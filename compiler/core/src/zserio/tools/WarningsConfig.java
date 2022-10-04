@@ -19,8 +19,34 @@ public class WarningsConfig
      */
     public WarningsConfig()
     {
-        addWarningGroup(ALL_OPTION, "Controls all warnings at once.", 0);
-        addWarning(UNUSED_OPTION, false, "Warn about defined, but unused types.");
+        addWarningGroup(ALL, "Controls all warnings at once.", 0);
+        addWarning(CHOICE_UNHANDLED_ENUM_ITEM, true,
+                "Warn when a choice with enumeration selector does not handle some of the enumeration items.");
+        addWarning(DOC_COMMENT_FORMAT, true,
+                "Warn when a documentation comment has invalid format.");
+        addWarning(DOC_COMMENT_SEE, true,
+                "Warn when a documentation see tag contains invalid symbol reference.");
+        addWarning(DOC_COMMENT_UNUSED, true,
+                "Warn when a documentation comment is not used - i.e. cannot be assigned to any documentable " +
+                "element.");
+        addWarning(ENCODING, true,
+                "Warn when a source file is not in UTF-8 encoding or " +
+                "when it contains non-printable characters.");
+        addWarning(IMPORT, true,
+                "Warn when some imports are duplicated or overrides other imports.");
+        addWarning(OPTIONAL_FIELD_REFERENCE, true,
+                "Warn when an expression contains a reference to an optional field, while the owner of the " +
+                "expression has no or inconsistent optional condition.");
+        addWarning(TIMESTAMP, true,
+                "Warn when timestamp of a source or a resource (on a class path) cannot be retrieved.");
+        addWarning(SQL_PRIMARY_KEY, true,
+                "Warn when a problem with primary key is detected in a SQL table. " +
+                "This can happen in various cases - no primary key, duplicated primary key, etc.");
+        addWarning(UNPACKABLE_ARRAY, true,
+                "Warn when a packed array is used on arrays of unpackable elements. Can be fired either for " +
+                "arrays of unpackable simple types (e.g. string) or for arrays of compounds which " +
+                "contain only unpackable types.");
+        addWarning(UNUSED, false, "Warn about defined, but unused types.");
     }
 
     /**
@@ -84,7 +110,7 @@ public class WarningsConfig
     {
         for (String option : warningsOptions)
         {
-            if (ALL_OPTION.equals(option))
+            if (ALL.equals(option))
                 setAll(value);
             else
                 setWarning(option, value, warningsDefinitionMap.get(option).getPriority());
@@ -103,7 +129,7 @@ public class WarningsConfig
     {
         for (String option : warningsConfigMap.keySet())
         {
-            setWarning(option, value, warningsDefinitionMap.get(ALL_OPTION).getPriority());
+            setWarning(option, value, warningsDefinitionMap.get(ALL).getPriority());
         }
     }
 
@@ -155,11 +181,11 @@ public class WarningsConfig
         /**
          * Gets priority of the warnings option.
          *
-         * Single warning options have highest priority and are always applied, while warnings options groups
-         * are applied only when no option with higher priority was applied.
-         * Option ALL_OPTION has the lowest possible priority.
+         * Single warning options have highest priority (Integer.MAX_VALUE) and are always applied,
+         * while warnings options groups are applied only when no option with higher priority was applied.
+         * Option ALL_OPTION has the lowest possible priority (Integer.MIN_VALUE).
          *
-         * @return
+         * @return The option priority.
          */
         public int getPriority()
         {
@@ -192,11 +218,31 @@ public class WarningsConfig
         private final int priority;
     }
 
+    /** Option name for choice unhandled enumeration item warnings. */
+    public static final String CHOICE_UNHANDLED_ENUM_ITEM = "choice-unhandled-enum-item";
+    /** Option name for documentation comment format warnings. */
+    public static final String DOC_COMMENT_FORMAT = "doc-comment-format";
+    /** Option name for documentation comment see tag warnings. */
+    public static final String DOC_COMMENT_SEE = "doc-comment-see";
+    /** Option name for unused documentation comments warnings. */
+    public static final String DOC_COMMENT_UNUSED = "doc-comment-unused";
+    /** Option name for encoding warnings. */
+    public static final String ENCODING = "encoding";
+    /** Option name for import warnings. */
+    public static final String IMPORT = "import";
+    /** Option name for optional field references warnings. */
+    public static final String OPTIONAL_FIELD_REFERENCE = "optional-field-reference";
+    /** Option name for timestamp warnings. */
+    public static final String TIMESTAMP = "timestamp";
+    /** Option name for SQL primary key warnings. */
+    public static final String SQL_PRIMARY_KEY = "sql-primary-key";
+    /** Option name for unpackable array warnings. */
+    public static final String UNPACKABLE_ARRAY = "unpackable-array";
     /** Option name for unused type warnings. */
-    public static final String UNUSED_OPTION = "unused";
+    public static final String UNUSED = "unused";
 
     // special option group covering all warnings options
-    private static final String ALL_OPTION = "all";
+    static final String ALL = "all";
 
     static final Character WARNINGS_OPTIONS_SEPARATOR = ',';
     // description map contains all warning options including group options (e.g. 'all')

@@ -127,7 +127,9 @@ public class ZserioTool
     private ZserioTool(Executor executor)
     {
         commandLineArguments = new CommandLineArguments(executor);
-        resourceManager = new ResourceManager();
+        // TODO[Mi-L@]: Note that the managers get command line arguments in constructor, but can use it only
+        //              after parse is called!
+        resourceManager = new ResourceManager(commandLineArguments);
         inputFileManager = new InputFileManager(commandLineArguments);
         extensionManager = new ExtensionManager(commandLineArguments);
     }
@@ -165,8 +167,10 @@ public class ZserioTool
     private Root parse() throws Exception
     {
         final String inputFileName = commandLineArguments.getInputFileName();
+        final WarningsConfig warningsConfig = commandLineArguments.getWarningsConfig();
         final ZserioAstBuilder astBuilder = new ZserioAstBuilder(
-                commandLineArguments.getTopLevelPackageNameIds(), inputFileName, inputFileManager);
+                commandLineArguments.getTopLevelPackageNameIds(), inputFileName, inputFileManager,
+                warningsConfig);
 
         final String inputFileFullName = inputFileManager.getFileFullName(inputFileName);
         final Package parsedPackage = parsePackage(astBuilder, inputFileFullName);
@@ -174,28 +178,26 @@ public class ZserioTool
 
         final Root rootNode = astBuilder.getAst();
 
-        final ZserioAstImporter importer = new ZserioAstImporter();
+        final ZserioAstImporter importer = new ZserioAstImporter(warningsConfig);
         rootNode.accept(importer);
 
         final ZserioAstTypeResolver typeResolver = new ZserioAstTypeResolver();
         rootNode.accept(typeResolver);
 
-        final ZserioAstTemplator templator = new ZserioAstTemplator(typeResolver,
-                commandLineArguments.getWarningsConfig());
+        final ZserioAstTemplator templator = new ZserioAstTemplator(typeResolver, warningsConfig);
         rootNode.accept(templator);
 
         final ZserioAstScopeSetter scopeSetter = new ZserioAstScopeSetter();
         rootNode.accept(scopeSetter);
 
-        final ZserioAstSymbolResolver symbolResolver = new ZserioAstSymbolResolver();
+        final ZserioAstSymbolResolver symbolResolver = new ZserioAstSymbolResolver(warningsConfig);
         rootNode.accept(symbolResolver);
 
         final ZserioAstEvaluator evaluator = new ZserioAstEvaluator();
         rootNode.accept(evaluator);
 
         final ZserioAstChecker checker = new ZserioAstChecker(
-                commandLineArguments.getWarningsConfig(),
-                commandLineArguments.getWithGlobalRuleIdCheck());
+                warningsConfig, commandLineArguments.getWithGlobalRuleIdCheck());
         rootNode.accept(checker);
 
         return rootNode;
@@ -218,7 +220,7 @@ public class ZserioTool
         final ParseTree tree = parser.packageDeclaration();
 
         final ZserioParseTreeChecker parseTreeChecker = new ZserioParseTreeChecker(
-                commandLineArguments.getAllowImplicitArrays());
+                commandLineArguments.getWarningsConfig(), commandLineArguments.getAllowImplicitArrays());
         parseTreeChecker.visit(tree);
 
         final Package parsedPackage = (Package)astBuilder.visit(tree, tokenStream);
@@ -244,8 +246,8 @@ public class ZserioTool
         }
     }
 
+    private final CommandLineArguments commandLineArguments;
     private final ResourceManager resourceManager;
     private final InputFileManager inputFileManager;
-    private final CommandLineArguments commandLineArguments;
     private final ExtensionManager extensionManager;
 }

@@ -12,7 +12,7 @@
     <target name="gen" depends="gen.check" unless="unused_type_warning.zs.gen_is_uptodate">
         <testGenClean testName="unused_type_warning"/>
         <testGen testName="unused_type_warning" zsFile="unused_type_warning.zs">
-            <arg name="withUnusedWarnings"/>
+            <arg name="withWarnings" value="unused"/>
         </testGen>
     </target>
 

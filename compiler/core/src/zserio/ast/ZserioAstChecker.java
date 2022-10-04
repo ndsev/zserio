@@ -30,17 +30,14 @@ public class ZserioAstChecker extends ZserioAstWalker
     {
         root.visitChildren(this);
         root.check(withGlobalRuleIdCheck);
-        if (warningsConfig.isEnabled(WarningsConfig.UNUSED_OPTION))
+
+        for (ZserioType definedType : definedTypes)
         {
-            for (ZserioType definedType : definedTypes)
+            final String definedTypeName = ZserioTypeUtil.getFullName(definedType);
+            if (!usedTypeNames.contains(definedTypeName))
             {
-                final String definedTypeName = ZserioTypeUtil.getFullName(definedType);
-                if (!usedTypeNames.contains(definedTypeName))
-                {
-                    ZserioToolPrinter.printWarning(definedType,
-                            "Type '" + definedTypeName + "' is not used!" +
-                            " [" + WarningsConfig.UNUSED_OPTION +  "]");
-                }
+                ZserioToolPrinter.printWarning(definedType, "Type '" + definedTypeName + "' is not used.",
+                        warningsConfig, WarningsConfig.UNUSED);
             }
         }
     }
@@ -76,7 +73,7 @@ public class ZserioAstChecker extends ZserioAstWalker
         {
             structureType.visitChildren(this);
             definedTypes.add(structureType);
-            structureType.check();
+            structureType.check(warningsConfig);
         }
         else
         {
@@ -91,7 +88,7 @@ public class ZserioAstChecker extends ZserioAstWalker
         {
             choiceType.visitChildren(this);
             definedTypes.add(choiceType);
-            choiceType.check();
+            choiceType.check(warningsConfig);
         }
         else
         {
@@ -106,7 +103,7 @@ public class ZserioAstChecker extends ZserioAstWalker
         {
             unionType.visitChildren(this);
             definedTypes.add(unionType);
-            unionType.check();
+            unionType.check(warningsConfig);
         }
         else
         {
@@ -137,7 +134,7 @@ public class ZserioAstChecker extends ZserioAstWalker
         {
             sqlTableType.visitChildren(this);
             definedTypes.add(sqlTableType);
-            sqlTableType.check();
+            sqlTableType.check(warningsConfig);
         }
         else
         {
@@ -149,14 +146,14 @@ public class ZserioAstChecker extends ZserioAstWalker
     public void visitSqlDatabaseType(SqlDatabaseType sqlDatabaseType)
     {
         sqlDatabaseType.visitChildren(this);
-        sqlDatabaseType.check();
+        sqlDatabaseType.check(warningsConfig);
     }
 
     @Override
     public void visitField(Field field)
     {
         field.visitChildren(this);
-        field.check(currentPackage);
+        field.check(currentPackage, warningsConfig);
     }
 
     @Override
@@ -191,14 +188,14 @@ public class ZserioAstChecker extends ZserioAstWalker
     public void visitFunction(Function function)
     {
         function.visitChildren(this);
-        function.check();
+        function.check(warningsConfig);
     }
 
     @Override
     public void visitTypeInstantiation(TypeInstantiation typeInstantiation)
     {
         typeInstantiation.visitChildren(this);
-        typeInstantiation.check(currentTemplateInstantiation);
+        typeInstantiation.check(warningsConfig, currentTemplateInstantiation);
     }
 
     @Override

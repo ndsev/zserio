@@ -1,5 +1,6 @@
 package zserio.ast;
 
+import zserio.tools.WarningsConfig;
 import zserio.tools.ZserioToolPrinter;
 
 /**
@@ -54,8 +55,10 @@ public class DocTagSee extends AstNodeBase
      *
      * @param ownerPackage Zserio package in which the symbol reference is defined.
      * @param ownerType ZserioType which is owner of the symbol reference or null.
+     * @param warningsConfig Warning subsystem configuration.
      */
-    void resolve(Package ownerPackage, ZserioScopedType ownerType)
+    void resolve(Package ownerPackage, ZserioScopedType ownerType,
+            WarningsConfig warningsConfig)
     {
         try
         {
@@ -63,7 +66,8 @@ public class DocTagSee extends AstNodeBase
         }
         catch (ParserException e)
         {
-            ZserioToolPrinter.printWarning(e.getLocation(), "Documentation: " + e.getMessage());
+            ZserioToolPrinter.printWarning(e.getLocation(), "Documentation: " + e.getMessage(),
+                    warningsConfig, WarningsConfig.DOC_COMMENT_SEE);
         }
     }
 

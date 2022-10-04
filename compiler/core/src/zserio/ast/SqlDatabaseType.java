@@ -3,6 +3,8 @@ package zserio.ast;
 import java.util.ArrayList;
 import java.util.List;
 
+import zserio.tools.WarningsConfig;
+
 /**
  * AST node for SQL Database types.
  *
@@ -33,9 +35,9 @@ public class SqlDatabaseType extends CompoundType
     }
 
     @Override
-    void check()
+    void check(WarningsConfig warningsConfig)
     {
-        super.check();
+        super.check(warningsConfig);
 
         checkSqlSymbolNames();
         checkNonSqlTableFields();

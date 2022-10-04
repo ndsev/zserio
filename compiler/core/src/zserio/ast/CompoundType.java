@@ -4,6 +4,8 @@ import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 
+import zserio.tools.WarningsConfig;
+
 /**
  * AST abstract node for all Compound types.
  *
@@ -212,7 +214,7 @@ public abstract class CompoundType extends TemplatableType
     /**
      * Checks the compound type.
      */
-    void check()
+    void check(WarningsConfig warningsConfig)
     {
         checkDirectRecursion();
         checkIndirectRecursion(this, this);

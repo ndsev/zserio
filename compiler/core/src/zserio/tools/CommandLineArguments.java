@@ -397,13 +397,13 @@ class CommandLineArguments
         options.addOptionGroup(writerCodeGroup);
 
         option = new Option(OptionNameWithWarnings, true,
-                "enable specified warnings, use '--help warnings' for more info");
+                "enable specified warnings, use '--help warnings' for detailed description");
         option.setArgName("warning[,warning]*");
         option.setValueSeparator(WarningsConfig.WARNINGS_OPTIONS_SEPARATOR);
         option.setRequired(false);
         options.addOption(option);
         option = new Option(OptionNameWithoutWarnings, true,
-                "disable specified warnings, use '--help warnings' for more info");
+                "disable specified warnings, use '--help warnings' for detailed description");
         option.setArgName("warning[,warning]*");
         option.setValueSeparator(WarningsConfig.WARNINGS_OPTIONS_SEPARATOR);
         option.setRequired(false);

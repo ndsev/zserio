@@ -3,6 +3,7 @@ package zserio.ast;
 import java.util.List;
 import java.util.Set;
 
+import zserio.tools.WarningsConfig;
 import zserio.tools.ZserioToolPrinter;
 
 /**
@@ -75,13 +76,13 @@ public class Function extends DocumentableAstNode implements ScopeSymbol
     /**
      * Checks the function type.
      */
-    void check()
+    void check(WarningsConfig warningsConfig)
     {
         // check result expression type
         ExpressionUtil.checkExpressionType(resultExpression, returnTypeReference);
 
         // check usage of optional fields (this is considered as a warning)
-        checkOptionalReferencesInFunction();
+        checkOptionalReferencesInFunction(warningsConfig);
     }
 
     /**
@@ -104,7 +105,7 @@ public class Function extends DocumentableAstNode implements ScopeSymbol
                 instantiatedResultExpression, getDocComments());
     }
 
-    private void checkOptionalReferencesInFunction()
+    private void checkOptionalReferencesInFunction(WarningsConfig warningsConfig)
     {
         // in case of ternary operator, we are not able to check correctness => such warning should be
         // enabled explicitly by command line
@@ -114,7 +115,8 @@ public class Function extends DocumentableAstNode implements ScopeSymbol
             for (Field referencedField : referencedFields)
             {
                 ZserioToolPrinter.printWarning(resultExpression, "Function '" + name + "' contains " +
-                        "reference to optional field '" + referencedField.getName() + "'.");
+                        "reference to optional field '" + referencedField.getName() + "'.",
+                        warningsConfig, WarningsConfig.OPTIONAL_FIELD_REFERENCE);
             }
         }
     }

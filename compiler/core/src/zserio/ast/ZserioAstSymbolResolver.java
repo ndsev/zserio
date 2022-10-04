@@ -1,10 +1,22 @@
 package zserio.ast;
 
+import zserio.tools.WarningsConfig;
+
 /**
  * Implementation of ZserioAstVisitor which resolves symbols for see documentation tags.
  */
 public class ZserioAstSymbolResolver extends ZserioAstWalker
 {
+    /**
+     * Constructor.
+     *
+     * @param warningsConfig Warnings subsystem configuration.
+     */
+    public ZserioAstSymbolResolver(WarningsConfig warningsConfig)
+    {
+        this.warningsConfig = warningsConfig;
+    }
+
     @Override
     public void visitPackage(Package pkg)
     {
@@ -66,7 +78,7 @@ public class ZserioAstSymbolResolver extends ZserioAstWalker
     @Override
     public void visitDocTagSee(DocTagSee docTagSee)
     {
-        docTagSee.resolve(currentPackage, currentScopedType);
+        docTagSee.resolve(currentPackage, currentScopedType, warningsConfig);
         docTagSee.visitChildren(this);
     }
 
@@ -108,6 +120,7 @@ public class ZserioAstSymbolResolver extends ZserioAstWalker
         }
     }
 
+    private final WarningsConfig warningsConfig;
     private Package currentPackage = null;
     private ZserioScopedType currentScopedType = null;
 };

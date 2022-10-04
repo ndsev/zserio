@@ -290,15 +290,15 @@ public class ZserioAstTemplator extends ZserioAstWalker
             if (descendingIterator.hasNext())
             {
                 stackedException.pushMessage(prevInstantiationReference.getLocation(),
-                        "    Required in instantiation of '" +
-                                prevInstantiationReference.getReferencedTypeName() + "' from here");
+                        "    In instantiation of '" +
+                                prevInstantiationReference.getReferencedTypeName() + "' required from here");
             }
             else
             {
                 final String message = previousInstantiation.getTemplate() == template
                         ? "    First instantiated here"
-                        : "    First seen in instantiation of '" +
-                                prevInstantiationReference.getReferencedTypeName() + "' from here";
+                        : "    In instantiation of '" +
+                                prevInstantiationReference.getReferencedTypeName() + "' first seen from here";
                 stackedException.pushMessage(prevInstantiationReference.getLocation(), message);
             }
         }

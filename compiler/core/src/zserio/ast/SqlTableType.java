@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
+import zserio.tools.WarningsConfig;
 import zserio.tools.ZserioToolPrinter;
 
 /**
@@ -129,9 +130,9 @@ public class SqlTableType extends CompoundType
     }
 
     @Override
-    void check()
+    void check(WarningsConfig warningsConfig)
     {
-        super.check();
+        super.check(warningsConfig);
 
         checkSqlSymbolNames();
         checkSqlTableFields();
@@ -141,7 +142,7 @@ public class SqlTableType extends CompoundType
         if (!isVirtual())
         {
             checkOrdinaryTableFields();
-            checkPrimaryKeyConstraint();
+            checkPrimaryKeyConstraint(warningsConfig);
             checkUniqueConstraint();
         }
         else
@@ -227,7 +228,7 @@ public class SqlTableType extends CompoundType
             throw new ParserException(this, "Virtual table must have at least one field!");
     }
 
-    private void checkPrimaryKeyConstraint()
+    private void checkPrimaryKeyConstraint(WarningsConfig warningsConfig)
     {
         boolean first = true;
         boolean found = false;
@@ -239,58 +240,66 @@ public class SqlTableType extends CompoundType
                 if (found)
                 {
                     ZserioToolPrinter.printWarning(fieldSqlConstraint, "Duplicated primary key " +
-                            "column '" + tableField.getName() + "' in sql table '" + getName() + "'.");
+                            "column '" + tableField.getName() + "' in sql table '" + getName() + "'.",
+                            warningsConfig, WarningsConfig.SQL_PRIMARY_KEY);
                 }
                 else
                 {
                     if (!first)
+                    {
                         ZserioToolPrinter.printWarning(fieldSqlConstraint, "Primary key column '" +
                                 tableField.getName() + "' is not the first one in sql table '" + getName() +
-                                "'.");
+                                "'.", warningsConfig, WarningsConfig.SQL_PRIMARY_KEY);
+                    }
                     found = true;
                 }
 
-                checkPrimaryKeyColumn(tableField);
+                checkPrimaryKeyColumn(warningsConfig, tableField);
             }
 
             first = false;
         }
 
-        checkPrimaryKeyInSqlConstraint(found);
-        checkPrimaryKeyForWithoutRowId();
+        checkPrimaryKeyInSqlConstraint(warningsConfig, found);
+        checkPrimaryKeyForWithoutRowId(warningsConfig);
     }
 
-    private void checkPrimaryKeyInSqlConstraint(boolean primaryKeyFound)
+    private void checkPrimaryKeyInSqlConstraint(WarningsConfig warningsConfig, boolean primaryKeyFound)
     {
         final List<String> primaryKeyColumnNames = (sqlConstraint != null) ?
                 sqlConstraint.getPrimaryKeyColumnNames() : new ArrayList<String>();
         if (primaryKeyFound)
         {
             if (!primaryKeyColumnNames.isEmpty())
+            {
                 ZserioToolPrinter.printWarning(sqlConstraint, "Multiple primary keys in sql table '" +
-                        getName() + "'.");
+                        getName() + "'.", warningsConfig, WarningsConfig.SQL_PRIMARY_KEY);
+            }
         }
         else
         {
             if (primaryKeyColumnNames.isEmpty())
             {
                 if (sqlWithoutRowId)
+                {
                     throw new ParserException(this, "No primary key in without rowid table '" + getName() +
                             "'!");
+                }
 
-                ZserioToolPrinter.printWarning(this, "No primary key in sql table '" + getName() + "'.");
+                ZserioToolPrinter.printWarning(this, "No primary key in sql table '" + getName() + "'.",
+                        warningsConfig, WarningsConfig.SQL_PRIMARY_KEY);
             }
         }
 
         int columnIndex = 0;
         for (String columnName : primaryKeyColumnNames)
         {
-            checkPrimaryKeyByColumnName(columnName, columnIndex);
+            checkPrimaryKeyByColumnName(warningsConfig, columnName, columnIndex);
             columnIndex++;
         }
     }
 
-    private void checkPrimaryKeyForWithoutRowId()
+    private void checkPrimaryKeyForWithoutRowId(WarningsConfig warningsConfig)
     {
         // single integer primary key for without rowid table brings performance drop
         if (sqlWithoutRowId && sqlPrimaryKeyFields.size() == 1)
@@ -299,8 +308,11 @@ public class SqlTableType extends CompoundType
             {
                 final ZserioType fieldBaseType = primaryKeyField.getTypeInstantiation().getBaseType();
                 if (fieldBaseType instanceof BooleanType || fieldBaseType instanceof IntegerType)
+                {
                     ZserioToolPrinter.printWarning(this, "Single integer primary key in without rowid " +
-                            "table '" + getName() + "' brings performance drop.");
+                            "table '" + getName() + "' brings performance drop.",
+                            warningsConfig, WarningsConfig.SQL_PRIMARY_KEY);
+                }
             }
         }
     }
@@ -329,15 +341,18 @@ public class SqlTableType extends CompoundType
         }
     }
 
-    private void checkPrimaryKeyColumn(Field tableField)
+    private void checkPrimaryKeyColumn(WarningsConfig warningsConfig, Field tableField)
     {
         sqlPrimaryKeyFields.add(tableField);
         if (SqlConstraint.isNullAllowed(tableField.getSqlConstraint()))
+        {
             ZserioToolPrinter.printWarning(tableField, "Primary key column '" + tableField.getName() +
-                    "' can contain NULL in sql table '" + getName() + "'.");
+                    "' can contain NULL in sql table '" + getName() + "'.",
+                    warningsConfig, WarningsConfig.SQL_PRIMARY_KEY);
+        }
     }
 
-    private void checkPrimaryKeyByColumnName(String columnName, int columnIndex)
+    private void checkPrimaryKeyByColumnName(WarningsConfig warningsConfig, String columnName, int columnIndex)
     {
         boolean found = false;
         int fieldIndex = 0;
@@ -346,7 +361,7 @@ public class SqlTableType extends CompoundType
             if (tableField.getName().equals(columnName))
             {
                 found = true;
-                checkPrimaryKeyColumn(tableField);
+                checkPrimaryKeyColumn(warningsConfig, tableField);
                 break;
             }
 
@@ -354,13 +369,16 @@ public class SqlTableType extends CompoundType
         }
 
         if (!found)
+        {
             throw new ParserException(sqlConstraint, "Primary key column '" + columnName +
                     "' not found in sql table '" + getName() + "'!");
+        }
 
         if (fieldIndex != columnIndex)
         {
             ZserioToolPrinter.printWarning(sqlConstraint, "Primary key column '" + columnName +
-                    "' is in bad order in sql table '" + getName() + "'.");
+                    "' is in bad order in sql table '" + getName() + "'.",
+                    warningsConfig, WarningsConfig.SQL_PRIMARY_KEY);
         }
     }
 

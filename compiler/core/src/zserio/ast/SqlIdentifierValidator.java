@@ -27,7 +27,7 @@ class SqlIdentifierValidator
         {
             final ParserStackedException stackedException = new ParserStackedException(symbol.getLocation(),
                     "Symbol '" + name + "' is not unique (case insensitive) within the SQL type!");
-            stackedException.pushMessage(addedName.getLocation(), "    Conflicting symbol defined here.");
+            stackedException.pushMessage(addedName.getLocation(), "    Conflicting symbol defined here");
             throw stackedException;
         }
     }

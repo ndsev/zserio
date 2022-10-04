@@ -40,10 +40,10 @@ struct OtherTestStruct
     with wrong terminator.
     */
     float32 fField;
-    /**
+    /*!
     Markdown multiline comment
     correctly terminated.
-    */
+    !*/
     string sField;
 };
 

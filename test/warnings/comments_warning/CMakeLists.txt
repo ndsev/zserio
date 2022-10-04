@@ -66,8 +66,8 @@ zserio_add_library(TARGET comments_warning_zs
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
     ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation
-    EXPECTED_WARNINGS 13
+    ZSERIO_OPTIONS -withWarnings unused -withoutSourcesAmalgamation
+    EXPECTED_WARNINGS 15
     ZSERIO_LOG_FILENAME zserio_log.txt
 )
 

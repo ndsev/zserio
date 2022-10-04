@@ -3,6 +3,8 @@ package zserio.ast;
 import java.util.ArrayList;
 import java.util.List;
 
+import zserio.tools.WarningsConfig;
+
 /**
  * AST node for Union types.
  *
@@ -58,9 +60,9 @@ public class UnionType extends CompoundType
     }
 
     @Override
-    void check()
+    void check(WarningsConfig warningsConfig)
     {
-        super.check();
+        super.check(warningsConfig);
 
         checkSymbolNames();
         checkSqlTableFields();

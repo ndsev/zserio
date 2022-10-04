@@ -18,13 +18,13 @@ protected:
 TEST_F(NotHandledWarningTest, notHandledWhite)
 {
     const std::string warning = "not_handled_warning.zs:15:8: "
-            "Enumeration value 'WHITE' is not handled in choice 'EnumParamChoice'.";
+            "Enumeration item 'WHITE' is not handled in choice 'EnumParamChoice'.";
     ASSERT_TRUE(zserioWarnings.isPresent(warning));
 }
 
 TEST_F(NotHandledWarningTest, notHandledRed)
 {
     const std::string warning = "not_handled_warning.zs:15:8: "
-            "Enumeration value 'RED' is not handled in choice 'EnumParamChoice'.";
+            "Enumeration item 'RED' is not handled in choice 'EnumParamChoice'.";
     ASSERT_TRUE(zserioWarnings.isPresent(warning));
 }

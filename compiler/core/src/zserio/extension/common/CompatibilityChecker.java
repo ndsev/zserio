@@ -36,6 +36,7 @@ public class CompatibilityChecker extends DefaultTreeWalker
     @Override
     public void beginPackage(Package pkg) throws ZserioExtensionException
     {
+        // TODO[Mi-L@]: Pass WarningsConfig to extensions?!
         if (pkg.getCompatibilityVersion() != null)
         {
             if (compatibilityVersion == null)
