@@ -225,8 +225,10 @@ public:
          * Initializes all blob fields of the table.
          *
          * This method sets all parameters for all blob fields recursively.
+            <#if needsParameterProvider>
          *
          * \param parameterProvider Explicit parameter provider to use for initialization.
+            </#if>
          */
         </#if>
         void initializeChildren(<#if needsParameterProvider>IParameterProvider& parameterProvider</#if>);
