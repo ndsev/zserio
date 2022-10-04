@@ -121,4 +121,10 @@ struct DirectionStructure(bool hasExtraValue)
     align(32):
     mixedOffset4:
     optional /*! Mixed comment. !*/ int32 mixedField4;
+
+    /*! The function return value of the optional field extraValue if exists. Otherwise, it returns zero. !*/
+    function uint32 getExtraValue()
+    {
+        return (hasExtraValue) ? extraValue : 0;
+    }
 };
