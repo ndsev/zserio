@@ -48,6 +48,11 @@ ${I} * <br>${element.paramTag.name} - <@doc_multiline element.paramTag.descripti
             </#list>
         </#list>
     </#if>
+    <#if has_comment_deprecated_tag(comment)>
+        <#-- Keyword '@deprecated' is not used because it fires warning. -->
+${I} * <p>
+${I} * <b>Deprecated</b>
+    </#if>
     <#if has_comment_see_tag(comment)>
 ${I} *
         <#list comment.paragraphs as paragraph>
@@ -57,10 +62,6 @@ ${I} * @see ${element.seeTag.link} ${element.seeTag.alias}
                 </#if>
             </#list>
         </#list>
-    </#if>
-    <#if has_comment_deprecated_tag(comment)>
-${I} *
-${I} * @deprecated
     </#if>
 </#macro>
 

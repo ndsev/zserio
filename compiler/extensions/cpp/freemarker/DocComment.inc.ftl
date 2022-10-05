@@ -12,30 +12,38 @@ ${I} */
 <#macro doc_comment comment indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#list comment.paragraphs as paragraph>
-        <#if !paragraph?is_first>
+        <#if !paragraph?is_first && (has_paragraph_multiline(paragraph) || has_paragraph_todo_tag(paragraph) ||
+                has_paragraph_see_tag(paragraph))>
 ${I} *
         </#if>
-        <#list paragraph.elements as element>
-${I} * <@doc_paragraph_element element, indent/>
+        <#list paragraph.elements as paragraphElement>
+            <#if paragraphElement.multiline??>
+${I} * <@doc_multiline paragraphElement.multiline, indent, 0/>
+            </#if>
+            <#if paragraphElement.todoTag??>
+${I} * \todo <@doc_multiline paragraphElement.todoTag, indent, 6/>
+            </#if>
+            <#if paragraphElement.seeTag??>
+${I} * \see \ref ${paragraphElement.seeTag.link} "${paragraphElement.seeTag.alias}"
+            </#if>
         </#list>
     </#list>
-</#macro>
-
-<#macro doc_paragraph_element paragraphElement indent>
-    <#if paragraphElement.multiline??>
-<@doc_multiline paragraphElement.multiline, indent, 0/><#rt>
+    <#if has_comment_param_tag(comment)>
+${I} *
+${I} * <dl class="param"><dt>Parameters:</dt>
+        <#list comment.paragraphs as paragraph>
+            <#list paragraph.elements as paragraphElement>
+                <#if paragraphElement.paramTag??>
+${I} * <dd> \b ${paragraphElement.paramTag.name} <@doc_multiline paragraphElement.paramTag.description, indent, paragraphElement.paramTag.name?length + 9/></dd>
+                </#if>
+            </#list>
+        </#list>
+${I} * </dl>
     </#if>
-    <#if paragraphElement.todoTag??>
-\todo <@doc_multiline paragraphElement.todoTag, indent, 6/><#rt>
-    </#if>
-    <#if paragraphElement.seeTag??>
-\see \ref ${paragraphElement.seeTag.link} "${paragraphElement.seeTag.alias}"<#rt>
-    </#if>
-    <#if paragraphElement.paramTag??>
-\param ${paragraphElement.paramTag.name} <@doc_multiline paragraphElement.paramTag.description, indent, 7/><#rt>
-    </#if>
-    <#if paragraphElement.isDeprecated>
-\deprecated<#rt>
+    <#if has_comment_deprecated_tag(comment)>
+        <#-- Keyword '@deprecated' is not used because it fires warning in clang. -->
+${I} *
+${I} * \b Deprecated
     </#if>
 </#macro>
 
@@ -59,3 +67,52 @@ ${I} * ${M}<#rt>
         </#if>
     </#list>
 </#macro>
+
+<#function has_paragraph_multiline paragraph>
+    <#list paragraph.elements as paragraphElement>
+        <#if paragraphElement.multiline??>
+            <#return true>
+        </#if>
+    </#list>
+    <#return false>
+</#function>
+
+<#function has_paragraph_todo_tag paragraph>
+    <#list paragraph.elements as paragraphElement>
+        <#if paragraphElement.todoTag??>
+            <#return true>
+        </#if>
+    </#list>
+    <#return false>
+</#function>
+
+<#function has_paragraph_see_tag paragraph>
+    <#list paragraph.elements as paragraphElement>
+        <#if paragraphElement.seeTag??>
+            <#return true>
+        </#if>
+    </#list>
+    <#return false>
+</#function>
+
+<#function has_comment_param_tag comment>
+    <#list comment.paragraphs as paragraph>
+        <#list paragraph.elements as paragraphElement>
+            <#if paragraphElement.paramTag??>
+                <#return true>
+            </#if>
+        </#list>
+    </#list>
+    <#return false>
+</#function>
+
+<#function has_comment_deprecated_tag comment>
+    <#list comment.paragraphs as paragraph>
+        <#list paragraph.elements as paragraphElement>
+            <#if paragraphElement.isDeprecated>
+                <#return true>
+            </#if>
+        </#list>
+    </#list>
+    <#return false>
+</#function>
