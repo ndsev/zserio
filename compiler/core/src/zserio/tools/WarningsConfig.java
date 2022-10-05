@@ -22,6 +22,8 @@ public class WarningsConfig
         addWarningGroup(ALL, "Controls all warnings at once.", 0);
         addWarning(CHOICE_UNHANDLED_ENUM_ITEM, true,
                 "Warn when a choice with enumeration selector does not handle some of the enumeration items.");
+        addWarning(DEFAULT_INSTANTIATION, false,
+                "Warn about template instantiations which are not instantiated using instantiate keyword.");
         addWarning(DOC_COMMENT_FORMAT, true,
                 "Warn when a documentation comment has invalid format.");
         addWarning(DOC_COMMENT_SEE, true,
@@ -220,6 +222,8 @@ public class WarningsConfig
 
     /** Option name for choice unhandled enumeration item warnings. */
     public static final String CHOICE_UNHANDLED_ENUM_ITEM = "choice-unhandled-enum-item";
+    /** Option name for default template instantiation warnings. */
+    public static final String DEFAULT_INSTANTIATION = "default-instantiation";
     /** Option name for documentation comment format warnings. */
     public static final String DOC_COMMENT_FORMAT = "doc-comment-format";
     /** Option name for documentation comment see tag warnings. */

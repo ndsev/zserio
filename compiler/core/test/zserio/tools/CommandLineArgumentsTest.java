@@ -316,7 +316,7 @@ public class CommandLineArgumentsTest
             if (warning.getValue().getPriority() != Integer.MAX_VALUE)
                 continue; // skip groups
 
-            if (warning.getKey() == WarningsConfig.UNUSED)
+            if (warning.getKey().equals(WarningsConfig.UNUSED))
                 assertFalse(warningsConfig.isEnabled(warning.getKey()));
             else
                 assertTrue(warningsConfig.isEnabled(warning.getKey()));
@@ -336,7 +336,7 @@ public class CommandLineArgumentsTest
             if (warning.getValue().getPriority() != Integer.MAX_VALUE)
                 continue; // skip groups
 
-            if (warning.getKey() == WarningsConfig.UNUSED)
+            if (warning.getKey().equals(WarningsConfig.UNUSED))
                 assertTrue(warningsConfig.isEnabled(warning.getKey()));
             else
                 assertFalse(warningsConfig.isEnabled(warning.getKey()));

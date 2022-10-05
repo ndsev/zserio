@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import zserio.tools.HashUtil;
+import zserio.tools.WarningsConfig;
+import zserio.tools.ZserioToolPrinter;
 
 /**
  * Implementation of ZserioAstVisitor which handles templates instantiation.
@@ -17,10 +19,12 @@ public class ZserioAstTemplator extends ZserioAstWalker
      * Constructor.
      *
      * @param typeResolver Type resolver.
+     * @param warningsConfig Warnings config.
      */
-    public ZserioAstTemplator(ZserioAstTypeResolver typeResolver)
+    public ZserioAstTemplator(ZserioAstTypeResolver typeResolver, WarningsConfig warningsConfig)
     {
         this.typeResolver = typeResolver;
+        this.warningsConfig = warningsConfig;
     }
 
     @Override
@@ -156,6 +160,32 @@ public class ZserioAstTemplator extends ZserioAstWalker
 
             // instantiation found
             return previousValue.getTemplatableType();
+        }
+
+        // warn about default instantiations
+        if (instantiateType == null)
+        {
+            final Iterator<TypeReference> descendingIt = instantiationReferenceStack.descendingIterator();
+            while (descendingIt.hasNext())
+            {
+                final TypeReference instantiationReference = descendingIt.next();
+                if (descendingIt.hasNext())
+                {
+                    if (warningsConfig.isEnabled(WarningsConfig.DEFAULT_INSTANTIATION))
+                    {
+                        ZserioToolPrinter.printWarning(instantiationReference.getLocation(),
+                                "    In instantiation of '" +
+                                instantiationReference.getReferencedTypeName() + "' required from here");
+                    }
+                }
+                else
+                {
+                    ZserioToolPrinter.printWarning(instantiationReference,
+                            "Default instantiation of '" + instantiationReference.getReferencedTypeName() +
+                            "' as '" + instantiationShortName + ".",
+                            warningsConfig, WarningsConfig.DEFAULT_INSTANTIATION);
+                }
+            }
         }
 
         // remember instantiation short name clashes
@@ -473,6 +503,7 @@ public class ZserioAstTemplator extends ZserioAstWalker
     private static final int MAX_TEMPLATE_NAME_LENGTH = 64;
 
     private final ZserioAstTypeResolver typeResolver;
+    private final WarningsConfig warningsConfig;
     private final ArrayDeque<TypeReference> instantiationReferenceStack = new ArrayDeque<TypeReference>();
     private final Map<InstantiationMapKey, InstantiationMapValue> instantiationMap =
             new HashMap<InstantiationMapKey, InstantiationMapValue>();
