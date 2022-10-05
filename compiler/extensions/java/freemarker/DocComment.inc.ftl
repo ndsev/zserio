@@ -1,78 +1,66 @@
 <#macro doc_comments docComments indent=0>
-    <#list docComments.comments as comment>
-        <@doc_comment comment, false, indent/>
-    </#list>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+${I}/**
+    <@doc_comment docComments, indent/>
+${I} */
 </#macro>
 
 <#macro doc_comments_inner docComments indent=0>
-    <#list docComments.comments as comment>
-        <@doc_comment comment, true, indent/>
-    </#list>
+    <@doc_comment docComments, indent/>
 </#macro>
 
-<#macro doc_comment comment isInner indent>
+<#macro doc_comment comment indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
-    <#if comment.isOneLiner && comment.paragraphs?size == 1 && comment.paragraphs[0].elements?size == 1 &&
-            comment.paragraphs[0].elements[0].multiline??>
-${I}<#if !isInner>/**<#else> *</#if> <@doc_multiline comment.paragraphs[0].elements[0].multiline, indent, 0/><#if !isInner> */</#if>
-    <#else>
-        <#if !isInner>
-${I}/**
-        </#if>
-        <#local isFirstParagraph=true>
-        <#list comment.paragraphs as paragraph>
-            <#if has_paragraph_multiline(paragraph)>
-                <#if isFirstParagraph>
-                    <#local isFirstParagraph=false>
-                <#else>
+    <#local isFirstParagraph=true>
+    <#list comment.paragraphs as paragraph>
+        <#if has_paragraph_multiline(paragraph)>
+            <#if isFirstParagraph>
+                <#local isFirstParagraph=false>
+            <#else>
 ${I} * <p>
-                </#if>
-                <#list paragraph.elements as element>
-                    <#if element.multiline??>
-${I} * <@doc_multiline element.multiline, indent, 0/>
-                    </#if>
-                </#list>
             </#if>
-        </#list>
-        <#if has_comment_todo_tag(comment)>
+            <#list paragraph.elements as element>
+                <#if element.multiline??>
+${I} * <@doc_multiline element.multiline, indent, 0/>
+                </#if>
+            </#list>
+        </#if>
+    </#list>
+    <#if has_comment_todo_tag(comment)>
 ${I} * <p>
 ${I} * <b>Todo:</b>
-            <#list comment.paragraphs as paragraph>
-                <#list paragraph.elements as element>
-                    <#if element.todoTag??>
+        <#list comment.paragraphs as paragraph>
+            <#list paragraph.elements as element>
+                <#if element.todoTag??>
 ${I} * <br><@doc_multiline element.todoTag, indent, 0/>
-                    </#if>
-                </#list>
+                </#if>
             </#list>
-        </#if>
-        <#if has_comment_param_tag(comment)>
+        </#list>
+    </#if>
+    <#if has_comment_param_tag(comment)>
 ${I} * <p>
 ${I} * <b>Parameters:</b>
-            <#list comment.paragraphs as paragraph>
-                <#list paragraph.elements as element>
-                    <#if element.paramTag??>
+        <#list comment.paragraphs as paragraph>
+            <#list paragraph.elements as element>
+                <#if element.paramTag??>
 ${I} * <br>${element.paramTag.name} - <@doc_multiline element.paramTag.description, indent, element.paramTag.name?length + 7/>
-                    </#if>
-                </#list>
+                </#if>
             </#list>
-        </#if>
-        <#if has_comment_see_tag(comment)>
+        </#list>
+    </#if>
+    <#if has_comment_see_tag(comment)>
 ${I} *
-            <#list comment.paragraphs as paragraph>
-                <#list paragraph.elements as element>
-                    <#if element.seeTag??>
+        <#list comment.paragraphs as paragraph>
+            <#list paragraph.elements as element>
+                <#if element.seeTag??>
 ${I} * @see ${element.seeTag.link} ${element.seeTag.alias}
-                    </#if>
-                </#list>
+                </#if>
             </#list>
-        </#if>
-        <#if has_comment_deprecated_tag(comment)>
+        </#list>
+    </#if>
+    <#if has_comment_deprecated_tag(comment)>
 ${I} *
 ${I} * @deprecated
-        </#if>
-        <#if !isInner>
-${I} */
-        </#if>
     </#if>
 </#macro>
 

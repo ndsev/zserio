@@ -29,215 +29,193 @@ public class DocCommentsTemplateData
         while (iterator.hasPrevious() && iterator.previous().isSticky())
             --stickyCommentsIndex;
 
+        docParagraphs = new ArrayList<DocParagraphData>();
         for (int i = 0; i < docComments.size(); ++i)
         {
             if (i >= stickyCommentsIndex)
             {
-                final DocComment docComment = docComments.get(i);
-                comments.add(new DocCommentTemplateData(docComment.toClassic()));
+                final DocCommentClassic docCommentClassic = docComments.get(i).toClassic();
+                for (DocParagraph docParagraph : docCommentClassic.getParagraphs())
+                    docParagraphs.add(new DocParagraphData(docParagraph));
             }
         }
     }
 
-    public Iterable<DocCommentTemplateData> getComments()
+    public Iterable<DocParagraphData> getParagraphs()
     {
-        return comments;
+        return docParagraphs;
     }
 
-    public static class DocCommentTemplateData
+    public static class DocParagraphData
     {
-        public DocCommentTemplateData(DocCommentClassic docCommentClassic)
+        public DocParagraphData(DocParagraph docParagraph)
         {
-            for (DocParagraph docParagraph : docCommentClassic.getParagraphs())
-                docParagraphs.add(new DocParagraphData(docParagraph));
-
-            isOneLiner = docCommentClassic.isOneLiner();
+            for (DocElement docElement : docParagraph.getDocElements())
+                docElements.add(new DocElementData(docElement));
         }
 
-        public Iterable<DocParagraphData> getParagraphs()
+        public Iterable<DocElementData> getElements()
         {
-            return docParagraphs;
+            return docElements;
         }
 
-        public boolean getIsOneLiner()
+        public static class DocElementData
         {
-            return isOneLiner;
+            public DocElementData(DocElement docElement)
+            {
+                final DocMultiline multiline = docElement.getDocMultiline();
+                this.multiline = (multiline != null) ? new DocMultilineData(multiline) : null;
+
+                final DocTagSee seeTag = docElement.getSeeTag();
+                this.seeTag = (seeTag != null) ? new DocTagSeeData(seeTag) : null;
+
+                final DocTagTodo todoTag = docElement.getTodoTag();
+                this.todoTag = (todoTag != null) ? new DocMultilineData(todoTag) : null;
+
+                final DocTagParam paramTag = docElement.getParamTag();
+                this.paramTag = (paramTag != null) ? new DocTagParamData(paramTag) : null;
+
+                final DocTagDeprecated deprecatedTag = docElement.getDeprecatedTag();
+                this.isDeprecated = deprecatedTag != null;
+            }
+
+            public DocMultilineData getMultiline()
+            {
+                return multiline;
+            }
+
+            public DocTagSeeData getSeeTag()
+            {
+                return seeTag;
+            }
+
+            public DocMultilineData getTodoTag()
+            {
+                return todoTag;
+            }
+
+            public DocTagParamData getParamTag()
+            {
+                return paramTag;
+            }
+
+            public boolean getIsDeprecated()
+            {
+                return isDeprecated;
+            }
+
+            private final DocMultilineData multiline;
+            private final DocTagSeeData seeTag;
+            private final DocMultilineData todoTag;
+            private final DocTagParamData paramTag;
+            private final boolean isDeprecated;
         }
 
-        public static class DocParagraphData
-        {
-            public DocParagraphData(DocParagraph docParagraph)
-            {
-                for (DocElement docElement : docParagraph.getDocElements())
-                    docElements.add(new DocElementData(docElement));
-            }
-
-            public Iterable<DocElementData> getElements()
-            {
-                return docElements;
-            }
-
-            public static class DocElementData
-            {
-                public DocElementData(DocElement docElement)
-                {
-                    final DocMultiline multiline = docElement.getDocMultiline();
-                    this.multiline = (multiline != null) ? new DocMultilineData(multiline) : null;
-
-                    final DocTagSee seeTag = docElement.getSeeTag();
-                    this.seeTag = (seeTag != null) ? new DocTagSeeData(seeTag) : null;
-
-                    final DocTagTodo todoTag = docElement.getTodoTag();
-                    this.todoTag = (todoTag != null) ? new DocMultilineData(todoTag) : null;
-
-                    final DocTagParam paramTag = docElement.getParamTag();
-                    this.paramTag = (paramTag != null) ? new DocTagParamData(paramTag) : null;
-
-                    final DocTagDeprecated deprecatedTag = docElement.getDeprecatedTag();
-                    this.isDeprecated = deprecatedTag != null;
-                }
-
-                public DocMultilineData getMultiline()
-                {
-                    return multiline;
-                }
-
-                public DocTagSeeData getSeeTag()
-                {
-                    return seeTag;
-                }
-
-                public DocMultilineData getTodoTag()
-                {
-                    return todoTag;
-                }
-
-                public DocTagParamData getParamTag()
-                {
-                    return paramTag;
-                }
-
-                public boolean getIsDeprecated()
-                {
-                    return isDeprecated;
-                }
-
-                private final DocMultilineData multiline;
-                private final DocTagSeeData seeTag;
-                private final DocMultilineData todoTag;
-                private final DocTagParamData paramTag;
-                private final boolean isDeprecated;
-            }
-
-            private final List<DocElementData> docElements = new ArrayList<DocElementData>();
-        }
-
-        public static class DocMultilineData
-        {
-            public DocMultilineData(DocMultiline docMultiline)
-            {
-                for (DocLine docLine : docMultiline.getLines())
-                    lines.add(new DocLineData(docLine));
-            }
-
-            public Iterable<DocLineData> getLines()
-            {
-                return lines;
-            }
-
-            public static class DocLineData
-            {
-                public DocLineData(DocLine docLine)
-                {
-                    for (DocLineElement docLineElement : docLine.getLineElements())
-                    {
-                        lineElements.add(new DocLineElementData(docLineElement));
-                    }
-                }
-
-                public Iterable<DocLineElementData> getLineElements()
-                {
-                    return lineElements;
-                }
-
-                private final List<DocLineElementData> lineElements = new ArrayList<DocLineElementData>();
-            }
-
-            public static class DocLineElementData
-            {
-                public DocLineElementData(DocLineElement docLineElement)
-                {
-                    final DocText docText = docLineElement.getDocText();
-                    docString = (docText != null) ? docText.getText() : null;
-
-                    final DocTagSee docTagSee = docLineElement.getSeeTag();
-                    seeTag = (docTagSee != null) ? new DocTagSeeData(docTagSee) : null;
-                }
-
-                public String getDocString()
-                {
-                    return docString;
-                }
-
-                public DocTagSeeData getSeeTag()
-                {
-                    return seeTag;
-                }
-
-                private final String docString;
-                private final DocTagSeeData seeTag;
-            }
-
-            private final List<DocLineData> lines = new ArrayList<DocLineData>();
-        }
-
-        public static class DocTagSeeData
-        {
-            public DocTagSeeData(DocTagSee docTagSee)
-            {
-                alias = docTagSee.getLinkAlias();
-                link = docTagSee.getLinkName();
-            }
-
-            public String getAlias()
-            {
-                return alias;
-            }
-
-            public String getLink()
-            {
-                return link;
-            }
-
-            private final String alias;
-            private final String link;
-        }
-
-        public static class DocTagParamData
-        {
-            public DocTagParamData(DocTagParam docTagParam)
-            {
-                name = docTagParam.getParamName();
-                description = new DocMultilineData(docTagParam);
-            }
-
-            public String getName()
-            {
-                return name;
-            }
-
-            public DocMultilineData getDescription()
-            {
-                return description;
-            }
-
-            private final String name;
-            private final DocMultilineData description;
-        }
-
-        private final List<DocParagraphData> docParagraphs = new ArrayList<DocParagraphData>();
-        private final boolean isOneLiner;
+        private final List<DocElementData> docElements = new ArrayList<DocElementData>();
     }
 
-    private final List<DocCommentTemplateData> comments = new ArrayList<DocCommentTemplateData>();
+    public static class DocMultilineData
+    {
+        public DocMultilineData(DocMultiline docMultiline)
+        {
+            for (DocLine docLine : docMultiline.getLines())
+                lines.add(new DocLineData(docLine));
+        }
+
+        public Iterable<DocLineData> getLines()
+        {
+            return lines;
+        }
+
+        public static class DocLineData
+        {
+            public DocLineData(DocLine docLine)
+            {
+                for (DocLineElement docLineElement : docLine.getLineElements())
+                {
+                    lineElements.add(new DocLineElementData(docLineElement));
+                }
+            }
+
+            public Iterable<DocLineElementData> getLineElements()
+            {
+                return lineElements;
+            }
+
+            private final List<DocLineElementData> lineElements = new ArrayList<DocLineElementData>();
+        }
+
+        public static class DocLineElementData
+        {
+            public DocLineElementData(DocLineElement docLineElement)
+            {
+                final DocText docText = docLineElement.getDocText();
+                docString = (docText != null) ? docText.getText() : null;
+
+                final DocTagSee docTagSee = docLineElement.getSeeTag();
+                seeTag = (docTagSee != null) ? new DocTagSeeData(docTagSee) : null;
+            }
+
+            public String getDocString()
+            {
+                return docString;
+            }
+
+            public DocTagSeeData getSeeTag()
+            {
+                return seeTag;
+            }
+
+            private final String docString;
+            private final DocTagSeeData seeTag;
+        }
+
+        private final List<DocLineData> lines = new ArrayList<DocLineData>();
+    }
+
+    public static class DocTagSeeData
+    {
+        public DocTagSeeData(DocTagSee docTagSee)
+        {
+            alias = docTagSee.getLinkAlias();
+            link = docTagSee.getLinkName();
+        }
+
+        public String getAlias()
+        {
+            return alias;
+        }
+
+        public String getLink()
+        {
+            return link;
+        }
+
+        private final String alias;
+        private final String link;
+    }
+
+    public static class DocTagParamData
+    {
+        public DocTagParamData(DocTagParam docTagParam)
+        {
+            name = docTagParam.getParamName();
+            description = new DocMultilineData(docTagParam);
+        }
+
+        public String getName()
+        {
+            return name;
+        }
+
+        public DocMultilineData getDescription()
+        {
+            return description;
+        }
+
+        private final String name;
+        private final DocMultilineData description;
+    }
+
+    private final List<DocParagraphData> docParagraphs;
 }

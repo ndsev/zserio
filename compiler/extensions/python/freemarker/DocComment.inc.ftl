@@ -1,20 +1,16 @@
 <#macro doc_comments docComments indent=0>
-    <#list docComments.comments as comment>
-        <@doc_comment comment, false, indent/>
-    </#list>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+${I}"""
+    <@doc_comment docComments, indent/>
+${I}"""
 </#macro>
 
 <#macro doc_comments_inner docComments indent=0>
-    <#list docComments.comments as comment>
-        <@doc_comment comment, true, indent/>
-    </#list>
+    <@doc_comment docComments, indent/>
 </#macro>
 
-<#macro doc_comment comment isInner indent>
+<#macro doc_comment comment indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
-    <#if !isInner>
-${I}"""
-    </#if>
         <#list comment.paragraphs as paragraph>
             <#if !paragraph?is_first>
 
@@ -23,9 +19,6 @@ ${I}"""
 ${I}<@doc_paragraph_element element, indent/>
             </#list>
         </#list>
-    <#if !isInner>
-${I}"""
-    </#if>
 </#macro>
 
 <#macro doc_paragraph_element paragraphElement indent>
