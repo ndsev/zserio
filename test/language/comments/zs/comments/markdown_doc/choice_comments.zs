@@ -19,22 +19,24 @@ See [Direction](enum_comments.zs#Direction) page.
 !*/
 choice TestChoice(Direction direction) on direction
 {
+    /*! Traffic allowed from start to end node. !*/
     case POSITIVE:
-        /*! Traffic allowed from start to end node. !*/
+        /*! Value which contains 8-bit unsigned integer. !*/
         uint8 positiveValue;
 
+    /*! Traffic allowed from end to start node. !*/
     case NEGATIVE:
-        /*! Traffic allowed from end to start node. !*/
+        /*! Value which contains 32-bit signed integer. !*/
         int32 negativeValue;
 
+    /*! Traffic allowed in both directions. !*/
     case BOTH:
-        /*! Traffic allowed in both directions. !*/
+    /*! No direction at all. !*/
+    case NONE:
+        /*! Value which contains 64-bit unsigned integer. !*/
         uint64 value;
 
-    case NONE:
-        /*! No direction at all. !*/
-        bool isNone;
-
+    /*! Default. !*/
     default:
         ;
 };
