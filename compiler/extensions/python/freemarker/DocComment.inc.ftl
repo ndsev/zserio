@@ -35,7 +35,7 @@ ${I}**Parameters:**
         <#list comment.paragraphs as paragraph>
             <#list paragraph.elements as paragraphElement>
                 <#if paragraphElement.paramTag??>
-${I}**${paragraphElement.paramTag.name}** - <@doc_multiline paragraphElement.paramTag.description, indent, paragraphElement.paramTag.name?length + 7/>
+${I}- **${paragraphElement.paramTag.name}** <@doc_multiline paragraphElement.paramTag.description, indent, 2/>
                 </#if>
             </#list>
         </#list>

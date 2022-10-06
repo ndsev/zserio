@@ -39,14 +39,15 @@ ${I} * <br><@doc_multiline element.todoTag, indent, 0/>
     </#if>
     <#if has_comment_param_tag(comment)>
 ${I} * <p>
-${I} * <b>Parameters:</b>
+${I} * <b>Parameters:</b><ul>
         <#list comment.paragraphs as paragraph>
             <#list paragraph.elements as element>
                 <#if element.paramTag??>
-${I} * <br>${element.paramTag.name} - <@doc_multiline element.paramTag.description, indent, element.paramTag.name?length + 7/>
+${I} * <li><b>${element.paramTag.name}</b> <@doc_multiline element.paramTag.description, indent, 4/></li>
                 </#if>
             </#list>
         </#list>
+${I} * </ul>
     </#if>
     <#if has_comment_deprecated_tag(comment)>
         <#-- Keyword '@deprecated' is not used because it fires warning. -->

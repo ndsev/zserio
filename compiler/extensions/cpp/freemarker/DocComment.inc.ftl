@@ -24,21 +24,20 @@ ${I} * <@doc_multiline paragraphElement.multiline, indent, 0/>
 ${I} * \todo <@doc_multiline paragraphElement.todoTag, indent, 6/>
             </#if>
             <#if paragraphElement.seeTag??>
-${I} * \see \ref ${paragraphElement.seeTag.link} "${paragraphElement.seeTag.alias}"
+${I} * \see <span/> \ref ${paragraphElement.seeTag.link} "${paragraphElement.seeTag.alias}"
             </#if>
         </#list>
     </#list>
     <#if has_comment_param_tag(comment)>
 ${I} *
-${I} * <dl class="param"><dt>Parameters:</dt>
+${I} * \b Parameters:
         <#list comment.paragraphs as paragraph>
             <#list paragraph.elements as paragraphElement>
                 <#if paragraphElement.paramTag??>
-${I} * <dd> \b ${paragraphElement.paramTag.name} <@doc_multiline paragraphElement.paramTag.description, indent, paragraphElement.paramTag.name?length + 9/></dd>
+${I} * - \b ${paragraphElement.paramTag.name} <@doc_multiline paragraphElement.paramTag.description, indent, 2/>
                 </#if>
             </#list>
         </#list>
-${I} * </dl>
     </#if>
     <#if has_comment_deprecated_tag(comment)>
         <#-- Keyword '@deprecated' is not used because it fires warning in clang. -->
