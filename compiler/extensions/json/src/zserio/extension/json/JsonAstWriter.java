@@ -1,18 +1,16 @@
 package zserio.extension.json;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 
 import zserio.ast.ArrayType;
-
 import zserio.ast.BitmaskType;
 import zserio.ast.BitmaskValue;
 import zserio.ast.BooleanType;
@@ -61,6 +59,8 @@ import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
 import zserio.ast.VarIntegerType;
 import zserio.ast.ZserioAstVisitor;
+import zserio.ast.ZserioTemplatableType;
+import zserio.ast.ZserioType;
 import zserio.extension.common.FileUtil;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
@@ -83,70 +83,123 @@ public class JsonAstWriter implements ZserioAstVisitor {
     /** Current package name */
     // private String currentPackageName = null;
 
+    private final OutputFileManager outputFileManager;
+
+    private final String outputDir;
+
     /** Current element */
     private JsonElement currentJsonElement = null;
 
     /** Collection of all types */
     private final Map<String, JsonElement> jsonElementMap = new HashMap<String, JsonElement>();
 
+    /** The number of times the element is referenced */
+    private final Map<String, Integer> referenceMap = new HashMap<String, Integer>();
+
     /**
      * Constructor.
      */
-    public JsonAstWriter() {
+    public JsonAstWriter(OutputFileManager outputFileManager, String outputDir) {
+        this.outputFileManager = outputFileManager;
+        this.outputDir = outputDir;
     }
 
     /**
      * Saves AST in the JSON format to the file.
      *
-     * @param outputDir JSON file outputDir where to write whole AST.
      * @throws ZserioExtensionException
-     * @throws IOException
      *
      */
-    public void save(OutputFileManager outputFileManager, String outputDir) throws ZserioExtensionException {
-        // TODO:
-        List<JsonElement> root = new ArrayList<JsonElement>();
-
-        final File outputFile = new File(outputDir, "ndslive-layer.json");
+    public void save() throws ZserioExtensionException {
+        // Create output directory
+        final File outputFile = new File(outputDir, "0");
         FileUtil.createOutputDirectory(outputFile);
 
+        TreeSet<String> rootSet = new TreeSet<String>();
         for (String key : jsonElementMap.keySet()) {
-            if (key.endsWith("Layer")) {
+            // Filter elements not referenced by other structures.
+            // key.endsWith("Layer") && 
+            if (referenceMap.containsKey(key) && 0 == referenceMap.get(key)) {
                 JsonElement element = jsonElementMap.get(key);
                 fillGrandson(element);
-                root.add(element);
-
-                String text = JSON.toJSONString(element, SerializerFeature.DisableCircularReferenceDetect);
-                final File jsonFile = new File(outputDir, element.getName() + ".json");
-                PrintWriter writer = FileUtil.createWriter(jsonFile);
-                writer.write(text);
-                writer.close();
-                outputFileManager.registerOutputFile(jsonFile);
+                writeFile(element, element.getName());
+                rootSet.add(key);
+            } else {
+                // remove it ?
             }
         }
-
-        //
-        String text = JSON.toJSONString(root, SerializerFeature.DisableCircularReferenceDetect);
-        PrintWriter writer = FileUtil.createWriter(outputFile);
-        writer.write(text);
-        writer.close();
-        outputFileManager.registerOutputFile(outputFile);
+        // Root node element as menu list.
+        writeFile(rootSet, "Menus");
     }
 
+    /**
+     * Fill in the real grandchild node information.
+     * 
+     * @param element
+     */
     private void fillGrandson(JsonElement element) {
         if (element != null) {
-            if (element.getChildren().isEmpty() && jsonElementMap.containsKey(element.getType())) {
-                String type = element.getType() + " (" + jsonElementMap.get(element.getType()).getType() + ")";
-                element.setType(type);
+            if (element.getChildren() == null) {
+                // leaf node
+                if (jsonElementMap.containsKey(element.getType())) {
+                    String type = element.getType() + " (" + jsonElementMap.get(element.getType()).getType() + ")";
+                    element.setType(type);
+                }
             } else {
+                // intermediate node
                 for (JsonElement children : element.getChildren()) {
                     if (jsonElementMap.containsKey(children.getType())) {
                         // add grandson
                         JsonElement realChildren = jsonElementMap.get(children.getType());
                         children.setChildren(realChildren.getChildren());
-                        fillGrandson(children);
                     }
+                    // recursive fill
+                    fillGrandson(children);
                 }
+            }
+        }
+    }
+
+    /**
+     * Export objects to a file.
+     *
+     * @param object object.
+     * @param name file name.
+     */
+    private void writeFile(Object object, String name) throws ZserioExtensionException {
+        String text = JSON.toJSONString(object, SerializerFeature.DisableCircularReferenceDetect);
+        final File jsonFile = new File(outputDir, name + ".json");
+        PrintWriter writer = FileUtil.createWriter(jsonFile);
+        writer.write(text);
+        writer.close();
+        outputFileManager.registerOutputFile(jsonFile);
+    }
+
+    /**
+     * Add element.
+     *
+     * @param name Name of the element.
+     * @param type Type of the element.
+     */
+    private void addElement(String name, String type) {
+        // Add element
+        currentJsonElement = new JsonElement(name, type);
+        jsonElementMap.put(name, currentJsonElement);
+        addReference(type);
+    }
+
+    /**
+     * Collect all types and record the number of times the type is referenced.
+     * 
+     * @param type Name of the type.
+     */
+    private void addReference(String type) {
+        // Number of references to the type
+        if (type != null) {
+            if (referenceMap.containsKey(type)) {
+                referenceMap.compute(type, (key, value) -> value + 1);
+            } else {
+                referenceMap.put(type, 0);
             }
         }
     }
@@ -212,14 +265,8 @@ public class JsonAstWriter implements ZserioAstVisitor {
     public void visitSubtype(Subtype subtype) {
         // name
         String name = subtype.getName();
-
-        // Add element
-        JsonElement element = new JsonElement(name);
-        jsonElementMap.put(name, element);
-        currentJsonElement = element;
-
+        addElement(name, name);
         subtype.visitChildren(this);
-        currentJsonElement = null;
     }
 
     /**
@@ -228,16 +275,22 @@ public class JsonAstWriter implements ZserioAstVisitor {
      * @param structureType Structure AST node.
      */
     public void visitStructureType(StructureType structureType) {
-        // name
-        String name = structureType.getName();
-
-        // Add element
-        JsonElement element = new JsonElement(name, name);
-        jsonElementMap.put(name, element);
-        currentJsonElement = element;
-
-        structureType.visitChildren(this);
-        currentJsonElement = null;
+        // instantiations
+        List<ZserioTemplatableType> instantiations = structureType.getInstantiations();
+        // Is it a template struct?
+        if (0 < instantiations.size()) {
+            for (ZserioTemplatableType instantiation : instantiations) {
+                // Add element
+                String name = instantiation.getInstantiationName();
+                addElement(name, name);
+                instantiation.visitChildren(this);
+            }
+        } else {
+            // Add element
+            String name = structureType.getName();
+            addElement(name, name);
+            structureType.visitChildren(this);
+        }
     }
 
     /**
@@ -248,14 +301,9 @@ public class JsonAstWriter implements ZserioAstVisitor {
     public void visitChoiceType(ChoiceType choiceType) {
         // name
         String name = choiceType.getName();
-
-        // Add element
-        JsonElement element = new JsonElement(name, name);
-        jsonElementMap.put(name, element);
-        currentJsonElement = element;
-
+        addElement(name, name);
         choiceType.visitChildren(this);
-        currentJsonElement = null;
+
     }
 
     /**
@@ -275,14 +323,8 @@ public class JsonAstWriter implements ZserioAstVisitor {
     public void visitEnumType(EnumType enumType) {
         // name
         String name = enumType.getName();
-
-        // Add element
-        JsonElement element = new JsonElement(name);
-        jsonElementMap.put(name, element);
-        currentJsonElement = element;
-
+        addElement(name, name);
         enumType.visitChildren(this);
-        currentJsonElement = null;
     }
 
     /**
@@ -291,7 +333,10 @@ public class JsonAstWriter implements ZserioAstVisitor {
      * @param bitmaskType Bitmask AST node.
      */
     public void visitBitmaskType(BitmaskType bitmaskType) {
-
+        // name
+        String name = bitmaskType.getName();
+        addElement(name, name);
+        bitmaskType.visitChildren(this);
     }
 
     /**
@@ -318,7 +363,10 @@ public class JsonAstWriter implements ZserioAstVisitor {
      * @param serviceType Service AST node.
      */
     public void visitServiceType(ServiceType serviceType) {
-
+        // name
+        String name = serviceType.getName();
+        addElement(name, name);
+        serviceType.visitChildren(this);
     }
 
     /**
@@ -327,7 +375,10 @@ public class JsonAstWriter implements ZserioAstVisitor {
      * @param pubsubType Pub/Sub AST node.
      */
     public void visitPubsubType(PubsubType pubsubType) {
-
+        // name
+        String name = pubsubType.getName();
+        addElement(name, name);
+        pubsubType.visitChildren(this);
     }
 
     /**
@@ -338,16 +389,17 @@ public class JsonAstWriter implements ZserioAstVisitor {
     public void visitField(Field field) {
         if (currentJsonElement != null) {
             JsonElement fatherElement = currentJsonElement;
-            JsonElement fieldElement = new JsonElement(field.getName());
+            addElement(field.getName(), null);
             // isOptional
-            fieldElement.setOptional(field.isOptional());
+            currentJsonElement.setOptional(field.isOptional());
             // isPackable
-            fieldElement.setPackable(field.isPackable());
-
-            currentJsonElement = fieldElement;
-            fatherElement.addChildren(fieldElement);
-
+            currentJsonElement.setPackable(field.isPackable());
             field.visitChildren(this);
+            //
+            addReference(currentJsonElement.getType());
+
+            // add children
+            fatherElement.addChildren(currentJsonElement);
             currentJsonElement = fatherElement;
         }
     }
@@ -388,12 +440,11 @@ public class JsonAstWriter implements ZserioAstVisitor {
     public void visitEnumItem(EnumItem enumItem) {
         if (currentJsonElement != null) {
             JsonElement fatherElement = currentJsonElement;
-            String text = enumItem.getName() + " (" + enumItem.getValue().toString() + ")";
-            JsonElement fieldElement = new JsonElement(text, fatherElement.getType());
-            currentJsonElement = fieldElement;
-            fatherElement.addChildren(fieldElement);
-
+            String name = enumItem.getName() + " (" + enumItem.getValue().toString() + ")";
+            addElement(name, null);
             enumItem.visitChildren(this);
+            // add children
+            fatherElement.addChildren(currentJsonElement);
             currentJsonElement = fatherElement;
         }
     }
@@ -404,7 +455,15 @@ public class JsonAstWriter implements ZserioAstVisitor {
      * @param bitmaskValue Bitmask named value AST node.
      */
     public void visitBitmaskValue(BitmaskValue bitmaskValue) {
-
+        if (currentJsonElement != null) {
+            JsonElement fatherElement = currentJsonElement;
+            String name = bitmaskValue.getName() + " (" + bitmaskValue.getValue().toString() + ")";
+            addElement(name, null);
+            bitmaskValue.visitChildren(this);
+            // add children
+            fatherElement.addChildren(currentJsonElement);
+            currentJsonElement = fatherElement;
+        }
     }
 
     /**
@@ -422,7 +481,24 @@ public class JsonAstWriter implements ZserioAstVisitor {
      * @param serviceMethod Service method AST node.
      */
     public void visitServiceMethod(ServiceMethod serviceMethod) {
+        if (currentJsonElement != null) {
+            JsonElement fatherElement = currentJsonElement;
+            addElement(serviceMethod.getName(), null);
+            JsonElement sonElement = currentJsonElement;
 
+            // request
+            String request = serviceMethod.getRequestTypeReference().getReferencedTypeName();
+            addElement("request", request);
+            sonElement.addChildren(currentJsonElement);
+            // response
+            String response = serviceMethod.getResponseTypeReference().getReferencedTypeName();
+            addElement("response", response);
+            sonElement.addChildren(currentJsonElement);
+
+            // add children
+            fatherElement.addChildren(sonElement);
+            currentJsonElement = fatherElement;
+        }
     }
 
     /**
@@ -431,6 +507,17 @@ public class JsonAstWriter implements ZserioAstVisitor {
      * @param pubsubMessage Pub/Sub message AST node.
      */
     public void visitPubsubMessage(PubsubMessage pubsubMessage) {
+        if (currentJsonElement != null) {
+            JsonElement fatherElement = currentJsonElement;
+            addElement(pubsubMessage.getName(), null);
+            pubsubMessage.visitChildren(this);
+            //
+            addReference(currentJsonElement.getType());
+
+            // add children
+            fatherElement.addChildren(currentJsonElement);
+            currentJsonElement = fatherElement;
+        }
 
     }
 
@@ -477,7 +564,13 @@ public class JsonAstWriter implements ZserioAstVisitor {
      */
     public void visitTypeReference(TypeReference typeReference) {
         if (currentJsonElement != null) {
-            String type = typeReference.getReferencedTypeName();
+            String type = null;
+            ZserioType zserioType = typeReference.getType();
+            if (zserioType != null) {
+                type = zserioType.getName();
+            } else {
+                type = typeReference.getReferencedTypeName();
+            }
             currentJsonElement.setType(type);
         }
     }
@@ -596,18 +689,7 @@ public class JsonAstWriter implements ZserioAstVisitor {
      * @param templateInstantiation Template instantiation AST node.
      */
     public void visitInstantiateType(InstantiateType templateInstantiation) {
-        // name
-        String name = templateInstantiation.getName();
-        // Add element
-        JsonElement element = new JsonElement(name);
-        jsonElementMap.put(name, element);
-        currentJsonElement = element;
-        templateInstantiation.visitChildren(this);
 
-        JsonElement fieldElement = new JsonElement(currentJsonElement.getType(), currentJsonElement.getType());
-        currentJsonElement.addChildren(fieldElement);
-
-        currentJsonElement = null;
     }
 
     /**

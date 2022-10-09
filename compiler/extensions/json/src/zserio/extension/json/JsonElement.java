@@ -53,6 +53,9 @@ public class JsonElement {
     }
 
     public void addChildren(JsonElement element) {
+        if (children == null) {
+            children = new ArrayList<JsonElement>();
+        }
         children.add(element);
     }
 
@@ -78,5 +81,5 @@ public class JsonElement {
     @JSONField (serialize = false)
     private Boolean isPackable = false;
 
-    private List<JsonElement> children = new ArrayList<JsonElement>();
+    private List<JsonElement> children = null;
 }

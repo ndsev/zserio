@@ -47,10 +47,10 @@ public class JsonExtension implements Extension {
         final OutputFileManager outputFileManager = new OutputFileManager(parameters);
         final String outputDir = parameters.getCommandLineArg(OptionJson);
 
-        final JsonAstWriter JsonAstWriter = new JsonAstWriter();
+        final JsonAstWriter JsonAstWriter = new JsonAstWriter(outputFileManager, outputDir);
         rootNode.accept(JsonAstWriter);
 
-        JsonAstWriter.save(outputFileManager, outputDir);
+        JsonAstWriter.save();
         outputFileManager.printReport();
     }
 
