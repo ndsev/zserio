@@ -32,7 +32,7 @@ public class TemplatesErrorTest
         final String errors[] =
         {
             "constraint_expression_expects_constant_error.zs:10:5: " +
-                    "In instantiation of 'TestStruct' required from here",
+                    "    In instantiation of 'TestStruct' required from here",
             "constraint_expression_expects_constant_error.zs:5:27: " +
                     "Unresolved symbol 'uint32' within expression scope!"
         };
@@ -63,10 +63,10 @@ public class TemplatesErrorTest
         final String errors[] =
         {
             "field_not_available_in_function_error.zs:21:5: " +
-                    "In instantiation of 'TestStruct' required from here",
+                    "    In instantiation of 'TestStruct' required from here",
             "field_not_available_in_function_error.zs:16:5: " +
-                    "In instantiation of 'FieldNotAvailable' required from here",
-            "field_not_available_in_function_error.zs:5:30: In function 'getField2' called from here",
+                    "    In instantiation of 'FieldNotAvailable' required from here",
+            "field_not_available_in_function_error.zs:5:30:     In function 'getField2' called from here",
             "field_not_available_in_function_error.zs:10:16: " +
                     "Unresolved symbol 'field2' within expression scope!"
         };
@@ -79,7 +79,7 @@ public class TemplatesErrorTest
         final String errors[] =
         {
             "hashed_template_name_clash_error.zs:21:5: " +
-                    "In instantiation of 'Test' required from here",
+                    "    In instantiation of 'Test' required from here",
             "hashed_template_name_clash_error.zs:25:8: " +
                     "    First defined here",
             "hashed_template_name_clash_error.zs:8:8: " +
@@ -127,7 +127,7 @@ public class TemplatesErrorTest
         final String errors[] =
         {
             "instantiate_duplicated_via_instantiate_error.zs:8:13: " +
-                    "In instantiation of 'Data' required from here",
+                    "    In instantiation of 'Data' required from here",
             "instantiate_duplicated_via_instantiate_error.zs:15:26:     First requested here",
             "instantiate_duplicated_via_instantiate_error.zs:16:32: " +
                     "Ambiguous request to instantiate template 'Other'!"
@@ -199,7 +199,8 @@ public class TemplatesErrorTest
     {
         final String errors[] =
         {
-            "instantiation_via_subtype_error.zs:13:9: In instantiation of 'TestStructure' required from here",
+            "instantiation_via_subtype_error.zs:13:9: " +
+                    "    In instantiation of 'TestStructure' required from here",
             "instantiation_via_subtype_error.zs:9:16: Unexpected dot expression 'field'!"
         };
         assertTrue(zserioErrors.isPresent(errors));
@@ -218,7 +219,7 @@ public class TemplatesErrorTest
     {
         final String errors[] =
         {
-            "missing_type_parameters_error.zs:15:5: In instantiation of 'TestStruct' required from here",
+            "missing_type_parameters_error.zs:15:5:     In instantiation of 'TestStruct' required from here",
             "missing_type_parameters_error.zs:5:5: " +
                     "Referenced type 'Parameterized' is defined as parameterized type!"
         };
@@ -230,7 +231,7 @@ public class TemplatesErrorTest
     {
         final String errors[] =
         {
-            "parameterized_builtin_type_error.zs:11:5: In instantiation of 'TestStruct' required from here",
+            "parameterized_builtin_type_error.zs:11:5:     In instantiation of 'TestStruct' required from here",
             "parameterized_builtin_type_error.zs:6:5: Referenced type 'uint32' is not a parameterized type!"
         };
         assertTrue(zserioErrors.isPresent(errors));
@@ -241,7 +242,8 @@ public class TemplatesErrorTest
     {
         final String errors[] =
         {
-            "parameterized_compound_type_error.zs:16:5: In instantiation of 'TestStruct' required from here",
+            "parameterized_compound_type_error.zs:16:5: " +
+                    "    In instantiation of 'TestStruct' required from here",
             "parameterized_compound_type_error.zs:11:5: " +
                     "Referenced type 'Compound' is not a parameterized type!"
         };

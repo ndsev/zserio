@@ -192,7 +192,7 @@ class PythonPackageWithModuleClashChecker extends DefaultTreeWalker
                         templatable.getReversedInstantiationReferenceStack())
                 {
                     ZserioToolPrinter.printError(instantiationReference.getLocation(),
-                            "In instantiation of '" + instantiationReference.getReferencedTypeName() +
+                            "    In instantiation of '" + instantiationReference.getReferencedTypeName() +
                             "' required from here");
                 }
             }

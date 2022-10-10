@@ -156,7 +156,7 @@ class PythonModuleClashChecker extends DefaultTreeWalker
                 for (TypeReference instantiationReference : reversedStack)
                 {
                     ZserioToolPrinter.printError(instantiationReference.getLocation(),
-                            "In instantiation of '" + instantiationReference.getReferencedTypeName() +
+                            "    In instantiation of '" + instantiationReference.getReferencedTypeName() +
                             "' required from here");
                 }
             }

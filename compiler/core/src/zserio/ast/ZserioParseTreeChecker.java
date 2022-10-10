@@ -80,7 +80,7 @@ public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
                 final AstLocation location = new AstLocation(ctx.IMPLICIT().getSymbol());
                 final ParserStackedException stackedException = new ParserStackedException(location,
                         "Implicit arrays are deprecated and will be removed from the language!");
-                stackedException.pushMessage(location,  "For strong compatibility reason, please " +
+                stackedException.pushMessage(location, "For strong compatibility reason, please " +
                         "consider to use command line option '-allowImplicitArrays'.");
                 throw stackedException;
             }

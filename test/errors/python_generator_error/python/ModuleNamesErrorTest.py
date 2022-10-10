@@ -65,7 +65,7 @@ class ModuleNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "module_names/instantiate_type_with_structure_clash_error.zs",
             [
-                ":13:13: In instantiation of 'Other' required from here",
+                ":13:13:     In instantiation of 'Other' required from here",
                 ":8:8: Module 'some_name' generated for package symbol 'SomeName' " +
                 "clashes with module generated for package symbol 'Some_Name' defined at 3:8!",
                 "[ERROR] Python Generator: Module name clashing detected!"
@@ -76,7 +76,7 @@ class ModuleNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "module_names/instantiation_with_structure_clash_error.zs",
             [
-                ":5:5: In instantiation of 'Some' required from here",
+                ":5:5:     In instantiation of 'Some' required from here",
                 ":8:8: Module 'some_name' generated for package symbol 'Some_Name' " +
                 "clashes with module generated for package symbol 'SomeName' defined at 3:8!",
                 "[ERROR] Python Generator: Module name clashing detected!"
