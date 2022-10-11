@@ -1,7 +1,7 @@
 package zserio.tools;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.NoSuchFileException;
 
 import org.antlr.v4.runtime.CharStream;
@@ -204,7 +204,7 @@ public class ZserioTool
     {
         ZserioToolPrinter.printMessage("Parsing " + inputFileFullName);
 
-        final CharStream inputStream = CharStreams.fromFileName(inputFileFullName, Charset.forName("UTF-8"));
+        final CharStream inputStream = CharStreams.fromFileName(inputFileFullName, StandardCharsets.UTF_8);
         final ParseErrorListener parseErrorListener = new ParseErrorListener();
         final ZserioLexer lexer = new ZserioLexer(inputStream);
         lexer.removeErrorListeners();

@@ -6,8 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
-import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
+import java.nio.charset.StandardCharsets;
 
 import zserio.antlr.ZserioParser;
 import zserio.antlr.ZserioParserBaseVisitor;
@@ -199,7 +199,7 @@ public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
         final byte[] fileContent = readFile(location);
         try
         {
-            final CharsetDecoder decoder = Charset.forName("UTF-8").newDecoder();
+            final CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder();
             decoder.decode(ByteBuffer.wrap(fileContent));
         }
         catch (CharacterCodingException exception)
@@ -211,7 +211,7 @@ public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
     private void checkNonPrintableCharacters(AstLocation location)
     {
         final byte[] fileContent = readFile(location);
-        final String content = new String(fileContent, Charset.forName("UTF-8"));
+        final String content = new String(fileContent, StandardCharsets.UTF_8);
 
         if (content.indexOf('\t') >= 0)
             ZserioToolPrinter.printWarning(location, "Found tab characters.");
