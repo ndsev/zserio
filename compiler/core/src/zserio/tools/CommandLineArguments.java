@@ -226,6 +226,16 @@ class CommandLineArguments
     }
 
     /**
+     * Gets whether to generate comments in code.
+     *
+     * @return True if command line arguments enable generating of comments in code.
+     */
+    public boolean getWithCodeComments()
+    {
+        return withCodeCommentsOption;
+    }
+
+    /**
      * Gets the top level package name identifier list.
      *
      * @return List of top level package name identifier or empty list if not specified.
@@ -427,6 +437,15 @@ class CommandLineArguments
         globalRuleIdCheckGroup.setRequired(false);
         options.addOptionGroup(globalRuleIdCheckGroup);
 
+        final OptionGroup codeCommentsGroup = new OptionGroup();
+        option = new Option(OptionNameWithCodeComments, false, "enable comments in generated code");
+        codeCommentsGroup.addOption(option);
+        option = new Option(OptionNameWithoutCodeComments, false,
+                "disable comments in generated code (default)");
+        codeCommentsGroup.addOption(option);
+        codeCommentsGroup.setRequired(false);
+        options.addOptionGroup(codeCommentsGroup);
+
         option = new Option(OptionNameSetTopLevelPackage, true,
                 "force top level package prefix to all zserio packages");
         option.setArgName("packageName");
@@ -460,6 +479,7 @@ class CommandLineArguments
                 getOptionValues(OptionNameWithoutWarnings));
         withCrossExtensionCheckOption = !hasOption(OptionNameWithoutCrossExtensionCheck);
         withGlobalRuleIdCheckOption = hasOption(OptionNameWithGlobalRuleIdCheck);
+        withCodeCommentsOption = hasOption(OptionNameWithCodeComments);
         final String topLevelPackageName = getOptionValue(OptionNameSetTopLevelPackage);
         topLevelPackageNameIds = topLevelPackageName == null
                 ? new ArrayList<String>()
@@ -646,6 +666,8 @@ class CommandLineArguments
     private static final String OptionNameWithoutCrossExtensionCheck = "withoutCrossExtensionCheck";
     private static final String OptionNameWithGlobalRuleIdCheck = "withGlobalRuleIdCheck";
     private static final String OptionNameWithoutGlobalRuleIdCheck = "withoutGlobalRuleIdCheck";
+    private static final String OptionNameWithCodeComments = "withCodeComments";
+    private static final String OptionNameWithoutCodeComments = "withoutCodeComments";
     private static final String OptionNameSetTopLevelPackage = "setTopLevelPackage";
     private static final String OptionNameIgnoreTimestamps = "ignoreTimestamps";
     private static final String OptionNameAllowImplicitArrays = "allowImplicitArrays";
@@ -674,6 +696,7 @@ class CommandLineArguments
     private WarningsConfig warningsConfig;
     private boolean withCrossExtensionCheckOption;
     private boolean withGlobalRuleIdCheckOption;
+    private boolean withCodeCommentsOption;
     private List<String> topLevelPackageNameIds;
     private boolean ignoreTimestampsOption;
     private boolean allowImplicitArraysOption;

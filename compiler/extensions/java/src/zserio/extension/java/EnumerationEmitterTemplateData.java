@@ -3,6 +3,7 @@ package zserio.extension.java;
 import java.util.ArrayList;
 import java.util.List;
 
+import zserio.ast.DocComment;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.TypeInstantiation;
@@ -18,7 +19,7 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
     public EnumerationEmitterTemplateData(TemplateDataContext context, EnumType enumType)
             throws ZserioExtensionException
     {
-        super(context, enumType);
+        super(context, enumType, enumType.getDocComments());
 
         final TypeInstantiation enumTypeInstantiation = enumType.getTypeInstantiation();
         final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
@@ -34,7 +35,7 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
 
         items = new ArrayList<EnumItemData>();
         for (EnumItem item: enumType.getItems())
-            items.add(new EnumItemData(nativeIntegralType, item));
+            items.add(new EnumItemData(context, nativeIntegralType, item));
     }
 
     public NativeTypeInfoTemplateData getUnderlyingTypeInfo()
@@ -59,11 +60,14 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
 
     public static class EnumItemData
     {
-        public EnumItemData(NativeIntegralType nativeIntegralType, EnumItem enumItem)
-                throws ZserioExtensionException
+        public EnumItemData(TemplateDataContext context, NativeIntegralType nativeIntegralType,
+                EnumItem enumItem) throws ZserioExtensionException
         {
             name = enumItem.getName();
             value = nativeIntegralType.formatLiteral(enumItem.getValue());
+            final List<DocComment> itemDocComments = enumItem.getDocComments();
+            docComments = itemDocComments.isEmpty()
+                    ? null : new DocCommentsTemplateData(context, itemDocComments);
         }
 
         public String getName()
@@ -76,8 +80,14 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
             return value;
         }
 
+        public DocCommentsTemplateData getDocComments()
+        {
+            return docComments;
+        }
+
         private final String name;
         private final String value;
+        private final DocCommentsTemplateData docComments;
     }
 
     private final NativeTypeInfoTemplateData underlyingTypeInfo;

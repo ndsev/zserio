@@ -1,7 +1,19 @@
 package comments.classic_doc.struct_comments;
 
+import comments.classic_doc.bitmask_comments.*;
+import comments.classic_doc.enum_comments.*;
+import comments.classic_doc.pubsub_comments.*;
+import comments.classic_doc.service_comments.*;
+import comments.classic_doc.sql_database_comments.*;
+import comments.classic_doc.sql_table_comments.*;
+import comments.classic_doc.union_comments.*;
+
 /**
  * Traffic flow on links.
+ *
+ * @see "Struct field via full name" comments.classic_doc.struct_comments.DirectionStructure.direction
+ *
+ * @see "Struct field via type name" DirectionStructure.direction
  */
 enum bit:2 Direction
 {
@@ -26,9 +38,35 @@ enum bit:2 Direction
  *
  * @see Direction
  *
+ * @see "Union comments via type name" TestUnion
+ *
+ * @see "Union comments via full name" comments.classic_doc.union_comments.TestUnion
+ *
+ * @see "Union field comment via type name" TestUnion.case1Field
+ *
+ * @see "Union field comment via full name" comments.classic_doc.union_comments.TestUnion.case1Field
+ *
+ * @see "Union comments package" comments.classic_doc.union_comments
+ *
+ * @see "Struct field via field name" direction
+ *
+ * @see "Service method via full name" comments.classic_doc.service_comments.SimpleService.powerOfTwo
+ *
+ * @see "Pubsub message via full name" comments.classic_doc.pubsub_comments.SimplePubsub.powerOfTwo
+ *
+ * @see "Sql table via full name" comments.classic_doc.sql_database_comments.Db.anotherTable
+ *
+ * @see "Sql column via full name" comments.classic_doc.sql_table_comments.VirtualTable.term
+ *
+ * @see "Bitmask value via full name" comments.classic_doc.bitmask_comments.Permission.WRITE
+ *
+ * @see "Enum item via full name" comments.classic_doc.enum_comments.Direction.POSITIVE
+ *
  * @param hasExtraValue True if the structure has extra value.
+ *        This parameter is not optional.
  *
  * @todo Update this comment.
+ *       Don't forget to check if this is really deprecated.
  *
  * @deprecated
  */
@@ -113,4 +151,10 @@ struct DirectionStructure(bool hasExtraValue)
     align(32):
     mixedOffset4:
     optional /** Mixed comment. */ int32 mixedField4;
+
+    /** The function return value of the optional field extraValue if exists. Otherwise, it returns zero. */
+    function uint32 getExtraValue()
+    {
+        return (hasExtraValue) ? extraValue : 0;
+    }
 };

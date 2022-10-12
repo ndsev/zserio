@@ -39,10 +39,16 @@ TEST_F(CommentsWarningTest, markdownCommentWithWrongTerminator)
             "Markdown documentation comment should be terminated by '!*/'."));
 }
 
+TEST_F(CommentsWarningTest, unresolvedMarkdownSeeTagReference)
+{
+    ASSERT_TRUE(zserioWarnings.isPresent("unresolved_markdown_see_tag_reference.zs:7:5: "
+            "Documentation: Unresolved referenced symbol 'comments_warning.unknown.Unknown'!"));
+}
+
 TEST_F(CommentsWarningTest, unresolvedSeeTagInTemplatedStruct)
 {
     ASSERT_TRUE(zserioWarnings.isPresent("unresolved_see_tag_in_templated_struct.zs:3:5: "
-            "Documentation: Unresolved referenced symbol 'unknown' for type 'TemplatedStruct'!"));
+            "Documentation: Unresolved referenced symbol 'unknown'!"));
 }
 
 TEST_F(CommentsWarningTest, unresolvedSeeTagReference)
@@ -50,8 +56,14 @@ TEST_F(CommentsWarningTest, unresolvedSeeTagReference)
     ASSERT_TRUE(zserioWarnings.isPresent("unresolved_see_tag_reference.zs:8:4: "
             "Documentation: Unresolved referenced symbol 'Unexisting'!"));
 
-    ASSERT_TRUE(zserioWarnings.isPresent("unresolved_see_tag_reference.zs:15:4: "
-            "Documentation: Unresolved referenced symbol 'Unexisting' for type 'Table'!"));
+    ASSERT_TRUE(zserioWarnings.isPresent("unresolved_see_tag_reference.zs:9:4: "
+            "Documentation: Unresolved referenced symbol 'comments_warning.unexisting_package'!"));
+
+    ASSERT_TRUE(zserioWarnings.isPresent("unresolved_see_tag_reference.zs:16:4: "
+            "Documentation: Unresolved referenced symbol 'unexisting' for type 'Table'!"));
+
+    ASSERT_TRUE(zserioWarnings.isPresent("unresolved_see_tag_reference.zs:17:4: "
+            "Documentation: Unresolved referenced symbol 'unexisting' for type 'Table'!"));
 }
 
 TEST_F(CommentsWarningTest, unusedFieldComments)

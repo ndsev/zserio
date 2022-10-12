@@ -7,7 +7,7 @@ class CommentsWarningTest(unittest.TestCase):
     def setUpClass(cls):
         cls.warnings = {}
         cls.api = getZserioApi(__file__, "comments_warning.zs", extraArgs=["-withWarnings", "unused"],
-                               expectedWarnings=15, errorOutputDict=cls.warnings)
+                               expectedWarnings=18, errorOutputDict=cls.warnings)
 
     def testDocCommentFormat(self):
         assertWarningsPresent(self,
@@ -59,12 +59,21 @@ class CommentsWarningTest(unittest.TestCase):
             ]
         )
 
+    def testUnresolvedMarkdownSeeTagReference(self):
+        assertWarningsPresent(self,
+            "comments_warning.zs",
+            [
+                "unresolved_markdown_see_tag_reference.zs:7:5: "
+                "Documentation: Unresolved referenced symbol 'comments_warning.unknown.Unknown'!"
+            ]
+        )
+
     def testUnresolvedSeeTagInTemplatedStruct(self):
         assertWarningsPresent(self,
             "comments_warning.zs",
             [
                 "unresolved_see_tag_in_templated_struct.zs:3:5: "
-                "Documentation: Unresolved referenced symbol 'unknown' for type 'TemplatedStruct'!"
+                "Documentation: Unresolved referenced symbol 'unknown'!"
             ]
         )
 
@@ -80,8 +89,24 @@ class CommentsWarningTest(unittest.TestCase):
         assertWarningsPresent(self,
             "comments_warning.zs",
             [
-                "unresolved_see_tag_reference.zs:15:4: "
-                "Documentation: Unresolved referenced symbol 'Unexisting' for type 'Table'!"
+                "unresolved_see_tag_reference.zs:9:4: "
+                "Documentation: Unresolved referenced symbol 'comments_warning.unexisting_package'!"
+            ]
+        )
+
+        assertWarningsPresent(self,
+            "comments_warning.zs",
+            [
+                "unresolved_see_tag_reference.zs:16:4: "
+                "Documentation: Unresolved referenced symbol 'unexisting' for type 'Table'!"
+            ]
+        )
+
+        assertWarningsPresent(self,
+            "comments_warning.zs",
+            [
+                "unresolved_see_tag_reference.zs:17:4: "
+                "Documentation: Unresolved referenced symbol 'unexisting' for type 'Table'!"
             ]
         )
 

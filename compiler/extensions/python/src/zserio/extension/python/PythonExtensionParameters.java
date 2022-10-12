@@ -25,6 +25,7 @@ class PythonExtensionParameters
         withSqlCode = parameters.getWithSqlCode();
         withRangeCheckCode = parameters.getWithRangeCheckCode();
         withTypeInfoCode = parameters.getWithTypeInfoCode();
+        withCodeComments = parameters.getWithCodeComments();
 
         final StringJoiner description = new StringJoiner(", ");
         if (withWriterCode)
@@ -39,6 +40,8 @@ class PythonExtensionParameters
             description.add("rangeCheckCode");
         if (withTypeInfoCode)
             description.add("typeInfoCode");
+        if (withCodeComments)
+            description.add("codeComments");
         parametersDescription = description.toString();
     }
 
@@ -77,6 +80,11 @@ class PythonExtensionParameters
         return withTypeInfoCode;
     }
 
+    public boolean getWithCodeComments()
+    {
+        return withCodeComments;
+    }
+
     public String getParametersDescription()
     {
         return parametersDescription;
@@ -104,5 +112,6 @@ class PythonExtensionParameters
     private final boolean withSqlCode;
     private final boolean withRangeCheckCode;
     private final boolean withTypeInfoCode;
+    private final boolean withCodeComments;
     private final String parametersDescription;
 }

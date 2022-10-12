@@ -3,6 +3,7 @@ package zserio.extension.python;
 import java.util.ArrayList;
 import java.util.List;
 
+import zserio.ast.DocComment;
 import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
@@ -20,7 +21,7 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
     public EnumerationEmitterTemplateData(TemplateDataContext context, EnumType enumType)
             throws ZserioExtensionException
     {
-        super(context, enumType);
+        super(context, enumType, enumType.getDocComments());
 
         importPackage("enum");
         importPackage("typing");
@@ -42,7 +43,7 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         final List<EnumItem> enumItems = enumType.getItems();
         items = new ArrayList<EnumItemData>(enumItems.size());
         for (EnumItem enumItem : enumItems)
-            items.add(new EnumItemData(enumItem));
+            items.add(new EnumItemData(context, enumItem));
     }
 
     public NativeTypeInfoTemplateData getUnderlyingTypeInfo()
@@ -67,11 +68,14 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
 
     public static class EnumItemData
     {
-        public EnumItemData(EnumItem enumItem) throws ZserioExtensionException
+        public EnumItemData(TemplateDataContext context, EnumItem enumItem) throws ZserioExtensionException
         {
             schemaName = enumItem.getName();
             name = PythonSymbolConverter.enumItemToSymbol(enumItem.getName());
             value = PythonLiteralFormatter.formatDecimalLiteral(enumItem.getValue());
+            final List<DocComment> itemDocComments = enumItem.getDocComments();
+            docComments = itemDocComments.isEmpty() ? null :
+                    new DocCommentsTemplateData(context, itemDocComments);
         }
 
         public String getSchemaName()
@@ -89,9 +93,15 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
             return value;
         }
 
+        public DocCommentsTemplateData getDocComments()
+        {
+            return docComments;
+        }
+
         private final String schemaName;
         private final String name;
         private final String value;
+        private final DocCommentsTemplateData docComments;
     }
 
     private static String createBitSize(TypeInstantiation typeInstantiation)

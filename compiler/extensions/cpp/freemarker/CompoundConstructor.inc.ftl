@@ -1,6 +1,13 @@
 <#include "CompoundField.inc.ftl">
 <#include "CompoundParameter.inc.ftl">
 <#macro compound_constructor_declaration compoundConstructorsData>
+    <#if withCodeComments>
+    /**
+     * Default constructor from allocator.
+     *
+     * \param allocator Allocator to construct from.
+     */
+    </#if>
     explicit ${compoundConstructorsData.compoundName}(const allocator_type& allocator = allocator_type()) noexcept;
 </#macro>
 
@@ -25,6 +32,22 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 </#macro>
 
 <#macro compound_read_constructor_declaration compoundConstructorsData packed=false>
+    <#if withCodeComments>
+    /**
+     * Read constructor.
+     *
+        <#if packed>
+     * Called only internally if packed arrays are used.
+     *
+     * \param contextNode Context for packed arrays.
+        </#if>
+     * \param in Bit stream reader to use.
+        <#list compoundConstructorsData.compoundParametersData.list as compoundParameter>
+     * \param <@parameter_argument_name compoundParameter.name/> Value of the parameter \ref ${compoundParameter.getterName} "${compoundParameter.name}".
+        </#list>
+     * \param allocator Allocator to use.
+     */
+    </#if>
     <#local constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData, 3/></#local>
     explicit ${compoundConstructorsData.compoundName}(<#rt>
     <#if packed>
@@ -77,11 +100,14 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 </#macro>
 
 <#macro compound_copy_constructor_declaration compoundConstructorsData>
+    <#if withCodeComments>
+    /**
+     * Copy constructor.
+     *
+     * \param other Instance to construct from.
+     */
+    </#if>
     ${compoundConstructorsData.compoundName}(const ${compoundConstructorsData.compoundName}& other);
-</#macro>
-
-<#macro compound_copy_constructor_allocator_declaration compoundConstructorsData>
-    <@compound_copy_constructor_declaration compoundConstructorsData true/>
 </#macro>
 
 <#macro compound_copy_initialization compoundConstructorsData>
@@ -117,6 +143,13 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 </#macro>
 
 <#macro compound_assignment_operator_declaration compoundConstructorsData>
+    <#if withCodeComments>
+    /**
+     * Assignment operator.
+     *
+     * \param other Instance to assign from.
+     */
+    </#if>
     ${compoundConstructorsData.compoundName}& operator=(const ${compoundConstructorsData.compoundName}& other);
 </#macro>
 
@@ -137,6 +170,13 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
 </#macro>
 
 <#macro compound_move_constructor_declaration compoundConstructorsData>
+    <#if withCodeComments>
+    /**
+     * Move constructor.
+     *
+     * \param other Instance to move from.
+     */
+    </#if>
     ${compoundConstructorsData.compoundName}(${compoundConstructorsData.compoundName}&& other);
 </#macro>
 
@@ -155,6 +195,13 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 </#macro>
 
 <#macro compound_move_assignment_operator_declaration compoundConstructorsData>
+    <#if withCodeComments>
+    /**
+     * Move assignment operator.
+     *
+     * \param other Instance to assign from.
+     */
+    </#if>
     ${compoundConstructorsData.compoundName}& operator=(${compoundConstructorsData.compoundName}&& other);
 </#macro>
 
@@ -175,6 +222,14 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
 </#macro>
 
 <#macro compound_allocator_propagating_copy_constructor_declaration compoundConstructorsData>
+    <#if withCodeComments>
+    /**
+     * Copy constructor with propagating allocator.
+     *
+     * \param other Instance to construct from.
+     * \param allocator Allocator to construct from.
+     */
+    </#if>
     ${compoundConstructorsData.compoundName}(::zserio::PropagateAllocatorT,
             const ${compoundConstructorsData.compoundName}& other, const allocator_type& allocator);
 </#macro>
@@ -201,12 +256,34 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 </#macro>
 
 <#macro compound_initialize_declaration compoundConstructorsData>
+    <#if withCodeComments>
+    /**
+     * Initializes this Zserio object and all its fields.
+     *
+     * This method sets <#if compoundConstructorsData.compoundParametersData.list?has_content>parameters for this Zserio object and </#if><#rt>
+     <#lt>all parameters for all fields recursively.
+        <#if compoundConstructorsData.compoundParametersData.list?has_content>
+     *
+            <#list compoundConstructorsData.compoundParametersData.list as compoundParameter>
+     * \param <@parameter_argument_name compoundParameter.name/> Value of the parameter \ref ${compoundParameter.getterName} "${compoundParameter.name}".
+            </#list>
+        </#if>
+     */
+    </#if>
     <#local constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData, 3/></#local>
     void initialize(<#rt>
     <#if constructorArgumentTypeList?has_content>
 
     </#if>
             <#lt>${constructorArgumentTypeList});
+    <#if withCodeComments>
+
+    /**
+     * Checks if this Zserio object is initialized.
+     *
+     * \return True if this Zserio object is initialized, otherwise false.
+     */
+    </#if>
     bool isInitialized() const;
 </#macro>
 

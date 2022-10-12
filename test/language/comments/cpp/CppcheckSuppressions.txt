@@ -1,8 +1,12 @@
 noExplicitConstructor:*/comments/classic_doc/bitmask_comments/Permission.h
 noExplicitConstructor:*/comments/markdown_doc/bitmask_comments/Permission.h
+uninitMemberVar:*/comments/classic_doc/choice_comments/TestChoice.cpp
 uninitMemberVar:*/comments/classic_doc/struct_comments/DirectionStructure.cpp
 uninitMemberVar:*/comments/classic_doc/struct_comments/DirectionStructure.h
+uninitMemberVar:*/comments/classic_doc/union_comments/TestUnion.cpp
+uninitMemberVar:*/comments/markdown_doc/choice_comments/TestChoice.cpp
 uninitMemberVar:*/comments/markdown_doc/struct_comments/DirectionStructure.cpp
 uninitMemberVar:*/comments/markdown_doc/struct_comments/DirectionStructure.h
+uninitMemberVar:*/comments/markdown_doc/union_comments/TestUnion.cpp
 uninitMemberVar:*/comments/mixed_doc/struct_comments/DirectionStructure.cpp
 uninitMemberVar:*/comments/mixed_doc/struct_comments/DirectionStructure.h

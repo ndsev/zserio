@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zserio.ast.CompoundType;
+import zserio.ast.DocComment;
 import zserio.ast.Parameter;
 import zserio.ast.TypeReference;
 import zserio.extension.common.ZserioExtensionException;
@@ -19,10 +20,11 @@ public class CompoundParameterTemplateData
     {
         final List<Parameter> compoundParameterTypeList = compoundType.getTypeParameters();
         compoundParameterList = new ArrayList<CompoundParameter>(compoundParameterTypeList.size());
+        final List<DocComment> compoundDocComments = compoundType.getDocComments();
         for (Parameter compoundParameterType : compoundParameterTypeList)
         {
             final CompoundParameter parameter = new CompoundParameter(context, compoundParameterType,
-                    includeCollector);
+                    includeCollector, compoundDocComments);
             compoundParameterList.add(parameter);
         }
     }
@@ -35,7 +37,8 @@ public class CompoundParameterTemplateData
     public static class CompoundParameter
     {
         public CompoundParameter(TemplateDataContext context, Parameter parameter,
-                IncludeCollector includeCollector) throws ZserioExtensionException
+                IncludeCollector includeCollector, List<DocComment> compoundDocComments)
+                        throws ZserioExtensionException
         {
             final TypeReference parameterTypeReference = parameter.getTypeReference();
             final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
@@ -45,6 +48,16 @@ public class CompoundParameterTemplateData
             name = parameter.getName();
             typeInfo = new NativeTypeInfoTemplateData(cppNativeType, parameterTypeReference);
             getterName = AccessorNameFormatter.getGetterName(parameter);
+
+            final List<DocComment> paramDocComments = new ArrayList<DocComment>();
+            for (DocComment compoundDocComment : compoundDocComments)
+            {
+                final DocComment paramDocComment = compoundDocComment.findParamDoc(name);
+                if (paramDocComment != null)
+                    paramDocComments.add(paramDocComment);
+            }
+            docComments = paramDocComments.isEmpty()
+                    ? null : new DocCommentsTemplateData(context, paramDocComments);
         }
 
         public String getName()
@@ -62,9 +75,15 @@ public class CompoundParameterTemplateData
             return getterName;
         }
 
+        public DocCommentsTemplateData getDocComments()
+        {
+            return docComments;
+        }
+
         private final String name;
         private final NativeTypeInfoTemplateData typeInfo;
         private final String getterName;
+        private final DocCommentsTemplateData docComments;
     }
 
     private final List<CompoundParameter> compoundParameterList;

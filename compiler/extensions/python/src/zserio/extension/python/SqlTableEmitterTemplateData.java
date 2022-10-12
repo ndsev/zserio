@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import zserio.ast.DocComment;
 import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.Expression;
 import zserio.ast.Field;
@@ -30,29 +31,25 @@ import zserio.tools.HashUtil;
  */
 public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 {
-    public SqlTableEmitterTemplateData(TemplateDataContext context, SqlTableType sqlTableType)
+    public SqlTableEmitterTemplateData(TemplateDataContext context, SqlTableType tableType)
             throws ZserioExtensionException
     {
-        super(context, sqlTableType);
+        super(context, tableType, tableType.getDocComments());
 
         importPackage("typing");
         importPackage("apsw");
 
-        final SqlConstraint tableSqlConstraint = sqlTableType.getSqlConstraint();
+        final SqlConstraint tableSqlConstraint = tableType.getSqlConstraint();
         final ExpressionFormatter pythonExpressionFormatter = context.getPythonExpressionFormatter(this);
         sqlConstraint = (tableSqlConstraint == null) ? null :
             pythonExpressionFormatter.formatGetter(tableSqlConstraint.getConstraintExpr());
-        virtualTableUsing = sqlTableType.getVirtualTableUsingString();
-        needsTypesInSchema = sqlTableType.needsTypesInSchema();
-        isWithoutRowId = sqlTableType.isWithoutRowId();
+        virtualTableUsing = tableType.getVirtualTableUsingString();
+        needsTypesInSchema = tableType.needsTypesInSchema();
+        isWithoutRowId = tableType.isWithoutRowId();
 
-        final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
-        final SqlNativeTypeMapper sqlNativeTypeMapper = new SqlNativeTypeMapper();
-        for (Field field: sqlTableType.getFields())
+        for (Field field: tableType.getFields())
         {
-            final FieldTemplateData fieldData = new FieldTemplateData(pythonNativeMapper,
-                    pythonExpressionFormatter, context.getPythonSqlIndirectExpressionFormatter(this),
-                    sqlNativeTypeMapper, sqlTableType, field, this);
+            final FieldTemplateData fieldData = new FieldTemplateData(context, tableType, field, this);
             fields.add(fieldData);
             for (FieldTemplateData.ParameterTemplateData parameterTemplateData : fieldData.getParameters())
             {
@@ -63,7 +60,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             }
         }
 
-        templateInstantiation = TemplateInstantiationTemplateData.create(context, sqlTableType, this);
+        templateInstantiation = TemplateInstantiationTemplateData.create(context, tableType, this);
     }
 
     public String getSqlConstraint()
@@ -159,13 +156,11 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
     public static class FieldTemplateData
     {
-        public FieldTemplateData(PythonNativeMapper pythonNativeMapper,
-                ExpressionFormatter pythonExpressionFormatter,
-                ExpressionFormatter pythonSqlIndirectExpressionFormatter,
-                SqlNativeTypeMapper sqlNativeTypeMapper, SqlTableType parentType, Field field,
+        public FieldTemplateData(TemplateDataContext context, SqlTableType parentType, Field field,
                 ImportCollector importCollector) throws ZserioExtensionException
         {
             final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
+            final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
             final PythonNativeType nativeType = pythonNativeMapper.getPythonType(fieldTypeInstantiation);
             importCollector.importType(nativeType);
 
@@ -183,18 +178,24 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 for (InstantiatedParameter instantiatedParameter :
                         parameterizedInstantiation.getInstantiatedParameters())
                 {
-                    parameters.add(new ParameterTemplateData(pythonNativeMapper, pythonExpressionFormatter,
-                            pythonSqlIndirectExpressionFormatter, parentType, instantiatedParameter,
+                    parameters.add(new ParameterTemplateData(context, parentType, instantiatedParameter,
                             importCollector));
                 }
             }
 
             final SqlConstraint fieldSqlConstraint = field.getSqlConstraint();
+            final ExpressionFormatter pythonExpressionFormatter =
+                    context.getPythonExpressionFormatter(importCollector);
             sqlConstraint = (fieldSqlConstraint == null) ? null :
                     pythonExpressionFormatter.formatGetter(fieldSqlConstraint.getConstraintExpr());
 
             lambdaBitSize = createBitSize(fieldTypeInstantiation, pythonExpressionFormatter);
+            final SqlNativeTypeMapper sqlNativeTypeMapper = new SqlNativeTypeMapper();
             sqlTypeData = new SqlTypeTemplateData(sqlNativeTypeMapper, field);
+
+            final List<DocComment> fieldDocComments = field.getDocComments();
+            docComments = fieldDocComments.isEmpty() ? null :
+                    new DocCommentsTemplateData(context, fieldDocComments);
         }
 
         public String getName()
@@ -237,6 +238,11 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             return sqlTypeData;
         }
 
+        public DocCommentsTemplateData getDocComments()
+        {
+            return docComments;
+        }
+
         public static class SqlTypeTemplateData
         {
             public SqlTypeTemplateData(SqlNativeTypeMapper sqlNativeTypeMapper, Field field)
@@ -264,14 +270,13 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
         public static class ParameterTemplateData
         {
-            public ParameterTemplateData(PythonNativeMapper pythonNativeMapper,
-                    ExpressionFormatter pythonExpressionFormatter,
-                    ExpressionFormatter pythonSqlIndirectExpressionFormatter, SqlTableType tableType,
+            public ParameterTemplateData(TemplateDataContext context, SqlTableType tableType,
                     InstantiatedParameter instantiatedParameter, ImportCollector importCollector)
                             throws ZserioExtensionException
             {
                 final Parameter parameter = instantiatedParameter.getParameter();
                 final TypeReference referencedType = parameter.getTypeReference();
+                final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
                 final PythonNativeType parameterNativeType =
                         pythonNativeMapper.getPythonType(referencedType);
                 importCollector.importType(parameterNativeType);
@@ -280,7 +285,11 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
                 final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
                 isExplicit = argumentExpression.isExplicitVariable();
+                final ExpressionFormatter pythonSqlIndirectExpressionFormatter =
+                        context.getPythonSqlIndirectExpressionFormatter(importCollector);
                 expression = pythonSqlIndirectExpressionFormatter.formatGetter(argumentExpression);
+                final ExpressionFormatter pythonExpressionFormatter =
+                        context.getPythonExpressionFormatter(importCollector);
                 lambdaExpression = pythonExpressionFormatter.formatGetter(argumentExpression);
             }
 
@@ -338,6 +347,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         private final String sqlConstraint;
         private final String lambdaBitSize;
         private final SqlTypeTemplateData sqlTypeData;
+        private final DocCommentsTemplateData docComments;
     }
 
     private final String sqlConstraint;

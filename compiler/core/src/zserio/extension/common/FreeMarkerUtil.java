@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -130,7 +131,7 @@ public class FreeMarkerUtil
     {
         final String fullTemplateName = FREEMARKER_LOCATION + templateName;
         try (final BufferedReader reader = new BufferedReader(
-                new InputStreamReader(getFreemarkerTemplateStream(fullTemplateName), "UTF-8")))
+                new InputStreamReader(getFreemarkerTemplateStream(fullTemplateName), StandardCharsets.UTF_8)))
         {
             final List<String> lines = new ArrayList<String>();
             while (reader.ready())

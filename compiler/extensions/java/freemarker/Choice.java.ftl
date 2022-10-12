@@ -5,6 +5,7 @@
 <#include "CompoundField.inc.ftl">
 <#include "RangeCheck.inc.ftl">
 <#include "TypeInfo.inc.ftl">
+<#include "DocComment.inc.ftl">
 <@standard_header generatorDescription, packageName/>
 <#macro choice_selector_condition caseList>
     <#if isSelectorExpressionBigInteger>
@@ -90,10 +91,20 @@ ${I}}
     </#if>
 </#macro>
 
+<#if withCodeComments && docComments??>
+<@doc_comments docComments/>
+</#if>
 public class ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeOffsetsWriter, </#if>zserio.runtime.SizeOf
 {
     <@compound_constructors compoundConstructorsData/>
 <#if withTypeInfoCode>
+    <#if withCodeComments>
+    /**
+     * Gets static information about this Zserio type useful for generic introspection.
+     *
+     * @return Zserio type information.
+     */
+    </#if>
     public static zserio.runtime.typeinfo.TypeInfo typeInfo()
     {
     <#list fieldList as field>
@@ -130,6 +141,13 @@ ${I}return <@choice_tag_name member.compoundField/>;
 ${I}return UNDEFINED_CHOICE;
     </#if>
 </#macro>
+    <#if withCodeComments>
+    /**
+     * Gets the current choice tag.
+     *
+     * @return Choice tag which denotes chosen field.
+     */
+    </#if>
     public int choiceTag()
     {
 <#if fieldList?has_content>
@@ -139,6 +157,15 @@ ${I}return UNDEFINED_CHOICE;
 </#if>
     }
 
+<#if withCodeComments>
+    /**
+     * Creates context for packed arrays.
+     * <p>
+     * Called only internally if packed arrays are used.
+     *
+     * @param contextNode Context for packed arrays.
+     */
+</#if>
     public static void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
     {
 <#list fieldList as field>
@@ -220,6 +247,21 @@ ${I}break;
 
 <@compound_parameter_accessors compoundParametersData/>
 <#list fieldList as field>
+    <#if withCodeComments>
+    /**
+     * Gets the value of the field ${field.name}.
+        <#if field.docComments??>
+     * <p>
+     * <b>Description:</b>
+     * <br>
+     <@doc_comments_inner field.docComments, 1/>
+     *
+        <#else>
+     *
+        </#if>
+     * @return Value of the field ${field.name}.
+     */
+    </#if>
     public ${field.typeInfo.typeFullName} ${field.getterName}()
     {
     <#if field.array??>
@@ -230,6 +272,21 @@ ${I}break;
     }
 
     <#if withWriterCode>
+        <#if withCodeComments>
+    /**
+     * Sets the field ${field.name}.
+            <#if field.docComments??>
+     * <p>
+     * <b>Description:</b>
+     * <br>
+     <@doc_comments_inner field.docComments, 1/>
+     *
+            <#else>
+     *
+            </#if>
+     * @param <@field_argument_name field/> Value of the field ${field.name} to set.
+     */
+        </#if>
     public void ${field.setterName}(${field.typeInfo.typeFullName} <@field_argument_name field/>)
     {
         <@range_check field.rangeCheckData, name/>
@@ -314,6 +371,15 @@ ${I}// empty
 ${I}break;
     </#if>
 </#macro>
+<#if withCodeComments>
+    /**
+     * Deserializes this Zserio object from the bit stream.
+     *
+     * @param in Bit stream reader to use.
+     *
+     * @throws IOException If the reading from the bit stream failed.
+     */
+</#if>
     public void read(zserio.runtime.io.BitStreamReader in) throws java.io.IOException
     {
 <#if fieldList?has_content>
@@ -321,6 +387,18 @@ ${I}break;
 </#if>
     }
 
+<#if withCodeComments>
+    /**
+     * Deserializes this Zserio object from the bit stream.
+     * <p>
+     * Called only internally if packed arrays are used.
+     *
+     * @param contextNode Context for packed arrays.
+     * @param in Bit stream reader to use.
+     *
+     * @throws IOException If the reading from the bit stream failed.
+     */
+</#if>
     public void read(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in)
             throws java.io.IOException
     {
@@ -347,6 +425,7 @@ ${I}// empty
 ${I}break;
     </#if>
 </#macro>
+    @Override
     public long initializeOffsets(long bitPosition)
     {
     <#if fieldList?has_content>
@@ -360,6 +439,7 @@ ${I}break;
     </#if>
     }
 
+    @Override
     public long initializeOffsets(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
     {
     <#if fieldList?has_content>
@@ -373,6 +453,15 @@ ${I}break;
     </#if>
     }
 
+    <#if withCodeComments>
+    /**
+     * Serializes this Zserio object to the file.
+     *
+     * @param file File where to serialize this Zserio object.
+     *
+     * @throws IOException If the writing to the file failed.
+     */
+    </#if>
     public void write(java.io.File file) throws java.io.IOException
     {
         try (final zserio.runtime.io.FileBitStreamWriter out = new zserio.runtime.io.FileBitStreamWriter(file))
@@ -428,8 +517,14 @@ ${I}break;
 </#if>
 
 <#list fieldList as field>
+    <#if withCodeComments>
+    /** Choice tag which denotes chosen field ${field.name}. */
+    </#if>
     public static final int <@choice_tag_name field/> = ${field?index};
 </#list>
+    <#if withCodeComments>
+    /** Choice tag which is used if no field has been set yet. */
+    </#if>
     public static final int UNDEFINED_CHOICE = -1;
 <#list fieldList as field>
     <@define_field_helper_classes name, field/>

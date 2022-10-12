@@ -15,7 +15,7 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
     public CompoundTypeTemplateData(TemplateDataContext context, CompoundType compoundType)
             throws ZserioExtensionException
     {
-        super(context, compoundType);
+        super(context, compoundType, compoundType.getDocComments());
 
         final List<Field> fieldTypeList = compoundType.getFields();
         fieldList = new ArrayList<CompoundFieldTemplateData>(fieldTypeList.size());

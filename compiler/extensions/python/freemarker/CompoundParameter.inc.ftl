@@ -20,6 +20,12 @@ ${I}<@parameter_argument_name parameter/>: ${parameter.typeInfo.typeFullName}<#r
     </#list>
 </#macro>
 
+<#macro compound_parameter_doc_comment compoundParametersData>
+    <#list compoundParametersData.list as parameter>
+        :param <@parameter_argument_name parameter/>: Value of the parameter :attr:`${parameter.name} <.${parameter.propertyName}>`.
+    </#list>
+</#macro>
+
 <#macro compound_compare_parameters compoundParametersData indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#list compoundParametersData.list as parameter>

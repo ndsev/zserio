@@ -3,6 +3,7 @@ package zserio.extension.java;
 import java.util.ArrayList;
 import java.util.List;
 
+import zserio.ast.DocComment;
 import zserio.ast.PubsubMessage;
 import zserio.ast.PubsubType;
 import zserio.ast.TypeReference;
@@ -18,18 +19,14 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
     public PubsubEmitterTemplateData(TemplateDataContext context, PubsubType pubsubType)
             throws ZserioExtensionException
     {
-        super(context, pubsubType);
-
-        final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
-        final ExpressionFormatter javaExpressionFormatter = context.getJavaExpressionFormatter();
+        super(context, pubsubType, pubsubType.getDocComments());
 
         Iterable<PubsubMessage> messageList = pubsubType.getMessageList();
         boolean hasPublishing = false;
         boolean hasSubscribing = false;
         for (PubsubMessage message : messageList)
         {
-            final MessageTemplateData templateData = new MessageTemplateData(javaNativeMapper,
-                    javaExpressionFormatter, message);
+            final MessageTemplateData templateData = new MessageTemplateData(context, message);
             hasPublishing |= templateData.getIsPublished();
             hasSubscribing |= templateData.getIsSubscribed();
             this.messageList.add(templateData);
@@ -55,10 +52,11 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
 
     public static class MessageTemplateData
     {
-        public MessageTemplateData(JavaNativeMapper javaNativeMapper,
-                ExpressionFormatter javaExpressionFormatter, PubsubMessage message)
-                        throws ZserioExtensionException
+        public MessageTemplateData(TemplateDataContext context, PubsubMessage message)
+                throws ZserioExtensionException
         {
+            final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
+            final ExpressionFormatter javaExpressionFormatter = context.getJavaExpressionFormatter();
             name = message.getName();
             final TypeReference referencedType = message.getTypeReference();
             final JavaNativeType javaType = javaNativeMapper.getJavaType(referencedType);
@@ -66,6 +64,9 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
             topicDefinition = javaExpressionFormatter.formatGetter(message.getTopicDefinitionExpr());
             isPublished = message.isPublished();
             isSubscribed = message.isSubscribed();
+            final List<DocComment> messageDocComments = message.getDocComments();
+            docComments = messageDocComments.isEmpty()
+                    ? null : new DocCommentsTemplateData(context, messageDocComments);
         }
 
         public String getName()
@@ -93,11 +94,17 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
             return isSubscribed;
         }
 
+        public DocCommentsTemplateData getDocComments()
+        {
+            return docComments;
+        }
+
         private final String name;
         private final NativeTypeInfoTemplateData typeInfo;
         private final String topicDefinition;
         private final boolean isPublished;
         private final boolean isSubscribed;
+        private final DocCommentsTemplateData docComments;
     }
 
     private final List<MessageTemplateData> messageList = new ArrayList<MessageTemplateData>();

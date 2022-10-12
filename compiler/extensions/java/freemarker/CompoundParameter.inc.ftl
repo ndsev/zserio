@@ -1,3 +1,4 @@
+<#include "DocComment.inc.ftl">
 <#macro parameter_member_name param>
     ${param.name}_<#t>
 </#macro>
@@ -8,6 +9,21 @@
 
 <#macro compound_parameter_accessors compoundParametersData>
     <#list compoundParametersData.list as compoundParameter>
+        <#if withCodeComments>
+    /**
+     * Gets the value of the parameter ${compoundParameter.name}.
+            <#if compoundParameter.docComments??>
+     * <p>
+     * <b>Description:</b>
+     * <br>
+     <@doc_comments_inner compoundParameter.docComments, 1/>
+     *
+            <#else>
+     *
+            </#if>
+     * @return The value of the parameter ${compoundParameter.name}.
+     */
+        </#if>
     public ${compoundParameter.typeInfo.typeFullName} ${compoundParameter.getterName}()
     {
         return this.<@parameter_member_name compoundParameter/>;

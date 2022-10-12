@@ -1,5 +1,7 @@
 package comments.markdown_doc.struct_comments;
 
+import comments.markdown_doc.union_comments.*;
+
 /*!
 
 **Direction**
@@ -26,7 +28,16 @@ enum bit:2 Direction
 
 **DirectionStructure**
 
- This is a structure which uses Direction enumeration type.
+This is a structure which uses Direction enumeration type.
+
+See [Union comments](union_comments.zs#TestUnion).
+See [Union comments relative](../markdown_doc/union_comments.zs#TestUnion).
+See [Union comments package](union_comments.zs).
+See [Union comments relative package](../markdown_doc/union_comments.zs).
+
+Parameter     | Description
+------------- | -----------
+hasExtraValue | True if the structure has extra value.
 
 !*/
 struct DirectionStructure(bool hasExtraValue)
@@ -110,4 +121,10 @@ struct DirectionStructure(bool hasExtraValue)
     align(32):
     mixedOffset4:
     optional /*! Mixed comment. !*/ int32 mixedField4;
+
+    /*! The function return value of the optional field extraValue if exists. Otherwise, it returns zero. !*/
+    function uint32 getExtraValue()
+    {
+        return (hasExtraValue) ? extraValue : 0;
+    }
 };

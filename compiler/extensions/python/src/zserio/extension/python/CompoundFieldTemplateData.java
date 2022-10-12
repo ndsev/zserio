@@ -7,6 +7,7 @@ import java.util.List;
 import zserio.ast.ArrayInstantiation;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
+import zserio.ast.DocComment;
 import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.IntegerType;
 import zserio.ast.ParameterizedTypeInstantiation;
@@ -61,6 +62,9 @@ public final class CompoundFieldTemplateData
         runtimeFunction = PythonRuntimeFunctionDataCreator.createData(fieldTypeInstantiation,
                 pythonExpressionFormatter);
         compound = createCompound(context, fieldTypeInstantiation, importCollector);
+        final List<DocComment> fieldDocComments = field.getDocComments();
+        docComments = fieldDocComments.isEmpty() ?
+                null : new DocCommentsTemplateData(context, fieldDocComments);
     }
 
     public String getName()
@@ -141,6 +145,11 @@ public final class CompoundFieldTemplateData
     public Compound getCompound()
     {
         return compound;
+    }
+
+    public DocCommentsTemplateData getDocComments()
+    {
+        return docComments;
     }
 
     public static class RangeCheck
@@ -581,4 +590,5 @@ public final class CompoundFieldTemplateData
     private final Array array;
     private final RuntimeFunctionTemplateData runtimeFunction;
     private final Compound compound;
+    private final DocCommentsTemplateData docComments;
 }

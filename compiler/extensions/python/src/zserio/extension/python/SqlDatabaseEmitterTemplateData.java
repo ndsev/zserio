@@ -5,6 +5,7 @@ import java.util.List;
 
 import zserio.ast.TypeInstantiation;
 import zserio.ast.ZserioType;
+import zserio.ast.DocComment;
 import zserio.ast.Field;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
@@ -19,7 +20,7 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
     public SqlDatabaseEmitterTemplateData(TemplateDataContext context, SqlDatabaseType databaseType)
             throws ZserioExtensionException
     {
-        super(context, databaseType);
+        super(context, databaseType, databaseType.getDocComments());
 
         importPackage("typing");
         importPackage("apsw");
@@ -51,6 +52,10 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
             propertyName = AccessorNameFormatter.getPropertyName(field);
             isWithoutRowIdTable = (fieldBaseType instanceof SqlTableType) ?
                     ((SqlTableType)fieldBaseType).isWithoutRowId() : false;
+
+            final List<DocComment> fieldDocComments = field.getDocComments();
+            docComments = fieldDocComments.isEmpty() ? null :
+                    new DocCommentsTemplateData(context, fieldDocComments);
         }
 
         public String getName()
@@ -78,11 +83,17 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
             return isWithoutRowIdTable;
         }
 
+        public DocCommentsTemplateData getDocComments()
+        {
+            return docComments;
+        }
+
         private final String name;
         private final String snakeCaseName;
         private final NativeTypeInfoTemplateData typeInfo;
         private final String propertyName;
         private final boolean isWithoutRowIdTable;
+        private final DocCommentsTemplateData docComments;
     }
 
     private final List<DatabaseFieldData> fields;

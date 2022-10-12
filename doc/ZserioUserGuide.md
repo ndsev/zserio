@@ -35,6 +35,7 @@ java -jar zserio.jar
     [-setTopLevelPackage <package>]
     [-src <source directory>]
     [-v,--version]
+    [-withCodeComments|-withoutCodeComments]
     [-withCrossExtensionCheck|-withoutCrossExtensionCheck]
     [-withGlobalRuleIdCheck|-withoutGlobalRuleIdCheck]
     [-withPubsubCode|-withoutPubsubCode]
@@ -125,6 +126,10 @@ directories as in the Java `CLASSPATH` is not supported.
 **`-v`, `--version`**
 
 Shows the version of the Zserio tool.
+
+**`-withCodeComments|-withoutCodeComments`**
+
+Enables/disables comments in generated code. By default is disabled.
 
 **`-withCrossExtensionCheck|-withoutCrossExtensionCheck`**
 

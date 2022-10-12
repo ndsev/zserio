@@ -3,6 +3,7 @@ package zserio.extension.python;
 import java.util.ArrayList;
 import java.util.List;
 
+import zserio.ast.DocComment;
 import zserio.ast.ServiceMethod;
 import zserio.ast.ServiceType;
 import zserio.ast.TypeReference;
@@ -17,13 +18,12 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
     public ServiceEmitterTemplateData(TemplateDataContext context, ServiceType serviceType)
             throws ZserioExtensionException
     {
-        super(context, serviceType);
+        super(context, serviceType, serviceType.getDocComments());
 
         importPackage("typing");
         importPackage("zserio");
 
         final PythonNativeMapper pythonTypeMapper = context.getPythonNativeMapper();
-
         final PythonNativeType nativeServiceType = pythonTypeMapper.getPythonType(serviceType);
         // keep Zserio default formatting to ensure that all languages have same name of service methods
         servicePackageName = nativeServiceType.getPackageName().toString();
@@ -31,7 +31,7 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
         final Iterable<ServiceMethod> methodList = serviceType.getMethodList();
         for (ServiceMethod method : methodList)
         {
-            final MethodTemplateData templateData = new MethodTemplateData(pythonTypeMapper, method, this);
+            final MethodTemplateData templateData = new MethodTemplateData(context, method, this);
             this.methodList.add(templateData);
         }
     }
@@ -48,24 +48,29 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
 
     public static class MethodTemplateData
     {
-        public MethodTemplateData(PythonNativeMapper typeMapper, ServiceMethod serviceMethod,
+        public MethodTemplateData(TemplateDataContext context, ServiceMethod method,
                 ImportCollector importCollector) throws ZserioExtensionException
         {
-            name = serviceMethod.getName();
+            name = method.getName();
             snakeCaseName = PythonSymbolConverter.toLowerSnakeCase(name);
-            clientMethodName = AccessorNameFormatter.getServiceClientMethodName(serviceMethod);
+            clientMethodName = AccessorNameFormatter.getServiceClientMethodName(method);
 
-            final TypeReference responseTypeReference = serviceMethod.getResponseTypeReference();
-            final PythonNativeType pythonResponseType = typeMapper.getPythonType(responseTypeReference);
+            final TypeReference responseTypeReference = method.getResponseTypeReference();
+            final PythonNativeMapper pythonTypeMapper = context.getPythonNativeMapper();
+            final PythonNativeType pythonResponseType = pythonTypeMapper.getPythonType(responseTypeReference);
             importCollector.importType(pythonResponseType);
             responseTypeInfo = new NativeTypeInfoTemplateData(pythonResponseType, responseTypeReference);
             responseTypeFullName = PythonFullNameFormatter.getFullName(pythonResponseType);
 
-            final TypeReference requestTypeReference = serviceMethod.getRequestTypeReference();
-            final PythonNativeType pythonRequestType = typeMapper.getPythonType(requestTypeReference);
+            final TypeReference requestTypeReference = method.getRequestTypeReference();
+            final PythonNativeType pythonRequestType = pythonTypeMapper.getPythonType(requestTypeReference);
             importCollector.importType(pythonRequestType);
             requestTypeInfo = new NativeTypeInfoTemplateData(pythonRequestType, requestTypeReference);
             requestTypeFullName = PythonFullNameFormatter.getFullName(pythonRequestType);
+
+            final List<DocComment> methodDocComments = method.getDocComments();
+            docComments = methodDocComments.isEmpty() ? null :
+                    new DocCommentsTemplateData(context, methodDocComments);
         }
 
         public String getName()
@@ -103,6 +108,11 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
             return requestTypeFullName;
         }
 
+        public DocCommentsTemplateData getDocComments()
+        {
+            return docComments;
+        }
+
         private final String name;
         private final String snakeCaseName;
         private final String clientMethodName;
@@ -110,6 +120,7 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
         private final String responseTypeFullName;
         private final NativeTypeInfoTemplateData requestTypeInfo;
         private final String requestTypeFullName;
+        private final DocCommentsTemplateData docComments;
     }
 
     private final String servicePackageName;

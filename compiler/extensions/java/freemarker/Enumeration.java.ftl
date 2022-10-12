@@ -1,5 +1,6 @@
 <#include "FileHeader.inc.ftl">
 <#include "TypeInfo.inc.ftl">
+<#include "DocComment.inc.ftl">
 <@standard_header generatorDescription, packageName/>
 <#macro enum_array_traits arrayableInfo bitSize>
 new ${arrayableInfo.arrayTraits.name}(<#rt>
@@ -10,10 +11,16 @@ new ${arrayableInfo.arrayTraits.name}(<#rt>
 </#macro>
 <#assign isBigInteger=!underlyingTypeInfo.isSimple>
 
+<#if withCodeComments && docComments??>
+<@doc_comments docComments/>
+</#if>
 public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeOffsetsWriter,
         </#if>zserio.runtime.SizeOf, zserio.runtime.ZserioEnum
 {
 <#list items as item>
+    <#if withCodeComments && item.docComments??>
+    <@doc_comments item.docComments, 1/>
+    </#if>
     ${item.name}(${item.value})<#if item_has_next>,<#else>;</#if>
 </#list>
 
@@ -22,6 +29,13 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeO
         this.value = value;
     }
 
+<#if withCodeComments>
+    /**
+     * Gets the enumeration raw value.
+     *
+     * @return Raw value which holds this enumeration.
+     */
+</#if>
     public ${underlyingTypeInfo.typeFullName} getValue()
     {
         return value;
@@ -34,6 +48,13 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeO
     }
 <#if withTypeInfoCode>
 
+    <#if withCodeComments>
+    /**
+     * Gets static information about this enumeration useful for generic introspection.
+     *
+     * @return Zserio type information.
+     */
+    </#if>
     public static zserio.runtime.typeinfo.TypeInfo typeInfo()
     {
         return new zserio.runtime.typeinfo.TypeInfo.EnumTypeInfo(
@@ -50,6 +71,15 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeO
     }
 </#if>
 
+<#if withCodeComments>
+    /**
+     * Creates context for packed arrays.
+     * <p>
+     * Called only internally if packed arrays are used.
+     *
+     * @param contextNode Context for packed arrays.
+     */
+</#if>
     public static void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
     {
         contextNode.createContext();
@@ -123,12 +153,33 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeO
     }
 
 </#if>
+<#if withCodeComments>
+    /**
+     * Reads enumeration from the bit stream.
+     *
+     * @param in Bit stream reader to use.
+     *
+     * @throws IOException If the reading from the bit stream failed.
+     */
+</#if>
     public static ${name} readEnum(zserio.runtime.io.BitStreamReader in) throws java.io.IOException
     {
         return toEnum(<#if runtimeFunction.javaReadTypeName??>(${runtimeFunction.javaReadTypeName})</#if><#rt>
                 <#lt>in.read${runtimeFunction.suffix}(${runtimeFunction.arg!}));
     }
 
+<#if withCodeComments>
+    /**
+     * Reads enumeration from the bit stream.
+     * <p>
+     * Called only internally if packed arrays are used.
+     *
+     * @param contextNode Context for packed arrays.
+     * @param in Bit stream reader to use.
+     *
+     * @throws IOException If the reading from the bit stream failed.
+     */
+</#if>
     public static ${name} readEnum(zserio.runtime.array.PackingContextNode contextNode,
             zserio.runtime.io.BitStreamReader in) throws java.io.IOException
     {
@@ -137,6 +188,15 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeO
                         <@enum_array_traits underlyingTypeInfo.arrayableInfo, bitSize!/>, in)).get());
     }
 
+<#if withCodeComments>
+    /**
+     * Converts raw value to the enumeration.
+     *
+     * @param value Raw value to convert.
+     *
+     * @return The enumeration which holds given raw value.
+     */
+</#if>
     public static ${name} toEnum(${underlyingTypeInfo.typeFullName} value)
     {
 <#if underlyingTypeInfo.isLong || isBigInteger>

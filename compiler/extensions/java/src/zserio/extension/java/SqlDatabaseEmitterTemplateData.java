@@ -7,6 +7,7 @@ import zserio.ast.ParameterizedTypeInstantiation;
 import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.ZserioType;
+import zserio.ast.DocComment;
 import zserio.ast.Field;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
@@ -21,15 +22,14 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
     public SqlDatabaseEmitterTemplateData(TemplateDataContext context, SqlDatabaseType databaseType)
             throws ZserioExtensionException
     {
-        super(context, databaseType);
+        super(context, databaseType, databaseType.getDocComments());
 
         rootPackageName = context.getJavaRootPackageName();
         this.withValidationCode = context.getWithValidationCode();
 
-        final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
         fields = new ArrayList<DatabaseFieldData>();
         for (Field field: databaseType.getFields())
-            fields.add(new DatabaseFieldData(javaNativeMapper, field));
+            fields.add(new DatabaseFieldData(context, field));
     }
 
     public String getRootPackageName()
@@ -49,11 +49,12 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
 
     public static class DatabaseFieldData
     {
-        public DatabaseFieldData(JavaNativeMapper javaNativeMapper, Field field)
+        public DatabaseFieldData(TemplateDataContext context, Field field)
                 throws ZserioExtensionException
         {
             final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
             final ZserioType fieldBaseType = fieldTypeInstantiation.getBaseType();
+            final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
             final JavaNativeType fieldNativeType = javaNativeMapper.getJavaType(fieldTypeInstantiation);
             typeInfo = new NativeTypeInfoTemplateData(fieldNativeType, fieldTypeInstantiation);
 
@@ -70,6 +71,10 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
                 isWithoutRowIdTable = false;
                 hasExplicitParameters = false;
             }
+
+            final List<DocComment> fieldDocComments = field.getDocComments();
+            docComments = fieldDocComments.isEmpty()
+                    ? null : new DocCommentsTemplateData(context, fieldDocComments);
         }
 
         public String getName()
@@ -95,6 +100,11 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
         public boolean getHasExplicitParameters()
         {
             return hasExplicitParameters;
+        }
+
+        public DocCommentsTemplateData getDocComments()
+        {
+            return docComments;
         }
 
         private static boolean hasTableExplicitParameters(SqlTableType tableType)
@@ -124,6 +134,7 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
         private final String getterName;
         private final boolean isWithoutRowIdTable;
         private final boolean hasExplicitParameters;
+        private final DocCommentsTemplateData docComments;
     }
 
     private final String rootPackageName;

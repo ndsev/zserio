@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import zserio.ast.ServiceType;
 import zserio.ast.TypeReference;
+import zserio.ast.DocComment;
 import zserio.ast.ServiceMethod;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.types.CppNativeType;
@@ -16,10 +17,9 @@ public class ServiceEmitterTemplateData extends UserTypeTemplateData
     public ServiceEmitterTemplateData(TemplateDataContext context, ServiceType serviceType)
             throws ZserioExtensionException
     {
-        super(context, serviceType);
+        super(context, serviceType, serviceType.getDocComments());
 
         final CppNativeMapper cppTypeMapper = context.getCppNativeMapper();
-
         final CppNativeType nativeServiceType = cppTypeMapper.getCppType(serviceType);
         // keep Zserio default formatting to ensure that all languages have same name of service methods
         servicePackageName = nativeServiceType.getPackageName().toString();
@@ -29,7 +29,7 @@ public class ServiceEmitterTemplateData extends UserTypeTemplateData
         {
             addHeaderIncludesForType(cppTypeMapper.getCppType(method.getResponseTypeReference()));
             addHeaderIncludesForType(cppTypeMapper.getCppType(method.getRequestTypeReference()));
-            final MethodTemplateData templateData = new MethodTemplateData(cppTypeMapper, method);
+            final MethodTemplateData templateData = new MethodTemplateData(context, method);
             this.methodList.add(templateData);
         }
     }
@@ -46,18 +46,23 @@ public class ServiceEmitterTemplateData extends UserTypeTemplateData
 
     public static class MethodTemplateData
     {
-        public MethodTemplateData(CppNativeMapper typeMapper, ServiceMethod method)
+        public MethodTemplateData(TemplateDataContext context, ServiceMethod method)
                 throws ZserioExtensionException
         {
             name = method.getName();
 
             final TypeReference responseTypeReference = method.getResponseTypeReference();
-            final CppNativeType cppResponseType = typeMapper.getCppType(responseTypeReference);
+            final CppNativeMapper cppTypeMapper = context.getCppNativeMapper();
+            final CppNativeType cppResponseType = cppTypeMapper.getCppType(responseTypeReference);
             responseTypeInfo = new NativeTypeInfoTemplateData(cppResponseType, responseTypeReference);
 
             final TypeReference requestTypeReference = method.getRequestTypeReference();
-            final CppNativeType cppRequestType = typeMapper.getCppType(requestTypeReference);
+            final CppNativeType cppRequestType = cppTypeMapper.getCppType(requestTypeReference);
             requestTypeInfo = new NativeTypeInfoTemplateData(cppRequestType, requestTypeReference);
+
+            final List<DocComment> methodDocComments = method.getDocComments();
+            docComments = methodDocComments.isEmpty()
+                    ? null : new DocCommentsTemplateData(context, methodDocComments);
         }
 
         public String getName()
@@ -75,9 +80,15 @@ public class ServiceEmitterTemplateData extends UserTypeTemplateData
             return requestTypeInfo;
         }
 
+        public DocCommentsTemplateData getDocComments()
+        {
+            return docComments;
+        }
+
         private final String name;
         private final NativeTypeInfoTemplateData responseTypeInfo;
         private final NativeTypeInfoTemplateData requestTypeInfo;
+        private final DocCommentsTemplateData docComments;
     }
 
     private final String servicePackageName;

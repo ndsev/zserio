@@ -6,6 +6,7 @@ import java.util.List;
 
 import zserio.ast.BitmaskType;
 import zserio.ast.BitmaskValue;
+import zserio.ast.DocComment;
 import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.FixedSizeType;
 import zserio.ast.IntegerType;
@@ -23,7 +24,7 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
     public BitmaskEmitterTemplateData(TemplateDataContext context, BitmaskType bitmaskType)
             throws ZserioExtensionException
     {
-        super(context, bitmaskType);
+        super(context, bitmaskType, bitmaskType.getDocComments());
 
         importPackage("typing");
         importPackage("zserio"); // needed at least for hash code calculation
@@ -48,7 +49,7 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
         final List<BitmaskValue> bitmaskValues = bitmaskType.getValues();
         values = new ArrayList<BitmaskValueData>(bitmaskValues.size());
         for (BitmaskValue bitmaskValue : bitmaskValues)
-            values.add(new BitmaskValueData(bitmaskValue));
+            values.add(new BitmaskValueData(context, bitmaskValue));
     }
 
     public NativeTypeInfoTemplateData getUnderlyingTypeInfo()
@@ -105,12 +106,16 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
 
     public static class BitmaskValueData
     {
-        public BitmaskValueData(BitmaskValue bitmaskValue) throws ZserioExtensionException
+        public BitmaskValueData(TemplateDataContext context, BitmaskValue bitmaskValue)
+                throws ZserioExtensionException
         {
             schemaName = bitmaskValue.getName();
             name = PythonSymbolConverter.bitmaskValueToSymbol(bitmaskValue.getName());
             value = PythonLiteralFormatter.formatDecimalLiteral(bitmaskValue.getValue());
             isZero = bitmaskValue.getValue().equals(BigInteger.ZERO);
+            final List<DocComment> valueDocComments = bitmaskValue.getDocComments();
+            docComments = valueDocComments.isEmpty() ? null :
+                    new DocCommentsTemplateData(context, valueDocComments);
         }
 
         public String getSchemaName()
@@ -133,10 +138,16 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
             return isZero;
         }
 
+        public DocCommentsTemplateData getDocComments()
+        {
+            return docComments;
+        }
+
         private final String schemaName;
         private final String name;
         private final String value;
         private final boolean isZero;
+        private final DocCommentsTemplateData docComments;
     }
 
     private static String createBitSize(TypeInstantiation typeInstantiation)

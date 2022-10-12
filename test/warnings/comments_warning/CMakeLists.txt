@@ -9,6 +9,9 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/comments_warning/markdown_comment_with_wrong_terminator/TestTable.cpp
     ${ZSERIO_GEN_DIR}/comments_warning/markdown_comment_with_wrong_terminator/TestTable.h
 
+    ${ZSERIO_GEN_DIR}/comments_warning/unresolved_markdown_see_tag_reference/Test.cpp
+    ${ZSERIO_GEN_DIR}/comments_warning/unresolved_markdown_see_tag_reference/Test.h
+
     ${ZSERIO_GEN_DIR}/comments_warning/unresolved_see_tag_in_templated_struct/TemplatedStructString.cpp
     ${ZSERIO_GEN_DIR}/comments_warning/unresolved_see_tag_in_templated_struct/TemplatedStructString.h
     ${ZSERIO_GEN_DIR}/comments_warning/unresolved_see_tag_in_templated_struct/TemplatedStructUInt32.cpp
@@ -67,7 +70,7 @@ zserio_add_library(TARGET comments_warning_zs
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
     ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
     ZSERIO_OPTIONS -withWarnings unused -withoutSourcesAmalgamation
-    EXPECTED_WARNINGS 15
+    EXPECTED_WARNINGS 18
     ZSERIO_LOG_FILENAME zserio_log.txt
 )
 

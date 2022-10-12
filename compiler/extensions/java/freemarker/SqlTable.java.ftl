@@ -2,6 +2,7 @@
 <#include "Sql.inc.ftl">
 <#include "RangeCheck.inc.ftl">
 <#include "TypeInfo.inc.ftl">
+<#include "DocComment.inc.ftl">
 <@standard_header generatorDescription, packageName/>
 <#assign hasBlobField=sql_table_has_blob_field(fields)/>
 <#assign needsParameterProvider=explicitParameters?has_content/>
@@ -12,16 +13,42 @@
     <#assign hasValidatableField=sql_table_has_validatable_field(fields)/>
 </#if>
 
+<#if withCodeComments && docComments??>
+<@doc_comments docComments/>
+</#if>
 public class ${name}
 {
 <#if needsParameterProvider>
+    <#if withCodeComments>
+    /** Interface for class which provides all explicit parameters of the table. */
+    </#if>
     public static interface ParameterProvider
     {
     <#list explicitParameters as parameter>
+        <#if withCodeComments>
+            <#if !parameter?is_first>
+
+            </#if>
+        /**
+         * Gets the value of the explicit parameter ${parameter.expression}.
+         *
+         * @param resultSet Current row of the table which can be used during parameter calculation.
+         *
+         * @return The value of the explicit parameter ${parameter.expression}.
+         */
+        </#if>
         ${parameter.typeInfo.typeFullName} <@sql_parameter_provider_getter_name parameter/>(java.sql.ResultSet resultSet);
     </#list>
     };
 
+</#if>
+<#if withCodeComments>
+    /**
+     * Constructor from database connection and table name.
+     *
+     * @param connection Database connection where the table is located.
+     * @param tableName Table name.
+     */
 </#if>
     public ${name}(java.sql.Connection connection, java.lang.String tableName)
     {
@@ -30,6 +57,15 @@ public class ${name}
         this.tableName = tableName;
     }
 
+<#if withCodeComments>
+    /**
+     * Constructor from database connection, table name and attached database name.
+     *
+     * @param connection Database connection where the table is located.
+     * @param attachedDbName Name of the attached database where table has been relocated.
+     * @param tableName Table name.
+     */
+</#if>
     public ${name}(java.sql.Connection connection, java.lang.String attachedDbName,
             java.lang.String tableName)
     {
@@ -39,6 +75,13 @@ public class ${name}
     }
 <#if withTypeInfoCode>
 
+    <#if withCodeComments>
+    /**
+     * Gets static information about the table type useful for generic introspection.
+     *
+     * @return Zserio type information.
+     */
+    </#if>
     public static zserio.runtime.typeinfo.TypeInfo typeInfo()
     {
         final java.lang.String templateName = <@template_info_template_name templateInstantiation!/>;
@@ -55,6 +98,13 @@ public class ${name}
 </#if>
 <#if withWriterCode>
 
+    <#if withCodeComments>
+    /**
+     * Creates the table using database connection given by constructor.
+     *
+     * @throws SQLException If table creation fails.
+     */
+    </#if>
     public void createTable() throws java.sql.SQLException
     {
         final java.lang.StringBuilder sqlQuery = getCreateTableQuery();
@@ -65,12 +115,28 @@ public class ${name}
     }
 
     <#if hasNonVirtualField && isWithoutRowId>
+        <#if withCodeComments>
+    /**
+     * Creates the table as ordinary row id using database connection given by constructor.
+     *
+     * The method creates the table as ordinary row id even if it is specified as without row id in schema.
+     *
+     * @throws SQLException If table creation fails.
+     */
+        </#if>
     public void createOrdinaryRowIdTable() throws java.sql.SQLException
     {
         final java.lang.StringBuilder sqlQuery = getCreateTableQuery();
         executeUpdate(sqlQuery.toString());
     }
 
+    </#if>
+    <#if withCodeComments>
+    /**
+     * Deletes the table using database connection given by constructor.
+     *
+     * @throws SQLException If table delete fails.
+     */
     </#if>
     public void deleteTable() throws java.sql.SQLException
     {
@@ -80,14 +146,39 @@ public class ${name}
     }
 </#if>
 
-    /** Reads all rows from the table. */
+<#if withCodeComments>
+    /**
+     * Reads all rows from the table.
+     *
+    <#if needsParameterProvider>
+     * @param parameterProvider Explicit parameter provider to be used during reading.
+     *
+    </#if>
+     * @throws SQLException In case of any failure during reading from the database.
+     * @throws IOException In case of any failure during reading from the database file.
+     */
+</#if>
     public java.util.List<${rowName}> read(<#if needsParameterProvider>ParameterProvider parameterProvider</#if>)
             throws java.sql.SQLException, java.io.IOException
     {
         return read(<#if needsParameterProvider>parameterProvider, </#if>"");
     }
 
-    /** Reads all rows from the table which fulfill the given condition. */
+<#if withCodeComments>
+    /**
+     * Reads all rows from the table which fulfill the given condition.
+     *
+        <#if needsParameterProvider>
+     * @param parameterProvider Explicit parameter provider to be used during reading.
+        </#if>
+     * @param condition SQL condition to use.
+     *
+     * @return Read rows.
+     *
+     * @throws SQLException In case of any failure during reading from the database.
+     * @throws IOException In case of any failure during reading from the database file.
+     */
+</#if>
     public java.util.List<${rowName}> read(<#if needsParameterProvider>ParameterProvider parameterProvider,</#if>
             java.lang.String condition) throws java.sql.SQLException, java.io.IOException
     {
@@ -122,11 +213,18 @@ public class ${name}
     }
 <#if withWriterCode>
 
+    <#if withCodeComments>
     /**
-     * Writes the given rows to the table.
+     * Writes rows to the table.
      *
      * Assumes that no other rows with the same primary keys exist, otherwise an exception is thrown.
+     *
+     * @param rows Table rows to write.
+     *
+     * @throws SQLException In case of any failure during writing to the database.
+     * @throws IOException In case of any failure during writing to the database file.
      */
+    </#if>
     public void write(java.util.List<${rowName}> rows)
             throws java.sql.SQLException, java.io.IOException
     {
@@ -158,7 +256,17 @@ public class ${name}
         endTransaction(wasTransactionStarted);
     }
 
-    /** Updates given row in the table. */
+    <#if withCodeComments>
+    /**
+     * Updates row of the table.
+     *
+     * @param row Table row to update.
+     * @param whereCondition SQL where condition to use.
+     *
+     * @throws SQLException In case of any failure during database update.
+     * @throws IOException In case of any failure during updating of the database file.
+     */
+    </#if>
     public void update(${rowName} row, java.lang.String whereCondition)
             throws java.sql.SQLException, java.io.IOException
     {
@@ -182,7 +290,33 @@ public class ${name}
 </#if>
 <#if withValidationCode>
 
-    /** Validates all fields in all rows of the table. */
+    <#if withCodeComments>
+    /**
+     * Validates the table.
+     *
+     * Validation consists of the following validation tests:
+     *
+     * 1. Table schema validation.
+     *
+     *    Table schema is read from database and checked according to the schema. It's checked if number of
+     *    columns are correct and if each column has expected type and expected 'isNotNull' and 'isPrimaryKey' 
+     *    flags.
+     *
+     * 2. Validation of column values.
+     *
+     *    Each blob or integer value stored in table is read from database and checked. Blobs are read from
+     *    the bit stream and written again. Then read bit stream is binary compared with the written stream.
+     *    Integer values are checked according to their boundaries specified in schema.
+     *
+        <#if needsParameterProvider>
+     * @param parameterProvider Explicit parameter provider to be used during reading.
+
+        </#if>
+     * @return Validation report which contains validation result.
+     *
+     * @throws SQLException In case of any failure during access to the database.
+     */
+    </#if>
     public zserio.runtime.validation.ValidationReport validate(<#if needsParameterProvider>ParameterProvider parameterProvider</#if>)
             throws java.sql.SQLException
     {

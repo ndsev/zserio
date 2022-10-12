@@ -38,6 +38,7 @@ final class TemplateDataContext
         withValidationCode = javaParameters.getWithValidationCode();
         withRangeCheckCode = javaParameters.getWithRangeCheckCode();
         withTypeInfoCode = javaParameters.getWithTypeInfoCode();
+        withCodeComments = javaParameters.getWithCodeComments();
 
         generatorDescription =
                 "/**\n" +
@@ -102,6 +103,11 @@ final class TemplateDataContext
         return withTypeInfoCode;
     }
 
+    public boolean getWithCodeComments()
+    {
+        return withCodeComments;
+    }
+
     public String getGeneratorDescription()
     {
         return generatorDescription;
@@ -120,6 +126,7 @@ final class TemplateDataContext
     private final boolean withValidationCode;
     private final boolean withRangeCheckCode;
     private final boolean withTypeInfoCode;
+    private final boolean withCodeComments;
 
     private final String generatorDescription;
 }

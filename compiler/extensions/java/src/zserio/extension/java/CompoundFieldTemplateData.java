@@ -1,9 +1,11 @@
 package zserio.extension.java;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
+import zserio.ast.DocComment;
 import zserio.ast.ParameterizedTypeInstantiation;
 import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.ast.ArrayInstantiation;
@@ -70,6 +72,9 @@ public final class CompoundFieldTemplateData
         array = createArray(context, nativeType, fieldTypeInstantiation, parentType);
         runtimeFunction = JavaRuntimeFunctionDataCreator.createData(context, fieldTypeInstantiation);
         compound = createCompound(context, fieldTypeInstantiation);
+        final List<DocComment> fieldDocComments = field.getDocComments();
+        docComments = fieldDocComments.isEmpty()
+                ? null : new DocCommentsTemplateData(context, fieldDocComments);
     }
 
     public String getName()
@@ -160,6 +165,11 @@ public final class CompoundFieldTemplateData
     public Compound getCompound()
     {
         return compound;
+    }
+
+    public DocCommentsTemplateData getDocComments()
+    {
+        return docComments;
     }
 
     public static class Optional
@@ -591,4 +601,5 @@ public final class CompoundFieldTemplateData
     private final Array array;
     private final RuntimeFunctionTemplateData runtimeFunction;
     private final Compound compound;
+    private final DocCommentsTemplateData docComments;
 }

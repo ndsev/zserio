@@ -202,7 +202,7 @@ public class DocCommentsTemplateData
 
             public static class DocLineElementData
             {
-                DocLineElementData(ContentTemplateDataContext context, DocLineElement docLineElement)
+                public DocLineElementData(ContentTemplateDataContext context, DocLineElement docLineElement)
                 {
                     final DocText docText = docLineElement.getDocText();
                     docString = docText != null ?

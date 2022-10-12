@@ -89,6 +89,13 @@ public interface ExtensionParameters
     public boolean getWithWriterCode();
 
     /**
+     * Gets the code comments flag.
+     *
+     * @return True if code comments are enabled.
+     */
+    public boolean getWithCodeComments();
+
+    /**
      * Gets the list of top level package names ids.
      *
      * @return The list of top level package names ids or empty list if no top level package name is specified.

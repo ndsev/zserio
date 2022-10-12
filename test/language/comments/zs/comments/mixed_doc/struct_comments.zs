@@ -41,6 +41,7 @@ enum bit:2 Direction
 /**
  * This is additional classic documentation comment.
  */
+/** This is an another sticky comment which is oneliner! */
 struct DirectionStructure(bool hasExtraValue)
 {
     /*! Direction. !*/

@@ -563,11 +563,14 @@ public class XmlAstWriter implements ZserioAstVisitor
             xmlElement.setAttribute("link_alias", linkAlias);
 
         final SymbolReference linkReference = docTagSee.getLinkSymbolReference();
+        final Package referencedPackage = linkReference.getReferencedPackage();
         final PackageSymbol referencedPackageSymbol = linkReference.getReferencedPackageSymbol();
+        final ScopeSymbol referencedScopeSymbol = linkReference.getReferencedScopeSymbol();
+
+        if (referencedPackage != null)
+            xmlElement.setAttribute("referenced_package", referencedPackage.getPackageName().toString());
         if (referencedPackageSymbol != null)
             xmlElement.setAttribute("referenced_package_symbol", referencedPackageSymbol.getName());
-
-        final ScopeSymbol referencedScopeSymbol = linkReference.getReferencedScopeSymbol();
         if (referencedScopeSymbol != null)
             xmlElement.setAttribute("referenced_scope_symbol", referencedScopeSymbol.getName());
 

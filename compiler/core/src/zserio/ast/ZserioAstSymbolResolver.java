@@ -1,5 +1,7 @@
 package zserio.ast;
 
+import java.util.Map;
+
 import zserio.tools.WarningsConfig;
 
 /**
@@ -15,6 +17,16 @@ public class ZserioAstSymbolResolver extends ZserioAstWalker
     public ZserioAstSymbolResolver(WarningsConfig warningsConfig)
     {
         this.warningsConfig = warningsConfig;
+    }
+
+    @Override
+    public void visitRoot(Root root)
+    {
+        this.packageNameMap = root.getPackageNameMap();
+
+        root.visitChildren(this);
+
+        this.packageNameMap = null;
     }
 
     @Override
@@ -76,9 +88,16 @@ public class ZserioAstSymbolResolver extends ZserioAstWalker
     }
 
     @Override
+    public void visitDocCommentMarkdown(DocCommentMarkdown docComment)
+    {
+        docComment.visitChildren(this);
+        docComment.resolve(currentPackage, this);
+    }
+
+    @Override
     public void visitDocTagSee(DocTagSee docTagSee)
     {
-        docTagSee.resolve(currentPackage, currentScopedType, warningsConfig);
+        docTagSee.resolve(packageNameMap, currentPackage, currentScopedType, warningsConfig);
         docTagSee.visitChildren(this);
     }
 
@@ -121,6 +140,7 @@ public class ZserioAstSymbolResolver extends ZserioAstWalker
     }
 
     private final WarningsConfig warningsConfig;
+    private Map<PackageName, Package> packageNameMap = null;
     private Package currentPackage = null;
     private ZserioScopedType currentScopedType = null;
 };

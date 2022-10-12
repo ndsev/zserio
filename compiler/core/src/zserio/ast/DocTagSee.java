@@ -1,5 +1,6 @@
 package zserio.ast;
 
+import java.util.Map;
 import zserio.tools.WarningsConfig;
 import zserio.tools.ZserioToolPrinter;
 
@@ -21,6 +22,7 @@ public class DocTagSee extends AstNodeBase
 
         // link alias is the same as a link name if no alias is available
         this.linkAlias = linkAlias != null ? linkAlias : linkName;
+        this.linkName = linkName;
         this.linkSymbolReference = new SymbolReference(this, linkName);
     }
 
@@ -41,6 +43,16 @@ public class DocTagSee extends AstNodeBase
     }
 
     /**
+     * Gets see tag link name.
+     *
+     * @return Link name.
+     */
+    public String getLinkName()
+    {
+        return linkName;
+    }
+
+    /**
      * Gets reference to symbol which see tag points to.
      *
      * @return Symbol reference.
@@ -53,16 +65,17 @@ public class DocTagSee extends AstNodeBase
     /**
      * Resolves the link symbol reference.
      *
+     * @param packageNameMap Map of all registered packages.
      * @param ownerPackage Zserio package in which the symbol reference is defined.
      * @param ownerType ZserioType which is owner of the symbol reference or null.
      * @param warningsConfig Warning subsystem configuration.
      */
-    void resolve(Package ownerPackage, ZserioScopedType ownerType,
+    void resolve(Map<PackageName, Package> packageNameMap, Package ownerPackage, ZserioScopedType ownerType,
             WarningsConfig warningsConfig)
     {
         try
         {
-            linkSymbolReference.resolve(ownerPackage, ownerType);
+            linkSymbolReference.resolve(packageNameMap, ownerPackage, ownerType);
         }
         catch (ParserException e)
         {
@@ -72,5 +85,6 @@ public class DocTagSee extends AstNodeBase
     }
 
     private final String linkAlias;
+    private final String linkName;
     private final SymbolReference linkSymbolReference;
 }

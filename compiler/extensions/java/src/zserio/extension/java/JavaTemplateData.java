@@ -10,6 +10,7 @@ public class JavaTemplateData
         generatorDescription = context.getGeneratorDescription();
         withWriterCode = context.getWithWriterCode();
         withTypeInfoCode = context.getWithTypeInfoCode();
+        withCodeComments = context.getWithCodeComments();
     }
 
     public String getGeneratorDescription()
@@ -27,7 +28,13 @@ public class JavaTemplateData
         return withTypeInfoCode;
     }
 
+    public boolean getWithCodeComments()
+    {
+        return withCodeComments;
+    }
+
     private final String generatorDescription;
     private final boolean withWriterCode;
     private final boolean withTypeInfoCode;
+    private final boolean withCodeComments;
 }

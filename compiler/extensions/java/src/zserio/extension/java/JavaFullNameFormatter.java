@@ -25,5 +25,5 @@ final public class JavaFullNameFormatter
                 JAVA_PACKAGE_SEPARATOR);
     }
 
-    private static final String JAVA_PACKAGE_SEPARATOR = ".";
+    static final String JAVA_PACKAGE_SEPARATOR = ".";
 }

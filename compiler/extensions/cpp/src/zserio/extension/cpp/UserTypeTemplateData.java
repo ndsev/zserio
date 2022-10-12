@@ -1,5 +1,8 @@
 package zserio.extension.cpp;
 
+import java.util.List;
+
+import zserio.ast.DocComment;
 import zserio.ast.ZserioType;
 import zserio.ast.ZserioTypeUtil;
 import zserio.extension.common.ZserioExtensionException;
@@ -10,13 +13,15 @@ import zserio.extension.cpp.types.CppNativeType;
  */
 public class UserTypeTemplateData extends CppTemplateData
 {
-    public UserTypeTemplateData(TemplateDataContext context, ZserioType type) throws ZserioExtensionException
+    public UserTypeTemplateData(TemplateDataContext context, ZserioType type, List<DocComment> docComments)
+            throws ZserioExtensionException
     {
         super(context);
 
         nativeType = context.getCppNativeMapper().getCppType(type);
         schemaTypeName = ZserioTypeUtil.getFullName(type);
         packageData = new PackageTemplateData(nativeType);
+        this.docComments = docComments.isEmpty() ? null : new DocCommentsTemplateData(context, docComments);
     }
 
     public String getName()
@@ -39,7 +44,13 @@ public class UserTypeTemplateData extends CppTemplateData
         return packageData;
     }
 
+    public DocCommentsTemplateData getDocComments()
+    {
+        return docComments;
+    }
+
     private final CppNativeType nativeType;
     private final String schemaTypeName;
     private final PackageTemplateData packageData;
+    private final DocCommentsTemplateData docComments;
 }

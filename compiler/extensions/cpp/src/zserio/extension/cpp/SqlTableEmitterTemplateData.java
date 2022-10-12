@@ -8,6 +8,7 @@ import java.util.TreeSet;
 
 import zserio.ast.BitmaskType;
 import zserio.ast.CompoundType;
+import zserio.ast.DocComment;
 import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.EnumType;
 import zserio.ast.Parameter;
@@ -41,7 +42,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
     public SqlTableEmitterTemplateData(TemplateDataContext context, SqlTableType tableType)
             throws ZserioExtensionException
     {
-        super(context, tableType);
+        super(context, tableType, tableType.getDocComments());
 
         final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
         sqlConstraint = createSqlConstraint(tableType.getSqlConstraint(), cppExpressionFormatter);
@@ -248,6 +249,10 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                     cppRowIndirectExpressionFormatter, fieldTypeInstantiation);
             needsChildrenInitialization = (fieldBaseType instanceof CompoundType) &&
                     ((CompoundType)fieldBaseType).needsChildrenInitialization();
+
+            final List<DocComment> fieldDocComments = field.getDocComments();
+            docComments = fieldDocComments.isEmpty()
+                    ? null : new DocCommentsTemplateData(context, fieldDocComments);
         }
 
         public String getName()
@@ -338,6 +343,11 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         public boolean getNeedsChildrenInitialization()
         {
             return needsChildrenInitialization;
+        }
+
+        public DocCommentsTemplateData getDocComments()
+        {
+            return docComments;
         }
 
         public static class ParameterTemplateData
@@ -524,6 +534,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         private final SqlTypeTemplateData sqlTypeData;
         private final SqlRangeCheckData sqlRangeCheckData;
         private final boolean needsChildrenInitialization;
+        private final DocCommentsTemplateData docComments;
     }
 
     private static String createSqlConstraint(SqlConstraint sqlConstraint,
