@@ -28,7 +28,7 @@ ${I}    </td></tr>
 ${I}    <tr><td>{</td></tr>
 ${I}  </thead>
 <#list messageList as message>
-${I}  <tbody>
+${I}  <tbody class="anchor-group" id="${message.symbol.htmlLink.htmlAnchor}">
     <#if hasDocComments(message.docComments)>
 ${I}    <tr class="doc"><td class="indent">
           <@doc_comments_all message.docComments, indent+3/>
