@@ -129,10 +129,14 @@ public class SqlTableType extends CompoundType
         return sqlWithoutRowId;
     }
 
-    @Override
+    /**
+     * Checks the SQL table.
+     *
+     * @param warningsConfig Warnings subsystem configuration.
+     */
     void check(WarningsConfig warningsConfig)
     {
-        super.check(warningsConfig);
+        super.check();
 
         checkSqlSymbolNames();
         checkSqlTableFields();

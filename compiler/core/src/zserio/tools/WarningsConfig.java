@@ -26,6 +26,8 @@ public class WarningsConfig
                 "Warn about template instantiations which are not instantiated using instantiate keyword.");
         addWarning(DOC_COMMENT_FORMAT, true,
                 "Warn when a documentation comment has invalid format.");
+        addWarning(DOC_COMMENT_MISSING, false,
+                "Warn when a documentable schema element has no documentation comment assigned.");
         addWarning(DOC_COMMENT_SEE, true,
                 "Warn when a documentation see tag contains invalid symbol reference.");
         addWarning(DOC_COMMENT_UNUSED, true,
@@ -226,6 +228,8 @@ public class WarningsConfig
     public static final String DEFAULT_INSTANTIATION = "default-instantiation";
     /** Option name for documentation comment format warnings. */
     public static final String DOC_COMMENT_FORMAT = "doc-comment-format";
+    /** Option name for missing documentation comment warnings. */
+    public static final String DOC_COMMENT_MISSING = "doc-comment-missing";
     /** Option name for documentation comment see tag warnings. */
     public static final String DOC_COMMENT_SEE = "doc-comment-see";
     /** Option name for unused documentation comments warnings. */

@@ -74,7 +74,9 @@ public class Function extends DocumentableAstNode implements ScopeSymbol
     }
 
     /**
-     * Checks the function type.
+     * Checks the function.
+     *
+     * @param warningsConfig Warnings subsystem configuration.
      */
     void check(WarningsConfig warningsConfig)
     {

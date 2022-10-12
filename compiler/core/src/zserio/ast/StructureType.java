@@ -3,8 +3,6 @@ package zserio.ast;
 import java.util.ArrayList;
 import java.util.List;
 
-import zserio.tools.WarningsConfig;
-
 /**
  * AST node for Structure types.
  *
@@ -61,9 +59,9 @@ public class StructureType extends CompoundType
     }
 
     @Override
-    void check(WarningsConfig warningsConfig)
+    void check()
     {
-        super.check(warningsConfig);
+        super.check();
 
         checkSymbolNames();
         checkSqlTableFields();

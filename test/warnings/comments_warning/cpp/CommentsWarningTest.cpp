@@ -9,7 +9,7 @@ class CommentsWarningTest : public ::testing::Test
 {
 protected:
     CommentsWarningTest()
-    :   zserioWarnings("warnings/comments_warning")
+    :   zserioWarnings("warnings/comments_warning", "zserio_log_comments.txt")
     {}
 
     const test_utils::ZserioErrorOutput zserioWarnings;

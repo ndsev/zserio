@@ -161,10 +161,14 @@ public class ChoiceType extends CompoundType
                 instantiatedChoiceCases, instantiatedChoiceDefault, instantiatedFunctions, getDocComments());
     }
 
-    @Override
+    /**
+     * Checks the choice type.
+     *
+     * @param warningsConfig Warnings subsystem configuration.
+     */
     void check(WarningsConfig warningsConfig)
     {
-        super.check(warningsConfig);
+        super.check();
 
         checkSymbolNames();
         checkSqlTableFields();

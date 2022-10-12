@@ -68,7 +68,7 @@ public class ServiceMethod extends DocumentableAstNode implements ScopeSymbol
     }
 
     /**
-     * Checks the method's types.
+     * Check the service method.
      */
     void check()
     {

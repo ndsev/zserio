@@ -48,7 +48,22 @@ public class ZserioAstChecker extends ZserioAstWalker
         currentPackage = pkg;
         pkg.visitChildren(this);
         pkg.check();
+        checkDocComments(currentPackage, WarningsConfig.DOC_COMMENT_MISSING, "package");
         currentPackage = null;
+    }
+
+    @Override
+    public void visitCompatibilityVersion(CompatibilityVersion compatibilityVersion)
+    {
+        compatibilityVersion.visitChildren(this);
+        checkDocComments(compatibilityVersion, WarningsConfig.DOC_COMMENT_MISSING, "compatibility version");
+    }
+
+    @Override
+    public void visitImport(Import unitImport)
+    {
+        unitImport.visitChildren(this);
+        checkDocComments(unitImport, WarningsConfig.DOC_COMMENT_MISSING, "import");
     }
 
     @Override
@@ -56,6 +71,15 @@ public class ZserioAstChecker extends ZserioAstWalker
     {
         constant.visitChildren(this);
         constant.check();
+        checkDocComments(constant, WarningsConfig.DOC_COMMENT_MISSING, "constant '" + constant.getName() + "'");
+    }
+
+    @Override
+    public void visitRuleGroup(RuleGroup ruleGroup)
+    {
+        ruleGroup.visitChildren(this);
+        checkDocComments(ruleGroup, WarningsConfig.DOC_COMMENT_MISSING,
+                "rule group '" + ruleGroup.getName() + "'");
     }
 
     @Override
@@ -64,6 +88,7 @@ public class ZserioAstChecker extends ZserioAstWalker
         subtype.visitChildren(this);
         definedTypes.add(subtype);
         addUsedType(subtype.getTypeReference().getType());
+        checkDocComments(subtype, WarningsConfig.DOC_COMMENT_MISSING, "subtype '" + subtype.getName() + "'");
     }
 
     @Override
@@ -73,7 +98,11 @@ public class ZserioAstChecker extends ZserioAstWalker
         {
             structureType.visitChildren(this);
             definedTypes.add(structureType);
-            structureType.check(warningsConfig);
+            structureType.check();
+
+            final String name = structureType.getTemplate() != null
+                    ? structureType.getTemplate().getName() : structureType.getName();
+            checkDocComments(structureType, WarningsConfig.DOC_COMMENT_MISSING, "structure '" + name + "'");
         }
         else
         {
@@ -89,11 +118,29 @@ public class ZserioAstChecker extends ZserioAstWalker
             choiceType.visitChildren(this);
             definedTypes.add(choiceType);
             choiceType.check(warningsConfig);
+
+            final String name = choiceType.getTemplate() != null
+                    ? choiceType.getTemplate().getName() : choiceType.getName();
+            checkDocComments(choiceType, WarningsConfig.DOC_COMMENT_MISSING, "choice '" + name + "'");
         }
         else
         {
             visitInstantiations(choiceType);
         }
+    }
+
+    @Override
+    public void visitChoiceCaseExpression(ChoiceCaseExpression choiceCaseExpression)
+    {
+        choiceCaseExpression.visitChildren(this);
+        checkDocComments(choiceCaseExpression, WarningsConfig.DOC_COMMENT_MISSING, "choice case expression");
+    }
+
+    @Override
+    public void visitChoiceDefault(ChoiceDefault choiceDefault)
+    {
+        choiceDefault.visitChildren(this);
+        checkDocComments(choiceDefault, WarningsConfig.DOC_COMMENT_MISSING, "choice default");
     }
 
     @Override
@@ -103,7 +150,11 @@ public class ZserioAstChecker extends ZserioAstWalker
         {
             unionType.visitChildren(this);
             definedTypes.add(unionType);
-            unionType.check(warningsConfig);
+            unionType.check();
+
+            final String name = unionType.getTemplate() != null
+                    ? unionType.getTemplate().getName() : unionType.getName();
+            checkDocComments(unionType, WarningsConfig.DOC_COMMENT_MISSING, "union '" + name + "'");
         }
         else
         {
@@ -117,6 +168,16 @@ public class ZserioAstChecker extends ZserioAstWalker
         enumType.visitChildren(this);
         definedTypes.add(enumType);
         enumType.check();
+        checkDocComments(enumType, WarningsConfig.DOC_COMMENT_MISSING,
+                "enumeration '" + enumType.getName() + "'");
+    }
+
+    @Override
+    public void visitEnumItem(EnumItem enumItem)
+    {
+        enumItem.visitChildren(this);
+        checkDocComments(enumItem, WarningsConfig.DOC_COMMENT_MISSING,
+                "enum item '" + enumItem.getName() + "'");
     }
 
     @Override
@@ -125,6 +186,16 @@ public class ZserioAstChecker extends ZserioAstWalker
         bitmaskType.visitChildren(this);
         definedTypes.add(bitmaskType);
         bitmaskType.check();
+        checkDocComments(bitmaskType, WarningsConfig.DOC_COMMENT_MISSING,
+                "bitmask '" + bitmaskType.getName() + "'");
+    }
+
+    @Override
+    public void visitBitmaskValue(BitmaskValue bitmaskValue)
+    {
+        bitmaskValue.visitChildren(this);
+        checkDocComments(bitmaskValue, WarningsConfig.DOC_COMMENT_MISSING,
+                "bitmask value '" + bitmaskValue.getName() + "'");
     }
 
     @Override
@@ -135,6 +206,10 @@ public class ZserioAstChecker extends ZserioAstWalker
             sqlTableType.visitChildren(this);
             definedTypes.add(sqlTableType);
             sqlTableType.check(warningsConfig);
+
+            final String name = sqlTableType.getTemplate() != null
+                    ? sqlTableType.getTemplate().getName() : sqlTableType.getName();
+            checkDocComments(sqlTableType, WarningsConfig.DOC_COMMENT_MISSING, "SQL table '" + name + "'");
         }
         else
         {
@@ -146,7 +221,9 @@ public class ZserioAstChecker extends ZserioAstWalker
     public void visitSqlDatabaseType(SqlDatabaseType sqlDatabaseType)
     {
         sqlDatabaseType.visitChildren(this);
-        sqlDatabaseType.check(warningsConfig);
+        sqlDatabaseType.check();
+        checkDocComments(sqlDatabaseType, WarningsConfig.DOC_COMMENT_MISSING,
+                "SQL database '" + sqlDatabaseType.getName() + "'");
     }
 
     @Override
@@ -154,6 +231,7 @@ public class ZserioAstChecker extends ZserioAstWalker
     {
         field.visitChildren(this);
         field.check(currentPackage, warningsConfig);
+        checkDocComments(field, WarningsConfig.DOC_COMMENT_MISSING, "field '" + field.getName() + "'");
     }
 
     @Override
@@ -161,6 +239,8 @@ public class ZserioAstChecker extends ZserioAstWalker
     {
         serviceType.visitChildren(this);
         serviceType.check();
+        checkDocComments(serviceType, WarningsConfig.DOC_COMMENT_MISSING,
+                "service '" + serviceType.getName() + "'");
     }
 
     @Override
@@ -168,6 +248,8 @@ public class ZserioAstChecker extends ZserioAstWalker
     {
         serviceMethod.visitChildren(this);
         serviceMethod.check();
+        checkDocComments(serviceMethod, WarningsConfig.DOC_COMMENT_MISSING,
+                "method '" + serviceMethod.getName() + "'");
     }
 
     @Override
@@ -175,6 +257,8 @@ public class ZserioAstChecker extends ZserioAstWalker
     {
         pubsubType.visitChildren(this);
         pubsubType.check();
+        checkDocComments(pubsubType, WarningsConfig.DOC_COMMENT_MISSING,
+                "pubsub '" + pubsubType.getName() + "'");
     }
 
     @Override
@@ -182,6 +266,15 @@ public class ZserioAstChecker extends ZserioAstWalker
     {
         pubsubMessage.visitChildren(this);
         pubsubMessage.check();
+        checkDocComments(pubsubMessage, WarningsConfig.DOC_COMMENT_MISSING,
+                "message '" + pubsubMessage.getName() + "'");
+    }
+
+    @Override
+    public void visitRule(Rule rule)
+    {
+        rule.visitChildren(this);
+        checkDocComments(rule, WarningsConfig.DOC_COMMENT_MISSING, "rule '" + rule.getRuleId() + "'");
     }
 
     @Override
@@ -189,6 +282,7 @@ public class ZserioAstChecker extends ZserioAstWalker
     {
         function.visitChildren(this);
         function.check(warningsConfig);
+        checkDocComments(function, WarningsConfig.DOC_COMMENT_MISSING, "function '" + function.getName() + "'");
     }
 
     @Override
@@ -203,6 +297,14 @@ public class ZserioAstChecker extends ZserioAstWalker
     {
         typeReference.visitChildren(this);
         addUsedType(typeReference.getType());
+    }
+
+    @Override
+    public void visitInstantiateType(InstantiateType instantiateType)
+    {
+        instantiateType.visitChildren(this);
+        checkDocComments(instantiateType, WarningsConfig.DOC_COMMENT_MISSING,
+                "instantiate type '" + instantiateType.getName() + "'");
     }
 
     private void visitInstantiations(ZserioTemplatableType template)
@@ -222,6 +324,27 @@ public class ZserioAstChecker extends ZserioAstWalker
         }
     }
 
+    private void checkDocComments(DocumentableAstNode documentableAstNode, String warningSpecifier,
+            String schemaElementDescription)
+    {
+        // check if documentable AST node has assigned some sticky comment
+        for (DocComment docComment : documentableAstNode.getDocComments())
+        {
+            if (docComment.isSticky())
+                return;
+        }
+
+        // report each warning only once - simple way to solve repeated warnings in template instantiations
+        final AstLocation location = documentableAstNode.getLocation();
+        if (!reportedDocCommentsWarnings.contains(location))
+        {
+            ZserioToolPrinter.printWarning(location,
+                    "Missing documentation comment for " + schemaElementDescription + ".",
+                    warningsConfig, warningSpecifier);
+            reportedDocCommentsWarnings.add(location);
+        }
+    }
+
     private void addUsedType(ZserioType usedType)
     {
         if (!(usedType instanceof BuiltInType))
@@ -231,6 +354,7 @@ public class ZserioAstChecker extends ZserioAstWalker
     private final WarningsConfig warningsConfig;
     private final boolean withGlobalRuleIdCheck;
 
+    private final Set<AstLocation> reportedDocCommentsWarnings = new HashSet<AstLocation>();
     private final Set<String> usedTypeNames = new HashSet<String>();
     private final List<ZserioType> definedTypes = new ArrayList<ZserioType>();
 

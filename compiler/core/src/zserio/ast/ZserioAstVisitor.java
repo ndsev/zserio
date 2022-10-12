@@ -302,9 +302,9 @@ public interface ZserioAstVisitor
     /**
      * Visits template instantiation.
      *
-     * @param templateInstantiation Template instantiation AST node.
+     * @param instantiateType Instantiate type AST node.
      */
-    public void visitInstantiateType(InstantiateType templateInstantiation);
+    public void visitInstantiateType(InstantiateType instantiateType);
 
     /**
      * Visits a classic-style documentation comment.
