@@ -28,6 +28,7 @@ import zserio.ast.PubsubMessage;
 import zserio.ast.ScopeSymbol;
 import zserio.ast.ServiceMethod;
 import zserio.ast.SqlTableType;
+import zserio.ast.Subtype;
 import zserio.ast.SymbolReference;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.java.symbols.JavaNativeSymbol;
@@ -214,6 +215,11 @@ public class DocCommentsTemplateData
             {
                 // link is a package
                 link = JavaFullNameFormatter.getFullName(referencedPackage.getPackageName());
+            }
+            else if (referencedPackageSymbol instanceof Subtype)
+            {
+                // java has no subtypes so we cannot map it
+                link = docTagSee.getLinkName();
             }
             else if (referencedScopeSymbol == null)
             {

@@ -4,6 +4,7 @@ import comments.classic_doc.bitmask_comments.*;
 import comments.classic_doc.enum_comments.*;
 import comments.classic_doc.pubsub_comments.*;
 import comments.classic_doc.service_comments.*;
+import comments.classic_doc.subtype_comments.*;
 import comments.classic_doc.sql_database_comments.*;
 import comments.classic_doc.sql_table_comments.*;
 import comments.classic_doc.union_comments.*;
@@ -61,6 +62,8 @@ enum bit:2 Direction
  * @see "Bitmask value via full name" comments.classic_doc.bitmask_comments.Permission.WRITE
  *
  * @see "Enum item via full name" comments.classic_doc.enum_comments.Direction.POSITIVE
+ *
+ * @see "Subtype via full name" comments.classic_doc.subtype_comments.U8
  *
  * @param hasExtraValue True if the structure has extra value.
  *        This parameter is not optional.
