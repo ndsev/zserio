@@ -7,19 +7,19 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/with_validation_code/blob_table_validation/BlobTableValidationDb.cpp
     ${ZSERIO_GEN_DIR}/with_validation_code/blob_table_validation/BlobTableValidationDb.h
 
+    ${ZSERIO_GEN_DIR}/with_validation_code/column_type_validation/Blob.cpp
+    ${ZSERIO_GEN_DIR}/with_validation_code/column_type_validation/Blob.h
+    ${ZSERIO_GEN_DIR}/with_validation_code/column_type_validation/ColumnTypeDb.cpp
+    ${ZSERIO_GEN_DIR}/with_validation_code/column_type_validation/ColumnTypeDb.h
+    ${ZSERIO_GEN_DIR}/with_validation_code/column_type_validation/ColumnTypeTable.cpp
+    ${ZSERIO_GEN_DIR}/with_validation_code/column_type_validation/ColumnTypeTable.h
+
     ${ZSERIO_GEN_DIR}/with_validation_code/constraint_table_validation/Blob.cpp
     ${ZSERIO_GEN_DIR}/with_validation_code/constraint_table_validation/Blob.h
     ${ZSERIO_GEN_DIR}/with_validation_code/constraint_table_validation/ConstraintTable.cpp
     ${ZSERIO_GEN_DIR}/with_validation_code/constraint_table_validation/ConstraintTable.h
     ${ZSERIO_GEN_DIR}/with_validation_code/constraint_table_validation/ConstraintTableValidationDb.cpp
     ${ZSERIO_GEN_DIR}/with_validation_code/constraint_table_validation/ConstraintTableValidationDb.h
-
-    ${ZSERIO_GEN_DIR}/with_validation_code/depend_table_validation/Blob.cpp
-    ${ZSERIO_GEN_DIR}/with_validation_code/depend_table_validation/Blob.h
-    ${ZSERIO_GEN_DIR}/with_validation_code/depend_table_validation/DependTable.cpp
-    ${ZSERIO_GEN_DIR}/with_validation_code/depend_table_validation/DependTable.h
-    ${ZSERIO_GEN_DIR}/with_validation_code/depend_table_validation/DependTableValidationDb.cpp
-    ${ZSERIO_GEN_DIR}/with_validation_code/depend_table_validation/DependTableValidationDb.h
 
     ${ZSERIO_GEN_DIR}/with_validation_code/control_validation/Blob.cpp
     ${ZSERIO_GEN_DIR}/with_validation_code/control_validation/Blob.h
@@ -31,6 +31,13 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/with_validation_code/control_validation/Table3.h
     ${ZSERIO_GEN_DIR}/with_validation_code/control_validation/ControlValidationDb.cpp
     ${ZSERIO_GEN_DIR}/with_validation_code/control_validation/ControlValidationDb.h
+
+    ${ZSERIO_GEN_DIR}/with_validation_code/depend_table_validation/Blob.cpp
+    ${ZSERIO_GEN_DIR}/with_validation_code/depend_table_validation/Blob.h
+    ${ZSERIO_GEN_DIR}/with_validation_code/depend_table_validation/DependTable.cpp
+    ${ZSERIO_GEN_DIR}/with_validation_code/depend_table_validation/DependTable.h
+    ${ZSERIO_GEN_DIR}/with_validation_code/depend_table_validation/DependTableValidationDb.cpp
+    ${ZSERIO_GEN_DIR}/with_validation_code/depend_table_validation/DependTableValidationDb.h
 
     ${ZSERIO_GEN_DIR}/with_validation_code/full_range_table_validation/FullRangeTable.cpp
     ${ZSERIO_GEN_DIR}/with_validation_code/full_range_table_validation/FullRangeTable.h
@@ -75,6 +82,7 @@ target_include_directories(with_validation_code_zs SYSTEM PRIVATE ${SQLITE_INCDI
 
 add_test_sources(
     cpp/BlobTableValidationTest.cpp
+    cpp/ColumnTypeValidationTest.cpp
     cpp/ConstraintTableValidationTest.cpp
     cpp/ControlValidationTest.cpp
     cpp/DependTableValidationTest.cpp

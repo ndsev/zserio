@@ -29,7 +29,6 @@
 <#assign needsParameterProvider=explicitParameters?has_content/>
 <#assign hasBlobField=sql_table_has_blob_field(fields)/>
 <#if withValidationCode>
-    <#assign hasValidatableField=sql_table_has_validatable_field(fields)/>
     <#assign hasNonVirtualField=sql_table_has_non_virtual_field(fields)/>
 </#if>
 <#if withCodeComments && docComments??>
@@ -489,6 +488,11 @@ private:
     <#if hasNonVirtualField>
 
         <#list fields as field>
+    bool validateType${field.name?cap_first}(::zserio::IValidationObserver& validationObserver,
+            sqlite3_stmt* statement, bool& continueValidation);
+        </#list>
+
+        <#list fields as field>
             <#if field.sqlTypeData.isBlob>
     bool validateBlob${field.name?cap_first}(::zserio::IValidationObserver& validationObserver,
             sqlite3_stmt* statement, Row& row<#rt>
@@ -498,12 +502,10 @@ private:
             sqlite3_stmt* statement, Row& row, bool& continueValidation);
             </#if>
         </#list>
-        <#if hasValidatableField>
 
     <@vector_type_name types.string.name/> getRowKeyValuesHolder(sqlite3_stmt* statement);
     <@vector_type_name "::zserio::StringView"/> getRowKeyValues(
             const <@vector_type_name types.string.name/>& rowKeyValuesHolder);
-        </#if>
     </#if>
 
 </#if>

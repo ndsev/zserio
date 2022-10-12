@@ -2,6 +2,7 @@ package zserio.ast;
 
 import java.util.List;
 
+import zserio.tools.WarningsConfig;
 import zserio.tools.ZserioToolPrinter;
 
 /**
@@ -129,9 +130,9 @@ public class ArrayInstantiation extends TypeInstantiation
     }
 
     @Override
-    void check(ZserioTemplatableType currentTemplateInstantiation)
+    void check(WarningsConfig warningsConfig, ZserioTemplatableType currentTemplateInstantiation)
     {
-        checkPackedArrayElementType(currentTemplateInstantiation);
+        checkPackedArrayElementType(warningsConfig, currentTemplateInstantiation);
 
         if (!checkImplicitArrayElementType())
         {
@@ -163,7 +164,8 @@ public class ArrayInstantiation extends TypeInstantiation
                 baseType instanceof EnumType || baseType instanceof BitmaskType;
     }
 
-    private void checkPackedArrayElementType(ZserioTemplatableType currentTemplateInstantiation)
+    private void checkPackedArrayElementType(WarningsConfig warningsConfig,
+            ZserioTemplatableType currentTemplateInstantiation)
     {
         if (isPacked)
         {
@@ -178,32 +180,34 @@ public class ArrayInstantiation extends TypeInstantiation
                     // be enabled explicitly by command line
                     if (!elementCompoundType.getFields().isEmpty())
                     {
-                        printInstantiationWarning(currentTemplateInstantiation,
-                                "'" + elementBaseType.getName() + "' doesn't contain any packable field!");
+                        printUnpackableWarning(warningsConfig, currentTemplateInstantiation,
+                                "'" + elementBaseType.getName() + "' doesn't contain any packable field.");
                     }
                 }
             }
             else if (!(isSimpleTypePackable(elementBaseType)))
             {
-                printInstantiationWarning(currentTemplateInstantiation,
-                        "'" + elementBaseType.getName() + "' is not packable element type!");
+                printUnpackableWarning(warningsConfig, currentTemplateInstantiation,
+                        "'" + elementBaseType.getName() + "' is not packable element type.");
             }
         }
     }
 
-    private void printInstantiationWarning(ZserioTemplatableType currentTemplateInstantiation, String message)
+    private void printUnpackableWarning(WarningsConfig warningsConfig,
+            ZserioTemplatableType currentTemplateInstantiation, String message)
     {
-        if (currentTemplateInstantiation != null)
+        if (currentTemplateInstantiation != null && warningsConfig.isEnabled(WarningsConfig.UNPACKABLE_ARRAY))
         {
             for (TypeReference instantiationReference :
                     currentTemplateInstantiation.getReversedInstantiationReferenceStack())
             {
                 ZserioToolPrinter.printWarning(instantiationReference.getLocation(),
-                        "In instantiation of '" + instantiationReference.getReferencedTypeName() +
+                        "    In instantiation of '" + instantiationReference.getReferencedTypeName() +
                         "' required from here");
             }
         }
-        ZserioToolPrinter.printWarning(getElementTypeInstantiation(), message);
+        ZserioToolPrinter.printWarning(getElementTypeInstantiation(), message,
+                warningsConfig, WarningsConfig.UNPACKABLE_ARRAY);
     }
 
     private boolean checkImplicitArrayElementType()

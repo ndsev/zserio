@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import zserio.tools.WarningsConfig;
 import zserio.tools.ZserioToolPrinter;
 
 /**
@@ -15,12 +16,12 @@ public class ZserioAstChecker extends ZserioAstWalker
     /**
      * Constructor.
      *
-     * @param checkUnusedTypes Whether to check for unused types.
+     * @param warningsConfig Warnings config.
      * @param withGlobalRuleIdCheck Whether to check of rule id uniqueness between all packages.
      */
-    public ZserioAstChecker(boolean checkUnusedTypes, boolean withGlobalRuleIdCheck)
+    public ZserioAstChecker(WarningsConfig warningsConfig, boolean withGlobalRuleIdCheck)
     {
-        this.checkUnusedTypes = checkUnusedTypes;
+        this.warningsConfig = warningsConfig;
         this.withGlobalRuleIdCheck = withGlobalRuleIdCheck;
     }
 
@@ -29,13 +30,14 @@ public class ZserioAstChecker extends ZserioAstWalker
     {
         root.visitChildren(this);
         root.check(withGlobalRuleIdCheck);
-        if (checkUnusedTypes)
+
+        for (ZserioType definedType : definedTypes)
         {
-            for (ZserioType definedType : definedTypes)
+            final String definedTypeName = ZserioTypeUtil.getFullName(definedType);
+            if (!usedTypeNames.contains(definedTypeName))
             {
-                final String definedTypeName = ZserioTypeUtil.getFullName(definedType);
-                if (!usedTypeNames.contains(definedTypeName))
-                    ZserioToolPrinter.printWarning(definedType, "Type '" + definedTypeName + "' is not used.");
+                ZserioToolPrinter.printWarning(definedType, "Type '" + definedTypeName + "' is not used.",
+                        warningsConfig, WarningsConfig.UNUSED);
             }
         }
     }
@@ -71,7 +73,7 @@ public class ZserioAstChecker extends ZserioAstWalker
         {
             structureType.visitChildren(this);
             definedTypes.add(structureType);
-            structureType.check();
+            structureType.check(warningsConfig);
         }
         else
         {
@@ -86,7 +88,7 @@ public class ZserioAstChecker extends ZserioAstWalker
         {
             choiceType.visitChildren(this);
             definedTypes.add(choiceType);
-            choiceType.check();
+            choiceType.check(warningsConfig);
         }
         else
         {
@@ -101,7 +103,7 @@ public class ZserioAstChecker extends ZserioAstWalker
         {
             unionType.visitChildren(this);
             definedTypes.add(unionType);
-            unionType.check();
+            unionType.check(warningsConfig);
         }
         else
         {
@@ -132,7 +134,7 @@ public class ZserioAstChecker extends ZserioAstWalker
         {
             sqlTableType.visitChildren(this);
             definedTypes.add(sqlTableType);
-            sqlTableType.check();
+            sqlTableType.check(warningsConfig);
         }
         else
         {
@@ -144,14 +146,14 @@ public class ZserioAstChecker extends ZserioAstWalker
     public void visitSqlDatabaseType(SqlDatabaseType sqlDatabaseType)
     {
         sqlDatabaseType.visitChildren(this);
-        sqlDatabaseType.check();
+        sqlDatabaseType.check(warningsConfig);
     }
 
     @Override
     public void visitField(Field field)
     {
         field.visitChildren(this);
-        field.check(currentPackage);
+        field.check(currentPackage, warningsConfig);
     }
 
     @Override
@@ -186,14 +188,14 @@ public class ZserioAstChecker extends ZserioAstWalker
     public void visitFunction(Function function)
     {
         function.visitChildren(this);
-        function.check();
+        function.check(warningsConfig);
     }
 
     @Override
     public void visitTypeInstantiation(TypeInstantiation typeInstantiation)
     {
         typeInstantiation.visitChildren(this);
-        typeInstantiation.check(currentTemplateInstantiation);
+        typeInstantiation.check(warningsConfig, currentTemplateInstantiation);
     }
 
     @Override
@@ -226,7 +228,7 @@ public class ZserioAstChecker extends ZserioAstWalker
             usedTypeNames.add(ZserioTypeUtil.getFullName(usedType));
     }
 
-    private final boolean checkUnusedTypes;
+    private final WarningsConfig warningsConfig;
     private final boolean withGlobalRuleIdCheck;
 
     private final Set<String> usedTypeNames = new HashSet<String>();

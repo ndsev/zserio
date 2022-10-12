@@ -15,10 +15,12 @@ class ResourceManager
 {
     /**
      * Constructor.
+     *
+     * @param commandLineArguments Command line arguments.
      */
-    public ResourceManager()
+    public ResourceManager(CommandLineArguments commandLineArguments)
     {
-        lastModifiedTime = getLastModifiedResourceTime();
+        this.commandLineArguments = commandLineArguments;
     }
 
     /**
@@ -28,16 +30,12 @@ class ResourceManager
      */
     public long getLastModifiedTime()
     {
-        return lastModifiedTime;
-    }
-
-    private long getLastModifiedResourceTime()
-    {
         final String classPath = System.getProperty("java.class.path");
 
         if (classPath == null || classPath.isEmpty())
         {
-            ZserioToolPrinter.printWarning("ResourceManager: Cannot get class path!");
+            ZserioToolPrinter.printWarning("ResourceManager: Cannot get class path.",
+                    commandLineArguments.getWarningsConfig(), WarningsConfig.TIMESTAMP);
             return 0L;
         }
 
@@ -75,8 +73,8 @@ class ResourceManager
                 }
                 else if (lastModifiedEntryTime == 0L)
                 {
-                    ZserioToolPrinter.printWarning(
-                            "ResourceManager: Failed to get timestamp of resource: '" + entry + "'!");
+                    ZserioToolPrinter.printWarning("ResourceManager: Failed to get timestamp of resource: '"
+                            + entry + "'.", commandLineArguments.getWarningsConfig(), WarningsConfig.TIMESTAMP);
                     return 0L;
                 }
             }
@@ -85,11 +83,11 @@ class ResourceManager
         }
         catch (IOException e)
         {
-            ZserioToolPrinter.printWarning(
-                    "ResourceManager: Failed to get timestamp of resource: '" + resourcePath + "'!");
+            ZserioToolPrinter.printWarning("ResourceManager: Failed to get timestamp of resource: '" +
+                    resourcePath + "'.", commandLineArguments.getWarningsConfig(), WarningsConfig.TIMESTAMP);
             return 0L;
         }
     }
 
-    private final long lastModifiedTime;
+    private final CommandLineArguments commandLineArguments;
 }

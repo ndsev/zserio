@@ -2,7 +2,7 @@ import unittest
 
 from testutils import getZserioApi, assertWarningsPresent
 
-class ArrayTypesWarningTest(unittest.TestCase):
+class ChoiceTypesWarningTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.warnings = {}

@@ -14,7 +14,7 @@ class NotHandledWarningTest(unittest.TestCase):
             "not_handled_warning.zs",
             [
                 "not_handled_warning.zs:15:8: "
-                "Enumeration value 'WHITE' is not handled in choice 'EnumParamChoice'."
+                "Enumeration item 'WHITE' is not handled in choice 'EnumParamChoice'."
             ]
         )
 
@@ -23,6 +23,6 @@ class NotHandledWarningTest(unittest.TestCase):
             "not_handled_warning.zs",
             [
                 "not_handled_warning.zs:15:8: "
-                "Enumeration value 'RED' is not handled in choice 'EnumParamChoice'."
+                "Enumeration item 'RED' is not handled in choice 'EnumParamChoice'."
             ]
         )

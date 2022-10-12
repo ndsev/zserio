@@ -2,11 +2,23 @@ package zserio.ast;
 
 import java.util.Map;
 
+import zserio.tools.WarningsConfig;
+
 /**
  * Implementation of ZserioAstVisitor which resolves symbols for see documentation tags.
  */
 public class ZserioAstSymbolResolver extends ZserioAstWalker
 {
+    /**
+     * Constructor.
+     *
+     * @param warningsConfig Warnings subsystem configuration.
+     */
+    public ZserioAstSymbolResolver(WarningsConfig warningsConfig)
+    {
+        this.warningsConfig = warningsConfig;
+    }
+
     @Override
     public void visitRoot(Root root)
     {
@@ -85,8 +97,8 @@ public class ZserioAstSymbolResolver extends ZserioAstWalker
     @Override
     public void visitDocTagSee(DocTagSee docTagSee)
     {
+        docTagSee.resolve(packageNameMap, currentPackage, currentScopedType, warningsConfig);
         docTagSee.visitChildren(this);
-        docTagSee.resolve(packageNameMap, currentPackage, currentScopedType);
     }
 
     private void visitType(CompoundType compoundType)
@@ -127,6 +139,7 @@ public class ZserioAstSymbolResolver extends ZserioAstWalker
         }
     }
 
+    private final WarningsConfig warningsConfig;
     private Map<PackageName, Package> packageNameMap = null;
     private Package currentPackage = null;
     private ZserioScopedType currentScopedType = null;

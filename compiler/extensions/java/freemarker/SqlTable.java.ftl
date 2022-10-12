@@ -329,7 +329,7 @@ public class ${name}
         final zserio.runtime.validation.ValidationTimer totalParameterProviderTimer =
                 new zserio.runtime.validation.ValidationTimer();
 
-    <#if hasValidatableField>
+    <#if hasNonVirtualField>
         if (validateSchema(errors))
         {
             <#-- don't use rowid because WITHOUT ROWID tables can be used even if Zserio does not support them -->
@@ -348,18 +348,26 @@ public class ${name}
                 while (resultSet.next())
                 {
                     numberOfValidatedRows++;
-                    final ${rowName} row = new ${rowName}();
+
         <#list fields as field>
-            <#if field.sqlTypeData.isBlob>
+                    if (!validateType${field.name?cap_first}(errors, resultSet))
+                        continue;
+        </#list>
+        <#if hasValidatableField>
+
+                    final ${rowName} row = new ${rowName}();
+            <#list fields as field>
+                <#if field.sqlTypeData.isBlob>
                     if (!validateBlob${field.name?cap_first}(errors, resultSet, row,<#rt>
                             <#lt> <#if needsParameterProvider>parameterProvider,</#if>
                             totalParameterProviderTimer))
                         continue;
-            <#else>
+                <#else>
                     if (!validateField${field.name?cap_first}(errors, resultSet, row))
                         continue;
-            </#if>
-        </#list>
+                </#if>
+            </#list>
+        </#if>
                 }
             }
         }
@@ -479,14 +487,14 @@ ${I}                (${parameter.typeInfo.typeFullName})(${parameter.expression}
         // field ${field.name}
     <#assign valueVarName="value${field.name?cap_first}"/>
     <#if field.sqlTypeData.isBlob>
-        final byte[] ${valueVarName} = resultSet.getBytes(${field_index + 1});
+        final byte[] ${valueVarName} = resultSet.getBytes(${field?index + 1});
     <#elseif field.underlyingTypeInfo??>
         final ${field.underlyingTypeInfo.typeFullName} ${valueVarName} = <#rt>
-                <#lt>resultSet.get${field.underlyingTypeInfo.typeName?cap_first}(${field_index + 1});
+                <#lt>resultSet.get${field.underlyingTypeInfo.typeName?cap_first}(${field?index + 1});
     <#elseif field.requiresBigInt>
-        final long ${valueVarName} = resultSet.getLong(${field_index + 1});
+        final long ${valueVarName} = resultSet.getLong(${field?index + 1});
     <#else>
-        final ${field.typeInfo.typeFullName} ${valueVarName} = resultSet.get${field.typeInfo.typeName?cap_first}(${field_index + 1});
+        final ${field.typeInfo.typeFullName} ${valueVarName} = resultSet.get${field.typeInfo.typeName?cap_first}(${field?index + 1});
     </#if>
         if (!resultSet.wasNull())
         {
@@ -518,23 +526,23 @@ ${I}                (${parameter.typeInfo.typeFullName})(${parameter.expression}
         // field ${field.name}
         if (row.isNull${field.name?cap_first}())
         {
-            statement.setNull(${field_index + 1}, java.sql.Types.${field.sqlTypeData.traditionalName});
+            statement.setNull(${field?index + 1}, java.sql.Types.${field.sqlTypeData.traditionalName});
         }
         else
         {
         <#if field.sqlTypeData.isBlob>
             final byte[] blobData = zserio.runtime.io.ZserioIO.write(row.get${field.name?cap_first}());
-            statement.setBytes(${field_index + 1}, blobData);
+            statement.setBytes(${field?index + 1}, blobData);
         <#elseif field.underlyingTypeInfo??>
             final ${field.underlyingTypeInfo.typeFullName} underlyingValue =
                     row.get${field.name?cap_first}().getValue();
-            statement.set${field.underlyingTypeInfo.typeName?cap_first}(${field_index + 1}, underlyingValue);
+            statement.set${field.underlyingTypeInfo.typeName?cap_first}(${field?index + 1}, underlyingValue);
         <#elseif field.requiresBigInt>
             final long bigIntValue = row.get${field.name?cap_first}().longValue();
-            statement.setLong(${field_index + 1}, bigIntValue);
+            statement.setLong(${field?index + 1}, bigIntValue);
         <#else>
             final ${field.typeInfo.typeFullName} value = row.get${field.name?cap_first}();
-            statement.set${field.typeInfo.typeName?cap_first}(${field_index + 1}, value);
+            statement.set${field.typeInfo.typeName?cap_first}(${field?index + 1}, value);
         </#if>
         }
         <#if field_has_next>
@@ -629,16 +637,44 @@ ${I}                (${parameter.typeInfo.typeFullName})(${parameter.expression}
         return true;
     }
     </#list>
+    <#if hasNonVirtualField>
+        <#list fields as field>
+
+    private boolean validateType${field.name?cap_first}(
+            java.util.List<zserio.runtime.validation.ValidationError> errors, java.sql.ResultSet resultSet)
+            throws java.sql.SQLException
+    {
+        final java.sql.ResultSetMetaData metaData = resultSet.getMetaData();
+        final int type = zserio.runtime.validation.ValidationSqliteUtil.sqlTypeToSqliteType(
+                metaData.getColumnType(${field?index + 1}));
+        if (type == java.sql.Types.NULL)
+            return true;
+
+        if (type != java.sql.Types.${field.sqlTypeData.traditionalName})
+        {
+            errors.add(new zserio.runtime.validation.ValidationError(tableName, "${field.name}",
+                    getRowKeyValues(resultSet),
+                    zserio.runtime.validation.ValidationError.Type.INVALID_COLUMN_TYPE,
+                    "Column ${name}.${field.name} type check failed (" +
+                    zserio.runtime.validation.ValidationSqliteUtil.sqliteColumnTypeName(type) +
+                    " doesn't match to ${field.sqlTypeData.name})!"));
+            return false;
+        }
+
+        return true;
+    }
+        </#list>
+    </#if>
     <#if hasValidatableField>
         <#list fields as field>
-            <#if field.sqlTypeData.isBlob>
 
+            <#if field.sqlTypeData.isBlob>
     private boolean validateBlob${field.name?cap_first}(
             java.util.List<zserio.runtime.validation.ValidationError> errors,
             java.sql.ResultSet resultSet, ${rowName} row, <#if needsParameterProvider>ParameterProvider parameterProvider, </#if>
             zserio.runtime.validation.ValidationTimer totalParameterProviderTimer) throws java.sql.SQLException
     {
-        final byte[] blobData = resultSet.getBytes(${field_index + 1});
+        final byte[] blobData = resultSet.getBytes(${field?index + 1});
         if (blobData != null)
         {
             try (
@@ -703,15 +739,14 @@ ${I}                (${parameter.typeInfo.typeFullName})(${parameter.expression}
         return true;
     }
             <#else>
-
     private boolean validateField${field.name?cap_first}(
             java.util.List<zserio.runtime.validation.ValidationError> errors, java.sql.ResultSet resultSet,
             ${rowName} row) throws java.sql.SQLException
     {
                 <#if field.typeInfo.isEnum || field.rangeCheckData.sqlRangeData?? || field.requiresBigInt>
-        final long value = resultSet.getLong(${field_index + 1});
+        final long value = resultSet.getLong(${field?index + 1});
                 <#else>
-        final ${field.typeInfo.typeFullName} value = resultSet.get${field.typeInfo.typeName?cap_first}(${field_index + 1});
+        final ${field.typeInfo.typeFullName} value = resultSet.get${field.typeInfo.typeName?cap_first}(${field?index + 1});
                 </#if>
         if (!resultSet.wasNull())
         {
@@ -753,6 +788,8 @@ ${I}                (${parameter.typeInfo.typeFullName})(${parameter.expression}
     }
             </#if>
         </#list>
+    </#if>
+    <#if hasNonVirtualField>
 
         <#assign hasPrimaryKeyField=false/>
         <#list fields as field>
@@ -770,7 +807,7 @@ ${I}                (${parameter.typeInfo.typeFullName})(${parameter.expression}
                 <#if field.sqlTypeData.isBlob>
         rowKeyValues.add("BLOB");
                 <#else>
-        final java.lang.String value${field.name?cap_first} = resultSet.getString(${field_index + 1});
+        final java.lang.String value${field.name?cap_first} = resultSet.getString(${field?index + 1});
         rowKeyValues.add((value${field.name?cap_first} != null) ? value${field.name?cap_first} : "NULL");
                 </#if>
             </#if>

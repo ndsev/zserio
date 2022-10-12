@@ -9,6 +9,7 @@
 <#if withWriterCode || withValidationCode>
     <#assign hasNonVirtualField=sql_table_has_non_virtual_field(fields)/>
     <#if hasNonVirtualField>
+#include <algorithm>
 #include <zserio/BitFieldUtil.h>
     </#if>
 #include <zserio/BitStreamWriter.h>
@@ -16,12 +17,6 @@
 </#if>
 <#if withTypeInfoCode>
 #include <zserio/TypeInfo.h>
-</#if>
-<#if withValidationCode>
-    <#assign hasValidatableField=sql_table_has_validatable_field(fields)/>
-    <#if hasValidatableField>
-#include <algorithm>
-    </#if>
 </#if>
 <@system_includes cppSystemIncludes/>
 
@@ -335,6 +330,12 @@ bool ${name}::validate(::zserio::IValidationObserver& validationObserver<#rt>
         while ((result = sqlite3_step(statement.get())) == SQLITE_ROW && continueTableValidation)
         {
             ++numberOfValidatedRows;
+
+        <#list fields as field>
+            if (!validateType${field.name?cap_first}(validationObserver, statement.get(), continueValidation))
+                continue;
+        </#list>
+
             Row row;
         <#list fields as field>
             <#if field.sqlTypeData.isBlob>
@@ -472,6 +473,44 @@ bool ${name}::validateColumn${field.name?cap_first}(::zserio::IValidationObserve
 }
     </#list>
     <#if hasNonVirtualField>
+        <#list fields as field>
+
+<#macro sqlite_type_field field>
+    <#if field.sqlTypeData.isInteger>
+        SQLITE_INTEGER<#t>
+    <#elseif field.sqlTypeData.isReal>
+        SQLITE_FLOAT<#t>
+    <#elseif field.sqlTypeData.isBlob>
+        SQLITE_BLOB<#t>
+    <#else>
+        SQLITE_TEXT<#t>
+    </#if>
+</#macro>
+bool ${name}::validateType${field.name?cap_first}(::zserio::IValidationObserver& validationObserver,
+        sqlite3_stmt* statement, bool& continueValidation)
+{
+    const int type = sqlite3_column_type(statement, ${field?index});
+    if (type == SQLITE_NULL)
+        return true;
+
+    if (type != <@sqlite_type_field field/>)
+    {
+        const auto rowKeyValuesHolder = getRowKeyValuesHolder(statement);
+        ${types.string.name} errorMessage = ${types.string.name}(
+                "Column ${name}.${field.name} type check failed (", get_allocator_ref());
+        errorMessage += ::zserio::ValidationSqliteUtil<${types.allocator.default}>::sqliteColumnTypeName(type);
+        errorMessage += " doesn't match to ";
+        errorMessage += ::zserio::ValidationSqliteUtil<${types.allocator.default}>::sqliteColumnTypeName(<@sqlite_type_field field/>);
+        errorMessage += ")!";
+        continueValidation = validationObserver.reportError(m_name, ::zserio::makeStringView("${field.name}"),
+                getRowKeyValues(rowKeyValuesHolder), ::zserio::IValidationObserver::INVALID_COLUMN_TYPE,
+                errorMessage);
+        return false;
+    }
+
+    return true;
+}
+        </#list>
         <#list fields as field>
 
             <#if field.sqlTypeData.isBlob>
@@ -616,27 +655,26 @@ bool ${name}::validateField${field.name?cap_first}(::zserio::IValidationObserver
 }
             </#if>
         </#list>
-        <#if hasValidatableField>
 
 <@vector_type_name types.string.name/> ${name}::getRowKeyValuesHolder(sqlite3_stmt* statement)
 {
     <@vector_type_name types.string.name/> rowKeyValuesHolder{get_allocator_ref()};
 
-            <#if hasPrimaryKeyField>
-                <#list fields as field>
-                    <#if field.isPrimaryKey>
-                        <#if field.sqlTypeData.isBlob>
+        <#if hasPrimaryKeyField>
+            <#list fields as field>
+                <#if field.isPrimaryKey>
+                    <#if field.sqlTypeData.isBlob>
     rowKeyValuesHolder.emplace_back("BLOB");
-                        <#else>
+                    <#else>
     const unsigned char* strValue${field.name?cap_first} = sqlite3_column_text(statement, ${field?index});
     rowKeyValuesHolder.emplace_back(reinterpret_cast<const char*>(strValue${field.name?cap_first}));
-                        </#if>
                     </#if>
-                </#list>
-            <#else>
+                </#if>
+            </#list>
+        <#else>
     const unsigned char* strValueRowId = sqlite3_column_text(statement, ${fields?size});
     rowKeyValuesHolder.emplace_back(reinterpret_cast<const char*>(strValueRowId));
-            </#if>
+        </#if>
 
     return rowKeyValuesHolder;
 }
@@ -650,7 +688,6 @@ bool ${name}::validateField${field.name?cap_first}(::zserio::IValidationObserver
             [](const ${types.string.name}& message) -> ::zserio::StringView { return message; });
     return rowKeyValues;
 }
-        </#if>
     </#if>
 </#if>
 

@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import zserio.tools.HashUtil;
+import zserio.tools.WarningsConfig;
 import zserio.tools.ZserioToolPrinter;
 
 /**
@@ -178,7 +179,7 @@ public class Package extends DocumentableAstNode
     /**
      * Resolves all imports which belong to this package.
      */
-    void resolveImports()
+    void resolveImports(WarningsConfig warningsConfig)
     {
         for (Import importedNode : imports)
         {
@@ -190,7 +191,8 @@ public class Package extends DocumentableAstNode
                 // this is a package import
                 if (importedPackages.contains(importedPackage))
                     ZserioToolPrinter.printWarning(importedNode, "Duplicated import of package '" +
-                            importedPackageName.toString() + "'.");
+                            importedPackageName.toString() + "'.",
+                            warningsConfig, WarningsConfig.IMPORT);
 
                 // check redundant single imports
                 final List<PackageSymbol> redundantImportedSymbols = new ArrayList<PackageSymbol>();
@@ -200,7 +202,8 @@ public class Package extends DocumentableAstNode
                     {
                         ZserioToolPrinter.printWarning(importedNode, "Import of package '" +
                                 importedPackageName.toString() + "' overwrites single import of '" +
-                                ZserioTypeUtil.getFullName(importedPackageName, symbol.getName()) + "'.");
+                                ZserioTypeUtil.getFullName(importedPackageName, symbol.getName()) + "'.",
+                                warningsConfig, WarningsConfig.IMPORT);
                         redundantImportedSymbols.add(symbol);
                     }
                 }
@@ -219,16 +222,22 @@ public class Package extends DocumentableAstNode
                 {
                     ZserioToolPrinter.printWarning(importedNode, "Single import of '" +
                             ZserioTypeUtil.getFullName(importedPackageName, importedName) +
-                            "' already covered by package import.");
+                            "' already covered by package import.",
+                            warningsConfig, WarningsConfig.IMPORT);
                     // don't add it to imported single imports because this type would become ambiguous
                 }
                 else
                 {
                     if (importedSymbols.contains(importedSymbol))
+                    {
                         ZserioToolPrinter.printWarning(importedNode, "Duplicated import of '" +
-                                ZserioTypeUtil.getFullName(importedPackageName, importedName) + "'.");
+                                ZserioTypeUtil.getFullName(importedPackageName, importedName) + "'.",
+                                warningsConfig, WarningsConfig.IMPORT);
+                    }
                     else
+                    {
                         importedSymbols.add(importedSymbol);
+                    }
                 }
             }
         }

@@ -14,6 +14,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import zserio.antlr.ZserioParser;
+import zserio.tools.WarningsConfig;
 
 public class DocCommentMarkdownTest
 {
@@ -328,11 +329,12 @@ public class DocCommentMarkdownTest
                 Arrays.asList(docComment), new ArrayList<DocComment>());
         packageNameMap.put(testPkg.getPackageName(), testPkg);
 
+        final WarningsConfig warningsConfig = new WarningsConfig();
         final Root root = new Root(packageNameMap);
-        final ZserioAstImporter importer = new ZserioAstImporter();
+        final ZserioAstImporter importer = new ZserioAstImporter(warningsConfig);
         root.accept(importer);
 
-        final ZserioAstSymbolResolver resolver = new ZserioAstSymbolResolver();
+        final ZserioAstSymbolResolver resolver = new ZserioAstSymbolResolver(warningsConfig);
         root.accept(resolver);
     }
 

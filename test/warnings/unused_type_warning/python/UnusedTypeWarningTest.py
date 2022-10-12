@@ -6,7 +6,7 @@ class UnusedTypeWarningTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.warnings = {}
-        cls.api = getZserioApi(__file__, "unused_type_warning.zs", extraArgs=["-withUnusedWarnings"],
+        cls.api = getZserioApi(__file__, "unused_type_warning.zs", extraArgs=["-withWarnings", "unused"],
                                expectedWarnings=6, errorOutputDict=cls.warnings)
 
     def testUnusedEnumeration(self):

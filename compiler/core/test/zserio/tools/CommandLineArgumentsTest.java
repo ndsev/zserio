@@ -6,9 +6,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
+import zserio.tools.WarningsConfig.WarningDefinition;
+
 import org.apache.commons.cli.ParseException;
 
 import java.util.List;
+import java.util.Map;
 
 public class CommandLineArgumentsTest
 {
@@ -24,6 +27,20 @@ public class CommandLineArgumentsTest
     {
         final String[] args = { "-help" };
         assertTrue(parse(args).hasHelpOption());
+    }
+
+    @Test
+    public void helpTopic() throws ParseException
+    {
+        final String[] args = { "-help", "warnings" };
+        assertTrue(parse(args).hasHelpOption());
+    }
+
+    @Test
+    public void helpTopicUnknown() throws ParseException
+    {
+        final String[] args = { "-help", "unknown" };
+        assertThrows(ParseException.class, () -> parse(args));
     }
 
     @Test
@@ -257,31 +274,73 @@ public class CommandLineArgumentsTest
     }
 
     @Test
-    public void withUnusedWarnings() throws ParseException
+    public void withWarningsUnused() throws ParseException
     {
-        final String[] args = { "-withUnusedWarnings" };
-        assertTrue(parse(args).getWithUnusedWarnings());
+        final String[] args = { "-withWarnings", WarningsConfig.UNUSED };
+        assertTrue(parse(args).getWarningsConfig().isEnabled(WarningsConfig.UNUSED));
     }
 
     @Test
-    public void withoutUnusedWarnings() throws ParseException
+    public void withoutWarningsUnused() throws ParseException
     {
-        final String[] args = { "-withoutUnusedWarnings" };
-        assertFalse(parse(args).getWithUnusedWarnings());
+        final String[] args = { "-withoutWarnings", WarningsConfig.UNUSED };
+        assertFalse(parse(args).getWarningsConfig().isEnabled(WarningsConfig.UNUSED));
     }
 
     @Test
-    public void withUnusedWarningsDefault() throws ParseException
+    public void withWarningsDefault() throws ParseException
     {
         final String[] args = {};
-        assertFalse(parse(args).getWithUnusedWarnings());
+        assertFalse(parse(args).getWarningsConfig().isEnabled(WarningsConfig.UNUSED));
     }
 
     @Test
-    public void unusedWarningsConflict() throws ParseException
+    public void warningsConflict() throws ParseException
     {
-        final String[] args = { "-withUnusedWarnings", "-withoutUnusedWarnings" };
+        final String[] args = {
+            "-withWarnings", WarningsConfig.UNUSED, "-withoutWarnings", WarningsConfig.UNUSED
+        };
         assertThrows(ParseException.class, () -> parse(args));
+    }
+
+    @Test
+    public void withWarningsAllWithoutUnused() throws ParseException
+    {
+        final String[] args = {
+                "-withWarnings", WarningsConfig.ALL, "-withoutWarnings", WarningsConfig.UNUSED
+        };
+
+        final WarningsConfig warningsConfig = parse(args).getWarningsConfig();
+        for (Map.Entry<String, WarningDefinition> warning : warningsConfig.getWarningsDefinition().entrySet())
+        {
+            if (warning.getValue().getPriority() != Integer.MAX_VALUE)
+                continue; // skip groups
+
+            if (warning.getKey().equals(WarningsConfig.UNUSED))
+                assertFalse(warningsConfig.isEnabled(warning.getKey()));
+            else
+                assertTrue(warningsConfig.isEnabled(warning.getKey()));
+        }
+    }
+
+    @Test
+    public void withWarningsUnusedWithoutAll() throws ParseException
+    {
+        final String[] args = {
+            "-withWarnings", WarningsConfig.UNUSED, "-withoutWarnings", WarningsConfig.ALL
+        };
+
+        final WarningsConfig warningsConfig = parse(args).getWarningsConfig();
+        for (Map.Entry<String, WarningDefinition> warning : warningsConfig.getWarningsDefinition().entrySet())
+        {
+            if (warning.getValue().getPriority() != Integer.MAX_VALUE)
+                continue; // skip groups
+
+            if (warning.getKey().equals(WarningsConfig.UNUSED))
+                assertTrue(warningsConfig.isEnabled(warning.getKey()));
+            else
+                assertFalse(warningsConfig.isEnabled(warning.getKey()));
+        }
     }
 
     @Test

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import zserio.tools.WarningsConfig;
 import zserio.tools.ZserioToolPrinter;
 
 /**
@@ -161,9 +162,9 @@ public class ChoiceType extends CompoundType
     }
 
     @Override
-    void check()
+    void check(WarningsConfig warningsConfig)
     {
-        super.check();
+        super.check(warningsConfig);
 
         checkSymbolNames();
         checkSqlTableFields();
@@ -171,11 +172,11 @@ public class ChoiceType extends CompoundType
         isChoiceDefaultUnreachable = checkUnreachableDefault();
         checkSelectorType();
         checkCaseTypes();
-        checkEnumerationCases();
+        checkEnumerationCases(warningsConfig);
         checkBitmaskCases();
         checkDuplicatedCases();
 
-        checkOptionalReferencesInSelector();
+        checkOptionalReferencesInSelector(warningsConfig);
     }
 
     @Override
@@ -304,7 +305,7 @@ public class ChoiceType extends CompoundType
         }
     }
 
-    private void checkEnumerationCases()
+    private void checkEnumerationCases(WarningsConfig warningsConfig)
     {
         final ZserioType selectorExpressionType = selectorExpression.getExprZserioType();
         if (selectorExpressionType instanceof EnumType)
@@ -336,8 +337,9 @@ public class ChoiceType extends CompoundType
             {
                 for (EnumItem unhandledEnumItem : unhandledEnumItems)
                 {
-                    ZserioToolPrinter.printWarning(this, "Enumeration value '" +
-                            unhandledEnumItem.getName() + "' is not handled in choice '" + getName() + "'.");
+                    ZserioToolPrinter.printWarning(this, "Enumeration item '" +
+                            unhandledEnumItem.getName() + "' is not handled in choice '" + getName() + "'.",
+                            warningsConfig, WarningsConfig.CHOICE_UNHANDLED_ENUM_ITEM);
                 }
             }
         }
@@ -371,7 +373,7 @@ public class ChoiceType extends CompoundType
         }
     }
 
-    private void checkOptionalReferencesInSelector()
+    private void checkOptionalReferencesInSelector(WarningsConfig warningsConfig)
     {
         // in case of ternary operator, we are not able to check correctness => such warning should be
         // enabled explicitly by command line
@@ -381,7 +383,8 @@ public class ChoiceType extends CompoundType
             for (Field referencedField : referencedFields)
             {
                 ZserioToolPrinter.printWarning(selectorExpression, "Choice '" + getName() + "' selector " +
-                        "contains reference to optional field '" + referencedField.getName() + "'.");
+                        "contains reference to optional field '" + referencedField.getName() + "'.",
+                        warningsConfig, WarningsConfig.OPTIONAL_FIELD_REFERENCE);
             }
         }
     }

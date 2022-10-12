@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
+import zserio.tools.WarningsConfig;
 import zserio.tools.ZserioToolPrinter;
 
 /**
@@ -262,7 +263,7 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
     /**
      * Checks the compound field.
      */
-    void check(Package pkg)
+    void check(Package pkg, WarningsConfig warningsConfig)
     {
         // check offset expression type
         checkOffsetExpression();
@@ -310,7 +311,7 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
         }
 
         // check optional references (should be at the end to check correct expression types at first)
-        checkOptionalReferences();
+        checkOptionalReferences(warningsConfig);
     }
 
     /**
@@ -385,23 +386,23 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
         }
     }
 
-    private void checkOptionalReferences()
+    private void checkOptionalReferences(WarningsConfig warningsConfig)
     {
-        checkOptionalReferencesInOffset();
-        checkOptionalReferencesInTypeArguments();
-        checkOptionalReferencesInOptionalClause();
-        checkOptionalReferencesInConstraint();
-        checkOptionalReferencesInArrayLength();
-        checkOptionalReferencesInBitfieldLength();
+        checkOptionalReferencesInOffset(warningsConfig);
+        checkOptionalReferencesInTypeArguments(warningsConfig);
+        checkOptionalReferencesInOptionalClause(warningsConfig);
+        checkOptionalReferencesInConstraint(warningsConfig);
+        checkOptionalReferencesInArrayLength(warningsConfig);
+        checkOptionalReferencesInBitfieldLength(warningsConfig);
     }
 
-    private void checkOptionalReferencesInOffset()
+    private void checkOptionalReferencesInOffset(WarningsConfig warningsConfig)
     {
         if (offsetExpr != null)
-            checkOptionalReferencesInExpression(offsetExpr, "offset");
+            checkOptionalReferencesInExpression(offsetExpr, "offset", warningsConfig);
     }
 
-    private void checkOptionalReferencesInTypeArguments()
+    private void checkOptionalReferencesInTypeArguments(WarningsConfig warningsConfig)
     {
         TypeInstantiation fieldTypeInstantiation = typeInstantiation;
         if (fieldTypeInstantiation instanceof ArrayInstantiation)
@@ -414,12 +415,12 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
             for (InstantiatedParameter instantiatedParameter : instantiatedParameters)
             {
                 final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
-                checkOptionalReferencesInExpression(argumentExpression, "type arguments");
+                checkOptionalReferencesInExpression(argumentExpression, "type arguments", warningsConfig);
             }
         }
     }
 
-    private void checkOptionalReferencesInOptionalClause()
+    private void checkOptionalReferencesInOptionalClause(WarningsConfig warningsConfig)
     {
         if (optionalClauseExpr != null)
         {
@@ -438,7 +439,8 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
                     {
                         ZserioToolPrinter.printWarning(this, "Field '" + name + "' contains reference to " +
                                 "auto optional field '" + referencedOptionalField.getName() +
-                                "' in optional clause.");
+                                "' in optional clause.",
+                                warningsConfig, WarningsConfig.OPTIONAL_FIELD_REFERENCE);
                     }
                     else
                     {
@@ -458,7 +460,8 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
                         {
                             ZserioToolPrinter.printWarning(this, "Field '" + name + "' does not have left " +
                                     "'and' condition of optional field '"+ referencedOptionalField.getName() +
-                                    "' referenced in optional clause.");
+                                    "' referenced in optional clause.",
+                                    warningsConfig, WarningsConfig.OPTIONAL_FIELD_REFERENCE);
                         }
                     }
                 }
@@ -466,33 +469,34 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
         }
     }
 
-    private void checkOptionalReferencesInConstraint()
+    private void checkOptionalReferencesInConstraint(WarningsConfig warningsConfig)
     {
         if (constraintExpr != null)
-            checkOptionalReferencesInExpression(constraintExpr, "constraint");
+            checkOptionalReferencesInExpression(constraintExpr, "constraint", warningsConfig);
     }
 
-    private void checkOptionalReferencesInArrayLength()
+    private void checkOptionalReferencesInArrayLength(WarningsConfig warningsConfig)
     {
         if (typeInstantiation instanceof ArrayInstantiation)
         {
             final Expression lengthExpr = ((ArrayInstantiation)typeInstantiation).getLengthExpression();
             if (lengthExpr != null)
-                checkOptionalReferencesInExpression(lengthExpr, "array length");
+                checkOptionalReferencesInExpression(lengthExpr, "array length", warningsConfig);
         }
     }
 
-    private void checkOptionalReferencesInBitfieldLength()
+    private void checkOptionalReferencesInBitfieldLength(WarningsConfig warningsConfig)
     {
         if (typeInstantiation instanceof DynamicBitFieldInstantiation)
         {
             final Expression lengthExpr =
                     ((DynamicBitFieldInstantiation)typeInstantiation).getLengthExpression();
-            checkOptionalReferencesInExpression(lengthExpr, "dynamic bitfield length");
+            checkOptionalReferencesInExpression(lengthExpr, "dynamic bitfield length", warningsConfig);
         }
     }
 
-    private void checkOptionalReferencesInExpression(Expression expr, String exprName)
+    private void checkOptionalReferencesInExpression(Expression expr, String exprName,
+            WarningsConfig warningsConfig)
     {
         // in case of ternary operator, we are not able to check correctness => such warning should be
         // enabled explicitly by command line
@@ -512,13 +516,15 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
                     {
                         ZserioToolPrinter.printWarning(this, "Field '" + name + "' is not optional " +
                                 "and contains reference to optional field '" +
-                                referencedOptionalField.getName() + "' in " + exprName + ".");
+                                referencedOptionalField.getName() + "' in " + exprName + ".",
+                                warningsConfig, WarningsConfig.OPTIONAL_FIELD_REFERENCE);
                     }
                     else
                     {
                         ZserioToolPrinter.printWarning(this, "Field '" + name + "' has different optional " +
                                 "condition than field '"+ referencedOptionalField.getName() +
-                                "' referenced in " + exprName + ".");
+                                "' referenced in " + exprName + ".",
+                                warningsConfig, WarningsConfig.OPTIONAL_FIELD_REFERENCE);
                     }
                 }
             }

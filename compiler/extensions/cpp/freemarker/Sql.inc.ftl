@@ -70,15 +70,3 @@
     </#list>
     <#return false>
 </#function>
-
-<#function sql_table_has_validatable_field fields>
-    <#list fields as field>
-        <#if !field.isVirtual>
-            <#if field.sqlTypeData.isBlob || field.typeInfo.isEnum || field.typeInfo.isBitmask ||
-                    field.sqlRangeCheckData??>
-                <#return true>
-            </#if>
-        </#if>
-    </#list>
-    <#return false>
-</#function>

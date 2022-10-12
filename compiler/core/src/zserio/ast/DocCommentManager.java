@@ -22,6 +22,7 @@ import zserio.antlr.DocCommentParser;
 import zserio.antlr.ZserioLexer;
 import zserio.antlr.ZserioParser;
 import zserio.antlr.util.TokenParseErrorListener;
+import zserio.tools.WarningsConfig;
 import zserio.tools.ZserioToolPrinter;
 
 /**
@@ -31,6 +32,16 @@ import zserio.tools.ZserioToolPrinter;
  */
 class DocCommentManager
 {
+    /**
+     * Constructor.
+     *
+     * @param warningsConfig Warnings subsystem configuration.
+     */
+    public DocCommentManager(WarningsConfig warningsConfig)
+    {
+        this.warningsConfig = warningsConfig;
+    }
+
     /**
      * Sets the current token stream.
      *
@@ -57,7 +68,8 @@ class DocCommentManager
                 if (!currentUsedComments.contains(token))
                 {
                     ZserioToolPrinter.printWarning(new AstLocation(token),
-                            "Documentation comment is not used!");
+                            "Documentation comment is not used.",
+                            warningsConfig, WarningsConfig.DOC_COMMENT_UNUSED);
                 }
             }
         }
@@ -151,7 +163,7 @@ class DocCommentManager
         return docComments;
     }
 
-    private static DocComment parseDocComment(Token docCommentToken, String[] docCommentLines, boolean isSticky)
+    private DocComment parseDocComment(Token docCommentToken, String[] docCommentLines, boolean isSticky)
     {
         final boolean isOneLiner = (docCommentLines.length == 1) ? true : false;
         if (docCommentToken.getType() == ZserioLexer.MARKDOWN_COMMENT)
@@ -160,7 +172,7 @@ class DocCommentManager
             return parseDocCommentClassic(docCommentToken, isSticky, isOneLiner);
     }
 
-    private static DocCommentMarkdown parseDocCommentMarkdown(Token docCommentToken, String[] docCommentLines,
+    private DocCommentMarkdown parseDocCommentMarkdown(Token docCommentToken, String[] docCommentLines,
             boolean isSticky, boolean isOneLiner)
     {
         String markdown = docCommentToken.getText();
@@ -179,7 +191,8 @@ class DocCommentManager
         if (!markdown.endsWith("!*/"))
         {
             ZserioToolPrinter.printWarning(new AstLocation(docCommentToken),
-                    "Markdown documentation comment should be terminated by '!*/'!");
+                    "Markdown documentation comment should be terminated by '!*/'.",
+                    warningsConfig, WarningsConfig.DOC_COMMENT_FORMAT);
         }
 
         markdown = markdown
@@ -218,7 +231,7 @@ class DocCommentManager
         return true;
     }
 
-    private static DocCommentClassic parseDocCommentClassic(Token docCommentToken, boolean isSticky,
+    private DocCommentClassic parseDocCommentClassic(Token docCommentToken, boolean isSticky,
             boolean isOneLiner)
     {
         try
@@ -256,11 +269,12 @@ class DocCommentManager
         {
             // if we cannot parse comment, just ignore it and report warning
             ZserioToolPrinter.printWarning(e.getLocation(), "Documentation: " +
-                    e.getMessage() + "!");
+                        e.getMessage() + ".", warningsConfig, WarningsConfig.DOC_COMMENT_FORMAT);
             return null;
         }
     }
 
+    private final WarningsConfig warningsConfig;
     private BufferedTokenStream currentTokenStream = null;
     private final Set<Token> currentUsedComments = new HashSet<Token>();
 }

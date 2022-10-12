@@ -14,7 +14,7 @@ public class InputFileManager
     /**
      * Constructor from command line arguments.
      *
-     * @param commandLineArguments Command line arguments to construct from.
+     * @param commandLineArguments Command line arguments.
      */
     public InputFileManager(CommandLineArguments commandLineArguments)
     {
@@ -80,8 +80,9 @@ public class InputFileManager
             {
                 lastModifiedTimeError = true;
                 this.lastModifiedTime = 0L;
-                ZserioToolPrinter.printWarning(
-                        "InputFileManager: Failed to get timestamp of source file: '" + fileFullName + "'!");
+                ZserioToolPrinter.printWarning("InputFileManager: Failed to get timestamp of source file: '" +
+                        fileFullName + "'.", commandLineArguments.getWarningsConfig(),
+                        WarningsConfig.TIMESTAMP);
             }
         }
     }
