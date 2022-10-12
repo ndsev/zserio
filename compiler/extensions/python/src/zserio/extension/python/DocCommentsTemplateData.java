@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
+import zserio.ast.BitmaskValue;
 import zserio.ast.DocComment;
 import zserio.ast.DocCommentClassic;
 import zserio.ast.DocElement;
@@ -16,12 +17,19 @@ import zserio.ast.DocTagParam;
 import zserio.ast.DocTagSee;
 import zserio.ast.DocTagTodo;
 import zserio.ast.DocText;
+import zserio.ast.EnumItem;
+import zserio.ast.Field;
+import zserio.ast.Function;
 import zserio.ast.SymbolReference;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.python.symbols.PythonNativeSymbol;
 import zserio.ast.Package;
 import zserio.ast.PackageSymbol;
+import zserio.ast.Parameter;
+import zserio.ast.PubsubMessage;
 import zserio.ast.ScopeSymbol;
+import zserio.ast.ServiceMethod;
+import zserio.ast.SqlTableType;
 
 /**
  * FreeMarker template data for documentation comments.
@@ -200,11 +208,13 @@ public class DocCommentsTemplateData
             {
                 // link cannot be resolved
                 link = docTagSee.getLinkName();
+                isCrossReference = false;
             }
             else if (referencedPackageSymbol == null)
             {
                 // link is a package
                 link = PythonFullNameFormatter.getFullName(referencedPackage.getPackageName());
+                isCrossReference = false;
             }
             else if (referencedScopeSymbol == null)
             {
@@ -212,14 +222,16 @@ public class DocCommentsTemplateData
                 final PythonNativeSymbol nativeSymbol =
                         pythonNativeMapper.getPythonSymbol(referencedPackageSymbol);
                 link = PythonFullNameFormatter.getFullName(nativeSymbol);
+                isCrossReference = false;
             }
             else
             {
                 // link is a scope symbol
                 final PythonNativeSymbol nativeSymbol =
                         pythonNativeMapper.getPythonSymbol(referencedPackageSymbol);
-                link = PythonFullNameFormatter.getFullName(nativeSymbol) + "." +
-                        PythonSymbolConverter.convertScopeSymbol(referencedScopeSymbol);
+                link = PythonFullNameFormatter.getFullName(nativeSymbol) +
+                        getScopeSymbolSuffix(referencedPackageSymbol, referencedScopeSymbol);
+                isCrossReference = referencedPackageSymbol instanceof SqlTableType;
             }
         }
 
@@ -233,8 +245,58 @@ public class DocCommentsTemplateData
             return link;
         }
 
+        public boolean getIsCrossReference()
+        {
+            return isCrossReference;
+        }
+
+        private static String getScopeSymbolSuffix(PackageSymbol packageSymbol, ScopeSymbol scopeSymbol)
+        {
+            if (scopeSymbol instanceof EnumItem)
+            {
+                return "." + PythonSymbolConverter.enumItemToSymbol(scopeSymbol.getName());
+            }
+            else if (scopeSymbol instanceof BitmaskValue)
+            {
+                return ".Values." + PythonSymbolConverter.bitmaskValueToSymbol(scopeSymbol.getName());
+            }
+            else if (scopeSymbol instanceof Field) // including SQL tables and columns
+            {
+                if (packageSymbol instanceof SqlTableType) // reference to SQL column
+                {
+                    return ".Rows." + scopeSymbol.getName();
+                }
+                else
+                {
+                    return "." + AccessorNameFormatter.getPropertyName((Field)scopeSymbol);
+                }
+            }
+            else if (scopeSymbol instanceof Parameter)
+            {
+                return "." + AccessorNameFormatter.getPropertyName((Parameter)scopeSymbol);
+            }
+            else if (scopeSymbol instanceof Function)
+            {
+                return "." + AccessorNameFormatter.getFunctionName((Function)scopeSymbol);
+            }
+            else if (scopeSymbol instanceof ServiceMethod)
+            {
+                return ".Client." +
+                        AccessorNameFormatter.getServiceClientMethodName((ServiceMethod)scopeSymbol);
+            }
+            else if (scopeSymbol instanceof PubsubMessage)
+            {
+                return ".publish_" + PythonSymbolConverter.toLowerSnakeCase(scopeSymbol.getName());
+            }
+            else // no special handling for other symbols
+            {
+                return "." + PythonSymbolConverter.toLowerSnakeCase(scopeSymbol.getName());
+            }
+        }
+
         private final String alias;
         private final String link;
+        private final boolean isCrossReference;
     }
 
     public static class DocTagParamData

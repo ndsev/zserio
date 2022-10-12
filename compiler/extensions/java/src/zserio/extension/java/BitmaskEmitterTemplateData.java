@@ -47,7 +47,7 @@ public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
 
         values = new ArrayList<BitmaskValueData>();
         for (BitmaskValue bitmaskValue: bitmaskType.getValues())
-            values.add(new BitmaskValueData(nativeIntegralType, bitmaskValue));
+            values.add(new BitmaskValueData(context, nativeIntegralType, bitmaskValue));
     }
 
     public NativeTypeInfoTemplateData getUnderlyingTypeInfo()
@@ -109,14 +109,15 @@ public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
 
     public static class BitmaskValueData
     {
-        public BitmaskValueData(NativeIntegralType nativeBaseType, BitmaskValue bitmaskValue)
-                throws ZserioExtensionException
+        public BitmaskValueData(TemplateDataContext context, NativeIntegralType nativeBaseType,
+                BitmaskValue bitmaskValue) throws ZserioExtensionException
         {
             name = bitmaskValue.getName();
             value = nativeBaseType.formatLiteral(bitmaskValue.getValue());
             isZero = bitmaskValue.getValue().equals(BigInteger.ZERO);
             final List<DocComment> valueDocComments = bitmaskValue.getDocComments();
-            docComments = valueDocComments.isEmpty() ? null : new DocCommentsTemplateData(valueDocComments);
+            docComments = valueDocComments.isEmpty()
+                    ? null : new DocCommentsTemplateData(context, valueDocComments);
         }
 
         public String getName()

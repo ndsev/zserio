@@ -26,8 +26,8 @@ public final class CompoundParameterTemplateData
         final List<DocComment> compoundDocComments = compoundType.getDocComments();
         for (Parameter compoundParameterType : compoundParameterTypeList)
         {
-            final CompoundParameter parameter = new CompoundParameter(javaNativeMapper, compoundParameterType,
-                    compoundDocComments);
+            final CompoundParameter parameter = new CompoundParameter(
+                    context, javaNativeMapper, compoundParameterType, compoundDocComments);
             compoundParameterList.add(parameter);
         }
     }
@@ -44,8 +44,8 @@ public final class CompoundParameterTemplateData
 
     public static class CompoundParameter
     {
-        public CompoundParameter(JavaNativeMapper javaNativeMapper, Parameter parameter,
-                List<DocComment> compoundDocComments) throws ZserioExtensionException
+        public CompoundParameter(TemplateDataContext context, JavaNativeMapper javaNativeMapper,
+                Parameter parameter, List<DocComment> compoundDocComments) throws ZserioExtensionException
         {
             name = parameter.getName();
             final TypeReference referencedType = parameter.getTypeReference();
@@ -60,7 +60,8 @@ public final class CompoundParameterTemplateData
                 if (paramDocComment != null)
                     paramDocComments.add(paramDocComment);
             }
-            docComments = paramDocComments.isEmpty() ? null : new DocCommentsTemplateData(paramDocComments);
+            docComments = paramDocComments.isEmpty()
+                    ? null : new DocCommentsTemplateData(context, paramDocComments);
         }
 
         public String getName()

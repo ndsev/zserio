@@ -1,5 +1,11 @@
 package comments.classic_doc.struct_comments;
 
+import comments.classic_doc.bitmask_comments.*;
+import comments.classic_doc.enum_comments.*;
+import comments.classic_doc.pubsub_comments.*;
+import comments.classic_doc.service_comments.*;
+import comments.classic_doc.sql_database_comments.*;
+import comments.classic_doc.sql_table_comments.*;
 import comments.classic_doc.union_comments.*;
 
 /**
@@ -43,6 +49,18 @@ enum bit:2 Direction
  * @see "Union comments package" comments.classic_doc.union_comments
  *
  * @see "Struct field via field name" direction
+ *
+ * @see "Service method via full name" comments.classic_doc.service_comments.SimpleService.powerOfTwo
+ *
+ * @see "Pubsub message via full name" comments.classic_doc.pubsub_comments.SimplePubsub.powerOfTwo
+ *
+ * @see "Sql table via full name" comments.classic_doc.sql_database_comments.Db.anotherTable
+ *
+ * @see "Sql column via full name" comments.classic_doc.sql_table_comments.VirtualTable.term
+ *
+ * @see "Bitmask value via full name" comments.classic_doc.bitmask_comments.Permission.WRITE
+ *
+ * @see "Enum item via full name" comments.classic_doc.enum_comments.Direction.POSITIVE
  *
  * @param hasExtraValue True if the structure has extra value.
  *        This parameter is not optional.

@@ -36,7 +36,7 @@ class ${name}:
         provided already attached database names.
 
         :param connection: Database connection of already open database.
-        :param table_to_attached_db_name_relocation_map Mapping of relocated table name to attached database file name.
+        :param table_to_attached_db_name_relocation_map: Mapping of relocated table name to attached database file name.
         """
 
 </#if>

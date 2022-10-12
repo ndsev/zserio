@@ -22,7 +22,7 @@ public class UserTypeTemplateData extends JavaTemplateData
         packageName = JavaFullNameFormatter.getFullName(javaNativeType.getPackageName());
         name = javaNativeType.getName();
         schemaTypeName = ZserioTypeUtil.getFullName(type);
-        this.docComments = docComments.isEmpty() ? null : new DocCommentsTemplateData(docComments);
+        this.docComments = docComments.isEmpty() ? null : new DocCommentsTemplateData(context, docComments);
     }
 
     public String getPackageName()

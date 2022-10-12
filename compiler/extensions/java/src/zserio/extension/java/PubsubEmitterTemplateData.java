@@ -65,7 +65,8 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
             isPublished = message.isPublished();
             isSubscribed = message.isSubscribed();
             final List<DocComment> messageDocComments = message.getDocComments();
-            docComments = messageDocComments.isEmpty() ? null : new DocCommentsTemplateData(messageDocComments);
+            docComments = messageDocComments.isEmpty()
+                    ? null : new DocCommentsTemplateData(context, messageDocComments);
         }
 
         public String getName()

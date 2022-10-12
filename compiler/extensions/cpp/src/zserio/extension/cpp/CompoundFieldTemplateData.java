@@ -70,7 +70,8 @@ public class CompoundFieldTemplateData
                 includeCollector);
         bitSize = BitSizeTemplateData.create(context, fieldTypeInstantiation, includeCollector);
         final List<DocComment> fieldDocComments = field.getDocComments();
-        docComments = fieldDocComments.isEmpty() ? null : new DocCommentsTemplateData(fieldDocComments);
+        docComments = fieldDocComments.isEmpty()
+                ? null : new DocCommentsTemplateData(context, fieldDocComments);
     }
 
     public Optional getOptional()

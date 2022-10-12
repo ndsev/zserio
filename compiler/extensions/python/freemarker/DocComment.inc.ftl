@@ -24,7 +24,11 @@ ${I}<@doc_multiline paragraphElement.multiline, indent, 0/>
 ${I}.. todo:: <@doc_multiline paragraphElement.todoTag, indent, 10/>
             </#if>
             <#if paragraphElement.seeTag??>
+                <#if paragraphElement.seeTag.isCrossReference>
+${I}.. seealso:: :ref:`${paragraphElement.seeTag.alias} <${paragraphElement.seeTag.link}>`
+                <#else>
 ${I}.. seealso:: :obj:`${paragraphElement.seeTag.alias} <${paragraphElement.seeTag.link}>`
+                </#if>
             </#if>
         </#list>
     </#list>
@@ -59,7 +63,8 @@ ${I}${M}<#rt>
 <#if !lineElement?is_first> </#if>${lineElement.docString}<#rt>
             </#if>
             <#if lineElement.seeTag??>
-<#if !lineElement?is_first> </#if>:obj:`${lineElement.seeTag.alias} <${lineElement.seeTag.link}>`<#rt>
+<#if !lineElement?is_first> </#if>:<#if lineElement.seeTag.isCrossReference>ref<#else>obj</#if>:<#rt>
+        <#lt>`${lineElement.seeTag.alias} <${lineElement.seeTag.link}>`<#rt>
             </#if>
         </#list>
         <#if !line?is_last>

@@ -49,6 +49,17 @@ class ${name}:
 <#if withCodeComments>
         """
         Class which describes one row in the table.
+
+        **Columns**
+    <#list fields as field>
+
+        .. _${fullName}.${rowsClassName}.${field.name}:
+
+        ${field.name}
+        <#if field.docComments??>
+        <@doc_comments_inner field.docComments, 3/>
+        </#if>
+    </#list>
         """
 
 </#if>
@@ -140,7 +151,7 @@ class ${name}:
 
         :param connection: Database connection where the table is located.
         :param table_name: Table name.
-        :param attached_db_name Name of the attached database where table has been relocated.
+        :param attached_db_name: Name of the attached database where table has been relocated.
         """
 
 </#if>

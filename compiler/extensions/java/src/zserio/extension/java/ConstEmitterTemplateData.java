@@ -34,7 +34,7 @@ public final class ConstEmitterTemplateData extends JavaTemplateData
         value = javaExpressionFormatter.formatGetter(constant.getValueExpression());
 
         final List<DocComment> itemDocComments = constant.getDocComments();
-        docComments = itemDocComments.isEmpty() ? null : new DocCommentsTemplateData(itemDocComments);
+        docComments = itemDocComments.isEmpty() ? null : new DocCommentsTemplateData(context, itemDocComments);
     }
 
     public String getPackageName()

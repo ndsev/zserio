@@ -46,8 +46,8 @@ public final class CompoundFunctionTemplateData
                     context.getJavaLambdaExpressionFormatter();
             lambdaResultExpression = javaLambdaExpressionFormatter.formatGetter(function.getResultExpression());
             final List<DocComment> functionDocComments = function.getDocComments();
-            docComments = functionDocComments.isEmpty() ? null :
-                    new DocCommentsTemplateData(functionDocComments);
+            docComments = functionDocComments.isEmpty()
+                    ? null : new DocCommentsTemplateData(context, functionDocComments);
         }
 
         public NativeTypeInfoTemplateData getReturnTypeInfo()

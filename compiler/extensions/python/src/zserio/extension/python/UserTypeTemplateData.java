@@ -20,6 +20,7 @@ public class UserTypeTemplateData extends PythonTemplateData
 
         final PythonNativeType nativeType = context.getPythonNativeMapper().getPythonType(type);
         name = nativeType.getName();
+        fullName = PythonFullNameFormatter.getFullName(nativeType);
         schemaTypeFullName = ZserioTypeUtil.getFullName(type);
         this.docComments = docComments.isEmpty() ? null : new DocCommentsTemplateData(context, docComments);
     }
@@ -27,6 +28,11 @@ public class UserTypeTemplateData extends PythonTemplateData
     public String getName()
     {
         return name;
+    }
+
+    public String getFullName()
+    {
+        return fullName;
     }
 
     public String getSchemaTypeFullName()
@@ -40,6 +46,7 @@ public class UserTypeTemplateData extends PythonTemplateData
     }
 
     private final String name;
+    private final String fullName;
     private final String schemaTypeFullName;
     private final DocCommentsTemplateData docComments;
 }

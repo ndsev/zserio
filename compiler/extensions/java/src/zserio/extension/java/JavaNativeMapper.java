@@ -1,7 +1,6 @@
 package zserio.extension.java;
 
 import zserio.ast.ArrayInstantiation;
-import zserio.ast.AstNode;
 import zserio.ast.BitmaskType;
 import zserio.ast.BooleanType;
 import zserio.ast.ChoiceType;
@@ -12,6 +11,7 @@ import zserio.ast.DynamicBitFieldType;
 import zserio.ast.ExternType;
 import zserio.ast.FixedBitFieldType;
 import zserio.ast.PackageName;
+import zserio.ast.PackageSymbol;
 import zserio.ast.PubsubType;
 import zserio.ast.ServiceType;
 import zserio.ast.TypeInstantiation;
@@ -65,18 +65,28 @@ final class JavaNativeMapper
         this.withWriterCode = withWriterCode;
     }
 
-    public JavaNativeSymbol getJavaSymbol(AstNode symbol) throws ZserioExtensionException
+    public JavaNativeSymbol getJavaSymbol(PackageSymbol packageSymbol) throws ZserioExtensionException
     {
-        if (symbol instanceof Constant)
+        if (packageSymbol instanceof Constant)
         {
-            final Constant constant = (Constant)symbol;
-            final PackageName packageName = constant.getPackage().getPackageName();
-            final String name = constant.getName();
-            return new JavaNativeSymbol(packageName, name);
+            return getJavaSymbol((Constant)packageSymbol);
+        }
+        else if (packageSymbol instanceof ZserioType)
+        {
+            return getJavaType((ZserioType)packageSymbol);
         }
         else
-            throw new ZserioExtensionException("Unhandled symbol '" + symbol.getClass().getName() +
-                    "' in JavaNativeMapper!");
+        {
+            throw new ZserioExtensionException("Unhandled package symbol '" +
+                    packageSymbol.getClass().getName() + "' in JavaNativeMapper!");
+        }
+    }
+
+    public JavaNativeSymbol getJavaSymbol(Constant constant) throws ZserioExtensionException
+    {
+        final PackageName packageName = constant.getPackage().getPackageName();
+        final String name = constant.getName();
+        return new JavaNativeSymbol(packageName, name);
     }
 
     public JavaNativeType getJavaType(TypeInstantiation typeInstantiation) throws ZserioExtensionException

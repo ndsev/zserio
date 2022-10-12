@@ -25,7 +25,7 @@ ${I} * \todo <@doc_multiline paragraphElement.todoTag, indent, 6/>
             </#if>
             <#if paragraphElement.seeTag??>
                 <#-- Span is workaround for clang 8.0 and 10.0 not to fire warning. -->
-${I} * \see <span/> \ref ${paragraphElement.seeTag.link} "${paragraphElement.seeTag.alias}"
+${I} * \see <span></span> \ref ${paragraphElement.seeTag.link} "${paragraphElement.seeTag.alias}"
             </#if>
         </#list>
     </#list>

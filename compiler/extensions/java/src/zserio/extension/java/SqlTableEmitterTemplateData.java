@@ -215,7 +215,8 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
             sqlTypeData = new SqlTypeTemplateData(sqlNativeTypeMapper, field);
 
             final List<DocComment> fieldDocComments = field.getDocComments();
-            docComments = fieldDocComments.isEmpty() ? null : new DocCommentsTemplateData(fieldDocComments);
+            docComments = fieldDocComments.isEmpty()
+                    ? null : new DocCommentsTemplateData(context, fieldDocComments);
         }
 
         public String getName()

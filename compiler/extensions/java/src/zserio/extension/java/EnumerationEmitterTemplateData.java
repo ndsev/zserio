@@ -35,7 +35,7 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
 
         items = new ArrayList<EnumItemData>();
         for (EnumItem item: enumType.getItems())
-            items.add(new EnumItemData(nativeIntegralType, item));
+            items.add(new EnumItemData(context, nativeIntegralType, item));
     }
 
     public NativeTypeInfoTemplateData getUnderlyingTypeInfo()
@@ -60,13 +60,14 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
 
     public static class EnumItemData
     {
-        public EnumItemData(NativeIntegralType nativeIntegralType, EnumItem enumItem)
-                throws ZserioExtensionException
+        public EnumItemData(TemplateDataContext context, NativeIntegralType nativeIntegralType,
+                EnumItem enumItem) throws ZserioExtensionException
         {
             name = enumItem.getName();
             value = nativeIntegralType.formatLiteral(enumItem.getValue());
             final List<DocComment> itemDocComments = enumItem.getDocComments();
-            docComments = itemDocComments.isEmpty() ? null : new DocCommentsTemplateData(itemDocComments);
+            docComments = itemDocComments.isEmpty()
+                    ? null : new DocCommentsTemplateData(context, itemDocComments);
         }
 
         public String getName()

@@ -46,7 +46,8 @@ public class ConstEmitterTemplateData extends CppTemplateData
 
         value = cppExpressionFormatter.formatGetter(constant.getValueExpression());
         final List<DocComment> itemDocComments = constant.getDocComments();
-        docComments = itemDocComments.isEmpty() ? null : new DocCommentsTemplateData(itemDocComments);
+        docComments = itemDocComments.isEmpty()
+                ? null : new DocCommentsTemplateData(context, itemDocComments);
     }
 
     public PackageTemplateData getPackage()

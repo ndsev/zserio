@@ -21,7 +21,7 @@ public class UserTypeTemplateData extends CppTemplateData
         nativeType = context.getCppNativeMapper().getCppType(type);
         schemaTypeName = ZserioTypeUtil.getFullName(type);
         packageData = new PackageTemplateData(nativeType);
-        this.docComments = docComments.isEmpty() ? null : new DocCommentsTemplateData(docComments);
+        this.docComments = docComments.isEmpty() ? null : new DocCommentsTemplateData(context, docComments);
     }
 
     public String getName()

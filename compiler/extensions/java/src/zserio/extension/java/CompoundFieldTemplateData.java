@@ -73,7 +73,8 @@ public final class CompoundFieldTemplateData
         runtimeFunction = JavaRuntimeFunctionDataCreator.createData(context, fieldTypeInstantiation);
         compound = createCompound(context, fieldTypeInstantiation);
         final List<DocComment> fieldDocComments = field.getDocComments();
-        docComments = fieldDocComments.isEmpty() ? null : new DocCommentsTemplateData(fieldDocComments);
+        docComments = fieldDocComments.isEmpty()
+                ? null : new DocCommentsTemplateData(context, fieldDocComments);
     }
 
     public String getName()

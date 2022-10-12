@@ -61,7 +61,8 @@ public class ServiceEmitterTemplateData extends UserTypeTemplateData
             requestTypeInfo = new NativeTypeInfoTemplateData(cppRequestType, requestTypeReference);
 
             final List<DocComment> methodDocComments = method.getDocComments();
-            docComments = methodDocComments.isEmpty() ? null : new DocCommentsTemplateData(methodDocComments);
+            docComments = methodDocComments.isEmpty()
+                    ? null : new DocCommentsTemplateData(context, methodDocComments);
         }
 
         public String getName()

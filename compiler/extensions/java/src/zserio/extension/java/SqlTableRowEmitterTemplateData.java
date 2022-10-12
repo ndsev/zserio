@@ -28,7 +28,7 @@ public final class SqlTableRowEmitterTemplateData extends JavaTemplateData
 
         for (Field field: tableType.getFields())
         {
-            final FieldTemplateData fieldData = new FieldTemplateData(javaNativeMapper, field);
+            final FieldTemplateData fieldData = new FieldTemplateData(context, javaNativeMapper, field);
             fields.add(fieldData);
         }
     }
@@ -50,18 +50,20 @@ public final class SqlTableRowEmitterTemplateData extends JavaTemplateData
 
     public static class FieldTemplateData
     {
-        public FieldTemplateData(JavaNativeMapper javaNativeMapper, Field field)
+        public FieldTemplateData(TemplateDataContext context, JavaNativeMapper javaNativeMapper, Field field)
                 throws ZserioExtensionException
         {
             final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
             name = field.getName();
             final JavaNativeType nativeType = javaNativeMapper.getJavaType(fieldTypeInstantiation);
-            final JavaNativeType nullableNativeType = javaNativeMapper.getNullableJavaType(fieldTypeInstantiation);
+            final JavaNativeType nullableNativeType =
+                    javaNativeMapper.getNullableJavaType(fieldTypeInstantiation);
             nullableTypeInfo = new NativeTypeInfoTemplateData(nullableNativeType, fieldTypeInstantiation);
             typeInfo = new NativeTypeInfoTemplateData(nativeType, fieldTypeInstantiation);
 
             final List<DocComment> fieldDocComments = field.getDocComments();
-            docComments = fieldDocComments.isEmpty() ? null : new DocCommentsTemplateData(fieldDocComments);
+            docComments = fieldDocComments.isEmpty()
+                    ? null : new DocCommentsTemplateData(context, fieldDocComments);
         }
 
         public String getName()
