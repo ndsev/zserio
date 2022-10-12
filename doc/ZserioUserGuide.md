@@ -236,7 +236,7 @@ Zserio provides possibility to configure warnings on command line. Each
 warning has it's own specifier (i.e. tag) which can be used to either
 enable or disable the particular warning.
 
-Options -withWarnings and -withoutWarnings can be combined. When
+Options `-withWarnings` and `-withoutWarnings` can be combined. When
 warnings options groups are used, more generic groups are applied first
 so that it is possible to enable all warnings in a group and then
 disable some smaller set of warnings or just a single warning.
