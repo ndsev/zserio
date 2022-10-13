@@ -409,12 +409,14 @@ class CommandLineArguments
         option = new Option(OptionNameWithWarnings, true,
                 "enable specified warnings, use '--help warnings' for detailed description");
         option.setArgName("warning[,warning]*");
+        option.setArgs(Option.UNLIMITED_VALUES);
         option.setValueSeparator(WarningsConfig.WARNINGS_OPTIONS_SEPARATOR);
         option.setRequired(false);
         options.addOption(option);
         option = new Option(OptionNameWithoutWarnings, true,
                 "disable specified warnings, use '--help warnings' for detailed description");
         option.setArgName("warning[,warning]*");
+        option.setArgs(Option.UNLIMITED_VALUES);
         option.setValueSeparator(WarningsConfig.WARNINGS_OPTIONS_SEPARATOR);
         option.setRequired(false);
         options.addOption(option);

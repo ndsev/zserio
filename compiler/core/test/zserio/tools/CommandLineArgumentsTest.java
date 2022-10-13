@@ -304,10 +304,12 @@ public class CommandLineArgumentsTest
     }
 
     @Test
-    public void withWarningsAllWithoutUnused() throws ParseException
+    public void withWarningsAllWithoutUnusedEncoding() throws ParseException
     {
         final String[] args = {
-                "-withWarnings", WarningsConfig.ALL, "-withoutWarnings", WarningsConfig.UNUSED
+                "-withWarnings", WarningsConfig.ALL,
+                "-withoutWarnings",
+                WarningsConfig.UNUSED + WarningsConfig.WARNINGS_OPTIONS_SEPARATOR + WarningsConfig.ENCODING
         };
 
         final WarningsConfig warningsConfig = parse(args).getWarningsConfig();
@@ -316,18 +318,25 @@ public class CommandLineArgumentsTest
             if (warning.getValue().getPriority() != Integer.MAX_VALUE)
                 continue; // skip groups
 
-            if (warning.getKey().equals(WarningsConfig.UNUSED))
+            if (warning.getKey().equals(WarningsConfig.UNUSED) ||
+                    warning.getKey().equals(WarningsConfig.ENCODING))
+            {
                 assertFalse(warningsConfig.isEnabled(warning.getKey()));
+            }
             else
+            {
                 assertTrue(warningsConfig.isEnabled(warning.getKey()));
+            }
         }
     }
 
     @Test
-    public void withWarningsUnusedWithoutAll() throws ParseException
+    public void withWarningsUnusedEncodingWithoutAll() throws ParseException
     {
         final String[] args = {
-            "-withWarnings", WarningsConfig.UNUSED, "-withoutWarnings", WarningsConfig.ALL
+            "-withWarnings",
+            WarningsConfig.UNUSED + WarningsConfig.WARNINGS_OPTIONS_SEPARATOR + WarningsConfig.ENCODING,
+            "-withoutWarnings", WarningsConfig.ALL
         };
 
         final WarningsConfig warningsConfig = parse(args).getWarningsConfig();
@@ -336,10 +345,15 @@ public class CommandLineArgumentsTest
             if (warning.getValue().getPriority() != Integer.MAX_VALUE)
                 continue; // skip groups
 
-            if (warning.getKey().equals(WarningsConfig.UNUSED))
+            if (warning.getKey().equals(WarningsConfig.UNUSED) ||
+                    warning.getKey().equals(WarningsConfig.ENCODING))
+            {
                 assertTrue(warningsConfig.isEnabled(warning.getKey()));
+            }
             else
+            {
                 assertFalse(warningsConfig.isEnabled(warning.getKey()));
+            }
         }
     }
 

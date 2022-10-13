@@ -123,7 +123,7 @@ public class WarningsConfig
     {
         if (warningsDefinitionMap.get(option) == null)
         {
-            throw new ParseException("The specified warnings option in not known: '" + option + "'!");
+            throw new ParseException("The specified warnings option is not known: '" + option + "'!");
         }
     }
 
