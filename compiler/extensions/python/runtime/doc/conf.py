@@ -14,10 +14,11 @@ import zserio
 
 project = 'Zserio'
 author = 'Eccam s.r.o.'
-copyright = 'Copyright (c) 2018-2021, Navigation Data Standard e.v.'
+copyright = 'Copyright (c) 2018-2022, Navigation Data Standard e.v.'
 
 # The full version, including alpha/beta/rc tags
 release = zserio.VERSION_STRING
+version = zserio.VERSION_STRING
 
 # -- General configuration ---------------------------------------------------
 
@@ -26,7 +27,7 @@ release = zserio.VERSION_STRING
 # ones.
 extensions = [
     'sphinx.ext.viewcode',
-    'sphinx_automodapi.automodapi'
+    'sphinx.ext.autodoc',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -61,11 +62,22 @@ default_role = 'code'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'default'
+html_theme = 'alabaster'
+html_theme_options = {
+    "fixed_sidebar": False,
+    "show_related": True,
+    "sidebar_collapse": False,
+    "sidebar_width": "340px",
+}
 html_copy_source = False
 html_show_sphinx = False
+html_sidebars = {
+    '**': [
+        'navigation.html',
+        'localtoc.html',
+        'searchbox.html',
+    ]
+}
 
 # -- Extension configuration -------------------------------------------------
-
 autoclass_content = 'both' # needed for documentation of constructors
-numpydoc_show_class_members = False # required by automodapi

@@ -100,8 +100,10 @@ install_python_runtime()
         return 1
     fi
 
+    sphinx-apidoc --module-first --force --separate -o . "${PYTHON_RUNTIME_SOURCES}/zserio/"
+    rm modules.rst
     PYTHONPATH="${PYTHON_RUNTIME_SOURCES}" \
-    sphinx-build -Wa -b html -d . -Dhtml_logo="${ZSERIO_LOGO}" -Dgraphviz_dot="${DOT}" . zserio_doc
+    sphinx-build -Wa -b html -d . -Dhtml_logo="${ZSERIO_LOGO}" . zserio_doc
     if [ $? -ne 0 ] ; then
         popd > /dev/null
         return 1
