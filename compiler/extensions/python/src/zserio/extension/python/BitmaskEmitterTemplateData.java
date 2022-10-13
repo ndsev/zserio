@@ -6,7 +6,6 @@ import java.util.List;
 
 import zserio.ast.BitmaskType;
 import zserio.ast.BitmaskValue;
-import zserio.ast.DocComment;
 import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.FixedSizeType;
 import zserio.ast.IntegerType;
@@ -24,7 +23,7 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
     public BitmaskEmitterTemplateData(TemplateDataContext context, BitmaskType bitmaskType)
             throws ZserioExtensionException
     {
-        super(context, bitmaskType, bitmaskType.getDocComments());
+        super(context, bitmaskType, bitmaskType);
 
         importPackage("typing");
         importPackage("zserio"); // needed at least for hash code calculation
@@ -40,7 +39,7 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
         bitSize = createBitSize(bitmaskTypeInstantiation);
 
         final ExpressionFormatter pythonExpressionFormatter = context.getPythonExpressionFormatter(this);
-        runtimeFunction = PythonRuntimeFunctionDataCreator.createData(
+        runtimeFunction = RuntimeFunctionDataCreator.createData(
                 bitmaskTypeInstantiation, pythonExpressionFormatter);
 
         lowerBound = PythonLiteralFormatter.formatDecimalLiteral(getLowerBound(bitmaskTypeInstantiation));
@@ -113,9 +112,7 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
             name = PythonSymbolConverter.bitmaskValueToSymbol(bitmaskValue.getName());
             value = PythonLiteralFormatter.formatDecimalLiteral(bitmaskValue.getValue());
             isZero = bitmaskValue.getValue().equals(BigInteger.ZERO);
-            final List<DocComment> valueDocComments = bitmaskValue.getDocComments();
-            docComments = valueDocComments.isEmpty() ? null :
-                    new DocCommentsTemplateData(context, valueDocComments);
+            docComments = DocCommentsDataCreator.createData(context, bitmaskValue);
         }
 
         public String getSchemaName()

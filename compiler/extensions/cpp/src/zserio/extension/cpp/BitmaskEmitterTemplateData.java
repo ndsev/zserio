@@ -6,7 +6,6 @@ import java.util.List;
 
 import zserio.ast.BitmaskType;
 import zserio.ast.BitmaskValue;
-import zserio.ast.DocComment;
 import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.IntegerType;
 import zserio.ast.TypeInstantiation;
@@ -22,7 +21,7 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
     public BitmaskEmitterTemplateData(TemplateDataContext context, BitmaskType bitmaskType)
             throws ZserioExtensionException
     {
-        super(context, bitmaskType, bitmaskType.getDocComments());
+        super(context, bitmaskType, bitmaskType);
 
         final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
 
@@ -33,7 +32,7 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
         underlyingTypeInfo = new NativeIntegralTypeInfoTemplateData(nativeBaseType, bitmaskTypeInstantiation);
 
         bitSize = BitSizeTemplateData.create(context, bitmaskTypeInstantiation, this);
-        runtimeFunction = CppRuntimeFunctionDataCreator.createData(context, bitmaskTypeInstantiation, this);
+        runtimeFunction = RuntimeFunctionDataCreator.createData(context, bitmaskTypeInstantiation, this);
 
         final BigInteger upperBound = getUpperBound(bitmaskTypeInstantiation);
         this.upperBound = upperBound.equals(nativeBaseType.getUpperBound()) ? null :
@@ -89,9 +88,7 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
             name = bitmaskValue.getName();
             value = nativeBaseType.formatLiteral(bitmaskValue.getValue());
             isZero = bitmaskValue.getValue().equals(BigInteger.ZERO);
-            final List<DocComment> valueDocComments = bitmaskValue.getDocComments();
-            docComments = valueDocComments.isEmpty()
-                    ? null : new DocCommentsTemplateData(context, valueDocComments);
+            docComments = DocCommentsDataCreator.createData(context, bitmaskValue);
         }
 
         public String getName()

@@ -7,7 +7,6 @@ import zserio.ast.ParameterizedTypeInstantiation;
 import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.ZserioType;
-import zserio.ast.DocComment;
 import zserio.ast.Field;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
@@ -22,7 +21,7 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
     public SqlDatabaseEmitterTemplateData(TemplateDataContext context, SqlDatabaseType databaseType)
             throws ZserioExtensionException
     {
-        super(context, databaseType, databaseType.getDocComments());
+        super(context, databaseType, databaseType);
 
         rootPackageName = context.getJavaRootPackageName();
         this.withValidationCode = context.getWithValidationCode();
@@ -72,9 +71,7 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
                 hasExplicitParameters = false;
             }
 
-            final List<DocComment> fieldDocComments = field.getDocComments();
-            docComments = fieldDocComments.isEmpty()
-                    ? null : new DocCommentsTemplateData(context, fieldDocComments);
+            docComments = DocCommentsDataCreator.createData(context, field);
         }
 
         public String getName()

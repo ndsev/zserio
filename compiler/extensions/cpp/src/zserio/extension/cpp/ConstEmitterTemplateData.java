@@ -1,9 +1,6 @@
 package zserio.extension.cpp;
 
-import java.util.List;
-
 import zserio.ast.Constant;
-import zserio.ast.DocComment;
 import zserio.ast.StringType;
 import zserio.ast.TypeInstantiation;
 import zserio.extension.common.ExpressionFormatter;
@@ -45,9 +42,7 @@ public class ConstEmitterTemplateData extends CppTemplateData
         }
 
         value = cppExpressionFormatter.formatGetter(constant.getValueExpression());
-        final List<DocComment> itemDocComments = constant.getDocComments();
-        docComments = itemDocComments.isEmpty()
-                ? null : new DocCommentsTemplateData(context, itemDocComments);
+        docComments = DocCommentsDataCreator.createData(context, constant);
     }
 
     public PackageTemplateData getPackage()

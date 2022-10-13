@@ -12,7 +12,7 @@ public class SubtypeEmitterTemplateData extends UserTypeTemplateData
     public SubtypeEmitterTemplateData(TemplateDataContext context, Subtype subtype)
             throws ZserioExtensionException
     {
-        super(context, subtype, subtype.getDocComments());
+        super(context, subtype, subtype);
 
         final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
         final PythonNativeType nativeTargetType =

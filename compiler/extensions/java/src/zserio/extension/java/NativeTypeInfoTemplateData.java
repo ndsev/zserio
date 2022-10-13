@@ -137,8 +137,8 @@ public class NativeTypeInfoTemplateData
         else
         {
             typeInfoGetter = (typeInstantiation != null) ?
-                    JavaRuntimeFunctionDataCreator.createTypeInfoData(typeInstantiation) :
-                    JavaRuntimeFunctionDataCreator.createTypeInfoData(typeReference);
+                    RuntimeFunctionDataCreator.createTypeInfoData(typeInstantiation) :
+                    RuntimeFunctionDataCreator.createTypeInfoData(typeReference);
         }
     }
 

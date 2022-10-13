@@ -6,7 +6,6 @@ import java.util.List;
 
 import zserio.ast.BitmaskType;
 import zserio.ast.BitmaskValue;
-import zserio.ast.DocComment;
 import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.IntegerType;
 import zserio.ast.TypeInstantiation;
@@ -23,7 +22,7 @@ public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
     public BitmaskEmitterTemplateData(TemplateDataContext context, BitmaskType bitmaskType)
             throws ZserioExtensionException
     {
-        super(context, bitmaskType, bitmaskType.getDocComments());
+        super(context, bitmaskType, bitmaskType);
 
         final TypeInstantiation bitmaskTypeInstantiation = bitmaskType.getTypeInstantiation();
         final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
@@ -35,7 +34,7 @@ public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
         underlyingTypeInfo = new NativeTypeInfoTemplateData(nativeIntegralType, bitmaskTypeInstantiation);
         bitSize = BitSizeTemplateData.create(bitmaskTypeInstantiation, javaExpressionFormatter,
                 javaLambdaExpressionFormatter);
-        runtimeFunction = JavaRuntimeFunctionDataCreator.createData(context, bitmaskTypeInstantiation);
+        runtimeFunction = RuntimeFunctionDataCreator.createData(context, bitmaskTypeInstantiation);
 
         final BigInteger lowerBound = getLowerBound(bitmaskTypeInstantiation);
         this.lowerBound = lowerBound.equals(nativeIntegralType.getLowerBound()) ? null :
@@ -115,9 +114,7 @@ public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
             name = bitmaskValue.getName();
             value = nativeBaseType.formatLiteral(bitmaskValue.getValue());
             isZero = bitmaskValue.getValue().equals(BigInteger.ZERO);
-            final List<DocComment> valueDocComments = bitmaskValue.getDocComments();
-            docComments = valueDocComments.isEmpty()
-                    ? null : new DocCommentsTemplateData(context, valueDocComments);
+            docComments = DocCommentsDataCreator.createData(context, bitmaskValue);
         }
 
         public String getName()

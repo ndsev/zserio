@@ -1,11 +1,9 @@
 package zserio.extension.java;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
-import zserio.ast.DocComment;
 import zserio.ast.ParameterizedTypeInstantiation;
 import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.ast.ArrayInstantiation;
@@ -70,11 +68,9 @@ public final class CompoundFieldTemplateData
                 javaLambdaExpressionFormatter);
         offset = createOffset(field, javaNativeMapper, javaExpressionFormatter, javaLambdaExpressionFormatter);
         array = createArray(context, nativeType, fieldTypeInstantiation, parentType);
-        runtimeFunction = JavaRuntimeFunctionDataCreator.createData(context, fieldTypeInstantiation);
+        runtimeFunction = RuntimeFunctionDataCreator.createData(context, fieldTypeInstantiation);
         compound = createCompound(context, fieldTypeInstantiation);
-        final List<DocComment> fieldDocComments = field.getDocComments();
-        docComments = fieldDocComments.isEmpty()
-                ? null : new DocCommentsTemplateData(context, fieldDocComments);
+        docComments = DocCommentsDataCreator.createData(context, field);
     }
 
     public String getName()

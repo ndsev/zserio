@@ -19,7 +19,7 @@ import zserio.extension.common.ZserioExtensionException;
  * Create RuntimeFunctionTemplateData needed for generating of calls to Zserio runtime
  * (e.g. for reading and writing of built-in types).
  */
-public class CppRuntimeFunctionDataCreator
+public class RuntimeFunctionDataCreator
 {
     public static RuntimeFunctionTemplateData createData(TemplateDataContext context,
             TypeInstantiation typeInstantiation, IncludeCollector includeCollector)

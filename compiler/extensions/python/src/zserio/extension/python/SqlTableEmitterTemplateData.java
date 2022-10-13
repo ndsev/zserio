@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import zserio.ast.DocComment;
 import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.Expression;
 import zserio.ast.Field;
@@ -34,7 +33,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
     public SqlTableEmitterTemplateData(TemplateDataContext context, SqlTableType tableType)
             throws ZserioExtensionException
     {
-        super(context, tableType, tableType.getDocComments());
+        super(context, tableType, tableType);
 
         importPackage("typing");
         importPackage("apsw");
@@ -193,9 +192,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             final SqlNativeTypeMapper sqlNativeTypeMapper = new SqlNativeTypeMapper();
             sqlTypeData = new SqlTypeTemplateData(sqlNativeTypeMapper, field);
 
-            final List<DocComment> fieldDocComments = field.getDocComments();
-            docComments = fieldDocComments.isEmpty() ? null :
-                    new DocCommentsTemplateData(context, fieldDocComments);
+            docComments = DocCommentsDataCreator.createData(context, field);
         }
 
         public String getName()

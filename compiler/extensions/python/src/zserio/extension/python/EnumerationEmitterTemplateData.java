@@ -3,7 +3,6 @@ package zserio.extension.python;
 import java.util.ArrayList;
 import java.util.List;
 
-import zserio.ast.DocComment;
 import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
@@ -21,7 +20,7 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
     public EnumerationEmitterTemplateData(TemplateDataContext context, EnumType enumType)
             throws ZserioExtensionException
     {
-        super(context, enumType, enumType.getDocComments());
+        super(context, enumType, enumType);
 
         importPackage("enum");
         importPackage("typing");
@@ -37,7 +36,7 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         bitSize = createBitSize(enumTypeInstantiation);
 
         final ExpressionFormatter pythonExpressionFormatter = context.getPythonExpressionFormatter(this);
-        runtimeFunction = PythonRuntimeFunctionDataCreator.createData(
+        runtimeFunction = RuntimeFunctionDataCreator.createData(
                 enumTypeInstantiation, pythonExpressionFormatter);
 
         final List<EnumItem> enumItems = enumType.getItems();
@@ -73,9 +72,7 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
             schemaName = enumItem.getName();
             name = PythonSymbolConverter.enumItemToSymbol(enumItem.getName());
             value = PythonLiteralFormatter.formatDecimalLiteral(enumItem.getValue());
-            final List<DocComment> itemDocComments = enumItem.getDocComments();
-            docComments = itemDocComments.isEmpty() ? null :
-                    new DocCommentsTemplateData(context, itemDocComments);
+            docComments = DocCommentsDataCreator.createData(context, enumItem);
         }
 
         public String getSchemaName()

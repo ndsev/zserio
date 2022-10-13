@@ -3,7 +3,6 @@ package zserio.extension.java;
 import java.util.ArrayList;
 import java.util.List;
 
-import zserio.ast.DocComment;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.TypeInstantiation;
@@ -19,7 +18,7 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
     public EnumerationEmitterTemplateData(TemplateDataContext context, EnumType enumType)
             throws ZserioExtensionException
     {
-        super(context, enumType, enumType.getDocComments());
+        super(context, enumType, enumType);
 
         final TypeInstantiation enumTypeInstantiation = enumType.getTypeInstantiation();
         final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
@@ -31,7 +30,7 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
         underlyingTypeInfo = new NativeTypeInfoTemplateData(nativeIntegralType, enumTypeInstantiation);
         bitSize = BitSizeTemplateData.create(enumTypeInstantiation, javaExpressionFormatter,
                 javaLambdaExpressionFormatter);
-        runtimeFunction = JavaRuntimeFunctionDataCreator.createData(context, enumTypeInstantiation);
+        runtimeFunction = RuntimeFunctionDataCreator.createData(context, enumTypeInstantiation);
 
         items = new ArrayList<EnumItemData>();
         for (EnumItem item: enumType.getItems())
@@ -65,9 +64,7 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
         {
             name = enumItem.getName();
             value = nativeIntegralType.formatLiteral(enumItem.getValue());
-            final List<DocComment> itemDocComments = enumItem.getDocComments();
-            docComments = itemDocComments.isEmpty()
-                    ? null : new DocCommentsTemplateData(context, itemDocComments);
+            docComments = DocCommentsDataCreator.createData(context, enumItem);
         }
 
         public String getName()

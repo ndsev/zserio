@@ -10,7 +10,6 @@ import zserio.ast.ParameterizedTypeInstantiation;
 import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.ast.ZserioType;
 import zserio.ast.BitmaskType;
-import zserio.ast.DocComment;
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
@@ -35,7 +34,7 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
     public SqlTableEmitterTemplateData(TemplateDataContext context, SqlTableType tableType, String tableRowName)
             throws ZserioExtensionException
     {
-        super(context, tableType, tableType.getDocComments());
+        super(context, tableType, tableType);
 
         rootPackageName = context.getJavaRootPackageName();
         this.withValidationCode = context.getWithValidationCode();
@@ -214,9 +213,7 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
             final SqlNativeTypeMapper sqlNativeTypeMapper = new SqlNativeTypeMapper();
             sqlTypeData = new SqlTypeTemplateData(sqlNativeTypeMapper, field);
 
-            final List<DocComment> fieldDocComments = field.getDocComments();
-            docComments = fieldDocComments.isEmpty()
-                    ? null : new DocCommentsTemplateData(context, fieldDocComments);
+            docComments = DocCommentsDataCreator.createData(context, field);
         }
 
         public String getName()

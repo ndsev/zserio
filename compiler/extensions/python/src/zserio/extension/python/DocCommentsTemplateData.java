@@ -2,7 +2,6 @@ package zserio.extension.python;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 import zserio.ast.BitmaskValue;
 import zserio.ast.DocComment;
@@ -39,20 +38,12 @@ public class DocCommentsTemplateData
     public DocCommentsTemplateData(TemplateDataContext context, List<DocComment> docComments)
             throws ZserioExtensionException
     {
-        int stickyCommentsIndex = docComments.size();
-        final ListIterator<DocComment> iterator = docComments.listIterator(docComments.size());
-        while (iterator.hasPrevious() && iterator.previous().isSticky())
-            --stickyCommentsIndex;
-
         docParagraphs = new ArrayList<DocParagraphData>();
         for (int i = 0; i < docComments.size(); ++i)
         {
-            if (i >= stickyCommentsIndex)
-            {
-                final DocCommentClassic docCommentClassic = docComments.get(i).toClassic();
-                for (DocParagraph docParagraph : docCommentClassic.getParagraphs())
-                    docParagraphs.add(new DocParagraphData(context, docParagraph));
-            }
+            final DocCommentClassic docCommentClassic = docComments.get(i).toClassic();
+            for (DocParagraph docParagraph : docCommentClassic.getParagraphs())
+                docParagraphs.add(new DocParagraphData(context, docParagraph));
         }
     }
 

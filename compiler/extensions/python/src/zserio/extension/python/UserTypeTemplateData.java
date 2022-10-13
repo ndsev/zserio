@@ -1,8 +1,6 @@
 package zserio.extension.python;
 
-import java.util.List;
-
-import zserio.ast.DocComment;
+import zserio.ast.DocumentableAstNode;
 import zserio.ast.ZserioType;
 import zserio.ast.ZserioTypeUtil;
 import zserio.extension.common.ZserioExtensionException;
@@ -13,8 +11,8 @@ import zserio.extension.python.types.PythonNativeType;
  */
 public class UserTypeTemplateData extends PythonTemplateData
 {
-    public UserTypeTemplateData(TemplateDataContext context, ZserioType type, List<DocComment> docComments)
-            throws ZserioExtensionException
+    public UserTypeTemplateData(TemplateDataContext context, ZserioType type,
+            DocumentableAstNode documentableNode) throws ZserioExtensionException
     {
         super(context);
 
@@ -22,7 +20,7 @@ public class UserTypeTemplateData extends PythonTemplateData
         name = nativeType.getName();
         fullName = PythonFullNameFormatter.getFullName(nativeType);
         schemaTypeFullName = ZserioTypeUtil.getFullName(type);
-        this.docComments = docComments.isEmpty() ? null : new DocCommentsTemplateData(context, docComments);
+        docComments = DocCommentsDataCreator.createData(context, documentableNode);
     }
 
     public String getName()

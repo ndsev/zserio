@@ -3,7 +3,6 @@ package zserio.extension.cpp;
 import java.util.ArrayList;
 import java.util.List;
 
-import zserio.ast.DocComment;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.TypeInstantiation;
@@ -19,7 +18,7 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
     public EnumerationEmitterTemplateData(TemplateDataContext context, EnumType enumType)
             throws ZserioExtensionException
     {
-        super(context, enumType, enumType.getDocComments());
+        super(context, enumType, enumType);
 
         final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
         final CppNativeType nativeEnumType = cppNativeMapper.getCppType(enumType);
@@ -31,7 +30,7 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         underlyingTypeInfo = new NativeIntegralTypeInfoTemplateData(nativeBaseType, enumTypeInstantiation);
 
         bitSize = BitSizeTemplateData.create(context, enumTypeInstantiation, this);
-        runtimeFunction = CppRuntimeFunctionDataCreator.createData(context, enumTypeInstantiation, this);
+        runtimeFunction = RuntimeFunctionDataCreator.createData(context, enumTypeInstantiation, this);
 
         final List<EnumItem> enumItems = enumType.getItems();
         items = new ArrayList<EnumItemData>(enumItems.size());
@@ -68,9 +67,7 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
             fullName = CppFullNameFormatter.getFullName(nativeEnumType.getPackageName(),
                     nativeEnumType.getName(), enumItem.getName());
             value = nativeBaseType.formatLiteral(enumItem.getValue());
-            final List<DocComment> itemDocComments = enumItem.getDocComments();
-            docComments = itemDocComments.isEmpty()
-                    ? null : new DocCommentsTemplateData(context, itemDocComments);
+            docComments = DocCommentsDataCreator.createData(context, enumItem);
         }
 
         public String getName()

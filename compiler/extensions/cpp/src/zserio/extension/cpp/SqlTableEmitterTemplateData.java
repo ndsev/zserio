@@ -8,7 +8,6 @@ import java.util.TreeSet;
 
 import zserio.ast.BitmaskType;
 import zserio.ast.CompoundType;
-import zserio.ast.DocComment;
 import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.EnumType;
 import zserio.ast.Parameter;
@@ -42,7 +41,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
     public SqlTableEmitterTemplateData(TemplateDataContext context, SqlTableType tableType)
             throws ZserioExtensionException
     {
-        super(context, tableType, tableType.getDocComments());
+        super(context, tableType, tableType);
 
         final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
         sqlConstraint = createSqlConstraint(tableType.getSqlConstraint(), cppExpressionFormatter);
@@ -250,9 +249,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             needsChildrenInitialization = (fieldBaseType instanceof CompoundType) &&
                     ((CompoundType)fieldBaseType).needsChildrenInitialization();
 
-            final List<DocComment> fieldDocComments = field.getDocComments();
-            docComments = fieldDocComments.isEmpty()
-                    ? null : new DocCommentsTemplateData(context, fieldDocComments);
+            docComments = DocCommentsDataCreator.createData(context, field);
         }
 
         public String getName()

@@ -56,8 +56,7 @@ public class CompoundParameterTemplateData
                 if (paramDocComment != null)
                     paramDocComments.add(paramDocComment);
             }
-            docComments = paramDocComments.isEmpty()
-                    ? null : new DocCommentsTemplateData(context, paramDocComments);
+            docComments = DocCommentsDataCreator.createData(context, paramDocComments);
         }
 
         public String getName()

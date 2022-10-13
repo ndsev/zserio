@@ -105,8 +105,8 @@ public class NativeTypeInfoTemplateData
         else
         {
             typeInfoGetter = (typeInstantiation != null) ?
-                    CppRuntimeFunctionDataCreator.createTypeInfoData(typeInstantiation) :
-                    CppRuntimeFunctionDataCreator.createTypeInfoData(typeReference);
+                    RuntimeFunctionDataCreator.createTypeInfoData(typeInstantiation) :
+                    RuntimeFunctionDataCreator.createTypeInfoData(typeReference);
         }
     }
 

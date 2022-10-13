@@ -7,7 +7,6 @@ import java.util.List;
 import zserio.ast.ArrayInstantiation;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
-import zserio.ast.DocComment;
 import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.IntegerType;
 import zserio.ast.ParameterizedTypeInstantiation;
@@ -59,12 +58,10 @@ public final class CompoundFieldTemplateData
         bitSize = new BitSize(fieldTypeInstantiation, pythonExpressionFormatter);
         offset = createOffset(field, pythonExpressionFormatter);
         array = createArray(context, fieldTypeInstantiation, parentType, importCollector);
-        runtimeFunction = PythonRuntimeFunctionDataCreator.createData(fieldTypeInstantiation,
+        runtimeFunction = RuntimeFunctionDataCreator.createData(fieldTypeInstantiation,
                 pythonExpressionFormatter);
         compound = createCompound(context, fieldTypeInstantiation, importCollector);
-        final List<DocComment> fieldDocComments = field.getDocComments();
-        docComments = fieldDocComments.isEmpty() ?
-                null : new DocCommentsTemplateData(context, fieldDocComments);
+        docComments = DocCommentsDataCreator.createData(context, field);
     }
 
     public String getName()
@@ -259,7 +256,7 @@ public final class CompoundFieldTemplateData
         {
             value = createValue(typeInstantiation, pythonExpressionFormatter);
             runtimeFunction = (value != null) ? null :
-                PythonRuntimeFunctionDataCreator.createData(typeInstantiation, pythonExpressionFormatter);
+                RuntimeFunctionDataCreator.createData(typeInstantiation, pythonExpressionFormatter);
         }
 
         public String getValue()

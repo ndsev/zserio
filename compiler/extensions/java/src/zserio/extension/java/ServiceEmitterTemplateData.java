@@ -3,7 +3,6 @@ package zserio.extension.java;
 import java.util.ArrayList;
 import java.util.List;
 
-import zserio.ast.DocComment;
 import zserio.ast.ServiceMethod;
 import zserio.ast.ServiceType;
 import zserio.ast.TypeReference;
@@ -18,7 +17,7 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
     public ServiceEmitterTemplateData(TemplateDataContext context, ServiceType serviceType)
             throws ZserioExtensionException
     {
-        super(context, serviceType, serviceType.getDocComments());
+        super(context, serviceType, serviceType);
 
         final JavaNativeMapper javaTypeMapper = context.getJavaNativeMapper();
 
@@ -61,9 +60,7 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
             final JavaNativeType requestNativeType = javaTypeMapper.getJavaType(requestTypeReference);
             requestTypeInfo = new NativeTypeInfoTemplateData(requestNativeType, requestTypeReference);
 
-            final List<DocComment> methodDocComments = method.getDocComments();
-            docComments = methodDocComments.isEmpty()
-                    ? null : new DocCommentsTemplateData(context, methodDocComments);
+            docComments = DocCommentsDataCreator.createData(context, method);
         }
 
         public String getName()

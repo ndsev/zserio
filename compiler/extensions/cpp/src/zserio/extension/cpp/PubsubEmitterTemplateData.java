@@ -3,7 +3,6 @@ package zserio.extension.cpp;
 import java.util.ArrayList;
 import java.util.List;
 
-import zserio.ast.DocComment;
 import zserio.ast.PubsubMessage;
 import zserio.ast.PubsubType;
 import zserio.ast.TypeReference;
@@ -19,7 +18,7 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
     public PubsubEmitterTemplateData(TemplateDataContext context, PubsubType pubsubType)
             throws ZserioExtensionException
     {
-        super(context, pubsubType, pubsubType.getDocComments());
+        super(context, pubsubType, pubsubType);
 
         Iterable<PubsubMessage> messageList = pubsubType.getMessageList();
         boolean hasPublishing = false;
@@ -65,9 +64,7 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
             topicDefinition = cppExpressionFormatter.formatGetter(message.getTopicDefinitionExpr());
             isPublished = message.isPublished();
             isSubscribed = message.isSubscribed();
-            final List<DocComment> messageDocComments = message.getDocComments();
-            docComments = messageDocComments.isEmpty()
-                    ? null : new DocCommentsTemplateData(context, messageDocComments);
+            docComments = DocCommentsDataCreator.createData(context, message);
         }
 
         public String getName()

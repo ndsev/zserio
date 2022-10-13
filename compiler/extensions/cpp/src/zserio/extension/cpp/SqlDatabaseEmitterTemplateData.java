@@ -6,7 +6,6 @@ import java.util.List;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.ZserioType;
 import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
-import zserio.ast.DocComment;
 import zserio.ast.Field;
 import zserio.ast.ParameterizedTypeInstantiation;
 import zserio.ast.SqlDatabaseType;
@@ -22,7 +21,7 @@ public class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
     public SqlDatabaseEmitterTemplateData(TemplateDataContext context, SqlDatabaseType databaseType)
             throws ZserioExtensionException
     {
-        super(context, databaseType, databaseType.getDocComments());
+        super(context, databaseType, databaseType);
 
         final List<Field> dbFields = databaseType.getFields();
         fields = new ArrayList<DatabaseField>(dbFields.size());
@@ -63,9 +62,7 @@ public class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
                 hasExplicitParameters = false;
             }
 
-            final List<DocComment> fieldDocComments = field.getDocComments();
-            docComments = fieldDocComments.isEmpty()
-                    ? null : new DocCommentsTemplateData(context, fieldDocComments);
+            docComments = DocCommentsDataCreator.createData(context, field);
         }
 
         public String getName()

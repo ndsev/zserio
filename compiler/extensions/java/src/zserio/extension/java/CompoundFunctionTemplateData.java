@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zserio.ast.CompoundType;
-import zserio.ast.DocComment;
 import zserio.ast.TypeReference;
 import zserio.ast.Function;
 import zserio.extension.common.ExpressionFormatter;
@@ -45,9 +44,7 @@ public final class CompoundFunctionTemplateData
             final ExpressionFormatter javaLambdaExpressionFormatter =
                     context.getJavaLambdaExpressionFormatter();
             lambdaResultExpression = javaLambdaExpressionFormatter.formatGetter(function.getResultExpression());
-            final List<DocComment> functionDocComments = function.getDocComments();
-            docComments = functionDocComments.isEmpty()
-                    ? null : new DocCommentsTemplateData(context, functionDocComments);
+            docComments = DocCommentsDataCreator.createData(context, function);
         }
 
         public NativeTypeInfoTemplateData getReturnTypeInfo()
