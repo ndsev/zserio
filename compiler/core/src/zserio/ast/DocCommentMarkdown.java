@@ -79,7 +79,8 @@ public class DocCommentMarkdown extends DocComment
         final int column = getLocation().getColumn();
         for (String markdownLine : markdownLines)
         {
-            if (!markdownLine.isEmpty())
+            // swallow empty lines
+            if (!markdownLine.trim().isEmpty())
             {
                 final AstLocation location = new AstLocation(fileName, line, column - 1);
                 markdownParagraphLines.add(new MarkdownLine(location, markdownLine.trim()));
