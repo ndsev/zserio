@@ -1,1 +1,1 @@
-WERROR=0
+ZSERIO_ARGS=-withoutWarnings import
