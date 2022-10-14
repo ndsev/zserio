@@ -969,7 +969,7 @@ The equality operators `==` and `!=` may be applied to any type.
 
 The boolean operators `&&` (and) and `||` (or) may be applied to boolean expressions.
 
-##### Bit Operators
+#### Bit Operators
 
 The bit operators `&` (bitwise and), `|` (bitwise or), `^` (bitwise exclusive or) may be applied to integer
 types.
@@ -978,6 +978,66 @@ types.
 
 The postfix operators include `[]` (array index), `()` (instantiation with argument list or function call) and
 `.` (member access).
+
+#### isset Operator
+
+Operator `isset` accepts bitmask and bitmask value. It return true if bitmask contains given bitmask
+value, i.e. if bitwise and (`&`) of bitmask and bitmask value is equal to bitmask value.
+
+**Example**
+```
+bitmask uint8 TestBitmask
+{
+    INT,
+    STRING
+};
+
+struct IsSetOperator
+{
+    TestBitmask testBitmask;
+
+    function bool hasInt()
+    {
+        return isset(testBitmask, INT);
+    }
+
+    function bool hasString()
+    {
+        return isset(testBitmask, TestBitmask.STRING);
+    }
+
+    function bool hasBoth()
+    {
+        return isset(testBitmask, INT | STRING);
+    }
+};
+```
+
+The `isset` operator in previous example can be rewritten using bitwise and operator with the completely
+same behavior:
+
+```
+struct IsSetOperator
+{
+    TestBitmask testBitmask;
+
+    function bool hasInt()
+    {
+        return ((testBitmask & TestBitmask.INT) == TestBitmask.INT);
+    }
+
+    function bool hasString()
+    {
+        return ((testBitmask & TestBitmask.STRING) == TestBitmask.STRING);
+    }
+
+    function bool hasBoth()
+    {
+        return ((testBitmask & (TestBitmask.INT | TestBitmask.STRING)) ==
+                (TestBitmask.INT | TestBitmask.STRING));
+    }
+};
+```
 
 ### Ternary Operators
 
