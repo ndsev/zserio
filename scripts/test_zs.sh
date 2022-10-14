@@ -346,8 +346,8 @@ test_zs()
         GEN_DISABLE_OPTION+="too-many-public-methods, too-few-public-methods, too-many-locals, "
         GEN_DISABLE_OPTION+="too-many-branches, too-many-statements, unneeded-not, superfluous-parens, "
         GEN_DISABLE_OPTION+="import-self, invalid-unary-operand-type, c-extension-no-member, "
-        GEN_DISABLE_OPTION+="too-many-lines, simplifiable-if-expression",
-        GEN_DISABLE_OPTION+="consider-using-in, too-many-return-statements, anomalous-backslash-in-string"
+        GEN_DISABLE_OPTION+="too-many-lines, simplifiable-if-expression, consider-using-in, ",
+        GEN_DISABLE_OPTION+="too-many-return-statements, anomalous-backslash-in-string, empty-docstring"
 
         local PYLINT_ARGS=("--disable=${GEN_DISABLE_OPTION}" "--ignore=api.py")
         PYTHONPATH="${GEN_PYTHON_DIR}:${PYTHON_RUNTIME_ROOT}" \
