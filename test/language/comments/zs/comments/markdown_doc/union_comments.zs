@@ -16,7 +16,7 @@ See [Direction](../markdown_doc/enum_comments.zs#Direction) page.
 
 **Deprecated!**
 
-!*/
+ !*/ // space is intentional to check trailing space (empty paragraph) at the end
 union TestUnion(bool case1Allowed)
 {
     /*! This is a comment for **case1Field**. !*/
