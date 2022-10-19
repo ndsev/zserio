@@ -265,6 +265,13 @@ public interface ZserioAstVisitor
     public void visitBooleanType(BooleanType booleanType);
 
     /**
+     * Visits reference to built-in bytestype.
+     *
+     * @param bytesType Bytes type AST node.
+     */
+    public void visitBytesType(BytesType bytesType);
+
+    /**
      * Visits reference to built-in string type.
      *
      * @param stringType String type AST node.

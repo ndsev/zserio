@@ -156,6 +156,10 @@ public class ZserioAstDefaultVisitor implements ZserioAstVisitor
     {}
 
     @Override
+    public void visitBytesType(BytesType bytesType)
+    {}
+
+    @Override
     public void visitStringType(StringType stringType)
     {}
 

@@ -40,6 +40,7 @@ ALIGN               : 'align' ;
 BIT_FIELD           : 'bit' ;
 BOOL                : 'bool' ;
 BITMASK             : 'bitmask' ;
+BYTES               : 'bytes' ;
 CASE                : 'case' ;
 CHOICE              : 'choice' ;
 CONST               : 'const' ;

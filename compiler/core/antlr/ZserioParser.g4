@@ -407,6 +407,7 @@ builtinType
     |   stringType
     |   floatType
     |   externType
+    |   bytesType
     ;
 
 qualifiedName
@@ -473,4 +474,8 @@ floatType
 
 externType
     :   EXTERN
+    ;
+
+bytesType
+    :   BYTES
     ;

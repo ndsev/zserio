@@ -1120,6 +1120,15 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     }
 
     @Override
+    public BytesType visitBytesType(ZserioParser.BytesTypeContext ctx)
+    {
+        final Token token = ctx.getStart();
+        final AstLocation location = new AstLocation(token);
+
+        return new BytesType(location, token.getText());
+    }
+
+    @Override
     public StringType visitStringType(ZserioParser.StringTypeContext ctx)
     {
         final Token token = ctx.getStart();

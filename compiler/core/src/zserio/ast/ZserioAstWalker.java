@@ -231,6 +231,12 @@ public class ZserioAstWalker implements ZserioAstVisitor
     }
 
     @Override
+    public void visitBytesType(BytesType bytesType)
+    {
+        bytesType.visitChildren(this);
+    }
+
+    @Override
     public void visitStringType(StringType stringType)
     {
         stringType.visitChildren(this);

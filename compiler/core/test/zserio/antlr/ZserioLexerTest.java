@@ -93,6 +93,7 @@ public class ZserioLexerTest
                 "bit " +
                 "bool " +
                 "bitmask " +
+                "bytes " +
                 "case " +
                 "choice " +
                 "const " +
@@ -162,6 +163,7 @@ public class ZserioLexerTest
         checkToken(lexer, ZserioLexer.BIT_FIELD);
         checkToken(lexer, ZserioLexer.BOOL);
         checkToken(lexer, ZserioLexer.BITMASK);
+        checkToken(lexer, ZserioLexer.BYTES);
         checkToken(lexer, ZserioLexer.CASE);
         checkToken(lexer, ZserioLexer.CHOICE);
         checkToken(lexer, ZserioLexer.CONST);
