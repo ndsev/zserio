@@ -12,6 +12,8 @@ def serialize(obj: typing.Any) -> BitBuffer:
     """
     Serializes generated object to the bit buffer.
 
+    Before serialization, the method calls on the given zserio object method initialize_offsets().
+
     Because serialization to the bit buffer does not have to be byte aligned (divisible by 8), it's possible
     that not all bits of the last byte are used. In this case, only most significant bits of the corresponded
     size are used.
@@ -31,6 +33,7 @@ def serialize(obj: typing.Any) -> BitBuffer:
     """
 
     writer = BitStreamWriter()
+    obj.initialize_offsets(writer.bitposition)
     obj.write(writer)
 
     return BitBuffer(writer.byte_array, writer.bitposition)
@@ -62,6 +65,8 @@ def deserialize(obj_class: typing.Type[typing.Any], bitbuffer: BitBuffer, *args)
 def serialize_to_bytes(obj: typing.Any) -> bytes:
     """
     Serializes generated object to the byte buffer.
+
+    Before serialization, the method calls on the given zserio object method initialize_offsets().
 
     This is a convenient method for users which do not need exact number of bits to which the given object
     will be serialized.
@@ -117,7 +122,9 @@ def deserialize_bytes(obj_class: typing.Type[typing.Any], buffer: bytes, *args) 
 
 def serialize_to_file(obj: typing.Any, filename: str) -> None:
     """
-    Serializes generated object to the byte buffer.
+    Serializes generated object to the file.
+
+    Before serialization, the method calls on the given zserio object method initialize_offsets().
 
     This is a convenient method for users to easily write given generated object to file.
 
@@ -136,6 +143,7 @@ def serialize_to_file(obj: typing.Any, filename: str) -> None:
     """
 
     writer = BitStreamWriter()
+    obj.initialize_offsets(writer.bitposition)
     obj.write(writer)
     writer.to_file(filename)
 

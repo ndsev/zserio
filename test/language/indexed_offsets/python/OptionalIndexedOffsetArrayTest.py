@@ -66,6 +66,7 @@ class OptionalIndexedOffsetArrayTest(unittest.TestCase):
         createWrongOffsets = True
         optionalIndexedOffsetArray = self._createOptionalIndexedOffsetArray(hasOptional, createWrongOffsets)
         writer = zserio.BitStreamWriter()
+        optionalIndexedOffsetArray.initialize_offsets(writer.bitposition)
         optionalIndexedOffsetArray.write(writer)
         self._checkOptionalIndexedOffsetArray(optionalIndexedOffsetArray, hasOptional)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)

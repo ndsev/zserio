@@ -80,7 +80,7 @@ class TernaryOperatorOffsetTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
-            ternaryOffset.write(writer, zserio_call_initialize_offsets=False)
+            ternaryOffset.write(writer)
 
     def _testOffsetReadWrong(self, isFirstOffsetUsed):
         writer = zserio.BitStreamWriter()

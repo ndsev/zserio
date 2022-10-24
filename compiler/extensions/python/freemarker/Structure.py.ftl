@@ -515,26 +515,16 @@ ${I}<#rt>
             <#break>
         </#if>
     </#list>
-    def write(self, zserio_writer: zserio.BitStreamWriter, *,
-              zserio_call_initialize_offsets: bool = True) -> None:
+    def write(self, zserio_writer: zserio.BitStreamWriter) -> None:
     <#if withCodeComments>
         """
         Serializes this Zserio object to the bit stream.
 
         :param zserio_writer: Bit stream writer where to serialize this Zserio object.
-        :param zserio_call_initialize_offsets: True to call automatically initialize_offsets method before
-               writing, otherwise False.
         """
 
     </#if>
     <#if fieldList?has_content>
-        <#if hasFieldWithOffset>
-        if zserio_call_initialize_offsets:
-            self.initialize_offsets(zserio_writer.bitposition)
-        <#else>
-        del zserio_call_initialize_offsets
-        </#if>
-
         <#list fieldList as field>
         <@compound_write_field field, name, 2/>
             <#if field?has_next && needsWriteNewLines>
@@ -543,7 +533,6 @@ ${I}<#rt>
         </#list>
     <#else>
         del zserio_writer
-        del zserio_call_initialize_offsets
     </#if>
 
     def write_packed(self, zserio_context_node: zserio.array.PackingContextNode,

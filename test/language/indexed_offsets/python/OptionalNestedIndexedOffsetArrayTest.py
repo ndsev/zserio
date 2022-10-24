@@ -71,6 +71,7 @@ class OptionalNestedIndexedOffsetArrayTest(unittest.TestCase):
         optionalNestedIndexedOffsetArray = self._createOptionalNestedIndexedOffsetArray(length,
                                                                                         createWrongOffsets)
         writer = zserio.BitStreamWriter()
+        optionalNestedIndexedOffsetArray.initialize_offsets(writer.bitposition)
         optionalNestedIndexedOffsetArray.write(writer)
         self._checkOptionalNestedIndexedOffsetArray(optionalNestedIndexedOffsetArray, length)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)

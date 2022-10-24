@@ -60,6 +60,7 @@ class CompoundIndexedOffsetArrayTest(unittest.TestCase):
         createWrongOffsets = True
         compoundIndexedOffsetArray = self._createCompoundIndexedOffsetArray(createWrongOffsets)
         writer = zserio.BitStreamWriter()
+        compoundIndexedOffsetArray.initialize_offsets(writer.bitposition)
         compoundIndexedOffsetArray.write(writer)
         self._checkCompoundIndexedOffsetArray(compoundIndexedOffsetArray)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
@@ -73,6 +74,7 @@ class CompoundIndexedOffsetArrayTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         bitPosition = 8
         writer.write_bits(0, bitPosition)
+        compoundIndexedOffsetArray.initialize_offsets(writer.bitposition)
         compoundIndexedOffsetArray.write(writer)
 
         offsetShift = 1
@@ -83,7 +85,7 @@ class CompoundIndexedOffsetArrayTest(unittest.TestCase):
         compoundIndexedOffsetArray = self._createCompoundIndexedOffsetArray(createWrongOffsets)
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
-            compoundIndexedOffsetArray.write(writer, zserio_call_initialize_offsets=False)
+            compoundIndexedOffsetArray.write(writer)
 
     @staticmethod
     def _writeCompoundIndexedOffsetArrayToStream(writer, writeWrongOffsets):

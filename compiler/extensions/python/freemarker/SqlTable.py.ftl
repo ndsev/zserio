@@ -365,6 +365,7 @@ class ${name}:
         ${field.snakeCaseName}_ = row_in_list[${field?index}]
         if isinstance(${field.snakeCaseName}_, ${field.typeInfo.typeFullName}):
             writer = zserio.BitStreamWriter()
+            ${field.snakeCaseName}_.initialize_offsets(writer.bitposition)
             ${field.snakeCaseName}_.write(writer)
             row_in_list[${field?index}] = writer.byte_array
 

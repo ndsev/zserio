@@ -60,6 +60,7 @@ class Int14IndexedOffsetArrayTest(unittest.TestCase):
         createWrongOffsets = True
         int14IndexedOffsetArray = self._createInt14IndexedOffsetArray(createWrongOffsets)
         writer = zserio.BitStreamWriter()
+        int14IndexedOffsetArray.initialize_offsets(writer.bitposition)
         int14IndexedOffsetArray.write(writer)
         self._checkInt14IndexedOffsetArray(int14IndexedOffsetArray)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
@@ -73,6 +74,7 @@ class Int14IndexedOffsetArrayTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         bitPosition = 8
         writer.write_bits(0, bitPosition)
+        int14IndexedOffsetArray.initialize_offsets(writer.bitposition)
         int14IndexedOffsetArray.write(writer)
 
         offsetShift = 1
@@ -83,7 +85,7 @@ class Int14IndexedOffsetArrayTest(unittest.TestCase):
         int14IndexedOffsetArray = self._createInt14IndexedOffsetArray(createWrongOffsets)
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
-            int14IndexedOffsetArray.write(writer, zserio_call_initialize_offsets=False)
+            int14IndexedOffsetArray.write(writer)
 
     @staticmethod
     def _writeInt14IndexedOffsetArrayToStream(writer, writeWrongOffsets):

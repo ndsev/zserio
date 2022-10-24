@@ -279,7 +279,7 @@ ${I}zserio_writer.write_${field.runtimeFunction.suffix}(self.<@field_member_name
         <#elseif field.array??>
 ${I}self.<@field_member_name field/>.write<@array_field_packed_suffix field, packed/>(zserio_writer)
         <#else>
-${I}self.<@field_member_name field/>.write(zserio_writer<#if field.compound??>, zserio_call_initialize_offsets=False</#if>)
+${I}self.<@field_member_name field/>.write(zserio_writer)
         </#if>
     </#if>
 </#macro>

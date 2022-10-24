@@ -9,6 +9,7 @@ class DummyObject:
     def __init__(self, parameter, value = 0):
         self._parameter = parameter
         self._value = value
+        self._offsets_initialized = False
 
     @classmethod
     def from_reader(cls, reader, parameter):
@@ -24,11 +25,17 @@ class DummyObject:
     def bitsizeof(_bitposition = 0):
         return 31 # to make an unaligned type
 
+    def initialize_offsets(self, bitposition: int) -> int:
+        self._offsets_initialized = True
+        return bitposition + DummyObject.bitsizeof(bitposition)
+
     def read(self, reader):
         self._value = reader.read_bits(self.bitsizeof(0))
 
     def write(self, writer):
-        writer.write_bits(self._value, self.bitsizeof(0))
+        # don't write anything if offsets are not initialized to force test failure
+        if self._offsets_initialized:
+            writer.write_bits(self._value, self.bitsizeof(0))
 
 class SerializationTest(unittest.TestCase):
 

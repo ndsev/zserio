@@ -61,6 +61,7 @@ class PackedAutoIndexedOffsetArrayTest(unittest.TestCase):
         createWrongOffsets = True
         autoIndexedOffsetArray = self._createAutoIndexedOffsetArray(createWrongOffsets)
         writer = zserio.BitStreamWriter()
+        autoIndexedOffsetArray.initialize_offsets(writer.bitposition)
         autoIndexedOffsetArray.write(writer)
         self._checkAutoIndexedOffsetArray(autoIndexedOffsetArray)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
@@ -82,6 +83,7 @@ class PackedAutoIndexedOffsetArrayTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         bitPosition = 8
         writer.write_bits(0, bitPosition)
+        autoIndexedOffsetArray.initialize_offsets(writer.bitposition)
         autoIndexedOffsetArray.write(writer)
 
         offsetShift = 1
@@ -92,7 +94,7 @@ class PackedAutoIndexedOffsetArrayTest(unittest.TestCase):
         autoIndexedOffsetArray = self._createAutoIndexedOffsetArray(createWrongOffsets)
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
-            autoIndexedOffsetArray.write(writer, zserio_call_initialize_offsets=False)
+            autoIndexedOffsetArray.write(writer)
 
     @staticmethod
     def _writeAutoIndexedOffsetArrayToStream(writer, writeWrongOffsets):

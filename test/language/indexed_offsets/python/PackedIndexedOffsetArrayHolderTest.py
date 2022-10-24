@@ -48,6 +48,7 @@ class PackedIndexedOffsetArrayHolderTest(unittest.TestCase):
     def _checkWriteRead(self, numElements):
         autoIndexedOffsetArray = self._createAutoIndexedOffsetArray(numElements)
         writer = zserio.BitStreamWriter()
+        autoIndexedOffsetArray.initialize_offsets(writer.bitposition)
         autoIndexedOffsetArray.write(writer)
         self.assertEqual(autoIndexedOffsetArray.bitsizeof(), writer.bitposition)
         self.assertEqual(autoIndexedOffsetArray.initialize_offsets(0), writer.bitposition)

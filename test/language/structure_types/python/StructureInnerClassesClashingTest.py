@@ -22,6 +22,7 @@ class StructureInnerClassesClashingTest(unittest.TestCase):
         testStructure = self.api.OffsetChecker_array([0] * 4, [1, 2, 3, 4])
 
         writer = zserio.BitStreamWriter()
+        testStructure.initialize_offsets(writer.bitposition)
         testStructure.write(writer)
 
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
@@ -32,6 +33,7 @@ class StructureInnerClassesClashingTest(unittest.TestCase):
         testStructure = self.api.OffsetInitializer_array([0] * 4, [1, 2, 3, 4])
 
         writer = zserio.BitStreamWriter()
+        testStructure.initialize_offsets(writer.bitposition)
         testStructure.write(writer)
 
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
