@@ -102,6 +102,7 @@ class ComplexTableTest(unittest.TestCase):
     def _createComplexTableRow(self, blobId, name):
         values = [blobId for i in range(self.COMPLEX_TABLE_COUNT)]
         blob = self.api.complex_table.TestBlob(len(values), 0, values, True)
+        blob.initialize_offsets(0)
 
         return (blobId, zserio.limits.INT64_MAX, name, True, 9.9, 5.5, 0x34,
                 self.api.complex_table.TestEnum.RED, blob)

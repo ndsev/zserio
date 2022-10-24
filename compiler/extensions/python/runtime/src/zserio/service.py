@@ -33,7 +33,6 @@ class ServiceData:
 
         if not self._is_byte_array_initialized:
             writer = BitStreamWriter()
-            self._zserio_object.initialize_offsets(writer.bitposition)
             self._zserio_object.write(writer)
             self._byte_array = writer.byte_array
             self._is_byte_array_initialized = True
