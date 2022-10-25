@@ -18,19 +18,14 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
     public PubsubEmitterTemplateData(TemplateDataContext context, PubsubType pubsubType)
             throws ZserioExtensionException
     {
-        super(context, pubsubType);
-
-        final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
-        final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
+        super(context, pubsubType, pubsubType);
 
         Iterable<PubsubMessage> messageList = pubsubType.getMessageList();
         boolean hasPublishing = false;
         boolean hasSubscribing = false;
         for (PubsubMessage message : messageList)
         {
-            addHeaderIncludesForType(cppNativeMapper.getCppType(message.getTypeReference()));
-            final MessageTemplateData templateData = new MessageTemplateData(cppNativeMapper,
-                    cppExpressionFormatter, message);
+            final MessageTemplateData templateData = new MessageTemplateData(context, message, this);
             hasPublishing |= templateData.getIsPublished();
             hasSubscribing |= templateData.getIsSubscribed();
             this.messageList.add(templateData);
@@ -56,16 +51,20 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
 
     public static class MessageTemplateData
     {
-        public MessageTemplateData(CppNativeMapper cppNativeMapper, ExpressionFormatter cppExpressionFormatter,
-                PubsubMessage message) throws ZserioExtensionException
+        public MessageTemplateData(TemplateDataContext context, PubsubMessage message,
+                IncludeCollector includeCollector) throws ZserioExtensionException
         {
+            final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
+            final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(includeCollector);
             name = message.getName();
             final TypeReference messageTypeReference = message.getTypeReference();
             final CppNativeType cppNativeType = cppNativeMapper.getCppType(messageTypeReference);
+            includeCollector.addHeaderIncludesForType(cppNativeType);
             typeInfo = new NativeTypeInfoTemplateData(cppNativeType, messageTypeReference);
             topicDefinition = cppExpressionFormatter.formatGetter(message.getTopicDefinitionExpr());
             isPublished = message.isPublished();
             isSubscribed = message.isSubscribed();
+            docComments = DocCommentsDataCreator.createData(context, message);
         }
 
         public String getName()
@@ -93,11 +92,17 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
             return isSubscribed;
         }
 
+        public DocCommentsTemplateData getDocComments()
+        {
+            return docComments;
+        }
+
         private final String name;
         private final NativeTypeInfoTemplateData typeInfo;
         private final String topicDefinition;
         private final boolean isPublished;
         private final boolean isSubscribed;
+        private final DocCommentsTemplateData docComments;
     }
 
     private final List<MessageTemplateData> messageList = new ArrayList<MessageTemplateData>();

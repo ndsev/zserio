@@ -7,14 +7,12 @@ import zserio.extension.python.types.PythonNativeType;
 /**
  * FreeMarker template data for SubtypeEmitter.
  */
-public class SubtypeEmitterTemplateData extends PythonTemplateData
+public class SubtypeEmitterTemplateData extends UserTypeTemplateData
 {
     public SubtypeEmitterTemplateData(TemplateDataContext context, Subtype subtype)
             throws ZserioExtensionException
     {
-        super(context);
-
-        name = subtype.getName();
+        super(context, subtype, subtype);
 
         final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
         final PythonNativeType nativeTargetType =
@@ -23,16 +21,10 @@ public class SubtypeEmitterTemplateData extends PythonTemplateData
         targetTypeName = PythonFullNameFormatter.getFullName(nativeTargetType);
     }
 
-    public String getName()
-    {
-        return name;
-    }
-
     public String getTargetTypeName()
     {
         return targetTypeName;
     }
 
-    private final String name;
     private final String targetTypeName;
 }

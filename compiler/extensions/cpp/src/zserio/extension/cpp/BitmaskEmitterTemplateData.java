@@ -21,7 +21,7 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
     public BitmaskEmitterTemplateData(TemplateDataContext context, BitmaskType bitmaskType)
             throws ZserioExtensionException
     {
-        super(context, bitmaskType);
+        super(context, bitmaskType, bitmaskType);
 
         final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
 
@@ -32,7 +32,7 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
         underlyingTypeInfo = new NativeIntegralTypeInfoTemplateData(nativeBaseType, bitmaskTypeInstantiation);
 
         bitSize = BitSizeTemplateData.create(context, bitmaskTypeInstantiation, this);
-        runtimeFunction = CppRuntimeFunctionDataCreator.createData(context, bitmaskTypeInstantiation, this);
+        runtimeFunction = RuntimeFunctionDataCreator.createData(context, bitmaskTypeInstantiation, this);
 
         final BigInteger upperBound = getUpperBound(bitmaskTypeInstantiation);
         this.upperBound = upperBound.equals(nativeBaseType.getUpperBound()) ? null :
@@ -41,7 +41,7 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
         final List<BitmaskValue> bitmaskValues = bitmaskType.getValues();
         values = new ArrayList<BitmaskValueData>(bitmaskValues.size());
         for (BitmaskValue bitmaskValue : bitmaskValues)
-            values.add(new BitmaskValueData(nativeBaseType, bitmaskValue));
+            values.add(new BitmaskValueData(context, nativeBaseType, bitmaskValue));
     }
 
     public NativeIntegralTypeInfoTemplateData getUnderlyingTypeInfo()
@@ -82,12 +82,13 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
 
     public static class BitmaskValueData
     {
-        public BitmaskValueData(NativeIntegralType nativeBaseType, BitmaskValue bitmaskValue)
-                throws ZserioExtensionException
+        public BitmaskValueData(TemplateDataContext context, NativeIntegralType nativeBaseType,
+                BitmaskValue bitmaskValue) throws ZserioExtensionException
         {
             name = bitmaskValue.getName();
             value = nativeBaseType.formatLiteral(bitmaskValue.getValue());
             isZero = bitmaskValue.getValue().equals(BigInteger.ZERO);
+            docComments = DocCommentsDataCreator.createData(context, bitmaskValue);
         }
 
         public String getName()
@@ -105,9 +106,15 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
             return isZero;
         }
 
+        public DocCommentsTemplateData getDocComments()
+        {
+            return docComments;
+        }
+
         private final String name;
         private final String value;
         private final boolean isZero;
+        private final DocCommentsTemplateData docComments;
     };
 
     private final NativeIntegralTypeInfoTemplateData underlyingTypeInfo;

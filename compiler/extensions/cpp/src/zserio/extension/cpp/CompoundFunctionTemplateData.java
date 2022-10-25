@@ -62,6 +62,8 @@ public class CompoundFunctionTemplateData
             resultExpression = cppExpressionFormatter.formatGetter(function.getResultExpression());
             schemaName = function.getName();
             name = AccessorNameFormatter.getFunctionName(function);
+
+            docComments = DocCommentsDataCreator.createData(context, function);
         }
 
         public NativeTypeInfoTemplateData getReturnTypeInfo()
@@ -84,10 +86,16 @@ public class CompoundFunctionTemplateData
             return name;
         }
 
+        public DocCommentsTemplateData getDocComments()
+        {
+            return docComments;
+        }
+
         private final NativeTypeInfoTemplateData returnTypeInfo;
         private final String resultExpression;
         private final String schemaName;
         private final String name;
+        private final DocCommentsTemplateData docComments;
     }
 
     private final List<CompoundFunction> compoundFunctionList;

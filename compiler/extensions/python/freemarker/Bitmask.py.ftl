@@ -1,5 +1,6 @@
 <#include "FileHeader.inc.ftl"/>
 <#include "ArrayTraits.inc.ftl"/>
+<#include "DocComment.inc.ftl">
 <#if withTypeInfoCode>
     <#include "TypeInfo.inc.ftl"/>
 </#if>
@@ -8,11 +9,29 @@
 <@all_imports packageImports symbolImports typeImports/>
 
 class ${name}:
+<#if withCodeComments && docComments??>
+<@doc_comments docComments, 1/>
+
+</#if>
     def __init__(self) -> None:
+<#if withCodeComments>
+        """
+        Default constructor.
+        """
+
+</#if>
         self._value = 0
 
     @classmethod
     def from_value(cls: typing.Type['${name}'], value: int) -> '${name}':
+<#if withCodeComments>
+        """
+        Returns new object instance constructed from bitmask value.
+
+        :param value: Bitmask value to construct from.
+        """
+
+</#if>
         if value < ${lowerBound} or value > ${upperBound}:
             raise zserio.PythonRuntimeException(f"Value for bitmask '${name}' out of bounds: {value}!")
 
@@ -22,6 +41,14 @@ class ${name}:
 
     @classmethod
     def from_reader(cls: typing.Type['${name}'], reader: zserio.BitStreamReader) -> '${name}':
+<#if withCodeComments>
+        """
+        Returns new object instance constructed from bit stream reader.
+
+        :param reader: Bit stream reader to use.
+        """
+
+</#if>
         instance = cls()
         instance._value = reader.read_${runtimeFunction.suffix}(${runtimeFunction.arg!})
         return instance
@@ -30,6 +57,17 @@ class ${name}:
     def from_reader_packed(cls: typing.Type['${name}'],
                            context_node: zserio.array.PackingContextNode,
                            reader: zserio.BitStreamReader) -> '${name}':
+<#if withCodeComments>
+        """
+        Returns new object instance constructed from bit stream reader.
+
+        Called only internally if packed arrays are used.
+
+        :param context_node: Context for packed arrays.
+        :param reader: Bit stream reader to use.
+        """
+
+</#if>
         instance = cls()
         instance._value = context_node.context.read(<@array_traits_create underlyingTypeInfo.arrayTraits, bitSize!/>, reader)
         return instance
@@ -37,6 +75,14 @@ class ${name}:
 
     @staticmethod
     def type_info():
+    <#if withCodeComments>
+        """
+        Gets static information about this bitmask type useful for generic introspection.
+
+        :returns: Zserio type information.
+        """
+
+    </#if>
         attribute_list = {
             zserio.typeinfo.TypeAttribute.UNDERLYING_TYPE : <@type_info underlyingTypeInfo/>,
     <#if underlyingTypeInfo.isDynamicBitField>
@@ -95,13 +141,43 @@ class ${name}:
 
     @staticmethod
     def create_packing_context(context_node: zserio.array.PackingContextNode) -> None:
+<#if withCodeComments>
+        """
+        Creates context for packed arrays.
+
+        Called only internally if packed arrays are used.
+
+        :param context_node: Context for packed arrays.
+        """
+
+</#if>
         context_node.create_context()
 
     def init_packing_context(self, context_node: zserio.array.PackingContextNode) -> None:
+<#if withCodeComments>
+        """
+        Initializes context for packed arrays.
+
+        Called only internally if packed arrays are used.
+
+        :param context_node: Context for packed arrays.
+        """
+
+</#if>
         context_node.context.init(<@array_traits_create underlyingTypeInfo.arrayTraits, bitSize!/>,
                                   self._value)
 
     def bitsizeof(self, _bitposition: int = 0) -> int:
+<#if withCodeComments>
+        """
+        Calculates size of the serialized object in bits.
+
+        :param _bitposition: Bit stream position calculated from zero where the object will be serialized.
+
+        :returns: Number of bits which are needed to store serialized object.
+        """
+
+</#if>
 <#if bitSize??>
         return ${bitSize}
 <#else>
@@ -110,34 +186,105 @@ class ${name}:
 
     def bitsizeof_packed(self, context_node: zserio.array.PackingContextNode,
                          _bitposition: int) -> int:
+<#if withCodeComments>
+        """
+        Calculates size of the serialized object in bits for packed arrays.
+
+        Called only internally if packed arrays are used.
+
+        :param context_node: Context for packed arrays.
+        :param _bitposition: Bit stream position calculated from zero where the object will be serialized.
+
+        :returns: Number of bits which are needed to store serialized object.
+        """
+
+</#if>
         return context_node.context.bitsizeof(<@array_traits_create underlyingTypeInfo.arrayTraits, bitSize!/>,
                                               self._value)
 <#if withWriterCode>
 
-    def initialize_offsets(self, bit_position: int) -> int:
-        return bit_position + self.bitsizeof(bit_position)
+    def initialize_offsets(self, bitposition: int) -> int:
+    <#if withCodeComments>
+        """
+        Initializes offsets in this bitmask object.
+
+        Bitmask objects cannot have any offsets, thus this method just update bit stream position.
+
+        :param bitposition: Bit stream position calculated from zero where the object will be serialized.
+
+        :returns: Bit stream position calculated from zero updated to the first byte after serialized object.
+        """
+
+    </#if>
+        return bitposition + self.bitsizeof(bitposition)
 
     def initialize_offsets_packed(self, context_node: zserio.array.PackingContextNode,
                                   bitposition: int) -> int:
+    <#if withCodeComments>
+        """
+        Initializes offsets in this bitmask object.
+
+        Bitmask objects cannot have any offsets, thus this method just update bit stream position.
+        Called only internally if packed arrays are used.
+
+        :param context_node: Context for packed arrays.
+        :param bitposition: Bit stream position calculated from zero where the object will be serialized.
+
+        :returns: Bit stream position calculated from zero updated to the first byte after serialized object.
+        """
+
+    </#if>
         return bitposition + self.bitsizeof_packed(context_node, bitposition)
 
     def write(self, writer: zserio.BitStreamWriter, *, zserio_call_initialize_offsets: bool = True) -> None:
+    <#if withCodeComments>
+        """
+        Serializes this bitmask object to the bit stream.
+
+        :param writer: Bit stream writer where to serialize this bitmask object.
+        :param zserio_call_initialize_offsets: True to call automatically initialize_offsets method before
+               writing, otherwise False.
+        """
+
+    </#if>
         del zserio_call_initialize_offsets
         writer.write_${runtimeFunction.suffix}(self._value<#rt>
                                                <#lt><#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>)
 
     def write_packed(self, context_node: zserio.array.PackingContextNode,
                      writer: zserio.BitStreamWriter) -> None:
+    <#if withCodeComments>
+        """
+        Serializes this bitmask object to the bit stream.
+
+        Called only internally if packed arrays are used.
+
+        :param zserio_context_node: Context for packed arrays.
+        :param writer: Bit stream writer where to serialize this bitmask object.
+        """
+
+    </#if>
         context_node.context.write(<@array_traits_create underlyingTypeInfo.arrayTraits, bitSize!/>, writer, self._value)
 </#if>
 
     @property
     def value(self) -> int:
+<#if withCodeComments>
+        """
+        Gets the bitmask raw value.
+
+        :returns: Raw value which holds this bitmask.
+        """
+
+</#if>
         return self._value
 
     class Values:
 <#list values as value>
         ${value.name}: '${name}' = None
+    <#if withCodeComments && value.docComments??>
+        <@doc_comments value.docComments, 2/>
+    </#if>
 </#list>
 
 <#list values as value>

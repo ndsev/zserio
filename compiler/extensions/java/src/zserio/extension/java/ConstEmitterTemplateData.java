@@ -29,6 +29,8 @@ public final class ConstEmitterTemplateData extends JavaTemplateData
         typeInfo = new NativeTypeInfoTemplateData(nativeTargetType, typeInstantiation);
 
         value = javaExpressionFormatter.formatGetter(constant.getValueExpression());
+
+        docComments = DocCommentsDataCreator.createData(context, constant);
     }
 
     public String getPackageName()
@@ -51,8 +53,14 @@ public final class ConstEmitterTemplateData extends JavaTemplateData
         return value;
     }
 
+    public DocCommentsTemplateData getDocComments()
+    {
+        return docComments;
+    }
+
     private final String packageName;
     private final String name;
     private final NativeTypeInfoTemplateData typeInfo;
     private final String value;
+    private final DocCommentsTemplateData docComments;
 }

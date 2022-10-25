@@ -1,3 +1,4 @@
+<#include "DocComment.inc.ftl">
 <#macro field_member_name field>
     m_${field.name}_<#t>
 </#macro>
@@ -848,14 +849,69 @@ ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPositi
 </#macro>
 
 <#macro compound_field_accessors_declaration field>
-    <#if needs_field_getter(field)>
-    <@field_raw_cpp_type_name field/>& ${field.getterName}();
+    <#if withCodeComments>
+    /**
+     * Gets the value of the field ${field.name}.
+     *
+        <#if field.docComments??>
+     * \b Description
+     *
+     <@doc_comments_inner field.docComments, 1/>
+     *
+        </#if>
+     * \return Value of the field ${field.name}.
+     */
     </#if>
     <@field_raw_cpp_argument_type_name field/> ${field.getterName}() const;
+    <#if needs_field_getter(field)>
+        <#if withCodeComments>
+
+    /**
+     * Gets the reference to the field ${field.name}.
+     *
+            <#if field.docComments??>
+     * \b Description
+     *
+     <@doc_comments_inner field.docComments, 1/>
+     *
+            </#if>
+     * \return Reference to the field ${field.name}.
+     */
+        </#if>
+    <@field_raw_cpp_type_name field/>& ${field.getterName}();
+    </#if>
     <#if needs_field_setter(field)>
+        <#if withCodeComments>
+
+    /**
+     * Sets the field ${field.name}.
+     *
+            <#if field.docComments??>
+     * \b Description
+     *
+     <@doc_comments_inner field.docComments, 1/>
+     *
+            </#if>
+     * \param <@field_argument_name field/> Value of the field ${field.name} to set.
+     */
+        </#if>
     void ${field.setterName}(<@field_raw_cpp_argument_type_name field/> <@field_argument_name field/>);
     </#if>
     <#if needs_field_rvalue_setter(field)>
+        <#if withCodeComments>
+
+    /**
+     * Sets the field ${field.name} using r-value.
+     *
+            <#if field.docComments??>
+     * \b Description
+     *
+     <@doc_comments_inner field.docComments, 1/>
+     *
+            </#if>
+     * \param <@field_argument_name field/> R-value of the field ${field.name} to set.
+     */
+        </#if>
     void ${field.setterName}(<@field_raw_cpp_type_name field/>&& <@field_argument_name field/>);
     </#if>
 </#macro>
@@ -949,6 +1005,13 @@ ${I}<@field_member_name field/>(::zserio::allocatorPropagatingCopy(<#rt>
 </#macro>
 
 <#macro compound_initialize_children_declaration>
+    <#if withCodeComments>
+    /**
+     * Initializes all fields of this Zserio object.
+     *
+     * This method sets all parameters for all fields recursively.
+     */
+    </#if>
     void initializeChildren();
 </#macro>
 

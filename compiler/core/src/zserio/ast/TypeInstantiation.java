@@ -2,6 +2,8 @@ package zserio.ast;
 
 import java.util.List;
 
+import zserio.tools.WarningsConfig;
+
 /**
  * AST node for type instantiation.
  */
@@ -126,7 +128,7 @@ public class TypeInstantiation extends AstNodeBase
     /**
      * Checks the type instantiation.
      */
-    void check(ZserioTemplatableType currentTemplateInstantiation)
+    void check(WarningsConfig config, ZserioTemplatableType currentTemplateInstantiation)
     {
         // overridden by particular instantiations
     }

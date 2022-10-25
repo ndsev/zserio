@@ -15,7 +15,7 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
     public CompoundTypeTemplateData(TemplateDataContext context, CompoundType compoundType)
             throws ZserioExtensionException
     {
-        super(context, compoundType);
+        super(context, compoundType, compoundType);
 
         importPackage("typing");
         importPackage("zserio");

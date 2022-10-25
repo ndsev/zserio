@@ -1,1 +1,2 @@
+ZSERIO_ARGS=-withoutWarnings doc-comment-format,doc-comment-unused,doc-comment-see
 WERROR=0

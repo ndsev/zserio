@@ -1023,7 +1023,7 @@ public class Expression extends AstNodeBase
             final AstLocation location = getLocation();
 
             final ParserStackedException stackedException = new ParserStackedException(e);
-            stackedException.pushMessage(location, "In function '" + function.getName() + "' " +
+            stackedException.pushMessage(location, "    In function '" + function.getName() + "' " +
                     "called from here");
             throw stackedException;
         }

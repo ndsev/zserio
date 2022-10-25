@@ -58,9 +58,10 @@ public final class CompoundFieldTemplateData
         bitSize = new BitSize(fieldTypeInstantiation, pythonExpressionFormatter);
         offset = createOffset(field, pythonExpressionFormatter);
         array = createArray(context, fieldTypeInstantiation, parentType, importCollector);
-        runtimeFunction = PythonRuntimeFunctionDataCreator.createData(fieldTypeInstantiation,
+        runtimeFunction = RuntimeFunctionDataCreator.createData(fieldTypeInstantiation,
                 pythonExpressionFormatter);
         compound = createCompound(context, fieldTypeInstantiation, importCollector);
+        docComments = DocCommentsDataCreator.createData(context, field);
     }
 
     public String getName()
@@ -141,6 +142,11 @@ public final class CompoundFieldTemplateData
     public Compound getCompound()
     {
         return compound;
+    }
+
+    public DocCommentsTemplateData getDocComments()
+    {
+        return docComments;
     }
 
     public static class RangeCheck
@@ -250,7 +256,7 @@ public final class CompoundFieldTemplateData
         {
             value = createValue(typeInstantiation, pythonExpressionFormatter);
             runtimeFunction = (value != null) ? null :
-                PythonRuntimeFunctionDataCreator.createData(typeInstantiation, pythonExpressionFormatter);
+                RuntimeFunctionDataCreator.createData(typeInstantiation, pythonExpressionFormatter);
         }
 
         public String getValue()
@@ -581,4 +587,5 @@ public final class CompoundFieldTemplateData
     private final Array array;
     private final RuntimeFunctionTemplateData runtimeFunction;
     private final Compound compound;
+    private final DocCommentsTemplateData docComments;
 }

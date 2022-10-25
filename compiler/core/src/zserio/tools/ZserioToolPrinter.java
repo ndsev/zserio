@@ -35,7 +35,22 @@ public class ZserioToolPrinter
      * Prints warning which is localized by base AST node.
      *
      * @param astNode AST node to which the warning belongs to.
-     * @param text      Text of the warning to print.
+     * @param text Text of the warning to print.
+     * @param warningsConfig Warnings subsystem configuration.
+     * @param warningSpecifier Specifier for the current warning.
+     */
+    public static void printWarning(AstNode astNode, String text,
+            WarningsConfig warningsConfig, String warningSpecifier)
+    {
+        if (warningsConfig.isEnabled(warningSpecifier))
+            printWarning(astNode, text + " [" + warningSpecifier + "]");
+    }
+
+    /**
+     * Prints warning which is localized by base AST node.
+     *
+     * @param astNode AST node to which the warning belongs to.
+     * @param text Text of the warning to print.
      */
     public static void printWarning(AstNode astNode, String text)
     {
@@ -43,6 +58,21 @@ public class ZserioToolPrinter
             printWarning(null, 0, 0, text);
         else
             printWarning(astNode.getLocation(), text);
+    }
+
+    /**
+     * Prints warning which is localized by AST node location.
+     *
+     * @param location AST node location.
+     * @param text Text of the warning to print.
+     * @param warningsConfig Warnings subsystem configuration.
+     * @param warningSpecifier Specifier for the current warning.
+     */
+    public static void printWarning(AstLocation location, String text,
+            WarningsConfig warningsConfig, String warningSpecifier)
+    {
+        if (warningsConfig.isEnabled(warningSpecifier))
+            printWarning(location, text + " [" + warningSpecifier + "]");
     }
 
     /**
@@ -65,6 +95,19 @@ public class ZserioToolPrinter
     public static void printWarning(String fileName, String text)
     {
         printWarning(fileName, 0, 0, text);
+    }
+
+    /**
+     * Prints warning.
+     *
+     * @param text Text of the warning to print.
+     * @param warningsConfig Warnings subsystem configuration.
+     * @param warningSpecifier Specifier for the current warning.
+     */
+    public static void printWarning(String text, WarningsConfig warningsConfig, String warningSpecifier)
+    {
+        if (warningsConfig.isEnabled(warningSpecifier))
+            printWarning(null, 0, 0, text + " [" + warningSpecifier + "]");
     }
 
     /**

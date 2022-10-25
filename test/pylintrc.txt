@@ -11,9 +11,7 @@
 # --disable=W".
 disable=no-else-return,
         protected-access,
-        wrong-import-order,
-        consider-using-in,
-        too-many-return-statements
+        wrong-import-order
 
 [FORMAT]
 
@@ -21,7 +19,7 @@ disable=no-else-return,
 max-line-length=112
 
 # Maximum number of lines in a module.
-max-module-lines=2500
+max-module-lines=3000
 
 [BASIC]
 

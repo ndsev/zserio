@@ -1,15 +1,57 @@
 <#macro compound_functions_declaration compoundFunctionsData>
     <#if compoundFunctionsData.list?has_content>
         <#list compoundFunctionsData.list as compoundFunction>
+
             <#if compoundFunction.returnTypeInfo.isSimple>
+                <#if withCodeComments>
+    /**
+     * Implementation of the function ${compoundFunction.name}.
+     *
+                    <#if compoundFunction.docComments??>
+     * \b Description
+     *
+     <@doc_comments_inner compoundFunction.docComments, 1/>
+     *
+                    </#if>
+     * \return Result of the function ${compoundFunction.name}.
+     */
+                </#if>
     ${compoundFunction.returnTypeInfo.typeFullName} ${compoundFunction.name}() const;
             <#else>
+                <#if withCodeComments>
+    /**
+     * Implementation of the function ${compoundFunction.name} using const reference.
+     *
+                    <#if compoundFunction.docComments??>
+     * \b Description
+     *
+     <@doc_comments_inner compoundFunction.docComments, 1/>
+     *
+                    </#if>
+     * \return Const reference to the result of the function ${compoundFunction.name}.
+     */
+                </#if>
     const ${compoundFunction.returnTypeInfo.typeFullName}& ${compoundFunction.name}() const;
                 <#if withWriterCode>
+                    <#if withCodeComments>
+
+    /**
+     * Implementation of the function ${compoundFunction.name} using reference.
+     *
+     * This method can be called internally during setting of offsets.
+     *
+                        <#if compoundFunction.docComments??>
+     * \b Description
+     *
+     <@doc_comments_inner compoundFunction.docComments, 1/>
+     *
+                        </#if>
+     * \return Reference to the result of the function ${compoundFunction.name}.
+     */
+                    </#if>
     ${compoundFunction.returnTypeInfo.typeFullName}& ${compoundFunction.name}();
                 </#if>
             </#if>
-
         </#list>
     </#if>
 </#macro>

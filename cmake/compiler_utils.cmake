@@ -22,6 +22,8 @@ function(compiler_get_warnings_setup VARNAME)
                 "-Wno-missing-noreturn"
                 "-Wno-switch-enum"
                 "-Wno-documentation-unknown-command"
+                "-Wno-documentation-html"
+                "-Wno-documentation"
         )
         string(REPLACE ";" " " WARNINGS_SETUP "${WARNINGS_SETUP_LIST}")
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")

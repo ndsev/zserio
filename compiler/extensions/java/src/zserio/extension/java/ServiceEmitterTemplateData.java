@@ -17,7 +17,7 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
     public ServiceEmitterTemplateData(TemplateDataContext context, ServiceType serviceType)
             throws ZserioExtensionException
     {
-        super(context, serviceType);
+        super(context, serviceType, serviceType);
 
         final JavaNativeMapper javaTypeMapper = context.getJavaNativeMapper();
 
@@ -29,7 +29,7 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
         final Iterable<ServiceMethod> methodList = serviceType.getMethodList();
         for (ServiceMethod method : methodList)
         {
-            MethodTemplateData templateData = new MethodTemplateData(javaTypeMapper, method);
+            MethodTemplateData templateData = new MethodTemplateData(context, method);
             this.methodList.add(templateData);
         }
     }
@@ -46,18 +46,21 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
 
     public static class MethodTemplateData
     {
-        public MethodTemplateData(JavaNativeMapper typeMapper, ServiceMethod serviceMethod)
+        public MethodTemplateData(TemplateDataContext context, ServiceMethod method)
                 throws ZserioExtensionException
         {
-            name = serviceMethod.getName();
+            name = method.getName();
 
-            final TypeReference responseTypeReference = serviceMethod.getResponseTypeReference();
-            final JavaNativeType responseNativeType = typeMapper.getJavaType(responseTypeReference);
+            final TypeReference responseTypeReference = method.getResponseTypeReference();
+            final JavaNativeMapper javaTypeMapper = context.getJavaNativeMapper();
+            final JavaNativeType responseNativeType = javaTypeMapper.getJavaType(responseTypeReference);
             responseTypeInfo = new NativeTypeInfoTemplateData(responseNativeType, responseTypeReference);
 
-            final TypeReference requestTypeReference = serviceMethod.getRequestTypeReference();
-            final JavaNativeType requestNativeType = typeMapper.getJavaType(requestTypeReference);
+            final TypeReference requestTypeReference = method.getRequestTypeReference();
+            final JavaNativeType requestNativeType = javaTypeMapper.getJavaType(requestTypeReference);
             requestTypeInfo = new NativeTypeInfoTemplateData(requestNativeType, requestTypeReference);
+
+            docComments = DocCommentsDataCreator.createData(context, method);
         }
 
         public String getName()
@@ -75,9 +78,15 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
             return requestTypeInfo;
         }
 
+        public DocCommentsTemplateData getDocComments()
+        {
+            return docComments;
+        }
+
         private final String name;
         private final NativeTypeInfoTemplateData responseTypeInfo;
         private final NativeTypeInfoTemplateData requestTypeInfo;
+        private final DocCommentsTemplateData docComments;
     }
 
     private final List<MethodTemplateData> methodList = new ArrayList<MethodTemplateData>();

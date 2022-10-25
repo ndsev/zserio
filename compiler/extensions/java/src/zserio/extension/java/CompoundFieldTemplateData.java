@@ -68,8 +68,9 @@ public final class CompoundFieldTemplateData
                 javaLambdaExpressionFormatter);
         offset = createOffset(field, javaNativeMapper, javaExpressionFormatter, javaLambdaExpressionFormatter);
         array = createArray(context, nativeType, fieldTypeInstantiation, parentType);
-        runtimeFunction = JavaRuntimeFunctionDataCreator.createData(context, fieldTypeInstantiation);
+        runtimeFunction = RuntimeFunctionDataCreator.createData(context, fieldTypeInstantiation);
         compound = createCompound(context, fieldTypeInstantiation);
+        docComments = DocCommentsDataCreator.createData(context, field);
     }
 
     public String getName()
@@ -160,6 +161,11 @@ public final class CompoundFieldTemplateData
     public Compound getCompound()
     {
         return compound;
+    }
+
+    public DocCommentsTemplateData getDocComments()
+    {
+        return docComments;
     }
 
     public static class Optional
@@ -591,4 +597,5 @@ public final class CompoundFieldTemplateData
     private final Array array;
     private final RuntimeFunctionTemplateData runtimeFunction;
     private final Compound compound;
+    private final DocCommentsTemplateData docComments;
 }

@@ -42,6 +42,7 @@ public class ConstEmitterTemplateData extends CppTemplateData
         }
 
         value = cppExpressionFormatter.formatGetter(constant.getValueExpression());
+        docComments = DocCommentsDataCreator.createData(context, constant);
     }
 
     public PackageTemplateData getPackage()
@@ -64,8 +65,14 @@ public class ConstEmitterTemplateData extends CppTemplateData
         return value;
     }
 
+    public DocCommentsTemplateData getDocComments()
+    {
+        return docComments;
+    }
+
     private final PackageTemplateData packageData;
     private final String name;
     private final NativeTypeInfoTemplateData typeInfo;
     private final String value;
+    private final DocCommentsTemplateData docComments;
 }

@@ -6,13 +6,15 @@ package comments_warning.unresolved_see_tag_reference;
  * Constant for number 10.
  *
  * @see "Wrong link to unexisting type." Unexisting
+ * @see "Wrong lin to unexisting package." comments_warning.unexisting_package
  */
 const int32 VALUE = 10;
 
 /**
  * Test structure.
  *
- * @see "Wrong link to unexisting symbol." Table.Unexisting
+ * @see "Wrong link to unexisting symbol." Table.unexisting
+ * @see "Wrong lint to fully specified symbol." comments_warning.unresolved_see_tag_reference.Table.unexisting
  */
 struct Test
 {

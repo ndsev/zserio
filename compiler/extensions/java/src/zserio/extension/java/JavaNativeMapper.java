@@ -1,7 +1,6 @@
 package zserio.extension.java;
 
 import zserio.ast.ArrayInstantiation;
-import zserio.ast.AstNode;
 import zserio.ast.BitmaskType;
 import zserio.ast.BooleanType;
 import zserio.ast.ChoiceType;
@@ -12,6 +11,7 @@ import zserio.ast.DynamicBitFieldType;
 import zserio.ast.ExternType;
 import zserio.ast.FixedBitFieldType;
 import zserio.ast.PackageName;
+import zserio.ast.PackageSymbol;
 import zserio.ast.PubsubType;
 import zserio.ast.ServiceType;
 import zserio.ast.TypeInstantiation;
@@ -65,24 +65,34 @@ final class JavaNativeMapper
         this.withWriterCode = withWriterCode;
     }
 
-    public JavaNativeSymbol getJavaSymbol(AstNode symbol) throws ZserioExtensionException
+    public JavaNativeSymbol getJavaSymbol(PackageSymbol packageSymbol) throws ZserioExtensionException
     {
-        if (symbol instanceof Constant)
+        if (packageSymbol instanceof Constant)
         {
-            final Constant constant = (Constant)symbol;
-            final PackageName packageName = constant.getPackage().getPackageName();
-            final String name = constant.getName();
-            return new JavaNativeSymbol(packageName, name);
+            return getJavaSymbol((Constant)packageSymbol);
+        }
+        else if (packageSymbol instanceof ZserioType)
+        {
+            return getJavaType((ZserioType)packageSymbol);
         }
         else
-            throw new ZserioExtensionException("Unhandled symbol '" + symbol.getClass().getName() +
-                    "' in JavaNativeMapper!");
+        {
+            throw new ZserioExtensionException("Unhandled package symbol '" +
+                    packageSymbol.getClass().getName() + "' in JavaNativeMapper!");
+        }
+    }
+
+    public JavaNativeSymbol getJavaSymbol(Constant constant) throws ZserioExtensionException
+    {
+        final PackageName packageName = constant.getPackage().getPackageName();
+        final String name = constant.getName();
+        return new JavaNativeSymbol(packageName, name);
     }
 
     public JavaNativeType getJavaType(TypeInstantiation typeInstantiation) throws ZserioExtensionException
     {
         final JavaNativeTypes javaTypes = getJavaTypes(typeInstantiation);
-        final JavaNativeType nativeType = javaTypes.getType();
+        final JavaNativeType nativeType = javaTypes != null ? javaTypes.getType() : null;
         if (nativeType == null)
         {
             throw new ZserioExtensionException("Unhandled type '" + typeInstantiation.getClass().getName() +
@@ -95,7 +105,7 @@ final class JavaNativeMapper
     public JavaNativeType getJavaType(TypeReference typeReference) throws ZserioExtensionException
     {
         final JavaNativeTypes javaTypes = getJavaTypes(typeReference);
-        final JavaNativeType nativeType = javaTypes.getType();
+        final JavaNativeType nativeType = javaTypes != null ? javaTypes.getType() : null;
         if (nativeType == null)
         {
             throw new ZserioExtensionException("Unhandled type '" + typeReference.getClass().getName() +
@@ -108,11 +118,11 @@ final class JavaNativeMapper
     public JavaNativeType getJavaType(ZserioType type) throws ZserioExtensionException
     {
         final JavaNativeTypes javaTypes = getJavaTypes(type);
-        final JavaNativeType nativeType = javaTypes.getType();
+        final JavaNativeType nativeType = javaTypes != null ? javaTypes.getType() : null;
         if (nativeType == null)
         {
             throw new ZserioExtensionException("Unhandled type '" + type.getClass().getName() +
-                    "' in JavaNativeMapper!");
+                    "' in JavaNativeMapper!" + type.getLocation());
         }
 
         return nativeType;
@@ -122,7 +132,7 @@ final class JavaNativeMapper
             throws ZserioExtensionException
     {
         final JavaNativeTypes javaTypes = getJavaTypes(typeInstantiation);
-        final JavaNativeType nativeType = javaTypes.getType();
+        final JavaNativeType nativeType = javaTypes != null ? javaTypes.getType() : null;
         if (!(nativeType instanceof NativeIntegralType))
         {
             throw new ZserioExtensionException("Unhandled integral type '" +
@@ -136,7 +146,7 @@ final class JavaNativeMapper
             throws ZserioExtensionException
     {
         final JavaNativeTypes javaTypes = getJavaTypes(typeInstantiation);
-        final JavaNativeType nativeNullableType = javaTypes.getNullableType();
+        final JavaNativeType nativeNullableType = javaTypes != null ? javaTypes.getNullableType() : null;
         if (nativeNullableType == null)
         {
             throw new ZserioExtensionException("Unhandled type '" + typeInstantiation.getClass().getName() +

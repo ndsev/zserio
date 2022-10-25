@@ -27,7 +27,7 @@ public final class SqlTableRowEmitterTemplateData extends JavaTemplateData
 
         for (Field field: tableType.getFields())
         {
-            final FieldTemplateData fieldData = new FieldTemplateData(javaNativeMapper, field);
+            final FieldTemplateData fieldData = new FieldTemplateData(context, javaNativeMapper, field);
             fields.add(fieldData);
         }
     }
@@ -49,15 +49,18 @@ public final class SqlTableRowEmitterTemplateData extends JavaTemplateData
 
     public static class FieldTemplateData
     {
-        public FieldTemplateData(JavaNativeMapper javaNativeMapper, Field field)
+        public FieldTemplateData(TemplateDataContext context, JavaNativeMapper javaNativeMapper, Field field)
                 throws ZserioExtensionException
         {
             final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
             name = field.getName();
             final JavaNativeType nativeType = javaNativeMapper.getJavaType(fieldTypeInstantiation);
-            final JavaNativeType nullableNativeType = javaNativeMapper.getNullableJavaType(fieldTypeInstantiation);
+            final JavaNativeType nullableNativeType =
+                    javaNativeMapper.getNullableJavaType(fieldTypeInstantiation);
             nullableTypeInfo = new NativeTypeInfoTemplateData(nullableNativeType, fieldTypeInstantiation);
             typeInfo = new NativeTypeInfoTemplateData(nativeType, fieldTypeInstantiation);
+
+            docComments = DocCommentsDataCreator.createData(context, field);
         }
 
         public String getName()
@@ -75,9 +78,15 @@ public final class SqlTableRowEmitterTemplateData extends JavaTemplateData
             return typeInfo;
         }
 
+        public DocCommentsTemplateData getDocComments()
+        {
+            return docComments;
+        }
+
         private final String name;
         private final NativeTypeInfoTemplateData nullableTypeInfo;
         private final NativeTypeInfoTemplateData typeInfo;
+        private final DocCommentsTemplateData docComments;
     }
 
     private final String packageName;

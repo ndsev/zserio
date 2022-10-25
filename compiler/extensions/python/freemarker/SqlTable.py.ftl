@@ -1,4 +1,5 @@
 <#include "FileHeader.inc.ftl"/>
+<#include "DocComment.inc.ftl">
 <#if withTypeInfoCode>
     <#include "TypeInfo.inc.ftl"/>
 </#if>
@@ -40,10 +41,42 @@
 <#assign rowsClassName = "Rows"/>
 
 class ${name}:
+<#if withCodeComments && docComments??>
+<@doc_comments docComments, 1/>
+
+</#if>
     class ${rowsClassName}:
+<#if withCodeComments>
+        """
+        Class which describes one row in the table.
+
+        **Columns**
+    <#list fields as field>
+
+        .. _${fullName}.${rowsClassName}.${field.name}:
+
+        ${field.name}
+        <#if field.docComments??>
+        <@doc_comments_inner field.docComments, 3/>
+        </#if>
+    </#list>
+        """
+
+</#if>
         def __init__(self, <#rt>
                 <#lt>rows: typing.Iterator[<#if needsRowConversion>typing.Tuple<#else>'${name}.${rowAnnotationName}'</#if>]<#rt>
                 <#lt><#if needsParameterProvider>, parameter_provider: '${name}.IParameterProvider'</#if>) -> None:
+<#if withCodeComments>
+            """
+            Constructor from rows.
+
+            :param rows: Table row to construct from.
+    <#if needsParameterProvider>
+            :param parameter_provider: Explicit parameter provider to be used.
+    </#if>
+            """
+
+</#if>
             self._rows = rows
 <#if needsParameterProvider>
             self._parameter_provider = parameter_provider
@@ -89,13 +122,39 @@ class ${name}:
         ${parameter.expression}<#t>
     </#macro>
     class IParameterProvider:
+    <#if withCodeComments>
+        """
+        Interface for class which provides all explicit parameters of the table.
+        """
+
+    </#if>
     <#list explicitParameters as parameter>
         def <@parameter_provider_method_name parameter/>(self, row: typing.Tuple) -> ${parameter.typeInfo.typeFullName}:
+        <#if withCodeComments>
+            """
+            Gets the value of the explicit parameter ${parameter.expression}.
+
+            :param row: Current row of the table which can be used during parameter calculation.
+
+            :returns: The value of the explicit parameter ${parameter.expression}.
+            """
+
+        </#if>
             raise NotImplementedError()
     </#list>
 
 </#if>
     def __init__(self, connection: apsw.Connection, table_name: str, attached_db_name: str = None) -> None:
+<#if withCodeComments>
+        """
+        Constructor from database connection, table name and attached database name.
+
+        :param connection: Database connection where the table is located.
+        :param table_name: Table name.
+        :param attached_db_name: Name of the attached database where table has been relocated.
+        """
+
+</#if>
         self._connection: apsw.Connection = connection
         self._table_name: str = table_name
         self._attached_db_name: str = attached_db_name
@@ -103,6 +162,14 @@ class ${name}:
 
     @staticmethod
     def type_info() -> zserio.typeinfo.TypeInfo:
+    <#if withCodeComments>
+        """
+        Gets static information about the table type useful for generic introspection.
+
+        :returns: Zserio type information.
+        """
+
+    </#if>
         column_list: typing.List[zserio.typeinfo.MemberInfo] = [
     <#list fields as field>
             <@member_info_table_field field field?has_next/>
@@ -134,6 +201,12 @@ class ${name}:
 <#if withWriterCode>
 
     def create_table(self) -> None:
+    <#if withCodeComments>
+        """
+        Creates the table using database connection given by constructor.
+        """
+
+    </#if>
         sql_query = self._get_create_table_query()
     <#if hasNonVirtualField && isWithoutRowId>
         sql_query += " WITHOUT ROWID"
@@ -143,12 +216,26 @@ class ${name}:
     <#if hasNonVirtualField && isWithoutRowId>
 
     def create_ordinary_rowid_table(self) -> None:
+        <#if withCodeComments>
+        """
+        Creates the table as ordinary row id using database connection given by constructor.
+
+        The method creates the table as ordinary row id even if it is specified as without row id in schema.
+        """
+
+        </#if>
         sql_query = self._get_create_table_query()
         cursor = self._connection.cursor()
         cursor.execute(sql_query)
     </#if>
 
     def delete_table(self) -> None:
+    <#if withCodeComments>
+        """
+        Deletes the table using database connection given by constructor.
+        """
+
+    </#if>
         sql_query = "DROP TABLE "
         sql_query += self._get_table_name_in_query()
         cursor = self._connection.cursor()
@@ -157,6 +244,19 @@ class ${name}:
 
     def read(self, <#if needsParameterProvider>parameter_provider: '${name}.IParameterProvider', </#if>condition: str = None) -> <#rt>
             <#lt>'${name}.${rowsClassName}':
+<#if withCodeComments>
+        """
+        Reads all rows from the table.
+
+    <#if needsParameterProvider>
+        :param parameter_provider: Explicit parameter provider to be used during reading.
+    </#if>
+        :param condition: SQL condition to use.
+
+        :returns: Read rows.
+        """
+
+</#if>
         sql_query = ("SELECT "
 <#list fields as field>
                     "${field.name}<#if field?has_next>, </#if>"
@@ -173,6 +273,14 @@ class ${name}:
 <#if withWriterCode>
 
     def write(self, rows: typing.Sequence['${name}.${rowAnnotationName}']) -> None:
+    <#if withCodeComments>
+        """
+        Writes rows to the table.
+
+        :param rows: Table rows to write.
+        """
+
+    </#if>
         sql_query = "INSERT INTO "
         sql_query += self._get_table_name_in_query()
         sql_query += ("("
@@ -193,6 +301,15 @@ class ${name}:
             cursor.execute("COMMIT")
 
     def update(self, row: '${name}.${rowAnnotationName}', where_condition: str) -> None:
+    <#if withCodeComments>
+        """
+        Updates row of the table.
+
+        :param row: Table row to update.
+        :param where_condition: SQL where condition to use.
+        """
+
+    </#if>
         sql_query = "UPDATE "
         sql_query += self._get_table_name_in_query()
         sql_query += (" SET"

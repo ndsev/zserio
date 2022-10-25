@@ -23,7 +23,7 @@ class ScopeSymbolValidator
         {
             final ParserStackedException stackedException = new ParserStackedException(symbol.getLocation(),
                     "Symbol '" + name + "' differs only in a case of its first letter!");
-            stackedException.pushMessage(prevSymbol.getLocation(), "   Conflicting symbol defined here!");
+            stackedException.pushMessage(prevSymbol.getLocation(), "    Conflicting symbol defined here");
             throw stackedException;
         }
     }

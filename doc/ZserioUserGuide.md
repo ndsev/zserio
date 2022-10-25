@@ -26,7 +26,7 @@ java -jar zserio.jar
     [-allowImplicitArrays]
     [-cpp <output directory>]
     [-doc <output directory>]
-    [-h,--help]
+    [-h,--help <[topic]>]
     [-ignoreTimestamps]
     [-java <output directory>]
     [-python <output directory>]
@@ -35,6 +35,7 @@ java -jar zserio.jar
     [-setTopLevelPackage <package>]
     [-src <source directory>]
     [-v,--version]
+    [-withCodeComments|-withoutCodeComments]
     [-withCrossExtensionCheck|-withoutCrossExtensionCheck]
     [-withGlobalRuleIdCheck|-withoutGlobalRuleIdCheck]
     [-withPubsubCode|-withoutPubsubCode]
@@ -45,7 +46,7 @@ java -jar zserio.jar
     [-withSqlCode|-withoutSqlCode]
     [-withSvgDiagrams|-withoutSvgDiagrams]
     [-withTypeInfoCode|-withoutTypeInfoCode]
-    [-withUnusedWarnings|-withoutUnusedWarnings]
+    [-withWarnings|-withoutWarnings <warning[,warning]*>]
     [-withValidationCode|-withoutValidationCode]
     [-withWriterCode|-withoutWriterCode]
     [-xml <output directory>]
@@ -74,6 +75,8 @@ Zserio will generate HTML documentation into a given output directory.
 **`-h, --help`**
 
 Shows all supported command line options with their description.
+
+Optionally specify one of the following topics for detailed description: warnings.
 
 **`-ignoreTimestamps`**
 
@@ -123,6 +126,10 @@ directories as in the Java `CLASSPATH` is not supported.
 **`-v`, `--version`**
 
 Shows the version of the Zserio tool.
+
+**`-withCodeComments|-withoutCodeComments`**
+
+Enables/disables comments in generated code. By default is disabled.
 
 **`-withCrossExtensionCheck|-withoutCrossExtensionCheck`**
 
@@ -181,9 +188,9 @@ executable is a part of the Graphviz package which can be downloaded from
 
 Enables/disables generation of type information code. By default is disabled.
 
-**`-withUnusedWarnings|-withoutUnusedWarnings`**
+**`-withWarnings|-withoutWarnings`**
 
-Enables/disables warnings for unused types. By default is disabled.
+Allows to enable/disable specific warnings. Use '--help warnings' for detailed description.
 
 **`-withValidationCode|-withoutValidationCode`**
 
@@ -227,6 +234,61 @@ generates:
 `java -jar zserio.jar -java api/java -cpp api/cpp -python api/python -doc html -xml xml -src sources zserio/test.zs`
 
 [top](#zserio-compiler-user-guide)
+
+## Zserio Warnings Subsystem
+
+Zserio provides possibility to configure warnings on command line. Each
+warning has it's own specifier (i.e. tag) which can be used to either
+enable or disable the particular warning.
+
+Options `-withWarnings` and `-withoutWarnings` can be combined. When
+warnings options groups are used, more generic groups are applied first
+so that it is possible to enable all warnings in a group and then
+disable some smaller set of warnings or just a single warning.
+
+### List of Warnings
+- `all`
+  Controls all warnings at once.
+- `choice-unhandled-enum-item`
+  Warn when a choice with enumeration selector does not handle some of
+  the enumeration items. Enabled by default.
+- `default-instantiation`
+  Warn about template instantiations which are not instantiated using
+  instantiate keyword. Disabled by default.
+- `doc-comment-format`
+  Warn when a documentation comment has invalid format. Enabled by
+  default.
+- `doc-comment-see`
+  Warn when a documentation see tag contains invalid symbol reference.
+  Enabled by default.
+- `doc-comment-unused`
+  Warn when a documentation comment is not used - i.e. cannot be
+  assigned to any documentable element. Enabled by default.
+- `encoding`
+  Warn when a source file is not in UTF-8 encoding or when it contains
+  non-printable characters. Enabled by default.
+- `import`
+  Warn when some imports are duplicated or overrides other imports.
+  Enabled by default.
+- `optional-field-reference`
+  Warn when an expression contains a reference to an optional field,
+  while the owner of the expression has no or inconsistent optional
+  condition. Enabled by default.
+- `timestamp`
+  Warn when timestamp of a source or a resource (on a class path) cannot
+  be retrieved. Enabled by default.
+- `sql-primary-key`
+  Warn when a problem with primary key is detected in a SQL table. This
+  can happen in various cases - no primary key, duplicated primary key,
+  etc. Enabled by default.
+- `unpackable-array`
+  Warn when a packed array is used on arrays of unpackable elements. Can
+  be fired either for arrays of unpackable simple types (e.g. string) or
+  for arrays of compounds which contain only unpackable types. Enabled
+  by default.
+- `unused`
+  Warn about defined, but unused types. Disabled by default.
+
 
 ## Zserio Ant Task
 

@@ -26,7 +26,7 @@ import zserio.extension.common.ZserioExtensionException;
  * Create RuntimeFunctionTemplateData needed for generating of calls to Zserio runtime for reading and writing
  * of built-in types.
  */
-class PythonRuntimeFunctionDataCreator
+class RuntimeFunctionDataCreator
 {
     public static RuntimeFunctionTemplateData createData(TypeInstantiation typeInstantiation,
             ExpressionFormatter pythonExpressionFormatter) throws ZserioExtensionException

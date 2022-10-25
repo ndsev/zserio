@@ -1,8 +1,8 @@
 package comments.classic_doc.enum_comments;
 
-/**
- * Traffic flow on links.
- */
+/*!
+ Traffic flow on links.
+ !*/
 enum bit:2 Direction
 {
     /** No traffic flow allowed. */

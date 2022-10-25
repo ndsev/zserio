@@ -65,7 +65,7 @@ class PackageWithModuleClashingErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "package_with_module_clashing/package_with_instantiate_type_clash_error.zs",
             [
-                ":18:13: In instantiation of 'Some' required from here",
+                ":18:13:     In instantiation of 'Some' required from here",
                 ":5:8: Module " +
                 "'package_with_module_clashing.package_with_instantiate_type_clash_error.clashing_name' " +
                 "generated for package symbol 'ClashingName' clashes with equally named generated package!",
@@ -77,7 +77,7 @@ class PackageWithModuleClashingErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "package_with_module_clashing/package_with_instantiation_clash_error.zs",
             [
-                ":16:9: In instantiation of 'Clashing' required from here",
+                ":16:9:     In instantiation of 'Clashing' required from here",
                 ":5:7: Module " +
                 "'package_with_module_clashing.package_with_instantiation_clash_error.clashing_name' " +
                 "generated for package symbol 'Clashing_Name' clashes with equally named generated package!",

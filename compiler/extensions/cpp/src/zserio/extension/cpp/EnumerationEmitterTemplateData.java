@@ -18,7 +18,7 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
     public EnumerationEmitterTemplateData(TemplateDataContext context, EnumType enumType)
             throws ZserioExtensionException
     {
-        super(context, enumType);
+        super(context, enumType, enumType);
 
         final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
         final CppNativeType nativeEnumType = cppNativeMapper.getCppType(enumType);
@@ -30,12 +30,12 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         underlyingTypeInfo = new NativeIntegralTypeInfoTemplateData(nativeBaseType, enumTypeInstantiation);
 
         bitSize = BitSizeTemplateData.create(context, enumTypeInstantiation, this);
-        runtimeFunction = CppRuntimeFunctionDataCreator.createData(context, enumTypeInstantiation, this);
+        runtimeFunction = RuntimeFunctionDataCreator.createData(context, enumTypeInstantiation, this);
 
         final List<EnumItem> enumItems = enumType.getItems();
         items = new ArrayList<EnumItemData>(enumItems.size());
         for (EnumItem enumItem : enumItems)
-            items.add(new EnumItemData(nativeBaseType, nativeEnumType, enumItem));
+            items.add(new EnumItemData(context, nativeBaseType, nativeEnumType, enumItem));
     }
 
     public NativeIntegralTypeInfoTemplateData getUnderlyingTypeInfo()
@@ -60,13 +60,14 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
 
     public static class EnumItemData
     {
-        public EnumItemData(NativeIntegralType nativeBaseType, CppNativeType nativeEnumType, EnumItem enumItem)
-                throws ZserioExtensionException
+        public EnumItemData(TemplateDataContext context, NativeIntegralType nativeBaseType,
+                CppNativeType nativeEnumType, EnumItem enumItem) throws ZserioExtensionException
         {
             name = enumItem.getName();
             fullName = CppFullNameFormatter.getFullName(nativeEnumType.getPackageName(),
                     nativeEnumType.getName(), enumItem.getName());
             value = nativeBaseType.formatLiteral(enumItem.getValue());
+            docComments = DocCommentsDataCreator.createData(context, enumItem);
         }
 
         public String getName()
@@ -84,9 +85,15 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
             return value;
         }
 
+        public DocCommentsTemplateData getDocComments()
+        {
+            return docComments;
+        }
+
         private final String name;
         private final String fullName;
         private final String value;
+        private final DocCommentsTemplateData docComments;
     };
 
     private final NativeIntegralTypeInfoTemplateData underlyingTypeInfo;

@@ -155,6 +155,30 @@ struct ValidationSqliteUtil
             return false;
         }
     }
+
+    /**
+     * Gets name of the given SQLite column type.
+     *
+     * \param columnType SQLite column type.
+     *
+     * \return SQLite column type name.
+     */
+    static const char* sqliteColumnTypeName(int columnType)
+    {
+        switch (columnType)
+        {
+        case SQLITE_INTEGER:
+            return "INTEGER";
+        case SQLITE_FLOAT:
+            return "REAL";
+        case SQLITE_TEXT:
+            return "TEXT";
+        case SQLITE_BLOB:
+            return "BLOB";
+        default:
+            return "NULL";
+        }
+    }
 };
 
 } // namespace zserio

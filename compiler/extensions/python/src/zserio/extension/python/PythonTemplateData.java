@@ -16,6 +16,7 @@ public class PythonTemplateData implements ImportCollector
     {
         withWriterCode = context.getWithWriterCode();
         withTypeInfoCode = context.getWithTypeInfoCode();
+        withCodeComments = context.getWithCodeComments();
         generatorDescription = context.getGeneratorDescription();
     }
 
@@ -32,6 +33,11 @@ public class PythonTemplateData implements ImportCollector
     public boolean getWithTypeInfoCode()
     {
         return withTypeInfoCode;
+    }
+
+    public boolean getWithCodeComments()
+    {
+        return withCodeComments;
     }
 
     public Iterable<String> getPackageImports()
@@ -74,6 +80,7 @@ public class PythonTemplateData implements ImportCollector
 
     private final boolean withWriterCode;
     private final boolean withTypeInfoCode;
+    private final boolean withCodeComments;
     private final String generatorDescription;
 
     // keep ordering to have system imports before application imports

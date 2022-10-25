@@ -12,12 +12,15 @@
     <target name="gen" depends="gen.check" unless="comments_warning.zs.gen_is_uptodate">
         <testGenClean testName="comments_warning"/>
         <testGen testName="comments_warning" zsFile="comments_warning.zs">
-            <arg name="withUnusedWarnings"/>
+            <arg name="withWarnings" value="unused"/>
+        </testGen>
+        <testGen testName="comments_warning" zsFile="doc_comment_missing_warning.zs">
+            <arg name="withWarnings" value="doc-comment-missing"/>
         </testGen>
     </target>
 
     <target name="gen.checkWarnings" depends="gen">
-        <testGenCheckWarnings testName="comments_warning" expectedWarnings="13"/>
+        <testGenCheckWarnings testName="comments_warning" expectedWarnings="50"/><!-- 18 + 32 -->
     </target>
 
     <target name="compile" depends="gen.checkWarnings">

@@ -18,7 +18,7 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
     public EnumerationEmitterTemplateData(TemplateDataContext context, EnumType enumType)
             throws ZserioExtensionException
     {
-        super(context, enumType);
+        super(context, enumType, enumType);
 
         final TypeInstantiation enumTypeInstantiation = enumType.getTypeInstantiation();
         final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
@@ -30,11 +30,11 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
         underlyingTypeInfo = new NativeTypeInfoTemplateData(nativeIntegralType, enumTypeInstantiation);
         bitSize = BitSizeTemplateData.create(enumTypeInstantiation, javaExpressionFormatter,
                 javaLambdaExpressionFormatter);
-        runtimeFunction = JavaRuntimeFunctionDataCreator.createData(context, enumTypeInstantiation);
+        runtimeFunction = RuntimeFunctionDataCreator.createData(context, enumTypeInstantiation);
 
         items = new ArrayList<EnumItemData>();
         for (EnumItem item: enumType.getItems())
-            items.add(new EnumItemData(nativeIntegralType, item));
+            items.add(new EnumItemData(context, nativeIntegralType, item));
     }
 
     public NativeTypeInfoTemplateData getUnderlyingTypeInfo()
@@ -59,11 +59,12 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
 
     public static class EnumItemData
     {
-        public EnumItemData(NativeIntegralType nativeIntegralType, EnumItem enumItem)
-                throws ZserioExtensionException
+        public EnumItemData(TemplateDataContext context, NativeIntegralType nativeIntegralType,
+                EnumItem enumItem) throws ZserioExtensionException
         {
             name = enumItem.getName();
             value = nativeIntegralType.formatLiteral(enumItem.getValue());
+            docComments = DocCommentsDataCreator.createData(context, enumItem);
         }
 
         public String getName()
@@ -76,8 +77,14 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
             return value;
         }
 
+        public DocCommentsTemplateData getDocComments()
+        {
+            return docComments;
+        }
+
         private final String name;
         private final String value;
+        private final DocCommentsTemplateData docComments;
     }
 
     private final NativeTypeInfoTemplateData underlyingTypeInfo;

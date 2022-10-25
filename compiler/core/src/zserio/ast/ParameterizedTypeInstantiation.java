@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import zserio.tools.WarningsConfig;
+
 /**
  * AST node for parameterized type instantiation.
  */
@@ -171,7 +173,7 @@ public class ParameterizedTypeInstantiation extends TypeInstantiation
     }
 
     @Override
-    void check(ZserioTemplatableType currentTemplateInstantiation)
+    void check(WarningsConfig warningsConfig, ZserioTemplatableType currentTemplateInstantiation)
     {
         // check all argument types in instantiated parameter list
         for (InstantiatedParameter instantiatedParameter : instantiatedParameters)

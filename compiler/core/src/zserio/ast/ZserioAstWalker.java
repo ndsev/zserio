@@ -261,9 +261,9 @@ public class ZserioAstWalker implements ZserioAstVisitor
     }
 
     @Override
-    public void visitInstantiateType(InstantiateType templateInstantiation)
+    public void visitInstantiateType(InstantiateType instantiateType)
     {
-        templateInstantiation.visitChildren(this);
+        instantiateType.visitChildren(this);
     }
 
     @Override

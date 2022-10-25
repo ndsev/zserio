@@ -1,2 +1,2 @@
-WERROR=0
+ZSERIO_ARGS=-withoutWarnings encoding
 XMLLINT=0

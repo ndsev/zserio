@@ -1,29 +1,73 @@
 <#include "FileHeader.inc.ftl">
 <#include "Sql.inc.ftl">
 <#include "TypeInfo.inc.ftl">
+<#include "DocComment.inc.ftl">
 <@standard_header generatorDescription, packageName/>
 <#if withValidationCode>
     <#assign needsParameterProvider = sql_db_needs_parameter_provider(fields)/>
 </#if>
 
+<#if withCodeComments && docComments??>
+<@doc_comments docComments/>
+</#if>
 public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>Reader</#if>
 {
 <#if withValidationCode && needsParameterProvider>
+    <#if withCodeComments>
+    /** Interface for class which provides all explicit parameter providers of all tables in the database. */
+    </#if>
     public static interface ParameterProvider
     {
-        <#list fields as field>
-            <#if field.hasExplicitParameters>
-        ${field.typeInfo.typeFullName}.ParameterProvider get${field.name?cap_first}ParameterProvider();
+    <#assign isTheFirst=true>
+    <#list fields as field>
+        <#if field.hasExplicitParameters>
+            <#if withCodeComments>
+                <#if !isTheFirst>
+
+                <#else>
+                    <#assign isTheFirst=false>
+                </#if>
+        /**
+         * Gets the explicit parameter provider for the table ${field.name}.
+         *
+         * @return The explicit parameter provider for the table ${field.name}.
+         */
             </#if>
-        </#list>
+        ${field.typeInfo.typeFullName}.ParameterProvider get${field.name?cap_first}ParameterProvider();
+        </#if>
+    </#list>
     };
 
+</#if>
+<#if withCodeComments>
+    /**
+     * Constructor from database file name.
+     *
+     * The method opens the database of given file name.
+     *
+     * @param fileName Database file name to use.
+     *
+     * @throws SQLException If database opening fails.
+     */
 </#if>
     public ${name}(java.lang.String fileName) throws java.sql.SQLException
     {
         this(fileName, new java.util.HashMap<java.lang.String, java.lang.String>());
     }
 
+<#if withCodeComments>
+    /**
+     * Constructor from database file name and table relocation map.
+     *
+     * The method opens the database of given file name and for each relocated table attaches database to
+     * which relocated table should be mapped.
+     *
+     * @param fileName Database file name to use.
+     * @param tableToDbFileNameRelocationMap Mapping of relocated table name to database file name.
+     *
+     * @throws SQLException If database opening fails.
+     */
+</#if>
     public ${name}(java.lang.String fileName,
             java.util.Map<java.lang.String, java.lang.String> tableToDbFileNameRelocationMap)
             throws java.sql.SQLException
@@ -60,11 +104,31 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
         initTables(tableToAttachedDbNameRelocationMap);
     }
 
+<#if withCodeComments>
+    /**
+     * Constructor from external connection.
+     *
+     * The method uses given external connection if database is already open.
+     *
+     * @param externalConnection Database connection of already open database.
+     */
+</#if>
     public ${name}(java.sql.Connection externalConnection)
     {
         this(externalConnection, new java.util.HashMap<java.lang.String, java.lang.String>());
     }
 
+<#if withCodeComments>
+    /**
+     * Constructor from external connection and table relocation map.
+     *
+     * The method uses given external connection if database is already open and for each relocated table uses
+     * provided already attached database names.
+     *
+     * @param externalConnection Database connection of already open database.
+     * @param tableToAttachedDbNameRelocationMap Mapping of relocated table name to attached database file name.
+     */
+</#if>
     public ${name}(java.sql.Connection externalConnection,
             java.util.Map<java.lang.String, java.lang.String> tableToAttachedDbNameRelocationMap)
     {
@@ -98,6 +162,13 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
     }
 <#if withTypeInfoCode>
 
+    <#if withCodeComments>
+    /**
+     * Gets static information about the database type useful for generic introspection.
+     *
+     * @return Zserio type information.
+     */
+    </#if>
     public static zserio.runtime.typeinfo.TypeInfo typeInfo()
     {
         final java.util.List<zserio.runtime.typeinfo.TableInfo> tableList =
@@ -110,6 +181,21 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
 </#if>
 <#list fields as field>
 
+    <#if withCodeComments>
+    /**
+     * Gets the table ${field.name}.
+        <#if field.docComments??>
+     * <p>
+     * <b>Description:</b>
+     * <br>
+     <@doc_comments_inner field.docComments, 1/>
+     *
+        <#else>
+     *
+        </#if>
+     * @return Reference to the table ${field.name}.
+     */
+    </#if>
     public ${field.typeInfo.typeFullName} ${field.getterName}()
     {
         return this.<@sql_field_member_name field/>;
@@ -174,6 +260,19 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
 </#if>
 <#if withValidationCode>
 
+    <#if withCodeComments>
+    /**
+     * Validates all tables in the database.
+     *
+        <#if needsParameterProvider>
+     * @param parameterProvider Provider of explicit parameters for all tables.
+     *
+        </#if>
+     * @return Validation report which contains validation result.
+     *
+     * @throws SQLException If any access to database fails.
+     */
+    </#if>
     public zserio.runtime.validation.ValidationReport validate(<#if needsParameterProvider>ParameterProvider parameterProvider</#if>)
             throws java.sql.SQLException
     {
@@ -187,11 +286,25 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
     }
 </#if>
 
+<#if withCodeComments>
+    /**
+     * Gets the database name.
+     *
+     * @return Database name.
+     */
+</#if>
     public static java.lang.String databaseName()
     {
         return DATABASE_NAME;
     }
 
+<#if withCodeComments>
+    /**
+     * Gets all table names of the database.
+     *
+     * @return Array of all table names of the database.
+     */
+</#if>
     public static java.lang.String[] tableNames()
     {
         return new java.lang.String[]

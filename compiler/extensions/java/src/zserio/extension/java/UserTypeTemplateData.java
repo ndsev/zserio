@@ -1,5 +1,6 @@
 package zserio.extension.java;
 
+import zserio.ast.DocumentableAstNode;
 import zserio.ast.ZserioType;
 import zserio.ast.ZserioTypeUtil;
 import zserio.extension.common.ZserioExtensionException;
@@ -10,7 +11,8 @@ import zserio.extension.java.types.JavaNativeType;
  */
 public class UserTypeTemplateData extends JavaTemplateData
 {
-    public UserTypeTemplateData(TemplateDataContext context, ZserioType type) throws ZserioExtensionException
+    public UserTypeTemplateData(TemplateDataContext context, ZserioType type,
+            DocumentableAstNode documentableNode) throws ZserioExtensionException
     {
         super(context);
 
@@ -18,6 +20,7 @@ public class UserTypeTemplateData extends JavaTemplateData
         packageName = JavaFullNameFormatter.getFullName(javaNativeType.getPackageName());
         name = javaNativeType.getName();
         schemaTypeName = ZserioTypeUtil.getFullName(type);
+        docComments = DocCommentsDataCreator.createData(context, documentableNode);
     }
 
     public String getPackageName()
@@ -35,7 +38,13 @@ public class UserTypeTemplateData extends JavaTemplateData
         return schemaTypeName;
     }
 
+    public DocCommentsTemplateData getDocComments()
+    {
+        return docComments;
+    }
+
     private final String packageName;
     private final String name;
     private final String schemaTypeName;
+    private final DocCommentsTemplateData docComments;
 }

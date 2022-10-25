@@ -166,6 +166,12 @@ public class CppExtensionParametersTest
         }
 
         @Override
+        public boolean getWithCodeComments()
+        {
+            return false;
+        }
+
+        @Override
         public List<String> getTopLevelPackageNameIds()
         {
             return new ArrayList<String>();
@@ -185,7 +191,7 @@ public class CppExtensionParametersTest
 
         private final String setCppAllocator;
         private final boolean withReflectionCode;
-        private final boolean withWriterCode;
         private final boolean withTypeInfoCode;
+        private final boolean withWriterCode;
     }
 }

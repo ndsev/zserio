@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceLoader;
@@ -46,22 +47,13 @@ class ExtensionManager
     }
 
     /**
-     * Prints list of all available extensions.
+     * Gets list of available extensions.
+     *
+     * @return List of extensions.
      */
-    public void printExtensions()
+    public List<Extension> getExtensions()
     {
-        if (extensions.isEmpty())
-        {
-            ZserioToolPrinter.printMessage("No extensions found!");
-        }
-        else
-        {
-            ZserioToolPrinter.printMessage("Available extensions:");
-            for (Extension extension : extensions)
-            {
-                ZserioToolPrinter.printMessage("  " + extension.getName());
-            }
-        }
+        return Collections.unmodifiableList(extensions);
     }
 
     /**

@@ -30,7 +30,7 @@ class SqlTableEmitter extends JavaDefaultEmitter
         }
     }
 
+    static final String TABLE_ROW_SUFFIX_NAME = "Row";
     private static final String TABLE_TEMPLATE_NAME = "SqlTable.java.ftl";
     private static final String TABLE_ROW_TEMPLATE_NAME = "SqlTableRow.java.ftl";
-    private static final String TABLE_ROW_SUFFIX_NAME = "Row";
 }

@@ -18,21 +18,17 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
     public PubsubEmitterTemplateData(TemplateDataContext context, PubsubType pubsubType)
             throws ZserioExtensionException
     {
-        super(context, pubsubType);
+        super(context, pubsubType, pubsubType);
 
         importPackage("typing");
         importPackage("zserio");
-
-        final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
-        final ExpressionFormatter pythonExpressionFormatter = context.getPythonExpressionFormatter(this);
 
         Iterable<PubsubMessage> messageList = pubsubType.getMessageList();
         boolean hasPublishing = false;
         boolean hasSubscribing = false;
         for (PubsubMessage message : messageList)
         {
-            final MessageTemplateData templateData = new MessageTemplateData(pythonNativeMapper,
-                    pythonExpressionFormatter, message, this);
+            final MessageTemplateData templateData = new MessageTemplateData(context, message, this);
             hasPublishing |= templateData.getIsPublished();
             hasSubscribing |= templateData.getIsSubscribed();
             this.messageList.add(templateData);
@@ -58,10 +54,12 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
 
     public static class MessageTemplateData
     {
-        public MessageTemplateData(PythonNativeMapper pythonNativeMapper,
-                ExpressionFormatter pythonExpressionFormatter, PubsubMessage message,
+        public MessageTemplateData(TemplateDataContext context, PubsubMessage message,
                 ImportCollector importCollector) throws ZserioExtensionException
         {
+            final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
+            final ExpressionFormatter pythonExpressionFormatter =
+                    context.getPythonExpressionFormatter(importCollector);
             name = message.getName();
             snakeCaseName = PythonSymbolConverter.toLowerSnakeCase(name);
             final TypeReference messageTypeReference = message.getTypeReference();
@@ -71,6 +69,7 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
             topicDefinition = pythonExpressionFormatter.formatGetter(message.getTopicDefinitionExpr());
             isPublished = message.isPublished();
             isSubscribed = message.isSubscribed();
+            docComments = DocCommentsDataCreator.createData(context, message);
         }
 
         public String getName()
@@ -103,12 +102,18 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
             return isSubscribed;
         }
 
+        public DocCommentsTemplateData getDocComments()
+        {
+            return docComments;
+        }
+
         private final String name;
         private final String snakeCaseName;
         private final NativeTypeInfoTemplateData typeInfo;
         private final String topicDefinition;
         private final boolean isPublished;
         private final boolean isSubscribed;
+        private final DocCommentsTemplateData docComments;
     }
 
     private final List<MessageTemplateData> messageList = new ArrayList<MessageTemplateData>();

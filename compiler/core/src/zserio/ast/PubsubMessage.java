@@ -93,7 +93,7 @@ public class PubsubMessage extends DocumentableAstNode implements ScopeSymbol
     }
 
     /**
-     * Checks the message type.
+     * Checks the message.
      */
     void check()
     {

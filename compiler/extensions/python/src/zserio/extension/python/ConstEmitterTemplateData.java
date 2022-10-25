@@ -20,6 +20,7 @@ public class ConstEmitterTemplateData extends PythonTemplateData
 
         final ExpressionFormatter pythonExpressionFormatter = context.getPythonExpressionFormatter(this);
         value = pythonExpressionFormatter.formatGetter(constant.getValueExpression());
+        docComments = DocCommentsDataCreator.createData(context, constant);
     }
 
     public String getName()
@@ -32,6 +33,12 @@ public class ConstEmitterTemplateData extends PythonTemplateData
         return value;
     }
 
+    public DocCommentsTemplateData getDocComments()
+    {
+        return docComments;
+    }
+
     private final String name;
     private final String value;
+    private final DocCommentsTemplateData docComments;
 }

@@ -44,6 +44,7 @@ public final class CompoundFunctionTemplateData
             final ExpressionFormatter javaLambdaExpressionFormatter =
                     context.getJavaLambdaExpressionFormatter();
             lambdaResultExpression = javaLambdaExpressionFormatter.formatGetter(function.getResultExpression());
+            docComments = DocCommentsDataCreator.createData(context, function);
         }
 
         public NativeTypeInfoTemplateData getReturnTypeInfo()
@@ -71,12 +72,18 @@ public final class CompoundFunctionTemplateData
             return lambdaResultExpression;
         }
 
+        public DocCommentsTemplateData getDocComments()
+        {
+            return docComments;
+        }
+
         private final NativeTypeInfoTemplateData returnTypeInfo;
         private final String schemaName;
         private final String name;
         private final String resultExpression;
         private final String lambdaResultExpression;
+        private final DocCommentsTemplateData docComments;
     }
 
-    private final List<CompoundFunction>    compoundFunctionList;
+    private final List<CompoundFunction> compoundFunctionList;
 }

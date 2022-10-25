@@ -98,8 +98,8 @@ public class NativeTypeInfoTemplateData
         else
         {
             hashCodeFunc = (typeInstantiation != null) ?
-                    PythonRuntimeFunctionDataCreator.createHashCodeData(typeInstantiation) :
-                    PythonRuntimeFunctionDataCreator.createHashCodeData(typeReference);
+                    RuntimeFunctionDataCreator.createHashCodeData(typeInstantiation) :
+                    RuntimeFunctionDataCreator.createHashCodeData(typeReference);
         }
     }
 

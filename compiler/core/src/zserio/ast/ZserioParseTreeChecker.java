@@ -6,11 +6,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
-import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
+import java.nio.charset.StandardCharsets;
 
 import zserio.antlr.ZserioParser;
 import zserio.antlr.ZserioParserBaseVisitor;
+import zserio.tools.WarningsConfig;
 import zserio.tools.ZserioToolPrinter;
 
 /**
@@ -18,8 +19,9 @@ import zserio.tools.ZserioToolPrinter;
  */
 public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
 {
-    public ZserioParseTreeChecker(boolean allowImplicitArrays)
+    public ZserioParseTreeChecker(WarningsConfig warningsConfig, boolean allowImplicitArrays)
     {
+        this.warningsConfig = warningsConfig;
         this.allowImplicitArrays = allowImplicitArrays;
     }
 
@@ -78,7 +80,7 @@ public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
                 final AstLocation location = new AstLocation(ctx.IMPLICIT().getSymbol());
                 final ParserStackedException stackedException = new ParserStackedException(location,
                         "Implicit arrays are deprecated and will be removed from the language!");
-                stackedException.pushMessage(location,  "    For strong compatibility reason, please " +
+                stackedException.pushMessage(location, "For strong compatibility reason, please " +
                         "consider to use command line option '-allowImplicitArrays'.");
                 throw stackedException;
             }
@@ -199,29 +201,34 @@ public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
         final byte[] fileContent = readFile(location);
         try
         {
-            final CharsetDecoder decoder = Charset.forName("UTF-8").newDecoder();
+            final CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder();
             decoder.decode(ByteBuffer.wrap(fileContent));
         }
         catch (CharacterCodingException exception)
         {
-            ZserioToolPrinter.printWarning(location, "Found non-UTF8 encoded characters.");
+            ZserioToolPrinter.printWarning(location, "Found non-UTF8 encoded characters.",
+                    warningsConfig, WarningsConfig.ENCODING);
         }
     }
 
     private void checkNonPrintableCharacters(AstLocation location)
     {
         final byte[] fileContent = readFile(location);
-        final String content = new String(fileContent, Charset.forName("UTF-8"));
+        final String content = new String(fileContent, StandardCharsets.UTF_8);
 
         if (content.indexOf('\t') >= 0)
-            ZserioToolPrinter.printWarning(location, "Found tab characters.");
+        {
+            ZserioToolPrinter.printWarning(location, "Found tab characters.",
+                    warningsConfig, WarningsConfig.ENCODING);
+        }
 
         for (int i = 0; i < content.length(); ++i)
         {
             final char character = content.charAt(i);
             if (character < '\u0020' && character != '\r' && character != '\n' && character != '\t')
             {
-                ZserioToolPrinter.printWarning(location, "Found non-printable ASCII characters.");
+                ZserioToolPrinter.printWarning(location, "Found non-printable ASCII characters.",
+                        warningsConfig, WarningsConfig.ENCODING);
                 break;
             }
         }
@@ -248,6 +255,7 @@ public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
         }
     }
 
+    private final WarningsConfig warningsConfig;
     private final boolean allowImplicitArrays;
 
     /** Flags used to allow index operator only in offsets or arguments in array fields. */

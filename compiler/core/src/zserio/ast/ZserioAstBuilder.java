@@ -13,6 +13,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import zserio.antlr.ZserioParser;
 import zserio.antlr.ZserioParserBaseVisitor;
 import zserio.tools.InputFileManager;
+import zserio.tools.WarningsConfig;
 
 /**
  * Implementation of ZserioParserBaseVisitor which builds Zserio AST.
@@ -25,13 +26,16 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
      * @param topLevelPackageNameIds List of top level package name identifiers given by command line option.
      * @param inputFileName Input file name given by command line.
      * @param inputFileManager Input file manager.
+     * @param warningsConfig Warnings subsystem configuration.
      */
     public ZserioAstBuilder(Iterable<String> topLevelPackageNameIds, String inputFileName,
-            InputFileManager inputFileManager)
+            InputFileManager inputFileManager, WarningsConfig warningsConfig)
     {
         this.topLevelPackageNameIds = topLevelPackageNameIds;
         this.inputFileName = inputFileName;
         this.inputFileManager = inputFileManager;
+
+        docCommentManager = new DocCommentManager(warningsConfig);
     }
 
     /**
@@ -1250,7 +1254,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     private final String inputFileName;
     private final InputFileManager inputFileManager;
 
-    private final DocCommentManager docCommentManager = new DocCommentManager();
+    private final DocCommentManager docCommentManager;
     private final LinkedHashMap<PackageName, Package> packageNameMap =
             new LinkedHashMap<PackageName, Package>();
 

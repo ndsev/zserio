@@ -23,7 +23,7 @@ public class ConstraintsErrorTest
     {
         final String errors[] =
         {
-            "field_in_function_not_available_error.zs:7:26: In function 'checkSpecial' called from here",
+            "field_in_function_not_available_error.zs:7:26:     In function 'checkSpecial' called from here",
             "field_in_function_not_available_error.zs:17:31: " +
                     "Unresolved symbol 'specialMinValue' within expression scope!"
         };

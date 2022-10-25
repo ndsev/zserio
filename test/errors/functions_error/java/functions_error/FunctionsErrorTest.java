@@ -21,7 +21,7 @@ public class FunctionsErrorTest
     {
         final String errors[] =
         {
-            "compound_field_not_available_error.zs:7:23: In function 'hasOptional2' called from here",
+            "compound_field_not_available_error.zs:7:23:     In function 'hasOptional2' called from here",
             "compound_field_not_available_error.zs:17:16: Unresolved symbol 'header2' within expression scope!"
         };
         assertTrue(zserioErrors.isPresent(errors));
@@ -32,7 +32,7 @@ public class FunctionsErrorTest
     {
         final String errors[] =
         {
-            "different_scopes_error.zs:15:27: In function 'getValue' called from here",
+            "different_scopes_error.zs:15:27:     In function 'getValue' called from here",
             "different_scopes_error.zs:20:55: Unresolved symbol 'val3' within expression scope!"
         };
         assertTrue(zserioErrors.isPresent(errors));
@@ -43,7 +43,7 @@ public class FunctionsErrorTest
     {
         final String errors[] =
         {
-            "field_not_available_error.zs:7:28: In function 'hasSpecial' called from here",
+            "field_not_available_error.zs:7:28:     In function 'hasSpecial' called from here",
             "field_not_available_error.zs:17:16: Unresolved symbol 'hasSpecialData' within expression scope!"
         };
         assertTrue(zserioErrors.isPresent(errors));

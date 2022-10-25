@@ -47,6 +47,8 @@ public final class CompoundFunctionTemplateData
             final ExpressionFormatter pythonExpressionFormatter =
                     context.getPythonExpressionFormatter(importCollector);
             resultExpression = pythonExpressionFormatter.formatGetter(function.getResultExpression());
+
+            docComments = DocCommentsDataCreator.createData(context, function);
         }
 
         public String getSchemaName()
@@ -69,10 +71,16 @@ public final class CompoundFunctionTemplateData
             return resultExpression;
         }
 
+        public DocCommentsTemplateData getDocComments()
+        {
+            return docComments;
+        }
+
         private final String schemaName;
         private final String functionName;
         private final NativeTypeInfoTemplateData returnTypeInfo;
         private final String resultExpression;
+        private final DocCommentsTemplateData docComments;
     }
 
     private final List<CompoundFunction> compoundFunctionList;

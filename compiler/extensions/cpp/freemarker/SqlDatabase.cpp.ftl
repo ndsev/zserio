@@ -43,7 +43,7 @@ ${name}::${name}(const ${types.string.name}& dbFileName, const TRelocationMap& t
         const ${types.string.name}& tableName = relocation.first;
         const ${types.string.name}& fileName = relocation.second;
         auto attachedDbIt = dbFileNameToAttachedDbNameMap.find(fileName);
-        if(attachedDbIt == dbFileNameToAttachedDbNameMap.end())
+        if (attachedDbIt == dbFileNameToAttachedDbNameMap.end())
         {
             ${types.string.name} attachedDbName =
                     ::zserio::stringViewToString(databaseName(), get_allocator_ref()) + "_" + tableName;

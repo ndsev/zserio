@@ -8,8 +8,9 @@ Traffic flow on links.
 
 !*/
 
-/**
- * This is additional classic documentation comment.
+/*
+ * This is standard comment which will be ignored. This means that there is only one floating comment and no
+ * sticky comment. This is intentional to check correctness of sticky comments filtering.
  */
 enum bit:2 Direction
 {
@@ -41,6 +42,7 @@ enum bit:2 Direction
 /**
  * This is additional classic documentation comment.
  */
+/** This is an another sticky comment which is oneliner! */
 struct DirectionStructure(bool hasExtraValue)
 {
     /*! Direction. !*/

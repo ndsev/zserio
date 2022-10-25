@@ -1,13 +1,24 @@
 <#include "FileHeader.inc.ftl">
 <#include "TypeInfo.inc.ftl">
+<#include "DocComment.inc.ftl">
 <@standard_header generatorDescription, packageName/>
 
 <#macro method_name_constant_name method>
     ${method.name}_METHOD_NAME<#t>
 </#macro>
+<#if withCodeComments && docComments??>
+<@doc_comments docComments/>
+</#if>
 public final class ${name}
 {
 <#if withTypeInfoCode>
+    <#if withCodeComments>
+    /**
+     * Gets static information about this service useful for generic introspection.
+     *
+     * @return Zserio type information.
+     */
+    </#if>
     public static zserio.runtime.typeinfo.TypeInfo typeInfo()
     {
         return new zserio.runtime.typeinfo.TypeInfo.ServiceTypeInfo(
@@ -18,8 +29,16 @@ public final class ${name}
     }
 
 </#if>
+<#if withCodeComments>
+    /**
+     * Service part of the service {@link ${name}}.
+     */
+</#if>
     public static abstract class ${name}Service implements zserio.runtime.service.ServiceInterface
     {
+<#if withCodeComments>
+        /** Default constructor. */
+</#if>
         public ${name}Service()
         {
             methodMap = new java.util.HashMap<java.lang.String, Method>();
@@ -52,11 +71,25 @@ public final class ${name}
             return method.invoke(requestData, context);
         }
 
+<#if withCodeComments>
+        /**
+         * Gets the service full qualified name.
+         *
+         * @return Service name together with its package name.
+         */
+</#if>
         public static java.lang.String serviceFullName()
         {
             return SERVICE_FULL_NAME;
         }
 
+<#if withCodeComments>
+        /**
+         * Gets all method names of the service.
+         *
+         * @return Array of all method names of the service.
+         */
+</#if>
         public static java.lang.String[] methodNames()
         {
             return new java.lang.String[]
@@ -96,14 +129,44 @@ public final class ${name}
         private final java.util.Map<java.lang.String, Method> methodMap;
     }
 
+<#if withCodeComments>
+    /**
+     * Client part of the service {@link ${name}}.
+     */
+</#if>
     public static final class ${name}Client
     {
+<#if withCodeComments>
+        /**
+         * Constructor from the service client backend.
+         *
+         * @param serviceClient Interface for service client backend.
+         */
+</#if>
         public ${name}Client(zserio.runtime.service.ServiceClientInterface serviceClient)
         {
             this.serviceClient = serviceClient;
         }
 <#list methodList as method>
 
+    <#if withCodeComments>
+        /**
+         * Calls method ${method.name}.
+        <#if method.docComments??>
+         * <p>
+         * <b>Description:</b>
+         * <br>
+         <@doc_comments_inner method.docComments, 2/>
+         *
+        <#else>
+         *
+        </#if>
+         * @param request Request to be passed to the method.
+         * @param context Context specific for particular service.
+         *
+         * @return Response returned from the method.
+         */
+    </#if>
         public ${method.responseTypeInfo.typeFullName} ${method.name}Method(${method.requestTypeInfo.typeFullName} request,
                 java.lang.Object context) throws zserio.runtime.ZserioError
         {
@@ -114,6 +177,23 @@ public final class ${name}
             return response;
         }
 
+    <#if withCodeComments>
+        /**
+         * Calls method ${method.name}.
+        <#if method.docComments??>
+         * <p>
+         * <b>Description:</b>
+         * <br>
+         <@doc_comments_inner method.docComments, 2/>
+         *
+        <#else>
+         *
+        </#if>
+         * @param request Request to be passed to the method.
+         *
+         * @return Response returned from the method.
+         */
+    </#if>
         public ${method.responseTypeInfo.typeFullName} ${method.name}Method(${method.requestTypeInfo.typeFullName} request)
                  throws zserio.runtime.ZserioError
         {
@@ -126,6 +206,9 @@ public final class ${name}
 <#if methodList?has_content>
 
     <#list methodList as method>
+        <#if withCodeComments>
+    /** Name definition of the service method ${method.name}. */
+        </#if>
     public static final String <@method_name_constant_name method/> = "${method.name}";
     </#list>
 </#if>

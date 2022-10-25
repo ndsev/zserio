@@ -64,9 +64,10 @@ public class CompoundFieldTemplateData
         constraint = createConstraint(context, field, includeCollector);
         offset = createOffset(context, field, includeCollector);
         array = createArray(context, fieldNativeType, fieldTypeInstantiation, parentType, includeCollector);
-        runtimeFunction = CppRuntimeFunctionDataCreator.createData(context, fieldTypeInstantiation,
+        runtimeFunction = RuntimeFunctionDataCreator.createData(context, fieldTypeInstantiation,
                 includeCollector);
         bitSize = BitSizeTemplateData.create(context, fieldTypeInstantiation, includeCollector);
+        docComments = DocCommentsDataCreator.createData(context, field);
     }
 
     public Optional getOptional()
@@ -162,6 +163,11 @@ public class CompoundFieldTemplateData
     public BitSizeTemplateData getBitSize()
     {
         return bitSize;
+    }
+
+    public DocCommentsTemplateData getDocComments()
+    {
+        return docComments;
     }
 
     public static class Optional
@@ -666,4 +672,5 @@ public class CompoundFieldTemplateData
     private final Array array;
     private final RuntimeFunctionTemplateData runtimeFunction;
     private final BitSizeTemplateData bitSize;
+    private final DocCommentsTemplateData docComments;
 }

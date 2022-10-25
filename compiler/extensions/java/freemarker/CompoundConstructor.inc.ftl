@@ -3,11 +3,32 @@
     <#local name=compoundConstructorsData.compoundName>
     <#local constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData/></#local>
     <#if withWriterCode>
+        <#if withCodeComments>
+    /**
+     * Default constructor.
+     *
+        <#list compoundConstructorsData.compoundParametersData.list as compoundParameter>
+     * @param <@parameter_argument_name compoundParameter/> Value of the parameter {@link #${compoundParameter.getterName}() ${compoundParameter.name}}.
+        </#list>
+     */
+        </#if>
     public ${name}(${constructorArgumentTypeList})
     {
         <@compound_constructors_set_parameters compoundConstructorsData/>
     }
 
+    </#if>
+    <#if withCodeComments>
+    /**
+     * File constructor.
+     *
+     * @param file File which contains bit stream to use.
+        <#list compoundConstructorsData.compoundParametersData.list as compoundParameter>
+     * @param <@parameter_argument_name compoundParameter/> Value of the parameter {@link #${compoundParameter.getterName}() ${compoundParameter.name}}.
+        </#list>
+     *
+     * @throws IOException If the reading from file failed.
+     */
     </#if>
     public ${name}(java.io.File file<#if constructorArgumentTypeList?has_content>,${constructorArgumentTypeList}</#if>)
             throws java.io.IOException
@@ -22,6 +43,18 @@
         }
     }
 
+    <#if withCodeComments>
+    /**
+     * Read constructor.
+     *
+     * @param in Bit stream reader to use.
+        <#list compoundConstructorsData.compoundParametersData.list as compoundParameter>
+     * @param <@parameter_argument_name compoundParameter/> Value of the parameter {@link #${compoundParameter.getterName}() ${compoundParameter.name}}.
+        </#list>
+     *
+     * @throws IOException If the reading from bit stream failed.
+     */
+    </#if>
     public ${name}(zserio.runtime.io.BitStreamReader in<#if constructorArgumentTypeList?has_content>,${constructorArgumentTypeList}</#if>)
             throws java.io.IOException
     {
@@ -32,6 +65,21 @@
         read(in);
     }
 
+    <#if withCodeComments>
+    /**
+     * Read constructor.
+     * <p>
+     * Called only internally if packed arrays are used.
+     *
+     * @param contextNode Context for packed arrays.
+     * @param in Bit stream reader to use.
+        <#list compoundConstructorsData.compoundParametersData.list as compoundParameter>
+     * @param <@parameter_argument_name compoundParameter/> Value of the parameter {@link #${compoundParameter.getterName}() ${compoundParameter.name}}.
+        </#list>
+     *
+     * @throws IOException If the reading from bit stream failed.
+     */
+    </#if>
     public ${name}(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in<#rt>
             <#lt><#if constructorArgumentTypeList?has_content>,${constructorArgumentTypeList}</#if>)
             throws java.io.IOException

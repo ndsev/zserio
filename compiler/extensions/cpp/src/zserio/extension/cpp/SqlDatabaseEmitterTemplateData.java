@@ -21,13 +21,12 @@ public class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
     public SqlDatabaseEmitterTemplateData(TemplateDataContext context, SqlDatabaseType databaseType)
             throws ZserioExtensionException
     {
-        super(context, databaseType);
+        super(context, databaseType, databaseType);
 
-        final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
         final List<Field> dbFields = databaseType.getFields();
         fields = new ArrayList<DatabaseField>(dbFields.size());
         for (Field dbField : dbFields)
-            fields.add(new DatabaseField(cppNativeMapper, dbField, this));
+            fields.add(new DatabaseField(context, dbField, this));
     }
 
     public Iterable<DatabaseField> getFields()
@@ -37,12 +36,13 @@ public class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
 
     public static class DatabaseField
     {
-        public DatabaseField(CppNativeMapper cppNativeMapper, Field field,
+        public DatabaseField(TemplateDataContext context, Field field,
                 IncludeCollector includeCollector) throws ZserioExtensionException
         {
             final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
             final ZserioType fieldBaseType = fieldTypeInstantiation.getBaseType();
 
+            final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
             final CppNativeType nativeFieldType = cppNativeMapper.getCppType(fieldTypeInstantiation);
             includeCollector.addHeaderIncludesForType(nativeFieldType);
 
@@ -61,6 +61,8 @@ public class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
                 isWithoutRowIdTable = false;
                 hasExplicitParameters = false;
             }
+
+            docComments = DocCommentsDataCreator.createData(context, field);
         }
 
         public String getName()
@@ -86,6 +88,11 @@ public class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
         public boolean getHasExplicitParameters()
         {
             return hasExplicitParameters;
+        }
+
+        public DocCommentsTemplateData getDocComments()
+        {
+            return docComments;
         }
 
         private static boolean hasTableExplicitParameters(SqlTableType tableType)
@@ -115,6 +122,7 @@ public class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
         private final String getterName;
         private final boolean isWithoutRowIdTable;
         private final boolean hasExplicitParameters;
+        private final DocCommentsTemplateData docComments;
     }
 
     private final List<DatabaseField> fields;

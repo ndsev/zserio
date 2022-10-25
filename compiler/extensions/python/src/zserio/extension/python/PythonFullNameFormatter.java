@@ -25,7 +25,7 @@ public class PythonFullNameFormatter
         return getModuleFullName(symbol.getPackageName(), symbol.getModuleName());
     }
 
-    private static String getFullName(PackageName packageName)
+    public static String getFullName(PackageName packageName)
     {
         return packageName.toString(PYTHON_PACKAGE_SEPARATOR);
     }

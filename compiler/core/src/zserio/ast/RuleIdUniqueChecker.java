@@ -39,7 +39,7 @@ class RuleIdUniqueChecker extends ZserioAstWalker
             final ParserStackedException stackedException = new ParserStackedException(rule.getLocation(),
                     "Rule ID '" + rule.getRuleId() + "' is not unique (case insensitive) " +
                             ((withGlobalRuleIdCheck) ? "between all packages" : "within a package") + "!");
-            stackedException.pushMessage(addedRule.getLocation(), "    Conflicting rule defined here.");
+            stackedException.pushMessage(addedRule.getLocation(), "    Conflicting rule defined here");
             throw stackedException;
         }
     }

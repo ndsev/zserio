@@ -5,6 +5,7 @@
 <#include "CompoundField.inc.ftl">
 <#include "RangeCheck.inc.ftl">
 <#include "TypeInfo.inc.ftl">
+<#include "DocComment.inc.ftl">
 <@standard_header generatorDescription, packageName/>
 <#assign hasFieldWithConstraint=false/>
 <#list fieldList as field>
@@ -14,11 +15,26 @@
     </#if>
 </#list>
 
+<#if withCodeComments && docComments??>
+<@doc_comments docComments/>
+</#if>
 public class ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeOffsetsWriter, </#if>zserio.runtime.SizeOf
 {
     <@compound_constructors compoundConstructorsData/>
 <#if withWriterCode && fieldList?has_content>
     <#assign constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData/></#assign>
+    <#if withCodeComments>
+    /**
+     * Fields constructor.
+     *
+        <#list compoundConstructorsData.compoundParametersData.list as compoundParameter>
+     * @param <@parameter_argument_name compoundParameter/> Value of the parameter {@link #${compoundParameter.getterName}() ${compoundParameter.name}}.
+        </#list>
+        <#list fieldList as field>
+     * @param <@field_argument_name field/> Value of the field {@link #${field.getterName}() ${field.name}}.
+        </#list>
+     */
+    </#if>
     public ${name}(<#if constructorArgumentTypeList?has_content>${constructorArgumentTypeList},</#if>
     <#list fieldList as field>
             ${field.typeInfo.typeFullName} <@field_argument_name field/><#if field_has_next>,<#else>)</#if>
@@ -35,6 +51,13 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 
 </#if>
 <#if withTypeInfoCode>
+    <#if withCodeComments>
+    /**
+     * Gets static information about this Zserio type useful for generic introspection.
+     *
+     * @return Zserio type information.
+     */
+    </#if>
     public static zserio.runtime.typeinfo.TypeInfo typeInfo()
     {
     <#list fieldList as field>
@@ -56,6 +79,15 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
         );
     }
 
+</#if>
+<#if withCodeComments>
+    /**
+     * Creates context for packed arrays.
+     * <p>
+     * Called only internally if packed arrays are used.
+     *
+     * @param contextNode Context for packed arrays.
+     */
 </#if>
     public static void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
     {
@@ -112,6 +144,21 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 
     <@compound_parameter_accessors compoundParametersData/>
 <#list fieldList as field>
+    <#if withCodeComments>
+    /**
+     * Gets the value of the field ${field.name}.
+        <#if field.docComments??>
+     * <p>
+     * <b>Description:</b>
+     * <br>
+     <@doc_comments_inner field.docComments, 1/>
+     *
+        <#else>
+     *
+        </#if>
+     * @return Value of the field ${field.name}.
+     */
+    </#if>
     public ${field.typeInfo.typeFullName} ${field.getterName}()
     {
     <#if field.array??>
@@ -122,6 +169,21 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     }
 
     <#if withWriterCode>
+        <#if withCodeComments>
+    /**
+     * Sets the field ${field.name}.
+            <#if field.docComments??>
+     * <p>
+     * <b>Description:</b>
+     * <br>
+     <@doc_comments_inner field.docComments, 1/>
+     *
+            <#else>
+     *
+            </#if>
+     * @param <@field_argument_name field/> Value of the field ${field.name} to set.
+     */
+        </#if>
     public void ${field.setterName}(${field.typeInfo.typeFullName} <@field_argument_name field/>)
     {
         <@range_check field.rangeCheckData, name/>
@@ -146,17 +208,36 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 
     </#if>
     <#if field.optional??>
+        <#if withCodeComments>
+    /**
+     * Checks if the optional field ${field.name} is used during serialization and deserialization.
+     *
+     * @return True if the optional field ${field.name} is used, otherwise false.
+     */
+        </#if>
     public boolean ${field.optional.isUsedIndicatorName}()
     {
         return <#if field.optional.clause??>(${field.optional.clause});<#else>${field.optional.isSetIndicatorName}();</#if>
     }
 
         <#if withWriterCode>
+            <#if withCodeComments>
+    /**
+     * Checks if the optional field ${field.name} is set.
+     *
+     * @return True if the optional field ${field.name} is set, otherwise false.
+     */
+            </#if>
     public boolean ${field.optional.isSetIndicatorName}()
     {
         return (<@field_member_name field/> != null);
     }
 
+            <#if withCodeComments>
+    /**
+     * Resets the optional field ${field.name}.
+     */
+            </#if>
     public void ${field.optional.resetterName}()
     {
         <@field_member_name field/> = null;
@@ -215,6 +296,15 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
         return result;
     }
 
+<#if withCodeComments>
+    /**
+     * Deserializes this Zserio object from the bit stream.
+     *
+     * @param in Bit stream reader to use.
+     *
+     * @throws IOException If the reading from the bit stream failed.
+     */
+</#if>
     public void read(zserio.runtime.io.BitStreamReader in)
             throws java.io.IOException
     {
@@ -232,6 +322,18 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 </#if>
     }
 
+<#if withCodeComments>
+    /**
+     * Deserializes this Zserio object from the bit stream.
+     * <p>
+     * Called only internally if packed arrays are used.
+     *
+     * @param contextNode Context for packed arrays.
+     * @param in Bit stream reader to use.
+     *
+     * @throws IOException If the reading from the bit stream failed.
+     */
+</#if>
     public void read(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in)
             throws java.io.IOException
     {
@@ -282,6 +384,15 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     </#if>
     }
 
+    <#if withCodeComments>
+    /**
+     * Serializes this Zserio object to the file.
+     *
+     * @param file File where to serialize this Zserio object.
+     *
+     * @throws IOException If the writing to the file failed.
+     */
+    </#if>
     public void write(java.io.File file) throws java.io.IOException
     {
         try (final zserio.runtime.io.FileBitStreamWriter out = new zserio.runtime.io.FileBitStreamWriter(file))
