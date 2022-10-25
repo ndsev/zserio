@@ -258,6 +258,9 @@ disable some smaller set of warnings or just a single warning.
 - `doc-comment-format`
   Warn when a documentation comment has invalid format. Enabled by
   default.
+- `doc-comment-missing`
+  Warn when a documentable schema element has no documentation comment
+  assigned. Disabled by default.
 - `doc-comment-see`
   Warn when a documentation see tag contains invalid symbol reference.
   Enabled by default.
