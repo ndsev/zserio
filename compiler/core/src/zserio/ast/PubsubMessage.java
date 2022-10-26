@@ -98,30 +98,33 @@ public class PubsubMessage extends DocumentableAstNode implements ScopeSymbol
     void check()
     {
         final ZserioType referencedBaseType = typeReference.getBaseTypeReference().getType();
-        if (!(referencedBaseType instanceof CompoundType))
+        if (!(referencedBaseType instanceof CompoundType) && !(referencedBaseType instanceof BytesType))
         {
             throw new ParserException(typeReference,
-                    "Only non-parameterized compound types can be used in pubsub messages, " +
+                    "Only non-parameterized compound types or bytes can be used in pubsub messages, " +
                     "'" + typeReference.getReferencedTypeName() + "' is not a compound type!");
         }
 
-        final CompoundType compoundType = (CompoundType)referencedBaseType;
-        if (compoundType.getTypeParameters().size() > 0)
+        if (referencedBaseType instanceof CompoundType)
         {
-            throw new ParserException(typeReference,
-                    "Only non-parameterized compound types can be used in pubsub messages, '" +
-                    ZserioTypeUtil.getReferencedFullName(typeReference) + "' is a parameterized type!");
-        }
+            final CompoundType compoundType = (CompoundType)referencedBaseType;
+            if (compoundType.getTypeParameters().size() > 0)
+            {
+                throw new ParserException(typeReference,
+                        "Only non-parameterized compound types or bytes can be used in pubsub messages, '" +
+                        ZserioTypeUtil.getReferencedFullName(typeReference) + "' is a parameterized type!");
+            }
 
-        if (compoundType instanceof SqlTableType)
-        {
-            throw new ParserException(typeReference, "SQL table '" +
-                    ZserioTypeUtil.getReferencedFullName(typeReference) +
-                    "' cannot be used in pubsub messages!");
-        }
+            if (compoundType instanceof SqlTableType)
+            {
+                throw new ParserException(typeReference, "SQL table '" +
+                        ZserioTypeUtil.getReferencedFullName(typeReference) +
+                        "' cannot be used in pubsub messages!");
+            }
 
-        if (topicDefinitionExpr.getStringValue() == null)
-            throw new ParserException(topicDefinitionExpr, "Topic definition must be a constant string!");
+            if (topicDefinitionExpr.getStringValue() == null)
+                throw new ParserException(topicDefinitionExpr, "Topic definition must be a constant string!");
+        }
     }
 
     private final String name;

@@ -8,6 +8,7 @@
 
 #include "zserio/PubsubException.h"
 #include "zserio/RebindAlloc.h"
+#include "zserio/SerializeUtil.h"
 
 using namespace zserio::literals;
 using namespace test_utils;
@@ -19,6 +20,7 @@ namespace simple_pubsub
 
 using allocator_type = SimplePubsub::allocator_type;
 using string_type = zserio::string<allocator_type>;
+using BitBuffer = zserio::BasicBitBuffer<allocator_type>;
 
 class SimplePubsubTest : public ::testing::Test
 {
@@ -183,6 +185,110 @@ TEST_F(SimplePubsubTest, powerOfTwoSimplePubsub)
     request.setValue(-2);
     simplePubsub.publishRequest(request);
     ASSERT_EQ(4, powerOfTwoCallback->result);
+}
+
+TEST_F(SimplePubsubTest, powerOfTwoRawClientAndProvider)
+{
+    struct RequestRawCallback :
+            public SimplePubsubProvider::SimplePubsubProviderCallback<zserio::Span<const uint8_t>>
+    {
+        explicit RequestRawCallback(SimplePubsubProvider& provider) :
+                simplePubsubProvider(provider)
+        {}
+
+        void operator()(zserio::StringView topic, const zserio::Span<const uint8_t>& valueData) override
+        {
+            ASSERT_EQ("simple_pubsub/request_raw"_sv, topic);
+            zserio::BitStreamReader reader(valueData.data(), valueData.size());
+            const Int32Value value(reader);
+            const uint64_t absValue = value.getValue() > 0
+                    ? static_cast<uint64_t>(value.getValue())
+                    : static_cast<uint64_t>(-value.getValue());
+            UInt64Value result{absValue * absValue};
+            const BitBuffer resultBitBuffer = zserio::serialize(result);
+            simplePubsubProvider.publishPowerOfTwoRaw(
+                    ::zserio::Span<const uint8_t>{resultBitBuffer.getBuffer(), resultBitBuffer.getByteSize()});
+        }
+
+        SimplePubsubProvider& simplePubsubProvider;
+    };
+
+    simplePubsubProvider.subscribeRequestRaw(
+            std::allocate_shared<RequestRawCallback>(allocator_type(), simplePubsubProvider));
+
+    struct PowerOfTwoRawCallback : public SimplePubsubClient::SimplePubsubClientCallback<zserio::Span<const uint8_t>>
+    {
+        void operator()(zserio::StringView topic, const zserio::Span<const uint8_t>& valueData) override
+        {
+            ASSERT_EQ("simple_pubsub/power_of_two_raw"_sv, topic);
+            zserio::BitStreamReader reader(valueData.data(), valueData.size());
+            const UInt64Value value(reader);
+            result = value.getValue();
+        }
+
+        uint64_t result;
+    };
+
+    std::shared_ptr<PowerOfTwoRawCallback> powerOfTwoRawCallback =
+            std::allocate_shared<PowerOfTwoRawCallback>(allocator_type());
+    simplePubsubClient.subscribePowerOfTwoRaw(powerOfTwoRawCallback);
+
+    Int32Value request{13};
+    const BitBuffer requestBitBuffer = zserio::serialize(request);
+    simplePubsubClient.publishRequestRaw(
+            zserio::Span<const uint8_t>(requestBitBuffer.getBuffer(), requestBitBuffer.getByteSize()));
+    ASSERT_EQ(169, powerOfTwoRawCallback->result);
+}
+
+TEST_F(SimplePubsubTest, powerOfTwoRawSimplePubsub)
+{
+    struct RequestRawCallback : public SimplePubsub::SimplePubsubCallback<zserio::Span<const uint8_t>>
+    {
+        explicit RequestRawCallback(SimplePubsub& pubsub) :
+                simplePubsub(pubsub)
+        {}
+
+        void operator()(zserio::StringView topic, const zserio::Span<const uint8_t>& valueData) override
+        {
+            ASSERT_EQ("simple_pubsub/request_raw"_sv, topic);
+            zserio::BitStreamReader reader(valueData.data(), valueData.size());
+            const Int32Value value(reader);
+            const uint64_t absValue = value.getValue() > 0
+                    ? static_cast<uint64_t>(value.getValue())
+                    : static_cast<uint64_t>(-value.getValue());
+            UInt64Value result{absValue * absValue};
+            const BitBuffer resultBitBuffer = zserio::serialize(result);
+            simplePubsub.publishPowerOfTwoRaw(
+                    zserio::Span<const uint8_t>{resultBitBuffer.getBuffer(), resultBitBuffer.getByteSize()});
+        }
+
+        SimplePubsub& simplePubsub;
+    };
+
+    simplePubsub.subscribeRequestRaw(std::allocate_shared<RequestRawCallback>(allocator_type(), simplePubsub));
+
+    struct PowerOfTwoRawCallback : public SimplePubsub::SimplePubsubCallback<zserio::Span<const uint8_t>>
+    {
+        void operator()(zserio::StringView topic, const zserio::Span<const uint8_t>& valueData) override
+        {
+            ASSERT_EQ("simple_pubsub/power_of_two_raw"_sv, topic);
+            zserio::BitStreamReader reader(valueData.data(), valueData.size());
+            const UInt64Value value(reader);
+            result = value.getValue();
+        }
+
+        uint64_t result;
+    };
+
+    std::shared_ptr<PowerOfTwoRawCallback> powerOfTwoRawCallback =
+            std::allocate_shared<PowerOfTwoRawCallback>(allocator_type());
+    simplePubsub.subscribePowerOfTwoRaw(powerOfTwoRawCallback);
+
+    Int32Value request{13};
+    const BitBuffer requestBitBuffer = zserio::serialize(request);
+    simplePubsub.publishRequestRaw(
+            zserio::Span<const uint8_t>(requestBitBuffer.getBuffer(), requestBitBuffer.getByteSize()));
+    ASSERT_EQ(169, powerOfTwoRawCallback->result);
 }
 
 TEST_F(SimplePubsubTest, publishRequestWithContext)

@@ -1,0 +1,8 @@
+<FindBugsFilter>
+    <Match>
+        <!-- The class could be refactored into a named _static_ inner class -->
+        <Bug code="SIC"/>
+        <Class name="~pubsub_types.simple_pubsub.SimplePubsub.*"/>
+        <Local name="onRaw"/>
+    </Match>
+</FindBugsFilter>

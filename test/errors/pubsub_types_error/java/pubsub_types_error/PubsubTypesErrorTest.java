@@ -20,7 +20,7 @@ public class PubsubTypesErrorTest
     public void builtinType()
     {
         final String error = "builtin_type_error.zs:5:36: " +
-                "Only non-parameterized compound types can be used in pubsub messages, " +
+                "Only non-parameterized compound types or bytes can be used in pubsub messages, " +
                 "'int32' is not a compound type!";
         assertTrue(zserioErrors.isPresent(error));
     }
@@ -29,7 +29,7 @@ public class PubsubTypesErrorTest
     public void choiceType()
     {
         final String error = "choice_type_error.zs:14:36: " +
-                "Only non-parameterized compound types can be used in pubsub messages, " +
+                "Only non-parameterized compound types or bytes can be used in pubsub messages, " +
                 "'Data' is a parameterized type!";
         assertTrue(zserioErrors.isPresent(error));
     }
@@ -57,7 +57,7 @@ public class PubsubTypesErrorTest
     public void nonCompoundSubtype()
     {
         final String error = "non_compound_subtype_error.zs:7:38: " +
-                "Only non-parameterized compound types can be used in pubsub messages, " +
+                "Only non-parameterized compound types or bytes can be used in pubsub messages, " +
                 "'Data' is not a compound type!";
         assertTrue(zserioErrors.isPresent(error));
     }
@@ -66,7 +66,7 @@ public class PubsubTypesErrorTest
     public void parameterizedStruct()
     {
         final String error = "parameterized_struct_error.zs:11:38: " +
-                "Only non-parameterized compound types can be used in pubsub messages, " +
+                "Only non-parameterized compound types or bytes can be used in pubsub messages, " +
                 "'Data' is a parameterized type!";
         assertTrue(zserioErrors.isPresent(error));
     }

@@ -78,6 +78,52 @@ class SimplePubsubTest(unittest.TestCase):
         self.simplePubsub.publish_request(request)
         self.assertEqual(4, result["value"])
 
+    def testPowerOfTwoRawClientAndProvider(self):
+        def requestRawCallback(topic, value_data):
+            self.assertEqual("simple_pubsub/request_raw", topic)
+            value = zserio.deserialize_from_bytes(self.api.Int32Value, value_data)
+            result = self.api.UInt64Value(value.value * value.value)
+            result_data = zserio.serialize_to_bytes(result)
+            self.simplePubsubProvider.publish_power_of_two_raw(result_data)
+
+        self.simplePubsubProvider.subscribe_request_raw(requestRawCallback)
+
+        result = {"value": 0}
+        def powerOfTwoRawCallback(topic, value_data):
+            self.assertEqual("simple_pubsub/power_of_two_raw", topic)
+            value = zserio.deserialize_from_bytes(self.api.UInt64Value, value_data)
+            result["value"] = value.value
+
+        self.simplePubsubClient.subscribe_power_of_two_raw(powerOfTwoRawCallback)
+
+        request = self.api.Int32Value(13)
+        request_data = zserio.serialize_to_bytes(request)
+        self.simplePubsubClient.publish_request_raw(request_data)
+        self.assertEqual(169, result["value"])
+
+    def testPowerOfTwoRawSimplePubsub(self):
+        def requestRawCallback(topic, value_data):
+            self.assertEqual("simple_pubsub/request_raw", topic)
+            value = zserio.deserialize_from_bytes(self.api.Int32Value, value_data)
+            result = self.api.UInt64Value(value.value * value.value)
+            result_data = zserio.serialize_to_bytes(result)
+            self.simplePubsub.publish_power_of_two_raw(result_data)
+
+        self.simplePubsub.subscribe_request_raw(requestRawCallback)
+
+        result = {"value": 0}
+        def powerOfTwoRawCallback(topic, value_data):
+            self.assertEqual("simple_pubsub/power_of_two_raw", topic)
+            value = zserio.deserialize_from_bytes(self.api.UInt64Value, value_data)
+            result["value"] = value.value
+
+        self.simplePubsub.subscribe_power_of_two_raw(powerOfTwoRawCallback)
+
+        request = self.api.Int32Value(13)
+        request_data = zserio.serialize_to_bytes(request)
+        self.simplePubsub.publish_request_raw(request_data)
+        self.assertEqual(169, result["value"])
+
     def testPublishRequestWithContext(self):
         context = TestPubsubContext()
         self.assertFalse(context.seenByPubsub)

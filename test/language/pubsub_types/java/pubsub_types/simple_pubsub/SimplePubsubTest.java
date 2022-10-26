@@ -10,6 +10,7 @@ import java.util.HashMap;
 
 import zserio.runtime.pubsub.PubsubException;
 import zserio.runtime.pubsub.PubsubCallback;
+import zserio.runtime.io.SerializeUtil;
 
 import pubsub_types.TestPubsub;
 
@@ -72,6 +73,34 @@ public class SimplePubsubTest
         request.setValue(-2);
         simplePubsub.publishRequest(request);
         assertEquals(BigInteger.valueOf(4), results.get(0));
+    }
+
+    @Test
+    public void powerOfTwoRawClientAndProvider()
+    {
+        simplePubsubProvider.subscribeRequestRaw(new ProviderRawCallback(simplePubsubProvider));
+
+        final Map<Integer, BigInteger> results = new HashMap<Integer, BigInteger>();
+        simplePubsubClient.subscribePowerOfTwoRaw(new PowerOfTwoRawCallback(results, 0));
+
+        final Int32Value request = new Int32Value(13);
+        final byte[] requestData = SerializeUtil.serializeToBytes(request);
+        simplePubsubClient.publishRequestRaw(requestData);
+        assertEquals(BigInteger.valueOf(169), results.get(0));
+    }
+
+    @Test
+    public void powerOfTwoRawSimplePubsub()
+    {
+        simplePubsub.subscribeRequestRaw(new RequestRawCallback(simplePubsub));
+
+        final Map<Integer, BigInteger> results = new HashMap<Integer, BigInteger>();
+        simplePubsub.subscribePowerOfTwoRaw(new PowerOfTwoRawCallback(results, 0));
+
+        final Int32Value request = new Int32Value(13);
+        final byte[] requestData = SerializeUtil.serializeToBytes(request);
+        simplePubsub.publishRequestRaw(requestData);
+        assertEquals(BigInteger.valueOf(169), results.get(0));
     }
 
     @Test
@@ -183,6 +212,66 @@ public class SimplePubsubTest
         public void invoke(String topic, UInt64Value value)
         {
             assertEquals("simple_pubsub/power_of_two", topic);
+            results.put(resultId, value.getValue());
+        }
+
+        private final Map<Integer, BigInteger> results;
+        private final int resultId;
+    }
+
+    private static class ProviderRawCallback implements PubsubCallback<byte[]>
+    {
+        public ProviderRawCallback(SimplePubsubProvider provider)
+        {
+            this.provider = provider;
+        }
+
+        @Override
+        public void invoke(String topic, byte[] valueData)
+        {
+            assertEquals("simple_pubsub/request_raw", topic);
+            final Int32Value value = SerializeUtil.deserializeFromBytes(Int32Value.class, valueData);
+            final UInt64Value result = new UInt64Value(BigInteger.valueOf(value.getValue()).pow(2));
+            final byte[] resultData = SerializeUtil.serializeToBytes(result);
+            provider.publishPowerOfTwoRaw(resultData);
+        }
+
+        private final SimplePubsubProvider provider;
+    }
+
+    private static class RequestRawCallback implements PubsubCallback<byte[]>
+    {
+        public RequestRawCallback(SimplePubsub pubsub)
+        {
+            this.pubsub = pubsub;
+        }
+
+        @Override
+        public void invoke(String topic, byte[] valueData)
+        {
+            assertEquals("simple_pubsub/request_raw", topic);
+            final Int32Value value = SerializeUtil.deserializeFromBytes(Int32Value.class, valueData);
+            final UInt64Value result = new UInt64Value(BigInteger.valueOf(value.getValue()).pow(2));
+            final byte[] resultData = SerializeUtil.serializeToBytes(result);
+            pubsub.publishPowerOfTwoRaw(resultData);
+        }
+
+        private final SimplePubsub pubsub;
+    }
+
+    private static class PowerOfTwoRawCallback implements PubsubCallback<byte[]>
+    {
+        public PowerOfTwoRawCallback(Map<Integer, BigInteger> results, int resultId)
+        {
+            this.results = results;
+            this.resultId = resultId;
+        }
+
+        @Override
+        public void invoke(String topic, byte[] valueData)
+        {
+            assertEquals("simple_pubsub/power_of_two_raw", topic);
+            final UInt64Value value = SerializeUtil.deserializeFromBytes(UInt64Value.class, valueData);
             results.put(resultId, value.getValue());
         }
 

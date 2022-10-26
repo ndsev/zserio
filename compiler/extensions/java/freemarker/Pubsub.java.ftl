@@ -79,7 +79,11 @@ public class ${name}
     public void publish${message.name?cap_first}(${message.typeInfo.typeFullName} message,
             java.lang.Object context)
     {
+        <#if message.typeInfo.isBytes>
+        pubsub.publish(${message.topicDefinition}, message, context);
+        <#else>
         publish(${message.topicDefinition}, message, context);
+        </#if>
     }
     </#if>
     <#if message.isSubscribed>
@@ -135,7 +139,11 @@ public class ${name}
                 @Override
                 public void invoke(java.lang.String topic, byte[] data)
                 {
+        <#if message.typeInfo.isBytes>
+                    callback.invoke(topic, data);
+        <#else>
                     onRaw${message.name?cap_first}(callback, topic, data);
+        </#if>
                 }
             };
         return pubsub.subscribe(${message.topicDefinition}, onRaw, context);
@@ -156,26 +164,52 @@ public class ${name}
         pubsub.unsubscribe(subscriptionId);
     }
     <#list messageList as message>
-        <#if message.isSubscribed>
+        <#if message.isSubscribed && !message.typeInfo.isBytes>
 
     private void onRaw${message.name?cap_first}(
             zserio.runtime.pubsub.PubsubCallback<${message.typeInfo.typeFullName}> callback,
             java.lang.String topic, byte[] data)
     {
-        final ${message.typeInfo.typeFullName} message = zserio.runtime.io.SerializeUtil.deserializeFromBytes(
-                ${message.typeInfo.typeFullName}.class, data);
-        callback.invoke(topic, message);
+        try
+        {
+            final zserio.runtime.io.ByteArrayBitStreamReader reader =
+                    new zserio.runtime.io.ByteArrayBitStreamReader(data);
+            final ${message.typeInfo.typeFullName} message = new ${message.typeInfo.typeFullName}(reader);
+            callback.invoke(topic, message);
+        }
+        catch (java.io.IOException exception)
+        {
+            throw new zserio.runtime.ZserioError("${name}: " + exception, exception);
+        }
     }
         </#if>
     </#list>
 </#if>
-<#if hasPublishing>
+<#function has_published_object messageList>
+    <#list messageList as message>
+        <#if message.isPublished && !message.typeInfo.isBytes>
+            <#return true>
+        </#if>
+    </#list>
+    <#return false>
+</#function>
+<#if hasPublishing && has_published_object(messageList)>
 
-    private <MSG extends zserio.runtime.io.Writer> void publish(java.lang.String topic, MSG message,
-            java.lang.Object context)
+    private <ZSERIO_MESSAGE extends zserio.runtime.io.Writer> void publish(
+            java.lang.String topic, ZSERIO_MESSAGE message, java.lang.Object context)
     {
-        final byte[] data = zserio.runtime.io.SerializeUtil.serializeToBytes(message);
-        pubsub.publish(topic, data, context);
+        try
+        {
+            final zserio.runtime.io.ByteArrayBitStreamWriter writer =
+                    new zserio.runtime.io.ByteArrayBitStreamWriter();
+            message.write(writer);
+            final byte[] data = writer.toByteArray();
+            pubsub.publish(topic, data, context);
+        }
+        catch (java.io.IOException exception)
+        {
+            throw new zserio.runtime.ZserioError("${name}: " + exception, exception);
+        }
     }
 </#if>
 

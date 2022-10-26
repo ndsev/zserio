@@ -1,5 +1,6 @@
 <#include "FileHeader.inc.ftl">
 <#include "DocComment.inc.ftl">
+<#include "Pubsub.inc.ftl">
 <@file_header generatorDescription/>
 
 <@include_guard_begin package.path, name/>
@@ -11,7 +12,7 @@
 <#if withTypeInfoCode>
 <@type_includes types.typeInfo/>
 </#if>
-<@type_includes types.vector/>
+<@system_includes headerSystemIncludes/>
 <@user_includes headerUserIncludes/>
 <@namespace_begin package.path/>
 
@@ -108,7 +109,7 @@ public:
      * \param context Context specific for a particular Pub/Sub implementation.
      */
         </#if>
-    void publish${message.name?cap_first}(${message.typeInfo.typeFullName}& message, void* context = nullptr);
+    void publish${message.name?cap_first}(<@pubsub_arg_type_name message.typeInfo/> message, void* context = nullptr);
     </#if>
     <#if message.isSubscribed>
 
@@ -130,7 +131,7 @@ public:
      */
         </#if>
     ::zserio::IPubsub::SubscriptionId subscribe${message.name?cap_first}(
-            const ::std::shared_ptr<${name}Callback<${message.typeInfo.typeFullName}>>& callback,
+            const ::std::shared_ptr<${name}Callback<<@pubsub_type_name message.typeInfo/>>>& callback,
             void* context = nullptr);
     </#if>
 </#list>
@@ -149,7 +150,7 @@ public:
 </#if>
 
 private:
-<#if hasPublishing>
+<#if hasPublishing && has_published_object(messageList)>
     template <typename ZSERIO_MESSAGE>
     void publish(ZSERIO_MESSAGE& message, ::zserio::StringView topic, void* context);
 

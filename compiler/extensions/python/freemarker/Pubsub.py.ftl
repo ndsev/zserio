@@ -7,6 +7,17 @@
 <@future_annotations/>
 <@all_imports packageImports symbolImports typeImports/>
 
+<#macro pubsub_type_name typeInfo>
+    <#if typeInfo.isBytes>
+        <#--
+        Note that bytes is a shorthand for typing.ByteString, thus all bytes, bytearray and memoryview are
+        allowed, see https://docs.python.org/3/library/typing.html#typing.ByteString.
+        -->
+        bytes<#t>
+    <#else>
+        ${typeInfo.typeFullName}<#t>
+    </#if>
+</#macro>
 class ${name}:
 <#if withCodeComments && docComments??>
 <@doc_comments docComments, 1/>
@@ -47,7 +58,7 @@ class ${name}:
 <#list messageList as message>
     <#if message.isPublished>
 
-    def publish_${message.snakeCaseName}(self, message: ${message.typeInfo.typeFullName}, context: typing.Any = None) -> None:
+    def publish_${message.snakeCaseName}(self, message: <@pubsub_type_name message.typeInfo/>, context: typing.Any = None) -> None:
         <#if withCodeComments>
         """
         Publishes given message as a topic '${message.name}'.
@@ -62,21 +73,25 @@ class ${name}:
         :param context: Context specific for a particular Pub/Sub implementation.
         """
         </#if>
+        <#if message.typeInfo.isBytes>
+        self._pubsub.publish(${message.topicDefinition}, message, context)
+        <#else>
         self._publish(${message.topicDefinition}, message, context)
+        </#if>
     </#if>
     <#if message.isSubscribed>
 
-    def subscribe_${message.snakeCaseName}(self, callback: typing.Callable[[str, ${message.typeInfo.typeFullName}], None], context: typing.Any = None) -> int:
+    def subscribe_${message.snakeCaseName}(self, callback: typing.Callable[[str, <@pubsub_type_name message.typeInfo/>], None], context: typing.Any = None) -> int:
         <#if withCodeComments>
         """
         Subscribes a topic '${message.name}'.
 
-        <#if message.docComments??>
+            <#if message.docComments??>
         **Description:**
 
         <@doc_comments_inner message.docComments, 2/>
 
-        </#if>
+            </#if>
         :param callback: Callback to be called when a message with the specified topic arrives.
         :param context: Context specific for a particular Pub/Sub implementation.
 
@@ -84,7 +99,11 @@ class ${name}:
         """
         </#if>
         def on_raw(topic: str, data: bytes) -> None:
+        <#if message.typeInfo.isBytes>
+            callback(topic, data)
+        <#else>
             self._on_raw_${message.snakeCaseName}(callback, topic, data)
+        </#if>
         return self._pubsub.subscribe(${message.topicDefinition}, on_raw, context)
     </#if>
 </#list>
@@ -100,7 +119,7 @@ class ${name}:
     </#if>
         self._pubsub.unsubscribe(subscription_id)
     <#list messageList as message>
-        <#if message.isSubscribed>
+        <#if message.isSubscribed && !message.typeInfo.isBytes>
 
     def _on_raw_${message.snakeCaseName}(self, callback: typing.Callable[[str, ${message.typeInfo.typeFullName}], None], topic: str, data: bytes) -> None:
         reader = zserio.BitStreamReader(data)
@@ -109,7 +128,15 @@ class ${name}:
         </#if>
     </#list>
 </#if>
-<#if hasPublishing>
+<#function has_published_object messageList>
+    <#list messageList as message>
+        <#if message.isPublished && !message.typeInfo.isBytes>
+            <#return true>
+        </#if>
+    </#list>
+    <#return false>
+</#function>
+<#if hasPublishing && has_published_object(messageList)>
 
     def _publish(self, topic: str, message: typing.Any, context: typing.Any) -> None:
         writer = zserio.BitStreamWriter()
