@@ -25,6 +25,10 @@
             ignoreErrors="true"/>
         <testGen testName="parameterized_types_error" zsFile="referenced_unknown_parameterized_type_error.zs"
             ignoreErrors="true"/>
+        <testGen testName="parameterized_types_error" zsFile="too_few_arguments_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="parameterized_types_error" zsFile="too_many_arguments_error.zs"
+            ignoreErrors="true"/>
         <testGen testName="parameterized_types_error" zsFile="wrong_argument_type_error.zs"
             ignoreErrors="true"/>
         <testGen testName="parameterized_types_error" zsFile="wrong_bitmask_argument_type_error.zs"
@@ -32,10 +36,6 @@
         <testGen testName="parameterized_types_error" zsFile="wrong_compound_argument_type_error.zs"
             ignoreErrors="true"/>
         <testGen testName="parameterized_types_error" zsFile="wrong_enum_argument_type_error.zs"
-            ignoreErrors="true"/>
-        <testGen testName="parameterized_types_error" zsFile="wrong_intfield_parameter_error.zs"
-        	ignoreErrors="true"/>
-        <testGen testName="parameterized_types_error" zsFile="wrong_number_of_arguments_error.zs"
             ignoreErrors="true"/>
     </target>
 

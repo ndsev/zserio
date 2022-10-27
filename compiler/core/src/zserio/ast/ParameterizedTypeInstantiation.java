@@ -140,17 +140,25 @@ public class ParameterizedTypeInstantiation extends TypeInstantiation
             // verify that number of arguments corresponds with the type definition
             if (typeArguments.size() != typeParameters.size())
             {
-                throw new ParserException(getTypeReference(), "Parameterized type instantiation '" +
-                        ZserioTypeUtil.getReferencedFullName(getTypeReference()) +
-                        "' has wrong number of arguments! " +
-                        "Expecting " + typeArguments.size() + ", got " + typeParameters.size() + "!");
-            }
+                final ParserStackedException exception = new ParserStackedException(
+                        getTypeReference().getLocation(),
+                        "Parameterized type instantiation of '" +
+                        ZserioTypeUtil.getReferencedFullName(getTypeReference()) + "' has " +
+                        (typeParameters.size() > typeArguments.size() ? "too few" : "too many") +
+                        " arguments! " + "Expecting " + typeParameters.size() +
+                        ", got " + typeArguments.size() + "!");
+                fillInstantiationStack(exception);
+                throw exception;
+          }
         }
         else
         {
-            throw new ParserException(getTypeReference(), "Referenced type '" +
+            final ParserStackedException exception = new ParserStackedException(
+                    getTypeReference().getLocation(), "Referenced type '" +
                     ZserioTypeUtil.getReferencedFullName(getTypeReference()) +
                     "' is not a parameterized type!");
+            fillInstantiationStack(exception);
+            throw exception;
         }
     }
 

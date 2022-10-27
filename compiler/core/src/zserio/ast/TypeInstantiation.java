@@ -108,9 +108,12 @@ public class TypeInstantiation extends AstNodeBase
                 baseType instanceof CompoundType && !((CompoundType)baseType).getTypeParameters().isEmpty();
         if (isParameterized)
         {
-            throw new ParserException(typeReference, "Referenced type '" +
+            final ParserStackedException exception = new ParserStackedException(
+                    typeReference.getLocation(), "Referenced type '" +
                     ZserioTypeUtil.getReferencedFullName(typeReference) +
                     "' is defined as parameterized type!");
+            fillInstantiationStack(exception);
+            throw exception;
         }
 
         if (baseType instanceof DynamicBitFieldType)
@@ -131,6 +134,34 @@ public class TypeInstantiation extends AstNodeBase
     void check(WarningsConfig config, ZserioTemplatableType currentTemplateInstantiation)
     {
         // overridden by particular instantiations
+    }
+
+    protected void fillInstantiationStack(ParserStackedException exception)
+    {
+        TypeReference resolvingTypeReference = typeReference;
+        ZserioType resolvingType = resolvingTypeReference.getType();
+        while (resolvingType instanceof Subtype || resolvingType instanceof InstantiateType)
+        {
+            if (resolvingType instanceof Subtype)
+            {
+                exception.pushMessage(resolvingType.getLocation(),
+                        "    See subtype '" +
+                        ZserioTypeUtil.getReferencedFullName(resolvingTypeReference) + "' definition here:");
+
+                resolvingTypeReference = ((Subtype)resolvingType).getTypeReference();
+            }
+            else if (resolvingType instanceof InstantiateType)
+            {
+                exception.pushMessage(resolvingType.getLocation(),
+                        "    See template instantiation '" +
+                        ZserioTypeUtil.getReferencedFullName(resolvingTypeReference) + "' definition here:");
+                resolvingTypeReference = ((InstantiateType)resolvingType).getTypeReference();
+            }
+            resolvingType = resolvingTypeReference.getType();
+        }
+
+        exception.pushMessage(resolvingType.getLocation(),
+                    "    See '" + resolvingType.getName() + "' definition here:");
     }
 
     private final TypeReference typeReference;
