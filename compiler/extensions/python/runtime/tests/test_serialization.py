@@ -21,6 +21,9 @@ class DummyObject:
     def get_value(self):
         return self._value
 
+    def offsets_initalized(self):
+        return self._offsets_initialized
+
     @staticmethod
     def bitsizeof(_bitposition = 0):
         return 31 # to make an unaligned type
@@ -33,18 +36,22 @@ class DummyObject:
         self._value = reader.read_bits(self.bitsizeof(0))
 
     def write(self, writer):
-        # don't write anything if offsets are not initialized to force test failure
-        if self._offsets_initialized:
-            writer.write_bits(self._value, self.bitsizeof(0))
+        writer.write_bits(self._value, self.bitsizeof(0))
 
 class SerializationTest(unittest.TestCase):
 
     def test_serialize(self):
         dummy_object = DummyObject(0xAB, 0xDEAD)
         bitbuffer = serialize(dummy_object)
+        self.assertTrue(dummy_object.offsets_initalized())
         expected_bitsize = 31
         self.assertEqual(expected_bitsize, bitbuffer.bitsize)
         self.assertEqual(b'\x00\x01\xBD\x5A', bitbuffer.buffer)
+
+    def test_serialize_skip_offsets(self):
+        dummy_object = DummyObject(0xAB, 0xDEAD)
+        serialize(dummy_object, call_initialize_offsets = False)
+        self.assertFalse(dummy_object.offsets_initalized())
 
     def test_deserialize(self):
         bitbuffer = BitBuffer(b'\x00\x01\xBD\x5A', 31)
@@ -58,9 +65,15 @@ class SerializationTest(unittest.TestCase):
     def test_serialize_to_bytes(self):
         dummy_object = DummyObject(0xAB, 0xDEAD)
         buffer = serialize_to_bytes(dummy_object)
+        self.assertTrue(dummy_object.offsets_initalized())
         expected_bitsize = 31
         self.assertEqual((expected_bitsize + 7) // 8, len(buffer))
         self.assertEqual(b'\x00\x01\xBD\x5A', buffer)
+
+    def test_serialize_to_bytes_skip_offsets(self):
+        dummy_object = DummyObject(0xAB, 0xDEAD)
+        serialize_to_bytes(dummy_object, call_initialize_offsets = False)
+        self.assertFalse(dummy_object.offsets_initalized())
 
     def test_deserialize_bytes(self):
         buffer = b'\x00\x01\xBD\x5A'
@@ -71,5 +84,12 @@ class SerializationTest(unittest.TestCase):
         dummy_object = DummyObject(0xAB, 0xDEAD)
         filename = "SerializationTest.bin"
         serialize_to_file(dummy_object, filename)
+        self.assertTrue(dummy_object.offsets_initalized())
         read_dummy_object = deserialize_from_file(DummyObject, filename, 0xAB)
         self.assertEqual(dummy_object.get_value(), read_dummy_object.get_value())
+
+    def test_to_file_from_file_skip_offsets(self):
+        dummy_object = DummyObject(0xAB, 0xDEAD)
+        filename = "SerializationTest.bin"
+        serialize_to_file(dummy_object, filename, call_initialize_offsets = False)
+        self.assertFalse(dummy_object.offsets_initalized())

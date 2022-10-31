@@ -8,7 +8,7 @@ from zserio.bitwriter import BitStreamWriter
 from zserio.bitbuffer import BitBuffer
 from zserio.bitreader import BitStreamReader
 
-def serialize(obj: typing.Any) -> BitBuffer:
+def serialize(obj: typing.Any, *, call_initialize_offsets = True) -> BitBuffer:
     """
     Serializes generated object to the bit buffer.
 
@@ -28,13 +28,12 @@ def serialize(obj: typing.Any) -> BitBuffer:
         bitbuffer = zserio.serialize(obj)
 
     :param obj: Generated object to serialize.
+    :param call_initialize_offsets: True to call initialize_offsets() method on generated object.
     :returns: Bit buffer which represents generated object in binary format.
     :raises PythonRuntimeException: Throws in case of any error during serialization.
     """
 
-    writer = BitStreamWriter()
-    obj.initialize_offsets(writer.bitposition)
-    obj.write(writer)
+    writer = _serialize(obj, call_initialize_offsets)
 
     return BitBuffer(writer.byte_array, writer.bitposition)
 
@@ -62,7 +61,7 @@ def deserialize(obj_class: typing.Type[typing.Any], bitbuffer: BitBuffer, *args)
 
     return obj_class.from_reader(reader, *args)
 
-def serialize_to_bytes(obj: typing.Any) -> bytes:
+def serialize_to_bytes(obj: typing.Any, *, call_initialize_offsets = True) -> bytes:
     """
     Serializes generated object to the byte buffer.
 
@@ -84,11 +83,12 @@ def serialize_to_bytes(obj: typing.Any) -> bytes:
         buffer = zserio.serialize_to_bytes(obj)
 
     :param obj: Generated object to serialize.
+    :param call_initialize_offsets: True to call initialize_offsets() method on generated object.
     :returns: Bytes which represents generated object in binary format.
     :raises PythonRuntimeException: Throws in case of any error during serialization.
     """
 
-    bitbuffer = serialize(obj)
+    bitbuffer = serialize(obj, call_initialize_offsets = call_initialize_offsets)
 
     return bitbuffer.buffer
 
@@ -120,7 +120,7 @@ def deserialize_bytes(obj_class: typing.Type[typing.Any], buffer: bytes, *args) 
 
     return deserialize(obj_class, bitbuffer, *args)
 
-def serialize_to_file(obj: typing.Any, filename: str) -> None:
+def serialize_to_file(obj: typing.Any, filename: str, *, call_initialize_offsets = True) -> None:
     """
     Serializes generated object to the file.
 
@@ -138,13 +138,12 @@ def serialize_to_file(obj: typing.Any, filename: str) -> None:
         buffer = zserio.serialize_to_file(obj, "file_name.bin")
 
     :param obj: Generated object to serialize.
+    :param call_initialize_offsets: True to call initialize_offsets() method on generated object.
     :param filename: File to write.
     :raises PythonRuntimeException: Throws in case of any error during serialization.
     """
 
-    writer = BitStreamWriter()
-    obj.initialize_offsets(writer.bitposition)
-    obj.write(writer)
+    writer = _serialize(obj, call_initialize_offsets)
     writer.to_file(filename)
 
 def deserialize_from_file(obj_class: typing.Type[typing.Any], filename: str, *args) -> typing.Any:
@@ -171,3 +170,11 @@ def deserialize_from_file(obj_class: typing.Type[typing.Any], filename: str, *ar
     reader = BitStreamReader.from_file(filename)
 
     return obj_class.from_reader(reader, *args)
+
+def _serialize(obj: typing.Any, call_initialize_offsets: bool) -> BitStreamWriter:
+    writer = BitStreamWriter()
+    if call_initialize_offsets:
+        obj.initialize_offsets(writer.bitposition)
+    obj.write(writer)
+
+    return writer
