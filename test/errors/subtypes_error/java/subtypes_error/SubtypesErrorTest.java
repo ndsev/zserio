@@ -36,7 +36,7 @@ public class SubtypesErrorTest
     public void simpleCyclicDependency()
     {
         final String error = "simple_cyclic_dependency_error.zs:3:11: " +
-                "Cyclic dependency detected in subtype 'X' definition!";
+                "Cyclic dependency detected in subtype 'X'!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -47,8 +47,7 @@ public class SubtypesErrorTest
         {
             "transitive_cyclic_dependency_error.zs:4:11:     Through subtype 'Z' here",
             "transitive_cyclic_dependency_error.zs:5:11:     Through subtype 'X' here",
-            "transitive_cyclic_dependency_error.zs:3:11: Cyclic dependency detected in " +
-                "subtype 'Y' definition!"
+            "transitive_cyclic_dependency_error.zs:3:11: Cyclic dependency detected in subtype 'Y'!"
         };
         assertTrue(zserioErrors.isPresent(errors));
     }

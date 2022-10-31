@@ -1,0 +1,5 @@
+package instantiate_name_clash_with_single_import_error;
+
+import instantiate_name_clash_with_single_import_error.pkg.Template;
+
+instantiate Template<uint32> Template;

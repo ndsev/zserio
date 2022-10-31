@@ -1,0 +1,3 @@
+package instantiate_type_full_name_cycle_error;
+
+instantiate instantiate_type_full_name_cycle_error.Template<uint32> Template;

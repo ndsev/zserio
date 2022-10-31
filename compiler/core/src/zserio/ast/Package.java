@@ -140,8 +140,6 @@ public class Package extends DocumentableAstNode
     /**
      * Gets a symbol if it's visible in this package.
      *
-     * This method does not throw exception in case of ambiguous symbol. It just returns null in this case.
-     *
      * @param ownerNode   AST node which holds symbol to resolve (used for ParserException).
      * @param packageName Package name where the symbol is defined.
      * @param symbolName  Symbol name to resolve.

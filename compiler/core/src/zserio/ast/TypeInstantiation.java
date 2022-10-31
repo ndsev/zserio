@@ -147,7 +147,6 @@ public class TypeInstantiation extends AstNodeBase
                 exception.pushMessage(resolvingType.getLocation(),
                         "    See subtype '" +
                         ZserioTypeUtil.getReferencedFullName(resolvingTypeReference) + "' definition here:");
-
                 resolvingTypeReference = ((Subtype)resolvingType).getTypeReference();
             }
             else if (resolvingType instanceof InstantiateType)

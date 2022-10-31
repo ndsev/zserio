@@ -155,6 +155,29 @@ public class TemplatesErrorTest
     }
 
     @Test
+    public void instantiateNameClashWithSingleImport()
+    {
+        final String errors[] =
+        {
+            "instantiate_name_clash_with_single_import_error/pkg.zs:3:8:     Found here",
+            "instantiate_name_clash_with_single_import_error.zs:5:30:     Found here",
+            "instantiate_name_clash_with_single_import_error.zs:5:13: Ambiguous symbol 'Template'"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
+    public void instantiateNameClashWithTemplate()
+    {
+        final String errors[] =
+        {
+            "instantiate_name_clash_with_template_error.zs:3:8:     First defined here",
+            "instantiate_name_clash_with_template_error.zs:8:30: 'Template' is already defined in this package!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
     public void instantiateNameClashWithType()
     {
         final String errors[] =
@@ -180,6 +203,30 @@ public class TemplatesErrorTest
     }
 
     @Test
+    public void instantiateTypeCycle()
+    {
+        final String error = "instantiate_type_cycle_error.zs:3:30: " +
+                "Cyclic dependency detected in template instantiation 'Template'!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void instantiateTypeFullNameCycle()
+    {
+        final String error = "instantiate_type_full_name_cycle_error.zs:3:69: " +
+                "Cyclic dependency detected in template instantiation 'Template'!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void instantiateTypeImportedCycle()
+    {
+        final String error = "instantiate_type_imported_cycle_error.zs:8:30: " +
+                "Cyclic dependency detected in template instantiation 'Template'!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void instantiateTypeInInstantiate()
     {
         final String error = "instantiate_type_in_instantiate_error.zs:8:26: 'T32' is not a template!";
@@ -192,6 +239,20 @@ public class TemplatesErrorTest
         final String error = "instantiate_type_is_sql_table_error.zs:13:14: " +
                 "Field 'field' cannot be a sql table!";
         assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void instantiateTypeTransitiveCycle()
+    {
+        final String[] errors = {
+            "instantiate_type_transitive_cycle_error.zs:4:27: " +
+                    "    Through template instantiation 'Some' here",
+            "instantiate_type_transitive_cycle_error.zs:5:26: " +
+                    "    Through template instantiation 'Template' here",
+            "instantiate_type_transitive_cycle_error.zs:3:30: " +
+                    "Cyclic dependency detected in template instantiation 'Other'!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
     }
 
     @Test
