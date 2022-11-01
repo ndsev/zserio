@@ -145,7 +145,7 @@ class ${name}(enum.Enum):
                                               self.value)
 <#if withWriterCode>
 
-    def initialize_offsets(self, bitposition: int) -> int:
+    def initialize_offsets(self, bitposition: int = 0) -> int:
     <#if withCodeComments>
         """
         Initializes offsets in this enumeration object.

@@ -394,7 +394,7 @@ ${I}<#rt>
 </#if>
 <#if withWriterCode>
 
-    def initialize_offsets(self, bitposition: int) -> int:
+    def initialize_offsets(self, bitposition: int = 0) -> int:
     <#if withCodeComments>
         """
         Initializes offsets in this Zserio object and in all its fields.

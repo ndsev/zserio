@@ -49,7 +49,7 @@ class VariableArraySubtypedStructTest(unittest.TestCase):
         bitBuffer = zserio.serialize(variableArray)
 
         self.assertEqual(variableArray.bitsizeof(), bitBuffer.bitsize)
-        self.assertEqual(variableArray.initialize_offsets(0), bitBuffer.bitsize)
+        self.assertEqual(variableArray.initialize_offsets(), bitBuffer.bitsize)
 
         readSubtypedStructVariableArray = zserio.deserialize(self.api.VariableArray, bitBuffer)
         self.assertEqual(numElements, readSubtypedStructVariableArray.num_elements)

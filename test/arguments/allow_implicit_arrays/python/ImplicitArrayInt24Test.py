@@ -45,7 +45,7 @@ class ImplicitArrayInt24Test(unittest.TestCase):
         bitBuffer = zserio.serialize(implicitArray)
 
         self.assertEqual(implicitArray.bitsizeof(), bitBuffer.bitsize)
-        self.assertEqual(implicitArray.initialize_offsets(0), bitBuffer.bitsize)
+        self.assertEqual(implicitArray.initialize_offsets(), bitBuffer.bitsize)
 
         readImplicitArray = zserio.deserialize(self.api.ImplicitArray, bitBuffer)
         readArray = readImplicitArray.array

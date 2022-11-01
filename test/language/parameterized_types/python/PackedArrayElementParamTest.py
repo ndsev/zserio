@@ -51,7 +51,7 @@ class PackedArrayElementParamTest(unittest.TestCase):
         database.initialize_offsets(writer.bitposition)
         database.write(writer)
         self.assertEqual(database.bitsizeof(), writer.bitposition)
-        self.assertEqual(database.initialize_offsets(0), writer.bitposition)
+        self.assertEqual(database.initialize_offsets(), writer.bitposition)
 
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readDatabase = self.api.Database.from_reader(reader)

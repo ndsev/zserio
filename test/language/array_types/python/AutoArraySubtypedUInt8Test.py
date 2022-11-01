@@ -70,7 +70,7 @@ class AutoArraySubtypedUInt8Test(unittest.TestCase):
         bitBuffer = zserio.serialize(autoArray)
 
         self.assertEqual(autoArray.bitsizeof(), bitBuffer.bitsize)
-        self.assertEqual(autoArray.initialize_offsets(0), bitBuffer.bitsize)
+        self.assertEqual(autoArray.initialize_offsets(), bitBuffer.bitsize)
 
         readAutoArray = zserio.deserialize(self.api.AutoArray, bitBuffer)
         readArray = readAutoArray.array

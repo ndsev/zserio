@@ -14,7 +14,7 @@ class PackedAutoArrayStructWithExternTest(unittest.TestCase):
         bitBuffer = zserio.serialize(packedAutoArray)
 
         self.assertEqual(bitBuffer.bitsize, packedAutoArray.bitsizeof())
-        self.assertEqual(bitBuffer.bitsize, packedAutoArray.initialize_offsets(0))
+        self.assertEqual(bitBuffer.bitsize, packedAutoArray.initialize_offsets())
 
         readPackedAutoArray = zserio.deserialize(self.api.PackedAutoArray, bitBuffer)
         self.assertEqual(packedAutoArray, readPackedAutoArray)

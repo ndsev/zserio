@@ -49,7 +49,7 @@ class VariableArrayStructCastInt8Test(unittest.TestCase):
         bitBuffer = zserio.serialize(variableArray)
 
         self.assertEqual(variableArray.bitsizeof(), bitBuffer.bitsize)
-        self.assertEqual(variableArray.initialize_offsets(0), bitBuffer.bitsize)
+        self.assertEqual(variableArray.initialize_offsets(), bitBuffer.bitsize)
 
         readVariableArray = zserio.deserialize(self.api.VariableArray, bitBuffer)
         self.assertEqual(numElements, readVariableArray.num_elements)

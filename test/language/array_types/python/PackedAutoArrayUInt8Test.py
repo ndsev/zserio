@@ -83,7 +83,7 @@ class PackedAutoArrayUInt8Test(unittest.TestCase):
         bitBuffer = zserio.serialize(packedAutoArray)
 
         self.assertEqual(packedAutoArray.bitsizeof(), bitBuffer.bitsize)
-        self.assertEqual(packedAutoArray.initialize_offsets(0), bitBuffer.bitsize)
+        self.assertEqual(packedAutoArray.initialize_offsets(), bitBuffer.bitsize)
 
         readPackedAutoArray = zserio.deserialize(self.api.PackedAutoArray, bitBuffer)
         readUint8Array = readPackedAutoArray.uint8_array

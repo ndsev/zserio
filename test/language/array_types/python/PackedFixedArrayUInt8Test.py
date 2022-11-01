@@ -38,7 +38,7 @@ class PackedFixedArrayUInt8Test(unittest.TestCase):
         bitBuffer = zserio.serialize(packedFixedArray)
 
         self.assertEqual(packedFixedArray.bitsizeof(), bitBuffer.bitsize)
-        self.assertEqual(packedFixedArray.initialize_offsets(0), bitBuffer.bitsize)
+        self.assertEqual(packedFixedArray.initialize_offsets(), bitBuffer.bitsize)
 
         readPackedFixedArray = zserio.deserialize(self.api.PackedFixedArray, bitBuffer)
         readUint8Array = readPackedFixedArray.uint8_array

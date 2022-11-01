@@ -19,7 +19,7 @@ class UInt64OffsetTest(unittest.TestCase):
     def testInitializeOffsets(self):
         uint64Offset = self.api.UInt64Offset()
         uint64Offset.array = list(range(self.ARRAY_SIZE))
-        uint64Offset.initialize_offsets(0)
+        uint64Offset.initialize_offsets()
         self.assertEqual(self.OFFSET, uint64Offset.offset)
 
     def testInitializeOffsetsWithPosition(self):

@@ -15,7 +15,7 @@ class DebugStringTest(unittest.TestCase):
 
     def testJsonWriterWithOptionals(self):
         withTypeInfoCode = createWithTypeInfoCode(self.api, createOptionals=True)
-        withTypeInfoCode.initialize_offsets(0)
+        withTypeInfoCode.initialize_offsets()
         zserio.to_json_file(withTypeInfoCode, self.JSON_NAME_WITH_OPTIONALS)
 
         self._checkWithTypeInfoCodeJson(self.JSON_NAME_WITH_OPTIONALS, createdOptionals=True)
@@ -25,7 +25,7 @@ class DebugStringTest(unittest.TestCase):
 
     def testJsonWriterWithoutOptionals(self):
         withTypeInfoCode = createWithTypeInfoCode(self.api, createOptionals=False)
-        withTypeInfoCode.initialize_offsets(0)
+        withTypeInfoCode.initialize_offsets()
         zserio.to_json_file(withTypeInfoCode, self.JSON_NAME_WITHOUT_OPTIONALS)
 
         self._checkWithTypeInfoCodeJson(self.JSON_NAME_WITHOUT_OPTIONALS, createdOptionals=False)
@@ -36,7 +36,7 @@ class DebugStringTest(unittest.TestCase):
 
     def testJsonWriterWithArrayLengthFilter(self):
         withTypeInfoCode = createWithTypeInfoCode(self.api)
-        withTypeInfoCode.initialize_offsets(0)
+        withTypeInfoCode.initialize_offsets()
         for i in range(11):
             jsonFileName = self._getJsonNameWithArrayLengthFilter(i)
             with open(jsonFileName, "w", encoding="utf-8") as jsonFile:
@@ -52,7 +52,7 @@ class DebugStringTest(unittest.TestCase):
 
     def testJsonWriterWithDepth0Filter(self):
         withTypeInfoCode = createWithTypeInfoCode(self.api)
-        withTypeInfoCode.initialize_offsets(0)
+        withTypeInfoCode.initialize_offsets()
         with open(self.JSON_NAME_WITH_DEPTH0_FILTER, "w", encoding="utf-8") as jsonFile:
             walkFilter = zserio.DepthWalkFilter(0)
             walker = zserio.Walker(zserio.JsonWriter(text_io=jsonFile, indent=4), walkFilter)
@@ -69,7 +69,7 @@ class DebugStringTest(unittest.TestCase):
 
     def testJsonWriterWithDepth1ArrayLength0Filter(self):
         withTypeInfoCode = createWithTypeInfoCode(self.api)
-        withTypeInfoCode.initialize_offsets(0)
+        withTypeInfoCode.initialize_offsets()
         with open(self.JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER, "w", encoding="utf-8") as jsonFile:
             walkFilter = zserio.AndWalkFilter([zserio.DepthWalkFilter(1), zserio.ArrayLengthWalkFilter(0)])
             walker = zserio.Walker(zserio.JsonWriter(text_io=jsonFile, indent=4), walkFilter)
@@ -83,7 +83,7 @@ class DebugStringTest(unittest.TestCase):
 
     def testJsonWriterWithDepth5Filter(self):
         withTypeInfoCode = createWithTypeInfoCode(self.api)
-        withTypeInfoCode.initialize_offsets(0)
+        withTypeInfoCode.initialize_offsets()
         with open(self.JSON_NAME_WITH_DEPTH5_FILTER, "w", encoding="utf-8") as jsonFile:
             walkFilter = zserio.DepthWalkFilter(5)
             walker = zserio.Walker(zserio.JsonWriter(text_io=jsonFile, indent=4), walkFilter)
@@ -97,7 +97,7 @@ class DebugStringTest(unittest.TestCase):
 
     def testJsonWriterWithRegexFilter(self):
         withTypeInfoCode = createWithTypeInfoCode(self.api, createOptionals=False)
-        withTypeInfoCode.initialize_offsets(0)
+        withTypeInfoCode.initialize_offsets()
         with open(self.JSON_NAME_WITH_REGEX_FILTER, "w", encoding="utf-8") as jsonFile:
             walkFilter = zserio.RegexWalkFilter(".*fieldOffset")
             walker = zserio.Walker(zserio.JsonWriter(text_io=jsonFile, indent=4), walkFilter)

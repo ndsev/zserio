@@ -83,7 +83,7 @@ class PackedVariableArrayUInt8Test(unittest.TestCase):
         bitBuffer = zserio.serialize(packedVariableArray)
 
         self.assertEqual(packedVariableArray.bitsizeof(), bitBuffer.bitsize)
-        self.assertEqual(packedVariableArray.initialize_offsets(0), bitBuffer.bitsize)
+        self.assertEqual(packedVariableArray.initialize_offsets(), bitBuffer.bitsize)
 
         readPackedVariableArray = zserio.deserialize(self.api.PackedVariableArray, bitBuffer)
         readUint8Array = readPackedVariableArray.uint8_array

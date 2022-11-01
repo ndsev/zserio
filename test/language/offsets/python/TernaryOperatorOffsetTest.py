@@ -58,7 +58,7 @@ class TernaryOperatorOffsetTest(unittest.TestCase):
                                                [self.WRONG_FIELD_OFFSET, self.WRONG_FIELD_OFFSET],
                                                self.FIELD_VALUE)
         if not createWrongOffset:
-            ternaryOffset.initialize_offsets(0)
+            ternaryOffset.initialize_offsets()
 
         return ternaryOffset
 
