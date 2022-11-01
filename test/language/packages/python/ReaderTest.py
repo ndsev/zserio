@@ -16,6 +16,7 @@ class ReaderTest(unittest.TestCase):
         test.parameterized_array = [ self.api.ParameterizedElement(i, i) for i in range(self.ARRAY_SIZE) ]
 
         writer = zserio.BitStreamWriter()
+        test.initialize_offsets(writer.bitposition)
         test.write(writer)
 
         reader = zserio.BitStreamReader(writer.byte_array)

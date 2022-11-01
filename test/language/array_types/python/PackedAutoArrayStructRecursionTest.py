@@ -81,7 +81,7 @@ class PackedAutoArrayStructRecursionTest(unittest.TestCase):
         bitBuffer = zserio.serialize(packedAutoArrayRecursion)
 
         self.assertEqual(packedAutoArrayRecursion.bitsizeof(), bitBuffer.bitsize)
-        self.assertEqual(packedAutoArrayRecursion.initialize_offsets(0), bitBuffer.bitsize)
+        self.assertEqual(packedAutoArrayRecursion.initialize_offsets(), bitBuffer.bitsize)
 
         readPackedAutoArrayRecursion = zserio.deserialize(self.api.PackedAutoArrayRecursion, bitBuffer)
         self._checkPackedAutoArrayRecursion(readPackedAutoArrayRecursion, numElements)

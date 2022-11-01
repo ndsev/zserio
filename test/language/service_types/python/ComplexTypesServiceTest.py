@@ -114,6 +114,7 @@ class ComplexTypesServiceTest(unittest.TestCase):
 
         requestData = self.api.RequestData(self.api.ColorModel.RGB, offsets, data)
         request = self.api.Request(self.api.ColorModel.RGB, requestData)
+        request.initialize_offsets()
 
         self.assertEqual(length, self.client.get_length(request).length)
 
@@ -141,6 +142,7 @@ class ComplexTypesServiceTest(unittest.TestCase):
 
         requestData = self.api.RequestData(self.api.ColorModel.CMYK, offsets, data)
         request = self.api.Request(self.api.ColorModel.CMYK, requestData)
+        request.initialize_offsets()
 
         self.assertEqual(length, self.client.get_length(request).length)
 

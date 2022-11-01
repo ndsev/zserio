@@ -390,7 +390,7 @@ ${I}pass
 </#if>
 <#if withWriterCode>
 
-    def initialize_offsets(self, bitposition: int) -> int:
+    def initialize_offsets(self, bitposition: int = 0) -> int:
     <#if withCodeComments>
         """
         Initializes offsets in this Zserio object and in all its fields.
@@ -493,32 +493,21 @@ ${I}pass
 <#macro union_write_field field indent packed index>
     <@compound_write_field field, name, indent, packed, index/>
 </#macro>
-    def write(self, zserio_writer: zserio.BitStreamWriter, *,
-              zserio_call_initialize_offsets: bool = True) -> None:
+    def write(self, zserio_writer: zserio.BitStreamWriter) -> None:
     <#if withCodeComments>
         """
         Serializes this Zserio object to the bit stream.
 
         :param zserio_writer: Bit stream writer where to serialize this Zserio object.
-        :param zserio_call_initialize_offsets: True to call automatically initialize_offsets method before
-               writing, otherwise False.
         """
 
     </#if>
     <#if fieldList?has_content>
-        <#if hasFieldWithOffset>
-        if zserio_call_initialize_offsets:
-            self.initialize_offsets(zserio_writer.bitposition)
-        <#else>
-        del zserio_call_initialize_offsets
-        </#if>
-
         zserio_writer.write_varsize(self._choice_tag)
 
         <@union_if "union_write_field", "union_no_match"/>
     <#else>
         del zserio_writer
-        del zserio_call_initialize_offsets
     </#if>
 
     def write_packed(self, zserio_context_node: zserio.array.PackingContextNode,

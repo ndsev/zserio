@@ -16,6 +16,7 @@ class StructTemplatedTypeArgumentTest(unittest.TestCase):
         )
 
         writer = zserio.BitStreamWriter()
+        structTemplatedTypeArgument.initialize_offsets(writer.bitposition)
         structTemplatedTypeArgument.write(writer)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readStructTemplatedTypeArgument = self.api.StructTemplatedTypeArgument()

@@ -71,6 +71,7 @@ class OptionalMemberOffsetTest(unittest.TestCase):
                                                              self.WRONG_OPTIONAL_FIELD_OFFSET,
                                                              optionalField, field)
         writer = zserio.BitStreamWriter()
+        optionalMemberOffset.initialize_offsets(writer.bitposition)
         optionalMemberOffset.write(writer)
         self._checkOptionalMemberOffset(optionalMemberOffset, hasOptional, self.OPTIONAL_FIELD_OFFSET,
                                         optionalField, field)

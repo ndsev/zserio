@@ -11,6 +11,7 @@ class ArrayElementParamTest(unittest.TestCase):
     def testWrite(self):
         database = self._createDatabase()
         writer = zserio.BitStreamWriter()
+        database.initialize_offsets(writer.bitposition)
         database.write(writer)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         self._checkDatabaseInStream(reader, database)

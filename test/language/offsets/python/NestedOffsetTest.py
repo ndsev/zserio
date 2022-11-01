@@ -53,6 +53,7 @@ class NestedOffsetTest(unittest.TestCase):
         createWrongOffsets = True
         nestedOffset = self._createNestedOffset(createWrongOffsets)
         writer = zserio.BitStreamWriter()
+        nestedOffset.initialize_offsets(writer.bitposition)
         nestedOffset.write(writer)
         self._checkNestedOffset(nestedOffset)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
@@ -66,6 +67,7 @@ class NestedOffsetTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         bitPosition = 2
         writer.write_bits(0, bitPosition)
+        nestedOffset.initialize_offsets(writer.bitposition)
         nestedOffset.write(writer)
         self._checkNestedOffset(nestedOffset)
 
@@ -74,7 +76,7 @@ class NestedOffsetTest(unittest.TestCase):
         nestedOffset = self._createNestedOffset(createWrongOffsets)
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
-            nestedOffset.write(writer, zserio_call_initialize_offsets=False)
+            nestedOffset.write(writer)
 
     def _writeNestedOffsetToStream(self, writer, writeWrongOffsets):
         writer.write_bits(self.WRONG_TERMINATOR_OFFSET if writeWrongOffsets else self.TERMINATOR_OFFSET, 32)

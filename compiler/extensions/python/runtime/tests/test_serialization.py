@@ -1,6 +1,6 @@
 import unittest
 
-from zserio.serialization import (serialize, deserialize, serialize_to_bytes, deserialize_bytes,
+from zserio.serialization import (serialize, deserialize, serialize_to_bytes, deserialize_from_bytes,
                                   serialize_to_file, deserialize_from_file)
 from zserio.bitbuffer import BitBuffer
 from zserio.exception import PythonRuntimeException
@@ -9,6 +9,7 @@ class DummyObject:
     def __init__(self, parameter, value = 0):
         self._parameter = parameter
         self._value = value
+        self._offsets_initialized = False
 
     @classmethod
     def from_reader(cls, reader, parameter):
@@ -20,9 +21,16 @@ class DummyObject:
     def get_value(self):
         return self._value
 
+    def offsets_initalized(self):
+        return self._offsets_initialized
+
     @staticmethod
     def bitsizeof(_bitposition = 0):
         return 31 # to make an unaligned type
+
+    def initialize_offsets(self, bitposition: int) -> int:
+        self._offsets_initialized = True
+        return bitposition + DummyObject.bitsizeof(bitposition)
 
     def read(self, reader):
         self._value = reader.read_bits(self.bitsizeof(0))
@@ -35,6 +43,7 @@ class SerializationTest(unittest.TestCase):
     def test_serialize(self):
         dummy_object = DummyObject(0xAB, 0xDEAD)
         bitbuffer = serialize(dummy_object)
+        self.assertTrue(dummy_object.offsets_initalized())
         expected_bitsize = 31
         self.assertEqual(expected_bitsize, bitbuffer.bitsize)
         self.assertEqual(b'\x00\x01\xBD\x5A', bitbuffer.buffer)
@@ -51,18 +60,20 @@ class SerializationTest(unittest.TestCase):
     def test_serialize_to_bytes(self):
         dummy_object = DummyObject(0xAB, 0xDEAD)
         buffer = serialize_to_bytes(dummy_object)
+        self.assertTrue(dummy_object.offsets_initalized())
         expected_bitsize = 31
         self.assertEqual((expected_bitsize + 7) // 8, len(buffer))
         self.assertEqual(b'\x00\x01\xBD\x5A', buffer)
 
-    def test_deserialize_bytes(self):
+    def test_deserialize_from_bytes(self):
         buffer = b'\x00\x01\xBD\x5A'
-        dummy_object = deserialize_bytes(DummyObject, buffer, 0xAB)
+        dummy_object = deserialize_from_bytes(DummyObject, buffer, 0xAB)
         self.assertEqual(0xDEAD, dummy_object.get_value())
 
     def test_to_file_from_file(self):
         dummy_object = DummyObject(0xAB, 0xDEAD)
         filename = "SerializationTest.bin"
         serialize_to_file(dummy_object, filename)
+        self.assertTrue(dummy_object.offsets_initalized())
         read_dummy_object = deserialize_from_file(DummyObject, filename, 0xAB)
         self.assertEqual(dummy_object.get_value(), read_dummy_object.get_value())

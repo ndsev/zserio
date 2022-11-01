@@ -203,7 +203,7 @@ class ${name}:
                                               self._value)
 <#if withWriterCode>
 
-    def initialize_offsets(self, bitposition: int) -> int:
+    def initialize_offsets(self, bitposition: int = 0) -> int:
     <#if withCodeComments>
         """
         Initializes offsets in this bitmask object.
@@ -236,18 +236,15 @@ class ${name}:
     </#if>
         return bitposition + self.bitsizeof_packed(context_node, bitposition)
 
-    def write(self, writer: zserio.BitStreamWriter, *, zserio_call_initialize_offsets: bool = True) -> None:
+    def write(self, writer: zserio.BitStreamWriter) -> None:
     <#if withCodeComments>
         """
         Serializes this bitmask object to the bit stream.
 
         :param writer: Bit stream writer where to serialize this bitmask object.
-        :param zserio_call_initialize_offsets: True to call automatically initialize_offsets method before
-               writing, otherwise False.
         """
 
     </#if>
-        del zserio_call_initialize_offsets
         writer.write_${runtimeFunction.suffix}(self._value<#rt>
                                                <#lt><#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>)
 

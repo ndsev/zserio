@@ -12,6 +12,8 @@ def serialize(obj: typing.Any) -> BitBuffer:
     """
     Serializes generated object to the bit buffer.
 
+    Before serialization, the method calls initialize_offsets() on the given zserio object.
+
     Because serialization to the bit buffer does not have to be byte aligned (divisible by 8), it's possible
     that not all bits of the last byte are used. In this case, only most significant bits of the corresponded
     size are used.
@@ -30,8 +32,7 @@ def serialize(obj: typing.Any) -> BitBuffer:
     :raises PythonRuntimeException: Throws in case of any error during serialization.
     """
 
-    writer = BitStreamWriter()
-    obj.write(writer)
+    writer = _serialize(obj)
 
     return BitBuffer(writer.byte_array, writer.bitposition)
 
@@ -63,6 +64,8 @@ def serialize_to_bytes(obj: typing.Any) -> bytes:
     """
     Serializes generated object to the byte buffer.
 
+    Before serialization, the method calls initialize_offsets() on the given zserio object.
+
     This is a convenient method for users which do not need exact number of bits to which the given object
     will be serialized.
 
@@ -87,7 +90,7 @@ def serialize_to_bytes(obj: typing.Any) -> bytes:
 
     return bitbuffer.buffer
 
-def deserialize_bytes(obj_class: typing.Type[typing.Any], buffer: bytes, *args) -> typing.Any:
+def deserialize_from_bytes(obj_class: typing.Type[typing.Any], buffer: bytes, *args) -> typing.Any:
     """
     Deserializes byte buffer to the generated object.
 
@@ -102,7 +105,7 @@ def deserialize_bytes(obj_class: typing.Type[typing.Any], buffer: bytes, *args) 
         import zserio
 
         buffer = b'\\x00\\x01\\xBD\\x5A'
-        obj = zserio.deserialize_bytes(SomeZserioObject, buffer, 0xAB)
+        obj = zserio.deserialize_from_bytes(SomeZserioObject, buffer, 0xAB)
 
     :param obj_class: Class instance of the generated object to deserialize.
     :param buffer: Byte buffer which represents generated object in binary format.
@@ -117,7 +120,9 @@ def deserialize_bytes(obj_class: typing.Type[typing.Any], buffer: bytes, *args) 
 
 def serialize_to_file(obj: typing.Any, filename: str) -> None:
     """
-    Serializes generated object to the byte buffer.
+    Serializes generated object to the file.
+
+    Before serialization, the method calls initialize_offsets() on the given zserio object.
 
     This is a convenient method for users to easily write given generated object to file.
 
@@ -135,8 +140,7 @@ def serialize_to_file(obj: typing.Any, filename: str) -> None:
     :raises PythonRuntimeException: Throws in case of any error during serialization.
     """
 
-    writer = BitStreamWriter()
-    obj.write(writer)
+    writer = _serialize(obj)
     writer.to_file(filename)
 
 def deserialize_from_file(obj_class: typing.Type[typing.Any], filename: str, *args) -> typing.Any:
@@ -163,3 +167,10 @@ def deserialize_from_file(obj_class: typing.Type[typing.Any], filename: str, *ar
     reader = BitStreamReader.from_file(filename)
 
     return obj_class.from_reader(reader, *args)
+
+def _serialize(obj: typing.Any) -> BitStreamWriter:
+    writer = BitStreamWriter()
+    obj.initialize_offsets(writer.bitposition)
+    obj.write(writer)
+
+    return writer
