@@ -12,6 +12,7 @@
 
 #include "zserio/BitStreamReader.h"
 #include "zserio/BitStreamWriter.h"
+#include "zserio/Vector.h"
 #include "zserio/FileUtil.h"
 #include "zserio/Traits.h"
 
@@ -72,7 +73,7 @@ BasicBitBuffer<ALLOC> serialize(T& object, const ALLOC& allocator, ARGS&&... arg
  * Serializes given generated object to bit buffer using given allocator.
  *
  * Before serialization, the method properly calls on the given zserio object methods `initialize()`
- * (if exits), `initializeChildren()` (if exists) and `%initializeOffsets()`.
+ * (if exits), `initializeChildren()` (if exists) and `initializeOffsets()`.
  *
  * Example:
  * \code{.cpp}
@@ -104,7 +105,7 @@ BasicBitBuffer<ALLOC> serialize(T& object, const ALLOC& allocator, ARGS&&... arg
  * Serializes given generated object to bit buffer using default allocator 'std::allocator<uint8_t>'.
  *
  * Before serialization, the method properly calls on the given zserio object methods `initialize()`
- * (if exits), `initializeChildren()` (if exists) and `%initializeOffsets()`.
+ * (if exits), `initializeChildren()` (if exists) and `initializeOffsets()`.
  *
  * Example:
  * \code{.cpp}
@@ -206,6 +207,153 @@ template <typename T, typename ALLOC>
 typename std::enable_if<std::is_enum<T>::value, T>::type deserialize(const BasicBitBuffer<ALLOC>& bitBuffer)
 {
     BitStreamReader reader(bitBuffer);
+    return zserio::read<T>(reader);
+}
+
+/**
+ * Serializes given generated object to vector of bytes using given allocator.
+ *
+ * Before serialization, the method properly calls on the given zserio object methods `initialize()`
+ * (if exits), `initializeChildren()` (if exists) and `initializeOffsets()`.
+ *
+ * Example:
+ * \code{.cpp}
+ *     #include <zserio/SerializeUtil.h>
+ *     #include <zserio/pmr/PolymorphicAllocator.h>
+ *
+ *     const zserio::pmr::PolymorphicAllocator<> allocator;
+ *     SomeZserioObject object(allocator);
+ *     const zserio::vector<uint8_t, zserio::pmr::PolymorphicAllocator<>> buffer =
+ *             zserio::serializeToBytes(object, allocator);
+ * \endcode
+ *
+ * \param object Generated object to serialize.
+ * \param allocator Allocator to use to allocate vector.
+ * \param arguments Object's actual parameters for initialize() method (optional).
+ *
+ * \return Vector of bytes containing the serialized object.
+ *
+ * \throw CppRuntimeException When serialization fails.
+ */
+template <typename T, typename ALLOC, typename ...ARGS,
+        typename std::enable_if<!std::is_enum<T>::value && is_allocator<ALLOC>::value, int>::type = 0>
+vector<uint8_t, ALLOC> serializeToBytes(T& object, const ALLOC& allocator, ARGS&&... arguments)
+{
+    const BasicBitBuffer<ALLOC> bitBuffer = detail::serialize(object, allocator,
+            std::forward<ARGS>(arguments)...);
+
+    return bitBuffer.getBytes();
+}
+
+/**
+ * Serializes given generated object to vector of bytes using default allocator 'std::allocator<uint8_t>'.
+ *
+ * Before serialization, the method properly calls on the given zserio object methods `initialize()`
+ * (if exits), `initializeChildren()` (if exists) and `initializeOffsets()`.
+ *
+ * Example:
+ * \code{.cpp}
+ *     #include <zserio/SerializeUtil.h>
+ *
+ *     SomeZserioObject object;
+ *     const zserio::vector<uint8_t> buffer = zserio::serializeToBytes(object);
+ * \endcode
+ *
+ * \param object Generated object to serialize.
+ * \param arguments Object's actual parameters for initialize() method (optional).
+ *
+ * \return Vector of bytes containing the serialized object.
+ *
+ * \throw CppRuntimeException When serialization fails.
+ */
+template <typename T, typename ALLOC = std::allocator<uint8_t>, typename ...ARGS,
+        typename std::enable_if<!std::is_enum<T>::value &&
+                !is_first_allocator<typename std::decay<ARGS>::type...>::value, int>::type = 0>
+vector<uint8_t, ALLOC> serializeToBytes(T& object, ARGS&&... arguments)
+{
+    const BasicBitBuffer<ALLOC> bitBuffer = detail::serialize(object, ALLOC(),
+            std::forward<ARGS>(arguments)...);
+
+    return bitBuffer.getBytes();
+}
+
+/**
+ * Serializes given generated enum to vector of bytes.
+ *
+ * Example:
+ * \code{.cpp}
+ *     #include <zserio/SerializeUtil.h>
+ *
+ *     const SomeZserioEnum enumValue = SomeZserioEnum::SomeEnumValue;
+ *     const zserio::vector<uint8_t> buffer = zserio::serializeToBytes(enumValue);
+ * \endcode
+ *
+ * \param enumValue Generated enum to serialize.
+ * \param allocator Allocator to use to allocate vector.
+ *
+ * \return Vector of bytes containing the serialized enum.
+ *
+ * \throw CppRuntimeException When serialization fails.
+ */
+template <typename T, typename ALLOC = std::allocator<uint8_t>,
+        typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
+vector<uint8_t, ALLOC> serializeToBytes(T enumValue, const ALLOC& allocator = ALLOC())
+{
+    const BasicBitBuffer<ALLOC> bitBuffer = serialize(enumValue, allocator);
+
+    return bitBuffer.getBytes();
+}
+
+/**
+ * Deserializes given vector of bytes to instance of generated object.
+ *
+ * Example:
+ * \code{.cpp}
+ *     #include <zserio/SerializeUtil.h>
+ *
+ *     SomeZserioObject object;
+ *     const zserio::vector<uint8_t> buffer = zserio::serializeToBytes(object);
+ *     SomeZserioObject readObject = zserio::deserializeFromBytes<SomeZserioObject>(buffer);
+ * \endcode
+ *
+ * \param bitBuffer Vector of bytes to use.
+ * \param arguments Object's actual parameters together with allocator for object's read constructor (optional).
+ *
+ * \return Generated object created from the given vector of bytes.
+ *
+ * \throw CppRuntimeException When deserialization fails.
+ */
+template <typename T, typename ALLOC, typename ...ARGS>
+typename std::enable_if<!std::is_enum<T>::value, T>::type deserializeFromBytes(
+        const std::vector<uint8_t, ALLOC>& buffer, ARGS&&... arguments)
+{
+    BitStreamReader reader(buffer);
+    return T(reader, std::forward<ARGS>(arguments)...);
+}
+
+/**
+ * Deserializes given vector of bytes to instance of generated enum.
+ *
+ * Example:
+ * \code{.cpp}
+ *     #include <zserio/SerializeUtil.h>
+ *
+ *     const SomeZserioEnum enumValue = SomeZserioEnum::SomeEnumValue;
+ *     const zserio::vector<uint8_t> buffer = zserio::serializeToBytes(enumValue);
+ *     const SomeZserioEnum readEnumValue = zserio::deserializeFromBytes<DummyEnum>(buffer);
+ * \endcode
+ *
+ * \param bitBuffer Vector of bytes to use.
+ *
+ * \return Generated enum created from the given vector of bytes.
+ *
+ * \throw CppRuntimeException When deserialization fails.
+ */
+template <typename T, typename ALLOC>
+typename std::enable_if<std::is_enum<T>::value, T>::type deserializeFromBytes(
+        const std::vector<uint8_t, ALLOC>& buffer)
+{
+    BitStreamReader reader(buffer);
     return zserio::read<T>(reader);
 }
 
