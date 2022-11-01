@@ -53,6 +53,8 @@ protected:
         vector_type<uint32_t>& array = parameterizedBlob.getArray();
         for (uint32_t i = 0; i < array_size; ++i)
             array.push_back(i);
+        parameterizedBlob.initialize(row.getOffsetsHolder());
+        parameterizedBlob.initializeOffsets();
     }
 
     static void fillBlobOffsetsParamTableRows(vector_type<BlobOffsetsParamTable::Row>& rows)

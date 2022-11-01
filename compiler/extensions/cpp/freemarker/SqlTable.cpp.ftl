@@ -25,7 +25,6 @@
 <@namespace_begin package.path/>
 
 <#assign needsParameterProvider=explicitParameters?has_content/>
-<#assign hasBlobField=sql_table_has_blob_field(fields)/>
 <#if withValidationCode>
     <#assign hasPrimaryKeyField=false/>
     <#list fields as field>
@@ -698,10 +697,6 @@ void ${name}::writeRow(<#if needsParameterProvider>IParameterProvider& parameter
     row.initializeChildren(<#if needsParameterProvider>parameterProvider</#if>);
 
 </#if>
-<#if hasBlobField>
-    row.initializeOffsets();
-
-</#if>
     int result;
 
     <#list fields as field>
@@ -895,18 +890,6 @@ void ${name}::Row::initializeChildren(<#if needsParameterProvider>IParameterProv
         <@sql_field_member_name field/>->initializeChildren();
                 </#if>
     }
-            </#if>
-        </#list>
-}
-    </#if>
-    <#if hasBlobField>
-
-void ${name}::Row::initializeOffsets()
-{
-        <#list fields as field>
-            <#if field.sqlTypeData.isBlob>
-    if (<@sql_field_member_name field/>)
-        <@sql_field_member_name field/>->initializeOffsets();
             </#if>
         </#list>
 }

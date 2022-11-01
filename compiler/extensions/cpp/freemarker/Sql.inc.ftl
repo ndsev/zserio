@@ -7,15 +7,6 @@
     <#return false>
 </#function>
 
-<#function sql_table_has_blob_field fields>
-    <#list fields as field>
-        <#if field.sqlTypeData.isBlob>
-            <#return true>
-        </#if>
-    </#list>
-    <#return false>
-</#function>
-
 <#function sql_db_has_without_rowid_table fields>
     <#list fields as field>
         <#if field.isWithoutRowIdTable>

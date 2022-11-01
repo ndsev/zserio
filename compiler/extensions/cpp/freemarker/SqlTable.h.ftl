@@ -27,7 +27,6 @@
 <@namespace_begin package.path/>
 
 <#assign needsParameterProvider=explicitParameters?has_content/>
-<#assign hasBlobField=sql_table_has_blob_field(fields)/>
 <#if withValidationCode>
     <#assign hasNonVirtualField=sql_table_has_non_virtual_field(fields)/>
 </#if>
@@ -231,17 +230,6 @@ public:
          */
         </#if>
         void initializeChildren(<#if needsParameterProvider>IParameterProvider& parameterProvider</#if>);
-
-    </#if>
-    <#if hasBlobField>
-        <#if withCodeComments>
-        /**
-         * Initializes offsets in all blob fields of the table.
-         *
-         * This method sets offsets in all blob fields recursively.
-         */
-        </#if>
-        void initializeOffsets();
 
     </#if>
 </#if>
