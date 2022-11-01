@@ -1,6 +1,6 @@
 import unittest
 
-from zserio.serialization import (serialize, deserialize, serialize_to_bytes, deserialize_bytes,
+from zserio.serialization import (serialize, deserialize, serialize_to_bytes, deserialize_from_bytes,
                                   serialize_to_file, deserialize_from_file)
 from zserio.bitbuffer import BitBuffer
 from zserio.exception import PythonRuntimeException
@@ -48,11 +48,6 @@ class SerializationTest(unittest.TestCase):
         self.assertEqual(expected_bitsize, bitbuffer.bitsize)
         self.assertEqual(b'\x00\x01\xBD\x5A', bitbuffer.buffer)
 
-    def test_serialize_skip_offsets(self):
-        dummy_object = DummyObject(0xAB, 0xDEAD)
-        serialize(dummy_object, call_initialize_offsets = False)
-        self.assertFalse(dummy_object.offsets_initalized())
-
     def test_deserialize(self):
         bitbuffer = BitBuffer(b'\x00\x01\xBD\x5A', 31)
         dummy_object = deserialize(DummyObject, bitbuffer, 0xAB)
@@ -70,14 +65,9 @@ class SerializationTest(unittest.TestCase):
         self.assertEqual((expected_bitsize + 7) // 8, len(buffer))
         self.assertEqual(b'\x00\x01\xBD\x5A', buffer)
 
-    def test_serialize_to_bytes_skip_offsets(self):
-        dummy_object = DummyObject(0xAB, 0xDEAD)
-        serialize_to_bytes(dummy_object, call_initialize_offsets = False)
-        self.assertFalse(dummy_object.offsets_initalized())
-
-    def test_deserialize_bytes(self):
+    def test_deserialize_from_bytes(self):
         buffer = b'\x00\x01\xBD\x5A'
-        dummy_object = deserialize_bytes(DummyObject, buffer, 0xAB)
+        dummy_object = deserialize_from_bytes(DummyObject, buffer, 0xAB)
         self.assertEqual(0xDEAD, dummy_object.get_value())
 
     def test_to_file_from_file(self):
@@ -87,9 +77,3 @@ class SerializationTest(unittest.TestCase):
         self.assertTrue(dummy_object.offsets_initalized())
         read_dummy_object = deserialize_from_file(DummyObject, filename, 0xAB)
         self.assertEqual(dummy_object.get_value(), read_dummy_object.get_value())
-
-    def test_to_file_from_file_skip_offsets(self):
-        dummy_object = DummyObject(0xAB, 0xDEAD)
-        filename = "SerializationTest.bin"
-        serialize_to_file(dummy_object, filename, call_initialize_offsets = False)
-        self.assertFalse(dummy_object.offsets_initalized())
