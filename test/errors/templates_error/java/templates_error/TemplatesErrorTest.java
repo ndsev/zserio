@@ -115,6 +115,8 @@ public class TemplatesErrorTest
     {
         final String errors[] =
         {
+            "instantiate_duplicated_via_import_error.zs:5:13: " +
+                    "    In instantiation of 'Test' required from here",
             "instantiate_duplicated_via_import_error.zs:5:26:     First requested here",
             "pkg.zs:8:26: Ambiguous request to instantiate template 'Test'!"
         };
@@ -159,7 +161,7 @@ public class TemplatesErrorTest
     {
         final String errors[] =
         {
-            "instantiate_name_clash_with_single_import_error/pkg.zs:3:8:     Found here",
+            "pkg.zs:3:8:     Found here",
             "instantiate_name_clash_with_single_import_error.zs:5:30:     Found here",
             "instantiate_name_clash_with_single_import_error.zs:5:13: Ambiguous symbol 'Template'"
         };
