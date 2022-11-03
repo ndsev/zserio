@@ -9,6 +9,8 @@ The following subjects are covered:
 
 [Zserio Command Line Interface Examples](#zserio-command-line-interface-examples)
 
+[Zserio Warnings Subsystem](#zserio-warnings-subsystem)
+
 [Zserio Ant Task](#zserio-ant-task)
 
 [Zserio Ant Task Examples](#zserio-ant-task-examples)
