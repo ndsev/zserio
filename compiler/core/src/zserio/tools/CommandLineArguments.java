@@ -60,29 +60,10 @@ class CommandLineArguments
      */
     public void parse(String[] args) throws ParseException
     {
-        try
-        {
-            CommandLineParser cliParser = new DefaultParser();
-            parsedCommandLine = cliParser.parse(options, args, false);
-            readArguments();
-            readOptions();
-        }
-        catch (UnrecognizedOptionException e)
-        {
-            // TODO[Mi-L@]: Should be removed after release 2.8!
-            if (e.getOption().equals("-withUnusedWarnings"))
-            {
-                throw new ParseException("Option '-withUnusedWarnings' was removed, use " +
-                        "'-withWarnings unused' instead! See '--help warnings' for more info.");
-            }
-            else if (e.getOption().equals("-withoutUnusedWarnings"))
-            {
-                throw new ParseException("Option '-withoutUnusedWarnings' was removed, use " +
-                        "'-withoutWarnings unused' instead! See '--help warnings' for more info.");
-            }
-
-            throw e; // rethrow
-        }
+        CommandLineParser cliParser = new DefaultParser();
+        parsedCommandLine = cliParser.parse(options, args, false);
+        readArguments();
+        readOptions();
     }
 
     /**
