@@ -5,6 +5,7 @@ import zserio.ast.AstNode;
 import zserio.ast.BitmaskType;
 import zserio.ast.BitmaskValue;
 import zserio.ast.BooleanType;
+import zserio.ast.BytesType;
 import zserio.ast.ChoiceType;
 import zserio.ast.Constant;
 import zserio.ast.DynamicBitFieldType;
@@ -249,6 +250,12 @@ class AstNodeNameMapper
         public void visitBooleanType(BooleanType booleanType)
         {
             name = booleanType.getName();
+        }
+
+        @Override
+        public void visitBytesType(BytesType bytesType)
+        {
+            name = bytesType.getName();
         }
 
         @Override

@@ -5,6 +5,7 @@ import zserio.ast.AstNode;
 import zserio.ast.BitmaskType;
 import zserio.ast.BitmaskValue;
 import zserio.ast.BooleanType;
+import zserio.ast.BytesType;
 import zserio.ast.ChoiceCase;
 import zserio.ast.ChoiceCaseExpression;
 import zserio.ast.ChoiceDefault;
@@ -287,6 +288,12 @@ class AstNodeTypeNameMapper
         public void visitBooleanType(BooleanType booleanType)
         {
             typeName = "Boolean";
+        }
+
+        @Override
+        public void visitBytesType(BytesType bytesType)
+        {
+            typeName = "Bytes";
         }
 
         @Override
