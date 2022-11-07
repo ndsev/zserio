@@ -177,6 +177,14 @@ size_t bitSizeOfVarSize(uint32_t value)
     return bitSizeOfVarIntImpl(value, VarSizeMaxValues, VarSizeMaxNumValues, "varsize");
 }
 
+size_t bitSizeOfBytes(Span<const uint8_t> bytesValue)
+{
+    const size_t bytesSize = bytesValue.size();
+
+    // the bytes consists of varsize for size followed by the bytes
+    return bitSizeOfVarSize(convertSizeToUInt32(bytesSize)) + bytesToBits(bytesSize);
+}
+
 size_t bitSizeOfString(StringView stringValue)
 {
     const size_t stringSize = stringValue.size();

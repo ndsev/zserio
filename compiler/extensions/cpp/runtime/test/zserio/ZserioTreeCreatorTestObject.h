@@ -124,6 +124,9 @@ public:
     BitBuffer& getData();
     void setData(const BitBuffer& data_);
 
+    vector<uint8_t>& getBytesData();
+    void setBytesData(const vector<uint8_t>& bytesData_);
+
     DummyEnum getDummyEnum() const;
     void setDummyEnum(DummyEnum dummyEnum_);
 
@@ -136,6 +139,7 @@ private:
     uint32_t m_value_;
     string<> m_text_;
     BitBuffer m_data_;
+    vector<uint8_t> m_bytesData_;
     DummyEnum m_dummyEnum_;
     DummyBitmask m_dummyBitmask_;
 };
@@ -166,6 +170,7 @@ private:
             ZserioElementFactory_nestedArray>, ArrayType::AUTO>;
     using ZserioArrayType_textArray = Array<vector<string<>>, StringArrayTraits, ArrayType::AUTO>;
     using ZserioArrayType_externArray = Array<vector<BitBuffer>, BitBufferArrayTraits, ArrayType::AUTO>;
+    using ZserioArrayType_bytesArray = Array<vector<vector<uint8_t>>, BytesArrayTraits, ArrayType::AUTO>;
 
 public:
     using allocator_type = ::std::allocator<uint8_t>;
@@ -197,6 +202,10 @@ public:
     vector<BitBuffer>& getExternArray();
     void setExternArray(const vector<BitBuffer>& externArray_);
 
+    vector<vector<uint8_t>>& getBytesArray();
+    void setBytesArray(const vector<vector<uint8_t>>& bytesArray_);
+    bool isBytesArraySet() const;
+
     bool isOptionalBoolSet() const;
     bool getOptionalBool() const;
     void setOptionalBool(bool optionalBool_);
@@ -214,6 +223,7 @@ private:
     ZserioArrayType_nestedArray m_nestedArray_;
     ZserioArrayType_textArray m_textArray_;
     InplaceOptionalHolder<ZserioArrayType_externArray> m_externArray_;
+    InplaceOptionalHolder<ZserioArrayType_bytesArray> m_bytesArray_;
     InplaceOptionalHolder<bool> m_optionalBool_;
     InplaceOptionalHolder<DummyNested> m_optionalNested_;
 };

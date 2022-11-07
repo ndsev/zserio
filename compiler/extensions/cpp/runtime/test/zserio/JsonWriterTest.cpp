@@ -47,6 +47,11 @@ const FieldInfo DATA_FIELD_INFO{
     {}, {}, {}, {}, false, {}, {}, false, {}, false, false
 };
 
+const FieldInfo BYTES_FIELD_INFO{
+    "bytesData"_sv, BuiltinTypeInfo<>::getBytes(),
+    {}, {}, {}, {}, false, {}, {}, false, {}, false, false
+};
+
 const StructTypeInfo<std::allocator<uint8_t>> DUMMY_TYPE_INFO{
     "Dummy"_sv, nullptr, {}, {}, {}, {}, {}
 };
@@ -367,10 +372,13 @@ TEST(JsonWriterTest, compound)
     observer.visitValue(ReflectableFactory::getString("test"_sv), TEXT_FIELD_INFO);
     BitBuffer bitBuffer({0xFF, 0x1F}, 13);
     observer.visitValue(ReflectableFactory::getBitBuffer(bitBuffer), DATA_FIELD_INFO);
+    vector<uint8_t> bytesData{{0xCA, 0xFE}};
+    observer.visitValue(ReflectableFactory::getBytes(bytesData), BYTES_FIELD_INFO);
     observer.endRoot(nullptr);
 
-    ASSERT_EQ("{\"identifier\": 13, \"text\": \"test\", \"data\": "
-            "{\"buffer\": [255, 31], \"bitSize\": 13}}", os.str());
+    ASSERT_EQ("{\"identifier\": 13, \"text\": \"test\", "
+            "\"data\": {\"buffer\": [255, 31], \"bitSize\": 13}, "
+            "\"bytesData\": {\"buffer\": [202, 254]}}", os.str());
 }
 
 TEST(JsonWriterTest, nestedCompound)

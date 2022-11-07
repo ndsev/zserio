@@ -3,13 +3,13 @@
 
 #include <cstddef>
 #include <cstring>
-#include <string>
 
-#include "zserio/Types.h"
-#include "zserio/Span.h"
 #include "zserio/BitBuffer.h"
 #include "zserio/RebindAlloc.h"
+#include "zserio/Span.h"
 #include "zserio/String.h"
+#include "zserio/Types.h"
+#include "zserio/Vector.h"
 
 namespace zserio
 {
@@ -220,14 +220,34 @@ public:
     float readFloat32();
 
     /**
-     * Reads 64-bit float double).
+     * Reads 64-bit float double.
      *
      * \return Read float64.
      */
     double readFloat64();
 
     /**
+     * Reads bytes.
+     *
+     * \param alloc Allocator to use.
+     *
+     * \return Read bytes as a vector.
+     */
+    template <typename ALLOC = std::allocator<uint8_t>>
+    vector<uint8_t, ALLOC> readBytes(const ALLOC& alloc = ALLOC())
+    {
+        vector<uint8_t, ALLOC> value{alloc};
+        const size_t len = static_cast<size_t>(readVarSize());
+        value.reserve(len);
+        for (size_t i = 0; i < len; ++i)
+            value.push_back(readByte());
+        return value;
+    }
+
+    /**
      * Reads an UTF-8 string.
+     *
+     * \param alloc Allocator to use.
      *
      * \return Read string.
      */
@@ -238,9 +258,7 @@ public:
         const size_t len = static_cast<size_t>(readVarSize());
         value.reserve(len);
         for (size_t i = 0; i < len; ++i)
-        {
-            value.push_back(static_cast<char>(readChar()));
-        }
+            value.push_back(static_cast<char>(readByte()));
         return value;
     }
 
@@ -253,6 +271,8 @@ public:
 
     /**
      * Reads a bit buffer.
+     *
+     * \param alloc Allocator to use.
      *
      * \return Read bit buffer.
      */
@@ -318,7 +338,7 @@ public:
     size_t getBufferBitSize() const { return m_context.bufferBitSize; }
 
 private:
-    uint8_t readChar();
+    uint8_t readByte();
 
     ReaderContext m_context;
 };

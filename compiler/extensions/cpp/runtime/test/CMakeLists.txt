@@ -78,6 +78,10 @@ set(ZSERIO_CPP_RUNTIME_TEST_HEADERS
     zserio/TrackingAllocator.h
 )
 
+if (MSVC)
+    set_property(SOURCE zserio/ReflectableTest.cpp APPEND PROPERTY COMPILE_OPTIONS /bigobj)
+endif ()
+
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)
     # allows bit stream reader and var size util optimizations for 64bit platforms
     set_property(SOURCE zserio/VarSizeUtilTest.cpp

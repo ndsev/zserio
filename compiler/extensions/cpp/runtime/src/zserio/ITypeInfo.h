@@ -22,6 +22,7 @@ enum class CppType
     UINT64, /**< C++ int64_t type */
     FLOAT, /**< C++ float type */
     DOUBLE, /**< C++ double type */
+    BYTES, /**< C++ bytes type (mapped as std::vector<uint8_t>) */
     STRING, /**< C++ string type */
     BIT_BUFFER, /**< C++ zserio::BitBuffer type */
     ENUM, /**< C++ enumeration generated from zserio enumeration type */
@@ -63,6 +64,7 @@ enum class SchemaType
     FLOAT16, /**< zserio float16 type */
     FLOAT32, /**< zserio float32 type */
     FLOAT64, /**< zserio float64 type */
+    BYTES, /**< zserio bytes type */
     STRING, /**< zserio string type */
     EXTERN, /**< zserio extern type */
     ENUM, /**< zserio enumeration type */

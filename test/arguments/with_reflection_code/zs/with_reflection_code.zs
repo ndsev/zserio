@@ -58,6 +58,8 @@ offsets[@index]:
     bool boolArray[];
     extern externField;
     extern externArray[];
+    bytes bytesField;
+    bytes bytesArray[];
 
     function Selector getEnumField()
     {

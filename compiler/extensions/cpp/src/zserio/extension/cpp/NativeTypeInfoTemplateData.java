@@ -3,6 +3,7 @@ package zserio.extension.cpp;
 import zserio.ast.ArrayType;
 import zserio.ast.BitmaskType;
 import zserio.ast.BooleanType;
+import zserio.ast.BytesType;
 import zserio.ast.CompoundType;
 import zserio.ast.EnumType;
 import zserio.ast.StringType;
@@ -67,6 +68,11 @@ public class NativeTypeInfoTemplateData
         return isString;
     }
 
+    public boolean getIsBytes()
+    {
+        return isBytes;
+    }
+
     public ArrayTraitsTemplateData getArrayTraits()
     {
         return arrayTraits;
@@ -89,6 +95,7 @@ public class NativeTypeInfoTemplateData
         isBitmask = baseType instanceof BitmaskType;
         isBoolean = baseType instanceof BooleanType;
         isString = baseType instanceof StringType;
+        isBytes = baseType instanceof BytesType;
 
         if (cppNativeType instanceof CppNativeArrayableType)
             arrayTraits = new ArrayTraitsTemplateData(((CppNativeArrayableType)cppNativeType).getArrayTraits());
@@ -97,8 +104,8 @@ public class NativeTypeInfoTemplateData
 
         final boolean isCompound = baseType instanceof CompoundType;
         final boolean isArray = baseType instanceof ArrayType;
-        final boolean hasTypeInfo = isCompound || isEnum || isBitmask || isArray;
-        if (hasTypeInfo || (typeInstantiation == null && typeReference == null))
+        final boolean hasTypeInfo = isCompound || isEnum || isBitmask;
+        if (hasTypeInfo || isArray || (typeInstantiation == null && typeReference == null))
         {
             typeInfoGetter = null;
         }
@@ -116,6 +123,7 @@ public class NativeTypeInfoTemplateData
     private final boolean isBitmask;
     private final boolean isBoolean;
     private final boolean isString;
+    private final boolean isBytes;
     private final ArrayTraitsTemplateData arrayTraits;
     private final RuntimeFunctionTemplateData typeInfoGetter;
 }

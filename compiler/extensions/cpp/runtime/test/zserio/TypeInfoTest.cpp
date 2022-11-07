@@ -82,6 +82,8 @@ protected:
         ASSERT_THROW(typeInfo.getMessages(), CppRuntimeException);
 
         ASSERT_THROW(typeInfo.getMethods(), CppRuntimeException);
+
+        ASSERT_THROW(typeInfo.createInstance(), CppRuntimeException);
     }
 };
 
@@ -120,6 +122,8 @@ TEST_F(TypeInfoTest, builtinTypeInfo)
     checkBuiltinTypeInfo(Builtin::getString(), "string"_sv, SchemaType::STRING, CppType::STRING);
 
     checkBuiltinTypeInfo(Builtin::getBitBuffer(), "extern"_sv, SchemaType::EXTERN, CppType::BIT_BUFFER);
+
+    checkBuiltinTypeInfo(Builtin::getBytes(), "bytes"_sv, SchemaType::BYTES, CppType::BYTES);
 
     // fixed signed bit fields
     uint8_t bitSize = 0;
@@ -271,6 +275,8 @@ TEST_F(TypeInfoTest, structTypeInfo)
     ASSERT_THROW(structTypeInfo.getMessages(), CppRuntimeException);
 
     ASSERT_THROW(structTypeInfo.getMethods(), CppRuntimeException);
+
+    ASSERT_THROW(structTypeInfo.createInstance(std::allocator<uint8_t>()), CppRuntimeException);
 }
 
 TEST_F(TypeInfoTest, unionTypeInfo)
@@ -306,6 +312,8 @@ TEST_F(TypeInfoTest, unionTypeInfo)
     ASSERT_THROW(unionTypeInfo.getMessages(), CppRuntimeException);
 
     ASSERT_THROW(unionTypeInfo.getMethods(), CppRuntimeException);
+
+    ASSERT_THROW(unionTypeInfo.createInstance(std::allocator<uint8_t>()), CppRuntimeException);
 }
 
 TEST_F(TypeInfoTest, choiceTypeInfo)
@@ -342,6 +350,8 @@ TEST_F(TypeInfoTest, choiceTypeInfo)
     ASSERT_THROW(choiceTypeInfo.getMessages(), CppRuntimeException);
 
     ASSERT_THROW(choiceTypeInfo.getMethods(), CppRuntimeException);
+
+    ASSERT_THROW(choiceTypeInfo.createInstance(std::allocator<uint8_t>()), CppRuntimeException);
 }
 
 TEST_F(TypeInfoTest, sqlTableTypeInfo)
@@ -377,6 +387,8 @@ TEST_F(TypeInfoTest, sqlTableTypeInfo)
     ASSERT_THROW(sqlTableTypeInfo.getMessages(), CppRuntimeException);
 
     ASSERT_THROW(sqlTableTypeInfo.getMethods(), CppRuntimeException);
+
+    ASSERT_THROW(sqlTableTypeInfo.createInstance(std::allocator<uint8_t>()), CppRuntimeException);
 }
 
 TEST_F(TypeInfoTest, sqlDatabaseTypeInfo)
@@ -412,6 +424,8 @@ TEST_F(TypeInfoTest, sqlDatabaseTypeInfo)
     ASSERT_THROW(sqlDatabaseTypeInfo.getMessages(), CppRuntimeException);
 
     ASSERT_THROW(sqlDatabaseTypeInfo.getMethods(), CppRuntimeException);
+
+    ASSERT_THROW(sqlDatabaseTypeInfo.createInstance(std::allocator<uint8_t>()), CppRuntimeException);
 }
 
 TEST_F(TypeInfoTest, enumTypeInfo)
@@ -448,6 +462,8 @@ TEST_F(TypeInfoTest, enumTypeInfo)
     ASSERT_THROW(enumTypeInfo.getMessages(), CppRuntimeException);
 
     ASSERT_THROW(enumTypeInfo.getMethods(), CppRuntimeException);
+
+    ASSERT_THROW(enumTypeInfo.createInstance(std::allocator<uint8_t>()), CppRuntimeException);
 }
 
 TEST_F(TypeInfoTest, bitmaskTypeInfo)
@@ -484,6 +500,8 @@ TEST_F(TypeInfoTest, bitmaskTypeInfo)
     ASSERT_THROW(bitmaskTypeInfo.getMessages(), CppRuntimeException);
 
     ASSERT_THROW(bitmaskTypeInfo.getMethods(), CppRuntimeException);
+
+    ASSERT_THROW(bitmaskTypeInfo.createInstance(std::allocator<uint8_t>()), CppRuntimeException);
 }
 
 TEST_F(TypeInfoTest, pubsubTypeInfo)
@@ -519,6 +537,8 @@ TEST_F(TypeInfoTest, pubsubTypeInfo)
     ASSERT_EQ(0, pubsubTypeInfo.getMessages().size());
 
     ASSERT_THROW(pubsubTypeInfo.getMethods(), CppRuntimeException);
+
+    ASSERT_THROW(pubsubTypeInfo.createInstance(std::allocator<uint8_t>()), CppRuntimeException);
 }
 
 TEST_F(TypeInfoTest, serviceTypeInfo)
@@ -554,6 +574,8 @@ TEST_F(TypeInfoTest, serviceTypeInfo)
     ASSERT_THROW(serviceTypeInfo.getMessages(), CppRuntimeException);
 
     ASSERT_EQ(0, serviceTypeInfo.getMethods().size());
+
+    ASSERT_THROW(serviceTypeInfo.createInstance(std::allocator<uint8_t>()), CppRuntimeException);
 }
 
 TEST_F(TypeInfoTest, recursiveTypeInfo)
@@ -591,6 +613,8 @@ TEST_F(TypeInfoTest, recursiveTypeInfo)
     ASSERT_THROW(recursiveTypeInfo.getMessages(), CppRuntimeException);
 
     ASSERT_THROW(recursiveTypeInfo.getMethods(), CppRuntimeException);
+
+    ASSERT_THROW(recursiveTypeInfo.createInstance(std::allocator<uint8_t>()), CppRuntimeException);
 }
 
 } // namespace zserio

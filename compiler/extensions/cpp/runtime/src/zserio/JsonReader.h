@@ -3,6 +3,7 @@
 
 #include <istream>
 #include <limits>
+#include <memory>
 
 #include "zserio/AllocatorHolder.h"
 #include "zserio/JsonParser.h"
@@ -16,8 +17,16 @@ namespace zserio
 namespace detail
 {
 
+// adapter for values which are encoded as a JSON object
 template <typename ALLOC>
-class BitBufferAdapter : public BasicJsonParser<ALLOC>::IObserver, public AllocatorHolder<ALLOC>
+class IObjectValueAdapter : public BasicJsonParser<ALLOC>::IObserver
+{
+public:
+    virtual AnyHolder<ALLOC> get() const = 0;
+};
+
+template <typename ALLOC>
+class BitBufferAdapter : public IObjectValueAdapter<ALLOC>, public AllocatorHolder<ALLOC>
 {
 public:
     using AllocatorHolder<ALLOC>::get_allocator;
@@ -42,7 +51,7 @@ public:
         return *this;
     }
 
-    BasicBitBuffer<ALLOC> get() const;
+    virtual AnyHolder<ALLOC> get() const override;
 
     virtual void beginObject() override;
     virtual void endObject() override;
@@ -68,6 +77,57 @@ private:
     State m_state;
     InplaceOptionalHolder<vector<uint8_t, ALLOC>> m_buffer;
     InplaceOptionalHolder<size_t> m_bitSize;
+};
+
+template <typename ALLOC>
+class BytesAdapter : public IObjectValueAdapter<ALLOC>, public AllocatorHolder<ALLOC>
+{
+public:
+    using AllocatorHolder<ALLOC>::get_allocator;
+
+    explicit BytesAdapter(const ALLOC& allocator) :
+            AllocatorHolder<ALLOC>(allocator), m_state(VISIT_KEY)
+    {}
+
+    BytesAdapter(BytesAdapter& other) = delete;
+    BytesAdapter& operator=(BytesAdapter& other) = delete;
+
+    BytesAdapter(BytesAdapter&& other) :
+            m_state(other.m_state), m_buffer(std::move(other.m_buffer))
+    {}
+
+    BytesAdapter& operator=(BytesAdapter&& other)
+    {
+        m_state = other.m_state;
+        m_buffer = std::move(other.m_buffer);
+
+        return *this;
+    }
+
+    virtual AnyHolder<ALLOC> get() const override;
+
+    virtual void beginObject() override;
+    virtual void endObject() override;
+    virtual void beginArray() override;
+    virtual void endArray() override;
+    virtual void visitKey(StringView key) override;
+    virtual void visitValue(std::nullptr_t) override;
+    virtual void visitValue(bool boolValue) override;
+    virtual void visitValue(int64_t intValue) override;
+    virtual void visitValue(uint64_t uintValue) override;
+    virtual void visitValue(double doubleValue) override;
+    virtual void visitValue(StringView stringValue) override;
+
+private:
+    enum State : uint8_t
+    {
+        VISIT_KEY,
+        BEGIN_ARRAY_BUFFER,
+        VISIT_VALUE_BUFFER,
+    };
+
+    State m_state;
+    InplaceOptionalHolder<vector<uint8_t, ALLOC>> m_buffer;
 };
 
 template <typename ALLOC>
@@ -105,7 +165,7 @@ private:
     InplaceOptionalHolder<BasicZserioTreeCreator<ALLOC>> m_creator;
     vector<string<ALLOC>, ALLOC> m_keyStack;
     IBasicReflectablePtr<ALLOC> m_object;
-    InplaceOptionalHolder<BitBufferAdapter<ALLOC>> m_bitBufferAdapter;
+    std::shared_ptr<IObjectValueAdapter<ALLOC>> m_objectValueAdapter;
 };
 
 } // namespace detail
@@ -168,12 +228,12 @@ namespace detail
 {
 
 template <typename ALLOC>
-BasicBitBuffer<ALLOC> BitBufferAdapter<ALLOC>::get() const
+AnyHolder<ALLOC> BitBufferAdapter<ALLOC>::get() const
 {
     if (m_state != VISIT_KEY || !m_buffer.hasValue() || !m_bitSize.hasValue())
         throw CppRuntimeException("JsonReader: Unexpected end in BitBuffer!");
 
-    return BasicBitBuffer<ALLOC>(m_buffer.value(), m_bitSize.value());
+    return AnyHolder<ALLOC>(BasicBitBuffer<ALLOC>(m_buffer.value(), m_bitSize.value()), get_allocator());
 }
 
 template <typename ALLOC>
@@ -254,7 +314,7 @@ void BitBufferAdapter<ALLOC>::visitValue(uint64_t uintValue)
         }
 
         if (!m_buffer.hasValue())
-            m_buffer = vector<uint8_t, ALLOC>(1, static_cast<uint8_t>(uintValue));
+            m_buffer = vector<uint8_t, ALLOC>(1, static_cast<uint8_t>(uintValue), get_allocator());
         else
             m_buffer->push_back(static_cast<uint8_t>(uintValue));
     }
@@ -288,6 +348,113 @@ void BitBufferAdapter<ALLOC>::visitValue(StringView)
 }
 
 template <typename ALLOC>
+AnyHolder<ALLOC> BytesAdapter<ALLOC>::get() const
+{
+    if (m_state != VISIT_KEY || !m_buffer.hasValue())
+        throw CppRuntimeException("JsonReader: Unexpected end in bytes!");
+
+    return AnyHolder<ALLOC>(m_buffer.value(), get_allocator());
+}
+
+template <typename ALLOC>
+void BytesAdapter<ALLOC>::beginObject()
+{
+    throw CppRuntimeException("JsonReader: Unexpected beginObject in bytes!");
+}
+
+template <typename ALLOC>
+void BytesAdapter<ALLOC>::endObject()
+{
+    throw CppRuntimeException("JsonReader: Unexpected endObject in bytes!");
+}
+
+template <typename ALLOC>
+void BytesAdapter<ALLOC>::beginArray()
+{
+    if (m_state == BEGIN_ARRAY_BUFFER)
+        m_state = VISIT_VALUE_BUFFER;
+    else
+        throw CppRuntimeException("JsonReader: Unexpected beginArray in bytes!");
+}
+
+template <typename ALLOC>
+void BytesAdapter<ALLOC>::endArray()
+{
+    if (m_state == VISIT_VALUE_BUFFER)
+        m_state = VISIT_KEY;
+    else
+        throw CppRuntimeException("JsonReader: Unexpected endArray in bytes!");
+}
+
+template <typename ALLOC>
+void BytesAdapter<ALLOC>::visitKey(StringView key)
+{
+    if (m_state == VISIT_KEY)
+    {
+        if (key == "buffer"_sv)
+            m_state = BEGIN_ARRAY_BUFFER;
+        else
+            throw CppRuntimeException("JsonReader: Unexpected key '") << key << "' in bytes!";
+    }
+    else
+    {
+        throw CppRuntimeException("JsonReader: Unexpected visitKey in bytes!");
+    }
+}
+
+template <typename ALLOC>
+void BytesAdapter<ALLOC>::visitValue(std::nullptr_t)
+{
+    throw CppRuntimeException("JsonReader: Unexpected visitValue (null) in bytes!");
+}
+
+template <typename ALLOC>
+void BytesAdapter<ALLOC>::visitValue(bool)
+{
+    throw CppRuntimeException("JsonReader: Unexpected visitValue (bool) in bytes!");
+}
+
+template <typename ALLOC>
+void BytesAdapter<ALLOC>::visitValue(int64_t)
+{
+    throw CppRuntimeException("JsonReader: Unexpected visitValue (int) in bytes!");
+}
+
+template <typename ALLOC>
+void BytesAdapter<ALLOC>::visitValue(uint64_t uintValue)
+{
+    if (m_state == VISIT_VALUE_BUFFER)
+    {
+        if (uintValue > static_cast<uint64_t>(std::numeric_limits<uint8_t>::max()))
+        {
+            throw CppRuntimeException("JsonReader: Cannot create byte for bytes from value '") <<
+                    uintValue << "'!";
+        }
+
+        if (!m_buffer.hasValue())
+            m_buffer = vector<uint8_t, ALLOC>(1, static_cast<uint8_t>(uintValue), get_allocator());
+        else
+            m_buffer->push_back(static_cast<uint8_t>(uintValue));
+    }
+    else
+    {
+        throw CppRuntimeException("JsonReader: Unexpected visitValue in bytes!");
+    }
+}
+
+template <typename ALLOC>
+void BytesAdapter<ALLOC>::visitValue(double)
+{
+    throw CppRuntimeException("JsonReader: Unexpected visitValue (double) in bytes!");
+}
+
+template <typename ALLOC>
+void BytesAdapter<ALLOC>::visitValue(StringView)
+{
+    throw CppRuntimeException("JsonReader: Unexpected visitValue (string) in bytes!");
+}
+
+template <typename ALLOC>
 void CreatorAdapter<ALLOC>::setType(const IBasicTypeInfo<ALLOC>& typeInfo)
 {
     m_creator = BasicZserioTreeCreator<ALLOC>(typeInfo, get_allocator());
@@ -305,9 +472,9 @@ IBasicReflectablePtr<ALLOC> CreatorAdapter<ALLOC>::get() const
 template <typename ALLOC>
 void CreatorAdapter<ALLOC>::beginObject()
 {
-    if (m_bitBufferAdapter)
+    if (m_objectValueAdapter)
     {
-        m_bitBufferAdapter->beginObject();
+        m_objectValueAdapter->beginObject();
     }
     else
     {
@@ -322,17 +489,39 @@ void CreatorAdapter<ALLOC>::beginObject()
         {
             if (!m_keyStack.back().empty())
             {
-                if (m_creator->getFieldType(m_keyStack.back()).getCppType() == CppType::BIT_BUFFER)
-                    m_bitBufferAdapter = BitBufferAdapter<ALLOC>(get_allocator());
+                const CppType cppType = m_creator->getFieldType(m_keyStack.back()).getCppType();
+                if (cppType == CppType::BIT_BUFFER)
+                {
+                    m_objectValueAdapter = std::allocate_shared<BitBufferAdapter<ALLOC>>(get_allocator(),
+                            get_allocator());
+                }
+                else if (cppType == CppType::BYTES)
+                {
+                    m_objectValueAdapter = std::allocate_shared<BytesAdapter<ALLOC>>(get_allocator(),
+                            get_allocator());
+                }
                 else
+                {
                     m_creator->beginCompound(m_keyStack.back());
+                }
             }
             else
             {
-                if (m_creator->getElementType().getCppType() == CppType::BIT_BUFFER)
-                    m_bitBufferAdapter = BitBufferAdapter<ALLOC>(get_allocator());
+                const CppType cppType = m_creator->getElementType().getCppType();
+                if (cppType == CppType::BIT_BUFFER)
+                {
+                    m_objectValueAdapter = std::allocate_shared<BitBufferAdapter<ALLOC>>(get_allocator(),
+                            get_allocator());
+                }
+                else if (cppType == CppType::BYTES)
+                {
+                    m_objectValueAdapter = std::allocate_shared<BytesAdapter<ALLOC>>(get_allocator(),
+                            get_allocator());
+                }
                 else
+                {
                     m_creator->beginCompoundElement();
+                }
             }
         }
     }
@@ -341,11 +530,10 @@ void CreatorAdapter<ALLOC>::beginObject()
 template <typename ALLOC>
 void CreatorAdapter<ALLOC>::endObject()
 {
-    if (m_bitBufferAdapter)
+    if (m_objectValueAdapter)
     {
-        const auto& bitBuffer = m_bitBufferAdapter->get();
-        setValue(bitBuffer);
-        m_bitBufferAdapter.reset();
+        setValue(m_objectValueAdapter->get());
+        m_objectValueAdapter.reset();
     }
     else
     {
@@ -375,9 +563,9 @@ void CreatorAdapter<ALLOC>::endObject()
 template <typename ALLOC>
 void CreatorAdapter<ALLOC>::beginArray()
 {
-    if (m_bitBufferAdapter)
+    if (m_objectValueAdapter)
     {
-        m_bitBufferAdapter->beginArray();
+        m_objectValueAdapter->beginArray();
     }
     else
     {
@@ -396,9 +584,9 @@ void CreatorAdapter<ALLOC>::beginArray()
 template <typename ALLOC>
 void CreatorAdapter<ALLOC>::endArray()
 {
-    if (m_bitBufferAdapter)
+    if (m_objectValueAdapter)
     {
-        m_bitBufferAdapter->endArray();
+        m_objectValueAdapter->endArray();
     }
     else
     {
@@ -415,9 +603,9 @@ void CreatorAdapter<ALLOC>::endArray()
 template <typename ALLOC>
 void CreatorAdapter<ALLOC>::visitKey(StringView key)
 {
-    if (m_bitBufferAdapter)
+    if (m_objectValueAdapter)
     {
-        m_bitBufferAdapter->visitKey(key);
+        m_objectValueAdapter->visitKey(key);
     }
     else
     {
@@ -431,9 +619,9 @@ void CreatorAdapter<ALLOC>::visitKey(StringView key)
 template <typename ALLOC>
 void CreatorAdapter<ALLOC>::visitValue(std::nullptr_t nullValue)
 {
-    if (m_bitBufferAdapter)
+    if (m_objectValueAdapter)
     {
-        m_bitBufferAdapter->visitValue(nullValue);
+        m_objectValueAdapter->visitValue(nullValue);
     }
     else
     {
@@ -447,9 +635,9 @@ void CreatorAdapter<ALLOC>::visitValue(std::nullptr_t nullValue)
 template <typename ALLOC>
 void CreatorAdapter<ALLOC>::visitValue(bool boolValue)
 {
-    if (m_bitBufferAdapter)
+    if (m_objectValueAdapter)
     {
-        m_bitBufferAdapter->visitValue(boolValue);
+        m_objectValueAdapter->visitValue(boolValue);
     }
     else
     {
@@ -463,9 +651,9 @@ void CreatorAdapter<ALLOC>::visitValue(bool boolValue)
 template <typename ALLOC>
 void CreatorAdapter<ALLOC>::visitValue(int64_t intValue)
 {
-    if (m_bitBufferAdapter)
+    if (m_objectValueAdapter)
     {
-        m_bitBufferAdapter->visitValue(intValue);
+        m_objectValueAdapter->visitValue(intValue);
     }
     else
     {
@@ -479,9 +667,9 @@ void CreatorAdapter<ALLOC>::visitValue(int64_t intValue)
 template <typename ALLOC>
 void CreatorAdapter<ALLOC>::visitValue(uint64_t uintValue)
 {
-    if (m_bitBufferAdapter)
+    if (m_objectValueAdapter)
     {
-        m_bitBufferAdapter->visitValue(uintValue);
+        m_objectValueAdapter->visitValue(uintValue);
     }
     else
     {
@@ -495,9 +683,9 @@ void CreatorAdapter<ALLOC>::visitValue(uint64_t uintValue)
 template <typename ALLOC>
 void CreatorAdapter<ALLOC>::visitValue(double doubleValue)
 {
-    if (m_bitBufferAdapter)
+    if (m_objectValueAdapter)
     {
-        m_bitBufferAdapter->visitValue(doubleValue);
+        m_objectValueAdapter->visitValue(doubleValue);
     }
     else
     {
@@ -511,9 +699,9 @@ void CreatorAdapter<ALLOC>::visitValue(double doubleValue)
 template <typename ALLOC>
 void CreatorAdapter<ALLOC>::visitValue(StringView stringValue)
 {
-    if (m_bitBufferAdapter)
+    if (m_objectValueAdapter)
     {
-        m_bitBufferAdapter->visitValue(stringValue);
+        m_objectValueAdapter->visitValue(stringValue);
     }
     else
     {

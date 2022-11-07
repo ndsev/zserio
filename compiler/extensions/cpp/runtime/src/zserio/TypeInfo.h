@@ -250,6 +250,13 @@ public:
     static const IBasicTypeInfo<ALLOC>& getFloat64();
 
     /**
+     * Gets the type information of bytes schema type.
+     *
+     * \return Reference to the type information of bytes schema type.
+     */
+    static const IBasicTypeInfo<ALLOC>& getBytes();
+
+    /**
      * Gets the type information of string schema type.
      *
      * \return Reference to the type information of string schema type.
@@ -1129,6 +1136,15 @@ template <typename ALLOC>
 const IBasicTypeInfo<ALLOC>& BuiltinTypeInfo<ALLOC>::getFloat64()
 {
     return FixedSizeBuiltinTypeInfo<ALLOC>::getFloat64();
+}
+
+template <typename ALLOC>
+const IBasicTypeInfo<ALLOC>& BuiltinTypeInfo<ALLOC>::getBytes()
+{
+    static const BuiltinTypeInfo<ALLOC> typeInfo = {
+        makeStringView("bytes"), SchemaType::BYTES, CppType::BYTES
+    };
+    return typeInfo;
 }
 
 template <typename ALLOC>

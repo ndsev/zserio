@@ -123,6 +123,12 @@ TEST_F(ArraysMappingTest, externArray)
     arraysMapping.setExternArray(vector_type<BitBuffer>(FIXED_ARRAY_LENGTH));
 }
 
+TEST_F(ArraysMappingTest, bytesArray)
+{
+    ArraysMapping arraysMapping;
+    arraysMapping.setBytesArray(vector_type<vector_type<uint8_t>>(FIXED_ARRAY_LENGTH));
+}
+
 TEST_F(ArraysMappingTest, compoundArray)
 {
     ArraysMapping arraysMapping;

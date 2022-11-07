@@ -166,6 +166,7 @@ private:
     void writeKey(StringView key);
     void writeValue(const IBasicReflectableConstPtr<ALLOC>& value);
     void writeBitBuffer(const BasicBitBuffer<ALLOC>& bitBuffer);
+    void writeBytes(Span<const uint8_t> value);
     void writeStringifiedEnum(const IBasicReflectableConstPtr<ALLOC>& reflectable);
     void writeStringifiedBitmask(const IBasicReflectableConstPtr<ALLOC>& reflectable);
 
@@ -412,6 +413,9 @@ void BasicJsonWriter<ALLOC>::writeValue(const IBasicReflectableConstPtr<ALLOC>& 
     case CppType::DOUBLE:
         JsonEncoder::encodeFloatingPoint(m_out, reflectable->getDouble());
         break;
+    case CppType::BYTES:
+        writeBytes(reflectable->getBytes());
+        break;
     case CppType::STRING:
         JsonEncoder::encodeString(m_out, reflectable->getStringView());
         break;
@@ -445,7 +449,7 @@ void BasicJsonWriter<ALLOC>::writeBitBuffer(const BasicBitBuffer<ALLOC>& bitBuff
 {
     beginObject();
     beginItem();
-    writeKey(zserio::makeStringView("buffer"));
+    writeKey("buffer"_sv);
     beginArray();
     const uint8_t* buffer = bitBuffer.getBuffer();
     for (size_t i = 0; i < bitBuffer.getByteSize(); ++i)
@@ -457,8 +461,26 @@ void BasicJsonWriter<ALLOC>::writeBitBuffer(const BasicBitBuffer<ALLOC>& bitBuff
     endArray();
     endItem();
     beginItem();
-    writeKey(zserio::makeStringView("bitSize"));
+    writeKey("bitSize"_sv);
     JsonEncoder::encodeIntegral(m_out, bitBuffer.getBitSize());
+    endItem();
+    endObject();
+}
+
+template <typename ALLOC>
+void BasicJsonWriter<ALLOC>::writeBytes(Span<const uint8_t> value)
+{
+    beginObject();
+    beginItem();
+    writeKey("buffer"_sv);
+    beginArray();
+    for (uint8_t byte : value)
+    {
+        beginItem();
+        JsonEncoder::encodeIntegral(m_out, byte);
+        endItem();
+    }
+    endArray();
     endItem();
     endObject();
 }

@@ -718,7 +718,7 @@ void BitStreamReader::alignTo(size_t alignment)
     }
 }
 
-uint8_t BitStreamReader::readChar()
+uint8_t BitStreamReader::readByte()
 {
     return static_cast<uint8_t>(readBitsImpl(m_context, 8));
 }

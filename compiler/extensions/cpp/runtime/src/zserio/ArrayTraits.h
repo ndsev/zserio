@@ -1401,13 +1401,93 @@ struct BoolArrayTraits
 };
 
 /**
+ * Array traits for Zserio bytes type.
+ */
+template <template <typename> class ALLOC = std::allocator>
+struct BasicBytesArrayTraits
+{
+    /** ElementType */
+    using ElementType = zserio::vector<uint8_t, ALLOC<uint8_t>>;
+
+    /** Allocator type. */
+    using allocator_type = typename ElementType::allocator_type;
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \param element Element to use for calculation.
+     *
+     * \return Bit size of the array element.
+     */
+    static size_t bitSizeOf(const ElementType& element)
+    {
+        return zserio::bitSizeOfBytes(element);
+    }
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \param element Element to use for calculation.
+     *
+     * \return Bit size of the array element.
+     */
+    static size_t bitSizeOf(size_t, const ElementType& element)
+    {
+        return bitSizeOf(element);
+    }
+
+    /**
+     * Initializes indexed offsets of the single array element.
+     *
+     * \param bitPosition Current bit position.
+     * \param element Element to use for calculation.
+     *
+     * \return Updated bit position which points to the first bit after the array element.
+     */
+    static size_t initializeOffsets(size_t bitPosition, const ElementType& element)
+    {
+        return bitPosition + bitSizeOf(bitPosition, element);
+    }
+
+    /**
+     * Reads the single array element.
+     *
+     * \param in Bit stream reader.
+     *
+     * \return Read element.
+     */
+    static ElementType read(BitStreamReader& in, const allocator_type& allocator)
+    {
+        return in.readBytes(allocator);
+    }
+
+    /**
+     * Writes the single array element.
+     *
+     * \param out Bit stream writer to use.
+     * \param element Element to write.
+     */
+    static void write(BitStreamWriter& out, const ElementType& element)
+    {
+        out.writeBytes(element);
+    }
+
+    /** Determines whether the bit size of the single element is constant. */
+    static const bool IS_BITSIZEOF_CONSTANT = false;
+    /** Determines whether the bit size depends on current bit position. */
+    static const bool NEEDS_BITSIZEOF_POSITION = false;
+};
+
+using BytesArrayTraits = BasicBytesArrayTraits<>;
+
+/**
  * Array traits for Zserio string type.
  */
 template <template <typename> class ALLOC = std::allocator>
 struct BasicStringArrayTraits
 {
     /** Element type. */
-    using ElementType = ::zserio::string<ALLOC<char>>;
+    using ElementType = zserio::string<ALLOC<char>>;
 
     /** Allocator type. */
     using allocator_type = typename ElementType::allocator_type;

@@ -84,11 +84,14 @@ struct ArraysMapping
     // boolean array
     bool                        boolArray[5];
 
-    // string arrays
+    // string array
     string                      stringArray[5];
 
     // extern array
     extern                      externArray[5];
+
+    // bytes array
+    bytes                       bytesArray[5];
 
     // compound array
     TestStructure               compoundArray[5];

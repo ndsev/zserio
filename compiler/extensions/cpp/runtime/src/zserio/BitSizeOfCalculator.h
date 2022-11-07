@@ -9,6 +9,7 @@
 #include "zserio/BitPositionUtil.h"
 #include "zserio/VarSizeUtil.h"
 #include "zserio/StringView.h"
+#include "zserio/Span.h"
 
 namespace zserio
 {
@@ -95,11 +96,20 @@ size_t bitSizeOfVarUInt(uint64_t value);
 size_t bitSizeOfVarSize(uint32_t value);
 
 /**
- * Calculates bit size of the string view.
+ * Calculates bit size of bytes.
+ *
+ * \param bytesValue Span representing the bytes value.
+ *
+ * \return Bit size of the given bytes value.
+ */
+size_t bitSizeOfBytes(Span<const uint8_t> bytesValue);
+
+/**
+ * Calculates bit size of the string.
  *
  * \param stringValue String view for which to calculate bit size.
  *
- * \return Bit size of the given string view.
+ * \return Bit size of the given string.
  */
 size_t bitSizeOfString(StringView stringValue);
 

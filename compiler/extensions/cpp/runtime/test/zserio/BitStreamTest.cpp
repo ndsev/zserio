@@ -6,6 +6,7 @@
 #include "zserio/BitStreamReader.h"
 #include "zserio/Types.h"
 #include "zserio/CppRuntimeException.h"
+#include "zserio/Vector.h"
 
 #include "gtest/gtest.h"
 
@@ -650,7 +651,25 @@ TEST_F(BitStreamTest, readBitBuffer)
                 &BitStreamWriter::writeBitBuffer<std::allocator<uint8_t>>;
     std::function<BitBuffer (BitStreamReader&)> readerFunc =
             std::bind(&BitStreamReader::readBitBuffer<
-                    std::allocator<char>>, std::placeholders::_1, std::allocator<uint8_t>());
+                    std::allocator<uint8_t>>, std::placeholders::_1, std::allocator<uint8_t>());
+
+    testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
+    testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);
+}
+
+TEST_F(BitStreamTest, readBytes)
+{
+    const vector<uint8_t> values[] =
+    {
+        vector<uint8_t>{{0, 255}},
+        vector<uint8_t>{{1, 127, 128, 254}},
+    };
+
+    std::function<void (BitStreamWriter&, const vector<uint8_t>&)> writerFunc =
+                &BitStreamWriter::writeBytes;
+    std::function<vector<uint8_t> (BitStreamReader&)> readerFunc =
+            std::bind(&BitStreamReader::readBytes<
+                    std::allocator<uint8_t>>, std::placeholders::_1, std::allocator<uint8_t>());
 
     testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
     testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);

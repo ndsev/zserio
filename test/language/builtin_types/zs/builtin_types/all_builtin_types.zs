@@ -76,6 +76,9 @@ struct AllBuiltInTypes
 
     // extern type
     extern          externType;
+
+    // bytes type
+    bytes           bytesType;
 };
 
 const uint8 NUM_BITS = 8;

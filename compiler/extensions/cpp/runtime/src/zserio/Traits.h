@@ -12,6 +12,8 @@ class BitStreamReader;
 struct PropagateAllocatorT;
 template <typename>
 class BasicPackingContextNode;
+template <typename, std::size_t>
+class Span;
 
 namespace detail
 {
@@ -137,6 +139,21 @@ struct is_bitmask : std::false_type
 template <typename T>
 struct is_bitmask<T, detail::void_t<typename detail::decltype_get_value<T>::type,
         typename T::underlying_type>> : std::true_type
+{};
+/**
+ * \}
+ */
+
+/**
+ * Traits used to check whether the type T is a Span.
+ * \{
+ */
+template <typename>
+struct is_span : std::false_type
+{};
+
+template <typename T, size_t Extent>
+struct is_span<Span<T, Extent>> : std::true_type
 {};
 /**
  * \}

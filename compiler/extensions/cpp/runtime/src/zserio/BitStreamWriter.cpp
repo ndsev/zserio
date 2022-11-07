@@ -239,14 +239,20 @@ void BitStreamWriter::writeFloat64(double data)
     writeUnsignedBits64(doublePrecisionFloat, 64);
 }
 
+void BitStreamWriter::writeBytes(Span<const uint8_t> data)
+{
+    const size_t len = data.size();
+    writeVarSize(convertSizeToUInt32(len));
+    for (size_t i = 0; i < len; ++i)
+        writeBits(data[i], 8);
+}
+
 void BitStreamWriter::writeString(StringView data)
 {
     const size_t len = data.size();
     writeVarSize(convertSizeToUInt32(len));
     for (size_t i = 0; i < len; ++i)
-    {
         writeBits(static_cast<uint8_t>(data[i]), 8);
-    }
 }
 
 void BitStreamWriter::writeBool(bool data)

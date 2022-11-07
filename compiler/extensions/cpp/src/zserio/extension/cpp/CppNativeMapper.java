@@ -13,6 +13,7 @@ import zserio.ast.PubsubType;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.UnionType;
 import zserio.ast.BooleanType;
+import zserio.ast.BytesType;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
 import zserio.ast.ZserioAstDefaultVisitor;
@@ -37,6 +38,7 @@ import zserio.extension.cpp.types.NativeArrayType;
 import zserio.extension.cpp.types.CppNativeArrayableType;
 import zserio.extension.cpp.types.NativeBitFieldArrayTraits;
 import zserio.extension.cpp.types.NativeBuiltinType;
+import zserio.extension.cpp.types.NativeBytesType;
 import zserio.extension.cpp.types.NativeCompoundType;
 import zserio.extension.cpp.types.NativeDynamicBitFieldArrayTraits;
 import zserio.extension.cpp.types.NativeIntegralType;
@@ -71,6 +73,7 @@ public class CppNativeMapper
         vectorType = new NativeRuntimeAllocType(typesContext.getVector(), allocatorDefinition);
         mapType = new NativeRuntimeAllocType(typesContext.getMap(), allocatorDefinition);
         setType = new NativeRuntimeAllocType(typesContext.getSet(), allocatorDefinition);
+        bytesType = new NativeBytesType(typesContext, stdUInt8Type);
         bitBufferType = new NativeRuntimeAllocArrayableType(typesContext.getBitBuffer(),
                 allocatorDefinition, stdUInt8Type, typesContext.getBitBufferArrayTraits());
         packingContextNodeType = new NativeRuntimeAllocType(typesContext.getPackingContextNode(),
@@ -404,6 +407,12 @@ public class CppNativeMapper
         }
 
         @Override
+        public void visitBytesType(BytesType type)
+        {
+            cppType = bytesType;
+        }
+
+        @Override
         public void visitChoiceType(ChoiceType type)
         {
             mapCompoundType(type);
@@ -587,6 +596,7 @@ public class CppNativeMapper
     private final NativeRuntimeAllocType vectorType;
     private final NativeRuntimeAllocType mapType;
     private final NativeRuntimeAllocType setType;
+    private final CppNativeArrayableType bytesType;
     private final NativeRuntimeAllocArrayableType bitBufferType;
     private final NativeRuntimeAllocType packingContextNodeType;
     private final NativeRuntimeAllocType typeInfoType;

@@ -10,6 +10,11 @@ namespace pmr
 {
 
 /**
+ * Typedef to BytesArrayTraits provided for convenience - using PropagatingPolymorphicAllocator.
+ */
+using BytesArrayTraits = BasicBytesArrayTraits<PropagatingPolymorphicAllocator>;
+
+/**
  * Typedef to StringArrayTraits provided for convenience - using PropagatingPolymorphicAllocator.
  */
 using StringArrayTraits = BasicStringArrayTraits<PropagatingPolymorphicAllocator>;

@@ -291,7 +291,8 @@ TEST(ZserioTreeCreatorTest, createObjectFull)
     creator.beginCompound("nested");
     creator.setValue("value", 10);
     creator.setValue("text", "nested"_sv);
-    creator.setValue("data", BitBuffer({0x3c}, 6));
+    creator.setValue("data", BitBuffer({0x3C}, 6));
+    creator.setValue("bytesData", vector<uint8_t>({0xFF}));
     creator.setValue("dummyEnum", DummyEnum::ONE);
     creator.setValue("dummyBitmask", DummyBitmask(DummyBitmask::Values::WRITE));
     creator.endCompound();
@@ -313,6 +314,9 @@ TEST(ZserioTreeCreatorTest, createObjectFull)
     creator.beginArray("externArray");
     creator.addValueElement(BitBuffer({0x0F}, 4));
     creator.endArray();
+    creator.beginArray("bytesArray");
+    creator.addValueElement(vector<uint8_t>({0xCA, 0xFE}));
+    creator.endArray();
     creator.setValue("optionalBool", false);
     creator.beginCompound("optionalNested");
     creator.setValue("text", "optionalNested");
@@ -327,8 +331,10 @@ TEST(ZserioTreeCreatorTest, createObjectFull)
     ASSERT_EQ(13, reflectable->find("nested.param")->getUInt32());
     ASSERT_EQ(10, reflectable->find("nested.value")->getUInt32());
     ASSERT_EQ("nested"_sv, reflectable->find("nested.text")->getStringView());
-    ASSERT_EQ(0x3c, reflectable->find("nested.data")->getBitBuffer().getBuffer()[0]);
+    ASSERT_EQ(0x3C, reflectable->find("nested.data")->getBitBuffer().getBuffer()[0]);
     ASSERT_EQ(6, reflectable->find("nested.data")->getBitBuffer().getBitSize());
+    ASSERT_EQ(1, reflectable->find("nested.bytesData")->getBytes().size());
+    ASSERT_EQ(0xFF, reflectable->find("nested.bytesData")->getBytes()[0]);
     ASSERT_EQ(enumToValue(DummyEnum::ONE), reflectable->find("nested.dummyEnum")->getInt8());
     ASSERT_EQ(DummyBitmask::Values::WRITE, DummyBitmask(reflectable->find("nested.dummyBitmask")->getUInt8()));
     ASSERT_EQ(1, reflectable->getField("nestedArray")->size());
@@ -346,6 +352,10 @@ TEST(ZserioTreeCreatorTest, createObjectFull)
     ASSERT_EQ(1, reflectable->getField("externArray")->size());
     ASSERT_EQ(0x0f, reflectable->getField("externArray")->at(0)->getBitBuffer().getBuffer()[0]);
     ASSERT_EQ(4, reflectable->getField("externArray")->at(0)->getBitBuffer().getBitSize());
+    ASSERT_EQ(1, reflectable->getField("bytesArray")->size());
+    ASSERT_EQ(2, reflectable->getField("bytesArray")->at(0)->getBytes().size());
+    ASSERT_EQ(0xCA, reflectable->getField("bytesArray")->at(0)->getBytes()[0]);
+    ASSERT_EQ(0xFE, reflectable->getField("bytesArray")->at(0)->getBytes()[1]);
     ASSERT_EQ(false, reflectable->getField("optionalBool")->getBool());
     ASSERT_TRUE(reflectable->getField("optionalNested"));
     ASSERT_EQ("optionalNested"_sv, reflectable->find("optionalNested.text")->getStringView());
@@ -501,6 +511,7 @@ TEST(ZserioTreeCreator, testObjectCoverage)
     constReflectable = reflectable;
     ASSERT_THROW(reflectable->getField("nonexistent"), CppRuntimeException);
     ASSERT_EQ(nullptr, reflectable->getField("externArray"));
+    ASSERT_EQ(nullptr, reflectable->getField("bytesArray"));
     ASSERT_THROW(reflectable->setField("nonexistent", AnyHolder<>()), CppRuntimeException);
     ASSERT_THROW(reflectable->createField("nonexistent"), CppRuntimeException);
     ASSERT_THROW(reflectable->getParameter("nonexistent"), CppRuntimeException);

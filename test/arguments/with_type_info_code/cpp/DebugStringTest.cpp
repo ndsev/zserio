@@ -71,6 +71,7 @@ protected:
         ASSERT_LE(reflectable->find("parameterizedStruct.array")->size(), maxArrayLength);
         ASSERT_LE(reflectable->find("templatedParameterizedStruct.array")->size(), maxArrayLength);
         ASSERT_LE(reflectable->find("externArray")->size(), maxArrayLength);
+        ASSERT_LE(reflectable->find("bytesArray")->size(), maxArrayLength);
         ASSERT_LE(reflectable->find("implicitArray")->size(), maxArrayLength);
     }
 
@@ -87,11 +88,13 @@ protected:
         ASSERT_FALSE(reflectable->find("complexStruct.optionalEnum"));
         ASSERT_FALSE(reflectable->find("complexStruct.optionalBitmask"));
         ASSERT_FALSE(reflectable->find("complexStruct.optionalExtern"));
+        ASSERT_FALSE(reflectable->find("complexStruct.optionalBytes"));
         ASSERT_EQ(0, reflectable->find("parameterizedStruct.array")->size());
         ASSERT_FALSE(reflectable->find("recursiveStruct.fieldRecursion"));
         ASSERT_EQ(0, reflectable->find("recursiveStruct.arrayRecursion")->size());
         ASSERT_EQ(0, reflectable->find("templatedParameterizedStruct.array")->size());
         ASSERT_EQ(0, reflectable->find("externArray")->size());
+        ASSERT_EQ(0, reflectable->find("bytesArray")->size());
         ASSERT_EQ(0, reflectable->find("implicitArray")->size());
     }
 
@@ -108,11 +111,13 @@ protected:
         ASSERT_FALSE(reflectable->find("complexStruct.optionalEnum"));
         ASSERT_FALSE(reflectable->find("complexStruct.optionalBitmask"));
         ASSERT_FALSE(reflectable->find("complexStruct.optionalExtern"));
+        ASSERT_FALSE(reflectable->find("complexStruct.optionalBytes"));
         ASSERT_EQ(0, reflectable->find("parameterizedStruct.array")->size());
         ASSERT_FALSE(reflectable->find("recursiveStruct.fieldRecursion"));
         ASSERT_EQ(0, reflectable->find("recursiveStruct.arrayRecursion")->size());
         ASSERT_EQ(0, reflectable->find("templatedParameterizedStruct.array")->size());
         ASSERT_EQ(0, reflectable->find("externArray")->size());
+        ASSERT_EQ(0, reflectable->find("bytesArray")->size());
         ASSERT_EQ(0, reflectable->find("implicitArray")->size());
     }
 

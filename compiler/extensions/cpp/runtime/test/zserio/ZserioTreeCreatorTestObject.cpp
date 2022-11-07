@@ -35,7 +35,7 @@ DummyEnum valueToEnum(int8_t rawValue)
     case INT8_C(-1):
         return DummyEnum::MinusOne;
     default:
-        throw ::zserio::CppRuntimeException("Unknown value for enumeration DummyEnum: ") << rawValue << "!";
+        throw CppRuntimeException("Unknown value for enumeration DummyEnum: ") << rawValue << "!";
     }
 }
 
@@ -173,6 +173,8 @@ DummyNested::DummyNested(const allocator_type& allocator) noexcept :
         m_isInitialized(false),
         m_value_(uint32_t()),
         m_text_(allocator),
+        m_data_(allocator),
+        m_bytesData_(allocator),
         m_dummyEnum_(DummyEnum()),
         m_dummyBitmask_(DummyBitmask())
 {
@@ -183,7 +185,7 @@ const ITypeInfo& DummyNested::typeInfo()
     static const StringView templateName;
     static const Span<TemplateArgumentInfo> templateArguments;
 
-    static const ::std::array<FieldInfo, 5> fields = {
+    static const ::std::array<FieldInfo, 6> fields = {
         FieldInfo{
             makeStringView("value"), // schemaName
             BuiltinTypeInfo<>::getUInt32(), // typeInfo
@@ -217,6 +219,21 @@ const ITypeInfo& DummyNested::typeInfo()
         FieldInfo{
             makeStringView("data"), // schemaName
             BuiltinTypeInfo<>::getBitBuffer(), // typeInfo
+            {}, // typeArguments
+            {}, // alignment
+            {}, // offset
+            {}, // initializer
+            false, // isOptional
+            {}, // optionalClause
+            {}, // constraint
+            false, // isArray
+            {}, // arrayLength
+            false, // isPacked
+            false // isImplicit
+        },
+        BasicFieldInfo<allocator_type>{
+            makeStringView("bytesData"), // schemaName
+            BuiltinTypeInfo<allocator_type>::getBytes(), // typeInfo
             {}, // typeArguments
             {}, // alignment
             {}, // offset
@@ -323,6 +340,10 @@ IReflectablePtr DummyNested::reflectable(const allocator_type& allocator)
             {
                 return ReflectableFactory::getBitBuffer(m_object.getData(), get_allocator());
             }
+            if (name == makeStringView("bytesData"))
+            {
+                return ReflectableFactory::getBytes(m_object.getBytesData(), get_allocator());
+            }
             if (name == makeStringView("dummyEnum"))
             {
                 return enumReflectable(m_object.getDummyEnum(), get_allocator());
@@ -348,6 +369,10 @@ IReflectablePtr DummyNested::reflectable(const allocator_type& allocator)
             if (name == makeStringView("data"))
             {
                 return ReflectableFactory::getBitBuffer(m_object.getData(), get_allocator());
+            }
+            if (name == makeStringView("bytesData"))
+            {
+                return ReflectableFactory::getBytes(m_object.getBytesData(), get_allocator());
             }
             if (name == makeStringView("dummyEnum"))
             {
@@ -377,6 +402,11 @@ IReflectablePtr DummyNested::reflectable(const allocator_type& allocator)
             if (name == makeStringView("data"))
             {
                 m_object.setData(value.get<BitBuffer>());
+                return;
+            }
+            if (name == makeStringView("bytesData"))
+            {
+                m_object.setBytesData(value.get<vector<uint8_t>>());
                 return;
             }
             if (name == makeStringView("dummyEnum"))
@@ -486,6 +516,16 @@ void DummyNested::setData(const BitBuffer& data_)
     m_data_ = data_;
 }
 
+vector<uint8_t>& DummyNested::getBytesData()
+{
+    return m_bytesData_;
+}
+
+void DummyNested::setBytesData(const vector<uint8_t>& bytesData_)
+{
+    m_bytesData_ = bytesData_;
+}
+
 DummyEnum DummyNested::getDummyEnum() const
 {
     return m_dummyEnum_;
@@ -530,7 +570,7 @@ const ITypeInfo& DummyObject::typeInfo()
     static const std::array<StringView, 1> nestedTypeArguments = { "getValue"_sv };
 
     static const std::array<StringView, 1> nestedArrayTypeArguments = { "getValue"_sv };
-    static const ::std::array<FieldInfo, 8> fields = {
+    static const ::std::array<FieldInfo, 9> fields = {
         FieldInfo{
             makeStringView("value"), // schemaName
             BuiltinTypeInfo<>::getUInt32(), // typeInfo
@@ -609,6 +649,21 @@ const ITypeInfo& DummyObject::typeInfo()
         FieldInfo{
             makeStringView("externArray"), // schemaName
             BuiltinTypeInfo<>::getBitBuffer(), // typeInfo
+            {}, // typeArguments
+            {}, // alignment
+            {}, // offset
+            {}, // initializer
+            true, // isOptional
+            {}, // optionalClause
+            {}, // constraint
+            true, // isArray
+            {}, // arrayLength
+            false, // isPacked
+            false // isImplicit
+        },
+        BasicFieldInfo<allocator_type>{
+            makeStringView("bytesArray"), // schemaName
+            BuiltinTypeInfo<allocator_type>::getBytes(), // typeInfo
             {}, // typeArguments
             {}, // alignment
             {}, // offset
@@ -755,6 +810,14 @@ IReflectablePtr DummyObject::reflectable(const allocator_type& allocator)
                 return ReflectableFactory::getBuiltinArray(BuiltinTypeInfo<>::getBitBuffer(),
                         m_object.getExternArray(), get_allocator());
             }
+            if (name == makeStringView("bytesArray"))
+            {
+                if (!m_object.isBytesArraySet())
+                    return nullptr;
+
+                return ReflectableFactory::getBuiltinArray(BuiltinTypeInfo<allocator_type>::getBytes(),
+                        m_object.getBytesArray(), get_allocator());
+            }
             if (name == makeStringView("optionalBool"))
             {
                 if (!m_object.isOptionalBoolSet())
@@ -803,6 +866,14 @@ IReflectablePtr DummyObject::reflectable(const allocator_type& allocator)
 
                 return ReflectableFactory::getBuiltinArray(BuiltinTypeInfo<>::getBitBuffer(),
                         m_object.getExternArray(), get_allocator());
+            }
+            if (name == makeStringView("bytesArray"))
+            {
+                if (!m_object.isBytesArraySet())
+                    return nullptr;
+
+                return ReflectableFactory::getBuiltinArray(BuiltinTypeInfo<allocator_type>::getBytes(),
+                        m_object.getBytesArray(), get_allocator());
             }
             if (name == makeStringView("optionalBool"))
             {
@@ -880,6 +951,13 @@ IReflectablePtr DummyObject::reflectable(const allocator_type& allocator)
                 m_object.setExternArray(vector<BitBuffer>(get_allocator()));
                 return ReflectableFactory::getBuiltinArray(BuiltinTypeInfo<>::getBitBuffer(),
                         m_object.getExternArray(), get_allocator());
+            }
+
+            if (name == makeStringView("bytesArray"))
+            {
+                m_object.setBytesArray(vector<vector<uint8_t>>(get_allocator()));
+                return ReflectableFactory::getBuiltinArray(BuiltinTypeInfo<allocator_type>::getBytes(),
+                        m_object.getBytesArray(), get_allocator());
             }
 
             if (name == makeStringView("optionalNested"))
@@ -978,6 +1056,21 @@ vector<BitBuffer>& DummyObject::getExternArray()
 void DummyObject::setExternArray(const vector<BitBuffer>& externArray_)
 {
     m_externArray_ = ZserioArrayType_externArray(externArray_, BitBufferArrayTraits());
+}
+
+vector<vector<uint8_t>>& DummyObject::getBytesArray()
+{
+    return m_bytesArray_.value().getRawArray();
+}
+
+void DummyObject::setBytesArray(const vector<vector<uint8_t>>& bytesArray_)
+{
+    m_bytesArray_ = ZserioArrayType_bytesArray(bytesArray_, BytesArrayTraits());
+}
+
+bool DummyObject::isBytesArraySet() const
+{
+    return m_bytesArray_.hasValue();
 }
 
 bool DummyObject::isOptionalBoolSet() const

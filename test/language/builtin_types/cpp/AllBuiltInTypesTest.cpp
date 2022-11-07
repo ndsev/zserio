@@ -15,6 +15,8 @@ namespace all_builtin_types
 
 using allocator_type = AllBuiltInTypes::allocator_type;
 using string_type = zserio::string<allocator_type>;
+template <typename T>
+using vector_type = zserio::vector<T, allocator_type>;
 
 using BitBuffer = zserio::BasicBitBuffer<zserio::RebindAlloc<allocator_type, uint8_t>>;
 
@@ -352,6 +354,14 @@ TEST_F(AllBuiltInTypesTest, externType)
     ASSERT_EQ(testExtern, externType);
 }
 
+TEST_F(AllBuiltInTypesTest, bytesType)
+{
+    const vector_type<uint8_t> testBytes{{1, 255}};
+    m_allBuiltInTypes.setBytesType(testBytes);
+    const vector_type<uint8_t>& bytesType = m_allBuiltInTypes.getBytesType();
+    ASSERT_EQ(testBytes, bytesType);
+}
+
 TEST_F(AllBuiltInTypesTest, bitSizeOf)
 {
     m_allBuiltInTypes.setBoolType(true);
@@ -393,7 +403,8 @@ TEST_F(AllBuiltInTypesTest, bitSizeOf)
     m_allBuiltInTypes.setVarintType(std::numeric_limits<int64_t>::max());
     m_allBuiltInTypes.setStringType("TEST");
     m_allBuiltInTypes.setExternType(getExternalBitBuffer());
-    const size_t expectedBitSizeOf = 1142;
+    m_allBuiltInTypes.setBytesType(vector_type<uint8_t>{{1, 255}});
+    const size_t expectedBitSizeOf = 1166;
     ASSERT_EQ(expectedBitSizeOf, m_allBuiltInTypes.bitSizeOf());
 }
 
@@ -438,6 +449,7 @@ TEST_F(AllBuiltInTypesTest, readWrite)
     m_allBuiltInTypes.setVarintType(std::numeric_limits<int64_t>::max());
     m_allBuiltInTypes.setStringType("TEST");
     m_allBuiltInTypes.setExternType(getExternalBitBuffer());
+    m_allBuiltInTypes.setBytesType(vector_type<uint8_t>{{1, 255}});
 
     zserio::serializeToFile(m_allBuiltInTypes, BLOB_NAME);
 

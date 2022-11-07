@@ -26,6 +26,7 @@ struct ComplexStruct
     optional TestEnum optionalEnum;
     optional TestBitmask optionalBitmask;
     optional extern optionalExtern;
+    optional bytes optionalBytes;
     TestEnum enumArray[2];
     TestBitmask bitmaskArray[valueof(TestEnum._TWO)];
 
@@ -131,6 +132,8 @@ struct WithTypeInfoCode
     TemplatedParameterizedStruct<TemplatedStruct<uint32>>(templatedStruct) templatedParameterizedStruct;
     extern externData;
     extern externArray[];
+    bytes bytesData;
+    bytes bytesArray[];
     implicit uint32 implicitArray[];
 };
 

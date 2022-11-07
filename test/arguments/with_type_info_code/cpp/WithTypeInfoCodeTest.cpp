@@ -174,7 +174,7 @@ protected:
         ASSERT_EQ(0, typeInfo.getTemplateArguments().size());
 
         const zserio::Span<const FieldInfo> fields = typeInfo.getFields();
-        ASSERT_EQ(13, fields.size());
+        ASSERT_EQ(15, fields.size());
 
         // simpleStruct
         const FieldInfo& simpleStructField = fields[0];
@@ -401,8 +401,48 @@ protected:
         ASSERT_EQ(false, externArrayField.isPacked);
         ASSERT_EQ(false, externArrayField.isImplicit);
 
+        // bytesData
+        const FieldInfo& bytesDataField = fields[12];
+        ASSERT_EQ("bytesData"_sv, bytesDataField.schemaName);
+
+        ASSERT_EQ("bytes"_sv, bytesDataField.typeInfo.getSchemaName());
+        ASSERT_EQ(zserio::SchemaType::BYTES, bytesDataField.typeInfo.getSchemaType());
+        ASSERT_EQ(zserio::CppType::BYTES, bytesDataField.typeInfo.getCppType());
+
+        ASSERT_EQ(0, bytesDataField.typeArguments.size());
+        ASSERT_EQ(""_sv, bytesDataField.alignment);
+        ASSERT_EQ(""_sv, bytesDataField.offset);
+        ASSERT_EQ(""_sv, bytesDataField.initializer);
+        ASSERT_EQ(false, bytesDataField.isOptional);
+        ASSERT_EQ(""_sv, bytesDataField.optionalCondition);
+        ASSERT_EQ(""_sv, bytesDataField.constraint);
+        ASSERT_EQ(false, bytesDataField.isArray);
+        ASSERT_EQ(""_sv, bytesDataField.arrayLength);
+        ASSERT_EQ(false, bytesDataField.isPacked);
+        ASSERT_EQ(false, bytesDataField.isImplicit);
+
+        // bytesArray
+        const FieldInfo& bytesArrayField = fields[13];
+        ASSERT_EQ("bytesArray"_sv, bytesArrayField.schemaName);
+
+        ASSERT_EQ("bytes"_sv, bytesArrayField.typeInfo.getSchemaName());
+        ASSERT_EQ(zserio::SchemaType::BYTES, bytesArrayField.typeInfo.getSchemaType());
+        ASSERT_EQ(zserio::CppType::BYTES, bytesArrayField.typeInfo.getCppType());
+
+        ASSERT_EQ(0, bytesArrayField.typeArguments.size());
+        ASSERT_EQ(""_sv, bytesArrayField.alignment);
+        ASSERT_EQ(""_sv, bytesArrayField.offset);
+        ASSERT_EQ(""_sv, bytesArrayField.initializer);
+        ASSERT_EQ(false, bytesArrayField.isOptional);
+        ASSERT_EQ(""_sv, bytesArrayField.optionalCondition);
+        ASSERT_EQ(""_sv, bytesArrayField.constraint);
+        ASSERT_EQ(true, bytesArrayField.isArray);
+        ASSERT_EQ(""_sv, bytesArrayField.arrayLength);
+        ASSERT_EQ(false, bytesArrayField.isPacked);
+        ASSERT_EQ(false, bytesArrayField.isImplicit);
+
         // implicitArray
-        const FieldInfo& implicitArrayField = fields[12];
+        const FieldInfo& implicitArrayField = fields[14];
         ASSERT_EQ("implicitArray"_sv, implicitArrayField.schemaName);
 
         ASSERT_EQ("uint32"_sv, implicitArrayField.typeInfo.getSchemaName());
@@ -607,7 +647,7 @@ protected:
         ASSERT_EQ(0, typeInfo.getTemplateArguments().size());
 
         const zserio::Span<const FieldInfo> fields = typeInfo.getFields();
-        ASSERT_EQ(13, fields.size());
+        ASSERT_EQ(14, fields.size());
 
         // simpleStruct
         const FieldInfo& simpleStructField = fields[0];
@@ -825,8 +865,28 @@ protected:
         ASSERT_EQ(false, optionalExternField.isPacked);
         ASSERT_EQ(false, optionalExternField.isImplicit);
 
+        // optionalBytes
+        const FieldInfo& optionalBytesField = fields[11];
+        ASSERT_EQ("optionalBytes"_sv, optionalBytesField.schemaName);
+
+        ASSERT_EQ("bytes"_sv, optionalBytesField.typeInfo.getSchemaName());
+        ASSERT_EQ(zserio::SchemaType::BYTES, optionalBytesField.typeInfo.getSchemaType());
+        ASSERT_EQ(zserio::CppType::BYTES, optionalBytesField.typeInfo.getCppType());
+
+        ASSERT_EQ(0, optionalBytesField.typeArguments.size());
+        ASSERT_EQ(""_sv, optionalBytesField.alignment);
+        ASSERT_EQ(""_sv, optionalBytesField.offset);
+        ASSERT_EQ(""_sv, optionalBytesField.initializer);
+        ASSERT_EQ(true, optionalBytesField.isOptional);
+        ASSERT_EQ(""_sv, optionalBytesField.optionalCondition);
+        ASSERT_EQ(""_sv, optionalBytesField.constraint);
+        ASSERT_EQ(false, optionalBytesField.isArray);
+        ASSERT_EQ(""_sv, optionalBytesField.arrayLength);
+        ASSERT_EQ(false, optionalBytesField.isPacked);
+        ASSERT_EQ(false, optionalBytesField.isImplicit);
+
         // enumArray
-        const FieldInfo& enumArrayField = fields[11];
+        const FieldInfo& enumArrayField = fields[12];
         ASSERT_EQ("enumArray"_sv, enumArrayField.schemaName);
 
         checkTestEnum(enumArrayField.typeInfo);
@@ -844,7 +904,7 @@ protected:
         ASSERT_EQ(false, enumArrayField.isImplicit);
 
         // bitmaskArray
-        const FieldInfo& bitmaskArrayField = fields[12];
+        const FieldInfo& bitmaskArrayField = fields[13];
         ASSERT_EQ("bitmaskArray"_sv, bitmaskArrayField.schemaName);
 
         checkTestBitmask(bitmaskArrayField.typeInfo);

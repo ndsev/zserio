@@ -998,6 +998,15 @@ TEST_F(ArrayTest, boolArray)
     testArray(rawArray, BoolArrayTraits(), elementBitSize);
 }
 
+TEST_F(ArrayTest, bytesArray)
+{
+    const size_t bytesLengthBitSize = 8;
+    const size_t bytesBitSize = 2 * 8;
+    const size_t elementBitSize = bytesLengthBitSize + bytesBitSize;
+    std::vector<std::vector<uint8_t>> rawArray = {{ {{ 1, 255 }}, {{ 127, 128 }} }};
+    testArray(rawArray, BytesArrayTraits(), elementBitSize);
+}
+
 TEST_F(ArrayTest, stringArray)
 {
     const size_t stringLengthBitSize = 8;

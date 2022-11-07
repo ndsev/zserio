@@ -230,6 +230,13 @@ TEST(HashCodeUtil, bitBufferArrayType)
     EXPECT_EQ(HASH_PRIME_NUMBER + HASH_SEED, calcHashCode(hashSeed, arrayValue));
 }
 
+TEST(HashCodeUtil, bytesArrayType)
+{
+    const uint32_t hashSeed = 1;
+    const std::vector<std::vector<uint8_t>> arrayValue = {{ 1 }};
+    EXPECT_EQ(HASH_PRIME_NUMBER + 1, calcHashCode(hashSeed, arrayValue));
+}
+
 TEST(HashCodeUtil, enumArrayType)
 {
     const uint32_t hashSeed = 1;

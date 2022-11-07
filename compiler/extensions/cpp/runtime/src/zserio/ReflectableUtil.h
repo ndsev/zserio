@@ -1,16 +1,17 @@
 #ifndef ZSERIO_REFLECTABLE_UTIL_H_INC
 #define ZSERIO_REFLECTABLE_UTIL_H_INC
 
+#include <algorithm>
+#include <functional>
 #include <cmath>
 #include <limits>
-#include <functional>
 
 #include "zserio/CppRuntimeException.h"
 #include "zserio/IReflectable.h"
 #include "zserio/ITypeInfo.h"
-#include "zserio/TypeInfoUtil.h"
 #include "zserio/StringView.h"
 #include "zserio/Traits.h"
+#include "zserio/TypeInfoUtil.h"
 
 namespace zserio
 {
@@ -253,6 +254,13 @@ bool ReflectableUtil::valuesEqual(const IBasicReflectableConstPtr<ALLOC>& lhsVal
     case CppType::FLOAT:
     case CppType::DOUBLE:
         return doubleValuesAlmostEqual(lhsValue->toDouble(), rhsValue->toDouble());
+    case CppType::BYTES:
+        {
+            Span<const uint8_t> lhs = lhsValue->getBytes();
+            Span<const uint8_t> rhs = rhsValue->getBytes();
+
+            return lhs.size() == rhs.size() && std::equal(lhs.begin(), lhs.end(), rhs.begin());
+        }
     case CppType::STRING:
         return lhsValue->getStringView() == rhsValue->getStringView();
     case CppType::BIT_BUFFER:

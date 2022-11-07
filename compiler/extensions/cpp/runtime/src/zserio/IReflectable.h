@@ -3,13 +3,14 @@
 
 #include <memory>
 
+#include "zserio/AnyHolder.h"
 #include "zserio/BitBuffer.h"
+#include "zserio/BitStreamWriter.h"
+#include "zserio/Span.h"
 #include "zserio/String.h"
 #include "zserio/StringView.h"
-#include "zserio/Vector.h"
 #include "zserio/RebindAlloc.h"
-#include "zserio/AnyHolder.h"
-#include "zserio/BitStreamWriter.h"
+#include "zserio/Vector.h"
 
 namespace zserio
 {
@@ -304,9 +305,10 @@ public:
      * Gets any value within the reflected object.
      *
      * For builtin types, enums and bitmasks the value is "returned by value" - i.e. it's copied
-     * into the any holder, for string the any holder contains an appropriate StringView and for compounds,
-     * bit buffers and arrays the value is "returned by reference" - i.e. the any holder contains
-     * std::reference_wrapper<T> with the reference to the compound type or the raw array type.
+     * into the any holder, but note that for bytes the any holder contains Span,
+     * for string the any holder contains an appropriate StringView and for compounds, bit buffers and arrays
+     * the value is "returned by reference" - i.e. the any holder contains std::reference_wrapper<T> with the
+     * reference to the compound type or the raw array type.
      *
      * \note For bit buffers only const reference is available.
      *
@@ -404,6 +406,14 @@ public:
      * \throw CppRuntimeException When the reflected object is not a double type.
      */
     virtual double getDouble() const = 0;
+
+    /**
+     * Gets byte value of the bytes reflectable.
+     *
+     * \return Bytes value as a span.
+     * \throw CppRuntimeException When the reflected object is not a bytes type.
+     */
+    virtual Span<const uint8_t> getBytes() const = 0;
 
     /**
      * Gets reference to the string value of the string reflectable.

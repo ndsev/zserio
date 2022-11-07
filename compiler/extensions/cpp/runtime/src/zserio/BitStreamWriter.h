@@ -3,14 +3,13 @@
 
 #include <cstddef>
 #include <cstring>
-#include <string>
-#include <vector>
 
 #include "zserio/Types.h"
 #include "zserio/Span.h"
 #include "zserio/BitBuffer.h"
 #include "zserio/VarSizeUtil.h"
 #include "zserio/StringView.h"
+#include "zserio/Span.h"
 
 namespace zserio
 {
@@ -191,6 +190,13 @@ public:
      * \param data Float64 to write.
      */
     void writeFloat64(double data);
+
+    /**
+     * Writes bytes.
+     *
+     * \param data Bytes to write.
+     */
+    void writeBytes(Span<const uint8_t> data);
 
     /**
      * Writes UTF-8 string.

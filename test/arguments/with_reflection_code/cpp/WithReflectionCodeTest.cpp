@@ -62,7 +62,9 @@ protected:
             vector_type<int8_t>{{-3, -1, 1, 3}},
             vector_type<bool>{{true, false, true}},
             BitBuffer{{0xAB, 0xCD}, 16},
-            vector_type<BitBuffer>{BitBuffer{{0x02}, 2}, BitBuffer{{0x01}, 1}}
+            vector_type<BitBuffer>{BitBuffer{{0x02}, 2}, BitBuffer{{0x01}, 1}},
+            vector_type<uint8_t>{{0xAB, 0xCD}},
+            vector_type<vector_type<uint8_t>>{{ {{ 0xDE, 0xAD }}, {{ 0xCA, 0xFE }} }}
         };
     }
 
@@ -150,6 +152,11 @@ protected:
         creator.beginArray("externArray");
         creator.addValueElement(BitBuffer{{0x02}, 2});
         creator.addValueElement(BitBuffer{{0x01}, 1});
+        creator.endArray();
+        creator.setValue("bytesField", vector_type<uint8_t>{{0xAB, 0xCD}});
+        creator.beginArray("bytesArray");
+        creator.addValueElement(vector_type<uint8_t>{{0xDE, 0xAD}});
+        creator.addValueElement(vector_type<uint8_t>{{0xCA, 0xFE}});
         creator.endArray();
     }
 
@@ -413,6 +420,32 @@ protected:
         checkWriteReadBuiltin(*(reflectable.getField("externArray")->at(0)),
                 [&structure](zserio::BitStreamReader& reader) {
                     ASSERT_EQ(structure.getExternArray()[0], reader.readBitBuffer<allocator_type>());
+                }
+        );
+
+        // bytes bytesField;
+        ASSERT_EQ(2, reflectable.getField("bytesField")->getBytes().size());
+        ASSERT_EQ(0xAB, reflectable.getField("bytesField")->getBytes().data()[0]);
+        ASSERT_EQ(0xCD, reflectable.getField("bytesField")->getBytes().data()[1]);
+        checkWriteReadBuiltin(*(reflectable.getField("bytesField")),
+                [&structure](zserio::BitStreamReader& reader) {
+                    ASSERT_EQ(structure.getBytesField(), reader.readBytes<allocator_type>());
+                }
+        );
+
+        // bytes bytesArray[];
+        ASSERT_TRUE(reflectable["bytesArray"]->isArray());
+        ASSERT_EQ(2, reflectable["bytesArray"]->size());
+        ASSERT_EQ(2, reflectable["bytesArray"]->at(0)->getBytes().size());
+        ASSERT_EQ(0xDE, reflectable["bytesArray"]->at(0)->getBytes()[0]);
+        ASSERT_EQ(0xAD, reflectable["bytesArray"]->at(0)->getBytes()[1]);
+        ASSERT_EQ(2, reflectable["bytesArray"]->at(1)->getBytes().size());
+        ASSERT_EQ(0xCA, reflectable["bytesArray"]->at(1)->getBytes()[0]);
+        ASSERT_EQ(0xFE, reflectable["bytesArray"]->at(1)->getBytes()[1]);
+        checkWriteThrows(*(reflectable["bytesArray"]));
+        checkWriteReadBuiltin(*(reflectable.getField("bytesArray")->at(0)),
+                [&structure](zserio::BitStreamReader& reader) {
+                    ASSERT_EQ(structure.getBytesArray()[0], reader.readBytes<allocator_type>());
                 }
         );
 

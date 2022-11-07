@@ -8,7 +8,9 @@
 #include "zserio/BitSizeOfCalculator.h"
 #include "zserio/CppRuntimeException.h"
 #include "zserio/IReflectable.h"
+#include "zserio/Span.h"
 #include "zserio/StringConvertUtil.h"
+#include "zserio/Traits.h"
 #include "zserio/TypeInfo.h"
 #include "zserio/TypeInfoUtil.h"
 
@@ -92,6 +94,7 @@ public:
     virtual uint64_t getUInt64() const override;
     virtual float getFloat() const override;
     virtual double getDouble() const override;
+    virtual Span<const uint8_t> getBytes() const override;
     virtual StringView getStringView() const override;
     virtual const BasicBitBuffer<ALLOC>& getBitBuffer() const override;
 
@@ -141,14 +144,14 @@ private:
 };
 
 /**
- * Specialization of the BuiltinReflectableBase base class for numeric (arithmetic) types.
+ * Specialization of the BuiltinReflectableBase base class for numeric (arithmetic) types, string view and span.
  *
  * Hold the value instead of reference.
  */
 template <typename ALLOC, typename T>
 class BuiltinReflectableBase<ALLOC, T,
-        typename std::enable_if<std::is_arithmetic<T>::value || std::is_same<T, StringView>::value>::type> :
-                public ReflectableBase<ALLOC>
+        typename std::enable_if<std::is_arithmetic<T>::value || std::is_same<T, StringView>::value ||
+                is_span<T>::value>::type> : public ReflectableBase<ALLOC>
 {
 private:
     using Base = ReflectableBase<ALLOC>;
@@ -705,6 +708,36 @@ public:
 };
 
 /**
+ * Reflectable for values of bytes type.
+ */
+template <typename ALLOC>
+class BytesReflectable : public BuiltinReflectableBase<ALLOC, Span<const uint8_t>>
+{
+private:
+    using Base = BuiltinReflectableBase<ALLOC, Span<const uint8_t>>;
+
+public:
+    explicit BytesReflectable(const IBasicTypeInfo<ALLOC>& typeInfo, Span<const uint8_t> value) :
+            Base(typeInfo, value)
+    {}
+
+    virtual size_t bitSizeOf(size_t) const override
+    {
+        return zserio::bitSizeOfBytes(Base::getValue());
+    }
+
+    virtual void write(BitStreamWriter& writer) const override
+    {
+        writer.writeBytes(Base::getValue());
+    }
+
+    virtual Span<const uint8_t> getBytes() const override
+    {
+        return Base::getValue();
+    }
+};
+
+/**
  * Reflectable for values of string type.
  */
 template <typename ALLOC>
@@ -1002,6 +1035,12 @@ struct ReflectableTraits<ALLOC, double>
 };
 
 template <typename ALLOC>
+struct ReflectableTraits<ALLOC, vector<uint8_t, ALLOC>>
+{
+    using Type = BytesReflectable<ALLOC>;
+};
+
+template <typename ALLOC>
 struct ReflectableTraits<ALLOC, string<ALLOC>>
 {
     using Type = StringReflectable<ALLOC>;
@@ -1102,6 +1141,7 @@ public:
     virtual uint64_t getUInt64() const override;
     virtual float getFloat() const override;
     virtual double getDouble() const override;
+    virtual Span<const uint8_t> getBytes() const override;
     virtual StringView getStringView() const override;
     virtual const BasicBitBuffer<ALLOC>& getBitBuffer() const override;
 
@@ -2040,6 +2080,7 @@ public:
     virtual uint64_t getUInt64() const override { return m_reflectable->getUInt64(); }
     virtual float getFloat() const override { return m_reflectable->getFloat(); }
     virtual double getDouble() const override { return m_reflectable->getDouble(); }
+    virtual Span<const uint8_t> getBytes() const override { return m_reflectable->getBytes(); }
     virtual StringView getStringView() const override { return m_reflectable->getStringView(); }
     virtual const BasicBitBuffer<ALLOC>& getBitBuffer() const override { return m_reflectable->getBitBuffer(); }
 
@@ -2200,8 +2241,13 @@ public:
                 allocator, BuiltinTypeInfo<ALLOC>::getFloat64(), value);
     }
 
-    static IBasicReflectablePtr<ALLOC> getString(
-            StringView value, const ALLOC& allocator = ALLOC())
+    static IBasicReflectablePtr<ALLOC> getBytes(Span<const uint8_t> value, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BytesReflectable<ALLOC>>(
+                allocator, BuiltinTypeInfo<ALLOC>::getBytes(), value);
+    }
+
+    static IBasicReflectablePtr<ALLOC> getString(StringView value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<StringReflectable<ALLOC>>(
                 allocator, BuiltinTypeInfo<ALLOC>::getString(), value);
@@ -2792,6 +2838,12 @@ double ReflectableBase<ALLOC>::getDouble() const
 }
 
 template <typename ALLOC>
+Span<const uint8_t> ReflectableBase<ALLOC>::getBytes() const
+{
+    throw CppRuntimeException("'") << getTypeInfo().getSchemaName() << "' is not bytes type!";
+}
+
+template <typename ALLOC>
 StringView ReflectableBase<ALLOC>::getStringView() const
 {
     throw CppRuntimeException("'") << getTypeInfo().getSchemaName() << "' is not string type!";
@@ -3025,6 +3077,12 @@ float ReflectableArrayBase<ALLOC>::getFloat() const
 
 template <typename ALLOC>
 double ReflectableArrayBase<ALLOC>::getDouble() const
+{
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
+}
+
+template <typename ALLOC>
+Span<const uint8_t> ReflectableArrayBase<ALLOC>::getBytes() const
 {
     throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }

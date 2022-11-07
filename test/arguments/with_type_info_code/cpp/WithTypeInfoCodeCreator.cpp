@@ -71,6 +71,7 @@ static void fillComplexStruct(ComplexStruct& complexStruct, bool createOptionals
         complexStruct.setOptionalBitmask(TestBitmask::Values::RED | TestBitmask::Values::_Green);
         const vector_type<uint8_t> buffer = {0xCB, 0xF0};
         complexStruct.setOptionalExtern(BitBuffer(buffer, 12));
+        complexStruct.setOptionalBytes(vector_type<uint8_t>{{0xAB, 0xCD}});
     }
 
     vector_type<TestEnum> enumArray;
@@ -168,6 +169,11 @@ void fillWithTypeInfoCode(WithTypeInfoCode& withTypeInfoCode, bool createOptiona
     withTypeInfoCode.setExternData(externData);
     const vector_type<BitBuffer> externArray = {externData, externData};
     withTypeInfoCode.setExternArray(externArray);
+    withTypeInfoCode.setBytesData(vector_type<uint8_t>{{0xAB, 0xCD}});
+    withTypeInfoCode.setBytesArray(vector_type<vector_type<uint8_t>>{{
+        vector_type<uint8_t>{{0xAB, 0xCD}},
+        vector_type<uint8_t>{{0xEF}},
+    }});
     const vector_type<uint32_t> implicitArray = {1, 4, 6, 4, 6, 1};
     withTypeInfoCode.setImplicitArray(implicitArray);
 

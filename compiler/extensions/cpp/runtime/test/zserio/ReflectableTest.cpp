@@ -4,11 +4,12 @@
 
 #include "gtest/gtest.h"
 
-#include "zserio/Reflectable.h"
+#include "zserio/ArrayTraits.h"
 #include "zserio/BitStreamReader.h"
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitSizeOfCalculator.h"
-#include "zserio/ArrayTraits.h"
+#include "zserio/Reflectable.h"
+#include "zserio/Vector.h"
 
 using namespace std::placeholders;
 
@@ -1101,6 +1102,7 @@ protected:
         ASSERT_THROW(reflectable->getUInt64(), CppRuntimeException);
         ASSERT_THROW(reflectable->getFloat(), CppRuntimeException);
         ASSERT_THROW(reflectable->getDouble(), CppRuntimeException);
+        ASSERT_THROW(reflectable->getBytes(), CppRuntimeException);
         ASSERT_THROW(reflectable->getStringView(), CppRuntimeException);
         ASSERT_THROW(reflectable->getBitBuffer(), CppRuntimeException);
 
@@ -1257,6 +1259,7 @@ protected:
         ASSERT_THROW(reflectable->getUInt16(), CppRuntimeException);
         ASSERT_THROW(reflectable->getUInt32(), CppRuntimeException);
         ASSERT_THROW(reflectable->getUInt64(), CppRuntimeException);
+        ASSERT_THROW(reflectable->getBytes(), CppRuntimeException);
         ASSERT_THROW(reflectable->getStringView(), CppRuntimeException);
         ASSERT_THROW(reflectable->getBitBuffer(), CppRuntimeException);
 
@@ -1281,6 +1284,7 @@ protected:
 
         ASSERT_THROW(reflectable->getFloat(), CppRuntimeException);
         ASSERT_THROW(reflectable->getDouble(), CppRuntimeException);
+        ASSERT_THROW(reflectable->getBytes(), CppRuntimeException);
         ASSERT_THROW(reflectable->getStringView(), CppRuntimeException);
         ASSERT_THROW(reflectable->getBitBuffer(), CppRuntimeException);
 
@@ -1344,6 +1348,76 @@ protected:
         checkWriteRead(toString(value), reflectable,
                 std::bind(&BitStreamReader::readString<>, _1, std::allocator<uint8_t>()),
                 bitSizeOfVarSize(convertSizeToUInt32(value.size())) + value.size() * 8);
+    }
+
+    template <typename REFLECTABLE_PTR>
+    void checkBitBuffer(const BitBuffer& value, const REFLECTABLE_PTR& reflectable)
+    {
+        ASSERT_EQ(value, reflectable->getBitBuffer());
+
+        ASSERT_EQ(value, reflectable->getAnyValue().
+                template get<std::reference_wrapper<const BitBuffer>>().get());
+
+        ASSERT_THROW(reflectable->toString(), CppRuntimeException);
+        ASSERT_THROW(reflectable->toDouble(), CppRuntimeException);
+        ASSERT_THROW(reflectable->toInt(), CppRuntimeException);
+        ASSERT_THROW(reflectable->toUInt(), CppRuntimeException);
+
+        ASSERT_THROW(reflectable->getInt8(), CppRuntimeException);
+        ASSERT_THROW(reflectable->getInt16(), CppRuntimeException);
+        ASSERT_THROW(reflectable->getInt32(), CppRuntimeException);
+        ASSERT_THROW(reflectable->getInt64(), CppRuntimeException);
+        ASSERT_THROW(reflectable->getUInt8(), CppRuntimeException);
+        ASSERT_THROW(reflectable->getUInt16(), CppRuntimeException);
+        ASSERT_THROW(reflectable->getUInt32(), CppRuntimeException);
+        ASSERT_THROW(reflectable->getUInt64(), CppRuntimeException);
+        ASSERT_THROW(reflectable->getFloat(), CppRuntimeException);
+        ASSERT_THROW(reflectable->getDouble(), CppRuntimeException);
+        ASSERT_THROW(reflectable->getBytes(), CppRuntimeException);
+        ASSERT_THROW(reflectable->getStringView(), CppRuntimeException);
+
+        checkNonCompound(reflectable);
+        checkNonArray(reflectable);
+
+        checkWriteRead(value, reflectable,
+                std::bind(&BitStreamReader::readBitBuffer<>, _1, std::allocator<uint8_t>()),
+                bitSizeOfVarSize(convertSizeToUInt32(value.getBitSize())) + value.getBitSize());
+    }
+
+    template <typename REFLECTABLE_PTR>
+    void checkBytes(const std::vector<uint8_t>& value, const REFLECTABLE_PTR& reflectable)
+    {
+        ASSERT_EQ(value.data(), reflectable->getBytes().data());
+        ASSERT_EQ(value.size(), reflectable->getBytes().size());
+        auto anyValue = reflectable->getAnyValue().template get<Span<const uint8_t>>();
+        ASSERT_EQ(value.data(), anyValue.data());
+        ASSERT_EQ(value.size(), anyValue.size());
+
+        ASSERT_THROW(reflectable->toString(), CppRuntimeException);
+        ASSERT_THROW(reflectable->toDouble(), CppRuntimeException);
+        ASSERT_THROW(reflectable->toInt(), CppRuntimeException);
+        ASSERT_THROW(reflectable->toUInt(), CppRuntimeException);
+
+        ASSERT_THROW(reflectable->getInt8(), CppRuntimeException);
+        ASSERT_THROW(reflectable->getInt16(), CppRuntimeException);
+        ASSERT_THROW(reflectable->getInt32(), CppRuntimeException);
+        ASSERT_THROW(reflectable->getInt64(), CppRuntimeException);
+        ASSERT_THROW(reflectable->getUInt8(), CppRuntimeException);
+        ASSERT_THROW(reflectable->getUInt16(), CppRuntimeException);
+        ASSERT_THROW(reflectable->getUInt32(), CppRuntimeException);
+        ASSERT_THROW(reflectable->getUInt64(), CppRuntimeException);
+        ASSERT_THROW(reflectable->getFloat(), CppRuntimeException);
+        ASSERT_THROW(reflectable->getDouble(), CppRuntimeException);
+        ASSERT_THROW(reflectable->getStringView(), CppRuntimeException);
+        ASSERT_THROW(reflectable->getBitBuffer(), CppRuntimeException);
+
+        checkNonCompound(reflectable);
+        checkNonArray(reflectable);
+
+        const size_t bitSize = bytesToBits(value.size());
+        checkWriteRead(value, reflectable,
+                std::bind(&BitStreamReader::readBytes<>, _1, std::allocator<uint8_t>()),
+                bitSizeOfVarSize(convertSizeToUInt32(bitSize)) + bitSize);
     }
 
     template <typename REFLECTABLE_PTR>
@@ -1429,11 +1503,15 @@ protected:
         {
             ASSERT_EQ(dummyParent,
                     reflectable->getAnyValue().template get<std::reference_wrapper<const DummyParent>>().get());
+            ASSERT_EQ(dummyParent.getDummyChild(), reflectable->getField("dummyChild")->
+                    getAnyValue().template get<std::reference_wrapper<const DummyChild>>().get());
         }
         else
         {
             ASSERT_EQ(dummyParent,
                     reflectable->getAnyValue().template get<std::reference_wrapper<DummyParent>>().get());
+            ASSERT_EQ(dummyParent.getDummyChild(), reflectable->getField("dummyChild")->
+                    getAnyValue().template get<std::reference_wrapper<DummyChild>>().get());
         }
 
         ASSERT_THROW(reflectable->getBool(), CppRuntimeException);
@@ -1447,6 +1525,7 @@ protected:
         ASSERT_THROW(reflectable->getUInt64(), CppRuntimeException);
         ASSERT_THROW(reflectable->getFloat(), CppRuntimeException);
         ASSERT_THROW(reflectable->getDouble(), CppRuntimeException);
+        ASSERT_THROW(reflectable->getBytes(), CppRuntimeException);
         ASSERT_THROW(reflectable->getStringView(), CppRuntimeException);
         ASSERT_THROW(reflectable->getBitBuffer(), CppRuntimeException);
 
@@ -1487,6 +1566,10 @@ protected:
         ASSERT_THROW(reflectable->setField("nonexistent", AnyHolder<>()), CppRuntimeException);
         ASSERT_THROW(reflectable->find("dummyChild")->setField("nonexistent", AnyHolder<>()),
                 CppRuntimeException);
+
+        // any value
+        ASSERT_EQ(dummyParent.getDummyChild(), reflectable->find("dummyChild")->
+                getAnyValue().template get<std::reference_wrapper<DummyChild>>().get());
 
         reflectable->createField("dummyChild");
         ASSERT_EQ(uint32_t(), dummyParent.getDummyChild().getValue());
@@ -1877,44 +1960,21 @@ TEST_F(ReflectableTest, stringViewReflectable)
 
 TEST_F(ReflectableTest, bitBufferReflectable)
 {
-    const BitBuffer value = BitBuffer{std::vector<uint8_t>{{0xAB, 0xF0}}, 12};
+    const BitBuffer value = BitBuffer{std::vector<uint8_t>({0xAB, 0xF0}), 12};
     auto reflectable = ReflectableFactory::getBitBuffer(value);
-    IReflectableConstPtr constReflectable = reflectable;
+    checkBitBuffer(value, reflectable);
+}
 
-    ASSERT_EQ(value, reflectable->getBitBuffer());
-
-    ASSERT_EQ(value, reflectable->getAnyValue().template get<std::reference_wrapper<const BitBuffer>>().get());
-    ASSERT_EQ(value,
-            constReflectable->getAnyValue().template get<std::reference_wrapper<const BitBuffer>>().get());
-
-    ASSERT_THROW(reflectable->toString(), CppRuntimeException);
-    ASSERT_THROW(reflectable->toDouble(), CppRuntimeException);
-    ASSERT_THROW(reflectable->toInt(), CppRuntimeException);
-    ASSERT_THROW(reflectable->toUInt(), CppRuntimeException);
-
-    ASSERT_THROW(reflectable->getInt8(), CppRuntimeException);
-    ASSERT_THROW(reflectable->getInt16(), CppRuntimeException);
-    ASSERT_THROW(reflectable->getInt32(), CppRuntimeException);
-    ASSERT_THROW(reflectable->getInt64(), CppRuntimeException);
-    ASSERT_THROW(reflectable->getUInt8(), CppRuntimeException);
-    ASSERT_THROW(reflectable->getUInt16(), CppRuntimeException);
-    ASSERT_THROW(reflectable->getUInt32(), CppRuntimeException);
-    ASSERT_THROW(reflectable->getUInt64(), CppRuntimeException);
-    ASSERT_THROW(reflectable->getFloat(), CppRuntimeException);
-    ASSERT_THROW(reflectable->getDouble(), CppRuntimeException);
-    ASSERT_THROW(reflectable->getStringView(), CppRuntimeException);
-
-    checkNonCompound(reflectable);
-    checkNonArray(reflectable);
-
-    checkWriteRead(value, reflectable,
-            std::bind(&BitStreamReader::readBitBuffer<>, _1, std::allocator<uint8_t>()),
-            bitSizeOfVarSize(convertSizeToUInt32(value.getBitSize())) + value.getBitSize());
+TEST_F(ReflectableTest, bytesReflectable)
+{
+    const vector<uint8_t> value{{0, 127, 128, 255}};
+    auto reflectable = ReflectableFactory::getBytes(value);
+    checkBytes(value, reflectable);
 }
 
 TEST_F(ReflectableTest, uint8ConstArray)
 {
-    const auto rawArray = std::vector<uint8_t>{{10, 20, 30, 40}};
+    const auto rawArray = std::vector<uint8_t>({10, 20, 30, 40});
     const ITypeInfo& typeInfo = BuiltinTypeInfo<>::getUInt8();
     auto reflectable = ReflectableFactory::getBuiltinArray(typeInfo, rawArray);
     checkArray(rawArray, reflectable,
@@ -2068,6 +2128,71 @@ TEST_F(ReflectableTest, stringArray)
 
     // out of range
     ASSERT_THROW(reflectable->setAt(AnyHolder<>(std::string("set")), 2), CppRuntimeException);
+}
+
+TEST_F(ReflectableTest, bitBufferArray)
+{
+    auto rawArray = std::vector<BitBuffer>{{BitBuffer({0xF8}, 5), BitBuffer({0xAB, 0xCD}, 16)}};
+    auto reflectable = ReflectableFactory::getBuiltinArray(BuiltinTypeInfo<>::getBitBuffer(), rawArray);
+    checkArray(rawArray, reflectable,
+            [&](const BitBuffer& value, const IReflectablePtr& elementReflectable) {
+                checkBitBuffer(value, elementReflectable);
+            }
+    );
+    checkArray(rawArray, static_cast<IReflectableConstPtr>(reflectable),
+            [&](const BitBuffer& value, const IReflectableConstPtr& elementReflectable) {
+                checkBitBuffer(value, elementReflectable);
+            }
+    );
+
+    reflectable->resize(0);
+    ASSERT_EQ(0, reflectable->size());
+    reflectable->append(AnyHolder<>(BitBuffer()));
+    ASSERT_EQ(1, reflectable->size());
+    ASSERT_EQ(0, reflectable->at(0)->getBitBuffer().getBitSize());
+    reflectable->setAt(AnyHolder<>(BitBuffer({0xA0}, 4)), 0);
+    ASSERT_EQ(1, reflectable->size());
+    ASSERT_EQ(4, reflectable->at(0)->getBitBuffer().getBitSize());
+    reflectable->resize(2);
+    ASSERT_EQ(2, reflectable->size());
+
+    // out of range
+    ASSERT_THROW(reflectable->setAt(AnyHolder<>(BitBuffer()), 2), CppRuntimeException);
+}
+
+TEST_F(ReflectableTest, bytesArray)
+{
+    auto rawArray = std::vector<std::vector<uint8_t>>{{
+        {{0x00, 0x01}},
+        {{0xFF, 0xFE}}
+    }};
+    auto reflectable = ReflectableFactory::getBuiltinArray(BuiltinTypeInfo<>::getBytes(), rawArray);
+    checkArray(rawArray, reflectable,
+            [&](const vector<uint8_t>& value, const IReflectablePtr& elementReflectable) {
+
+                checkBytes(value, elementReflectable);
+            }
+    );
+    checkArray(rawArray, static_cast<IReflectableConstPtr>(reflectable),
+            [&](const vector<uint8_t>& value, const IReflectableConstPtr& elementReflectable) {
+
+                checkBytes(value, elementReflectable);
+            }
+    );
+
+    reflectable->resize(0);
+    ASSERT_EQ(0, reflectable->size());
+    reflectable->append(AnyHolder<>(std::vector<uint8_t>()));
+    ASSERT_EQ(1, reflectable->size());
+    ASSERT_EQ(0, reflectable->at(0)->getBytes().size());
+    reflectable->setAt(AnyHolder<>(std::vector<uint8_t>{{0xAB, 0xCD}}), 0);
+    ASSERT_EQ(1, reflectable->size());
+    ASSERT_EQ(2, reflectable->at(0)->getBytes().size());
+    reflectable->resize(2);
+    ASSERT_EQ(2, reflectable->size());
+
+    // out of range
+    ASSERT_THROW(reflectable->setAt(AnyHolder<>(std::vector<uint8_t>()), 2), CppRuntimeException);
 }
 
 TEST_F(ReflectableTest, bitmaskConst)
@@ -2346,6 +2471,7 @@ TEST_F(ReflectableTest, reflectableOwner)
     ASSERT_THROW(reflectable->getUInt64(), CppRuntimeException);
     ASSERT_THROW(reflectable->getFloat(), CppRuntimeException);
     ASSERT_THROW(reflectable->getDouble(), CppRuntimeException);
+    ASSERT_THROW(reflectable->getBytes(), CppRuntimeException);
     ASSERT_THROW(reflectable->getStringView(), CppRuntimeException);
     ASSERT_THROW(reflectable->getBitBuffer(), CppRuntimeException);
 

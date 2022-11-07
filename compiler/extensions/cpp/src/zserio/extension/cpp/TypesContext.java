@@ -35,6 +35,8 @@ public class TypesContext
                     false, false, "zserio/BitBuffer.h");
             packingContextNode = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "PackingContextNode",
                     false, false, "zserio/PackingContext.h");
+            bytesArrayTraits = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BytesArrayTraits",
+                    false, false, "zserio/ArrayTraits.h");
             stringArrayTraits = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "StringArrayTraits",
                     false, false, "zserio/ArrayTraits.h");
             bitBufferArrayTraits = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BitBufferArrayTraits",
@@ -78,6 +80,8 @@ public class TypesContext
                     false, false, "zserio/pmr/BitBuffer.h");
             packingContextNode = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "PackingContextNode",
                     false, false, "zserio/pmr/PackingContext.h");
+            bytesArrayTraits = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "BytesArrayTraits",
+                    false, false, "zserio/pmr/ArrayTraits.h");
             stringArrayTraits = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "StringArrayTraits",
                     false, false, "zserio/pmr/ArrayTraits.h");
             bitBufferArrayTraits = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "BitBufferArrayTraits",
@@ -121,6 +125,8 @@ public class TypesContext
                     true, true, "zserio/BitBuffer.h");
             packingContextNode = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicPackingContextNode",
                     true, true, "zserio/Array.h");
+            bytesArrayTraits = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicBytesArrayTraits",
+                    true, true, "zserio/ArrayTraits.h");
             stringArrayTraits = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicStringArrayTraits",
                     true, true, "zserio/ArrayTraits.h");
             bitBufferArrayTraits = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicBitBufferArrayTraits",
@@ -234,6 +240,11 @@ public class TypesContext
         return packingContextNode;
     }
 
+    public NativeTypeDefinition getBytesArrayTraits()
+    {
+        return bytesArrayTraits;
+    }
+
     public NativeTypeDefinition getStringArrayTraits()
     {
         return stringArrayTraits;
@@ -339,6 +350,7 @@ public class TypesContext
     private final NativeTypeDefinition uniquePtr;
     private final NativeTypeDefinition bitBuffer;
     private final NativeTypeDefinition packingContextNode;
+    private final NativeTypeDefinition bytesArrayTraits;
     private final NativeTypeDefinition stringArrayTraits;
     private final NativeTypeDefinition bitBufferArrayTraits;
     private final NativeTypeDefinition typeInfo;

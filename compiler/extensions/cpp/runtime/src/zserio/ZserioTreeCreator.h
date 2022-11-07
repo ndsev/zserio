@@ -383,6 +383,13 @@ AnyHolder<ALLOC> makeAnyValue(const IBasicTypeInfo<ALLOC>& typeInfo, T&& value, 
     }
 }
 
+// overload for values which are already in AnyHolder
+template <typename ALLOC>
+AnyHolder<ALLOC> makeAnyValue(const IBasicTypeInfo<ALLOC>&, AnyHolder<ALLOC>&& anyValue, const ALLOC&)
+{
+    return std::move(anyValue);
+}
+
 enum class CreatorState : uint8_t
 {
     BEFORE_ROOT,

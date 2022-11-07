@@ -504,7 +504,7 @@ template <typename ALLOC>
 bool BasicWalker<ALLOC>::walkField(
         const IBasicReflectableConstPtr<ALLOC>& reflectable, const BasicFieldInfo<ALLOC>& fieldInfo)
 {
-    if (reflectable && reflectable->isArray())
+    if (reflectable && fieldInfo.isArray)
     {
         if (m_walkFilter.beforeArray(reflectable, fieldInfo))
         {

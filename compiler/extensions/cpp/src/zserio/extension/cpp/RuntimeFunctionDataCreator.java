@@ -1,6 +1,7 @@
 package zserio.extension.cpp;
 
 import zserio.ast.BooleanType;
+import zserio.ast.BytesType;
 import zserio.ast.DynamicBitFieldType;
 import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.ExternType;
@@ -134,6 +135,12 @@ public class RuntimeFunctionDataCreator
         public void visitFixedBitFieldType(FixedBitFieldType type)
         {
             handleFixedIntegerType(type.getBitSize(), type.isSigned());
+        }
+
+        @Override
+        public void visitBytesType(BytesType type)
+        {
+            templateData = new RuntimeFunctionTemplateData("Bytes");
         }
 
         @Override
