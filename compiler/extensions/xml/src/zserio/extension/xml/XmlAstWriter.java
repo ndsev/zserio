@@ -23,6 +23,7 @@ import zserio.ast.AstNode;
 import zserio.ast.BitmaskType;
 import zserio.ast.BitmaskValue;
 import zserio.ast.BooleanType;
+import zserio.ast.BytesType;
 import zserio.ast.ChoiceCase;
 import zserio.ast.ChoiceCaseExpression;
 import zserio.ast.ChoiceDefault;
@@ -473,6 +474,12 @@ public class XmlAstWriter implements ZserioAstVisitor
     public void visitBooleanType(BooleanType booleanType)
     {
         visitZserioType(booleanType, "BOOLEAN");
+    }
+
+    @Override
+    public void visitBytesType(BytesType bytesType)
+    {
+        visitZserioType(bytesType, "BYTES");
     }
 
     @Override
