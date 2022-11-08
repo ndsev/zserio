@@ -19,7 +19,7 @@ import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.InitializeOffsetsWriter;
+import zserio.runtime.io.Writer;
 
 public class ArrayTest
 {
@@ -748,7 +748,7 @@ public class ArrayTest
         testPackedArray(rawArray, emptyRawArray, arrayTraits);
     }
 
-    private static class ArrayTestObject implements InitializeOffsetsWriter, SizeOf
+    private static class ArrayTestObject implements Writer, SizeOf
     {
         public ArrayTestObject(zserio.runtime.io.BitStreamReader reader) throws IOException
         {
@@ -844,6 +844,12 @@ public class ArrayTest
                     contextNode.getChildren().get(0).getContext().read(
                             new ArrayTraits.BitFieldByteArrayTraits(3), reader)).get();
 
+        }
+
+        @Override
+        public long initializeOffsets()
+        {
+            return initializeOffsets(0);
         }
 
         @Override

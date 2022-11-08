@@ -124,7 +124,7 @@ public class PackedAutoArrayUInt8Test
         writer.close();
 
         assertEquals(packedAutoArray.bitSizeOf(), writer.getBitPosition());
-        assertEquals(packedAutoArray.initializeOffsets(0), writer.getBitPosition());
+        assertEquals(packedAutoArray.initializeOffsets(), writer.getBitPosition());
 
         final PackedAutoArray readPackedAutoArray = new PackedAutoArray(file);
         checkPackedAutoArray(readPackedAutoArray, numElements);

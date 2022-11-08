@@ -14,8 +14,8 @@ new ${arrayableInfo.arrayTraits.name}(<#rt>
 <#if withCodeComments && docComments??>
 <@doc_comments docComments/>
 </#if>
-public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeOffsetsWriter,
-        </#if>zserio.runtime.SizeOf, zserio.runtime.ZserioEnum
+public enum ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </#if>zserio.runtime.SizeOf,
+        zserio.runtime.ZserioEnum
 {
 <#list items as item>
     <#if withCodeComments && item.docComments??>
@@ -117,6 +117,12 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeO
                 new ${underlyingTypeInfo.arrayableInfo.arrayElement}(value));
     }
 <#if withWriterCode>
+
+    @Override
+    public long initializeOffsets()
+    {
+        return initializeOffsets(0);
+    }
 
     @Override
     public long initializeOffsets(long bitPosition) throws zserio.runtime.ZserioError

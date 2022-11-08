@@ -312,7 +312,7 @@ public class ZserioTreeCreator
 
         try
         {
-            final Constructor<?> constructor = typeInfo.getJavaClass().getDeclaredConstructor(parametersTypes);
+            final Constructor<?> constructor = typeInfo.getJavaClass().getConstructor(parametersTypes);
             return constructor.newInstance(arguments);
         }
         catch (InstantiationException | IllegalAccessException | NoSuchMethodException |

@@ -101,7 +101,7 @@ public class TernaryOperatorOffsetTest
         final TernaryOffset ternaryOffset = new TernaryOffset(isFirstOffsetUsed, new long[] {
                 WRONG_FIELD_OFFSET, WRONG_FIELD_OFFSET}, FIELD_VALUE);
         if (!createWrongOffset)
-            ternaryOffset.initializeOffsets(0);
+            ternaryOffset.initializeOffsets();
 
         return ternaryOffset;
     }

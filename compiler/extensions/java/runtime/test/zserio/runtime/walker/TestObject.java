@@ -27,7 +27,7 @@ public class TestObject
         }
     }
 
-    public static class DummyNested implements zserio.runtime.io.InitializeOffsetsWriter, zserio.runtime.SizeOf
+    public static class DummyNested implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
     {
         public DummyNested()
         {
@@ -172,6 +172,12 @@ public class TestObject
         }
 
         @Override
+        public long initializeOffsets()
+        {
+            return initializeOffsets(0);
+        }
+
+        @Override
         public long initializeOffsets(long bitPosition)
         {
             long endBitPosition = bitPosition;
@@ -215,7 +221,7 @@ public class TestObject
         private java.lang.String text_;
     }
 
-    public static class DummyUnion implements zserio.runtime.io.InitializeOffsetsWriter, zserio.runtime.SizeOf
+    public static class DummyUnion implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
     {
         public DummyUnion()
         {
@@ -539,6 +545,12 @@ public class TestObject
         }
 
         @Override
+        public long initializeOffsets()
+        {
+            return initializeOffsets(0);
+        }
+
+        @Override
         public long initializeOffsets(long bitPosition)
         {
             long endBitPosition = bitPosition;
@@ -679,7 +691,7 @@ public class TestObject
         private int choiceTag = UNDEFINED_CHOICE;
     }
 
-    public static class DummyObject implements zserio.runtime.io.InitializeOffsetsWriter, zserio.runtime.SizeOf
+    public static class DummyObject implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
     {
         public DummyObject()
         {
@@ -1084,6 +1096,12 @@ public class TestObject
         }
 
         @Override
+        public long initializeOffsets()
+        {
+            return initializeOffsets(0);
+        }
+
+        @Override
         public long initializeOffsets(long bitPosition)
         {
             long endBitPosition = bitPosition;
@@ -1250,7 +1268,7 @@ public class TestObject
         private zserio.runtime.array.Array optionalUnionArray_;
     }
 
-    public static class DummyBitmask implements zserio.runtime.io.InitializeOffsetsWriter, zserio.runtime.SizeOf
+    public static class DummyBitmask implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
     {
         public DummyBitmask()
         {
@@ -1323,6 +1341,12 @@ public class TestObject
             return contextNode.getContext().bitSizeOf(
                     new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits(32),
                     new zserio.runtime.array.ArrayElement.LongArrayElement(value));
+        }
+
+        @Override
+        public long initializeOffsets()
+        {
+            return initializeOffsets(0);
         }
 
         @Override

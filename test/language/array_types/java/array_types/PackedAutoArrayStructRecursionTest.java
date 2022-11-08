@@ -123,7 +123,7 @@ public class PackedAutoArrayStructRecursionTest
         writer.close();
 
         assertEquals(packedAutoArrayRecursion.bitSizeOf(), writer.getBitPosition());
-        assertEquals(packedAutoArrayRecursion.initializeOffsets(0), writer.getBitPosition());
+        assertEquals(packedAutoArrayRecursion.initializeOffsets(), writer.getBitPosition());
 
         final PackedAutoArrayRecursion readAutoArrayRecursion = new PackedAutoArrayRecursion(file);
         checkPackedAutoArrayRecursion(readAutoArrayRecursion, numElements);

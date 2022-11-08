@@ -23,7 +23,7 @@ public class PackedAutoArrayStructWithExternTest
         writer.close();
 
         assertEquals(writer.getBitPosition(), packedAutoArray.bitSizeOf());
-        assertEquals(writer.getBitPosition(), packedAutoArray.initializeOffsets(0));
+        assertEquals(writer.getBitPosition(), packedAutoArray.initializeOffsets());
 
         final PackedAutoArray readPackedAutoArray = new PackedAutoArray(file);
         assertEquals(packedAutoArray, readPackedAutoArray);

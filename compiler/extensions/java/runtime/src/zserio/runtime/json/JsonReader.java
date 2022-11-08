@@ -506,7 +506,7 @@ public class JsonReader implements AutoCloseable
                 final TypeInfo bitmaskUnderlyingTypeInfo = typeInfo.getUnderlyingType();
                 final Class<?> bitmaskUnderlyingClass = bitmaskUnderlyingTypeInfo.getJavaClass();
                 final Class<?>[] parameterType = new Class<?>[] { bitmaskUnderlyingClass };
-                final Constructor<?> constructor = bitmaskClass.getDeclaredConstructor(parameterType);
+                final Constructor<?> constructor = bitmaskClass.getConstructor(parameterType);
                 final JavaType bitmaskUnderlyingJavaType = bitmaskUnderlyingTypeInfo.getJavaType();
 
                 return constructor.newInstance(convertNumber(value, typeInfo, bitmaskUnderlyingJavaType));

@@ -123,7 +123,7 @@ public class PackedVariableArrayUInt8Test
         writer.close();
 
         assertEquals(packedVariableArray.bitSizeOf(), writer.getBitPosition());
-        assertEquals(packedVariableArray.initializeOffsets(0), writer.getBitPosition());
+        assertEquals(packedVariableArray.initializeOffsets(), writer.getBitPosition());
 
         final PackedVariableArray readPackedVariableArray = new PackedVariableArray(file);
         checkPackedVariableArray(readPackedVariableArray, numElements);

@@ -115,7 +115,7 @@ public class AutoArraySubtypedUInt8Test
         writer.close();
 
         assertEquals(autoArray.bitSizeOf(), writer.getBitPosition());
-        assertEquals(autoArray.initializeOffsets(0), writer.getBitPosition());
+        assertEquals(autoArray.initializeOffsets(), writer.getBitPosition());
 
         final AutoArray readAutoArray = new AutoArray(file);
         final short[] readArray = readAutoArray.getArray();

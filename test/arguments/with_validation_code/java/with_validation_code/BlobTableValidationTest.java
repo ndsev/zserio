@@ -19,7 +19,7 @@ import with_validation_code.blob_table_validation.Blob;
 import with_validation_code.blob_table_validation.BlobTableValidationDb;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.io.ZserioIO;
+import zserio.runtime.io.SerializeUtil;
 import zserio.runtime.validation.ValidationReport;
 
 public class BlobTableValidationTest
@@ -68,8 +68,9 @@ public class BlobTableValidationTest
             int argIdx = 1;
             statement.setLong(argIdx++, ROW_ID);
 
-            final Blob blob = new Blob(Float.isNaN(NONE_STANDARD_NAN_VALUE), NONE_STANDARD_NAN_VALUE, END_VALUE);
-            final byte[] bytesBlob = ZserioIO.write(blob);
+            final Blob blob = new Blob(Float.isNaN(NONE_STANDARD_NAN_VALUE), NONE_STANDARD_NAN_VALUE,
+                    END_VALUE);
+            final byte[] bytesBlob = SerializeUtil.serializeToBytes(blob);
             bytesBlob[1] = (byte)0xFF;      // none standard NaN
             bytesBlob[2] = (byte)0xFF;      // set skipped bits
             statement.setBytes(argIdx++, bytesBlob);

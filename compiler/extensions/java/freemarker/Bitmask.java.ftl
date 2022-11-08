@@ -14,8 +14,8 @@ new ${arrayableInfo.arrayTraits.name}(<#rt>
 <#if withCodeComments && docComments??>
 <@doc_comments docComments/>
 </#if>
-public class ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeOffsetsWriter,
-        </#if>zserio.runtime.SizeOf, zserio.runtime.ZserioBitmask
+public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </#if>zserio.runtime.SizeOf,
+        zserio.runtime.ZserioBitmask
 {
 <#if withCodeComments>
     /** Default constructor. */
@@ -155,6 +155,12 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
                 new ${underlyingTypeInfo.arrayableInfo.arrayElement}(value));
     }
 <#if withWriterCode>
+
+    @Override
+    public long initializeOffsets()
+    {
+        return initializeOffsets(0);
+    }
 
     @Override
     public long initializeOffsets(long bitPosition)

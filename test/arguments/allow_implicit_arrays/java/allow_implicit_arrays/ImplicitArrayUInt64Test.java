@@ -77,7 +77,7 @@ public class ImplicitArrayUInt64Test
             implicitArray.write(writer);
 
             assertEquals(implicitArray.bitSizeOf(), writer.getBitPosition());
-            assertEquals(implicitArray.initializeOffsets(0), writer.getBitPosition());
+            assertEquals(implicitArray.initializeOffsets(), writer.getBitPosition());
         }
 
         final ImplicitArray readImplicitArray = new ImplicitArray(file);

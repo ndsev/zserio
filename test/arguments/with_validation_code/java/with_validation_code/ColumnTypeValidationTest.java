@@ -26,7 +26,7 @@ import with_validation_code.column_type_validation.Blob;
 
 import zserio.runtime.validation.ValidationError;
 import zserio.runtime.validation.ValidationReport;
-import zserio.runtime.io.ZserioIO;
+import zserio.runtime.io.SerializeUtil;
 
 public class ColumnTypeValidationTest
 {
@@ -151,7 +151,7 @@ public class ColumnTypeValidationTest
                     "UPDATE columnTypeTable SET int64Value = ? WHERE id = 2");
         )
         {
-            final byte[] blobBytes = ZserioIO.write(new Blob(13));
+            final byte[] blobBytes = SerializeUtil.serializeToBytes(new Blob(13));
             statement.setBytes(1, blobBytes);
             statement.execute();
         }
@@ -238,7 +238,7 @@ public class ColumnTypeValidationTest
                     "UPDATE columnTypeTable SET float16Value = ? WHERE id = 2");
         )
         {
-            final byte[] blobBytes = ZserioIO.write(new Blob(13));
+            final byte[] blobBytes = SerializeUtil.serializeToBytes(new Blob(13));
             statement.setBytes(1, blobBytes);
             statement.execute();
         }
@@ -291,7 +291,7 @@ public class ColumnTypeValidationTest
                     "UPDATE columnTypeTable SET stringValue = ? WHERE id = 2");
         )
         {
-            final byte[] blobBytes = ZserioIO.write(new Blob(13));
+            final byte[] blobBytes = SerializeUtil.serializeToBytes(new Blob(13));
             statement.setBytes(1, blobBytes);
             statement.execute();
         }

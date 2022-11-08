@@ -78,7 +78,7 @@ public class FixedArrayUInt8Test
         writer.close();
 
         assertEquals(fixedArray.bitSizeOf(), writer.getBitPosition());
-        assertEquals(fixedArray.initializeOffsets(0), writer.getBitPosition());
+        assertEquals(fixedArray.initializeOffsets(), writer.getBitPosition());
 
         final FixedArray readFixedArray = new FixedArray(file);
         final short[] readUint8Array = readFixedArray.getUint8Array();

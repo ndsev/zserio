@@ -43,7 +43,7 @@ import zserio.runtime.HashCodeUtil;
  */
 public class ZserioTreeCreatorTestObject
 {
-    public static enum DummyEnum implements zserio.runtime.io.InitializeOffsetsWriter,
+    public static enum DummyEnum implements zserio.runtime.io.Writer,
             zserio.runtime.SizeOf, zserio.runtime.ZserioEnum
     {
         ONE((byte)0),
@@ -115,6 +115,12 @@ public class ZserioTreeCreatorTestObject
         }
 
         @Override
+        public long initializeOffsets()
+        {
+            return initializeOffsets(0);
+        }
+
+        @Override
         public long initializeOffsets(long bitPosition) throws zserio.runtime.ZserioError
         {
             return bitPosition + bitSizeOf(bitPosition);
@@ -180,7 +186,7 @@ public class ZserioTreeCreatorTestObject
         private byte value;
     }
 
-    public static class DummyBitmask implements zserio.runtime.io.InitializeOffsetsWriter,
+    public static class DummyBitmask implements zserio.runtime.io.Writer,
             zserio.runtime.SizeOf, zserio.runtime.ZserioBitmask
     {
         public DummyBitmask()
@@ -256,6 +262,12 @@ public class ZserioTreeCreatorTestObject
             return contextNode.getContext().bitSizeOf(
                     new zserio.runtime.array.ArrayTraits.BitFieldShortArrayTraits(8),
                     new zserio.runtime.array.ArrayElement.ShortArrayElement(value));
+        }
+
+        @Override
+        public long initializeOffsets()
+        {
+            return initializeOffsets(0);
         }
 
         @Override
@@ -365,7 +377,7 @@ public class ZserioTreeCreatorTestObject
         private short value;
     }
 
-    public static class DummyNested implements zserio.runtime.io.InitializeOffsetsWriter, zserio.runtime.SizeOf
+    public static class DummyNested implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
     {
         public DummyNested(
                 long param_)
@@ -716,6 +728,12 @@ public class ZserioTreeCreatorTestObject
         }
 
         @Override
+        public long initializeOffsets()
+        {
+            return initializeOffsets(0);
+        }
+
+        @Override
         public long initializeOffsets(long bitPosition)
         {
             long endBitPosition = bitPosition;
@@ -802,7 +820,7 @@ public class ZserioTreeCreatorTestObject
         private DummyBitmask dummyBitmask_;
     }
 
-    public static class DummyObject implements zserio.runtime.io.InitializeOffsetsWriter, zserio.runtime.SizeOf
+    public static class DummyObject implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
     {
         public DummyObject()
         {
@@ -1342,6 +1360,12 @@ public class ZserioTreeCreatorTestObject
             {
                 optionalNested_ = new DummyNested(contextNode.getChildren().get(7), in, (getValue()));
             }
+        }
+
+        @Override
+        public long initializeOffsets()
+        {
+            return initializeOffsets(0);
         }
 
         @Override

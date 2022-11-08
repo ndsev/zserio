@@ -86,9 +86,9 @@ def serialize_to_bytes(obj: typing.Any) -> bytes:
     :raises PythonRuntimeException: Throws in case of any error during serialization.
     """
 
-    bitbuffer = serialize(obj)
+    writer = _serialize(obj)
 
-    return bitbuffer.buffer
+    return writer.byte_array
 
 def deserialize_from_bytes(obj_class: typing.Type[typing.Any], buffer: bytes, *args) -> typing.Any:
     """

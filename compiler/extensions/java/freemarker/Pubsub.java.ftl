@@ -162,7 +162,7 @@ public class ${name}
             zserio.runtime.pubsub.PubsubCallback<${message.typeInfo.typeFullName}> callback,
             java.lang.String topic, byte[] data)
     {
-        final ${message.typeInfo.typeFullName} message = zserio.runtime.io.ZserioIO.read(
+        final ${message.typeInfo.typeFullName} message = zserio.runtime.io.SerializeUtil.deserializeFromBytes(
                 ${message.typeInfo.typeFullName}.class, data);
         callback.invoke(topic, message);
     }
@@ -174,7 +174,7 @@ public class ${name}
     private <MSG extends zserio.runtime.io.Writer> void publish(java.lang.String topic, MSG message,
             java.lang.Object context)
     {
-        final byte[] data = zserio.runtime.io.ZserioIO.write(message);
+        final byte[] data = zserio.runtime.io.SerializeUtil.serializeToBytes(message);
         pubsub.publish(topic, data, context);
     }
 </#if>

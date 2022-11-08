@@ -75,7 +75,7 @@ public class PackedIndexedOffsetArrayHolderTest
 
         final long writtenBitPosition = writer.getBitPosition();
         assertEquals(autoIndexedOffsetArray.bitSizeOf(), writtenBitPosition);
-        assertEquals(autoIndexedOffsetArray.initializeOffsets(0), writtenBitPosition);
+        assertEquals(autoIndexedOffsetArray.initializeOffsets(), writtenBitPosition);
 
         final AutoIndexedOffsetArray readAutoIndexedOffsetArray = new AutoIndexedOffsetArray(file);
         assertEquals(autoIndexedOffsetArray, readAutoIndexedOffsetArray);
@@ -96,6 +96,11 @@ public class PackedIndexedOffsetArrayHolderTest
             data2[i] = i * 2;
 
         return new AutoIndexedOffsetArray(new OffsetArray(offsetHolders), data1, data2);
+        final AutoIndexedOffsetArray autoIndexedOffsetArray =
+                new AutoIndexedOffsetArray(new OffsetArray(offsetHolders), data1, data2);
+        autoIndexedOffsetArray.initializeOffsets();
+
+        return autoIndexedOffsetArray;
     }
 
     private int calcAutoIndexedOffsetArrayBitSize(int numElements)

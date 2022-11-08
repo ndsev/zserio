@@ -72,7 +72,7 @@ public class PackedVariableArrayStructRecursionTest
         writer.close();
 
         assertEquals(packedVariableArray.bitSizeOf(), writer.getBitPosition());
-        assertEquals(packedVariableArray.initializeOffsets(0), writer.getBitPosition());
+        assertEquals(packedVariableArray.initializeOffsets(), writer.getBitPosition());
 
         final FileBitStreamReader reader = new FileBitStreamReader(file);
         final PackedVariableArray readPackedVariableArray = new PackedVariableArray(reader);

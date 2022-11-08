@@ -56,7 +56,7 @@ public class PackedFixedArrayUInt8Test
         writer.close();
 
         assertEquals(packedFixedArray.bitSizeOf(), writer.getBitPosition());
-        assertEquals(packedFixedArray.initializeOffsets(0), writer.getBitPosition());
+        assertEquals(packedFixedArray.initializeOffsets(), writer.getBitPosition());
 
         final PackedFixedArray readPackedFixedArray = new PackedFixedArray(file);
         checkPackedFixedArray(readPackedFixedArray);

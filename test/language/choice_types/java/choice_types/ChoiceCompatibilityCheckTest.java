@@ -21,7 +21,7 @@ import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
 import zserio.runtime.io.FileBitStreamWriter;
-import zserio.runtime.io.InitializeOffsetsWriter;
+import zserio.runtime.io.Writer;
 
 public class ChoiceCompatibilityCheckTest
 {
@@ -180,7 +180,7 @@ public class ChoiceCompatibilityCheckTest
     }
 
     private ChoiceCompatibilityCheckVersion1 writeReadVersion1(
-            InitializeOffsetsWriter choiceCompatibilityCheck) throws IOException
+            Writer choiceCompatibilityCheck) throws IOException
     {
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         choiceCompatibilityCheck.write(writer);
@@ -194,7 +194,7 @@ public class ChoiceCompatibilityCheckTest
     }
 
     private ChoiceCompatibilityCheckVersion2 writeReadVersion2(
-            InitializeOffsetsWriter choiceCompatibilityCheck) throws IOException
+            Writer choiceCompatibilityCheck) throws IOException
     {
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         choiceCompatibilityCheck.write(writer);
@@ -208,7 +208,7 @@ public class ChoiceCompatibilityCheckTest
     }
 
     private ChoiceCompatibilityCheckVersion1 writeReadVersion1File(
-            InitializeOffsetsWriter choiceCompatibilityCheck, String variant) throws IOException
+            Writer choiceCompatibilityCheck, String variant) throws IOException
     {
         final File file = new File(BLOB_NAME_BASE + variant + ".blob");
 
@@ -224,7 +224,7 @@ public class ChoiceCompatibilityCheckTest
     }
 
     private ChoiceCompatibilityCheckVersion2 writeReadVersion2File(
-            InitializeOffsetsWriter choiceCompatibilityCheck, String variant) throws IOException
+            Writer choiceCompatibilityCheck, String variant) throws IOException
     {
         final File file = new File(BLOB_NAME_BASE + variant + ".blob");
 

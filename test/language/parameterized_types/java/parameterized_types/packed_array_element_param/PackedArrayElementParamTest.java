@@ -89,7 +89,7 @@ public class PackedArrayElementParamTest
 
         final long writtenBitPosition = writer.getBitPosition();
         assertEquals(database.bitSizeOf(), writtenBitPosition);
-        assertEquals(database.initializeOffsets(0), writtenBitPosition);
+        assertEquals(database.initializeOffsets(), writtenBitPosition);
 
         final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
         final Database readDatabase = new Database(reader);

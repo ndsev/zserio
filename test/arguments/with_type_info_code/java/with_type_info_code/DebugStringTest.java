@@ -35,7 +35,7 @@ public class DebugStringTest
         final boolean createdOptionals = true;
         final WithTypeInfoCode withTypeInfoCode =
                 WithTypeInfoCodeCreator.createWithTypeInfoCode(createdOptionals);
-        withTypeInfoCode.initializeOffsets(0);
+        withTypeInfoCode.initializeOffsets();
 
         DebugStringUtil.toJsonFile(withTypeInfoCode, JSON_NAME_WITH_OPTIONALS);
 
@@ -51,7 +51,7 @@ public class DebugStringTest
         final boolean createdOptionals = false;
         final WithTypeInfoCode withTypeInfoCode =
                 WithTypeInfoCodeCreator.createWithTypeInfoCode(createdOptionals);
-        withTypeInfoCode.initializeOffsets(0);
+        withTypeInfoCode.initializeOffsets();
 
         DebugStringUtil.toJsonFile(withTypeInfoCode, JSON_NAME_WITHOUT_OPTIONALS);
 
@@ -67,7 +67,7 @@ public class DebugStringTest
         final boolean createdOptionals = true;
         final WithTypeInfoCode withTypeInfoCode =
                 WithTypeInfoCodeCreator.createWithTypeInfoCode(createdOptionals);
-        withTypeInfoCode.initializeOffsets(0);
+        withTypeInfoCode.initializeOffsets();
 
         for (int i = 0; i < 11; ++i)
         {
@@ -97,7 +97,7 @@ public class DebugStringTest
         final boolean createdOptionals = true;
         final WithTypeInfoCode withTypeInfoCode =
                 WithTypeInfoCodeCreator.createWithTypeInfoCode(createdOptionals);
-        withTypeInfoCode.initializeOffsets(0);
+        withTypeInfoCode.initializeOffsets();
 
         final OutputStream outputStream = new FileOutputStream(JSON_NAME_WITH_DEPTH0_FILTER);
         final OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
@@ -123,7 +123,7 @@ public class DebugStringTest
         final boolean createdOptionals = true;
         final WithTypeInfoCode withTypeInfoCode =
                 WithTypeInfoCodeCreator.createWithTypeInfoCode(createdOptionals);
-        withTypeInfoCode.initializeOffsets(0);
+        withTypeInfoCode.initializeOffsets();
 
         final OutputStream outputStream = new FileOutputStream(JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER);
         final OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
@@ -152,7 +152,7 @@ public class DebugStringTest
         final boolean createdOptionals = true;
         final WithTypeInfoCode withTypeInfoCode =
                 WithTypeInfoCodeCreator.createWithTypeInfoCode(createdOptionals);
-        withTypeInfoCode.initializeOffsets(0);
+        withTypeInfoCode.initializeOffsets();
 
         final OutputStream outputStream = new FileOutputStream(JSON_NAME_WITH_DEPTH5_FILTER);
         final OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
@@ -178,7 +178,7 @@ public class DebugStringTest
         final boolean createdOptionals = false;
         final WithTypeInfoCode withTypeInfoCode =
                 WithTypeInfoCodeCreator.createWithTypeInfoCode(createdOptionals);
-        withTypeInfoCode.initializeOffsets(0);
+        withTypeInfoCode.initializeOffsets();
 
         final OutputStream outputStream = new FileOutputStream(JSON_NAME_WITH_REGEX_FILTER);
         final OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);

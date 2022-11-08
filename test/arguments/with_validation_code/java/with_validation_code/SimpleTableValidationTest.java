@@ -25,7 +25,7 @@ import with_validation_code.simple_table_validation.TestEnum;
 import with_validation_code.simple_table_validation.TestBitmask;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.io.ZserioIO;
+import zserio.runtime.io.SerializeUtil;
 import zserio.runtime.validation.ValidationError;
 import zserio.runtime.validation.ValidationReport;
 
@@ -469,7 +469,7 @@ public class SimpleTableValidationTest
             statement.setLong(argIdx++, fieldDynamicBit);
             statement.setShort(argIdx++, fieldVarInt16);
             statement.setString(argIdx++, fieldString);
-            final byte[] bytesFieldBlob = ZserioIO.write(fieldBlob);
+            final byte[] bytesFieldBlob = SerializeUtil.serializeToBytes(fieldBlob);
             if (wrongOffset)
                 corruptOffsetInFieldBlob(bytesFieldBlob);
             statement.setBytes(argIdx++, bytesFieldBlob);

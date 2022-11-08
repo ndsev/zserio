@@ -139,7 +139,7 @@ public class BlobOffsetsParamTableTest
         row.setBlob(parameterizedBlob);
 
         // we must initialize offsets manually since offsetsHolder is written first to the sqlite table
-        parameterizedBlob.initializeOffsets(0);
+        parameterizedBlob.initializeOffsets();
 
         return row;
     }

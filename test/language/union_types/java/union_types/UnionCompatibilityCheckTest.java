@@ -17,7 +17,7 @@ import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
 import zserio.runtime.io.FileBitStreamWriter;
-import zserio.runtime.io.InitializeOffsetsWriter;
+import zserio.runtime.io.Writer;
 
 public class UnionCompatibilityCheckTest
 {
@@ -181,7 +181,7 @@ public class UnionCompatibilityCheckTest
     }
 
     private UnionCompatibilityCheckVersion1 writeReadVersion1(
-            InitializeOffsetsWriter unionCompatibilityCheck) throws IOException
+            Writer unionCompatibilityCheck) throws IOException
     {
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         unionCompatibilityCheck.write(writer);
@@ -195,7 +195,7 @@ public class UnionCompatibilityCheckTest
     }
 
     private UnionCompatibilityCheckVersion2 writeReadVersion2(
-            InitializeOffsetsWriter unionCompatibilityCheck) throws IOException
+            Writer unionCompatibilityCheck) throws IOException
     {
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         unionCompatibilityCheck.write(writer);
@@ -209,7 +209,7 @@ public class UnionCompatibilityCheckTest
     }
 
     private UnionCompatibilityCheckVersion1 writeReadVersion1File(
-            InitializeOffsetsWriter unionCompatibilityCheck, String variant) throws IOException
+            Writer unionCompatibilityCheck, String variant) throws IOException
     {
         final File file = new File(BLOB_NAME_BASE + variant + ".blob");
 
@@ -225,7 +225,7 @@ public class UnionCompatibilityCheckTest
     }
 
     private UnionCompatibilityCheckVersion2 writeReadVersion2File(
-            InitializeOffsetsWriter unionCompatibilityCheck, String variant) throws IOException
+            Writer unionCompatibilityCheck, String variant) throws IOException
     {
         final File file = new File(BLOB_NAME_BASE + variant + ".blob");
 

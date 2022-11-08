@@ -89,7 +89,7 @@ public class VariableArraySubtypedStructTest
         writer.close();
 
         assertEquals(variableArray.bitSizeOf(), writer.getBitPosition());
-        assertEquals(variableArray.initializeOffsets(0), writer.getBitPosition());
+        assertEquals(variableArray.initializeOffsets(), writer.getBitPosition());
 
         final VariableArray readVariableArray = new VariableArray(file);
         assertEquals(numElements, readVariableArray.getNumElements());

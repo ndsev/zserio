@@ -99,7 +99,7 @@ public class AutoArrayStructRecursionTest
         writer.close();
 
         assertEquals(autoArrayRecursion.bitSizeOf(), writer.getBitPosition());
-        assertEquals(autoArrayRecursion.initializeOffsets(0), writer.getBitPosition());
+        assertEquals(autoArrayRecursion.initializeOffsets(), writer.getBitPosition());
 
         final AutoArrayRecursion readAutoArrayRecursion = new AutoArrayRecursion(file);
         checkAutoArrayRecursion(readAutoArrayRecursion, numElements);

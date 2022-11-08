@@ -9,7 +9,7 @@ import zserio.runtime.array.ArrayElement.IntegralArrayElement;
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.InitializeOffsetsWriter;
+import zserio.runtime.io.Writer;
 
 /**
  * Interface for array traits.
@@ -1332,7 +1332,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio object arrays (with writer part) which are mapped to Java zserio object array.
      */
-    public static class WriteObjectArrayTraits<E extends InitializeOffsetsWriter & SizeOf>
+    public static class WriteObjectArrayTraits<E extends Writer & SizeOf>
             extends ObjectArrayTraits<E>
     {
         /**

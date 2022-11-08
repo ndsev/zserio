@@ -53,7 +53,7 @@ public class UInt64OffsetTest
     {
         final UInt64Offset uint64Offset = new UInt64Offset();
         uint64Offset.setArray(new byte[ARRAY_SIZE]);
-        uint64Offset.initializeOffsets(0);
+        uint64Offset.initializeOffsets();
         assertEquals(OFFSET, uint64Offset.getOffset().longValue());
     }
 

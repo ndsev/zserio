@@ -7,7 +7,7 @@ import zserio.runtime.array.ArrayElement.IntegralArrayElement;
 import zserio.runtime.array.ArrayTraits.IntegralArrayTraits;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.InitializeOffsetsWriter;
+import zserio.runtime.io.Writer;
 
 /**
  * Interface for packed array traits.
@@ -202,7 +202,7 @@ public interface PackedArrayTraits
     /**
      * Packed array traits for zserio object arrays (with writer part).
      */
-    public static class WriteObjectPackedArrayTraits<E extends InitializeOffsetsWriter & SizeOf>
+    public static class WriteObjectPackedArrayTraits<E extends Writer & SizeOf>
             extends ObjectPackedArrayTraits<E>
     {
         /**

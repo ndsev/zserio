@@ -531,7 +531,7 @@ ${I}                (${parameter.typeInfo.typeFullName})(${parameter.expression}
         else
         {
         <#if field.sqlTypeData.isBlob>
-            final byte[] blobData = zserio.runtime.io.ZserioIO.write(row.get${field.name?cap_first}());
+            final byte[] blobData = zserio.runtime.io.SerializeUtil.serializeToBytes(row.get${field.name?cap_first}());
             statement.setBytes(${field?index + 1}, blobData);
         <#elseif field.underlyingTypeInfo??>
             final ${field.underlyingTypeInfo.typeFullName} underlyingValue =

@@ -24,7 +24,7 @@ public class ServiceData<T extends Writer>
     public byte[] getByteArray()
     {
         if (byteArray == null)
-            byteArray = zserio.runtime.io.ZserioIO.write(zserioObject);
+            byteArray = zserio.runtime.io.SerializeUtil.serializeToBytes(zserioObject);
 
         return byteArray;
     }

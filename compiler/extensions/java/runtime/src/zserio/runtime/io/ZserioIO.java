@@ -18,7 +18,11 @@ import zserio.runtime.ZserioError;
  *
  * MyType myType2 = ZserioIO.read(MyType.class, blob);
  * </pre>
+ *
+ * @deprecated
+ * Please use the {@link SerializeUtil} instead. This class will be removed in the future.
  */
+@Deprecated
 public final class ZserioIO
 {
     /**
@@ -36,7 +40,11 @@ public final class ZserioIO
      * @param obj Zserio object of the given class.
      *
      * @return Byte array with a serialized version of the given object.
+     *
+     * @deprecated
+     * Please use the {@link SerializeUtil#serialize} instead. This method will be removed in the future.
      */
+    @Deprecated
     public static <E extends Writer> byte[] write(final E obj)
     {
         try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
@@ -58,7 +66,11 @@ public final class ZserioIO
      * @param byteArray Byte array to be read.
      *
      * @return Zserio object of the given class.
+     *
+     * @deprecated
+     * Please use the {@link SerializeUtil#deserialize} instead. This method will be removed in the future.
      */
+    @Deprecated
     public static <E> E read(final Class<E> clazz, final byte[] byteArray)
     {
         try
@@ -103,7 +115,11 @@ public final class ZserioIO
      * @param args      Additional constructor arguments.
      *
      * @return Zserio Read object of the given class.
+     *
+     * @deprecated
+     * Please use the {@link SerializeUtil#deserialize} instead. This method will be removed in the future.
      */
+    @Deprecated
     public static <E> E read(final Class<E> clazz, final byte[] byteArray, final Object... args)
     {
         try

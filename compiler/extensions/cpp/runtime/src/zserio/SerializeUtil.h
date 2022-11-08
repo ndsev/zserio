@@ -251,6 +251,9 @@ vector<uint8_t, ALLOC> serializeToBytes(T& object, const ALLOC& allocator, ARGS&
  * Before serialization, the method properly calls on the given zserio object methods `initialize()`
  * (if exits), `initializeChildren()` (if exists) and `initializeOffsets()`.
  *
+ * However, it's still possible that not all bits of the last byte are used. In this case, only most
+ * significant bits of the corresponding size are used.
+ *
  * Example:
  * \code{.cpp}
  *     #include <zserio/SerializeUtil.h>
@@ -306,6 +309,10 @@ vector<uint8_t, ALLOC> serializeToBytes(T enumValue, const ALLOC& allocator = AL
 
 /**
  * Deserializes given vector of bytes to instance of generated object.
+ *
+ * This method can potentially use all bits of the last byte even if not all of them were written during
+ * serialization (because there is no way how to specify exact number of bits). Thus, it could allow reading
+ * behind stream (possibly in case of damaged data).
  *
  * Example:
  * \code{.cpp}

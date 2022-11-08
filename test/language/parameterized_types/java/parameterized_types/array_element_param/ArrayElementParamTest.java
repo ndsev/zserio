@@ -38,6 +38,10 @@ public class ArrayElementParamTest
         }
 
         return new Database(NUM_BLOCKS, blockHeaders, blocks);
+        final Database database = new Database(NUM_BLOCKS, blockHeaders, blocks);
+        database.initializeOffsets();
+
+        return database;
     }
 
     private void checkDatabaseInFile(File file, Database database) throws IOException

@@ -111,7 +111,7 @@ public final class ${name}
                 byte[] requestData, java.lang.Object context) throws zserio.runtime.ZserioError
         {
             final ${method.requestTypeInfo.typeFullName} request =
-                    zserio.runtime.io.ZserioIO.read(${method.requestTypeInfo.typeFullName}.class, requestData);
+                    zserio.runtime.io.SerializeUtil.deserializeFromBytes(${method.requestTypeInfo.typeFullName}.class, requestData);
             final ${method.responseTypeInfo.typeFullName} response = ${method.name}Impl(request, context);
 
             return (zserio.runtime.service.ServiceData<T>)new zserio.runtime.service.ServiceData<${method.responseTypeInfo.typeFullName}>(response);
@@ -173,7 +173,7 @@ public final class ${name}
             final byte[] responseData = serviceClient.callMethod(<@method_name_constant_name method/>,
                     new zserio.runtime.service.ServiceData<>(request), context);
             final ${method.responseTypeInfo.typeFullName} response =
-                    zserio.runtime.io.ZserioIO.read(${method.responseTypeInfo.typeFullName}.class, responseData);
+                    zserio.runtime.io.SerializeUtil.deserializeFromBytes(${method.responseTypeInfo.typeFullName}.class, responseData);
             return response;
         }
 
