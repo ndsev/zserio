@@ -6,10 +6,10 @@ from zserio.bitbuffer import BitBuffer
 from zserio.hashcode import (HASH_SEED, HASH_PRIME_NUMBER, calc_hashcode_bool,
                              calc_hashcode_int32, calc_hashcode_int64,
                              calc_hashcode_float32, calc_hashcode_float64,
-                             calc_hashcode_string, calc_hashcode_object,
+                             calc_hashcode_bytes, calc_hashcode_string, calc_hashcode_object,
                              calc_hashcode_bool_array, calc_hashcode_int_array,
                              calc_hashcode_float32_array, calc_hashcode_float64_array,
-                             calc_hashcode_string_array, calc_hashcode_object_array)
+                             calc_hashcode_bytes_array, calc_hashcode_string_array, calc_hashcode_object_array)
 from zserio.float import float_to_uint32, float_to_uint64
 
 class Color(enum.Enum):
@@ -91,6 +91,13 @@ class HashCodeTest(unittest.TestCase):
         self.assertEqual(expected_hash_code, calc_hashcode_float64(hash_seed, float_value))
 
         self.assertEqual(HASH_PRIME_NUMBER, calc_hashcode_float64(hash_seed, None))
+
+    def test_bytes_type(self):
+        hash_seed = 1
+        bytes_value = bytearray([1])
+        self.assertEqual(HASH_PRIME_NUMBER + 1, calc_hashcode_bytes(hash_seed, bytes_value))
+
+        self.assertEqual(HASH_PRIME_NUMBER, calc_hashcode_bytes(hash_seed, None))
 
     def test_string_type(self):
         hash_seed = 1
@@ -175,6 +182,13 @@ class HashCodeTest(unittest.TestCase):
         self.assertEqual(expected_hash_code, calc_hashcode_float64_array(hash_seed, float64_array_value))
 
         self.assertEqual(HASH_PRIME_NUMBER, calc_hashcode_float64_array(hash_seed, None))
+
+    def test_bytes_array_type(self):
+        hash_seed = 1
+        bytes_value = [ bytearray([1]) ]
+        self.assertEqual(HASH_PRIME_NUMBER + 1, calc_hashcode_bytes_array(hash_seed, bytes_value))
+
+        self.assertEqual(HASH_PRIME_NUMBER, calc_hashcode_bytes_array(hash_seed, None))
 
     def test_str_array_type(self):
         hash_seed = 1

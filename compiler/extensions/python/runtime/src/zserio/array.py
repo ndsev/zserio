@@ -7,13 +7,13 @@ import typing
 from zserio.bitposition import alignto
 from zserio.bitsizeof import (bitsizeof_varuint16, bitsizeof_varuint32, bitsizeof_varuint64, bitsizeof_varuint,
                               bitsizeof_varint16, bitsizeof_varint32, bitsizeof_varint64, bitsizeof_varint,
-                              bitsizeof_varsize, bitsizeof_string, bitsizeof_bitbuffer)
+                              bitsizeof_varsize, bitsizeof_bytes, bitsizeof_string, bitsizeof_bitbuffer)
 from zserio.bitreader import BitStreamReader
 from zserio.bitwriter import BitStreamWriter
 from zserio.bitbuffer import BitBuffer
 from zserio.hashcode import (HASH_SEED, calc_hashcode_bool_array, calc_hashcode_int_array,
                              calc_hashcode_float32_array, calc_hashcode_float64_array,
-                             calc_hashcode_string_array, calc_hashcode_object_array)
+                             calc_hashcode_bytes_array, calc_hashcode_string_array, calc_hashcode_object_array)
 from zserio.exception import PythonRuntimeException
 
 class Array:
@@ -811,6 +811,7 @@ class BitFieldArrayTraits:
         Reads unsigned fixed integer Zserio type from the bit stream.
 
         :param reader: Bit stream from which to read.
+        :returns: Read unsigned int value.
         """
 
         return reader.read_bits(self._numbits)
@@ -879,6 +880,7 @@ class SignedBitFieldArrayTraits:
         Reads signed fixed integer Zserio type from the bit stream.
 
         :param reader: Bit stream from which to read.
+        :returns: Read signed int value.
         """
 
         return reader.read_signed_bits(self._numbits)
@@ -953,6 +955,7 @@ class VarUInt16ArrayTraits:
 
         :param writer: Bit stream where to write.
         :param value: Zserio varuint16 type to write.
+        :returns: Read varuint16 value.
         """
 
         writer.write_varuint16(value)
@@ -1006,6 +1009,7 @@ class VarUInt32ArrayTraits:
         Reads Zserio varuint32 type from the bit stream.
 
         :param reader: Bit stream from which to read.
+        :returns: Read varuint32 value.
         """
 
         return reader.read_varuint32()
@@ -1069,6 +1073,7 @@ class VarUInt64ArrayTraits:
         Reads Zserio varuint64 type from the bit stream.
 
         :param reader: Bit stream from which to read.
+        :returns: Read varuint64 value.
         """
 
         return reader.read_varuint64()
@@ -1133,6 +1138,7 @@ class VarUIntArrayTraits:
         Reads Zserio varuint type from the bit stream.
 
         :param reader: Bit stream from which to read.
+        :returns: Read varuint value.
         """
 
         return reader.read_varuint()
@@ -1197,6 +1203,7 @@ class VarSizeArrayTraits:
         Reads Zserio varsize type from the bit stream.
 
         :param reader: Bit stream from which to read.
+        :returns: Read varsize value.
         """
 
         return reader.read_varsize()
@@ -1261,6 +1268,7 @@ class VarInt16ArrayTraits:
         Reads Zserio varint16 type from the bit stream.
 
         :param reader: Bit stream from which to read.
+        :returns: Read varint16 value.
         """
 
         return reader.read_varint16()
@@ -1325,6 +1333,7 @@ class VarInt32ArrayTraits:
         Reads Zserio varint32 type from the bit stream.
 
         :param reader: Bit stream from which to read.
+        :returns: Read varint32 value.
         """
 
         return reader.read_varint32()
@@ -1389,6 +1398,7 @@ class VarInt64ArrayTraits:
         Reads Zserio varint64 type from the bit stream.
 
         :param reader: Bit stream from which to read.
+        :returns: Read varint64 value.
         """
 
         return reader.read_varint64()
@@ -1453,6 +1463,7 @@ class VarIntArrayTraits:
         Reads Zserio varint type from the bit stream.
 
         :param reader: Bit stream from which to read.
+        :returns: Read varint value.
         """
 
         return reader.read_varint()
@@ -1527,6 +1538,7 @@ class Float16ArrayTraits:
 
         :param writer: Bit stream where to write.
         :param value: Zserio float16 type to write.
+        :returns: Read float16 value.
         """
 
         writer.write_float16(value)
@@ -1579,6 +1591,7 @@ class Float32ArrayTraits:
         Reads Zserio float32 type from the bit stream.
 
         :param reader: Bit stream from which to read.
+        :returns: Read float32 value.
         """
 
         return reader.read_float32()
@@ -1642,6 +1655,7 @@ class Float64ArrayTraits:
         Reads Zserio float64 type from the bit stream.
 
         :param reader: Bit stream from which to read.
+        :returns: Read float64 value.
         """
 
         return reader.read_float64()
@@ -1656,6 +1670,71 @@ class Float64ArrayTraits:
         """
 
         writer.write_float64(value)
+
+class BytesArrayTraits:
+    """
+    Array traits for Zserio bytes type.
+    """
+
+    HAS_BITSIZEOF_CONSTANT = False
+    NEEDS_BITSIZEOF_POSITION = False
+    NEEDS_READ_INDEX = False
+    CALC_HASHCODE_FUNC = staticmethod(calc_hashcode_bytes_array)
+
+    @property
+    def packed_traits(self) -> PackedArrayTraits:
+        """
+        Gets packed array traits.
+
+        :returns: PackedArrayTraits instance.
+        """
+
+        return PackedArrayTraits(self)
+
+    @staticmethod
+    def bitsizeof(value: bytearray) -> int:
+        """
+        Returns length of Zserio bytes type stored in the bit stream in bits.
+
+        :param value: Zserio bytes type value.
+        :returns: Length of given Zserio bytes type in bits.
+        """
+
+        return bitsizeof_bytes(value)
+
+    @staticmethod
+    def initialize_offsets(bitposition: int, value: bytearray) -> int:
+        """
+        Initializes indexed offsets for Zserio bytes type.
+
+        :param bitposition: Current bit stream position.
+        :param value: Zserio bytes type value.
+        :returns: Updated bit stream position which points to the first bit after Zserio bytes type.
+        """
+
+        return bitposition + BytesArrayTraits.bitsizeof(value)
+
+    @staticmethod
+    def read(reader: BitStreamReader) -> bytearray:
+        """
+        Reads Zserio bytes type from the bit stream.
+
+        :param reader: Bit stream from which to read.
+        :returns: Read bytes value.
+        """
+
+        return reader.read_bytes()
+
+    @staticmethod
+    def write(writer: BitStreamWriter, value: bytearray) -> None:
+        """
+        Writes Zserio bytes type to the bit stream.
+
+        :param writer: Bit stream where to write.
+        :param value: Zserio bytes type to write.
+        """
+
+        writer.write_bytes(value)
 
 class StringArrayTraits:
     """
@@ -1706,6 +1785,7 @@ class StringArrayTraits:
         Reads Zserio string type from the bit stream.
 
         :param reader: Bit stream from which to read.
+        :returns: Read string value.
         """
 
         return reader.read_string()
@@ -1769,6 +1849,7 @@ class BoolArrayTraits:
         Reads Zserio bool type from the bit stream.
 
         :param reader: Bit stream from which to read.
+        :returns: Read bool value.
         """
 
         return reader.read_bool()
@@ -1833,6 +1914,7 @@ class BitBufferArrayTraits:
         Reads Zserio extern bit buffer type from the bit stream.
 
         :param reader: Bit stream from which to read.
+        :returns: Read bit buffer value.
         """
 
         return reader.read_bitbuffer()
@@ -1911,6 +1993,7 @@ class ObjectArrayTraits:
 
         :param reader: Bit stream from which to read.
         :param index: Element index in the array.
+        :returns: Read object.
         """
 
         return self._object_creator(reader, index)

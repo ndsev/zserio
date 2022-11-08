@@ -123,9 +123,13 @@ class JsonWriterTest(unittest.TestCase):
         json_writer.visit_value("test", MemberInfo("text", TypeInfo("string", str)))
         json_writer.visit_value(BitBuffer(bytes([0xFF,0x1F]), 13),
                                 MemberInfo("data", TypeInfo("extern", BitBuffer)))
+        json_writer.visit_value(bytes([0xCA,0xFE]),
+                                MemberInfo("bytesData", TypeInfo("bytes", bytearray)))
         json_writer.end_root(object())
         self.assertEqual(
-            "{\"identifier\": 13, \"text\": \"test\", \"data\": {\"buffer\": [255, 31], \"bitSize\": 13}}",
+            "{\"identifier\": 13, \"text\": \"test\", "
+            "\"data\": {\"buffer\": [255, 31], \"bitSize\": 13}, "
+            "\"bytesData\": {\"buffer\": [202, 254]}}",
             json_writer.get_io().getvalue())
 
     def test_nested_compound(self):
@@ -850,6 +854,11 @@ class JsonTokenizerTest(unittest.TestCase):
 
 class JsonReaderTest(unittest.TestCase):
 
+    def test_json_reader_object_value_adapter(self):
+        object_value_adapter = JsonReader._ObjectValueAdapter()
+        with self.assertRaises(NotImplementedError):
+            object_value_adapter.get()
+
     def test_read_object(self):
         text_io = io.StringIO(
                 "{\n" +
@@ -863,6 +872,12 @@ class JsonReaderTest(unittest.TestCase):
                 "                 240\n" +
                 "             ],\n" +
                 "             \"bitSize\": 12\n" +
+                "        },\n" +
+                "        \"bytesData\": {\n" +
+                "           \"buffer\": [\n" +
+                "               202,\n" +
+                "               254\n" +
+                "           ]\n" +
                 "        },\n" +
                 "        \"dummyEnum\": 0,\n" +
                 "        \"dummyBitmask\": 1\n" +
@@ -898,6 +913,13 @@ class JsonReaderTest(unittest.TestCase):
                 "            \"bitSize\": 13\n" +
                 "        }\n" +
                 "    ],\n" +
+                "    \"bytesArray\": [\n"  +
+                "        {\n" +
+                "           \"buffer\": [\n" +
+                "               0\n" +
+                "           ]\n" +
+                "        }\n" +
+                "    ],\n" +
                 "    \"optionalBool\": null\n" +
                 "}"
                 )
@@ -912,6 +934,7 @@ class JsonReaderTest(unittest.TestCase):
         self.assertEqual(10, dummy_object.nested.value)
         self.assertEqual("nested", dummy_object.nested.text)
         self.assertEqual(BitBuffer(bytes([0xCB, 0xF0]), 12), dummy_object.nested.data)
+        self.assertEqual(bytes([0xCA, 0xFE]), dummy_object.nested.bytes_data)
         self.assertEqual(DummyEnum.ONE, dummy_object.nested.dummy_enum)
         self.assertEqual(DummyBitmask.Values.READ, dummy_object.nested.dummy_bitmask)
         self.assertEqual("test", dummy_object.text)
@@ -928,6 +951,8 @@ class JsonReaderTest(unittest.TestCase):
         self.assertEqual("array", dummy_object.text_array[3])
         self.assertEqual(1, len(dummy_object.extern_array))
         self.assertEqual(BitBuffer(bytes([0xDE, 0xD1]), 13), dummy_object.extern_array[0])
+        self.assertEqual(1, len(dummy_object.bytes_array))
+        self.assertEqual(bytes([0]), dummy_object.bytes_array[0])
         self.assertEqual(None, dummy_object.optional_bool)
         self.assertEqual(None, dummy_object.optional_nested) # not present in json
 
@@ -1110,6 +1135,49 @@ class JsonReaderTest(unittest.TestCase):
             json_reader.read(DummyObject.type_info())
         self.assertEqual("JsonReader: Unexpected end in Bit Buffer! (JsonParser:12:5)", str(error.exception))
 
+    def test_wrong_bytes_exception(self):
+        text_io = io.StringIO(
+                "{\n" +
+                "    \"value\": 13,\n" +
+                "    \"nested\": {\n" +
+                "        \"value\": 10,\n" +
+                "        \"text\": \"nested\",\n" +
+                "        \"data\": {\n" +
+                "             \"buffer\": [\n" +
+                "                 203,\n" +
+                "                 240\n" +
+                "             ],\n" +
+                "             \"bitSize\": 12\n" +
+                "        },\n" +
+                "        \"bytesData\": {\n" +
+                "            \"buffer\": {}\n" +
+                "        }\n" +
+                "    }\n" +
+                "}"
+                )
+
+        json_reader = JsonReader(text_io)
+        with self.assertRaises(PythonRuntimeException) as error:
+            json_reader.read(DummyObject.type_info())
+        self.assertEqual("JsonReader: Unexpected begin object in bytes! (JsonParser:14:23)",
+                         str(error.exception))
+
+    def test_partial_bytes_exception(self):
+        text_io = io.StringIO(
+                "{\n" +
+                "    \"value\": 13,\n" +
+                "    \"nested\": {\n" +
+                "        \"bytesData\": {\n" +
+                "        }\n" +
+                "}"
+                )
+
+        json_reader = JsonReader(text_io)
+        with self.assertRaises(PythonRuntimeException) as error:
+            json_reader.read(DummyObject.type_info())
+        self.assertEqual("JsonReader: Unexpected end in bytes! (JsonParser:6:1)",
+                         str(error.exception))
+
     def test_json_array_exception(self):
         text_io = io.StringIO(
                 "[1, 2]"
@@ -1131,6 +1199,62 @@ class JsonReaderTest(unittest.TestCase):
             json_reader.read(DummyObject.type_info())
         self.assertEqual("JsonReader: ZserioTreeCreator expects json object! (JsonParser:1:1)",
                          str(error.exception))
+
+    def test_bitbuffer_adapter_uninitialized_calls(self):
+        bitbuffer_adapter = JsonReader._BitBufferAdapter()
+
+        with self.assertRaises(PythonRuntimeException):
+            bitbuffer_adapter.begin_object()
+        with self.assertRaises(PythonRuntimeException):
+            bitbuffer_adapter.end_object()
+        with self.assertRaises(PythonRuntimeException):
+            bitbuffer_adapter.begin_array()
+        with self.assertRaises(PythonRuntimeException):
+            bitbuffer_adapter.end_array()
+        with self.assertRaises(PythonRuntimeException):
+            bitbuffer_adapter.visit_key("nonexisting")
+        bitbuffer_adapter.visit_key("buffer")
+        with self.assertRaises(PythonRuntimeException):
+            bitbuffer_adapter.visit_key("nonexisting")
+        with self.assertRaises(PythonRuntimeException):
+            bitbuffer_adapter.visit_value("BadValue")
+
+    def test_bytes_adapter_uninitialized_calls(self):
+        bytes_adapter = JsonReader._BytesAdapter()
+
+        with self.assertRaises(PythonRuntimeException):
+            bytes_adapter.begin_object()
+        with self.assertRaises(PythonRuntimeException):
+            bytes_adapter.end_object()
+        with self.assertRaises(PythonRuntimeException):
+            bytes_adapter.begin_array()
+        with self.assertRaises(PythonRuntimeException):
+            bytes_adapter.end_array()
+        with self.assertRaises(PythonRuntimeException):
+            bytes_adapter.visit_key("nonexisting")
+        bytes_adapter.visit_key("buffer")
+        with self.assertRaises(PythonRuntimeException):
+            bytes_adapter.visit_key("nonexisting")
+        with self.assertRaises(PythonRuntimeException):
+            bytes_adapter.visit_value("BadValue")
+
+    def test_creator_adapter_uninitialized_calls(self):
+        creator_adapter = JsonReader._CreatorAdapter()
+
+        with self.assertRaises(PythonRuntimeException):
+            creator_adapter.get()
+        with self.assertRaises(PythonRuntimeException):
+            creator_adapter.begin_object()
+        with self.assertRaises(PythonRuntimeException):
+            creator_adapter.end_object()
+        with self.assertRaises(PythonRuntimeException):
+            creator_adapter.begin_array()
+        with self.assertRaises(PythonRuntimeException):
+            creator_adapter.end_array()
+        with self.assertRaises(PythonRuntimeException):
+            creator_adapter.visit_key("key")
+        with self.assertRaises(PythonRuntimeException):
+            creator_adapter.visit_value(None)
 
     def _check_read_stringified_enum(self, string_value, expected_value):
         text_io = io.StringIO(

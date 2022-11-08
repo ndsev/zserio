@@ -3,6 +3,7 @@ package zserio.extension.python;
 import zserio.ast.ArrayInstantiation;
 import zserio.ast.BitmaskType;
 import zserio.ast.BooleanType;
+import zserio.ast.BytesType;
 import zserio.ast.ChoiceType;
 import zserio.ast.Constant;
 import zserio.ast.DynamicBitFieldType;
@@ -129,6 +130,12 @@ class PythonNativeMapper
         public void visitBooleanType(BooleanType type)
         {
             pythonType = boolType;
+        }
+
+        @Override
+        public void visitBytesType(BytesType type)
+        {
+            pythonType = bytesType;
         }
 
         @Override
@@ -328,6 +335,8 @@ class PythonNativeMapper
             new NativeBuiltinType("int", new NativeArrayTraits("VarUIntArrayTraits"));
     private final static PythonNativeType varSizeType =
             new NativeBuiltinType("int", new NativeArrayTraits("VarSizeArrayTraits"));
+    private final static PythonNativeType bytesType =
+            new NativeBuiltinType("bytearray", new NativeArrayTraits("BytesArrayTraits"));
     private final static PythonNativeType strType =
             new NativeBuiltinType("str", new NativeArrayTraits("StringArrayTraits"));
     private final static PythonNativeType float16Type =

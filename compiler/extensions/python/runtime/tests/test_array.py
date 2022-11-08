@@ -4,8 +4,8 @@ from zserio.array import (Array, BitFieldArrayTraits, SignedBitFieldArrayTraits,
                           VarUInt16ArrayTraits, VarUInt32ArrayTraits, VarUInt64ArrayTraits, VarUIntArrayTraits,
                           VarSizeArrayTraits, VarInt16ArrayTraits, VarInt32ArrayTraits, VarInt64ArrayTraits,
                           VarIntArrayTraits, Float16ArrayTraits, Float32ArrayTraits, Float64ArrayTraits,
-                          StringArrayTraits, BoolArrayTraits, BitBufferArrayTraits, ObjectArrayTraits,
-                          PackingContextNode)
+                          BytesArrayTraits, StringArrayTraits, BoolArrayTraits, BitBufferArrayTraits,
+                          ObjectArrayTraits, PackingContextNode)
 from zserio.bitposition import alignto
 from zserio.bitbuffer import BitBuffer
 from zserio.bitreader import BitStreamReader
@@ -126,6 +126,14 @@ class ArrayTest(unittest.TestCase):
         array1_bitsizeof = 2 * 64
         array1_aligned_bitsizeof = array1_bitsizeof
         array2_values = [-3.5, 3.5]
+        self._test_array(array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof, array2_values)
+
+    def test_bytes_array(self):
+        array_traits = BytesArrayTraits()
+        array1_values = [bytearray([1, 255]), bytearray([127, 128])]
+        array1_bitsizeof = 2 * (1 + 2) * 8
+        array1_aligned_bitsizeof = array1_bitsizeof
+        array2_values = [bytearray([0, 0]), bytearray([255, 255])]
         self._test_array(array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof, array2_values)
 
     def test_string_array(self):

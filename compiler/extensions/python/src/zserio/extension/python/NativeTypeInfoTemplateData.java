@@ -1,6 +1,7 @@
 package zserio.extension.python;
 
 import zserio.ast.BitmaskType;
+import zserio.ast.BytesType;
 import zserio.ast.CompoundType;
 import zserio.ast.DynamicBitFieldType;
 import zserio.ast.EnumType;
@@ -39,6 +40,11 @@ public class NativeTypeInfoTemplateData
     public boolean getIsBuiltin()
     {
         return isBuiltin;
+    }
+
+    public boolean getIsBytes()
+    {
+        return isBytes;
     }
 
     public boolean getIsEnum()
@@ -84,6 +90,7 @@ public class NativeTypeInfoTemplateData
                 ((NativeSubtype)pythonNativeType).getNativeTargetBaseType() : pythonNativeType;
         isBuiltin = pythonNativeBaseType instanceof NativeBuiltinType;
         final ZserioType baseType = typeReference.getBaseTypeReference().getType();
+        isBytes = baseType instanceof BytesType;
         isEnum = baseType instanceof EnumType;
         isBitmask = baseType instanceof BitmaskType;
         final boolean isCompound = baseType instanceof CompoundType;
@@ -105,6 +112,7 @@ public class NativeTypeInfoTemplateData
 
     private final String typeFullName;
     private final boolean isBuiltin;
+    private final boolean isBytes;
     private final boolean isEnum;
     private final boolean isBitmask;
     private final boolean hasTypeInfo;

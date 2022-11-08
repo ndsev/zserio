@@ -225,6 +225,12 @@ class AllBuiltInTypesTest(unittest.TestCase):
         allBuiltInTypes.extern_type = testExtern
         self.assertEqual(testExtern, allBuiltInTypes.extern_type)
 
+    def testBytesType(self):
+        allBuiltInTypes = self.api.AllBuiltInTypes()
+        testBytes = bytearray([1, 255])
+        allBuiltInTypes.bytes_type = testBytes
+        self.assertEqual(testBytes, allBuiltInTypes.bytes_type)
+
     def testBitSizeOf(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
         allBuiltInTypes.bool_type = True
@@ -266,7 +272,8 @@ class AllBuiltInTypesTest(unittest.TestCase):
         allBuiltInTypes.varint_type = zserio.limits.VARINT_MAX
         allBuiltInTypes.string_type = "TEST"
         allBuiltInTypes.extern_type =  self._getExternalBitBuffer()
-        expectedBitSizeOf = 1142
+        allBuiltInTypes.bytes_type = bytearray([1, 255])
+        expectedBitSizeOf = 1166
         self.assertEqual(expectedBitSizeOf, allBuiltInTypes.bitsizeof())
 
     def testReadWrite(self):
@@ -310,6 +317,7 @@ class AllBuiltInTypesTest(unittest.TestCase):
         allBuiltInTypes.varint_type = zserio.limits.VARINT_MAX
         allBuiltInTypes.string_type = "TEST"
         allBuiltInTypes.extern_type = self._getExternalBitBuffer()
+        allBuiltInTypes.bytes_type = bytearray([1, 255])
 
         zserio.serialize_to_file(allBuiltInTypes, self.BLOB_NAME)
 

@@ -442,6 +442,21 @@ class BitStreamReader:
 
         return uint64_to_float(self.read_bits(64))
 
+    def read_bytes(self) -> bytearray:
+        """
+        Reads bytes from the stream.
+
+        :returns: Read bytes.
+        :raises PythonRuntimeException: If the reading goes behind the stream.
+        """
+
+        length = self.read_varsize()
+        value = bytearray()
+        for _ in range(length):
+            value.append(self.read_bits(8))
+
+        return value
+
     def read_string(self) -> str:
         """
         Reads string from the stream.

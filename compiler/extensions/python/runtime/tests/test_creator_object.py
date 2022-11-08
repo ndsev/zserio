@@ -1,7 +1,7 @@
 import typing
 import enum
 
-from zserio.array import Array, ObjectArrayTraits, StringArrayTraits, BitBufferArrayTraits
+from zserio.array import Array, ObjectArrayTraits, StringArrayTraits, BitBufferArrayTraits, BytesArrayTraits
 from zserio.typeinfo import TypeInfo, TypeAttribute, MemberInfo, MemberAttribute, ItemInfo
 from zserio.bitbuffer import BitBuffer
 
@@ -65,12 +65,14 @@ DummyBitmask.Values.WRITE = DummyBitmask.from_value(2)
 class DummyNested:
     def __init__(self, param_ : int, value_ : int = int(),  text_ : str = str(),
                  data_: typing.Union[BitBuffer, None] = None,
+                 bytes_data_: bytearray = bytearray(),
                  dummy_enum_: typing.Union[DummyEnum, None] = None,
                  dummy_bitmask_: typing.Union[DummyBitmask, None] = None) -> None:
         self._param_ = param_
         self._value_ = value_
         self._text_ = text_
         self._data_ = data_
+        self._bytes_data_ = bytes_data_
         self._dummy_enum_ = dummy_enum_
         self._dummy_bitmask_ = dummy_bitmask_
 
@@ -94,6 +96,12 @@ class DummyNested:
                 'data', TypeInfo('extern', BitBuffer),
                 attributes={
                     MemberAttribute.PROPERTY_NAME : 'data'
+                }
+            ),
+            MemberInfo(
+                'bytesData', TypeInfo('bytes', bytearray),
+                attributes={
+                    MemberAttribute.PROPERTY_NAME : 'bytes_data'
                 }
             ),
             MemberInfo(
@@ -153,6 +161,14 @@ class DummyNested:
         self._data_ = data_
 
     @property
+    def bytes_data(self) -> bytearray:
+        return self._bytes_data_
+
+    @bytes_data.setter
+    def bytes_data(self, bytes_data_: bytearray) -> None:
+        self._bytes_data_ = bytes_data_
+
+    @property
     def dummy_enum(self) -> typing.Union[DummyEnum, None]:
         return self._dummy_enum_
 
@@ -180,6 +196,7 @@ class DummyObject:
         self._nested_array_ = Array(ObjectArrayTraits(None, None, None), nested_array_, is_auto=True)
         self._text_array = Array(StringArrayTraits(), text_array_, is_auto=True)
         self._extern_array_ = None
+        self._bytes_array_ = None
         self._optional_bool_ = None
         self._optional_nested_ = None
 
@@ -228,6 +245,16 @@ class DummyObject:
                     MemberAttribute.OPTIONAL : None,
                     MemberAttribute.IS_USED_INDICATOR_NAME : 'is_extern_array_used',
                     MemberAttribute.IS_SET_INDICATOR_NAME : 'is_extern_array_set'
+                }
+            ),
+            MemberInfo(
+                'bytesArray', TypeInfo('bytes', bytearray),
+                attributes={
+                    MemberAttribute.PROPERTY_NAME : 'bytes_array',
+                    MemberAttribute.ARRAY_LENGTH : None,
+                    MemberAttribute.OPTIONAL : None,
+                    MemberAttribute.IS_USED_INDICATOR_NAME : 'is_bytes_array_used',
+                    MemberAttribute.IS_SET_INDICATOR_NAME : 'is_bytes_array_set'
                 }
             ),
             MemberInfo(
@@ -303,6 +330,14 @@ class DummyObject:
     @extern_array.setter
     def extern_array(self, extern_array_: typing.List[BitBuffer]) -> None:
         self._extern_array_ = Array(BitBufferArrayTraits(), extern_array_, is_auto=True)
+
+    @property
+    def bytes_array(self) -> typing.Optional[typing.List[bytearray]]:
+        return self._bytes_array_.raw_array
+
+    @bytes_array.setter
+    def bytes_array(self, bytes_array_: typing.Optional[typing.List[bytearray]]) -> None:
+        self._bytes_array_ = Array(BytesArrayTraits(), bytes_array_, is_auto=True)
 
     @property
     def optional_bool(self) -> typing.Optional[bool]:

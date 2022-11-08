@@ -173,10 +173,12 @@ class JsonWriter(WalkObserver):
             self._io.write(self._json_encoder.encode_value(None))
             return
 
-        if isinstance(value, BitBuffer):
+        type_info = member_info.type_info
+        if type_info.schema_name == "extern":
             self._write_bitbuffer(value)
+        elif type_info.schema_name == "bytes":
+            self._write_bytes(value)
         else:
-            type_info = member_info.type_info
             if TypeAttribute.ENUM_ITEMS in type_info.attributes:
                 if self._enumerable_format == JsonEnumerableFormat.STRING:
                     self._write_stringified_enum(value, type_info)
@@ -190,7 +192,7 @@ class JsonWriter(WalkObserver):
             else:
                 self._io.write(self._json_encoder.encode_value(value))
 
-    def _write_bitbuffer(self, value: typing.Any) -> None:
+    def _write_bitbuffer(self, value: BitBuffer) -> None:
         self._begin_object()
         self._begin_item()
         self._write_key("buffer")
@@ -204,6 +206,19 @@ class JsonWriter(WalkObserver):
         self._begin_item()
         self._write_key("bitSize")
         self._io.write(self._json_encoder.encode_value(value.bitsize))
+        self._end_item()
+        self._end_object()
+
+    def _write_bytes(self, value: bytes) -> None:
+        self._begin_object()
+        self._begin_item()
+        self._write_key("buffer")
+        self._begin_array()
+        for byte in value:
+            self._begin_item()
+            self._io.write(self._json_encoder.encode_value(byte))
+            self._end_item()
+        self._end_array()
         self._end_item()
         self._end_object()
 
@@ -900,7 +915,19 @@ class JsonReader:
 
         return self._creator_adapter.get()
 
-    class _BitBufferAdapter(JsonParser.Observer):
+    class _ObjectValueAdapter(JsonParser.Observer):
+        """
+        Adapter for values which are encoded as Json objects.
+        """
+
+        def get(self) -> typing.Any:
+            """
+            Gets the parsed value.
+            """
+
+            raise NotImplementedError()
+
+    class _BitBufferAdapter(_ObjectValueAdapter):
         """
         The adapter which allows to parse Bit Buffer object from JSON.
         """
@@ -918,7 +945,7 @@ class JsonReader:
             """
             Gets the created Bit Buffer object.
 
-            :returns: Parser Bit Buffer object.
+            :returns: Parsed Bit Buffer object.
             :raises PythonRuntimeException: In case of invalid use.
             """
 
@@ -974,6 +1001,72 @@ class JsonReader:
             VISIT_VALUE_BUFFER = enum.auto()
             VISIT_VALUE_BITSIZE = enum.auto()
 
+    class _BytesAdapter(_ObjectValueAdapter):
+        """
+        The adapter which allows to parse bytes object from JSON.
+        """
+
+        def __init__(self) -> None:
+            """
+            Constructor.
+            """
+
+            self._state = JsonReader._BytesAdapter._State.VISIT_KEY
+            self._buffer: typing.Optional[bytearray] = None
+
+        def get(self) -> bytearray:
+            """
+            Gets the created bytes object.
+
+            :returns: Parsed bytes object.
+            :raises PythonRuntimeException: In case of invalid use.
+            """
+
+            if self._buffer is None:
+                raise PythonRuntimeException("JsonReader: Unexpected end in bytes!")
+            return self._buffer
+
+        def begin_object(self) -> None:
+            raise PythonRuntimeException("JsonReader: Unexpected begin object in bytes!")
+
+        def end_object(self) -> None:
+            raise PythonRuntimeException("JsonReader: Unexpected end object in bytes!")
+
+        def begin_array(self) -> None:
+            if self._state == JsonReader._BytesAdapter._State.BEGIN_ARRAY_BUFFER:
+                self._state = JsonReader._BytesAdapter._State.VISIT_VALUE_BUFFER
+            else:
+                raise PythonRuntimeException("JsonReader: Unexpected begin array in bytes!")
+
+        def end_array(self) -> None:
+            if self._state == JsonReader._BytesAdapter._State.VISIT_VALUE_BUFFER:
+                self._state = JsonReader._BytesAdapter._State.VISIT_KEY
+            else:
+                raise PythonRuntimeException("JsonReader: Unexpected end array in bytes!")
+
+        def visit_key(self, key: str) -> None:
+            if self._state == JsonReader._BytesAdapter._State.VISIT_KEY:
+                if key == "buffer":
+                    self._state = JsonReader._BytesAdapter._State.BEGIN_ARRAY_BUFFER
+                else:
+                    raise PythonRuntimeException(f"JsonReader: Unknown key '{key}' in bytes!")
+            else:
+                raise PythonRuntimeException(f"JsonReader: Unexpected key '{key}' in bytes!")
+
+        def visit_value(self, value: typing.Any) -> None:
+            if self._state == JsonReader._BytesAdapter._State.VISIT_VALUE_BUFFER and isinstance(value, int):
+                if self._buffer is None:
+                    self._buffer = bytearray([value])
+                else:
+                    self._buffer.append(value)
+            else:
+                raise PythonRuntimeException(f"JsonReader: Unexpected value '{value}' in bytes!")
+
+        class _State(enum.Enum):
+            VISIT_KEY = enum.auto()
+            BEGIN_ARRAY_BUFFER = enum.auto()
+            VISIT_VALUE_BUFFER = enum.auto()
+
     class _CreatorAdapter(JsonParser.Observer):
         """
         The adapter which allows to use ZserioTreeCreator as an JsonReader observer.
@@ -987,7 +1080,7 @@ class JsonReader:
             self._creator: typing.Optional[ZserioTreeCreator] = None
             self._key_stack: typing.List[str] = []
             self._object: typing.Any = None
-            self._bitbuffer_adapter: typing.Optional[JsonReader._BitBufferAdapter] = None
+            self._object_value_adapter: typing.Optional[JsonReader._ObjectValueAdapter] = None
 
         def set_type(self, type_info: TypeInfo, *arguments: typing.List[typing.Any]) -> None:
             """
@@ -1014,8 +1107,8 @@ class JsonReader:
             return self._object
 
         def begin_object(self) -> None:
-            if self._bitbuffer_adapter:
-                self._bitbuffer_adapter.begin_object()
+            if self._object_value_adapter:
+                self._object_value_adapter.begin_object()
             else:
                 if not self._creator:
                     raise PythonRuntimeException("JsonReader: Adapter not initialized!")
@@ -1024,21 +1117,27 @@ class JsonReader:
                     self._creator.begin_root()
                 else:
                     if self._key_stack[-1]:
-                        if self._creator.get_field_type(self._key_stack[-1]).py_type == BitBuffer:
-                            self._bitbuffer_adapter = JsonReader._BitBufferAdapter()
+                        schema_type = self._creator.get_field_type(self._key_stack[-1]).schema_name
+                        if schema_type == "extern":
+                            self._object_value_adapter = JsonReader._BitBufferAdapter()
+                        elif schema_type == "bytes":
+                            self._object_value_adapter = JsonReader._BytesAdapter()
                         else:
                             self._creator.begin_compound(self._key_stack[-1])
                     else:
-                        if self._creator.get_element_type().py_type == BitBuffer:
-                            self._bitbuffer_adapter = JsonReader._BitBufferAdapter()
+                        schema_type = self._creator.get_element_type().schema_name
+                        if schema_type == "extern":
+                            self._object_value_adapter = JsonReader._BitBufferAdapter()
+                        elif schema_type == "bytes":
+                            self._object_value_adapter = JsonReader._BytesAdapter()
                         else:
                             self._creator.begin_compound_element()
 
         def end_object(self) -> None:
-            if self._bitbuffer_adapter:
-                bitbuffer = self._bitbuffer_adapter.get()
-                self._bitbuffer_adapter = None
-                self.visit_value(bitbuffer)
+            if self._object_value_adapter:
+                value = self._object_value_adapter.get()
+                self._object_value_adapter = None
+                self.visit_value(value)
             else:
                 if not self._creator:
                     raise PythonRuntimeException("JsonReader: Adapter not initialized!")
@@ -1054,8 +1153,8 @@ class JsonReader:
                         self._creator.end_compound_element()
 
         def begin_array(self) -> None:
-            if self._bitbuffer_adapter:
-                self._bitbuffer_adapter.begin_array()
+            if self._object_value_adapter:
+                self._object_value_adapter.begin_array()
             else:
                 if not self._creator:
                     raise PythonRuntimeException("JsonReader: Adapter not initialized!")
@@ -1068,8 +1167,8 @@ class JsonReader:
                 self._key_stack.append("")
 
         def end_array(self) -> None:
-            if self._bitbuffer_adapter:
-                self._bitbuffer_adapter.end_array()
+            if self._object_value_adapter:
+                self._object_value_adapter.end_array()
             else:
                 if not self._creator:
                     raise PythonRuntimeException("JsonReader: Adapter not initialized!")
@@ -1080,8 +1179,8 @@ class JsonReader:
                 self._key_stack.pop() # finish member
 
         def visit_key(self, key: str) -> None:
-            if self._bitbuffer_adapter:
-                self._bitbuffer_adapter.visit_key(key)
+            if self._object_value_adapter:
+                self._object_value_adapter.visit_key(key)
             else:
                 if not self._creator:
                     raise PythonRuntimeException("JsonReader: Adapter not initialized!")
@@ -1089,8 +1188,8 @@ class JsonReader:
                 self._key_stack.append(key)
 
         def visit_value(self, value: typing.Any) -> None:
-            if self._bitbuffer_adapter:
-                self._bitbuffer_adapter.visit_value(value)
+            if self._object_value_adapter:
+                self._object_value_adapter.visit_value(value)
             else:
                 if not self._creator:
                     raise PythonRuntimeException("JsonReader: Adapter not initialized!")

@@ -109,6 +109,16 @@ def bitsizeof_varsize(value: int) -> int:
 
     return _bitsizeof_varnum(value, VARSIZE_MAX_VALUES, "varsize")
 
+def bitsizeof_bytes(value: bytearray) -> int:
+    """
+    Gets bit size of bytes.
+
+    :param value: Bytes value to use for bit size calculation.
+    :raises PythonRuntimeException: Throws if given string is too long.
+    """
+
+    return bitsizeof_varsize(len(value)) + len(value) * 8
+
 def bitsizeof_string(string: str) -> int:
     """
     Gets bit size of string.

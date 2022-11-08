@@ -67,7 +67,7 @@ max-public-methods=30
 max-returns=16
 
 # Maximum number of statements in function / method body.
-max-statements=60
+max-statements=80
 
 # Maximum number of attributes for a class (see R0902).
 max-attributes=10

@@ -120,6 +120,7 @@ class DebugStringTest(unittest.TestCase):
         self.assertLessEqual(len(withTypeInfoCode.parameterized_struct.array), maxArrayLength)
         self.assertLessEqual(len(withTypeInfoCode.templated_parameterized_struct.array), maxArrayLength)
         self.assertLessEqual(len(withTypeInfoCode.extern_array), maxArrayLength)
+        self.assertLessEqual(len(withTypeInfoCode.bytes_array), maxArrayLength)
         self.assertLessEqual(len(withTypeInfoCode.implicit_array), maxArrayLength)
 
     def _checkWithTypeInfoCodeDepth0(self, withTypeInfoCode):
@@ -134,7 +135,9 @@ class DebugStringTest(unittest.TestCase):
         self.assertEqual(None, withTypeInfoCode.templated_struct)
         self.assertEqual(None, withTypeInfoCode.templated_parameterized_struct)
         self.assertEqual(None, withTypeInfoCode.extern_data)
+        self.assertEqual(bytes(), withTypeInfoCode.bytes_data)
         self.assertEqual([], withTypeInfoCode.extern_array)
+        self.assertEqual([], withTypeInfoCode.bytes_array)
         self.assertEqual([], withTypeInfoCode.implicit_array)
 
     def _checkWithTypeInfoCodeDepth1ArrayLength0(self, withTypeInfoCode):
@@ -154,7 +157,9 @@ class DebugStringTest(unittest.TestCase):
         self.assertNotEqual(None, withTypeInfoCode.templated_struct)
         self.assertNotEqual(None, withTypeInfoCode.templated_parameterized_struct)
         self.assertNotEqual(None, withTypeInfoCode.extern_data)
+        self.assertNotEqual(None, withTypeInfoCode.bytes_data)
         self.assertEqual([], withTypeInfoCode.extern_array)
+        self.assertEqual([], withTypeInfoCode.bytes_array)
         self.assertEqual([], withTypeInfoCode.implicit_array)
 
     def _checkWithTypeInfoCodeRegex(self, withTypeInfoCode):
@@ -184,9 +189,11 @@ class DebugStringTest(unittest.TestCase):
                                                          maxArrayLength)
         self._checkExternDataJson(jsonData["externData"])
         self._checkExternArrayJson(jsonData["externArray"], maxArrayLength)
+        self._checkBytesDataJson(jsonData["bytesData"])
+        self._checkBytesArrayJson(jsonData["bytesArray"], maxArrayLength)
         self._checkImplicitArrayJson(jsonData["implicitArray"], maxArrayLength)
 
-        self.assertEqual(13, len(jsonData.keys()))
+        self.assertEqual(15, len(jsonData.keys()))
 
     def _checkWithTypeInfoCodeDepth1ArrayLength0Json(self, jsonFileName):
         with open(jsonFileName, 'r', encoding="utf-8") as jsonFile:
@@ -204,8 +211,10 @@ class DebugStringTest(unittest.TestCase):
         self.assertEqual({}, jsonData["templatedParameterizedStruct"])
         self._checkExternDataJson(jsonData["externData"])
         self.assertEqual([], jsonData["externArray"])
+        self._checkBytesDataJson(jsonData["bytesData"])
+        self.assertEqual([], jsonData["bytesArray"])
         self.assertEqual([], jsonData["implicitArray"])
-        self.assertEqual(13, len(jsonData.keys()))
+        self.assertEqual(15, len(jsonData.keys()))
 
     def _checkWithTypeInfoCodeRegexJson(self, jsonFileName):
         with open(jsonFileName, 'r', encoding="utf-8") as jsonFile:
@@ -267,10 +276,12 @@ class DebugStringTest(unittest.TestCase):
             self.assertEqual("ItemThree", complexStruct["optionalEnum"])
             self.assertEqual("RED | _Green", complexStruct["optionalBitmask"])
             self._checkOptionalExternDataJson(complexStruct["optionalExtern"])
+            self._checkOptionalBytesDataJson(complexStruct["optionalBytes"])
         else:
             self.assertEqual(None, complexStruct["optionalEnum"])
             self.assertEqual(None, complexStruct["optionalBitmask"])
             self.assertEqual(None, complexStruct["optionalExtern"])
+            self.assertEqual(None, complexStruct["optionalBytes"])
 
         enumArray = ["_TWO", "ItemThree"] # stringified
         enumArrayLength = len(enumArray) if (maxArrayLength is None or
@@ -284,7 +295,7 @@ class DebugStringTest(unittest.TestCase):
         for jsonArrayElement in complexStruct["bitmaskArray"]:
             self.assertEqual("_Green", jsonArrayElement)
 
-        self.assertEqual(13, len(complexStruct.keys()))
+        self.assertEqual(14, len(complexStruct.keys()))
 
     def _checkParameterizedStructJson(self, parameterizedStruct, fieldU32, maxArrayLength):
         arrayLength = fieldU32 if maxArrayLength is None or maxArrayLength > fieldU32 else maxArrayLength
@@ -357,6 +368,19 @@ class DebugStringTest(unittest.TestCase):
         for jsonArrayElement in externArray:
             self._checkExternDataJson(jsonArrayElement)
 
+    def _checkBytesDataJson(self, bytesData):
+        self.assertEqual([0xAB, 0xCD], bytesData["buffer"])
+        self.assertEqual(1, len(bytesData.keys()))
+
+    def _checkBytesArrayJson(self, bytesArray, maxArrayLength):
+        bytesArrayLen = 2
+        filteredBytesArrayLength = (bytesArrayLen
+                                    if (maxArrayLength is None or bytesArrayLen <= maxArrayLength)
+                                    else maxArrayLength)
+        self.assertEqual(filteredBytesArrayLength, len(bytesArray))
+        for jsonArrayElement in bytesArray:
+            self._checkBytesDataJson(jsonArrayElement)
+
     def _checkImplicitArrayJson(self, implicitArray, maxArrayLength):
         expectedImplicitArray = [1, 4, 6, 4, 6, 1]
         filteredImplicitArrayLength = (len(expectedImplicitArray)
@@ -371,6 +395,10 @@ class DebugStringTest(unittest.TestCase):
         self.assertEqual([203, 240], externData["buffer"])
         self.assertEqual(12, externData["bitSize"])
         self.assertEqual(2, len(externData.keys()))
+
+    def _checkOptionalBytesDataJson(self, bytesData):
+        self.assertEqual([0xAB, 0xCD], bytesData["buffer"])
+        self.assertEqual(1, len(bytesData.keys()))
 
     @staticmethod
     def _getJsonNameWithArrayLengthFilter(arrayLength):

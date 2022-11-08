@@ -92,17 +92,22 @@ class ArraysMappingTest(unittest.TestCase):
 
         arraysMapping.bool_array = boolArray
 
-    def testStringArrays(self):
+    def testStringArray(self):
         arraysMapping = self.api.ArraysMapping()
         stringArray = ["Test" + str(i) for i in range(self.FIXED_ARRAY_LENGTH)]
 
         arraysMapping.string_array = stringArray
 
-    def testExternArrays(self):
+    def testExternArray(self):
         arraysMapping = self.api.ArraysMapping()
         externArray = [zserio.BitBuffer(bytes([0xCD, 0xC0]), 10)
                        for i in range(self.FIXED_ARRAY_LENGTH)]
         arraysMapping.extern_array = externArray
+
+    def testBytesArray(self):
+        arraysMapping = self.api.ArraysMapping()
+        bytesArray = [bytearray() for i in range(self.FIXED_ARRAY_LENGTH)]
+        arraysMapping.bytes_array = bytesArray
 
     def testCompoundArray(self):
         arraysMapping = self.api.ArraysMapping()

@@ -172,7 +172,7 @@ void fillWithTypeInfoCode(WithTypeInfoCode& withTypeInfoCode, bool createOptiona
     withTypeInfoCode.setBytesData(vector_type<uint8_t>{{0xAB, 0xCD}});
     withTypeInfoCode.setBytesArray(vector_type<vector_type<uint8_t>>{{
         vector_type<uint8_t>{{0xAB, 0xCD}},
-        vector_type<uint8_t>{{0xEF}},
+        vector_type<uint8_t>{{0xAB, 0xCD}},
     }});
     const vector_type<uint32_t> implicitArray = {1, 4, 6, 4, 6, 1};
     withTypeInfoCode.setImplicitArray(implicitArray);

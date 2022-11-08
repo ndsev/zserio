@@ -17,6 +17,8 @@ def createWithTypeInfoCode(api, *, createOptionals = True):
         _createTemplatedParameterizedStruct_TS32(api, ts32),
         _createExternData(),
         [_createExternData(), _createExternData()],
+        _createBytes(),
+        [_createBytes(), _createBytes()],
         [1, 4, 6, 4, 6, 1])
 
     return withTypeInfoCode
@@ -44,6 +46,7 @@ def _createComplexStruct(api, createOptionals):
         api.TestEnum.ITEM_THREE if createOptionals else None,
         api.TestBitmask.Values.RED | api.TestBitmask.Values._GREEN if createOptionals else None,
         _createOptionalExternData() if createOptionals else None,
+        _createOptionalBytes() if createOptionals else None,
         [api.TestEnum._TWO, api.TestEnum.ITEM_THREE],
         [api.TestBitmask.Values._GREEN, api.TestBitmask.Values._GREEN, api.TestBitmask.Values._GREEN,
          api.TestBitmask.Values._GREEN, api.TestBitmask.Values._GREEN])
@@ -112,5 +115,11 @@ def _createTemplatedParameterizedStruct_TS32(api, ts32):
 def _createExternData():
     return zserio.BitBuffer(bytes([0xCA, 0xFE]), 15)
 
+def _createBytes():
+    return bytearray([0xAB, 0xCD])
+
 def _createOptionalExternData():
     return zserio.BitBuffer(bytes([0xCB, 0xF0]), 12)
+
+def _createOptionalBytes():
+    return bytearray([0xAB, 0xCD])

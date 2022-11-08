@@ -186,10 +186,22 @@ class BitStreamWriter:
 
         self.write_bits(float_to_uint64(value), 64)
 
+    def write_bytes(self, value: bytearray):
+        """
+        Writes the given bytes to the underlying storage. Length of the bytes is written
+        as varsize at the beginning.
+
+        :param value: Bytes to write.
+        """
+
+        self.write_varsize(len(value))
+        for byte in value:
+            self.write_bits(byte, 8)
+
     def write_string(self, string: str) -> None:
         """
         Writes the given string to the underlying storage in UTF-8 encoding. Length of the string is written
-        as varuint64 at the beginning.
+        as varsize at the beginning.
 
         :param string: String to write.
         """
@@ -210,7 +222,7 @@ class BitStreamWriter:
 
     def write_bitbuffer(self, bitbuffer: BitBuffer) -> None:
         """
-        Writes a bit buffer to the underlying storage. Length of the bit buffer is written as varuint64
+        Writes a bit buffer to the underlying storage. Length of the bit buffer is written as varsize
         at the beginning.
 
         :param bitbuffer: Bit buffer to write.

@@ -79,6 +79,24 @@ def calc_hashcode_float64(seed_value: int, value: float) -> int:
     int_value = float_to_uint64(value)
     return calc_hashcode_int64(seed_value, int_value)
 
+def calc_hashcode_bytes(seed_value: int, value: bytearray) -> int:
+    """
+    Calculates hash code for a bytes value.
+
+    :param seed_value: Seed value (current hash code).
+    :param value: Value to use.
+    :returns: Calculated hash code.
+    """
+
+    if value is None:
+        return calc_hashcode_int32(seed_value, 0)
+
+    result = seed_value
+    for element in value:
+        result = calc_hashcode_int32(result, element)
+
+    return result
+
 def calc_hashcode_string(seed_value: int, value: str) -> int:
     """
     Calculates hash code for a string value.
@@ -177,6 +195,23 @@ def calc_hashcode_float64_array(seed_value: int, value: typing.List[int]) -> int
     result = seed_value
     for element in value:
         result = calc_hashcode_float64(result, element)
+    return result
+
+def calc_hashcode_bytes_array(seed_value: int, value: typing.List[bytearray]) -> int:
+    """
+    Calculates hash code for a bytes array value.
+
+    :param seed_value: Seed value (current hash code).
+    :param value: Value to use.
+    :returns: Calculated hash code.
+    """
+
+    if value is None:
+        return calc_hashcode_int32(seed_value, 0)
+
+    result = seed_value
+    for element in value:
+        result = calc_hashcode_bytes(result, element)
     return result
 
 def calc_hashcode_string_array(seed_value: int, value: typing.List[str]) -> int:

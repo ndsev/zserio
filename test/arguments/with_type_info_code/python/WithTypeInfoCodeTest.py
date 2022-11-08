@@ -139,7 +139,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         self.assertEqual(2, len(type_info.attributes))
         self.assertIn(TypeAttribute.FIELDS, type_info.attributes)
         fields = type_info.attributes[TypeAttribute.FIELDS]
-        self.assertEqual(13, len(fields))
+        self.assertEqual(14, len(fields))
         self.assertIn(TypeAttribute.FUNCTIONS, type_info.attributes)
         functions = type_info.attributes[TypeAttribute.FUNCTIONS]
         self.assertEqual(1, len(functions))
@@ -322,8 +322,25 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         self.assertEqual("is_optional_extern_set",
                          memberInfo.attributes[MemberAttribute.IS_SET_INDICATOR_NAME])
 
-        # enumArray
+        # optionalBytes
         memberInfo = fields[11]
+        self.assertEqual("optionalBytes", memberInfo.schema_name)
+        self.assertEqual("bytes", memberInfo.type_info.schema_name)
+        self.assertEqual(bytearray, memberInfo.type_info.py_type)
+        self.assertEqual(4, len(memberInfo.attributes))
+        self.assertIn(MemberAttribute.PROPERTY_NAME, memberInfo.attributes)
+        self.assertEqual("optional_bytes", memberInfo.attributes[MemberAttribute.PROPERTY_NAME])
+        self.assertIn(MemberAttribute.OPTIONAL, memberInfo.attributes)
+        self.assertIsNone(memberInfo.attributes[MemberAttribute.OPTIONAL])
+        self.assertIn(MemberAttribute.IS_USED_INDICATOR_NAME, memberInfo.attributes)
+        self.assertEqual("is_optional_bytes_used",
+                         memberInfo.attributes[MemberAttribute.IS_USED_INDICATOR_NAME])
+        self.assertIn(MemberAttribute.IS_SET_INDICATOR_NAME, memberInfo.attributes)
+        self.assertEqual("is_optional_bytes_set",
+                         memberInfo.attributes[MemberAttribute.IS_SET_INDICATOR_NAME])
+
+        # enumArray
+        memberInfo = fields[12]
         self.assertEqual("enumArray", memberInfo.schema_name)
         self._checkTestEnum(memberInfo.type_info)
         self.assertEqual(2, len(memberInfo.attributes))
@@ -334,7 +351,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         self.assertEqual(2, arrayLengthLambda(self.api.ComplexStruct(array_=[])))
 
         # bitmaskArray
-        memberInfo = fields[12]
+        memberInfo = fields[13]
         self.assertEqual("bitmaskArray", memberInfo.schema_name)
         self._checkTestBitmask(memberInfo.type_info)
         self.assertEqual(2, len(memberInfo.attributes))
@@ -825,7 +842,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         self.assertEqual(1, len(type_info.attributes))
         self.assertIn(TypeAttribute.FIELDS, type_info.attributes)
         fields = type_info.attributes[TypeAttribute.FIELDS]
-        self.assertEqual(13, len(fields))
+        self.assertEqual(15, len(fields))
 
         # simpleStruct
         memberInfo = fields[0]
@@ -947,8 +964,29 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         self.assertIn(MemberAttribute.ARRAY_LENGTH, memberInfo.attributes)
         self.assertIsNone(memberInfo.attributes[MemberAttribute.ARRAY_LENGTH])
 
-        # implicitArray
+        # bytesData
         memberInfo = fields[12]
+        self.assertEqual("bytesData", memberInfo.schema_name)
+        self.assertEqual("bytes", memberInfo.type_info.schema_name)
+        self.assertEqual(bytearray, memberInfo.type_info.py_type)
+        self.assertFalse(memberInfo.type_info.attributes)
+        self.assertIn(MemberAttribute.PROPERTY_NAME, memberInfo.attributes)
+        self.assertEqual("bytes_data", memberInfo.attributes[MemberAttribute.PROPERTY_NAME])
+
+        # bytesArray
+        memberInfo = fields[13]
+        self.assertEqual("bytesArray", memberInfo.schema_name)
+        self.assertEqual("bytes", memberInfo.type_info.schema_name)
+        self.assertEqual(bytearray, memberInfo.type_info.py_type)
+        self.assertFalse(memberInfo.type_info.attributes)
+        self.assertEqual(2, len(memberInfo.attributes))
+        self.assertIn(MemberAttribute.PROPERTY_NAME, memberInfo.attributes)
+        self.assertEqual("bytes_array", memberInfo.attributes[MemberAttribute.PROPERTY_NAME])
+        self.assertIn(MemberAttribute.ARRAY_LENGTH, memberInfo.attributes)
+        self.assertIsNone(memberInfo.attributes[MemberAttribute.ARRAY_LENGTH])
+
+        # implicitArray
+        memberInfo = fields[14]
         self.assertEqual("implicitArray", memberInfo.schema_name)
         self.assertEqual("uint32", memberInfo.type_info.schema_name)
         self.assertEqual(int, memberInfo.type_info.py_type)

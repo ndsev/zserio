@@ -3,6 +3,7 @@ package zserio.extension.python;
 import zserio.ast.ArrayType;
 import zserio.ast.BitmaskType;
 import zserio.ast.BooleanType;
+import zserio.ast.BytesType;
 import zserio.ast.ChoiceType;
 import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.DynamicBitFieldType;
@@ -129,6 +130,12 @@ class RuntimeFunctionDataCreator
         }
 
         @Override
+        public void visitBytesType(BytesType type)
+        {
+            templateData = new RuntimeFunctionTemplateData("bytes");
+        }
+
+        @Override
         public void visitStringType(StringType type)
         {
             templateData = new RuntimeFunctionTemplateData("string");
@@ -218,6 +225,12 @@ class RuntimeFunctionDataCreator
         public void visitFloatType(FloatType type)
         {
             templateData = new RuntimeFunctionTemplateData("float" + (type.getBitSize() > 32 ? "64" : "32"));
+        }
+
+        @Override
+        public void visitBytesType(BytesType type)
+        {
+            templateData = new RuntimeFunctionTemplateData("bytes");
         }
 
         @Override
