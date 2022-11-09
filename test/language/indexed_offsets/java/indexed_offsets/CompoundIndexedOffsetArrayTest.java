@@ -90,7 +90,7 @@ public class CompoundIndexedOffsetArrayTest
     @Test
     public void write() throws IOException, ZserioError
     {
-        final boolean createWrongOffsets = true;
+        final boolean createWrongOffsets = false;
         final CompoundIndexedOffsetArray compoundIndexedOffsetArray =
                 createCompoundIndexedOffsetArray(createWrongOffsets);
         final File file = new File("test.bin");
@@ -113,6 +113,7 @@ public class CompoundIndexedOffsetArrayTest
         final BitStreamWriter writer = new FileBitStreamWriter(file);
         final int bitPosition = 8;
         writer.writeBits(0, bitPosition);
+        compoundIndexedOffsetArray.initializeOffsets(writer.getBitPosition());
         compoundIndexedOffsetArray.write(writer);
         writer.close();
 
@@ -127,7 +128,7 @@ public class CompoundIndexedOffsetArrayTest
         final CompoundIndexedOffsetArray compoundIndexedOffsetArray =
                 createCompoundIndexedOffsetArray(createWrongOffsets);
         final BitStreamWriter writer = new ByteArrayBitStreamWriter();
-        assertThrows(ZserioError.class, () -> compoundIndexedOffsetArray.write(writer, false));
+        assertThrows(ZserioError.class, () -> compoundIndexedOffsetArray.write(writer));
         writer.close();
     }
 

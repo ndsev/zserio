@@ -14,6 +14,7 @@ import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
 import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 
 public class PackedAutoArrayOffsetTest
 {
@@ -86,12 +87,10 @@ public class PackedAutoArrayOffsetTest
     {
         final boolean createWrongOffset = true;
         final AutoArrayHolder autoArrayHolder = createAutoArrayHolder(createWrongOffset);
-        final File file = new File(BLOB_NAME);
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        autoArrayHolder.write(writer);
-        writer.close();
+        SerializeUtil.serializeToFile(autoArrayHolder, BLOB_NAME);
         checkAutoArrayHolder(autoArrayHolder);
-        final AutoArrayHolder readAutoArrayHolder = new AutoArrayHolder(file);
+        final AutoArrayHolder readAutoArrayHolder = SerializeUtil.deserializeFromFile(AutoArrayHolder.class,
+                BLOB_NAME);
         checkAutoArrayHolder(readAutoArrayHolder);
         assertEquals(autoArrayHolder, readAutoArrayHolder);
     }
@@ -105,6 +104,7 @@ public class PackedAutoArrayOffsetTest
         final BitStreamWriter writer = new FileBitStreamWriter(file);
         final int bitPosition = 2;
         writer.writeBits(0, bitPosition);
+        autoArrayHolder.initializeOffsets(writer.getBitPosition());
         autoArrayHolder.write(writer);
         writer.close();
         checkAutoArrayHolder(autoArrayHolder, bitPosition);
@@ -116,7 +116,7 @@ public class PackedAutoArrayOffsetTest
         final boolean createWrongOffset = true;
         final AutoArrayHolder autoArrayHolder = createAutoArrayHolder(createWrongOffset);
         final BitStreamWriter writer = new ByteArrayBitStreamWriter();
-        assertThrows(ZserioError.class, () -> autoArrayHolder.write(writer, false));
+        assertThrows(ZserioError.class, () -> autoArrayHolder.write(writer));
         writer.close();
     }
 

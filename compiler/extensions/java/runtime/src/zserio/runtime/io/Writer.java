@@ -47,16 +47,6 @@ public interface Writer
     public void write(zserio.runtime.io.BitStreamWriter out) throws IOException;
 
     /**
-     * Writes this objects to the given bit stream and optionally calls initializeOffsets.
-     *
-     * @param out The bit stream writer to use.
-     * @param callInitializeOffsets True to call initializeOffsets on the object being written.
-     *
-     * @throws IOException Throws if the writing failed.
-     */
-    public void write(BitStreamWriter out, boolean callInitializeOffsets) throws IOException;
-
-    /**
      * Writes this object which is an element of a packed array to the given bit stream.
      *
      * @param contextNode Packing context node.

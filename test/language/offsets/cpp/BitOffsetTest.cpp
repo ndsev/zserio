@@ -263,9 +263,9 @@ TEST_F(BitOffsetTest, writeWithPosition)
     fillBitOffset(bitOffset, createWrongOffsets);
 
     const size_t bitPosition = 2;
-    bitOffset.initializeOffsets(bitPosition);
     zserio::BitStreamWriter writer(bitBuffer);
     writer.writeBits(0, bitPosition);
+    bitOffset.initializeOffsets(writer.getBitPosition());
     bitOffset.write(writer);
 
     const uint16_t offsetShift = 1;

@@ -82,7 +82,7 @@ public class ParameterOffsetTest
     @Test
     public void write() throws IOException, ZserioError
     {
-        final boolean createWrongOffset = true;
+        final boolean createWrongOffset = false;
         final School school = createSchool(createWrongOffset);
         final File file = new File("test.bin");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
@@ -103,6 +103,7 @@ public class ParameterOffsetTest
         final BitStreamWriter writer = new FileBitStreamWriter(file);
         final int bitPosition = 2;
         writer.writeBits(0, bitPosition);
+        school.initializeOffsets(writer.getBitPosition());
         school.write(writer);
         writer.close();
         checkSchool(school, bitPosition);
@@ -114,7 +115,7 @@ public class ParameterOffsetTest
         final boolean createWrongOffset = true;
         final School school = createSchool(createWrongOffset);
         final BitStreamWriter writer = new ByteArrayBitStreamWriter();
-        assertThrows(ZserioError.class, () -> school.write(writer, false));
+        assertThrows(ZserioError.class, () -> school.write(writer));
         writer.close();
     }
 

@@ -73,6 +73,7 @@ public class UInt64OffsetTest
         final UInt64Offset uint64Offset = new UInt64Offset();
         uint64Offset.setArray(new byte[ARRAY_SIZE]);
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
+        uint64Offset.initializeOffsets(writer.getBitPosition());
         uint64Offset.write(writer);
         assertEquals(OFFSET, uint64Offset.getOffset().longValue());
         assertEquals(BitPositionUtil.bitsToBytes(BIT_SIZE), writer.toByteArray().length);
@@ -85,6 +86,7 @@ public class UInt64OffsetTest
         uint64Offset.setArray(new byte[ARRAY_SIZE]);
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         writer.writeBits(0, 3);
+        uint64Offset.initializeOffsets(writer.getBitPosition());
         uint64Offset.write(writer);
         assertEquals(OFFSET + 1, uint64Offset.getOffset().longValue());
         assertEquals(BitPositionUtil.bitsToBytes(BIT_SIZE) + 1, writer.toByteArray().length);
@@ -97,7 +99,7 @@ public class UInt64OffsetTest
         uint64Offset.setArray(new byte[ARRAY_SIZE]);
         uint64Offset.setOffset(BigInteger.valueOf(WRONG_OFFSET));
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        assertThrows(ZserioError.class, () -> uint64Offset.write(writer, false));
+        assertThrows(ZserioError.class, () -> uint64Offset.write(writer));
     }
 
     private BitStreamReader prepareReader(boolean wrongOffset) throws IOException

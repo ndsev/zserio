@@ -405,26 +405,9 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
     }
 
     @Override
-    public void write(zserio.runtime.io.BitStreamWriter out)
-            throws java.io.IOException
-    {
-        write(out, true);
-    }
-
-    @Override
-    public void write(zserio.runtime.io.BitStreamWriter out, boolean callInitializeOffsets)
-            throws java.io.IOException
+    public void write(zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
     {
     <#if fieldList?has_content>
-        <#if hasFieldWithOffset>
-        final long startBitPosition = out.getBitPosition();
-
-        if (callInitializeOffsets)
-        {
-            initializeOffsets(startBitPosition);
-        }
-
-        </#if>
         out.writeVarSize(choiceTag);
 
         switch (choiceTag)

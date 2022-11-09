@@ -198,15 +198,7 @@ public class TestObject
         }
 
         @Override
-        public void write(zserio.runtime.io.BitStreamWriter out)
-                throws java.io.IOException
-        {
-            write(out, true);
-        }
-
-        @Override
-        public void write(zserio.runtime.io.BitStreamWriter out, boolean callInitializeOffsets)
-                throws java.io.IOException
+        public void write(zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
         {
             out.writeString(text_);
         }
@@ -605,15 +597,7 @@ public class TestObject
         }
 
         @Override
-        public void write(zserio.runtime.io.BitStreamWriter out)
-                throws java.io.IOException
-        {
-            write(out, true);
-        }
-
-        @Override
-        public void write(zserio.runtime.io.BitStreamWriter out, boolean callInitializeOffsets)
-                throws java.io.IOException
+        public void write(zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
         {
             out.writeVarSize(choiceTag);
 
@@ -1155,21 +1139,13 @@ public class TestObject
         }
 
         @Override
-        public void write(zserio.runtime.io.BitStreamWriter out)
-                throws java.io.IOException
-        {
-            write(out, true);
-        }
-
-        @Override
-        public void write(zserio.runtime.io.BitStreamWriter out, boolean callInitializeOffsets)
-                throws java.io.IOException
+        public void write(zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
         {
             out.writeUnsignedInt(identifier_);
 
             if (isNestedUsed())
             {
-                nested_.write(out, false);
+                nested_.write(out);
             }
 
             out.writeString(text_);
@@ -1394,13 +1370,6 @@ public class TestObject
 
         @Override
         public void write(zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
-        {
-            write(out, false);
-        }
-
-        @Override
-        public void write(zserio.runtime.io.BitStreamWriter out, boolean callInitializeOffsets)
-                throws java.io.IOException
         {
             out.writeUnsignedInt(value);
         }

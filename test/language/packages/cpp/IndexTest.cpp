@@ -27,10 +27,10 @@ TEST_F(IndexTest, readWrite)
         test.getParameterizedArray().emplace_back(i);
     }
     test.initializeChildren();
-    test.initializeOffsets();
 
     zserio::BitBuffer bitBuffer(1024 * 8);
     zserio::BitStreamWriter writer(bitBuffer);
+    test.initializeOffsets(writer.getBitPosition());
     test.write(writer);
 
     zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());

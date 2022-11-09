@@ -95,7 +95,6 @@ public class PackedIndexedOffsetArrayHolderTest
         for (int i = 0; i < numElements; ++i)
             data2[i] = i * 2;
 
-        return new AutoIndexedOffsetArray(new OffsetArray(offsetHolders), data1, data2);
         final AutoIndexedOffsetArray autoIndexedOffsetArray =
                 new AutoIndexedOffsetArray(new OffsetArray(offsetHolders), data1, data2);
         autoIndexedOffsetArray.initializeOffsets();

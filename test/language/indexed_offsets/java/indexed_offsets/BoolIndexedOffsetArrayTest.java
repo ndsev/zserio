@@ -84,7 +84,7 @@ public class BoolIndexedOffsetArrayTest
     @Test
     public void write() throws IOException, ZserioError
     {
-        final boolean createWrongOffsets = true;
+        final boolean createWrongOffsets = false;
         final BoolIndexedOffsetArray boolIndexedOffsetArray = createBoolIndexedOffsetArray(createWrongOffsets);
         final File file = new File("test.bin");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
@@ -105,6 +105,7 @@ public class BoolIndexedOffsetArrayTest
         final BitStreamWriter writer = new FileBitStreamWriter(file);
         final int bitPosition = 8;
         writer.writeBits(0, bitPosition);
+        boolIndexedOffsetArray.initializeOffsets(writer.getBitPosition());
         boolIndexedOffsetArray.write(writer);
         writer.close();
 
@@ -118,7 +119,7 @@ public class BoolIndexedOffsetArrayTest
         final boolean createWrongOffsets = true;
         final BoolIndexedOffsetArray boolIndexedOffsetArray = createBoolIndexedOffsetArray(createWrongOffsets);
         final BitStreamWriter writer = new ByteArrayBitStreamWriter();
-        assertThrows(ZserioError.class, () -> boolIndexedOffsetArray.write(writer, false));
+        assertThrows(ZserioError.class, () -> boolIndexedOffsetArray.write(writer));
         writer.close();
     }
 

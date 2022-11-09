@@ -200,9 +200,9 @@ TEST_F(PackedAutoArrayOffsetTest, writeWithPosition)
     fillAutoArrayHolder(autoArrayHolder, createWrongOffset);
 
     const size_t bitPosition = 2;
-    autoArrayHolder.initializeOffsets(bitPosition);
     zserio::BitStreamWriter writer(bitBuffer);
     writer.writeBits(0, bitPosition);
+    autoArrayHolder.initializeOffsets(writer.getBitPosition());
     autoArrayHolder.write(writer);
 
     checkAutoArrayHolder(autoArrayHolder, bitPosition);

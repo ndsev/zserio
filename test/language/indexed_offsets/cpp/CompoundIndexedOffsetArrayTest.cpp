@@ -207,9 +207,9 @@ TEST_F(CompoundIndexedOffsetArrayTest, writeWithPosition)
     fillCompoundIndexedOffsetArray(compoundIndexedOffsetArray, createWrongOffsets);
 
     const size_t bitPosition = 8;
-    compoundIndexedOffsetArray.initializeOffsets(bitPosition);
     zserio::BitStreamWriter writer(bitBuffer);
     writer.writeBits(0, bitPosition);
+    compoundIndexedOffsetArray.initializeOffsets(writer.getBitPosition());
     compoundIndexedOffsetArray.write(writer);
 
     const uint16_t offsetShift = 1;

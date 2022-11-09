@@ -130,7 +130,7 @@ public class TernaryOperatorOffsetTest
 
         final File file = new File("test.bin");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
-        assertThrows(ZserioError.class, () -> ternaryOffset.write(writer, false));
+        assertThrows(ZserioError.class, () -> ternaryOffset.write(writer));
         writer.close();
     }
 

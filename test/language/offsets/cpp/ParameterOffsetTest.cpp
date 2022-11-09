@@ -143,14 +143,14 @@ TEST_F(ParameterOffsetTest, write)
 
 TEST_F(ParameterOffsetTest, writeWithPosition)
 {
-    const bool createWrongOffset = false;
+    const bool createWrongOffset = true;
     School school;
     fillSchool(school, createWrongOffset);
 
     const size_t bitPosition = 2;
-    school.initializeOffsets(bitPosition);
     zserio::BitStreamWriter writer(bitBuffer);
     writer.writeBits(0, bitPosition);
+    school.initializeOffsets(writer.getBitPosition());
     school.write(writer);
 
     checkSchool(school, bitPosition);

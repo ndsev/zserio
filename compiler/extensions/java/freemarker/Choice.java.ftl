@@ -476,12 +476,6 @@ ${I}break;
         }
     }
 
-    @Override
-    public void write(zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
-    {
-        write(out, true);
-    }
-
 <#macro choice_write_member member indent packed index>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
@@ -495,19 +489,9 @@ ${I}break;
     </#if>
 </#macro>
     @Override
-    public void write(zserio.runtime.io.BitStreamWriter out, boolean callInitializeOffsets)
-            throws java.io.IOException
+    public void write(zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
     {
     <#if fieldList?has_content>
-        <#if hasFieldWithOffset>
-        final long startBitPosition = out.getBitPosition();
-
-        if (callInitializeOffsets)
-        {
-            initializeOffsets(startBitPosition);
-        }
-
-        </#if>
         <@choice_switch "choice_write_member", "choice_no_match", 2/>
     </#if>
     }

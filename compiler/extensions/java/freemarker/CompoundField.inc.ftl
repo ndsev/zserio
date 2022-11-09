@@ -247,7 +247,7 @@ ${I}out.write${field.runtimeFunction.suffix}(<@compound_get_field field/><#if fi
     <#else>
         <#-- enum or compound -->
         <@compound_check_parameterized_field field, compoundName, indent/>
-${I}<@compound_get_field field/>.write(out, false);
+${I}<@compound_get_field field/>.write(out);
     </#if>
 </#macro>
 

@@ -80,7 +80,7 @@ public class AutoArrayOffsetTest
     @Test
     public void write() throws IOException, ZserioError
     {
-        final boolean createWrongOffset = true;
+        final boolean createWrongOffset = false;
         final AutoArrayHolder autoArrayHolder = createAutoArrayHolder(createWrongOffset);
         final File file = new File("test.bin");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
@@ -101,6 +101,7 @@ public class AutoArrayOffsetTest
         final BitStreamWriter writer = new FileBitStreamWriter(file);
         final int bitPosition = 2;
         writer.writeBits(0, bitPosition);
+        autoArrayHolder.initializeOffsets(writer.getBitPosition());
         autoArrayHolder.write(writer);
         writer.close();
         checkAutoArrayHolder(autoArrayHolder, bitPosition);
@@ -112,7 +113,7 @@ public class AutoArrayOffsetTest
         final boolean createWrongOffset = true;
         final AutoArrayHolder autoArrayHolder = createAutoArrayHolder(createWrongOffset);
         final BitStreamWriter writer = new ByteArrayBitStreamWriter();
-        assertThrows(ZserioError.class, () -> autoArrayHolder.write(writer, false));
+        assertThrows(ZserioError.class, () -> autoArrayHolder.write(writer));
         writer.close();
     }
 

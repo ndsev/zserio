@@ -95,7 +95,7 @@ public class OptionalMemberOffsetTest
         final int optionalField = 0x1A1A;
         final int field = 0xA1A1;
         final OptionalMemberOffset optionalMemberOffset = new OptionalMemberOffset(hasOptional,
-                WRONG_OPTIONAL_FIELD_OFFSET, optionalField, field);
+                OPTIONAL_FIELD_OFFSET, optionalField, field);
         final File file = new File("test.bin");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
         optionalMemberOffset.write(writer);

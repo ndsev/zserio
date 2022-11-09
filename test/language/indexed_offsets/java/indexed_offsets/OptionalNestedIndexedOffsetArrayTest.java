@@ -97,7 +97,7 @@ public class OptionalNestedIndexedOffsetArrayTest
     public void writeWithOptional() throws IOException, ZserioError
     {
         final int length = NUM_ELEMENTS;
-        final boolean createWrongOffsets = true;
+        final boolean createWrongOffsets = false;
         final OptionalNestedIndexedOffsetArray optionalNestedIndexedOffsetArray =
                 createOptionalNestedIndexedOffsetArray(length, createWrongOffsets);
         final File file = new File("test.bin");

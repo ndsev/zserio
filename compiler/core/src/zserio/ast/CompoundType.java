@@ -179,37 +179,6 @@ public abstract class CompoundType extends TemplatableType
     }
 
     /**
-     * Checks if this compound type or any of its subfields contains some offset.
-     *
-     * @return True if this compound type contains some offset.
-     */
-    public boolean hasFieldWithOffset()
-    {
-        for (Field field : fields)
-        {
-            if (field.getOffsetExpr() != null)
-                return true;
-
-            TypeInstantiation typeInstantiation = field.getTypeInstantiation();
-            if (typeInstantiation instanceof ArrayInstantiation)
-            {
-                typeInstantiation = ((ArrayInstantiation)typeInstantiation).getElementTypeInstantiation();
-            }
-
-            final ZserioType fieldBaseType = typeInstantiation.getBaseType();
-            if (fieldBaseType instanceof CompoundType)
-            {
-                final CompoundType childCompoundType = (CompoundType)fieldBaseType;
-                // compound type can have itself as an optional field
-                if (childCompoundType != this && childCompoundType.hasFieldWithOffset())
-                    return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * Checks the compound type.
      */
     void check()

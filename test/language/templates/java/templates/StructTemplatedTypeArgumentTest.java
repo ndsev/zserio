@@ -31,6 +31,7 @@ public class StructTemplatedTypeArgumentTest
         structTemplatedTypeArgument.setParameterized(parameterized);
 
         final BitStreamWriter writer = new FileBitStreamWriter(TEST_FILE);
+        structTemplatedTypeArgument.initializeOffsets(writer.getBitPosition());
         structTemplatedTypeArgument.write(writer);
         writer.close();
         final BitStreamReader reader = new FileBitStreamReader(TEST_FILE);

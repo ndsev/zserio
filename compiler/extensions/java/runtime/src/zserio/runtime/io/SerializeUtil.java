@@ -164,11 +164,9 @@ public final class SerializeUtil
      */
     public static <T extends Writer> void serializeToFile(T object, String fileName)
     {
-        final FileBitStreamWriter writer = new FileBitStreamWriter(fileName);
-        try
+        try (final FileBitStreamWriter writer = new FileBitStreamWriter(fileName))
         {
             serializeToWriter(object, writer);
-            writer.close();
         }
         catch (IOException exception)
         {

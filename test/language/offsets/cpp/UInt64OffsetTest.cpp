@@ -104,8 +104,8 @@ TEST_F(UInt64OffsetTest, write)
 {
     UInt64Offset uint64Offset;
     uint64Offset.getArray().resize(ARRAY_SIZE);
-    uint64Offset.initializeOffsets();
     BitStreamWriter writer(bitBuffer);
+    uint64Offset.initializeOffsets(writer.getBitPosition());
     uint64Offset.write(writer);
     ASSERT_EQ(OFFSET, uint64Offset.getOffset());
     ASSERT_EQ(BIT_SIZE, writer.getBitPosition());
@@ -116,9 +116,9 @@ TEST_F(UInt64OffsetTest, writeWithPosition)
     UInt64Offset uint64Offset;
     uint64Offset.getArray().resize(ARRAY_SIZE);
     const size_t bitPosition = 3;
-    uint64Offset.initializeOffsets(bitPosition);
     BitStreamWriter writer(bitBuffer);
     writer.writeBits(0, bitPosition);
+    uint64Offset.initializeOffsets(writer.getBitPosition());
     uint64Offset.write(writer);
     ASSERT_EQ(OFFSET + 1, uint64Offset.getOffset());
     ASSERT_EQ(BIT_SIZE + 8, writer.getBitPosition());

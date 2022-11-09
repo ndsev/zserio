@@ -36,6 +36,7 @@ public class StructureInnerClassesClashingTest
             new long[4], new long[] {1, 2, 3, 4});
 
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
+        testStructure.initializeOffsets(writer.getBitPosition());
         testStructure.write(writer);
         writer.close();
 
@@ -51,6 +52,7 @@ public class StructureInnerClassesClashingTest
             new long[4], new long[] {1, 2, 3, 4});
 
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
+        testStructure.initializeOffsets(writer.getBitPosition());
         testStructure.write(writer);
         writer.close();
 

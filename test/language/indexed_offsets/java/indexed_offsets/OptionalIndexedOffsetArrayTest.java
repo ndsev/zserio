@@ -92,7 +92,7 @@ public class OptionalIndexedOffsetArrayTest
     public void writeWithOptional() throws IOException, ZserioError
     {
         final boolean hasOptional = true;
-        final boolean createWrongOffsets = true;
+        final boolean createWrongOffsets = false;
         final OptionalIndexedOffsetArray optionalIndexedOffsetArray =
                 createOptionalIndexedOffsetArray(hasOptional, createWrongOffsets);
         final File file = new File("test.bin");

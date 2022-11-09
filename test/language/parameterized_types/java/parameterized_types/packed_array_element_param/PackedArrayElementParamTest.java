@@ -84,6 +84,7 @@ public class PackedArrayElementParamTest
     {
         final Database database = createDatabase(numBlocks);
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
+        database.initializeOffsets(writer.getBitPosition());
         database.write(writer);
         writer.close();
 
@@ -101,6 +102,7 @@ public class PackedArrayElementParamTest
         final Database database = createDatabase(numBlocks);
         final File file = new File(BLOB_NAME_BASE + numBlocks + ".blob");
         final FileBitStreamWriter writer = new FileBitStreamWriter(file);
+        database.initializeOffsets(writer.getBitPosition());
         database.write(writer);
         writer.close();
 

@@ -293,18 +293,12 @@ public class SerializationUtilTest
         }
 
         @Override
-        public void write(zserio.runtime.io.BitStreamWriter out, boolean callInitializeOffsets) throws java.io.IOException
+        public void write(zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
         {
             if (isOptionalValueUsed())
             {
                 out.writeBits(optionalValue_, 31);
             }
-        }
-
-        @Override
-        public void write(zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
-        {
-            write(out, false);
         }
 
         @Override

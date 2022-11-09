@@ -21,8 +21,6 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         compoundConstructorsData = new CompoundConstructorTemplateData(compoundType, compoundParametersData);
         compoundFunctionsData = new CompoundFunctionTemplateData(context, compoundType);
 
-        hasFieldWithOffset = compoundType.hasFieldWithOffset();
-
         final List<Field> fieldTypeList = compoundType.getFields();
         fieldList = new ArrayList<CompoundFieldTemplateData>(fieldTypeList.size());
         for (Field fieldType : fieldTypeList)
@@ -46,11 +44,6 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         return compoundFunctionsData;
     }
 
-    public boolean getHasFieldWithOffset()
-    {
-        return hasFieldWithOffset;
-    }
-
     public Iterable<CompoundFieldTemplateData> getFieldList()
     {
         return fieldList;
@@ -64,7 +57,6 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
     private final CompoundParameterTemplateData     compoundParametersData;
     private final CompoundConstructorTemplateData   compoundConstructorsData;
     private final CompoundFunctionTemplateData      compoundFunctionsData;
-    private final boolean                           hasFieldWithOffset;
     private final List<CompoundFieldTemplateData>   fieldList;
     private final TemplateInstantiationTemplateData templateInstantiation;
 }

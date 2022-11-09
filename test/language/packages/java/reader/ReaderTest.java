@@ -24,6 +24,7 @@ public class ReaderTest
         final reader.Test test = new reader.Test(indexes, array, indexesForParameterized, parameterizedArray);
 
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
+        test.initializeOffsets(writer.getBitPosition());
         test.write(writer);
 
         final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());

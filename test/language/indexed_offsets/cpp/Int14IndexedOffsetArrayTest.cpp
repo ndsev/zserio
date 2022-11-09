@@ -195,9 +195,9 @@ TEST_F(Int14IndexedOffsetArrayTest, writeWithPosition)
     fillInt14IndexedOffsetArray(int14IndexedOffsetArray, createWrongOffsets);
 
     const size_t bitPosition = 8;
-    int14IndexedOffsetArray.initializeOffsets(bitPosition);
     zserio::BitStreamWriter writer(bitBuffer);
     writer.writeBits(0, bitPosition);
+    int14IndexedOffsetArray.initializeOffsets(writer.getBitPosition());
     int14IndexedOffsetArray.write(writer);
 
     const uint16_t offsetShift = 1;

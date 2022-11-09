@@ -210,9 +210,9 @@ TEST_F(NestedOffsetTest, writeWithPosition)
     fillNestedOffset(nestedOffset, createWrongOffsets);
 
     const size_t bitPosition = 2;
-    nestedOffset.initializeOffsets(bitPosition);
     zserio::BitStreamWriter writer(bitBuffer);
     writer.writeBits(0, bitPosition);
+    nestedOffset.initializeOffsets(writer.getBitPosition());
     nestedOffset.write(writer);
 
     checkNestedOffset(nestedOffset);

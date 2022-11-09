@@ -218,13 +218,6 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
     @Override
     public void write(zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
     {
-        write(out, false);
-    }
-
-    @Override
-    public void write(zserio.runtime.io.BitStreamWriter out, boolean callInitializeOffsets)
-            throws java.io.IOException
-    {
         out.write${runtimeFunction.suffix}(value<#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>);
     }
 

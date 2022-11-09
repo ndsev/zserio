@@ -84,7 +84,7 @@ public class NestedOffsetTest
     @Test
     public void write() throws IOException, ZserioError
     {
-        final boolean createWrongOffsets = true;
+        final boolean createWrongOffsets = false;
         final NestedOffset nestedOffset = createNestedOffset(createWrongOffsets);
         final File file = new File("test.bin");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
@@ -105,6 +105,7 @@ public class NestedOffsetTest
         final BitStreamWriter writer = new FileBitStreamWriter(file);
         final int bitPosition = 2;
         writer.writeBits(0, bitPosition);
+        nestedOffset.initializeOffsets(writer.getBitPosition());
         nestedOffset.write(writer);
         writer.close();
         checkNestedOffset(nestedOffset);
@@ -116,7 +117,7 @@ public class NestedOffsetTest
         final boolean createWrongOffsets = true;
         final NestedOffset nestedOffset = createNestedOffset(createWrongOffsets);
         final BitStreamWriter writer = new ByteArrayBitStreamWriter();
-        assertThrows(ZserioError.class, () -> nestedOffset.write(writer, false));
+        assertThrows(ZserioError.class, () -> nestedOffset.write(writer));
         writer.close();
     }
 

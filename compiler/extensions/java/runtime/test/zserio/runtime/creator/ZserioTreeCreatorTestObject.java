@@ -135,13 +135,6 @@ public class ZserioTreeCreatorTestObject
         @Override
         public void write(zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
         {
-            write(out, false);
-        }
-
-        @Override
-        public void write(zserio.runtime.io.BitStreamWriter out, boolean callInitializeOffsets)
-                throws java.io.IOException
-        {
             out.writeByte(getValue());
         }
 
@@ -317,13 +310,6 @@ public class ZserioTreeCreatorTestObject
 
         @Override
         public void write(zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
-        {
-            write(out, false);
-        }
-
-        @Override
-        public void write(zserio.runtime.io.BitStreamWriter out, boolean callInitializeOffsets)
-                throws java.io.IOException
         {
             out.writeUnsignedByte(value);
         }
@@ -774,15 +760,7 @@ public class ZserioTreeCreatorTestObject
         }
 
         @Override
-        public void write(zserio.runtime.io.BitStreamWriter out)
-                throws java.io.IOException
-        {
-            write(out, true);
-        }
-
-        @Override
-        public void write(zserio.runtime.io.BitStreamWriter out, boolean callInitializeOffsets)
-                throws java.io.IOException
+        public void write(zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
         {
             out.writeUnsignedInt(value_);
 
@@ -790,9 +768,9 @@ public class ZserioTreeCreatorTestObject
 
             out.writeBitBuffer(data_);
 
-            dummyEnum_.write(out, false);
+            dummyEnum_.write(out);
 
-            dummyBitmask_.write(out, false);
+            dummyBitmask_.write(out);
         }
 
         @Override
@@ -1431,15 +1409,7 @@ public class ZserioTreeCreatorTestObject
         }
 
         @Override
-        public void write(zserio.runtime.io.BitStreamWriter out)
-                throws java.io.IOException
-        {
-            write(out, true);
-        }
-
-        @Override
-        public void write(zserio.runtime.io.BitStreamWriter out, boolean callInitializeOffsets)
-                throws java.io.IOException
+        public void write(zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
         {
             out.writeUnsignedInt(value_);
 
@@ -1449,7 +1419,7 @@ public class ZserioTreeCreatorTestObject
                 throw new zserio.runtime.ZserioError("Write: Wrong parameter param for field DummyObject.nested: " +
                         nested_.getParam() + " != " + (getValue()) + "!");
             }
-            nested_.write(out, false);
+            nested_.write(out);
 
             out.writeString(text_);
 
@@ -1478,7 +1448,7 @@ public class ZserioTreeCreatorTestObject
                     throw new zserio.runtime.ZserioError("Write: Wrong parameter param for field DummyObject.optionalNested: " +
                             optionalNested_.getParam() + " != " + (getValue()) + "!");
                 }
-                optionalNested_.write(out, false);
+                optionalNested_.write(out);
             }
             else
             {

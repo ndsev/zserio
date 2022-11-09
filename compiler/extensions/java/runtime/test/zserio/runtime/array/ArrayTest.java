@@ -874,14 +874,7 @@ public class ArrayTest
         }
 
         @Override
-        public void write(zserio.runtime.io.BitStreamWriter out)
-                throws java.io.IOException, zserio.runtime.ZserioError
-        {
-            write(out, true);
-        }
-
-        @Override
-        public void write(zserio.runtime.io.BitStreamWriter writer, boolean callInitializeOffsets)
+        public void write(zserio.runtime.io.BitStreamWriter writer)
                 throws java.io.IOException, zserio.runtime.ZserioError
         {
             writer.writeBits(value, 3);

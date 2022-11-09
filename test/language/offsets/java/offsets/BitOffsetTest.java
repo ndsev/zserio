@@ -82,7 +82,7 @@ public class BitOffsetTest
     @Test
     public void write() throws IOException, ZserioError
     {
-        final boolean createWrongOffsets = true;
+        final boolean createWrongOffsets = false;
         final BitOffset bitOffset = createBitOffset(createWrongOffsets);
         final File file = new File("test.bin");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
@@ -103,6 +103,7 @@ public class BitOffsetTest
         final BitStreamWriter writer = new FileBitStreamWriter(file);
         final int bitPosition = 2;
         writer.writeBits(0, bitPosition);
+        bitOffset.initializeOffsets(writer.getBitPosition());
         bitOffset.write(writer);
         writer.close();
 
@@ -116,7 +117,7 @@ public class BitOffsetTest
         final boolean createWrongOffsets = true;
         final BitOffset bitOffset = createBitOffset(createWrongOffsets);
         final BitStreamWriter writer = new ByteArrayBitStreamWriter();
-        assertThrows(ZserioError.class, () -> bitOffset.write(writer, false));
+        assertThrows(ZserioError.class, () -> bitOffset.write(writer));
         writer.close();
     }
 

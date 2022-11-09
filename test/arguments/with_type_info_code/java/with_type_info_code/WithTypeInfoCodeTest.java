@@ -24,6 +24,7 @@ import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.FileBitStreamWriter;
 import zserio.runtime.io.BitBuffer;
+import zserio.runtime.io.SerializeUtil;
 
 public class WithTypeInfoCodeTest
 {
@@ -67,12 +68,10 @@ public class WithTypeInfoCodeTest
     public void writeReadFileWithOptionals() throws IOException
     {
         final WithTypeInfoCode withTypeInfoCode = WithTypeInfoCodeCreator.createWithTypeInfoCode();
-        final File file = new File(BLOB_NAME_WITH_OPTIONALS);
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        withTypeInfoCode.write(writer);
-        writer.close();
+        SerializeUtil.serializeToFile(withTypeInfoCode, BLOB_NAME_WITH_OPTIONALS);
 
-        final WithTypeInfoCode readWithTypeInfoCode = new WithTypeInfoCode(file);
+        final WithTypeInfoCode readWithTypeInfoCode = SerializeUtil.deserializeFromFile(WithTypeInfoCode.class,
+                BLOB_NAME_WITH_OPTIONALS);
         assertEquals(withTypeInfoCode, readWithTypeInfoCode);
     }
 
@@ -82,12 +81,10 @@ public class WithTypeInfoCodeTest
         final boolean createdOptionals = false;
         final WithTypeInfoCode withTypeInfoCode =
                 WithTypeInfoCodeCreator.createWithTypeInfoCode(createdOptionals);
-        final File file = new File(BLOB_NAME_WITHOUT_OPTIONALS);
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        withTypeInfoCode.write(writer);
-        writer.close();
+        SerializeUtil.serializeToFile(withTypeInfoCode, BLOB_NAME_WITHOUT_OPTIONALS);
 
-        final WithTypeInfoCode readWithTypeInfoCode = new WithTypeInfoCode(file);
+        final WithTypeInfoCode readWithTypeInfoCode = SerializeUtil.deserializeFromFile(WithTypeInfoCode.class,
+                BLOB_NAME_WITHOUT_OPTIONALS);
         assertEquals(withTypeInfoCode, readWithTypeInfoCode);
     }
 
