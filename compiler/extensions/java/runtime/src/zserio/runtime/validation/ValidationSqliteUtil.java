@@ -164,8 +164,10 @@ public class ValidationSqliteUtil
     }
 
     /**
-     * Converts SQL type returned by ResultSetMetaData.getColumnType to SQLite type which is one of
-     * Types.INTEGER, Types.REAL, Types.VARCHAR, Types.BLOB or Types.NULL.
+     * Converts SQL type returned by ResultSetMetaData.getColumnType.
+     *
+     * It converts only types which belongs to one of Types.INTEGER, Types.REAL, Types.VARCHAR, Types.BLOB or
+     * Types.NULL to SQLite type. All others types are left unchanged (possibly unknown for SQLite).
      *
      * @param columnType SQL column type returned by ResultSetMetaData.getColumnType().
      *
@@ -173,7 +175,7 @@ public class ValidationSqliteUtil
      */
     public static int sqlTypeToSqliteType(int columnType)
     {
-        // Zserio supports only INTEGER, READ, VARCHAR and BLOB,
+        // Zserio supports only INTEGER, REAL, VARCHAR and BLOB,
         // however we check also other cases in order to support different versions of Xerial JDBC driver
         switch (columnType)
         {
@@ -181,26 +183,18 @@ public class ValidationSqliteUtil
         case Types.TINYINT:
         case Types.SMALLINT:
         case Types.BIGINT: // returned only by older versions of Xerial
-        case Types.INTEGER:
             return Types.INTEGER;
         case Types.DECIMAL:
         case Types.DOUBLE:
-        case Types.REAL:
         case Types.FLOAT:
             return Types.REAL;
         case Types.CHAR:
         case Types.CLOB:
-        case Types.VARCHAR:
             return Types.VARCHAR;
         case Types.BINARY:
-        case Types.BLOB:
             return Types.BLOB;
-        // note that this is returned only by older versions of Xerial JDBC driver,
-        // in newer versions the concrete types are returned
-        case Types.NULL:
-            return Types.NULL;
         default:
-            return Types.NUMERIC;
+            return columnType;
         }
     }
 
@@ -231,7 +225,7 @@ public class ValidationSqliteUtil
         case Types.NULL:
             return "NULL";
         default:
-            return "UNKNOWN";
+            return "UNKNOWN (" + columnType + ")";
         }
     }
 }

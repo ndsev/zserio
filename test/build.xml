@@ -23,7 +23,7 @@ spotbugs.home_dir            - Location of the spotbugs tool. If not set, spotbu
     <property name="3rdparty.jar_dir" location="${zserio.root_dir}/3rdparty/java"/>
     <property name="3rdparty.junit.jar_file"
         location="${3rdparty.jar_dir}/junit-platform-console-standalone-1.8.2.jar"/>
-    <property name="3rdparty.sqlitejdbc.jar_file" location="${3rdparty.jar_dir}/sqlite-jdbc-3.23.1.jar"/>
+    <property name="3rdparty.sqlitejdbc.jar_file" location="${3rdparty.jar_dir}/sqlitejdbc-3.39.4.jar"/>
 
     <property name="zserio_java_test.build_dir" location="${zserio.root_dir}/build/test/java"/>
     <property name="zserio_java_test.log_file" location="${zserio_java_test.build_dir}/test_log.txt"/>

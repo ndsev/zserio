@@ -302,7 +302,11 @@ public class ${name}
      *    columns are correct and if each column has expected type and expected 'isNotNull' and 'isPrimaryKey' 
      *    flags.
      *
-     * 2. Validation of column values.
+     * 2. Validation of column value types.
+     *
+     *    If column value is not null, it is checked if value type is the same as column type in the schema.
+     *
+     * 3. Validation of column values.
      *
      *    Each blob or integer value stored in table is read from database and checked. Blobs are read from
      *    the bit stream and written again. Then read bit stream is binary compared with the written stream.
@@ -644,21 +648,23 @@ ${I}                (${parameter.typeInfo.typeFullName})(${parameter.expression}
             java.util.List<zserio.runtime.validation.ValidationError> errors, java.sql.ResultSet resultSet)
             throws java.sql.SQLException
     {
-        final java.sql.ResultSetMetaData metaData = resultSet.getMetaData();
-        final int type = zserio.runtime.validation.ValidationSqliteUtil.sqlTypeToSqliteType(
-                metaData.getColumnType(${field?index + 1}));
-        if (type == java.sql.Types.NULL)
-            return true;
-
-        if (type != java.sql.Types.${field.sqlTypeData.traditionalName})
+        // don't check null column values because new JDBC returns NUMERIC type for null in virtual tables
+        // note that known Xerial JDBC drivers do not apply automatic type conversion in getObject method
+        if (resultSet.getObject(${field?index + 1}) != null)
         {
-            errors.add(new zserio.runtime.validation.ValidationError(tableName, "${field.name}",
-                    getRowKeyValues(resultSet),
-                    zserio.runtime.validation.ValidationError.Type.INVALID_COLUMN_TYPE,
-                    "Column ${name}.${field.name} type check failed (" +
-                    zserio.runtime.validation.ValidationSqliteUtil.sqliteColumnTypeName(type) +
-                    " doesn't match to ${field.sqlTypeData.name})!"));
-            return false;
+            final java.sql.ResultSetMetaData metaData = resultSet.getMetaData();
+            final int type = zserio.runtime.validation.ValidationSqliteUtil.sqlTypeToSqliteType(
+                    metaData.getColumnType(${field?index + 1}));
+            if (type != java.sql.Types.${field.sqlTypeData.traditionalName})
+            {
+                errors.add(new zserio.runtime.validation.ValidationError(tableName, "${field.name}",
+                        getRowKeyValues(resultSet),
+                        zserio.runtime.validation.ValidationError.Type.INVALID_COLUMN_TYPE,
+                        "Column ${name}.${field.name} type check failed (" +
+                        zserio.runtime.validation.ValidationSqliteUtil.sqliteColumnTypeName(type) +
+                        " doesn't match to ${field.sqlTypeData.name})!"));
+                return false;
+            }
         }
 
         return true;

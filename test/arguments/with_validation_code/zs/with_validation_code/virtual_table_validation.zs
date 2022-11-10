@@ -1,8 +1,14 @@
 package with_validation_code.virtual_table_validation;
 
+subtype int16 AnotherId;
+
 sql_table TestTable using fts4
 {
+    sql_virtual int64 docId;
     string text;
+    AnotherId anotherId;
+
+    sql "notindexed='anotherId'";
 };
 
 sql_table VirtualTable using fts4aux
