@@ -88,7 +88,7 @@ public class FieldConstraintsTest
         final SQLException thrown =
                 assertThrows(SQLException.class, () -> fieldConstraintsTable.write(Arrays.asList(row)));
 
-        assertThat(thrown.getMessage(), containsString("CHECK constraint failed: fieldConstraintsTable"));
+        assertThat(thrown.getMessage(), containsString("CHECK constraint failed: sqlCheckConstant < 123"));
     }
 
     @Test
@@ -102,7 +102,8 @@ public class FieldConstraintsTest
         final SQLException thrown =
                 assertThrows(SQLException.class, () -> fieldConstraintsTable.write(Arrays.asList(row)));
 
-        assertThat(thrown.getMessage(), containsString("CHECK constraint failed: fieldConstraintsTable"));
+        assertThat(thrown.getMessage(),
+                containsString("CHECK constraint failed: sqlCheckImportedConstant < 321"));
     }
 
     @Test
@@ -115,7 +116,7 @@ public class FieldConstraintsTest
         final SQLException thrown =
                 assertThrows(SQLException.class, () -> fieldConstraintsTable.write(Arrays.asList(row)));
 
-        assertThat(thrown.getMessage(), containsString("CHECK constraint failed: fieldConstraintsTable"));
+        assertThat(thrown.getMessage(), containsString("CHECK constraint failed: sqlCheckUnicodeEscape == 1"));
     }
 
     @Test
@@ -128,7 +129,7 @@ public class FieldConstraintsTest
         final SQLException thrown =
                 assertThrows(SQLException.class, () -> fieldConstraintsTable.write(Arrays.asList(row)));
 
-        assertThat(thrown.getMessage(), containsString("CHECK constraint failed: fieldConstraintsTable"));
+        assertThat(thrown.getMessage(), containsString("CHECK constraint failed: sqlCheckHexEscape == 2"));
     }
 
     @Test
@@ -141,7 +142,7 @@ public class FieldConstraintsTest
         final SQLException thrown =
                 assertThrows(SQLException.class, () -> fieldConstraintsTable.write(Arrays.asList(row)));
 
-        assertThat(thrown.getMessage(), containsString("CHECK constraint failed: fieldConstraintsTable"));
+        assertThat(thrown.getMessage(), containsString("CHECK constraint failed: sqlCheckOctalEscape == 3"));
     }
 
     private void fillRow(FieldConstraintsTableRow row)
