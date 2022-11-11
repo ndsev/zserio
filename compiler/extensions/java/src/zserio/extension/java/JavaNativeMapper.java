@@ -3,6 +3,7 @@ package zserio.extension.java;
 import zserio.ast.ArrayInstantiation;
 import zserio.ast.BitmaskType;
 import zserio.ast.BooleanType;
+import zserio.ast.BytesType;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
 import zserio.ast.Constant;
@@ -38,6 +39,7 @@ import zserio.extension.java.types.NativeBitBufferType;
 import zserio.extension.java.types.NativeBitmaskType;
 import zserio.extension.java.types.NativeBooleanType;
 import zserio.extension.java.types.NativeByteType;
+import zserio.extension.java.types.NativeBytesType;
 import zserio.extension.java.types.NativeCompoundType;
 import zserio.extension.java.types.NativeDoubleType;
 import zserio.extension.java.types.NativeEnumType;
@@ -95,7 +97,8 @@ final class JavaNativeMapper
         final JavaNativeType nativeType = javaTypes != null ? javaTypes.getType() : null;
         if (nativeType == null)
         {
-            throw new ZserioExtensionException("Unhandled type '" + typeInstantiation.getClass().getName() +
+            final ZserioType referencedType = typeInstantiation.getTypeReference().getType();
+            throw new ZserioExtensionException("Unhandled type '" + referencedType.getClass().getName() +
                     "' in JavaNativeMapper!");
         }
 
@@ -108,7 +111,8 @@ final class JavaNativeMapper
         final JavaNativeType nativeType = javaTypes != null ? javaTypes.getType() : null;
         if (nativeType == null)
         {
-            throw new ZserioExtensionException("Unhandled type '" + typeReference.getClass().getName() +
+            final ZserioType referencedType = typeReference.getType();
+            throw new ZserioExtensionException("Unhandled type '" + referencedType.getClass().getName() +
                     "' in JavaNativeMapper!");
         }
 
@@ -427,6 +431,12 @@ final class JavaNativeMapper
         }
 
         @Override
+        public void visitBytesType(BytesType type)
+        {
+            javaTypes = new JavaNativeTypes(bytesType);
+        }
+
+        @Override
         public void visitStringType(StringType type)
         {
             javaTypes = new JavaNativeTypes(stringType);
@@ -545,6 +555,7 @@ final class JavaNativeMapper
     private final static NativeBooleanType booleanType = new NativeBooleanType(false);
     private final static NativeBooleanType booleanNullableType = new NativeBooleanType(true);
 
+    private final static NativeBytesType bytesType = new NativeBytesType();
     private final static NativeStringType stringType = new NativeStringType();
 
     private final static NativeArrayTraits float16ArrayTraits = new NativeArrayTraits("Float16ArrayTraits");

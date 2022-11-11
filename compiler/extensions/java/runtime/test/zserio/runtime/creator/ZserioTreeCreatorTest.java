@@ -54,6 +54,7 @@ public class ZserioTreeCreatorTest
         creator.setValue("value", (long)10);
         creator.setValue("text", "nested");
         creator.setValue("data", new BitBuffer(new byte[] {0x3c}, 6));
+        creator.setValue("bytesData", new byte[] {(byte)0xff});
         creator.setValue("dummyEnum", ZserioTreeCreatorTestObject.DummyEnum.ONE);
         creator.setValue("dummyBitmask", ZserioTreeCreatorTestObject.DummyBitmask.Values.WRITE);
         creator.endCompound();
@@ -74,6 +75,9 @@ public class ZserioTreeCreatorTest
         creator.beginArray("externArray");
         creator.addValueElement(new BitBuffer(new byte[] {0x0f}, 4));
         creator.endArray();
+        creator.beginArray("bytesArray");
+        creator.addValueElement(new byte[] {(byte)0xca, (byte)0xfe});
+        creator.endArray();
         creator.setValue("optionalBool", false);
         creator.beginCompound("optionalNested");
         creator.setValue("text", "optionalNested");
@@ -90,6 +94,7 @@ public class ZserioTreeCreatorTest
         assertEquals(10, dummyObject.getNested().getValue());
         assertEquals("nested", dummyObject.getNested().getText());
         assertArrayEquals(new byte[] {0x3c}, dummyObject.getNested().getData().getBuffer());
+        assertArrayEquals(new byte[] {(byte)0xff}, dummyObject.getNested().getBytesData());
         assertEquals(6, dummyObject.getNested().getData().getBitSize());
         assertEquals(ZserioTreeCreatorTestObject.DummyEnum.ONE, dummyObject.getNested().getDummyEnum());
         assertEquals(ZserioTreeCreatorTestObject.DummyBitmask.Values.WRITE, dummyObject.getNested().getDummyBitmask());
@@ -102,6 +107,8 @@ public class ZserioTreeCreatorTest
         assertArrayEquals(new String[] {"this", "is", "text", "array"}, dummyObject.getTextArray());
         assertEquals(1, dummyObject.getExternArray().length);
         assertArrayEquals(new byte[] {0x0f}, dummyObject.getExternArray()[0].getBuffer());
+        assertEquals(1, dummyObject.getBytesArray().length);
+        assertArrayEquals(new byte[] {(byte)0xca, (byte)0xfe}, dummyObject.getBytesArray()[0]);
         assertEquals(4, dummyObject.getExternArray()[0].getBitSize());
         assertEquals(false, dummyObject.getOptionalBool());
         assertEquals("optionalNested", dummyObject.getOptionalNested().getText());

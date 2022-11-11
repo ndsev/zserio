@@ -395,7 +395,7 @@ public class WithTypeInfoCodeTest
         assertEquals(0, typeInfo.getTemplateArguments().size());
 
         final List<FieldInfo> fields = typeInfo.getFields();
-        assertEquals(13, fields.size());
+        assertEquals(15, fields.size());
 
         // simpleStruct
         final FieldInfo simpleStructField = fields.get(0);
@@ -675,8 +675,58 @@ public class WithTypeInfoCodeTest
         assertFalse(externArrayField.isPacked());
         assertFalse(externArrayField.isImplicit());
 
+        // externData
+        final FieldInfo bytesDataField = fields.get(12);
+        assertEquals("bytesData", bytesDataField.getSchemaName());
+        assertEquals("getBytesData", bytesDataField.getGetterName());
+        assertEquals("setBytesData", bytesDataField.getSetterName());
+
+        assertEquals("bytes", bytesDataField.getTypeInfo().getSchemaName());
+        assertEquals(SchemaType.BYTES, bytesDataField.getTypeInfo().getSchemaType());
+        assertEquals(JavaType.BYTES, bytesDataField.getTypeInfo().getJavaType());
+        assertEquals(byte[].class, bytesDataField.getTypeInfo().getJavaClass());
+
+        assertEquals(0, bytesDataField.getTypeArguments().size());
+        assertEquals(null, bytesDataField.getAlignment());
+        assertEquals(null, bytesDataField.getOffset());
+        assertEquals(null, bytesDataField.getInitializer());
+        assertFalse(bytesDataField.isOptional());
+        assertEquals(null, bytesDataField.getOptionalCondition());
+        assertEquals("", bytesDataField.getIsUsedIndicatorName());
+        assertEquals("", bytesDataField.getIsSetIndicatorName());
+        assertEquals(null, bytesDataField.getConstraint());
+        assertFalse(bytesDataField.isArray());
+        assertEquals(null, bytesDataField.getArrayLength());
+        assertFalse(bytesDataField.isPacked());
+        assertFalse(bytesDataField.isImplicit());
+
+        // externArray
+        final FieldInfo bytesArrayField = fields.get(13);
+        assertEquals("bytesArray", bytesArrayField.getSchemaName());
+        assertEquals("getBytesArray", bytesArrayField.getGetterName());
+        assertEquals("setBytesArray", bytesArrayField.getSetterName());
+
+        assertEquals("bytes", bytesArrayField.getTypeInfo().getSchemaName());
+        assertEquals(SchemaType.BYTES, bytesArrayField.getTypeInfo().getSchemaType());
+        assertEquals(JavaType.BYTES, bytesArrayField.getTypeInfo().getJavaType());
+        assertEquals(byte[].class, bytesArrayField.getTypeInfo().getJavaClass());
+
+        assertEquals(0, bytesArrayField.getTypeArguments().size());
+        assertEquals(null, bytesArrayField.getAlignment());
+        assertEquals(null, bytesArrayField.getOffset());
+        assertEquals(null, bytesArrayField.getInitializer());
+        assertFalse(bytesArrayField.isOptional());
+        assertEquals(null, bytesArrayField.getOptionalCondition());
+        assertEquals("", bytesArrayField.getIsUsedIndicatorName());
+        assertEquals("", bytesArrayField.getIsSetIndicatorName());
+        assertEquals(null, bytesArrayField.getConstraint());
+        assertTrue(bytesArrayField.isArray());
+        assertEquals(null, bytesArrayField.getArrayLength());
+        assertFalse(bytesArrayField.isPacked());
+        assertFalse(bytesArrayField.isImplicit());
+
         // implicitArray
-        final FieldInfo implicitArrayField = fields.get(12);
+        final FieldInfo implicitArrayField = fields.get(14);
         assertEquals("implicitArray", implicitArrayField.getSchemaName());
         assertEquals("getImplicitArray", implicitArrayField.getGetterName());
         assertEquals("setImplicitArray", implicitArrayField.getSetterName());
@@ -934,7 +984,7 @@ public class WithTypeInfoCodeTest
         assertEquals(0, typeInfo.getTemplateArguments().size());
 
         final List<FieldInfo> fields = typeInfo.getFields();
-        assertEquals(13, fields.size());
+        assertEquals(14, fields.size());
 
         // simpleStruct
         final FieldInfo simpleStructField = fields.get(0);
@@ -1200,8 +1250,33 @@ public class WithTypeInfoCodeTest
         assertFalse(optionalExternField.isPacked());
         assertFalse(optionalExternField.isImplicit());
 
+        // optionalBytes
+        final FieldInfo optionalBytesField = fields.get(11);
+        assertEquals("optionalBytes", optionalBytesField.getSchemaName());
+        assertEquals("getOptionalBytes", optionalBytesField.getGetterName());
+        assertEquals("setOptionalBytes", optionalBytesField.getSetterName());
+
+        assertEquals("bytes", optionalBytesField.getTypeInfo().getSchemaName());
+        assertEquals(SchemaType.BYTES, optionalBytesField.getTypeInfo().getSchemaType());
+        assertEquals(JavaType.BYTES, optionalBytesField.getTypeInfo().getJavaType());
+        assertEquals(byte[].class, optionalBytesField.getTypeInfo().getJavaClass());
+
+        assertEquals(0, optionalBytesField.getTypeArguments().size());
+        assertEquals(null, optionalBytesField.getAlignment());
+        assertEquals(null, optionalBytesField.getOffset());
+        assertEquals(null, optionalBytesField.getInitializer());
+        assertTrue(optionalBytesField.isOptional());
+        assertEquals(null, optionalBytesField.getOptionalCondition());
+        assertEquals("isOptionalBytesUsed", optionalBytesField.getIsUsedIndicatorName());
+        assertEquals("isOptionalBytesSet", optionalBytesField.getIsSetIndicatorName());
+        assertEquals(null, optionalBytesField.getConstraint());
+        assertFalse(optionalBytesField.isArray());
+        assertEquals(null, optionalBytesField.getArrayLength());
+        assertFalse(optionalBytesField.isPacked());
+        assertFalse(optionalBytesField.isImplicit());
+
         // enumArray
-        final FieldInfo enumArrayField = fields.get(11);
+        final FieldInfo enumArrayField = fields.get(12);
         assertEquals("enumArray", enumArrayField.getSchemaName());
         assertEquals("getEnumArray", enumArrayField.getGetterName());
         assertEquals("setEnumArray", enumArrayField.getSetterName());
@@ -1223,7 +1298,7 @@ public class WithTypeInfoCodeTest
         assertFalse(enumArrayField.isImplicit());
 
         // bitmaskArray
-        final FieldInfo bitmaskArrayField = fields.get(12);
+        final FieldInfo bitmaskArrayField = fields.get(13);
         assertEquals("bitmaskArray", bitmaskArrayField.getSchemaName());
         assertEquals("getBitmaskArray", bitmaskArrayField.getGetterName());
         assertEquals("setBitmaskArray", bitmaskArrayField.getSetterName());

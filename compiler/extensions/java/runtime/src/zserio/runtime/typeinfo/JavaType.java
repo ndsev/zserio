@@ -21,6 +21,8 @@ public enum JavaType
     FLOAT,
     /** Java double type */
     DOUBLE,
+    /** Java bytes type (mapped to byte[]) */
+    BYTES,
     /** Java String type */
     STRING,
     /** Java zserio.runtime.io.BitBuffer type */

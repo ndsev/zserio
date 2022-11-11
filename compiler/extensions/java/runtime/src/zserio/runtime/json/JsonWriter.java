@@ -288,6 +288,9 @@ public class JsonWriter implements WalkObserver, AutoCloseable
         case DOUBLE:
             JsonEncoder.encodeFloatingPoint(out, ((Number)value).doubleValue());
             break;
+        case BYTES:
+            writeBytes((byte[])value);
+            break;
         case STRING:
             JsonEncoder.encodeString(out, (String)value);
             break;
@@ -312,6 +315,24 @@ public class JsonWriter implements WalkObserver, AutoCloseable
         }
 
         flush();
+    }
+
+    private void writeBytes(byte[] bytes)
+    {
+        beginObject();
+        beginItem();
+        writeKey("buffer");
+        beginArray();
+        for (byte byteValue : bytes)
+        {
+            beginItem();
+            // note that we don't want to have negative numbers in bytes
+            JsonEncoder.encodeIntegral(out, Byte.toUnsignedInt(byteValue));
+            endItem();
+        }
+        endArray();
+        endItem();
+        endObject();
     }
 
     private void writeBitBuffer(BitBuffer bitBuffer)

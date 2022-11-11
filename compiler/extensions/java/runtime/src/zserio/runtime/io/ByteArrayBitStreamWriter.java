@@ -242,6 +242,21 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
     }
 
     @Override
+    public void writeBytes(final byte[] value) throws IOException
+    {
+        writeVarSize(value.length);
+        if (bitOffset == 0)
+        {
+            write(value);
+        }
+        else
+        {
+            for (byte b : value)
+                writeSignedBits(b, 8);
+        }
+    }
+
+    @Override
     public void writeString(final String value) throws IOException
     {
         final byte[] bytes = value.getBytes(DEFAULT_CHARSET_NAME);

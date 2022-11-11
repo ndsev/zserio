@@ -5,17 +5,13 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.BufferedReader;
 
 import zserio.runtime.walker.AndWalkFilter;
 import zserio.runtime.walker.ArrayLengthWalkFilter;
@@ -212,6 +208,7 @@ public class DebugStringTest
         assertTrue(withTypeInfoCode.getParameterizedStruct().getArray().length <= maxArrayLength);
         assertTrue(withTypeInfoCode.getTemplatedParameterizedStruct().getArray().length <= maxArrayLength);
         assertTrue(withTypeInfoCode.getExternArray().length <= maxArrayLength);
+        assertTrue(withTypeInfoCode.getBytesArray().length <= maxArrayLength);
         assertTrue(withTypeInfoCode.getImplicitArray().length <= maxArrayLength);
     }
 
@@ -229,6 +226,8 @@ public class DebugStringTest
         assertEquals(null, withTypeInfoCode.getTemplatedParameterizedStruct());
         assertEquals(null, withTypeInfoCode.getExternData());
         assertEquals(null, withTypeInfoCode.getExternArray());
+        assertEquals(null, withTypeInfoCode.getBytesData());
+        assertEquals(null, withTypeInfoCode.getBytesArray());
         assertEquals(null, withTypeInfoCode.getImplicitArray());
     }
 
@@ -251,6 +250,8 @@ public class DebugStringTest
         assertNotEquals(null, withTypeInfoCode.getTemplatedParameterizedStruct());
         assertNotEquals(null, withTypeInfoCode.getExternData());
         assertEquals(0, withTypeInfoCode.getExternArray().length);
+        assertNotEquals(null, withTypeInfoCode.getBytesData());
+        assertEquals(0, withTypeInfoCode.getBytesArray().length);
         assertEquals(0, withTypeInfoCode.getImplicitArray().length);
     }
 

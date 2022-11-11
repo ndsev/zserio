@@ -69,10 +69,21 @@ public class JsonReader implements AutoCloseable
         return creatorAdapter.get();
     }
 
-     /**
+    /**
+     * Adapter for values which are encoded as a JSON object.
+     */
+    private interface ObjectValueAdapter extends JsonParser.Observer
+    {
+        /**
+         * Gets the parsed value.
+         */
+        Object get();
+    }
+
+    /**
      * The adapter which allows to parse Bit Buffer object from JSON.
      */
-    private static class BitBufferAdapter implements JsonParser.Observer
+    private static class BitBufferAdapter implements ObjectValueAdapter
     {
         /**
          * Constructor.
@@ -87,8 +98,9 @@ public class JsonReader implements AutoCloseable
         /**
          * Gets the created Bit Buffer object.
          *
-         * @return Parser Bit Buffer object.
+         * @return Parsed Bit Buffer object.
          */
+        @Override
         public BitBuffer get()
         {
             if (buffer == null || bitSize == null)
@@ -200,6 +212,118 @@ public class JsonReader implements AutoCloseable
     }
 
     /**
+     * The adapter which allows to parse bytes object from JSON.
+     */
+    private static class BytesAdapter implements ObjectValueAdapter
+    {
+        /**
+         * Constructor.
+         */
+        public BytesAdapter()
+        {
+            state = State.VISIT_KEY;
+            buffer = null;
+        }
+
+        /**
+         * Gets the created bytes object.
+         *
+         * @return Parsed bytes object.
+         */
+        @Override
+        public byte[] get()
+        {
+            if (buffer == null)
+                throw new ZserioError("JsonReader: Unexpected end in bytes!");
+
+            final byte[] bytes = new byte[buffer.size()];
+            for (int i = 0; i < bytes.length; ++i)
+                bytes[i] = buffer.get(i);
+
+            return bytes;
+        }
+
+        @Override
+        public void beginObject()
+        {
+            throw new ZserioError("JsonReader: Unexpected begin object in bytes!");
+        }
+
+        @Override
+        public void endObject()
+        {
+            throw new ZserioError("JsonReader: Unexpected end object in bytes!");
+        }
+
+        @Override
+        public void beginArray()
+        {
+            if (state == State.BEGIN_ARRAY_BUFFER)
+                state = State.VISIT_VALUE_BUFFER;
+            else
+                throw new ZserioError("JsonReader: Unexpected begin array in bytes!");
+        }
+
+        @Override
+        public void endArray()
+        {
+            if (state == State.VISIT_VALUE_BUFFER)
+                state = State.VISIT_KEY;
+            else
+                throw new ZserioError("JsonReader: Unexpected end array in bytes!");
+        }
+
+        @Override
+        public void visitKey(String key)
+        {
+            if (state == State.VISIT_KEY)
+            {
+                if (key.equals("buffer"))
+                    state = State.BEGIN_ARRAY_BUFFER;
+                else
+                    throw new ZserioError("JsonReader: Unknown key '" + key + "' in bytes!");
+            }
+            else
+            {
+                throw new ZserioError("JsonReader: Unexpected key '" + key + "' in bytes!");
+            }
+        }
+
+        @Override
+        public void visitValue(Object value)
+        {
+            if (state == State.VISIT_VALUE_BUFFER && value instanceof BigInteger)
+            {
+                if (buffer == null)
+                    buffer = new ArrayList<Byte>();
+
+                // bit buffer stores 8-bit unsigned values in byte type
+                final BigInteger intValue = (BigInteger)value;
+                if (intValue.compareTo(BigInteger.ZERO) < 0 || intValue.compareTo(BigInteger.valueOf(255)) > 0)
+                {
+                    throw new ZserioError("JsonReader: Cannot create byte for bytes from value '" +
+                            value.toString() + "'!");
+                }
+                buffer.add(((BigInteger)value).byteValue());
+            }
+            else
+            {
+                throw new ZserioError("JsonReader: Unexpected value '" + value + "' in bytes!");
+            }
+        }
+
+        private enum State
+        {
+            VISIT_KEY,
+            BEGIN_ARRAY_BUFFER,
+            VISIT_VALUE_BUFFER,
+        }
+
+        private State state;
+        private List<Byte> buffer;
+    }
+
+    /**
      * The adapter which allows to use ZserioTreeCreator as an JsonReader observer.
      */
     private static class CreatorAdapter implements JsonParser.Observer
@@ -212,7 +336,7 @@ public class JsonReader implements AutoCloseable
             creator = null;
             keyStack = new Stack<String>();
             object = null;
-            bitBufferAdapter = null;
+            objectValueAdapter = null;
         }
 
         /**
@@ -243,9 +367,9 @@ public class JsonReader implements AutoCloseable
         @Override
         public void beginObject()
         {
-            if (bitBufferAdapter != null)
+            if (objectValueAdapter != null)
             {
-                bitBufferAdapter.beginObject();
+                objectValueAdapter.beginObject();
             }
             else
             {
@@ -261,15 +385,21 @@ public class JsonReader implements AutoCloseable
                     final String lastKey = keyStack.peek();
                     if (!lastKey.isEmpty())
                     {
-                        if (creator.getFieldType(lastKey).getJavaClass().equals(BitBuffer.class))
-                            bitBufferAdapter = new BitBufferAdapter();
+                        final JavaType javaType = creator.getFieldType(lastKey).getJavaType();
+                        if (javaType == JavaType.BIT_BUFFER)
+                            objectValueAdapter = new BitBufferAdapter();
+                        else if (javaType == JavaType.BYTES)
+                            objectValueAdapter = new BytesAdapter();
                         else
                             creator.beginCompound(lastKey);
                     }
                     else
                     {
-                        if (creator.getElementType().getJavaClass().equals(BitBuffer.class))
-                            bitBufferAdapter = new BitBufferAdapter();
+                        final JavaType javaType = creator.getElementType().getJavaType();
+                        if (javaType == JavaType.BIT_BUFFER)
+                            objectValueAdapter = new BitBufferAdapter();
+                        else if (javaType == JavaType.BYTES)
+                            objectValueAdapter = new BytesAdapter();
                         else
                             creator.beginCompoundElement();
                     }
@@ -280,11 +410,11 @@ public class JsonReader implements AutoCloseable
         @Override
         public void endObject()
         {
-            if (bitBufferAdapter != null)
+            if (objectValueAdapter != null)
             {
-                final BitBuffer bitBuffer = bitBufferAdapter.get();
-                bitBufferAdapter = null;
-                visitValue(bitBuffer);
+                final Object objectValue = objectValueAdapter.get();
+                objectValueAdapter = null;
+                visitValue(objectValue);
             }
             else
             {
@@ -315,9 +445,9 @@ public class JsonReader implements AutoCloseable
         @Override
         public void beginArray()
         {
-            if (bitBufferAdapter != null)
+            if (objectValueAdapter != null)
             {
-                bitBufferAdapter.beginArray();
+                objectValueAdapter.beginArray();
             }
             else
             {
@@ -336,9 +466,9 @@ public class JsonReader implements AutoCloseable
         @Override
         public void endArray()
         {
-            if (bitBufferAdapter != null)
+            if (objectValueAdapter != null)
             {
-                bitBufferAdapter.endArray();
+                objectValueAdapter.endArray();
             }
             else
             {
@@ -355,9 +485,9 @@ public class JsonReader implements AutoCloseable
         @Override
         public void visitKey(String key)
         {
-            if (bitBufferAdapter != null)
+            if (objectValueAdapter != null)
             {
-                bitBufferAdapter.visitKey(key);
+                objectValueAdapter.visitKey(key);
             }
             else
             {
@@ -371,9 +501,9 @@ public class JsonReader implements AutoCloseable
         @Override
         public void visitValue(Object value)
         {
-            if (bitBufferAdapter != null)
+            if (objectValueAdapter != null)
             {
-                bitBufferAdapter.visitValue(value);
+                objectValueAdapter.visitValue(value);
             }
             else
             {
@@ -646,7 +776,7 @@ public class JsonReader implements AutoCloseable
         private ZserioTreeCreator creator;
         private final Stack<String> keyStack;
         private Object object;
-        private BitBufferAdapter bitBufferAdapter;
+        private ObjectValueAdapter objectValueAdapter;
     }
 
     private final Reader reader;

@@ -343,6 +343,15 @@ public class AllBuiltInTypesTest
     }
 
     @Test
+    public void bytesType()
+    {
+        final byte[] testBytes = new byte[] {(byte)1, (byte)255};
+        allBuiltInTypes.setBytesType(testBytes);
+        final byte[] bytesType = allBuiltInTypes.getBytesType();
+        assertArrayEquals(testBytes, bytesType);
+    }
+
+    @Test
     public void stringType()
     {
         final String testString = "TEST";
@@ -402,7 +411,8 @@ public class AllBuiltInTypesTest
         allBuiltInTypes.setVarintType(Long.MAX_VALUE);
         allBuiltInTypes.setStringType("TEST");
         allBuiltInTypes.setExternType(getExternalBitBuffer());
-        final int expectedBitSizeOf = 1142;
+        allBuiltInTypes.setBytesType(new byte[] {(byte)1, (byte)255});
+        final int expectedBitSizeOf = 1166;
         assertEquals(expectedBitSizeOf, allBuiltInTypes.bitSizeOf());
     }
 
@@ -448,6 +458,7 @@ public class AllBuiltInTypesTest
         allBuiltInTypes.setVarintType(Long.MAX_VALUE);
         allBuiltInTypes.setStringType("TEST");
         allBuiltInTypes.setExternType(getExternalBitBuffer());
+        allBuiltInTypes.setBytesType(new byte[] {(byte)1, (byte)255});
 
         final BitStreamWriter writer = new FileBitStreamWriter(TEST_FILE);
         allBuiltInTypes.write(writer);

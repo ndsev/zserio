@@ -148,7 +148,7 @@ public class ArraysMappingTest
     }
 
     @Test
-    public void stringArrays()
+    public void stringArray()
     {
         ArraysMapping arraysMapping = new ArraysMapping();
         final String[] stringArray = new String[FIXED_ARRAY_LENGTH];
@@ -157,7 +157,16 @@ public class ArraysMappingTest
     }
 
     @Test
-    public void externArrays()
+    public void bytesArray()
+    {
+        ArraysMapping arraysMapping = new ArraysMapping();
+        final byte[][] bytesArray = new byte[FIXED_ARRAY_LENGTH][];
+        arraysMapping.setBytesArray(bytesArray);
+        assertTrue(Arrays.equals(bytesArray, arraysMapping.getBytesArray()));
+    }
+
+    @Test
+    public void externArray()
     {
         ArraysMapping arraysMapping = new ArraysMapping();
         final BitBuffer[] externArray = new BitBuffer[FIXED_ARRAY_LENGTH];

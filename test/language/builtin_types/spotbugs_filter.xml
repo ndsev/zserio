@@ -1,0 +1,14 @@
+<FindBugsFilter>
+    <Match>
+        <!-- May expose internal representation by returning reference to mutable object - this is ok -->
+        <Bug code="EI"/>
+        <Class name="~.*\.AllBuiltInTypes.*"/>
+        <Method name="getBytesType"/>
+    </Match>
+    <Match>
+        <!-- May expose internal representation by storing reference to mutable object - this is ok -->
+        <Bug code="EI2"/>
+        <Class name="~.*\.AllBuiltInTypes.*"/>
+        <Method name="setBytesType"/>
+    </Match>
+</FindBugsFilter>

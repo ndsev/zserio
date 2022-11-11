@@ -29,6 +29,8 @@ public class WithTypeInfoCodeCreator
             createTemplatedParameterizedStruct_TS32(ts32),
             createExternData(),
             new BitBuffer[] { createExternData(), createExternData() },
+            createBytesData(),
+            new byte[][] { createBytesData(), createBytesData() },
             new long[] {1, 4, 6, 4, 6, 1});
 
         return withTypeInfoCode;
@@ -64,6 +66,7 @@ public class WithTypeInfoCodeCreator
             (createOptionals) ? TestEnum.ItemThree : null,
             (createOptionals) ? TestBitmask.Values.RED.or(TestBitmask.Values._Green) : null,
             (createOptionals) ? new BitBuffer(new byte[]{(byte)0xCB, (byte)0xF0}, 12) : null,
+            (createOptionals) ? createBytesData() : null,
             new TestEnum[] { TestEnum._TWO, TestEnum.ItemThree},
             new TestBitmask[] { TestBitmask.Values._Green, TestBitmask.Values._Green, TestBitmask.Values._Green,
                     TestBitmask.Values._Green, TestBitmask.Values._Green });
@@ -161,5 +164,10 @@ public class WithTypeInfoCodeCreator
     private static BitBuffer createExternData()
     {
         return new BitBuffer(new byte[]{(byte)0xCA, (byte)0xFE}, 15);
+    }
+
+    private static byte[] createBytesData()
+    {
+        return new byte[] { (byte)0xAB, (byte)0xCD };
     }
 }

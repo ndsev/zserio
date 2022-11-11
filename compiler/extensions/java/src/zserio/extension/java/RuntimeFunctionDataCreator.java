@@ -1,6 +1,7 @@
 package zserio.extension.java;
 
 import zserio.ast.BooleanType;
+import zserio.ast.BytesType;
 import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.DynamicBitFieldType;
 import zserio.ast.ExternType;
@@ -108,6 +109,12 @@ public class RuntimeFunctionDataCreator
         public void visitExternType(ExternType type)
         {
             templateData = new RuntimeFunctionTemplateData("BitBuffer");
+        }
+
+        @Override
+        public void visitBytesType(BytesType type)
+        {
+            templateData = new RuntimeFunctionTemplateData("Bytes");
         }
 
         @Override

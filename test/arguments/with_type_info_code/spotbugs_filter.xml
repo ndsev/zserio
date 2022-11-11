@@ -17,4 +17,32 @@
         <Bug code="Nm"/>
         <Class name="with_type_info_code.SqlDatabase"/>
     </Match>
+    <Match>
+        <!-- May expose internal representation by returning reference to mutable object - this is ok -->
+        <Bug code="EI"/>
+        <Or>
+            <And>
+                <Class name="~.*\.WithTypeInfoCode.*"/>
+                <Method name="getBytesData"/>
+            </And>
+            <And>
+                <Class name="~.*\.ComplexStruct.*"/>
+                <Method name="getOptionalBytes"/>
+            </And>
+        </Or>
+    </Match>
+    <Match>
+        <!-- May expose internal representation by storing reference to mutable object - this is ok -->
+        <Bug code="EI2"/>
+        <Or>
+            <And>
+                <Class name="~.*\.WithTypeInfoCode.*"/>
+                <Method name="setBytesData"/>
+            </And>
+            <And>
+                <Class name="~.*\.ComplexStruct.*"/>
+                <Method name="setOptionalBytes"/>
+            </And>
+        </Or>
+    </Match>
 </FindBugsFilter>

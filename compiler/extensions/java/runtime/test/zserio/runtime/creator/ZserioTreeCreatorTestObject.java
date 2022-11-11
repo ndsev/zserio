@@ -25,6 +25,7 @@ import zserio.runtime.HashCodeUtil;
  *     uint32 value;
  *     string text;
  *     extern data;
+ *     optional bytesData;
  *     DummyEnum dummyEnum;
  *     DummyBitmask dummyBitmask;
  * };
@@ -36,7 +37,8 @@ import zserio.runtime.HashCodeUtil;
  *     string text;
  *     DummyNested(value) nestedArray[];
  *     string textArray[];
- *     extern externArray[];
+ *     optional extern externArray[];
+ *     optional bytesArray[];
  *     optional bool optionalBool;
  *     optional DummyNested(value) optionalNested;
  * };
@@ -406,6 +408,7 @@ public class ZserioTreeCreatorTestObject
                 long value_,
                 java.lang.String text_,
                 zserio.runtime.io.BitBuffer data_,
+                byte[] bytesData_,
                 DummyEnum dummyEnum_,
                 DummyBitmask dummyBitmask_)
         {
@@ -414,6 +417,7 @@ public class ZserioTreeCreatorTestObject
             setValue(value_);
             setText(text_);
             setData(data_);
+            setBytesData(bytesData_);
             setDummyEnum(dummyEnum_);
             setDummyBitmask(dummyBitmask_);
         }
@@ -468,6 +472,25 @@ public class ZserioTreeCreatorTestObject
                                     "getData", // getterName
                                     "setData", // setterName
                                     zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo.getBitBuffer(), // typeInfo
+                                    new java.util.ArrayList<java.util.function.BiFunction<java.lang.Object, java.lang.Integer, java.lang.Object>>(), // typeArguments
+                                    null, // alignment
+                                    null, // offset
+                                    null, // initializer
+                                    false, // isOptional
+                                    null, // optionalCondition
+                                    "", // isUsedIndicatorName
+                                    "", // isSetIndicatorName
+                                    null, // constraint
+                                    false, // isArray
+                                    null, // arrayLength
+                                    false, // isPacked
+                                    false // isImplicit
+                            ),
+                            new zserio.runtime.typeinfo.FieldInfo(
+                                    "bytesData", // schemaName
+                                    "getBytesData", // getterName
+                                    "setBytesData", // setterName
+                                    zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo.getBytes(), // typeInfo
                                     new java.util.ArrayList<java.util.function.BiFunction<java.lang.Object, java.lang.Integer, java.lang.Object>>(), // typeArguments
                                     null, // alignment
                                     null, // offset
@@ -542,6 +565,7 @@ public class ZserioTreeCreatorTestObject
             contextNode.createChild().createContext();
             contextNode.createChild();
             contextNode.createChild();
+            contextNode.createChild();
             DummyEnum.createPackingContext(contextNode.createChild());
             DummyBitmask.createPackingContext(contextNode.createChild());
         }
@@ -552,8 +576,8 @@ public class ZserioTreeCreatorTestObject
             contextNode.getChildren().get(0).getContext().init(
                     new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((32)),
                     new zserio.runtime.array.ArrayElement.LongArrayElement(value_));
-            dummyEnum_.initPackingContext(contextNode.getChildren().get(3));
-            dummyBitmask_.initPackingContext(contextNode.getChildren().get(4));
+            dummyEnum_.initPackingContext(contextNode.getChildren().get(4));
+            dummyBitmask_.initPackingContext(contextNode.getChildren().get(5));
         }
 
         @Override
@@ -570,6 +594,7 @@ public class ZserioTreeCreatorTestObject
             endBitPosition += 32;
             endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfString(text_);
             endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfBitBuffer(data_);
+            endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfBytes(bytesData_);
             endBitPosition += dummyEnum_.bitSizeOf(endBitPosition);
             endBitPosition += dummyBitmask_.bitSizeOf(endBitPosition);
 
@@ -586,9 +611,10 @@ public class ZserioTreeCreatorTestObject
                     new zserio.runtime.array.ArrayElement.LongArrayElement(value_));
             endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfString(text_);
             endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfBitBuffer(data_);
-            endBitPosition += dummyEnum_.bitSizeOf(contextNode.getChildren().get(3),
+            endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfBytes(bytesData_);
+            endBitPosition += dummyEnum_.bitSizeOf(contextNode.getChildren().get(4),
                     endBitPosition);
-            endBitPosition += dummyBitmask_.bitSizeOf(contextNode.getChildren().get(4),
+            endBitPosition += dummyBitmask_.bitSizeOf(contextNode.getChildren().get(5),
                     endBitPosition);
 
             return (int)(endBitPosition - bitPosition);
@@ -629,6 +655,16 @@ public class ZserioTreeCreatorTestObject
             this.data_ = data_;
         }
 
+        public byte[] getBytesData()
+        {
+            return bytesData_;
+        }
+
+        public void setBytesData(byte[] bytesData_)
+        {
+            this.bytesData_ = bytesData_;
+        }
+
         public DummyEnum getDummyEnum()
         {
             return dummyEnum_;
@@ -661,6 +697,7 @@ public class ZserioTreeCreatorTestObject
                         value_ == that.value_ &&
                         ((text_ == null) ? that.text_ == null : text_.equals(that.text_)) &&
                         ((data_ == null) ? that.data_ == null : data_.equals(that.data_)) &&
+                        ((bytesData_ == null) ? that.bytesData_ == null : java.util.Arrays.equals(bytesData_, that.bytesData_)) &&
                         ((dummyEnum_ == null) ? that.dummyEnum_ == null : dummyEnum_.getValue() == that.dummyEnum_.getValue()) &&
                         ((dummyBitmask_ == null) ? that.dummyBitmask_ == null : dummyBitmask_.getValue() == that.dummyBitmask_.getValue());
             }
@@ -677,6 +714,7 @@ public class ZserioTreeCreatorTestObject
             result = HashCodeUtil.calcHashCode(result, value_);
             result = HashCodeUtil.calcHashCode(result, text_);
             result = HashCodeUtil.calcHashCode(result, data_);
+            result = zserio.runtime.HashCodeUtil.calcHashCode(result, bytesData_);
             result = HashCodeUtil.calcHashCode(result, dummyEnum_);
             result = HashCodeUtil.calcHashCode(result, dummyBitmask_);
 
@@ -691,6 +729,8 @@ public class ZserioTreeCreatorTestObject
             text_ = in.readString();
 
             data_ = in.readBitBuffer();
+
+            bytesData_ = in.readBytes();
 
             dummyEnum_ = DummyEnum.readEnum(in);
 
@@ -708,9 +748,11 @@ public class ZserioTreeCreatorTestObject
 
             data_ = in.readBitBuffer();
 
-            dummyEnum_ = DummyEnum.readEnum(contextNode.getChildren().get(3), in);
+            bytesData_ = in.readBytes();
 
-            dummyBitmask_ = new DummyBitmask(contextNode.getChildren().get(4), in);
+            dummyEnum_ = DummyEnum.readEnum(contextNode.getChildren().get(4), in);
+
+            dummyBitmask_ = new DummyBitmask(contextNode.getChildren().get(5), in);
         }
 
         @Override
@@ -727,6 +769,7 @@ public class ZserioTreeCreatorTestObject
             endBitPosition += 32;
             endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfString(text_);
             endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfBitBuffer(data_);
+            endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfBytes(bytesData_);
             endBitPosition += dummyEnum_.bitSizeOf(endBitPosition);
             endBitPosition += dummyBitmask_.bitSizeOf(endBitPosition);
 
@@ -743,9 +786,10 @@ public class ZserioTreeCreatorTestObject
                     new zserio.runtime.array.ArrayElement.LongArrayElement(value_));
             endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfString(text_);
             endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfBitBuffer(data_);
-            endBitPosition = dummyEnum_.initializeOffsets(contextNode.getChildren().get(3),
+            endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfBytes(bytesData_);
+            endBitPosition = dummyEnum_.initializeOffsets(contextNode.getChildren().get(4),
                     endBitPosition);
-            endBitPosition = dummyBitmask_.initializeOffsets(contextNode.getChildren().get(4),
+            endBitPosition = dummyBitmask_.initializeOffsets(contextNode.getChildren().get(5),
                     endBitPosition);
 
             return endBitPosition;
@@ -768,6 +812,8 @@ public class ZserioTreeCreatorTestObject
 
             out.writeBitBuffer(data_);
 
+            out.writeBytes(bytesData_);
+
             dummyEnum_.write(out);
 
             dummyBitmask_.write(out);
@@ -785,15 +831,18 @@ public class ZserioTreeCreatorTestObject
 
             out.writeBitBuffer(data_);
 
-            dummyEnum_.write(contextNode.getChildren().get(3), out);
+            out.writeBytes(bytesData_);
 
-            dummyBitmask_.write(contextNode.getChildren().get(4), out);
+            dummyEnum_.write(contextNode.getChildren().get(4), out);
+
+            dummyBitmask_.write(contextNode.getChildren().get(5), out);
         }
 
         private final long param_;
         private long value_;
         private java.lang.String text_;
         private zserio.runtime.io.BitBuffer data_;
+        private byte[] bytesData_;
         private DummyEnum dummyEnum_;
         private DummyBitmask dummyBitmask_;
     }
@@ -832,6 +881,7 @@ public class ZserioTreeCreatorTestObject
                 DummyNested[] nestedArray_,
                 java.lang.String[] textArray_,
                 zserio.runtime.io.BitBuffer[] externArray_,
+                byte[][] bytesArray_,
                 java.lang.Boolean optionalBool_,
                 DummyNested optionalNested_)
         {
@@ -841,6 +891,7 @@ public class ZserioTreeCreatorTestObject
             setNestedArray(nestedArray_);
             setTextArray(textArray_);
             setExternArray(externArray_);
+            setBytesArray(bytesArray_);
             setOptionalBool(optionalBool_);
             setOptionalNested(optionalNested_);
         }
@@ -956,10 +1007,29 @@ public class ZserioTreeCreatorTestObject
                                     null, // alignment
                                     null, // offset
                                     null, // initializer
-                                    false, // isOptional
+                                    true, // isOptional
                                     null, // optionalCondition
-                                    "", // isUsedIndicatorName
-                                    "", // isSetIndicatorName
+                                    "isExternArrayUsed", // isUsedIndicatorName
+                                    "isExternArraySet", // isSetIndicatorName
+                                    null, // constraint
+                                    true, // isArray
+                                    null, // arrayLength
+                                    false, // isPacked
+                                    false // isImplicit
+                            ),
+                            new zserio.runtime.typeinfo.FieldInfo(
+                                    "bytesArray", // schemaName
+                                    "getBytesArray", // getterName
+                                    "setBytesArray", // setterName
+                                    zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo.getBytes(), // typeInfo
+                                    new java.util.ArrayList<java.util.function.BiFunction<java.lang.Object, java.lang.Integer, java.lang.Object>>(), // typeArguments
+                                    null, // alignment
+                                    null, // offset
+                                    null, // initializer
+                                    true, // isOptional
+                                    null, // optionalCondition
+                                    "isBytesArrayUsed", // isUsedIndicatorName
+                                    "isBytesArraySet", // isSetIndicatorName
                                     null, // constraint
                                     true, // isArray
                                     null, // arrayLength
@@ -1025,6 +1095,7 @@ public class ZserioTreeCreatorTestObject
             contextNode.createChild();
             contextNode.createChild();
             contextNode.createChild();
+            contextNode.createChild();
             DummyNested.createPackingContext(contextNode.createChild());
         }
 
@@ -1037,7 +1108,7 @@ public class ZserioTreeCreatorTestObject
             nested_.initPackingContext(contextNode.getChildren().get(1));
             if (isOptionalNestedUsed())
             {
-                optionalNested_.initPackingContext(contextNode.getChildren().get(7));
+                optionalNested_.initPackingContext(contextNode.getChildren().get(8));
             }
         }
 
@@ -1057,7 +1128,16 @@ public class ZserioTreeCreatorTestObject
             endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfString(text_);
             endBitPosition += nestedArray_.bitSizeOf(endBitPosition);
             endBitPosition += textArray_.bitSizeOf(endBitPosition);
-            endBitPosition += externArray_.bitSizeOf(endBitPosition);
+            endBitPosition += 1;
+            if (isExternArrayUsed())
+            {
+                endBitPosition += externArray_.bitSizeOf(endBitPosition);
+            }
+            endBitPosition += 1;
+            if (isBytesArrayUsed())
+            {
+                endBitPosition += bytesArray_.bitSizeOf(endBitPosition);
+            }
             endBitPosition += 1;
             if (isOptionalBoolUsed())
             {
@@ -1085,7 +1165,16 @@ public class ZserioTreeCreatorTestObject
             endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfString(text_);
             endBitPosition += nestedArray_.bitSizeOfPacked(endBitPosition);
             endBitPosition += textArray_.bitSizeOf(endBitPosition);
-            endBitPosition += externArray_.bitSizeOf(endBitPosition);
+            endBitPosition += 1;
+            if (isExternArrayUsed())
+            {
+                endBitPosition += externArray_.bitSizeOf(endBitPosition);
+            }
+            endBitPosition += 1;
+            if (isBytesArrayUsed())
+            {
+                endBitPosition += bytesArray_.bitSizeOf(endBitPosition);
+            }
             endBitPosition += 1;
             if (isOptionalBoolUsed())
             {
@@ -1094,7 +1183,7 @@ public class ZserioTreeCreatorTestObject
             endBitPosition += 1;
             if (isOptionalNestedUsed())
             {
-                endBitPosition += optionalNested_.bitSizeOf(contextNode.getChildren().get(7),
+                endBitPosition += optionalNested_.bitSizeOf(contextNode.getChildren().get(8),
                         endBitPosition);
             }
 
@@ -1159,15 +1248,72 @@ public class ZserioTreeCreatorTestObject
 
         public zserio.runtime.io.BitBuffer[] getExternArray()
         {
-            return externArray_.getRawArray();
+            return (externArray_ == null) ? null : externArray_.getRawArray();
         }
 
         public void setExternArray(zserio.runtime.io.BitBuffer[] externArray_)
         {
-            this.externArray_ = new zserio.runtime.array.Array(
-                    new zserio.runtime.array.RawArray.BitBufferRawArray(externArray_),
-                    new zserio.runtime.array.ArrayTraits.BitBufferArrayTraits(),
-                    zserio.runtime.array.ArrayType.AUTO);
+            if (externArray_ == null)
+            {
+                this.externArray_ = null;
+            }
+            else
+            {
+                this.externArray_ = new zserio.runtime.array.Array(
+                        new zserio.runtime.array.RawArray.BitBufferRawArray(externArray_),
+                        new zserio.runtime.array.ArrayTraits.BitBufferArrayTraits(),
+                        zserio.runtime.array.ArrayType.AUTO);
+            }
+        }
+
+        public boolean isExternArrayUsed()
+        {
+            return isExternArraySet();
+        }
+
+        public boolean isExternArraySet()
+        {
+            return (externArray_ != null);
+        }
+
+        public void resetExternArray()
+        {
+            externArray_ = null;
+        }
+
+        public byte[][] getBytesArray()
+        {
+            return (bytesArray_ == null) ? null : bytesArray_.getRawArray();
+        }
+
+        public void setBytesArray(byte[][] bytesArray_)
+        {
+            if (bytesArray_ == null)
+            {
+                this.bytesArray_ = null;
+            }
+            else
+            {
+                this.bytesArray_ = new zserio.runtime.array.Array(
+                        new zserio.runtime.array.RawArray.BytesRawArray(bytesArray_),
+                        new zserio.runtime.array.ArrayTraits.BytesArrayTraits(),
+                        zserio.runtime.array.ArrayType.AUTO);
+            }
+        }
+
+        public boolean isBytesArrayUsed()
+        {
+            return isBytesArraySet();
+        }
+
+        public boolean isBytesArraySet()
+        {
+            return (bytesArray_ != null);
+        }
+
+        public void resetBytesArray()
+        {
+            bytesArray_ = null;
         }
 
         public java.lang.Boolean getOptionalBool()
@@ -1233,7 +1379,10 @@ public class ZserioTreeCreatorTestObject
                         ((text_ == null) ? that.text_ == null : text_.equals(that.text_)) &&
                         ((nestedArray_ == null) ? that.nestedArray_ == null : nestedArray_.equals(that.nestedArray_)) &&
                         ((textArray_ == null) ? that.textArray_ == null : textArray_.equals(that.textArray_)) &&
-                        ((externArray_ == null) ? that.externArray_ == null : externArray_.equals(that.externArray_)) &&
+                        ((!isExternArrayUsed()) ? !that.isExternArrayUsed() :
+                            ((externArray_ == null) ? that.externArray_ == null : externArray_.equals(that.externArray_))) &&
+                        ((!isBytesArrayUsed()) ? !that.isBytesArrayUsed() :
+                            ((bytesArray_ == null) ? that.bytesArray_ == null : bytesArray_.equals(that.bytesArray_))) &&
                         ((!isOptionalBoolUsed()) ? !that.isOptionalBoolUsed() :
                             ((optionalBool_ == null) ? that.optionalBool_ == null : optionalBool_.equals(that.optionalBool_))) &&
                         ((!isOptionalNestedUsed()) ? !that.isOptionalNestedUsed() :
@@ -1254,6 +1403,10 @@ public class ZserioTreeCreatorTestObject
             result = HashCodeUtil.calcHashCode(result, nestedArray_);
             result = HashCodeUtil.calcHashCode(result, textArray_);
             result = HashCodeUtil.calcHashCode(result, externArray_);
+            if (isExternArrayUsed())
+                result = zserio.runtime.HashCodeUtil.calcHashCode(result, externArray_);
+            if (isBytesArrayUsed())
+                result = zserio.runtime.HashCodeUtil.calcHashCode(result, bytesArray_);
             if (isOptionalBoolUsed())
                 result = HashCodeUtil.calcHashCode(result, optionalBool_);
             if (isOptionalNestedUsed())
@@ -1283,11 +1436,23 @@ public class ZserioTreeCreatorTestObject
                     zserio.runtime.array.ArrayType.AUTO);
             textArray_.read(in);
 
-            externArray_ = new zserio.runtime.array.Array(
-                    new zserio.runtime.array.RawArray.BitBufferRawArray(),
-                    new zserio.runtime.array.ArrayTraits.BitBufferArrayTraits(),
-                    zserio.runtime.array.ArrayType.AUTO);
-            externArray_.read(in);
+            if (in.readBool())
+            {
+                externArray_ = new zserio.runtime.array.Array(
+                        new zserio.runtime.array.RawArray.BitBufferRawArray(),
+                        new zserio.runtime.array.ArrayTraits.BitBufferArrayTraits(),
+                        zserio.runtime.array.ArrayType.AUTO);
+                externArray_.read(in);
+            }
+
+            if (in.readBool())
+            {
+                bytesArray_ = new zserio.runtime.array.Array(
+                        new zserio.runtime.array.RawArray.BytesRawArray(),
+                        new zserio.runtime.array.ArrayTraits.BytesArrayTraits(),
+                        zserio.runtime.array.ArrayType.AUTO);
+                bytesArray_.read(in);
+            }
 
             if (in.readBool())
             {
@@ -1323,11 +1488,23 @@ public class ZserioTreeCreatorTestObject
                     zserio.runtime.array.ArrayType.AUTO);
             textArray_.read(in);
 
-            externArray_ = new zserio.runtime.array.Array(
-                    new zserio.runtime.array.RawArray.BitBufferRawArray(),
-                    new zserio.runtime.array.ArrayTraits.BitBufferArrayTraits(),
-                    zserio.runtime.array.ArrayType.AUTO);
-            externArray_.read(in);
+            if (in.readBool())
+            {
+                externArray_ = new zserio.runtime.array.Array(
+                        new zserio.runtime.array.RawArray.BitBufferRawArray(),
+                        new zserio.runtime.array.ArrayTraits.BitBufferArrayTraits(),
+                        zserio.runtime.array.ArrayType.AUTO);
+                externArray_.read(in);
+            }
+
+            if (in.readBool())
+            {
+                bytesArray_ = new zserio.runtime.array.Array(
+                        new zserio.runtime.array.RawArray.BytesRawArray(),
+                        new zserio.runtime.array.ArrayTraits.BytesArrayTraits(),
+                        zserio.runtime.array.ArrayType.AUTO);
+                bytesArray_.read(in);
+            }
 
             if (in.readBool())
             {
@@ -1336,7 +1513,7 @@ public class ZserioTreeCreatorTestObject
 
             if (in.readBool())
             {
-                optionalNested_ = new DummyNested(contextNode.getChildren().get(7), in, (getValue()));
+                optionalNested_ = new DummyNested(contextNode.getChildren().get(8), in, (getValue()));
             }
         }
 
@@ -1356,7 +1533,16 @@ public class ZserioTreeCreatorTestObject
             endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfString(text_);
             endBitPosition = nestedArray_.initializeOffsets(endBitPosition);
             endBitPosition = textArray_.initializeOffsets(endBitPosition);
-            endBitPosition = externArray_.initializeOffsets(endBitPosition);
+            endBitPosition += 1;
+            if (isExternArrayUsed())
+            {
+                endBitPosition = externArray_.initializeOffsets(endBitPosition);
+            }
+            endBitPosition += 1;
+            if (isBytesArrayUsed())
+            {
+                endBitPosition = bytesArray_.initializeOffsets(endBitPosition);
+            }
             endBitPosition += 1;
             if (isOptionalBoolUsed())
             {
@@ -1384,7 +1570,16 @@ public class ZserioTreeCreatorTestObject
             endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfString(text_);
             endBitPosition = nestedArray_.initializeOffsetsPacked(endBitPosition);
             endBitPosition = textArray_.initializeOffsets(endBitPosition);
-            endBitPosition = externArray_.initializeOffsets(endBitPosition);
+            endBitPosition += 1;
+            if (isExternArrayUsed())
+            {
+                endBitPosition = externArray_.initializeOffsets(endBitPosition);
+            }
+            endBitPosition += 1;
+            if (isBytesArrayUsed())
+            {
+                endBitPosition = bytesArray_.initializeOffsets(endBitPosition);
+            }
             endBitPosition += 1;
             if (isOptionalBoolUsed())
             {
@@ -1393,7 +1588,7 @@ public class ZserioTreeCreatorTestObject
             endBitPosition += 1;
             if (isOptionalNestedUsed())
             {
-                endBitPosition = optionalNested_.initializeOffsets(contextNode.getChildren().get(7),
+                endBitPosition = optionalNested_.initializeOffsets(contextNode.getChildren().get(8),
                         endBitPosition);
             }
 
@@ -1427,7 +1622,25 @@ public class ZserioTreeCreatorTestObject
 
             textArray_.write(out);
 
-            externArray_.write(out);
+            if (isExternArrayUsed())
+            {
+                out.writeBool(true);
+                externArray_.write(out);
+            }
+            else
+            {
+                out.writeBool(false);
+            }
+
+            if (isBytesArrayUsed())
+            {
+                out.writeBool(true);
+                bytesArray_.write(out);
+            }
+            else
+            {
+                out.writeBool(false);
+            }
 
             if (isOptionalBoolUsed())
             {
@@ -1472,7 +1685,25 @@ public class ZserioTreeCreatorTestObject
 
             textArray_.write(out);
 
-            externArray_.write(out);
+            if (isExternArrayUsed())
+            {
+                out.writeBool(true);
+                externArray_.write(out);
+            }
+            else
+            {
+                out.writeBool(false);
+            }
+
+            if (isBytesArrayUsed())
+            {
+                out.writeBool(true);
+                bytesArray_.write(out);
+            }
+            else
+            {
+                out.writeBool(false);
+            }
 
             if (isOptionalBoolUsed())
             {
@@ -1487,7 +1718,7 @@ public class ZserioTreeCreatorTestObject
             if (isOptionalNestedUsed())
             {
                 out.writeBool(true);
-                optionalNested_.write(contextNode.getChildren().get(7), out);
+                optionalNested_.write(contextNode.getChildren().get(8), out);
             }
             else
             {
@@ -1524,6 +1755,7 @@ public class ZserioTreeCreatorTestObject
         private zserio.runtime.array.Array nestedArray_;
         private zserio.runtime.array.Array textArray_;
         private zserio.runtime.array.Array externArray_;
+        private zserio.runtime.array.Array bytesArray_;
         private java.lang.Boolean optionalBool_;
         private DummyNested optionalNested_;
     }

@@ -267,6 +267,17 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
     }
 
     @Override
+    public byte[] readBytes() throws IOException
+    {
+        final int byteSize = readVarSize();
+        final byte[] bytesValue = new byte[byteSize];
+        for (int i = 0; i < byteSize; ++i)
+            bytesValue[i] = (byte)readSignedBits(8);
+
+        return bytesValue;
+    }
+
+    @Override
     public String readString() throws IOException
     {
         try (final ByteArrayOutputStream baos = new ByteArrayOutputStream())

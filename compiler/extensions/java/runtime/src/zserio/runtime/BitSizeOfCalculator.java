@@ -353,6 +353,21 @@ public class BitSizeOfCalculator
     }
 
     /**
+     * Gets the bit size of Zserio bytes value which is stored in bit stream.
+     *
+     * @param value Zserio bytes value for calculation.
+     *
+     * @return Length of Zserio bytes value in bits.
+     */
+    public static int getBitSizeOfBytes(byte[] value)
+    {
+        final int bytesSize = value.length;
+
+        // the bytes consists of varsize for size followed by the bytes
+        return getBitSizeOfVarSize(bytesSize) + (int)BitPositionUtil.bytesToBits(bytesSize);
+    }
+
+    /**
      * Gets the bit size of Zserio string value which is stored in bit stream.
      *
      * @param value Zserio string value for calculation.

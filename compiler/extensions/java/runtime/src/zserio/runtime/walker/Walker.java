@@ -154,7 +154,7 @@ public class Walker
 
     private boolean walkField(Object field, FieldInfo fieldInfo)
     {
-        if (field != null && field.getClass().isArray())
+        if (field != null && fieldInfo.isArray())
         {
             if (walkFilter.beforeArray(field, fieldInfo))
             {

@@ -325,10 +325,13 @@ public class JsonWriterTest
             jsonWriter.visitValue("test", TEXT_FIELD_INFO, WalkerConst.NOT_ELEMENT);
             jsonWriter.visitValue(new BitBuffer(new byte[] {(byte)0xFF, 0x1F}, (long)13), DATA_FIELD_INFO,
                     WalkerConst.NOT_ELEMENT);
+            jsonWriter.visitValue(new byte[] {(byte)0xCA, (byte)0xFE}, BYTES_DATA_FIELD_INFO,
+                    WalkerConst.NOT_ELEMENT);
             jsonWriter.endRoot(null);
 
-            assertJsonEquals("{\"identifier\": 13, \"text\": \"test\", \"data\": " +
-                    "{\"buffer\": [255, 31], \"bitSize\": 13}}", stringWriter.toString());
+            assertJsonEquals("{\"identifier\": 13, \"text\": \"test\", " +
+                    "\"data\": {\"buffer\": [255, 31], \"bitSize\": 13}, " +
+                    "\"bytesData\": {\"buffer\": [202, 254]}}", stringWriter.toString());
         }
     }
 
@@ -724,6 +727,26 @@ public class JsonWriterTest
             "getData", // getterName
             "setData", // setterName
             BuiltinTypeInfo.getBitBuffer(), // typeInfo
+            new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+            null, // alignment
+            null, // offset
+            null, // initializer
+            false, // isOptional
+            null, // optionalCondition
+            "", // isUsedindicatorName
+            "", // isSetindicatorName
+            null, // constraint
+            false, // isArray
+            null, // arrayLength
+            false, // isPacked
+            false // isImplicit
+    );
+
+    private static final FieldInfo BYTES_DATA_FIELD_INFO = new FieldInfo(
+            "bytesData", // schemaName
+            "getBytesData", // getterName
+            "setBytesData", // setterName
+            BuiltinTypeInfo.getBytes(), // typeInfo
             new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
             null, // alignment
             null, // offset

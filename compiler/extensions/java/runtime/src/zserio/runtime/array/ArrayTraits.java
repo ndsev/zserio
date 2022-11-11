@@ -1136,6 +1136,51 @@ public interface ArrayTraits
     }
 
     /**
+     * Array traits for zserio bytes arrays which are mapped to Java byte[][] array.
+     */
+    public static class BytesArrayTraits implements ArrayTraits
+    {
+        @Override
+        public PackedArrayTraits getPackedArrayTraits()
+        {
+            return null;
+        }
+
+        @Override
+        public boolean isBitSizeOfConstant()
+        {
+            return false;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public int bitSizeOf(long bitPosition, ArrayElement element)
+        {
+            return BitSizeOfCalculator.getBitSizeOfBytes(
+                    ((ArrayElement.ObjectArrayElement<byte[]>)element).get());
+        }
+
+        @Override
+        public long initializeOffsets(long bitPosition, ArrayElement element)
+        {
+            return bitPosition + bitSizeOf(bitPosition, element);
+        }
+
+        @Override
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException
+        {
+            return new ArrayElement.ObjectArrayElement<>(reader.readBytes());
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
+        {
+            writer.writeBytes(((ArrayElement.ObjectArrayElement<byte[]>)element).get());
+        }
+    }
+
+    /**
      * Array traits for zserio string arrays which are mapped to Java String[] array.
      */
     public static class StringArrayTraits implements ArrayTraits

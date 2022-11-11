@@ -385,6 +385,25 @@ public class ArrayTest
     }
 
     @Test
+    public void bytesArray() throws IOException
+    {
+        final RawArray rawArray1 = new RawArray.BytesRawArray(
+                new byte[][] { new byte[] {(byte)1, (byte)255}, new byte[] {(byte)127, (byte)128} });
+        final int array1BitSizeOf = 2 * (1 + 2) * 8;
+        final int array1AlignedBitSizeOf = array1BitSizeOf;
+        final RawArray rawArray2 = new RawArray.BytesRawArray(
+                new byte[][] { new byte[] {(byte)0, (byte)0}, new byte[] {(byte)255, (byte)255} });
+        final RawArray emptyRawArray = new RawArray.BytesRawArray();
+        final ArrayTraits arrayTraits = new ArrayTraits.BytesArrayTraits();
+        testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);
+
+        final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);
+        final byte[][] expectedRawArray = rawArray1.getRawArray();
+        assertArrayEquals(expectedRawArray, normalArray1.getRawArray());
+        assertEquals(expectedRawArray.length, normalArray1.size());
+    }
+
+    @Test
     public void stringArray() throws IOException
     {
         final RawArray rawArray1 = new RawArray.StringRawArray(new String[] { "Text1", "Text2"});

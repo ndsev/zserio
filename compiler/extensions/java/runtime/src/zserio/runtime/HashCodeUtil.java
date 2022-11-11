@@ -439,6 +439,25 @@ public class HashCodeUtil
     }
 
     /**
+     * Calculates hash code for a bytes raw array value.
+     *
+     * @param seedValue Seed value (current hash code).
+     * @param value Value to use.
+     *
+     * @return Calculated hash code.
+     */
+    public static int calcHashCode(int seedValue, byte[][] value)
+    {
+        if (value == null)
+            return calcHashCode(seedValue, 0);
+
+        int result = seedValue;
+        for (byte[] element : value)
+            result = calcHashCode(result, element);
+        return result;
+    }
+
+    /**
      * Calculates hash code for a String raw array value.
      *
      * @param seedValue Seed value (current hash code).

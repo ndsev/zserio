@@ -55,6 +55,8 @@ public enum SchemaType
     FLOAT32,
     /** Zserio float64 type. */
     FLOAT64,
+    /** Zserio bytes type. */
+    BYTES,
     /** Zserio string type. */
     STRING,
     /** Zserio extern type. */

@@ -2,6 +2,7 @@ package zserio.runtime.json;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
@@ -31,6 +32,12 @@ public class JsonReaderTest
                 "                 240\n" +
                 "             ],\n" +
                 "             \"bitSize\": 12\n" +
+                "        },\n" +
+                "        \"bytesData\": {\n" +
+                "           \"buffer\": [\n" +
+                "               202,\n" +
+                "               254\n" +
+                "           ]\n" +
                 "        },\n" +
                 "        \"dummyEnum\": 0,\n" +
                 "        \"dummyBitmask\": 1\n" +
@@ -66,6 +73,13 @@ public class JsonReaderTest
                 "            \"bitSize\": 13\n" +
                 "        }\n" +
                 "    ],\n" +
+                "    \"bytesArray\": [\n"  +
+                "        {\n" +
+                "           \"buffer\": [\n" +
+                "               0\n" +
+                "           ]\n" +
+                "        }\n" +
+                "    ],\n" +
                 "    \"optionalBool\": null\n" +
                 "}"
                 );
@@ -83,6 +97,7 @@ public class JsonReaderTest
         assertEquals(10, dummyObject.getNested().getValue());
         assertEquals("nested", dummyObject.getNested().getText());
         assertEquals(new BitBuffer(new byte[] {(byte)0xCB, (byte)0xF0}, 12), dummyObject.getNested().getData());
+        assertArrayEquals(new byte[] {(byte)0xCA, (byte)0xFE}, dummyObject.getNested().getBytesData());
         assertEquals(ZserioTreeCreatorTestObject.DummyEnum.ONE, dummyObject.getNested().getDummyEnum());
         assertEquals(ZserioTreeCreatorTestObject.DummyBitmask.Values.READ,
                 dummyObject.getNested().getDummyBitmask());
@@ -102,6 +117,8 @@ public class JsonReaderTest
         assertEquals("array", dummyObject.getTextArray()[3]);
         assertEquals(1, dummyObject.getExternArray().length);
         assertEquals(new BitBuffer(new byte[] {(byte)0xDE, (byte)0xD1}, 13), dummyObject.getExternArray()[0]);
+        assertEquals(1, dummyObject.getBytesArray().length);
+        assertArrayEquals(new byte[] {0}, dummyObject.getBytesArray()[0]);
         assertEquals(null, dummyObject.getOptionalBool());
         assertEquals(null, dummyObject.getOptionalNested()); // not present in json
     }
@@ -336,6 +353,37 @@ public class JsonReaderTest
     }
 
     @Test
+    public void wrongBytesException() throws IOException
+    {
+        final Reader reader = new StringReader(
+                "{\n" +
+                "    \"value\": 13,\n" +
+                "    \"nested\": {\n" +
+                "        \"value\": 10,\n" +
+                "        \"text\": \"nested\",\n" +
+                "        \"data\": {\n" +
+                "             \"buffer\": [\n" +
+                "                 203,\n" +
+                "                 240\n" +
+                "             ],\n" +
+                "             \"bitSize\": 12\n" +
+                "        },\n" +
+                "        \"bytesData\": {\n" +
+                "            \"buffer\": {}\n" +
+                "        }\n" +
+                "    }\n" +
+                "}"
+                );
+
+        final JsonReader jsonReader = new JsonReader(reader);
+        final ZserioError exception = assertThrows(ZserioError.class,
+                () -> jsonReader.read(ZserioTreeCreatorTestObject.DummyObject.typeInfo()));
+        assertEquals("JsonReader: Unexpected begin object in bytes! (JsonParser:14:23)",
+                exception.getMessage());
+        jsonReader.close();
+    }
+
+    @Test
     public void jsonArrayException() throws IOException
     {
         final Reader reader = new StringReader(
@@ -468,6 +516,52 @@ public class JsonReaderTest
                 () -> jsonReader.read(ZserioTreeCreatorTestObject.DummyObject.typeInfo()));
         assertEquals("JsonReader: Cannot create long for Bit Buffer size from value '9223372036854775808'! " +
                 "(JsonParser:7:25)", exception.getMessage());
+        jsonReader.close();
+    }
+
+    @Test
+    public void bigBytesByteValueException() throws IOException
+    {
+        final Reader reader = new StringReader(
+                "{\n" +
+                "    \"nested\": {\n" +
+                "        \"bytesData\": {\n" +
+                "             \"buffer\": [\n" +
+                "                 256\n" +
+                "             ]\n" +
+                "        }\n" +
+                "    }\n" +
+                "}"
+                );
+
+        final JsonReader jsonReader = new JsonReader(reader);
+        final ZserioError exception = assertThrows(ZserioError.class,
+                () -> jsonReader.read(ZserioTreeCreatorTestObject.DummyObject.typeInfo()));
+        assertEquals("JsonReader: Cannot create byte for bytes from value '256'! (JsonParser:5:18)",
+                exception.getMessage());
+        jsonReader.close();
+    }
+
+    @Test
+    public void negativeBytesByteValueException() throws IOException
+    {
+        final Reader reader = new StringReader(
+                "{\n" +
+                "    \"nested\": {\n" +
+                "        \"bytesData\": {\n" +
+                "             \"buffer\": [\n" +
+                "                 -1\n" +
+                "             ]\n" +
+                "        }\n" +
+                "    }\n" +
+                "}"
+                );
+
+        final JsonReader jsonReader = new JsonReader(reader);
+        final ZserioError exception = assertThrows(ZserioError.class,
+                () -> jsonReader.read(ZserioTreeCreatorTestObject.DummyObject.typeInfo()));
+        assertEquals("JsonReader: Cannot create byte for bytes from value '-1'! (JsonParser:5:18)",
+                exception.getMessage());
         jsonReader.close();
     }
 

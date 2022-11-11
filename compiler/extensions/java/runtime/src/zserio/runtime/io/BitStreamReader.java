@@ -144,6 +144,15 @@ public interface BitStreamReader extends Closeable
     double readFloat64() throws IOException;
 
     /**
+     * Reads a Zserio bytes from the bit stream.
+     *
+     * @return Read Zserio bytes as byte[].
+     *
+     * @throws IOException If reading failed.
+     */
+    byte[] readBytes() throws IOException;
+
+    /**
      * Reads a Zserio string from the bit stream assuming it is encoded in UTF-8.
      *
      * @return Read Zserio string.

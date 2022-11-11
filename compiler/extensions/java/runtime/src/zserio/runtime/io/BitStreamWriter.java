@@ -130,6 +130,15 @@ public interface BitStreamWriter extends Closeable
     void writeFloat64(final double value) throws IOException;
 
     /**
+     * Writes a Zserio bytes to the underlying storage.
+     *
+     * @param value Zserio bytes to write.
+     *
+     * @throws IOException If the writing failed.
+     */
+    void writeBytes(final byte[] value) throws IOException;
+
+    /**
      * Writes a Zserio string to the underlying storage in UTF-8 encoding.
      *
      * @param value Zserio string to write.

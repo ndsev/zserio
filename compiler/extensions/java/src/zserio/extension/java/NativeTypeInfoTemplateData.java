@@ -8,6 +8,7 @@ import zserio.extension.java.types.NativeArrayType;
 import zserio.extension.java.types.NativeArrayableType;
 import zserio.extension.java.types.NativeBitmaskType;
 import zserio.extension.java.types.NativeBooleanType;
+import zserio.extension.java.types.NativeBytesType;
 import zserio.extension.java.types.NativeCompoundType;
 import zserio.extension.java.types.NativeDoubleType;
 import zserio.extension.java.types.NativeEnumType;
@@ -52,6 +53,11 @@ public class NativeTypeInfoTemplateData
     public boolean getIsSimple()
     {
         return isSimple;
+    }
+
+    public boolean getIsBytes()
+    {
+        return isBytes;
     }
 
     public boolean getIsEnum()
@@ -110,6 +116,7 @@ public class NativeTypeInfoTemplateData
         typeFullName = javaNativeType.getFullName();
         typeName = javaNativeType.getName();
         isSimple = javaNativeType.isSimple();
+        isBytes = javaNativeType instanceof NativeBytesType;
 
         isEnum = javaNativeType instanceof NativeEnumType;
         isBitmask = javaNativeType instanceof NativeBitmaskType;
@@ -129,8 +136,8 @@ public class NativeTypeInfoTemplateData
         final boolean isSqlDatabase = javaNativeType instanceof NativeSqlDatabaseType;
         final boolean isSqlTable = javaNativeType instanceof NativeSqlTableType;
         final boolean isArray = javaNativeType instanceof NativeArrayType;
-        final boolean hasTypeInfo = isCompound || isSqlDatabase || isSqlTable || isEnum || isBitmask || isArray;
-        if (hasTypeInfo || (typeInstantiation == null && typeReference == null))
+        final boolean hasTypeInfo = isCompound || isSqlDatabase || isSqlTable || isEnum || isBitmask;
+        if (hasTypeInfo || isArray || (typeInstantiation == null && typeReference == null))
         {
             typeInfoGetter = null;
         }
@@ -145,6 +152,7 @@ public class NativeTypeInfoTemplateData
     private final String typeFullName;
     private final String typeName;
     private final boolean isSimple;
+    private final boolean isBytes;
     private final boolean isEnum;
     private final boolean isBitmask;
     private final boolean isBoolean;

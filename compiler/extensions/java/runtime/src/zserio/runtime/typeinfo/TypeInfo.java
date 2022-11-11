@@ -632,6 +632,16 @@ public interface TypeInfo
         }
 
         /**
+         * Gets the type information of bytes schema type.
+         *
+         * @return Type information of bytes schema type.
+         */
+        public static BuiltinTypeInfo getBytes()
+        {
+            return BYTES;
+        }
+
+        /**
          * Gets the type information of string schema type.
          *
          * @return Type information of string schema type.
@@ -775,6 +785,8 @@ public interface TypeInfo
         private static final BuiltinTypeInfo VARSIZE =
                 new BuiltinTypeInfo("varsize", SchemaType.VARSIZE, JavaType.INT, int.class);
 
+        private static final BuiltinTypeInfo BYTES =
+                new BuiltinTypeInfo("bytes", SchemaType.BYTES, JavaType.BYTES, byte[].class);
         private static final BuiltinTypeInfo STRING =
                 new BuiltinTypeInfo("string", SchemaType.STRING, JavaType.STRING, String.class);
         private static final BuiltinTypeInfo BIT_BUFFER =

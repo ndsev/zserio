@@ -20,12 +20,22 @@
                 <Class name="~zserio.runtime.service.ServiceData"/>
                 <Method name="getByteArray"/>
             </And>
+            <And>
+                <Class name="zserio.runtime.creator.ZserioTreeCreatorTestObject$DummyNested"/>
+                <Method name="getBytesData"/>
+            </And>
         </Or>
     </Match>
     <Match>
         <!-- May expose internal representation by incorporating reference to mutable object - this is ok -->
         <Bug code="EI2"/>
-        <Class name="~zserio.runtime.array.RawArray\$.*RawArray"/>
+        <Or>
+            <Class name="~zserio.runtime.array.RawArray\$.*RawArray"/>
+            <And>
+                <Class name="zserio.runtime.creator.ZserioTreeCreatorTestObject$DummyNested"/>
+                <Method name="setBytesData"/>
+            </And>
+        </Or>
     </Match>
     <Match>
         <!-- Unchecked/unconfirmed cast - this is ok, our responsibility -->

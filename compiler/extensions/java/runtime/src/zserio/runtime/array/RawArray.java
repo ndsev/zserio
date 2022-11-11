@@ -609,6 +609,76 @@ public interface RawArray
     }
 
     /**
+     * Raw array for Java native array of bytes.
+     */
+    public static class BytesRawArray implements RawArray
+    {
+        /**
+         * Empty constructor.
+         */
+        public BytesRawArray()
+        {
+        }
+
+        /**
+         * Constructor from raw array.
+         *
+         * @param rawArray Raw array to construct from.
+         */
+        public BytesRawArray(byte[][] rawArray)
+        {
+            this.rawArray = rawArray;
+        }
+
+        @Override
+        public boolean equals(java.lang.Object obj)
+        {
+            return (obj instanceof BytesRawArray) ? Arrays.deepEquals(rawArray, ((BytesRawArray)obj).rawArray) :
+                false;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, rawArray);
+        }
+
+        @Override
+        public int size()
+        {
+            return (rawArray == null) ? 0 : rawArray.length;
+        }
+
+        @Override
+        public void reset(int capacity)
+        {
+            rawArray = new byte[capacity][];
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T> T getRawArray()
+        {
+            return (T)rawArray;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void setElement(ArrayElement element, int index)
+        {
+            rawArray[index] = ((ArrayElement.ObjectArrayElement<byte[]>)element).get();
+        }
+
+        @Override
+        public ArrayElement getElement(int index)
+        {
+            return new ArrayElement.ObjectArrayElement<>(rawArray[index]);
+        }
+
+        private byte[][] rawArray;
+    }
+
+    /**
      * Raw array for Java native array of Strings.
      */
     public static class StringRawArray implements RawArray
