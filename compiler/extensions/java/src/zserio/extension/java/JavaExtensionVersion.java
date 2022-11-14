@@ -9,5 +9,5 @@ package zserio.extension.java;
 public class JavaExtensionVersion
 {
     /** Java extension version string. */
-    public static final String VERSION_STRING = "2.8.0";
+    public static final String VERSION_STRING = "2.9.0-pre1";
 }
