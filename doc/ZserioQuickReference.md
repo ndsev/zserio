@@ -51,6 +51,11 @@ string
 extern
 ```
 
+**Bytes Types**
+```
+bytes
+```
+
 **Constants**
 ```
 const bit:1 FALSE = 0;

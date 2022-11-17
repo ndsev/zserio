@@ -278,6 +278,24 @@ struct StructureWithExternalField
 
 [top](#language-guide)
 
+### Bytes Type
+
+Bytes type is a zserio built-in type for raw bytes sequences. It is denoted by zserio keyword `bytes`. It is
+represented by a number of bytes (stored as a `varsize`) followed by a byte sequence.
+
+**Example**
+```
+struct StructureWithBytesField
+{
+    string text;
+    bytes  data;
+};
+```
+
+> Since `2.9.0`
+
+[top](#language-guide)
+
 ## Constants
 
 A constant is an immutable named value. The syntax and behavior is similar to C or C++. Their syntax is as
@@ -1713,9 +1731,10 @@ by zserio.
 
 ### Request and Response Types
 
-The types must be non-parameterized compound types. Parameterized types are not allowed since the parameters
-are not stored in the bit stream. However parameterized types can be still used in the response or request
-types' subtree.
+The types must be non-parameterized compound types or `bytes`. Parameterized types are not allowed since
+the parameters are not stored in the bit stream. However parameterized types can be still used in the response
+or request types' subtree. The `bytes` type can be used when raw data format is needed - e.g. when the response
+is an image.
 
 > Since `2.0.0`
 
@@ -1767,8 +1786,9 @@ as an example of a concrete Pub/Sub pattern specification.
 
 ### Message Types
 
-Message type must be a non-parameterized compound type. Parameterized types are not allowed since the parameters
-are not stored in the bit stream. However parameterized types can be still used in the type's subtree.
+Message type must be a non-parameterized compound type or `bytes`. Parameterized types are not allowed since
+the parameters are not stored in the bit stream. However parameterized types can be still used in the types'
+subtree. The `bytes` type can be used when raw data format is needed - e.g. when the message is an image.
 
 > Since `2.0.0`
 
