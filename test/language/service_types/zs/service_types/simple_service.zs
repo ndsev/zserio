@@ -13,4 +13,5 @@ struct Request
 service SimpleService
 {
     Response powerOfTwo(Request);
+    bytes powerOfTwoRaw(bytes);
 };

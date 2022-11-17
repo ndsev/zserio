@@ -5,6 +5,7 @@
 
 #include "zserio/ServiceException.h"
 #include "zserio/RebindAlloc.h"
+#include "zserio/SerializeUtil.h"
 
 #include "test_utils/LocalServiceClient.h"
 
@@ -19,6 +20,9 @@ namespace simple_service
 
 using allocator_type = SimpleService::Client::allocator_type;
 using LocalServiceClient = test_utils::LocalServiceClient<allocator_type>;
+template <typename T>
+using vector_type = zserio::vector<T, allocator_type>;
+using BitBuffer = zserio::BasicBitBuffer<allocator_type>;
 
 namespace
 {
@@ -40,6 +44,20 @@ public:
         if (value < 0)
             value = -value;
         return Response(static_cast<uint64_t>(value) * static_cast<uint64_t>(value), get_allocator_ref());
+    }
+
+    vector_type<uint8_t> powerOfTwoRawImpl(zserio::Span<const uint8_t> requestData, void* context) override
+    {
+        zserio::BitStreamReader reader(requestData.data(), requestData.size());
+        Request request(reader);
+        Response response = powerOfTwoImpl(request, context);
+
+        vector_type<uint8_t> responseData;
+        responseData.resize(zserio::bitsToBytes(response.bitSizeOf()));
+        zserio::BitStreamWriter writer(responseData.data(), responseData.size());
+        response.write(writer);
+
+        return responseData;
     }
 };
 
@@ -106,6 +124,16 @@ TEST_F(SimpleServiceTest, powerOfTwo)
     request.setValue(-2);
     response = movedClient.powerOfTwoMethod(request);
     ASSERT_EQ(4, response.getValue());
+}
+
+TEST_F(SimpleServiceTest, powerOfTwoRaw)
+{
+    Request request;
+    request.setValue(13);
+    auto requestData = zserio::serialize(request);
+    auto responseData = client.powerOfTwoRawMethod(requestData.getBytes());
+    auto response = zserio::deserialize<Response>(BitBuffer(responseData));
+    ASSERT_EQ(169, response.getValue());
 }
 
 TEST_F(SimpleServiceTest, invalidServiceMethod)

@@ -59,6 +59,7 @@ public class ComplexTypesServiceTest
 
         final RequestData requestData = new RequestData(ColorModel.RGB, offsets, data);
         final Request request = new Request(ColorModel.RGB, requestData);
+        request.initializeOffsets();
 
         assertEquals(length, client.getLengthMethod(request).getLength());
 
@@ -94,6 +95,7 @@ public class ComplexTypesServiceTest
 
         final RequestData requestData = new RequestData(ColorModel.CMYK, offsets, data);
         final Request request = new Request(ColorModel.CMYK, requestData);
+        request.initializeOffsets();
 
         assertEquals(length, client.getLengthMethod(request).getLength());
 
@@ -219,7 +221,7 @@ public class ComplexTypesServiceTest
         }
 
         @Override
-        public <T extends Writer> byte[] callMethod(String methodName, ServiceData<T> request, Object context)
+        public byte[] callMethod(String methodName, ServiceData<? extends Writer> request, Object context)
         {
             return service.callMethod(methodName, request.getByteArray(), context).getByteArray();
         }

@@ -20,7 +20,7 @@ public class ServiceTypesErrorTest
     public void builtinType()
     {
         final String error = "builtin_type_error.zs:10:25: " +
-                "Only non-parameterized compound types can be used in service methods, " +
+                "Only non-parameterized compound types or bytes can be used in service methods, " +
                 "'int32' is not a compound type!";
         assertTrue(zserioErrors.isPresent(error));
     }
@@ -29,7 +29,7 @@ public class ServiceTypesErrorTest
     public void choiceType()
     {
         final String error = "choice_type_error.zs:19:25: " +
-                "Only non-parameterized compound types can be used in service methods, " +
+                "Only non-parameterized compound types or bytes can be used in service methods, " +
                 "'Request' is a parameterized type!";
         assertTrue(zserioErrors.isPresent(error));
     }
@@ -49,7 +49,7 @@ public class ServiceTypesErrorTest
     public void nonCompoundSubtype()
     {
         final String error = "non_compound_subtype_error.zs:12:25: " +
-                "Only non-parameterized compound types can be used in service methods, " +
+                "Only non-parameterized compound types or bytes can be used in service methods, " +
                 "'Request' is not a compound type!";
         assertTrue(zserioErrors.isPresent(error));
     }
@@ -58,7 +58,7 @@ public class ServiceTypesErrorTest
     public void parameterizedStruct()
     {
         final String error = "parameterized_struct_error.zs:16:25: " +
-                "Only non-parameterized compound types can be used in service methods, " +
+                "Only non-parameterized compound types or bytes can be used in service methods, " +
                 "'Request' is a parameterized type!";
         assertTrue(zserioErrors.isPresent(error));
     }

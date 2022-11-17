@@ -7,6 +7,24 @@
 <@future_annotations/>
 <@all_imports packageImports symbolImports typeImports/>
 
+<#macro service_type_name typeInfo>
+    <#if typeInfo.isBytes>
+        <#--
+        Note that bytes is a shorthand for typing.ByteString, thus all bytes, bytearray and memoryview are
+        allowed, see https://docs.python.org/3/library/typing.html#typing.ByteString.
+        -->
+        bytes<#t>
+    <#else>
+        ${typeInfo.typeFullName}<#t>
+    </#if>
+</#macro>
+<#macro service_data_type_name typeInfo>
+    <#if typeInfo.isBytes>
+        zserio.service.RawServiceData<#t>
+    <#else>
+        zserio.service.ObjectServiceData<#t>
+    </#if>
+</#macro>
 class ${name}:
 <#if withCodeComments && docComments??>
 <@doc_comments docComments, 1/>
@@ -107,17 +125,20 @@ class ${name}:
             return self._METHOD_NAMES
 <#list methodList as method>
 
-        def _${method.snakeCaseName}_impl(self, request: ${method.requestTypeInfo.typeFullName}, <#rt>
-                <#lt>context: typing.Any = None) -> ${method.responseTypeInfo.typeFullName}:
+        def _${method.snakeCaseName}_impl(self, request: <@service_type_name method.requestTypeInfo/>, <#rt>
+                <#lt>context: typing.Any = None) -> <@service_type_name method.responseTypeInfo/>:
             raise NotImplementedError()
 </#list>
 <#list methodList as method>
 
         def _${method.snakeCaseName}_method(self, request_data: bytes, context: typing.Any) -> zserio.ServiceData:
+            <#if !method.requestTypeInfo.isBytes>
             reader = zserio.BitStreamReader(request_data)
             request = ${method.requestTypeInfo.typeFullName}.from_reader(reader)
 
-            return zserio.ServiceData(self._${method.snakeCaseName}_impl(request, context))
+            </#if>
+            return <@service_data_type_name method.responseTypeInfo/>(<#rt>
+                    <#lt>self._${method.snakeCaseName}_impl(request<#if method.requestTypeInfo.isBytes>_data</#if>, context))
 </#list>
 
         _SERVICE_FULL_NAME = "${serviceFullName}"
@@ -152,8 +173,8 @@ class ${name}:
             self._service_client = service_client
 <#list methodList as method>
 
-        def ${method.clientMethodName}(self, request: ${method.requestTypeInfo.typeFullName}, <#rt>
-                <#lt>context: typing.Any = None) -> ${method.responseTypeInfo.typeFullName}:
+        def ${method.clientMethodName}(self, request: <@service_type_name method.requestTypeInfo/>, <#rt>
+                <#lt>context: typing.Any = None) -> <@service_type_name method.responseTypeInfo/>:
     <#if withCodeComments>
             """
             Calls method ${method.name}.
@@ -171,9 +192,14 @@ class ${name}:
             """
 
     </#if>
-            response_data = self._service_client.call_method("${method.name}", zserio.ServiceData(request), context)
+            response_data = self._service_client.call_method("${method.name}",
+                                                             <@service_data_type_name method.requestTypeInfo/>(request), context)
+            <#if method.responseTypeInfo.isBytes>
+            return response_data
+            <#else>
             reader = zserio.BitStreamReader(response_data)
             response = ${method.responseTypeInfo.typeFullName}.from_reader(reader)
 
             return response
+            </#if>
 </#list>

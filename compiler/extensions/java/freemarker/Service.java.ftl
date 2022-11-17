@@ -6,6 +6,13 @@
 <#macro method_name_constant_name method>
     ${method.name}_METHOD_NAME<#t>
 </#macro>
+<#macro service_data_type_name typeInfo>
+    <#if typeInfo.isBytes>
+        zserio.runtime.service.RawServiceData<#t>
+    <#else>
+        zserio.runtime.service.ObjectServiceData<><#t>
+    </#if>
+</#macro>
 <#if withCodeComments && docComments??>
 <@doc_comments docComments/>
 </#if>
@@ -47,7 +54,7 @@ public final class ${name}
                 new Method()
                 {
                     @Override
-                    public <T extends zserio.runtime.io.Writer> zserio.runtime.service.ServiceData<T> invoke(
+                    public zserio.runtime.service.ServiceData<? extends zserio.runtime.io.Writer> invoke(
                             byte[] requestData, java.lang.Object context) throws zserio.runtime.ZserioError
                     {
                         return ${method.name}Method(requestData, context);
@@ -58,7 +65,7 @@ public final class ${name}
         }
 
         @Override
-        public <T extends zserio.runtime.io.Writer> zserio.runtime.service.ServiceData<T> callMethod(
+        public zserio.runtime.service.ServiceData<? extends zserio.runtime.io.Writer> callMethod(
                 java.lang.String methodName, byte[] requestData, java.lang.Object context)
                 throws zserio.runtime.ZserioError
         {
@@ -106,21 +113,39 @@ public final class ${name}
 </#list>
 <#list methodList as method>
 
-        @SuppressWarnings("unchecked")
-        private <T extends zserio.runtime.io.Writer> zserio.runtime.service.ServiceData<T> ${method.name}Method(
+    <#if method.responseTypeInfo.isBytes>
+        private zserio.runtime.service.RawServiceData <#rt>
+    <#else>
+        private zserio.runtime.service.ObjectServiceData<${method.responseTypeInfo.typeFullName}> <#rt>
+    </#if>
+        <#lt>${method.name}Method(
                 byte[] requestData, java.lang.Object context) throws zserio.runtime.ZserioError
         {
-            final ${method.requestTypeInfo.typeFullName} request =
-                    zserio.runtime.io.SerializeUtil.deserializeFromBytes(${method.requestTypeInfo.typeFullName}.class, requestData);
-            final ${method.responseTypeInfo.typeFullName} response = ${method.name}Impl(request, context);
+            <#if method.requestTypeInfo.isBytes>
+            final ${method.responseTypeInfo.typeFullName} response = ${method.name}Impl(requestData, context);
+            return new <@service_data_type_name method.responseTypeInfo/>(response);
+            <#else>
+            try
+            {
+                final zserio.runtime.io.ByteArrayBitStreamReader reader =
+                        new zserio.runtime.io.ByteArrayBitStreamReader(requestData);
+                final ${method.requestTypeInfo.typeFullName} request =
+                        new ${method.requestTypeInfo.typeFullName}(reader);
+                final ${method.responseTypeInfo.typeFullName} response = ${method.name}Impl(request, context);
 
-            return (zserio.runtime.service.ServiceData<T>)new zserio.runtime.service.ServiceData<${method.responseTypeInfo.typeFullName}>(response);
+                return new <@service_data_type_name method.responseTypeInfo/>(response);
+            }
+            catch (java.io.IOException exception)
+            {
+                throw new zserio.runtime.ZserioError("${name}: " + exception, exception);
+            }
+            </#if>
         }
 </#list>
 
         private interface Method
         {
-            public <T extends zserio.runtime.io.Writer> zserio.runtime.service.ServiceData<T> invoke(
+            public zserio.runtime.service.ServiceData<? extends zserio.runtime.io.Writer> invoke(
                     byte[] requestData, java.lang.Object context) throws zserio.runtime.ZserioError;
         }
 
@@ -167,14 +192,28 @@ public final class ${name}
          * @return Response returned from the method.
          */
     </#if>
-        public ${method.responseTypeInfo.typeFullName} ${method.name}Method(${method.requestTypeInfo.typeFullName} request,
-                java.lang.Object context) throws zserio.runtime.ZserioError
+        public ${method.responseTypeInfo.typeFullName} ${method.name}Method(
+                ${method.requestTypeInfo.typeFullName} request, java.lang.Object context)
+                throws zserio.runtime.ZserioError
         {
             final byte[] responseData = serviceClient.callMethod(<@method_name_constant_name method/>,
-                    new zserio.runtime.service.ServiceData<>(request), context);
-            final ${method.responseTypeInfo.typeFullName} response =
-                    zserio.runtime.io.SerializeUtil.deserializeFromBytes(${method.responseTypeInfo.typeFullName}.class, responseData);
-            return response;
+                    new <@service_data_type_name method.requestTypeInfo/>(request), context);
+            <#if method.responseTypeInfo.isBytes>
+            return responseData;
+            <#else>
+            try
+            {
+                final zserio.runtime.io.ByteArrayBitStreamReader reader =
+                        new zserio.runtime.io.ByteArrayBitStreamReader(responseData);
+                final ${method.responseTypeInfo.typeFullName} response =
+                        new ${method.responseTypeInfo.typeFullName}(reader);
+                return response;
+            }
+            catch (java.io.IOException exception)
+            {
+                throw new zserio.runtime.ZserioError("${name}: " + exception, exception);
+            }
+            </#if>
         }
 
     <#if withCodeComments>
@@ -194,8 +233,8 @@ public final class ${name}
          * @return Response returned from the method.
          */
     </#if>
-        public ${method.responseTypeInfo.typeFullName} ${method.name}Method(${method.requestTypeInfo.typeFullName} request)
-                 throws zserio.runtime.ZserioError
+        public ${method.responseTypeInfo.typeFullName} ${method.name}Method(
+                ${method.requestTypeInfo.typeFullName} request) throws zserio.runtime.ZserioError
         {
             return ${method.name}Method(request, null);
         }

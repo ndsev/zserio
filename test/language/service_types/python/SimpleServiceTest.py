@@ -22,6 +22,10 @@ class SimpleServiceTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "service_types.zs").simple_service
 
         class Service(cls.api.SimpleService.Service):
+            def __init__(self, api):
+                super().__init__()
+                self.api = api
+
             @staticmethod
             def _power_of_two_impl(request, context):
                 if context:
@@ -31,10 +35,15 @@ class SimpleServiceTest(unittest.TestCase):
                 response = cls.api.Response(value**2)
                 return response
 
+            def _power_of_two_raw_impl(self, request_data, context):
+                request = zserio.deserialize_from_bytes(self.api.Request, request_data)
+                response = SimpleServiceTest.Service._power_of_two_impl(request, context)
+                return zserio.serialize_to_bytes(response)
+
         cls.Service = Service
 
     def setUp(self):
-        self.service = self.Service()
+        self.service = self.Service(self.api)
         self.client = self.api.SimpleService.Client(LocalServiceClient(self.service))
 
     def testServiceFullName(self):
@@ -52,6 +61,13 @@ class SimpleServiceTest(unittest.TestCase):
         self.assertEqual(4, self.client.power_of_two(request).value)
         request.value = -2
         self.assertEqual(4, self.client.power_of_two(request).value)
+
+    def testPowerOfTwoRaw(self):
+        request = self.api.Request(13)
+        request_data = zserio.serialize_to_bytes(request)
+        response_data = self.client.power_of_two_raw(request_data)
+        response = zserio.deserialize_from_bytes(self.api.Response, response_data)
+        self.assertEqual(169, response.value)
 
     def testInvalidServiceMethod(self):
         with self.assertRaises(zserio.ServiceException):

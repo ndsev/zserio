@@ -3,42 +3,19 @@ package zserio.runtime.service;
 import zserio.runtime.io.Writer;
 
 /** Data abstraction to be sent or to be received in all Zserio services. */
-public class ServiceData<T extends Writer>
+public interface ServiceData<T extends Writer>
 {
     /**
-     * Constructor.
+     * Gets the Zserio object which represents the request, if available.
      *
-     * @param zserioObject Zserio object from which to create service data.
+     * @return The Zserio object or null.
      */
-    public ServiceData(T zserioObject)
-    {
-        this.zserioObject = zserioObject;
-        this.byteArray = null;
-    }
+    public T getZserioObject();
 
     /**
      * Gets the data which represent the request.
      *
-     * @return The request data which are created by serialization of Zserio object.
+     * @return The request data.
      */
-    public byte[] getByteArray()
-    {
-        if (byteArray == null)
-            byteArray = zserio.runtime.io.SerializeUtil.serializeToBytes(zserioObject);
-
-        return byteArray;
-    }
-
-    /**
-     * Gets the Zserio object which represents the request.
-     *
-     * @return The Zserio object.
-     */
-    public T getZserioObject()
-    {
-        return zserioObject;
-    }
-
-    private final T zserioObject;
-    private byte[] byteArray;
-};
+    public byte[] getByteArray();
+}

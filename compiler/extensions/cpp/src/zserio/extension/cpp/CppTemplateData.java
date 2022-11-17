@@ -184,7 +184,10 @@ public abstract class CppTemplateData implements IncludeCollector
             service = new TypeTemplateData(nativeMapper.getServiceType());
             serviceClient = new TypeTemplateData(nativeMapper.getServiceClientType());
             serviceDataPtr = new TypeTemplateData(nativeMapper.getServiceDataPtrType());
-            serviceData = new TypeTemplateData(nativeMapper.getServiceDataType());
+            reflectableServiceData = new TypeTemplateData(nativeMapper.getReflectableServiceDataType());
+            objectServiceData = new TypeTemplateData(nativeMapper.getObjectServiceDataType());
+            rawServiceDataHolder = new TypeTemplateData(nativeMapper.getRawServiceDataHolderType());
+            rawServiceDataView = new TypeTemplateData(nativeMapper.getRawServiceDataViewType());
         }
 
         public AllocatorTemplateData getAllocator()
@@ -277,9 +280,24 @@ public abstract class CppTemplateData implements IncludeCollector
             return serviceDataPtr;
         }
 
-        public TypeTemplateData getServiceData()
+        public TypeTemplateData getReflectableServiceData()
         {
-            return serviceData;
+            return reflectableServiceData;
+        }
+
+        public TypeTemplateData getObjectServiceData()
+        {
+            return objectServiceData;
+        }
+
+        public TypeTemplateData getRawServiceDataHolder()
+        {
+            return rawServiceDataHolder;
+        }
+
+        public TypeTemplateData getRawServiceDataView()
+        {
+            return rawServiceDataView;
         }
 
         public static class AllocatorTemplateData
@@ -385,7 +403,10 @@ public abstract class CppTemplateData implements IncludeCollector
         private final TypeTemplateData service;
         private final TypeTemplateData serviceClient;
         private final TypeTemplateData serviceDataPtr;
-        private final TypeTemplateData serviceData;
+        private final TypeTemplateData reflectableServiceData;
+        private final TypeTemplateData objectServiceData;
+        private final TypeTemplateData rawServiceDataHolder;
+        private final TypeTemplateData rawServiceDataView;
     }
 
     private final String generatorDescription;

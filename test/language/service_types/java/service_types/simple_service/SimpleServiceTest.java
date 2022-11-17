@@ -4,10 +4,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
+import java.io.IOException;
 
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.Writer;
 import zserio.runtime.service.ServiceData;
 import zserio.runtime.service.ServiceException;
-import zserio.runtime.io.Writer;
 
 public class SimpleServiceTest
 {
@@ -39,6 +42,19 @@ public class SimpleServiceTest
     }
 
     @Test
+    public void powerOfTwoRaw() throws IOException
+    {
+        final Request request = new Request(13);
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
+        request.write(writer);
+        final byte[] requestData = writer.toByteArray();
+        final byte[] responseData = client.powerOfTwoRawMethod(requestData);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(responseData);
+        final Response response = new Response(reader);
+        assertEquals(BigInteger.valueOf(169), response.getValue());
+    }
+
+    @Test
     public void invalidServiceMethod()
     {
         assertThrows(ServiceException.class, () -> service.callMethod("nonexistentMethod", null, null));
@@ -66,6 +82,24 @@ public class SimpleServiceTest
             final Response response = new Response(BigInteger.valueOf(request.getValue()).pow(2));
             return response;
         }
+
+        @Override
+        public byte[] powerOfTwoRawImpl(byte[] requestData, Object context)
+        {
+            try
+            {
+                final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(requestData);
+                final Request request = new Request(reader);
+                final Response response = powerOfTwoImpl(request, context);
+                final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
+                response.write(writer);
+                return writer.toByteArray();
+            }
+            catch (IOException e)
+            {
+                return new byte[]{};
+            }
+        }
     }
 
     private static class FakeContext
@@ -81,7 +115,7 @@ public class SimpleServiceTest
         }
 
         @Override
-        public <T extends Writer> byte[] callMethod(String methodName, ServiceData<T> request, Object context)
+        public byte[] callMethod(String methodName, ServiceData<? extends Writer> request, Object context)
         {
             return service.callMethod(methodName, request.getByteArray(), context).getByteArray();
         }

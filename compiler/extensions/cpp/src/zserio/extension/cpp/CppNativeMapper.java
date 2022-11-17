@@ -92,7 +92,13 @@ public class CppNativeMapper
                 allocatorDefinition, stdUInt8Type);
         serviceDataPtrType = new NativeRuntimeAllocType(typesContext.getServiceDataPtr(),
                 allocatorDefinition, stdUInt8Type);
-        serviceDataType = new NativeRuntimeAllocType(typesContext.getServiceData(),
+        reflectableServiceDataType = new NativeRuntimeAllocType(typesContext.getReflectableServiceData(),
+                allocatorDefinition, stdUInt8Type);
+        objectServiceDataType = new NativeRuntimeAllocType(typesContext.getObjectServiceData(),
+                allocatorDefinition, stdUInt8Type);
+        rawServiceDataHolderType = new NativeRuntimeAllocType(typesContext.getRawServiceDataHolder(),
+                allocatorDefinition, stdUInt8Type);
+        rawServiceDataViewType = new NativeRuntimeAllocType(typesContext.getRawServiceDataView(),
                 allocatorDefinition, stdUInt8Type);
     }
 
@@ -258,9 +264,24 @@ public class CppNativeMapper
         return serviceDataPtrType;
     }
 
-    public NativeRuntimeAllocType getServiceDataType()
+    public NativeRuntimeAllocType getReflectableServiceDataType()
     {
-        return serviceDataType;
+        return reflectableServiceDataType;
+    }
+
+    public NativeRuntimeAllocType getObjectServiceDataType()
+    {
+        return objectServiceDataType;
+    }
+
+    public NativeRuntimeAllocType getRawServiceDataHolderType()
+    {
+        return rawServiceDataHolderType;
+    }
+
+    public NativeRuntimeAllocType getRawServiceDataViewType()
+    {
+        return rawServiceDataViewType;
     }
 
     public NativeIntegralType getUInt64Type()
@@ -606,7 +627,10 @@ public class CppNativeMapper
     private final NativeRuntimeAllocType serviceType;
     private final NativeRuntimeAllocType serviceClientType;
     private final NativeRuntimeAllocType serviceDataPtrType;
-    private final NativeRuntimeAllocType serviceDataType;
+    private final NativeRuntimeAllocType reflectableServiceDataType;
+    private final NativeRuntimeAllocType objectServiceDataType;
+    private final NativeRuntimeAllocType rawServiceDataHolderType;
+    private final NativeRuntimeAllocType rawServiceDataViewType;
 
     private final static NativeBuiltinType booleanType =
             new NativeBuiltinType("bool", new NativeArrayTraits("BoolArrayTraits"));

@@ -24,7 +24,10 @@ using IServiceClient = IBasicServiceClient<PropagatingPolymorphicAllocator<uint8
  * Typedef to service data implementation provided for convenience - using
  * PropagatingPolymorphicAllocator<uint8_t>.
  */
-using ServiceData = BasicServiceData<PropagatingPolymorphicAllocator<uint8_t>>;
+using ReflectableServiceData = BasicReflectableServiceData<PropagatingPolymorphicAllocator<uint8_t>>;
+using ObjectServiceData = BasicObjectServiceData<PropagatingPolymorphicAllocator<uint8_t>>;
+using RawServiceDataHolder = BasicRawServiceDataHolder<PropagatingPolymorphicAllocator<uint8_t>>;
+using RawServiceDataView = BasicRawServiceDataView<PropagatingPolymorphicAllocator<uint8_t>>;
 
 } // namespace pmr
 } // namespace zserio

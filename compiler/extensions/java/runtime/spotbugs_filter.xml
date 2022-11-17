@@ -21,6 +21,14 @@
                 <Method name="getByteArray"/>
             </And>
             <And>
+                <Class name="~zserio.runtime.service.ObjectServiceData"/>
+                <Method name="getByteArray"/>
+            </And>
+            <And>
+                <Class name="~zserio.runtime.service.RawServiceData"/>
+                <Method name="getByteArray"/>
+            </And>
+            <And>
                 <Class name="test_object.DummyNested"/>
                 <Method name="getBytesData"/>
             </And>
@@ -30,7 +38,14 @@
         <!-- May expose internal representation by incorporating reference to mutable object - this is ok -->
         <Bug code="EI2"/>
         <Or>
-            <Class name="~zserio.runtime.array.RawArray\$.*RawArray"/>
+            <And>
+                <Class name="~zserio.runtime.array.RawArray\$.*RawArray"/>
+                <Field name="~.*rawArray"/>
+            </And>
+            <And>
+                <Class name="~zserio.runtime.service.RawServiceData"/>
+                <Field name="~.*rawData"/>
+            </And>
             <And>
                 <Class name="test_object.DummyNested"/>
                 <Method name="setBytesData"/>

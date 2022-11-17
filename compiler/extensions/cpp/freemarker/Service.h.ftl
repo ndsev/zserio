@@ -1,5 +1,6 @@
 <#include "FileHeader.inc.ftl">
 <#include "DocComment.inc.ftl">
+<#include "Service.inc.ftl">
 <@file_header generatorDescription/>
 
 <@include_guard_begin package.path, name/>
@@ -12,6 +13,7 @@
 <#if withTypeInfoCode>
 <@type_includes types.typeInfo/>
 </#if>
+<@system_includes headerSystemIncludes/>
 <@user_includes headerUserIncludes/>
 <@namespace_begin package.path/>
 <@namespace_begin [name]/>
@@ -113,8 +115,8 @@ public:
 private:
 <#if methodList?has_content>
 <#list methodList as method>
-    virtual ${method.responseTypeInfo.typeFullName} ${method.name}Impl(const ${method.requestTypeInfo.typeFullName}& request<#rt>
-            <#lt>, void* context) = 0;
+    virtual ${method.responseTypeInfo.typeFullName} ${method.name}Impl(<#rt>
+            <#lt><@service_arg_type_name method.requestTypeInfo/> request, void* context) = 0;
 </#list>
 
 <#list methodList as method>
@@ -188,8 +190,8 @@ public:
      * \return Response returned from the method.
      */
 </#if>
-    ${method.responseTypeInfo.typeFullName} ${method.name}Method(${method.requestTypeInfo.typeFullName}& request, <#rt>
-            <#lt>void* context = nullptr);
+    ${method.responseTypeInfo.typeFullName} ${method.name}Method(<#rt>
+            <#lt><@service_arg_type_name method.requestTypeInfo/> request, void* context = nullptr);
 </#list>
 
 private:

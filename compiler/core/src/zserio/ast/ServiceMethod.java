@@ -79,25 +79,28 @@ public class ServiceMethod extends DocumentableAstNode implements ScopeSymbol
     private void checkUsedType(TypeReference typeReference)
     {
         final ZserioType referencedBaseType = typeReference.getBaseTypeReference().getType();
-        if (!(referencedBaseType instanceof CompoundType))
+        if (!(referencedBaseType instanceof CompoundType) && !(referencedBaseType instanceof BytesType))
         {
             throw new ParserException(typeReference,
-                    "Only non-parameterized compound types can be used in service methods, " +
+                    "Only non-parameterized compound types or bytes can be used in service methods, " +
                     "'" + typeReference.getReferencedTypeName() + "' is not a compound type!");
         }
 
-        final CompoundType compoundType = (CompoundType)referencedBaseType;
-        if (compoundType.getTypeParameters().size() > 0)
+        if (referencedBaseType instanceof CompoundType)
         {
-            throw new ParserException(typeReference,
-                    "Only non-parameterized compound types can be used in service methods, '" +
-                    ZserioTypeUtil.getReferencedFullName(typeReference) + "' is a parameterized type!");
-        }
-        if (compoundType instanceof SqlTableType)
-        {
-            throw new ParserException(typeReference, "SQL table '" +
-                    ZserioTypeUtil.getReferencedFullName(typeReference) +
-                    "' cannot be used in service methods!");
+            final CompoundType compoundType = (CompoundType)referencedBaseType;
+            if (compoundType.getTypeParameters().size() > 0)
+            {
+                throw new ParserException(typeReference,
+                        "Only non-parameterized compound types or bytes can be used in service methods, '" +
+                        ZserioTypeUtil.getReferencedFullName(typeReference) + "' is a parameterized type!");
+            }
+            if (compoundType instanceof SqlTableType)
+            {
+                throw new ParserException(typeReference, "SQL table '" +
+                        ZserioTypeUtil.getReferencedFullName(typeReference) +
+                        "' cannot be used in service methods!");
+            }
         }
     }
 

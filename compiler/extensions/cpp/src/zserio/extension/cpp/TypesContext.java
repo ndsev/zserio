@@ -55,7 +55,13 @@ public class TypesContext
                     false, false, "zserio/IService.h");
             serviceDataPtr = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "IServiceDataPtr",
                     false, false, "zserio/IService.h");
-            serviceData = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "ServiceData",
+            reflectableServiceData = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "ReflectableServiceData",
+                    false, false, "zserio/IService.h");
+            objectServiceData = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "ObjectServiceData",
+                    false, false, "zserio/IService.h");
+            rawServiceDataHolder = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "RawServiceDataHolder",
+                    false, false, "zserio/IService.h");
+            rawServiceDataView = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "RawServiceDataView",
                     false, false, "zserio/IService.h");
         }
         else if (allocator.equals(PROPAGATING_POLYMORPHIC_ALLOCATOR))
@@ -100,7 +106,13 @@ public class TypesContext
                     false, false, "zserio/pmr/IService.h");
             serviceDataPtr = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "IServiceDataPtr",
                     false, false, "zserio/pmr/IService.h");
-            serviceData = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "ServiceData",
+            reflectableServiceData = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "ReflectableServiceData",
+                    false, false, "zserio/pmr/IService.h");
+            objectServiceData = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "ObjectServiceData",
+                    false, false, "zserio/pmr/IService.h");
+            rawServiceDataHolder = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "RawServiceDataHolder",
+                    false, false, "zserio/pmr/IService.h");
+            rawServiceDataView = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "RawServiceDataView",
                     false, false, "zserio/pmr/IService.h");
         }
         else
@@ -145,7 +157,14 @@ public class TypesContext
                     true, true, "zserio/IService.h");
             serviceDataPtr = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "IBasicServiceDataPtr",
                     true, true, "zserio/IService.h");
-            serviceData = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicServiceData",
+            reflectableServiceData = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "BasicReflectableServiceData",
+                    true, true, "zserio/IService.h");
+            objectServiceData = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicObjectServiceData",
+                    true, true, "zserio/IService.h");
+            rawServiceDataHolder = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicRawServiceDataHolder",
+                    true, true, "zserio/IService.h");
+            rawServiceDataView = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicRawServiceDataView",
                     true, true, "zserio/IService.h");
         }
     }
@@ -290,9 +309,24 @@ public class TypesContext
         return serviceDataPtr;
     }
 
-    public NativeTypeDefinition getServiceData()
+    public NativeTypeDefinition getReflectableServiceData()
     {
-        return serviceData;
+        return reflectableServiceData;
+    }
+
+    public NativeTypeDefinition getObjectServiceData()
+    {
+        return objectServiceData;
+    }
+
+    public NativeTypeDefinition getRawServiceDataHolder()
+    {
+        return rawServiceDataHolder;
+    }
+
+    public NativeTypeDefinition getRawServiceDataView()
+    {
+        return rawServiceDataView;
     }
 
     public static class NativeTypeDefinition
@@ -360,7 +394,10 @@ public class TypesContext
     private final NativeTypeDefinition service;
     private final NativeTypeDefinition serviceClient;
     private final NativeTypeDefinition serviceDataPtr;
-    private final NativeTypeDefinition serviceData;
+    private final NativeTypeDefinition reflectableServiceData;
+    private final NativeTypeDefinition objectServiceData;
+    private final NativeTypeDefinition rawServiceDataHolder;
+    private final NativeTypeDefinition rawServiceDataView;
 
     public static final AllocatorDefinition PROPAGATING_POLYMORPHIC_ALLOCATOR = new AllocatorDefinition(
             "::zserio::pmr::PropagatingPolymorphicAllocator", "zserio/pmr/PolymorphicAllocator.h", "");
