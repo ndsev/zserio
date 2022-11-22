@@ -42,12 +42,12 @@ const FieldInfo IDENTIFIER_FIELD_INFO{
     {}, {}, {}, {}, false, {}, {}, false, {}, false, false
 };
 
-const FieldInfo DATA_FIELD_INFO{
-    "data"_sv, BuiltinTypeInfo<>::getBitBuffer(),
+const FieldInfo EXTERN_DATA_FIELD_INFO{
+    "externData"_sv, BuiltinTypeInfo<>::getBitBuffer(),
     {}, {}, {}, {}, false, {}, {}, false, {}, false, false
 };
 
-const FieldInfo BYTES_FIELD_INFO{
+const FieldInfo BYTES_DATA_FIELD_INFO{
     "bytesData"_sv, BuiltinTypeInfo<>::getBytes(),
     {}, {}, {}, {}, false, {}, {}, false, {}, false, false
 };
@@ -371,13 +371,13 @@ TEST(JsonWriterTest, compound)
     observer.visitValue(ReflectableFactory::getUInt32(13), IDENTIFIER_FIELD_INFO);
     observer.visitValue(ReflectableFactory::getString("test"_sv), TEXT_FIELD_INFO);
     BitBuffer bitBuffer({0xFF, 0x1F}, 13);
-    observer.visitValue(ReflectableFactory::getBitBuffer(bitBuffer), DATA_FIELD_INFO);
+    observer.visitValue(ReflectableFactory::getBitBuffer(bitBuffer), EXTERN_DATA_FIELD_INFO);
     vector<uint8_t> bytesData{{0xCA, 0xFE}};
-    observer.visitValue(ReflectableFactory::getBytes(bytesData), BYTES_FIELD_INFO);
+    observer.visitValue(ReflectableFactory::getBytes(bytesData), BYTES_DATA_FIELD_INFO);
     observer.endRoot(nullptr);
 
     ASSERT_EQ("{\"identifier\": 13, \"text\": \"test\", "
-            "\"data\": {\"buffer\": [255, 31], \"bitSize\": 13}, "
+            "\"externData\": {\"buffer\": [255, 31], \"bitSize\": 13}, "
             "\"bytesData\": {\"buffer\": [202, 254]}}", os.str());
 }
 

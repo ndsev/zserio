@@ -5,7 +5,16 @@
 #include "zserio/ReflectableUtil.h"
 #include "zserio/Reflectable.h"
 #include "zserio/TypeInfo.h"
-#include "zserio/ZserioTreeCreatorTestObject.h"
+
+#include "test_object/DummyBitmask.h"
+#include "test_object/DummyEnum.h"
+#include "test_object/DummyNested.h"
+#include "test_object/DummyObject.h"
+
+using test_object::DummyBitmask;
+using test_object::DummyEnum;
+using test_object::DummyNested;
+using test_object::DummyObject;
 
 namespace zserio
 {

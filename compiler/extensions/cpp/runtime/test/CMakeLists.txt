@@ -23,6 +23,17 @@ if (SANITIZERS_ENABLED)
     compiler_set_undefined_sanitizer()
 endif ()
 
+set(TEST_OBJECT_SRCS
+    test_object/DummyBitmask.cpp
+    test_object/DummyBitmask.h
+    test_object/DummyEnum.cpp
+    test_object/DummyEnum.h
+    test_object/DummyNested.cpp
+    test_object/DummyNested.h
+    test_object/DummyObject.cpp
+    test_object/DummyObject.h
+)
+
 set(ZSERIO_CPP_RUNTIME_TEST_SRCS
     zserio/AllocatorPropagatingCopyTest.cpp
     zserio/AnyHolderTest.cpp
@@ -70,8 +81,6 @@ set(ZSERIO_CPP_RUNTIME_TEST_SRCS
     zserio/VarSizeUtilTest.cpp
     zserio/WalkerTest.cpp
     zserio/ZserioTreeCreatorTest.cpp
-    zserio/ZserioTreeCreatorTestObject.h
-    zserio/ZserioTreeCreatorTestObject.cpp
 )
 
 set(ZSERIO_CPP_RUNTIME_TEST_HEADERS
@@ -88,7 +97,8 @@ if (CMAKE_SIZEOF_VOID_P EQUAL 8)
                  APPEND PROPERTY COMPILE_DEFINITIONS ZSERIO_RUNTIME_64BIT)
 endif ()
 
-add_executable(${PROJECT_NAME} ${ZSERIO_CPP_RUNTIME_TEST_SRCS} ${ZSERIO_CPP_RUNTIME_TEST_HEADERS})
+add_executable(${PROJECT_NAME} ${TEST_OBJECT_SRCS} ${ZSERIO_CPP_RUNTIME_TEST_SRCS}
+        ${ZSERIO_CPP_RUNTIME_TEST_HEADERS})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS NO)
 target_include_directories(${PROJECT_NAME} PRIVATE .)

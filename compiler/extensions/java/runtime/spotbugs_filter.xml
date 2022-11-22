@@ -21,7 +21,7 @@
                 <Method name="getByteArray"/>
             </And>
             <And>
-                <Class name="zserio.runtime.creator.ZserioTreeCreatorTestObject$DummyNested"/>
+                <Class name="test_object.DummyNested"/>
                 <Method name="getBytesData"/>
             </And>
         </Or>
@@ -32,7 +32,7 @@
         <Or>
             <Class name="~zserio.runtime.array.RawArray\$.*RawArray"/>
             <And>
-                <Class name="zserio.runtime.creator.ZserioTreeCreatorTestObject$DummyNested"/>
+                <Class name="test_object.DummyNested"/>
                 <Method name="setBytesData"/>
             </And>
         </Or>

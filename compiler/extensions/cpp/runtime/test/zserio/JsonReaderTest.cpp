@@ -2,7 +2,16 @@
 
 #include "zserio/JsonReader.h"
 #include "zserio/ReflectableUtil.h"
-#include "zserio/ZserioTreeCreatorTestObject.h"
+
+#include "test_object/DummyBitmask.h"
+#include "test_object/DummyEnum.h"
+#include "test_object/DummyNested.h"
+#include "test_object/DummyObject.h"
+
+using test_object::DummyBitmask;
+using test_object::DummyEnum;
+using test_object::DummyNested;
+using test_object::DummyObject;
 
 namespace zserio
 {
@@ -102,7 +111,7 @@ TEST(JsonReaderTest, readObject)
         "    \"nested\": {\n"
         "        \"value\": 10,\n"
         "        \"text\": \"nested\",\n"
-        "        \"data\": {\n"
+        "        \"externData\": {\n"
         "             \"buffer\": [\n"
         "                 203,\n"
         "                 240\n"
@@ -123,12 +132,18 @@ TEST(JsonReaderTest, readObject)
         "        {\n"
         "            \"value\": 5,\n"
         "            \"text\": \"nestedArray\",\n"
-        "            \"data\": {\n"
+        "            \"externData\": {\n"
         "                 \"buffer\": [\n"
         "                     202,\n"
         "                     254\n"
         "                 ],"
         "                 \"bitSize\": 15\n"
+        "            },\n"
+        "            \"bytesData\": {\n"
+        "               \"buffer\": [\n"
+        "                   203,\n"
+        "                   240\n"
+        "               ]\n"
         "            },\n"
         "            \"dummyEnum\": 1,\n"
         "            \"dummyBitmask\": 2\n"
@@ -170,8 +185,8 @@ TEST(JsonReaderTest, readObject)
     ASSERT_EQ(13, reflectable->getField("nested")->getParameter("param")->getUInt32());
     ASSERT_EQ(10, reflectable->find("nested.value")->getUInt32());
     ASSERT_EQ("nested"_sv, reflectable->find("nested.text")->getStringView());
-    ASSERT_EQ(BitBuffer({{0xCB, 0xF0}}, 12), reflectable->find("nested.data")->getBitBuffer());
-    Span<const uint8_t> bytesData = reflectable->find("nested.bytesData")->getBytes();
+    ASSERT_EQ(BitBuffer({{0xCB, 0xF0}}, 12), reflectable->find("nested.externData")->getBitBuffer());
+    const Span<const uint8_t> bytesData = reflectable->find("nested.bytesData")->getBytes();
     ASSERT_EQ(2, bytesData.size());
     ASSERT_EQ(0xCA, bytesData[0]);
     ASSERT_EQ(0xFE, bytesData[1]);
@@ -183,7 +198,12 @@ TEST(JsonReaderTest, readObject)
     ASSERT_EQ(5, reflectable->getField("nestedArray")->at(0)->getField("value")->getUInt32());
     ASSERT_EQ("nestedArray"_sv, reflectable->getField("nestedArray")->at(0)->getField("text")->getStringView());
     ASSERT_EQ(BitBuffer({{0xCA, 0xFE}}, 15),
-            reflectable->getField("nestedArray")->at(0)->getField("data")->getBitBuffer());
+            reflectable->getField("nestedArray")->at(0)->getField("externData")->getBitBuffer());
+    const Span<const uint8_t> nestedBytesData =
+            reflectable->getField("nestedArray")->at(0)->getField("bytesData")->getBytes();
+    ASSERT_EQ(2, nestedBytesData.size());
+    ASSERT_EQ(0xCB, nestedBytesData[0]);
+    ASSERT_EQ(0xF0, nestedBytesData[1]);
     ASSERT_EQ(enumToValue(DummyEnum::TWO),
             reflectable->getField("nestedArray")->at(0)->getField("dummyEnum")->getInt8());
     ASSERT_EQ(DummyBitmask(DummyBitmask::Values::WRITE).getValue(),
@@ -228,12 +248,18 @@ TEST(JsonReaderTest, readParameterizedObject)
         "{\n"
         "    \"value\": 10,\n"
         "    \"text\": \"nested\",\n"
-        "    \"data\": {\n"
+        "    \"externData\": {\n"
         "         \"bitSize\": 12,\n"
         "         \"buffer\": [\n"
         "             203,\n"
         "             240\n"
         "         ]\n"
+        "    },\n"
+        "    \"bytesData\": {\n"
+        "       \"buffer\": [\n"
+        "           202,\n"
+        "           254\n"
+        "       ]\n"
         "    },\n"
         "    \"dummyEnum\": 0,\n"
         "    \"dummyBitmask\": 1\n"
@@ -249,7 +275,7 @@ TEST(JsonReaderTest, readParameterizedObject)
     ASSERT_EQ(10, reflectable->getField("value")->getUInt32());
 }
 
-TEST(JsonReaderTest, readUnonrderedBitBuffer)
+TEST(JsonReaderTest, readUnorderedBitBuffer)
 {
     std::stringstream str(
         "{\n"
@@ -257,12 +283,18 @@ TEST(JsonReaderTest, readUnonrderedBitBuffer)
         "    \"nested\": {\n"
         "        \"value\": 10,\n"
         "        \"text\": \"nested\",\n"
-        "        \"data\": {\n"
+        "        \"externData\": {\n"
         "             \"bitSize\": 12,\n"
         "             \"buffer\": [\n"
         "                 203,\n"
         "                 240\n"
         "             ]\n"
+        "        },\n"
+        "        \"bytesData\": {\n"
+        "           \"buffer\": [\n"
+        "               202,\n"
+        "               254\n"
+        "           ]\n"
         "        },\n"
         "        \"dummyEnum\": -1,\n"
         "        \"dummyBitmask\": 1\n"
@@ -280,7 +312,11 @@ TEST(JsonReaderTest, readUnonrderedBitBuffer)
     ASSERT_EQ(13, reflectable->getField("nested")->getParameter("param")->getUInt32());
     ASSERT_EQ(10, reflectable->find("nested.value")->getUInt32());
     ASSERT_EQ("nested"_sv, reflectable->find("nested.text")->getStringView());
-    ASSERT_EQ(BitBuffer({{0xCB, 0xF0}}, 12), reflectable->find("nested.data")->getBitBuffer());
+    ASSERT_EQ(BitBuffer({{0xCB, 0xF0}}, 12), reflectable->find("nested.externData")->getBitBuffer());
+    const Span<const uint8_t> bytesData = reflectable->find("nested.bytesData")->getBytes();
+    ASSERT_EQ(2, bytesData.size());
+    ASSERT_EQ(0xCA, bytesData[0]);
+    ASSERT_EQ(0xFE, bytesData[1]);
     ASSERT_EQ(enumToValue(DummyEnum::MinusOne), reflectable->find("nested.dummyEnum")->getInt8());
     ASSERT_EQ(DummyBitmask(DummyBitmask::Values::READ).getValue(),
             reflectable->find("nested.dummyBitmask")->getUInt8());
@@ -291,19 +327,19 @@ TEST(JsonReaderTest, readStringifiedEnum)
     checkReadStringifiedEnum("ONE", DummyEnum::ONE);
     checkReadStringifiedEnum("MinusOne", DummyEnum::MinusOne);
     checkReadStringifiedEnumThrows("NONEXISTING",
-            "ZserioTreeCreator: Cannot create enum 'DummyEnum' "
+            "ZserioTreeCreator: Cannot create enum 'test_object.DummyEnum' "
             "from string value 'NONEXISTING'! (JsonParser:3:22)");
     checkReadStringifiedEnumThrows("***",
-            "ZserioTreeCreator: Cannot create enum 'DummyEnum' "
+            "ZserioTreeCreator: Cannot create enum 'test_object.DummyEnum' "
             "from string value '***'! (JsonParser:3:22)");
     checkReadStringifiedEnumThrows("10 /* no match */",
-            "ZserioTreeCreator: Cannot create enum 'DummyEnum' "
+            "ZserioTreeCreator: Cannot create enum 'test_object.DummyEnum' "
             "from string value '10 /* no match */'! (JsonParser:3:22)");
     checkReadStringifiedEnumThrows("-10 /* no match */",
-            "ZserioTreeCreator: Cannot create enum 'DummyEnum' "
+            "ZserioTreeCreator: Cannot create enum 'test_object.DummyEnum' "
             "from string value '-10 /* no match */'! (JsonParser:3:22)");
     checkReadStringifiedEnumThrows("",
-            "ZserioTreeCreator: Cannot create enum 'DummyEnum' "
+            "ZserioTreeCreator: Cannot create enum 'test_object.DummyEnum' "
             "from string value ''! (JsonParser:3:22)");
 }
 
@@ -314,25 +350,25 @@ TEST(JsonReaderTest, readStringifiedBitmask)
     checkReadStringifiedBitmask("READ | WRITE",
             DummyBitmask::Values::READ | DummyBitmask::Values::WRITE);
     checkReadStringifiedBitmaskThrows("NONEXISTING",
-            "ZserioTreeCreator: Cannot create bitmask 'DummyBitmask' "
+            "ZserioTreeCreator: Cannot create bitmask 'test_object.DummyBitmask' "
             "from string value 'NONEXISTING'! (JsonParser:3:25)");
     checkReadStringifiedBitmaskThrows("READ | NONEXISTING",
-            "ZserioTreeCreator: Cannot create bitmask 'DummyBitmask' "
+            "ZserioTreeCreator: Cannot create bitmask 'test_object.DummyBitmask' "
             "from string value 'READ | NONEXISTING'! (JsonParser:3:25)");
     checkReadStringifiedBitmaskThrows("READ * NONEXISTING",
-            "ZserioTreeCreator: Cannot create bitmask 'DummyBitmask' "
+            "ZserioTreeCreator: Cannot create bitmask 'test_object.DummyBitmask' "
             "from string value 'READ * NONEXISTING'! (JsonParser:3:25)");
     checkReadStringifiedBitmask("7 /* READ | WRITE */", DummyBitmask(7));
     checkReadStringifiedBitmask("15 /* READ | WRITE */", DummyBitmask(15));
     checkReadStringifiedBitmask("4 /* no match */", DummyBitmask(4));
     checkReadStringifiedBitmaskThrows("",
-            "ZserioTreeCreator: Cannot create bitmask 'DummyBitmask' "
+            "ZserioTreeCreator: Cannot create bitmask 'test_object.DummyBitmask' "
             "from string value ''! (JsonParser:3:25)");
     checkReadStringifiedBitmaskThrows(" ",
-            "ZserioTreeCreator: Cannot create bitmask 'DummyBitmask' "
+            "ZserioTreeCreator: Cannot create bitmask 'test_object.DummyBitmask' "
             "from string value ' '! (JsonParser:3:25)");
     checkReadStringifiedBitmaskThrows(" | ",
-            "ZserioTreeCreator: Cannot create bitmask 'DummyBitmask' "
+            "ZserioTreeCreator: Cannot create bitmask 'test_object.DummyBitmask' "
             "from string value ' | '! (JsonParser:3:25)");
 }
 
@@ -370,8 +406,8 @@ TEST(JsonReaderTest, wrongKeyException)
         }
         catch (const CppRuntimeException& e)
         {
-            ASSERT_STREQ("ZserioTreeCreator: Member 'nonexisting' not found in 'DummyObject'! "
-                    "(JsonParser:2:16)", e.what());
+            ASSERT_STREQ("ZserioTreeCreator: Member 'nonexisting' not found in "
+                    "'test_object.DummyObject'! (JsonParser:2:16)", e.what());
             throw;
         }
     }, CppRuntimeException);
@@ -406,7 +442,7 @@ TEST(JsonReaderTest, wrongBitBufferException)
         "    \"nested\": {\n"
         "        \"value\": 10,\n"
         "        \"text\": \"nested\",\n"
-        "        \"data\": {\n"
+        "        \"externData\": {\n"
         "             \"buffer\": [\n"
         "                 203,\n"
         "                 240\n"
@@ -440,7 +476,7 @@ TEST(JsonReaderTest, partialBitBufferException)
         "    \"nested\": {\n"
         "        \"value\": 10,\n"
         "        \"text\": \"nested\",\n"
-        "        \"data\": {\n"
+        "        \"externData\": {\n"
         "             \"buffer\": [\n"
         "                 203,\n"
         "                 240\n"
@@ -472,7 +508,7 @@ TEST(JsonReaderTest, wrongBytesException)
         "    \"nested\": {\n"
         "        \"value\": 10,\n"
         "        \"text\": \"nested\",\n"
-        "        \"data\": {\n"
+        "        \"externData\": {\n"
         "             \"buffer\": [\n"
         "                 203,\n"
         "                 240\n"
@@ -567,7 +603,7 @@ TEST(JsonReaderTest, bigBitBufferByteValueException)
     std::stringstream str(
         "{\n"
         "    \"nested\": {\n"
-        "        \"data\": {\n"
+        "        \"externData\": {\n"
         "             \"buffer\": [\n"
         "                 256\n"
         "             ],\n"
@@ -597,7 +633,7 @@ TEST(JsonReaderTest, negativeBitBufferByteValueException)
     std::stringstream str(
         "{\n"
         "    \"nested\": {\n"
-        "        \"data\": {\n"
+        "        \"externData\": {\n"
         "             \"buffer\": [\n"
         "                 -1\n"
         "             ],\n"
@@ -626,7 +662,7 @@ TEST(JsonReaderTest, wrongBitBufferSizeValueException)
     std::stringstream str(
         "{\n"
         "    \"nested\": {\n"
-        "        \"data\": {\n"
+        "        \"externData\": {\n"
         "             \"buffer\": [\n"
         "                 255\n"
         "             ],\n"

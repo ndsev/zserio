@@ -59,6 +59,8 @@ if (${ZSERIO_CODE_COVERAGE_ENABLE})
         list(APPEND COV_PARAMS "INCOMPLETE_COVERAGE_FAIL")
         list(APPEND COV_PARAMS "98")
     endif ()
+    list(APPEND COV_PARAMS "EXCLUDE_SOURCES")
+    list(APPEND COV_PARAMS ".*test_object.*")
     create_coverage_target(${COV_PARAMS})
 endif ()
 
@@ -75,8 +77,8 @@ cppcheck_add_custom_command(TARGET ZserioCppRuntime
                             SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src"
                                        "${CMAKE_CURRENT_SOURCE_DIR}/src/*/*.h"
                                        "${CMAKE_CURRENT_SOURCE_DIR}/src/*/*/*.h"
-                                       "${CMAKE_CURRENT_SOURCE_DIR}/test"
-                                       "${CMAKE_CURRENT_SOURCE_DIR}/test/*/*.h"
+                                       "${CMAKE_CURRENT_SOURCE_DIR}/test/zserio"
+                                       "${CMAKE_CURRENT_SOURCE_DIR}/test/zserio/*.h"
                             OPTIONS --library=googletest.cfg -UZSERIO_STANDARD_TYPES_HEADER)
 
 # build and install doxygen documentation

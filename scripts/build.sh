@@ -20,8 +20,8 @@ test_python_runtime()
     echo
 
     PYTHONPATH="${SOURCES_DIR}" python \
-                                -m coverage run --source "${PYTHON_RUNTIME_ROOT}/" \
-                                -m unittest discover -s "${TESTS_DIR}" -v
+            -m coverage run --source "${PYTHON_RUNTIME_ROOT}/" \
+            -m unittest discover -s "${TESTS_DIR}" -v
     local PYTHON_RESULT=$?
     if [ ${PYTHON_RESULT} -ne 0 ] ; then
         stderr_echo "Running python unit tests failed with return code ${PYTHON_RESULT}!"
@@ -33,7 +33,8 @@ test_python_runtime()
     echo "Running python coverage report."
     echo
 
-    python -m coverage report -m --fail-under=100
+    python -m coverage html --directory="coverage" --fail-under=100 --omit="*test_object*" \
+            --title="Zserio Python Runtime Library"
     local COVERAGE_RESULT=$?
     if [ ${COVERAGE_RESULT} -ne 0 ] ; then
         stderr_echo "Running python coverage report failed with return code ${COVERAGE_RESULT}!"
@@ -56,6 +57,7 @@ test_python_runtime()
     echo "Running pylint on python runtime test sources."
 
     PYLINT_ARGS+=("--disable=missing-docstring,duplicate-code")
+    PYLINT_ARGS+=("--ignore-paths=.*test_object.*")
     PYTHONPATH="${SOURCES_DIR}" run_pylint "${PYLINT_RCFILE}" PYLINT_ARGS[@] "${TESTS_DIR}"/*
     if [ $? -ne 0 ]; then
         return 1

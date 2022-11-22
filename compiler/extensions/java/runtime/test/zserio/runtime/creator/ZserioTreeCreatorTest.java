@@ -11,33 +11,34 @@ import org.junit.jupiter.api.Test;
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
 
+import test_object.DummyBitmask;
+import test_object.DummyEnum;
+import test_object.DummyObject;
+
 public class ZserioTreeCreatorTest
 {
     @Test
     public void createObject()
     {
-        final ZserioTreeCreator creator =
-                new ZserioTreeCreator(ZserioTreeCreatorTestObject.DummyObject.typeInfo());
+        final ZserioTreeCreator creator = new ZserioTreeCreator(DummyObject.typeInfo());
         creator.beginRoot();
         final Object obj = creator.endRoot();
-        assertTrue(obj instanceof ZserioTreeCreatorTestObject.DummyObject);
+        assertTrue(obj instanceof DummyObject);
         assertNotNull(obj);
     }
 
     @Test
     public void createObjectSetFields()
     {
-        final ZserioTreeCreator creator =
-                new ZserioTreeCreator(ZserioTreeCreatorTestObject.DummyObject.typeInfo());
+        final ZserioTreeCreator creator = new ZserioTreeCreator(DummyObject.typeInfo());
         creator.beginRoot();
         creator.setValue("value", (long)13);
         creator.setValue("text", "test");
         final Object obj = creator.endRoot();
-        assertTrue(obj instanceof ZserioTreeCreatorTestObject.DummyObject);
+        assertTrue(obj instanceof DummyObject);
         assertNotNull(obj);
 
-        final ZserioTreeCreatorTestObject.DummyObject dummyObject =
-                (ZserioTreeCreatorTestObject.DummyObject)obj;
+        final DummyObject dummyObject = (DummyObject)obj;
         assertEquals((long)13, dummyObject.getValue());
         assertEquals("test", dummyObject.getText());
     }
@@ -45,25 +46,24 @@ public class ZserioTreeCreatorTest
     @Test
     public void createObjectFull()
     {
-        final ZserioTreeCreator creator =
-                new ZserioTreeCreator(ZserioTreeCreatorTestObject.DummyObject.typeInfo());
+        final ZserioTreeCreator creator = new ZserioTreeCreator(DummyObject.typeInfo());
         creator.beginRoot();
         creator.setValue("value", (long)13);
         creator.setValue("text", "test");
         creator.beginCompound("nested");
         creator.setValue("value", (long)10);
         creator.setValue("text", "nested");
-        creator.setValue("data", new BitBuffer(new byte[] {0x3c}, 6));
+        creator.setValue("externData", new BitBuffer(new byte[] {0x3c}, 6));
         creator.setValue("bytesData", new byte[] {(byte)0xff});
-        creator.setValue("dummyEnum", ZserioTreeCreatorTestObject.DummyEnum.ONE);
-        creator.setValue("dummyBitmask", ZserioTreeCreatorTestObject.DummyBitmask.Values.WRITE);
+        creator.setValue("dummyEnum", DummyEnum.ONE);
+        creator.setValue("dummyBitmask", DummyBitmask.Values.WRITE);
         creator.endCompound();
         creator.beginArray("nestedArray");
         creator.beginCompoundElement();
         creator.setValue("value", (long)5);
         creator.setValue("text", "nestedArray");
-        creator.setValue("dummyEnum", ZserioTreeCreatorTestObject.DummyEnum.TWO);
-        creator.setValue("dummyBitmask", ZserioTreeCreatorTestObject.DummyBitmask.Values.READ);
+        creator.setValue("dummyEnum", DummyEnum.TWO);
+        creator.setValue("dummyBitmask", DummyBitmask.Values.READ);
         creator.endCompoundElement();
         creator.endArray();
         creator.beginArray("textArray");
@@ -83,27 +83,25 @@ public class ZserioTreeCreatorTest
         creator.setValue("text", "optionalNested");
         creator.endCompound();
         final Object obj = creator.endRoot();
-        assertTrue(obj instanceof ZserioTreeCreatorTestObject.DummyObject);
+        assertTrue(obj instanceof DummyObject);
         assertNotNull(obj);
 
-        final ZserioTreeCreatorTestObject.DummyObject dummyObject =
-                (ZserioTreeCreatorTestObject.DummyObject)obj;
+        final DummyObject dummyObject = (DummyObject)obj;
         assertEquals(13, dummyObject.getValue());
         assertEquals("test", dummyObject.getText());
         assertEquals(13, dummyObject.getNested().getParam());
         assertEquals(10, dummyObject.getNested().getValue());
         assertEquals("nested", dummyObject.getNested().getText());
-        assertArrayEquals(new byte[] {0x3c}, dummyObject.getNested().getData().getBuffer());
+        assertArrayEquals(new byte[] {0x3c}, dummyObject.getNested().getExternData().getBuffer());
         assertArrayEquals(new byte[] {(byte)0xff}, dummyObject.getNested().getBytesData());
-        assertEquals(6, dummyObject.getNested().getData().getBitSize());
-        assertEquals(ZserioTreeCreatorTestObject.DummyEnum.ONE, dummyObject.getNested().getDummyEnum());
-        assertEquals(ZserioTreeCreatorTestObject.DummyBitmask.Values.WRITE, dummyObject.getNested().getDummyBitmask());
+        assertEquals(6, dummyObject.getNested().getExternData().getBitSize());
+        assertEquals(DummyEnum.ONE, dummyObject.getNested().getDummyEnum());
+        assertEquals(DummyBitmask.Values.WRITE, dummyObject.getNested().getDummyBitmask());
         assertEquals(1, dummyObject.getNestedArray().length);
         assertEquals(5, dummyObject.getNestedArray()[0].getValue());
         assertEquals("nestedArray", dummyObject.getNestedArray()[0].getText());
-        assertEquals(ZserioTreeCreatorTestObject.DummyEnum.TWO, dummyObject.getNestedArray()[0].getDummyEnum());
-        assertEquals(ZserioTreeCreatorTestObject.DummyBitmask.Values.READ,
-                dummyObject.getNestedArray()[0].getDummyBitmask());
+        assertEquals(DummyEnum.TWO, dummyObject.getNestedArray()[0].getDummyEnum());
+        assertEquals(DummyBitmask.Values.READ, dummyObject.getNestedArray()[0].getDummyBitmask());
         assertArrayEquals(new String[] {"this", "is", "text", "array"}, dummyObject.getTextArray());
         assertEquals(1, dummyObject.getExternArray().length);
         assertArrayEquals(new byte[] {0x0f}, dummyObject.getExternArray()[0].getBuffer());
@@ -117,8 +115,7 @@ public class ZserioTreeCreatorTest
     @Test
     public void exceptionsBeforeRoot()
     {
-        final ZserioTreeCreator creator =
-                new ZserioTreeCreator(ZserioTreeCreatorTestObject.DummyObject.typeInfo());
+        final ZserioTreeCreator creator = new ZserioTreeCreator(DummyObject.typeInfo());
 
         assertThrows(ZserioError.class, () -> creator.endRoot());
         assertThrows(ZserioError.class, () -> creator.beginArray("nestedArray"));
@@ -134,8 +131,7 @@ public class ZserioTreeCreatorTest
     @Test
     public void exceptionsInRoot()
     {
-        final ZserioTreeCreator creator =
-                new ZserioTreeCreator(ZserioTreeCreatorTestObject.DummyObject.typeInfo());
+        final ZserioTreeCreator creator = new ZserioTreeCreator(DummyObject.typeInfo());
         creator.beginRoot();
 
         assertThrows(ZserioError.class, () -> creator.beginRoot());
@@ -155,8 +151,7 @@ public class ZserioTreeCreatorTest
     @Test
     public void exceptionsInCompound()
     {
-        final ZserioTreeCreator creator =
-                new ZserioTreeCreator(ZserioTreeCreatorTestObject.DummyObject.typeInfo());
+        final ZserioTreeCreator creator = new ZserioTreeCreator(DummyObject.typeInfo());
         creator.beginRoot();
         creator.beginCompound("nested");
 
@@ -178,8 +173,7 @@ public class ZserioTreeCreatorTest
     @Test
     public void exceptionsInCompoundArray()
     {
-        final ZserioTreeCreator creator =
-                new ZserioTreeCreator(ZserioTreeCreatorTestObject.DummyObject.typeInfo());
+        final ZserioTreeCreator creator = new ZserioTreeCreator(DummyObject.typeInfo());
         creator.beginRoot();
         creator.beginArray("nestedArray");
 
@@ -197,8 +191,7 @@ public class ZserioTreeCreatorTest
     @Test
     public void exceptionsInSimpleArray()
     {
-        final ZserioTreeCreator creator =
-                new ZserioTreeCreator(ZserioTreeCreatorTestObject.DummyObject.typeInfo());
+        final ZserioTreeCreator creator = new ZserioTreeCreator(DummyObject.typeInfo());
         creator.beginRoot();
         creator.beginArray("textArray");
 
@@ -218,8 +211,7 @@ public class ZserioTreeCreatorTest
     @Test
     public void exceptionsInCompoundElement()
     {
-        final ZserioTreeCreator creator =
-                new ZserioTreeCreator(ZserioTreeCreatorTestObject.DummyObject.typeInfo());
+        final ZserioTreeCreator creator = new ZserioTreeCreator(DummyObject.typeInfo());
         creator.beginRoot();
         creator.beginArray("nestedArray");
         creator.beginCompoundElement();

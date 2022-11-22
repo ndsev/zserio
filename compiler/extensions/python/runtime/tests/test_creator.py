@@ -1,6 +1,6 @@
 import unittest
 
-from test_creator_object import DummyEnum, DummyBitmask, DummyObject
+from test_object.api import DummyEnum, DummyBitmask, DummyObject
 
 from zserio.exception import PythonRuntimeException
 from zserio.creator import ZserioTreeCreator
@@ -34,7 +34,7 @@ class ZserioTreeCreatorTest(unittest.TestCase):
         creator.begin_compound("nested")
         creator.set_value("value", 10)
         creator.set_value("text", "nested")
-        creator.set_value("data", BitBuffer([0x3c], 6))
+        creator.set_value("externData", BitBuffer([0x3c], 6))
         creator.set_value("bytesData", bytearray([0xff]))
         creator.set_value("dummyEnum", DummyEnum.ONE)
         creator.set_value("dummyBitmask", DummyBitmask.Values.WRITE)
@@ -70,9 +70,9 @@ class ZserioTreeCreatorTest(unittest.TestCase):
         self.assertEqual(13, obj.nested.param)
         self.assertEqual(10, obj.nested.value)
         self.assertEqual("nested", obj.nested.text)
-        self.assertEqual([0x3c], obj.nested.data.buffer)
+        self.assertEqual([0x3c], obj.nested.extern_data.buffer)
         self.assertEqual(bytes([0xff]), obj.nested.bytes_data)
-        self.assertEqual(6, obj.nested.data.bitsize)
+        self.assertEqual(6, obj.nested.extern_data.bitsize)
         self.assertEqual(DummyEnum.ONE, obj.nested.dummy_enum)
         self.assertEqual(DummyBitmask.Values.WRITE, obj.nested.dummy_bitmask)
         self.assertEqual(1, len(obj.nested_array))
