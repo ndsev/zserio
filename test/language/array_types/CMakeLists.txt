@@ -40,6 +40,11 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_struct_recursion/PackedAutoArrayRecursion.cpp
     ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_struct_recursion/PackedAutoArrayRecursion.h
 
+    ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_struct_with_bytes/PackedAutoArray.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_struct_with_bytes/PackedAutoArray.h
+    ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_struct_with_bytes/TestStructure.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_struct_with_bytes/TestStructure.h
+
     ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_struct_with_extern/PackedAutoArray.cpp
     ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_struct_with_extern/PackedAutoArray.h
     ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_struct_with_extern/TestStructure.cpp
@@ -129,6 +134,7 @@ add_test_sources(
     cpp/PackedArraysMappingTest.cpp
     cpp/PackedAutoArrayBitfieldParamTest.cpp
     cpp/PackedAutoArrayStructRecursionTest.cpp
+    cpp/PackedAutoArrayStructWithBytesTest.cpp
     cpp/PackedAutoArrayStructWithExternTest.cpp
     cpp/PackedAutoArrayStructWithUnpackedFieldTest.cpp
     cpp/PackedAutoArrayUInt8Test.cpp

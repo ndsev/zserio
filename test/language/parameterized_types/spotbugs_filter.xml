@@ -1,0 +1,30 @@
+<FindBugsFilter>
+    <Match>
+        <!-- May expose internal representation by returning reference to mutable object - this is ok -->
+        <Bug code="EI"/>
+        <Or>
+            <And>
+                <Class name="~.*\.bytes_param\.BytesParam"/>
+                <Method name="getBytesField"/>
+            </And>
+            <And>
+                <Class name="~.*\.bytes_param\.Parameterized"/>
+                <Method name="getParam"/>
+            </And>
+        </Or>
+    </Match>
+    <Match>
+        <!-- May expose internal representation by storing reference to mutable object - this is ok -->
+        <Bug code="EI2"/>
+        <Or>
+            <And>
+                <Class name="~.*\.bytes_param\.BytesParam"/>
+                <Method name="setBytesField"/>
+            </And>
+            <And>
+                <Class name="~.*\.bytes_param\.Parameterized"/>
+                <Field name="param_"/>
+            </And>
+        </Or>
+    </Match>
+</FindBugsFilter>

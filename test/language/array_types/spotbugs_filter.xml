@@ -1,0 +1,30 @@
+<FindBugsFilter>
+    <Match>
+        <!-- May expose internal representation by returning reference to mutable object - this is ok -->
+        <Bug code="EI"/>
+        <Or>
+            <And>
+                <Class name="~.*\.packed_auto_array_struct_with_bytes\.TestStructure"/>
+                <Method name="getBytesField"/>
+            </And>
+            <And>
+                <Class name="~.*\.packed_variable_array_struct\.TestStructure"/>
+                <Method name="getBytesData"/>
+            </And>
+        </Or>
+    </Match>
+    <Match>
+        <!-- May expose internal representation by storing reference to mutable object - this is ok -->
+        <Bug code="EI2"/>
+        <Or>
+            <And>
+                <Class name="~.*\.packed_auto_array_struct_with_bytes\.TestStructure"/>
+                <Method name="setBytesField"/>
+            </And>
+            <And>
+                <Class name="~.*\.packed_variable_array_struct\.TestStructure"/>
+                <Method name="setBytesData"/>
+            </And>
+        </Or>
+    </Match>
+</FindBugsFilter>

@@ -79,7 +79,7 @@ public class PackedVariableArrayStructTest
         final PackedVariableArray packedVariableArray = createPackedVariableArray(numElements);
         final int unpackedBitSizeOf = packedVariableArray.getTestUnpackedArray().bitSizeOf();
         final int packedBitSizeOf = packedVariableArray.getTestPackedArray().bitSizeOf();
-        final double minCompressionRatio = 0.59;
+        final double minCompressionRatio = 0.622;
         assertTrue(unpackedBitSizeOf * minCompressionRatio > packedBitSizeOf, () ->
                 "Unpacked array has " + unpackedBitSizeOf + " bits, packed array has " + packedBitSizeOf +
                 " bits, " + "compression ratio is " + packedBitSizeOf * 100.0 / unpackedBitSizeOf + "%!");
@@ -123,6 +123,7 @@ public class PackedVariableArrayStructTest
     {
         final String name = "name" + index;
         final BitBuffer data = new BitBuffer(new byte[] {(byte)0xCD, (byte)0xC0}, 10);
+        final byte[] bytesData = new byte[] {(byte)0xCD, (byte)0xC0};
 
         final TestChoice testChoice = new TestChoice(index);
         if (index == 0 || index == 2 || index == 4)
@@ -162,8 +163,8 @@ public class PackedVariableArrayStructTest
                 new Empty(),
                 new Empty()};
 
-        return new TestStructure(index, name, data, testChoice, testUnion, testEnum, testBitmask, testOptional,
-                testDynamicBitfield, values.length, values, values, empties);
+        return new TestStructure(index, name, data, bytesData, testChoice, testUnion, testEnum, testBitmask,
+                testOptional, testDynamicBitfield, values.length, values, values, empties);
     }
 
     private static final String BLOB_NAME_BASE = "packed_variable_array_struct_";

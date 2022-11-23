@@ -55,6 +55,7 @@ struct TestStructure
     uint32          id;
     string          name;
     extern          data;
+    bytes           bytesData;
     TestChoice(id)  testChoice;
     TestUnion       testUnion;
     TestEnum        testEnum;

@@ -1,7 +1,11 @@
 uninitMemberVar:*/parameterized_types/array_element_param/Block.cpp
 uninitMemberVar:*/parameterized_types/array_element_param/Block.h
+uninitMemberVar:*/parameterized_types/bytes_param/Parameterized.cpp
+uninitMemberVar:*/parameterized_types/bytes_param/Parameterized.h
 uninitMemberVar:*/parameterized_types/dynamic_bitfield_param/DynamicBitfieldParam.cpp
 uninitMemberVar:*/parameterized_types/dynamic_bitfield_param/DynamicBitfieldParam.h
+uninitMemberVar:*/parameterized_types/extern_param/Parameterized.cpp
+uninitMemberVar:*/parameterized_types/extern_param/Parameterized.h
 uninitMemberVar:*/parameterized_types/fixed_and_variable_param/ArrayHolder.cpp
 uninitMemberVar:*/parameterized_types/fixed_and_variable_param/ArrayHolder.h
 uninitMemberVar:*/parameterized_types/grand_child_param/ItemChoice.cpp

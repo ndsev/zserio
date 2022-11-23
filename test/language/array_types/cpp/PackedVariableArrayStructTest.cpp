@@ -43,7 +43,8 @@ protected:
         TestStructure testStructure;
         testStructure.setId(index);
         testStructure.setName("name" + zserio::toString<allocator_type>(index));
-        testStructure.setData(BitBuffer{vector_type<uint8_t>{0xCD, 0xC0}, 10});
+        testStructure.setData(BitBuffer{vector_type<uint8_t>{{0xCD, 0xC0}}, 10});
+        testStructure.setBytesData(vector_type<uint8_t>{{0xCD, 0xC0}});
         testStructure.setTestChoice(createTestChoice(index));
         testStructure.setTestUnion(createTestUnion(index));
         testStructure.setTestEnum(index % 2 == 0 ? TestEnum::DARK_RED : TestEnum::DARK_GREEN);
@@ -97,7 +98,7 @@ protected:
         const double unpackedBitSize = static_cast<double>(
                 packedVariableArray.getTestUnpackedArray().bitSizeOf());
         const double packedBitSize = static_cast<double>(packedVariableArray.getTestPackedArray().bitSizeOf());
-        const double minCompressionRatio = 0.59;
+        const double minCompressionRatio = 0.622;
         ASSERT_GT(unpackedBitSize * minCompressionRatio, packedBitSize)
                 << "Unpacked array has " << std::to_string(unpackedBitSize) << " bits, "
                 << "packed array has " << std::to_string(packedBitSize) << " bits, "

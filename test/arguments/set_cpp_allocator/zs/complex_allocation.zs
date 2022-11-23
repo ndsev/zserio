@@ -21,6 +21,9 @@ struct MainStructure
     extern                      externalField;
     extern                      externalArray[] : lengthof(externalArray) > 0;
 
+    bytes                       bytesField;
+    bytes                       bytesArray[] : lengthof(bytesArray) > 0;
+
     function string constString()
     {
         return "This is constant string " + "longer than 32 bytes!";

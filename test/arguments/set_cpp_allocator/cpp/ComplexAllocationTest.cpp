@@ -108,6 +108,17 @@ protected:
         writer.writeVarSize(EXTERNAL_ARRAY_ELEMENT1_VAR_SIZE);
         writer.writeBits(EXTERNAL_ARRAY_ELEMENT1_DATA >> (8 - (EXTERNAL_ARRAY_ELEMENT1_VAR_SIZE % 8)),
                 EXTERNAL_ARRAY_ELEMENT1_VAR_SIZE);
+
+        // bytesField
+        writer.writeVarSize(BYTES_FIELD_VAR_SIZE);
+        writer.writeBits(BYTES_FIELD_DATA, BYTES_FIELD_VAR_SIZE * 8);
+
+        // bytesArray
+        writer.writeVarSize(BYTES_ARRAY_SIZE);
+        writer.writeVarSize(BYTES_ARRAY_ELEMENT0_VAR_SIZE);
+        writer.writeBits(BYTES_ARRAY_ELEMENT0_DATA, BYTES_ARRAY_ELEMENT0_VAR_SIZE * 8);
+        writer.writeVarSize(BYTES_ARRAY_ELEMENT1_VAR_SIZE);
+        writer.writeBits(BYTES_ARRAY_ELEMENT1_DATA, BYTES_ARRAY_ELEMENT1_VAR_SIZE * 8);
     }
 
     void fillStringArray(vector_type<string_type>& stringArray, const allocator_type& allocator)
@@ -206,6 +217,22 @@ protected:
         externalArray.emplace_back(externalElement1Data, EXTERNAL_ARRAY_ELEMENT1_VAR_SIZE, allocator);
     }
 
+    vector_type<uint8_t> createBytesField(const allocator_type& allocator)
+    {
+        return vector_type<uint8_t>({static_cast<uint8_t>(BYTES_FIELD_DATA >> 8),
+                static_cast<uint8_t>(BYTES_FIELD_DATA)}, allocator);
+    }
+
+    void fillBytesArray(vector_type<vector_type<uint8_t>>& bytesArray, const allocator_type& allocator)
+    {
+        bytesArray.reserve(BYTES_ARRAY_SIZE);
+        const uint8_t bytesArrayElement0Data[] = {static_cast<uint8_t>(BYTES_ARRAY_ELEMENT0_DATA >> 8),
+                static_cast<uint8_t>(BYTES_ARRAY_ELEMENT0_DATA)};
+        bytesArray.emplace_back(bytesArrayElement0Data, bytesArrayElement0Data + BYTES_ARRAY_ELEMENT0_VAR_SIZE,
+                allocator);
+        bytesArray.emplace_back(BYTES_ARRAY_ELEMENT1_VAR_SIZE, BYTES_ARRAY_ELEMENT1_DATA, allocator);
+    }
+
     void fillMainStructure(MainStructure& mainStructure, const allocator_type& allocator, bool hasArray)
     {
         // stringField
@@ -234,6 +261,12 @@ protected:
 
         // externalArray
         fillExternalArray(mainStructure.getExternalArray(), allocator);
+
+        // bytesField
+        mainStructure.setBytesField(createBytesField(allocator));
+
+        // bytesArray
+        fillBytesArray(mainStructure.getBytesArray(), allocator);
     }
 
     void checkMainStructure(const MainStructure& mainStructure, bool hasArray)
@@ -337,6 +370,24 @@ protected:
         const uint16_t externalDataElement1 = (static_cast<uint16_t>(externalBufferElement1[0] << 8)) |
                 (externalBufferElement1[1]);
         ASSERT_EQ(EXTERNAL_ARRAY_ELEMENT1_DATA, externalDataElement1);
+
+        // bytesField
+        const auto& bytesField = mainStructure.getBytesField();
+        ASSERT_EQ(BYTES_FIELD_VAR_SIZE, bytesField.size());
+        const uint16_t bytesFieldData = (static_cast<uint16_t>(bytesField[0] << 8)) | (bytesField[1]);
+        ASSERT_EQ(BYTES_FIELD_DATA, bytesFieldData);
+
+        // bytesArray
+        const auto& bytesArray = mainStructure.getBytesArray();
+        ASSERT_EQ(BYTES_ARRAY_SIZE, bytesArray.size());
+        const auto& bytesArrayElement0 = bytesArray[0];
+        ASSERT_EQ(BYTES_ARRAY_ELEMENT0_VAR_SIZE, bytesArrayElement0.size());
+        const uint16_t bytesDataElement0 = (static_cast<uint16_t>(bytesArrayElement0[0] << 8)) |
+                (bytesArrayElement0[1]);
+        ASSERT_EQ(BYTES_ARRAY_ELEMENT0_DATA, bytesDataElement0);
+        const auto& bytesArrayElement1 = bytesArray[1];
+        ASSERT_EQ(BYTES_ARRAY_ELEMENT1_VAR_SIZE, bytesArrayElement1.size());
+        ASSERT_EQ(BYTES_ARRAY_ELEMENT1_DATA, bytesArrayElement1[0]);
     }
 
     void checkReadConstructor(bool hasArray)
@@ -644,11 +695,15 @@ protected:
             vector_type<BitBuffer> externalArray(allocator);
             fillExternalArray(externalArray, allocator);
 
+            // bytesArray
+            vector_type<vector_type<uint8_t>> bytesArray(allocator);
+            fillBytesArray(bytesArray, allocator);
+
             if (hasCopyPropagatingAllocator())
             {
                 MainStructure mainStructure(STRING_FIELD, stringArray, hasArray, choiceField, unionField,
                         structField, structOptionalField, createExternalField(allocator), externalArray,
-                        allocator);
+                        createBytesField(allocator), bytesArray, allocator);
                 checkMainStructure(mainStructure, hasArray);
 
                 // check memory fragmentation in used memory resource
@@ -659,7 +714,8 @@ protected:
                 MainStructure mainStructure(STRING_FIELD, std::move(stringArray), hasArray,
                         std::move(choiceField), std::move(unionField), std::move(structField),
                         std::move(structOptionalField), createExternalField(allocator),
-                        std::move(externalArray), allocator);
+                        std::move(externalArray), createBytesField(allocator),
+                        std::move(bytesArray), allocator);
                 checkMainStructure(mainStructure, hasArray);
 
                 // check memory fragmentation in used memory resource
@@ -706,6 +762,10 @@ protected:
             vector_type<BitBuffer> externalArray(allocator);
             fillExternalArray(externalArray, allocator);
 
+            // bytesArray
+            vector_type<vector_type<uint8_t>> bytesArray(allocator);
+            fillBytesArray(bytesArray, allocator);
+
             MainStructure mainStructure(allocator);
             if (hasCopyPropagatingAllocator())
             {
@@ -718,6 +778,8 @@ protected:
                 mainStructure.setStructOptionalField(structOptionalField);
                 mainStructure.setExternalField(createExternalField(allocator));
                 mainStructure.setExternalArray(externalArray);
+                mainStructure.setBytesField(createBytesField(allocator));
+                mainStructure.setBytesArray(bytesArray);
             }
             else
             {
@@ -730,6 +792,8 @@ protected:
                 mainStructure.setStructOptionalField(std::move(structOptionalField));
                 mainStructure.setExternalField(createExternalField(allocator));
                 mainStructure.setExternalArray(std::move(externalArray));
+                mainStructure.setBytesField(createBytesField(allocator));
+                mainStructure.setBytesArray(std::move(bytesArray));
             }
 
             checkMainStructure(mainStructure, hasArray);
@@ -1032,6 +1096,15 @@ private:
     static const uint8_t EXTERNAL_ARRAY_ELEMENT1_VAR_SIZE;
     static const uint16_t EXTERNAL_ARRAY_ELEMENT1_DATA;
 
+    static const uint8_t BYTES_FIELD_VAR_SIZE;
+    static const uint16_t BYTES_FIELD_DATA;
+
+    static const uint32_t BYTES_ARRAY_SIZE;
+    static const uint8_t BYTES_ARRAY_ELEMENT0_VAR_SIZE;
+    static const uint16_t BYTES_ARRAY_ELEMENT0_DATA;
+    static const uint8_t BYTES_ARRAY_ELEMENT1_VAR_SIZE;
+    static const uint8_t BYTES_ARRAY_ELEMENT1_DATA;
+
     static const size_t MAIN_STRUCTURE_WITH_ARRAYS_BIT_SIZE;
     static const size_t MAIN_STRUCTURE_WITHOUT_ARRAYS_BIT_SIZE;
 
@@ -1090,8 +1163,17 @@ const uint8_t ComplexAllocationTest::EXTERNAL_ARRAY_ELEMENT0_DATA = 0xAE;
 const uint8_t ComplexAllocationTest::EXTERNAL_ARRAY_ELEMENT1_VAR_SIZE = 15;
 const uint16_t ComplexAllocationTest::EXTERNAL_ARRAY_ELEMENT1_DATA = 0xEA;
 
-const size_t ComplexAllocationTest::MAIN_STRUCTURE_WITH_ARRAYS_BIT_SIZE = 3769;
-const size_t ComplexAllocationTest::MAIN_STRUCTURE_WITHOUT_ARRAYS_BIT_SIZE = 3736;
+const uint8_t ComplexAllocationTest::BYTES_FIELD_VAR_SIZE = 2;
+const uint16_t ComplexAllocationTest::BYTES_FIELD_DATA = 0xC0DE;
+
+const uint32_t ComplexAllocationTest::BYTES_ARRAY_SIZE = 2;
+const uint8_t ComplexAllocationTest::BYTES_ARRAY_ELEMENT0_VAR_SIZE = 2;
+const uint16_t ComplexAllocationTest::BYTES_ARRAY_ELEMENT0_DATA = 0xCAFE;
+const uint8_t ComplexAllocationTest::BYTES_ARRAY_ELEMENT1_VAR_SIZE = 1;
+const uint8_t ComplexAllocationTest::BYTES_ARRAY_ELEMENT1_DATA = 0xC0;
+
+const size_t ComplexAllocationTest::MAIN_STRUCTURE_WITH_ARRAYS_BIT_SIZE = 3841;
+const size_t ComplexAllocationTest::MAIN_STRUCTURE_WITHOUT_ARRAYS_BIT_SIZE = 3808;
 
 TEST_F(ComplexAllocationTest, readConstructor)
 {

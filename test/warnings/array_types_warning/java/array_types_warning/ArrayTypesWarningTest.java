@@ -70,6 +70,14 @@ public class ArrayTypesWarningTest
     }
 
     @Test
+    public void packedArrayUnpackableBytesElement()
+    {
+        final String warning =
+                "packed_array_unpackable_bytes_element.zs:6:12: 'bytes' is not packable element type.";
+        assertTrue(zserioWarnings.isPresent(warning));
+    }
+
+    @Test
     public void packedArrayUnpackableExternElement()
     {
         final String warning =

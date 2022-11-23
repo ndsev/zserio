@@ -121,6 +121,10 @@ class ExpressionUtil
         {
             isTypeMismatch = (expression.getExprType() != Expression.ExpressionType.EXTERN);
         }
+        else if (type instanceof BytesType)
+        {
+            isTypeMismatch = (expression.getExprType() != Expression.ExpressionType.BYTES);
+        }
 
         if (isTypeMismatch)
         {

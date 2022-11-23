@@ -63,6 +63,13 @@ TEST_F(ArrayTypesWarningTest, packedArrayUnpackableBoolElement)
     ASSERT_TRUE(zserioWarnings.isPresent(warning));
 }
 
+TEST_F(ArrayTypesWarningTest, packedArrayUnpackableBytesElement)
+{
+    const std::string warning =
+            "packed_array_unpackable_bytes_element.zs:6:12: 'bytes' is not packable element type.";
+    ASSERT_TRUE(zserioWarnings.isPresent(warning));
+}
+
 TEST_F(ArrayTypesWarningTest, packedArrayUnpackableExternElement)
 {
     const std::string warning =

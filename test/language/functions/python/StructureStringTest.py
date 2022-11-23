@@ -2,7 +2,7 @@ import unittest
 
 from testutils import getZserioApi
 
-class StructureValueTest(unittest.TestCase):
+class StructureStringTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.api = getZserioApi(__file__, "functions.zs").structure_string

@@ -21,6 +21,11 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/functions/structure_array_param/ParentStructure.cpp
     ${ZSERIO_GEN_DIR}/functions/structure_array_param/ParentStructure.h
 
+    ${ZSERIO_GEN_DIR}/functions/structure_bytes/TestStructure.cpp
+    ${ZSERIO_GEN_DIR}/functions/structure_bytes/TestStructure.h
+    ${ZSERIO_GEN_DIR}/functions/structure_bytes/Child.cpp
+    ${ZSERIO_GEN_DIR}/functions/structure_bytes/Child.h
+
     ${ZSERIO_GEN_DIR}/functions/structure_extern/TestStructure.cpp
     ${ZSERIO_GEN_DIR}/functions/structure_extern/TestStructure.h
     ${ZSERIO_GEN_DIR}/functions/structure_extern/Child.cpp
@@ -79,6 +84,7 @@ add_test_sources(
     cpp/ChoiceArrayTest.cpp
     cpp/StructureArrayTest.cpp
     cpp/StructureArrayParamTest.cpp
+    cpp/StructureBytesTest.cpp
     cpp/StructureExternTest.cpp
     cpp/StructureOptionalTest.cpp
     cpp/StructureParamTest.cpp

@@ -245,7 +245,10 @@ public class Expression extends AstNodeBase
         COMPOUND,
 
         /** Expression which result is extern type. */
-        EXTERN
+        EXTERN,
+
+        /** Expression which result is bytes type. */
+        BYTES
     };
 
     /**
@@ -1683,6 +1686,10 @@ public class Expression extends AstNodeBase
         else if (baseType instanceof ExternType)
         {
             expressionType = ExpressionType.EXTERN;
+        }
+        else if (baseType instanceof BytesType)
+        {
+            expressionType = ExpressionType.BYTES;
         }
         else
         {

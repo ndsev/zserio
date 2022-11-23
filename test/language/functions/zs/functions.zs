@@ -3,6 +3,7 @@ package functions;
 import functions.choice_array.*;
 import functions.structure_array.*;
 import functions.structure_array_param.*;
+import functions.structure_bytes.*;
 import functions.structure_extern.*;
 import functions.structure_optional.*;
 import functions.structure_param.*;

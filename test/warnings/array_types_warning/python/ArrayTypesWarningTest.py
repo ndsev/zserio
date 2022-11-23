@@ -7,7 +7,7 @@ class ArrayTypesWarningTest(unittest.TestCase):
     def setUpClass(cls):
         cls.warnings = {}
         cls.api = getZserioApi(__file__, "array_types_warning.zs",
-                               expectedWarnings=11, errorOutputDict=cls.warnings)
+                               expectedWarnings=12, errorOutputDict=cls.warnings)
 
     def testPackedArrayChoiceHasNoPackableField(self):
         assertWarningsPresent(self,
@@ -61,6 +61,14 @@ class ArrayTypesWarningTest(unittest.TestCase):
             "array_types_warning.zs",
             [
                 "packed_array_unpackable_bool_element.zs:23:12: 'bool' is not packable element type."
+            ]
+        )
+
+    def testPackedArrayUnpackableBytesElement(self):
+        assertWarningsPresent(self,
+            "array_types_warning.zs",
+            [
+                "packed_array_unpackable_bytes_element.zs:6:12: 'bytes' is not packable element type."
             ]
         )
 
