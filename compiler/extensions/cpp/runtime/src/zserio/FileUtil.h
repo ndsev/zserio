@@ -65,7 +65,8 @@ inline void writeBufferToFile(const uint8_t* buffer, size_t byteSize, const std:
  *
  * \throw CppRuntimeException When writing fails.
  */
-inline void writeBufferToFile(const BitBuffer& bitBuffer, const std::string& fileName)
+template <typename ALLOC>
+inline void writeBufferToFile(const BasicBitBuffer<ALLOC>& bitBuffer, const std::string& fileName)
 {
     writeBufferToFile(bitBuffer.getBuffer(), bitBuffer.getBitSize(), BitsTag(), fileName);
 }

@@ -20,6 +20,8 @@ enum class DummyEnum : uint8_t
 template <typename ALLOC = std::allocator<uint8_t>>
 struct DummyObject
 {
+    using allocator_type = ALLOC;
+
     explicit DummyObject(uint32_t value_, const ALLOC& = ALLOC()) :
             value(value_)
     {}
@@ -44,6 +46,7 @@ struct DummyObject
 template <typename ALLOC = std::allocator<uint8_t>>
 struct DummyObjectWithInitializeChildren : DummyObject<ALLOC>
 {
+    using allocator_type = ALLOC;
     using DummyObject<ALLOC>::DummyObject;
 
     void initializeChildren()
@@ -57,6 +60,8 @@ struct DummyObjectWithInitializeChildren : DummyObject<ALLOC>
 template <typename ALLOC = std::allocator<uint8_t>>
 struct ParameterizedDummyObject : DummyObject<ALLOC>
 {
+    using allocator_type = ALLOC;
+
     explicit ParameterizedDummyObject(uint32_t value_, const ALLOC& allocator = ALLOC()) :
             DummyObject<ALLOC>(value_, allocator), param(false), optionalValue(0)
     {}

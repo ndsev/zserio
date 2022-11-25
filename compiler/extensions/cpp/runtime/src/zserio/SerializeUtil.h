@@ -56,6 +56,18 @@ void initialize(T& object, ARGS&&... arguments)
     initializeImpl(has_initialize<T>(), object, std::forward<ARGS>(arguments)...);
 }
 
+template <typename T, typename = void>
+struct allocator_chooser
+{
+    using type = std::allocator<uint8_t>;
+};
+
+template <typename T>
+struct allocator_chooser<T, detail::void_t<typename T::allocator_type>>
+{
+    using type = typename T::allocator_type;
+};
+
 // This implementation needs to be in detail because old MSVC compiler 2015 has problems with calling overload.
 template <typename T, typename ALLOC, typename ...ARGS>
 BasicBitBuffer<ALLOC> serialize(T& object, const ALLOC& allocator, ARGS&&... arguments)
@@ -122,7 +134,7 @@ BasicBitBuffer<ALLOC> serialize(T& object, const ALLOC& allocator, ARGS&&... arg
  *
  * \throw CppRuntimeException When serialization fails.
  */
-template <typename T, typename ALLOC = std::allocator<uint8_t>, typename ...ARGS,
+template <typename T, typename ALLOC = typename detail::allocator_chooser<T>::type, typename ...ARGS,
         typename std::enable_if<!std::is_enum<T>::value &&
                 !is_first_allocator<typename std::decay<ARGS>::type...>::value, int>::type = 0>
 BasicBitBuffer<ALLOC> serialize(T& object, ARGS&&... arguments)
@@ -269,7 +281,7 @@ vector<uint8_t, ALLOC> serializeToBytes(T& object, const ALLOC& allocator, ARGS&
  *
  * \throw CppRuntimeException When serialization fails.
  */
-template <typename T, typename ALLOC = std::allocator<uint8_t>, typename ...ARGS,
+template <typename T, typename ALLOC = typename detail::allocator_chooser<T>::type, typename ...ARGS,
         typename std::enable_if<!std::is_enum<T>::value &&
                 !is_first_allocator<typename std::decay<ARGS>::type...>::value, int>::type = 0>
 vector<uint8_t, ALLOC> serializeToBytes(T& object, ARGS&&... arguments)
@@ -330,9 +342,9 @@ vector<uint8_t, ALLOC> serializeToBytes(T enumValue, const ALLOC& allocator = AL
  *
  * \throw CppRuntimeException When deserialization fails.
  */
-template <typename T, typename ALLOC, typename ...ARGS>
+template <typename T, typename ...ARGS>
 typename std::enable_if<!std::is_enum<T>::value, T>::type deserializeFromBytes(
-        const std::vector<uint8_t, ALLOC>& buffer, ARGS&&... arguments)
+        Span<const uint8_t> buffer, ARGS&&... arguments)
 {
     BitStreamReader reader(buffer);
     return T(reader, std::forward<ARGS>(arguments)...);
@@ -356,9 +368,8 @@ typename std::enable_if<!std::is_enum<T>::value, T>::type deserializeFromBytes(
  *
  * \throw CppRuntimeException When deserialization fails.
  */
-template <typename T, typename ALLOC>
-typename std::enable_if<std::is_enum<T>::value, T>::type deserializeFromBytes(
-        const std::vector<uint8_t, ALLOC>& buffer)
+template <typename T>
+typename std::enable_if<std::is_enum<T>::value, T>::type deserializeFromBytes(Span<const uint8_t> buffer)
 {
     BitStreamReader reader(buffer);
     return zserio::read<T>(reader);
@@ -375,8 +386,6 @@ typename std::enable_if<std::is_enum<T>::value, T>::type deserializeFromBytes(
  *     zserio::serializeToFile(object, "FileName.bin");
  * \endcode
  *
- * \note Please note that BitBuffer is always allocated using 'std::allocator<uint8_t>'.
- *
  * \param object Generated object to serialize.
  * \param fileName File name to write.
  *
@@ -385,7 +394,7 @@ typename std::enable_if<std::is_enum<T>::value, T>::type deserializeFromBytes(
 template <typename T, typename ...ARGS>
 void serializeToFile(T& object, const std::string& fileName, ARGS&&... arguments)
 {
-    const BitBuffer bitBuffer = serialize(object, std::forward<ARGS>(arguments)...);
+    const auto bitBuffer = serialize(object, std::forward<ARGS>(arguments)...);
     writeBufferToFile(bitBuffer, fileName);
 }
 
