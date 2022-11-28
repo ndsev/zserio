@@ -3,15 +3,11 @@ package templates;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 
-import zserio.runtime.BitSizeOfCalculator;
-import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
 
 import templates.struct_full_and_short_template_argument.StructFullNameTemplateArgument;
 import templates.struct_full_and_short_template_argument.templated_struct.StructShortNameTemplateArgument;
@@ -26,14 +22,13 @@ public class StructFullAndShortTemplateArgumentTest
         final StructFullNameTemplateArgument structFullNameTemplateArgument =
                 new StructFullNameTemplateArgument(new TemplatedStruct_Storage(new Storage("String")));
 
-        final BitStreamWriter writer = new FileBitStreamWriter(TEST_FILE);
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         structFullNameTemplateArgument.write(writer);
-        writer.close();
-        final BitStreamReader reader = new FileBitStreamReader(TEST_FILE);
 
+        final BitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
         final StructFullNameTemplateArgument readStructFullNameTemplateArgument =
                 new StructFullNameTemplateArgument(reader);
-        reader.close();
         assertTrue(structFullNameTemplateArgument.equals(readStructFullNameTemplateArgument));
     }
 
@@ -43,16 +38,13 @@ public class StructFullAndShortTemplateArgumentTest
         final StructShortNameTemplateArgument structShortNameTemplateArgument =
                 new StructShortNameTemplateArgument(new TemplatedStruct_Storage(new Storage("String")));
 
-        final BitStreamWriter writer = new FileBitStreamWriter(TEST_FILE);
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         structShortNameTemplateArgument.write(writer);
-        writer.close();
-        final BitStreamReader reader = new FileBitStreamReader(TEST_FILE);
 
+        final BitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
         final StructShortNameTemplateArgument readStructShortNameTemplateArgument =
                 new StructShortNameTemplateArgument(reader);
-        reader.close();
         assertTrue(structShortNameTemplateArgument.equals(readStructShortNameTemplateArgument));
     }
-
-    private static final File TEST_FILE = new File("test.bin");
 }

@@ -65,10 +65,9 @@ public class DynamicBitRangeCheckTest
         dynamicBitRangeCheckCompound.setValue(value);
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         dynamicBitRangeCheckCompound.write(writer);
-        final byte[] writtenByteArray = writer.toByteArray();
-        writer.close();
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writtenByteArray);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
+                writer.getBitPosition());
         final DynamicBitRangeCheckCompound readDynamicBitRangeCheckCompound =
                 new DynamicBitRangeCheckCompound(reader);
         assertEquals(dynamicBitRangeCheckCompound, readDynamicBitRangeCheckCompound);

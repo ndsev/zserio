@@ -14,13 +14,6 @@ import java.util.ArrayList;
 import test_utils.FileUtil;
 import test_utils.JdbcUtil;
 
-import zserio.runtime.BitSizeOfCalculator;
-import zserio.runtime.ZserioError;
-import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
-
 import templates.instantiate_type_as_sql_database_field.InstantiateTypeAsSqlDatabaseFieldDb;
 import templates.instantiate_type_as_sql_database_field.StringTable;
 import templates.instantiate_type_as_sql_database_field.StringTableRow;

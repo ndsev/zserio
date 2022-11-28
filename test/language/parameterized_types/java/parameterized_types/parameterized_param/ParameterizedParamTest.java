@@ -3,23 +3,24 @@ package parameterized_types.parameterized_param;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 
+import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.FileBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.SerializeUtil;
 
 public class ParameterizedParamTest
 {
     @Test
-    public void fileWrite() throws IOException
+    public void writeRead() throws IOException
     {
         final ParameterizedParamHolder parameterizedParamHolder = createParameterizedParamHolder();
-        final File file = new File("test1.bin");
-        parameterizedParamHolder.write(file);
-        checkParameterizedParamHolderInFile(file, parameterizedParamHolder);
+
+        final BitBuffer bitBuffer = SerializeUtil.serialize(parameterizedParamHolder);
+        checkParameterizedParamHolderInBitBuffer(bitBuffer, parameterizedParamHolder);
         final ParameterizedParamHolder readParameterizedParamHolder =
-                new ParameterizedParamHolder(file);
+                SerializeUtil.deserialize(ParameterizedParamHolder.class, bitBuffer);
         assertEquals(parameterizedParamHolder, readParameterizedParamHolder);
     }
 
@@ -32,24 +33,23 @@ public class ParameterizedParamTest
         return new ParameterizedParamHolder(PARAMETER, param, parameterizedParam);
     }
 
-    private void checkParameterizedParamHolderInFile(File file, ParameterizedParamHolder
+    private void checkParameterizedParamHolderInBitBuffer(BitBuffer bitBuffer, ParameterizedParamHolder
             parameterizedParamHolder) throws IOException
     {
-        final BitStreamReader stream = new FileBitStreamReader(file);
+        try (final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer))
+        {
+            assertEquals(parameterizedParamHolder.getParameter(), reader.readUnsignedShort());
 
-        assertEquals(parameterizedParamHolder.getParameter(), stream.readUnsignedShort());
+            final Param param = parameterizedParamHolder.getParam();
+            assertEquals(param.getParameter(), PARAMETER);
+            assertEquals(param.getValue(), reader.readUnsignedShort());
+            assertEquals(param.getExtraValue(), reader.readUnsignedInt());
 
-        final Param param = parameterizedParamHolder.getParam();
-        assertEquals(param.getParameter(), PARAMETER);
-        assertEquals(param.getValue(), stream.readUnsignedShort());
-        assertEquals(param.getExtraValue(), stream.readUnsignedInt());
-
-        final ParameterizedParam parameterizedParam = parameterizedParamHolder.getParameterizedParam();
-        assertEquals(parameterizedParam.getParam(), param);
-        assertEquals(parameterizedParam.getValue(), stream.readUnsignedShort());
-        assertEquals(parameterizedParam.getExtraValue(), stream.readUnsignedInt());
-
-        stream.close();
+            final ParameterizedParam parameterizedParam = parameterizedParamHolder.getParameterizedParam();
+            assertEquals(parameterizedParam.getParam(), param);
+            assertEquals(parameterizedParam.getValue(), reader.readUnsignedShort());
+            assertEquals(parameterizedParam.getExtraValue(), reader.readUnsignedInt());
+        }
     }
 
     static final int PARAMETER = 11;

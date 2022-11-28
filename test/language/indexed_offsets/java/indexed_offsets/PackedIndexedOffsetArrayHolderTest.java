@@ -7,13 +7,14 @@ import indexed_offsets.packed_indexed_offset_array_holder.AutoIndexedOffsetArray
 import indexed_offsets.packed_indexed_offset_array_holder.OffsetArray;
 import indexed_offsets.packed_indexed_offset_array_holder.OffsetHolder;
 
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
 
 import zserio.runtime.ZserioError;
+import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 
 public class PackedIndexedOffsetArrayHolderTest
 {
@@ -53,6 +54,24 @@ public class PackedIndexedOffsetArrayHolderTest
         checkWriteRead(NUM_ELEMENTS3);
     }
 
+    @Test
+    public void writeReadFileLength1() throws IOException, ZserioError
+    {
+        checkWriteReadFile(NUM_ELEMENTS1);
+    }
+
+    @Test
+    public void writeReadFileLength2() throws IOException, ZserioError
+    {
+        checkWriteReadFile(NUM_ELEMENTS2);
+    }
+
+    @Test
+    public void writeReadFileLength3() throws IOException, ZserioError
+    {
+        checkWriteReadFile(NUM_ELEMENTS3);
+    }
+
     private void checkBitSizeOf(int numElements) throws IOException, ZserioError
     {
         final AutoIndexedOffsetArray autoIndexedOffsetArray = createAutoIndexedOffsetArray(numElements);
@@ -68,16 +87,27 @@ public class PackedIndexedOffsetArrayHolderTest
     private void checkWriteRead(int numElements) throws IOException, ZserioError
     {
         final AutoIndexedOffsetArray autoIndexedOffsetArray = createAutoIndexedOffsetArray(numElements);
-        final File file = new File(BLOB_NAME_BASE + numElements + ".blob");
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         autoIndexedOffsetArray.write(writer);
-        writer.close();
 
         final long writtenBitPosition = writer.getBitPosition();
         assertEquals(autoIndexedOffsetArray.bitSizeOf(), writtenBitPosition);
         assertEquals(autoIndexedOffsetArray.initializeOffsets(), writtenBitPosition);
 
-        final AutoIndexedOffsetArray readAutoIndexedOffsetArray = new AutoIndexedOffsetArray(file);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
+        final AutoIndexedOffsetArray readAutoIndexedOffsetArray = new AutoIndexedOffsetArray(reader);
+        assertEquals(autoIndexedOffsetArray, readAutoIndexedOffsetArray);
+    }
+
+    private void checkWriteReadFile(int numElements) throws IOException, ZserioError
+    {
+        final AutoIndexedOffsetArray autoIndexedOffsetArray = createAutoIndexedOffsetArray(numElements);
+        final File file = new File(BLOB_NAME_BASE + numElements + ".blob");
+        SerializeUtil.serializeToFile(autoIndexedOffsetArray, file);
+
+        final AutoIndexedOffsetArray readAutoIndexedOffsetArray = SerializeUtil.deserializeFromFile(
+                AutoIndexedOffsetArray.class, file);
         assertEquals(autoIndexedOffsetArray, readAutoIndexedOffsetArray);
     }
 

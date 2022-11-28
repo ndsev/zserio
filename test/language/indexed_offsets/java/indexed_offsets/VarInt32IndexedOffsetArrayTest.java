@@ -4,41 +4,37 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.io.File;
 
 import indexed_offsets.varint32_indexed_offset_array.VarInt32IndexedOffsetArray;
 
 import zserio.runtime.BitSizeOfCalculator;
 import zserio.runtime.ZserioError;
+import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
+import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 
 public class VarInt32IndexedOffsetArrayTest
 {
     @Test
-    public void read() throws IOException, ZserioError
+    public void readConstructor() throws IOException, ZserioError
     {
         final boolean writeWrongOffsets = false;
-        final File file = new File("test.bin");
-        writeVarInt32IndexedOffsetArrayToFile(file, writeWrongOffsets);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final VarInt32IndexedOffsetArray varint32IndexedOffsetArray = new VarInt32IndexedOffsetArray(stream);
-        stream.close();
+        final BitBuffer bitBuffer = writeVarInt32IndexedOffsetArrayToBitBuffer(writeWrongOffsets);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+        final VarInt32IndexedOffsetArray varint32IndexedOffsetArray = new VarInt32IndexedOffsetArray(reader);
         checkVarInt32IndexedOffsetArray(varint32IndexedOffsetArray);
     }
 
     @Test
-    public void readWrongOffsets() throws IOException, ZserioError
+    public void readConstructorWrongOffsets() throws IOException, ZserioError
     {
         final boolean writeWrongOffsets = true;
-        final File file = new File("test.bin");
-        writeVarInt32IndexedOffsetArrayToFile(file, writeWrongOffsets);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        assertThrows(ZserioError.class, () -> new VarInt32IndexedOffsetArray(stream));
-        stream.close();
+        final BitBuffer bitBuffer = writeVarInt32IndexedOffsetArrayToBitBuffer(writeWrongOffsets);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+        assertThrows(ZserioError.class, () -> new VarInt32IndexedOffsetArray(reader));
     }
 
     @Test
@@ -88,37 +84,41 @@ public class VarInt32IndexedOffsetArrayTest
     }
 
     @Test
-    public void write() throws IOException, ZserioError
+    public void writeRead() throws IOException, ZserioError
     {
         final boolean createWrongOffsets = false;
         final VarInt32IndexedOffsetArray varint32IndexedOffsetArray =
                 createVarInt32IndexedOffsetArray(createWrongOffsets);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        varint32IndexedOffsetArray.write(writer);
-        writer.close();
+        final BitBuffer bitBuffer = SerializeUtil.serialize(varint32IndexedOffsetArray);
         checkVarInt32IndexedOffsetArray(varint32IndexedOffsetArray);
-        final VarInt32IndexedOffsetArray readVarInt32IndexedOffsetArray = new VarInt32IndexedOffsetArray(file);
-        checkVarInt32IndexedOffsetArray(readVarInt32IndexedOffsetArray);
-        assertTrue(varint32IndexedOffsetArray.equals(readVarInt32IndexedOffsetArray));
+
+        final VarInt32IndexedOffsetArray readVarint32IndexedOffsetArray = SerializeUtil.deserialize(
+                VarInt32IndexedOffsetArray.class, bitBuffer);
+        checkVarInt32IndexedOffsetArray(readVarint32IndexedOffsetArray);
+        assertTrue(varint32IndexedOffsetArray.equals(readVarint32IndexedOffsetArray));
     }
 
     @Test
-    public void writeWithPosition() throws IOException, ZserioError
+    public void writeReadWithPosition() throws IOException, ZserioError
     {
         final boolean createWrongOffsets = true;
         final VarInt32IndexedOffsetArray varint32IndexedOffsetArray =
                 createVarInt32IndexedOffsetArray(createWrongOffsets);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         final int bitPosition = 8;
         writer.writeBits(0, bitPosition);
         varint32IndexedOffsetArray.initializeOffsets(writer.getBitPosition());
         varint32IndexedOffsetArray.write(writer);
-        writer.close();
-
         final short offsetShift = 1;
         checkOffsets(varint32IndexedOffsetArray, offsetShift);
+
+        final BitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
+        assertEquals(0, reader.readBits(bitPosition));
+        final VarInt32IndexedOffsetArray readVarint32IndexedOffsetArray =
+                new VarInt32IndexedOffsetArray(reader);
+        checkOffsets(readVarint32IndexedOffsetArray, offsetShift);
+        assertTrue(varint32IndexedOffsetArray.equals(readVarint32IndexedOffsetArray));
     }
 
     @Test
@@ -132,27 +132,28 @@ public class VarInt32IndexedOffsetArrayTest
         writer.close();
     }
 
-    private void writeVarInt32IndexedOffsetArrayToFile(File file, boolean writeWrongOffsets) throws IOException
+    private BitBuffer writeVarInt32IndexedOffsetArrayToBitBuffer(boolean writeWrongOffsets) throws IOException
     {
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
-
-        long currentOffset = ELEMENT0_OFFSET;
-        for (short i = 0; i < NUM_ELEMENTS; ++i)
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
-            if ((i + 1) == NUM_ELEMENTS && writeWrongOffsets)
-                writer.writeUnsignedInt(WRONG_OFFSET);
-            else
-                writer.writeUnsignedInt(currentOffset);
-            currentOffset += BitSizeOfCalculator.getBitSizeOfVarInt32(i) / Byte.SIZE;
+            long currentOffset = ELEMENT0_OFFSET;
+            for (short i = 0; i < NUM_ELEMENTS; ++i)
+            {
+                if ((i + 1) == NUM_ELEMENTS && writeWrongOffsets)
+                    writer.writeUnsignedInt(WRONG_OFFSET);
+                else
+                    writer.writeUnsignedInt(currentOffset);
+                currentOffset += BitSizeOfCalculator.getBitSizeOfVarInt32(i) / Byte.SIZE;
+            }
+
+            writer.writeBits(SPACER_VALUE, 1);
+            writer.writeBits(0, 7);
+
+            for (short i = 0; i < NUM_ELEMENTS; ++i)
+                writer.writeVarInt32(i);
+
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
         }
-
-        writer.writeBits(SPACER_VALUE, 1);
-        writer.writeBits(0, 7);
-
-        for (short i = 0; i < NUM_ELEMENTS; ++i)
-            writer.writeVarInt32(i);
-
-        writer.close();
     }
 
     private void checkOffsets(VarInt32IndexedOffsetArray varint32IndexedOffsetArray, short offsetShift)

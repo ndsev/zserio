@@ -3,24 +3,34 @@ package parameterized_types.grand_child_param;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 
+import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.FileBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.SerializeUtil;
 
 public class GrandChildParamTest
 {
     @Test
-    public void fileWrite() throws IOException
+    public void writeReadFile() throws IOException
     {
         final GrandChildParam grandChildParam = createGrandChildParam();
-        final File file = new File(BLOB_NAME);
-        grandChildParam.write(file);
-        final BitStreamReader reader = new FileBitStreamReader(file);
-        checkGrandChildParamInStream(reader, grandChildParam);
-        reader.close();
-        final GrandChildParam readGrandChildParam = new GrandChildParam(file);
+        SerializeUtil.serializeToFile(grandChildParam, BLOB_NAME);
+
+        final GrandChildParam readGrandChildParam = SerializeUtil.deserializeFromFile(
+                GrandChildParam.class, BLOB_NAME);
+        assertEquals(grandChildParam, readGrandChildParam);
+    }
+
+    @Test
+    public void writeRead() throws IOException
+    {
+        final GrandChildParam grandChildParam = createGrandChildParam();
+        final BitBuffer bitBuffer = SerializeUtil.serialize(grandChildParam);
+        checkGrandChildParamInBitBuffer(bitBuffer, grandChildParam);
+
+        final GrandChildParam readGrandChildParam = SerializeUtil.deserialize(GrandChildParam.class, bitBuffer);
         assertEquals(grandChildParam, readGrandChildParam);
     }
 
@@ -52,23 +62,26 @@ public class GrandChildParamTest
         assertEquals((long)item.getExtraParam(), reader.readBits(32));
     }
 
-    private void checkGrandChildParamInStream(BitStreamReader reader, GrandChildParam grandChildParam)
+    private void checkGrandChildParamInBitBuffer(BitBuffer bitBuffer, GrandChildParam grandChildParam)
             throws IOException
     {
-        final ItemChoiceHolder itemChoiceHolder = grandChildParam.getItemChoiceHolder();
-        checkItemChoiceHolderInStream(reader, itemChoiceHolder);
-
-        final ItemChoiceHolder[] itemChoiceHolderArray = grandChildParam.getItemChoiceHolderArray();
-        assertEquals(itemChoiceHolderArray.length, reader.readVarSize());
-        checkItemChoiceHolderInStream(reader, itemChoiceHolderArray[0]);
-
-        final boolean isDummyArrayUsed = grandChildParam.isDummyArrayUsed();
-        assertEquals(isDummyArrayUsed, reader.readBool());
-        if (isDummyArrayUsed)
+        try (final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer))
         {
-            final long[] dummyArray = grandChildParam.getDummyArray();
-            assertEquals(dummyArray.length, reader.readVarSize());
-            assertEquals(dummyArray[0], reader.readBits(32));
+            final ItemChoiceHolder itemChoiceHolder = grandChildParam.getItemChoiceHolder();
+            checkItemChoiceHolderInStream(reader, itemChoiceHolder);
+
+            final ItemChoiceHolder[] itemChoiceHolderArray = grandChildParam.getItemChoiceHolderArray();
+            assertEquals(itemChoiceHolderArray.length, reader.readVarSize());
+            checkItemChoiceHolderInStream(reader, itemChoiceHolderArray[0]);
+
+            final boolean isDummyArrayUsed = grandChildParam.isDummyArrayUsed();
+            assertEquals(isDummyArrayUsed, reader.readBool());
+            if (isDummyArrayUsed)
+            {
+                final long[] dummyArray = grandChildParam.getDummyArray();
+                assertEquals(dummyArray.length, reader.readVarSize());
+                assertEquals(dummyArray[0], reader.readBits(32));
+            }
         }
     }
 

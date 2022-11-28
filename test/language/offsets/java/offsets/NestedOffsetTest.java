@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.io.File;
 
 import offsets.nested_offset.NestedOffset;
 import offsets.nested_offset.NestedOffsetArrayStructure;
@@ -13,35 +12,32 @@ import offsets.nested_offset.NestedOffsetStructure;
 import offsets.nested_offset.NestedOffsetUnion;
 
 import zserio.runtime.ZserioError;
+import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
+import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 
 public class NestedOffsetTest
 {
     @Test
-    public void read() throws IOException, ZserioError
+    public void readConstructor() throws IOException, ZserioError
     {
         final boolean writeWrongOffsets = false;
-        final File file = new File("test.bin");
-        writeNestedOffsetToFile(file, writeWrongOffsets);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final NestedOffset nestedOffset = new NestedOffset(stream);
-        stream.close();
+        final BitBuffer bitBuffer = writeNestedOffsetToBitBuffer(writeWrongOffsets);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+        final NestedOffset nestedOffset = new NestedOffset(reader);
         checkNestedOffset(nestedOffset);
     }
 
     @Test
-    public void readWrongOffsets() throws IOException, ZserioError
+    public void readConstructorWrongOffsets() throws IOException, ZserioError
     {
         final boolean writeWrongOffsets = true;
-        final File file = new File("test.bin");
-        writeNestedOffsetToFile(file, writeWrongOffsets);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        assertThrows(ZserioError.class, () -> new NestedOffset(stream));
-        stream.close();
+        final BitBuffer bitBuffer = writeNestedOffsetToBitBuffer(writeWrongOffsets);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+        assertThrows(ZserioError.class, () -> new NestedOffset(reader));
     }
 
     @Test
@@ -82,33 +78,36 @@ public class NestedOffsetTest
     }
 
     @Test
-    public void write() throws IOException, ZserioError
+    public void writeRead() throws IOException, ZserioError
     {
         final boolean createWrongOffsets = false;
         final NestedOffset nestedOffset = createNestedOffset(createWrongOffsets);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        nestedOffset.write(writer);
-        writer.close();
+        final BitBuffer bitBuffer = SerializeUtil.serialize(nestedOffset);
         checkNestedOffset(nestedOffset);
-        final NestedOffset readNestedOffset = new NestedOffset(file);
+
+        final NestedOffset readNestedOffset = SerializeUtil.deserialize(NestedOffset.class, bitBuffer);
         checkNestedOffset(readNestedOffset);
         assertTrue(nestedOffset.equals(readNestedOffset));
     }
 
     @Test
-    public void writeWithPosition() throws IOException, ZserioError
+    public void writeReadWithPosition() throws IOException, ZserioError
     {
         final boolean createWrongOffsets = true;
         final NestedOffset nestedOffset = createNestedOffset(createWrongOffsets);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         final int bitPosition = 2;
         writer.writeBits(0, bitPosition);
         nestedOffset.initializeOffsets(writer.getBitPosition());
         nestedOffset.write(writer);
-        writer.close();
         checkNestedOffset(nestedOffset);
+
+        final BitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
+        assertEquals(0, reader.readBits(bitPosition));
+        final NestedOffset readNestedOffset = new NestedOffset(reader);
+        checkNestedOffset(readNestedOffset);
+        assertTrue(nestedOffset.equals(readNestedOffset));
     }
 
     @Test
@@ -121,25 +120,26 @@ public class NestedOffsetTest
         writer.close();
     }
 
-    private void writeNestedOffsetToFile(File file, boolean writeWrongOffsets) throws IOException
+    private BitBuffer writeNestedOffsetToBitBuffer(boolean writeWrongOffsets) throws IOException
     {
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
-
-        writer.writeUnsignedInt((writeWrongOffsets) ? WRONG_TERMINATOR_OFFSET : TERMINATOR_OFFSET);
-        writer.writeBool(BOOL_VALUE);
-        writer.writeVarSize(NestedOffsetUnion.CHOICE_nestedOffsetArrayStructure); // union's choice tag
-        writer.writeUnsignedByte(NUM_ELEMENTS);
-        for (short i = 0; i < NUM_ELEMENTS; ++i)
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
-            writer.writeUnsignedInt((writeWrongOffsets) ? WRONG_DATA_OFFSET : FIRST_DATA_OFFSET + i * 8L);
-            writer.writeBits(0, (i == 0) ? 7 : 1);
-            writer.writeBits(i, 31);
+            writer.writeUnsignedInt((writeWrongOffsets) ? WRONG_TERMINATOR_OFFSET : TERMINATOR_OFFSET);
+            writer.writeBool(BOOL_VALUE);
+            writer.writeVarSize(NestedOffsetUnion.CHOICE_nestedOffsetArrayStructure); // union's choice tag
+            writer.writeUnsignedByte(NUM_ELEMENTS);
+            for (short i = 0; i < NUM_ELEMENTS; ++i)
+            {
+                writer.writeUnsignedInt((writeWrongOffsets) ? WRONG_DATA_OFFSET : FIRST_DATA_OFFSET + i * 8L);
+                writer.writeBits(0, (i == 0) ? 7 : 1);
+                writer.writeBits(i, 31);
+            }
+
+            writer.alignTo(8);
+            writer.writeBits(TERMINATOR_VALUE, 7);
+
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
         }
-
-        writer.alignTo(8);
-        writer.writeBits(TERMINATOR_VALUE, 7);
-
-        writer.close();
     }
 
     private void checkNestedOffset(NestedOffset nestedOffset)

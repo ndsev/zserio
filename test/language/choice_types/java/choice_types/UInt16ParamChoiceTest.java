@@ -3,18 +3,14 @@ package choice_types;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
-
-import javax.imageio.stream.FileImageOutputStream;
 
 import choice_types.uint16_param_choice.UInt16ParamChoice;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.BitBuffer;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
 
 public class UInt16ParamChoiceTest
 {
@@ -27,27 +23,14 @@ public class UInt16ParamChoiceTest
     }
 
     @Test
-    public void fileConstructor() throws IOException, ZserioError
-    {
-        final int selector = VARIANT_A_SELECTOR;
-        final File file = new File("test.bin");
-        final int value = 99;
-        writeUInt16ParamChoiceToFile(file, selector, value);
-        final UInt16ParamChoice uint16ParamChoice = new UInt16ParamChoice(file, selector);
-        assertEquals(selector, uint16ParamChoice.getSelector());
-        assertEquals((byte)value, uint16ParamChoice.getA());
-    }
-
-    @Test
     public void bitStreamReaderConstructor() throws IOException, ZserioError
     {
         final int selector = VARIANT_B_SELECTOR1;
-        final File file = new File("test.bin");
         final int value = 234;
-        writeUInt16ParamChoiceToFile(file, selector, value);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final UInt16ParamChoice uint16ParamChoice = new UInt16ParamChoice(stream, selector);
-        stream.close();
+        final BitBuffer buffer = writeUInt16ParamChoiceToBitBuffer(selector, value);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer.getBuffer(),
+                buffer.getBitSize());
+        final UInt16ParamChoice uint16ParamChoice = new UInt16ParamChoice(reader, selector);
         assertEquals(selector, uint16ParamChoice.getSelector());
         assertEquals((short)value, uint16ParamChoice.getB());
     }
@@ -185,88 +168,63 @@ public class UInt16ParamChoiceTest
     }
 
     @Test
-    public void fileWrite() throws IOException, ZserioError
-    {
-        final UInt16ParamChoice uint16ParamChoiceA = new UInt16ParamChoice(VARIANT_A_SELECTOR);
-        final byte byteValueA = 99;
-        uint16ParamChoiceA.setA(byteValueA);
-        final File file = new File("test.bin");
-        uint16ParamChoiceA.write(file);
-        final UInt16ParamChoice readUInt16ParamChoiceA = new UInt16ParamChoice(file, VARIANT_A_SELECTOR);
-        assertEquals(byteValueA, readUInt16ParamChoiceA.getA());
-
-        final UInt16ParamChoice uint16ParamChoiceB = new UInt16ParamChoice(VARIANT_B_SELECTOR1);
-        final short shortValueB = 234;
-        uint16ParamChoiceB.setB(shortValueB);
-        uint16ParamChoiceB.write(file);
-        final UInt16ParamChoice readUInt16ParamChoiceB = new UInt16ParamChoice(file, VARIANT_B_SELECTOR1);
-        assertEquals(shortValueB, readUInt16ParamChoiceB.getB());
-
-        final UInt16ParamChoice uint16ParamChoiceC = new UInt16ParamChoice(VARIANT_C_SELECTOR);
-        final int intValueC = 65535;
-        uint16ParamChoiceC.setC(intValueC);
-        uint16ParamChoiceC.write(file);
-        final UInt16ParamChoice readUInt16ParamChoiceC = new UInt16ParamChoice(file, VARIANT_C_SELECTOR);
-        assertEquals(intValueC, readUInt16ParamChoiceC.getC());
-    }
-
-    @Test
     public void bitStreamWriterWrite() throws IOException, ZserioError
     {
         final UInt16ParamChoice uint16ParamChoiceA = new UInt16ParamChoice(VARIANT_A_SELECTOR);
         final byte byteValueA = 99;
         uint16ParamChoiceA.setA(byteValueA);
-        final File file = new File("test.bin");
-        BitStreamWriter writer = new FileBitStreamWriter(file);
+        ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         uint16ParamChoiceA.write(writer);
-        writer.close();
-        final UInt16ParamChoice readUInt16ParamChoiceA = new UInt16ParamChoice(file, VARIANT_A_SELECTOR);
+        ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
+                writer.getBitPosition());
+        final UInt16ParamChoice readUInt16ParamChoiceA = new UInt16ParamChoice(reader, VARIANT_A_SELECTOR);
         assertEquals(byteValueA, readUInt16ParamChoiceA.getA());
 
         final UInt16ParamChoice uint16ParamChoiceB = new UInt16ParamChoice(VARIANT_B_SELECTOR1);
         final short shortValueB = 234;
         uint16ParamChoiceB.setB(shortValueB);
-        writer = new FileBitStreamWriter(file);
+        writer = new ByteArrayBitStreamWriter();
         uint16ParamChoiceB.write(writer);
-        writer.close();
-        final UInt16ParamChoice readUInt16ParamChoiceB = new UInt16ParamChoice(file, VARIANT_B_SELECTOR1);
+        reader = new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
+        final UInt16ParamChoice readUInt16ParamChoiceB = new UInt16ParamChoice(reader, VARIANT_B_SELECTOR1);
         assertEquals(shortValueB, readUInt16ParamChoiceB.getB());
 
         final UInt16ParamChoice uint16ParamChoiceC = new UInt16ParamChoice(VARIANT_C_SELECTOR);
         final int intValueC = 65535;
         uint16ParamChoiceC.setC(intValueC);
-        writer = new FileBitStreamWriter(file);
+        writer = new ByteArrayBitStreamWriter();
         uint16ParamChoiceC.write(writer);
-        writer.close();
-        final UInt16ParamChoice readUInt16ParamChoiceC = new UInt16ParamChoice(file, VARIANT_C_SELECTOR);
+        reader = new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
+        final UInt16ParamChoice readUInt16ParamChoiceC = new UInt16ParamChoice(reader, VARIANT_C_SELECTOR);
         assertEquals(intValueC, readUInt16ParamChoiceC.getC());
     }
 
-    private void writeUInt16ParamChoiceToFile(File file, int selector, int value) throws IOException
+    private BitBuffer writeUInt16ParamChoiceToBitBuffer(int selector, int value) throws IOException
     {
-        final FileImageOutputStream stream = new FileImageOutputStream(file);
-
-        switch (selector)
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
-        case 1:
-            stream.writeByte(value);
-            break;
+            switch (selector)
+            {
+            case 1:
+                writer.writeByte((byte)value);
+                break;
 
-        case 2:
-        case 3:
-        case 4:
-            stream.writeShort(value);
-            break;
+            case 2:
+            case 3:
+            case 4:
+                writer.writeShort((short)value);
+                break;
 
-        case 5:
-        case 6:
-            break;
+            case 5:
+            case 6:
+                break;
 
-        default:
-            stream.writeInt(value);
+            default:
+                writer.writeInt(value);
+            }
+
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
         }
-
-        stream.close();
     }
 
     private static int VARIANT_A_SELECTOR = 1;

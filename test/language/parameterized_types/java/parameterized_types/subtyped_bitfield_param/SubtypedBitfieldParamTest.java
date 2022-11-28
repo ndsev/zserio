@@ -3,23 +3,23 @@ package parameterized_types.subtyped_bitfield_param;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 
+import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.FileBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.SerializeUtil;
 
 public class SubtypedBitfieldParamTest
 {
     @Test
-    public void fileWrite() throws IOException
+    public void writeRead() throws IOException
     {
         final SubtypedBitfieldParamHolder subtypedBitfieldParamHolder = createSubtypedBitfieldParamHolder();
-        final File file = new File("test1.bin");
-        subtypedBitfieldParamHolder.write(file);
-        checkSubtypedBitfieldParamHolderInFile(file, subtypedBitfieldParamHolder);
+        final BitBuffer bitBuffer = SerializeUtil.serialize(subtypedBitfieldParamHolder);
+        checkSubtypedBitfieldParamHolderInBitBuffer(bitBuffer, subtypedBitfieldParamHolder);
         final SubtypedBitfieldParamHolder readSubtypedBitfieldParamHolder =
-                new SubtypedBitfieldParamHolder(file);
+                SerializeUtil.deserialize(SubtypedBitfieldParamHolder.class, bitBuffer);
         assertEquals(subtypedBitfieldParamHolder, readSubtypedBitfieldParamHolder);
     }
 
@@ -31,18 +31,17 @@ public class SubtypedBitfieldParamTest
         return new SubtypedBitfieldParamHolder(subtypedBitfieldParam);
     }
 
-    private void checkSubtypedBitfieldParamHolderInFile(File file, SubtypedBitfieldParamHolder
+    private void checkSubtypedBitfieldParamHolderInBitBuffer(BitBuffer bitBuffer, SubtypedBitfieldParamHolder
             subtypedBitfieldParamHolder) throws IOException
     {
-        final BitStreamReader stream = new FileBitStreamReader(file);
-
-        final SubtypedBitfieldParam subtypedBitfieldParam =
-                subtypedBitfieldParamHolder.getSubtypedBitfieldParam();
-        assertEquals(subtypedBitfieldParam.getParam(), SUBTYPED_BITFIELD_PARAM);
-        assertEquals(subtypedBitfieldParam.getValue(), stream.readUnsignedShort());
-        assertEquals((long)subtypedBitfieldParam.getExtraValue(), stream.readUnsignedInt());
-
-        stream.close();
+        try (final BitStreamReader stream = new ByteArrayBitStreamReader(bitBuffer))
+        {
+            final SubtypedBitfieldParam subtypedBitfieldParam =
+                    subtypedBitfieldParamHolder.getSubtypedBitfieldParam();
+            assertEquals(subtypedBitfieldParam.getParam(), SUBTYPED_BITFIELD_PARAM);
+            assertEquals(subtypedBitfieldParam.getValue(), stream.readUnsignedShort());
+            assertEquals((long)subtypedBitfieldParam.getExtraValue(), stream.readUnsignedInt());
+        }
     }
 
     static final byte SUBTYPED_BITFIELD_PARAM = 11;

@@ -3,23 +3,23 @@ package parameterized_types.dynamic_bitfield_param;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 
+import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.FileBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.SerializeUtil;
 
 public class DynamicBitfieldParamTest
 {
     @Test
-    public void fileWrite() throws IOException
+    public void writeRead() throws IOException
     {
         final DynamicBitfieldParamHolder dynamicBitfieldParamHolder = createDynamicBitfieldParamHolder();
-        final File file = new File("test1.bin");
-        dynamicBitfieldParamHolder.write(file);
-        checkDynamicBitfieldParamHolderInFile(file, dynamicBitfieldParamHolder);
+        final BitBuffer bitBuffer = SerializeUtil.serialize(dynamicBitfieldParamHolder);
+        checkDynamicBitfieldParamHolderInBitBuffer(bitBuffer, dynamicBitfieldParamHolder);
         final DynamicBitfieldParamHolder readDynamicBitfieldParamHolder =
-                new DynamicBitfieldParamHolder(file);
+                SerializeUtil.deserialize(DynamicBitfieldParamHolder.class, bitBuffer);
         assertEquals(dynamicBitfieldParamHolder, readDynamicBitfieldParamHolder);
     }
 
@@ -31,20 +31,19 @@ public class DynamicBitfieldParamTest
         return new DynamicBitfieldParamHolder(LENGTH, BITFIELD, dynamicBitfieldParam);
     }
 
-    private void checkDynamicBitfieldParamHolderInFile(File file, DynamicBitfieldParamHolder
-            dynamicBitfieldParamHolder) throws IOException
+    private void checkDynamicBitfieldParamHolderInBitBuffer(BitBuffer bitBuffer,
+            DynamicBitfieldParamHolder dynamicBitfieldParamHolder) throws IOException
     {
-        final BitStreamReader stream = new FileBitStreamReader(file);
+        try (final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer))
+        {
+            assertEquals(dynamicBitfieldParamHolder.getLength(), reader.readBits(4));
+            assertEquals(dynamicBitfieldParamHolder.getBitfield(), reader.readSignedBits(LENGTH));
 
-        assertEquals(dynamicBitfieldParamHolder.getLength(), stream.readBits(4));
-        assertEquals(dynamicBitfieldParamHolder.getBitfield(), stream.readSignedBits(LENGTH));
-
-        final DynamicBitfieldParam dynamicBitfieldParam = dynamicBitfieldParamHolder.getDynamicBitfieldParam();
-        assertEquals(dynamicBitfieldParam.getParam(), BITFIELD);
-        assertEquals(dynamicBitfieldParam.getValue(), stream.readUnsignedShort());
-        assertEquals(dynamicBitfieldParam.getExtraValue(), stream.readUnsignedInt());
-
-        stream.close();
+            final DynamicBitfieldParam dynamicBitfieldParam = dynamicBitfieldParamHolder.getDynamicBitfieldParam();
+            assertEquals(dynamicBitfieldParam.getParam(), BITFIELD);
+            assertEquals(dynamicBitfieldParam.getValue(), reader.readBits(16));
+            assertEquals(dynamicBitfieldParam.getExtraValue(), reader.readBits(32));
+        }
     }
 
     static final byte LENGTH = 5;

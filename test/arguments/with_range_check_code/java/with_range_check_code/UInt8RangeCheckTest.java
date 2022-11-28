@@ -43,10 +43,9 @@ public class UInt8RangeCheckTest
         uint8RangeCheckCompound.setValue(value);
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         uint8RangeCheckCompound.write(writer);
-        final byte[] writtenByteArray = writer.toByteArray();
-        writer.close();
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writtenByteArray);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
+                writer.getBitPosition());
         final UInt8RangeCheckCompound readUInt8RangeCheckCompound = new UInt8RangeCheckCompound(reader);
         assertEquals(uint8RangeCheckCompound, readUInt8RangeCheckCompound);
     }

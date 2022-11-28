@@ -4,15 +4,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.io.File;
 
 import allow_implicit_arrays.implicit_array_int24.ImplicitArray;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
+import zserio.runtime.io.BitBuffer;
 
 public class ImplicitArrayInt24Test
 {
@@ -47,18 +45,14 @@ public class ImplicitArrayInt24Test
     @Test
     public void read() throws IOException, ZserioError
     {
-        final File file = new File("test.bin");
         final int numElements = 99;
-        writeImplicitArrayToFile(file, numElements);
-        try (final BitStreamReader stream = new FileBitStreamReader(file))
-        {
-            final ImplicitArray implicitArray = new ImplicitArray(stream);
+        final BitBuffer buffer = writeImplicitArrayToBitBuffer(numElements);
+        final ImplicitArray implicitArray = SerializeUtil.deserialize(ImplicitArray.class, buffer);
 
-            final int[] array = implicitArray.getArray();
-            assertEquals(numElements, array.length);
-            for (int i = 0; i < numElements; ++i)
-                assertEquals(i, array[i]);
-        }
+        final int[] array = implicitArray.getArray();
+        assertEquals(numElements, array.length);
+        for (int i = 0; i < numElements; ++i)
+            assertEquals(i, array[i]);
     }
 
     @Test
@@ -70,28 +64,24 @@ public class ImplicitArrayInt24Test
             array[i] = i;
 
         ImplicitArray implicitArray = new ImplicitArray(array);
-        final File file = new File(BLOB_NAME);
-        try (final BitStreamWriter writer = new FileBitStreamWriter(file))
-        {
-            implicitArray.write(writer);
+        SerializeUtil.serializeToFile(implicitArray, BLOB_NAME);
 
-            assertEquals(implicitArray.bitSizeOf(), writer.getBitPosition());
-            assertEquals(implicitArray.initializeOffsets(), writer.getBitPosition());
-        }
-
-        final ImplicitArray readImplicitArray = new ImplicitArray(file);
+        final ImplicitArray readImplicitArray = SerializeUtil.deserializeFromFile(ImplicitArray.class,
+                BLOB_NAME);
         final int[] readArray = readImplicitArray.getArray();
         assertEquals(numElements, readArray.length);
         for (int i = 0; i < numElements; ++i)
             assertEquals(i, readArray[i]);
     }
 
-    private void writeImplicitArrayToFile(File file, int numElements) throws IOException
+    private BitBuffer writeImplicitArrayToBitBuffer(int numElements) throws IOException
     {
-        try (final FileBitStreamWriter writer = new FileBitStreamWriter(file))
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
             for (int i = 0; i < numElements; ++i)
                 writer.writeSignedBits(i, 24);
+
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
         }
     }
 

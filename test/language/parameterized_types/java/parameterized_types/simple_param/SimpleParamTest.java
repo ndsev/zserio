@@ -3,14 +3,13 @@ package parameterized_types.simple_param;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 
-import javax.imageio.stream.FileImageInputStream;
-import javax.imageio.stream.FileImageOutputStream;
-
+import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.FileBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 
 public class SimpleParamTest
 {
@@ -22,23 +21,11 @@ public class SimpleParamTest
     }
 
     @Test
-    public void fileConstructor() throws IOException
-    {
-        final File file = new File("test.bin");
-        final long version = LOWER_VERSION;
-        writeItemToFile(file, version, ITEM_PARAM, ITEM_EXTRA_PARAM);
-        final Item item = new Item(file, version);
-        assertEquals(ITEM_PARAM, item.getParam());
-        assertFalse(item.isExtraParamUsed());
-    }
-
-    @Test
     public void bitStreamReaderConstructor() throws IOException
     {
-        final File file = new File("test.bin");
         final long version = HIGHER_VERSION;
-        writeItemToFile(file, version, ITEM_PARAM, ITEM_EXTRA_PARAM);
-        final BitStreamReader stream = new FileBitStreamReader(file);
+        final BitBuffer bitBuffer = writeItemToBitBuffer(version, ITEM_PARAM, ITEM_EXTRA_PARAM);
+        final BitStreamReader stream = new ByteArrayBitStreamReader(bitBuffer);
         final Item item = new Item(stream, version);
         assertEquals(ITEM_PARAM, item.getParam());
         assertTrue(item.isExtraParamUsed());
@@ -98,41 +85,43 @@ public class SimpleParamTest
     }
 
     @Test
-    public void fileWrite() throws IOException
+    public void writeRead() throws IOException
     {
         final long version1 = LOWER_VERSION;
         final Item item1 = new Item(version1);
         item1.setParam(ITEM_PARAM);
-        final File file = new File("test.bin");
-        item1.write(file);
-        checkItemInFile(file, item1, version1);
-        Item readItem1 = new Item(file, version1);
+        final BitBuffer bitBuffer1 = SerializeUtil.serialize(item1);
+        checkItemInBitBuffer(bitBuffer1, item1, version1);
+        Item readItem1 = SerializeUtil.deserialize(Item.class, bitBuffer1, version1);
         assertEquals(item1, readItem1);
 
         final long version2 = HIGHER_VERSION;
         final Item item2 = new Item(version2, ITEM_PARAM, (long)ITEM_EXTRA_PARAM);
-        item2.write(file);
-        checkItemInFile(file, item2, version2);
-        Item readItem2 = new Item(file, version2);
+        final BitBuffer bitBuffer2 = SerializeUtil.serialize(item2);
+        checkItemInBitBuffer(bitBuffer2, item2, version2);
+        Item readItem2 = SerializeUtil.deserialize(Item.class, bitBuffer2, version2);
         assertEquals(item2, readItem2);
     }
 
-    private void writeItemToFile(File file, long version, short param, int extraParam) throws IOException
+    private BitBuffer writeItemToBitBuffer(long version, short param, int extraParam) throws IOException
     {
-        final FileImageOutputStream stream = new FileImageOutputStream(file);
-        stream.writeShort(param);
-        if (version >= HIGHER_VERSION)
-            stream.writeInt(extraParam);
-        stream.close();
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            writer.writeBits(param, 16);
+            if (version >= HIGHER_VERSION)
+                writer.writeBits(extraParam, 32);
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
+        }
     }
 
-    private void checkItemInFile(File file, Item item, long version) throws IOException
+    private void checkItemInBitBuffer(BitBuffer bitBuffer, Item item, long version) throws IOException
     {
-        final FileImageInputStream stream = new FileImageInputStream(file);
-        assertEquals(item.getParam(), stream.readUnsignedShort());
-        if (version >= HIGHER_VERSION)
-            assertEquals(item.getExtraParam(), Long.valueOf(stream.readUnsignedInt()));
-        stream.close();
+        try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer))
+        {
+            assertEquals(item.getParam(), reader.readBits(16));
+            if (version >= HIGHER_VERSION)
+                assertEquals(item.getExtraParam(), Long.valueOf(reader.readBits(32)));
+        }
     }
 
     private static final long LOWER_VERSION = 9;

@@ -7,11 +7,9 @@ import java.io.IOException;
 import java.io.File;
 import java.math.BigInteger;
 
-import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 import zserio.runtime.BitSizeOfCalculator;
 
 public class VarUIntBitmaskTest
@@ -48,7 +46,8 @@ public class VarUIntBitmaskTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         writer.writeBigInteger(Permission.Values.WRITE.getValue(),
                 BitSizeOfCalculator.getBitSizeOfVarUInt(Permission.Values.WRITE.getValue()));
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
+                writer.getBitPosition());
         final Permission readPermission = new Permission(reader);
         assertEquals(Permission.Values.WRITE, readPermission);
     }
@@ -140,13 +139,8 @@ public class VarUIntBitmaskTest
     {
         final Permission permission = Permission.Values.READ;
         final File file = new File(BLOB_NAME);
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
-        permission.write(writer);
-        writer.close();
-
-        final FileBitStreamReader reader = new FileBitStreamReader(file);
-        final Permission readPermission = new Permission(reader);
-        reader.close();
+        SerializeUtil.serializeToFile(permission, BLOB_NAME);
+        final Permission readPermission = SerializeUtil.deserializeFromFile(Permission.class, file);
         assertEquals(permission, readPermission);
     }
 

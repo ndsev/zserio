@@ -3,15 +3,11 @@ package templates;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 
-import zserio.runtime.BitSizeOfCalculator;
-import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
 
 import templates.struct_templated_template_argument.StructTemplatedTemplateArgument;
 import templates.struct_templated_template_argument.Field_Compound_uint32;
@@ -26,17 +22,13 @@ public class StructTemplatedTemplateArgumentTest
                 new StructTemplatedTemplateArgument();
         structTemplatedTemplateArgument.setCompoundField(new Field_Compound_uint32(new Compound_uint32(42)));
 
-        final BitStreamWriter writer = new FileBitStreamWriter(TEST_FILE);
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         structTemplatedTemplateArgument.write(writer);
-        writer.close();
-        final BitStreamReader reader = new FileBitStreamReader(TEST_FILE);
 
+        final BitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
         StructTemplatedTemplateArgument readStructTemplatedTemplateArgument =
                 new StructTemplatedTemplateArgument(reader);
-        reader.close();
         assertTrue(structTemplatedTemplateArgument.equals(readStructTemplatedTemplateArgument));
     }
-
-    private static final File TEST_FILE = new File("test.bin");
 }
-;

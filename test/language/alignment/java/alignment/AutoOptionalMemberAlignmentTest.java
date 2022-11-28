@@ -4,15 +4,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.io.File;
 
 import alignment.auto_optional_member_alignment.AutoOptionalMemberAlignment;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
+import zserio.runtime.io.BitBuffer;
 
 public class AutoOptionalMemberAlignmentTest
 {
@@ -21,11 +20,9 @@ public class AutoOptionalMemberAlignmentTest
     {
         final int autoOptionalField = 0x1234;
         final int field = 0x7654;
-        final File file = new File("test.bin");
-        writeAutoOptionalMemberAlignmentToFile(file, autoOptionalField, field);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final AutoOptionalMemberAlignment autoOptionalMemberAlignment = new AutoOptionalMemberAlignment(stream);
-        stream.close();
+        final BitBuffer buffer = writeAutoOptionalMemberAlignmentToBitBuffer(autoOptionalField, field);
+        final AutoOptionalMemberAlignment autoOptionalMemberAlignment =
+                SerializeUtil.deserialize(AutoOptionalMemberAlignment.class, buffer);
         checkAutoOptionalMemberAlignment(autoOptionalMemberAlignment, autoOptionalField, field);
     }
 
@@ -33,11 +30,9 @@ public class AutoOptionalMemberAlignmentTest
     public void readWithoutOptional() throws IOException, ZserioError
     {
         final int field = 0x2222;
-        final File file = new File("test.bin");
-        writeAutoOptionalMemberAlignmentToFile(file, null, field);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final AutoOptionalMemberAlignment autoOptionalMemberAlignment = new AutoOptionalMemberAlignment(stream);
-        stream.close();
+        final BitBuffer buffer = writeAutoOptionalMemberAlignmentToBitBuffer(null, field);
+        final AutoOptionalMemberAlignment autoOptionalMemberAlignment =
+                SerializeUtil.deserialize(AutoOptionalMemberAlignment.class, buffer);
         checkAutoOptionalMemberAlignment(autoOptionalMemberAlignment, null, field);
     }
 
@@ -88,12 +83,13 @@ public class AutoOptionalMemberAlignmentTest
         final int field = 0x8ACD;
         final AutoOptionalMemberAlignment autoOptionalMemberAlignment = new AutoOptionalMemberAlignment(
                 autoOptionalField, field);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         autoOptionalMemberAlignment.write(writer);
-        writer.close();
+
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
+                writer.getBitPosition());
         final AutoOptionalMemberAlignment readAutoOptionalMemberAlignment =
-                new AutoOptionalMemberAlignment(file);
+                new AutoOptionalMemberAlignment(reader);
         checkAutoOptionalMemberAlignment(readAutoOptionalMemberAlignment, autoOptionalField, field);
         assertTrue(autoOptionalMemberAlignment.equals(readAutoOptionalMemberAlignment));
     }
@@ -104,34 +100,36 @@ public class AutoOptionalMemberAlignmentTest
         final int field = 0x7ACF;
         final AutoOptionalMemberAlignment autoOptionalMemberAlignment = new AutoOptionalMemberAlignment(
                 null, field);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         autoOptionalMemberAlignment.write(writer);
-        writer.close();
+
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
+                writer.getBitPosition());
         final AutoOptionalMemberAlignment readAutoOptionalMemberAlignment =
-                new AutoOptionalMemberAlignment(file);
+                new AutoOptionalMemberAlignment(reader);
         checkAutoOptionalMemberAlignment(readAutoOptionalMemberAlignment, null, field);
         assertTrue(autoOptionalMemberAlignment.equals(readAutoOptionalMemberAlignment));
     }
 
-    private void writeAutoOptionalMemberAlignmentToFile(File file, Integer autoOptionalField, int field)
+    private BitBuffer writeAutoOptionalMemberAlignmentToBitBuffer(Integer autoOptionalField, int field)
             throws IOException
     {
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
-
-        if (autoOptionalField != null)
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
-            writer.writeBool(true);
-            writer.writeBits(0, 31);
-            writer.writeInt(autoOptionalField);
-        }
-        else
-        {
-            writer.writeBool(false);
-        }
-        writer.writeInt(field);
+            if (autoOptionalField != null)
+            {
+                writer.writeBool(true);
+                writer.writeBits(0, 31);
+                writer.writeInt(autoOptionalField);
+            }
+            else
+            {
+                writer.writeBool(false);
+            }
+            writer.writeInt(field);
 
-        writer.close();
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
+        }
     }
 
     private void checkAutoOptionalMemberAlignment(AutoOptionalMemberAlignment autoOptionalMemberAlignment,

@@ -3,7 +3,6 @@ package constraints;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 
 import constraints.structure_constraints.BasicColor;
@@ -11,66 +10,62 @@ import constraints.structure_constraints.StructureConstraints;
 import constraints.structure_constraints.ExtendedColor;
 
 import zserio.runtime.ZserioError;
+import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 
 public class StructureConstraintsTest
 {
     @Test
-    public void readCorrectConstraints() throws IOException, ZserioError
+    public void readConstructorCorrectConstraints() throws IOException, ZserioError
     {
-        final File file = new File("test.bin");
-        writeStructureConstraintsToFile(file, BasicColor.BLACK, BasicColor.WHITE, ExtendedColor.PURPLE);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final StructureConstraints structureConstraints = new StructureConstraints(stream);
-        stream.close();
+        final BitBuffer bitBuffer = writeStructureConstraintsToBitBuffer(
+                BasicColor.BLACK, BasicColor.WHITE, ExtendedColor.PURPLE);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+        final StructureConstraints structureConstraints = new StructureConstraints(reader);
         assertEquals(BasicColor.BLACK, structureConstraints.getBlackColor());
         assertEquals(BasicColor.WHITE, structureConstraints.getWhiteColor());
         assertEquals(ExtendedColor.PURPLE, structureConstraints.getPurpleColor());
     }
 
     @Test
-    public void readWrongBlackConstraint() throws IOException, ZserioError
+    public void readConstructorWrongBlackConstraint() throws IOException, ZserioError
     {
-        final File file = new File("test.bin");
-        writeStructureConstraintsToFile(file, BasicColor.RED, BasicColor.WHITE, ExtendedColor.PURPLE);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        assertThrows(ZserioError.class, () -> new StructureConstraints(stream));
-        stream.close();
+        final BitBuffer bitBuffer = writeStructureConstraintsToBitBuffer(
+                BasicColor.RED, BasicColor.WHITE, ExtendedColor.PURPLE);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+        assertThrows(ZserioError.class, () -> new StructureConstraints(reader));
     }
 
     @Test
-    public void readWrongWhiteConstraint() throws IOException, ZserioError
+    public void readConstructorWrongWhiteConstraint() throws IOException, ZserioError
     {
-        final File file = new File("test.bin");
-        writeStructureConstraintsToFile(file, BasicColor.BLACK, BasicColor.RED, ExtendedColor.PURPLE);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        assertThrows(ZserioError.class, () -> new StructureConstraints(stream));
-        stream.close();
+        final BitBuffer bitBuffer = writeStructureConstraintsToBitBuffer(
+                BasicColor.BLACK, BasicColor.RED, ExtendedColor.PURPLE);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+        assertThrows(ZserioError.class, () -> new StructureConstraints(reader));
     }
 
     @Test
-    public void readWrongPurpleConstraint() throws IOException, ZserioError
+    public void readConstructorWrongPurpleConstraint() throws IOException, ZserioError
     {
-        final File file = new File("test.bin");
-        writeStructureConstraintsToFile(file, BasicColor.BLACK, BasicColor.WHITE, ExtendedColor.LIME);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        assertThrows(ZserioError.class, () -> new StructureConstraints(stream));
-        stream.close();
+        final BitBuffer bitBuffer = writeStructureConstraintsToBitBuffer(
+                BasicColor.BLACK, BasicColor.WHITE, ExtendedColor.LIME);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+        assertThrows(ZserioError.class, () -> new StructureConstraints(reader));
     }
 
     @Test
-    public void writeCorrectStructureConstraints() throws IOException, ZserioError
+    public void writeReadCorrectStructureConstraints() throws IOException, ZserioError
     {
         final StructureConstraints structureConstraints =
                 new StructureConstraints(BasicColor.BLACK, BasicColor.WHITE, true, ExtendedColor.PURPLE);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        structureConstraints.write(writer);
-        writer.close();
-        final StructureConstraints readStructureConstraints = new StructureConstraints(file);
+        final BitBuffer bitBuffer = SerializeUtil.serialize(structureConstraints);
+        final StructureConstraints readStructureConstraints = SerializeUtil.deserialize(
+                StructureConstraints.class, bitBuffer);
         assertEquals(BasicColor.BLACK, readStructureConstraints.getBlackColor());
         assertEquals(BasicColor.WHITE, readStructureConstraints.getWhiteColor());
         assertEquals(ExtendedColor.PURPLE, readStructureConstraints.getPurpleColor());
@@ -82,10 +77,8 @@ public class StructureConstraintsTest
     {
         final StructureConstraints structureConstraints =
                 new StructureConstraints(BasicColor.RED, BasicColor.WHITE, true, ExtendedColor.PURPLE);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
+        final BitStreamWriter writer = new ByteArrayBitStreamWriter();
         assertThrows(ZserioError.class, () -> structureConstraints.write(writer));
-        writer.close();
     }
 
     @Test
@@ -93,10 +86,8 @@ public class StructureConstraintsTest
     {
         final StructureConstraints structureConstraints =
                 new StructureConstraints(BasicColor.BLACK, BasicColor.WHITE, true, ExtendedColor.LIME);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
+        final BitStreamWriter writer = new ByteArrayBitStreamWriter();
         assertThrows(ZserioError.class, () -> structureConstraints.write(writer));
-        writer.close();
     }
 
     @Test
@@ -104,23 +95,22 @@ public class StructureConstraintsTest
     {
         final StructureConstraints structureConstraints =
                 new StructureConstraints(BasicColor.BLACK, BasicColor.RED, true, ExtendedColor.PURPLE);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
+        final BitStreamWriter writer = new ByteArrayBitStreamWriter();
         assertThrows(ZserioError.class, () -> structureConstraints.write(writer));
-        writer.close();
     }
 
-    private void writeStructureConstraintsToFile(File file, BasicColor blackColor, BasicColor whiteColor,
+    private BitBuffer writeStructureConstraintsToBitBuffer(BasicColor blackColor, BasicColor whiteColor,
             ExtendedColor purpleColor) throws IOException
     {
-        final BitStreamWriter stream = new FileBitStreamWriter(file);
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            writer.writeBits(blackColor.getValue(), 8);
+            writer.writeBool(true);
+            writer.writeBits(whiteColor.getValue(), 8);
+            writer.writeBool(true);
+            writer.writeBits(purpleColor.getValue(), 16);
 
-        stream.writeBits(blackColor.getValue(), 8);
-        stream.writeBool(true);
-        stream.writeBits(whiteColor.getValue(), 8);
-        stream.writeBool(true);
-        stream.writeBits(purpleColor.getValue(), 16);
-
-        stream.close();
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
+        }
     }
 }

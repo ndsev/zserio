@@ -4,29 +4,28 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.io.File;
 
 import member_access.access_within_type.Header;
 import member_access.access_within_type.Message;
 
 import zserio.runtime.ZserioError;
+import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 
 public class AccessWithinTypeTest
 {
     @Test
-    public void read() throws IOException, ZserioError
+    public void readConstructor() throws IOException, ZserioError
     {
         final int numSentences = 10;
         final boolean wrongArrayLength = false;
-        final File file = new File("test.bin");
-        writeMessageToFile(file, numSentences, wrongArrayLength);
-        final BitStreamReader stream = new FileBitStreamReader(file);
+        final BitBuffer bitBuffer = writeMessageToBitBuffer(numSentences, wrongArrayLength);
+        final BitStreamReader stream = new ByteArrayBitStreamReader(bitBuffer);
         final Message message = new Message(stream);
-        stream.close();
         checkMessage(message, numSentences);
     }
 
@@ -35,24 +34,21 @@ public class AccessWithinTypeTest
     {
         final int numSentences = 10;
         final boolean wrongArrayLength = true;
-        final File file = new File("test.bin");
-        writeMessageToFile(file, numSentences, wrongArrayLength);
-        final BitStreamReader stream = new FileBitStreamReader(file);
+        final BitBuffer bitBuffer = writeMessageToBitBuffer(numSentences, wrongArrayLength);
+        final BitStreamReader stream = new ByteArrayBitStreamReader(bitBuffer);
         assertThrows(IOException.class, () -> new Message(stream));
         stream.close();
     }
 
     @Test
-    public void write() throws IOException, ZserioError
+    public void writeRead() throws IOException, ZserioError
     {
         final int numSentences = 13;
         final boolean wrongArrayLength = false;
         final Message message = createMessage(numSentences, wrongArrayLength);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        message.write(writer);
-        writer.close();
-        final Message readMessage = new Message(file);
+        final BitBuffer bitBuffer = SerializeUtil.serialize(message);
+
+        final Message readMessage = SerializeUtil.deserialize(Message.class, bitBuffer);
         checkMessage(readMessage, numSentences);
         assertTrue(message.equals(readMessage));
     }
@@ -63,23 +59,23 @@ public class AccessWithinTypeTest
         final int numSentences = 13;
         final boolean wrongArrayLength = true;
         final Message message = createMessage(numSentences, wrongArrayLength);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
+        final BitStreamWriter writer = new ByteArrayBitStreamWriter();
         assertThrows(ZserioError.class, () -> message.write(writer));
         writer.close();
     }
 
-    private void writeMessageToFile(File file, int numSentences, boolean wrongArrayLength) throws IOException
+    private BitBuffer writeMessageToBitBuffer(int numSentences, boolean wrongArrayLength) throws IOException
     {
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            writer.writeUnsignedShort(VERSION_VALUE);
+            writer.writeUnsignedShort(numSentences);
+            final int numStrings = (wrongArrayLength) ? numSentences - 1 : numSentences;
+            for (int i = 0; i < numStrings; ++i)
+                writer.writeString(SENTENCE_PREFIX + i);
 
-        writer.writeUnsignedShort(VERSION_VALUE);
-        writer.writeUnsignedShort(numSentences);
-        final int numStrings = (wrongArrayLength) ? numSentences - 1 : numSentences;
-        for (int i = 0; i < numStrings; ++i)
-            writer.writeString(SENTENCE_PREFIX + i);
-
-        writer.close();
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
+        }
     }
 
     private void checkMessage(Message message, int numSentences)

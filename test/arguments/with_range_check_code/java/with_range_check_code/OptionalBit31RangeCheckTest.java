@@ -51,10 +51,9 @@ public class OptionalBit31RangeCheckTest
         optionalBit31RangeCheckCompound.setValue(value);
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         optionalBit31RangeCheckCompound.write(writer);
-        final byte[] writtenByteArray = writer.toByteArray();
-        writer.close();
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writtenByteArray);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
+                writer.getBitPosition());
         final OptionalBit31RangeCheckCompound readOptionalBit31RangeCheckCompound =
                 new OptionalBit31RangeCheckCompound(reader);
         assertEquals(optionalBit31RangeCheckCompound, readOptionalBit31RangeCheckCompound);

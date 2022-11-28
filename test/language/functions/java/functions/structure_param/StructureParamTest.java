@@ -20,12 +20,12 @@ public class StructureParamTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         metresConverterCaller.write(writer);
         final byte[] writtenByteArray = writer.toByteArray();
-        writer.close();
 
         final byte[] expectedByteArray = writeMetresConverterCallerToByteArray();
         assertTrue(Arrays.equals(expectedByteArray, writtenByteArray));
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writtenByteArray);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
+                writtenByteArray, writer.getBitPosition());
         final MetresConverterCaller readMetresConverterCaller = new MetresConverterCaller(reader);
         assertEquals(metresConverterCaller, readMetresConverterCaller);
     }

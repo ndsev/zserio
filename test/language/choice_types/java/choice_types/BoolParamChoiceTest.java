@@ -3,18 +3,14 @@ package choice_types;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
-
-import javax.imageio.stream.FileImageOutputStream;
 
 import choice_types.bool_param_choice.BoolParamChoice;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.BitBuffer;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
 
 public class BoolParamChoiceTest
 {
@@ -27,27 +23,14 @@ public class BoolParamChoiceTest
     }
 
     @Test
-    public void fileConstructor() throws IOException, ZserioError
-    {
-        final boolean selector = true;
-        final File file = new File("test.bin");
-        final int value = 99;
-        writeBoolParamChoiceToFile(file, selector, value);
-        final BoolParamChoice boolParamChoice = new BoolParamChoice(file, selector);
-        assertEquals(selector, boolParamChoice.getSelector());
-        assertEquals((byte)value, boolParamChoice.getBlack());
-    }
-
-    @Test
     public void bitStreamReaderConstructor() throws IOException, ZserioError
     {
         final boolean selector = false;
-        final File file = new File("test.bin");
-        final int value = 234;
-        writeBoolParamChoiceToFile(file, selector, value);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final BoolParamChoice boolParamChoice = new BoolParamChoice(stream, selector);
-        stream.close();
+        final byte value = (byte)234;
+        final BitBuffer buffer = writeBoolParamChoiceToBitBuffer(selector, value);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer.getBuffer(),
+                buffer.getBitSize());
+        final BoolParamChoice boolParamChoice = new BoolParamChoice(reader, selector);
         assertEquals(selector, boolParamChoice.getSelector());
         assertEquals((short)value, boolParamChoice.getGrey());
     }
@@ -152,60 +135,40 @@ public class BoolParamChoiceTest
     }
 
     @Test
-    public void fileWrite() throws IOException, ZserioError
-    {
-        boolean selector = true;
-        BoolParamChoice boolParamChoice = new BoolParamChoice(selector);
-        final byte byteValue = 99;
-        boolParamChoice.setBlack(byteValue);
-        final File file = new File("test.bin");
-        boolParamChoice.write(file);
-        BoolParamChoice readBoolParamChoice = new BoolParamChoice(file, selector);
-        assertEquals(byteValue, readBoolParamChoice.getBlack());
-
-        selector = false;
-        boolParamChoice = new BoolParamChoice(selector);
-        final short shortValue = 234;
-        boolParamChoice.setGrey(shortValue);
-        boolParamChoice.write(file);
-        readBoolParamChoice = new BoolParamChoice(file, selector);
-        assertEquals(shortValue, readBoolParamChoice.getGrey());
-    }
-
-    @Test
     public void bitStreamWriterWrite() throws IOException, ZserioError
     {
         boolean selector = true;
         BoolParamChoice boolParamChoice = new BoolParamChoice(selector);
         final byte byteValue = 99;
         boolParamChoice.setBlack(byteValue);
-        final File file = new File("test.bin");
-        BitStreamWriter writer = new FileBitStreamWriter(file);
+        ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         boolParamChoice.write(writer);
-        writer.close();
-        BoolParamChoice readBoolParamChoice = new BoolParamChoice(file, selector);
+        ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
+                writer.getBitPosition());
+        BoolParamChoice readBoolParamChoice = new BoolParamChoice(reader, selector);
         assertEquals(byteValue, readBoolParamChoice.getBlack());
 
         selector = false;
         boolParamChoice = new BoolParamChoice(selector);
         final short shortValue = 234;
         boolParamChoice.setGrey(shortValue);
-        writer = new FileBitStreamWriter(file);
+        writer = new ByteArrayBitStreamWriter();
         boolParamChoice.write(writer);
-        writer.close();
-        readBoolParamChoice = new BoolParamChoice(file, selector);
+        reader = new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
+        readBoolParamChoice = new BoolParamChoice(reader, selector);
         assertEquals(shortValue, readBoolParamChoice.getGrey());
     }
 
-    private void writeBoolParamChoiceToFile(File file, boolean selector, int value) throws IOException
+    private BitBuffer writeBoolParamChoiceToBitBuffer(boolean selector, byte value) throws IOException
     {
-        final FileImageOutputStream stream = new FileImageOutputStream(file);
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            if (selector)
+                writer.writeByte(value);
+            else
+                writer.writeShort(value);
 
-        if (selector)
-            stream.writeByte(value);
-        else
-            stream.writeShort(value);
-
-        stream.close();
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
+        }
     }
 }

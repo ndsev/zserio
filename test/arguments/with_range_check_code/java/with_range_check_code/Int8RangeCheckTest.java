@@ -31,10 +31,9 @@ public class Int8RangeCheckTest
         int8RangeCheckCompound.setValue(value);
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         int8RangeCheckCompound.write(writer);
-        final byte[] writtenByteArray = writer.toByteArray();
-        writer.close();
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writtenByteArray);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
+                writer.getBitPosition());
         final Int8RangeCheckCompound readInt8RangeCheckCompound = new Int8RangeCheckCompound(reader);
         assertEquals(int8RangeCheckCompound, readInt8RangeCheckCompound);
     }

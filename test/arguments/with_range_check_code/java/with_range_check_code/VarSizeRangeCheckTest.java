@@ -37,10 +37,9 @@ public class VarSizeRangeCheckTest
         varSizeRangeCheckCompound.setValue(value);
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         varSizeRangeCheckCompound.write(writer);
-        final byte[] writtenByteArray = writer.toByteArray();
-        writer.close();
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writtenByteArray);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
+                writer.getBitPosition());
         final VarSizeRangeCheckCompound readVarSizeRangeCheckCompound =
                 new VarSizeRangeCheckCompound(reader);
         assertEquals(varSizeRangeCheckCompound, readVarSizeRangeCheckCompound);

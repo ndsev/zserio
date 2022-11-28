@@ -9,12 +9,8 @@ import java.io.IOException;
 import java.math.BigInteger;
 
 import zserio.runtime.io.BitBuffer;
-import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
-
+import zserio.runtime.io.SerializeUtil;
 import builtin_types.all_builtin_types.AllBuiltInTypes;
 import builtin_types.all_builtin_types.ExternalStructure;
 
@@ -460,13 +456,9 @@ public class AllBuiltInTypesTest
         allBuiltInTypes.setExternType(getExternalBitBuffer());
         allBuiltInTypes.setBytesType(new byte[] {(byte)1, (byte)255});
 
-        final BitStreamWriter writer = new FileBitStreamWriter(TEST_FILE);
-        allBuiltInTypes.write(writer);
-        writer.close();
-        final BitStreamReader reader = new FileBitStreamReader(TEST_FILE);
-
-        final AllBuiltInTypes readAllBuiltInTypes = new AllBuiltInTypes(reader);
-        reader.close();
+        SerializeUtil.serializeToFile(allBuiltInTypes, TEST_FILE);
+        final AllBuiltInTypes readAllBuiltInTypes =
+                SerializeUtil.deserializeFromFile(AllBuiltInTypes.class, TEST_FILE);
         assertEquals(allBuiltInTypes, readAllBuiltInTypes);
     }
 

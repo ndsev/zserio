@@ -3,28 +3,27 @@ package constraints;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 
 import constraints.union_constraints.UnionConstraints;
 
 import zserio.runtime.ZserioError;
+import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 
 public class UnionConstraintsTest
 {
     @Test
     public void readCorrectConstraints() throws IOException, ZserioError
     {
-        final File file = new File("test.bin");
         final short value8 = VALUE8_CORRECT_CONSTRAINT;
-        writeUnionConstraintsToFile(file, value8);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final UnionConstraints unionConstraints = new UnionConstraints(stream);
-        stream.close();
+        final BitBuffer bitBuffer = writeUnionConstraintsToBitBuffer(value8);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+        final UnionConstraints unionConstraints = new UnionConstraints(reader);
         assertEquals(UnionConstraints.CHOICE_value8, unionConstraints.choiceTag());
         assertEquals(value8, unionConstraints.getValue8());
     }
@@ -32,36 +31,30 @@ public class UnionConstraintsTest
     @Test
     public void readWrongValue8Constraint() throws IOException, ZserioError
     {
-        final File file = new File("test.bin");
         final short value8 = VALUE8_WRONG_CONSTRAINT;
-        writeUnionConstraintsToFile(file,value8);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        assertThrows(ZserioError.class, () -> new UnionConstraints(stream));
-        stream.close();
+        final BitBuffer bitBuffer = writeUnionConstraintsToBitBuffer(value8);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+        assertThrows(ZserioError.class, () -> new UnionConstraints(reader));
     }
 
     @Test
     public void readWrongValue16Constraint() throws IOException, ZserioError
     {
-        final File file = new File("test.bin");
         final int value16 = VALUE16_WRONG_CONSTRAINT;
-        writeUnionConstraintsToFile(file, value16);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        assertThrows(ZserioError.class, () -> new UnionConstraints(stream));
-        stream.close();
+        final BitBuffer bitBuffer = writeUnionConstraintsToBitBuffer(value16);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+        assertThrows(ZserioError.class, () -> new UnionConstraints(reader));
     }
 
     @Test
-    public void writeCorrectUnionConstraints() throws IOException, ZserioError
+    public void writeReadCorrectUnionConstraints() throws IOException, ZserioError
     {
         final int value16 = VALUE16_CORRECT_CONSTRAINT;
         final UnionConstraints unionConstraints = new UnionConstraints();
         unionConstraints.setValue16(value16);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        unionConstraints.write(writer);
-        writer.close();
-        final UnionConstraints readUnionConstraints = new UnionConstraints(file);
+        final BitBuffer bitBuffer = SerializeUtil.serialize(unionConstraints);
+        final UnionConstraints readUnionConstraints = SerializeUtil.deserialize(
+                UnionConstraints.class, bitBuffer);
         assertEquals(UnionConstraints.CHOICE_value16, readUnionConstraints.choiceTag());
         assertEquals(value16, readUnionConstraints.getValue16());
         assertTrue(unionConstraints.equals(readUnionConstraints));
@@ -73,10 +66,8 @@ public class UnionConstraintsTest
         final short value8 = VALUE8_WRONG_CONSTRAINT;
         final UnionConstraints unionConstraints = new UnionConstraints();
         unionConstraints.setValue8(value8);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
+        final BitStreamWriter writer = new ByteArrayBitStreamWriter();
         assertThrows(ZserioError.class, () -> unionConstraints.write(writer));
-        writer.close();
     }
 
     @Test
@@ -85,30 +76,30 @@ public class UnionConstraintsTest
         final short value16 = VALUE16_WRONG_CONSTRAINT;
         final UnionConstraints unionConstraints = new UnionConstraints();
         unionConstraints.setValue16(value16);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
+        final BitStreamWriter writer = new ByteArrayBitStreamWriter();
         assertThrows(ZserioError.class, () -> unionConstraints.write(writer));
-        writer.close();
     }
 
-    private void writeUnionConstraintsToFile(File file, short value8) throws IOException
+    private BitBuffer writeUnionConstraintsToBitBuffer(short value8) throws IOException
     {
-        final FileBitStreamWriter stream = new FileBitStreamWriter(file);
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            writer.writeVarSize(UnionConstraints.CHOICE_value8);
+            writer.writeBits(value8, 8);
 
-        stream.writeVarSize(UnionConstraints.CHOICE_value8);
-        stream.writeBits(value8, 8);
-
-        stream.close();
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
+        }
     }
 
-    private void writeUnionConstraintsToFile(File file, int value16) throws IOException
+    private BitBuffer writeUnionConstraintsToBitBuffer(int value16) throws IOException
     {
-        final FileBitStreamWriter stream = new FileBitStreamWriter(file);
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            writer.writeVarSize(UnionConstraints.CHOICE_value16);
+            writer.writeBits(value16, 16);
 
-        stream.writeVarSize(UnionConstraints.CHOICE_value16);
-        stream.writeBits(value16, 16);
-
-        stream.close();
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
+        }
     }
 
     private static final short VALUE8_CORRECT_CONSTRAINT = 1;

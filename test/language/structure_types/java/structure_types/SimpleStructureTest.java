@@ -3,18 +3,15 @@ package structure_types;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
-
-import javax.imageio.stream.FileImageOutputStream;
 
 import structure_types.simple_structure.SimpleStructure;
 
 import zserio.runtime.ZserioError;
+import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
 
 public class SimpleStructureTest
 {
@@ -28,30 +25,15 @@ public class SimpleStructureTest
     }
 
     @Test
-    public void fileConstructor() throws IOException, ZserioError
-    {
-        final byte numberA = 0x07;
-        final short numberB = 0xFF;
-        final byte numberC = 0x7F;
-        final File file = new File("test.bin");
-        writeSimpleStructureToFile(file, numberA, numberB, numberC);
-        final SimpleStructure simpleStructure = new SimpleStructure(file);
-        assertEquals(numberA, simpleStructure.getNumberA());
-        assertEquals(numberB, simpleStructure.getNumberB());
-        assertEquals(numberC, simpleStructure.getNumberC());
-    }
-
-    @Test
     public void bitStreamReaderConstructor() throws IOException, ZserioError
     {
         final byte numberA = 0x00;
         final short numberB = 0x00;
         final byte numberC = 0x00;
-        final File file = new File("test.bin");
-        writeSimpleStructureToFile(file, numberA, numberB, numberC);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final SimpleStructure simpleStructure = new SimpleStructure(stream);
-        stream.close();
+        final BitBuffer bitBuffer = writeSimpleStructureToBitBuffer(numberA, numberB, numberC);
+
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+        final SimpleStructure simpleStructure = new SimpleStructure(reader);
         assertEquals(numberA, simpleStructure.getNumberA());
         assertEquals(numberB, simpleStructure.getNumberB());
         assertEquals(numberC, simpleStructure.getNumberC());
@@ -166,49 +148,36 @@ public class SimpleStructureTest
     }
 
     @Test
-    public void fileWrite() throws IOException, ZserioError
-    {
-        final byte numberA = 0x06;
-        final short numberB = 0x11;
-        final byte numberC = 0x52;
-        final SimpleStructure simpleStructure = new SimpleStructure(numberA, numberB, numberC);
-        final File file = new File("test.bin");
-        simpleStructure.write(file);
-        final SimpleStructure readsimpleStructure = new SimpleStructure(file);
-        assertEquals(numberA, readsimpleStructure.getNumberA());
-        assertEquals(numberB, readsimpleStructure.getNumberB());
-        assertEquals(numberC, readsimpleStructure.getNumberC());
-        assertTrue(simpleStructure.equals(readsimpleStructure));
-    }
-
-    @Test
-    public void bitStreamWriterWrite() throws IOException, ZserioError
+    public void writeRead() throws IOException, ZserioError
     {
         final byte numberA = 0x07;
         final short numberB = 0x22;
         final byte numberC = 0x33;
         final SimpleStructure simpleStructure = new SimpleStructure(numberA, numberB, numberC);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
+
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         simpleStructure.write(writer);
-        writer.close();
-        final SimpleStructure readsimpleStructure = new SimpleStructure(file);
+
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
+        final SimpleStructure readsimpleStructure = new SimpleStructure(reader);
         assertEquals(numberA, readsimpleStructure.getNumberA());
         assertEquals(numberB, readsimpleStructure.getNumberB());
         assertEquals(numberC, readsimpleStructure.getNumberC());
         assertTrue(simpleStructure.equals(readsimpleStructure));
     }
 
-    private void writeSimpleStructureToFile(File file, byte numberA, short numberB, byte numberC)
+    private BitBuffer writeSimpleStructureToBitBuffer(byte numberA, short numberB, byte numberC)
             throws IOException
     {
-        final FileImageOutputStream stream = new FileImageOutputStream(file);
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            writer.writeBits(numberA, 3);
+            writer.writeBits(numberB, 8);
+            writer.writeBits(numberC, 7);
 
-        stream.writeBits(numberA, 3);
-        stream.writeBits(numberB, 8);
-        stream.writeBits(numberC, 7);
-
-        stream.close();
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
+        }
     }
 
     private static final int SIMPLE_STRUCTURE_BIT_SIZE = 18;

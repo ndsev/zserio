@@ -51,12 +51,14 @@ public class BitfieldConstEnumTest
     }
 
     @Test
-    public void write() throws IOException
+    public void writeRead() throws IOException
     {
         final Color color = Color.GREEN;
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         color.write(writer);
-        final BitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
+
+        final BitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
         final byte readColor = (byte)reader.readBits(BITFIELD_ENUM_BITSIZEOF);
         assertEquals(readColor, color.getValue());
     }

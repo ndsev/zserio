@@ -3,12 +3,9 @@ package array_types;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 
-import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.FileBitStreamReader;
-
+import zserio.runtime.io.SerializeUtil;
 import array_types.packed_auto_array_bitfield_param.ParameterizedBitfieldLength;
 
 public class PackedAutoArrayBitfieldParamTest
@@ -17,10 +14,9 @@ public class PackedAutoArrayBitfieldParamTest
     public void writeReadFile() throws IOException
     {
         final ParameterizedBitfieldLength parameterizedBitfieldLength = createParameterizedBitfieldLength();
-        final File file = new File(BLOB_NAME);
-        parameterizedBitfieldLength.write(file);
+        SerializeUtil.serializeToFile(parameterizedBitfieldLength, BLOB_NAME);
         final ParameterizedBitfieldLength readParameterizedBitfieldLength =
-                new ParameterizedBitfieldLength(file, NUM_BITS_PARAM);
+                SerializeUtil.deserializeFromFile(ParameterizedBitfieldLength.class, BLOB_NAME, NUM_BITS_PARAM);
         assertEquals(parameterizedBitfieldLength, readParameterizedBitfieldLength);
     }
 

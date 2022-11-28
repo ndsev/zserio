@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.math.BigInteger;
 
-import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 
@@ -45,7 +44,8 @@ public class UInt64BitmaskTest
     {
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         writer.writeBigInteger(Permission.Values.write_permission.getValue(), PERMISSION_BITSIZEOF);
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
+                writer.getBitPosition());
         final Permission readPermission = new Permission(reader);
         assertEquals(Permission.Values.write_permission, readPermission);
     }

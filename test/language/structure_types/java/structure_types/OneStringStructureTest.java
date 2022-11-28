@@ -3,18 +3,16 @@ package structure_types;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
-
-import javax.imageio.stream.FileImageOutputStream;
 
 import structure_types.one_string_structure.OneStringStructure;
 
 import zserio.runtime.ZserioError;
+import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 
 public class OneStringStructureTest
 {
@@ -26,22 +24,11 @@ public class OneStringStructureTest
     }
 
     @Test
-    public void fileConstructor() throws IOException, ZserioError
-    {
-        final File file = new File("test.bin");
-        writeOneStringStructureToFile(file, ONE_STRING);
-        final OneStringStructure oneStringStructure = new OneStringStructure(file);
-        assertEquals(ONE_STRING, oneStringStructure.getOneString());
-    }
-
-    @Test
     public void bitStreamReaderConstructor() throws IOException, ZserioError
     {
-        final File file = new File("test.bin");
-        writeOneStringStructureToFile(file, ONE_STRING);
-        final BitStreamReader stream = new FileBitStreamReader(file);
+        final BitBuffer bitBuffer = writeOneStringStructureToBitBuffer(ONE_STRING);
+        final BitStreamReader stream = new ByteArrayBitStreamReader(bitBuffer);
         final OneStringStructure oneStringStructure = new OneStringStructure(stream);
-        stream.close();
         assertEquals(ONE_STRING, oneStringStructure.getOneString());
     }
 
@@ -105,41 +92,44 @@ public class OneStringStructureTest
     {
         final OneStringStructure oneStringStructure = new OneStringStructure(ONE_STRING);
         final int bitPosition = 1;
-        assertEquals(ONE_STRING_STRUCTURE_BIT_SIZE + bitPosition, oneStringStructure.initializeOffsets(bitPosition));
+        assertEquals(ONE_STRING_STRUCTURE_BIT_SIZE + bitPosition,
+                oneStringStructure.initializeOffsets(bitPosition));
     }
 
     @Test
-    public void fileWrite() throws IOException, ZserioError
+    public void writeReadFile() throws IOException, ZserioError
     {
         final OneStringStructure oneStringStructure = new OneStringStructure(ONE_STRING);
-        final File file = new File(BLOB_NAME);
-        oneStringStructure.write(file);
-        final OneStringStructure readOneStringStructure = new OneStringStructure(file);
+
+        SerializeUtil.serializeToFile(oneStringStructure, BLOB_NAME);
+
+        final OneStringStructure readOneStringStructure = SerializeUtil.deserializeFromFile(
+                OneStringStructure.class, BLOB_NAME);
         assertEquals(ONE_STRING, readOneStringStructure.getOneString());
         assertTrue(oneStringStructure.equals(readOneStringStructure));
     }
 
     @Test
-    public void bitStreamWriterWrite() throws IOException, ZserioError
+    public void writeRead() throws IOException, ZserioError
     {
         final OneStringStructure oneStringStructure = new OneStringStructure(ONE_STRING);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         oneStringStructure.write(writer);
-        writer.close();
-        final OneStringStructure readOneStringStructure = new OneStringStructure(file);
+
+        final BitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
+        final OneStringStructure readOneStringStructure = new OneStringStructure(reader);
         assertEquals(ONE_STRING, readOneStringStructure.getOneString());
         assertTrue(oneStringStructure.equals(readOneStringStructure));
     }
 
-    private void writeOneStringStructureToFile(File file, String oneString) throws IOException
+    private BitBuffer writeOneStringStructureToBitBuffer(String oneString) throws IOException
     {
-        final FileImageOutputStream stream = new FileImageOutputStream(file);
-
-        stream.writeBits(oneString.length(), 8);
-        stream.writeBytes(oneString);
-
-        stream.close();
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            writer.writeString(oneString);
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
+        }
     }
 
     private static final String BLOB_NAME = "one_string_structure.blob";

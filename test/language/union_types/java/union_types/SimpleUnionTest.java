@@ -3,15 +3,14 @@ package union_types;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 
 import zserio.runtime.BitSizeOfCalculator;
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
 
 import union_types.simple_union.SimpleUnion;
 
@@ -264,35 +263,32 @@ public class SimpleUnionTest
 
     private static SimpleUnion bitStreamReaderConstructor(int choiceTag) throws ZserioError, IOException
     {
-        final BitStreamWriter writer = new FileBitStreamWriter(TEST_FILE);
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         writeSimpleUnionToByteArray(writer, choiceTag);
-        writer.close();
-        final BitStreamReader reader = new FileBitStreamReader(TEST_FILE);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
         SimpleUnion simpleUnion = new SimpleUnion(reader);
-        reader.close();
         return simpleUnion;
     }
 
     private static SimpleUnion read(int choiceTag) throws IOException
     {
-        final BitStreamWriter writer = new FileBitStreamWriter(TEST_FILE);
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         writeSimpleUnionToByteArray(writer, choiceTag);
-        writer.close();
-        final BitStreamReader reader = new FileBitStreamReader(TEST_FILE);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
         SimpleUnion simpleUnion = new SimpleUnion();
         simpleUnion.read(reader);
-        reader.close();
         return simpleUnion;
     }
 
     private static void write(SimpleUnion simpleUnion) throws ZserioError, IOException
     {
-        final BitStreamWriter writer = new FileBitStreamWriter(TEST_FILE);
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         simpleUnion.write(writer);
-        writer.close();
-        final BitStreamReader reader = new FileBitStreamReader(TEST_FILE);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
         SimpleUnion readSimpleUnion = new SimpleUnion(reader);
-        reader.close();
         assertTrue(simpleUnion.equals(readSimpleUnion));
     }
 
@@ -354,6 +350,4 @@ public class SimpleUnionTest
             BitSizeOfCalculator.getBitSizeOfString(CASE3_FIELD);
     private static final long UNION_CASE4_BIT_SIZE =
             BitSizeOfCalculator.getBitSizeOfVarUInt64(SimpleUnion.CHOICE_case4Field) + 8;
-
-    private static final File TEST_FILE = new File("test.bin");
 }

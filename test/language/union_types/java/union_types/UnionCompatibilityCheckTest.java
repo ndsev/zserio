@@ -15,9 +15,8 @@ import union_types.union_compatibility_check.CoordXYZ;
 
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
 import zserio.runtime.io.Writer;
+import zserio.runtime.io.SerializeUtil;
 
 public class UnionCompatibilityCheckTest
 {
@@ -185,11 +184,10 @@ public class UnionCompatibilityCheckTest
     {
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         unionCompatibilityCheck.write(writer);
-        writer.close();
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
         final UnionCompatibilityCheckVersion1 readUnion = new UnionCompatibilityCheckVersion1(reader);
-        reader.close();
 
         return readUnion;
     }
@@ -199,11 +197,10 @@ public class UnionCompatibilityCheckTest
     {
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         unionCompatibilityCheck.write(writer);
-        writer.close();
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
         final UnionCompatibilityCheckVersion2 readUnion = new UnionCompatibilityCheckVersion2(reader);
-        reader.close();
 
         return readUnion;
     }
@@ -213,14 +210,10 @@ public class UnionCompatibilityCheckTest
     {
         final File file = new File(BLOB_NAME_BASE + variant + ".blob");
 
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
-        unionCompatibilityCheck.write(writer);
-        writer.close();
+        SerializeUtil.serializeToFile(unionCompatibilityCheck, file);
 
-        final FileBitStreamReader reader = new FileBitStreamReader(file);
-        final UnionCompatibilityCheckVersion1 readUnion = new UnionCompatibilityCheckVersion1(reader);
-        reader.close();
-
+        final UnionCompatibilityCheckVersion1 readUnion = SerializeUtil.deserializeFromFile(
+                UnionCompatibilityCheckVersion1.class, file);
         return readUnion;
     }
 
@@ -229,14 +222,10 @@ public class UnionCompatibilityCheckTest
     {
         final File file = new File(BLOB_NAME_BASE + variant + ".blob");
 
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
-        unionCompatibilityCheck.write(writer);
-        writer.close();
+        SerializeUtil.serializeToFile(unionCompatibilityCheck, file);
 
-        final FileBitStreamReader reader = new FileBitStreamReader(file);
-        final UnionCompatibilityCheckVersion2 readUnion = new UnionCompatibilityCheckVersion2(reader);
-        reader.close();
-
+        final UnionCompatibilityCheckVersion2 readUnion = SerializeUtil.deserializeFromFile(
+                UnionCompatibilityCheckVersion2.class, file);
         return readUnion;
     }
 

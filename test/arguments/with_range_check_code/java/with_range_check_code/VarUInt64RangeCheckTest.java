@@ -43,10 +43,9 @@ public class VarUInt64RangeCheckTest
         varUInt64RangeCheckCompound.setValue(value);
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         varUInt64RangeCheckCompound.write(writer);
-        final byte[] writtenByteArray = writer.toByteArray();
-        writer.close();
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writtenByteArray);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
+                writer.getBitPosition());
         final VarUInt64RangeCheckCompound readVarUInt64RangeCheckCompound =
                 new VarUInt64RangeCheckCompound(reader);
         assertEquals(varUInt64RangeCheckCompound, readVarUInt64RangeCheckCompound);

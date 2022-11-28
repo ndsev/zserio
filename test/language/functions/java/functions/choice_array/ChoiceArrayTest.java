@@ -118,12 +118,12 @@ public class ChoiceArrayTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         inner.write(writer);
         final byte[] writtenByteArray = writer.toByteArray();
-        writer.close();
 
         final byte[] expectedByteArray = writeOuterArrayToByteArray(pos);
         assertTrue(Arrays.equals(expectedByteArray, writtenByteArray));
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writtenByteArray);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
+                writtenByteArray, writer.getBitPosition());
         final Inner readInner = new Inner(reader);
         assertEquals(inner, readInner);
     }

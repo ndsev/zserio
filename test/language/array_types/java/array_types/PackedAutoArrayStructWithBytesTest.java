@@ -6,8 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.io.File;
 
-import zserio.runtime.io.FileBitStreamWriter;
-import zserio.runtime.io.BitBuffer;
+import zserio.runtime.io.SerializeUtil;
 import array_types.packed_auto_array_struct_with_bytes.PackedAutoArray;
 import array_types.packed_auto_array_struct_with_bytes.TestStructure;
 
@@ -18,14 +17,9 @@ public class PackedAutoArrayStructWithBytesTest
     {
         final PackedAutoArray packedAutoArray = createPackedAutoArray();
         final File file = new File(BLOB_NAME);
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
-        packedAutoArray.write(writer);
-        writer.close();
-
-        assertEquals(writer.getBitPosition(), packedAutoArray.bitSizeOf());
-        assertEquals(writer.getBitPosition(), packedAutoArray.initializeOffsets());
-
-        final PackedAutoArray readPackedAutoArray = new PackedAutoArray(file);
+        SerializeUtil.serializeToFile(packedAutoArray, file);
+        final PackedAutoArray readPackedAutoArray =
+                SerializeUtil.deserializeFromFile(PackedAutoArray.class, file);
         assertEquals(packedAutoArray, readPackedAutoArray);
     }
 

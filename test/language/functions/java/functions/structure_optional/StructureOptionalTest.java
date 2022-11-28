@@ -68,12 +68,12 @@ public class StructureOptionalTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         valueConsumerCreator.write(writer);
         final byte[] writtenByteArray = writer.toByteArray();
-        writer.close();
 
         final byte[] expectedByteArray = writeValueConsumerCreatorToByteArray(defaultValue, externalValue);
         assertTrue(Arrays.equals(expectedByteArray, writtenByteArray));
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writtenByteArray);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
+                writtenByteArray, writer.getBitPosition());
         final ValueConsumerCreator readValueConsumerCreator = new ValueConsumerCreator(reader);
         assertEquals(valueConsumerCreator, readValueConsumerCreator);
     }

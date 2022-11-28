@@ -52,12 +52,14 @@ public class UInt64EnumTest
     }
 
     @Test
-    public void write() throws IOException
+    public void writeRead() throws IOException
     {
         final DarkColor darkColor = DarkColor.DarkGreen;
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         darkColor.write(writer);
-        final BitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
+
+        final BitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
         final BigInteger readColor = reader.readBigInteger(UINT64_ENUM_BITSIZEOF);
         assertEquals(readColor, darkColor.getValue());
     }

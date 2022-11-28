@@ -16,8 +16,6 @@ import java.util.Set;
 import test_utils.FileUtil;
 import test_utils.JdbcUtil;
 
-import sql_without_rowid_tables.simple_without_rowid_table.SimpleWithoutRowIdDb;
-
 public class SimpleWithoutRowIdTableTest
 {
     @BeforeAll

@@ -4,41 +4,37 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.io.File;
 
 import indexed_offsets.compound_indexed_offset_array.Compound;
 import indexed_offsets.compound_indexed_offset_array.CompoundIndexedOffsetArray;
 
 import zserio.runtime.ZserioError;
+import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
+import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 
 public class CompoundIndexedOffsetArrayTest
 {
     @Test
-    public void read() throws IOException, ZserioError
+    public void readConstructor() throws IOException, ZserioError
     {
         final boolean writeWrongOffsets = false;
-        final File file = new File("test.bin");
-        writeCompoundIndexedOffsetArrayToFile(file, writeWrongOffsets);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final CompoundIndexedOffsetArray compoundIndexedOffsetArray = new CompoundIndexedOffsetArray(stream);
-        stream.close();
+        final BitBuffer bitBuffer = writeCompoundIndexedOffsetArrayToBitBuffer(writeWrongOffsets);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+        final CompoundIndexedOffsetArray compoundIndexedOffsetArray = new CompoundIndexedOffsetArray(reader);
         checkCompoundIndexedOffsetArray(compoundIndexedOffsetArray);
     }
 
     @Test
-    public void readWrongOffsets() throws IOException, ZserioError
+    public void readConstructorWrongOffsets() throws IOException, ZserioError
     {
         final boolean writeWrongOffsets = true;
-        final File file = new File("test.bin");
-        writeCompoundIndexedOffsetArrayToFile(file, writeWrongOffsets);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        assertThrows(ZserioError.class, () -> new CompoundIndexedOffsetArray(stream));
-        stream.close();
+        final BitBuffer bitBuffer = writeCompoundIndexedOffsetArrayToBitBuffer(writeWrongOffsets);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+        assertThrows(ZserioError.class, () -> new CompoundIndexedOffsetArray(reader));
     }
 
     @Test
@@ -88,37 +84,41 @@ public class CompoundIndexedOffsetArrayTest
     }
 
     @Test
-    public void write() throws IOException, ZserioError
+    public void writeRead() throws IOException, ZserioError
     {
         final boolean createWrongOffsets = false;
         final CompoundIndexedOffsetArray compoundIndexedOffsetArray =
                 createCompoundIndexedOffsetArray(createWrongOffsets);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        compoundIndexedOffsetArray.write(writer);
-        writer.close();
+        final BitBuffer bitBuffer = SerializeUtil.serialize(compoundIndexedOffsetArray);
         checkCompoundIndexedOffsetArray(compoundIndexedOffsetArray);
-        final CompoundIndexedOffsetArray readCompoundIndexedOffsetArray = new CompoundIndexedOffsetArray(file);
+
+        final CompoundIndexedOffsetArray readCompoundIndexedOffsetArray = SerializeUtil.deserialize(
+                CompoundIndexedOffsetArray.class, bitBuffer);
         checkCompoundIndexedOffsetArray(readCompoundIndexedOffsetArray);
         assertTrue(compoundIndexedOffsetArray.equals(readCompoundIndexedOffsetArray));
     }
 
     @Test
-    public void writeWithPosition() throws IOException, ZserioError
+    public void writeReadWithPosition() throws IOException, ZserioError
     {
         final boolean createWrongOffsets = true;
         final CompoundIndexedOffsetArray compoundIndexedOffsetArray =
                 createCompoundIndexedOffsetArray(createWrongOffsets);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         final int bitPosition = 8;
         writer.writeBits(0, bitPosition);
         compoundIndexedOffsetArray.initializeOffsets(writer.getBitPosition());
         compoundIndexedOffsetArray.write(writer);
-        writer.close();
-
         final short offsetShift = 1;
         checkOffsets(compoundIndexedOffsetArray, offsetShift);
+
+        final BitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
+        assertEquals(0, reader.readBits(bitPosition));
+        final CompoundIndexedOffsetArray readCompoundIndexedOffsetArray =
+                new CompoundIndexedOffsetArray(reader);
+        checkOffsets(readCompoundIndexedOffsetArray, offsetShift);
+        assertTrue(compoundIndexedOffsetArray.equals(readCompoundIndexedOffsetArray));
     }
 
     @Test
@@ -132,32 +132,33 @@ public class CompoundIndexedOffsetArrayTest
         writer.close();
     }
 
-    private void writeCompoundIndexedOffsetArrayToFile(File file, boolean writeWrongOffsets) throws IOException
+    private BitBuffer writeCompoundIndexedOffsetArrayToBitBuffer(boolean writeWrongOffsets) throws IOException
     {
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
-
-        long currentOffset = ELEMENT0_OFFSET;
-        for (short i = 0; i < NUM_ELEMENTS; ++i)
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
-            if ((i + 1) == NUM_ELEMENTS && writeWrongOffsets)
-                writer.writeUnsignedInt(WRONG_OFFSET);
-            else
-                writer.writeUnsignedInt(currentOffset);
-            currentOffset += ALIGNED_ELEMENT_BYTE_SIZE;
+            long currentOffset = ELEMENT0_OFFSET;
+            for (short i = 0; i < NUM_ELEMENTS; ++i)
+            {
+                if ((i + 1) == NUM_ELEMENTS && writeWrongOffsets)
+                    writer.writeUnsignedInt(WRONG_OFFSET);
+                else
+                    writer.writeUnsignedInt(currentOffset);
+                currentOffset += ALIGNED_ELEMENT_BYTE_SIZE;
+            }
+
+            writer.writeBits(SPACER_VALUE, 1);
+            writer.writeBits(0, 7);
+
+            for (short i = 0; i < NUM_ELEMENTS; ++i)
+            {
+                writer.writeBits(i, 32);
+                writer.writeBits(i % 8, 3);
+                if ((i + 1) != NUM_ELEMENTS)
+                    writer.writeBits(0, ALIGNED_ELEMENT_SIZE - ELEMENT_SIZE);
+            }
+
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
         }
-
-        writer.writeBits(SPACER_VALUE, 1);
-        writer.writeBits(0, 7);
-
-        for (short i = 0; i < NUM_ELEMENTS; ++i)
-        {
-            writer.writeBits(i, 32);
-            writer.writeBits(i % 8, 3);
-            if ((i + 1) != NUM_ELEMENTS)
-                writer.writeBits(0, ALIGNED_ELEMENT_SIZE - ELEMENT_SIZE);
-        }
-
-        writer.close();
     }
 
     private void checkOffsets(CompoundIndexedOffsetArray compoundIndexedOffsetArray, short offsetShift)

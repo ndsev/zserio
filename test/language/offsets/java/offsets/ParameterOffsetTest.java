@@ -4,30 +4,28 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.io.File;
 
 import offsets.parameter_offset.OffsetHolder;
 import offsets.parameter_offset.Room;
 import offsets.parameter_offset.School;
 
 import zserio.runtime.ZserioError;
+import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
+import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 
 public class ParameterOffsetTest
 {
     @Test
-    public void read() throws IOException, ZserioError
+    public void readConstructor() throws IOException, ZserioError
     {
         final boolean writeWrongOffset = false;
-        final File file = new File("test.bin");
-        writeSchoolToFile(file, writeWrongOffset);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final School school = new School(stream);
-        stream.close();
+        final BitBuffer bitBuffer = writeSchoolToBitBuffer(writeWrongOffset);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+        final School school = new School(reader);
         checkSchool(school);
     }
 
@@ -35,11 +33,9 @@ public class ParameterOffsetTest
     public void readWrongOffsets() throws IOException, ZserioError
     {
         final boolean writeWrongOffset = true;
-        final File file = new File("test.bin");
-        writeSchoolToFile(file, writeWrongOffset);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        assertThrows(ZserioError.class, () -> new School(stream));
-        stream.close();
+        final BitBuffer bitBuffer = writeSchoolToBitBuffer(writeWrongOffset);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+        assertThrows(ZserioError.class, () -> new School(reader));
     }
 
     @Test
@@ -80,33 +76,36 @@ public class ParameterOffsetTest
     }
 
     @Test
-    public void write() throws IOException, ZserioError
+    public void writeRead() throws IOException, ZserioError
     {
         final boolean createWrongOffset = false;
         final School school = createSchool(createWrongOffset);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        school.write(writer);
-        writer.close();
+        final BitBuffer bitBuffer = SerializeUtil.serialize(school);
         checkSchool(school);
-        final School readSchool = new School(file);
+
+        final School readSchool = SerializeUtil.deserialize(School.class, bitBuffer);
         checkSchool(readSchool);
         assertTrue(school.equals(readSchool));
     }
 
     @Test
-    public void writeWithPosition() throws IOException, ZserioError
+    public void writeReadWithPosition() throws IOException, ZserioError
     {
         final boolean createWrongOffset = true;
         final School school = createSchool(createWrongOffset);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         final int bitPosition = 2;
         writer.writeBits(0, bitPosition);
         school.initializeOffsets(writer.getBitPosition());
         school.write(writer);
-        writer.close();
         checkSchool(school, bitPosition);
+
+        final BitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
+        assertEquals(0, reader.readBits(bitPosition));
+        final School readSchool = new School(reader);
+        checkSchool(school, bitPosition);
+        assertTrue(school.equals(readSchool));
     }
 
     @Test
@@ -119,13 +118,16 @@ public class ParameterOffsetTest
         writer.close();
     }
 
-    private void writeSchoolToFile(File file, boolean writeWrongOffset) throws IOException
+    private BitBuffer writeSchoolToBitBuffer(boolean writeWrongOffset) throws IOException
     {
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
-        writer.writeUnsignedShort(SCHOOL_ID);
-        writer.writeUnsignedInt((writeWrongOffset) ? WRONG_ROOM_OFFSET : ROOM_OFFSET);
-        writer.writeUnsignedShort(ROOM_ID);
-        writer.close();
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            writer.writeUnsignedShort(SCHOOL_ID);
+            writer.writeUnsignedInt((writeWrongOffset) ? WRONG_ROOM_OFFSET : ROOM_OFFSET);
+            writer.writeUnsignedShort(ROOM_ID);
+
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
+        }
     }
 
     private void checkSchool(School school)

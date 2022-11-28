@@ -10,7 +10,7 @@ import java.math.BigInteger;
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 
 public class PackedArrayElementParamTest
 {
@@ -92,7 +92,8 @@ public class PackedArrayElementParamTest
         assertEquals(database.bitSizeOf(), writtenBitPosition);
         assertEquals(database.initializeOffsets(), writtenBitPosition);
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
         final Database readDatabase = new Database(reader);
         assertEquals(database, readDatabase);
     }
@@ -101,12 +102,9 @@ public class PackedArrayElementParamTest
     {
         final Database database = createDatabase(numBlocks);
         final File file = new File(BLOB_NAME_BASE + numBlocks + ".blob");
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
-        database.initializeOffsets(writer.getBitPosition());
-        database.write(writer);
-        writer.close();
+        SerializeUtil.serializeToFile(database, file);
 
-        final Database readDatabase = new Database(file);
+        final Database readDatabase = SerializeUtil.deserializeFromFile(Database.class, file);
         assertEquals(database, readDatabase);
     }
 

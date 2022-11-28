@@ -1,39 +1,22 @@
 package structure_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 
 import structure_types.empty_structure.EmptyStructure;
 
-import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 
 public class EmptyStructureTest
 {
-    @BeforeEach
-    public void setUp() throws IOException
-    {
-        if (!testFile.exists())
-            assertTrue(testFile.createNewFile());
-    }
-
     @Test
     public void emptyConstructor()
     {
         final EmptyStructure emptyStructure = new EmptyStructure();
-        assertEquals(0, emptyStructure.bitSizeOf());
-    }
-
-    @Test
-    public void fileConstructor() throws IOException, ZserioError
-    {
-        final EmptyStructure emptyStructure = new EmptyStructure(testFile);
         assertEquals(0, emptyStructure.bitSizeOf());
     }
 
@@ -84,20 +67,11 @@ public class EmptyStructureTest
     @Test
     public void read() throws IOException
     {
-        final BitStreamReader reader = new ByteArrayBitStreamReader(new byte[0]);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(new byte[0], 0);
 
         final EmptyStructure emptyStructure = new EmptyStructure();
         emptyStructure.read(reader);
         assertEquals(0, emptyStructure.bitSizeOf());
-    }
-
-    @Test
-    public void fileWrite() throws IOException
-    {
-        final EmptyStructure emptyStructure = new EmptyStructure();
-        emptyStructure.write(testFile);
-        EmptyStructure readEmptyStructure = new EmptyStructure(testFile);
-        assertEquals(emptyStructure, readEmptyStructure);
     }
 
     @Test
@@ -112,6 +86,4 @@ public class EmptyStructureTest
         EmptyStructure readEmptyStructure = new EmptyStructure(reader);
         assertEquals(emptyStructure, readEmptyStructure);
     }
-
-    private final File testFile = new File("test.bin");
 };

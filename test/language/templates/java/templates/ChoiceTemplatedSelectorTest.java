@@ -3,15 +3,11 @@ package templates;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 
-import zserio.runtime.BitSizeOfCalculator;
-import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
 
 import templates.choice_templated_selector.ChoiceTemplatedSelector;
 import templates.choice_templated_selector.TemplatedChoice_uint32_Shift32;
@@ -36,15 +32,12 @@ public class ChoiceTemplatedSelectorTest
         uint32Choice.setStringField("string");
         choiceTemplatedSelector.setUint32Choice(uint32Choice);
 
-        final BitStreamWriter writer = new FileBitStreamWriter(TEST_FILE);
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         choiceTemplatedSelector.write(writer);
-        writer.close();
-        final BitStreamReader reader = new FileBitStreamReader(TEST_FILE);
 
+        final BitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
         ChoiceTemplatedSelector readChoiceTemplatedSelector = new ChoiceTemplatedSelector(reader);
-        reader.close();
         assertTrue(choiceTemplatedSelector.equals(readChoiceTemplatedSelector));
     }
-
-    private static final File TEST_FILE = new File("test.bin");
 }

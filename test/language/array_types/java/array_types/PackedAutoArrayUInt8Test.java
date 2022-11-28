@@ -7,11 +7,9 @@ import java.io.IOException;
 import java.io.File;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
-
+import zserio.runtime.io.BitBuffer;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 import array_types.packed_auto_array_uint8.PackedAutoArray;
 
 public class PackedAutoArrayUInt8Test
@@ -106,12 +104,8 @@ public class PackedAutoArrayUInt8Test
 
     private void checkRead(short numElements) throws IOException, ZserioError
     {
-        final File file = new File("test.bin");
-        writePackedAutoArrayToFile(file, numElements);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final PackedAutoArray packedAutoArray = new PackedAutoArray(stream);
-        stream.close();
-
+        final BitBuffer buffer = writePackedAutoArrayToBitBuffer(numElements);
+        final PackedAutoArray packedAutoArray = SerializeUtil.deserialize(PackedAutoArray.class, buffer);
         checkPackedAutoArray(packedAutoArray, numElements);
     }
 
@@ -119,14 +113,9 @@ public class PackedAutoArrayUInt8Test
     {
         final PackedAutoArray packedAutoArray = createPackedAutoArray(numElements);
         final File file = new File(BLOB_NAME_BASE + numElements + ".blob");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        packedAutoArray.write(writer);
-        writer.close();
-
-        assertEquals(packedAutoArray.bitSizeOf(), writer.getBitPosition());
-        assertEquals(packedAutoArray.initializeOffsets(), writer.getBitPosition());
-
-        final PackedAutoArray readPackedAutoArray = new PackedAutoArray(file);
+        SerializeUtil.serializeToFile(packedAutoArray, file);
+        final PackedAutoArray readPackedAutoArray =
+                SerializeUtil.deserializeFromFile(PackedAutoArray.class, file);
         checkPackedAutoArray(readPackedAutoArray, numElements);
     }
 
@@ -159,23 +148,24 @@ public class PackedAutoArrayUInt8Test
         return new PackedAutoArray(uint8Array);
     }
 
-    private void writePackedAutoArrayToFile(File file, short numElements) throws IOException
+    private BitBuffer writePackedAutoArrayToBitBuffer(short numElements) throws IOException
     {
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
-
-        writer.writeVarSize(numElements);
-        writer.writeBool(true);
-        writer.writeBits(PACKED_ARRAY_MAX_BIT_NUMBER, 6);
-        short value = PACKED_ARRAY_ELEMENT0;
-        writer.writeBits(value, 8);
-        if (numElements > 1)
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
-            writer.writeSignedBits(PACKED_ARRAY_DELTA * 2, PACKED_ARRAY_MAX_BIT_NUMBER + 1);
-            for (short i = 2; i < numElements; ++i)
-                writer.writeSignedBits(PACKED_ARRAY_DELTA, PACKED_ARRAY_MAX_BIT_NUMBER + 1);
-        }
+            writer.writeVarSize(numElements);
+            writer.writeBool(true);
+            writer.writeBits(PACKED_ARRAY_MAX_BIT_NUMBER, 6);
+            short value = PACKED_ARRAY_ELEMENT0;
+            writer.writeBits(value, 8);
+            if (numElements > 1)
+            {
+                writer.writeSignedBits(PACKED_ARRAY_DELTA * 2, PACKED_ARRAY_MAX_BIT_NUMBER + 1);
+                for (short i = 2; i < numElements; ++i)
+                    writer.writeSignedBits(PACKED_ARRAY_DELTA, PACKED_ARRAY_MAX_BIT_NUMBER + 1);
+            }
 
-        writer.close();
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
+        }
     }
 
     private int calcPackedAutoArrayBitSize(short numElements)

@@ -8,8 +8,10 @@ import java.io.IOException;
 
 import optional_members.optional_array_recursion.Employee;
 import optional_members.optional_array_recursion.Title;
-
-import zserio.runtime.io.FileBitStreamReader;
+import zserio.runtime.io.BitBuffer;
+import zserio.runtime.io.BitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.SerializeUtil;
 
 public class OptionalArrayRecursionTest
 {
@@ -111,12 +113,25 @@ public class OptionalArrayRecursionTest
                 Title.DEVELOPER);
 
         final File employeeFile = new File(BLOB_NAME_BASE + "employee.blob");
-        employee.write(employeeFile);
-        final FileBitStreamReader reader = new FileBitStreamReader(employeeFile);
-        checkEmployeeInStream(reader, EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY, Title.DEVELOPER);
-        reader.close();
+        SerializeUtil.serializeToFile(employee, employeeFile);
 
-        Employee readEmployee = new Employee(employeeFile);
+        Employee readEmployee = SerializeUtil.deserializeFromFile(Employee.class, employeeFile);
+        assertEquals(EMPLOYEE_DEVELOPER1_NAME, readEmployee.getName());
+        assertEquals(EMPLOYEE_DEVELOPER1_SALARY, readEmployee.getSalary());
+        assertEquals(Title.DEVELOPER, readEmployee.getTitle());
+    }
+
+    @Test
+    public void writeReadEmployee() throws IOException
+    {
+        final Employee employee = createEmployee(EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY,
+                Title.DEVELOPER);
+
+        final BitBuffer bitBuffer = SerializeUtil.serialize(employee);
+        checkEmployeeInBitBuffer(bitBuffer,
+                EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY, Title.DEVELOPER);
+
+        Employee readEmployee = SerializeUtil.deserialize(Employee.class, bitBuffer);
         assertEquals(EMPLOYEE_DEVELOPER1_NAME, readEmployee.getName());
         assertEquals(EMPLOYEE_DEVELOPER1_SALARY, readEmployee.getSalary());
         assertEquals(Title.DEVELOPER, readEmployee.getTitle());
@@ -128,12 +143,24 @@ public class OptionalArrayRecursionTest
         final Employee teamLead = createTeamLead();
 
         final File teamLeadFile = new File(BLOB_NAME_BASE + "team_lead.blob");
-        teamLead.write(teamLeadFile);
-        final FileBitStreamReader reader = new FileBitStreamReader(teamLeadFile);
-        checkTeamLeadInStream(reader);
-        reader.close();
+        SerializeUtil.serializeToFile(teamLead, teamLeadFile);
 
-        Employee readTeamLead = new Employee(teamLeadFile);
+        final Employee readTeamLead = SerializeUtil.deserializeFromFile(Employee.class, teamLeadFile);
+        assertEquals(EMPLOYEE_TEAM_LEAD_NAME, readTeamLead.getName());
+        assertEquals(EMPLOYEE_TEAM_LEAD_SALARY, readTeamLead.getSalary());
+        assertEquals(Title.TEAM_LEAD, readTeamLead.getTitle());
+        assertEquals(NUM_DEVELOPERS, readTeamLead.getTeamMembers().length);
+    }
+
+    @Test
+    public void writeReadTeamLead() throws IOException
+    {
+        final Employee teamLead = createTeamLead();
+
+        final BitBuffer bitBuffer = SerializeUtil.serialize(teamLead);
+        checkTeamLeadInBitBuffer(bitBuffer);
+
+        final Employee readTeamLead = SerializeUtil.deserialize(Employee.class, bitBuffer);
         assertEquals(EMPLOYEE_TEAM_LEAD_NAME, readTeamLead.getName());
         assertEquals(EMPLOYEE_TEAM_LEAD_SALARY, readTeamLead.getSalary());
         assertEquals(Title.TEAM_LEAD, readTeamLead.getTitle());
@@ -163,20 +190,35 @@ public class OptionalArrayRecursionTest
         return teamLead;
     }
 
-    private static void checkEmployeeInStream(FileBitStreamReader reader, String name, int salary,
-            Title title) throws IOException
+    private static void checkEmployeeInStream(BitStreamReader reader, String name, int salary, Title title)
+            throws IOException
     {
         assertEquals(name, reader.readString());
         assertEquals(salary, reader.readBits(16));
         assertEquals(title.getValue(), reader.readBits(8));
     }
 
-    private static void checkTeamLeadInStream(FileBitStreamReader reader) throws IOException
+    private static void checkEmployeeInBitBuffer(BitBuffer bitBuffer, String name, int salary, Title title)
+            throws IOException
     {
-        checkEmployeeInStream(reader, EMPLOYEE_TEAM_LEAD_NAME, EMPLOYEE_TEAM_LEAD_SALARY, Title.TEAM_LEAD);
-        assertEquals(NUM_DEVELOPERS, reader.readVarUInt64());
-        checkEmployeeInStream(reader, EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY, Title.DEVELOPER);
-        checkEmployeeInStream(reader, EMPLOYEE_DEVELOPER2_NAME, EMPLOYEE_DEVELOPER2_SALARY, Title.DEVELOPER);
+        try (final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer))
+        {
+            checkEmployeeInStream(reader, name, salary, title);
+        }
+    }
+
+    private static void checkTeamLeadInBitBuffer(BitBuffer bitBuffer) throws IOException
+    {
+        try (final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer))
+        {
+            checkEmployeeInStream(reader,
+                    EMPLOYEE_TEAM_LEAD_NAME, EMPLOYEE_TEAM_LEAD_SALARY, Title.TEAM_LEAD);
+            assertEquals(NUM_DEVELOPERS, reader.readVarUInt64());
+            checkEmployeeInStream(reader,
+                    EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY, Title.DEVELOPER);
+            checkEmployeeInStream(reader,
+                    EMPLOYEE_DEVELOPER2_NAME, EMPLOYEE_DEVELOPER2_SALARY, Title.DEVELOPER);
+        }
     }
 
     private static final String BLOB_NAME_BASE = "optional_array_recursion_";

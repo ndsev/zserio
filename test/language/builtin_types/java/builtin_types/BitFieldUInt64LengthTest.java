@@ -8,12 +8,8 @@ import java.io.IOException;
 
 import java.math.BigInteger;
 
-import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
-
 import builtin_types.bitfield_uint64_length.Container;
+import zserio.runtime.io.SerializeUtil;
 
 public class BitFieldUInt64LengthTest
 {
@@ -38,14 +34,8 @@ public class BitFieldUInt64LengthTest
         container.setLength(bitFieldLength);
         container.setUnsignedBitField(UNSIGNED_BIT_FIELD_VALUE);
         container.setSignedBitField(SIGNED_BIT_FIELD_VALUE);
-
-        final BitStreamWriter writer = new FileBitStreamWriter(TEST_FILE);
-        container.write(writer);
-        writer.close();
-        final BitStreamReader reader = new FileBitStreamReader(TEST_FILE);
-
-        final Container readContainer = new Container(reader);
-        reader.close();
+        SerializeUtil.serializeToFile(container, TEST_FILE);
+        final Container readContainer = SerializeUtil.deserializeFromFile(Container.class, TEST_FILE);
         assertEquals(container, readContainer);
     }
 

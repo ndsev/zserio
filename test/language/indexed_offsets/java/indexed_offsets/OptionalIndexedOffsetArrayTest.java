@@ -4,16 +4,16 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.io.File;
 
 import indexed_offsets.optional_indexed_offset_array.OptionalIndexedOffsetArray;
 
 import zserio.runtime.BitSizeOfCalculator;
 import zserio.runtime.ZserioError;
+import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 
 public class OptionalIndexedOffsetArrayTest
 {
@@ -22,11 +22,9 @@ public class OptionalIndexedOffsetArrayTest
     {
         final boolean hasOptional = true;
         final boolean writeWrongOffsets = false;
-        final File file = new File("test.bin");
-        writeOptionalIndexedOffsetArrayToFile(file, hasOptional, writeWrongOffsets);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final OptionalIndexedOffsetArray optionalIndexedOffsetArray = new OptionalIndexedOffsetArray(stream);
-        stream.close();
+        final BitBuffer bitBuffer = writeOptionalIndexedOffsetArrayToBitBuffer(hasOptional, writeWrongOffsets);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+        final OptionalIndexedOffsetArray optionalIndexedOffsetArray = new OptionalIndexedOffsetArray(reader);
         checkOptionalIndexedOffsetArray(optionalIndexedOffsetArray, hasOptional);
     }
 
@@ -35,11 +33,9 @@ public class OptionalIndexedOffsetArrayTest
     {
         final boolean hasOptional = false;
         final boolean writeWrongOffsets = false;
-        final File file = new File("test.bin");
-        writeOptionalIndexedOffsetArrayToFile(file, hasOptional, writeWrongOffsets);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final OptionalIndexedOffsetArray optionalIndexedOffsetArray = new OptionalIndexedOffsetArray(stream);
-        stream.close();
+        final BitBuffer bitBuffer = writeOptionalIndexedOffsetArrayToBitBuffer(hasOptional, writeWrongOffsets);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+        final OptionalIndexedOffsetArray optionalIndexedOffsetArray = new OptionalIndexedOffsetArray(reader);
         checkOptionalIndexedOffsetArray(optionalIndexedOffsetArray, hasOptional);
     }
 
@@ -89,65 +85,64 @@ public class OptionalIndexedOffsetArrayTest
     }
 
     @Test
-    public void writeWithOptional() throws IOException, ZserioError
+    public void writeReadWithOptional() throws IOException, ZserioError
     {
         final boolean hasOptional = true;
         final boolean createWrongOffsets = false;
         final OptionalIndexedOffsetArray optionalIndexedOffsetArray =
                 createOptionalIndexedOffsetArray(hasOptional, createWrongOffsets);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        optionalIndexedOffsetArray.write(writer);
-        writer.close();
+        final BitBuffer bitBuffer = SerializeUtil.serialize(optionalIndexedOffsetArray);
         checkOptionalIndexedOffsetArray(optionalIndexedOffsetArray, hasOptional);
-        final OptionalIndexedOffsetArray readOptionalIndexedOffsetArray = new OptionalIndexedOffsetArray(file);
+
+        final OptionalIndexedOffsetArray readOptionalIndexedOffsetArray = SerializeUtil.deserialize(
+                OptionalIndexedOffsetArray.class, bitBuffer);
         checkOptionalIndexedOffsetArray(readOptionalIndexedOffsetArray, hasOptional);
         assertTrue(optionalIndexedOffsetArray.equals(readOptionalIndexedOffsetArray));
     }
 
     @Test
-    public void writeWithoutOptional() throws IOException, ZserioError
+    public void writeReadWithoutOptional() throws IOException, ZserioError
     {
         final boolean hasOptional = false;
         final boolean createWrongOffsets = false;
         final OptionalIndexedOffsetArray optionalIndexedOffsetArray =
                 createOptionalIndexedOffsetArray(hasOptional, createWrongOffsets);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        optionalIndexedOffsetArray.write(writer);
-        writer.close();
-        final OptionalIndexedOffsetArray readOptionalIndexedOffsetArray = new OptionalIndexedOffsetArray(file);
+        final BitBuffer bitBuffer = SerializeUtil.serialize(optionalIndexedOffsetArray);
+
+        final OptionalIndexedOffsetArray readOptionalIndexedOffsetArray = SerializeUtil.deserialize(
+                OptionalIndexedOffsetArray.class, bitBuffer);
         checkOptionalIndexedOffsetArray(readOptionalIndexedOffsetArray, hasOptional);
         assertTrue(optionalIndexedOffsetArray.equals(readOptionalIndexedOffsetArray));
     }
 
-    private void writeOptionalIndexedOffsetArrayToFile(File file, boolean hasOptional,
+    private BitBuffer writeOptionalIndexedOffsetArrayToBitBuffer(boolean hasOptional,
             boolean writeWrongOffsets) throws IOException
     {
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
-
-        long currentOffset = ELEMENT0_OFFSET;
-        for (short i = 0; i < NUM_ELEMENTS; ++i)
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
-            if ((i + 1) == NUM_ELEMENTS && writeWrongOffsets)
-                writer.writeUnsignedInt(WRONG_OFFSET);
-            else
-                writer.writeUnsignedInt(currentOffset);
-            currentOffset += BitSizeOfCalculator.getBitSizeOfString(DATA[i]) / Byte.SIZE;
-        }
-
-        writer.writeBool(hasOptional);
-
-        if (hasOptional)
-        {
-            writer.writeBits(0, 7);
+            long currentOffset = ELEMENT0_OFFSET;
             for (short i = 0; i < NUM_ELEMENTS; ++i)
-                writer.writeString(DATA[i]);
+            {
+                if ((i + 1) == NUM_ELEMENTS && writeWrongOffsets)
+                    writer.writeUnsignedInt(WRONG_OFFSET);
+                else
+                    writer.writeUnsignedInt(currentOffset);
+                currentOffset += BitSizeOfCalculator.getBitSizeOfString(DATA[i]) / Byte.SIZE;
+            }
+
+            writer.writeBool(hasOptional);
+
+            if (hasOptional)
+            {
+                writer.writeBits(0, 7);
+                for (short i = 0; i < NUM_ELEMENTS; ++i)
+                    writer.writeString(DATA[i]);
+            }
+
+            writer.writeBits(FIELD_VALUE, 6);
+
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
         }
-
-        writer.writeBits(FIELD_VALUE, 6);
-
-        writer.close();
     }
 
     private void checkOffsets(OptionalIndexedOffsetArray optionalIndexedOffsetArray, short offsetShift)

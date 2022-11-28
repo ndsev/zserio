@@ -32,7 +32,8 @@ public class TemplatedStructRecursionTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         templatedStructRecursion.write(writer);
         writer.close();
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
 
         final TemplatedStructRecursion readTemplatedStructRecursion = new TemplatedStructRecursion(reader);
         reader.close();

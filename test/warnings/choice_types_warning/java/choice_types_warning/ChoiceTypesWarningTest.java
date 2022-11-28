@@ -1,4 +1,4 @@
-package functions_warning;
+package choice_types_warning;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeAll;

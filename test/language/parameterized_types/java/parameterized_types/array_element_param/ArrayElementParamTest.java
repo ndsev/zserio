@@ -3,21 +3,22 @@ package parameterized_types.array_element_param;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 
-import javax.imageio.stream.FileImageInputStream;
+import zserio.runtime.io.BitBuffer;
+import zserio.runtime.io.BitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.SerializeUtil;
 
 public class ArrayElementParamTest
 {
     @Test
-    public void fileWrite() throws IOException
+    public void writeRead() throws IOException
     {
         final Database database = createDatabase();
-        final File file = new File("test.bin");
-        database.write(file);
-        checkDatabaseInFile(file, database);
-        final Database readDatabase = new Database(file);
+        final BitBuffer bitBuffer = SerializeUtil.serialize(database);
+        checkDatabaseInBitBuffer(bitBuffer, database);
+        final Database readDatabase = SerializeUtil.deserialize(Database.class, bitBuffer);
         assertEquals(database, readDatabase);
     }
 
@@ -43,32 +44,32 @@ public class ArrayElementParamTest
         return database;
     }
 
-    private void checkDatabaseInFile(File file, Database database) throws IOException
+    private void checkDatabaseInBitBuffer(BitBuffer bitBuffer, Database database) throws IOException
     {
-        final FileImageInputStream stream = new FileImageInputStream(file);
-        final int numBlocks = database.getNumBlocks();
-        assertEquals(numBlocks, stream.readUnsignedShort());
-
-        final BlockHeader[] headers = database.getHeaders();
-        long expectedOffset = FIRST_BYTE_OFFSET;
-        for (int i = 0; i < numBlocks; ++i)
+        try (final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer))
         {
-            final int numItems = stream.readUnsignedShort();
-            assertEquals(headers[i].getNumItems(), numItems);
-            assertEquals(expectedOffset, stream.readUnsignedInt());
-            expectedOffset += 8L * numItems;
-        }
+            final int numBlocks = database.getNumBlocks();
+            assertEquals(numBlocks, reader.readBits(16));
 
-        final Block[] blocks = database.getBlocks();
-        for (int i = 0; i < numBlocks; ++i)
-        {
-            final int numItems = headers[i].getNumItems();
-            final long[] items = blocks[i].getItems();
-            for (int j = 0; j < numItems; ++j)
-                assertEquals(items[j], stream.readLong());
-        }
+            final BlockHeader[] headers = database.getHeaders();
+            long expectedOffset = FIRST_BYTE_OFFSET;
+            for (int i = 0; i < numBlocks; ++i)
+            {
+                final int numItems = (int)reader.readBits(16);
+                assertEquals(headers[i].getNumItems(), numItems);
+                assertEquals(expectedOffset, reader.readBits(32));
+                expectedOffset += 8L * numItems;
+            }
 
-        stream.close();
+            final Block[] blocks = database.getBlocks();
+            for (int i = 0; i < numBlocks; ++i)
+            {
+                final int numItems = headers[i].getNumItems();
+                final long[] items = blocks[i].getItems();
+                for (int j = 0; j < numItems; ++j)
+                    assertEquals(items[j], reader.readSignedBits(64));
+            }
+        }
     }
 
     static final int NUM_BLOCKS = 3;

@@ -32,8 +32,8 @@ public class UnionWithParameterizedFieldTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         testUnion.write(writer);
 
-        final byte[] buffer = writer.toByteArray();
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
         final TestUnion readTestUnion = new TestUnion(reader);
         assertEquals((short)10, readTestUnion.getArrayHolder().getSize());
     }

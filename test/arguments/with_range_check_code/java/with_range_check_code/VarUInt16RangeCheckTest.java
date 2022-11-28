@@ -43,10 +43,9 @@ public class VarUInt16RangeCheckTest
         varUInt16RangeCheckCompound.setValue(value);
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         varUInt16RangeCheckCompound.write(writer);
-        final byte[] writtenByteArray = writer.toByteArray();
-        writer.close();
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writtenByteArray);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
+                writer.getBitPosition());
         final VarUInt16RangeCheckCompound readVarUInt16RangeCheckCompound =
                 new VarUInt16RangeCheckCompound(reader);
         assertEquals(varUInt16RangeCheckCompound, readVarUInt16RangeCheckCompound);

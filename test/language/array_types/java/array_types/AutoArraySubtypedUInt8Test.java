@@ -7,11 +7,9 @@ import java.io.IOException;
 import java.io.File;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
-
+import zserio.runtime.io.BitBuffer;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 import array_types.auto_array_subtyped_uint8.AutoArray;
 
 public class AutoArraySubtypedUInt8Test
@@ -90,11 +88,8 @@ public class AutoArraySubtypedUInt8Test
 
     private void checkRead(short numElements) throws IOException, ZserioError
     {
-        final File file = new File("test.bin");
-        writeAutoArrayToFile(file, numElements);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final AutoArray autoArray = new AutoArray(stream);
-        stream.close();
+        final BitBuffer buffer = writeAutoArrayToBitBuffer(numElements);
+        final AutoArray autoArray = SerializeUtil.deserialize(AutoArray.class, buffer);
 
         final short[] array = autoArray.getArray();
         assertEquals(numElements, array.length);
@@ -110,29 +105,25 @@ public class AutoArraySubtypedUInt8Test
 
         final AutoArray autoArray = new AutoArray(array);
         final File file = new File(BLOB_NAME_BASE + numElements + ".blob");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        autoArray.write(writer);
-        writer.close();
+        SerializeUtil.serializeToFile(autoArray, file);
 
-        assertEquals(autoArray.bitSizeOf(), writer.getBitPosition());
-        assertEquals(autoArray.initializeOffsets(), writer.getBitPosition());
-
-        final AutoArray readAutoArray = new AutoArray(file);
+        final AutoArray readAutoArray = SerializeUtil.deserializeFromFile(AutoArray.class, file);
         final short[] readArray = readAutoArray.getArray();
         assertEquals(numElements, readArray.length);
         for (short i = 0; i < numElements; ++i)
             assertEquals(i, readArray[i]);
     }
 
-    private void writeAutoArrayToFile(File file, short numElements) throws IOException
+    private BitBuffer writeAutoArrayToBitBuffer(short numElements) throws IOException
     {
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            writer.writeVarSize(numElements);
+            for (short i = 0; i < numElements; ++i)
+                writer.writeUnsignedByte(i);
 
-        writer.writeVarSize(numElements);
-        for (short i = 0; i < numElements; ++i)
-            writer.writeUnsignedByte(i);
-
-        writer.close();
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
+        }
     }
 
     private static String BLOB_NAME_BASE = "auto_array_subtyped_uint8_";

@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.io.IOException;
-import java.io.File;
 import java.math.BigInteger;
 
 import zserio.runtime.typeinfo.TypeInfo;
@@ -21,8 +20,6 @@ import zserio.runtime.typeinfo.ItemInfo;
 import zserio.runtime.typeinfo.MessageInfo;
 import zserio.runtime.typeinfo.MethodInfo;
 import zserio.runtime.ZserioError;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamWriter;
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.SerializeUtil;
 

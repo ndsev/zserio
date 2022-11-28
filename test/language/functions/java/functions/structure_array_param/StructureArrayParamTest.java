@@ -22,12 +22,12 @@ public class StructureArrayParamTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         parentStructure.write(writer);
         final byte[] writtenByteArray = writer.toByteArray();
-        writer.close();
 
         final byte[] expectedByteArray = writeParentStructureToByteArray();
         assertTrue(Arrays.equals(expectedByteArray, writtenByteArray));
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writtenByteArray);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
+                writtenByteArray, writer.getBitPosition());
         final ParentStructure readParentStructure = new ParentStructure(reader);
         assertEquals(parentStructure, readParentStructure);
     }

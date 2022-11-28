@@ -3,15 +3,11 @@ package templates;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 
-import zserio.runtime.BitSizeOfCalculator;
-import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
 
 import templates.struct_template_clash.InstantiationNameClash;
 import templates.struct_template_clash.TestStruct_uint32;
@@ -33,15 +29,12 @@ public class StructTemplateClashTest
                 new Template_A_B_C_5EB4E3FC(new A(1), new B_C("string")));
         final InstantiationNameClash instantiationNameClash = new InstantiationNameClash(testStruct_uint32);
 
-        final BitStreamWriter writer = new FileBitStreamWriter(TEST_FILE);
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         instantiationNameClash.write(writer);
-        writer.close();
-        final BitStreamReader reader = new FileBitStreamReader(TEST_FILE);
 
+        final BitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
         final InstantiationNameClash readInstantiationNameClash = new InstantiationNameClash(reader);
-        reader.close();
         assertTrue(instantiationNameClash.equals(readInstantiationNameClash));
     }
-
-    private static final File TEST_FILE = new File("test.bin");
 }

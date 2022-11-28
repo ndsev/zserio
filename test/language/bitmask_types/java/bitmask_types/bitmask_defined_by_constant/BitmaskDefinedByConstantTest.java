@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 
@@ -42,7 +41,8 @@ public class BitmaskDefinedByConstantTest
     {
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         writer.writeBits(Permission.Values.WRITE.getValue(), PERMISSION_BITSIZEOF);
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
+                writer.getBitPosition());
         final Permission readPermission = new Permission(reader);
         assertEquals(Permission.Values.WRITE, readPermission);
     }

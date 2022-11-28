@@ -4,14 +4,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.io.File;
 
 import zserio.runtime.HashCodeUtil;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 
 public class BitfieldEnumTest
 {
@@ -59,7 +57,9 @@ public class BitfieldEnumTest
         final Color color = Color.GREEN;
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         color.write(writer);
-        final BitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
+
+        final BitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
         final byte readColor = (byte)reader.readBits(BITFIELD_ENUM_BITSIZEOF);
         assertEquals(readColor, color.getValue());
     }
@@ -68,13 +68,9 @@ public class BitfieldEnumTest
     public void writeReadFile() throws IOException
     {
         final Color color = Color.GREEN;
-        final File file = new File(BLOB_NAME);
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
-        color.write(writer);
-        writer.close();
+        SerializeUtil.serializeToFile(color, BLOB_NAME);
 
-        final BitStreamReader reader = new FileBitStreamReader(file);
-        final Color readColor = Color.readEnum(reader);
+        final Color readColor = SerializeUtil.deserializeFromFile(Color.class, BLOB_NAME);
         assertEquals(color, readColor);
     }
 

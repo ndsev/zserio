@@ -43,10 +43,9 @@ public class Int4RangeCheckTest
         int4RangeCheckCompound.setValue(value);
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         int4RangeCheckCompound.write(writer);
-        final byte[] writtenByteArray = writer.toByteArray();
-        writer.close();
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writtenByteArray);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
+                writer.getBitPosition());
         final Int4RangeCheckCompound readInt4RangeCheckCompound = new Int4RangeCheckCompound(reader);
         assertEquals(int4RangeCheckCompound, readInt4RangeCheckCompound);
     }

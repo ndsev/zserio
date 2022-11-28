@@ -4,16 +4,16 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.io.File;
 
 import offsets.bit_offset.BitOffset;
 
 import zserio.runtime.ZserioError;
+import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
+import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 
 public class BitOffsetTest
 {
@@ -21,11 +21,10 @@ public class BitOffsetTest
     public void read() throws IOException, ZserioError
     {
         final boolean writeWrongOffsets = false;
-        final File file = new File("test.bin");
-        writeBitOffsetToFile(file, writeWrongOffsets);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final BitOffset bitOffset = new BitOffset(stream);
-        stream.close();
+        final BitBuffer bitBuffer = writeBitOffsetToBitBuffer(writeWrongOffsets);
+        final BitStreamReader reader= new ByteArrayBitStreamReader(bitBuffer);
+        final BitOffset bitOffset = new BitOffset();
+        bitOffset.read(reader);
         checkBitOffset(bitOffset);
     }
 
@@ -33,11 +32,9 @@ public class BitOffsetTest
     public void readWrongOffsets() throws IOException, ZserioError
     {
         final boolean writeWrongOffsets = true;
-        final File file = new File("test.bin");
-        writeBitOffsetToFile(file, writeWrongOffsets);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        assertThrows(ZserioError.class, () -> new BitOffset(stream));
-        stream.close();
+        final BitBuffer bitBuffer = writeBitOffsetToBitBuffer(writeWrongOffsets);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+        assertThrows(ZserioError.class, () -> new BitOffset(reader));
     }
 
     @Test
@@ -80,35 +77,37 @@ public class BitOffsetTest
     }
 
     @Test
-    public void write() throws IOException, ZserioError
+    public void writeRead() throws IOException, ZserioError
     {
         final boolean createWrongOffsets = false;
         final BitOffset bitOffset = createBitOffset(createWrongOffsets);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        bitOffset.write(writer);
-        writer.close();
+        final BitBuffer bitBuffer = SerializeUtil.serialize(bitOffset);
         checkBitOffset(bitOffset);
-        final BitOffset readBitOffset = new BitOffset(file);
+
+        final BitOffset readBitOffset = SerializeUtil.deserialize(BitOffset.class, bitBuffer);
         checkBitOffset(readBitOffset);
         assertTrue(bitOffset.equals(readBitOffset));
     }
 
     @Test
-    public void writeWithPosition() throws IOException, ZserioError
+    public void writeReadWithPosition() throws IOException, ZserioError
     {
         final boolean createWrongOffsets = true;
         final BitOffset bitOffset = createBitOffset(createWrongOffsets);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         final int bitPosition = 2;
         writer.writeBits(0, bitPosition);
         bitOffset.initializeOffsets(writer.getBitPosition());
         bitOffset.write(writer);
-        writer.close();
-
         final short offsetShift = 1;
         checkOffsets(bitOffset, offsetShift);
+
+        final BitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
+        assertEquals(0, reader.readBits(bitPosition));
+        final BitOffset readBitOffset = new BitOffset(reader);
+        checkOffsets(readBitOffset, offsetShift);
+        assertTrue(bitOffset.equals(readBitOffset));
     }
 
     @Test
@@ -121,57 +120,58 @@ public class BitOffsetTest
         writer.close();
     }
 
-    private void writeBitOffsetToFile(File file, boolean writeWrongOffsets) throws IOException
+    private BitBuffer writeBitOffsetToBitBuffer(boolean writeWrongOffsets) throws IOException
     {
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
-
-        if (writeWrongOffsets)
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
-            writer.writeUnsignedByte(WRONG_FIELD1_OFFSET);
-            writer.writeUnsignedShort(WRONG_FIELD2_OFFSET);
-            writer.writeUnsignedInt(WRONG_FIELD3_OFFSET);
-            writer.writeBits(WRONG_FIELD4_OFFSET, 8);
-            writer.writeBits(WRONG_FIELD5_OFFSET, 15);
-            writer.writeBits(WRONG_FIELD6_OFFSET, 18);
-            writer.writeBits(WRONG_FIELD7_OFFSET, 23);
-            writer.writeBits(WRONG_FIELD8_OFFSET, 8);
+            if (writeWrongOffsets)
+            {
+                writer.writeUnsignedByte(WRONG_FIELD1_OFFSET);
+                writer.writeUnsignedShort(WRONG_FIELD2_OFFSET);
+                writer.writeUnsignedInt(WRONG_FIELD3_OFFSET);
+                writer.writeBits(WRONG_FIELD4_OFFSET, 8);
+                writer.writeBits(WRONG_FIELD5_OFFSET, 15);
+                writer.writeBits(WRONG_FIELD6_OFFSET, 18);
+                writer.writeBits(WRONG_FIELD7_OFFSET, 23);
+                writer.writeBits(WRONG_FIELD8_OFFSET, 8);
+            }
+            else
+            {
+                writer.writeUnsignedByte(FIELD1_OFFSET);
+                writer.writeUnsignedShort(FIELD2_OFFSET);
+                writer.writeUnsignedInt(FIELD3_OFFSET);
+                writer.writeBits(FIELD4_OFFSET, 8);
+                writer.writeBits(FIELD5_OFFSET, 15);
+                writer.writeBits(FIELD6_OFFSET, 18);
+                writer.writeBits(FIELD7_OFFSET, 23);
+                writer.writeBits(FIELD8_OFFSET, 8);
+            }
+
+            writer.writeBits(FIELD1_VALUE, 1);
+
+            writer.writeBits(0, 7);
+            writer.writeBits(FIELD2_VALUE, 2);
+
+            writer.writeBits(0, 6);
+            writer.writeBits(FIELD3_VALUE, 3);
+
+            writer.writeBits(0, 5);
+            writer.writeBits(FIELD4_VALUE, 4);
+
+            writer.writeBits(0, 4);
+            writer.writeBits(FIELD5_VALUE, 5);
+
+            writer.writeBits(0, 3);
+            writer.writeBits(FIELD6_VALUE, 6);
+
+            writer.writeBits(0, 2);
+            writer.writeBits(FIELD7_VALUE, 7);
+
+            writer.writeBits(0, 1);
+            writer.writeBits(FIELD8_VALUE, 8);
+
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
         }
-        else
-        {
-            writer.writeUnsignedByte(FIELD1_OFFSET);
-            writer.writeUnsignedShort(FIELD2_OFFSET);
-            writer.writeUnsignedInt(FIELD3_OFFSET);
-            writer.writeBits(FIELD4_OFFSET, 8);
-            writer.writeBits(FIELD5_OFFSET, 15);
-            writer.writeBits(FIELD6_OFFSET, 18);
-            writer.writeBits(FIELD7_OFFSET, 23);
-            writer.writeBits(FIELD8_OFFSET, 8);
-        }
-
-        writer.writeBits(FIELD1_VALUE, 1);
-
-        writer.writeBits(0, 7);
-        writer.writeBits(FIELD2_VALUE, 2);
-
-        writer.writeBits(0, 6);
-        writer.writeBits(FIELD3_VALUE, 3);
-
-        writer.writeBits(0, 5);
-        writer.writeBits(FIELD4_VALUE, 4);
-
-        writer.writeBits(0, 4);
-        writer.writeBits(FIELD5_VALUE, 5);
-
-        writer.writeBits(0, 3);
-        writer.writeBits(FIELD6_VALUE, 6);
-
-        writer.writeBits(0, 2);
-        writer.writeBits(FIELD7_VALUE, 7);
-
-        writer.writeBits(0, 1);
-        writer.writeBits(FIELD8_VALUE, 8);
-
-        writer.close();
     }
 
     private void checkOffsets(BitOffset bitOffset, short offsetShift)

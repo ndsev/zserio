@@ -3,27 +3,23 @@ package alignment;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 
 import alignment.bit_alignment.BitAlignment;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.BitBuffer;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 
 public class BitAlignmentTest
 {
     @Test
     public void read() throws IOException, ZserioError
     {
-        final File file = new File("test.bin");
-        writeBitAlignmentToFile(file);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final BitAlignment bitAlignment = new BitAlignment(stream);
-        stream.close();
+        final BitBuffer buffer = writeBitAlignmentToBitBuffer();
+        final BitAlignment bitAlignment = SerializeUtil.deserialize(BitAlignment.class, buffer);
         checkBitAlignment(bitAlignment);
     }
 
@@ -65,53 +61,55 @@ public class BitAlignmentTest
     public void write() throws IOException, ZserioError
     {
         final BitAlignment bitAlignment = createBitAlignment();
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         bitAlignment.write(writer);
-        writer.close();
-        final BitAlignment readBitAlignment = new BitAlignment(file);
+
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
+                writer.getBitPosition());
+        final BitAlignment readBitAlignment = new BitAlignment(reader);
         checkBitAlignment(readBitAlignment);
         assertTrue(bitAlignment.equals(readBitAlignment));
     }
 
-    private void writeBitAlignmentToFile(File file) throws IOException
+    private BitBuffer writeBitAlignmentToBitBuffer() throws IOException
     {
-        final FileBitStreamWriter stream = new FileBitStreamWriter(file);
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            writer.writeBits(ALIGNED1_FIELD_VALUE, 1);
 
-        stream.writeBits(ALIGNED1_FIELD_VALUE, 1);
+            writer.writeBits(0, 1);
+            writer.writeBits(ALIGNED2_FIELD_VALUE, 2);
 
-        stream.writeBits(0, 1);
-        stream.writeBits(ALIGNED2_FIELD_VALUE, 2);
+            writer.writeBits(0, 2);
+            writer.writeBits(ALIGNED3_FIELD_VALUE, 3);
 
-        stream.writeBits(0, 2);
-        stream.writeBits(ALIGNED3_FIELD_VALUE, 3);
+            writer.writeBits(0, 3);
+            writer.writeBits(ALIGNED4_FIELD_VALUE, 4);
 
-        stream.writeBits(0, 3);
-        stream.writeBits(ALIGNED4_FIELD_VALUE, 4);
+            writer.writeBits(0, 4);
+            writer.writeBits(ALIGNED5_FIELD_VALUE, 5);
 
-        stream.writeBits(0, 4);
-        stream.writeBits(ALIGNED5_FIELD_VALUE, 5);
+            writer.writeBits(0, 5);
+            writer.writeBits(ALIGNED6_FIELD_VALUE, 6);
 
-        stream.writeBits(0, 5);
-        stream.writeBits(ALIGNED6_FIELD_VALUE, 6);
+            writer.writeBits(0, 6);
+            writer.writeBits(ALIGNED7_FIELD_VALUE, 7);
 
-        stream.writeBits(0, 6);
-        stream.writeBits(ALIGNED7_FIELD_VALUE, 7);
+            writer.writeBits(0, 7);
+            writer.writeBits(ALIGNED8_FIELD_VALUE, 8);
 
-        stream.writeBits(0, 7);
-        stream.writeBits(ALIGNED8_FIELD_VALUE, 8);
+            writer.writeBits(0, 1 + 15);
+            writer.writeBits(ALIGNED16_FIELD_VALUE, 16);
 
-        stream.writeBits(0, 1 + 15);
-        stream.writeBits(ALIGNED16_FIELD_VALUE, 16);
+            writer.writeBits(0, 1 + 31);
+            writer.writeBits(ALIGNED32_FIELD_VALUE, 32);
 
-        stream.writeBits(0, 1 + 31);
-        stream.writeBits(ALIGNED32_FIELD_VALUE, 32);
+            writer.writeBits(0, 33);
+            writer.writeBits(0, 63);
+            writer.writeBigInteger(ALIGNED64_FIELD_VALUE, 64);
 
-        stream.writeBits(0, 33);
-        stream.writeBits(0, 63);
-        stream.writeBigInteger(ALIGNED64_FIELD_VALUE, 64);
-
-        stream.close();
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
+        }
     }
 
     private void checkBitAlignment(BitAlignment bitAlignment)

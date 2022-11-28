@@ -25,7 +25,8 @@ public class FieldConstructorClashingTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         fieldConstructorClashing.write(writer);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
+        final BitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
         final FieldConstructorClashing readFieldConstructorClashing = new FieldConstructorClashing(reader);
         assertEquals(fieldConstructorClashing, readFieldConstructorClashing);
     }

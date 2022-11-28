@@ -61,12 +61,14 @@ public class VarUIntEnumTest
     }
 
     @Test
-    public void write() throws IOException
+    public void writeRead() throws IOException
     {
         final DarkColor darkColor = DarkColor.DARK_GREEN;
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         darkColor.write(writer);
-        final BitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
+
+        final BitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
         final BigInteger readColor = reader.readVarUInt();
         assertEquals(readColor, darkColor.getValue());
     }

@@ -3,19 +3,15 @@ package choice_types;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
-
-import javax.imageio.stream.FileImageOutputStream;
 
 import choice_types.full_enum_param_choice.FullEnumParamChoice;
 import choice_types.full_enum_param_choice.Selector;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.BitBuffer;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
 
 public class FullEnumParamChoiceTest
 {
@@ -28,27 +24,14 @@ public class FullEnumParamChoiceTest
     }
 
     @Test
-    public void fileConstructor() throws IOException, ZserioError
-    {
-        final Selector selector = Selector.BLACK;
-        final File file = new File("test.bin");
-        final int value = 99;
-        writeFullEnumParamChoiceToFile(file, selector, value);
-        final FullEnumParamChoice fullEnumParamChoice = new FullEnumParamChoice(file, selector);
-        assertEquals(selector, fullEnumParamChoice.getSelector());
-        assertEquals((byte)value, fullEnumParamChoice.getBlack());
-    }
-
-    @Test
     public void bitStreamReaderConstructor() throws IOException, ZserioError
     {
         final Selector selector = Selector.GREY;
-        final File file = new File("test.bin");
         final int value = 234;
-        writeFullEnumParamChoiceToFile(file, selector, value);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final FullEnumParamChoice fullEnumParamChoice = new FullEnumParamChoice(stream, selector);
-        stream.close();
+        final BitBuffer buffer = writeFullEnumParamChoiceToBitBuffer(selector, value);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer.getBuffer(),
+                buffer.getBitSize());
+        final FullEnumParamChoice fullEnumParamChoice = new FullEnumParamChoice(reader, selector);
         assertEquals(selector, fullEnumParamChoice.getSelector());
         assertEquals((short)value, fullEnumParamChoice.getGrey());
     }
@@ -171,82 +154,54 @@ public class FullEnumParamChoiceTest
     }
 
     @Test
-    public void fileWrite() throws IOException, ZserioError
-    {
-        Selector selector = Selector.BLACK;
-        FullEnumParamChoice fullEnumParamChoice = new FullEnumParamChoice(selector);
-        final byte byteValue = 99;
-        fullEnumParamChoice.setBlack(byteValue);
-        final File file = new File("test.bin");
-        fullEnumParamChoice.write(file);
-        FullEnumParamChoice readFullEnumParamChoice = new FullEnumParamChoice(file, selector);
-        assertEquals(byteValue, readFullEnumParamChoice.getBlack());
-
-        selector = Selector.GREY;
-        fullEnumParamChoice = new FullEnumParamChoice(selector);
-        final short shortValue = 234;
-        fullEnumParamChoice.setGrey(shortValue);
-        fullEnumParamChoice.write(file);
-        readFullEnumParamChoice = new FullEnumParamChoice(file, selector);
-        assertEquals(shortValue, readFullEnumParamChoice.getGrey());
-
-        selector = Selector.WHITE;
-        fullEnumParamChoice = new FullEnumParamChoice(selector);
-        final int intValue = 65535;
-        fullEnumParamChoice.setWhite(intValue);
-        fullEnumParamChoice.write(file);
-        readFullEnumParamChoice = new FullEnumParamChoice(file, selector);
-        assertEquals(intValue, readFullEnumParamChoice.getWhite());
-    }
-
-    @Test
     public void bitStreamWriterWrite() throws IOException, ZserioError
     {
         Selector selector = Selector.BLACK;
         FullEnumParamChoice fullEnumParamChoice = new FullEnumParamChoice(selector);
         final byte byteValue = 99;
         fullEnumParamChoice.setBlack(byteValue);
-        final File file = new File("test.bin");
-        BitStreamWriter writer = new FileBitStreamWriter(file);
+        ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         fullEnumParamChoice.write(writer);
-        writer.close();
-        FullEnumParamChoice readFullEnumParamChoice = new FullEnumParamChoice(file, selector);
+        ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
+                writer.getBitPosition());
+        FullEnumParamChoice readFullEnumParamChoice = new FullEnumParamChoice(reader, selector);
         assertEquals(byteValue, readFullEnumParamChoice.getBlack());
 
         selector = Selector.GREY;
         fullEnumParamChoice = new FullEnumParamChoice(selector);
         final short shortValue = 234;
         fullEnumParamChoice.setGrey(shortValue);
-        writer = new FileBitStreamWriter(file);
+        writer = new ByteArrayBitStreamWriter();
         fullEnumParamChoice.write(writer);
-        writer.close();
-        readFullEnumParamChoice = new FullEnumParamChoice(file, selector);
+        reader = new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
+        readFullEnumParamChoice = new FullEnumParamChoice(reader, selector);
         assertEquals(shortValue, readFullEnumParamChoice.getGrey());
 
         selector = Selector.WHITE;
         fullEnumParamChoice = new FullEnumParamChoice(selector);
         final int intValue = 65535;
         fullEnumParamChoice.setWhite(intValue);
-        writer = new FileBitStreamWriter(file);
+        writer = new ByteArrayBitStreamWriter();
         fullEnumParamChoice.write(writer);
-        writer.close();
-        readFullEnumParamChoice = new FullEnumParamChoice(file, selector);
+        reader = new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
+        readFullEnumParamChoice = new FullEnumParamChoice(reader, selector);
         assertEquals(intValue, readFullEnumParamChoice.getWhite());
     }
 
-    private void writeFullEnumParamChoiceToFile(File file, Selector selector, int value) throws IOException
+    private BitBuffer writeFullEnumParamChoiceToBitBuffer(Selector selector, int value) throws IOException
     {
-        final FileImageOutputStream stream = new FileImageOutputStream(file);
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            if (selector == Selector.BLACK)
+                writer.writeByte((byte)value);
+            else if (selector == Selector.GREY)
+                writer.writeShort((short)value);
+            else if (selector == Selector.WHITE)
+                writer.writeInt(value);
+            else
+                fail("Invalid selector: " + selector);
 
-        if (selector == Selector.BLACK)
-            stream.writeByte(value);
-        else if (selector == Selector.GREY)
-            stream.writeShort(value);
-        else if (selector == Selector.WHITE)
-            stream.writeInt(value);
-        else
-            fail("Invalid selector: " + selector);
-
-        stream.close();
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
+        }
     }
 }

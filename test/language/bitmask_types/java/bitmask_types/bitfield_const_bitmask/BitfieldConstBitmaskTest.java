@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 
@@ -120,7 +119,8 @@ public class BitfieldConstBitmaskTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         permission.write(writer);
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
+                writer.getBitPosition());
         final Permission readPermission = new Permission(reader);
         assertEquals(permission, readPermission);
     }

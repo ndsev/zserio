@@ -9,10 +9,7 @@ import java.math.BigInteger;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.ByteArrayBitStreamReader;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 import array_types.packed_variable_array_struct.Empty;
 import array_types.packed_variable_array_struct.PackedVariableArray;
 import array_types.packed_variable_array_struct.TestBitmask;
@@ -89,15 +86,9 @@ public class PackedVariableArrayStructTest
     {
         final PackedVariableArray packedVariableArray = createPackedVariableArray(numElements);
         final File file = new File(BLOB_NAME_BASE + numElements + ".blob");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        packedVariableArray.write(writer);
-        writer.close();
-
-        assertEquals(packedVariableArray.bitSizeOf(), writer.getBitPosition());
-        assertEquals(packedVariableArray.initializeOffsets(), writer.getBitPosition());
-
-        final ByteArrayBitStreamReader reader = new FileBitStreamReader(file);
-        final PackedVariableArray readPackedVariableArray = new PackedVariableArray(reader);
+        SerializeUtil.serializeToFile(packedVariableArray, file);
+        final PackedVariableArray readPackedVariableArray =
+        SerializeUtil.deserializeFromFile(PackedVariableArray.class, file);
         assertEquals(packedVariableArray, readPackedVariableArray);
     }
 

@@ -3,19 +3,15 @@ package choice_types;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
-
-import javax.imageio.stream.FileImageOutputStream;
 
 import choice_types.full_bitmask_param_choice.FullBitmaskParamChoice;
 import choice_types.full_bitmask_param_choice.Selector;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.BitBuffer;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
 
 public class FullBitmaskParamChoiceTest
 {
@@ -28,27 +24,14 @@ public class FullBitmaskParamChoiceTest
     }
 
     @Test
-    public void fileConstructor() throws IOException, ZserioError
-    {
-        final Selector selector = Selector.Values.BLACK;
-        final File file = new File("test.bin");
-        final int value = 99;
-        writeFullBitmaskParamChoiceToFile(file, selector, value);
-        final FullBitmaskParamChoice fullBitmaskParamChoice = new FullBitmaskParamChoice(file, selector);
-        assertEquals(selector, fullBitmaskParamChoice.getSelector());
-        assertEquals((byte)value, fullBitmaskParamChoice.getBlack());
-    }
-
-    @Test
     public void bitStreamReaderConstructor() throws IOException, ZserioError
     {
         final Selector selector = Selector.Values.WHITE;
-        final File file = new File("test.bin");
         final int value = 234;
-        writeFullBitmaskParamChoiceToFile(file, selector, value);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final FullBitmaskParamChoice fullBitmaskParamChoice = new FullBitmaskParamChoice(stream, selector);
-        stream.close();
+        final BitBuffer buffer = writeFullBitmaskParamChoiceToBitBuffer(selector, value);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer.getBuffer(),
+                buffer.getBitSize());
+        final FullBitmaskParamChoice fullBitmaskParamChoice = new FullBitmaskParamChoice(reader, selector);
         assertEquals(selector, fullBitmaskParamChoice.getSelector());
         assertEquals((short)value, fullBitmaskParamChoice.getWhite());
     }
@@ -171,82 +154,54 @@ public class FullBitmaskParamChoiceTest
     }
 
     @Test
-    public void fileWrite() throws IOException, ZserioError
-    {
-        Selector selector = Selector.Values.BLACK;
-        FullBitmaskParamChoice fullBitmaskParamChoice = new FullBitmaskParamChoice(selector);
-        final byte byteValue = 99;
-        fullBitmaskParamChoice.setBlack(byteValue);
-        final File file = new File("test.bin");
-        fullBitmaskParamChoice.write(file);
-        FullBitmaskParamChoice readFullBitmaskParamChoice = new FullBitmaskParamChoice(file, selector);
-        assertEquals(byteValue, readFullBitmaskParamChoice.getBlack());
-
-        selector = Selector.Values.WHITE;
-        fullBitmaskParamChoice = new FullBitmaskParamChoice(selector);
-        final short shortValue = 234;
-        fullBitmaskParamChoice.setWhite(shortValue);
-        fullBitmaskParamChoice.write(file);
-        readFullBitmaskParamChoice = new FullBitmaskParamChoice(file, selector);
-        assertEquals(shortValue, readFullBitmaskParamChoice.getWhite());
-
-        selector = Selector.Values.BLACK_AND_WHITE;
-        fullBitmaskParamChoice = new FullBitmaskParamChoice(selector);
-        final int intValue = 65535;
-        fullBitmaskParamChoice.setBlackAndWhite(intValue);
-        fullBitmaskParamChoice.write(file);
-        readFullBitmaskParamChoice = new FullBitmaskParamChoice(file, selector);
-        assertEquals(intValue, readFullBitmaskParamChoice.getBlackAndWhite());
-    }
-
-    @Test
     public void bitStreamWriterWrite() throws IOException, ZserioError
     {
         Selector selector = Selector.Values.BLACK;
         FullBitmaskParamChoice fullBitmaskParamChoice = new FullBitmaskParamChoice(selector);
         final byte byteValue = 99;
         fullBitmaskParamChoice.setBlack(byteValue);
-        final File file = new File("test.bin");
-        BitStreamWriter writer = new FileBitStreamWriter(file);
+        ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         fullBitmaskParamChoice.write(writer);
-        writer.close();
-        FullBitmaskParamChoice readFullBitmaskParamChoice = new FullBitmaskParamChoice(file, selector);
+        ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
+                writer.getBitPosition());
+        FullBitmaskParamChoice readFullBitmaskParamChoice = new FullBitmaskParamChoice(reader, selector);
         assertEquals(byteValue, readFullBitmaskParamChoice.getBlack());
 
         selector = Selector.Values.WHITE;
         fullBitmaskParamChoice = new FullBitmaskParamChoice(selector);
         final short shortValue = 234;
         fullBitmaskParamChoice.setWhite(shortValue);
-        writer = new FileBitStreamWriter(file);
+        writer = new ByteArrayBitStreamWriter();
         fullBitmaskParamChoice.write(writer);
-        writer.close();
-        readFullBitmaskParamChoice = new FullBitmaskParamChoice(file, selector);
+        reader = new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
+        readFullBitmaskParamChoice = new FullBitmaskParamChoice(reader, selector);
         assertEquals(shortValue, readFullBitmaskParamChoice.getWhite());
 
         selector = Selector.Values.BLACK_AND_WHITE;
         fullBitmaskParamChoice = new FullBitmaskParamChoice(selector);
         final int intValue = 65535;
         fullBitmaskParamChoice.setBlackAndWhite(intValue);
-        writer = new FileBitStreamWriter(file);
+        writer = new ByteArrayBitStreamWriter();
         fullBitmaskParamChoice.write(writer);
-        writer.close();
-        readFullBitmaskParamChoice = new FullBitmaskParamChoice(file, selector);
+        reader = new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
+        readFullBitmaskParamChoice = new FullBitmaskParamChoice(reader, selector);
         assertEquals(intValue, readFullBitmaskParamChoice.getBlackAndWhite());
     }
 
-    private void writeFullBitmaskParamChoiceToFile(File file, Selector selector, int value) throws IOException
+    private BitBuffer writeFullBitmaskParamChoiceToBitBuffer(Selector selector, int value) throws IOException
     {
-        final FileImageOutputStream stream = new FileImageOutputStream(file);
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            if (selector == Selector.Values.BLACK)
+                writer.writeByte((byte)value);
+            else if (selector == Selector.Values.WHITE)
+                writer.writeByte((byte)value);
+            else if (selector == Selector.Values.BLACK_AND_WHITE)
+                writer.writeShort((short)value);
+            else
+                fail("Invalid selector: " + selector);
 
-        if (selector == Selector.Values.BLACK)
-            stream.writeByte(value);
-        else if (selector == Selector.Values.WHITE)
-            stream.writeByte(value);
-        else if (selector == Selector.Values.BLACK_AND_WHITE)
-            stream.writeShort(value);
-        else
-            fail("Invalid selector: " + selector);
-
-        stream.close();
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
+        }
     }
 }

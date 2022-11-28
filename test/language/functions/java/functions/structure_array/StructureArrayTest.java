@@ -67,12 +67,12 @@ public class StructureArrayTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         structureArray.write(writer);
         final byte[] writtenByteArray = writer.toByteArray();
-        writer.close();
 
         final byte[] expectedByteArray = writeStructureArrayToByteArray(pos);
         assertTrue(Arrays.equals(expectedByteArray, writtenByteArray));
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writtenByteArray);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
+                writtenByteArray, writer.getBitPosition());
         final StructureArray readStructureArray = new StructureArray(reader);
         assertEquals(structureArray, readStructureArray);
     }

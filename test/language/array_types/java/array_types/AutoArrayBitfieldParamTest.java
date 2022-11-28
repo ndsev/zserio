@@ -3,13 +3,12 @@ package array_types;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 
-import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.FileBitStreamReader;
-
 import array_types.auto_array_bitfield_param.ParameterizedBitfieldLength;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 
 public class AutoArrayBitfieldParamTest
 {
@@ -17,13 +16,26 @@ public class AutoArrayBitfieldParamTest
     public void writeReadFile() throws IOException
     {
         final ParameterizedBitfieldLength parameterizedBitfieldLength = createParameterizedBitfieldLength();
-        final File file = new File(BLOB_NAME);
-        parameterizedBitfieldLength.write(file);
-        final BitStreamReader reader = new FileBitStreamReader(file);
-        checkParameterizedBitfieldLengthInStream(reader, parameterizedBitfieldLength);
-        reader.close();
+        SerializeUtil.serializeToFile(parameterizedBitfieldLength, BLOB_NAME);
+
         final ParameterizedBitfieldLength readParameterizedBitfieldLength =
-                new ParameterizedBitfieldLength(file, NUM_BITS_PARAM);
+                SerializeUtil.deserializeFromFile(ParameterizedBitfieldLength.class, BLOB_NAME, NUM_BITS_PARAM);
+        assertEquals(parameterizedBitfieldLength, readParameterizedBitfieldLength);
+    }
+
+    @Test
+    public void writeRead() throws IOException
+    {
+        final ParameterizedBitfieldLength parameterizedBitfieldLength = createParameterizedBitfieldLength();
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
+        parameterizedBitfieldLength.write(writer);
+
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
+                writer.getBitPosition());
+        checkParameterizedBitfieldLengthInStream(reader, parameterizedBitfieldLength);
+        reader.setBitPosition(0);
+        final ParameterizedBitfieldLength readParameterizedBitfieldLength =
+                new ParameterizedBitfieldLength(reader, NUM_BITS_PARAM);
         assertEquals(parameterizedBitfieldLength, readParameterizedBitfieldLength);
     }
 
@@ -39,7 +51,7 @@ public class AutoArrayBitfieldParamTest
         return parameterizedBitfieldLength;
     }
 
-    private void checkParameterizedBitfieldLengthInStream(BitStreamReader reader,
+    private void checkParameterizedBitfieldLengthInStream(ByteArrayBitStreamReader reader,
             ParameterizedBitfieldLength parameterizedBitfieldLength) throws IOException
     {
         assertEquals(NUM_BITS_PARAM, parameterizedBitfieldLength.getNumBits());

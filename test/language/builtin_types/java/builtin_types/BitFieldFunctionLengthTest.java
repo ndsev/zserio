@@ -8,12 +8,8 @@ import java.io.IOException;
 
 import java.math.BigInteger;
 
-import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
-
 import builtin_types.bitfield_function_length.Container;
+import zserio.runtime.io.SerializeUtil;
 
 public class BitFieldFunctionLengthTest
 {
@@ -29,14 +25,8 @@ public class BitFieldFunctionLengthTest
     public void readWrite() throws IOException
     {
         final Container container = createContainer();
-
-        final BitStreamWriter writer = new FileBitStreamWriter(TEST_FILE);
-        container.write(writer);
-        writer.close();
-        final BitStreamReader reader = new FileBitStreamReader(TEST_FILE);
-
-        final Container readContainer = new Container(reader);
-        reader.close();
+        SerializeUtil.serializeToFile(container, TEST_FILE);
+        final Container readContainer = SerializeUtil.deserializeFromFile(Container.class, TEST_FILE);
         assertEquals(container, readContainer);
     }
 

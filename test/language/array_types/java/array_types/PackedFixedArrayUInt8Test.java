@@ -7,11 +7,9 @@ import java.io.IOException;
 import java.io.File;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
-
+import zserio.runtime.io.BitBuffer;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 import array_types.packed_fixed_array_uint8.PackedFixedArray;
 
 public class PackedFixedArrayUInt8Test
@@ -37,12 +35,8 @@ public class PackedFixedArrayUInt8Test
     @Test
     public void read() throws IOException, ZserioError
     {
-        final File file = new File("test.bin");
-        writePackedFixedArrayToFile(file);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final PackedFixedArray packedFixedArray = new PackedFixedArray(stream);
-        stream.close();
-
+        final BitBuffer buffer = writePackedFixedArrayToBitBuffer();
+        final PackedFixedArray packedFixedArray = SerializeUtil.deserialize(PackedFixedArray.class, buffer);
         checkPackedFixedArray(packedFixedArray);
     }
 
@@ -51,14 +45,9 @@ public class PackedFixedArrayUInt8Test
     {
         final PackedFixedArray packedFixedArray = createPackedFixedArray();
         final File file = new File(BLOB_NAME);
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        packedFixedArray.write(writer);
-        writer.close();
-
-        assertEquals(packedFixedArray.bitSizeOf(), writer.getBitPosition());
-        assertEquals(packedFixedArray.initializeOffsets(), writer.getBitPosition());
-
-        final PackedFixedArray readPackedFixedArray = new PackedFixedArray(file);
+        SerializeUtil.serializeToFile(packedFixedArray, file);
+        final PackedFixedArray readPackedFixedArray =
+                SerializeUtil.deserializeFromFile(PackedFixedArray.class, file);
         checkPackedFixedArray(readPackedFixedArray);
     }
 
@@ -66,8 +55,7 @@ public class PackedFixedArrayUInt8Test
     public void writeWrongArray() throws IOException, ZserioError
     {
         final PackedFixedArray packedFixedArray = createWrongPackedFixedArray();
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         assertThrows(ZserioError.class, () -> packedFixedArray.write(writer));
         writer.close();
     }
@@ -99,15 +87,16 @@ public class PackedFixedArrayUInt8Test
             assertEquals(PACKED_ARRAY_ELEMENT, uint8Array[i]);
     }
 
-    private void writePackedFixedArrayToFile(File file) throws IOException
+    private BitBuffer writePackedFixedArrayToBitBuffer() throws IOException
     {
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            writer.writeBool(true);
+            writer.writeBits(PACKED_ARRAY_MAX_BIT_NUMBER, 6);
+            writer.writeBits(PACKED_ARRAY_ELEMENT, 8);
 
-        writer.writeBool(true);
-        writer.writeBits(PACKED_ARRAY_MAX_BIT_NUMBER, 6);
-        writer.writeBits(PACKED_ARRAY_ELEMENT, 8);
-
-        writer.close();
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
+        }
     }
 
     private int calcPackedFixedArrayBitSize()

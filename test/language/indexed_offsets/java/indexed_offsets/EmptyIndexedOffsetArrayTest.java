@@ -4,26 +4,24 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.io.File;
 
 import indexed_offsets.empty_indexed_offset_array.EmptyIndexedOffsetArray;
 
 import zserio.runtime.ZserioError;
+import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 
 public class EmptyIndexedOffsetArrayTest
 {
     @Test
-    public void read() throws IOException, ZserioError
+    public void readConstructor() throws IOException, ZserioError
     {
-        final File file = new File("test.bin");
-        writeEmptyIndexedOffsetArrayToFile(file);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final EmptyIndexedOffsetArray emptyIndexedOffsetArray = new EmptyIndexedOffsetArray(stream);
-        stream.close();
+        final BitBuffer bitBuffer = writeEmptyIndexedOffsetArrayToBitBuffer();
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+        final EmptyIndexedOffsetArray emptyIndexedOffsetArray = new EmptyIndexedOffsetArray(reader);
         checkEmptyIndexedOffsetArray(emptyIndexedOffsetArray);
     }
 
@@ -63,27 +61,27 @@ public class EmptyIndexedOffsetArrayTest
     }
 
     @Test
-    public void write() throws IOException, ZserioError
+    public void writeRead() throws IOException, ZserioError
     {
         final EmptyIndexedOffsetArray emptyIndexedOffsetArray = createEmptyIndexedOffsetArray();
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        emptyIndexedOffsetArray.write(writer);
-        writer.close();
+        final BitBuffer bitBuffer = SerializeUtil.serialize(emptyIndexedOffsetArray);
         checkEmptyIndexedOffsetArray(emptyIndexedOffsetArray);
-        final EmptyIndexedOffsetArray readEmptyIndexedOffsetArray = new EmptyIndexedOffsetArray(file);
+
+        final EmptyIndexedOffsetArray readEmptyIndexedOffsetArray = SerializeUtil.deserialize(
+                EmptyIndexedOffsetArray.class, bitBuffer);
         checkEmptyIndexedOffsetArray(readEmptyIndexedOffsetArray);
         assertTrue(emptyIndexedOffsetArray.equals(readEmptyIndexedOffsetArray));
     }
 
-    private void writeEmptyIndexedOffsetArrayToFile(File file) throws IOException
+    private BitBuffer writeEmptyIndexedOffsetArrayToBitBuffer() throws IOException
     {
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            writer.writeBits(SPACER_VALUE, 1);
+            writer.writeBits(FIELD_VALUE, 6);
 
-        writer.writeBits(SPACER_VALUE, 1);
-        writer.writeBits(FIELD_VALUE, 6);
-
-        writer.close();
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
+        }
     }
 
     private void checkEmptyIndexedOffsetArray(EmptyIndexedOffsetArray emptyIndexedOffsetArray)

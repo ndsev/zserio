@@ -6,14 +6,14 @@ import org.junit.jupiter.api.Test;
 import indexed_offsets.packed_auto_indexed_offset_array.AutoIndexedOffsetArray;
 
 import java.io.IOException;
-import java.io.File;
 
 import zserio.runtime.ZserioError;
+import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
+import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 
 public class PackedAutoIndexedOffsetArrayTest
 {
@@ -21,11 +21,9 @@ public class PackedAutoIndexedOffsetArrayTest
     public void read() throws IOException, ZserioError
     {
         final boolean writeWrongOffsets = false;
-        final File file = new File("test.bin");
-        writeAutoIndexedOffsetArrayToFile(file, writeWrongOffsets);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final AutoIndexedOffsetArray autoIndexedOffsetArray = new AutoIndexedOffsetArray(stream);
-        stream.close();
+        final BitBuffer bitBuffer = writeAutoIndexedOffsetArrayToBitBuffer(writeWrongOffsets);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+        final AutoIndexedOffsetArray autoIndexedOffsetArray = new AutoIndexedOffsetArray(reader);
         checkAutoIndexedOffsetArray(autoIndexedOffsetArray);
     }
 
@@ -33,11 +31,9 @@ public class PackedAutoIndexedOffsetArrayTest
     public void readWrongOffsets() throws IOException, ZserioError
     {
         final boolean writeWrongOffsets = true;
-        final File file = new File("test.bin");
-        writeAutoIndexedOffsetArrayToFile(file, writeWrongOffsets);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        assertThrows(ZserioError.class, () -> new AutoIndexedOffsetArray(stream));
-        stream.close();
+        final BitBuffer bitBuffer = writeAutoIndexedOffsetArrayToBitBuffer(writeWrongOffsets);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+        assertThrows(ZserioError.class, () -> new AutoIndexedOffsetArray(reader));
     }
 
     @Test
@@ -86,31 +82,34 @@ public class PackedAutoIndexedOffsetArrayTest
     {
         final boolean createWrongOffsets = false;
         final AutoIndexedOffsetArray autoIndexedOffsetArray = createAutoIndexedOffsetArray(createWrongOffsets);
-        final File file = new File(BLOB_NAME);
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        autoIndexedOffsetArray.write(writer);
-        writer.close();
+        SerializeUtil.serializeToFile(autoIndexedOffsetArray, BLOB_NAME);
         checkAutoIndexedOffsetArray(autoIndexedOffsetArray);
-        final AutoIndexedOffsetArray readAutoIndexedOffsetArray = new AutoIndexedOffsetArray(file);
+
+        final AutoIndexedOffsetArray readAutoIndexedOffsetArray = SerializeUtil.deserializeFromFile(
+                AutoIndexedOffsetArray.class, BLOB_NAME);
         checkAutoIndexedOffsetArray(readAutoIndexedOffsetArray);
         assertTrue(autoIndexedOffsetArray.equals(readAutoIndexedOffsetArray));
     }
 
     @Test
-    public void writeWithPosition() throws IOException, ZserioError
+    public void writeReadWithPosition() throws IOException, ZserioError
     {
         final boolean createWrongOffsets = true;
         final AutoIndexedOffsetArray autoIndexedOffsetArray = createAutoIndexedOffsetArray(createWrongOffsets);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         final int bitPosition = 8;
         writer.writeBits(0, bitPosition);
         autoIndexedOffsetArray.initializeOffsets(writer.getBitPosition());
         autoIndexedOffsetArray.write(writer);
-        writer.close();
-
         final short offsetShift = 1;
         checkOffsets(autoIndexedOffsetArray, offsetShift);
+
+        final BitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
+        assertEquals(0, reader.readBits(bitPosition));
+        final AutoIndexedOffsetArray readAutoIndexedOffsetArray = new AutoIndexedOffsetArray(reader);
+        checkOffsets(readAutoIndexedOffsetArray, offsetShift);
+        assertTrue(autoIndexedOffsetArray.equals(readAutoIndexedOffsetArray));
     }
 
     @Test
@@ -120,39 +119,39 @@ public class PackedAutoIndexedOffsetArrayTest
         final AutoIndexedOffsetArray autoIndexedOffsetArray = createAutoIndexedOffsetArray(createWrongOffsets);
         final BitStreamWriter writer = new ByteArrayBitStreamWriter();
         assertThrows(ZserioError.class, () -> autoIndexedOffsetArray.write(writer));
-        writer.close();
     }
 
-    private void writeAutoIndexedOffsetArrayToFile(File file, boolean writeWrongOffsets) throws IOException
+    private BitBuffer writeAutoIndexedOffsetArrayToBitBuffer(boolean writeWrongOffsets) throws IOException
     {
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
-
-        writer.writeVarSize(NUM_ELEMENTS);
-        long currentOffset = ELEMENT0_OFFSET;
-        for (int i = 0; i < NUM_ELEMENTS; ++i)
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
-            if ((i + 1) == NUM_ELEMENTS && writeWrongOffsets)
-                writer.writeBits(WRONG_OFFSET, 32);
-            else
-                writer.writeBits(currentOffset, 32);
-            currentOffset += (i == 0 ? ALIGNED_FIRST_ELEMENT_BYTE_SIZE : ALIGNED_ELEMENT_BYTE_SIZE);
-        }
+            writer.writeVarSize(NUM_ELEMENTS);
+            long currentOffset = ELEMENT0_OFFSET;
+            for (int i = 0; i < NUM_ELEMENTS; ++i)
+            {
+                if ((i + 1) == NUM_ELEMENTS && writeWrongOffsets)
+                    writer.writeBits(WRONG_OFFSET, 32);
+                else
+                    writer.writeBits(currentOffset, 32);
+                currentOffset += (i == 0 ? ALIGNED_FIRST_ELEMENT_BYTE_SIZE : ALIGNED_ELEMENT_BYTE_SIZE);
+            }
 
-        writer.writeBits(SPACER_VALUE, 3);
+            writer.writeBits(SPACER_VALUE, 3);
 
-        writer.writeVarSize(NUM_ELEMENTS);
+            writer.writeVarSize(NUM_ELEMENTS);
 
-        writer.alignTo(8);
-        writer.writeBool(true);
-        writer.writeBits(PACKED_ARRAY_MAX_BIT_NUMBER, 6);
-        writer.writeBits(0, ELEMENT_SIZE);
-        for (int i = 1; i < NUM_ELEMENTS; ++i)
-        {
             writer.alignTo(8);
-            writer.writeSignedBits(PACKED_ARRAY_DELTA, PACKED_ARRAY_MAX_BIT_NUMBER + 1);
-        }
+            writer.writeBool(true);
+            writer.writeBits(PACKED_ARRAY_MAX_BIT_NUMBER, 6);
+            writer.writeBits(0, ELEMENT_SIZE);
+            for (int i = 1; i < NUM_ELEMENTS; ++i)
+            {
+                writer.alignTo(8);
+                writer.writeSignedBits(PACKED_ARRAY_DELTA, PACKED_ARRAY_MAX_BIT_NUMBER + 1);
+            }
 
-        writer.close();
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
+        }
     }
 
     private void checkOffsets(AutoIndexedOffsetArray autoIndexedOffsetArray, short offsetShift)

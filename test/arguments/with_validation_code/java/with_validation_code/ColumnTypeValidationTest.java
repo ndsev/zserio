@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.net.URISyntaxException;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.ArrayList;
@@ -20,7 +19,6 @@ import test_utils.FileUtil;
 import test_utils.JdbcUtil;
 
 import with_validation_code.column_type_validation.ColumnTypeDb;
-import with_validation_code.column_type_validation.ColumnTypeTable;
 import with_validation_code.column_type_validation.ColumnTypeTableRow;
 import with_validation_code.column_type_validation.Blob;
 

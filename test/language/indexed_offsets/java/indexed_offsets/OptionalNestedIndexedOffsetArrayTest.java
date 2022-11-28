@@ -4,45 +4,41 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.io.File;
 
 import indexed_offsets.optional_nested_indexed_offset_array.OptionalNestedIndexedOffsetArray;
 import indexed_offsets.optional_nested_indexed_offset_array.Header;
 
 import zserio.runtime.BitSizeOfCalculator;
 import zserio.runtime.ZserioError;
+import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 
 public class OptionalNestedIndexedOffsetArrayTest
 {
     @Test
-    public void readWithOptional() throws IOException, ZserioError
+    public void readConstructorWithOptional() throws IOException, ZserioError
     {
         final int length = NUM_ELEMENTS;
         final boolean writeWrongOffsets = false;
-        final File file = new File("test.bin");
-        writeOptionalNestedIndexedOffsetArrayToFile(file, length, writeWrongOffsets);
-        final BitStreamReader stream = new FileBitStreamReader(file);
+        final BitBuffer bitBuffer = writeOptionalNestedIndexedOffsetArrayToBitBuffer(length, writeWrongOffsets);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
         final OptionalNestedIndexedOffsetArray optionalNestedIndexedOffsetArray =
-                new OptionalNestedIndexedOffsetArray(stream);
-        stream.close();
+                new OptionalNestedIndexedOffsetArray(reader);
         checkOptionalNestedIndexedOffsetArray(optionalNestedIndexedOffsetArray, length);
     }
 
     @Test
-    public void readWithoutOptional() throws IOException, ZserioError
+    public void readConstructorWithoutOptional() throws IOException, ZserioError
     {
         final int length = 0;
         final boolean writeWrongOffsets = false;
-        final File file = new File("test.bin");
-        writeOptionalNestedIndexedOffsetArrayToFile(file, length, writeWrongOffsets);
-        final BitStreamReader stream = new FileBitStreamReader(file);
+        final BitBuffer bitBuffer = writeOptionalNestedIndexedOffsetArrayToBitBuffer(length, writeWrongOffsets);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
         final OptionalNestedIndexedOffsetArray optionalNestedIndexedOffsetArray =
-                new OptionalNestedIndexedOffsetArray(stream);
-        stream.close();
+                new OptionalNestedIndexedOffsetArray(reader);
         checkOptionalNestedIndexedOffsetArray(optionalNestedIndexedOffsetArray, length);
     }
 
@@ -94,67 +90,64 @@ public class OptionalNestedIndexedOffsetArrayTest
     }
 
     @Test
-    public void writeWithOptional() throws IOException, ZserioError
+    public void writeReadWithOptional() throws IOException, ZserioError
     {
         final int length = NUM_ELEMENTS;
         final boolean createWrongOffsets = false;
         final OptionalNestedIndexedOffsetArray optionalNestedIndexedOffsetArray =
                 createOptionalNestedIndexedOffsetArray(length, createWrongOffsets);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        optionalNestedIndexedOffsetArray.write(writer);
-        writer.close();
+        final BitBuffer bitBuffer = SerializeUtil.serialize(optionalNestedIndexedOffsetArray);
         checkOptionalNestedIndexedOffsetArray(optionalNestedIndexedOffsetArray, length);
-        final OptionalNestedIndexedOffsetArray readOptionalNestedIndexedOffsetArray =
-                new OptionalNestedIndexedOffsetArray(file);
+
+        final OptionalNestedIndexedOffsetArray readOptionalNestedIndexedOffsetArray = SerializeUtil.deserialize(
+                OptionalNestedIndexedOffsetArray.class, bitBuffer);
         checkOptionalNestedIndexedOffsetArray(readOptionalNestedIndexedOffsetArray, length);
         assertTrue(optionalNestedIndexedOffsetArray.equals(readOptionalNestedIndexedOffsetArray));
     }
 
     @Test
-    public void writeWithoutOptional() throws IOException, ZserioError
+    public void writeReadWithoutOptional() throws IOException, ZserioError
     {
         final int length = 0;
         final boolean createWrongOffsets = false;
         final OptionalNestedIndexedOffsetArray optionalNestedIndexedOffsetArray =
                 createOptionalNestedIndexedOffsetArray(length, createWrongOffsets);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        optionalNestedIndexedOffsetArray.write(writer);
-        writer.close();
-        final OptionalNestedIndexedOffsetArray readOptionalNestedIndexedOffsetArray =
-                new OptionalNestedIndexedOffsetArray(file);
+        final BitBuffer bitBuffer = SerializeUtil.serialize(optionalNestedIndexedOffsetArray);
+
+        final OptionalNestedIndexedOffsetArray readOptionalNestedIndexedOffsetArray = SerializeUtil.deserialize(
+                OptionalNestedIndexedOffsetArray.class, bitBuffer);
         checkOptionalNestedIndexedOffsetArray(readOptionalNestedIndexedOffsetArray, length);
         assertTrue(optionalNestedIndexedOffsetArray.equals(readOptionalNestedIndexedOffsetArray));
     }
 
-    private void writeOptionalNestedIndexedOffsetArrayToFile(File file, int length,
-            boolean writeWrongOffsets) throws IOException
+    private BitBuffer writeOptionalNestedIndexedOffsetArrayToBitBuffer(int length, boolean writeWrongOffsets)
+            throws IOException
     {
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
-
-        writer.writeUnsignedShort(length);
-
-        if (length > 0)
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
-            long currentOffset = ELEMENT0_OFFSET;
-            for (int i = 0; i < length; ++i)
+            writer.writeUnsignedShort(length);
+
+            if (length > 0)
             {
-                if ((i + 1) == length && writeWrongOffsets)
-                    writer.writeUnsignedInt(WRONG_OFFSET);
-                else
-                    writer.writeUnsignedInt(currentOffset);
-                currentOffset += BitSizeOfCalculator.getBitSizeOfString(DATA[i]) / Byte.SIZE;
+                long currentOffset = ELEMENT0_OFFSET;
+                for (int i = 0; i < length; ++i)
+                {
+                    if ((i + 1) == length && writeWrongOffsets)
+                        writer.writeUnsignedInt(WRONG_OFFSET);
+                    else
+                        writer.writeUnsignedInt(currentOffset);
+                    currentOffset += BitSizeOfCalculator.getBitSizeOfString(DATA[i]) / Byte.SIZE;
+                }
+
+                // already aligned
+                for (int i = 0; i < length; ++i)
+                    writer.writeString(DATA[i]);
             }
 
-            // already aligned
-            for (int i = 0; i < length; ++i)
-                writer.writeString(DATA[i]);
+            writer.writeBits(FIELD_VALUE, 6);
+
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
         }
-
-        writer.writeBits(FIELD_VALUE, 6);
-
-        writer.close();
     }
 
     private void checkOffsets(OptionalNestedIndexedOffsetArray optionalNestedIndexedOffsetArray,

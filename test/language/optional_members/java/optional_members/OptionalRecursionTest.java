@@ -3,12 +3,13 @@ package optional_members;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 
 import optional_members.optional_recursion.Block;
-
-import zserio.runtime.io.FileBitStreamReader;
+import zserio.runtime.io.BitBuffer;
+import zserio.runtime.io.BitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.SerializeUtil;
 
 public class OptionalRecursionTest
 {
@@ -115,13 +116,12 @@ public class OptionalRecursionTest
     public void fileWriteBlock1() throws IOException
     {
         final Block block1 = createBlock(BLOCK1_DATA);
-        final File block1File = new File("block1.bin");
-        block1.write(block1File);
-        final FileBitStreamReader reader = new FileBitStreamReader(block1File);
+        final BitBuffer block1BitBuffer = SerializeUtil.serialize(block1);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(block1BitBuffer);
         checkBlockInStream(reader, BLOCK1_DATA);
-        reader.close();
 
-        final Block readBlock1 = new Block(block1File, (short)BLOCK1_DATA.length);
+        final Block readBlock1 = SerializeUtil.deserialize(
+                Block.class, block1BitBuffer, (short)BLOCK1_DATA.length);
         assertEquals(block1, readBlock1);
     }
 
@@ -129,13 +129,12 @@ public class OptionalRecursionTest
     public void fileWriteBlock12() throws IOException
     {
         final Block block12 = createBlock(BLOCK1_DATA, BLOCK2_DATA);
-        final File block12File = new File("block12.bin");
-        block12.write(block12File);
-        final FileBitStreamReader reader = new FileBitStreamReader(block12File);
+        final BitBuffer block12BitBuffer = SerializeUtil.serialize(block12);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(block12BitBuffer);
         checkBlockInStream(reader, BLOCK1_DATA, BLOCK2_DATA);
-        reader.close();
 
-        final Block readBlock12 = new Block(block12File, (short)BLOCK1_DATA.length);
+        final Block readBlock12 = SerializeUtil.deserialize(
+                Block.class, block12BitBuffer, (short)BLOCK1_DATA.length);
         assertEquals(block12, readBlock12);
     }
 
@@ -161,14 +160,14 @@ public class OptionalRecursionTest
         return getBlockBitSize(block1Data) + getBlockBitSize(block2Data);
     }
 
-    private static void checkBlockInStream(FileBitStreamReader reader, short[] blockData) throws IOException
+    private static void checkBlockInStream(BitStreamReader reader, short[] blockData) throws IOException
     {
         for (short element : blockData)
             assertEquals(element, reader.readBits(8));
         assertEquals(0, reader.readBits(8));
     }
 
-    private static void checkBlockInStream(FileBitStreamReader reader, short[] block1Data, short[] block2Data)
+    private static void checkBlockInStream(BitStreamReader reader, short[] block1Data, short[] block2Data)
             throws IOException
     {
         for (short element : block1Data)

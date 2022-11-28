@@ -4,16 +4,16 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.io.File;
 
 import offsets.auto_array_offset.AutoArrayHolder;
 
 import zserio.runtime.ZserioError;
+import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
+import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 
 public class AutoArrayOffsetTest
 {
@@ -21,11 +21,9 @@ public class AutoArrayOffsetTest
     public void read() throws IOException, ZserioError
     {
         final boolean writeWrongOffset = false;
-        final File file = new File("test.bin");
-        writeAutoArrayHolderToFile(file, writeWrongOffset);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final AutoArrayHolder autoArrayHolder = new AutoArrayHolder(stream);
-        stream.close();
+        final BitBuffer bitBuffer = writeAutoArrayHolderToBitBuffer(writeWrongOffset);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+        final AutoArrayHolder autoArrayHolder = new AutoArrayHolder(reader);
         checkAutoArrayHolder(autoArrayHolder);
     }
 
@@ -33,11 +31,9 @@ public class AutoArrayOffsetTest
     public void readWrongOffsets() throws IOException, ZserioError
     {
         final boolean writeWrongOffset = true;
-        final File file = new File("test.bin");
-        writeAutoArrayHolderToFile(file, writeWrongOffset);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        assertThrows(ZserioError.class, () -> new AutoArrayHolder(stream));
-        stream.close();
+        final BitBuffer bitBuffer = writeAutoArrayHolderToBitBuffer(writeWrongOffset);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+        assertThrows(ZserioError.class, () -> new AutoArrayHolder(reader));
     }
 
     @Test
@@ -78,33 +74,35 @@ public class AutoArrayOffsetTest
     }
 
     @Test
-    public void write() throws IOException, ZserioError
+    public void writeRead() throws IOException, ZserioError
     {
         final boolean createWrongOffset = false;
         final AutoArrayHolder autoArrayHolder = createAutoArrayHolder(createWrongOffset);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        autoArrayHolder.write(writer);
-        writer.close();
+        final BitBuffer bitBuffer = SerializeUtil.serialize(autoArrayHolder);
         checkAutoArrayHolder(autoArrayHolder);
-        final AutoArrayHolder readAutoArrayHolder = new AutoArrayHolder(file);
+        final AutoArrayHolder readAutoArrayHolder = SerializeUtil.deserialize(AutoArrayHolder.class, bitBuffer);
         checkAutoArrayHolder(readAutoArrayHolder);
         assertTrue(autoArrayHolder.equals(readAutoArrayHolder));
     }
 
     @Test
-    public void writeWithPosition() throws IOException, ZserioError
+    public void writeReadWithPosition() throws IOException, ZserioError
     {
         final boolean createWrongOffset = true;
         final AutoArrayHolder autoArrayHolder = createAutoArrayHolder(createWrongOffset);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         final int bitPosition = 2;
         writer.writeBits(0, bitPosition);
         autoArrayHolder.initializeOffsets(writer.getBitPosition());
         autoArrayHolder.write(writer);
-        writer.close();
         checkAutoArrayHolder(autoArrayHolder, bitPosition);
+
+        final BitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
+        assertEquals(0, reader.readBits(bitPosition));
+        final AutoArrayHolder readAutoArrayHolder = new AutoArrayHolder(reader);
+        checkAutoArrayHolder(readAutoArrayHolder, bitPosition);
+        assertTrue(autoArrayHolder.equals(readAutoArrayHolder));
     }
 
     @Test
@@ -117,15 +115,18 @@ public class AutoArrayOffsetTest
         writer.close();
     }
 
-    private void writeAutoArrayHolderToFile(File file, boolean writeWrongOffset) throws IOException
+    private BitBuffer writeAutoArrayHolderToBitBuffer(boolean writeWrongOffset) throws IOException
     {
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
-        writer.writeUnsignedInt((writeWrongOffset) ? WRONG_AUTO_ARRAY_OFFSET : AUTO_ARRAY_OFFSET);
-        writer.writeBits(FORCED_ALIGNMENT_VALUE, 8);
-        writer.writeVarSize(AUTO_ARRAY_LENGTH);
-        for (int i = 0; i < AUTO_ARRAY_LENGTH; ++i)
-            writer.writeBits(i, 7);
-        writer.close();
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            writer.writeUnsignedInt((writeWrongOffset) ? WRONG_AUTO_ARRAY_OFFSET : AUTO_ARRAY_OFFSET);
+            writer.writeBits(FORCED_ALIGNMENT_VALUE, 8);
+            writer.writeVarSize(AUTO_ARRAY_LENGTH);
+            for (int i = 0; i < AUTO_ARRAY_LENGTH; ++i)
+                writer.writeBits(i, 7);
+
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
+        }
     }
 
     private void checkAutoArrayHolder(AutoArrayHolder autoArrayHolder)

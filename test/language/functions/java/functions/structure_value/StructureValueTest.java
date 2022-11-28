@@ -100,12 +100,12 @@ public class StructureValueTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         customVarInt.write(writer);
         final byte[] writtenByteArray = writer.toByteArray();
-        writer.close();
 
         final byte[] expecteByteArray = writeCustomVarIntToByteArray(value);
         assertTrue(Arrays.equals(expecteByteArray, writtenByteArray));
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writtenByteArray);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
+                writtenByteArray, writer.getBitPosition());
         final CustomVarInt readcustomVarInt = new CustomVarInt(reader);
         assertEquals(customVarInt, readcustomVarInt);
     }

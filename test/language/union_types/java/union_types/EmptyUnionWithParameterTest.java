@@ -1,44 +1,24 @@
 package union_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 
 import union_types.empty_union_with_parameter.EmptyUnionWithParameter;
 
-import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 
 public class EmptyUnionWithParameterTest
 {
-    @BeforeEach
-    public void setUp() throws IOException
-    {
-        if (!testFile.exists())
-            assertTrue(testFile.createNewFile());
-    }
-
     @Test
     public void emptyConstructor()
     {
         final EmptyUnionWithParameter emptyUnionWithParameter =
                 new EmptyUnionWithParameter((short)1);
         assertEquals(1, emptyUnionWithParameter.getParam());
-    }
-
-    @Test
-    public void fileConstructor() throws IOException, ZserioError
-    {
-        final short param = 1;
-        final EmptyUnionWithParameter emptyUnionWithParameter =
-                new EmptyUnionWithParameter(testFile, param);
-        assertEquals(param, emptyUnionWithParameter.getParam());
-        assertEquals(0, emptyUnionWithParameter.bitSizeOf());
     }
 
     @Test
@@ -113,24 +93,13 @@ public class EmptyUnionWithParameterTest
     public void read() throws IOException
     {
         final short param = 1;
-        final BitStreamReader reader = new ByteArrayBitStreamReader(new byte[0]);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(new byte[0], 0);
 
         final EmptyUnionWithParameter emptyUnionWithParameter =
                 new EmptyUnionWithParameter(param);
         emptyUnionWithParameter.read(reader);
         assertEquals(param, emptyUnionWithParameter.getParam());
         assertEquals(0, emptyUnionWithParameter.bitSizeOf());
-    }
-
-    @Test
-    public void fileWrite() throws IOException
-    {
-        final short param = 1;
-        final EmptyUnionWithParameter emptyUnionWithParameter = new EmptyUnionWithParameter(param);
-        emptyUnionWithParameter.write(testFile);
-        EmptyUnionWithParameter readEmptyUnionWithParameter =
-                new EmptyUnionWithParameter(testFile, param);
-        assertEquals(emptyUnionWithParameter, readEmptyUnionWithParameter);
     }
 
     @Test
@@ -148,6 +117,4 @@ public class EmptyUnionWithParameterTest
                 new EmptyUnionWithParameter(reader, param);
         assertEquals(emptyUnionWithParameter, readEmptyUnionWithParameter);
     }
-
-    private final File testFile = new File("test.bin");
 };

@@ -4,16 +4,15 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.io.File;
 
 import offsets.ternary_operator_offset.TernaryOffset;
 
 import zserio.runtime.ZserioError;
+import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
+import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
 
 public class TernaryOperatorOffsetTest
 {
@@ -59,25 +58,26 @@ public class TernaryOperatorOffsetTest
         testOffsetReadWrong(isFirstOffsetUsed);
     }
 
-    private void writeTernaryOffsetToFile(File file, boolean isFirstOffsetUsed, boolean writeWrongOffset)
+    private BitBuffer writeTernaryOffsetToBitBuffer(boolean isFirstOffsetUsed, boolean writeWrongOffset)
             throws IOException
     {
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
-
-        writer.writeBool(isFirstOffsetUsed);
-        if (isFirstOffsetUsed)
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
-            writer.writeBits((writeWrongOffset) ? WRONG_FIELD_OFFSET : FIELD_OFFSET, 32);
-            writer.writeBits(WRONG_FIELD_OFFSET, 32);
-        }
-        else
-        {
-            writer.writeBits(WRONG_FIELD_OFFSET, 32);
-            writer.writeBits((writeWrongOffset) ? WRONG_FIELD_OFFSET : FIELD_OFFSET, 32);
-        }
-        writer.writeSignedBits(FIELD_VALUE, 32);
+            writer.writeBool(isFirstOffsetUsed);
+            if (isFirstOffsetUsed)
+            {
+                writer.writeBits((writeWrongOffset) ? WRONG_FIELD_OFFSET : FIELD_OFFSET, 32);
+                writer.writeBits(WRONG_FIELD_OFFSET, 32);
+            }
+            else
+            {
+                writer.writeBits(WRONG_FIELD_OFFSET, 32);
+                writer.writeBits((writeWrongOffset) ? WRONG_FIELD_OFFSET : FIELD_OFFSET, 32);
+            }
+            writer.writeSignedBits(FIELD_VALUE, 32);
 
-        writer.close();
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
+        }
     }
 
     private void checkTernaryOffset(TernaryOffset ternaryOffset, boolean isFirstOffsetUsed)
@@ -111,15 +111,12 @@ public class TernaryOperatorOffsetTest
         final boolean writeWrongOffset = false;
         final TernaryOffset ternaryOffset = createTernaryOffset(isFirstOffsetUsed, writeWrongOffset);
 
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         ternaryOffset.write(writer);
-        writer.close();
 
-        final BitStreamReader reader = new FileBitStreamReader(file);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
         final TernaryOffset readTernaryOffset = new TernaryOffset(reader);
-        reader.close();
-
         checkTernaryOffset(readTernaryOffset, isFirstOffsetUsed);
     }
 
@@ -128,21 +125,18 @@ public class TernaryOperatorOffsetTest
         final boolean writeWrongOffset = true;
         final TernaryOffset ternaryOffset = createTernaryOffset(isFirstOffsetUsed, writeWrongOffset);
 
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
+        final BitStreamWriter writer = new ByteArrayBitStreamWriter();
         assertThrows(ZserioError.class, () -> ternaryOffset.write(writer));
         writer.close();
     }
 
     private void testOffsetReadWrong(boolean isFirstOffsetUsed) throws IOException, ZserioError
     {
-        final File file = new File("test.bin");
         final boolean writeWrongOffset = true;
-        writeTernaryOffsetToFile(file, isFirstOffsetUsed, writeWrongOffset);
+        final BitBuffer bitBuffer = writeTernaryOffsetToBitBuffer(isFirstOffsetUsed, writeWrongOffset);
 
-        final BitStreamReader reader = new FileBitStreamReader(file);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
         assertThrows(ZserioError.class, () -> new TernaryOffset(reader));
-        reader.close();
     }
 
     private static final long WRONG_FIELD_OFFSET = 0;

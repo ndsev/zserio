@@ -104,18 +104,19 @@ public class UInt64OffsetTest
 
     private BitStreamReader prepareReader(boolean wrongOffset) throws IOException
     {
-        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-
-        // offset
-        writer.writeBigInteger(BigInteger.valueOf(wrongOffset ? WRONG_OFFSET : OFFSET), 64);
-        writer.writeVarSize(ARRAY_SIZE);
-        for (int i = 0; i < ARRAY_SIZE; ++i)
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
-            writer.writeByte((byte)0);
-        }
-        writer.writeInt(0);
+            // offset
+            writer.writeBigInteger(BigInteger.valueOf(wrongOffset ? WRONG_OFFSET : OFFSET), 64);
+            writer.writeVarSize(ARRAY_SIZE);
+            for (int i = 0; i < ARRAY_SIZE; ++i)
+            {
+                writer.writeByte((byte)0);
+            }
+            writer.writeInt(0);
 
-        return new ByteArrayBitStreamReader(writer.toByteArray());
+            return new ByteArrayBitStreamReader(writer.toByteArray());
+        }
     }
 
     private static final int ARRAY_SIZE = 13;

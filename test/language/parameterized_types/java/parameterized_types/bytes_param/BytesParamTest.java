@@ -3,7 +3,6 @@ package parameterized_types.bytes_param;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 
 import zserio.runtime.io.BitBuffer;

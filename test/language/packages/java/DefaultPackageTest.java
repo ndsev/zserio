@@ -3,7 +3,6 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 
-
 public class DefaultPackageTest
 {
     @Test

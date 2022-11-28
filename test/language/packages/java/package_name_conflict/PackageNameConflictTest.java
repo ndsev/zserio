@@ -17,7 +17,8 @@ public class PackageNameConflictTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         packageNameConflictLocal.write(writer);
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
         final PackageNameConflictLocal readPackageNameConflictLocal = new PackageNameConflictLocal(reader);
 
         assertEquals(13, packageNameConflictLocal.getBlob().getValue());
@@ -35,7 +36,8 @@ public class PackageNameConflictTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         packageNameConflictImported.write(writer);
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
         final PackageNameConflictImported readPackageNameConflictImported =
                 new PackageNameConflictImported(reader);
 

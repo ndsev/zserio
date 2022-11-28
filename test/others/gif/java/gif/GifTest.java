@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.IOException;
 
 import zserio.runtime.ZserioError;
-
+import zserio.runtime.io.SerializeUtil;
 import gif.gif_data.*;
 import gif.rgb_color.RgbColor;
 import gif.screen_descriptor.ScreenDescriptor;
@@ -18,7 +18,7 @@ public class GifTest
     public void onePixGif() throws ZserioError, IOException
     {
         final File file = new File(ONE_PIX_GIF_FILE_NAME);
-        final GifFile gifFile = new GifFile(file);
+        final GifFile gifFile = SerializeUtil.deserializeFromFile(GifFile.class, file);
 
         final short[] signatureFormat = gifFile.getSignature().getFormat();
         final String fileFormat = String.format("%1$c%2$c%3$c", signatureFormat[0], signatureFormat[1],
@@ -43,7 +43,7 @@ public class GifTest
     {
         alignment = "";
         final File file = new File(ONE_PIX_GIF_FILE_NAME);
-        final GifFile gifFile = new GifFile(file);
+        final GifFile gifFile = SerializeUtil.deserializeFromFile(GifFile.class, file);
 
         final short[] signature = gifFile.getSignature().getFormat();
         System.out.format(alignment + "Header: %1$c%2$c%3$c", signature[0], signature[1], signature[2]);

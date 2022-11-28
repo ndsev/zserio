@@ -21,9 +21,9 @@ public class ParameterizedInnerClassesClashingTest
 
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         testStructure.write(writer);
-        writer.close();
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
         final ElementFactory_array readTestStructure = new ElementFactory_array(reader);
         assertEquals(testStructure, readTestStructure);
     }
@@ -38,9 +38,9 @@ public class ParameterizedInnerClassesClashingTest
 
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         testStructure.write(writer);
-        writer.close();
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
         final ElementInitializer_array readTestStructure = new ElementInitializer_array(reader);
         assertEquals(testStructure, readTestStructure);
     }
@@ -58,9 +58,9 @@ public class ParameterizedInnerClassesClashingTest
 
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         testStructure.write(writer);
-        writer.close();
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
         final ElementChildrenInitializer_array readTestStructure = new ElementChildrenInitializer_array(reader);
         assertEquals(testStructure, readTestStructure);
     }

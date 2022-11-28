@@ -3,18 +3,14 @@ package choice_types;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
-
-import javax.imageio.stream.FileImageOutputStream;
 
 import choice_types.uint32_param_choice.UInt32ParamChoice;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.BitBuffer;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
 
 public class UInt32ParamChoiceTest
 {
@@ -27,27 +23,14 @@ public class UInt32ParamChoiceTest
     }
 
     @Test
-    public void fileConstructor() throws IOException, ZserioError
-    {
-        final long selector = VARIANT_A_SELECTOR;
-        final File file = new File("test.bin");
-        final int value = 99;
-        writeUInt32ParamChoiceToFile(file, selector, value);
-        final UInt32ParamChoice uint32ParamChoice = new UInt32ParamChoice(file, selector);
-        assertEquals(selector, uint32ParamChoice.getSelector());
-        assertEquals((byte)value, uint32ParamChoice.getA());
-    }
-
-    @Test
     public void bitStreamReaderConstructor() throws IOException, ZserioError
     {
         final long selector = VARIANT_B_SELECTOR1;
-        final File file = new File("test.bin");
         final int value = 234;
-        writeUInt32ParamChoiceToFile(file, selector, value);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final UInt32ParamChoice uint32ParamChoice = new UInt32ParamChoice(stream, selector);
-        stream.close();
+        final BitBuffer buffer = writeUInt32ParamChoiceToBitBuffer(selector, value);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer.getBuffer(),
+                buffer.getBitSize());
+        final UInt32ParamChoice uint32ParamChoice = new UInt32ParamChoice(reader, selector);
         assertEquals(selector, uint32ParamChoice.getSelector());
         assertEquals((short)value, uint32ParamChoice.getB());
     }
@@ -185,81 +168,56 @@ public class UInt32ParamChoiceTest
     }
 
     @Test
-    public void fileWrite() throws IOException, ZserioError
-    {
-        final UInt32ParamChoice uint32ParamChoiceA = new UInt32ParamChoice(VARIANT_A_SELECTOR);
-        final byte byteValueA = 99;
-        uint32ParamChoiceA.setA(byteValueA);
-        final File file = new File("test.bin");
-        uint32ParamChoiceA.write(file);
-        final UInt32ParamChoice readUInt32ParamChoiceA = new UInt32ParamChoice(file, VARIANT_A_SELECTOR);
-        assertEquals(byteValueA, readUInt32ParamChoiceA.getA());
-
-        final UInt32ParamChoice uint32ParamChoiceB = new UInt32ParamChoice(VARIANT_B_SELECTOR1);
-        final short shortValueB = 234;
-        uint32ParamChoiceB.setB(shortValueB);
-        uint32ParamChoiceB.write(file);
-        final UInt32ParamChoice readUInt32ParamChoiceB = new UInt32ParamChoice(file, VARIANT_B_SELECTOR1);
-        assertEquals(shortValueB, readUInt32ParamChoiceB.getB());
-
-        final UInt32ParamChoice uint32ParamChoiceC = new UInt32ParamChoice(VARIANT_C_SELECTOR);
-        final int intValueC = 65535;
-        uint32ParamChoiceC.setC(intValueC);
-        uint32ParamChoiceC.write(file);
-        final UInt32ParamChoice readUInt32ParamChoiceC = new UInt32ParamChoice(file, VARIANT_C_SELECTOR);
-        assertEquals(intValueC, readUInt32ParamChoiceC.getC());
-    }
-
-    @Test
     public void bitStreamWriterWrite() throws IOException, ZserioError
     {
         final UInt32ParamChoice uint32ParamChoiceA = new UInt32ParamChoice(VARIANT_A_SELECTOR);
         final byte byteValueA = 99;
         uint32ParamChoiceA.setA(byteValueA);
-        final File file = new File("test.bin");
-        BitStreamWriter writer = new FileBitStreamWriter(file);
+        ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         uint32ParamChoiceA.write(writer);
-        writer.close();
-        final UInt32ParamChoice readUInt32ParamChoiceA = new UInt32ParamChoice(file, VARIANT_A_SELECTOR);
+        ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
+                writer.getBitPosition());
+        final UInt32ParamChoice readUInt32ParamChoiceA = new UInt32ParamChoice(reader, VARIANT_A_SELECTOR);
         assertEquals(byteValueA, readUInt32ParamChoiceA.getA());
 
         final UInt32ParamChoice uint32ParamChoiceB = new UInt32ParamChoice(VARIANT_B_SELECTOR1);
         final short shortValueB = 234;
         uint32ParamChoiceB.setB(shortValueB);
-        writer = new FileBitStreamWriter(file);
+        writer = new ByteArrayBitStreamWriter();
         uint32ParamChoiceB.write(writer);
-        writer.close();
-        final UInt32ParamChoice readUInt32ParamChoiceB = new UInt32ParamChoice(file, VARIANT_B_SELECTOR1);
+        reader = new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
+        final UInt32ParamChoice readUInt32ParamChoiceB = new UInt32ParamChoice(reader, VARIANT_B_SELECTOR1);
         assertEquals(shortValueB, readUInt32ParamChoiceB.getB());
 
         final UInt32ParamChoice uint32ParamChoiceC = new UInt32ParamChoice(VARIANT_C_SELECTOR);
         final int intValueC = 65535;
         uint32ParamChoiceC.setC(intValueC);
-        writer = new FileBitStreamWriter(file);
+        writer = new ByteArrayBitStreamWriter();
         uint32ParamChoiceC.write(writer);
-        writer.close();
-        final UInt32ParamChoice readUInt32ParamChoiceC = new UInt32ParamChoice(file, VARIANT_C_SELECTOR);
+        reader = new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
+        final UInt32ParamChoice readUInt32ParamChoiceC = new UInt32ParamChoice(reader, VARIANT_C_SELECTOR);
         assertEquals(intValueC, readUInt32ParamChoiceC.getC());
     }
 
-    private void writeUInt32ParamChoiceToFile(File file, long selector, int value) throws IOException
+    private BitBuffer writeUInt32ParamChoiceToBitBuffer(long selector, int value) throws IOException
     {
-        final FileImageOutputStream stream = new FileImageOutputStream(file);
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            if (selector == 1)
+            {
+                writer.writeByte((byte)value);
+            }
+            else if (selector == 2 || selector == 3 || selector == 4)
+            {
+                writer.writeShort((short)value);
+            }
+            else if (selector != 5 && selector != 6)
+            {
+                writer.writeInt(value);
+            }
 
-        if (selector == 1)
-        {
-            stream.writeByte(value);
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
         }
-        else if (selector == 2 || selector == 3 || selector == 4)
-        {
-            stream.writeShort(value);
-        }
-        else if (selector != 5 && selector != 6)
-        {
-            stream.writeInt(value);
-        }
-
-        stream.close();
     }
 
     private static long VARIANT_A_SELECTOR = 1;

@@ -57,10 +57,9 @@ public class DynamicIntRangeCheckTest
         dynamicIntRangeCheckCompound.setValue(value);
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         dynamicIntRangeCheckCompound.write(writer);
-        final byte[] writtenByteArray = writer.toByteArray();
-        writer.close();
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writtenByteArray);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
+                writer.getBitPosition());
         final DynamicIntRangeCheckCompound readDynamicIntRangeCheckCompound =
                 new DynamicIntRangeCheckCompound(reader);
         assertEquals(dynamicIntRangeCheckCompound, readDynamicIntRangeCheckCompound);

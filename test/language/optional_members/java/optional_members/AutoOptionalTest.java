@@ -3,12 +3,12 @@ package optional_members;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 
-import javax.imageio.stream.FileImageInputStream;
-
 import optional_members.auto_optional.Container;
+import zserio.runtime.io.BitBuffer;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.SerializeUtil;
 
 public class AutoOptionalTest
 {
@@ -105,49 +105,48 @@ public class AutoOptionalTest
     }
 
     @Test
-    public void fileWrite() throws IOException
+    public void writeRead() throws IOException
     {
         final Container container = new Container();
         container.setNonOptionalInt(NON_OPTIONAL_INT_VALUE);
-        final File nonOptionalContainerFile = new File("non_optional.bin");
-        container.write(nonOptionalContainerFile);
-        checkContainerInFile(nonOptionalContainerFile, NON_OPTIONAL_INT_VALUE, null);
-        final Container readNonOptionalContainer = new Container(nonOptionalContainerFile);
+        final BitBuffer nonOptionalBitBuffer = SerializeUtil.serialize(container);
+        checkContainerInBitBuffer(nonOptionalBitBuffer, NON_OPTIONAL_INT_VALUE, null);
+        final Container readNonOptionalContainer = SerializeUtil.deserialize(
+                Container.class, nonOptionalBitBuffer);
         assertEquals(NON_OPTIONAL_INT_VALUE, readNonOptionalContainer.getNonOptionalInt());
         assertFalse(readNonOptionalContainer.isAutoOptionalIntSet());
         assertFalse(readNonOptionalContainer.isAutoOptionalIntUsed());
 
         container.setAutoOptionalInt(AUTO_OPTIONAL_INT_VALUE);
-        final File autoOptionalContainerFile = new File("auto_optional.bin");
-        container.write(autoOptionalContainerFile);
-        checkContainerInFile(autoOptionalContainerFile, NON_OPTIONAL_INT_VALUE, AUTO_OPTIONAL_INT_VALUE);
-        final Container readAutoOptionalContainer = new Container(autoOptionalContainerFile);
+        final BitBuffer autoOptionalBitBuffer = SerializeUtil.serialize(container);
+        checkContainerInBitBuffer(autoOptionalBitBuffer, NON_OPTIONAL_INT_VALUE, AUTO_OPTIONAL_INT_VALUE);
+        final Container readAutoOptionalContainer = SerializeUtil.deserialize(
+                Container.class, autoOptionalBitBuffer);
         assertEquals(NON_OPTIONAL_INT_VALUE, readAutoOptionalContainer.getNonOptionalInt());
         assertTrue(readAutoOptionalContainer.isAutoOptionalIntSet());
         assertTrue(readAutoOptionalContainer.isAutoOptionalIntUsed());
         assertEquals(AUTO_OPTIONAL_INT_VALUE, (int) readAutoOptionalContainer.getAutoOptionalInt());
     }
 
-    private static void checkContainerInFile(File file, int nonOptionalIntValue, Integer autoOptionalIntValue)
-            throws IOException
+    private static void checkContainerInBitBuffer(BitBuffer bitBuffer, int nonOptionalIntValue,
+            Integer autoOptionalIntValue) throws IOException
     {
-        final FileImageInputStream stream = new FileImageInputStream(file);
-
-        if (autoOptionalIntValue == null)
+        try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer))
         {
-            assertEquals((CONTAINER_BIT_SIZE_WITHOUT_OPTIONAL + 7) / Byte.SIZE, stream.length());
-            assertEquals(nonOptionalIntValue, (int) stream.readBits(32));
-            assertEquals(0, stream.readBit());
+            if (autoOptionalIntValue == null)
+            {
+                assertEquals(CONTAINER_BIT_SIZE_WITHOUT_OPTIONAL, reader.getBufferBitSize());
+                assertEquals(nonOptionalIntValue, (int) reader.readBits(32));
+                assertEquals(0, reader.readBits(1));
+            }
+            else
+            {
+                assertEquals(CONTAINER_BIT_SIZE_WITH_OPTIONAL, reader.getBufferBitSize());
+                assertEquals(nonOptionalIntValue, (int) reader.readBits(32));
+                assertEquals(1, reader.readBits(1));
+                assertEquals((int) autoOptionalIntValue, (int) reader.readBits(32));
+            }
         }
-        else
-        {
-            assertEquals((CONTAINER_BIT_SIZE_WITH_OPTIONAL + 7) / Byte.SIZE, stream.length());
-            assertEquals(nonOptionalIntValue, (int) stream.readBits(32));
-            assertEquals(1, stream.readBit());
-            assertEquals((int) autoOptionalIntValue, (int) stream.readBits(32));
-        }
-
-        stream.close();
     }
 
     private static int NON_OPTIONAL_INT_VALUE = 0xDEADDEAD;

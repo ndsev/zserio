@@ -46,10 +46,9 @@ public class Int7ArrayRangeCheckTest
         int7ArrayRangeCheckCompound.setArray(values);
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         int7ArrayRangeCheckCompound.write(writer);
-        final byte[] writtenByteArray = writer.toByteArray();
-        writer.close();
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writtenByteArray);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
+                writer.getBitPosition());
         final Int7ArrayRangeCheckCompound readInt7ArrayRangeCheckCompound =
                 new Int7ArrayRangeCheckCompound(reader);
         assertEquals(int7ArrayRangeCheckCompound, readInt7ArrayRangeCheckCompound);

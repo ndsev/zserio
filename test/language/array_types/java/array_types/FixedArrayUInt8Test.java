@@ -4,14 +4,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.io.File;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
-
+import zserio.runtime.io.BitBuffer;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 import array_types.fixed_array_uint8.FixedArray;
 
 public class FixedArrayUInt8Test
@@ -52,11 +49,8 @@ public class FixedArrayUInt8Test
     @Test
     public void read() throws IOException, ZserioError
     {
-        final File file = new File("test.bin");
-        writeFixedArrayToFile(file);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final FixedArray fixedArray = new FixedArray(stream);
-        stream.close();
+        final BitBuffer buffer = writeFixedArrayToBitBuffer();
+        final FixedArray fixedArray = SerializeUtil.deserialize(FixedArray.class, buffer);
 
         final short[] uint8Array = fixedArray.getUint8Array();
         assertEquals(FIXED_ARRAY_LENGTH, uint8Array.length);
@@ -72,15 +66,10 @@ public class FixedArrayUInt8Test
             uint8Array[i] = i;
 
         FixedArray fixedArray = new FixedArray(uint8Array);
-        final File file = new File(BLOB_NAME);
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        fixedArray.write(writer);
-        writer.close();
+        SerializeUtil.serializeToFile(fixedArray, BLOB_NAME);
 
-        assertEquals(fixedArray.bitSizeOf(), writer.getBitPosition());
-        assertEquals(fixedArray.initializeOffsets(), writer.getBitPosition());
 
-        final FixedArray readFixedArray = new FixedArray(file);
+        final FixedArray readFixedArray = SerializeUtil.deserializeFromFile(FixedArray.class, BLOB_NAME);
         final short[] readUint8Array = readFixedArray.getUint8Array();
         assertEquals(FIXED_ARRAY_LENGTH, readUint8Array.length);
         for (short i = 0; i < FIXED_ARRAY_LENGTH; ++i)
@@ -95,20 +84,20 @@ public class FixedArrayUInt8Test
             uint8Array[i] = i;
 
         FixedArray fixedArray = new FixedArray(uint8Array);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         assertThrows(ZserioError.class, () -> fixedArray.write(writer));
         writer.close();
     }
 
-    private void writeFixedArrayToFile(File file) throws IOException
+    private BitBuffer writeFixedArrayToBitBuffer() throws IOException
     {
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            for (short i = 0; i < FIXED_ARRAY_LENGTH; ++i)
+                writer.writeUnsignedByte(i);
 
-        for (short i = 0; i < FIXED_ARRAY_LENGTH; ++i)
-            writer.writeUnsignedByte(i);
-
-        writer.close();
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
+        }
     }
 
     private static final String BLOB_NAME = "fixed_array_uint8.blob";

@@ -3,19 +3,15 @@ package choice_types;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
-
-import javax.imageio.stream.FileImageOutputStream;
 
 import choice_types.enum_param_choice.EnumParamChoice;
 import choice_types.enum_param_choice.Selector;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.BitBuffer;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
 
 public class EnumParamChoiceTest
 {
@@ -28,27 +24,14 @@ public class EnumParamChoiceTest
     }
 
     @Test
-    public void fileConstructor() throws IOException, ZserioError
-    {
-        final Selector selector = Selector.BLACK;
-        final File file = new File("test.bin");
-        final int value = 99;
-        writeEnumParamChoiceToFile(file, selector, value);
-        final EnumParamChoice enumParamChoice = new EnumParamChoice(file, selector);
-        assertEquals(selector, enumParamChoice.getSelector());
-        assertEquals((byte)value, enumParamChoice.getBlack());
-    }
-
-    @Test
     public void bitStreamReaderConstructor() throws IOException, ZserioError
     {
         final Selector selector = Selector.GREY;
-        final File file = new File("test.bin");
         final int value = 234;
-        writeEnumParamChoiceToFile(file, selector, value);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final EnumParamChoice enumParamChoice = new EnumParamChoice(stream, selector);
-        stream.close();
+        final BitBuffer buffer = writeEnumParamChoiceToBitBuffer(selector, value);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer.getBuffer(),
+                buffer.getBitSize());
+        final EnumParamChoice enumParamChoice = new EnumParamChoice(reader, selector);
         assertEquals(selector, enumParamChoice.getSelector());
         assertEquals((short)value, enumParamChoice.getGrey());
     }
@@ -171,82 +154,54 @@ public class EnumParamChoiceTest
     }
 
     @Test
-    public void fileWrite() throws IOException, ZserioError
-    {
-        Selector selector = Selector.BLACK;
-        EnumParamChoice enumParamChoice = new EnumParamChoice(selector);
-        final byte byteValue = 99;
-        enumParamChoice.setBlack(byteValue);
-        final File file = new File("test.bin");
-        enumParamChoice.write(file);
-        EnumParamChoice readEnumParamChoice = new EnumParamChoice(file, selector);
-        assertEquals(byteValue, readEnumParamChoice.getBlack());
-
-        selector = Selector.GREY;
-        enumParamChoice = new EnumParamChoice(selector);
-        final short shortValue = 234;
-        enumParamChoice.setGrey(shortValue);
-        enumParamChoice.write(file);
-        readEnumParamChoice = new EnumParamChoice(file, selector);
-        assertEquals(shortValue, readEnumParamChoice.getGrey());
-
-        selector = Selector.WHITE;
-        enumParamChoice = new EnumParamChoice(selector);
-        final int intValue = 65535;
-        enumParamChoice.setWhite(intValue);
-        enumParamChoice.write(file);
-        readEnumParamChoice = new EnumParamChoice(file, selector);
-        assertEquals(intValue, readEnumParamChoice.getWhite());
-    }
-
-    @Test
     public void bitStreamWriterWrite() throws IOException, ZserioError
     {
         Selector selector = Selector.BLACK;
         EnumParamChoice enumParamChoice = new EnumParamChoice(selector);
         final byte byteValue = 99;
         enumParamChoice.setBlack(byteValue);
-        final File file = new File("test.bin");
-        BitStreamWriter writer = new FileBitStreamWriter(file);
+        ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         enumParamChoice.write(writer);
-        writer.close();
-        EnumParamChoice readEnumParamChoice = new EnumParamChoice(file, selector);
+        ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
+                writer.getBitPosition());
+        EnumParamChoice readEnumParamChoice = new EnumParamChoice(reader, selector);
         assertEquals(byteValue, readEnumParamChoice.getBlack());
 
         selector = Selector.GREY;
         enumParamChoice = new EnumParamChoice(selector);
         final short shortValue = 234;
         enumParamChoice.setGrey(shortValue);
-        writer = new FileBitStreamWriter(file);
+        writer = new ByteArrayBitStreamWriter();
         enumParamChoice.write(writer);
-        writer.close();
-        readEnumParamChoice = new EnumParamChoice(file, selector);
+        reader = new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
+        readEnumParamChoice = new EnumParamChoice(reader, selector);
         assertEquals(shortValue, readEnumParamChoice.getGrey());
 
         selector = Selector.WHITE;
         enumParamChoice = new EnumParamChoice(selector);
         final int intValue = 65535;
         enumParamChoice.setWhite(intValue);
-        writer = new FileBitStreamWriter(file);
+        writer = new ByteArrayBitStreamWriter();
         enumParamChoice.write(writer);
-        writer.close();
-        readEnumParamChoice = new EnumParamChoice(file, selector);
+        reader = new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
+        readEnumParamChoice = new EnumParamChoice(reader, selector);
         assertEquals(intValue, readEnumParamChoice.getWhite());
     }
 
-    private void writeEnumParamChoiceToFile(File file, Selector selector, int value) throws IOException
+    private BitBuffer writeEnumParamChoiceToBitBuffer(Selector selector, int value) throws IOException
     {
-        final FileImageOutputStream stream = new FileImageOutputStream(file);
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            if (selector == Selector.BLACK)
+                writer.writeByte((byte)value);
+            else if (selector == Selector.GREY)
+                writer.writeShort((short)value);
+            else if (selector == Selector.WHITE)
+                writer.writeInt(value);
+            else
+                fail("Invalid selector: " + selector);
 
-        if (selector == Selector.BLACK)
-            stream.writeByte(value);
-        else if (selector == Selector.GREY)
-            stream.writeShort(value);
-        else if (selector == Selector.WHITE)
-            stream.writeInt(value);
-        else
-            fail("Invalid selector: " + selector);
-
-        stream.close();
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
+        }
     }
 }

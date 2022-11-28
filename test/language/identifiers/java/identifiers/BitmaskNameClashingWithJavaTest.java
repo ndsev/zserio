@@ -3,19 +3,8 @@ package identifiers;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.stream.FileImageOutputStream;
-
 import identifiers.bitmask_name_clashing_with_java.BitmaskNameClashingWithJava;
 import identifiers.bitmask_name_clashing_with_java.String;
-
-import zserio.runtime.ZserioError;
-import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
 
 public class BitmaskNameClashingWithJavaTest
 {

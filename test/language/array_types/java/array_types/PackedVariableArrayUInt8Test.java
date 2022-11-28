@@ -7,10 +7,9 @@ import java.io.IOException;
 import java.io.File;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.BitBuffer;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 import array_types.packed_variable_array_uint8.PackedVariableArray;
 
 public class PackedVariableArrayUInt8Test
@@ -105,12 +104,9 @@ public class PackedVariableArrayUInt8Test
 
     private void checkRead(int numElements) throws IOException, ZserioError
     {
-        final File file = new File("test.bin");
-        writePackedVariableArrayToFile(file, numElements);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final PackedVariableArray packedVariableArray = new PackedVariableArray(stream);
-        stream.close();
-
+        final BitBuffer buffer = writePackedVariableArrayToBitBuffer(numElements);
+        final PackedVariableArray packedVariableArray =
+                SerializeUtil.deserialize(PackedVariableArray.class, buffer);
         checkPackedVariableArray(packedVariableArray, numElements);
     }
 
@@ -118,14 +114,9 @@ public class PackedVariableArrayUInt8Test
     {
         final PackedVariableArray packedVariableArray = createPackedVariableArray(numElements);
         final File file = new File(BLOB_NAME_BASE + numElements + ".blob");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        packedVariableArray.write(writer);
-        writer.close();
-
-        assertEquals(packedVariableArray.bitSizeOf(), writer.getBitPosition());
-        assertEquals(packedVariableArray.initializeOffsets(), writer.getBitPosition());
-
-        final PackedVariableArray readPackedVariableArray = new PackedVariableArray(file);
+        SerializeUtil.serializeToFile(packedVariableArray, file);
+        final PackedVariableArray readPackedVariableArray =
+                SerializeUtil.deserializeFromFile(PackedVariableArray.class, file);
         checkPackedVariableArray(readPackedVariableArray, numElements);
     }
 
@@ -158,23 +149,24 @@ public class PackedVariableArrayUInt8Test
         return new PackedVariableArray(numElements, uint8Array);
     }
 
-    private void writePackedVariableArrayToFile(File file, int numElements) throws IOException
+    private BitBuffer writePackedVariableArrayToBitBuffer(int numElements) throws IOException
     {
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
-
-        writer.writeVarSize(numElements);
-        writer.writeBool(true);
-        writer.writeBits(PACKED_ARRAY_MAX_BIT_NUMBER, 6);
-        short value = PACKED_ARRAY_ELEMENT0;
-        writer.writeBits(value, 8);
-        if (numElements > 1)
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
-            writer.writeSignedBits(PACKED_ARRAY_DELTA * 2, PACKED_ARRAY_MAX_BIT_NUMBER + 1);
-            for (int i = 2; i < numElements; ++i)
-                writer.writeSignedBits(PACKED_ARRAY_DELTA, PACKED_ARRAY_MAX_BIT_NUMBER + 1);
-        }
+            writer.writeVarSize(numElements);
+            writer.writeBool(true);
+            writer.writeBits(PACKED_ARRAY_MAX_BIT_NUMBER, 6);
+            short value = PACKED_ARRAY_ELEMENT0;
+            writer.writeBits(value, 8);
+            if (numElements > 1)
+            {
+                writer.writeSignedBits(PACKED_ARRAY_DELTA * 2, PACKED_ARRAY_MAX_BIT_NUMBER + 1);
+                for (int i = 2; i < numElements; ++i)
+                    writer.writeSignedBits(PACKED_ARRAY_DELTA, PACKED_ARRAY_MAX_BIT_NUMBER + 1);
+            }
 
-        writer.close();
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
+        }
     }
 
     private int calcPackedVariableArrayBitSize(int numElements)

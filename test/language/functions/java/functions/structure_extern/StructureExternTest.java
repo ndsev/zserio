@@ -3,11 +3,6 @@ package functions.structure_extern;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.util.Arrays;
-
-import zserio.runtime.io.ByteArrayBitStreamReader;
-import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.BitBuffer;
 
 public class StructureExternTest

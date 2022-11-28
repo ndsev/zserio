@@ -7,15 +7,13 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 
-import javax.imageio.stream.FileImageOutputStream;
-
 import choice_types.uint64_param_choice.UInt64ParamChoice;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.BitBuffer;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 
 public class UInt64ParamChoiceTest
 {
@@ -27,23 +25,12 @@ public class UInt64ParamChoiceTest
     }
 
     @Test
-    public void fileConstructor() throws IOException, ZserioError
-    {
-        final File file = new File("test.bin");
-        final byte value = 99;
-        writeUInt64ParamChoiceToFile(file, VARIANT_A_SELECTOR, value);
-        final UInt64ParamChoice uint64ParamChoice = new UInt64ParamChoice(file, VARIANT_A_SELECTOR);
-        assertEquals(VARIANT_A_SELECTOR, uint64ParamChoice.getSelector());
-        assertEquals(value, uint64ParamChoice.getA());
-    }
-
-    @Test
     public void bitStreamReaderConstructor() throws IOException, ZserioError
     {
-        final File file = new File("test.bin");
         final short value = 234;
-        writeUInt64ParamChoiceToFile(file, VARIANT_B_SELECTOR, value);
-        final BitStreamReader stream = new FileBitStreamReader(file);
+        final BitBuffer buffer = writeUInt64ParamChoiceToBitBuffer(VARIANT_B_SELECTOR, value);
+        final ByteArrayBitStreamReader stream = new ByteArrayBitStreamReader(buffer.getBuffer(),
+                buffer.getBitSize());
         final UInt64ParamChoice uint64ParamChoice = new UInt64ParamChoice(stream, VARIANT_B_SELECTOR);
         stream.close();
         assertEquals(VARIANT_B_SELECTOR, uint64ParamChoice.getSelector());
@@ -169,20 +156,20 @@ public class UInt64ParamChoiceTest
         UInt64ParamChoice uint64ParamChoice = new UInt64ParamChoice(VARIANT_A_SELECTOR);
         final byte byteValue = 99;
         uint64ParamChoice.setA(byteValue);
-        final File file = new File("test.bin");
-        BitStreamWriter writer = new FileBitStreamWriter(file);
+        ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         uint64ParamChoice.write(writer);
-        writer.close();
-        UInt64ParamChoice readUInt64ParamChoice = new UInt64ParamChoice(file, VARIANT_A_SELECTOR);
+        ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
+                writer.getBitPosition());
+        UInt64ParamChoice readUInt64ParamChoice = new UInt64ParamChoice(reader, VARIANT_A_SELECTOR);
         assertEquals(byteValue, readUInt64ParamChoice.getA());
 
         uint64ParamChoice = new UInt64ParamChoice(VARIANT_B_SELECTOR);
         final short shortValue = 234;
         uint64ParamChoice.setB(shortValue);
-        writer = new FileBitStreamWriter(file);
+        writer = new ByteArrayBitStreamWriter();
         uint64ParamChoice.write(writer);
-        writer.close();
-        readUInt64ParamChoice = new UInt64ParamChoice(file, VARIANT_B_SELECTOR);
+        reader = new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
+        readUInt64ParamChoice = new UInt64ParamChoice(reader, VARIANT_B_SELECTOR);
         assertEquals(shortValue, readUInt64ParamChoice.getB());
     }
 
@@ -193,39 +180,44 @@ public class UInt64ParamChoiceTest
         final byte byteValue = 99;
         uint64ParamChoice.setA(byteValue);
         final File fileA = new File(BLOB_NAME_BASE + "a.blob");
-        uint64ParamChoice.write(fileA);
-        UInt64ParamChoice readUInt64ParamChoice = new UInt64ParamChoice(fileA, VARIANT_A_SELECTOR);
+        SerializeUtil.serializeToFile(uint64ParamChoice, fileA);
+        UInt64ParamChoice readUInt64ParamChoice =
+                SerializeUtil.deserializeFromFile(UInt64ParamChoice.class, fileA, VARIANT_A_SELECTOR);
         assertEquals(byteValue, readUInt64ParamChoice.getA());
 
         uint64ParamChoice = new UInt64ParamChoice(VARIANT_B_SELECTOR);
         final short shortValue = 234;
         uint64ParamChoice.setB(shortValue);
         final File fileB = new File(BLOB_NAME_BASE + "b.blob");
-        uint64ParamChoice.write(fileB);
-        readUInt64ParamChoice = new UInt64ParamChoice(fileB, VARIANT_B_SELECTOR);
+        SerializeUtil.serializeToFile(uint64ParamChoice, fileB);
+        readUInt64ParamChoice =
+                SerializeUtil.deserializeFromFile(UInt64ParamChoice.class, fileB, VARIANT_B_SELECTOR);
         assertEquals(shortValue, readUInt64ParamChoice.getB());
     }
 
-    private void writeUInt64ParamChoiceToFile(File file, BigInteger selector, int value) throws IOException
+    private BitBuffer writeUInt64ParamChoiceToBitBuffer(BigInteger selector, int value) throws IOException
     {
-        final FileImageOutputStream stream = new FileImageOutputStream(file);
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            if (selector.compareTo(new BigInteger("1")) == 0)
+                writer.writeByte((byte)value);
+            else if (selector.compareTo(new BigInteger("2")) == 0 ||
+                    selector.compareTo(new BigInteger("3")) == 0 ||
+                    selector.compareTo(new BigInteger("4")) == 0)
+                writer.writeShort((short)value);
+            else if (selector.compareTo(new BigInteger("5")) == 0 ||
+                    selector.compareTo(new BigInteger("6")) == 0)
+                ;
+            else
+                writer.writeInt(value);
 
-        if (selector.compareTo(new BigInteger("1")) == 0)
-            stream.writeByte(value);
-        else if (selector.compareTo(new BigInteger("2")) == 0 || selector.compareTo(new BigInteger("3")) == 0 ||
-                 selector.compareTo(new BigInteger("4")) == 0)
-            stream.writeShort(value);
-        else if (selector.compareTo(new BigInteger("5")) == 0 || selector.compareTo(new BigInteger("6")) == 0)
-            ;
-        else
-            stream.writeInt(value);
-
-        stream.close();
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
+        }
     }
 
-    private final static String BLOB_NAME_BASE = "uint64_param_choice_";
-    private final static BigInteger VARIANT_A_SELECTOR = BigInteger.ONE;
-    private final static BigInteger VARIANT_B_SELECTOR = new BigInteger("2");
-    private final static BigInteger VARIANT_C_SELECTOR = new BigInteger("7");
-    private final static BigInteger EMPTY_SELECTOR = new BigInteger("5");
+    private static final String BLOB_NAME_BASE = "uint64_param_choice_";
+    private static final BigInteger VARIANT_A_SELECTOR = BigInteger.ONE;
+    private static final BigInteger VARIANT_B_SELECTOR = new BigInteger("2");
+    private static final BigInteger VARIANT_C_SELECTOR = new BigInteger("7");
+    private static final BigInteger EMPTY_SELECTOR = new BigInteger("5");
 }

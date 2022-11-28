@@ -4,15 +4,15 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.io.File;
 
 import offsets.optional_member_offset.OptionalMemberOffset;
 
 import zserio.runtime.ZserioError;
+import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 
 public class OptionalMemberOffsetTest
 {
@@ -22,11 +22,11 @@ public class OptionalMemberOffsetTest
         final boolean hasOptional = true;
         final int optionalField = 0x1212;
         final int field = 0x2121;
-        final File file = new File("test.bin");
-        writeOptionalMemberOffsetToFile(file, hasOptional, OPTIONAL_FIELD_OFFSET, optionalField, field);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final OptionalMemberOffset optionalMemberOffset = new OptionalMemberOffset(stream);
-        stream.close();
+        final BitBuffer bitBuffer = writeOptionalMemberOffsetToBitBuffer(
+                hasOptional, OPTIONAL_FIELD_OFFSET, optionalField, field);
+        final BitStreamReader reader= new ByteArrayBitStreamReader(bitBuffer);
+        final OptionalMemberOffset optionalMemberOffset = new OptionalMemberOffset();
+        optionalMemberOffset.read(reader);
         checkOptionalMemberOffset(optionalMemberOffset, hasOptional, OPTIONAL_FIELD_OFFSET, optionalField,
                 field);
     }
@@ -37,11 +37,11 @@ public class OptionalMemberOffsetTest
         final boolean hasOptional = false;
         final long optionalFieldOffset = 0xABCD;
         final int field = 0x2121;
-        final File file = new File("test.bin");
-        writeOptionalMemberOffsetToFile(file, hasOptional, optionalFieldOffset, null, field);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final OptionalMemberOffset optionalMemberOffset = new OptionalMemberOffset(stream);
-        stream.close();
+        final BitBuffer bitBuffer = writeOptionalMemberOffsetToBitBuffer(
+                hasOptional, optionalFieldOffset, null, field);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+        final OptionalMemberOffset optionalMemberOffset = new OptionalMemberOffset();
+        optionalMemberOffset.read(reader);
         checkOptionalMemberOffset(optionalMemberOffset, hasOptional, optionalFieldOffset, null, field);
     }
 
@@ -89,20 +89,18 @@ public class OptionalMemberOffsetTest
     }
 
     @Test
-    public void writeWithOptional() throws IOException, ZserioError
+    public void writeReadWithOptional() throws IOException, ZserioError
     {
         final boolean hasOptional = true;
         final int optionalField = 0x1A1A;
         final int field = 0xA1A1;
         final OptionalMemberOffset optionalMemberOffset = new OptionalMemberOffset(hasOptional,
                 OPTIONAL_FIELD_OFFSET, optionalField, field);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        optionalMemberOffset.write(writer);
-        writer.close();
+        final BitBuffer bitBuffer = SerializeUtil.serialize(optionalMemberOffset);
         checkOptionalMemberOffset(optionalMemberOffset, hasOptional, OPTIONAL_FIELD_OFFSET, optionalField,
                 field);
-        final OptionalMemberOffset readOptionalMemberOffset = new OptionalMemberOffset(file);
+        final OptionalMemberOffset readOptionalMemberOffset = SerializeUtil.deserialize(
+                OptionalMemberOffset.class, bitBuffer);
         checkOptionalMemberOffset(readOptionalMemberOffset, hasOptional, OPTIONAL_FIELD_OFFSET, optionalField,
                 field);
         assertTrue(optionalMemberOffset.equals(readOptionalMemberOffset));
@@ -116,30 +114,32 @@ public class OptionalMemberOffsetTest
         final int field = 0x7ACF;
         final OptionalMemberOffset optionalMemberOffset = new OptionalMemberOffset(hasOptional,
                 optionalFieldOffset, null, field);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         optionalMemberOffset.write(writer);
-        writer.close();
-        final OptionalMemberOffset readOptionalMemberOffset = new OptionalMemberOffset(file);
+
+        final BitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
+        final OptionalMemberOffset readOptionalMemberOffset = new OptionalMemberOffset(reader);
         checkOptionalMemberOffset(readOptionalMemberOffset, hasOptional, optionalFieldOffset, null, field);
         assertTrue(optionalMemberOffset.equals(readOptionalMemberOffset));
     }
 
-    private void writeOptionalMemberOffsetToFile(File file, boolean hasOptional, long optionalFieldOffset,
+    private BitBuffer writeOptionalMemberOffsetToBitBuffer(boolean hasOptional, long optionalFieldOffset,
             Integer optionalField, int field) throws IOException
     {
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
-
-        writer.writeBool(hasOptional);
-        writer.writeUnsignedInt(optionalFieldOffset);
-        if (hasOptional)
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
-            writer.writeBits(0, 7);
-            writer.writeInt(optionalField);
-        }
-        writer.writeInt(field);
+            writer.writeBool(hasOptional);
+            writer.writeUnsignedInt(optionalFieldOffset);
+            if (hasOptional)
+            {
+                writer.writeBits(0, 7);
+                writer.writeInt(optionalField);
+            }
+            writer.writeInt(field);
 
-        writer.close();
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
+        }
     }
 
     private void checkOptionalMemberOffset(OptionalMemberOffset optionalMemberOffset, boolean hasOptional,

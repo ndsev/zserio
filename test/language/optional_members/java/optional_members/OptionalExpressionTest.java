@@ -3,14 +3,14 @@ package optional_members;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
-
-import javax.imageio.stream.FileImageInputStream;
 
 import optional_members.optional_expression.BasicColor;
 import optional_members.optional_expression.BlackColor;
 import optional_members.optional_expression.Container;
+import zserio.runtime.io.BitBuffer;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.SerializeUtil;
 
 public class OptionalExpressionTest
 {
@@ -149,7 +149,8 @@ public class OptionalExpressionTest
         final Container container = new Container();
         container.setBasicColor(BasicColor.WHITE);
         final int bitPosition = 1;
-        assertEquals(bitPosition + CONTAINER_BIT_SIZE_WITHOUT_OPTIONAL, container.initializeOffsets(bitPosition));
+        assertEquals(bitPosition + CONTAINER_BIT_SIZE_WITHOUT_OPTIONAL,
+                container.initializeOffsets(bitPosition));
 
         container.setBasicColor(BasicColor.BLACK);
         container.setNumBlackTones(NUM_BLACK_TONES);
@@ -158,14 +159,13 @@ public class OptionalExpressionTest
     }
 
     @Test
-    public void fileWrite() throws IOException
+    public void writeRead() throws IOException
     {
         final Container container = new Container();
         container.setBasicColor(BasicColor.WHITE);
-        final File whiteContainerFile = new File("white.bin");
-        container.write(whiteContainerFile);
-        checkContainerInFile(whiteContainerFile, BasicColor.WHITE, NUM_BLACK_TONES);
-        Container readContainer = new Container(whiteContainerFile);
+        final BitBuffer whiteBitBuffer = SerializeUtil.serialize(container);
+        checkContainerInBitBuffer(whiteBitBuffer, BasicColor.WHITE, NUM_BLACK_TONES);
+        Container readContainer = SerializeUtil.deserialize(Container.class, whiteBitBuffer);
         assertEquals(BasicColor.WHITE, readContainer.getBasicColor());
         assertFalse(readContainer.isNumBlackTonesSet());
         assertFalse(readContainer.isNumBlackTonesUsed());
@@ -176,10 +176,9 @@ public class OptionalExpressionTest
         container.setNumBlackTones(NUM_BLACK_TONES);
         final BlackColor blackColor = createBlackColor(NUM_BLACK_TONES);
         container.setBlackColor(blackColor);
-        final File blackContainerFile = new File("black.bin");
-        container.write(blackContainerFile);
-        checkContainerInFile(blackContainerFile, BasicColor.BLACK, NUM_BLACK_TONES);
-        readContainer = new Container(blackContainerFile);
+        final BitBuffer blackBitBuffer = SerializeUtil.serialize(container);
+        checkContainerInBitBuffer(blackBitBuffer, BasicColor.BLACK, NUM_BLACK_TONES);
+        readContainer = SerializeUtil.deserialize(Container.class, blackBitBuffer);
         assertEquals(BasicColor.BLACK, readContainer.getBasicColor());
         assertEquals(NUM_BLACK_TONES, (short)readContainer.getNumBlackTones());
         assertTrue(blackColor.equals(readContainer.getBlackColor()));
@@ -201,26 +200,25 @@ public class OptionalExpressionTest
         return blackColor;
     }
 
-    private static void checkContainerInFile(File file, BasicColor basicColor, short numBlackTones)
-            throws IOException
+    private static void checkContainerInBitBuffer(BitBuffer bitBuffer, BasicColor basicColor,
+            short numBlackTones) throws IOException
     {
-        final FileImageInputStream stream = new FileImageInputStream(file);
-
-        if (basicColor == BasicColor.WHITE)
+        try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer))
         {
-            assertEquals(1, stream.length());
-            assertEquals(basicColor.getValue(), stream.readByte());
+            if (basicColor == BasicColor.WHITE)
+            {
+                assertEquals(8, reader.getBufferBitSize());
+                assertEquals(basicColor.getValue(), reader.readByte());
+            }
+            else
+            {
+                assertEquals((long)(1 + 1 + 4 * numBlackTones) * Byte.SIZE, reader.getBufferBitSize());
+                assertEquals(basicColor.getValue(), reader.readByte());
+                assertEquals(numBlackTones, reader.readByte());
+                for (short i = 0; i < numBlackTones; ++i)
+                    assertEquals(i + 1, reader.readInt());
+            }
         }
-        else
-        {
-            assertEquals(1 + 1 + 4 * numBlackTones, stream.length());
-            assertEquals(basicColor.getValue(), stream.readByte());
-            assertEquals(numBlackTones, stream.readByte());
-            for (short i = 0; i < numBlackTones; ++i)
-                assertEquals(i + 1, stream.readInt());
-        }
-
-        stream.close();
     }
 
     private static short NUM_BLACK_TONES = 2;

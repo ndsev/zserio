@@ -19,8 +19,7 @@ import choice_types.choice_compatibility_check.CoordXYZ;
 
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 import zserio.runtime.io.Writer;
 
 public class ChoiceCompatibilityCheckTest
@@ -212,13 +211,9 @@ public class ChoiceCompatibilityCheckTest
     {
         final File file = new File(BLOB_NAME_BASE + variant + ".blob");
 
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
-        choiceCompatibilityCheck.write(writer);
-        writer.close();
-
-        final FileBitStreamReader reader = new FileBitStreamReader(file);
-        final ChoiceCompatibilityCheckVersion1 readChoice = new ChoiceCompatibilityCheckVersion1(reader);
-        reader.close();
+        SerializeUtil.serializeToFile(choiceCompatibilityCheck, file);
+        final ChoiceCompatibilityCheckVersion1 readChoice =
+                SerializeUtil.deserializeFromFile(ChoiceCompatibilityCheckVersion1.class, file);
 
         return readChoice;
     }
@@ -228,13 +223,9 @@ public class ChoiceCompatibilityCheckTest
     {
         final File file = new File(BLOB_NAME_BASE + variant + ".blob");
 
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
-        choiceCompatibilityCheck.write(writer);
-        writer.close();
-
-        final FileBitStreamReader reader = new FileBitStreamReader(file);
-        final ChoiceCompatibilityCheckVersion2 readChoice = new ChoiceCompatibilityCheckVersion2(reader);
-        reader.close();
+        SerializeUtil.serializeToFile(choiceCompatibilityCheck, file);
+        final ChoiceCompatibilityCheckVersion2 readChoice =
+                SerializeUtil.deserializeFromFile(ChoiceCompatibilityCheckVersion2.class, file);
 
         return readChoice;
     }

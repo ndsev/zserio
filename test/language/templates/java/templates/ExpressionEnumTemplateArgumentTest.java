@@ -3,15 +3,11 @@ package templates;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 
-import zserio.runtime.BitSizeOfCalculator;
-import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
 
 import templates.expression_enum_template_argument.EnumTemplateArgumentHolder;
 import templates.expression_enum_template_argument.EnumTemplateArgument_Color;
@@ -26,16 +22,13 @@ public class ExpressionEnumTemplateArgumentTest
 
         final EnumTemplateArgumentHolder enumTemplateArgumentHolder =
                 new EnumTemplateArgumentHolder(enumTemplateArgument_Color);
-        final BitStreamWriter writer = new FileBitStreamWriter(TEST_FILE);
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         enumTemplateArgumentHolder.write(writer);
-        writer.close();
-        final BitStreamReader reader = new FileBitStreamReader(TEST_FILE);
 
+        final BitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
         final EnumTemplateArgumentHolder readEnumTemplateArgumentHolder =
                 new EnumTemplateArgumentHolder(reader);
-        reader.close();
         assertTrue(enumTemplateArgumentHolder.equals(readEnumTemplateArgumentHolder));
     }
-
-    private static final File TEST_FILE = new File("test.bin");
 }

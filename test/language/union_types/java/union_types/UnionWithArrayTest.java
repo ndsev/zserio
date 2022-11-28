@@ -6,8 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
 
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 
 import union_types.union_with_array.TestUnion;
 import union_types.union_with_array.Data8;
@@ -37,11 +36,9 @@ public class UnionWithArrayTest
             final TestUnion testUnion = new TestUnion();
             testUnion.setArray8(createArray8());
             final File file = new File(BLOB_NAME_BASE + "array8.blob");
-            final FileBitStreamWriter writer = new FileBitStreamWriter(file);
-            testUnion.write(writer);
-            writer.close();
+            SerializeUtil.serializeToFile(testUnion, file);
 
-            final TestUnion readTestUnion = new TestUnion(file);
+            final TestUnion readTestUnion = SerializeUtil.deserializeFromFile(TestUnion.class, file);
             assertEquals(testUnion, readTestUnion);
         }
 
@@ -49,11 +46,9 @@ public class UnionWithArrayTest
             final TestUnion testUnion = new TestUnion();
             testUnion.setArray16(createArray16());
             final File file = new File(BLOB_NAME_BASE + "array16.blob");
-            final FileBitStreamWriter writer = new FileBitStreamWriter(file);
-            testUnion.write(writer);
-            writer.close();
+            SerializeUtil.serializeToFile(testUnion, file);
 
-            final TestUnion readTestUnion = new TestUnion(file);
+            final TestUnion readTestUnion = SerializeUtil.deserializeFromFile(TestUnion.class, file);
             assertEquals(testUnion, readTestUnion);
         }
     }

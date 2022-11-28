@@ -3,8 +3,9 @@ package without_writer_code;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -12,19 +13,17 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
 import zserio.runtime.BitPositionUtil;
-import zserio.runtime.SqlDatabase;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 
 public class WithoutWriterCodeTest
 {
@@ -288,7 +287,8 @@ public class WithoutWriterCodeTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         writeTile(writer);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
+        final BitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
+                writer.getBitPosition());
         final Tile tile = new Tile(reader);
         checkTile(tile);
     }
@@ -296,13 +296,17 @@ public class WithoutWriterCodeTest
     @Test
     public void readFile() throws IOException
     {
-        final File file = new File(BLOB_NAME);
-        try (final FileBitStreamWriter writer = new FileBitStreamWriter(file))
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
+        writeTile(writer);
+
+        final byte[] bytes = writer.toByteArray();
+        try (final FileOutputStream outputStream = new FileOutputStream(new File(BLOB_NAME)))
         {
-            writeTile(writer);
+            outputStream.write(bytes);
+            outputStream.flush();
         }
 
-        final Tile tile = new Tile(file);
+        final Tile tile = SerializeUtil.deserializeFromFile(Tile.class, BLOB_NAME);
         checkTile(tile);
     }
 

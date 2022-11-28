@@ -20,12 +20,12 @@ public class StructureParentChildValueTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         parentValue.write(writer);
         final byte[] writtenByteArray = writer.toByteArray();
-        writer.close();
 
         final byte[] expectedByteArray = writeParentValueToByteArray();
         assertTrue(Arrays.equals(expectedByteArray, writtenByteArray));
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writtenByteArray);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
+                writtenByteArray, writer.getBitPosition());
         final ParentValue readParentValue = new ParentValue(reader);
         assertEquals(parentValue, readParentValue);
     }

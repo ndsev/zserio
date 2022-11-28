@@ -540,7 +540,6 @@ public class SimpleTableValidationTest
     private static final long SIMPLE_TABLE_LOCAL_COUNT = 10;
 
     private static final byte FIELD_BIT5_OUT_OF_RANGE_ROW_ID = 0;
-    private static final byte FIELD_DYNAMIC_BIT_OUT_OF_RANGE_ROW_ID = 1;
     private static final byte FIELD_VARINT16_OUT_OF_RANGE_ROW_ID = 2;
     private static final byte FIELD_BITMASK_OUT_OF_RANGE_ROW_ID = 3;
     private static final byte FIELD_ENUM_RED_ROW_ID = 1;

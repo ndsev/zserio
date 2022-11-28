@@ -43,10 +43,9 @@ public class UnionInt4RangeCheckTest
         unionInt4RangeCheckCompound.setValue(value);
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         unionInt4RangeCheckCompound.write(writer);
-        final byte[] writtenByteArray = writer.toByteArray();
-        writer.close();
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writtenByteArray);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
+                writer.getBitPosition());
         final UnionInt4RangeCheckCompound readUnionInt4RangeCheckCompound =
                 new UnionInt4RangeCheckCompound(reader);
         assertEquals(unionInt4RangeCheckCompound, readUnionInt4RangeCheckCompound);

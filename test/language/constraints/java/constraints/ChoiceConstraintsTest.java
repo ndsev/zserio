@@ -3,71 +3,63 @@ package constraints;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
-
-import javax.imageio.stream.FileImageOutputStream;
 
 import constraints.choice_constraints.ChoiceConstraints;
 
 import zserio.runtime.ZserioError;
+import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 
 public class ChoiceConstraintsTest
 {
     @Test
-    public void readCorrectConstraints() throws IOException, ZserioError
+    public void readConstructorCorrectConstraints() throws IOException, ZserioError
     {
-        final File file = new File("test.bin");
         final boolean selector = true;
         final short value8 = VALUE8_CORRECT_CONSTRAINT;
-        writeChoiceConstraintsToFile(file, selector, value8, 0);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final ChoiceConstraints choiceConstraints = new ChoiceConstraints(stream, selector);
-        stream.close();
+        final BitBuffer bitBuffer = writeChoiceConstraintsToBitBuffer(selector, value8, 0);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+        final ChoiceConstraints choiceConstraints = new ChoiceConstraints(reader, selector);
         assertEquals(selector, choiceConstraints.getSelector());
         assertEquals(value8, choiceConstraints.getValue8());
     }
 
     @Test
-    public void readWrongValue8Constraint() throws IOException, ZserioError
+    public void readConstructorWrongValue8Constraint() throws IOException, ZserioError
     {
-        final File file = new File("test.bin");
         final boolean selector = true;
         final short value8 = VALUE8_WRONG_CONSTRAINT;
-        writeChoiceConstraintsToFile(file, selector, value8, 0);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        assertThrows(ZserioError.class, () -> new ChoiceConstraints(stream, selector));
-        stream.close();
+        final BitBuffer bitBuffer = writeChoiceConstraintsToBitBuffer(selector, value8, 0);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+        assertThrows(ZserioError.class, () -> new ChoiceConstraints(reader, selector));
     }
 
     @Test
-    public void readWrongValue16Constraint() throws IOException, ZserioError
+    public void readConstructorWrongValue16Constraint() throws IOException, ZserioError
     {
-        final File file = new File("test.bin");
         final boolean selector = false;
         final int value16 = VALUE16_WRONG_CONSTRAINT;
-        writeChoiceConstraintsToFile(file, selector, (short)0, value16);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        assertThrows(ZserioError.class, () -> new ChoiceConstraints(stream, selector));
-        stream.close();
+        final BitBuffer bitBuffer = writeChoiceConstraintsToBitBuffer(selector, (short)0, value16);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+        assertThrows(ZserioError.class, () -> new ChoiceConstraints(reader, selector));
     }
 
     @Test
-    public void writeCorrectChoiceConstraints() throws IOException, ZserioError
+    public void writeReadCorrectChoiceConstraints() throws IOException, ZserioError
     {
         final boolean selector = false;
         final int value16 = VALUE16_CORRECT_CONSTRAINT;
         final ChoiceConstraints choiceConstraints = new ChoiceConstraints(selector);
         choiceConstraints.setValue16(value16);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        choiceConstraints.write(writer);
-        writer.close();
-        final ChoiceConstraints readChoiceConstraints = new ChoiceConstraints(file, selector);
+        final BitBuffer bitBuffer = SerializeUtil.serialize(choiceConstraints);
+
+        final ChoiceConstraints readChoiceConstraints = SerializeUtil.deserialize(
+                ChoiceConstraints.class, bitBuffer, selector);
         assertEquals(selector, readChoiceConstraints.getSelector());
         assertEquals(value16, readChoiceConstraints.getValue16());
         assertTrue(choiceConstraints.equals(readChoiceConstraints));
@@ -80,10 +72,8 @@ public class ChoiceConstraintsTest
         final short value8 = VALUE8_WRONG_CONSTRAINT;
         final ChoiceConstraints choiceConstraints = new ChoiceConstraints(selector);
         choiceConstraints.setValue8(value8);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
+        final BitStreamWriter writer = new ByteArrayBitStreamWriter();
         assertThrows(ZserioError.class, () -> choiceConstraints.write(writer));
-        writer.close();
     }
 
     @Test
@@ -93,23 +83,22 @@ public class ChoiceConstraintsTest
         final short value16 = VALUE16_WRONG_CONSTRAINT;
         final ChoiceConstraints choiceConstraints = new ChoiceConstraints(selector);
         choiceConstraints.setValue16(value16);
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
+        final BitStreamWriter writer = new ByteArrayBitStreamWriter();
         assertThrows(ZserioError.class, () -> choiceConstraints.write(writer));
-        writer.close();
     }
 
-    private void writeChoiceConstraintsToFile(File file, boolean selector, short value8, int value16)
+    private BitBuffer writeChoiceConstraintsToBitBuffer(boolean selector, short value8, int value16)
             throws IOException
     {
-        final FileImageOutputStream stream = new FileImageOutputStream(file);
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            if (selector)
+                writer.writeBits(value8, 8);
+            else
+                writer.writeBits(value16, 16);
 
-        if (selector)
-            stream.writeBits(value8, 8);
-        else
-            stream.writeBits(value16, 16);
-
-        stream.close();
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
+        }
     }
 
     private static final short VALUE8_CORRECT_CONSTRAINT = 1;

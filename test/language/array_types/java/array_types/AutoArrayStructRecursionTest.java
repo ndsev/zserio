@@ -7,11 +7,9 @@ import java.io.IOException;
 import java.io.File;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
-
+import zserio.runtime.io.BitBuffer;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 import array_types.auto_array_struct_recursion.AutoArrayRecursion;
 
 public class AutoArrayStructRecursionTest
@@ -82,11 +80,9 @@ public class AutoArrayStructRecursionTest
 
     private void checkRead(short numElements) throws IOException, ZserioError
     {
-        final File file = new File("test.bin");
-        writeAutoArrayRecursionToFile(file, numElements);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final AutoArrayRecursion autoArrayRecursion = new AutoArrayRecursion(stream);
-        stream.close();
+        final BitBuffer buffer = writeAutoArrayRecursionToBitBuffer(numElements);
+        final AutoArrayRecursion autoArrayRecursion =
+                SerializeUtil.deserialize(AutoArrayRecursion.class, buffer);
         checkAutoArrayRecursion(autoArrayRecursion, numElements);
     }
 
@@ -94,14 +90,10 @@ public class AutoArrayStructRecursionTest
     {
         final AutoArrayRecursion autoArrayRecursion = createAutoArrayRecursion(numElements);
         final File file = new File(BLOB_NAME_BASE + numElements + ".blob");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        autoArrayRecursion.write(writer);
-        writer.close();
+        SerializeUtil.serializeToFile(autoArrayRecursion, file);
 
-        assertEquals(autoArrayRecursion.bitSizeOf(), writer.getBitPosition());
-        assertEquals(autoArrayRecursion.initializeOffsets(), writer.getBitPosition());
-
-        final AutoArrayRecursion readAutoArrayRecursion = new AutoArrayRecursion(file);
+        final AutoArrayRecursion readAutoArrayRecursion =
+                SerializeUtil.deserializeFromFile(AutoArrayRecursion.class, file);
         checkAutoArrayRecursion(readAutoArrayRecursion, numElements);
     }
 
@@ -130,19 +122,20 @@ public class AutoArrayStructRecursionTest
         }
     }
 
-    private void writeAutoArrayRecursionToFile(File file, short numElements) throws IOException
+    private BitBuffer writeAutoArrayRecursionToBitBuffer(short numElements) throws IOException
     {
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
-
-        writer.writeUnsignedByte((short) 0);
-        writer.writeVarSize(numElements);
-        for (short i = 1; i <= numElements; ++i)
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
-            writer.writeUnsignedByte(i);
-            writer.writeVarSize(0);
-        }
+            writer.writeUnsignedByte((short) 0);
+            writer.writeVarSize(numElements);
+            for (short i = 1; i <= numElements; ++i)
+            {
+                writer.writeUnsignedByte(i);
+                writer.writeVarSize(0);
+            }
 
-        writer.close();
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
+        }
     }
 
     private static final String BLOB_NAME_BASE = "auto_array_struct_recursion_";

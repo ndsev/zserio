@@ -3,11 +3,6 @@ package identifiers;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.stream.FileImageOutputStream;
-
 import identifiers.structure_name_clashing_with_java.StructureNameClashingWithJava;
 import identifiers.structure_name_clashing_with_java.Byte;
 import identifiers.structure_name_clashing_with_java.Short;
@@ -17,12 +12,6 @@ import identifiers.structure_name_clashing_with_java.BigInteger;
 import identifiers.structure_name_clashing_with_java.Float;
 import identifiers.structure_name_clashing_with_java.Double;
 import identifiers.structure_name_clashing_with_java.String;
-
-import zserio.runtime.ZserioError;
-import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
 
 public class StructureNameClashingWithJavaTest
 {

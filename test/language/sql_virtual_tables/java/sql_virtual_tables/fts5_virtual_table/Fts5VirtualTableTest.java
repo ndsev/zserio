@@ -14,7 +14,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import sql_virtual_tables.fts5_virtual_table.Fts5TestDb;
 import test_utils.FileUtil;
 import test_utils.JdbcUtil;
 

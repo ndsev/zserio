@@ -10,10 +10,9 @@ import array_types.variable_array_struct_cast_int8.TestStructure;
 import array_types.variable_array_struct_cast_int8.VariableArray;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.BitBuffer;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 
 public class VariableArrayStructCastInt8Test
 {
@@ -55,11 +54,8 @@ public class VariableArrayStructCastInt8Test
     public void read() throws IOException, ZserioError
     {
         final byte numElements = 59;
-        final File file = new File("test.bin");
-        writeVariableArrayToFile(file, numElements);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final VariableArray variableArray = new VariableArray(stream);
-        stream.close();
+        final BitBuffer buffer = writeVariableArrayToBitBuffer(numElements);
+        final VariableArray variableArray = SerializeUtil.deserialize(VariableArray.class, buffer);
 
         assertEquals(numElements, variableArray.getNumElements());
         final TestStructure[] compoundArray = variableArray.getCompoundArray();
@@ -84,14 +80,9 @@ public class VariableArrayStructCastInt8Test
         }
         final VariableArray variableArray = new VariableArray(numElements, compoundArray);
         final File file = new File(BLOB_NAME);
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        variableArray.write(writer);
-        writer.close();
+        SerializeUtil.serializeToFile(variableArray, file);
 
-        assertEquals(variableArray.bitSizeOf(), writer.getBitPosition());
-        assertEquals(variableArray.initializeOffsets(), writer.getBitPosition());
-
-        final VariableArray readVariableArray = new VariableArray(file);
+        final VariableArray readVariableArray = SerializeUtil.deserializeFromFile(VariableArray.class, file);
         assertEquals(numElements, readVariableArray.getNumElements());
         final TestStructure[] readCompoundArray = readVariableArray.getCompoundArray();
         assertEquals(numElements, readCompoundArray.length);
@@ -115,24 +106,24 @@ public class VariableArrayStructCastInt8Test
         }
         VariableArray variableArray = new VariableArray((byte)(numElements + 1), compoundArray);
 
-        final File file = new File("test.bin");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         assertThrows(ZserioError.class, () -> variableArray.write(writer));
         writer.close();
     }
 
-    private void writeVariableArrayToFile(File file, byte numElements) throws IOException
+    private BitBuffer writeVariableArrayToBitBuffer(byte numElements) throws IOException
     {
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
-
-        writer.writeByte(numElements);
-        for (byte i = 0; i < numElements; ++i)
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
-            writer.writeUnsignedInt(i);
-            writer.writeString("Name" + i);
-        }
+            writer.writeByte(numElements);
+            for (byte i = 0; i < numElements; ++i)
+            {
+                writer.writeUnsignedInt(i);
+                writer.writeString("Name" + i);
+            }
 
-        writer.close();
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
+        }
     }
 
     private static final String BLOB_NAME = "variable_array_struct_cast_int8.blob";

@@ -3,31 +3,42 @@ package parameterized_types.fixed_and_variable_param;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 
 import zserio.runtime.ZserioError;
+import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.FileBitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
+import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 
 public class FixedAndVariableParamTest
 {
     @Test
-    public void fileWrite() throws IOException
+    public void writeReadFile() throws IOException
     {
         final FixedAndVariableParam fixedAndVariableParam = createFixedAndVariableParam(ARRAY_SIZE, EXTRA_LIMIT,
                 LIMIT, COLOR, ACCESS, FLOAT_VALUE);
-        final File file = new File(BLOB_NAME);
-        fixedAndVariableParam.write(file);
-        try (final BitStreamReader reader = new FileBitStreamReader(file))
-        {
-            checkFixedAndVariableParamInStream(reader, fixedAndVariableParam, ARRAY_SIZE, EXTRA_LIMIT, LIMIT,
-                    COLOR, ACCESS, FLOAT_VALUE);
-        }
-        final FixedAndVariableParam readFixedAndVariableParam = new FixedAndVariableParam(file);
+        SerializeUtil.serializeToFile(fixedAndVariableParam, BLOB_NAME);
+
+        final FixedAndVariableParam readFixedAndVariableParam = SerializeUtil.deserializeFromFile(
+                FixedAndVariableParam.class, BLOB_NAME);
+        assertEquals(fixedAndVariableParam, readFixedAndVariableParam);
+    }
+
+    @Test
+    public void writeRead() throws IOException
+    {
+        final FixedAndVariableParam fixedAndVariableParam = createFixedAndVariableParam(ARRAY_SIZE, EXTRA_LIMIT,
+                LIMIT, COLOR, ACCESS, FLOAT_VALUE);
+        final BitBuffer bitBuffer = SerializeUtil.serialize(fixedAndVariableParam);
+        checkFixedAndVariableParamInBitBuffer(bitBuffer, fixedAndVariableParam,
+                ARRAY_SIZE, EXTRA_LIMIT, LIMIT, COLOR, ACCESS, FLOAT_VALUE);
+
+        final FixedAndVariableParam readFixedAndVariableParam = SerializeUtil.deserialize(
+                FixedAndVariableParam.class, bitBuffer);
         assertEquals(fixedAndVariableParam, readFixedAndVariableParam);
     }
 
@@ -148,18 +159,22 @@ public class FixedAndVariableParamTest
         assertEquals(arrayHolder.getExtraValue(), reader.readBits(3));
     }
 
-    private void checkFixedAndVariableParamInStream(BitStreamReader reader,
+    private void checkFixedAndVariableParamInBitBuffer(BitBuffer bitBuffer,
             FixedAndVariableParam fixedAndVariableParam, int size, short extraLimit, short limit, Color color,
             Access access, float floatValue) throws IOException
     {
-        assertEquals(extraLimit, reader.readBits(8));
-        assertEquals(limit, reader.readBits(8));
-        assertEquals(color.getValue(), reader.readBits(2));
-        assertEquals(access.getValue(), reader.readBits(4));
-        assertEquals(floatValue, reader.readFloat16());
-        final ArrayHolder arrayHolder = fixedAndVariableParam.getArrayHolder();
-        final LimitHolder limitHolder = fixedAndVariableParam.getLimitHolder();
-        checkArrayHolderInStream(reader, arrayHolder, size, extraLimit, limitHolder, color, access, floatValue);
+        try (final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer))
+        {
+            assertEquals(extraLimit, reader.readBits(8));
+            assertEquals(limit, reader.readBits(8));
+            assertEquals(color.getValue(), reader.readBits(2));
+            assertEquals(access.getValue(), reader.readBits(4));
+            assertEquals(floatValue, reader.readFloat16());
+            final ArrayHolder arrayHolder = fixedAndVariableParam.getArrayHolder();
+            final LimitHolder limitHolder = fixedAndVariableParam.getLimitHolder();
+            checkArrayHolderInStream(reader, arrayHolder, size, extraLimit, limitHolder, color, access,
+                    floatValue);
+        }
     }
 
     private static final String BLOB_NAME = "fixed_and_variable_param.blob";

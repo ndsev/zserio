@@ -7,11 +7,9 @@ import java.io.IOException;
 import java.io.File;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
-
+import zserio.runtime.io.BitBuffer;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 import array_types.packed_auto_array_struct_recursion.PackedAutoArrayRecursion;
 
 public class PackedAutoArrayStructRecursionTest
@@ -106,11 +104,9 @@ public class PackedAutoArrayStructRecursionTest
 
     private void checkRead(short numElements) throws IOException, ZserioError
     {
-        final File file = new File("test.bin");
-        writePackedAutoArrayRecursionToFile(file, numElements);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final PackedAutoArrayRecursion packedAutoArrayRecursion = new PackedAutoArrayRecursion(stream);
-        stream.close();
+        final BitBuffer buffer = writePackedAutoArrayRecursionToBitBuffer(numElements);
+        final PackedAutoArrayRecursion packedAutoArrayRecursion =
+                SerializeUtil.deserialize(PackedAutoArrayRecursion.class, buffer);
         checkPackedAutoArrayRecursion(packedAutoArrayRecursion, numElements);
     }
 
@@ -118,14 +114,9 @@ public class PackedAutoArrayStructRecursionTest
     {
         final PackedAutoArrayRecursion packedAutoArrayRecursion = createPackedAutoArrayRecursion(numElements);
         final File file = new File(BLOB_NAME_BASE + numElements + ".blob");
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        packedAutoArrayRecursion.write(writer);
-        writer.close();
-
-        assertEquals(packedAutoArrayRecursion.bitSizeOf(), writer.getBitPosition());
-        assertEquals(packedAutoArrayRecursion.initializeOffsets(), writer.getBitPosition());
-
-        final PackedAutoArrayRecursion readAutoArrayRecursion = new PackedAutoArrayRecursion(file);
+        SerializeUtil.serializeToFile(packedAutoArrayRecursion, file);
+        final PackedAutoArrayRecursion readAutoArrayRecursion =
+                SerializeUtil.deserializeFromFile(PackedAutoArrayRecursion.class, file);
         checkPackedAutoArrayRecursion(readAutoArrayRecursion, numElements);
     }
 
@@ -156,24 +147,25 @@ public class PackedAutoArrayStructRecursionTest
         }
     }
 
-    private void writePackedAutoArrayRecursionToFile(File file, short numElements) throws IOException
+    private BitBuffer writePackedAutoArrayRecursionToBitBuffer(short numElements) throws IOException
     {
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
-
-        writer.writeBits(0, 8);
-        writer.writeVarSize(numElements);
-        writer.writeBool(true);
-        final byte maxBitNumber = 1;
-        writer.writeBits(maxBitNumber, 6);
-        writer.writeBits(1, 8);
-        writer.writeVarSize(0);
-        for (short i = 1; i <= numElements; ++i)
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
-            writer.writeSignedBits(1, maxBitNumber + 1);
+            writer.writeBits(0, 8);
+            writer.writeVarSize(numElements);
+            writer.writeBool(true);
+            final byte maxBitNumber = 1;
+            writer.writeBits(maxBitNumber, 6);
+            writer.writeBits(1, 8);
             writer.writeVarSize(0);
-        }
+            for (short i = 1; i <= numElements; ++i)
+            {
+                writer.writeSignedBits(1, maxBitNumber + 1);
+                writer.writeVarSize(0);
+            }
 
-        writer.close();
+            return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
+        }
     }
 
     private int calcPackedAutoArrayRecursionBitSize(short numElements)

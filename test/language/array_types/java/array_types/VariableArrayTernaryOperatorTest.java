@@ -9,11 +9,7 @@ import java.io.File;
 import array_types.variable_array_ternary_operator.VariableArray;
 import array_types.variable_array_ternary_operator.VariableArrayElement;
 
-import zserio.runtime.ZserioError;
-import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 
 public class VariableArrayTernaryOperatorTest
 {
@@ -69,11 +65,8 @@ public class VariableArrayTernaryOperatorTest
         final VariableArray variableArray = createVariableArray(isFirstSizeUsed);
         final String blobName = (isFirstSizeUsed) ? BLOB_NAME_FIRST : BLOB_NAME_SECOND;
         final File file = new File(blobName);
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        variableArray.write(writer);
-        writer.close();
-
-        final VariableArray readVariableArray = new VariableArray(file);
+        SerializeUtil.serializeToFile(variableArray, file);
+        final VariableArray readVariableArray = SerializeUtil.deserializeFromFile(VariableArray.class, file);
         checkVariableArray(readVariableArray, isFirstSizeUsed);
         assertEquals(variableArray, readVariableArray);
     }

@@ -1,14 +1,12 @@
 package expressions;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
 import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 
 import expressions.index_operator.*;
@@ -87,12 +85,10 @@ public class IndexOperatorTest
     {
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         list.write(writer);
-        final byte[] buffer = writer.toByteArray();
-        writer.close();
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(
+                writer.toByteArray(), writer.getBitPosition());
         final ElementList newList = new ElementList(reader);
-        reader.close();
 
         return newList;
     }

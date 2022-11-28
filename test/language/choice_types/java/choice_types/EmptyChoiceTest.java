@@ -1,28 +1,18 @@
 package choice_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 
 import choice_types.empty_choice.EmptyChoice;
 
-import zserio.runtime.ZserioError;
-import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
 
 public class EmptyChoiceTest
 {
-    @BeforeEach
-    public void setUp() throws IOException
-    {
-        if (!testFile.exists())
-            assertTrue(testFile.createNewFile());
-    }
-
     @Test
     public void selectorConstructor()
     {
@@ -31,19 +21,10 @@ public class EmptyChoiceTest
     }
 
     @Test
-    public void fileConstructor() throws IOException, ZserioError
-    {
-        final short selector = 1;
-        final EmptyChoice emptyChoice = new EmptyChoice(testFile, selector);
-        assertEquals(selector, emptyChoice.getSelector());
-        assertEquals(0, emptyChoice.bitSizeOf());
-    }
-
-    @Test
     public void bitStreamReaderConstructor() throws IOException
     {
         final short selector = 1;
-        final BitStreamReader reader = new ByteArrayBitStreamReader(new byte[0]);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(new byte[0]);
         final EmptyChoice emptyChoice = new EmptyChoice(reader, selector);
         assertEquals(selector, emptyChoice.getSelector());
         assertEquals(0, emptyChoice.bitSizeOf());
@@ -108,7 +89,7 @@ public class EmptyChoiceTest
     public void read() throws IOException
     {
         final short selector = 1;
-        final BitStreamReader reader = new ByteArrayBitStreamReader(new byte[0]);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(new byte[0]);
 
         final EmptyChoice emptyChoice = new EmptyChoice(selector);
         emptyChoice.read(reader);
@@ -120,12 +101,12 @@ public class EmptyChoiceTest
     public void writeRead() throws IOException
     {
         final short selector = 1;
-        ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         final EmptyChoice emptyChoice = new EmptyChoice(selector);
         emptyChoice.write(writer);
-        byte bytes[] = writer.toByteArray();
+        final byte bytes[] = writer.toByteArray();
         assertEquals(0, bytes.length);
-        BitStreamReader reader = new ByteArrayBitStreamReader(bytes);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(bytes, writer.getBitPosition());
         EmptyChoice readEmptyChoice = new EmptyChoice(reader, selector);
         assertEquals(emptyChoice, readEmptyChoice);
     }
@@ -135,10 +116,12 @@ public class EmptyChoiceTest
     {
         final short selector = 1;
         final EmptyChoice emptyChoice = new EmptyChoice(selector);
-        emptyChoice.write(testFile);
-        EmptyChoice readEmptyChoice = new EmptyChoice(testFile, selector);
+        SerializeUtil.serializeToFile(emptyChoice, BLOB_NAME);
+
+        EmptyChoice readEmptyChoice = SerializeUtil.deserializeFromFile(EmptyChoice.class, BLOB_NAME, selector);
         assertEquals(emptyChoice, readEmptyChoice);
     }
 
-    private final File testFile = new File("empty_choice.blob");
+
+    private static final String BLOB_NAME = "empty_choice.blob";
 };

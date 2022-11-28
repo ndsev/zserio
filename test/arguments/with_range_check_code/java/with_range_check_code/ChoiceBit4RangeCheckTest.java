@@ -44,10 +44,9 @@ public class ChoiceBit4RangeCheckTest
         choiceBit4RangeCheckCompound.setValue(value);
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         choiceBit4RangeCheckCompound.write(writer);
-        final byte[] writtenByteArray = writer.toByteArray();
-        writer.close();
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writtenByteArray);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
+                writer.getBitPosition());
         final ChoiceBit4RangeCheckCompound readChoiceBit4RangeCheckCompound =
                 new ChoiceBit4RangeCheckCompound(reader, selector);
         assertEquals(choiceBit4RangeCheckCompound, readChoiceBit4RangeCheckCompound);

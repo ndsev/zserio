@@ -3,12 +3,6 @@ package functions.structure_string;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.util.Arrays;
-
-import zserio.runtime.io.ByteArrayBitStreamReader;
-import zserio.runtime.io.ByteArrayBitStreamWriter;
-
 public class StructureStringTest
 {
     @Test
