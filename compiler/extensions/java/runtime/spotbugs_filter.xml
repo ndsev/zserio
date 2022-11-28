@@ -29,7 +29,7 @@
                 <Method name="getByteArray"/>
             </And>
             <And>
-                <Class name="test_object.DummyNested"/>
+                <Class name="test_object.CreatorNested"/>
                 <Method name="getBytesData"/>
             </And>
         </Or>
@@ -47,7 +47,7 @@
                 <Field name="~.*rawData"/>
             </And>
             <And>
-                <Class name="test_object.DummyNested"/>
+                <Class name="test_object.CreatorNested"/>
                 <Method name="setBytesData"/>
             </And>
         </Or>
