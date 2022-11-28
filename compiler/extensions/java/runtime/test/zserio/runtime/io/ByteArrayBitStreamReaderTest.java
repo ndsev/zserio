@@ -43,6 +43,37 @@ public class ByteArrayBitStreamReaderTest
     }
 
     @Test
+    public void bitConstructor() throws IOException
+    {
+        final long bitSize = 17;
+        final byte[] buffer = new byte[]{(byte)0xAE, (byte)0xEA, (byte)0x80};
+
+        try (final BitStreamReader reader = new ByteArrayBitStreamReader(buffer, bitSize))
+        {
+            assertEquals(bitSize, reader.getBufferBitSize());
+            assertEquals(0xAEE, reader.readBits(12));
+            assertEquals(0x0A, reader.readBits(4));
+            assertEquals(0x01, reader.readBits(1));
+
+            // check eof
+            assertThrows(IOException.class, () -> reader.readBits(1));
+        }
+    }
+
+    @Test
+    public void bitConstructorOverflow() throws IOException
+    {
+        final long bitSize = 19;
+        final byte[] buffer = new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xF0};
+        try (final BitStreamReader reader = new ByteArrayBitStreamReader(buffer, bitSize))
+        {
+            assertEquals(bitSize, reader.getBufferBitSize());
+
+            assertThrows(IOException.class, () -> reader.readBits(20));
+        }
+    }
+
+    @Test
     public void readUnalignedData() throws IOException
     {
         // number expected to read at offset

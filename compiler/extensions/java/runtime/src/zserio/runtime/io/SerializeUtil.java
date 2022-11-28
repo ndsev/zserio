@@ -1,12 +1,17 @@
 package zserio.runtime.io;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import zserio.runtime.ZserioEnum;
 import zserio.runtime.ZserioError;
 
 /**
@@ -36,9 +41,7 @@ public final class SerializeUtil
      */
     public static <T extends Writer> BitBuffer serialize(T object)
     {
-        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-
-        try
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
             serializeToWriter(object, writer);
             return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
@@ -70,9 +73,7 @@ public final class SerializeUtil
      */
     public static <T> T deserialize(final Class<T> clazz, BitBuffer bitBuffer, Object... arguments)
     {
-        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer.getBuffer());
-
-        return deserializeFromReader(clazz, reader, arguments);
+        return deserializeFromBytes(clazz, bitBuffer.getBuffer(), arguments);
     }
 
     /**
@@ -101,8 +102,7 @@ public final class SerializeUtil
      */
     public static <T extends Writer> byte[] serializeToBytes(T object)
     {
-        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        try
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
             serializeToWriter(object, writer);
             return writer.toByteArray();
@@ -138,9 +138,14 @@ public final class SerializeUtil
      */
     public static <T> T deserializeFromBytes(final Class<T> clazz, byte[] buffer, Object... arguments)
     {
-        final BitStreamReader reader = new ByteArrayBitStreamReader(buffer);
-
-        return deserializeFromReader(clazz, reader, arguments);
+        try (final BitStreamReader reader = new ByteArrayBitStreamReader(buffer))
+        {
+            return deserializeFromReader(clazz, reader, arguments);
+        }
+        catch (IOException exception)
+        {
+            throw new ZserioError("SerializeUtil: " + exception, exception);
+        }
     }
 
     /**
@@ -164,14 +169,7 @@ public final class SerializeUtil
      */
     public static <T extends Writer> void serializeToFile(T object, String fileName)
     {
-        try (final FileBitStreamWriter writer = new FileBitStreamWriter(fileName))
-        {
-            serializeToWriter(object, writer);
-        }
-        catch (IOException exception)
-        {
-            throw new ZserioError("SerializeUtil: " + exception, exception);
-        }
+        serializeToFile(object, new File(fileName));
     }
 
     /**
@@ -195,9 +193,15 @@ public final class SerializeUtil
      */
     public static <T extends Writer> void serializeToFile(T object, File file)
     {
-        try (final FileBitStreamWriter writer = new FileBitStreamWriter(file))
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
             serializeToWriter(object, writer);
+            final byte[] bytes = writer.toByteArray();
+            try (final FileOutputStream outputStream = new FileOutputStream(file))
+            {
+                outputStream.write(bytes);
+                outputStream.flush();
+            }
         }
         catch (IOException exception)
         {
@@ -229,15 +233,7 @@ public final class SerializeUtil
      */
     public static <T> T deserializeFromFile(final Class<T> clazz, String fileName, Object... arguments)
     {
-        try
-        {
-            final BitStreamReader reader = new FileBitStreamReader(fileName);
-            return deserializeFromReader(clazz, reader, arguments);
-        }
-        catch (IOException exception)
-        {
-            throw new ZserioError("SerializeUtil: " + exception, exception);
-        }
+        return deserializeFromFile(clazz, new File(fileName), arguments);
     }
 
     /**
@@ -266,8 +262,11 @@ public final class SerializeUtil
     {
         try
         {
-            final BitStreamReader reader = new FileBitStreamReader(file);
-            return deserializeFromReader(clazz, reader, arguments);
+            final byte[] fileContent = Files.readAllBytes(file.toPath());
+            try (final BitStreamReader reader = new ByteArrayBitStreamReader(fileContent))
+            {
+                return deserializeFromReader(clazz, reader, arguments);
+            }
         }
         catch (IOException exception)
         {
@@ -285,21 +284,28 @@ public final class SerializeUtil
     private static <T> T deserializeFromReader(final Class<T> clazz, BitStreamReader reader,
             Object... arguments)
     {
-        final Class<?>[] ctorArgumentTypes = new Class<?>[arguments.length + 1];
-        ctorArgumentTypes[0] = BitStreamReader.class;
-        // please note that arguments are always boxed and object parameters are always unboxed
-        for (int i = 0; i < arguments.length; ++i)
-            ctorArgumentTypes[i + 1] = toUnboxedClass(arguments[i].getClass());
-
         try
         {
-            final Constructor<T> constructor = clazz.getConstructor(ctorArgumentTypes);
-            final Object[] ctorArguments = new Object[arguments.length + 1];
-            ctorArguments[0] = reader;
-            for (int i = 0; i < arguments.length; ++i)
-                ctorArguments[i + 1] = arguments[i];
+            if (Arrays.asList(clazz.getInterfaces()).contains(ZserioEnum.class))
+            {
+                final Method method = clazz.getMethod("readEnum", BitStreamReader.class);
+                return clazz.cast(method.invoke(null, reader));
+            }
+            else
+            {
+                final Class<?>[] ctorArgumentTypes = new Class<?>[arguments.length + 1];
+                ctorArgumentTypes[0] = BitStreamReader.class;
+                // please note that arguments are always boxed and object parameters are always unboxed
+                for (int i = 0; i < arguments.length; ++i)
+                    ctorArgumentTypes[i + 1] = toUnboxedClass(arguments[i].getClass());
+                final Constructor<T> constructor = clazz.getConstructor(ctorArgumentTypes);
 
-            return constructor.newInstance(ctorArguments);
+                final Object[] ctorArguments = new Object[arguments.length + 1];
+                ctorArguments[0] = reader;
+                for (int i = 0; i < arguments.length; ++i)
+                    ctorArguments[i + 1] = arguments[i];
+                return constructor.newInstance(ctorArguments);
+            }
         }
         catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException |
                 IllegalArgumentException | InvocationTargetException exception)

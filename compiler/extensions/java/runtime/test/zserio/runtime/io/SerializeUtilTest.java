@@ -6,7 +6,7 @@ import java.io.File;
 
 import org.junit.jupiter.api.Test;
 
-public class SerializationUtilTest
+public class SerializeUtilTest
 {
     @Test
     public void serialize()
@@ -81,18 +81,6 @@ public class SerializationUtilTest
                 boolean param_)
         {
             this.param_ = param_;
-        }
-
-        public DummyObject(java.io.File file,
-                boolean param_)
-                throws java.io.IOException
-        {
-            this.param_ = param_;
-
-            try (final zserio.runtime.io.FileBitStreamReader in = new zserio.runtime.io.FileBitStreamReader(file))
-            {
-                read(in);
-            }
         }
 
         public DummyObject(zserio.runtime.io.BitStreamReader in,
@@ -282,14 +270,6 @@ public class SerializationUtilTest
             }
 
             return endBitPosition;
-        }
-
-        public void write(java.io.File file) throws java.io.IOException
-        {
-            try (final zserio.runtime.io.FileBitStreamWriter out = new zserio.runtime.io.FileBitStreamWriter(file))
-            {
-                write(out);
-            }
         }
 
         @Override

@@ -28,8 +28,11 @@
         </#list>
      *
      * @throws IOException If the reading from file failed.
+     *
+     * @deprecated Please use zserio.runtime.io.SerializeUtil.deserializeFromFile() method instead.
      */
     </#if>
+    @Deprecated
     public ${name}(java.io.File file<#if constructorArgumentTypeList?has_content>,${constructorArgumentTypeList}</#if>)
             throws java.io.IOException
     {

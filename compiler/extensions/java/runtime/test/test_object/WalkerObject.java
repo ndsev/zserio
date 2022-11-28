@@ -12,6 +12,7 @@ public class WalkerObject implements zserio.runtime.io.Writer, zserio.runtime.Si
     {
     }
 
+    @Deprecated
     public WalkerObject(java.io.File file)
             throws java.io.IOException
     {
@@ -471,6 +472,7 @@ public class WalkerObject implements zserio.runtime.io.Writer, zserio.runtime.Si
         return endBitPosition;
     }
 
+    @Deprecated
     public void write(java.io.File file) throws java.io.IOException
     {
         try (final zserio.runtime.io.FileBitStreamWriter out = new zserio.runtime.io.FileBitStreamWriter(file))

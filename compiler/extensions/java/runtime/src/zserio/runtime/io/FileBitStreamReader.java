@@ -7,7 +7,10 @@ import java.io.InputStream;
 
 /**
  * A bit stream reader using file.
+ *
+ * @deprecated Please use {@link SerializeUtil#deserializeFromFile} instead.
  */
+@Deprecated
 public class FileBitStreamReader extends ByteArrayBitStreamReader
 {
     /**

@@ -397,8 +397,11 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
      * @param file File where to serialize this Zserio object.
      *
      * @throws IOException If the writing to the file failed.
+     *
+     * @deprecated Please use zserio.runtime.io.SerializeUtil.serializeToFile() method instead.
      */
     </#if>
+    @Deprecated
     public void write(java.io.File file) throws java.io.IOException
     {
         try (final zserio.runtime.io.FileBitStreamWriter out = new zserio.runtime.io.FileBitStreamWriter(file))

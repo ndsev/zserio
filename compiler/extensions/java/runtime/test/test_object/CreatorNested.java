@@ -14,6 +14,7 @@ public class CreatorNested implements zserio.runtime.io.Writer, zserio.runtime.S
         this.param_ = param_;
     }
 
+    @Deprecated
     public CreatorNested(java.io.File file,
             long param_)
             throws java.io.IOException
@@ -436,6 +437,7 @@ public class CreatorNested implements zserio.runtime.io.Writer, zserio.runtime.S
         return endBitPosition;
     }
 
+    @Deprecated
     public void write(java.io.File file) throws java.io.IOException
     {
         try (final zserio.runtime.io.FileBitStreamWriter out = new zserio.runtime.io.FileBitStreamWriter(file))

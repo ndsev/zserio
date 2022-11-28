@@ -36,6 +36,20 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
         lastByteBits = lastBits == 0 ? 8 : lastBits;
     }
 
+    /**
+     * Constructs object containing given bytes with a given byte order with exact bit size.
+     *
+     * @param bytes Array of bytes to construct from.
+     * @param bitSize Size of the buffer in bits.
+     */
+    public ByteArrayBitStreamReader(final byte[] bytes, long bitSize)
+    {
+        this.buffer = new byte[bytes.length];
+        System.arraycopy(bytes, 0, this.buffer, 0, bytes.length);
+        final byte lastBits = (byte)(bitSize % 8);
+        lastByteBits = lastBits == 0 ? 8 : lastBits;
+    }
+
     @Override
     public long readSignedBits(final int numBits) throws IOException
     {

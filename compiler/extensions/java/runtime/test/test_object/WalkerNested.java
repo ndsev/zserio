@@ -5,12 +5,14 @@
 
 package test_object;
 
+@SuppressWarnings("cast")
 public class WalkerNested implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
 {
     public WalkerNested()
     {
     }
 
+    @Deprecated
     public WalkerNested(java.io.File file)
             throws java.io.IOException
     {
@@ -184,6 +186,7 @@ public class WalkerNested implements zserio.runtime.io.Writer, zserio.runtime.Si
         return endBitPosition;
     }
 
+    @Deprecated
     public void write(java.io.File file) throws java.io.IOException
     {
         try (final zserio.runtime.io.FileBitStreamWriter out = new zserio.runtime.io.FileBitStreamWriter(file))

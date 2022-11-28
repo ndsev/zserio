@@ -7,7 +7,10 @@ import java.io.OutputStream;
 
 /**
  * A bit stream writer using file.
+ *
+ * @deprecated Please use {@link SerializeUtil#serializeToFile} instead.
  */
+@Deprecated
 public class FileBitStreamWriter extends ByteArrayBitStreamWriter
 {
     /**

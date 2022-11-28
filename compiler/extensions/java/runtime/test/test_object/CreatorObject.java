@@ -12,6 +12,7 @@ public class CreatorObject implements zserio.runtime.io.Writer, zserio.runtime.S
     {
     }
 
+    @Deprecated
     public CreatorObject(java.io.File file)
             throws java.io.IOException
     {
@@ -753,6 +754,7 @@ public class CreatorObject implements zserio.runtime.io.Writer, zserio.runtime.S
         return endBitPosition;
     }
 
+    @Deprecated
     public void write(java.io.File file) throws java.io.IOException
     {
         try (final zserio.runtime.io.FileBitStreamWriter out = new zserio.runtime.io.FileBitStreamWriter(file))
