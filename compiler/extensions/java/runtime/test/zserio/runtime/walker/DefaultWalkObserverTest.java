@@ -6,26 +6,28 @@ import org.junit.jupiter.api.Test;
 
 import zserio.runtime.typeinfo.FieldInfo;
 
+import test_object.WalkerObject;
+
 public class DefaultWalkObserverTest
 {
     @Test
     public void allMethods()
     {
         final DefaultWalkObserver walkObserver = new DefaultWalkObserver();
-        final TestObject.DummyObject dummyObject = TestObject.createDummyObject();
-        final FieldInfo dummyArrayFieldInfo = TestObject.DummyObject.typeInfo().getFields().get(3);
-        final FieldInfo dummyCompoundFieldInfo = TestObject.DummyObject.typeInfo().getFields().get(1);
-        final FieldInfo dummyFieldInfo = TestObject.DummyObject.typeInfo().getFields().get(0);
+        final WalkerObject walkerObject = TestObjectCreator.createWalkerObject();
+        final FieldInfo walkerArrayFieldInfo = WalkerObject.typeInfo().getFields().get(3);
+        final FieldInfo walkerCompoundFieldInfo = WalkerObject.typeInfo().getFields().get(1);
+        final FieldInfo walkerFieldInfo = WalkerObject.typeInfo().getFields().get(0);
 
-        assertDoesNotThrow(() -> walkObserver.beginRoot(dummyObject));
-        assertDoesNotThrow(() -> walkObserver.endRoot(dummyObject));
-        assertDoesNotThrow(() -> walkObserver.beginArray(dummyObject.getUnionArray(), dummyArrayFieldInfo));
-        assertDoesNotThrow(() -> walkObserver.endArray(dummyObject.getUnionArray(), dummyArrayFieldInfo));
-        assertDoesNotThrow(() -> walkObserver.beginCompound(dummyObject.getNested(), dummyCompoundFieldInfo,
+        assertDoesNotThrow(() -> walkObserver.beginRoot(walkerObject));
+        assertDoesNotThrow(() -> walkObserver.endRoot(walkerObject));
+        assertDoesNotThrow(() -> walkObserver.beginArray(walkerObject.getUnionArray(), walkerArrayFieldInfo));
+        assertDoesNotThrow(() -> walkObserver.endArray(walkerObject.getUnionArray(), walkerArrayFieldInfo));
+        assertDoesNotThrow(() -> walkObserver.beginCompound(walkerObject.getNested(), walkerCompoundFieldInfo,
                 WalkerConst.NOT_ELEMENT));
-        assertDoesNotThrow(() -> walkObserver.endCompound(dummyObject.getNested(), dummyCompoundFieldInfo,
+        assertDoesNotThrow(() -> walkObserver.endCompound(walkerObject.getNested(), walkerCompoundFieldInfo,
                 WalkerConst.NOT_ELEMENT));
-        assertDoesNotThrow(() -> walkObserver.visitValue(dummyObject.getIdentifier(), dummyFieldInfo,
+        assertDoesNotThrow(() -> walkObserver.visitValue(walkerObject.getIdentifier(), walkerFieldInfo,
                 WalkerConst.NOT_ELEMENT));
     }
 }

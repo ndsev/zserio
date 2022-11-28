@@ -3,15 +3,15 @@
 #include "zserio/JsonReader.h"
 #include "zserio/ReflectableUtil.h"
 
-#include "test_object/DummyBitmask.h"
-#include "test_object/DummyEnum.h"
-#include "test_object/DummyNested.h"
-#include "test_object/DummyObject.h"
+#include "test_object/CreatorBitmask.h"
+#include "test_object/CreatorEnum.h"
+#include "test_object/CreatorNested.h"
+#include "test_object/CreatorObject.h"
 
-using test_object::DummyBitmask;
-using test_object::DummyEnum;
-using test_object::DummyNested;
-using test_object::DummyObject;
+using test_object::CreatorBitmask;
+using test_object::CreatorEnum;
+using test_object::CreatorNested;
+using test_object::CreatorObject;
 
 namespace zserio
 {
@@ -19,21 +19,21 @@ namespace zserio
 namespace
 {
 
-void checkReadStringifiedEnum(const char* stringValue, DummyEnum expectedValue)
+void checkReadStringifiedEnum(const char* stringValue, CreatorEnum expectedValue)
 {
     std::stringstream str;
     str <<
             "{\n"
             "    \"nested\": {\n"
-            "        \"dummyEnum\": \"" << stringValue << "\"\n"
+            "        \"creatorEnum\": \"" << stringValue << "\"\n"
             "    }\n"
             "}";
 
     JsonReader jsonReader(str);
-    auto reflectable = jsonReader.read(DummyObject::typeInfo());
+    auto reflectable = jsonReader.read(CreatorObject::typeInfo());
     ASSERT_TRUE(reflectable);
 
-    ASSERT_EQ(expectedValue, ReflectableUtil::getValue<DummyEnum>(reflectable->find("nested.dummyEnum")));
+    ASSERT_EQ(expectedValue, ReflectableUtil::getValue<CreatorEnum>(reflectable->find("nested.creatorEnum")));
 }
 
 void checkReadStringifiedEnumThrows(const char* stringValue, const char* expectedMessage)
@@ -42,7 +42,7 @@ void checkReadStringifiedEnumThrows(const char* stringValue, const char* expecte
     str <<
             "{\n"
             "    \"nested\": {\n"
-            "        \"dummyEnum\": \"" << stringValue << "\"\n"
+            "        \"creatorEnum\": \"" << stringValue << "\"\n"
             "    }\n"
             "}";
 
@@ -50,7 +50,7 @@ void checkReadStringifiedEnumThrows(const char* stringValue, const char* expecte
     ASSERT_THROW({
         try
         {
-            jsonReader.read(DummyObject::typeInfo());
+            jsonReader.read(CreatorObject::typeInfo());
         }
         catch (const CppRuntimeException& e)
         {
@@ -60,21 +60,21 @@ void checkReadStringifiedEnumThrows(const char* stringValue, const char* expecte
     }, CppRuntimeException);
 }
 
-void checkReadStringifiedBitmask(const char* stringValue, DummyBitmask expectedValue)
+void checkReadStringifiedBitmask(const char* stringValue, CreatorBitmask expectedValue)
 {
     std::stringstream str;
     str <<
             "{\n"
             "    \"nested\": {\n"
-            "        \"dummyBitmask\": \"" << stringValue << "\"\n"
+            "        \"creatorBitmask\": \"" << stringValue << "\"\n"
             "    }\n"
             "}";
 
     JsonReader jsonReader(str);
-    auto reflectable = jsonReader.read(DummyObject::typeInfo());
+    auto reflectable = jsonReader.read(CreatorObject::typeInfo());
     ASSERT_TRUE(reflectable);
 
-    ASSERT_EQ(expectedValue, ReflectableUtil::getValue<DummyBitmask>(reflectable->find("nested.dummyBitmask")));
+    ASSERT_EQ(expectedValue, ReflectableUtil::getValue<CreatorBitmask>(reflectable->find("nested.creatorBitmask")));
 }
 
 void checkReadStringifiedBitmaskThrows(const char* stringValue, const char* expectedMessage)
@@ -83,7 +83,7 @@ void checkReadStringifiedBitmaskThrows(const char* stringValue, const char* expe
     str <<
             "{\n"
             "    \"nested\": {\n"
-            "        \"dummyBitmask\": \"" << stringValue << "\"\n" <<
+            "        \"creatorBitmask\": \"" << stringValue << "\"\n" <<
             "    }\n"
             "}";
 
@@ -91,7 +91,7 @@ void checkReadStringifiedBitmaskThrows(const char* stringValue, const char* expe
     ASSERT_THROW({
         try
         {
-            jsonReader.read(DummyObject::typeInfo());
+            jsonReader.read(CreatorObject::typeInfo());
         }
         catch (const CppRuntimeException& e)
         {
@@ -124,8 +124,8 @@ TEST(JsonReaderTest, readObject)
         "               254\n"
         "           ]\n"
         "        },\n"
-        "        \"dummyEnum\": 0,\n"
-        "        \"dummyBitmask\": 1\n"
+        "        \"creatorEnum\": 0,\n"
+        "        \"creatorBitmask\": 1\n"
         "    },\n"
         "    \"text\": \"test\",\n"
         "    \"nestedArray\": [\n"
@@ -145,8 +145,8 @@ TEST(JsonReaderTest, readObject)
         "                   240\n"
         "               ]\n"
         "            },\n"
-        "            \"dummyEnum\": 1,\n"
-        "            \"dummyBitmask\": 2\n"
+        "            \"creatorEnum\": 1,\n"
+        "            \"creatorBitmask\": 2\n"
         "        }\n"
         "    ],\n"
         "    \"textArray\": [\n"
@@ -176,7 +176,7 @@ TEST(JsonReaderTest, readObject)
     );
 
     JsonReader jsonReader(str);
-    IReflectablePtr reflectable = jsonReader.read(DummyObject::typeInfo());
+    IReflectablePtr reflectable = jsonReader.read(CreatorObject::typeInfo());
     ASSERT_TRUE(reflectable);
 
     reflectable->initializeChildren();
@@ -190,9 +190,9 @@ TEST(JsonReaderTest, readObject)
     ASSERT_EQ(2, bytesData.size());
     ASSERT_EQ(0xCA, bytesData[0]);
     ASSERT_EQ(0xFE, bytesData[1]);
-    ASSERT_EQ(enumToValue(DummyEnum::ONE), reflectable->find("nested.dummyEnum")->getInt8());
-    ASSERT_EQ(DummyBitmask(DummyBitmask::Values::READ).getValue(),
-            reflectable->find("nested.dummyBitmask")->getUInt8());
+    ASSERT_EQ(enumToValue(CreatorEnum::ONE), reflectable->find("nested.creatorEnum")->getInt8());
+    ASSERT_EQ(CreatorBitmask(CreatorBitmask::Values::READ).getValue(),
+            reflectable->find("nested.creatorBitmask")->getUInt8());
     ASSERT_EQ("test"_sv, reflectable->getField("text")->getStringView());
     ASSERT_EQ(1, reflectable->getField("nestedArray")->size());
     ASSERT_EQ(5, reflectable->getField("nestedArray")->at(0)->getField("value")->getUInt32());
@@ -204,10 +204,10 @@ TEST(JsonReaderTest, readObject)
     ASSERT_EQ(2, nestedBytesData.size());
     ASSERT_EQ(0xCB, nestedBytesData[0]);
     ASSERT_EQ(0xF0, nestedBytesData[1]);
-    ASSERT_EQ(enumToValue(DummyEnum::TWO),
-            reflectable->getField("nestedArray")->at(0)->getField("dummyEnum")->getInt8());
-    ASSERT_EQ(DummyBitmask(DummyBitmask::Values::WRITE).getValue(),
-            reflectable->getField("nestedArray")->at(0)->getField("dummyBitmask")->getUInt8());
+    ASSERT_EQ(enumToValue(CreatorEnum::TWO),
+            reflectable->getField("nestedArray")->at(0)->getField("creatorEnum")->getInt8());
+    ASSERT_EQ(CreatorBitmask(CreatorBitmask::Values::WRITE).getValue(),
+            reflectable->getField("nestedArray")->at(0)->getField("creatorBitmask")->getUInt8());
     ASSERT_EQ(4, reflectable->getField("textArray")->size());
     ASSERT_EQ("this"_sv, reflectable->getField("textArray")->at(0)->getStringView());
     ASSERT_EQ("is"_sv, reflectable->getField("textArray")->at(1)->getStringView());
@@ -231,12 +231,12 @@ TEST(JsonReaderTest, readTwoObjects)
 
     JsonReader jsonReader(str);
 
-    auto obj1 = jsonReader.read(DummyObject::typeInfo());
+    auto obj1 = jsonReader.read(CreatorObject::typeInfo());
     ASSERT_TRUE(obj1);
     ASSERT_EQ(13, obj1->getField("value")->getUInt32());
     ASSERT_EQ(""_sv, obj1->getField("text")->getStringView());
 
-    auto obj2 = jsonReader.read(DummyObject::typeInfo());
+    auto obj2 = jsonReader.read(CreatorObject::typeInfo());
     ASSERT_TRUE(obj2);
     ASSERT_EQ(42, obj2->getField("value")->getUInt32());
     ASSERT_EQ("test"_sv, obj2->getField("text")->getStringView());
@@ -261,13 +261,13 @@ TEST(JsonReaderTest, readParameterizedObject)
         "           254\n"
         "       ]\n"
         "    },\n"
-        "    \"dummyEnum\": 0,\n"
-        "    \"dummyBitmask\": 1\n"
+        "    \"creatorEnum\": 0,\n"
+        "    \"creatorBitmask\": 1\n"
         "}\n"
     );
 
     JsonReader jsonReader(str);
-    auto reflectable = jsonReader.read(DummyNested::typeInfo());
+    auto reflectable = jsonReader.read(CreatorNested::typeInfo());
 
     reflectable->initialize(vector<AnyHolder<>>{AnyHolder<>{static_cast<uint32_t>(13)}});
 
@@ -296,14 +296,14 @@ TEST(JsonReaderTest, readUnorderedBitBuffer)
         "               254\n"
         "           ]\n"
         "        },\n"
-        "        \"dummyEnum\": -1,\n"
-        "        \"dummyBitmask\": 1\n"
+        "        \"creatorEnum\": -1,\n"
+        "        \"creatorBitmask\": 1\n"
         "    }\n"
         "}"
     );
 
     JsonReader jsonReader(str);
-    auto reflectable = jsonReader.read(DummyObject::typeInfo());
+    auto reflectable = jsonReader.read(CreatorObject::typeInfo());
     ASSERT_TRUE(reflectable);
 
     reflectable->initializeChildren();
@@ -317,59 +317,59 @@ TEST(JsonReaderTest, readUnorderedBitBuffer)
     ASSERT_EQ(2, bytesData.size());
     ASSERT_EQ(0xCA, bytesData[0]);
     ASSERT_EQ(0xFE, bytesData[1]);
-    ASSERT_EQ(enumToValue(DummyEnum::MinusOne), reflectable->find("nested.dummyEnum")->getInt8());
-    ASSERT_EQ(DummyBitmask(DummyBitmask::Values::READ).getValue(),
-            reflectable->find("nested.dummyBitmask")->getUInt8());
+    ASSERT_EQ(enumToValue(CreatorEnum::MinusOne), reflectable->find("nested.creatorEnum")->getInt8());
+    ASSERT_EQ(CreatorBitmask(CreatorBitmask::Values::READ).getValue(),
+            reflectable->find("nested.creatorBitmask")->getUInt8());
 }
 
 TEST(JsonReaderTest, readStringifiedEnum)
 {
-    checkReadStringifiedEnum("ONE", DummyEnum::ONE);
-    checkReadStringifiedEnum("MinusOne", DummyEnum::MinusOne);
+    checkReadStringifiedEnum("ONE", CreatorEnum::ONE);
+    checkReadStringifiedEnum("MinusOne", CreatorEnum::MinusOne);
     checkReadStringifiedEnumThrows("NONEXISTING",
-            "ZserioTreeCreator: Cannot create enum 'test_object.DummyEnum' "
-            "from string value 'NONEXISTING'! (JsonParser:3:22)");
+            "ZserioTreeCreator: Cannot create enum 'test_object.CreatorEnum' "
+            "from string value 'NONEXISTING'! (JsonParser:3:24)");
     checkReadStringifiedEnumThrows("***",
-            "ZserioTreeCreator: Cannot create enum 'test_object.DummyEnum' "
-            "from string value '***'! (JsonParser:3:22)");
+            "ZserioTreeCreator: Cannot create enum 'test_object.CreatorEnum' "
+            "from string value '***'! (JsonParser:3:24)");
     checkReadStringifiedEnumThrows("10 /* no match */",
-            "ZserioTreeCreator: Cannot create enum 'test_object.DummyEnum' "
-            "from string value '10 /* no match */'! (JsonParser:3:22)");
+            "ZserioTreeCreator: Cannot create enum 'test_object.CreatorEnum' "
+            "from string value '10 /* no match */'! (JsonParser:3:24)");
     checkReadStringifiedEnumThrows("-10 /* no match */",
-            "ZserioTreeCreator: Cannot create enum 'test_object.DummyEnum' "
-            "from string value '-10 /* no match */'! (JsonParser:3:22)");
+            "ZserioTreeCreator: Cannot create enum 'test_object.CreatorEnum' "
+            "from string value '-10 /* no match */'! (JsonParser:3:24)");
     checkReadStringifiedEnumThrows("",
-            "ZserioTreeCreator: Cannot create enum 'test_object.DummyEnum' "
-            "from string value ''! (JsonParser:3:22)");
+            "ZserioTreeCreator: Cannot create enum 'test_object.CreatorEnum' "
+            "from string value ''! (JsonParser:3:24)");
 }
 
 TEST(JsonReaderTest, readStringifiedBitmask)
 {
     checkReadStringifiedBitmask("READ",
-            DummyBitmask::Values::READ);
+            CreatorBitmask::Values::READ);
     checkReadStringifiedBitmask("READ | WRITE",
-            DummyBitmask::Values::READ | DummyBitmask::Values::WRITE);
+            CreatorBitmask::Values::READ | CreatorBitmask::Values::WRITE);
     checkReadStringifiedBitmaskThrows("NONEXISTING",
-            "ZserioTreeCreator: Cannot create bitmask 'test_object.DummyBitmask' "
-            "from string value 'NONEXISTING'! (JsonParser:3:25)");
+            "ZserioTreeCreator: Cannot create bitmask 'test_object.CreatorBitmask' "
+            "from string value 'NONEXISTING'! (JsonParser:3:27)");
     checkReadStringifiedBitmaskThrows("READ | NONEXISTING",
-            "ZserioTreeCreator: Cannot create bitmask 'test_object.DummyBitmask' "
-            "from string value 'READ | NONEXISTING'! (JsonParser:3:25)");
+            "ZserioTreeCreator: Cannot create bitmask 'test_object.CreatorBitmask' "
+            "from string value 'READ | NONEXISTING'! (JsonParser:3:27)");
     checkReadStringifiedBitmaskThrows("READ * NONEXISTING",
-            "ZserioTreeCreator: Cannot create bitmask 'test_object.DummyBitmask' "
-            "from string value 'READ * NONEXISTING'! (JsonParser:3:25)");
-    checkReadStringifiedBitmask("7 /* READ | WRITE */", DummyBitmask(7));
-    checkReadStringifiedBitmask("15 /* READ | WRITE */", DummyBitmask(15));
-    checkReadStringifiedBitmask("4 /* no match */", DummyBitmask(4));
+            "ZserioTreeCreator: Cannot create bitmask 'test_object.CreatorBitmask' "
+            "from string value 'READ * NONEXISTING'! (JsonParser:3:27)");
+    checkReadStringifiedBitmask("7 /* READ | WRITE */", CreatorBitmask(7));
+    checkReadStringifiedBitmask("15 /* READ | WRITE */", CreatorBitmask(15));
+    checkReadStringifiedBitmask("4 /* no match */", CreatorBitmask(4));
     checkReadStringifiedBitmaskThrows("",
-            "ZserioTreeCreator: Cannot create bitmask 'test_object.DummyBitmask' "
-            "from string value ''! (JsonParser:3:25)");
+            "ZserioTreeCreator: Cannot create bitmask 'test_object.CreatorBitmask' "
+            "from string value ''! (JsonParser:3:27)");
     checkReadStringifiedBitmaskThrows(" ",
-            "ZserioTreeCreator: Cannot create bitmask 'test_object.DummyBitmask' "
-            "from string value ' '! (JsonParser:3:25)");
+            "ZserioTreeCreator: Cannot create bitmask 'test_object.CreatorBitmask' "
+            "from string value ' '! (JsonParser:3:27)");
     checkReadStringifiedBitmaskThrows(" | ",
-            "ZserioTreeCreator: Cannot create bitmask 'test_object.DummyBitmask' "
-            "from string value ' | '! (JsonParser:3:25)");
+            "ZserioTreeCreator: Cannot create bitmask 'test_object.CreatorBitmask' "
+            "from string value ' | '! (JsonParser:3:27)");
 }
 
 TEST(JsonReaderTest, jsonParserException)
@@ -382,7 +382,7 @@ TEST(JsonReaderTest, jsonParserException)
     ASSERT_THROW({
         try
         {
-            jsonReader.read(DummyObject::typeInfo());
+            jsonReader.read(CreatorObject::typeInfo());
         }
         catch (const JsonParserException& e)
         {
@@ -402,12 +402,12 @@ TEST(JsonReaderTest, wrongKeyException)
     ASSERT_THROW({
         try
         {
-            jsonReader.read(DummyObject::typeInfo());
+            jsonReader.read(CreatorObject::typeInfo());
         }
         catch (const CppRuntimeException& e)
         {
             ASSERT_STREQ("ZserioTreeCreator: Member 'nonexisting' not found in "
-                    "'test_object.DummyObject'! (JsonParser:2:16)", e.what());
+                    "'test_object.CreatorObject'! (JsonParser:2:16)", e.what());
             throw;
         }
     }, CppRuntimeException);
@@ -423,7 +423,7 @@ TEST(JsonReaderTest, wrongValueTypeException)
     ASSERT_THROW({
         try
         {
-            jsonReader.read(DummyObject::typeInfo());
+            jsonReader.read(CreatorObject::typeInfo());
         }
         catch (const CppRuntimeException& e)
         {
@@ -458,7 +458,7 @@ TEST(JsonReaderTest, wrongBitBufferException)
     ASSERT_THROW({
         try
         {
-            jsonReader.read(DummyObject::typeInfo());
+            jsonReader.read(CreatorObject::typeInfo());
         }
         catch (const CppRuntimeException& e)
         {
@@ -490,7 +490,7 @@ TEST(JsonReaderTest, partialBitBufferException)
     ASSERT_THROW({
         try
         {
-            jsonReader.read(DummyObject::typeInfo());
+            jsonReader.read(CreatorObject::typeInfo());
         }
         catch (const CppRuntimeException& e)
         {
@@ -526,7 +526,7 @@ TEST(JsonReaderTest, wrongBytesException)
     ASSERT_THROW({
         try
         {
-            jsonReader.read(DummyObject::typeInfo());
+            jsonReader.read(CreatorObject::typeInfo());
         }
         catch (const CppRuntimeException& e)
         {
@@ -541,7 +541,7 @@ TEST(JsonReaderTest, jsonArrayException)
     std::stringstream str("[1, 2]");
     JsonReader jsonReader(str);
 
-    ASSERT_THROW(jsonReader.read(DummyObject::typeInfo()), CppRuntimeException);
+    ASSERT_THROW(jsonReader.read(CreatorObject::typeInfo()), CppRuntimeException);
 }
 
 TEST(JsonReaderTest, jsonValueException)
@@ -549,7 +549,7 @@ TEST(JsonReaderTest, jsonValueException)
     std::stringstream str("\"text\"");
     JsonReader jsonReader(str);
 
-    ASSERT_THROW(jsonReader.read(DummyObject::typeInfo()), CppRuntimeException);
+    ASSERT_THROW(jsonReader.read(CreatorObject::typeInfo()), CppRuntimeException);
 }
 
 TEST(JsonReaderTest, bigLongValueException)
@@ -564,7 +564,7 @@ TEST(JsonReaderTest, bigLongValueException)
     ASSERT_THROW({
         try
         {
-            jsonReader.read(DummyObject::typeInfo());
+            jsonReader.read(CreatorObject::typeInfo());
         }
         catch (const CppRuntimeException& e)
         {
@@ -587,7 +587,7 @@ TEST(JsonReaderTest, floatLongValueException)
     ASSERT_THROW({
         try
         {
-            jsonReader.read(DummyObject::typeInfo());
+            jsonReader.read(CreatorObject::typeInfo());
         }
         catch (const CppRuntimeException& e)
         {
@@ -617,7 +617,7 @@ TEST(JsonReaderTest, bigBitBufferByteValueException)
     ASSERT_THROW({
         try
         {
-            jsonReader.read(DummyObject::typeInfo());
+            jsonReader.read(CreatorObject::typeInfo());
         }
         catch (const CppRuntimeException& e)
         {
@@ -647,7 +647,7 @@ TEST(JsonReaderTest, negativeBitBufferByteValueException)
     ASSERT_THROW({
         try
         {
-            jsonReader.read(DummyObject::typeInfo());
+            jsonReader.read(CreatorObject::typeInfo());
         }
         catch (const CppRuntimeException& e)
         {
@@ -676,7 +676,7 @@ TEST(JsonReaderTest, wrongBitBufferSizeValueException)
     ASSERT_THROW({
         try
         {
-            jsonReader.read(DummyObject::typeInfo());
+            jsonReader.read(CreatorObject::typeInfo());
         }
         catch (const CppRuntimeException& e)
         {
@@ -725,7 +725,7 @@ TEST(JsonReaderTest, bigBytesByteValueException)
     ASSERT_THROW({
         try
         {
-            jsonReader.read(DummyObject::typeInfo());
+            jsonReader.read(CreatorObject::typeInfo());
         }
         catch (const CppRuntimeException& e)
         {
@@ -754,7 +754,7 @@ TEST(JsonReaderTest, negativeBytesByteValueException)
     ASSERT_THROW({
         try
         {
-            jsonReader.read(DummyObject::typeInfo());
+            jsonReader.read(CreatorObject::typeInfo());
         }
         catch (const CppRuntimeException& e)
         {

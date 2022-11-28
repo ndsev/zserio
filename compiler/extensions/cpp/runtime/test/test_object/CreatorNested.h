@@ -3,8 +3,8 @@
  * Generator setup: writerCode, pubsubCode, serviceCode, sqlCode, typeInfoCode, reflectionCode, stdAllocator.
  */
 
-#ifndef TEST_OBJECT_DUMMY_NESTED_H
-#define TEST_OBJECT_DUMMY_NESTED_H
+#ifndef TEST_OBJECT_CREATOR_NESTED_H
+#define TEST_OBJECT_CREATOR_NESTED_H
 
 #include <zserio/Traits.h>
 #include <zserio/BitStreamReader.h>
@@ -20,56 +20,56 @@
 #include <zserio/Types.h>
 #include <zserio/Vector.h>
 
-#include <test_object/DummyBitmask.h>
-#include <test_object/DummyEnum.h>
+#include <test_object/CreatorBitmask.h>
+#include <test_object/CreatorEnum.h>
 
 namespace test_object
 {
 
-class DummyNested
+class CreatorNested
 {
 public:
     using allocator_type = ::std::allocator<uint8_t>;
 
-    explicit DummyNested(const allocator_type& allocator = allocator_type()) noexcept;
+    explicit CreatorNested(const allocator_type& allocator = allocator_type()) noexcept;
 
     template <typename ZSERIO_T_text,
             typename ZSERIO_T_externData,
             typename ZSERIO_T_bytesData>
-    DummyNested(
+    CreatorNested(
             uint32_t value_,
             ZSERIO_T_text&& text_,
             ZSERIO_T_externData&& externData_,
             ZSERIO_T_bytesData&& bytesData_,
-            ::test_object::DummyEnum dummyEnum_,
-            ::test_object::DummyBitmask dummyBitmask_,
+            ::test_object::CreatorEnum creatorEnum_,
+            ::test_object::CreatorBitmask creatorBitmask_,
             const allocator_type& allocator = allocator_type()) :
-            DummyNested(allocator)
+            CreatorNested(allocator)
     {
         m_value_ = value_;
         m_text_ = ::std::forward<ZSERIO_T_text>(text_);
         m_externData_ = ::std::forward<ZSERIO_T_externData>(externData_);
         m_bytesData_ = ::std::forward<ZSERIO_T_bytesData>(bytesData_);
-        m_dummyEnum_ = dummyEnum_;
-        m_dummyBitmask_ = dummyBitmask_;
+        m_creatorEnum_ = creatorEnum_;
+        m_creatorBitmask_ = creatorBitmask_;
     }
 
-    explicit DummyNested(::zserio::BitStreamReader& in,
+    explicit CreatorNested(::zserio::BitStreamReader& in,
             uint32_t param_, const allocator_type& allocator = allocator_type());
-    explicit DummyNested(::zserio::PackingContextNode& contextNode,
+    explicit CreatorNested(::zserio::PackingContextNode& contextNode,
             ::zserio::BitStreamReader& in,
             uint32_t param_, const allocator_type& allocator = allocator_type());
 
-    ~DummyNested() = default;
+    ~CreatorNested() = default;
 
-    DummyNested(const DummyNested& other);
-    DummyNested& operator=(const DummyNested& other);
+    CreatorNested(const CreatorNested& other);
+    CreatorNested& operator=(const CreatorNested& other);
 
-    DummyNested(DummyNested&& other);
-    DummyNested& operator=(DummyNested&& other);
+    CreatorNested(CreatorNested&& other);
+    CreatorNested& operator=(CreatorNested&& other);
 
-    DummyNested(::zserio::PropagateAllocatorT,
-            const DummyNested& other, const allocator_type& allocator);
+    CreatorNested(::zserio::PropagateAllocatorT,
+            const CreatorNested& other, const allocator_type& allocator);
 
     static const ::zserio::ITypeInfo& typeInfo();
     ::zserio::IReflectableConstPtr reflectable(const allocator_type& allocator = allocator_type()) const;
@@ -99,11 +99,11 @@ public:
     void setBytesData(const ::zserio::vector<uint8_t>& bytesData_);
     void setBytesData(::zserio::vector<uint8_t>&& bytesData_);
 
-    ::test_object::DummyEnum getDummyEnum() const;
-    void setDummyEnum(::test_object::DummyEnum dummyEnum_);
+    ::test_object::CreatorEnum getCreatorEnum() const;
+    void setCreatorEnum(::test_object::CreatorEnum creatorEnum_);
 
-    ::test_object::DummyBitmask getDummyBitmask() const;
-    void setDummyBitmask(::test_object::DummyBitmask dummyBitmask_);
+    ::test_object::CreatorBitmask getCreatorBitmask() const;
+    void setCreatorBitmask(::test_object::CreatorBitmask creatorBitmask_);
 
     static void createPackingContext(::zserio::PackingContextNode& contextNode);
     void initPackingContext(::zserio::PackingContextNode& contextNode) const;
@@ -114,7 +114,7 @@ public:
     size_t initializeOffsets(size_t bitPosition = 0);
     size_t initializeOffsets(::zserio::PackingContextNode& contextNode, size_t bitPosition);
 
-    bool operator==(const DummyNested& other) const;
+    bool operator==(const CreatorNested& other) const;
     uint32_t hashCode() const;
 
     void write(::zserio::BitStreamWriter& out) const;
@@ -130,11 +130,11 @@ private:
             const allocator_type& allocator);
     ::zserio::vector<uint8_t> readBytesData(::zserio::BitStreamReader& in,
             const allocator_type& allocator);
-    ::test_object::DummyEnum readDummyEnum(::zserio::BitStreamReader& in);
-    ::test_object::DummyEnum readDummyEnum(::zserio::PackingContextNode& contextNode,
+    ::test_object::CreatorEnum readCreatorEnum(::zserio::BitStreamReader& in);
+    ::test_object::CreatorEnum readCreatorEnum(::zserio::PackingContextNode& contextNode,
             ::zserio::BitStreamReader& in);
-    ::test_object::DummyBitmask readDummyBitmask(::zserio::BitStreamReader& in);
-    ::test_object::DummyBitmask readDummyBitmask(::zserio::PackingContextNode& contextNode,
+    ::test_object::CreatorBitmask readCreatorBitmask(::zserio::BitStreamReader& in);
+    ::test_object::CreatorBitmask readCreatorBitmask(::zserio::PackingContextNode& contextNode,
             ::zserio::BitStreamReader& in);
 
     uint32_t m_param_;
@@ -143,10 +143,10 @@ private:
     ::zserio::string<> m_text_;
     ::zserio::BitBuffer m_externData_;
     ::zserio::vector<uint8_t> m_bytesData_;
-    ::test_object::DummyEnum m_dummyEnum_;
-    ::test_object::DummyBitmask m_dummyBitmask_;
+    ::test_object::CreatorEnum m_creatorEnum_;
+    ::test_object::CreatorBitmask m_creatorBitmask_;
 };
 
 } // namespace test_object
 
-#endif // TEST_OBJECT_DUMMY_NESTED_H
+#endif // TEST_OBJECT_CREATOR_NESTED_H

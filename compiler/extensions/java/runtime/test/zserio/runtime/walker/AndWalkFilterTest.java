@@ -9,26 +9,28 @@ import org.junit.jupiter.api.Test;
 
 import zserio.runtime.typeinfo.FieldInfo;
 
+import test_object.WalkerObject;
+
 public class AndWalkFilterTest
 {
     @Test
     public void empty()
     {
         final AndWalkFilter walkFilter = new AndWalkFilter(new ArrayList<WalkFilter>());
-        final TestObject.DummyObject dummyObject = TestObject.createDummyObject();
-        final FieldInfo dummyArrayFieldInfo = TestObject.DummyObject.typeInfo().getFields().get(3);
-        final FieldInfo dummyCompoundFieldInfo = TestObject.DummyObject.typeInfo().getFields().get(1);
-        final FieldInfo dummyFieldInfo = TestObject.DummyObject.typeInfo().getFields().get(0);
+        final WalkerObject walkerObject = TestObjectCreator.createWalkerObject();
+        final FieldInfo walkerArrayFieldInfo = WalkerObject.typeInfo().getFields().get(3);
+        final FieldInfo walkerCompoundFieldInfo = WalkerObject.typeInfo().getFields().get(1);
+        final FieldInfo walkerFieldInfo = WalkerObject.typeInfo().getFields().get(0);
 
-        assertTrue(walkFilter.beforeArray(dummyObject.getUnionArray(), dummyArrayFieldInfo));
-        assertTrue(walkFilter.afterArray(dummyObject.getUnionArray(), dummyArrayFieldInfo));
-        assertTrue(walkFilter.beforeCompound(dummyObject.getNested(), dummyCompoundFieldInfo,
+        assertTrue(walkFilter.beforeArray(walkerObject.getUnionArray(), walkerArrayFieldInfo));
+        assertTrue(walkFilter.afterArray(walkerObject.getUnionArray(), walkerArrayFieldInfo));
+        assertTrue(walkFilter.beforeCompound(walkerObject.getNested(), walkerCompoundFieldInfo,
                 WalkerConst.NOT_ELEMENT));
-        assertTrue(walkFilter.afterCompound(dummyObject.getNested(), dummyCompoundFieldInfo,
+        assertTrue(walkFilter.afterCompound(walkerObject.getNested(), walkerCompoundFieldInfo,
                 WalkerConst.NOT_ELEMENT));
-        assertTrue(walkFilter.beforeValue(dummyObject.getIdentifier(), dummyFieldInfo,
+        assertTrue(walkFilter.beforeValue(walkerObject.getIdentifier(), walkerFieldInfo,
                 WalkerConst.NOT_ELEMENT));
-        assertTrue(walkFilter.afterValue(dummyObject.getIdentifier(), dummyFieldInfo,
+        assertTrue(walkFilter.afterValue(walkerObject.getIdentifier(), walkerFieldInfo,
                 WalkerConst.NOT_ELEMENT));
     }
 
@@ -39,20 +41,20 @@ public class AndWalkFilterTest
         walkFilters.add(new TestWalkFilter());
         walkFilters.add(new TestWalkFilter());
         final AndWalkFilter walkFilter = new AndWalkFilter(walkFilters);
-        final TestObject.DummyObject dummyObject = TestObject.createDummyObject();
-        final FieldInfo dummyArrayFieldInfo = TestObject.DummyObject.typeInfo().getFields().get(3);
-        final FieldInfo dummyCompoundFieldInfo = TestObject.DummyObject.typeInfo().getFields().get(1);
-        final FieldInfo dummyFieldInfo = TestObject.DummyObject.typeInfo().getFields().get(0);
+        final WalkerObject walkerObject = TestObjectCreator.createWalkerObject();
+        final FieldInfo walkerArrayFieldInfo = WalkerObject.typeInfo().getFields().get(3);
+        final FieldInfo walkerCompoundFieldInfo = WalkerObject.typeInfo().getFields().get(1);
+        final FieldInfo walkerFieldInfo = WalkerObject.typeInfo().getFields().get(0);
 
-        assertTrue(walkFilter.beforeArray(dummyObject.getUnionArray(), dummyArrayFieldInfo));
-        assertTrue(walkFilter.afterArray(dummyObject.getUnionArray(), dummyArrayFieldInfo));
-        assertTrue(walkFilter.beforeCompound(dummyObject.getNested(), dummyCompoundFieldInfo,
+        assertTrue(walkFilter.beforeArray(walkerObject.getUnionArray(), walkerArrayFieldInfo));
+        assertTrue(walkFilter.afterArray(walkerObject.getUnionArray(), walkerArrayFieldInfo));
+        assertTrue(walkFilter.beforeCompound(walkerObject.getNested(), walkerCompoundFieldInfo,
                 WalkerConst.NOT_ELEMENT));
-        assertTrue(walkFilter.afterCompound(dummyObject.getNested(), dummyCompoundFieldInfo,
+        assertTrue(walkFilter.afterCompound(walkerObject.getNested(), walkerCompoundFieldInfo,
                 WalkerConst.NOT_ELEMENT));
-        assertTrue(walkFilter.beforeValue(dummyObject.getIdentifier(), dummyFieldInfo,
+        assertTrue(walkFilter.beforeValue(walkerObject.getIdentifier(), walkerFieldInfo,
                 WalkerConst.NOT_ELEMENT));
-        assertTrue(walkFilter.afterValue(dummyObject.getIdentifier(), dummyFieldInfo,
+        assertTrue(walkFilter.afterValue(walkerObject.getIdentifier(), walkerFieldInfo,
                 WalkerConst.NOT_ELEMENT));
     }
 
@@ -77,20 +79,20 @@ public class AndWalkFilterTest
         falseFilter2.afterValue(false);
         walkFilters.add(falseFilter2);
         final AndWalkFilter walkFilter = new AndWalkFilter(walkFilters);
-        final TestObject.DummyObject dummyObject = TestObject.createDummyObject();
-        final FieldInfo dummyArrayFieldInfo = TestObject.DummyObject.typeInfo().getFields().get(3);
-        final FieldInfo dummyCompoundFieldInfo = TestObject.DummyObject.typeInfo().getFields().get(1);
-        final FieldInfo dummyFieldInfo = TestObject.DummyObject.typeInfo().getFields().get(0);
+        final WalkerObject walkerObject = TestObjectCreator.createWalkerObject();
+        final FieldInfo walkerArrayFieldInfo = WalkerObject.typeInfo().getFields().get(3);
+        final FieldInfo walkerCompoundFieldInfo = WalkerObject.typeInfo().getFields().get(1);
+        final FieldInfo walkerFieldInfo = WalkerObject.typeInfo().getFields().get(0);
 
-        assertFalse(walkFilter.beforeArray(dummyObject.getUnionArray(), dummyArrayFieldInfo));
-        assertFalse(walkFilter.afterArray(dummyObject.getUnionArray(), dummyArrayFieldInfo));
-        assertFalse(walkFilter.beforeCompound(dummyObject.getNested(), dummyCompoundFieldInfo,
+        assertFalse(walkFilter.beforeArray(walkerObject.getUnionArray(), walkerArrayFieldInfo));
+        assertFalse(walkFilter.afterArray(walkerObject.getUnionArray(), walkerArrayFieldInfo));
+        assertFalse(walkFilter.beforeCompound(walkerObject.getNested(), walkerCompoundFieldInfo,
                 WalkerConst.NOT_ELEMENT));
-        assertFalse(walkFilter.afterCompound(dummyObject.getNested(), dummyCompoundFieldInfo,
+        assertFalse(walkFilter.afterCompound(walkerObject.getNested(), walkerCompoundFieldInfo,
                 WalkerConst.NOT_ELEMENT));
-        assertFalse(walkFilter.beforeValue(dummyObject.getIdentifier(), dummyFieldInfo,
+        assertFalse(walkFilter.beforeValue(walkerObject.getIdentifier(), walkerFieldInfo,
                 WalkerConst.NOT_ELEMENT));
-        assertFalse(walkFilter.afterValue(dummyObject.getIdentifier(), dummyFieldInfo,
+        assertFalse(walkFilter.afterValue(walkerObject.getIdentifier(), walkerFieldInfo,
                 WalkerConst.NOT_ELEMENT));
     }
 
@@ -109,20 +111,20 @@ public class AndWalkFilterTest
         falseFilter2.afterValue(false);
         walkFilters.add(falseFilter2);
         final AndWalkFilter walkFilter = new AndWalkFilter(walkFilters);
-        final TestObject.DummyObject dummyObject = TestObject.createDummyObject();
-        final FieldInfo dummyArrayFieldInfo = TestObject.DummyObject.typeInfo().getFields().get(3);
-        final FieldInfo dummyCompoundFieldInfo = TestObject.DummyObject.typeInfo().getFields().get(1);
-        final FieldInfo dummyFieldInfo = TestObject.DummyObject.typeInfo().getFields().get(0);
+        final WalkerObject walkerObject = TestObjectCreator.createWalkerObject();
+        final FieldInfo walkerArrayFieldInfo = WalkerObject.typeInfo().getFields().get(3);
+        final FieldInfo walkerCompoundFieldInfo = WalkerObject.typeInfo().getFields().get(1);
+        final FieldInfo walkerFieldInfo = WalkerObject.typeInfo().getFields().get(0);
 
-        assertFalse(walkFilter.beforeArray(dummyObject.getUnionArray(), dummyArrayFieldInfo));
-        assertFalse(walkFilter.afterArray(dummyObject.getUnionArray(), dummyArrayFieldInfo));
-        assertFalse(walkFilter.beforeCompound(dummyObject.getNested(), dummyCompoundFieldInfo,
+        assertFalse(walkFilter.beforeArray(walkerObject.getUnionArray(), walkerArrayFieldInfo));
+        assertFalse(walkFilter.afterArray(walkerObject.getUnionArray(), walkerArrayFieldInfo));
+        assertFalse(walkFilter.beforeCompound(walkerObject.getNested(), walkerCompoundFieldInfo,
                 WalkerConst.NOT_ELEMENT));
-        assertFalse(walkFilter.afterCompound(dummyObject.getNested(), dummyCompoundFieldInfo,
+        assertFalse(walkFilter.afterCompound(walkerObject.getNested(), walkerCompoundFieldInfo,
                 WalkerConst.NOT_ELEMENT));
-        assertFalse(walkFilter.beforeValue(dummyObject.getIdentifier(), dummyFieldInfo,
+        assertFalse(walkFilter.beforeValue(walkerObject.getIdentifier(), walkerFieldInfo,
                 WalkerConst.NOT_ELEMENT));
-        assertFalse(walkFilter.afterValue(dummyObject.getIdentifier(), dummyFieldInfo,
+        assertFalse(walkFilter.afterValue(walkerObject.getIdentifier(), walkerFieldInfo,
                 WalkerConst.NOT_ELEMENT));
     }
 }

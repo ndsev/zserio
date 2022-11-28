@@ -6,15 +6,15 @@
 package test_object;
 
 @SuppressWarnings("cast")
-public class DummyNested implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
+public class CreatorNested implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
 {
-    public DummyNested(
+    public CreatorNested(
             long param_)
     {
         this.param_ = param_;
     }
 
-    public DummyNested(java.io.File file,
+    public CreatorNested(java.io.File file,
             long param_)
             throws java.io.IOException
     {
@@ -26,7 +26,7 @@ public class DummyNested implements zserio.runtime.io.Writer, zserio.runtime.Siz
         }
     }
 
-    public DummyNested(zserio.runtime.io.BitStreamReader in,
+    public CreatorNested(zserio.runtime.io.BitStreamReader in,
             long param_)
             throws java.io.IOException
     {
@@ -35,7 +35,7 @@ public class DummyNested implements zserio.runtime.io.Writer, zserio.runtime.Siz
         read(in);
     }
 
-    public DummyNested(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in,
+    public CreatorNested(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in,
             long param_)
             throws java.io.IOException
     {
@@ -44,14 +44,14 @@ public class DummyNested implements zserio.runtime.io.Writer, zserio.runtime.Siz
         read(contextNode, in);
     }
 
-    public DummyNested(
+    public CreatorNested(
             long param_,
             long value_,
             java.lang.String text_,
             zserio.runtime.io.BitBuffer externData_,
             byte[] bytesData_,
-            test_object.DummyEnum dummyEnum_,
-            test_object.DummyBitmask dummyBitmask_)
+            test_object.CreatorEnum creatorEnum_,
+            test_object.CreatorBitmask creatorBitmask_)
     {
         this(param_);
 
@@ -59,8 +59,8 @@ public class DummyNested implements zserio.runtime.io.Writer, zserio.runtime.Siz
         setText(text_);
         setExternData(externData_);
         setBytesData(bytesData_);
-        setDummyEnum(dummyEnum_);
-        setDummyBitmask(dummyBitmask_);
+        setCreatorEnum(creatorEnum_);
+        setCreatorBitmask(creatorBitmask_);
     }
 
     public static zserio.runtime.typeinfo.TypeInfo typeInfo()
@@ -147,10 +147,10 @@ public class DummyNested implements zserio.runtime.io.Writer, zserio.runtime.Siz
                                 false // isImplicit
                         ),
                         new zserio.runtime.typeinfo.FieldInfo(
-                                "dummyEnum", // schemaName
-                                "getDummyEnum", // getterName
-                                "setDummyEnum", // setterName
-                                test_object.DummyEnum.typeInfo(), // typeInfo
+                                "creatorEnum", // schemaName
+                                "getCreatorEnum", // getterName
+                                "setCreatorEnum", // setterName
+                                test_object.CreatorEnum.typeInfo(), // typeInfo
                                 new java.util.ArrayList<java.util.function.BiFunction<java.lang.Object, java.lang.Integer, java.lang.Object>>(), // typeArguments
                                 null, // alignment
                                 null, // offset
@@ -166,10 +166,10 @@ public class DummyNested implements zserio.runtime.io.Writer, zserio.runtime.Siz
                                 false // isImplicit
                         ),
                         new zserio.runtime.typeinfo.FieldInfo(
-                                "dummyBitmask", // schemaName
-                                "getDummyBitmask", // getterName
-                                "setDummyBitmask", // setterName
-                                test_object.DummyBitmask.typeInfo(), // typeInfo
+                                "creatorBitmask", // schemaName
+                                "getCreatorBitmask", // getterName
+                                "setCreatorBitmask", // setterName
+                                test_object.CreatorBitmask.typeInfo(), // typeInfo
                                 new java.util.ArrayList<java.util.function.BiFunction<java.lang.Object, java.lang.Integer, java.lang.Object>>(), // typeArguments
                                 null, // alignment
                                 null, // offset
@@ -196,7 +196,7 @@ public class DummyNested implements zserio.runtime.io.Writer, zserio.runtime.Siz
                 new java.util.ArrayList<zserio.runtime.typeinfo.FunctionInfo>();
 
         return new zserio.runtime.typeinfo.TypeInfo.StructTypeInfo(
-                "test_object.DummyNested", DummyNested.class, templateName, templateArguments,
+                "test_object.CreatorNested", CreatorNested.class, templateName, templateArguments,
                 fieldList, parameterList, functionList
         );
     }
@@ -207,8 +207,8 @@ public class DummyNested implements zserio.runtime.io.Writer, zserio.runtime.Siz
         contextNode.createChild();
         contextNode.createChild();
         contextNode.createChild();
-        test_object.DummyEnum.createPackingContext(contextNode.createChild());
-        test_object.DummyBitmask.createPackingContext(contextNode.createChild());
+        test_object.CreatorEnum.createPackingContext(contextNode.createChild());
+        test_object.CreatorBitmask.createPackingContext(contextNode.createChild());
     }
 
     @Override
@@ -217,8 +217,8 @@ public class DummyNested implements zserio.runtime.io.Writer, zserio.runtime.Siz
         contextNode.getChildren().get(0).getContext().init(
                 new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)),
                 new zserio.runtime.array.ArrayElement.LongArrayElement(value_));
-        dummyEnum_.initPackingContext(contextNode.getChildren().get(4));
-        dummyBitmask_.initPackingContext(contextNode.getChildren().get(5));
+        creatorEnum_.initPackingContext(contextNode.getChildren().get(4));
+        creatorBitmask_.initPackingContext(contextNode.getChildren().get(5));
     }
 
     @Override
@@ -236,8 +236,8 @@ public class DummyNested implements zserio.runtime.io.Writer, zserio.runtime.Siz
         endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfString(text_);
         endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfBitBuffer(externData_);
         endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfBytes(bytesData_);
-        endBitPosition += dummyEnum_.bitSizeOf(endBitPosition);
-        endBitPosition += dummyBitmask_.bitSizeOf(endBitPosition);
+        endBitPosition += creatorEnum_.bitSizeOf(endBitPosition);
+        endBitPosition += creatorBitmask_.bitSizeOf(endBitPosition);
 
         return (int)(endBitPosition - bitPosition);
     }
@@ -253,9 +253,9 @@ public class DummyNested implements zserio.runtime.io.Writer, zserio.runtime.Siz
         endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfString(text_);
         endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfBitBuffer(externData_);
         endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfBytes(bytesData_);
-        endBitPosition += dummyEnum_.bitSizeOf(contextNode.getChildren().get(4),
+        endBitPosition += creatorEnum_.bitSizeOf(contextNode.getChildren().get(4),
                 endBitPosition);
-        endBitPosition += dummyBitmask_.bitSizeOf(contextNode.getChildren().get(5),
+        endBitPosition += creatorBitmask_.bitSizeOf(contextNode.getChildren().get(5),
                 endBitPosition);
 
         return (int)(endBitPosition - bitPosition);
@@ -306,32 +306,32 @@ public class DummyNested implements zserio.runtime.io.Writer, zserio.runtime.Siz
         this.bytesData_ = bytesData_;
     }
 
-    public test_object.DummyEnum getDummyEnum()
+    public test_object.CreatorEnum getCreatorEnum()
     {
-        return dummyEnum_;
+        return creatorEnum_;
     }
 
-    public void setDummyEnum(test_object.DummyEnum dummyEnum_)
+    public void setCreatorEnum(test_object.CreatorEnum creatorEnum_)
     {
-        this.dummyEnum_ = dummyEnum_;
+        this.creatorEnum_ = creatorEnum_;
     }
 
-    public test_object.DummyBitmask getDummyBitmask()
+    public test_object.CreatorBitmask getCreatorBitmask()
     {
-        return dummyBitmask_;
+        return creatorBitmask_;
     }
 
-    public void setDummyBitmask(test_object.DummyBitmask dummyBitmask_)
+    public void setCreatorBitmask(test_object.CreatorBitmask creatorBitmask_)
     {
-        this.dummyBitmask_ = dummyBitmask_;
+        this.creatorBitmask_ = creatorBitmask_;
     }
 
     @Override
     public boolean equals(java.lang.Object obj)
     {
-        if (obj instanceof DummyNested)
+        if (obj instanceof CreatorNested)
         {
-            final DummyNested that = (DummyNested)obj;
+            final CreatorNested that = (CreatorNested)obj;
 
             return
                     this.param_ == that.param_ &&
@@ -339,8 +339,8 @@ public class DummyNested implements zserio.runtime.io.Writer, zserio.runtime.Siz
                     ((text_ == null) ? that.text_ == null : text_.equals(that.text_)) &&
                     ((externData_ == null) ? that.externData_ == null : externData_.equals(that.externData_)) &&
                     ((bytesData_ == null) ? that.bytesData_ == null : java.util.Arrays.equals(bytesData_, that.bytesData_)) &&
-                    ((dummyEnum_ == null) ? that.dummyEnum_ == null : dummyEnum_.getValue() == that.dummyEnum_.getValue()) &&
-                    ((dummyBitmask_ == null) ? that.dummyBitmask_ == null : dummyBitmask_.equals(that.dummyBitmask_));
+                    ((creatorEnum_ == null) ? that.creatorEnum_ == null : creatorEnum_.getValue() == that.creatorEnum_.getValue()) &&
+                    ((creatorBitmask_ == null) ? that.creatorBitmask_ == null : creatorBitmask_.equals(that.creatorBitmask_));
         }
 
         return false;
@@ -356,8 +356,8 @@ public class DummyNested implements zserio.runtime.io.Writer, zserio.runtime.Siz
         result = zserio.runtime.HashCodeUtil.calcHashCode(result, text_);
         result = zserio.runtime.HashCodeUtil.calcHashCode(result, externData_);
         result = zserio.runtime.HashCodeUtil.calcHashCode(result, bytesData_);
-        result = zserio.runtime.HashCodeUtil.calcHashCode(result, dummyEnum_);
-        result = zserio.runtime.HashCodeUtil.calcHashCode(result, dummyBitmask_);
+        result = zserio.runtime.HashCodeUtil.calcHashCode(result, creatorEnum_);
+        result = zserio.runtime.HashCodeUtil.calcHashCode(result, creatorBitmask_);
 
         return result;
     }
@@ -373,9 +373,9 @@ public class DummyNested implements zserio.runtime.io.Writer, zserio.runtime.Siz
 
         bytesData_ = in.readBytes();
 
-        dummyEnum_ = test_object.DummyEnum.readEnum(in);
+        creatorEnum_ = test_object.CreatorEnum.readEnum(in);
 
-        dummyBitmask_ = new test_object.DummyBitmask(in);
+        creatorBitmask_ = new test_object.CreatorBitmask(in);
     }
 
     public void read(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in)
@@ -391,9 +391,9 @@ public class DummyNested implements zserio.runtime.io.Writer, zserio.runtime.Siz
 
         bytesData_ = in.readBytes();
 
-        dummyEnum_ = test_object.DummyEnum.readEnum(contextNode.getChildren().get(4), in);
+        creatorEnum_ = test_object.CreatorEnum.readEnum(contextNode.getChildren().get(4), in);
 
-        dummyBitmask_ = new test_object.DummyBitmask(contextNode.getChildren().get(5), in);
+        creatorBitmask_ = new test_object.CreatorBitmask(contextNode.getChildren().get(5), in);
     }
 
     @Override
@@ -411,8 +411,8 @@ public class DummyNested implements zserio.runtime.io.Writer, zserio.runtime.Siz
         endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfString(text_);
         endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfBitBuffer(externData_);
         endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfBytes(bytesData_);
-        endBitPosition += dummyEnum_.bitSizeOf(endBitPosition);
-        endBitPosition += dummyBitmask_.bitSizeOf(endBitPosition);
+        endBitPosition += creatorEnum_.bitSizeOf(endBitPosition);
+        endBitPosition += creatorBitmask_.bitSizeOf(endBitPosition);
 
         return endBitPosition;
     }
@@ -428,9 +428,9 @@ public class DummyNested implements zserio.runtime.io.Writer, zserio.runtime.Siz
         endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfString(text_);
         endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfBitBuffer(externData_);
         endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfBytes(bytesData_);
-        endBitPosition = dummyEnum_.initializeOffsets(contextNode.getChildren().get(4),
+        endBitPosition = creatorEnum_.initializeOffsets(contextNode.getChildren().get(4),
                 endBitPosition);
-        endBitPosition = dummyBitmask_.initializeOffsets(contextNode.getChildren().get(5),
+        endBitPosition = creatorBitmask_.initializeOffsets(contextNode.getChildren().get(5),
                 endBitPosition);
 
         return endBitPosition;
@@ -455,9 +455,9 @@ public class DummyNested implements zserio.runtime.io.Writer, zserio.runtime.Siz
 
         out.writeBytes(bytesData_);
 
-        dummyEnum_.write(out);
+        creatorEnum_.write(out);
 
-        dummyBitmask_.write(out);
+        creatorBitmask_.write(out);
     }
 
     @Override
@@ -474,9 +474,9 @@ public class DummyNested implements zserio.runtime.io.Writer, zserio.runtime.Siz
 
         out.writeBytes(bytesData_);
 
-        dummyEnum_.write(contextNode.getChildren().get(4), out);
+        creatorEnum_.write(contextNode.getChildren().get(4), out);
 
-        dummyBitmask_.write(contextNode.getChildren().get(5), out);
+        creatorBitmask_.write(contextNode.getChildren().get(5), out);
     }
 
     private final long param_;
@@ -484,6 +484,6 @@ public class DummyNested implements zserio.runtime.io.Writer, zserio.runtime.Siz
     private java.lang.String text_;
     private zserio.runtime.io.BitBuffer externData_;
     private byte[] bytesData_;
-    private test_object.DummyEnum dummyEnum_;
-    private test_object.DummyBitmask dummyBitmask_;
+    private test_object.CreatorEnum creatorEnum_;
+    private test_object.CreatorBitmask creatorBitmask_;
 }

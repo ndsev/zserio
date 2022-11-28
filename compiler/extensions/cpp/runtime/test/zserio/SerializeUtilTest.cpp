@@ -17,6 +17,7 @@ enum class DummyEnum : uint8_t
     VALUE3 = UINT8_C(2)
 };
 
+// These objects are not generated but templated for easier usage of allocators.
 template <typename ALLOC = std::allocator<uint8_t>>
 struct DummyObject
 {

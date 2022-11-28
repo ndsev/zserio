@@ -8,26 +8,30 @@ import org.junit.jupiter.api.Test;
 
 import zserio.runtime.typeinfo.FieldInfo;
 
+import test_object.WalkerUnion;
+import test_object.WalkerNested;
+import test_object.WalkerObject;
+
 public class RegexWalkFilterTest
 {
     @Test
     public void regexAllMatch()
     {
         final RegexWalkFilter walkFilter = new RegexWalkFilter(".*");
-        final TestObject.DummyObject dummyObject = TestObject.createDummyObject();
-        final FieldInfo dummyArrayFieldInfo = TestObject.DummyObject.typeInfo().getFields().get(3);
-        final FieldInfo dummyCompoundFieldInfo = TestObject.DummyObject.typeInfo().getFields().get(1);
-        final FieldInfo dummyFieldInfo = TestObject.DummyObject.typeInfo().getFields().get(0);
+        final WalkerObject walkerObject = TestObjectCreator.createWalkerObject();
+        final FieldInfo walkerArrayFieldInfo = WalkerObject.typeInfo().getFields().get(3);
+        final FieldInfo walkerCompoundFieldInfo = WalkerObject.typeInfo().getFields().get(1);
+        final FieldInfo walkerFieldInfo = WalkerObject.typeInfo().getFields().get(0);
 
-        assertTrue(walkFilter.beforeArray(dummyObject.getUnionArray(), dummyArrayFieldInfo));
-        assertTrue(walkFilter.afterArray(dummyObject.getUnionArray(), dummyArrayFieldInfo));
-        assertTrue(walkFilter.beforeCompound(dummyObject.getNested(), dummyCompoundFieldInfo,
+        assertTrue(walkFilter.beforeArray(walkerObject.getUnionArray(), walkerArrayFieldInfo));
+        assertTrue(walkFilter.afterArray(walkerObject.getUnionArray(), walkerArrayFieldInfo));
+        assertTrue(walkFilter.beforeCompound(walkerObject.getNested(), walkerCompoundFieldInfo,
                 WalkerConst.NOT_ELEMENT));
-        assertTrue(walkFilter.afterCompound(dummyObject.getNested(), dummyCompoundFieldInfo,
+        assertTrue(walkFilter.afterCompound(walkerObject.getNested(), walkerCompoundFieldInfo,
                 WalkerConst.NOT_ELEMENT));
-        assertTrue(walkFilter.beforeValue(dummyObject.getIdentifier(), dummyFieldInfo,
+        assertTrue(walkFilter.beforeValue(walkerObject.getIdentifier(), walkerFieldInfo,
                 WalkerConst.NOT_ELEMENT));
-        assertTrue(walkFilter.afterValue(dummyObject.getIdentifier(), dummyFieldInfo,
+        assertTrue(walkFilter.afterValue(walkerObject.getIdentifier(), walkerFieldInfo,
                 WalkerConst.NOT_ELEMENT));
     }
 
@@ -35,51 +39,51 @@ public class RegexWalkFilterTest
     public void regexPrefixMatch()
     {
         final RegexWalkFilter walkFilter = new RegexWalkFilter("nested\\..*");
-        final TestObject.DummyObject dummyObject = TestObject.createDummyObject();
+        final WalkerObject walkerObject = TestObjectCreator.createWalkerObject();
 
-        final FieldInfo identifierFieldInfo = TestObject.DummyObject.typeInfo().getFields().get(0);
-        assertFalse(walkFilter.beforeValue(dummyObject.getIdentifier(), identifierFieldInfo,
+        final FieldInfo identifierFieldInfo = WalkerObject.typeInfo().getFields().get(0);
+        assertFalse(walkFilter.beforeValue(walkerObject.getIdentifier(), identifierFieldInfo,
                 WalkerConst.NOT_ELEMENT));
-        assertTrue(walkFilter.afterValue(dummyObject.getIdentifier(), identifierFieldInfo,
+        assertTrue(walkFilter.afterValue(walkerObject.getIdentifier(), identifierFieldInfo,
                 WalkerConst.NOT_ELEMENT));
 
-        final FieldInfo nestedFieldInfo = TestObject.DummyObject.typeInfo().getFields().get(1);
-        assertTrue(walkFilter.beforeCompound(dummyObject.getNested(), nestedFieldInfo,
+        final FieldInfo nestedFieldInfo = WalkerObject.typeInfo().getFields().get(1);
+        assertTrue(walkFilter.beforeCompound(walkerObject.getNested(), nestedFieldInfo,
                 WalkerConst.NOT_ELEMENT));
         final FieldInfo textFieldInfo = nestedFieldInfo.getTypeInfo().getFields().get(0);
-        assertTrue(walkFilter.beforeValue(dummyObject.getNested().getText(), textFieldInfo,
+        assertTrue(walkFilter.beforeValue(walkerObject.getNested().getText(), textFieldInfo,
                 WalkerConst.NOT_ELEMENT));
-        assertTrue(walkFilter.afterValue(dummyObject.getNested().getText(), textFieldInfo,
+        assertTrue(walkFilter.afterValue(walkerObject.getNested().getText(), textFieldInfo,
                 WalkerConst.NOT_ELEMENT));
-        assertTrue(walkFilter.afterCompound(dummyObject.getNested(), nestedFieldInfo,
+        assertTrue(walkFilter.afterCompound(walkerObject.getNested(), nestedFieldInfo,
                 WalkerConst.NOT_ELEMENT));
 
         // ignore text
 
-        final FieldInfo unionArrayFieldInfo = TestObject.DummyObject.typeInfo().getFields().get(3);
-        assertFalse(walkFilter.beforeArray(dummyObject.getUnionArray(), unionArrayFieldInfo));
-        assertTrue(walkFilter.afterArray(dummyObject.getUnionArray(), unionArrayFieldInfo));
+        final FieldInfo unionArrayFieldInfo = WalkerObject.typeInfo().getFields().get(3);
+        assertFalse(walkFilter.beforeArray(walkerObject.getUnionArray(), unionArrayFieldInfo));
+        assertTrue(walkFilter.afterArray(walkerObject.getUnionArray(), unionArrayFieldInfo));
     }
 
     @Test
     public void regexArrayMatch()
     {
         final RegexWalkFilter walkFilter = new RegexWalkFilter("unionArray\\[\\d+\\]\\.nes.*");
-        final TestObject.DummyObject dummyObject = TestObject.createDummyObject();
+        final WalkerObject walkerObject = TestObjectCreator.createWalkerObject();
 
-        final FieldInfo unionArrayFieldInfo = TestObject.DummyObject.typeInfo().getFields().get(3);
-        assertTrue(walkFilter.beforeArray(dummyObject.getUnionArray(), unionArrayFieldInfo));
+        final FieldInfo unionArrayFieldInfo = WalkerObject.typeInfo().getFields().get(3);
+        assertTrue(walkFilter.beforeArray(walkerObject.getUnionArray(), unionArrayFieldInfo));
 
-        assertFalse(walkFilter.beforeCompound(dummyObject.getUnionArray()[0], unionArrayFieldInfo, 0));
-        assertTrue(walkFilter.afterCompound(dummyObject.getUnionArray()[0], unionArrayFieldInfo, 0));
+        assertFalse(walkFilter.beforeCompound(walkerObject.getUnionArray()[0], unionArrayFieldInfo, 0));
+        assertTrue(walkFilter.afterCompound(walkerObject.getUnionArray()[0], unionArrayFieldInfo, 0));
 
-        assertFalse(walkFilter.beforeCompound(dummyObject.getUnionArray()[1], unionArrayFieldInfo, 1));
-        assertTrue(walkFilter.afterCompound(dummyObject.getUnionArray()[1], unionArrayFieldInfo, 1));
+        assertFalse(walkFilter.beforeCompound(walkerObject.getUnionArray()[1], unionArrayFieldInfo, 1));
+        assertTrue(walkFilter.afterCompound(walkerObject.getUnionArray()[1], unionArrayFieldInfo, 1));
 
-        assertTrue(walkFilter.beforeCompound(dummyObject.getUnionArray()[2], unionArrayFieldInfo, 2));
-        assertTrue(walkFilter.afterCompound(dummyObject.getUnionArray()[2], unionArrayFieldInfo, 2));
+        assertTrue(walkFilter.beforeCompound(walkerObject.getUnionArray()[2], unionArrayFieldInfo, 2));
+        assertTrue(walkFilter.afterCompound(walkerObject.getUnionArray()[2], unionArrayFieldInfo, 2));
 
-        assertTrue(walkFilter.afterArray(dummyObject.getUnionArray(), unionArrayFieldInfo));
+        assertTrue(walkFilter.afterArray(walkerObject.getUnionArray(), unionArrayFieldInfo));
     }
 
     @Test
@@ -87,55 +91,54 @@ public class RegexWalkFilterTest
     {
         final RegexWalkFilter walkFilter = new RegexWalkFilter("^unionArray\\[\\d*\\]\\.te.*");
 
-        final TestObject.DummyUnion[] unionArray = new TestObject.DummyUnion[] { new TestObject.DummyUnion() };
-        unionArray[0].setNestedArray(
-                new TestObject.DummyNested[] { new TestObject.DummyNested("nestedArray") });
-        final TestObject.DummyObject dummyObject =
-                new TestObject.DummyObject(13, new TestObject.DummyNested("nested"), "test", unionArray, null);
+        final WalkerUnion[] unionArray = new WalkerUnion[] { new WalkerUnion() };
+        unionArray[0].setNestedArray(new WalkerNested[] { new WalkerNested("nestedArray") });
+        final WalkerObject walkerObject = new WalkerObject(
+                13, new WalkerNested("nested"), "test", unionArray, null);
 
-        final FieldInfo unionArrayFieldInfo = TestObject.DummyObject.typeInfo().getFields().get(3);
-        assertFalse(walkFilter.beforeArray(dummyObject.getUnionArray(), unionArrayFieldInfo));
-        assertTrue(walkFilter.afterArray(dummyObject.getUnionArray(), unionArrayFieldInfo));
+        final FieldInfo unionArrayFieldInfo = WalkerObject.typeInfo().getFields().get(3);
+        assertFalse(walkFilter.beforeArray(walkerObject.getUnionArray(), unionArrayFieldInfo));
+        assertTrue(walkFilter.afterArray(walkerObject.getUnionArray(), unionArrayFieldInfo));
     }
 
     @Test
     public void regexNullCompoundMatch()
     {
         final RegexWalkFilter walkFilter = new RegexWalkFilter("nested");
-        final TestObject.DummyObject dummyObject = TestObject.createDummyObject(0, false);
+        final WalkerObject walkerObject = TestObjectCreator.createWalkerObject(0, false);
 
-        final FieldInfo nestedFieldInfo = TestObject.DummyObject.typeInfo().getFields().get(1);
-        assertEquals(null, dummyObject.getNested());
+        final FieldInfo nestedFieldInfo = WalkerObject.typeInfo().getFields().get(1);
+        assertEquals(null, walkerObject.getNested());
         // note that the null compounds are processed as values!
-        assertTrue(walkFilter.beforeValue(dummyObject.getNested(), nestedFieldInfo, WalkerConst.NOT_ELEMENT));
-        assertTrue(walkFilter.afterValue(dummyObject.getNested(), nestedFieldInfo, WalkerConst.NOT_ELEMENT));
+        assertTrue(walkFilter.beforeValue(walkerObject.getNested(), nestedFieldInfo, WalkerConst.NOT_ELEMENT));
+        assertTrue(walkFilter.afterValue(walkerObject.getNested(), nestedFieldInfo, WalkerConst.NOT_ELEMENT));
     }
 
     @Test
     public void regexNullCompoundNoMatch()
     {
         final RegexWalkFilter walkFilter = new RegexWalkFilter("^nested\\.text$");
-        final TestObject.DummyObject dummyObject = TestObject.createDummyObject(0, false);
+        final WalkerObject walkerObject = TestObjectCreator.createWalkerObject(0, false);
 
-        final FieldInfo nestedFieldInfo = TestObject.DummyObject.typeInfo().getFields().get(1);
-        assertEquals(null, dummyObject.getNested());
+        final FieldInfo nestedFieldInfo = WalkerObject.typeInfo().getFields().get(1);
+        assertEquals(null, walkerObject.getNested());
         // note that the null compounds are processed as values!
-        assertFalse(walkFilter.beforeValue(dummyObject.getNested(), nestedFieldInfo, WalkerConst.NOT_ELEMENT));
-        assertTrue(walkFilter.afterValue(dummyObject.getNested(), nestedFieldInfo, WalkerConst.NOT_ELEMENT));
+        assertFalse(walkFilter.beforeValue(walkerObject.getNested(), nestedFieldInfo, WalkerConst.NOT_ELEMENT));
+        assertTrue(walkFilter.afterValue(walkerObject.getNested(), nestedFieldInfo, WalkerConst.NOT_ELEMENT));
     }
 
     @Test
     public void regexNullArrayMatch()
     {
         final RegexWalkFilter walkFilter = new RegexWalkFilter("optionalUnionArray");
-        final TestObject.DummyObject dummyObject = TestObject.createDummyObject();
+        final WalkerObject walkerObject = TestObjectCreator.createWalkerObject();
 
-        final FieldInfo optionalUnionArrayFieldInfo = TestObject.DummyObject.typeInfo().getFields().get(4);
-        assertEquals(null, dummyObject.getOptionalUnionArray());
+        final FieldInfo optionalUnionArrayFieldInfo = WalkerObject.typeInfo().getFields().get(4);
+        assertEquals(null, walkerObject.getOptionalUnionArray());
         // note that the null arrays are processed as values!
-        assertTrue(walkFilter.beforeValue(dummyObject.getOptionalUnionArray(), optionalUnionArrayFieldInfo,
+        assertTrue(walkFilter.beforeValue(walkerObject.getOptionalUnionArray(), optionalUnionArrayFieldInfo,
                 WalkerConst.NOT_ELEMENT));
-        assertTrue(walkFilter.afterValue(dummyObject.getOptionalUnionArray(), optionalUnionArrayFieldInfo,
+        assertTrue(walkFilter.afterValue(walkerObject.getOptionalUnionArray(), optionalUnionArrayFieldInfo,
                 WalkerConst.NOT_ELEMENT));
     }
 
@@ -144,14 +147,14 @@ public class RegexWalkFilterTest
     {
         final RegexWalkFilter walkFilter =
                 new RegexWalkFilter("^optionalUnionArray\\.\\[\\d+\\]\\.nestedArray.*");
-        final TestObject.DummyObject dummyObject = TestObject.createDummyObject();
+        final WalkerObject walkerObject = TestObjectCreator.createWalkerObject();
 
-        final FieldInfo optionalUnionArrayFieldInfo = TestObject.DummyObject.typeInfo().getFields().get(4);
-        assertEquals(null, dummyObject.getOptionalUnionArray());
+        final FieldInfo optionalUnionArrayFieldInfo = WalkerObject.typeInfo().getFields().get(4);
+        assertEquals(null, walkerObject.getOptionalUnionArray());
         // note that the null arrays are processed as values!
-        assertFalse(walkFilter.beforeValue(dummyObject.getOptionalUnionArray(), optionalUnionArrayFieldInfo,
+        assertFalse(walkFilter.beforeValue(walkerObject.getOptionalUnionArray(), optionalUnionArrayFieldInfo,
                 WalkerConst.NOT_ELEMENT));
-        assertTrue(walkFilter.afterValue(dummyObject.getOptionalUnionArray(), optionalUnionArrayFieldInfo,
+        assertTrue(walkFilter.afterValue(walkerObject.getOptionalUnionArray(), optionalUnionArrayFieldInfo,
                 WalkerConst.NOT_ELEMENT));
     }
 }

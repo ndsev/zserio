@@ -7,19 +7,19 @@ import enum
 import typing
 import zserio
 
-class DummyEnum(enum.Enum):
+class CreatorEnum(enum.Enum):
     ONE = 0
     TWO = 1
     MINUS_ONE = -1
 
     @classmethod
-    def from_reader(cls: typing.Type['DummyEnum'], reader: zserio.BitStreamReader) -> 'DummyEnum':
+    def from_reader(cls: typing.Type['CreatorEnum'], reader: zserio.BitStreamReader) -> 'CreatorEnum':
         return cls(reader.read_signed_bits(8))
 
     @classmethod
-    def from_reader_packed(cls: typing.Type['DummyEnum'],
+    def from_reader_packed(cls: typing.Type['CreatorEnum'],
                            context_node: zserio.array.PackingContextNode,
-                           reader: zserio.BitStreamReader) -> 'DummyEnum':
+                           reader: zserio.BitStreamReader) -> 'CreatorEnum':
         return cls(context_node.context.read(zserio.array.SignedBitFieldArrayTraits(8), reader))
 
     @staticmethod
@@ -27,13 +27,13 @@ class DummyEnum(enum.Enum):
         attribute_list = {
             zserio.typeinfo.TypeAttribute.UNDERLYING_TYPE : zserio.typeinfo.TypeInfo('int8', int),
             zserio.typeinfo.TypeAttribute.ENUM_ITEMS: [
-                zserio.typeinfo.ItemInfo('ONE', DummyEnum.ONE),
-                zserio.typeinfo.ItemInfo('TWO', DummyEnum.TWO),
-                zserio.typeinfo.ItemInfo('MinusOne', DummyEnum.MINUS_ONE)
+                zserio.typeinfo.ItemInfo('ONE', CreatorEnum.ONE),
+                zserio.typeinfo.ItemInfo('TWO', CreatorEnum.TWO),
+                zserio.typeinfo.ItemInfo('MinusOne', CreatorEnum.MINUS_ONE)
             ]
         }
 
-        return zserio.typeinfo.TypeInfo('test_object.DummyEnum', DummyEnum, attributes=attribute_list)
+        return zserio.typeinfo.TypeInfo('test_object.CreatorEnum', CreatorEnum, attributes=attribute_list)
 
     def __hash__(self) -> int:
         result = zserio.hashcode.HASH_SEED

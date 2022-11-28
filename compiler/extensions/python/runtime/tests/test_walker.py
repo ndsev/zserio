@@ -1,185 +1,10 @@
 import unittest
-import typing
+
+from test_object.api import WalkerBitmask, WalkerNested, WalkerObject, WalkerUnion
 
 from zserio import (WalkObserver, WalkFilter, Walker, DefaultWalkObserver, PythonRuntimeException,
                     ArrayLengthWalkFilter, DepthWalkFilter, RegexWalkFilter, AndWalkFilter)
-from zserio.typeinfo import TypeInfo, TypeAttribute, MemberInfo, MemberAttribute, ItemInfo
-from zserio.array import Array, ObjectArrayTraits
-
-class DummyUnion:
-
-    def __init__(
-            self,
-            *,
-            value_: typing.Union[int, None]=None,
-            text_: typing.Union[str, None]=None,
-            nested_array_: typing.Optional[typing.List['DummyNested']]=None) -> None:
-        self._choice_tag: int = self.UNDEFINED_CHOICE
-        self._choice: typing.Any = None
-        if value_ is not None:
-            self._choice_tag = self.CHOICE_VALUE
-            self._choice = value_
-        if text_ is not None:
-            self._choice_tag = self.CHOICE_TEXT
-            self._choice = text_
-        if nested_array_ is not None:
-            self._choice_tag = self.CHOICE_NESTED_ARRAY
-            self._choice = Array(ObjectArrayTraits(None, None, None), nested_array_, is_auto=True)
-
-    @staticmethod
-    def type_info() -> TypeInfo:
-        field_list: typing.List[MemberInfo] = [
-            MemberInfo(
-                'value', TypeInfo('uint32', int),
-                attributes={
-                    MemberAttribute.PROPERTY_NAME: 'value'
-                }
-            ),
-            MemberInfo(
-                'text', TypeInfo('string', str),
-                attributes={
-                    MemberAttribute.PROPERTY_NAME: 'text'
-                }
-            ),
-            MemberInfo(
-                'nestedArray', DummyNested.type_info(),
-                attributes={
-                    MemberAttribute.PROPERTY_NAME: 'nested_array',
-                    MemberAttribute.ARRAY_LENGTH: None
-                }
-            )
-        ]
-        attribute_list = {
-            TypeAttribute.FIELDS: field_list,
-            TypeAttribute.SELECTOR: None
-        }
-
-        return TypeInfo("DummyUnion", DummyUnion, attributes=attribute_list)
-
-    @property
-    def choice_tag(self) -> int:
-        return self._choice_tag
-
-    @property
-    def value(self) -> int:
-        return self._choice
-
-    @property
-    def text(self) -> str:
-        return self._choice
-
-    @property
-    def nested_array(self) -> typing.Optional[typing.List['DummyNested']]:
-        return self._choice.raw_array
-
-    CHOICE_VALUE = 0
-    CHOICE_TEXT = 1
-    CHOICE_NESTED_ARRAY = 2
-    UNDEFINED_CHOICE = -1
-
-
-class DummyNested:
-
-    def __init__(self, text_: str=str()) -> None:
-        self._text = text_
-
-    @staticmethod
-    def type_info() -> TypeInfo:
-        field_list: typing.List[MemberInfo] = [
-            MemberInfo(
-                'text', TypeInfo('string', str),
-                attributes={
-                    MemberAttribute.PROPERTY_NAME: 'text'
-                }
-            )
-        ]
-        attribute_list = {
-            TypeAttribute.FIELDS: field_list
-        }
-
-        return TypeInfo("DummyNested", DummyNested, attributes=attribute_list)
-
-    @property
-    def text(self) -> str:
-        return self._text
-
-
-class DummyObject:
-
-    def __init__(self, identifier_: int=int(),
-                 nested_: typing.Optional[DummyNested]=None,
-                 text_: str=str(),
-                 union_array_: typing.List[DummyUnion]=None) -> None:
-        self._identifier = identifier_
-        self._nested = nested_
-        self._text = text_
-        self._union_array = Array(ObjectArrayTraits(None, None, None), union_array_, is_auto=True)
-        self._optional_union_array_ = None
-
-    @staticmethod
-    def type_info() -> TypeInfo:
-        field_list: typing.List[MemberInfo] = [
-            MemberInfo(
-                'identifier', TypeInfo('uint32', int),
-                attributes={
-                    MemberAttribute.PROPERTY_NAME: 'identifier'
-                }
-            ),
-            MemberInfo(
-                'nested', DummyNested.type_info(),
-                attributes={
-                    MemberAttribute.PROPERTY_NAME: 'nested',
-                    MemberAttribute.OPTIONAL : 'self.identifier != 0'
-                }
-            ),
-            MemberInfo(
-                'text', TypeInfo('string', str),
-                attributes={
-                    MemberAttribute.PROPERTY_NAME: 'text'
-                }
-            ),
-            MemberInfo(
-                'unionArray', DummyUnion.type_info(),
-                attributes={
-                    MemberAttribute.PROPERTY_NAME: 'union_array',
-                    MemberAttribute.ARRAY_LENGTH: None
-                }
-            ),
-            MemberInfo(
-                'optionalUnionArray', DummyUnion.type_info(),
-                attributes={
-                    MemberAttribute.PROPERTY_NAME : 'optional_union_array',
-                    MemberAttribute.ARRAY_LENGTH : None,
-                    MemberAttribute.OPTIONAL : None
-                }
-            )
-        ]
-        attribute_list = {
-            TypeAttribute.FIELDS: field_list
-        }
-
-        return TypeInfo("DummyObject", DummyObject, attributes=attribute_list)
-
-    @property
-    def identifier(self) -> int:
-        return self._identifier
-
-    @property
-    def nested(self) -> typing.Optional[DummyNested]:
-        return self._nested
-
-    @property
-    def text(self) -> str:
-        return self._text
-
-    @property
-    def union_array(self) -> typing.List[DummyUnion]:
-        return self._union_array.raw_array
-
-    @property
-    def optional_union_array(self) -> typing.Optional[typing.List[DummyUnion]]:
-        return None if self._optional_union_array_ is None else self._optional_union_array_.raw_array
-
+from zserio.typeinfo import TypeInfo, TypeAttribute, MemberInfo, MemberAttribute
 
 class TestWalkObserver(WalkObserver):
 
@@ -263,42 +88,42 @@ class WalkerTest(unittest.TestCase):
     def test_observer(self):
         observer = WalkObserver()
 
-        dummy_object = object()
-        dummy_member_info = MemberInfo("dummy", TypeInfo("Dummy", None))
+        walker_object = object()
+        walker_member_info = MemberInfo("walker", TypeInfo("Walker", None))
 
         with self.assertRaises(NotImplementedError):
-            observer.begin_root(dummy_object)
+            observer.begin_root(walker_object)
         with self.assertRaises(NotImplementedError):
-            observer.end_root(dummy_object)
+            observer.end_root(walker_object)
         with self.assertRaises(NotImplementedError):
-            observer.begin_array([], dummy_member_info)
+            observer.begin_array([], walker_member_info)
         with self.assertRaises(NotImplementedError):
-            observer.end_array([], dummy_member_info)
+            observer.end_array([], walker_member_info)
         with self.assertRaises(NotImplementedError):
-            observer.begin_compound(dummy_object, dummy_member_info)
+            observer.begin_compound(walker_object, walker_member_info)
         with self.assertRaises(NotImplementedError):
-            observer.end_compound(dummy_object, dummy_member_info)
+            observer.end_compound(walker_object, walker_member_info)
         with self.assertRaises(NotImplementedError):
-            observer.visit_value("", dummy_member_info)
+            observer.visit_value("", walker_member_info)
 
     def test_filter(self):
         walk_filter = WalkFilter()
 
-        dummy_object = object()
-        dummy_member_info = MemberInfo("dummy", TypeInfo("Dummy", None))
+        walker_object = object()
+        walker_member_info = MemberInfo("walker", TypeInfo("Walker", None))
 
         with self.assertRaises(NotImplementedError):
-            walk_filter.before_array([], dummy_member_info)
+            walk_filter.before_array([], walker_member_info)
         with self.assertRaises(NotImplementedError):
-            walk_filter.after_array([], dummy_member_info)
+            walk_filter.after_array([], walker_member_info)
         with self.assertRaises(NotImplementedError):
-            walk_filter.before_compound(dummy_object, dummy_member_info)
+            walk_filter.before_compound(walker_object, walker_member_info)
         with self.assertRaises(NotImplementedError):
-            walk_filter.after_compound(dummy_object, dummy_member_info)
+            walk_filter.after_compound(walker_object, walker_member_info)
         with self.assertRaises(NotImplementedError):
-            walk_filter.before_value("", dummy_member_info)
+            walk_filter.before_value("", walker_member_info)
         with self.assertRaises(NotImplementedError):
-            walk_filter.after_value("", dummy_member_info)
+            walk_filter.after_value("", walker_member_info)
 
     def test_walk_without_type_info(self):
         walker = Walker(TestWalkObserver())
@@ -307,21 +132,14 @@ class WalkerTest(unittest.TestCase):
             walker.walk(obj)
 
     def test_walk_non_compound(self):
-        class DummyBitmask:
-            @staticmethod
-            def type_info():
-                return TypeInfo("DummyBitmask", DummyBitmask, attributes={
-                    TypeAttribute.BITMASK_VALUES : [ItemInfo("ZERO", 0)]
-                })
-
         walker = Walker(TestWalkObserver())
         with self.assertRaises(PythonRuntimeException):
-            walker.walk(DummyBitmask())
+            walker.walk(WalkerBitmask())
 
     def test_walk(self):
         observer = TestWalkObserver()
         walker = Walker(observer)
-        obj = _create_dummy_object()
+        obj = _create_walker_object()
         walker.walk(obj)
         self.assertEqual(obj, observer.captures["begin_root"])
         self.assertEqual(obj, observer.captures["end_root"])
@@ -349,7 +167,7 @@ class WalkerTest(unittest.TestCase):
                                      before_compound=False, after_compound=True,
                                      before_value=True, after_value=True)
         walker = Walker(observer, AndWalkFilter([test_filter]))
-        obj = _create_dummy_object()
+        obj = _create_walker_object()
         walker.walk(obj)
         self.assertEqual(obj, observer.captures["begin_root"])
         self.assertEqual(obj, observer.captures["end_root"])
@@ -365,7 +183,7 @@ class WalkerTest(unittest.TestCase):
                                      before_compound=True, after_compound=True,
                                      before_value=True, after_value=False)
         walker = Walker(observer, AndWalkFilter([test_filter]))
-        obj = _create_dummy_object()
+        obj = _create_walker_object()
         walker.walk(obj)
         self.assertEqual(obj, observer.captures["begin_root"])
         self.assertEqual(obj, observer.captures["end_root"])
@@ -381,7 +199,7 @@ class WalkerTest(unittest.TestCase):
                                      before_compound=True, after_compound=False,
                                      before_value=True, after_value=True)
         walker = Walker(observer, AndWalkFilter([test_filter]))
-        obj = _create_dummy_object()
+        obj = _create_walker_object()
         walker.walk(obj)
         self.assertEqual(obj, observer.captures["begin_root"])
         self.assertEqual(obj, observer.captures["end_root"])
@@ -397,7 +215,7 @@ class WalkerTest(unittest.TestCase):
                                      before_compound=True, after_compound=True,
                                      before_value=True, after_value=True)
         walker = Walker(observer, AndWalkFilter([test_filter]))
-        obj = _create_dummy_object()
+        obj = _create_walker_object()
         walker.walk(obj)
         self.assertEqual(obj, observer.captures["begin_root"])
         self.assertEqual(obj, observer.captures["end_root"])
@@ -412,147 +230,147 @@ class DefaultObserverTest(unittest.TestCase):
 
     @staticmethod
     def test_default():
-        dummy_member_info = MemberInfo("dummy", TypeInfo("Dummy", None))
+        walker_member_info = MemberInfo("walker", TypeInfo("Walker", None))
         default_observer = DefaultWalkObserver()
 
         default_observer.begin_root(object())
         default_observer.end_root(object())
-        default_observer.begin_array([], dummy_member_info)
-        default_observer.end_array([], dummy_member_info)
-        default_observer.begin_compound(object(), dummy_member_info)
-        default_observer.end_compound(object(), dummy_member_info)
-        default_observer.visit_value(None, dummy_member_info)
+        default_observer.begin_array([], walker_member_info)
+        default_observer.end_array([], walker_member_info)
+        default_observer.begin_compound(object(), walker_member_info)
+        default_observer.end_compound(object(), walker_member_info)
+        default_observer.visit_value(None, walker_member_info)
 
 class DepthWalkFilterTest(unittest.TestCase):
 
     def test_depth_0(self):
-        dummy_member_info = MemberInfo("dummy", TypeInfo("Dummy", None))
+        walker_member_info = MemberInfo("walker", TypeInfo("Walker", None))
         depth_filter = DepthWalkFilter(0)
 
-        self.assertFalse(depth_filter.before_array([], dummy_member_info))
-        self.assertTrue(depth_filter.after_array([], dummy_member_info))
+        self.assertFalse(depth_filter.before_array([], walker_member_info))
+        self.assertTrue(depth_filter.after_array([], walker_member_info))
 
-        self.assertFalse(depth_filter.before_compound(object(), dummy_member_info))
-        self.assertTrue(depth_filter.after_compound(object(), dummy_member_info))
+        self.assertFalse(depth_filter.before_compound(object(), walker_member_info))
+        self.assertTrue(depth_filter.after_compound(object(), walker_member_info))
 
-        self.assertFalse(depth_filter.before_value(None, dummy_member_info))
-        self.assertTrue(depth_filter.after_value(None, dummy_member_info))
+        self.assertFalse(depth_filter.before_value(None, walker_member_info))
+        self.assertTrue(depth_filter.after_value(None, walker_member_info))
 
     def test_depth_1(self):
-        dummy_member_info = MemberInfo("dummy", TypeInfo("Dummy", None))
+        walker_member_info = MemberInfo("walker", TypeInfo("Walker", None))
         depth_filter = DepthWalkFilter(1)
 
-        self.assertTrue(depth_filter.before_array([], dummy_member_info))  # 0
-        self.assertFalse(depth_filter.before_array([], dummy_member_info))  # 1
-        self.assertTrue(depth_filter.after_array([], dummy_member_info))  # 1
-        self.assertFalse(depth_filter.before_compound(object(), dummy_member_info, 0))  # 1
-        self.assertTrue(depth_filter.after_compound(object(), dummy_member_info, 0))  # 1
-        self.assertFalse(depth_filter.before_value(None, dummy_member_info, 1))  # 1
-        self.assertTrue(depth_filter.after_value(None, dummy_member_info, 1))  # 1
-        self.assertTrue(depth_filter.after_array([], dummy_member_info))  # 0
+        self.assertTrue(depth_filter.before_array([], walker_member_info))  # 0
+        self.assertFalse(depth_filter.before_array([], walker_member_info))  # 1
+        self.assertTrue(depth_filter.after_array([], walker_member_info))  # 1
+        self.assertFalse(depth_filter.before_compound(object(), walker_member_info, 0))  # 1
+        self.assertTrue(depth_filter.after_compound(object(), walker_member_info, 0))  # 1
+        self.assertFalse(depth_filter.before_value(None, walker_member_info, 1))  # 1
+        self.assertTrue(depth_filter.after_value(None, walker_member_info, 1))  # 1
+        self.assertTrue(depth_filter.after_array([], walker_member_info))  # 0
 
-        self.assertTrue(depth_filter.before_compound(object(), dummy_member_info))  # 0
-        self.assertFalse(depth_filter.before_array([], dummy_member_info))  # 1
-        self.assertTrue(depth_filter.after_array([], dummy_member_info))  # 1
-        self.assertFalse(depth_filter.before_compound(object(), dummy_member_info))  # 1
-        self.assertTrue(depth_filter.after_compound(object(), dummy_member_info))  # 1
-        self.assertFalse(depth_filter.before_value(None, dummy_member_info))  # 1
-        self.assertTrue(depth_filter.after_value(None, dummy_member_info))  # 1
-        self.assertTrue(depth_filter.after_compound(object(), dummy_member_info))  # 0
+        self.assertTrue(depth_filter.before_compound(object(), walker_member_info))  # 0
+        self.assertFalse(depth_filter.before_array([], walker_member_info))  # 1
+        self.assertTrue(depth_filter.after_array([], walker_member_info))  # 1
+        self.assertFalse(depth_filter.before_compound(object(), walker_member_info))  # 1
+        self.assertTrue(depth_filter.after_compound(object(), walker_member_info))  # 1
+        self.assertFalse(depth_filter.before_value(None, walker_member_info))  # 1
+        self.assertTrue(depth_filter.after_value(None, walker_member_info))  # 1
+        self.assertTrue(depth_filter.after_compound(object(), walker_member_info))  # 0
 
-        self.assertTrue(depth_filter.before_value(None, dummy_member_info))  # 0
-        self.assertTrue(depth_filter.after_value(None, dummy_member_info))  # 0
+        self.assertTrue(depth_filter.before_value(None, walker_member_info))  # 0
+        self.assertTrue(depth_filter.after_value(None, walker_member_info))  # 0
 
 
 class RegexWalkFilterTest(unittest.TestCase):
 
     def test_regex_all_match(self):
-        dummy_member_info = MemberInfo("dummy", TypeInfo("Dummy", None))
-        dummy_array_member_info = MemberInfo("dummy", TypeInfo("Dummy", None), attributes={
+        walker_member_info = MemberInfo("walker", TypeInfo("Walker", None))
+        walker_array_member_info = MemberInfo("walker", TypeInfo("Walker", None), attributes={
             MemberAttribute.ARRAY_LENGTH: None
         })
         regex_filter = RegexWalkFilter(".*")
 
-        self.assertTrue(regex_filter.before_array([], dummy_array_member_info))
-        self.assertTrue(regex_filter.after_array([], dummy_array_member_info))
-        self.assertTrue(regex_filter.before_compound(object(), dummy_member_info))
-        self.assertTrue(regex_filter.before_compound(object(), dummy_member_info))
-        self.assertTrue(regex_filter.before_value(None, dummy_member_info))
-        self.assertTrue(regex_filter.after_value(None, dummy_member_info))
+        self.assertTrue(regex_filter.before_array([], walker_array_member_info))
+        self.assertTrue(regex_filter.after_array([], walker_array_member_info))
+        self.assertTrue(regex_filter.before_compound(object(), walker_member_info))
+        self.assertTrue(regex_filter.before_compound(object(), walker_member_info))
+        self.assertTrue(regex_filter.before_value(None, walker_member_info))
+        self.assertTrue(regex_filter.after_value(None, walker_member_info))
 
     def test_regex_prefix_match(self):
-        dummy_object = _create_dummy_object()
+        walker_object = _create_walker_object()
         regex_filter = RegexWalkFilter("nested\\..*")
 
-        identifier_member_info = dummy_object.type_info().attributes[TypeAttribute.FIELDS][0]
-        self.assertFalse(regex_filter.before_value(dummy_object.identifier, identifier_member_info))
-        self.assertTrue(regex_filter.after_value(dummy_object.identifier, identifier_member_info))
+        identifier_member_info = walker_object.type_info().attributes[TypeAttribute.FIELDS][0]
+        self.assertFalse(regex_filter.before_value(walker_object.identifier, identifier_member_info))
+        self.assertTrue(regex_filter.after_value(walker_object.identifier, identifier_member_info))
 
-        nested_member_info = dummy_object.type_info().attributes[TypeAttribute.FIELDS][1]
-        self.assertTrue(regex_filter.before_compound(dummy_object.nested, nested_member_info))
+        nested_member_info = walker_object.type_info().attributes[TypeAttribute.FIELDS][1]
+        self.assertTrue(regex_filter.before_compound(walker_object.nested, nested_member_info))
         text_member_info = nested_member_info.type_info.attributes[TypeAttribute.FIELDS][0]
-        self.assertTrue(regex_filter.before_value(dummy_object.nested.text, text_member_info))
-        self.assertTrue(regex_filter.after_value(dummy_object.nested.text, text_member_info))
-        self.assertTrue(regex_filter.after_compound(dummy_object.nested, nested_member_info))
+        self.assertTrue(regex_filter.before_value(walker_object.nested.text, text_member_info))
+        self.assertTrue(regex_filter.after_value(walker_object.nested.text, text_member_info))
+        self.assertTrue(regex_filter.after_compound(walker_object.nested, nested_member_info))
 
         # ignore text
 
-        union_array_member_info = dummy_object.type_info().attributes[TypeAttribute.FIELDS][3]
-        self.assertFalse(regex_filter.before_array(dummy_object.union_array, union_array_member_info))
-        self.assertTrue(regex_filter.after_array(dummy_object.union_array, union_array_member_info))
+        union_array_member_info = walker_object.type_info().attributes[TypeAttribute.FIELDS][3]
+        self.assertFalse(regex_filter.before_array(walker_object.union_array, union_array_member_info))
+        self.assertTrue(regex_filter.after_array(walker_object.union_array, union_array_member_info))
 
     def test_regex_array_match(self):
-        dummy_object = _create_dummy_object()
+        walker_object = _create_walker_object()
         regex_filter = RegexWalkFilter("unionArray\\[\\d+\\]\\.nes.*")
 
-        union_array_member_info = dummy_object.type_info().attributes[TypeAttribute.FIELDS][3]
-        self.assertTrue(regex_filter.before_array(dummy_object.union_array, union_array_member_info))
+        union_array_member_info = walker_object.type_info().attributes[TypeAttribute.FIELDS][3]
+        self.assertTrue(regex_filter.before_array(walker_object.union_array, union_array_member_info))
 
-        self.assertFalse(regex_filter.before_compound(dummy_object.union_array[0], union_array_member_info, 0))
-        self.assertTrue(regex_filter.after_compound(dummy_object.union_array[0], union_array_member_info, 0))
+        self.assertFalse(regex_filter.before_compound(walker_object.union_array[0], union_array_member_info, 0))
+        self.assertTrue(regex_filter.after_compound(walker_object.union_array[0], union_array_member_info, 0))
 
-        self.assertFalse(regex_filter.before_compound(dummy_object.union_array[1], union_array_member_info, 1))
-        self.assertTrue(regex_filter.after_compound(dummy_object.union_array[1], union_array_member_info, 1))
+        self.assertFalse(regex_filter.before_compound(walker_object.union_array[1], union_array_member_info, 1))
+        self.assertTrue(regex_filter.after_compound(walker_object.union_array[1], union_array_member_info, 1))
 
-        self.assertTrue(regex_filter.before_compound(dummy_object.union_array[2], union_array_member_info, 2))
-        self.assertTrue(regex_filter.after_compound(dummy_object.union_array[2], union_array_member_info, 2))
+        self.assertTrue(regex_filter.before_compound(walker_object.union_array[2], union_array_member_info, 2))
+        self.assertTrue(regex_filter.after_compound(walker_object.union_array[2], union_array_member_info, 2))
 
-        self.assertTrue(regex_filter.after_array(dummy_object.union_array, union_array_member_info))
+        self.assertTrue(regex_filter.after_array(walker_object.union_array, union_array_member_info))
 
     def test_regex_array_no_match(self):
-        dummy_object = DummyObject(13, DummyNested("nested"), "test",
-                                   [DummyUnion(nested_array_=[DummyNested("nestedArray")])])
+        walker_object = WalkerObject(13, WalkerNested("nested"), "test",
+                                   [WalkerUnion(nested_array_=[WalkerNested("nestedArray")])])
 
         regex_filter = RegexWalkFilter("^unionArray\\[\\d*\\]\\.te.*")
 
-        union_array_member_info = dummy_object.type_info().attributes[TypeAttribute.FIELDS][3]
-        self.assertFalse(regex_filter.before_array(dummy_object.union_array, union_array_member_info))
-        self.assertTrue(regex_filter.after_array(dummy_object.union_array, union_array_member_info))
+        union_array_member_info = walker_object.type_info().attributes[TypeAttribute.FIELDS][3]
+        self.assertFalse(regex_filter.before_array(walker_object.union_array, union_array_member_info))
+        self.assertTrue(regex_filter.after_array(walker_object.union_array, union_array_member_info))
 
     def test_regex_none_compound_match(self):
-        dummy_object = DummyObject(13, None, "test", [DummyUnion(text_="1"), DummyUnion(value_=2)])
+        walker_object = WalkerObject(13, None, "test", [WalkerUnion(text_="1"), WalkerUnion(value_=2)])
 
         regex_filter = RegexWalkFilter("nested")
 
-        nested_member_info = dummy_object.type_info().attributes[TypeAttribute.FIELDS][1]
+        nested_member_info = walker_object.type_info().attributes[TypeAttribute.FIELDS][1]
         # note that the None compounds are processed as values!
-        self.assertTrue(regex_filter.before_value(dummy_object.nested, nested_member_info))
-        self.assertTrue(regex_filter.after_value(dummy_object.nested, nested_member_info))
+        self.assertTrue(regex_filter.before_value(walker_object.nested, nested_member_info))
+        self.assertTrue(regex_filter.after_value(walker_object.nested, nested_member_info))
 
     def test_regex_none_compound_no_match(self):
-        dummy_object = DummyObject(13, None, "test", [DummyUnion(text_="1"), DummyUnion(value_=2)])
+        walker_object = WalkerObject(13, None, "test", [WalkerUnion(text_="1"), WalkerUnion(value_=2)])
 
         regex_filter = RegexWalkFilter("^nested\\.text$")
 
-        nested_member_info = dummy_object.type_info().attributes[TypeAttribute.FIELDS][1]
+        nested_member_info = walker_object.type_info().attributes[TypeAttribute.FIELDS][1]
         # note that the None compounds are processed as values!
-        self.assertFalse(regex_filter.before_value(dummy_object.nested, nested_member_info))
-        self.assertTrue(regex_filter.after_value(dummy_object.nested, nested_member_info))
+        self.assertFalse(regex_filter.before_value(walker_object.nested, nested_member_info))
+        self.assertTrue(regex_filter.after_value(walker_object.nested, nested_member_info))
 
     def test_regex_none_array_match(self):
         regex_filter = RegexWalkFilter("optionalUnionArray")
 
-        optional_union_array_member_info = DummyObject.type_info().attributes[TypeAttribute.FIELDS][4]
+        optional_union_array_member_info = WalkerObject.type_info().attributes[TypeAttribute.FIELDS][4]
         # note that the None arrays are processed as values!
         self.assertTrue(regex_filter.before_value(None, optional_union_array_member_info))
         self.assertTrue(regex_filter.after_value(None, optional_union_array_member_info))
@@ -560,7 +378,7 @@ class RegexWalkFilterTest(unittest.TestCase):
     def test_regex_none_array_no_match(self):
         regex_filter = RegexWalkFilter("^optionalUnionArray\\[\\d+\\]\\.nestedArray.*")
 
-        union_array_member_info = DummyObject.type_info().attributes[TypeAttribute.FIELDS][3]
+        union_array_member_info = WalkerObject.type_info().attributes[TypeAttribute.FIELDS][3]
         # note that the None arrays are processed as values!
         self.assertFalse(regex_filter.before_value(None, union_array_member_info))
         self.assertTrue(regex_filter.after_value(None, union_array_member_info))
@@ -569,56 +387,56 @@ class RegexWalkFilterTest(unittest.TestCase):
 class ArrayLengthWalkFilterTest(unittest.TestCase):
 
     def test_array_length_0(self):
-        dummy_member_info = MemberInfo("dummy", TypeInfo("Dummy", None))
-        dummy_array_member_info = MemberInfo("dummy_array", TypeInfo("Dummy", None), attributes={
+        walker_member_info = MemberInfo("walker", TypeInfo("Walker", None))
+        walker_array_member_info = MemberInfo("walker_array", TypeInfo("Walker", None), attributes={
             MemberAttribute.ARRAY_LENGTH : None
         })
         array_length_filter = ArrayLengthWalkFilter(0)
 
-        self.assertTrue(array_length_filter.before_array([], dummy_array_member_info))
-        self.assertFalse(array_length_filter.before_compound(object(), dummy_array_member_info, 0))
-        self.assertFalse(array_length_filter.after_compound(object(), dummy_array_member_info, 0))
-        self.assertFalse(array_length_filter.before_value(None, dummy_array_member_info, 1))
-        self.assertFalse(array_length_filter.after_value(None, dummy_array_member_info, 1))
-        self.assertTrue(array_length_filter.after_array([], dummy_array_member_info))
+        self.assertTrue(array_length_filter.before_array([], walker_array_member_info))
+        self.assertFalse(array_length_filter.before_compound(object(), walker_array_member_info, 0))
+        self.assertFalse(array_length_filter.after_compound(object(), walker_array_member_info, 0))
+        self.assertFalse(array_length_filter.before_value(None, walker_array_member_info, 1))
+        self.assertFalse(array_length_filter.after_value(None, walker_array_member_info, 1))
+        self.assertTrue(array_length_filter.after_array([], walker_array_member_info))
 
-        self.assertTrue(array_length_filter.before_compound(object(), dummy_member_info))
-        self.assertTrue(array_length_filter.before_value(None, dummy_member_info))
-        self.assertTrue(array_length_filter.after_value(None, dummy_member_info))
-        self.assertTrue(array_length_filter.before_array([], dummy_array_member_info))
-        self.assertFalse(array_length_filter.before_value(None, dummy_array_member_info, 0))
-        self.assertFalse(array_length_filter.after_value(None, dummy_array_member_info, 0))
-        self.assertTrue(array_length_filter.after_array([], dummy_array_member_info))
-        self.assertTrue(array_length_filter.after_compound(object(), dummy_member_info))
+        self.assertTrue(array_length_filter.before_compound(object(), walker_member_info))
+        self.assertTrue(array_length_filter.before_value(None, walker_member_info))
+        self.assertTrue(array_length_filter.after_value(None, walker_member_info))
+        self.assertTrue(array_length_filter.before_array([], walker_array_member_info))
+        self.assertFalse(array_length_filter.before_value(None, walker_array_member_info, 0))
+        self.assertFalse(array_length_filter.after_value(None, walker_array_member_info, 0))
+        self.assertTrue(array_length_filter.after_array([], walker_array_member_info))
+        self.assertTrue(array_length_filter.after_compound(object(), walker_member_info))
 
 
 class AndWalkFilterTest(unittest.TestCase):
 
     def test_empty(self):
-        dummy_member_info = MemberInfo("dummy", TypeInfo("Dummy", None))
+        walker_member_info = MemberInfo("walker", TypeInfo("Walker", None))
         walk_filter = AndWalkFilter([])
 
-        self.assertTrue(walk_filter.before_array([], dummy_member_info))
-        self.assertTrue(walk_filter.after_array([], dummy_member_info))
-        self.assertTrue(walk_filter.before_compound(object(), dummy_member_info))
-        self.assertTrue(walk_filter.after_compound(object(), dummy_member_info))
-        self.assertTrue(walk_filter.before_value(None, dummy_member_info))
-        self.assertTrue(walk_filter.after_value(None, dummy_member_info))
+        self.assertTrue(walk_filter.before_array([], walker_member_info))
+        self.assertTrue(walk_filter.after_array([], walker_member_info))
+        self.assertTrue(walk_filter.before_compound(object(), walker_member_info))
+        self.assertTrue(walk_filter.after_compound(object(), walker_member_info))
+        self.assertTrue(walk_filter.before_value(None, walker_member_info))
+        self.assertTrue(walk_filter.after_value(None, walker_member_info))
 
     def test_true_true(self):
-        dummy_member_info = MemberInfo("dummy", TypeInfo("Dummy", None))
+        walker_member_info = MemberInfo("walker", TypeInfo("Walker", None))
         # two filters returning True
         walk_filter = AndWalkFilter([TestWalkFilter(), TestWalkFilter()])
 
-        self.assertTrue(walk_filter.before_array([], dummy_member_info))
-        self.assertTrue(walk_filter.after_array([], dummy_member_info))
-        self.assertTrue(walk_filter.before_compound(object(), dummy_member_info))
-        self.assertTrue(walk_filter.after_compound(object(), dummy_member_info))
-        self.assertTrue(walk_filter.before_value(None, dummy_member_info))
-        self.assertTrue(walk_filter.after_value(None, dummy_member_info))
+        self.assertTrue(walk_filter.before_array([], walker_member_info))
+        self.assertTrue(walk_filter.after_array([], walker_member_info))
+        self.assertTrue(walk_filter.before_compound(object(), walker_member_info))
+        self.assertTrue(walk_filter.after_compound(object(), walker_member_info))
+        self.assertTrue(walk_filter.before_value(None, walker_member_info))
+        self.assertTrue(walk_filter.after_value(None, walker_member_info))
 
     def test_false_false(self):
-        dummy_member_info = MemberInfo("dummy", TypeInfo("Dummy", None))
+        walker_member_info = MemberInfo("walker", TypeInfo("Walker", None))
         # two filters returning False
         walk_filter = AndWalkFilter([
             TestWalkFilter(before_array=False, after_array=False,
@@ -629,15 +447,15 @@ class AndWalkFilterTest(unittest.TestCase):
                            before_value=False, after_value=False)
             ])
 
-        self.assertFalse(walk_filter.before_array([], dummy_member_info))
-        self.assertFalse(walk_filter.after_array([], dummy_member_info))
-        self.assertFalse(walk_filter.before_compound(object(), dummy_member_info))
-        self.assertFalse(walk_filter.after_compound(object(), dummy_member_info))
-        self.assertFalse(walk_filter.before_value(None, dummy_member_info))
-        self.assertFalse(walk_filter.after_value(None, dummy_member_info))
+        self.assertFalse(walk_filter.before_array([], walker_member_info))
+        self.assertFalse(walk_filter.after_array([], walker_member_info))
+        self.assertFalse(walk_filter.before_compound(object(), walker_member_info))
+        self.assertFalse(walk_filter.after_compound(object(), walker_member_info))
+        self.assertFalse(walk_filter.before_value(None, walker_member_info))
+        self.assertFalse(walk_filter.after_value(None, walker_member_info))
 
     def test_true_false(self):
-        dummy_member_info = MemberInfo("dummy", TypeInfo("Dummy", None))
+        walker_member_info = MemberInfo("walker", TypeInfo("Walker", None))
         walk_filter = AndWalkFilter([
             TestWalkFilter(), # returning true
             TestWalkFilter(before_array=False, after_array=False,
@@ -645,17 +463,17 @@ class AndWalkFilterTest(unittest.TestCase):
                            before_value=False, after_value=False) # returning false
         ])
 
-        self.assertFalse(walk_filter.before_array([], dummy_member_info))
-        self.assertFalse(walk_filter.after_array([], dummy_member_info))
-        self.assertFalse(walk_filter.before_compound(object(), dummy_member_info))
-        self.assertFalse(walk_filter.after_compound(object(), dummy_member_info))
-        self.assertFalse(walk_filter.before_value(None, dummy_member_info))
-        self.assertFalse(walk_filter.after_value(None, dummy_member_info))
+        self.assertFalse(walk_filter.before_array([], walker_member_info))
+        self.assertFalse(walk_filter.after_array([], walker_member_info))
+        self.assertFalse(walk_filter.before_compound(object(), walker_member_info))
+        self.assertFalse(walk_filter.after_compound(object(), walker_member_info))
+        self.assertFalse(walk_filter.before_value(None, walker_member_info))
+        self.assertFalse(walk_filter.after_value(None, walker_member_info))
 
 
-def _create_dummy_object():
-    return DummyObject(13, DummyNested("nested"), "test", [
-        DummyUnion(text_="1"),
-        DummyUnion(value_=2),
-        DummyUnion(nested_array_=[DummyNested("nestedArray")])
+def _create_walker_object():
+    return WalkerObject(13, WalkerNested("nested"), "test", [
+        WalkerUnion(text_="1"),
+        WalkerUnion(value_=2),
+        WalkerUnion(nested_array_=[WalkerNested("nestedArray")])
     ])

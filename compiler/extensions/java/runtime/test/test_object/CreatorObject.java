@@ -6,13 +6,13 @@
 package test_object;
 
 @SuppressWarnings("cast")
-public class DummyObject implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
+public class CreatorObject implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
 {
-    public DummyObject()
+    public CreatorObject()
     {
     }
 
-    public DummyObject(java.io.File file)
+    public CreatorObject(java.io.File file)
             throws java.io.IOException
     {
         try (final zserio.runtime.io.FileBitStreamReader in = new zserio.runtime.io.FileBitStreamReader(file))
@@ -21,28 +21,28 @@ public class DummyObject implements zserio.runtime.io.Writer, zserio.runtime.Siz
         }
     }
 
-    public DummyObject(zserio.runtime.io.BitStreamReader in)
+    public CreatorObject(zserio.runtime.io.BitStreamReader in)
             throws java.io.IOException
     {
         read(in);
     }
 
-    public DummyObject(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in)
+    public CreatorObject(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in)
             throws java.io.IOException
     {
         read(contextNode, in);
     }
 
-    public DummyObject(
+    public CreatorObject(
             long value_,
-            test_object.DummyNested nested_,
+            test_object.CreatorNested nested_,
             java.lang.String text_,
-            test_object.DummyNested[] nestedArray_,
+            test_object.CreatorNested[] nestedArray_,
             java.lang.String[] textArray_,
             zserio.runtime.io.BitBuffer[] externArray_,
             byte[][] bytesArray_,
             java.lang.Boolean optionalBool_,
-            test_object.DummyNested optionalNested_)
+            test_object.CreatorNested optionalNested_)
     {
         setValue(value_);
         setNested(nested_);
@@ -85,8 +85,8 @@ public class DummyObject implements zserio.runtime.io.Writer, zserio.runtime.Siz
                                 "nested", // schemaName
                                 "getNested", // getterName
                                 "setNested", // setterName
-                                test_object.DummyNested.typeInfo(), // typeInfo
-                                java.util.Arrays.asList((obj, index) -> ((DummyObject)obj).getValue()), // typeArguments
+                                test_object.CreatorNested.typeInfo(), // typeInfo
+                                java.util.Arrays.asList((obj, index) -> ((CreatorObject)obj).getValue()), // typeArguments
                                 null, // alignment
                                 null, // offset
                                 null, // initializer
@@ -123,8 +123,8 @@ public class DummyObject implements zserio.runtime.io.Writer, zserio.runtime.Siz
                                 "nestedArray", // schemaName
                                 "getNestedArray", // getterName
                                 "setNestedArray", // setterName
-                                test_object.DummyNested.typeInfo(), // typeInfo
-                                java.util.Arrays.asList((obj, index) -> ((DummyObject)obj).getValue()), // typeArguments
+                                test_object.CreatorNested.typeInfo(), // typeInfo
+                                java.util.Arrays.asList((obj, index) -> ((CreatorObject)obj).getValue()), // typeArguments
                                 null, // alignment
                                 null, // offset
                                 null, // initializer
@@ -218,8 +218,8 @@ public class DummyObject implements zserio.runtime.io.Writer, zserio.runtime.Siz
                                 "optionalNested", // schemaName
                                 "getOptionalNested", // getterName
                                 "setOptionalNested", // setterName
-                                test_object.DummyNested.typeInfo(), // typeInfo
-                                java.util.Arrays.asList((obj, index) -> ((DummyObject)obj).getValue()), // typeArguments
+                                test_object.CreatorNested.typeInfo(), // typeInfo
+                                java.util.Arrays.asList((obj, index) -> ((CreatorObject)obj).getValue()), // typeArguments
                                 null, // alignment
                                 null, // offset
                                 null, // initializer
@@ -240,7 +240,7 @@ public class DummyObject implements zserio.runtime.io.Writer, zserio.runtime.Siz
                 new java.util.ArrayList<zserio.runtime.typeinfo.FunctionInfo>();
 
         return new zserio.runtime.typeinfo.TypeInfo.StructTypeInfo(
-                "test_object.DummyObject", DummyObject.class, templateName, templateArguments,
+                "test_object.CreatorObject", CreatorObject.class, templateName, templateArguments,
                 fieldList, parameterList, functionList
         );
     }
@@ -248,14 +248,14 @@ public class DummyObject implements zserio.runtime.io.Writer, zserio.runtime.Siz
     public static void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
     {
         contextNode.createChild().createContext();
-        test_object.DummyNested.createPackingContext(contextNode.createChild());
+        test_object.CreatorNested.createPackingContext(contextNode.createChild());
         contextNode.createChild();
         contextNode.createChild();
         contextNode.createChild();
         contextNode.createChild();
         contextNode.createChild();
         contextNode.createChild();
-        test_object.DummyNested.createPackingContext(contextNode.createChild());
+        test_object.CreatorNested.createPackingContext(contextNode.createChild());
     }
 
     @Override
@@ -359,12 +359,12 @@ public class DummyObject implements zserio.runtime.io.Writer, zserio.runtime.Siz
         this.value_ = value_;
     }
 
-    public test_object.DummyNested getNested()
+    public test_object.CreatorNested getNested()
     {
         return nested_;
     }
 
-    public void setNested(test_object.DummyNested nested_)
+    public void setNested(test_object.CreatorNested nested_)
     {
         this.nested_ = nested_;
     }
@@ -379,16 +379,16 @@ public class DummyObject implements zserio.runtime.io.Writer, zserio.runtime.Siz
         this.text_ = text_;
     }
 
-    public test_object.DummyNested[] getNestedArray()
+    public test_object.CreatorNested[] getNestedArray()
     {
         return (nestedArray_ == null) ? null : nestedArray_.getRawArray();
     }
 
-    public void setNestedArray(test_object.DummyNested[] nestedArray_)
+    public void setNestedArray(test_object.CreatorNested[] nestedArray_)
     {
         this.nestedArray_ = new zserio.runtime.array.Array(
-                new zserio.runtime.array.RawArray.ObjectRawArray<>(test_object.DummyNested.class, nestedArray_),
-                new zserio.runtime.array.ArrayTraits.WriteObjectArrayTraits<test_object.DummyNested>(new ZserioElementFactory_nestedArray()),
+                new zserio.runtime.array.RawArray.ObjectRawArray<>(test_object.CreatorNested.class, nestedArray_),
+                new zserio.runtime.array.ArrayTraits.WriteObjectArrayTraits<test_object.CreatorNested>(new ZserioElementFactory_nestedArray()),
                 zserio.runtime.array.ArrayType.AUTO);
     }
 
@@ -500,12 +500,12 @@ public class DummyObject implements zserio.runtime.io.Writer, zserio.runtime.Siz
         optionalBool_ = null;
     }
 
-    public test_object.DummyNested getOptionalNested()
+    public test_object.CreatorNested getOptionalNested()
     {
         return optionalNested_;
     }
 
-    public void setOptionalNested(test_object.DummyNested optionalNested_)
+    public void setOptionalNested(test_object.CreatorNested optionalNested_)
     {
         this.optionalNested_ = optionalNested_;
     }
@@ -528,9 +528,9 @@ public class DummyObject implements zserio.runtime.io.Writer, zserio.runtime.Siz
     @Override
     public boolean equals(java.lang.Object obj)
     {
-        if (obj instanceof DummyObject)
+        if (obj instanceof CreatorObject)
         {
-            final DummyObject that = (DummyObject)obj;
+            final CreatorObject that = (CreatorObject)obj;
 
             return
                     value_ == that.value_ &&
@@ -578,13 +578,13 @@ public class DummyObject implements zserio.runtime.io.Writer, zserio.runtime.Siz
     {
         value_ = in.readUnsignedInt();
 
-        nested_ = new test_object.DummyNested(in, (long)(getValue()));
+        nested_ = new test_object.CreatorNested(in, (long)(getValue()));
 
         text_ = in.readString();
 
         nestedArray_ = new zserio.runtime.array.Array(
-                new zserio.runtime.array.RawArray.ObjectRawArray<>(test_object.DummyNested.class),
-                new zserio.runtime.array.ArrayTraits.WriteObjectArrayTraits<test_object.DummyNested>(new ZserioElementFactory_nestedArray()),
+                new zserio.runtime.array.RawArray.ObjectRawArray<>(test_object.CreatorNested.class),
+                new zserio.runtime.array.ArrayTraits.WriteObjectArrayTraits<test_object.CreatorNested>(new ZserioElementFactory_nestedArray()),
                 zserio.runtime.array.ArrayType.AUTO);
         nestedArray_.read(in);
 
@@ -619,7 +619,7 @@ public class DummyObject implements zserio.runtime.io.Writer, zserio.runtime.Siz
 
         if (in.readBool())
         {
-            optionalNested_ = new test_object.DummyNested(in, (long)(getValue()));
+            optionalNested_ = new test_object.CreatorNested(in, (long)(getValue()));
         }
     }
 
@@ -630,13 +630,13 @@ public class DummyObject implements zserio.runtime.io.Writer, zserio.runtime.Siz
                 contextNode.getChildren().get(0).getContext().read(
                         new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)), in)).get();
 
-        nested_ = new test_object.DummyNested(contextNode.getChildren().get(1), in, (long)(getValue()));
+        nested_ = new test_object.CreatorNested(contextNode.getChildren().get(1), in, (long)(getValue()));
 
         text_ = in.readString();
 
         nestedArray_ = new zserio.runtime.array.Array(
-                new zserio.runtime.array.RawArray.ObjectRawArray<>(test_object.DummyNested.class),
-                new zserio.runtime.array.ArrayTraits.WriteObjectArrayTraits<test_object.DummyNested>(new ZserioElementFactory_nestedArray()),
+                new zserio.runtime.array.RawArray.ObjectRawArray<>(test_object.CreatorNested.class),
+                new zserio.runtime.array.ArrayTraits.WriteObjectArrayTraits<test_object.CreatorNested>(new ZserioElementFactory_nestedArray()),
                 zserio.runtime.array.ArrayType.AUTO);
         nestedArray_.readPacked(in);
 
@@ -671,7 +671,7 @@ public class DummyObject implements zserio.runtime.io.Writer, zserio.runtime.Siz
 
         if (in.readBool())
         {
-            optionalNested_ = new test_object.DummyNested(contextNode.getChildren().get(8), in, (long)(getValue()));
+            optionalNested_ = new test_object.CreatorNested(contextNode.getChildren().get(8), in, (long)(getValue()));
         }
     }
 
@@ -769,7 +769,7 @@ public class DummyObject implements zserio.runtime.io.Writer, zserio.runtime.Siz
         // check parameters
         if (nested_.getParam() != (long)(getValue()))
         {
-            throw new zserio.runtime.ZserioError("Write: Wrong parameter param for field DummyObject.nested: " +
+            throw new zserio.runtime.ZserioError("Write: Wrong parameter param for field CreatorObject.nested: " +
                     nested_.getParam() + " != " + (long)(getValue()) + "!");
         }
         nested_.write(out);
@@ -816,7 +816,7 @@ public class DummyObject implements zserio.runtime.io.Writer, zserio.runtime.Siz
             // check parameters
             if (optionalNested_.getParam() != (long)(getValue()))
             {
-                throw new zserio.runtime.ZserioError("Write: Wrong parameter param for field DummyObject.optionalNested: " +
+                throw new zserio.runtime.ZserioError("Write: Wrong parameter param for field CreatorObject.optionalNested: " +
                         optionalNested_.getParam() + " != " + (long)(getValue()) + "!");
             }
             optionalNested_.write(out);
@@ -884,36 +884,36 @@ public class DummyObject implements zserio.runtime.io.Writer, zserio.runtime.Siz
         }
     }
 
-    private final class ZserioElementFactory_nestedArray implements zserio.runtime.array.ElementFactory<test_object.DummyNested>
+    private final class ZserioElementFactory_nestedArray implements zserio.runtime.array.ElementFactory<test_object.CreatorNested>
     {
         @Override
-        public test_object.DummyNested create(zserio.runtime.io.BitStreamReader in, int index)
+        public test_object.CreatorNested create(zserio.runtime.io.BitStreamReader in, int index)
                 throws java.io.IOException
         {
-            return new test_object.DummyNested(in, (long)(getValue()));
+            return new test_object.CreatorNested(in, (long)(getValue()));
         }
 
         @Override
         public void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
         {
-            test_object.DummyNested.createPackingContext(contextNode);
+            test_object.CreatorNested.createPackingContext(contextNode);
         }
 
         @Override
-        public test_object.DummyNested create(zserio.runtime.array.PackingContextNode contextNode,
+        public test_object.CreatorNested create(zserio.runtime.array.PackingContextNode contextNode,
                 zserio.runtime.io.BitStreamReader in, int index) throws java.io.IOException
         {
-            return new test_object.DummyNested(contextNode, in, (long)(getValue()));
+            return new test_object.CreatorNested(contextNode, in, (long)(getValue()));
         }
     }
 
     private long value_;
-    private test_object.DummyNested nested_;
+    private test_object.CreatorNested nested_;
     private java.lang.String text_;
     private zserio.runtime.array.Array nestedArray_;
     private zserio.runtime.array.Array textArray_;
     private zserio.runtime.array.Array externArray_;
     private zserio.runtime.array.Array bytesArray_;
     private java.lang.Boolean optionalBool_;
-    private test_object.DummyNested optionalNested_;
+    private test_object.CreatorNested optionalNested_;
 }

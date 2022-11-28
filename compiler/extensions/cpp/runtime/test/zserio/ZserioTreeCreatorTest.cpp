@@ -5,15 +5,15 @@
 #include "zserio/ZserioTreeCreator.h"
 #include "zserio/TypeInfo.h"
 
-#include "test_object/DummyBitmask.h"
-#include "test_object/DummyEnum.h"
-#include "test_object/DummyNested.h"
-#include "test_object/DummyObject.h"
+#include "test_object/CreatorBitmask.h"
+#include "test_object/CreatorEnum.h"
+#include "test_object/CreatorNested.h"
+#include "test_object/CreatorObject.h"
 
-using test_object::DummyBitmask;
-using test_object::DummyEnum;
-using test_object::DummyNested;
-using test_object::DummyObject;
+using test_object::CreatorBitmask;
+using test_object::CreatorEnum;
+using test_object::CreatorNested;
+using test_object::CreatorObject;
 
 namespace zserio
 {
@@ -162,71 +162,71 @@ TEST(ZserioTreeCreator, makeAnyValue)
             CppRuntimeException);
 
     // enum
-    any = detail::makeAnyValue(enumTypeInfo<DummyEnum>(), DummyEnum::ONE, allocator);
-    ASSERT_EQ(DummyEnum::ONE, any.get<DummyEnum>());
-    any = detail::makeAnyValue(enumTypeInfo<DummyEnum>(), 0, allocator);
-    ASSERT_EQ(enumToValue(DummyEnum::ONE), any.get<int8_t>());
-    any = detail::makeAnyValue(enumTypeInfo<DummyEnum>(), "ONE"_sv, allocator);
-    ASSERT_EQ(enumToValue(DummyEnum::ONE), any.get<int8_t>());
-    any = detail::makeAnyValue(enumTypeInfo<DummyEnum>(), "MinusOne"_sv, allocator);
-    ASSERT_EQ(enumToValue(DummyEnum::MinusOne), any.get<int8_t>());
-    ASSERT_THROW(detail::makeAnyValue(enumTypeInfo<DummyEnum>(), "NONEXISTING"_sv, allocator),
+    any = detail::makeAnyValue(enumTypeInfo<CreatorEnum>(), CreatorEnum::ONE, allocator);
+    ASSERT_EQ(CreatorEnum::ONE, any.get<CreatorEnum>());
+    any = detail::makeAnyValue(enumTypeInfo<CreatorEnum>(), 0, allocator);
+    ASSERT_EQ(enumToValue(CreatorEnum::ONE), any.get<int8_t>());
+    any = detail::makeAnyValue(enumTypeInfo<CreatorEnum>(), "ONE"_sv, allocator);
+    ASSERT_EQ(enumToValue(CreatorEnum::ONE), any.get<int8_t>());
+    any = detail::makeAnyValue(enumTypeInfo<CreatorEnum>(), "MinusOne"_sv, allocator);
+    ASSERT_EQ(enumToValue(CreatorEnum::MinusOne), any.get<int8_t>());
+    ASSERT_THROW(detail::makeAnyValue(enumTypeInfo<CreatorEnum>(), "NONEXISTING"_sv, allocator),
             CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(enumTypeInfo<DummyEnum>(), "***"_sv, allocator),
+    ASSERT_THROW(detail::makeAnyValue(enumTypeInfo<CreatorEnum>(), "***"_sv, allocator),
             CppRuntimeException);
     // check all string overloads!
-    ASSERT_THROW(detail::makeAnyValue(enumTypeInfo<DummyEnum>(), "10 /* no match */"_sv, allocator),
+    ASSERT_THROW(detail::makeAnyValue(enumTypeInfo<CreatorEnum>(), "10 /* no match */"_sv, allocator),
             CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(enumTypeInfo<DummyEnum>(), "-10 /* no match */", allocator),
+    ASSERT_THROW(detail::makeAnyValue(enumTypeInfo<CreatorEnum>(), "-10 /* no match */", allocator),
             CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(enumTypeInfo<DummyEnum>(),
+    ASSERT_THROW(detail::makeAnyValue(enumTypeInfo<CreatorEnum>(),
             string<>("10 /* no match */", allocator), allocator), CppRuntimeException);
     const string<> enumString("10 /* no match */", allocator);
-    ASSERT_THROW(detail::makeAnyValue(enumTypeInfo<DummyEnum>(), enumString, allocator), CppRuntimeException);
+    ASSERT_THROW(detail::makeAnyValue(enumTypeInfo<CreatorEnum>(), enumString, allocator), CppRuntimeException);
     // out-of-range int64_t
-    ASSERT_THROW(detail::makeAnyValue(enumTypeInfo<DummyEnum>(), "99999999999999999999", allocator),
+    ASSERT_THROW(detail::makeAnyValue(enumTypeInfo<CreatorEnum>(), "99999999999999999999", allocator),
             CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(enumTypeInfo<DummyEnum>(), "-99999999999999999999"_sv, allocator),
+    ASSERT_THROW(detail::makeAnyValue(enumTypeInfo<CreatorEnum>(), "-99999999999999999999"_sv, allocator),
             CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(enumTypeInfo<DummyEnum>(), ""_sv, allocator), CppRuntimeException);
+    ASSERT_THROW(detail::makeAnyValue(enumTypeInfo<CreatorEnum>(), ""_sv, allocator), CppRuntimeException);
 
     // bitmask
-    any = detail::makeAnyValue(DummyBitmask::typeInfo(), DummyBitmask(DummyBitmask::Values::READ), allocator);
-    ASSERT_EQ(DummyBitmask::Values::READ, any.get<DummyBitmask>());
-    any = detail::makeAnyValue(DummyBitmask::typeInfo(), 1, allocator);
-    ASSERT_EQ(DummyBitmask(DummyBitmask::Values::READ).getValue(), any.get<uint8_t>());
-    any = detail::makeAnyValue(DummyBitmask::typeInfo(), "READ"_sv, allocator);
-    ASSERT_EQ(DummyBitmask(DummyBitmask::Values::READ).getValue(), any.get<uint8_t>());
-    any = detail::makeAnyValue(DummyBitmask::typeInfo(), "READ | WRITE"_sv, allocator);
-    ASSERT_EQ(DummyBitmask(DummyBitmask::Values::READ | DummyBitmask::Values::WRITE).getValue(),
+    any = detail::makeAnyValue(CreatorBitmask::typeInfo(), CreatorBitmask(CreatorBitmask::Values::READ), allocator);
+    ASSERT_EQ(CreatorBitmask::Values::READ, any.get<CreatorBitmask>());
+    any = detail::makeAnyValue(CreatorBitmask::typeInfo(), 1, allocator);
+    ASSERT_EQ(CreatorBitmask(CreatorBitmask::Values::READ).getValue(), any.get<uint8_t>());
+    any = detail::makeAnyValue(CreatorBitmask::typeInfo(), "READ"_sv, allocator);
+    ASSERT_EQ(CreatorBitmask(CreatorBitmask::Values::READ).getValue(), any.get<uint8_t>());
+    any = detail::makeAnyValue(CreatorBitmask::typeInfo(), "READ | WRITE"_sv, allocator);
+    ASSERT_EQ(CreatorBitmask(CreatorBitmask::Values::READ | CreatorBitmask::Values::WRITE).getValue(),
             any.get<uint8_t>());
-    any = detail::makeAnyValue(DummyBitmask::typeInfo(), "READ|WRITE"_sv, allocator);
-    ASSERT_EQ(DummyBitmask(DummyBitmask::Values::READ | DummyBitmask::Values::WRITE).getValue(),
+    any = detail::makeAnyValue(CreatorBitmask::typeInfo(), "READ|WRITE"_sv, allocator);
+    ASSERT_EQ(CreatorBitmask(CreatorBitmask::Values::READ | CreatorBitmask::Values::WRITE).getValue(),
             any.get<uint8_t>());
-    ASSERT_THROW(detail::makeAnyValue(DummyBitmask::typeInfo(), "NONEXISTING"_sv, allocator),
+    ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), "NONEXISTING"_sv, allocator),
             CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(DummyBitmask::typeInfo(), "READ | NONEXISTING"_sv, allocator),
+    ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), "READ | NONEXISTING"_sv, allocator),
             CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(DummyBitmask::typeInfo(), "READ * NONEXISTING"_sv, allocator),
+    ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), "READ * NONEXISTING"_sv, allocator),
             CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(DummyBitmask::typeInfo(), "***"_sv, allocator),
+    ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), "***"_sv, allocator),
             CppRuntimeException);
-    any = detail::makeAnyValue(DummyBitmask::typeInfo(), "7 /* READ | WRITE */"_sv, allocator);
+    any = detail::makeAnyValue(CreatorBitmask::typeInfo(), "7 /* READ | WRITE */"_sv, allocator);
     ASSERT_EQ(7, any.get<uint8_t>());
     // check all string overloads!
-    any = detail::makeAnyValue(DummyBitmask::typeInfo(), "4 /* no match */"_sv, allocator);
+    any = detail::makeAnyValue(CreatorBitmask::typeInfo(), "4 /* no match */"_sv, allocator);
     ASSERT_EQ(4, any.get<uint8_t>());
-    any = detail::makeAnyValue(DummyBitmask::typeInfo(), "4 /* no match */", allocator);
+    any = detail::makeAnyValue(CreatorBitmask::typeInfo(), "4 /* no match */", allocator);
     ASSERT_EQ(4, any.get<uint8_t>());
-    any = detail::makeAnyValue(DummyBitmask::typeInfo(), string<>("4 /* no match */", allocator), allocator);
+    any = detail::makeAnyValue(CreatorBitmask::typeInfo(), string<>("4 /* no match */", allocator), allocator);
     ASSERT_EQ(4, any.get<uint8_t>());
     const string<> bitmaskString("4 /* no match */", allocator);
-    any = detail::makeAnyValue(DummyBitmask::typeInfo(), bitmaskString, allocator);
+    any = detail::makeAnyValue(CreatorBitmask::typeInfo(), bitmaskString, allocator);
     ASSERT_EQ(4, any.get<uint8_t>());
     // out-of-range uint64_t
-    ASSERT_THROW(detail::makeAnyValue(DummyBitmask::typeInfo(), "99999999999999999999"_sv, allocator),
+    ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), "99999999999999999999"_sv, allocator),
             CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(DummyBitmask::typeInfo(), ""_sv, allocator), CppRuntimeException);
+    ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), ""_sv, allocator), CppRuntimeException);
 }
 
 TEST(ZserioTreeCreatorTest, parseBitmaskStringValue)
@@ -258,7 +258,7 @@ TEST(ZserioTreeCreatorTest, parseBitmaskStringValue)
 
 TEST(ZserioTreeCreatorTest, createObject)
 {
-    ZserioTreeCreator creator(DummyObject::typeInfo());
+    ZserioTreeCreator creator(CreatorObject::typeInfo());
     creator.beginRoot();
     IReflectablePtr reflectable = creator.endRoot();
     ASSERT_TRUE(reflectable);
@@ -267,7 +267,7 @@ TEST(ZserioTreeCreatorTest, createObject)
 
 TEST(ZserioTreeCreatorTest, createObjectSetFields)
 {
-    ZserioTreeCreator creator(DummyObject::typeInfo());
+    ZserioTreeCreator creator(CreatorObject::typeInfo());
     creator.beginRoot();
     creator.setValue("value", 13);
     creator.setValue("text", "test");
@@ -280,7 +280,7 @@ TEST(ZserioTreeCreatorTest, createObjectSetFields)
 
 TEST(ZserioTreeCreatorTest, createObjectResetFields)
 {
-    ZserioTreeCreator creator(DummyObject::typeInfo());
+    ZserioTreeCreator creator(CreatorObject::typeInfo());
     creator.beginRoot();
     creator.setValue("value", 13);
     creator.setValue("text", nullptr);
@@ -294,7 +294,7 @@ TEST(ZserioTreeCreatorTest, createObjectResetFields)
 
 TEST(ZserioTreeCreatorTest, createObjectFull)
 {
-    ZserioTreeCreator creator(DummyObject::typeInfo());
+    ZserioTreeCreator creator(CreatorObject::typeInfo());
     creator.beginRoot();
     creator.setValue("value", 13);
     creator.setValue("text", string<>("test"));
@@ -303,16 +303,16 @@ TEST(ZserioTreeCreatorTest, createObjectFull)
     creator.setValue("text", "nested"_sv);
     creator.setValue("externData", BitBuffer({0x3C}, 6));
     creator.setValue("bytesData", vector<uint8_t>({0xFF}));
-    creator.setValue("dummyEnum", DummyEnum::ONE);
-    creator.setValue("dummyBitmask", DummyBitmask(DummyBitmask::Values::WRITE));
+    creator.setValue("creatorEnum", CreatorEnum::ONE);
+    creator.setValue("creatorBitmask", CreatorBitmask(CreatorBitmask::Values::WRITE));
     creator.endCompound();
     creator.beginArray("nestedArray");
     creator.beginCompoundElement();
     creator.setValue("value", 5);
     const std::string nestedArrayText = "nestedArray";
     creator.setValue("text", nestedArrayText);
-    creator.setValue("dummyEnum", "MinusOne");
-    creator.setValue("dummyBitmask", DummyBitmask(DummyBitmask::Values::READ));
+    creator.setValue("creatorEnum", "MinusOne");
+    creator.setValue("creatorBitmask", CreatorBitmask(CreatorBitmask::Values::READ));
     creator.endCompoundElement();
     creator.endArray();
     creator.beginArray("textArray");
@@ -345,15 +345,15 @@ TEST(ZserioTreeCreatorTest, createObjectFull)
     ASSERT_EQ(6, reflectable->find("nested.externData")->getBitBuffer().getBitSize());
     ASSERT_EQ(1, reflectable->find("nested.bytesData")->getBytes().size());
     ASSERT_EQ(0xFF, reflectable->find("nested.bytesData")->getBytes()[0]);
-    ASSERT_EQ(enumToValue(DummyEnum::ONE), reflectable->find("nested.dummyEnum")->getInt8());
-    ASSERT_EQ(DummyBitmask::Values::WRITE, DummyBitmask(reflectable->find("nested.dummyBitmask")->getUInt8()));
+    ASSERT_EQ(enumToValue(CreatorEnum::ONE), reflectable->find("nested.creatorEnum")->getInt8());
+    ASSERT_EQ(CreatorBitmask::Values::WRITE, CreatorBitmask(reflectable->find("nested.creatorBitmask")->getUInt8()));
     ASSERT_EQ(1, reflectable->getField("nestedArray")->size());
     ASSERT_EQ(5, reflectable->getField("nestedArray")->at(0)->getField("value")->getUInt32());
     ASSERT_EQ("nestedArray"_sv, reflectable->getField("nestedArray")->at(0)->getField("text")->getStringView());
-    ASSERT_EQ(enumToValue(DummyEnum::MinusOne),
-            reflectable->getField("nestedArray")->at(0)->getField("dummyEnum")->getInt8());
-    ASSERT_EQ(DummyBitmask::Values::READ,
-            DummyBitmask(reflectable->getField("nestedArray")->at(0)->getField("dummyBitmask")->getUInt8()));
+    ASSERT_EQ(enumToValue(CreatorEnum::MinusOne),
+            reflectable->getField("nestedArray")->at(0)->getField("creatorEnum")->getInt8());
+    ASSERT_EQ(CreatorBitmask::Values::READ,
+            CreatorBitmask(reflectable->getField("nestedArray")->at(0)->getField("creatorBitmask")->getUInt8()));
     ASSERT_EQ(4, reflectable->getField("textArray")->size());
     ASSERT_EQ("this"_sv, reflectable->getField("textArray")->at(0)->getStringView());
     ASSERT_EQ("is"_sv, reflectable->getField("textArray")->at(1)->getStringView());
@@ -373,7 +373,7 @@ TEST(ZserioTreeCreatorTest, createObjectFull)
 
 TEST(ZserioTreeCreator, exceptionsBeforeRoot)
 {
-    ZserioTreeCreator creator(DummyObject::typeInfo());
+    ZserioTreeCreator creator(CreatorObject::typeInfo());
 
     ASSERT_THROW(creator.endRoot(), CppRuntimeException);
     ASSERT_THROW(creator.beginArray("nestedArray"), CppRuntimeException);
@@ -391,7 +391,7 @@ TEST(ZserioTreeCreator, exceptionsBeforeRoot)
 
 TEST(ZserioTreeCreator, exceptionsInRoot)
 {
-    ZserioTreeCreator creator(DummyObject::typeInfo());
+    ZserioTreeCreator creator(CreatorObject::typeInfo());
     creator.beginRoot();
 
     ASSERT_THROW(creator.beginRoot(), CppRuntimeException);
@@ -410,7 +410,7 @@ TEST(ZserioTreeCreator, exceptionsInRoot)
 
 TEST(ZserioTreeCreator, exceptionsInCompound)
 {
-    ZserioTreeCreator creator(DummyObject::typeInfo());
+    ZserioTreeCreator creator(CreatorObject::typeInfo());
     creator.beginRoot();
     creator.beginCompound("nested");
 
@@ -430,7 +430,7 @@ TEST(ZserioTreeCreator, exceptionsInCompound)
 
 TEST(ZserioTreeCreator, exceptionsInCompoundArray)
 {
-    ZserioTreeCreator creator(DummyObject::typeInfo());
+    ZserioTreeCreator creator(CreatorObject::typeInfo());
     creator.beginRoot();
     creator.beginArray("nestedArray");
 
@@ -446,7 +446,7 @@ TEST(ZserioTreeCreator, exceptionsInCompoundArray)
 
 TEST(ZserioTreeCreator, exceptionsInSimpleArray)
 {
-    ZserioTreeCreator creator(DummyObject::typeInfo());
+    ZserioTreeCreator creator(CreatorObject::typeInfo());
     creator.beginRoot();
     creator.beginArray("textArray");
 
@@ -463,7 +463,7 @@ TEST(ZserioTreeCreator, exceptionsInSimpleArray)
 
 TEST(ZserioTreeCreator, exceptionsInCompoundElement)
 {
-    ZserioTreeCreator creator(DummyObject::typeInfo());
+    ZserioTreeCreator creator(CreatorObject::typeInfo());
     creator.beginRoot();
     creator.beginArray("nestedArray");
     creator.beginCompoundElement();

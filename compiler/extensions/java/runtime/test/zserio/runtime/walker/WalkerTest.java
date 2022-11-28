@@ -7,6 +7,9 @@ import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 
+import test_object.WalkerBitmask;
+import test_object.WalkerObject;
+
 public class WalkerTest
 {
     @Test
@@ -15,9 +18,9 @@ public class WalkerTest
         final DefaultWalkObserver defaultObserver = new DefaultWalkObserver();
         final DefaultWalkFilter defaultFilter = new DefaultWalkFilter();
         final Walker walker = new Walker(defaultObserver, defaultFilter);
-        final TestObject.DummyBitmask dummyBitmask = new TestObject.DummyBitmask();
+        final WalkerBitmask walkerBitmask = new WalkerBitmask();
 
-        assertThrows(ZserioError.class, () -> walker.walk(dummyBitmask));
+        assertThrows(ZserioError.class, () -> walker.walk(walkerBitmask));
     }
 
     @Test
@@ -26,36 +29,36 @@ public class WalkerTest
         final TestWalkObserver observer = new TestWalkObserver();
         final DefaultWalkFilter defaultFilter = new DefaultWalkFilter();
         final Walker walker = new Walker(observer, defaultFilter);
-        final TestObject.DummyObject dummyObject = TestObject.createDummyObject();
-        walker.walk(dummyObject);
+        final WalkerObject walkerObject = TestObjectCreator.createWalkerObject();
+        walker.walk(walkerObject);
 
-        assertEquals(dummyObject, observer.getCaptures("beginRoot").get(0));
-        assertEquals(dummyObject, observer.getCaptures("endRoot").get(0));
+        assertEquals(walkerObject, observer.getCaptures("beginRoot").get(0));
+        assertEquals(walkerObject, observer.getCaptures("endRoot").get(0));
 
         assertEquals(2, observer.getCaptures("beginArray").size());
-        assertEquals(dummyObject.getUnionArray(), observer.getCaptures("beginArray").get(0));
-        assertEquals(dummyObject.getUnionArray()[2].getNestedArray(),
+        assertEquals(walkerObject.getUnionArray(), observer.getCaptures("beginArray").get(0));
+        assertEquals(walkerObject.getUnionArray()[2].getNestedArray(),
                 observer.getCaptures("beginArray").get(1));
 
         assertEquals(2, observer.getCaptures("endArray").size());
-        assertEquals(dummyObject.getUnionArray()[2].getNestedArray(), observer.getCaptures("endArray").get(0));
-        assertEquals(dummyObject.getUnionArray(), observer.getCaptures("endArray").get(1));
+        assertEquals(walkerObject.getUnionArray()[2].getNestedArray(), observer.getCaptures("endArray").get(0));
+        assertEquals(walkerObject.getUnionArray(), observer.getCaptures("endArray").get(1));
 
         assertEquals(5, observer.getCaptures("beginCompound").size());
-        assertEquals(dummyObject.getNested(), observer.getCaptures("beginCompound").get(0));
-        assertEquals(dummyObject.getUnionArray()[0], observer.getCaptures("beginCompound").get(1));
-        assertEquals(dummyObject.getUnionArray()[1], observer.getCaptures("beginCompound").get(2));
-        assertEquals(dummyObject.getUnionArray()[2], observer.getCaptures("beginCompound").get(3));
-        assertEquals(dummyObject.getUnionArray()[2].getNestedArray()[0],
+        assertEquals(walkerObject.getNested(), observer.getCaptures("beginCompound").get(0));
+        assertEquals(walkerObject.getUnionArray()[0], observer.getCaptures("beginCompound").get(1));
+        assertEquals(walkerObject.getUnionArray()[1], observer.getCaptures("beginCompound").get(2));
+        assertEquals(walkerObject.getUnionArray()[2], observer.getCaptures("beginCompound").get(3));
+        assertEquals(walkerObject.getUnionArray()[2].getNestedArray()[0],
                 observer.getCaptures("beginCompound").get(4));
 
         assertEquals(5, observer.getCaptures("endCompound").size());
-        assertEquals(dummyObject.getNested(), observer.getCaptures("endCompound").get(0));
-        assertEquals(dummyObject.getUnionArray()[0], observer.getCaptures("endCompound").get(1));
-        assertEquals(dummyObject.getUnionArray()[1], observer.getCaptures("endCompound").get(2));
-        assertEquals(dummyObject.getUnionArray()[2].getNestedArray()[0],
+        assertEquals(walkerObject.getNested(), observer.getCaptures("endCompound").get(0));
+        assertEquals(walkerObject.getUnionArray()[0], observer.getCaptures("endCompound").get(1));
+        assertEquals(walkerObject.getUnionArray()[1], observer.getCaptures("endCompound").get(2));
+        assertEquals(walkerObject.getUnionArray()[2].getNestedArray()[0],
                 observer.getCaptures("endCompound").get(3));
-        assertEquals(dummyObject.getUnionArray()[2], observer.getCaptures("endCompound").get(4));
+        assertEquals(walkerObject.getUnionArray()[2], observer.getCaptures("endCompound").get(4));
 
         assertEquals(7, observer.getCaptures("visitValue").size());
         assertEquals((long)13, observer.getCaptures("visitValue").get(0));
@@ -74,34 +77,34 @@ public class WalkerTest
         final TestWalkObserver observer = new TestWalkObserver();
         final DefaultWalkFilter defaultFilter = new DefaultWalkFilter();
         final Walker walker = new Walker(observer, defaultFilter);
-        final TestObject.DummyObject dummyObject = TestObject.createDummyObject(13, false);
-        walker.walk(dummyObject);
+        final WalkerObject walkerObject = TestObjectCreator.createWalkerObject(13, false);
+        walker.walk(walkerObject);
 
-        assertEquals(dummyObject, observer.getCaptures("beginRoot").get(0));
-        assertEquals(dummyObject, observer.getCaptures("endRoot").get(0));
+        assertEquals(walkerObject, observer.getCaptures("beginRoot").get(0));
+        assertEquals(walkerObject, observer.getCaptures("endRoot").get(0));
 
         assertEquals(2, observer.getCaptures("beginArray").size());
-        assertEquals(dummyObject.getUnionArray(), observer.getCaptures("beginArray").get(0));
-        assertEquals(dummyObject.getUnionArray()[2].getNestedArray(),
+        assertEquals(walkerObject.getUnionArray(), observer.getCaptures("beginArray").get(0));
+        assertEquals(walkerObject.getUnionArray()[2].getNestedArray(),
                 observer.getCaptures("beginArray").get(1));
 
         assertEquals(2, observer.getCaptures("endArray").size());
-        assertEquals(dummyObject.getUnionArray()[2].getNestedArray(), observer.getCaptures("endArray").get(0));
-        assertEquals(dummyObject.getUnionArray(), observer.getCaptures("endArray").get(1));
+        assertEquals(walkerObject.getUnionArray()[2].getNestedArray(), observer.getCaptures("endArray").get(0));
+        assertEquals(walkerObject.getUnionArray(), observer.getCaptures("endArray").get(1));
 
         assertEquals(4, observer.getCaptures("beginCompound").size());
-        assertEquals(dummyObject.getUnionArray()[0], observer.getCaptures("beginCompound").get(0));
-        assertEquals(dummyObject.getUnionArray()[1], observer.getCaptures("beginCompound").get(1));
-        assertEquals(dummyObject.getUnionArray()[2], observer.getCaptures("beginCompound").get(2));
-        assertEquals(dummyObject.getUnionArray()[2].getNestedArray()[0],
+        assertEquals(walkerObject.getUnionArray()[0], observer.getCaptures("beginCompound").get(0));
+        assertEquals(walkerObject.getUnionArray()[1], observer.getCaptures("beginCompound").get(1));
+        assertEquals(walkerObject.getUnionArray()[2], observer.getCaptures("beginCompound").get(2));
+        assertEquals(walkerObject.getUnionArray()[2].getNestedArray()[0],
                 observer.getCaptures("beginCompound").get(3));
 
         assertEquals(4, observer.getCaptures("endCompound").size());
-        assertEquals(dummyObject.getUnionArray()[0], observer.getCaptures("endCompound").get(0));
-        assertEquals(dummyObject.getUnionArray()[1], observer.getCaptures("endCompound").get(1));
-        assertEquals(dummyObject.getUnionArray()[2].getNestedArray()[0],
+        assertEquals(walkerObject.getUnionArray()[0], observer.getCaptures("endCompound").get(0));
+        assertEquals(walkerObject.getUnionArray()[1], observer.getCaptures("endCompound").get(1));
+        assertEquals(walkerObject.getUnionArray()[2].getNestedArray()[0],
                 observer.getCaptures("endCompound").get(2));
-        assertEquals(dummyObject.getUnionArray()[2], observer.getCaptures("endCompound").get(3));
+        assertEquals(walkerObject.getUnionArray()[2], observer.getCaptures("endCompound").get(3));
 
         assertEquals(7, observer.getCaptures("visitValue").size());
         assertEquals((long)13, observer.getCaptures("visitValue").get(0));
@@ -120,17 +123,17 @@ public class WalkerTest
         final TestWalkFilter filter = new TestWalkFilter();
         filter.beforeCompound(false);
         final Walker walker = new Walker(observer, filter);
-        final TestObject.DummyObject dummyObject = TestObject.createDummyObject();
-        walker.walk(dummyObject);
+        final WalkerObject walkerObject = TestObjectCreator.createWalkerObject();
+        walker.walk(walkerObject);
 
-        assertEquals(dummyObject, observer.getCaptures("beginRoot").get(0));
-        assertEquals(dummyObject, observer.getCaptures("endRoot").get(0));
+        assertEquals(walkerObject, observer.getCaptures("beginRoot").get(0));
+        assertEquals(walkerObject, observer.getCaptures("endRoot").get(0));
 
         assertEquals(1, observer.getCaptures("beginArray").size());
-        assertEquals(dummyObject.getUnionArray(), observer.getCaptures("beginArray").get(0));
+        assertEquals(walkerObject.getUnionArray(), observer.getCaptures("beginArray").get(0));
 
         assertEquals(1, observer.getCaptures("endArray").size());
-        assertEquals(dummyObject.getUnionArray(), observer.getCaptures("endArray").get(0));
+        assertEquals(walkerObject.getUnionArray(), observer.getCaptures("endArray").get(0));
 
         assertEquals(0, observer.getCaptures("beginCompound").size());
         assertEquals(0, observer.getCaptures("endCompound").size());
@@ -148,11 +151,11 @@ public class WalkerTest
         final TestWalkFilter filter = new TestWalkFilter();
         filter.afterValue(false);
         final Walker walker = new Walker(observer, filter);
-        final TestObject.DummyObject dummyObject = TestObject.createDummyObject();
-        walker.walk(dummyObject);
+        final WalkerObject walkerObject = TestObjectCreator.createWalkerObject();
+        walker.walk(walkerObject);
 
-        assertEquals(dummyObject, observer.getCaptures("beginRoot").get(0));
-        assertEquals(dummyObject, observer.getCaptures("endRoot").get(0));
+        assertEquals(walkerObject, observer.getCaptures("beginRoot").get(0));
+        assertEquals(walkerObject, observer.getCaptures("endRoot").get(0));
 
         assertEquals(0, observer.getCaptures("beginArray").size());
         assertEquals(0, observer.getCaptures("endArray").size());
@@ -171,20 +174,20 @@ public class WalkerTest
         final TestWalkFilter filter = new TestWalkFilter();
         filter.afterCompound(false);
         final Walker walker = new Walker(observer, filter);
-        final TestObject.DummyObject dummyObject = TestObject.createDummyObject();
-        walker.walk(dummyObject);
+        final WalkerObject walkerObject = TestObjectCreator.createWalkerObject();
+        walker.walk(walkerObject);
 
-        assertEquals(dummyObject, observer.getCaptures("beginRoot").get(0));
-        assertEquals(dummyObject, observer.getCaptures("endRoot").get(0));
+        assertEquals(walkerObject, observer.getCaptures("beginRoot").get(0));
+        assertEquals(walkerObject, observer.getCaptures("endRoot").get(0));
 
         assertEquals(0, observer.getCaptures("beginArray").size());
         assertEquals(0, observer.getCaptures("endArray").size());
 
         assertEquals(1, observer.getCaptures("beginCompound").size());
-        assertEquals(dummyObject.getNested(), observer.getCaptures("beginCompound").get(0));
+        assertEquals(walkerObject.getNested(), observer.getCaptures("beginCompound").get(0));
 
         assertEquals(1, observer.getCaptures("endCompound").size());
-        assertEquals(dummyObject.getNested(), observer.getCaptures("endCompound").get(0));
+        assertEquals(walkerObject.getNested(), observer.getCaptures("endCompound").get(0));
 
         assertEquals(2, observer.getCaptures("visitValue").size());
         assertEquals((long)13, observer.getCaptures("visitValue").get(0));
@@ -198,25 +201,25 @@ public class WalkerTest
         final TestWalkFilter filter = new TestWalkFilter();
         filter.onlyFirstElement(true);
         final Walker walker = new Walker(observer, filter);
-        final TestObject.DummyObject dummyObject = TestObject.createDummyObject();
-        walker.walk(dummyObject);
+        final WalkerObject walkerObject = TestObjectCreator.createWalkerObject();
+        walker.walk(walkerObject);
 
-        assertEquals(dummyObject, observer.getCaptures("beginRoot").get(0));
-        assertEquals(dummyObject, observer.getCaptures("endRoot").get(0));
+        assertEquals(walkerObject, observer.getCaptures("beginRoot").get(0));
+        assertEquals(walkerObject, observer.getCaptures("endRoot").get(0));
 
         assertEquals(1, observer.getCaptures("beginArray").size());
-        assertEquals(dummyObject.getUnionArray(), observer.getCaptures("beginArray").get(0));
+        assertEquals(walkerObject.getUnionArray(), observer.getCaptures("beginArray").get(0));
 
         assertEquals(1, observer.getCaptures("endArray").size());
-        assertEquals(dummyObject.getUnionArray(), observer.getCaptures("endArray").get(0));
+        assertEquals(walkerObject.getUnionArray(), observer.getCaptures("endArray").get(0));
 
         assertEquals(2, observer.getCaptures("beginCompound").size());
-        assertEquals(dummyObject.getNested(), observer.getCaptures("beginCompound").get(0));
-        assertEquals(dummyObject.getUnionArray()[0], observer.getCaptures("beginCompound").get(1));
+        assertEquals(walkerObject.getNested(), observer.getCaptures("beginCompound").get(0));
+        assertEquals(walkerObject.getUnionArray()[0], observer.getCaptures("beginCompound").get(1));
 
         assertEquals(2, observer.getCaptures("endCompound").size());
-        assertEquals(dummyObject.getNested(), observer.getCaptures("endCompound").get(0));
-        assertEquals(dummyObject.getUnionArray()[0], observer.getCaptures("endCompound").get(1));
+        assertEquals(walkerObject.getNested(), observer.getCaptures("endCompound").get(0));
+        assertEquals(walkerObject.getUnionArray()[0], observer.getCaptures("endCompound").get(1));
 
         assertEquals(5, observer.getCaptures("visitValue").size());
         assertEquals((long)13, observer.getCaptures("visitValue").get(0));

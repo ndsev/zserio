@@ -3,8 +3,8 @@
  * Generator setup: writerCode, pubsubCode, serviceCode, sqlCode, typeInfoCode, reflectionCode, stdAllocator.
  */
 
-#ifndef TEST_OBJECT_DUMMY_OBJECT_H
-#define TEST_OBJECT_DUMMY_OBJECT_H
+#ifndef TEST_OBJECT_CREATOR_OBJECT_H
+#define TEST_OBJECT_CREATOR_OBJECT_H
 
 #include <zserio/Traits.h>
 #include <zserio/BitStreamReader.h>
@@ -22,42 +22,42 @@
 #include <zserio/Types.h>
 #include <zserio/Vector.h>
 
-#include <test_object/DummyNested.h>
+#include <test_object/CreatorNested.h>
 
 namespace test_object
 {
 
-class DummyObject
+class CreatorObject
 {
 private:
     class ZserioElementFactory_nestedArray
     {
     public:
-        explicit ZserioElementFactory_nestedArray(DummyObject& owner);
+        explicit ZserioElementFactory_nestedArray(CreatorObject& owner);
 
-        void create(::zserio::vector<::test_object::DummyNested>& array,
+        void create(::zserio::vector<::test_object::CreatorNested>& array,
                 ::zserio::BitStreamReader& in, size_t index) const;
 
         void create(::zserio::PackingContextNode& contextNode,
-                ::zserio::vector<::test_object::DummyNested>& array,
+                ::zserio::vector<::test_object::CreatorNested>& array,
                 ::zserio::BitStreamReader& in, size_t index) const;
 
     private:
-        std::reference_wrapper<DummyObject> m_ownerRef;
+        std::reference_wrapper<CreatorObject> m_ownerRef;
     };
 
     class ZserioElementInitializer_nestedArray
     {
     public:
-        explicit ZserioElementInitializer_nestedArray(DummyObject& owner);
+        explicit ZserioElementInitializer_nestedArray(CreatorObject& owner);
 
-        void initialize(::test_object::DummyNested& element, size_t index) const;
+        void initialize(::test_object::CreatorNested& element, size_t index) const;
 
     private:
-        std::reference_wrapper<DummyObject> m_ownerRef;
+        std::reference_wrapper<CreatorObject> m_ownerRef;
     };
 
-    using ZserioArrayType_nestedArray = ::zserio::Array<::zserio::vector<::test_object::DummyNested>, ::zserio::ObjectArrayTraits<::test_object::DummyNested, ZserioElementFactory_nestedArray>, ::zserio::ArrayType::AUTO>;
+    using ZserioArrayType_nestedArray = ::zserio::Array<::zserio::vector<::test_object::CreatorNested>, ::zserio::ObjectArrayTraits<::test_object::CreatorNested, ZserioElementFactory_nestedArray>, ::zserio::ArrayType::AUTO>;
     using ZserioArrayType_textArray = ::zserio::Array<::zserio::vector<::zserio::string<>>, ::zserio::StringArrayTraits, ::zserio::ArrayType::AUTO>;
     using ZserioArrayType_externArray = ::zserio::Array<::zserio::vector<::zserio::BitBuffer>, ::zserio::BitBufferArrayTraits, ::zserio::ArrayType::AUTO>;
     using ZserioArrayType_bytesArray = ::zserio::Array<::zserio::vector<::zserio::vector<uint8_t>>, ::zserio::BytesArrayTraits, ::zserio::ArrayType::AUTO>;
@@ -65,7 +65,7 @@ private:
 public:
     using allocator_type = ::std::allocator<uint8_t>;
 
-    explicit DummyObject(const allocator_type& allocator = allocator_type()) noexcept;
+    explicit CreatorObject(const allocator_type& allocator = allocator_type()) noexcept;
 
     template <typename ZSERIO_T_nested,
             typename ZSERIO_T_text,
@@ -75,7 +75,7 @@ public:
             typename ZSERIO_T_bytesArray,
             typename ZSERIO_T_optionalBool,
             typename ZSERIO_T_optionalNested>
-    DummyObject(
+    CreatorObject(
             uint32_t value_,
             ZSERIO_T_nested&& nested_,
             ZSERIO_T_text&& text_,
@@ -86,12 +86,12 @@ public:
             ZSERIO_T_optionalBool&& optionalBool_,
             ZSERIO_T_optionalNested&& optionalNested_,
             const allocator_type& allocator = allocator_type()) :
-            DummyObject(allocator)
+            CreatorObject(allocator)
     {
         m_value_ = value_;
         m_nested_ = ::std::forward<ZSERIO_T_nested>(nested_);
         m_text_ = ::std::forward<ZSERIO_T_text>(text_);
-        m_nestedArray_ = ZserioArrayType_nestedArray(::std::forward<ZSERIO_T_nestedArray>(nestedArray_), ::zserio::ObjectArrayTraits<::test_object::DummyNested, ZserioElementFactory_nestedArray>());
+        m_nestedArray_ = ZserioArrayType_nestedArray(::std::forward<ZSERIO_T_nestedArray>(nestedArray_), ::zserio::ObjectArrayTraits<::test_object::CreatorNested, ZserioElementFactory_nestedArray>());
         m_textArray_ = ZserioArrayType_textArray(::std::forward<ZSERIO_T_textArray>(textArray_), ::zserio::StringArrayTraits());
         m_externArray_ = ::zserio::createOptionalArray<ZserioArrayType_externArray>(::std::forward<ZSERIO_T_externArray>(externArray_), ::zserio::BitBufferArrayTraits());
         m_bytesArray_ = ::zserio::createOptionalArray<ZserioArrayType_bytesArray>(::std::forward<ZSERIO_T_bytesArray>(bytesArray_), ::zserio::BytesArrayTraits());
@@ -99,20 +99,20 @@ public:
         m_optionalNested_ = ::std::forward<ZSERIO_T_optionalNested>(optionalNested_);
     }
 
-    explicit DummyObject(::zserio::BitStreamReader& in, const allocator_type& allocator = allocator_type());
-    explicit DummyObject(::zserio::PackingContextNode& contextNode,
+    explicit CreatorObject(::zserio::BitStreamReader& in, const allocator_type& allocator = allocator_type());
+    explicit CreatorObject(::zserio::PackingContextNode& contextNode,
             ::zserio::BitStreamReader& in, const allocator_type& allocator = allocator_type());
 
-    ~DummyObject() = default;
+    ~CreatorObject() = default;
 
-    DummyObject(const DummyObject& other);
-    DummyObject& operator=(const DummyObject& other);
+    CreatorObject(const CreatorObject& other);
+    CreatorObject& operator=(const CreatorObject& other);
 
-    DummyObject(DummyObject&& other);
-    DummyObject& operator=(DummyObject&& other);
+    CreatorObject(CreatorObject&& other);
+    CreatorObject& operator=(CreatorObject&& other);
 
-    DummyObject(::zserio::PropagateAllocatorT,
-            const DummyObject& other, const allocator_type& allocator);
+    CreatorObject(::zserio::PropagateAllocatorT,
+            const CreatorObject& other, const allocator_type& allocator);
 
     static const ::zserio::ITypeInfo& typeInfo();
     ::zserio::IReflectableConstPtr reflectable(const allocator_type& allocator = allocator_type()) const;
@@ -123,20 +123,20 @@ public:
     uint32_t getValue() const;
     void setValue(uint32_t value_);
 
-    const ::test_object::DummyNested& getNested() const;
-    ::test_object::DummyNested& getNested();
-    void setNested(const ::test_object::DummyNested& nested_);
-    void setNested(::test_object::DummyNested&& nested_);
+    const ::test_object::CreatorNested& getNested() const;
+    ::test_object::CreatorNested& getNested();
+    void setNested(const ::test_object::CreatorNested& nested_);
+    void setNested(::test_object::CreatorNested&& nested_);
 
     const ::zserio::string<>& getText() const;
     ::zserio::string<>& getText();
     void setText(const ::zserio::string<>& text_);
     void setText(::zserio::string<>&& text_);
 
-    const ::zserio::vector<::test_object::DummyNested>& getNestedArray() const;
-    ::zserio::vector<::test_object::DummyNested>& getNestedArray();
-    void setNestedArray(const ::zserio::vector<::test_object::DummyNested>& nestedArray_);
-    void setNestedArray(::zserio::vector<::test_object::DummyNested>&& nestedArray_);
+    const ::zserio::vector<::test_object::CreatorNested>& getNestedArray() const;
+    ::zserio::vector<::test_object::CreatorNested>& getNestedArray();
+    void setNestedArray(const ::zserio::vector<::test_object::CreatorNested>& nestedArray_);
+    void setNestedArray(::zserio::vector<::test_object::CreatorNested>&& nestedArray_);
 
     const ::zserio::vector<::zserio::string<>>& getTextArray() const;
     ::zserio::vector<::zserio::string<>>& getTextArray();
@@ -165,10 +165,10 @@ public:
     bool isOptionalBoolSet() const;
     void resetOptionalBool();
 
-    const ::test_object::DummyNested& getOptionalNested() const;
-    ::test_object::DummyNested& getOptionalNested();
-    void setOptionalNested(const ::test_object::DummyNested& optionalNested_);
-    void setOptionalNested(::test_object::DummyNested&& optionalNested_);
+    const ::test_object::CreatorNested& getOptionalNested() const;
+    ::test_object::CreatorNested& getOptionalNested();
+    void setOptionalNested(const ::test_object::CreatorNested& optionalNested_);
+    void setOptionalNested(::test_object::CreatorNested&& optionalNested_);
     bool isOptionalNestedUsed() const;
     bool isOptionalNestedSet() const;
     void resetOptionalNested();
@@ -182,7 +182,7 @@ public:
     size_t initializeOffsets(size_t bitPosition = 0);
     size_t initializeOffsets(::zserio::PackingContextNode& contextNode, size_t bitPosition);
 
-    bool operator==(const DummyObject& other) const;
+    bool operator==(const CreatorObject& other) const;
     uint32_t hashCode() const;
 
     void write(::zserio::BitStreamWriter& out) const;
@@ -192,9 +192,9 @@ private:
     uint32_t readValue(::zserio::BitStreamReader& in);
     uint32_t readValue(::zserio::PackingContextNode& contextNode,
             ::zserio::BitStreamReader& in);
-    ::test_object::DummyNested readNested(::zserio::BitStreamReader& in,
+    ::test_object::CreatorNested readNested(::zserio::BitStreamReader& in,
             const allocator_type& allocator);
-    ::test_object::DummyNested readNested(::zserio::PackingContextNode& contextNode,
+    ::test_object::CreatorNested readNested(::zserio::PackingContextNode& contextNode,
             ::zserio::BitStreamReader& in, const allocator_type& allocator);
     ::zserio::string<> readText(::zserio::BitStreamReader& in,
             const allocator_type& allocator);
@@ -209,23 +209,23 @@ private:
     ::zserio::InplaceOptionalHolder<ZserioArrayType_bytesArray> readBytesArray(::zserio::BitStreamReader& in,
             const allocator_type& allocator);
     ::zserio::InplaceOptionalHolder<bool> readOptionalBool(::zserio::BitStreamReader& in);
-    ::zserio::InplaceOptionalHolder<::test_object::DummyNested> readOptionalNested(::zserio::BitStreamReader& in,
+    ::zserio::InplaceOptionalHolder<::test_object::CreatorNested> readOptionalNested(::zserio::BitStreamReader& in,
             const allocator_type& allocator);
-    ::zserio::InplaceOptionalHolder<::test_object::DummyNested> readOptionalNested(::zserio::PackingContextNode& contextNode,
+    ::zserio::InplaceOptionalHolder<::test_object::CreatorNested> readOptionalNested(::zserio::PackingContextNode& contextNode,
             ::zserio::BitStreamReader& in, const allocator_type& allocator);
 
     bool m_areChildrenInitialized;
     uint32_t m_value_;
-    ::test_object::DummyNested m_nested_;
+    ::test_object::CreatorNested m_nested_;
     ::zserio::string<> m_text_;
     ZserioArrayType_nestedArray m_nestedArray_;
     ZserioArrayType_textArray m_textArray_;
     ::zserio::InplaceOptionalHolder<ZserioArrayType_externArray> m_externArray_;
     ::zserio::InplaceOptionalHolder<ZserioArrayType_bytesArray> m_bytesArray_;
     ::zserio::InplaceOptionalHolder<bool> m_optionalBool_;
-    ::zserio::InplaceOptionalHolder<::test_object::DummyNested> m_optionalNested_;
+    ::zserio::InplaceOptionalHolder<::test_object::CreatorNested> m_optionalNested_;
 };
 
 } // namespace test_object
 
-#endif // TEST_OBJECT_DUMMY_OBJECT_H
+#endif // TEST_OBJECT_CREATOR_OBJECT_H

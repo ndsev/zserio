@@ -24,14 +24,30 @@ if (SANITIZERS_ENABLED)
 endif ()
 
 set(TEST_OBJECT_SRCS
-    test_object/DummyBitmask.cpp
-    test_object/DummyBitmask.h
-    test_object/DummyEnum.cpp
-    test_object/DummyEnum.h
-    test_object/DummyNested.cpp
-    test_object/DummyNested.h
-    test_object/DummyObject.cpp
-    test_object/DummyObject.h
+    test_object/CreatorBitmask.cpp
+    test_object/CreatorBitmask.h
+    test_object/CreatorEnum.cpp
+    test_object/CreatorEnum.h
+    test_object/CreatorNested.cpp
+    test_object/CreatorNested.h
+    test_object/CreatorObject.cpp
+    test_object/CreatorObject.h
+    test_object/ReflectableBitmask.cpp
+    test_object/ReflectableBitmask.h
+    test_object/ReflectableEnum.cpp
+    test_object/ReflectableEnum.h
+    test_object/ReflectableNested.cpp
+    test_object/ReflectableNested.h
+    test_object/ReflectableObject.cpp
+    test_object/ReflectableObject.h
+    test_object/WalkerBitmask.cpp
+    test_object/WalkerBitmask.h
+    test_object/WalkerNested.cpp
+    test_object/WalkerNested.h
+    test_object/WalkerObject.cpp
+    test_object/WalkerObject.h
+    test_object/WalkerUnion.cpp
+    test_object/WalkerUnion.h
 )
 
 set(ZSERIO_CPP_RUNTIME_TEST_SRCS

@@ -9,20 +9,20 @@
 #include <zserio/AnyHolder.h>
 #include <zserio/Reflectable.h>
 
-#include <test_object/DummyBitmask.h>
+#include <test_object/CreatorBitmask.h>
 
 namespace test_object
 {
 
-DummyBitmask::DummyBitmask(::zserio::BitStreamReader& in) :
+CreatorBitmask::CreatorBitmask(::zserio::BitStreamReader& in) :
         m_value(readValue(in))
 {}
 
-DummyBitmask::DummyBitmask(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in) :
+CreatorBitmask::CreatorBitmask(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in) :
         m_value(readValue(contextNode, in))
 {}
 
-const ::zserio::ITypeInfo& DummyBitmask::typeInfo()
+const ::zserio::ITypeInfo& CreatorBitmask::typeInfo()
 {
     using allocator_type = ::std::allocator<uint8_t>;
 
@@ -34,20 +34,20 @@ const ::zserio::ITypeInfo& DummyBitmask::typeInfo()
     };
 
     static const ::zserio::BitmaskTypeInfo<allocator_type> typeInfo = {
-        ::zserio::makeStringView("test_object.DummyBitmask"),
+        ::zserio::makeStringView("test_object.CreatorBitmask"),
         ::zserio::BuiltinTypeInfo<allocator_type>::getUInt8(), underlyingTypeArguments, values
     };
 
     return typeInfo;
 }
 
-::zserio::IReflectablePtr DummyBitmask::reflectable(const ::std::allocator<uint8_t>& allocator) const
+::zserio::IReflectablePtr CreatorBitmask::reflectable(const ::std::allocator<uint8_t>& allocator) const
 {
     class Reflectable : public ::zserio::ReflectableBase<::std::allocator<uint8_t>>
     {
     public:
-        explicit Reflectable(::test_object::DummyBitmask bitmask) :
-                ::zserio::ReflectableBase<::std::allocator<uint8_t>>(::test_object::DummyBitmask::typeInfo()),
+        explicit Reflectable(::test_object::CreatorBitmask bitmask) :
+                ::zserio::ReflectableBase<::std::allocator<uint8_t>>(::test_object::CreatorBitmask::typeInfo()),
                 m_bitmask(bitmask)
         {}
 
@@ -93,85 +93,85 @@ const ::zserio::ITypeInfo& DummyBitmask::typeInfo()
         }
 
     private:
-        ::test_object::DummyBitmask m_bitmask;
+        ::test_object::CreatorBitmask m_bitmask;
     };
 
     return ::std::allocate_shared<Reflectable>(allocator, *this);
 }
 
-void DummyBitmask::createPackingContext(::zserio::PackingContextNode& contextNode)
+void CreatorBitmask::createPackingContext(::zserio::PackingContextNode& contextNode)
 {
     contextNode.createContext();
 }
 
-void DummyBitmask::initPackingContext(::zserio::PackingContextNode& contextNode) const
+void CreatorBitmask::initPackingContext(::zserio::PackingContextNode& contextNode) const
 {
-    contextNode.getContext().init(::zserio::StdIntArrayTraits<::test_object::DummyBitmask::underlying_type>(),
+    contextNode.getContext().init(::zserio::StdIntArrayTraits<::test_object::CreatorBitmask::underlying_type>(),
             m_value);
 }
 
-size_t DummyBitmask::bitSizeOf(size_t) const
+size_t CreatorBitmask::bitSizeOf(size_t) const
 {
     return UINT8_C(8);
 }
 
-size_t DummyBitmask::bitSizeOf(::zserio::PackingContextNode& contextNode, size_t) const
+size_t CreatorBitmask::bitSizeOf(::zserio::PackingContextNode& contextNode, size_t) const
 {
     return contextNode.getContext().bitSizeOf(
-            ::zserio::StdIntArrayTraits<::test_object::DummyBitmask::underlying_type>(),
+            ::zserio::StdIntArrayTraits<::test_object::CreatorBitmask::underlying_type>(),
             m_value);
 }
 
-size_t DummyBitmask::initializeOffsets(size_t bitPosition) const
+size_t CreatorBitmask::initializeOffsets(size_t bitPosition) const
 {
     return bitPosition + bitSizeOf(bitPosition);
 }
 
-size_t DummyBitmask::initializeOffsets(::zserio::PackingContextNode& contextNode, size_t bitPosition) const
+size_t CreatorBitmask::initializeOffsets(::zserio::PackingContextNode& contextNode, size_t bitPosition) const
 {
     return bitPosition + bitSizeOf(contextNode, bitPosition);
 }
 
-uint32_t DummyBitmask::hashCode() const
+uint32_t CreatorBitmask::hashCode() const
 {
     uint32_t result = ::zserio::HASH_SEED;
     result = ::zserio::calcHashCode(result, m_value);
     return result;
 }
 
-void DummyBitmask::write(::zserio::BitStreamWriter& out) const
+void CreatorBitmask::write(::zserio::BitStreamWriter& out) const
 {
     out.writeBits(m_value, UINT8_C(8));
 }
 
-void DummyBitmask::write(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const
+void CreatorBitmask::write(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const
 {
     contextNode.getContext().write(
-            ::zserio::StdIntArrayTraits<::test_object::DummyBitmask::underlying_type>(),
+            ::zserio::StdIntArrayTraits<::test_object::CreatorBitmask::underlying_type>(),
             out, m_value);
 }
 
-::zserio::string<> DummyBitmask::toString(const ::zserio::string<>::allocator_type& allocator) const
+::zserio::string<> CreatorBitmask::toString(const ::zserio::string<>::allocator_type& allocator) const
 {
     ::zserio::string<> result(allocator);
-    if ((*this & DummyBitmask::Values::READ) == DummyBitmask::Values::READ)
+    if ((*this & CreatorBitmask::Values::READ) == CreatorBitmask::Values::READ)
         result += result.empty() ? "READ" : " | READ";
-    if ((*this & DummyBitmask::Values::WRITE) == DummyBitmask::Values::WRITE)
+    if ((*this & CreatorBitmask::Values::WRITE) == CreatorBitmask::Values::WRITE)
         result += result.empty() ? "WRITE" : " | WRITE";
 
     return ::zserio::toString<::zserio::string<>::allocator_type>(m_value, allocator) + "[" + result + "]";
 }
 
-DummyBitmask::underlying_type DummyBitmask::readValue(::zserio::BitStreamReader& in)
+CreatorBitmask::underlying_type CreatorBitmask::readValue(::zserio::BitStreamReader& in)
 {
     return static_cast<underlying_type>(in.readBits(UINT8_C(8)));
 }
 
-DummyBitmask::underlying_type DummyBitmask::readValue(::zserio::PackingContextNode& contextNode,
+CreatorBitmask::underlying_type CreatorBitmask::readValue(::zserio::PackingContextNode& contextNode,
         ::zserio::BitStreamReader& in)
 {
     return contextNode.getContext().read(
-            ::zserio::StdIntArrayTraits<::test_object::DummyBitmask::underlying_type>(), in);
+            ::zserio::StdIntArrayTraits<::test_object::CreatorBitmask::underlying_type>(), in);
 }
 
 } // namespace test_object

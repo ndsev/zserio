@@ -1,6 +1,6 @@
 import unittest
 
-from test_object.api import DummyEnum, DummyBitmask, DummyObject
+from test_object.api import CreatorEnum, CreatorBitmask, CreatorObject
 
 from zserio.exception import PythonRuntimeException
 from zserio.creator import ZserioTreeCreator
@@ -9,13 +9,13 @@ from zserio.bitbuffer import BitBuffer
 class ZserioTreeCreatorTest(unittest.TestCase):
 
     def test_create_object(self):
-        creator = ZserioTreeCreator(DummyObject.type_info())
+        creator = ZserioTreeCreator(CreatorObject.type_info())
         creator.begin_root()
         obj = creator.end_root()
-        self.assertTrue(isinstance(obj, DummyObject))
+        self.assertTrue(isinstance(obj, CreatorObject))
 
     def test_create_object_set_fields(self):
-        creator = ZserioTreeCreator(DummyObject.type_info())
+        creator = ZserioTreeCreator(CreatorObject.type_info())
 
         creator.begin_root()
         creator.set_value("value", 13)
@@ -26,7 +26,7 @@ class ZserioTreeCreatorTest(unittest.TestCase):
         self.assertEqual("test", obj.text)
 
     def test_create_object_full(self):
-        creator = ZserioTreeCreator(DummyObject.type_info())
+        creator = ZserioTreeCreator(CreatorObject.type_info())
 
         creator.begin_root()
         creator.set_value("value", 13)
@@ -36,15 +36,15 @@ class ZserioTreeCreatorTest(unittest.TestCase):
         creator.set_value("text", "nested")
         creator.set_value("externData", BitBuffer([0x3c], 6))
         creator.set_value("bytesData", bytearray([0xff]))
-        creator.set_value("dummyEnum", DummyEnum.ONE)
-        creator.set_value("dummyBitmask", DummyBitmask.Values.WRITE)
+        creator.set_value("creatorEnum", CreatorEnum.ONE)
+        creator.set_value("creatorBitmask", CreatorBitmask.Values.WRITE)
         creator.end_compound()
         creator.begin_array("nestedArray")
         creator.begin_compound_element()
         creator.set_value("value", 5)
         creator.set_value("text", "nestedArray")
-        creator.set_value("dummyEnum", DummyEnum.TWO)
-        creator.set_value("dummyBitmask", DummyBitmask.Values.READ)
+        creator.set_value("creatorEnum", CreatorEnum.TWO)
+        creator.set_value("creatorBitmask", CreatorBitmask.Values.READ)
         creator.end_compound_element()
         creator.end_array()
         creator.begin_array("textArray")
@@ -73,13 +73,13 @@ class ZserioTreeCreatorTest(unittest.TestCase):
         self.assertEqual([0x3c], obj.nested.extern_data.buffer)
         self.assertEqual(bytes([0xff]), obj.nested.bytes_data)
         self.assertEqual(6, obj.nested.extern_data.bitsize)
-        self.assertEqual(DummyEnum.ONE, obj.nested.dummy_enum)
-        self.assertEqual(DummyBitmask.Values.WRITE, obj.nested.dummy_bitmask)
+        self.assertEqual(CreatorEnum.ONE, obj.nested.creator_enum)
+        self.assertEqual(CreatorBitmask.Values.WRITE, obj.nested.creator_bitmask)
         self.assertEqual(1, len(obj.nested_array))
         self.assertEqual(5, obj.nested_array[0].value)
         self.assertEqual("nestedArray", obj.nested_array[0].text)
-        self.assertEqual(DummyEnum.TWO, obj.nested_array[0].dummy_enum)
-        self.assertEqual(DummyBitmask.Values.READ, obj.nested_array[0].dummy_bitmask)
+        self.assertEqual(CreatorEnum.TWO, obj.nested_array[0].creator_enum)
+        self.assertEqual(CreatorBitmask.Values.READ, obj.nested_array[0].creator_bitmask)
         self.assertEqual(["this", "is", "text", "array"], obj.text_array)
         self.assertEqual(1, len(obj.extern_array))
         self.assertEqual([0x0f], obj.extern_array[0].buffer)
@@ -90,7 +90,7 @@ class ZserioTreeCreatorTest(unittest.TestCase):
         self.assertEqual("optionalNested", obj.optional_nested.text)
 
     def test_exceptions_before_root(self):
-        creator = ZserioTreeCreator(DummyObject.type_info())
+        creator = ZserioTreeCreator(CreatorObject.type_info())
 
         with self.assertRaises(PythonRuntimeException):
             creator.end_root()
@@ -112,7 +112,7 @@ class ZserioTreeCreatorTest(unittest.TestCase):
             creator.add_value_element(13)
 
     def test_exceptions_in_root(self):
-        creator = ZserioTreeCreator(DummyObject.type_info())
+        creator = ZserioTreeCreator(CreatorObject.type_info())
 
         creator.begin_root()
 
@@ -142,7 +142,7 @@ class ZserioTreeCreatorTest(unittest.TestCase):
             creator.add_value_element(13)
 
     def test_exceptions_in_compound(self):
-        creator = ZserioTreeCreator(DummyObject.type_info())
+        creator = ZserioTreeCreator(CreatorObject.type_info())
 
         creator.begin_root()
         creator.begin_compound("nested")
@@ -175,7 +175,7 @@ class ZserioTreeCreatorTest(unittest.TestCase):
             creator.get_element_type()
 
     def test_exceptions_in_compound_array(self):
-        creator = ZserioTreeCreator(DummyObject.type_info())
+        creator = ZserioTreeCreator(CreatorObject.type_info())
         creator.begin_root()
         creator.begin_array("nestedArray")
 
@@ -199,7 +199,7 @@ class ZserioTreeCreatorTest(unittest.TestCase):
             creator.get_field_type("nonexistent")
 
     def test_exceptions_in_simple_array(self):
-        creator = ZserioTreeCreator(DummyObject.type_info())
+        creator = ZserioTreeCreator(CreatorObject.type_info())
         creator.begin_root()
         creator.begin_array("textArray")
 
@@ -225,7 +225,7 @@ class ZserioTreeCreatorTest(unittest.TestCase):
             creator.get_field_type("nonexistent")
 
     def test_exceptions_in_compound_element(self):
-        creator = ZserioTreeCreator(DummyObject.type_info())
+        creator = ZserioTreeCreator(CreatorObject.type_info())
         creator.begin_root()
         creator.begin_array("nestedArray")
         creator.begin_compound_element()

@@ -5,30 +5,30 @@
 
 package test_object;
 
-public class DummyBitmask implements zserio.runtime.io.Writer, zserio.runtime.SizeOf,
+public class CreatorBitmask implements zserio.runtime.io.Writer, zserio.runtime.SizeOf,
         zserio.runtime.ZserioBitmask
 {
-    public DummyBitmask()
+    public CreatorBitmask()
     {
         this((short)0);
     }
 
-    public DummyBitmask(short value)
+    public CreatorBitmask(short value)
     {
         if (value < (short)0 || value > (short)255)
         {
             throw new java.lang.IllegalArgumentException(
-                    "Value for bitmask 'DummyBitmask' out of bounds: " + value + "!");
+                    "Value for bitmask 'CreatorBitmask' out of bounds: " + value + "!");
         }
         this.value = value;
     }
 
-    public DummyBitmask(zserio.runtime.io.BitStreamReader in) throws java.io.IOException
+    public CreatorBitmask(zserio.runtime.io.BitStreamReader in) throws java.io.IOException
     {
         value = in.readUnsignedByte();
     }
 
-    public DummyBitmask(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in)
+    public CreatorBitmask(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in)
             throws java.io.IOException
     {
         value = ((zserio.runtime.array.ArrayElement.ShortArrayElement)
@@ -39,8 +39,8 @@ public class DummyBitmask implements zserio.runtime.io.Writer, zserio.runtime.Si
     public static zserio.runtime.typeinfo.TypeInfo typeInfo()
     {
         return new zserio.runtime.typeinfo.TypeInfo.BitmaskTypeInfo(
-                "test_object.DummyBitmask",
-                DummyBitmask.class,
+                "test_object.CreatorBitmask",
+                CreatorBitmask.class,
                 zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo.getUInt8(),
                 new java.util.ArrayList<java.util.function.Supplier<java.lang.Object>>(),
                 java.util.Arrays.asList(
@@ -104,11 +104,11 @@ public class DummyBitmask implements zserio.runtime.io.Writer, zserio.runtime.Si
     @Override
     public boolean equals(java.lang.Object other)
     {
-        if (!(other instanceof DummyBitmask))
+        if (!(other instanceof CreatorBitmask))
             return false;
 
-        final DummyBitmask otherDummyBitmask = (DummyBitmask)other;
-        return value == otherDummyBitmask.value;
+        final CreatorBitmask otherCreatorBitmask = (CreatorBitmask)other;
+        return value == otherCreatorBitmask.value;
     }
 
     @Override
@@ -124,9 +124,9 @@ public class DummyBitmask implements zserio.runtime.io.Writer, zserio.runtime.Si
     {
         final java.lang.StringBuilder builder = new java.lang.StringBuilder();
 
-        if (this.and(DummyBitmask.Values.READ).equals(DummyBitmask.Values.READ))
+        if (this.and(CreatorBitmask.Values.READ).equals(CreatorBitmask.Values.READ))
             builder.append(builder.length() == 0 ? "READ" : " | READ");
-        if (this.and(DummyBitmask.Values.WRITE).equals(DummyBitmask.Values.WRITE))
+        if (this.and(CreatorBitmask.Values.WRITE).equals(CreatorBitmask.Values.WRITE))
             builder.append(builder.length() == 0 ? "WRITE" : " | WRITE");
 
         return java.lang.String.valueOf(value) + "[" + builder.toString() + "]";
@@ -158,30 +158,30 @@ public class DummyBitmask implements zserio.runtime.io.Writer, zserio.runtime.Si
         return value;
     }
 
-    public DummyBitmask or(DummyBitmask other)
+    public CreatorBitmask or(CreatorBitmask other)
     {
-        return new DummyBitmask((short)(value | other.value));
+        return new CreatorBitmask((short)(value | other.value));
     }
 
-    public DummyBitmask and(DummyBitmask other)
+    public CreatorBitmask and(CreatorBitmask other)
     {
-        return new DummyBitmask((short)(value & other.value));
+        return new CreatorBitmask((short)(value & other.value));
     }
 
-    public DummyBitmask xor(DummyBitmask other)
+    public CreatorBitmask xor(CreatorBitmask other)
     {
-        return new DummyBitmask((short)(value ^ other.value));
+        return new CreatorBitmask((short)(value ^ other.value));
     }
 
-    public DummyBitmask not()
+    public CreatorBitmask not()
     {
-        return new DummyBitmask((short)(~value & (short)255));
+        return new CreatorBitmask((short)(~value & (short)255));
     }
 
     public static final class Values
     {
-        public static final DummyBitmask READ = new DummyBitmask((short)1);
-        public static final DummyBitmask WRITE = new DummyBitmask((short)2);
+        public static final CreatorBitmask READ = new CreatorBitmask((short)1);
+        public static final CreatorBitmask WRITE = new CreatorBitmask((short)2);
     }
 
     private short value;

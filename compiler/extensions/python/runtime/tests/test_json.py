@@ -4,7 +4,7 @@ import unittest
 import math
 
 
-from test_object.api import DummyEnum, DummyBitmask, DummyObject
+from test_object.api import CreatorEnum, CreatorBitmask, CreatorObject
 
 from zserio.bitbuffer import BitBuffer
 from zserio.json import (JsonWriter, JsonEncoder, JsonParser, JsonTokenizer, JsonToken, JsonParserException,
@@ -184,13 +184,13 @@ class JsonWriterTest(unittest.TestCase):
 
     @staticmethod
     def _walk_nested(json_writer):
-        dummy_type_info = TypeInfo("Dummy", object)
+        creator_type_info = TypeInfo("Creator", object)
 
         json_writer.begin_root(object())
         json_writer.visit_value(13, MemberInfo("identifier", TypeInfo("uint32", int)))
-        json_writer.begin_compound(object(), MemberInfo("nested", dummy_type_info))
+        json_writer.begin_compound(object(), MemberInfo("nested", creator_type_info))
         json_writer.visit_value("test", MemberInfo("text", TypeInfo("string", str)))
-        json_writer.end_compound(object(), MemberInfo("nested", dummy_type_info))
+        json_writer.end_compound(object(), MemberInfo("nested", creator_type_info))
         json_writer.end_root(object())
 
     @staticmethod
@@ -879,8 +879,8 @@ class JsonReaderTest(unittest.TestCase):
                 "               254\n" +
                 "           ]\n" +
                 "        },\n" +
-                "        \"dummyEnum\": 0,\n" +
-                "        \"dummyBitmask\": 1\n" +
+                "        \"creatorEnum\": 0,\n" +
+                "        \"creatorBitmask\": 1\n" +
                 "    },\n" +
                 "    \"text\": \"test\",\n" +
                 "    \"nestedArray\": [\n" +
@@ -900,8 +900,8 @@ class JsonReaderTest(unittest.TestCase):
                 "                   240\n"
                 "               ]\n"
                 "            },\n"
-                "            \"dummyEnum\": 1,\n" +
-                "            \"dummyBitmask\": 2\n" +
+                "            \"creatorEnum\": 1,\n" +
+                "            \"creatorBitmask\": 2\n" +
                 "        }\n" +
                 "    ],\n" +
                 "    \"textArray\": [\n" +
@@ -931,37 +931,37 @@ class JsonReaderTest(unittest.TestCase):
                 )
 
         json_reader = JsonReader(text_io)
-        dummy_object = json_reader.read(DummyObject.type_info())
-        self.assertTrue(dummy_object is not None)
-        self.assertTrue(isinstance(dummy_object, DummyObject))
+        creator_object = json_reader.read(CreatorObject.type_info())
+        self.assertTrue(creator_object is not None)
+        self.assertTrue(isinstance(creator_object, CreatorObject))
 
-        self.assertEqual(13, dummy_object.value)
-        self.assertEqual(13, dummy_object.nested.param)
-        self.assertEqual(10, dummy_object.nested.value)
-        self.assertEqual("nested", dummy_object.nested.text)
-        self.assertEqual(BitBuffer(bytes([0xCB, 0xF0]), 12), dummy_object.nested.extern_data)
-        self.assertEqual(bytes([0xCA, 0xFE]), dummy_object.nested.bytes_data)
-        self.assertEqual(DummyEnum.ONE, dummy_object.nested.dummy_enum)
-        self.assertEqual(DummyBitmask.Values.READ, dummy_object.nested.dummy_bitmask)
-        self.assertEqual("test", dummy_object.text)
-        self.assertEqual(1, len(dummy_object.nested_array))
-        self.assertEqual(5, dummy_object.nested_array[0].value)
-        self.assertEqual("nestedArray", dummy_object.nested_array[0].text)
-        self.assertEqual(BitBuffer(bytes([0xCA, 0xFE]), 15), dummy_object.nested_array[0].extern_data)
-        self.assertEqual(bytes([0xCB, 0xF0]), dummy_object.nested_array[0].bytes_data)
-        self.assertEqual(DummyEnum.TWO, dummy_object.nested_array[0].dummy_enum)
-        self.assertEqual(DummyBitmask.Values.WRITE, dummy_object.nested_array[0].dummy_bitmask)
-        self.assertEqual(4, len(dummy_object.text_array))
-        self.assertEqual("this", dummy_object.text_array[0])
-        self.assertEqual("is", dummy_object.text_array[1])
-        self.assertEqual("text", dummy_object.text_array[2])
-        self.assertEqual("array", dummy_object.text_array[3])
-        self.assertEqual(1, len(dummy_object.extern_array))
-        self.assertEqual(BitBuffer(bytes([0xDE, 0xD1]), 13), dummy_object.extern_array[0])
-        self.assertEqual(1, len(dummy_object.bytes_array))
-        self.assertEqual(bytes([0]), dummy_object.bytes_array[0])
-        self.assertEqual(None, dummy_object.optional_bool)
-        self.assertEqual(None, dummy_object.optional_nested) # not present in json
+        self.assertEqual(13, creator_object.value)
+        self.assertEqual(13, creator_object.nested.param)
+        self.assertEqual(10, creator_object.nested.value)
+        self.assertEqual("nested", creator_object.nested.text)
+        self.assertEqual(BitBuffer(bytes([0xCB, 0xF0]), 12), creator_object.nested.extern_data)
+        self.assertEqual(bytes([0xCA, 0xFE]), creator_object.nested.bytes_data)
+        self.assertEqual(CreatorEnum.ONE, creator_object.nested.creator_enum)
+        self.assertEqual(CreatorBitmask.Values.READ, creator_object.nested.creator_bitmask)
+        self.assertEqual("test", creator_object.text)
+        self.assertEqual(1, len(creator_object.nested_array))
+        self.assertEqual(5, creator_object.nested_array[0].value)
+        self.assertEqual("nestedArray", creator_object.nested_array[0].text)
+        self.assertEqual(BitBuffer(bytes([0xCA, 0xFE]), 15), creator_object.nested_array[0].extern_data)
+        self.assertEqual(bytes([0xCB, 0xF0]), creator_object.nested_array[0].bytes_data)
+        self.assertEqual(CreatorEnum.TWO, creator_object.nested_array[0].creator_enum)
+        self.assertEqual(CreatorBitmask.Values.WRITE, creator_object.nested_array[0].creator_bitmask)
+        self.assertEqual(4, len(creator_object.text_array))
+        self.assertEqual("this", creator_object.text_array[0])
+        self.assertEqual("is", creator_object.text_array[1])
+        self.assertEqual("text", creator_object.text_array[2])
+        self.assertEqual("array", creator_object.text_array[3])
+        self.assertEqual(1, len(creator_object.extern_array))
+        self.assertEqual(BitBuffer(bytes([0xDE, 0xD1]), 13), creator_object.extern_array[0])
+        self.assertEqual(1, len(creator_object.bytes_array))
+        self.assertEqual(bytes([0]), creator_object.bytes_array[0])
+        self.assertEqual(None, creator_object.optional_bool)
+        self.assertEqual(None, creator_object.optional_nested) # not present in json
 
     def test_read_two_objects(self):
         text_io = io.StringIO(
@@ -970,19 +970,19 @@ class JsonReaderTest(unittest.TestCase):
                 )
 
         json_reader = JsonReader(text_io)
-        dummy_object1 = json_reader.read(DummyObject.type_info())
-        self.assertTrue(dummy_object1 is not None)
-        self.assertTrue(isinstance(dummy_object1, DummyObject))
+        creator_object1 = json_reader.read(CreatorObject.type_info())
+        self.assertTrue(creator_object1 is not None)
+        self.assertTrue(isinstance(creator_object1, CreatorObject))
 
-        self.assertEqual(13, dummy_object1.value)
-        self.assertEqual("", dummy_object1.text)
+        self.assertEqual(13, creator_object1.value)
+        self.assertEqual("", creator_object1.text)
 
-        dummy_object2 = json_reader.read(DummyObject.type_info())
-        self.assertTrue(dummy_object2 is not None)
-        self.assertTrue(isinstance(dummy_object2, DummyObject))
+        creator_object2 = json_reader.read(CreatorObject.type_info())
+        self.assertTrue(creator_object2 is not None)
+        self.assertTrue(isinstance(creator_object2, CreatorObject))
 
-        self.assertEqual(42, dummy_object2.value)
-        self.assertEqual("test", dummy_object2.text)
+        self.assertEqual(42, creator_object2.value)
+        self.assertEqual("test", creator_object2.text)
 
     def test_read_unordered_bit_buffer(self):
         text_io = io.StringIO(
@@ -1004,70 +1004,70 @@ class JsonReaderTest(unittest.TestCase):
                 "               254\n" +
                 "           ]\n" +
                 "        },\n" +
-                "        \"dummyEnum\": 0,\n" +
-                "        \"dummyBitmask\": 1\n" +
+                "        \"creatorEnum\": 0,\n" +
+                "        \"creatorBitmask\": 1\n" +
                 "    }\n" +
                 "}"
                 )
 
         json_reader = JsonReader(text_io)
-        dummy_object = json_reader.read(DummyObject.type_info())
-        self.assertTrue(dummy_object is not None)
-        self.assertTrue(isinstance(dummy_object, DummyObject))
+        creator_object = json_reader.read(CreatorObject.type_info())
+        self.assertTrue(creator_object is not None)
+        self.assertTrue(isinstance(creator_object, CreatorObject))
 
-        self.assertEqual(13, dummy_object.value)
-        self.assertEqual(13, dummy_object.nested.param)
-        self.assertEqual(10, dummy_object.nested.value)
-        self.assertEqual("nested", dummy_object.nested.text)
-        self.assertEqual(BitBuffer(bytes([0xCB, 0xF0]), 12), dummy_object.nested.extern_data)
-        self.assertEqual(bytes([0xCA, 0xFE]), dummy_object.nested.bytes_data)
-        self.assertEqual(DummyEnum.ONE, dummy_object.nested.dummy_enum)
-        self.assertEqual(DummyBitmask.Values.READ, dummy_object.nested.dummy_bitmask)
+        self.assertEqual(13, creator_object.value)
+        self.assertEqual(13, creator_object.nested.param)
+        self.assertEqual(10, creator_object.nested.value)
+        self.assertEqual("nested", creator_object.nested.text)
+        self.assertEqual(BitBuffer(bytes([0xCB, 0xF0]), 12), creator_object.nested.extern_data)
+        self.assertEqual(bytes([0xCA, 0xFE]), creator_object.nested.bytes_data)
+        self.assertEqual(CreatorEnum.ONE, creator_object.nested.creator_enum)
+        self.assertEqual(CreatorBitmask.Values.READ, creator_object.nested.creator_bitmask)
 
     def test_read_stringified_enum(self):
-        self._check_read_stringified_enum("ONE", DummyEnum.ONE)
-        self._check_read_stringified_enum("MinusOne", DummyEnum.MINUS_ONE)
+        self._check_read_stringified_enum("ONE", CreatorEnum.ONE)
+        self._check_read_stringified_enum("MinusOne", CreatorEnum.MINUS_ONE)
         self._check_read_stringified_enum_raises("NONEXISTING",
-            "JsonReader: Cannot create enum 'test_object.DummyEnum' "
-            "from string value 'NONEXISTING'! (JsonParser:3:22)")
+            "JsonReader: Cannot create enum 'test_object.CreatorEnum' "
+            "from string value 'NONEXISTING'! (JsonParser:3:24)")
         self._check_read_stringified_enum_raises("***",
-            "JsonReader: Cannot create enum 'test_object.DummyEnum' "
-            "from string value '***'! (JsonParser:3:22)")
+            "JsonReader: Cannot create enum 'test_object.CreatorEnum' "
+            "from string value '***'! (JsonParser:3:24)")
         self._check_read_stringified_enum_raises("10 /* no match */",
-            "JsonReader: Cannot create enum 'test_object.DummyEnum' "
-            "from string value '10 /* no match */'! (JsonParser:3:22)")
+            "JsonReader: Cannot create enum 'test_object.CreatorEnum' "
+            "from string value '10 /* no match */'! (JsonParser:3:24)")
         self._check_read_stringified_enum_raises("-10 /* no match */",
-            "JsonReader: Cannot create enum 'test_object.DummyEnum' "
-            "from string value '-10 /* no match */'! (JsonParser:3:22)")
+            "JsonReader: Cannot create enum 'test_object.CreatorEnum' "
+            "from string value '-10 /* no match */'! (JsonParser:3:24)")
         self._check_read_stringified_enum_raises("",
-            "JsonReader: Cannot create enum 'test_object.DummyEnum' "
-            "from string value ''! (JsonParser:3:22)")
+            "JsonReader: Cannot create enum 'test_object.CreatorEnum' "
+            "from string value ''! (JsonParser:3:24)")
 
     def test_read_stringified_bitmask(self):
-        self._check_read_stringified_bitmask("READ", DummyBitmask.Values.READ)
+        self._check_read_stringified_bitmask("READ", CreatorBitmask.Values.READ)
         self._check_read_stringified_bitmask("READ | WRITE",
-            DummyBitmask.Values.READ | DummyBitmask.Values.WRITE)
+            CreatorBitmask.Values.READ | CreatorBitmask.Values.WRITE)
         self._check_read_stringified_bitmask_raises("NONEXISTING",
-            "JsonReader: Cannot create bitmask 'test_object.DummyBitmask' " +
-            "from string value 'NONEXISTING'! (JsonParser:3:25)")
+            "JsonReader: Cannot create bitmask 'test_object.CreatorBitmask' " +
+            "from string value 'NONEXISTING'! (JsonParser:3:27)")
         self._check_read_stringified_bitmask_raises("READ | NONEXISTING",
-            "JsonReader: Cannot create bitmask 'test_object.DummyBitmask' " +
-            "from string value 'READ | NONEXISTING'! (JsonParser:3:25)")
+            "JsonReader: Cannot create bitmask 'test_object.CreatorBitmask' " +
+            "from string value 'READ | NONEXISTING'! (JsonParser:3:27)")
         self._check_read_stringified_bitmask_raises("READ * NONEXISTING",
-            "JsonReader: Cannot create bitmask 'test_object.DummyBitmask' " +
-            "from string value 'READ * NONEXISTING'! (JsonParser:3:25)")
-        self._check_read_stringified_bitmask("7 /* READ | WRITE */", DummyBitmask.from_value(7))
-        self._check_read_stringified_bitmask("15 /* READ | WRITE */", DummyBitmask.from_value(15))
-        self._check_read_stringified_bitmask("4 /* no match */", DummyBitmask.from_value(4))
+            "JsonReader: Cannot create bitmask 'test_object.CreatorBitmask' " +
+            "from string value 'READ * NONEXISTING'! (JsonParser:3:27)")
+        self._check_read_stringified_bitmask("7 /* READ | WRITE */", CreatorBitmask.from_value(7))
+        self._check_read_stringified_bitmask("15 /* READ | WRITE */", CreatorBitmask.from_value(15))
+        self._check_read_stringified_bitmask("4 /* no match */", CreatorBitmask.from_value(4))
         self._check_read_stringified_bitmask_raises("",
-            "JsonReader: Cannot create bitmask 'test_object.DummyBitmask' " +
-            "from string value ''! (JsonParser:3:25)")
+            "JsonReader: Cannot create bitmask 'test_object.CreatorBitmask' " +
+            "from string value ''! (JsonParser:3:27)")
         self._check_read_stringified_bitmask_raises(" ",
-            "JsonReader: Cannot create bitmask 'test_object.DummyBitmask' " +
-            "from string value ' '! (JsonParser:3:25)")
+            "JsonReader: Cannot create bitmask 'test_object.CreatorBitmask' " +
+            "from string value ' '! (JsonParser:3:27)")
         self._check_read_stringified_bitmask_raises(" | ",
-            "JsonReader: Cannot create bitmask 'test_object.DummyBitmask' " +
-            "from string value ' | '! (JsonParser:3:25)")
+            "JsonReader: Cannot create bitmask 'test_object.CreatorBitmask' " +
+            "from string value ' | '! (JsonParser:3:27)")
 
     def test_json_parser_exception(self):
         text_io = io.StringIO(
@@ -1076,7 +1076,7 @@ class JsonReaderTest(unittest.TestCase):
 
         json_reader = JsonReader(text_io)
         with self.assertRaises(JsonParserException) as error:
-            json_reader.read(DummyObject.type_info())
+            json_reader.read(CreatorObject.type_info())
         self.assertEqual("JsonParser:2:1: Unexpected token: JsonToken.VALUE ('value'), " +
                          "expecting JsonToken.KEY_SEPARATOR!", str(error.exception))
 
@@ -1087,9 +1087,9 @@ class JsonReaderTest(unittest.TestCase):
 
         json_reader = JsonReader(text_io)
         with self.assertRaises(PythonRuntimeException) as error:
-            json_reader.read(DummyObject.type_info())
+            json_reader.read(CreatorObject.type_info())
         self.assertEqual("ZserioTreeCreator: Field 'nonexisting' not found in " +
-                         "'test_object.DummyObject'! (JsonParser:2:16)", str(error.exception))
+                         "'test_object.CreatorObject'! (JsonParser:2:16)", str(error.exception))
 
     def test_wrong_value_type_exception(self):
         text_io = io.StringIO(
@@ -1098,7 +1098,7 @@ class JsonReaderTest(unittest.TestCase):
 
         json_reader = JsonReader(text_io)
         with self.assertRaises(PythonRuntimeException) as error:
-            json_reader.read(DummyObject.type_info())
+            json_reader.read(CreatorObject.type_info())
         self.assertEqual("ZserioTreeCreator: Unexpected value type '<class 'str'>', " +
                          "expecting '<class 'int'>'! (JsonParser:2:12)", str(error.exception))
 
@@ -1123,7 +1123,7 @@ class JsonReaderTest(unittest.TestCase):
 
         json_reader = JsonReader(text_io)
         with self.assertRaises(PythonRuntimeException) as error:
-            json_reader.read(DummyObject.type_info())
+            json_reader.read(CreatorObject.type_info())
         self.assertEqual("JsonReader: Unexpected begin object in Bit Buffer! (JsonParser:11:25)",
                          str(error.exception))
 
@@ -1146,7 +1146,7 @@ class JsonReaderTest(unittest.TestCase):
 
         json_reader = JsonReader(text_io)
         with self.assertRaises(PythonRuntimeException) as error:
-            json_reader.read(DummyObject.type_info())
+            json_reader.read(CreatorObject.type_info())
         self.assertEqual("JsonReader: Unexpected end in Bit Buffer! (JsonParser:12:5)", str(error.exception))
 
     def test_wrong_bytes_exception(self):
@@ -1172,7 +1172,7 @@ class JsonReaderTest(unittest.TestCase):
 
         json_reader = JsonReader(text_io)
         with self.assertRaises(PythonRuntimeException) as error:
-            json_reader.read(DummyObject.type_info())
+            json_reader.read(CreatorObject.type_info())
         self.assertEqual("JsonReader: Unexpected begin object in bytes! (JsonParser:14:23)",
                          str(error.exception))
 
@@ -1188,7 +1188,7 @@ class JsonReaderTest(unittest.TestCase):
 
         json_reader = JsonReader(text_io)
         with self.assertRaises(PythonRuntimeException) as error:
-            json_reader.read(DummyObject.type_info())
+            json_reader.read(CreatorObject.type_info())
         self.assertEqual("JsonReader: Unexpected end in bytes! (JsonParser:6:1)",
                          str(error.exception))
 
@@ -1199,7 +1199,7 @@ class JsonReaderTest(unittest.TestCase):
 
         json_reader = JsonReader(text_io)
         with self.assertRaises(PythonRuntimeException) as error:
-            json_reader.read(DummyObject.type_info())
+            json_reader.read(CreatorObject.type_info())
         self.assertEqual("JsonReader: ZserioTreeCreator expects json object! (JsonParser:1:1)",
                          str(error.exception))
 
@@ -1210,7 +1210,7 @@ class JsonReaderTest(unittest.TestCase):
 
         json_reader = JsonReader(text_io)
         with self.assertRaises(PythonRuntimeException) as error:
-            json_reader.read(DummyObject.type_info())
+            json_reader.read(CreatorObject.type_info())
         self.assertEqual("JsonReader: ZserioTreeCreator expects json object! (JsonParser:1:1)",
                          str(error.exception))
 
@@ -1274,58 +1274,58 @@ class JsonReaderTest(unittest.TestCase):
         text_io = io.StringIO(
                 "{\n"
                 "    \"nested\": {\n"
-                "        \"dummyEnum\": \"" + string_value + "\"\n"
+                "        \"creatorEnum\": \"" + string_value + "\"\n"
                 "    }\n"
                 "}"
                 )
 
         json_reader = JsonReader(text_io)
-        dummy_object = json_reader.read(DummyObject.type_info())
-        self.assertTrue(dummy_object is not None)
-        self.assertTrue(isinstance(dummy_object, DummyObject))
+        creator_object = json_reader.read(CreatorObject.type_info())
+        self.assertTrue(creator_object is not None)
+        self.assertTrue(isinstance(creator_object, CreatorObject))
 
-        self.assertEqual(expected_value, dummy_object.nested.dummy_enum)
+        self.assertEqual(expected_value, creator_object.nested.creator_enum)
 
     def _check_read_stringified_enum_raises(self, string_value, expected_message):
         text_io = io.StringIO(
                 "{\n"
                 "    \"nested\": {\n"
-                "        \"dummyEnum\": \"" + string_value + "\"\n"
+                "        \"creatorEnum\": \"" + string_value + "\"\n"
                 "    }\n"
                 "}"
                 )
 
         json_reader = JsonReader(text_io)
         with self.assertRaises(PythonRuntimeException) as error:
-            dummy_object = json_reader.read(DummyObject.type_info())
+            json_reader.read(CreatorObject.type_info())
         self.assertEqual(expected_message, str(error.exception))
 
     def _check_read_stringified_bitmask(self, string_value, expected_value):
         text_io = io.StringIO(
                 "{\n"
                 "    \"nested\": {\n"
-                "        \"dummyBitmask\": \"" + string_value + "\"\n"
+                "        \"creatorBitmask\": \"" + string_value + "\"\n"
                 "    }\n"
                 "}"
                 )
 
         json_reader = JsonReader(text_io)
-        dummy_object = json_reader.read(DummyObject.type_info())
-        self.assertTrue(dummy_object is not None)
-        self.assertTrue(isinstance(dummy_object, DummyObject))
+        creator_object = json_reader.read(CreatorObject.type_info())
+        self.assertTrue(creator_object is not None)
+        self.assertTrue(isinstance(creator_object, CreatorObject))
 
-        self.assertEqual(expected_value, dummy_object.nested.dummy_bitmask)
+        self.assertEqual(expected_value, creator_object.nested.creator_bitmask)
 
     def _check_read_stringified_bitmask_raises(self, string_value, expected_message):
         text_io = io.StringIO(
                 "{\n"
                 "    \"nested\": {\n"
-                "        \"dummyBitmask\": \"" + string_value + "\"\n"
+                "        \"creatorBitmask\": \"" + string_value + "\"\n"
                 "    }\n"
                 "}"
                 )
 
         json_reader = JsonReader(text_io)
         with self.assertRaises(PythonRuntimeException) as error:
-            dummy_object = json_reader.read(DummyObject.type_info())
+            json_reader.read(CreatorObject.type_info())
         self.assertEqual(expected_message, str(error.exception))

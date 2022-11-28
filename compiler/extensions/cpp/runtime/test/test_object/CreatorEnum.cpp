@@ -9,17 +9,17 @@
 #include <zserio/AnyHolder.h>
 #include <zserio/Reflectable.h>
 
-#include <test_object/DummyEnum.h>
+#include <test_object/CreatorEnum.h>
 
 namespace zserio
 {
 
-// This is full specialization of enumeration traits and methods for DummyEnum enumeration.
-constexpr ::std::array<const char*, 3> EnumTraits<::test_object::DummyEnum>::names;
-constexpr ::std::array<::test_object::DummyEnum, 3> EnumTraits<::test_object::DummyEnum>::values;
+// This is full specialization of enumeration traits and methods for CreatorEnum enumeration.
+constexpr ::std::array<const char*, 3> EnumTraits<::test_object::CreatorEnum>::names;
+constexpr ::std::array<::test_object::CreatorEnum, 3> EnumTraits<::test_object::CreatorEnum>::values;
 
 template <>
-const ::zserio::ITypeInfo& enumTypeInfo<::test_object::DummyEnum, ::std::allocator<uint8_t>>()
+const ::zserio::ITypeInfo& enumTypeInfo<::test_object::CreatorEnum, ::std::allocator<uint8_t>>()
 {
     using allocator_type = ::std::allocator<uint8_t>;
 
@@ -32,7 +32,7 @@ const ::zserio::ITypeInfo& enumTypeInfo<::test_object::DummyEnum, ::std::allocat
     };
 
     static const ::zserio::EnumTypeInfo<allocator_type> typeInfo = {
-        ::zserio::makeStringView("test_object.DummyEnum"),
+        ::zserio::makeStringView("test_object.CreatorEnum"),
         ::zserio::BuiltinTypeInfo<allocator_type>::getInt8(), underlyingTypeArguments, items
     };
 
@@ -40,14 +40,14 @@ const ::zserio::ITypeInfo& enumTypeInfo<::test_object::DummyEnum, ::std::allocat
 }
 
 template <>
-::zserio::IReflectablePtr enumReflectable(::test_object::DummyEnum value, const ::std::allocator<uint8_t>& allocator)
+::zserio::IReflectablePtr enumReflectable(::test_object::CreatorEnum value, const ::std::allocator<uint8_t>& allocator)
 {
     class Reflectable : public ::zserio::ReflectableBase<::std::allocator<uint8_t>>
     {
     public:
-        explicit Reflectable(::test_object::DummyEnum value) :
+        explicit Reflectable(::test_object::CreatorEnum value) :
                 ::zserio::ReflectableBase<::std::allocator<uint8_t>>(
-                        ::zserio::enumTypeInfo<::test_object::DummyEnum, ::std::allocator<uint8_t>>()),
+                        ::zserio::enumTypeInfo<::test_object::CreatorEnum, ::std::allocator<uint8_t>>()),
                 m_value(value)
         {}
 
@@ -73,12 +73,12 @@ template <>
 
         virtual int8_t getInt8() const override
         {
-            return static_cast<typename ::std::underlying_type<::test_object::DummyEnum>::type>(m_value);
+            return static_cast<typename ::std::underlying_type<::test_object::CreatorEnum>::type>(m_value);
         }
 
         virtual int64_t toInt() const override
         {
-            return static_cast<typename ::std::underlying_type<::test_object::DummyEnum>::type>(m_value);
+            return static_cast<typename ::std::underlying_type<::test_object::CreatorEnum>::type>(m_value);
         }
 
         virtual double toDouble() const override
@@ -93,46 +93,46 @@ template <>
         }
 
     private:
-        ::test_object::DummyEnum m_value;
+        ::test_object::CreatorEnum m_value;
     };
 
     return std::allocate_shared<Reflectable>(allocator, value);
 }
 
 template <>
-size_t enumToOrdinal(::test_object::DummyEnum value)
+size_t enumToOrdinal(::test_object::CreatorEnum value)
 {
     switch (value)
     {
-    case ::test_object::DummyEnum::ONE:
+    case ::test_object::CreatorEnum::ONE:
         return 0;
-    case ::test_object::DummyEnum::TWO:
+    case ::test_object::CreatorEnum::TWO:
         return 1;
-    case ::test_object::DummyEnum::MinusOne:
+    case ::test_object::CreatorEnum::MinusOne:
         return 2;
     default:
-        throw ::zserio::CppRuntimeException("Unknown value for enumeration DummyEnum: ") <<
-                static_cast<typename ::std::underlying_type<::test_object::DummyEnum>::type>(value) << "!";
+        throw ::zserio::CppRuntimeException("Unknown value for enumeration CreatorEnum: ") <<
+                static_cast<typename ::std::underlying_type<::test_object::CreatorEnum>::type>(value) << "!";
     }
 }
 
 template <>
-::test_object::DummyEnum valueToEnum(
-        typename ::std::underlying_type<::test_object::DummyEnum>::type rawValue)
+::test_object::CreatorEnum valueToEnum(
+        typename ::std::underlying_type<::test_object::CreatorEnum>::type rawValue)
 {
     switch (rawValue)
     {
     case INT8_C(0):
     case INT8_C(1):
     case INT8_C(-1):
-        return ::test_object::DummyEnum(rawValue);
+        return ::test_object::CreatorEnum(rawValue);
     default:
-        throw ::zserio::CppRuntimeException("Unknown value for enumeration DummyEnum: ") << rawValue << "!";
+        throw ::zserio::CppRuntimeException("Unknown value for enumeration CreatorEnum: ") << rawValue << "!";
     }
 }
 
 template <>
-uint32_t enumHashCode<::test_object::DummyEnum>(::test_object::DummyEnum value)
+uint32_t enumHashCode<::test_object::CreatorEnum>(::test_object::CreatorEnum value)
 {
     uint32_t result = ::zserio::HASH_SEED;
     result = ::zserio::calcHashCode(result, enumToValue(value));
@@ -140,65 +140,65 @@ uint32_t enumHashCode<::test_object::DummyEnum>(::test_object::DummyEnum value)
 }
 
 template <>
-void initPackingContext(::zserio::PackingContextNode& contextNode, ::test_object::DummyEnum value)
+void initPackingContext(::zserio::PackingContextNode& contextNode, ::test_object::CreatorEnum value)
 {
-    contextNode.getContext().init(::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::DummyEnum>::type>(),
+    contextNode.getContext().init(::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::CreatorEnum>::type>(),
             ::zserio::enumToValue(value));
 }
 
 template <>
-size_t bitSizeOf(::test_object::DummyEnum)
+size_t bitSizeOf(::test_object::CreatorEnum)
 {
     return UINT8_C(8);
 }
 
 template <>
-size_t bitSizeOf(::zserio::PackingContextNode& contextNode, ::test_object::DummyEnum value)
+size_t bitSizeOf(::zserio::PackingContextNode& contextNode, ::test_object::CreatorEnum value)
 {
     return contextNode.getContext().bitSizeOf(
-            ::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::DummyEnum>::type>(),
+            ::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::CreatorEnum>::type>(),
             ::zserio::enumToValue(value));
 }
 
 template <>
-size_t initializeOffsets(size_t bitPosition, ::test_object::DummyEnum value)
+size_t initializeOffsets(size_t bitPosition, ::test_object::CreatorEnum value)
 {
     return bitPosition + bitSizeOf(value);
 }
 
 template <>
 size_t initializeOffsets(::zserio::PackingContextNode& contextNode,
-        size_t bitPosition, ::test_object::DummyEnum value)
+        size_t bitPosition, ::test_object::CreatorEnum value)
 {
     return bitPosition + bitSizeOf(contextNode, value);
 }
 
 template <>
-::test_object::DummyEnum read(::zserio::BitStreamReader& in)
+::test_object::CreatorEnum read(::zserio::BitStreamReader& in)
 {
-    return valueToEnum<::test_object::DummyEnum>(
-            static_cast<typename ::std::underlying_type<::test_object::DummyEnum>::type>(
+    return valueToEnum<::test_object::CreatorEnum>(
+            static_cast<typename ::std::underlying_type<::test_object::CreatorEnum>::type>(
                     in.readSignedBits(UINT8_C(8))));
 }
 
 template <>
-::test_object::DummyEnum read(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in)
+::test_object::CreatorEnum read(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in)
 {
-    return valueToEnum<::test_object::DummyEnum>(contextNode.getContext().read(
-            ::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::DummyEnum>::type>(), in));
+    return valueToEnum<::test_object::CreatorEnum>(contextNode.getContext().read(
+            ::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::CreatorEnum>::type>(), in));
 }
 
 template <>
-void write(::zserio::BitStreamWriter& out, ::test_object::DummyEnum value)
+void write(::zserio::BitStreamWriter& out, ::test_object::CreatorEnum value)
 {
     out.writeSignedBits(::zserio::enumToValue(value), UINT8_C(8));
 }
 
 template <>
-void write(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out, ::test_object::DummyEnum value)
+void write(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out, ::test_object::CreatorEnum value)
 {
     contextNode.getContext().write(
-            ::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::DummyEnum>::type>(),
+            ::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::CreatorEnum>::type>(),
             out, ::zserio::enumToValue(value));
 }
 

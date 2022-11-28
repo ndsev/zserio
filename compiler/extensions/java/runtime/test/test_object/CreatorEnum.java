@@ -5,14 +5,14 @@
 
 package test_object;
 
-public enum DummyEnum implements zserio.runtime.io.Writer, zserio.runtime.SizeOf,
+public enum CreatorEnum implements zserio.runtime.io.Writer, zserio.runtime.SizeOf,
         zserio.runtime.ZserioEnum
 {
     ONE((byte)0),
     TWO((byte)1),
     MinusOne((byte)-1);
 
-    private DummyEnum(byte value)
+    private CreatorEnum(byte value)
     {
         this.value = value;
     }
@@ -31,8 +31,8 @@ public enum DummyEnum implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
     public static zserio.runtime.typeinfo.TypeInfo typeInfo()
     {
         return new zserio.runtime.typeinfo.TypeInfo.EnumTypeInfo(
-                "test_object.DummyEnum",
-                DummyEnum.class,
+                "test_object.CreatorEnum",
+                CreatorEnum.class,
                 zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo.getInt8(),
                 new java.util.ArrayList<java.util.function.Supplier<java.lang.Object>>(),
                 java.util.Arrays.asList(
@@ -109,12 +109,12 @@ public enum DummyEnum implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
                 new zserio.runtime.array.ArrayElement.ByteArrayElement(value));
     }
 
-    public static DummyEnum readEnum(zserio.runtime.io.BitStreamReader in) throws java.io.IOException
+    public static CreatorEnum readEnum(zserio.runtime.io.BitStreamReader in) throws java.io.IOException
     {
         return toEnum(in.readByte());
     }
 
-    public static DummyEnum readEnum(zserio.runtime.array.PackingContextNode contextNode,
+    public static CreatorEnum readEnum(zserio.runtime.array.PackingContextNode contextNode,
             zserio.runtime.io.BitStreamReader in) throws java.io.IOException
     {
         return toEnum(((zserio.runtime.array.ArrayElement.ByteArrayElement)
@@ -122,7 +122,7 @@ public enum DummyEnum implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
                         new zserio.runtime.array.ArrayTraits.SignedBitFieldByteArrayTraits(8), in)).get());
     }
 
-    public static DummyEnum toEnum(byte value)
+    public static CreatorEnum toEnum(byte value)
     {
         switch (value)
         {
@@ -134,7 +134,7 @@ public enum DummyEnum implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
                 return MinusOne;
             default:
                 throw new java.lang.IllegalArgumentException(
-                        "Unknown value for enumeration DummyEnum: " + value + "!");
+                        "Unknown value for enumeration CreatorEnum: " + value + "!");
         }
     }
 

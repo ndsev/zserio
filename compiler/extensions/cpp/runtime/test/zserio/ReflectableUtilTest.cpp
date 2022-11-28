@@ -6,15 +6,15 @@
 #include "zserio/Reflectable.h"
 #include "zserio/TypeInfo.h"
 
-#include "test_object/DummyBitmask.h"
-#include "test_object/DummyEnum.h"
-#include "test_object/DummyNested.h"
-#include "test_object/DummyObject.h"
+#include "test_object/CreatorBitmask.h"
+#include "test_object/CreatorEnum.h"
+#include "test_object/CreatorNested.h"
+#include "test_object/CreatorObject.h"
 
-using test_object::DummyBitmask;
-using test_object::DummyEnum;
-using test_object::DummyNested;
-using test_object::DummyObject;
+using test_object::CreatorBitmask;
+using test_object::CreatorEnum;
+using test_object::CreatorNested;
+using test_object::CreatorObject;
 
 namespace zserio
 {
@@ -187,8 +187,8 @@ TEST(ReflectableUtilTest, equalBitBuffers)
 
 TEST(ReflectableUtilTest, equalEnums)
 {
-    const DummyEnum one = DummyEnum::ONE;
-    const DummyEnum two = DummyEnum::TWO;
+    const CreatorEnum one = CreatorEnum::ONE;
+    const CreatorEnum two = CreatorEnum::TWO;
 
     ASSERT_TRUE(ReflectableUtil::equal(enumReflectable(one), enumReflectable(one)));
     ASSERT_TRUE(ReflectableUtil::equal(enumReflectable(two), enumReflectable(two)));
@@ -197,8 +197,8 @@ TEST(ReflectableUtilTest, equalEnums)
 
 TEST(ReflectableUtilTest, equalBitmasks)
 {
-    const DummyBitmask read = DummyBitmask::Values::READ;
-    const DummyBitmask write = DummyBitmask::Values::WRITE;
+    const CreatorBitmask read = CreatorBitmask::Values::READ;
+    const CreatorBitmask write = CreatorBitmask::Values::WRITE;
 
     ASSERT_TRUE(ReflectableUtil::equal(read.reflectable(), read.reflectable()));
     ASSERT_TRUE(ReflectableUtil::equal(write.reflectable(), write.reflectable()));
@@ -207,57 +207,57 @@ TEST(ReflectableUtilTest, equalBitmasks)
 
 TEST(ReflectableUtilTest, equalCompounds)
 {
-    DummyObject dummy1 = DummyObject();
-    dummy1.setTextArray({{{"one"}, {"two"}}});
-    dummy1.initializeChildren();
+    CreatorObject creator1 = CreatorObject();
+    creator1.setTextArray({{{"one"}, {"two"}}});
+    creator1.initializeChildren();
 
-    DummyObject dummy2 = DummyObject(); // larger array
-    dummy2.setTextArray({{{"one"}, {"two"}, {"three"}}});
-    dummy2.initializeChildren();
+    CreatorObject creator2 = CreatorObject(); // larger array
+    creator2.setTextArray({{{"one"}, {"two"}, {"three"}}});
+    creator2.initializeChildren();
 
-    DummyObject dummy3 = DummyObject();
-    dummy3.setTextArray({{{"one"}, {"something else"}}}); // difference in array element
-    dummy3.initializeChildren();
+    CreatorObject creator3 = CreatorObject();
+    creator3.setTextArray({{{"one"}, {"something else"}}}); // difference in array element
+    creator3.initializeChildren();
 
-    DummyObject dummy4 = DummyObject(); // extern array set
-    dummy4.setTextArray({{{"one"}, {"two"}}});
-    dummy4.setExternArray({{}});
-    dummy4.initializeChildren();
+    CreatorObject creator4 = CreatorObject(); // extern array set
+    creator4.setTextArray({{{"one"}, {"two"}}});
+    creator4.setExternArray({{}});
+    creator4.initializeChildren();
 
-    DummyObject dummy5 = DummyObject(); // optional bool set
-    dummy5.setTextArray({{{"one"}, {"two"}}});
-    dummy5.setOptionalBool(true);
-    dummy5.initializeChildren();
+    CreatorObject creator5 = CreatorObject(); // optional bool set
+    creator5.setTextArray({{{"one"}, {"two"}}});
+    creator5.setOptionalBool(true);
+    creator5.initializeChildren();
 
-    DummyObject dummy6 = DummyObject(); // optional nested set
-    dummy6.setTextArray({{{"one"}, {"two"}}});
-    dummy6.setOptionalNested(DummyNested());
-    dummy6.initializeChildren();
+    CreatorObject creator6 = CreatorObject(); // optional nested set
+    creator6.setTextArray({{{"one"}, {"two"}}});
+    creator6.setOptionalNested(CreatorNested());
+    creator6.initializeChildren();
 
-    ASSERT_TRUE(ReflectableUtil::equal(dummy1.reflectable(), dummy1.reflectable()));
-    ASSERT_TRUE(ReflectableUtil::equal(dummy2.reflectable(), dummy2.reflectable()));
-    ASSERT_TRUE(ReflectableUtil::equal(dummy3.reflectable(), dummy3.reflectable()));
-    ASSERT_TRUE(ReflectableUtil::equal(dummy4.reflectable(), dummy4.reflectable()));
-    ASSERT_TRUE(ReflectableUtil::equal(dummy5.reflectable(), dummy5.reflectable()));
-    ASSERT_TRUE(ReflectableUtil::equal(dummy6.reflectable(), dummy6.reflectable()));
+    ASSERT_TRUE(ReflectableUtil::equal(creator1.reflectable(), creator1.reflectable()));
+    ASSERT_TRUE(ReflectableUtil::equal(creator2.reflectable(), creator2.reflectable()));
+    ASSERT_TRUE(ReflectableUtil::equal(creator3.reflectable(), creator3.reflectable()));
+    ASSERT_TRUE(ReflectableUtil::equal(creator4.reflectable(), creator4.reflectable()));
+    ASSERT_TRUE(ReflectableUtil::equal(creator5.reflectable(), creator5.reflectable()));
+    ASSERT_TRUE(ReflectableUtil::equal(creator6.reflectable(), creator6.reflectable()));
 
-    ASSERT_FALSE(ReflectableUtil::equal(dummy1.reflectable(), dummy2.reflectable()));
-    ASSERT_FALSE(ReflectableUtil::equal(dummy1.reflectable(), dummy3.reflectable()));
-    ASSERT_FALSE(ReflectableUtil::equal(dummy1.reflectable(), dummy4.reflectable()));
-    ASSERT_FALSE(ReflectableUtil::equal(dummy1.reflectable(), dummy5.reflectable()));
-    ASSERT_FALSE(ReflectableUtil::equal(dummy1.reflectable(), dummy6.reflectable()));
+    ASSERT_FALSE(ReflectableUtil::equal(creator1.reflectable(), creator2.reflectable()));
+    ASSERT_FALSE(ReflectableUtil::equal(creator1.reflectable(), creator3.reflectable()));
+    ASSERT_FALSE(ReflectableUtil::equal(creator1.reflectable(), creator4.reflectable()));
+    ASSERT_FALSE(ReflectableUtil::equal(creator1.reflectable(), creator5.reflectable()));
+    ASSERT_FALSE(ReflectableUtil::equal(creator1.reflectable(), creator6.reflectable()));
 
-    DummyNested nested1 = DummyNested();
+    CreatorNested nested1 = CreatorNested();
     nested1.initialize(0);
 
-    DummyNested nested2 = DummyNested();
+    CreatorNested nested2 = CreatorNested();
     nested2.initialize(1);
 
     ASSERT_FALSE(ReflectableUtil::equal(nested1.reflectable(), nested2.reflectable()));
 
     // array and non array
-    ASSERT_FALSE(ReflectableUtil::equal(dummy1.reflectable()->getField("textArray"),
-            dummy1.reflectable()->getField("textArray")->at(0)));
+    ASSERT_FALSE(ReflectableUtil::equal(creator1.reflectable()->getField("textArray"),
+            creator1.reflectable()->getField("textArray")->at(0)));
 }
 
 TEST(ReflectableUtilTest, getValueArithmeticType)
@@ -307,32 +307,32 @@ TEST(ReflectableUtilTest, getValueBitBuffer)
 
 TEST(ReflectableUtilTest, getValueEnum)
 {
-    DummyEnum dummyEnum = DummyEnum::ONE;
-    auto reflectable = enumReflectable(dummyEnum);
-    ASSERT_EQ(dummyEnum, ReflectableUtil::getValue<DummyEnum>(reflectable));
+    CreatorEnum creatorEnum = CreatorEnum::ONE;
+    auto reflectable = enumReflectable(creatorEnum);
+    ASSERT_EQ(creatorEnum, ReflectableUtil::getValue<CreatorEnum>(reflectable));
 }
 
 TEST(ReflectableUtilTest, getValueBitmask)
 {
-    DummyBitmask dummyBitmask = DummyBitmask::Values::READ;
-    auto reflectable = dummyBitmask.reflectable();
-    ASSERT_EQ(dummyBitmask, ReflectableUtil::getValue<DummyBitmask>(reflectable));
+    CreatorBitmask creatorBitmask = CreatorBitmask::Values::READ;
+    auto reflectable = creatorBitmask.reflectable();
+    ASSERT_EQ(creatorBitmask, ReflectableUtil::getValue<CreatorBitmask>(reflectable));
 }
 
 TEST(ReflectableUtilTest, getValueCompound)
 {
-    DummyObject dummyObject;
-    auto reflectable = dummyObject.reflectable();
-    ASSERT_EQ(&dummyObject, &ReflectableUtil::getValue<DummyObject>(reflectable));
+    CreatorObject creatorObject;
+    auto reflectable = creatorObject.reflectable();
+    ASSERT_EQ(&creatorObject, &ReflectableUtil::getValue<CreatorObject>(reflectable));
 
-    DummyObject& dummyObjectRef = ReflectableUtil::getValue<DummyObject>(reflectable);
-    dummyObjectRef.setValue(32);
-    ASSERT_EQ(32, dummyObject.getValue());
+    CreatorObject& creatorObjectRef = ReflectableUtil::getValue<CreatorObject>(reflectable);
+    creatorObjectRef.setValue(32);
+    ASSERT_EQ(32, creatorObject.getValue());
 
-    auto constReflectable = static_cast<const DummyObject&>(dummyObject).reflectable();
-    const DummyObject& dummyObjectConstRef = ReflectableUtil::getValue<DummyObject>(constReflectable);
-    ASSERT_EQ(32, dummyObjectConstRef.getValue());
-    ASSERT_EQ(&dummyObject, &dummyObjectConstRef);
+    auto constReflectable = static_cast<const CreatorObject&>(creatorObject).reflectable();
+    const CreatorObject& creatorObjectConstRef = ReflectableUtil::getValue<CreatorObject>(constReflectable);
+    ASSERT_EQ(32, creatorObjectConstRef.getValue());
+    ASSERT_EQ(&creatorObject, &creatorObjectConstRef);
 }
 
 TEST(ReflectableUtilTest, getValueBuiltinArray)
@@ -351,11 +351,11 @@ TEST(ReflectableUtilTest, getValueBuiltinArray)
 
 TEST(ReflectableUtilTest, getValueCompoundArray)
 {
-    DummyObject dummyObject;
-    auto reflectable = ReflectableFactory::getCompoundArray(dummyObject.getNestedArray());
-    std::vector<DummyNested>& nestedArrayRef =
-            ReflectableUtil::getValue<std::vector<DummyNested>>(reflectable);
-    ASSERT_EQ(&dummyObject.getNestedArray(), &nestedArrayRef);
+    CreatorObject creatorObject;
+    auto reflectable = ReflectableFactory::getCompoundArray(creatorObject.getNestedArray());
+    std::vector<CreatorNested>& nestedArrayRef =
+            ReflectableUtil::getValue<std::vector<CreatorNested>>(reflectable);
+    ASSERT_EQ(&creatorObject.getNestedArray(), &nestedArrayRef);
 }
 
 } // namespace zserio

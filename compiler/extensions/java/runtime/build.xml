@@ -300,7 +300,7 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
 
             <check>
                 <rule element="BUNDLE">
-                    <limit counter="INSTRUCTION" value="COVEREDRATIO" minimum="89%"/>
+                    <limit counter="INSTRUCTION" value="COVEREDRATIO" minimum="92%"/>
                 </rule>
             </check>
         </jacoco:report>
