@@ -85,10 +85,10 @@ EOF
 
     mkdir -p "${BUILD_DIR}/src"
     cat > "${BUILD_DIR}"/src/PerformanceTest.java << EOF
-import java.io.PrintStream;
 import java.io.File;
+import java.io.PrintStream;
 
-import zserio.runtime.io.FileBitStreamReader;
+import zserio.runtime.io.SerializeUtil;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 
@@ -110,8 +110,8 @@ public class PerformanceTest
         final int numIterations = args.length > 2 ? Integer.parseInt(args[2]) : ${NUM_ITERATIONS};
 
         // prepare byte array
-        final FileBitStreamReader fileReader = new FileBitStreamReader(blobPath);
-        final ${BLOB_FULL_NAME} blobFromFile = new ${BLOB_FULL_NAME}(fileReader);
+        final ${BLOB_FULL_NAME} blobFromFile = SerializeUtil.deserializeFromFile(
+                ${BLOB_FULL_NAME}.class, blobPath);
         final ByteArrayBitStreamWriter bufferWriter = new ByteArrayBitStreamWriter();
         blobFromFile.write(bufferWriter);
         final byte[] byteArray = bufferWriter.toByteArray();
