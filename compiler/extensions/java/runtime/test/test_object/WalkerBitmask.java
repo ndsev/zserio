@@ -5,7 +5,6 @@
 
 package test_object;
 
-@SuppressWarnings("cast")
 public class WalkerBitmask implements zserio.runtime.io.Writer, zserio.runtime.SizeOf,
         zserio.runtime.ZserioBitmask
 {

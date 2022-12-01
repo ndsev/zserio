@@ -5,15 +5,15 @@
 #include "zserio/ZserioTreeCreator.h"
 #include "zserio/TypeInfo.h"
 
-#include "test_object/CreatorBitmask.h"
-#include "test_object/CreatorEnum.h"
-#include "test_object/CreatorNested.h"
-#include "test_object/CreatorObject.h"
+#include "test_object/std_allocator/CreatorBitmask.h"
+#include "test_object/std_allocator/CreatorEnum.h"
+#include "test_object/std_allocator/CreatorNested.h"
+#include "test_object/std_allocator/CreatorObject.h"
 
-using test_object::CreatorBitmask;
-using test_object::CreatorEnum;
-using test_object::CreatorNested;
-using test_object::CreatorObject;
+using test_object::std_allocator::CreatorBitmask;
+using test_object::std_allocator::CreatorEnum;
+using test_object::std_allocator::CreatorNested;
+using test_object::std_allocator::CreatorObject;
 
 namespace zserio
 {

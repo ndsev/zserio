@@ -32,7 +32,7 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
     <property name="zserio_java_runtime.install_dir" value="${zserio_runtimes.install_dir}/java"/>
     <property name="relational.enable" value="yes"/>
     <property name="relational.sqlite.jar_file"
-        value="${zserio_java_runtime.zserio_root}/3rdparty/java/sqlitejdbc-3.39.4.jar"/>
+            value="${zserio_java_runtime.zserio_root}/3rdparty/java/sqlitejdbc-3.39.4.jar"/>
     <property name="relational.validation" value="yes"/>
 
     <property name="zserio_java_runtime.src_dir" location="${zserio_java_runtime.base_dir}/src"/>
@@ -41,30 +41,32 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
     <property name="zserio_java_runtime.spotbugs.out_dir" value="${zserio_java_runtime.build_dir}/spotbugs"/>
 
     <property name="zserio_java_runtime.test.src_dir" location="${zserio_java_runtime.base_dir}/test"/>
+    <property name="zserio_java_runtime.test.src_test_object_subdir"
+            value="test_object"/>
     <property name="zserio_java_runtime.test.build_dir" value="${zserio_java_runtime.build_dir}/test"/>
     <property name="zserio_java_runtime.test.classes_dir"
-        value="${zserio_java_runtime.test.build_dir}/classes"/>
+            value="${zserio_java_runtime.test.build_dir}/classes"/>
     <property name="zserio_java_runtime.test.spotbugs.out_dir"
-        value="${zserio_java_runtime.test.build_dir}/spotbugs"/>
+            value="${zserio_java_runtime.test.build_dir}/spotbugs"/>
     <property name="zserio_java_runtime.test.results_dir"
-        value="${zserio_java_runtime.test.build_dir}/results"/>
+            value="${zserio_java_runtime.test.build_dir}/results"/>
     <property name="zserio_java_runtime.test.coverage_dir"
-        value="${zserio_java_runtime.test.build_dir}/coverage"/>
+            value="${zserio_java_runtime.test.build_dir}/coverage"/>
     <property name="zserio_java_runtime.test.coverage_file"
-        value="${zserio_java_runtime.test.coverage_dir}/jacoco_coverage.bin"/>
+            value="${zserio_java_runtime.test.coverage_dir}/jacoco_coverage.bin"/>
 
     <property name="zserio_java_runtime.jar_dir" value="${zserio_java_runtime.build_dir}/jar"/>
     <property name="zserio_java_runtime.jar_file" value="${zserio_java_runtime.jar_dir}/zserio_runtime.jar"/>
     <property name="zserio_java_runtime.javadocs_jar_file"
-        value="${zserio_java_runtime.jar_dir}/zserio_runtime_javadocs.jar"/>
+            value="${zserio_java_runtime.jar_dir}/zserio_runtime_javadocs.jar"/>
     <property name="zserio_java_runtime.sources_jar_file"
-        value="${zserio_java_runtime.jar_dir}/zserio_runtime_sources.jar"/>
+            value="${zserio_java_runtime.jar_dir}/zserio_runtime_sources.jar"/>
 
     <property name="zserio_java_runtime.3rdparty.root_dir" value="${zserio_java_runtime.zserio_root}/3rdparty"/>
     <property name="zserio_java_runtime.3rdparty.jar_dir"
-        value="${zserio_java_runtime.3rdparty.root_dir}/java"/>
+            value="${zserio_java_runtime.3rdparty.root_dir}/java"/>
     <property name="zserio_java_runtime.3rdparty.junit.jar_file"
-        location="${zserio_java_runtime.3rdparty.jar_dir}/junit-platform-console-standalone-1.8.2.jar"/>
+            location="${zserio_java_runtime.3rdparty.jar_dir}/junit-platform-console-standalone-1.8.2.jar"/>
 
     <!-- check Ant version, minimum is 1.9.1 due to xmlns:if and xmlns:unless -->
     <fail message="[ERROR] Ant 1.9.1+ required! Current ant is ${ant.version}.">
@@ -121,9 +123,9 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
     <target name="compile">
         <mkdir dir="${zserio_java_runtime.classes_dir}"/>
         <depend srcDir="${zserio_java_runtime.src_dir}" destDir="${zserio_java_runtime.classes_dir}"
-            cache="${zserio_java_runtime.build_dir}/depend-cache"/>
+                cache="${zserio_java_runtime.build_dir}/depend-cache"/>
         <javac destdir="${zserio_java_runtime.classes_dir}" debug="on" encoding="utf8"
-            includeAntRuntime="false">
+                includeAntRuntime="false">
             <compilerarg value="-Xlint:all"/>
             <compilerarg value="-Xdoclint:all/public"/>
             <compilerarg value="-Werror"/>
@@ -137,7 +139,8 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
             <format property="timestamp" pattern="yyyy-MM-dd HH:mm:ss"/>
         </tstamp>
         <javadoc packagenames="zserio.runtime.*" destdir="${zserio_java_runtime.javadocs_dir}"
-            failonerror="true" failonwarning="true" Overview="${zserio_java_runtime.src_dir}/zserio/runtime/overview.html">
+                failonerror="true" failonwarning="true"
+                Overview="${zserio_java_runtime.src_dir}/zserio/runtime/overview.html">
             <fileset refid="zserio_java_runtime.sources"/>
             <doctitle>
                 <![CDATA[<h1>Zserio Java Runtime Library Documentation</h1><h2>Version ${zserio_java_runtime.version}</h2]]>
@@ -178,11 +181,11 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
     <target name="install" depends="jar">
         <mkdir dir="${zserio_java_runtime.install_dir}"/>
         <copy file="${zserio_java_runtime.jar_file}" todir="${zserio_java_runtime.install_dir}"
-            overwrite="true"/>
+               overwrite="true"/>
         <copy file="${zserio_java_runtime.javadocs_jar_file}" todir="${zserio_java_runtime.install_dir}"
-            overwrite="true"/>
+               overwrite="true"/>
         <copy file="${zserio_java_runtime.sources_jar_file}" todir="${zserio_java_runtime.install_dir}"
-            overwrite="true"/>
+               overwrite="true"/>
     </target>
 
     <target name="spotbugs" depends="install" if="spotbugs.home_dir">
@@ -216,13 +219,23 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
     <target name="test.compile" depends="jar">
         <mkdir dir="${zserio_java_runtime.test.classes_dir}"/>
         <depend srcDir="${zserio_java_runtime.test.src_dir}" destDir="${zserio_java_runtime.test.classes_dir}"
-            cache="${zserio_java_runtime.test.build_dir}/depend-cache"/>
+                cache="${zserio_java_runtime.test.build_dir}/depend-cache"/>
+        <javac srcdir="${zserio_java_runtime.test.src_dir}/${zserio_java_runtime.test.src_test_object_subdir}"
+                destdir="${zserio_java_runtime.test.classes_dir}" debug="on" encoding="utf8"
+                includeAntRuntime="false">
+            <compilerarg value="-Xlint:all"/>
+            <compilerarg value="-Xlint:-cast"/>
+            <compilerarg value="-Werror"/>
+            <classpath>
+                <pathelement path="${zserio_java_runtime.jar_file}"/>
+            </classpath>
+        </javac>
         <javac srcdir="${zserio_java_runtime.test.src_dir}" destdir="${zserio_java_runtime.test.classes_dir}"
-            debug="on" encoding="utf8" includeAntRuntime="false">
+                debug="on" encoding="utf8" includeAntRuntime="false">
             <compilerarg value="-Xlint:all"/>
             <compilerarg value="-Werror"/>
             <exclude name="zserio/runtime/validation/*.java"
-                unless="relational.validation_enabled"/>
+                    unless="relational.validation_enabled"/>
             <classpath>
                 <pathelement path="${zserio_java_runtime.3rdparty.junit.jar_file}"/>
                 <pathelement path="${zserio_java_runtime.jar_file}"/>
@@ -235,12 +248,12 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
         <taskdef classpath="${spotbugs.home_dir}/lib/spotbugs-ant.jar"
             resource="edu/umd/cs/findbugs/anttask/tasks.properties"/>
         <spotbugs home="${spotbugs.home_dir}"
-            output="html"
-            outputFile="${zserio_java_runtime.test.spotbugs.out_dir}/spotbugs.html"
-            excludeFilter="${zserio_java_runtime.base_dir}/spotbugs_filter.xml"
-            reportLevel="low"
-            errorProperty="zserio_java_runtime.spotbugs.is_failed"
-            warningsProperty="zserio_java_runtime.spotbugs.is_failed">
+                output="html"
+                outputFile="${zserio_java_runtime.test.spotbugs.out_dir}/spotbugs.html"
+                excludeFilter="${zserio_java_runtime.base_dir}/spotbugs_filter.xml"
+                reportLevel="low"
+                errorProperty="zserio_java_runtime.spotbugs.is_failed"
+                warningsProperty="zserio_java_runtime.spotbugs.is_failed">
             <sourcePath>
                 <dirset dir="${zserio_java_runtime.test.src_dir}"/>
             </sourcePath>
@@ -258,14 +271,15 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
         <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml"
                 classpath="${zserio_java_runtime.3rdparty.jar_dir}/jacocoant-0.8.8.jar"/>
         <jacoco:coverage destfile="${zserio_java_runtime.test.coverage_file}" append="false"
-                excludes="*test_object*">
+                excludes="*${zserio_java_runtime.test.src_test_object_subdir}*">
             <java classname="org.junit.platform.console.ConsoleLauncher" fork="true" failonerror="true"
                     dir="${zserio_java_runtime.test.build_dir}">
                 <classpath>
                     <pathelement path="${zserio_java_runtime.3rdparty.junit.jar_file}"/>
                     <pathelement path="${zserio_java_runtime.jar_file}"/>
                     <pathelement path="${zserio_java_runtime.test.classes_dir}"/>
-                    <pathelement path="${relational.sqlite.jar_file}" if:true="${relational.validation_enabled}"/>
+                    <pathelement path="${relational.sqlite.jar_file}"
+                            if:true="${relational.validation_enabled}"/>
                 </classpath>
                 <arg line="--disable-banner"/>
                 <arg line="--scan-classpath"/>
@@ -287,7 +301,7 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
                 <classfiles>
                     <fileset dir="${zserio_java_runtime.classes_dir}"/>
                     <fileset dir="${zserio_java_runtime.test.classes_dir}">
-                        <exclude name="test_object/**/*.class"/>
+                        <exclude name="${zserio_java_runtime.test.src_test_object_subdir}/**/*.class"/>
                     </fileset>
                 </classfiles>
                 <sourcefiles encoding="UTF-8">

@@ -9,3 +9,6 @@ from test_object.walker_bitmask import WalkerBitmask
 from test_object.walker_nested import WalkerNested
 from test_object.walker_union import WalkerUnion
 from test_object.walker_object import WalkerObject
+from test_object.serialize_enum import SerializeEnum
+from test_object.serialize_nested import SerializeNested
+from test_object.serialize_object import SerializeObject

@@ -11,15 +11,15 @@
 #include "zserio/Reflectable.h"
 #include "zserio/Vector.h"
 
-#include "test_object/ReflectableBitmask.h"
-#include "test_object/ReflectableEnum.h"
-#include "test_object/ReflectableNested.h"
-#include "test_object/ReflectableObject.h"
+#include "test_object/std_allocator/ReflectableBitmask.h"
+#include "test_object/std_allocator/ReflectableEnum.h"
+#include "test_object/std_allocator/ReflectableNested.h"
+#include "test_object/std_allocator/ReflectableObject.h"
 
-using test_object::ReflectableBitmask;
-using test_object::ReflectableEnum;
-using test_object::ReflectableNested;
-using test_object::ReflectableObject;
+using test_object::std_allocator::ReflectableBitmask;
+using test_object::std_allocator::ReflectableEnum;
+using test_object::std_allocator::ReflectableNested;
+using test_object::std_allocator::ReflectableObject;
 
 using namespace std::placeholders;
 

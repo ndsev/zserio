@@ -61,3 +61,23 @@ struct WalkerObject
     WalkerUnion unionArray[];
     optional WalkerUnion optionalUnionArray[];
 };
+
+enum uint8 SerializeEnum
+{
+    VALUE1,
+    VALUE2,
+    VALUE3
+};
+
+struct SerializeNested(int8 param)
+{
+    uint8 offset;
+offset:
+    uint32 optionalValue if param >= 0;
+};
+
+struct SerializeObject
+{
+    int8 param;
+    SerializeNested(param) nested;
+};

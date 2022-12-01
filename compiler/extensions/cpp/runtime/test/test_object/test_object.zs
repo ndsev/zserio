@@ -1,5 +1,11 @@
-package test_object;
-
+/*
+ * Compiled twice using the following command line options:
+ *
+ * 1. -withTypeInfoCode -withReflectionCode -withoutSourcesAmalgamation -setCppAllocator std
+ *    -setTopLevelPackage test_object.std_allocator
+ * 2. -withTypeInfoCode -withReflectionCode -withoutSourcesAmalgamation -setCppAllocator polymorphic
+ *    -setTopLevelPackage test_object.polymorphic_allocator
+ */
 enum int8 CreatorEnum
 {
     ONE,
@@ -90,4 +96,24 @@ struct ReflectableObject
 {
     string stringField;
     ReflectableNested(13, stringField) reflectableNested;
+};
+
+enum uint8 SerializeEnum
+{
+    VALUE1,
+    VALUE2,
+    VALUE3
+};
+
+struct SerializeNested(int8 param)
+{
+    uint8 offset;
+offset:
+    uint32 optionalValue if param >= 0;
+};
+
+struct SerializeObject
+{
+    int8 param;
+    SerializeNested(param) nested;
 };

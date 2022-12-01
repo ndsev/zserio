@@ -5,7 +5,6 @@
 
 package test_object;
 
-@SuppressWarnings("cast")
 public class WalkerUnion implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
 {
     public WalkerUnion()

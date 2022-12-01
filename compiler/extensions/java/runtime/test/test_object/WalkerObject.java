@@ -5,7 +5,6 @@
 
 package test_object;
 
-@SuppressWarnings("cast")
 public class WalkerObject implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
 {
     public WalkerObject()

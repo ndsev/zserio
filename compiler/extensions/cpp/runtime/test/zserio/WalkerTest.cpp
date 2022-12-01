@@ -10,15 +10,15 @@
 #include "zserio/BitStreamWriter.h"
 #include "zserio/OptionalHolder.h"
 
-#include "test_object/WalkerBitmask.h"
-#include "test_object/WalkerNested.h"
-#include "test_object/WalkerUnion.h"
-#include "test_object/WalkerObject.h"
+#include "test_object/std_allocator/WalkerBitmask.h"
+#include "test_object/std_allocator/WalkerNested.h"
+#include "test_object/std_allocator/WalkerUnion.h"
+#include "test_object/std_allocator/WalkerObject.h"
 
-using test_object::WalkerBitmask;
-using test_object::WalkerNested;
-using test_object::WalkerUnion;
-using test_object::WalkerObject;
+using test_object::std_allocator::WalkerBitmask;
+using test_object::std_allocator::WalkerNested;
+using test_object::std_allocator::WalkerUnion;
+using test_object::std_allocator::WalkerObject;
 
 namespace zserio
 {
@@ -189,45 +189,45 @@ TEST(WalkerTest, walk)
     WalkerObject walkerObject = createWalkerObject();
     walker.walk(walkerObject.reflectable());
 
-    ASSERT_EQ("test_object.WalkerObject"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerObject"_sv,
             observer.getCaptures("beginRoot"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("test_object.WalkerObject"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerObject"_sv,
             observer.getCaptures("endRoot"_sv).at(0)->getTypeInfo().getSchemaName());
 
     ASSERT_EQ(2, observer.getCaptures("beginArray"_sv).size());
-    ASSERT_EQ("test_object.WalkerUnion"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("beginArray"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("test_object.WalkerNested"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerNested"_sv,
             observer.getCaptures("beginArray"_sv).at(1)->getTypeInfo().getSchemaName());
 
     ASSERT_EQ(2, observer.getCaptures("endArray"_sv).size());
-    ASSERT_EQ("test_object.WalkerNested"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerNested"_sv,
             observer.getCaptures("endArray"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("test_object.WalkerUnion"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("endArray"_sv).at(1)->getTypeInfo().getSchemaName());
 
     ASSERT_EQ(5, observer.getCaptures("beginCompound"_sv).size());
-    ASSERT_EQ("test_object.WalkerNested"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerNested"_sv,
             observer.getCaptures("beginCompound"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("test_object.WalkerUnion"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("beginCompound"_sv).at(1)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("test_object.WalkerUnion"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("beginCompound"_sv).at(2)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("test_object.WalkerUnion"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("beginCompound"_sv).at(3)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("test_object.WalkerNested"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerNested"_sv,
             observer.getCaptures("beginCompound"_sv).at(4)->getTypeInfo().getSchemaName());
 
     ASSERT_EQ(5, observer.getCaptures("endCompound"_sv).size());
-    ASSERT_EQ("test_object.WalkerNested"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerNested"_sv,
             observer.getCaptures("endCompound"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("test_object.WalkerUnion"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("endCompound"_sv).at(1)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("test_object.WalkerUnion"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("endCompound"_sv).at(2)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("test_object.WalkerNested"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerNested"_sv,
             observer.getCaptures("endCompound"_sv).at(3)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("test_object.WalkerUnion"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("endCompound"_sv).at(4)->getTypeInfo().getSchemaName());
 
     ASSERT_EQ(7, observer.getCaptures("visitValue"_sv).size());
@@ -249,41 +249,41 @@ TEST(WalkerTest, walkWrongOptionalCondition)
     WalkerObject walkerObject = createWalkerObject(13, false);
     walker.walk(walkerObject.reflectable());
 
-    ASSERT_EQ("test_object.WalkerObject"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerObject"_sv,
             observer.getCaptures("beginRoot"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("test_object.WalkerObject"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerObject"_sv,
             observer.getCaptures("endRoot"_sv).at(0)->getTypeInfo().getSchemaName());
 
     ASSERT_EQ(2, observer.getCaptures("beginArray"_sv).size());
-    ASSERT_EQ("test_object.WalkerUnion"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("beginArray"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("test_object.WalkerNested"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerNested"_sv,
             observer.getCaptures("beginArray"_sv).at(1)->getTypeInfo().getSchemaName());
 
     ASSERT_EQ(2, observer.getCaptures("endArray"_sv).size());
-    ASSERT_EQ("test_object.WalkerNested"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerNested"_sv,
             observer.getCaptures("endArray"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("test_object.WalkerUnion"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("endArray"_sv).at(1)->getTypeInfo().getSchemaName());
 
     ASSERT_EQ(4, observer.getCaptures("beginCompound"_sv).size());
-    ASSERT_EQ("test_object.WalkerUnion"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("beginCompound"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("test_object.WalkerUnion"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("beginCompound"_sv).at(1)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("test_object.WalkerUnion"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("beginCompound"_sv).at(2)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("test_object.WalkerNested"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerNested"_sv,
             observer.getCaptures("beginCompound"_sv).at(3)->getTypeInfo().getSchemaName());
 
     ASSERT_EQ(4, observer.getCaptures("endCompound"_sv).size());
-    ASSERT_EQ("test_object.WalkerUnion"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("endCompound"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("test_object.WalkerUnion"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("endCompound"_sv).at(1)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("test_object.WalkerNested"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerNested"_sv,
             observer.getCaptures("endCompound"_sv).at(2)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("test_object.WalkerUnion"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("endCompound"_sv).at(3)->getTypeInfo().getSchemaName());
 
     ASSERT_EQ(7, observer.getCaptures("visitValue"_sv).size());
@@ -305,17 +305,17 @@ TEST(WalkerTest, walkSkipCompound)
     WalkerObject walkerObject = createWalkerObject();
     walker.walk(walkerObject.reflectable());
 
-    ASSERT_EQ("test_object.WalkerObject"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerObject"_sv,
             observer.getCaptures("beginRoot"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("test_object.WalkerObject"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerObject"_sv,
             observer.getCaptures("endRoot"_sv).at(0)->getTypeInfo().getSchemaName());
 
     ASSERT_EQ(1, observer.getCaptures("beginArray"_sv).size());
-    ASSERT_EQ("test_object.WalkerUnion"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("beginArray"_sv).at(0)->getTypeInfo().getSchemaName());
 
     ASSERT_EQ(1, observer.getCaptures("endArray"_sv).size());
-    ASSERT_EQ("test_object.WalkerUnion"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("endArray"_sv).at(0)->getTypeInfo().getSchemaName());
 
     ASSERT_TRUE(observer.getCaptures("beginCompound"_sv).empty());
@@ -336,9 +336,9 @@ TEST(WalkerTest, walkSkipSiblings)
     WalkerObject walkerObject = createWalkerObject();
     walker.walk(walkerObject.reflectable());
 
-    ASSERT_EQ("test_object.WalkerObject"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerObject"_sv,
             observer.getCaptures("beginRoot"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("test_object.WalkerObject"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerObject"_sv,
             observer.getCaptures("endRoot"_sv).at(0)->getTypeInfo().getSchemaName());
 
     ASSERT_TRUE(observer.getCaptures("beginArray"_sv).empty());
@@ -360,20 +360,20 @@ TEST(WalkerTest, walkSkipAfterNested)
     WalkerObject walkerObject = createWalkerObject();
     walker.walk(walkerObject.reflectable());
 
-    ASSERT_EQ("test_object.WalkerObject"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerObject"_sv,
             observer.getCaptures("beginRoot"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("test_object.WalkerObject"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerObject"_sv,
             observer.getCaptures("endRoot"_sv).at(0)->getTypeInfo().getSchemaName());
 
     ASSERT_TRUE(observer.getCaptures("beginArray"_sv).empty());
     ASSERT_TRUE(observer.getCaptures("endArray"_sv).empty());
 
     ASSERT_EQ(1, observer.getCaptures("beginCompound"_sv).size());
-    ASSERT_EQ("test_object.WalkerNested"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerNested"_sv,
             observer.getCaptures("beginCompound"_sv).at(0)->getTypeInfo().getSchemaName());
 
     ASSERT_EQ(1, observer.getCaptures("endCompound"_sv).size());
-    ASSERT_EQ("test_object.WalkerNested"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerNested"_sv,
             observer.getCaptures("endCompound"_sv).at(0)->getTypeInfo().getSchemaName());
 
     ASSERT_EQ(2, observer.getCaptures("visitValue"_sv).size());
@@ -390,29 +390,29 @@ TEST(WalkerTest, walkOnlyFirstElement)
     WalkerObject walkerObject = createWalkerObject();
     walker.walk(walkerObject.reflectable());
 
-    ASSERT_EQ("test_object.WalkerObject"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerObject"_sv,
             observer.getCaptures("beginRoot"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("test_object.WalkerObject"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerObject"_sv,
             observer.getCaptures("endRoot"_sv).at(0)->getTypeInfo().getSchemaName());
 
     ASSERT_EQ(1, observer.getCaptures("beginArray"_sv).size());
-    ASSERT_EQ("test_object.WalkerUnion"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("beginArray"_sv).at(0)->getTypeInfo().getSchemaName());
 
     ASSERT_EQ(1, observer.getCaptures("endArray"_sv).size());
-    ASSERT_EQ("test_object.WalkerUnion"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("endArray"_sv).at(0)->getTypeInfo().getSchemaName());
 
     ASSERT_EQ(2, observer.getCaptures("beginCompound"_sv).size());
-    ASSERT_EQ("test_object.WalkerNested"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerNested"_sv,
             observer.getCaptures("beginCompound"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("test_object.WalkerUnion"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("beginCompound"_sv).at(1)->getTypeInfo().getSchemaName());
 
     ASSERT_EQ(2, observer.getCaptures("endCompound"_sv).size());
-    ASSERT_EQ("test_object.WalkerNested"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerNested"_sv,
             observer.getCaptures("endCompound"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("test_object.WalkerUnion"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("endCompound"_sv).at(1)->getTypeInfo().getSchemaName());
 
     ASSERT_EQ(5, observer.getCaptures("visitValue"_sv).size());

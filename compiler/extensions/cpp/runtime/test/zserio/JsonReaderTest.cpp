@@ -3,15 +3,15 @@
 #include "zserio/JsonReader.h"
 #include "zserio/ReflectableUtil.h"
 
-#include "test_object/CreatorBitmask.h"
-#include "test_object/CreatorEnum.h"
-#include "test_object/CreatorNested.h"
-#include "test_object/CreatorObject.h"
+#include "test_object/std_allocator/CreatorBitmask.h"
+#include "test_object/std_allocator/CreatorEnum.h"
+#include "test_object/std_allocator/CreatorNested.h"
+#include "test_object/std_allocator/CreatorObject.h"
 
-using test_object::CreatorBitmask;
-using test_object::CreatorEnum;
-using test_object::CreatorNested;
-using test_object::CreatorObject;
+using test_object::std_allocator::CreatorBitmask;
+using test_object::std_allocator::CreatorEnum;
+using test_object::std_allocator::CreatorNested;
+using test_object::std_allocator::CreatorObject;
 
 namespace zserio
 {
@@ -327,19 +327,19 @@ TEST(JsonReaderTest, readStringifiedEnum)
     checkReadStringifiedEnum("ONE", CreatorEnum::ONE);
     checkReadStringifiedEnum("MinusOne", CreatorEnum::MinusOne);
     checkReadStringifiedEnumThrows("NONEXISTING",
-            "ZserioTreeCreator: Cannot create enum 'test_object.CreatorEnum' "
+            "ZserioTreeCreator: Cannot create enum 'test_object.std_allocator.CreatorEnum' "
             "from string value 'NONEXISTING'! (JsonParser:3:24)");
     checkReadStringifiedEnumThrows("***",
-            "ZserioTreeCreator: Cannot create enum 'test_object.CreatorEnum' "
+            "ZserioTreeCreator: Cannot create enum 'test_object.std_allocator.CreatorEnum' "
             "from string value '***'! (JsonParser:3:24)");
     checkReadStringifiedEnumThrows("10 /* no match */",
-            "ZserioTreeCreator: Cannot create enum 'test_object.CreatorEnum' "
+            "ZserioTreeCreator: Cannot create enum 'test_object.std_allocator.CreatorEnum' "
             "from string value '10 /* no match */'! (JsonParser:3:24)");
     checkReadStringifiedEnumThrows("-10 /* no match */",
-            "ZserioTreeCreator: Cannot create enum 'test_object.CreatorEnum' "
+            "ZserioTreeCreator: Cannot create enum 'test_object.std_allocator.CreatorEnum' "
             "from string value '-10 /* no match */'! (JsonParser:3:24)");
     checkReadStringifiedEnumThrows("",
-            "ZserioTreeCreator: Cannot create enum 'test_object.CreatorEnum' "
+            "ZserioTreeCreator: Cannot create enum 'test_object.std_allocator.CreatorEnum' "
             "from string value ''! (JsonParser:3:24)");
 }
 
@@ -350,25 +350,25 @@ TEST(JsonReaderTest, readStringifiedBitmask)
     checkReadStringifiedBitmask("READ | WRITE",
             CreatorBitmask::Values::READ | CreatorBitmask::Values::WRITE);
     checkReadStringifiedBitmaskThrows("NONEXISTING",
-            "ZserioTreeCreator: Cannot create bitmask 'test_object.CreatorBitmask' "
+            "ZserioTreeCreator: Cannot create bitmask 'test_object.std_allocator.CreatorBitmask' "
             "from string value 'NONEXISTING'! (JsonParser:3:27)");
     checkReadStringifiedBitmaskThrows("READ | NONEXISTING",
-            "ZserioTreeCreator: Cannot create bitmask 'test_object.CreatorBitmask' "
+            "ZserioTreeCreator: Cannot create bitmask 'test_object.std_allocator.CreatorBitmask' "
             "from string value 'READ | NONEXISTING'! (JsonParser:3:27)");
     checkReadStringifiedBitmaskThrows("READ * NONEXISTING",
-            "ZserioTreeCreator: Cannot create bitmask 'test_object.CreatorBitmask' "
+            "ZserioTreeCreator: Cannot create bitmask 'test_object.std_allocator.CreatorBitmask' "
             "from string value 'READ * NONEXISTING'! (JsonParser:3:27)");
     checkReadStringifiedBitmask("7 /* READ | WRITE */", CreatorBitmask(7));
     checkReadStringifiedBitmask("15 /* READ | WRITE */", CreatorBitmask(15));
     checkReadStringifiedBitmask("4 /* no match */", CreatorBitmask(4));
     checkReadStringifiedBitmaskThrows("",
-            "ZserioTreeCreator: Cannot create bitmask 'test_object.CreatorBitmask' "
+            "ZserioTreeCreator: Cannot create bitmask 'test_object.std_allocator.CreatorBitmask' "
             "from string value ''! (JsonParser:3:27)");
     checkReadStringifiedBitmaskThrows(" ",
-            "ZserioTreeCreator: Cannot create bitmask 'test_object.CreatorBitmask' "
+            "ZserioTreeCreator: Cannot create bitmask 'test_object.std_allocator.CreatorBitmask' "
             "from string value ' '! (JsonParser:3:27)");
     checkReadStringifiedBitmaskThrows(" | ",
-            "ZserioTreeCreator: Cannot create bitmask 'test_object.CreatorBitmask' "
+            "ZserioTreeCreator: Cannot create bitmask 'test_object.std_allocator.CreatorBitmask' "
             "from string value ' | '! (JsonParser:3:27)");
 }
 
@@ -407,7 +407,7 @@ TEST(JsonReaderTest, wrongKeyException)
         catch (const CppRuntimeException& e)
         {
             ASSERT_STREQ("ZserioTreeCreator: Member 'nonexisting' not found in "
-                    "'test_object.CreatorObject'! (JsonParser:2:16)", e.what());
+                    "'test_object.std_allocator.CreatorObject'! (JsonParser:2:16)", e.what());
             throw;
         }
     }, CppRuntimeException);
