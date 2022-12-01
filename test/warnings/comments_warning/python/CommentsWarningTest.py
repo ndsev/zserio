@@ -7,7 +7,7 @@ class CommentsWarningTest(unittest.TestCase):
     def setUpClass(cls):
         cls.warnings = {}
         cls.api = getZserioApi(__file__, "comments_warning.zs", extraArgs=["-withWarnings", "unused"],
-                               expectedWarnings=18, errorOutputDict=cls.warnings)
+                               expectedWarnings=24, errorOutputDict=cls.warnings)
 
     def testDocCommentFormat(self):
         assertWarningsPresent(self,
@@ -64,6 +64,54 @@ class CommentsWarningTest(unittest.TestCase):
             "comments_warning.zs",
             [
                 "unresolved_markdown_see_tag_reference.zs:7:5: "
+                "Documentation: Unresolved referenced symbol 'comments_warning.unknown.Unknown'!"
+            ]
+        )
+
+        assertWarningsPresent(self,
+            "comments_warning.zs",
+            [
+                "unresolved_markdown_see_tag_reference.zs:14:41: "
+                "Documentation: Unresolved referenced symbol 'comments_warning.unknown'!"
+            ]
+        )
+
+        assertWarningsPresent(self,
+            "comments_warning.zs",
+            [
+                "unresolved_markdown_see_tag_reference.zs:22:34: "
+                "Documentation: Unresolved referenced symbol 'comments_warning.unknown'!"
+            ]
+        )
+
+        assertWarningsPresent(self,
+            "comments_warning.zs",
+            [
+                "unresolved_markdown_see_tag_reference.zs:27:23: "
+                "Documentation: Unresolved referenced symbol 'comments_warning.unknown.Unknown'!"
+            ]
+        )
+
+        assertWarningsPresent(self,
+            "comments_warning.zs",
+            [
+                "unresolved_markdown_see_tag_reference.zs:33:6: "
+                "Documentation: Unresolved referenced symbol 'comments_warning.unknown.Unknown'!"
+            ]
+        )
+
+        assertWarningsPresent(self,
+            "comments_warning.zs",
+            [
+                "unresolved_markdown_see_tag_reference.zs:38:20: "
+                "Documentation: Unresolved referenced symbol 'comments_warning.unknown'!"
+            ]
+        )
+
+        assertWarningsPresent(self,
+            "comments_warning.zs",
+            [
+                "unresolved_markdown_see_tag_reference.zs:42:46: "
                 "Documentation: Unresolved referenced symbol 'comments_warning.unknown.Unknown'!"
             ]
         )

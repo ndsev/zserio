@@ -28,8 +28,9 @@ public class WarningsConfig
                 "Warn when a documentation comment has invalid format.");
         addWarning(DOC_COMMENT_MISSING, false,
                 "Warn when a documentable schema element has no documentation comment assigned.");
-        addWarning(DOC_COMMENT_SEE, true,
-                "Warn when a documentation see tag contains invalid symbol reference.");
+        addWarning(DOC_COMMENT_LINK, true,
+                "Warn when a documentation link contains invalid symbol reference " +
+                "(e.g. see tag or markdown link).");
         addWarning(DOC_COMMENT_UNUSED, true,
                 "Warn when a documentation comment is not used - i.e. cannot be assigned to any documentable " +
                 "element.");
@@ -230,8 +231,8 @@ public class WarningsConfig
     public static final String DOC_COMMENT_FORMAT = "doc-comment-format";
     /** Option name for missing documentation comment warnings. */
     public static final String DOC_COMMENT_MISSING = "doc-comment-missing";
-    /** Option name for documentation comment see tag warnings. */
-    public static final String DOC_COMMENT_SEE = "doc-comment-see";
+    /** Option name for documentation comment warnings related to links (e.g. see tag or markdown link). */
+    public static final String DOC_COMMENT_LINK = "doc-comment-link";
     /** Option name for unused documentation comments warnings. */
     public static final String DOC_COMMENT_UNUSED = "doc-comment-unused";
     /** Option name for encoding warnings. */

@@ -176,12 +176,14 @@ class DocCommentManager
             boolean isSticky, boolean isOneLiner)
     {
         String markdown = docCommentToken.getText();
+        boolean isIndented = false; // one-liner is considered as not indented
         if (docCommentLines.length > 1 && docCommentLines[0].trim().equals("/*!"))
         {
             // there are at least two lines and the first line contains only comment syntax "/*!"
             final int commentIndentInSpaces = new AstLocation(docCommentToken).getColumn() - 1;
             final String indent = getFirstLineIndent(docCommentLines, commentIndentInSpaces);
-            if (!indent.isEmpty() && areLinesIndented(docCommentLines, indent))
+            isIndented = !indent.isEmpty() && areLinesIndented(docCommentLines, indent);
+            if (isIndented)
             {
                 // strip the indent from each line, (?m) is multiline regex marker
                 markdown = markdown.replaceAll("(?m)^" + indent, "");
@@ -199,7 +201,8 @@ class DocCommentManager
                 .replaceFirst("^\\/\\*!", "") // strip comment marker from beginning
                 .replaceFirst("!?\\*\\/$", ""); // strip comment marker from the end
 
-        return new DocCommentMarkdown(new AstLocation(docCommentToken), markdown, isSticky, isOneLiner);
+        return new DocCommentMarkdown(
+                new AstLocation(docCommentToken), markdown, isSticky, isOneLiner, isIndented);
     }
 
     private static String getFirstLineIndent(String[] lines, int numWhitespaces)

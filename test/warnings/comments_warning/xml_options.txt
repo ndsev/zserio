@@ -1,1 +1,1 @@
-ZSERIO_ARGS=-withoutWarnings doc-comment-format,doc-comment-unused,doc-comment-see
+ZSERIO_ARGS=-withoutWarnings doc-comment-format,doc-comment-unused,doc-comment-link

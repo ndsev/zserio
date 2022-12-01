@@ -80,7 +80,7 @@ public class DocTagSee extends AstNodeBase
         catch (ParserException e)
         {
             ZserioToolPrinter.printWarning(e.getLocation(), "Documentation: " + e.getMessage(),
-                    warningsConfig, WarningsConfig.DOC_COMMENT_SEE);
+                    warningsConfig, WarningsConfig.DOC_COMMENT_LINK);
         }
     }
 

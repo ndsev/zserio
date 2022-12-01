@@ -25,7 +25,9 @@ public class DocCommentMarkdownTest
                 "See [Direction](../classic_doc/enum_comments.zs) !";
         final boolean isSticky = true;
         final boolean isOneLiner = true;
-        final DocCommentMarkdown docCommentMarkdown = createDocCommentMarkdown(text, isSticky, isOneLiner);
+        final boolean isIndented = false;
+        final DocCommentMarkdown docCommentMarkdown = new DocCommentMarkdown(
+                TEST_LOCATION, text, isSticky, isOneLiner, isIndented);
 
         resolve(docCommentMarkdown);
 
@@ -42,7 +44,9 @@ public class DocCommentMarkdownTest
                 "See [Direction](../classic_doc/enum_comments.zs#Direction) !";
         final boolean isSticky = true;
         final boolean isOneLiner = true;
-        final DocCommentMarkdown docCommentMarkdown = createDocCommentMarkdown(text, isSticky, isOneLiner);
+        final boolean isIndented = false;
+        final DocCommentMarkdown docCommentMarkdown = new DocCommentMarkdown(
+                TEST_LOCATION, text, isSticky, isOneLiner, isIndented);
 
         resolve(docCommentMarkdown);
 
@@ -60,7 +64,9 @@ public class DocCommentMarkdownTest
                 "See [Direction](../classic_doc/enum_comments.zs#Direction) and [Color](enum_colors.zs) !";
         final boolean isSticky = true;
         final boolean isOneLiner = true;
-        final DocCommentMarkdown docCommentMarkdown = createDocCommentMarkdown(text, isSticky, isOneLiner);
+        final boolean isIndented = false;
+        final DocCommentMarkdown docCommentMarkdown = new DocCommentMarkdown(
+                TEST_LOCATION, text, isSticky, isOneLiner, isIndented);
 
         resolve(docCommentMarkdown);
 
@@ -80,7 +86,9 @@ public class DocCommentMarkdownTest
                 "See [Logo](image.png) and [Color](enum_colors.zs) !";
         final boolean isSticky = true;
         final boolean isOneLiner = true;
-        final DocCommentMarkdown docCommentMarkdown = createDocCommentMarkdown(text, isSticky, isOneLiner);
+        final boolean isIndented = false;
+        final DocCommentMarkdown docCommentMarkdown = new DocCommentMarkdown(
+                TEST_LOCATION, text, isSticky, isOneLiner, isIndented);
 
         resolve(docCommentMarkdown);
 
@@ -94,25 +102,93 @@ public class DocCommentMarkdownTest
     @Test
     public void markdownMultipleParagraphs()
     {
-        final String text =
-                "**TestUnion**\n" +
-                "\n" +
-                "This is an union which uses constraint in one case.\n" +
-                "This is an second line of the same paragraph.\n" +
-                "\n" +
-                "\n" +
-                "See [Direction](some_extern_file.html) page.\n" +
-                "\n" +
-                "**case1Allowed** True if case1Field is allowed.\n" +
-                "See [Direction](../classic_doc/enum_comments.zs) for more info.\n" +
-                "\n" +
-                "Some comment outside zserio tree: [Comment](../../../classic_doc/enum_comments.zs).\n";
-        final boolean isSticky = true;
-        final boolean isOneLiner = false;
-        final DocCommentMarkdown docCommentMarkdown = createDocCommentMarkdown(text, isSticky, isOneLiner);
+        final int beginCommentPosition = 0;
+        final int indent = 0;
+        final DocCommentMarkdown docCommentMarkdown = createMultipleParagrahsMarkdown(
+                beginCommentPosition, indent);
 
         resolve(docCommentMarkdown);
 
+        final List<ArrayList<ExpectedLineElement>> expectedParagraphs = createExpectedParagraphs();
+
+        checkClassicParagraphs(docCommentMarkdown.toClassic(), expectedParagraphs, indent);
+    }
+
+    @Test
+    public void markdownMultipleParagraphsBeginCommentIndented()
+    {
+        final int beginCommentPosition = 4;
+        final int indent = 0;
+        final DocCommentMarkdown docCommentMarkdown = createMultipleParagrahsMarkdown(
+                beginCommentPosition, indent);
+
+        resolve(docCommentMarkdown);
+
+        final List<ArrayList<ExpectedLineElement>> expectedParagraphs = createExpectedParagraphs();
+
+        checkClassicParagraphs(docCommentMarkdown.toClassic(), expectedParagraphs, indent);
+    }
+
+    @Test
+    public void markdownMultipleParagraphsNotIndentedWithSpaces()
+    {
+        final int beginCommentPosition = 0;
+        final int indent = 4;
+        final DocCommentMarkdown docCommentMarkdown = createMultipleParagrahsMarkdown(
+                beginCommentPosition, indent);
+
+        resolve(docCommentMarkdown);
+
+        final List<ArrayList<ExpectedLineElement>> expectedParagraphs = createExpectedParagraphs();
+
+        checkClassicParagraphs(docCommentMarkdown.toClassic(), expectedParagraphs, indent);
+    }
+
+    @Test
+    public void markdownMultipleParagraphsIndented()
+    {
+        final int beginCommentPosition = 4;
+        final int indent = beginCommentPosition;
+        final DocCommentMarkdown docCommentMarkdown = createMultipleParagrahsMarkdown(
+                beginCommentPosition, indent);
+
+        resolve(docCommentMarkdown);
+
+        final List<ArrayList<ExpectedLineElement>> expectedParagraphs = createExpectedParagraphs();
+
+        checkClassicParagraphs(docCommentMarkdown.toClassic(), expectedParagraphs, indent);
+    }
+
+    private DocCommentMarkdown createMultipleParagrahsMarkdown(int beginCommentPosition, int indent)
+    {
+        // note that properly indented markdown will be left-stripped in DocCommentManager
+        final int prefixLen = indent >= beginCommentPosition ? indent - beginCommentPosition : indent;
+        final String prefixSpaces = new String(new char[prefixLen]).replace('\0', ' ');
+        final String text =
+                "\n" +
+                prefixSpaces + "**TestUnion**\n" +
+                "\n" +
+                prefixSpaces + "This is an union which uses constraint in one case.\n" +
+                prefixSpaces + "This is an second line of the same paragraph.\n" +
+                "\n" +
+                "\n" +
+                prefixSpaces + "See [Direction](some_extern_file.html) page.\n" +
+                "\n" +
+                prefixSpaces + "**case1Allowed** True if case1Field is allowed.\n" +
+                prefixSpaces + "See [Direction](../classic_doc/enum_comments.zs) for more info.\n" +
+                "\n" +
+                prefixSpaces +
+                        "Some comment outside zserio tree: [Comment](../../../classic_doc/enum_comments.zs).\n";
+        final boolean isSticky = true;
+        final boolean isOneLiner = false;
+        final boolean isIndented = beginCommentPosition != 0 && indent >= beginCommentPosition;
+        final AstLocation location = new AstLocation(TEST_LOCATION.getFileName(), TEST_LOCATION.getLine(),
+                beginCommentPosition);
+        return new DocCommentMarkdown(location, text, isSticky, isOneLiner, isIndented);
+    }
+
+    private List<ArrayList<ExpectedLineElement>> createExpectedParagraphs()
+    {
         final ArrayList<ExpectedLineElement> expectedParagraph1 = new ArrayList<ExpectedLineElement>();
         expectedParagraph1.add(new ExpectedLineElement("**TestUnion**"));
 
@@ -143,12 +219,7 @@ public class DocCommentMarkdownTest
         expectedParagraphs.add(expectedParagraph4);
         expectedParagraphs.add(expectedParagraph5);
 
-        checkClassicParagraphs(docCommentMarkdown.toClassic(), expectedParagraphs, isSticky);
-    }
-
-    private DocCommentMarkdown createDocCommentMarkdown(String text, boolean isSticky, boolean isOneLiner)
-    {
-        return new DocCommentMarkdown(TEST_LOCATION, text, isSticky, isOneLiner);
+        return expectedParagraphs;
     }
 
     private static class ExpectedLineElement
@@ -182,9 +253,9 @@ public class DocCommentMarkdownTest
             return seeTagLink;
         }
 
-        private String text;
-        private String seeTagAlias;
-        private String seeTagLink;
+        private final String text;
+        private final String seeTagAlias;
+        private final String seeTagLink;
     }
 
     private void checkClassicOneLiner(DocCommentClassic docCommentClassic,
@@ -241,11 +312,11 @@ public class DocCommentMarkdownTest
     }
 
     private void checkClassicParagraphs(DocCommentClassic docCommentClassic,
-            List<ArrayList<ExpectedLineElement>> expectedParagraphs, boolean expectedIsSticky)
+            List<ArrayList<ExpectedLineElement>> expectedParagraphs, int indent)
     {
         assertNotEquals(null, docCommentClassic);
 
-        assertEquals(expectedIsSticky, docCommentClassic.isSticky());
+        assertEquals(true, docCommentClassic.isSticky());
         assertEquals(false, docCommentClassic.isOneLiner());
 
         assertEquals(expectedParagraphs.size(), docCommentClassic.getParagraphs().size());
@@ -269,6 +340,7 @@ public class DocCommentMarkdownTest
             for (int j = 0; j < docMultiline.getLines().size(); ++j)
             {
                 final DocLine docLine = docMultiline.getLines().get(j);
+                assertEquals(indent + 1, docLine.getLocation().getColumn());
                 assertTrue(expectedParagraph.size() >= docLine.getLineElements().size() + lineElementsCount);
                 for (int k = 0; k < docLine.getLineElements().size(); ++k)
                 {

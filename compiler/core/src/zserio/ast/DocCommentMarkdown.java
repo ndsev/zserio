@@ -17,12 +17,16 @@ public class DocCommentMarkdown extends DocComment
      * @param markdown Markdown documentation.
      * @param isSticky True if the Markdown documentation comment is not followed by blank line.
      * @param isOneLiner True if the documentation comment is on one line in the source.
+     * @param isIndented True if all lines are indented at least as the begin-comment delimiter.
      */
-    public DocCommentMarkdown(AstLocation location, String markdown, boolean isSticky, boolean isOneLiner)
+    public DocCommentMarkdown(AstLocation location, String markdown, boolean isSticky, boolean isOneLiner,
+            boolean isIndented)
     {
         super(location, isSticky, isOneLiner);
 
         this.markdown = markdown;
+        // when isIndented is true, the beginning indent is already stripped out of all lines
+        this.isIndented = isIndented;
     }
 
     @Override
@@ -76,12 +80,17 @@ public class DocCommentMarkdown extends DocComment
         ArrayList<MarkdownLine> markdownParagraphLines = new ArrayList<MarkdownLine>();
         final String fileName = getLocation().getFileName();
         int line = getLocation().getLine();
-        final int column = getLocation().getColumn();
         for (String markdownLine : markdownLines)
         {
             // swallow empty lines
             if (!markdownLine.trim().isEmpty())
             {
+                int column = line == getLocation().getLine()
+                        ? getLocation().getColumn() + 3 /* first line: +3 for begin-comment delimiter '/*!' */
+                        : (isIndented ? getLocation().getColumn() : 1);
+                // add leading white spaces which will be trimmed below
+                column += markdownLine.length() - markdownLine.replaceFirst("^\\s+", "").length();
+
                 final AstLocation location = new AstLocation(fileName, line, column - 1);
                 markdownParagraphLines.add(new MarkdownLine(location, markdownLine.trim()));
             }
@@ -221,6 +230,9 @@ public class DocCommentMarkdown extends DocComment
     {
         final PackageName.Builder packageNameBuilder = new PackageName.Builder();
         packageNameBuilder.append(pkg.getPackageName());
+        // do not include top level package name (it will be handled in classic DocTagSee)
+        for (int i = 0; i < pkg.getTopLevelPackageName().getIdList().size(); ++i)
+            packageNameBuilder.removeFirstId();
         packageNameBuilder.removeLastId(); // go to parent directory (from markdown point of view)
         final String[] packageIds = zsFile.split("/");
         for (String id : packageIds)
@@ -246,6 +258,7 @@ public class DocCommentMarkdown extends DocComment
         return seeTagLink;
     }
 
-    final String markdown;
-    DocCommentClassic classic = null;
+    private final String markdown;
+    private final boolean isIndented;
+    private DocCommentClassic classic = null;
 }

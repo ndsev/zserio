@@ -47,6 +47,24 @@ public class CommentsWarningTest
     {
         assertTrue(zserioWarnings.isPresent("unresolved_markdown_see_tag_reference.zs:7:5: " +
                 "Documentation: Unresolved referenced symbol 'comments_warning.unknown.Unknown'!"));
+
+        assertTrue(zserioWarnings.isPresent("unresolved_markdown_see_tag_reference.zs:14:41: " +
+                "Documentation: Unresolved referenced symbol 'comments_warning.unknown'!"));
+
+        assertTrue(zserioWarnings.isPresent("unresolved_markdown_see_tag_reference.zs:22:34: " +
+                "Documentation: Unresolved referenced symbol 'comments_warning.unknown'!"));
+
+        assertTrue(zserioWarnings.isPresent("unresolved_markdown_see_tag_reference.zs:27:23: " +
+                "Documentation: Unresolved referenced symbol 'comments_warning.unknown.Unknown'!"));
+
+        assertTrue(zserioWarnings.isPresent("unresolved_markdown_see_tag_reference.zs:33:6: " +
+                "Documentation: Unresolved referenced symbol 'comments_warning.unknown.Unknown'!"));
+
+        assertTrue(zserioWarnings.isPresent("unresolved_markdown_see_tag_reference.zs:38:20: " +
+                "Documentation: Unresolved referenced symbol 'comments_warning.unknown'!"));
+
+        assertTrue(zserioWarnings.isPresent("unresolved_markdown_see_tag_reference.zs:42:46: " +
+                "Documentation: Unresolved referenced symbol 'comments_warning.unknown.Unknown'!"));
     }
 
     @Test

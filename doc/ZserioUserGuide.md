@@ -263,9 +263,9 @@ disable some smaller set of warnings or just a single warning.
 - `doc-comment-missing`
   Warn when a documentable schema element has no documentation comment
   assigned. Disabled by default.
-- `doc-comment-see`
-  Warn when a documentation see tag contains invalid symbol reference.
-  Enabled by default.
+- `doc-comment-link`
+  Warn when a documentation link contains invalid symbol reference
+  (e.g. see tag or markdown link). Enabled by default.
 - `doc-comment-unused`
   Warn when a documentation comment is not used - i.e. cannot be
   assigned to any documentable element. Enabled by default.
