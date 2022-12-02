@@ -68,6 +68,7 @@ function(create_coverage_target)
             COMMAND ${LLVM_COV_BIN} show ${cov_test_exectable}
                 -instr-profile=${cov_binary_dir}/runtime.profdata
                 --format=html --show-instantiations=false -output-dir=${cov_binary_dir}
+                ${cov_exclude}
             COMMAND ${LLVM_COV_BIN} report ${cov_test_exectable}
                 -instr-profile=${cov_binary_dir}/runtime.profdata
                 ${cov_exclude}
