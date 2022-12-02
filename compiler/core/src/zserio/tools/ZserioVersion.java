@@ -155,7 +155,7 @@ public class ZserioVersion implements Comparable<ZserioVersion>
     }
 
     /** ZserioTool version string. */
-    public static final String VERSION_STRING = "2.9.0-pre1";
+    public static final String VERSION_STRING = "2.9.0";
 
     private final int major;
     private final int minor;
