@@ -3,13 +3,13 @@
 
 #include <istream>
 #include <limits>
-#include <memory>
 
 #include "zserio/AllocatorHolder.h"
 #include "zserio/JsonParser.h"
 #include "zserio/OptionalHolder.h"
 #include "zserio/StringView.h"
 #include "zserio/ZserioTreeCreator.h"
+#include "zserio/UniquePtr.h"
 
 namespace zserio
 {
@@ -165,7 +165,7 @@ private:
     InplaceOptionalHolder<BasicZserioTreeCreator<ALLOC>> m_creator;
     vector<string<ALLOC>, ALLOC> m_keyStack;
     IBasicReflectablePtr<ALLOC> m_object;
-    std::shared_ptr<IObjectValueAdapter<ALLOC>> m_objectValueAdapter;
+    unique_ptr<IObjectValueAdapter<ALLOC>, RebindAlloc<ALLOC, IObjectValueAdapter<ALLOC>>> m_objectValueAdapter;
 };
 
 } // namespace detail
@@ -492,12 +492,12 @@ void CreatorAdapter<ALLOC>::beginObject()
                 const CppType cppType = m_creator->getFieldType(m_keyStack.back()).getCppType();
                 if (cppType == CppType::BIT_BUFFER)
                 {
-                    m_objectValueAdapter = std::allocate_shared<BitBufferAdapter<ALLOC>>(get_allocator(),
+                    m_objectValueAdapter = allocate_unique<BitBufferAdapter<ALLOC>>(get_allocator(),
                             get_allocator());
                 }
                 else if (cppType == CppType::BYTES)
                 {
-                    m_objectValueAdapter = std::allocate_shared<BytesAdapter<ALLOC>>(get_allocator(),
+                    m_objectValueAdapter = allocate_unique<BytesAdapter<ALLOC>>(get_allocator(),
                             get_allocator());
                 }
                 else
@@ -510,12 +510,12 @@ void CreatorAdapter<ALLOC>::beginObject()
                 const CppType cppType = m_creator->getElementType().getCppType();
                 if (cppType == CppType::BIT_BUFFER)
                 {
-                    m_objectValueAdapter = std::allocate_shared<BitBufferAdapter<ALLOC>>(get_allocator(),
+                    m_objectValueAdapter = allocate_unique<BitBufferAdapter<ALLOC>>(get_allocator(),
                             get_allocator());
                 }
                 else if (cppType == CppType::BYTES)
                 {
-                    m_objectValueAdapter = std::allocate_shared<BytesAdapter<ALLOC>>(get_allocator(),
+                    m_objectValueAdapter = allocate_unique<BytesAdapter<ALLOC>>(get_allocator(),
                             get_allocator());
                 }
                 else
