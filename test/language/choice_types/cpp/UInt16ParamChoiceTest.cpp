@@ -58,8 +58,14 @@ const uint16_t UInt16ParamChoiceTest::VARIANT_C_SELECTOR = 7;
 
 TEST_F(UInt16ParamChoiceTest, emptyConstructor)
 {
-    UInt16ParamChoice uint16ParamChoice;
-    ASSERT_THROW(uint16ParamChoice.getSelector(), zserio::CppRuntimeException);
+    {
+        UInt16ParamChoice uint16ParamChoice;
+        ASSERT_THROW(uint16ParamChoice.getSelector(), zserio::CppRuntimeException);
+    }
+    {
+        UInt16ParamChoice uint16ParamChoice = {};
+        ASSERT_THROW(uint16ParamChoice.getSelector(), zserio::CppRuntimeException);
+    }
 }
 
 TEST_F(UInt16ParamChoiceTest, bitStreamReaderConstructor)

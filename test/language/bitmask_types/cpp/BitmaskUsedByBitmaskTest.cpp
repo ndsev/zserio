@@ -36,8 +36,14 @@ const Permission::underlying_type BitmaskUsedByBitmaskTest::WRITE_VALUE =
 
 TEST_F(BitmaskUsedByBitmaskTest, emptyConstructor)
 {
-    const Permission permission;
-    ASSERT_EQ(0, permission.getValue());
+    {
+        const Permission permission;
+        ASSERT_EQ(0, permission.getValue());
+    }
+    {
+        const Permission permission = {};
+        ASSERT_EQ(0, permission.getValue());
+    }
 }
 
 TEST_F(BitmaskUsedByBitmaskTest, valuesConstroctor)

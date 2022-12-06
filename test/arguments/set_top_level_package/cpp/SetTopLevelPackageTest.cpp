@@ -19,10 +19,24 @@ const size_t SetTopLevelPackageTest::SIMPLE_STRUCTURE_BIT_SIZE = 32;
 
 TEST_F(SetTopLevelPackageTest, emptyConstructor)
 {
-    SimpleStructure simpleStructure;
-    const size_t expectedBitSize = SIMPLE_STRUCTURE_BIT_SIZE;
-    simpleStructure.initializeChildren();
-    ASSERT_EQ(expectedBitSize, simpleStructure.bitSizeOf());
+    {
+        SimpleStructure simpleStructure;
+        simpleStructure.initializeChildren();
+        ASSERT_EQ(SIMPLE_STRUCTURE_BIT_SIZE, simpleStructure.bitSizeOf());
+    }
+
+    {
+        SimpleStructure simpleStructure = {};
+        simpleStructure.initializeChildren();
+        ASSERT_EQ(SIMPLE_STRUCTURE_BIT_SIZE, simpleStructure.bitSizeOf());
+    }
+}
+
+TEST_F(SetTopLevelPackageTest, fieldConstructor)
+{
+    SimpleStructure simpleStructure2 = SimpleStructure({}, {}, {}, {}, {}, {});
+    simpleStructure2.initializeChildren();
+    ASSERT_EQ(SIMPLE_STRUCTURE_BIT_SIZE, simpleStructure2.bitSizeOf());
 }
 
 } // namespace simple_structure

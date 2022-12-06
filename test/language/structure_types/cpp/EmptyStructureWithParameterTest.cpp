@@ -13,18 +13,23 @@ namespace empty_structure_with_parameter
 
 TEST(EmptyStructureWithParameterTest, emptyConstructor)
 {
-    EmptyStructureWithParameter emptyStructureWithParameter;
-    ASSERT_EQ(0, emptyStructureWithParameter.bitSizeOf());
-    ASSERT_THROW(emptyStructureWithParameter.getParam(), zserio::CppRuntimeException);
-}
-
-TEST(EmptyStructureWithParameterTest, fieldConstructor)
-{
-    const int32_t param = 10;
-    EmptyStructureWithParameter emptyStructureWithParameter;
-    emptyStructureWithParameter.initialize(param);
-    ASSERT_EQ(0, emptyStructureWithParameter.bitSizeOf());
-    ASSERT_EQ(param, emptyStructureWithParameter.getParam());
+    {
+        EmptyStructureWithParameter emptyStructureWithParameter;
+        ASSERT_EQ(0, emptyStructureWithParameter.bitSizeOf());
+        ASSERT_THROW(emptyStructureWithParameter.getParam(), zserio::CppRuntimeException);
+    }
+    {
+        EmptyStructureWithParameter emptyStructureWithParameter = {};
+        ASSERT_EQ(0, emptyStructureWithParameter.bitSizeOf());
+        ASSERT_THROW(emptyStructureWithParameter.getParam(), zserio::CppRuntimeException);
+    }
+    {
+        const int32_t param = 10;
+        EmptyStructureWithParameter emptyStructureWithParameter;
+        emptyStructureWithParameter.initialize(param);
+        ASSERT_EQ(0, emptyStructureWithParameter.bitSizeOf());
+        ASSERT_EQ(param, emptyStructureWithParameter.getParam());
+    }
 }
 
 TEST(EmptyStructureWithParameterTest, copyConstructor)

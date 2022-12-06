@@ -13,8 +13,14 @@ namespace empty_choice_with_default
 
 TEST(EmptyChoiceWithDefaultTest, emptyConstructor)
 {
-    EmptyChoiceWithDefault emptyChoiceWithDefault;
-    ASSERT_THROW(emptyChoiceWithDefault.getSelector(), zserio::CppRuntimeException);
+    {
+        EmptyChoiceWithDefault emptyChoiceWithDefault;
+        ASSERT_THROW(emptyChoiceWithDefault.getSelector(), zserio::CppRuntimeException);
+    }
+    {
+        EmptyChoiceWithDefault emptyChoiceWithDefault = {};
+        ASSERT_THROW(emptyChoiceWithDefault.getSelector(), zserio::CppRuntimeException);
+    }
 }
 
 TEST(EmptyChoiceWithDefaultTest, bitStreamReaderConstructor)

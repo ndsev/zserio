@@ -20,8 +20,14 @@ const size_t BitmaskNameClashingWithJavaTest::BIT_SIZE = 8;
 
 TEST_F(BitmaskNameClashingWithJavaTest, emptyConstructor)
 {
-    BitmaskNameClashingWithJava bitmaskNameClashingWithJava;
-    ASSERT_EQ(0, bitmaskNameClashingWithJava.getStringField().getValue());
+    {
+        BitmaskNameClashingWithJava bitmaskNameClashingWithJava;
+        ASSERT_EQ(0, bitmaskNameClashingWithJava.getStringField().getValue());
+    }
+    {
+        BitmaskNameClashingWithJava bitmaskNameClashingWithJava = {};
+        ASSERT_EQ(0, bitmaskNameClashingWithJava.getStringField().getValue());
+    }
 }
 
 TEST_F(BitmaskNameClashingWithJavaTest, bitSizeOf)

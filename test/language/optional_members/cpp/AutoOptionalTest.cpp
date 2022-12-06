@@ -46,9 +46,16 @@ const size_t AutoOptionalTest::CONTAINER_BIT_SIZE_WITH_OPTIONAL = 32 + 1 + 32;
 
 TEST_F(AutoOptionalTest, emptyConstructor)
 {
-    const Container container;
-    ASSERT_FALSE(container.isAutoOptionalIntSet());
-    ASSERT_FALSE(container.isAutoOptionalIntUsed());
+    {
+        const Container container;
+        ASSERT_FALSE(container.isAutoOptionalIntSet());
+        ASSERT_FALSE(container.isAutoOptionalIntUsed());
+    }
+    {
+        const Container container = {};
+        ASSERT_FALSE(container.isAutoOptionalIntSet());
+        ASSERT_FALSE(container.isAutoOptionalIntUsed());
+    }
 }
 
 TEST_F(AutoOptionalTest, fieldConstructor)
@@ -61,6 +68,13 @@ TEST_F(AutoOptionalTest, fieldConstructor)
     const Container containerWithoutOptional(NON_OPTIONAL_INT_VALUE, zserio::NullOpt);
     ASSERT_FALSE(containerWithoutOptional.isAutoOptionalIntSet());
     ASSERT_FALSE(containerWithoutOptional.isAutoOptionalIntUsed());
+
+    // {} implies int{}, thus int() -> 0 even for the optional field!
+    const Container containerWithDefaultOptional({}, {});
+    ASSERT_EQ(0, containerWithDefaultOptional.getNonOptionalInt());
+    ASSERT_TRUE(containerWithDefaultOptional.isAutoOptionalIntSet());
+    ASSERT_TRUE(containerWithDefaultOptional.isAutoOptionalIntUsed());
+    ASSERT_EQ(0, containerWithDefaultOptional.getAutoOptionalInt());
 }
 
 TEST_F(AutoOptionalTest, isAutoOptionalIntSetAndUsed)

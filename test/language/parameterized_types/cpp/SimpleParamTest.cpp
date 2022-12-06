@@ -55,10 +55,21 @@ const size_t SimpleParamTest::ITEM_BIT_SIZE_WITH_OPTIONAL = 16 + 32;
 TEST_F(SimpleParamTest, emptyConstructor)
 {
     const uint16_t version = LOWER_VERSION;
-    Item item;
-    item.initialize(version);
-    ASSERT_EQ(version, item.getVersion());
-    ASSERT_FALSE(item.isExtraParamUsed());
+
+    {
+        Item item;
+        item.initialize(version);
+        ASSERT_EQ(version, item.getVersion());
+        ASSERT_FALSE(item.isExtraParamUsed());
+    }
+
+    {
+        Item item = {};
+        item.initialize(version);
+        ASSERT_EQ(version, item.getVersion());
+        ASSERT_EQ(0, item.getParam());
+        ASSERT_FALSE(item.isExtraParamUsed());
+    }
 }
 
 TEST_F(SimpleParamTest, fieldConstructor)
@@ -75,6 +86,15 @@ TEST_F(SimpleParamTest, fieldConstructor)
         item.initialize(HIGHER_VERSION);
         ASSERT_TRUE(item.isExtraParamUsed());
         ASSERT_EQ(ITEM_EXTRA_PARAM, item.getExtraParam());
+    }
+
+    {
+        Item item({}, {});
+        ASSERT_FALSE(item.isInitialized());
+        item.initialize(HIGHER_VERSION);
+        ASSERT_TRUE(item.isExtraParamUsed());
+        ASSERT_EQ(0, item.getParam());
+        ASSERT_EQ(0, item.getExtraParam());
     }
 }
 

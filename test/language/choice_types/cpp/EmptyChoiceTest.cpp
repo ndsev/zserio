@@ -12,8 +12,14 @@ namespace empty_choice
 
 TEST(EmptyChoiceTest, emptyConstructor)
 {
-    EmptyChoice emptyChoice;
-    ASSERT_THROW(emptyChoice.getSelector(), zserio::CppRuntimeException);
+    {
+        EmptyChoice emptyChoice;
+        ASSERT_THROW(emptyChoice.getSelector(), zserio::CppRuntimeException);
+    }
+    {
+        EmptyChoice emptyChoice = {};
+        ASSERT_THROW(emptyChoice.getSelector(), zserio::CppRuntimeException);
+    }
 }
 
 TEST(EmptyChoiceTest, bitStreamReaderConstructor)

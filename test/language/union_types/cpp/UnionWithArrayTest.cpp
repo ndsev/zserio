@@ -88,9 +88,16 @@ const int16_t UnionWithArrayTest::ARRAY16[ARRAY16_SIZE] = { -10, -20, -30, -40, 
 
 TEST_F(UnionWithArrayTest, emptyConstructor)
 {
-    TestUnion test;
-    ASSERT_EQ(TestUnion::UNDEFINED_CHOICE, test.choiceTag());
-    ASSERT_THROW(test.bitSizeOf(), zserio::CppRuntimeException);
+    {
+        TestUnion test;
+        ASSERT_EQ(TestUnion::UNDEFINED_CHOICE, test.choiceTag());
+        ASSERT_THROW(test.bitSizeOf(), zserio::CppRuntimeException);
+    }
+    {
+        TestUnion test = {};
+        ASSERT_EQ(TestUnion::UNDEFINED_CHOICE, test.choiceTag());
+        ASSERT_THROW(test.bitSizeOf(), zserio::CppRuntimeException);
+    }
 }
 
 TEST_F(UnionWithArrayTest, bitStreamReaderConstructor)

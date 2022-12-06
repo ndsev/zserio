@@ -1,5 +1,16 @@
 <#include "CompoundField.inc.ftl">
 <#include "CompoundParameter.inc.ftl">
+<#macro compound_default_constructor compoundConstructorsData>
+    <#if withCodeComments>
+    /**
+     * Default constructor.
+     */
+     </#if>
+    ${compoundConstructorsData.compoundName}() noexcept :
+            ${compoundConstructorsData.compoundName}(allocator_type())
+    {}
+</#macro>
+
 <#macro compound_constructor_declaration compoundConstructorsData>
     <#if withCodeComments>
     /**
@@ -8,7 +19,7 @@
      * \param allocator Allocator to construct from.
      */
     </#if>
-    explicit ${compoundConstructorsData.compoundName}(const allocator_type& allocator = allocator_type()) noexcept;
+    explicit ${compoundConstructorsData.compoundName}(const allocator_type& allocator) noexcept;
 </#macro>
 
 <#macro compound_constructor_definition compoundConstructorsData memberInitializationMacroName="">

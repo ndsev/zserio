@@ -41,8 +41,15 @@ protected:
 
 TEST_F(FullBitmaskParamChoiceTest, emptyConstructor)
 {
-    FullBitmaskParamChoice fullBitmaskParamChoice;
-    ASSERT_THROW(fullBitmaskParamChoice.getSelector(), zserio::CppRuntimeException);
+    {
+        FullBitmaskParamChoice fullBitmaskParamChoice;
+        ASSERT_THROW(fullBitmaskParamChoice.getSelector(), zserio::CppRuntimeException);
+    }
+
+    {
+        FullBitmaskParamChoice fullBitmaskParamChoice = {};
+        ASSERT_THROW(fullBitmaskParamChoice.getSelector(), zserio::CppRuntimeException);
+    }
 }
 
 TEST_F(FullBitmaskParamChoiceTest, bitStreamReaderConstructor)

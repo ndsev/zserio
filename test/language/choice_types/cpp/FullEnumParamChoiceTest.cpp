@@ -40,8 +40,14 @@ protected:
 
 TEST_F(FullEnumParamChoiceTest, emptyConstructor)
 {
-    FullEnumParamChoice fullEnumParamChoice;
-    ASSERT_THROW(fullEnumParamChoice.getSelector(), zserio::CppRuntimeException);
+    {
+        FullEnumParamChoice fullEnumParamChoice;
+        ASSERT_THROW(fullEnumParamChoice.getSelector(), zserio::CppRuntimeException);
+    }
+    {
+        FullEnumParamChoice fullEnumParamChoice = {};
+        ASSERT_THROW(fullEnumParamChoice.getSelector(), zserio::CppRuntimeException);
+    }
 }
 
 TEST_F(FullEnumParamChoiceTest, bitStreamReaderConstructor)

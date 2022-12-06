@@ -71,9 +71,16 @@ const size_t SimpleUnionTest::UNION_CASE4_BIT_SIZE =
 
 TEST_F(SimpleUnionTest, emptyConstructor)
 {
-    SimpleUnion simpleUnion;
-    ASSERT_EQ(SimpleUnion::UNDEFINED_CHOICE, simpleUnion.choiceTag());
-    ASSERT_THROW(simpleUnion.bitSizeOf(), zserio::CppRuntimeException);
+    {
+        SimpleUnion simpleUnion;
+        ASSERT_EQ(SimpleUnion::UNDEFINED_CHOICE, simpleUnion.choiceTag());
+        ASSERT_THROW(simpleUnion.bitSizeOf(), zserio::CppRuntimeException);
+    }
+    {
+        SimpleUnion simpleUnion = {};
+        ASSERT_EQ(SimpleUnion::UNDEFINED_CHOICE, simpleUnion.choiceTag());
+        ASSERT_THROW(simpleUnion.bitSizeOf(), zserio::CppRuntimeException);
+    }
 }
 
 TEST_F(SimpleUnionTest, bitStreamReaderConstructor)

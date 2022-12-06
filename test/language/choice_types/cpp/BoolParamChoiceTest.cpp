@@ -26,8 +26,14 @@ protected:
 
 TEST_F(BoolParamChoiceTest, emptyConstructor)
 {
-    BoolParamChoice boolParamChoice;
-    ASSERT_THROW(boolParamChoice.getSelector(), zserio::CppRuntimeException);
+    {
+        BoolParamChoice boolParamChoice;
+        ASSERT_THROW(boolParamChoice.getSelector(), zserio::CppRuntimeException);
+    }
+    {
+        BoolParamChoice boolParamChoice = {};
+        ASSERT_THROW(boolParamChoice.getSelector(), zserio::CppRuntimeException);
+    }
 }
 
 TEST_F(BoolParamChoiceTest, bitStreamReaderConstructor)

@@ -57,6 +57,8 @@ public:
     };
 <#if withWriterCode>
 
+    <@compound_default_constructor compoundConstructorsData/>
+
     <@compound_constructor_declaration compoundConstructorsData/>
 </#if>
 

@@ -52,7 +52,7 @@ public:
      * \param allocator Allocator to construct from.
      */
 </#if>
-    Service(const allocator_type& allocator = allocator_type());
+    explicit Service(const allocator_type& allocator = allocator_type());
 <#if withCodeComments>
 
     /** Default destructor. */

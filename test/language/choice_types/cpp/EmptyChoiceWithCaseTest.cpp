@@ -13,8 +13,14 @@ namespace empty_choice_with_case
 
 TEST(EmptyChoiceWithCaseTest, emptyConstructor)
 {
-    EmptyChoiceWithCase emptyChoiceWithCase;
-    ASSERT_THROW(emptyChoiceWithCase.getSelector(), zserio::CppRuntimeException);
+    {
+        EmptyChoiceWithCase emptyChoiceWithCase;
+        ASSERT_THROW(emptyChoiceWithCase.getSelector(), zserio::CppRuntimeException);
+    }
+    {
+        EmptyChoiceWithCase emptyChoiceWithCase = {};
+        ASSERT_THROW(emptyChoiceWithCase.getSelector(), zserio::CppRuntimeException);
+    }
 }
 
 TEST(EmptyChoiceWithCaseTest, bitStreamReaderConstructor)

@@ -37,8 +37,14 @@ const size_t OneStringStructureTest::ONE_STRING_STRUCTURE_BIT_SIZE = (1 + sizeof
 
 TEST_F(OneStringStructureTest, emptyConstructor)
 {
-    OneStringStructure oneStringStructure;
-    ASSERT_EQ("", oneStringStructure.getOneString());
+    {
+        OneStringStructure oneStringStructure;
+        ASSERT_EQ("", oneStringStructure.getOneString());
+    }
+    {
+        OneStringStructure oneStringStructure = {};
+        ASSERT_EQ("", oneStringStructure.getOneString());
+    }
 }
 
 TEST_F(OneStringStructureTest, fieldConstructor)
@@ -48,13 +54,17 @@ TEST_F(OneStringStructureTest, fieldConstructor)
         OneStringStructure oneStringStructure(str);
         ASSERT_EQ(str, oneStringStructure.getOneString());
     }
-
     {
         string_type movedString(1000, 'a'); // long enough to prevent small string optimization
         const void* ptr = movedString.data();
         OneStringStructure oneStringStructure(std::move(movedString));
         const void* movedPtr= oneStringStructure.getOneString().data();
         ASSERT_EQ(ptr, movedPtr);
+    }
+    {
+        // cannot use just '{}' since ctor would be ambiguous (ambiguity with move/copy ctors)
+        OneStringStructure oneStringStructure(string_type{});
+        ASSERT_TRUE(oneStringStructure.getOneString().empty());
     }
 }
 

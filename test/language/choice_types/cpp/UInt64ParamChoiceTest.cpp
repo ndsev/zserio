@@ -50,8 +50,14 @@ const std::string UInt64ParamChoiceTest::BLOB_NAME_BASE = "language/choice_types
 
 TEST_F(UInt64ParamChoiceTest, emptyConstructor)
 {
-    UInt64ParamChoice uint64ParamChoice;
-    ASSERT_THROW(uint64ParamChoice.getSelector(), zserio::CppRuntimeException);
+    {
+        UInt64ParamChoice uint64ParamChoice;
+        ASSERT_THROW(uint64ParamChoice.getSelector(), zserio::CppRuntimeException);
+    }
+    {
+        UInt64ParamChoice uint64ParamChoice = {};
+        ASSERT_THROW(uint64ParamChoice.getSelector(), zserio::CppRuntimeException);
+    }
 }
 
 TEST_F(UInt64ParamChoiceTest, bitStreamReaderConstructor)

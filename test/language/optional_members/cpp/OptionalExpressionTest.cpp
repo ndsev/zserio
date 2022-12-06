@@ -50,18 +50,39 @@ const size_t OptionalExpressionTest::CONTAINER_BIT_SIZE_WITH_OPTIONAL = 8 + 8 + 
 TEST_F(OptionalExpressionTest, fieldConstructor)
 {
     BlackColor blackColor;
+    blackColor.initialize(NUM_BLACK_TONES);
+
     fillBlackColor(blackColor, NUM_BLACK_TONES);
-    const Container containerWithOptionals(BasicColor::BLACK, NUM_BLACK_TONES, blackColor);
+    Container containerWithOptionals(BasicColor::BLACK, NUM_BLACK_TONES, blackColor);
+    containerWithOptionals.initializeChildren();
+    ASSERT_EQ(BasicColor::BLACK, containerWithOptionals.getBasicColor());
     ASSERT_TRUE(containerWithOptionals.isNumBlackTonesSet());
     ASSERT_TRUE(containerWithOptionals.isNumBlackTonesUsed());
+    ASSERT_EQ(NUM_BLACK_TONES, containerWithOptionals.getNumBlackTones());
     ASSERT_TRUE(containerWithOptionals.isBlackColorSet());
     ASSERT_TRUE(containerWithOptionals.isBlackColorUsed());
+    ASSERT_EQ(blackColor, containerWithOptionals.getBlackColor());
 
     const Container containerWithoutOptionals(BasicColor::WHITE, zserio::NullOpt, zserio::NullOpt);
+    ASSERT_EQ(BasicColor::WHITE, containerWithoutOptionals.getBasicColor());
     ASSERT_FALSE(containerWithoutOptionals.isNumBlackTonesSet());
     ASSERT_FALSE(containerWithoutOptionals.isNumBlackTonesUsed());
     ASSERT_FALSE(containerWithoutOptionals.isBlackColorSet());
     ASSERT_FALSE(containerWithoutOptionals.isBlackColorUsed());
+
+    // {} implies int{}, thus int() -> 0 even for optional fields!
+    BlackColor defaultBlackColor = {};
+    defaultBlackColor.initialize(0);
+
+    Container containerWithDefaults({}, {}, {});
+    containerWithDefaults.initializeChildren();
+    ASSERT_EQ(BasicColor(), containerWithDefaults.getBasicColor());
+    ASSERT_TRUE(containerWithDefaults.isNumBlackTonesSet());
+    ASSERT_TRUE(containerWithDefaults.isNumBlackTonesUsed());
+    ASSERT_EQ(0, containerWithDefaults.getNumBlackTones());
+    ASSERT_TRUE(containerWithDefaults.isBlackColorSet());
+    ASSERT_TRUE(containerWithDefaults.isBlackColorUsed());
+    ASSERT_EQ(defaultBlackColor, containerWithDefaults.getBlackColor());
 }
 
 TEST_F(OptionalExpressionTest, isNumBlackTonesSetAndUsed)

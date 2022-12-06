@@ -28,18 +28,37 @@ protected:
 
 TEST_F(SimpleStructureTest, emptyConstructor)
 {
-    SimpleStructure simpleStructure; // just no-throw test
+    {
+        SimpleStructure simpleStructure;
+        ASSERT_EQ(0, simpleStructure.getNumberA());
+        ASSERT_EQ(0, simpleStructure.getNumberB());
+        ASSERT_EQ(0, simpleStructure.getNumberC());
+    }
+    {
+        SimpleStructure simpleStructure = {};
+        ASSERT_EQ(0, simpleStructure.getNumberA());
+        ASSERT_EQ(0, simpleStructure.getNumberB());
+        ASSERT_EQ(0, simpleStructure.getNumberC());
+    }
 }
 
 TEST_F(SimpleStructureTest, fieldConstructor)
 {
-    const uint8_t numberA = 0x07;
-    const uint8_t numberB = 0xFF;
-    const uint8_t numberC = 0x7F;
-    SimpleStructure simpleStructure(numberA, numberB, numberC);
-    ASSERT_EQ(numberA, simpleStructure.getNumberA());
-    ASSERT_EQ(numberB, simpleStructure.getNumberB());
-    ASSERT_EQ(numberC, simpleStructure.getNumberC());
+    {
+        const uint8_t numberA = 0x07;
+        const uint8_t numberB = 0xFF;
+        const uint8_t numberC = 0x7F;
+        SimpleStructure simpleStructure(numberA, numberB, numberC);
+        ASSERT_EQ(numberA, simpleStructure.getNumberA());
+        ASSERT_EQ(numberB, simpleStructure.getNumberB());
+        ASSERT_EQ(numberC, simpleStructure.getNumberC());
+    }
+    {
+        SimpleStructure simpleStructure({}, {}, {});
+        ASSERT_EQ(0, simpleStructure.getNumberA());
+        ASSERT_EQ(0, simpleStructure.getNumberB());
+        ASSERT_EQ(0, simpleStructure.getNumberC());
+    }
 }
 
 TEST_F(SimpleStructureTest, bitStreamReaderConstructor)

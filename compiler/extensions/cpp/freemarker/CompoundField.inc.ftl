@@ -1057,9 +1057,9 @@ ${I};
             <#if !field.typeInfo.isSimple || field.optional??>
                 <#if numTemplateArgs != 0>
             <#lt>,
-            typename ZSERIO_T_${field.name}<#rt>
+            typename ZSERIO_T_${field.name} = <@field_raw_cpp_type_name field/><#rt>
                 <#else>
-            typename ZSERIO_T_${field.name}<#t>
+            typename ZSERIO_T_${field.name} = <@field_raw_cpp_type_name field/><#t>
                 </#if>
                 <#if numTemplateArgs == 0 && field?is_first>
                     <#local firstTemplateArgName="ZSERIO_T_${field.name}"/>

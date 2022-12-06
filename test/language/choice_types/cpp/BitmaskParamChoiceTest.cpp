@@ -40,8 +40,14 @@ protected:
 
 TEST_F(BitmaskParamChoiceTest, emptyConstructor)
 {
-    BitmaskParamChoice bitmaskParamChoice;
-    ASSERT_THROW(bitmaskParamChoice.getSelector(), zserio::CppRuntimeException);
+    {
+        BitmaskParamChoice bitmaskParamChoice;
+        ASSERT_THROW(bitmaskParamChoice.getSelector(), zserio::CppRuntimeException);
+    }
+    {
+        BitmaskParamChoice bitmaskParamChoice = {};
+        ASSERT_THROW(bitmaskParamChoice.getSelector(), zserio::CppRuntimeException);
+    }
 }
 
 TEST_F(BitmaskParamChoiceTest, bitStreamReaderConstructor)

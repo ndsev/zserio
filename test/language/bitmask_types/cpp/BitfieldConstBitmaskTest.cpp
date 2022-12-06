@@ -34,8 +34,15 @@ const Permission::underlying_type BitfieldConstBitmaskTest::WRITE_VALUE = 4;
 
 TEST_F(BitfieldConstBitmaskTest, emptyConstructor)
 {
-    const Permission permission;
-    ASSERT_EQ(0, permission.getValue());
+    {
+        const Permission permission;
+        ASSERT_EQ(0, permission.getValue());
+    }
+
+    {
+        const Permission permission = {};
+        ASSERT_EQ(0, permission.getValue());
+    }
 }
 
 TEST_F(BitfieldConstBitmaskTest, valuesConstroctor)

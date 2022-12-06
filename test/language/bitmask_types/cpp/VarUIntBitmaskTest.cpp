@@ -33,8 +33,14 @@ const Permission::underlying_type VarUIntBitmaskTest::WRITE_VALUE = 4;
 
 TEST_F(VarUIntBitmaskTest, emptyConstructor)
 {
-    const Permission permission;
-    ASSERT_EQ(0, permission.getValue());
+    {
+        const Permission permission;
+        ASSERT_EQ(0, permission.getValue());
+    }
+    {
+        const Permission permission = {};
+        ASSERT_EQ(0, permission.getValue());
+    }
 }
 
 TEST_F(VarUIntBitmaskTest, valuesConstroctor)

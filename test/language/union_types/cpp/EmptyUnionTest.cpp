@@ -12,9 +12,16 @@ namespace empty_union
 
 TEST(EmptyUnionTest, emptyConstructor)
 {
-    EmptyUnion emptyUnion;
-    ASSERT_EQ(EmptyUnion::UNDEFINED_CHOICE, emptyUnion.choiceTag());
-    ASSERT_EQ(0, emptyUnion.bitSizeOf());
+    {
+        EmptyUnion emptyUnion;
+        ASSERT_EQ(EmptyUnion::UNDEFINED_CHOICE, emptyUnion.choiceTag());
+        ASSERT_EQ(0, emptyUnion.bitSizeOf());
+    }
+    {
+        EmptyUnion emptyUnion = {};
+        ASSERT_EQ(EmptyUnion::UNDEFINED_CHOICE, emptyUnion.choiceTag());
+        ASSERT_EQ(0, emptyUnion.bitSizeOf());
+    }
 }
 
 TEST(EmptyUnionTest, bitStreamReaderConstructor)

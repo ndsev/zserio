@@ -13,8 +13,14 @@ namespace union_with_parameter
 
 TEST(UnionWithParameterTest, emptyConstructor)
 {
-    TestUnion testUnion;
-    ASSERT_THROW(testUnion.getCase1Allowed(), zserio::CppRuntimeException);
+    {
+        TestUnion testUnion;
+        ASSERT_THROW(testUnion.getCase1Allowed(), zserio::CppRuntimeException);
+    }
+    {
+        TestUnion testUnion = {};
+        ASSERT_THROW(testUnion.getCase1Allowed(), zserio::CppRuntimeException);
+    }
 }
 
 TEST(UnionWithParameterTest, bitStreamReaderConstructor)

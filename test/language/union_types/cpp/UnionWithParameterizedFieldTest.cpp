@@ -29,14 +29,26 @@ constexpr size_t UnionWithParameterizedFieldTest::ARRAY_HOLDER_BITSIZE;
 
 TEST_F(UnionWithParameterizedFieldTest, emptyConstructor)
 {
-    TestUnion testUnion;
-    ASSERT_THROW(testUnion.getArrayHolder().getSize(), zserio::CppRuntimeException);
+    {
+        TestUnion testUnion;
+        ASSERT_THROW(testUnion.getArrayHolder().getSize(), zserio::CppRuntimeException);
 
-    testUnion.setArrayHolder(ArrayHolder());
-    ASSERT_THROW(testUnion.getArrayHolder().getSize(), zserio::CppRuntimeException);
+        testUnion.setArrayHolder(ArrayHolder());
+        ASSERT_THROW(testUnion.getArrayHolder().getSize(), zserio::CppRuntimeException);
 
-    testUnion.initializeChildren();
-    ASSERT_EQ(10, testUnion.getArrayHolder().getSize());
+        testUnion.initializeChildren();
+        ASSERT_EQ(10, testUnion.getArrayHolder().getSize());
+    }
+    {
+        TestUnion testUnion = {};
+        ASSERT_THROW(testUnion.getArrayHolder().getSize(), zserio::CppRuntimeException);
+
+        testUnion.setArrayHolder(ArrayHolder());
+        ASSERT_THROW(testUnion.getArrayHolder().getSize(), zserio::CppRuntimeException);
+
+        testUnion.initializeChildren();
+        ASSERT_EQ(10, testUnion.getArrayHolder().getSize());
+    }
 }
 
 TEST_F(UnionWithParameterizedFieldTest, readerConstructor)

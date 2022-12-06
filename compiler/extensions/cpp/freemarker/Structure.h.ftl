@@ -47,6 +47,8 @@ public:
     using allocator_type = ${types.allocator.default};
 <#if withWriterCode>
 
+    <@compound_default_constructor compoundConstructorsData/>
+
     <@compound_constructor_declaration compoundConstructorsData/>
     <#if fieldList?has_content>
 

@@ -33,8 +33,14 @@ const Permission::underlying_type Uint8BitmaskTest::WRITE_VALUE = 4;
 
 TEST_F(Uint8BitmaskTest, emptyConstructor)
 {
-    const Permission permission;
-    ASSERT_EQ(0, permission.getValue());
+    {
+        const Permission permission;
+        ASSERT_EQ(0, permission.getValue());
+    }
+    {
+        const Permission permission = {};
+        ASSERT_EQ(0, permission.getValue());
+    }
 }
 
 TEST_F(Uint8BitmaskTest, valuesConstroctor)

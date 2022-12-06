@@ -12,8 +12,14 @@ namespace empty_structure
 
 TEST(EmptyStructureTest, emptyConstructor)
 {
-    EmptyStructure emptyStructure;
-    ASSERT_EQ(0, emptyStructure.bitSizeOf());
+    {
+        EmptyStructure emptyStructure;
+        ASSERT_EQ(0, emptyStructure.bitSizeOf());
+    }
+    {
+        EmptyStructure emptyStructure = {};
+        ASSERT_EQ(0, emptyStructure.bitSizeOf());
+    }
 }
 
 TEST(EmptyStructureTest, bitStreamReaderConstructor)

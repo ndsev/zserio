@@ -13,11 +13,20 @@ namespace empty_union_with_parameter
 
 TEST(EmptyUnionWithParameterTest, emptyConstructor)
 {
-    EmptyUnionWithParameter emptyUnionWithParameter;
-    ASSERT_EQ(EmptyUnionWithParameter::UNDEFINED_CHOICE, emptyUnionWithParameter.choiceTag());
-    ASSERT_EQ(0, emptyUnionWithParameter.bitSizeOf());
+    {
+        EmptyUnionWithParameter emptyUnionWithParameter;
+        ASSERT_EQ(EmptyUnionWithParameter::UNDEFINED_CHOICE, emptyUnionWithParameter.choiceTag());
+        ASSERT_EQ(0, emptyUnionWithParameter.bitSizeOf());
 
-    ASSERT_THROW(emptyUnionWithParameter.getParam(), zserio::CppRuntimeException);
+        ASSERT_THROW(emptyUnionWithParameter.getParam(), zserio::CppRuntimeException);
+    }
+    {
+        EmptyUnionWithParameter emptyUnionWithParameter = {};
+        ASSERT_EQ(EmptyUnionWithParameter::UNDEFINED_CHOICE, emptyUnionWithParameter.choiceTag());
+        ASSERT_EQ(0, emptyUnionWithParameter.bitSizeOf());
+
+        ASSERT_THROW(emptyUnionWithParameter.getParam(), zserio::CppRuntimeException);
+    }
 }
 
 TEST(EmptyUnionWithParameterTest, bitStreamReaderConstructor)

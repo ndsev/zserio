@@ -79,22 +79,30 @@ const uint32_t ArrayElementParamTest::FIRST_BYTE_OFFSET =
 
 TEST_F(ArrayElementParamTest, fieldConstructor)
 {
-    Database database;
-    fillDatabase(database);
-    // initialize because Block::operator== touches header parameter (see last assert)
-    database.initializeChildren();
+    {
+        Database database;
+        fillDatabase(database);
+        // initialize because Block::operator== touches header parameter (see last assert)
+        database.initializeChildren();
 
-    auto headers = database.getHeaders();
-    auto blocks = database.getBlocks();
+        auto headers = database.getHeaders();
+        auto blocks = database.getBlocks();
 
-    void* headersPtr = headers.data();
-    void* blocksPtr = blocks.data();
+        void* headersPtr = headers.data();
+        void* blocksPtr = blocks.data();
 
-    // headers are moved, blocks copied
-    Database newDatabase(database.getNumBlocks(), std::move(headers), blocks);
-    ASSERT_EQ(headersPtr, newDatabase.getHeaders().data());
-    ASSERT_NE(blocksPtr, newDatabase.getBlocks().data());
-    ASSERT_EQ(blocks, newDatabase.getBlocks());
+        // headers are moved, blocks copied
+        Database newDatabase(database.getNumBlocks(), std::move(headers), blocks);
+        ASSERT_EQ(headersPtr, newDatabase.getHeaders().data());
+        ASSERT_NE(blocksPtr, newDatabase.getBlocks().data());
+        ASSERT_EQ(blocks, newDatabase.getBlocks());
+    }
+    {
+        Database database({}, {}, {});
+        ASSERT_EQ(0, database.getNumBlocks());
+        ASSERT_EQ(0, database.getHeaders().size());
+        ASSERT_EQ(0, database.getBlocks().size());
+    }
 }
 
 TEST_F(ArrayElementParamTest, moveConstructor)
