@@ -106,6 +106,11 @@ public class ZserioAstTemplator extends ZserioAstWalker
                             typeReference.getTemplateArguments());
                     typeReference.resolveInstantiation(instantiation);
                 }
+                catch (InstantiationException e)
+                {
+                    // prevent recurrent InstantitationExcpetion (which is also ParserException)
+                    throw e;
+                }
                 catch (ParserException e)
                 {
                     throw new InstantiationException(e, instantiationReferenceStack);

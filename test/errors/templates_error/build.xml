@@ -57,13 +57,14 @@
         <testGen testName="templates_error" zsFile="symbol_with_type_name_clash_error.zs" ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="templatable_not_a_template_error.zs" ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="templated_template_parameter_error.zs" ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="too_few_arguments_error.zs" ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="too_many_arguments_error.zs" ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="unresolved_reference_in_template_error.zs"
                 ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="unresolved_template_instantiation_error.zs"
                 ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="unresolved_template_instantiation_in_template_error.zs"
                 ignoreErrors="true"/>
-        <testGen testName="templates_error" zsFile="wrong_number_of_arguments_error.zs" ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">

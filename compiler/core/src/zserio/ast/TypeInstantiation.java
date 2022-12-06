@@ -146,21 +146,21 @@ public class TypeInstantiation extends AstNodeBase
             {
                 exception.pushMessage(resolvingType.getLocation(),
                         "    See subtype '" +
-                        ZserioTypeUtil.getReferencedFullName(resolvingTypeReference) + "' definition here:");
+                        ZserioTypeUtil.getReferencedFullName(resolvingTypeReference) + "' definition here");
                 resolvingTypeReference = ((Subtype)resolvingType).getTypeReference();
             }
             else if (resolvingType instanceof InstantiateType)
             {
                 exception.pushMessage(resolvingType.getLocation(),
                         "    See template instantiation '" +
-                        ZserioTypeUtil.getReferencedFullName(resolvingTypeReference) + "' definition here:");
+                        ZserioTypeUtil.getReferencedFullName(resolvingTypeReference) + "' definition here");
                 resolvingTypeReference = ((InstantiateType)resolvingType).getTypeReference();
             }
             resolvingType = resolvingTypeReference.getType();
         }
 
         exception.pushMessage(resolvingType.getLocation(),
-                    "    See '" + resolvingType.getName() + "' definition here:");
+                    "    See '" + resolvingType.getName() + "' definition here");
     }
 
     private final TypeReference typeReference;

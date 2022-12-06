@@ -34,9 +34,9 @@ public class ParameterizedTypesErrorTest
     public void referencedBuiltInType()
     {
         final String[] errors = {
-            "referenced_builtin_type_error.zs:3:9:     See 'uint32' definition here:",
-            "referenced_builtin_type_error.zs:3:16:     See subtype 'Item' definition here:",
-            "referenced_builtin_type_error.zs:5:14:     See subtype 'Subtype' definition here:",
+            "referenced_builtin_type_error.zs:3:9:     See 'uint32' definition here",
+            "referenced_builtin_type_error.zs:3:16:     See subtype 'Item' definition here",
+            "referenced_builtin_type_error.zs:5:14:     See subtype 'Subtype' definition here",
             "referenced_builtin_type_error.zs:10:5: " +
                     "Referenced type 'Subtype' is not a parameterized type!"
         };
@@ -47,7 +47,7 @@ public class ParameterizedTypesErrorTest
     public void referencedEnumType()
     {
         final String[] errors = {
-            "referenced_enum_type_error.zs:3:13:     See 'Item' definition here:",
+            "referenced_enum_type_error.zs:3:13:     See 'Item' definition here",
             "referenced_enum_type_error.zs:12:5: " +
                     "Referenced type 'Item' is not a parameterized type!"
         };
@@ -58,7 +58,7 @@ public class ParameterizedTypesErrorTest
     public void referencedNonParameterizedType()
     {
         final String[] errors = {
-            "referenced_non_parameterized_type_error.zs:3:8:     See 'Item' definition here:",
+            "referenced_non_parameterized_type_error.zs:3:8:     See 'Item' definition here",
             "referenced_non_parameterized_type_error.zs:12:5: " +
                     "Referenced type 'Item' is not a parameterized type!"
         };
@@ -69,7 +69,7 @@ public class ParameterizedTypesErrorTest
     public void referencedParameterizedType()
     {
         final String[] errors = {
-            "referenced_parameterized_type_error.zs:3:8:     See 'Item' definition here:",
+            "referenced_parameterized_type_error.zs:3:8:     See 'Item' definition here",
             "referenced_parameterized_type_error.zs:12:5: " +
                     "Referenced type 'Item' is defined as parameterized type!"
         };
@@ -120,7 +120,7 @@ public class ParameterizedTypesErrorTest
     public void tooFewArguments()
     {
         final String[] errors = {
-            "too_few_arguments_error.zs:3:8:     See 'Item' definition here:",
+            "too_few_arguments_error.zs:3:8:     See 'Item' definition here",
             "too_few_arguments_error.zs:13:5: " +
                     "Parameterized type instantiation of 'Item' has too few arguments! Expecting 2, got 1!"
         };
@@ -131,9 +131,9 @@ public class ParameterizedTypesErrorTest
     public void tooManyArguments()
     {
         final String[] errors = {
-            "too_many_arguments_error.zs:3:8:     See 'Item' definition here:",
-            "too_many_arguments_error.zs:9:26:     See template instantiation 'ItemU16' definition here:",
-            "too_many_arguments_error.zs:11:17:     See subtype 'Subtype' definition here:",
+            "too_many_arguments_error.zs:3:8:     See 'Item' definition here",
+            "too_many_arguments_error.zs:9:26:     See template instantiation 'ItemU16' definition here",
+            "too_many_arguments_error.zs:11:17:     See subtype 'Subtype' definition here",
             "too_many_arguments_error.zs:17:5: " +
                     "Parameterized type instantiation of 'Subtype' has too many arguments! Expecting 1, got 2!"
         };

@@ -89,9 +89,14 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
         final List<TemplateArgument> templateArguments = instantiationReference.getTemplateArguments();
         if (templateParameters.size() != templateArguments.size())
         {
-            throw new ParserException(instantiationReference,
-                    "Wrong number of template arguments for template '" + getName() + "'! Expecting " +
-                    templateParameters.size() + ", got " + templateArguments.size() + "!");
+            final ParserStackedException stackedException = new ParserStackedException(
+                    instantiationReference.getLocation(),
+                    "Template instantiation of '" + getName() + "' has " +
+                    (templateParameters.size() > templateArguments.size() ? "too few" : "too many") +
+                    " arguments! Expecting " + templateParameters.size() +
+                    ", got " + templateArguments.size() + "!");
+            stackedException.pushMessage(getLocation(), "    See '" + getName() + "' definition here");
+            throw stackedException;
         }
 
         TemplatableType instantiation = instantiateImpl(templateArguments, instantiationPackage);

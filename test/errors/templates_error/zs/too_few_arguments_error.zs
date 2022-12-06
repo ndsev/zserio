@@ -1,4 +1,4 @@
-package wrong_number_of_arguments_error;
+package too_few_arguments_error;
 
 struct TestStruct<T1, T2>
 {

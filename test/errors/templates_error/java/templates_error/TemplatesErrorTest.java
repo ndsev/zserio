@@ -340,6 +340,33 @@ public class TemplatesErrorTest
     }
 
     @Test
+    public void tooFewArguments()
+    {
+        final String errors[] =
+        {
+            "too_few_arguments_error.zs:11:5:     In instantiation of 'TestStruct' required from here",
+            "too_few_arguments_error.zs:3:8:     See 'TestStruct' definition here",
+            "too_few_arguments_error.zs:11:5: " +
+                    "Template instantiation of 'TestStruct' has too few arguments! Expecting 2, got 1!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
+    public void tooManyArguments()
+    {
+        final String errors[] =
+        {
+            "too_many_arguments_error.zs:16:5:     In instantiation of 'OtherStruct' required from here",
+            "too_many_arguments_error.zs:11:5:     In instantiation of 'TestStruct' required from here",
+            "too_many_arguments_error.zs:3:8:     See 'TestStruct' definition here",
+            "too_many_arguments_error.zs:11:5: " +
+                    "Template instantiation of 'TestStruct' has too many arguments! Expecting 2, got 3!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
     public void unresolvedReferenceInTemplate()
     {
         final String error = "unresolved_reference_in_template_error.zs:5:5: " +
@@ -360,14 +387,6 @@ public class TemplatesErrorTest
     {
         final String error = "unresolved_template_instantiation_in_template_error.zs:5:5: " +
                 "Unresolved referenced type 'Unresolved'!";
-        assertTrue(zserioErrors.isPresent(error));
-    }
-
-    @Test
-    public void wrongNumberOfArguments()
-    {
-        final String error = "wrong_number_of_arguments_error.zs:11:5: " +
-                "Wrong number of template arguments for template 'TestStruct'! Expecting 2, got 1!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
