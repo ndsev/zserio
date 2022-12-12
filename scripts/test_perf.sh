@@ -388,6 +388,9 @@ generate_python_perftest()
 import sys
 import argparse
 from timeit import default_timer as timer
+import cProfile
+import re
+import os
 
 import zserio
 import ${API_MODULE}.api as api
@@ -396,14 +399,18 @@ def performance_test(log_path, blob_path, num_iterations):
     print("Zserio Python Performance Test")
 
     # prepare byte array
-    reader_from_file = zserio.BitStreamReader.from_file(blob_path)
+
+    with open(blob_path, 'rb') as file:
+        reader_from_file = zserio.BitStreamReader(file.read())
     blob_from_file = api.${BLOB_API_PATH}.from_reader(reader_from_file)
     buffer_writer = zserio.BitStreamWriter()
-    blob_from_file.write(buffer_writer);
+    blob_from_file.write(buffer_writer)
     byte_array = buffer_writer.byte_array
 
     # run the test
+    pr = cProfile.Profile()
     start = timer()
+    pr.enable()
     for i in range(num_iterations):
 EOF
 
@@ -432,7 +439,13 @@ EOF
     esac
 
     cat >> "${BUILD_DIR}/src/perftest.py" << EOF
+    pr.disable()
     stop = timer()
+    prof_path = re.sub("\..*$", ".prof", log_path)
+    if pr.getstats():
+        pr.dump_stats(prof_path)
+    elif os.path.exists(prof_path):
+        os.remove(prof_path)
 
     # process results
     total_duration = (stop - start) * 1000
@@ -535,9 +548,15 @@ test_perf()
 
         generate_python_perftest "${TEST_OUT_DIR}/python" "${SWITCH_BLOB_NAME}" ${SWITCH_NUM_ITERATIONS} \
                                  ${SWITCH_TEST_CONFIG}
+
         PYTHONPATH="${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/python:${TEST_OUT_DIR}/python/gen" \
-        python ${TEST_OUT_DIR}/python/src/perftest.py --log-path="${TEST_OUT_DIR}/python/perftest.log" \
+        python ${TEST_OUT_DIR}/python/src/perftest.py \
+               --log-path="${TEST_OUT_DIR}/python/perftest.log" \
                --blob-path "${SWITCH_BLOB_PATH}"
+        if [ -f ${TEST_OUT_DIR}/python/perftest.prof ] ; then
+            #python -m snakeviz ${TEST_OUT_DIR}/python/perftest.prof
+            python -m pyprof2calltree -k -i ${TEST_OUT_DIR}/python/perftest.prof
+        fi
         if [ $? -ne 0 ] ; then
             return 1
         fi
@@ -575,7 +594,7 @@ Description:
     Runds performance tests on given zserio sources with zserio release compiled in release-ver directory.
 
 Usage:
-    $0 [-h] [-e] [-p] [-o <dir>] [-d <dir>] [-t <name>] -[n <num>] [-t <config>]
+    $0 [-h] [-e] [-p] [-o <dir>] [-d <dir>] [-t <name>] -[n <num>] [-c <config>]
        generator... -s test.zs -b test.Blob -f blob.bin
 
 Arguments:
@@ -590,7 +609,7 @@ Arguments:
                             Test name. Optional.
     -n <num>, --num-iterations <num>
                             Number of iterations. Optional, default is 100.
-    -t <config>, --test-config <config>
+    -c <config>, --test-config <config>
                             Test configuration: READ (default), WRITE, READ_WRITE.
     -s <source>, --source <source>
                             Main zserio source.
@@ -753,7 +772,7 @@ parse_arguments()
                 shift
                 ;;
 
-            "-t" | "--test-config")
+            "-c" | "--test-config")
                 shift
                 local ARG="$1"
                 if [ -z "${ARG}" ] ; then
