@@ -283,7 +283,7 @@ activate_python_virtualenv()
     local STANDARD_REQUIREMENTS=(
         # needed to build apsw on Windows using MSVC compiler - see https://github.com/rogerbinns/apsw/issues/303
         "setuptools==59.8.0"
-        "coverage>=4.5.1" "sphinx"
+        "coverage==6.5.0" "sphinx"
         "astroid==2.9.3" "pylint==2.12.2" "mypy==0.931"
     )
     local APSW_REQUIREMENTS=("apsw")
