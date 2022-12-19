@@ -239,7 +239,7 @@ parse_arguments()
     local NUM_PARAMS=0
     local PARAM_ARRAY=();
     local ARG="$1"
-    while [ -n "${ARG}" ] ; do
+    while [ $# -ne 0 ] ; do
         case "${ARG}" in
             "-h" | "--help")
                 return 2
@@ -265,7 +265,7 @@ parse_arguments()
                 ;;
 
             "-"*)
-                stderr_echo "Invalid switch ${ARG}!"
+                stderr_echo "Invalid switch '${ARG}'!"
                 echo
                 return 1
                 ;;
@@ -345,7 +345,7 @@ parse_arguments()
                 ;;
 
             *)
-                stderr_echo "Invalid argument ${PARAM}!"
+                stderr_echo "Invalid argument '${PARAM}'!"
                 echo
                 return 1
         esac

@@ -69,7 +69,7 @@ parse_arguments()
     local ARR=()
     local NUM_DIRS=0
     local ARG="$1"
-    while [ -n "${ARG}" ] ; do
+    while [ $# -ne 0 ] ; do
         case "${ARG}" in
             "-h" | "--help")
                 return 2
@@ -85,7 +85,7 @@ parse_arguments()
                 ;;
 
             "-"*)
-                stderr_echo "Invalid switch ${ARG}!"
+                stderr_echo "Invalid switch '${ARG}'!"
                 echo
                 return 1
                 ;;
