@@ -8,6 +8,7 @@
 
 <@include_guard_begin package.path, name/>
 
+<@pybind_includes/>
 <#if withWriterCode && fieldList?has_content>
 #include <zserio/Traits.h>
 </#if>
@@ -41,6 +42,8 @@ class ${name}
 {
 <@top_private_section_declarations name, fieldList/>
 public:
+    static void zserioInitPyBind11(::pybind11::module m);
+
     <#if withCodeComments>
     /** Definition for allocator type. */
     </#if>

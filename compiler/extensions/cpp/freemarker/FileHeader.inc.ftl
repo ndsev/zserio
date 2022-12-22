@@ -93,3 +93,8 @@ namespace ${namespace}
     ${types.set.name}<${typeName}<#t>
             <#if types.set.needsAllocatorArgument>, ${types.allocator.name}<${typeName}></#if>><#t>
 </#macro>
+
+<#macro pybind_includes>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+</#macro>

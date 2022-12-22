@@ -43,8 +43,15 @@ abstract class CppDefaultEmitter extends DefaultTreeWalker
     protected void processSourceTemplate(String templateName, Object templateData, ZserioType zserioType)
             throws ZserioExtensionException
     {
-        processTemplate(templateName, templateData, zserioType.getPackage().getPackageName(),
-                zserioType.getName(), CPP_SOURCE_EXTENSION, true);
+        processSourceTemplate(templateName, templateData, zserioType.getPackage().getPackageName(),
+                zserioType.getName());
+    }
+
+    protected void processSourceTemplate(String templateName, Object templateData,
+            PackageName zserioPackageName, String outFileName) throws ZserioExtensionException
+    {
+        processTemplate(templateName, templateData, zserioPackageName,
+                outFileName, CPP_SOURCE_EXTENSION, true);
     }
 
     protected void processHeaderTemplate(String templateName, Object templateData, ZserioType zserioType)
@@ -58,6 +65,13 @@ abstract class CppDefaultEmitter extends DefaultTreeWalker
             PackageName zserioPackageName, String outFileName) throws ZserioExtensionException
     {
         processTemplate(templateName, templateData, zserioPackageName, outFileName, CPP_HEADER_EXTENSION,
+                false);
+    }
+
+    protected void processPyTemplate(String templateName, Object templateData,
+            PackageName zserioPackageName, String outFileName) throws ZserioExtensionException
+    {
+        processTemplate(templateName, templateData, zserioPackageName, outFileName, PY_EXTENSION,
                 false);
     }
 
@@ -166,6 +180,7 @@ abstract class CppDefaultEmitter extends DefaultTreeWalker
 
     private static final String CPP_SOURCE_EXTENSION = ".cpp";
     private static final String CPP_HEADER_EXTENSION = ".h";
+    private static final String PY_EXTENSION = ".py";
     private static final String CPP_TEMPLATE_LOCATION = "cpp/";
 
     private static final String CPP_DEFAULT_AMALGAM_FILE_NAME_ROOT = "Amalgamation";

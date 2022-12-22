@@ -76,6 +76,7 @@ public class CppExtension implements Extension
         emitters.add(new SqlTableEmitter(outputFileManager, cppParameters));
         emitters.add(new ServiceEmitter(outputFileManager, cppParameters));
         emitters.add(new PubsubEmitter(outputFileManager, cppParameters));
+        emitters.add(new PyBind11Emitter(outputFileManager, cppParameters));
 
         // emit C++ code
         for (CppDefaultEmitter emitter: emitters)

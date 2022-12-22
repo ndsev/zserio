@@ -32,6 +32,41 @@
 <@user_includes cppUserIncludes, false/>
 <@namespace_begin package.path/>
 
+void ${name}::zserioInitPyBind11(::pybind11::module m)
+{
+<#assign pybind_from_reader_parameters>
+    <@compound_parameter_constructor_type_list compoundParametersData, 5/>
+</#assign>
+    ::pybind11::class_<${name}>(m, "${name}")
+            .def(::pybind11::init())
+            .def_static("from_reader", [](::zserio::BitStreamReader& reader<#if pybind_from_reader_parameters?has_content>,
+                    <#lt>${pybind_from_reader_parameters}</#if>) {
+                return ${name}(reader<#rt>
+<#if compoundParametersData.list?has_content>
+                , <#t>
+    <#list compoundParametersData.list as compoundParameter>
+                <@parameter_argument_name compoundParameter.name/><#if compoundParameter?has_next>, </#if><#t>
+    </#list>
+</#if>
+                <#lt>);
+            })
+            .def("bitsizeof",
+                    static_cast<size_t (${name}::*)(size_t) const>(&${name}::bitSizeOf))
+            .def("initialize_offsets",
+                    static_cast<size_t (${name}::*)(size_t)>(&${name}::initializeOffsets))
+            .def("write",
+                    static_cast<void (${name}::*)(::zserio::BitStreamWriter&) const>(&${name}::write))
+<#if fieldList?has_content>
+
+    <#list fieldList as field>
+            .def_property("${field.name}",
+                    static_cast<<@field_raw_cpp_argument_type_name field/> (${name}::*)() const>(&${name}::${field.getterName}),
+                    static_cast<void (${name}::*)(<@field_raw_cpp_argument_type_name field/>)>(&${name}::${field.setterName}))
+    </#list>
+</#if>
+            ;
+}
+
 <@inner_classes_definition name, fieldList/>
 <#if withWriterCode>
 <#macro empty_constructor_field_initialization>
