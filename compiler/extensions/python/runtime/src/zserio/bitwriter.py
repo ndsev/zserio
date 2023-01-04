@@ -37,13 +37,7 @@ class BitStreamWriter:
         if numbits <= 0:
             raise PythonRuntimeException(f"BitStreamWriter: numbits '{numbits}' is less than 1!")
 
-        min_value = 0
-        max_value = (1 << numbits) - 1
-        if value < min_value or value > max_value:
-            raise PythonRuntimeException(f"BitStreamWriter: Value '{value}' is out of the range "
-                                         f"<{min_value},{max_value}>!")
-
-        self._write_bits(value, numbits, signed=False)
+        self.write_bits_unchecked(value, numbits)
 
     def write_signed_bits(self, value: int, numbits: int) -> None:
         """
@@ -57,6 +51,39 @@ class BitStreamWriter:
 
         if numbits <= 0:
             raise PythonRuntimeException(f"BitStreamWriter: numbits '{numbits}' is less than 1!")
+
+        self.write_signed_bits_unchecked(value, numbits)
+
+    def write_bits_unchecked(self, value: int, numbits: int) -> None:
+        """
+        Writes the given value with the given number of bits to the underlying storage.
+
+        This method does not check that numbits > 0 and assumes that it's ensured by the caller.
+
+        :param value: Value to write.
+        :param numbits: Number of bits to write.
+        :raises PythonRuntimeException: If the value is out of the range or if the number of bits is invalid.
+        """
+
+        min_value = 0
+        max_value = (1 << numbits) - 1
+        if value < min_value or value > max_value:
+            raise PythonRuntimeException(f"BitStreamWriter: Value '{value}' is out of the range "
+                                         f"<{min_value},{max_value}>!")
+
+        self._write_bits(value, numbits, signed=False)
+
+    def write_signed_bits_unchecked(self, value: int, numbits: int) -> None:
+        """
+        Writes the given signed value with the given number of bits to the underlying storage.
+        Provided for convenience.
+
+        This method does not check that numbits > 0 and assumes that it's ensured by the caller.
+
+        :param value: Signed value to write.
+        :param numbits: Number of bits to write.
+        :raises PythonRuntimeException: If the value is out of the range or if the number of bits is invalid.
+        """
 
         min_value = -(1 << (numbits - 1))
         max_value = (1 << (numbits - 1)) - 1
@@ -105,7 +132,7 @@ class BitStreamWriter:
         """
 
         if value == INT64_MIN:
-            self.write_bits(0x80, 8) # INT64_MIN is stored as -0
+            self._write_bits(0x80, 8) # INT64_MIN is stored as -0
         else:
             self._write_varnum(value, 9, bitsizeof_varint(value) // 8, is_signed=True)
 
@@ -166,7 +193,7 @@ class BitStreamWriter:
         :param value: Float value to write.
         """
 
-        self.write_bits(float_to_uint16(value), 16)
+        self.write_bits_unchecked(float_to_uint16(value), 16)
 
     def write_float32(self, value: float) -> None:
         """
@@ -175,7 +202,7 @@ class BitStreamWriter:
         :param value: Float value to write.
         """
 
-        self.write_bits(float_to_uint32(value), 32)
+        self.write_bits_unchecked(float_to_uint32(value), 32)
 
     def write_float64(self, value: float) -> None:
         """
@@ -184,7 +211,7 @@ class BitStreamWriter:
         :param value: Float value to write.
         """
 
-        self.write_bits(float_to_uint64(value), 64)
+        self.write_bits_unchecked(float_to_uint64(value), 64)
 
     def write_bytes(self, value: bytearray):
         """
@@ -196,7 +223,7 @@ class BitStreamWriter:
 
         self.write_varsize(len(value))
         for byte in value:
-            self.write_bits(byte, 8)
+            self.write_bits_unchecked(byte, 8)
 
     def write_string(self, string: str) -> None:
         """
@@ -209,7 +236,7 @@ class BitStreamWriter:
         string_bytes = string.encode("utf-8")
         self.write_varsize(len(string_bytes))
         for string_byte in string_bytes:
-            self.write_bits(string_byte, 8)
+            self.write_bits_unchecked(string_byte, 8)
 
     def write_bool(self, value: bool) -> None:
         """
@@ -218,7 +245,7 @@ class BitStreamWriter:
         :param value: Bool value to write.
         """
 
-        self.write_bits(1 if value else 0, 1)
+        self._write_bits(1 if value else 0, 1)
 
     def write_bitbuffer(self, bitbuffer: BitBuffer) -> None:
         """
@@ -238,14 +265,14 @@ class BitStreamWriter:
         if (begin_bitposition & 0x07) != 0:
             # we are not aligned to byte
             for i in range(num_bytes_to_write):
-                self.write_bits(write_buffer[i], 8)
+                self.write_bits_unchecked(write_buffer[i], 8)
         else:
             # we are aligned to byte
             self._byte_array += write_buffer[0:num_bytes_to_write]
             self._bitposition += num_bytes_to_write * 8
 
         if num_rest_bits > 0:
-            self.write_bits(write_buffer[num_bytes_to_write] >> (8 - num_rest_bits), num_rest_bits)
+            self.write_bits_unchecked(write_buffer[num_bytes_to_write] >> (8 - num_rest_bits), num_rest_bits)
 
     @property
     def byte_array(self) -> bytes:
@@ -286,9 +313,9 @@ class BitStreamWriter:
 
         offset = self._bitposition % alignment
         if offset != 0:
-            self.write_bits(0, alignment - offset)
+            self._write_bits(0, alignment - offset)
 
-    def _write_bits(self, value: int, numbits: int, *, signed: bool) -> None:
+    def _write_bits(self, value: int, numbits: int, *, signed: bool = False) -> None:
         buffer_last_byte_bits = self._bitposition % 8
         buffer_free_bits = (8 - buffer_last_byte_bits) if buffer_last_byte_bits != 0 else 0
         value_first_byte_bits = numbits % 8 or 8
@@ -329,6 +356,6 @@ class BitStreamWriter:
 
             shift_bits = (num_var_bytes - (i + 1)) * 7 + (1 if has_max_byte_range and has_next_byte else 0)
             byte |= (abs_value >> shift_bits) & VAR_NUM_BIT_MASKS[numbits - 1]
-            self.write_bits(byte, 8)
+            self.write_bits_unchecked(byte, 8)
 
 VAR_NUM_BIT_MASKS = [0x01, 0x03, 0x07, 0x0f, 0x1f, 0x3f, 0x7f, 0xff]

@@ -65,6 +65,33 @@ class BitStreamReader:
         if numbits < 0:
             raise PythonRuntimeException("BitStreamReader: Reading negative number of bits!")
 
+        return self.read_bits_unchecked(numbits)
+
+    def read_signed_bits(self, numbits: int) -> int:
+        """
+        Reads given number of bits from the bit stream as a signed integer.
+
+        :param numbits: Number of bits to read
+        :returns: Read bits as a signed integer.
+        :raises PythonRuntimeException: If the numbits is invalid number of the reading goes behind the stream.
+        """
+
+        if numbits < 0:
+            raise PythonRuntimeException("BitStreamReader: Reading negative number of bits!")
+
+        return self.read_signed_bits_unchecked(numbits)
+
+    def read_bits_unchecked(self, numbits: int) -> int:
+        """
+        Reads given number of bits from the bit stream as an unsigned integer.
+
+        This method does not check that numbits >= 0 and assumes that it's ensured by the caller.
+
+        :param numbits: Number of bits to read.
+        :returns: Read bits as an unsigned integer.
+        :raises PythonRuntimeException: If the numbits is invalid number of the reading goes behind the stream.
+        """
+
         end_bitposition = self._bitposition + numbits
 
         if end_bitposition > self._bitbuffer.bitsize:
@@ -85,16 +112,18 @@ class BitStreamReader:
 
         return value
 
-    def read_signed_bits(self, numbits: int) -> int:
+    def read_signed_bits_unchecked(self, numbits: int) -> int:
         """
         Reads given number of bits from the bit stream as a signed integer.
+
+        This method does not check that numbits >= 0 and assumes that it's ensured by the caller.
 
         :param numbits: Number of bits to read
         :returns: Read bits as a signed integer.
         :raises PythonRuntimeException: If the numbits is invalid number of the reading goes behind the stream.
         """
 
-        value = self.read_bits(numbits)
+        value = self.read_bits_unchecked(numbits)
 
         if numbits != 0 and (value >> (numbits - 1)) != 0:
             # signed
@@ -110,13 +139,13 @@ class BitStreamReader:
         :returns: Variable 16-bit signed integer value.
         """
 
-        byte = self.read_bits(8) # byte 1
+        byte = self.read_bits_unchecked(8) # byte 1
         sign = byte & VARINT_SIGN_1
         result = byte & VARINT_BYTE_1
         if byte & VARINT_HAS_NEXT_1 == 0:
             return -result if sign != 0 else result
 
-        result = (result << 8) | self.read_bits(8) # byte 2
+        result = (result << 8) | self.read_bits_unchecked(8) # byte 2
         return -result if sign else result
 
     def read_varint32(self) -> int:
@@ -126,23 +155,23 @@ class BitStreamReader:
         :returns: Variable 32-bit signed integer value.
         """
 
-        byte = self.read_bits(8) # byte 1
+        byte = self.read_bits_unchecked(8) # byte 1
         sign = byte & VARINT_SIGN_1
         result = byte & VARINT_BYTE_1
         if byte & VARINT_HAS_NEXT_1 == 0:
             return -result if sign else result
 
-        byte = self.read_bits(8) # byte 2
+        byte = self.read_bits_unchecked(8) # byte 2
         result = result << 7 | (byte & VARINT_BYTE_N)
         if byte & VARINT_HAS_NEXT_N == 0:
             return -result if sign else result
 
-        byte = self.read_bits(8) # byte 3
+        byte = self.read_bits_unchecked(8) # byte 3
         result = result << 7 | (byte & VARINT_BYTE_N)
         if byte & VARINT_HAS_NEXT_N == 0:
             return -result if sign else result
 
-        result = result << 8 | self.read_bits(8) # byte 4
+        result = result << 8 | self.read_bits_unchecked(8) # byte 4
         return -result if sign else result
 
     def read_varint64(self) -> int:
@@ -152,43 +181,43 @@ class BitStreamReader:
         :returns: Variable 64-bit signed integer value.
         """
 
-        byte = self.read_bits(8) # byte 1
+        byte = self.read_bits_unchecked(8) # byte 1
         sign = byte & VARINT_SIGN_1
         result = byte & VARINT_BYTE_1
         if byte & VARINT_HAS_NEXT_1 == 0:
             return -result if sign else result
 
-        byte = self.read_bits(8) # byte 2
+        byte = self.read_bits_unchecked(8) # byte 2
         result = result << 7 | (byte & VARINT_BYTE_N)
         if byte & VARINT_HAS_NEXT_N == 0:
             return -result if sign else result
 
-        byte = self.read_bits(8) # byte 3
+        byte = self.read_bits_unchecked(8) # byte 3
         result = result << 7 | (byte & VARINT_BYTE_N)
         if byte & VARINT_HAS_NEXT_N == 0:
             return -result if sign else result
 
-        byte = self.read_bits(8) # byte 4
+        byte = self.read_bits_unchecked(8) # byte 4
         result = result << 7 | (byte & VARINT_BYTE_N)
         if byte & VARINT_HAS_NEXT_N == 0:
             return -result if sign else result
 
-        byte = self.read_bits(8) # byte 5
+        byte = self.read_bits_unchecked(8) # byte 5
         result = result << 7 | (byte & VARINT_BYTE_N)
         if byte & VARINT_HAS_NEXT_N == 0:
             return -result if sign else result
 
-        byte = self.read_bits(8) # byte 6
+        byte = self.read_bits_unchecked(8) # byte 6
         result = result << 7 | (byte & VARINT_BYTE_N)
         if byte & VARINT_HAS_NEXT_N == 0:
             return -result if sign else result
 
-        byte = self.read_bits(8) # byte 7
+        byte = self.read_bits_unchecked(8) # byte 7
         result = result << 7 | (byte & VARINT_BYTE_N)
         if byte & VARINT_HAS_NEXT_N == 0:
             return -result if sign else result
 
-        result = result << 8 | self.read_bits(8) # byte 8
+        result = result << 8 | self.read_bits_unchecked(8) # byte 8
         return -result if sign else result
 
     def read_varint(self) -> int:
@@ -198,48 +227,48 @@ class BitStreamReader:
         :returns: Variable signed integer value (up to 9 bytes).
         """
 
-        byte = self.read_bits(8) # byte 1
+        byte = self.read_bits_unchecked(8) # byte 1
         sign = byte & VARINT_SIGN_1
         result = byte & VARINT_BYTE_1
         if byte & VARINT_HAS_NEXT_1 == 0:
             return (INT64_MIN if result == 0 else -result) if sign else result
 
-        byte = self.read_bits(8) # byte 2
+        byte = self.read_bits_unchecked(8) # byte 2
         result = result << 7 | (byte & VARINT_BYTE_N)
         if byte & VARINT_HAS_NEXT_N == 0:
             return -result if sign else result
 
-        byte = self.read_bits(8) # byte 3
+        byte = self.read_bits_unchecked(8) # byte 3
         result = result << 7 | (byte & VARINT_BYTE_N)
         if byte & VARINT_HAS_NEXT_N == 0:
             return -result if sign else result
 
-        byte = self.read_bits(8) # byte 4
+        byte = self.read_bits_unchecked(8) # byte 4
         result = result << 7 | (byte & VARINT_BYTE_N)
         if byte & VARINT_HAS_NEXT_N == 0:
             return -result if sign else result
 
-        byte = self.read_bits(8) # byte 5
+        byte = self.read_bits_unchecked(8) # byte 5
         result = result << 7 | (byte & VARINT_BYTE_N)
         if byte & VARINT_HAS_NEXT_N == 0:
             return -result if sign else result
 
-        byte = self.read_bits(8) # byte 6
+        byte = self.read_bits_unchecked(8) # byte 6
         result = result << 7 | (byte & VARINT_BYTE_N)
         if byte & VARINT_HAS_NEXT_N == 0:
             return -result if sign else result
 
-        byte = self.read_bits(8) # byte 7
+        byte = self.read_bits_unchecked(8) # byte 7
         result = result << 7 | (byte & VARINT_BYTE_N)
         if byte & VARINT_HAS_NEXT_N == 0:
             return -result if sign else result
 
-        byte = self.read_bits(8) # byte 8
+        byte = self.read_bits_unchecked(8) # byte 8
         result = result << 7 | (byte & VARINT_BYTE_N)
         if byte & VARINT_HAS_NEXT_N == 0:
             return -result if sign else result
 
-        result = result << 8 | self.read_bits(8) # byte 9
+        result = result << 8 | self.read_bits_unchecked(8) # byte 9
         return -result if sign else result
 
     def read_varuint16(self) -> int:
@@ -249,12 +278,12 @@ class BitStreamReader:
         :returns: Variable 16-bit unsigned integer value.
         """
 
-        byte = self.read_bits(8) # byte 1
+        byte = self.read_bits_unchecked(8) # byte 1
         result = byte & VARUINT_BYTE
         if byte & VARUINT_HAS_NEXT == 0:
             return result
 
-        result = result << 8 | self.read_bits(8) # byte 2
+        result = result << 8 | self.read_bits_unchecked(8) # byte 2
         return result
 
     def read_varuint32(self) -> int:
@@ -264,22 +293,22 @@ class BitStreamReader:
         :returns: Variable 32-bit unsigned integer value.
         """
 
-        byte = self.read_bits(8) # byte 1
+        byte = self.read_bits_unchecked(8) # byte 1
         result = byte & VARUINT_BYTE
         if byte & VARUINT_HAS_NEXT == 0:
             return result
 
-        byte = self.read_bits(8) # byte 2
+        byte = self.read_bits_unchecked(8) # byte 2
         result = result << 7 | (byte & VARUINT_BYTE)
         if byte & VARUINT_HAS_NEXT == 0:
             return result
 
-        byte = self.read_bits(8) # byte 3
+        byte = self.read_bits_unchecked(8) # byte 3
         result = result << 7 | (byte & VARUINT_BYTE)
         if byte & VARUINT_HAS_NEXT == 0:
             return result
 
-        result = result << 8 | self.read_bits(8) # byte 4
+        result = result << 8 | self.read_bits_unchecked(8) # byte 4
         return result
 
     def read_varuint64(self) -> int:
@@ -289,42 +318,42 @@ class BitStreamReader:
         :returns: Variable 64-bit unsigned integer value.
         """
 
-        byte = self.read_bits(8) # byte 1
+        byte = self.read_bits_unchecked(8) # byte 1
         result = byte & VARUINT_BYTE
         if byte & VARUINT_HAS_NEXT == 0:
             return result
 
-        byte = self.read_bits(8) # byte 2
+        byte = self.read_bits_unchecked(8) # byte 2
         result = result << 7 | (byte & VARUINT_BYTE)
         if byte & VARUINT_HAS_NEXT == 0:
             return result
 
-        byte = self.read_bits(8) # byte 3
+        byte = self.read_bits_unchecked(8) # byte 3
         result = result << 7 | (byte & VARUINT_BYTE)
         if byte & VARUINT_HAS_NEXT == 0:
             return result
 
-        byte = self.read_bits(8) # byte 4
+        byte = self.read_bits_unchecked(8) # byte 4
         result = result << 7 | (byte & VARUINT_BYTE)
         if byte & VARUINT_HAS_NEXT == 0:
             return result
 
-        byte = self.read_bits(8) # byte 5
+        byte = self.read_bits_unchecked(8) # byte 5
         result = result << 7 | (byte & VARUINT_BYTE)
         if byte & VARUINT_HAS_NEXT == 0:
             return result
 
-        byte = self.read_bits(8) # byte 6
+        byte = self.read_bits_unchecked(8) # byte 6
         result = result << 7 | (byte & VARUINT_BYTE)
         if byte & VARUINT_HAS_NEXT == 0:
             return result
 
-        byte = self.read_bits(8) # byte 7
+        byte = self.read_bits_unchecked(8) # byte 7
         result = result << 7 | (byte & VARUINT_BYTE)
         if byte & VARUINT_HAS_NEXT == 0:
             return result
 
-        result = result << 8 | self.read_bits(8) # byte 8
+        result = result << 8 | self.read_bits_unchecked(8) # byte 8
         return result
 
     def read_varuint(self) -> int:
@@ -334,47 +363,47 @@ class BitStreamReader:
         :returns: Variable unsigned integer value (up to 9 bytes).
         """
 
-        byte = self.read_bits(8) # byte 1
+        byte = self.read_bits_unchecked(8) # byte 1
         result = byte & VARUINT_BYTE
         if byte & VARUINT_HAS_NEXT == 0:
             return result
 
-        byte = self.read_bits(8) # byte 2
+        byte = self.read_bits_unchecked(8) # byte 2
         result = result << 7 | (byte & VARUINT_BYTE)
         if byte & VARUINT_HAS_NEXT == 0:
             return result
 
-        byte = self.read_bits(8) # byte 3
+        byte = self.read_bits_unchecked(8) # byte 3
         result = result << 7 | (byte & VARUINT_BYTE)
         if byte & VARUINT_HAS_NEXT == 0:
             return result
 
-        byte = self.read_bits(8) # byte 4
+        byte = self.read_bits_unchecked(8) # byte 4
         result = result << 7 | (byte & VARUINT_BYTE)
         if byte & VARUINT_HAS_NEXT == 0:
             return result
 
-        byte = self.read_bits(8) # byte 5
+        byte = self.read_bits_unchecked(8) # byte 5
         result = result << 7 | (byte & VARUINT_BYTE)
         if byte & VARUINT_HAS_NEXT == 0:
             return result
 
-        byte = self.read_bits(8) # byte 6
+        byte = self.read_bits_unchecked(8) # byte 6
         result = result << 7 | (byte & VARUINT_BYTE)
         if byte & VARUINT_HAS_NEXT == 0:
             return result
 
-        byte = self.read_bits(8) # byte 7
+        byte = self.read_bits_unchecked(8) # byte 7
         result = result << 7 | (byte & VARUINT_BYTE)
         if byte & VARUINT_HAS_NEXT == 0:
             return result
 
-        byte = self.read_bits(8) # byte 8
+        byte = self.read_bits_unchecked(8) # byte 8
         result = result << 7 | (byte & VARUINT_BYTE)
         if byte & VARUINT_HAS_NEXT == 0:
             return result
 
-        result = result << 8 | self.read_bits(8) # byte 9
+        result = result << 8 | self.read_bits_unchecked(8) # byte 9
         return result
 
     def read_varsize(self) -> int:
@@ -385,27 +414,27 @@ class BitStreamReader:
         :raises PythonRuntimeException: If read variable size integer is out of range.
         """
 
-        byte = self.read_bits(8) # byte 1
+        byte = self.read_bits_unchecked(8) # byte 1
         result = byte & VARUINT_BYTE
         if byte & VARUINT_HAS_NEXT == 0:
             return result
 
-        byte = self.read_bits(8) # byte 2
+        byte = self.read_bits_unchecked(8) # byte 2
         result = result << 7 | (byte & VARUINT_BYTE)
         if byte & VARUINT_HAS_NEXT == 0:
             return result
 
-        byte = self.read_bits(8) # byte 3
+        byte = self.read_bits_unchecked(8) # byte 3
         result = result << 7 | (byte & VARUINT_BYTE)
         if byte & VARUINT_HAS_NEXT == 0:
             return result
 
-        byte = self.read_bits(8) # byte 4
+        byte = self.read_bits_unchecked(8) # byte 4
         result = result << 7 | (byte & VARUINT_BYTE)
         if byte & VARUINT_HAS_NEXT == 0:
             return result
 
-        result = result << 8 | self.read_bits(8) # byte 5
+        result = result << 8 | self.read_bits_unchecked(8) # byte 5
         if result > VARSIZE_MAX_VALUE:
             raise PythonRuntimeException(f"BitStreamReader: Read value '{result}' is out of range "
                                          "for varsize type!")
@@ -420,7 +449,7 @@ class BitStreamReader:
         :raises PythonRuntimeException: If the reading goes behind the stream.
         """
 
-        return uint16_to_float(self.read_bits(16))
+        return uint16_to_float(self.read_bits_unchecked(16))
 
     def read_float32(self) -> float:
         """
@@ -430,7 +459,7 @@ class BitStreamReader:
         :raises PythonRuntimeException: If the reading goes behind the stream.
         """
 
-        return uint32_to_float(self.read_bits(32))
+        return uint32_to_float(self.read_bits_unchecked(32))
 
     def read_float64(self) -> float:
         """
@@ -440,7 +469,7 @@ class BitStreamReader:
         :raises PythonRuntimeException: If the reading goes behind the stream.
         """
 
-        return uint64_to_float(self.read_bits(64))
+        return uint64_to_float(self.read_bits_unchecked(64))
 
     def read_bytes(self) -> bytearray:
         """
@@ -453,7 +482,7 @@ class BitStreamReader:
         length = self.read_varsize()
         value = bytearray()
         for _ in range(length):
-            value.append(self.read_bits(8))
+            value.append(self.read_bits_unchecked(8))
 
         return value
 
@@ -468,7 +497,7 @@ class BitStreamReader:
         length = self.read_varsize()
         value = bytearray()
         for _ in range(length):
-            value.append(self.read_bits(8))
+            value.append(self.read_bits_unchecked(8))
 
         return value.decode("utf-8")
 
@@ -480,7 +509,7 @@ class BitStreamReader:
         :raises PythonRuntimeException: If the reading goes behind the stream.
         """
 
-        return self.read_bits(1) != 0
+        return self.read_bits_unchecked(1) != 0
 
     def read_bitbuffer(self) -> BitBuffer:
         """
@@ -499,7 +528,7 @@ class BitStreamReader:
         if (begin_bitposition & 0x07) != 0:
             # we are not aligned to byte
             for i in range(num_bytes_to_read):
-                read_buffer[i] = self.read_bits(8)
+                read_buffer[i] = self.read_bits_unchecked(8)
         else:
             # we are aligned to byte
             self.bitposition = begin_bitposition + num_bytes_to_read * 8

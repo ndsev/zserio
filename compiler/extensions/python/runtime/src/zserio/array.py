@@ -443,7 +443,7 @@ class DeltaContext:
         else:
             assert self._previous_element is not None
             if self._max_bit_number > 0:
-                delta = reader.read_signed_bits(self._max_bit_number + 1)
+                delta = reader.read_signed_bits_unchecked(self._max_bit_number + 1)
                 self._previous_element += delta
             return self._previous_element
 
@@ -468,7 +468,7 @@ class DeltaContext:
             assert self._previous_element is not None
             if self._max_bit_number > 0:
                 delta = element - self._previous_element
-                writer.write_signed_bits(delta, self._max_bit_number + 1)
+                writer.write_signed_bits_unchecked(delta, self._max_bit_number + 1)
                 self._previous_element = element
 
     def _finish_init(self) -> None:
@@ -498,7 +498,7 @@ class DeltaContext:
     def _read_descriptor(self, reader: BitStreamReader) -> None:
         self._is_packed = reader.read_bool()
         if self._is_packed:
-            self._max_bit_number = reader.read_bits(self._MAX_BIT_NUMBER_BITS)
+            self._max_bit_number = reader.read_bits_unchecked(self._MAX_BIT_NUMBER_BITS)
 
     def _read_unpacked(self, array_traits: typing.Any, reader: BitStreamReader) -> int:
         element = array_traits.read(reader)
@@ -508,7 +508,7 @@ class DeltaContext:
     def _write_descriptor(self, writer: BitStreamWriter) -> None:
         writer.write_bool(self._is_packed)
         if self._is_packed:
-            writer.write_bits(self._max_bit_number, self._MAX_BIT_NUMBER_BITS)
+            writer.write_bits_unchecked(self._max_bit_number, self._MAX_BIT_NUMBER_BITS)
 
     def _write_unpacked(self, array_traits: typing.Any, writer: BitStreamWriter, element: int) -> None:
         self._previous_element = element
