@@ -158,13 +158,23 @@ class Array:
                 end_bitposition = alignto(8, end_bitposition)
                 end_bitposition += element_size + (size - 1) * alignto(8, element_size)
         else:
-            for element in self._raw_array:
-                if self._set_offset_method is not None:
-                    end_bitposition = alignto(8, end_bitposition)
+            array_traits_bitsizeof = self._array_traits.bitsizeof
+            if self._set_offset_method is not None:
                 if self._array_traits.NEEDS_BITSIZEOF_POSITION:
-                    end_bitposition += self._array_traits.bitsizeof(end_bitposition, element)
+                    for element in self._raw_array:
+                        end_bitposition = alignto(8, end_bitposition)
+                        end_bitposition += array_traits_bitsizeof(end_bitposition, element)
                 else:
-                    end_bitposition += self._array_traits.bitsizeof(element)
+                    for element in self._raw_array:
+                        end_bitposition = alignto(8, end_bitposition)
+                        end_bitposition += array_traits_bitsizeof(element)
+            else:
+                if self._array_traits.NEEDS_BITSIZEOF_POSITION:
+                    for element in self._raw_array:
+                        end_bitposition += array_traits_bitsizeof(end_bitposition, element)
+                else:
+                    for element in self._raw_array:
+                        end_bitposition += array_traits_bitsizeof(element)
 
         return end_bitposition - bitposition
 
@@ -183,13 +193,20 @@ class Array:
 
         if size > 0:
             context_node = self._packed_array_traits.create_context()
-            for element in self._raw_array:
-                self._packed_array_traits.init_context(context_node, element)
+            packed_array_traits_init_context = self._packed_array_traits.init_context
+            packed_array_traits_bitsizeof = self._packed_array_traits.bitsizeof
 
             for element in self._raw_array:
-                if self._set_offset_method is not None:
+                packed_array_traits_init_context(context_node, element)
+
+            if self._set_offset_method is not None:
+                for element in self._raw_array:
                     end_bitposition = alignto(8, end_bitposition)
-                end_bitposition += self._packed_array_traits.bitsizeof(context_node, end_bitposition, element)
+                    end_bitposition += packed_array_traits_bitsizeof(context_node, end_bitposition, element)
+            else:
+                for element in self._raw_array:
+                    end_bitposition += packed_array_traits_bitsizeof(context_node, end_bitposition, element)
+
 
         return end_bitposition - bitposition
 
@@ -206,11 +223,16 @@ class Array:
         if self._is_auto:
             end_bitposition += bitsizeof_varsize(size)
 
-        for index in range(size):
-            if self._set_offset_method is not None:
+        array_traits_initialize_offsets = self._array_traits.initialize_offsets
+        if self._set_offset_method is not None:
+            set_offset = self._set_offset_method
+            for index in range(size):
                 end_bitposition = alignto(8, end_bitposition)
-                self._set_offset_method(index, end_bitposition)
-            end_bitposition = self._array_traits.initialize_offsets(end_bitposition, self._raw_array[index])
+                set_offset(index, end_bitposition)
+                end_bitposition = array_traits_initialize_offsets(end_bitposition, self._raw_array[index])
+        else:
+            for element in self._raw_array:
+                end_bitposition = array_traits_initialize_offsets(end_bitposition, element)
 
         return end_bitposition
 
@@ -229,15 +251,23 @@ class Array:
 
         if size > 0:
             context_node = self._packed_array_traits.create_context()
-            for element in self._raw_array:
-                self._packed_array_traits.init_context(context_node, element)
+            packed_array_traits_init_context = self._packed_array_traits.init_context
+            packed_array_traits_initialize_offsets = self._packed_array_traits.initialize_offsets
 
-            for index in range(size):
-                if self._set_offset_method is not None:
+            for element in self._raw_array:
+                packed_array_traits_init_context(context_node, element)
+
+            if self._set_offset_method is not None:
+                set_offset = self._set_offset_method
+                for index in range(size):
                     end_bitposition = alignto(8, end_bitposition)
-                    self._set_offset_method(index, end_bitposition)
-                end_bitposition = self._packed_array_traits.initialize_offsets(context_node, end_bitposition,
-                                                                               self._raw_array[index])
+                    set_offset(index, end_bitposition)
+                    end_bitposition = packed_array_traits_initialize_offsets(context_node, end_bitposition,
+                                                                             self._raw_array[index])
+            else:
+                for element in self._raw_array:
+                    end_bitposition = packed_array_traits_initialize_offsets(context_node, end_bitposition,
+                                                                             element)
 
         return end_bitposition
 
@@ -253,6 +283,8 @@ class Array:
 
         self._raw_array.clear()
 
+        append = self._raw_array.append
+        array_traits_read = self._array_traits.read
         if self._is_implicit:
             if not self._array_traits.HAS_BITSIZEOF_CONSTANT:
                 raise PythonRuntimeException("Array: Implicit array elements must have constant bit size!")
@@ -260,23 +292,35 @@ class Array:
             element_size = self._array_traits.bitsizeof()
             remaining_bits = reader.buffer_bitsize - reader.bitposition
             read_size = remaining_bits // element_size
-            for index in range(read_size):
+            for _ in range(read_size):
                 # we know that no traits NEEDS_READ_INDEX here
-                self._raw_array.append(self._array_traits.read(reader))
+                append(array_traits_read(reader))
         else:
             if self._is_auto:
                 read_size = reader.read_varsize()
             else:
                 read_size = size
 
-            for index in range(read_size):
-                if self._check_offset_method is not None:
-                    reader.alignto(8)
-                    self._check_offset_method(index, reader.bitposition)
+            if self._check_offset_method is not None:
+                check_offset = self._check_offset_method
+                reader_alignto = reader.alignto
                 if self._array_traits.NEEDS_READ_INDEX:
-                    self._raw_array.append(self._array_traits.read(reader, index))
+                    for index in range(read_size):
+                        reader_alignto(8)
+                        check_offset(index, reader.bitposition)
+                        append(array_traits_read(reader, index))
                 else:
-                    self._raw_array.append(self._array_traits.read(reader))
+                    for index in range(read_size):
+                        reader_alignto(8)
+                        check_offset(index, reader.bitposition)
+                        append(array_traits_read(reader))
+            else:
+                if self._array_traits.NEEDS_READ_INDEX:
+                    for index in range(read_size):
+                        append(array_traits_read(reader, index))
+                else:
+                    for _ in range(read_size):
+                        append(array_traits_read(reader))
 
     def read_packed(self, reader: BitStreamReader, size: int = 0) -> None:
         """
@@ -299,11 +343,19 @@ class Array:
         if read_size > 0:
             context_node = self._packed_array_traits.create_context()
 
-            for index in range(read_size):
-                if self._check_offset_method is not None:
-                    reader.alignto(8)
-                    self._check_offset_method(index, reader.bitposition)
-                self._raw_array.append(self._packed_array_traits.read(context_node, reader, index))
+            append = self._raw_array.append
+            packed_array_traits_read = self._packed_array_traits.read
+
+            if self._check_offset_method is not None:
+                check_offset = self._check_offset_method
+                reader_alignto = reader.alignto
+                for index in range(read_size):
+                    reader_alignto(8)
+                    check_offset(index, reader.bitposition)
+                    append(packed_array_traits_read(context_node, reader, index))
+            else:
+                for index in range(read_size):
+                    append(packed_array_traits_read(context_node, reader, index))
 
     def write(self, writer: BitStreamWriter) -> None:
         """
@@ -316,11 +368,17 @@ class Array:
         if self._is_auto:
             writer.write_varsize(size)
 
-        for index in range(size):
-            if self._check_offset_method is not None:
-                writer.alignto(8)
-                self._check_offset_method(index, writer.bitposition)
-            self._array_traits.write(writer, self._raw_array[index])
+        array_traits_write = self._array_traits.write
+        if self._check_offset_method is not None:
+            check_offset = self._check_offset_method
+            writer_alignto = writer.alignto
+            for index in range(size):
+                writer_alignto(8)
+                check_offset(index, writer.bitposition)
+                array_traits_write(writer, self._raw_array[index])
+        else:
+            for element in self._raw_array:
+                array_traits_write(writer, element)
 
     def write_packed(self, writer: BitStreamWriter) -> None:
         """
@@ -336,14 +394,22 @@ class Array:
 
         if size > 0:
             context_node = self._packed_array_traits.create_context()
-            for element in self._raw_array:
-                self._packed_array_traits.init_context(context_node, element)
+            packed_array_traits_init_context = self._packed_array_traits.init_context
+            packed_array_traits_write = self._packed_array_traits.write
 
-            for index in range(size):
-                if self._check_offset_method is not None:
-                    writer.alignto(8)
-                    self._check_offset_method(index, writer.bitposition)
-                self._packed_array_traits.write(context_node, writer, self._raw_array[index])
+            for element in self._raw_array:
+                packed_array_traits_init_context(context_node, element)
+
+            if self._check_offset_method is not None:
+                check_offset = self._check_offset_method
+                writer_alignto = writer.alignto
+                for index in range(size):
+                    writer_alignto(8)
+                    check_offset(index, writer.bitposition)
+                    packed_array_traits_write(context_node, writer, self._raw_array[index])
+            else:
+                for element in self._raw_array:
+                    packed_array_traits_write(context_node, writer, element)
 
 class DeltaContext:
     """
