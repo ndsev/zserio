@@ -152,6 +152,8 @@ ${I}if self.${field.optional.isUsedIndicatorName}():
 ${I}if zserio_reader.read_bool():
         </#if>
 <@compound_read_field_inner field, compoundName, indent + 1, packed, index/>
+${I}else:
+${I}    self.<@field_member_name field/> = None
     <#else>
 <@compound_read_field_inner field, compoundName, indent, packed, index/>
     </#if>

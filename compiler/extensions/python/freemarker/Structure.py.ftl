@@ -67,10 +67,12 @@ class ${name}:
         """
 
 </#if>
-        instance = cls(${constructorParamList})
-        instance.read(zserio_reader)
+        self = object.__new__(cls)
+        <@compound_constructor_parameter_assignments compoundParametersData/>
 
-        return instance
+        self.read(zserio_reader)
+
+        return self
 
     @classmethod
     def from_reader_packed(
@@ -90,10 +92,12 @@ class ${name}:
         """
 
 </#if>
-        instance = cls(${constructorParamList})
-        instance.read_packed(zserio_context_node, zserio_reader)
+        self = object.__new__(cls)
+        <@compound_constructor_parameter_assignments compoundParametersData/>
 
-        return instance
+        self.read_packed(zserio_context_node, zserio_reader)
+
+        return self
 <#if withTypeInfoCode>
 
     @staticmethod

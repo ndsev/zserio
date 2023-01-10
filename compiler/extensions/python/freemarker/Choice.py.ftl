@@ -87,11 +87,13 @@ class ${name}:
      </#list>
 </#if>
 
-<#assign constructorParamList><@compound_constructor_parameters compoundParametersData/></#assign>
+<#if !fieldList?has_content>
+    <#assign constructorParamList><@compound_constructor_parameters compoundParametersData/></#assign>
+</#if>
     @classmethod
     def from_reader(
             cls: typing.Type['${name}'],
-            reader: zserio.BitStreamReader<#if constructorAnnotatedParamList?has_content>,
+            zserio_reader: zserio.BitStreamReader<#if constructorAnnotatedParamList?has_content>,
             <#lt>${constructorAnnotatedParamList}</#if>) -> '${name}':
 <#if withCodeComments>
         """
@@ -102,10 +104,18 @@ class ${name}:
         """
 
 </#if>
-        instance = cls(${constructorParamList})
-        instance.read(reader)
+<#if fieldList?has_content>
+        self = object.__new__(cls)
+        <@compound_constructor_parameter_assignments compoundParametersData/>
 
-        return instance
+        self.read(zserio_reader)
+
+        return self
+<#else>
+        del zserio_reader
+
+        return cls(${constructorParamList})
+</#if>
 
     @classmethod
     def from_reader_packed(
@@ -125,10 +135,19 @@ class ${name}:
         """
 
 </#if>
-        instance = cls(${constructorParamList})
-        instance.read_packed(zserio_context_node, zserio_reader)
+<#if fieldList?has_content>
+        self = object.__new__(cls)
+        <@compound_constructor_parameter_assignments compoundParametersData/>
 
-        return instance
+        self.read_packed(zserio_context_node, zserio_reader)
+
+        return self
+<#else>
+        del zserio_context_node
+        del zserio_reader
+
+        return cls(${constructorParamList})
+</#if>
 <#if withTypeInfoCode>
 
     @staticmethod
