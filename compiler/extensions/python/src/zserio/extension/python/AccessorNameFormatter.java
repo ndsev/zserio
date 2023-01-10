@@ -49,6 +49,16 @@ class AccessorNameFormatter
         return PythonSymbolConverter.toLowerSnakeCase(param.getName());
     }
 
+    public static String getMemberName(Field field)
+    {
+        return "_" + PythonSymbolConverter.toLowerSnakeCase(field.getName()) + "_";
+    }
+
+    public static String getMemberName(Parameter param)
+    {
+        return "_" + PythonSymbolConverter.toLowerSnakeCase(param.getName()) + "_";
+    }
+
     public static String getServiceClientMethodName(ServiceMethod method)
     {
         return PythonSymbolConverter.toLowerSnakeCase(method.getName());

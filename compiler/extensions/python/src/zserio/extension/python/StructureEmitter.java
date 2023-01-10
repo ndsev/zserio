@@ -11,7 +11,7 @@ class StructureEmitter extends PythonDefaultEmitter
 {
     public StructureEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {
-        super(outputFileManager, pythonParameters);
+        super(outputFileManager, pythonParameters, new StructTemplateDataContext(pythonParameters));
     }
 
     @Override

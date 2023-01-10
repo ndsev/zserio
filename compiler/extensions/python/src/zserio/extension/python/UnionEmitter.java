@@ -11,7 +11,7 @@ class UnionEmitter extends PythonDefaultEmitter
 {
     public UnionEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {
-        super(outputFileManager, pythonParameters);
+        super(outputFileManager, pythonParameters, new ChoiceTemplateDataContext(pythonParameters));
     }
 
     @Override

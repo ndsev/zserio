@@ -22,9 +22,15 @@ abstract class PythonDefaultEmitter extends DefaultTreeWalker
 {
     public PythonDefaultEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {
+        this(outputFileManager, pythonParameters, new TemplateDataContext(pythonParameters));
+    }
+
+    public PythonDefaultEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters,
+            TemplateDataContext context)
+    {
         this.outputFileManager = outputFileManager;
         this.pythonParameters = pythonParameters;
-        this.context = new TemplateDataContext(pythonParameters);
+        this.context = context;
         this.generatorDescription = context.getGeneratorDescription().split("\\n");
     }
 

@@ -11,7 +11,7 @@ class ChoiceEmitter extends PythonDefaultEmitter
 {
     public ChoiceEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {
-        super(outputFileManager, pythonParameters);
+        super(outputFileManager, pythonParameters, new ChoiceTemplateDataContext(pythonParameters));
     }
 
     @Override

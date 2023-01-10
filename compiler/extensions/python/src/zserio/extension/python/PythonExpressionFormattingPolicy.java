@@ -347,7 +347,7 @@ class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
             boolean isSetter)
     {
         if (isMostLeftId)
-            result.append(PYTHON_FUNCTION_CALL_PREFIX);
+            result.append(PYTHON_SELF_PREFIX);
 
         if (isSetter)
         {
@@ -360,12 +360,13 @@ class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
         }
     }
 
-    private void formatParameterAccessor(StringBuilder result, boolean isMostLeftId, Parameter param)
+    protected void formatParameterAccessor(StringBuilder result, boolean isMostLeftId, Parameter param)
     {
         if (isMostLeftId)
-            result.append(PYTHON_FUNCTION_CALL_PREFIX);
+            result.append(PYTHON_SELF_PREFIX);
 
         result.append(AccessorNameFormatter.getPropertyName(param));
+
     }
 
     private void formatEnumItem(StringBuilder result, boolean isMostLeftId, EnumItem enumItem,
@@ -440,7 +441,7 @@ class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
             // [functionCall]()
             final Function function = (Function)resolvedSymbol;
             if (isMostLeftId)
-                result.append(PYTHON_FUNCTION_CALL_PREFIX);
+                result.append(PYTHON_SELF_PREFIX);
             result.append(AccessorNameFormatter.getFunctionName(function));
         }
         else if (resolvedSymbol instanceof Constant)
@@ -492,5 +493,5 @@ class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
 
     private final static String PYTHON_PROPERTY_ASSIGNMENT = " = value";
 
-    private final static String PYTHON_FUNCTION_CALL_PREFIX = "self.";
+    protected final static String PYTHON_SELF_PREFIX = "self.";
 }
