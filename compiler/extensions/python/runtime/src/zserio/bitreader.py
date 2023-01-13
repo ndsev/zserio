@@ -27,7 +27,14 @@ class BitStreamReader:
         :raises PythonRuntimeException: If bitsize is out of range.
         """
 
-        self._bitbuffer: BitBuffer = BitBuffer(buffer, bitsize)
+        if bitsize is None:
+            bitsize = len(buffer) * 8
+        elif len(buffer) * 8 < bitsize:
+            raise PythonRuntimeException(f"BitStreamReader: Bit size '{bitsize}' out of range "
+                                         f"for the given buffer byte size '{len(buffer)}'!")
+
+        self._buffer: bytes = buffer
+        self._bitsize: int = bitsize
         self._bitposition: int = 0
 
     @classmethod
@@ -94,14 +101,13 @@ class BitStreamReader:
 
         end_bitposition = self._bitposition + numbits
 
-        if end_bitposition > self._bitbuffer.bitsize:
+        if end_bitposition > self._bitsize:
             raise PythonRuntimeException("BitStreamReader: Reading behind the stream!")
 
         start_byte = self._bitposition // 8
         end_byte = (end_bitposition - 1) // 8
 
-        buffer = self._bitbuffer.buffer
-        value = int.from_bytes(buffer[start_byte : end_byte + 1], byteorder='big', signed=False)
+        value = int.from_bytes(self._buffer[start_byte : end_byte + 1], byteorder='big', signed=False)
 
         last_bits = end_bitposition % 8
         if last_bits != 0:
@@ -533,9 +539,8 @@ class BitStreamReader:
             # we are aligned to byte
             self.bitposition = begin_bitposition + num_bytes_to_read * 8
             begin_byte_position = begin_bitposition // 8
-            buffer = self._bitbuffer.buffer
-            read_buffer[0:num_bytes_to_read] = buffer[begin_byte_position:
-                                                      begin_byte_position + num_bytes_to_read]
+            read_buffer[0:num_bytes_to_read] = self._buffer[begin_byte_position:
+                                                            begin_byte_position + num_bytes_to_read]
 
         if num_rest_bits != 0:
             read_buffer[num_bytes_to_read] = self.read_bits(num_rest_bits) << (8 - num_rest_bits)
@@ -563,7 +568,7 @@ class BitStreamReader:
 
         if bitposition < 0:
             raise PythonRuntimeException("BitStreamReader: Cannot set negative bit position!")
-        if bitposition > self._bitbuffer.bitsize:
+        if bitposition > self._bitsize:
             raise PythonRuntimeException("BitStreamReader: Setting bit position behind the stream!")
 
         self._bitposition = bitposition
@@ -588,7 +593,7 @@ class BitStreamReader:
         :returns: Buffer bit size.
         """
 
-        return self._bitbuffer.bitsize
+        return self._bitsize
 
 VARINT_SIGN_1 = 0x80
 VARINT_BYTE_1 = 0x3f
