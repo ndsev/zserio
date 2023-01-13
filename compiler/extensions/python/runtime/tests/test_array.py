@@ -332,8 +332,13 @@ class ArrayTest(unittest.TestCase):
         self._test_packed_array(array_traits, [ArrayTest.DummyObject(3), ArrayTest.DummyObject(4)])
 
     def test_packing_context_node(self):
-        with self.assertRaises(PythonRuntimeException):
-            self.assertIsNotNone(PackingContextNode().context)
+        with self.assertRaises(AssertionError):
+            self.assertIsNone(PackingContextNode().context)
+
+        node = PackingContextNode()
+        child = node.create_child()
+        child.create_context()
+        self.assertIsNotNone(node.get_child_context(0))
 
     @staticmethod
     def _set_offset_method(_index, _bitoffset):

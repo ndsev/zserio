@@ -346,8 +346,7 @@ ${I}pass
 
 </#if>
 <#if fieldList?has_content>
-        zserio_context_node.children[0].context.init(${choiceTagArrayTraits}(),
-                                                     self._choice_tag)
+        zserio_context_node.get_child_context(0).init(${choiceTagArrayTraits}(), self._choice_tag)
         <@union_if "union_init_packing_context", "union_no_match", true/>
 <#else>
         del zserio_context_node
@@ -396,8 +395,8 @@ ${I}pass
 <#if fieldList?has_content>
         end_bitposition = bitposition
 
-        end_bitposition += zserio_context_node.children[0].context.bitsizeof(${choiceTagArrayTraits}(),
-                                                                             self._choice_tag)
+        end_bitposition += zserio_context_node.get_child_context(0).bitsizeof(${choiceTagArrayTraits}(),
+                                                                              self._choice_tag)
 
         <@union_if "compound_bitsizeof_field", "union_no_match", true/>
 
@@ -454,8 +453,8 @@ ${I}pass
     <#if fieldList?has_content>
         end_bitposition = bitposition
 
-        end_bitposition += zserio_context_node.children[0].context.bitsizeof(${choiceTagArrayTraits}(),
-                                                                             self._choice_tag)
+        end_bitposition += zserio_context_node.get_child_context(0).bitsizeof(${choiceTagArrayTraits}(),
+                                                                              self._choice_tag)
 
         <@union_if "compound_initialize_offsets_field", "union_no_match", true/>
 
@@ -500,8 +499,8 @@ ${I}pass
 
 </#if>
 <#if fieldList?has_content>
-        self._choice_tag = zserio_context_node.children[0].context.read(${choiceTagArrayTraits}(),
-                                                                        zserio_reader)
+        self._choice_tag = zserio_context_node.get_child_context(0).read(${choiceTagArrayTraits}(),
+                                                                         zserio_reader)
 
         <@union_if "union_read_field", "union_no_match", true/>
 <#else>
@@ -544,8 +543,8 @@ ${I}pass
 
     </#if>
     <#if fieldList?has_content>
-        zserio_context_node.children[0].context.write(${choiceTagArrayTraits}(),
-                                                      zserio_writer, self._choice_tag)
+        zserio_context_node.get_child_context(0).write(${choiceTagArrayTraits}(),
+                                                       zserio_writer, self._choice_tag)
 
         <@union_if "union_write_field", "union_no_match", true/>
     <#else>

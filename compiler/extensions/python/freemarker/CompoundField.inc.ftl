@@ -71,7 +71,7 @@ ${I}if self.${field.optional.isUsedIndicatorName}():
     <@compound_align_field field, indent/>
     <#if packed && field.isPackable && !field.array??>
         <#if field.typeInfo.isBuiltin>
-${I}end_bitposition += <@compound_field_packing_context_node field, index/>.context.bitsizeof(<#rt>
+${I}end_bitposition += zserio_context_node.get_child_context(${index}).bitsizeof(<#rt>
         <#lt><@array_traits_create_field field/>, self.<@field_member_name field/>)
         <#else>
 ${I}end_bitposition += self.<@field_member_name field/>.bitsizeof_packed(<#rt>
@@ -124,7 +124,7 @@ ${I}${field.offset.setter}
     </#if>
     <#if packed && field.isPackable && !field.array??>
         <#if field.typeInfo.isBuiltin>
-${I}end_bitposition += <@compound_field_packing_context_node field, index/>.context.bitsizeof(<#rt>
+${I}end_bitposition += zserio_context_node.get_child_context(${index}).bitsizeof(<#rt>
         <#lt><@array_traits_create_field field/>, self.<@field_member_name field/>)
         <#else>
 ${I}end_bitposition = self.<@field_member_name field/>.initialize_offsets_packed(<#rt>
@@ -170,7 +170,7 @@ ${I}zserio_reader.alignto(8)
     </#if>
     <#if packed && field.isPackable && !field.array??>
         <#if field.typeInfo.isBuiltin>
-${I}self.<@field_member_name field/> = <@compound_field_packing_context_node field, index/>.context.read(<#rt>
+${I}self.<@field_member_name field/> = zserio_context_node.get_child_context(${index}).read(<#rt>
         <#lt><@array_traits_create_field field/>, zserio_reader)
         <#else>
             <#local fromReaderArguments><#if field.compound??><@compound_field_constructor_parameters field.compound/></#if></#local>
@@ -270,7 +270,7 @@ ${I}zserio_writer.alignto(8)
     <@compound_check_range_field field, compoundName, indent/>
     <#if packed && field.isPackable && !field.array??>
         <#if field.typeInfo.isBuiltin>
-${I}<@compound_field_packing_context_node field, index/>.context.write(<@array_traits_create_field field/>, <#rt>
+${I}zserio_context_node.get_child_context(${index}).write(<@array_traits_create_field field/>, <#rt>
         <#lt>zserio_writer, self.<@field_member_name field/>)
         <#else>
 ${I}self.<@field_member_name field/>.write_packed(<@compound_field_packing_context_node field, index/>, zserio_writer)
@@ -501,7 +501,7 @@ ${I}if self.${field.optional.isUsedIndicatorName}():
 <#macro compound_init_packing_context_field_inner field index indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.typeInfo.isBuiltin>
-${I}<@compound_field_packing_context_node field, index/>.context.init(<@array_traits_create_field field/>, <#rt>
+${I}zserio_context_node.get_child_context(${index}).init(<@array_traits_create_field field/>, <#rt>
         <#lt>self.<@field_member_name field/>)
     <#else>
 ${I}self.<@field_member_name field/>.init_packing_context(<@compound_field_packing_context_node field, index/>)

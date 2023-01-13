@@ -632,12 +632,22 @@ class PackingContextNode:
         Gets packing context for leaf nodes.
 
         :returns: Packing context for leafs, None otherwise.
-        :raises PythonRuntimeException: When called on a node which is not leaf.
         """
 
-        if self._context is None:
-            raise PythonRuntimeException("PackingContextNode is not a leaf!")
+        assert self._context
         return self._context
+
+    def get_child_context(self, index : int) -> DeltaContext:
+        """
+        Gets packing context for leaf child nodes.
+
+        :param index: Child context node index.
+        :returns: Packing context.
+        """
+
+        child_context = self._children[index]._context
+        assert child_context
+        return child_context
 
 class PackedArrayTraits:
     """
