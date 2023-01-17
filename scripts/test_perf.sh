@@ -575,7 +575,7 @@ Description:
     Runds performance tests on given zserio sources with zserio release compiled in release-ver directory.
 
 Usage:
-    $0 [-h] [-e] [-p] [-o <dir>] [-d <dir>] [-t <name>] -[n <num>] [-t <config>]
+    $0 [-h] [-e] [-p] [-o <dir>] [-d <dir>] [-t <name>] -[n <num>] [-c <config>]
        generator... -s test.zs -b test.Blob -f blob.bin
 
 Arguments:
@@ -590,7 +590,7 @@ Arguments:
                             Test name. Optional.
     -n <num>, --num-iterations <num>
                             Number of iterations. Optional, default is 100.
-    -t <config>, --test-config <config>
+    -c <config>, --test-config <config>
                             Test configuration: READ (default), WRITE, READ_WRITE.
     -s <source>, --source <source>
                             Main zserio source.
@@ -753,7 +753,7 @@ parse_arguments()
                 shift
                 ;;
 
-            "-t" | "--test-config")
+            "-c" | "--test-config")
                 shift
                 local ARG="$1"
                 if [ -z "${ARG}" ] ; then
