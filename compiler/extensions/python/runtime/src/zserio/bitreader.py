@@ -8,6 +8,7 @@ from zserio.bitbuffer import BitBuffer
 from zserio.limits import INT64_MIN
 from zserio.exception import PythonRuntimeException
 from zserio.float import uint16_to_float, uint32_to_float, uint64_to_float
+from zserio.cppbind import import_cpp_class
 
 class BitStreamReader:
     """
@@ -603,3 +604,12 @@ VARINT_HAS_NEXT_N = 0x80
 VARUINT_BYTE = 0x7f
 VARUINT_HAS_NEXT = 0x80
 VARSIZE_MAX_VALUE = (1 << 31) - 1
+
+_BitStreamReaderCpp = import_cpp_class("BitStreamReader")
+if _BitStreamReaderCpp is not None:
+    BitStreamReader = _BitStreamReaderCpp # type: ignore
+
+    def _bitstreamreader_fromfile(filename: str) -> 'BitStreamReader':
+        with open(filename, 'rb') as file:
+            return BitStreamReader(file.read())
+    BitStreamReader.from_file = _bitstreamreader_fromfile

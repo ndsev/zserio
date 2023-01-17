@@ -8,6 +8,7 @@ from zserio.exception import PythonRuntimeException
 from zserio.hashcode import HASH_SEED
 from zserio.hashcode import calc_hashcode_int32
 from zserio.bitposition import bitsize_to_bytesize
+from zserio.cppbind import import_cpp_class
 
 class BitBuffer:
     """
@@ -90,3 +91,5 @@ class BitBuffer:
 
         return (self._buffer[rounded_bytesize - 1] if last_byte_bits == 0 else
                 self._buffer[rounded_bytesize] & (0xFF << (8 - last_byte_bits)))
+
+BitBuffer = import_cpp_class("BitBuffer") or BitBuffer # type: ignore
