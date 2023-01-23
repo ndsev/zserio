@@ -374,11 +374,12 @@ EOF
 # Generate python peftest.py
 generate_python_perftest()
 {
-    exit_if_argc_ne $# 4
+    exit_if_argc_ne $# 5
     local BUILD_DIR="$1"; shift
     local BLOB_FULL_NAME="$1"; shift
     local NUM_ITERATIONS="$1"; shift
     local TEST_CONFIG="$1"; shift
+    local PROFILE="$1"; shift
 
     local API_MODULE=${BLOB_FULL_NAME%%.*}
     local BLOB_API_PATH=${BLOB_FULL_NAME#*.}
@@ -388,7 +389,17 @@ generate_python_perftest()
 import sys
 import argparse
 from timeit import default_timer as timer
+EOF
 
+    if [[ ${PROFILE} == 1 ]] ; then
+        cat >> "${BUILD_DIR}/src/perftest.py" << EOF
+import cProfile
+import re
+
+EOF
+    fi
+
+    cat >> "${BUILD_DIR}/src/perftest.py" << EOF
 import zserio
 import ${API_MODULE}.api as api
 
@@ -396,14 +407,35 @@ def performance_test(log_path, blob_path, num_iterations):
     print("Zserio Python Performance Test")
 
     # prepare byte array
-    reader_from_file = zserio.BitStreamReader.from_file(blob_path)
+    with open(blob_path, 'rb') as file:
+        file_data = file.read()
+        reader_from_file = zserio.BitStreamReader(file_data)
     blob_from_file = api.${BLOB_API_PATH}.from_reader(reader_from_file)
-    buffer_writer = zserio.BitStreamWriter()
-    blob_from_file.write(buffer_writer);
-    byte_array = buffer_writer.byte_array
+    assert len(file_data) == zserio.bitposition.bitsize_to_bytesize(reader_from_file.bitposition)
 
+    buffer_writer = zserio.BitStreamWriter()
+    blob_from_file.write(buffer_writer)
+    byte_array = buffer_writer.byte_array
+    assert buffer_writer.bitposition == reader_from_file.bitposition
+
+EOF
+
+    if [[ ${PROFILE} == 1 ]] ; then
+        cat >> "${BUILD_DIR}/src/perftest.py" << EOF
+    # run the test
+    pr = cProfile.Profile()
+    pr.enable()
+    start = timer()
+EOF
+    else
+        cat >> "${BUILD_DIR}/src/perftest.py" << EOF
     # run the test
     start = timer()
+EOF
+    fi
+
+    cat >> "${BUILD_DIR}/src/perftest.py" << EOF
+
     for i in range(num_iterations):
 EOF
 
@@ -432,14 +464,27 @@ EOF
     esac
 
     cat >> "${BUILD_DIR}/src/perftest.py" << EOF
+
     stop = timer()
+EOF
+
+    if [[ ${PROFILE} == 1 ]] ; then
+        cat >> "${BUILD_DIR}/src/perftest.py" << EOF
+    pr.disable()
+    prof_path = re.sub("\..*$", ".prof", log_path)
+    pr.dump_stats(prof_path)
+EOF
+    fi
+
+    cat >> "${BUILD_DIR}/src/perftest.py" << EOF
 
     # process results
     total_duration = (stop - start) * 1000
     step_duration = total_duration / num_iterations
     print("Total Duration: %.03fms" % total_duration)
     print("Iterations:     %d" % num_iterations)
-    print("Step Duration   %.03fms" % step_duration)
+    print("Step Duration:  %.03fms" % step_duration)
+    print("Blob Size:      %d bits (%.03f kB)" % (reader_from_file.bitposition, len(file_data) / 1000.))
 
     # write results to file
     log_file = open(log_path, "w")
@@ -461,7 +506,7 @@ EOF
 # Run zserio performance tests.
 test_perf()
 {
-    exit_if_argc_ne $# 14
+    exit_if_argc_ne $# 15
     local UNPACKED_ZSERIO_RELEASE_DIR="$1"; shift
     local ZSERIO_PROJECT_ROOT="$1"; shift
     local ZSERIO_BUILD_DIR="$1"; shift
@@ -477,8 +522,14 @@ test_perf()
     local SWITCH_BLOB_PATH="$1"; shift
     local SWITCH_NUM_ITERATIONS="$1"; shift
     local SWITCH_TEST_CONFIG="$1"; shift
+    local SWITCH_PROFILE="$1"; shift
 
     convert_to_absolute_path "${SWITCH_BLOB_PATH}" SWITCH_BLOB_PATH
+
+    if [[ ${SWITCH_PROFILE} == 1 && ( ${#CPP_TARGETS[@]} -ne 0 || ${PARAM_JAVA} == 1 ) ]] ; then
+        stderr_echo "Profiling allowed only for python!"
+        return 1
+    fi
 
     # generate sources using zserio
     local ZSERIO_ARGS=()
@@ -534,12 +585,21 @@ test_perf()
         fi
 
         generate_python_perftest "${TEST_OUT_DIR}/python" "${SWITCH_BLOB_NAME}" ${SWITCH_NUM_ITERATIONS} \
-                                 ${SWITCH_TEST_CONFIG}
-        PYTHONPATH="${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/python:${TEST_OUT_DIR}/python/gen" \
-        python ${TEST_OUT_DIR}/python/src/perftest.py --log-path="${TEST_OUT_DIR}/python/perftest.log" \
+                                 ${SWITCH_TEST_CONFIG} ${SWITCH_PROFILE}
+
+        PYTHONPATH="${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/python:${TEST_OUT_DIR}/python/gen:${PY_CPP_PATH}" \
+        python ${TEST_OUT_DIR}/python/src/perftest.py \
+               --log-path="${TEST_OUT_DIR}/python/perftest.log" \
                --blob-path "${SWITCH_BLOB_PATH}"
         if [ $? -ne 0 ] ; then
             return 1
+        fi
+        if [[ ${SWITCH_PROFILE} == 1 ]] ; then
+            echo ""
+            echo "Python profiling finished, use one of the following commands for analysis:"
+            echo "    python3 -m pstats ${TEST_OUT_DIR}/python/perftest.prof"
+            echo "    python3 -m snakeviz ${TEST_OUT_DIR}/python/perftest.prof"
+            echo "    python3 -m pyprof2calltree -k -i ${TEST_OUT_DIR}/python/perftest.prof"
         fi
     fi
 
@@ -582,6 +642,7 @@ Arguments:
     -h, --help              Show this help.
     -e, --help-env          Show help for enviroment variables.
     -p, --purge             Purge test build directory.
+    --profile               Run the test in profiling mode and produce profiling data.
     -o <dir>, --output-directory <dir>
                             Output directory where tests will be run.
     -d <dir>, --source-dir <dir>
@@ -633,7 +694,7 @@ EOF
 # 3 - Environment help switch is present. Arguments after help switch have not been checked.
 parse_arguments()
 {
-    exit_if_argc_lt $# 12
+    exit_if_argc_lt $# 13
     local PARAM_CPP_TARGET_ARRAY_OUT="$1"; shift
     local PARAM_JAVA_OUT="$1"; shift
     local PARAM_PYTHON_OUT="$1"; shift
@@ -646,6 +707,7 @@ parse_arguments()
     local SWITCH_NUM_ITERATIONS_OUT="$1"; shift
     local SWITCH_TEST_CONFIG_OUT="$1"; shift
     local SWITCH_PURGE_OUT="$1"; shift
+    local SWITCH_PROFILE_OUT="$1"; shift
 
     eval ${PARAM_JAVA_OUT}=0
     eval ${PARAM_PYTHON_OUT}=0
@@ -657,6 +719,7 @@ parse_arguments()
     eval ${SWITCH_NUM_ITERATIONS_OUT}=100 # default
     eval ${SWITCH_TEST_CONFIG_OUT}="READ"
     eval ${SWITCH_PURGE_OUT}=0
+    eval ${SWITCH_PROFILE_OUT}=0
 
     local NUM_PARAMS=0
     local PARAM_ARRAY=();
@@ -762,6 +825,11 @@ parse_arguments()
                     return 1
                 fi
                 eval ${SWITCH_TEST_CONFIG_OUT}="${ARG}"
+                shift
+                ;;
+
+            "--profile")
+                eval ${SWITCH_PROFILE_OUT}=1
                 shift
                 ;;
 
@@ -878,9 +946,10 @@ main()
     local SWITCH_NUM_ITERATIONS
     local SWITCH_TEST_CONFIG
     local SWITCH_PURGE
+    local SWITCH_PROFILE
     parse_arguments PARAM_CPP_TARGET_ARRAY PARAM_JAVA PARAM_PYTHON PARAM_OUT_DIR \
             SWITCH_DIRECTORY SWITCH_SOURCE SWITCH_TEST_NAME SWITCH_BLOB_NAME SWITCH_BLOB_FILE \
-            SWITCH_NUM_ITERATIONS SWITCH_TEST_CONFIG SWITCH_PURGE "$@"
+            SWITCH_NUM_ITERATIONS SWITCH_TEST_CONFIG SWITCH_PURGE SWITCH_PROFILE "$@"
     local PARSE_RESULT=$?
     if [ ${PARSE_RESULT} -eq 2 ] ; then
         print_help
@@ -972,7 +1041,7 @@ main()
     test_perf "${UNPACKED_ZSERIO_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" \
               "${TEST_OUT_DIR}" PARAM_CPP_TARGET_ARRAY[@] ${PARAM_JAVA} ${PARAM_PYTHON} \
               "${SWITCH_DIRECTORY}" "${SWITCH_SOURCE}" "${SWITCH_TEST_NAME}" "${SWITCH_BLOB_NAME}" \
-              "${SWITCH_BLOB_FILE}" ${SWITCH_NUM_ITERATIONS} ${SWITCH_TEST_CONFIG}
+              "${SWITCH_BLOB_FILE}" ${SWITCH_NUM_ITERATIONS} ${SWITCH_TEST_CONFIG} ${SWITCH_PROFILE}
     if [ $? -ne 0 ] ; then
         return 1
     fi
