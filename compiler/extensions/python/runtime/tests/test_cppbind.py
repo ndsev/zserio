@@ -12,19 +12,17 @@ class CppBindTest(unittest.TestCase):
     def test_invalid_env(self):
         os.environ["ZSERIO_PYTHON_IMPLEMENTATION"] = "invalid"
         with self.assertRaises(PythonRuntimeException):
-            import_cpp_class(MissingCppClass)
+            import_cpp_class("MissingCppClass")
 
     def test_missing_cpp_default(self):
         os.environ.pop("ZSERIO_PYTHON_IMPLEMENTATION")
-        imported = import_cpp_class(MissingCppClass)
-        self.assertEqual(MissingCppClass, imported)
+        self.assertIsNone(import_cpp_class("MissingCppClass"))
 
     def test_missing_cpp_python(self):
         os.environ["ZSERIO_PYTHON_IMPLEMENTATION"] = "python"
-        imported = import_cpp_class(MissingCppClass)
-        self.assertEqual(MissingCppClass, imported)
+        self.assertIsNone(import_cpp_class("MissingCppClass"))
 
     def test_missing_cpp_cpp(self):
         os.environ["ZSERIO_PYTHON_IMPLEMENTATION"] = "cpp"
         with self.assertRaises(PythonRuntimeException):
-            import_cpp_class(MissingCppClass)
+            import_cpp_class("MissingCppClass")

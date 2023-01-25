@@ -25,7 +25,7 @@ class BitStreamReaderTest(unittest.TestCase):
 
         out_of_range_bitsize = 9
         with self.assertRaises(PythonRuntimeException):
-            BitBuffer([1], out_of_range_bitsize) # throws!
+            BitBuffer(bytes([1]), out_of_range_bitsize) # throws!
 
     def test_eq(self):
         bitsize = 11

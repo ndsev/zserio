@@ -108,7 +108,7 @@ class HashCodeTest(unittest.TestCase):
 
     def test_bitbuffer_type(self):
         hash_seed = 1
-        bitbuffer_value = BitBuffer([])
+        bitbuffer_value = BitBuffer(bytes())
         self.assertEqual(HASH_PRIME_NUMBER + HASH_SEED, calc_hashcode_object(hash_seed, bitbuffer_value))
 
     def test_enum_type(self):
@@ -200,7 +200,7 @@ class HashCodeTest(unittest.TestCase):
 
     def test_bitbuffer_array_type(self):
         hash_seed = 1
-        bitbuffer_array_value = [ BitBuffer([]) ]
+        bitbuffer_array_value = [ BitBuffer(bytes()) ]
         self.assertEqual(HASH_PRIME_NUMBER + HASH_SEED,
                          calc_hashcode_object_array(hash_seed, bitbuffer_array_value))
 

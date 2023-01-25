@@ -19,8 +19,9 @@ test_python_runtime()
     echo "Running python runtime unit tests."
     echo
 
+    ZSERIO_PYTHON_IMPLEMENTATION="python" \
     PYTHONPATH="${SOURCES_DIR}" python \
-            -m coverage run --source "${PYTHON_RUNTIME_ROOT}/" \
+            -m coverage run --source "${PYTHON_RUNTIME_ROOT}/" --data-file=coverage_python.data \
             -m unittest discover -s "${TESTS_DIR}" -v
     local PYTHON_RESULT=$?
     if [ ${PYTHON_RESULT} -ne 0 ] ; then
@@ -30,11 +31,34 @@ test_python_runtime()
     fi
     echo
 
+    echo "Running python runtime unit tests with C++ optimizations."
+    echo
+
+    local ZSERIO_CPP_DIR
+    ZSERIO_CPP_DIR=$(ls -d1 "${BUILD_DIR}/zserio_cpp/lib"*)
+    if [ $? -ne 0 ] ; then
+        stderr_echo "Failed to locate C++ runtime binding to Python!"
+        return 1
+    fi
+
+    ZSERIO_PYTHON_IMPLEMENTATION="cpp" \
+    PYTHONPATH="${SOURCES_DIR}:${ZSERIO_CPP_DIR}" python \
+            -m coverage run --source "${PYTHON_RUNTIME_ROOT}/" --data-file=coverage_cpp.data \
+            -m unittest discover -s "${TESTS_DIR}" -v
+    local PYTHON_RESULT=$?
+    if [ ${PYTHON_RESULT} -ne 0 ] ; then
+        stderr_echo "Running python unit tests with C++ optimizations failed with return code ${PYTHON_RESULT}!"
+        popd > /dev/null
+        return 1
+    fi
+    echo
+
     echo "Running python coverage report."
     echo
 
-    python -m coverage html --directory="coverage" --fail-under=100 --omit="*test_object*" \
-            --title="Zserio Python Runtime Library"
+    python -m coverage combine --keep coverage_cpp.data coverage_python.data
+    python -m coverage html --directory="coverage" --fail-under=100 \
+            --omit="*test_object*,*cppbind*" --title="Zserio Python Runtime Library"
     local COVERAGE_RESULT=$?
     if [ ${COVERAGE_RESULT} -ne 0 ] ; then
         stderr_echo "Running python coverage report failed with return code ${COVERAGE_RESULT}!"
@@ -49,7 +73,7 @@ test_python_runtime()
 
     local PYLINT_RCFILE="${PYTHON_RUNTIME_ROOT}/pylintrc.txt"
     local PYLINT_ARGS=("--disable=too-few-public-methods")
-    run_pylint "${PYLINT_RCFILE}" PYLINT_ARGS[@] "${SOURCES_DIR}"/*
+    PYTHONPATH="${ZSERIO_CPP_DIR}" run_pylint "${PYLINT_RCFILE}" PYLINT_ARGS[@] "${SOURCES_DIR}"/zserio
     if [ $? -ne 0 ]; then
         return 1
     fi
@@ -67,7 +91,7 @@ test_python_runtime()
 
     local MYPY_CONFIG_FILE="${PYTHON_RUNTIME_ROOT}/mypy.ini"
     local MYPY_ARGS=()
-    run_mypy "${BUILD_DIR}" "${MYPY_CONFIG_FILE}" MYPY_ARGS[@] "${SOURCES_DIR}"/*
+    run_mypy "${BUILD_DIR}" "${MYPY_CONFIG_FILE}" MYPY_ARGS[@] "${SOURCES_DIR}"/zserio
     if [ $? -ne 0 ]; then
         return 1
     fi
@@ -121,10 +145,10 @@ install_python_runtime()
     rm -rf "${PYTHON_RUNTIME_DISTR_DIR}/"
     mkdir -p "${PYTHON_RUNTIME_DISTR_DIR}"
 
-    # install sources and doc
+    # install sources
     pushd "${PYTHON_RUNTIME_SOURCES}" > /dev/null
 
-    "${FIND}" . -name "*.py" | while read -r SOURCE ; do
+    "${FIND}" . -name "*.py" -o -name "*.cpp" | while read -r SOURCE ; do
         echo "Installing ${SOURCE}"
         cp --parents "${SOURCE}" "${PYTHON_RUNTIME_DISTR_DIR}"
         if [ $? -ne 0 ] ; then
@@ -134,15 +158,16 @@ install_python_runtime()
         fi
     done
 
+    popd > /dev/null
+
+    # install doc
     echo "Installing API documentation"
     cp -r "${PYTHON_RUNTIME_DOC_BUILD_DIR}/zserio_doc" "${PYTHON_RUNTIME_DISTR_DIR}/"
     if [ $? -ne 0 ] ; then
         stderr_echo "Failed to install documentation!"
-        popd > /dev/null
         return 1
     fi
 
-    popd > /dev/null
     return 0
 }
 
@@ -586,7 +611,17 @@ main()
                 return 1
             fi
 
+            local CPP_RUNTIME_DIR="${ZSERIO_PROJECT_ROOT}/compiler/extensions/cpp/runtime/src"
             local PYTHON_RUNTIME_ROOT="${ZSERIO_PROJECT_ROOT}/compiler/extensions/python/runtime"
+
+            # compile C++ runtime binding to Python
+            python ${PYTHON_RUNTIME_ROOT}/src/zserio_cpp/setup.py build \
+                    --build-base="${PYTHON_RUNTIME_BUILD_DIR}/zserio_cpp" \
+                    --cpp-runtime-dir="${CPP_RUNTIME_DIR}"
+            if [ $? -ne 0 ] ; then
+                stderr_echo "Failed to build C++ runtime binding to Python!"
+                return 1
+            fi
 
             test_python_runtime "${PYTHON_RUNTIME_ROOT}" "${PYTHON_RUNTIME_BUILD_DIR}"
             if [ $? -ne 0 ] ; then

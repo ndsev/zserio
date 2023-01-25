@@ -285,6 +285,7 @@ activate_python_virtualenv()
         "setuptools==59.8.0"
         "coverage==6.5.0" "sphinx"
         "astroid==2.9.3" "pylint==2.12.2" "mypy==0.931"
+        "pybind11>=2.10.0"
     )
     local APSW_REQUIREMENTS=("apsw")
 
@@ -369,7 +370,7 @@ Uses the following environment variables for building:
                            "Eclipse CDT4 - Unix Makefiles".
     MSVC_CMAKE_GENERATOR   CMake generator to use with MSVC compiler. Default is
                            "Visual Studio 17 2022". Note that CMake option "-A x64"
-                           is added automatically for windows64-mscv target. 
+                           is added automatically for windows64-mscv target.
     MSVC_CMAKE_TOOLSET     MSVC toolset specification for CMake generator.
                            Default is "v141". Note that "v141" is for VS 2017,
                            "v142" is for VS 2019.

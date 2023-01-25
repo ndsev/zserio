@@ -280,20 +280,20 @@ class BitSizeOfTest(unittest.TestCase):
         self.assertEqual((2 + 2 * test_string_length) * 8, bitsizeof_string(test_string))
 
     def test_bitsizeof_bitbuffer(self):
-        test_bitbuffer1 = BitBuffer([0xAB, 0x03], 8)
+        test_bitbuffer1 = BitBuffer(bytes([0xAB, 0x03]), 8)
         self.assertEqual(8 + 8, bitsizeof_bitbuffer(test_bitbuffer1))
 
-        test_bitbuffer2 = BitBuffer([0xAB, 0x03], 11)
+        test_bitbuffer2 = BitBuffer(bytes([0xAB, 0x03]), 11)
         self.assertEqual(8 + 11, bitsizeof_bitbuffer(test_bitbuffer2))
 
-        test_bitbuffer3 = BitBuffer([0xAB, 0xCD], 16)
+        test_bitbuffer3 = BitBuffer(bytes([0xAB, 0xCD]), 16)
         self.assertEqual(8 + 16, bitsizeof_bitbuffer(test_bitbuffer3))
 
-        test_bitbuffer4 = BitBuffer([0xAB, 0xCD])
+        test_bitbuffer4 = BitBuffer(bytes([0xAB, 0xCD]))
         self.assertEqual(8 + 16, bitsizeof_bitbuffer(test_bitbuffer4))
 
-        test_bitbuffer5 = BitBuffer(16 * [1], 127)
+        test_bitbuffer5 = BitBuffer(bytes(16 * [1]), 127)
         self.assertEqual(8 + 15 * 8 + 7, bitsizeof_bitbuffer(test_bitbuffer5))
 
-        test_bitbuffer6 = BitBuffer(16 * [1], 128)
+        test_bitbuffer6 = BitBuffer(bytes(16 * [1]), 128)
         self.assertEqual(16 + 16 * 8, bitsizeof_bitbuffer(test_bitbuffer6))

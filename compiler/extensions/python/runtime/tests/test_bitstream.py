@@ -476,13 +476,19 @@ class BitStreamTest(unittest.TestCase):
     def _test_impl(self, write_method, read_method, values, max_start_bit_pos):
         for bit_pos in range(max_start_bit_pos):
             writer = BitStreamWriter()
-            if bit_pos > 0:
+            if bit_pos > 64:
+                writer.write_bits(0, 64)
+                writer.write_bits(0, bit_pos - 64)
+            elif bit_pos > 0:
                 writer.write_bits(0, bit_pos)
             for value in values:
                 write_method(writer, value)
 
             reader = BitStreamReader(buffer=writer.byte_array)
-            if bit_pos > 0:
+            if bit_pos > 64:
+                reader.read_bits(64)
+                reader.read_bits(bit_pos - 64)
+            elif bit_pos > 0:
                 reader.read_bits(bit_pos)
             for value in values:
                 self.assertEqual(value, read_method(reader), f"[bit_pos={bit_pos}]")
