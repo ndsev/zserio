@@ -153,14 +153,28 @@ test_python()
     local MESSAGE="Zserio Python tests"
     echo "STARTING - ${MESSAGE}"
 
-    activate_python_virtualenv "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}"
-    if [ $? -ne 0 ] ; then
-        return 1
-    fi
-
     if [[ ${SWITCH_CLEAN} == 1 ]] ; then
         rm -rf "${TEST_OUT_DIR}/python"
     else
+        activate_python_virtualenv "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}"
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
+
+        python "${UNPACKED_ZSERIO_RELEASE_DIR}"/runtime_libs/python/zserio_cpp/setup.py build \
+                --build-base="${TEST_OUT_DIR}/python/zserio_cpp" \
+                --cpp-runtime-dir="${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/cpp/"
+        if [ $? -ne 0 ] ; then
+            stderr_echo "Failed to build C++ runtime binding to Python!"
+            return 1
+        fi
+        local ZSERIO_CPP_DIR
+        ZSERIO_CPP_DIR=$(ls -d1 "${TEST_OUT_DIR}/python/zserio_cpp/lib"*)
+        if [ $? -ne 0 ] ; then
+            stderr_echo "Failed to locate C++ runtime binding to Python!"
+            return 1
+        fi
+
         local TEST_FILTER=""
         for i in ${!TEST_SUITES[@]} ; do
             if [ $i -gt 0 ] ; then
@@ -183,7 +197,8 @@ test_python()
         echo
 
         python "${TEST_FILE}" "${TEST_ARGS[@]}" --pylint_rcfile="${PYLINT_RCFILE}" \
-                --pylint_rcfile_test="${PYLINT_RCFILE_FOR_TESTS}" --mypy_config_file="${MYPY_CONFIG_FILE}"
+                --pylint_rcfile_test="${PYLINT_RCFILE_FOR_TESTS}" --mypy_config_file="${MYPY_CONFIG_FILE}" \
+                --zserio_cpp_dir="${ZSERIO_CPP_DIR}"
         local PYTHON_RESULT=$?
         if [ ${PYTHON_RESULT} -ne 0 ] ; then
             stderr_echo "Running python failed with return code ${PYTHON_RESULT}!"

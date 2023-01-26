@@ -9,6 +9,7 @@ import os
 import argparse
 import glob
 import pylint.lint
+from multiprocessing import Process
 
 def main():
     testRoot = os.path.dirname(os.path.realpath(__file__))
@@ -26,6 +27,7 @@ def main():
     argParser.add_argument("--pylint_rcfile")
     argParser.add_argument("--pylint_rcfile_test")
     argParser.add_argument("--mypy_config_file")
+    argParser.add_argument("--zserio_cpp_dir")
     argParser.set_defaults(filter="**", verbosity=2)
     args = argParser.parse_args()
     if args.build_dir:
@@ -38,8 +40,7 @@ def main():
     # path to zserio runtime release
     runtimePath = os.path.join(TEST_ARGS["release_dir"], "runtime_libs", "python")
     sys.path.append(runtimePath)
-
-    sysPathBeforeTests = list(sys.path)
+    sys.path.append(args.zserio_cpp_dir)
 
     # detect test directories
     testPattern = "*Test.py"
@@ -60,7 +61,32 @@ def main():
     # sort test dirs
     testDirs = sorted(testDirs)
 
-    # load tests
+    # run tests with pure python runtime
+    print("\nRunning python language tests with pure python runtime.")
+    os.environ["ZSERIO_PYTHON_IMPLEMENTATION"] = "python"
+    if not _runTests(args, testDirs, testPattern) :
+        return 1
+
+    # run tests with python runtime and optimized zserio_cpp
+    print("\nRunning python language tests with C++ optimized runtime.")
+    os.environ["ZSERIO_PYTHON_IMPLEMENTATION"] = "cpp"
+    if not _runTests(args, testDirs, testPattern):
+        return 1
+
+    # run pylint
+    pylintResult = _runPylintOnAllSources(args, testDirs)
+    if pylintResult != 0:
+        return pylintResult
+
+    return _runMypyOnAllSources(args, testDirs, runtimePath, testutilsPath)
+
+def _runTests(args, testDirs, testPattern):
+    p = Process(target=_runTestsProcess, args=(args, testDirs, testPattern))
+    p.start()
+    p.join()
+    return p.exitcode == 0
+
+def _runTestsProcess(args, testDirs, testPattern):
     loader = unittest.TestLoader()
     testSuite = unittest.TestSuite()
     for testDir in testDirs:
@@ -69,18 +95,8 @@ def main():
 
     runner = unittest.TextTestRunner(verbosity=args.verbosity)
     testResult = runner.run(testSuite)
-    if not testResult.wasSuccessful():
-        return 1
 
-    # restore sys.path to get rid of what test runner recently added
-    sys.path = sysPathBeforeTests
-
-    # run pylint
-    pylintResult = _runPylintOnAllSources(args, testDirs)
-    if pylintResult != 0:
-        return pylintResult
-
-    return _runMypyOnAllSources(args, testDirs, runtimePath, testutilsPath)
+    sys.exit(0 if testResult.wasSuccessful() else 1)
 
 def _runPylintOnAllSources(args, testDirs):
     print("\nRunning pylint on python tests")

@@ -13,7 +13,7 @@ class EmptyUnionWithParameterTest(unittest.TestCase):
         self.assertEqual(self.PARAM_VALUE1, emptyUnionWithParameter.param)
 
     def testFromReader(self):
-        reader = zserio.BitStreamReader([])
+        reader = zserio.BitStreamReader(bytes())
         emptyUnionWithParameter = self.api.EmptyUnionWithParameter.from_reader(reader, self.PARAM_VALUE1)
         self.assertEqual(self.PARAM_VALUE1, emptyUnionWithParameter.param)
         self.assertEqual(0, emptyUnionWithParameter.bitsizeof())
@@ -53,7 +53,7 @@ class EmptyUnionWithParameterTest(unittest.TestCase):
 
     def testRead(self):
         emptyUnionWithParameter = self.api.EmptyUnionWithParameter(self.PARAM_VALUE1)
-        reader = zserio.BitStreamReader([])
+        reader = zserio.BitStreamReader(bytes())
         emptyUnionWithParameter.read(reader)
         self.assertEqual(self.PARAM_VALUE1, emptyUnionWithParameter.param)
         self.assertEqual(0, emptyUnionWithParameter.bitsizeof())

@@ -9,7 +9,7 @@ class EmptyStructureTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "structure_types.zs").empty_structure
 
     def testFromReader(self):
-        reader = zserio.BitStreamReader([])
+        reader = zserio.BitStreamReader(bytes())
         emptyStructure = self.api.EmptyStructure.from_reader(reader)
         self.assertEqual(0, emptyStructure.bitsizeof())
 
@@ -38,7 +38,7 @@ class EmptyStructureTest(unittest.TestCase):
         self.assertEqual(bitPosition, emptyStructure.initialize_offsets(bitPosition))
 
     def testRead(self):
-        reader = zserio.BitStreamReader([])
+        reader = zserio.BitStreamReader(bytes())
         emptyStructure = self.api.EmptyStructure()
         emptyStructure.read(reader)
         self.assertEqual(0, emptyStructure.bitsizeof())
