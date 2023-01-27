@@ -170,7 +170,7 @@ EOF
 # Generate C++ files
 generate_cpp_files()
 {
-    exit_if_argc_ne $# 8
+    exit_if_argc_ne $# 7
     local ZSERIO_PROJECT_ROOT="$1"; shift
     local ZSERIO_RELEASE="$1"; shift
     local BUILD_DIR="$1"; shift
@@ -178,15 +178,12 @@ generate_cpp_files()
     local BLOB_PATH="$1"; shift
     local NUM_ITERATIONS="$1"; shift
     local TEST_CONFIG="$1"; shift
-    local GENERATOR="$1"; shift
 
-    local LOG_PATH="${BUILD_DIR}/PerformanceTest.log"
 
     # use host paths in generated files
     local DISABLE_SLASHES_CONVERSION=1
     posix_to_host_path "${ZSERIO_PROJECT_ROOT}" HOST_ZSERIO_ROOT ${DISABLE_SLASHES_CONVERSION}
     posix_to_host_path "${ZSERIO_RELEASE}" HOST_ZSERIO_RELEASE ${DISABLE_SLASHES_CONVERSION}
-    posix_to_host_path "${LOG_PATH}" HOST_LOG_PATH ${DISABLE_SLASHES_CONVERSION}
     posix_to_host_path "${BLOB_PATH}" HOST_BLOB_PATH ${DISABLE_SLASHES_CONVERSION}
 
     cat > "${BUILD_DIR}"/CMakeLists.txt << EOF
@@ -197,7 +194,7 @@ enable_testing()
 
 set(ZSERIO_ROOT "${HOST_ZSERIO_ROOT}" CACHE PATH "")
 set(ZSERIO_RELEASE "${HOST_ZSERIO_RELEASE}" CACHE PATH "")
-set(LOG_PATH "${HOST_LOG_PATH}")
+set(LOG_PATH "PerformanceTest.log")
 set(BLOB_PATH "${HOST_BLOB_PATH}")
 set(CMAKE_MODULE_PATH "\${ZSERIO_ROOT}/cmake")
 
@@ -212,7 +209,7 @@ compiler_set_warnings()
 
 # add zserio runtime library
 include(zserio_utils)
-set(ZSERIO_RUNTIME_LIBRARY_DIR "\${ZSERIO_RELEASE}/runtime_libs/${GENERATOR}")
+set(ZSERIO_RUNTIME_LIBRARY_DIR "\${ZSERIO_RELEASE}/runtime_libs/cpp")
 zserio_add_runtime_library(RUNTIME_LIBRARY_DIR "\${ZSERIO_RUNTIME_LIBRARY_DIR}")
 
 file(GLOB_RECURSE SOURCES RELATIVE "\${CMAKE_CURRENT_SOURCE_DIR}" "gen/*.cpp" "gen/*.h")
@@ -506,7 +503,7 @@ EOF
 # Run zserio performance tests.
 test_perf()
 {
-    exit_if_argc_ne $# 15
+    exit_if_argc_ne $# 16
     local UNPACKED_ZSERIO_RELEASE_DIR="$1"; shift
     local ZSERIO_PROJECT_ROOT="$1"; shift
     local ZSERIO_BUILD_DIR="$1"; shift
@@ -515,6 +512,7 @@ test_perf()
     local CPP_TARGETS=("${MSYS_WORKAROUND_TEMP[@]}")
     local PARAM_JAVA="$1"; shift
     local PARAM_PYTHON="$1"; shift
+    local PARAM_PYTHON_CPP="$1"; shift
     local SWITCH_DIRECTORY="$1"; shift
     local SWITCH_SOURCE="$1"; shift
     local SWITCH_TEST_NAME="$1"; shift
@@ -541,7 +539,7 @@ test_perf()
         rm -rf "${TEST_OUT_DIR}/java"
         ZSERIO_ARGS+=("-java" "${TEST_OUT_DIR}/java/gen")
     fi
-    if [[ ${PARAM_PYTHON} == 1 ]] ; then
+    if [[ ${PARAM_PYTHON} == 1 || ${PARAM_PYTHON_CPP} == 1 ]] ; then
         rm -rf "${TEST_OUT_DIR}/python"
         ZSERIO_ARGS+=("-python" "${TEST_OUT_DIR}/python/gen")
     fi
@@ -567,7 +565,7 @@ test_perf()
     if [[ ${#CPP_TARGETS[@]} != 0 ]] ; then
         generate_cpp_files "${ZSERIO_PROJECT_ROOT}" "${UNPACKED_ZSERIO_RELEASE_DIR}" "${TEST_OUT_DIR}/cpp" \
                            "${SWITCH_BLOB_NAME}" "${SWITCH_BLOB_PATH}" ${SWITCH_NUM_ITERATIONS} \
-                           ${SWITCH_TEST_CONFIG} "cpp"
+                           ${SWITCH_TEST_CONFIG}
         local CMAKE_ARGS=()
         local CTEST_ARGS=()
         compile_cpp "${ZSERIO_PROJECT_ROOT}" "${TEST_OUT_DIR}/cpp" "${TEST_OUT_DIR}/cpp" \
@@ -578,7 +576,7 @@ test_perf()
     fi
 
     # run Python performance test
-    if [[ ${PARAM_PYTHON} == 1 ]] ; then
+    if [[ ${PARAM_PYTHON} == 1 || ${PARAM_PYTHON_CPP} == 1 ]] ; then
         activate_python_virtualenv "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}"
         if [ $? -ne 0 ] ; then
             return 1
@@ -587,19 +585,53 @@ test_perf()
         generate_python_perftest "${TEST_OUT_DIR}/python" "${SWITCH_BLOB_NAME}" ${SWITCH_NUM_ITERATIONS} \
                                  ${SWITCH_TEST_CONFIG} ${SWITCH_PROFILE}
 
-        PYTHONPATH="${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/python:${TEST_OUT_DIR}/python/gen:${PY_CPP_PATH}" \
-        python ${TEST_OUT_DIR}/python/src/perftest.py \
-               --log-path="${TEST_OUT_DIR}/python/perftest.log" \
-               --blob-path "${SWITCH_BLOB_PATH}"
-        if [ $? -ne 0 ] ; then
-            return 1
+        if [[ ${PARAM_PYTHON} == 1 ]] ; then
+            ZSERIO_PYTHOM_IMPLEMENTATION="python" \
+            PYTHONPATH="${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/python:${TEST_OUT_DIR}/python/gen" \
+            python ${TEST_OUT_DIR}/python/src/perftest.py \
+                --log-path="${TEST_OUT_DIR}/python/perftest.log" \
+                --blob-path "${SWITCH_BLOB_PATH}"
+            if [ $? -ne 0 ] ; then
+                return 1
+            fi
         fi
+
+        if [[ ${PARAM_PYTHON_CPP} == 1 ]] ; then
+            python ${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/python/zserio_cpp/setup.py build \
+                    --build-base="${TEST_OUT_DIR}/python/zserio_cpp" \
+                    --cpp-runtime-dir=${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/cpp
+            if [ $? -ne 0 ] ; then
+                stderr_echo "Failed to build C++ runtime binding to Python!"
+                return 1
+            fi
+            local ZSERIO_CPP_DIR
+            ZSERIO_CPP_DIR=$(ls -d1 "${TEST_OUT_DIR}/python/zserio_cpp/lib"*)
+            if [ $? -ne 0 ] ; then
+                stderr_echo "Failed to locate C++ runtime binding to Python!"
+                return 1
+            fi
+
+            local PYTHON_RUNTIME_DIR="${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/python"
+            ZSERIO_PYTHOM_IMPLEMENTATION="cpp" \
+            PYTHONPATH="${PYTHON_RUNTIME_DIR}:${TEST_OUT_DIR}/python/gen:${ZSERIO_CPP_DIR}" \
+            python ${TEST_OUT_DIR}/python/src/perftest.py \
+                --log-path="${TEST_OUT_DIR}/python/perftest-cpp.log" \
+                --blob-path "${SWITCH_BLOB_PATH}"
+            if [ $? -ne 0 ] ; then
+                return 1
+            fi
+        fi
+
         if [[ ${SWITCH_PROFILE} == 1 ]] ; then
+            local PROFDATA_FILE="perftest.prof"
+            if [[ ${PARAM_PYTHON} == 0 ]] ; then
+                PROFDATA_FILE="perftest-cpp.prof"
+            fi
             echo ""
             echo "Python profiling finished, use one of the following commands for analysis:"
-            echo "    python3 -m pstats ${TEST_OUT_DIR}/python/perftest.prof"
-            echo "    python3 -m snakeviz ${TEST_OUT_DIR}/python/perftest.prof"
-            echo "    python3 -m pyprof2calltree -k -i ${TEST_OUT_DIR}/python/perftest.prof"
+            echo "    python3 -m pstats ${TEST_OUT_DIR}/python/${PROFDATA_FILE}"
+            echo "    python3 -m snakeviz ${TEST_OUT_DIR}/python/${PROFDATA_FILE}"
+            echo "    python3 -m pyprof2calltree -k -i ${TEST_OUT_DIR}/python/${PROFDATA_FILE}"
         fi
     fi
 
@@ -610,18 +642,23 @@ test_perf()
     printf "| %-20s | %14s | %10s | %15s |\n" "Generator" "Total Duration" "Iterations" "Step Duration"
     echo -n "|" ; for i in {1..70} ; do echo -n "-" ; done ; echo "|"
     if [[ ${PARAM_JAVA} == 1 ]] ; then
-        RESULTS=($(cat ${TEST_OUT_DIR}/java/PerformanceTest.log))
-        printf "| %-20s | %14s | %10s | %15s |\n" Java ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]}
+        local RESULTS=($(cat ${TEST_OUT_DIR}/java/PerformanceTest.log))
+        printf "| %-20s | %14s | %10s | %15s |\n" "Java" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]}
     fi
     if [[ ${#CPP_TARGETS[@]} != 0 ]] ; then
         for CPP_TARGET in ${CPP_TARGETS[@]} ; do
-        RESULTS=($(cat ${TEST_OUT_DIR}/cpp/PerformanceTest.log))
-        printf "| %-20s | %14s | %10s | %15s |\n" "C++ (${CPP_TARGET})" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]}
+            local PERF_TEST_FILE=$(${FIND} "${TEST_OUT_DIR}/cpp/${CPP_TARGET}" -name "PerformanceTest.log")
+            local RESULTS=($(cat ${PERF_TEST_FILE}))
+            printf "| %-20s | %14s | %10s | %15s |\n" "C++ (${CPP_TARGET})" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]}
         done
     fi
     if [[ ${PARAM_PYTHON} == 1 ]] ; then
-        RESULTS=($(cat ${TEST_OUT_DIR}/python/perftest.log))
-        printf "| %-20s | %14s | %10s | %15s |\n" Python ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]}
+        local RESULTS=($(cat ${TEST_OUT_DIR}/python/perftest.log))
+        printf "| %-20s | %14s | %10s | %15s |\n" "Python" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]}
+    fi
+    if [[ ${PARAM_PYTHON_CPP} == 1 ]] ; then
+        local RESULTS=($(cat ${TEST_OUT_DIR}/python/perftest-cpp.log))
+        printf "| %-20s | %14s | %10s | %15s |\n" "Python (C++)" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]}
     fi
     for i in {1..72} ; do echo -n "=" ; done ; echo
     echo
@@ -632,7 +669,7 @@ print_help()
 {
     cat << EOF
 Description:
-    Runds performance tests on given zserio sources with zserio release compiled in release-ver directory.
+    Runs performance tests on given zserio sources with zserio release compiled in release-ver directory.
 
 Usage:
     $0 [-h] [-e] [-p] [-o <dir>] [-d <dir>] [-t <name>] -[n <num>] [-c <config>]
@@ -669,7 +706,8 @@ Generator can be:
     cpp-windows64-mingw     Generate C++ sources and compile them for for windows64 target (MinGW64).
     cpp-windows64-msvc      Generate C++ sources and compile them for for windows64 target (MSVC).
     java                    Generate Java sources and compile them.
-    python                  Generate python sources.
+    python                  Generate python sources and use pure python runtime.
+    python-cpp              Generate python sources and use C++ optimized python runtime.
     all-linux32-gcc         Test all generators and compile all possible linux32 sources (gcc).
     all-linux64-gcc         Test all generators and compile all possible linux64 sources (gcc).
     all-linux32-clang       Test all generators and compile all possible linux32 sources (Clang).
@@ -694,10 +732,11 @@ EOF
 # 3 - Environment help switch is present. Arguments after help switch have not been checked.
 parse_arguments()
 {
-    exit_if_argc_lt $# 13
+    exit_if_argc_lt $# 14
     local PARAM_CPP_TARGET_ARRAY_OUT="$1"; shift
     local PARAM_JAVA_OUT="$1"; shift
     local PARAM_PYTHON_OUT="$1"; shift
+    local PARAM_PYTHON_CPP_OUT="$1"; shift
     local PARAM_OUT_DIR_OUT="$1"; shift
     local SWITCH_DIRECTORY_OUT="$1"; shift
     local SWITCH_SOURCE_OUT="$1"; shift
@@ -711,6 +750,7 @@ parse_arguments()
 
     eval ${PARAM_JAVA_OUT}=0
     eval ${PARAM_PYTHON_OUT}=0
+    eval ${PARAM_PYTHON_CPP_OUT}=0
     eval ${SWITCH_DIRECTORY_OUT}="."
     eval ${SWITCH_SOURCE_OUT}=""
     eval ${SWITCH_TEST_NAME_OUT}=""
@@ -865,11 +905,16 @@ parse_arguments()
                 eval ${PARAM_PYTHON_OUT}=1
                 ;;
 
+            "python-cpp")
+                eval ${PARAM_PYTHON_CPP_OUT}=1
+                ;;
+
             "all-linux32-"* | "all-linux64-"* | "all-windows64-"*)
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_CPP_TARGETS}]="${PARAM#all-}"
                 NUM_CPP_TARGETS=$((NUM_CPP_TARGETS + 1))
                 eval ${PARAM_JAVA_OUT}=1
                 eval ${PARAM_PYTHON_OUT}=1
+                eval ${PARAM_PYTHON_CPP_OUT}=1
                 ;;
 
             *)
@@ -892,7 +937,8 @@ parse_arguments()
     if [[ ${!SWITCH_PURGE_OUT} == 0 ]] ; then
         if [[ ${NUM_CPP_TARGETS} == 0 &&
             ${!PARAM_JAVA_OUT} == 0 &&
-            ${!PARAM_PYTHON_OUT} == 0 ]] ; then
+            ${!PARAM_PYTHON_OUT} == 0 &&
+            ${!PARAM_PYTHON_CPP_OUT} == 0 ]] ; then
             stderr_echo "Generator to test is not specified!"
             echo
             return 1
@@ -937,6 +983,7 @@ main()
     local PARAM_CPP_TARGET_ARRAY=()
     local PARAM_JAVA
     local PARAM_PYTHON
+    local PARAM_PYTHON_CPP
     local PARAM_OUT_DIR="${ZSERIO_PROJECT_ROOT}"
     local SWITCH_DIRECTORY
     local SWITCH_SOURCE
@@ -947,7 +994,7 @@ main()
     local SWITCH_TEST_CONFIG
     local SWITCH_PURGE
     local SWITCH_PROFILE
-    parse_arguments PARAM_CPP_TARGET_ARRAY PARAM_JAVA PARAM_PYTHON PARAM_OUT_DIR \
+    parse_arguments PARAM_CPP_TARGET_ARRAY PARAM_JAVA PARAM_PYTHON PARAM_PYTHON_CPP PARAM_OUT_DIR \
             SWITCH_DIRECTORY SWITCH_SOURCE SWITCH_TEST_NAME SWITCH_BLOB_NAME SWITCH_BLOB_FILE \
             SWITCH_NUM_ITERATIONS SWITCH_TEST_CONFIG SWITCH_PURGE SWITCH_PROFILE "$@"
     local PARSE_RESULT=$?
@@ -990,7 +1037,7 @@ main()
         fi
     fi
 
-    if [[ ${PARAM_PYTHON} != 0 ]] ; then
+    if [[ ${PARAM_PYTHON} != 0 || ${PARAM_PYTHON_CPP} != 0 ]] ; then
         set_global_python_variables "${ZSERIO_PROJECT_ROOT}"
         if [ $? -ne 0 ] ; then
             return 1
@@ -1039,7 +1086,7 @@ main()
 
     # run test
     test_perf "${UNPACKED_ZSERIO_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" \
-              "${TEST_OUT_DIR}" PARAM_CPP_TARGET_ARRAY[@] ${PARAM_JAVA} ${PARAM_PYTHON} \
+              "${TEST_OUT_DIR}" PARAM_CPP_TARGET_ARRAY[@] ${PARAM_JAVA} ${PARAM_PYTHON} ${PARAM_PYTHON_CPP} \
               "${SWITCH_DIRECTORY}" "${SWITCH_SOURCE}" "${SWITCH_TEST_NAME}" "${SWITCH_BLOB_NAME}" \
               "${SWITCH_BLOB_FILE}" ${SWITCH_NUM_ITERATIONS} ${SWITCH_TEST_CONFIG} ${SWITCH_PROFILE}
     if [ $? -ne 0 ] ; then
