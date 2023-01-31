@@ -4,12 +4,12 @@
 #include <cstddef>
 #include <cstring>
 
-#include "zserio/Types.h"
-#include "zserio/Span.h"
 #include "zserio/BitBuffer.h"
-#include "zserio/VarSizeUtil.h"
-#include "zserio/StringView.h"
+#include "zserio/CppRuntimeException.h"
 #include "zserio/Span.h"
+#include "zserio/StringView.h"
+#include "zserio/Types.h"
+#include "zserio/VarSizeUtil.h"
 
 namespace zserio
 {
@@ -20,6 +20,13 @@ namespace zserio
 class BitStreamWriter
 {
 public:
+    /** Exception throw in case of insufficient capacity of the given buffer. */
+    class InsufficientCapacityException : public CppRuntimeException
+    {
+    public:
+        using CppRuntimeException::CppRuntimeException;
+    };
+
     /** Type for bit position. */
     typedef size_t BitPosType;
 
@@ -299,7 +306,7 @@ private:
     void writeUnsignedVarNum(uint64_t value, size_t maxVarBytes, size_t numVarBytes);
     void writeVarNum(uint64_t value, bool hasSign, bool isNegative, size_t maxVarBytes, size_t numVarBytes);
 
-    bool checkCapacity(size_t bitSize) const;
+    void checkCapacity(size_t bitSize) const;
 
     uint8_t* m_buffer;
     size_t m_bitIndex;

@@ -263,10 +263,7 @@ void BitStreamWriter::writeBool(bool data)
 void BitStreamWriter::setBitPosition(BitPosType position)
 {
     if (hasWriteBuffer())
-    {
-        if (!checkCapacity(position))
-            throw CppRuntimeException("BitStreamWriter: Reached eof(), setting of bit position failed!");
-    }
+        checkCapacity(position);
 
     m_bitIndex = position;
 }
@@ -294,8 +291,7 @@ void BitStreamWriter::writeUnsignedBits(uint32_t data, uint8_t numBits)
         return;
     }
 
-    if (!checkCapacity(m_bitIndex + numBits))
-        throw CppRuntimeException("BitStreamWriter: Reached eof(), writing to stream failed!");
+    checkCapacity(m_bitIndex + numBits);
 
     uint8_t restNumBits = numBits;
     const uint8_t bitsUsed = m_bitIndex & 0x07;
@@ -392,11 +388,10 @@ inline void BitStreamWriter::writeVarNum(uint64_t value, bool isSigned, bool isN
     }
 }
 
-inline bool BitStreamWriter::checkCapacity(size_t bitSize) const
+inline void BitStreamWriter::checkCapacity(size_t bitSize) const
 {
     if (bitSize > m_bufferBitSize)
-        return false;
-    return true;
+        throw InsufficientCapacityException("BitStreamWriter: Reached end of bit buffer!");
 }
 
 } // namespace zserio

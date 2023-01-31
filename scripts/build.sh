@@ -58,7 +58,7 @@ test_python_runtime()
 
     python -m coverage combine --keep coverage_cpp.data coverage_python.data
     python -m coverage html --directory="coverage" --fail-under=100 \
-            --omit="*test_object*,*cppbind*" --title="Zserio Python Runtime Library"
+            --omit="*test_object*" --title="Zserio Python Runtime Library"
     local COVERAGE_RESULT=$?
     if [ ${COVERAGE_RESULT} -ne 0 ] ; then
         stderr_echo "Running python coverage report failed with return code ${COVERAGE_RESULT}!"
@@ -148,7 +148,7 @@ install_python_runtime()
     # install sources
     pushd "${PYTHON_RUNTIME_SOURCES}" > /dev/null
 
-    "${FIND}" . -name "*.py" -o -name "*.cpp" | while read -r SOURCE ; do
+    "${FIND}" . -name "*.py" -o -name "*.cpp" -o -name "*.h" | while read -r SOURCE ; do
         echo "Installing ${SOURCE}"
         cp --parents "${SOURCE}" "${PYTHON_RUNTIME_DISTR_DIR}"
         if [ $? -ne 0 ] ; then

@@ -11,6 +11,7 @@ from zserio.bitsizeof import (bitsizeof_varint16, bitsizeof_varint32,
 from zserio.exception import PythonRuntimeException
 from zserio.float import float_to_uint16, float_to_uint32, float_to_uint64
 from zserio.limits import INT64_MIN
+from zserio.cppbind import import_cpp_class
 
 class BitStreamWriter:
     """
@@ -359,3 +360,5 @@ class BitStreamWriter:
             self.write_bits_unchecked(byte, 8)
 
 VAR_NUM_BIT_MASKS = [0x01, 0x03, 0x07, 0x0f, 0x1f, 0x3f, 0x7f, 0xff]
+
+BitStreamWriter = import_cpp_class("BitStreamWriter") or BitStreamWriter # type: ignore

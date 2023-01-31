@@ -8,7 +8,7 @@ from distutils.command.build import build
 os.chdir(Path(__file__).parent.resolve())
 
 OPTIONS = [
-    ('cpp-runtime-dir=', None, 'Directory containing C++ runtime soruces.')
+    ('cpp-runtime-dir=', None, 'Directory containing C++ runtime sources.')
 ]
 
 class ZserioBuild(build):
@@ -23,7 +23,7 @@ class ZserioBuild(build):
         if not self.cpp_runtime_dir:
             raise Exception("Parameter '--cpp-runtime-dir' is missing!")
         if not os.path.exists(Path(self.cpp_runtime_dir) / 'zserio'):
-            raise Exception("Parameter '--cpp-runtime-dir' does not point to Zserio C++ runitme soruces!")
+            raise Exception("Parameter '--cpp-runtime-dir' does not point to Zserio C++ runtime sources!")
 
 class ZserioBuildExt(build_ext):
     user_options = build_ext.user_options + OPTIONS
@@ -38,17 +38,27 @@ class ZserioBuildExt(build_ext):
 
         zserio_cpp = self.extensions[0]
 
+        zserio_cpp.depends.append(__file__)
+
         zserio_cpp.sources.extend((str(filename) for filename in Path('.').rglob('*.cpp')))
+        zserio_cpp.depends.extend((str(filename) for filename in Path('.').rglob('*.h')))
+
         zserio_cpp.sources.extend(
             (str(filename) for filename in Path(self.cpp_runtime_dir).resolve().rglob('*.cpp'))
         )
+        zserio_cpp.depends.extend(
+            (str(filename) for filename in Path(self.cpp_runtime_dir).resolve().rglob('*.h'))
+        )
 
+        zserio_cpp.include_dirs.append(".")
         zserio_cpp.include_dirs.append(self.cpp_runtime_dir)
 
         zserio_cpp.extra_compile_args.extend(['-O3'])
 
         if sys.maxsize > 2**32:
             zserio_cpp.define_macros.append(('ZSERIO_RUNTIME_64BIT', None))
+
+        zserio_cpp.define_macros.append(('PYBIND11_DETAILED_ERROR_MESSAGES', None))
 
 ParallelCompile(default=0).install()
 
