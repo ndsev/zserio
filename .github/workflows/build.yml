@@ -1,4 +1,4 @@
-name: build-ubuntu_20_04
+name: Zserio Actions
 
 on:
   push:
@@ -8,35 +8,55 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os: ["ubuntu-18.04", "ubuntu-20.04", "ubuntu-22.04"]
+        python-version: ["3.8", "3.9", "3.10"]
+        include:
+          - os: "ubuntu-18.04"
+            clang-version-suffix: "-9"
+          - os: "ubuntu-20.04"
+            clang-version-suffix: "-11"
+          - os: "ubuntu-22.04"
+            clang-version-suffix: "-14"
     env:
       CPPCHECK_HOME: "${{github.workspace}}/cppcheck-2.6"
       SPOTBUGS_HOME: "${{github.workspace}}/spotbugs-3.1.12"
       PYLINT_ENABLED: 1
-      PYLINT_EXTRA_ARGS: "--disable=wrong-import-order"
       MYPY_ENABLED: 1
+      NU_HTML_VALIDATOR: "${{github.workspace}}/vnu-20.6.30/vnu.jar"
+      XMLLINT_ENABLED: 1
+      CLANG_VERSION_SUFFIX: "${{matrix.clang-version-suffix}}"
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+
     - name: Checkout submodules
       run: git submodule update --init
+
     - name: Set up JDK 1.8
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-    - name: Set up Python 3.8
+
+    - name: Set up Python ${{matrix.python-version}}
       uses: actions/setup-python@v2
       with:
-        python-version: 3.8
+        python-version: ${{matrix.python-version}}
+
     - name: Install Python dependencies
       run: |
         python -m pip install --upgrade pip
         python -m pip install virtualenv
         python -m pip install gcovr
+
     - name: Workaround for 'Unable to connect to ppa.launchpad.net' failure during installation
       run: sudo apt-get update --option Acquire::Retries=100 --option Acquire::http::Timeout="300"
+
     - name: Install dependencies
-      run: sudo apt-get install cmake doxygen graphviz
+      run: sudo apt-get install cmake doxygen graphviz g++-multilib
+
     - name: Install specific version of C++ static code analysis tool (cppcheck)
       run: |
         wget https://github.com/danmar/cppcheck/archive/2.6.tar.gz -P "${GITHUB_WORKSPACE}" -O cppcheck-2.6.tar.gz
@@ -50,31 +70,104 @@ jobs:
                -DFILESDIR=.
         cmake --build . --target install
         popd
+
     - name: Install specific version of Java static code analysis tool (spotbugs)
       run: |
         wget https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/3.1.12/spotbugs-3.1.12.zip -P "${GITHUB_WORKSPACE}"
         unzip "${GITHUB_WORKSPACE}"/spotbugs-3.1.12.zip
+
+    - name: Install specific version of HTML validator (v.Nu)
+      run: |
+        wget https://github.com/validator/validator/releases/download/20.6.30/vnu.jar_20.6.30.zip -P "${GITHUB_WORKSPACE}"
+        unzip "${GITHUB_WORKSPACE}"/vnu.jar_20.6.30.zip -d "${GITHUB_WORKSPACE}"
+        mv "${GITHUB_WORKSPACE}"/dist "${GITHUB_WORKSPACE}"/vnu-20.6.30
+
+    - name: Install XML validator (xmllint)
+      run: sudo apt-get install libxml2-utils
+
+    - name: Build Zserio C++ runtime using gcc
+      strategy:
+        matrix:
+          build-type: ["Debug", "Release"]
+        steps:
+          - name: Build
+            run: scripts/build.sh cpp-linux64-gcc cpp-linux32-gcc
+            env:
+              CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1 -DCMAKE_BUILD_TYPE=${{matrix.build-type}}"
+              GCOVR_BIN: "gcovr"
+
     - name: Build Zserio
       run: scripts/build.sh all-linux64-gcc
       env:
-        GCOVR_BIN: "" # coverage disabled
+        GCOVR_BIN: "gcovr"
+
     - name: Build Zserio runtime using clang
       run: scripts/build.sh cpp_rt-linux64-clang
       env:
-        SANITIZERS_ENABLED: 1
+        SANITIZERS_ENABLED: 1 # works only for clang
+        LLVM_PROFDATA_BIN: "llvm-profdata${{matrix.clang-version-suffix}}"
+        LLVM_COV_BIN: "llvm-cov${{matrix.clang-version-suffix}}"
+
     - name: Pack Zserio release
       run: scripts/release.sh
+
     - name: Run Zserio tests
       run: |
-          unset JAVA_TOOL_OPTIONS # workaround https://github.com/actions/virtual-environments/issues/1437
-          scripts/test.sh all-linux64-gcc cpp-linux64-clang
+        unset JAVA_TOOL_OPTIONS # workaround https://github.com/actions/virtual-environments/issues/1437
+        scripts/test.sh all-linux64-gcc cpp-linux64-clang
+
+    - name: Run Zserio C++ tests with extra arguments (Release Build)
+      run: |
+        scripts/test.sh -x arguments/without_writer_code \
+              cpp-linux64-gcc cpp-linux32-gcc cpp-linux64-clang cpp-linux32-clang
+      env:
+        CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Release"
+        ZSERIO_EXTRA_ARGS: "-withTypeInfoCode -withCodeComments -withRangeCheckCode -withValidationCode
+              -setCppAllocator polymorphic -withReflectionCode"
+
+    - name: Run Zserio C++ tests with extra arguments (Debug Build)
+      run: |
+        scripts/test.sh -x arguments/without_writer_code \
+              cpp-linux64-gcc cpp-linux32-gcc cpp-linux64-clang cpp-linux32-clang
+      env:
+        CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Debug"
+        ZSERIO_EXTRA_ARGS: "-withTypeInfoCode -withCodeComments -withRangeCheckCode -withValidationCode \
+              -setCppAllocator polymorphic -withReflectionCode"
+
+    - name: Run Zserio Java and Python tests with extra arguments
+      run: |
+        scripts/test.sh -x arguments/without_writer_code java python 
+      env:
+        ZSERIO_EXTRA_ARGS: "-withTypeInfoCode -withCodeComments -withRangeCheckCode -withValidationCode"
+
+    - name: Run Zserio Doc and XML tests with extra arguments
+      run: |
+        scripts/test.sh -x arguments/without_writer_code java python 
+      env:
+        ZSERIO_EXTRA_ARGS: "-withTypeInfoCode -withCodeComments -withRangeCheckCode -withValidationCode \
+              -setTopLevelPackage top.level"
+
+    - name: Compare all blobs created by Zserio tests with extra arguments
+      run: |
+        scripts/compare_test_data.sh \
+              build/test/cpp/linux64-gcc/debug \
+              build/test/cpp/linux64-gcc/release \
+              build/test/cpp/linux32-gcc/debug \
+              build/test/cpp/linux32-gcc/release \
+              build/test/cpp/linux64-clang/debug \
+              build/test/cpp/linux64-clang/release \
+              build/test/cpp/linux32-clang/debug \
+              build/test/cpp/linux32-clang/release \
+              build/test/java \
+              build/test/python
+
     - name: Run Zserio integration tests for repeated generation
       run: |
-          unset JAVA_TOOL_OPTIONS # workaround https://github.com/actions/virtual-environments/issues/1437
-          scripts/test_gen.sh all-linux64-gcc cpp-linux64-clang
+        unset JAVA_TOOL_OPTIONS # workaround https://github.com/actions/virtual-environments/issues/1437
+        scripts/test_gen.sh all-linux64-gcc cpp-linux64-clang
+
     - name: Archive Zserio artifacts
       uses: actions/upload-artifact@v2
       with:
         name: zserio-release
         path: release-*
-
