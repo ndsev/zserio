@@ -3,12 +3,12 @@
 namespace
 {
 
-zserio::BitBuffer bitBufferInit(const py::buffer_info& bufferInfo, std::optional<py::int_> optionalBitSize)
+zserio::BitBuffer bitBufferInit(const py::buffer_info& bufferInfo, py::object optionalBitSize)
 {
     uint8_t* buffer = static_cast<uint8_t*>(bufferInfo.ptr);
-    if (optionalBitSize)
+    if (!optionalBitSize.is(py::none()))
     {
-        const size_t bitSize = optionalBitSize->cast<size_t>();
+        const size_t bitSize = optionalBitSize.cast<size_t>();
         if ((bitSize + 7) / 8 > static_cast<size_t>(bufferInfo.size))
             throw zserio::CppRuntimeException("BitBuffer: Bit size out of range for given buffer!");
 
@@ -28,7 +28,7 @@ namespace zserio_cpp
 void pybindBitBuffer(py::module_ module)
 {
     py::class_<zserio::BitBuffer>(module, "BitBuffer")
-            .def(py::init([](const py::object& buffer, std::optional<py::int_> bitsize) {
+            .def(py::init([](const py::object& buffer, py::object bitsize) {
                 return bitBufferInit(py::buffer(buffer).request(), bitsize);
             }), py::arg("buffer"), py::arg("bitsize") = py::none())
             .def_property_readonly("buffer", py::cpp_function([](zserio::BitBuffer& self){

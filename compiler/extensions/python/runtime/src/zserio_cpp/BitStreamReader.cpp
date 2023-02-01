@@ -4,12 +4,12 @@ namespace
 {
 
 std::unique_ptr<zserio::BitStreamReader> bitStreamReaderInit(const py::buffer_info& bufferInfo,
-            std::optional<py::int_> optionalBitSize)
+            py::object optionalBitSize)
 {
     const uint8_t* buffer = static_cast<const uint8_t*>(bufferInfo.ptr);
-    if (optionalBitSize)
+    if (!optionalBitSize.is(py::none()))
     {
-        const size_t bitSize = optionalBitSize->cast<size_t>();
+        const size_t bitSize = optionalBitSize.cast<size_t>();
         if ((bitSize + 7) / 8 > static_cast<size_t>(bufferInfo.size))
             throw zserio::CppRuntimeException("BitStreamReader: Bit size out of range for given buffer!");
 
@@ -29,7 +29,7 @@ namespace zserio_cpp
 void pybindBitStreamReader(py::module_ module)
 {
     py::class_<zserio::BitStreamReader>(module, "BitStreamReader")
-            .def(py::init([](const py::object& buffer, std::optional<py::int_> bitsize) {
+            .def(py::init([](const py::object& buffer, py::object bitsize) {
                 return bitStreamReaderInit(py::buffer(buffer).request(), bitsize);
             }), py::arg("buffer"), py::arg("bitsize") = py::none(), py::keep_alive<1, 2>())
             .def_static("from_bitbuffer", [](const zserio::BitBuffer& bitBuffer){
