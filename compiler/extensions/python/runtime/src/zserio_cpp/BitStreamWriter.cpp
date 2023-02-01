@@ -64,7 +64,8 @@ void pybindBitStreamWriter(py::module_ module)
             .def("write_bytes", [](zserio_cpp::BitStreamWriter& self, const py::object& value) {
                 py::buffer_info bufferInfo = py::buffer(value).request();
                 self.write(&zserio::BitStreamWriter::writeBytes,
-                        zserio::Span(static_cast<const uint8_t*>(bufferInfo.ptr), bufferInfo.size));
+                        zserio::Span<const uint8_t>(
+                                static_cast<const uint8_t*>(bufferInfo.ptr), bufferInfo.size));
             })
             .def("write_string", [](zserio_cpp::BitStreamWriter& self, const std::string& value) {
                 self.write(&zserio::BitStreamWriter::writeString, value);
