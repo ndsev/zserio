@@ -18,7 +18,8 @@ cmake_minimum_required(VERSION 3.1.0)
 separate_arguments(OPTIONS)
 separate_arguments(EXTRA_OPTIONS)
 
-if (WIN32)
+# don't use WIN32 because it can be set during cross-compilation on Linux
+if ("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Windows")
     set(JAVA_CLASSPATH_SEPARATOR ";")
 else ()
     set(JAVA_CLASSPATH_SEPARATOR ":")

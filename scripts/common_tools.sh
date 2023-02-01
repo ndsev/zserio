@@ -712,6 +712,7 @@ compile_cpp_for_target()
         local CMAKE_BUILD_CONFIG=""
     fi
 
+    # generate makefile running cmake
     "${CMAKE}" ${CMAKE_EXTRA_ARGS} -G "${CMAKE_GENERATOR}" "${CMAKE_ARGS[@]}" "${CMAKELISTS_DIR}"
     local CMAKE_RESULT=$?
     if [ ${CMAKE_RESULT} -ne 0 ] ; then
@@ -720,10 +721,11 @@ compile_cpp_for_target()
         return 1
     fi
 
+    # build it running cmake
     "${CMAKE}" --build . --target ${CMAKE_BUILD_TARGET} ${CMAKE_BUILD_CONFIG} -- ${CMAKE_BUILD_OPTIONS}
-    local MAKE_RESULT=$?
-    if [ ${MAKE_RESULT} -ne 0 ] ; then
-        stderr_echo "Make failed with return code ${MAKE_RESULT}!"
+    local CMAKE_RESULT=$?
+    if [ ${CMAKE_RESULT} -ne 0 ] ; then
+        stderr_echo "Running CMake failed with return code ${CMAKE_RESULT}!"
         popd > /dev/null
         return 1
     fi
