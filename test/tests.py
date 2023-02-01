@@ -30,12 +30,7 @@ def main():
     argParser.add_argument("--zserio_cpp_dir")
     argParser.set_defaults(filter="**", verbosity=2)
     args = argParser.parse_args()
-    if args.build_dir:
-        TEST_ARGS["build_dir"] = args.build_dir
-    if args.release_dir:
-        TEST_ARGS["release_dir"] = args.release_dir
-    if args.java:
-        TEST_ARGS["java"] = args.java
+    _processTestArgs(args)
 
     # path to zserio runtime release
     runtimePath = os.path.join(TEST_ARGS["release_dir"], "runtime_libs", "python")
@@ -80,6 +75,15 @@ def main():
 
     return _runMypyOnAllSources(args, testDirs, runtimePath, testutilsPath)
 
+def _processTestArgs(args):
+    from testutils import TEST_ARGS
+    if args.build_dir:
+        TEST_ARGS["build_dir"] = args.build_dir
+    if args.release_dir:
+        TEST_ARGS["release_dir"] = args.release_dir
+    if args.java:
+        TEST_ARGS["java"] = args.java
+
 def _runTests(args, testDirs, testPattern):
     p = Process(target=_runTestsProcess, args=(args, testDirs, testPattern))
     p.start()
@@ -87,6 +91,9 @@ def _runTests(args, testDirs, testPattern):
     return p.exitcode == 0
 
 def _runTestsProcess(args, testDirs, testPattern):
+    # need to re-process TEST_ARGS in a new Process on Windows
+    _processTestArgs(args)
+
     loader = unittest.TestLoader()
     testSuite = unittest.TestSuite()
     for testDir in testDirs:
