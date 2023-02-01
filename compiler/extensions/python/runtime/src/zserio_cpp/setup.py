@@ -53,12 +53,18 @@ class ZserioBuildExt(build_ext):
         zserio_cpp.include_dirs.append(".")
         zserio_cpp.include_dirs.append(self.cpp_runtime_dir)
 
-        zserio_cpp.extra_compile_args.extend(['-O3'])
-
         if sys.maxsize > 2**32:
             zserio_cpp.define_macros.append(('ZSERIO_RUNTIME_64BIT', None))
 
         zserio_cpp.define_macros.append(('PYBIND11_DETAILED_ERROR_MESSAGES', None))
+
+    def build_extensions(self):
+        # compiler is not known in finalize_options yet
+        if self.compiler.compiler_type == "unix":
+             zserio_cpp = self.extensions[0]
+             zserio_cpp.extra_compile_args.extend(['-O3'])
+
+        build_ext.build_extensions(self)
 
 ParallelCompile(default=0).install()
 
