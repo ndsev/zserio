@@ -28,7 +28,7 @@ def import_cpp_class(cppname: str, *, exception_class = None) -> typing.Optional
 
     if exception_class is None:
         # we need to break cyclic import from zserio.exception
-        from zserio.exception import PythonRuntimeException
+        from zserio.exception import PythonRuntimeException # pylint: disable=import-outside-toplevel
         exception_class = PythonRuntimeException
 
     impl = os.getenv(ZSERIO_PYTHON_IMPLEMENTATION_ENV)
