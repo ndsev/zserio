@@ -259,7 +259,7 @@ protected:
 
         ASSERT_EQ(value, reflectable->getAnyValue().template get<T>());
 
-        ASSERT_EQ(value, reflectable->toDouble());
+        ASSERT_DOUBLE_EQ(static_cast<double>(value), reflectable->toDouble());
         ASSERT_EQ(zserio::toString(value), reflectable->toString());
 
         ASSERT_THROW(reflectable->getFloat(), CppRuntimeException);
