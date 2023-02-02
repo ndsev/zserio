@@ -48,35 +48,35 @@ endfunction()
 
 function(compiler_get_warnings_as_errors_setup VARNAME)
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-        set(TESTED_VERSIONS "4.4.3" "4.5.4" "5.4.0" "7.4.0")
-        list(FIND TESTED_VERSIONS "${CMAKE_CXX_COMPILER_VERSION}" TESTED_VERSION_INDEX)
-        if (NOT (TESTED_VERSION_INDEX EQUAL -1))
+        if (DEFINED ZSERIO_ENABLE_WERROR)
             set(WARNINGS_SETUP "-Werror")
-            if (CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL "4.4.3")
-                set(WARNINGS_SETUP "${WARNINGS_SETUP} -Wno-error=strict-aliasing")
-            endif ()
+        endif ()
+        if (CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL "7.5.0")
+            set(WARNINGS_SETUP
+                "${WARNINGS_SETUP} -Wno-unused-function") # declared ‘static’ but never defined
+        endif ()
+        if (CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL "11.3.0" OR
+                CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL "11.2.0")
+            set(WARNINGS_SETUP
+                "${WARNINGS_SETUP} -Wno-array-bounds") # array subscript 6 is outside array bounds
         endif ()
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-        set(TESTED_VERSIONS "8.0.0" "10.0.0")
-        list(FIND TESTED_VERSIONS "${CMAKE_CXX_COMPILER_VERSION}" TESTED_VERSION_INDEX)
-        if (NOT (TESTED_VERSION_INDEX EQUAL -1))
+        if (DEFINED ZSERIO_ENABLE_WERROR)
             set(WARNINGS_SETUP "-Werror")
-            if (CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL "8.0.0")
-                set(WARNINGS_SETUP_LIST
-                    "-Wno-error=range-loop-analysis" # && to bool array element which is not reference
-                    "-Wno-error=deprecated" # definition of implicit copy constructor is deprecated
-                )
-                string(REPLACE ";" " " WARNINGS_SETUP "${WARNINGS_SETUP} ${WARNINGS_SETUP_LIST}")
-            endif ()
+        endif ()
+        if (CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL "8.0.0")
+            set(WARNINGS_SETUP_LIST
+                "-Wno-error=range-loop-analysis" # && to bool array element which is not reference
+                "-Wno-error=deprecated" # definition of implicit copy constructor is deprecated
+            )
+            string(REPLACE ";" " " WARNINGS_SETUP "${WARNINGS_SETUP} ${WARNINGS_SETUP_LIST}")
         endif ()
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-        set(TESTED_VERSIONS "1900")
-        list(FIND TESTED_VERSIONS "${MSVC_VERSION}" TESTED_VERSION_INDEX)
-        if (NOT (TESTED_VERSION_INDEX EQUAL -1))
+        if (DEFINED ZSERIO_ENABLE_WERROR)
             set(WARNINGS_SETUP "/WX")
-            if (MSVC_VERSION STREQUAL "1900")
-                set(WARNINGS_SETUP "${WARNINGS_SETUP} /wd4334")
-            endif ()
+        endif ()
+        if (MSVC_VERSION STREQUAL "1900")
+            set(WARNINGS_SETUP "${WARNINGS_SETUP} /wd4334")
         endif ()
     endif ()
     set(${VARNAME} "${WARNINGS_SETUP}" PARENT_SCOPE)

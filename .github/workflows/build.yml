@@ -99,11 +99,13 @@ jobs:
     - name: Build Zserio
       run: scripts/build.sh all-linux64-gcc
       env:
+        CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1"
         GCOVR_BIN: "gcovr"
 
     - name: Build Zserio runtime using clang
       run: scripts/build.sh cpp_rt-linux64-clang
       env:
+        CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1"
         SANITIZERS_ENABLED: 1 # works only for clang
         LLVM_PROFDATA_BIN: "llvm-profdata${{matrix.clang-version-suffix}}"
         LLVM_COV_BIN: "llvm-cov${{matrix.clang-version-suffix}}"
