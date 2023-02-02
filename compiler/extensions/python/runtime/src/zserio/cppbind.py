@@ -6,12 +6,10 @@ import importlib
 import os
 import typing
 
-from zserio.exception import PythonRuntimeException
-
 ZSERIO_PYTHON_IMPLEMENTATION_ENV = "ZSERIO_PYTHON_IMPLEMENTATION"
 ZSERIO_CPP_MODULE = "zserio_cpp"
 
-def import_cpp_class(cppname: str) -> typing.Optional[typing.Type[typing.Any]]:
+def import_cpp_class(cppname: str, *, exception_class = None) -> typing.Optional[typing.Type[typing.Any]]:
     """
     Tries to import optimized C++ implementation of the given python class if 'ZSERIO_PYTHON_IMPLEMENTATION'
     environment variable is either unset or set to 'cpp'.
@@ -23,13 +21,19 @@ def import_cpp_class(cppname: str) -> typing.Optional[typing.Type[typing.Any]]:
 
     :param pyclass: Pure python class implemenation for which the C++ optimized version should be loaded.
     :param cppname: Name of optimized C++ class in case that it differs from the pyclass name.
+    :param exception_class: Exception to raise in case of an error.
     :returns: Requested implemenation of the given pyclass.
     :raises PythonRuntimeException: When the requested implementation is not available.
     """
 
+    if exception_class is None:
+        # we need to break cyclic import from zserio.exception
+        from zserio.exception import PythonRuntimeException
+        exception_class = PythonRuntimeException
+
     impl = os.getenv(ZSERIO_PYTHON_IMPLEMENTATION_ENV)
     if not impl in [None, "python", "cpp", "c++"]:
-        raise PythonRuntimeException(f"Zserio Python runtime implementation '{impl}' is not available!")
+        raise exception_class(f"Zserio Python runtime implementation '{impl}' is not available!")
 
     if impl != "python":
         try:
@@ -37,5 +41,5 @@ def import_cpp_class(cppname: str) -> typing.Optional[typing.Type[typing.Any]]:
         except (ImportError, AttributeError) as err:
             if impl in ["cpp", "c++"]:
                 message = f"Zserio C++ implementation of '{cppname}' is not available!"
-                raise PythonRuntimeException(message) from err
+                raise exception_class(message) from err
     return None

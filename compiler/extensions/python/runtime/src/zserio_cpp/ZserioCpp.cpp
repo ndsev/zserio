@@ -11,6 +11,7 @@ PYBIND11_MODULE(zserio_cpp, module)
     zserio_cpp::pybindBitStreamWriter(module);
 
     // ensure that all standard exceptions will be fired as PythonRuntimeException
+    static py::exception<zserio::CppRuntimeException> pythonRuntimeException(module, "PythonRuntimeException");
     py::register_local_exception_translator([](std::exception_ptr exceptionPtr) {
         try
         {
@@ -19,8 +20,7 @@ PYBIND11_MODULE(zserio_cpp, module)
         }
         catch (const std::exception& excpt)
         {
-            auto pythonRuntimeException = py::module_::import("zserio").attr("PythonRuntimeException");
-            PyErr_SetString(pythonRuntimeException.ptr(), excpt.what());
+            pythonRuntimeException(excpt.what());
         }
     });
 }
