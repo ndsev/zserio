@@ -743,7 +743,8 @@ compile_cpp_for_target()
             return 1
         fi
 
-        if [[ ! -z "${GCOVR_BIN}" || (! -z "${LLVM_PROFDATA_BIN}" && ! -z "${LLVM_COV_BIN}") ]] ; then
+        if [[ (! -z "${GCOVR_BIN}" && "${TARGET}" == *"gcc"*) ||
+                (! -z "${LLVM_PROFDATA_BIN}" && ! -z "${LLVM_COV_BIN}" && "${TARGET}" == *"clang"*) ]] ; then
             "${CMAKE}" --build . --target coverage
             local COVERAGE_RESULT=$?
             if [ ${COVERAGE_RESULT} -ne 0 ] ; then

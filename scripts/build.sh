@@ -540,18 +540,23 @@ main()
         local CMAKELISTS_DIR="${ZSERIO_PROJECT_ROOT}/compiler/extensions/cpp/runtime"
         local CPP_BUILD_DIR="${ZSERIO_BUILD_DIR}/runtime_libs/cpp"
         local CMAKE_ARGS=(-DCMAKE_INSTALL_PREFIX="${ZSERIO_DISTR_DIR}/runtime_libs")
+        local IS_COVERAGE_ENABLED=0
         if [[ ! -z "${GCOVR_BIN}" && "${PARAM_CPP_TARGET_ARRAY[@]}" == *"gcc"* ]] ; then
+            local IS_COVERAGE_ENABLED=1
             CMAKE_ARGS+=(
-                    -DZSERIO_CODE_COVERAGE_ENABLE=ON
                     -DGCOVR_BIN="${GCOVR_BIN}"
             )
-        elif [[ ! -z "${LLVM_PROFDATA_BIN}" && ! -z "${LLVM_COV_BIN}" &&
+        fi
+        if [[ ! -z "${LLVM_PROFDATA_BIN}" && ! -z "${LLVM_COV_BIN}" &&
                 "${PARAM_CPP_TARGET_ARRAY[@]}" == *"clang"* ]] ; then
+            local IS_COVERAGE_ENABLED=1
             CMAKE_ARGS+=(
-                    -DZSERIO_CODE_COVERAGE_ENABLE=ON
                     -DLLVM_PROFDATA_BIN="${LLVM_PROFDATA_BIN}"
                     -DLLVM_COV_BIN="${LLVM_COV_BIN}"
             )
+        fi
+        if [ ${IS_COVERAGE_ENABLED} -eq 1 ] ; then
+            CMAKE_ARGS+=(-DZSERIO_CODE_COVERAGE_ENABLE=ON)
         else
             CMAKE_ARGS+=(-DZSERIO_CODE_COVERAGE_ENABLE=OFF)
         fi
