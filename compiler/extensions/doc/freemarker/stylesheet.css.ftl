@@ -272,11 +272,12 @@ a:hover {
   max-width: ${codeIndent}rem;
 }
 
-.code td.value-expression  {
+.code td.value-expression {
   padding-left: 1rem;
 }
 
-.code div.doc {
+.code div.doc,
+.code td.value-expression.doc {
   white-space: normal;
   color: ${codeDocColor};
 }

@@ -49,8 +49,9 @@ public class BitmaskTemplateData extends PackageTemplateDataBase
 
             final ExpressionFormatter docExpressionFormatter = context.getExpressionFormatter();
             final Expression valueExpression = bitmaskValue.getValueExpression();
-            value = (valueExpression == null) ? bitmaskValue.getValue().toString() :
-                docExpressionFormatter.formatGetter(bitmaskValue.getValueExpression());
+            hasValueExpression = valueExpression != null;
+            value = hasValueExpression ? docExpressionFormatter.formatGetter(bitmaskValue.getValueExpression()) :
+                    bitmaskValue.getValue().toString();
 
             docComments = new DocCommentsTemplateData(context, bitmaskValue.getDocComments());
 
@@ -75,6 +76,11 @@ public class BitmaskTemplateData extends PackageTemplateDataBase
             return symbol;
         }
 
+        public boolean getHasValueExpression()
+        {
+            return hasValueExpression;
+        }
+
         public String getValue()
         {
             return value;
@@ -91,6 +97,7 @@ public class BitmaskTemplateData extends PackageTemplateDataBase
         }
 
         private final SymbolTemplateData symbol;
+        private final boolean hasValueExpression;
         private final String value;
         private final DocCommentsTemplateData docComments;
         private final List<SeeSymbolTemplateData> seeSymbols;

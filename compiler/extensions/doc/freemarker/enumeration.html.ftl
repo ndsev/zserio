@@ -37,7 +37,7 @@ ${I}    </td></tr>
     </#if>
 ${I}    <tr>
 ${I}      <td class="indent"><@symbol_reference item.symbol/></td>
-${I}      <td class="value-expression">= ${item.value}<#if item_has_next>,</#if></td>
+${I}      <td class="value-expression<#if !item.hasValueExpression> doc</#if>">= ${item.value}<#if item_has_next>,</#if></td>
 ${I}    </tr>
 ${I}  </tbody>
 </#list>

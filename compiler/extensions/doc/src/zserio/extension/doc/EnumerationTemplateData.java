@@ -47,8 +47,9 @@ public class EnumerationTemplateData extends PackageTemplateDataBase
 
             final Expression valueExpression = enumItem.getValueExpression();
             final ExpressionFormatter docExpressionFormatter = context.getExpressionFormatter();
-            value = (valueExpression == null) ? enumItem.getValue().toString() :
-                docExpressionFormatter.formatGetter(valueExpression);
+            hasValueExpression = (valueExpression != null);
+            value = hasValueExpression ? docExpressionFormatter.formatGetter(valueExpression) :
+                    enumItem.getValue().toString();
 
             docComments = new DocCommentsTemplateData(context, enumItem.getDocComments());
 
@@ -73,6 +74,11 @@ public class EnumerationTemplateData extends PackageTemplateDataBase
             return symbol;
         }
 
+        public boolean getHasValueExpression()
+        {
+            return hasValueExpression;
+        }
+
         public String getValue()
         {
             return value;
@@ -89,6 +95,7 @@ public class EnumerationTemplateData extends PackageTemplateDataBase
         }
 
         private final SymbolTemplateData symbol;
+        private final boolean hasValueExpression;
         private final String value;
         private final DocCommentsTemplateData docComments;
         private final List<SeeSymbolTemplateData> seeSymbols;
