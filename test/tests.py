@@ -11,13 +11,12 @@ import glob
 import pylint.lint
 from multiprocessing import Process
 
+TEST_ROOT = os.path.dirname(os.path.realpath(__file__))
+TESTUTILS_PATH = os.path.join(TEST_ROOT, "utils", "python")
+sys.path.append(TESTUTILS_PATH)
+from testutils import TestConfig # pylint: disable=wrong-import-position
+
 def main():
-    testRoot = os.path.dirname(os.path.realpath(__file__))
-
-    testutilsPath = os.path.join(testRoot, "utils", "python")
-    sys.path.append(testutilsPath)
-    from testutils import TEST_ARGS
-
     argParser = argparse.ArgumentParser()
     argParser.add_argument("--build_dir")
     argParser.add_argument("--release_dir")
@@ -30,10 +29,10 @@ def main():
     argParser.add_argument("--zserio_cpp_dir")
     argParser.set_defaults(filter="**", verbosity=2)
     args = argParser.parse_args()
-    _processTestArgs(args)
+    _initTestConfig(args)
 
     # path to zserio runtime release
-    runtimePath = os.path.join(TEST_ARGS["release_dir"], "runtime_libs", "python")
+    runtimePath = os.path.join(TestConfig["release_dir"], "runtime_libs", "python")
     sys.path.append(runtimePath)
     sys.path.append(args.zserio_cpp_dir)
 
@@ -43,9 +42,9 @@ def main():
 
     for testFilter in args.filter.split(","):
         if testFilter.endswith("**"):
-            testFilesPattern = os.path.join(testRoot, testFilter, testPattern)
+            testFilesPattern = os.path.join(TEST_ROOT, testFilter, testPattern)
         else:
-            testFilesPattern = os.path.join(testRoot, testFilter, "**", testPattern)
+            testFilesPattern = os.path.join(TEST_ROOT, testFilter, "**", testPattern)
 
         testFiles = glob.glob(testFilesPattern, recursive=True)
         for globResult in testFiles:
@@ -73,16 +72,28 @@ def main():
     if pylintResult != 0:
         return pylintResult
 
-    return _runMypyOnAllSources(args, testDirs, runtimePath, testutilsPath)
+    return _runMypyOnAllSources(args, testDirs, runtimePath)
 
-def _processTestArgs(args):
-    from testutils import TEST_ARGS
+def _initTestConfig(args):
+    configDict = {}
+    configDict['zserio_root_dir'] = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..", "..")
+
     if args.build_dir:
-        TEST_ARGS["build_dir"] = args.build_dir
+        configDict["build_dir"] = args.build_dir
+    else:
+        configDict["build_dir"] = os.path.join(configDict["zserio_root_dir"], "build", "test", "python")
+
     if args.release_dir:
-        TEST_ARGS["release_dir"] = args.release_dir
+        configDict["release_dir"] = args.release_dir
+    else:
+        configDict["release_dir"] = os.path.join(configDict["zserio_root_dir"], "distr")
+
     if args.java:
-        TEST_ARGS["java"] = args.java
+        configDict["java"] = args.java
+    else:
+        configDict["java"] = "java"
+
+    TestConfig.init(configDict)
 
 def _runTests(args, testDirs, testPattern):
     p = Process(target=_runTestsProcess, args=(args, testDirs, testPattern))
@@ -91,8 +102,7 @@ def _runTests(args, testDirs, testPattern):
     return p.exitcode == 0
 
 def _runTestsProcess(args, testDirs, testPattern):
-    # need to re-process TEST_ARGS in a new Process on Windows
-    _processTestArgs(args)
+    _initTestConfig(args) # needed on Windows since the subprocess is created using spawn method by default
 
     loader = unittest.TestLoader()
     testSuite = unittest.TestSuite()
@@ -186,19 +196,20 @@ def _runPylint(sources, options, disableOption=None):
 
     return 0
 
-def _runMypyOnAllSources(args, testDirs, runtimePath, testutilsPath):
+def _runMypyOnAllSources(args, testDirs, runtimePath):
     print("\nRunning mypy on python tests")
 
     if not "MYPY_ENABLED" in os.environ or os.environ["MYPY_ENABLED"] != '1':
         print("Mypy is disabled.\n")
         return 0
 
-    from testutils import TEST_ARGS, getApiDir, getTestSuiteName
+    from testutils import getApiDir, getTestSuiteName
     from mypy import api
 
-    os.environ["MYPYPATH"] = runtimePath + os.pathsep + testutilsPath
+    # contains two paths
+    os.environ["MYPYPATH"] = runtimePath + os.pathsep + TESTUTILS_PATH
 
-    mypyCacheDir = os.path.join(TEST_ARGS["build_dir"], ".mypy_cache")
+    mypyCacheDir = os.path.join(TestConfig["build_dir"], ".mypy_cache")
     mypyArgs = []
     mypyArgs.append(f"--cache-dir={mypyCacheDir}")
     if args.mypy_config_file:

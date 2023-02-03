@@ -7,12 +7,29 @@ import sys
 import importlib
 import subprocess
 
-# global arguments with default values (stored here to allow running of particular tests)
-TEST_ARGS = {}
-TEST_ARGS["zserio_root_dir"] = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..", "..")
-TEST_ARGS["build_dir"] = os.path.join(TEST_ARGS["zserio_root_dir"], "build", "test", "python")
-TEST_ARGS["release_dir"] = os.path.join(TEST_ARGS["zserio_root_dir"], "distr")
-TEST_ARGS["java"] = "java"
+class TestConfig:
+    """
+    Test config as a special singleton, init must be called before any access to the configuration
+    values via TestConfig[key].
+    """
+
+    def __new__(cls):
+        raise Exception("TestConfig constructor is forbidden! Use init method instead.")
+
+    @classmethod
+    def init(cls, configDict):
+        if not hasattr(cls, 'instance'):
+            cls.instance = object.__new__(cls)
+        cls.instance.configDict = configDict # pylint: disable=attribute-defined-outside-init
+
+    def __class_getitem__(cls, key):
+        return cls._get().configDict[key]
+
+    @staticmethod
+    def _get():
+        if not hasattr(TestConfig, 'instance'):
+            raise Exception("TestConfig was not initialized!")
+        return TestConfig.instance
 
 # set containing all compiled main zs files to prevent multiple compilations of the same zserio sources
 COMPILED_ZS = {} # keys are zs definition tuples: (zsDir, mainZsFile), value is zserio tool error log
@@ -70,7 +87,7 @@ def getApiDir(testDir):
     :returns: Directory where the API for current test suite will be generated.
     """
 
-    buildDir = TEST_ARGS["build_dir"] # python test root build directory
+    buildDir = TestConfig["build_dir"] # python test root build directory
     testSuiteName = getTestSuiteName(testDir)
     return os.path.join(buildDir, testSuiteName)
 
@@ -184,11 +201,11 @@ def _compileZserio(zsDef, apiDir, extraArgs):
     :raises Exception: When zserio tool fails.
     """
 
-    zserioLibsDir = os.path.join(TEST_ARGS["release_dir"], "zserio_libs")
+    zserioLibsDir = os.path.join(TestConfig["release_dir"], "zserio_libs")
     zserioCore = os.path.join(zserioLibsDir, "zserio_core.jar")
     zserioPython = os.path.join(zserioLibsDir, "zserio_python.jar")
     zserioCmd = [
-        TEST_ARGS["java"],
+        TestConfig["java"],
         "-cp",
         os.pathsep.join([zserioCore, zserioPython]),
         "zserio.tools.ZserioTool",
