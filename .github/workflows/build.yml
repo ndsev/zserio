@@ -85,30 +85,19 @@ jobs:
     - name: Install XML validator (xmllint)
       run: sudo apt-get install libxml2-utils
 
-    - name: Build Zserio C++ runtime using gcc
-      strategy:
-        matrix:
-          build-type: ["Debug", "Release"]
-        steps:
-          - name: Build
-            run: scripts/build.sh cpp-linux64-gcc cpp-linux32-gcc
-            env:
-              CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1 -DCMAKE_BUILD_TYPE=${{matrix.build-type}}"
-              GCOVR_BIN: "gcovr"
-
     - name: Build Zserio
-      run: scripts/build.sh all-linux64-gcc
+      run: scripts/build.sh all-linux64-gcc cpp_rt-linux32-gcc cpp_rt-linux64-clang cpp_rt-linux32-clang
       env:
-        CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1"
-        GCOVR_BIN: "gcovr"
+        CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1 -DCMAKE_BUILD_TYPE=Release"
 
-    - name: Build Zserio runtime using clang
-      run: scripts/build.sh cpp_rt-linux64-clang
+    - name: Build Zserio C++ runtime (Debug Build)
+      run: scripts/build.sh cpp_rt-linux64-gcc cpp_rt-linux32-gcc cpp_rt-linux64-clang # cpp_rt-linux32-clang
       env:
-        CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1"
-        SANITIZERS_ENABLED: 1 # works only for clang
+        CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1 -DCMAKE_BUILD_TYPE=Debug"
+        GCOVR_BIN: "gcovr"
         LLVM_PROFDATA_BIN: "llvm-profdata${{matrix.clang-version-suffix}}"
         LLVM_COV_BIN: "llvm-cov${{matrix.clang-version-suffix}}"
+        SANITIZERS_ENABLED: 1
 
     - name: Pack Zserio release
       run: scripts/release.sh
@@ -116,18 +105,49 @@ jobs:
     - name: Run Zserio tests
       run: |
         unset JAVA_TOOL_OPTIONS # workaround https://github.com/actions/virtual-environments/issues/1437
-        scripts/test.sh all-linux64-gcc cpp-linux64-clang
+        scripts/test.sh all-linux64-gcc cpp-linux32-gcc cpp-linux64-clang cpp-linux32-clang
+      env:
+        CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Release"
 
-    - name: Run Zserio C++ tests with extra arguments (Release Build)
+    - name: Run Zserio C++ tests (Debug Build)
+      run: |
+        scripts/test.sh cpp-linux64-gcc cpp-linux32-gcc cpp-linux64-clang cpp-linux32-clang
+      env:
+        CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Debug"
+
+    - name: Compare all blobs created by Zserio tests
+      run: |
+        scripts/compare_test_data.sh \
+              build/test/cpp/linux64-gcc/debug \
+              build/test/cpp/linux64-gcc/release \
+              build/test/cpp/linux32-gcc/debug \
+              build/test/cpp/linux32-gcc/release \
+              build/test/cpp/linux64-clang/debug \
+              build/test/cpp/linux64-clang/release \
+              build/test/cpp/linux32-clang/debug \
+              build/test/cpp/linux32-clang/release \
+              build/test/java \
+              build/test/python
+
+    - name: Run Zserio C++ tests with extra arguments, except of without_writer_code (Release Build)
       run: |
         scripts/test.sh -x arguments/without_writer_code \
               cpp-linux64-gcc cpp-linux32-gcc cpp-linux64-clang cpp-linux32-clang
       env:
         CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Release"
-        ZSERIO_EXTRA_ARGS: "-withTypeInfoCode -withCodeComments -withRangeCheckCode -withValidationCode
+        ZSERIO_EXTRA_ARGS: "-withTypeInfoCode -withCodeComments -withRangeCheckCode -withValidationCode \
               -setCppAllocator polymorphic -withReflectionCode"
 
-    - name: Run Zserio C++ tests with extra arguments (Debug Build)
+    - name: Run Zserio C++ tests with extra arguments, only without_writer_code (Release Build)
+      run: |
+        scripts/test.sh -i arguments/without_writer_code \
+              cpp-linux64-gcc cpp-linux32-gcc cpp-linux64-clang cpp-linux32-clang
+      env:
+        CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Release"
+        ZSERIO_EXTRA_ARGS: "-withTypeInfoCode -withCodeComments \
+              -setCppAllocator polymorphic -withReflectionCode"
+
+    - name: Run Zserio C++ tests with extra arguments, except of without_writer_code (Debug Build)
       run: |
         scripts/test.sh -x arguments/without_writer_code \
               cpp-linux64-gcc cpp-linux32-gcc cpp-linux64-clang cpp-linux32-clang
@@ -136,18 +156,39 @@ jobs:
         ZSERIO_EXTRA_ARGS: "-withTypeInfoCode -withCodeComments -withRangeCheckCode -withValidationCode \
               -setCppAllocator polymorphic -withReflectionCode"
 
-    - name: Run Zserio Java and Python tests with extra arguments
+    - name: Run Zserio C++ tests with extra arguments, only without_writer_code (Debug Build)
+      run: |
+        scripts/test.sh -i arguments/without_writer_code \
+              cpp-linux64-gcc cpp-linux32-gcc cpp-linux64-clang cpp-linux32-clang
+      env:
+        CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Debug"
+        ZSERIO_EXTRA_ARGS: "-withTypeInfoCode -withCodeComments \
+              -setCppAllocator polymorphic -withReflectionCode"
+
+    - name: Run Zserio Java and Python tests with extra arguments, except of without_writer_code
       run: |
         scripts/test.sh -x arguments/without_writer_code java python 
       env:
         ZSERIO_EXTRA_ARGS: "-withTypeInfoCode -withCodeComments -withRangeCheckCode -withValidationCode"
 
-    - name: Run Zserio Doc and XML tests with extra arguments
+    - name: Run Zserio Java and Python tests with extra arguments, only without_writer_code
+      run: |
+        scripts/test.sh -i arguments/without_writer_code java python 
+      env:
+        ZSERIO_EXTRA_ARGS: "-withTypeInfoCode -withCodeComments"
+
+    - name: Run Zserio Doc and XML tests with extra arguments, except of without_writer_code
       run: |
         scripts/test.sh -x arguments/without_writer_code java python 
       env:
         ZSERIO_EXTRA_ARGS: "-withTypeInfoCode -withCodeComments -withRangeCheckCode -withValidationCode \
               -setTopLevelPackage top.level"
+
+    - name: Run Zserio Doc and XML tests with extra arguments, only without_writer_code
+      run: |
+        scripts/test.sh -i arguments/without_writer_code java python 
+      env:
+        ZSERIO_EXTRA_ARGS: "-withTypeInfoCode -withCodeComments -setTopLevelPackage top.level"
 
     - name: Compare all blobs created by Zserio tests with extra arguments
       run: |
@@ -166,7 +207,12 @@ jobs:
     - name: Run Zserio integration tests for repeated generation
       run: |
         unset JAVA_TOOL_OPTIONS # workaround https://github.com/actions/virtual-environments/issues/1437
-        scripts/test_gen.sh all-linux64-gcc cpp-linux64-clang
+        scripts/test_gen.sh all-linux64-gcc cpp-linux32-gcc cpp-linux64-clang cpp-linux32-clang
+
+    - name: Run Zserio tests and compares produced BLOBs to check binary compatibility
+      run: |
+        unset JAVA_TOOL_OPTIONS # workaround https://github.com/actions/virtual-environments/issues/1437
+        scripts/test_compat.sh
 
     - name: Archive Zserio artifacts
       uses: actions/upload-artifact@v2
