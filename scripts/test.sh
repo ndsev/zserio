@@ -110,11 +110,14 @@ test_java()
     local TEST_SUITES=("${MSYS_WORKAROUND_TEMP[@]}")
 
     local TEST_FILTER=""
-    for i in ${!TEST_SUITES[@]} ; do
-        if [ $i -gt 0 ] ; then
+    local IS_FIRST=1
+    for TEST_SUITE in ${TEST_SUITES[@]} ; do
+        if [ ${IS_FIRST} -eq 0 ] ; then
             TEST_FILTER+=","
+        else
+            IS_FIRST=0
         fi
-        TEST_FILTER+="${TEST_SUITES[$i]}"
+        TEST_FILTER+="${TEST_SUITE}"
     done
 
     local MESSAGE="Zserio Java tests"
