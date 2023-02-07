@@ -20,7 +20,7 @@ public class CommentsWarningTest
     public void docCommentFormat()
     {
         assertTrue(zserioWarnings.isPresent("doc_comment_format.zs:4:4: " +
-                "Documentation: no viable alternative at input '\\n * /**'."));
+                "Documentation: no viable alternative at input")); // '\\n * /**' won't work under Windows
     }
 
     @Test

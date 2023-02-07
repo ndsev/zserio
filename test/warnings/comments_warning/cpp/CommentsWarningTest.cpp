@@ -18,7 +18,7 @@ protected:
 TEST_F(CommentsWarningTest, docCommentFormat)
 {
     ASSERT_TRUE(zserioWarnings.isPresent("doc_comment_format.zs:4:4: "
-            "Documentation: no viable alternative at input '\\n * /**'."));
+            "Documentation: no viable alternative at input")); // '\\n * /**' won't work under Windows
 }
 
 TEST_F(CommentsWarningTest, markdownCommentWithWrongTerminator)
