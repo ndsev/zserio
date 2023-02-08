@@ -52,7 +52,7 @@
     <#if field.optional?? && field.optional.isRecursive>
         contextNode<#t>
     <#else>
-        contextNode.getChildren().at(${index})<#t>
+        contextNode.getChildren()[${index}]<#t>
     </#if>
 </#macro>
 
