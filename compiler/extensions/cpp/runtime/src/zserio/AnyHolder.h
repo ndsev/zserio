@@ -530,7 +530,13 @@ private:
     void checkType() const
     {
         if (!isType<T>())
-            throw CppRuntimeException("Bad type in AnyHolder");
+            throwBadType();
+    }
+
+    /** Optimization which increases changes to inline checkType(). */
+    void throwBadType() const
+    {
+        throw CppRuntimeException("Bad type in AnyHolder");
     }
 
     template <typename T>

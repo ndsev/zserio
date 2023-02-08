@@ -307,6 +307,7 @@ private:
     void writeVarNum(uint64_t value, bool hasSign, bool isNegative, size_t maxVarBytes, size_t numVarBytes);
 
     void checkCapacity(size_t bitSize) const;
+    void throwInsufficientCapacityException() const;
 
     uint8_t* m_buffer;
     size_t m_bitIndex;

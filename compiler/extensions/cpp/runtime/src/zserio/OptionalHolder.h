@@ -135,7 +135,7 @@ protected:
     void checkHasValue() const
     {
         if (!getDerived()->hasValue())
-            throw CppRuntimeException("Trying to access value of non-present optional field!");
+            throwNonPresentException();
     }
 
 private:
@@ -157,6 +157,12 @@ private:
     const Derived* getDerived() const
     {
         return static_cast<const Derived*>(this);
+    }
+
+    /** Optimization which increases chances to inline checkHasValue(). */
+    void throwNonPresentException() const
+    {
+        throw CppRuntimeException("Trying to access value of non-present optional field!");
     }
 };
 

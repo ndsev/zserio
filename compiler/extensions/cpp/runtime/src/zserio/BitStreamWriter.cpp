@@ -388,10 +388,15 @@ inline void BitStreamWriter::writeVarNum(uint64_t value, bool isSigned, bool isN
     }
 }
 
+inline void BitStreamWriter::throwInsufficientCapacityException() const
+{
+    throw InsufficientCapacityException("BitStreamWriter: Reached end of bit buffer!");
+}
+
 inline void BitStreamWriter::checkCapacity(size_t bitSize) const
 {
     if (bitSize > m_bufferBitSize)
-        throw InsufficientCapacityException("BitStreamWriter: Reached end of bit buffer!");
+        throwInsufficientCapacityException();
 }
 
 } // namespace zserio

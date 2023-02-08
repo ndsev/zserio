@@ -154,34 +154,34 @@ namespace
         return static_cast<BaseType>(buffer[0]);
     }
 
-    /** Checks that reading of numBits don't reach end of stream. */
-    inline void checkEof(const ReaderContext& ctx, uint8_t numBits)
+    /** Optimization which increases chances to inline checkNumBits and checkNumBits64. */
+    inline void throwNumBitsIsNotValid(uint8_t numBits)
     {
-        if (ctx.bitIndex + numBits > ctx.bufferBitSize)
-            throw CppRuntimeException("BitStreamReader: Reached eof(), reading from stream failed!");
+        throw CppRuntimeException("BitStreamReader: ReadBits #") << numBits <<
+                " is not valid, reading from stream failed!";
     }
 
     /** Checks numBits validity for 32-bit reads. */
     inline void checkNumBits(uint8_t numBits)
     {
         if (numBits > 32)
-        {
-            throw CppRuntimeException("BitStreamReader: ReadBits #") << numBits <<
-                    " is not valid, reading from stream failed!";
-        }
+            throwNumBitsIsNotValid(numBits);
     }
 
     /** Checks numBits validity for 64-bit reads. */
     inline void checkNumBits64(uint8_t numBits)
     {
         if (numBits > 64)
-        {
-            throw CppRuntimeException("BitStreamReader: ReadBits64 #") << numBits <<
-                    " is not valid, reading from stream failed!";
-        }
+            throwNumBitsIsNotValid(numBits);
     }
 
-    /** Loads next 32 bits to 32-bit bit-cache. */
+    /** Optimization which increases chances to inline loadCacheNext. */
+    inline void throwEof()
+    {
+        throw CppRuntimeException("BitStreamReader: Reached eof(), reading from stream failed!");
+    }
+
+    /** Loads next 32/64 bits to 32/64 bit-cache. */
     inline void loadCacheNext(ReaderContext& ctx, uint8_t numBits)
     {
         static const uint8_t cacheBitSize = sizeof(BaseType) * 8;
@@ -201,7 +201,8 @@ namespace
         }
         else
         {
-            checkEof(ctx, numBits);
+            if (ctx.bitIndex + numBits > ctx.bufferBitSize)
+                throwEof();
 
             ctx.cacheNumBits = static_cast<uint8_t>(ctx.bufferBitSize - ctx.bitIndex);
 
