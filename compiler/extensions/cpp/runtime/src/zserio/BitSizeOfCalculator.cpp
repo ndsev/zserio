@@ -120,7 +120,7 @@ static size_t bitSizeOfVarIntImpl(uint64_t value, const uint64_t* maxValues, siz
                 "' is out of range for " << varIntName << "!";
     }
 
-    return bytesToBits(byteSize);
+    return byteSize * 8;
 }
 
 template <typename T>
@@ -182,7 +182,7 @@ size_t bitSizeOfBytes(Span<const uint8_t> bytesValue)
     const size_t bytesSize = bytesValue.size();
 
     // the bytes consists of varsize for size followed by the bytes
-    return bitSizeOfVarSize(convertSizeToUInt32(bytesSize)) + bytesToBits(bytesSize);
+    return bitSizeOfVarSize(convertSizeToUInt32(bytesSize)) + bytesSize * 8;
 }
 
 size_t bitSizeOfString(StringView stringValue)
@@ -190,7 +190,7 @@ size_t bitSizeOfString(StringView stringValue)
     const size_t stringSize = stringValue.size();
 
     // the string consists of varsize for size followed by the UTF-8 encoded string
-    return bitSizeOfVarSize(convertSizeToUInt32(stringSize)) + bytesToBits(stringSize);
+    return bitSizeOfVarSize(convertSizeToUInt32(stringSize)) + stringSize * 8;
 }
 
 } // namespace zserio

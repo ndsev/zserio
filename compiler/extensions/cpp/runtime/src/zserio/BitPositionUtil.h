@@ -16,26 +16,6 @@ namespace zserio
  */
 size_t alignTo(size_t alignmentValue, size_t bitPosition);
 
-/**
- * Converts number of bits to bytes.
- *
- * \param numBits The number of bits to convert.
- *
- * \return Number of bytes.
- *
- * \throw CppRuntimeException if number of bits to convert is not divisible by 8.
- */
-size_t bitsToBytes(size_t numBits);
-
-/**
- * Converts number of bytes to bits.
- *
- * \param numBytes The n number of bytes to convert.
- *
- * \return Number of bits.
- */
-size_t bytesToBits(size_t numBytes);
-
 } // namespace zserio
 
 #endif // ifndef ZSERIO_BITPOSITION_UTIL_H_INC

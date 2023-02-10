@@ -418,7 +418,7 @@ public:
             if (ARRAY_TYPE == ArrayType::ALIGNED || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
             {
                 endBitPosition = alignTo(8, endBitPosition);
-                detail::initializeOffset(offsetInitializer, index, bitsToBytes(endBitPosition));
+                detail::initializeOffset(offsetInitializer, index, endBitPosition / 8);
             }
             endBitPosition = m_arrayTraits.initializeOffsets(endBitPosition, m_rawArray[index]);
         }
@@ -455,7 +455,7 @@ public:
                 if (ARRAY_TYPE == ArrayType::ALIGNED || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
                 {
                     endBitPosition = alignTo(8, endBitPosition);
-                    detail::initializeOffset(offsetInitializer, index, bitsToBytes(endBitPosition));
+                    detail::initializeOffset(offsetInitializer, index, endBitPosition / 8);
                 }
                 endBitPosition = m_packedArrayTraits.initializeOffsets(
                         contextNode, endBitPosition, m_rawArray[index]);
@@ -500,7 +500,7 @@ public:
             if (ARRAY_TYPE == ArrayType::ALIGNED || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
             {
                 in.alignTo(8);
-                detail::checkOffset(offsetChecker, index, bitsToBytes(in.getBitPosition()));
+                detail::checkOffset(offsetChecker, index, in.getBitPosition() / 8);
             }
             detail::arrayTraitsRead(m_rawArray, m_arrayTraits, elementFactory, in, index);
         }
@@ -539,7 +539,7 @@ public:
                 if (ARRAY_TYPE == ArrayType::ALIGNED || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
                 {
                     in.alignTo(8);
-                    detail::checkOffset(offsetChecker, index, bitsToBytes(in.getBitPosition()));
+                    detail::checkOffset(offsetChecker, index, in.getBitPosition() / 8);
                 }
                 detail::packedArrayTraitsRead(m_rawArray, m_packedArrayTraits, elementFactory,
                         contextNode, in, index);
@@ -564,7 +564,7 @@ public:
             if (ARRAY_TYPE == ArrayType::ALIGNED || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
             {
                 out.alignTo(8);
-                detail::checkOffset(offsetChecker, index, bitsToBytes(out.getBitPosition()));
+                detail::checkOffset(offsetChecker, index, out.getBitPosition() / 8);
             }
             m_arrayTraits.write(out, m_rawArray[index]);
         }
@@ -595,7 +595,7 @@ public:
                 if (ARRAY_TYPE == ArrayType::ALIGNED || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
                 {
                     out.alignTo(8);
-                    detail::checkOffset(offsetChecker, index, bitsToBytes(out.getBitPosition()));
+                    detail::checkOffset(offsetChecker, index, out.getBitPosition() / 8);
                 }
                 m_packedArrayTraits.write(contextNode, out, m_rawArray[index]);
             }

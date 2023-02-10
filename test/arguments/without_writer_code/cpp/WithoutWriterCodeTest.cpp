@@ -603,7 +603,7 @@ protected:
         writer.writeBits(NUM_ELEMENTS, 32);
 
         // offsets
-        size_t offset = zserio::bitsToBytes(writer.getBitPosition()) + 4 * NUM_ELEMENTS;
+        size_t offset = writer.getBitPosition() / 8 + 4 * NUM_ELEMENTS;
         for (uint32_t i = 0; i < NUM_ELEMENTS; ++i)
         {
             writer.writeBits(static_cast<uint32_t>(offset), 32);

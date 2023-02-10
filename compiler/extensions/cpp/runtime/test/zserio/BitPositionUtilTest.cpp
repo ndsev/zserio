@@ -20,19 +20,4 @@ TEST(BitPositionUtilTest, alignTo)
     EXPECT_EQ(8, alignTo(8, bitPosition));
 }
 
-TEST(BitPositionUtilTest, bitsToBytes)
-{
-    EXPECT_EQ(0, bitsToBytes(0));
-    EXPECT_EQ(1, bitsToBytes(8));
-    ASSERT_THROW(bitsToBytes(9), CppRuntimeException);
-    EXPECT_EQ(2, bitsToBytes(16));
-}
-
-TEST(BitPositionUtilTest, bytesToBits)
-{
-    EXPECT_EQ(0, bytesToBits(0));
-    EXPECT_EQ(8, bytesToBits(1));
-    EXPECT_EQ(16, bytesToBits(2));
-}
-
 } // namespace zserio

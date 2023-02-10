@@ -177,10 +177,10 @@ ${I}in.alignTo(${field.alignmentValue});
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}${streamObjectName}.alignTo(UINT32_C(8));
 ${I}// check offset
-${I}if (::zserio::bitsToBytes(${streamObjectName}.getBitPosition()) != (${field.offset.getter}))
+${I}if (${streamObjectName}.getBitPosition() / 8 != (${field.offset.getter}))
 ${I}{
 ${I}    throw ::zserio::CppRuntimeException("${actionName}: Wrong offset for field ${compoundName}.${field.name}: ") <<
-${I}            ::zserio::bitsToBytes(${streamObjectName}.getBitPosition()) << " != " << (${field.offset.getter}) << "!";
+${I}            (${streamObjectName}.getBitPosition() / 8) << " != " << (${field.offset.getter}) << "!";
 ${I}}
 </#macro>
 
@@ -811,7 +811,7 @@ ${I}}
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}{
 ${I}    const ${field.offset.typeInfo.typeFullName} value =
-${I}            static_cast<${field.offset.typeInfo.typeFullName}>(::zserio::bitsToBytes(endBitPosition));
+${I}            static_cast<${field.offset.typeInfo.typeFullName}>(endBitPosition / 8);
 ${I}    ${field.offset.setter};
 ${I}}
     </#if>

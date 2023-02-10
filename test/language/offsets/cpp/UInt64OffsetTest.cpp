@@ -39,10 +39,10 @@ protected:
 
 const size_t UInt64OffsetTest::ARRAY_SIZE = 13;
 const size_t UInt64OffsetTest::OFFSET = 8 +
-        bitsToBytes(bitSizeOfVarUInt64(ARRAY_SIZE)) +
+        bitSizeOfVarUInt64(ARRAY_SIZE) / 8 +
         ARRAY_SIZE;
 const size_t UInt64OffsetTest::WRONG_OFFSET = OFFSET + 1;
-const size_t UInt64OffsetTest::BIT_SIZE = bytesToBits(OFFSET + 4);
+const size_t UInt64OffsetTest::BIT_SIZE = (OFFSET + 4) * 8;
 
 TEST_F(UInt64OffsetTest, readConstructor)
 {

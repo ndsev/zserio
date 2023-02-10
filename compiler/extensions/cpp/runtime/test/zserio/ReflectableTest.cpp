@@ -394,7 +394,7 @@ protected:
         checkNonCompound(reflectable);
         checkNonArray(reflectable);
 
-        const size_t bitSize = bytesToBits(value.size());
+        const size_t bitSize = value.size() * 8;
         checkWriteRead(value, reflectable,
                 std::bind(&BitStreamReader::readBytes<>, _1, std::allocator<uint8_t>()),
                 bitSizeOfVarSize(convertSizeToUInt32(bitSize)) + bitSize);

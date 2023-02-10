@@ -53,7 +53,7 @@ public:
         Response response = powerOfTwoImpl(request, context);
 
         vector_type<uint8_t> responseData;
-        responseData.resize(zserio::bitsToBytes(response.bitSizeOf()));
+        responseData.resize((response.bitSizeOf() + 7) / 8);
         zserio::BitStreamWriter writer(responseData.data(), responseData.size());
         response.write(writer);
 
