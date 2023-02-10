@@ -44,7 +44,6 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/BitBuffer.h
     zserio/BitFieldUtil.cpp
     zserio/BitFieldUtil.h
-    zserio/BitPositionUtil.cpp
     zserio/BitPositionUtil.h
     zserio/BitSizeOfCalculator.cpp
     zserio/BitSizeOfCalculator.h
