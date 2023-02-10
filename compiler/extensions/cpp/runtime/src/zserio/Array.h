@@ -356,7 +356,7 @@ public:
             {
                 if (ARRAY_TYPE == ArrayType::ALIGNED || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
                     endBitPosition = alignTo(8, endBitPosition);
-                endBitPosition += m_arrayTraits.bitSizeOf(endBitPosition, m_rawArray.at(index));
+                endBitPosition += m_arrayTraits.bitSizeOf(endBitPosition, m_rawArray[index]);
             }
         }
 
@@ -384,14 +384,13 @@ public:
         {
             auto& contextNode = getPackingContextNode();
             for (size_t index = 0; index < size; ++index)
-                m_packedArrayTraits.initContext(contextNode, m_rawArray.at(index));
+                m_packedArrayTraits.initContext(contextNode, m_rawArray[index]);
 
             for (size_t index = 0; index < size; ++index)
             {
                 if (ARRAY_TYPE == ArrayType::ALIGNED || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
                     endBitPosition = alignTo(8, endBitPosition);
-                endBitPosition += m_packedArrayTraits.bitSizeOf(contextNode, endBitPosition,
-                        m_rawArray.at(index));
+                endBitPosition += m_packedArrayTraits.bitSizeOf(contextNode, endBitPosition, m_rawArray[index]);
             }
         }
 
@@ -421,7 +420,7 @@ public:
                 endBitPosition = alignTo(8, endBitPosition);
                 detail::initializeOffset(offsetInitializer, index, bitsToBytes(endBitPosition));
             }
-            endBitPosition = m_arrayTraits.initializeOffsets(endBitPosition, m_rawArray.at(index));
+            endBitPosition = m_arrayTraits.initializeOffsets(endBitPosition, m_rawArray[index]);
         }
 
         return endBitPosition;
@@ -449,7 +448,7 @@ public:
         {
             auto& contextNode = getPackingContextNode();
             for (size_t index = 0; index < size; ++index)
-                m_packedArrayTraits.initContext(contextNode, m_rawArray.at(index));
+                m_packedArrayTraits.initContext(contextNode, m_rawArray[index]);
 
             for (size_t index = 0; index < size; ++index)
             {
@@ -459,7 +458,7 @@ public:
                     detail::initializeOffset(offsetInitializer, index, bitsToBytes(endBitPosition));
                 }
                 endBitPosition = m_packedArrayTraits.initializeOffsets(
-                        contextNode, endBitPosition, m_rawArray.at(index));
+                        contextNode, endBitPosition, m_rawArray[index]);
             }
         }
 
@@ -567,7 +566,7 @@ public:
                 out.alignTo(8);
                 detail::checkOffset(offsetChecker, index, bitsToBytes(out.getBitPosition()));
             }
-            m_arrayTraits.write(out, m_rawArray.at(index));
+            m_arrayTraits.write(out, m_rawArray[index]);
         }
     }
 
@@ -589,7 +588,7 @@ public:
         {
             auto& contextNode = getPackingContextNode();
             for (size_t index = 0; index < size; ++index)
-                m_packedArrayTraits.initContext(contextNode, m_rawArray.at(index));
+                m_packedArrayTraits.initContext(contextNode, m_rawArray[index]);
 
             for (size_t index = 0; index < size; ++index)
             {
@@ -598,7 +597,7 @@ public:
                     out.alignTo(8);
                     detail::checkOffset(offsetChecker, index, bitsToBytes(out.getBitPosition()));
                 }
-                m_packedArrayTraits.write(contextNode, out, m_rawArray.at(index));
+                m_packedArrayTraits.write(contextNode, out, m_rawArray[index]);
             }
         }
     }
