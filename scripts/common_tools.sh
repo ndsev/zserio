@@ -504,7 +504,13 @@ get_latest_zserio_version()
     exit_if_argc_ne $# 1
     local ZSERIO_VERSION_OUT="$1"; shift
 
-    local ZSERIO_VERSION_GET_LATEST_ZSERIO=`curl -s https://api.github.com/repos/ndsev/zserio/releases |
+    local CURL_AUTHORIZATION=""
+    if [[ ! -z "${GITHUB_TOKEN}" ]] ; then
+        local CURL_AUTHORIZATION=(-H "Authorization: Bearer ${GITHUB_TOKEN}") # we need to pass quotes
+    fi
+
+    local ZSERIO_VERSION_GET_LATEST_ZSERIO=`curl "${CURL_AUTHORIZATION[@]}" -s \
+            https://api.github.com/repos/ndsev/zserio/releases |
             grep -m 1 tag_name | cut -d\" -f4 | cut -c2-`
     if [ $? -ne 0 -o -z "${ZSERIO_VERSION_GET_LATEST_ZSERIO}" ] ; then
         stderr_echo "Failed to grep the latest Zserio version from GitHub!"

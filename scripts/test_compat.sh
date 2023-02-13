@@ -182,6 +182,10 @@ Arguments:
     version               Specify the version(s) to test.
                           Use 'working' for release in working directory.
                           Use 'latest' for latest release on GitHub.
+
+Uses the following environment variable:
+    GITHUB_TOKEN          GitHub token authentication to use during looking for the latest release on GitHub.
+                          Default is without authentication.
 EOF
 }
 

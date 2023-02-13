@@ -144,6 +144,9 @@ Uses the following environment variables for releasing:
     JAVA_BIN Java executable to use. Default is "java".
     PYTHON   Python executable to use. Default is "python3".
 
+    GITHUB_TOKEN                GitHub token authentication to use during looking for the latest release on GitHub.
+                                Default is without authentication.
+
     ZSERIO_PYPI_DIR             ZserioPyPi project directory. Default is "../../ZserioPyPi".
     ZSERIO_EXTENSION_SAMPLE_DIR ZserioExtensionSample project directory. Default is "../../ZserioExtensionSample".
     ZSERIO_TUTORIAL_CPP_DIR     ZserioTutorialCpp project directory. Default is "../../ZserioTutorialCpp".
