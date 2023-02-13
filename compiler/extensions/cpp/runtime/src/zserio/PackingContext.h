@@ -3,8 +3,9 @@
 
 #include <type_traits>
 
+#include "zserio/RebindAlloc.h"
 #include "zserio/Types.h"
-#include "zserio/OptionalHolder.h"
+#include "zserio/UniquePtr.h"
 #include "zserio/Vector.h"
 
 namespace zserio
@@ -91,7 +92,7 @@ public:
     {
         m_isPacked = false;
         m_maxBitNumber = 0;
-        m_previousElement.reset();
+        m_initStarted = false;
         m_processingStarted = false;
 
         m_unpackedBitSize = 0;
@@ -110,8 +111,9 @@ public:
         m_numElements++;
         m_unpackedBitSize += bitSizeOfUnpacked(arrayTraits, element);
 
-        if (!m_previousElement.hasValue())
+        if (!m_initStarted)
         {
+            m_initStarted = true;
             m_previousElement = static_cast<uint64_t>(element);
             m_firstElementBitSize = m_unpackedBitSize;
         }
@@ -121,7 +123,7 @@ public:
             {
                 m_isPacked = true;
                 const auto previousElement = static_cast<typename ARRAY_TRAITS::ElementType>(
-                        m_previousElement.value());
+                        m_previousElement);
                 const uint8_t maxBitNumber = detail::calcBitLength(element, previousElement);
                 if (maxBitNumber > m_maxBitNumber)
                 {
@@ -191,11 +193,11 @@ public:
                 const int64_t delta = in.readSignedBits64(m_maxBitNumber + 1);
                 const typename ARRAY_TRAITS::ElementType element =
                         static_cast<typename ARRAY_TRAITS::ElementType>(
-                                m_previousElement.value() + static_cast<uint64_t>(delta));
+                                m_previousElement + static_cast<uint64_t>(delta));
                 m_previousElement = static_cast<uint64_t>(element);
             }
 
-            return static_cast<typename ARRAY_TRAITS::ElementType>(m_previousElement.value());
+            return static_cast<typename ARRAY_TRAITS::ElementType>(m_previousElement);
         }
     }
 
@@ -227,7 +229,7 @@ public:
             if (m_maxBitNumber > 0)
             {
                 // it's already checked in the init phase that the delta will fit into int64_t
-                const int64_t delta = detail::calcUncheckedDelta(element, m_previousElement.value());
+                const int64_t delta = detail::calcUncheckedDelta(element, m_previousElement);
                 out.writeSignedBits64(delta, m_maxBitNumber + 1);
                 m_previousElement = static_cast<uint64_t>(element);
             }
@@ -295,9 +297,10 @@ private:
     static const uint8_t MAX_BIT_NUMBER_BITS = 6;
     static const uint8_t MAX_BIT_NUMBER_LIMIT = 62;
 
+    uint64_t m_previousElement;
     bool m_isPacked = false;
     uint8_t m_maxBitNumber = 0;
-    InplaceOptionalHolder<uint64_t> m_previousElement;
+    bool m_initStarted = false;
     bool m_processingStarted = false;
 
     size_t m_unpackedBitSize = 0;
@@ -379,7 +382,7 @@ public:
      */
     void createContext()
     {
-        m_context = DeltaContext();
+        m_context = allocate_unique<DeltaContext>(m_children.get_allocator());
     }
 
     /**
@@ -389,7 +392,7 @@ public:
      */
     bool hasContext() const
     {
-        return m_context.hasValue();
+        return m_context != nullptr;
     }
 
     /**
@@ -401,12 +404,12 @@ public:
      */
     DeltaContext& getContext()
     {
-        return m_context.value();
+        return *m_context;
     }
 
 private:
     Children m_children;
-    InplaceOptionalHolder<DeltaContext> m_context;
+    unique_ptr<DeltaContext, RebindAlloc<ALLOC, DeltaContext>> m_context;
 };
 
 using PackingContextNode = BasicPackingContextNode<>;
