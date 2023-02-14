@@ -784,7 +784,7 @@ parse_arguments()
                 shift 2
                 ;;
 
-            "-d" | "--directory")
+            "-d" | "--source-dir")
                 shift
                 local ARG="$1"
                 if [ -z "${ARG}" ] ; then
