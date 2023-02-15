@@ -87,6 +87,8 @@ EOF
     cat > "${BUILD_DIR}"/src/PerformanceTest.java << EOF
 import java.io.File;
 import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import zserio.runtime.io.SerializeUtil;
 import zserio.runtime.io.ByteArrayBitStreamReader;
@@ -110,11 +112,17 @@ public class PerformanceTest
         final int numIterations = args.length > 2 ? Integer.parseInt(args[2]) : ${NUM_ITERATIONS};
 
         // prepare byte array
+        final long blobByteSize = Files.size(Paths.get(blobPath));
         final ${BLOB_FULL_NAME} blobFromFile = SerializeUtil.deserializeFromFile(
                 ${BLOB_FULL_NAME}.class, blobPath);
         final ByteArrayBitStreamWriter bufferWriter = new ByteArrayBitStreamWriter();
         blobFromFile.write(bufferWriter);
         final byte[] byteArray = bufferWriter.toByteArray();
+        if ((long)byteArray.length != blobByteSize)
+        {
+            System.err.println("Read only " + byteArray.length + "/" + blobByteSize + " bytes!");
+            System.exit(1);
+        }
 
         // run the test
         final long startTime = System.nanoTime();
@@ -157,6 +165,8 @@ EOF
         System.out.println("Total Duration: " + String.format("%.3f", totalDuration) + "ms");
         System.out.println("Iterations:     " + numIterations);
         System.out.println("Step Duration:  " + String.format("%.3f", stepDuration) + "ms");
+        System.out.println("Blob Size:      " + bufferWriter.getBitPosition() + " bits (" +
+                String.format("%.3f", byteArray.length / 1000.) + " kB)");
 
         // write results to file
         PrintStream logFile = new PrintStream(new File(logPath));
@@ -170,7 +180,7 @@ EOF
 # Generate C++ files
 generate_cpp_files()
 {
-    exit_if_argc_ne $# 7
+    exit_if_argc_ne $# 8
     local ZSERIO_PROJECT_ROOT="$1"; shift
     local ZSERIO_RELEASE="$1"; shift
     local BUILD_DIR="$1"; shift
@@ -178,6 +188,7 @@ generate_cpp_files()
     local BLOB_PATH="$1"; shift
     local NUM_ITERATIONS="$1"; shift
     local TEST_CONFIG="$1"; shift
+    local PROFILE="$1"; shift
 
 
     # use host paths in generated files
@@ -198,6 +209,20 @@ set(LOG_PATH "PerformanceTest.log")
 set(BLOB_PATH "${HOST_BLOB_PATH}")
 set(CMAKE_MODULE_PATH "\${ZSERIO_ROOT}/cmake")
 
+EOF
+
+if [[ ${PROFILE} == 1 ]] ; then
+    cat >> "${BUILD_DIR}"/CMakeLists.txt << EOF
+string(CONCAT MEMORYCHECK_COMMAND_OPTIONS
+    "--tool=callgrind -v --instr-atstart=no --collect-atstart=no --collect-jumps=yes --dump-instr=yes "
+    "--callgrind-out-file=callgrind.out"
+)
+include(CTest)
+
+EOF
+fi
+
+cat >> "${BUILD_DIR}"/CMakeLists.txt << EOF
 # cmake helpers
 include(cmake_utils)
 
@@ -238,6 +263,16 @@ EOF
 
 #include <${BLOB_INCLUDE_PATH}>
 
+EOF
+
+if [[ ${PROFILE} == 1 ]] ; then
+    cat >> "${BUILD_DIR}"/src/PerformanceTest.cpp << EOF
+#include <valgrind/callgrind.h>
+
+EOF
+fi
+
+cat >> "${BUILD_DIR}"/src/PerformanceTest.cpp << EOF
 #if defined(_WIN32) || defined(_WIN64)
 #   include <windows.h>
 #else
@@ -315,8 +350,27 @@ int main(int argc, char* argv[])
 
     uint8_t* buffer = &blobBuffer[0];
     size_t bufferBitSize = blobReader.getBitPosition();
+    if ((bufferBitSize + 7) / 8 != blobByteSize)
+    {
+        std::cerr << "Read only " << (bufferBitSize + 7) / 8 << "/" << blobByteSize << " bytes!" << std::endl;
+        return 1;
+    }
 
     // run the test
+    std::vector<${BLOB_CLASS_FULL_NAME}> readBlobs;
+    readBlobs.reserve(numIterations);
+EOF
+
+if [[ ${PROFILE} == 1 ]] ; then
+    cat >> "${BUILD_DIR}"/src/PerformanceTest.cpp << EOF
+
+    CALLGRIND_START_INSTRUMENTATION;
+    CALLGRIND_TOGGLE_COLLECT;
+
+EOF
+fi
+
+cat >> "${BUILD_DIR}"/src/PerformanceTest.cpp << EOF
     const uint64_t start = PerfTimer::getMicroTime();
     for (int i = 0; i < numIterations; ++i)
     {
@@ -326,15 +380,15 @@ EOF
         "READ")
             cat >> "${BUILD_DIR}"/src/PerformanceTest.cpp << EOF
         zserio::BitStreamReader reader(buffer, bufferBitSize, zserio::BitsTag());
-        ${BLOB_CLASS_FULL_NAME} blob(reader);
+        readBlobs.emplace_back(reader);
 EOF
             ;;
         "READ_WRITE")
             cat >> "${BUILD_DIR}"/src/PerformanceTest.cpp << EOF
         zserio::BitStreamReader reader(buffer, bufferBitSize, zserio::BitsTag());
-        ${BLOB_CLASS_FULL_NAME} blob(reader);
+        readBlobs.emplace_back(reader);
         zserio::BitStreamWriter writer(buffer, bufferBitSize, zserio::BitsTag());
-        blob.write(writer);
+        readBlobs.back().write(writer);
 EOF
             ;;
 
@@ -350,6 +404,17 @@ cat >> "${BUILD_DIR}"/src/PerformanceTest.cpp << EOF
     }
     const uint64_t stop = PerfTimer::getMicroTime();
 
+EOF
+
+if [[ ${PROFILE} == 1 ]] ; then
+    cat >> "${BUILD_DIR}"/src/PerformanceTest.cpp << EOF
+    CALLGRIND_STOP_INSTRUMENTATION;
+    CALLGRIND_TOGGLE_COLLECT;
+
+EOF
+fi
+
+cat >> "${BUILD_DIR}"/src/PerformanceTest.cpp << EOF
     // process results
     double totalDuration = static_cast<double>(stop - start) / 1000.;
     double stepDuration = totalDuration / numIterations;
@@ -357,6 +422,8 @@ cat >> "${BUILD_DIR}"/src/PerformanceTest.cpp << EOF
     std::cout << "Total Duration: " << totalDuration << "ms" << std::endl;
     std::cout << "Iterations:     " << numIterations << std::endl;
     std::cout << "Step Duration:  " << stepDuration << "ms" << std::endl;
+    std::cout << "Blob Size:      " << bufferBitSize << " bits" << "(" << blobByteSize / 1000. << " kB)"
+              << std::endl;
 
     // write results to file
     std::ofstream logFile(logPath);
@@ -503,7 +570,7 @@ EOF
 # Run zserio performance tests.
 test_perf()
 {
-    exit_if_argc_ne $# 16
+    exit_if_argc_ne $# 17
     local UNPACKED_ZSERIO_RELEASE_DIR="$1"; shift
     local ZSERIO_PROJECT_ROOT="$1"; shift
     local ZSERIO_BUILD_DIR="$1"; shift
@@ -520,40 +587,45 @@ test_perf()
     local SWITCH_BLOB_PATH="$1"; shift
     local SWITCH_NUM_ITERATIONS="$1"; shift
     local SWITCH_TEST_CONFIG="$1"; shift
+    local SWITCH_RUN_ONLY="$1"; shift
     local SWITCH_PROFILE="$1"; shift
 
     convert_to_absolute_path "${SWITCH_BLOB_PATH}" SWITCH_BLOB_PATH
 
-    if [[ ${SWITCH_PROFILE} == 1 && ( ${#CPP_TARGETS[@]} -ne 0 || ${PARAM_JAVA} == 1 ) ]] ; then
-        stderr_echo "Profiling allowed only for python!"
+    if [[ ${SWITCH_PROFILE} == 1 && ( ${PARAM_JAVA} == 1 ) ]] ; then
+        stderr_echo "Profiling not available for Java!"
         return 1
     fi
 
     # generate sources using zserio
-    local ZSERIO_ARGS=()
-    if [[ ${#CPP_TARGETS[@]} -ne 0 ]] ; then
-        rm -rf "${TEST_OUT_DIR}/cpp"
-        ZSERIO_ARGS+=("-cpp" "${TEST_OUT_DIR}/cpp/gen")
-    fi
-    if [[ ${PARAM_JAVA} == 1 ]] ; then
-        rm -rf "${TEST_OUT_DIR}/java"
-        ZSERIO_ARGS+=("-java" "${TEST_OUT_DIR}/java/gen")
-    fi
-    if [[ ${PARAM_PYTHON} == 1 || ${PARAM_PYTHON_CPP} == 1 ]] ; then
-        rm -rf "${TEST_OUT_DIR}/python"
-        ZSERIO_ARGS+=("-python" "${TEST_OUT_DIR}/python/gen")
-    fi
+    if [[ ${SWITCH_RUN_ONLY} == 0 ]] ; then
+        local ZSERIO_ARGS=()
+        if [[ ${#CPP_TARGETS[@]} -ne 0 ]] ; then
+            rm -rf "${TEST_OUT_DIR}/cpp"
+            ZSERIO_ARGS+=("-cpp" "${TEST_OUT_DIR}/cpp/gen")
+        fi
+        if [[ ${PARAM_JAVA} == 1 ]] ; then
+            rm -rf "${TEST_OUT_DIR}/java"
+            ZSERIO_ARGS+=("-java" "${TEST_OUT_DIR}/java/gen")
+        fi
+        if [[ ${PARAM_PYTHON} == 1 || ${PARAM_PYTHON_CPP} == 1 ]] ; then
+            rm -rf "${TEST_OUT_DIR}/python"
+            ZSERIO_ARGS+=("-python" "${TEST_OUT_DIR}/python/gen")
+        fi
 
-    run_zserio_tool "${UNPACKED_ZSERIO_RELEASE_DIR}" "${TEST_OUT_DIR}" \
-        "${SWITCH_DIRECTORY}" "${SWITCH_SOURCE}" 0 ZSERIO_ARGS[@]
-    if [ $? -ne 0 ] ; then
-        return 1
+        run_zserio_tool "${UNPACKED_ZSERIO_RELEASE_DIR}" "${TEST_OUT_DIR}" \
+            "${SWITCH_DIRECTORY}" "${SWITCH_SOURCE}" 0 ZSERIO_ARGS[@]
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
     fi
 
     # run java performance test
     if [[ ${PARAM_JAVA} == 1 ]] ; then
-        generate_java_files "${UNPACKED_ZSERIO_RELEASE_DIR}" "${TEST_OUT_DIR}/java" "${SWITCH_BLOB_NAME}" \
-                            "${SWITCH_BLOB_PATH}" ${SWITCH_NUM_ITERATIONS} ${SWITCH_TEST_CONFIG}
+        if [[ ${SWITCH_RUN_ONLY} == 0 ]] ; then
+            generate_java_files "${UNPACKED_ZSERIO_RELEASE_DIR}" "${TEST_OUT_DIR}/java" "${SWITCH_BLOB_NAME}" \
+                                "${SWITCH_BLOB_PATH}" ${SWITCH_NUM_ITERATIONS} ${SWITCH_TEST_CONFIG}
+        fi
         ANT_ARGS=()
         compile_java "${TEST_OUT_DIR}/java/build.xml" ANT_ARGS[@] "run"
         if [ $? -ne 0 ] ; then
@@ -563,15 +635,30 @@ test_perf()
 
     # run C++ performance test
     if [[ ${#CPP_TARGETS[@]} != 0 ]] ; then
-        generate_cpp_files "${ZSERIO_PROJECT_ROOT}" "${UNPACKED_ZSERIO_RELEASE_DIR}" "${TEST_OUT_DIR}/cpp" \
-                           "${SWITCH_BLOB_NAME}" "${SWITCH_BLOB_PATH}" ${SWITCH_NUM_ITERATIONS} \
-                           ${SWITCH_TEST_CONFIG}
+        if [[ ${SWITCH_RUN_ONLY} == 0 ]] ; then
+            generate_cpp_files "${ZSERIO_PROJECT_ROOT}" "${UNPACKED_ZSERIO_RELEASE_DIR}" "${TEST_OUT_DIR}/cpp" \
+                               "${SWITCH_BLOB_NAME}" "${SWITCH_BLOB_PATH}" ${SWITCH_NUM_ITERATIONS} \
+                               ${SWITCH_TEST_CONFIG} ${SWITCH_PROFILE}
+        fi
         local CMAKE_ARGS=()
-        local CTEST_ARGS=()
+        local CTEST_ARGS=("-V")
+        if [[ ${SWITCH_PROFILE} == 1 ]] ; then
+            CMAKE_ARGS=("-DCMAKE_BUILD_TYPE=RelWithDebInfo")
+            CTEST_ARGS+=("-T memcheck")
+        fi
         compile_cpp "${ZSERIO_PROJECT_ROOT}" "${TEST_OUT_DIR}/cpp" "${TEST_OUT_DIR}/cpp" \
                     CPP_TARGETS[@] CMAKE_ARGS[@] CTEST_ARGS[@] all
         if [ $? -ne 0 ] ; then
             return 1
+        fi
+
+        if [[ ${SWITCH_PROFILE} == 1 ]] ; then
+            echo ""
+            echo "C++ profiling finished, use one of the following commands for analysis:"
+            for CPP_TARGET in ${CPP_TARGETS[@]} ; do
+                local CALLGRIND_FILE=$(${FIND} "${TEST_OUT_DIR}/cpp/${CPP_TARGET}" -name "callgrind.out")
+                echo "    kcachegrind ${CALLGRIND_FILE}"
+            done
         fi
     fi
 
@@ -582,8 +669,10 @@ test_perf()
             return 1
         fi
 
-        generate_python_perftest "${TEST_OUT_DIR}/python" "${SWITCH_BLOB_NAME}" ${SWITCH_NUM_ITERATIONS} \
-                                 ${SWITCH_TEST_CONFIG} ${SWITCH_PROFILE}
+        if [[ ${SWITCH_RUN_ONLY} == 0 ]] ; then
+            generate_python_perftest "${TEST_OUT_DIR}/python" "${SWITCH_BLOB_NAME}" ${SWITCH_NUM_ITERATIONS} \
+                                     ${SWITCH_TEST_CONFIG} ${SWITCH_PROFILE}
+        fi
 
         if [[ ${PARAM_PYTHON} == 1 ]] ; then
             ZSERIO_PYTHOM_IMPLEMENTATION="python" \
@@ -597,13 +686,16 @@ test_perf()
         fi
 
         if [[ ${PARAM_PYTHON_CPP} == 1 ]] ; then
-            python ${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/python/zserio_cpp/setup.py build \
-                    --build-base="${TEST_OUT_DIR}/python/zserio_cpp" \
-                    --cpp-runtime-dir=${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/cpp
-            if [ $? -ne 0 ] ; then
-                stderr_echo "Failed to build C++ runtime binding to Python!"
-                return 1
+            if [[ ${SWITCH_RUN_ONLY} == 0 ]] ; then
+                python ${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/python/zserio_cpp/setup.py build \
+                       --build-base="${TEST_OUT_DIR}/python/zserio_cpp" \
+                       --cpp-runtime-dir=${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/cpp
+                if [ $? -ne 0 ] ; then
+                    stderr_echo "Failed to build C++ runtime binding to Python!"
+                    return 1
+                fi
             fi
+
             local ZSERIO_CPP_DIR
             ZSERIO_CPP_DIR=$(ls -d1 "${TEST_OUT_DIR}/python/zserio_cpp/lib"*)
             if [ $? -ne 0 ] ; then
@@ -638,29 +730,32 @@ test_perf()
     # collect results
     echo
     echo "Performance Tests Results - ${SWITCH_TEST_CONFIG}"
-    for i in {1..72} ; do echo -n "=" ; done ; echo
-    printf "| %-20s | %14s | %10s | %15s |\n" "Generator" "Total Duration" "Iterations" "Step Duration"
-    echo -n "|" ; for i in {1..70} ; do echo -n "-" ; done ; echo "|"
+    echo "Blob name: ${SWITCH_BLOB_NAME}"
+    echo "Blob file: ${SWITCH_BLOB_PATH##*/}"
+    echo "Blob size: $(du -k ${SWITCH_BLOB_PATH} | cut -f1) kB"
+    for i in {1..73} ; do echo -n "=" ; done ; echo
+    printf "| %-21s | %14s | %10s | %15s |\n" "Generator" "Total Duration" "Iterations" "Step Duration"
+    echo -n "|" ; for i in {1..71} ; do echo -n "-" ; done ; echo "|"
     if [[ ${PARAM_JAVA} == 1 ]] ; then
         local RESULTS=($(cat ${TEST_OUT_DIR}/java/PerformanceTest.log))
-        printf "| %-20s | %14s | %10s | %15s |\n" "Java" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]}
+        printf "| %-21s | %14s | %10s | %15s |\n" "Java" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]}
     fi
     if [[ ${#CPP_TARGETS[@]} != 0 ]] ; then
         for CPP_TARGET in ${CPP_TARGETS[@]} ; do
             local PERF_TEST_FILE=$(${FIND} "${TEST_OUT_DIR}/cpp/${CPP_TARGET}" -name "PerformanceTest.log")
             local RESULTS=($(cat ${PERF_TEST_FILE}))
-            printf "| %-20s | %14s | %10s | %15s |\n" "C++ (${CPP_TARGET})" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]}
+            printf "| %-21s | %14s | %10s | %15s |\n" "C++ (${CPP_TARGET})" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]}
         done
     fi
     if [[ ${PARAM_PYTHON} == 1 ]] ; then
         local RESULTS=($(cat ${TEST_OUT_DIR}/python/perftest.log))
-        printf "| %-20s | %14s | %10s | %15s |\n" "Python" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]}
+        printf "| %-21s | %14s | %10s | %15s |\n" "Python" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]}
     fi
     if [[ ${PARAM_PYTHON_CPP} == 1 ]] ; then
         local RESULTS=($(cat ${TEST_OUT_DIR}/python/perftest-cpp.log))
-        printf "| %-20s | %14s | %10s | %15s |\n" "Python (C++)" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]}
+        printf "| %-21s | %14s | %10s | %15s |\n" "Python (C++)" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]}
     fi
-    for i in {1..72} ; do echo -n "=" ; done ; echo
+    for i in {1..73} ; do echo -n "=" ; done ; echo
     echo
 }
 
@@ -679,6 +774,7 @@ Arguments:
     -h, --help              Show this help.
     -e, --help-env          Show help for enviroment variables.
     -p, --purge             Purge test build directory.
+    -r, --run-only          Run already compiled PerformanceTests again.
     --profile               Run the test in profiling mode and produce profiling data.
     -o <dir>, --output-directory <dir>
                             Output directory where tests will be run.
@@ -732,7 +828,7 @@ EOF
 # 3 - Environment help switch is present. Arguments after help switch have not been checked.
 parse_arguments()
 {
-    exit_if_argc_lt $# 14
+    exit_if_argc_lt $# 15
     local PARAM_CPP_TARGET_ARRAY_OUT="$1"; shift
     local PARAM_JAVA_OUT="$1"; shift
     local PARAM_PYTHON_OUT="$1"; shift
@@ -746,6 +842,7 @@ parse_arguments()
     local SWITCH_NUM_ITERATIONS_OUT="$1"; shift
     local SWITCH_TEST_CONFIG_OUT="$1"; shift
     local SWITCH_PURGE_OUT="$1"; shift
+    local SWITCH_RUN_ONLY_OUT="$1"; shift
     local SWITCH_PROFILE_OUT="$1"; shift
 
     eval ${PARAM_JAVA_OUT}=0
@@ -759,6 +856,7 @@ parse_arguments()
     eval ${SWITCH_NUM_ITERATIONS_OUT}=100 # default
     eval ${SWITCH_TEST_CONFIG_OUT}="READ"
     eval ${SWITCH_PURGE_OUT}=0
+    eval ${SWITCH_RUN_ONLY_OUT}=0
     eval ${SWITCH_PROFILE_OUT}=0
 
     local NUM_PARAMS=0
@@ -868,6 +966,11 @@ parse_arguments()
                 shift
                 ;;
 
+            "-r" | "--run-only")
+                eval ${SWITCH_RUN_ONLY_OUT}=1
+                shift
+                ;;
+
             "--profile")
                 eval ${SWITCH_PROFILE_OUT}=1
                 shift
@@ -961,6 +1064,12 @@ parse_arguments()
             echo
             return 1
         fi
+    else
+        if [[ ${!SWITCH_RUN_ONLY_OUT} == 1 ]] ; then
+            stderr_echo "Cannot run-only tests when purge is required!"
+            echo
+            return 1
+        fi
     fi
 
     # default test name
@@ -993,10 +1102,11 @@ main()
     local SWITCH_NUM_ITERATIONS
     local SWITCH_TEST_CONFIG
     local SWITCH_PURGE
+    local SWITCH_RUN_ONLY
     local SWITCH_PROFILE
     parse_arguments PARAM_CPP_TARGET_ARRAY PARAM_JAVA PARAM_PYTHON PARAM_PYTHON_CPP PARAM_OUT_DIR \
             SWITCH_DIRECTORY SWITCH_SOURCE SWITCH_TEST_NAME SWITCH_BLOB_NAME SWITCH_BLOB_FILE \
-            SWITCH_NUM_ITERATIONS SWITCH_TEST_CONFIG SWITCH_PURGE SWITCH_PROFILE "$@"
+            SWITCH_NUM_ITERATIONS SWITCH_TEST_CONFIG SWITCH_PURGE SWITCH_RUN_ONLY SWITCH_PROFILE "$@"
     local PARSE_RESULT=$?
     if [ ${PARSE_RESULT} -eq 2 ] ; then
         print_help
@@ -1088,7 +1198,8 @@ main()
     test_perf "${UNPACKED_ZSERIO_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" \
               "${TEST_OUT_DIR}" PARAM_CPP_TARGET_ARRAY[@] ${PARAM_JAVA} ${PARAM_PYTHON} ${PARAM_PYTHON_CPP} \
               "${SWITCH_DIRECTORY}" "${SWITCH_SOURCE}" "${SWITCH_TEST_NAME}" "${SWITCH_BLOB_NAME}" \
-              "${SWITCH_BLOB_FILE}" ${SWITCH_NUM_ITERATIONS} ${SWITCH_TEST_CONFIG} ${SWITCH_PROFILE}
+              "${SWITCH_BLOB_FILE}" ${SWITCH_NUM_ITERATIONS} ${SWITCH_TEST_CONFIG} \
+              ${SWITCH_RUN_ONLY} ${SWITCH_PROFILE}
     if [ $? -ne 0 ] ; then
         return 1
     fi
