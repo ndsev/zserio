@@ -3,6 +3,7 @@ The module implements abstraction for arrays used by Zserio python extension.
 """
 
 import typing
+import os
 
 from zserio.bitposition import alignto
 from zserio.bitsizeof import (bitsizeof_varuint16, bitsizeof_varuint32, bitsizeof_varuint64, bitsizeof_varuint,
@@ -452,24 +453,25 @@ class DeltaContext:
         self._num_elements += 1
         self._unpacked_bitsize += DeltaContext._bitsizeof_unpacked(array_traits, element)
 
-        if self._previous_element is None:
-            self._previous_element = element
-            self._first_element_bitsize = self._unpacked_bitsize
-        else:
-            if self._max_bit_number <= self._MAX_BIT_NUMBER_LIMIT:
-                self._is_packed = True
-
-                delta = element - self._previous_element
-                max_bit_number = delta.bit_length()
-                # if delta is negative, we need one bit more because of sign
-                # if delta is positive, we need one bit more because delta are treated as signed number
-                # if delta is zero, we need one bit more because bit_length() returned zero
-                if max_bit_number > self._max_bit_number:
-                    self._max_bit_number = max_bit_number
-                    if max_bit_number > self._MAX_BIT_NUMBER_LIMIT:
-                        self._is_packed = False
-
+        if not 'ZSERIO_DISABLE_PACKED_ARRAYS' in os.environ:
+            if self._previous_element is None:
                 self._previous_element = element
+                self._first_element_bitsize = self._unpacked_bitsize
+            else:
+                if self._max_bit_number <= self._MAX_BIT_NUMBER_LIMIT:
+                    self._is_packed = True
+
+                    delta = element - self._previous_element
+                    max_bit_number = delta.bit_length()
+                    # if delta is negative, we need one bit more because of sign
+                    # if delta is positive, we need one bit more because delta are treated as signed number
+                    # if delta is zero, we need one bit more because bit_length() returned zero
+                    if max_bit_number > self._max_bit_number:
+                        self._max_bit_number = max_bit_number
+                        if max_bit_number > self._MAX_BIT_NUMBER_LIMIT:
+                            self._is_packed = False
+
+                    self._previous_element = element
 
     def bitsizeof(self, array_traits: typing.Any, element: int) -> int:
         """
