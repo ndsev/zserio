@@ -1,3 +1,7 @@
 [submodule "3rdparty/cpp/googletest"]
 	path = 3rdparty/cpp/googletest
 	url = https://github.com/google/googletest.git
+[submodule "benchmarks/datasets"]
+	path = benchmarks/datasets
+	url = https://github.com/ndsev/zserio-datasets.git
+	branch = master

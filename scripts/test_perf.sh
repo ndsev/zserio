@@ -6,21 +6,29 @@ source "${SCRIPT_DIR}/common_test_tools.sh"
 # Generate Ant build.xml file and src/PerformanceTest.java
 generate_java_files()
 {
-    exit_if_argc_ne $# 6
+    exit_if_argc_ne $# 7
     local ZSERIO_RELEASE="$1"; shift
     local BUILD_DIR="$1"; shift
     local BLOB_FULL_NAME="$1"; shift
+    local JSON_PATH="$1"; shift
     local BLOB_PATH="$1"; shift
     local NUM_ITERATIONS="$1"; shift
     local TEST_CONFIG="$1"; shift
 
     local LOG_PATH="${BUILD_DIR}/PerformanceTest.log"
 
+    local INPUT_SWITCH="-j"
+    local INPUT_PATH="${JSON_PATH}"
+    if [[ "${BLOB_PATH}" != "" ]] ; then
+        INPUT_SWITCH="-b"
+        INPUT_PATH="${BLOB_PATH}"
+    fi
+
     # use host paths in generated files
     posix_to_host_path "${ZSERIO_RELEASE}" HOST_ZSERIO_RELEASE
     posix_to_host_path "${BUILD_DIR}" HOST_BUILD_DIR
     posix_to_host_path "${LOG_PATH}" HOST_LOG_PATH
-    posix_to_host_path "${BLOB_PATH}" HOST_BLOB_PATH
+    posix_to_host_path "${INPUT_PATH}" HOST_INPUT_PATH
 
     cat > "${BUILD_DIR}"/build.xml << EOF
 <project name="performance_test" basedir="." default="run">
@@ -70,7 +78,8 @@ generate_java_files()
     <target name="run" depends="jar">
         <java jar="\${test_perf.jar_file}" fork="true" failonerror="true">
             <arg file="${HOST_LOG_PATH}"/>
-            <arg file="${HOST_BLOB_PATH}"/>
+            <arg value="${INPUT_SWITCH}"/>
+            <arg file="${HOST_INPUT_PATH}"/>
             <arg value="${NUM_ITERATIONS}"/>
         </java>
     </target>
@@ -93,6 +102,7 @@ import java.nio.file.Paths;
 import zserio.runtime.io.SerializeUtil;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.DebugStringUtil;
 
 public class PerformanceTest
 {
@@ -100,29 +110,31 @@ public class PerformanceTest
     {
         System.out.println("Zserio Java Performance Test");
 
-        if (args.length < 2)
+        if (args.length < 3)
         {
             System.err.println("No enough arguments!");
-            System.err.println("Usage: PerformanceTest LOG_PATH BLOB_PATH [NUM_ITERATIONS]");
+            System.err.println("Usage: PerformanceTest LOG_PATH [-j|-b] INPUT_PATH [NUM_ITERATIONS]");
             System.exit(1);
         }
 
         final String logPath = args[0];
-        final String blobPath = args[1];
-        final int numIterations = args.length > 2 ? Integer.parseInt(args[2]) : ${NUM_ITERATIONS};
+        final boolean inputIsJson = args[1].equals("-j") ? true : false;
+        final String inputPath = args[2];
+        final int numIterations = args.length > 2 ? Integer.parseInt(args[3]) : ${NUM_ITERATIONS};
 
         // prepare byte array
-        final long blobByteSize = Files.size(Paths.get(blobPath));
-        final ${BLOB_FULL_NAME} blobFromFile = SerializeUtil.deserializeFromFile(
-                ${BLOB_FULL_NAME}.class, blobPath);
-        final ByteArrayBitStreamWriter bufferWriter = new ByteArrayBitStreamWriter();
-        blobFromFile.write(bufferWriter);
-        final byte[] byteArray = bufferWriter.toByteArray();
-        if ((long)byteArray.length != blobByteSize)
-        {
-            System.err.println("Read only " + byteArray.length + "/" + blobByteSize + " bytes!");
-            System.exit(1);
-        }
+        byte[] blobBuffer = readBlobBuffer(inputIsJson, inputPath);
+
+        final ByteArrayBitStreamReader blobReader = new ByteArrayBitStreamReader(blobBuffer);
+EOF
+
+    if [[ "${TEST_CONFIG}" == "WRITE" ]] ; then
+        cat >> "${BUILD_DIR}"/src/PerformanceTest.java << EOF
+        final ${BLOB_FULL_NAME} blobFromFile = new ${BLOB_FULL_NAME}(blobReader);
+EOF
+    fi
+
+    cat >> "${BUILD_DIR}"/src/PerformanceTest.java << EOF
 
         // run the test
         final long startTime = System.nanoTime();
@@ -133,13 +145,13 @@ EOF
     case "${TEST_CONFIG}" in
         "READ")
             cat >> "${BUILD_DIR}"/src/PerformanceTest.java << EOF
-            final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(byteArray);
+            final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(blobBuffer);
             final ${BLOB_FULL_NAME} blob = new ${BLOB_FULL_NAME}(reader);
 EOF
             ;;
         "READ_WRITE")
             cat >> "${BUILD_DIR}"/src/PerformanceTest.java << EOF
-            final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(byteArray);
+            final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(blobBuffer);
             final ${BLOB_FULL_NAME} blob = new ${BLOB_FULL_NAME}(reader);
             final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
             blob.write(writer);
@@ -165,13 +177,52 @@ EOF
         System.out.println("Total Duration: " + String.format("%.3f", totalDuration) + "ms");
         System.out.println("Iterations:     " + numIterations);
         System.out.println("Step Duration:  " + String.format("%.3f", stepDuration) + "ms");
-        System.out.println("Blob Size:      " + bufferWriter.getBitPosition() + " bits (" +
-                String.format("%.3f", byteArray.length / 1000.) + " kB)");
+        System.out.println("Blob Size:      " + blobReader.getBitPosition() + " bits (" +
+                String.format("%.3f", blobBuffer.length / 1000.) + " kB)");
 
         // write results to file
         PrintStream logFile = new PrintStream(new File(logPath));
-        logFile.println(String.format("%.03fms %d %.03fms", totalDuration, numIterations, stepDuration));
+        logFile.println(String.format("%.03fms %d %.03fms %.03fkB",
+                totalDuration, numIterations, stepDuration, blobBuffer.length / 1000.));
         logFile.close();
+    }
+
+    private static byte[] readBlobBuffer(boolean isInputJson, String inputPath) throws Exception
+    {
+        try
+        {
+            if (isInputJson)
+            {
+                final ${BLOB_FULL_NAME} blob = (${BLOB_FULL_NAME})
+                        DebugStringUtil.fromJsonFile(${BLOB_FULL_NAME}.class, inputPath);
+                final ByteArrayBitStreamWriter bufferWriter = new ByteArrayBitStreamWriter();
+                blob.write(bufferWriter);
+                return bufferWriter.toByteArray();
+            }
+            else
+            {
+                final long blobByteSize = Files.size(Paths.get(inputPath));
+                final ${BLOB_FULL_NAME} blobFromFile =
+                        SerializeUtil.deserializeFromFile(${BLOB_FULL_NAME}.class, inputPath);
+                final ByteArrayBitStreamWriter bufferWriter = new ByteArrayBitStreamWriter();
+                blobFromFile.write(bufferWriter);
+                byte[] blobBuffer = bufferWriter.toByteArray();
+
+                if (blobByteSize != (long)blobBuffer.length)
+                {
+                    System.err.println("Read only " + blobBuffer.length + "/" + blobByteSize + " bytes!");
+                    System.exit(1);
+                }
+                return blobBuffer;
+            }
+        }
+        catch (Exception e)
+        {
+            System.err.println("Failed to read blob buffer! (" + e + ")");
+            System.exit(1);
+        }
+
+        return null;
     }
 };
 EOF
@@ -180,22 +231,29 @@ EOF
 # Generate C++ files
 generate_cpp_files()
 {
-    exit_if_argc_ne $# 8
+    exit_if_argc_ne $# 9
     local ZSERIO_PROJECT_ROOT="$1"; shift
     local ZSERIO_RELEASE="$1"; shift
     local BUILD_DIR="$1"; shift
     local BLOB_FULL_NAME="$1"; shift
+    local JSON_PATH="$1"; shift
     local BLOB_PATH="$1"; shift
     local NUM_ITERATIONS="$1"; shift
     local TEST_CONFIG="$1"; shift
     local PROFILE="$1"; shift
 
+    local INPUT_SWITCH="-j"
+    local INPUT_PATH="${JSON_PATH}"
+    if [[ "${BLOB_PATH}" != "" ]] ; then
+        INPUT_SWITCH="-b"
+        INPUT_PATH="${BLOB_PATH}"
+    fi
 
     # use host paths in generated files
     local DISABLE_SLASHES_CONVERSION=1
     posix_to_host_path "${ZSERIO_PROJECT_ROOT}" HOST_ZSERIO_ROOT ${DISABLE_SLASHES_CONVERSION}
     posix_to_host_path "${ZSERIO_RELEASE}" HOST_ZSERIO_RELEASE ${DISABLE_SLASHES_CONVERSION}
-    posix_to_host_path "${BLOB_PATH}" HOST_BLOB_PATH ${DISABLE_SLASHES_CONVERSION}
+    posix_to_host_path "${INPUT_PATH}" HOST_INPUT_PATH ${DISABLE_SLASHES_CONVERSION}
 
     cat > "${BUILD_DIR}"/CMakeLists.txt << EOF
 cmake_minimum_required(VERSION 3.1.0)
@@ -206,7 +264,8 @@ enable_testing()
 set(ZSERIO_ROOT "${HOST_ZSERIO_ROOT}" CACHE PATH "")
 set(ZSERIO_RELEASE "${HOST_ZSERIO_RELEASE}" CACHE PATH "")
 set(LOG_PATH "PerformanceTest.log")
-set(BLOB_PATH "${HOST_BLOB_PATH}")
+set(INPUT_SWITCH "${INPUT_SWITCH}")
+set(INPUT_PATH "${HOST_INPUT_PATH}")
 set(CMAKE_MODULE_PATH "\${ZSERIO_ROOT}/cmake")
 
 EOF
@@ -228,7 +287,6 @@ include(cmake_utils)
 
 # setup compiler
 include(compiler_utils)
-compiler_set_pthread()
 compiler_set_static_clibs()
 compiler_set_warnings()
 
@@ -246,11 +304,12 @@ set_target_properties(\${PROJECT_NAME} PROPERTIES CXX_STANDARD 11 CXX_STANDARD_R
 target_include_directories(\${PROJECT_NAME} PUBLIC "\${CMAKE_CURRENT_SOURCE_DIR}/gen")
 target_link_libraries(\${PROJECT_NAME} ZserioCppRuntime)
 
-add_test(NAME PerformanceTest COMMAND \${PROJECT_NAME} \${LOG_PATH} \${BLOB_PATH})
+add_test(NAME PerformanceTest COMMAND \${PROJECT_NAME} \${LOG_PATH} \${INPUT_SWITCH} \${INPUT_PATH})
 EOF
 
     local BLOB_INCLUDE_PATH=${BLOB_FULL_NAME//.//}.h
     local BLOB_CLASS_FULL_NAME=${BLOB_FULL_NAME//./::}
+    local TOP_LEVEL_PACKAGE_NAME=${BLOB_FULL_NAME%%.*}
 
     mkdir -p "${BUILD_DIR}/src"
     cat > "${BUILD_DIR}"/src/PerformanceTest.cpp << EOF
@@ -260,6 +319,8 @@ EOF
 
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
+#include <zserio/DebugStringUtil.h>
+#include <zserio/SerializeUtil.h>
 
 #include <${BLOB_INCLUDE_PATH}>
 
@@ -309,56 +370,83 @@ private:
 #endif
 };
 
+static zserio::BitBuffer readBlobBuffer(bool inputIsJson, const char* inputPath)
+{
+    if (inputIsJson)
+    {
+        // read json file
+        auto blob = zserio::fromJsonFile<${BLOB_CLASS_FULL_NAME}>(inputPath);
+
+        // serialize to binary file for further analysis
+        zserio::serializeToFile(blob, "${TOP_LEVEL_PACKAGE_NAME}.blob");
+
+        return zserio::serialize(blob);
+    }
+    else
+    {
+        // read blob file
+        std::ifstream is(inputPath, std::ifstream::binary);
+        if (!is)
+            throw zserio::CppRuntimeException("Cannot open '") << inputPath << "' for reading!";
+        is.seekg(0, is.end);
+        const size_t blobByteSize = static_cast<size_t>(is.tellg());
+        is.close();
+
+        auto blob = zserio::deserializeFromFile<${BLOB_CLASS_FULL_NAME}>(inputPath);
+        auto bitBuffer = zserio::serialize(blob);
+
+        if (bitBuffer.getByteSize() != blobByteSize)
+        {
+            throw zserio::CppRuntimeException("Read only ") << bitBuffer.getByteSize()
+                    << "/" << blobByteSize << " bytes!";
+        }
+
+        return bitBuffer;
+    }
+}
+
 int main(int argc, char* argv[])
 {
     std::cout << "Zserio C++ Performance Test" << std::endl;
 
-    if (argc < 3)
+    if (argc < 4)
     {
         std::cerr << "No enough arguments!" << std::endl;
-        std::cerr << "Usage: PerformanceTest LOG_PATH BLOB_PATH [NUM_ITERATIONS]" << std::endl;
+        std::cerr << "Usage: PerformanceTest LOG_PATH (-j|-b) INPUT_PATH [NUM_ITERATIONS]" << std::endl;
         return 1;
     }
 
     const char* logPath = argv[1];
-    const char* blobPath = argv[2];
+    const bool inputIsJson = strcmp("-j", argv[2]) == 0 ? true : false;
+    const char* inputPath = argv[3];
     int numIterations = ${NUM_ITERATIONS};
-    if (argc > 3)
-        numIterations = atoi(argv[3]);
+    if (argc > 4)
+        numIterations = atoi(argv[4]);
 
-    // read file
-    std::ifstream is(blobPath, std::ifstream::binary);
-    if (!is)
+    if (numIterations <= 0)
     {
-        std::cerr << std::string("Cannot open '") + blobPath + "' for reading!" << std::endl;
+        std::cerr << "Num iterations must be a positive integer (" << numIterations << ")!" << std::endl;
         return 1;
     }
-    is.seekg(0, is.end);
-    const size_t blobByteSize = static_cast<size_t>(is.tellg());
-    is.seekg(0);
-    std::vector<uint8_t> blobBuffer(blobByteSize);
-    is.read(reinterpret_cast<char*>(&blobBuffer[0]), static_cast<std::streamsize>(blobByteSize));
-    if (!is)
+
+    zserio::BitBuffer bitBuffer;
+    try
     {
-        std::cerr << std::string("Failed to read '") + blobPath + "'!" << std::endl;
+        bitBuffer = readBlobBuffer(inputIsJson, inputPath);
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << e.what() << std::endl;
         return 1;
     }
 
     // prepare test buffer
-    zserio::BitStreamReader blobReader(blobBuffer);
+    zserio::BitStreamReader blobReader(bitBuffer);
     ${BLOB_CLASS_FULL_NAME} blobFromFile(blobReader);
-
-    uint8_t* buffer = &blobBuffer[0];
-    size_t bufferBitSize = blobReader.getBitPosition();
-    if ((bufferBitSize + 7) / 8 != blobByteSize)
-    {
-        std::cerr << "Read only " << (bufferBitSize + 7) / 8 << "/" << blobByteSize << " bytes!" << std::endl;
-        return 1;
-    }
 
     // run the test
     std::vector<${BLOB_CLASS_FULL_NAME}> readBlobs;
-    readBlobs.reserve(numIterations);
+    readBlobs.reserve(static_cast<size_t>(numIterations));
 EOF
 
 if [[ ${PROFILE} == 1 ]] ; then
@@ -379,22 +467,22 @@ EOF
     case "${TEST_CONFIG}" in
         "READ")
             cat >> "${BUILD_DIR}"/src/PerformanceTest.cpp << EOF
-        zserio::BitStreamReader reader(buffer, bufferBitSize, zserio::BitsTag());
+        zserio::BitStreamReader reader(bitBuffer);
         readBlobs.emplace_back(reader);
 EOF
             ;;
         "READ_WRITE")
             cat >> "${BUILD_DIR}"/src/PerformanceTest.cpp << EOF
-        zserio::BitStreamReader reader(buffer, bufferBitSize, zserio::BitsTag());
+        zserio::BitStreamReader reader(bitBuffer);
         readBlobs.emplace_back(reader);
-        zserio::BitStreamWriter writer(buffer, bufferBitSize, zserio::BitsTag());
+        zserio::BitStreamWriter writer(bitBuffer);
         readBlobs.back().write(writer);
 EOF
             ;;
 
         "WRITE")
             cat >> "${BUILD_DIR}"/src/PerformanceTest.cpp << EOF
-        zserio::BitStreamWriter writer(buffer, bufferBitSize, zserio::BitsTag());
+        zserio::BitStreamWriter writer(bitBuffer);
         blobFromFile.write(writer);
 EOF
             ;;
@@ -418,17 +506,21 @@ cat >> "${BUILD_DIR}"/src/PerformanceTest.cpp << EOF
     // process results
     double totalDuration = static_cast<double>(stop - start) / 1000.;
     double stepDuration = totalDuration / numIterations;
+    double kBSize = static_cast<double>(bitBuffer.getByteSize()) / 1000.;
     std::cout << std::fixed << std::setprecision(3);
     std::cout << "Total Duration: " << totalDuration << "ms" << std::endl;
     std::cout << "Iterations:     " << numIterations << std::endl;
     std::cout << "Step Duration:  " << stepDuration << "ms" << std::endl;
-    std::cout << "Blob Size:      " << bufferBitSize << " bits" << "(" << blobByteSize / 1000. << " kB)"
+    std::cout << "Blob Size:      " << bitBuffer.getBitSize() << " bits" << "(" << kBSize << " kB)"
               << std::endl;
 
     // write results to file
     std::ofstream logFile(logPath);
     logFile << std::fixed << std::setprecision(3);
-    logFile << totalDuration << "ms " << numIterations << " " << stepDuration << "ms" << std::endl;
+    logFile << totalDuration << "ms "
+            << numIterations << " "
+            << stepDuration << "ms "
+            << kBSize << "kB" << std::endl;
 
     return 0;
 }
@@ -450,6 +542,7 @@ generate_python_perftest()
 
     mkdir -p "${BUILD_DIR}/src"
     cat > "${BUILD_DIR}/src/perftest.py" << EOF
+import os
 import sys
 import argparse
 from timeit import default_timer as timer
@@ -467,20 +560,27 @@ EOF
 import zserio
 import ${API_MODULE}.api as api
 
-def performance_test(log_path, blob_path, num_iterations):
+def read_blob_buffer(input_is_json, input_path):
+    if input_is_json:
+        blob = zserio.from_json_file(api.${BLOB_API_PATH}, input_path)
+        return zserio.serialize_to_bytes(blob)
+    else:
+        blobByteSize = os.path.getsize(input_path)
+
+        blob = zserio.deserialize_from_file(api.${BLOB_API_PATH}, input_path)
+        blob_buffer = zserio.serialize_to_bytes(blob)
+
+        assert len(blob_buffer) == blobByteSize
+
+        return blob_buffer
+
+def performance_test(log_path, input_is_json, input_path, num_iterations):
     print("Zserio Python Performance Test")
 
     # prepare byte array
-    with open(blob_path, 'rb') as file:
-        file_data = file.read()
-        reader_from_file = zserio.BitStreamReader(file_data)
-    blob_from_file = api.${BLOB_API_PATH}.from_reader(reader_from_file)
-    assert len(file_data) == zserio.bitposition.bitsize_to_bytesize(reader_from_file.bitposition)
-
-    buffer_writer = zserio.BitStreamWriter()
-    blob_from_file.write(buffer_writer)
-    byte_array = buffer_writer.byte_array
-    assert buffer_writer.bitposition == reader_from_file.bitposition
+    blob_buffer = read_blob_buffer(input_is_json, input_path)
+    reader_from_file = zserio.BitStreamReader(blob_buffer)
+    blob_from_file = api.${BLOB_API_PATH}.from_reader(reader_from_file);
 
 EOF
 
@@ -506,13 +606,13 @@ EOF
     case "${TEST_CONFIG}" in
         "READ")
             cat >> "${BUILD_DIR}/src/perftest.py" << EOF
-        reader = zserio.BitStreamReader(byte_array)
+        reader = zserio.BitStreamReader(blob_buffer)
         blob = api.${BLOB_API_PATH}.from_reader(reader)
 EOF
             ;;
         "READ_WRITE")
             cat >> "${BUILD_DIR}/src/perftest.py" << EOF
-        reader = zserio.BitStreamReader(byte_array)
+        reader = zserio.BitStreamReader(blob_buffer)
         blob = api.${BLOB_API_PATH}.from_reader(reader)
         writer = zserio.BitStreamWriter()
         blob.write(writer)
@@ -545,25 +645,27 @@ EOF
     # process results
     total_duration = (stop - start) * 1000
     step_duration = total_duration / num_iterations
+    kb_size = len(blob_buffer) / 1000.
     print("Total Duration: %.03fms" % total_duration)
     print("Iterations:     %d" % num_iterations)
     print("Step Duration:  %.03fms" % step_duration)
-    print("Blob Size:      %d bits (%.03f kB)" % (reader_from_file.bitposition, len(file_data) / 1000.))
+    print("Blob Size:      %d bits (%.03f kB)" % (reader_from_file.bitposition, kb_size))
 
     # write results to file
     log_file = open(log_path, "w")
-    log_file.write("%.03fms %d %.03fms" % (total_duration, num_iterations, step_duration))
+    log_file.write("%.03fms %d %.03fms %.03fkB" % (total_duration, num_iterations, step_duration, kb_size))
 
 if __name__ == "__main__":
     sys.setrecursionlimit(5000) # empiric constant to prevent failing during testing on recursive blobs
 
     arg_parser = argparse.ArgumentParser(description="Zserio Python Performance Test")
     arg_parser.add_argument("--log-path", required=True, help="Path to the log file to create")
-    arg_parser.add_argument('--blob-path', required=True, help="Path to the blob file")
+    arg_parser.add_argument('--is-json', default=False, help="True when the input is a JSON file")
+    arg_parser.add_argument('--input-path', required=True, help="Path to the input file")
     arg_parser.add_argument('--num-iterations', default=${NUM_ITERATIONS}, type=int, help="Number of iterations")
     args = arg_parser.parse_args()
 
-    performance_test(args.log_path, args.blob_path, args.num_iterations)
+    performance_test(args.log_path, args.is_json, args.input_path, args.num_iterations)
 EOF
 }
 
@@ -582,15 +684,20 @@ test_perf()
     local PARAM_PYTHON_CPP="$1"; shift
     local SWITCH_DIRECTORY="$1"; shift
     local SWITCH_SOURCE="$1"; shift
-    local SWITCH_TEST_NAME="$1"; shift
     local SWITCH_BLOB_NAME="$1"; shift
+    local SWITCH_JSON_PATH="$1"; shift
     local SWITCH_BLOB_PATH="$1"; shift
     local SWITCH_NUM_ITERATIONS="$1"; shift
     local SWITCH_TEST_CONFIG="$1"; shift
     local SWITCH_RUN_ONLY="$1"; shift
     local SWITCH_PROFILE="$1"; shift
 
-    convert_to_absolute_path "${SWITCH_BLOB_PATH}" SWITCH_BLOB_PATH
+    if [[ "${SWITCH_JSON_PATH}" != "" ]] ; then
+        convert_to_absolute_path "${SWITCH_JSON_PATH}" SWITCH_JSON_PATH
+    fi
+    if [[ "${SWITCH_BLOB_PATH}" != "" ]] ; then
+        convert_to_absolute_path "${SWITCH_BLOB_PATH}" SWITCH_BLOB_PATH
+    fi
 
     if [[ ${SWITCH_PROFILE} == 1 && ( ${PARAM_JAVA} == 1 ) ]] ; then
         stderr_echo "Profiling not available for Java!"
@@ -599,7 +706,7 @@ test_perf()
 
     # generate sources using zserio
     if [[ ${SWITCH_RUN_ONLY} == 0 ]] ; then
-        local ZSERIO_ARGS=()
+        local ZSERIO_ARGS=("-withTypeInfoCode" "-withReflectionCode")
         if [[ ${#CPP_TARGETS[@]} -ne 0 ]] ; then
             rm -rf "${TEST_OUT_DIR}/cpp"
             ZSERIO_ARGS+=("-cpp" "${TEST_OUT_DIR}/cpp/gen")
@@ -623,8 +730,9 @@ test_perf()
     # run java performance test
     if [[ ${PARAM_JAVA} == 1 ]] ; then
         if [[ ${SWITCH_RUN_ONLY} == 0 ]] ; then
-            generate_java_files "${UNPACKED_ZSERIO_RELEASE_DIR}" "${TEST_OUT_DIR}/java" "${SWITCH_BLOB_NAME}" \
-                                "${SWITCH_BLOB_PATH}" ${SWITCH_NUM_ITERATIONS} ${SWITCH_TEST_CONFIG}
+            generate_java_files "${UNPACKED_ZSERIO_RELEASE_DIR}" "${TEST_OUT_DIR}/java" \
+                                "${SWITCH_BLOB_NAME}" "${SWITCH_JSON_PATH}" "${SWITCH_BLOB_PATH}" \
+                                ${SWITCH_NUM_ITERATIONS} ${SWITCH_TEST_CONFIG}
         fi
         ANT_ARGS=()
         compile_java "${TEST_OUT_DIR}/java/build.xml" ANT_ARGS[@] "run"
@@ -637,11 +745,11 @@ test_perf()
     if [[ ${#CPP_TARGETS[@]} != 0 ]] ; then
         if [[ ${SWITCH_RUN_ONLY} == 0 ]] ; then
             generate_cpp_files "${ZSERIO_PROJECT_ROOT}" "${UNPACKED_ZSERIO_RELEASE_DIR}" "${TEST_OUT_DIR}/cpp" \
-                               "${SWITCH_BLOB_NAME}" "${SWITCH_BLOB_PATH}" ${SWITCH_NUM_ITERATIONS} \
-                               ${SWITCH_TEST_CONFIG} ${SWITCH_PROFILE}
+                               "${SWITCH_BLOB_NAME}" "${SWITCH_JSON_PATH}" "${SWITCH_BLOB_PATH}" \
+                               ${SWITCH_NUM_ITERATIONS} ${SWITCH_TEST_CONFIG} ${SWITCH_PROFILE}
         fi
         local CMAKE_ARGS=()
-        local CTEST_ARGS=("-V")
+        local CTEST_ARGS=("--verbose")
         if [[ ${SWITCH_PROFILE} == 1 ]] ; then
             CMAKE_ARGS=("-DCMAKE_BUILD_TYPE=RelWithDebInfo")
             CTEST_ARGS+=("-T memcheck")
@@ -674,12 +782,19 @@ test_perf()
                                      ${SWITCH_TEST_CONFIG} ${SWITCH_PROFILE}
         fi
 
+        local IS_JSON="True"
+        local INPUT_PATH="${SWITCH_JSON_PATH}"
+        if [[ "${SWITCH_BLOB_FILE}" != "" ]] ; then
+            IS_JSON="False"
+            INPUT_PATH="${SWITCH_BLOB_PATH}"
+        fi
+
         if [[ ${PARAM_PYTHON} == 1 ]] ; then
             ZSERIO_PYTHOM_IMPLEMENTATION="python" \
             PYTHONPATH="${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/python:${TEST_OUT_DIR}/python/gen" \
             python ${TEST_OUT_DIR}/python/src/perftest.py \
-                --log-path="${TEST_OUT_DIR}/python/perftest.log" \
-                --blob-path "${SWITCH_BLOB_PATH}"
+                --log-path="${TEST_OUT_DIR}/python/PerformanceTest.log" \
+                --is-json ${IS_JSON} --input-path "${INPUT_PATH}"
             if [ $? -ne 0 ] ; then
                 return 1
             fi
@@ -707,8 +822,8 @@ test_perf()
             ZSERIO_PYTHOM_IMPLEMENTATION="cpp" \
             PYTHONPATH="${PYTHON_RUNTIME_DIR}:${TEST_OUT_DIR}/python/gen:${ZSERIO_CPP_DIR}" \
             python ${TEST_OUT_DIR}/python/src/perftest.py \
-                --log-path="${TEST_OUT_DIR}/python/perftest-cpp.log" \
-                --blob-path "${SWITCH_BLOB_PATH}"
+                   --log-path="${TEST_OUT_DIR}/python/PerformanceTest-cpp.log" \
+                   --is-json ${IS_JSON} --input-path "${INPUT_PATH}"
             if [ $? -ne 0 ] ; then
                 return 1
             fi
@@ -731,31 +846,39 @@ test_perf()
     echo
     echo "Performance Tests Results - ${SWITCH_TEST_CONFIG}"
     echo "Blob name: ${SWITCH_BLOB_NAME}"
-    echo "Blob file: ${SWITCH_BLOB_PATH##*/}"
-    echo "Blob size: $(du -k ${SWITCH_BLOB_PATH} | cut -f1) kB"
-    for i in {1..73} ; do echo -n "=" ; done ; echo
-    printf "| %-21s | %14s | %10s | %15s |\n" "Generator" "Total Duration" "Iterations" "Step Duration"
-    echo -n "|" ; for i in {1..71} ; do echo -n "-" ; done ; echo "|"
+    if [[ "${SWITCH_JSON_PATH}" != "" ]] ; then
+        echo "JSON file: ${SWITCH_JSON_PATH##*/}"
+    else
+        echo "Blob file: ${SWITCH_BLOB_PATH##*/}"
+    fi
+    for i in {1..86} ; do echo -n "=" ; done ; echo
+    printf "| %-21s | %14s | %10s | %15s | %10s |\n" \
+           "Generator" "Total Duration" "Iterations" "Step Duration" "Blob Size"
+    echo -n "|" ; for i in {1..84} ; do echo -n "-" ; done ; echo "|"
     if [[ ${PARAM_JAVA} == 1 ]] ; then
         local RESULTS=($(cat ${TEST_OUT_DIR}/java/PerformanceTest.log))
-        printf "| %-21s | %14s | %10s | %15s |\n" "Java" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]}
+        printf "| %-21s | %14s | %10s | %15s | %10s |\n" \
+               "Java" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]} ${RESULTS[3]}
     fi
     if [[ ${#CPP_TARGETS[@]} != 0 ]] ; then
         for CPP_TARGET in ${CPP_TARGETS[@]} ; do
             local PERF_TEST_FILE=$(${FIND} "${TEST_OUT_DIR}/cpp/${CPP_TARGET}" -name "PerformanceTest.log")
             local RESULTS=($(cat ${PERF_TEST_FILE}))
-            printf "| %-21s | %14s | %10s | %15s |\n" "C++ (${CPP_TARGET})" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]}
+            printf "| %-21s | %14s | %10s | %15s | %10s |\n" \
+                   "C++ (${CPP_TARGET})" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]} ${RESULTS[3]}
         done
     fi
     if [[ ${PARAM_PYTHON} == 1 ]] ; then
-        local RESULTS=($(cat ${TEST_OUT_DIR}/python/perftest.log))
-        printf "| %-21s | %14s | %10s | %15s |\n" "Python" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]}
+        local RESULTS=($(cat ${TEST_OUT_DIR}/python/PerformanceTest.log))
+        printf "| %-21s | %14s | %10s | %15s | %10s |\n" \
+               "Python" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]} ${RESULTS[3]}
     fi
     if [[ ${PARAM_PYTHON_CPP} == 1 ]] ; then
-        local RESULTS=($(cat ${TEST_OUT_DIR}/python/perftest-cpp.log))
-        printf "| %-21s | %14s | %10s | %15s |\n" "Python (C++)" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]}
+        local RESULTS=($(cat ${TEST_OUT_DIR}/python/PerformanceTest-cpp.log))
+        printf "| %-21s | %14s | %10s | %15s | %10s |\n" \
+               "Python (C++)" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]} ${RESULTS[3]}
     fi
-    for i in {1..73} ; do echo -n "=" ; done ; echo
+    for i in {1..86} ; do echo -n "=" ; done ; echo
     echo
 }
 
@@ -768,7 +891,7 @@ Description:
 
 Usage:
     $0 [-h] [-e] [-p] [-o <dir>] [-d <dir>] [-t <name>] -[n <num>] [-c <config>]
-       generator... -s test.zs -b test.Blob -f blob.bin
+        generator... -s test.zs -b test.Blob -f blob.bin
 
 Arguments:
     -h, --help              Show this help.
@@ -828,16 +951,17 @@ EOF
 # 3 - Environment help switch is present. Arguments after help switch have not been checked.
 parse_arguments()
 {
-    exit_if_argc_lt $# 15
+    exit_if_argc_lt $# 16
     local PARAM_CPP_TARGET_ARRAY_OUT="$1"; shift
     local PARAM_JAVA_OUT="$1"; shift
     local PARAM_PYTHON_OUT="$1"; shift
     local PARAM_PYTHON_CPP_OUT="$1"; shift
-    local PARAM_OUT_DIR_OUT="$1"; shift
+    local SWITCH_OUT_DIR_OUT="$1"; shift
     local SWITCH_DIRECTORY_OUT="$1"; shift
     local SWITCH_SOURCE_OUT="$1"; shift
     local SWITCH_TEST_NAME_OUT="$1"; shift
     local SWITCH_BLOB_NAME_OUT="$1"; shift
+    local SWITCH_JSON_FILE_OUT="$1"; shift
     local SWITCH_BLOB_FILE_OUT="$1"; shift
     local SWITCH_NUM_ITERATIONS_OUT="$1"; shift
     local SWITCH_TEST_CONFIG_OUT="$1"; shift
@@ -852,6 +976,7 @@ parse_arguments()
     eval ${SWITCH_SOURCE_OUT}=""
     eval ${SWITCH_TEST_NAME_OUT}=""
     eval ${SWITCH_BLOB_NAME_OUT}=""
+    eval ${SWITCH_JSON_FILE_OUT}=""
     eval ${SWITCH_BLOB_FILE_OUT}=""
     eval ${SWITCH_NUM_ITERATIONS_OUT}=100 # default
     eval ${SWITCH_TEST_CONFIG_OUT}="READ"
@@ -860,7 +985,7 @@ parse_arguments()
     eval ${SWITCH_PROFILE_OUT}=0
 
     local NUM_PARAMS=0
-    local PARAM_ARRAY=();
+    local PARAM_ARRAY=()
     local ARG="$1"
     while [ $# -ne 0 ] ; do
         case "${ARG}" in
@@ -878,7 +1003,7 @@ parse_arguments()
                 ;;
 
             "-o" | "--output-directory")
-                eval ${PARAM_OUT_DIR_OUT}="$2"
+                eval ${SWITCH_OUT_DIR_OUT}="$2"
                 shift 2
                 ;;
 
@@ -927,6 +1052,18 @@ parse_arguments()
                     return 1
                 fi
                 eval ${SWITCH_BLOB_NAME_OUT}="${ARG}"
+                shift
+                ;;
+
+            "-j" | "--json-file")
+                shift
+                local ARG="$1"
+                if [ -z "${ARG}" ] ; then
+                    stderr_echo "JSON filename is not set!"
+                    echo
+                    return 1
+                fi
+                eval ${SWITCH_JSON_FILE_OUT}="${ARG}"
                 shift
                 ;;
 
@@ -1059,8 +1196,14 @@ parse_arguments()
             return 1
         fi
 
-        if [[ "${!SWITCH_BLOB_FILE_OUT}" == "" ]] ; then
-            stderr_echo "Blob filename is not set!"
+        if [[ "${!SWITCH_BLOB_FILE_OUT}" == "" && "${!SWITCH_JSON_FILE_OUT}" == "" ]] ; then
+            stderr_echo "Neither blob nor JSON filename is set!"
+            echo
+            return 1
+        fi
+
+        if [[ "${!SWITCH_BLOB_FILE_OUT}" != "" && "${!SWITCH_JSON_FILE_OUT}" != "" ]] ; then
+            stderr_echo "Set either blob or JSON filename, not both!"
             echo
             return 1
         fi
@@ -1093,19 +1236,20 @@ main()
     local PARAM_JAVA
     local PARAM_PYTHON
     local PARAM_PYTHON_CPP
-    local PARAM_OUT_DIR="${ZSERIO_PROJECT_ROOT}"
+    local SWITCH_OUT_DIR="${ZSERIO_PROJECT_ROOT}"
     local SWITCH_DIRECTORY
     local SWITCH_SOURCE
     local SWITCH_TEST_NAME
     local SWITCH_BLOB_NAME
+    local SWITCH_JSON_FILE
     local SWITCH_BLOB_FILE
     local SWITCH_NUM_ITERATIONS
     local SWITCH_TEST_CONFIG
     local SWITCH_PURGE
     local SWITCH_RUN_ONLY
     local SWITCH_PROFILE
-    parse_arguments PARAM_CPP_TARGET_ARRAY PARAM_JAVA PARAM_PYTHON PARAM_PYTHON_CPP PARAM_OUT_DIR \
-            SWITCH_DIRECTORY SWITCH_SOURCE SWITCH_TEST_NAME SWITCH_BLOB_NAME SWITCH_BLOB_FILE \
+    parse_arguments PARAM_CPP_TARGET_ARRAY PARAM_JAVA PARAM_PYTHON PARAM_PYTHON_CPP SWITCH_OUT_DIR \
+            SWITCH_DIRECTORY SWITCH_SOURCE SWITCH_TEST_NAME SWITCH_BLOB_NAME SWITCH_JSON_FILE SWITCH_BLOB_FILE \
             SWITCH_NUM_ITERATIONS SWITCH_TEST_CONFIG SWITCH_PURGE SWITCH_RUN_ONLY SWITCH_PROFILE "$@"
     local PARSE_RESULT=$?
     if [ ${PARSE_RESULT} -eq 2 ] ; then
@@ -1155,10 +1299,10 @@ main()
     fi
 
     # extensions need absolute paths
-    convert_to_absolute_path "${PARAM_OUT_DIR}" PARAM_OUT_DIR
+    convert_to_absolute_path "${SWITCH_OUT_DIR}" SWITCH_OUT_DIR
 
     # purge if requested and then create test output directory
-    local ZSERIO_BUILD_DIR="${PARAM_OUT_DIR}/build"
+    local ZSERIO_BUILD_DIR="${SWITCH_OUT_DIR}/build"
     local TEST_OUT_DIR="${ZSERIO_BUILD_DIR}/test_perf/${SWITCH_TEST_NAME}"
     if [[ ${SWITCH_PURGE} == 1 ]] ; then
         echo "Purging test directory." # purges all tests in test_perf directory
@@ -1167,7 +1311,8 @@ main()
 
         if [[ ${#PARAM_CPP_TARGET_ARRAY[@]} == 0 &&
               ${PARAM_JAVA} == 0 &&
-              ${PARAM_PYTHON} == 0 ]] ; then
+              ${PARAM_PYTHON} == 0 &&
+              ${PARAM_PYTHON_CPP} == 0 ]] ; then
             return 0  # purge only
         fi
     fi
@@ -1176,7 +1321,7 @@ main()
     # get zserio release directory
     local ZSERIO_RELEASE_DIR
     local ZSERIO_VERSION
-    get_release_dir "${ZSERIO_PROJECT_ROOT}" "${PARAM_OUT_DIR}" ZSERIO_RELEASE_DIR ZSERIO_VERSION
+    get_release_dir "${ZSERIO_PROJECT_ROOT}" "${SWITCH_OUT_DIR}" ZSERIO_RELEASE_DIR ZSERIO_VERSION
     if [ $? -ne 0 ] ; then
         return 1
     fi
@@ -1197,8 +1342,8 @@ main()
     # run test
     test_perf "${UNPACKED_ZSERIO_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" \
               "${TEST_OUT_DIR}" PARAM_CPP_TARGET_ARRAY[@] ${PARAM_JAVA} ${PARAM_PYTHON} ${PARAM_PYTHON_CPP} \
-              "${SWITCH_DIRECTORY}" "${SWITCH_SOURCE}" "${SWITCH_TEST_NAME}" "${SWITCH_BLOB_NAME}" \
-              "${SWITCH_BLOB_FILE}" ${SWITCH_NUM_ITERATIONS} ${SWITCH_TEST_CONFIG} \
+              "${SWITCH_DIRECTORY}" "${SWITCH_SOURCE}" "${SWITCH_BLOB_NAME}" \
+              "${SWITCH_JSON_FILE}" "${SWITCH_BLOB_FILE}" ${SWITCH_NUM_ITERATIONS} ${SWITCH_TEST_CONFIG} \
               ${SWITCH_RUN_ONLY} ${SWITCH_PROFILE}
     if [ $? -ne 0 ] ; then
         return 1

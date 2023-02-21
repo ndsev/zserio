@@ -762,7 +762,7 @@ compile_cpp_for_target()
     can_run_tests "${TARGET}"
     local CAN_RUN_TESTS_RESULT=$?
     if [[ ${MAKE_TARGET} != "clean" && ${CAN_RUN_TESTS_RESULT} == 0 ]] ; then
-        CTEST_OUTPUT_ON_FAILURE=1 "${CTEST}" ${CTEST_ARGS[@]}
+        CTEST_OUTPUT_ON_FAILURE=1 "${CTEST}" "${CTEST_ARGS[@]}"
         local CTEST_RESULT=$?
         if [ ${CTEST_RESULT} -ne 0 ] ; then
             stderr_echo "Tests on target ${TARGET} failed with return code ${CTEST_RESULT}."
