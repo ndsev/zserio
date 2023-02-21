@@ -534,7 +534,13 @@ get_zserio_bin()
         local ZSERIO_BIN_ZIP_NAME="zserio-${ZSERIO_VERSION}-bin.zip"
     fi
 
-    curl -L -s -f "https://github.com/ndsev/zserio/releases/download/v${ZSERIO_VERSION}/zserio-${ZSERIO_VERSION}-bin.zip" \
+    local CURL_AUTHORIZATION=""
+    if [[ ! -z "${GITHUB_TOKEN}" ]] ; then
+        local CURL_AUTHORIZATION=(-H "Authorization: Bearer ${GITHUB_TOKEN}") # we need to pass quotes
+    fi
+
+    curl "${CURL_AUTHORIZATION[@]}" -L -s -f \
+            "https://github.com/ndsev/zserio/releases/download/v${ZSERIO_VERSION}/zserio-${ZSERIO_VERSION}-bin.zip" \
             -o "${ZSERIO_BIN_OUT_DIR}/${ZSERIO_BIN_ZIP_NAME}"
     if [ $? -ne 0 ] ; then
         stderr_echo "Failed to download Zserio binaries from GitHub!"
@@ -556,7 +562,12 @@ get_zserio_runtime_libs()
         local ZSERIO_RUNTIME_LIBS_ZIP_NAME="zserio-${ZSERIO_VERSION}-runtime-libs.zip"
     fi
 
-    curl -L -s -f "https://github.com/ndsev/zserio/releases/download/v${ZSERIO_VERSION}/zserio-${ZSERIO_VERSION}-runtime-libs.zip" \
+    local CURL_AUTHORIZATION=""
+    if [[ ! -z "${GITHUB_TOKEN}" ]] ; then
+        local CURL_AUTHORIZATION=(-H "Authorization: Bearer ${GITHUB_TOKEN}") # we need to pass quotes
+    fi
+    curl "${CURL_AUTHORIZATION[@]}" -L -s -f \
+            "https://github.com/ndsev/zserio/releases/download/v${ZSERIO_VERSION}/zserio-${ZSERIO_VERSION}-runtime-libs.zip" \
             -o "${ZSERIO_RUNTIME_LIBS_OUT_DIR}/${ZSERIO_RUNTIME_LIBS_ZIP_NAME}"
     if [ $? -ne 0 ] ; then
         stderr_echo "Failed to download Zserio runtime libraries from GitHub!"
