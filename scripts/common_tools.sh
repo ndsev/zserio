@@ -504,7 +504,7 @@ get_latest_zserio_version()
     exit_if_argc_ne $# 1
     local ZSERIO_VERSION_OUT="$1"; shift
 
-    local CURL_AUTHORIZATION=""
+    local CURL_AUTHORIZATION=()
     if [[ ! -z "${GITHUB_TOKEN}" ]] ; then
         local CURL_AUTHORIZATION=(-H "Authorization: Bearer ${GITHUB_TOKEN}") # we need to pass quotes
     fi
@@ -534,7 +534,7 @@ get_zserio_bin()
         local ZSERIO_BIN_ZIP_NAME="zserio-${ZSERIO_VERSION}-bin.zip"
     fi
 
-    local CURL_AUTHORIZATION=""
+    local CURL_AUTHORIZATION=()
     if [[ ! -z "${GITHUB_TOKEN}" ]] ; then
         local CURL_AUTHORIZATION=(-H "Authorization: Bearer ${GITHUB_TOKEN}") # we need to pass quotes
     fi
@@ -562,7 +562,7 @@ get_zserio_runtime_libs()
         local ZSERIO_RUNTIME_LIBS_ZIP_NAME="zserio-${ZSERIO_VERSION}-runtime-libs.zip"
     fi
 
-    local CURL_AUTHORIZATION=""
+    local CURL_AUTHORIZATION=()
     if [[ ! -z "${GITHUB_TOKEN}" ]] ; then
         local CURL_AUTHORIZATION=(-H "Authorization: Bearer ${GITHUB_TOKEN}") # we need to pass quotes
     fi
