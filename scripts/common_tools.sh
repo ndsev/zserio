@@ -641,7 +641,7 @@ compile_java()
         ANT_PROPS+=("-Dspotbugs.home_dir=${SPOTBUGS_HOME}")
     fi
 
-    "${ANT}" ${ANT_EXTRA_ARGS} -f "${ANT_BUILD_FILE}" "${ANT_PROPS[@]}" ${ANT_TARGET}
+    "${ANT}" ${ANT_EXTRA_ARGS} -f "${ANT_BUILD_FILE}" ${ANT_PROPS[@]} ${ANT_TARGET}
     local ANT_RESULT=$?
     if [ ${ANT_RESULT} -ne 0 ] ; then
         stderr_echo "Running ant failed with return code ${ANT_RESULT}!"
@@ -741,7 +741,7 @@ compile_cpp_for_target()
     fi
 
     # generate makefile running cmake
-    "${CMAKE}" ${CMAKE_EXTRA_ARGS} -G "${CMAKE_GENERATOR}" "${CMAKE_ARGS[@]}" "${CMAKELISTS_DIR}"
+    "${CMAKE}" ${CMAKE_EXTRA_ARGS} -G "${CMAKE_GENERATOR}" ${CMAKE_ARGS[@]} "${CMAKELISTS_DIR}"
     local CMAKE_RESULT=$?
     if [ ${CMAKE_RESULT} -ne 0 ] ; then
         stderr_echo "Running CMake failed with return code ${CMAKE_RESULT}!"
@@ -762,7 +762,7 @@ compile_cpp_for_target()
     can_run_tests "${TARGET}"
     local CAN_RUN_TESTS_RESULT=$?
     if [[ ${MAKE_TARGET} != "clean" && ${CAN_RUN_TESTS_RESULT} == 0 ]] ; then
-        CTEST_OUTPUT_ON_FAILURE=1 "${CTEST}" "${CTEST_ARGS[@]}"
+        CTEST_OUTPUT_ON_FAILURE=1 "${CTEST}" ${CTEST_ARGS[@]}
         local CTEST_RESULT=$?
         if [ ${CTEST_RESULT} -ne 0 ] ; then
             stderr_echo "Tests on target ${TARGET} failed with return code ${CTEST_RESULT}."
@@ -849,8 +849,8 @@ run_mypy()
     local MYPY_ARGS=("${MSYS_WORKAROUND_TEMP[@]}")
     local SOURCES=("$@")
 
-    python -m mypy ${MYPY_EXTRA_ARGS} "${MYPY_ARGS[@]}" --cache-dir="${BUILD_DIR}/.mypy_cache" \
-            --config-file "${MYPY_CONFIG_FILE}" "${SOURCES[@]}"
+    python -m mypy ${MYPY_EXTRA_ARGS} ${MYPY_ARGS[@]} --cache-dir="${BUILD_DIR}/.mypy_cache" \
+            --config-file "${MYPY_CONFIG_FILE}" ${SOURCES[@]}
     local MYPY_RESULT=$?
     if [ ${MYPY_RESULT} -ne 0 ] ; then
         stderr_echo "Running mypy failed with return code ${MYPY_RESULT}!"

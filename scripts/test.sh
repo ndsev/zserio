@@ -38,7 +38,7 @@ get_test_suites()
     done
 
     local TEST_SUITES_ARR=(
-        $(${FIND} ${STARTING_POINT} -mindepth 2 -maxdepth 2 -type d "${FIND_EXPRESSION[@]}" | sort)
+        $(${FIND} ${STARTING_POINT} -mindepth 2 -maxdepth 2 -type d ${FIND_EXPRESSION[@]} | sort)
     )
 
     for i in ${!TEST_SUITES_ARR[@]} ; do
@@ -199,7 +199,7 @@ test_python()
         echo "Running python tests."
         echo
 
-        python "${TEST_FILE}" "${TEST_ARGS[@]}" --pylint_rcfile="${PYLINT_RCFILE}" \
+        python "${TEST_FILE}" ${TEST_ARGS[@]} --pylint_rcfile="${PYLINT_RCFILE}" \
                 --pylint_rcfile_test="${PYLINT_RCFILE_FOR_TESTS}" --mypy_config_file="${MYPY_CONFIG_FILE}" \
                 --zserio_cpp_dir="${ZSERIO_CPP_DIR}"
         local PYTHON_RESULT=$?

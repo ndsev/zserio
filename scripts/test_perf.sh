@@ -255,7 +255,9 @@ generate_cpp_files()
     posix_to_host_path "${ZSERIO_RELEASE}" HOST_ZSERIO_RELEASE ${DISABLE_SLASHES_CONVERSION}
     posix_to_host_path "${INPUT_PATH}" HOST_INPUT_PATH ${DISABLE_SLASHES_CONVERSION}
 
-    cat > "${BUILD_DIR}"/CMakeLists.txt << EOF
+    local BUILD_SRC_DIR="${BUILD_DIR}/src"
+    mkdir -p "${BUILD_SRC_DIR}"
+    cat > "${BUILD_SRC_DIR}"/CMakeLists.txt << EOF
 cmake_minimum_required(VERSION 3.1.0)
 project(PerformanceTest)
 
@@ -271,7 +273,7 @@ set(CMAKE_MODULE_PATH "\${ZSERIO_ROOT}/cmake")
 EOF
 
 if [[ ${PROFILE} == 1 ]] ; then
-    cat >> "${BUILD_DIR}"/CMakeLists.txt << EOF
+    cat >> "${BUILD_SRC_DIR}"/CMakeLists.txt << EOF
 string(CONCAT MEMORYCHECK_COMMAND_OPTIONS
     "--tool=callgrind -v --instr-atstart=no --collect-atstart=no --collect-jumps=yes --dump-instr=yes "
     "--callgrind-out-file=callgrind.out"
@@ -281,7 +283,7 @@ include(CTest)
 EOF
 fi
 
-cat >> "${BUILD_DIR}"/CMakeLists.txt << EOF
+cat >> "${BUILD_SRC_DIR}"/CMakeLists.txt << EOF
 # cmake helpers
 include(cmake_utils)
 
@@ -297,7 +299,7 @@ zserio_add_runtime_library(RUNTIME_LIBRARY_DIR "\${ZSERIO_RUNTIME_LIBRARY_DIR}")
 
 file(GLOB_RECURSE SOURCES RELATIVE "\${CMAKE_CURRENT_SOURCE_DIR}" "gen/*.cpp" "gen/*.h")
 
-add_executable(\${PROJECT_NAME} src/PerformanceTest.cpp \${SOURCES})
+add_executable(\${PROJECT_NAME} PerformanceTest.cpp \${SOURCES})
 # CXX_EXTENSIONS are necessary for old MinGW32 to support clock_gettime method
 set_target_properties(\${PROJECT_NAME} PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS YES)
 
@@ -311,8 +313,7 @@ EOF
     local BLOB_CLASS_FULL_NAME=${BLOB_FULL_NAME//./::}
     local TOP_LEVEL_PACKAGE_NAME=${BLOB_FULL_NAME%%.*}
 
-    mkdir -p "${BUILD_DIR}/src"
-    cat > "${BUILD_DIR}"/src/PerformanceTest.cpp << EOF
+    cat > "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
 #include <fstream>
 #include <iostream>
 #include <iomanip>
@@ -327,13 +328,13 @@ EOF
 EOF
 
 if [[ ${PROFILE} == 1 ]] ; then
-    cat >> "${BUILD_DIR}"/src/PerformanceTest.cpp << EOF
+    cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
 #include <valgrind/callgrind.h>
 
 EOF
 fi
 
-cat >> "${BUILD_DIR}"/src/PerformanceTest.cpp << EOF
+cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
 #if defined(_WIN32) || defined(_WIN64)
 #   include <windows.h>
 #else
@@ -443,14 +444,19 @@ int main(int argc, char* argv[])
     // prepare test buffer
     zserio::BitStreamReader blobReader(bitBuffer);
     ${BLOB_CLASS_FULL_NAME} blobFromFile(blobReader);
+EOF
+
+if [[ "${TEST_CONFIG}" != "WRITE" ]] ; then
+    cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
 
     // run the test
     std::vector<${BLOB_CLASS_FULL_NAME}> readBlobs;
     readBlobs.reserve(static_cast<size_t>(numIterations));
 EOF
+fi
 
 if [[ ${PROFILE} == 1 ]] ; then
-    cat >> "${BUILD_DIR}"/src/PerformanceTest.cpp << EOF
+    cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
 
     CALLGRIND_START_INSTRUMENTATION;
     CALLGRIND_TOGGLE_COLLECT;
@@ -458,7 +464,7 @@ if [[ ${PROFILE} == 1 ]] ; then
 EOF
 fi
 
-cat >> "${BUILD_DIR}"/src/PerformanceTest.cpp << EOF
+cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
     const uint64_t start = PerfTimer::getMicroTime();
     for (int i = 0; i < numIterations; ++i)
     {
@@ -466,13 +472,13 @@ EOF
 
     case "${TEST_CONFIG}" in
         "READ")
-            cat >> "${BUILD_DIR}"/src/PerformanceTest.cpp << EOF
+            cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
         zserio::BitStreamReader reader(bitBuffer);
         readBlobs.emplace_back(reader);
 EOF
             ;;
         "READ_WRITE")
-            cat >> "${BUILD_DIR}"/src/PerformanceTest.cpp << EOF
+            cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
         zserio::BitStreamReader reader(bitBuffer);
         readBlobs.emplace_back(reader);
         zserio::BitStreamWriter writer(bitBuffer);
@@ -481,28 +487,28 @@ EOF
             ;;
 
         "WRITE")
-            cat >> "${BUILD_DIR}"/src/PerformanceTest.cpp << EOF
+            cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
         zserio::BitStreamWriter writer(bitBuffer);
         blobFromFile.write(writer);
 EOF
             ;;
     esac
 
-cat >> "${BUILD_DIR}"/src/PerformanceTest.cpp << EOF
+cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
     }
     const uint64_t stop = PerfTimer::getMicroTime();
 
 EOF
 
 if [[ ${PROFILE} == 1 ]] ; then
-    cat >> "${BUILD_DIR}"/src/PerformanceTest.cpp << EOF
+    cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
     CALLGRIND_STOP_INSTRUMENTATION;
     CALLGRIND_TOGGLE_COLLECT;
 
 EOF
 fi
 
-cat >> "${BUILD_DIR}"/src/PerformanceTest.cpp << EOF
+cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
     // process results
     double totalDuration = static_cast<double>(stop - start) / 1000.;
     double stepDuration = totalDuration / numIterations;
@@ -709,7 +715,7 @@ test_perf()
         local ZSERIO_ARGS=("-withTypeInfoCode" "-withReflectionCode")
         if [[ ${#CPP_TARGETS[@]} -ne 0 ]] ; then
             rm -rf "${TEST_OUT_DIR}/cpp"
-            ZSERIO_ARGS+=("-cpp" "${TEST_OUT_DIR}/cpp/gen")
+            ZSERIO_ARGS+=("-cpp" "${TEST_OUT_DIR}/cpp/src/gen")
         fi
         if [[ ${PARAM_JAVA} == 1 ]] ; then
             rm -rf "${TEST_OUT_DIR}/java"
@@ -754,7 +760,7 @@ test_perf()
             CMAKE_ARGS=("-DCMAKE_BUILD_TYPE=RelWithDebInfo")
             CTEST_ARGS+=("-T memcheck")
         fi
-        compile_cpp "${ZSERIO_PROJECT_ROOT}" "${TEST_OUT_DIR}/cpp" "${TEST_OUT_DIR}/cpp" \
+        compile_cpp "${ZSERIO_PROJECT_ROOT}" "${TEST_OUT_DIR}/cpp" "${TEST_OUT_DIR}/cpp/src" \
                     CPP_TARGETS[@] CMAKE_ARGS[@] CTEST_ARGS[@] all
         if [ $? -ne 0 ] ; then
             return 1
