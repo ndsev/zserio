@@ -276,8 +276,7 @@ a:hover {
   padding-left: 1rem;
 }
 
-.code div.doc,
-.code td.value-expression.doc {
+.code div.doc {
   white-space: normal;
   color: ${codeDocColor};
 }

@@ -36,8 +36,12 @@ ${I}    <tr class="doc"><td colspan=2 class="indent">
 ${I}    </td></tr>
     </#if>
 ${I}    <tr>
+    <#if item.hasValueExpression>
 ${I}      <td class="indent"><@symbol_reference item.symbol/></td>
-${I}      <td class="value-expression<#if !item.hasValueExpression> doc</#if>">= ${item.value}<#if item_has_next>,</#if></td>
+${I}      <td class="value-expression">= ${item.value}<#if item?has_next>,</#if></td>
+    <#else>
+${I}      <td class="indent"><@symbol_reference item.symbol/><#if item?has_next>,</#if></td><td></td>
+    </#if>
 ${I}    </tr>
 ${I}  </tbody>
 </#list>
