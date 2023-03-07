@@ -14,7 +14,7 @@ class TestConfig:
     """
 
     def __new__(cls):
-        raise Exception("TestConfig constructor is forbidden! Use init method instead.")
+        raise RuntimeError("TestConfig constructor is forbidden! Use init method instead.")
 
     @classmethod
     def init(cls, configDict):
@@ -28,7 +28,7 @@ class TestConfig:
     @staticmethod
     def _get():
         if not hasattr(TestConfig, 'instance'):
-            raise Exception("TestConfig was not initialized!")
+            raise RuntimeError("TestConfig was not initialized!")
         return TestConfig.instance
 
 # set containing all compiled main zs files to prevent multiple compilations of the same zserio sources
@@ -198,7 +198,7 @@ def _compileZserio(zsDef, apiDir, extraArgs):
     :param extraArgs: Extra arguments to zserio compiler.
     :returns: CompletedProcess containing zserio result.
 
-    :raises Exception: When zserio tool fails.
+    :raises RuntimeError: When zserio tool fails.
     """
 
     zserioLibsDir = os.path.join(TestConfig["release_dir"], "zserio_libs")
@@ -237,7 +237,7 @@ def _checkExpectedWarnings(zserioLog, expectedWarnings):
     numWarnings = content.count("[WARNING]")
 
     if numWarnings != expectedWarnings:
-        raise Exception(f"Zserio tool produced {numWarnings} warnings (expected {expectedWarnings})!")
+        raise RuntimeError(f"Zserio tool produced {numWarnings} warnings (expected {expectedWarnings})!")
 
 def _importModule(path, modulePath):
     """

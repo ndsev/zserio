@@ -129,6 +129,9 @@ set_global_python_variables()
         fi
 
         check_python_version ${PYTHON}
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
 
         # check that python pip and virtualenv modules are installed
         local PYTHON_REQUIREMENTS=("virtualenv" "pip")
@@ -170,14 +173,29 @@ set_global_doc_variables()
     return 0
 }
 
+# Get python version as an array.
+get_python_version()
+{
+    exit_if_argc_ne $# 2
+    local PYTHON_BIN="$1"; shift
+    local PYTHON_VERSION_OUT="$1"; shift
+
+    local PYTHON_VERSION_ARRAY=$(${PYTHON_BIN} -V 2>&1 | cut -d\  -f 2)
+    PYTHON_VERSION_ARRAY=(${PYTHON_VERSION_ARRAY//./ }) # python version as an array
+
+    for i in ${!PYTHON_VERSION_ARRAY[@]} ; do
+        eval ${PYTHON_VERSION_OUT}[$i]="${PYTHON_VERSION_ARRAY[$i]}"
+    done
+}
+
 # Check python version.
 check_python_version()
 {
     exit_if_argc_ne $# 1
     local PYTHON_BIN="$1"; shift
 
-    local PYTHON_VERSION=$(${PYTHON_BIN} -V 2>&1 | cut -d\  -f 2)
-    PYTHON_VERSION=(${PYTHON_VERSION//./ }) # python version as an array
+    local PYTHON_VERSION=()
+    get_python_version "${PYTHON_BIN}" PYTHON_VERSION
     if [[ ${#PYTHON_VERSION[@]} -lt 2 || ${PYTHON_VERSION[0]} -lt 3 ]] ||
        [[ ${PYTHON_VERSION[0]} -eq 3 && ${PYTHON_VERSION[1]} -lt 8 ]] ; then
         stderr_echo "Python 3.8+ is required! Current Python is '$(${PYTHON_BIN} -V 2>&1)'"
@@ -284,7 +302,7 @@ activate_python_virtualenv()
         # needed to build apsw on Windows using MSVC compiler - see https://github.com/rogerbinns/apsw/issues/303
         "setuptools==59.8.0"
         "coverage==6.5.0" "sphinx"
-        "astroid==2.9.3" "pylint==2.12.2" "mypy==0.931"
+        "astroid==2.15.0" "pylint==2.16.3" "mypy==0.931"
         "pybind11>=2.10.0"
     )
     local APSW_REQUIREMENTS=("apsw")
@@ -329,7 +347,7 @@ install_python_apsw()
 
     pushd "${PYTHON_VIRTUALENV_ROOT}" > /dev/null
     if [ ! -d "${PYTHON_VIRTUALENV_ROOT}/apsw" ] ; then
-        git clone --depth 1 https://github.com/rogerbinns/apsw.git -b 3.37.0-r1
+        git clone --depth 1 https://github.com/rogerbinns/apsw.git -b 3.41.0.0
         if [ $? -ne 0 ] ; then
             stderr_echo "Failed to clone apsw repository!"
             popd > /dev/null
@@ -339,15 +357,7 @@ install_python_apsw()
 
     cd apsw
 
-    # copy 3rdparty sqlite3 to be built within apsw module
-    cp -r "${SQLITE_ROOT}" sqlite3
-    if [ $? -ne 0 ] ; then
-        stderr_echo "Failed to copy 3rdparty sqlite to apsw build directory!"
-        popd > /dev/null
-        return 1
-    fi
-
-    python setup.py build --enable=fts4,fts5 install
+    python setup.py fetch --sqlite --version=3.41.0 build --enable=fts4,fts5 install
     if [ $? -ne 0 ] ; then
         stderr_echo "Failed to build python apsw module!"
         popd > /dev/null

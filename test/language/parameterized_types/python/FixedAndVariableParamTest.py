@@ -88,9 +88,9 @@ class FixedAndVariableParamTest(unittest.TestCase):
         array = []
         for i in range(size):
             array.append(i * i)
-        hasBlack = (color == self.api.Color.BLACK)
-        hasRead = ((access & self.api.Access.Values.READ) == self.api.Access.Values.READ)
-        hasFloatBiggerThanOne = (floatValue > 1.0)
+        hasBlack = color == self.api.Color.BLACK
+        hasRead = (access & self.api.Access.Values.READ) == self.api.Access.Values.READ
+        hasFloatBiggerThanOne = floatValue > 1.0
 
         return self.api.ArrayHolder(size, extraLimit, limitHolder, color, access, floatValue, array,
                                     self.EXTRA_VALUE, hasBlack, hasRead, hasFloatBiggerThanOne)

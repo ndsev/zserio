@@ -483,7 +483,7 @@ class JsonParser:
         if len(expecting) == 1:
             msg += f", expecting {expecting[0]}!"
         else:
-            msg += ", expecting one of [" + ", ".join([str(x) for x in expecting]) + "]!"
+            msg += ", expecting one of [" + ", ".join([str(token) for token in expecting]) + "]!"
 
         raise JsonParserException(msg)
 

@@ -25,7 +25,7 @@ class BitStreamWriterTest(unittest.TestCase):
             written_test_value = buffer[offset // 8] << (offset % 8)
             if offset % 8 != 0:
                 written_test_value |= buffer[offset // 8 + 1] >> (8 - (offset % 8))
-            self.assertEqual(test_value, written_test_value, msg=("Offset: " + str(offset)))
+            self.assertEqual(test_value, written_test_value, msg="Offset: " + str(offset))
 
     def test_write_bits(self):
         writer = BitStreamWriter()

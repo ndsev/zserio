@@ -341,7 +341,7 @@ test_zs()
         echo "Running pylint on Python generated files."
 
         local GEN_DISABLE_OPTION=""
-        GEN_DISABLE_OPTION+="missing-docstring, no-self-use,duplicate-code, line-too-long, "
+        GEN_DISABLE_OPTION+="missing-docstring, duplicate-code, line-too-long, "
         GEN_DISABLE_OPTION+="singleton-comparison, too-many-instance-attributes, too-many-arguments, "
         GEN_DISABLE_OPTION+="too-many-public-methods, too-few-public-methods, too-many-locals, "
         GEN_DISABLE_OPTION+="too-many-branches, too-many-statements, unneeded-not, superfluous-parens, "

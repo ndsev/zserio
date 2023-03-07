@@ -19,9 +19,9 @@ def uint16_to_float(float16_value: int) -> float:
     """
 
     # decompose half precision float (float16)
-    sign16_shifted = (float16_value & FLOAT16_SIGN_MASK)
+    sign16_shifted = float16_value & FLOAT16_SIGN_MASK
     exponent16 = (float16_value & FLOAT16_EXPONENT_MASK) >> FLOAT16_EXPONENT_BIT_POSITION
-    significand16 = (float16_value & FLOAT16_SIGNIFICAND_MASK)
+    significand16 = float16_value & FLOAT16_SIGNIFICAND_MASK
 
     # calculate significand for single precision float (float32)
     significand32 = significand16 << (FLOAT32_SIGNIFICAND_NUM_BITS - FLOAT16_SIGNIFICAND_NUM_BITS)
@@ -68,9 +68,9 @@ def float_to_uint16(float64: float) -> int:
     float32_value = float_to_uint32(float64)
 
     # decompose single precision float (float32)
-    sign32_shifted = (float32_value & FLOAT32_SIGN_MASK)
+    sign32_shifted = float32_value & FLOAT32_SIGN_MASK
     exponent32 = (float32_value & FLOAT32_EXPONENT_MASK) >> FLOAT32_EXPONENT_BIT_POSITION
-    significand32 = (float32_value & FLOAT32_SIGNIFICAND_MASK)
+    significand32 = float32_value & FLOAT32_SIGNIFICAND_MASK
 
     # calculate significand for half precision float (float16)
     significand16 = significand32 >> (FLOAT32_SIGNIFICAND_NUM_BITS - FLOAT16_SIGNIFICAND_NUM_BITS)

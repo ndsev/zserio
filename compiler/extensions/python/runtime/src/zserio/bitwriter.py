@@ -338,11 +338,11 @@ class BitStreamWriter:
 
     def _write_varnum(self, value: int, max_var_bytes: int, num_var_bytes: int, *, is_signed: bool) -> None:
         abs_value = abs(value)
-        has_max_byte_range = (num_var_bytes == max_var_bytes)
+        has_max_byte_range = num_var_bytes == max_var_bytes
         for i in range(num_var_bytes):
             byte = 0x00
             numbits = 8
-            has_next_byte = (i < num_var_bytes - 1)
+            has_next_byte = i < num_var_bytes - 1
             has_sign_bit = (is_signed and i == 0)
             if has_sign_bit:
                 if value < 0:

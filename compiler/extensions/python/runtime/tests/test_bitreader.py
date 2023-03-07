@@ -55,7 +55,7 @@ class BitStreamReaderTest(unittest.TestCase):
             self.assertEqual(0, reader.read_bits(offset))
 
             # read magic number
-            self.assertEqual(test_value, reader.read_bits(8), msg=("Offset: " + str(offset)))
+            self.assertEqual(test_value, reader.read_bits(8), msg="Offset: " + str(offset))
 
             # check eof
             with self.assertRaises(PythonRuntimeException):

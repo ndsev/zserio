@@ -71,8 +71,16 @@ test_python_runtime()
 
     echo "Running pylint on python runtime sources."
 
+    local PYTHON_VERSION=()
+    get_python_version python PYTHON_VERSION
+
     local PYLINT_RCFILE="${PYTHON_RUNTIME_ROOT}/pylintrc.txt"
-    local PYLINT_ARGS=("--disable=too-few-public-methods")
+    local PYLINT_ARGS=()
+    if [[ ${PYTHON_VERSION[0]} -eq 3 && ${PYTHON_VERSION[1]} -le 9 ]] ; then
+        PYLINT_ARGS+=("--disable=too-few-public-methods,duplicate-code,unsupported-binary-operation")
+    else
+        PYLINT_ARGS+=("--disable=too-few-public-methods,duplicate-code")
+    fi
     PYTHONPATH="${ZSERIO_CPP_DIR}" run_pylint "${PYLINT_RCFILE}" PYLINT_ARGS[@] "${SOURCES_DIR}"/zserio
     if [ $? -ne 0 ]; then
         return 1

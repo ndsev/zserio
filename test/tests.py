@@ -124,22 +124,22 @@ def _runPylintOnAllSources(args, testDirs):
 
     from testutils import getApiDir, getTestSuiteName
 
-    testDisableOption = ("missing-docstring, duplicate-code, too-many-public-methods, "
+    testDisableOption = ("missing-docstring, duplicate-code, too-many-public-methods, unnecessary-dunder-call, "
                          "too-few-public-methods, c-extension-no-member")
     pylintOptions = ["--persistent=n", "--score=n"]
     if args.pylint_rcfile_test:
         pylintOptions.append(f"--rcfile={args.pylint_rcfile_test}")
 
-    genDisableOption = ("missing-docstring, no-self-use, duplicate-code, line-too-long, "
-                        "singleton-comparison, too-many-instance-attributes, too-many-arguments, "
-                        "too-many-public-methods, too-few-public-methods, too-many-locals, "
-                        "too-many-branches, too-many-statements, unneeded-not, superfluous-parens, "
-                        "import-self, invalid-unary-operand-type, c-extension-no-member")
+    genDisableOption = ("missing-docstring, duplicate-code, line-too-long, singleton-comparison, "
+                        "too-many-instance-attributes, too-many-arguments, too-many-public-methods, "
+                        "too-few-public-methods, too-many-locals, too-many-branches, too-many-statements, "
+                        "unneeded-not, superfluous-parens, import-self, invalid-unary-operand-type, "
+                        "invalid-character-sub, c-extension-no-member")
     genPylintOptions = ["--persistent=n", "--score=n", "--ignore=api.py"]
     if args.pylint_rcfile:
         genPylintOptions.append(f"--rcfile={args.pylint_rcfile}")
 
-    apiDisableOption = ("missing-docstring, unused-import, line-too-long")
+    apiDisableOption = "missing-docstring, unused-import, line-too-long"
     apiPylintOptions = ["--persistent=n", "--score=n", "--ignore-patterns=^.*\\.py(?<!^api\\.py)$"]
     if args.pylint_rcfile:
         apiPylintOptions.append(f"--rcfile={args.pylint_rcfile}")
