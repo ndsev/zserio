@@ -245,14 +245,16 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
     public void writeBytes(final byte[] value) throws IOException
     {
         writeVarSize(value.length);
-        if (bitOffset == 0)
+        if (bitOffset != 0)
         {
-            write(value);
+            // we are not aligned to byte
+            for (byte b : value)
+                writeBitsImpl(b, 8);
         }
         else
         {
-            for (byte b : value)
-                writeSignedBits(b, 8);
+            // we are aligned to byte
+            write(value);
         }
     }
 
@@ -261,16 +263,16 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
     {
         final byte[] bytes = value.getBytes(DEFAULT_CHARSET_NAME);
         writeVarSize(bytes.length);
-        if (bitOffset == 0)
+        if (bitOffset != 0)
         {
-            write(bytes);
+            // we are not aligned to byte
+            for (byte b : bytes)
+                writeBitsImpl(b, 8);
         }
         else
         {
-            for (final byte b : bytes)
-            {
-                writeByte(b);
-            }
+            // we are aligned to byte
+            write(bytes);
         }
     }
 
@@ -449,7 +451,7 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
         {
             // we are not aligned to byte
             for (int i = 0; i < numBytesToWrite; ++i)
-                writeSignedBits(writeBuffer[i], 8);
+                writeBitsImpl(writeBuffer[i], 8);
         }
         else
         {

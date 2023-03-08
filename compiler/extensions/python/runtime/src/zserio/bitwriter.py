@@ -222,9 +222,18 @@ class BitStreamWriter:
         :param value: Bytes to write.
         """
 
-        self.write_varsize(len(value))
-        for byte in value:
-            self.write_bits_unchecked(byte, 8)
+        length = len(value)
+        self.write_varsize(length)
+
+        begin_bitposition = self._bitposition
+        if (begin_bitposition & 0x07) != 0:
+            # we are not aligned to byte
+            for byte in value:
+                self.write_bits_unchecked(byte, 8)
+        else:
+            # we are aligned to byte
+            self._bitposition += length * 8
+            self._byte_array += value[0:length]
 
     def write_string(self, string: str) -> None:
         """
@@ -235,9 +244,18 @@ class BitStreamWriter:
         """
 
         string_bytes = string.encode("utf-8")
-        self.write_varsize(len(string_bytes))
-        for string_byte in string_bytes:
-            self.write_bits_unchecked(string_byte, 8)
+        length = len(string_bytes)
+        self.write_varsize(length)
+
+        begin_bitposition = self._bitposition
+        if (begin_bitposition & 0x07) != 0:
+            # we are not aligned to byte
+            for string_byte in string_bytes:
+                self.write_bits_unchecked(string_byte, 8)
+        else:
+            # we are aligned to byte
+            self._bitposition += length * 8
+            self._byte_array += string_bytes[0:length]
 
     def write_bool(self, value: bool) -> None:
         """
@@ -269,8 +287,8 @@ class BitStreamWriter:
                 self.write_bits_unchecked(write_buffer[i], 8)
         else:
             # we are aligned to byte
-            self._byte_array += write_buffer[0:num_bytes_to_write]
             self._bitposition += num_bytes_to_write * 8
+            self._byte_array += write_buffer[0:num_bytes_to_write]
 
         if num_rest_bits > 0:
             self.write_bits_unchecked(write_buffer[num_bytes_to_write] >> (8 - num_rest_bits), num_rest_bits)

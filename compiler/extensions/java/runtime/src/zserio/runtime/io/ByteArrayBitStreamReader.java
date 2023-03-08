@@ -283,10 +283,19 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
     @Override
     public byte[] readBytes() throws IOException
     {
-        final int byteSize = readVarSize();
-        final byte[] bytesValue = new byte[byteSize];
-        for (int i = 0; i < byteSize; ++i)
-            bytesValue[i] = (byte)readSignedBits(8);
+        final int length = readVarSize();
+        final byte[] bytesValue = new byte[length];
+        if (bitOffset != 0)
+        {
+            // we are not aligned to byte
+            for (int i = 0; i < length; ++i)
+                bytesValue[i] = (byte)readBits(8);
+        }
+        else
+        {
+            // we are aligned to byte
+            read(bytesValue, 0, length);
+        }
 
         return bytesValue;
     }
@@ -294,15 +303,21 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
     @Override
     public String readString() throws IOException
     {
-        try (final ByteArrayOutputStream baos = new ByteArrayOutputStream())
+        final int length = readVarSize();
+        final byte[] readBuffer = new byte[length];
+        if (bitOffset != 0)
         {
-            final int numBytes = readVarSize();
-            for (int i = 0; i < numBytes; i++)
-            {
-                baos.write(readByte());
-            }
-            return new String(baos.toByteArray(), DEFAULT_CHARSET_NAME);
+            // we are not aligned to byte
+            for (int i = 0; i < length; ++i)
+                readBuffer[i] = (byte)readBits(8);
         }
+        else
+        {
+            // we are aligned to byte
+            read(readBuffer, 0, length);
+        }
+
+        return new String(readBuffer, DEFAULT_CHARSET_NAME);
     }
 
     @Override
@@ -613,7 +628,7 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
         {
             // we are not aligned to byte
             for (int i = 0; i < numBytesToRead; ++i)
-                readBuffer[i] = (byte)(readSignedBits(8));
+                readBuffer[i] = (byte)readBits(8);
         }
         else
         {

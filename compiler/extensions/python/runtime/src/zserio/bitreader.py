@@ -487,9 +487,19 @@ class BitStreamReader:
         """
 
         length = self.read_varsize()
-        value = bytearray()
-        for _ in range(length):
-            value.append(self.read_bits_unchecked(8))
+        begin_bitposition = self._bitposition
+
+        if (begin_bitposition & 0x07) != 0:
+            # we are not aligned to byte
+            value = bytearray()
+            for _ in range(length):
+                value.append(self.read_bits_unchecked(8))
+        else:
+            # we are aligned to byte
+            self.bitposition = begin_bitposition + length * 8
+            value = bytearray(length)
+            begin_byte_position = begin_bitposition // 8
+            value[0:length] = self._buffer[begin_byte_position:begin_byte_position+length]
 
         return value
 
@@ -502,9 +512,18 @@ class BitStreamReader:
         """
 
         length = self.read_varsize()
-        value = bytearray()
-        for _ in range(length):
-            value.append(self.read_bits_unchecked(8))
+        begin_bitposition = self._bitposition
+        if (begin_bitposition & 0x07) != 0:
+            # we are not aligned to byte
+            value = bytearray()
+            for _ in range(length):
+                value.append(self.read_bits_unchecked(8))
+        else:
+            # we are aligned to byte
+            self.bitposition = begin_bitposition + length * 8
+            value = bytearray(length)
+            begin_byte_position = begin_bitposition // 8
+            value[0:length] = self._buffer[begin_byte_position:begin_byte_position + length]
 
         return value.decode("utf-8")
 

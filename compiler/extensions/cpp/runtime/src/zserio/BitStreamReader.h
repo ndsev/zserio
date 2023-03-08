@@ -236,12 +236,24 @@ public:
     template <typename ALLOC = std::allocator<uint8_t>>
     vector<uint8_t, ALLOC> readBytes(const ALLOC& alloc = ALLOC())
     {
-        vector<uint8_t, ALLOC> value{alloc};
         const size_t len = static_cast<size_t>(readVarSize());
-        value.reserve(len);
-        for (size_t i = 0; i < len; ++i)
-            value.push_back(readByte());
-        return value;
+        const BitPosType beginBitPosition = getBitPosition();
+        if ((beginBitPosition & 0x07) != 0)
+        {
+            // we are not aligned to byte
+            vector<uint8_t, ALLOC> value{alloc};
+            value.reserve(len);
+            for (size_t i = 0; i < len; ++i)
+                value.push_back(readByte());
+            return value;
+        }
+        else
+        {
+            // we are aligned to byte
+            setBitPosition(beginBitPosition + len * 8);
+            const uint8_t* beginIt = m_context.buffer + beginBitPosition / 8;
+            return vector<uint8_t, ALLOC>(beginIt, beginIt + len, alloc);
+        }
     }
 
     /**
@@ -254,12 +266,24 @@ public:
     template <typename ALLOC = std::allocator<char>>
     string<ALLOC> readString(const ALLOC& alloc = ALLOC())
     {
-        string<ALLOC> value{alloc};
         const size_t len = static_cast<size_t>(readVarSize());
-        value.reserve(len);
-        for (size_t i = 0; i < len; ++i)
-            value.push_back(static_cast<char>(readByte()));
-        return value;
+        const BitPosType beginBitPosition = getBitPosition();
+        if ((beginBitPosition & 0x07) != 0)
+        {
+            // we are not aligned to byte
+            string<ALLOC> value{alloc};
+            value.reserve(len);
+            for (size_t i = 0; i < len; ++i)
+                value.push_back(static_cast<char>(readByte()));
+            return value;
+        }
+        else
+        {
+            // we are aligned to byte
+            setBitPosition(beginBitPosition + len * 8);
+            const uint8_t* beginIt = m_context.buffer + beginBitPosition / 8;
+            return string<ALLOC>(beginIt, beginIt + len, alloc);
+        }
     }
 
     /**

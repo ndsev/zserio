@@ -391,6 +391,14 @@ class BitStreamTest(unittest.TestCase):
 
         self._test_impl(BitStreamWriter.write_bitbuffer, BitStreamReader.read_bitbuffer, values, 7)
 
+    def test_bytes(self):
+        values = [
+            bytearray([0, 255]),
+            bytearray([1, 127, 128, 254])
+        ]
+
+        self._test_impl(BitStreamWriter.write_bytes, BitStreamReader.read_bytes, values, 7)
+
     def test_bitposition(self):
         writer = BitStreamWriter()
         writer.write_bits(0xaaaa, 16)

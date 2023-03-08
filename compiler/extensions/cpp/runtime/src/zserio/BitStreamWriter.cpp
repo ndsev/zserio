@@ -243,16 +243,42 @@ void BitStreamWriter::writeBytes(Span<const uint8_t> data)
 {
     const size_t len = data.size();
     writeVarSize(convertSizeToUInt32(len));
-    for (size_t i = 0; i < len; ++i)
-        writeBits(data[i], 8);
+
+    const BitPosType beginBitPosition = getBitPosition();
+    if ((beginBitPosition & 0x07) != 0)
+    {
+        // we are not aligned to byte
+        for (size_t i = 0; i < len; ++i)
+            writeBits(data[i], 8);
+    }
+    else
+    {
+        // we are aligned to bytes
+        setBitPosition(beginBitPosition + len * 8);
+        if (hasWriteBuffer())
+            memcpy(m_buffer + beginBitPosition / 8, data.data(), len);
+    }
 }
 
 void BitStreamWriter::writeString(StringView data)
 {
     const size_t len = data.size();
     writeVarSize(convertSizeToUInt32(len));
-    for (size_t i = 0; i < len; ++i)
-        writeBits(static_cast<uint8_t>(data[i]), 8);
+
+    const BitPosType beginBitPosition = getBitPosition();
+    if ((beginBitPosition & 0x07) != 0)
+    {
+        // we are not aligned to byte
+        for (size_t i = 0; i < len; ++i)
+            writeBits(static_cast<uint8_t>(data[i]), 8);
+    }
+    else
+    {
+        // we are aligned to bytes
+        setBitPosition(beginBitPosition + len * 8);
+        if (hasWriteBuffer())
+            memcpy(m_buffer + beginBitPosition / 8, data.data(), len);
+    }
 }
 
 void BitStreamWriter::writeBool(bool data)

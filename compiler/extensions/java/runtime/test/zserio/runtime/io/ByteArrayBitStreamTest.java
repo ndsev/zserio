@@ -1,6 +1,7 @@
 package zserio.runtime.io;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
 
@@ -403,6 +404,20 @@ public class ByteArrayBitStreamTest
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeString", String.class);
         Method readMethod = ByteArrayBitStreamReader.class.getMethod("readString");
+        testImpl(writeMethod, readMethod, values, 7);
+    }
+
+    @Test
+    public void bytes() throws Exception
+    {
+        byte values[][] =
+        {
+            {(byte)0, (byte)255},
+            {(byte)1, (byte)127, (byte)128, (byte)254}
+        };
+
+        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeBytes", byte[].class);
+        Method readMethod = ByteArrayBitStreamReader.class.getMethod("readBytes");
         testImpl(writeMethod, readMethod, values, 7);
     }
 
@@ -850,7 +865,12 @@ public class ByteArrayBitStreamTest
                         if (bitPos > 0)
                             reader.readBits(bitPos);
                         for (int i = 0; i < values.length; ++i)
-                            assertEquals(values[i], readMethod.invoke(reader));
+                        {
+                            if (values instanceof byte[][])
+                                assertArrayEquals((byte[])values[i], (byte[])readMethod.invoke(reader));
+                            else
+                                assertEquals(values[i], readMethod.invoke(reader));
+                        }
                     }
                 }
                 catch (AssertionError e)
