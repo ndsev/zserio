@@ -85,7 +85,6 @@ public class WithoutWriterCodeTest
         assertMethodNotPresent(methods, "initializeOffsets(");
         assertMethodNotPresent(methods, "write(");
 
-        assertMethodPresent(methods, "ExtraParamUnion(java.io.File");
         assertMethodPresent(methods, "ExtraParamUnion(zserio.runtime.io.BitStreamReader");
         assertMethodPresent(methods, "ExtraParamUnion(zserio.runtime.array.PackingContextNode,");
         assertMethodPresent(methods, "createPackingContext(");
@@ -114,7 +113,6 @@ public class WithoutWriterCodeTest
         assertMethodNotPresent(methods, "isExtraParamSet(");
         assertMethodNotPresent(methods, "setParam(");
 
-        assertMethodPresent(methods, "Item(java.io.File");
         assertMethodPresent(methods, "Item(zserio.runtime.io.BitStreamReader");
         assertMethodPresent(methods, "Item(zserio.runtime.array.PackingContextNode,");
         assertMethodPresent(methods, "createPackingContext(");
@@ -143,7 +141,6 @@ public class WithoutWriterCodeTest
         assertMethodNotPresent(methods, "setItem(");
         assertMethodNotPresent(methods, "setParam(");
 
-        assertMethodPresent(methods, "ItemChoice(java.io.File");
         assertMethodPresent(methods, "ItemChoice(zserio.runtime.io.BitStreamReader");
         assertMethodPresent(methods, "ItemChoice(zserio.runtime.array.PackingContextNode,");
         assertMethodPresent(methods, "createPackingContext(");
@@ -172,7 +169,6 @@ public class WithoutWriterCodeTest
         assertMethodNotPresent(methods, "setHasItem(");
         assertMethodNotPresent(methods, "setItemChoice(");
 
-        assertMethodPresent(methods, "ItemChoiceHolder(java.io.File)");
         assertMethodPresent(methods, "ItemChoiceHolder(zserio.runtime.io.BitStreamReader)");
         assertMethodPresent(methods, "ItemChoiceHolder(zserio.runtime.array.PackingContextNode,");
         assertMethodPresent(methods, "createPackingContext(");
@@ -205,7 +201,6 @@ public class WithoutWriterCodeTest
         assertMethodNotPresent(methods, "setNumElements(");
         assertMethodNotPresent(methods, "setData(");
 
-        assertMethodPresent(methods, "Tile(java.io.File)");
         assertMethodPresent(methods, "Tile(zserio.runtime.io.BitStreamReader)");
         assertMethodPresent(methods, "Tile(zserio.runtime.array.PackingContextNode,");
         assertMethodPresent(methods, "createPackingContext(");

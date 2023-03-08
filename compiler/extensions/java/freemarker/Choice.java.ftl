@@ -459,26 +459,6 @@ ${I}break;
     </#if>
     }
 
-    <#if withCodeComments>
-    /**
-     * Serializes this Zserio object to the file.
-     *
-     * @param file File where to serialize this Zserio object.
-     *
-     * @throws IOException If the writing to the file failed.
-     *
-     * @deprecated Please use zserio.runtime.io.SerializeUtil.serializeToFile() method instead.
-     */
-    </#if>
-    @Deprecated
-    public void write(java.io.File file) throws java.io.IOException
-    {
-        try (final zserio.runtime.io.FileBitStreamWriter out = new zserio.runtime.io.FileBitStreamWriter(file))
-        {
-            write(out);
-        }
-    }
-
 <#macro choice_write_member member indent packed index>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>

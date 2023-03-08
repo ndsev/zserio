@@ -20,34 +20,6 @@
     </#if>
     <#if withCodeComments>
     /**
-     * File constructor.
-     *
-     * @param file File which contains bit stream to use.
-        <#list compoundConstructorsData.compoundParametersData.list as compoundParameter>
-     * @param <@parameter_argument_name compoundParameter/> Value of the parameter {@link #${compoundParameter.getterName}() ${compoundParameter.name}}.
-        </#list>
-     *
-     * @throws IOException If the reading from file failed.
-     *
-     * @deprecated Please use zserio.runtime.io.SerializeUtil.deserializeFromFile() method instead.
-     */
-    </#if>
-    @Deprecated
-    public ${name}(java.io.File file<#if constructorArgumentTypeList?has_content>,${constructorArgumentTypeList}</#if>)
-            throws java.io.IOException
-    {
-        <@compound_constructors_set_parameters compoundConstructorsData/>
-        <#if constructorArgumentTypeList?has_content>
-
-        </#if>
-        try (final zserio.runtime.io.FileBitStreamReader in = new zserio.runtime.io.FileBitStreamReader(file))
-        {
-            read(in);
-        }
-    }
-
-    <#if withCodeComments>
-    /**
      * Read constructor.
      *
      * @param in Bit stream reader to use.
