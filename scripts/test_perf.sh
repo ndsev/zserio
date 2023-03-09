@@ -798,8 +798,6 @@ test_perf()
                                      ${SWITCH_TEST_CONFIG} ${SWITCH_PROFILE}
         fi
 
-        mkdir -p "${TEST_OUT_DIR}/python"
-
         local IS_JSON="--is-json"
         local INPUT_PATH="${SWITCH_JSON_PATH}"
         if [[ "${SWITCH_BLOB_FILE}" != "" ]] ; then
@@ -809,12 +807,12 @@ test_perf()
         local PYTHON_RUNTIME_DIR="${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/python"
 
         if [[ ${PARAM_PYTHON} == 1 ]] ; then
-            pushd "${TEST_OUT_DIR}/python" > /dev/null
+            mkdir -p "${TEST_OUT_DIR}/python/python-pure"
+            pushd "${TEST_OUT_DIR}/python/python-pure" > /dev/null
             ZSERIO_PYTHOM_IMPLEMENTATION="python" \
             PYTHONPATH="${PYTHON_RUNTIME_DIR}:${TEST_OUT_DIR}/python/gen" \
             python ${TEST_OUT_DIR}/python/src/perftest.py \
-                   --log-path="${TEST_OUT_DIR}/python/PerformanceTest.log" \
-                    ${IS_JSON} --input-path "${INPUT_PATH}"
+                   --log-path="PerformanceTest.log" ${IS_JSON} --input-path "${INPUT_PATH}"
             if [ $? -ne 0 ] ; then
                 popd > /dev/null
                 return 1
@@ -840,12 +838,12 @@ test_perf()
                 return 1
             fi
 
-            pushd "${TEST_OUT_DIR}/python" > /dev/null
+            mkdir -p "${TEST_OUT_DIR}/python/python-cpp"
+            pushd "${TEST_OUT_DIR}/python/python-cpp" > /dev/null
             ZSERIO_PYTHOM_IMPLEMENTATION="cpp" \
             PYTHONPATH="${PYTHON_RUNTIME_DIR}:${TEST_OUT_DIR}/python/gen:${ZSERIO_CPP_DIR}" \
             python ${TEST_OUT_DIR}/python/src/perftest.py \
-                   --log-path="${TEST_OUT_DIR}/python/PerformanceTest-cpp.log" \
-                   ${IS_JSON} --input-path "${INPUT_PATH}"
+                   --log-path="PerformanceTest.log" ${IS_JSON} --input-path "${INPUT_PATH}"
             if [ $? -ne 0 ] ; then
                 popd > /dev/null
                 return 1
@@ -854,10 +852,7 @@ test_perf()
         fi
 
         if [[ ${SWITCH_PROFILE} == 1 ]] ; then
-            local PROFDATA_FILE="perftest.prof"
-            if [[ ${PARAM_PYTHON} == 0 ]] ; then
-                PROFDATA_FILE="perftest-cpp.prof"
-            fi
+            local PROFDATA_FILE="PerformanceTest.prof"
             echo ""
             echo "Python profiling finished, use one of the following commands for analysis:"
             echo "    python3 -m pstats ${TEST_OUT_DIR}/python/${PROFDATA_FILE}"
@@ -893,12 +888,12 @@ test_perf()
         done
     fi
     if [[ ${PARAM_PYTHON} == 1 ]] ; then
-        local RESULTS=($(cat ${TEST_OUT_DIR}/python/PerformanceTest.log))
+        local RESULTS=($(cat ${TEST_OUT_DIR}/python/python-pure/PerformanceTest.log))
         printf "| %-21s | %14s | %10s | %15s | %10s |\n" \
                "Python" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]} ${RESULTS[3]}
     fi
     if [[ ${PARAM_PYTHON_CPP} == 1 ]] ; then
-        local RESULTS=($(cat ${TEST_OUT_DIR}/python/PerformanceTest-cpp.log))
+        local RESULTS=($(cat ${TEST_OUT_DIR}/python/python-cpp/PerformanceTest.log))
         printf "| %-21s | %14s | %10s | %15s | %10s |\n" \
                "Python (C++)" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]} ${RESULTS[3]}
     fi

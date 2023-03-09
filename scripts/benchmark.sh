@@ -100,12 +100,10 @@ run_benchmark()
             TARGET="C++ (${TARGET})"
         elif [[ "${TARGET}" == "java/"* ]] ; then
             TARGET="Java"
-        elif [[ "${TARGET}" == "python/"* ]] ; then
-            if [[ "${TARGET}" == *"PerformanceTest-cpp.log" ]] ; then
-                TARGET="Python (C++)"
-            else
-                TARGET="Python"
-            fi
+        elif [[ "${TARGET}" == "python/python-pure"* ]] ; then
+            TARGET="Python"
+        elif [[ "${TARGET}" == "python/python-cpp"* ]] ; then
+            TARGET="Python (C++)"
         fi
 
         RESULTS=($(cat ${LOG}))

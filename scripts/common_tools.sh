@@ -236,7 +236,7 @@ detect_python_virtualenv_activate()
     local PYTHON_VIRTUALENV_ROOT="$1"; shift
     local PYTHON_VIRTUALENV_ACTIVATE_OUT="$1"; shift
 
-    local ACTIVATE=
+    local ACTIVATE
     if [ -f "${PYTHON_VIRTUALENV_ROOT}/bin/activate" ] ; then
         ACTIVATE="${PYTHON_VIRTUALENV_ROOT}/bin/activate"
     elif [ -f "${PYTHON_VIRTUALENV_ROOT}/Scripts/activate" ] ; then
