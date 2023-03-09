@@ -1,0 +1,163 @@
+name: Zserio Actions
+
+on:
+  push:
+    branches: [ master, '*-ci' ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-windows:
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os: ["windows-latest"]
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
+    env:
+      ANT: "/c/ProgramData/chocolatey/lib/ant/tools/apache-ant-1.10.13/bin/ant"
+      CPPCHECK_HOME: "/c/Program Files/Cppcheck"
+      SPOTBUGS_HOME: "${{github.workspace}}/spotbugs-3.1.12"
+      PYLINT_ENABLED: 1
+      MYPY_ENABLED: 1
+      NU_HTML_VALIDATOR: "${{github.workspace}}/vnu-20.6.30/vnu.jar"
+      XMLLINT_ENABLED: 1
+      MINGW64_TOOLCHAIN_ROOT: "/c/ProgramData/chocolatey/lib/mingw/tools/install/mingw64"
+      MSVC_CMAKE_TOOLSET: "v141"
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        submodules: recursive
+
+    - name: Set up JDK 1.8
+      uses: actions/setup-java@v3
+      with:
+        distribution: temurin
+        java-version: 8
+
+    - name: Convert environment variables to POSIX paths
+      run: |
+        echo "SPOTBUGS_HOME=/${SPOTBUGS_HOME}" | sed -e 's/\\/\//g' -e 's/://' >> ${GITHUB_ENV}
+        echo "NU_HTML_VALIDATOR=/${NU_HTML_VALIDATOR}" | sed -e 's/\\/\//g' -e 's/://' >> ${GITHUB_ENV}
+        echo "JAVA_HOME=/${JAVA_HOME}" | sed -e 's/\\/\//g' -e 's/://' >> ${GITHUB_ENV}
+      shell: bash
+
+    - name: Set up Python ${{matrix.python-version}}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{matrix.python-version}}
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install virtualenv
+        python -m pip install gcovr
+
+    - name: Set up MinGW
+      uses: egor-tensin/setup-mingw@v2
+      with:
+        platform: x64
+        version: 11.3.0
+
+    - name: Install dependecies
+      run: |
+        choco install wget
+        choco install graphviz
+        choco install zip
+      shell: bash
+
+    - name: Install specific version of C++ static code analysis tool (cppcheck)
+      run: choco install cppcheck --version=2.6
+
+    - name: Install specific version of Java static code analysis tool (spotbugs)
+      run: |
+        wget -P "${{github.workspace}}" https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/3.1.12/spotbugs-3.1.12.zip
+        unzip "${{github.workspace}}\spotbugs-3.1.12.zip"
+
+    - name: Install specific version of HTML validator (v.Nu)
+      run: |
+        wget -P "${{github.workspace}}"  https://github.com/validator/validator/releases/download/20.6.30/vnu.jar_20.6.30.zip
+        unzip "${{github.workspace}}\vnu.jar_20.6.30.zip" -d "${{github.workspace}}"
+        mv "${{github.workspace}}\dist" "${{github.workspace}}\vnu-20.6.30"
+
+    - name: Install XML validator (xmllint)
+      run: choco install xsltproc
+
+    - name: Build Zserio
+      run: scripts/build.sh all-windows64-mingw cpp_rt-windows64-msvc
+      shell: bash
+      env:
+        CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1 -DCMAKE_BUILD_TYPE=Release"
+
+    - name: Build Zserio C++ runtime (Debug Build)
+      run: scripts/build.sh cpp_rt-windows64-mingw cpp_rt-windows64-msvc
+      shell: bash
+      env:
+        CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1 -DCMAKE_BUILD_TYPE=Debug"
+
+    - name: Pack Zserio release
+      run: scripts/release.sh
+      shell: bash
+
+    - name: Run Zserio tests
+      run: |
+        ant -version
+        scripts/test.sh all-windows64-mingw cpp-windows64-msvc
+      shell: bash
+      env:
+        CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Release"
+
+    - name: Run Zserio C++ tests (Debug Build)
+      run: scripts/test.sh cpp-windows64-mingw # cpp-windows64-msvc - allocation tests does not work debug
+      shell: bash
+      env:
+        CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Debug"
+
+    - name: Compare all blobs created by Zserio tests
+      run: |
+        scripts/compare_test_data.sh \
+              build/test/cpp/windows64-mingw/debug \
+              build/test/cpp/windows64-mingw/release \
+              build/test/cpp/windows64-msvc/release \
+              build/test/java \
+              build/test/python
+      shell: bash
+
+    - name: Run Zserio integration tests for repeated generation
+      run: scripts/test_gen.sh all-windows64-mingw cpp-windows64-msvc
+      shell: bash
+
+    - name: Run Zserio tests and compares produced BLOBs to check binary compatibility
+      run: scripts/test_compat.sh
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+    - name: Run Zserio performance tests
+      run: |
+        scripts/test_perf.sh cpp-windows64-mingw cpp-windows64-msvc python python-cpp java \
+              --source-dir test/others/gif/zs --source gif.zs \
+              --blob-name gif.GifFile --blob-file test/others/gif/data/1pix.gif \
+              --num-iterations 1000 --test-config READ_WRITE
+      shell: bash
+
+    - name: Run Zserio performance tests
+      run: |
+        scripts/benchmark.sh cpp-windows64-mingw cpp-windows64-msvc python python-cpp java \
+              --num-iterations 100
+      shell: bash
+
+    - name: Archive Zserio release artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: zserio-release-${{matrix.os}}-${{matrix.python-version}}
+        path: release-*
+
+    - name: Archive Zserio build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: zserio-build-${{matrix.os}}-${{matrix.python-version}}
+        path: |
+          build/runtime_libs/python/zserio_cpp/**/*.pyd
+          build/runtime_libs/cpp/**/runtime/*.a
+          build/runtime_libs/cpp/**/runtime/**/*.lib
