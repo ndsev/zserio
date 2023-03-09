@@ -308,7 +308,7 @@ activate_python_virtualenv()
     local APSW_REQUIREMENTS=("apsw")
 
     if [ ! -z "${PYTHON_VIRTUALENV}" ] ; then  # forced python virtualenv
-        local REQUIREMENTS=(${STANDARD_REQUIREMENTS[@]} ${APSW_REQUIREMENTS[@]})
+        local REQUIREMENTS=("${STANDARD_REQUIREMENTS[@]}" "${APSW_REQUIREMENTS[@]}")
         check_python_requirements python REQUIREMENTS[@]
         if [ $? -ne 0 ] ; then
             return 1
@@ -317,7 +317,7 @@ activate_python_virtualenv()
         check_python_requirements python STANDARD_REQUIREMENTS[@] 2> /dev/null
         if [ $? -ne 0 ] ; then
             # don't use only pip because this does not support spaces in path (https://github.com/pypa/pip/issues/923)
-            python -m pip install ${STANDARD_REQUIREMENTS[@]}
+            python -m pip install "${STANDARD_REQUIREMENTS[@]}"
             if [ $? -ne 0 ] ; then
                 stderr_echo "Failed to install python requirements!"
                 return 1
@@ -641,7 +641,7 @@ compile_java()
         ANT_PROPS+=("-Dspotbugs.home_dir=${SPOTBUGS_HOME}")
     fi
 
-    "${ANT}" ${ANT_EXTRA_ARGS} -f "${ANT_BUILD_FILE}" ${ANT_PROPS[@]} ${ANT_TARGET}
+    "${ANT}" ${ANT_EXTRA_ARGS} -f "${ANT_BUILD_FILE}" "${ANT_PROPS[@]}" ${ANT_TARGET}
     local ANT_RESULT=$?
     if [ ${ANT_RESULT} -ne 0 ] ; then
         stderr_echo "Running ant failed with return code ${ANT_RESULT}!"
@@ -741,7 +741,7 @@ compile_cpp_for_target()
     fi
 
     # generate makefile running cmake
-    "${CMAKE}" ${CMAKE_EXTRA_ARGS} -G "${CMAKE_GENERATOR}" ${CMAKE_ARGS[@]} "${CMAKELISTS_DIR}"
+    "${CMAKE}" ${CMAKE_EXTRA_ARGS} -G "${CMAKE_GENERATOR}" "${CMAKE_ARGS[@]}" "${CMAKELISTS_DIR}"
     local CMAKE_RESULT=$?
     if [ ${CMAKE_RESULT} -ne 0 ] ; then
         stderr_echo "Running CMake failed with return code ${CMAKE_RESULT}!"
@@ -849,8 +849,8 @@ run_mypy()
     local MYPY_ARGS=("${MSYS_WORKAROUND_TEMP[@]}")
     local SOURCES=("$@")
 
-    python -m mypy ${MYPY_EXTRA_ARGS} ${MYPY_ARGS[@]} --cache-dir="${BUILD_DIR}/.mypy_cache" \
-            --config-file "${MYPY_CONFIG_FILE}" ${SOURCES[@]}
+    python -m mypy ${MYPY_EXTRA_ARGS} "${MYPY_ARGS[@]}" --cache-dir="${BUILD_DIR}/.mypy_cache" \
+            --config-file "${MYPY_CONFIG_FILE}" "${SOURCES[@]}"
     local MYPY_RESULT=$?
     if [ ${MYPY_RESULT} -ne 0 ] ; then
         stderr_echo "Running mypy failed with return code ${MYPY_RESULT}!"

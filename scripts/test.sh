@@ -38,7 +38,7 @@ get_test_suites()
     done
 
     local TEST_SUITES_ARR=(
-        $(${FIND} ${STARTING_POINT} -mindepth 2 -maxdepth 2 -type d ${FIND_EXPRESSION[@]} | sort)
+        $(${FIND} ${STARTING_POINT} -mindepth 2 -maxdepth 2 -type d "${FIND_EXPRESSION[@]}" | sort)
     )
 
     for i in ${!TEST_SUITES_ARR[@]} ; do
@@ -111,7 +111,7 @@ test_java()
 
     local TEST_FILTER=""
     local IS_FIRST=1
-    for TEST_SUITE in ${TEST_SUITES[@]} ; do
+    for TEST_SUITE in "${TEST_SUITES[@]}" ; do
         if [ ${IS_FIRST} -eq 0 ] ; then
             TEST_FILTER+=","
         else
@@ -199,7 +199,7 @@ test_python()
         echo "Running python tests."
         echo
 
-        python "${TEST_FILE}" ${TEST_ARGS[@]} --pylint_rcfile="${PYLINT_RCFILE}" \
+        python "${TEST_FILE}" "${TEST_ARGS[@]}" --pylint_rcfile="${PYLINT_RCFILE}" \
                 --pylint_rcfile_test="${PYLINT_RCFILE_FOR_TESTS}" --mypy_config_file="${MYPY_CONFIG_FILE}" \
                 --zserio_cpp_dir="${ZSERIO_CPP_DIR}"
         local PYTHON_RESULT=$?
@@ -241,7 +241,7 @@ test_xml()
         rm -rf "${TEST_XML_OUT_DIR}"
     else
         local TOTAL_NUMBER_OF_TESTS=0
-        for TEST_SUITE in ${TEST_SUITES[@]} ; do
+        for TEST_SUITE in "${TEST_SUITES[@]}" ; do
             local TEST_ZS_DIRS=`"${FIND}" "${TEST_SRC_DIR}/${TEST_SUITE}" -path '*/zs' ! -path '*errors*'`
             for TEST_ZS_DIR in ${TEST_ZS_DIRS} ; do
                 local MAIN_ZS_FILES=`"${FIND}" "${TEST_ZS_DIR}" -maxdepth 1 -type f`
@@ -315,7 +315,7 @@ test_doc()
         rm -rf "${TEST_DOC_OUT_DIR}"
     else
         local TOTAL_NUMBER_OF_TESTS=0
-        for TEST_SUITE in ${TEST_SUITES[@]} ; do
+        for TEST_SUITE in "${TEST_SUITES[@]}" ; do
             local TEST_ZS_DIRS=`"${FIND}" "${TEST_SRC_DIR}/${TEST_SUITE}" -path '*/zs' ! -path '*errors*'`
             for TEST_ZS_DIR in ${TEST_ZS_DIRS} ; do
                 local MAIN_ZS_FILES=`"${FIND}" "${TEST_ZS_DIR}" -maxdepth 1 -type f`

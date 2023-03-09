@@ -92,7 +92,7 @@ run_benchmark()
     local LOGS=($(${FIND} "${TEST_OUT_DIR}" -iname "PerformanceTest*.log"))
     local TARGET
     local RESULTS
-    for LOG in ${LOGS[@]} ; do
+    for LOG in "${LOGS[@]}" ; do
         TARGET="${LOG#"${TEST_OUT_DIR}/"}"
         if [[ "${TARGET}" == "cpp/"* ]] ; then
             TARGET="${TARGET#cpp/}"
@@ -157,10 +157,10 @@ run_benchmarks()
     fi
 
     local DATASETS
-    for BENCHMARK in ${BENCHMARKS[@]} ; do
+    for BENCHMARK in "${BENCHMARKS[@]}" ; do
         local DATASETS=($(${FIND} "${DATASETS_DIR}/${BENCHMARK%/*}" -iname "*.json" ! -iname "*.schema.*"))
 
-        for DATASET in ${DATASETS[@]} ; do
+        for DATASET in "${DATASETS[@]}" ; do
             run_benchmark "${UNPACKED_ZSERIO_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" \
                           "${BENCHMARKS_SRC_DIR}" "${BENCHMARKS_OUT_DIR}" "${BENCHMARK}" "${DATASET}" \
                           CPP_TARGETS[@] ${PARAM_JAVA} ${PARAM_PYTHON} ${PARAM_PYTHON_CPP} \

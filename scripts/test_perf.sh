@@ -779,7 +779,7 @@ test_perf()
         if [[ ${SWITCH_PROFILE} == 1 ]] ; then
             echo ""
             echo "C++ profiling finished, use one of the following commands for analysis:"
-            for CPP_TARGET in ${CPP_TARGETS[@]} ; do
+            for CPP_TARGET in "${CPP_TARGETS[@]}" ; do
                 local CALLGRIND_FILE=$(${FIND} "${TEST_OUT_DIR}/cpp/${CPP_TARGET}" -name "callgrind.out")
                 echo "    kcachegrind ${CALLGRIND_FILE}"
             done
@@ -880,7 +880,7 @@ test_perf()
                "Java" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]} ${RESULTS[3]}
     fi
     if [[ ${#CPP_TARGETS[@]} != 0 ]] ; then
-        for CPP_TARGET in ${CPP_TARGETS[@]} ; do
+        for CPP_TARGET in "${CPP_TARGETS[@]}" ; do
             local PERF_TEST_FILE=$(${FIND} "${TEST_OUT_DIR}/cpp/${CPP_TARGET}" -name "PerformanceTest.log")
             local RESULTS=($(cat ${PERF_TEST_FILE}))
             printf "| %-21s | %14s | %10s | %15s | %10s |\n" \

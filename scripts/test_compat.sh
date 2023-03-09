@@ -320,7 +320,7 @@ main()
     done
 
     # get releases
-    for VERSION in ${PARAM_VERSIONS[@]} ; do
+    for VERSION in "${PARAM_VERSIONS[@]}" ; do
         get_release "${ZSERIO_PROJECT_ROOT}" "${TEST_OUT_DIR}" "${VERSION}"
         if [ $? -ne 0 ] ; then
             return 1
