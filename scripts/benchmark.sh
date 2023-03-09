@@ -76,10 +76,15 @@ run_benchmark()
     fi
 
     local BLOBS=($("${FIND}" "${TEST_OUT_DIR}" -iname "${ZSERIO_PACKAGE_NAME}.blob"))
+    if [ ${#BLOBS[@]} -eq 0 ] ; then
+        stderr_echo "Failed to find blobs created by performance test!"
+        return 1
+    fi
     local BLOB=${BLOBS[0]} # all blobs are same
     local ZIP_FILE=${BLOB/%blob/zip}
     "${ZIP}" "${ZIP_FILE}" "${BLOB}" > /dev/null
     if [ $? -ne 0 ] ; then
+        stderr_echo "Failed to zip blob created by performance test!"
         return 1
     fi
     local ZIP_SIZE="$(du --block-size=1000 ${ZIP_FILE} | cut -f1)kB"
@@ -163,7 +168,7 @@ run_benchmarks()
                           CPP_TARGETS[@] ${PARAM_JAVA} ${PARAM_PYTHON} ${PARAM_PYTHON_CPP} \
                           ${TEST_CONFIG} ${NUM_ITERATIONS} ${SWITCH_RUN_ONLY} ${LOG_FILE}
             if [[ $? -ne 0 ]] ; then
-                stderr_echo "Benchmark ${BENCHMARK_DIR} failed!"
+                stderr_echo "Benchmark ${BENCHMARK} failed!"
                 return 1
             fi
         done

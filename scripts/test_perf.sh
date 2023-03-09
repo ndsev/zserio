@@ -16,6 +16,7 @@ generate_java_files()
     local TEST_CONFIG="$1"; shift
 
     local LOG_PATH="${BUILD_DIR}/PerformanceTest.log"
+    local TOP_LEVEL_PACKAGE_NAME=${BLOB_FULL_NAME%%.*}
 
     local INPUT_SWITCH="-j"
     local INPUT_PATH="${JSON_PATH}"
@@ -195,6 +196,10 @@ EOF
             {
                 final ${BLOB_FULL_NAME} blob = (${BLOB_FULL_NAME})
                         DebugStringUtil.fromJsonFile(${BLOB_FULL_NAME}.class, inputPath);
+
+                // serialize to binary file for further analysis
+                SerializeUtil.serializeToFile(blob, "${TOP_LEVEL_PACKAGE_NAME}.blob");
+
                 final ByteArrayBitStreamWriter bufferWriter = new ByteArrayBitStreamWriter();
                 blob.write(bufferWriter);
                 return bufferWriter.toByteArray();
@@ -569,6 +574,10 @@ import ${API_MODULE}.api as api
 def read_blob_buffer(input_is_json, input_path):
     if input_is_json:
         blob = zserio.from_json_file(api.${BLOB_API_PATH}, input_path)
+
+        # serialize to binary file for further analysis
+        zserio.serialize_to_file(blob, "${API_MODULE}.blob");
+
         return zserio.serialize_to_bytes(blob)
     else:
         blobByteSize = os.path.getsize(input_path)
@@ -586,7 +595,7 @@ def performance_test(log_path, input_is_json, input_path, num_iterations):
     # prepare byte array
     blob_buffer = read_blob_buffer(input_is_json, input_path)
     reader_from_file = zserio.BitStreamReader(blob_buffer)
-    blob_from_file = api.${BLOB_API_PATH}.from_reader(reader_from_file);
+    blob_from_file = api.${BLOB_API_PATH}.from_reader(reader_from_file)
 
 EOF
 
@@ -666,7 +675,8 @@ if __name__ == "__main__":
 
     arg_parser = argparse.ArgumentParser(description="Zserio Python Performance Test")
     arg_parser.add_argument("--log-path", required=True, help="Path to the log file to create")
-    arg_parser.add_argument('--is-json', default=False, help="True when the input is a JSON file")
+    arg_parser.add_argument('--is-json', default=False, action="store_true",
+                            help="Use when the input is a JSON file")
     arg_parser.add_argument('--input-path', required=True, help="Path to the input file")
     arg_parser.add_argument('--num-iterations', default=${NUM_ITERATIONS}, type=int, help="Number of iterations")
     args = arg_parser.parse_args()
@@ -788,27 +798,33 @@ test_perf()
                                      ${SWITCH_TEST_CONFIG} ${SWITCH_PROFILE}
         fi
 
-        local IS_JSON="True"
+        mkdir -p "${TEST_OUT_DIR}/python"
+
+        local IS_JSON="--is-json"
         local INPUT_PATH="${SWITCH_JSON_PATH}"
         if [[ "${SWITCH_BLOB_FILE}" != "" ]] ; then
-            IS_JSON="False"
+            IS_JSON=""
             INPUT_PATH="${SWITCH_BLOB_PATH}"
         fi
+        local PYTHON_RUNTIME_DIR="${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/python"
 
         if [[ ${PARAM_PYTHON} == 1 ]] ; then
+            pushd "${TEST_OUT_DIR}/python" > /dev/null
             ZSERIO_PYTHOM_IMPLEMENTATION="python" \
-            PYTHONPATH="${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/python:${TEST_OUT_DIR}/python/gen" \
+            PYTHONPATH="${PYTHON_RUNTIME_DIR}:${TEST_OUT_DIR}/python/gen" \
             python ${TEST_OUT_DIR}/python/src/perftest.py \
-                --log-path="${TEST_OUT_DIR}/python/PerformanceTest.log" \
-                --is-json ${IS_JSON} --input-path "${INPUT_PATH}"
+                   --log-path="${TEST_OUT_DIR}/python/PerformanceTest.log" \
+                    ${IS_JSON} --input-path "${INPUT_PATH}"
             if [ $? -ne 0 ] ; then
+                popd > /dev/null
                 return 1
             fi
+            popd > /dev/null
         fi
 
         if [[ ${PARAM_PYTHON_CPP} == 1 ]] ; then
             if [[ ${SWITCH_RUN_ONLY} == 0 ]] ; then
-                python ${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/python/zserio_cpp/setup.py build \
+                python "${PYTHON_RUNTIME_DIR}/zserio_cpp/setup.py" build \
                        --build-base="${TEST_OUT_DIR}/python/zserio_cpp" \
                        --cpp-runtime-dir=${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/cpp
                 if [ $? -ne 0 ] ; then
@@ -824,15 +840,17 @@ test_perf()
                 return 1
             fi
 
-            local PYTHON_RUNTIME_DIR="${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/python"
+            pushd "${TEST_OUT_DIR}/python" > /dev/null
             ZSERIO_PYTHOM_IMPLEMENTATION="cpp" \
             PYTHONPATH="${PYTHON_RUNTIME_DIR}:${TEST_OUT_DIR}/python/gen:${ZSERIO_CPP_DIR}" \
             python ${TEST_OUT_DIR}/python/src/perftest.py \
                    --log-path="${TEST_OUT_DIR}/python/PerformanceTest-cpp.log" \
-                   --is-json ${IS_JSON} --input-path "${INPUT_PATH}"
+                   ${IS_JSON} --input-path "${INPUT_PATH}"
             if [ $? -ne 0 ] ; then
+                popd > /dev/null
                 return 1
             fi
+            popd > /dev/null
         fi
 
         if [[ ${SWITCH_PROFILE} == 1 ]] ; then
@@ -886,6 +904,8 @@ test_perf()
     fi
     for i in {1..86} ; do echo -n "=" ; done ; echo
     echo
+
+    return 0
 }
 
 # Print help message.
