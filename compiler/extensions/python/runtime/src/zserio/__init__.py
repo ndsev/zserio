@@ -49,4 +49,4 @@ from zserio import walker
 
 
 #: Zserio Python runtime library version string.
-VERSION_STRING = "2.9.0"
+VERSION_STRING = "2.10.0"
