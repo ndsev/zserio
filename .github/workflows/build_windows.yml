@@ -1,4 +1,4 @@
-name: Zserio Actions
+name: Windows
 
 on:
   push:
