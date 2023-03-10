@@ -2,8 +2,8 @@
 
 ***z***ero ***seri***alization ***o***verhead
 
-[![](https://github.com/ndsev/zserio/workflows/build_linux/badge.svg)](https://github.com/ndsev/zserio/actions/workflow/build_linux.yml)
-[![](https://github.com/ndsev/zserio/workflows/build_windows/badge.svg)](https://github.com/ndsev/zserio/actions/workflow/build_windows.yml)
+[![](https://github.com/ndsev/zserio/actions/workflows/build_linux.yml/badge.svg)](https://github.com/ndsev/zserio/actions/workflows/build_linux.yml)
+[![](https://github.com/ndsev/zserio/actions/workflows/build_windows.yml/badge.svg)](https://github.com/ndsev/zserio/actions/workflows/build_windows.yml)
 [![](https://img.shields.io/github/release-date/ndsev/zserio)](https://github.com/ndsev/zserio/releases/latest)
 [![](https://img.shields.io/github/commits-since/ndsev/zserio/latest)](https://github.com/ndsev/zserio/commits/master)
 [![](https://img.shields.io/github/commit-activity/m/ndsev/zserio)](https://github.com/ndsev/zserio/commits/master)

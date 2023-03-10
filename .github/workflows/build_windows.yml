@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build-windows:
+  build_windows:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
