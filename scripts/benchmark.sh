@@ -157,8 +157,9 @@ run_benchmarks()
     fi
 
     local DATASETS
+    local DATASET_FILTER="! -iname *.schema.json ! -iname *.proto.json"
     for BENCHMARK in "${BENCHMARKS[@]}" ; do
-        local DATASETS=($(${FIND} "${DATASETS_DIR}/${BENCHMARK%/*}" -iname "*.json" ! -iname "*.schema.*"))
+        local DATASETS=($(${FIND} "${DATASETS_DIR}/${BENCHMARK%/*}" -iname "*.json" ${DATASET_FILTER}))
 
         for DATASET in "${DATASETS[@]}" ; do
             run_benchmark "${UNPACKED_ZSERIO_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" \
