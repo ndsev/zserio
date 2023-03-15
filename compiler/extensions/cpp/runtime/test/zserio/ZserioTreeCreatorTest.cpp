@@ -295,6 +295,7 @@ TEST(ZserioTreeCreatorTest, createObjectResetFields)
 TEST(ZserioTreeCreatorTest, createObjectFull)
 {
     ZserioTreeCreator creator(CreatorObject::typeInfo());
+
     creator.beginRoot();
     creator.setValue("value", 13);
     creator.setValue("text", string<>("test"));
@@ -346,14 +347,15 @@ TEST(ZserioTreeCreatorTest, createObjectFull)
     ASSERT_EQ(1, reflectable->find("nested.bytesData")->getBytes().size());
     ASSERT_EQ(0xFF, reflectable->find("nested.bytesData")->getBytes()[0]);
     ASSERT_EQ(enumToValue(CreatorEnum::ONE), reflectable->find("nested.creatorEnum")->getInt8());
-    ASSERT_EQ(CreatorBitmask::Values::WRITE, CreatorBitmask(reflectable->find("nested.creatorBitmask")->getUInt8()));
+    ASSERT_EQ(CreatorBitmask::Values::WRITE,
+            CreatorBitmask(reflectable->find("nested.creatorBitmask")->getUInt8()));
     ASSERT_EQ(1, reflectable->getField("nestedArray")->size());
     ASSERT_EQ(5, reflectable->getField("nestedArray")->at(0)->getField("value")->getUInt32());
     ASSERT_EQ("nestedArray"_sv, reflectable->getField("nestedArray")->at(0)->getField("text")->getStringView());
     ASSERT_EQ(enumToValue(CreatorEnum::MinusOne),
             reflectable->getField("nestedArray")->at(0)->getField("creatorEnum")->getInt8());
-    ASSERT_EQ(CreatorBitmask::Values::READ,
-            CreatorBitmask(reflectable->getField("nestedArray")->at(0)->getField("creatorBitmask")->getUInt8()));
+    ASSERT_EQ(CreatorBitmask::Values::READ, CreatorBitmask(
+            reflectable->getField("nestedArray")->at(0)->getField("creatorBitmask")->getUInt8()));
     ASSERT_EQ(4, reflectable->getField("textArray")->size());
     ASSERT_EQ("this"_sv, reflectable->getField("textArray")->at(0)->getStringView());
     ASSERT_EQ("is"_sv, reflectable->getField("textArray")->at(1)->getStringView());
@@ -369,6 +371,119 @@ TEST(ZserioTreeCreatorTest, createObjectFull)
     ASSERT_EQ(false, reflectable->getField("optionalBool")->getBool());
     ASSERT_TRUE(reflectable->getField("optionalNested"));
     ASSERT_EQ("optionalNested"_sv, reflectable->find("optionalNested.text")->getStringView());
+}
+
+TEST(TestZserioTreeCreator, creatorRequireAll)
+{
+    ZserioTreeCreator creator(CreatorObject::typeInfo());
+    creator.setRequireAllFields(true);
+
+    creator.beginRoot();
+    creator.setValue("value", 13);
+    creator.setValue("text", string<>("test"));
+    creator.beginCompound("nested");
+    creator.setValue("value", 10);
+    creator.setValue("text", "nested"_sv);
+    creator.setValue("externData", BitBuffer({0x3C}, 6));
+    creator.setValue("bytesData", vector<uint8_t>({0xFF}));
+    creator.setValue("creatorEnum", CreatorEnum::ONE);
+    creator.setValue("creatorBitmask", CreatorBitmask(CreatorBitmask::Values::WRITE));
+    creator.endCompound();
+    creator.beginArray("nestedArray");
+    creator.beginCompoundElement();
+    creator.setValue("value", 5);
+    const std::string nestedArrayText = "nestedArray";
+    creator.setValue("text", nestedArrayText);
+    creator.setValue("externData", BitBuffer({0x3C}, 6));
+    creator.setValue("bytesData", vector<uint8_t>({0xFF}));
+    creator.setValue("creatorEnum", "MinusOne");
+    creator.setValue("creatorBitmask", CreatorBitmask(CreatorBitmask::Values::READ));
+    creator.endCompoundElement();
+    creator.endArray();
+    creator.beginArray("textArray");
+    creator.addValueElement("this");
+    creator.addValueElement("is");
+    creator.addValueElement("text"_sv);
+    creator.addValueElement("array");
+    creator.endArray();
+    // rest is optional
+    IReflectablePtr reflectable = creator.endRoot();
+    ASSERT_TRUE(reflectable);
+
+    reflectable->initializeChildren();
+
+    ASSERT_EQ(13, reflectable->getField("value")->getUInt32());
+    ASSERT_EQ("test"_sv, reflectable->getField("text")->getStringView());
+    ASSERT_EQ(13, reflectable->find("nested.param")->getUInt32());
+    ASSERT_EQ(10, reflectable->find("nested.value")->getUInt32());
+    ASSERT_EQ("nested"_sv, reflectable->find("nested.text")->getStringView());
+    ASSERT_EQ(0x3C, reflectable->find("nested.externData")->getBitBuffer().getBuffer()[0]);
+    ASSERT_EQ(6, reflectable->find("nested.externData")->getBitBuffer().getBitSize());
+    ASSERT_EQ(1, reflectable->find("nested.bytesData")->getBytes().size());
+    ASSERT_EQ(0xFF, reflectable->find("nested.bytesData")->getBytes()[0]);
+    ASSERT_EQ(enumToValue(CreatorEnum::ONE), reflectable->find("nested.creatorEnum")->getInt8());
+    ASSERT_EQ(CreatorBitmask::Values::WRITE,
+            CreatorBitmask(reflectable->find("nested.creatorBitmask")->getUInt8()));
+    ASSERT_EQ(1, reflectable->getField("nestedArray")->size());
+    ASSERT_EQ(5, reflectable->getField("nestedArray")->at(0)->getField("value")->getUInt32());
+    ASSERT_EQ("nestedArray"_sv, reflectable->getField("nestedArray")->at(0)->getField("text")->getStringView());
+    ASSERT_EQ(0x3C,
+            reflectable->find("nestedArray")->at(0)->getField("externData")->getBitBuffer().getBuffer()[0]);
+    ASSERT_EQ(6,
+            reflectable->find("nestedArray")->at(0)->getField("externData")->getBitBuffer().getBitSize());
+    ASSERT_EQ(1, reflectable->find("nestedArray")->at(0)->getField("bytesData")->getBytes().size());
+    ASSERT_EQ(0xFF, reflectable->find("nestedArray")->at(0)->getField("bytesData")->getBytes()[0]);
+    ASSERT_EQ(enumToValue(CreatorEnum::MinusOne),
+            reflectable->getField("nestedArray")->at(0)->getField("creatorEnum")->getInt8());
+    ASSERT_EQ(CreatorBitmask::Values::READ, CreatorBitmask(
+            reflectable->getField("nestedArray")->at(0)->getField("creatorBitmask")->getUInt8()));
+    ASSERT_EQ(4, reflectable->getField("textArray")->size());
+    ASSERT_EQ("this"_sv, reflectable->getField("textArray")->at(0)->getStringView());
+    ASSERT_EQ("is"_sv, reflectable->getField("textArray")->at(1)->getStringView());
+    ASSERT_EQ("text"_sv, reflectable->getField("textArray")->at(2)->getStringView());
+    ASSERT_EQ("array"_sv, reflectable->getField("textArray")->at(3)->getStringView());
+}
+
+TEST(TestZserioTreeCreator, exceptionCreatorRequireAll)
+{
+    ZserioTreeCreator creator(CreatorObject::typeInfo());
+    creator.setRequireAllFields(true);
+
+    creator.beginRoot();
+    creator.setValue("value", 13);
+    creator.setValue("text", string<>("test"));
+    creator.beginCompound("nested");
+    creator.setValue("value", 10);
+    creator.setValue("text", "nested"_sv);
+    creator.setValue("externData", BitBuffer({0x3C}, 6));
+    creator.setValue("bytesData", vector<uint8_t>({0xFF}));
+    creator.setValue("creatorEnum", CreatorEnum::ONE);
+    creator.setValue("creatorBitmask", CreatorBitmask(CreatorBitmask::Values::WRITE));
+    creator.endCompound();
+    creator.beginArray("nestedArray");
+    creator.beginCompoundElement();
+    creator.setValue("value", 5);
+    const std::string nestedArrayText = "nestedArray";
+    creator.setValue("text", nestedArrayText);
+    // missing "externData" and "bytesData"
+    creator.setValue("creatorEnum", "MinusOne");
+    creator.setValue("creatorBitmask", CreatorBitmask(CreatorBitmask::Values::READ));
+    ASSERT_THROW(creator.endCompoundElement(), CppRuntimeException);
+}
+
+TEST(ZserioTreeCreator, exceptionCreatorNestedRequireAll)
+{
+    ZserioTreeCreator creator(CreatorNested::typeInfo());
+    creator.setRequireAllFields(true);
+
+    creator.beginRoot();
+    creator.setValue("value", 10);
+    // missing "text"
+    creator.setValue("externData", BitBuffer({0x3C}, 6));
+    creator.setValue("bytesData", vector<uint8_t>({0xFF}));
+    creator.setValue("creatorEnum", CreatorEnum::ONE);
+    creator.setValue("creatorBitmask", CreatorBitmask(CreatorBitmask::Values::WRITE));
+    ASSERT_THROW(creator.endRoot(), CppRuntimeException);
 }
 
 TEST(ZserioTreeCreator, exceptionsBeforeRoot)

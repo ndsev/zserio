@@ -5,6 +5,7 @@
 #include <type_traits>
 #include <cerrno>
 #include <cstdlib>
+#include <iostream>
 
 #include "zserio/BitBuffer.h"
 #include "zserio/CppRuntimeException.h"
@@ -424,6 +425,16 @@ public:
     explicit BasicZserioTreeCreator(const IBasicTypeInfo<ALLOC>& typeInfo, const ALLOC& allocator = ALLOC());
 
     /**
+     * Sets wheter to require all non-optional fields to be set.
+     *
+     * \param require True when all non-optional fields have to be set, false (default) otherwise.
+     */
+    void setRequireAllFields(bool require)
+    {
+        m_requireAllFields = require;
+    }
+
+    /**
      * Creates the top level compound element and move to state of building its children.
      */
     void beginRoot();
@@ -545,9 +556,30 @@ private:
     template <typename T>
     AnyHolder<ALLOC> makeAnyValue(const IBasicTypeInfo<ALLOC>& typeInfo, T&& value) const;
 
+    void checkUsedFields()
+    {
+        if (!m_requireAllFields)
+            return;
+
+        const auto& typeInfo = getTypeInfo();
+        const auto& usedFields = m_usedFieldsStack.back();
+
+        for (const auto& fieldInfo : typeInfo.getFields())
+        {
+            if (!fieldInfo.isOptional &&
+                    std::find(usedFields.begin(), usedFields.end(), fieldInfo.schemaName) == usedFields.end())
+            {
+                throw CppRuntimeException("ZserioTreeCreator: Missing field '") << fieldInfo.schemaName <<
+                        "' in compound '" << typeInfo.getSchemaName() << "'!";
+            }
+        }
+    }
+
     const IBasicTypeInfo<ALLOC>& m_typeInfo;
     vector<std::reference_wrapper<const BasicFieldInfo<ALLOC>>, ALLOC> m_fieldInfoStack;
     vector<IBasicReflectablePtr<ALLOC>, ALLOC> m_valueStack;
+    vector<vector<StringView, ALLOC>, ALLOC> m_usedFieldsStack;
+    bool m_requireAllFields = false;
     detail::CreatorState m_state = detail::CreatorState::BEFORE_ROOT;
 };
 
@@ -568,6 +600,7 @@ void BasicZserioTreeCreator<ALLOC>::beginRoot()
         throw CppRuntimeException("ZserioTreeCreator: Cannot begin root in state '") << m_state << "'!";
 
     m_valueStack.push_back(m_typeInfo.createInstance(get_allocator()));
+    m_usedFieldsStack.emplace_back(get_allocator());
     m_state = detail::CreatorState::IN_COMPOUND;
 }
 
@@ -577,9 +610,13 @@ IBasicReflectablePtr<ALLOC> BasicZserioTreeCreator<ALLOC>::endRoot()
     if (m_state != detail::CreatorState::IN_COMPOUND || m_valueStack.size() != 1)
         throw CppRuntimeException("ZserioTreeCreator: Cannot end root in state '") << m_state << "'!";
 
+    checkUsedFields();
+
     m_state = detail::CreatorState::BEFORE_ROOT;
     auto value = m_valueStack.back();
+    m_usedFieldsStack.pop_back();
     m_valueStack.pop_back();
+
     return value;
 }
 
@@ -606,6 +643,8 @@ void BasicZserioTreeCreator<ALLOC>::beginArray(const string<ALLOC>& name)
     // moreover we need to properly initialize arrays of dynamic bit fields
     // see https://github.com/ndsev/zserio/issues/414
     m_valueStack.push_back(m_valueStack.back()->createField(name));
+
+    m_usedFieldsStack.back().push_back(fieldInfo.schemaName);
 
     m_state = detail::CreatorState::IN_ARRAY;
 }
@@ -649,6 +688,9 @@ void BasicZserioTreeCreator<ALLOC>::beginCompound(const string<ALLOC>& name)
         m_valueStack.push_back(m_valueStack.back()->getField(name));
     }
 
+    m_usedFieldsStack.back().push_back(fieldInfo.schemaName);
+    m_usedFieldsStack.emplace_back(get_allocator());
+
     m_state = detail::CreatorState::IN_COMPOUND;
 }
 
@@ -665,6 +707,9 @@ void BasicZserioTreeCreator<ALLOC>::endCompound()
     if (fieldInfo.isArray)
         throw CppRuntimeException("ZserioTreeCreator: Cannot end compound, it's an array element!");
 
+    checkUsedFields();
+
+    m_usedFieldsStack.pop_back();
     m_fieldInfoStack.pop_back();
     m_valueStack.pop_back();
 }
@@ -685,6 +730,8 @@ void BasicZserioTreeCreator<ALLOC>::setValue(const string<ALLOC>& name, T&& valu
 
     m_valueStack.back()->setField(fieldInfo.schemaName,
             makeAnyValue(fieldInfo.typeInfo, std::forward<T>(value)));
+
+    m_usedFieldsStack.back().push_back(fieldInfo.schemaName);
 }
 
 template <typename ALLOC>
@@ -708,6 +755,8 @@ void BasicZserioTreeCreator<ALLOC>::setValue(const string<ALLOC>& name, std::nul
         // (classes generated in C++ do not support null values)
         m_valueStack.back()->createField(fieldInfo.schemaName);
     }
+
+    m_usedFieldsStack.back().push_back(fieldInfo.schemaName);
 }
 
 template <typename ALLOC>
@@ -738,6 +787,9 @@ void BasicZserioTreeCreator<ALLOC>::beginCompoundElement()
     auto compoundArray = m_valueStack.back();
     compoundArray->resize(compoundArray->size() + 1);
     m_valueStack.push_back(compoundArray->at(compoundArray->size() - 1));
+
+    m_usedFieldsStack.emplace_back(get_allocator());
+
     m_state = detail::CreatorState::IN_COMPOUND;
 }
 
@@ -754,7 +806,11 @@ void BasicZserioTreeCreator<ALLOC>::endCompoundElement()
     if (!fieldInfo.isArray)
         throw CppRuntimeException("ZserioTreeCreator: Cannot end compound element, not in array!");
 
+    checkUsedFields();
+
     m_valueStack.pop_back();
+    m_usedFieldsStack.pop_back();
+
     m_state = detail::CreatorState::IN_ARRAY;
 }
 

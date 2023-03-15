@@ -350,7 +350,7 @@ struct BasicFieldInfo
     StringView offset; /**< field offset or empty in case of no alignment */
     StringView initializer; /**< field initializer or empty in case of no alignment */
     bool isOptional; /**< true if field is optional */
-    StringView optionalCondition; /**< optional condition or empty if field is not optional */
+    StringView optionalCondition; /**< optional condition or empty if field is not optional or auto optional */
     StringView constraint; /**< constraint or empty if field does not have constraint */
     bool isArray; /**< true if field is array */
     StringView arrayLength; /**< array length or empty if field is not array or is auto/implicit array */
