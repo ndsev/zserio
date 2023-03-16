@@ -356,6 +356,8 @@ ${name}::ChoiceTag ${name}::choiceTag() const
 void ${name}::createPackingContext(${types.packingContextNode.name}&<#if fieldList?has_content> contextNode</#if>)
 {
 <#if fieldList?has_content>
+    contextNode.reserveChildren(${fieldList?size + 1});
+
     contextNode.createChild().createContext();<#-- choice tag -->
 
     <#list fieldList as field>

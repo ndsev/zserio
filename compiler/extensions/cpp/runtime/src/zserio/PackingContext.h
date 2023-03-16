@@ -357,6 +357,16 @@ public:
      */
 
     /**
+     * Reserves array of children (to prevent reallocations).
+     *
+     * \param numChildren Number of children to reserve.
+     */
+    void reserveChildren(size_t numChildren)
+    {
+        m_children.reserve(numChildren);
+    }
+
+    /**
      * Creates a new child.
      *
      * \return The child which was just created.

@@ -295,9 +295,13 @@ void ${name}::${field.optional.resetterName}()
 <@compound_functions_definition name, compoundFunctionsData/>
 void ${name}::createPackingContext(${types.packingContextNode.name}&<#if fieldList?has_content> contextNode</#if>)
 {
-<#list fieldList as field>
+<#if fieldList?has_content>
+    contextNode.reserveChildren(${fieldList?size});
+
+    <#list fieldList as field>
     <@compound_create_packing_context_field field/>
-</#list>
+    </#list>
+</#if>
 }
 
 void ${name}::initPackingContext(${types.packingContextNode.name}&<#rt>
