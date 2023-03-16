@@ -8,6 +8,8 @@ set(ZSERIO_GENERATED_SOURCES_COMPLEX_ALLOCATION
     ${ZSERIO_GEN_DIR_COMPLEX_ALLOCATION}/complex_allocation/allocation_choice/ChoiceCompound.h
     ${ZSERIO_GEN_DIR_COMPLEX_ALLOCATION}/complex_allocation/allocation_struct/AllocationStruct.cpp
     ${ZSERIO_GEN_DIR_COMPLEX_ALLOCATION}/complex_allocation/allocation_struct/AllocationStruct.h
+    ${ZSERIO_GEN_DIR_COMPLEX_ALLOCATION}/complex_allocation/allocation_struct/Element.cpp
+    ${ZSERIO_GEN_DIR_COMPLEX_ALLOCATION}/complex_allocation/allocation_struct/Element.h
     ${ZSERIO_GEN_DIR_COMPLEX_ALLOCATION}/complex_allocation/allocation_struct_optional/AllocationStructOptional.cpp
     ${ZSERIO_GEN_DIR_COMPLEX_ALLOCATION}/complex_allocation/allocation_struct_optional/AllocationStructOptional.h
     ${ZSERIO_GEN_DIR_COMPLEX_ALLOCATION}/complex_allocation/allocation_union/AllocationUnion.cpp

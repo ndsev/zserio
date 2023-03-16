@@ -83,6 +83,37 @@ protected:
         writer.writeBits(STRUCT_PACKED_UINT16_ARRAY_ELEMENT0, 16);
         writer.writeSignedBits(STRUCT_PACKED_UINT16_ARRAY_DELTA, STRUCT_PACKED_UINT16_ARRAY_MAX_BIT_NUMBER + 1);
         writer.writeSignedBits(STRUCT_PACKED_UINT16_ARRAY_DELTA, STRUCT_PACKED_UINT16_ARRAY_MAX_BIT_NUMBER + 1);
+        writer.writeVarSize(STRUCT_PACKED_ELEMENT_ARRAY_SIZE);
+        // x0
+        writer.writeBool(true);
+        writer.writeBits(STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER, 6);
+        writer.writeBits(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X, 32);
+        // y0
+        writer.writeBool(true);
+        writer.writeBits(STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER, 6);
+        writer.writeBits(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y, 32);
+        // z0
+        writer.writeBool(true);
+        writer.writeBits(STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER, 6);
+        writer.writeBits(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z, 32);
+        // x1
+        writer.writeSignedBits(STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
+                STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER + 1);
+        // y1
+        writer.writeSignedBits(STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
+                STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER + 1);
+        // z1
+        writer.writeSignedBits(STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
+                STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER + 1);
+        // x2
+        writer.writeSignedBits(STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
+                STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER + 1);
+        // y2
+        writer.writeSignedBits(STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
+                STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER + 1);
+        // z2
+        writer.writeSignedBits(STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
+                STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER + 1);
 
         // structOptionalField
         writer.writeBool(true);
@@ -179,6 +210,20 @@ protected:
         packedUInt16Array.push_back(STRUCT_PACKED_UINT16_ARRAY_ELEMENT0);
         packedUInt16Array.push_back(STRUCT_PACKED_UINT16_ARRAY_ELEMENT1);
         packedUInt16Array.push_back(STRUCT_PACKED_UINT16_ARRAY_ELEMENT2);
+        auto& packedElementArray = structField.getPackedElementArray();
+        packedElementArray.reserve(STRUCT_PACKED_ELEMENT_ARRAY_SIZE);
+        packedElementArray.emplace_back(
+                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X,
+                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y,
+                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z);
+        packedElementArray.emplace_back(
+                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X + STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
+                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y + STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
+                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z + STRUCT_PACKED_ELEMENT_ARRAY_DELTA);
+        packedElementArray.emplace_back(
+                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X + STRUCT_PACKED_ELEMENT_ARRAY_DELTA * 2,
+                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y + STRUCT_PACKED_ELEMENT_ARRAY_DELTA * 2,
+                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z + STRUCT_PACKED_ELEMENT_ARRAY_DELTA * 2);
     }
 
     void fillOptionalField(allocation_struct_optional::AllocationStructOptional& structOptionalField,
@@ -335,6 +380,23 @@ protected:
         ASSERT_EQ(STRUCT_PACKED_UINT16_ARRAY_ELEMENT0, packedUInt16Array[0]);
         ASSERT_EQ(STRUCT_PACKED_UINT16_ARRAY_ELEMENT1, packedUInt16Array[1]);
         ASSERT_EQ(STRUCT_PACKED_UINT16_ARRAY_ELEMENT2, packedUInt16Array[2]);
+        const auto& packedElementArray = structField.getPackedElementArray();
+        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_SIZE, packedElementArray.size());
+        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X, packedElementArray[0].getX());
+        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X + STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
+                packedElementArray[1].getX());
+        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X + STRUCT_PACKED_ELEMENT_ARRAY_DELTA * 2,
+                packedElementArray[2].getX());
+        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y, packedElementArray[0].getY());
+        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y + STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
+                packedElementArray[1].getY());
+        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y + STRUCT_PACKED_ELEMENT_ARRAY_DELTA * 2,
+                packedElementArray[2].getY());
+        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z, packedElementArray[0].getZ());
+        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z + STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
+                packedElementArray[1].getZ());
+        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z + STRUCT_PACKED_ELEMENT_ARRAY_DELTA * 2,
+                packedElementArray[2].getZ());
 
         // structOptionalField
         const auto& optionalField0 = mainStructure.getStructOptionalField();
@@ -428,7 +490,7 @@ protected:
         writeMainStructure(writer, hasArray);
 
         zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
-        TestMemoryResource<1024 * 3> memoryResource("Memory Resource #1");
+        TestMemoryResource<1024 * 4> memoryResource("Memory Resource #1");
         {
             const allocator_type allocator(&memoryResource);
             MainStructure mainStructure(reader, allocator);
@@ -514,7 +576,7 @@ protected:
         writeMainStructure(writer, hasArray);
 
         zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
-        TestMemoryResource<1024 * 3> memoryResource("Memory Resource #1");
+        TestMemoryResource<1024 * 4> memoryResource("Memory Resource #1");
         {
             const allocator_type allocator(&memoryResource);
             MainStructure mainStructure(reader, allocator);
@@ -1080,6 +1142,12 @@ private:
     static const uint16_t STRUCT_PACKED_UINT16_ARRAY_ELEMENT2;
     static const int8_t STRUCT_PACKED_UINT16_ARRAY_DELTA;
     static const uint8_t STRUCT_PACKED_UINT16_ARRAY_MAX_BIT_NUMBER;
+    static const uint32_t STRUCT_PACKED_ELEMENT_ARRAY_SIZE;
+    static const uint32_t STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X;
+    static const uint32_t STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y ;
+    static const uint32_t STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z;
+    static const int8_t STRUCT_PACKED_ELEMENT_ARRAY_DELTA;
+    static const uint8_t STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER;
 
     static const uint32_t STRUCT_OPTIONAL_NAMES0_SIZE;
     static const char* STRUCT_OPTIONAL_NAMES0_ELEMENT0;
@@ -1144,6 +1212,12 @@ const uint16_t ComplexAllocationTest::STRUCT_PACKED_UINT16_ARRAY_ELEMENT1 = 0xCA
 const uint16_t ComplexAllocationTest::STRUCT_PACKED_UINT16_ARRAY_ELEMENT2 = 0xCAFE;
 const int8_t ComplexAllocationTest::STRUCT_PACKED_UINT16_ARRAY_DELTA = 1;
 const uint8_t ComplexAllocationTest::STRUCT_PACKED_UINT16_ARRAY_MAX_BIT_NUMBER = 1;
+const uint32_t ComplexAllocationTest::STRUCT_PACKED_ELEMENT_ARRAY_SIZE = 3;
+const uint32_t ComplexAllocationTest::STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X = 0;
+const uint32_t ComplexAllocationTest::STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y = 10;
+const uint32_t ComplexAllocationTest::STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z = 100;
+const int8_t ComplexAllocationTest::STRUCT_PACKED_ELEMENT_ARRAY_DELTA = 1;
+const uint8_t ComplexAllocationTest::STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER = 1;
 
 const uint32_t ComplexAllocationTest::STRUCT_OPTIONAL_NAMES0_SIZE = 2;
 const char* ComplexAllocationTest::STRUCT_OPTIONAL_NAMES0_ELEMENT0 =
@@ -1172,8 +1246,8 @@ const uint16_t ComplexAllocationTest::BYTES_ARRAY_ELEMENT0_DATA = 0xCAFE;
 const uint8_t ComplexAllocationTest::BYTES_ARRAY_ELEMENT1_VAR_SIZE = 1;
 const uint8_t ComplexAllocationTest::BYTES_ARRAY_ELEMENT1_DATA = 0xC0;
 
-const size_t ComplexAllocationTest::MAIN_STRUCTURE_WITH_ARRAYS_BIT_SIZE = 3841;
-const size_t ComplexAllocationTest::MAIN_STRUCTURE_WITHOUT_ARRAYS_BIT_SIZE = 3808;
+const size_t ComplexAllocationTest::MAIN_STRUCTURE_WITH_ARRAYS_BIT_SIZE = 3978;
+const size_t ComplexAllocationTest::MAIN_STRUCTURE_WITHOUT_ARRAYS_BIT_SIZE = 3945;
 
 TEST_F(ComplexAllocationTest, readConstructor)
 {
