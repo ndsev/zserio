@@ -55,6 +55,8 @@ struct EnumTraits<${fullName}>
         ${item.fullName}<#if item?has_next>,</#if>
 </#list>
     }};
+
+    static constexpr const char* enumName = "${name}";
 };
 <#if withTypeInfoCode>
 

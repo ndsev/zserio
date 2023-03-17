@@ -61,9 +61,22 @@ TEST_F(BitfieldConstEnumTest, valueToEnum)
     ASSERT_EQ(Color::GREEN, zserio::valueToEnum<Color>(GREEN_VALUE));
 }
 
+TEST_F(BitfieldConstEnumTest, stringToEnum)
+{
+    ASSERT_EQ(Color::NONE, zserio::stringToEnum<Color>("NONE"));
+    ASSERT_EQ(Color::RED, zserio::stringToEnum<Color>("RED"));
+    ASSERT_EQ(Color::BLUE, zserio::stringToEnum<Color>("BLUE"));
+    ASSERT_EQ(Color::GREEN, zserio::stringToEnum<Color>("GREEN"));
+}
+
 TEST_F(BitfieldConstEnumTest, valueToEnumFailure)
 {
     ASSERT_THROW(zserio::valueToEnum<Color>(1), zserio::CppRuntimeException);
+}
+
+TEST_F(BitfieldConstEnumTest, stringToEnumFailure)
+{
+    ASSERT_THROW(zserio::stringToEnum<Color>("NONEXISTING"), zserio::CppRuntimeException);
 }
 
 TEST_F(BitfieldConstEnumTest, calcHashCode)

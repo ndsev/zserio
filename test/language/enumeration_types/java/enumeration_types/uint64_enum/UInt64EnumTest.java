@@ -65,7 +65,7 @@ public class UInt64EnumTest
     }
 
     @Test
-    public void toEnum()
+    public void valueToEnum()
     {
         DarkColor darkColor = DarkColor.toEnum(NONE_COLOR_VALUE);
         assertEquals(DarkColor.noneColor, darkColor);
@@ -81,9 +81,31 @@ public class UInt64EnumTest
     }
 
     @Test
-    public void toEnumFailure()
+    public void stringToEnum()
+    {
+        DarkColor darkColor = DarkColor.toEnum("noneColor");
+        assertEquals(DarkColor.noneColor, darkColor);
+
+        darkColor = DarkColor.toEnum("DARK_RED");
+        assertEquals(DarkColor.DARK_RED, darkColor);
+
+        darkColor = DarkColor.toEnum("dark_blue");
+        assertEquals(DarkColor.dark_blue, darkColor);
+
+        darkColor = DarkColor.toEnum("DarkGreen");
+        assertEquals(DarkColor.DarkGreen, darkColor);
+    }
+
+    @Test
+    public void valueToEnumFailure()
     {
         assertThrows(IllegalArgumentException.class, () -> DarkColor.toEnum(BigInteger.valueOf(3)));
+    }
+
+    @Test
+    public void stringToEnumFailure()
+    {
+        assertThrows(IllegalArgumentException.class, () -> DarkColor.toEnum("NONEXISTING"));
     }
 
     private static int UINT64_ENUM_BITSIZEOF = 64;

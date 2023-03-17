@@ -224,5 +224,24 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </#
 </#if>
     }
 
+<#if withCodeComments>
+    /**
+     * Converts enumeration item name to the enumeration item.
+     *
+     * @param value Enumeration item name to convert.
+     *
+     * @return The enumeration item matching its string name.
+     */
+</#if>
+    public static ${name} toEnum(java.lang.String itemName)
+    {
+<#list items as item>
+        if (itemName.equals("${item.name}"))
+            return ${item.name};
+</#list>
+        throw new java.lang.IllegalArgumentException(
+                "Enum item '" + itemName + "' doesn't exist in enumeration ${name}!");
+    }
+
     private ${underlyingTypeInfo.typeFullName} value;
 }

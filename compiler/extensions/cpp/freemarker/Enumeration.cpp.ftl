@@ -27,6 +27,7 @@
 // This is full specialization of enumeration traits and methods for ${name} enumeration.
 constexpr ::std::array<const char*, ${items?size}> EnumTraits<${fullName}>::names;
 constexpr ::std::array<${fullName}, ${items?size}> EnumTraits<${fullName}>::values;
+constexpr const char* EnumTraits<${fullName}>::enumName;
 <#if withTypeInfoCode>
 
 template <>

@@ -23,10 +23,12 @@ struct EnumTraits<Color>
 {
     static constexpr std::array<const char*, 4> names = {{"NONE", "RED", "BLUE", "BLACK"}};
     static constexpr std::array<Color, 4> values = {{Color::NONE, Color::RED, Color::BLUE, Color::BLACK}};
+    static constexpr const char* enumName = "Color";
 };
 
 constexpr std::array<const char*, 4> EnumTraits<Color>::names;
 constexpr std::array<Color, 4> EnumTraits<Color>::values;
+constexpr const char* EnumTraits<Color>::enumName;
 
 template <>
 inline size_t enumToOrdinal<Color>(Color value)
@@ -114,6 +116,16 @@ TEST(EnumsTest, enumToValue)
     EXPECT_EQ(7, enumToValue(Color::BLACK));
 }
 
+TEST(EnumsTest, stringToEnum)
+{
+    EXPECT_EQ(Color::NONE, stringToEnum<Color>("NONE"));
+    EXPECT_EQ(Color::RED, stringToEnum<Color>("RED"));
+    EXPECT_EQ(Color::BLUE, stringToEnum<Color>("BLUE"));
+    EXPECT_EQ(Color::BLACK, stringToEnum<Color>("BLACK"));
+
+    EXPECT_THROW(stringToEnum<Color>("NONEXISTING"), CppRuntimeException);
+}
+
 TEST(EnumsTest, enumToString)
 {
     // use std::string to prevent comparison of pointer values (which happened on MSVC in debug)
@@ -147,6 +159,12 @@ TEST(EnumsTest, writeAndRead)
 
     const Color readColor = read<Color>(in);
     EXPECT_EQ(writeColor, readColor);
+}
+
+TEST(EnumsTest, cppRuntimeExceptionOperator)
+{
+    CppRuntimeException exception = CppRuntimeException() << Color::NONE;
+    ASSERT_STREQ("NONE", exception.what());
 }
 
 } // namespace zserio

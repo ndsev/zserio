@@ -21,6 +21,26 @@ class ${name}(enum.Enum):
 </#list>
 
     @classmethod
+    def from_name(cls: typing.Type['${name}'], item_name: str) -> '${name}':
+<#if withCodeComments>
+        """
+        Converts enumeration item name to the enumeration item.
+
+        :param item_name: Enumeration item name to convert.
+        :returns: The enumeration item matching its string name.
+        """
+
+</#if>
+<#list items as item>
+        <#if !item?is_first>el</#if>if item_name == '${item.name}':
+            item = ${name}.${item.name}
+</#list>
+        else:
+            raise zserio.PythonRuntimeException(f"Enum item '{item_name}' doesn't exist in enum '${name}'!")
+
+        return item
+
+    @classmethod
     def from_reader(cls: typing.Type['${name}'], reader: zserio.BitStreamReader) -> '${name}':
 <#if withCodeComments>
         """

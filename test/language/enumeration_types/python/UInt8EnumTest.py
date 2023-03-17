@@ -15,6 +15,14 @@ class UInt8EnumTest(unittest.TestCase):
         self.assertEqual(DARK_BLUE_VALUE, self.api.DarkColor.DARK_BLUE.value)
         self.assertEqual(DARK_GREEN_VALUE, self.api.DarkColor.DARK_GREEN.value)
 
+    def testFromString(self):
+        self.assertEqual(self.api.DarkColor.from_name("NONE"), self.api.DarkColor.NONE)
+        self.assertEqual(self.api.DarkColor.from_name("DARK_RED"), self.api.DarkColor.DARK_RED)
+        self.assertEqual(self.api.DarkColor.from_name("DARK_BLUE"), self.api.DarkColor.DARK_BLUE)
+        self.assertEqual(self.api.DarkColor.from_name("DARK_GREEN"), self.api.DarkColor.DARK_GREEN)
+        with self.assertRaises(zserio.PythonRuntimeException):
+            self.api.DarkColor.from_name("NONEXISTING")
+
     def testFromReader(self):
         writer = zserio.BitStreamWriter()
         writer.write_bits(self.api.DarkColor.DARK_GREEN.value, DARK_COLOR_BITSIZEOF)

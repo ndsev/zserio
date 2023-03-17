@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "zserio/StringConvertUtil.h"
-#include "zserio/Enums.h"
 #include "zserio/Traits.h"
 
 namespace zserio
@@ -122,21 +121,6 @@ CppRuntimeException& operator<<(CppRuntimeException& exception, T value)
     char buffer[24];
     const char* stringValue = convertIntToString(buffer, value);
     return exception << stringValue;
-}
-
-/**
- * Appends any enumeration value to the exception's description.
- *
- * \param exception Exception to modify.
- * \param value Enumeration value to append.
- *
- * \return Reference to the exception to allow operator chaining.
- */
-template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
-CppRuntimeException& operator<<(CppRuntimeException& exception, T value)
-{
-    exception << enumToString(value);
-    return exception;
 }
 
 /**

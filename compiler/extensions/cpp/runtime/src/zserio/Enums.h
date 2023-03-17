@@ -3,8 +3,11 @@
 
 #include <cstddef>
 #include <type_traits>
+#include <algorithm>
 
 #include "zserio/Types.h"
+#include "zserio/CppRuntimeException.h"
+#include "zserio/StringView.h"
 
 // This should be implemented in runtime library header.
 namespace zserio
@@ -66,6 +69,30 @@ constexpr typename std::underlying_type<T>::type enumToValue(T value)
  */
 template <typename T>
 uint32_t enumHashCode(T value);
+
+/**
+ * Converts the given enum item name to an appropriate enum item.
+ *
+ * \param itemName Name of the enum item.
+ *
+ * \return Enum item corresponding to the itemName.
+ *
+ * \throw CppRuntimeException when the itemName doesn't match to any enum item.
+ */
+template <typename T>
+T stringToEnum(StringView itemName)
+{
+    const auto foundIt = std::find_if(EnumTraits<T>::names.begin(), EnumTraits<T>::names.end(),
+            [itemName](const char* enumItemName){ return itemName.compare(enumItemName) == 0; });
+    if (foundIt == EnumTraits<T>::names.end())
+    {
+        throw CppRuntimeException("Enum item '") << itemName << "' doesn't exist in enum '" <<
+                EnumTraits<T>::enumName << "'!";
+    }
+
+    const size_t ordinal = static_cast<size_t>(std::distance(EnumTraits<T>::names.begin(), foundIt));
+    return EnumTraits<T>::values[ordinal];
+}
 
 /**
  * Gets the name of the given enum item.
@@ -182,6 +209,21 @@ void write(BitStreamWriter& out, T value);
  */
 template <typename PACKING_CONTEXT_NODE, typename T>
 void write(PACKING_CONTEXT_NODE& contextNode, BitStreamWriter& out, T value);
+
+/**
+ * Appends any enumeration value to the exception's description.
+ *
+ * \param exception Exception to modify.
+ * \param value Enumeration value to append.
+ *
+ * \return Reference to the exception to allow operator chaining.
+ */
+template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
+CppRuntimeException& operator<<(CppRuntimeException& exception, T value)
+{
+    exception << enumToString(value);
+    return exception;
+}
 
 } // namespace zserio
 

@@ -79,51 +79,6 @@ TEST(CppRuntimeExceptionTest, appendInt)
     ASSERT_EQ(std::to_string(value), exception.what());
 }
 
-enum class Enumeration : uint8_t
-{
-    BLACK,
-    RED,
-    WHITE
-};
-
-template <>
-struct EnumTraits<Enumeration>
-{
-    static constexpr ::std::array<const char*, 3> names =
-    {{
-        "BLACK",
-        "RED",
-        "WHITE"
-    }};
-};
-
-constexpr ::std::array<const char*, 3> EnumTraits<Enumeration>::names;
-
-template <>
-size_t enumToOrdinal(Enumeration value)
-{
-    switch (value)
-    {
-    case Enumeration::BLACK:
-        return 0;
-    case Enumeration::RED:
-        return 1;
-    case Enumeration::WHITE:
-        return 2;
-    default:
-        throw CppRuntimeException("Unknown value for enumeration Enumeration: ") <<
-                static_cast<typename ::std::underlying_type<Enumeration>::type>(value) << "!";
-    }
-}
-
-TEST(CppRuntimeExceptionTest, appendEnum)
-{
-    CppRuntimeException exception = CppRuntimeException() << Enumeration::BLACK <<
-            Enumeration::RED << Enumeration::WHITE;
-    ASSERT_EQ(std::string(EnumTraits<Enumeration>::names[0]) + EnumTraits<Enumeration>::names[1] +
-            EnumTraits<Enumeration>::names[2], exception.what());
-}
-
 class Bitmask
 {
 public:

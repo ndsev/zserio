@@ -15,6 +15,14 @@ class BitfieldEnumTest(unittest.TestCase):
         self.assertEqual(BLUE_VALUE, self.api.Color.BLUE.value)
         self.assertEqual(GREEN_VALUE, self.api.Color.GREEN.value)
 
+    def testFromString(self):
+        self.assertEqual(self.api.Color.from_name("NONE"), self.api.Color.NONE)
+        self.assertEqual(self.api.Color.from_name("RED"), self.api.Color.RED)
+        self.assertEqual(self.api.Color.from_name("BLUE"), self.api.Color.BLUE)
+        self.assertEqual(self.api.Color.from_name("GREEN"), self.api.Color.GREEN)
+        with self.assertRaises(zserio.PythonRuntimeException):
+            self.api.Color.from_name("NONEXISTING")
+
     def testFromReader(self):
         writer = zserio.BitStreamWriter()
         writer.write_bits(self.api.Color.GREEN.value, COLOR_BITSIZEOF)

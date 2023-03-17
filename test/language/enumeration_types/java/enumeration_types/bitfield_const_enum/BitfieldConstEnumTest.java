@@ -47,7 +47,7 @@ public class BitfieldConstEnumTest
     public void bitSizeOf()
     {
         final Color color = Color.NONE;
-        assertEquals(BITFIELD_ENUM_BITSIZEOF, color.bitSizeOf());
+        assertEquals(BITFIELD_CONST_ENUM_BITSIZEOF, color.bitSizeOf());
     }
 
     @Test
@@ -59,12 +59,12 @@ public class BitfieldConstEnumTest
 
         final BitStreamReader reader = new ByteArrayBitStreamReader(
                 writer.toByteArray(), writer.getBitPosition());
-        final byte readColor = (byte)reader.readBits(BITFIELD_ENUM_BITSIZEOF);
+        final byte readColor = (byte)reader.readBits(BITFIELD_CONST_ENUM_BITSIZEOF);
         assertEquals(readColor, color.getValue());
     }
 
     @Test
-    public void toEnum()
+    public void valueToEnum()
     {
         Color color = Color.toEnum(NONE_VALUE);
         assertEquals(Color.NONE, color);
@@ -80,12 +80,34 @@ public class BitfieldConstEnumTest
     }
 
     @Test
-    public void toEnumFailure()
+    public void stringToEnum()
+    {
+        Color color = Color.toEnum("NONE");
+        assertEquals(Color.NONE, color);
+
+        color = Color.toEnum("RED");
+        assertEquals(Color.RED, color);
+
+        color = Color.toEnum("BLUE");
+        assertEquals(Color.BLUE, color);
+
+        color = Color.toEnum("GREEN");
+        assertEquals(Color.GREEN, color);
+    }
+
+    @Test
+    public void valueToEnumFailure()
     {
         assertThrows(IllegalArgumentException.class, () -> Color.toEnum((byte)1));
     }
 
-    private static int BITFIELD_ENUM_BITSIZEOF = 5;
+    @Test
+    public void stringToEnumFailure()
+    {
+        assertThrows(IllegalArgumentException.class, () -> Color.toEnum("NONEXISTING"));
+    }
+
+    private static int BITFIELD_CONST_ENUM_BITSIZEOF = 5;
 
     private static byte NONE_VALUE = 0;
     private static byte RED_VALUE = 2;

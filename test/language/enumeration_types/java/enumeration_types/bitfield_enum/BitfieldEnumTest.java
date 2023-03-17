@@ -75,7 +75,7 @@ public class BitfieldEnumTest
     }
 
     @Test
-    public void toEnum()
+    public void valueToEnum()
     {
         Color color = Color.toEnum(NONE_VALUE);
         assertEquals(Color.NONE, color);
@@ -91,9 +91,31 @@ public class BitfieldEnumTest
     }
 
     @Test
-    public void toEnumFailure()
+    public void stringToEnum()
+    {
+        Color color = Color.toEnum("NONE");
+        assertEquals(Color.NONE, color);
+
+        color = Color.toEnum("RED");
+        assertEquals(Color.RED, color);
+
+        color = Color.toEnum("BLUE");
+        assertEquals(Color.BLUE, color);
+
+        color = Color.toEnum("GREEN");
+        assertEquals(Color.GREEN, color);
+    }
+
+    @Test
+    public void valueToEnumFailure()
     {
         assertThrows(IllegalArgumentException.class, () -> Color.toEnum((byte)1));
+    }
+
+    @Test
+    public void stringToEnumFailure()
+    {
+        assertThrows(IllegalArgumentException.class, () -> Color.toEnum("NONEXISTING"));
     }
 
     private static final String BLOB_NAME = "bitfield_enum.blob";

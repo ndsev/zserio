@@ -74,7 +74,7 @@ public class VarUIntEnumTest
     }
 
     @Test
-    public void toEnum()
+    public void valueToEnum()
     {
         DarkColor darkColor = DarkColor.toEnum(NONE_VALUE);
         assertEquals(DarkColor.NONE, darkColor);
@@ -90,9 +90,31 @@ public class VarUIntEnumTest
     }
 
     @Test
-    public void toEnumFailure()
+    public void stringToEnum()
+    {
+        DarkColor darkColor = DarkColor.toEnum("NONE");
+        assertEquals(DarkColor.NONE, darkColor);
+
+        darkColor = DarkColor.toEnum("DARK_RED");
+        assertEquals(DarkColor.DARK_RED, darkColor);
+
+        darkColor = DarkColor.toEnum("DARK_BLUE");
+        assertEquals(DarkColor.DARK_BLUE, darkColor);
+
+        darkColor = DarkColor.toEnum("DARK_GREEN");
+        assertEquals(DarkColor.DARK_GREEN, darkColor);
+    }
+
+    @Test
+    public void valueToEnumFailure()
     {
         assertThrows(IllegalArgumentException.class, () -> DarkColor.toEnum(new BigInteger("3")));
+    }
+
+    @Test
+    public void stringToEnumFailure()
+    {
+        assertThrows(IllegalArgumentException.class, () -> DarkColor.toEnum("NONEXISTING"));
     }
 
     private static int DARK_COLOR_NONE_BITSIZEOF = 8;

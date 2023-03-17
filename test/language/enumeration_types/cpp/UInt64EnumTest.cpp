@@ -58,9 +58,22 @@ TEST_F(UInt64EnumTest, valueToEnum)
     ASSERT_EQ(DarkColor::DarkGreen, zserio::valueToEnum<DarkColor>(DARK_GREEN_VALUE));
 }
 
+TEST_F(UInt64EnumTest, stringToEnum)
+{
+    ASSERT_EQ(DarkColor::noneColor, zserio::stringToEnum<DarkColor>("noneColor"));
+    ASSERT_EQ(DarkColor::DARK_RED, zserio::stringToEnum<DarkColor>("DARK_RED"));
+    ASSERT_EQ(DarkColor::dark_blue, zserio::stringToEnum<DarkColor>("dark_blue"));
+    ASSERT_EQ(DarkColor::DarkGreen, zserio::stringToEnum<DarkColor>("DarkGreen"));
+}
+
 TEST_F(UInt64EnumTest, valueToEnumFailure)
 {
     ASSERT_THROW(zserio::valueToEnum<DarkColor>(3), zserio::CppRuntimeException);
+}
+
+TEST_F(UInt64EnumTest, stringToEnumFailure)
+{
+    ASSERT_THROW(zserio::stringToEnum<DarkColor>("NONEXISTING"), zserio::CppRuntimeException);
 }
 
 TEST_F(UInt64EnumTest, enumHashCode)
