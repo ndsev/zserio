@@ -121,7 +121,7 @@ public class PerformanceTest
         final String logPath = args[0];
         final boolean inputIsJson = args[1].equals("-j") ? true : false;
         final String inputPath = args[2];
-        final int numIterations = args.length > 2 ? Integer.parseInt(args[3]) : ${NUM_ITERATIONS};
+        final int numIterations = args.length > 3 ? Integer.parseInt(args[3]) : ${NUM_ITERATIONS};
 
         // prepare byte array
         byte[] blobBuffer = readBlobBuffer(inputIsJson, inputPath);

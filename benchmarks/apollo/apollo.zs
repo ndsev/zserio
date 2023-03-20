@@ -12,11 +12,11 @@ struct Map
     YieldSign yieldSign[];
     Overlap overlap[];
     ClearArea clearArea[];
-    SpeedBump speedBump[];
+    optional SpeedBump speedBump[];
     Road road[];
-    ParkingSpace parkingSpace[];
-    PNCJunction pncJunction[];
-    RSU rsu[];
+    optional ParkingSpace parkingSpace[];
+    optional PNCJunction pncJunction[];
+    optional RSU rsu[];
 };
 
 // This message defines how we project the ellipsoidal Earth surface to a plane.
@@ -34,7 +34,7 @@ struct Header
     string date;
     Projection projection;
     string district;
-    string generation;
+    optional string generation;
     string revMajor;
     string revMinor;
     float64 left;
@@ -233,19 +233,19 @@ struct Lane
     Id overlapId[];
 
     // All lanes can be driving into (or from).
-    Id predecessorId[];
-    Id successorId[];
+    optional Id predecessorId[];
+    optional Id successorId[];
 
     // Neighbor lanes on the same direction.
-    Id leftNeighborForwardLaneId[];
-    Id rightNeighborForwardLaneId[];
+    optional Id leftNeighborForwardLaneId[];
+    optional Id rightNeighborForwardLaneId[];
 
     LaneType type;
 
     LaneTurn turn;
 
-    Id leftNeighborReverseLaneId[];
-    Id rightNeighborReverseLaneId[];
+    optional Id leftNeighborReverseLaneId[];
+    optional Id rightNeighborReverseLaneId[];
 
     optional Id junctionId;
 
@@ -256,10 +256,10 @@ struct Lane
     optional LaneDirection direction;
 
     // Association between central point to closest road boundary.
-    LaneSampleAssociation leftRoadSample[];
-    LaneSampleAssociation rightRoadSample[];
+    optional LaneSampleAssociation leftRoadSample[];
+    optional LaneSampleAssociation rightRoadSample[];
 
-    Id selfReverseLaneId[];
+    optional Id selfReverseLaneId[];
 };
 
 enum uint8 LaneDirection
@@ -354,7 +354,7 @@ struct Overlap
     // Information about one overlap, include all overlapped objects.
     ObjectOverlapInfo object[];
 
-    RegionOverlapInfo regionOverlap[];
+    optional RegionOverlapInfo regionOverlap[];
 };
 
 // ParkingSpace is a place designated to park a car.
@@ -431,7 +431,7 @@ struct RoadBoundary
 {
     BoundaryPolygon outerPolygon;
     // if boundary without hole, hole is null
-    BoundaryPolygon hole[];
+    optional BoundaryPolygon hole[];
 };
 
 struct RoadROIBoundary
@@ -525,7 +525,7 @@ struct Signal
     // stop line
     Curve stopLine[];
 
-    SignInfo signInfo[];
+    optional SignInfo signInfo[];
 };
 
 enum uint8 SignalType
