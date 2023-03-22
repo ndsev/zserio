@@ -28,7 +28,7 @@ public final class SerializeUtil
      * <p>
      * Example:
      * <blockquote><pre>
-     * import zserio.runtime.SerializeUtil;
+     * import zserio.runtime.io.SerializeUtil;
      *
      * final SomeZserioObject object = new SomeZserioObject();
      * final BitBuffer bitBuffer = SerializeUtil.serialize(object);
@@ -57,7 +57,7 @@ public final class SerializeUtil
      * <p>
      * Example:
      * <blockquote><pre>
-     * import zserio.runtime.SerializeUtil;
+     * import zserio.runtime.io.SerializeUtil;
      *
      * final SomeZserioObject object = new SomeZserioObject();
      * final BitBuffer bitBuffer = SerializeUtil.serialize(object);
@@ -89,7 +89,7 @@ public final class SerializeUtil
      * <p>
      * Example:
      * <blockquote><pre>
-     * import zserio.runtime.SerializeUtil;
+     * import zserio.runtime.io.SerializeUtil;
      *
      * final SomeZserioObject object = new SomeZserioObject();
      * final byte[] buffer = SerializeUtil.serializeToBytes(object);
@@ -122,7 +122,7 @@ public final class SerializeUtil
      * <p>
      * Example:
      * <blockquote><pre>
-     * import zserio.runtime.SerializeUtil;
+     * import zserio.runtime.io.SerializeUtil;
      *
      * final SomeZserioObject object = new SomeZserioObject();
      * final byte[] buffer = SerializeUtil.serializeToBytes(object);
@@ -157,7 +157,7 @@ public final class SerializeUtil
      * <p>
      * Example:
      * <blockquote><pre>
-     * import zserio.runtime.SerializeUtil;
+     * import zserio.runtime.io.SerializeUtil;
      *
      * final SomeZserioObject object = new SomeZserioObject();
      * SerializeUtil.serializeToFile(object, "FileName.bin");
@@ -181,7 +181,7 @@ public final class SerializeUtil
      * <p>
      * Example:
      * <blockquote><pre>
-     * import zserio.runtime.SerializeUtil;
+     * import zserio.runtime.io.SerializeUtil;
      *
      * final SomeZserioObject object = new SomeZserioObject();
      * SerializeUtil.serializeToFile(object, "FileName.bin");
@@ -216,7 +216,7 @@ public final class SerializeUtil
      * <p>
      * Example:
      * <blockquote><pre>
-     * import zserio.runtime.SerializeUtil;
+     * import zserio.runtime.io.SerializeUtil;
      *
      * final String fileName = "FileName.bin";
      * final SomeZserioObject object = new SomeZserioObject();
@@ -243,7 +243,7 @@ public final class SerializeUtil
      * <p>
      * Example:
      * <blockquote><pre>
-     * import zserio.runtime.SerializeUtil;
+     * import zserio.runtime.io.SerializeUtil;
      *
      * final String fileName = "FileName.bin";
      * final SomeZserioObject object = new SomeZserioObject();
