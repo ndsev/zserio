@@ -141,7 +141,7 @@ jobs:
               --num-iterations 1000 --test-config READ_WRITE
       shell: bash
 
-    - name: Run Zserio performance tests
+    - name: Run Zserio benchmarks
       run: |
         scripts/benchmark.sh cpp-windows64-mingw cpp-windows64-msvc python python-cpp java \
               --num-iterations 100
