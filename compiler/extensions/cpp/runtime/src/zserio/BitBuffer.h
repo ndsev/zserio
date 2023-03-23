@@ -221,7 +221,7 @@ BasicBitBuffer<ALLOC>::BasicBitBuffer(vector<uint8_t, ALLOC>&& buffer, size_t bi
     if (m_buffer.size() < byteSize)
     {
         throw CppRuntimeException("BitBuffer: Bit size ") << bitSize <<
-                " out of range for given vector byte size " << buffer.size() << "!";
+                " out of range for given vector byte size " << m_buffer.size() << "!";
     }
 }
 

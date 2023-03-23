@@ -37,7 +37,7 @@ Checks: "-*,\
   bugprone-unhandled-self-assignment,\
   bugprone-unused-raii,\
   bugprone-unused-return-value,\
-#  bugprone-use-after-move,\
+  bugprone-use-after-move,\
   bugprone-virtual-near-miss,\
   cert-dcl50-cpp,\
   cert-dcl58-cpp,\
@@ -49,7 +49,7 @@ Checks: "-*,\
   cert-msc50-cpp,\
   cert-oop57-cpp,\
   cert-oop58-cpp,\
-#  clang-analyzer-cplusplus.Move,\
+  clang-analyzer-cplusplus.Move,\
 #  clang-analyzer-cplusplus.NewDeleteLeaks,\
 #  cppcoreguidelines-avoid-c-arrays,\
   cppcoreguidelines-avoid-goto,\

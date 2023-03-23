@@ -144,7 +144,7 @@ TEST(AnyHolderTest, moveConstructorNoValue)
 
     AnyHolder<TrackingAllocatorNonProp<uint8_t>> any1(alloc1);
     AnyHolder<TrackingAllocatorNonProp<uint8_t>> any2(std::move(any1), alloc2);
-    ASSERT_FALSE(any1.hasValue());
+    ASSERT_FALSE(any1.hasValue()); // NOLINT(bugprone-use-after-move)
     ASSERT_FALSE(any2.hasValue());
 }
 
