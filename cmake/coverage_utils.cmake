@@ -27,7 +27,7 @@ function(create_coverage_target)
         set(cov_tgt_name "coverage")
     endif ()
 
-    set(cov_binary_dir "${PROJECT_BINARY_DIR}/${cov_tgt_name}")
+    set(cov_html_dir "${PROJECT_BINARY_DIR}/zserio_doc/${cov_tgt_name}")
 
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
         set(cov_fail)
@@ -40,25 +40,33 @@ function(create_coverage_target)
             list(APPEND cov_exclude "--exclude=${cov_EXCLUDE_SOURCES}")
         endif ()
 
+        set(cov_html_gcc_dir "${cov_html_dir}/gcc")
         add_custom_target(
             ${cov_tgt_name}
-            COMMAND ${CMAKE_COMMAND} -E make_directory ${cov_binary_dir}
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${cov_html_gcc_dir}
             COMMAND ${GCOVR_BIN}
                 -s
-                --html --html-details -o "${cov_tgt_name}/index.html"
+                -r ${PROJECT_SOURCE_DIR}
+                --object-directory=${PROJECT_BINARY_DIR}
+                ${cov_exclude}
+            COMMAND ${GCOVR_BIN}
+                -s
+                --html --html-details -o "${cov_html_gcc_dir}/index.html"
                 -r ${PROJECT_SOURCE_DIR}
                 --object-directory=${PROJECT_BINARY_DIR}
                 ${cov_fail}
-                ${cov_exclude}
+                ${cov_exclude} > ${cov_html_gcc_dir}/coverage_report.txt
             WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
             VERBATIM
-            COMMENT "Generating html code coverage report in ${cov_binary_dir}/index.html")
+            COMMENT "Generating html code coverage report in ${cov_html_gcc_dir}/index.html")
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-        set(cov_test_exectable "${ZserioCppRuntimeTest_BINARY_DIR}/ZserioCppRuntimeTest")
         set(cov_exclude)
         if (cov_EXCLUDE_SOURCES)
             list(APPEND cov_exclude "--ignore-filename-regex=${cov_EXCLUDE_SOURCES}")
         endif ()
+        set(cov_test_exectable "${ZserioCppRuntimeTest_BINARY_DIR}/ZserioCppRuntimeTest")
+        set(cov_binary_dir "${PROJECT_BINARY_DIR}/${cov_tgt_name}")
+        set(cov_html_clang_dir "${cov_html_dir}/clang")
         add_custom_target(
             ${cov_tgt_name}
             COMMAND ${CMAKE_COMMAND} -E make_directory ${cov_binary_dir}
@@ -67,11 +75,14 @@ function(create_coverage_target)
             COMMAND ${LLVM_PROFDATA_BIN} merge --sparse default.profraw -o ${cov_binary_dir}/runtime.profdata
             COMMAND ${LLVM_COV_BIN} show ${cov_test_exectable}
                 -instr-profile=${cov_binary_dir}/runtime.profdata
-                --format=html --show-instantiations=false -output-dir=${cov_binary_dir}
+                -format=html -show-instantiations=false -output-dir=${cov_html_clang_dir}
                 ${cov_exclude}
             COMMAND ${LLVM_COV_BIN} report ${cov_test_exectable}
                 -instr-profile=${cov_binary_dir}/runtime.profdata
                 ${cov_exclude}
+            COMMAND bash -c "${LLVM_COV_BIN} report ${cov_test_exectable} \
+                    -instr-profile=${cov_binary_dir}/runtime.profdata ${cov_exclude} \
+                    > ${cov_html_clang_dir}/coverage_report.txt"
             COMMAND bash -c "(( \
                 `${LLVM_COV_BIN} report ${cov_test_exectable} \
                     -instr-profile=${cov_binary_dir}/runtime.profdata ${cov_exclude} | grep TOTAL | \
@@ -79,7 +90,7 @@ function(create_coverage_target)
                 ))"
             WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
             VERBATIM
-            COMMENT "Generating html code coverage report in ${cov_binary_dir}/index.html")
+            COMMENT "Generating html code coverage report in ${cov_html_clang_dir}/index.html")
     else ()
         message(FATAL_ERROR "Coverage reports are not supported for target compiler ${CMAKE_CXX_COMPILER_ID}!")
     endif ()

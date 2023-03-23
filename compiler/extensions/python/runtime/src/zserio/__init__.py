@@ -8,6 +8,8 @@ called by applications:
 
 - Serialization (:obj:`zserio.serialization` module)
 - Debug string output (:obj:`zserio.debugstring` module)
+
+`Test coverage report <coverage/index.html>`_ of this library is available as well.
 """
 
 from zserio.bitbuffer import BitBuffer

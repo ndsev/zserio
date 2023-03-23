@@ -54,6 +54,8 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
             value="${zserio_java_runtime.test.build_dir}/coverage"/>
     <property name="zserio_java_runtime.test.coverage_file"
             value="${zserio_java_runtime.test.coverage_dir}/jacoco_coverage.bin"/>
+    <property name="zserio_java_runtime.test.coverage_html_dir"
+            value="${zserio_java_runtime.javadocs_dir}/coverage"/>
 
     <property name="zserio_java_runtime.jar_dir" value="${zserio_java_runtime.build_dir}/jar"/>
     <property name="zserio_java_runtime.jar_file" value="${zserio_java_runtime.jar_dir}/zserio_runtime.jar"/>
@@ -310,7 +312,8 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
                 </sourcefiles>
             </structure>
 
-            <html destdir="${zserio_java_runtime.test.coverage_dir}"/>
+            <html destdir="${zserio_java_runtime.test.coverage_html_dir}"/>
+            <xml destfile="${zserio_java_runtime.test.coverage_html_dir}/jacoco_report.xml"/>
 
             <check>
                 <rule element="BUNDLE">
@@ -318,6 +321,14 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
                 </rule>
             </check>
         </jacoco:report>
+
+        <jar destfile="${zserio_java_runtime.javadocs_jar_file}" update="true">
+            <fileset dir="${zserio_java_runtime.javadocs_dir}">
+                <include name="**"/>
+            </fileset>
+        </jar>
+        <copy file="${zserio_java_runtime.javadocs_jar_file}" todir="${zserio_java_runtime.install_dir}"
+               overwrite="true"/>
     </target>
 
     <target name="test" depends="test.run">

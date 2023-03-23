@@ -554,14 +554,13 @@ update_web_pages()
     fi
     echo "Done"
 
+    echo -ne "Creating Zserio runtime library GitHub badges..."
+    create_github_badge_jsons "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_VERSION}"
+    echo "Done"
+
     # This is necessary because Jekyll ignores Python runtime doc directories that start with underscores.
     echo -ne "Creating Jekyll configuration file..."
-    echo "theme: jekyll-theme-slate" > "${ZSERIO_PROJECT_ROOT}"/_config.yml
-    echo "exclude: 3rdparty" >> "${ZSERIO_PROJECT_ROOT}"/_config.yml
-    echo "include:" >> "${ZSERIO_PROJECT_ROOT}"/_config.yml
-    echo "  - _images" >> "${ZSERIO_PROJECT_ROOT}"/_config.yml
-    echo "  - _modules" >> "${ZSERIO_PROJECT_ROOT}"/_config.yml
-    echo "  - _static" >> "${ZSERIO_PROJECT_ROOT}"/_config.yml
+    create_jekyll_config_file "${ZSERIO_PROJECT_ROOT}"
     echo "Done"
 
     echo
@@ -588,6 +587,78 @@ update_web_pages()
     echo
 
     return 0
+}
+
+# Create JSON configuration files for all GitHub badges
+create_github_badge_jsons()
+{
+    exit_if_argc_ne $# 2
+    local ZSERIO_PROJECT_ROOT="$1"; shift
+    local ZSERIO_VERSION="$1"; shift
+
+    local CLANG_COVERAGE_DIR="${ZSERIO_PROJECT_ROOT}"/doc/runtime/cpp/coverage/clang
+    local CLANG_LINES_COVERAGE=`cat "${CLANG_COVERAGE_DIR}"/coverage_report.txt | grep TOTAL | \
+            tr -s ' ' | cut -d' ' -f 10`
+    create_github_badge_json "${CLANG_COVERAGE_DIR}"/coverage_github_badge.json \
+            "C++ clang runtime ${ZSERIO_VERSION} coverage" "${CLANG_LINES_COVERAGE}"
+
+    local GCC_COVERAGE_DIR="${ZSERIO_PROJECT_ROOT}"/doc/runtime/cpp/coverage/gcc
+    local GCC_LINES_COVERAGE=`cat "${GCC_COVERAGE_DIR}"/coverage_report.txt | grep lines: | \
+            tr -s ' ' | cut -d' ' -f 2`
+    create_github_badge_json "${GCC_COVERAGE_DIR}"/coverage_github_badge.json \
+            "C++ gcc runtime ${ZSERIO_VERSION} coverage" "${GCC_LINES_COVERAGE}"
+
+    local JAVA_COVERAGE_DIR="${ZSERIO_PROJECT_ROOT}"/doc/runtime/java/coverage
+    local JAVA_COVERAGE_REPORT=`cat "${JAVA_COVERAGE_DIR}"/jacoco_report.xml`
+    local JAVA_LINES_MISSED=`echo ${JAVA_COVERAGE_REPORT##*INSTRUCTION} | cut -d'"' -f3`
+    local JAVA_LINES_COVERED=`echo ${JAVA_COVERAGE_REPORT##*INSTRUCTION} | cut -d'"' -f5`
+    local JAVA_LINES_VALID=$((${JAVA_LINES_COVERED} - ${JAVA_LINES_MISSED}))
+    local JAVA_LINES_COVERAGE=$((10000 * ${JAVA_LINES_VALID} / ${JAVA_LINES_COVERED}))
+    create_github_badge_json "${JAVA_COVERAGE_DIR}"/coverage_github_badge.json \
+            "Java runtime ${ZSERIO_VERSION} coverage" \
+            "${JAVA_LINES_COVERAGE:0:-2}.${JAVA_LINES_COVERAGE: -2}%"
+
+    local PYTHON_COVERAGE_DIR="${ZSERIO_PROJECT_ROOT}"/doc/runtime/python/coverage
+    local PYTHON_LINES_VALID=`cat "${PYTHON_COVERAGE_DIR}"/coverage_report.xml | grep lines-covered | \
+            cut -d' ' -f 4 | cut -d= -f2 | tr -d \"`
+    local PYTHON_LINES_COVERED=`cat "${PYTHON_COVERAGE_DIR}"/coverage_report.xml | grep lines-covered | \
+            cut -d' ' -f 5 | cut -d= -f2 | tr -d \"`
+    local PYTHON_LINES_COVERAGE=$((10000 * ${PYTHON_LINES_VALID} / ${PYTHON_LINES_COVERED}))
+    create_github_badge_json "${PYTHON_COVERAGE_DIR}"/coverage_github_badge.json \
+            "Python runtime ${ZSERIO_VERSION} coverage" \
+            "${PYTHON_LINES_COVERAGE:0:-2}.${PYTHON_LINES_COVERAGE: -2}%"
+}
+
+# Create JSON configuration file for GitHub badge
+create_github_badge_json()
+{
+    exit_if_argc_ne $# 3
+    local BADGE_JSON_FILE="$1"; shift
+    local BADGE_LABEL="$1"; shift
+    local BADGE_MESSAGE="$1"; shift
+
+    cat > "${BADGE_JSON_FILE}" << EOF
+{
+    "schemaVersion": 1,
+    "label": "${BADGE_LABEL}",
+    "message": "${BADGE_MESSAGE}",
+    "color": "green"
+}
+EOF
+}
+
+# Create Jekyll configuration file
+create_jekyll_config_file()
+{
+    exit_if_argc_ne $# 1
+    local ZSERIO_PROJECT_ROOT="$1"; shift
+
+    echo "theme: jekyll-theme-slate" > "${ZSERIO_PROJECT_ROOT}"/_config.yml
+    echo "exclude: 3rdparty" >> "${ZSERIO_PROJECT_ROOT}"/_config.yml
+    echo "include:" >> "${ZSERIO_PROJECT_ROOT}"/_config.yml
+    echo "  - _images" >> "${ZSERIO_PROJECT_ROOT}"/_config.yml
+    echo "  - _modules" >> "${ZSERIO_PROJECT_ROOT}"/_config.yml
+    echo "  - _static" >> "${ZSERIO_PROJECT_ROOT}"/_config.yml
 }
 
 # Print help message.

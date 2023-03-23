@@ -38,6 +38,7 @@ test_python_runtime()
     ZSERIO_CPP_DIR=$(ls -d1 "${BUILD_DIR}/zserio_cpp/lib"*)
     if [ $? -ne 0 ] ; then
         stderr_echo "Failed to locate C++ runtime binding to Python!"
+        popd > /dev/null
         return 1
     fi
 
@@ -57,6 +58,13 @@ test_python_runtime()
     echo
 
     python -m coverage combine --keep coverage_cpp.data coverage_python.data
+    python -m coverage xml -o "coverage/coverage_report.xml" --omit="*test_object*"
+    local COVERAGE_RESULT=$?
+    if [ ${COVERAGE_RESULT} -ne 0 ] ; then
+        stderr_echo "Running python coverage report failed with return code ${COVERAGE_RESULT}!"
+        popd > /dev/null
+        return 1
+    fi
     python -m coverage html --directory="coverage" --fail-under=100 \
             --omit="*test_object*" --title="Zserio Python Runtime Library"
     local COVERAGE_RESULT=$?
@@ -120,8 +128,12 @@ install_python_runtime()
     local PYTHON_RUNTIME_DOC_BUILD_DIR="${PYTHON_RUNTIME_BUILD_DIR}/doc"
     local ZSERIO_LOGO="${ZSERIO_PROJECT_ROOT}/doc/Zserio.png"
 
-    # build doc
-    echo "Building documentation for Zserio Python runtime library."
+    echo "Purging python distr dir ${PYTHON_RUNTIME_DISTR_DIR}."
+    rm -rf "${PYTHON_RUNTIME_DISTR_DIR}/"
+    mkdir -p "${PYTHON_RUNTIME_DISTR_DIR}"
+
+    # install doc together with test coverage report
+    echo "Installing documentation for Zserio Python runtime library."
     echo
     rm -rf "${PYTHON_RUNTIME_DOC_BUILD_DIR}/"
     mkdir -p "${PYTHON_RUNTIME_DOC_BUILD_DIR}"
@@ -137,21 +149,23 @@ install_python_runtime()
     sphinx-apidoc --module-first --force --separate -o . "${PYTHON_RUNTIME_SOURCES}/zserio/"
     rm modules.rst
     PYTHONPATH="${PYTHON_RUNTIME_SOURCES}" \
-    sphinx-build -Wa -b html -d . -Dhtml_logo="${ZSERIO_LOGO}" . zserio_doc
+    sphinx-build -Wa -b html -d . -Dhtml_logo="${ZSERIO_LOGO}" . "${PYTHON_RUNTIME_DISTR_DIR}/zserio_doc"
     if [ $? -ne 0 ] ; then
         popd > /dev/null
         return 1
     fi
-
     popd > /dev/null
+
+    cp -r "${PYTHON_RUNTIME_BUILD_DIR}/coverage" "${PYTHON_RUNTIME_DISTR_DIR}/zserio_doc/coverage"
+    if [ $? -ne 0 ] ; then
+        stderr_echo "Failed to install documentation!"
+        return 1
+    fi
+    rm -f "${PYTHON_RUNTIME_DISTR_DIR}/zserio_doc/coverage/.gitignore"
 
     echo
     echo "Installing Zserio Python runtime library."
     echo
-
-    echo "Purging python distr dir: ${PYTHON_RUNTIME_DISTR_DIR}"
-    rm -rf "${PYTHON_RUNTIME_DISTR_DIR}/"
-    mkdir -p "${PYTHON_RUNTIME_DISTR_DIR}"
 
     # install sources
     pushd "${PYTHON_RUNTIME_SOURCES}" > /dev/null
@@ -167,14 +181,6 @@ install_python_runtime()
     done
 
     popd > /dev/null
-
-    # install doc
-    echo "Installing API documentation"
-    cp -r "${PYTHON_RUNTIME_DOC_BUILD_DIR}/zserio_doc" "${PYTHON_RUNTIME_DISTR_DIR}/"
-    if [ $? -ne 0 ] ; then
-        stderr_echo "Failed to install documentation!"
-        return 1
-    fi
 
     return 0
 }

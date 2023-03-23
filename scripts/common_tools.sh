@@ -724,13 +724,17 @@ compile_cpp_for_target()
     mkdir -p "${BUILD_DIR}"
     pushd "${BUILD_DIR}" > /dev/null
 
-    local CMAKE_BUILD_TARGET=${MAKE_TARGET}
+    if [[ ${MAKE_TARGET} == "install" ]] ; then
+        local CMAKE_BUILD_TARGET="all"
+    else
+        local CMAKE_BUILD_TARGET="${MAKE_TARGET}"
+    fi
 
     # resolve CMake generator
     if [[ ${TARGET} == *"-msvc" ]] ; then
         local CMAKE_BUILD_CONFIG="--config ${BUILD_TYPE}"
         CTEST_ARGS+=("-C ${BUILD_TYPE}")
-        if [[ ${MAKE_TARGET} == "all" ]] ; then
+        if [[ ${CMAKE_BUILD_TARGET} == "all" ]] ; then
             CMAKE_BUILD_TARGET="ALL_BUILD" # all target doesn't exist in MSVC solution
         fi
         local CMAKE_GENERATOR="${MSVC_CMAKE_GENERATOR}";
@@ -779,6 +783,17 @@ compile_cpp_for_target()
                 popd > /dev/null
                 return 1
             fi
+        fi
+    fi
+
+    # install it running cmake
+    if [[ ${MAKE_TARGET} == "install" ]] ; then
+        "${CMAKE}" --build . --target install ${CMAKE_BUILD_CONFIG} -- ${CMAKE_BUILD_OPTIONS}
+        local CMAKE_RESULT=$?
+        if [ ${CMAKE_RESULT} -ne 0 ] ; then
+            stderr_echo "Running CMake failed with return code ${CMAKE_RESULT}!"
+            popd > /dev/null
+            return 1
         fi
     fi
 
