@@ -50,9 +50,9 @@ TEST(MemoryResourceTest, allocateDeallocate)
 {
     TestResource res(1);
     auto p = res.allocate(10);
-    ASSERT_EQ(1, res.numAllocs());
+    EXPECT_EQ(1, res.numAllocs());
     res.deallocate(p, 10);
-    ASSERT_EQ(1, res.numDeallocs());
+    EXPECT_EQ(1, res.numDeallocs());
 }
 
 TEST(MemoryResourceTest, isEqual)
