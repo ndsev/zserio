@@ -244,11 +244,9 @@ public:
         case SchemaType::VARSIZE:
             return zserio::bitSizeOfVarSize(static_cast<uint32_t>(Base::getValue()));
         case SchemaType::FIXED_SIGNED_BITFIELD:
-            return typeInfo.getBitSize();
         case SchemaType::FIXED_UNSIGNED_BITFIELD:
             return typeInfo.getBitSize();
         case SchemaType::DYNAMIC_SIGNED_BITFIELD:
-            return m_dynamicBitSize;
         case SchemaType::DYNAMIC_UNSIGNED_BITFIELD:
             return m_dynamicBitSize;
         default:

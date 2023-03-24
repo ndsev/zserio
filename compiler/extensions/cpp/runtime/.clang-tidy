@@ -1,6 +1,6 @@
 Checks: "-*,\
   bugprone-bool-pointer-implicit-conversion,\
-#  bugprone-branch-clone,\
+  bugprone-branch-clone,\
   bugprone-copy-constructor-init,\
   bugprone-dangling-handle,\
   bugprone-exception-escape,\
