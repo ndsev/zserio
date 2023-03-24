@@ -51,9 +51,9 @@ TEST_F(HeapOptionalHolderTest, lvalueConstructor)
     TrackingAllocator<std::vector<int>> alloc;
 
     std::vector<int> values{1, 2, 3};
-    void* origAddress = &values[0];
+    void* origAddress = values.data();
     HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optional{values, alloc};
-    ASSERT_NE(origAddress, &(*optional)[0]);
+    ASSERT_NE(origAddress, (*optional).data());
     ASSERT_EQ(values, *optional);
 
     HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optionalFromList{
@@ -70,10 +70,10 @@ TEST_F(HeapOptionalHolderTest, rvalueConstructor)
 
     std::vector<int> values{1, 2, 3};
     std::vector<int> origValues{ values };
-    void* origAddress = &values[0];
+    void* origAddress = values.data();
     HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optional{
             std::move(values), alloc};
-    ASSERT_EQ(origAddress, &(*optional)[0]);
+    ASSERT_EQ(origAddress, (*optional).data());
     ASSERT_EQ(origValues, *optional);
 
     ASSERT_GE(alloc.numAllocs(), 1u);
@@ -112,10 +112,10 @@ TEST_F(HeapOptionalHolderTest, copyConstructor)
 
     HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optionalVector{
             std::vector<int>{1, 2, 3}, allocVec};
-    void* origAddress = &(*optionalVector)[0];
+    void* origAddress = (*optionalVector).data();
     HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optionalVectorCopy{
             optionalVector};
-    ASSERT_NE(origAddress, &(*optionalVectorCopy)[0]);
+    ASSERT_NE(origAddress, (*optionalVectorCopy).data());
     ASSERT_EQ(*optionalVector, *optionalVectorCopy);
     ASSERT_EQ(optionalVector.get_allocator(), optionalVectorCopy.get_allocator());
 
@@ -144,10 +144,10 @@ TEST_F(HeapOptionalHolderTest, copyConstructorAllocator)
 
     HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optionalVector{
             std::vector<int>{1, 2, 3}, allocVec1};
-    void* origAddress = &(*optionalVector)[0];
+    void* origAddress = (*optionalVector).data();
     HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optionalVectorCopy{
             optionalVector, allocVec2};
-    ASSERT_NE(origAddress, &(*optionalVectorCopy)[0]);
+    ASSERT_NE(origAddress, (*optionalVectorCopy).data());
     ASSERT_EQ(*optionalVector, *optionalVectorCopy);
     ASSERT_NE(optionalVector.get_allocator(), optionalVectorCopy.get_allocator());
     ASSERT_EQ(optionalVector.get_allocator(), allocVec1);
@@ -210,10 +210,10 @@ TEST_F(HeapOptionalHolderTest, copyAssignmentOperator)
 
     HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optionalVector{
             std::vector<int>{1, 2, 3}, allocVec};
-    void* origAddress = &((*optionalVector)[0]);
+    void* origAddress = (*optionalVector).data();
     HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optionalVectorCopy;
     optionalVectorCopy = optionalVector;
-    ASSERT_NE(origAddress, &((*optionalVectorCopy)[0]));
+    ASSERT_NE(origAddress, (*optionalVectorCopy).data());
     ASSERT_EQ(*optionalVector, *optionalVectorCopy);
     ASSERT_EQ(optionalVector.get_allocator(), optionalVectorCopy.get_allocator());
     ASSERT_EQ(optionalVector.get_allocator(), allocVec);
@@ -240,10 +240,10 @@ TEST_F(HeapOptionalHolderTest, moveAssignmentOperator)
     HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optionalVector{
             std::vector<int>{1, 2, 3}, allocVec};
     std::vector<int> origValues{*optionalVector};
-    void* origAddress = &(*optionalVector)[0];
+    void* origAddress = (*optionalVector).data();
     HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optionalVectorMoved;
     optionalVectorMoved = std::move(optionalVector);
-    ASSERT_EQ(origAddress, &(*optionalVectorMoved)[0]);
+    ASSERT_EQ(origAddress, (*optionalVectorMoved).data());
     ASSERT_EQ(origValues, *optionalVectorMoved);
     // NOLINTNEXTLINE(bugprone-use-after-move,clang-analyzer-cplusplus.Move)
     ASSERT_EQ(optionalVector.get_allocator(), optionalVectorMoved.get_allocator());
@@ -271,10 +271,10 @@ TEST_F(HeapOptionalHolderTest, lvalueAssignmentOperator)
     TrackingAllocator<std::vector<int>> allocVec;
 
     std::vector<int> values{1, 2, 3};
-    void* origAddress = &values[0];
+    void* origAddress = values.data();
     HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optional(allocVec);
     optional = values;
-    ASSERT_NE(origAddress, &(*optional)[0]);
+    ASSERT_NE(origAddress, (*optional).data());
     ASSERT_EQ(values, *optional);
     ASSERT_EQ(optional.get_allocator(), allocVec);
 
@@ -283,7 +283,7 @@ TEST_F(HeapOptionalHolderTest, lvalueAssignmentOperator)
     TrackingAllocatorNonProp<std::vector<int>> allocVecNp;
     HeapOptionalHolder<std::vector<int>, TrackingAllocatorNonProp<std::vector<int>>> optionalNp(allocVecNp);
     optionalNp = values;
-    ASSERT_NE(origAddress, &(*optionalNp)[0]);
+    ASSERT_NE(origAddress, (*optionalNp).data());
     ASSERT_EQ(values, *optionalNp);
     ASSERT_EQ(optionalNp.get_allocator(), allocVecNp);
 
@@ -296,10 +296,10 @@ TEST_F(HeapOptionalHolderTest, rvalueAssignmentOperator)
 
     std::vector<int> values{1, 2, 3};
     std::vector<int> origValues{ values };
-    void* origAddress = &values[0];
+    void* origAddress = values.data();
     HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optional(allocVec);
     optional = std::move(values);
-    ASSERT_EQ(origAddress, &(*optional)[0]);
+    ASSERT_EQ(origAddress, (*optional).data());
     ASSERT_EQ(origValues, *optional);
     ASSERT_EQ(optional.get_allocator(), allocVec);
 
@@ -307,10 +307,10 @@ TEST_F(HeapOptionalHolderTest, rvalueAssignmentOperator)
 
     TrackingAllocatorNonProp<std::vector<int>> allocVecNp;
     values = origValues;
-    origAddress = &values[0];
+    origAddress = values.data();
     HeapOptionalHolder<std::vector<int>, TrackingAllocatorNonProp<std::vector<int>>> optionalNp(allocVecNp);
     optionalNp = std::move(values);
-    ASSERT_EQ(origAddress, &(*optionalNp)[0]);
+    ASSERT_EQ(origAddress, (*optionalNp).data());
     ASSERT_EQ(origValues, *optionalNp);
     ASSERT_EQ(optionalNp.get_allocator(), allocVecNp);
 

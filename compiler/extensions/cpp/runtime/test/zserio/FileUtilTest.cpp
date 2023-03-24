@@ -12,7 +12,7 @@ TEST(FileUtilTest, writeReadByteBufferBitSize)
     const std::string fileName = "FileUtilTest_byteBufferBitSize.bin";
 
     auto buffer = std::vector<uint8_t>{0xAB, 0xCD, 0xF0};
-    writeBufferToFile(&buffer[0], 20, BitsTag(), fileName);
+    writeBufferToFile(buffer.data(), 20, BitsTag(), fileName);
 
     BitBuffer readBitBuffer = readBufferFromFile(fileName);
     ASSERT_EQ(24, readBitBuffer.getBitSize());
@@ -31,7 +31,7 @@ TEST(FileUtilTest, writeReadByteBufferByteSize)
     const std::string fileName = "FileUtilTest_byteBufferByteSize.bin";
 
     auto buffer = std::vector<uint8_t>{0xAB, 0xCD, 0xF0};
-    writeBufferToFile(&buffer[0], buffer.size(), fileName);
+    writeBufferToFile(buffer.data(), buffer.size(), fileName);
 
     BitBuffer readBitBuffer = readBufferFromFile(fileName);
     ASSERT_EQ(24, readBitBuffer.getBitSize());
