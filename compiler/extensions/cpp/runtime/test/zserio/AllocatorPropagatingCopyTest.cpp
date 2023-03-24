@@ -50,7 +50,7 @@ public:
         return m_allocator;
     }
 
-    RegularWithAllocatorSupport(const allocator_type& allocator = allocator_type())
+    explicit RegularWithAllocatorSupport(const allocator_type& allocator = allocator_type())
         : m_allocator(allocator)
     {}
 

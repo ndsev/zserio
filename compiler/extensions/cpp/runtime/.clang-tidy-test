@@ -76,7 +76,7 @@ Checks: "-*,\
   google-build-namespaces,\
 #  google-build-using-namespace,\
 #  google-default-arguments,\
-#  google-explicit-constructor,\
+#(generated bitmasks break this rule)  google-explicit-constructor,\
   google-global-names-in-headers,\
 #  google-readability-casting,\
   google-runtime-int,\
