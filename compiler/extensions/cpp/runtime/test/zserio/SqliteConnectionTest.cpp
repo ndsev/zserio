@@ -83,7 +83,7 @@ TEST(SqliteConnectionTest, internalConstructor)
     ASSERT_EQ(SqliteConnection::INTERNAL_CONNECTION, db.getConnectionType());
 
     db.reset();
-    ASSERT_EQ(NULL, db.getConnection());
+    ASSERT_EQ(nullptr, db.getConnection());
 
     ASSERT_EQ(SQLITE_OK, sqlite3_shutdown());
 }
@@ -99,7 +99,7 @@ TEST(SqliteConnectionTest, defaultInternalConstructor)
     ASSERT_EQ(SqliteConnection::INTERNAL_CONNECTION, db.getConnectionType());
 
     db.reset();
-    ASSERT_EQ(NULL, db.getConnection());
+    ASSERT_EQ(nullptr, db.getConnection());
 
     ASSERT_EQ(SQLITE_OK, sqlite3_shutdown());
 }
@@ -116,7 +116,7 @@ TEST(SqliteConnectionTest, resetExternal)
     ASSERT_EQ(SqliteConnection::EXTERNAL_CONNECTION, db.getConnectionType());
 
     db.reset();
-    ASSERT_EQ(NULL, db.getConnection());
+    ASSERT_EQ(nullptr, db.getConnection());
 
     result = sqlite3_close(externalConnection);
     ASSERT_EQ(SQLITE_OK, result);
@@ -136,7 +136,7 @@ TEST(SqliteConnectionTest, resetInternal)
     ASSERT_EQ(SqliteConnection::INTERNAL_CONNECTION, db.getConnectionType());
 
     db.reset();
-    ASSERT_EQ(NULL, db.getConnection());
+    ASSERT_EQ(nullptr, db.getConnection());
 
     ASSERT_EQ(SQLITE_OK, sqlite3_shutdown());
 }
@@ -153,7 +153,7 @@ TEST(SqliteConnectionTest, resetDefaultInternal)
     ASSERT_EQ(SqliteConnection::INTERNAL_CONNECTION, db.getConnectionType());
 
     db.reset();
-    ASSERT_EQ(NULL, db.getConnection());
+    ASSERT_EQ(nullptr, db.getConnection());
 
     ASSERT_EQ(SQLITE_OK, sqlite3_shutdown());
 }
@@ -258,7 +258,7 @@ TEST(SqliteConnectionTest, reset)
     ASSERT_EQ(internalConnection, db.getConnection());
 
     db.reset();
-    ASSERT_EQ(NULL, db.getConnection());
+    ASSERT_EQ(nullptr, db.getConnection());
 
     ASSERT_EQ(SQLITE_OK, sqlite3_shutdown());
 }
