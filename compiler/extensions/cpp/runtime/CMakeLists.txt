@@ -14,6 +14,7 @@ enable_testing()
 
 set(CPPCHECK_HOME "" CACHE PATH "Home directory of cppcheck tool. If empty, cppcheck tool is not called.")
 set(SANITIZERS_ENABLED OFF CACHE BOOL "Whether the compiler sanitizers are enabled.")
+set(CLANG_TIDY_BIN "" CACHE STRING "Name of clang-tidy binary. If empty, clang-tidy tool is not called.")
 
 set(ZSERIO_PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../../..")
 set(CMAKE_MODULE_PATH "${ZSERIO_PROJECT_ROOT}/cmake")
@@ -70,6 +71,16 @@ install(DIRECTORY src/ DESTINATION cpp
         PATTERN "CMakeLists.txt"
         PATTERN "*.h"
         PATTERN "*.cpp")
+
+# clang-tidy
+if (CLANG_TIDY_BIN)
+    set_property(TARGET ZserioCppRuntime PROPERTY CXX_CLANG_TIDY
+        "${CLANG_TIDY_BIN}"
+        "--config-file=${CMAKE_CURRENT_SOURCE_DIR}/.clang-tidy")
+    set_property(TARGET ZserioCppRuntimeTest PROPERTY CXX_CLANG_TIDY
+        "${CLANG_TIDY_BIN}"
+        "--config-file=${CMAKE_CURRENT_SOURCE_DIR}/.clang-tidy-test")
+endif ()
 
 # add cppcheck custom command
 include(cppcheck_utils)

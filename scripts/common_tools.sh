@@ -94,12 +94,25 @@ set_global_cpp_variables()
 
     # gcovr binary to use for coverage report (gcc), by default is empty
     GCOVR_BIN="${GCOVR_BIN:-""}"
+    if [[ (! -z "${GCOVR_BIN}" && ! -f "`which "${GCOVR_BIN}"`") ]] ; then
+        stderr_echo "Provided GCOVR_BIN=\"${GCOVR_BIN}\" does not exist!"
+        return 1
+    fi
 
     # llvm-profdata binary to use for coverage report (clang), by default is empty
     LLVM_PROFDATA_BIN="${LLVM_PROFDATA_BIN:-""}"
+    if [[ (! -z "${LLVM_PROFDATA_BIN}" && ! -f "`which "${LLVM_PROFDATA_BIN}"`") ]] ; then
+        stderr_echo "Provided LLVM_PROFDATA_BIN=\"${LLVM_PROFDATA_BIN}\" does not exist!"
+        return 1
+    fi
 
     # llvm-cov binary to use for coverage report (clang), by default is empty
     LLVM_COV_BIN="${LLVM_COV_BIN:-""}"
+    if [[ (! -z "${LLVM_COV_BIN}" && ! -f "`which "${LLVM_COV_BIN}"`") ]] ; then
+        stderr_echo "Provided LLVM_COV_BIN=\"${LLVM_COV_BIN}\" does not exist!"
+        return 1
+    fi
+
     if [[ (! -z "${LLVM_PROFDATA_BIN}" && -z "${LLVM_COV_BIN}") ||
             (-z "${LLVM_PROFDATA_BIN}" && ! -z "${LLVM_COV_BIN}") ]] ; then
         stderr_echo "Both LLVM_PROFDATA_BIN and LLVM_COV_BIN environment variable must be set!"
@@ -108,6 +121,13 @@ set_global_cpp_variables()
 
     # Sanitizers configuration - sanitizers disabled by default
     SANITIZERS_ENABLED="${SANITIZERS_ENABLED:-0}"
+
+    # clang-tidy binary to use for static code check, by default is empty
+    CLANG_TIDY_BIN="${CLANG_TIDY_BIN:-""}"
+    if [[ (! -z "${CLANG_TIDY_BIN}" && ! -f "`which "${CLANG_TIDY_BIN}"`") ]] ; then
+        stderr_echo "Provided CLANG_TIDY_BIN=\"${CLANG_TIDY_BIN}\" does not exist!"
+        return 1
+    fi
 
     return 0
 }
@@ -708,6 +728,12 @@ compile_cpp_for_target()
         CMAKE_ARGS=("${CMAKE_ARGS[@]}" "-DSANITIZERS_ENABLED=ON")
     else
         CMAKE_ARGS=("${CMAKE_ARGS[@]}" "-DSANITIZERS_ENABLED=OFF")
+    fi
+
+    if [ ! -z "${CLANG_TIDY_BIN}" ] ; then
+        CMAKE_ARGS=("${CMAKE_ARGS[@]}" "-DCLANG_TIDY_BIN=${CLANG_TIDY_BIN}")
+    else
+        CMAKE_ARGS=("${CMAKE_ARGS[@]}" "-UCLANG_TIDY_BIN")
     fi
 
     # detect build type
