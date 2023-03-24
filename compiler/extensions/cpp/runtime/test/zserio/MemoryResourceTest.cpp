@@ -57,7 +57,9 @@ TEST(MemoryResourceTest, allocateDeallocate)
 
 TEST(MemoryResourceTest, isEqual)
 {
-    TestResource res1(1), res1_1(1), res2(2);
+    TestResource res1(1);
+    TestResource res1_1(1);
+    TestResource res2(2);
     ASSERT_TRUE(res1.isEqual(res1));
     ASSERT_TRUE(res1.isEqual(res1_1));
     ASSERT_FALSE(res1.isEqual(res2));
@@ -65,7 +67,9 @@ TEST(MemoryResourceTest, isEqual)
 
 TEST(MemoryResourceTest, equalOp)
 {
-    TestResource res1(1), res1_1(1), res2(2);
+    TestResource res1(1);
+    TestResource res1_1(1);
+    TestResource res2(2);
     ASSERT_TRUE(res1 == res1);
     ASSERT_TRUE(res1 == res1_1);
     ASSERT_FALSE(res1 == res2);
@@ -73,7 +77,9 @@ TEST(MemoryResourceTest, equalOp)
 
 TEST(MemoryResourceTest, nonEqualOp)
 {
-    TestResource res1(1), res1_1(1), res2(2);
+    TestResource res1(1);
+    TestResource res1_1(1);
+    TestResource res2(2);
     ASSERT_FALSE(res1 != res1);
     ASSERT_FALSE(res1 != res1_1);
     ASSERT_TRUE(res1 != res2);
