@@ -4,12 +4,16 @@
 
 [![](https://github.com/ndsev/zserio/actions/workflows/build_linux.yml/badge.svg)](https://github.com/ndsev/zserio/actions/workflows/build_linux.yml)
 [![](https://github.com/ndsev/zserio/actions/workflows/build_windows.yml/badge.svg)](https://github.com/ndsev/zserio/actions/workflows/build_windows.yml)
+[![](https://img.shields.io/endpoint?url=https://zserio.org/doc/runtime/cpp/coverage/clang/coverage_github_badge.json)](https://zserio.org/doc/runtime/cpp/coverage/clang)
+[![](https://img.shields.io/endpoint?url=https://zserio.org/doc/runtime/cpp/coverage/gcc/coverage_github_badge.json)](https://zserio.org/doc/runtime/cpp/coverage/gcc)
+[![](https://img.shields.io/endpoint?url=https://zserio.org/doc/runtime/java/coverage/coverage_github_badge.json)](https://zserio.org/doc/runtime/java/coverage)
+[![](https://img.shields.io/endpoint?url=https://zserio.org/doc/runtime/python/coverage/coverage_github_badge.json)](https://zserio.org/doc/runtime/python/coverage)
 [![](https://img.shields.io/github/release-date/ndsev/zserio)](https://github.com/ndsev/zserio/releases/latest)
 [![](https://img.shields.io/github/commits-since/ndsev/zserio/latest)](https://github.com/ndsev/zserio/commits/master)
 [![](https://img.shields.io/github/commit-activity/m/ndsev/zserio)](https://github.com/ndsev/zserio/commits/master)
-[![](https://img.shields.io/github/watchers/ndsev/zserio.svg)](https://GitHub.com/ndsev/zserio/watchers)
-[![](https://img.shields.io/github/forks/ndsev/zserio.svg)](https://GitHub.com/ndsev/zserio/network/members)
-[![](https://img.shields.io/github/stars/ndsev/zserio.svg?color=yellow)](https://GitHub.com/ndsev/zserio/stargazers)
+[![](https://img.shields.io/github/watchers/ndsev/zserio.svg)](https://github.com/ndsev/zserio/watchers)
+[![](https://img.shields.io/github/forks/ndsev/zserio.svg)](https://github.com/ndsev/zserio/network/members)
+[![](https://img.shields.io/github/stars/ndsev/zserio.svg?color=yellow)](https://github.com/ndsev/zserio/stargazers)
 
 --------
 
