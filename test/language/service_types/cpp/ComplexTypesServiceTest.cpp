@@ -85,7 +85,10 @@ private:
         for (uint32_t i = 0; i < response.getLength(); ++i)
         {
             const RGBModel& rgb = data.at(i).getRgb();
-            uint8_t c, m, y, k;
+            uint8_t c;
+            uint8_t m;
+            uint8_t y;
+            uint8_t k;
             convertRgbToCmyk(rgb.getRed(), rgb.getGreen(), rgb.getBlue(), c, m, y, k);
             cmykData[i].setCyan(c);
             cmykData[i].setMagenta(m);
@@ -102,7 +105,9 @@ private:
         for (uint32_t i = 0; i < response.getLength(); ++i)
         {
             const CMYKModel& cmyk = data.at(i).getCmyk();
-            uint8_t r, g, b;
+            uint8_t r;
+            uint8_t g;
+            uint8_t b;
             convertCmykToRgb(cmyk.getCyan(), cmyk.getMagenta(), cmyk.getYellow(), cmyk.getKey(), r, g, b);
             rgbData[i].setRed(r);
             rgbData[i].setGreen(g);
@@ -119,7 +124,10 @@ public:
     {
         for (size_t i = 0; i < 3; ++i)
         {
-            uint8_t c, m, y, k;
+            uint8_t c;
+            uint8_t m;
+            uint8_t y;
+            uint8_t k;
             convertRgbToCmyk(rgbValues[i][0], rgbValues[i][1], rgbValues[i][2], c, m, y, k);
             cmykValues[i][0] = c;
             cmykValues[i][1] = m;
