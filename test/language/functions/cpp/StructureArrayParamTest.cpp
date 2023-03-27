@@ -54,7 +54,6 @@ protected:
         parentStructure.initializeChildren();
     }
 
-protected:
     static const uint8_t CHILD_BIT_SIZE = 19;
     static const uint8_t ANOTHER_CHILD_BIT_SIZE = 17;
 

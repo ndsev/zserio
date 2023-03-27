@@ -135,7 +135,7 @@ Checks: "-*,\
   readability-misleading-indentation,\
   readability-misplaced-array-index,\
   readability-non-const-parameter,\
-#  readability-redundant-access-specifiers,\
+  readability-redundant-access-specifiers,\
   readability-redundant-control-flow,\
   readability-redundant-function-ptr-dereference,\
   readability-redundant-preprocessor,\

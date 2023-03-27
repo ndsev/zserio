@@ -33,7 +33,6 @@ protected:
         return bitBuffer;
     }
 
-protected:
     AllBuiltInTypes  m_allBuiltInTypes;
 
     static const std::string BLOB_NAME;
