@@ -27,7 +27,7 @@ public:
         m_database->createSchema();
     }
 
-    ~BlobFieldWithChildrenInitializationTableTest()
+    ~BlobFieldWithChildrenInitializationTableTest() override
     {
         delete m_database;
     }

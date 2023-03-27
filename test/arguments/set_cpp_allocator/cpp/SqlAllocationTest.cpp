@@ -32,7 +32,7 @@ public:
         m_database->createSchema();
     }
 
-    ~SqlAllocationTest()
+    ~SqlAllocationTest() override
     {
         m_database.reset();
         EXPECT_EQ(m_memoryResource.getNumDeallocations(), m_memoryResource.getNumAllocations());

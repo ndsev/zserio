@@ -28,7 +28,7 @@ public:
         m_database->createSchema();
     }
 
-    ~SubtypedEnumFieldTableTest()
+    ~SubtypedEnumFieldTableTest() override
     {
         delete m_database;
     }

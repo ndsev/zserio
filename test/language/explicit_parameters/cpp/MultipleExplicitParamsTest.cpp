@@ -30,7 +30,7 @@ public:
         m_database->createSchema();
     }
 
-    ~MultipleExplicitParamsTest()
+    ~MultipleExplicitParamsTest() override
     {
         delete m_database;
     }
@@ -115,17 +115,17 @@ protected:
     class MultipleParamsTableParameterProvider : public MultipleParamsTable::IParameterProvider
     {
     public:
-        virtual uint32_t getCount1(MultipleParamsTable::Row&)
+        virtual uint32_t getCount1(MultipleParamsTable::Row&) override
         {
             return MULTIPLE_PARAMS_COUNT1;
         }
 
-        virtual uint32_t getCount2(MultipleParamsTable::Row&)
+        virtual uint32_t getCount2(MultipleParamsTable::Row&) override
         {
             return MULTIPLE_PARAMS_COUNT2;
         }
 
-        virtual uint32_t getCount(MultipleParamsTable::Row&)
+        virtual uint32_t getCount(MultipleParamsTable::Row&) override
         {
             return MULTIPLE_PARAMS_COUNT;
         }

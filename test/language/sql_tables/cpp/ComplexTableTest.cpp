@@ -32,7 +32,7 @@ public:
         m_database->createSchema();
     }
 
-    ~ComplexTableTest()
+    ~ComplexTableTest() override
     {
         delete m_database;
     }
@@ -193,7 +193,7 @@ protected:
 
     class ComplexTableParameterProvider : public ComplexTable::IParameterProvider
     {
-        virtual uint32_t getCount(ComplexTable::Row&)
+        virtual uint32_t getCount(ComplexTable::Row&) override
         {
             return static_cast<uint32_t>(COMPLEX_TABLE_COUNT);
         }

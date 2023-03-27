@@ -28,7 +28,7 @@ public:
         m_database->createSchema();
     }
 
-    ~SubtypedBitmaskFieldTableTest()
+    ~SubtypedBitmaskFieldTableTest() override
     {
         delete m_database;
     }

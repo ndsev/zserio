@@ -28,7 +28,7 @@ public:
         m_database->createSchema();
     }
 
-    ~SubtypedBoolFieldTableTest()
+    ~SubtypedBoolFieldTableTest() override
     {
         delete m_database;
     }

@@ -30,7 +30,7 @@ public:
         m_database->createSchema();
     }
 
-    ~MultipleWithSameNameTest()
+    ~MultipleWithSameNameTest() override
     {
         delete m_database;
     }
@@ -78,12 +78,12 @@ protected:
     class MultipleParamsTableParameterProvider : public MultipleWithSameNameTable::IParameterProvider
     {
     public:
-        virtual uint32_t getParam1(MultipleWithSameNameTable::Row&)
+        virtual uint32_t getParam1(MultipleWithSameNameTable::Row&) override
         {
             return PARAM1;
         }
 
-        virtual float getParam2(MultipleWithSameNameTable::Row&)
+        virtual float getParam2(MultipleWithSameNameTable::Row&) override
         {
             return PARAM2;
         }

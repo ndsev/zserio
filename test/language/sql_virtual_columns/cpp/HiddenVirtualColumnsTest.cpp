@@ -34,7 +34,7 @@ public:
         m_database->createSchema();
     }
 
-    ~HiddenVirtualColumnsTest()
+    ~HiddenVirtualColumnsTest() override
     {
         delete m_database;
     }

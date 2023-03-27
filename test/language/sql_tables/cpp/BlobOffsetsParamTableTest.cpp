@@ -33,7 +33,7 @@ public:
         m_database->createSchema();
     }
 
-    ~BlobOffsetsParamTableTest()
+    ~BlobOffsetsParamTableTest() override
     {
         delete m_database;
     }

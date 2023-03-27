@@ -13,7 +13,7 @@ public:
     /**
      * Virtual destructor.
      */
-    virtual ~ISqliteDatabase() {}
+    virtual ~ISqliteDatabase() override {}
 
     /**
      * Creates database schema.

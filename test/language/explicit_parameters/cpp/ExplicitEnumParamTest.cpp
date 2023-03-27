@@ -30,7 +30,7 @@ public:
         m_database->createSchema();
     }
 
-    ~ExplicitEnumParamTest()
+    ~ExplicitEnumParamTest() override
     {
         delete m_database;
     }
@@ -95,12 +95,12 @@ protected:
     class EnumParamTableParameterProvider : public EnumParamTable::IParameterProvider
     {
     public:
-        virtual TestEnum getCount1(EnumParamTable::Row&)
+        virtual TestEnum getCount1(EnumParamTable::Row&) override
         {
             return ENUM_PARAM_TABLE_COUNT1;
         }
 
-        virtual TestEnum getCount2(EnumParamTable::Row&)
+        virtual TestEnum getCount2(EnumParamTable::Row&) override
         {
             return ENUM_PARAM_TABLE_COUNT2;
         }

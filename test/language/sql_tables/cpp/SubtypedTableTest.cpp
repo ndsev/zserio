@@ -28,7 +28,7 @@ public:
         m_database->createSchema();
     }
 
-    ~SubtypedTableTest()
+    ~SubtypedTableTest() override
     {
         delete m_database;
     }

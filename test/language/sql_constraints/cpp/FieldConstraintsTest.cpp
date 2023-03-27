@@ -29,7 +29,7 @@ public:
         m_database->createSchema();
     }
 
-    ~FieldConstraintsTest()
+    ~FieldConstraintsTest() override
     {
         delete m_database;
     }

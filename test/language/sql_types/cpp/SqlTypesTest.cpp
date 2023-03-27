@@ -23,7 +23,7 @@ public:
         m_database->createSchema();
     }
 
-    ~SqlTypesTest()
+    ~SqlTypesTest() override
     {
         delete m_database;
     }

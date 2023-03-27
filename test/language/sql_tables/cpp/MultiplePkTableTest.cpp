@@ -32,7 +32,7 @@ public:
         m_database->createSchema();
     }
 
-    ~MultiplePkTableTest()
+    ~MultiplePkTableTest() override
     {
         delete m_database;
     }

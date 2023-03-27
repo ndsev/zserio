@@ -33,7 +33,7 @@ public:
         m_database->createSchema();
     }
 
-    ~ConstParamTableTest()
+    ~ConstParamTableTest() override
     {
         delete m_database;
     }

@@ -31,7 +31,7 @@ public:
         m_database->createSchema();
     }
 
-    ~ColumnParamTableTest()
+    ~ColumnParamTableTest() override
     {
         delete m_database;
     }

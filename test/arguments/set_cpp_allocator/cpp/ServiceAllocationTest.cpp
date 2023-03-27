@@ -28,7 +28,7 @@ public:
             greetingClient(localServiceClient, m_allocator)
     {}
 
-    ~ServiceAllocationTest()
+    ~ServiceAllocationTest() override
     {
         EXPECT_EQ(m_memoryResource.getNumDeallocations(), m_memoryResource.getNumAllocations());
     }

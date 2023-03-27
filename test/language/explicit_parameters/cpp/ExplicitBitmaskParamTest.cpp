@@ -30,7 +30,7 @@ public:
         m_database->createSchema();
     }
 
-    ~ExplicitBitmaskParamTest()
+    ~ExplicitBitmaskParamTest() override
     {
         delete m_database;
     }
@@ -96,12 +96,12 @@ protected:
     class BitmaskParamTableParameterProvider : public BitmaskParamTable::IParameterProvider
     {
     public:
-        virtual TestBitmask getCount1(BitmaskParamTable::Row&)
+        virtual TestBitmask getCount1(BitmaskParamTable::Row&) override
         {
             return BITMASK_PARAM_TABLE_COUNT1;
         }
 
-        virtual TestBitmask getCount2(BitmaskParamTable::Row&)
+        virtual TestBitmask getCount2(BitmaskParamTable::Row&) override
         {
             return BITMASK_PARAM_TABLE_COUNT2;
         }

@@ -29,7 +29,7 @@ public:
         m_database->createSchema();
     }
 
-    ~TableWithImplicitArrayTest()
+    ~TableWithImplicitArrayTest() override
     {
         delete m_database;
     }

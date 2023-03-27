@@ -32,7 +32,7 @@ public:
         m_database->createSchema();
     }
 
-    ~Fts3VirtualTableTest()
+    ~Fts3VirtualTableTest() override
     {
         delete m_database;
     }

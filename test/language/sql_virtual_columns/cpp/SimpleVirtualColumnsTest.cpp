@@ -32,7 +32,7 @@ public:
         m_database->createSchema();
     }
 
-    ~SimpleVirtualColumnsTest()
+    ~SimpleVirtualColumnsTest() override
     {
         delete m_database;
     }
