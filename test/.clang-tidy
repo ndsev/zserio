@@ -79,7 +79,7 @@ Checks: "-*,\
 #(generated bitmasks break this rule)  google-explicit-constructor,\
   google-global-names-in-headers,\
 #  google-readability-casting,\
-#  google-runtime-int,\
+  google-runtime-int,\
   google-runtime-operator,\
   google-upgrade-googletest-case,\
   hicpp-multiway-paths-covered,\
