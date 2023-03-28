@@ -217,13 +217,19 @@ protected:
                 STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y,
                 STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z);
         packedElementArray.emplace_back(
-                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X + STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
-                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y + STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
-                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z + STRUCT_PACKED_ELEMENT_ARRAY_DELTA);
+                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X +
+                        static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA),
+                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y +
+                        static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA),
+                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z +
+                        static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA));
         packedElementArray.emplace_back(
-                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X + STRUCT_PACKED_ELEMENT_ARRAY_DELTA * 2,
-                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y + STRUCT_PACKED_ELEMENT_ARRAY_DELTA * 2,
-                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z + STRUCT_PACKED_ELEMENT_ARRAY_DELTA * 2);
+                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X +
+                        static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA) * 2,
+                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y +
+                        static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA) * 2,
+                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z +
+                        static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA) * 2);
     }
 
     void fillOptionalField(allocation_struct_optional::AllocationStructOptional& structOptionalField,
@@ -383,20 +389,20 @@ protected:
         const auto& packedElementArray = structField.getPackedElementArray();
         ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_SIZE, packedElementArray.size());
         ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X, packedElementArray[0].getX());
-        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X + STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
-                packedElementArray[1].getX());
-        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X + STRUCT_PACKED_ELEMENT_ARRAY_DELTA * 2,
-                packedElementArray[2].getX());
+        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X +
+                static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA), packedElementArray[1].getX());
+        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X +
+                static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA) * 2, packedElementArray[2].getX());
         ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y, packedElementArray[0].getY());
-        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y + STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
-                packedElementArray[1].getY());
-        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y + STRUCT_PACKED_ELEMENT_ARRAY_DELTA * 2,
-                packedElementArray[2].getY());
+        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y +
+                static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA), packedElementArray[1].getY());
+        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y +
+                static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA) * 2, packedElementArray[2].getY());
         ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z, packedElementArray[0].getZ());
-        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z + STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
-                packedElementArray[1].getZ());
-        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z + STRUCT_PACKED_ELEMENT_ARRAY_DELTA * 2,
-                packedElementArray[2].getZ());
+        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z +
+                static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA), packedElementArray[1].getZ());
+        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z +
+                static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA) * 2, packedElementArray[2].getZ());
 
         // structOptionalField
         const auto& optionalField0 = mainStructure.getStructOptionalField();

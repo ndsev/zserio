@@ -24,8 +24,8 @@ static void fillSimpleStruct(SimpleStruct& simpleStruct)
 static void fillParameterizedStruct(ParameterizedStruct& parameterizedStruct, const SimpleStruct& simpleStruct)
 {
     vector_type<uint8_t> array;
-    for (uint8_t i = 0; i < simpleStruct.getFieldU32(); i++)
-        array.push_back(i);
+    for (uint32_t i = 0; i < simpleStruct.getFieldU32(); i++)
+        array.push_back(static_cast<uint8_t>(i));
     parameterizedStruct.setArray(array);
 }
 
@@ -61,7 +61,7 @@ static void fillComplexStruct(ComplexStruct& complexStruct, bool createOptionals
     complexStruct.setDynamicBitField(8);
 
     vector_type<uint64_t> dynamicBitFieldArray;
-    for (uint64_t i = 1; i < 65536; i += 2)
+    for (size_t i = 1; i < 65536; i += 2)
         dynamicBitFieldArray.push_back(i);
     complexStruct.setDynamicBitFieldArray(dynamicBitFieldArray);
 
