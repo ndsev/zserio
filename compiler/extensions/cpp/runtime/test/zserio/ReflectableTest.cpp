@@ -903,7 +903,7 @@ TEST_F(ReflectableTest, varsizeReflectable)
 
 TEST_F(ReflectableTest, float16Reflectable)
 {
-    const float value = 2.0f;
+    const float value = 2.0F;
     auto reflectable = ReflectableFactory::getFloat16(value);
     checkFloatingPoint(value, reflectable, &IReflectable::getFloat,
             std::bind(&BitStreamReader::readFloat16, _1));
@@ -911,7 +911,7 @@ TEST_F(ReflectableTest, float16Reflectable)
 
 TEST_F(ReflectableTest, float32Reflectable)
 {
-    const float value = 1.2f;
+    const float value = 1.2F;
     auto reflectable = ReflectableFactory::getFloat32(value);
     checkFloatingPoint(value, reflectable, &IReflectable::getFloat,
             std::bind(&BitStreamReader::readFloat32, _1));

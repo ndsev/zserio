@@ -61,7 +61,7 @@ TEST_F(HeapOptionalHolderTest, lvalueConstructor)
     std::vector<int> listValues{1, 2, 3};
     ASSERT_EQ(listValues, *optionalFromList);
 
-    ASSERT_GE(alloc.numAllocs(), 2u);
+    ASSERT_GE(alloc.numAllocs(), 2U);
 }
 
 TEST_F(HeapOptionalHolderTest, rvalueConstructor)
@@ -76,7 +76,7 @@ TEST_F(HeapOptionalHolderTest, rvalueConstructor)
     ASSERT_EQ(origAddress, (*optional).data());
     ASSERT_EQ(origValues, *optional);
 
-    ASSERT_GE(alloc.numAllocs(), 1u);
+    ASSERT_GE(alloc.numAllocs(), 1U);
 }
 
 TEST_F(HeapOptionalHolderTest, forwardingConstructor)
@@ -88,7 +88,7 @@ TEST_F(HeapOptionalHolderTest, forwardingConstructor)
             alloc, src.begin(), src.end()};
     ASSERT_EQ(src, *optional);
 
-    ASSERT_GE(alloc.numAllocs(), 1u);
+    ASSERT_GE(alloc.numAllocs(), 1U);
 }
 
 TEST_F(HeapOptionalHolderTest, copyConstructor)
@@ -119,7 +119,7 @@ TEST_F(HeapOptionalHolderTest, copyConstructor)
     ASSERT_EQ(*optionalVector, *optionalVectorCopy);
     ASSERT_EQ(optionalVector.get_allocator(), optionalVectorCopy.get_allocator());
 
-    ASSERT_GE(alloc.numAllocs(), 2u);
+    ASSERT_GE(alloc.numAllocs(), 2U);
 
     TrackingAllocatorNonProp<int> allocNp;
     HeapOptionalHolder<int, TrackingAllocatorNonProp<int>> optionalNp(allocNp);
@@ -153,8 +153,8 @@ TEST_F(HeapOptionalHolderTest, copyConstructorAllocator)
     ASSERT_EQ(optionalVector.get_allocator(), allocVec1);
     ASSERT_EQ(optionalVectorCopy.get_allocator(), allocVec2);
 
-    ASSERT_GE(alloc1.numAllocs(), 1u);
-    ASSERT_GE(alloc2.numAllocs(), 1u);
+    ASSERT_GE(alloc1.numAllocs(), 1U);
+    ASSERT_GE(alloc2.numAllocs(), 1U);
 }
 
 TEST_F(HeapOptionalHolderTest, moveConstructor)
@@ -167,7 +167,7 @@ TEST_F(HeapOptionalHolderTest, moveConstructor)
     ASSERT_EQ(*optionalMoved, 13);
     ASSERT_EQ(optionalMoved.get_allocator(), alloc);
     ASSERT_FALSE(optional.hasValue()); // NOLINT(bugprone-use-after-move,clang-analyzer-cplusplus.Move)
-    ASSERT_EQ(alloc.numAllocs(), 1u);
+    ASSERT_EQ(alloc.numAllocs(), 1U);
 }
 
 TEST_F(HeapOptionalHolderTest, moveConstructorAllocator)
@@ -188,8 +188,8 @@ TEST_F(HeapOptionalHolderTest, moveConstructorAllocator)
     ASSERT_EQ(emptyOptional.get_allocator(), alloc);
     ASSERT_EQ(emptyMoved.get_allocator(), alloc2);
 
-    ASSERT_EQ(alloc.numAllocs(), 0u);
-    ASSERT_EQ(alloc2.numAllocs(), 1u);
+    ASSERT_EQ(alloc.numAllocs(), 0U);
+    ASSERT_EQ(alloc2.numAllocs(), 1U);
 }
 
 TEST_F(HeapOptionalHolderTest, copyAssignmentOperator)
@@ -218,7 +218,7 @@ TEST_F(HeapOptionalHolderTest, copyAssignmentOperator)
     ASSERT_EQ(optionalVector.get_allocator(), optionalVectorCopy.get_allocator());
     ASSERT_EQ(optionalVector.get_allocator(), allocVec);
 
-    ASSERT_GE(alloc.numAllocs(), 4u);
+    ASSERT_GE(alloc.numAllocs(), 4U);
 
     TrackingAllocatorNonProp<int> allocNp;
     HeapOptionalHolder<int, TrackingAllocatorNonProp<int>> optionalNp(13, allocNp);
@@ -249,7 +249,7 @@ TEST_F(HeapOptionalHolderTest, moveAssignmentOperator)
     ASSERT_EQ(optionalVector.get_allocator(), optionalVectorMoved.get_allocator());
     ASSERT_EQ(optionalVector.get_allocator(), allocVec);
 
-    ASSERT_GE(allocVec.numAllocs(), 1u);
+    ASSERT_GE(allocVec.numAllocs(), 1U);
 
     TrackingAllocatorNonProp<int> allocNp;
     HeapOptionalHolder<int, TrackingAllocatorNonProp<int>> optionalNp(13, allocNp);
@@ -278,7 +278,7 @@ TEST_F(HeapOptionalHolderTest, lvalueAssignmentOperator)
     ASSERT_EQ(values, *optional);
     ASSERT_EQ(optional.get_allocator(), allocVec);
 
-    ASSERT_GE(allocVec.numAllocs(), 1u);
+    ASSERT_GE(allocVec.numAllocs(), 1U);
 
     TrackingAllocatorNonProp<std::vector<int>> allocVecNp;
     HeapOptionalHolder<std::vector<int>, TrackingAllocatorNonProp<std::vector<int>>> optionalNp(allocVecNp);
@@ -287,7 +287,7 @@ TEST_F(HeapOptionalHolderTest, lvalueAssignmentOperator)
     ASSERT_EQ(values, *optionalNp);
     ASSERT_EQ(optionalNp.get_allocator(), allocVecNp);
 
-    ASSERT_GE(allocVecNp.numAllocs(), 1u);
+    ASSERT_GE(allocVecNp.numAllocs(), 1U);
 }
 
 TEST_F(HeapOptionalHolderTest, rvalueAssignmentOperator)
@@ -303,7 +303,7 @@ TEST_F(HeapOptionalHolderTest, rvalueAssignmentOperator)
     ASSERT_EQ(origValues, *optional);
     ASSERT_EQ(optional.get_allocator(), allocVec);
 
-    ASSERT_GE(allocVec.numAllocs(), 1u);
+    ASSERT_GE(allocVec.numAllocs(), 1U);
 
     TrackingAllocatorNonProp<std::vector<int>> allocVecNp;
     values = origValues;
@@ -314,7 +314,7 @@ TEST_F(HeapOptionalHolderTest, rvalueAssignmentOperator)
     ASSERT_EQ(origValues, *optionalNp);
     ASSERT_EQ(optionalNp.get_allocator(), allocVecNp);
 
-    ASSERT_GE(allocVecNp.numAllocs(), 1u);
+    ASSERT_GE(allocVecNp.numAllocs(), 1U);
 }
 
 TEST_F(HeapOptionalHolderTest, reset)
@@ -325,14 +325,14 @@ TEST_F(HeapOptionalHolderTest, reset)
             std::vector<int>{1, 2, 3}, allocVec};
     ASSERT_TRUE(optional.hasValue());
     ASSERT_EQ(1, (*optional)[0]);
-    ASSERT_EQ(allocVec.numAllocs(), 1u);
+    ASSERT_EQ(allocVec.numAllocs(), 1U);
 
     optional.reset();
     ASSERT_EQ(allocVec.numAllocs(), 0);
     ASSERT_FALSE(optional.hasValue());
 
     optional = std::vector<int>{3, 2, 1};
-    ASSERT_EQ(allocVec.numAllocs(), 1u);
+    ASSERT_EQ(allocVec.numAllocs(), 1U);
     ASSERT_TRUE(optional.hasValue());
     ASSERT_EQ(3, (*optional)[0]);
 
@@ -361,7 +361,7 @@ TEST_F(HeapOptionalHolderTest, setGet)
 
     HeapOptionalHolder<float> optionalFloat;
     ASSERT_THROW(*optionalFloat, CppRuntimeException);
-    const float floatValue = 3.14f;
+    const float floatValue = 3.14F;
     optionalFloat = floatValue;
     ASSERT_EQ(floatValue, optionalFloat.value());
 

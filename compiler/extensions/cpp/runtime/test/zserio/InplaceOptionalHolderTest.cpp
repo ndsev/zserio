@@ -203,7 +203,7 @@ TEST_F(InplaceOptionalHolderTest, setGet)
 
     InplaceOptionalHolder<float> optionalFloat;
     ASSERT_THROW(*optionalFloat, CppRuntimeException);
-    const float floatValue = 3.14f;
+    const float floatValue = 3.14F;
     optionalFloat = floatValue;
     ASSERT_EQ(floatValue, optionalFloat.value());
 

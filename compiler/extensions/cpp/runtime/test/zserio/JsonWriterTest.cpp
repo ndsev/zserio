@@ -180,7 +180,7 @@ TEST(JsonWriterTest, floatValue)
     JsonWriter jsonWriter(os);
     IWalkObserver& observer = jsonWriter;
 
-    observer.visitValue(ReflectableFactory::getFloat32(3.5f), FLOAT_FIELD_INFO);
+    observer.visitValue(ReflectableFactory::getFloat32(3.5F), FLOAT_FIELD_INFO);
 
     // note that this is not valid json
     ASSERT_EQ("\"floatField\": 3.5", os.str());

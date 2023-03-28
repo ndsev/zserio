@@ -101,13 +101,13 @@ TEST(StringConvertUtilTest, convertUInt64)
 TEST(StringConvertUtilTest, convertFloat)
 {
     char buffer[48];
-    EXPECT_EQ(std::string("13579.247"), convertFloatToString(buffer, 13579.2468f));
-    EXPECT_EQ(std::string("-2468.123"), convertFloatToString(buffer, -2468.123456789f));
-    EXPECT_EQ(std::string("1.0"), convertFloatToString(buffer, 1.0f));
-    EXPECT_EQ(std::string("10000000000.0"), convertFloatToString(buffer, 1E10f));
-    EXPECT_EQ(std::string("-10000000000.0"), convertFloatToString(buffer, -1E10f));
-    EXPECT_EQ(std::string("+Inf"), convertFloatToString(buffer, 1E20f));
-    EXPECT_EQ(std::string("-Inf"), convertFloatToString(buffer, -1E20f));
+    EXPECT_EQ(std::string("13579.247"), convertFloatToString(buffer, 13579.2468F));
+    EXPECT_EQ(std::string("-2468.123"), convertFloatToString(buffer, -2468.123456789F));
+    EXPECT_EQ(std::string("1.0"), convertFloatToString(buffer, 1.0F));
+    EXPECT_EQ(std::string("10000000000.0"), convertFloatToString(buffer, 1E10F));
+    EXPECT_EQ(std::string("-10000000000.0"), convertFloatToString(buffer, -1E10F));
+    EXPECT_EQ(std::string("+Inf"), convertFloatToString(buffer, 1E20F));
+    EXPECT_EQ(std::string("-Inf"), convertFloatToString(buffer, -1E20F));
 }
 
 TEST(StringConvertUtilTest, convertBool)

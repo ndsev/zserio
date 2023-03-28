@@ -253,7 +253,7 @@ TEST(AnyHolderTest, setGet)
     ASSERT_EQ(intValue, any.get<int>());
     ASSERT_THROW(any.get<float>(), CppRuntimeException);
 
-    const float floatValue = 3.14f;
+    const float floatValue = 3.14F;
     any.set(floatValue);
     ASSERT_THROW(any.get<int>(), CppRuntimeException);
     ASSERT_EQ(floatValue, any.get<float>());
@@ -277,7 +277,7 @@ TEST(AnyHolderTest, isType)
     any.set(intValue);
     ASSERT_TRUE(any.isType<int>());
 
-    const float floatValue = 3.14f;
+    const float floatValue = 3.14F;
     any.set(floatValue);
     ASSERT_TRUE(any.isType<float>());
     ASSERT_FALSE(any.isType<int>());

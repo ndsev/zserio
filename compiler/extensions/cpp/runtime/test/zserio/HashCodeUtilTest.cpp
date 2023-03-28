@@ -107,7 +107,7 @@ TEST(HashCodeUtilTest, simpleTypes)
     const int64_t int64Value = -1;
     EXPECT_EQ(HASH_PRIME_NUMBER, calcHashCode(hashSeed, int64Value));
 
-    const float floatValue = 10.0f;
+    const float floatValue = 10.0F;
     EXPECT_EQ(HASH_PRIME_NUMBER + convertFloatToUInt32(floatValue), calcHashCode(hashSeed, floatValue));
 
     const double doubleValue = 10.0;

@@ -31,8 +31,8 @@ TEST(ReflectableUtilTest, unequalTypeInfo)
             ReflectableFactory::getVarSize(0)));
     ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getInt8(0),
             ReflectableFactory::getFloat32(0.0)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getFloat16(0.0f),
-            ReflectableFactory::getFloat32(0.0f)));
+    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getFloat16(0.0F),
+            ReflectableFactory::getFloat32(0.0F)));
     ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getString(""),
             ReflectableFactory::getInt8(0)));
     ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getBitBuffer(BitBuffer()),
@@ -135,15 +135,15 @@ TEST(ReflectableUtilTest, equalUnsignedIntegrals)
 
 TEST(ReflectableUtilTest, equalFloatingPoints)
 {
-    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getFloat16(0.0f),
-            ReflectableFactory::getFloat16(0.0f)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getFloat16(-1.0f),
-            ReflectableFactory::getFloat16(1.0f)));
+    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getFloat16(0.0F),
+            ReflectableFactory::getFloat16(0.0F)));
+    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getFloat16(-1.0F),
+            ReflectableFactory::getFloat16(1.0F)));
 
-    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getFloat32(0.0f),
-            ReflectableFactory::getFloat32(0.0f)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getFloat32(-1.0f),
-            ReflectableFactory::getFloat32(1.0f)));
+    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getFloat32(0.0F),
+            ReflectableFactory::getFloat32(0.0F)));
+    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getFloat32(-1.0F),
+            ReflectableFactory::getFloat32(1.0F)));
 
     ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getFloat64(0.0),
             ReflectableFactory::getFloat64(0.0)));
@@ -287,8 +287,8 @@ TEST(ReflectableUtilTest, getValueArithmeticType)
 
     ASSERT_EQ(0, ReflectableUtil::getValue<uint32_t>(ReflectableFactory::getVarSize(0)));
 
-    ASSERT_EQ(1.0f, ReflectableUtil::getValue<float>(ReflectableFactory::getFloat16(1.0f)));
-    ASSERT_EQ(3.5f, ReflectableUtil::getValue<float>(ReflectableFactory::getFloat32(3.5f)));
+    ASSERT_EQ(1.0F, ReflectableUtil::getValue<float>(ReflectableFactory::getFloat16(1.0F)));
+    ASSERT_EQ(3.5F, ReflectableUtil::getValue<float>(ReflectableFactory::getFloat32(3.5F)));
     ASSERT_EQ(9.875, ReflectableUtil::getValue<double>(ReflectableFactory::getFloat64(9.875)));
 }
 
