@@ -303,9 +303,9 @@ namespace
 #endif
 } // namespace
 
-BitStreamReader::ReaderContext::ReaderContext(const uint8_t* constBuffer, size_t constBufferBitSize)
-:   buffer(const_cast<uint8_t*>(constBuffer)),
-    bufferBitSize(constBufferBitSize),
+BitStreamReader::ReaderContext::ReaderContext(const uint8_t* readBuffer, size_t readBufferBitSize)
+:   buffer(readBuffer),
+    bufferBitSize(readBufferBitSize),
     cacheNumBits(0),
     bitIndex(0)
 {

@@ -31,10 +31,10 @@ public:
         /**
          * Constructor.
          *
-         * \param buffer Pointer to the buffer to read.
-         * \param bufferBitSize Size of the buffer in bits.
+         * \param readBuffer Pointer to the buffer to read.
+         * \param readBufferBitSize Size of the buffer in bits.
          */
-        explicit ReaderContext(const uint8_t* buffer, size_t bufferBitSize);
+        explicit ReaderContext(const uint8_t* readBuffer, size_t readBufferBitSize);
 
         /**
          * Copying and moving is disallowed!
@@ -56,7 +56,7 @@ public:
             uint64_t buffer64; /**< Cache buffer used on 64bit platforms. */
         };
 
-        uint8_t* buffer; /**< Buffer to read from. */
+        const uint8_t* buffer; /**< Buffer to read from. */
         const BitPosType bufferBitSize; /**< Size of the buffer in bits. */
 
         BitCache cache; /**< Bit cache to optimize bit reading. */
