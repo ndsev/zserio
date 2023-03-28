@@ -26,11 +26,11 @@ MemoryResource* getDefaultResource() noexcept
     return getCurrentDefaultResource();
 }
 
-MemoryResource* setDefaultResource(MemoryResource* newDefaultResource) noexcept
+MemoryResource* setDefaultResource(MemoryResource* resource) noexcept
 {
-    MemoryResource* resource = newDefaultResource ? newDefaultResource : getNewDeleteResource();
-    std::swap(resource, getCurrentDefaultResource());
-    return resource;
+    MemoryResource* defaultResource = resource ? resource : getNewDeleteResource();
+    std::swap(defaultResource, getCurrentDefaultResource());
+    return defaultResource;
 }
 
 } // namespace pmr

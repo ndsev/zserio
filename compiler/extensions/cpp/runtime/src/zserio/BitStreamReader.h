@@ -343,9 +343,9 @@ public:
     /**
      * Sets current bit position. Use with caution!
      *
-     * \param pos New bit position.
+     * \param position New bit position.
      */
-    void setBitPosition(BitPosType pos);
+    void setBitPosition(BitPosType position);
 
     /**
      * Moves current bit position to perform the requested bit alignment.

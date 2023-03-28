@@ -375,7 +375,7 @@ inline void BitStreamWriter::writeUnsignedVarNum(uint64_t value, size_t maxVarBy
     writeVarNum(value, false, false, maxVarBytes, numVarBytes);
 }
 
-inline void BitStreamWriter::writeVarNum(uint64_t value, bool isSigned, bool isNegative, size_t maxVarBytes,
+inline void BitStreamWriter::writeVarNum(uint64_t value, bool hasSign, bool isNegative, size_t maxVarBytes,
         size_t numVarBytes)
 {
     static const uint64_t bitMasks[8] = { 0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x7F, 0xFF };
@@ -386,7 +386,7 @@ inline void BitStreamWriter::writeVarNum(uint64_t value, bool isSigned, bool isN
         uint8_t byte = 0x00;
         uint8_t numBits = 8;
         const bool hasNextByte = (i < numVarBytes - 1);
-        const bool hasSignBit = (isSigned && i == 0);
+        const bool hasSignBit = (hasSign && i == 0);
         if (hasSignBit)
         {
             if (isNegative)

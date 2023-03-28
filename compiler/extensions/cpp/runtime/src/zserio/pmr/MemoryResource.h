@@ -176,6 +176,7 @@ MemoryResource* getDefaultResource() noexcept;
  * It is undefined behavior to call setDefaultResource together with getDefaultResource concurrently.
  *
  * \param resource Resource to be set as default, or nullptr to use zserio::pmr::NewDeleteResource.
+ *
  * \return Previous default resource.
  */
 MemoryResource* setDefaultResource(MemoryResource* resource) noexcept;
