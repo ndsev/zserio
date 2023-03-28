@@ -31,7 +31,8 @@ float convertUInt16ToFloat(uint16_t float16Value)
 {
     // decompose half precision float (float16)
     const uint16_t sign16Shifted = (float16Value & FLOAT16_SIGN_MASK);
-    const uint16_t exponent16 = (float16Value & FLOAT16_EXPONENT_MASK) >> FLOAT16_EXPONENT_BIT_POSITION;
+    const uint16_t exponent16 = static_cast<uint16_t>(float16Value & FLOAT16_EXPONENT_MASK) >>
+            FLOAT16_EXPONENT_BIT_POSITION;
     const uint16_t significand16 = (float16Value & FLOAT16_SIGNIFICAND_MASK);
 
     // calculate significand for single precision float (float32)
@@ -50,7 +51,7 @@ float convertUInt16ToFloat(uint16_t float16Value)
             while ((significand32 & (FLOAT32_SIGNIFICAND_MASK + 1)) == 0)
             {
                 exponent32--;
-                significand32 <<= 1;
+                significand32 <<= 1U;
             }
             // mask out overflowed leading bit from significand (normalized has implicit leading bit 1)
             significand32 &= FLOAT32_SIGNIFICAND_MASK;
@@ -157,7 +158,7 @@ uint16_t convertFloatToUInt16(float float32)
     const uint16_t sign16Shifted = static_cast<uint16_t>(sign32Shifted >> (FLOAT32_SIGN_BIT_POSITION -
             FLOAT16_SIGN_BIT_POSITION));
     const uint16_t exponent16Shifted = static_cast<uint16_t>(exponent16 << FLOAT16_EXPONENT_BIT_POSITION);
-    uint16_t float16Value = sign16Shifted | exponent16Shifted | significand16;
+    uint16_t float16Value = static_cast<uint16_t>(sign16Shifted | exponent16Shifted) | significand16;
 
     // check rounding
     if (needsRounding)

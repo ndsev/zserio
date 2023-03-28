@@ -47,7 +47,7 @@ private:
 const std::string AutoArrayBitfieldParamTest::BLOB_NAME = "language/array_types/auto_array_bitfield_param.blob";
 const uint8_t AutoArrayBitfieldParamTest::NUM_BITS_PARAM = 9;
 
-const size_t AutoArrayBitfieldParamTest::DYNAMIC_BITFIELD_ARRAY_SIZE = (1 << 9) - 1;
+const size_t AutoArrayBitfieldParamTest::DYNAMIC_BITFIELD_ARRAY_SIZE = (1U << 9U) - 1;
 
 TEST_F(AutoArrayBitfieldParamTest, writeRead)
 {

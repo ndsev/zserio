@@ -57,7 +57,7 @@ TEST_F(BitmaskUsedByBitmaskTest, underlyingTypeConstructor)
     const Permission permission(READ_VALUE);
     ASSERT_TRUE((permission & Permission::Values::READ) == Permission::Values::READ);
 
-    ASSERT_THROW(Permission(1 << PERMISSION_BITSIZEOF), ::zserio::CppRuntimeException);
+    ASSERT_THROW(Permission(1U << PERMISSION_BITSIZEOF), ::zserio::CppRuntimeException);
 }
 
 TEST_F(BitmaskUsedByBitmaskTest, readConstructor)

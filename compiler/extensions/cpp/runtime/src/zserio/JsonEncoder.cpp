@@ -85,8 +85,8 @@ void JsonEncoder::encodeString(std::ostream& os, StringView value)
                 os.put('u');
                 os.put('0');
                 os.put('0');
-                os.put(HEX[(ch >> 4) & 0xf]);
-                os.put(HEX[ch & 0xf]);
+                os.put(HEX[static_cast<uint8_t>(static_cast<uint8_t>(ch) >> 4U) & 0xFU]);
+                os.put(HEX[static_cast<uint8_t>(ch) & 0xFU]);
             }
             else
             {

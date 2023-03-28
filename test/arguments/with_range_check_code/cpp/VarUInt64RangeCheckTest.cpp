@@ -31,7 +31,7 @@ protected:
 };
 
 const uint64_t VarUInt64RangeCheckTest::VARUINT64_LOWER_BOUND = UINT64_C(0);
-const uint64_t VarUInt64RangeCheckTest::VARUINT64_UPPER_BOUND = (UINT64_C(1) << 57) - 1;
+const uint64_t VarUInt64RangeCheckTest::VARUINT64_UPPER_BOUND = (UINT64_C(1) << 57U) - 1;
 
 TEST_F(VarUInt64RangeCheckTest, varUInt64LowerBound)
 {

@@ -83,9 +83,12 @@ TEST_F(BitStreamWriterTest, writeUnalignedData)
         ASSERT_THROW(writer.writeBits64(0, 1), CppRuntimeException);
 
         // check written value
-        uint8_t writtenTestValue = static_cast<uint8_t>(bitBuffer.getBuffer()[offset / 8] << (offset % 8));
+        uint8_t writtenTestValue = static_cast<uint8_t>(bitBuffer.getBuffer()[offset / 8U] << (offset % 8U));
         if (offset % 8 != 0)
-            writtenTestValue |= bitBuffer.getBuffer()[offset / 8 + 1] >> (8 - (offset % 8));
+        {
+            writtenTestValue |=
+                    static_cast<uint8_t>(bitBuffer.getBuffer()[offset / 8U + 1U] >> (8U - (offset % 8U)));
+        }
         ASSERT_EQ(testValue, writtenTestValue) << "Offset: " << offset;
     }
 }
@@ -142,10 +145,10 @@ TEST_F(BitStreamWriterTest, writeSignedBits)
     }
 
     // check value out of range
-    for (int i = 1; i < 32; ++i)
+    for (uint32_t i = 1; i < 32; ++i)
     {
-        const int32_t minSigned = -(INT32_C(1) << (i - 1));
-        const int32_t maxSigned =  (INT32_C(1) << (i - 1)) - 1;
+        const int32_t minSigned = -static_cast<int32_t>(1U << (i - 1U));
+        const int32_t maxSigned =  static_cast<int32_t>((1U << (i - 1U)) - 1U);
         m_externalBufferWriter.writeSignedBits(minSigned, static_cast<uint8_t>(i));
         m_externalBufferWriter.writeSignedBits(maxSigned, static_cast<uint8_t>(i));
 
@@ -187,42 +190,43 @@ TEST_F(BitStreamWriterTest, writeSignedBits64)
 TEST_F(BitStreamWriterTest, writeVarInt64)
 {
     // check value out of range
-    const int64_t outOfRangeValue = INT64_C(1) << ( 6 + 7 + 7 + 7 + 7 + 7 + 7 + 8);
+    const int64_t outOfRangeValue =
+            static_cast<int64_t>(UINT64_C(1) << (6U + 7U + 7U + 7U + 7U + 7U + 7U + 8U));
     ASSERT_THROW(m_externalBufferWriter.writeVarInt64(outOfRangeValue), CppRuntimeException);
 }
 
 TEST_F(BitStreamWriterTest, writeVarInt32)
 {
     // check value out of range
-    const int32_t outOfRangeValue = INT32_C(1) << (6 + 7 + 7 + 8);
+    const int32_t outOfRangeValue = static_cast<int32_t>(1U << (6U + 7U + 7U + 8U));
     ASSERT_THROW(m_externalBufferWriter.writeVarInt32(outOfRangeValue), CppRuntimeException);
 }
 
 TEST_F(BitStreamWriterTest, writeVarInt16)
 {
     // check value out of range
-    const int16_t outOfRangeValue = INT16_C(1) << (6 + 8);
+    const int16_t outOfRangeValue = static_cast<int16_t>(1U << (6U + 8U));
     ASSERT_THROW(m_externalBufferWriter.writeVarInt16(outOfRangeValue), CppRuntimeException);
 }
 
 TEST_F(BitStreamWriterTest, writeVarUInt64)
 {
     // check value out of range
-    const uint64_t outOfRangeValue = UINT64_C(1) << (7 + 7 + 7 + 7 + 7 + 7 + 7 + 8);
+    const uint64_t outOfRangeValue = UINT64_C(1) << (7U + 7U + 7U + 7U + 7U + 7U + 7U + 8U);
     ASSERT_THROW(m_externalBufferWriter.writeVarUInt64(outOfRangeValue), CppRuntimeException);
 }
 
 TEST_F(BitStreamWriterTest, writeVarUInt32)
 {
     // check value out of range
-    const uint32_t outOfRangeValue = UINT32_C(1) << (7 + 7 + 7 + 8);
+    const uint32_t outOfRangeValue = UINT32_C(1) << (7U + 7U + 7U + 8U);
     ASSERT_THROW(m_externalBufferWriter.writeVarUInt32(outOfRangeValue), CppRuntimeException);
 }
 
 TEST_F(BitStreamWriterTest, writeVarUInt16)
 {
     // check value out of range
-    const uint16_t outOfRangeValue = (UINT16_C(1)) << (7 + 8);
+    const uint16_t outOfRangeValue = static_cast<uint16_t>(1U << (7U + 8U));
     ASSERT_THROW(m_externalBufferWriter.writeVarUInt16(outOfRangeValue), CppRuntimeException);
 }
 
@@ -241,7 +245,7 @@ TEST_F(BitStreamWriterTest, writeVarUInt)
 TEST_F(BitStreamWriterTest, writeVarSize)
 {
     // check value out of range
-    const uint32_t outOfRangeValue = UINT32_C(1) << (2 + 7 + 7 + 7 + 8);
+    const uint32_t outOfRangeValue = UINT32_C(1) << (2U + 7U + 7U + 7U + 8U);
     ASSERT_THROW(m_externalBufferWriter.writeVarSize(outOfRangeValue), CppRuntimeException);
 }
 

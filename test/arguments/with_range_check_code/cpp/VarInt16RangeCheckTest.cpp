@@ -30,8 +30,8 @@ protected:
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
-const int16_t VarInt16RangeCheckTest::VARINT16_LOWER_BOUND = -((INT16_C(1) << 14) - 1);
-const int16_t VarInt16RangeCheckTest::VARINT16_UPPER_BOUND = (INT16_C(1) << 14) - 1;
+const int16_t VarInt16RangeCheckTest::VARINT16_LOWER_BOUND = -static_cast<int16_t>((1U << 14U) - 1);
+const int16_t VarInt16RangeCheckTest::VARINT16_UPPER_BOUND = static_cast<int16_t>((1U << 14U) - 1);
 
 TEST_F(VarInt16RangeCheckTest, varInt16LowerBound)
 {

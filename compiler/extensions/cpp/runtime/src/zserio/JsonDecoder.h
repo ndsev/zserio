@@ -246,7 +246,7 @@ bool BasicJsonDecoder<ALLOC>::decodeUnicodeEscape(const char*& pInput, string<AL
     if (ch2 == -1)
         return false;
 
-    value.push_back(static_cast<char>(ch1 << 4) | ch2);
+    value.push_back(static_cast<char>(ch1 << 4U) | ch2);
     return true;
 }
 

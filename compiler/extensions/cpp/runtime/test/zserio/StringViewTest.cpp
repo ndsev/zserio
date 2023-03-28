@@ -134,7 +134,7 @@ TEST(StringViewTest, MaxSize)
 {
     const char* str = "Karbanatek";
     StringView sv(str);
-    ASSERT_LE((1U << 16), sv.max_size());
+    ASSERT_LE(1U << 16U, sv.max_size());
 }
 
 TEST(StringViewTest, Empty)

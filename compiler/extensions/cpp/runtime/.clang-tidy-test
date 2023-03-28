@@ -84,7 +84,7 @@ Checks: "-*,\
   google-upgrade-googletest-case,\
   hicpp-multiway-paths-covered,\
   hicpp-no-assembler,\
-#  hicpp-signed-bitwise,\
+  hicpp-signed-bitwise,\
   misc-definitions-in-headers,\
   misc-misplaced-const,\
   misc-new-delete-overloads,\

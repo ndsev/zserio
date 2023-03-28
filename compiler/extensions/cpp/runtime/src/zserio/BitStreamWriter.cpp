@@ -241,7 +241,7 @@ void BitStreamWriter::writeBytes(Span<const uint8_t> data)
     writeVarSize(convertSizeToUInt32(len));
 
     const BitPosType beginBitPosition = getBitPosition();
-    if ((beginBitPosition & 0x07) != 0)
+    if ((beginBitPosition & 0x07U) != 0)
     {
         // we are not aligned to byte
         for (size_t i = 0; i < len; ++i)
@@ -262,7 +262,7 @@ void BitStreamWriter::writeString(StringView data)
     writeVarSize(convertSizeToUInt32(len));
 
     const BitPosType beginBitPosition = getBitPosition();
-    if ((beginBitPosition & 0x07) != 0)
+    if ((beginBitPosition & 0x07U) != 0)
     {
         // we are not aligned to byte
         for (size_t i = 0; i < len; ++i)
@@ -316,7 +316,7 @@ void BitStreamWriter::writeUnsignedBits(uint32_t data, uint8_t numBits)
     checkCapacity(m_bitIndex + numBits);
 
     uint8_t restNumBits = numBits;
-    const uint8_t bitsUsed = m_bitIndex & 0x07;
+    const uint8_t bitsUsed = m_bitIndex & 0x07U;
     uint8_t bitsFree = 8 - bitsUsed;
     size_t byteIndex = m_bitIndex / 8;
 
@@ -324,7 +324,7 @@ void BitStreamWriter::writeUnsignedBits(uint32_t data, uint8_t numBits)
     {
         // first part
         const uint8_t shiftNum = restNumBits - bitsFree;
-        const uint8_t maskedByte = m_buffer[byteIndex] & ~(0xFF >> bitsUsed);
+        const uint8_t maskedByte = m_buffer[byteIndex] & ~(0xFFU >> bitsUsed);
         m_buffer[byteIndex++] = maskedByte | static_cast<uint8_t>(data >> shiftNum);
         restNumBits -= bitsFree;
 
@@ -344,7 +344,8 @@ void BitStreamWriter::writeUnsignedBits(uint32_t data, uint8_t numBits)
     {
         const uint8_t shiftNum = bitsFree - restNumBits;
         const uint32_t mask = MAX_U32_VALUES[restNumBits];
-        const uint8_t maskedByte = m_buffer[byteIndex] & ~static_cast<uint8_t>(mask << shiftNum);
+        const uint8_t maskedByte = m_buffer[byteIndex] &
+                static_cast<uint8_t>(~static_cast<uint8_t>(mask << shiftNum));
         m_buffer[byteIndex] = maskedByte | static_cast<uint8_t>((data & mask) << shiftNum);
     }
 
@@ -359,7 +360,7 @@ inline void BitStreamWriter::writeUnsignedBits64(uint64_t data, uint8_t numBits)
     }
     else
     {
-        writeUnsignedBits(static_cast<uint32_t>(data >> 32), numBits - 32);
+        writeUnsignedBits(static_cast<uint32_t>(data >> 32U), numBits - 32);
         writeUnsignedBits(static_cast<uint32_t>(data), 32);
     }
 }
@@ -390,13 +391,13 @@ inline void BitStreamWriter::writeVarNum(uint64_t value, bool hasSign, bool isNe
         if (hasSignBit)
         {
             if (isNegative)
-                byte |= 0x80;
+                byte |= 0x80U;
             numBits--;
         }
         if (hasNextByte)
         {
             numBits--;
-            byte |= (0x01 << numBits); // use bit 6 if signed bit is present, use bit 7 otherwise
+            byte |= (0x01U << numBits); // use bit 6 if signed bit is present, use bit 7 otherwise
         }
         else // this is the last byte
         {

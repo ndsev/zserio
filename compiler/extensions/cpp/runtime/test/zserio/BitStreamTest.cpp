@@ -328,17 +328,17 @@ TEST_F(BitStreamTest, readVarInt32)
         -65536,
         65536,
 
-        ( INT32_C(1) << ( 0 ) ),
-        ( INT32_C(1) << ( 6 ) ) - 1,
+        static_cast<int32_t>(1U << (0U)),
+        static_cast<int32_t>(1U << (6U)) - 1,
 
-        ( INT32_C(1) << ( 6 ) ),
-        ( INT32_C(1) << ( 6+7 ) ) - 1,
+        static_cast<int32_t>(1U << (6U)),
+        static_cast<int32_t>(1U << (6U+7)) - 1,
 
-        ( INT32_C(1) << ( 6+7 ) ),
-        ( INT32_C(1) << ( 6+7+7 ) ) - 1,
+        static_cast<int32_t>(1U << (6U+7)),
+        static_cast<int32_t>(1U << (6U+7+7)) - 1,
 
-        ( INT32_C(1) << ( 6+7+7 ) ),
-        ( INT32_C(1) << ( 6+7+7+8 ) ) - 1,
+        static_cast<int32_t>(1U << (6U+7+7)),
+        static_cast<int32_t>(1U << (6U+7+7+8)) - 1,
     };
 
     std::function<void (BitStreamWriter&, int32_t)> writerFunc = &BitStreamWriter::writeVarInt32;
@@ -355,11 +355,11 @@ TEST_F(BitStreamTest, readVarInt16)
         -8192,
         8192,
 
-        ( INT16_C(1) << ( 0 ) ),
-        ( INT16_C(1) << ( 6 ) ) - 1,
+        static_cast<int16_t>(1U << (0U)),
+        static_cast<int16_t>(1U << (6U)) - 1,
 
-        ( INT16_C(1) << ( 6 ) ),
-        ( INT16_C(1) << ( 6+8 ) ) - 1,
+        static_cast<int16_t>(1U << (6U)),
+        static_cast<int16_t>(1U << (6+8U)) - 1,
     };
 
     std::function<void (BitStreamWriter&, int16_t)> writerFunc = &BitStreamWriter::writeVarInt16;
@@ -376,29 +376,29 @@ TEST_F(BitStreamTest, readVarUInt64)
         262144,
         524288,
 
-        ( UINT64_C(1) << ( 0 ) ),
-        ( UINT64_C(1) << ( 7 ) ) - 1,
+        (UINT64_C(1) << (0U)),
+        (UINT64_C(1) << (7U)) - 1,
 
-        ( UINT64_C(1) << ( 7 ) ),
-        ( UINT64_C(1) << ( 7+7 ) ) - 1,
+        (UINT64_C(1) << (7U)),
+        (UINT64_C(1) << (7U+7)) - 1,
 
-        ( UINT64_C(1) << ( 7+7 ) ),
-        ( UINT64_C(1) << ( 7+7+7 ) ) - 1,
+        (UINT64_C(1) << (7U+7)),
+        (UINT64_C(1) << (7U+7+7)) - 1,
 
-        ( UINT64_C(1) << ( 7+7+7 ) ),
-        ( UINT64_C(1) << ( 7+7+7+7 ) ) - 1,
+        (UINT64_C(1) << (7U+7+7)),
+        (UINT64_C(1) << (7U+7+7+7)) - 1,
 
-        ( UINT64_C(1) << ( 7+7+7+7 ) ),
-        ( UINT64_C(1) << ( 7+7+7+7 +7 ) ) - 1,
+        (UINT64_C(1) << (7U+7+7+7)),
+        (UINT64_C(1) << (7U+7+7+7 +7)) - 1,
 
-        ( UINT64_C(1) << ( 7+7+7+7 +7 ) ),
-        ( UINT64_C(1) << ( 7+7+7+7 +7+7 ) ) - 1,
+        (UINT64_C(1) << (7U+7+7+7 +7)),
+        (UINT64_C(1) << (7U+7+7+7 +7+7)) - 1,
 
-        ( UINT64_C(1) << ( 7+7+7+7 +7+7 ) ),
-        ( UINT64_C(1) << ( 7+7+7+7 +7+7+7 ) ) - 1,
+        (UINT64_C(1) << (7U+7+7+7 +7+7)),
+        (UINT64_C(1) << (7U+7+7+7 +7+7+7)) - 1,
 
-        ( UINT64_C(1) << ( 7+7+7+7 +7+7+7 ) ),
-        ( UINT64_C(1) << ( 7+7+7+7 +7+7+7+8 ) ) - 1,
+        (UINT64_C(1) << (7U+7+7+7 +7+7+7)),
+        (UINT64_C(1) << (7U+7+7+7 +7+7+7+8)) - 1,
     };
 
     std::function<void (BitStreamWriter&, uint64_t)> writerFunc = &BitStreamWriter::writeVarUInt64;
@@ -415,17 +415,17 @@ TEST_F(BitStreamTest, readVarUInt32)
         65536,
         131072,
 
-        ( UINT32_C(1) << ( 0 ) ),
-        ( UINT32_C(1) << ( 7 ) ) - 1,
+        (1U << (0U)),
+        (1U << (7U)) - 1,
 
-        ( UINT32_C(1) << ( 7 ) ),
-        ( UINT32_C(1) << ( 7+7 ) ) - 1,
+        (1U << (7U)),
+        (1U << (7U+7)) - 1,
 
-        ( UINT32_C(1) << ( 7+7 ) ),
-        ( UINT32_C(1) << ( 7+7+7 ) ) - 1,
+        (1U << (7U+7)),
+        (1U << (7U+7+7)) - 1,
 
-        ( UINT32_C(1) << ( 7+7+7 ) ),
-        ( UINT32_C(1) << ( 7+7+7+8 ) ) - 1,
+        (1U << (7U+7+7)),
+        (1U << (7U+7+7+8)) - 1,
     };
 
     std::function<void (BitStreamWriter&, uint32_t)> writerFunc = &BitStreamWriter::writeVarUInt32;
@@ -442,11 +442,11 @@ TEST_F(BitStreamTest, readVarUInt16)
         8192,
         16384,
 
-        ( UINT16_C(1) << ( 0 ) ),
-        ( UINT16_C(1) << ( 6 ) ) - 1,
+        (1U << (0U)),
+        (1U << (6U)) - 1,
 
-        ( UINT16_C(1) << ( 6 ) ),
-        ( UINT16_C(1) << ( 6+8 ) ) - 1,
+        (1U << (6U)),
+        (1U << (6U+8)) - 1,
     };
 
     std::function<void (BitStreamWriter&, uint16_t)> writerFunc = &BitStreamWriter::writeVarUInt16;
@@ -463,46 +463,46 @@ TEST_F(BitStreamTest, readVarInt)
         0,
         -1,
         1,
-        -(INT64_C(1) << 6) + 1,
-        (INT64_C(1) << 6) - 1,
+        -static_cast<int64_t>(UINT64_C(1) << 6U) + 1,
+        static_cast<int64_t>(UINT64_C(1) << 6U) - 1,
         // 2 bytes
-        -(INT64_C(1) << 6),
-        (INT64_C(1) << 6),
-        -(INT64_C(1) << 13) + 1,
-        (INT64_C(1) << 13) - 1,
+        -static_cast<int64_t>(UINT64_C(1) << 6U),
+        static_cast<int64_t>(UINT64_C(1) << 6U),
+        -static_cast<int64_t>(UINT64_C(1) << 13U) + 1,
+        static_cast<int64_t>(UINT64_C(1) << 13U) - 1,
         // 3 bytes
-        -(INT64_C(1) << 13),
-        (INT64_C(1) << 13),
-        -(INT64_C(1) << 20) + 1,
-        (INT64_C(1) << 20) - 1,
+        -static_cast<int64_t>(UINT64_C(1) << 13U),
+        static_cast<int64_t>(UINT64_C(1) << 13U),
+        -static_cast<int64_t>(UINT64_C(1) << 20U) + 1,
+        static_cast<int64_t>(UINT64_C(1) << 20U) - 1,
         // 4 bytes
-        -(INT64_C(1) << 20),
-        (INT64_C(1) << 20),
-        -(INT64_C(1) << 27) + 1,
-        (INT64_C(1) << 27) - 1,
+        -static_cast<int64_t>(UINT64_C(1) << 20U),
+        static_cast<int64_t>(UINT64_C(1) << 20U),
+        -static_cast<int64_t>(UINT64_C(1) << 27U) + 1,
+        static_cast<int64_t>(UINT64_C(1) << 27U) - 1,
         // 5 bytes
-        -(INT64_C(1) << 27),
-        (INT64_C(1) << 27),
-        -(INT64_C(1) << 34) + 1,
-        (INT64_C(1) << 34) - 1,
+        -static_cast<int64_t>(UINT64_C(1) << 27U),
+        static_cast<int64_t>(UINT64_C(1) << 27U),
+        -static_cast<int64_t>(UINT64_C(1) << 34U) + 1,
+        static_cast<int64_t>(UINT64_C(1) << 34U) - 1,
         // 6 bytes
-        -(INT64_C(1) << 34),
-        (INT64_C(1) << 34),
-        -(INT64_C(1) << 41) + 1,
-        (INT64_C(1) << 41) - 1,
+        -static_cast<int64_t>(UINT64_C(1) << 34U),
+        static_cast<int64_t>(UINT64_C(1) << 34U),
+        -static_cast<int64_t>(UINT64_C(1) << 41U) + 1,
+        static_cast<int64_t>(UINT64_C(1) << 41U) - 1,
         // 7 bytes
-        -(INT64_C(1) << 41),
-        (INT64_C(1) << 41),
-        -(INT64_C(1) << 48) + 1,
-        (INT64_C(1) << 48) - 1,
+        -static_cast<int64_t>(UINT64_C(1) << 41U),
+        static_cast<int64_t>(UINT64_C(1) << 41U),
+        -static_cast<int64_t>(UINT64_C(1) << 48U) + 1,
+        static_cast<int64_t>(UINT64_C(1) << 48U) - 1,
         // 8 bytes
-        -(INT64_C(1) << 48),
-        (INT64_C(1) << 48),
-        -(INT64_C(1) << 55) + 1,
-        (INT64_C(1) << 55) - 1,
+        -static_cast<int64_t>(UINT64_C(1) << 48U),
+        static_cast<int64_t>(UINT64_C(1) << 48U),
+        -static_cast<int64_t>(UINT64_C(1) << 55U) + 1,
+        static_cast<int64_t>(UINT64_C(1) << 55U) - 1,
         // 9 bytes
-        -(INT64_C(1) << 55),
-        (INT64_C(1) << 55),
+        -static_cast<int64_t>(UINT64_C(1) << 55U),
+        static_cast<int64_t>(UINT64_C(1) << 55U),
         INT64_MIN + 1,
         INT64_MAX,
 
@@ -523,30 +523,30 @@ TEST_F(BitStreamTest, readVarUInt)
         // 1 byte
         0,
         1,
-        (UINT64_C(1) << 7) - 1,
+        (UINT64_C(1) << 7U) - 1,
         // 2 bytes
-        (UINT64_C(1) << 7),
-        (UINT64_C(1) << 14) - 1,
+        (UINT64_C(1) << 7U),
+        (UINT64_C(1) << 14U) - 1,
         // 3 bytes
-        (UINT64_C(1) << 14),
-        (UINT64_C(1) << 21) - 1,
+        (UINT64_C(1) << 14U),
+        (UINT64_C(1) << 21U) - 1,
         // 4 bytes
-        (UINT64_C(1) << 21),
-        (UINT64_C(1) << 28) - 1,
+        (UINT64_C(1) << 21U),
+        (UINT64_C(1) << 28U) - 1,
         // 5 bytes
-        (UINT64_C(1) << 28),
-        (UINT64_C(1) << 35) - 1,
+        (UINT64_C(1) << 28U),
+        (UINT64_C(1) << 35U) - 1,
         // 6 bytes
-        (UINT64_C(1) << 35),
-        (UINT64_C(1) << 42) - 1,
+        (UINT64_C(1) << 35U),
+        (UINT64_C(1) << 42U) - 1,
         // 7 bytes
-        (UINT64_C(1) << 42),
-        (UINT64_C(1) << 49) - 1,
+        (UINT64_C(1) << 42U),
+        (UINT64_C(1) << 49U) - 1,
         // 8 bytes
-        (UINT64_C(1) << 49),
-        (UINT64_C(1) << 56) - 1,
+        (UINT64_C(1) << 49U),
+        (UINT64_C(1) << 56U) - 1,
         // 9 bytes
-        (UINT64_C(1) << 56),
+        (UINT64_C(1) << 56U),
         UINT64_MAX
     };
 
@@ -564,20 +564,20 @@ TEST_F(BitStreamTest, readVarSize)
         65536,
         131072,
 
-        ( UINT32_C(1) << ( 0 ) ),
-        ( UINT32_C(1) << ( 7 ) ) - 1,
+        (1U << (0U)),
+        (1U << (7U)) - 1,
 
-        ( UINT32_C(1) << ( 7 ) ),
-        ( UINT32_C(1) << ( 7+7 ) ) - 1,
+        (1U << (7U)),
+        (1U << (7U+7)) - 1,
 
-        ( UINT32_C(1) << ( 7+7 ) ),
-        ( UINT32_C(1) << ( 7+7+7 ) ) - 1,
+        (1U << (7U+7)),
+        (1U << (7U+7+7)) - 1,
 
-        ( UINT32_C(1) << ( 7+7+7 ) ),
-        ( UINT32_C(1) << ( 7+7+7+7 ) ) - 1,
+        (1U << (7U+7+7)),
+        (1U << (7U+7+7+7)) - 1,
 
-        ( UINT32_C(1) << ( 7+7+7+7 ) ),
-        ( UINT32_C(1) << ( 7+7+7+7+3 ) ) - 1,
+        (1U << (7U+7+7+7)),
+        (1U << (7U+7+7+7+3)) - 1,
     };
 
     std::function<void (BitStreamWriter&, uint32_t)> writerFunc = &BitStreamWriter::writeVarSize;

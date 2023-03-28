@@ -10,8 +10,10 @@ class FloatUtilTest : public ::testing::Test
 protected:
     uint16_t createFloat16Value(uint16_t sign, uint16_t exponent, uint16_t significand)
     {
-        return static_cast<uint16_t>((sign << FLOAT16_SIGN_BIT_POSITION) |
-                (exponent << FLOAT16_EXPONENT_BIT_POSITION) | significand);
+        return static_cast<uint16_t>(
+                (static_cast<uint32_t>(sign) << FLOAT16_SIGN_BIT_POSITION) |
+                (static_cast<uint32_t>(exponent) << FLOAT16_EXPONENT_BIT_POSITION) |
+                significand);
     }
 
     uint32_t createFloat32Value(uint32_t sign, uint32_t exponent, uint32_t significand)

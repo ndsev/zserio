@@ -718,7 +718,7 @@ TEST_F(ReflectableTest, fixedUnsignedBitField31) // mapped to uint32_t
 TEST_F(ReflectableTest, fixedUnsignedBitField33) // mapped to uint64_t
 {
     const uint8_t numBits = 33;
-    const uint64_t value = static_cast<uint64_t>(UINT32_MAX) << 1;
+    const uint64_t value = static_cast<uint64_t>(UINT32_MAX) << 1U;
     auto reflectable = ReflectableFactory::getFixedUnsignedBitField(numBits, value);
     checkUnsignedIntegral(value, reflectable, &IReflectable::getUInt64,
             std::bind(&BitStreamReader::readBits64, _1, numBits), numBits);
@@ -820,7 +820,7 @@ TEST_F(ReflectableTest, dynamicUnsignedBitField33) // mapped to uint64_t
 {
     const uint8_t maxBitSize = 64;
     const uint8_t numBits = 33;
-    const uint64_t value = static_cast<uint64_t>(UINT32_MAX) << 1;
+    const uint64_t value = static_cast<uint64_t>(UINT32_MAX) << 1U;
     auto reflectable = ReflectableFactory::getDynamicUnsignedBitField(maxBitSize, value, numBits);
     checkUnsignedIntegral(value, reflectable, &IReflectable::getUInt64,
             std::bind(&BitStreamReader::readBits64, _1, numBits), numBits);

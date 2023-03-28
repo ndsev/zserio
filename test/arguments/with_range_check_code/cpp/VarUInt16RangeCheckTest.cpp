@@ -31,7 +31,7 @@ protected:
 };
 
 const uint16_t VarUInt16RangeCheckTest::VARUINT16_LOWER_BOUND = UINT16_C(0);
-const uint16_t VarUInt16RangeCheckTest::VARUINT16_UPPER_BOUND = (UINT16_C(1) << 15) - 1;
+const uint16_t VarUInt16RangeCheckTest::VARUINT16_UPPER_BOUND = static_cast<uint16_t>((1U << 15U) - 1);
 
 TEST_F(VarUInt16RangeCheckTest, varUInt16LowerBound)
 {

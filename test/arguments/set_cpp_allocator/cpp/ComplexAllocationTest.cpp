@@ -129,15 +129,15 @@ protected:
 
         // externalField
         writer.writeVarSize(EXTERNAL_FIELD_VAR_SIZE);
-        writer.writeBits(EXTERNAL_FIELD_DATA >> (8 - (EXTERNAL_FIELD_VAR_SIZE % 8)), EXTERNAL_FIELD_VAR_SIZE);
+        writer.writeBits(EXTERNAL_FIELD_DATA >> (8U - (EXTERNAL_FIELD_VAR_SIZE % 8U)), EXTERNAL_FIELD_VAR_SIZE);
 
         // externalArray
         writer.writeVarSize(EXTERNAL_ARRAY_SIZE);
         writer.writeVarSize(EXTERNAL_ARRAY_ELEMENT0_VAR_SIZE);
-        writer.writeBits(EXTERNAL_ARRAY_ELEMENT0_DATA >> (8 - (EXTERNAL_ARRAY_ELEMENT0_VAR_SIZE % 8)),
+        writer.writeBits(EXTERNAL_ARRAY_ELEMENT0_DATA >> (8U - (EXTERNAL_ARRAY_ELEMENT0_VAR_SIZE % 8U)),
                 EXTERNAL_ARRAY_ELEMENT0_VAR_SIZE);
         writer.writeVarSize(EXTERNAL_ARRAY_ELEMENT1_VAR_SIZE);
-        writer.writeBits(EXTERNAL_ARRAY_ELEMENT1_DATA >> (8 - (EXTERNAL_ARRAY_ELEMENT1_VAR_SIZE % 8)),
+        writer.writeBits(EXTERNAL_ARRAY_ELEMENT1_DATA >> (8U - (EXTERNAL_ARRAY_ELEMENT1_VAR_SIZE % 8U)),
                 EXTERNAL_ARRAY_ELEMENT1_VAR_SIZE);
 
         // bytesField
@@ -253,7 +253,7 @@ protected:
 
     BitBuffer createExternalField(const allocator_type& allocator)
     {
-        const uint8_t externalFieldData[] = {static_cast<uint8_t>(EXTERNAL_FIELD_DATA >> 8),
+        const uint8_t externalFieldData[] = {static_cast<uint8_t>(EXTERNAL_FIELD_DATA >> 8U),
                 static_cast<uint8_t>(EXTERNAL_FIELD_DATA)};
 
         return BitBuffer(externalFieldData, EXTERNAL_FIELD_VAR_SIZE, allocator);
@@ -263,21 +263,21 @@ protected:
     {
         externalArray.reserve(EXTERNAL_ARRAY_SIZE);
         externalArray.emplace_back(&EXTERNAL_ARRAY_ELEMENT0_DATA, EXTERNAL_ARRAY_ELEMENT0_VAR_SIZE, allocator);
-        const uint8_t externalElement1Data[] = {static_cast<uint8_t>(EXTERNAL_ARRAY_ELEMENT1_DATA >> 8),
+        const uint8_t externalElement1Data[] = {static_cast<uint8_t>(EXTERNAL_ARRAY_ELEMENT1_DATA >> 8U),
                 static_cast<uint8_t>(EXTERNAL_ARRAY_ELEMENT1_DATA)};
         externalArray.emplace_back(externalElement1Data, EXTERNAL_ARRAY_ELEMENT1_VAR_SIZE, allocator);
     }
 
     vector_type<uint8_t> createBytesField(const allocator_type& allocator)
     {
-        return vector_type<uint8_t>({static_cast<uint8_t>(BYTES_FIELD_DATA >> 8),
+        return vector_type<uint8_t>({static_cast<uint8_t>(BYTES_FIELD_DATA >> 8U),
                 static_cast<uint8_t>(BYTES_FIELD_DATA)}, allocator);
     }
 
     void fillBytesArray(vector_type<vector_type<uint8_t>>& bytesArray, const allocator_type& allocator)
     {
         bytesArray.reserve(BYTES_ARRAY_SIZE);
-        const uint8_t bytesArrayElement0Data[] = {static_cast<uint8_t>(BYTES_ARRAY_ELEMENT0_DATA >> 8),
+        const uint8_t bytesArrayElement0Data[] = {static_cast<uint8_t>(BYTES_ARRAY_ELEMENT0_DATA >> 8U),
                 static_cast<uint8_t>(BYTES_ARRAY_ELEMENT0_DATA)};
         bytesArray.emplace_back(bytesArrayElement0Data, bytesArrayElement0Data + BYTES_ARRAY_ELEMENT0_VAR_SIZE,
                 allocator);
@@ -421,7 +421,7 @@ protected:
         const auto& externalField = mainStructure.getExternalField();
         ASSERT_EQ(EXTERNAL_FIELD_VAR_SIZE, externalField.getBitSize());
         const uint8_t* externalFieldBuffer = externalField.getBuffer();
-        const uint16_t externalFieldData = (static_cast<uint16_t>(externalFieldBuffer[0] << 8)) |
+        const uint16_t externalFieldData = (static_cast<uint16_t>(externalFieldBuffer[0] << 8U)) |
                 (externalFieldBuffer[1]);
         ASSERT_EQ(EXTERNAL_FIELD_DATA, externalFieldData);
 
@@ -435,14 +435,14 @@ protected:
         const auto& externalArrayElement1 = externalArray[1];
         ASSERT_EQ(EXTERNAL_ARRAY_ELEMENT1_VAR_SIZE, externalArrayElement1.getBitSize());
         const uint8_t* externalBufferElement1 = externalArrayElement1.getBuffer();
-        const uint16_t externalDataElement1 = (static_cast<uint16_t>(externalBufferElement1[0] << 8)) |
+        const uint16_t externalDataElement1 = (static_cast<uint16_t>(externalBufferElement1[0] << 8U)) |
                 (externalBufferElement1[1]);
         ASSERT_EQ(EXTERNAL_ARRAY_ELEMENT1_DATA, externalDataElement1);
 
         // bytesField
         const auto& bytesField = mainStructure.getBytesField();
         ASSERT_EQ(BYTES_FIELD_VAR_SIZE, bytesField.size());
-        const uint16_t bytesFieldData = (static_cast<uint16_t>(bytesField[0] << 8)) | (bytesField[1]);
+        const uint16_t bytesFieldData = (static_cast<uint16_t>(bytesField[0] << 8U)) | (bytesField[1]);
         ASSERT_EQ(BYTES_FIELD_DATA, bytesFieldData);
 
         // bytesArray
@@ -450,7 +450,7 @@ protected:
         ASSERT_EQ(BYTES_ARRAY_SIZE, bytesArray.size());
         const auto& bytesArrayElement0 = bytesArray[0];
         ASSERT_EQ(BYTES_ARRAY_ELEMENT0_VAR_SIZE, bytesArrayElement0.size());
-        const uint16_t bytesDataElement0 = (static_cast<uint16_t>(bytesArrayElement0[0] << 8)) |
+        const uint16_t bytesDataElement0 = (static_cast<uint16_t>(bytesArrayElement0[0] << 8U)) |
                 (bytesArrayElement0[1]);
         ASSERT_EQ(BYTES_ARRAY_ELEMENT0_DATA, bytesDataElement0);
         const auto& bytesArrayElement1 = bytesArray[1];

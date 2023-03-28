@@ -12,11 +12,11 @@ uint8_t numBits(uint64_t numValues)
         return 0;
 
     uint8_t result = 1;
-    uint64_t current = (numValues - 1) >> 1;
+    uint64_t current = (numValues - 1U) >> 1U;
     while (current > 0)
     {
         result++;
-        current >>= 1;
+        current >>= 1U;
     }
 
     return result;

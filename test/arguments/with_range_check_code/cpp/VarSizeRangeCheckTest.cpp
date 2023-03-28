@@ -31,7 +31,7 @@ protected:
 };
 
 const uint32_t VarSizeRangeCheckTest::VARSIZE_LOWER_BOUND = UINT32_C(0);
-const uint32_t VarSizeRangeCheckTest::VARSIZE_UPPER_BOUND = (UINT32_C(1) << 31) - 1;
+const uint32_t VarSizeRangeCheckTest::VARSIZE_UPPER_BOUND = (UINT32_C(1) << 31U) - 1;
 
 TEST_F(VarSizeRangeCheckTest, varSizeLowerBound)
 {

@@ -18,9 +18,9 @@ public:
 
     enum class Values : underlying_type
     {
-        READ = 1,
-        WRITE = 2,
-        CREATE = 1 | 2
+        READ = 1U,
+        WRITE = 2U,
+        CREATE = 1U | 2U
     };
 
     constexpr DummyBitmask(Values value) noexcept :
@@ -101,12 +101,12 @@ TEST(BuiltInOperatorsTest, numBits)
     EXPECT_EQ(14, numBits(16384));
     EXPECT_EQ(15, numBits(32768));
     EXPECT_EQ(16, numBits(65536));
-    EXPECT_EQ(24, numBits(UINT64_C(1) << 24));
-    EXPECT_EQ(25, numBits((UINT64_C(1) << 24) + 1));
-    EXPECT_EQ(32, numBits(UINT64_C(1) << 32));
-    EXPECT_EQ(33, numBits((UINT64_C(1) << 32) + 1));
-    EXPECT_EQ(63, numBits(UINT64_C(1) << 63));
-    EXPECT_EQ(64, numBits((UINT64_C(1) << 63) + 1));
+    EXPECT_EQ(24, numBits(UINT64_C(1) << 24U));
+    EXPECT_EQ(25, numBits((UINT64_C(1) << 24U) + 1));
+    EXPECT_EQ(32, numBits(UINT64_C(1) << 32U));
+    EXPECT_EQ(33, numBits((UINT64_C(1) << 32U) + 1));
+    EXPECT_EQ(63, numBits(UINT64_C(1) << 63U));
+    EXPECT_EQ(64, numBits((UINT64_C(1) << 63U) + 1));
 }
 
 } // namespace builtin

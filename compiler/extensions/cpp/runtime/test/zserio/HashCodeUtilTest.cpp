@@ -113,7 +113,7 @@ TEST(HashCodeUtilTest, simpleTypes)
     const double doubleValue = 10.0;
     const uint64_t uint64DoubleValue = convertDoubleToUInt64(doubleValue);
     const uint32_t expectedHashCode = HASH_PRIME_NUMBER +
-            static_cast<uint32_t>(uint64DoubleValue ^ (uint64DoubleValue >> 32));
+            static_cast<uint32_t>(uint64DoubleValue ^ (uint64DoubleValue >> 32U));
     EXPECT_EQ(expectedHashCode, calcHashCode(hashSeed, doubleValue));
 }
 
