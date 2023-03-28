@@ -1,5 +1,3 @@
-#include "math.h"
-
 #include "gtest/gtest.h"
 
 #include "expressions/cast_uint64_to_uint8/CastUInt64ToUInt8Expression.h"
