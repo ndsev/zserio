@@ -16,7 +16,7 @@ class IBasicWalkFilter
 {
 public:
     /** Destructor. */
-    virtual ~IBasicWalkFilter() {}
+    virtual ~IBasicWalkFilter() = default;
 
     /**
      * Called before an array.

@@ -839,8 +839,7 @@ TypeInfoBase<ALLOC>::TypeInfoBase(StringView schemaName, SchemaType schemaType, 
 {}
 
 template <typename ALLOC>
-TypeInfoBase<ALLOC>::~TypeInfoBase()
-{}
+TypeInfoBase<ALLOC>::~TypeInfoBase() = default;
 
 template <typename ALLOC>
 StringView TypeInfoBase<ALLOC>::getSchemaName() const
@@ -1542,8 +1541,7 @@ TemplatableTypeInfoBase<ALLOC>::TemplatableTypeInfoBase(StringView schemaName,
 {}
 
 template <typename ALLOC>
-TemplatableTypeInfoBase<ALLOC>::~TemplatableTypeInfoBase()
-{}
+TemplatableTypeInfoBase<ALLOC>::~TemplatableTypeInfoBase() = default;
 
 template <typename ALLOC>
 StringView TemplatableTypeInfoBase<ALLOC>::getTemplateName() const
@@ -1569,8 +1567,7 @@ CompoundTypeInfoBase<ALLOC>::CompoundTypeInfoBase(StringView schemaName, CreateI
 {}
 
 template <typename ALLOC>
-CompoundTypeInfoBase<ALLOC>::~CompoundTypeInfoBase()
-{}
+CompoundTypeInfoBase<ALLOC>::~CompoundTypeInfoBase() = default;
 
 template <typename ALLOC>
 Span<const BasicFieldInfo<ALLOC>> CompoundTypeInfoBase<ALLOC>::getFields() const

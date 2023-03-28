@@ -125,10 +125,6 @@ BitStreamWriter::BitStreamWriter(Span<uint8_t> buffer) :
         BitStreamWriter(buffer.data(), buffer.size() * 8, BitsTag())
 {}
 
-BitStreamWriter::~BitStreamWriter()
-{
-}
-
 void BitStreamWriter::writeBits(uint32_t data, uint8_t numBits)
 {
     if (numBits > sizeof(uint32_t) * 8 || data > MAX_U32_VALUES[numBits])

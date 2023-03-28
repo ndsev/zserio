@@ -16,7 +16,7 @@ public:
     /**
      * Virtual destructor.
      */
-    virtual ~ISqliteDatabaseReader() {}
+    virtual ~ISqliteDatabaseReader() = default;
 
     /**
      * Returns current database connection.

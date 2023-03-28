@@ -340,9 +340,6 @@ BitStreamReader::BitStreamReader(const uint8_t* buffer, size_t bufferBitSize, Bi
         m_context(buffer, bufferBitSize)
 {}
 
-BitStreamReader::~BitStreamReader()
-{}
-
 uint32_t BitStreamReader::readBits(uint8_t numBits)
 {
     checkNumBits(numBits);

@@ -2610,8 +2610,7 @@ ReflectableBase<ALLOC>::ReflectableBase(const IBasicTypeInfo<ALLOC>& typeInfo) :
 {}
 
 template <typename ALLOC>
-ReflectableBase<ALLOC>::~ReflectableBase()
-{}
+ReflectableBase<ALLOC>::~ReflectableBase() = default;
 
 template <typename ALLOC>
 const IBasicTypeInfo<ALLOC>& ReflectableBase<ALLOC>::getTypeInfo() const

@@ -67,7 +67,7 @@ public:
     /**
      * Destructor.
      */
-    ~BitStreamWriter();
+    ~BitStreamWriter() = default;
 
     /**
      * Copying and moving is disallowed!

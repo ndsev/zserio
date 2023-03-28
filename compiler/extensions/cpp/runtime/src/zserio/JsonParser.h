@@ -27,7 +27,7 @@ public:
         /**
          * Destructor.
          */
-        virtual ~IObserver() {}
+        virtual ~IObserver() = default;
 
         /**
          * Called when a JSON object begins - i.e. on '{'.

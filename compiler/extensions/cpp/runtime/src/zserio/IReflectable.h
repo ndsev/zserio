@@ -40,7 +40,7 @@ public:
     /**
      * Destructor.
      */
-    virtual ~IBasicReflectable() {}
+    virtual ~IBasicReflectable() = default;
 
     /**
      * Gets type info for the current zserio object.

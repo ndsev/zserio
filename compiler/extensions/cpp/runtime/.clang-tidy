@@ -105,7 +105,7 @@ Checks: "-*,\
   modernize-replace-random-shuffle,\
   modernize-shrink-to-fit,\
   modernize-use-bool-literals,\
-#  modernize-use-equals-default,\
+  modernize-use-equals-default,\
   modernize-use-equals-delete,\
   modernize-use-nullptr,\
   modernize-use-override,\

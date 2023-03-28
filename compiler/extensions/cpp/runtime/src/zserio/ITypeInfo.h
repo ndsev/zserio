@@ -115,7 +115,7 @@ public:
     /**
      * Virtual destructor.
      */
-    virtual ~IBasicTypeInfo() {}
+    virtual ~IBasicTypeInfo() = default;
 
     /**
      * Gets the schema name.

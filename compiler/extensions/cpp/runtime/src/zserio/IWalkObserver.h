@@ -16,7 +16,7 @@ class IBasicWalkObserver
 {
 public:
     /** Destructor. */
-    virtual ~IBasicWalkObserver() {}
+    virtual ~IBasicWalkObserver() = default;
 
     /**
      * Called for the root compound zserio object which is to be walked-through.

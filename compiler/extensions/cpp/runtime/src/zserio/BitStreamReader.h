@@ -104,7 +104,7 @@ public:
     /**
      * Destructor.
      */
-    ~BitStreamReader();
+    ~BitStreamReader() = default;
 
     /**
      * Reads unsigned bits up to 32-bits.
