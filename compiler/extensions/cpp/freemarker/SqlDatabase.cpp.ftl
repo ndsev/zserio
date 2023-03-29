@@ -58,8 +58,8 @@ ${name}::${name}(const ${types.string.name}& dbFileName, const TRelocationMap& t
     initTables();
 }
 
-${name}::${name}(const ${types.string.name}& fileName, const allocator_type& allocator) :
-        ${name}(fileName, TRelocationMap(allocator), allocator)
+${name}::${name}(const ${types.string.name}& dbFileName, const allocator_type& allocator) :
+        ${name}(dbFileName, TRelocationMap(allocator), allocator)
 {}
 
 ${name}::${name}(sqlite3* externalConnection, const TRelocationMap& tableToAttachedDbNameRelocationMap,
