@@ -14,7 +14,30 @@ namespace
 {
 
 class RegularType
-{};
+{
+};
+
+class RegularTypeWithStdAllocator
+{
+public:
+    using allocator_type = std::allocator<RegularTypeWithStdAllocator>;
+
+    allocator_type get_allocator() const
+    {
+        return m_allocator;
+    }
+
+    RegularTypeWithStdAllocator(const allocator_type& allocator = allocator_type())
+        : m_allocator(allocator)
+    {}
+
+    RegularTypeWithStdAllocator(const RegularTypeWithStdAllocator&, const allocator_type& allocator)
+        : m_allocator(allocator)
+    {}
+
+private:
+    allocator_type m_allocator;
+};
 
 class RegularWithAllocatorSupport
 {
@@ -37,13 +60,6 @@ public:
 
     RegularWithAllocatorSupport(RegularWithAllocatorSupport&&) = default;
 
-    RegularWithAllocatorSupport& operator=(const RegularWithAllocatorSupport& other)
-    {
-        if(AllocTraits::propagate_on_container_copy_assignment::value)
-            m_allocator = other.m_allocator;
-        return *this;
-    }
-
     RegularWithAllocatorSupport(PropagateAllocatorT, const RegularWithAllocatorSupport&,
             const allocator_type& allocator) :
             m_allocator(allocator)
@@ -62,6 +78,14 @@ TEST(AllocatorPropagatingCopyTest, copyDefault)
     const RegularType thing;
     RegularType thingCopy(allocatorPropagatingCopy(thing, allocator));
     static_cast<void>(thingCopy);
+}
+
+TEST(AllocatorPropagatingCopyTest, copyDefaultStdAllocator)
+{
+    RegularTypeWithStdAllocator::allocator_type allocator;
+    const RegularTypeWithStdAllocator thing(allocator);
+    RegularTypeWithStdAllocator thingCopy(allocatorPropagatingCopy(thing, allocator));
+    ASSERT_EQ(allocator, thingCopy.get_allocator());
 }
 
 TEST(AllocatorPropagatingCopyTest, copyDefaultAllocator)
@@ -152,6 +176,27 @@ TEST(AllocatorPropagatingCopyTest, copyVector)
                            {
                                return a.get_allocator() == b.get_allocator();
                            }));
+}
+
+TEST(AllocatorPropagatingCopyTest, copyVectorRegular)
+{
+    std::allocator<RegularType> allocator;
+
+    const std::vector<RegularType> emptyVec(allocator);
+    std::vector<RegularType>
+            emptyVecCopy(allocatorPropagatingCopy(emptyVec, allocator));
+    ASSERT_EQ(emptyVec.get_allocator(), emptyVecCopy.get_allocator());
+}
+
+TEST(AllocatorPropagatingCopyTest, copyString)
+{
+    RegularWithAllocatorSupport::allocator_type allocator;
+
+    const std::basic_string<char, std::char_traits<char>, RegularWithAllocatorSupport::allocator_type>
+            emptyString(allocator);
+    std::basic_string<char, std::char_traits<char>, RegularWithAllocatorSupport::allocator_type>
+            emptyStringCopy(allocatorPropagatingCopy(emptyString, allocator));
+    ASSERT_EQ(emptyString.get_allocator(), emptyStringCopy.get_allocator());
 }
 
 } // namespace zserio

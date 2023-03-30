@@ -141,7 +141,7 @@ set(ZSERIO_CPP_RUNTIME_TEST_HEADERS
 )
 
 if (MSVC)
-    set_property(SOURCE zserio/ReflectableTest.cpp APPEND PROPERTY COMPILE_OPTIONS /bigobj)
+    set_property(SOURCE zserio/ReflectableTest.cpp zserio/ArrayTest.cpp APPEND PROPERTY COMPILE_OPTIONS /bigobj)
 endif ()
 
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)

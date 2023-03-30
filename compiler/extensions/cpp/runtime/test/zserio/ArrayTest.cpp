@@ -426,6 +426,9 @@ private:
             Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL> readArray{arrayTraits};
             readArray.read(reader, rawArray.size(), elementFactory);
             ASSERT_EQ(array, readArray);
+
+            Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL> arrayCopy(array);
+            ASSERT_EQ(array, arrayCopy);
         }
     }
 
@@ -451,6 +454,9 @@ private:
             Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO> readArray{arrayTraits};
             readArray.read(reader, elementFactory);
             ASSERT_EQ(array, readArray);
+
+            Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO> arrayCopy(array);
+            ASSERT_EQ(array, arrayCopy);
         }
     }
 
@@ -478,6 +484,10 @@ private:
                     ArrayTestOffsetChecker, ArrayTestOffsetInitializer> readArray{arrayTraits};
             readArray.read(reader, rawArray.size(), elementFactory, ArrayTestOffsetChecker());
             ASSERT_EQ(array, readArray);
+
+            Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED,
+                    ArrayTestOffsetChecker, ArrayTestOffsetInitializer> arrayCopy(array);
+            ASSERT_EQ(array, arrayCopy);
         }
     }
 
@@ -505,6 +515,10 @@ private:
                     ArrayTestOffsetChecker, ArrayTestOffsetInitializer> readArray{arrayTraits};
             readArray.read(reader, elementFactory, ArrayTestOffsetChecker());
             ASSERT_EQ(array, readArray);
+
+            Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED_AUTO,
+                    ArrayTestOffsetChecker, ArrayTestOffsetInitializer> arrayCopy(array);
+            ASSERT_EQ(array, arrayCopy);
         }
     }
 
@@ -533,6 +547,9 @@ private:
             Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::IMPLICIT> readArray{arrayTraits};
             readArray.read(reader);
             ASSERT_EQ(array, readArray);
+
+            Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::IMPLICIT> arrayCopy(array);
+            ASSERT_EQ(array, arrayCopy);
         }
     }
 
@@ -568,6 +585,9 @@ private:
             Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL> readArray{arrayTraits};
             readArray.readPacked(reader, rawArray.size(), elementFactory);
             ASSERT_EQ(array, readArray);
+
+            Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL> arrayCopy(array);
+            ASSERT_EQ(array, arrayCopy);
         }
     }
 
@@ -596,6 +616,9 @@ private:
             Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO> readArray{arrayTraits};
             readArray.readPacked(reader, elementFactory);
             ASSERT_EQ(array, readArray);
+
+            Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO> arrayCopy(array);
+            ASSERT_EQ(array, arrayCopy);
         }
     }
 
@@ -626,6 +649,10 @@ private:
                     ArrayTestOffsetChecker, ArrayTestOffsetInitializer> readArray{arrayTraits};
             readArray.readPacked(reader, rawArray.size(), elementFactory, ArrayTestOffsetChecker());
             ASSERT_EQ(array, readArray);
+
+            Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED,
+                    ArrayTestOffsetChecker, ArrayTestOffsetInitializer> arrayCopy(array);
+            ASSERT_EQ(array, arrayCopy);
         }
     }
 
@@ -656,6 +683,10 @@ private:
                     ArrayTestOffsetChecker, ArrayTestOffsetInitializer> readArray{arrayTraits};
             readArray.readPacked(reader, elementFactory, ArrayTestOffsetChecker());
             ASSERT_EQ(array, readArray);
+
+            Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED_AUTO,
+                    ArrayTestOffsetChecker, ArrayTestOffsetInitializer> arrayCopy(array);
+            ASSERT_EQ(array, arrayCopy);
         }
     }
 

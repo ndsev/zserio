@@ -437,7 +437,28 @@ TEST(DebugStringUtilTest, toJsonStreamDefault)
     // improve coverage
     IReflectablePtr reflectable = dummyObject.reflectable();
     ASSERT_TRUE(reflectable);
+    ASSERT_EQ(0, reflectable->bitSizeOf());
+    uint8_t buffer[1];
+    BitStreamWriter writer(buffer, 1);
+    reflectable->write(writer);
     ASSERT_EQ("test"_sv, reflectable->getField("text")->getStringView());
+    ASSERT_THROW(reflectable->getField("wrong"), CppRuntimeException);
+    const AnyHolder<> value(0);
+    ASSERT_THROW(reflectable->setField("wrong", value), CppRuntimeException);
+    IReflectableConstPtr reflectableConst = dummyObject.reflectable();
+    ASSERT_EQ("test",
+            reflectableConst->getAnyValue().get<std::reference_wrapper<const DummyObject<>>>().get().getText());
+
+    // improve coverage
+    const DummyObject<> dummyObjectConst;
+    reflectableConst = dummyObjectConst.reflectable();
+    ASSERT_TRUE(reflectableConst);
+    ASSERT_EQ(0, reflectableConst->bitSizeOf());
+    reflectableConst->write(writer);
+    ASSERT_EQ("test"_sv, reflectableConst->getField("text")->getStringView());
+    ASSERT_THROW(reflectableConst->getField("wrong"), CppRuntimeException);
+    ASSERT_EQ("test",
+            reflectableConst->getAnyValue().get<std::reference_wrapper<const DummyObject<>>>().get().getText());
 }
 
 TEST(DebugStringUtilTest, toJsonStreamDefaultWithAlloc)
@@ -614,6 +635,7 @@ TEST(DebugStringUtilTest, toJsonFileDefault)
     const DummyObject<> dummyObject;
     const std::string fileName = "DebugStringUtilTest_toJsonFileDefault.json";
     toJsonFile(dummyObject, fileName);
+    ASSERT_THROW(toJsonFile(dummyObject, ""), CppRuntimeException);
 
     std::ifstream is(fileName.c_str());
     std::stringstream ss;
@@ -782,6 +804,20 @@ TEST(DebugStringUtilTest, fromJsonStreamParameterizedTypeInfo)
 
     ASSERT_EQ(10, reflectable->getParameter("param")->getInt32());
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
+
+    // improve coverage
+    ASSERT_EQ(0, reflectable->bitSizeOf());
+    uint8_t buffer[1];
+    BitStreamWriter writer(buffer, 1);
+    reflectable->write(writer);
+    ASSERT_THROW(reflectable->getField("wrong"), CppRuntimeException);
+    const AnyHolder<> value(0);
+    ASSERT_THROW(reflectable->setField("wrong", value), CppRuntimeException);
+    ASSERT_THROW(reflectable->getParameter("wrong"), CppRuntimeException);
+    ASSERT_EQ("something",
+            reflectable->getAnyValue().get<std::reference_wrapper<ParameterizedDummyObject<>>>().
+                    get().getText());
+    ASSERT_THROW(reflectable->initialize(vector<AnyHolder<>>()), CppRuntimeException);
 }
 
 TEST(DebugStringUtilTest, fromJsonStreamTypeInfoWithAlloc)
@@ -963,6 +999,8 @@ TEST(DebugStringUtilTest, fromJsonFileTypeInfo)
     ASSERT_TRUE(reflectable);
 
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
+
+    ASSERT_THROW(fromJsonFile(DummyObject<>::typeInfo(), ""), CppRuntimeException);
 }
 
 TEST(DebugStringUtilTest, fromJsonFileParameterizedTypeInfo)

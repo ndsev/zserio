@@ -236,7 +236,10 @@ TEST(JsonWriterTest, enumValue)
         int8_t m_value;
     };
 
+    IReflectableConstPtr reflectableZeroConst = std::make_shared<DummyEnumReflectable>(0);
+    ASSERT_EQ(0, reflectableZeroConst->getAnyValue().get<int8_t>()); // improve coverage
     IReflectablePtr reflectableZero = std::make_shared<DummyEnumReflectable>(0);
+    ASSERT_EQ(0, reflectableZero->getAnyValue().get<int8_t>()); // improve coverage
     IReflectablePtr reflectableOne = std::make_shared<DummyEnumReflectable>(1);
     IReflectablePtr reflectableTwo = std::make_shared<DummyEnumReflectable>(2);
     IReflectablePtr reflectableMinusOne = std::make_shared<DummyEnumReflectable>(-1);
@@ -317,7 +320,10 @@ TEST(JsonWriterTest, bitmaskValue)
         uint8_t m_value;
     };
 
+    IReflectableConstPtr reflectableZeroConst = std::make_shared<DummyBitmaskReflectable>(0);
+    ASSERT_EQ(0, reflectableZeroConst->getAnyValue().get<uint8_t>()); // improve coverage
     IReflectablePtr reflectableZero = std::make_shared<DummyBitmaskReflectable>(0);
+    ASSERT_EQ(0, reflectableZero->getAnyValue().get<uint8_t>()); // improve coverage
     IReflectablePtr reflectableTwo = std::make_shared<DummyBitmaskReflectable>(2);
     IReflectablePtr reflectableThree = std::make_shared<DummyBitmaskReflectable>(3);
     IReflectablePtr reflectableFour = std::make_shared<DummyBitmaskReflectable>(4);

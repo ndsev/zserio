@@ -20,6 +20,10 @@ TEST(FileUtilTest, writeReadByteBufferBitSize)
     {
         ASSERT_EQ(buffer[i], readBitBuffer.getBuffer()[i]);
     }
+
+    const std::string invalidFileName = "";
+    ASSERT_THROW(writeBufferToFile(&buffer[0], 20, BitsTag(), invalidFileName), CppRuntimeException);
+    ASSERT_THROW(readBufferFromFile(invalidFileName), CppRuntimeException);
 }
 
 TEST(FileUtilTest, writeReadByteBufferByteSize)
