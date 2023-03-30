@@ -176,13 +176,13 @@ TEST_F(UnionWithParameterizedFieldTest, arrayHolder)
     TestUnion testUnion;
     ArrayHolder arrayHolder{vector_type<uint32_t>(10)};
     arrayHolder.initialize(10);
-    void* ptr = &(arrayHolder.getArray()[0]);
+    void* ptr = arrayHolder.getArray().data();
     testUnion.setArrayHolder(arrayHolder);
-    ASSERT_NE(ptr, &testUnion.getArrayHolder().getArray()[0]);
+    ASSERT_NE(ptr, testUnion.getArrayHolder().getArray().data());
     ASSERT_EQ(arrayHolder, testUnion.getArrayHolder());
 
     testUnion.setArrayHolder(std::move(arrayHolder));
-    ASSERT_EQ(ptr, &testUnion.getArrayHolder().getArray()[0]);
+    ASSERT_EQ(ptr, testUnion.getArrayHolder().getArray().data());
 }
 
 TEST_F(UnionWithParameterizedFieldTest, bitSizeOf)

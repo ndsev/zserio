@@ -29,7 +29,7 @@ protected:
         const size_t fileSize = static_cast<size_t>(inputStream.tellg());
         inputStream.seekg(0, inputStream.beg);
         buffer.resize(fileSize);
-        inputStream.read(reinterpret_cast<char*>(&buffer[0]), static_cast<std::streamsize>(buffer.size()));
+        inputStream.read(reinterpret_cast<char*>(buffer.data()), static_cast<std::streamsize>(buffer.size()));
         const bool result = (inputStream) ? true : false;
         inputStream.close();
 
@@ -48,7 +48,7 @@ TEST_F(GifTest, OnePixGif)
     const string_type onePixGifFileName("others/gif/data/1pix.gif");
     vector_type<uint8_t> buffer;
     ASSERT_TRUE(readFileToBuffer(onePixGifFileName, buffer));
-    zserio::BitStreamReader reader(&buffer[0], buffer.size());
+    zserio::BitStreamReader reader(buffer.data(), buffer.size());
     const GifFile gifFile(reader);
 
     string_type fileFormat;

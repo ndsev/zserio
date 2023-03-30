@@ -233,28 +233,28 @@ TEST_F(UnionWithArrayTest, array8)
 {
     TestUnion test;
     vector_type<Data8> data8(4);
-    void* ptr = &data8[0];
+    void* ptr = data8.data();
     test.setArray8(data8);
     ASSERT_EQ(4, test.getArray8().size());
-    ASSERT_NE(ptr, &test.getArray8()[0]);
+    ASSERT_NE(ptr, test.getArray8().data());
 
     test.setArray8(std::move(data8));
     ASSERT_EQ(4, test.getArray8().size());
-    ASSERT_EQ(ptr, &test.getArray8()[0]);
+    ASSERT_EQ(ptr, test.getArray8().data());
 }
 
 TEST_F(UnionWithArrayTest, array16)
 {
     TestUnion test;
     vector_type<int16_t> data16(4);
-    void* ptr = &data16[0];
+    void* ptr = data16.data();
     test.setArray16(data16);
     ASSERT_EQ(4, test.getArray16().size());
-    ASSERT_NE(ptr, &test.getArray16()[0]);
+    ASSERT_NE(ptr, test.getArray16().data());
 
     test.setArray16(std::move(data16));
     ASSERT_EQ(4, test.getArray16().size());
-    ASSERT_EQ(ptr, &test.getArray16()[0]);
+    ASSERT_EQ(ptr, test.getArray16().data());
 }
 
 TEST_F(UnionWithArrayTest, bitSizeOf)
