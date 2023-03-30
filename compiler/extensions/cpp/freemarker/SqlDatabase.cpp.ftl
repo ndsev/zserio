@@ -240,10 +240,17 @@ void ${name}::detachDatabases()
 {
     for (const auto& attachedDb : m_attachedDbList)
     {
-        ${types.string.name} sqlQuery(get_allocator_ref());
-        sqlQuery += "DETACH DATABASE ";
-        sqlQuery += attachedDb;
-        m_db.executeUpdate(sqlQuery);
+        try
+        {
+            ${types.string.name} sqlQuery(get_allocator_ref());
+            sqlQuery += "DETACH DATABASE ";
+            sqlQuery += attachedDb;
+            m_db.executeUpdate(sqlQuery);
+        }
+        catch (const ::zserio::SqliteException&)
+        {
+            // ignore since we have no logging sub-system and we need to prevent exception in SQLDatabase destructor
+        }
     }
     m_attachedDbList.clear();
 }
