@@ -354,6 +354,9 @@ class BitStreamWriter:
 
         self._bitposition += numbits
 
+        # align each field to byte immediately
+        self.alignto(8)
+
     def _write_varnum(self, value: int, max_var_bytes: int, num_var_bytes: int, *, is_signed: bool) -> None:
         abs_value = abs(value)
         has_max_byte_range = num_var_bytes == max_var_bytes

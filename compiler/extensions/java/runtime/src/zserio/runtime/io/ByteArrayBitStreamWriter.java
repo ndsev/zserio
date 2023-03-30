@@ -696,6 +696,9 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
             buffer[--bytePosition] = (byte)partialByte;
             bitOffset = nBits;
         }
+
+        // align each field to byte immediately
+        alignTo(8);
     }
 
     /**

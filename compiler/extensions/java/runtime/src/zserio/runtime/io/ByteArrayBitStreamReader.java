@@ -118,6 +118,9 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
             }
         }
 
+        // align each field to byte immediately
+        alignTo(8);
+
         return accum;
     }
 

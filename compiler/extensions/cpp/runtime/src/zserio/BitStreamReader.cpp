@@ -268,6 +268,15 @@ namespace
         ctx.cacheNumBits -= numBits;
         ctx.bitIndex += numBits;
 
+        // align each field to byte immediately
+        const size_t alignment = 8;
+        const BitPosType offset = ctx.bitIndex % alignment;
+        if (offset != 0)
+        {
+            const uint8_t skip = static_cast<uint8_t>(alignment - offset);
+            readBitsImpl(ctx, skip);
+        }
+
         return value;
     }
 

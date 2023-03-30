@@ -117,6 +117,9 @@ class BitStreamReader:
 
         self._bitposition = end_bitposition
 
+        # align each field to byte immediately
+        self.alignto(8)
+
         return value
 
     def read_signed_bits_unchecked(self, numbits: int) -> int:
