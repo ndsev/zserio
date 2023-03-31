@@ -140,7 +140,7 @@ ${fullName} valueToEnum(
 <#list items as item>
     case ${item.value}:
 </#list>
-        return ${fullName}(rawValue);
+        return static_cast<${fullName}>(rawValue);
     default:
         throw ::zserio::CppRuntimeException("Unknown value for enumeration ${name}: ") << rawValue << "!";
     }

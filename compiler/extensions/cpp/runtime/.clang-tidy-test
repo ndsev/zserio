@@ -78,7 +78,7 @@ Checks: "-*,\
 #  google-default-arguments,\
 #(generated bitmasks break this rule)  google-explicit-constructor,\
   google-global-names-in-headers,\
-#  google-readability-casting,\
+  google-readability-casting,\
   google-runtime-int,\
   google-runtime-operator,\
   google-upgrade-googletest-case,\

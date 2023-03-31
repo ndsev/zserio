@@ -58,7 +58,7 @@ inline Color valueToEnum<Color>(typename std::underlying_type<Color>::type rawVa
     case UINT8_C(2):
     case UINT8_C(3):
     case UINT8_C(7):
-        return Color(rawValue);
+        return static_cast<Color>(rawValue);
     default:
         throw CppRuntimeException("Unknown value for enumeration Color: ") << rawValue << "!";
     }

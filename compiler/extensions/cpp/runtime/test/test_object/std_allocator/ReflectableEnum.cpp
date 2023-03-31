@@ -125,7 +125,7 @@ template <>
     case INT8_C(-1):
     case INT8_C(0):
     case INT8_C(1):
-        return ::test_object::std_allocator::ReflectableEnum(rawValue);
+        return static_cast<::test_object::std_allocator::ReflectableEnum>(rawValue);
     default:
         throw ::zserio::CppRuntimeException("Unknown value for enumeration ReflectableEnum: ") << rawValue << "!";
     }

@@ -262,7 +262,7 @@ inline DummyEnum valueToEnum(typename std::underlying_type<DummyEnum>::type rawV
     case UINT8_C(0):
     case UINT8_C(1):
     case UINT8_C(2):
-        return DummyEnum(rawValue);
+        return static_cast<DummyEnum>(rawValue);
     default:
         throw CppRuntimeException("Unknown value for enumeration DummyEnum: ") << rawValue << "!";
     }

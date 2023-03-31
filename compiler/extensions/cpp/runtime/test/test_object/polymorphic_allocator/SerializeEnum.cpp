@@ -125,7 +125,7 @@ template <>
     case UINT8_C(0):
     case UINT8_C(1):
     case UINT8_C(2):
-        return ::test_object::polymorphic_allocator::SerializeEnum(rawValue);
+        return static_cast<::test_object::polymorphic_allocator::SerializeEnum>(rawValue);
     default:
         throw ::zserio::CppRuntimeException("Unknown value for enumeration SerializeEnum: ") << rawValue << "!";
     }
