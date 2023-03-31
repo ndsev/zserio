@@ -123,6 +123,7 @@ Checks: "-*,\
   portability-simd-intrinsics,\
 #  readability-braces-around-statements,\
   readability-const-return-type,\
+#(case-info which holds pointers to fields info breaks this rule)  readability-container-data-pointer,\
   readability-delete-null-pointer,\
   readability-deleted-default,\
   readability-identifier-naming,\
