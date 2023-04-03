@@ -39,6 +39,12 @@ public:
         delete m_database;
     }
 
+    HiddenVirtualColumnsTest(const HiddenVirtualColumnsTest&) = delete;
+    HiddenVirtualColumnsTest& operator=(const HiddenVirtualColumnsTest&) = delete;
+
+    HiddenVirtualColumnsTest(HiddenVirtualColumnsTest&&) = delete;
+    HiddenVirtualColumnsTest& operator=(HiddenVirtualColumnsTest&&) = delete;
+
 protected:
     static void fillHiddenVirtualColumnsTableRow(HiddenVirtualColumnsTable::Row& row, int64_t docId,
             const string_type& searchTags)

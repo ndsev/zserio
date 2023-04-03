@@ -33,6 +33,12 @@ public:
         delete m_database;
     }
 
+    SubtypedEnumFieldTableTest(const SubtypedEnumFieldTableTest&) = delete;
+    SubtypedEnumFieldTableTest& operator=(const SubtypedEnumFieldTableTest&) = delete;
+
+    SubtypedEnumFieldTableTest(SubtypedEnumFieldTableTest&&) = delete;
+    SubtypedEnumFieldTableTest& operator=(SubtypedEnumFieldTableTest&&) = delete;
+
 protected:
     static void fillRow(SubtypedEnumFieldTable::Row& row, size_t i)
     {

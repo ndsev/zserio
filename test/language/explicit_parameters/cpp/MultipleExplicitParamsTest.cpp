@@ -35,6 +35,12 @@ public:
         delete m_database;
     }
 
+    MultipleExplicitParamsTest(const MultipleExplicitParamsTest&) = delete;
+    MultipleExplicitParamsTest& operator=(const MultipleExplicitParamsTest&) = delete;
+
+    MultipleExplicitParamsTest(MultipleExplicitParamsTest&&) = delete;
+    MultipleExplicitParamsTest& operator=(MultipleExplicitParamsTest&&) = delete;
+
 protected:
     void fillMultipleParamsTableRow(MultipleParamsTable::Row& row, uint32_t id, const string_type& name)
     {

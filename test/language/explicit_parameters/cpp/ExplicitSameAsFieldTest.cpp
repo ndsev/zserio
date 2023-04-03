@@ -35,6 +35,12 @@ public:
         delete m_database;
     }
 
+    ExplicitSameAsFieldTest(const ExplicitSameAsFieldTest&) = delete;
+    ExplicitSameAsFieldTest& operator=(const ExplicitSameAsFieldTest&) = delete;
+
+    ExplicitSameAsFieldTest(ExplicitSameAsFieldTest&&) = delete;
+    ExplicitSameAsFieldTest& operator=(ExplicitSameAsFieldTest&&) = delete;
+
 protected:
     void fillSameAsFieldTableRow(SameAsFieldTable::Row& row, uint32_t id, const string_type& name)
     {

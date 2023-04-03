@@ -32,6 +32,14 @@ public:
         delete m_database;
     }
 
+    BlobFieldWithChildrenInitializationTableTest(const BlobFieldWithChildrenInitializationTableTest&) = delete;
+    BlobFieldWithChildrenInitializationTableTest& operator=(
+            const BlobFieldWithChildrenInitializationTableTest&) = delete;
+
+    BlobFieldWithChildrenInitializationTableTest(BlobFieldWithChildrenInitializationTableTest&&) = delete;
+    BlobFieldWithChildrenInitializationTableTest& operator=(
+            BlobFieldWithChildrenInitializationTableTest&&) = delete;
+
 protected:
     static void fillRow(BlobFieldWithChildrenInitializationTable::Row& row, size_t index)
     {

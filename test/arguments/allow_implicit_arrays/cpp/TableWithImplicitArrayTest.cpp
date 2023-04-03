@@ -34,6 +34,12 @@ public:
         delete m_database;
     }
 
+    TableWithImplicitArrayTest(const TableWithImplicitArrayTest&) = delete;
+    TableWithImplicitArrayTest& operator=(const TableWithImplicitArrayTest&) = delete;
+
+    TableWithImplicitArrayTest(TableWithImplicitArrayTest&&) = delete;
+    TableWithImplicitArrayTest& operator=(TableWithImplicitArrayTest&&) = delete;
+
 protected:
     static void fillRow(TableWithImplicitArray::Row& row, size_t i)
     {

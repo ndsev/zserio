@@ -35,6 +35,12 @@ public:
         delete m_database;
     }
 
+    ExplicitBlobParamTest(const ExplicitBlobParamTest&) = delete;
+    ExplicitBlobParamTest& operator=(const ExplicitBlobParamTest&) = delete;
+
+    ExplicitBlobParamTest(ExplicitBlobParamTest&&) = delete;
+    ExplicitBlobParamTest& operator=(ExplicitBlobParamTest&&) = delete;
+
 protected:
     class BlobParamTableParameterProvider : public BlobParamTable::IParameterProvider
     {

@@ -37,6 +37,12 @@ public:
         delete m_database;
     }
 
+    MultiplePkTableTest(const MultiplePkTableTest&) = delete;
+    MultiplePkTableTest& operator=(const MultiplePkTableTest&) = delete;
+
+    MultiplePkTableTest(MultiplePkTableTest&&) = delete;
+    MultiplePkTableTest& operator=(MultiplePkTableTest&&) = delete;
+
 protected:
     static void fillMultiplePkTableRow(MultiplePkTable::Row& row, int32_t blobId, const string_type& name)
     {

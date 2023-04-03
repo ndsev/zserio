@@ -70,7 +70,7 @@ Checks: "-*,\
 #  cppcoreguidelines-pro-type-union-access,\
   cppcoreguidelines-pro-type-vararg,\
   cppcoreguidelines-slicing,\
-#  cppcoreguidelines-special-member-functions,\
+  cppcoreguidelines-special-member-functions,\
   fuchsia-multiple-inheritance,\
   google-build-explicit-make-pair,\
   google-build-namespaces,\

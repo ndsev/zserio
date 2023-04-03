@@ -35,6 +35,12 @@ public:
         delete m_database;
     }
 
+    ExplicitEnumParamTest(const ExplicitEnumParamTest&) = delete;
+    ExplicitEnumParamTest& operator=(const ExplicitEnumParamTest&) = delete;
+
+    ExplicitEnumParamTest(ExplicitEnumParamTest&&) = delete;
+    ExplicitEnumParamTest& operator=(ExplicitEnumParamTest&&) = delete;
+
 protected:
     void fillEnumParamTableRow(EnumParamTable::Row& row, uint32_t id, const string_type& name)
     {

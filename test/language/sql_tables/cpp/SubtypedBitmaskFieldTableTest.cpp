@@ -33,6 +33,12 @@ public:
         delete m_database;
     }
 
+    SubtypedBitmaskFieldTableTest(const SubtypedBitmaskFieldTableTest&) = delete;
+    SubtypedBitmaskFieldTableTest& operator=(const SubtypedBitmaskFieldTableTest&) = delete;
+
+    SubtypedBitmaskFieldTableTest(SubtypedBitmaskFieldTableTest&&) = delete;
+    SubtypedBitmaskFieldTableTest& operator=(SubtypedBitmaskFieldTableTest&&) = delete;
+
 protected:
     static void fillRow(SubtypedBitmaskFieldTable::Row& row, size_t i)
     {

@@ -33,6 +33,12 @@ public:
         delete m_database;
     }
 
+    SubtypedTableTest(const SubtypedTableTest&) = delete;
+    SubtypedTableTest& operator=(const SubtypedTableTest&) = delete;
+
+    SubtypedTableTest(SubtypedTableTest&&) = delete;
+    SubtypedTableTest& operator=(SubtypedTableTest&&) = delete;
+
 protected:
     bool isTableInDb()
     {

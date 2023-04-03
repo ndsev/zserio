@@ -37,6 +37,12 @@ public:
         delete m_database;
     }
 
+    WithoutPkTableTest(const WithoutPkTableTest&) = delete;
+    WithoutPkTableTest& operator=(const WithoutPkTableTest&) = delete;
+
+    WithoutPkTableTest(WithoutPkTableTest&&) = delete;
+    WithoutPkTableTest& operator=(WithoutPkTableTest&&) = delete;
+
 protected:
     static void fillWithoutPkTableRow(WithoutPkTable::Row& row, int32_t identifier, const string_type& name)
     {

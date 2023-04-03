@@ -35,6 +35,12 @@ public:
         delete m_database;
     }
 
+    ExplicitSimpleParamTest(const ExplicitSimpleParamTest&) = delete;
+    ExplicitSimpleParamTest& operator=(const ExplicitSimpleParamTest&) = delete;
+
+    ExplicitSimpleParamTest(ExplicitSimpleParamTest&&) = delete;
+    ExplicitSimpleParamTest& operator=(ExplicitSimpleParamTest&&) = delete;
+
 protected:
     void fillSimpleParamTableRow(SimpleParamTable::Row& row, uint32_t id, const string_type& name)
     {

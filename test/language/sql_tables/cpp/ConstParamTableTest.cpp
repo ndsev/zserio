@@ -38,6 +38,12 @@ public:
         delete m_database;
     }
 
+    ConstParamTableTest(const ConstParamTableTest&) = delete;
+    ConstParamTableTest& operator=(const ConstParamTableTest&) = delete;
+
+    ConstParamTableTest(ConstParamTableTest&&) = delete;
+    ConstParamTableTest& operator=(ConstParamTableTest&&) = delete;
+
 protected:
     static void fillConstParamTableRow(ConstParamTable::Row& row, uint32_t blobId, const string_type& name)
     {

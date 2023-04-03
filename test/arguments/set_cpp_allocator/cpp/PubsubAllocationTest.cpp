@@ -36,6 +36,12 @@ public:
         EXPECT_EQ(m_memoryResource.getNumDeallocations(), m_memoryResource.getNumAllocations());
     }
 
+    PubsubAllocationTest(const PubsubAllocationTest&) = delete;
+    PubsubAllocationTest& operator=(const PubsubAllocationTest&) = delete;
+
+    PubsubAllocationTest(PubsubAllocationTest&&) = delete;
+    PubsubAllocationTest& operator=(PubsubAllocationTest&&) = delete;
+
     const allocator_type& getAllocator()
     {
         return m_allocator;

@@ -35,6 +35,12 @@ public:
         delete m_database;
     }
 
+    MultipleWithSameNameTest(const MultipleWithSameNameTest&) = delete;
+    MultipleWithSameNameTest& operator=(const MultipleWithSameNameTest&) = delete;
+
+    MultipleWithSameNameTest(MultipleWithSameNameTest&&) = delete;
+    MultipleWithSameNameTest& operator=(MultipleWithSameNameTest&&) = delete;
+
 protected:
     void fillMultipleWithSameNameTableRow(MultipleWithSameNameTable::Row& row, uint32_t id,
             const string_type& name)

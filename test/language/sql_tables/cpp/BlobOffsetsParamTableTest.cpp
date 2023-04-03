@@ -38,6 +38,12 @@ public:
         delete m_database;
     }
 
+    BlobOffsetsParamTableTest(const BlobOffsetsParamTableTest&) = delete;
+    BlobOffsetsParamTableTest& operator=(const BlobOffsetsParamTableTest&) = delete;
+
+    BlobOffsetsParamTableTest(BlobOffsetsParamTableTest&&) = delete;
+    BlobOffsetsParamTableTest& operator=(BlobOffsetsParamTableTest&&) = delete;
+
 protected:
     static void fillBlobOffsetsParamTableRow(BlobOffsetsParamTable::Row& row, uint32_t blobId,
             const string_type& name)

@@ -33,6 +33,12 @@ public:
         EXPECT_EQ(m_memoryResource.getNumDeallocations(), m_memoryResource.getNumAllocations());
     }
 
+    ServiceAllocationTest(const ServiceAllocationTest&) = delete;
+    ServiceAllocationTest& operator=(const ServiceAllocationTest&) = delete;
+
+    ServiceAllocationTest(ServiceAllocationTest&&) = delete;
+    ServiceAllocationTest& operator=(ServiceAllocationTest&&) = delete;
+
     const allocator_type& getAllocator()
     {
         return m_allocator;

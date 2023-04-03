@@ -38,6 +38,12 @@ public:
         EXPECT_EQ(m_memoryResource.getNumDeallocations(), m_memoryResource.getNumAllocations());
     }
 
+    SqlAllocationTest(const SqlAllocationTest&) = delete;
+    SqlAllocationTest& operator=(const SqlAllocationTest&) = delete;
+
+    SqlAllocationTest(SqlAllocationTest&&) = delete;
+    SqlAllocationTest& operator=(SqlAllocationTest&&) = delete;
+
 protected:
     class SqlAllocationTableParameterProvider : public SqlAllocationTable::IParameterProvider
     {

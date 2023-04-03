@@ -36,6 +36,12 @@ public:
         delete m_database;
     }
 
+    ColumnParamTableTest(const ColumnParamTableTest&) = delete;
+    ColumnParamTableTest& operator=(const ColumnParamTableTest&) = delete;
+
+    ColumnParamTableTest(ColumnParamTableTest&&) = delete;
+    ColumnParamTableTest& operator=(ColumnParamTableTest&&) = delete;
+
 protected:
     static void fillColumnParamTableRow(ColumnParamTable::Row& row, uint32_t blobId, const string_type& name)
     {

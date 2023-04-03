@@ -37,6 +37,12 @@ public:
         delete m_database;
     }
 
+    ComplexTableTest(const ComplexTableTest&) = delete;
+    ComplexTableTest& operator=(const ComplexTableTest&) = delete;
+
+    ComplexTableTest(ComplexTableTest&&) = delete;
+    ComplexTableTest& operator=(ComplexTableTest&&) = delete;
+
 protected:
     static void fillComplexTableRowWithNullValues(ComplexTable::Row& row, uint64_t blobId)
     {

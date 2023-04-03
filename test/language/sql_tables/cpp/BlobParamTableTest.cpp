@@ -38,6 +38,12 @@ public:
         delete m_database;
     }
 
+    BlobParamTableTest(const BlobParamTableTest&) = delete;
+    BlobParamTableTest& operator=(const BlobParamTableTest&) = delete;
+
+    BlobParamTableTest(BlobParamTableTest&&) = delete;
+    BlobParamTableTest& operator=(BlobParamTableTest&&) = delete;
+
 protected:
     static void fillBlobParamTableRowWithNullValues(BlobParamTable::Row& row, uint32_t blobId)
     {

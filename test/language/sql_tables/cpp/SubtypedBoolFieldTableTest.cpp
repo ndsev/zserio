@@ -33,6 +33,12 @@ public:
         delete m_database;
     }
 
+    SubtypedBoolFieldTableTest(const SubtypedBoolFieldTableTest&) = delete;
+    SubtypedBoolFieldTableTest& operator=(const SubtypedBoolFieldTableTest&) = delete;
+
+    SubtypedBoolFieldTableTest(SubtypedBoolFieldTableTest&&) = delete;
+    SubtypedBoolFieldTableTest& operator=(SubtypedBoolFieldTableTest&&) = delete;
+
 protected:
     static void fillRow(SubtypedBoolFieldTable::Row& row, size_t i)
     {

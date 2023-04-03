@@ -34,6 +34,12 @@ public:
         delete m_database;
     }
 
+    TableConstraintsTest(const TableConstraintsTest&) = delete;
+    TableConstraintsTest& operator=(const TableConstraintsTest&) = delete;
+
+    TableConstraintsTest(TableConstraintsTest&&) = delete;
+    TableConstraintsTest& operator=(TableConstraintsTest&&) = delete;
+
 protected:
     static const char DB_FILE_NAME[];
 

@@ -34,6 +34,12 @@ public:
         delete m_database;
     }
 
+    FieldConstraintsTest(const FieldConstraintsTest&) = delete;
+    FieldConstraintsTest& operator=(const FieldConstraintsTest&) = delete;
+
+    FieldConstraintsTest(FieldConstraintsTest&&) = delete;
+    FieldConstraintsTest& operator=(FieldConstraintsTest&&) = delete;
+
 protected:
     void fillRow(FieldConstraintsTable::Row& row)
     {

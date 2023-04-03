@@ -33,6 +33,12 @@ public:
         delete m_database;
     }
 
+    DynamicBitFieldEnumFieldTableTest(const DynamicBitFieldEnumFieldTableTest&) = delete;
+    DynamicBitFieldEnumFieldTableTest& operator=(const DynamicBitFieldEnumFieldTableTest&) = delete;
+
+    DynamicBitFieldEnumFieldTableTest(DynamicBitFieldEnumFieldTableTest&&) = delete;
+    DynamicBitFieldEnumFieldTableTest& operator=(DynamicBitFieldEnumFieldTableTest&&) = delete;
+
 protected:
     static void fillRow(DynamicBitFieldEnumFieldTable::Row& row, size_t i)
     {

@@ -35,6 +35,12 @@ public:
         delete m_database;
     }
 
+    ExplicitBitmaskParamTest(const ExplicitBitmaskParamTest&) = delete;
+    ExplicitBitmaskParamTest& operator=(const ExplicitBitmaskParamTest&) = delete;
+
+    ExplicitBitmaskParamTest(ExplicitBitmaskParamTest&&) = delete;
+    ExplicitBitmaskParamTest& operator=(ExplicitBitmaskParamTest&&) = delete;
+
 protected:
     void fillBitmaskParamTableRow(BitmaskParamTable::Row& row, uint32_t id, const string_type& name)
     {

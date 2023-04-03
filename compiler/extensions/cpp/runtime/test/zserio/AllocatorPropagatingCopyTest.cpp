@@ -54,11 +54,17 @@ public:
         : m_allocator(allocator)
     {}
 
+    ~RegularWithAllocatorSupport() = default;
+
     RegularWithAllocatorSupport(const RegularWithAllocatorSupport& other)
         : m_allocator(AllocTraits::select_on_container_copy_construction(other.m_allocator))
     {}
 
+    RegularWithAllocatorSupport& operator=(const RegularWithAllocatorSupport&) = delete;
+
     RegularWithAllocatorSupport(RegularWithAllocatorSupport&&) = default;
+
+    RegularWithAllocatorSupport& operator=(RegularWithAllocatorSupport&&) = delete;
 
     RegularWithAllocatorSupport(PropagateAllocatorT, const RegularWithAllocatorSupport&,
             const allocator_type& allocator) :

@@ -37,6 +37,12 @@ public:
         delete m_database;
     }
 
+    Fts3VirtualTableTest(const Fts3VirtualTableTest&) = delete;
+    Fts3VirtualTableTest& operator=(const Fts3VirtualTableTest&) = delete;
+
+    Fts3VirtualTableTest(Fts3VirtualTableTest&&) = delete;
+    Fts3VirtualTableTest& operator=(Fts3VirtualTableTest&&) = delete;
+
 protected:
     static void fillFts3VirtualTableRow(Fts3VirtualTable::Row& row, const string_type& title,
             const string_type& body)

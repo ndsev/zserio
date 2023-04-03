@@ -37,6 +37,12 @@ public:
         delete m_database;
     }
 
+    SimpleVirtualColumnsTest(const SimpleVirtualColumnsTest&) = delete;
+    SimpleVirtualColumnsTest& operator=(const SimpleVirtualColumnsTest&) = delete;
+
+    SimpleVirtualColumnsTest(SimpleVirtualColumnsTest&&) = delete;
+    SimpleVirtualColumnsTest& operator=(SimpleVirtualColumnsTest&&) = delete;
+
 protected:
     static void fillSimpleVirtualColumnsTableRow(SimpleVirtualColumnsTable::Row& row,
             const string_type& content)

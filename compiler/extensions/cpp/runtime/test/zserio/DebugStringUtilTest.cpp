@@ -30,9 +30,13 @@ struct DummyObject
             m_text_(text_)
     {}
 
+    ~DummyObject() = default;
+
     DummyObject(const DummyObject& other) = delete;
+    DummyObject& operator=(const DummyObject& other) = delete;
 
     DummyObject(DummyObject&& other) = default;
+    DummyObject& operator=(DummyObject&& other) = delete;
 
     static const IBasicTypeInfo<ALLOC>& typeInfo()
     {
@@ -190,7 +194,10 @@ public:
             m_text_(text_)
     {}
 
+    ~ParameterizedDummyObject() = default;
+
     ParameterizedDummyObject(const ParameterizedDummyObject& other) = delete;
+    ParameterizedDummyObject& operator=(const ParameterizedDummyObject& other) = delete;
 
     ParameterizedDummyObject(ParameterizedDummyObject&& other) :
         m_text_(std::move(other.m_text_))
@@ -200,6 +207,8 @@ public:
         else
             m_isInitialized = false;
     }
+
+    ParameterizedDummyObject& operator=(ParameterizedDummyObject&& other) = delete;
 
     static const IBasicTypeInfo<ALLOC>& typeInfo()
     {

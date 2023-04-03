@@ -28,6 +28,12 @@ public:
         delete m_database;
     }
 
+    SqlTypesTest(const SqlTypesTest&) = delete;
+    SqlTypesTest& operator=(const SqlTypesTest&) = delete;
+
+    SqlTypesTest(SqlTypesTest&&) = delete;
+    SqlTypesTest& operator=(SqlTypesTest&&) = delete;
+
 protected:
     bool getSqlColumnTypes(std::map<std::string, std::string>& sqlColumnTypes)
     {
