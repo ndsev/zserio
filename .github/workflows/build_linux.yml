@@ -96,6 +96,7 @@ jobs:
         GCOVR_BIN: "gcovr"
         LLVM_PROFDATA_BIN: "llvm-profdata${{matrix.clang-version-suffix}}"
         LLVM_COV_BIN: "llvm-cov${{matrix.clang-version-suffix}}"
+        CLANG_TIDY_BIN: "clang-tidy${{matrix.clang-version-suffix}}"
         SANITIZERS_ENABLED: 1
 
     - name: Pack Zserio release
@@ -113,6 +114,7 @@ jobs:
         scripts/test.sh cpp-linux64-gcc cpp-linux32-gcc cpp-linux64-clang cpp-linux32-clang
       env:
         CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Debug"
+        CLANG_TIDY_BIN: "clang-tidy${{matrix.clang-version-suffix}}"
 
     - name: Compare all blobs created by Zserio tests
       run: |
