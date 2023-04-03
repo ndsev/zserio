@@ -51,19 +51,19 @@ public:
         return *this;
     }
 
-    virtual AnyHolder<ALLOC> get() const override;
+    AnyHolder<ALLOC> get() const override;
 
-    virtual void beginObject() override;
-    virtual void endObject() override;
-    virtual void beginArray() override;
-    virtual void endArray() override;
-    virtual void visitKey(StringView key) override;
-    virtual void visitValue(std::nullptr_t) override;
-    virtual void visitValue(bool boolValue) override;
-    virtual void visitValue(int64_t intValue) override;
-    virtual void visitValue(uint64_t uintValue) override;
-    virtual void visitValue(double doubleValue) override;
-    virtual void visitValue(StringView stringValue) override;
+    void beginObject() override;
+    void endObject() override;
+    void beginArray() override;
+    void endArray() override;
+    void visitKey(StringView key) override;
+    void visitValue(std::nullptr_t) override;
+    void visitValue(bool boolValue) override;
+    void visitValue(int64_t intValue) override;
+    void visitValue(uint64_t uintValue) override;
+    void visitValue(double doubleValue) override;
+    void visitValue(StringView stringValue) override;
 
 private:
     enum State : uint8_t
@@ -104,19 +104,19 @@ public:
         return *this;
     }
 
-    virtual AnyHolder<ALLOC> get() const override;
+    AnyHolder<ALLOC> get() const override;
 
-    virtual void beginObject() override;
-    virtual void endObject() override;
-    virtual void beginArray() override;
-    virtual void endArray() override;
-    virtual void visitKey(StringView key) override;
-    virtual void visitValue(std::nullptr_t) override;
-    virtual void visitValue(bool boolValue) override;
-    virtual void visitValue(int64_t intValue) override;
-    virtual void visitValue(uint64_t uintValue) override;
-    virtual void visitValue(double doubleValue) override;
-    virtual void visitValue(StringView stringValue) override;
+    void beginObject() override;
+    void endObject() override;
+    void beginArray() override;
+    void endArray() override;
+    void visitKey(StringView key) override;
+    void visitValue(std::nullptr_t) override;
+    void visitValue(bool boolValue) override;
+    void visitValue(int64_t intValue) override;
+    void visitValue(uint64_t uintValue) override;
+    void visitValue(double doubleValue) override;
+    void visitValue(StringView stringValue) override;
 
 private:
     enum State : uint8_t
@@ -143,17 +143,17 @@ public:
     void setType(const IBasicTypeInfo<ALLOC>& typeInfo);
     IBasicReflectablePtr<ALLOC> get() const;
 
-    virtual void beginObject() override;
-    virtual void endObject() override;
-    virtual void beginArray() override;
-    virtual void endArray() override;
-    virtual void visitKey(StringView key) override;
-    virtual void visitValue(std::nullptr_t) override;
-    virtual void visitValue(bool boolValue) override;
-    virtual void visitValue(int64_t intValue) override;
-    virtual void visitValue(uint64_t uintValue) override;
-    virtual void visitValue(double doubleValue) override;
-    virtual void visitValue(StringView stringValue) override;
+    void beginObject() override;
+    void endObject() override;
+    void beginArray() override;
+    void endArray() override;
+    void visitKey(StringView key) override;
+    void visitValue(std::nullptr_t) override;
+    void visitValue(bool boolValue) override;
+    void visitValue(int64_t intValue) override;
+    void visitValue(uint64_t uintValue) override;
+    void visitValue(double doubleValue) override;
+    void visitValue(StringView stringValue) override;
 
 private:
     template <typename T>

@@ -23,19 +23,19 @@ public:
     }
 
 private:
-    virtual void* doAllocate(size_t bytes, size_t) override
+    void* doAllocate(size_t bytes, size_t) override
     {
         ++m_numAllocs;
         return ::operator new(bytes);
     }
 
-    virtual void doDeallocate(void* p, size_t, size_t) override
+    void doDeallocate(void* p, size_t, size_t) override
     {
         ++m_numDeallocs;
         ::operator delete(p);
     }
 
-    virtual bool doIsEqual(const MemoryResource& other) const noexcept override
+    bool doIsEqual(const MemoryResource& other) const noexcept override
     {
         auto otherPtr = dynamic_cast<const TestResource*>(&other);
         return otherPtr && m_instanceId == otherPtr->m_instanceId;

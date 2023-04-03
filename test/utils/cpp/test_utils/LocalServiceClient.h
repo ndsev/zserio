@@ -18,7 +18,7 @@ public:
             zserio::AllocatorHolder<ALLOC>(allocator), m_service(service)
     {}
 
-    virtual std::vector<uint8_t, ALLOC> callMethod(zserio::StringView methodName,
+    std::vector<uint8_t, ALLOC> callMethod(zserio::StringView methodName,
             const zserio::IBasicServiceData<ALLOC>& requestData,
             void* context = nullptr) override
     {

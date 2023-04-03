@@ -70,12 +70,12 @@ namespace detail
             return m_typedHolder.value();
         }
 
-        virtual bool isSet() const override
+        bool isSet() const override
         {
             return m_typedHolder.hasValue();
         }
 
-        virtual bool isType(detail::TypeIdHolder::type_id typeId) const override
+        bool isType(detail::TypeIdHolder::type_id typeId) const override
         {
             return detail::TypeIdHolder::get<T>() == typeId;
         }
@@ -126,7 +126,7 @@ namespace detail
             }
         }
 
-        virtual IHolder<ALLOC>* clone(const ALLOC& allocator) const override
+        IHolder<ALLOC>* clone(const ALLOC& allocator) const override
         {
             this_type* holder = create(allocator);
             holder->set(this->getHolder());
@@ -134,12 +134,12 @@ namespace detail
         }
 
         // due to gcovr bug, exclusion markers must be defined in this way
-        virtual IHolder<ALLOC>* clone(void*) const override
+        IHolder<ALLOC>* clone(void*) const override
         {
             throw CppRuntimeException("AnyHolder: Unexpected clone call.");
         }
 
-        virtual IHolder<ALLOC>* move(const ALLOC& allocator) override
+        IHolder<ALLOC>* move(const ALLOC& allocator) override
         {
             this_type* holder = create(allocator);
             holder->set(std::move(this->getHolder()));
@@ -147,12 +147,12 @@ namespace detail
         }
 
         // due to gcovr bug, exclusion markers must be defined in this way
-        virtual IHolder<ALLOC>* move(void*) override
+        IHolder<ALLOC>* move(void*) override
         {
             throw CppRuntimeException("AnyHolder: Unexpected clone call.");
         }
 
-        virtual void destroy(const ALLOC& allocator) override
+        void destroy(const ALLOC& allocator) override
         {
             using AllocType = RebindAlloc<ALLOC, this_type>;
             using AllocTraits = std::allocator_traits<AllocType>;
@@ -176,12 +176,12 @@ namespace detail
         }
 
         // due to gcovr bug, exclusion markers must be defined in this way
-        virtual IHolder<ALLOC>* clone(const ALLOC&) const override
+        IHolder<ALLOC>* clone(const ALLOC&) const override
         {
             throw CppRuntimeException("AnyHolder: Unexpected clone call.");
         }
 
-        virtual IHolder<ALLOC>* clone(void* storage) const override
+        IHolder<ALLOC>* clone(void* storage) const override
         {
             NonHeapHolder* holder = new (storage) NonHeapHolder();
             holder->set(this->getHolder());
@@ -189,19 +189,19 @@ namespace detail
         }
 
         // due to gcovr bug, exclusion markers must be defined in this way
-        virtual IHolder<ALLOC>* move(const ALLOC&) override
+        IHolder<ALLOC>* move(const ALLOC&) override
         {
             throw CppRuntimeException("AnyHolder: Unexpected clone call.");
         }
 
-        virtual IHolder<ALLOC>* move(void* storage) override
+        IHolder<ALLOC>* move(void* storage) override
         {
             NonHeapHolder* holder = new (storage) NonHeapHolder();
             holder->set(std::move(this->getHolder()));
             return holder;
         }
 
-        virtual void destroy(const ALLOC&) override
+        void destroy(const ALLOC&) override
         {
             this->~NonHeapHolder();
         }

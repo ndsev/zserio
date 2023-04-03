@@ -101,12 +101,12 @@ protected:
     class EnumParamTableParameterProvider : public EnumParamTable::IParameterProvider
     {
     public:
-        virtual TestEnum getCount1(EnumParamTable::Row&) override
+        TestEnum getCount1(EnumParamTable::Row&) override
         {
             return ENUM_PARAM_TABLE_COUNT1;
         }
 
-        virtual TestEnum getCount2(EnumParamTable::Row&) override
+        TestEnum getCount2(EnumParamTable::Row&) override
         {
             return ENUM_PARAM_TABLE_COUNT2;
         }

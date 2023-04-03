@@ -199,7 +199,7 @@ protected:
 
     class ComplexTableParameterProvider : public ComplexTable::IParameterProvider
     {
-        virtual uint32_t getCount(ComplexTable::Row&) override
+        uint32_t getCount(ComplexTable::Row&) override
         {
             return static_cast<uint32_t>(COMPLEX_TABLE_COUNT);
         }

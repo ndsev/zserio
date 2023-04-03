@@ -94,7 +94,7 @@ protected:
     class SameAsFieldTableParameterProvider : public SameAsFieldTable::IParameterProvider
     {
     public:
-        virtual uint32_t getCount(SameAsFieldTable::Row&) override
+        uint32_t getCount(SameAsFieldTable::Row&) override
         {
             return SAME_AS_FIELD_TABLE_COUNT_EXPLICIT;
         }

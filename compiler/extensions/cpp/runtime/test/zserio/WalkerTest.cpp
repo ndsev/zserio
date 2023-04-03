@@ -60,37 +60,37 @@ public:
         m_captures["visitValue"_sv];
     }
 
-    virtual void beginRoot(const IReflectableConstPtr& compound) override
+    void beginRoot(const IReflectableConstPtr& compound) override
     {
         m_captures["beginRoot"_sv].push_back(compound);
     }
 
-    virtual void endRoot(const IReflectableConstPtr& compound) override
+    void endRoot(const IReflectableConstPtr& compound) override
     {
         m_captures["endRoot"_sv].push_back(compound);
     }
 
-    virtual void beginArray(const IReflectableConstPtr& array, const FieldInfo&) override
+    void beginArray(const IReflectableConstPtr& array, const FieldInfo&) override
     {
         m_captures["beginArray"_sv].push_back(array);
     }
 
-    virtual void endArray(const IReflectableConstPtr& array, const FieldInfo&) override
+    void endArray(const IReflectableConstPtr& array, const FieldInfo&) override
     {
         m_captures["endArray"_sv].push_back(array);
     }
 
-    virtual void beginCompound(const IReflectableConstPtr& compound, const FieldInfo&, size_t) override
+    void beginCompound(const IReflectableConstPtr& compound, const FieldInfo&, size_t) override
     {
         m_captures["beginCompound"_sv].push_back(compound);
     }
 
-    virtual void endCompound(const IReflectableConstPtr& compound, const FieldInfo&, size_t) override
+    void endCompound(const IReflectableConstPtr& compound, const FieldInfo&, size_t) override
     {
         m_captures["endCompound"_sv].push_back(compound);
     }
 
-    virtual void visitValue(const IReflectableConstPtr& value, const FieldInfo&, size_t) override
+    void visitValue(const IReflectableConstPtr& value, const FieldInfo&, size_t) override
     {
         m_captures["visitValue"_sv].push_back(value);
     }
@@ -118,36 +118,36 @@ public:
     TestWalkFilter& beforeValue(bool beforeValue) { m_beforeValue = beforeValue; return *this; }
     TestWalkFilter& afterValue(bool afterValue) { m_afterValue = afterValue; return *this; }
 
-    virtual bool beforeArray(const IReflectableConstPtr&, const FieldInfo&) override
+    bool beforeArray(const IReflectableConstPtr&, const FieldInfo&) override
     {
         m_isFirstElement = true;
         return m_beforeArray;
     }
 
-    virtual bool afterArray(const IReflectableConstPtr&, const FieldInfo&) override
+    bool afterArray(const IReflectableConstPtr&, const FieldInfo&) override
     {
         m_isFirstElement = false;
         return m_afterArray;
     }
 
-    virtual bool beforeCompound(const IReflectableConstPtr&, const FieldInfo&, size_t) override
+    bool beforeCompound(const IReflectableConstPtr&, const FieldInfo&, size_t) override
     {
         return m_beforeCompound;
     }
 
-    virtual bool afterCompound(const IReflectableConstPtr&, const FieldInfo&, size_t) override
+    bool afterCompound(const IReflectableConstPtr&, const FieldInfo&, size_t) override
     {
         bool goToNext = !(m_onlyFirstElement && m_isFirstElement);
         m_isFirstElement = false;
         return goToNext && m_afterCompound;
     }
 
-    virtual bool beforeValue(const IReflectableConstPtr&, const FieldInfo&, size_t) override
+    bool beforeValue(const IReflectableConstPtr&, const FieldInfo&, size_t) override
     {
         return m_beforeValue;
     }
 
-    virtual bool afterValue(const IReflectableConstPtr&, const FieldInfo&, size_t) override
+    bool afterValue(const IReflectableConstPtr&, const FieldInfo&, size_t) override
     {
         return m_afterValue;
     }

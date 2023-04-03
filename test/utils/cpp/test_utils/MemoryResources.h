@@ -11,19 +11,19 @@ namespace test_utils
 class InvalidMemoryResource : public zserio::pmr::MemoryResource
 {
 private:
-    virtual void* doAllocate(size_t bytes, size_t align) override
+    void* doAllocate(size_t bytes, size_t align) override
     {
         throw zserio::CppRuntimeException("Trying to allocate using default memory resource (") << bytes <<
                 ", " << align << ")!";
     }
 
-    virtual void doDeallocate(void*, size_t bytes, size_t align) override
+    void doDeallocate(void*, size_t bytes, size_t align) override
     {
         throw zserio::CppRuntimeException("Trying to deallocate using default memory resource (") << bytes <<
                 ", " << align << ")!";
     }
 
-    virtual bool doIsEqual(const MemoryResource& other) const noexcept override
+    bool doIsEqual(const MemoryResource& other) const noexcept override
     {
         return this == &other;
     }
@@ -32,7 +32,7 @@ private:
 class HeapMemoryResource : public zserio::pmr::MemoryResource
 {
 public:
-    virtual void* doAllocate(size_t bytes, size_t) override
+    void* doAllocate(size_t bytes, size_t) override
     {
         ++m_numAllocations;
         m_allocatedSize += bytes;
@@ -40,7 +40,7 @@ public:
         return ::operator new(bytes);
     }
 
-    virtual void doDeallocate(void* p, size_t bytes, size_t) override
+    void doDeallocate(void* p, size_t bytes, size_t) override
     {
         ++m_numDeallocations;
         m_allocatedSize -= bytes;
@@ -48,7 +48,7 @@ public:
         ::operator delete(p);
     }
 
-    virtual bool doIsEqual(const MemoryResource& other) const noexcept override
+    bool doIsEqual(const MemoryResource& other) const noexcept override
     {
         return this == &other;
     }
@@ -83,7 +83,7 @@ public:
         std::fill(m_buffer, m_buffer + BUFFER_SIZE, 0);
     }
 
-    virtual void* doAllocate(size_t bytes, size_t align) override
+    void* doAllocate(size_t bytes, size_t align) override
     {
         const size_t alignMod = static_cast<size_t>(m_nextPtr - m_buffer) % align;
         if (alignMod != 0)
@@ -102,13 +102,13 @@ public:
         return ptr;
     }
 
-    virtual void doDeallocate(void*, size_t bytes, size_t) override
+    void doDeallocate(void*, size_t bytes, size_t) override
     {
         ++m_numDeallocations;
         m_allocatedSize -= bytes;
     }
 
-    virtual bool doIsEqual(const MemoryResource& other) const noexcept override
+    bool doIsEqual(const MemoryResource& other) const noexcept override
     {
         return this == &other;
     }

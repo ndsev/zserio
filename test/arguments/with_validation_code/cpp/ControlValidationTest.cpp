@@ -120,7 +120,7 @@ protected:
                 m_numberOfErrorsInRowsToSkipRestOfTheTable(numberOfErrorsInRowsToSkipRestOfTheTable)
         {}
 
-        virtual bool beginTable(zserio::StringView tableName, size_t numberOfTableRows) override
+        bool beginTable(zserio::StringView tableName, size_t numberOfTableRows) override
         {
             ValidationObserver::beginTable(tableName, numberOfTableRows);
             if (m_tablesToSkip.count(zserio::toString(tableName)) != 0)
@@ -128,7 +128,7 @@ protected:
             return true;
         }
 
-        virtual bool endTable(zserio::StringView tableName, size_t numberOfValidatedTableRows) override
+        bool endTable(zserio::StringView tableName, size_t numberOfValidatedTableRows) override
         {
             ValidationObserver::endTable(tableName, numberOfValidatedTableRows);
             if (zserio::StringView(m_tableToStopAfter) == tableName)
@@ -136,7 +136,7 @@ protected:
             return true;
         }
 
-        virtual bool reportError(zserio::StringView tableName, zserio::StringView fieldName,
+        bool reportError(zserio::StringView tableName, zserio::StringView fieldName,
             zserio::Span<const zserio::StringView> primaryKeyValues, ErrorType errorType,
             zserio::StringView message) override
         {
@@ -417,13 +417,13 @@ TEST_F(ControlValidationTest, validateSkipTableAndTerminateValidationAfterFirstS
     class SkipAndTerminateObserver : public ValidationObserver
     {
     public:
-        virtual bool endTable(zserio::StringView tableName, size_t numberOfValidatedTableRows) override
+        bool endTable(zserio::StringView tableName, size_t numberOfValidatedTableRows) override
         {
             ValidationObserver::endTable(tableName, numberOfValidatedTableRows);
             return !m_wasSchemaError; // terminate if an schema error occurred
         }
 
-        virtual bool reportError(zserio::StringView tableName, zserio::StringView fieldName,
+        bool reportError(zserio::StringView tableName, zserio::StringView fieldName,
             zserio::Span<const zserio::StringView> primaryKeyValues, ErrorType errorType,
             zserio::StringView message) override
         {

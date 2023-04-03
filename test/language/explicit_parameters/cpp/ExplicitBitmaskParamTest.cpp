@@ -102,12 +102,12 @@ protected:
     class BitmaskParamTableParameterProvider : public BitmaskParamTable::IParameterProvider
     {
     public:
-        virtual TestBitmask getCount1(BitmaskParamTable::Row&) override
+        TestBitmask getCount1(BitmaskParamTable::Row&) override
         {
             return BITMASK_PARAM_TABLE_COUNT1;
         }
 
-        virtual TestBitmask getCount2(BitmaskParamTable::Row&) override
+        TestBitmask getCount2(BitmaskParamTable::Row&) override
         {
             return BITMASK_PARAM_TABLE_COUNT2;
         }

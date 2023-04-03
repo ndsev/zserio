@@ -208,26 +208,26 @@ TEST(JsonWriterTest, enumValue)
                 m_value(value)
         {}
 
-        virtual size_t bitSizeOf(size_t) const override
+        size_t bitSizeOf(size_t) const override
         {
             return 0;
         }
 
-        virtual void write(BitStreamWriter&) const override
+        void write(BitStreamWriter&) const override
         {
         }
 
-        virtual AnyHolder<> getAnyValue(const std::allocator<uint8_t>& allocator) const override
-        {
-            return AnyHolder<>(m_value, allocator);
-        }
-
-        virtual AnyHolder<> getAnyValue(const std::allocator<uint8_t>& allocator) override
+        AnyHolder<> getAnyValue(const std::allocator<uint8_t>& allocator) const override
         {
             return AnyHolder<>(m_value, allocator);
         }
 
-        virtual int64_t toInt() const override
+        AnyHolder<> getAnyValue(const std::allocator<uint8_t>& allocator) override
+        {
+            return AnyHolder<>(m_value, allocator);
+        }
+
+        int64_t toInt() const override
         {
             return m_value;
         }
@@ -292,26 +292,26 @@ TEST(JsonWriterTest, bitmaskValue)
                 m_value(value)
         {}
 
-        virtual size_t bitSizeOf(size_t) const override
+        size_t bitSizeOf(size_t) const override
         {
             return 0;
         }
 
-        virtual void write(BitStreamWriter&) const override
+        void write(BitStreamWriter&) const override
         {
         }
 
-        virtual AnyHolder<> getAnyValue(const std::allocator<uint8_t>& allocator) const override
-        {
-            return AnyHolder<>(m_value, allocator);
-        }
-
-        virtual AnyHolder<> getAnyValue(const std::allocator<uint8_t>& allocator) override
+        AnyHolder<> getAnyValue(const std::allocator<uint8_t>& allocator) const override
         {
             return AnyHolder<>(m_value, allocator);
         }
 
-        virtual uint64_t toUInt() const override
+        AnyHolder<> getAnyValue(const std::allocator<uint8_t>& allocator) override
+        {
+            return AnyHolder<>(m_value, allocator);
+        }
+
+        uint64_t toUInt() const override
         {
             return m_value;
         }

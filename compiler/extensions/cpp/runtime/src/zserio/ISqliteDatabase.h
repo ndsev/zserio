@@ -11,9 +11,9 @@ class ISqliteDatabase : public ISqliteDatabaseReader
 {
 public:
     /**
-     * Virtual destructor.
+     * Destructor.
      */
-    virtual ~ISqliteDatabase() override {}
+    ~ISqliteDatabase() override {}
 
     /**
      * Creates database schema.

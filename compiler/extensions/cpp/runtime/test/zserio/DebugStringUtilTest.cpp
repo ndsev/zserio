@@ -73,16 +73,16 @@ struct DummyObject
                     m_owner(owner)
             {}
 
-            virtual size_t bitSizeOf(size_t) const override
+            size_t bitSizeOf(size_t) const override
             {
                 return 0;
             }
 
-            virtual void write(BitStreamWriter&) const override
+            void write(BitStreamWriter&) const override
             {
             }
 
-            virtual IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override
+            IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override
             {
                 if (name == makeStringView("text"))
                 {
@@ -91,7 +91,7 @@ struct DummyObject
                 throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyNested'!";
             }
 
-            virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
+            AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
             {
                 return AnyHolder<ALLOC>(std::cref(m_owner), allocator);
             }
@@ -118,16 +118,16 @@ struct DummyObject
                     m_owner(owner)
             {}
 
-            virtual size_t bitSizeOf(size_t) const override
+            size_t bitSizeOf(size_t) const override
             {
                 return 0;
             }
 
-            virtual void write(BitStreamWriter&) const override
+            void write(BitStreamWriter&) const override
             {
             }
 
-            virtual IBasicReflectablePtr<ALLOC> getField(StringView name) override
+            IBasicReflectablePtr<ALLOC> getField(StringView name) override
             {
                 if (name == makeStringView("text"))
                 {
@@ -136,7 +136,7 @@ struct DummyObject
                 throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyNested'!";
             }
 
-            virtual void setField(StringView name, const AnyHolder<ALLOC>& any) override
+            void setField(StringView name, const AnyHolder<ALLOC>& any) override
             {
                 if (name == makeStringView("text"))
                 {
@@ -146,12 +146,12 @@ struct DummyObject
                 throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyNested'!";
             }
 
-            virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
+            AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
             {
                 return AnyHolder<ALLOC>(std::cref(m_owner), allocator);
             }
 
-            virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) override
+            AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) override
             {
                 return AnyHolder<ALLOC>(std::ref(m_owner), allocator);
             }
@@ -274,15 +274,15 @@ public:
                     m_object(object)
             {}
 
-            virtual size_t bitSizeOf(size_t) const override
+            size_t bitSizeOf(size_t) const override
             {
                 return 0;
             }
 
-            virtual void write(BitStreamWriter&) const override
+            void write(BitStreamWriter&) const override
             {}
 
-            virtual IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override
+            IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override
             {
                 if (name == makeStringView("text"))
                 {
@@ -292,7 +292,7 @@ public:
                         "' doesn't exist in 'ParameterizedDummyObject'!";
             }
 
-            virtual IBasicReflectableConstPtr<ALLOC> getParameter(StringView name) const override
+            IBasicReflectableConstPtr<ALLOC> getParameter(StringView name) const override
             {
                 if (name == makeStringView("param"))
                 {
@@ -330,7 +330,7 @@ public:
                     m_object(object)
             {}
 
-            virtual void initialize(
+            void initialize(
                     const vector<AnyHolder<allocator_type>, allocator_type>& typeArguments) override
             {
                 if (typeArguments.size() != 1)
@@ -344,15 +344,15 @@ public:
                 );
             }
 
-            virtual size_t bitSizeOf(size_t) const override
+            size_t bitSizeOf(size_t) const override
             {
                 return 0;
             }
 
-            virtual void write(BitStreamWriter&) const override
+            void write(BitStreamWriter&) const override
             {}
 
-            virtual IBasicReflectablePtr<ALLOC> getField(StringView name) override
+            IBasicReflectablePtr<ALLOC> getField(StringView name) override
             {
                 if (name == makeStringView("text"))
                 {
@@ -362,7 +362,7 @@ public:
                         "' doesn't exist in 'ParameterizedDummyObject'!";
             }
 
-            virtual void setField(StringView name,
+            void setField(StringView name,
                     const AnyHolder<allocator_type>& value) override
             {
                 if (name == makeStringView("text"))
@@ -374,7 +374,7 @@ public:
                         "' doesn't exist in 'ParameterizedDummyObject'!";
             }
 
-            virtual IBasicReflectablePtr<ALLOC> getParameter(StringView name) override
+            IBasicReflectablePtr<ALLOC> getParameter(StringView name) override
             {
                 if (name == makeStringView("param"))
                 {
@@ -384,12 +384,12 @@ public:
                         "' doesn't exist in 'ParameterizedDummyObject'!";
             }
 
-            virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
+            AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
             {
                 return AnyHolder<ALLOC>(std::cref(m_object), allocator);
             }
 
-            virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) override
+            AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) override
             {
                 return AnyHolder<ALLOC>(std::ref(m_object), allocator);
             }

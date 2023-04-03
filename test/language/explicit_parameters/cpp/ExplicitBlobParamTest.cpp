@@ -51,12 +51,12 @@ protected:
             m_blob.setCount(BLOB_PARAM_TABLE_BLOB_COUNT);
         }
 
-        virtual Header& getHeaderParam(BlobParamTable::Row&) override
+        Header& getHeaderParam(BlobParamTable::Row&) override
         {
             return m_headerParam;
         }
 
-        virtual Header& getBlob(BlobParamTable::Row&) override
+        Header& getBlob(BlobParamTable::Row&) override
         {
             return m_blob;
         }

@@ -51,42 +51,42 @@ template <>
                 m_value(value)
         {}
 
-        virtual size_t bitSizeOf(size_t) const override
+        size_t bitSizeOf(size_t) const override
         {
             return ::zserio::bitSizeOf(m_value);
         }
 
-        virtual void write(::zserio::BitStreamWriter& writer) const override
+        void write(::zserio::BitStreamWriter& writer) const override
         {
             ::zserio::write(writer, m_value);
         }
 
-        virtual ::zserio::pmr::AnyHolder getAnyValue(const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator) const override
+        ::zserio::pmr::AnyHolder getAnyValue(const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator) const override
         {
             return ::zserio::pmr::AnyHolder(m_value, allocator);
         }
 
-        virtual ::zserio::pmr::AnyHolder getAnyValue(const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator) override
+        ::zserio::pmr::AnyHolder getAnyValue(const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator) override
         {
             return ::zserio::pmr::AnyHolder(m_value, allocator);
         }
 
-        virtual int8_t getInt8() const override
+        int8_t getInt8() const override
         {
             return static_cast<typename ::std::underlying_type<::test_object::polymorphic_allocator::ReflectableEnum>::type>(m_value);
         }
 
-        virtual int64_t toInt() const override
+        int64_t toInt() const override
         {
             return static_cast<typename ::std::underlying_type<::test_object::polymorphic_allocator::ReflectableEnum>::type>(m_value);
         }
 
-        virtual double toDouble() const override
+        double toDouble() const override
         {
             return static_cast<double>(toInt());
         }
 
-        virtual ::zserio::pmr::string toString(
+        ::zserio::pmr::string toString(
                 const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator = ::zserio::pmr::PropagatingPolymorphicAllocator<>()) const override
         {
             return ::zserio::pmr::string(::zserio::enumToString(m_value), allocator);

@@ -56,7 +56,7 @@ protected:
         explicit GreetingServiceImpl(const allocator_type& allocator) : GreetingService::Service(allocator)
         {}
 
-        virtual Greeting sendGreetingImpl(const Name& name, void* context) override
+        Greeting sendGreetingImpl(const Name& name, void* context) override
         {
             if (context != nullptr)
                 static_cast<CountingContext*>(context)->greetingCount++;

@@ -17,57 +17,57 @@ public:
         return m_report;
     }
 
-    virtual void beginObject() override
+    void beginObject() override
     {
         m_report.push_back("beginObject");
     }
 
-    virtual void endObject() override
+    void endObject() override
     {
         m_report.push_back("endObject");
     }
 
-    virtual void beginArray() override
+    void beginArray() override
     {
         m_report.push_back("beginArray");
     }
 
-    virtual void endArray() override
+    void endArray() override
     {
         m_report.push_back("endArray");
     }
 
-    virtual void visitKey(StringView stringValue) override
+    void visitKey(StringView stringValue) override
     {
         m_report.push_back("visitKey: " + toString(stringValue));
     }
 
-    virtual void visitValue(std::nullptr_t) override
+    void visitValue(std::nullptr_t) override
     {
         m_report.push_back("visitValue: null");
     }
 
-    virtual void visitValue(bool boolValue) override
+    void visitValue(bool boolValue) override
     {
         m_report.push_back("visitValue: " + toString(boolValue));
     }
 
-    virtual void visitValue(int64_t intValue) override
+    void visitValue(int64_t intValue) override
     {
         m_report.push_back("visitValue: " + toString(intValue));
     }
 
-    virtual void visitValue(uint64_t uintValue) override
+    void visitValue(uint64_t uintValue) override
     {
         m_report.push_back("visitValue: " + toString(uintValue));
     }
 
-    virtual void visitValue(double doubleValue) override
+    void visitValue(double doubleValue) override
     {
         m_report.push_back("visitValue: " + std::to_string(doubleValue));
     }
 
-    virtual void visitValue(StringView stringValue) override
+    void visitValue(StringView stringValue) override
     {
         m_report.push_back("visitValue: " + toString(stringValue));
     }

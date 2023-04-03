@@ -48,7 +48,7 @@ protected:
     class SqlAllocationTableParameterProvider : public SqlAllocationTable::IParameterProvider
     {
     public:
-        virtual DataBlob& getDataBlob(SqlAllocationTable::Row&) override
+        DataBlob& getDataBlob(SqlAllocationTable::Row&) override
         {
             return m_dataBlob;
         }
@@ -60,7 +60,7 @@ protected:
     class SqlAllocationDbParameterProvider : public SqlAllocationDb::IParameterProvider
     {
     public:
-        virtual SqlAllocationTableParameterProvider& getAllocationTableParameterProvider() override
+        SqlAllocationTableParameterProvider& getAllocationTableParameterProvider() override
         {
             return m_sqlAllocationTableParameterProvider;
         }

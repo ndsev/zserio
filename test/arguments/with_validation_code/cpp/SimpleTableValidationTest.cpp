@@ -30,7 +30,7 @@ protected:
     class SimpleTableParameterProvider : public SimpleTable::IParameterProvider
     {
     public:
-        virtual uint32_t getLocalCount1(SimpleTable::Row&) override
+        uint32_t getLocalCount1(SimpleTable::Row&) override
         {
             ++m_localCount1CallCount;
             return SIMPLE_TABLE_LOCAL_COUNT;
@@ -48,7 +48,7 @@ protected:
     class TestParameterProvider : public SimpleTableValidationDb::IParameterProvider
     {
     public:
-        virtual SimpleTable::IParameterProvider& getSimpleTableParameterProvider() override
+        SimpleTable::IParameterProvider& getSimpleTableParameterProvider() override
         {
             return simpleTableParameterProvider;
         }
@@ -538,7 +538,7 @@ TEST_F(SimpleTableValidationTest, validateSkipTable)
     class SkippingObserver : public ValidationObserver
     {
     public:
-        virtual bool beginTable(zserio::StringView tableName, size_t numberOfTableRows) override
+        bool beginTable(zserio::StringView tableName, size_t numberOfTableRows) override
         {
             ValidationObserver::beginTable(tableName, numberOfTableRows);
             return false;

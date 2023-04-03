@@ -35,7 +35,7 @@ public:
     explicit ReflectableBase(const IBasicTypeInfo<ALLOC>& typeInfo);
 
     /** Destructor. */
-    virtual ~ReflectableBase() override = 0;
+    ~ReflectableBase() override = 0;
 
     /**
     * Copying and moving is disallowed!
@@ -50,59 +50,59 @@ public:
     * \}
     */
 
-    virtual const IBasicTypeInfo<ALLOC>& getTypeInfo() const override;
-    virtual bool isArray() const override;
+    const IBasicTypeInfo<ALLOC>& getTypeInfo() const override;
+    bool isArray() const override;
 
-    virtual void initializeChildren() override;
-    virtual void initialize(const vector<AnyHolder<ALLOC>, ALLOC>& typeArguments) override;
-    virtual size_t initializeOffsets(size_t bitPosition) override;
+    void initializeChildren() override;
+    void initialize(const vector<AnyHolder<ALLOC>, ALLOC>& typeArguments) override;
+    size_t initializeOffsets(size_t bitPosition) override;
 
-    virtual IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override;
-    virtual IBasicReflectablePtr<ALLOC> getField(StringView name) override;
-    virtual IBasicReflectablePtr<ALLOC> createField(StringView name) override;
-    virtual void setField(StringView name, const AnyHolder<ALLOC>& value) override;
-    virtual IBasicReflectableConstPtr<ALLOC> getParameter(StringView name) const override;
-    virtual IBasicReflectablePtr<ALLOC> getParameter(StringView name) override;
-    virtual IBasicReflectableConstPtr<ALLOC> callFunction(StringView name) const override;
-    virtual IBasicReflectablePtr<ALLOC> callFunction(StringView name) override;
+    IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override;
+    IBasicReflectablePtr<ALLOC> getField(StringView name) override;
+    IBasicReflectablePtr<ALLOC> createField(StringView name) override;
+    void setField(StringView name, const AnyHolder<ALLOC>& value) override;
+    IBasicReflectableConstPtr<ALLOC> getParameter(StringView name) const override;
+    IBasicReflectablePtr<ALLOC> getParameter(StringView name) override;
+    IBasicReflectableConstPtr<ALLOC> callFunction(StringView name) const override;
+    IBasicReflectablePtr<ALLOC> callFunction(StringView name) override;
 
-    virtual StringView getChoice() const override;
+    StringView getChoice() const override;
 
-    virtual IBasicReflectableConstPtr<ALLOC> find(StringView path) const override;
-    virtual IBasicReflectablePtr<ALLOC> find(StringView path) override;
-    virtual IBasicReflectableConstPtr<ALLOC> operator[](StringView path) const override;
-    virtual IBasicReflectablePtr<ALLOC> operator[](StringView path) override;
+    IBasicReflectableConstPtr<ALLOC> find(StringView path) const override;
+    IBasicReflectablePtr<ALLOC> find(StringView path) override;
+    IBasicReflectableConstPtr<ALLOC> operator[](StringView path) const override;
+    IBasicReflectablePtr<ALLOC> operator[](StringView path) override;
 
-    virtual size_t size() const override;
-    virtual void resize(size_t size) override;
-    virtual IBasicReflectableConstPtr<ALLOC> at(size_t index) const override;
-    virtual IBasicReflectablePtr<ALLOC> at(size_t index) override;
-    virtual IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override;
-    virtual IBasicReflectablePtr<ALLOC> operator[](size_t index) override;
-    virtual void setAt(const AnyHolder<ALLOC>& value, size_t index) override;
-    virtual void append(const AnyHolder<ALLOC>& value) override;
+    size_t size() const override;
+    void resize(size_t size) override;
+    IBasicReflectableConstPtr<ALLOC> at(size_t index) const override;
+    IBasicReflectablePtr<ALLOC> at(size_t index) override;
+    IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override;
+    IBasicReflectablePtr<ALLOC> operator[](size_t index) override;
+    void setAt(const AnyHolder<ALLOC>& value, size_t index) override;
+    void append(const AnyHolder<ALLOC>& value) override;
 
     // exact checked getters
-    virtual bool getBool() const override;
-    virtual int8_t getInt8() const override;
-    virtual int16_t getInt16() const override;
-    virtual int32_t getInt32() const override;
-    virtual int64_t getInt64() const override;
-    virtual uint8_t getUInt8() const override;
-    virtual uint16_t getUInt16() const override;
-    virtual uint32_t getUInt32() const override;
-    virtual uint64_t getUInt64() const override;
-    virtual float getFloat() const override;
-    virtual double getDouble() const override;
-    virtual Span<const uint8_t> getBytes() const override;
-    virtual StringView getStringView() const override;
-    virtual const BasicBitBuffer<ALLOC>& getBitBuffer() const override;
+    bool getBool() const override;
+    int8_t getInt8() const override;
+    int16_t getInt16() const override;
+    int32_t getInt32() const override;
+    int64_t getInt64() const override;
+    uint8_t getUInt8() const override;
+    uint16_t getUInt16() const override;
+    uint32_t getUInt32() const override;
+    uint64_t getUInt64() const override;
+    float getFloat() const override;
+    double getDouble() const override;
+    Span<const uint8_t> getBytes() const override;
+    StringView getStringView() const override;
+    const BasicBitBuffer<ALLOC>& getBitBuffer() const override;
 
     // convenience conversions
-    virtual int64_t toInt() const override;
-    virtual uint64_t toUInt() const override;
-    virtual double toDouble() const override;
-    virtual string<ALLOC> toString(const ALLOC& allocator) const override;
+    int64_t toInt() const override;
+    uint64_t toUInt() const override;
+    double toDouble() const override;
+    string<ALLOC> toString(const ALLOC& allocator) const override;
 
 private:
     const IBasicTypeInfo<ALLOC>& m_typeInfo;
@@ -128,12 +128,12 @@ protected:
     }
 
 public:
-    virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
+    AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
     {
         return AnyHolder<ALLOC>(std::cref(getValue()), allocator);
     }
 
-    virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) override
+    AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) override
     {
         // we have only const reference, thus return it
         return AnyHolder<ALLOC>(std::cref(getValue()), allocator);
@@ -167,12 +167,12 @@ protected:
     }
 
 public:
-    virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
+    AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
     {
         return AnyHolder<ALLOC>(m_value, allocator);
     }
 
-    virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) override
+    AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) override
     {
         return AnyHolder<ALLOC>(m_value, allocator);
     }
@@ -202,7 +202,7 @@ public:
             Base(typeInfo, value), m_dynamicBitSize(dynamicBitSize)
     {}
 
-    virtual size_t bitSizeOf(size_t) const override
+    size_t bitSizeOf(size_t) const override
     {
         const IBasicTypeInfo<ALLOC>& typeInfo = Base::getTypeInfo();
         switch (typeInfo.getSchemaType())
@@ -254,7 +254,7 @@ public:
         }
     }
 
-    virtual void write(BitStreamWriter& writer) const override
+    void write(BitStreamWriter& writer) const override
     {
         const IBasicTypeInfo<ALLOC>& typeInfo = Base::getTypeInfo();
         switch (typeInfo.getSchemaType())
@@ -382,12 +382,12 @@ public:
         }
     }
 
-    virtual double toDouble() const override
+    double toDouble() const override
     {
         return static_cast<double>(Base::getValue());
     }
 
-    virtual string<ALLOC> toString(const ALLOC& allocator) const override
+    string<ALLOC> toString(const ALLOC& allocator) const override
     {
         return ::zserio::toString<ALLOC>(Base::getValue(), allocator);
     }
@@ -412,7 +412,7 @@ protected:
     using Base::IntegralReflectableBase;
 
 public:
-    virtual int64_t toInt() const override
+    int64_t toInt() const override
     {
         return Base::getValue();
     }
@@ -434,7 +434,7 @@ protected:
     using Base::IntegralReflectableBase;
 
 public:
-    virtual uint64_t toUInt() const override
+    uint64_t toUInt() const override
     {
         return Base::getValue();
     }
@@ -454,7 +454,7 @@ public:
             Base(typeInfo, value, dynamicBitSize)
     {}
 
-    virtual bool getBool() const override
+    bool getBool() const override
     {
         return Base::getValue();
     }
@@ -474,7 +474,7 @@ public:
             Base(typeInfo, value, dynamicBitSize)
     {}
 
-    virtual int8_t getInt8() const override
+    int8_t getInt8() const override
     {
         return Base::getValue();
     }
@@ -494,7 +494,7 @@ public:
             Base(typeInfo, value, dynamicBitSize)
     {}
 
-    virtual int16_t getInt16() const override
+    int16_t getInt16() const override
     {
         return Base::getValue();
     }
@@ -514,7 +514,7 @@ public:
             Base(typeInfo, value, dynamicBitSize)
     {}
 
-    virtual int32_t getInt32() const override
+    int32_t getInt32() const override
     {
         return Base::getValue();
     }
@@ -534,7 +534,7 @@ public:
             Base(typeInfo, value, dynamicBitSize)
     {}
 
-    virtual int64_t getInt64() const override
+    int64_t getInt64() const override
     {
         return Base::getValue();
     }
@@ -554,7 +554,7 @@ public:
             Base(typeInfo, value, dynamicBitSize)
     {}
 
-    virtual uint8_t getUInt8() const override
+    uint8_t getUInt8() const override
     {
         return Base::getValue();
     }
@@ -574,7 +574,7 @@ public:
             Base(typeInfo, value, dynamicBitSize)
     {}
 
-    virtual uint16_t getUInt16() const override
+    uint16_t getUInt16() const override
     {
         return Base::getValue();
     }
@@ -594,7 +594,7 @@ public:
             Base(typeInfo, value, dynamicBitSize)
     {}
 
-    virtual uint32_t getUInt32() const override
+    uint32_t getUInt32() const override
     {
         return Base::getValue();
     }
@@ -614,7 +614,7 @@ public:
             Base(typeInfo, value, dynamicBitSize)
     {}
 
-    virtual uint64_t getUInt64() const override
+    uint64_t getUInt64() const override
     {
         return Base::getValue();
     }
@@ -633,7 +633,7 @@ protected:
     using BuiltinReflectableBase<ALLOC, T>::BuiltinReflectableBase;
 
 public:
-    virtual double toDouble() const override
+    double toDouble() const override
     {
         return static_cast<double>(getValue());
     }
@@ -653,7 +653,7 @@ public:
             Base(typeInfo, value)
     {}
 
-    virtual size_t bitSizeOf(size_t) const override
+    size_t bitSizeOf(size_t) const override
     {
         if (Base::getTypeInfo().getSchemaType() == SchemaType::FLOAT16)
             return 16;
@@ -661,7 +661,7 @@ public:
             return 32;
     }
 
-    virtual void write(BitStreamWriter& writer) const override
+    void write(BitStreamWriter& writer) const override
     {
         if (Base::getTypeInfo().getSchemaType() == SchemaType::FLOAT16)
             writer.writeFloat16(Base::getValue());
@@ -669,7 +669,7 @@ public:
             writer.writeFloat32(Base::getValue());
     }
 
-    virtual float getFloat() const override
+    float getFloat() const override
     {
         return Base::getValue();
     }
@@ -689,17 +689,17 @@ public:
             Base(typeInfo, value)
     {}
 
-    virtual size_t bitSizeOf(size_t) const override
+    size_t bitSizeOf(size_t) const override
     {
         return 64;
     }
 
-    virtual void write(BitStreamWriter& writer) const override
+    void write(BitStreamWriter& writer) const override
     {
         writer.writeFloat64(Base::getValue());
     }
 
-    virtual double getDouble() const override
+    double getDouble() const override
     {
         return Base::getValue();
     }
@@ -719,17 +719,17 @@ public:
             Base(typeInfo, value)
     {}
 
-    virtual size_t bitSizeOf(size_t) const override
+    size_t bitSizeOf(size_t) const override
     {
         return zserio::bitSizeOfBytes(Base::getValue());
     }
 
-    virtual void write(BitStreamWriter& writer) const override
+    void write(BitStreamWriter& writer) const override
     {
         writer.writeBytes(Base::getValue());
     }
 
-    virtual Span<const uint8_t> getBytes() const override
+    Span<const uint8_t> getBytes() const override
     {
         return Base::getValue();
     }
@@ -749,22 +749,22 @@ public:
             Base(typeInfo, value)
     {}
 
-    virtual size_t bitSizeOf(size_t) const override
+    size_t bitSizeOf(size_t) const override
     {
         return zserio::bitSizeOfString(Base::getValue());
     }
 
-    virtual void write(BitStreamWriter& writer) const override
+    void write(BitStreamWriter& writer) const override
     {
         writer.writeString(Base::getValue());
     }
 
-    virtual StringView getStringView() const override
+    StringView getStringView() const override
     {
         return Base::getValue();
     }
 
-    virtual string<ALLOC> toString(const ALLOC& allocator) const override
+    string<ALLOC> toString(const ALLOC& allocator) const override
     {
         return zserio::toString(Base::getValue(), allocator);
     }
@@ -784,17 +784,17 @@ public:
             Base(typeInfo, value)
     {}
 
-    virtual size_t bitSizeOf(size_t) const override
+    size_t bitSizeOf(size_t) const override
     {
         return zserio::bitSizeOfBitBuffer(Base::getValue());
     }
 
-    virtual void write(BitStreamWriter& writer) const override
+    void write(BitStreamWriter& writer) const override
     {
         writer.writeBitBuffer(Base::getValue());
     }
 
-    virtual const BasicBitBuffer<ALLOC>& getBitBuffer() const override
+    const BasicBitBuffer<ALLOC>& getBitBuffer() const override
     {
         return Base::getValue();
     }
@@ -1079,16 +1079,16 @@ public:
     using Base::ReflectableAllocatorHolderBase;
     using Base::getTypeInfo;
 
-    virtual void initializeChildren() override;
-    virtual void initialize(const vector<AnyHolder<ALLOC>, ALLOC>& typeArguments) override;
-    virtual size_t initializeOffsets(size_t bitPosition) override;
+    void initializeChildren() override;
+    void initialize(const vector<AnyHolder<ALLOC>, ALLOC>& typeArguments) override;
+    size_t initializeOffsets(size_t bitPosition) override;
 
-    virtual IBasicReflectablePtr<ALLOC> getField(StringView name) override;
-    virtual void setField(StringView name, const AnyHolder<ALLOC>& value) override;
-    virtual IBasicReflectablePtr<ALLOC> getParameter(StringView name) override;
-    virtual IBasicReflectablePtr<ALLOC> callFunction(StringView name) override;
+    IBasicReflectablePtr<ALLOC> getField(StringView name) override;
+    void setField(StringView name, const AnyHolder<ALLOC>& value) override;
+    IBasicReflectablePtr<ALLOC> getParameter(StringView name) override;
+    IBasicReflectablePtr<ALLOC> callFunction(StringView name) override;
 
-    virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) override;
+    AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) override;
 };
 
 /**
@@ -1106,47 +1106,47 @@ public:
     using Base::ReflectableAllocatorHolderBase;
     using Base::getTypeInfo;
 
-    virtual bool isArray() const override
+    bool isArray() const override
     {
         return true;
     }
 
-    virtual void initializeChildren() override;
-    virtual void initialize(const vector<AnyHolder<ALLOC>, ALLOC>& typeArguments) override;
-    virtual size_t initializeOffsets(size_t bitPosition) override;
-    virtual size_t bitSizeOf(size_t bitPosition) const override;
-    virtual void write(BitStreamWriter& writer) const override;
+    void initializeChildren() override;
+    void initialize(const vector<AnyHolder<ALLOC>, ALLOC>& typeArguments) override;
+    size_t initializeOffsets(size_t bitPosition) override;
+    size_t bitSizeOf(size_t bitPosition) const override;
+    void write(BitStreamWriter& writer) const override;
 
-    virtual IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override;
-    virtual IBasicReflectablePtr<ALLOC> getField(StringView name) override;
-    virtual IBasicReflectablePtr<ALLOC> createField(StringView name) override;
-    virtual void setField(StringView name, const AnyHolder<ALLOC>& value) override;
-    virtual IBasicReflectableConstPtr<ALLOC> getParameter(StringView name) const override;
-    virtual IBasicReflectablePtr<ALLOC> getParameter(StringView name) override;
-    virtual IBasicReflectableConstPtr<ALLOC> callFunction(StringView name) const override;
-    virtual IBasicReflectablePtr<ALLOC> callFunction(StringView name) override;
+    IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override;
+    IBasicReflectablePtr<ALLOC> getField(StringView name) override;
+    IBasicReflectablePtr<ALLOC> createField(StringView name) override;
+    void setField(StringView name, const AnyHolder<ALLOC>& value) override;
+    IBasicReflectableConstPtr<ALLOC> getParameter(StringView name) const override;
+    IBasicReflectablePtr<ALLOC> getParameter(StringView name) override;
+    IBasicReflectableConstPtr<ALLOC> callFunction(StringView name) const override;
+    IBasicReflectablePtr<ALLOC> callFunction(StringView name) override;
 
-    virtual StringView getChoice() const override;
+    StringView getChoice() const override;
 
-    virtual bool getBool() const override;
-    virtual int8_t getInt8() const override;
-    virtual int16_t getInt16() const override;
-    virtual int32_t getInt32() const override;
-    virtual int64_t getInt64() const override;
-    virtual uint8_t getUInt8() const override;
-    virtual uint16_t getUInt16() const override;
-    virtual uint32_t getUInt32() const override;
-    virtual uint64_t getUInt64() const override;
-    virtual float getFloat() const override;
-    virtual double getDouble() const override;
-    virtual Span<const uint8_t> getBytes() const override;
-    virtual StringView getStringView() const override;
-    virtual const BasicBitBuffer<ALLOC>& getBitBuffer() const override;
+    bool getBool() const override;
+    int8_t getInt8() const override;
+    int16_t getInt16() const override;
+    int32_t getInt32() const override;
+    int64_t getInt64() const override;
+    uint8_t getUInt8() const override;
+    uint16_t getUInt16() const override;
+    uint32_t getUInt32() const override;
+    uint64_t getUInt64() const override;
+    float getFloat() const override;
+    double getDouble() const override;
+    Span<const uint8_t> getBytes() const override;
+    StringView getStringView() const override;
+    const BasicBitBuffer<ALLOC>& getBitBuffer() const override;
 
-    virtual int64_t toInt() const override;
-    virtual uint64_t toUInt() const override;
-    virtual double toDouble() const override;
-    virtual string<ALLOC> toString(const ALLOC& allocator) const override;
+    int64_t toInt() const override;
+    uint64_t toUInt() const override;
+    double toDouble() const override;
+    string<ALLOC> toString(const ALLOC& allocator) const override;
 };
 
 /**
@@ -1164,13 +1164,13 @@ public:
     using Base::ReflectableArrayBase;
     using Base::getTypeInfo;
 
-    virtual void resize(size_t index) override;
-    virtual IBasicReflectablePtr<ALLOC> at(size_t index) override;
-    virtual IBasicReflectablePtr<ALLOC> operator[](size_t index) override;
-    virtual void setAt(const AnyHolder<ALLOC>& value, size_t index) override;
-    virtual void append(const AnyHolder<ALLOC>& value) override;
+    void resize(size_t index) override;
+    IBasicReflectablePtr<ALLOC> at(size_t index) override;
+    IBasicReflectablePtr<ALLOC> operator[](size_t index) override;
+    void setAt(const AnyHolder<ALLOC>& value, size_t index) override;
+    void append(const AnyHolder<ALLOC>& value) override;
 
-    virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) override;
+    AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) override;
 };
 
 /**
@@ -1197,12 +1197,12 @@ public:
             Base(typeInfo, allocator), m_rawArray(rawArray)
     {}
 
-    virtual size_t size() const override
+    size_t size() const override
     {
         return m_rawArray.size();
     }
 
-    virtual IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
+    IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
     {
         if (index >= size())
         {
@@ -1214,12 +1214,12 @@ public:
                 Base::get_allocator(), Base::getTypeInfo(), m_rawArray[index]);
     }
 
-    virtual IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
+    IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
     {
         return at(index);
     }
 
-    virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
+    AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
     {
         return AnyHolder<ALLOC>(std::cref(m_rawArray), allocator);
     }
@@ -1245,17 +1245,17 @@ public:
             Base(typeInfo, allocator), m_rawArray(rawArray)
     {}
 
-    virtual size_t size() const override
+    size_t size() const override
     {
         return m_rawArray.size();
     }
 
-    virtual void resize(size_t size) override
+    void resize(size_t size) override
     {
         m_rawArray.resize(size);
     }
 
-    virtual IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
+    IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
     {
         if (index >= size())
         {
@@ -1267,7 +1267,7 @@ public:
                 Base::get_allocator(), Base::getTypeInfo(), m_rawArray[index]);
     }
 
-    virtual IBasicReflectablePtr<ALLOC> at(size_t index) override
+    IBasicReflectablePtr<ALLOC> at(size_t index) override
     {
         if (index >= size())
         {
@@ -1279,17 +1279,17 @@ public:
                 Base::get_allocator(), Base::getTypeInfo(), m_rawArray[index]);
     }
 
-    virtual IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
+    IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
     {
         return at(index);
     }
 
-    virtual IBasicReflectablePtr<ALLOC> operator[](size_t index) override
+    IBasicReflectablePtr<ALLOC> operator[](size_t index) override
     {
         return at(index);
     }
 
-    virtual void setAt(const AnyHolder<ALLOC>& value, size_t index) override
+    void setAt(const AnyHolder<ALLOC>& value, size_t index) override
     {
         if (index >= size())
         {
@@ -1300,17 +1300,17 @@ public:
         m_rawArray[index] = value.template get<typename RAW_ARRAY::value_type>();
     }
 
-    virtual void append(const AnyHolder<ALLOC>& value) override
+    void append(const AnyHolder<ALLOC>& value) override
     {
         m_rawArray.push_back(value.template get<typename RAW_ARRAY::value_type>());
     }
 
-    virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
+    AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
     {
         return AnyHolder<ALLOC>(std::cref(m_rawArray), allocator);
     }
 
-    virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) override
+    AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) override
     {
         return AnyHolder<ALLOC>(std::ref(m_rawArray), allocator);
     }
@@ -1347,12 +1347,12 @@ public:
             Base(typeInfo, allocator), m_rawArray(rawArray), m_dynamicBitSize(dynamicBitSize)
     {}
 
-    virtual size_t size() const override
+    size_t size() const override
     {
         return m_rawArray.size();
     }
 
-    virtual IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
+    IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
     {
         if (index >= size())
         {
@@ -1364,12 +1364,12 @@ public:
                 Base::get_allocator(), Base::getTypeInfo(), m_rawArray[index], m_dynamicBitSize);
     }
 
-    virtual IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
+    IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
     {
         return at(index);
     }
 
-    virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
+    AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
     {
         return AnyHolder<ALLOC>(std::cref(m_rawArray), allocator);
     }
@@ -1396,17 +1396,17 @@ public:
             Base(typeInfo, allocator), m_rawArray(rawArray), m_dynamicBitSize(dynamicBitSize)
     {}
 
-    virtual size_t size() const override
+    size_t size() const override
     {
         return m_rawArray.size();
     }
 
-    virtual void resize(size_t size) override
+    void resize(size_t size) override
     {
         m_rawArray.resize(size);
     }
 
-    virtual IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
+    IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
     {
         if (index >= size())
         {
@@ -1418,7 +1418,7 @@ public:
                 Base::get_allocator(), Base::getTypeInfo(), m_rawArray[index], m_dynamicBitSize);
     }
 
-    virtual IBasicReflectablePtr<ALLOC> at(size_t index) override
+    IBasicReflectablePtr<ALLOC> at(size_t index) override
     {
         if (index >= size())
         {
@@ -1430,17 +1430,17 @@ public:
                 Base::get_allocator(), Base::getTypeInfo(), m_rawArray[index], m_dynamicBitSize);
     }
 
-    virtual IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
+    IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
     {
         return at(index);
     }
 
-    virtual IBasicReflectablePtr<ALLOC> operator[](size_t index) override
+    IBasicReflectablePtr<ALLOC> operator[](size_t index) override
     {
         return at(index);
     }
 
-    virtual void setAt(const AnyHolder<ALLOC>& value, size_t index) override
+    void setAt(const AnyHolder<ALLOC>& value, size_t index) override
     {
         if (index >= size())
         {
@@ -1451,17 +1451,17 @@ public:
         m_rawArray[index] = value.template get<typename RAW_ARRAY::value_type>();
     }
 
-    virtual void append(const AnyHolder<ALLOC>& value) override
+    void append(const AnyHolder<ALLOC>& value) override
     {
         m_rawArray.push_back(value.template get<typename RAW_ARRAY::value_type>());
     }
 
-    virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
+    AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
     {
         return AnyHolder<ALLOC>(std::cref(m_rawArray), allocator);
     }
 
-    virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) override
+    AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) override
     {
         return AnyHolder<ALLOC>(std::ref(m_rawArray), allocator);
     }
@@ -1494,12 +1494,12 @@ public:
             Base(ElementType::typeInfo(), allocator), m_rawArray(rawArray)
     {}
 
-    virtual size_t size() const override
+    size_t size() const override
     {
         return m_rawArray.size();
     }
 
-    virtual IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
+    IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
     {
         if (index >= size())
         {
@@ -1510,12 +1510,12 @@ public:
         return m_rawArray[index].reflectable(Base::get_allocator());
     }
 
-    virtual IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
+    IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
     {
         return at(index);
     }
 
-    virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
+    AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
     {
         return AnyHolder<ALLOC>(std::cref(m_rawArray), allocator);
     }
@@ -1539,17 +1539,17 @@ public:
             Base(ElementType::typeInfo(), allocator), m_rawArray(rawArray)
     {}
 
-    virtual size_t size() const override
+    size_t size() const override
     {
         return m_rawArray.size();
     }
 
-    virtual void resize(size_t size) override
+    void resize(size_t size) override
     {
         m_rawArray.resize(size);
     }
 
-    virtual IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
+    IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
     {
         if (index >= size())
         {
@@ -1560,7 +1560,7 @@ public:
         return m_rawArray[index].reflectable(Base::get_allocator());
     }
 
-    virtual IBasicReflectablePtr<ALLOC> at(size_t index) override
+    IBasicReflectablePtr<ALLOC> at(size_t index) override
     {
         if (index >= size())
         {
@@ -1571,17 +1571,17 @@ public:
         return m_rawArray[index].reflectable(Base::get_allocator());
     }
 
-    virtual IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
+    IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
     {
         return at(index);
     }
 
-    virtual IBasicReflectablePtr<ALLOC> operator[](size_t index) override
+    IBasicReflectablePtr<ALLOC> operator[](size_t index) override
     {
         return at(index);
     }
 
-    virtual void setAt(const AnyHolder<ALLOC>& value, size_t index) override
+    void setAt(const AnyHolder<ALLOC>& value, size_t index) override
     {
         if (index >= size())
         {
@@ -1592,17 +1592,17 @@ public:
         m_rawArray[index] = value.template get<typename RAW_ARRAY::value_type>();
     }
 
-    virtual void append(const AnyHolder<ALLOC>& value) override
+    void append(const AnyHolder<ALLOC>& value) override
     {
         m_rawArray.push_back(value.template get<typename RAW_ARRAY::value_type>());
     }
 
-    virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
+    AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
     {
         return AnyHolder<ALLOC>(std::cref(m_rawArray), allocator);
     }
 
-    virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) override
+    AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) override
     {
         return AnyHolder<ALLOC>(std::ref(m_rawArray), allocator);
     }
@@ -1632,12 +1632,12 @@ public:
             Base(ElementType::typeInfo(), allocator), m_rawArray(rawArray)
     {}
 
-    virtual size_t size() const override
+    size_t size() const override
     {
         return m_rawArray.size();
     }
 
-    virtual IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
+    IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
     {
         if (index >= size())
         {
@@ -1648,12 +1648,12 @@ public:
         return m_rawArray[index].reflectable(Base::get_allocator());
     }
 
-    virtual IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
+    IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
     {
         return at(index);
     }
 
-    virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
+    AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
     {
         return AnyHolder<ALLOC>(std::cref(m_rawArray), allocator);
     }
@@ -1678,17 +1678,17 @@ public:
             Base(ElementType::typeInfo(), allocator), m_rawArray(rawArray)
     {}
 
-    virtual size_t size() const override
+    size_t size() const override
     {
         return m_rawArray.size();
     }
 
-    virtual void resize(size_t size) override
+    void resize(size_t size) override
     {
         m_rawArray.resize(size);
     }
 
-    virtual IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
+    IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
     {
         if (index >= size())
         {
@@ -1699,7 +1699,7 @@ public:
         return m_rawArray[index].reflectable(Base::get_allocator());
     }
 
-    virtual IBasicReflectablePtr<ALLOC> at(size_t index) override
+    IBasicReflectablePtr<ALLOC> at(size_t index) override
     {
         if (index >= size())
         {
@@ -1710,17 +1710,17 @@ public:
         return m_rawArray[index].reflectable(Base::get_allocator());
     }
 
-    virtual IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
+    IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
     {
         return at(index);
     }
 
-    virtual IBasicReflectablePtr<ALLOC> operator[](size_t index) override
+    IBasicReflectablePtr<ALLOC> operator[](size_t index) override
     {
         return at(index);
     }
 
-    virtual void setAt(const AnyHolder<ALLOC>& value, size_t index) override
+    void setAt(const AnyHolder<ALLOC>& value, size_t index) override
     {
         if (index >= size())
         {
@@ -1734,7 +1734,7 @@ public:
             m_rawArray[index] = ElementType(value.template get<UnderlyingElementType>());
     }
 
-    virtual void append(const AnyHolder<ALLOC>& value) override
+    void append(const AnyHolder<ALLOC>& value) override
     {
         if (value.template isType<ElementType>())
             m_rawArray.push_back(value.template get<ElementType>());
@@ -1742,12 +1742,12 @@ public:
             m_rawArray.push_back(ElementType(value.template get<UnderlyingElementType>()));
     }
 
-    virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
+    AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
     {
         return AnyHolder<ALLOC>(std::cref(m_rawArray), allocator);
     }
 
-    virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) override
+    AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) override
     {
         return AnyHolder<ALLOC>(std::ref(m_rawArray), allocator);
     }
@@ -1777,12 +1777,12 @@ public:
             Base(enumTypeInfo<ElementType, ALLOC>(), allocator), m_rawArray(rawArray)
     {}
 
-    virtual size_t size() const override
+    size_t size() const override
     {
         return m_rawArray.size();
     }
 
-    virtual IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
+    IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
     {
         if (index >= size())
         {
@@ -1793,12 +1793,12 @@ public:
         return enumReflectable(m_rawArray[index], Base::get_allocator());
     }
 
-    virtual IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
+    IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
     {
         return at(index);
     }
 
-    virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
+    AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
     {
         return AnyHolder<ALLOC>(std::cref(m_rawArray), allocator);
     }
@@ -1823,17 +1823,17 @@ public:
             Base(enumTypeInfo<ElementType, ALLOC>(), allocator), m_rawArray(rawArray)
     {}
 
-    virtual size_t size() const override
+    size_t size() const override
     {
         return m_rawArray.size();
     }
 
-    virtual void resize(size_t size) override
+    void resize(size_t size) override
     {
         m_rawArray.resize(size);
     }
 
-    virtual IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
+    IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
     {
         if (index >= size())
         {
@@ -1844,7 +1844,7 @@ public:
         return enumReflectable(m_rawArray[index], Base::get_allocator());
     }
 
-    virtual IBasicReflectablePtr<ALLOC> at(size_t index) override
+    IBasicReflectablePtr<ALLOC> at(size_t index) override
     {
         if (index >= size())
         {
@@ -1855,17 +1855,17 @@ public:
         return enumReflectable(m_rawArray[index], Base::get_allocator());
     }
 
-    virtual IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
+    IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
     {
         return at(index);
     }
 
-    virtual IBasicReflectablePtr<ALLOC> operator[](size_t index) override
+    IBasicReflectablePtr<ALLOC> operator[](size_t index) override
     {
         return at(index);
     }
 
-    virtual void setAt(const AnyHolder<ALLOC>& value, size_t index) override
+    void setAt(const AnyHolder<ALLOC>& value, size_t index) override
     {
         if (index >= size())
         {
@@ -1879,7 +1879,7 @@ public:
             m_rawArray[index] = valueToEnum<ElementType>(value.template get<UnderlyingElementType>());
     }
 
-    virtual void append(const AnyHolder<ALLOC>& value) override
+    void append(const AnyHolder<ALLOC>& value) override
     {
         if (value.template isType<ElementType>())
             m_rawArray.push_back(value.template get<ElementType>());
@@ -1887,12 +1887,12 @@ public:
             m_rawArray.push_back(valueToEnum<ElementType>(value.template get<UnderlyingElementType>()));
     }
 
-    virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
+    AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
     {
         return AnyHolder<ALLOC>(std::cref(m_rawArray), allocator);
     }
 
-    virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) override
+    AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) override
     {
         return AnyHolder<ALLOC>(std::ref(m_rawArray), allocator);
     }
@@ -1916,177 +1916,177 @@ public:
             m_reflectable(m_object.reflectable(allocator))
     {}
 
-    virtual const IBasicTypeInfo<ALLOC>& getTypeInfo() const override
+    const IBasicTypeInfo<ALLOC>& getTypeInfo() const override
     {
         return m_reflectable->getTypeInfo();
     }
 
-    virtual bool isArray() const override
+    bool isArray() const override
     {
         return m_reflectable->isArray();
     }
 
-    virtual void initializeChildren() override
+    void initializeChildren() override
     {
         m_reflectable->initializeChildren();
     }
 
-    virtual void initialize(const vector<AnyHolder<ALLOC>, ALLOC>& typeArguments) override
+    void initialize(const vector<AnyHolder<ALLOC>, ALLOC>& typeArguments) override
     {
         m_reflectable->initialize(typeArguments);
     }
 
-    virtual size_t initializeOffsets(size_t bitPosition) override
+    size_t initializeOffsets(size_t bitPosition) override
     {
         return m_reflectable->initializeOffsets(bitPosition);
     }
 
-    virtual size_t bitSizeOf(size_t bitPosition) const override
+    size_t bitSizeOf(size_t bitPosition) const override
     {
         return m_reflectable->bitSizeOf(bitPosition);
     }
 
-    virtual void write(BitStreamWriter& writer) const override
+    void write(BitStreamWriter& writer) const override
     {
         m_reflectable->write(writer);
     }
 
-    virtual IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override
+    IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override
     {
         return m_reflectable->getField(name);
     }
 
-    virtual IBasicReflectablePtr<ALLOC> getField(StringView name) override
+    IBasicReflectablePtr<ALLOC> getField(StringView name) override
     {
         return m_reflectable->getField(name);
     }
 
-    virtual IBasicReflectablePtr<ALLOC> createField(StringView name) override
+    IBasicReflectablePtr<ALLOC> createField(StringView name) override
     {
         return m_reflectable->createField(name);
     }
 
-    virtual void setField(StringView name, const AnyHolder<ALLOC>& value) override
+    void setField(StringView name, const AnyHolder<ALLOC>& value) override
     {
         m_reflectable->setField(name, value);
     }
 
-    virtual IBasicReflectableConstPtr<ALLOC> getParameter(StringView name) const override
+    IBasicReflectableConstPtr<ALLOC> getParameter(StringView name) const override
     {
         return m_reflectable->getParameter(name);
     }
 
-    virtual IBasicReflectablePtr<ALLOC> getParameter(StringView name) override
+    IBasicReflectablePtr<ALLOC> getParameter(StringView name) override
     {
         return m_reflectable->getParameter(name);
     }
 
-    virtual IBasicReflectableConstPtr<ALLOC> callFunction(StringView name) const override
+    IBasicReflectableConstPtr<ALLOC> callFunction(StringView name) const override
     {
         return m_reflectable->callFunction(name);
     }
 
-    virtual IBasicReflectablePtr<ALLOC> callFunction(StringView name) override
+    IBasicReflectablePtr<ALLOC> callFunction(StringView name) override
     {
         return m_reflectable->callFunction(name);
     }
 
-    virtual StringView getChoice() const override
+    StringView getChoice() const override
     {
         return m_reflectable->getChoice();
     }
 
-    virtual IBasicReflectableConstPtr<ALLOC> find(StringView path) const override
+    IBasicReflectableConstPtr<ALLOC> find(StringView path) const override
     {
         return m_reflectable->find(path);
     }
 
-    virtual IBasicReflectablePtr<ALLOC> find(StringView path) override
+    IBasicReflectablePtr<ALLOC> find(StringView path) override
     {
         return m_reflectable->find(path);
     }
 
-    virtual IBasicReflectableConstPtr<ALLOC> operator[](StringView path) const override
+    IBasicReflectableConstPtr<ALLOC> operator[](StringView path) const override
     {
         return m_reflectable->operator[](path);
     }
 
-    virtual IBasicReflectablePtr<ALLOC> operator[](StringView path) override
+    IBasicReflectablePtr<ALLOC> operator[](StringView path) override
     {
         return m_reflectable->operator[](path);
     }
 
-    virtual size_t size() const override
+    size_t size() const override
     {
         return m_reflectable->size();
     }
 
-    virtual void resize(size_t size) override
+    void resize(size_t size) override
     {
         m_reflectable->resize(size);
     }
 
-    virtual IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
+    IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
     {
         return m_reflectable->at(index);
     }
 
-    virtual IBasicReflectablePtr<ALLOC> at(size_t index) override
+    IBasicReflectablePtr<ALLOC> at(size_t index) override
     {
         return m_reflectable->at(index);
     }
 
-    virtual IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
+    IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
     {
         return m_reflectable->operator[](index);
     }
 
-    virtual IBasicReflectablePtr<ALLOC> operator[](size_t index) override
+    IBasicReflectablePtr<ALLOC> operator[](size_t index) override
     {
         return m_reflectable->operator[](index);
     }
 
-    virtual void setAt(const AnyHolder<ALLOC>& value, size_t index) override
+    void setAt(const AnyHolder<ALLOC>& value, size_t index) override
     {
         m_reflectable->setAt(value, index);
     }
 
-    virtual void append(const AnyHolder<ALLOC>& value) override
+    void append(const AnyHolder<ALLOC>& value) override
     {
         m_reflectable->append(value);
     }
 
-    virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
+    AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
     {
         return m_reflectable->getAnyValue(allocator);
     }
 
-    virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) override
+    AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) override
     {
         return m_reflectable->getAnyValue(allocator);
     }
 
     // exact checked getters
-    virtual bool getBool() const override { return m_reflectable->getBool(); }
-    virtual int8_t getInt8() const override { return m_reflectable->getInt8(); }
-    virtual int16_t getInt16() const override { return m_reflectable->getInt16(); }
-    virtual int32_t getInt32() const override { return m_reflectable->getInt32(); }
-    virtual int64_t getInt64() const override { return m_reflectable->getInt64(); }
-    virtual uint8_t getUInt8() const override { return m_reflectable->getUInt8(); }
-    virtual uint16_t getUInt16() const override { return m_reflectable->getUInt16(); }
-    virtual uint32_t getUInt32() const override { return m_reflectable->getUInt32(); }
-    virtual uint64_t getUInt64() const override { return m_reflectable->getUInt64(); }
-    virtual float getFloat() const override { return m_reflectable->getFloat(); }
-    virtual double getDouble() const override { return m_reflectable->getDouble(); }
-    virtual Span<const uint8_t> getBytes() const override { return m_reflectable->getBytes(); }
-    virtual StringView getStringView() const override { return m_reflectable->getStringView(); }
-    virtual const BasicBitBuffer<ALLOC>& getBitBuffer() const override { return m_reflectable->getBitBuffer(); }
+    bool getBool() const override { return m_reflectable->getBool(); }
+    int8_t getInt8() const override { return m_reflectable->getInt8(); }
+    int16_t getInt16() const override { return m_reflectable->getInt16(); }
+    int32_t getInt32() const override { return m_reflectable->getInt32(); }
+    int64_t getInt64() const override { return m_reflectable->getInt64(); }
+    uint8_t getUInt8() const override { return m_reflectable->getUInt8(); }
+    uint16_t getUInt16() const override { return m_reflectable->getUInt16(); }
+    uint32_t getUInt32() const override { return m_reflectable->getUInt32(); }
+    uint64_t getUInt64() const override { return m_reflectable->getUInt64(); }
+    float getFloat() const override { return m_reflectable->getFloat(); }
+    double getDouble() const override { return m_reflectable->getDouble(); }
+    Span<const uint8_t> getBytes() const override { return m_reflectable->getBytes(); }
+    StringView getStringView() const override { return m_reflectable->getStringView(); }
+    const BasicBitBuffer<ALLOC>& getBitBuffer() const override { return m_reflectable->getBitBuffer(); }
 
     // convenience conversions
-    virtual int64_t toInt() const override { return m_reflectable->toInt(); }
-    virtual uint64_t toUInt() const override { return m_reflectable->toUInt(); }
-    virtual double toDouble() const override { return m_reflectable->toDouble(); }
-    virtual string<RebindAlloc<ALLOC, char>> toString(const ALLOC& allocator = ALLOC()) const override
+    int64_t toInt() const override { return m_reflectable->toInt(); }
+    uint64_t toUInt() const override { return m_reflectable->toUInt(); }
+    double toDouble() const override { return m_reflectable->toDouble(); }
+    string<RebindAlloc<ALLOC, char>> toString(const ALLOC& allocator = ALLOC()) const override
     {
         return m_reflectable->toString(allocator);
     }

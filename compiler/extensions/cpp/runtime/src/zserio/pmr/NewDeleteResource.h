@@ -17,17 +17,17 @@ namespace detail
 class NewDeleteResource : public MemoryResource
 {
 private:
-    virtual void* doAllocate(size_t bytes, size_t ) override
+    void* doAllocate(size_t bytes, size_t ) override
     {
         return ::operator new(bytes);
     }
 
-    virtual void doDeallocate(void* p, size_t, size_t) override
+    void doDeallocate(void* p, size_t, size_t) override
     {
         ::operator delete(p);
     }
 
-    virtual bool doIsEqual(const MemoryResource& other) const noexcept override
+    bool doIsEqual(const MemoryResource& other) const noexcept override
     {
         return this == &other;
     }

@@ -84,12 +84,12 @@ protected:
     class MultipleParamsTableParameterProvider : public MultipleWithSameNameTable::IParameterProvider
     {
     public:
-        virtual uint32_t getParam1(MultipleWithSameNameTable::Row&) override
+        uint32_t getParam1(MultipleWithSameNameTable::Row&) override
         {
             return PARAM1;
         }
 
-        virtual float getParam2(MultipleWithSameNameTable::Row&) override
+        float getParam2(MultipleWithSameNameTable::Row&) override
         {
             return PARAM2;
         }

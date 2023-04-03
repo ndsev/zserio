@@ -101,12 +101,12 @@ protected:
     class SimpleParamTableParameterProvider : public SimpleParamTable::IParameterProvider
     {
     public:
-        virtual uint32_t getCount1(SimpleParamTable::Row&) override
+        uint32_t getCount1(SimpleParamTable::Row&) override
         {
             return SIMPLE_PARAM_TABLE_COUNT1;
         }
 
-        virtual uint32_t getCount2(SimpleParamTable::Row&) override
+        uint32_t getCount2(SimpleParamTable::Row&) override
         {
             return SIMPLE_PARAM_TABLE_COUNT2;
         }

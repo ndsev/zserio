@@ -175,17 +175,17 @@ const ::zserio::pmr::ITypeInfo& SerializeNested::typeInfo()
                 m_object(object)
         {}
 
-        virtual size_t bitSizeOf(size_t bitPosition) const override
+        size_t bitSizeOf(size_t bitPosition) const override
         {
             return m_object.bitSizeOf(bitPosition);
         }
 
-        virtual void write(::zserio::BitStreamWriter& writer) const override
+        void write(::zserio::BitStreamWriter& writer) const override
         {
             m_object.write(writer);
         }
 
-        virtual ::zserio::pmr::IReflectableConstPtr getField(::zserio::StringView name) const override
+        ::zserio::pmr::IReflectableConstPtr getField(::zserio::StringView name) const override
         {
             if (name == ::zserio::makeStringView("offset"))
             {
@@ -201,7 +201,7 @@ const ::zserio::pmr::ITypeInfo& SerializeNested::typeInfo()
             throw ::zserio::CppRuntimeException("Field '") << name << "' doesn't exist in 'SerializeNested'!";
         }
 
-        virtual ::zserio::pmr::IReflectableConstPtr getParameter(::zserio::StringView name) const override
+        ::zserio::pmr::IReflectableConstPtr getParameter(::zserio::StringView name) const override
         {
             if (name == ::zserio::makeStringView("param"))
             {
@@ -210,7 +210,7 @@ const ::zserio::pmr::ITypeInfo& SerializeNested::typeInfo()
             throw ::zserio::CppRuntimeException("Parameter '") << name << "' doesn't exist in 'SerializeNested'!";
         }
 
-        virtual ::zserio::pmr::AnyHolder getAnyValue(const allocator_type& allocator) const override
+        ::zserio::pmr::AnyHolder getAnyValue(const allocator_type& allocator) const override
         {
             return ::zserio::pmr::AnyHolder(::std::cref(m_object), allocator);
         }
@@ -232,11 +232,11 @@ const ::zserio::pmr::ITypeInfo& SerializeNested::typeInfo()
                 m_object(object)
         {}
 
-        virtual void initializeChildren() override
+        void initializeChildren() override
         {
         }
 
-        virtual void initialize(
+        void initialize(
                 const ::zserio::vector<::zserio::AnyHolder<allocator_type>, allocator_type>& typeArguments) override
         {
             if (typeArguments.size() != 1)
@@ -250,22 +250,22 @@ const ::zserio::pmr::ITypeInfo& SerializeNested::typeInfo()
             );
         }
 
-        virtual size_t initializeOffsets(size_t bitPosition) override
+        size_t initializeOffsets(size_t bitPosition) override
         {
             return m_object.initializeOffsets(bitPosition);
         }
 
-        virtual size_t bitSizeOf(size_t bitPosition) const override
+        size_t bitSizeOf(size_t bitPosition) const override
         {
             return m_object.bitSizeOf(bitPosition);
         }
 
-        virtual void write(::zserio::BitStreamWriter& writer) const override
+        void write(::zserio::BitStreamWriter& writer) const override
         {
             m_object.write(writer);
         }
 
-        virtual ::zserio::pmr::IReflectableConstPtr getField(::zserio::StringView name) const override
+        ::zserio::pmr::IReflectableConstPtr getField(::zserio::StringView name) const override
         {
             if (name == ::zserio::makeStringView("offset"))
             {
@@ -281,7 +281,7 @@ const ::zserio::pmr::ITypeInfo& SerializeNested::typeInfo()
             throw ::zserio::CppRuntimeException("Field '") << name << "' doesn't exist in 'SerializeNested'!";
         }
 
-        virtual ::zserio::pmr::IReflectablePtr getField(::zserio::StringView name) override
+        ::zserio::pmr::IReflectablePtr getField(::zserio::StringView name) override
         {
             if (name == ::zserio::makeStringView("offset"))
             {
@@ -297,7 +297,7 @@ const ::zserio::pmr::ITypeInfo& SerializeNested::typeInfo()
             throw ::zserio::CppRuntimeException("Field '") << name << "' doesn't exist in 'SerializeNested'!";
         }
 
-        virtual void setField(::zserio::StringView name,
+        void setField(::zserio::StringView name,
                 const ::zserio::AnyHolder<allocator_type>& value) override
         {
             if (name == ::zserio::makeStringView("offset"))
@@ -319,7 +319,7 @@ const ::zserio::pmr::ITypeInfo& SerializeNested::typeInfo()
             throw ::zserio::CppRuntimeException("Field '") << name << "' doesn't exist in 'SerializeNested'!";
         }
 
-        virtual ::zserio::pmr::IReflectablePtr createField(::zserio::StringView name) override
+        ::zserio::pmr::IReflectablePtr createField(::zserio::StringView name) override
         {
             if (name == ::zserio::makeStringView("offset"))
             {
@@ -334,7 +334,7 @@ const ::zserio::pmr::ITypeInfo& SerializeNested::typeInfo()
             throw ::zserio::CppRuntimeException("Field '") << name << "' doesn't exist in 'SerializeNested'!";
         }
 
-        virtual ::zserio::pmr::IReflectableConstPtr getParameter(::zserio::StringView name) const override
+        ::zserio::pmr::IReflectableConstPtr getParameter(::zserio::StringView name) const override
         {
             if (name == ::zserio::makeStringView("param"))
             {
@@ -343,7 +343,7 @@ const ::zserio::pmr::ITypeInfo& SerializeNested::typeInfo()
             throw ::zserio::CppRuntimeException("Parameter '") << name << "' doesn't exist in 'SerializeNested'!";
         }
 
-        virtual ::zserio::pmr::IReflectablePtr getParameter(::zserio::StringView name) override
+        ::zserio::pmr::IReflectablePtr getParameter(::zserio::StringView name) override
         {
             if (name == ::zserio::makeStringView("param"))
             {
@@ -352,12 +352,12 @@ const ::zserio::pmr::ITypeInfo& SerializeNested::typeInfo()
             throw ::zserio::CppRuntimeException("Parameter '") << name << "' doesn't exist in 'SerializeNested'!";
         }
 
-        virtual ::zserio::pmr::AnyHolder getAnyValue(const allocator_type& allocator) const override
+        ::zserio::pmr::AnyHolder getAnyValue(const allocator_type& allocator) const override
         {
             return ::zserio::pmr::AnyHolder(::std::cref(m_object), allocator);
         }
 
-        virtual ::zserio::pmr::AnyHolder getAnyValue(const allocator_type& allocator) override
+        ::zserio::pmr::AnyHolder getAnyValue(const allocator_type& allocator) override
         {
             return ::zserio::pmr::AnyHolder(::std::ref(m_object), allocator);
         }

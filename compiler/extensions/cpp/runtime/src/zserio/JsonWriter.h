@@ -135,20 +135,20 @@ public:
      */
     void setEnumerableFormat(EnumerableFormat enumerableFormat);
 
-    virtual void beginRoot(const IBasicReflectableConstPtr<ALLOC>& compound) override;
-    virtual void endRoot(const IBasicReflectableConstPtr<ALLOC>& compound) override;
+    void beginRoot(const IBasicReflectableConstPtr<ALLOC>& compound) override;
+    void endRoot(const IBasicReflectableConstPtr<ALLOC>& compound) override;
 
-    virtual void beginArray(const IBasicReflectableConstPtr<ALLOC>& array,
+    void beginArray(const IBasicReflectableConstPtr<ALLOC>& array,
             const BasicFieldInfo<ALLOC>& fieldInfo) override;
-    virtual void endArray(const IBasicReflectableConstPtr<ALLOC>& array,
+    void endArray(const IBasicReflectableConstPtr<ALLOC>& array,
             const BasicFieldInfo<ALLOC>& fieldInfo) override;
 
-    virtual void beginCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
+    void beginCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
             const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
-    virtual void endCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
+    void endCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
             const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
 
-    virtual void visitValue(const IBasicReflectableConstPtr<ALLOC>& value,
+    void visitValue(const IBasicReflectableConstPtr<ALLOC>& value,
             const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
 
 private:

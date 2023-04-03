@@ -62,7 +62,7 @@ public:
             m_reflectable(reflectable), m_data(allocator)
     {}
 
-    virtual IBasicReflectableConstPtr<ALLOC> getReflectable() const override
+    IBasicReflectableConstPtr<ALLOC> getReflectable() const override
     {
         return m_reflectable;
     }
@@ -72,7 +72,7 @@ public:
      *
      * \copydoc IBasicServiceData::getData()
      */
-    virtual Span<const uint8_t> getData() const override
+    Span<const uint8_t> getData() const override
     {
         if (m_reflectable && m_data.getBitSize() == 0)
         {
@@ -110,12 +110,12 @@ public:
         object.write(writer);
     }
 
-    virtual IBasicReflectableConstPtr<ALLOC> getReflectable() const override
+    IBasicReflectableConstPtr<ALLOC> getReflectable() const override
     {
         return nullptr;
     }
 
-    virtual Span<const uint8_t> getData() const override
+    Span<const uint8_t> getData() const override
     {
         return { m_data.getBuffer(), m_data.getByteSize() };
     }
@@ -149,12 +149,12 @@ public:
     :       m_data(std::move(rawData))
     {}
 
-    virtual IBasicReflectableConstPtr<ALLOC> getReflectable() const override
+    IBasicReflectableConstPtr<ALLOC> getReflectable() const override
     {
         return nullptr;
     }
 
-    virtual Span<const uint8_t> getData() const override
+    Span<const uint8_t> getData() const override
     {
         return m_data;
     }
@@ -181,12 +181,12 @@ public:
     :       m_data(rawData)
     {}
 
-    virtual IBasicReflectableConstPtr<ALLOC> getReflectable() const override
+    IBasicReflectableConstPtr<ALLOC> getReflectable() const override
     {
         return nullptr;
     }
 
-    virtual Span<const uint8_t> getData() const override
+    Span<const uint8_t> getData() const override
     {
         return m_data;
     }

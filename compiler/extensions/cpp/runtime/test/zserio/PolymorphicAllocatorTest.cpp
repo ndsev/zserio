@@ -12,19 +12,19 @@ namespace
 class TestResource : public zserio::pmr::MemoryResource
 {
 public:
-    virtual void* doAllocate(size_t bytes, size_t) override
+    void* doAllocate(size_t bytes, size_t) override
     {
         ++m_numAllocations;
         return ::operator new(bytes);
     }
 
-    virtual void doDeallocate(void* p, size_t, size_t) override
+    void doDeallocate(void* p, size_t, size_t) override
     {
         --m_numAllocations;
         ::operator delete(p);
     }
 
-    virtual bool doIsEqual(const MemoryResource& other) const noexcept override
+    bool doIsEqual(const MemoryResource& other) const noexcept override
     {
         return this == &other;
     }
