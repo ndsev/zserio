@@ -35,8 +35,8 @@ protected:
         {
             auto& row = rows.at(i - 1);
             row.setId(static_cast<int8_t>(i));
-            row.setInt8Value(-1 * static_cast<int8_t>(i));
-            row.setInt16Value(-2 * static_cast<int8_t>(i));
+            row.setInt8Value(static_cast<int8_t>(-1 * static_cast<int8_t>(i)));
+            row.setInt16Value(static_cast<int16_t>(-2 * static_cast<int8_t>(i)));
             row.setInt32Value(-3 * static_cast<int8_t>(i));
             row.setInt64Value(-4 * static_cast<int8_t>(i));
             row.setUint8Value(1 * static_cast<uint8_t>(i));

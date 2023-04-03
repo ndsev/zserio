@@ -465,10 +465,10 @@ int16_t BitStreamReader::readVarInt16()
     const uint8_t sign = byte & VARINT_SIGN_1;
     uint16_t result = byte & VARINT_BYTE_1;
     if (!(byte & VARINT_HAS_NEXT_1))
-        return sign ? -static_cast<int16_t>(result) : static_cast<int16_t>(result);
+        return sign ? static_cast<int16_t>(-result) : static_cast<int16_t>(result);
 
     result = static_cast<uint16_t>(result << 8U) | static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 2
-    return sign ? -static_cast<int16_t>(result) : static_cast<int16_t>(result);
+    return sign ? static_cast<int16_t>(-result) : static_cast<int16_t>(result);
 }
 
 uint64_t BitStreamReader::readVarUInt64()
