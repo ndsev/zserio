@@ -173,7 +173,7 @@ TEST_F(VariableArrayStructCastVarUIntTest, writeWrongArray)
         compoundArray.push_back(testStructure);
     }
     VariableArray variableArray;
-    variableArray.setNumElements(static_cast<uint64_t>(numElements + 1));
+    variableArray.setNumElements(static_cast<uint64_t>(numElements) + 1);
     variableArray.setCompoundArray(compoundArray);
 
     zserio::BitStreamWriter writer(bitBuffer);

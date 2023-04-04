@@ -3,7 +3,7 @@ Checks: "-*,\
 #(generated test objects break this rule)  bugprone-branch-clone,\
   bugprone-copy-constructor-init,\
   bugprone-dangling-handle,\
-#  bugprone-exception-escape,\
+#(move costructors throws and we don't know how to prevent it)  bugprone-exception-escape,\
   bugprone-fold-init-type,\
   bugprone-forwarding-reference-overload,\
   bugprone-inaccurate-erase,\
@@ -13,7 +13,7 @@ Checks: "-*,\
   bugprone-macro-repeated-side-effects,\
   bugprone-misplaced-operator-in-strlen-in-alloc,\
   bugprone-misplaced-pointer-arithmetic-in-alloc,\
-#  bugprone-misplaced-widening-cast,\
+#(generated expressions break this rule)  bugprone-misplaced-widening-cast,\
   bugprone-move-forwarding-reference,\
   bugprone-multiple-statement-macro,\
   bugprone-not-null-terminated-result,\
