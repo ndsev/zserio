@@ -50,10 +50,11 @@ Checks: "-*,\
   cert-oop57-cpp,\
   cert-oop58-cpp,\
   clang-analyzer-cplusplus.Move,\
+  clang-analyzer-cplusplus.NewDeleteLeaks,\
 #  cppcoreguidelines-avoid-c-arrays,\
   cppcoreguidelines-avoid-goto,\
 #  cppcoreguidelines-avoid-non-const-global-variables,\
-#  cppcoreguidelines-init-variables,\
+#(sometimes doesn't make sense) cppcoreguidelines-init-variables,\
   cppcoreguidelines-interfaces-global-init,\
   cppcoreguidelines-macro-usage,\
   cppcoreguidelines-narrowing-conversions,\
