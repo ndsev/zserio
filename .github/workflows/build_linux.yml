@@ -92,7 +92,7 @@ jobs:
     - name: Build Zserio C++ runtime (Debug Build)
       run: |
          if [ -f "`which clang-tidy-14`" ] ; then
-            echo "CLANG_TIDY_BIN=clang-tidy-14" >> ${GITHUB_ENV}
+            export CLANG_TIDY_BIN=clang-tidy-14
          fi
          # cpp_rt-linux32-clang works only for native linux32
          scripts/build.sh cpp_rt-linux64-gcc cpp_rt-linux32-gcc cpp_rt-linux64-clang
@@ -122,7 +122,7 @@ jobs:
     - name: Run Zserio C++ tests (Debug Build - clang)
       run: |
         if [ -f "`which clang-tidy-14`" ] ; then
-            echo "CLANG_TIDY_BIN=clang-tidy-14" >> ${GITHUB_ENV}
+            export CLANG_TIDY_BIN=clang-tidy-14
         fi
         scripts/test.sh cpp-linux64-clang cpp-linux32-clang
       env:
