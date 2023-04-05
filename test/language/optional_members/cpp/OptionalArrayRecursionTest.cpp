@@ -1,3 +1,5 @@
+#include <cstring>
+
 #include "gtest/gtest.h"
 
 #include "optional_members/optional_array_recursion/Employee.h"
@@ -18,7 +20,7 @@ using vector_type = zserio::vector<T, allocator_type>;
 class OptionalArrayRecursionTest : public ::testing::Test
 {
 protected:
-    void fillEmployee(Employee& employee, const char name[], uint16_t salary, Title title)
+    void fillEmployee(Employee& employee, const char* name, uint16_t salary, Title title)
     {
         employee.setName(name);
         employee.setSalary(salary);
@@ -41,7 +43,7 @@ protected:
         teamLead.setTeamMembers(teamMembers);
     }
 
-    void checkEmployeeInBitStream(zserio::BitStreamReader& reader, const char name[], uint16_t salary,
+    void checkEmployeeInBitStream(zserio::BitStreamReader& reader, const char* name, uint16_t salary,
             Title title)
     {
         ASSERT_EQ(name, reader.readString<allocator_type>());
@@ -61,16 +63,16 @@ protected:
 
     static const std::string BLOB_NAME_BASE;
 
-    static const char   EMPTY_EMPLOYEE_NAME[];
+    static const char*  EMPTY_EMPLOYEE_NAME;
     static uint16_t     EMPTY_EMPLOYEE_SALARY;
 
-    static const char   EMPLOYEE_TEAM_LEAD_NAME[];
+    static const char*  EMPLOYEE_TEAM_LEAD_NAME;
     static uint16_t     EMPLOYEE_TEAM_LEAD_SALARY;
 
-    static const char   EMPLOYEE_DEVELOPER1_NAME[];
+    static const char*  EMPLOYEE_DEVELOPER1_NAME;
     static uint16_t     EMPLOYEE_DEVELOPER1_SALARY;
 
-    static const char   EMPLOYEE_DEVELOPER2_NAME[];
+    static const char*  EMPLOYEE_DEVELOPER2_NAME;
     static uint16_t     EMPLOYEE_DEVELOPER2_SALARY;
 
     static const size_t NUM_DEVELOPERS;
@@ -85,27 +87,27 @@ protected:
 const std::string OptionalArrayRecursionTest::BLOB_NAME_BASE =
         "language/optional_members/optional_array_recursion_";
 
-const char  OptionalArrayRecursionTest::EMPTY_EMPLOYEE_NAME[] = "";
+const char* OptionalArrayRecursionTest::EMPTY_EMPLOYEE_NAME = "";
 uint16_t    OptionalArrayRecursionTest::EMPTY_EMPLOYEE_SALARY = 0;
 
-const char  OptionalArrayRecursionTest::EMPLOYEE_TEAM_LEAD_NAME[] = "Nico";
+const char* OptionalArrayRecursionTest::EMPLOYEE_TEAM_LEAD_NAME = "Nico";
 uint16_t    OptionalArrayRecursionTest::EMPLOYEE_TEAM_LEAD_SALARY = 2000;
 
-const char  OptionalArrayRecursionTest::EMPLOYEE_DEVELOPER1_NAME[] = "Mike";
+const char* OptionalArrayRecursionTest::EMPLOYEE_DEVELOPER1_NAME = "Mike";
 uint16_t    OptionalArrayRecursionTest::EMPLOYEE_DEVELOPER1_SALARY = 1000;
 
-const char  OptionalArrayRecursionTest::EMPLOYEE_DEVELOPER2_NAME[] = "Luke";
+const char*  OptionalArrayRecursionTest::EMPLOYEE_DEVELOPER2_NAME = "Luke";
 uint16_t    OptionalArrayRecursionTest::EMPLOYEE_DEVELOPER2_SALARY = 1800;
 
 const size_t OptionalArrayRecursionTest::NUM_DEVELOPERS = 2;
 const size_t OptionalArrayRecursionTest::EMPTY_EMPLOYEE_BIT_SIZE = 32;
 const size_t OptionalArrayRecursionTest::TEAM_LEAD_BIT_SIZE = EMPTY_EMPLOYEE_BIT_SIZE * 3 + 8 +
-        (sizeof(OptionalArrayRecursionTest::EMPLOYEE_TEAM_LEAD_NAME) - 1) * 8 +
-        (sizeof(OptionalArrayRecursionTest::EMPLOYEE_DEVELOPER1_NAME) - 1) * 8 +
-        (sizeof(OptionalArrayRecursionTest::EMPLOYEE_DEVELOPER2_NAME) - 1) * 8;
+        strlen(OptionalArrayRecursionTest::EMPLOYEE_TEAM_LEAD_NAME) * 8 +
+        strlen(OptionalArrayRecursionTest::EMPLOYEE_DEVELOPER1_NAME) * 8 +
+        strlen(OptionalArrayRecursionTest::EMPLOYEE_DEVELOPER2_NAME) * 8;
 
 const size_t OptionalArrayRecursionTest::TEAM_LEAD_BIT_SIZE_UNUSED_TEAM_MEMBERS = EMPTY_EMPLOYEE_BIT_SIZE +
-        (sizeof(OptionalArrayRecursionTest::EMPLOYEE_TEAM_LEAD_NAME) - 1) * 8;
+        strlen(OptionalArrayRecursionTest::EMPLOYEE_TEAM_LEAD_NAME) * 8;
 
 TEST_F(OptionalArrayRecursionTest, isTeamMembersSetAndUsed)
 {

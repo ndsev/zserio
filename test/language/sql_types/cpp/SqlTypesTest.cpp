@@ -63,12 +63,12 @@ protected:
         return true;
     }
 
-    static const char DB_FILE_NAME[];
+    static const char* DB_FILE_NAME;
 
     sql_types::SqlTypesDb* m_database;
 };
 
-const char SqlTypesTest::DB_FILE_NAME[] = "language/sql_types/sql_types_test.sqlite";
+const char* SqlTypesTest::DB_FILE_NAME = "language/sql_types/sql_types_test.sqlite";
 
 TEST_F(SqlTypesTest, unsignedIntegerTypes)
 {

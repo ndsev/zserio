@@ -110,14 +110,14 @@ protected:
                 m_database->connection(), ""_sv, m_tableName, columnName, allocator_type());
     }
 
-    static const char DB_FILE_NAME[];
+    static const char* DB_FILE_NAME;
     static const int32_t NUM_TABLE_ROWS;
 
     string_type m_tableName;
     HiddenVirtualColumnsDb* m_database;
 };
 
-const char HiddenVirtualColumnsTest::DB_FILE_NAME[] =
+const char* HiddenVirtualColumnsTest::DB_FILE_NAME =
         "language/sql_virtual_columns/hidden_virtual_columns_test.sqlite";
 const int32_t HiddenVirtualColumnsTest::NUM_TABLE_ROWS = 5;
 

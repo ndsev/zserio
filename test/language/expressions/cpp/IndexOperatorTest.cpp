@@ -1,3 +1,5 @@
+#include <array>
+
 #include "gtest/gtest.h"
 
 #include "zserio/BitStreamWriter.h"
@@ -68,7 +70,7 @@ protected:
         }
     }
 
-    static const uint16_t ELEMENTS[];
+    static const std::array<uint16_t, 4> ELEMENTS;
     static const size_t LENGTH_SIZE;
     static const size_t FIELD8_SIZE;
     static const size_t FIELD16_SIZE;
@@ -76,7 +78,7 @@ protected:
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
-const uint16_t IndexOperatorTest::ELEMENTS[] =  { 11, 33, 55, 77 };
+const std::array<uint16_t, 4> IndexOperatorTest::ELEMENTS =  { 11, 33, 55, 77 };
 const size_t IndexOperatorTest::LENGTH_SIZE = 16;
 const size_t IndexOperatorTest::FIELD8_SIZE = 8;
 const size_t IndexOperatorTest::FIELD16_SIZE = 16;

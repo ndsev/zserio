@@ -1,3 +1,5 @@
+#include <array>
+
 #include "zserio/FloatUtil.h"
 
 #include "gtest/gtest.h"
@@ -64,8 +66,8 @@ protected:
         double   expectedDouble;
     };
 
-    static const TestFloat32Element TEST_FLOAT32_DATA[];
-    static const TestFloat64Element TEST_FLOAT64_DATA[];
+    static const std::array<TestFloat32Element, 8> TEST_FLOAT32_DATA;
+    static const std::array<TestFloat64Element, 8> TEST_FLOAT64_DATA;
 
 private:
     static const uint16_t FLOAT16_SIGN_BIT_POSITION;
@@ -78,28 +80,28 @@ private:
     static const uint64_t FLOAT64_EXPONENT_BIT_POSITION;
 };
 
-const FloatUtilTest::TestFloat32Element FloatUtilTest::TEST_FLOAT32_DATA[] =
+const std::array<FloatUtilTest::TestFloat32Element, 8> FloatUtilTest::TEST_FLOAT32_DATA =
 {
-    { 0, 0,   UINT32_C(0),         0.0F },
-    { 1, 0,   UINT32_C(0),        -0.0F },
-    { 0, 127, UINT32_C(0),        +1.0F },
-    { 1, 127, UINT32_C(0),        -1.0F },
-    { 0, 128, UINT32_C(0x600000),  3.5F },       // 2^1 (1 + 2^-1 + 2^-2)
-    { 0, 126, UINT32_C(0x600000),  0.875F },     // 2^-1 (1 + 2^-1 + 2^-2)
-    { 0, 130, UINT32_C(0x1E0000),  9.875F },     // 2^3 (1 + 2^-3 + 2^-4 + 2^-5 + 2^-6)
-    { 0, 126, UINT32_C(0x1E0000),  0.6171875F }  // 2^-3 (1 + 2^-3 + 2^-4 + 2^-5 + 2^-6)
+    TestFloat32Element{0, 0,   UINT32_C(0),        0.0F},
+    TestFloat32Element{1, 0,   UINT32_C(0),       -0.0F},
+    TestFloat32Element{0, 127, UINT32_C(0),       +1.0F},
+    TestFloat32Element{1, 127, UINT32_C(0),       -1.0F},
+    TestFloat32Element{0, 128, UINT32_C(0x600000), 3.5F},      // 2^1 (1 + 2^-1 + 2^-2)
+    TestFloat32Element{0, 126, UINT32_C(0x600000), 0.875F},    // 2^-1 (1 + 2^-1 + 2^-2)
+    TestFloat32Element{0, 130, UINT32_C(0x1E0000), 9.875F},    // 2^3 (1 + 2^-3 + 2^-4 + 2^-5 + 2^-6)
+    TestFloat32Element{0, 126, UINT32_C(0x1E0000), 0.6171875F} // 2^-3 (1 + 2^-3 + 2^-4 + 2^-5 + 2^-6)
 };
 
-const FloatUtilTest::TestFloat64Element FloatUtilTest::TEST_FLOAT64_DATA[] =
+const std::array<FloatUtilTest::TestFloat64Element, 8> FloatUtilTest::TEST_FLOAT64_DATA =
 {
-    { 0, 0,    UINT64_C(0),                 0.0 },
-    { 1, 0,    UINT64_C(0),                -0.0 },
-    { 0, 1023, UINT64_C(0),                +1.0 },
-    { 1, 1023, UINT64_C(0),                -1.0 },
-    { 0, 1024, UINT64_C(0xC000000000000),  3.5 },       // 2^1 (1 + 2^-1 + 2^-2)
-    { 0, 1022, UINT64_C(0xC000000000000),  0.875 },     // 2^-1 (1 + 2^-1 + 2^-2)
-    { 0, 1026, UINT64_C(0x3C00000000000),  9.875 },     // 2^3 (1 + 2^-3 + 2^-4 + 2^-5 + 2^-6)
-    { 0, 1022, UINT64_C(0x3C00000000000),  0.6171875 }  // 2^-3 (1 + 2^-3 + 2^-4 + 2^-5 + 2^-6)
+    TestFloat64Element{0, 0,    UINT64_C(0),                0.0},
+    TestFloat64Element{1, 0,    UINT64_C(0),               -0.0},
+    TestFloat64Element{0, 1023, UINT64_C(0),               +1.0},
+    TestFloat64Element{1, 1023, UINT64_C(0),               -1.0},
+    TestFloat64Element{0, 1024, UINT64_C(0xC000000000000), 3.5},      // 2^1 (1 + 2^-1 + 2^-2)
+    TestFloat64Element{0, 1022, UINT64_C(0xC000000000000), 0.875},    // 2^-1 (1 + 2^-1 + 2^-2)
+    TestFloat64Element{0, 1026, UINT64_C(0x3C00000000000), 9.875},    // 2^3 (1 + 2^-3 + 2^-4 + 2^-5 + 2^-6)
+    TestFloat64Element{0, 1022, UINT64_C(0x3C00000000000), 0.6171875} // 2^-3 (1 + 2^-3 + 2^-4 + 2^-5 + 2^-6)
 };
 
 const uint16_t FloatUtilTest::FLOAT16_SIGN_BIT_POSITION = UINT16_C(15);

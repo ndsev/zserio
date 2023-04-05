@@ -114,14 +114,14 @@ protected:
 
     ExplicitParametersDb* m_database;
 
-    static const char DB_FILE_NAME[];
+    static const char* DB_FILE_NAME;
 
     static const uint32_t NUM_SIMPLE_PARAM_TABLE_ROWS;
     static const uint32_t SIMPLE_PARAM_TABLE_COUNT1;
     static const uint32_t SIMPLE_PARAM_TABLE_COUNT2;
 };
 
-const char ExplicitSimpleParamTest::DB_FILE_NAME[] =
+const char* ExplicitSimpleParamTest::DB_FILE_NAME =
         "language/explicit_parameters/explicit_simple_param_test.sqlite";
 
 const uint32_t ExplicitSimpleParamTest::NUM_SIMPLE_PARAM_TABLE_ROWS = 5;

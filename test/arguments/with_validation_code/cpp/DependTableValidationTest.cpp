@@ -64,10 +64,10 @@ protected:
     std::unique_ptr<DependTableValidationDb> m_database;
 
 private:
-    static const char DB_FILE_NAME[];
+    static const char* DB_FILE_NAME;
 };
 
-const char DependTableValidationTest::DB_FILE_NAME[] =
+const char* DependTableValidationTest::DB_FILE_NAME =
         "arguments/with_validation_code/depend_table_validation_test.sqlite";
 
 TEST_F(DependTableValidationTest, validate)

@@ -1,4 +1,5 @@
 #include <vector>
+#include <array>
 
 #include "gtest/gtest.h"
 
@@ -20,13 +21,12 @@ class ChoiceArrayTest : public ::testing::Test
 public:
     ChoiceArrayTest()
     {
-        uint8_t ElementsA[NUM_ITEM_ELEMENTS] = {12, ELEMENT_A_FOR_EXTRA_VALUE, 17};
-        uint8_t ElementsB[NUM_ITEM_ELEMENTS] = {13, 18, 14};
-
-        for (uint16_t i = 0; i < NUM_ITEM_ELEMENTS; ++i)
+        const std::array<uint8_t, 3> elementsA = {12, ELEMENT_A_FOR_EXTRA_VALUE, 17};
+        const std::array<uint8_t, 3> elementsB = {13, 18, 14};
+        for (size_t i = 0; i < m_items.size(); ++i)
         {
-            m_items[i].setA(ElementsA[i]);
-            m_items[i].setB(ElementsB[i]);
+            m_items[i].setA(elementsA[i]);
+            m_items[i].setB(elementsB[i]);
         }
 
         m_explicitItem.setA(27);
@@ -36,15 +36,15 @@ public:
 protected:
     void writeInnerToByteArray(zserio::BitStreamWriter& writer, uint16_t pos)
     {
-        writer.writeBits(NUM_ITEM_ELEMENTS, 16);
+        writer.writeBits(static_cast<uint32_t>(m_items.size()), 16);
 
-        for (uint16_t i = 0; i < NUM_ITEM_ELEMENTS; ++i)
+        for (Item item : m_items)
         {
-            writer.writeBits(m_items[i].getA(), 8);
-            writer.writeBits(m_items[i].getB(), 8);
+            writer.writeBits(item.getA(), 8);
+            writer.writeBits(item.getB(), 8);
         }
 
-        const uint8_t isExplicit = (pos >= NUM_ITEM_ELEMENTS) ? 1 : 0;
+        const uint8_t isExplicit = (pos >= m_items.size()) ? 1 : 0;
         writer.writeBits(isExplicit, 8);
         uint8_t elementA;
         if (isExplicit != 0)
@@ -66,12 +66,12 @@ protected:
     void fillInner(Inner& inner, uint16_t pos)
     {
         OuterArray outerArray;
-        outerArray.setNumElements(NUM_ITEM_ELEMENTS);
+        outerArray.setNumElements(static_cast<uint16_t>(m_items.size()));
         auto& values = outerArray.getValues();
-        values.assign(&m_items[0], &m_items[NUM_ITEM_ELEMENTS]);
+        values.assign(m_items.begin(), m_items.end());
         inner.setOuterArray(outerArray);
 
-        const uint8_t isExplicit = (pos >= NUM_ITEM_ELEMENTS) ? 1 : 0;
+        const uint8_t isExplicit = (pos >= m_items.size()) ? 1 : 0;
         inner.setIsExplicit(isExplicit);
         ItemRef& itemRef = inner.getRef();
         uint8_t elementA;
@@ -96,7 +96,7 @@ protected:
         Inner inner;
         fillInner(inner, pos);
         const Item& readElement = inner.getRef().funcGetElement();
-        if (pos >= NUM_ITEM_ELEMENTS)
+        if (pos >= m_items.size())
         {
             ASSERT_EQ(m_explicitItem, readElement);
         }
@@ -120,17 +120,15 @@ protected:
         ASSERT_EQ(inner, readInner);
     }
 
-    static const uint16_t NUM_ITEM_ELEMENTS = 3;
+    std::array<Item, 3> m_items;
 
 private:
-    Item m_items[NUM_ITEM_ELEMENTS];
     Item m_explicitItem;
 
     static const uint8_t ELEMENT_A_FOR_EXTRA_VALUE;
     static const int32_t EXTRA_VALUE;
 };
 
-const uint16_t ChoiceArrayTest::NUM_ITEM_ELEMENTS;
 const uint8_t ChoiceArrayTest::ELEMENT_A_FOR_EXTRA_VALUE = 20;
 const int32_t ChoiceArrayTest::EXTRA_VALUE = 4711;
 
@@ -151,7 +149,7 @@ TEST_F(ChoiceArrayTest, checkChoiceArrayFunctionElement2)
 
 TEST_F(ChoiceArrayTest, checkChoiceArrayFunctionExplicitElement)
 {
-    checkChoiceArrayFunction(NUM_ITEM_ELEMENTS);
+    checkChoiceArrayFunction(static_cast<uint16_t>(m_items.size()));
 }
 
 } // namespace choice_array

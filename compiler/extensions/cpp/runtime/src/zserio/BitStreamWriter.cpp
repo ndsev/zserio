@@ -1,5 +1,6 @@
 #include <cstring>
 #include <fstream>
+#include <array>
 
 #include "zserio/CppRuntimeException.h"
 #include "zserio/BitSizeOfCalculator.h"
@@ -9,7 +10,7 @@
 namespace zserio
 {
 
-static const uint32_t MAX_U32_VALUES[] =
+static const std::array<uint32_t, 33> MAX_U32_VALUES =
 {
     0x00U,
     0x0001U,     0x0003U,     0x0007U,     0x000fU,
@@ -22,7 +23,7 @@ static const uint32_t MAX_U32_VALUES[] =
     0x1fffffffU, 0x3fffffffU, 0x7fffffffU, 0xffffffffU,
 };
 
-static const int32_t MIN_I32_VALUES[] =
+static const std::array<int32_t, 33> MIN_I32_VALUES =
 {
     0,
    -0x0001,     -0x0002,     -0x0004,     -0x0008,
@@ -35,7 +36,7 @@ static const int32_t MIN_I32_VALUES[] =
    -0x10000000, -0x20000000, -0x40000000, INT32_MIN
 };
 
-static const int32_t MAX_I32_VALUES[] =
+static const std::array<int32_t, 33> MAX_I32_VALUES =
 {
     0x00,
     0x0000,      0x0001,      0x0003,      0x0007,
@@ -48,7 +49,7 @@ static const int32_t MAX_I32_VALUES[] =
     0x0fffffff,  0x1fffffff,  0x3fffffff,  0x7fffffff
 };
 
-static const uint64_t MAX_U64_VALUES[] =
+static const std::array<uint64_t, 65> MAX_U64_VALUES =
 {
     0x00ULL,
     0x0001ULL,             0x0003ULL,             0x0007ULL,             0x000fULL,
@@ -69,7 +70,7 @@ static const uint64_t MAX_U64_VALUES[] =
     0x1fffffffffffffffULL, 0x3fffffffffffffffULL, 0x7fffffffffffffffULL, 0xffffffffffffffffULL
 };
 
-static const int64_t MIN_I64_VALUES[] =
+static const std::array<int64_t, 65> MIN_I64_VALUES =
 {
     0LL,
    -0x0001LL,             -0x0002LL,             -0x0004LL,             -0x0008LL,
@@ -90,7 +91,7 @@ static const int64_t MIN_I64_VALUES[] =
    -0x1000000000000000LL, -0x2000000000000000LL, -0x4000000000000000LL, INT64_MIN
 };
 
-static const int64_t MAX_I64_VALUES[] =
+static const std::array<int64_t, 65> MAX_I64_VALUES =
 {
     0x00LL,
     0x0000LL,              0x0001LL,              0x0003LL,             0x0007LL,
@@ -379,7 +380,7 @@ inline void BitStreamWriter::writeUnsignedVarNum(uint64_t value, size_t maxVarBy
 inline void BitStreamWriter::writeVarNum(uint64_t value, bool hasSign, bool isNegative, size_t maxVarBytes,
         size_t numVarBytes)
 {
-    static const uint64_t bitMasks[8] = { 0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x7F, 0xFF };
+    static const std::array<uint64_t, 8> bitMasks = { 0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x7F, 0xFF };
     const bool hasMaxByteRange = (numVarBytes == maxVarBytes);
 
     for (size_t i = 0; i < numVarBytes; i++)

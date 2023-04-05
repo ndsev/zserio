@@ -74,13 +74,13 @@ protected:
             checkRow(rows1[i], rows2[i]);
     }
 
-    static const char DB_FILE_NAME[];
+    static const char* DB_FILE_NAME;
     static const size_t NUM_ROWS;
 
     allow_implicit_arrays::table_with_implicit_array::DbWithImplicitArray* m_database;
 };
 
-const char TableWithImplicitArrayTest::DB_FILE_NAME[] =
+const char* TableWithImplicitArrayTest::DB_FILE_NAME =
         "arguments/allow_implicit_arrays/table_with_implicit_array_test.sqlite";
 const size_t TableWithImplicitArrayTest::NUM_ROWS = 5;
 

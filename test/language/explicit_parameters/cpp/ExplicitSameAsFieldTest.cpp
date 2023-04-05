@@ -102,14 +102,14 @@ protected:
 
     ExplicitParametersDb* m_database;
 
-    static const char DB_FILE_NAME[];
+    static const char* DB_FILE_NAME;
 
     static const uint32_t NUM_SAME_AS_FIELD_TABLE_ROWS;
     static const uint32_t SAME_AS_FIELD_TABLE_COUNT;
     static const uint32_t SAME_AS_FIELD_TABLE_COUNT_EXPLICIT;
 };
 
-const char ExplicitSameAsFieldTest::DB_FILE_NAME[] =
+const char* ExplicitSameAsFieldTest::DB_FILE_NAME =
         "language/explicit_parameters/explicit_same_as_field_test.sqlite";
 
 const uint32_t ExplicitSameAsFieldTest::NUM_SAME_AS_FIELD_TABLE_ROWS = 5;

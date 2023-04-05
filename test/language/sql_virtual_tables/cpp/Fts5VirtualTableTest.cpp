@@ -100,14 +100,14 @@ protected:
         return true;
     }
 
-    static const char DB_FILE_NAME[];
+    static const char* DB_FILE_NAME;
     static const int32_t NUM_VIRTUAL_TABLE_ROWS;
 
     sql_virtual_tables::fts5_virtual_table::Fts5TestDb* m_database;
 
 };
 
-const char Fts5VirtualTableTest::DB_FILE_NAME[] = "language/sql_virtual_tables/fts5_virtual_table_test.sqlite";
+const char* Fts5VirtualTableTest::DB_FILE_NAME = "language/sql_virtual_tables/fts5_virtual_table_test.sqlite";
 const int32_t Fts5VirtualTableTest::NUM_VIRTUAL_TABLE_ROWS = 5;
 
 TEST_F(Fts5VirtualTableTest, deleteTable)

@@ -53,7 +53,7 @@ protected:
         row.setSqlCheckOctalEscape(OCTAL_ESCAPE_CONST);
     }
 
-    static const char DB_FILE_NAME[];
+    static const char* DB_FILE_NAME;
 
     static const uint8_t UNICODE_ESCAPE_CONST;
     static const uint8_t HEX_ESCAPE_CONST;
@@ -69,7 +69,7 @@ protected:
     sql_constraints::TestDb* m_database;
 };
 
-const char FieldConstraintsTest::DB_FILE_NAME[] =
+const char* FieldConstraintsTest::DB_FILE_NAME =
         "language/sql_constraints/field_constraints_test.sqlite";
 
 const uint8_t FieldConstraintsTest::UNICODE_ESCAPE_CONST = 1;

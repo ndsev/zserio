@@ -1,6 +1,7 @@
 #include <cstring>
 #include <string>
 #include <functional>
+#include <array>
 
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
@@ -16,14 +17,15 @@ namespace zserio
 class BitStreamTest : public ::testing::Test
 {
 public:
-    BitStreamTest() : m_externalWriter(m_byteBuffer, BUFFER_SIZE), m_dummyWriter(nullptr, 0)
+    BitStreamTest() : m_byteBuffer(), m_externalWriter(m_byteBuffer.data(), m_byteBuffer.size()),
+            m_dummyWriter(nullptr, 0)
     {
-        memset(m_byteBuffer, 0, BUFFER_SIZE);
+        m_byteBuffer.fill(0);
     }
 
 protected:
     template <typename T, size_t N, typename U>
-    void testImpl(const T (&values)[N], std::function<void (BitStreamWriter&, U)> writerFunc,
+    void testImpl(const std::array<T, N>& values, std::function<void (BitStreamWriter&, U)> writerFunc,
             std::function<T(BitStreamReader&)> readerFunc, uint8_t maxStartBitPos)
     {
         testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc, maxStartBitPos);
@@ -31,7 +33,7 @@ protected:
     }
 
     template <typename T, size_t N, typename U>
-    void testBitStreamValues(const T (&values)[N], BitStreamWriter& writer,
+    void testBitStreamValues(const std::array<T, N>& values, BitStreamWriter& writer,
             std::function<void (BitStreamWriter&, U)> writerFunc,
             std::function<T(BitStreamReader&)> readerFunc, uint8_t maxStartBitPos)
     {
@@ -56,7 +58,7 @@ protected:
             }
 
             writer.setBitPosition(0);
-            memset(m_byteBuffer, 0, BUFFER_SIZE);
+            m_byteBuffer.fill(0);
         }
     }
 
@@ -165,13 +167,13 @@ protected:
         {
             if (writer.hasWriteBuffer())
             {
-                ASSERT_THROW(writer.setBitPosition(BUFFER_SIZE * 8 + 1), CppRuntimeException);
+                ASSERT_THROW(writer.setBitPosition(m_byteBuffer.size() * 8 + 1), CppRuntimeException);
             }
             else
             {
                 // dummy buffer
-                writer.setBitPosition(BUFFER_SIZE * 8 + 1);
-                ASSERT_EQ(BUFFER_SIZE * 8 + 1, writer.getBitPosition());
+                writer.setBitPosition(m_byteBuffer.size() * 8 + 1);
+                ASSERT_EQ(m_byteBuffer.size() * 8 + 1, writer.getBitPosition());
             }
         }
         writer.setBitPosition(4);
@@ -241,12 +243,7 @@ protected:
         ASSERT_EQ(137, reader.getBitPosition());
     }
 
-    static const size_t BUFFER_SIZE = 256;
-
-private:
-    uint8_t m_byteBuffer[BUFFER_SIZE];
-
-protected:
+    std::array<uint8_t, 256> m_byteBuffer;
     BitStreamWriter m_externalWriter;
     BitStreamWriter m_dummyWriter;
 };
@@ -283,7 +280,7 @@ TEST_F(BitStreamTest, alignedBytes)
 
 TEST_F(BitStreamTest, readVarInt64)
 {
-    const int64_t values[] =
+    const std::array<int64_t, 19> values =
     {
         0,
         -262144,
@@ -322,7 +319,7 @@ TEST_F(BitStreamTest, readVarInt64)
 
 TEST_F(BitStreamTest, readVarInt32)
 {
-    const int32_t values[] =
+    const std::array<int32_t, 11> values =
     {
         0,
         -65536,
@@ -349,7 +346,7 @@ TEST_F(BitStreamTest, readVarInt32)
 
 TEST_F(BitStreamTest, readVarInt16)
 {
-    const int16_t values[] =
+    const std::array<int16_t, 7> values =
     {
         0,
         -8192,
@@ -370,7 +367,7 @@ TEST_F(BitStreamTest, readVarInt16)
 
 TEST_F(BitStreamTest, readVarUInt64)
 {
-    const uint64_t values[] =
+    const std::array<uint64_t, 19> values =
     {
         0,
         262144,
@@ -409,7 +406,7 @@ TEST_F(BitStreamTest, readVarUInt64)
 
 TEST_F(BitStreamTest, readVarUInt32)
 {
-    const uint32_t values[] =
+    const std::array<uint32_t, 11> values =
     {
         0,
         65536,
@@ -436,7 +433,7 @@ TEST_F(BitStreamTest, readVarUInt32)
 
 TEST_F(BitStreamTest, readVarUInt16)
 {
-    const uint16_t values[] =
+    const std::array<uint16_t, 7> values =
     {
         0,
         8192,
@@ -457,7 +454,7 @@ TEST_F(BitStreamTest, readVarUInt16)
 
 TEST_F(BitStreamTest, readVarInt)
 {
-    const int64_t values[] =
+    const std::array<int64_t, 38> values =
     {
         // 1 byte
         0,
@@ -518,7 +515,7 @@ TEST_F(BitStreamTest, readVarInt)
 
 TEST_F(BitStreamTest, readVarUInt)
 {
-    const uint64_t values[] =
+    const std::array<uint64_t, 19> values =
     {
         // 1 byte
         0,
@@ -558,7 +555,7 @@ TEST_F(BitStreamTest, readVarUInt)
 
 TEST_F(BitStreamTest, readVarSize)
 {
-    const uint32_t values[] =
+    const std::array<uint32_t, 13> values =
     {
         0,
         65536,
@@ -588,7 +585,7 @@ TEST_F(BitStreamTest, readVarSize)
 
 TEST_F(BitStreamTest, readFloat16)
 {
-    const float values[] = { 2.0, -2.0, 0.6171875, 0.875, 9.875, 42.5 };
+    const std::array<float, 6> values = { 2.0, -2.0, 0.6171875, 0.875, 9.875, 42.5 };
 
     std::function<void (BitStreamWriter&, float)> writerFunc = &BitStreamWriter::writeFloat16;
     std::function<float(BitStreamReader&)> readerFunc = &BitStreamReader::readFloat16;
@@ -598,7 +595,7 @@ TEST_F(BitStreamTest, readFloat16)
 
 TEST_F(BitStreamTest, readFloat32)
 {
-    const float values[] = { 2.0, -2.0, 0.6171875, 0.875, 9.875, 42.5 };
+    const std::array<float, 6> values = { 2.0, -2.0, 0.6171875, 0.875, 9.875, 42.5 };
 
     std::function<void (BitStreamWriter&, float)> writerFunc = &BitStreamWriter::writeFloat32;
     std::function<float(BitStreamReader&)> readerFunc = &BitStreamReader::readFloat32;
@@ -608,7 +605,7 @@ TEST_F(BitStreamTest, readFloat32)
 
 TEST_F(BitStreamTest, readFloat64)
 {
-    const double values[] = { 2.0, -2.0, 0.6171875, 0.875, 9.875, 42.5 };
+    const std::array<double, 6> values = { 2.0, -2.0, 0.6171875, 0.875, 9.875, 42.5 };
 
     std::function<void (BitStreamWriter&, double)> writerFunc = &BitStreamWriter::writeFloat64;
     std::function<double(BitStreamReader&)> readerFunc = &BitStreamReader::readFloat64;
@@ -618,7 +615,7 @@ TEST_F(BitStreamTest, readFloat64)
 
 TEST_F(BitStreamTest, readString)
 {
-    const std::string values[] =
+    const std::array<std::string, 3> values =
     {
         "Hello World",
         "\n\t%^@(*aAzZ01234569$%^!?<>[]](){}-=+~:;/|\\\"\'Hello World2\0nonWrittenPart",
@@ -635,7 +632,7 @@ TEST_F(BitStreamTest, readString)
 
 TEST_F(BitStreamTest, readBool)
 {
-    const bool values[] = {true, false};
+    const std::array<bool, 2> values = {true, false};
 
     std::function<void (BitStreamWriter&, bool)> writerFunc = &BitStreamWriter::writeBool;
     std::function<bool(BitStreamReader&)> readerFunc = &BitStreamReader::readBool;
@@ -645,7 +642,7 @@ TEST_F(BitStreamTest, readBool)
 
 TEST_F(BitStreamTest, readBitBuffer)
 {
-    const BitBuffer values[] =
+    const std::array<BitBuffer, 2> values =
     {
         BitBuffer(std::vector<uint8_t>({0xAB, 0xE0}), 11),
         BitBuffer(std::vector<uint8_t>({0xAB, 0xCD, 0xFE}), 23)
@@ -662,7 +659,7 @@ TEST_F(BitStreamTest, readBitBuffer)
 
 TEST_F(BitStreamTest, readBytes)
 {
-    const vector<uint8_t> values[] =
+    const std::array<vector<uint8_t>, 2> values =
     {
         vector<uint8_t>{{0, 255}},
         vector<uint8_t>{{1, 127, 128, 254}},

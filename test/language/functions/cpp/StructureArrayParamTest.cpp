@@ -1,4 +1,5 @@
 #include <vector>
+#include <array>
 
 #include "gtest/gtest.h"
 
@@ -18,36 +19,36 @@ class StructureArrayParamTest : public ::testing::Test
 protected:
     void writeParentStructureToByteArray(zserio::BitStreamWriter& writer)
     {
-        writer.writeBits(NUM_CHILDREN, 8);
+        writer.writeBits(VALUES.size(), 8);
 
-        for (uint8_t i = 0; i < NUM_CHILDREN; ++i)
-            writer.writeBits(static_cast<uint32_t>(VALUES[i]), CHILD_BIT_SIZE);
+        for (uint64_t value : VALUES)
+            writer.writeBits(static_cast<uint32_t>(value), CHILD_BIT_SIZE);
 
-        writer.writeBits(NUM_ANOTHER_CHILDREN, 8);
+        writer.writeBits(ANOTHER_VALUES.size(), 8);
 
-        for (uint8_t i = 0; i < NUM_ANOTHER_CHILDREN; ++i)
-            writer.writeBits(static_cast<uint32_t>(ANOTHER_VALUES[i]), ANOTHER_CHILD_BIT_SIZE);
+        for (uint64_t anotherValue : ANOTHER_VALUES)
+            writer.writeBits(static_cast<uint32_t>(anotherValue), ANOTHER_CHILD_BIT_SIZE);
     }
 
     void createParentStructure(ParentStructure& parentStructure)
     {
-        parentStructure.setNumChildren(NUM_CHILDREN);
+        parentStructure.setNumChildren(VALUES.size());
 
         auto& children = parentStructure.getChildren();
-        for (uint8_t i = 0; i < NUM_CHILDREN; ++i)
+        for (uint64_t value : VALUES)
         {
             ChildStructure child;
-            child.setValue(VALUES[i]);
+            child.setValue(value);
             children.push_back(child);
         }
 
-        parentStructure.setNumAnotherChildren(NUM_ANOTHER_CHILDREN);
+        parentStructure.setNumAnotherChildren(ANOTHER_VALUES.size());
 
         auto& anotherChildren = parentStructure.getAnotherChildren();
-        for (uint8_t i = 0; i < NUM_ANOTHER_CHILDREN; ++i)
+        for (uint64_t anotherValue : ANOTHER_VALUES)
         {
             ChildStructure child;
-            child.setValue(ANOTHER_VALUES[i]);
+            child.setValue(anotherValue);
             anotherChildren.push_back(child);
         }
 
@@ -58,19 +59,16 @@ protected:
     static const uint8_t ANOTHER_CHILD_BIT_SIZE = 17;
 
 private:
-    static const uint8_t NUM_CHILDREN = 2;
-    static const uint64_t VALUES[NUM_CHILDREN];
-    static const uint8_t NUM_ANOTHER_CHILDREN = 2;
-    static const uint64_t ANOTHER_VALUES[NUM_ANOTHER_CHILDREN];
+    static const std::array<uint64_t, 2> VALUES;
+    static const std::array<uint64_t, 2> ANOTHER_VALUES;
 };
 
-const uint64_t StructureArrayParamTest::VALUES[StructureArrayParamTest::NUM_CHILDREN] =
+const std::array<uint64_t, 2> StructureArrayParamTest::VALUES =
 {
     0xAABB, 0xCCDD
 };
 
-const uint64_t StructureArrayParamTest::ANOTHER_VALUES[
-        StructureArrayParamTest::NUM_ANOTHER_CHILDREN] =
+const std::array<uint64_t, 2> StructureArrayParamTest::ANOTHER_VALUES =
 {
     0xAABB, 0xCCDD
 };

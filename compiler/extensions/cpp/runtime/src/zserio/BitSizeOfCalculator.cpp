@@ -1,4 +1,5 @@
 #include <limits>
+#include <array>
 
 #include "zserio/BitSizeOfCalculator.h"
 #include "zserio/CppRuntimeException.h"
@@ -6,23 +7,21 @@
 namespace zserio
 {
 
-static const uint64_t VarInt16MaxValues[] =
+static const std::array<uint64_t, 2> VARIN16_MAX_VALUES =
 {
     (UINT64_C(1) << (6)) - 1,
     (UINT64_C(1) << (6 + 8)) - 1,
 };
-static const size_t VarInt16MaxNumValues = sizeof(VarInt16MaxValues) / sizeof(VarInt16MaxValues[0]);
 
-static const uint64_t VarInt32MaxValues[] =
+static const std::array<uint64_t, 4> VARINT32_MAX_VALUES =
 {
     (UINT64_C(1) << (6)) - 1,
     (UINT64_C(1) << (6 + 7)) - 1,
     (UINT64_C(1) << (6 + 7 + 7)) - 1,
     (UINT64_C(1) << (6 + 7 + 7 + 8)) - 1
 };
-static const size_t VarInt32MaxNumValues = sizeof(VarInt32MaxValues) / sizeof(VarInt32MaxValues[0]);
 
-static const uint64_t VarInt64MaxValues[] =
+static const std::array<uint64_t, 8> VARINT64_MAX_VALUES =
 {
     (UINT64_C(1) << (6)) - 1,
     (UINT64_C(1) << (6 + 7)) - 1,
@@ -33,25 +32,22 @@ static const uint64_t VarInt64MaxValues[] =
     (UINT64_C(1) << (6 + 7 + 7 + 7 + 7 + 7 + 7)) - 1,
     (UINT64_C(1) << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1
 };
-static const size_t VarInt64MaxNumValues = sizeof(VarInt64MaxValues) / sizeof(VarInt64MaxValues[0]);
 
-static const uint64_t VarUInt16MaxValues[] =
+static const std::array<uint64_t, 2> VARUINT16_MAX_VALUES =
 {
     (UINT64_C(1) << (7)) - 1,
     (UINT64_C(1) << (7 + 8)) - 1,
 };
-static const size_t VarUInt16MaxNumValues = sizeof(VarUInt16MaxValues) / sizeof(VarUInt16MaxValues[0]);
 
-static const uint64_t VarUInt32MaxValues[] =
+static const std::array<uint64_t, 4> VARUINT32_MAX_VALUES =
 {
     (UINT64_C(1) << (7)) - 1,
     (UINT64_C(1) << (7 + 7)) - 1,
     (UINT64_C(1) << (7 + 7 + 7)) - 1,
     (UINT64_C(1) << (7 + 7 + 7 + 8)) - 1
 };
-static const size_t VarUInt32MaxNumValues = sizeof(VarUInt32MaxValues) / sizeof(VarUInt32MaxValues[0]);
 
-static const uint64_t VarUInt64MaxValues[] =
+static const std::array<uint64_t, 8> VARUINT64_MAX_VALUES =
 {
     (UINT64_C(1) << (7)) - 1,
     (UINT64_C(1) << (7 + 7)) - 1,
@@ -62,9 +58,8 @@ static const uint64_t VarUInt64MaxValues[] =
     (UINT64_C(1) << (7 + 7 + 7 + 7 + 7 + 7 + 7)) - 1,
     (UINT64_C(1) << (7 + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1
 };
-static const size_t VarUInt64MaxNumValues = sizeof(VarUInt64MaxValues) / sizeof(VarUInt64MaxValues[0]);
 
-static const uint64_t VarIntMaxValues[] =
+static const std::array<uint64_t, 9> VARINT_MAX_VALUES =
 {
     (UINT64_C(1) << (6)) - 1,
     (UINT64_C(1) << (6 + 7)) - 1,
@@ -76,9 +71,8 @@ static const uint64_t VarIntMaxValues[] =
     (UINT64_C(1) << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 7)) - 1,
     (UINT64_C(1) << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1
 };
-static const size_t VarIntMaxNumValues = sizeof(VarIntMaxValues) / sizeof(VarIntMaxValues[0]);
 
-static const uint64_t VarUIntMaxValues[] =
+static const std::array<uint64_t, 9> VARUINT_MAX_VALUES =
 {
     (UINT64_C(1) << (7)) - 1,
     (UINT64_C(1) << (7 + 7)) - 1,
@@ -90,9 +84,8 @@ static const uint64_t VarUIntMaxValues[] =
     (UINT64_C(1) << (7 + 7 + 7 + 7 + 7 + 7 + 7 + 7)) - 1,
     UINT64_MAX
 };
-static const size_t VarUIntMaxNumValues = sizeof(VarUIntMaxValues) / sizeof(VarUIntMaxValues[0]);
 
-static const uint64_t VarSizeMaxValues[] =
+static const std::array<uint64_t, 5> VARSIZE_MAX_VALUES =
 {
     (UINT64_C(1) << (7)) - 1,
     (UINT64_C(1) << (7 + 7)) - 1,
@@ -100,21 +93,20 @@ static const uint64_t VarSizeMaxValues[] =
     (UINT64_C(1) << (7 + 7 + 7 + 7)) - 1,
     (UINT64_C(1) << (2 + 7 + 7 + 7 + 8)) - 1,
 };
-static const size_t VarSizeMaxNumValues = sizeof(VarSizeMaxValues) / sizeof(VarSizeMaxValues[0]);
 
-static size_t bitSizeOfVarIntImpl(uint64_t value, const uint64_t* maxValues, size_t numMaxValues,
+template <std::size_t SIZE>
+static size_t bitSizeOfVarIntImpl(uint64_t value, const std::array<uint64_t, SIZE>& maxValues,
         const char* varIntName)
 {
-    const uint64_t* maxValue = maxValues;
     size_t byteSize = 1;
-    for (; byteSize <= numMaxValues; ++byteSize)
+    for (uint64_t maxValue : maxValues)
     {
-        if (value <= *maxValue)
+        if (value <= maxValue)
             break;
-        maxValue++;
+        byteSize++;
     }
 
-    if (byteSize > numMaxValues)
+    if (byteSize > maxValues.size())
     {
         throw CppRuntimeException("BitSizeOfCalculator: Value '") << value <<
                 "' is out of range for " << varIntName << "!";
@@ -131,32 +123,32 @@ static uint64_t convertToAbsValue(T value)
 
 size_t bitSizeOfVarInt16(int16_t value)
 {
-    return bitSizeOfVarIntImpl(convertToAbsValue(value), VarInt16MaxValues, VarInt16MaxNumValues, "varint16");
+    return bitSizeOfVarIntImpl(convertToAbsValue(value), VARIN16_MAX_VALUES, "varint16");
 }
 
 size_t bitSizeOfVarInt32(int32_t value)
 {
-    return bitSizeOfVarIntImpl(convertToAbsValue(value), VarInt32MaxValues, VarInt32MaxNumValues, "varint32");
+    return bitSizeOfVarIntImpl(convertToAbsValue(value), VARINT32_MAX_VALUES, "varint32");
 }
 
 size_t bitSizeOfVarInt64(int64_t value)
 {
-    return bitSizeOfVarIntImpl(convertToAbsValue(value), VarInt64MaxValues, VarInt64MaxNumValues, "varint64");
+    return bitSizeOfVarIntImpl(convertToAbsValue(value), VARINT64_MAX_VALUES, "varint64");
 }
 
 size_t bitSizeOfVarUInt16(uint16_t value)
 {
-    return bitSizeOfVarIntImpl(value, VarUInt16MaxValues, VarUInt16MaxNumValues, "varuint16");
+    return bitSizeOfVarIntImpl(value, VARUINT16_MAX_VALUES, "varuint16");
 }
 
 size_t bitSizeOfVarUInt32(uint32_t value)
 {
-    return bitSizeOfVarIntImpl(value, VarUInt32MaxValues, VarUInt32MaxNumValues, "varuint32");
+    return bitSizeOfVarIntImpl(value, VARUINT32_MAX_VALUES, "varuint32");
 }
 
 size_t bitSizeOfVarUInt64(uint64_t value)
 {
-    return bitSizeOfVarIntImpl(value, VarUInt64MaxValues, VarUInt64MaxNumValues, "varuint64");
+    return bitSizeOfVarIntImpl(value, VARUINT64_MAX_VALUES, "varuint64");
 }
 
 size_t bitSizeOfVarInt(int64_t value)
@@ -164,17 +156,17 @@ size_t bitSizeOfVarInt(int64_t value)
     if (value == INT64_MIN)
         return 8; // INT64_MIN is stored as -0
 
-    return bitSizeOfVarIntImpl(convertToAbsValue(value), VarIntMaxValues, VarIntMaxNumValues, "varint");
+    return bitSizeOfVarIntImpl(convertToAbsValue(value), VARINT_MAX_VALUES, "varint");
 }
 
 size_t bitSizeOfVarUInt(uint64_t value)
 {
-    return bitSizeOfVarIntImpl(value, VarUIntMaxValues, VarUIntMaxNumValues, "varuint");
+    return bitSizeOfVarIntImpl(value, VARUINT_MAX_VALUES, "varuint");
 }
 
 size_t bitSizeOfVarSize(uint32_t value)
 {
-    return bitSizeOfVarIntImpl(value, VarSizeMaxValues, VarSizeMaxNumValues, "varsize");
+    return bitSizeOfVarIntImpl(value, VARSIZE_MAX_VALUES, "varsize");
 }
 
 size_t bitSizeOfBytes(Span<const uint8_t> bytesValue)

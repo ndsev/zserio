@@ -41,12 +41,12 @@ public:
     TableConstraintsTest& operator=(TableConstraintsTest&&) = delete;
 
 protected:
-    static const char DB_FILE_NAME[];
+    static const char* DB_FILE_NAME;
 
     sql_constraints::TestDb* m_database;
 };
 
-const char TableConstraintsTest::DB_FILE_NAME[] =
+const char* TableConstraintsTest::DB_FILE_NAME =
         "language/sql_constraints/table_constraints_test.sqlite";
 
 TEST_F(TableConstraintsTest, primaryKey)

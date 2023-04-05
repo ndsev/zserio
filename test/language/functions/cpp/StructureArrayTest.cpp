@@ -1,4 +1,5 @@
 #include <vector>
+#include <array>
 
 #include "gtest/gtest.h"
 
@@ -15,28 +16,15 @@ namespace structure_array
 
 class StructureArrayTest : public ::testing::Test
 {
-public:
-    StructureArrayTest()
-    {
-        uint8_t ElementsA[NUM_ITEM_ELEMENTS] = {1, 3, 5};
-        uint8_t ElementsB[NUM_ITEM_ELEMENTS] = {2, 4, 6};
-
-        for (uint16_t i = 0; i < NUM_ITEM_ELEMENTS; ++i)
-        {
-            m_items[i].setA(ElementsA[i]);
-            m_items[i].setB(ElementsB[i]);
-        }
-    }
-
 protected:
     void writeStructureArrayToByteArray(zserio::BitStreamWriter& writer, uint16_t pos)
     {
-        writer.writeBits(NUM_ITEM_ELEMENTS, 16);
+        writer.writeBits(ITEMS.size(), 16);
 
-        for (uint16_t i = 0; i < NUM_ITEM_ELEMENTS; ++i)
+        for (Item item : ITEMS)
         {
-            writer.writeBits(m_items[i].getA(), 8);
-            writer.writeBits(m_items[i].getB(), 8);
+            writer.writeBits(item.getA(), 8);
+            writer.writeBits(item.getB(), 8);
         }
 
         writer.writeBits(pos, 16);
@@ -44,10 +32,10 @@ protected:
 
     void createStructureArray(StructureArray& structureArray, uint16_t pos)
     {
-        structureArray.setNumElements(NUM_ITEM_ELEMENTS);
+        structureArray.setNumElements(ITEMS.size());
 
         auto& values = structureArray.getValues();
-        values.assign(&m_items[0], &m_items[NUM_ITEM_ELEMENTS]);
+        values.assign(ITEMS.begin(), ITEMS.end());
 
         structureArray.setPos(pos);
     }
@@ -57,7 +45,7 @@ protected:
         StructureArray structureArray;
         createStructureArray(structureArray, pos);
         const Item readElement = structureArray.funcGetElement();
-        ASSERT_EQ(m_items[pos], readElement);
+        ASSERT_EQ(ITEMS[pos], readElement);
 
         zserio::BitBuffer writtenBitBuffer = zserio::BitBuffer(1024 * 8);
         zserio::BitStreamWriter writtenWriter(writtenBitBuffer);
@@ -75,9 +63,12 @@ protected:
     }
 
 private:
-    static const uint16_t NUM_ITEM_ELEMENTS = 3;
+    static const std::array<Item, 3> ITEMS;
+};
 
-    Item m_items[NUM_ITEM_ELEMENTS];
+const std::array<Item, 3> StructureArrayTest::ITEMS =
+{
+    Item{1, 2}, Item{3, 4}, Item{5, 6}
 };
 
 TEST_F(StructureArrayTest, checkStructureArrayElement0)

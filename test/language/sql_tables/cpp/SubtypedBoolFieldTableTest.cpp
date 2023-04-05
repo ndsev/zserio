@@ -71,13 +71,13 @@ protected:
             checkRow(rows1[i], rows2[i]);
     }
 
-    static const char DB_FILE_NAME[];
+    static const char* DB_FILE_NAME;
     static const size_t NUM_ROWS;
 
     sql_tables::TestDb* m_database;
 };
 
-const char SubtypedBoolFieldTableTest::DB_FILE_NAME[] =
+const char* SubtypedBoolFieldTableTest::DB_FILE_NAME =
         "language/sql_tables/subtyped_bool_field_table_test.sqlite";
 const size_t SubtypedBoolFieldTableTest::NUM_ROWS = 5;
 

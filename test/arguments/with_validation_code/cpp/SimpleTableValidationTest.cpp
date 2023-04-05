@@ -76,7 +76,7 @@ protected:
         connection.endTransaction(wasTransactionStarted);
     }
 
-    static const char DB_FILE_NAME[];
+    static const char* DB_FILE_NAME;
 
     static constexpr uint64_t ENTRY_COUNT = 5;
     static constexpr uint32_t SIMPLE_TABLE_LOCAL_COUNT = 10;
@@ -161,7 +161,7 @@ private:
     }
 };
 
-const char SimpleTableValidationTest::DB_FILE_NAME[] =
+const char* SimpleTableValidationTest::DB_FILE_NAME =
         "arguments/with_validation_code/simple_table_validation_test.sqlite";
 constexpr uint64_t SimpleTableValidationTest::ENTRY_COUNT;
 constexpr uint32_t SimpleTableValidationTest::SIMPLE_TABLE_LOCAL_COUNT;

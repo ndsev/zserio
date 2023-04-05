@@ -141,13 +141,14 @@ protected:
     LocalServiceClient localServiceClient;
     ComplexTypesService::Client client;
 
-    // note that conversion is slightly inaccurate and therefore this values are carefully choosen
+    // note that conversion is slightly inaccurate and therefore this values are carefully chosen
     // to provide consistent results for the test needs
-    static constexpr uint8_t rgbValues[3][3] = { { 0 ,128, 255 }, { 222, 222, 0 }, { 65, 196, 31 } };
-    uint8_t cmykValues[3][4];
+    static constexpr uint8_t rgbValues[3][3] = { // NOLINT(cppcoreguidelines-avoid-c-arrays)
+            { 0 ,128, 255 }, { 222, 222, 0 }, { 65, 196, 31 } };
+    uint8_t cmykValues[3][4]; // NOLINT(cppcoreguidelines-avoid-c-arrays)
 };
 
-constexpr uint8_t ComplexTypesServiceTest::rgbValues[3][3];
+constexpr uint8_t ComplexTypesServiceTest::rgbValues[3][3]; // NOLINT(cppcoreguidelines-avoid-c-arrays)
 
 TEST_F(ComplexTypesServiceTest, serviceFullName)
 {

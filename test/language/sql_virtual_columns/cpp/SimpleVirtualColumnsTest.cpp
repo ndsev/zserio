@@ -118,7 +118,7 @@ protected:
         return isFound;
     }
 
-    static const char DB_FILE_NAME[];
+    static const char* DB_FILE_NAME;
     static const int32_t NUM_TABLE_ROWS;
 
     string_type m_tableName;
@@ -126,7 +126,7 @@ protected:
     SimpleVirtualColumnsDb* m_database;
 };
 
-const char SimpleVirtualColumnsTest::DB_FILE_NAME[] =
+const char* SimpleVirtualColumnsTest::DB_FILE_NAME =
         "language/sql_virtual_columns/simple_virtual_columns_test.sqlite";
 const int32_t SimpleVirtualColumnsTest::NUM_TABLE_ROWS = 5;
 

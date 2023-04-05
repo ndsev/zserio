@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 
 #include <sstream>
+#include <array>
 
 #include "zserio/CppRuntimeException.h"
 #include "zserio/StringView.h"
@@ -447,8 +448,8 @@ TEST(DebugStringUtilTest, toJsonStreamDefault)
     IReflectablePtr reflectable = dummyObject.reflectable();
     ASSERT_TRUE(reflectable);
     ASSERT_EQ(0, reflectable->bitSizeOf());
-    uint8_t buffer[1];
-    BitStreamWriter writer(buffer, 1);
+    std::array<uint8_t, 1> buffer;
+    BitStreamWriter writer(buffer.data(), buffer.size());
     reflectable->write(writer);
     ASSERT_EQ("test"_sv, reflectable->getField("text")->getStringView());
     ASSERT_THROW(reflectable->getField("wrong"), CppRuntimeException);
@@ -816,8 +817,8 @@ TEST(DebugStringUtilTest, fromJsonStreamParameterizedTypeInfo)
 
     // improve coverage
     ASSERT_EQ(0, reflectable->bitSizeOf());
-    uint8_t buffer[1];
-    BitStreamWriter writer(buffer, 1);
+    std::array<uint8_t, 1> buffer;
+    BitStreamWriter writer(buffer.data(), buffer.size());
     reflectable->write(writer);
     ASSERT_THROW(reflectable->getField("wrong"), CppRuntimeException);
     const AnyHolder<> value(0);

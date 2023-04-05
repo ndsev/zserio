@@ -1,4 +1,5 @@
 #include <cstring>
+#include <array>
 
 #include "zserio/BitStreamWriter.h"
 #include "zserio/CppRuntimeException.h"
@@ -12,26 +13,22 @@ class BitStreamWriterTest : public ::testing::Test
 {
 public:
     BitStreamWriterTest() :
-        m_externalBufferWriter(m_externalBuffer, EXTERNAL_BUFFER_SIZE),
+        m_externalBuffer(),
+        m_externalBufferWriter(m_externalBuffer.data(), m_externalBuffer.size()),
         m_dummyBufferWriter(nullptr, 0)
     {
-        memset(m_externalBuffer, 0, sizeof(m_externalBuffer) / sizeof(m_externalBuffer[0]));
+        m_externalBuffer.fill(0);
     }
 
 protected:
+    std::array<uint8_t, 512> m_externalBuffer;
     BitStreamWriter m_externalBufferWriter;
     BitStreamWriter m_dummyBufferWriter;
-
-    static const size_t EXTERNAL_BUFFER_SIZE = 512;
-
-    uint8_t m_externalBuffer[EXTERNAL_BUFFER_SIZE];
 };
-
-const size_t BitStreamWriterTest::EXTERNAL_BUFFER_SIZE;
 
 TEST_F(BitStreamWriterTest, spanConstructor)
 {
-    uint8_t data[] = { 0x00, 0x00 };
+    std::array<uint8_t, 2> data = { 0x00, 0x00 };
     const Span<uint8_t> span(data);
     BitStreamWriter writer(span);
 
@@ -96,10 +93,10 @@ TEST_F(BitStreamWriterTest, writeUnalignedData)
 TEST_F(BitStreamWriterTest, writeBits)
 {
     // check invalid bitlength acceptance
-    const uint8_t numBits[] = { 255, 0, 33 };
-    for (size_t i = 0; i < sizeof(numBits) / sizeof(numBits[0]); ++i)
+    const std::array<uint8_t, 3> numBitsArray = { 255, 0, 33 };
+    for (uint8_t numBits : numBitsArray)
     {
-        ASSERT_THROW(m_externalBufferWriter.writeBits(1, numBits[i]), CppRuntimeException);
+        ASSERT_THROW(m_externalBufferWriter.writeBits(1, numBits), CppRuntimeException);
     }
 
     // check value out of range
@@ -117,10 +114,10 @@ TEST_F(BitStreamWriterTest, writeBits)
 TEST_F(BitStreamWriterTest, writeBits64)
 {
     // check invalid bitlength acceptance
-    const uint8_t numBits[] = { 255, 0, 65 };
-    for (size_t i = 0; i < sizeof(numBits) / sizeof(numBits[0]); ++i)
+    const std::array<uint8_t, 3> numBitsArray = { 255, 0, 65 };
+    for (uint8_t numBits : numBitsArray)
     {
-        ASSERT_THROW(m_externalBufferWriter.writeBits64(1, numBits[i]), CppRuntimeException);
+        ASSERT_THROW(m_externalBufferWriter.writeBits64(1, numBits), CppRuntimeException);
     }
 
     // check value out of range
@@ -138,10 +135,10 @@ TEST_F(BitStreamWriterTest, writeBits64)
 TEST_F(BitStreamWriterTest, writeSignedBits)
 {
     // check invalid bitlength acceptance
-    const uint8_t numBits[] = { 255, 0, 33 };
-    for (size_t i = 0; i < sizeof(numBits) / sizeof(numBits[0]); ++i)
+    const std::array<uint8_t, 3> numBitsArray = { 255, 0, 33 };
+    for (uint8_t numBits : numBitsArray)
     {
-        ASSERT_THROW(m_externalBufferWriter.writeSignedBits(1, numBits[i]), CppRuntimeException);
+        ASSERT_THROW(m_externalBufferWriter.writeSignedBits(1, numBits), CppRuntimeException);
     }
 
     // check value out of range
@@ -164,10 +161,10 @@ TEST_F(BitStreamWriterTest, writeSignedBits)
 TEST_F(BitStreamWriterTest, writeSignedBits64)
 {
     // check invalid bitlength acceptance
-    const uint8_t numBits[] = { 255, 0, 65 };
-    for (size_t i = 0; i < sizeof(numBits) / sizeof(numBits[0]); ++i)
+    const std::array<uint8_t, 3> numBitsArray = { 255, 0, 65 };
+    for (uint8_t numBits : numBitsArray)
     {
-        ASSERT_THROW(m_externalBufferWriter.writeSignedBits64(1, numBits[i]), CppRuntimeException);
+        ASSERT_THROW(m_externalBufferWriter.writeSignedBits64(1, numBits), CppRuntimeException);
     }
 
     // check value out of range
@@ -273,7 +270,7 @@ TEST_F(BitStreamWriterTest, hasWriteBuffer)
 
 TEST_F(BitStreamWriterTest, getWriteBuffer)
 {
-    ASSERT_EQ(m_externalBuffer, m_externalBufferWriter.getWriteBuffer());
+    ASSERT_EQ(m_externalBuffer.data(), m_externalBufferWriter.getWriteBuffer());
 
     ASSERT_EQ(nullptr, m_dummyBufferWriter.getWriteBuffer());
 }

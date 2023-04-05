@@ -1,4 +1,5 @@
 #include <limits>
+#include <array>
 
 #include "zserio/BitStreamReader.h"
 #include "zserio/CppRuntimeException.h"
@@ -32,9 +33,9 @@ namespace
 #endif
     }
 
-    static const BaseType MASK_TABLE[] =
-    {
 #ifdef ZSERIO_RUNTIME_64BIT
+    static const std::array<BaseType, 65> MASK_TABLE =
+    {
         UINT64_C(0x00),
         UINT64_C(0x0001),     UINT64_C(0x0003),     UINT64_C(0x0007),     UINT64_C(0x000f),
         UINT64_C(0x001f),     UINT64_C(0x003f),     UINT64_C(0x007f),     UINT64_C(0x00ff),
@@ -61,7 +62,10 @@ namespace
         UINT64_C(0x07ffffffffffffff), UINT64_C(0x0fffffffffffffff),
         UINT64_C(0x1fffffffffffffff), UINT64_C(0x3fffffffffffffff),
         UINT64_C(0x7fffffffffffffff), UINT64_C(0xffffffffffffffff)
+    };
 #else
+    static const std::array<BaseType, 33> MASK_TABLE =
+    {
         UINT32_C(0x00),
         UINT32_C(0x0001),     UINT32_C(0x0003),     UINT32_C(0x0007),     UINT32_C(0x000f),
         UINT32_C(0x001f),     UINT32_C(0x003f),     UINT32_C(0x007f),     UINT32_C(0x00ff),
@@ -71,8 +75,8 @@ namespace
         UINT32_C(0x001fffff), UINT32_C(0x003fffff), UINT32_C(0x007fffff), UINT32_C(0x00ffffff),
         UINT32_C(0x01ffffff), UINT32_C(0x03ffffff), UINT32_C(0x07ffffff), UINT32_C(0x0fffffff),
         UINT32_C(0x1fffffff), UINT32_C(0x3fffffff), UINT32_C(0x7fffffff), UINT32_C(0xffffffff)
-#endif
     };
+#endif
 
     static const uint8_t VARINT_SIGN_1 = UINT8_C(0x80);
     static const uint8_t VARINT_BYTE_1 = UINT8_C(0x3f);

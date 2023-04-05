@@ -102,7 +102,7 @@ protected:
         return true;
     }
 
-    static const char DB_FILE_NAME[];
+    static const char* DB_FILE_NAME;
 
     static const uint32_t PARAMETERIZED_BLOB_VALUE;
     static const uint32_t NUM_COLUMN_PARAM_TABLE_ROWS;
@@ -110,7 +110,7 @@ protected:
     sql_tables::TestDb* m_database;
 };
 
-const char ColumnParamTableTest::DB_FILE_NAME[] = "language/sql_tables/column_param_table_test.sqlite";
+const char* ColumnParamTableTest::DB_FILE_NAME = "language/sql_tables/column_param_table_test.sqlite";
 
 const uint32_t ColumnParamTableTest::PARAMETERIZED_BLOB_VALUE = 0xABCD;
 const uint32_t ColumnParamTableTest::NUM_COLUMN_PARAM_TABLE_ROWS = 5;

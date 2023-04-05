@@ -150,8 +150,8 @@ TEST(EnumsTest, initializeOffsets)
 
 TEST(EnumsTest, writeAndRead)
 {
-    static uint8_t WRITE_BUFFER[1];
-    BitStreamWriter out(WRITE_BUFFER, sizeof(WRITE_BUFFER));
+    std::array<uint8_t, 1> writeBuffer = {0};
+    BitStreamWriter out(writeBuffer.data(), writeBuffer.size());
     const Color writeColor = Color::NONE;
     write(out, writeColor);
 

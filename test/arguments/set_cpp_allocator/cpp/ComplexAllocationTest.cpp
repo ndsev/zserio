@@ -1,5 +1,6 @@
 #include <string>
 #include <memory>
+#include <array>
 
 #include "gtest/gtest.h"
 
@@ -253,19 +254,20 @@ protected:
 
     BitBuffer createExternalField(const allocator_type& allocator)
     {
-        const uint8_t externalFieldData[] = {static_cast<uint8_t>(EXTERNAL_FIELD_DATA >> 8U),
+        const std::array<uint8_t, 2> externalFieldData = {static_cast<uint8_t>(EXTERNAL_FIELD_DATA >> 8U),
                 static_cast<uint8_t>(EXTERNAL_FIELD_DATA)};
 
-        return BitBuffer(externalFieldData, EXTERNAL_FIELD_VAR_SIZE, allocator);
+        return BitBuffer(externalFieldData.data(), EXTERNAL_FIELD_VAR_SIZE, allocator);
     }
 
     void fillExternalArray(vector_type<BitBuffer>& externalArray, const allocator_type& allocator)
     {
         externalArray.reserve(EXTERNAL_ARRAY_SIZE);
         externalArray.emplace_back(&EXTERNAL_ARRAY_ELEMENT0_DATA, EXTERNAL_ARRAY_ELEMENT0_VAR_SIZE, allocator);
-        const uint8_t externalElement1Data[] = {static_cast<uint8_t>(EXTERNAL_ARRAY_ELEMENT1_DATA >> 8U),
+        const std::array<uint8_t, 2> externalElement1Data = {
+                static_cast<uint8_t>(EXTERNAL_ARRAY_ELEMENT1_DATA >> 8U),
                 static_cast<uint8_t>(EXTERNAL_ARRAY_ELEMENT1_DATA)};
-        externalArray.emplace_back(externalElement1Data, EXTERNAL_ARRAY_ELEMENT1_VAR_SIZE, allocator);
+        externalArray.emplace_back(externalElement1Data.data(), EXTERNAL_ARRAY_ELEMENT1_VAR_SIZE, allocator);
     }
 
     vector_type<uint8_t> createBytesField(const allocator_type& allocator)
@@ -277,10 +279,10 @@ protected:
     void fillBytesArray(vector_type<vector_type<uint8_t>>& bytesArray, const allocator_type& allocator)
     {
         bytesArray.reserve(BYTES_ARRAY_SIZE);
-        const uint8_t bytesArrayElement0Data[] = {static_cast<uint8_t>(BYTES_ARRAY_ELEMENT0_DATA >> 8U),
+        const std::array<uint8_t, 2> bytesArrayElement0Data = {
+                static_cast<uint8_t>(BYTES_ARRAY_ELEMENT0_DATA >> 8U),
                 static_cast<uint8_t>(BYTES_ARRAY_ELEMENT0_DATA)};
-        bytesArray.emplace_back(bytesArrayElement0Data, bytesArrayElement0Data + BYTES_ARRAY_ELEMENT0_VAR_SIZE,
-                allocator);
+        bytesArray.emplace_back(bytesArrayElement0Data.begin(), bytesArrayElement0Data.end(), allocator);
         bytesArray.emplace_back(BYTES_ARRAY_ELEMENT1_VAR_SIZE, BYTES_ARRAY_ELEMENT1_DATA, allocator);
     }
 

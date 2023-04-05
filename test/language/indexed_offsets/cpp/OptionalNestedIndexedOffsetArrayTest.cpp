@@ -1,3 +1,5 @@
+#include <array>
+
 #include "gtest/gtest.h"
 
 #include "indexed_offsets/optional_nested_indexed_offset_array/OptionalNestedIndexedOffsetArray.h"
@@ -22,9 +24,8 @@ class OptionalNestedIndexedOffsetArrayTest : public ::testing::Test
 public:
     OptionalNestedIndexedOffsetArrayTest()
     {
-        const char* data[NUM_ELEMENTS] = {"Green", "Red", "Pink", "Blue", "Black"};
-        for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
-            m_data.push_back(data[i]);
+        const std::array<const char*, NUM_ELEMENTS> data = {"Green", "Red", "Pink", "Blue", "Black"};
+        m_data.assign(data.begin(), data.end());
     }
 
 protected:

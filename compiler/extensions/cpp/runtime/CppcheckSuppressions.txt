@@ -1,4 +1,4 @@
-constParameter:*/src/zserio/BitStreamReader.cpp:26
+constParameter:*/src/zserio/BitStreamReader.cpp:27
 constParameter:*/src/zserio/Span.h:102
 constVariable:*/src/zserio/TypeInfo.cpp:431
 constVariable:*/src/zserio/TypeInfo.cpp:509
@@ -31,8 +31,8 @@ noExplicitConstructor:*/test/zserio/HashCodeUtilTest.cpp:34
 noExplicitConstructor:*/test/zserio/TrackingAllocator.h:66
 noExplicitConstructor:*/test/zserio/ZserioTreeCreatorTestObject.h:63
 uninitMemberVar:*/src/zserio/Reflectable.h:160
-uninitMemberVar:*/test/zserio/DebugStringUtilTest.cpp:186
-uninitMemberVar:*/test/zserio/DebugStringUtilTest.cpp:191
+uninitMemberVar:*/test/zserio/DebugStringUtilTest.cpp:187
+uninitMemberVar:*/test/zserio/DebugStringUtilTest.cpp:192
 uninitMemberVar:*/test/zserio/ReflectableTest.cpp:216
 uninitMemberVar:*/test/zserio/ReflectableTest.cpp:220
 uninitMemberVar:*/test/zserio/ZserioTreeCreatorTestObject.cpp:172

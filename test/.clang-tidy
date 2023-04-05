@@ -51,7 +51,7 @@ Checks: "-*,\
   cert-oop58-cpp,\
   clang-analyzer-cplusplus.Move,\
   clang-analyzer-cplusplus.NewDeleteLeaks,\
-#  cppcoreguidelines-avoid-c-arrays,\
+  cppcoreguidelines-avoid-c-arrays,\
   cppcoreguidelines-avoid-goto,\
 #  cppcoreguidelines-avoid-non-const-global-variables,\
 #(sometimes doesn't make sense)  cppcoreguidelines-init-variables,\
