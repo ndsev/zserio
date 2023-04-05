@@ -124,9 +124,13 @@ set_global_cpp_variables()
 
     # clang-tidy binary to use for static code check, by default is empty
     CLANG_TIDY_BIN="${CLANG_TIDY_BIN:-""}"
-    if [[ (! -z "${CLANG_TIDY_BIN}" && ! -f "`which "${CLANG_TIDY_BIN}"`") ]] ; then
-        stderr_echo "Provided CLANG_TIDY_BIN=\"${CLANG_TIDY_BIN}\" does not exist!"
-        return 1
+    if [[ ! -z "${CLANG_TIDY_BIN}" ]] ; then
+        local CLANG_TIDY_FILE=`which "${CLANG_TIDY_BIN}"`
+        if [[ ! -f "${CLANG_TIDY_FILE}" ]] ; then
+            stderr_echo "Provided CLANG_TIDY_BIN=\"${CLANG_TIDY_BIN}\" does not exist!"
+            return 1
+        fi
+        echo "Used clang-tidy: ${CLANG_TIDY_FILE}"
     fi
 
     return 0

@@ -118,7 +118,6 @@ jobs:
         scripts/test.sh cpp-linux64-gcc cpp-linux32-gcc
       env:
         CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Debug"
-        CLANG_TIDY_BIN: "clang-tidy${{matrix.clang-version-suffix}}"
 
     - name: Run Zserio C++ tests (Debug Build - clang)
       run: |
