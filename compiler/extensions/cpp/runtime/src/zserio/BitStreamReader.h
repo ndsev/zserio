@@ -49,23 +49,13 @@ public:
          * \}
          */
 
-        /** Cache buffer union to cover both 32bit and 64bit implementations. */
-        union BitCache
-        {
-            uint32_t buffer32; /**< Cache buffer used on 32bit platforms. */
-            uint64_t buffer64; /**< Cache buffer used on 64bit platforms. */
-        };
-
         const uint8_t* buffer; /**< Buffer to read from. */
         const BitPosType bufferBitSize; /**< Size of the buffer in bits. */
 
-        BitCache cache; /**< Bit cache to optimize bit reading. */
+        uintptr_t cache; /**< Bit cache to optimize bit reading. */
         uint8_t cacheNumBits; /**< Num bits available in the bit cache. */
 
         BitPosType bitIndex; /**< Current bit index. */
-
-    private:
-        void Init();
     };
 
     /**

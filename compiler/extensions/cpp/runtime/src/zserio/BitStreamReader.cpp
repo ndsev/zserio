@@ -24,14 +24,7 @@ namespace
     typedef int32_t BaseSignedType;
 #endif
 
-    inline BaseType& getCacheBuffer(ReaderContext::BitCache& cache)
-    {
-#ifdef ZSERIO_RUNTIME_64BIT
-        return cache.buffer64;
-#else
-        return cache.buffer32;
-#endif
-    }
+    static_assert(sizeof(uintptr_t) == sizeof(BaseType), "Unexpected uintptr_t sizeof!");
 
 #ifdef ZSERIO_RUNTIME_64BIT
     static const std::array<BaseType, 65> MASK_TABLE =
@@ -189,13 +182,12 @@ namespace
     inline void loadCacheNext(ReaderContext& ctx, uint8_t numBits)
     {
         static const uint8_t cacheBitSize = sizeof(BaseType) * 8;
-        BaseType& cacheBuffer = getCacheBuffer(ctx.cache);
 
         // ctx.bitIndex is always byte aligned and ctx.cacheNumBits is always zero in this call
         const size_t byteIndex = ctx.bitIndex >> 3U;
         if (ctx.bufferBitSize >= ctx.bitIndex + cacheBitSize)
         {
-            cacheBuffer =
+            ctx.cache =
 #ifdef ZSERIO_RUNTIME_64BIT
                     parse64(ctx.buffer + byteIndex);
 #else
@@ -217,33 +209,33 @@ namespace
             {
 #ifdef ZSERIO_RUNTIME_64BIT
             case 64:
-                cacheBuffer = parse64(ctx.buffer + byteIndex);
+                ctx.cache = parse64(ctx.buffer + byteIndex);
                 break;
             case 56:
-                cacheBuffer = parse56(ctx.buffer + byteIndex);
+                ctx.cache = parse56(ctx.buffer + byteIndex);
                 break;
             case 48:
-                cacheBuffer = parse48(ctx.buffer + byteIndex);
+                ctx.cache = parse48(ctx.buffer + byteIndex);
                 break;
             case 40:
-                cacheBuffer = parse40(ctx.buffer + byteIndex);
+                ctx.cache = parse40(ctx.buffer + byteIndex);
                 break;
 #endif
             case 32:
-                cacheBuffer = parse32(ctx.buffer + byteIndex);
+                ctx.cache = parse32(ctx.buffer + byteIndex);
                 break;
             case 24:
-                cacheBuffer = parse24(ctx.buffer + byteIndex);
+                ctx.cache = parse24(ctx.buffer + byteIndex);
                 break;
             case 16:
-                cacheBuffer = parse16(ctx.buffer + byteIndex);
+                ctx.cache = parse16(ctx.buffer + byteIndex);
                 break;
             default: // 8
-                cacheBuffer = parse8(ctx.buffer + byteIndex);
+                ctx.cache = parse8(ctx.buffer + byteIndex);
                 break;
             }
 
-            cacheBuffer >>= static_cast<uint8_t>(alignedNumBits - ctx.cacheNumBits);
+            ctx.cache >>= static_cast<uint8_t>(alignedNumBits - ctx.cacheNumBits);
         }
     }
 
@@ -251,12 +243,10 @@ namespace
     inline BaseType readBitsImpl(ReaderContext& ctx, uint8_t numBits)
     {
         BaseType value = 0;
-        const BaseType& cacheBuffer = getCacheBuffer(ctx.cache);
-
         if (ctx.cacheNumBits < numBits)
         {
             // read all remaining cache bits
-            value = cacheBuffer & MASK_TABLE[ctx.cacheNumBits];
+            value = ctx.cache & MASK_TABLE[ctx.cacheNumBits];
             ctx.bitIndex += ctx.cacheNumBits;
             numBits -= ctx.cacheNumBits;
 
@@ -268,7 +258,7 @@ namespace
             if (numBits < sizeof(BaseType) * 8)
                 value <<= numBits;
         }
-        value |= ((cacheBuffer >> static_cast<uint8_t>(ctx.cacheNumBits - numBits)) & MASK_TABLE[numBits]);
+        value |= ((ctx.cache >> static_cast<uint8_t>(ctx.cacheNumBits - numBits)) & MASK_TABLE[numBits]);
         ctx.cacheNumBits -= numBits;
         ctx.bitIndex += numBits;
 
@@ -313,26 +303,16 @@ namespace
 BitStreamReader::ReaderContext::ReaderContext(const uint8_t* readBuffer, size_t readBufferBitSize)
 :   buffer(readBuffer),
     bufferBitSize(readBufferBitSize),
+    cache(0),
     cacheNumBits(0),
     bitIndex(0)
 {
-    Init();
-
     const size_t bufferByteSize = (bufferBitSize + 7) / 8;
     if (bufferByteSize > MAX_BUFFER_SIZE)
     {
         throw CppRuntimeException("BitStreamReader: Buffer size exceeded limit '") << MAX_BUFFER_SIZE <<
                 "' bytes!";
     }
-}
-
-void BitStreamReader::ReaderContext::Init()
-{
-#ifdef ZSERIO_RUNTIME_64BIT
-    cache.buffer64 = 0;
-#else
-    cache.buffer32 = 0;
-#endif
 }
 
 BitStreamReader::BitStreamReader(const uint8_t* buffer, size_t bufferByteSize) :
