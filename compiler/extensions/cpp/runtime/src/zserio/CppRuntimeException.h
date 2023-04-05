@@ -5,6 +5,7 @@
 #include <exception>
 #include <string>
 #include <vector>
+#include <array>
 
 #include "zserio/StringConvertUtil.h"
 #include "zserio/Traits.h"
@@ -60,10 +61,7 @@ public:
 private:
     void appendImpl(const char* message, size_t numCharsToAppend);
 
-    // Note: If you move this to public section, old MSVC 2015 compiler will fail with internal compiler error!
-    static constexpr size_t BUFFER_SIZE = 512;
-
-    char m_buffer[BUFFER_SIZE]; // note that fixed sized array is deeply copied on copy operations and its OK
+    std::array<char, 512> m_buffer; // note fixed sized array is deeply copied on copy operations and it's OK
     size_t m_len = 0;
 };
 

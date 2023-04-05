@@ -14,19 +14,19 @@ CppRuntimeException::CppRuntimeException(const char* message)
 
 const char* CppRuntimeException::what() const noexcept
 {
-    return m_buffer;
+    return m_buffer.data();
 }
 
 void CppRuntimeException::append(const char* message)
 {
-    const size_t available = BUFFER_SIZE - 1 - m_len;
+    const size_t available = m_buffer.size() - 1 - m_len;
     const size_t numCharsToAppend = strnlen(message, available);
     appendImpl(message, numCharsToAppend);
 }
 
 void CppRuntimeException::append(const char* message, size_t messageLen)
 {
-    const size_t available = BUFFER_SIZE - 1 - m_len;
+    const size_t available = m_buffer.size() - 1 - m_len;
     const size_t numCharsToAppend = std::min(messageLen, available);
     appendImpl(message, numCharsToAppend);
 }
@@ -35,10 +35,10 @@ void CppRuntimeException::appendImpl(const char* message, size_t numCharsToAppen
 {
     if (numCharsToAppend > 0)
     {
-        memcpy(m_buffer + m_len, message, numCharsToAppend);
+        std::copy(message, message + numCharsToAppend, m_buffer.data() + m_len);
         m_len += numCharsToAppend;
     }
-    *(m_buffer + m_len) = 0;
+    m_buffer[m_len] = 0;
 }
 
 CppRuntimeException& operator<<(CppRuntimeException& exception, const char* message)

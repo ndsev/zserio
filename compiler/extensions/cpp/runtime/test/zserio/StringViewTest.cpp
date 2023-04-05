@@ -10,7 +10,7 @@ namespace zserio
 
 TEST(StringViewTest, ptrConstructor)
 {
-    const char* str = "karbanatek";
+    const char* str = "everything";
     StringView sv(str);
     ASSERT_EQ(str, sv.data());
     ASSERT_EQ(10, sv.size());
@@ -18,7 +18,7 @@ TEST(StringViewTest, ptrConstructor)
 
 TEST(StringViewTest, ptrCountConstructor)
 {
-    const char* str = "karbanatek";
+    const char* str = "everything";
     StringView sv(str, 9);
     ASSERT_EQ(str, sv.data());
     ASSERT_EQ(9, sv.size());
@@ -26,7 +26,7 @@ TEST(StringViewTest, ptrCountConstructor)
 
 TEST(StringViewTest, stringConstructor)
 {
-    std::string str = "karbanatek";
+    std::string str = "everything";
     StringView sv(str);
     ASSERT_EQ(str.data(), sv.data());
     ASSERT_EQ(str.size(), sv.size());
@@ -34,7 +34,7 @@ TEST(StringViewTest, stringConstructor)
 
 TEST(StringViewTest, beginEnd)
 {
-    std::string str = "karbanatek";
+    std::string str = "everything";
     StringView sv(str);
 
     auto itStr = str.begin();
@@ -54,7 +54,7 @@ TEST(StringViewTest, beginEnd)
 
 TEST(StringViewTest, rBeginRend)
 {
-    std::string str = "karbanatek";
+    std::string str = "everything";
     StringView sv(str);
 
     auto itStr = str.rbegin();
@@ -74,7 +74,7 @@ TEST(StringViewTest, rBeginRend)
 
 TEST(StringViewTest, arrayAccess)
 {
-    const char* str = "karbanatek";
+    const char* str = "everything";
     StringView sv(str);
 
     for (size_t i = 0; i < sv.size(); ++i)
@@ -85,7 +85,7 @@ TEST(StringViewTest, arrayAccess)
 
 TEST(StringViewTest, at)
 {
-    const char* str = "karbanatek";
+    const char* str = "everything";
     StringView sv(str);
 
     for (size_t i = 0; i < sv.size(); ++i)
@@ -98,49 +98,49 @@ TEST(StringViewTest, at)
 
 TEST(StringViewTest, front)
 {
-    const char* str = "nevim";
+    const char* str = "nothing";
     StringView sv(str);
     ASSERT_EQ('n', sv.front());
 }
 
 TEST(StringViewTest, back)
 {
-    const char* str = "nevim";
+    const char* str = "beam";
     StringView sv(str);
     ASSERT_EQ('m', sv.back());
 }
 
 TEST(StringViewTest, data)
 {
-    const char* str = "Karbanatek";
+    const char* str = "Everything";
     StringView sv(str);
     ASSERT_EQ(str, sv.data());
 }
 
 TEST(StringViewTest, size)
 {
-    const char* str = "Karbanatek";
+    const char* str = "Everything";
     StringView sv(str);
     ASSERT_EQ(10, sv.size());
 }
 
 TEST(StringViewTest, length)
 {
-    const char* str = "Karbanatek";
+    const char* str = "Everything";
     StringView sv(str);
     ASSERT_EQ(10, sv.length());
 }
 
 TEST(StringViewTest, maxSize)
 {
-    const char* str = "Karbanatek";
+    const char* str = "Everything";
     StringView sv(str);
     ASSERT_LE(1U << 16U, sv.max_size());
 }
 
 TEST(StringViewTest, empty)
 {
-    const char* str = "Karbanatek";
+    const char* str = "Everything";
     StringView sv(str);
     StringView svEmpty;
     ASSERT_FALSE(sv.empty());
@@ -149,7 +149,7 @@ TEST(StringViewTest, empty)
 
 TEST(StringViewTest, removePrefix)
 {
-    const char* str = "Karbanatek";
+    const char* str = "Everything";
     StringView sv(str);
 
     sv.remove_prefix(2);
@@ -162,7 +162,7 @@ TEST(StringViewTest, removePrefix)
 
 TEST(StringViewTest, removeSuffix)
 {
-    const char* str = "Karbanatek";
+    const char* str = "Everything";
     StringView sv(str);
 
     sv.remove_suffix(2);
@@ -175,7 +175,7 @@ TEST(StringViewTest, removeSuffix)
 
 TEST(StringViewTest, swap)
 {
-    const char* str1 = "karbanatek";
+    const char* str1 = "everything";
     const char* str2 = "another string";
     StringView sv1(str1);
     StringView sv2(str2);
@@ -188,22 +188,22 @@ TEST(StringViewTest, swap)
 
 TEST(StringViewTest, copy)
 {
-    const char* str = "karbanatek";
+    const char* str = "everything";
     StringView sv(str);
     std::array<char, 6> buffer = {0x55, 0x55, 0x55, 0x55, 0x55, 0x55};
     sv.copy(buffer.data(), buffer.size() - 1, 1);
-    ASSERT_EQ('a', buffer[0]);
-    ASSERT_EQ('r', buffer[1]);
-    ASSERT_EQ('b', buffer[2]);
-    ASSERT_EQ('a', buffer[3]);
-    ASSERT_EQ('n', buffer[4]);
+    ASSERT_EQ('v', buffer[0]);
+    ASSERT_EQ('e', buffer[1]);
+    ASSERT_EQ('r', buffer[2]);
+    ASSERT_EQ('y', buffer[3]);
+    ASSERT_EQ('t', buffer[4]);
     ASSERT_EQ(0x55, buffer[5]);
     ASSERT_THROW(sv.copy(buffer.data(), buffer.size() - 1, 11), CppRuntimeException);
 }
 
 TEST(StringViewTest, substr)
 {
-    const char* str = "karbanatek";
+    const char* str = "everything";
     StringView sv(str);
     StringView subView = sv.substr(2, 5);
     ASSERT_EQ(5, subView.size());
