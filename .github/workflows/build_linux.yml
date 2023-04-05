@@ -11,9 +11,11 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: ["ubuntu-22.04"]
+        os: ["ubuntu-20.04", "ubuntu-22.04"]
         python-version: ["3.8", "3.9", "3.10", "3.11"]
         include:
+          - os: "ubuntu-20.04"
+            clang-version-suffix: "-11"
           - os: "ubuntu-22.04"
             clang-version-suffix: "-14"
     env:
@@ -88,13 +90,17 @@ jobs:
         CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1 -DCMAKE_BUILD_TYPE=Release"
 
     - name: Build Zserio C++ runtime (Debug Build)
-      run: scripts/build.sh cpp_rt-linux64-gcc cpp_rt-linux32-gcc cpp_rt-linux64-clang # cpp_rt-linux32-clang
+      run: |
+         if [ -f "`which clang-tidy-14`" ] ; then
+            echo "CLANG_TIDY_BIN=clang-tidy-14" >> ${GITHUB_ENV}
+         fi
+         # cpp_rt-linux32-clang works only for native linux32
+         scripts/build.sh cpp_rt-linux64-gcc cpp_rt-linux32-gcc cpp_rt-linux64-clang
       env:
         CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1 -DCMAKE_BUILD_TYPE=Debug"
         GCOVR_BIN: "gcovr"
         LLVM_PROFDATA_BIN: "llvm-profdata${{matrix.clang-version-suffix}}"
         LLVM_COV_BIN: "llvm-cov${{matrix.clang-version-suffix}}"
-        CLANG_TIDY_BIN: "clang-tidy${{matrix.clang-version-suffix}}"
         SANITIZERS_ENABLED: 1
 
     - name: Pack Zserio release
@@ -107,12 +113,21 @@ jobs:
       env:
         CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Release"
 
-    - name: Run Zserio C++ tests (Debug Build)
+    - name: Run Zserio C++ tests (Debug Build - gcc)
       run: |
-        scripts/test.sh cpp-linux64-gcc cpp-linux32-gcc cpp-linux64-clang cpp-linux32-clang
+        scripts/test.sh cpp-linux64-gcc cpp-linux32-gcc
       env:
         CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Debug"
         CLANG_TIDY_BIN: "clang-tidy${{matrix.clang-version-suffix}}"
+
+    - name: Run Zserio C++ tests (Debug Build - clang)
+      run: |
+        if [ -f "`which clang-tidy-14`" ] ; then
+            echo "CLANG_TIDY_BIN=clang-tidy-14" >> ${GITHUB_ENV}
+        fi
+        scripts/test.sh cpp-linux64-clang cpp-linux32-clang
+      env:
+        CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Debug"
 
     - name: Compare all blobs created by Zserio tests
       run: |
