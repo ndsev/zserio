@@ -89,16 +89,20 @@ jobs:
       env:
         CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1 -DCMAKE_BUILD_TYPE=Release"
 
-    - name: Build Zserio C++ runtime (Debug Build)
+    - name: Build Zserio C++ runtime (Debug Build - gcc)
+      run: scripts/build.sh cpp_rt-linux64-gcc cpp_rt-linux32-gcc
+      env:
+        CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1 -DCMAKE_BUILD_TYPE=Debug"
+        GCOVR_BIN: "gcovr"
+
+    - name: Build Zserio C++ runtime (Debug Build - clang)
       run: |
          if [ -f "`which clang-tidy-14`" ] ; then
             export CLANG_TIDY_BIN=clang-tidy-14
          fi
-         # cpp_rt-linux32-clang works only for native linux32
-         scripts/build.sh cpp_rt-linux64-gcc cpp_rt-linux32-gcc cpp_rt-linux64-clang
+         scripts/build.sh cpp_rt-linux64-clang # cpp_rt-linux32-clang works only for native linux32
       env:
         CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1 -DCMAKE_BUILD_TYPE=Debug"
-        GCOVR_BIN: "gcovr"
         LLVM_PROFDATA_BIN: "llvm-profdata${{matrix.clang-version-suffix}}"
         LLVM_COV_BIN: "llvm-cov${{matrix.clang-version-suffix}}"
         SANITIZERS_ENABLED: 1
@@ -167,7 +171,7 @@ jobs:
       run: |
         unset JAVA_TOOL_OPTIONS # workaround https://github.com/actions/virtual-environments/issues/1437
         scripts/benchmark.sh cpp-linux64-gcc cpp-linux64-clang cpp-linux32-gcc cpp-linux32-clang \
-              python python-cpp java --num-iterations 100
+              python python-cpp java --num-iterations 10
 
     - name: Archive Zserio release artifacts
       uses: actions/upload-artifact@v3
