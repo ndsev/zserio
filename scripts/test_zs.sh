@@ -202,6 +202,8 @@ enable_testing()
 set(ZSERIO_ROOT "${HOST_ZSERIO_ROOT}" CACHE PATH "")
 set(ZSERIO_RELEASE "${HOST_ZSERIO_RELEASE}" CACHE PATH "")
 set(CMAKE_MODULE_PATH "\${ZSERIO_ROOT}/cmake")
+set(CPPCHECK_HOME "" CACHE PATH "Home directory of cppcheck tool. If empty, cppcheck tool is not called.")
+set(CLANG_TIDY_BIN "" CACHE STRING "Name of clang-tidy binary. If empty, clang-tidy tool is not called.")
 
 # cmake helpers
 include(cmake_utils)
@@ -225,6 +227,13 @@ add_library(\${PROJECT_NAME} \${SOURCES})
 set_target_properties(\${PROJECT_NAME} PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS NO)
 target_include_directories(\${PROJECT_NAME} PUBLIC "\${CMAKE_CURRENT_SOURCE_DIR}/gen")
 target_link_libraries(\${PROJECT_NAME} ZserioCppRuntime)${SQLITE_USE}
+
+# clang-tidy
+if (CLANG_TIDY_BIN)
+    set_property(TARGET \${PROJECT_NAME} PROPERTY CXX_CLANG_TIDY
+        "${CLANG_TIDY_BIN}"
+        "--config-file=\${ZSERIO_ROOT}/test/.clang-tidy-gen")
+endif ()
 
 # add cppcheck custom command
 include(cppcheck_utils)
