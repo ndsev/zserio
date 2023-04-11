@@ -7,7 +7,8 @@
 namespace zserio
 {
 
-CppRuntimeException::CppRuntimeException(const char* message)
+CppRuntimeException::CppRuntimeException(const char* message) :
+        m_buffer()
 {
     append(message);
 }
@@ -54,10 +55,10 @@ CppRuntimeException& operator<<(CppRuntimeException& exception, bool value)
 
 CppRuntimeException& operator<<(CppRuntimeException& exception, float value)
 {
-    std::array<char, 24> integerPartBuffer;
-    std::array<char, 24> floatingPartBuffer;
-    const char* integerPartString;
-    const char* floatingPartString;
+    std::array<char, 24> integerPartBuffer = {};
+    std::array<char, 24> floatingPartBuffer = {};
+    const char* integerPartString = nullptr;
+    const char* floatingPartString = nullptr;
     convertFloatToString(integerPartBuffer, floatingPartBuffer, value, integerPartString, floatingPartString);
     CppRuntimeException& result = exception << integerPartString;
     if (floatingPartString != nullptr)
