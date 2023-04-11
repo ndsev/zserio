@@ -120,7 +120,7 @@ class ComplexTypesServiceTest : public ::testing::Test
 {
 public:
     ComplexTypesServiceTest()
-    :   localServiceClient(service), client(localServiceClient)
+    :   localServiceClient(service), client(localServiceClient), cmykValues()
     {
         for (size_t i = 0; i < 3; ++i)
         {
@@ -143,12 +143,12 @@ protected:
 
     // note that conversion is slightly inaccurate and therefore this values are carefully chosen
     // to provide consistent results for the test needs
-    static constexpr uint8_t rgbValues[3][3] = { // NOLINT(cppcoreguidelines-avoid-c-arrays)
-            { 0 ,128, 255 }, { 222, 222, 0 }, { 65, 196, 31 } };
-    uint8_t cmykValues[3][4]; // NOLINT(cppcoreguidelines-avoid-c-arrays)
+    static constexpr std::array<std::array<uint8_t, 3>, 3> rgbValues = {{
+            { 0 ,128, 255 }, { 222, 222, 0 }, { 65, 196, 31 } }};
+    std::array<std::array<uint8_t, 4>, 3> cmykValues;
 };
 
-constexpr uint8_t ComplexTypesServiceTest::rgbValues[3][3]; // NOLINT(cppcoreguidelines-avoid-c-arrays)
+constexpr std::array<std::array<uint8_t, 3>, 3> ComplexTypesServiceTest::rgbValues;
 
 TEST_F(ComplexTypesServiceTest, serviceFullName)
 {

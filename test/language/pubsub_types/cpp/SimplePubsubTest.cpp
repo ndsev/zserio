@@ -108,7 +108,7 @@ TEST_F(SimplePubsubTest, powerOfTwoClientAndProvider)
             result = value.getValue();
         }
 
-        uint64_t result;
+        uint64_t result = 0;
     };
 
     std::shared_ptr<PowerOfTwoCallback> powerOfTwoCallback =
@@ -163,7 +163,7 @@ TEST_F(SimplePubsubTest, powerOfTwoSimplePubsub)
             result = value.getValue();
         }
 
-        uint64_t result;
+        uint64_t result = 0;
     };
 
     std::shared_ptr<PowerOfTwoCallback> powerOfTwoCallback =
@@ -226,7 +226,7 @@ TEST_F(SimplePubsubTest, powerOfTwoRawClientAndProvider)
             result = value.getValue();
         }
 
-        uint64_t result;
+        uint64_t result = 0;
     };
 
     std::shared_ptr<PowerOfTwoRawCallback> powerOfTwoRawCallback =
@@ -277,7 +277,7 @@ TEST_F(SimplePubsubTest, powerOfTwoRawSimplePubsub)
             result = value.getValue();
         }
 
-        uint64_t result;
+        uint64_t result = 0;
     };
 
     std::shared_ptr<PowerOfTwoRawCallback> powerOfTwoRawCallback =
@@ -347,7 +347,7 @@ TEST_F(SimplePubsubTest, unsubscribe)
             result = value.getValue();
         }
 
-        uint64_t result;
+        uint64_t result = 0;
     };
 
     std::shared_ptr<PowerOfTwoCallback> powerOfTwoCallback1 =
