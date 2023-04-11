@@ -11,7 +11,7 @@ namespace zserio
 namespace
 {
     // max size calculated to prevent overflows in internal comparisons
-    static const size_t MAX_BUFFER_SIZE = std::numeric_limits<size_t>::max() / 8 - 4;
+    const size_t MAX_BUFFER_SIZE = std::numeric_limits<size_t>::max() / 8 - 4;
 
     typedef BitStreamReader::BitPosType BitPosType;
     typedef BitStreamReader::ReaderContext ReaderContext;
@@ -27,7 +27,7 @@ namespace
     static_assert(sizeof(uintptr_t) == sizeof(BaseType), "Unexpected uintptr_t sizeof!");
 
 #ifdef ZSERIO_RUNTIME_64BIT
-    static const std::array<BaseType, 65> MASK_TABLE =
+    const std::array<BaseType, 65> MASK_TABLE =
     {
         UINT64_C(0x00),
         UINT64_C(0x0001),     UINT64_C(0x0003),     UINT64_C(0x0007),     UINT64_C(0x000f),
@@ -57,7 +57,7 @@ namespace
         UINT64_C(0x7fffffffffffffff), UINT64_C(0xffffffffffffffff)
     };
 #else
-    static const std::array<BaseType, 33> MASK_TABLE =
+    const std::array<BaseType, 33> MASK_TABLE =
     {
         UINT32_C(0x00),
         UINT32_C(0x0001),     UINT32_C(0x0003),     UINT32_C(0x0007),     UINT32_C(0x000f),
@@ -71,16 +71,16 @@ namespace
     };
 #endif
 
-    static const uint8_t VARINT_SIGN_1 = UINT8_C(0x80);
-    static const uint8_t VARINT_BYTE_1 = UINT8_C(0x3f);
-    static const uint8_t VARINT_BYTE_N = UINT8_C(0x7f);
-    static const uint8_t VARINT_HAS_NEXT_1 = UINT8_C(0x40);
-    static const uint8_t VARINT_HAS_NEXT_N = UINT8_C(0x80);
+    const uint8_t VARINT_SIGN_1 = UINT8_C(0x80);
+    const uint8_t VARINT_BYTE_1 = UINT8_C(0x3f);
+    const uint8_t VARINT_BYTE_N = UINT8_C(0x7f);
+    const uint8_t VARINT_HAS_NEXT_1 = UINT8_C(0x40);
+    const uint8_t VARINT_HAS_NEXT_N = UINT8_C(0x80);
 
-    static const uint8_t VARUINT_BYTE = UINT8_C(0x7f);
-    static const uint8_t VARUINT_HAS_NEXT = UINT8_C(0x80);
+    const uint8_t VARUINT_BYTE = UINT8_C(0x7f);
+    const uint8_t VARUINT_HAS_NEXT = UINT8_C(0x80);
 
-    static const uint32_t VARSIZE_MAX_VALUE = (UINT32_C(1) << 31U) - 1;
+    const uint32_t VARSIZE_MAX_VALUE = (UINT32_C(1) << 31U) - 1;
 
 #ifdef ZSERIO_RUNTIME_64BIT
     inline BaseType parse64(const uint8_t* buffer)

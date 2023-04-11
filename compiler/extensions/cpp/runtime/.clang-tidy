@@ -142,7 +142,7 @@ Checks: "-*,\
   readability-redundant-smartptr-get,\
   readability-simplify-boolean-expr,\
   readability-simplify-subscript-expr,\
-#  readability-static-definition-in-anonymous-namespace,\
+  readability-static-definition-in-anonymous-namespace,\
   readability-string-compare,\
   readability-uniqueptr-delete-release,\
   readability-uppercase-literal-suffix,\
