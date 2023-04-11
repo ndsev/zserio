@@ -172,15 +172,16 @@ function(zserio_add_library)
                 CXX_EXTENSIONS NO)
     endif ()
 
-    # add clang-tidy
-    if (CLANG_TIDY_BIN)
+    # checkers fail if no sources to check are available
+    if (NOT(SOURCE_FILE_POSITION EQUAL -1))
+        # add clang-tidy
+        if (CLANG_TIDY_BIN)
         set_property(TARGET ${VALUE_TARGET} PROPERTY CXX_CLANG_TIDY
             "${CLANG_TIDY_BIN}"
             "--config-file=${CMAKE_SOURCE_DIR}/.clang-tidy-gen")
-    endif ()
+        endif ()
 
-    # add cppcheck custom command (cppcheck fails if no sources to check are available)
-    if (NOT(SOURCE_FILE_POSITION EQUAL -1))
+        # add cppcheck custom command
         include(cppcheck_utils)
         set(SUPPRESSION_FILE_NAME "${CMAKE_CURRENT_SOURCE_DIR}/cpp/CppcheckSuppressions.txt")
         cppcheck_add_custom_command(TARGET ${VALUE_TARGET}
