@@ -20,7 +20,7 @@ Checks: "-*,\
   bugprone-parent-virtual-call,\
   bugprone-posix-return,\
   bugprone-reserved-identifier,\
-#  bugprone-signed-char-misuse,\
+  bugprone-signed-char-misuse,\
   bugprone-sizeof-expression,\
   bugprone-spuriously-wake-up-functions,\
   bugprone-string-constructor,\
@@ -152,6 +152,8 @@ Checks: "-*,\
 CheckOptions:
   - key: IgnoredMacros
     value: "TEST,INSTANTIATE,BENCHMARK,MATCHER"
+  - key: bugprone-signed-char-misuse.CharTypdefsToIgnore
+    value: int8_t
   - key: cppcoreguidelines-special-member-functions.AllowSoleDefaultDtor
     value: true
   - key: misc-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic
