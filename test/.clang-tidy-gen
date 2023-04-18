@@ -3,9 +3,9 @@ Checks: "-*,\
 #(generated test objects break this rule)  bugprone-branch-clone,\
   bugprone-copy-constructor-init,\
   bugprone-dangling-handle,\
-#(move costructors throws and we don't know how to prevent it)  bugprone-exception-escape,\
+#(move constructors throws and we don't know how to prevent it)  bugprone-exception-escape,\
   bugprone-fold-init-type,\
-  bugprone-forwarding-reference-overload,\
+#(generated test objects break this rule)  bugprone-forwarding-reference-overload,\
   bugprone-inaccurate-erase,\
   bugprone-incorrect-roundings,\
   bugprone-infinite-loop,\

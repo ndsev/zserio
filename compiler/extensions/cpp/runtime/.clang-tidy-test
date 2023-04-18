@@ -5,7 +5,7 @@ Checks: "-*,\
   bugprone-dangling-handle,\
   bugprone-exception-escape,\
   bugprone-fold-init-type,\
-  bugprone-forwarding-reference-overload,\
+#(generated test objects break this rule)  bugprone-forwarding-reference-overload,\
   bugprone-inaccurate-erase,\
   bugprone-incorrect-roundings,\
   bugprone-infinite-loop,\
