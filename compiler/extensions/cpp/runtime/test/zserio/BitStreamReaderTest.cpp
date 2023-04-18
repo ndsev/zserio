@@ -36,12 +36,25 @@ TEST_F(BitStreamReaderTest, spanConstructor)
     ASSERT_THROW(reader.readBits(1), CppRuntimeException);
 }
 
+TEST_F(BitStreamReaderTest, spanConstructorWithBitSize)
+{
+    const std::array<const uint8_t, 3> data = {0xAE, 0xEA, 0x80};
+    const Span<const uint8_t> span(data);
+    BitStreamReader reader(span, 23);
+    ASSERT_THROW(BitStreamReader wrongReader(span, 25), CppRuntimeException);
+
+    ASSERT_EQ(23, reader.getBufferBitSize());
+    ASSERT_EQ(0xAEE, reader.readBits(12));
+    ASSERT_EQ(0xA, reader.readBits(4));
+    ASSERT_EQ(0x40, reader.readBits(7));
+
+    ASSERT_THROW(reader.readBits(1), CppRuntimeException);
+}
+
 TEST_F(BitStreamReaderTest, bitBufferConstructor)
 {
-    BitBuffer bitBuffer(17);
-    bitBuffer.getBuffer()[0] = 0xAE;
-    bitBuffer.getBuffer()[1] = 0xEA;
-    bitBuffer.getBuffer()[2] = 0x80;
+    const std::vector<uint8_t> data = {0xAE, 0xEA, 0x80};
+    BitBuffer bitBuffer(data, 17);
     BitStreamReader reader(bitBuffer);
 
     ASSERT_EQ(bitBuffer.getBitSize(), reader.getBufferBitSize());
@@ -57,10 +70,8 @@ TEST_F(BitStreamReaderTest, bitBufferConstructor)
 
 TEST_F(BitStreamReaderTest, bitBufferConstructorOverflow)
 {
-    BitBuffer bitBuffer(19);
-    bitBuffer.getBuffer()[0] = 0xFF;
-    bitBuffer.getBuffer()[1] = 0xFF;
-    bitBuffer.getBuffer()[2] = 0xF0;
+    const std::vector<uint8_t> data = {0xFF, 0xFF, 0xF0};
+    BitBuffer bitBuffer(data, 19);
     BitStreamReader reader(bitBuffer);
 
     ASSERT_EQ(bitBuffer.getBitSize(), reader.getBufferBitSize());
@@ -77,9 +88,9 @@ TEST_F(BitStreamReaderTest, readUnalignedData)
         BitBuffer buffer(8 + offset);
 
         // write test value at offset to data buffer
-        buffer.getBuffer()[offset / 8U] |= static_cast<uint8_t>(testValue >> (offset % 8U));
+        buffer.getData()[offset / 8U] |= static_cast<uint8_t>(testValue >> (offset % 8U));
         if (offset % 8 != 0) // don't write behind the buffer
-            buffer.getBuffer()[offset / 8U + 1] |= static_cast<uint8_t>(testValue << (8U - (offset % 8U)));
+            buffer.getData()[offset / 8U + 1] |= static_cast<uint8_t>(testValue << (8U - (offset % 8U)));
 
         BitStreamReader reader(buffer);
 

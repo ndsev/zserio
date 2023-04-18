@@ -60,8 +60,8 @@ Checks: "-*,\
   cppcoreguidelines-narrowing-conversions,\
   cppcoreguidelines-no-malloc,\
   cppcoreguidelines-pro-bounds-array-to-pointer-decay,\
-#  cppcoreguidelines-pro-bounds-constant-array-index,\
-#  cppcoreguidelines-pro-bounds-pointer-arithmetic,\
+#(too many use cases, use at())  cppcoreguidelines-pro-bounds-constant-array-index,\
+#(too many use cases, use at())  cppcoreguidelines-pro-bounds-pointer-arithmetic,\
   cppcoreguidelines-pro-type-const-cast,\
   cppcoreguidelines-pro-type-cstyle-cast,\
 #(parameters of parameterized objects)  cppcoreguidelines-pro-type-member-init,\

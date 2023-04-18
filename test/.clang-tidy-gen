@@ -61,7 +61,7 @@ Checks: "-*,\
   cppcoreguidelines-no-malloc,\
   cppcoreguidelines-pro-bounds-array-to-pointer-decay,\
 #  cppcoreguidelines-pro-bounds-constant-array-index,\
-#  cppcoreguidelines-pro-bounds-pointer-arithmetic,\
+  cppcoreguidelines-pro-bounds-pointer-arithmetic,\
 #  cppcoreguidelines-pro-type-const-cast,\
   cppcoreguidelines-pro-type-cstyle-cast,\
 #(parameters of parameterized objects)  cppcoreguidelines-pro-type-member-init,\

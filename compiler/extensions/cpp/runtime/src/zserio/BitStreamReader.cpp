@@ -83,72 +83,72 @@ namespace
     const uint32_t VARSIZE_MAX_VALUE = (UINT32_C(1) << 31U) - 1;
 
 #ifdef ZSERIO_RUNTIME_64BIT
-    inline BaseType parse64(const uint8_t* buffer)
+    inline BaseType parse64(Span<const uint8_t> buffer, size_t byteIndex)
     {
-        return static_cast<BaseType>(buffer[0]) << 56U |
-               static_cast<BaseType>(buffer[1]) << 48U |
-               static_cast<BaseType>(buffer[2]) << 40U |
-               static_cast<BaseType>(buffer[3]) << 32U |
-               static_cast<BaseType>(buffer[4]) << 24U |
-               static_cast<BaseType>(buffer[5]) << 16U |
-               static_cast<BaseType>(buffer[6]) << 8U |
-               static_cast<BaseType>(buffer[7]);
+        return static_cast<BaseType>(buffer[byteIndex]) << 56U |
+               static_cast<BaseType>(buffer[byteIndex + 1]) << 48U |
+               static_cast<BaseType>(buffer[byteIndex + 2]) << 40U |
+               static_cast<BaseType>(buffer[byteIndex + 3]) << 32U |
+               static_cast<BaseType>(buffer[byteIndex + 4]) << 24U |
+               static_cast<BaseType>(buffer[byteIndex + 5]) << 16U |
+               static_cast<BaseType>(buffer[byteIndex + 6]) << 8U |
+               static_cast<BaseType>(buffer[byteIndex + 7]);
     }
 
-    inline BaseType parse56(const uint8_t* buffer)
+    inline BaseType parse56(Span<const uint8_t> buffer, size_t byteIndex)
     {
-        return static_cast<BaseType>(buffer[0]) << 48U |
-               static_cast<BaseType>(buffer[1]) << 40U |
-               static_cast<BaseType>(buffer[2]) << 32U |
-               static_cast<BaseType>(buffer[3]) << 24U |
-               static_cast<BaseType>(buffer[4]) << 16U |
-               static_cast<BaseType>(buffer[5]) << 8U |
-               static_cast<BaseType>(buffer[6]);
+        return static_cast<BaseType>(buffer[byteIndex + 0]) << 48U |
+               static_cast<BaseType>(buffer[byteIndex + 1]) << 40U |
+               static_cast<BaseType>(buffer[byteIndex + 2]) << 32U |
+               static_cast<BaseType>(buffer[byteIndex + 3]) << 24U |
+               static_cast<BaseType>(buffer[byteIndex + 4]) << 16U |
+               static_cast<BaseType>(buffer[byteIndex + 5]) << 8U |
+               static_cast<BaseType>(buffer[byteIndex + 6]);
     }
 
-    inline BaseType parse48(const uint8_t* buffer)
+    inline BaseType parse48(Span<const uint8_t> buffer, size_t byteIndex)
     {
-        return static_cast<BaseType>(buffer[0]) << 40U |
-               static_cast<BaseType>(buffer[1]) << 32U |
-               static_cast<BaseType>(buffer[2]) << 24U |
-               static_cast<BaseType>(buffer[3]) << 16U |
-               static_cast<BaseType>(buffer[4]) << 8U |
-               static_cast<BaseType>(buffer[5]);
+        return static_cast<BaseType>(buffer[byteIndex + 0]) << 40U |
+               static_cast<BaseType>(buffer[byteIndex + 1]) << 32U |
+               static_cast<BaseType>(buffer[byteIndex + 2]) << 24U |
+               static_cast<BaseType>(buffer[byteIndex + 3]) << 16U |
+               static_cast<BaseType>(buffer[byteIndex + 4]) << 8U |
+               static_cast<BaseType>(buffer[byteIndex + 5]);
     }
 
-    inline BaseType parse40(const uint8_t* buffer)
+    inline BaseType parse40(Span<const uint8_t> buffer, size_t byteIndex)
     {
-        return static_cast<BaseType>(buffer[0]) << 32U |
-               static_cast<BaseType>(buffer[1]) << 24U |
-               static_cast<BaseType>(buffer[2]) << 16U |
-               static_cast<BaseType>(buffer[3]) << 8U |
-               static_cast<BaseType>(buffer[4]);
+        return static_cast<BaseType>(buffer[byteIndex + 0]) << 32U |
+               static_cast<BaseType>(buffer[byteIndex + 1]) << 24U |
+               static_cast<BaseType>(buffer[byteIndex + 2]) << 16U |
+               static_cast<BaseType>(buffer[byteIndex + 3]) << 8U |
+               static_cast<BaseType>(buffer[byteIndex + 4]);
     }
 #endif
-    inline BaseType parse32(const uint8_t* buffer)
+    inline BaseType parse32(Span<const uint8_t> buffer, size_t byteIndex)
     {
-        return static_cast<BaseType>(buffer[0]) << 24U |
-               static_cast<BaseType>(buffer[1]) << 16U |
-               static_cast<BaseType>(buffer[2]) << 8U |
-               static_cast<BaseType>(buffer[3]);
+        return static_cast<BaseType>(buffer[byteIndex + 0]) << 24U |
+               static_cast<BaseType>(buffer[byteIndex + 1]) << 16U |
+               static_cast<BaseType>(buffer[byteIndex + 2]) << 8U |
+               static_cast<BaseType>(buffer[byteIndex + 3]);
     }
 
-    inline BaseType parse24(const uint8_t* buffer)
+    inline BaseType parse24(Span<const uint8_t> buffer, size_t byteIndex)
     {
-        return static_cast<BaseType>(buffer[0]) << 16U |
-               static_cast<BaseType>(buffer[1]) << 8U |
-               static_cast<BaseType>(buffer[2]);
+        return static_cast<BaseType>(buffer[byteIndex + 0]) << 16U |
+               static_cast<BaseType>(buffer[byteIndex + 1]) << 8U |
+               static_cast<BaseType>(buffer[byteIndex + 2]);
     }
 
-    inline BaseType parse16(const uint8_t* buffer)
+    inline BaseType parse16(Span<const uint8_t> buffer, size_t byteIndex)
     {
-        return static_cast<BaseType>(buffer[0]) << 8U |
-               static_cast<BaseType>(buffer[1]);
+        return static_cast<BaseType>(buffer[byteIndex + 0]) << 8U |
+               static_cast<BaseType>(buffer[byteIndex + 1]);
     }
 
-    inline BaseType parse8(const uint8_t* buffer)
+    inline BaseType parse8(Span<const uint8_t> buffer, size_t byteIndex)
     {
-        return static_cast<BaseType>(buffer[0]);
+        return static_cast<BaseType>(buffer[byteIndex + 0]);
     }
 
     /** Optimization which increases chances to inline checkNumBits and checkNumBits64. */
@@ -189,9 +189,9 @@ namespace
         {
             ctx.cache =
 #ifdef ZSERIO_RUNTIME_64BIT
-                    parse64(ctx.buffer + byteIndex);
+                    parse64(ctx.buffer, byteIndex);
 #else
-                    parse32(ctx.buffer + byteIndex);
+                    parse32(ctx.buffer, byteIndex);
 #endif
             ctx.cacheNumBits = cacheBitSize;
         }
@@ -209,29 +209,29 @@ namespace
             {
 #ifdef ZSERIO_RUNTIME_64BIT
             case 64:
-                ctx.cache = parse64(ctx.buffer + byteIndex);
+                ctx.cache = parse64(ctx.buffer, byteIndex);
                 break;
             case 56:
-                ctx.cache = parse56(ctx.buffer + byteIndex);
+                ctx.cache = parse56(ctx.buffer, byteIndex);
                 break;
             case 48:
-                ctx.cache = parse48(ctx.buffer + byteIndex);
+                ctx.cache = parse48(ctx.buffer, byteIndex);
                 break;
             case 40:
-                ctx.cache = parse40(ctx.buffer + byteIndex);
+                ctx.cache = parse40(ctx.buffer, byteIndex);
                 break;
 #endif
             case 32:
-                ctx.cache = parse32(ctx.buffer + byteIndex);
+                ctx.cache = parse32(ctx.buffer, byteIndex);
                 break;
             case 24:
-                ctx.cache = parse24(ctx.buffer + byteIndex);
+                ctx.cache = parse24(ctx.buffer, byteIndex);
                 break;
             case 16:
-                ctx.cache = parse16(ctx.buffer + byteIndex);
+                ctx.cache = parse16(ctx.buffer, byteIndex);
                 break;
             default: // 8
-                ctx.cache = parse8(ctx.buffer + byteIndex);
+                ctx.cache = parse8(ctx.buffer, byteIndex);
                 break;
             }
 
@@ -300,15 +300,14 @@ namespace
 #endif
 } // namespace
 
-BitStreamReader::ReaderContext::ReaderContext(const uint8_t* readBuffer, size_t readBufferBitSize)
+BitStreamReader::ReaderContext::ReaderContext(Span<const uint8_t> readBuffer, size_t readBufferBitSize)
 :   buffer(readBuffer),
     bufferBitSize(readBufferBitSize),
     cache(0),
     cacheNumBits(0),
     bitIndex(0)
 {
-    const size_t bufferByteSize = (bufferBitSize + 7) / 8;
-    if (bufferByteSize > MAX_BUFFER_SIZE)
+    if (buffer.size() > MAX_BUFFER_SIZE)
     {
         throw CppRuntimeException("BitStreamReader: Buffer size exceeded limit '") << MAX_BUFFER_SIZE <<
                 "' bytes!";
@@ -316,15 +315,25 @@ BitStreamReader::ReaderContext::ReaderContext(const uint8_t* readBuffer, size_t 
 }
 
 BitStreamReader::BitStreamReader(const uint8_t* buffer, size_t bufferByteSize) :
-        BitStreamReader(buffer, bufferByteSize * 8, BitsTag())
+        BitStreamReader(Span<const uint8_t>(buffer, bufferByteSize))
 {}
 
 BitStreamReader::BitStreamReader(Span<const uint8_t> buffer) :
-        BitStreamReader(buffer.data(), buffer.size() * 8, BitsTag())
+        m_context(buffer, buffer.size() * 8)
 {}
 
-BitStreamReader::BitStreamReader(const uint8_t* buffer, size_t bufferBitSize, BitsTag) :
+BitStreamReader::BitStreamReader(Span<const uint8_t> buffer, size_t bufferBitSize) :
         m_context(buffer, bufferBitSize)
+{
+    if (buffer.size() < (bufferBitSize + 7) / 8)
+    {
+        throw CppRuntimeException("BitStreamReader: Wrong buffer bit size ('") << buffer.size() <<
+                "' < '" << (bufferBitSize + 7) / 8 << "')!";
+    }
+}
+
+BitStreamReader::BitStreamReader(const uint8_t* buffer, size_t bufferBitSize, BitsTag) :
+        m_context(Span<const uint8_t>(buffer, (bufferBitSize + 7) / 8), bufferBitSize)
 {}
 
 uint32_t BitStreamReader::readBits(uint8_t numBits)

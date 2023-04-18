@@ -1,6 +1,7 @@
 #include <cstring>
 #include <fstream>
 #include <array>
+#include <algorithm>
 
 #include "zserio/CppRuntimeException.h"
 #include "zserio/BitSizeOfCalculator.h"
@@ -113,18 +114,32 @@ static const std::array<int64_t, 65> MAX_I64_VALUES =
 };
 
 BitStreamWriter::BitStreamWriter(uint8_t* buffer, size_t bufferBitSize, BitsTag) :
-        m_buffer(buffer),
+        m_buffer(buffer, (bufferBitSize + 7) / 8),
         m_bitIndex(0),
         m_bufferBitSize(bufferBitSize)
 {}
 
 BitStreamWriter::BitStreamWriter(uint8_t* buffer, size_t bufferByteSize) :
-        BitStreamWriter(buffer, bufferByteSize * 8, BitsTag())
+        BitStreamWriter(Span<uint8_t>(buffer, bufferByteSize))
 {}
 
 BitStreamWriter::BitStreamWriter(Span<uint8_t> buffer) :
-        BitStreamWriter(buffer.data(), buffer.size() * 8, BitsTag())
+        m_buffer(buffer),
+        m_bitIndex(0),
+        m_bufferBitSize(buffer.size() * 8)
 {}
+
+BitStreamWriter::BitStreamWriter(Span<uint8_t> buffer, size_t bufferBitSize) :
+        m_buffer(buffer),
+        m_bitIndex(0),
+        m_bufferBitSize(bufferBitSize)
+{
+    if (buffer.size() < (bufferBitSize + 7) / 8)
+    {
+        throw CppRuntimeException("BitStreamWriter: Wrong buffer bit size ('") << buffer.size() <<
+                "' < '" << (bufferBitSize + 7) / 8 << "')!";
+    }
+}
 
 void BitStreamWriter::writeBits(uint32_t data, uint8_t numBits)
 {
@@ -253,7 +268,7 @@ void BitStreamWriter::writeBytes(Span<const uint8_t> data)
         // we are aligned to bytes
         setBitPosition(beginBitPosition + len * 8);
         if (hasWriteBuffer())
-            memcpy(m_buffer + beginBitPosition / 8, data.data(), len);
+            std::copy(data.begin(), data.end(), m_buffer.begin() + beginBitPosition / 8);
     }
 }
 
@@ -274,7 +289,7 @@ void BitStreamWriter::writeString(StringView data)
         // we are aligned to bytes
         setBitPosition(beginBitPosition + len * 8);
         if (hasWriteBuffer())
-            memcpy(m_buffer + beginBitPosition / 8, data.data(), len);
+            std::copy(data.begin(), data.begin() + len, m_buffer.data() + beginBitPosition / 8);
     }
 }
 
@@ -302,6 +317,11 @@ void BitStreamWriter::alignTo(size_t alignment)
 }
 
 const uint8_t* BitStreamWriter::getWriteBuffer() const
+{
+    return m_buffer.data();
+}
+
+Span<const uint8_t> BitStreamWriter::getBuffer() const
 {
     return m_buffer;
 }

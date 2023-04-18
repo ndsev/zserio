@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <cstring>
+#include <algorithm>
 
 #include "zserio/BitBuffer.h"
 #include "zserio/RebindAlloc.h"
@@ -31,10 +32,10 @@ public:
         /**
          * Constructor.
          *
-         * \param readBuffer Pointer to the buffer to read.
+         * \param readBuffer Span to the buffer to read.
          * \param readBufferBitSize Size of the buffer in bits.
          */
-        explicit ReaderContext(const uint8_t* readBuffer, size_t readBufferBitSize);
+        explicit ReaderContext(Span<const uint8_t> readBuffer, size_t readBufferBitSize);
 
         /**
          * Copying and moving is disallowed!
@@ -49,7 +50,7 @@ public:
          * \}
          */
 
-        const uint8_t* buffer; /**< Buffer to read from. */
+        Span<const uint8_t> buffer; /**< Buffer to read from. */
         const BitPosType bufferBitSize; /**< Size of the buffer in bits. */
 
         uintptr_t cache; /**< Bit cache to optimize bit reading. */
@@ -74,6 +75,14 @@ public:
     explicit BitStreamReader(Span<const uint8_t> buffer);
 
     /**
+     * Constructor from buffer passed as a Span with exact bit size.
+     *
+     * \param buffer Buffer to read.
+     * \param bufferBitSize Size of the buffer in bits.
+     */
+    explicit BitStreamReader(Span<const uint8_t> buffer, size_t bufferBitSize);
+
+    /**
      * Constructor from raw buffer with exact bit size.
      *
      * \param buffer Pointer to buffer to read.
@@ -88,7 +97,7 @@ public:
      */
     template <typename ALLOC>
     explicit BitStreamReader(const BasicBitBuffer<ALLOC>& bitBuffer) :
-            BitStreamReader(bitBuffer.getBuffer(), bitBuffer.getBitSize(), BitsTag())
+            BitStreamReader(bitBuffer.getData(), bitBuffer.getBitSize())
     {}
 
     /**
@@ -241,7 +250,7 @@ public:
         {
             // we are aligned to byte
             setBitPosition(beginBitPosition + len * 8);
-            const uint8_t* beginIt = m_context.buffer + beginBitPosition / 8;
+            Span<const uint8_t>::iterator beginIt = m_context.buffer.begin() + beginBitPosition / 8;
             return vector<uint8_t, ALLOC>(beginIt, beginIt + len, alloc);
         }
     }
@@ -271,7 +280,7 @@ public:
         {
             // we are aligned to byte
             setBitPosition(beginBitPosition + len * 8);
-            const uint8_t* beginIt = m_context.buffer + beginBitPosition / 8;
+            Span<const uint8_t>::iterator beginIt = m_context.buffer.begin() + beginBitPosition / 8;
             return string<ALLOC>(beginIt, beginIt + len, alloc);
         }
     }
@@ -294,31 +303,28 @@ public:
     BasicBitBuffer<RebindAlloc<ALLOC, uint8_t>> readBitBuffer(const ALLOC& allocator = ALLOC())
     {
         const size_t bitSize = static_cast<size_t>(readVarSize());
-        size_t numBytesToRead = bitSize / 8;
+        const size_t numBytesToRead = bitSize / 8;
         const uint8_t numRestBits = static_cast<uint8_t>(bitSize - numBytesToRead * 8);
         BasicBitBuffer<RebindAlloc<ALLOC, uint8_t>> bitBuffer(bitSize, allocator);
-        uint8_t* buffer = bitBuffer.getBuffer();
+        Span<uint8_t> buffer = bitBuffer.getData();
         const BitPosType beginBitPosition = getBitPosition();
+        const Span<uint8_t>::iterator itEnd = buffer.begin() + numBytesToRead;
         if ((beginBitPosition & 0x07) != 0)
         {
             // we are not aligned to byte
-            while (numBytesToRead > 0)
-            {
-                *buffer = static_cast<uint8_t>(readBits(8));
-                buffer++;
-                numBytesToRead--;
-            }
+            for (Span<uint8_t>::iterator it = buffer.begin(); it != itEnd; ++it)
+                *it = static_cast<uint8_t>(readBits(8));
         }
         else
         {
             // we are aligned to byte
             setBitPosition(beginBitPosition + numBytesToRead * 8);
-            memcpy(buffer, m_context.buffer + beginBitPosition / 8, numBytesToRead);
-            buffer += numBytesToRead;
+            Span<const uint8_t>::const_iterator sourceIt =  m_context.buffer.begin() + beginBitPosition / 8;
+            std::copy(sourceIt, sourceIt + numBytesToRead, buffer.begin());
         }
 
         if (numRestBits > 0)
-            *buffer = static_cast<uint8_t>(readBits(numRestBits) << (8 - numRestBits));
+            *itEnd = static_cast<uint8_t>(readBits(numRestBits) << (8 - numRestBits));
 
         return bitBuffer;
     }

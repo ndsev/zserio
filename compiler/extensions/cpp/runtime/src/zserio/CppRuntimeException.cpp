@@ -1,5 +1,4 @@
 #include <cstring>
-#include <algorithm>
 #include <array>
 
 #include "zserio/CppRuntimeException.h"
@@ -36,7 +35,7 @@ void CppRuntimeException::appendImpl(const char* message, size_t numCharsToAppen
 {
     if (numCharsToAppend > 0)
     {
-        std::copy(message, message + numCharsToAppend, m_buffer.data() + m_len);
+        memcpy(m_buffer.data() + m_len, message, numCharsToAppend);
         m_len += numCharsToAppend;
     }
     m_buffer[m_len] = 0;

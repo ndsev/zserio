@@ -53,15 +53,15 @@ Checks: "-*,\
   clang-analyzer-cplusplus.NewDeleteLeaks,\
   cppcoreguidelines-avoid-c-arrays,\
   cppcoreguidelines-avoid-goto,\
-#  cppcoreguidelines-avoid-non-const-global-variables,\
+#(default memory allocator breaks this rule)  cppcoreguidelines-avoid-non-const-global-variables,\
 #(sometimes doesn't make sense)  cppcoreguidelines-init-variables,\
   cppcoreguidelines-interfaces-global-init,\
   cppcoreguidelines-macro-usage,\
   cppcoreguidelines-narrowing-conversions,\
   cppcoreguidelines-no-malloc,\
   cppcoreguidelines-pro-bounds-array-to-pointer-decay,\
-#  cppcoreguidelines-pro-bounds-constant-array-index,\
-#  cppcoreguidelines-pro-bounds-pointer-arithmetic,\
+#(optimization breaks this rule)  cppcoreguidelines-pro-bounds-constant-array-index,\
+  cppcoreguidelines-pro-bounds-pointer-arithmetic,\
   cppcoreguidelines-pro-type-const-cast,\
   cppcoreguidelines-pro-type-cstyle-cast,\
   cppcoreguidelines-pro-type-member-init,\

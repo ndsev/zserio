@@ -1,5 +1,6 @@
 #include <iomanip>
 #include <cmath>
+#include <array>
 
 #include "zserio/JsonEncoder.h"
 
@@ -46,7 +47,7 @@ void JsonEncoder::encodeFloatingPoint(std::ostream& os, double value)
 
 void JsonEncoder::encodeString(std::ostream& os, StringView value)
 {
-    static const char* HEX = "0123456789abcdef";
+    static const std::array<char, 17> HEX = {"0123456789abcdef"};
 
     os.put('"');
     for (char ch : value)

@@ -26,22 +26,75 @@ protected:
     BitStreamWriter m_dummyBufferWriter;
 };
 
+TEST_F(BitStreamWriterTest, rawConstructor)
+{
+    std::array<uint8_t, 2> data = { 0x00, 0x00 };
+    BitStreamWriter writer(data.data(), data.size());
+
+    ASSERT_EQ(data.data(), writer.getBuffer().data());
+    ASSERT_EQ(data.size() * 8, writer.getBufferBitSize());
+
+    writer.writeBits(0x1F, 5);
+    writer.writeBits(0x07, 3);
+    ASSERT_EQ(0xFF, writer.getBuffer()[0]);
+    ASSERT_THROW(writer.writeBits(0xFFFF, 16), CppRuntimeException);
+    writer.writeBits(0x07, 3);
+    writer.writeBits(0x00, 5);
+    ASSERT_EQ(0xE0, writer.getBuffer()[1]);
+}
+
+TEST_F(BitStreamWriterTest, rawConstructorWithBitSize)
+{
+    std::array<uint8_t, 2> data = { 0x00, 0x00 };
+    BitStreamWriter writer(data.data(), 15, BitsTag());
+
+    ASSERT_EQ(data.data(), writer.getBuffer().data());
+    ASSERT_EQ(15, writer.getBufferBitSize());
+
+    writer.writeBits(0x1F, 5);
+    writer.writeBits(0x07, 3);
+    ASSERT_EQ(0xFF, writer.getBuffer()[0]);
+    ASSERT_THROW(writer.writeBits(0xFF, 8), CppRuntimeException);
+    writer.writeBits(0x07, 3);
+    writer.writeBits(0x00, 4);
+    ASSERT_EQ(0xE0, writer.getBuffer()[1]);
+}
+
 TEST_F(BitStreamWriterTest, spanConstructor)
 {
     std::array<uint8_t, 2> data = { 0x00, 0x00 };
     const Span<uint8_t> span(data);
     BitStreamWriter writer(span);
 
-    ASSERT_EQ(span.data(), writer.getWriteBuffer());
+    ASSERT_EQ(span.data(), writer.getBuffer().data());
     ASSERT_EQ(span.size() * 8, writer.getBufferBitSize());
 
     writer.writeBits(0x1F, 5);
     writer.writeBits(0x07, 3);
-    ASSERT_EQ(0xFF, writer.getWriteBuffer()[0]);
+    ASSERT_EQ(0xFF, writer.getBuffer()[0]);
     ASSERT_THROW(writer.writeBits(0xFFFF, 16), CppRuntimeException);
     writer.writeBits(0x07, 3);
     writer.writeBits(0x00, 5);
-    ASSERT_EQ(0xE0, writer.getWriteBuffer()[1]);
+    ASSERT_EQ(0xE0, writer.getBuffer()[1]);
+}
+
+TEST_F(BitStreamWriterTest, spanConstructorWithBitSize)
+{
+    std::array<uint8_t, 2> data = { 0x00, 0x00 };
+    const Span<uint8_t> span(data);
+    BitStreamWriter writer(span, 15);
+    ASSERT_THROW(BitStreamWriter wrongWriter(span, 17), CppRuntimeException);
+
+    ASSERT_EQ(span.data(), writer.getBuffer().data());
+    ASSERT_EQ(15, writer.getBufferBitSize());
+
+    writer.writeBits(0x1F, 5);
+    writer.writeBits(0x07, 3);
+    ASSERT_EQ(0xFF, writer.getBuffer()[0]);
+    ASSERT_THROW(writer.writeBits(0xFF, 8), CppRuntimeException);
+    writer.writeBits(0x07, 3);
+    writer.writeBits(0x00, 4);
+    ASSERT_EQ(0xE0, writer.getBuffer()[1]);
 }
 
 TEST_F(BitStreamWriterTest, bitBufferConstructor)
@@ -49,15 +102,15 @@ TEST_F(BitStreamWriterTest, bitBufferConstructor)
     BitBuffer bitBuffer(11);
     BitStreamWriter writer(bitBuffer);
 
-    ASSERT_EQ(bitBuffer.getBuffer(), writer.getWriteBuffer());
+    ASSERT_EQ(bitBuffer.getBuffer(), writer.getBuffer().data());
     ASSERT_EQ(bitBuffer.getBitSize(), writer.getBufferBitSize());
 
     writer.writeBits(0x1F, 5);
     writer.writeBits(0x07, 3);
-    ASSERT_EQ(0xFF, writer.getWriteBuffer()[0]);
+    ASSERT_EQ(0xFF, writer.getBuffer()[0]);
     ASSERT_THROW(writer.writeBits(0x0F, 4), CppRuntimeException);
     writer.writeBits(0x07, 3);
-    ASSERT_EQ(0xE0, writer.getWriteBuffer()[1]);
+    ASSERT_EQ(0xE0, writer.getBuffer()[1]);
 }
 
 TEST_F(BitStreamWriterTest, writeUnalignedData)
@@ -253,8 +306,8 @@ TEST_F(BitStreamWriterTest, writeBitBuffer)
 
     {
         ASSERT_NO_THROW(m_externalBufferWriter.writeBitBuffer(bitBuffer));
-        const uint8_t* buffer = m_externalBufferWriter.getWriteBuffer();
-        BitBuffer readBitBuffer{buffer + 1, bitBufferBitSize}; // first byte is bit buffer size
+        Span<const uint8_t> buffer = m_externalBufferWriter.getBuffer();
+        BitBuffer readBitBuffer{&buffer[1], bitBufferBitSize}; // first byte is bit buffer size
         ASSERT_EQ(bitBuffer, readBitBuffer);
     }
 
@@ -273,6 +326,13 @@ TEST_F(BitStreamWriterTest, getWriteBuffer)
     ASSERT_EQ(m_externalBuffer.data(), m_externalBufferWriter.getWriteBuffer());
 
     ASSERT_EQ(nullptr, m_dummyBufferWriter.getWriteBuffer());
+}
+
+TEST_F(BitStreamWriterTest, getBuffer)
+{
+    ASSERT_EQ(m_externalBuffer.data(), m_externalBufferWriter.getBuffer().data());
+
+    ASSERT_EQ(nullptr, m_dummyBufferWriter.getBuffer().data());
 }
 
 TEST_F(BitStreamWriterTest, dummyBufferTest)

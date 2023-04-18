@@ -10,6 +10,7 @@
 #include "zserio/HashCodeUtil.h"
 #include "zserio/CppRuntimeException.h"
 #include "zserio/Vector.h"
+#include "zserio/Span.h"
 
 namespace zserio
 {
@@ -48,6 +49,8 @@ public:
 
     /**
      * Empty constructor.
+     *
+     * \param allocator Allocator to use for internal vector allocation.
      */
     BasicBitBuffer(const ALLOC& allocator = ALLOC());
 
@@ -55,25 +58,28 @@ public:
      * Constructor from bit size.
      *
      * \param bitSize Size in bits of created bit buffer.
+     * \param allocator Allocator to use for internal vector allocation.
      */
     explicit BasicBitBuffer(size_t bitSize, const ALLOC& allocator = ALLOC());
 
     /**
-     * Constructor from STL vector.
+     * Constructor from span.
      *
-     * \param buffer STL vector of bytes from which the bit buffer should be created.
+     * \param buffer Span of bytes from which the bit buffer should be created.
+     * \param allocator Allocator to use for internal vector allocation.
      */
-    explicit BasicBitBuffer(const vector<uint8_t, ALLOC>& buffer);
+    explicit BasicBitBuffer(Span<const uint8_t> buffer, const ALLOC& allocator = ALLOC());
 
     /**
-     * Constructor from STL vector and bit size.
+     * Constructor from span and bit size.
      *
-     * \param buffer STL vector of bytes from which the bit buffer should be created.
+     * \param buffer Span of bytes from which the bit buffer should be created.
      * \param bitSize Number of bits stored in buffer to use.
+     * \param allocator Allocator to use for internal vector allocation.
      *
-     * \throw CppRuntimeException If given bit size is out of range for given vector.
+     * \throw CppRuntimeException If given bit size is out of range for given Span.
      */
-    explicit BasicBitBuffer(const vector<uint8_t, ALLOC>& buffer, size_t bitSize);
+    explicit BasicBitBuffer(Span<const uint8_t> buffer, size_t bitSize, const ALLOC& allocator = ALLOC());
 
     /**
      * Constructor from moved STL vector.
@@ -97,6 +103,7 @@ public:
      *
      * \param buffer Raw pointer to all bytes from which the bit buffer should be created.
      * \param bitSize Number of bits stored in buffer to use.
+     * \param allocator Allocator to use for internal vector allocation.
      */
     explicit BasicBitBuffer(const uint8_t* buffer, size_t bitSize, const ALLOC& allocator = ALLOC());
 
@@ -168,6 +175,20 @@ public:
      */
     const vector<uint8_t, ALLOC>& getBytes() const;
 
+    /**
+     * Convenience getter for the underlying buffer.
+     *
+     * \return The span to the underlying vector of bytes.
+     */
+    Span<const uint8_t> getData() const;
+
+    /**
+     * Convenience getter for the underlying buffer.
+     *
+     * \return The span to the underlying vector of bytes.
+     */
+    Span<uint8_t> getData();
+
 private:
     uint8_t getMaskedLastByte() const;
 
@@ -188,23 +209,21 @@ BasicBitBuffer<ALLOC>::BasicBitBuffer(size_t bitSize, const ALLOC& allocator) :
 }
 
 template <typename ALLOC>
-BasicBitBuffer<ALLOC>::BasicBitBuffer(const vector<uint8_t, ALLOC>& buffer) :
-        m_buffer(buffer), m_bitSize(8 * buffer.size())
+BasicBitBuffer<ALLOC>::BasicBitBuffer(Span<const uint8_t> buffer, const ALLOC& allocator) :
+        m_buffer(buffer.begin(), buffer.end(), allocator), m_bitSize(8 * buffer.size())
 {
 }
 
 template <typename ALLOC>
-BasicBitBuffer<ALLOC>::BasicBitBuffer(const vector<uint8_t, ALLOC>& buffer, size_t bitSize) :
-        m_buffer(buffer.get_allocator()), m_bitSize(bitSize)
+BasicBitBuffer<ALLOC>::BasicBitBuffer(Span<const uint8_t> buffer, size_t bitSize, const ALLOC& allocator) :
+        m_buffer(buffer.begin(), buffer.end(), allocator), m_bitSize(bitSize)
 {
     const size_t byteSize = (bitSize + 7) / 8;
     if (buffer.size() < byteSize)
     {
         throw CppRuntimeException("BitBuffer: Bit size ") << bitSize <<
-                " out of range for given vector byte size " << buffer.size() << "!";
+                " out of range for given span byte size " << buffer.size() << "!";
     }
-
-    m_buffer.assign(buffer.data(), buffer.data() + byteSize);
 }
 
 template <typename ALLOC>
@@ -315,6 +334,18 @@ template <typename ALLOC>
 const vector<uint8_t, ALLOC>& BasicBitBuffer<ALLOC>::getBytes() const
 {
     return m_buffer;
+}
+
+template <typename ALLOC>
+Span<const uint8_t> BasicBitBuffer<ALLOC>::getData() const
+{
+    return Span<const uint8_t>(m_buffer);
+}
+
+template <typename ALLOC>
+Span<uint8_t> BasicBitBuffer<ALLOC>::getData()
+{
+    return Span<uint8_t>(m_buffer);
 }
 
 template <typename ALLOC>

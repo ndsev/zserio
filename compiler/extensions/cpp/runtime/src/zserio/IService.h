@@ -81,7 +81,7 @@ public:
             BitStreamWriter writer(m_data);
             m_reflectable->write(writer);
         }
-        return { m_data.getBuffer(), m_data.getByteSize() };
+        return m_data.getData();
     }
 
 private:
@@ -117,7 +117,7 @@ public:
 
     Span<const uint8_t> getData() const override
     {
-        return { m_data.getBuffer(), m_data.getByteSize() };
+        return m_data.getData();
     }
 
 private:

@@ -22,25 +22,53 @@ TEST(BitBufferTest, bitSizeConstructor)
     ASSERT_EQ(bitSize, bitBuffer.getBitSize());
 }
 
-TEST(BitBufferTest, vectorConstructor)
+TEST(BitBufferTest, spanConstructor)
 {
-    const size_t byteSize = 2;
-    const std::vector<uint8_t> buffer(byteSize);
-    const BitBuffer bitBuffer(buffer);
-    ASSERT_EQ(8 * byteSize, bitBuffer.getBitSize());
+    // vector
+    std::vector<uint8_t> buffer1(2);
+    const BitBuffer bitBuffer1(buffer1);
+    ASSERT_EQ(8 * buffer1.size(), bitBuffer1.getBitSize());
 
     const size_t emptyBitSize = 0;
     const std::vector<uint8_t> emptyBuffer;
     const BitBuffer emptyBitBuffer(emptyBuffer);
     ASSERT_EQ(emptyBitSize, emptyBitBuffer.getBitSize());
+
+    // const vector
+    const std::vector<uint8_t> buffer2(2);
+    const BitBuffer bitBuffer2(buffer2);
+    ASSERT_EQ(8 * buffer2.size(), bitBuffer2.getBitSize());
+
+    // array
+    std::array<uint8_t, 2> buffer3{};
+    const BitBuffer bitBuffer3(buffer3);
+    ASSERT_EQ(8 * buffer3.size(), bitBuffer3.getBitSize());
+
+    // const array
+    const std::array<uint8_t, 2> buffer4{};
+    const BitBuffer bitBuffer4(buffer4);
+    ASSERT_EQ(8 * buffer4.size(), bitBuffer4.getBitSize());
+
+    // span
+    std::array<uint8_t, 2> arrayBuffer5{};
+    Span<uint8_t> buffer5(arrayBuffer5);
+    const BitBuffer bitBuffer5(buffer5);
+    ASSERT_EQ(8 * buffer5.size(), bitBuffer5.getBitSize());
+
+    // const span
+    const std::array<uint8_t, 2> arrayBuffer6{};
+    Span<const uint8_t> buffer6(arrayBuffer6);
+    const BitBuffer bitBuffer6(buffer6);
+    ASSERT_EQ(8 * buffer6.size(), bitBuffer6.getBitSize());
 }
 
-TEST(BitBufferTest, vectorBitSizeConstructor)
+TEST(BitBufferTest, spanBitSizeConstructor)
 {
+    // vector
     const size_t bitSize = 11;
-    const std::vector<uint8_t> buffer((bitSize + 7) / 8);
-    const BitBuffer bitBuffer(buffer, bitSize);
-    ASSERT_EQ(bitSize, bitBuffer.getBitSize());
+    std::vector<uint8_t> buffer1((bitSize + 7) / 8);
+    const BitBuffer bitBuffer1(buffer1, bitSize);
+    ASSERT_EQ(bitSize, bitBuffer1.getBitSize());
 
     const size_t emptyBitSize = 0;
     const std::vector<uint8_t> emptyBuffer;
@@ -50,6 +78,33 @@ TEST(BitBufferTest, vectorBitSizeConstructor)
     const size_t outOfRangeBitSize = 9;
     const std::vector<uint8_t> outOfRangeBuffer(1);
     ASSERT_THROW(BitBuffer(outOfRangeBuffer, outOfRangeBitSize), CppRuntimeException);
+
+    // const vector
+    const std::vector<uint8_t> buffer2((bitSize + 7) / 8);
+    const BitBuffer bitBuffer2(buffer2, bitSize);
+    ASSERT_EQ(bitSize, bitBuffer2.getBitSize());
+
+    // array
+    std::array<uint8_t, 2> buffer3{};
+    const BitBuffer bitBuffer3(buffer3, bitSize);
+    ASSERT_EQ(bitSize, bitBuffer3.getBitSize());
+
+    // const array
+    const std::array<uint8_t, 2> buffer4{};
+    const BitBuffer bitBuffer4(buffer4, bitSize);
+    ASSERT_EQ(bitSize, bitBuffer4.getBitSize());
+
+    // span
+    std::array<uint8_t, 2> arrayBuffer5{};
+    Span<uint8_t> buffer5(arrayBuffer5);
+    const BitBuffer bitBuffer5(buffer5, bitSize);
+    ASSERT_EQ(bitSize, bitBuffer5.getBitSize());
+
+    // const span
+    const std::array<uint8_t, 2> arrayBuffer6{};
+    Span<const uint8_t> buffer6(arrayBuffer6);
+    const BitBuffer bitBuffer6(buffer6, bitSize);
+    ASSERT_EQ(bitSize, bitBuffer6.getBitSize());
 }
 
 TEST(BitBufferTest, vectorMoveConstructor)
@@ -248,6 +303,20 @@ TEST(BitBufferTest, getBytes)
     const BitBuffer bitBuffer(buffer, bitSize);
 
     const std::vector<uint8_t>& bytes = bitBuffer.getBytes();
+    ASSERT_EQ(buffer.size(), bytes.size());
+    for (size_t i = 0; i < buffer.size(); ++i)
+    {
+        ASSERT_EQ(buffer[i], bytes[i]);
+    }
+}
+
+TEST(BitBufferTest, getData)
+{
+    const size_t bitSize = 11;
+    const std::vector<uint8_t> buffer = {0xAB, 0xC0};
+    const BitBuffer bitBuffer(buffer, bitSize);
+
+    const Span<const uint8_t> bytes = bitBuffer.getData();
     ASSERT_EQ(buffer.size(), bytes.size());
     for (size_t i = 0; i < buffer.size(); ++i)
     {

@@ -451,11 +451,11 @@ void BasicJsonWriter<ALLOC>::writeBitBuffer(const BasicBitBuffer<ALLOC>& bitBuff
     beginItem();
     writeKey("buffer"_sv);
     beginArray();
-    const uint8_t* buffer = bitBuffer.getBuffer();
-    for (size_t i = 0; i < bitBuffer.getByteSize(); ++i)
+    Span<const uint8_t> buffer = bitBuffer.getData();
+    for (uint8_t element : buffer)
     {
         beginItem();
-        JsonEncoder::encodeIntegral(m_out, buffer[i]);
+        JsonEncoder::encodeIntegral(m_out, element);
         endItem();
     }
     endArray();
