@@ -7,6 +7,8 @@
 #include "zserio/Types.h"
 #include "zserio/UniquePtr.h"
 #include "zserio/Vector.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace zserio
 {
