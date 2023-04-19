@@ -72,15 +72,23 @@ install(DIRECTORY src/ DESTINATION cpp
         PATTERN "*.h"
         PATTERN "*.cpp")
 
-# clang-tidy
-if (CLANG_TIDY_BIN)
-    set_property(TARGET ZserioCppRuntime PROPERTY CXX_CLANG_TIDY
-        "${CLANG_TIDY_BIN}"
-        "--config-file=${CMAKE_CURRENT_SOURCE_DIR}/.clang-tidy")
-    set_property(TARGET ZserioCppRuntimeTest PROPERTY CXX_CLANG_TIDY
-        "${CLANG_TIDY_BIN}"
-        "--config-file=${CMAKE_CURRENT_SOURCE_DIR}/.clang-tidy-test")
-endif ()
+# add clang-tidy custom target
+include(clang_tidy_utils)
+clang_tidy_add_custom_target(TARGET ZserioCppRuntime
+                             SOURCES_GLOBS
+                                "${CMAKE_CURRENT_SOURCE_DIR}/src/zserio/*.h"
+                                "${CMAKE_CURRENT_SOURCE_DIR}/src/zserio/*.cpp"
+                             BUILD_PATH "${CMAKE_BINARY_DIR}"
+                             CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/.clang-tidy"
+                             OUTPUT_FILE "clang-tidy.log")
+
+clang_tidy_add_custom_target(TARGET ZserioCppRuntimeTest
+                             SOURCES_GLOBS
+                                "${CMAKE_CURRENT_SOURCE_DIR}/test/zserio/*.h"
+                                "${CMAKE_CURRENT_SOURCE_DIR}/test/zserio/*.cpp"
+                             BUILD_PATH "${CMAKE_BINARY_DIR}"
+                             CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/.clang-tidy-test"
+                             OUTPUT_FILE "clang-tidy-test.log")
 
 # add cppcheck custom command
 include(cppcheck_utils)

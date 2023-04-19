@@ -75,13 +75,13 @@ function(add_test_dependencies)
 endfunction()
 
 # add all test suites
-foreach(TEST_SUITE ${ZSERIO_TEST_SUITES})
+foreach (TEST_SUITE ${ZSERIO_TEST_SUITES})
     file(GLOB_RECURSE SUBPROJECTS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${TEST_SUITE}/CMakeLists.txt")
-    foreach(subproject ${SUBPROJECTS})
+    foreach (subproject ${SUBPROJECTS})
         get_filename_component(subdirectory ${subproject} DIRECTORY)
         add_subdirectory(${subdirectory})
-    endforeach()
-endforeach()
+    endforeach ()
+endforeach ()
 
 if (NOT TEST_SOURCES_LIST)
     if (NOT TEST_DEPENDENCIES_LIST)
@@ -108,12 +108,12 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/u
 # add tests - test are labeled by file names (i.e. grouped)
 gtest_add_tests(${PROJECT_NAME} "--gtest_output=xml" ${TEST_SOURCES_LIST})
 
-# clang-tidy
-if (CLANG_TIDY_BIN)
-    set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_CLANG_TIDY
-        "${CLANG_TIDY_BIN}"
-        "--config-file=${CMAKE_CURRENT_SOURCE_DIR}/.clang-tidy")
-endif ()
+# add clang-tidy custom target
+include(clang_tidy_utils)
+clang_tidy_add_custom_target(TARGET ${PROJECT_NAME}
+                             SOURCES "${TEST_SOURCES_LIST}"
+                             BUILD_PATH "${CMAKE_BINARY_DIR}"
+                             CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/.clang-tidy")
 
 # add cppcheck custom command
 include(cppcheck_utils)

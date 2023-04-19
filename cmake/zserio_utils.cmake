@@ -174,12 +174,12 @@ function(zserio_add_library)
 
     # checkers fail if no sources to check are available
     if (NOT(SOURCE_FILE_POSITION EQUAL -1))
-        # add clang-tidy
-        if (CLANG_TIDY_BIN)
-        set_property(TARGET ${VALUE_TARGET} PROPERTY CXX_CLANG_TIDY
-            "${CLANG_TIDY_BIN}"
-            "--config-file=${CMAKE_SOURCE_DIR}/.clang-tidy-gen")
-        endif ()
+        # add clang-tidy custom target
+        include(clang_tidy_utils)
+        clang_tidy_add_custom_target(TARGET ${VALUE_TARGET}
+                                     SOURCES "${VALUE_OUT_FILES}"
+                                     BUILD_PATH "${CMAKE_BINARY_DIR}"
+                                     CONFIG_FILE "${CMAKE_SOURCE_DIR}/.clang-tidy-gen")
 
         # add cppcheck custom command
         include(cppcheck_utils)

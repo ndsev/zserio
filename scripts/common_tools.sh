@@ -715,6 +715,7 @@ compile_cpp_for_target()
     local TOOLCHAIN_FILE="${ZSERIO_PROJECT_ROOT}/cmake/toolchain-${TARGET}.cmake"
     CMAKE_ARGS=("--no-warn-unused-cli"
                 "${CMAKE_ARGS[@]}"
+                "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
                 "-DCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN_FILE}"
                 "-DCMAKE_PREFIX_PATH=${SQLITE_RELEASE_ROOT}/${TARGET}")
 
