@@ -188,7 +188,7 @@ TEST_F(HeapOptionalHolderTest, moveConstructorAllocator)
     ASSERT_EQ(emptyOptional.get_allocator(), alloc);
     ASSERT_EQ(emptyMoved.get_allocator(), alloc2);
 
-    ASSERT_EQ(alloc.numAllocs(), 0U);
+    ASSERT_EQ(alloc.numAllocs(), 1U);
     ASSERT_EQ(alloc2.numAllocs(), 1U);
 }
 
@@ -255,7 +255,7 @@ TEST_F(HeapOptionalHolderTest, moveAssignmentOperator)
     HeapOptionalHolder<int, TrackingAllocatorNonProp<int>> optionalNp(13, allocNp);
     HeapOptionalHolder<int, TrackingAllocatorNonProp<int>> optionalNpMoved;
     optionalNpMoved = std::move(optionalNp);
-    ASSERT_FALSE(optionalNp.hasValue()); // NOLINT(bugprone-use-after-move,clang-analyzer-cplusplus.Move)
+    ASSERT_TRUE(optionalNp.hasValue()); // NOLINT(bugprone-use-after-move,clang-analyzer-cplusplus.Move)
     ASSERT_TRUE(optionalNpMoved.hasValue());
     ASSERT_NE(optionalNp.get_allocator(), optionalNpMoved.get_allocator());
 

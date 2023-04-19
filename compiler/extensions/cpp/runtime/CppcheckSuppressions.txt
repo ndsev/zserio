@@ -16,9 +16,9 @@ mismatchingContainers:*/test/zserio/AnyHolderTest.cpp:198
 noExplicitConstructor:*/src/zserio/OptionalHolder.h:204
 noExplicitConstructor:*/src/zserio/OptionalHolder.h:214
 noExplicitConstructor:*/src/zserio/OptionalHolder.h:224
-noExplicitConstructor:*/src/zserio/OptionalHolder.h:532
-noExplicitConstructor:*/src/zserio/OptionalHolder.h:540
-noExplicitConstructor:*/src/zserio/OptionalHolder.h:551
+noExplicitConstructor:*/src/zserio/OptionalHolder.h:530
+noExplicitConstructor:*/src/zserio/OptionalHolder.h:538
+noExplicitConstructor:*/src/zserio/OptionalHolder.h:549
 noExplicitConstructor:*/src/zserio/Span.h:113
 noExplicitConstructor:*/src/zserio/Span.h:125
 noExplicitConstructor:*/src/zserio/Span.h:137

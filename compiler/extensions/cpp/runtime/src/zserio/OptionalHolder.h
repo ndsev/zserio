@@ -272,7 +272,6 @@ public:
     heap_optional_holder(heap_optional_holder&& other, const allocator_type& allocator) :
             m_storage(move_initialize(std::move(other), allocator))
     {
-        other.reset();
     }
 
     /**
@@ -311,7 +310,6 @@ public:
             allocator_traits::propagate_on_container_move_assignment::value ?
                 other.m_storage.get_deleter().get_allocator() :
                 m_storage.get_deleter().get_allocator());
-        other.reset();
 
         return *this;
     }
