@@ -1,6 +1,8 @@
 #ifndef ZSERIO_ALLOCATOR_HOLDER_H_INC
 #define ZSERIO_ALLOCATOR_HOLDER_H_INC
 
+#include <utility>
+
 namespace zserio
 {
 
