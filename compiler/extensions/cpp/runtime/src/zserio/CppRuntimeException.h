@@ -193,7 +193,7 @@ detail::CppRuntimeExceptionRValueInsertion<CPP_RUNTIME_EXCEPTION, T>
 operator<<(CPP_RUNTIME_EXCEPTION&& exception, const T& value)
 {
     exception << value;
-    return std::move(exception);
+    return std::forward<CPP_RUNTIME_EXCEPTION>(exception);
 }
 
 } // namespace zserio
