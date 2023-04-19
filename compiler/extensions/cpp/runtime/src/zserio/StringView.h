@@ -891,7 +891,7 @@ constexpr bool operator>=(BasicStringView<CharT, Traits> lhs, BasicStringView<Ch
  * \return String view to given input string.
  */
 template<typename CharT, size_t N>
-constexpr BasicStringView<CharT> makeStringView(const CharT(&str)[N])
+constexpr BasicStringView<CharT> makeStringView(const CharT(&str)[N]) // NOLINT(cppcoreguidelines-avoid-c-arrays)
 {
     // Note: strip the very last null terminator, if it is there
     return BasicStringView<CharT>(str, (N > 0 && str[N - 1] == CharT()) ? (N - 1) : N);

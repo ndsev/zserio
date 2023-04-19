@@ -110,7 +110,7 @@ public:
      */
     template <size_type N, size_type ext = Extent,
         typename std::enable_if<(ext == dynamic_extent || ext == N), int>::type = 0>
-    constexpr Span(element_type(&arr)[N]) noexcept :
+    constexpr Span(element_type(&arr)[N]) noexcept : // NOLINT(cppcoreguidelines-avoid-c-arrays)
         m_storage(arr, N)
     {}
 
@@ -121,7 +121,7 @@ public:
      */
     template <typename U, size_type N, size_type ext = Extent,
         typename std::enable_if<(ext == dynamic_extent || ext == N) &&
-                std::is_convertible<U(*)[], T(*)[]>::value, int>::type = 0>
+                std::is_convertible<U(*)[], T(*)[]>::value, int>::type = 0> // NOLINT(cppcoreguidelines-avoid-c-arrays)
     constexpr Span(std::array<U, N>& arr) noexcept :
         m_storage(arr.data(), arr.size())
     {}
@@ -133,7 +133,7 @@ public:
      */
     template <typename U, size_type N, size_type ext = Extent,
         typename std::enable_if<(ext == dynamic_extent || ext == N) &&
-                std::is_convertible<const U(*)[], T(*)[]>::value, int>::type = 0>
+                std::is_convertible<const U(*)[], T(*)[]>::value, int>::type = 0> // NOLINT(cppcoreguidelines-avoid-c-arrays)
     constexpr Span(const std::array<U, N>& arr) noexcept :
         m_storage(arr.data(), arr.size())
     {}
@@ -145,7 +145,7 @@ public:
      */
     template <typename U, typename ALLOC, size_type ext = Extent,
         typename std::enable_if<(ext == dynamic_extent) &&
-                std::is_convertible<U(*)[], T(*)[]>::value, int>::type = 0>
+                std::is_convertible<U(*)[], T(*)[]>::value, int>::type = 0> // NOLINT(cppcoreguidelines-avoid-c-arrays)
     constexpr Span(std::vector<U, ALLOC>& vec) :
         m_storage(vec.data(), vec.size())
     {}
@@ -157,7 +157,7 @@ public:
      */
     template <typename U, typename ALLOC, size_type ext = Extent,
         typename std::enable_if<(ext == dynamic_extent) &&
-                std::is_convertible<const U(*)[], T(*)[]>::value, int>::type = 0>
+                std::is_convertible<const U(*)[], T(*)[]>::value, int>::type = 0> // NOLINT(cppcoreguidelines-avoid-c-arrays)
     constexpr Span(const std::vector<U, ALLOC>& vec) :
         m_storage(vec.data(), vec.size())
     {}
@@ -169,7 +169,7 @@ public:
      */
     template <typename U, size_type N,
         typename std::enable_if<(Extent == N || Extent == dynamic_extent) &&
-                std::is_convertible<U(*)[], T(*)[]>::value, int>::type = 0>
+                std::is_convertible<U(*)[], T(*)[]>::value, int>::type = 0> // NOLINT(cppcoreguidelines-avoid-c-arrays)
     constexpr Span(const Span<U, N>& s) noexcept :
         m_storage(s.data(), s.size())
     {}

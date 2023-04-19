@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <istream>
+#include <array>
 
 #include "zserio/AnyHolder.h"
 #include "zserio/CppRuntimeException.h"
@@ -122,7 +123,7 @@ private:
     void setTokenValue();
 
     static constexpr size_t BUFFER_SIZE = 64 * 1024;
-    char m_buffer[BUFFER_SIZE];
+    std::array<char, BUFFER_SIZE> m_buffer;
 
     std::istream& m_in;
     BasicJsonDecoder<ALLOC> m_decoder;
@@ -167,8 +168,8 @@ JsonToken BasicJsonTokenizer<ALLOC>::next()
 template <typename ALLOC>
 string<ALLOC> BasicJsonTokenizer<ALLOC>::readContent(const ALLOC& allocator)
 {
-    const size_t count = static_cast<size_t>(m_in.rdbuf()->sgetn(m_buffer, BUFFER_SIZE));
-    return string<ALLOC>(m_buffer, count, allocator);
+    const size_t count = static_cast<size_t>(m_in.rdbuf()->sgetn(m_buffer.data(), BUFFER_SIZE));
+    return string<ALLOC>(m_buffer.data(), count, allocator);
 }
 
 template <typename ALLOC>
