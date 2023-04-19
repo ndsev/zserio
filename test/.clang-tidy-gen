@@ -19,7 +19,7 @@ Checks: "-*,\
   bugprone-not-null-terminated-result,\
   bugprone-parent-virtual-call,\
   bugprone-posix-return,\
-  bugprone-reserved-identifier,\
+#(generated code breaks this rule)  bugprone-reserved-identifier,\
   bugprone-signed-char-misuse,\
   bugprone-sizeof-expression,\
   bugprone-spuriously-wake-up-functions,\
