@@ -254,11 +254,11 @@ template <typename ALLOC>
 char BasicJsonDecoder<ALLOC>::decodeHex(char ch)
 {
     if (ch >= '0' && ch <= '9')
-        return ch - '0';
+        return static_cast<char>(ch - '0');
     else if (ch >= 'a' && ch <= 'f')
-        return ch - 'a' + 10;
+        return static_cast<char>(ch - 'a' + 10);
     else if (ch >= 'A' && ch <= 'F')
-        return ch - 'A' + 10;
+        return static_cast<char>(ch - 'A' + 10);
 
     return -1;
 }
