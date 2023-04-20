@@ -98,7 +98,7 @@ public:
      */
     DecoderResult decodeValue(const char* input)
     {
-        switch (input[0])
+        switch (input[0]) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         {
         case '\0':
             return DecoderResult(0, get_allocator());
@@ -115,6 +115,7 @@ public:
         case '"':
             return decodeString(input);
         case '-':
+            // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
             if (input[1] == 'I') // note that input is zero-terminated, thus 1 still must be a valid index
                 return decodeLiteral(input, "-Infinity"_sv, -static_cast<double>(INFINITY));
             return decodeNumber(input);
@@ -148,6 +149,7 @@ typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeL
     return DecoderResult(numReadChars, get_allocator());
 }
 
+// NOLINTBEGIN(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 template <typename ALLOC>
 typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeString(const char* input)
 {
@@ -303,6 +305,7 @@ size_t BasicJsonDecoder<ALLOC>::checkNumber(const char* input, bool& isDouble)
 
     return static_cast<size_t>(pInput - input);
 }
+// NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
 template <typename ALLOC>
 typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeNumber(const char* input)

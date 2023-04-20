@@ -246,6 +246,7 @@ BasicBitBuffer<ALLOC>::BasicBitBuffer(vector<uint8_t, ALLOC>&& buffer, size_t bi
 
 template <typename ALLOC>
 BasicBitBuffer<ALLOC>::BasicBitBuffer(const uint8_t* buffer, size_t bitSize, const ALLOC& allocator) :
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         m_buffer(buffer, buffer + (bitSize + 7) / 8, allocator), m_bitSize(bitSize)
 {
 }
@@ -296,9 +297,9 @@ uint32_t BasicBitBuffer<ALLOC>::hashCode() const
     {
         if (byteSize > 1)
         {
-            const uint8_t* lastElement = getBuffer() + byteSize - 1;
-            for (const uint8_t* p = getBuffer(); p < lastElement; p++)
-                result = calcHashCode(result, *p);
+            auto lastIt = m_buffer.begin() + static_cast<int>(byteSize) - 1;
+            for (auto it = m_buffer.begin(); it != lastIt; ++it)
+                result = calcHashCode(result, *it);
         }
         result = ::zserio::calcHashCode(result, getMaskedLastByte());
     }
