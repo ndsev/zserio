@@ -159,7 +159,7 @@ inline const char* convertBoolToString(bool value)
 template <typename ALLOC, typename T>
 string<ALLOC> toString(T value, const ALLOC& allocator = ALLOC())
 {
-    std::array<char, 24> buffer;
+    std::array<char, 24> buffer = {};
     return string<ALLOC>(convertIntToString(buffer, value), allocator);
 }
 

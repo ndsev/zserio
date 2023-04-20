@@ -116,7 +116,7 @@ CppRuntimeException& operator<<(CppRuntimeException& exception, double value);
 template <typename T, typename std::enable_if<std::is_integral<T>::value, int>::type = 0>
 CppRuntimeException& operator<<(CppRuntimeException& exception, T value)
 {
-    std::array<char, 24> buffer;
+    std::array<char, 24> buffer = {};
     const char* stringValue = convertIntToString(buffer, value);
     return exception << stringValue;
 }

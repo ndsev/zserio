@@ -341,6 +341,7 @@ public:
  * Type information for compound type field.
  */
 template <typename ALLOC = std::allocator<uint8_t>>
+// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 struct BasicFieldInfo
 {
     StringView schemaName; /**< field schema name */
@@ -402,6 +403,7 @@ struct ItemInfo
  * Type information for SQL table column.
  */
 template <typename ALLOC = std::allocator<uint8_t>>
+// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 struct BasicColumnInfo
 {
     StringView schemaName; /**< column schema name */
@@ -435,6 +437,7 @@ struct BasicTemplateArgumentInfo
  * Type information for pubsub message.
  */
 template <typename ALLOC = std::allocator<uint8_t>>
+// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 struct BasicMessageInfo
 {
     StringView schemaName; /**< message schema name */

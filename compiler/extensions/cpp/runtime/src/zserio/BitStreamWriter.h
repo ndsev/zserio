@@ -68,6 +68,7 @@ public:
      * \param bitBuffer External bit buffer to create from.
      */
     template <typename ALLOC>
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
     explicit BitStreamWriter(BasicBitBuffer<ALLOC>& bitBuffer) :
             BitStreamWriter(bitBuffer.getData(), bitBuffer.getBitSize())
     {
