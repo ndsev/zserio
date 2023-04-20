@@ -51,6 +51,6 @@ function(cppcheck_add_custom_command)
             COMMAND ${CPPCHECK_HOME}/cppcheck ${CPPCHECK_VALUE_SOURCE_DIR} --language=c++ --std=c++11
                 --enable=warning,style,performance,portability --error-exitcode=1 --template='gcc' -q
                  ${CPPCHECK_INCLUDE_OPTIONS} ${CPPCHECK_SUPPRESSION_OPTION} ${CPPCHECK_VALUE_OPTIONS}
-            COMMENT "Running cppcheck tool for static analysis")
+            COMMENT "Running cppcheck tool for static analysis (${CPPCHECK_VALUE_TARGET})")
     endif ()
 endfunction()
