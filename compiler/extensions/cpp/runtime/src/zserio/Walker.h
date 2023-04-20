@@ -111,19 +111,19 @@ public:
      */
 
     void beginRoot(const IBasicReflectableConstPtr<ALLOC>&) override {}
-    virtual void endRoot(const IBasicReflectableConstPtr<ALLOC>&) override {}
+    void endRoot(const IBasicReflectableConstPtr<ALLOC>&) override {}
 
-    virtual void beginArray(const IBasicReflectableConstPtr<ALLOC>&,
+    void beginArray(const IBasicReflectableConstPtr<ALLOC>&,
             const BasicFieldInfo<ALLOC>&) override {}
-    virtual void endArray(const IBasicReflectableConstPtr<ALLOC>&,
+    void endArray(const IBasicReflectableConstPtr<ALLOC>&,
             const BasicFieldInfo<ALLOC>&) override {}
 
-    virtual void beginCompound(const IBasicReflectableConstPtr<ALLOC>&,
+    void beginCompound(const IBasicReflectableConstPtr<ALLOC>&,
             const BasicFieldInfo<ALLOC>&, size_t) override {}
-    virtual void endCompound(const IBasicReflectableConstPtr<ALLOC>&,
+    void endCompound(const IBasicReflectableConstPtr<ALLOC>&,
             const BasicFieldInfo<ALLOC>&, size_t) override {}
 
-    virtual void visitValue(const IBasicReflectableConstPtr<ALLOC>&,
+    void visitValue(const IBasicReflectableConstPtr<ALLOC>&,
             const BasicFieldInfo<ALLOC>&, size_t) override {}
 };
 
