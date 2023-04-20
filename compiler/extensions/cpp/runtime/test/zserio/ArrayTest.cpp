@@ -186,12 +186,12 @@ public:
         return endBitPosition - bitPosition;
     }
 
-    size_t initializeOffsets(size_t bitPosition)
+    size_t initializeOffsets(size_t bitPosition) const
     {
         return bitPosition + bitSizeOf(bitPosition);
     }
 
-    size_t initializeOffsets(PackingContextNode& contextNode, size_t bitPosition = 0)
+    size_t initializeOffsets(PackingContextNode& contextNode, size_t bitPosition = 0) const
     {
         size_t endBitPosition = bitPosition;
 

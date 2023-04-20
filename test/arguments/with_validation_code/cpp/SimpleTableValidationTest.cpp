@@ -36,7 +36,7 @@ protected:
             return SIMPLE_TABLE_LOCAL_COUNT;
         }
 
-        size_t getLocalCount1CallCount()
+        size_t getLocalCount1CallCount() const
         {
             return m_localCount1CallCount;
         }
@@ -53,7 +53,7 @@ protected:
             return simpleTableParameterProvider;
         }
 
-        size_t getLocalCount1CallCount()
+        size_t getLocalCount1CallCount() const
         {
             return simpleTableParameterProvider.getLocalCount1CallCount();
         }

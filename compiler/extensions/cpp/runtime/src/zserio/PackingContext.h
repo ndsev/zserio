@@ -252,7 +252,7 @@ private:
         }
     }
 
-    size_t bitSizeOfDescriptor()
+    size_t bitSizeOfDescriptor() const
     {
         if (m_isPacked)
             return 1 + MAX_BIT_NUMBER_BITS;
@@ -281,7 +281,7 @@ private:
         return element;
     }
 
-    void writeDescriptor(BitStreamWriter& out)
+    void writeDescriptor(BitStreamWriter& out) const
     {
         out.writeBool(m_isPacked);
         if (m_isPacked)
