@@ -1056,6 +1056,7 @@ struct ReflectableTraits<ALLOC, BasicBitBuffer<ALLOC>>
  * Base class for reflectable which needs to hold an allocator.
  */
 template <typename ALLOC>
+// NOLINTNEXTLINE(fuchsia-multiple-inheritance)
 class ReflectableAllocatorHolderBase : public ReflectableBase<ALLOC>, public AllocatorHolder<ALLOC>
 {
 public:
