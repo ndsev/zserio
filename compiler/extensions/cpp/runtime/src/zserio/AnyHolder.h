@@ -18,7 +18,7 @@ namespace detail
     class TypeIdHolder
     {
     public:
-        typedef int* type_id;
+        typedef const int* type_id;
 
         template <typename T>
         static type_id get()
