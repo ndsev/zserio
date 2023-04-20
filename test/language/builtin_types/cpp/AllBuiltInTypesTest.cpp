@@ -342,7 +342,7 @@ TEST_F(AllBuiltInTypesTest, stringType)
     const string_type testString("TEST");
     m_allBuiltInTypes.setStringType(testString);
     const string_type& stringType = m_allBuiltInTypes.getStringType();
-    ASSERT_TRUE(stringType.compare(testString) == 0);
+    ASSERT_EQ(stringType, testString);
 }
 
 TEST_F(AllBuiltInTypesTest, externType)

@@ -88,7 +88,7 @@ protected:
             return false;
 
         const unsigned char* readTableName = sqlite3_column_text(statement.get(), 0);
-        if (readTableName == nullptr || m_tableName.compare(reinterpret_cast<const char*>(readTableName)) != 0)
+        if (readTableName == nullptr || m_tableName != reinterpret_cast<const char*>(readTableName))
             return false;
 
         return true;
@@ -109,7 +109,7 @@ protected:
 
             const unsigned char* readColumnName = sqlite3_column_text(statement.get(), 1);
             if (readColumnName != nullptr &&
-                    m_virtualColumnName.compare(reinterpret_cast<const char*>(readColumnName)) == 0)
+                    m_virtualColumnName == reinterpret_cast<const char*>(readColumnName))
             {
                 isFound = true;
             }

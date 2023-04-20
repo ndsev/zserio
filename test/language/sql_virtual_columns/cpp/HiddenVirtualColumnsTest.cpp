@@ -98,7 +98,7 @@ protected:
             return false;
 
         const unsigned char* readTableName = sqlite3_column_text(statement.get(), 0);
-        if (readTableName == nullptr || m_tableName.compare(reinterpret_cast<const char*>(readTableName)) != 0)
+        if (readTableName == nullptr || m_tableName != reinterpret_cast<const char*>(readTableName))
             return false;
 
         return true;

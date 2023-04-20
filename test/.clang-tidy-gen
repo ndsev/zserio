@@ -143,7 +143,7 @@ Checks: "-*,\
 #(obfuscates code)  readability-simplify-boolean-expr,\
   readability-simplify-subscript-expr,\
   readability-static-definition-in-anonymous-namespace,\
-#  readability-string-compare,\
+  readability-string-compare,\
   readability-uniqueptr-delete-release,\
 #(generated expressions break this rule)  readability-uppercase-literal-suffix,\
   readability-use-anyofallof\
