@@ -127,7 +127,7 @@ TEST(AllocatorPropagatingCopyTest, copyInplaceOptional)
 {
     RegularWithAllocatorSupport::allocator_type allocator;
 
-    const InplaceOptionalHolder<RegularWithAllocatorSupport> emptyOptional;
+    const InplaceOptionalHolder<RegularWithAllocatorSupport> emptyOptional{};
     InplaceOptionalHolder<RegularWithAllocatorSupport>
             emptyOptionalCopy(allocatorPropagatingCopy(emptyOptional, allocator));
 

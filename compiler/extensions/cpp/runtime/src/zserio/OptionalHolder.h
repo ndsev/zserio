@@ -435,7 +435,7 @@ public:
     /**
      * Constructor.
      */
-    in_place_storage() {}
+    in_place_storage() = default;
 
     /**
      * Destructor.
@@ -529,8 +529,7 @@ public:
     /**
      * Empty constructor which creates an unset holder.
      */
-    constexpr inplace_optional_holder() noexcept
-    {}
+    constexpr inplace_optional_holder() noexcept = default;
 
     /**
      * Constructor from zserio::NullOpt constant to create an unset holder.

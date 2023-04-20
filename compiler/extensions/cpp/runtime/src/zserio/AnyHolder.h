@@ -207,7 +207,7 @@ namespace detail
         }
 
     private:
-        NonHeapHolder() {}
+        NonHeapHolder() = default;
     };
 
     template <typename ALLOC>

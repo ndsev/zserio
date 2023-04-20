@@ -22,8 +22,7 @@ namespace detail
 template <typename T, std::size_t Extent>
 struct SpanStorage
 {
-    SpanStorage()
-    {}
+    SpanStorage() = default;
 
     SpanStorage(T* data, std::size_t) :
         m_data(data)
@@ -36,8 +35,7 @@ struct SpanStorage
 template <typename T>
 struct SpanStorage<T, dynamic_extent>
 {
-    SpanStorage()
-    {}
+    SpanStorage() = default;
 
     SpanStorage(T* data, std::size_t size) :
         m_data(data), m_size(size)
@@ -78,7 +76,7 @@ public:
      */
     template <size_type ext = Extent,
         typename std::enable_if<(ext == 0 || ext == dynamic_extent), int>::type = 0>
-    constexpr Span() noexcept
+    constexpr Span() noexcept // NOLINT(modernize-use-equals-default) // false-positive
     {}
 
     /**

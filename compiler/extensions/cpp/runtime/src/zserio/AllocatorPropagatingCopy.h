@@ -18,7 +18,7 @@ namespace zserio
  */
 struct PropagateAllocatorT
 {
-    constexpr explicit PropagateAllocatorT() {}
+    constexpr explicit PropagateAllocatorT() = default;
 };
 
 /**

@@ -21,7 +21,7 @@ public:
     /**
      * Constructor.
      */
-    MemoryResource() {}
+    MemoryResource() = default;
 
     /**
      * Destructor.

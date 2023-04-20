@@ -44,7 +44,7 @@ public:
     /**
      * Constructor. Initializes empty view.
      */
-    constexpr BasicStringView() noexcept {}
+    constexpr BasicStringView() noexcept = default;
 
     /**
      * Constructor. Initializes string view to given null-terminated string.

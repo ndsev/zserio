@@ -168,7 +168,7 @@ TEST(HashCodeUtilTest, objectType)
 TEST(HashCodeUtilTest, emptyOptionalHolderType)
 {
     const uint32_t hashSeed = 1;
-    const InplaceOptionalHolder<DummyObject> optionalHolder;
+    const InplaceOptionalHolder<DummyObject> optionalHolder{};
     EXPECT_EQ(HASH_PRIME_NUMBER, calcHashCode(hashSeed, optionalHolder));
 }
 
