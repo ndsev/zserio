@@ -192,7 +192,7 @@ template <typename CPP_RUNTIME_EXCEPTION, typename T>
 detail::CppRuntimeExceptionRValueInsertion<CPP_RUNTIME_EXCEPTION, T>
 operator<<(CPP_RUNTIME_EXCEPTION&& exception, const T& value)
 {
-    exception << value;
+    exception << value; // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
     return std::forward<CPP_RUNTIME_EXCEPTION>(exception);
 }
 
