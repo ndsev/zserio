@@ -43,8 +43,8 @@ protected:
             row.setUint16Value(2 * static_cast<uint16_t>(i));
             row.setUint32Value(3 * static_cast<uint32_t>(i));
             row.setUint64Value(4 * i);
-            row.setFloat16Value(1.1f * static_cast<float>(i));
-            row.setFloat32Value(1.2f * static_cast<float>(i));
+            row.setFloat16Value(1.1F * static_cast<float>(i));
+            row.setFloat32Value(1.2F * static_cast<float>(i));
             row.setFloat64Value(1.3 * static_cast<double>(i));
             row.setStringValue("stringValue" + zserio::toString(i, m_database->get_allocator()));
         }

@@ -74,7 +74,7 @@ protected:
         row.setAge(std::numeric_limits<int64_t>::max());
         row.setName(name);
         row.setIsValid(true);
-        row.setSalary(9.9f);
+        row.setSalary(9.9F);
         row.setBonus(5.5);
         row.setValue(0x34);
         row.setColor(TestEnum::RED);

@@ -129,7 +129,7 @@ inline void convertFloatToString(std::array<char, 24>& integerPartBuffer,
     {
         const int64_t integerPart = static_cast<int64_t>(value);
         const int64_t floatingPart = static_cast<int64_t>(
-                (value - static_cast<float>(integerPart)) * 1E3f); // 3 digits
+                (value - static_cast<float>(integerPart)) * 1e3F); // 3 digits
         const int64_t floatingPartAbs = (floatingPart < 0) ? 0 - floatingPart : floatingPart;
         integerPartString = convertIntToString(integerPartBuffer, integerPart);
         floatingPartString = convertIntToString(floatingPartBuffer, floatingPartAbs);

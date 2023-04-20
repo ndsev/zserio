@@ -145,7 +145,7 @@ Checks: "-*,\
   readability-static-definition-in-anonymous-namespace,\
 #  readability-string-compare,\
   readability-uniqueptr-delete-release,\
-#  readability-uppercase-literal-suffix,\
+#(generated expressions break this rule)  readability-uppercase-literal-suffix,\
   readability-use-anyofallof\
   "
 

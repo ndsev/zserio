@@ -62,7 +62,7 @@ TEST_F(StructureNameClashingWithJavaTest, bitSizeOf)
         Integer{static_cast<int32_t>(0)},
         Long{static_cast<int64_t>(0)},
         BigInteger{static_cast<uint64_t>(0)},
-        Float{0.0f},
+        Float{0.0F},
         Double{0.0},
         String{""}
     };

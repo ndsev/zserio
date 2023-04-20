@@ -13,7 +13,7 @@ TEST(FloatTypeTest, result)
     const float floatValue = 15.0;
     floatTypeExpression.setFloatValue(floatValue);
 
-    const bool result = (floatValue * 2.0f + 1.0f / 0.5f > 1.0f);
+    const bool result = (floatValue * 2.0F + 1.0F / 0.5F > 1.0F);
     ASSERT_EQ(result, floatTypeExpression.funcResult());
 }
 

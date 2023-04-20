@@ -71,16 +71,16 @@ TEST(LiteralsTest, Binary)
 
 TEST(LiteralsTest, float16Literal)
 {
-    float diff = 15.2f - FLOAT16;
-    if (diff < 0.0f)
+    float diff = 15.2F - FLOAT16;
+    if (diff < 0.0F)
         diff = -diff;
     ASSERT_TRUE(diff <= std::numeric_limits<float>::epsilon());
 }
 
 TEST(LiteralsTest, float32Literal)
 {
-    float diff = 15.23f - FLOAT32;
-    if (diff < 0.0f)
+    float diff = 15.23F - FLOAT32;
+    if (diff < 0.0F)
         diff = -diff;
     ASSERT_TRUE(diff <= std::numeric_limits<float>::epsilon());
 }

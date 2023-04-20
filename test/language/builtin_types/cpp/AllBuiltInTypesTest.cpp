@@ -434,7 +434,7 @@ TEST_F(AllBuiltInTypesTest, readWrite)
     const int16_t variableIntfieldTypeMax = static_cast<int16_t>((1U << 13U) - 1);
     m_allBuiltInTypes.setVariableIntfieldType(variableIntfieldTypeMax);
     m_allBuiltInTypes.setVariableIntfield8Type(std::numeric_limits<int8_t>::max());
-    m_allBuiltInTypes.setFloat16Type(1.0f);
+    m_allBuiltInTypes.setFloat16Type(1.0F);
     m_allBuiltInTypes.setFloat32Type(std::numeric_limits<float>::max());
     m_allBuiltInTypes.setFloat64Type(std::numeric_limits<double>::max());
     m_allBuiltInTypes.setVaruint16Type(static_cast<uint16_t>((1U << 15U) - 1));
