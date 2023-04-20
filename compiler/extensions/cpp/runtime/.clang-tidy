@@ -140,7 +140,7 @@ Checks: "-*,\
   readability-redundant-function-ptr-dereference,\
   readability-redundant-preprocessor,\
   readability-redundant-smartptr-get,\
-  readability-simplify-boolean-expr,\
+#(obfuscates code)  readability-simplify-boolean-expr,\
   readability-simplify-subscript-expr,\
   readability-static-definition-in-anonymous-namespace,\
   readability-string-compare,\
