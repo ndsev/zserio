@@ -122,7 +122,7 @@ Checks: "-*,\
   performance-type-promotion-in-math-fn,\
   performance-unnecessary-value-param,\
   portability-simd-intrinsics,\
-#  readability-braces-around-statements,\
+#(obfuscates code)  readability-braces-around-statements,\
   readability-const-return-type,\
   readability-container-data-pointer,\
   readability-delete-null-pointer,\
