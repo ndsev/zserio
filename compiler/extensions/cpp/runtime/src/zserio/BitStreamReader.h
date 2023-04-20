@@ -38,6 +38,11 @@ public:
         explicit ReaderContext(Span<const uint8_t> readBuffer, size_t readBufferBitSize);
 
         /**
+         * Destructor.
+         */
+        ~ReaderContext() = default;
+
+        /**
          * Copying and moving is disallowed!
          * \{
          */

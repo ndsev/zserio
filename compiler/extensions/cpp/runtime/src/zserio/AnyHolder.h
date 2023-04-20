@@ -34,7 +34,7 @@ namespace detail
     class IHolder
     {
     public:
-        virtual ~IHolder() {}
+        virtual ~IHolder() = default;
         virtual bool isSet() const = 0;
         virtual IHolder* clone(const ALLOC& allocator) const = 0;
         virtual IHolder* clone(void* storage) const = 0;

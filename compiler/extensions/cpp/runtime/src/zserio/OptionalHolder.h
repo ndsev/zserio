@@ -237,6 +237,11 @@ public:
     {}
 
     /**
+     * Destructor.
+     */
+    ~heap_optional_holder() = default;
+
+    /**
      * Copy constructor.
      *
      * \param other Other holder to copy.

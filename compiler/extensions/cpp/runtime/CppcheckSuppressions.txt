@@ -16,9 +16,9 @@ mismatchingContainers:*/test/zserio/AnyHolderTest.cpp:198
 noExplicitConstructor:*/src/zserio/OptionalHolder.h:204
 noExplicitConstructor:*/src/zserio/OptionalHolder.h:214
 noExplicitConstructor:*/src/zserio/OptionalHolder.h:224
-noExplicitConstructor:*/src/zserio/OptionalHolder.h:530
-noExplicitConstructor:*/src/zserio/OptionalHolder.h:538
-noExplicitConstructor:*/src/zserio/OptionalHolder.h:549
+noExplicitConstructor:*/src/zserio/OptionalHolder.h:535
+noExplicitConstructor:*/src/zserio/OptionalHolder.h:543
+noExplicitConstructor:*/src/zserio/OptionalHolder.h:554
 noExplicitConstructor:*/src/zserio/Span.h:113
 noExplicitConstructor:*/src/zserio/Span.h:125
 noExplicitConstructor:*/src/zserio/Span.h:137
@@ -28,7 +28,7 @@ noExplicitConstructor:*/src/zserio/StringView.h:54
 noExplicitConstructor:*/src/zserio/StringView.h:74
 noExplicitConstructor:*/test/zserio/BuiltInOperatorsTest.cpp:26
 noExplicitConstructor:*/test/zserio/HashCodeUtilTest.cpp:34
-noExplicitConstructor:*/test/zserio/TrackingAllocator.h:66
+noExplicitConstructor:*/test/zserio/TrackingAllocator.h:78
 noExplicitConstructor:*/test/zserio/ZserioTreeCreatorTestObject.h:63
 uninitMemberVar:*/src/zserio/Reflectable.h:160
 uninitMemberVar:*/test/zserio/DebugStringUtilTest.cpp:187
