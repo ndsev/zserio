@@ -455,6 +455,12 @@ public:
 
     ~TemplatableTypeInfoBase() override = 0;
 
+    TemplatableTypeInfoBase(const TemplatableTypeInfoBase&) = default;
+    TemplatableTypeInfoBase& operator=(const TemplatableTypeInfoBase&) = default;
+
+    TemplatableTypeInfoBase(TemplatableTypeInfoBase&&) = default;
+    TemplatableTypeInfoBase& operator=(TemplatableTypeInfoBase&&) = default;
+
     StringView getTemplateName() const override;
     Span<const BasicTemplateArgumentInfo<ALLOC>> getTemplateArguments() const override;
 
@@ -492,6 +498,12 @@ public:
             Span<const BasicFunctionInfo<ALLOC>> functions);
 
     ~CompoundTypeInfoBase() override = 0;
+
+    CompoundTypeInfoBase(const CompoundTypeInfoBase&) = default;
+    CompoundTypeInfoBase& operator=(const CompoundTypeInfoBase&) = default;
+
+    CompoundTypeInfoBase(CompoundTypeInfoBase&&) = default;
+    CompoundTypeInfoBase& operator=(CompoundTypeInfoBase&&) = default;
 
     Span<const BasicFieldInfo<ALLOC>> getFields() const override;
     Span<const BasicParameterInfo<ALLOC>> getParameters() const override;
@@ -783,6 +795,8 @@ public:
     explicit RecursiveTypeInfo(TypeInfoFunc typeInfoFunc) :
             m_typeInfoFunc(typeInfoFunc)
     {}
+
+    ~RecursiveTypeInfo() override = default;
 
     /**
      * Copying and moving is disallowed!

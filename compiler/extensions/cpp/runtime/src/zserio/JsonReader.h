@@ -34,6 +34,7 @@ public:
     explicit BitBufferAdapter(const ALLOC& allocator) :
             AllocatorHolder<ALLOC>(allocator), m_state(VISIT_KEY)
     {}
+    ~BitBufferAdapter() override = default;
 
     BitBufferAdapter(BitBufferAdapter& other) = delete;
     BitBufferAdapter& operator=(BitBufferAdapter& other) = delete;
@@ -88,6 +89,7 @@ public:
     explicit BytesAdapter(const ALLOC& allocator) :
             AllocatorHolder<ALLOC>(allocator), m_state(VISIT_KEY)
     {}
+    ~BytesAdapter() override = default;
 
     BytesAdapter(BytesAdapter& other) = delete;
     BytesAdapter& operator=(BytesAdapter& other) = delete;
