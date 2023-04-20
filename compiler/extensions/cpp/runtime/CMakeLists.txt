@@ -75,6 +75,7 @@ install(DIRECTORY src/ DESTINATION cpp
 # add clang-tidy custom target
 include(clang_tidy_utils)
 clang_tidy_add_custom_target(ZserioCppRuntime-clang-tidy
+                             DEPENDS ZserioCppRuntime
                              SOURCES_GLOBS
                                 "${CMAKE_CURRENT_SOURCE_DIR}/src/zserio/*.h"
                                 "${CMAKE_CURRENT_SOURCE_DIR}/src/zserio/*.cpp"
@@ -83,8 +84,8 @@ clang_tidy_add_custom_target(ZserioCppRuntime-clang-tidy
                              OUTPUT_FILE "clang-tidy.log")
 
 clang_tidy_add_custom_target(ZserioCppRuntimeTest-clang-tidy
+                             DEPENDS ZserioCppRuntimeTest
                              SOURCES_GLOBS
-                                "${CMAKE_CURRENT_SOURCE_DIR}/test/zserio/*.h"
                                 "${CMAKE_CURRENT_SOURCE_DIR}/test/zserio/*.cpp"
                              BUILD_PATH "${CMAKE_BINARY_DIR}"
                              CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/.clang-tidy-test"

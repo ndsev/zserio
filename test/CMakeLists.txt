@@ -111,9 +111,11 @@ gtest_add_tests(${PROJECT_NAME} "--gtest_output=xml" ${TEST_SOURCES_LIST})
 # add clang-tidy custom target
 include(clang_tidy_utils)
 clang_tidy_add_custom_target(${PROJECT_NAME}-clang-tidy
+                             DEPENDS ${PROJECT_NAME}
                              SOURCES "${TEST_SOURCES_LIST}"
                              BUILD_PATH "${CMAKE_BINARY_DIR}"
-                             CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/.clang-tidy")
+                             CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/.clang-tidy"
+                             HEADER_FILTER "${CMAKE_CURRENT_SOURCE_DIR}/.*")
 
 # add cppcheck custom command
 include(cppcheck_utils)

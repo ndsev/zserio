@@ -732,7 +732,6 @@ compile_cpp_for_target()
     fi
 
     if [ ! -z "${CLANG_TIDY_BIN}" ] ; then
-        echo "Using clang-tidy: ${CLANG_TIDY_BIN}"
         CMAKE_ARGS=("${CMAKE_ARGS[@]}" "-DCLANG_TIDY_BIN=${CLANG_TIDY_BIN}")
     else
         CMAKE_ARGS=("${CMAKE_ARGS[@]}" "-UCLANG_TIDY_BIN")

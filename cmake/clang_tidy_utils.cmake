@@ -8,11 +8,13 @@
 #                     Use -DCMAKE_EXPORT_COMPILE_COMMANDS=ON!
 #   CONFIG_FILE       Path to .clang-tidy config file.
 #   HEADER_FILTER     Optional header filter which will be passed as a --header-filter clang-tidy
-#                     argument. Default is '_NEVER_MATCH'.
+#                     argument. Default is '.*'.
 #   LINE_FILTER_FILE  Optional line filter file which content will be passed as a --line-filter clang-tidy
 #                     argument. Default is '[]'.
 #   OUTPUT_FILE       Optional file name where the clang-tidy output will be stored.
 #                     Default is 'clang-tidy.log'.
+#
+# Note that only implementation files ('*.cpp') are used as sources.
 function (clang_tidy_add_custom_target CLANG_TIDY_TARGET)
     include(CMakeParseArguments)
     cmake_parse_arguments(CLANG_TIDY
@@ -34,11 +36,10 @@ function (clang_tidy_add_custom_target CLANG_TIDY_TARGET)
     endif ()
 
     # process optional arguments
-    list(APPEND CLANG_TIDY_TARGET_DEPENDENCIES ${CLANG_TIDY_DEPENDS})
     if (DEFINED CLANG_TIDY_HEADER_FILTER)
         set(HEADER_FILTER "${CLANG_TIDY_HEADER_FILTER}")
     else ()
-        set(HEADER_FILTER "_NEVER_MATCH")
+        set(HEADER_FILTER ".*")
     endif ()
     if (EXISTS "${CLANG_TIDY_LINE_FILTER_FILE}")
         file(READ ${CLANG_TIDY_LINE_FILTER_FILE} LINE_FILTER)
@@ -60,6 +61,7 @@ function (clang_tidy_add_custom_target CLANG_TIDY_TARGET)
         list(APPEND CLANG_TIDY_SOURCES_LIST ${MATCHING_SOURCES})
     endforeach ()
     list(REMOVE_DUPLICATES CLANG_TIDY_SOURCES_LIST)
+    list(FILTER CLANG_TIDY_SOURCES_LIST INCLUDE REGEX ".*\.c(pp)?$")
 
     if (CLANG_TIDY_BIN)
         add_custom_command(
@@ -75,7 +77,7 @@ function (clang_tidy_add_custom_target CLANG_TIDY_TARGET)
             COMMAND "${CMAKE_COMMAND}" -E touch "${OUTPUT_FILE}"
             COMMAND "${CMAKE_COMMAND}" -E make_directory clang-tidy
             COMMAND "${CMAKE_COMMAND}" -E touch "${OUTPUT_TIMESTAMP_FILE}"
-            DEPENDS "${OUTPUT_FILE}"
+            DEPENDS "${OUTPUT_FILE}" "${CLANG_TIDY_DEPENDS}"
             COMMENT "Clear ${OUTPUT_FILE}"
         )
 
@@ -104,7 +106,6 @@ function (clang_tidy_add_custom_target CLANG_TIDY_TARGET)
             math(EXPR INDEX "${INDEX} + 1")
         endforeach ()
 
-        add_custom_target(${CLANG_TIDY_TARGET} ALL
-            DEPENDS ${CLANG_TIDY_TARGET_DEPENDENCIES})
+        add_custom_target(${CLANG_TIDY_TARGET} ALL DEPENDS ${CLANG_TIDY_TARGET_DEPENDENCIES})
     endif ()
 endfunction()

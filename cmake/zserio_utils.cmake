@@ -177,7 +177,7 @@ function(zserio_add_library)
         # add clang-tidy custom target
         include(clang_tidy_utils)
         clang_tidy_add_custom_target(${VALUE_TARGET}-clang-tidy
-                                     DEPENDS ${VALUE_TARGET}_generate
+                                     DEPENDS ${VALUE_TARGET}
                                      SOURCES "${VALUE_OUT_FILES}"
                                      BUILD_PATH "${CMAKE_BINARY_DIR}"
                                      CONFIG_FILE "${CMAKE_SOURCE_DIR}/.clang-tidy-gen")
