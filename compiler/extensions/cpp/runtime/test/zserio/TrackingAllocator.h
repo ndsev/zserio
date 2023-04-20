@@ -71,8 +71,8 @@ public:
     TrackingAllocatorImpl(const TrackingAllocatorImpl&) = default;
     TrackingAllocatorImpl& operator=(const TrackingAllocatorImpl&) = default;
 
-    TrackingAllocatorImpl(TrackingAllocatorImpl&&) = default;
-    TrackingAllocatorImpl& operator=(TrackingAllocatorImpl&&) = default;
+    TrackingAllocatorImpl(TrackingAllocatorImpl&&) = delete;
+    TrackingAllocatorImpl& operator=(TrackingAllocatorImpl&&) = delete;
 
     template <typename Other>
     TrackingAllocatorImpl(const TrackingAllocatorImpl<Other>& other) :
