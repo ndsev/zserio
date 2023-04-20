@@ -111,7 +111,7 @@ public:
     template <size_type N, size_type ext = Extent,
         typename std::enable_if<(ext == dynamic_extent || ext == N), int>::type = 0>
     constexpr Span(element_type(&arr)[N]) noexcept : // NOLINT(cppcoreguidelines-avoid-c-arrays)
-        m_storage(arr, N)
+        m_storage(arr, N) // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
     {}
 
     /**

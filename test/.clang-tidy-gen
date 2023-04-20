@@ -59,7 +59,7 @@ Checks: "-*,\
   cppcoreguidelines-macro-usage,\
   cppcoreguidelines-narrowing-conversions,\
   cppcoreguidelines-no-malloc,\
-  cppcoreguidelines-pro-bounds-array-to-pointer-decay,\
+#(generated template ctor break this rule)  cppcoreguidelines-pro-bounds-array-to-pointer-decay,\
 #  cppcoreguidelines-pro-bounds-constant-array-index,\
   cppcoreguidelines-pro-bounds-pointer-arithmetic,\
 #  cppcoreguidelines-pro-type-const-cast,\

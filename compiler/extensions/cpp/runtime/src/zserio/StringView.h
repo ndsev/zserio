@@ -894,6 +894,7 @@ template<typename CharT, size_t N>
 constexpr BasicStringView<CharT> makeStringView(const CharT(&str)[N]) // NOLINT(cppcoreguidelines-avoid-c-arrays)
 {
     // Note: strip the very last null terminator, if it is there
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
     return BasicStringView<CharT>(str, (N > 0 && str[N - 1] == CharT()) ? (N - 1) : N);
 }
 
