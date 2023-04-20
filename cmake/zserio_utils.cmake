@@ -180,7 +180,8 @@ function(zserio_add_library)
                                      DEPENDS ${VALUE_TARGET}
                                      SOURCES "${VALUE_OUT_FILES}"
                                      BUILD_PATH "${CMAKE_BINARY_DIR}"
-                                     CONFIG_FILE "${CMAKE_SOURCE_DIR}/.clang-tidy-gen")
+                                     CONFIG_FILE "${CMAKE_SOURCE_DIR}/.clang-tidy-gen"
+                                     HEADER_FILTER "${VALUE_OUT_DIR}/.*")
 
         # add cppcheck custom command
         include(cppcheck_utils)
