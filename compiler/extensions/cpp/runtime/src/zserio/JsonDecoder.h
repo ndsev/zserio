@@ -128,7 +128,7 @@ private:
     template <typename T>
     DecoderResult decodeLiteral(const char* input, StringView literal, T&& value);
     DecoderResult decodeString(const char* input);
-    static bool decodeUnicodeEscape(const char*& input, string<ALLOC>& value);
+    static bool decodeUnicodeEscape(const char*& pInput, string<ALLOC>& value);
     static char decodeHex(char ch);
     size_t checkNumber(const char* input, bool& isDouble);
     DecoderResult decodeNumber(const char* input);

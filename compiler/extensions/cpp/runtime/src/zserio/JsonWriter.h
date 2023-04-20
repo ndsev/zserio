@@ -164,7 +164,7 @@ private:
 
     void writeIndent();
     void writeKey(StringView key);
-    void writeValue(const IBasicReflectableConstPtr<ALLOC>& value);
+    void writeValue(const IBasicReflectableConstPtr<ALLOC>& reflectable);
     void writeBitBuffer(const BasicBitBuffer<ALLOC>& bitBuffer);
     void writeBytes(Span<const uint8_t> value);
     void writeStringifiedEnum(const IBasicReflectableConstPtr<ALLOC>& reflectable);

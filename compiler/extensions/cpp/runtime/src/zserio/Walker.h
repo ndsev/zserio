@@ -65,9 +65,9 @@ public:
     /**
      * Walks given reflectable zserio compound object.
      *
-     * \param reflectable Zserio compound object to walk.
+     * \param compound Zserio compound object to walk.
      */
-    void walk(const IBasicReflectableConstPtr<ALLOC>& reflectable);
+    void walk(const IBasicReflectableConstPtr<ALLOC>& compound);
 
 private:
     void walkFields(const IBasicReflectableConstPtr<ALLOC>& compound, const IBasicTypeInfo<ALLOC>& typeInfo);
