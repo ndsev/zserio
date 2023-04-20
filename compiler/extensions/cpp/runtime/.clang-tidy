@@ -67,7 +67,7 @@ Checks: "-*,\
   cppcoreguidelines-pro-type-member-init,\
 #(FloatUtil, FileUtil, AhyHolder, OptionalHolder break this rule)  cppcoreguidelines-pro-type-reinterpret-cast,\
   cppcoreguidelines-pro-type-static-cast-downcast,\
-  cppcoreguidelines-pro-type-union-access,\
+#(AnyHolder break this rule)  cppcoreguidelines-pro-type-union-access,\
   cppcoreguidelines-pro-type-vararg,\
   cppcoreguidelines-slicing,\
   cppcoreguidelines-special-member-functions,\
