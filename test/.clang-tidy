@@ -117,6 +117,7 @@ Checks: "-*,\
   performance-inefficient-string-concatenation,\
   performance-inefficient-vector-operation,\
 #  performance-move-const-arg,\
+  performance-move-const-arg,\
   performance-no-automatic-move,\
   performance-trivially-destructible,\
   performance-type-promotion-in-math-fn,\
@@ -156,6 +157,8 @@ CheckOptions:
     value: true
   - key: misc-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic
     value: true
+  - key: performance-move-const-arg.CheckTriviallyCopyableMove
+    value: false # move constructors are checked in language tests
   - key: readability-inconsistent-declaration-parameter-name.Strict
     value: true
   - key: readability-identifier-naming.UnionCase
