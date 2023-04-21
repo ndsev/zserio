@@ -13,7 +13,7 @@ template <typename ALLOC>
 class TestPubsub : public zserio::IPubsub, public zserio::AllocatorHolder<ALLOC>
 {
 public:
-    TestPubsub(const ALLOC& allocator = ALLOC()) :
+    explicit TestPubsub(const ALLOC& allocator = ALLOC()) :
             zserio::AllocatorHolder<ALLOC>(allocator),
             m_subscriptions(allocator)
     {}
