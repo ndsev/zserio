@@ -51,7 +51,7 @@ public:
      *
      * \param str Input null-terminated string.
      */
-    BasicStringView(const const_pointer str) noexcept :
+    BasicStringView(const const_pointer str) noexcept : // NOLINT(google-explicit-constructor)
         m_data(str), m_size(Traits::length(str))
     {}
 
@@ -71,6 +71,7 @@ public:
      * \param str Input string.
      */
     template<typename ALLOC>
+    // NOLINTNEXTLINE(google-explicit-constructor)
     constexpr BasicStringView(const std::basic_string<CharT, Traits, ALLOC>& str) noexcept :
         m_data(str.data()), m_size(str.size())
     {}

@@ -52,7 +52,14 @@ public:
      *
      * \param allocator Allocator to use for internal vector allocation.
      */
-    BasicBitBuffer(const ALLOC& allocator = ALLOC());
+    BasicBitBuffer();
+
+    /**
+     * Constructor from given allocator.
+     *
+     * \param allocator Allocator to use for internal vector allocation.
+     */
+    explicit BasicBitBuffer(const ALLOC& allocator);
 
     /**
      * Constructor from bit size.
@@ -195,6 +202,12 @@ private:
     vector<uint8_t, ALLOC> m_buffer;
     size_t m_bitSize;
 };
+
+template <typename ALLOC>
+BasicBitBuffer<ALLOC>::BasicBitBuffer() :
+        m_buffer(ALLOC()), m_bitSize(0)
+{
+}
 
 template <typename ALLOC>
 BasicBitBuffer<ALLOC>::BasicBitBuffer(const ALLOC& allocator) :

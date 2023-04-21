@@ -17,11 +17,18 @@ public:
     using allocator_type = ALLOC;
 
     /**
+     * Empty constructor.
+     */
+    AllocatorHolder() :
+        m_allocator(allocator_type())
+    {}
+
+    /**
      * Constructor from given allocator.
      *
      * \param allocator Allocator to be stored.
      */
-    AllocatorHolder(const allocator_type &allocator = allocator_type()) :
+    explicit AllocatorHolder(const allocator_type &allocator) :
         m_allocator(allocator)
     {}
 

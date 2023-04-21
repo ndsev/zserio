@@ -238,7 +238,14 @@ public:
     /**
      * Empty constructor.
      */
-    AnyHolder(const ALLOC& allocator = ALLOC()) : AllocatorHolder<ALLOC>(allocator)
+    AnyHolder() : AnyHolder(ALLOC())
+    {
+    }
+
+    /**
+     * Constructor from given allocator
+     */
+    explicit AnyHolder(const ALLOC& allocator) : AllocatorHolder<ALLOC>(allocator)
     {
         m_untypedHolder.heap = nullptr;
     }

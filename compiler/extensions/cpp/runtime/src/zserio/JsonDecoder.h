@@ -81,11 +81,18 @@ public:
     };
 
     /**
-     * Constructor.
+     * Empty constructor.
+     */
+    BasicJsonDecoder() :
+            AllocatorHolder<ALLOC>(ALLOC())
+    {}
+
+    /**
+     * Constructor from given allocator.
      *
      * \param allocator Allocator to use.
      */
-    BasicJsonDecoder(const ALLOC& allocator = ALLOC()) :
+    explicit BasicJsonDecoder(const ALLOC& allocator) :
             AllocatorHolder<ALLOC>(allocator)
     {}
 
