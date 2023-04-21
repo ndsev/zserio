@@ -242,7 +242,7 @@ public:
     {
         const size_t len = static_cast<size_t>(readVarSize());
         const BitPosType beginBitPosition = getBitPosition();
-        if ((beginBitPosition & 0x07) != 0)
+        if ((beginBitPosition & 0x07U) != 0)
         {
             // we are not aligned to byte
             vector<uint8_t, ALLOC> value{alloc};
@@ -272,7 +272,7 @@ public:
     {
         const size_t len = static_cast<size_t>(readVarSize());
         const BitPosType beginBitPosition = getBitPosition();
-        if ((beginBitPosition & 0x07) != 0)
+        if ((beginBitPosition & 0x07U) != 0)
         {
             // we are not aligned to byte
             string<ALLOC> value{alloc};
@@ -314,7 +314,7 @@ public:
         Span<uint8_t> buffer = bitBuffer.getData();
         const BitPosType beginBitPosition = getBitPosition();
         const Span<uint8_t>::iterator itEnd = buffer.begin() + numBytesToRead;
-        if ((beginBitPosition & 0x07) != 0)
+        if ((beginBitPosition & 0x07U) != 0)
         {
             // we are not aligned to byte
             for (Span<uint8_t>::iterator it = buffer.begin(); it != itEnd; ++it)
@@ -329,7 +329,7 @@ public:
         }
 
         if (numRestBits > 0)
-            *itEnd = static_cast<uint8_t>(readBits(numRestBits) << (8 - numRestBits));
+            *itEnd = static_cast<uint8_t>(readBits(numRestBits) << (8U - numRestBits));
 
         return bitBuffer;
     }

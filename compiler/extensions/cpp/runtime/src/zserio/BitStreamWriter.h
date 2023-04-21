@@ -245,7 +245,7 @@ public:
         const uint8_t numRestBits = static_cast<uint8_t>(bitSize - numBytesToWrite * 8);
         const BitPosType beginBitPosition = getBitPosition();
         const Span<const uint8_t>::iterator itEnd = buffer.begin() + numBytesToWrite;
-        if ((beginBitPosition & 0x07) != 0)
+        if ((beginBitPosition & 0x07U) != 0)
         {
             // we are not aligned to byte
             for (Span<const uint8_t>::iterator it = buffer.begin(); it != itEnd; ++it)
@@ -263,7 +263,7 @@ public:
         }
 
         if (numRestBits > 0)
-            writeUnsignedBits(*itEnd >> (8 - numRestBits), numRestBits);
+            writeUnsignedBits(*itEnd >> (8U - numRestBits), numRestBits);
     }
 
     /**

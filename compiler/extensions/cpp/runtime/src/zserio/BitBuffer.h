@@ -369,7 +369,7 @@ uint8_t BasicBitBuffer<ALLOC>::getMaskedLastByte() const
     const uint8_t lastByteBits = static_cast<uint8_t>(m_bitSize - 8 * roundedByteSize);
 
     return (lastByteBits == 0) ? m_buffer[roundedByteSize - 1] :
-            (m_buffer[roundedByteSize] & (0xFF << (8 - lastByteBits)));
+            (m_buffer[roundedByteSize] & (0xFFU << (8U - lastByteBits)));
 }
 
 /** Typedef to BitBuffer provided for convenience - using std::allocator<uint8_t>. */

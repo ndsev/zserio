@@ -50,8 +50,8 @@ unusedStructMember:*/src/zserio/ITypeInfo.h:445
 unusedStructMember:*/src/zserio/ITypeInfo.h:446
 unusedStructMember:*/src/zserio/ValidationSqliteUtil.h:29
 unusedStructMember:*/src/zserio/ValidationSqliteUtil.h:30
-useStlAlgorithm:*/src/zserio/HashCodeUtil.h:103
-useStlAlgorithm:*/src/zserio/HashCodeUtil.h:152
+useStlAlgorithm:*/src/zserio/HashCodeUtil.h:104
+useStlAlgorithm:*/src/zserio/HashCodeUtil.h:153
 useStlAlgorithm:*/src/zserio/JsonWriter.h:497
 useStlAlgorithm:*/src/zserio/Walker.h:429
 useStlAlgorithm:*/src/zserio/ZserioTreeCreator.h:164

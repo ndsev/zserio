@@ -23,7 +23,7 @@ inline uint8_t absDeltaBitLength(uint64_t absDelta)
     while (absDelta > 0)
     {
         result++;
-        absDelta >>= 1;
+        absDelta >>= 1U;
     }
 
     return result;
