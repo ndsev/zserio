@@ -97,7 +97,7 @@ Checks: "-*,\
   modernize-avoid-bind,\
   modernize-deprecated-headers,\
   modernize-deprecated-ios-base-aliases,\
-#  modernize-loop-convert,\
+  modernize-loop-convert,\
   modernize-make-shared,\
   modernize-make-unique,\
   modernize-redundant-void-arg,\

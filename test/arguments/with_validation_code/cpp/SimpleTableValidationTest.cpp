@@ -1,4 +1,5 @@
 #include <memory>
+#include <algorithm>
 
 #include "gtest/gtest.h"
 
@@ -111,8 +112,7 @@ private:
         rootStruct.initialize(count);
         auto& filler = rootStruct.getFiller();
         filler.resize(rootStruct.getCount());
-        for (size_t i = 0; i < filler.size(); ++i)
-            filler[i] = static_cast<uint8_t>(id);
+        std::fill(filler.begin(), filler.end(), id);
         rootStruct.initializeOffsets();
 
         return rootStruct;
