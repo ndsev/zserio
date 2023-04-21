@@ -5,7 +5,7 @@
 # This CMake file is NOT designed to be included directly without any further dependencies.
 #
 
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.6.0)
 
 project(ZserioCppRuntimeTest)
 

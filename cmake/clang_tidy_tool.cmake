@@ -8,7 +8,7 @@
 #   HEADER_FILTER  Header filter to use.
 #   LINE_FILTER    Line filter to use.
 #   OUTPUT_FILE    Output file to use.
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.6.0)
 
 separate_arguments(SOURCES)
 
