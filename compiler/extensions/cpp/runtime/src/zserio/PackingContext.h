@@ -392,7 +392,7 @@ public:
      */
     void createContext()
     {
-        m_context = allocate_unique<DeltaContext>(m_children.get_allocator());
+        m_context = DeltaContext();
     }
 
     /**
@@ -402,7 +402,7 @@ public:
      */
     bool hasContext() const
     {
-        return m_context != nullptr;
+        return m_context.hasValue();
     }
 
     /**
@@ -419,7 +419,7 @@ public:
 
 private:
     Children m_children;
-    unique_ptr<DeltaContext, RebindAlloc<ALLOC, DeltaContext>> m_context;
+    InplaceOptionalHolder<DeltaContext> m_context;
 };
 
 using PackingContextNode = BasicPackingContextNode<>;
