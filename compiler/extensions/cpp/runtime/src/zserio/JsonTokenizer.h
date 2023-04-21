@@ -290,13 +290,10 @@ void BasicJsonTokenizer<ALLOC>::setTokenValue()
 {
     if (!m_decoderResult.value.hasValue())
     {
-        JsonParserException excpt("JsonTokenizer:");
-        excpt << m_lineNumber << ":" << m_tokenColumnNumber << ": ";
-        if (m_decoderResult.integerOverflow)
-            excpt << "Value is outside of the 64-bit integer range!";
-        else
-            excpt << "Unknown token!";
-        throw excpt;
+        throw JsonParserException("JsonTokenizer:") << m_lineNumber << ":" << m_tokenColumnNumber << ": " <<
+                (m_decoderResult.integerOverflow
+                        ? "Value is outside of the 64-bit integer range!"
+                        : "Unknown token!");
     }
 
     setToken(JsonToken::VALUE, std::move(m_decoderResult.value));
