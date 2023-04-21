@@ -906,6 +906,7 @@ IBasicReflectablePtr<ALLOC> callFunctionInObject(IBasicReflectable<ALLOC>& objec
     return nullptr;
 }
 
+// NOLINTBEGIN(misc-no-recursion)
 template <typename ALLOC>
 IBasicReflectableConstPtr<ALLOC> getFromObject(
         const IBasicReflectable<ALLOC>& object, StringView path, size_t pos)
@@ -960,6 +961,7 @@ IBasicReflectablePtr<ALLOC> getFromObject(IBasicReflectable<ALLOC>& object, Stri
 
     return nullptr;
 }
+// NOLINTEND(misc-no-recursion)
 
 template <typename ALLOC, typename T>
 struct ReflectableTraits

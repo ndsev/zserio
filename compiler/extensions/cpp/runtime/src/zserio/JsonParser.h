@@ -150,12 +150,14 @@ public:
     }
 
 private:
+    // NOLINTBEGIN(misc-no-recursion)
     void parseElement();
     void parseObject();
     void parseMembers();
     void parseMember();
     void parseArray();
     void parseElements();
+    // NOLINTEND(misc-no-recursion)
 
     void parseValue();
     void visitValue() const;

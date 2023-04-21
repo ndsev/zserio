@@ -19,6 +19,7 @@
 namespace zserio
 {
 
+// NOLINTBEGIN(misc-no-recursion)
 namespace detail
 {
 
@@ -398,6 +399,7 @@ enum class CreatorState : uint8_t
 };
 
 } // namespace detail
+// NOLINTEND(misc-no-recursion)
 
 /**
  * Allows to append detail::CreatorState to CppRuntimeException.
