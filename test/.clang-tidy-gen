@@ -90,7 +90,7 @@ Checks: "-*,\
   misc-new-delete-overloads,\
 #(recursive schemas break this rule)  misc-no-recursion,\
   misc-non-copyable-objects,\
-#  misc-redundant-expression,\
+#(generated expressions can be redundant,constraint checks are inlined)  misc-redundant-expression,\
   misc-throw-by-value-catch-by-reference,\
   misc-unconventional-assign-operator,\
   misc-unused-parameters,\
