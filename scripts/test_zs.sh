@@ -222,18 +222,21 @@ include(zserio_utils)
 set(ZSERIO_RUNTIME_LIBRARY_DIR "\${ZSERIO_RELEASE}/runtime_libs/${RUNTIME_LIBRARY_SUBDIR}")
 zserio_add_runtime_library(RUNTIME_LIBRARY_DIR "\${ZSERIO_RUNTIME_LIBRARY_DIR}")
 
-file(GLOB_RECURSE SOURCES RELATIVE "\${CMAKE_CURRENT_SOURCE_DIR}" "gen/*.cpp" "gen/*.h")
+file(GLOB_RECURSE SOURCES "gen/*.cpp" "gen/*.h")
 add_library(\${PROJECT_NAME} \${SOURCES})
 set_target_properties(\${PROJECT_NAME} PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS NO)
 target_include_directories(\${PROJECT_NAME} PUBLIC "\${CMAKE_CURRENT_SOURCE_DIR}/gen")
 target_link_libraries(\${PROJECT_NAME} ZserioCppRuntime)${SQLITE_USE}
 
 # clang-tidy
-if (CLANG_TIDY_BIN)
-    set_property(TARGET \${PROJECT_NAME} PROPERTY CXX_CLANG_TIDY
-        "${CLANG_TIDY_BIN}"
-        "--config-file=\${ZSERIO_ROOT}/test/.clang-tidy-gen")
-endif ()
+include(clang_tidy_utils)
+clang_tidy_add_custom_target(\${PROJECT_NAME}-clang-tidy
+    DEPENDS \${PROJECT_NAME}
+    SOURCES "\${SOURCES}"
+    BUILD_PATH "\${CMAKE_BINARY_DIR}"
+    CONFIG_FILE "\${ZSERIO_ROOT}/test/.clang-tidy-gen"
+    HEADER_FILTER "\${CMAKE_CURRENT_SOURCE_DIR}/gen/.*"
+)
 
 # add cppcheck custom command
 include(cppcheck_utils)
