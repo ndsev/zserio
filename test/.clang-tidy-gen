@@ -71,7 +71,7 @@ Checks: "-*,\
   cppcoreguidelines-pro-type-vararg,\
   cppcoreguidelines-slicing,\
   cppcoreguidelines-special-member-functions,\
-  fuchsia-multiple-inheritance,\
+#(generated SQL code breaks this rule)  fuchsia-multiple-inheritance,\
   google-build-explicit-make-pair,\
   google-build-namespaces,\
 #  google-build-using-namespace,\
