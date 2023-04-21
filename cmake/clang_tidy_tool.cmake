@@ -31,7 +31,6 @@ execute_process(
 file(APPEND "${OUTPUT_FILE}" "${CLANG_TIDY_OUTPUT}")
 
 if (NOT ${CLANG_TIDY_RESULT} EQUAL 0)
-    file(READ "${OUTPUT_FILE}" CLANG_TIDY_LOG)
-    message(STATUS "Clang Tidy output:\n${CLANG_TIDY_LOG}")
+    message(STATUS "Clang Tidy output:\n${CLANG_TIDY_OUTPUT}")
     message(FATAL_ERROR "Clang Tidy Tool failed!")
 endif ()
