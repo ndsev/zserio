@@ -77,7 +77,6 @@ include(clang_tidy_utils)
 clang_tidy_add_custom_target(ZserioCppRuntime-clang-tidy
                              DEPENDS ZserioCppRuntime
                              SOURCES_GLOBS
-                                "${CMAKE_CURRENT_SOURCE_DIR}/src/zserio/*.h"
                                 "${CMAKE_CURRENT_SOURCE_DIR}/src/zserio/*.cpp"
                              BUILD_PATH "${CMAKE_BINARY_DIR}"
                              CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/.clang-tidy"
