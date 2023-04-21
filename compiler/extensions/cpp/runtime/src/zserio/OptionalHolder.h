@@ -365,7 +365,7 @@ public:
      */
     bool hasValue() const noexcept
     {
-        return bool(m_storage);
+        return static_cast<bool>(m_storage);
     }
 
     /**

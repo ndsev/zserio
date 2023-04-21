@@ -39,7 +39,7 @@ public:
     /**
      * Constant used to indicate end of view or "not a position", depending on context.
      */
-    static constexpr const size_type npos = size_type(-1);
+    static constexpr const size_type npos = static_cast<size_type>(-1);
 
     /**
      * Constructor. Initializes empty view.
@@ -522,7 +522,7 @@ public:
         if (str.size() > size())
             return npos;
 
-        for (size_t p = std::min(size_type(size() - str.size()), pos) + 1; p > 0; --p)
+        for (size_t p = std::min(static_cast<size_type>(size() - str.size()), pos) + 1; p > 0; --p)
         {
             if (Traits::compare(data() + p - 1, str.data(), str.size()) == 0)
                 return p - 1;
