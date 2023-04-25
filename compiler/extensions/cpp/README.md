@@ -6,6 +6,80 @@ For a **quick start** see the [C++ Tutorial](https://github.com/ndsev/zserio-tut
 
 For an **API documentation** see the [C++ Runtime Library](https://zserio.org/doc/runtime/latest/cpp).
 
+## Functional Safety Features
+
+### C++ Runtime Library
+
+The following describes features which minimize the risk of Zserio C++ runtime library malfunctioning behavior:
+
+- Supported compilers (minimum versions): gcc 5.4.0, clang 8, MinGW 5.4.0, MSVC 2017
+- Warnings are treaded as errors for all supported compilers
+- All features are properly tested by unit tests for all supported compilers (>600 tests)
+- Implemented automatic check of test coverage threshold with the for
+  [clang](https://zserio.org/doc/runtime/latest/cpp/coverage/clang/index.html) builds (>98%)
+- AddressSanitizer is run with no findings
+- UndefinedBehaviourSanitizer is run with no findings
+- C++ runtime library sources are checked by static analysis tool clang-tidy version 14
+
+#### Clang-tidy Usage
+
+Clang-tidy tool is run using [this configuration](https://github.com/ndsev/zserio/blob/master/compiler/extensions/cpp/runtime/ClangTidyConfig.txt).
+The clang-tidy report from the latest C++ runtime library is available [here](https://zserio.org/doc/runtime/latest/cpp/clang-tidy/clang-tidy-report.txt).
+
+Because C++ runtime library is very low level (e.g. it mimic `std::span` or `std::string_view` standard
+abstraction from C++17), it was not possible to fix all clang-tidy findings.
+
+Therefore all clang-tidy findings have been carefully checked and filtered out using definitions in clang-tidy
+[suppression file](https://github.com/ndsev/zserio/blob/master/compiler/extensions/cpp/runtime/ClangTidySuppressions.txt).
+This suppression file contains as well the brief reasoning why these findings cannot be fixed. This solution
+with suppression file has been chosen not to pollute C++ runtime sources with `// NOLINT` comments and to
+allow implementation of warnings-as-error feature. The clang-tidy suppression file is automatically used
+during compilation using `CMake`.
+
+
+### C++ Generated Code
+
+The following describes features which minimize the risk of Zserio C++ generated code malfunctioning behavior:
+
+- Supported compilers (minimum versions): gcc 5.4.0, clang 8, MinGW 5.4.0, MSVC 2017
+- Warnings are treaded as errors for all supported compilers
+- All features are properly tested by unit tests for all supported compilers (>1700 tests)
+- Generated C++ sources are checked by static analysis tool clang-tidy version 14 using
+  [this configuration](https://github.com/ndsev/zserio/blob/master/compiler/extensions/cpp/runtime/ClangTidyConfig.txt)
+
+### Exceptions
+
+Zserio C++ runtime library together with the C++ generated code can throw a `zserio::CppRuntimeException` in
+some rare circumstances, mainly
+
+- during parsing (reading)
+- during writing
+- in reflection code
+- in type info code
+
+Because there are hundreds possibilities when exception `zserio::CppRuntimeException` can be thrown, the
+following section contains only description of exceptions during parsing.
+
+#### Exceptions During Parsing
+
+The following table describes all possibilities when C++ generated code can throw
+a `zserio::CppRuntimeException` during parsing of binary data:
+
+| Module | Method | Exception Message | Description |
+| ------ | ------ | ----------------- | ----------- |
+| `BitStreamReader.cpp` | constructor | "BitStreamReader: Buffer size exceeded limit '[MAX_BUFFER_SIZE]' bytes!" | Throws if provided buffer is bigger that 536870908 bytes (cca 511MB) on 32-bit OS or 2**64/8-4 bytes on 64-bit OS. |
+| `BitStreamReader.cpp` | constructor | "BitStreamReader: Wrong buffer bit size ('[BUFFER_SIZE]' < '[SPECIFIED_BYTE_SIZE]')!" | Throws if provided buffer is smaller than specified bit size. This could happen only in case of wrong arguments. |
+| `BitStreamReader.cpp` | `throwNumBitsIsNotValid()` | "BitStreamReader: ReadBits #[NUM_BITS] is not valid, reading from stream failed!" | Throws if `readBits()`, `readSignedBits()`, `readBits64()` or `readSignedBits64()` has been called with wrong (too big) `numBits` argument. This could happen only in case of data inconsistency, e.g. if dynamic bit field has length bigger than 32 or 64 bits respectively. |
+| `BitStreamReader.cpp` | `throwEof()` | "BitStreamReader: Reached eof(), reading from stream failed!" | Throws if end of underlying buffer has been reached (reading beyond stream). This could happen only in case of data inconsistency, e.g. if array length is defined bigger than is actually stored in the stream). |
+| `BitStreamReader.cpp` | `readVarSize()` | "BitStreamReader: Read value '[VARSIZE_VALUE]' is out of range for varsize type!" | Throws if `varsize` value stored in stream is bigger than 2147483647. This could happen only in case of data inconsistency when `varsize` value stored in the stream is wrong. |
+| `OptionalHolder.h` | `throwNonPresentException()` | "Trying to access value of non-present optional field!" | Throws if optional value is not present during access. This could happen only in case of data inconsistency when optional field is not present in the stream and there is a reference to it in some expression. |
+| Generated Sources | Object read constructor | "Read: Wrong offset for field [COMPOUND_NAME].[FIELD_NAME]: [STREAM_BYTE_POSITION] != [OFFSET_VALUE]!" | Throws in case of wrong offset. This could happen only in case of data inconsistency when offset value stored in the stream is wrong. |
+| Generated Sources | Object read constructor | "Read: Constraint violated at [COMPOUND_NAME].[FIELD_NAME]!" | Throws in case of wrong constraint. This could happen only in case of data inconsistency when some constraint is violated. |
+| Generated Sources | Object read constructor | "No match in choice [NAME]!" | Throws in case of wrong choice selector. This could happen only in case of data inconsistency when choice selector stored in the stream is wrong. |
+| Generated Sources | Object read constructor | "No match in union [NAME]!" | Throws in case of wrong union tag. This could happen only in case of data inconsistency when union tag stored in the stream is wrong. |
+| Generated Sources | Bitmask constructor | "Value for bitmask [NAME] out of bounds: [VALUE]!" | Throws if value stored in stream is bigger than bitmask upper bound. This could happen only in case of data inconsistency when bitmask value stored in the stream is wrong. |
+| Generated Sources | `valueToEnum` | "Unknown value for enumeration [NAME]: [VALUE]!" | Throws in case of unknown enumeration value. This could happen only in case of data inconsistency when enumeration value stored in the stream is wrong. |
+
 ## Compatibility check
 
 C++ generator honors the `zserio_compatibility_version` specified in the schema. However note that only
