@@ -201,7 +201,6 @@ public:
      *
      * \param allocator Allocator to be used to perform dynamic memory allocations.
      */
-    // NOLINTNEXTLINE(google-explicit-constructor)
     constexpr heap_optional_holder(NullOptType,
             const allocator_type& allocator = allocator_type()) noexcept : m_storage(nullptr, allocator)
     {}
@@ -212,7 +211,6 @@ public:
      * \param value Value to store in the holder.
      * \param allocator Allocator to be used to perform dynamic memory allocations.
      */
-    // NOLINTNEXTLINE(google-explicit-constructor)
     heap_optional_holder(const T& value, const allocator_type& allocator = allocator_type()) :
             m_storage(zserio::allocate_unique<T, allocator_type>(allocator, value))
     {}
@@ -223,7 +221,6 @@ public:
      * \param value Value to store in the holder.
      * \param allocator Allocator to be used to perform dynamic memory allocations.
      */
-    // NOLINTNEXTLINE(google-explicit-constructor)
     heap_optional_holder(T&& value, const allocator_type& allocator = allocator_type()) :
             m_storage(zserio::allocate_unique<T, allocator_type>(allocator, std::move(value)))
     {}
@@ -534,7 +531,7 @@ public:
     /**
      * Constructor from zserio::NullOpt constant to create an unset holder.
      */
-    constexpr inplace_optional_holder(NullOptType) noexcept // NOLINT(google-explicit-constructor))
+    constexpr inplace_optional_holder(NullOptType) noexcept
     {}
 
     /**
@@ -542,7 +539,7 @@ public:
      *
      * \param value Value to store in the holder.
      */
-    inplace_optional_holder(const T& value) // NOLINT(google-explicit-constructor)
+    inplace_optional_holder(const T& value)
     {
         new (m_storage.getStorage()) T(value);
         m_hasValue = true;
@@ -553,7 +550,7 @@ public:
      *
      * \param value Value to store in the holder.
      */
-    inplace_optional_holder(T&& value) // NOLINT(google-explicit-constructor)
+    inplace_optional_holder(T&& value)
     {
         new (m_storage.getStorage()) T(std::move(value));
         m_hasValue = true;

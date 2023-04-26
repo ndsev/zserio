@@ -75,29 +75,27 @@ install(DIRECTORY src/ DESTINATION cpp
 # add clang-tidy custom target
 include(clang_tidy_utils)
 clang_tidy_add_custom_target(ZserioCppRuntime-clang-tidy
-                             DEPENDS ZserioCppRuntime
+                             DEPENDS ZserioCppRuntime ZserioCppRuntimeTest
                              SOURCES_GLOBS
                                 "${CMAKE_CURRENT_SOURCE_DIR}/src/zserio/*.cpp"
-                             BUILD_PATH "${CMAKE_BINARY_DIR}"
-                             CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/.clang-tidy"
-                             OUTPUT_FILE "clang-tidy.log")
-
-clang_tidy_add_custom_target(ZserioCppRuntimeTest-clang-tidy
-                             DEPENDS ZserioCppRuntimeTest
-                             SOURCES_GLOBS
                                 "${CMAKE_CURRENT_SOURCE_DIR}/test/zserio/*.cpp"
                              BUILD_PATH "${CMAKE_BINARY_DIR}"
-                             CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/.clang-tidy-test"
-                             OUTPUT_FILE "clang-tidy-test.log")
+                             CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/ClangTidyConfig.txt"
+                             HEADER_FILTER
+                                ".*(src|test)/zserio/.*"
+                             SUPPRESSIONS_FILE "${CMAKE_CURRENT_SOURCE_DIR}/ClangTidySuppressions.txt")
 
 # add cppcheck custom command
 include(cppcheck_utils)
 cppcheck_add_custom_command(TARGET ZserioCppRuntime
-                            SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src"
-                                       "${CMAKE_CURRENT_SOURCE_DIR}/src/*/*.h"
-                                       "${CMAKE_CURRENT_SOURCE_DIR}/src/*/*/*.h"
-                                       "${CMAKE_CURRENT_SOURCE_DIR}/test/zserio"
-                                       "${CMAKE_CURRENT_SOURCE_DIR}/test/zserio/*.h"
+                            SOURCE_DIR
+                                "${CMAKE_CURRENT_SOURCE_DIR}/src/zserio"
+                                "${CMAKE_CURRENT_SOURCE_DIR}/src/zserio/*.h"
+                                "${CMAKE_CURRENT_SOURCE_DIR}/src/zserio/*/*.h"
+                                "${CMAKE_CURRENT_SOURCE_DIR}/test/zserio"
+                                "${CMAKE_CURRENT_SOURCE_DIR}/test/zserio/*.h"
+                            INCLUDE_DIR
+                                "${CMAKE_CURRENT_SOURCE_DIR}/src"
                             OPTIONS --library=googletest.cfg -UZSERIO_STANDARD_TYPES_HEADER)
 
 # build and install doxygen documentation

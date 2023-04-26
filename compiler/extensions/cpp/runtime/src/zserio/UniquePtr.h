@@ -54,7 +54,7 @@ struct UniquePtrDeleter : public AllocatorHolder<ALLOC_T>
      * Constructor from given allocator.
      */
     template <typename ALLOC_U = ALLOC_T>
-    UniquePtrDeleter(const ALLOC_U& allocator) : // NOLINT(google-explicit-constructor)
+    UniquePtrDeleter(const ALLOC_U& allocator) :
             AllocatorHolder<ALLOC_T>(allocator)
     {
         static_assert(std::is_same<allocator_type, RebindAlloc<ALLOC_U, T>>::value,
@@ -65,7 +65,7 @@ struct UniquePtrDeleter : public AllocatorHolder<ALLOC_T>
      * Constructor from deleter to another type.
      */
     template <typename ALLOC_U>
-    UniquePtrDeleter(const UniquePtrDeleter<ALLOC_U>& deleter) : // NOLINT(google-explicit-constructor)
+    UniquePtrDeleter(const UniquePtrDeleter<ALLOC_U>& deleter) :
             UniquePtrDeleter(deleter.get_allocator())
     {}
 

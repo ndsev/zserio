@@ -906,7 +906,6 @@ IBasicReflectablePtr<ALLOC> callFunctionInObject(IBasicReflectable<ALLOC>& objec
     return nullptr;
 }
 
-// NOLINTBEGIN(misc-no-recursion)
 template <typename ALLOC>
 IBasicReflectableConstPtr<ALLOC> getFromObject(
         const IBasicReflectable<ALLOC>& object, StringView path, size_t pos)
@@ -961,7 +960,6 @@ IBasicReflectablePtr<ALLOC> getFromObject(IBasicReflectable<ALLOC>& object, Stri
 
     return nullptr;
 }
-// NOLINTEND(misc-no-recursion)
 
 template <typename ALLOC, typename T>
 struct ReflectableTraits
@@ -1058,7 +1056,6 @@ struct ReflectableTraits<ALLOC, BasicBitBuffer<ALLOC>>
  * Base class for reflectable which needs to hold an allocator.
  */
 template <typename ALLOC>
-// NOLINTNEXTLINE(fuchsia-multiple-inheritance)
 class ReflectableAllocatorHolderBase : public ReflectableBase<ALLOC>, public AllocatorHolder<ALLOC>
 {
 public:

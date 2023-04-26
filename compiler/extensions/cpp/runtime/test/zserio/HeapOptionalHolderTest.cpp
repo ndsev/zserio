@@ -166,7 +166,7 @@ TEST_F(HeapOptionalHolderTest, moveConstructor)
 
     ASSERT_EQ(*optionalMoved, 13);
     ASSERT_EQ(optionalMoved.get_allocator(), alloc);
-    ASSERT_FALSE(optional.hasValue()); // NOLINT(bugprone-use-after-move,clang-analyzer-cplusplus.Move)
+    ASSERT_FALSE(optional.hasValue());
     ASSERT_EQ(alloc.numAllocs(), 1U);
 }
 
@@ -183,7 +183,7 @@ TEST_F(HeapOptionalHolderTest, moveConstructorAllocator)
 
     HeapOptionalHolder<int, TrackingAllocator<int>> emptyOptional(alloc);
     HeapOptionalHolder<int, TrackingAllocator<int>> emptyMoved(std::move(emptyOptional), alloc2);
-    ASSERT_FALSE(emptyOptional.hasValue()); // NOLINT(bugprone-use-after-move)
+    ASSERT_FALSE(emptyOptional.hasValue());
     ASSERT_FALSE(emptyMoved.hasValue());
     ASSERT_EQ(emptyOptional.get_allocator(), alloc);
     ASSERT_EQ(emptyMoved.get_allocator(), alloc2);
@@ -245,7 +245,6 @@ TEST_F(HeapOptionalHolderTest, moveAssignmentOperator)
     optionalVectorMoved = std::move(optionalVector);
     ASSERT_EQ(origAddress, (*optionalVectorMoved).data());
     ASSERT_EQ(origValues, *optionalVectorMoved);
-    // NOLINTNEXTLINE(bugprone-use-after-move,clang-analyzer-cplusplus.Move)
     ASSERT_EQ(optionalVector.get_allocator(), optionalVectorMoved.get_allocator());
     ASSERT_EQ(optionalVector.get_allocator(), allocVec);
 
@@ -255,7 +254,7 @@ TEST_F(HeapOptionalHolderTest, moveAssignmentOperator)
     HeapOptionalHolder<int, TrackingAllocatorNonProp<int>> optionalNp(13, allocNp);
     HeapOptionalHolder<int, TrackingAllocatorNonProp<int>> optionalNpMoved;
     optionalNpMoved = std::move(optionalNp);
-    ASSERT_TRUE(optionalNp.hasValue()); // NOLINT(bugprone-use-after-move,clang-analyzer-cplusplus.Move)
+    ASSERT_TRUE(optionalNp.hasValue());
     ASSERT_TRUE(optionalNpMoved.hasValue());
     ASSERT_NE(optionalNp.get_allocator(), optionalNpMoved.get_allocator());
 

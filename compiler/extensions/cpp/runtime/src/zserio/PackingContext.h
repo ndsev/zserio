@@ -116,7 +116,7 @@ public:
         if (!m_initStarted)
         {
             m_initStarted = true;
-            m_previousElement = static_cast<uint64_t>(element); // NOLINT(bugprone-signed-char-misuse)
+            m_previousElement = static_cast<uint64_t>(element);
             m_firstElementBitSize = m_unpackedBitSize;
         }
         else
@@ -133,7 +133,7 @@ public:
                     if (m_maxBitNumber > MAX_BIT_NUMBER_LIMIT)
                         m_isPacked = false;
                 }
-                m_previousElement = static_cast<uint64_t>(element); // NOLINT(bugprone-signed-char-misuse)
+                m_previousElement = static_cast<uint64_t>(element);
             }
         }
     }
@@ -196,7 +196,7 @@ public:
                 const typename ARRAY_TRAITS::ElementType element =
                         static_cast<typename ARRAY_TRAITS::ElementType>(
                                 m_previousElement + static_cast<uint64_t>(delta));
-                m_previousElement = static_cast<uint64_t>(element); // NOLINT(bugprone-signed-char-misuse)
+                m_previousElement = static_cast<uint64_t>(element);
             }
 
             return static_cast<typename ARRAY_TRAITS::ElementType>(m_previousElement);
@@ -233,7 +233,7 @@ public:
                 // it's already checked in the init phase that the delta will fit into int64_t
                 const int64_t delta = detail::calcUncheckedDelta(element, m_previousElement);
                 out.writeSignedBits64(delta, m_maxBitNumber + 1);
-                m_previousElement = static_cast<uint64_t>(element); // NOLINT(bugprone-signed-char-misuse)
+                m_previousElement = static_cast<uint64_t>(element);
             }
         }
     }
@@ -277,7 +277,7 @@ private:
     typename ARRAY_TRAITS::ElementType readUnpacked(const ARRAY_TRAITS& arrayTraits, BitStreamReader& in)
     {
         const auto element = arrayTraits.read(in);
-        m_previousElement = static_cast<uint64_t>(element); // NOLINT(bugprone-signed-char-misuse)
+        m_previousElement = static_cast<uint64_t>(element);
         return element;
     }
 
@@ -292,7 +292,7 @@ private:
     void writeUnpacked(const ARRAY_TRAITS& arrayTraits, BitStreamWriter& out,
             typename ARRAY_TRAITS::ElementType element)
     {
-        m_previousElement = static_cast<uint64_t>(element); // NOLINT(bugprone-signed-char-misuse)
+        m_previousElement = static_cast<uint64_t>(element);
         arrayTraits.write(out, element);
     }
 

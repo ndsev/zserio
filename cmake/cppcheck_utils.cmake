@@ -2,8 +2,8 @@
 #
 # Usage: cppcheck_add_custom_command
 #    TARGET           Target for which cppcheck custom command should be added.
-#    SOURCE_DIR       Directory with sources for cppcheck.
-#    INCLUDE_DIR      Directory where to find headers for cppcheck.
+#    SOURCE_DIR       Directories with sources for cppcheck.
+#    INCLUDE_DIR      Directories where to find headers for cppcheck.
 #    SUPPRESSION_FILE Override default suppression file (optional),
 #                     default is ${CMAKE_CURRENT_SOURCE_DIR}/CppcheckSuppressions.txt.
 #    OPTIONS          Additional options for cppcheck command.

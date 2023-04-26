@@ -56,7 +56,7 @@ TEST(PolymorphicAllocatorTest, constructorAndResource)
     pmr::PolymorphicAllocator<> allocator2Copy(allocator2);
     ASSERT_EQ(&resource, allocator2Copy.resource());
 
-    pmr::PolymorphicAllocator<> allocator2Moved(std::move(allocator2)); // NOLINT(performance-move-const-arg)
+    pmr::PolymorphicAllocator<> allocator2Moved(std::move(allocator2));
     ASSERT_EQ(&resource, allocator2Moved.resource());
 }
 
@@ -76,7 +76,6 @@ TEST(PropagatingPolymorphicAllocatorTest, constructorAndResource)
     pmr::PropagatingPolymorphicAllocator<> allocator2Copy(allocator2);
     ASSERT_EQ(&resource, allocator2Copy.resource());
 
-    // NOLINTNEXTLINE(performance-move-const-arg)
     pmr::PropagatingPolymorphicAllocator<> allocator2Moved(std::move(allocator2));
     ASSERT_EQ(&resource, allocator2Moved.resource());
 }

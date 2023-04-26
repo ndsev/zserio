@@ -76,7 +76,7 @@ public:
      */
     template <size_type ext = Extent,
         typename std::enable_if<(ext == 0 || ext == dynamic_extent), int>::type = 0>
-    constexpr Span() noexcept // NOLINT(modernize-use-equals-default) // false-positive
+    constexpr Span() noexcept
     {}
 
     /**
@@ -108,9 +108,8 @@ public:
      */
     template <size_type N, size_type ext = Extent,
         typename std::enable_if<(ext == dynamic_extent || ext == N), int>::type = 0>
-    // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, google-explicit-constructor)
     constexpr Span(element_type(&arr)[N]) noexcept :
-        m_storage(arr, N) // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
+        m_storage(arr, N)
     {}
 
     /**
@@ -120,8 +119,8 @@ public:
      */
     template <typename U, size_type N, size_type ext = Extent,
         typename std::enable_if<(ext == dynamic_extent || ext == N) &&
-                std::is_convertible<U(*)[], T(*)[]>::value, int>::type = 0> // NOLINT(cppcoreguidelines-avoid-c-arrays)
-    constexpr Span(std::array<U, N>& arr) noexcept : // NOLINT(google-explicit-constructor)
+                std::is_convertible<U(*)[], T(*)[]>::value, int>::type = 0>
+    constexpr Span(std::array<U, N>& arr) noexcept :
         m_storage(arr.data(), arr.size())
     {}
 
@@ -132,8 +131,8 @@ public:
      */
     template <typename U, size_type N, size_type ext = Extent,
         typename std::enable_if<(ext == dynamic_extent || ext == N) &&
-                std::is_convertible<const U(*)[], T(*)[]>::value, int>::type = 0> // NOLINT(cppcoreguidelines-avoid-c-arrays)
-    constexpr Span(const std::array<U, N>& arr) noexcept : // NOLINT(google-explicit-constructor)
+                std::is_convertible<const U(*)[], T(*)[]>::value, int>::type = 0>
+    constexpr Span(const std::array<U, N>& arr) noexcept :
         m_storage(arr.data(), arr.size())
     {}
 
@@ -144,8 +143,8 @@ public:
      */
     template <typename U, typename ALLOC, size_type ext = Extent,
         typename std::enable_if<(ext == dynamic_extent) &&
-                std::is_convertible<U(*)[], T(*)[]>::value, int>::type = 0> // NOLINT(cppcoreguidelines-avoid-c-arrays)
-    constexpr Span(std::vector<U, ALLOC>& vec) : // NOLINT(google-explicit-constructor)
+                std::is_convertible<U(*)[], T(*)[]>::value, int>::type = 0>
+    constexpr Span(std::vector<U, ALLOC>& vec) :
         m_storage(vec.data(), vec.size())
     {}
 
@@ -156,8 +155,8 @@ public:
      */
     template <typename U, typename ALLOC, size_type ext = Extent,
         typename std::enable_if<(ext == dynamic_extent) &&
-                std::is_convertible<const U(*)[], T(*)[]>::value, int>::type = 0> // NOLINT(cppcoreguidelines-avoid-c-arrays)
-    constexpr Span(const std::vector<U, ALLOC>& vec) : // NOLINT(google-explicit-constructor)
+                std::is_convertible<const U(*)[], T(*)[]>::value, int>::type = 0>
+    constexpr Span(const std::vector<U, ALLOC>& vec) :
         m_storage(vec.data(), vec.size())
     {}
 
@@ -168,8 +167,8 @@ public:
      */
     template <typename U, size_type N,
         typename std::enable_if<(Extent == N || Extent == dynamic_extent) &&
-                std::is_convertible<U(*)[], T(*)[]>::value, int>::type = 0> // NOLINT(cppcoreguidelines-avoid-c-arrays)
-    constexpr Span(const Span<U, N>& s) noexcept : // NOLINT(google-explicit-constructor)
+                std::is_convertible<U(*)[], T(*)[]>::value, int>::type = 0>
+    constexpr Span(const Span<U, N>& s) noexcept :
         m_storage(s.data(), s.size())
     {}
 

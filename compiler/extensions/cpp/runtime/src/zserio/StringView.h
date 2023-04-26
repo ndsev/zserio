@@ -51,7 +51,7 @@ public:
      *
      * \param str Input null-terminated string.
      */
-    BasicStringView(const const_pointer str) noexcept : // NOLINT(google-explicit-constructor)
+    BasicStringView(const const_pointer str) noexcept :
         m_data(str), m_size(Traits::length(str))
     {}
 
@@ -71,7 +71,6 @@ public:
      * \param str Input string.
      */
     template<typename ALLOC>
-    // NOLINTNEXTLINE(google-explicit-constructor)
     constexpr BasicStringView(const std::basic_string<CharT, Traits, ALLOC>& str) noexcept :
         m_data(str.data()), m_size(str.size())
     {}
@@ -892,10 +891,9 @@ constexpr bool operator>=(BasicStringView<CharT, Traits> lhs, BasicStringView<Ch
  * \return String view to given input string.
  */
 template<typename CharT, size_t N>
-constexpr BasicStringView<CharT> makeStringView(const CharT(&str)[N]) // NOLINT(cppcoreguidelines-avoid-c-arrays)
+constexpr BasicStringView<CharT> makeStringView(const CharT(&str)[N])
 {
     // Note: strip the very last null terminator, if it is there
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
     return BasicStringView<CharT>(str, (N > 0 && str[N - 1] == CharT()) ? (N - 1) : N);
 }
 

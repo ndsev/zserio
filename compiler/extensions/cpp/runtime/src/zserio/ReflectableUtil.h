@@ -129,7 +129,6 @@ public:
     }
 
 private:
-    // NOLINTBEGIN(misc-no-recursion)
     template <typename ALLOC>
     static bool arraysEqual(const IBasicReflectableConstPtr<ALLOC>& lhsArray,
             const IBasicReflectableConstPtr<ALLOC>& rhsArray);
@@ -141,12 +140,10 @@ private:
     template <typename ALLOC>
     static bool valuesEqual(const IBasicReflectableConstPtr<ALLOC>& lhsValue,
             const IBasicReflectableConstPtr<ALLOC>& rhsValue);
-    // NOLINTEND(misc-no-recursion)
 
     static bool doubleValuesAlmostEqual(double lhs, double rhs);
 };
 
-// NOLINTBEGIN(misc-no-recursion)
 template <typename ALLOC>
 bool ReflectableUtil::equal(const IBasicReflectableConstPtr<ALLOC>& lhs,
         const IBasicReflectableConstPtr<ALLOC>& rhs)
@@ -176,7 +173,6 @@ bool ReflectableUtil::equal(const IBasicReflectableConstPtr<ALLOC>& lhs,
         return valuesEqual<ALLOC>(lhs, rhs);
     }
 }
-// NOLINTEND(misc-no-recursion)
 
 template <typename ALLOC>
 bool ReflectableUtil::arraysEqual(const IBasicReflectableConstPtr<ALLOC>& lhsArray,

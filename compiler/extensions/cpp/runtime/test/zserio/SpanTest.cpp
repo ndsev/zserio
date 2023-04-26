@@ -43,7 +43,7 @@ TEST(SpanTest, PtrPtrConstructor)
 
 TEST(SpanTest, ArrayConstructor)
 {
-    int arr[] = { 0, 13, 42 }; // NOLINT(cppcoreguidelines-avoid-c-arrays)
+    int arr[] = { 0, 13, 42 };
     Span<int> span(arr);
     ASSERT_EQ(3, span.size());
     ASSERT_EQ(&arr[0], span.data());

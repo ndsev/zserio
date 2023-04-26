@@ -70,12 +70,10 @@ public:
     void walk(const IBasicReflectableConstPtr<ALLOC>& compound);
 
 private:
-    // NOLINTBEGIN(misc-no-recursion)
     void walkFields(const IBasicReflectableConstPtr<ALLOC>& compound, const IBasicTypeInfo<ALLOC>& typeInfo);
     bool walkField(const IBasicReflectableConstPtr<ALLOC>& reflectable, const BasicFieldInfo<ALLOC>& fieldInfo);
     bool walkFieldValue(const IBasicReflectableConstPtr<ALLOC>& reflectable,
             const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex = WALKER_NOT_ELEMENT);
-    // NOLINTEND(misc-no-recursion)
 
     IBasicWalkObserver<ALLOC>& m_walkObserver;
     BasicDefaultWalkFilter<ALLOC> m_defaultWalkFilter;

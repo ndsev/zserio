@@ -314,7 +314,6 @@ TEST(SqliteConnectionTest, prepareStatement)
     ASSERT_EQ(SQLITE_ROW, result);
 
     ASSERT_EQ(1, sqlite3_column_count(statement));
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     const std::string resultString(reinterpret_cast<char const*>(sqlite3_column_text(statement, 0)));
     ASSERT_EQ("1", resultString);
 

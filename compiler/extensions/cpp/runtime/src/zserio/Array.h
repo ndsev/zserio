@@ -881,7 +881,6 @@ private:
         m_packedArrayTraits.createContext(*m_packingContextNode);
     }
 
-    // NOLINTNEXTLINE(misc-no-recursion)
     static void resetContext(PackingContextNodeType& contextNode)
     {
         if (contextNode.hasContext())

@@ -18,7 +18,6 @@ endfunction()
 #    TARGET "name" - Specifies the target name. Default is "coverage".
 #    EXCLUDE_SOURCES "regex" - Skip source files with file paths that match the given regular expression.
 function(create_coverage_target)
-    include(CMakeParseArguments)
     cmake_parse_arguments(cov "" "INCOMPLETE_COVERAGE_FAIL;TARGET;EXCLUDE_SOURCES" "" ${ARGN})
 
     if (cov_TARGET)
