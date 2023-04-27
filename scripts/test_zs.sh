@@ -234,7 +234,7 @@ clang_tidy_add_custom_target(\${PROJECT_NAME}-clang-tidy
     DEPENDS \${PROJECT_NAME}
     SOURCES "\${SOURCES}"
     BUILD_PATH "\${CMAKE_BINARY_DIR}"
-    CONFIG_FILE "\${ZSERIO_ROOT}/test/.clang-tidy-gen"
+    CONFIG_FILE "\${ZSERIO_ROOT}/compiler/extensions/cpp/runtime/ClangTidyConfig.txt"
     HEADER_FILTER "\${CMAKE_CURRENT_SOURCE_DIR}/gen/.*"
 )
 
