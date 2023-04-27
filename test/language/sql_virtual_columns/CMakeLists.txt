@@ -11,7 +11,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/sql_virtual_columns/simple_virtual_columns/SimpleVirtualColumnsTable.h
 )
 
-zserio_add_library(TARGET sql_virtual_columns_zs
+zserio_add_library(sql_virtual_columns_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE sql_virtual_columns.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -23,9 +23,12 @@ zserio_add_library(TARGET sql_virtual_columns_zs
 
 target_include_directories(sql_virtual_columns_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 
-add_test_sources(
-    cpp/HiddenVirtualColumnsTest.cpp
-    cpp/SimpleVirtualColumnsTest.cpp
+add_custom_test(sql_virtual_columns
+    DEPENDS
+        sql_virtual_columns_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/HiddenVirtualColumnsTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/SimpleVirtualColumnsTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(sql_virtual_columns_zs)

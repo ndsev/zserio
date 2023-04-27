@@ -30,7 +30,7 @@ endfunction()
 # A function to create a static library out of Zserio-generated sources.
 #
 # Usage: zserio_add_library
-#   TARGET target_name
+#   target_name
 #   SOURCE_DIR src_dir
 #   MAIN_SOURCE src_file
 #   SOURCES all source files (optional, relative to SOURCE_DIR)
@@ -50,11 +50,10 @@ endfunction()
 # (CMake doesn't pick up changes in the glob, e.g. added files.)
 #
 # The actual Zserio generation target is added to the top-level target "gen".
-function(zserio_add_library)
+function(zserio_add_library TARGET_NAME)
     # parse cmdline args
-    foreach (ARG ${ARGV})
-        if ((ARG STREQUAL TARGET) OR
-            (ARG STREQUAL SOURCE_DIR) OR
+    foreach (ARG ${ARGN})
+        if ((ARG STREQUAL SOURCE_DIR) OR
             (ARG STREQUAL MAIN_SOURCE) OR
             (ARG STREQUAL SOURCES) OR
             (ARG STREQUAL OUT_DIR) OR
@@ -75,13 +74,13 @@ function(zserio_add_library)
         endif ()
     endforeach ()
 
-    foreach (ARG TARGET SOURCE_DIR MAIN_SOURCE OUT_DIR OUT_FILES ZSERIO_CORE_DIR ZSERIO_CPP_DIR)
+    foreach (ARG SOURCE_DIR MAIN_SOURCE OUT_DIR OUT_FILES ZSERIO_CORE_DIR ZSERIO_CPP_DIR)
         if (NOT DEFINED VALUE_${ARG})
             message(FATAL_ERROR "No value defined for required argument ${ARG}!")
         endif ()
     endforeach ()
 
-    foreach (ARG TARGET SOURCE_DIR MAIN_SOURCE OUT_DIR ZSERIO_CORE_DIR ZSERIO_CPP_DIR)
+    foreach (ARG SOURCE_DIR MAIN_SOURCE OUT_DIR ZSERIO_CORE_DIR ZSERIO_CPP_DIR)
         list(LENGTH VALUE_${ARG} LEN)
         if (NOT(LEN EQUAL 1))
             message(FATAL_ERROR "Argument ${ARG} requires exactly one value!")
@@ -127,8 +126,8 @@ function(zserio_add_library)
     separate_arguments(ZSERIO_EXTRA_OPTIONS)
 
     # hack to always re-run Zserio compiler (Zserio itself can skip sources generations if it's not needed)
-    # - uses ${VALUE_TARGET}_ALWAYS_GENERATE output which will be never generated and thus it will always re-run
-    add_custom_command(OUTPUT ${VALUE_TARGET}_ALWAYS_GENERATE
+    # - uses ${TARGET_NAME}_ALWAYS_GENERATE output which will be never generated and thus it will always re-run
+    add_custom_command(OUTPUT ${TARGET_NAME}_ALWAYS_GENERATE
         COMMAND ${CMAKE_COMMAND} -DJAVA_BIN=${JAVA_BIN}
             -DCORE_DIR=${VALUE_ZSERIO_CORE_DIR} -DCPP_DIR=${VALUE_ZSERIO_CPP_DIR} -DOUT_DIR=${VALUE_OUT_DIR}
             -DSOURCE_DIR=${VALUE_SOURCE_DIR} -DMAIN_SOURCE=${VALUE_MAIN_SOURCE}
@@ -141,56 +140,34 @@ function(zserio_add_library)
         COMMENT "Generating sources with Zserio from ${VALUE_MAIN_SOURCE}")
 
     # add a custom target for the generation step
-    add_custom_target(${VALUE_TARGET}_generate
-        DEPENDS ${VALUE_TARGET}_ALWAYS_GENERATE)
+    add_custom_target(${TARGET_NAME}_generate
+        DEPENDS ${TARGET_NAME}_ALWAYS_GENERATE)
 
     # add to custom "gen" target
     if (NOT TARGET gen)
         add_custom_target(gen COMMENT "Trigger compilation of all included zserio files.")
     endif ()
-    add_dependencies(gen ${VALUE_TARGET}_generate)
+    add_dependencies(gen ${TARGET_NAME}_generate)
 
     # delete whole directory even if Zserio generated a file that's not listed in ZSERIO_GENERATED_SOURCES
     set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${VALUE_OUT_DIR})
 
     # add a static library
     if (SOURCE_FILE_POSITION EQUAL -1)
-        add_library(${VALUE_TARGET} INTERFACE)
-        add_dependencies(${VALUE_TARGET} ${VALUE_TARGET}_generate)
-        target_include_directories(${VALUE_TARGET} INTERFACE ${VALUE_OUT_DIR})
-        target_link_libraries(${VALUE_TARGET} INTERFACE ZserioCppRuntime)
+        add_library(${TARGET_NAME} INTERFACE)
+        add_dependencies(${TARGET_NAME} ${TARGET_NAME}_generate)
+        target_include_directories(${TARGET_NAME} INTERFACE ${VALUE_OUT_DIR})
+        target_link_libraries(${TARGET_NAME} INTERFACE ZserioCppRuntime)
     else ()
-        add_library(${VALUE_TARGET} STATIC ${VALUE_OUT_FILES})
-        add_dependencies(${VALUE_TARGET} ${VALUE_TARGET}_generate)
-        target_include_directories(${VALUE_TARGET} PUBLIC ${VALUE_OUT_DIR})
-        target_link_libraries(${VALUE_TARGET} PUBLIC ZserioCppRuntime)
+        add_library(${TARGET_NAME} STATIC ${VALUE_OUT_FILES})
+        add_dependencies(${TARGET_NAME} ${TARGET_NAME}_generate)
+        target_include_directories(${TARGET_NAME} PUBLIC ${VALUE_OUT_DIR})
+        target_link_libraries(${TARGET_NAME} PUBLIC ZserioCppRuntime)
         if (SOURCE_FILE_POSITION EQUAL -1)
             # make sure that cmake knows language when no sources are available
-            set_target_properties(${VALUE_TARGET} PROPERTIES LINKER_LANGUAGE CXX)
+            set_target_properties(${TARGET_NAME} PROPERTIES LINKER_LANGUAGE CXX)
         endif ()
-        set_target_properties(${VALUE_TARGET} PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED YES
+        set_target_properties(${TARGET_NAME} PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED YES
                 CXX_EXTENSIONS NO)
-    endif ()
-
-    # checkers fail if no sources to check are available
-    if (NOT(SOURCE_FILE_POSITION EQUAL -1))
-        # add clang-tidy custom target
-        include(clang_tidy_utils)
-        clang_tidy_add_custom_target(${VALUE_TARGET}-clang-tidy
-                                     DEPENDS ${VALUE_TARGET}
-                                     SOURCES "${VALUE_OUT_FILES}"
-                                     BUILD_PATH "${CMAKE_BINARY_DIR}"
-                                     CONFIG_FILE "${CMAKE_SOURCE_DIR}/.clang-tidy-gen"
-                                     HEADER_FILTER "${VALUE_OUT_DIR}/.*")
-
-        # add cppcheck custom command
-        include(cppcheck_utils)
-        set(SUPPRESSION_FILE_NAME "${CMAKE_CURRENT_SOURCE_DIR}/cpp/CppcheckSuppressions.txt")
-        cppcheck_add_custom_command(TARGET ${VALUE_TARGET}
-                                    SOURCE_DIR "${VALUE_OUT_DIR}"
-                                    INCLUDE_DIR "${VALUE_OUT_DIR}"
-                                    SUPPRESSION_FILE "${SUPPRESSION_FILE_NAME}"
-                                    # add suppression needed due to generated field constructors
-                                    OPTIONS --suppress=useInitializationList:*gen*/*.h)
     endif ()
 endfunction()

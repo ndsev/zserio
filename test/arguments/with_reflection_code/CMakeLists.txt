@@ -21,7 +21,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/with_reflection_code/Union.h
 )
 
-zserio_add_library(TARGET with_reflection_code_zs
+zserio_add_library(with_reflection_code_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE with_reflection_code.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -31,8 +31,11 @@ zserio_add_library(TARGET with_reflection_code_zs
     ZSERIO_OPTIONS -withTypeInfoCode -withReflectionCode -withoutSourcesAmalgamation
 )
 
-add_test_sources(
-    cpp/WithReflectionCodeTest.cpp
+add_custom_test(with_reflection_code
+    DEPENDS
+        with_reflection_code_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/WithReflectionCodeTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(with_reflection_code_zs)

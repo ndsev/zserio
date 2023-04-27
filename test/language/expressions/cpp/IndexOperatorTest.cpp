@@ -38,7 +38,7 @@ protected:
         return list;
     }
 
-    ElementList readWrite(ElementList& list)
+    ElementList readWrite(const ElementList& list)
     {
         zserio::BitStreamWriter writer(bitBuffer);
         list.write(writer);
@@ -48,7 +48,7 @@ protected:
         return newList;
     }
 
-    void checkWriteError(ElementList& list)
+    void checkWriteError(const ElementList& list)
     {
         zserio::BitStreamWriter writer(bitBuffer);
         ASSERT_THROW(list.write(writer), zserio::CppRuntimeException);

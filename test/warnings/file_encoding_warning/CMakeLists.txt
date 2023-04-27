@@ -4,7 +4,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/file_encoding_warning/NON_UTF8_STRING.h
 )
 
-zserio_add_library(TARGET file_encoding_warning_zs
+zserio_add_library(file_encoding_warning_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE file_encoding_warning.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -16,8 +16,11 @@ zserio_add_library(TARGET file_encoding_warning_zs
     ZSERIO_LOG_FILENAME zserio_log.txt
 )
 
-add_test_sources(
-    cpp/FileEncodingWarningTest.cpp
+add_custom_test(file_encoding_warning
+    DEPENDS
+        file_encoding_warning_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/FileEncodingWarningTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(file_encoding_warning_zs)

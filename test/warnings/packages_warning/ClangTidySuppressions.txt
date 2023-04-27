@@ -1,0 +1,13 @@
+cppcoreguidelines-init-variables:gen/packages_warning/simple_database/SimpleTable.cpp:191
+
+cppcoreguidelines-pro-type-member-init:gen/packages_warning/simple_database/SimpleTable.cpp:70
+
+fuchsia-multiple-inheritance:gen/packages_warning/package_import_overwrite_warning/TopDatabase.h:30
+fuchsia-multiple-inheritance:gen/packages_warning/simple_database/SimpleDatabase.h:30
+fuchsia-multiple-inheritance:gen/packages_warning/single_type_already_imported_warning/TopDatabase.h:30
+
+modernize-use-using:gen/packages_warning/package_import_overwrite_warning/TopDatabase.h:34
+modernize-use-using:gen/packages_warning/simple_database/SimpleDatabase.h:34
+modernize-use-using:gen/packages_warning/single_type_already_imported_warning/TopDatabase.h:34
+
+readability-braces-around-statements:gen/packages_warning/simple_database/SimpleTable.cpp:185

@@ -10,7 +10,7 @@ set(ZSERIO_GENERATED_SOURCES_PYTHON
     ${ZSERIO_GEN_DIR_PYTHON}/invalid_in_python/Test.h
 )
 
-zserio_add_library(TARGET invalid_in_java_zs
+zserio_add_library(invalid_in_java_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE invalid_in_java.zs
     OUT_DIR ${ZSERIO_GEN_DIR_JAVA}
@@ -20,7 +20,7 @@ zserio_add_library(TARGET invalid_in_java_zs
     ZSERIO_OPTIONS -withoutSourcesAmalgamation -withoutCrossExtensionCheck
 )
 
-zserio_add_library(TARGET invalid_in_python_zs
+zserio_add_library(invalid_in_python_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE invalid_in_python.zs
     OUT_DIR ${ZSERIO_GEN_DIR_PYTHON}
@@ -30,9 +30,13 @@ zserio_add_library(TARGET invalid_in_python_zs
     ZSERIO_OPTIONS -withoutSourcesAmalgamation -withoutCrossExtensionCheck
 )
 
-add_test_sources(
-    cpp/WithoutCrossExtensionCheckTest.cpp
+add_custom_test(without_cross_extension_check
+    DEPENDS
+        invalid_in_java_zs
+        invalid_in_python_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/WithoutCrossExtensionCheckTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES_JAVA}
+        ${ZSERIO_GENERATED_SOURCES_PYTHON}
 )
-
-add_test_dependencies(invalid_in_java_zs)
-add_test_dependencies(invalid_in_python_zs)

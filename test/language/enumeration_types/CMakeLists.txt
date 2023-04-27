@@ -28,7 +28,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/enumeration_types/varuint_enum/DarkColor.h
 )
 
-zserio_add_library(TARGET enumeration_types_zs
+zserio_add_library(enumeration_types_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE enumeration_types.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -38,14 +38,17 @@ zserio_add_library(TARGET enumeration_types_zs
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
-add_test_sources(
-    cpp/BitfieldConstEnumTest.cpp
-    cpp/BitfieldEnumTest.cpp
-    cpp/EnumDefinedByConstantTest.cpp
-    cpp/EnumUsedByEnumTest.cpp
-    cpp/UInt64EnumTest.cpp
-    cpp/UInt8EnumTest.cpp
-    cpp/VarUIntEnumTest.cpp
+add_custom_test(enumeration_types
+    DEPENDS
+        enumeration_types_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/BitfieldConstEnumTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/BitfieldEnumTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/EnumDefinedByConstantTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/EnumUsedByEnumTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/UInt64EnumTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/UInt8EnumTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/VarUIntEnumTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(enumeration_types_zs)

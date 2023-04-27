@@ -97,10 +97,7 @@ public:
 
         const size_t usedBytes = static_cast<size_t>(m_nextPtr - m_buffer.begin());
         if (usedBytes > BUFFER_SIZE)
-        {
-            // NOLINTNEXTLINE(google-readability-casting)
             throw zserio::CppRuntimeException(m_name) << ": Buffer overflow (" << usedBytes << ")!";
-        }
 
         ++m_numAllocations;
         m_allocatedSize += bytes;

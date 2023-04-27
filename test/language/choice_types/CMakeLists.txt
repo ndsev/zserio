@@ -103,7 +103,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/choice_types/uint64_param_choice/VariantC.h
 )
 
-zserio_add_library(TARGET choice_types_zs
+zserio_add_library(choice_types_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE choice_types.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -113,23 +113,26 @@ zserio_add_library(TARGET choice_types_zs
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
-add_test_sources(
-    cpp/BitmaskParamChoiceTest.cpp
-    cpp/BoolParamChoiceTest.cpp
-    cpp/ChoiceCompatibilityCheckTest.cpp
-    cpp/ChoiceWithArrayTest.cpp
-    cpp/DefaultEmptyChoiceTest.cpp
-    cpp/EmptyChoiceTest.cpp
-    cpp/EmptyChoiceWithCaseTest.cpp
-    cpp/EmptyChoiceWithDefaultTest.cpp
-    cpp/EnumParamChoiceTest.cpp
-    cpp/ExpressionSelectorChoiceTest.cpp
-    cpp/FullBitmaskParamChoiceTest.cpp
-    cpp/FullEnumParamChoiceTest.cpp
-    cpp/FunctionReturningLiteralSelectorChoiceTest.cpp
-    cpp/FunctionSelectorChoiceTest.cpp
-    cpp/UInt16ParamChoiceTest.cpp
-    cpp/UInt64ParamChoiceTest.cpp
+add_custom_test(choice_types
+    DEPENDS
+        choice_types_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/BitmaskParamChoiceTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/BoolParamChoiceTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ChoiceCompatibilityCheckTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ChoiceWithArrayTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/DefaultEmptyChoiceTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/EmptyChoiceTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/EmptyChoiceWithCaseTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/EmptyChoiceWithDefaultTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/EnumParamChoiceTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ExpressionSelectorChoiceTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/FullBitmaskParamChoiceTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/FullEnumParamChoiceTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/FunctionReturningLiteralSelectorChoiceTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/FunctionSelectorChoiceTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/UInt16ParamChoiceTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/UInt64ParamChoiceTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(choice_types_zs)

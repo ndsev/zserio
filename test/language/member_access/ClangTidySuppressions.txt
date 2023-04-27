@@ -1,0 +1,6 @@
+performance-move-const-arg:gen/member_access/access_within_type/Message.cpp:62
+
+readability-braces-around-statements:cpp/AccessWithinTypeTest.cpp:32
+readability-braces-around-statements:cpp/AccessWithinTypeTest.cpp:60
+
+readability-make-member-function-const:gen/member_access/access_within_type/Header.cpp:113

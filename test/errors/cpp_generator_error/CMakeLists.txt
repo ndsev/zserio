@@ -4,7 +4,7 @@ set(LOG_FILENAME zserio_log.txt)
 # clean old log file
 file(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/${LOG_FILENAME})
 
-zserio_add_library(TARGET wrong_set_cpp_allocator_error_zs
+zserio_add_library(wrong_set_cpp_allocator_error_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE wrong_set_cpp_allocator_error.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -17,7 +17,7 @@ zserio_add_library(TARGET wrong_set_cpp_allocator_error_zs
     APPEND_TO_ZSERIO_LOG_FILE ON
 )
 
-zserio_add_library(TARGET bitmask_values_class_clash_error_zs
+zserio_add_library(bitmask_values_class_clash_error_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE bitmask_values_class_clash_error.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -30,7 +30,7 @@ zserio_add_library(TARGET bitmask_values_class_clash_error_zs
     APPEND_TO_ZSERIO_LOG_FILE ON
 )
 
-zserio_add_library(TARGET sql_table_provider_class_clash_error_zs
+zserio_add_library(sql_table_provider_class_clash_error_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE sql_table_provider_class_clash_error.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -43,7 +43,7 @@ zserio_add_library(TARGET sql_table_provider_class_clash_error_zs
     APPEND_TO_ZSERIO_LOG_FILE ON
 )
 
-zserio_add_library(TARGET sql_table_reader_class_clash_error_zs
+zserio_add_library(sql_table_reader_class_clash_error_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE sql_table_reader_class_clash_error.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -56,7 +56,7 @@ zserio_add_library(TARGET sql_table_reader_class_clash_error_zs
     APPEND_TO_ZSERIO_LOG_FILE ON
 )
 
-zserio_add_library(TARGET sql_table_row_class_clash_error_zs
+zserio_add_library(sql_table_row_class_clash_error_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE sql_table_row_class_clash_error.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -69,12 +69,13 @@ zserio_add_library(TARGET sql_table_row_class_clash_error_zs
     APPEND_TO_ZSERIO_LOG_FILE ON
 )
 
-add_test_dependencies(wrong_set_cpp_allocator_error_zs)
-add_test_dependencies(bitmask_values_class_clash_error_zs)
-add_test_dependencies(sql_table_provider_class_clash_error_zs)
-add_test_dependencies(sql_table_reader_class_clash_error_zs)
-add_test_dependencies(sql_table_row_class_clash_error_zs)
-
-add_test_sources(
-    cpp/CppGeneratorErrorTest.cpp
+add_custom_test(cpp_generator_error
+    DEPENDS
+        wrong_set_cpp_allocator_error_zs
+        bitmask_values_class_clash_error_zs
+        sql_table_provider_class_clash_error_zs
+        sql_table_reader_class_clash_error_zs
+        sql_table_row_class_clash_error_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/CppGeneratorErrorTest.cpp
 )

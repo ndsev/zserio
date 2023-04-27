@@ -1,0 +1,10 @@
+cert-err58-cpp:gen/literals/STRING.h:14
+
+google-build-using-namespace:cpp/LiteralsTest.cpp:26
+
+readability-braces-around-statements:cpp/LiteralsTest.cpp:75
+readability-braces-around-statements:cpp/LiteralsTest.cpp:83
+readability-braces-around-statements:cpp/LiteralsTest.cpp:91
+
+readability-uppercase-literal-suffix:gen/literals/FLOAT16.h:14
+readability-uppercase-literal-suffix:gen/literals/FLOAT32.h:14

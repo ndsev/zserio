@@ -37,7 +37,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/offsets/uint64_offset/UInt64Offset.h
 )
 
-zserio_add_library(TARGET offsets_zs
+zserio_add_library(offsets_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE offsets.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -47,15 +47,18 @@ zserio_add_library(TARGET offsets_zs
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
-add_test_sources(
-    cpp/AutoArrayOffsetTest.cpp
-    cpp/BitOffsetTest.cpp
-    cpp/NestedOffsetTest.cpp
-    cpp/OptionalMemberOffsetTest.cpp
-    cpp/PackedAutoArrayOffsetTest.cpp
-    cpp/ParameterOffsetTest.cpp
-    cpp/TernaryOperatorOffsetTest.cpp
-    cpp/UInt64OffsetTest.cpp
+add_custom_test(offsets
+    DEPENDS
+        offsets_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/AutoArrayOffsetTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/BitOffsetTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/NestedOffsetTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/OptionalMemberOffsetTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedAutoArrayOffsetTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ParameterOffsetTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/TernaryOperatorOffsetTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/UInt64OffsetTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(offsets_zs)

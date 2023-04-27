@@ -20,7 +20,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/without_writer_code/WorldDb.h
 )
 
-zserio_add_library(TARGET without_writer_code_zs
+zserio_add_library(without_writer_code_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE without_writer_code.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -32,8 +32,11 @@ zserio_add_library(TARGET without_writer_code_zs
 
 target_include_directories(without_writer_code_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 
-add_test_sources(
-    cpp/WithoutWriterCodeTest.cpp
+add_custom_test(without_writer_code
+    DEPENDS
+        without_writer_code_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/WithoutWriterCodeTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(without_writer_code_zs)

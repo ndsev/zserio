@@ -20,7 +20,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/templates_warning/default_instantiation_subpackage1/Subpackage1Template_string.h
 )
 
-zserio_add_library(TARGET templates_warning_zs
+zserio_add_library(templates_warning_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE templates_warning.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -32,8 +32,11 @@ zserio_add_library(TARGET templates_warning_zs
     ZSERIO_LOG_FILENAME zserio_log.txt
 )
 
-add_test_sources(
-    cpp/TemplatesWarningTest.cpp
+add_custom_test(templates_warning
+    DEPENDS
+        templates_warning_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/TemplatesWarningTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(templates_warning_zs)

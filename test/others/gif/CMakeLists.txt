@@ -53,7 +53,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/gif/signature/Signature.h
 )
 
-zserio_add_library(TARGET gif_zs
+zserio_add_library(gif_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE gif.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -63,11 +63,17 @@ zserio_add_library(TARGET gif_zs
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
-add_test_sources(cpp/GifTest.cpp)
-add_test_dependencies(gif_zs)
-
 add_custom_command(TARGET gif_zs POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data
                            ${CMAKE_CURRENT_BINARY_DIR}/data
                    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/data
                    COMMENT "Copying data directory for gif test")
+
+add_custom_test(gif
+    DEPENDS
+        gif_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/GifTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
+)

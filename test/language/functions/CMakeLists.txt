@@ -70,7 +70,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/functions/union_array/OuterArray.h
 )
 
-zserio_add_library(TARGET functions_zs
+zserio_add_library(functions_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE functions.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -80,18 +80,21 @@ zserio_add_library(TARGET functions_zs
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
-add_test_sources(
-    cpp/ChoiceArrayTest.cpp
-    cpp/StructureArrayTest.cpp
-    cpp/StructureArrayParamTest.cpp
-    cpp/StructureBytesTest.cpp
-    cpp/StructureExternTest.cpp
-    cpp/StructureOptionalTest.cpp
-    cpp/StructureParamTest.cpp
-    cpp/StructureParentChildValueTest.cpp
-    cpp/StructureStringTest.cpp
-    cpp/StructureValueTest.cpp
-    cpp/UnionArrayTest.cpp
+add_custom_test(functions
+    DEPENDS
+        functions_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ChoiceArrayTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/StructureArrayTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/StructureArrayParamTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/StructureBytesTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/StructureExternTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/StructureOptionalTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/StructureParamTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/StructureParentChildValueTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/StructureStringTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/StructureValueTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/UnionArrayTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(functions_zs)

@@ -5,7 +5,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/rules/pkg_rules/Test.h
 )
 
-zserio_add_library(TARGET rules_zs
+zserio_add_library(rules_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE rules.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -15,7 +15,9 @@ zserio_add_library(TARGET rules_zs
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
-add_test_sources(
+add_custom_test(rules
+    DEPENDS
+        rules_zs
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(rules_zs)

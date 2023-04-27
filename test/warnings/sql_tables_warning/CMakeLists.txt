@@ -33,7 +33,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/sql_tables_warning/not_null_primary_key_warning/NotNullPrimaryKeyTable2.h
 )
 
-zserio_add_library(TARGET sql_tables_warning_zs
+zserio_add_library(sql_tables_warning_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE sql_tables_warning.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -47,8 +47,11 @@ zserio_add_library(TARGET sql_tables_warning_zs
 
 target_include_directories(sql_tables_warning_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 
-add_test_sources(
-    cpp/SqlTablesWarningTest.cpp
+add_custom_test(sql_tables_warning
+    DEPENDS
+        sql_tables_warning_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/SqlTablesWarningTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(sql_tables_warning_zs)

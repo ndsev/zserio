@@ -25,7 +25,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/identifiers/structure_name_clashing_with_java/StructureNameClashingWithJava.h
 )
 
-zserio_add_library(TARGET identifiers_zs
+zserio_add_library(identifiers_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE identifiers.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -35,9 +35,12 @@ zserio_add_library(TARGET identifiers_zs
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
-add_test_sources(
-    cpp/BitmaskNameClashingWithJavaTest.cpp
-    cpp/StructureNameClashingWithJavaTest.cpp
+add_custom_test(identifiers
+    DEPENDS
+        identifiers_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/BitmaskNameClashingWithJavaTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/StructureNameClashingWithJavaTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(identifiers_zs)

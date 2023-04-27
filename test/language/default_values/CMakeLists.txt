@@ -10,7 +10,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/default_values/structure_default_values/Permission.h
 )
 
-zserio_add_library(TARGET default_values_zs
+zserio_add_library(default_values_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE default_values.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -20,8 +20,11 @@ zserio_add_library(TARGET default_values_zs
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
-add_test_sources(
-    cpp/StructureDefaultValuesTest.cpp
+add_custom_test(default_values
+    DEPENDS
+        default_values_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/StructureDefaultValuesTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(default_values_zs)

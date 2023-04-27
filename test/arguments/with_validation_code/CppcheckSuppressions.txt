@@ -1,8 +1,8 @@
+noExplicitConstructor:*/with_validation_code/simple_table_validation/TestBitmask.h
 uninitMemberVar:*/with_validation_code/depend_table_validation/Blob.cpp
 uninitMemberVar:*/with_validation_code/depend_table_validation/Blob.h
-variableScope:*/with_validation_code/depend_table_validation/DependTable.cpp
-variableScope:*/with_validation_code/depend_table_validation/DependTable.cpp
 uninitMemberVar:*/with_validation_code/simple_table_validation/RootStruct.cpp
 uninitMemberVar:*/with_validation_code/simple_table_validation/RootStruct.h
-noExplicitConstructor:*/with_validation_code/simple_table_validation/TestBitmask.h
+variableScope:*/with_validation_code/depend_table_validation/DependTable.cpp
+variableScope:*/with_validation_code/depend_table_validation/DependTable.cpp
 variableScope:*/with_validation_code/simple_table_validation/SimpleTable.cpp
