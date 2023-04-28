@@ -103,12 +103,13 @@ public:
      *
      * \return Decoder result.
      */
-    DecoderResult decodeValue(const char* input)
+    DecoderResult decodeValue(StringView input)
     {
+        if (input.empty())
+            return DecoderResult(0, get_allocator());
+
         switch (input[0])
         {
-        case '\0':
-            return DecoderResult(0, get_allocator());
         case 'n':
             return decodeLiteral(input, "null"_sv, nullptr);
         case 't':
@@ -122,7 +123,7 @@ public:
         case '"':
             return decodeString(input);
         case '-':
-            if (input[1] == 'I') // note that input is zero-terminated, thus 1 still must be a valid index
+            if (input.size() > 1 && input[1] == 'I')
                 return decodeLiteral(input, "-Infinity"_sv, -static_cast<double>(INFINITY));
             return decodeNumber(input);
         default:
@@ -132,124 +133,142 @@ public:
 
 private:
     template <typename T>
-    DecoderResult decodeLiteral(const char* input, StringView literal, T&& value);
-    DecoderResult decodeString(const char* input);
-    static bool decodeUnicodeEscape(const char*& pInput, string<ALLOC>& value);
+    DecoderResult decodeLiteral(StringView input, StringView literal, T&& value);
+    DecoderResult decodeString(StringView input);
+    static bool decodeUnicodeEscape(StringView input, StringView::const_iterator& inputIt,
+            string<ALLOC>& value);
     static char decodeHex(char ch);
-    size_t checkNumber(const char* input, bool& isDouble);
-    DecoderResult decodeNumber(const char* input);
-    DecoderResult decodeSigned(const char* input, size_t numChars);
-    DecoderResult decodeUnsigned(const char* input, size_t numChars);
-    DecoderResult decodeDouble(const char* input, size_t numChars);
+    size_t checkNumber(StringView input, bool& isDouble, bool& isSigned);
+    DecoderResult decodeNumber(StringView input);
+    DecoderResult decodeSigned(StringView input, size_t numChars);
+    DecoderResult decodeUnsigned(StringView input, size_t numChars);
+    DecoderResult decodeDouble(StringView input, size_t numChars);
 };
 
 template <typename ALLOC>
 template <typename T>
 typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeLiteral(
-        const char* input, StringView literal, T&& value)
+        StringView input, StringView literal, T&& value)
 {
-    if (strncmp(input, literal.data(), literal.size()) == 0)
-        return DecoderResult(literal.size(), std::forward<T>(value), get_allocator());
+    StringView::const_iterator literalIt = literal.begin();
+    StringView::const_iterator inputIt = input.begin();
+    while (inputIt != input.end() && literalIt != literal.end())
+    {
+        if (*inputIt++ != *literalIt++)
+        {
+            // failure, not decoded
+            return DecoderResult(static_cast<size_t>(inputIt - input.begin()), get_allocator());
+        }
+    }
 
-    const size_t numReadChars = strnlen(input, literal.size());
-    return DecoderResult(numReadChars, get_allocator());
+    if (literalIt != literal.end())
+    {
+        // short input, not decoded
+        return DecoderResult(input.size(), get_allocator());
+    }
+
+    // success
+    return DecoderResult(literal.size(), std::forward<T>(value), get_allocator());
 }
 
 template <typename ALLOC>
-typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeString(const char* input)
+typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeString(StringView input)
 {
-    const char* pInput = input + 1; // we know that at the beginning is '"'
+    StringView::const_iterator inputIt = input.begin() + 1; // we know that at the beginning is '"'
     string<ALLOC> value(get_allocator());
 
-    while (true)
+    while (inputIt != input.end())
     {
-        if (*pInput == '\\')
+        if (*inputIt == '\\')
         {
-            char nextChar = *(++pInput);
+            ++inputIt;
+            if (inputIt == input.end())
+            {
+                // wrong escape, not decoded
+                return DecoderResult(static_cast<size_t>(inputIt - input.begin()), get_allocator());
+            }
+
+            char nextChar = *inputIt;
             switch (nextChar)
             {
             case '\\':
             case '"':
                 value.push_back(nextChar);
-                ++pInput;
+                ++inputIt;
                 break;
             case 'b':
                 value.push_back('\b');
-                ++pInput;
+                ++inputIt;
                 break;
             case 'f':
                 value.push_back('\f');
-                ++pInput;
+                ++inputIt;
                 break;
             case 'n':
                 value.push_back('\n');
-                ++pInput;
+                ++inputIt;
                 break;
             case 'r':
                 value.push_back('\r');
-                ++pInput;
+                ++inputIt;
                 break;
             case 't':
                 value.push_back('\t');
-                ++pInput;
+                ++inputIt;
                 break;
             case 'u': // unicode escape
                 {
-                    ++pInput;
-                    const size_t unicodeEscapeLen = 4;
-                    const size_t numReadChars = strnlen(pInput, unicodeEscapeLen);
-                    if (numReadChars < unicodeEscapeLen)
+                    ++inputIt;
+                    if (!decodeUnicodeEscape(input, inputIt, value))
                     {
-                        return DecoderResult(static_cast<size_t>(pInput + numReadChars - input),
-                                get_allocator());
-                    }
-                    if (!decodeUnicodeEscape(pInput, value))
-                    {
-                        // unsupported unicode escape
-                        return DecoderResult(static_cast<size_t>(pInput - input), get_allocator());
+                        // unsupported unicode escape, not decoded
+                        return DecoderResult(static_cast<size_t>(inputIt - input.begin()), get_allocator());
                     }
                     break;
                 }
-            case '\0': // in case of terminating zero do not consume it
-                return DecoderResult(static_cast<size_t>(pInput - input), get_allocator());
             default:
-                ++pInput;
-                // unknown character, not decoded...
-                return DecoderResult(static_cast<size_t>(pInput - input), get_allocator());
+                ++inputIt;
+                // unknown escape, not decoded
+                return DecoderResult(static_cast<size_t>(inputIt - input.begin()), get_allocator());
             }
         }
-        else if (*pInput == '"')
+        else if (*inputIt == '"')
         {
-            ++pInput;
-            break;
-        }
-        else if (*pInput == '\0')
-        {
-            // unterminated string, not decoded...
-            return DecoderResult(static_cast<size_t>(pInput - input), get_allocator());
+            ++inputIt;
+            // successfully decoded
+            return DecoderResult(static_cast<size_t>(inputIt - input.begin()), std::move(value),
+                    get_allocator());
         }
         else
         {
-            value.push_back(*pInput++);
+            value.push_back(*inputIt++);
         }
     }
 
-    return DecoderResult(static_cast<size_t>(pInput - input), std::move(value), get_allocator());
+    // unterminated string, not decoded
+    return DecoderResult(input.size(), get_allocator());
 }
 
 template <typename ALLOC>
-bool BasicJsonDecoder<ALLOC>::decodeUnicodeEscape(const char*& pInput, string<ALLOC>& value)
+bool BasicJsonDecoder<ALLOC>::decodeUnicodeEscape(StringView input, StringView::const_iterator& inputIt,
+        string<ALLOC>& value)
 {
     // TODO[Mi-L@]: Simplified just to decode what zserio encodes, for complex solution we could use
     //              std::wstring_convert but it's deprecated in C++17.
-    if (*pInput++ != '0' || *pInput++ != '0')
+    if (inputIt == input.end() || *inputIt++ != '0')
+        return false;
+    if (inputIt == input.end() || *inputIt++ != '0')
         return false;
 
-    const char ch1 = decodeHex(*pInput++);
+    if (inputIt == input.end())
+        return false;
+    const char ch1 = decodeHex(*inputIt++);
     if (ch1 == -1)
         return false;
 
-    const char ch2 = decodeHex(*pInput++);
+    if (inputIt == input.end())
+        return false;
+    const char ch2 = decodeHex(*inputIt++);
     if (ch2 == -1)
         return false;
 
@@ -271,57 +290,65 @@ char BasicJsonDecoder<ALLOC>::decodeHex(char ch)
 }
 
 template <typename ALLOC>
-size_t BasicJsonDecoder<ALLOC>::checkNumber(const char* input, bool& isDouble)
+size_t BasicJsonDecoder<ALLOC>::checkNumber(StringView input, bool& isDouble, bool& isSigned)
 {
-    const char* pInput = input;
-    bool acceptSign = false;
+    StringView::const_iterator inputIt = input.begin();
+    bool acceptExpSign = false;
+    isDouble = false;
 
-    char nextChar = *pInput;
-    if (nextChar == '-')
-        nextChar = *++pInput;
-
-    while (nextChar != '\0')
+    if (*inputIt == '-') // we know that at the beginning is at least one character
     {
-        if (acceptSign)
+        ++inputIt;
+        isSigned = true;
+    }
+    else
+    {
+        isSigned = false;
+    }
+
+    while (inputIt != input.end())
+    {
+        if (acceptExpSign)
         {
-            acceptSign = false;
-            if (nextChar == '+' || nextChar == '-')
+            acceptExpSign = false;
+            if (*inputIt == '+' || *inputIt == '-')
             {
-                nextChar = *++pInput;
+                ++inputIt;
                 continue;
             }
         }
-        if (nextChar >= '0' && nextChar <= '9')
+        if (*inputIt >= '0' && *inputIt <= '9')
         {
-            nextChar = *++pInput;
+            ++inputIt;
             continue;
         }
-        if (isDouble == false && (nextChar == '.' || nextChar == 'e' || nextChar == 'E'))
+        if (isDouble == false && (*inputIt == '.' || *inputIt == 'e' || *inputIt == 'E'))
         {
             isDouble = true;
-            if (nextChar == 'e' || nextChar == 'E')
-                acceptSign = true;
-            nextChar = *++pInput;
+            if (*inputIt == 'e' || *inputIt == 'E')
+                acceptExpSign = true;
+            ++inputIt;
             continue;
         }
 
         break; // end of a number
     }
 
-    return static_cast<size_t>(pInput - input);
+    return static_cast<size_t>(inputIt - input.begin());
 }
 
 template <typename ALLOC>
-typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeNumber(const char* input)
+typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeNumber(StringView input)
 {
     bool isDouble = false;
-    const size_t numChars = checkNumber(input, isDouble);
+    bool isSigned = false;
+    const size_t numChars = checkNumber(input, isDouble, isSigned);
     if (numChars == 0)
         return DecoderResult(1, get_allocator());
 
     if (isDouble)
         return decodeDouble(input, numChars);
-    else if (*input == '-')
+    else if (isSigned)
         return decodeSigned(input, numChars);
     else
         return decodeUnsigned(input, numChars);
@@ -329,12 +356,12 @@ typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeN
 
 template <typename ALLOC>
 typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeSigned(
-        const char* input, size_t numChars)
+        StringView input, size_t numChars)
 {
     char* pEnd = nullptr;
     errno = 0; // no library function sets its value back to zero once changed
-    const int64_t value = std::strtoll(input, &pEnd, 10);
-    if (static_cast<size_t>(pEnd - input) != numChars)
+    const int64_t value = std::strtoll(input.begin(), &pEnd, 10);
+    if (static_cast<size_t>(pEnd - input.begin()) != numChars)
         return DecoderResult(numChars, get_allocator());
 
     const bool overflow = (errno == ERANGE);
@@ -344,12 +371,12 @@ typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeS
 
 template <typename ALLOC>
 typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeUnsigned(
-        const char* input, size_t numChars)
+        StringView input, size_t numChars)
 {
     char* pEnd = nullptr;
     errno = 0; // no library function sets its value back to zero once changed
-    const uint64_t value = std::strtoull(input, &pEnd, 10);
-    if (static_cast<size_t>(pEnd - input) != numChars)
+    const uint64_t value = std::strtoull(input.begin(), &pEnd, 10);
+    if (static_cast<size_t>(pEnd - input.begin()) != numChars)
         return DecoderResult(numChars, get_allocator());
 
     const bool overflow = (errno == ERANGE);
@@ -359,11 +386,11 @@ typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeU
 
 template <typename ALLOC>
 typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeDouble(
-        const char* input, size_t numChars)
+        StringView input, size_t numChars)
 {
     char* pEnd = nullptr;
-    const double value = std::strtod(input, &pEnd);
-    if (static_cast<size_t>(pEnd - input) != numChars)
+    const double value = std::strtod(input.begin(), &pEnd);
+    if (static_cast<size_t>(pEnd - input.begin()) != numChars)
         return DecoderResult(numChars, get_allocator());
 
     return DecoderResult(numChars, value, get_allocator());

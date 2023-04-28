@@ -1,6 +1,8 @@
 assertWithSideEffect
 
 constParameter:*/src/zserio/Span.h:100
+knownConditionTrueFalse:*/src/zserio/JsonDecoder.h:260
+knownConditionTrueFalse:*/src/zserio/JsonDecoder.h:263
 mismatchingContainers:*/test/zserio/AnyHolderTest.cpp:37
 mismatchingContainers:*/test/zserio/AnyHolderTest.cpp:50
 mismatchingContainers:*/test/zserio/AnyHolderTest.cpp:72
