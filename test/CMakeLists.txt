@@ -61,7 +61,7 @@ if (SANITIZERS_ENABLED)
 endif ()
 
 # cppcheck needs to know all include directories in generated code
-function(get_generated_include_dirs GENERATED_SOURCES GENERATED_INCLUDES_VAR)
+function(get_generated_dirs GENERATED_SOURCES GENERATED_INCLUDES_VAR)
     foreach (SOURCE ${GENERATED_SOURCES})
         string(REGEX REPLACE "^(${CMAKE_CURRENT_BINARY_DIR}/[^/]*)/.*$" "\\1" INC_DIR "${SOURCE}")
         list(APPEND INCLUDE_DIRS "${INC_DIR}")
@@ -93,14 +93,14 @@ function(add_custom_test TEST_NAME)
                                  HEADER_FILTER
                                     "${CMAKE_CURRENT_SOURCE_DIR}/.*|${CMAKE_CURRENT_BINARY_DIR}/.*")
 
-    get_generated_include_dirs("${TEST_ARG_GENERATED_SOURCES}" GENERATED_INCLUDES)
+    get_generated_dirs("${TEST_ARG_GENERATED_SOURCES}" GENERATED_DIRS)
     cppcheck_add_custom_command(TARGET ${TEST_NAME}
                                 SOURCE_DIR
                                     "${TEST_ARG_SOURCES}"
-                                    "${TEST_ARG_GENERATED_SOURCES}"
+                                    "${GENERATED_DIRS}"
                                 INCLUDE_DIR
                                     "${CMAKE_CURRENT_SOURCE_DIR}"
-                                    "${GENERATED_INCLUDES}"
+                                    "${GENERATED_DIRS}"
                                 SUPPRESSION_FILE
                                     "${CMAKE_CURRENT_SOURCE_DIR}/CppcheckSuppressions.txt"
                                 OPTIONS --library=googletest.cfg --suppress=assertWithSideEffect)
