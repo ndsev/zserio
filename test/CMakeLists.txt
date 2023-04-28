@@ -71,20 +71,14 @@ function(get_generated_include_dirs GENERATED_SOURCES GENERATED_INCLUDES_VAR)
 endfunction()
 
 # functions to set globals called by included CMake lists
-set(TEST_OBJECTS_LIST "" CACHE INTERNAL "Test objects")
+set(TEST_DEPENDENCIES_LIST "" CACHE INTERNAL "Test objects")
 set(TEST_SOURCES_LIST "" CACHE INTERNAL "Test sources")
 function(add_custom_test TEST_NAME)
     cmake_parse_arguments(TEST_ARG "" "" "DEPENDS;SOURCES;GENERATED_SOURCES" ${ARGN})
 
-    if (NOT DEFINED TEST_ARG_SOURCES)
-        add_library(${TEST_NAME} INTERFACE)
-        target_link_libraries(${TEST_NAME} INTERFACE ${TEST_ARG_DEPENDS} gtest ZserioCppRuntime)
-        add_dependencies(${TEST_NAME} ${TEST_ARG_DEPENDS})
-    else ()
-        add_library(${TEST_NAME} OBJECT ${TEST_ARG_SOURCES})
-        target_link_libraries(${TEST_NAME} ${TEST_ARG_DEPENDS} gtest)
-        target_include_directories(${TEST_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/utils/cpp ${SQLITE_INCDIR})
-    endif ()
+    # test sources are added in add_executable to simplify dependencies handling
+    add_library(${TEST_NAME} INTERFACE)
+    add_dependencies(${TEST_NAME} ${TEST_ARG_DEPENDS})
 
     clang_tidy_add_custom_target(${TEST_NAME}-clang-tidy
                                  DEPENDS
@@ -111,10 +105,7 @@ function(add_custom_test TEST_NAME)
                                     "${CMAKE_CURRENT_SOURCE_DIR}/CppcheckSuppressions.txt"
                                 OPTIONS --library=googletest.cfg --suppress=assertWithSideEffect)
 
-    set(TEST_OBJECTS_LIST "${TEST_OBJECTS_LIST};$<TARGET_OBJECTS:${TEST_NAME}>" CACHE INTERNAL "")
-    foreach (DEPENDENCY ${TEST_ARG_DEPENDS})
-        set(TEST_OBJECTS_LIST "${TEST_OBJECTS_LIST};$<TARGET_OBJECTS:${DEPENDENCY}>" CACHE INTERNAL "")
-    endforeach ()
+    set(TEST_DEPENDENCIES_LIST "${TEST_DEPENDENCIES_LIST};${TEST_ARG_DEPENDS}" CACHE INTERNAL "")
     if (DEFINED TEST_ARG_SOURCES)
         set(TEST_SOURCES_LIST "${TEST_SOURCES_LIST};${TEST_ARG_SOURCES}" CACHE INTERNAL "")
     endif ()
@@ -129,23 +120,25 @@ foreach (TEST_SUITE ${ZSERIO_TEST_SUITES})
     endforeach ()
 endforeach ()
 
-set(EMPTY_TEST_HELPER ${CMAKE_CURRENT_BINARY_DIR}/EmptyTestHelper.cpp)
 if (NOT TEST_SOURCES_LIST)
     if (NOT TEST_DEPENDENCIES_LIST)
         message(STATUS "Test suites doesn't match any test!")
         return()
     endif ()
 
+    set(EMPTY_TEST_HELPER ${CMAKE_CURRENT_BINARY_DIR}/EmptyTestHelper.cpp)
     set(EMPTY_TEST_HELPER_CONTENT
         "#include \"gtest/gtest.h\"\nTEST(EmptyTestHelper, Success)\n{\n    ASSERT_TRUE(true);\n}\n"
     )
+    file(WRITE ${EMPTY_TEST_HELPER} "${EMPTY_TEST_HELPER_CONTENT}")
     set(TEST_SOURCES_LIST ${EMPTY_TEST_HELPER})
 endif ()
-file(WRITE ${EMPTY_TEST_HELPER} "${EMPTY_TEST_HELPER_CONTENT}")
+
 
 # add_executable requieres at least a single source file
-add_executable(${PROJECT_NAME} ${EMPTY_TEST_HELPER} ${TEST_OBJECTS_LIST})
-target_link_libraries(${PROJECT_NAME} gtest_main ZserioCppRuntime ${SQLITE_LIBRARY})
+add_executable(${PROJECT_NAME} ${TEST_SOURCES_LIST})
+target_link_libraries(${PROJECT_NAME} ${TEST_DEPENDENCIES_LIST} gtest_main ZserioCppRuntime ${SQLITE_LIBRARY})
+target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${SQLITE_INCDIR})
 
 # add tests - test are labeled by file names (i.e. grouped)
 gtest_add_tests(${PROJECT_NAME} "--gtest_output=xml" ${TEST_SOURCES_LIST})
