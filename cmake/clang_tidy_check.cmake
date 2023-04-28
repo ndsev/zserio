@@ -9,6 +9,7 @@
 #                       rule-definition:path-regex         # suppress rule on matching paths
 #                       rule-definition:path-regex:10      # suppress rule on matching line
 #                       rule-definition:path-regex:10:1    # suppress rule on matching location
+#   WERROR            Ends with an error in case of any unsuppressed clang-tidy warnings.
 cmake_minimum_required(VERSION 3.6.0)
 
 # splits suppression to RULE and PATH_MATCHER parts
@@ -61,10 +62,9 @@ string(REGEX REPLACE "\r?\n" ";" LOG_LINES "${LOG_CONTENT}")
 file(STRINGS "${SUPPRESSIONS_FILE}" SUPPRESSIONS_LINES)
 strip_suppressions("${SUPPRESSIONS_LINES}" SUPPRESSIONS_LINES)
 
-set(UNUSED_SUPPRESSIONS "${SUPPRESSIONS_LINES}")
-
-set(NUM_UNSUPPRESSED_WARNINGS 0)
 list(LENGTH SUPPRESSIONS_LINES NUM_SUPPRESSIONS)
+set(UNUSED_SUPPRESSIONS "${SUPPRESSIONS_LINES}")
+set(NUM_UNSUPPRESSED_WARNINGS 0)
 set(IS_AFTER_MATCH FALSE)
 foreach (LINE ${LOG_LINES})
     if (NOT "${LINE}" MATCHES ".*warning:.*\\[.*\\]\$")
@@ -109,9 +109,12 @@ if (SUPPRESSIONS_LINES)
     message(FATAL_ERROR "Unused suppressions detected in ${SUPPRESSIONS_FILE}!")
 endif ()
 
-# report unsuppressed warnings - emulate WarningsAsErrors
+# report unsuppressed warnings
 if (UNSUPPRESSED_LINES)
     list(JOIN UNSUPPRESSED_LINES "\n" UNSUPPRESSED_LOG)
     message(STATUS "Clang Tidy output:\n${UNSUPPRESSED_LOG}")
-    message(FATAL_ERROR "Clang Tidy produced ${NUM_UNSUPPRESSED_WARNINGS} warnings which are not suppressed!")
+    if (WERROR) # emulate WarningsAsErrors
+        message(FATAL_ERROR
+            "Clang Tidy produced ${NUM_UNSUPPRESSED_WARNINGS} warnings which are not suppressed!")
+    endif ()
 endif ()
