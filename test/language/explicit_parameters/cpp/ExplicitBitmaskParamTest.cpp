@@ -115,14 +115,14 @@ protected:
 
     ExplicitParametersDb* m_database;
 
-    static const char* DB_FILE_NAME;
+    static const char* const DB_FILE_NAME;
 
     static const uint32_t NUM_BITMASK_PARAM_TABLE_ROWS;
     static const TestBitmask BITMASK_PARAM_TABLE_COUNT1;
     static const TestBitmask BITMASK_PARAM_TABLE_COUNT2;
 };
 
-const char* ExplicitBitmaskParamTest::DB_FILE_NAME =
+const char* const ExplicitBitmaskParamTest::DB_FILE_NAME =
         "language/explicit_parameters/explicit_bitmask_param_test.sqlite";
 
 const uint32_t ExplicitBitmaskParamTest::NUM_BITMASK_PARAM_TABLE_ROWS = 5;

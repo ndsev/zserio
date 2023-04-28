@@ -1,9 +1,6 @@
 bugprone-signed-char-misuse:gen/sql_types/SqlTypesTable.cpp:562
 bugprone-signed-char-misuse:gen/sql_types/SqlTypesTable.cpp:658
 
-cppcoreguidelines-avoid-non-const-global-variables:cpp/SqlTypesTest.cpp:66
-cppcoreguidelines-avoid-non-const-global-variables:cpp/SqlTypesTest.cpp:71
-
 cppcoreguidelines-pro-type-member-init:gen/sql_types/SqlTypesTable.cpp:98
 cppcoreguidelines-pro-type-member-init:gen/sql_types/TestChoice.cpp:18
 cppcoreguidelines-pro-type-member-init:gen/sql_types/TestChoice.cpp:40

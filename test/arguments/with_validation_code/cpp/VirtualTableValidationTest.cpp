@@ -57,10 +57,10 @@ private:
         ASSERT_EQ(SQLITE_DONE, sqlite3_step(statement.get()));
     }
 
-    static const char* DB_FILE_NAME;
+    static const char* const DB_FILE_NAME;
 };
 
-const char* VirtualTableValidationTest::DB_FILE_NAME =
+const char* const VirtualTableValidationTest::DB_FILE_NAME =
         "arguments/with_validation_code/virtual_table_validation_test.sqlite";
 
 constexpr int16_t VirtualTableValidationTest::ENTRY_COUNT;

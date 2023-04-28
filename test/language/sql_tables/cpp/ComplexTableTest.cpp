@@ -202,7 +202,7 @@ protected:
         }
     };
 
-    static const char* DB_FILE_NAME;
+    static const char* const DB_FILE_NAME;
 
     static const size_t NUM_COMPLEX_TABLE_ROWS;
     static const size_t COMPLEX_TABLE_COUNT;
@@ -211,7 +211,7 @@ protected:
     sql_tables::TestDb* m_database;
 };
 
-const char* ComplexTableTest::DB_FILE_NAME = "language/sql_tables/complex_table_test.sqlite";
+const char* const ComplexTableTest::DB_FILE_NAME = "language/sql_tables/complex_table_test.sqlite";
 
 const size_t ComplexTableTest::NUM_COMPLEX_TABLE_ROWS = 5;
 const size_t ComplexTableTest::COMPLEX_TABLE_COUNT = 10;

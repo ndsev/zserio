@@ -56,10 +56,10 @@ private:
         return db;
     }
 
-    static const char* IN_MEMORY_DATABASE;
+    static const char* const IN_MEMORY_DATABASE;
 };
 
-const char* ValidationSqliteUtilTest::IN_MEMORY_DATABASE = ":memory:";
+const char* const ValidationSqliteUtilTest::IN_MEMORY_DATABASE = ":memory:";
 
 TEST_F(ValidationSqliteUtilTest, getNumberOfTableRows)
 {

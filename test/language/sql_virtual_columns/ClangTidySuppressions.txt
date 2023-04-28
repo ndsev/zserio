@@ -1,8 +1,3 @@
-cppcoreguidelines-avoid-non-const-global-variables:cpp/HiddenVirtualColumnsTest.cpp:113
-cppcoreguidelines-avoid-non-const-global-variables:cpp/HiddenVirtualColumnsTest.cpp:120
-cppcoreguidelines-avoid-non-const-global-variables:cpp/SimpleVirtualColumnsTest.cpp:121
-cppcoreguidelines-avoid-non-const-global-variables:cpp/SimpleVirtualColumnsTest.cpp:129
-
 cppcoreguidelines-pro-type-member-init:gen/sql_virtual_columns/hidden_virtual_columns/HiddenVirtualColumnsTable.cpp:71
 cppcoreguidelines-pro-type-member-init:gen/sql_virtual_columns/simple_virtual_columns/SimpleVirtualColumnsTable.cpp:65
 

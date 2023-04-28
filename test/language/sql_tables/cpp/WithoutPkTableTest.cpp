@@ -95,13 +95,13 @@ protected:
         return true;
     }
 
-    static const char* DB_FILE_NAME;
+    static const char* const DB_FILE_NAME;
     static const int32_t NUM_WITHOUT_PK_TABLE_ROWS;
 
     sql_tables::TestDb* m_database;
 };
 
-const char* WithoutPkTableTest::DB_FILE_NAME = "language/sql_tables/without_pk_table_test.sqlite";
+const char* const WithoutPkTableTest::DB_FILE_NAME = "language/sql_tables/without_pk_table_test.sqlite";
 const int32_t WithoutPkTableTest::NUM_WITHOUT_PK_TABLE_ROWS = 5;
 
 TEST_F(WithoutPkTableTest, deleteTable)

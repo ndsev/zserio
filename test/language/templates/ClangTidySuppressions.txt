@@ -76,9 +76,6 @@ bugprone-unhandled-self-assignment:gen/templates/struct_templated_type_argument/
 cert-err58-cpp:cpp/InstantiateTypeAsSqlDatabaseFieldTest.cpp:48
 cert-err58-cpp:cpp/SqlTableTemplatedFieldTest.cpp:48
 
-cppcoreguidelines-avoid-non-const-global-variables:cpp/InstantiateSqlTableTest.cpp:18
-cppcoreguidelines-avoid-non-const-global-variables:cpp/InstantiateTypeAsSqlTableFieldTest.cpp:18
-
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen/templates/instantiate_imported/Test_string.h:41
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen/templates/instantiate_nested_template/NStr.h:41
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen/templates/instantiate_not_imported/pkg/Test_string.h:43

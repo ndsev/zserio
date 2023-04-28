@@ -75,13 +75,13 @@ protected:
             checkRow(rows1[i], rows2[i]);
     }
 
-    static const char* DB_FILE_NAME;
+    static const char* const DB_FILE_NAME;
     static const size_t NUM_ROWS;
 
     sql_tables::TestDb* m_database;
 };
 
-const char* SubtypedBitmaskFieldTableTest::DB_FILE_NAME =
+const char* const SubtypedBitmaskFieldTableTest::DB_FILE_NAME =
         "language/sql_tables/subtyped_bitmask_field_table_test.sqlite";
 const size_t SubtypedBitmaskFieldTableTest::NUM_ROWS = 5;
 

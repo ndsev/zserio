@@ -8,25 +8,6 @@ bugprone-unhandled-self-assignment:gen_sql_allocation/sql_allocation/Parameteriz
 
 cert-err58-cpp:cpp/SqlAllocationTest.cpp:157
 
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ComplexAllocationTest.cpp:1124
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ComplexAllocationTest.cpp:1127
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ComplexAllocationTest.cpp:1128
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ComplexAllocationTest.cpp:1129
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ComplexAllocationTest.cpp:1145
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ComplexAllocationTest.cpp:1146
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ComplexAllocationTest.cpp:1161
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ComplexAllocationTest.cpp:1162
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ComplexAllocationTest.cpp:1164
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ComplexAllocationTest.cpp:1193
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ComplexAllocationTest.cpp:1196
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ComplexAllocationTest.cpp:1197
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ComplexAllocationTest.cpp:1198
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ComplexAllocationTest.cpp:1214
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ComplexAllocationTest.cpp:1215
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ComplexAllocationTest.cpp:1231
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ComplexAllocationTest.cpp:1233
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ComplexAllocationTest.cpp:1236
-
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen_pubsub_allocation/pubsub_allocation/Name.h:39
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen_service_allocation/service_allocation/Name.h:39
 

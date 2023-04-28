@@ -59,12 +59,12 @@ protected:
         return true;
     }
 
-    static const char* DB_FILE_NAME;
+    static const char* const DB_FILE_NAME;
 
     sql_tables::TestDb* m_database;
 };
 
-const char* SubtypedTableTest::DB_FILE_NAME = "language/sql_tables/subtyped_table_test.sqlite";
+const char* const SubtypedTableTest::DB_FILE_NAME = "language/sql_tables/subtyped_table_test.sqlite";
 
 TEST_F(SubtypedTableTest, testSubtypedTable)
 {

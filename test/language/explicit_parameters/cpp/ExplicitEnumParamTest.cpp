@@ -114,14 +114,14 @@ protected:
 
     ExplicitParametersDb* m_database;
 
-    static const char* DB_FILE_NAME;
+    static const char* const DB_FILE_NAME;
 
     static const uint32_t NUM_ENUM_PARAM_TABLE_ROWS;
     static const TestEnum ENUM_PARAM_TABLE_COUNT1;
     static const TestEnum ENUM_PARAM_TABLE_COUNT2;
 };
 
-const char* ExplicitEnumParamTest::DB_FILE_NAME =
+const char* const ExplicitEnumParamTest::DB_FILE_NAME =
         "language/explicit_parameters/explicit_enum_param_test.sqlite";
 
 const uint32_t ExplicitEnumParamTest::NUM_ENUM_PARAM_TABLE_ROWS = 5;

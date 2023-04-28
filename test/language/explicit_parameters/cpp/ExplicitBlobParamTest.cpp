@@ -125,14 +125,14 @@ protected:
 
     ExplicitParametersDb* m_database;
 
-    static const char* DB_FILE_NAME;
+    static const char* const DB_FILE_NAME;
 
     static const uint32_t NUM_BLOB_PARAM_TABLE_ROWS;
     static const uint32_t BLOB_PARAM_TABLE_HEADER_COUNT;
     static const uint32_t BLOB_PARAM_TABLE_BLOB_COUNT;
 };
 
-const char* ExplicitBlobParamTest::DB_FILE_NAME =
+const char* const ExplicitBlobParamTest::DB_FILE_NAME =
         "language/explicit_parameters/explicit_blob_param_test.sqlite";
 
 const uint32_t ExplicitBlobParamTest::NUM_BLOB_PARAM_TABLE_ROWS = 5;

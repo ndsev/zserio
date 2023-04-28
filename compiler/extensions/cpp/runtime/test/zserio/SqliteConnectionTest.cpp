@@ -46,7 +46,7 @@ namespace
     }
 } // namespace
 
-static const char* SQLITE3_MEM_DB = ":memory:";
+static const char* const SQLITE3_MEM_DB = ":memory:";
 
 TEST(SqliteConnectionTest, emptyConstructor)
 {

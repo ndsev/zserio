@@ -680,7 +680,7 @@ protected:
     }
 
     static const std::string BLOB_NAME;
-    static const char* PATH;
+    static const char* const PATH;
     static const int32_t TILE_ID_EUROPE;
     static const int32_t TILE_ID_AMERICA;
     static const uint8_t VERSION_AVAILABILITY;
@@ -694,7 +694,7 @@ protected:
 };
 
 const std::string WithoutWriterCode::BLOB_NAME = "arguments/without_writer_code/without_writer_code.blob";
-const char* WithoutWriterCode::PATH = "arguments/without_writer_code/gen/without_writer_code/";
+const char* const WithoutWriterCode::PATH = "arguments/without_writer_code/gen/without_writer_code/";
 const int32_t WithoutWriterCode::TILE_ID_EUROPE = 99;
 const int32_t WithoutWriterCode::TILE_ID_AMERICA = 11;
 const uint8_t WithoutWriterCode::VERSION_AVAILABILITY = 0x01;

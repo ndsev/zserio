@@ -5,9 +5,6 @@ bugprone-exception-escape:gen/without_writer_code/ItemChoice.h:50
 
 cert-err58-cpp:cpp/WithoutWriterCodeTest.cpp:696
 
-cppcoreguidelines-avoid-non-const-global-variables:cpp/WithoutWriterCodeTest.cpp:683
-cppcoreguidelines-avoid-non-const-global-variables:cpp/WithoutWriterCodeTest.cpp:697
-
 cppcoreguidelines-pro-type-member-init:gen/without_writer_code/GeoMapTable.cpp:86
 cppcoreguidelines-pro-type-member-init:gen/without_writer_code/ItemChoice.cpp:38
 cppcoreguidelines-pro-type-member-init:gen/without_writer_code/ItemChoice.cpp:58

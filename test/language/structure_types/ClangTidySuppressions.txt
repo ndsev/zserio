@@ -3,9 +3,6 @@ bugprone-forwarding-reference-overload:gen/structure_types/structure_inner_class
 
 cert-err58-cpp:cpp/OneStringStructureTest.cpp:36
 
-cppcoreguidelines-avoid-non-const-global-variables:cpp/OneStringStructureTest.cpp:30
-cppcoreguidelines-avoid-non-const-global-variables:cpp/OneStringStructureTest.cpp:37
-
 cppcoreguidelines-pro-type-member-init:gen/structure_types/empty_structure_with_parameter/EmptyStructureWithParameter.cpp:20
 cppcoreguidelines-pro-type-member-init:gen/structure_types/empty_structure_with_parameter/EmptyStructureWithParameter.cpp:39
 cppcoreguidelines-pro-type-member-init:gen/structure_types/empty_structure_with_parameter/EmptyStructureWithParameter.cpp:57

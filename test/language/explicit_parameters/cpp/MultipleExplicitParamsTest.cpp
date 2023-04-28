@@ -139,7 +139,7 @@ protected:
 
     ExplicitParametersDb* m_database;
 
-    static const char* DB_FILE_NAME;
+    static const char* const DB_FILE_NAME;
 
     static const uint32_t NUM_MULTIPLE_PARAMS_ROWS;
     static const uint32_t MULTIPLE_PARAMS_COUNT1;
@@ -147,7 +147,7 @@ protected:
     static const uint32_t MULTIPLE_PARAMS_COUNT;
 };
 
-const char* MultipleExplicitParamsTest::DB_FILE_NAME =
+const char* const MultipleExplicitParamsTest::DB_FILE_NAME =
         "language/explicit_parameters/multiple_explicit_param_test.sqlite";
 
 const uint32_t MultipleExplicitParamsTest::NUM_MULTIPLE_PARAMS_ROWS = 5;

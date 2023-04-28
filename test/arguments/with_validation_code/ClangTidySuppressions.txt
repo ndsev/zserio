@@ -3,25 +3,6 @@ bugprone-forwarding-reference-overload:gen/with_validation_code/depend_table_val
 bugprone-signed-char-misuse:gen/with_validation_code/column_type_validation/ColumnTypeTable.cpp:2018
 bugprone-signed-char-misuse:gen/with_validation_code/depend_table_validation/DependTable.cpp:984
 
-cppcoreguidelines-avoid-non-const-global-variables:cpp/BlobTableValidationTest.cpp:60
-cppcoreguidelines-avoid-non-const-global-variables:cpp/BlobTableValidationTest.cpp:69
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ColumnTypeValidationTest.cpp:66
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ColumnTypeValidationTest.cpp:75
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ConstraintTableValidationTest.cpp:55
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ConstraintTableValidationTest.cpp:61
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ControlValidationTest.cpp:161
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ControlValidationTest.cpp:168
-cppcoreguidelines-avoid-non-const-global-variables:cpp/DependTableValidationTest.cpp:67
-cppcoreguidelines-avoid-non-const-global-variables:cpp/DependTableValidationTest.cpp:70
-cppcoreguidelines-avoid-non-const-global-variables:cpp/FullRangeTableValidationTest.cpp:66
-cppcoreguidelines-avoid-non-const-global-variables:cpp/FullRangeTableValidationTest.cpp:71
-cppcoreguidelines-avoid-non-const-global-variables:cpp/HiddenColumnTableValidationTest.cpp:67
-cppcoreguidelines-avoid-non-const-global-variables:cpp/HiddenColumnTableValidationTest.cpp:72
-cppcoreguidelines-avoid-non-const-global-variables:cpp/SimpleTableValidationTest.cpp:80
-cppcoreguidelines-avoid-non-const-global-variables:cpp/SimpleTableValidationTest.cpp:164
-cppcoreguidelines-avoid-non-const-global-variables:cpp/VirtualTableValidationTest.cpp:60
-cppcoreguidelines-avoid-non-const-global-variables:cpp/VirtualTableValidationTest.cpp:63
-
 cppcoreguidelines-pro-bounds-pointer-arithmetic:cpp/SimpleTableValidationTest.cpp:160
 
 cppcoreguidelines-pro-type-member-init:gen/with_validation_code/blob_table_validation/BlobTable.cpp:70

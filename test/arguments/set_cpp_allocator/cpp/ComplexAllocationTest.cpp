@@ -1121,12 +1121,12 @@ private:
                 std::allocator_traits<allocator_type>::select_on_container_copy_construction(dummyAllocator));
     }
 
-    static const char* STRING_FIELD;
+    static const char* const STRING_FIELD;
 
     static const uint32_t STRING_ARRAY_SIZE;
-    static const char* STRING_ARRAY_ELEMENT0;
-    static const char* STRING_ARRAY_ELEMENT1;
-    static const char* STRING_ARRAY_ELEMENT2;
+    static const char* const STRING_ARRAY_ELEMENT0;
+    static const char* const STRING_ARRAY_ELEMENT1;
+    static const char* const STRING_ARRAY_ELEMENT2;
 
     static const uint32_t CHOICE_COMPOUND_ARRAY_SIZE;
     static const uint16_t CHOICE_COMPOUND_ELEMENT0_VALUE16;
@@ -1142,8 +1142,8 @@ private:
     static const uint8_t STRUCT_BIT7_ARRAY_ELEMENT0;
     static const uint8_t STRUCT_BIT7_ARRAY_ELEMENT1;
     static const uint8_t STRUCT_BIT7_ARRAY_ELEMENT2;
-    static const char* STRUCT_STRING_FIELD;
-    static const char* STRUCT_DEFAULT_STRING_FIELD;
+    static const char* const STRUCT_STRING_FIELD;
+    static const char* const STRUCT_DEFAULT_STRING_FIELD;
     static const uint32_t STRUCT_PACKED_UINT16_ARRAY_SIZE;
     static const uint16_t STRUCT_PACKED_UINT16_ARRAY_ELEMENT0;
     static const uint16_t STRUCT_PACKED_UINT16_ARRAY_ELEMENT1;
@@ -1158,10 +1158,10 @@ private:
     static const uint8_t STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER;
 
     static const uint32_t STRUCT_OPTIONAL_NAMES0_SIZE;
-    static const char* STRUCT_OPTIONAL_NAMES0_ELEMENT0;
-    static const char* STRUCT_OPTIONAL_NAMES0_ELEMENT1;
+    static const char* const STRUCT_OPTIONAL_NAMES0_ELEMENT0;
+    static const char* const STRUCT_OPTIONAL_NAMES0_ELEMENT1;
     static const uint32_t STRUCT_OPTIONAL_NAMES1_SIZE;
-    static const char* STRUCT_OPTIONAL_NAMES1_ELEMENT0;
+    static const char* const STRUCT_OPTIONAL_NAMES1_ELEMENT0;
 
     static const uint8_t EXTERNAL_FIELD_VAR_SIZE;
     static const uint16_t EXTERNAL_FIELD_DATA;
@@ -1190,12 +1190,15 @@ private:
 const bool ComplexAllocationTest::ARRAY_IN_UNION_AND_CHOICE = true;
 const bool ComplexAllocationTest::COMPOUND_IN_UNION_AND_CHOICE = false;
 
-const char* ComplexAllocationTest::STRING_FIELD = "String Field Must Be Longer Than 32 Bytes";
+const char* const ComplexAllocationTest::STRING_FIELD = "String Field Must Be Longer Than 32 Bytes";
 
 const uint32_t ComplexAllocationTest::STRING_ARRAY_SIZE = 3;
-const char* ComplexAllocationTest::STRING_ARRAY_ELEMENT0 = "String Array Element0 Must Be Longer Than 32 Bytes";
-const char* ComplexAllocationTest::STRING_ARRAY_ELEMENT1 = "String Array Element1 Must Be Longer Than 32 Bytes";
-const char* ComplexAllocationTest::STRING_ARRAY_ELEMENT2 = "String Array Element2 Must Be Longer Than 32 Bytes";
+const char* const ComplexAllocationTest::STRING_ARRAY_ELEMENT0 =
+        "String Array Element0 Must Be Longer Than 32 Bytes";
+const char* const ComplexAllocationTest::STRING_ARRAY_ELEMENT1 =
+        "String Array Element1 Must Be Longer Than 32 Bytes";
+const char* const ComplexAllocationTest::STRING_ARRAY_ELEMENT2 =
+        "String Array Element2 Must Be Longer Than 32 Bytes";
 
 const uint32_t ComplexAllocationTest::CHOICE_COMPOUND_ARRAY_SIZE = 2;
 const uint16_t ComplexAllocationTest::CHOICE_COMPOUND_ELEMENT0_VALUE16 = 0xAB;
@@ -1211,8 +1214,9 @@ const uint32_t ComplexAllocationTest::STRUCT_BIT7_ARRAY_SIZE = 3;
 const uint8_t ComplexAllocationTest::STRUCT_BIT7_ARRAY_ELEMENT0 = 0x2B;
 const uint8_t ComplexAllocationTest::STRUCT_BIT7_ARRAY_ELEMENT1 = 0x4D;
 const uint8_t ComplexAllocationTest::STRUCT_BIT7_ARRAY_ELEMENT2 = 0x6F;
-const char* ComplexAllocationTest::STRUCT_STRING_FIELD = "Structure String Field Must Be Longer Than 32 Bytes";
-const char* ComplexAllocationTest::STRUCT_DEFAULT_STRING_FIELD =
+const char* const ComplexAllocationTest::STRUCT_STRING_FIELD =
+        "Structure String Field Must Be Longer Than 32 Bytes";
+const char* const ComplexAllocationTest::STRUCT_DEFAULT_STRING_FIELD =
         "Structure Default String Field Must Be Longer Than 32 Bytes";
 const uint32_t ComplexAllocationTest::STRUCT_PACKED_UINT16_ARRAY_SIZE = 3;
 const uint16_t ComplexAllocationTest::STRUCT_PACKED_UINT16_ARRAY_ELEMENT0 = 0xCAFC;
@@ -1228,12 +1232,12 @@ const int8_t ComplexAllocationTest::STRUCT_PACKED_ELEMENT_ARRAY_DELTA = 1;
 const uint8_t ComplexAllocationTest::STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER = 1;
 
 const uint32_t ComplexAllocationTest::STRUCT_OPTIONAL_NAMES0_SIZE = 2;
-const char* ComplexAllocationTest::STRUCT_OPTIONAL_NAMES0_ELEMENT0 =
+const char* const ComplexAllocationTest::STRUCT_OPTIONAL_NAMES0_ELEMENT0 =
         "Optional Name00 Must Be Longer Than 32 Bytes";
-const char* ComplexAllocationTest::STRUCT_OPTIONAL_NAMES0_ELEMENT1 =
+const char* const ComplexAllocationTest::STRUCT_OPTIONAL_NAMES0_ELEMENT1 =
         "Optional Name01 Must Be Longer Than 32 Bytes";
 const uint32_t ComplexAllocationTest::STRUCT_OPTIONAL_NAMES1_SIZE = 1;
-const char* ComplexAllocationTest::STRUCT_OPTIONAL_NAMES1_ELEMENT0 =
+const char* const ComplexAllocationTest::STRUCT_OPTIONAL_NAMES1_ELEMENT0 =
         "Optional Name10 Must Be Longer Than 32 Bytes";
 
 const uint8_t ComplexAllocationTest::EXTERNAL_FIELD_VAR_SIZE = 11;

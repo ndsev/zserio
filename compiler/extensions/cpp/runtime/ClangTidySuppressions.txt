@@ -47,9 +47,6 @@ cppcoreguidelines-avoid-c-arrays:src/zserio/StringView.h:894
 cppcoreguidelines-avoid-c-arrays:test/zserio/SpanTest.cpp:46
 
 cppcoreguidelines-avoid-non-const-global-variables:src/zserio/pmr/MemoryResource.cpp:18
-cppcoreguidelines-avoid-non-const-global-variables:test/zserio/SqliteConnectionTest.cpp:49
-cppcoreguidelines-avoid-non-const-global-variables:test/zserio/ValidationSqliteUtilTest.cpp:59
-cppcoreguidelines-avoid-non-const-global-variables:test/zserio/ValidationSqliteUtilTest.cpp:62
 
 cppcoreguidelines-pro-type-union-access:src/zserio/AnyHolder.h
 

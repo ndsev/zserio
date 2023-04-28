@@ -77,13 +77,13 @@ protected:
             checkRow(rows1[i], rows2[i]);
     }
 
-    static const char* DB_FILE_NAME;
+    static const char* const DB_FILE_NAME;
     static const size_t NUM_ROWS;
 
     sql_tables::TestDb* m_database;
 };
 
-const char* BlobFieldWithChildrenInitializationTableTest::DB_FILE_NAME =
+const char* const BlobFieldWithChildrenInitializationTableTest::DB_FILE_NAME =
         "language/sql_tables/blob_field_with_children_initialization_table_test.sqlite";
 const size_t BlobFieldWithChildrenInitializationTableTest::NUM_ROWS = 5;
 

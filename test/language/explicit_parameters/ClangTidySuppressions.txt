@@ -6,21 +6,6 @@ bugprone-forwarding-reference-overload:gen/explicit_parameters/explicit_simple_p
 
 bugprone-unhandled-self-assignment:gen/explicit_parameters/explicit_blob_param/TestBlob.cpp:51
 
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ExplicitBitmaskParamTest.cpp:118
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ExplicitBitmaskParamTest.cpp:125
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ExplicitBlobParamTest.cpp:128
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ExplicitBlobParamTest.cpp:135
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ExplicitEnumParamTest.cpp:117
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ExplicitEnumParamTest.cpp:124
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ExplicitSameAsFieldTest.cpp:105
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ExplicitSameAsFieldTest.cpp:112
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ExplicitSimpleParamTest.cpp:117
-cppcoreguidelines-avoid-non-const-global-variables:cpp/ExplicitSimpleParamTest.cpp:124
-cppcoreguidelines-avoid-non-const-global-variables:cpp/MultipleExplicitParamsTest.cpp:142
-cppcoreguidelines-avoid-non-const-global-variables:cpp/MultipleExplicitParamsTest.cpp:150
-cppcoreguidelines-avoid-non-const-global-variables:cpp/MultipleWithSameNameTest.cpp:100
-cppcoreguidelines-avoid-non-const-global-variables:cpp/MultipleWithSameNameTest.cpp:107
-
 cppcoreguidelines-pro-type-member-init:gen/explicit_parameters/explicit_bitmask_param/BitmaskParamTable.cpp:72
 cppcoreguidelines-pro-type-member-init:gen/explicit_parameters/explicit_blob_param/BlobParamTable.cpp:72
 cppcoreguidelines-pro-type-member-init:gen/explicit_parameters/explicit_blob_param/TestBlob.cpp:20

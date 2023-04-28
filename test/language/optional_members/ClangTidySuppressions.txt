@@ -2,23 +2,6 @@ bugprone-forwarding-reference-overload:gen/optional_members/optional_expression/
 
 cert-err58-cpp:cpp/OptionalArrayRecursionTest.cpp:87
 
-cppcoreguidelines-avoid-non-const-global-variables:cpp/OptionalArrayRecursionTest.cpp:66
-cppcoreguidelines-avoid-non-const-global-variables:cpp/OptionalArrayRecursionTest.cpp:67
-cppcoreguidelines-avoid-non-const-global-variables:cpp/OptionalArrayRecursionTest.cpp:69
-cppcoreguidelines-avoid-non-const-global-variables:cpp/OptionalArrayRecursionTest.cpp:70
-cppcoreguidelines-avoid-non-const-global-variables:cpp/OptionalArrayRecursionTest.cpp:72
-cppcoreguidelines-avoid-non-const-global-variables:cpp/OptionalArrayRecursionTest.cpp:73
-cppcoreguidelines-avoid-non-const-global-variables:cpp/OptionalArrayRecursionTest.cpp:75
-cppcoreguidelines-avoid-non-const-global-variables:cpp/OptionalArrayRecursionTest.cpp:76
-cppcoreguidelines-avoid-non-const-global-variables:cpp/OptionalArrayRecursionTest.cpp:90
-cppcoreguidelines-avoid-non-const-global-variables:cpp/OptionalArrayRecursionTest.cpp:91
-cppcoreguidelines-avoid-non-const-global-variables:cpp/OptionalArrayRecursionTest.cpp:93
-cppcoreguidelines-avoid-non-const-global-variables:cpp/OptionalArrayRecursionTest.cpp:94
-cppcoreguidelines-avoid-non-const-global-variables:cpp/OptionalArrayRecursionTest.cpp:96
-cppcoreguidelines-avoid-non-const-global-variables:cpp/OptionalArrayRecursionTest.cpp:97
-cppcoreguidelines-avoid-non-const-global-variables:cpp/OptionalArrayRecursionTest.cpp:99
-cppcoreguidelines-avoid-non-const-global-variables:cpp/OptionalArrayRecursionTest.cpp:100
-
 cppcoreguidelines-pro-type-member-init:gen/optional_members/optional_expression/BlackColor.cpp:20
 cppcoreguidelines-pro-type-member-init:gen/optional_members/optional_expression/BlackColor.cpp:42
 cppcoreguidelines-pro-type-member-init:gen/optional_members/optional_expression/BlackColor.cpp:62

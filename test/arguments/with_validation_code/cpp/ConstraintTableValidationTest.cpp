@@ -52,13 +52,13 @@ protected:
     std::unique_ptr<ConstraintTableValidationDb> m_database;
 
 private:
-    static const char* DB_FILE_NAME;
+    static const char* const DB_FILE_NAME;
 
     static constexpr uint32_t ROW_ID = 0;
     static constexpr uint8_t VALUE = 0x7F;
 };
 
-const char* ConstraintTableValidationTest::DB_FILE_NAME =
+const char* const ConstraintTableValidationTest::DB_FILE_NAME =
         "arguments/with_validation_code/constraint_table_validation_test.sqlite";
 
 constexpr uint32_t ConstraintTableValidationTest::ROW_ID;

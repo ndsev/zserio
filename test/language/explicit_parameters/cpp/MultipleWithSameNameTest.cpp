@@ -97,14 +97,14 @@ protected:
 
     ExplicitParametersDb* m_database;
 
-    static const char* DB_FILE_NAME;
+    static const char* const DB_FILE_NAME;
 
     static const uint32_t NUM_ROWS;
     static const uint32_t PARAM1;
     static const float PARAM2;
 };
 
-const char* MultipleWithSameNameTest::DB_FILE_NAME =
+const char* const MultipleWithSameNameTest::DB_FILE_NAME =
         "language/explicit_parameters/multiple_with_same_name_test.sqlite";
 
 const uint32_t MultipleWithSameNameTest::NUM_ROWS = 5;

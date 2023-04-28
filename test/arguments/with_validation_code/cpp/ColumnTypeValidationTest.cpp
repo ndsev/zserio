@@ -63,7 +63,7 @@ protected:
         m_database->connection().executeUpdate(sql);
     }
 
-    static const char* DB_FILE_NAME;
+    static const char* const DB_FILE_NAME;
 
     static constexpr size_t ENTRY_COUNT = 2;
 
@@ -72,7 +72,7 @@ protected:
 private:
 };
 
-const char* ColumnTypeValidationTest::DB_FILE_NAME =
+const char* const ColumnTypeValidationTest::DB_FILE_NAME =
         "arguments/with_validation_code/column_type_validation_test.sqlite";
 constexpr size_t ColumnTypeValidationTest::ENTRY_COUNT;
 

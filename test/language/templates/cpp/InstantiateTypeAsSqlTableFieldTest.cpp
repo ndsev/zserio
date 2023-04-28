@@ -15,7 +15,7 @@ using allocator_type = Test32Table::allocator_type;
 template <typename T>
 using vector_type = zserio::vector<T, allocator_type>;
 
-static const char* SQLITE3_MEM_DB = ":memory:";
+static const char* const SQLITE3_MEM_DB = ":memory:";
 
 TEST(InstantiateSqlTableTest, instantiationOfTest32Table)
 {

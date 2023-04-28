@@ -97,14 +97,14 @@ protected:
         return true;
     }
 
-    static const char* DB_FILE_NAME;
+    static const char* const DB_FILE_NAME;
 
     static const int32_t NUM_MULTIPLE_PK_TABLE_ROWS;
 
     sql_tables::TestDb* m_database;
 };
 
-const char* MultiplePkTableTest::DB_FILE_NAME = "language/sql_tables/multiple_pk_table_test.sqlite";
+const char* const MultiplePkTableTest::DB_FILE_NAME = "language/sql_tables/multiple_pk_table_test.sqlite";
 
 const int32_t MultiplePkTableTest::NUM_MULTIPLE_PK_TABLE_ROWS = 5;
 
