@@ -15,9 +15,6 @@ cppcoreguidelines-pro-type-member-init:gen/without_writer_code/Item.cpp:85
 
 cppcoreguidelines-pro-type-reinterpret-cast:gen/without_writer_code/GeoMapTable.cpp:120
 
-google-default-arguments:gen/without_writer_code/ItemType.cpp:90
-google-default-arguments:gen/without_writer_code/VersionAvailability.cpp:98
-
 google-explicit-constructor:gen/without_writer_code/VersionAvailability.h:39
 
 hicpp-signed-bitwise:gen/without_writer_code/VersionAvailability.h:127
@@ -75,8 +72,8 @@ readability-braces-around-statements:gen/without_writer_code/Tile.cpp:262
 readability-braces-around-statements:gen/without_writer_code/Tile.cpp:442
 readability-braces-around-statements:gen/without_writer_code/Tile.cpp:444
 readability-braces-around-statements:gen/without_writer_code/VersionAvailability.cpp:29
-readability-braces-around-statements:gen/without_writer_code/VersionAvailability.cpp:144
-readability-braces-around-statements:gen/without_writer_code/VersionAvailability.cpp:146
+readability-braces-around-statements:gen/without_writer_code/VersionAvailability.cpp:143
+readability-braces-around-statements:gen/without_writer_code/VersionAvailability.cpp:145
 readability-braces-around-statements:cpp/WithoutWriterCodeTest.cpp:611
 readability-braces-around-statements:cpp/WithoutWriterCodeTest.cpp:613
 

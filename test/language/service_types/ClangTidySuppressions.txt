@@ -34,11 +34,6 @@ cppcoreguidelines-pro-type-member-init:gen/service_types/complex_types_service/R
 google-build-using-namespace:cpp/ComplexTypesServiceTest.cpp:13
 google-build-using-namespace:cpp/SimpleServiceTest.cpp:14
 
-google-default-arguments:gen/service_types/complex_types_service/ComplexTypesService.cpp:25
-google-default-arguments:gen/service_types/complex_types_service/ComplexTypesService.h:42
-google-default-arguments:gen/service_types/simple_service/SimpleService.cpp:25
-google-default-arguments:gen/service_types/simple_service/SimpleService.h:42
-
 modernize-use-using:gen/service_types/complex_types_service/Color.h:18
 
 performance-move-const-arg:gen/service_types/complex_types_service/ColorModelChoice.cpp:129

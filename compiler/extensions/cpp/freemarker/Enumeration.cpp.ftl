@@ -101,8 +101,7 @@ ${types.reflectablePtr.name} enumReflectable(${fullName} value, const ${types.al
             return static_cast<double>(<#if underlyingTypeInfo.isSigned>toInt()<#else>toUInt()</#if>);
         }
 
-        ${types.string.name} toString(
-                const ${types.allocator.default}& allocator = ${types.allocator.default}()) const override
+        ${types.string.name} toString(const ${types.allocator.default}& allocator) const override
         {
             return ${types.string.name}(::zserio::enumToString(m_value), allocator);
         }

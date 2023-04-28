@@ -56,6 +56,9 @@ public:
     void initializeChildren() override;
     void initialize(const vector<AnyHolder<ALLOC>, ALLOC>& typeArguments) override;
     size_t initializeOffsets(size_t bitPosition) override;
+    size_t initializeOffsets() override;
+    size_t bitSizeOf(size_t bitPosition) const override;
+    size_t bitSizeOf() const override;
 
     IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override;
     IBasicReflectablePtr<ALLOC> getField(StringView name) override;
@@ -82,6 +85,11 @@ public:
     void setAt(const AnyHolder<ALLOC>& value, size_t index) override;
     void append(const AnyHolder<ALLOC>& value) override;
 
+    AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override;
+    AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) override;
+    AnyHolder<ALLOC> getAnyValue() const override;
+    AnyHolder<ALLOC> getAnyValue() override;
+
     // exact checked getters
     bool getBool() const override;
     int8_t getInt8() const override;
@@ -103,6 +111,7 @@ public:
     uint64_t toUInt() const override;
     double toDouble() const override;
     string<ALLOC> toString(const ALLOC& allocator) const override;
+    string<ALLOC> toString() const override;
 
 private:
     const IBasicTypeInfo<ALLOC>& m_typeInfo;
@@ -1114,6 +1123,7 @@ public:
     void initializeChildren() override;
     void initialize(const vector<AnyHolder<ALLOC>, ALLOC>& typeArguments) override;
     size_t initializeOffsets(size_t bitPosition) override;
+    size_t initializeOffsets() override;
     size_t bitSizeOf(size_t bitPosition) const override;
     void write(BitStreamWriter& writer) const override;
 
@@ -1941,9 +1951,19 @@ public:
         return m_reflectable->initializeOffsets(bitPosition);
     }
 
+    size_t initializeOffsets() override
+    {
+        return initializeOffsets(0);
+    }
+
     size_t bitSizeOf(size_t bitPosition) const override
     {
         return m_reflectable->bitSizeOf(bitPosition);
+    }
+
+    size_t bitSizeOf() const override
+    {
+        return bitSizeOf(0);
     }
 
     void write(BitStreamWriter& writer) const override
@@ -2066,6 +2086,16 @@ public:
         return m_reflectable->getAnyValue(allocator);
     }
 
+    AnyHolder<ALLOC> getAnyValue() const override
+    {
+        return getAnyValue(ALLOC());
+    }
+
+    AnyHolder<ALLOC> getAnyValue() override
+    {
+        return getAnyValue(ALLOC());
+    }
+
     // exact checked getters
     bool getBool() const override { return m_reflectable->getBool(); }
     int8_t getInt8() const override { return m_reflectable->getInt8(); }
@@ -2086,9 +2116,13 @@ public:
     int64_t toInt() const override { return m_reflectable->toInt(); }
     uint64_t toUInt() const override { return m_reflectable->toUInt(); }
     double toDouble() const override { return m_reflectable->toDouble(); }
-    string<RebindAlloc<ALLOC, char>> toString(const ALLOC& allocator = ALLOC()) const override
+    string<RebindAlloc<ALLOC, char>> toString(const ALLOC& allocator) const override
     {
         return m_reflectable->toString(allocator);
+    }
+    string<RebindAlloc<ALLOC, char>> toString() const override
+    {
+        return toString(ALLOC());
     }
 
 private:
@@ -2643,6 +2677,24 @@ size_t ReflectableBase<ALLOC>::initializeOffsets(size_t)
 }
 
 template <typename ALLOC>
+size_t ReflectableBase<ALLOC>::initializeOffsets()
+{
+    return initializeOffsets(0);
+}
+
+template <typename ALLOC>
+size_t ReflectableBase<ALLOC>::bitSizeOf(size_t) const
+{
+    throw CppRuntimeException("Type '") << getTypeInfo().getSchemaName() << "' is not implemented!";
+}
+
+template <typename ALLOC>
+size_t ReflectableBase<ALLOC>::bitSizeOf() const
+{
+    return bitSizeOf(0);
+}
+
+template <typename ALLOC>
 IBasicReflectableConstPtr<ALLOC> ReflectableBase<ALLOC>::getField(StringView) const
 {
     throw CppRuntimeException("Type '") << getTypeInfo().getSchemaName() << "' has no fields to get!";
@@ -2769,6 +2821,30 @@ void ReflectableBase<ALLOC>::append(const AnyHolder<ALLOC>&)
 }
 
 template <typename ALLOC>
+AnyHolder<ALLOC> ReflectableBase<ALLOC>::getAnyValue(const ALLOC&) const
+{
+    throw CppRuntimeException("Type '") << getTypeInfo().getSchemaName() << "' is not implemented!";
+}
+
+template <typename ALLOC>
+AnyHolder<ALLOC> ReflectableBase<ALLOC>::getAnyValue(const ALLOC&)
+{
+    throw CppRuntimeException("Type '") << getTypeInfo().getSchemaName() << "' is not implemented!";
+}
+
+template <typename ALLOC>
+AnyHolder<ALLOC> ReflectableBase<ALLOC>::getAnyValue() const
+{
+    return getAnyValue(ALLOC());
+}
+
+template <typename ALLOC>
+AnyHolder<ALLOC> ReflectableBase<ALLOC>::getAnyValue()
+{
+    return getAnyValue(ALLOC());
+}
+
+template <typename ALLOC>
 bool ReflectableBase<ALLOC>::getBool() const
 {
     throw CppRuntimeException("'") << getTypeInfo().getSchemaName() << "' is not boolean type!";
@@ -2881,6 +2957,12 @@ string<ALLOC> ReflectableBase<ALLOC>::toString(const ALLOC&) const
 }
 
 template <typename ALLOC>
+string<ALLOC> ReflectableBase<ALLOC>::toString() const
+{
+    return toString(ALLOC());
+}
+
+template <typename ALLOC>
 void ReflectableConstAllocatorHolderBase<ALLOC>::initializeChildren()
 {
     throw CppRuntimeException("Reflectable '") << getTypeInfo().getSchemaName() << "' is constant!";
@@ -2944,6 +3026,12 @@ template <typename ALLOC>
 size_t ReflectableArrayBase<ALLOC>::initializeOffsets(size_t)
 {
     throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
+}
+
+template <typename ALLOC>
+size_t ReflectableArrayBase<ALLOC>::initializeOffsets()
+{
+    return initializeOffsets(0);
 }
 
 template <typename ALLOC>

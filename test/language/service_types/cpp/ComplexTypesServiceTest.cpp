@@ -238,7 +238,7 @@ TEST_F(ComplexTypesServiceTest, cmykToRgb)
 
 TEST_F(ComplexTypesServiceTest, invalidServiceMethod)
 {
-    ASSERT_THROW(service.callMethod("nonexistentMethod"_sv, {}), zserio::ServiceException);
+    ASSERT_THROW(service.callMethod("nonexistentMethod"_sv, {}, nullptr), zserio::ServiceException);
 }
 
 } // namespace complex_types_service

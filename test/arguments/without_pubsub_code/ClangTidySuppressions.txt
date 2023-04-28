@@ -1,6 +1,3 @@
-google-default-arguments:gen/without_pubsub_code/Service.cpp:23
-google-default-arguments:gen/without_pubsub_code/Service.h:39
-
 readability-braces-around-statements:gen/without_pubsub_code/Service.cpp:26
 
 readability-make-member-function-const:gen/without_pubsub_code/Request.cpp:90

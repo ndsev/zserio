@@ -92,7 +92,7 @@ public:
 </#if>
     ${types.serviceDataPtr.name} callMethod(
             ::zserio::StringView methodName, ::zserio::Span<const uint8_t> requestData,
-            void* context = nullptr) override;
+            void* context) override;
 
 <#if withCodeComments>
     /**

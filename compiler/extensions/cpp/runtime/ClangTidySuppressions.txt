@@ -1,7 +1,6 @@
 # global suppressions
 cppcoreguidelines-pro-bounds-constant-array-index   # optimization breaks this rule
 cppcoreguidelines-pro-type-reinterpret-cast         # FloatUtil, FileUtil, AhyHolder, OptionalHolder
-google-default-arguments                            # IReflectable.h
 modernize-use-using                                 # too many cases
 readability-braces-around-statements                # obfuscates code
 readability-implicit-bool-conversion                # obfuscates code
@@ -117,9 +116,9 @@ cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/ZserioTreeCreatorTes
 cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/ZserioTreeCreatorTest.cpp:363
 
 cppcoreguidelines-pro-type-member-init:src/zserio/BitStreamWriter.h:71
-cppcoreguidelines-pro-type-member-init:src/zserio/ITypeInfo.h:344
-cppcoreguidelines-pro-type-member-init:src/zserio/ITypeInfo.h:405
-cppcoreguidelines-pro-type-member-init:src/zserio/ITypeInfo.h:438
+cppcoreguidelines-pro-type-member-init:src/zserio/ITypeInfo.h:357
+cppcoreguidelines-pro-type-member-init:src/zserio/ITypeInfo.h:418
+cppcoreguidelines-pro-type-member-init:src/zserio/ITypeInfo.h:451
 cppcoreguidelines-pro-type-member-init:src/zserio/OptionalHolder.h:529
 cppcoreguidelines-pro-type-member-init:src/zserio/PackingContext.h:61
 cppcoreguidelines-pro-type-member-init:src/zserio/PackingContext.h:68
@@ -140,7 +139,7 @@ cppcoreguidelines-pro-type-member-init:test/zserio/StringConvertUtilTest.cpp:95
 cppcoreguidelines-pro-type-member-init:test/zserio/StringConvertUtilTest.cpp:104
 cppcoreguidelines-pro-type-member-init:test/zserio/StringConvertUtilTest.cpp:105
 
-fuchsia-multiple-inheritance:src/zserio/Reflectable.h:1059
+fuchsia-multiple-inheritance:src/zserio/Reflectable.h:1068
 
 google-build-using-namespace:test/zserio/ReflectableTest.cpp:24
 
@@ -152,7 +151,7 @@ google-explicit-constructor:src/zserio/OptionalHolder.h:542
 google-explicit-constructor:src/zserio/OptionalHolder.h:553
 google-explicit-constructor:src/zserio/pmr/PolymorphicAllocator.h:47
 google-explicit-constructor:src/zserio/pmr/PolymorphicAllocator.h:72
-google-explicit-constructor:src/zserio/Reflectable.h:1914
+google-explicit-constructor:src/zserio/Reflectable.h:1924
 google-explicit-constructor:src/zserio/Span.h:111
 google-explicit-constructor:src/zserio/Span.h:123
 google-explicit-constructor:src/zserio/Span.h:135
@@ -175,8 +174,8 @@ misc-no-recursion:src/zserio/JsonParser.h:155
 misc-no-recursion:src/zserio/JsonParser.h:156
 misc-no-recursion:src/zserio/JsonParser.h:157
 misc-no-recursion:src/zserio/JsonParser.h:158
-misc-no-recursion:src/zserio/Reflectable.h:910
-misc-no-recursion:src/zserio/Reflectable.h:938
+misc-no-recursion:src/zserio/Reflectable.h:919
+misc-no-recursion:src/zserio/Reflectable.h:947
 misc-no-recursion:src/zserio/ReflectableUtil.h:133
 misc-no-recursion:src/zserio/ReflectableUtil.h:137
 misc-no-recursion:src/zserio/ReflectableUtil.h:148

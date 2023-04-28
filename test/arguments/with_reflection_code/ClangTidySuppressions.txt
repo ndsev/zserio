@@ -26,9 +26,6 @@ cppcoreguidelines-pro-type-member-init:gen/with_reflection_code/Parameterized.cp
 
 google-build-using-namespace:cpp/WithReflectionCodeTest.cpp:9
 
-google-default-arguments:gen/with_reflection_code/Bitmask.cpp:101
-google-default-arguments:gen/with_reflection_code/SelectorEnum.cpp:90
-
 google-explicit-constructor:gen/with_reflection_code/Bitmask.h:40
 
 hicpp-signed-bitwise:gen/with_reflection_code/Bitmask.h:134
@@ -49,9 +46,9 @@ performance-move-const-arg:gen/with_reflection_code/Struct.cpp:298
 performance-move-const-arg:gen/with_reflection_code/Struct.cpp:1411
 
 readability-braces-around-statements:gen/with_reflection_code/Bitmask.cpp:30
-readability-braces-around-statements:gen/with_reflection_code/Bitmask.cpp:169
-readability-braces-around-statements:gen/with_reflection_code/Bitmask.cpp:171
-readability-braces-around-statements:gen/with_reflection_code/Bitmask.cpp:173
+readability-braces-around-statements:gen/with_reflection_code/Bitmask.cpp:168
+readability-braces-around-statements:gen/with_reflection_code/Bitmask.cpp:170
+readability-braces-around-statements:gen/with_reflection_code/Bitmask.cpp:172
 readability-braces-around-statements:gen/with_reflection_code/Child.cpp:180
 readability-braces-around-statements:gen/with_reflection_code/Child.cpp:245
 readability-braces-around-statements:gen/with_reflection_code/Child.cpp:269

@@ -48,9 +48,6 @@ google-build-using-namespace:cpp/ServiceAllocationTest.cpp:9
 google-build-using-namespace:cpp/SqlAllocationTest.cpp:8
 google-build-using-namespace:cpp/SqlAllocationTest.cpp:9
 
-google-default-arguments:gen_service_allocation/service_allocation/GreetingService.cpp:23
-google-default-arguments:gen_service_allocation/service_allocation/GreetingService.h:39
-
 google-explicit-constructor:gen_sql_allocation/sql_allocation/Role.h:38
 
 misc-no-recursion # reports also tested_release and some system headers

@@ -78,6 +78,7 @@ public:
     Span<const BasicMethodInfo<ALLOC>> getMethods() const override;
 
     IBasicReflectablePtr<ALLOC> createInstance(const ALLOC& allocator) const override;
+    IBasicReflectablePtr<ALLOC> createInstance() const override;
 
 private:
     StringView m_schemaName;
@@ -842,6 +843,7 @@ public:
     Span<const BasicMethodInfo<ALLOC>> getMethods() const override;
 
     IBasicReflectablePtr<ALLOC> createInstance(const ALLOC& allocator) const override;
+    IBasicReflectablePtr<ALLOC> createInstance() const override;
 
 private:
     TypeInfoFunc m_typeInfoFunc;
@@ -991,6 +993,12 @@ template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> TypeInfoBase<ALLOC>::createInstance(const ALLOC&) const
 {
     throw CppRuntimeException("Type '") << getSchemaName() << "' is not a compound type!";
+}
+
+template <typename ALLOC>
+IBasicReflectablePtr<ALLOC> TypeInfoBase<ALLOC>::createInstance() const
+{
+    return createInstance(ALLOC());
 }
 
 template <typename ALLOC>
@@ -1907,6 +1915,12 @@ template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> RecursiveTypeInfo<ALLOC>::createInstance(const ALLOC& allocator) const
 {
     return m_typeInfoFunc().createInstance(allocator);
+}
+
+template <typename ALLOC>
+IBasicReflectablePtr<ALLOC> RecursiveTypeInfo<ALLOC>::createInstance() const
+{
+    return createInstance(ALLOC());
 }
 
 } // namespace zserio

@@ -20,7 +20,7 @@ public:
 
     std::vector<uint8_t, ALLOC> callMethod(zserio::StringView methodName,
             const zserio::IBasicServiceData<ALLOC>& requestData,
-            void* context = nullptr) override
+            void* context) override
     {
         return callMethodOnService(methodName, requestData.getData(), context);
     }

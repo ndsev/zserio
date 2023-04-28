@@ -99,10 +99,10 @@ const FieldInfo BITMASK_FIELD_INFO{
 void walkNested(IWalkObserver& observer)
 {
     observer.beginRoot(nullptr);
-    observer.visitValue(ReflectableFactory::getUInt32(13), IDENTIFIER_FIELD_INFO);
-    observer.beginCompound(nullptr, NESTED_FIELD_INFO);
-    observer.visitValue(ReflectableFactory::getString("test"_sv), TEXT_FIELD_INFO);
-    observer.endCompound(nullptr, NESTED_FIELD_INFO);
+    observer.visitValue(ReflectableFactory::getUInt32(13), IDENTIFIER_FIELD_INFO, WALKER_NOT_ELEMENT);
+    observer.beginCompound(nullptr, NESTED_FIELD_INFO, WALKER_NOT_ELEMENT);
+    observer.visitValue(ReflectableFactory::getString("test"_sv), TEXT_FIELD_INFO, WALKER_NOT_ELEMENT);
+    observer.endCompound(nullptr, NESTED_FIELD_INFO, WALKER_NOT_ELEMENT);
     observer.endRoot(nullptr);
 }
 
@@ -132,7 +132,7 @@ TEST(JsonWriterTest, nullValue)
     JsonWriter jsonWriter(os);
     IWalkObserver& observer = jsonWriter;
 
-    observer.visitValue(nullptr, TEXT_FIELD_INFO);
+    observer.visitValue(nullptr, TEXT_FIELD_INFO, WALKER_NOT_ELEMENT);
 
     // note that this is not valid json
     ASSERT_EQ("\"text\": null", os.str());
@@ -144,7 +144,7 @@ TEST(JsonWriterTest, textValue)
     JsonWriter jsonWriter(os);
     IWalkObserver& observer = jsonWriter;
 
-    observer.visitValue(ReflectableFactory::getString("test"_sv), TEXT_FIELD_INFO);
+    observer.visitValue(ReflectableFactory::getString("test"_sv), TEXT_FIELD_INFO, WALKER_NOT_ELEMENT);
 
     // note that this is not valid json
     ASSERT_EQ("\"text\": \"test\"", os.str());
@@ -156,7 +156,7 @@ TEST(JsonWriterTest, boolValue)
     JsonWriter jsonWriter(os);
     IWalkObserver& observer = jsonWriter;
 
-    observer.visitValue(ReflectableFactory::getBool(true), BOOL_FIELD_INFO);
+    observer.visitValue(ReflectableFactory::getBool(true), BOOL_FIELD_INFO, WALKER_NOT_ELEMENT);
 
     // note that this is not valid json
     ASSERT_EQ("\"boolField\": true", os.str());
@@ -168,7 +168,7 @@ TEST(JsonWriterTest, intValue)
     JsonWriter jsonWriter(os);
     IWalkObserver& observer = jsonWriter;
 
-    observer.visitValue(ReflectableFactory::getInt32(INT32_MIN), INT_FIELD_INFO);
+    observer.visitValue(ReflectableFactory::getInt32(INT32_MIN), INT_FIELD_INFO, WALKER_NOT_ELEMENT);
 
     // note that this is not valid json
     ASSERT_EQ("\"intField\": " + std::to_string(INT32_MIN), os.str());
@@ -180,7 +180,7 @@ TEST(JsonWriterTest, floatValue)
     JsonWriter jsonWriter(os);
     IWalkObserver& observer = jsonWriter;
 
-    observer.visitValue(ReflectableFactory::getFloat32(3.5F), FLOAT_FIELD_INFO);
+    observer.visitValue(ReflectableFactory::getFloat32(3.5F), FLOAT_FIELD_INFO, WALKER_NOT_ELEMENT);
 
     // note that this is not valid json
     ASSERT_EQ("\"floatField\": 3.5", os.str());
@@ -192,7 +192,7 @@ TEST(JsonWriterTest, doubleValue)
     JsonWriter jsonWriter(os);
     IWalkObserver& observer = jsonWriter;
 
-    observer.visitValue(ReflectableFactory::getFloat64(9.875), DOUBLE_FIELD_INFO);
+    observer.visitValue(ReflectableFactory::getFloat64(9.875), DOUBLE_FIELD_INFO, WALKER_NOT_ELEMENT);
 
     // note that this is not valid json
     ASSERT_EQ("\"doubleField\": 9.875", os.str());
@@ -248,10 +248,10 @@ TEST(JsonWriterTest, enumValue)
         std::ostringstream os;
         JsonWriter jsonWriter(os);
         IWalkObserver& observer = jsonWriter;
-        observer.visitValue(reflectableZero, ENUM_FIELD_INFO);
-        observer.visitValue(reflectableOne, ENUM_FIELD_INFO);
-        observer.visitValue(reflectableTwo, ENUM_FIELD_INFO);
-        observer.visitValue(reflectableMinusOne, ENUM_FIELD_INFO);
+        observer.visitValue(reflectableZero, ENUM_FIELD_INFO, WALKER_NOT_ELEMENT);
+        observer.visitValue(reflectableOne, ENUM_FIELD_INFO, WALKER_NOT_ELEMENT);
+        observer.visitValue(reflectableTwo, ENUM_FIELD_INFO, WALKER_NOT_ELEMENT);
+        observer.visitValue(reflectableMinusOne, ENUM_FIELD_INFO, WALKER_NOT_ELEMENT);
 
         // note that this is not valid json
         ASSERT_EQ(
@@ -273,9 +273,9 @@ TEST(JsonWriterTest, enumValue)
         JsonWriter jsonWriter(os);
         jsonWriter.setEnumerableFormat(JsonWriter::EnumerableFormat::NUMBER);
         IWalkObserver& observer = jsonWriter;
-        observer.visitValue(reflectableZero, ENUM_FIELD_INFO);
-        observer.visitValue(reflectableTwo, ENUM_FIELD_INFO);
-        observer.visitValue(reflectableMinusOne, ENUM_FIELD_INFO);
+        observer.visitValue(reflectableZero, ENUM_FIELD_INFO, WALKER_NOT_ELEMENT);
+        observer.visitValue(reflectableTwo, ENUM_FIELD_INFO, WALKER_NOT_ELEMENT);
+        observer.visitValue(reflectableMinusOne, ENUM_FIELD_INFO, WALKER_NOT_ELEMENT);
 
         // note that this is not valid json
         ASSERT_EQ("\"enumField\": 0, \"enumField\": 2, \"enumField\": -1", os.str());
@@ -333,11 +333,11 @@ TEST(JsonWriterTest, bitmaskValue)
         std::ostringstream os;
         JsonWriter jsonWriter(os);
         IWalkObserver& observer = jsonWriter;
-        observer.visitValue(reflectableZero, BITMASK_FIELD_INFO);
-        observer.visitValue(reflectableTwo, BITMASK_FIELD_INFO);
-        observer.visitValue(reflectableThree, BITMASK_FIELD_INFO);
-        observer.visitValue(reflectableFour, BITMASK_FIELD_INFO);
-        observer.visitValue(reflectableSeven, BITMASK_FIELD_INFO);
+        observer.visitValue(reflectableZero, BITMASK_FIELD_INFO, WALKER_NOT_ELEMENT);
+        observer.visitValue(reflectableTwo, BITMASK_FIELD_INFO, WALKER_NOT_ELEMENT);
+        observer.visitValue(reflectableThree, BITMASK_FIELD_INFO, WALKER_NOT_ELEMENT);
+        observer.visitValue(reflectableFour, BITMASK_FIELD_INFO, WALKER_NOT_ELEMENT);
+        observer.visitValue(reflectableSeven, BITMASK_FIELD_INFO, WALKER_NOT_ELEMENT);
 
         // note that this is not valid json
         ASSERT_EQ(
@@ -359,8 +359,8 @@ TEST(JsonWriterTest, bitmaskValue)
         JsonWriter jsonWriter(os);
         jsonWriter.setEnumerableFormat(JsonWriter::EnumerableFormat::NUMBER);
         IWalkObserver& observer = jsonWriter;
-        observer.visitValue(reflectableZero, BITMASK_FIELD_INFO);
-        observer.visitValue(reflectableSeven, BITMASK_FIELD_INFO);
+        observer.visitValue(reflectableZero, BITMASK_FIELD_INFO, WALKER_NOT_ELEMENT);
+        observer.visitValue(reflectableSeven, BITMASK_FIELD_INFO, WALKER_NOT_ELEMENT);
 
         // note that this is not valid json
         ASSERT_EQ("\"bitmaskField\": 0, \"bitmaskField\": 7", os.str());
@@ -374,12 +374,13 @@ TEST(JsonWriterTest, compound)
     IWalkObserver& observer = jsonWriter;
 
     observer.beginRoot(nullptr);
-    observer.visitValue(ReflectableFactory::getUInt32(13), IDENTIFIER_FIELD_INFO);
-    observer.visitValue(ReflectableFactory::getString("test"_sv), TEXT_FIELD_INFO);
+    observer.visitValue(ReflectableFactory::getUInt32(13), IDENTIFIER_FIELD_INFO, WALKER_NOT_ELEMENT);
+    observer.visitValue(ReflectableFactory::getString("test"_sv), TEXT_FIELD_INFO, WALKER_NOT_ELEMENT);
     BitBuffer bitBuffer({0xFF, 0x1F}, 13);
-    observer.visitValue(ReflectableFactory::getBitBuffer(bitBuffer), EXTERN_DATA_FIELD_INFO);
+    observer.visitValue(ReflectableFactory::getBitBuffer(bitBuffer), EXTERN_DATA_FIELD_INFO,
+            WALKER_NOT_ELEMENT);
     vector<uint8_t> bytesData{{0xCA, 0xFE}};
-    observer.visitValue(ReflectableFactory::getBytes(bytesData), BYTES_DATA_FIELD_INFO);
+    observer.visitValue(ReflectableFactory::getBytes(bytesData), BYTES_DATA_FIELD_INFO, WALKER_NOT_ELEMENT);
     observer.endRoot(nullptr);
 
     ASSERT_EQ("{\"identifier\": 13, \"text\": \"test\", "

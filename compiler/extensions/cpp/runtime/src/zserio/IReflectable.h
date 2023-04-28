@@ -86,7 +86,18 @@ public:
      *
      * \return Updated bit position which points to the first bit after the compound.
      */
-    virtual size_t initializeOffsets(size_t bitPosition = 0) = 0;
+    virtual size_t initializeOffsets(size_t bitPosition) = 0;
+
+    /**
+     * Initializes indexed offsets of the reflected compound object.
+     *
+     * The bit stream position to be used for calculation is defaulted to zero.
+     *
+     * \throw CppRuntimeException When the reflected object is not a compound.
+     *
+     * \return Updated bit position which points to the first bit after the compound.
+     */
+    virtual size_t initializeOffsets() = 0;
 
     /**
      * Gets the number of bits needed for serialization of the reflected object.
@@ -99,7 +110,20 @@ public:
      *
      * \return The size of the serialized reflected object in bits.
      */
-    virtual size_t bitSizeOf(size_t bitPosition = 0) const = 0;
+    virtual size_t bitSizeOf(size_t bitPosition) const = 0;
+
+    /**
+     * Gets the number of bits needed for serialization of the reflected object.
+     *
+     * The bit stream position to be used for calculation is defaulted to zero.
+     *
+     * \note Works for all reflectable types except arrays!
+     *
+     * \throw CppRuntimeException When the reflected object is an array.
+     *
+     * \return The size of the serialized reflected object in bits.
+     */
+    virtual size_t bitSizeOf() const = 0;
 
     /**
      * Writes the reflected object to a bit stream using the given bit stream writer.
@@ -311,12 +335,17 @@ public:
      * reference to the compound type or the raw array type.
      *
      * \note For bit buffers only const reference is available.
+     * \note Overloads without parameter use default constructed allocator.
+     *
+     * \param allocator Allocator to use for the value allocation.
      *
      * \return Any value.
      */
     /** \{ */
-    virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator = ALLOC()) const = 0;
-    virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator = ALLOC()) = 0;
+    virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const = 0;
+    virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) = 0;
+    virtual AnyHolder<ALLOC> getAnyValue() const = 0;
+    virtual AnyHolder<ALLOC> getAnyValue() = 0;
     /** \} */
 
     /**
@@ -469,12 +498,16 @@ public:
      *
      * \note Floating point types are not currently supported!
      * \note The conversion to string can be implemented for more types in future versions.
+     * \note Overload without parameter use default constructed allocator.
      *
      * \param allocator Allocator to use for the string allocation.
      *
      * \return String value representing the reflected object.
      */
-    virtual string<ALLOC> toString(const ALLOC& allocator = ALLOC()) const = 0;
+    /** \{ */
+    virtual string<ALLOC> toString(const ALLOC& allocator) const = 0;
+    virtual string<ALLOC> toString() const = 0;
+    /** \} */
 };
 
 /** Typedef to reflectable smart pointer needed for convenience in generated code. */

@@ -434,9 +434,9 @@ TEST(DefaultWalkObserverTest, allMethods)
     ASSERT_NO_THROW(walkObserver.endRoot(walkerReflectable));
     ASSERT_NO_THROW(walkObserver.beginArray(walkerReflectable, walkerFieldInfo));
     ASSERT_NO_THROW(walkObserver.endArray(walkerReflectable, walkerFieldInfo));
-    ASSERT_NO_THROW(walkObserver.beginCompound(walkerReflectable, walkerFieldInfo));
-    ASSERT_NO_THROW(walkObserver.endCompound(walkerReflectable, walkerFieldInfo));
-    ASSERT_NO_THROW(walkObserver.visitValue(walkerReflectable, walkerFieldInfo));
+    ASSERT_NO_THROW(walkObserver.beginCompound(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT));
+    ASSERT_NO_THROW(walkObserver.endCompound(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT));
+    ASSERT_NO_THROW(walkObserver.visitValue(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT));
 }
 
 TEST(DefaultWalkFilterTest, allMethods)
@@ -448,10 +448,10 @@ TEST(DefaultWalkFilterTest, allMethods)
 
     ASSERT_TRUE(walkFilter.beforeArray(walkerReflectable, walkerFieldInfo));
     ASSERT_TRUE(walkFilter.afterArray(walkerReflectable, walkerFieldInfo));
-    ASSERT_TRUE(walkFilter.beforeCompound(walkerReflectable, walkerFieldInfo));
-    ASSERT_TRUE(walkFilter.afterCompound(walkerReflectable, walkerFieldInfo));
-    ASSERT_TRUE(walkFilter.beforeValue(walkerReflectable, walkerFieldInfo));
-    ASSERT_TRUE(walkFilter.afterValue(walkerReflectable, walkerFieldInfo));
+    ASSERT_TRUE(walkFilter.beforeCompound(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT));
+    ASSERT_TRUE(walkFilter.afterCompound(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT));
+    ASSERT_TRUE(walkFilter.beforeValue(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT));
+    ASSERT_TRUE(walkFilter.afterValue(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT));
 }
 
 TEST(DepthFilterTest, depth0)
@@ -464,11 +464,11 @@ TEST(DepthFilterTest, depth0)
     ASSERT_FALSE(walkFilter.beforeArray(walkerReflectable, walkerFieldInfo)); // 0
     ASSERT_TRUE(walkFilter.afterArray(walkerReflectable, walkerFieldInfo)); // 0
 
-    ASSERT_FALSE(walkFilter.beforeCompound(walkerReflectable, walkerFieldInfo)); // 0
-    ASSERT_TRUE(walkFilter.afterCompound(walkerReflectable, walkerFieldInfo)); // 0
+    ASSERT_FALSE(walkFilter.beforeCompound(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT)); // 0
+    ASSERT_TRUE(walkFilter.afterCompound(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT)); // 0
 
-    ASSERT_FALSE(walkFilter.beforeValue(walkerReflectable, walkerFieldInfo)); // 0
-    ASSERT_TRUE(walkFilter.afterValue(walkerReflectable, walkerFieldInfo)); // 0
+    ASSERT_FALSE(walkFilter.beforeValue(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT)); // 0
+    ASSERT_TRUE(walkFilter.afterValue(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT)); // 0
 }
 
 TEST(DepthFilterTest, depth1)
@@ -481,23 +481,23 @@ TEST(DepthFilterTest, depth1)
     ASSERT_TRUE(walkFilter.beforeArray(walkerReflectable, walkerFieldInfo)); // 0
     ASSERT_FALSE(walkFilter.beforeArray(walkerReflectable, walkerFieldInfo)); // 1
     ASSERT_TRUE(walkFilter.afterArray(walkerReflectable, walkerFieldInfo)); // 1
-    ASSERT_FALSE(walkFilter.beforeCompound(walkerReflectable, walkerFieldInfo)); // 1
-    ASSERT_TRUE(walkFilter.afterCompound(walkerReflectable, walkerFieldInfo)); // 1
-    ASSERT_FALSE(walkFilter.beforeValue(walkerReflectable, walkerFieldInfo)); // 1
-    ASSERT_TRUE(walkFilter.afterValue(walkerReflectable, walkerFieldInfo)); // 1
+    ASSERT_FALSE(walkFilter.beforeCompound(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT)); // 1
+    ASSERT_TRUE(walkFilter.afterCompound(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT)); // 1
+    ASSERT_FALSE(walkFilter.beforeValue(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT)); // 1
+    ASSERT_TRUE(walkFilter.afterValue(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT)); // 1
     ASSERT_TRUE(walkFilter.afterArray(walkerReflectable, walkerFieldInfo)); // 0
 
-    ASSERT_TRUE(walkFilter.beforeCompound(walkerReflectable, walkerFieldInfo)); // 0
+    ASSERT_TRUE(walkFilter.beforeCompound(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT)); // 0
     ASSERT_FALSE(walkFilter.beforeArray(walkerReflectable, walkerFieldInfo)); // 1
     ASSERT_TRUE(walkFilter.afterArray(walkerReflectable, walkerFieldInfo)); // 1
-    ASSERT_FALSE(walkFilter.beforeCompound(walkerReflectable, walkerFieldInfo)); // 1
-    ASSERT_TRUE(walkFilter.afterCompound(walkerReflectable, walkerFieldInfo)); // 1
-    ASSERT_FALSE(walkFilter.beforeValue(walkerReflectable, walkerFieldInfo)); // 1
-    ASSERT_TRUE(walkFilter.afterValue(walkerReflectable, walkerFieldInfo)); // 1
-    ASSERT_TRUE(walkFilter.afterCompound(walkerReflectable, walkerFieldInfo)); // 0
+    ASSERT_FALSE(walkFilter.beforeCompound(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT)); // 1
+    ASSERT_TRUE(walkFilter.afterCompound(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT)); // 1
+    ASSERT_FALSE(walkFilter.beforeValue(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT)); // 1
+    ASSERT_TRUE(walkFilter.afterValue(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT)); // 1
+    ASSERT_TRUE(walkFilter.afterCompound(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT)); // 0
 
-    ASSERT_TRUE(walkFilter.beforeValue(walkerReflectable, walkerFieldInfo)); // 0
-    ASSERT_TRUE(walkFilter.afterValue(walkerReflectable, walkerFieldInfo)); // 0
+    ASSERT_TRUE(walkFilter.beforeValue(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT)); // 0
+    ASSERT_TRUE(walkFilter.afterValue(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT)); // 0
 }
 
 TEST(RegexWalkFilterTest, regexAllMatch)
@@ -510,10 +510,10 @@ TEST(RegexWalkFilterTest, regexAllMatch)
 
     ASSERT_TRUE(walkFilter.beforeArray(walkerReflectable, walkerArrayFieldInfo));
     ASSERT_TRUE(walkFilter.afterArray(walkerReflectable, walkerArrayFieldInfo));
-    ASSERT_TRUE(walkFilter.beforeCompound(walkerReflectable, walkerFieldInfo));
-    ASSERT_TRUE(walkFilter.afterCompound(walkerReflectable, walkerFieldInfo));
-    ASSERT_TRUE(walkFilter.beforeValue(walkerReflectable, walkerFieldInfo));
-    ASSERT_TRUE(walkFilter.afterValue(walkerReflectable, walkerFieldInfo));
+    ASSERT_TRUE(walkFilter.beforeCompound(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT));
+    ASSERT_TRUE(walkFilter.afterCompound(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT));
+    ASSERT_TRUE(walkFilter.beforeValue(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT));
+    ASSERT_TRUE(walkFilter.afterValue(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT));
 }
 
 TEST(RegexWalkFilterTest, regexPrefixMatch)
@@ -525,17 +525,17 @@ TEST(RegexWalkFilterTest, regexPrefixMatch)
 
     const FieldInfo& identifierFieldInfo = walkerObject.typeInfo().getFields()[0];
     IReflectableConstPtr identifierReflectable = walkerReflectable->getField("identifier");
-    ASSERT_FALSE(walkFilter.beforeValue(identifierReflectable, identifierFieldInfo));
-    ASSERT_TRUE(walkFilter.afterValue(identifierReflectable, identifierFieldInfo));
+    ASSERT_FALSE(walkFilter.beforeValue(identifierReflectable, identifierFieldInfo, WALKER_NOT_ELEMENT));
+    ASSERT_TRUE(walkFilter.afterValue(identifierReflectable, identifierFieldInfo, WALKER_NOT_ELEMENT));
 
     const FieldInfo& nestedFieldInfo = walkerObject.typeInfo().getFields()[1];
     IReflectableConstPtr nestedReflectable = walkerReflectable->getField("nested");
-    ASSERT_TRUE(walkFilter.beforeCompound(nestedReflectable, nestedFieldInfo));
+    ASSERT_TRUE(walkFilter.beforeCompound(nestedReflectable, nestedFieldInfo, WALKER_NOT_ELEMENT));
     const FieldInfo& textFieldInfo = nestedFieldInfo.typeInfo.getFields()[0];
     IReflectableConstPtr textReflectable = nestedReflectable->getField("text");
-    ASSERT_TRUE(walkFilter.beforeValue(textReflectable, textFieldInfo));
-    ASSERT_TRUE(walkFilter.afterValue(textReflectable, textFieldInfo));
-    ASSERT_TRUE(walkFilter.afterCompound(nestedReflectable, nestedFieldInfo));
+    ASSERT_TRUE(walkFilter.beforeValue(textReflectable, textFieldInfo, WALKER_NOT_ELEMENT));
+    ASSERT_TRUE(walkFilter.afterValue(textReflectable, textFieldInfo, WALKER_NOT_ELEMENT));
+    ASSERT_TRUE(walkFilter.afterCompound(nestedReflectable, nestedFieldInfo, WALKER_NOT_ELEMENT));
 
     // ignore text
 
@@ -597,8 +597,8 @@ TEST(RegexWalkFilterTest, regexNullCompoundMatch)
     IReflectableConstPtr nestedReflectable = walkerReflectable->getField("nested");
     ASSERT_EQ(nullptr, nestedReflectable);
     // note that the null compounds are processed as values!
-    ASSERT_TRUE(walkFilter.beforeValue(nestedReflectable, nestedFieldInfo));
-    ASSERT_TRUE(walkFilter.afterValue(nestedReflectable, nestedFieldInfo));
+    ASSERT_TRUE(walkFilter.beforeValue(nestedReflectable, nestedFieldInfo, WALKER_NOT_ELEMENT));
+    ASSERT_TRUE(walkFilter.afterValue(nestedReflectable, nestedFieldInfo, WALKER_NOT_ELEMENT));
 }
 
 TEST(RegexWalkFilterTest, regexNullCompoundNoMatch)
@@ -613,8 +613,8 @@ TEST(RegexWalkFilterTest, regexNullCompoundNoMatch)
     IReflectableConstPtr nestedReflectable = walkerReflectable->getField("nested");
     ASSERT_EQ(nullptr, nestedReflectable);
     // note that the null compounds are processed as values!
-    ASSERT_FALSE(walkFilter.beforeValue(nestedReflectable, nestedFieldInfo));
-    ASSERT_TRUE(walkFilter.afterValue(nestedReflectable, nestedFieldInfo));
+    ASSERT_FALSE(walkFilter.beforeValue(nestedReflectable, nestedFieldInfo, WALKER_NOT_ELEMENT));
+    ASSERT_TRUE(walkFilter.afterValue(nestedReflectable, nestedFieldInfo, WALKER_NOT_ELEMENT));
 }
 
 TEST(RegexWalkFilterTest, regexNullArrayMatch)
@@ -629,8 +629,10 @@ TEST(RegexWalkFilterTest, regexNullArrayMatch)
     IReflectableConstPtr optionalUnionArrayReflectable = walkerReflectable->getField("optionalUnionArray");
     ASSERT_EQ(nullptr, optionalUnionArrayReflectable);
     // note that the null arrays are processed as values!
-    ASSERT_TRUE(walkFilter.beforeValue(optionalUnionArrayReflectable, optionalUnionArrayFieldInfo));
-    ASSERT_TRUE(walkFilter.afterValue(optionalUnionArrayReflectable, optionalUnionArrayFieldInfo));
+    ASSERT_TRUE(walkFilter.beforeValue(optionalUnionArrayReflectable, optionalUnionArrayFieldInfo,
+            WALKER_NOT_ELEMENT));
+    ASSERT_TRUE(walkFilter.afterValue(optionalUnionArrayReflectable, optionalUnionArrayFieldInfo,
+            WALKER_NOT_ELEMENT));
 }
 
 TEST(RegexWalkFilterTest, regexNullArrayNoMatch)
@@ -645,8 +647,10 @@ TEST(RegexWalkFilterTest, regexNullArrayNoMatch)
     IReflectableConstPtr optionalUnionArrayReflectable = walkerReflectable->getField("optionalUnionArray");
     ASSERT_EQ(nullptr, optionalUnionArrayReflectable);
     // note that the null arrays are processed as values!
-    ASSERT_FALSE(walkFilter.beforeValue(optionalUnionArrayReflectable, optionalUnionArrayFieldInfo));
-    ASSERT_TRUE(walkFilter.afterValue(optionalUnionArrayReflectable, optionalUnionArrayFieldInfo));
+    ASSERT_FALSE(walkFilter.beforeValue(optionalUnionArrayReflectable, optionalUnionArrayFieldInfo,
+            WALKER_NOT_ELEMENT));
+    ASSERT_TRUE(walkFilter.afterValue(optionalUnionArrayReflectable, optionalUnionArrayFieldInfo,
+            WALKER_NOT_ELEMENT));
 }
 
 TEST(ArrayLengthWalkFilterTest, length0)
@@ -664,14 +668,14 @@ TEST(ArrayLengthWalkFilterTest, length0)
     ASSERT_FALSE(walkFilter.afterValue(walkerReflectable, walkerFieldInfo, 1));
     ASSERT_TRUE(walkFilter.afterArray(walkerReflectable, walkerArrayFieldInfo));
 
-    ASSERT_TRUE(walkFilter.beforeCompound(walkerReflectable, walkerFieldInfo));
-    ASSERT_TRUE(walkFilter.beforeValue(walkerReflectable, walkerFieldInfo));
-    ASSERT_TRUE(walkFilter.afterValue(walkerReflectable, walkerFieldInfo));
+    ASSERT_TRUE(walkFilter.beforeCompound(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT));
+    ASSERT_TRUE(walkFilter.beforeValue(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT));
+    ASSERT_TRUE(walkFilter.afterValue(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT));
     ASSERT_TRUE(walkFilter.beforeArray(walkerReflectable, walkerArrayFieldInfo));
     ASSERT_FALSE(walkFilter.beforeValue(walkerReflectable, walkerFieldInfo, 0));
     ASSERT_FALSE(walkFilter.afterValue(walkerReflectable, walkerFieldInfo, 0));
     ASSERT_TRUE(walkFilter.afterArray(walkerReflectable, walkerArrayFieldInfo));
-    ASSERT_TRUE(walkFilter.afterCompound(walkerReflectable, walkerFieldInfo));
+    ASSERT_TRUE(walkFilter.afterCompound(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT));
 }
 
 TEST(AndWalkFilterTest, empty)
@@ -684,10 +688,10 @@ TEST(AndWalkFilterTest, empty)
 
     ASSERT_TRUE(walkFilter.beforeArray(walkerReflectable, walkerArrayFieldInfo));
     ASSERT_TRUE(walkFilter.afterArray(walkerReflectable, walkerArrayFieldInfo));
-    ASSERT_TRUE(walkFilter.beforeCompound(walkerReflectable, walkerFieldInfo));
-    ASSERT_TRUE(walkFilter.afterCompound(walkerReflectable, walkerFieldInfo));
-    ASSERT_TRUE(walkFilter.beforeValue(walkerReflectable, walkerFieldInfo));
-    ASSERT_TRUE(walkFilter.afterValue(walkerReflectable, walkerFieldInfo));
+    ASSERT_TRUE(walkFilter.beforeCompound(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT));
+    ASSERT_TRUE(walkFilter.afterCompound(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT));
+    ASSERT_TRUE(walkFilter.beforeValue(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT));
+    ASSERT_TRUE(walkFilter.afterValue(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT));
 }
 
 TEST(AndWalkFilterTest, trueTrue)
@@ -702,10 +706,10 @@ TEST(AndWalkFilterTest, trueTrue)
 
     ASSERT_TRUE(walkFilter.beforeArray(walkerReflectable, walkerArrayFieldInfo));
     ASSERT_TRUE(walkFilter.afterArray(walkerReflectable, walkerArrayFieldInfo));
-    ASSERT_TRUE(walkFilter.beforeCompound(walkerReflectable, walkerFieldInfo));
-    ASSERT_TRUE(walkFilter.afterCompound(walkerReflectable, walkerFieldInfo));
-    ASSERT_TRUE(walkFilter.beforeValue(walkerReflectable, walkerFieldInfo));
-    ASSERT_TRUE(walkFilter.afterValue(walkerReflectable, walkerFieldInfo));
+    ASSERT_TRUE(walkFilter.beforeCompound(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT));
+    ASSERT_TRUE(walkFilter.afterCompound(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT));
+    ASSERT_TRUE(walkFilter.beforeValue(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT));
+    ASSERT_TRUE(walkFilter.afterValue(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT));
 }
 
 TEST(AndWalkFilterTest, falseFalse)
@@ -732,10 +736,10 @@ TEST(AndWalkFilterTest, falseFalse)
 
     ASSERT_FALSE(walkFilter.beforeArray(walkerReflectable, walkerArrayFieldInfo));
     ASSERT_FALSE(walkFilter.afterArray(walkerReflectable, walkerArrayFieldInfo));
-    ASSERT_FALSE(walkFilter.beforeCompound(walkerReflectable, walkerFieldInfo));
-    ASSERT_FALSE(walkFilter.afterCompound(walkerReflectable, walkerFieldInfo));
-    ASSERT_FALSE(walkFilter.beforeValue(walkerReflectable, walkerFieldInfo));
-    ASSERT_FALSE(walkFilter.afterValue(walkerReflectable, walkerFieldInfo));
+    ASSERT_FALSE(walkFilter.beforeCompound(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT));
+    ASSERT_FALSE(walkFilter.afterCompound(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT));
+    ASSERT_FALSE(walkFilter.beforeValue(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT));
+    ASSERT_FALSE(walkFilter.afterValue(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT));
 }
 
 TEST(AndWalkFilterTest, trueFalse)
@@ -756,10 +760,10 @@ TEST(AndWalkFilterTest, trueFalse)
 
     ASSERT_FALSE(walkFilter.beforeArray(walkerReflectable, walkerArrayFieldInfo));
     ASSERT_FALSE(walkFilter.afterArray(walkerReflectable, walkerArrayFieldInfo));
-    ASSERT_FALSE(walkFilter.beforeCompound(walkerReflectable, walkerFieldInfo));
-    ASSERT_FALSE(walkFilter.afterCompound(walkerReflectable, walkerFieldInfo));
-    ASSERT_FALSE(walkFilter.beforeValue(walkerReflectable, walkerFieldInfo));
-    ASSERT_FALSE(walkFilter.afterValue(walkerReflectable, walkerFieldInfo));
+    ASSERT_FALSE(walkFilter.beforeCompound(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT));
+    ASSERT_FALSE(walkFilter.afterCompound(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT));
+    ASSERT_FALSE(walkFilter.beforeValue(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT));
+    ASSERT_FALSE(walkFilter.afterValue(walkerReflectable, walkerFieldInfo, WALKER_NOT_ELEMENT));
 }
 
 } // namespace zserio

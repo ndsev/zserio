@@ -41,11 +41,6 @@ fuchsia-multiple-inheritance:gen/comments_warning/unused_struct_comment_multiple
 fuchsia-multiple-inheritance:gen_doc_comment_missing/doc_comment_missing_warning/all_nodes/SqlDatabaseType.h:30
 fuchsia-multiple-inheritance:gen_doc_comment_missing/doc_comment_missing_warning/documented/DocumentedSqlDatabaseType.h:30
 
-google-default-arguments:gen_doc_comment_missing/doc_comment_missing_warning/all_nodes/ServiceType.cpp:25
-google-default-arguments:gen_doc_comment_missing/doc_comment_missing_warning/all_nodes/ServiceType.h:41
-google-default-arguments:gen_doc_comment_missing/doc_comment_missing_warning/documented/DocumentdServiceType.cpp:25
-google-default-arguments:gen_doc_comment_missing/doc_comment_missing_warning/documented/DocumentdServiceType.h:41
-
 google-explicit-constructor:gen_doc_comment_missing/doc_comment_missing_warning/all_nodes/BitmaskType.h:38
 google-explicit-constructor:gen_doc_comment_missing/doc_comment_missing_warning/documented/DocumentedBitmaskType.h:38
 

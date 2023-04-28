@@ -138,7 +138,7 @@ TEST_F(SimpleServiceTest, powerOfTwoRaw)
 
 TEST_F(SimpleServiceTest, invalidServiceMethod)
 {
-    ASSERT_THROW(service.callMethod("nonexistentMethod"_sv, {}), zserio::ServiceException);
+    ASSERT_THROW(service.callMethod("nonexistentMethod"_sv, {}, nullptr), zserio::ServiceException);
 }
 
 TEST_F(SimpleServiceTest, callWithContext)

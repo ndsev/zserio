@@ -209,7 +209,7 @@ public:
      *
      * \param methodName Name of the service method to call.
      * \param requestData Request data to be passed to the method.
-     * \param context Context specific for particular service.
+     * \param context Context specific for particular service or nullptr in case of no context.
      *
      * \return Created response data.
      *
@@ -218,7 +218,7 @@ public:
     virtual IBasicServiceDataPtr<ALLOC> callMethod(
             StringView methodName,
             Span<const uint8_t> requestData,
-            void* context = nullptr) = 0;
+            void* context) = 0;
 };
 
 /**
@@ -235,7 +235,7 @@ public:
      *
      * \param methodName Name of the service method to call.
      * \param requestData Request data to be passed to the method.
-     * \param context Context specific for particular service.
+     * \param context Context specific for particular service or nullptr in case of no context.
      *
      * \return Created response data as bytes.
      *
@@ -244,7 +244,7 @@ public:
     virtual vector<uint8_t, ALLOC> callMethod(
             StringView methodName,
             const IBasicServiceData<ALLOC>& requestData,
-            void* context = nullptr) = 0;
+            void* context) = 0;
 };
 
 /** Typedef to service interface provided for convenience - using default std::allocator<uint8_t>. */

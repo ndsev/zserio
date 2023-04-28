@@ -54,11 +54,6 @@ google-build-using-namespace:cpp/DebugStringTest.cpp:14
 google-build-using-namespace:cpp/WithTypeInfoCodeCreator.cpp:7
 google-build-using-namespace:cpp/WithTypeInfoCodeTest.cpp:14
 
-google-default-arguments:with_type_info_code/gen/with_type_info_code/SimpleService.cpp:41
-google-default-arguments:with_type_info_code/gen/with_type_info_code/SimpleService.h:42
-google-default-arguments:with_type_info_code/gen/with_type_info_code/TestBitmask.cpp:100
-google-default-arguments:with_type_info_code/gen/with_type_info_code/TestEnum.cpp:90
-
 google-explicit-constructor:with_type_info_code/gen/with_type_info_code/TestBitmask.h:40
 
 hicpp-signed-bitwise:with_type_info_code/gen/with_type_info_code/TestBitmask.h:134
@@ -191,9 +186,9 @@ readability-braces-around-statements:with_type_info_code/gen/with_type_info_code
 readability-braces-around-statements:with_type_info_code/gen/with_type_info_code/TemplatedSqlTableU8.cpp:220
 readability-braces-around-statements:with_type_info_code/gen/with_type_info_code/TemplatedSqlTable_uint32.cpp:220
 readability-braces-around-statements:with_type_info_code/gen/with_type_info_code/TestBitmask.cpp:29
-readability-braces-around-statements:with_type_info_code/gen/with_type_info_code/TestBitmask.cpp:168
-readability-braces-around-statements:with_type_info_code/gen/with_type_info_code/TestBitmask.cpp:170
-readability-braces-around-statements:with_type_info_code/gen/with_type_info_code/TestBitmask.cpp:172
+readability-braces-around-statements:with_type_info_code/gen/with_type_info_code/TestBitmask.cpp:167
+readability-braces-around-statements:with_type_info_code/gen/with_type_info_code/TestBitmask.cpp:169
+readability-braces-around-statements:with_type_info_code/gen/with_type_info_code/TestBitmask.cpp:171
 readability-braces-around-statements:with_type_info_code/gen/with_type_info_code/WithTypeInfoCode.cpp:98
 readability-braces-around-statements:with_type_info_code/gen/with_type_info_code/WithTypeInfoCode.cpp:100
 readability-braces-around-statements:with_type_info_code/gen/with_type_info_code/WithTypeInfoCode.cpp:121

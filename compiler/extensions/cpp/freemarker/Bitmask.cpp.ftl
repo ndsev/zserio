@@ -113,8 +113,7 @@ ${types.reflectablePtr.name} ${name}::reflectable(const ${types.allocator.defaul
             return static_cast<double>(toUInt());
         }
 
-        ${types.string.name} toString(
-                const ${types.allocator.default}& allocator = ${types.allocator.default}()) const override
+        ${types.string.name} toString(const ${types.allocator.default}& allocator) const override
         {
             return m_bitmask.toString(allocator);
         }
