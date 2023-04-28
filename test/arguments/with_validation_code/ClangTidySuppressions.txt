@@ -22,20 +22,6 @@ cppcoreguidelines-avoid-non-const-global-variables:cpp/SimpleTableValidationTest
 cppcoreguidelines-avoid-non-const-global-variables:cpp/VirtualTableValidationTest.cpp:60
 cppcoreguidelines-avoid-non-const-global-variables:cpp/VirtualTableValidationTest.cpp:63
 
-cppcoreguidelines-init-variables:gen/with_validation_code/blob_table_validation/BlobTable.cpp:682
-cppcoreguidelines-init-variables:gen/with_validation_code/column_type_validation/ColumnTypeTable.cpp:1993
-cppcoreguidelines-init-variables:gen/with_validation_code/constraint_table_validation/ConstraintTable.cpp:533
-cppcoreguidelines-init-variables:gen/with_validation_code/control_validation/Table1.cpp:515
-cppcoreguidelines-init-variables:gen/with_validation_code/control_validation/Table2.cpp:533
-cppcoreguidelines-init-variables:gen/with_validation_code/control_validation/Table3.cpp:515
-cppcoreguidelines-init-variables:gen/with_validation_code/depend_table_validation/DependTable.cpp:943
-cppcoreguidelines-init-variables:gen/with_validation_code/full_range_table_validation/FullRangeTable.cpp:815
-cppcoreguidelines-init-variables:gen/with_validation_code/hidden_column_table_validation/HiddenColumnTable.cpp:692
-cppcoreguidelines-init-variables:gen/with_validation_code/simple_table_validation/SimpleTable.cpp:1413
-cppcoreguidelines-init-variables:gen/with_validation_code/virtual_table_validation/TestTable.cpp:512
-cppcoreguidelines-init-variables:gen/with_validation_code/virtual_table_validation/VirtualTable.cpp:367
-cppcoreguidelines-init-variables:cpp/SimpleTableValidationTest.cpp:229
-
 cppcoreguidelines-pro-bounds-pointer-arithmetic:cpp/SimpleTableValidationTest.cpp:160
 
 cppcoreguidelines-pro-type-member-init:gen/with_validation_code/blob_table_validation/BlobTable.cpp:70

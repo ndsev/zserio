@@ -14,9 +14,6 @@ cert-err58-cpp:cpp/StructureExternTest.cpp:25
 cert-err58-cpp:cpp/UnionArrayTest.cpp:104
 cert-err58-cpp:cpp/UnionArrayTest.cpp:109
 
-cppcoreguidelines-init-variables:cpp/ChoiceArrayTest.cpp:49
-cppcoreguidelines-init-variables:cpp/ChoiceArrayTest.cpp:77
-
 cppcoreguidelines-pro-bounds-constant-array-index:cpp/ChoiceArrayTest.cpp:28
 cppcoreguidelines-pro-bounds-constant-array-index:cpp/ChoiceArrayTest.cpp:29
 cppcoreguidelines-pro-bounds-constant-array-index:cpp/ChoiceArrayTest.cpp:59

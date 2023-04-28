@@ -3,8 +3,6 @@ bugprone-reserved-identifier:gen/_imported_tile_/Tile.h:20
 bugprone-reserved-identifier:gen/___/Empty.h:7
 bugprone-reserved-identifier:gen/___/Empty.h:15
 
-cppcoreguidelines-init-variables:gen/with_sources_amalgamation/WithSourcesAmalgamation.cpp:386
-
 cppcoreguidelines-pro-type-member-init:gen/with_sources_amalgamation/WithSourcesAmalgamation.cpp:257
 cppcoreguidelines-pro-type-reinterpret-cast:gen/with_sources_amalgamation/WithSourcesAmalgamation.cpp:291
 cppcoreguidelines-pro-type-reinterpret-cast:gen/with_sources_amalgamation/WithSourcesAmalgamation.cpp:302

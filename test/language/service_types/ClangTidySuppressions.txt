@@ -1,15 +1,3 @@
-cppcoreguidelines-init-variables:cpp/ComplexTypesServiceTest.cpp:88
-cppcoreguidelines-init-variables:cpp/ComplexTypesServiceTest.cpp:89
-cppcoreguidelines-init-variables:cpp/ComplexTypesServiceTest.cpp:90
-cppcoreguidelines-init-variables:cpp/ComplexTypesServiceTest.cpp:91
-cppcoreguidelines-init-variables:cpp/ComplexTypesServiceTest.cpp:108
-cppcoreguidelines-init-variables:cpp/ComplexTypesServiceTest.cpp:109
-cppcoreguidelines-init-variables:cpp/ComplexTypesServiceTest.cpp:110
-cppcoreguidelines-init-variables:cpp/ComplexTypesServiceTest.cpp:127
-cppcoreguidelines-init-variables:cpp/ComplexTypesServiceTest.cpp:128
-cppcoreguidelines-init-variables:cpp/ComplexTypesServiceTest.cpp:129
-cppcoreguidelines-init-variables:cpp/ComplexTypesServiceTest.cpp:130
-
 cppcoreguidelines-pro-bounds-constant-array-index:cpp/ComplexTypesServiceTest.cpp:131
 cppcoreguidelines-pro-bounds-constant-array-index:cpp/ComplexTypesServiceTest.cpp:132
 cppcoreguidelines-pro-bounds-constant-array-index:cpp/ComplexTypesServiceTest.cpp:133

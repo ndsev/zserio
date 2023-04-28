@@ -1,5 +1,3 @@
-cppcoreguidelines-init-variables:gen/unused_type_warning/BoolStructureTable.cpp:196
-cppcoreguidelines-init-variables:gen/unused_type_warning/UnusedTable.cpp:179
 cppcoreguidelines-pro-type-member-init:gen/unused_type_warning/BoolChoice.cpp:18
 cppcoreguidelines-pro-type-member-init:gen/unused_type_warning/BoolChoice.cpp:40
 cppcoreguidelines-pro-type-member-init:gen/unused_type_warning/BoolChoice.cpp:60

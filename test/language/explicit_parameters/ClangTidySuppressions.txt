@@ -21,14 +21,6 @@ cppcoreguidelines-avoid-non-const-global-variables:cpp/MultipleExplicitParamsTes
 cppcoreguidelines-avoid-non-const-global-variables:cpp/MultipleWithSameNameTest.cpp:100
 cppcoreguidelines-avoid-non-const-global-variables:cpp/MultipleWithSameNameTest.cpp:107
 
-cppcoreguidelines-init-variables:gen/explicit_parameters/explicit_bitmask_param/BitmaskParamTable.cpp:229
-cppcoreguidelines-init-variables:gen/explicit_parameters/explicit_blob_param/BlobParamTable.cpp:229
-cppcoreguidelines-init-variables:gen/explicit_parameters/explicit_enum_param/EnumParamTable.cpp:229
-cppcoreguidelines-init-variables:gen/explicit_parameters/explicit_same_as_field/SameAsFieldTable.cpp:224
-cppcoreguidelines-init-variables:gen/explicit_parameters/explicit_simple_param/SimpleParamTable.cpp:229
-cppcoreguidelines-init-variables:gen/explicit_parameters/multiple_explicit_params/MultipleParamsTable.cpp:232
-cppcoreguidelines-init-variables:gen/explicit_parameters/multiple_with_same_name/MultipleWithSameNameTable.cpp:214
-
 cppcoreguidelines-pro-type-member-init:gen/explicit_parameters/explicit_bitmask_param/BitmaskParamTable.cpp:72
 cppcoreguidelines-pro-type-member-init:gen/explicit_parameters/explicit_blob_param/BlobParamTable.cpp:72
 cppcoreguidelines-pro-type-member-init:gen/explicit_parameters/explicit_blob_param/TestBlob.cpp:20

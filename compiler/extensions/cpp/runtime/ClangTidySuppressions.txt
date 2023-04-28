@@ -46,12 +46,6 @@ cppcoreguidelines-avoid-c-arrays:src/zserio/Span.h:170
 cppcoreguidelines-avoid-c-arrays:src/zserio/StringView.h:894
 cppcoreguidelines-avoid-c-arrays:test/zserio/SpanTest.cpp:46
 
-cppcoreguidelines-init-variables:src/zserio/FloatUtil.cpp:43
-cppcoreguidelines-init-variables:src/zserio/FloatUtil.cpp:101
-cppcoreguidelines-init-variables:src/zserio/JsonEncoder.cpp:34
-cppcoreguidelines-init-variables:test/zserio/StringConvertUtilTest.cpp:106
-cppcoreguidelines-init-variables:test/zserio/StringConvertUtilTest.cpp:107
-
 cppcoreguidelines-avoid-non-const-global-variables:src/zserio/pmr/MemoryResource.cpp:18
 cppcoreguidelines-avoid-non-const-global-variables:test/zserio/SqliteConnectionTest.cpp:49
 cppcoreguidelines-avoid-non-const-global-variables:test/zserio/ValidationSqliteUtilTest.cpp:59

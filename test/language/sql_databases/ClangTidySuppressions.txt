@@ -1,6 +1,3 @@
-cppcoreguidelines-init-variables:gen/sql_databases/db_with_relocation/CountryMapTable.cpp:185
-cppcoreguidelines-init-variables:gen/sql_databases/simple_db/GeoMapTable.cpp:185
-
 cppcoreguidelines-pro-type-member-init:gen/sql_databases/db_with_relocation/CountryMapTable.cpp:69
 cppcoreguidelines-pro-type-member-init:gen/sql_databases/simple_db/GeoMapTable.cpp:69
 

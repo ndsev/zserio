@@ -27,8 +27,6 @@ cppcoreguidelines-avoid-non-const-global-variables:cpp/ComplexAllocationTest.cpp
 cppcoreguidelines-avoid-non-const-global-variables:cpp/ComplexAllocationTest.cpp:1233
 cppcoreguidelines-avoid-non-const-global-variables:cpp/ComplexAllocationTest.cpp:1236
 
-cppcoreguidelines-init-variables:gen_sql_allocation/sql_allocation/SqlAllocationTable.cpp:1231
-
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen_pubsub_allocation/pubsub_allocation/Name.h:39
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen_service_allocation/service_allocation/Name.h:39
 

@@ -1,7 +1,3 @@
-cppcoreguidelines-init-variables:gen/sql_without_rowid_tables/rowid_and_without_rowid_tables/OrdinaryRowIdTable.cpp:182
-cppcoreguidelines-init-variables:gen/sql_without_rowid_tables/rowid_and_without_rowid_tables/WithoutRowIdTable.cpp:190
-cppcoreguidelines-init-variables:gen/sql_without_rowid_tables/simple_without_rowid_table/SimpleWithoutRowIdTable.cpp:190
-
 cppcoreguidelines-pro-type-member-init:gen/sql_without_rowid_tables/rowid_and_without_rowid_tables/OrdinaryRowIdTable.cpp:69
 cppcoreguidelines-pro-type-member-init:gen/sql_without_rowid_tables/rowid_and_without_rowid_tables/WithoutRowIdTable.cpp:77
 cppcoreguidelines-pro-type-member-init:gen/sql_without_rowid_tables/simple_without_rowid_table/SimpleWithoutRowIdTable.cpp:77

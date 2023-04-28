@@ -46,7 +46,7 @@ protected:
 
         const uint8_t isExplicit = (pos >= m_items.size()) ? 1 : 0;
         writer.writeBits(isExplicit, 8);
-        uint8_t elementA;
+        uint8_t elementA = 0;
         if (isExplicit != 0)
         {
             writer.writeBits(m_explicitItem.getA(), 8);
@@ -74,7 +74,7 @@ protected:
         const uint8_t isExplicit = (pos >= m_items.size()) ? 1 : 0;
         inner.setIsExplicit(isExplicit);
         ItemRef& itemRef = inner.getRef();
-        uint8_t elementA;
+        uint8_t elementA = 0;
         if (isExplicit != 0)
         {
             itemRef.setItem(m_explicitItem);

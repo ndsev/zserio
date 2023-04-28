@@ -21,12 +21,6 @@ cert-err58-cpp:cpp/DebugStringTest.cpp:154
 cert-err58-cpp:cpp/WithTypeInfoCodeTest.cpp:1669
 cert-err58-cpp:cpp/WithTypeInfoCodeTest.cpp:1671
 
-cppcoreguidelines-init-variables:with_type_info_code/gen/with_type_info_code/Fts4Table.cpp:218
-cppcoreguidelines-init-variables:with_type_info_code/gen/with_type_info_code/SqlTable.cpp:219
-cppcoreguidelines-init-variables:with_type_info_code/gen/with_type_info_code/TemplatedSqlTableU8.cpp:228
-cppcoreguidelines-init-variables:with_type_info_code/gen/with_type_info_code/TemplatedSqlTable_uint32.cpp:228
-cppcoreguidelines-init-variables:with_type_info_code/gen/with_type_info_code/WithoutRowIdTable.cpp:226
-
 cppcoreguidelines-pro-type-member-init:with_type_info_code/gen/with_type_info_code/Fts4Table.cpp:105
 cppcoreguidelines-pro-type-member-init:with_type_info_code/gen/with_type_info_code/ParameterizedStruct.cpp:22
 cppcoreguidelines-pro-type-member-init:with_type_info_code/gen/with_type_info_code/ParameterizedStruct.cpp:44

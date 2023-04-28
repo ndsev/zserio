@@ -33,20 +33,6 @@ cppcoreguidelines-avoid-non-const-global-variables:cpp/SubtypedTableTest.cpp:67
 cppcoreguidelines-avoid-non-const-global-variables:cpp/WithoutPkTableTest.cpp:98
 cppcoreguidelines-avoid-non-const-global-variables:cpp/WithoutPkTableTest.cpp:104
 
-cppcoreguidelines-init-variables:gen/sql_tables/blob_field_with_children_initialization_table/BlobFieldWithChildrenInitializationTable.cpp:187
-cppcoreguidelines-init-variables:gen/sql_tables/blob_offsets_param_table/BlobOffsetsParamTable.cpp:213
-cppcoreguidelines-init-variables:gen/sql_tables/blob_param_table/BlobParamTable.cpp:213
-cppcoreguidelines-init-variables:gen/sql_tables/column_param_table/ColumnParamTable.cpp:199
-cppcoreguidelines-init-variables:gen/sql_tables/complex_table/ComplexTable.cpp:262
-cppcoreguidelines-init-variables:gen/sql_tables/const_param_table/ConstParamTable.cpp:199
-cppcoreguidelines-init-variables:gen/sql_tables/dynamic_bit_field_enum_field_table/DynamicBitFieldEnumFieldTable.cpp:184
-cppcoreguidelines-init-variables:gen/sql_tables/multiple_pk_table/MultiplePkTable.cpp:192
-cppcoreguidelines-init-variables:gen/sql_tables/subtyped_bitmask_field_table/SubtypedBitmaskFieldTable.cpp:184
-cppcoreguidelines-init-variables:gen/sql_tables/subtyped_bool_field_table/SubtypedBoolFieldTable.cpp:181
-cppcoreguidelines-init-variables:gen/sql_tables/subtyped_enum_field_table/SubtypedEnumFieldTable.cpp:184
-cppcoreguidelines-init-variables:gen/sql_tables/subtyped_table/TestTable.cpp:185
-cppcoreguidelines-init-variables:gen/sql_tables/without_pk_table/WithoutPkTable.cpp:181
-
 cppcoreguidelines-pro-type-member-init:gen/sql_tables/blob_field_with_children_initialization_table/BlobFieldWithChildrenInitializationTable.cpp:69
 cppcoreguidelines-pro-type-member-init:gen/sql_tables/blob_field_with_children_initialization_table/ParameterizedArray.cpp:20
 cppcoreguidelines-pro-type-member-init:gen/sql_tables/blob_field_with_children_initialization_table/ParameterizedArray.cpp:42

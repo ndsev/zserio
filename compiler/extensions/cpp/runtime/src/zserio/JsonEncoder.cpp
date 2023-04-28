@@ -31,7 +31,7 @@ void JsonEncoder::encodeFloatingPoint(std::ostream& os, double value)
     }
     else
     {
-        double intPart;
+        double intPart = 1e16;
         const double fractPart = std::modf(value, &intPart);
         // trying to get closer to behavior of Python
         if (fractPart == 0.0 && intPart > -1e16 && intPart < 1e16)

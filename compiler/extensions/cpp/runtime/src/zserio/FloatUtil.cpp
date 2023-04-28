@@ -40,7 +40,7 @@ float convertUInt16ToFloat(uint16_t float16Value)
             (FLOAT32_SIGNIFICAND_NUM_BITS - FLOAT16_SIGNIFICAND_NUM_BITS);
 
     // calculate exponent for single precision float (float32)
-    uint32_t exponent32;
+    uint32_t exponent32 = 0;
     if (exponent16 == 0)
     {
         if (significand32 != 0)
@@ -55,11 +55,6 @@ float convertUInt16ToFloat(uint16_t float16Value)
             }
             // mask out overflowed leading bit from significand (normalized has implicit leading bit 1)
             significand32 &= FLOAT32_SIGNIFICAND_MASK;
-        }
-        else
-        {
-            // zero
-            exponent32 = 0;
         }
     }
     else if (exponent16 == FLOAT16_EXPONENT_INFINITY_NAN)
@@ -98,7 +93,7 @@ uint16_t convertFloatToUInt16(float float32)
 
     // calculate exponent for half precision float (float16)
     bool needsRounding = false;
-    uint16_t exponent16;
+    uint16_t exponent16 = 0;
     if (exponent32 == 0)
     {
         if (significand32 != 0)
@@ -106,7 +101,6 @@ uint16_t convertFloatToUInt16(float float32)
             // subnormal (denormal) number will be zero
             significand16 = 0;
         }
-        exponent16 = 0;
     }
     else if (exponent32 == FLOAT32_EXPONENT_INFINITY_NAN)
     {
@@ -129,13 +123,11 @@ uint16_t convertFloatToUInt16(float float32)
             if (signedExponent16 <= static_cast<int16_t>(-FLOAT16_SIGNIFICAND_NUM_BITS))
             {
                 // too big underflow, set to zero
-                exponent16 = 0;
                 significand16 = 0;
             }
             else
             {
                 // we can still use subnormal numbers
-                exponent16 = 0;
                 const uint32_t fullSignificand32 = significand32 | (FLOAT32_SIGNIFICAND_MASK + 1);
                 const uint32_t significandShift = static_cast<uint32_t>(1 - signedExponent16);
                 significand16 = static_cast<uint16_t>(fullSignificand32 >>

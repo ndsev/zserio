@@ -103,8 +103,8 @@ TEST(StringConvertUtilTest, convertFloat)
 {
     std::array<char, 24> integerBuffer;
     std::array<char, 24> floatingBuffer;
-    const char* integerString;
-    const char* floatingString;
+    const char* integerString = "";
+    const char* floatingString = "";
     convertFloatToString(integerBuffer, floatingBuffer, 13579.2468F, integerString, floatingString);
     EXPECT_EQ(std::string("13579"), integerString);
     EXPECT_EQ(std::string("247"), floatingString);

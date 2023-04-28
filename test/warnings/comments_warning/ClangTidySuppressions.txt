@@ -2,14 +2,6 @@ bugprone-forwarding-reference-overload:gen/comments_warning/unused_field_comment
 bugprone-forwarding-reference-overload:gen_doc_comment_missing/doc_comment_missing_warning/all_nodes/StructureTypeSTR.h:36
 bugprone-forwarding-reference-overload:gen_doc_comment_missing/doc_comment_missing_warning/documented/DocumentedStructureTypeSTR.h:36
 
-cppcoreguidelines-init-variables:gen/comments_warning/markdown_comment_with_wrong_terminator/TestTable.cpp:199
-cppcoreguidelines-init-variables:gen/comments_warning/unresolved_see_tag_reference/Table.cpp:185
-cppcoreguidelines-init-variables:gen/comments_warning/unused_field_comments/Table.cpp:297
-cppcoreguidelines-init-variables:gen/comments_warning/unused_struct_comment_by_id/Table.cpp:185
-cppcoreguidelines-init-variables:gen/comments_warning/unused_struct_comment_multiple_comments/Table.cpp:185
-cppcoreguidelines-init-variables:gen_doc_comment_missing/doc_comment_missing_warning/all_nodes/SqlTableType.cpp:171
-cppcoreguidelines-init-variables:gen_doc_comment_missing/doc_comment_missing_warning/documented/DocumentedSqlTableType.cpp:171
-
 cppcoreguidelines-pro-type-member-init:gen/comments_warning/markdown_comment_with_wrong_terminator/TestTable.cpp:70
 cppcoreguidelines-pro-type-member-init:gen/comments_warning/unresolved_see_tag_reference/Table.cpp:69
 cppcoreguidelines-pro-type-member-init:gen/comments_warning/unused_field_comments/Table.cpp:77

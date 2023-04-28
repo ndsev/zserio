@@ -226,7 +226,7 @@ TEST_F(SimpleTableValidationTest, validateSingleTable)
 
     TestParameterProvider parameterProvider;
     ValidationObserver validationObserver;
-    bool continueValidation;
+    bool continueValidation = false;
     const bool isValidated = simpleTable.validate(validationObserver,
             parameterProvider.getSimpleTableParameterProvider(), continueValidation);
 

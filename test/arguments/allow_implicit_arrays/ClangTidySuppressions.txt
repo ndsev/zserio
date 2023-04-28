@@ -15,8 +15,6 @@ cert-err58-cpp:cpp/ImplicitArrayUInt64Test.cpp:30
 cppcoreguidelines-avoid-non-const-global-variables:cpp/TableWithImplicitArrayTest.cpp:77
 cppcoreguidelines-avoid-non-const-global-variables:cpp/TableWithImplicitArrayTest.cpp:83
 
-cppcoreguidelines-init-variables:gen/allow_implicit_arrays/table_with_implicit_array/TableWithImplicitArray.cpp:196
-
 cppcoreguidelines-pro-type-member-init:gen/allow_implicit_arrays/table_with_implicit_array/TableWithImplicitArray.cpp:70
 
 cppcoreguidelines-pro-type-reinterpret-cast:gen/allow_implicit_arrays/table_with_implicit_array/TableWithImplicitArray.cpp:104

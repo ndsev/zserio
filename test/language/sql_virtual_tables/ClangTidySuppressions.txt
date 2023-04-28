@@ -3,9 +3,6 @@ cppcoreguidelines-avoid-non-const-global-variables:cpp/Fts3VirtualTableTest.cpp:
 cppcoreguidelines-avoid-non-const-global-variables:cpp/Fts5VirtualTableTest.cpp:100
 cppcoreguidelines-avoid-non-const-global-variables:cpp/Fts5VirtualTableTest.cpp:107
 
-cppcoreguidelines-init-variables:gen/sql_virtual_tables/fts3_virtual_table/Fts3VirtualTable.cpp:182
-cppcoreguidelines-init-variables:gen/sql_virtual_tables/fts5_virtual_table/Fts5VirtualTable.cpp:183
-
 cppcoreguidelines-pro-type-member-init:gen/sql_virtual_tables/fts3_virtual_table/Fts3VirtualTable.cpp:68
 cppcoreguidelines-pro-type-member-init:gen/sql_virtual_tables/fts5_virtual_table/Fts5VirtualTable.cpp:69
 

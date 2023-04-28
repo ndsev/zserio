@@ -3,9 +3,6 @@ cppcoreguidelines-avoid-non-const-global-variables:cpp/FieldConstraintsTest.cpp:
 cppcoreguidelines-avoid-non-const-global-variables:cpp/TableConstraintsTest.cpp:44
 cppcoreguidelines-avoid-non-const-global-variables:cpp/TableConstraintsTest.cpp:49
 
-cppcoreguidelines-init-variables:gen/sql_constraints/field_constraints/FieldConstraintsTable.cpp:251
-cppcoreguidelines-init-variables:gen/sql_constraints/table_constraints/TableConstraintsTable.cpp:201
-
 cppcoreguidelines-pro-type-member-init:gen/sql_constraints/field_constraints/FieldConstraintsTable.cpp:76
 cppcoreguidelines-pro-type-member-init:gen/sql_constraints/table_constraints/TableConstraintsTable.cpp:71
 

@@ -697,7 +697,7 @@ void ${name}::writeRow(<#if needsParameterProvider>IParameterProvider& parameter
     row.initializeChildren(<#if needsParameterProvider>parameterProvider</#if>);
 
 </#if>
-    int result;
+    int result = SQLITE_ERROR;
 
     <#list fields as field>
     // field ${field.name}

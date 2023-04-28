@@ -3,10 +3,6 @@ bugprone-forwarding-reference-overload:language/comments/gen/comments/classic_do
 bugprone-forwarding-reference-overload:language/comments/gen/comments/markdown_doc/struct_template_comments/Field_Compound.h:39
 bugprone-forwarding-reference-overload:language/comments/gen/comments/markdown_doc/struct_template_comments/Field_string.h:38
 
-cppcoreguidelines-init-variables:language/comments/gen/comments/classic_doc/sql_database_comments/Table.cpp:173
-cppcoreguidelines-init-variables:language/comments/gen/comments/classic_doc/sql_table_comments/VirtualTable.cpp:172
-cppcoreguidelines-init-variables:language/comments/gen/comments/markdown_doc/sql_database_comments/Table.cpp:173
-cppcoreguidelines-init-variables:language/comments/gen/comments/markdown_doc/sql_table_comments/VirtualTable.cpp:172
 cppcoreguidelines-pro-type-member-init:language/comments/gen/comments/classic_doc/sql_database_comments/Table.cpp:70
 cppcoreguidelines-pro-type-member-init:language/comments/gen/comments/classic_doc/sql_table_comments/VirtualTable.cpp:68
 cppcoreguidelines-pro-type-member-init:language/comments/gen/comments/classic_doc/struct_comments/DirectionStructure.cpp:154

@@ -79,12 +79,6 @@ cert-err58-cpp:cpp/SqlTableTemplatedFieldTest.cpp:48
 cppcoreguidelines-avoid-non-const-global-variables:cpp/InstantiateSqlTableTest.cpp:18
 cppcoreguidelines-avoid-non-const-global-variables:cpp/InstantiateTypeAsSqlTableFieldTest.cpp:18
 
-cppcoreguidelines-init-variables:gen/templates/instantiate_sql_table/U32Table.cpp:182
-cppcoreguidelines-init-variables:gen/templates/instantiate_type_as_sql_database_field/StringTable.cpp:182
-cppcoreguidelines-init-variables:gen/templates/instantiate_type_as_sql_table_field/Test32Table.cpp:185
-cppcoreguidelines-init-variables:gen/templates/sql_table_templated_field/TemplatedTable_Union.cpp:185
-cppcoreguidelines-init-variables:gen/templates/sql_table_templated_field/TemplatedTable_uint32.cpp:185
-
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen/templates/instantiate_imported/Test_string.h:41
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen/templates/instantiate_nested_template/NStr.h:41
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen/templates/instantiate_not_imported/pkg/Test_string.h:43
