@@ -23,17 +23,3 @@ modernize-use-using:gen/sql_types/SqlTypesDb.h:32
 readability-make-member-function-const:gen/sql_types/TestChoice.cpp:206
 readability-make-member-function-const:gen/sql_types/TestChoice.cpp:320
 readability-make-member-function-const:gen/sql_types/TestChoice.cpp:334
-
-readability-simplify-boolean-expr:gen/sql_types/TestChoice.cpp:134
-readability-simplify-boolean-expr:gen/sql_types/TestChoice.cpp:156
-readability-simplify-boolean-expr:gen/sql_types/TestChoice.cpp:174
-readability-simplify-boolean-expr:gen/sql_types/TestChoice.cpp:192
-readability-simplify-boolean-expr:gen/sql_types/TestChoice.cpp:212
-readability-simplify-boolean-expr:gen/sql_types/TestChoice.cpp:230
-readability-simplify-boolean-expr:gen/sql_types/TestChoice.cpp:254
-readability-simplify-boolean-expr:gen/sql_types/TestChoice.cpp:277
-readability-simplify-boolean-expr:gen/sql_types/TestChoice.cpp:294
-readability-simplify-boolean-expr:gen/sql_types/TestChoice.cpp:308
-readability-simplify-boolean-expr:gen/sql_types/TestChoice.cpp:324
-readability-simplify-boolean-expr:gen/sql_types/TestChoice.cpp:339
-readability-simplify-boolean-expr:gen/sql_types/TestChoice.cpp:353

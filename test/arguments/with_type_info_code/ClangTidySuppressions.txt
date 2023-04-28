@@ -79,21 +79,4 @@ readability-make-member-function-const:with_type_info_code/gen/with_type_info_co
 readability-make-member-function-const:with_type_info_code/gen/with_type_info_code/WithTypeInfoCode.cpp:1611
 readability-make-member-function-const:with_type_info_code/gen/with_type_info_code/WithTypeInfoCode.cpp:1617
 
-readability-simplify-boolean-expr:with_type_info_code/gen/with_type_info_code/RecursiveChoice.cpp:267
-readability-simplify-boolean-expr:with_type_info_code/gen/with_type_info_code/RecursiveChoice.cpp:421
-readability-simplify-boolean-expr:with_type_info_code/gen/with_type_info_code/RecursiveChoice.cpp:468
-readability-simplify-boolean-expr:with_type_info_code/gen/with_type_info_code/RecursiveChoice.cpp:527
-readability-simplify-boolean-expr:with_type_info_code/gen/with_type_info_code/RecursiveChoice.cpp:549
-readability-simplify-boolean-expr:with_type_info_code/gen/with_type_info_code/RecursiveChoice.cpp:565
-readability-simplify-boolean-expr:with_type_info_code/gen/with_type_info_code/RecursiveChoice.cpp:583
-readability-simplify-boolean-expr:with_type_info_code/gen/with_type_info_code/RecursiveChoice.cpp:602
-readability-simplify-boolean-expr:with_type_info_code/gen/with_type_info_code/RecursiveChoice.cpp:621
-readability-simplify-boolean-expr:with_type_info_code/gen/with_type_info_code/RecursiveChoice.cpp:646
-readability-simplify-boolean-expr:with_type_info_code/gen/with_type_info_code/RecursiveChoice.cpp:670
-readability-simplify-boolean-expr:with_type_info_code/gen/with_type_info_code/RecursiveChoice.cpp:687
-readability-simplify-boolean-expr:with_type_info_code/gen/with_type_info_code/RecursiveChoice.cpp:701
-readability-simplify-boolean-expr:with_type_info_code/gen/with_type_info_code/RecursiveChoice.cpp:716
-readability-simplify-boolean-expr:with_type_info_code/gen/with_type_info_code/RecursiveChoice.cpp:736
-readability-simplify-boolean-expr:with_type_info_code/gen/with_type_info_code/RecursiveChoice.cpp:755
-
 readability-uppercase-literal-suffix:with_type_info_code/gen/with_type_info_code/SimpleStruct.cpp:27

@@ -36,17 +36,3 @@ readability-make-member-function-const:gen/unused_type_warning/UnusedStructure.c
 readability-make-member-function-const:gen/unused_type_warning/UnusedStructure.cpp:230
 readability-make-member-function-const:gen/unused_type_warning/UnusedStructure.cpp:296
 readability-make-member-function-const:gen/unused_type_warning/UnusedStructure.cpp:306
-
-readability-simplify-boolean-expr:gen/unused_type_warning/BoolChoice.cpp:134
-readability-simplify-boolean-expr:gen/unused_type_warning/BoolChoice.cpp:156
-readability-simplify-boolean-expr:gen/unused_type_warning/BoolChoice.cpp:174
-readability-simplify-boolean-expr:gen/unused_type_warning/BoolChoice.cpp:192
-readability-simplify-boolean-expr:gen/unused_type_warning/BoolChoice.cpp:212
-readability-simplify-boolean-expr:gen/unused_type_warning/BoolChoice.cpp:230
-readability-simplify-boolean-expr:gen/unused_type_warning/BoolChoice.cpp:254
-readability-simplify-boolean-expr:gen/unused_type_warning/BoolChoice.cpp:277
-readability-simplify-boolean-expr:gen/unused_type_warning/BoolChoice.cpp:294
-readability-simplify-boolean-expr:gen/unused_type_warning/BoolChoice.cpp:308
-readability-simplify-boolean-expr:gen/unused_type_warning/BoolChoice.cpp:324
-readability-simplify-boolean-expr:gen/unused_type_warning/BoolChoice.cpp:339
-readability-simplify-boolean-expr:gen/unused_type_warning/BoolChoice.cpp:353

@@ -102,13 +102,3 @@ readability-make-member-function-const:gen/sql_tables/complex_table/TestBlob.cpp
 readability-make-member-function-const:gen/sql_tables/complex_table/TestBlob.cpp:327
 readability-make-member-function-const:gen/sql_tables/complex_table/TestBlob.cpp:335
 readability-make-member-function-const:gen/sql_tables/const_param_table/ParameterizedBlob.cpp:168
-
-readability-simplify-boolean-expr:cpp/BlobOffsetsParamTableTest.cpp:108
-readability-simplify-boolean-expr:cpp/BlobParamTableTest.cpp:138
-readability-simplify-boolean-expr:cpp/ColumnParamTableTest.cpp:97
-readability-simplify-boolean-expr:cpp/ComplexTableTest.cpp:192
-readability-simplify-boolean-expr:cpp/ConstParamTableTest.cpp:100
-readability-simplify-boolean-expr:cpp/MultiplePkTableTest.cpp:95
-readability-simplify-boolean-expr:cpp/SubtypedBoolFieldTableTest.cpp:46
-readability-simplify-boolean-expr:cpp/SubtypedTableTest.cpp:57
-readability-simplify-boolean-expr:cpp/WithoutPkTableTest.cpp:93

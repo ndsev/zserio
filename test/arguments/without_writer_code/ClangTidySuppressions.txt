@@ -39,15 +39,3 @@ readability-make-member-function-const:gen/without_writer_code/Tile.cpp:484
 readability-make-member-function-const:gen/without_writer_code/Tile.cpp:500
 readability-make-member-function-const:gen/without_writer_code/Tile.cpp:512
 readability-make-member-function-const:gen/without_writer_code/Tile.cpp:524
-
-readability-simplify-boolean-expr:gen/without_writer_code/ItemChoice.cpp:217
-readability-simplify-boolean-expr:gen/without_writer_code/ItemChoice.cpp:257
-readability-simplify-boolean-expr:gen/without_writer_code/ItemChoice.cpp:288
-readability-simplify-boolean-expr:gen/without_writer_code/ItemChoice.cpp:310
-readability-simplify-boolean-expr:gen/without_writer_code/ItemChoice.cpp:327
-readability-simplify-boolean-expr:gen/without_writer_code/ItemChoice.cpp:345
-readability-simplify-boolean-expr:gen/without_writer_code/ItemChoice.cpp:369
-readability-simplify-boolean-expr:gen/without_writer_code/ItemChoice.cpp:392
-readability-simplify-boolean-expr:gen/without_writer_code/ItemChoice.cpp:409
-readability-simplify-boolean-expr:gen/without_writer_code/ItemChoice.cpp:424
-readability-simplify-boolean-expr:gen/without_writer_code/ItemChoice.cpp:438

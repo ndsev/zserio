@@ -130,6 +130,3 @@ readability-make-member-function-const:gen/with_validation_code/simple_table_val
 readability-make-member-function-const:gen/with_validation_code/simple_table_validation/RootStruct.cpp:332
 readability-make-member-function-const:gen/with_validation_code/simple_table_validation/RootStruct.cpp:340
 readability-make-member-function-const:gen/with_validation_code/simple_table_validation/RootStruct.cpp:352
-
-readability-simplify-boolean-expr:cpp/ControlValidationTest.cpp:127
-readability-simplify-boolean-expr:cpp/ControlValidationTest.cpp:135

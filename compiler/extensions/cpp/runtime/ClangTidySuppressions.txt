@@ -3,7 +3,6 @@ cppcoreguidelines-pro-bounds-constant-array-index   # optimization breaks this r
 cppcoreguidelines-pro-type-reinterpret-cast         # FloatUtil, FileUtil, AhyHolder, OptionalHolder
 modernize-use-using                                 # too many cases
 readability-implicit-bool-conversion                # obfuscates code
-readability-simplify-boolean-expr                   # obfuscates code
 
 # suppressions per line
 bugprone-signed-char-misuse:src/zserio/PackingContext.h:119

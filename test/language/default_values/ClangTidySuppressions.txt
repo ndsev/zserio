@@ -8,16 +8,5 @@ modernize-use-using:gen/default_values/structure_default_values/Nibble.h:17
 readability-make-member-function-const:gen/default_values/structure_default_values/StructureDefaultValues.cpp:385
 readability-make-member-function-const:gen/default_values/structure_default_values/StructureDefaultValues.cpp:395
 
-readability-simplify-boolean-expr:gen/default_values/structure_default_values/StructureDefaultValues.cpp:99
-readability-simplify-boolean-expr:gen/default_values/structure_default_values/StructureDefaultValues.cpp:209
-readability-simplify-boolean-expr:gen/default_values/structure_default_values/StructureDefaultValues.cpp:226
-readability-simplify-boolean-expr:gen/default_values/structure_default_values/StructureDefaultValues.cpp:246
-readability-simplify-boolean-expr:gen/default_values/structure_default_values/StructureDefaultValues.cpp:270
-readability-simplify-boolean-expr:gen/default_values/structure_default_values/StructureDefaultValues.cpp:290
-readability-simplify-boolean-expr:gen/default_values/structure_default_values/StructureDefaultValues.cpp:349
-readability-simplify-boolean-expr:gen/default_values/structure_default_values/StructureDefaultValues.cpp:365
-readability-simplify-boolean-expr:gen/default_values/structure_default_values/StructureDefaultValues.cpp:387
-readability-simplify-boolean-expr:gen/default_values/structure_default_values/StructureDefaultValues.cpp:397
-
 readability-uppercase-literal-suffix:gen/default_values/structure_default_values/StructureDefaultValues.cpp:28
 readability-uppercase-literal-suffix:gen/default_values/structure_default_values/StructureDefaultValues.cpp:29

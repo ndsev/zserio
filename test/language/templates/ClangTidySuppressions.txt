@@ -352,17 +352,3 @@ readability-make-member-function-const:gen/templates/subtype_template_with_built
 readability-make-member-function-const:gen/templates/subtype_template_with_compound/Compound.cpp:92
 readability-make-member-function-const:gen/templates/union_templated_field/Compound_uint16.cpp:92
 readability-make-member-function-const:gen/templates/union_templated_field/Compound_uint32.cpp:92
-
-readability-simplify-boolean-expr:gen/templates/instantiate_type_as_choice_field/InstantiateTypeAsChoiceField.cpp:146
-readability-simplify-boolean-expr:gen/templates/instantiate_type_as_choice_field/InstantiateTypeAsChoiceField.cpp:168
-readability-simplify-boolean-expr:gen/templates/instantiate_type_as_choice_field/InstantiateTypeAsChoiceField.cpp:185
-readability-simplify-boolean-expr:gen/templates/instantiate_type_as_choice_field/InstantiateTypeAsChoiceField.cpp:203
-readability-simplify-boolean-expr:gen/templates/instantiate_type_as_choice_field/InstantiateTypeAsChoiceField.cpp:223
-readability-simplify-boolean-expr:gen/templates/instantiate_type_as_choice_field/InstantiateTypeAsChoiceField.cpp:241
-readability-simplify-boolean-expr:gen/templates/instantiate_type_as_choice_field/InstantiateTypeAsChoiceField.cpp:265
-readability-simplify-boolean-expr:gen/templates/instantiate_type_as_choice_field/InstantiateTypeAsChoiceField.cpp:288
-readability-simplify-boolean-expr:gen/templates/instantiate_type_as_choice_field/InstantiateTypeAsChoiceField.cpp:305
-readability-simplify-boolean-expr:gen/templates/instantiate_type_as_choice_field/InstantiateTypeAsChoiceField.cpp:319
-readability-simplify-boolean-expr:gen/templates/instantiate_type_as_choice_field/InstantiateTypeAsChoiceField.cpp:334
-readability-simplify-boolean-expr:gen/templates/instantiate_type_as_choice_field/InstantiateTypeAsChoiceField.cpp:349
-readability-simplify-boolean-expr:gen/templates/instantiate_type_as_choice_field/InstantiateTypeAsChoiceField.cpp:363

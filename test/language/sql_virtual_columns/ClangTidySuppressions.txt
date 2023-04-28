@@ -14,6 +14,3 @@ google-build-using-namespace:cpp/HiddenVirtualColumnsTest.cpp:14
 
 modernize-use-using:gen/sql_virtual_columns/hidden_virtual_columns/HiddenVirtualColumnsDb.h:34
 modernize-use-using:gen/sql_virtual_columns/simple_virtual_columns/SimpleVirtualColumnsDb.h:34
-
-readability-simplify-boolean-expr:cpp/HiddenVirtualColumnsTest.cpp:102
-readability-simplify-boolean-expr:cpp/SimpleVirtualColumnsTest.cpp:92

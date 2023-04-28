@@ -13,14 +13,3 @@ readability-make-member-function-const:gen/builtin_types/bitfield_function_lengt
 readability-make-member-function-const:gen/builtin_types/bitfield_uint64_length/Container.cpp:142
 readability-make-member-function-const:gen/builtin_types/bitfield_uint64_length/Container.cpp:218
 readability-make-member-function-const:gen/builtin_types/bitfield_uint64_length/Container.cpp:228
-
-readability-simplify-boolean-expr:gen/builtin_types/all_builtin_types/AllBuiltInTypes.cpp:445
-readability-simplify-boolean-expr:gen/builtin_types/all_builtin_types/AllBuiltInTypes.cpp:737
-readability-simplify-boolean-expr:gen/builtin_types/all_builtin_types/AllBuiltInTypes.cpp:790
-readability-simplify-boolean-expr:gen/builtin_types/all_builtin_types/AllBuiltInTypes.cpp:861
-readability-simplify-boolean-expr:gen/builtin_types/all_builtin_types/AllBuiltInTypes.cpp:922
-readability-simplify-boolean-expr:gen/builtin_types/all_builtin_types/AllBuiltInTypes.cpp:993
-readability-simplify-boolean-expr:gen/builtin_types/all_builtin_types/AllBuiltInTypes.cpp:1149
-readability-simplify-boolean-expr:gen/builtin_types/all_builtin_types/AllBuiltInTypes.cpp:1216
-readability-simplify-boolean-expr:gen/builtin_types/all_builtin_types/AllBuiltInTypes.cpp:1466
-readability-simplify-boolean-expr:gen/builtin_types/all_builtin_types/AllBuiltInTypes.cpp:1476

@@ -3,14 +3,3 @@ readability-make-member-function-const:gen/alignment/bit_alignment/BitAlignment.
 readability-make-member-function-const:gen/alignment/optional_member_alignment/OptionalMemberAlignment.cpp:146
 readability-make-member-function-const:gen/alignment/optional_member_alignment/OptionalMemberAlignment.cpp:232
 readability-make-member-function-const:gen/alignment/optional_member_alignment/OptionalMemberAlignment.cpp:243
-
-readability-simplify-boolean-expr:gen/alignment/optional_member_alignment/OptionalMemberAlignment.cpp:71
-readability-simplify-boolean-expr:gen/alignment/optional_member_alignment/OptionalMemberAlignment.cpp:105
-readability-simplify-boolean-expr:gen/alignment/optional_member_alignment/OptionalMemberAlignment.cpp:119
-readability-simplify-boolean-expr:gen/alignment/optional_member_alignment/OptionalMemberAlignment.cpp:134
-readability-simplify-boolean-expr:gen/alignment/optional_member_alignment/OptionalMemberAlignment.cpp:151
-readability-simplify-boolean-expr:gen/alignment/optional_member_alignment/OptionalMemberAlignment.cpp:166
-readability-simplify-boolean-expr:gen/alignment/optional_member_alignment/OptionalMemberAlignment.cpp:206
-readability-simplify-boolean-expr:gen/alignment/optional_member_alignment/OptionalMemberAlignment.cpp:217
-readability-simplify-boolean-expr:gen/alignment/optional_member_alignment/OptionalMemberAlignment.cpp:234
-readability-simplify-boolean-expr:gen/alignment/optional_member_alignment/OptionalMemberAlignment.cpp:245

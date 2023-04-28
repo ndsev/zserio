@@ -35,17 +35,3 @@ readability-make-member-function-const:gen/constraints/structure_bitmask_constra
 readability-make-member-function-const:gen/constraints/structure_bitmask_constraints/StructureBitmaskConstraints.cpp:302
 readability-make-member-function-const:gen/constraints/structure_constraints/StructureConstraints.cpp:380
 readability-make-member-function-const:gen/constraints/structure_constraints/StructureConstraints.cpp:395
-
-readability-simplify-boolean-expr:gen/constraints/choice_constraints/ChoiceConstraints.cpp:137
-readability-simplify-boolean-expr:gen/constraints/choice_constraints/ChoiceConstraints.cpp:159
-readability-simplify-boolean-expr:gen/constraints/choice_constraints/ChoiceConstraints.cpp:177
-readability-simplify-boolean-expr:gen/constraints/choice_constraints/ChoiceConstraints.cpp:195
-readability-simplify-boolean-expr:gen/constraints/choice_constraints/ChoiceConstraints.cpp:215
-readability-simplify-boolean-expr:gen/constraints/choice_constraints/ChoiceConstraints.cpp:233
-readability-simplify-boolean-expr:gen/constraints/choice_constraints/ChoiceConstraints.cpp:257
-readability-simplify-boolean-expr:gen/constraints/choice_constraints/ChoiceConstraints.cpp:280
-readability-simplify-boolean-expr:gen/constraints/choice_constraints/ChoiceConstraints.cpp:297
-readability-simplify-boolean-expr:gen/constraints/choice_constraints/ChoiceConstraints.cpp:317
-readability-simplify-boolean-expr:gen/constraints/choice_constraints/ChoiceConstraints.cpp:339
-readability-simplify-boolean-expr:gen/constraints/choice_constraints/ChoiceConstraints.cpp:368
-readability-simplify-boolean-expr:gen/constraints/choice_constraints/ChoiceConstraints.cpp:396

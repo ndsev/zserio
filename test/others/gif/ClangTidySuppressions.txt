@@ -183,5 +183,3 @@ readability-make-member-function-const:gen/gif/screen_descriptor/ScreenDescripto
 readability-make-member-function-const:gen/gif/screen_descriptor/ScreenDescriptor.cpp:908
 readability-make-member-function-const:gen/gif/screen_descriptor/ScreenDescriptor.cpp:923
 readability-make-member-function-const:gen/gif/screen_descriptor/ScreenDescriptor.cpp:933
-
-readability-simplify-boolean-expr:cpp/GifTest.cpp:33

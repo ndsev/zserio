@@ -13,6 +13,3 @@ fuchsia-multiple-inheritance:gen/sql_virtual_tables/fts5_virtual_table/Fts5TestD
 
 modernize-use-using:gen/sql_virtual_tables/fts3_virtual_table/Fts3TestDb.h:34
 modernize-use-using:gen/sql_virtual_tables/fts5_virtual_table/Fts5TestDb.h:34
-
-readability-simplify-boolean-expr:cpp/Fts3VirtualTableTest.cpp:95
-readability-simplify-boolean-expr:cpp/Fts5VirtualTableTest.cpp:95

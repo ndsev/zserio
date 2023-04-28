@@ -7,14 +7,3 @@ readability-implicit-bool-conversion:cpp/BoolIndexedOffsetArrayTest.cpp:87
 
 readability-make-member-function-const:gen/indexed_offsets/compound_indexed_offset_array/Compound.cpp:113
 readability-make-member-function-const:gen/indexed_offsets/optional_nested_indexed_offset_array/Header.cpp:194
-
-readability-simplify-boolean-expr:gen/indexed_offsets/optional_indexed_offset_array/OptionalIndexedOffsetArray.cpp:130
-readability-simplify-boolean-expr:gen/indexed_offsets/optional_indexed_offset_array/OptionalIndexedOffsetArray.cpp:175
-readability-simplify-boolean-expr:gen/indexed_offsets/optional_indexed_offset_array/OptionalIndexedOffsetArray.cpp:190
-readability-simplify-boolean-expr:gen/indexed_offsets/optional_indexed_offset_array/OptionalIndexedOffsetArray.cpp:207
-readability-simplify-boolean-expr:gen/indexed_offsets/optional_indexed_offset_array/OptionalIndexedOffsetArray.cpp:224
-readability-simplify-boolean-expr:gen/indexed_offsets/optional_indexed_offset_array/OptionalIndexedOffsetArray.cpp:275
-readability-simplify-boolean-expr:gen/indexed_offsets/optional_indexed_offset_array/OptionalIndexedOffsetArray.cpp:303
-readability-simplify-boolean-expr:gen/indexed_offsets/optional_indexed_offset_array/OptionalIndexedOffsetArray.cpp:336
-readability-simplify-boolean-expr:cpp/BoolIndexedOffsetArrayTest.cpp:65
-readability-simplify-boolean-expr:cpp/BoolIndexedOffsetArrayTest.cpp:87
