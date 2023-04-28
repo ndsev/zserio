@@ -71,7 +71,7 @@ function(get_generated_include_dirs GENERATED_SOURCES GENERATED_INCLUDES_VAR)
 endfunction()
 
 # functions to set globals called by included CMake lists
-set(TEST_DEPENDENCIES_LIST "" CACHE INTERNAL "Test dependencies")
+set(TEST_OBJECTS_LIST "" CACHE INTERNAL "Test objects")
 set(TEST_SOURCES_LIST "" CACHE INTERNAL "Test sources")
 function(add_custom_test TEST_NAME)
     cmake_parse_arguments(TEST_ARG "" "" "DEPENDS;SOURCES;GENERATED_SOURCES" ${ARGN})
@@ -79,12 +79,11 @@ function(add_custom_test TEST_NAME)
     if (NOT DEFINED TEST_ARG_SOURCES)
         add_library(${TEST_NAME} INTERFACE)
         target_link_libraries(${TEST_NAME} INTERFACE ${TEST_ARG_DEPENDS} gtest ZserioCppRuntime)
-        # let clang-tidy and cppcheck wait for generated sources
         add_dependencies(${TEST_NAME} ${TEST_ARG_DEPENDS})
     else ()
-        add_library(${TEST_NAME} ${TEST_ARG_SOURCES})
-        target_link_libraries(${TEST_NAME} ${TEST_ARG_DEPENDS} gtest ZserioCppRuntime)
-        target_include_directories(${TEST_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/utils/cpp)
+        add_library(${TEST_NAME} OBJECT ${TEST_ARG_SOURCES})
+        target_link_libraries(${TEST_NAME} ${TEST_ARG_DEPENDS} gtest)
+        target_include_directories(${TEST_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/utils/cpp ${SQLITE_INCDIR})
     endif ()
 
     clang_tidy_add_custom_target(${TEST_NAME}-clang-tidy
@@ -112,7 +111,10 @@ function(add_custom_test TEST_NAME)
                                     "${CMAKE_CURRENT_SOURCE_DIR}/CppcheckSuppressions.txt"
                                 OPTIONS --library=googletest.cfg --suppress=assertWithSideEffect)
 
-    set(TEST_DEPENDENCIES_LIST "${TEST_DEPENDENCIES_LIST};${TEST_NAME}" CACHE INTERNAL "")
+    set(TEST_OBJECTS_LIST "${TEST_OBJECTS_LIST};$<TARGET_OBJECTS:${TEST_NAME}>" CACHE INTERNAL "")
+    foreach (DEPENDENCY ${TEST_ARG_DEPENDS})
+        set(TEST_OBJECTS_LIST "${TEST_OBJECTS_LIST};$<TARGET_OBJECTS:${DEPENDENCY}>" CACHE INTERNAL "")
+    endforeach ()
     if (DEFINED TEST_ARG_SOURCES)
         set(TEST_SOURCES_LIST "${TEST_SOURCES_LIST};${TEST_ARG_SOURCES}" CACHE INTERNAL "")
     endif ()
@@ -142,8 +144,8 @@ endif ()
 file(WRITE ${EMPTY_TEST_HELPER} "${EMPTY_TEST_HELPER_CONTENT}")
 
 # add_executable requieres at least a single source file
-add_executable(${PROJECT_NAME} ${EMPTY_TEST_HELPER})
-target_link_libraries(${PROJECT_NAME} gtest_main ${TEST_DEPENDENCIES_LIST})
+add_executable(${PROJECT_NAME} ${EMPTY_TEST_HELPER} ${TEST_OBJECTS_LIST})
+target_link_libraries(${PROJECT_NAME} gtest_main ZserioCppRuntime ${SQLITE_LIBRARY})
 
 # add tests - test are labeled by file names (i.e. grouped)
 gtest_add_tests(${PROJECT_NAME} "--gtest_output=xml" ${TEST_SOURCES_LIST})

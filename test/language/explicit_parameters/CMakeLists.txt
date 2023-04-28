@@ -58,6 +58,8 @@ zserio_add_library(explicit_parameters_zs
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
+target_include_directories(explicit_parameters_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
+
 add_custom_test(explicit_parameters
     DEPENDS
         explicit_parameters_zs
