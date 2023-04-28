@@ -37,10 +37,6 @@ cert-err58-cpp:test/zserio/JsonWriterTest.cpp:64
 cert-err58-cpp:test/zserio/JsonWriterTest.cpp:75
 cert-err58-cpp:test/zserio/JsonWriterTest.cpp:90
 
-clang-analyzer-cplusplus.Move:test/zserio/HeapOptionalHolderTest.cpp:169
-clang-analyzer-cplusplus.Move:test/zserio/HeapOptionalHolderTest.cpp:248
-clang-analyzer-cplusplus.Move:test/zserio/HeapOptionalHolderTest.cpp:257
-
 cppcoreguidelines-avoid-c-arrays:src/zserio/Span.h:111
 cppcoreguidelines-avoid-c-arrays:src/zserio/Span.h:122
 cppcoreguidelines-avoid-c-arrays:src/zserio/Span.h:134
