@@ -48,8 +48,6 @@ Checks: "-*,\
   cert-msc50-cpp,\
   cert-oop57-cpp,\
   cert-oop58-cpp,\
-  clang-analyzer-cplusplus.Move,\
-  clang-analyzer-cplusplus.NewDeleteLeaks,\
   cppcoreguidelines-avoid-c-arrays,\
   cppcoreguidelines-avoid-goto,\
   cppcoreguidelines-avoid-non-const-global-variables,\
