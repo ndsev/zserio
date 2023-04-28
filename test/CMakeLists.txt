@@ -138,6 +138,7 @@ endif ()
 # add_executable requieres at least a single source file
 add_executable(${PROJECT_NAME} ${TEST_SOURCES_LIST})
 target_link_libraries(${PROJECT_NAME} ${TEST_DEPENDENCIES_LIST} gtest_main ZserioCppRuntime ${SQLITE_LIBRARY})
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/utils/cpp)
 target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${SQLITE_INCDIR})
 
 # add tests - test are labeled by file names (i.e. grouped)
