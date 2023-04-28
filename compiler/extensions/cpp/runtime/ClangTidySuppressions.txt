@@ -2,7 +2,6 @@
 cppcoreguidelines-pro-bounds-constant-array-index   # optimization breaks this rule
 cppcoreguidelines-pro-type-reinterpret-cast         # FloatUtil, FileUtil, AhyHolder, OptionalHolder
 modernize-use-using                                 # too many cases
-readability-braces-around-statements                # obfuscates code
 readability-implicit-bool-conversion                # obfuscates code
 readability-simplify-boolean-expr                   # obfuscates code
 

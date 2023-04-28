@@ -119,7 +119,6 @@ Checks: "-*,\
   performance-type-promotion-in-math-fn,\
   performance-unnecessary-value-param,\
   portability-simd-intrinsics,\
-  readability-braces-around-statements,\
   readability-const-return-type,\
   readability-delete-null-pointer,\
   readability-deleted-default,\

@@ -19,13 +19,5 @@ modernize-use-using:gen/constants/Int25Subtype.h:15
 modernize-use-using:gen/constants/PermissionSubtype.h:16
 modernize-use-using:gen/constants/StringSubtype.h:15
 
-readability-braces-around-statements:gen/constants/Permission.cpp:26
-readability-braces-around-statements:gen/constants/Permission.cpp:85
-readability-braces-around-statements:gen/constants/Permission.cpp:87
-readability-braces-around-statements:gen/constants/Permission.cpp:89
-readability-braces-around-statements:cpp/ConstantsTest.cpp:185
-readability-braces-around-statements:cpp/ConstantsTest.cpp:193
-readability-braces-around-statements:cpp/ConstantsTest.cpp:201
-
 readability-uppercase-literal-suffix:gen/constants/FLOAT16_CONSTANT.h:14
 readability-uppercase-literal-suffix:gen/constants/FLOAT32_CONSTANT.h:14

@@ -20,30 +20,6 @@ google-explicit-constructor:gen/sql_types/TestBitmask.h:38
 
 modernize-use-using:gen/sql_types/SqlTypesDb.h:32
 
-readability-braces-around-statements:gen/sql_types/SqlTypesTable.cpp:481
-readability-braces-around-statements:gen/sql_types/TestBitmask.cpp:77
-readability-braces-around-statements:gen/sql_types/TestBitmask.cpp:79
-readability-braces-around-statements:gen/sql_types/TestBitmask.cpp:81
-readability-braces-around-statements:gen/sql_types/TestChoice.cpp:43
-readability-braces-around-statements:gen/sql_types/TestChoice.cpp:45
-readability-braces-around-statements:gen/sql_types/TestChoice.cpp:52
-readability-braces-around-statements:gen/sql_types/TestChoice.cpp:54
-readability-braces-around-statements:gen/sql_types/TestChoice.cpp:63
-readability-braces-around-statements:gen/sql_types/TestChoice.cpp:65
-readability-braces-around-statements:gen/sql_types/TestChoice.cpp:72
-readability-braces-around-statements:gen/sql_types/TestChoice.cpp:74
-readability-braces-around-statements:gen/sql_types/TestChoice.cpp:84
-readability-braces-around-statements:gen/sql_types/TestChoice.cpp:86
-readability-braces-around-statements:gen/sql_types/TestChoice.cpp:104
-readability-braces-around-statements:gen/sql_types/TestChoice.cpp:246
-readability-braces-around-statements:gen/sql_types/TestChoice.cpp:249
-readability-braces-around-statements:gen/sql_types/TestUnion.cpp:192
-readability-braces-around-statements:gen/sql_types/TestUnion.cpp:195
-readability-braces-around-statements:gen/sql_types/TestUnion.cpp:198
-readability-braces-around-statements:gen/sql_types/TestUnion.cpp:201
-readability-braces-around-statements:cpp/SqlTypesTest.cpp:51
-readability-braces-around-statements:cpp/SqlTypesTest.cpp:56
-
 readability-make-member-function-const:gen/sql_types/TestChoice.cpp:206
 readability-make-member-function-const:gen/sql_types/TestChoice.cpp:320
 readability-make-member-function-const:gen/sql_types/TestChoice.cpp:334

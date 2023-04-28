@@ -7,20 +7,4 @@ cppcoreguidelines-pro-type-member-init:gen/choice_types_warning/optional_referen
 cppcoreguidelines-pro-type-member-init:gen/choice_types_warning/optional_references_in_selector/TestChoice.cpp:62
 cppcoreguidelines-pro-type-member-init:gen/choice_types_warning/optional_references_in_selector/TestChoice.cpp:82
 
-readability-braces-around-statements:gen/choice_types_warning/optional_references_in_selector/Selector.cpp:151
-readability-braces-around-statements:gen/choice_types_warning/optional_references_in_selector/TestChoice.cpp:45
-readability-braces-around-statements:gen/choice_types_warning/optional_references_in_selector/TestChoice.cpp:47
-readability-braces-around-statements:gen/choice_types_warning/optional_references_in_selector/TestChoice.cpp:54
-readability-braces-around-statements:gen/choice_types_warning/optional_references_in_selector/TestChoice.cpp:56
-readability-braces-around-statements:gen/choice_types_warning/optional_references_in_selector/TestChoice.cpp:65
-readability-braces-around-statements:gen/choice_types_warning/optional_references_in_selector/TestChoice.cpp:67
-readability-braces-around-statements:gen/choice_types_warning/optional_references_in_selector/TestChoice.cpp:74
-readability-braces-around-statements:gen/choice_types_warning/optional_references_in_selector/TestChoice.cpp:76
-readability-braces-around-statements:gen/choice_types_warning/optional_references_in_selector/TestChoice.cpp:86
-readability-braces-around-statements:gen/choice_types_warning/optional_references_in_selector/TestChoice.cpp:88
-readability-braces-around-statements:gen/choice_types_warning/optional_references_in_selector/TestChoice.cpp:106
-readability-braces-around-statements:gen/choice_types_warning/optional_references_in_selector/TestChoice.cpp:114
-readability-braces-around-statements:gen/choice_types_warning/optional_references_in_selector/TestChoice.cpp:260
-readability-braces-around-statements:gen/choice_types_warning/optional_references_in_selector/TestChoice.cpp:263
-
 readability-make-member-function-const:gen/choice_types_warning/optional_references_in_selector/Selector.cpp:109

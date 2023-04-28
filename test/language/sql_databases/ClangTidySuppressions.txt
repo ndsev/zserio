@@ -18,15 +18,6 @@ modernize-use-using:gen/sql_databases/simple_db/WorldDb.h:34
 performance-move-const-arg:gen/sql_databases/db_with_relocation/CountryMapTable.cpp:106
 performance-move-const-arg:gen/sql_databases/db_with_relocation/CountryMapTable.cpp:283
 
-readability-braces-around-statements:gen/sql_databases/db_with_relocation/CountryMapTable.cpp:179
-readability-braces-around-statements:gen/sql_databases/simple_db/GeoMapTable.cpp:179
-readability-braces-around-statements:cpp/DbWithRelocationTest.cpp:60
-readability-braces-around-statements:cpp/DbWithRelocationTest.cpp:64
-readability-braces-around-statements:cpp/DbWithRelocationTest.cpp:125
-readability-braces-around-statements:cpp/DbWithRelocationTest.cpp:163
-readability-braces-around-statements:cpp/SimpleDbTest.cpp:48
-readability-braces-around-statements:cpp/SimpleDbTest.cpp:52
-
 readability-make-member-function-const:gen/sql_databases/db_with_relocation/Tile.cpp:113
 readability-make-member-function-const:gen/sql_databases/simple_db/Tile.cpp:234
 readability-make-member-function-const:gen/sql_databases/simple_db/Tile.cpp:243

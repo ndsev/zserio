@@ -1,8 +1,5 @@
 google-build-using-namespace:cpp/SimplePubsubTest.cpp:13
 google-build-using-namespace:cpp/SimplePubsubTest.cpp:14
 
-readability-braces-around-statements:cpp/SimplePubsubTest.cpp:46
-readability-braces-around-statements:cpp/SimplePubsubTest.cpp:54
-
 readability-make-member-function-const:gen/pubsub_types/simple_pubsub/Int32Value.cpp:92
 readability-make-member-function-const:gen/pubsub_types/simple_pubsub/UInt64Value.cpp:92

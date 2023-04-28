@@ -15,21 +15,5 @@ google-build-using-namespace:cpp/HiddenVirtualColumnsTest.cpp:14
 modernize-use-using:gen/sql_virtual_columns/hidden_virtual_columns/HiddenVirtualColumnsDb.h:34
 modernize-use-using:gen/sql_virtual_columns/simple_virtual_columns/SimpleVirtualColumnsDb.h:34
 
-readability-braces-around-statements:gen/sql_virtual_columns/hidden_virtual_columns/HiddenVirtualColumnsTable.cpp:196
-readability-braces-around-statements:gen/sql_virtual_columns/simple_virtual_columns/SimpleVirtualColumnsTable.cpp:163
-readability-braces-around-statements:cpp/HiddenVirtualColumnsTest.cpp:85
-readability-braces-around-statements:cpp/HiddenVirtualColumnsTest.cpp:97
-readability-braces-around-statements:cpp/HiddenVirtualColumnsTest.cpp:101
-readability-braces-around-statements:cpp/HiddenVirtualColumnsTest.cpp:146
-readability-braces-around-statements:cpp/HiddenVirtualColumnsTest.cpp:162
-readability-braces-around-statements:cpp/HiddenVirtualColumnsTest.cpp:186
-readability-braces-around-statements:cpp/SimpleVirtualColumnsTest.cpp:75
-readability-braces-around-statements:cpp/SimpleVirtualColumnsTest.cpp:87
-readability-braces-around-statements:cpp/SimpleVirtualColumnsTest.cpp:91
-readability-braces-around-statements:cpp/SimpleVirtualColumnsTest.cpp:107
-readability-braces-around-statements:cpp/SimpleVirtualColumnsTest.cpp:155
-readability-braces-around-statements:cpp/SimpleVirtualColumnsTest.cpp:171
-readability-braces-around-statements:cpp/SimpleVirtualColumnsTest.cpp:196
-
 readability-simplify-boolean-expr:cpp/HiddenVirtualColumnsTest.cpp:102
 readability-simplify-boolean-expr:cpp/SimpleVirtualColumnsTest.cpp:92

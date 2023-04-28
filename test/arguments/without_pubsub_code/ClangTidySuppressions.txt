@@ -1,4 +1,2 @@
-readability-braces-around-statements:gen/without_pubsub_code/Service.cpp:26
-
 readability-make-member-function-const:gen/without_pubsub_code/Request.cpp:90
 readability-make-member-function-const:gen/without_pubsub_code/Response.cpp:90

@@ -4,6 +4,3 @@ cppcoreguidelines-pro-type-member-init:gen/sql_constraints/table_constraints/Tab
 fuchsia-multiple-inheritance:gen/sql_constraints/TestDb.h:29
 
 modernize-use-using:gen/sql_constraints/TestDb.h:33
-
-readability-braces-around-statements:gen/sql_constraints/field_constraints/FieldConstraintsTable.cpp:245
-readability-braces-around-statements:gen/sql_constraints/table_constraints/TableConstraintsTable.cpp:195

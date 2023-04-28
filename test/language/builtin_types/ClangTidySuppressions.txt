@@ -3,8 +3,6 @@ cert-err58-cpp:cpp/BitFieldFunctionLengthTest.cpp:35
 
 hicpp-signed-bitwise:gen/builtin_types/bitfield_function_length/Container.cpp:143
 
-readability-braces-around-statements:gen/builtin_types/all_builtin_types/AllBuiltInTypes.cpp:1103
-
 readability-make-member-function-const:gen/builtin_types/all_builtin_types/AllBuiltInTypes.cpp:1404
 readability-make-member-function-const:gen/builtin_types/all_builtin_types/AllBuiltInTypes.cpp:1464
 readability-make-member-function-const:gen/builtin_types/all_builtin_types/ExternalStructure.cpp:113

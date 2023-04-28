@@ -7,5 +7,3 @@ fuchsia-multiple-inheritance:gen/packages_warning/single_type_already_imported_w
 modernize-use-using:gen/packages_warning/package_import_overwrite_warning/TopDatabase.h:34
 modernize-use-using:gen/packages_warning/simple_database/SimpleDatabase.h:34
 modernize-use-using:gen/packages_warning/single_type_already_imported_warning/TopDatabase.h:34
-
-readability-braces-around-statements:gen/packages_warning/simple_database/SimpleTable.cpp:185

@@ -18,17 +18,5 @@ performance-move-const-arg:cpp/EmptyStructureTest.cpp:63
 performance-move-const-arg:cpp/SimpleStructureTest.cpp:110
 performance-move-const-arg:cpp/SimpleStructureTest.cpp:123
 
-readability-braces-around-statements:gen/structure_types/empty_structure_with_parameter/EmptyStructureWithParameter.cpp:41
-readability-braces-around-statements:gen/structure_types/empty_structure_with_parameter/EmptyStructureWithParameter.cpp:43
-readability-braces-around-statements:gen/structure_types/empty_structure_with_parameter/EmptyStructureWithParameter.cpp:49
-readability-braces-around-statements:gen/structure_types/empty_structure_with_parameter/EmptyStructureWithParameter.cpp:51
-readability-braces-around-statements:gen/structure_types/empty_structure_with_parameter/EmptyStructureWithParameter.cpp:59
-readability-braces-around-statements:gen/structure_types/empty_structure_with_parameter/EmptyStructureWithParameter.cpp:61
-readability-braces-around-statements:gen/structure_types/empty_structure_with_parameter/EmptyStructureWithParameter.cpp:67
-readability-braces-around-statements:gen/structure_types/empty_structure_with_parameter/EmptyStructureWithParameter.cpp:69
-readability-braces-around-statements:gen/structure_types/empty_structure_with_parameter/EmptyStructureWithParameter.cpp:78
-readability-braces-around-statements:gen/structure_types/empty_structure_with_parameter/EmptyStructureWithParameter.cpp:80
-readability-braces-around-statements:gen/structure_types/empty_structure_with_parameter/EmptyStructureWithParameter.cpp:98
-
 readability-make-member-function-const:gen/structure_types/field_constructor_clashing/Field.cpp:92
 readability-make-member-function-const:gen/structure_types/simple_structure/SimpleStructure.cpp:134

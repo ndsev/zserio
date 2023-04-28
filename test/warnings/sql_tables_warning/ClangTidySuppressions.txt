@@ -19,11 +19,3 @@ modernize-use-using:gen/sql_tables_warning/multiple_primary_keys_warning/Multipl
 modernize-use-using:gen/sql_tables_warning/not_first_primary_key_warning/NotFirstPrimaryKeyDatabase.h:34
 modernize-use-using:gen/sql_tables_warning/not_null_primary_key_warning/NotNullPrimaryKeyDatabase.h:35
 modernize-use-using:gen/sql_tables_warning/no_primary_key_warning/NoPrimaryKeyDatabase.h:34
-
-readability-braces-around-statements:gen/sql_tables_warning/bad_ordered_primary_key_warning/BadOrderedPrimaryKeyTable.cpp:185
-readability-braces-around-statements:gen/sql_tables_warning/duplicated_primary_key_warning/DuplicatedPrimaryKeyTable.cpp:185
-readability-braces-around-statements:gen/sql_tables_warning/multiple_primary_keys_warning/MultiplePrimaryKeysTable.cpp:185
-readability-braces-around-statements:gen/sql_tables_warning/not_first_primary_key_warning/NotFirstPrimaryKeyTable.cpp:185
-readability-braces-around-statements:gen/sql_tables_warning/not_null_primary_key_warning/NotNullPrimaryKeyTable1.cpp:185
-readability-braces-around-statements:gen/sql_tables_warning/not_null_primary_key_warning/NotNullPrimaryKeyTable2.cpp:185
-readability-braces-around-statements:gen/sql_tables_warning/no_primary_key_warning/NoPrimaryKeyTable.cpp:184
