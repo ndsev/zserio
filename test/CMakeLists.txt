@@ -14,6 +14,7 @@ enable_testing()
 set(CPPCHECK_HOME "" CACHE PATH "Home directory of cppcheck tool. If empty, cppcheck tool is not called.")
 set(SANITIZERS_ENABLED OFF CACHE BOOL "Whether the compiler sanitizers are enabled.")
 set(CLANG_TIDY_BIN "" CACHE STRING "Name of clang-tidy binary. If empty, clang-tidy tool is not called.")
+set(CLANG_TIDY_IGNORE_UNUSED_SUPPRESSIONS OFF CACHE BOOL "Whether to ignore unused clang-tidy suppressions.")
 
 set(ZSERIO_PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/..")
 set(ZSERIO_RELEASE_ROOT "${ZSERIO_PROJECT_ROOT}/distr" CACHE PATH "Root directory of Zserio release binaries.")
@@ -91,7 +92,9 @@ function(add_custom_test TEST_NAME)
                                  CONFIG_FILE
                                     "${ZSERIO_PROJECT_ROOT}/compiler/extensions/cpp/runtime/ClangTidyConfig.txt"
                                  HEADER_FILTER
-                                    "${CMAKE_CURRENT_SOURCE_DIR}/.*|${CMAKE_CURRENT_BINARY_DIR}/.*")
+                                    "${CMAKE_CURRENT_SOURCE_DIR}/.*|${CMAKE_CURRENT_BINARY_DIR}/.*"
+                                 IGNORE_UNUSED_SUPPRESSIONS
+                                    ${CLANG_TIDY_IGNORE_UNUSED_SUPPRESSIONS})
 
     get_generated_dirs("${TEST_ARG_GENERATED_SOURCES}" GENERATED_DIRS)
     cppcheck_add_custom_command(TARGET ${TEST_NAME}

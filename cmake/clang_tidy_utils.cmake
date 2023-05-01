@@ -17,12 +17,13 @@
 #                     the clang-tidy target will fail. See clang_tidy_check.cmake for syntax. If omitted,
 #                     the ClangTidySuppressions.txt placed in ${CMAKE_CURRENT_SOURCE_DIR} is used if it exists.
 #   WERROR            Ends with an error in case of any unsuppressed clang-tidy warnings. Default is ON.
-#
+#   IGNORE_UNUSED_SUPPRESSIONS
+#                     Doesn't fire an error in case of unused suppressions. Default is OFF.
 # Note that only implementation files ('*.cpp') are used as sources.
 function(clang_tidy_add_custom_target CLANG_TIDY_TARGET)
     cmake_parse_arguments(CLANG_TIDY
         ""
-        "BUILD_PATH;CONFIG_FILE;HEADER_FILTER;OUTPUT_FILE;SUPPRESSIONS_FILE;WERROR"
+        "BUILD_PATH;CONFIG_FILE;HEADER_FILTER;OUTPUT_FILE;SUPPRESSIONS_FILE;WERROR;IGNORE_UNUSED_SUPPRESSIONS"
         "DEPENDS;SOURCES;SOURCES_GLOBS"
         ${ARGN}
     )
@@ -55,6 +56,10 @@ function(clang_tidy_add_custom_target CLANG_TIDY_TARGET)
 
     if (NOT DEFINED CLANG_TIDY_WERROR)
         set(CLANG_TIDY_WERROR ON)
+    endif ()
+
+    if (NOT DEFINED CLANG_TIDY_IGNORE_UNUSED_SUPPRESSIONS)
+        set(CLANG_TIDY_IGNORE_UNUSED_SUPPRESSIONS OFF)
     endif ()
 
     # process sources
@@ -106,6 +111,7 @@ function(clang_tidy_add_custom_target CLANG_TIDY_TARGET)
                 -DLOG_FILE="${CLANG_TIDY_OUTPUT_FILE}"
                 -DSUPPRESSIONS_FILE="${CLANG_TIDY_SUPPRESSIONS_FILE}"
                 -DWERROR="${CLANG_TIDY_WERROR}"
+                -DIGNORE_UNUSED_SUPPRESSIONS="${CLANG_TIDY_IGNORE_UNUSED_SUPPRESSIONS}"
                 -P ${CMAKE_MODULE_PATH}/clang_tidy_check.cmake
             COMMAND "${CMAKE_COMMAND}" -E touch "${CLANG_TIDY_CHECK_FILE}"
             DEPENDS "${CLANG_TIDY_FILE_STAMPS}" "${CLANG_TIDY_SUPPRESSIONS_FILE}"
