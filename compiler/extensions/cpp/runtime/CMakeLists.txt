@@ -83,7 +83,8 @@ clang_tidy_add_custom_target(ZserioCppRuntime-clang-tidy
                              CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/ClangTidyConfig.txt"
                              HEADER_FILTER
                                 ".*(src|test)/zserio/.*"
-                             SUPPRESSIONS_FILE "${CMAKE_CURRENT_SOURCE_DIR}/ClangTidySuppressions.txt")
+                             SUPPRESSIONS_FILE "${CMAKE_CURRENT_SOURCE_DIR}/ClangTidySuppressions.txt"
+                             WERROR_UNUSED_SUPPRESSIONS ON)
 
 # add cppcheck custom command
 include(cppcheck_utils)

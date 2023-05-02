@@ -10,8 +10,8 @@
 #                       rule-definition:path-regex:10      # suppress rule on matching line
 #                       rule-definition:path-regex:10:1    # suppress rule on matching location
 #   WERROR            Ends with an error in case of any unsuppressed clang-tidy warnings.
-#   IGNORE_UNUSED_SUPPRESSIONS
-#                     Doesn't fire an error in case of unused suppressions.
+#   WERROR_UNUSED_SUPPRESSIONS
+#                     Fires an error in case of unused suppressions.
 cmake_minimum_required(VERSION 3.6.0)
 
 # splits suppression to RULE and PATH_MATCHER parts
@@ -108,7 +108,7 @@ endif ()
 if (SUPPRESSIONS_LINES)
     list(JOIN SUPPRESSIONS_LINES "\n" UNUSED_SUPPRESSIONS)
     message(STATUS "Unused suppressions:\n${UNUSED_SUPPRESSIONS}")
-    if (NOT IGNORE_UNUSED_SUPPRESSIONS)
+    if (WERROR_UNUSED_SUPPRESSIONS)
         message(FATAL_ERROR "Unused suppressions detected in ${SUPPRESSIONS_FILE}!")
     endif ()
 endif ()
