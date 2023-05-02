@@ -17,6 +17,8 @@ cppcoreguidelines-pro-type-reinterpret-cast:gen/comments_warning/unresolved_see_
 cppcoreguidelines-pro-type-reinterpret-cast:gen/comments_warning/unused_field_comments/Table.cpp
 cppcoreguidelines-pro-type-reinterpret-cast:gen/comments_warning/unused_struct_comment_by_id/Table.cpp
 cppcoreguidelines-pro-type-reinterpret-cast:gen/comments_warning/unused_struct_comment_multiple_comments/Table.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen_doc_comment_missing/doc_comment_missing_warning/all_nodes/SqlTableType.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen_doc_comment_missing/doc_comment_missing_warning/documented/DocumentedSqlTableType.cpp
 
 fuchsia-multiple-inheritance:gen/comments_warning/markdown_comment_with_wrong_terminator/TestDatabase.h
 fuchsia-multiple-inheritance:gen/comments_warning/unresolved_see_tag_reference/Database.h
@@ -44,6 +46,8 @@ performance-move-const-arg:gen/comments_warning/unresolved_see_tag_reference/Tab
 performance-move-const-arg:gen/comments_warning/unused_field_comments/Table.cpp
 performance-move-const-arg:gen/comments_warning/unused_struct_comment_by_id/Table.cpp
 performance-move-const-arg:gen/comments_warning/unused_struct_comment_multiple_comments/Table.cpp
+performance-move-const-arg:gen_doc_comment_missing/doc_comment_missing_warning/all_nodes/ServiceType.cpp
+performance-move-const-arg:gen_doc_comment_missing/doc_comment_missing_warning/documented/DocumentdServiceType.cpp
 
 readability-make-member-function-const:gen/comments_warning/unresolved_markdown_see_tag_reference/Test.cpp
 readability-make-member-function-const:gen/comments_warning/unresolved_see_tag_in_templated_struct/TemplatedStructString.cpp

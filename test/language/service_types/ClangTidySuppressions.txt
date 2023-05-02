@@ -10,8 +10,10 @@ google-build-using-namespace:cpp/SimpleServiceTest.cpp
 modernize-use-using:gen/service_types/complex_types_service/Color.h
 
 performance-move-const-arg:gen/service_types/complex_types_service/ColorModelChoice.cpp
+performance-move-const-arg:gen/service_types/complex_types_service/ComplexTypesService.cpp
 performance-move-const-arg:gen/service_types/complex_types_service/Request.cpp
 performance-move-const-arg:gen/service_types/complex_types_service/Response.cpp
+performance-move-const-arg:gen/service_types/simple_service/SimpleService.cpp
 
 readability-make-member-function-const:gen/service_types/complex_types_service/CMYKModel.cpp
 readability-make-member-function-const:gen/service_types/complex_types_service/ColorModelChoice.cpp

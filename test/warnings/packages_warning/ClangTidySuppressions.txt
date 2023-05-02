@@ -1,5 +1,7 @@
 cppcoreguidelines-pro-type-member-init:gen/packages_warning/simple_database/SimpleTable.cpp
 
+cppcoreguidelines-pro-type-reinterpret-cast:gen/packages_warning/simple_database/SimpleTable.cpp
+
 fuchsia-multiple-inheritance:gen/packages_warning/package_import_overwrite_warning/TopDatabase.h
 fuchsia-multiple-inheritance:gen/packages_warning/simple_database/SimpleDatabase.h
 fuchsia-multiple-inheritance:gen/packages_warning/single_type_already_imported_warning/TopDatabase.h
