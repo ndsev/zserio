@@ -28,7 +28,7 @@ MemoryResource* getDefaultResource() noexcept
 
 MemoryResource* setDefaultResource(MemoryResource* resource) noexcept
 {
-    MemoryResource* defaultResource = resource ? resource : getNewDeleteResource();
+    MemoryResource* defaultResource = (resource != nullptr) ? resource : getNewDeleteResource();
     std::swap(defaultResource, getCurrentDefaultResource());
     return defaultResource;
 }

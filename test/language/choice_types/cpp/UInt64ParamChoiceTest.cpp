@@ -151,7 +151,7 @@ TEST_F(UInt64ParamChoiceTest, initialize)
 
 TEST_F(UInt64ParamChoiceTest, getSelector)
 {
-    const uint64_t selector = true;
+    const uint64_t selector = 1;
     UInt64ParamChoice uint64ParamChoice;
     uint64ParamChoice.initialize(selector);
     ASSERT_EQ(selector, uint64ParamChoice.getSelector());

@@ -183,7 +183,7 @@ inline sqlite3_stmt* SqliteConnection::prepareStatement(StringView sqlQuery)
 inline bool SqliteConnection::startTransaction()
 {
     bool wasTransactionStarted = false;
-    if (sqlite3_get_autocommit(m_connection))
+    if (sqlite3_get_autocommit(m_connection) != 0)
     {
         executeUpdate("BEGIN;");
         wasTransactionStarted = true;

@@ -84,7 +84,7 @@ protected:
         auto& data = boolIndexedOffsetArray.getData();
         data.reserve(NUM_ELEMENTS);
         for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
-            data.push_back((i & 0x01U) ? true : false);
+            data.push_back(((i & 0x01U) != 0) ? true : false);
     }
 
     static const uint8_t    NUM_ELEMENTS = 5;

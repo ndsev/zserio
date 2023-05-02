@@ -104,8 +104,6 @@ performance-move-const-arg:gen/choice_types/choice_compatibility_check/HolderVer
 performance-move-const-arg:gen/choice_types/choice_compatibility_check/HolderVersion2.cpp:64
 performance-move-const-arg:gen/choice_types/choice_compatibility_check/HolderVersion2.cpp:75
 
-readability-implicit-bool-conversion:cpp/UInt64ParamChoiceTest.cpp:154
-
 readability-make-member-function-const:gen/choice_types/bitmask_param_choice/BitmaskParamChoice.cpp:253
 readability-make-member-function-const:gen/choice_types/bitmask_param_choice/BitmaskParamChoice.cpp:418
 readability-make-member-function-const:gen/choice_types/bitmask_param_choice/BitmaskParamChoice.cpp:440
