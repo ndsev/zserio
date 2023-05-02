@@ -108,3 +108,6 @@ add_custom_target(ZserioCppRuntime-doxygen ALL
     COMMENT "Generating C++ runtime HTML documentation"
 )
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/zserio_doc DESTINATION cpp)
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/coverage/clang DESTINATION cpp/zserio_doc/coverage OPTIONAL)
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/coverage/gcc DESTINATION cpp/zserio_doc/coverage OPTIONAL)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/clang-tidy-report.txt DESTINATION cpp/zserio_doc/clang-tidy OPTIONAL)

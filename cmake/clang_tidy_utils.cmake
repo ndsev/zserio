@@ -12,7 +12,7 @@
 #   HEADER_FILTER     Optional header filter which will be passed as a --header-filter clang-tidy
 #                     argument. Default is '.*'.
 #   OUTPUT_FILE       Optional file name where the clang-tidy output will be stored.
-#                     Default is 'clang-tidy.log'.
+#                     Default is 'clang-tidy-report.txt'.
 #   SUPPRESSIONS_FILE Suppressions file for clang-tidy warnings. If any warnings are fired but not suppressed,
 #                     the clang-tidy target will fail. See clang_tidy_check.cmake for syntax. If omitted,
 #                     the ClangTidySuppressions.txt placed in ${CMAKE_CURRENT_SOURCE_DIR} is used if it exists.

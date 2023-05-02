@@ -26,7 +26,7 @@ function(create_coverage_target)
         set(cov_tgt_name "coverage")
     endif ()
 
-    set(cov_html_dir "${PROJECT_BINARY_DIR}/zserio_doc/${cov_tgt_name}")
+    set(cov_html_dir "${PROJECT_BINARY_DIR}/${cov_tgt_name}")
 
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
         set(cov_fail)
