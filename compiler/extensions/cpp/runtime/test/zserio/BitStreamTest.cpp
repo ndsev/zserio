@@ -43,7 +43,7 @@ protected:
                 writer.writeBits64(0, bitPos);
             for (size_t i = 0; i < N; ++i)
             {
-                writerFunc(writer, values[i]);
+                writerFunc(writer, values.at(i));
             }
 
             if (!writer.hasWriteBuffer())
@@ -54,7 +54,7 @@ protected:
                 reader.readBits64(bitPos);
             for (size_t i = 0; i < N; ++i)
             {
-                ASSERT_EQ(readerFunc(reader), values[i]) << "[bitPos=" << bitPos << "]";
+                ASSERT_EQ(readerFunc(reader), values.at(i)) << "[bitPos=" << bitPos << "]";
             }
 
             writer.setBitPosition(0);

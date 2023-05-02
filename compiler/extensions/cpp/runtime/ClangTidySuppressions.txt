@@ -1,5 +1,4 @@
 # global suppressions
-cppcoreguidelines-pro-bounds-constant-array-index   # optimization breaks this rule
 modernize-use-using                                 # too many cases
 
 # suppressions per line
@@ -52,6 +51,28 @@ cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/StringView.h:897
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/ZserioTreeCreator.h:376
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/ZserioTreeCreator.h:378
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/ZserioTreeCreator.h:380
+
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/StringConvertUtil.h:41
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/StringConvertUtil.h:42
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/StringConvertUtil.h:52
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/StringConvertUtil.h:53
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/CppRuntimeException.cpp:41
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamReader.cpp:249
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamReader.cpp:261
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:146
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:157
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:168
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:174
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:179
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:185
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:367
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:430
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/JsonEncoder.cpp:89
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/JsonEncoder.cpp:90
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/Enums.h:94
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/Enums.h:107
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/TypeInfo.h:1475
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/TypeInfo.h:1554
 
 cppcoreguidelines-pro-bounds-pointer-arithmetic:src/zserio/BitBuffer.h:262
 cppcoreguidelines-pro-bounds-pointer-arithmetic:src/zserio/JsonTokenizer.h:211

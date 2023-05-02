@@ -240,9 +240,8 @@ TEST_F(FloatUtilTest, convertFloatToUInt16)
 
 TEST_F(FloatUtilTest, convertUInt32ToFloat)
 {
-    for (uint32_t i = 0; i < sizeof(TEST_FLOAT32_DATA) / sizeof(TEST_FLOAT32_DATA[0]); ++i)
+    for (TestFloat32Element testElement : TEST_FLOAT32_DATA)
     {
-        const TestFloat32Element& testElement = TEST_FLOAT32_DATA[i];
         const uint32_t float32Value = createFloat32Value(testElement.sign, testElement.exponent,
                 testElement.significand);
         const float convertedFloat = convertUInt32ToFloat(float32Value);
@@ -253,9 +252,8 @@ TEST_F(FloatUtilTest, convertUInt32ToFloat)
 
 TEST_F(FloatUtilTest, convertFloatToUInt32)
 {
-    for (uint32_t i = 0; i < sizeof(TEST_FLOAT32_DATA) / sizeof(TEST_FLOAT32_DATA[0]); ++i)
+    for (TestFloat32Element testElement : TEST_FLOAT32_DATA)
     {
-        const TestFloat32Element& testElement = TEST_FLOAT32_DATA[i];
         const uint32_t convertedFloatValue = convertFloatToUInt32(testElement.expectedFloat);
         const uint32_t expectedFloatValue = createFloat32Value(testElement.sign, testElement.exponent,
                 testElement.significand);
@@ -266,9 +264,8 @@ TEST_F(FloatUtilTest, convertFloatToUInt32)
 
 TEST_F(FloatUtilTest, convertUInt64ToDouble)
 {
-    for (uint32_t i = 0; i < sizeof(TEST_FLOAT64_DATA) / sizeof(TEST_FLOAT64_DATA[0]); ++i)
+    for (TestFloat64Element testElement : TEST_FLOAT64_DATA)
     {
-        const TestFloat64Element& testElement = TEST_FLOAT64_DATA[i];
         const uint64_t float64Value = createFloat64Value(testElement.sign, testElement.exponent,
                 testElement.significand);
         const double convertedDouble = convertUInt64ToDouble(float64Value);
@@ -279,9 +276,8 @@ TEST_F(FloatUtilTest, convertUInt64ToDouble)
 
 TEST_F(FloatUtilTest, convertDoubleToUInt64)
 {
-    for (uint32_t i = 0; i < sizeof(TEST_FLOAT64_DATA) / sizeof(TEST_FLOAT64_DATA[0]); ++i)
+    for (TestFloat64Element testElement : TEST_FLOAT64_DATA)
     {
-        const TestFloat64Element& testElement = TEST_FLOAT64_DATA[i];
         const uint64_t convertedDoubleValue = convertDoubleToUInt64(testElement.expectedDouble);
         const uint64_t expectedDoubleValue = createFloat64Value(testElement.sign, testElement.exponent,
                 testElement.significand);
