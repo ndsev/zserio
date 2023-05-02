@@ -1,2 +1,1 @@
-readability-make-member-function-const:gen/without_sql_code/Tile.cpp:232
-readability-make-member-function-const:gen/without_sql_code/Tile.cpp:241
+readability-make-member-function-const:gen/without_sql_code/Tile.cpp

@@ -1,59 +1,28 @@
-bugprone-exception-escape:gen/with_reflection_code/Choice.cpp:65
-bugprone-exception-escape:gen/with_reflection_code/Choice.cpp:74
-bugprone-exception-escape:gen/with_reflection_code/Choice.h:59
-bugprone-exception-escape:gen/with_reflection_code/Choice.h:60
-bugprone-exception-escape:gen/with_reflection_code/Union.cpp:82
-bugprone-exception-escape:gen/with_reflection_code/Union.cpp:92
-bugprone-exception-escape:gen/with_reflection_code/Union.h:79
-bugprone-exception-escape:gen/with_reflection_code/Union.h:80
+bugprone-exception-escape:gen/with_reflection_code/Choice.cpp
+bugprone-exception-escape:gen/with_reflection_code/Choice.h
+bugprone-exception-escape:gen/with_reflection_code/Union.cpp
+bugprone-exception-escape:gen/with_reflection_code/Union.h
 
-bugprone-forwarding-reference-overload:gen/with_reflection_code/Parameterized.h:41
+bugprone-forwarding-reference-overload:gen/with_reflection_code/Parameterized.h
 
-cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen/with_reflection_code/Child.h:52
-cppcoreguidelines-pro-bounds-pointer-arithmetic:cpp/WithReflectionCodeTest.cpp:404
-cppcoreguidelines-pro-bounds-pointer-arithmetic:cpp/WithReflectionCodeTest.cpp:405
-cppcoreguidelines-pro-bounds-pointer-arithmetic:cpp/WithReflectionCodeTest.cpp:416
-cppcoreguidelines-pro-bounds-pointer-arithmetic:cpp/WithReflectionCodeTest.cpp:418
+cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen/with_reflection_code/Child.h
 
-cppcoreguidelines-pro-type-member-init:gen/with_reflection_code/Choice.cpp:23
-cppcoreguidelines-pro-type-member-init:gen/with_reflection_code/Choice.cpp:45
-cppcoreguidelines-pro-type-member-init:gen/with_reflection_code/Choice.cpp:65
-cppcoreguidelines-pro-type-member-init:gen/with_reflection_code/Choice.cpp:85
-cppcoreguidelines-pro-type-member-init:gen/with_reflection_code/Parameterized.cpp:21
-cppcoreguidelines-pro-type-member-init:gen/with_reflection_code/Parameterized.cpp:43
-cppcoreguidelines-pro-type-member-init:gen/with_reflection_code/Parameterized.cpp:63
-cppcoreguidelines-pro-type-member-init:gen/with_reflection_code/Parameterized.cpp:83
+cppcoreguidelines-pro-bounds-pointer-arithmetic:cpp/WithReflectionCodeTest.cpp
 
-google-build-using-namespace:cpp/WithReflectionCodeTest.cpp:9
+cppcoreguidelines-pro-type-member-init:gen/with_reflection_code/Choice.cpp
+cppcoreguidelines-pro-type-member-init:gen/with_reflection_code/Parameterized.cpp
 
-google-explicit-constructor:gen/with_reflection_code/Bitmask.h:40
+google-build-using-namespace:cpp/WithReflectionCodeTest.cpp
 
-hicpp-signed-bitwise:gen/with_reflection_code/Bitmask.h:134
-hicpp-signed-bitwise:gen/with_reflection_code/Bitmask.h:139
+google-explicit-constructor:gen/with_reflection_code/Bitmask.h
 
-modernize-use-using:gen/with_reflection_code/Selector.h:16
+hicpp-signed-bitwise:gen/with_reflection_code/Bitmask.h
 
-performance-move-const-arg:gen/with_reflection_code/Struct.cpp:258
-performance-move-const-arg:gen/with_reflection_code/Struct.cpp:261
-performance-move-const-arg:gen/with_reflection_code/Struct.cpp:263
-performance-move-const-arg:gen/with_reflection_code/Struct.cpp:266
-performance-move-const-arg:gen/with_reflection_code/Struct.cpp:268
-performance-move-const-arg:gen/with_reflection_code/Struct.cpp:288
-performance-move-const-arg:gen/with_reflection_code/Struct.cpp:291
-performance-move-const-arg:gen/with_reflection_code/Struct.cpp:293
-performance-move-const-arg:gen/with_reflection_code/Struct.cpp:296
-performance-move-const-arg:gen/with_reflection_code/Struct.cpp:298
-performance-move-const-arg:gen/with_reflection_code/Struct.cpp:1411
+modernize-use-using:gen/with_reflection_code/Selector.h
 
-readability-make-member-function-const:gen/with_reflection_code/Child.cpp:577
-readability-make-member-function-const:gen/with_reflection_code/Choice.cpp:823
-readability-make-member-function-const:gen/with_reflection_code/Choice.cpp:838
-readability-make-member-function-const:gen/with_reflection_code/Parameterized.cpp:445
-readability-make-member-function-const:gen/with_reflection_code/Parameterized.cpp:454
-readability-make-member-function-const:gen/with_reflection_code/Struct.cpp:2398
-readability-make-member-function-const:gen/with_reflection_code/Struct.cpp:2404
-readability-make-member-function-const:gen/with_reflection_code/Struct.cpp:2429
-readability-make-member-function-const:gen/with_reflection_code/Struct.cpp:2509
-readability-make-member-function-const:gen/with_reflection_code/Struct.cpp:2546
-readability-make-member-function-const:gen/with_reflection_code/Struct.cpp:2566
-readability-make-member-function-const:gen/with_reflection_code/Struct.cpp:2580
+performance-move-const-arg:gen/with_reflection_code/Struct.cpp
+
+readability-make-member-function-const:gen/with_reflection_code/Child.cpp
+readability-make-member-function-const:gen/with_reflection_code/Choice.cpp
+readability-make-member-function-const:gen/with_reflection_code/Parameterized.cpp
+readability-make-member-function-const:gen/with_reflection_code/Struct.cpp

@@ -1,25 +1,15 @@
-bugprone-signed-char-misuse:gen/sql_types/SqlTypesTable.cpp:562
-bugprone-signed-char-misuse:gen/sql_types/SqlTypesTable.cpp:658
+bugprone-signed-char-misuse:gen/sql_types/SqlTypesTable.cpp
 
-cppcoreguidelines-pro-type-member-init:gen/sql_types/SqlTypesTable.cpp:98
-cppcoreguidelines-pro-type-member-init:gen/sql_types/TestChoice.cpp:18
-cppcoreguidelines-pro-type-member-init:gen/sql_types/TestChoice.cpp:40
-cppcoreguidelines-pro-type-member-init:gen/sql_types/TestChoice.cpp:60
-cppcoreguidelines-pro-type-member-init:gen/sql_types/TestChoice.cpp:80
+cppcoreguidelines-pro-type-member-init:gen/sql_types/SqlTypesTable.cpp
+cppcoreguidelines-pro-type-member-init:gen/sql_types/TestChoice.cpp
 
-cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_types/SqlTypesTable.cpp:300
-cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_types/SqlTypesTable.cpp:324
-cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_types/SqlTypesTable.cpp:335
-cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_types/SqlTypesTable.cpp:347
-cppcoreguidelines-pro-type-reinterpret-cast:cpp/SqlTypesTest.cpp:59
-cppcoreguidelines-pro-type-reinterpret-cast:cpp/SqlTypesTest.cpp:60
+cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_types/SqlTypesTable.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:cpp/SqlTypesTest.cpp
 
-fuchsia-multiple-inheritance:gen/sql_types/SqlTypesDb.h:28
+fuchsia-multiple-inheritance:gen/sql_types/SqlTypesDb.h
 
-google-explicit-constructor:gen/sql_types/TestBitmask.h:38
+google-explicit-constructor:gen/sql_types/TestBitmask.h
 
-modernize-use-using:gen/sql_types/SqlTypesDb.h:32
+modernize-use-using:gen/sql_types/SqlTypesDb.h
 
-readability-make-member-function-const:gen/sql_types/TestChoice.cpp:206
-readability-make-member-function-const:gen/sql_types/TestChoice.cpp:320
-readability-make-member-function-const:gen/sql_types/TestChoice.cpp:334
+readability-make-member-function-const:gen/sql_types/TestChoice.cpp

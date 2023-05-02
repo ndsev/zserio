@@ -1,34 +1,18 @@
-bugprone-forwarding-reference-overload:gen/optional_members/optional_expression/BlackColor.h:41
+bugprone-forwarding-reference-overload:gen/optional_members/optional_expression/BlackColor.h
 
-cert-err58-cpp:cpp/OptionalArrayRecursionTest.cpp:87
+cert-err58-cpp:cpp/OptionalArrayRecursionTest.cpp
 
-cppcoreguidelines-pro-type-member-init:gen/optional_members/optional_expression/BlackColor.cpp:20
-cppcoreguidelines-pro-type-member-init:gen/optional_members/optional_expression/BlackColor.cpp:42
-cppcoreguidelines-pro-type-member-init:gen/optional_members/optional_expression/BlackColor.cpp:62
-cppcoreguidelines-pro-type-member-init:gen/optional_members/optional_expression/BlackColor.cpp:82
-cppcoreguidelines-pro-type-member-init:gen/optional_members/optional_recursion/Block.cpp:20
-cppcoreguidelines-pro-type-member-init:gen/optional_members/optional_recursion/Block.cpp:48
-cppcoreguidelines-pro-type-member-init:gen/optional_members/optional_recursion/Block.cpp:72
-cppcoreguidelines-pro-type-member-init:gen/optional_members/optional_recursion/Block.cpp:96
+cppcoreguidelines-pro-type-member-init:gen/optional_members/optional_expression/BlackColor.cpp
+cppcoreguidelines-pro-type-member-init:gen/optional_members/optional_recursion/Block.cpp
 
 misc-no-recursion # reports also tested_release and some system headers
 
-performance-move-const-arg:gen/optional_members/optional_expression/Container.cpp:71
-performance-move-const-arg:gen/optional_members/optional_expression/Container.cpp:83
-performance-move-const-arg:gen/optional_members/optional_recursion/Block.cpp:74
-performance-move-const-arg:gen/optional_members/optional_recursion/Block.cpp:86
+performance-move-const-arg:gen/optional_members/optional_expression/Container.cpp
+performance-move-const-arg:gen/optional_members/optional_recursion/Block.cpp
 
-readability-make-member-function-const:gen/optional_members/auto_optional/Container.cpp:129
-readability-make-member-function-const:gen/optional_members/optional_array/Data8.cpp:92
-readability-make-member-function-const:gen/optional_members/optional_array/TestStruct.cpp:528
-readability-make-member-function-const:gen/optional_members/optional_array/TestStruct.cpp:542
-readability-make-member-function-const:gen/optional_members/optional_expression/BlackColor.cpp:227
-readability-make-member-function-const:gen/optional_members/optional_expression/BlackColor.cpp:236
-readability-make-member-function-const:gen/optional_members/optional_expression/Container.cpp:361
-readability-make-member-function-const:gen/optional_members/optional_expression/Container.cpp:371
-readability-make-member-function-const:gen/optional_members/optional_expression/Container.cpp:381
-readability-make-member-function-const:gen/optional_members/optional_expression/Container.cpp:392
-readability-make-member-function-const:gen/optional_members/optional_recursion/Block.cpp:360
-readability-make-member-function-const:gen/optional_members/optional_recursion/Block.cpp:369
-readability-make-member-function-const:gen/optional_members/optional_recursion/Block.cpp:387
-readability-make-member-function-const:gen/optional_members/optional_recursion/Block.cpp:398
+readability-make-member-function-const:gen/optional_members/auto_optional/Container.cpp
+readability-make-member-function-const:gen/optional_members/optional_array/Data8.cpp
+readability-make-member-function-const:gen/optional_members/optional_array/TestStruct.cpp
+readability-make-member-function-const:gen/optional_members/optional_expression/BlackColor.cpp
+readability-make-member-function-const:gen/optional_members/optional_expression/Container.cpp
+readability-make-member-function-const:gen/optional_members/optional_recursion/Block.cpp

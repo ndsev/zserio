@@ -1,23 +1,10 @@
-cppcoreguidelines-pro-type-member-init:gen/company/appl/SimpleChoice.cpp:22
-cppcoreguidelines-pro-type-member-init:gen/company/appl/SimpleChoice.cpp:44
-cppcoreguidelines-pro-type-member-init:gen/company/appl/SimpleChoice.cpp:64
-cppcoreguidelines-pro-type-member-init:gen/company/appl/SimpleChoice.cpp:84
+cppcoreguidelines-pro-type-member-init:gen/company/appl/SimpleChoice.cpp
 
-misc-redundant-expression:gen/company/appl/SimpleStructure.cpp:408
-misc-redundant-expression:gen/company/appl/SimpleStructure.cpp:418
+misc-redundant-expression:gen/company/appl/SimpleStructure.cpp
 
-modernize-use-using:gen/company/appl/U8.h:17
+modernize-use-using:gen/company/appl/U8.h
 
-performance-move-const-arg:gen/company/appl/SimpleStructure.cpp:88
-performance-move-const-arg:gen/company/appl/SimpleStructure.cpp:89
-performance-move-const-arg:gen/company/appl/SimpleStructure.cpp:90
-performance-move-const-arg:gen/company/appl/SimpleStructure.cpp:91
-performance-move-const-arg:gen/company/appl/SimpleStructure.cpp:103
-performance-move-const-arg:gen/company/appl/SimpleStructure.cpp:104
-performance-move-const-arg:gen/company/appl/SimpleStructure.cpp:105
-performance-move-const-arg:gen/company/appl/SimpleStructure.cpp:106
+performance-move-const-arg:gen/company/appl/SimpleStructure.cpp
 
-readability-make-member-function-const:gen/company/appl/SimpleChoice.cpp:383
-readability-make-member-function-const:gen/company/appl/SimpleChoice.cpp:398
-readability-make-member-function-const:gen/company/appl/SimpleStructure.cpp:444
-readability-make-member-function-const:gen/company/appl/SimpleStructure.cpp:450
+readability-make-member-function-const:gen/company/appl/SimpleChoice.cpp
+readability-make-member-function-const:gen/company/appl/SimpleStructure.cpp

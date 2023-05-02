@@ -1,11 +1,6 @@
-cppcoreguidelines-pro-type-member-init:gen/not_handled_warning/EnumParamChoice.cpp:20
-cppcoreguidelines-pro-type-member-init:gen/not_handled_warning/EnumParamChoice.cpp:42
-cppcoreguidelines-pro-type-member-init:gen/not_handled_warning/EnumParamChoice.cpp:62
-cppcoreguidelines-pro-type-member-init:gen/not_handled_warning/EnumParamChoice.cpp:82
+cppcoreguidelines-pro-type-member-init:gen/not_handled_warning/EnumParamChoice.cpp
 
-modernize-use-using:gen/not_handled_warning/Black.h:15
-modernize-use-using:gen/not_handled_warning/Grey.h:15
+modernize-use-using:gen/not_handled_warning/Black.h
+modernize-use-using:gen/not_handled_warning/Grey.h
 
-readability-make-member-function-const:gen/not_handled_warning/EnumParamChoice.cpp:210
-readability-make-member-function-const:gen/not_handled_warning/EnumParamChoice.cpp:328
-readability-make-member-function-const:gen/not_handled_warning/EnumParamChoice.cpp:341
+readability-make-member-function-const:gen/not_handled_warning/EnumParamChoice.cpp

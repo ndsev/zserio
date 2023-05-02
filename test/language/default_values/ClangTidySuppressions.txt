@@ -1,12 +1,9 @@
-google-explicit-constructor:gen/default_values/structure_default_values/Permission.h:40
+google-explicit-constructor:gen/default_values/structure_default_values/Permission.h
 
-hicpp-signed-bitwise:gen/default_values/structure_default_values/Permission.h:131
-hicpp-signed-bitwise:gen/default_values/structure_default_values/Permission.h:136
+hicpp-signed-bitwise:gen/default_values/structure_default_values/Permission.h
 
-modernize-use-using:gen/default_values/structure_default_values/Nibble.h:17
+modernize-use-using:gen/default_values/structure_default_values/Nibble.h
 
-readability-make-member-function-const:gen/default_values/structure_default_values/StructureDefaultValues.cpp:385
-readability-make-member-function-const:gen/default_values/structure_default_values/StructureDefaultValues.cpp:395
+readability-make-member-function-const:gen/default_values/structure_default_values/StructureDefaultValues.cpp
 
-readability-uppercase-literal-suffix:gen/default_values/structure_default_values/StructureDefaultValues.cpp:28
-readability-uppercase-literal-suffix:gen/default_values/structure_default_values/StructureDefaultValues.cpp:29
+readability-uppercase-literal-suffix:gen/default_values/structure_default_values/StructureDefaultValues.cpp

@@ -1,45 +1,24 @@
-bugprone-exception-escape:gen/union_types/union_with_parameterized_field/TestUnion.cpp:63
-bugprone-exception-escape:gen/union_types/union_with_parameterized_field/TestUnion.cpp:73
-bugprone-exception-escape:gen/union_types/union_with_parameterized_field/TestUnion.h:53
-bugprone-exception-escape:gen/union_types/union_with_parameterized_field/TestUnion.h:54
+bugprone-exception-escape:gen/union_types/union_with_parameterized_field/TestUnion.cpp
+bugprone-exception-escape:gen/union_types/union_with_parameterized_field/TestUnion.h
 
-bugprone-forwarding-reference-overload:gen/union_types/union_with_parameterized_field/ArrayHolder.h:41
+bugprone-forwarding-reference-overload:gen/union_types/union_with_parameterized_field/ArrayHolder.h
 
-cert-err58-cpp:cpp/SimpleUnionTest.cpp:60
-cert-err58-cpp:cpp/SimpleUnionTest.cpp:62
-cert-err58-cpp:cpp/SimpleUnionTest.cpp:64
-cert-err58-cpp:cpp/SimpleUnionTest.cpp:66
-cert-err58-cpp:cpp/SimpleUnionTest.cpp:69
-cert-err58-cpp:cpp/UnionCompatibilityCheckTest.cpp:92
-cert-err58-cpp:cpp/UnionWithArrayTest.cpp:82
+cert-err58-cpp:cpp/SimpleUnionTest.cpp
+cert-err58-cpp:cpp/UnionCompatibilityCheckTest.cpp
+cert-err58-cpp:cpp/UnionWithArrayTest.cpp
 
-cppcoreguidelines-pro-bounds-constant-array-index:cpp/UnionWithArrayTest.cpp:44
-cppcoreguidelines-pro-bounds-constant-array-index:cpp/UnionWithArrayTest.cpp:53
-cppcoreguidelines-pro-bounds-constant-array-index:cpp/UnionWithArrayTest.cpp:61
+cppcoreguidelines-pro-bounds-constant-array-index:cpp/UnionWithArrayTest.cpp
 
-cppcoreguidelines-pro-type-member-init:gen/union_types/empty_union_with_parameter/EmptyUnionWithParameter.cpp:20
-cppcoreguidelines-pro-type-member-init:gen/union_types/empty_union_with_parameter/EmptyUnionWithParameter.cpp:41
-cppcoreguidelines-pro-type-member-init:gen/union_types/empty_union_with_parameter/EmptyUnionWithParameter.cpp:61
-cppcoreguidelines-pro-type-member-init:gen/union_types/empty_union_with_parameter/EmptyUnionWithParameter.cpp:81
-cppcoreguidelines-pro-type-member-init:gen/union_types/union_with_parameterized_field/ArrayHolder.cpp:20
-cppcoreguidelines-pro-type-member-init:gen/union_types/union_with_parameterized_field/ArrayHolder.cpp:42
-cppcoreguidelines-pro-type-member-init:gen/union_types/union_with_parameterized_field/ArrayHolder.cpp:62
-cppcoreguidelines-pro-type-member-init:gen/union_types/union_with_parameterized_field/ArrayHolder.cpp:82
-cppcoreguidelines-pro-type-member-init:gen/union_types/union_with_parameter/TestUnion.cpp:21
-cppcoreguidelines-pro-type-member-init:gen/union_types/union_with_parameter/TestUnion.cpp:46
-cppcoreguidelines-pro-type-member-init:gen/union_types/union_with_parameter/TestUnion.cpp:68
-cppcoreguidelines-pro-type-member-init:gen/union_types/union_with_parameter/TestUnion.cpp:90
+cppcoreguidelines-pro-type-member-init:gen/union_types/empty_union_with_parameter/EmptyUnionWithParameter.cpp
+cppcoreguidelines-pro-type-member-init:gen/union_types/union_with_parameterized_field/ArrayHolder.cpp
+cppcoreguidelines-pro-type-member-init:gen/union_types/union_with_parameter/TestUnion.cpp
 
-performance-move-const-arg:gen/union_types/union_compatibility_check/UnionVersion1.cpp:64
-performance-move-const-arg:gen/union_types/union_compatibility_check/UnionVersion2.cpp:64
-performance-move-const-arg:gen/union_types/union_compatibility_check/UnionVersion2.cpp:108
-performance-move-const-arg:gen/union_types/union_with_parameter/TestUnion.cpp:428
-performance-move-const-arg:gen/union_types/union_with_parameter/TestUnion.cpp:451
-performance-move-const-arg:cpp/EmptyUnionTest.cpp:56
-performance-move-const-arg:cpp/EmptyUnionTest.cpp:65
+performance-move-const-arg:gen/union_types/union_compatibility_check/UnionVersion1.cpp
+performance-move-const-arg:gen/union_types/union_compatibility_check/UnionVersion2.cpp
+performance-move-const-arg:gen/union_types/union_with_parameter/TestUnion.cpp
+performance-move-const-arg:cpp/EmptyUnionTest.cpp
 
-readability-make-member-function-const:gen/union_types/union_compatibility_check/CoordXYZ.cpp:131
-readability-make-member-function-const:gen/union_types/union_compatibility_check/CoordXY.cpp:113
-readability-make-member-function-const:gen/union_types/union_with_array/Data8.cpp:92
-readability-make-member-function-const:gen/union_types/union_with_parameterized_field/ArrayHolder.cpp:227
-readability-make-member-function-const:gen/union_types/union_with_parameterized_field/ArrayHolder.cpp:236
+readability-make-member-function-const:gen/union_types/union_compatibility_check/CoordXYZ.cpp
+readability-make-member-function-const:gen/union_types/union_compatibility_check/CoordXY.cpp
+readability-make-member-function-const:gen/union_types/union_with_array/Data8.cpp
+readability-make-member-function-const:gen/union_types/union_with_parameterized_field/ArrayHolder.cpp

@@ -1,5 +1,3 @@
-readability-make-member-function-const:gen/alignment/auto_optional_member_alignment/AutoOptionalMemberAlignment.cpp:131
-readability-make-member-function-const:gen/alignment/bit_alignment/BitAlignment.cpp:399
-readability-make-member-function-const:gen/alignment/optional_member_alignment/OptionalMemberAlignment.cpp:146
-readability-make-member-function-const:gen/alignment/optional_member_alignment/OptionalMemberAlignment.cpp:232
-readability-make-member-function-const:gen/alignment/optional_member_alignment/OptionalMemberAlignment.cpp:243
+readability-make-member-function-const:gen/alignment/auto_optional_member_alignment/AutoOptionalMemberAlignment.cpp
+readability-make-member-function-const:gen/alignment/bit_alignment/BitAlignment.cpp
+readability-make-member-function-const:gen/alignment/optional_member_alignment/OptionalMemberAlignment.cpp

@@ -1,27 +1,21 @@
-bugprone-forwarding-reference-overload:gen/subtypes/param_structure_subtype/ParameterizedStruct.h:41
-bugprone-forwarding-reference-overload:gen/subtypes/structure_subtype/SubtypeStructure.h:37
-bugprone-forwarding-reference-overload:gen/subtypes/subtype_imported/SubtypeImported.h:37
+bugprone-forwarding-reference-overload:gen/subtypes/param_structure_subtype/ParameterizedStruct.h
+bugprone-forwarding-reference-overload:gen/subtypes/structure_subtype/SubtypeStructure.h
+bugprone-forwarding-reference-overload:gen/subtypes/subtype_imported/SubtypeImported.h
 
-cppcoreguidelines-pro-type-member-init:gen/subtypes/param_structure_subtype/ParameterizedStruct.cpp:20
-cppcoreguidelines-pro-type-member-init:gen/subtypes/param_structure_subtype/ParameterizedStruct.cpp:42
-cppcoreguidelines-pro-type-member-init:gen/subtypes/param_structure_subtype/ParameterizedStruct.cpp:62
-cppcoreguidelines-pro-type-member-init:gen/subtypes/param_structure_subtype/ParameterizedStruct.cpp:82
+cppcoreguidelines-pro-type-member-init:gen/subtypes/param_structure_subtype/ParameterizedStruct.cpp
 
-google-explicit-constructor:gen/subtypes/bitmask_subtype/Permission.h:40
+google-explicit-constructor:gen/subtypes/bitmask_subtype/Permission.h
 
-modernize-use-using:gen/subtypes/bitmask_subtype/PermissionSubtype.h:18
-modernize-use-using:gen/subtypes/enum_subtype/ColorSubtype.h:18
-modernize-use-using:gen/subtypes/param_structure_subtype/ParameterizedSubtype.h:18
-modernize-use-using:gen/subtypes/structure_subtype/Student.h:18
-modernize-use-using:gen/subtypes/subtype_imported/pkg/SubTest.h:20
-modernize-use-using:gen/subtypes/uint16_subtype/Identifier.h:17
+modernize-use-using:gen/subtypes/bitmask_subtype/PermissionSubtype.h
+modernize-use-using:gen/subtypes/enum_subtype/ColorSubtype.h
+modernize-use-using:gen/subtypes/param_structure_subtype/ParameterizedSubtype.h
+modernize-use-using:gen/subtypes/structure_subtype/Student.h
+modernize-use-using:gen/subtypes/subtype_imported/pkg/SubTest.h
+modernize-use-using:gen/subtypes/uint16_subtype/Identifier.h
 
-performance-move-const-arg:gen/subtypes/param_structure_subtype/ParameterizedSubtypeStruct.cpp:98
-performance-move-const-arg:gen/subtypes/param_structure_subtype/ParameterizedSubtypeStruct.cpp:110
-performance-move-const-arg:gen/subtypes/subtype_imported/SubtypeImported.cpp:58
+performance-move-const-arg:gen/subtypes/param_structure_subtype/ParameterizedSubtypeStruct.cpp
+performance-move-const-arg:gen/subtypes/subtype_imported/SubtypeImported.cpp
 
-readability-make-member-function-const:gen/subtypes/param_structure_subtype/ParameterizedStruct.cpp:227
-readability-make-member-function-const:gen/subtypes/param_structure_subtype/ParameterizedStruct.cpp:236
-readability-make-member-function-const:gen/subtypes/param_structure_subtype/ParameterizedSubtypeStruct.cpp:322
-readability-make-member-function-const:gen/subtypes/param_structure_subtype/ParameterizedSubtypeStruct.cpp:328
-readability-make-member-function-const:gen/subtypes/subtype_imported/Test.cpp:92
+readability-make-member-function-const:gen/subtypes/param_structure_subtype/ParameterizedStruct.cpp
+readability-make-member-function-const:gen/subtypes/param_structure_subtype/ParameterizedSubtypeStruct.cpp
+readability-make-member-function-const:gen/subtypes/subtype_imported/Test.cpp

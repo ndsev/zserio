@@ -1,22 +1,20 @@
-bugprone-forwarding-reference-overload:gen/identifiers/structure_name_clashing_with_java/BigInteger.h:37
-bugprone-forwarding-reference-overload:gen/identifiers/structure_name_clashing_with_java/Byte.h:37
-bugprone-forwarding-reference-overload:gen/identifiers/structure_name_clashing_with_java/Double.h:36
-bugprone-forwarding-reference-overload:gen/identifiers/structure_name_clashing_with_java/Float.h:36
-bugprone-forwarding-reference-overload:gen/identifiers/structure_name_clashing_with_java/Integer.h:37
-bugprone-forwarding-reference-overload:gen/identifiers/structure_name_clashing_with_java/Long.h:37
-bugprone-forwarding-reference-overload:gen/identifiers/structure_name_clashing_with_java/Short.h:37
-bugprone-forwarding-reference-overload:gen/identifiers/structure_name_clashing_with_java/String.h:37
+bugprone-forwarding-reference-overload:gen/identifiers/structure_name_clashing_with_java/BigInteger.h
+bugprone-forwarding-reference-overload:gen/identifiers/structure_name_clashing_with_java/Byte.h
+bugprone-forwarding-reference-overload:gen/identifiers/structure_name_clashing_with_java/Double.h
+bugprone-forwarding-reference-overload:gen/identifiers/structure_name_clashing_with_java/Float.h
+bugprone-forwarding-reference-overload:gen/identifiers/structure_name_clashing_with_java/Integer.h
+bugprone-forwarding-reference-overload:gen/identifiers/structure_name_clashing_with_java/Long.h
+bugprone-forwarding-reference-overload:gen/identifiers/structure_name_clashing_with_java/Short.h
+bugprone-forwarding-reference-overload:gen/identifiers/structure_name_clashing_with_java/String.h
 
-cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen/identifiers/structure_name_clashing_with_java/String.h:42
+cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen/identifiers/structure_name_clashing_with_java/String.h
 
-google-explicit-constructor:gen/identifiers/bitmask_name_clashing_with_java/String.h:39
+google-explicit-constructor:gen/identifiers/bitmask_name_clashing_with_java/String.h
 
-readability-make-member-function-const:gen/identifiers/structure_name_clashing_with_java/BigInteger.cpp:109
-readability-make-member-function-const:gen/identifiers/structure_name_clashing_with_java/Byte.cpp:109
-readability-make-member-function-const:gen/identifiers/structure_name_clashing_with_java/Double.cpp:103
-readability-make-member-function-const:gen/identifiers/structure_name_clashing_with_java/Double.cpp:116
-readability-make-member-function-const:gen/identifiers/structure_name_clashing_with_java/Float.cpp:103
-readability-make-member-function-const:gen/identifiers/structure_name_clashing_with_java/Float.cpp:116
-readability-make-member-function-const:gen/identifiers/structure_name_clashing_with_java/Integer.cpp:109
-readability-make-member-function-const:gen/identifiers/structure_name_clashing_with_java/Long.cpp:109
-readability-make-member-function-const:gen/identifiers/structure_name_clashing_with_java/Short.cpp:109
+readability-make-member-function-const:gen/identifiers/structure_name_clashing_with_java/BigInteger.cpp
+readability-make-member-function-const:gen/identifiers/structure_name_clashing_with_java/Byte.cpp
+readability-make-member-function-const:gen/identifiers/structure_name_clashing_with_java/Double.cpp
+readability-make-member-function-const:gen/identifiers/structure_name_clashing_with_java/Float.cpp
+readability-make-member-function-const:gen/identifiers/structure_name_clashing_with_java/Integer.cpp
+readability-make-member-function-const:gen/identifiers/structure_name_clashing_with_java/Long.cpp
+readability-make-member-function-const:gen/identifiers/structure_name_clashing_with_java/Short.cpp

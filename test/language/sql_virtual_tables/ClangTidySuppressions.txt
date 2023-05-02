@@ -1,15 +1,13 @@
-cppcoreguidelines-pro-type-member-init:gen/sql_virtual_tables/fts3_virtual_table/Fts3VirtualTable.cpp:68
-cppcoreguidelines-pro-type-member-init:gen/sql_virtual_tables/fts5_virtual_table/Fts5VirtualTable.cpp:69
+cppcoreguidelines-pro-type-member-init:gen/sql_virtual_tables/fts3_virtual_table/Fts3VirtualTable.cpp
+cppcoreguidelines-pro-type-member-init:gen/sql_virtual_tables/fts5_virtual_table/Fts5VirtualTable.cpp
 
-cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_virtual_tables/fts3_virtual_table/Fts3VirtualTable.cpp:95
-cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_virtual_tables/fts3_virtual_table/Fts3VirtualTable.cpp:103
-cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_virtual_tables/fts5_virtual_table/Fts5VirtualTable.cpp:96
-cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_virtual_tables/fts5_virtual_table/Fts5VirtualTable.cpp:104
-cppcoreguidelines-pro-type-reinterpret-cast:cpp/Fts3VirtualTableTest.cpp:94
-cppcoreguidelines-pro-type-reinterpret-cast:cpp/Fts5VirtualTableTest.cpp:94
+cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_virtual_tables/fts3_virtual_table/Fts3VirtualTable.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_virtual_tables/fts5_virtual_table/Fts5VirtualTable.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:cpp/Fts3VirtualTableTest.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:cpp/Fts5VirtualTableTest.cpp
 
-fuchsia-multiple-inheritance:gen/sql_virtual_tables/fts3_virtual_table/Fts3TestDb.h:30
-fuchsia-multiple-inheritance:gen/sql_virtual_tables/fts5_virtual_table/Fts5TestDb.h:30
+fuchsia-multiple-inheritance:gen/sql_virtual_tables/fts3_virtual_table/Fts3TestDb.h
+fuchsia-multiple-inheritance:gen/sql_virtual_tables/fts5_virtual_table/Fts5TestDb.h
 
-modernize-use-using:gen/sql_virtual_tables/fts3_virtual_table/Fts3TestDb.h:34
-modernize-use-using:gen/sql_virtual_tables/fts5_virtual_table/Fts5TestDb.h:34
+modernize-use-using:gen/sql_virtual_tables/fts3_virtual_table/Fts3TestDb.h
+modernize-use-using:gen/sql_virtual_tables/fts5_virtual_table/Fts5TestDb.h

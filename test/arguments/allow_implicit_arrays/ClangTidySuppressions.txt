@@ -1,22 +1,21 @@
-bugprone-forwarding-reference-overload:gen/allow_implicit_arrays/implicit_array_bit8/ImplicitArray.h:41
-bugprone-forwarding-reference-overload:gen/allow_implicit_arrays/implicit_array_float16/ImplicitArray.h:40
-bugprone-forwarding-reference-overload:gen/allow_implicit_arrays/implicit_array_int24/ImplicitArray.h:41
-bugprone-forwarding-reference-overload:gen/allow_implicit_arrays/implicit_array_uint8/ImplicitArray.h:41
-bugprone-forwarding-reference-overload:gen/allow_implicit_arrays/implicit_array_uint64/ImplicitArray.h:41
-bugprone-forwarding-reference-overload:gen/allow_implicit_arrays/lengthof_with_implicit_array/LengthOfWithImplicitArray.h:41
-bugprone-forwarding-reference-overload:gen/allow_implicit_arrays/table_with_implicit_array/StructWithImplicit.h:41
+bugprone-forwarding-reference-overload:gen/allow_implicit_arrays/implicit_array_bit8/ImplicitArray.h
+bugprone-forwarding-reference-overload:gen/allow_implicit_arrays/implicit_array_float16/ImplicitArray.h
+bugprone-forwarding-reference-overload:gen/allow_implicit_arrays/implicit_array_int24/ImplicitArray.h
+bugprone-forwarding-reference-overload:gen/allow_implicit_arrays/implicit_array_uint8/ImplicitArray.h
+bugprone-forwarding-reference-overload:gen/allow_implicit_arrays/implicit_array_uint64/ImplicitArray.h
+bugprone-forwarding-reference-overload:gen/allow_implicit_arrays/lengthof_with_implicit_array/LengthOfWithImplicitArray.h
+bugprone-forwarding-reference-overload:gen/allow_implicit_arrays/table_with_implicit_array/StructWithImplicit.h
 
-cert-err58-cpp:cpp/ImplicitArrayBit8Test.cpp:30
-cert-err58-cpp:cpp/ImplicitArrayFloat16Test.cpp:30
-cert-err58-cpp:cpp/ImplicitArrayInt24Test.cpp:30
-cert-err58-cpp:cpp/ImplicitArrayUInt8Test.cpp:30
-cert-err58-cpp:cpp/ImplicitArrayUInt64Test.cpp:30
+cert-err58-cpp:cpp/ImplicitArrayBit8Test.cpp
+cert-err58-cpp:cpp/ImplicitArrayFloat16Test.cpp
+cert-err58-cpp:cpp/ImplicitArrayInt24Test.cpp
+cert-err58-cpp:cpp/ImplicitArrayUInt8Test.cpp
+cert-err58-cpp:cpp/ImplicitArrayUInt64Test.cpp
 
-cppcoreguidelines-pro-type-member-init:gen/allow_implicit_arrays/table_with_implicit_array/TableWithImplicitArray.cpp:70
+cppcoreguidelines-pro-type-member-init:gen/allow_implicit_arrays/table_with_implicit_array/TableWithImplicitArray.cpp
 
-cppcoreguidelines-pro-type-reinterpret-cast:gen/allow_implicit_arrays/table_with_implicit_array/TableWithImplicitArray.cpp:104
-cppcoreguidelines-pro-type-reinterpret-cast:gen/allow_implicit_arrays/table_with_implicit_array/TableWithImplicitArray.cpp:115
+cppcoreguidelines-pro-type-reinterpret-cast:gen/allow_implicit_arrays/table_with_implicit_array/TableWithImplicitArray.cpp
 
-fuchsia-multiple-inheritance:gen/allow_implicit_arrays/table_with_implicit_array/DbWithImplicitArray.h:30
+fuchsia-multiple-inheritance:gen/allow_implicit_arrays/table_with_implicit_array/DbWithImplicitArray.h
 
-modernize-use-using:gen/allow_implicit_arrays/table_with_implicit_array/DbWithImplicitArray.h:34
+modernize-use-using:gen/allow_implicit_arrays/table_with_implicit_array/DbWithImplicitArray.h

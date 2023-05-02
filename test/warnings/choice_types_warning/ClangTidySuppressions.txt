@@ -1,10 +1,7 @@
-bugprone-forwarding-reference-overload:gen/choice_types_warning/optional_references_in_selector/Selector.h:37
+bugprone-forwarding-reference-overload:gen/choice_types_warning/optional_references_in_selector/Selector.h
 
-bugprone-unhandled-self-assignment:gen/choice_types_warning/optional_references_in_selector/TestChoice.cpp:51
+bugprone-unhandled-self-assignment:gen/choice_types_warning/optional_references_in_selector/TestChoice.cpp
 
-cppcoreguidelines-pro-type-member-init:gen/choice_types_warning/optional_references_in_selector/TestChoice.cpp:20
-cppcoreguidelines-pro-type-member-init:gen/choice_types_warning/optional_references_in_selector/TestChoice.cpp:42
-cppcoreguidelines-pro-type-member-init:gen/choice_types_warning/optional_references_in_selector/TestChoice.cpp:62
-cppcoreguidelines-pro-type-member-init:gen/choice_types_warning/optional_references_in_selector/TestChoice.cpp:82
+cppcoreguidelines-pro-type-member-init:gen/choice_types_warning/optional_references_in_selector/TestChoice.cpp
 
-readability-make-member-function-const:gen/choice_types_warning/optional_references_in_selector/Selector.cpp:109
+readability-make-member-function-const:gen/choice_types_warning/optional_references_in_selector/Selector.cpp

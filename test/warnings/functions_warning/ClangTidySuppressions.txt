@@ -1,3 +1,1 @@
-readability-make-member-function-const:gen/functions_warning/optional_references_in_function/SingleOptionalFieldFunction.cpp:183
-readability-make-member-function-const:gen/functions_warning/optional_references_in_function/SingleOptionalFieldFunction.cpp:297
-readability-make-member-function-const:gen/functions_warning/optional_references_in_function/SingleOptionalFieldFunction.cpp:307
+readability-make-member-function-const:gen/functions_warning/optional_references_in_function/SingleOptionalFieldFunction.cpp

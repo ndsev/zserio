@@ -1,20 +1,15 @@
-bugprone-reserved-identifier:gen/_imported_tile_/Tile.h:7
-bugprone-reserved-identifier:gen/_imported_tile_/Tile.h:20
-bugprone-reserved-identifier:gen/___/Empty.h:7
-bugprone-reserved-identifier:gen/___/Empty.h:15
+bugprone-reserved-identifier:gen/_imported_tile_/Tile.h
+bugprone-reserved-identifier:gen/___/Empty.h
 
-cppcoreguidelines-pro-type-member-init:gen/with_sources_amalgamation/WithSourcesAmalgamation.cpp:257
-cppcoreguidelines-pro-type-reinterpret-cast:gen/with_sources_amalgamation/WithSourcesAmalgamation.cpp:291
-cppcoreguidelines-pro-type-reinterpret-cast:gen/with_sources_amalgamation/WithSourcesAmalgamation.cpp:302
+cppcoreguidelines-pro-type-member-init:gen/with_sources_amalgamation/WithSourcesAmalgamation.cpp
 
-fuchsia-multiple-inheritance:gen/with_sources_amalgamation/WorldDb.h:28
+cppcoreguidelines-pro-type-reinterpret-cast:gen/with_sources_amalgamation/WithSourcesAmalgamation.cpp
 
-modernize-use-using:gen/with_sources_amalgamation/WorldDb.h:32
+fuchsia-multiple-inheritance:gen/with_sources_amalgamation/WorldDb.h
 
-performance-move-const-arg:gen/with_sources_amalgamation/WithSourcesAmalgamation.cpp:305
-performance-move-const-arg:gen/with_sources_amalgamation/WithSourcesAmalgamation.cpp:535
+modernize-use-using:gen/with_sources_amalgamation/WorldDb.h
 
-readability-make-member-function-const:gen/_imported_tile_/ImportedTile.cpp:232
-readability-make-member-function-const:gen/_imported_tile_/ImportedTile.cpp:241
-readability-make-member-function-const:gen_default_package/DefaultPackageAmalgamation.cpp:108
-readability-make-member-function-const:gen_default_package/DefaultPackageAmalgamation.cpp:176
+performance-move-const-arg:gen/with_sources_amalgamation/WithSourcesAmalgamation.cpp
+
+readability-make-member-function-const:gen/_imported_tile_/ImportedTile.cpp
+readability-make-member-function-const:gen_default_package/DefaultPackageAmalgamation.cpp

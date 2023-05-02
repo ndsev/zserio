@@ -1,76 +1,44 @@
-bugprone-forwarding-reference-overload:gen_pubsub_allocation/pubsub_allocation/Greeting.h:34
-bugprone-forwarding-reference-overload:gen_pubsub_allocation/pubsub_allocation/Name.h:34
-bugprone-forwarding-reference-overload:gen_service_allocation/service_allocation/Greeting.h:34
-bugprone-forwarding-reference-overload:gen_service_allocation/service_allocation/Name.h:34
-bugprone-forwarding-reference-overload:gen_sql_allocation/sql_allocation/ParameterizedBlob.h:41
+bugprone-forwarding-reference-overload:gen_pubsub_allocation/pubsub_allocation/Greeting.h
+bugprone-forwarding-reference-overload:gen_pubsub_allocation/pubsub_allocation/Name.h
+bugprone-forwarding-reference-overload:gen_service_allocation/service_allocation/Greeting.h
+bugprone-forwarding-reference-overload:gen_service_allocation/service_allocation/Name.h
+bugprone-forwarding-reference-overload:gen_sql_allocation/sql_allocation/ParameterizedBlob.h
 
-bugprone-unhandled-self-assignment:gen_sql_allocation/sql_allocation/ParameterizedBlob.cpp:49
+bugprone-unhandled-self-assignment:gen_sql_allocation/sql_allocation/ParameterizedBlob.cpp
 
-cert-err58-cpp:cpp/SqlAllocationTest.cpp:157
+cert-err58-cpp:cpp/SqlAllocationTest.cpp
 
-cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen_pubsub_allocation/pubsub_allocation/Name.h:39
-cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen_service_allocation/service_allocation/Name.h:39
+cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen_pubsub_allocation/pubsub_allocation/Name.h
+cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen_service_allocation/service_allocation/Name.h
+cppcoreguidelines-pro-bounds-pointer-arithmetic:cpp/ComplexAllocationTest.cpp
 
-cppcoreguidelines-pro-bounds-pointer-arithmetic:cpp/ComplexAllocationTest.cpp:426
-cppcoreguidelines-pro-bounds-pointer-arithmetic:cpp/ComplexAllocationTest.cpp:427
-cppcoreguidelines-pro-bounds-pointer-arithmetic:cpp/ComplexAllocationTest.cpp:436
-cppcoreguidelines-pro-bounds-pointer-arithmetic:cpp/ComplexAllocationTest.cpp:440
-cppcoreguidelines-pro-bounds-pointer-arithmetic:cpp/ComplexAllocationTest.cpp:441
+cppcoreguidelines-pro-type-member-init:gen_complex_allocation/complex_allocation/allocation_choice/AllocationChoice.cpp
+cppcoreguidelines-pro-type-member-init:gen_sql_allocation/sql_allocation/ParameterizedBlob.cpp
+cppcoreguidelines-pro-type-member-init:gen_sql_allocation/sql_allocation/SqlAllocationTable.cpp
 
-cppcoreguidelines-pro-type-member-init:gen_complex_allocation/complex_allocation/allocation_choice/AllocationChoice.cpp:40
-cppcoreguidelines-pro-type-member-init:gen_complex_allocation/complex_allocation/allocation_choice/AllocationChoice.cpp:62
-cppcoreguidelines-pro-type-member-init:gen_complex_allocation/complex_allocation/allocation_choice/AllocationChoice.cpp:82
-cppcoreguidelines-pro-type-member-init:gen_complex_allocation/complex_allocation/allocation_choice/AllocationChoice.cpp:102
-cppcoreguidelines-pro-type-member-init:gen_sql_allocation/sql_allocation/ParameterizedBlob.cpp:18
-cppcoreguidelines-pro-type-member-init:gen_sql_allocation/sql_allocation/ParameterizedBlob.cpp:40
-cppcoreguidelines-pro-type-member-init:gen_sql_allocation/sql_allocation/ParameterizedBlob.cpp:60
-cppcoreguidelines-pro-type-member-init:gen_sql_allocation/sql_allocation/ParameterizedBlob.cpp:80
-cppcoreguidelines-pro-type-member-init:gen_sql_allocation/sql_allocation/SqlAllocationTable.cpp:74
+cppcoreguidelines-pro-type-reinterpret-cast:gen_sql_allocation/sql_allocation/SqlAllocationTable.cpp
 
-cppcoreguidelines-pro-type-reinterpret-cast:gen_sql_allocation/sql_allocation/SqlAllocationTable.cpp:108
-cppcoreguidelines-pro-type-reinterpret-cast:gen_sql_allocation/sql_allocation/SqlAllocationTable.cpp:116
-cppcoreguidelines-pro-type-reinterpret-cast:gen_sql_allocation/sql_allocation/SqlAllocationTable.cpp:127
-cppcoreguidelines-pro-type-reinterpret-cast:gen_sql_allocation/sql_allocation/SqlAllocationTable.cpp:139
-cppcoreguidelines-pro-type-reinterpret-cast:gen_sql_allocation/sql_allocation/SqlAllocationTable.cpp:987
-cppcoreguidelines-pro-type-reinterpret-cast:gen_sql_allocation/sql_allocation/SqlAllocationTable.cpp:1002
-cppcoreguidelines-pro-type-reinterpret-cast:gen_sql_allocation/sql_allocation/SqlAllocationTable.cpp:1047
-cppcoreguidelines-pro-type-reinterpret-cast:gen_sql_allocation/sql_allocation/SqlAllocationTable.cpp:1093
-cppcoreguidelines-pro-type-reinterpret-cast:gen_sql_allocation/sql_allocation/SqlAllocationTable.cpp:1212
+fuchsia-multiple-inheritance:gen_sql_allocation/sql_allocation/SqlAllocationDb.h
 
-fuchsia-multiple-inheritance:gen_sql_allocation/sql_allocation/SqlAllocationDb.h:29
+google-build-using-namespace:cpp/ComplexAllocationTest.cpp
+google-build-using-namespace:cpp/PubsubAllocationTest.cpp
+google-build-using-namespace:cpp/ServiceAllocationTest.cpp
+google-build-using-namespace:cpp/SqlAllocationTest.cpp
 
-google-build-using-namespace:cpp/ComplexAllocationTest.cpp:14
-google-build-using-namespace:cpp/ComplexAllocationTest.cpp:15
-google-build-using-namespace:cpp/PubsubAllocationTest.cpp:12
-google-build-using-namespace:cpp/PubsubAllocationTest.cpp:13
-google-build-using-namespace:cpp/ServiceAllocationTest.cpp:8
-google-build-using-namespace:cpp/ServiceAllocationTest.cpp:9
-google-build-using-namespace:cpp/SqlAllocationTest.cpp:8
-google-build-using-namespace:cpp/SqlAllocationTest.cpp:9
-
-google-explicit-constructor:gen_sql_allocation/sql_allocation/Role.h:38
+google-explicit-constructor:gen_sql_allocation/sql_allocation/Role.h
 
 misc-no-recursion # reports also tested_release and some system headers
 
-modernize-use-using:gen_sql_allocation/sql_allocation/SqlAllocationDb.h:41
+modernize-use-using:gen_sql_allocation/sql_allocation/SqlAllocationDb.h
 
-performance-move-const-arg:gen_complex_allocation/complex_allocation/MainStructure.cpp:111
-performance-move-const-arg:gen_complex_allocation/complex_allocation/MainStructure.cpp:131
-performance-move-const-arg:gen_complex_allocation/complex_allocation/allocation_choice/AllocationChoice.cpp:149
-performance-move-const-arg:gen_complex_allocation/complex_allocation/allocation_choice/AllocationChoice.cpp:375
-performance-move-const-arg:gen_complex_allocation/complex_allocation/allocation_choice/AllocationChoice.cpp:402
-performance-move-const-arg:gen_complex_allocation/complex_allocation/allocation_union/AllocationUnion.cpp:84
-performance-move-const-arg:gen_complex_allocation/complex_allocation/allocation_union/AllocationUnion.cpp:343
-performance-move-const-arg:gen_complex_allocation/complex_allocation/allocation_union/AllocationUnion.cpp:369
-performance-move-const-arg:gen_sql_allocation/sql_allocation/SqlAllocationTable.cpp:119
-performance-move-const-arg:gen_sql_allocation/sql_allocation/SqlAllocationTable.cpp:1022
-performance-move-const-arg:gen_sql_allocation/sql_allocation/SqlAllocationTable.cpp:1510
+performance-move-const-arg:gen_complex_allocation/complex_allocation/MainStructure.cpp
+performance-move-const-arg:gen_complex_allocation/complex_allocation/allocation_choice/AllocationChoice.cpp
+performance-move-const-arg:gen_complex_allocation/complex_allocation/allocation_union/AllocationUnion.cpp
+performance-move-const-arg:gen_sql_allocation/sql_allocation/SqlAllocationTable.cpp
 
-readability-make-member-function-const:gen_complex_allocation/complex_allocation/MainStructure.cpp:658
-readability-make-member-function-const:gen_complex_allocation/complex_allocation/MainStructure.cpp:664
-readability-make-member-function-const:gen_complex_allocation/complex_allocation/allocation_choice/ChoiceCompound.cpp:110
-readability-make-member-function-const:gen_complex_allocation/complex_allocation/allocation_struct/Element.cpp:134
-readability-make-member-function-const:gen_complex_allocation/complex_allocation/allocation_struct_optional/AllocationStructOptional.cpp:317
-readability-make-member-function-const:gen_complex_allocation/complex_allocation/allocation_struct_optional/AllocationStructOptional.cpp:328
-readability-make-member-function-const:gen_complex_allocation/complex_allocation/allocation_union/UnionCompound.cpp:110
-readability-make-member-function-const:gen_sql_allocation/sql_allocation/DataBlob.cpp:112
+readability-make-member-function-const:gen_complex_allocation/complex_allocation/MainStructure.cpp
+readability-make-member-function-const:gen_complex_allocation/complex_allocation/allocation_choice/ChoiceCompound.cpp
+readability-make-member-function-const:gen_complex_allocation/complex_allocation/allocation_struct/Element.cpp
+readability-make-member-function-const:gen_complex_allocation/complex_allocation/allocation_struct_optional/AllocationStructOptional.cpp
+readability-make-member-function-const:gen_complex_allocation/complex_allocation/allocation_union/UnionCompound.cpp
+readability-make-member-function-const:gen_sql_allocation/sql_allocation/DataBlob.cpp

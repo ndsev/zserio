@@ -1,2 +1,2 @@
-readability-make-member-function-const:gen/without_service_code/Request.cpp:90
-readability-make-member-function-const:gen/without_service_code/Response.cpp:90
+readability-make-member-function-const:gen/without_service_code/Request.cpp
+readability-make-member-function-const:gen/without_service_code/Response.cpp

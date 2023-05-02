@@ -1,37 +1,16 @@
-bugprone-forwarding-reference-overload:gen/constraints/array_lengthof_constraint/ArrayLengthofConstraint.h:41
+bugprone-forwarding-reference-overload:gen/constraints/array_lengthof_constraint/ArrayLengthofConstraint.h
 
-cppcoreguidelines-pro-type-member-init:gen/constraints/choice_constraints/ChoiceConstraints.cpp:21
-cppcoreguidelines-pro-type-member-init:gen/constraints/choice_constraints/ChoiceConstraints.cpp:43
-cppcoreguidelines-pro-type-member-init:gen/constraints/choice_constraints/ChoiceConstraints.cpp:63
-cppcoreguidelines-pro-type-member-init:gen/constraints/choice_constraints/ChoiceConstraints.cpp:83
+cppcoreguidelines-pro-type-member-init:gen/constraints/choice_constraints/ChoiceConstraints.cpp
 
-google-explicit-constructor:gen/constraints/structure_bitmask_constraints/Availability.h:40
+google-explicit-constructor:gen/constraints/structure_bitmask_constraints/Availability.h
 
-hicpp-signed-bitwise:gen/constraints/structure_bitmask_constraints/Availability.h:131
-hicpp-signed-bitwise:gen/constraints/structure_bitmask_constraints/Availability.h:136
+hicpp-signed-bitwise:gen/constraints/structure_bitmask_constraints/Availability.h
 
-performance-move-const-arg:gen/constraints/choice_constraints/ChoiceConstraints.cpp:347
-performance-move-const-arg:gen/constraints/choice_constraints/ChoiceConstraints.cpp:358
-performance-move-const-arg:gen/constraints/choice_constraints/ChoiceConstraints.cpp:376
-performance-move-const-arg:gen/constraints/choice_constraints/ChoiceConstraints.cpp:387
-performance-move-const-arg:gen/constraints/structure_constraints/StructureConstraints.cpp:354
-performance-move-const-arg:gen/constraints/structure_constraints/StructureConstraints.cpp:369
-performance-move-const-arg:gen/constraints/structure_constraints/StructureConstraints.cpp:389
-performance-move-const-arg:gen/constraints/structure_constraints/StructureConstraints.cpp:404
-performance-move-const-arg:gen/constraints/union_constraints/UnionConstraints.cpp:313
-performance-move-const-arg:gen/constraints/union_constraints/UnionConstraints.cpp:322
-performance-move-const-arg:gen/constraints/union_constraints/UnionConstraints.cpp:341
-performance-move-const-arg:gen/constraints/union_constraints/UnionConstraints.cpp:350
+performance-move-const-arg:gen/constraints/choice_constraints/ChoiceConstraints.cpp
+performance-move-const-arg:gen/constraints/structure_constraints/StructureConstraints.cpp
+performance-move-const-arg:gen/constraints/union_constraints/UnionConstraints.cpp
 
-readability-make-member-function-const:gen/constraints/choice_constraints/ChoiceConstraints.cpp:209
-readability-make-member-function-const:gen/constraints/choice_constraints/ChoiceConstraints.cpp:335
-readability-make-member-function-const:gen/constraints/choice_constraints/ChoiceConstraints.cpp:363
-readability-make-member-function-const:gen/constraints/literal_constraint/LiteralConstraint.cpp:93
-readability-make-member-function-const:gen/constraints/structure_bitmask_constraints/StructureBitmaskConstraints.cpp:252
-readability-make-member-function-const:gen/constraints/structure_bitmask_constraints/StructureBitmaskConstraints.cpp:262
-readability-make-member-function-const:gen/constraints/structure_bitmask_constraints/StructureBitmaskConstraints.cpp:272
-readability-make-member-function-const:gen/constraints/structure_bitmask_constraints/StructureBitmaskConstraints.cpp:282
-readability-make-member-function-const:gen/constraints/structure_bitmask_constraints/StructureBitmaskConstraints.cpp:292
-readability-make-member-function-const:gen/constraints/structure_bitmask_constraints/StructureBitmaskConstraints.cpp:302
-readability-make-member-function-const:gen/constraints/structure_constraints/StructureConstraints.cpp:380
-readability-make-member-function-const:gen/constraints/structure_constraints/StructureConstraints.cpp:395
+readability-make-member-function-const:gen/constraints/choice_constraints/ChoiceConstraints.cpp
+readability-make-member-function-const:gen/constraints/literal_constraint/LiteralConstraint.cpp
+readability-make-member-function-const:gen/constraints/structure_bitmask_constraints/StructureBitmaskConstraints.cpp
+readability-make-member-function-const:gen/constraints/structure_constraints/StructureConstraints.cpp

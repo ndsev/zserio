@@ -1,41 +1,24 @@
-bugprone-exception-escape:gen/without_writer_code/ItemChoice.cpp:58
-bugprone-exception-escape:gen/without_writer_code/ItemChoice.cpp:67
-bugprone-exception-escape:gen/without_writer_code/ItemChoice.h:49
-bugprone-exception-escape:gen/without_writer_code/ItemChoice.h:50
+bugprone-exception-escape:gen/without_writer_code/ItemChoice.cpp
+bugprone-exception-escape:gen/without_writer_code/ItemChoice.h
 
-cert-err58-cpp:cpp/WithoutWriterCodeTest.cpp:696
+cert-err58-cpp:cpp/WithoutWriterCodeTest.cpp
 
-cppcoreguidelines-pro-type-member-init:gen/without_writer_code/GeoMapTable.cpp:86
-cppcoreguidelines-pro-type-member-init:gen/without_writer_code/ItemChoice.cpp:38
-cppcoreguidelines-pro-type-member-init:gen/without_writer_code/ItemChoice.cpp:58
-cppcoreguidelines-pro-type-member-init:gen/without_writer_code/ItemChoice.cpp:78
-cppcoreguidelines-pro-type-member-init:gen/without_writer_code/Item.cpp:41
-cppcoreguidelines-pro-type-member-init:gen/without_writer_code/Item.cpp:63
-cppcoreguidelines-pro-type-member-init:gen/without_writer_code/Item.cpp:85
+cppcoreguidelines-pro-type-member-init:gen/without_writer_code/GeoMapTable.cpp
+cppcoreguidelines-pro-type-member-init:gen/without_writer_code/ItemChoice.cpp
+cppcoreguidelines-pro-type-member-init:gen/without_writer_code/Item.cpp
 
-cppcoreguidelines-pro-type-reinterpret-cast:gen/without_writer_code/GeoMapTable.cpp:120
+cppcoreguidelines-pro-type-reinterpret-cast:gen/without_writer_code/GeoMapTable.cpp
 
-google-explicit-constructor:gen/without_writer_code/VersionAvailability.h:39
+google-explicit-constructor:gen/without_writer_code/VersionAvailability.h
 
-hicpp-signed-bitwise:gen/without_writer_code/VersionAvailability.h:127
-hicpp-signed-bitwise:gen/without_writer_code/VersionAvailability.h:132
+hicpp-signed-bitwise:gen/without_writer_code/VersionAvailability.h
 
-modernize-use-using:gen/without_writer_code/WorldDb.h:33
+modernize-use-using:gen/without_writer_code/WorldDb.h
 
-performance-move-const-arg:gen/without_writer_code/ItemChoiceHolder.cpp:58
-performance-move-const-arg:gen/without_writer_code/ItemChoiceHolder.cpp:69
-performance-move-const-arg:gen/without_writer_code/Item.cpp:64
-performance-move-const-arg:gen/without_writer_code/Item.cpp:75
+performance-move-const-arg:gen/without_writer_code/ItemChoiceHolder.cpp
+performance-move-const-arg:gen/without_writer_code/Item.cpp
 
-readability-make-member-function-const:gen/without_writer_code/ItemChoiceHolder.cpp:274
-readability-make-member-function-const:gen/without_writer_code/ItemChoiceHolder.cpp:280
-readability-make-member-function-const:gen/without_writer_code/ItemChoice.cpp:405
-readability-make-member-function-const:gen/without_writer_code/ItemChoice.cpp:419
-readability-make-member-function-const:gen/without_writer_code/Item.cpp:332
-readability-make-member-function-const:gen/without_writer_code/Item.cpp:343
-readability-make-member-function-const:gen/without_writer_code/Tile.cpp:464
-readability-make-member-function-const:gen/without_writer_code/Tile.cpp:474
-readability-make-member-function-const:gen/without_writer_code/Tile.cpp:484
-readability-make-member-function-const:gen/without_writer_code/Tile.cpp:500
-readability-make-member-function-const:gen/without_writer_code/Tile.cpp:512
-readability-make-member-function-const:gen/without_writer_code/Tile.cpp:524
+readability-make-member-function-const:gen/without_writer_code/ItemChoiceHolder.cpp
+readability-make-member-function-const:gen/without_writer_code/ItemChoice.cpp
+readability-make-member-function-const:gen/without_writer_code/Item.cpp
+readability-make-member-function-const:gen/without_writer_code/Tile.cpp

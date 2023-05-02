@@ -1,6 +1,6 @@
-cppcoreguidelines-pro-type-member-init:gen/sql_constraints/field_constraints/FieldConstraintsTable.cpp:76
-cppcoreguidelines-pro-type-member-init:gen/sql_constraints/table_constraints/TableConstraintsTable.cpp:71
+cppcoreguidelines-pro-type-member-init:gen/sql_constraints/field_constraints/FieldConstraintsTable.cpp
+cppcoreguidelines-pro-type-member-init:gen/sql_constraints/table_constraints/TableConstraintsTable.cpp
 
-fuchsia-multiple-inheritance:gen/sql_constraints/TestDb.h:29
+fuchsia-multiple-inheritance:gen/sql_constraints/TestDb.h
 
-modernize-use-using:gen/sql_constraints/TestDb.h:33
+modernize-use-using:gen/sql_constraints/TestDb.h

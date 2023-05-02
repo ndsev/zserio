@@ -91,9 +91,7 @@ function(add_custom_test TEST_NAME)
                                  CONFIG_FILE
                                     "${ZSERIO_PROJECT_ROOT}/compiler/extensions/cpp/runtime/ClangTidyConfig.txt"
                                  HEADER_FILTER
-                                    "${CMAKE_CURRENT_SOURCE_DIR}/.*|${CMAKE_CURRENT_BINARY_DIR}/.*"
-                                 IGNORE_UNUSED_SUPPRESSIONS
-                                    ${CLANG_TIDY_IGNORE_UNUSED_SUPPRESSIONS})
+                                    "${CMAKE_CURRENT_SOURCE_DIR}/.*|${CMAKE_CURRENT_BINARY_DIR}/.*")
 
     get_generated_dirs("${TEST_ARG_GENERATED_SOURCES}" GENERATED_DIRS)
     cppcheck_add_custom_command(TARGET ${TEST_NAME}

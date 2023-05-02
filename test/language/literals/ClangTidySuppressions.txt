@@ -1,6 +1,6 @@
-cert-err58-cpp:gen/literals/STRING.h:14
+cert-err58-cpp:gen/literals/STRING.h
 
-google-build-using-namespace:cpp/LiteralsTest.cpp:26
+google-build-using-namespace:cpp/LiteralsTest.cpp
 
-readability-uppercase-literal-suffix:gen/literals/FLOAT16.h:14
-readability-uppercase-literal-suffix:gen/literals/FLOAT32.h:14
+readability-uppercase-literal-suffix:gen/literals/FLOAT16.h
+readability-uppercase-literal-suffix:gen/literals/FLOAT32.h

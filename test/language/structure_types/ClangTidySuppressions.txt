@@ -1,22 +1,14 @@
-bugprone-forwarding-reference-overload:gen/structure_types/one_string_structure/OneStringStructure.h:36
-bugprone-forwarding-reference-overload:gen/structure_types/structure_inner_classes_clashing/ArrayType_array.h:41
+bugprone-forwarding-reference-overload:gen/structure_types/one_string_structure/OneStringStructure.h
+bugprone-forwarding-reference-overload:gen/structure_types/structure_inner_classes_clashing/ArrayType_array.h
 
-cert-err58-cpp:cpp/OneStringStructureTest.cpp:36
+cert-err58-cpp:cpp/OneStringStructureTest.cpp
 
-cppcoreguidelines-pro-type-member-init:gen/structure_types/empty_structure_with_parameter/EmptyStructureWithParameter.cpp:20
-cppcoreguidelines-pro-type-member-init:gen/structure_types/empty_structure_with_parameter/EmptyStructureWithParameter.cpp:39
-cppcoreguidelines-pro-type-member-init:gen/structure_types/empty_structure_with_parameter/EmptyStructureWithParameter.cpp:57
-cppcoreguidelines-pro-type-member-init:gen/structure_types/empty_structure_with_parameter/EmptyStructureWithParameter.cpp:75
+cppcoreguidelines-pro-type-member-init:gen/structure_types/empty_structure_with_parameter/EmptyStructureWithParameter.cpp
 
-performance-move-const-arg:gen/structure_types/field_constructor_clashing/CompoundPackingRead.cpp:66
-performance-move-const-arg:gen/structure_types/field_constructor_clashing/CompoundPackingRead.cpp:86
-performance-move-const-arg:gen/structure_types/field_constructor_clashing/CompoundPackingRead.cpp:106
-performance-move-const-arg:gen/structure_types/field_constructor_clashing/CompoundRead.cpp:62
-performance-move-const-arg:gen/structure_types/field_constructor_clashing/CompoundRead.cpp:82
-performance-move-const-arg:cpp/EmptyStructureTest.cpp:54
-performance-move-const-arg:cpp/EmptyStructureTest.cpp:63
-performance-move-const-arg:cpp/SimpleStructureTest.cpp:110
-performance-move-const-arg:cpp/SimpleStructureTest.cpp:123
+performance-move-const-arg:gen/structure_types/field_constructor_clashing/CompoundPackingRead.cpp
+performance-move-const-arg:gen/structure_types/field_constructor_clashing/CompoundRead.cpp
+performance-move-const-arg:cpp/EmptyStructureTest.cpp
+performance-move-const-arg:cpp/SimpleStructureTest.cpp
 
-readability-make-member-function-const:gen/structure_types/field_constructor_clashing/Field.cpp:92
-readability-make-member-function-const:gen/structure_types/simple_structure/SimpleStructure.cpp:134
+readability-make-member-function-const:gen/structure_types/field_constructor_clashing/Field.cpp
+readability-make-member-function-const:gen/structure_types/simple_structure/SimpleStructure.cpp

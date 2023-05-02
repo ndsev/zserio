@@ -1,23 +1,22 @@
-cert-err58-cpp:gen/constants/DEFAULT_PEN_COLOR_VALUE.h:17
-cert-err58-cpp:gen/constants/HEX_ESC_STRING_CONSTANT.h:14
-cert-err58-cpp:gen/constants/JOINED_STRING_CONSTANT.h:14
-cert-err58-cpp:gen/constants/OCTAL_ESC_STRING_CONSTANT.h:14
-cert-err58-cpp:gen/constants/STRING_CONSTANT.h:14
-cert-err58-cpp:gen/constants/SUBTYPE_STRING_CONSTANT.h:14
-cert-err58-cpp:gen/constants/StringPascalCaseConstant.h:14
-cert-err58-cpp:gen/constants/UNICODE_ESC_STRING_CONSTANT.h:14
+cert-err58-cpp:gen/constants/DEFAULT_PEN_COLOR_VALUE.h
+cert-err58-cpp:gen/constants/HEX_ESC_STRING_CONSTANT.h
+cert-err58-cpp:gen/constants/JOINED_STRING_CONSTANT.h
+cert-err58-cpp:gen/constants/OCTAL_ESC_STRING_CONSTANT.h
+cert-err58-cpp:gen/constants/STRING_CONSTANT.h
+cert-err58-cpp:gen/constants/SUBTYPE_STRING_CONSTANT.h
+cert-err58-cpp:gen/constants/StringPascalCaseConstant.h
+cert-err58-cpp:gen/constants/UNICODE_ESC_STRING_CONSTANT.h
 
-google-build-using-namespace:cpp/ConstantsTest.cpp:67
+google-build-using-namespace:cpp/ConstantsTest.cpp
 
-google-explicit-constructor:gen/constants/Permission.h:38
+google-explicit-constructor:gen/constants/Permission.h
 
-hicpp-signed-bitwise:gen/constants/Permission.h:129
-hicpp-signed-bitwise:gen/constants/Permission.h:134
+hicpp-signed-bitwise:gen/constants/Permission.h
 
-modernize-use-using:gen/constants/ColorsSubtype.h:16
-modernize-use-using:gen/constants/Int25Subtype.h:15
-modernize-use-using:gen/constants/PermissionSubtype.h:16
-modernize-use-using:gen/constants/StringSubtype.h:15
+modernize-use-using:gen/constants/ColorsSubtype.h
+modernize-use-using:gen/constants/Int25Subtype.h
+modernize-use-using:gen/constants/PermissionSubtype.h
+modernize-use-using:gen/constants/StringSubtype.h
 
-readability-uppercase-literal-suffix:gen/constants/FLOAT16_CONSTANT.h:14
-readability-uppercase-literal-suffix:gen/constants/FLOAT32_CONSTANT.h:14
+readability-uppercase-literal-suffix:gen/constants/FLOAT16_CONSTANT.h
+readability-uppercase-literal-suffix:gen/constants/FLOAT32_CONSTANT.h
