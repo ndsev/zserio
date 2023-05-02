@@ -1,6 +1,5 @@
 # global suppressions
 cppcoreguidelines-pro-bounds-constant-array-index   # optimization breaks this rule
-cppcoreguidelines-pro-type-reinterpret-cast         # FloatUtil, FileUtil, AhyHolder, OptionalHolder
 modernize-use-using                                 # too many cases
 
 # suppressions per line
@@ -135,6 +134,18 @@ cppcoreguidelines-pro-type-member-init:test/zserio/StringConvertUtilTest.cpp:84
 cppcoreguidelines-pro-type-member-init:test/zserio/StringConvertUtilTest.cpp:95
 cppcoreguidelines-pro-type-member-init:test/zserio/StringConvertUtilTest.cpp:104
 cppcoreguidelines-pro-type-member-init:test/zserio/StringConvertUtilTest.cpp:105
+
+cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/OptionalHolder.h:*
+cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/AnyHolder.h:*
+cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FloatUtil.cpp:164
+cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FloatUtil.cpp:171
+cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FloatUtil.cpp:178
+cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FloatUtil.cpp:185
+cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FileUtil.cpp:17
+cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FileUtil.cpp:42
+cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/ValidationSqliteUtil.h:100
+cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/ValidationSqliteUtil.h:101
+cppcoreguidelines-pro-type-reinterpret-cast:test/zserio/SqliteConnectionTest.cpp:317
 
 fuchsia-multiple-inheritance:src/zserio/Reflectable.h:1068
 

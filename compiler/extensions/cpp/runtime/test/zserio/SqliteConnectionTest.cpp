@@ -314,7 +314,7 @@ TEST(SqliteConnectionTest, prepareStatement)
     ASSERT_EQ(SQLITE_ROW, result);
 
     ASSERT_EQ(1, sqlite3_column_count(statement));
-    const std::string resultString(reinterpret_cast<char const*>(sqlite3_column_text(statement, 0)));
+    const std::string resultString(reinterpret_cast<const char*>(sqlite3_column_text(statement, 0)));
     ASSERT_EQ("1", resultString);
 
     result = sqlite3_step(statement);
