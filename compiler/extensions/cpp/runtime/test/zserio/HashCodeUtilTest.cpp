@@ -22,7 +22,7 @@ enum class Color : uint8_t
 class Permissions
 {
 public:
-    typedef uint8_t underlying_type;
+    using underlying_type = uint8_t;
 
     enum class Values : underlying_type
     {

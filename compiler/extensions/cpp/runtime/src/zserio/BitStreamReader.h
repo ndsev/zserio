@@ -22,7 +22,7 @@ class BitStreamReader
 {
 public:
     /** Type for bit position. */
-    typedef size_t BitPosType;
+    using BitPosType = size_t;
 
     /**
      * Context of the reader defining its state.

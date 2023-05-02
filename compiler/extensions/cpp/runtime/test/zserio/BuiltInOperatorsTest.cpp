@@ -14,7 +14,7 @@ namespace
 class DummyBitmask
 {
 public:
-    typedef uint8_t underlying_type;
+    using underlying_type = uint8_t;
 
     enum class Values : underlying_type
     {

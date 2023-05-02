@@ -8,8 +8,6 @@ cppcoreguidelines-pro-type-member-init:gen/optional_members_warning/optional_ref
 
 misc-no-recursion # reports also tested_release and some system headers
 
-modernize-use-using:gen/optional_members_warning/optional_references_in_type_arguments/SubtypedColorTones.h
-
 performance-move-const-arg:gen/optional_members_warning/optional_references_in_constraint/Container.cpp
 performance-move-const-arg:gen/optional_members_warning/optional_references_in_offset/Container.cpp
 performance-move-const-arg:gen/optional_members_warning/optional_references_in_type_arguments/Container.cpp

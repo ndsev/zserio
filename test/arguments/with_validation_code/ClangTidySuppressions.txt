@@ -55,17 +55,6 @@ google-build-using-namespace:cpp/VirtualTableValidationTest.cpp
 
 google-explicit-constructor:gen/with_validation_code/simple_table_validation/TestBitmask.h
 
-modernize-use-using:gen/with_validation_code/blob_table_validation/BlobTableValidationDb.h
-modernize-use-using:gen/with_validation_code/column_type_validation/ColumnTypeDb.h
-modernize-use-using:gen/with_validation_code/constraint_table_validation/ConstraintTableValidationDb.h
-modernize-use-using:gen/with_validation_code/control_validation/ControlValidationDb.h
-modernize-use-using:gen/with_validation_code/depend_table_validation/DependTableValidationDb.h
-modernize-use-using:gen/with_validation_code/full_range_table_validation/FullRangeTableValidationDb.h
-modernize-use-using:gen/with_validation_code/hidden_column_table_validation/HiddenColumnTableValidationDb.h
-modernize-use-using:gen/with_validation_code/simple_table_validation/SimpleTableValidationDb.h
-modernize-use-using:gen/with_validation_code/virtual_table_validation/AnotherId.h
-modernize-use-using:gen/with_validation_code/virtual_table_validation/VirtualTableValidationDb.h
-
 performance-move-const-arg:gen/with_validation_code/blob_table_validation/BlobTable.cpp
 performance-move-const-arg:gen/with_validation_code/column_type_validation/ColumnTypeTable.cpp
 performance-move-const-arg:gen/with_validation_code/constraint_table_validation/ConstraintTable.cpp

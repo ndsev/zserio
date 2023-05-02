@@ -25,26 +25,6 @@ cppcoreguidelines-pro-type-member-init:gen/choice_types/uint64_param_choice/UInt
 google-explicit-constructor:gen/choice_types/bitmask_param_choice/Selector.h
 google-explicit-constructor:gen/choice_types/full_bitmask_param_choice/Selector.h
 
-modernize-use-using:gen/choice_types/bool_param_choice/Black.h
-modernize-use-using:gen/choice_types/bool_param_choice/Grey.h
-modernize-use-using:gen/choice_types/default_empty_choice/VariantA.h
-modernize-use-using:gen/choice_types/default_empty_choice/VariantB.h
-modernize-use-using:gen/choice_types/enum_param_choice/Black.h
-modernize-use-using:gen/choice_types/enum_param_choice/Grey.h
-modernize-use-using:gen/choice_types/enum_param_choice/White.h
-modernize-use-using:gen/choice_types/full_enum_param_choice/Black.h
-modernize-use-using:gen/choice_types/full_enum_param_choice/Grey.h
-modernize-use-using:gen/choice_types/full_enum_param_choice/White.h
-modernize-use-using:gen/choice_types/uint16_param_choice/VariantA.h
-modernize-use-using:gen/choice_types/uint16_param_choice/VariantB.h
-modernize-use-using:gen/choice_types/uint16_param_choice/VariantC.h
-modernize-use-using:gen/choice_types/uint32_param_choice/VariantA.h
-modernize-use-using:gen/choice_types/uint32_param_choice/VariantB.h
-modernize-use-using:gen/choice_types/uint32_param_choice/VariantC.h
-modernize-use-using:gen/choice_types/uint64_param_choice/VariantA.h
-modernize-use-using:gen/choice_types/uint64_param_choice/VariantB.h
-modernize-use-using:gen/choice_types/uint64_param_choice/VariantC.h
-
 performance-move-const-arg:gen/choice_types/choice_compatibility_check/ChoiceVersion1.cpp
 performance-move-const-arg:gen/choice_types/choice_compatibility_check/ChoiceVersion2.cpp
 performance-move-const-arg:gen/choice_types/choice_compatibility_check/HolderVersion1.cpp

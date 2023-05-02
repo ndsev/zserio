@@ -49,10 +49,6 @@ google-explicit-constructor:gen/array_types/packed_variable_array_struct/TestBit
 
 misc-no-recursion # reports also tested_release and some system headers
 
-modernize-use-using:gen/array_types/auto_array_subtyped_uint8/ArrayElement.h
-modernize-use-using:gen/array_types/packed_variable_array_struct/Bit15.h
-modernize-use-using:gen/array_types/variable_array_subtyped_struct/ArrayElement.h
-
 performance-move-const-arg:gen/array_types/packed_variable_array_struct/PackedVariableArray.cpp
 performance-move-const-arg:gen/array_types/packed_variable_array_struct/TestChoice.cpp
 performance-move-const-arg:gen/array_types/packed_variable_array_struct/TestStructure.cpp

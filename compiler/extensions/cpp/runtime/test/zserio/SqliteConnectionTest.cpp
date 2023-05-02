@@ -18,8 +18,8 @@ namespace
     class SqliteResultAccumulator
     {
     public:
-        typedef std::vector<std::string> TRow;
-        typedef std::vector<TRow> TResult;
+        using TRow = std::vector<std::string>;
+        using TResult = std::vector<TRow>;
 
         TResult const& getResult() const
         {

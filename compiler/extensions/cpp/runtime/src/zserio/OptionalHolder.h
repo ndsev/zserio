@@ -509,10 +509,10 @@ private:
     // Caution!
     // We use static constants as a WORKAROUND for a GCC 8/9 bug observed when cross-compiling with -m32 flag.
     // The compilers somehow spoils the aligned storage when alignof(T) is used directly as the template
-    // argument which leads to "*** stack smashing detected ***" error (as observed in some langauge tests).
+    // argument which leads to "*** stack smashing detected ***" error (as observed in some language tests).
     static constexpr size_t SIZEOF_T = sizeof(T);
     static constexpr size_t ALIGNOF_T = alignof(T);
-    typedef typename std::aligned_storage<SIZEOF_T, ALIGNOF_T>::type AlignedStorage;
+    using AlignedStorage = typename std::aligned_storage<SIZEOF_T, ALIGNOF_T>::type;
     AlignedStorage m_inPlace;
 };
 

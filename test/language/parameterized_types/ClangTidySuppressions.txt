@@ -34,8 +34,6 @@ google-explicit-constructor:gen/parameterized_types/fixed_and_variable_param/Acc
 
 hicpp-signed-bitwise:gen/parameterized_types/fixed_and_variable_param/Access.h
 
-modernize-use-using:gen/parameterized_types/subtyped_bitfield_param/ParamType.h
-
 performance-move-const-arg:gen/parameterized_types/array_element_param/Database.cpp
 performance-move-const-arg:gen/parameterized_types/bytes_param/Parameterized.cpp
 performance-move-const-arg:gen/parameterized_types/dynamic_bitfield_param/DynamicBitfieldParamHolder.cpp

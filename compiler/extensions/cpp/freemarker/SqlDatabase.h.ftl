@@ -73,7 +73,7 @@ public:
 <#if withCodeComments>
     /** Typedef for table relocation map which maps tables to different databases. */
 </#if>
-    typedef <@map_type_name types.string.name, types.string.name/> TRelocationMap;
+    using TRelocationMap = <@map_type_name types.string.name, types.string.name/>;
 
 <#if withCodeComments>
     /**

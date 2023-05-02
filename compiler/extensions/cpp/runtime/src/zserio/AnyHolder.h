@@ -18,7 +18,7 @@ namespace detail
     class TypeIdHolder
     {
     public:
-        typedef const int* type_id;
+        using type_id = const int*;
 
         template <typename T>
         static type_id get()
@@ -214,7 +214,7 @@ namespace detail
     union UntypedHolder
     {
         // 2 * sizeof(void*) for T + sizeof(void*) for Holder's vptr
-        typedef std::aligned_storage<3 * sizeof(void*), alignof(void*)>::type MaxInPlaceType;
+        using MaxInPlaceType = std::aligned_storage<3 * sizeof(void*), alignof(void*)>::type;
 
         detail::IHolder<ALLOC>* heap;
         MaxInPlaceType inPlace;

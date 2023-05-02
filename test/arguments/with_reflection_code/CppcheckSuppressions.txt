@@ -1,3 +1,4 @@
 noExplicitConstructor:*/with_reflection_code/Bitmask.h
 uninitMemberVar:*/with_reflection_code/Parameterized.cpp
 uninitMemberVar:*/with_reflection_code/Parameterized.h
+uninitMemberVar:*/with_reflection_code/Choice.cpp

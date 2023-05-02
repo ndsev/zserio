@@ -13,15 +13,15 @@ namespace
     // max size calculated to prevent overflows in internal comparisons
     const size_t MAX_BUFFER_SIZE = std::numeric_limits<size_t>::max() / 8 - 4;
 
-    typedef BitStreamReader::BitPosType BitPosType;
-    typedef BitStreamReader::ReaderContext ReaderContext;
+    using BitPosType = BitStreamReader::BitPosType;
+    using ReaderContext = BitStreamReader::ReaderContext;
 
 #ifdef ZSERIO_RUNTIME_64BIT
-    typedef uint64_t BaseType;
-    typedef int64_t BaseSignedType;
+    using BaseType = uint64_t;
+    using BaseSignedType = int64_t;
 #else
-    typedef uint32_t BaseType;
-    typedef int32_t BaseSignedType;
+    using BaseType = uint32_t;
+    using BaseSignedType = int32_t;
 #endif
 
     static_assert(sizeof(uintptr_t) == sizeof(BaseType), "Unexpected uintptr_t sizeof!");

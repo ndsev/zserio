@@ -13,8 +13,6 @@ google-explicit-constructor:gen/without_writer_code/VersionAvailability.h
 
 hicpp-signed-bitwise:gen/without_writer_code/VersionAvailability.h
 
-modernize-use-using:gen/without_writer_code/WorldDb.h
-
 performance-move-const-arg:gen/without_writer_code/ItemChoiceHolder.cpp
 performance-move-const-arg:gen/without_writer_code/Item.cpp
 

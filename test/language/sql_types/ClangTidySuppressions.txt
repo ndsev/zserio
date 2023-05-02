@@ -10,6 +10,4 @@ fuchsia-multiple-inheritance:gen/sql_types/SqlTypesDb.h
 
 google-explicit-constructor:gen/sql_types/TestBitmask.h
 
-modernize-use-using:gen/sql_types/SqlTypesDb.h
-
 readability-make-member-function-const:gen/sql_types/TestChoice.cpp

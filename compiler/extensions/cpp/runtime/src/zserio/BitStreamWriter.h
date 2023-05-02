@@ -29,7 +29,7 @@ public:
     };
 
     /** Type for bit position. */
-    typedef size_t BitPosType;
+    using BitPosType = size_t;
 
     /**
      * Constructor from externally allocated byte buffer.

@@ -34,14 +34,6 @@ google-explicit-constructor:gen_doc_comment_missing/doc_comment_missing_warning/
 hicpp-multiway-paths-covered:gen_doc_comment_missing/doc_comment_missing_warning/all_nodes/EnumType.cpp
 hicpp-multiway-paths-covered:gen_doc_comment_missing/doc_comment_missing_warning/documented/DocumentedEnumType.cpp
 
-modernize-use-using:gen/comments_warning/markdown_comment_with_wrong_terminator/TestDatabase.h
-modernize-use-using:gen/comments_warning/unresolved_see_tag_reference/Database.h
-modernize-use-using:gen/comments_warning/unused_field_comments/Database.h
-modernize-use-using:gen/comments_warning/unused_struct_comment_by_id/Database.h
-modernize-use-using:gen/comments_warning/unused_struct_comment_multiple_comments/Database.h
-modernize-use-using:gen_doc_comment_missing/doc_comment_missing_warning/all_nodes/SqlDatabaseType.h
-modernize-use-using:gen_doc_comment_missing/doc_comment_missing_warning/documented/DocumentedSqlDatabaseType.h
-
 performance-move-const-arg:gen/comments_warning/unresolved_see_tag_reference/Table.cpp
 performance-move-const-arg:gen/comments_warning/unused_field_comments/Table.cpp
 performance-move-const-arg:gen/comments_warning/unused_struct_comment_by_id/Table.cpp

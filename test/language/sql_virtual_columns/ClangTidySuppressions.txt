@@ -10,6 +10,3 @@ fuchsia-multiple-inheritance:gen/sql_virtual_columns/hidden_virtual_columns/Hidd
 fuchsia-multiple-inheritance:gen/sql_virtual_columns/simple_virtual_columns/SimpleVirtualColumnsDb.h
 
 google-build-using-namespace:cpp/HiddenVirtualColumnsTest.cpp
-
-modernize-use-using:gen/sql_virtual_columns/hidden_virtual_columns/HiddenVirtualColumnsDb.h
-modernize-use-using:gen/sql_virtual_columns/simple_virtual_columns/SimpleVirtualColumnsDb.h

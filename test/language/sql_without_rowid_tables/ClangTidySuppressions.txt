@@ -11,6 +11,3 @@ fuchsia-multiple-inheritance:gen/sql_without_rowid_tables/simple_without_rowid_t
 
 google-build-using-namespace:cpp/RowIdAndWithoutRowIdTablesTest.cpp
 google-build-using-namespace:cpp/SimpleWithoutRowIdTableTest.cpp
-
-modernize-use-using:gen/sql_without_rowid_tables/rowid_and_without_rowid_tables/RowIdAndWithoutRowIdDb.h
-modernize-use-using:gen/sql_without_rowid_tables/simple_without_rowid_table/SimpleWithoutRowIdDb.h

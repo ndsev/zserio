@@ -11,7 +11,7 @@
 <#if withCodeComments && docComments??>
 <@doc_comments docComments/>
 </#if>
-typedef ${targetTypeInfo.typeFullName} ${name};
+using ${name} = ${targetTypeInfo.typeFullName};
 <@namespace_end package.path/>
 
 <@include_guard_end package.path, name/>

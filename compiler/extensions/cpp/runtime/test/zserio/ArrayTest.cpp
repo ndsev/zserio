@@ -43,7 +43,7 @@ enum class DummyEnum : uint8_t
 class DummyBitmask
 {
 public:
-    typedef uint8_t underlying_type;
+    using underlying_type = uint8_t;
 
     struct Values
     {

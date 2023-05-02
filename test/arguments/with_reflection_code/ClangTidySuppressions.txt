@@ -18,8 +18,6 @@ google-explicit-constructor:gen/with_reflection_code/Bitmask.h
 
 hicpp-signed-bitwise:gen/with_reflection_code/Bitmask.h
 
-modernize-use-using:gen/with_reflection_code/Selector.h
-
 performance-move-const-arg:gen/with_reflection_code/Struct.cpp
 
 readability-make-member-function-const:gen/with_reflection_code/Child.cpp

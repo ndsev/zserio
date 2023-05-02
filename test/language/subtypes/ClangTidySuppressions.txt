@@ -6,13 +6,6 @@ cppcoreguidelines-pro-type-member-init:gen/subtypes/param_structure_subtype/Para
 
 google-explicit-constructor:gen/subtypes/bitmask_subtype/Permission.h
 
-modernize-use-using:gen/subtypes/bitmask_subtype/PermissionSubtype.h
-modernize-use-using:gen/subtypes/enum_subtype/ColorSubtype.h
-modernize-use-using:gen/subtypes/param_structure_subtype/ParameterizedSubtype.h
-modernize-use-using:gen/subtypes/structure_subtype/Student.h
-modernize-use-using:gen/subtypes/subtype_imported/pkg/SubTest.h
-modernize-use-using:gen/subtypes/uint16_subtype/Identifier.h
-
 performance-move-const-arg:gen/subtypes/param_structure_subtype/ParameterizedSubtypeStruct.cpp
 performance-move-const-arg:gen/subtypes/subtype_imported/SubtypeImported.cpp
 

@@ -13,10 +13,5 @@ google-explicit-constructor:gen/constants/Permission.h
 
 hicpp-signed-bitwise:gen/constants/Permission.h
 
-modernize-use-using:gen/constants/ColorsSubtype.h
-modernize-use-using:gen/constants/Int25Subtype.h
-modernize-use-using:gen/constants/PermissionSubtype.h
-modernize-use-using:gen/constants/StringSubtype.h
-
 readability-uppercase-literal-suffix:gen/constants/FLOAT16_CONSTANT.h
 readability-uppercase-literal-suffix:gen/constants/FLOAT32_CONSTANT.h

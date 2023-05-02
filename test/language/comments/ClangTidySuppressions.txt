@@ -25,9 +25,6 @@ google-explicit-constructor:gen/comments/markdown_doc/bitmask_comments/Permissio
 hicpp-signed-bitwise:gen/comments/classic_doc/bitmask_comments/Permission.h
 hicpp-signed-bitwise:gen/comments/markdown_doc/bitmask_comments/Permission.h
 
-modernize-use-using:gen/comments/classic_doc/sql_database_comments/Db.h
-modernize-use-using:gen/comments/markdown_doc/sql_database_comments/Db.h
-
 performance-move-const-arg:gen/comments/classic_doc/struct_comments/DirectionStructure.cpp
 performance-move-const-arg:gen/comments/classic_doc/struct_template_comments/Field_Compound.cpp
 performance-move-const-arg:gen/comments/classic_doc/struct_template_comments/StructTemplatedField.cpp

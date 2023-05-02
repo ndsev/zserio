@@ -52,12 +52,6 @@ fuchsia-multiple-inheritance:gen/sql_tables/TestDb.h
 
 google-explicit-constructor:gen/sql_tables/subtyped_bitmask_field_table/TestBitmask.h
 
-modernize-use-using:gen/sql_tables/TestDb.h
-modernize-use-using:gen/sql_tables/subtyped_bitmask_field_table/SubtypedBitmask.h
-modernize-use-using:gen/sql_tables/subtyped_bool_field_table/SubtypedBool.h
-modernize-use-using:gen/sql_tables/subtyped_enum_field_table/SubtypedEnum.h
-modernize-use-using:gen/sql_tables/subtyped_table/SubtypedTable.h
-
 performance-move-const-arg:gen/sql_tables/blob_field_with_children_initialization_table/BlobWithChildrenInitialization.cpp
 performance-move-const-arg:gen/sql_tables/blob_param_table/BlobParamTable.cpp
 performance-move-const-arg:gen/sql_tables/column_param_table/ParameterizedBlob.cpp

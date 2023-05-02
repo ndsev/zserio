@@ -41,9 +41,6 @@ hicpp-signed-bitwise:gen/with_type_info_code/TestBitmask.h
 
 misc-no-recursion # reports also tested_release and some system headers
 
-modernize-use-using:gen/with_type_info_code/SqlDatabase.h
-modernize-use-using:gen/with_type_info_code/SubtypedSimpleStruct.h
-
 performance-move-const-arg:gen/with_type_info_code/ComplexStruct.cpp
 performance-move-const-arg:gen/with_type_info_code/WithTypeInfoCode.cpp
 

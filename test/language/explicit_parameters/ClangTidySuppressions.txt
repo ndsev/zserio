@@ -35,8 +35,6 @@ google-explicit-constructor:gen/explicit_parameters/explicit_bitmask_param/TestB
 
 hicpp-signed-bitwise:gen/explicit_parameters/explicit_bitmask_param/TestBitmask.h
 
-modernize-use-using:gen/explicit_parameters/ExplicitParametersDb.h
-
 performance-move-const-arg:gen/explicit_parameters/multiple_with_same_name/Parameterized1.cpp
 performance-move-const-arg:gen/explicit_parameters/multiple_with_same_name/Parameterized2.cpp
 

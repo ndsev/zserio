@@ -46,7 +46,7 @@ WalkerObject createWalkerObject(uint32_t identifier = 13, bool createNested = tr
 class TestWalkObserver : public IWalkObserver
 {
 public:
-    typedef std::map<StringView, std::vector<IReflectableConstPtr>> CapturesMap;
+    using CapturesMap = std::map<StringView, std::vector<IReflectableConstPtr>>;
 
     TestWalkObserver()
     {

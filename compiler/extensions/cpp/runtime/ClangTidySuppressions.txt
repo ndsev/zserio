@@ -1,7 +1,3 @@
-# global suppressions
-modernize-use-using                                 # too many cases
-
-# suppressions per line
 bugprone-signed-char-misuse:src/zserio/PackingContext.h:119
 bugprone-signed-char-misuse:src/zserio/PackingContext.h:136
 bugprone-signed-char-misuse:src/zserio/PackingContext.h:199

@@ -29,8 +29,6 @@ google-explicit-constructor:gen_sql_allocation/sql_allocation/Role.h
 
 misc-no-recursion # reports also tested_release and some system headers
 
-modernize-use-using:gen_sql_allocation/sql_allocation/SqlAllocationDb.h
-
 performance-move-const-arg:gen_complex_allocation/complex_allocation/MainStructure.cpp
 performance-move-const-arg:gen_complex_allocation/complex_allocation/allocation_choice/AllocationChoice.cpp
 performance-move-const-arg:gen_complex_allocation/complex_allocation/allocation_union/AllocationUnion.cpp

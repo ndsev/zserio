@@ -23,3 +23,5 @@ uninitMemberVar:*/parameterized_types/parameterized_param/ParameterizedParam.cpp
 uninitMemberVar:*/parameterized_types/parameterized_param/ParameterizedParam.h
 uninitMemberVar:*/parameterized_types/simple_param/Item.cpp
 uninitMemberVar:*/parameterized_types/simple_param/Item.h
+uninitMemberVar:*/parameterized_types/subtyped_bitfield_param/SubtypedBitfieldParam.cpp
+uninitMemberVar:*/parameterized_types/subtyped_bitfield_param/SubtypedBitfieldParam.h

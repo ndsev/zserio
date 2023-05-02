@@ -203,7 +203,7 @@ public:
     template<typename U>
     struct rebind
     {
-        typedef PolymorphicAllocator<U> other;
+        using other = PolymorphicAllocator<U>;
     };
 };
 
@@ -236,7 +236,7 @@ public:
     template<typename U>
     struct rebind
     {
-        typedef PropagatingPolymorphicAllocator<U> other;
+        using other = PropagatingPolymorphicAllocator<U>;
     };
 };
 

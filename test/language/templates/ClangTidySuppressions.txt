@@ -128,15 +128,6 @@ hicpp-multiway-paths-covered:gen/templates/choice_templated_selector/Shift32.cpp
 
 misc-no-recursion # reports also tested_release and some system headers
 
-modernize-use-using:gen/templates/instantiate_type_as_sql_database_field/InstantiateTypeAsSqlDatabaseFieldDb.h
-modernize-use-using:gen/templates/sql_table_templated_field/SqlTableTemplatedFieldDb.h
-modernize-use-using:gen/templates/subtype_template_argument/AnotherCompoundType.h
-modernize-use-using:gen/templates/subtype_template_argument/AnotherUInt32Type.h
-modernize-use-using:gen/templates/subtype_template_argument/CompoundType.h
-modernize-use-using:gen/templates/subtype_template_argument/UInt32Type.h
-modernize-use-using:gen/templates/subtype_template_with_builtin/TestStructureSubtype.h
-modernize-use-using:gen/templates/subtype_template_with_compound/SubtypeTemplateWithCompound.h
-
 performance-move-const-arg:gen/templates/choice_templated_enum_selector/ChoiceTemplatedEnumSelector.cpp
 performance-move-const-arg:gen/templates/choice_templated_field/ChoiceTemplatedField.cpp
 performance-move-const-arg:gen/templates/choice_templated_field/TemplatedChoice_Compound_uint32_uint16.cpp
