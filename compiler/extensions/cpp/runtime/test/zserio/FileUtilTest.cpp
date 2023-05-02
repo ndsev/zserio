@@ -18,7 +18,7 @@ TEST(FileUtilTest, writeReadByteBufferBitSize)
     ASSERT_EQ(24, readBitBuffer.getBitSize());
     for (size_t i = 0; i < 3; ++i)
     {
-        ASSERT_EQ(buffer[i], readBitBuffer.getBuffer()[i]);
+        ASSERT_EQ(buffer[i], readBitBuffer.getData()[i]);
     }
 
     const std::string invalidFileName = "";
@@ -37,7 +37,7 @@ TEST(FileUtilTest, writeReadByteBufferByteSize)
     ASSERT_EQ(24, readBitBuffer.getBitSize());
     for (size_t i = 0; i < 3; ++i)
     {
-        ASSERT_EQ(buffer[i], readBitBuffer.getBuffer()[i]);
+        ASSERT_EQ(buffer[i], readBitBuffer.getData()[i]);
     }
 }
 
@@ -52,7 +52,7 @@ TEST(FileUtilTest, writeReadBitBuffer)
     ASSERT_EQ(24, readBitBuffer.getBitSize());
     for (size_t i = 0; i < 3; ++i)
     {
-        ASSERT_EQ(bitBuffer.getBuffer()[i], readBitBuffer.getBuffer()[i]);
+        ASSERT_EQ(bitBuffer.getData()[i], readBitBuffer.getData()[i]);
     }
 }
 
@@ -71,7 +71,7 @@ TEST(FileUtilTest, writeReadBitStreamWriter)
     ASSERT_EQ(24, readBitBuffer.getBitSize());
     for (size_t i = 0; i < 3; ++i)
     {
-        ASSERT_EQ(bitBuffer.getBuffer()[i], readBitBuffer.getBuffer()[i]);
+        ASSERT_EQ(bitBuffer.getData()[i], readBitBuffer.getData()[i]);
     }
 }
 

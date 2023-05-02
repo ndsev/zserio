@@ -24,7 +24,7 @@ TEST(SerializeUtilTest, serializeEnum)
                 test_object::std_allocator::SerializeEnum::VALUE3;
         const BitBuffer bitBuffer = serialize(serializeEnum);
         ASSERT_EQ(8, bitBuffer.getBitSize());
-        ASSERT_EQ(0x02, bitBuffer.getBuffer()[0]);
+        ASSERT_EQ(0x02, bitBuffer.getData()[0]);
     }
 
     // with std allocator
@@ -34,7 +34,7 @@ TEST(SerializeUtilTest, serializeEnum)
                 test_object::std_allocator::SerializeEnum::VALUE3;
         const BitBuffer bitBuffer = serialize(serializeEnum, allocator);
         ASSERT_EQ(8, bitBuffer.getBitSize());
-        ASSERT_EQ(0x02, bitBuffer.getBuffer()[0]);
+        ASSERT_EQ(0x02, bitBuffer.getData()[0]);
     }
 
     // with polymorphic allocator
@@ -45,7 +45,7 @@ TEST(SerializeUtilTest, serializeEnum)
         const BasicBitBuffer<pmr::PropagatingPolymorphicAllocator<>> bitBuffer =
                 serialize(serializeEnum, allocator);
         ASSERT_EQ(8, bitBuffer.getBitSize());
-        ASSERT_EQ(0x02, bitBuffer.getBuffer()[0]);
+        ASSERT_EQ(0x02, bitBuffer.getData()[0]);
     }
 }
 
@@ -59,11 +59,11 @@ TEST(SerializeUtilTest, serializeParameterizedObject)
         test_object::std_allocator::SerializeNested serializeNested(offset, optionalValue);
         const BitBuffer bitBuffer = serialize(serializeNested, param);
         ASSERT_EQ(40, bitBuffer.getBitSize());
-        ASSERT_EQ(0x01, bitBuffer.getBuffer()[0]);
-        ASSERT_EQ(0xDE, bitBuffer.getBuffer()[1]);
-        ASSERT_EQ(0xAD, bitBuffer.getBuffer()[2]);
-        ASSERT_EQ(0xCA, bitBuffer.getBuffer()[3]);
-        ASSERT_EQ(0xFE, bitBuffer.getBuffer()[4]);
+        ASSERT_EQ(0x01, bitBuffer.getData()[0]);
+        ASSERT_EQ(0xDE, bitBuffer.getData()[1]);
+        ASSERT_EQ(0xAD, bitBuffer.getData()[2]);
+        ASSERT_EQ(0xCA, bitBuffer.getData()[3]);
+        ASSERT_EQ(0xFE, bitBuffer.getData()[4]);
     }
 
     {
@@ -72,11 +72,11 @@ TEST(SerializeUtilTest, serializeParameterizedObject)
         test_object::std_allocator::SerializeNested serializeNested(offset, optionalValue, allocator);
         const BitBuffer bitBuffer = serialize(serializeNested, allocator, param);
         ASSERT_EQ(40, bitBuffer.getBitSize());
-        ASSERT_EQ(0x01, bitBuffer.getBuffer()[0]);
-        ASSERT_EQ(0xDE, bitBuffer.getBuffer()[1]);
-        ASSERT_EQ(0xAD, bitBuffer.getBuffer()[2]);
-        ASSERT_EQ(0xCA, bitBuffer.getBuffer()[3]);
-        ASSERT_EQ(0xFE, bitBuffer.getBuffer()[4]);
+        ASSERT_EQ(0x01, bitBuffer.getData()[0]);
+        ASSERT_EQ(0xDE, bitBuffer.getData()[1]);
+        ASSERT_EQ(0xAD, bitBuffer.getData()[2]);
+        ASSERT_EQ(0xCA, bitBuffer.getData()[3]);
+        ASSERT_EQ(0xFE, bitBuffer.getData()[4]);
     }
 
     {
@@ -86,11 +86,11 @@ TEST(SerializeUtilTest, serializeParameterizedObject)
         const BasicBitBuffer<pmr::PropagatingPolymorphicAllocator<>> bitBuffer =
                 serialize(serializeNested, allocator, param);
         ASSERT_EQ(40, bitBuffer.getBitSize());
-        ASSERT_EQ(0x01, bitBuffer.getBuffer()[0]);
-        ASSERT_EQ(0xDE, bitBuffer.getBuffer()[1]);
-        ASSERT_EQ(0xAD, bitBuffer.getBuffer()[2]);
-        ASSERT_EQ(0xCA, bitBuffer.getBuffer()[3]);
-        ASSERT_EQ(0xFE, bitBuffer.getBuffer()[4]);
+        ASSERT_EQ(0x01, bitBuffer.getData()[0]);
+        ASSERT_EQ(0xDE, bitBuffer.getData()[1]);
+        ASSERT_EQ(0xAD, bitBuffer.getData()[2]);
+        ASSERT_EQ(0xCA, bitBuffer.getData()[3]);
+        ASSERT_EQ(0xFE, bitBuffer.getData()[4]);
     }
 }
 
@@ -105,12 +105,12 @@ TEST(SerializeUtilTest, serializeObject)
         test_object::std_allocator::SerializeObject serializeObject(param, serializeNested);
         const BitBuffer bitBuffer = serialize(serializeObject);
         ASSERT_EQ(48, bitBuffer.getBitSize());
-        ASSERT_EQ(0x12, bitBuffer.getBuffer()[0]);
-        ASSERT_EQ(0x02, bitBuffer.getBuffer()[1]);
-        ASSERT_EQ(0xDE, bitBuffer.getBuffer()[2]);
-        ASSERT_EQ(0xAD, bitBuffer.getBuffer()[3]);
-        ASSERT_EQ(0xCA, bitBuffer.getBuffer()[4]);
-        ASSERT_EQ(0xFE, bitBuffer.getBuffer()[5]);
+        ASSERT_EQ(0x12, bitBuffer.getData()[0]);
+        ASSERT_EQ(0x02, bitBuffer.getData()[1]);
+        ASSERT_EQ(0xDE, bitBuffer.getData()[2]);
+        ASSERT_EQ(0xAD, bitBuffer.getData()[3]);
+        ASSERT_EQ(0xCA, bitBuffer.getData()[4]);
+        ASSERT_EQ(0xFE, bitBuffer.getData()[5]);
     }
 
     {
@@ -120,12 +120,12 @@ TEST(SerializeUtilTest, serializeObject)
         test_object::std_allocator::SerializeObject serializeObject(param, serializeNested, allocator);
         const BitBuffer bitBuffer = serialize(serializeObject, allocator);
         ASSERT_EQ(48, bitBuffer.getBitSize());
-        ASSERT_EQ(0x12, bitBuffer.getBuffer()[0]);
-        ASSERT_EQ(0x02, bitBuffer.getBuffer()[1]);
-        ASSERT_EQ(0xDE, bitBuffer.getBuffer()[2]);
-        ASSERT_EQ(0xAD, bitBuffer.getBuffer()[3]);
-        ASSERT_EQ(0xCA, bitBuffer.getBuffer()[4]);
-        ASSERT_EQ(0xFE, bitBuffer.getBuffer()[5]);
+        ASSERT_EQ(0x12, bitBuffer.getData()[0]);
+        ASSERT_EQ(0x02, bitBuffer.getData()[1]);
+        ASSERT_EQ(0xDE, bitBuffer.getData()[2]);
+        ASSERT_EQ(0xAD, bitBuffer.getData()[3]);
+        ASSERT_EQ(0xCA, bitBuffer.getData()[4]);
+        ASSERT_EQ(0xFE, bitBuffer.getData()[5]);
     }
 
     {
@@ -136,12 +136,12 @@ TEST(SerializeUtilTest, serializeObject)
         const BasicBitBuffer<pmr::PropagatingPolymorphicAllocator<>> bitBuffer =
                 serialize(serializeObject, allocator);
         ASSERT_EQ(48, bitBuffer.getBitSize());
-        ASSERT_EQ(0x12, bitBuffer.getBuffer()[0]);
-        ASSERT_EQ(0x02, bitBuffer.getBuffer()[1]);
-        ASSERT_EQ(0xDE, bitBuffer.getBuffer()[2]);
-        ASSERT_EQ(0xAD, bitBuffer.getBuffer()[3]);
-        ASSERT_EQ(0xCA, bitBuffer.getBuffer()[4]);
-        ASSERT_EQ(0xFE, bitBuffer.getBuffer()[5]);
+        ASSERT_EQ(0x12, bitBuffer.getData()[0]);
+        ASSERT_EQ(0x02, bitBuffer.getData()[1]);
+        ASSERT_EQ(0xDE, bitBuffer.getData()[2]);
+        ASSERT_EQ(0xAD, bitBuffer.getData()[3]);
+        ASSERT_EQ(0xCA, bitBuffer.getData()[4]);
+        ASSERT_EQ(0xFE, bitBuffer.getData()[5]);
     }
 }
 

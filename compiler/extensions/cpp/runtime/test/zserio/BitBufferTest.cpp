@@ -152,11 +152,12 @@ TEST(BitBufferTest, copyConstructor)
     const BitBuffer copiedBitBuffer(bitBuffer);
     ASSERT_EQ(bitBuffer.getBitSize(), copiedBitBuffer.getBitSize());
     ASSERT_EQ(bitBuffer.getByteSize(), copiedBitBuffer.getByteSize());
-    const uint8_t* copiedBuffer = copiedBitBuffer.getBuffer();
+    const Span<const uint8_t> copiedBuffer = copiedBitBuffer.getData();
+    size_t index = 0;
     for (uint8_t element : buffer)
     {
-        ASSERT_EQ(element, *copiedBuffer);
-        copiedBuffer++;
+        ASSERT_EQ(element, copiedBuffer[index]);
+        ++index;
     }
 }
 
@@ -169,11 +170,12 @@ TEST(BitBufferTest, assignmentOperator)
     const BitBuffer copiedBitBuffer = bitBuffer;
     ASSERT_EQ(bitBuffer.getBitSize(), copiedBitBuffer.getBitSize());
     ASSERT_EQ(bitBuffer.getByteSize(), copiedBitBuffer.getByteSize());
-    const uint8_t* copiedBuffer = copiedBitBuffer.getBuffer();
+    const Span<const uint8_t> copiedBuffer = copiedBitBuffer.getData();
+    size_t index = 0;
     for (uint8_t element : buffer)
     {
-        ASSERT_EQ(element, *copiedBuffer);
-        copiedBuffer++;
+        ASSERT_EQ(element, copiedBuffer[index]);
+        ++index;
     }
 }
 

@@ -341,12 +341,13 @@ TEST(ZserioTreeCreatorTest, createObjectFull)
     ASSERT_EQ(13, reflectable->find("nested.param")->getUInt32());
     ASSERT_EQ(10, reflectable->find("nested.value")->getUInt32());
     ASSERT_EQ("nested"_sv, reflectable->find("nested.text")->getStringView());
-    ASSERT_EQ(0x3C, reflectable->find("nested.externData")->getBitBuffer().getBuffer()[0]);
+    ASSERT_EQ(0x3C, reflectable->find("nested.externData")->getBitBuffer().getData()[0]);
     ASSERT_EQ(6, reflectable->find("nested.externData")->getBitBuffer().getBitSize());
     ASSERT_EQ(1, reflectable->find("nested.bytesData")->getBytes().size());
     ASSERT_EQ(0xFF, reflectable->find("nested.bytesData")->getBytes()[0]);
     ASSERT_EQ(enumToValue(CreatorEnum::ONE), reflectable->find("nested.creatorEnum")->getInt8());
-    ASSERT_EQ(CreatorBitmask::Values::WRITE, CreatorBitmask(reflectable->find("nested.creatorBitmask")->getUInt8()));
+    ASSERT_EQ(CreatorBitmask::Values::WRITE,
+            CreatorBitmask(reflectable->find("nested.creatorBitmask")->getUInt8()));
     ASSERT_EQ(1, reflectable->getField("nestedArray")->size());
     ASSERT_EQ(5, reflectable->getField("nestedArray")->at(0)->getField("value")->getUInt32());
     ASSERT_EQ("nestedArray"_sv, reflectable->getField("nestedArray")->at(0)->getField("text")->getStringView());
@@ -360,7 +361,7 @@ TEST(ZserioTreeCreatorTest, createObjectFull)
     ASSERT_EQ("text"_sv, reflectable->getField("textArray")->at(2)->getStringView());
     ASSERT_EQ("array"_sv, reflectable->getField("textArray")->at(3)->getStringView());
     ASSERT_EQ(1, reflectable->getField("externArray")->size());
-    ASSERT_EQ(0x0f, reflectable->getField("externArray")->at(0)->getBitBuffer().getBuffer()[0]);
+    ASSERT_EQ(0x0f, reflectable->getField("externArray")->at(0)->getBitBuffer().getData()[0]);
     ASSERT_EQ(4, reflectable->getField("externArray")->at(0)->getBitBuffer().getBitSize());
     ASSERT_EQ(1, reflectable->getField("bytesArray")->size());
     ASSERT_EQ(2, reflectable->getField("bytesArray")->at(0)->getBytes().size());
