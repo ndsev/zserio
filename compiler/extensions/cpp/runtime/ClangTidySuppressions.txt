@@ -11,22 +11,6 @@ bugprone-use-after-move:test/zserio/HeapOptionalHolderTest.cpp:186
 bugprone-use-after-move:test/zserio/HeapOptionalHolderTest.cpp:248
 bugprone-use-after-move:test/zserio/HeapOptionalHolderTest.cpp:257
 
-cert-err58-cpp:test/zserio/ArrayTest.cpp:127
-cert-err58-cpp:test/zserio/ArrayTest.cpp:128
-cert-err58-cpp:test/zserio/ArrayTest.cpp:129
-cert-err58-cpp:test/zserio/JsonWriterTest.cpp:15
-cert-err58-cpp:test/zserio/JsonWriterTest.cpp:20
-cert-err58-cpp:test/zserio/JsonWriterTest.cpp:25
-cert-err58-cpp:test/zserio/JsonWriterTest.cpp:30
-cert-err58-cpp:test/zserio/JsonWriterTest.cpp:35
-cert-err58-cpp:test/zserio/JsonWriterTest.cpp:40
-cert-err58-cpp:test/zserio/JsonWriterTest.cpp:45
-cert-err58-cpp:test/zserio/JsonWriterTest.cpp:50
-cert-err58-cpp:test/zserio/JsonWriterTest.cpp:55
-cert-err58-cpp:test/zserio/JsonWriterTest.cpp:64
-cert-err58-cpp:test/zserio/JsonWriterTest.cpp:75
-cert-err58-cpp:test/zserio/JsonWriterTest.cpp:90
-
 cppcoreguidelines-avoid-c-arrays:src/zserio/Span.h:111
 cppcoreguidelines-avoid-c-arrays:src/zserio/Span.h:122
 cppcoreguidelines-avoid-c-arrays:src/zserio/Span.h:134
@@ -91,7 +75,7 @@ cppcoreguidelines-pro-type-member-init:src/zserio/ITypeInfo.h:451
 cppcoreguidelines-pro-type-member-init:src/zserio/OptionalHolder.h:529
 cppcoreguidelines-pro-type-member-init:src/zserio/PackingContext.h:61
 cppcoreguidelines-pro-type-member-init:src/zserio/PackingContext.h:68
-cppcoreguidelines-pro-type-member-init:test/zserio/ArrayTest.cpp:331
+cppcoreguidelines-pro-type-member-init:test/zserio/ArrayTest.cpp:327
 cppcoreguidelines-pro-type-member-init:test/zserio/DebugStringUtilTest.cpp:187
 cppcoreguidelines-pro-type-member-init:test/zserio/DebugStringUtilTest.cpp:192
 cppcoreguidelines-pro-type-member-init:test/zserio/DebugStringUtilTest.cpp:203
@@ -143,6 +127,7 @@ google-explicit-constructor:src/zserio/StringView.h:54
 google-explicit-constructor:src/zserio/StringView.h:74
 google-explicit-constructor:src/zserio/UniquePtr.h:57
 google-explicit-constructor:src/zserio/UniquePtr.h:68
+google-explicit-constructor:test/zserio/ArrayTest.cpp:63
 google-explicit-constructor:test/zserio/AllocatorPropagatingCopyTest.cpp:30
 google-explicit-constructor:test/zserio/BuiltInOperatorsTest.cpp:26
 google-explicit-constructor:test/zserio/HashCodeUtilTest.cpp:34

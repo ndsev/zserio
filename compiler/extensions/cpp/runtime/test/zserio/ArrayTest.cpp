@@ -45,23 +45,23 @@ class DummyBitmask
 public:
     using underlying_type = uint8_t;
 
-    struct Values
+    enum class Values : underlying_type
     {
-        static const DummyBitmask CREATE;
-        static const DummyBitmask READ;
-        static const DummyBitmask WRITE;
+        CREATE = UINT8_C(1),
+        READ = UINT8_C(2),
+        WRITE = UINT8_C(8)
     };
 
     explicit DummyBitmask(BitStreamReader& in) :
-        m_value(readValue(in))
-    {}
-
-    explicit DummyBitmask(underlying_type value) :
-        m_value(value)
+            m_value(readValue(in))
     {}
 
     DummyBitmask(PackingContextNode& contextNode, BitStreamReader& in) :
-        m_value(readValue(contextNode, in))
+            m_value(readValue(contextNode, in))
+    {}
+
+    constexpr DummyBitmask(Values value) noexcept :
+            m_value(static_cast<underlying_type>(value))
     {}
 
     static void createPackingContext(PackingContextNode& contextNode)
@@ -123,10 +123,6 @@ private:
 
     underlying_type m_value;
 };
-
-const DummyBitmask DummyBitmask::Values::CREATE = DummyBitmask(UINT8_C(1));
-const DummyBitmask DummyBitmask::Values::READ = DummyBitmask(UINT8_C(2));
-const DummyBitmask DummyBitmask::Values::WRITE = DummyBitmask(UINT8_C(8));
 
 class ElementBitSize
 {

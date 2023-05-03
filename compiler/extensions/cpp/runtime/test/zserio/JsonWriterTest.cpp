@@ -9,116 +9,88 @@
 namespace zserio
 {
 
-namespace
+class JsonWriterTest : public ::testing::Test
 {
+public:
+    JsonWriterTest() :
+            BOOL_FIELD_INFO{"boolField"_sv, BuiltinTypeInfo<>::getBool(),
+                    {}, {}, {}, {}, false, {}, {}, false, {}, false, false},
+            INT_FIELD_INFO{"intField"_sv, BuiltinTypeInfo<>::getInt32(),
+                    {}, {}, {}, {}, false, {}, {}, false, {}, false, false},
+            FLOAT_FIELD_INFO{"floatField"_sv, BuiltinTypeInfo<>::getFloat32(),
+                    {}, {}, {}, {}, false, {}, {}, false, {}, false, false},
+            DOUBLE_FIELD_INFO{"doubleField"_sv, BuiltinTypeInfo<>::getFloat64(),
+                    {}, {}, {}, {}, false, {}, {}, false, {}, false, false},
+            TEXT_FIELD_INFO{"text"_sv, BuiltinTypeInfo<>::getString(),
+                    {}, {}, {}, {}, false, {}, {}, false, {}, false, false},
+            IDENTIFIER_FIELD_INFO{"identifier", BuiltinTypeInfo<>::getUInt32(),
+                    {}, {}, {}, {}, false, {}, {}, false, {}, false, false},
+            EXTERN_DATA_FIELD_INFO{"externData"_sv, BuiltinTypeInfo<>::getBitBuffer(),
+                    {}, {}, {}, {}, false, {}, {}, false, {}, false, false},
+            BYTES_DATA_FIELD_INFO{"bytesData"_sv, BuiltinTypeInfo<>::getBytes(),
+                    {}, {}, {}, {}, false, {}, {}, false, {}, false, false},
+            DUMMY_TYPE_INFO{"Dummy"_sv, nullptr, {}, {}, {}, {}, {}},
+            NESTED_FIELD_INFO{"nested"_sv, DUMMY_TYPE_INFO,
+                    {}, {}, {}, {}, false, {}, {}, false, {}, false, false},
+            ARRAY_FIELD_INFO{"array", BuiltinTypeInfo<>::getUInt32(),
+                    {}, {}, {}, {}, false, {}, {}, true, {}, false, false},
+            ENUM_ITEMS{
+                    ItemInfo{"ZERO"_sv, static_cast<uint64_t>(0)},
+                    ItemInfo{"One"_sv, static_cast<uint64_t>(1)},
+                    ItemInfo{"MINUS_ONE"_sv, static_cast<uint64_t>(-1)}},
+            ENUM_TYPE_INFO{"DummyEnum"_sv, BuiltinTypeInfo<>::getInt8(), {}, ENUM_ITEMS},
+            ENUM_FIELD_INFO{"enumField"_sv, ENUM_TYPE_INFO,
+                    {}, {}, {}, {}, false, {}, {}, false, {}, false, false},
+            BITMASK_ITEMS{
+                    ItemInfo{"ZERO"_sv, static_cast<uint64_t>(0)},
+                    ItemInfo{"One"_sv, static_cast<uint64_t>(1)},
+                    ItemInfo{"TWO"_sv, static_cast<uint64_t>(2)}},
+            BITMASK_TYPE_INFO{"DummyBitmask"_sv, BuiltinTypeInfo<>::getUInt32(), {}, BITMASK_ITEMS},
+            BITMASK_FIELD_INFO{"bitmaskField"_sv, BITMASK_TYPE_INFO,
+                    {}, {}, {}, {}, false, {}, {}, false, {}, false, false}
+    {}
 
-const FieldInfo BOOL_FIELD_INFO{
-    "boolField"_sv, BuiltinTypeInfo<>::getBool(),
-    {}, {}, {}, {}, false, {}, {}, false, {}, false, false
+protected:
+    void walkNested(IWalkObserver& observer)
+    {
+        observer.beginRoot(nullptr);
+        observer.visitValue(ReflectableFactory::getUInt32(13), IDENTIFIER_FIELD_INFO, WALKER_NOT_ELEMENT);
+        observer.beginCompound(nullptr, NESTED_FIELD_INFO, WALKER_NOT_ELEMENT);
+        observer.visitValue(ReflectableFactory::getString("test"_sv), TEXT_FIELD_INFO, WALKER_NOT_ELEMENT);
+        observer.endCompound(nullptr, NESTED_FIELD_INFO, WALKER_NOT_ELEMENT);
+        observer.endRoot(nullptr);
+    }
+
+    void walkArray(IWalkObserver& observer)
+    {
+        observer.beginRoot(nullptr);
+        observer.beginArray(nullptr, ARRAY_FIELD_INFO);
+        observer.visitValue(ReflectableFactory::getUInt32(1), ARRAY_FIELD_INFO, 0);
+        observer.visitValue(ReflectableFactory::getUInt32(2), ARRAY_FIELD_INFO, 1);
+        observer.endArray(nullptr, ARRAY_FIELD_INFO);
+        observer.endRoot(nullptr);
+    }
+
+    const FieldInfo BOOL_FIELD_INFO;
+    const FieldInfo INT_FIELD_INFO;
+    const FieldInfo FLOAT_FIELD_INFO;
+    const FieldInfo DOUBLE_FIELD_INFO;
+    const FieldInfo TEXT_FIELD_INFO;
+    const FieldInfo IDENTIFIER_FIELD_INFO;
+    const FieldInfo EXTERN_DATA_FIELD_INFO;
+    const FieldInfo BYTES_DATA_FIELD_INFO;
+    const StructTypeInfo<std::allocator<uint8_t>> DUMMY_TYPE_INFO;
+    const FieldInfo NESTED_FIELD_INFO;
+    const FieldInfo ARRAY_FIELD_INFO;
+    const std::array<ItemInfo, 3> ENUM_ITEMS;
+    const EnumTypeInfo<std::allocator<uint8_t>> ENUM_TYPE_INFO;
+    const FieldInfo ENUM_FIELD_INFO;
+    const std::array<ItemInfo, 3> BITMASK_ITEMS;
+    const BitmaskTypeInfo<std::allocator<uint8_t>> BITMASK_TYPE_INFO;
+    const FieldInfo BITMASK_FIELD_INFO;
 };
 
-const FieldInfo INT_FIELD_INFO{
-    "intField"_sv, BuiltinTypeInfo<>::getInt32(),
-    {}, {}, {}, {}, false, {}, {}, false, {}, false, false
-};
-
-const FieldInfo FLOAT_FIELD_INFO{
-    "floatField"_sv, BuiltinTypeInfo<>::getFloat32(),
-    {}, {}, {}, {}, false, {}, {}, false, {}, false, false
-};
-
-const FieldInfo DOUBLE_FIELD_INFO{
-    "doubleField"_sv, BuiltinTypeInfo<>::getFloat64(),
-    {}, {}, {}, {}, false, {}, {}, false, {}, false, false
-};
-
-const FieldInfo TEXT_FIELD_INFO{
-    "text"_sv, BuiltinTypeInfo<>::getString(),
-    {}, {}, {}, {}, false, {}, {}, false, {}, false, false
-};
-
-const FieldInfo IDENTIFIER_FIELD_INFO{
-    "identifier", BuiltinTypeInfo<>::getUInt32(),
-    {}, {}, {}, {}, false, {}, {}, false, {}, false, false
-};
-
-const FieldInfo EXTERN_DATA_FIELD_INFO{
-    "externData"_sv, BuiltinTypeInfo<>::getBitBuffer(),
-    {}, {}, {}, {}, false, {}, {}, false, {}, false, false
-};
-
-const FieldInfo BYTES_DATA_FIELD_INFO{
-    "bytesData"_sv, BuiltinTypeInfo<>::getBytes(),
-    {}, {}, {}, {}, false, {}, {}, false, {}, false, false
-};
-
-const StructTypeInfo<std::allocator<uint8_t>> DUMMY_TYPE_INFO{
-    "Dummy"_sv, nullptr, {}, {}, {}, {}, {}
-};
-
-const FieldInfo NESTED_FIELD_INFO{
-    "nested"_sv, DUMMY_TYPE_INFO,
-    {}, {}, {}, {}, false, {}, {}, false, {}, false, false
-};
-
-const FieldInfo ARRAY_FIELD_INFO{
-    "array", BuiltinTypeInfo<>::getUInt32(),
-    {}, {}, {}, {}, false, {}, {}, true, {}, false, false
-};
-
-const std::array<ItemInfo, 3> ENUM_ITEMS{
-    ItemInfo{"ZERO"_sv, static_cast<uint64_t>(0)},
-    ItemInfo{"One"_sv, static_cast<uint64_t>(1)},
-    ItemInfo{"MINUS_ONE"_sv, static_cast<uint64_t>(-1)}
-};
-
-const EnumTypeInfo<std::allocator<uint8_t>> ENUM_TYPE_INFO{
-    "DummyEnum"_sv, BuiltinTypeInfo<>::getInt8(), {}, ENUM_ITEMS
-};
-
-const FieldInfo ENUM_FIELD_INFO{
-    "enumField"_sv, ENUM_TYPE_INFO,
-    {}, {}, {}, {}, false, {}, {}, false, {}, false, false
-};
-
-const std::array<ItemInfo, 3> BITMASK_ITEMS{
-    ItemInfo{"ZERO"_sv, static_cast<uint64_t>(0)},
-    ItemInfo{"One"_sv, static_cast<uint64_t>(1)},
-    ItemInfo{"TWO"_sv, static_cast<uint64_t>(2)}
-};
-
-const BitmaskTypeInfo<std::allocator<uint8_t>> BITMASK_TYPE_INFO{
-    "DummyBitmask"_sv, BuiltinTypeInfo<>::getUInt32(), {}, BITMASK_ITEMS
-};
-
-const FieldInfo BITMASK_FIELD_INFO{
-    "bitmaskField"_sv, BITMASK_TYPE_INFO,
-    {}, {}, {}, {}, false, {}, {}, false, {}, false, false
-};
-
-void walkNested(IWalkObserver& observer)
-{
-    observer.beginRoot(nullptr);
-    observer.visitValue(ReflectableFactory::getUInt32(13), IDENTIFIER_FIELD_INFO, WALKER_NOT_ELEMENT);
-    observer.beginCompound(nullptr, NESTED_FIELD_INFO, WALKER_NOT_ELEMENT);
-    observer.visitValue(ReflectableFactory::getString("test"_sv), TEXT_FIELD_INFO, WALKER_NOT_ELEMENT);
-    observer.endCompound(nullptr, NESTED_FIELD_INFO, WALKER_NOT_ELEMENT);
-    observer.endRoot(nullptr);
-}
-
-void walkArray(IWalkObserver& observer)
-{
-    observer.beginRoot(nullptr);
-    observer.beginArray(nullptr, ARRAY_FIELD_INFO);
-    observer.visitValue(ReflectableFactory::getUInt32(1), ARRAY_FIELD_INFO, 0);
-    observer.visitValue(ReflectableFactory::getUInt32(2), ARRAY_FIELD_INFO, 1);
-    observer.endArray(nullptr, ARRAY_FIELD_INFO);
-    observer.endRoot(nullptr);
-}
-
-} // namespace
-
-TEST(JsonWriterTest, empty)
+TEST_F(JsonWriterTest, empty)
 {
     std::ostringstream os;
     JsonWriter jsonWriter(os);
@@ -126,7 +98,7 @@ TEST(JsonWriterTest, empty)
     ASSERT_EQ("", os.str());
 }
 
-TEST(JsonWriterTest, nullValue)
+TEST_F(JsonWriterTest, nullValue)
 {
     std::ostringstream os;
     JsonWriter jsonWriter(os);
@@ -138,7 +110,7 @@ TEST(JsonWriterTest, nullValue)
     ASSERT_EQ("\"text\": null", os.str());
 }
 
-TEST(JsonWriterTest, textValue)
+TEST_F(JsonWriterTest, textValue)
 {
     std::ostringstream os;
     JsonWriter jsonWriter(os);
@@ -150,7 +122,7 @@ TEST(JsonWriterTest, textValue)
     ASSERT_EQ("\"text\": \"test\"", os.str());
 }
 
-TEST(JsonWriterTest, boolValue)
+TEST_F(JsonWriterTest, boolValue)
 {
     std::ostringstream os;
     JsonWriter jsonWriter(os);
@@ -162,7 +134,7 @@ TEST(JsonWriterTest, boolValue)
     ASSERT_EQ("\"boolField\": true", os.str());
 }
 
-TEST(JsonWriterTest, intValue)
+TEST_F(JsonWriterTest, intValue)
 {
     std::ostringstream os;
     JsonWriter jsonWriter(os);
@@ -174,7 +146,7 @@ TEST(JsonWriterTest, intValue)
     ASSERT_EQ("\"intField\": " + std::to_string(INT32_MIN), os.str());
 }
 
-TEST(JsonWriterTest, floatValue)
+TEST_F(JsonWriterTest, floatValue)
 {
     std::ostringstream os;
     JsonWriter jsonWriter(os);
@@ -186,7 +158,7 @@ TEST(JsonWriterTest, floatValue)
     ASSERT_EQ("\"floatField\": 3.5", os.str());
 }
 
-TEST(JsonWriterTest, doubleValue)
+TEST_F(JsonWriterTest, doubleValue)
 {
     std::ostringstream os;
     JsonWriter jsonWriter(os);
@@ -198,13 +170,13 @@ TEST(JsonWriterTest, doubleValue)
     ASSERT_EQ("\"doubleField\": 9.875", os.str());
 }
 
-TEST(JsonWriterTest, enumValue)
+TEST_F(JsonWriterTest, enumValue)
 {
     class DummyEnumReflectable : public ReflectableBase<std::allocator<uint8_t>>
     {
     public:
-        explicit DummyEnumReflectable(int8_t value) :
-                ReflectableBase<std::allocator<uint8_t>>(ENUM_TYPE_INFO),
+        explicit DummyEnumReflectable(int8_t value, const EnumTypeInfo<std::allocator<uint8_t>>& typeInfo) :
+                ReflectableBase<std::allocator<uint8_t>>(typeInfo),
                 m_value(value)
         {}
 
@@ -236,13 +208,13 @@ TEST(JsonWriterTest, enumValue)
         int8_t m_value;
     };
 
-    IReflectableConstPtr reflectableZeroConst = std::make_shared<DummyEnumReflectable>(0);
+    IReflectableConstPtr reflectableZeroConst = std::make_shared<DummyEnumReflectable>(0, ENUM_TYPE_INFO);
     ASSERT_EQ(0, reflectableZeroConst->getAnyValue().get<int8_t>()); // improve coverage
-    IReflectablePtr reflectableZero = std::make_shared<DummyEnumReflectable>(0);
+    IReflectablePtr reflectableZero = std::make_shared<DummyEnumReflectable>(0, ENUM_TYPE_INFO);
     ASSERT_EQ(0, reflectableZero->getAnyValue().get<int8_t>()); // improve coverage
-    IReflectablePtr reflectableOne = std::make_shared<DummyEnumReflectable>(1);
-    IReflectablePtr reflectableTwo = std::make_shared<DummyEnumReflectable>(2);
-    IReflectablePtr reflectableMinusOne = std::make_shared<DummyEnumReflectable>(-1);
+    IReflectablePtr reflectableOne = std::make_shared<DummyEnumReflectable>(1, ENUM_TYPE_INFO);
+    IReflectablePtr reflectableTwo = std::make_shared<DummyEnumReflectable>(2, ENUM_TYPE_INFO);
+    IReflectablePtr reflectableMinusOne = std::make_shared<DummyEnumReflectable>(-1, ENUM_TYPE_INFO);
 
     {
         std::ostringstream os;
@@ -282,13 +254,14 @@ TEST(JsonWriterTest, enumValue)
     }
 }
 
-TEST(JsonWriterTest, bitmaskValue)
+TEST_F(JsonWriterTest, bitmaskValue)
 {
     class DummyBitmaskReflectable : public ReflectableBase<std::allocator<uint8_t>>
     {
     public:
-        explicit DummyBitmaskReflectable(uint8_t value) :
-                ReflectableBase<std::allocator<uint8_t>>(BITMASK_TYPE_INFO),
+        explicit DummyBitmaskReflectable(uint8_t value,
+                const BitmaskTypeInfo<std::allocator<uint8_t>>& typeInfo) :
+                ReflectableBase<std::allocator<uint8_t>>(typeInfo),
                 m_value(value)
         {}
 
@@ -320,14 +293,14 @@ TEST(JsonWriterTest, bitmaskValue)
         uint8_t m_value;
     };
 
-    IReflectableConstPtr reflectableZeroConst = std::make_shared<DummyBitmaskReflectable>(0);
+    IReflectableConstPtr reflectableZeroConst = std::make_shared<DummyBitmaskReflectable>(0, BITMASK_TYPE_INFO);
     ASSERT_EQ(0, reflectableZeroConst->getAnyValue().get<uint8_t>()); // improve coverage
-    IReflectablePtr reflectableZero = std::make_shared<DummyBitmaskReflectable>(0);
+    IReflectablePtr reflectableZero = std::make_shared<DummyBitmaskReflectable>(0, BITMASK_TYPE_INFO);
     ASSERT_EQ(0, reflectableZero->getAnyValue().get<uint8_t>()); // improve coverage
-    IReflectablePtr reflectableTwo = std::make_shared<DummyBitmaskReflectable>(2);
-    IReflectablePtr reflectableThree = std::make_shared<DummyBitmaskReflectable>(3);
-    IReflectablePtr reflectableFour = std::make_shared<DummyBitmaskReflectable>(4);
-    IReflectablePtr reflectableSeven = std::make_shared<DummyBitmaskReflectable>(7);
+    IReflectablePtr reflectableTwo = std::make_shared<DummyBitmaskReflectable>(2, BITMASK_TYPE_INFO);
+    IReflectablePtr reflectableThree = std::make_shared<DummyBitmaskReflectable>(3, BITMASK_TYPE_INFO);
+    IReflectablePtr reflectableFour = std::make_shared<DummyBitmaskReflectable>(4, BITMASK_TYPE_INFO);
+    IReflectablePtr reflectableSeven = std::make_shared<DummyBitmaskReflectable>(7, BITMASK_TYPE_INFO);
 
     {
         std::ostringstream os;
@@ -367,7 +340,7 @@ TEST(JsonWriterTest, bitmaskValue)
     }
 }
 
-TEST(JsonWriterTest, compound)
+TEST_F(JsonWriterTest, compound)
 {
     std::ostringstream os;
     JsonWriter jsonWriter(os);
@@ -388,7 +361,7 @@ TEST(JsonWriterTest, compound)
             "\"bytesData\": {\"buffer\": [202, 254]}}", os.str());
 }
 
-TEST(JsonWriterTest, nestedCompound)
+TEST_F(JsonWriterTest, nestedCompound)
 {
     std::ostringstream os;
     JsonWriter jsonWriter(os);
@@ -398,7 +371,7 @@ TEST(JsonWriterTest, nestedCompound)
     ASSERT_EQ("{\"identifier\": 13, \"nested\": {\"text\": \"test\"}}", os.str());
 }
 
-TEST(JsonWriterTest, array)
+TEST_F(JsonWriterTest, array)
 {
     std::ostringstream os;
     JsonWriter jsonWriter(os);
@@ -408,7 +381,7 @@ TEST(JsonWriterTest, array)
     ASSERT_EQ("{\"array\": [1, 2]}", os.str());
 }
 
-TEST(JsonWriterTest, arrayWithIndent)
+TEST_F(JsonWriterTest, arrayWithIndent)
 {
     std::ostringstream os;
     JsonWriter jsonWriter(os, 2);
@@ -418,7 +391,7 @@ TEST(JsonWriterTest, arrayWithIndent)
     ASSERT_EQ("{\n  \"array\": [\n    1,\n    2\n  ]\n}", os.str());
 }
 
-TEST(JsonWriterTest, emptyIndent)
+TEST_F(JsonWriterTest, emptyIndent)
 {
     std::ostringstream os;
     JsonWriter jsonWriter(os, "");
@@ -428,7 +401,7 @@ TEST(JsonWriterTest, emptyIndent)
     ASSERT_EQ("{\n\"identifier\": 13,\n\"nested\": {\n\"text\": \"test\"\n}\n}", os.str());
 }
 
-TEST(JsonWriterTest, strIndent)
+TEST_F(JsonWriterTest, strIndent)
 {
     std::ostringstream os;
     JsonWriter jsonWriter(os, "  ");
@@ -438,7 +411,7 @@ TEST(JsonWriterTest, strIndent)
     ASSERT_EQ("{\n  \"identifier\": 13,\n  \"nested\": {\n    \"text\": \"test\"\n  }\n}", os.str());
 }
 
-TEST(JsonWriterTest, intIndent)
+TEST_F(JsonWriterTest, intIndent)
 {
     std::ostringstream os;
     JsonWriter jsonWriter(os, 2);
@@ -448,7 +421,7 @@ TEST(JsonWriterTest, intIndent)
     ASSERT_EQ("{\n  \"identifier\": 13,\n  \"nested\": {\n    \"text\": \"test\"\n  }\n}", os.str());
 }
 
-TEST(JsonWriterTest, compactSeparators)
+TEST_F(JsonWriterTest, compactSeparators)
 {
     std::ostringstream os;
     JsonWriter jsonWriter(os);
