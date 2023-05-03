@@ -25,9 +25,9 @@ cppcoreguidelines-avoid-non-const-global-variables:src/zserio/pmr/MemoryResource
 cppcoreguidelines-pro-type-union-access:src/zserio/AnyHolder.h
 
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/AnyHolder.h:60
-cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/CppRuntimeException.h:195
-cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/Span.h:112
-cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/StringView.h:897
+cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/CppRuntimeException.h:196
+cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/Span.h:112 # necessary for implementation
+cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/StringView.h:897 # necessary for implementation
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/ZserioTreeCreator.h:376
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/ZserioTreeCreator.h:378
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/ZserioTreeCreator.h:380
@@ -36,7 +36,6 @@ cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/StringConvertUtil.h
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/StringConvertUtil.h:42
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/StringConvertUtil.h:52
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/StringConvertUtil.h:53
-cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/CppRuntimeException.cpp:41
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamReader.cpp:249
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamReader.cpp:261
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:146

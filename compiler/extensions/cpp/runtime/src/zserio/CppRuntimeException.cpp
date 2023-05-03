@@ -1,5 +1,6 @@
 #include <cstring>
 #include <array>
+#include <algorithm>
 
 #include "zserio/CppRuntimeException.h"
 
@@ -21,24 +22,24 @@ void CppRuntimeException::append(const char* message)
 {
     const size_t available = m_buffer.size() - 1 - m_len;
     const size_t numCharsToAppend = strnlen(message, available);
-    appendImpl(message, numCharsToAppend);
+    appendImpl(Span<const char>(message, numCharsToAppend));
 }
 
 void CppRuntimeException::append(const char* message, size_t messageLen)
 {
     const size_t available = m_buffer.size() - 1 - m_len;
     const size_t numCharsToAppend = std::min(messageLen, available);
-    appendImpl(message, numCharsToAppend);
+    appendImpl(Span<const char>(message, numCharsToAppend));
 }
 
-void CppRuntimeException::appendImpl(const char* message, size_t numCharsToAppend)
+void CppRuntimeException::appendImpl(Span<const char> message)
 {
-    if (numCharsToAppend > 0)
+    if (message.size() > 0)
     {
-        memcpy(m_buffer.data() + m_len, message, numCharsToAppend);
-        m_len += numCharsToAppend;
+        std::copy(message.begin(), message.end(), m_buffer.begin() + m_len);
+        m_len += message.size();
     }
-    m_buffer[m_len] = 0;
+    m_buffer.at(m_len) = 0;
 }
 
 CppRuntimeException& operator<<(CppRuntimeException& exception, const char* message)

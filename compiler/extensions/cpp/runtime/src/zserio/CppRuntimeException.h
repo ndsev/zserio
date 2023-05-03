@@ -8,6 +8,7 @@
 #include <array>
 
 #include "zserio/StringConvertUtil.h"
+#include "zserio/Span.h"
 #include "zserio/Traits.h"
 
 namespace zserio
@@ -59,7 +60,7 @@ public:
     void append(const char* message, size_t messageLen);
 
 private:
-    void appendImpl(const char* message, size_t numCharsToAppend);
+    void appendImpl(Span<const char> message);
 
     std::array<char, 512> m_buffer; // note fixed sized array is deeply copied on copy operations and it's OK
     size_t m_len = 0;
