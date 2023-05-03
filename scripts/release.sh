@@ -493,14 +493,15 @@ update_web_pages()
     local ZSERIO_BUILD_DIR="$1"; shift
     local ZSERIO_VERSION="$1"; shift
 
-    echo "Creating Zserio Web Pages branch."
-    "${GIT}" -C "${ZSERIO_PROJECT_ROOT}" fetch
-    local GIT_RESULT=$?
-    if [ ${GIT_RESULT} -ne 0 ] ; then
+    echo "Merging master into Zserio Web Pages branch."
+    "${GIT}" checkout web-pages
+    if [ $? -ne 0 ] ; then
+        "${GIT}" checkout -b web-pages
+        local GIT_RESULT=$?
         stderr_echo "Git failed with return code ${GIT_RESULT}!"
         return 1
     fi
-    "${GIT}" -C "${ZSERIO_PROJECT_ROOT}" checkout -f -B web-pages v${ZSERIO_VERSION}
+    "${GIT}" merge v${ZSERIO_VERSION} -m "Merge version v${ZSERIO_VERSION} into 'web-pages' branch"
     local GIT_RESULT=$?
     if [ ${GIT_RESULT} -ne 0 ] ; then
         stderr_echo "Git failed with return code ${GIT_RESULT}!"
@@ -536,22 +537,27 @@ update_web_pages()
     fi
     echo "Done"
 
-    echo -ne "Copying Zserio runtime libraries..."
-    mkdir -p "${ZSERIO_PROJECT_ROOT}"/doc/runtime/cpp
-    cp -r "${WEB_PAGES_BUILD_DIR}"/runtime_libs/cpp/zserio_doc/* "${ZSERIO_PROJECT_ROOT}"/doc/runtime/cpp
+    echo -ne "Copying Zserio runtime libraries version ${ZSERIO_VERSION}..."
+    local DEST_RUNTIME_DIR="${ZSERIO_PROJECT_ROOT}/doc/runtime/${ZSERIO_VERSION}"
+    mkdir -p "${DEST_RUNTIME_DIR}"/cpp
+    cp -r "${WEB_PAGES_BUILD_DIR}"/runtime_libs/cpp/zserio_doc/* "${DEST_RUNTIME_DIR}"/cpp
     if [ $? -ne 0 ] ; then
         return 1
     fi
-    mkdir -p "${ZSERIO_PROJECT_ROOT}"/doc/runtime/java
-    cp -r "${WEB_PAGES_BUILD_DIR}"/runtime_libs/java/zserio_doc/* "${ZSERIO_PROJECT_ROOT}"/doc/runtime/java
+    mkdir -p "${DEST_RUNTIME_DIR}"/java
+    cp -r "${WEB_PAGES_BUILD_DIR}"/runtime_libs/java/zserio_doc/* "${DEST_RUNTIME_DIR}"/java
     if [ $? -ne 0 ] ; then
         return 1
     fi
-    mkdir -p "${ZSERIO_PROJECT_ROOT}"/doc/runtime/python
-    cp -r "${WEB_PAGES_BUILD_DIR}"/runtime_libs/python/zserio_doc/* "${ZSERIO_PROJECT_ROOT}"/doc/runtime/python
+    mkdir -p "${DEST_RUNTIME_DIR}"/python
+    cp -r "${WEB_PAGES_BUILD_DIR}"/runtime_libs/python/zserio_doc/* "${DEST_RUNTIME_DIR}"/python
     if [ $? -ne 0 ] ; then
         return 1
     fi
+    local DEST_LATEST_DIR="${ZSERIO_PROJECT_ROOT}/doc/runtime/latest"
+    rm -rf "${DEST_LATEST_DIR}"
+    mkdir -p "${DEST_LATEST_DIR}"
+    cp -r "${DEST_RUNTIME_DIR}"/* "${DEST_LATEST_DIR}"
     echo "Done"
 
     echo -ne "Creating Zserio runtime library GitHub badges..."
