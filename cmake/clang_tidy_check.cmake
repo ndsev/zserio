@@ -98,6 +98,16 @@ foreach (LINE ${LOG_LINES})
     endif ()
 endforeach ()
 
+# report unsuppressed warnings
+if (UNSUPPRESSED_LINES)
+    list(JOIN UNSUPPRESSED_LINES "\n" UNSUPPRESSED_LOG)
+    message(STATUS "Clang Tidy output:\n${UNSUPPRESSED_LOG}")
+    if (WERROR) # emulate WarningsAsErrors
+        message(FATAL_ERROR
+            "Clang Tidy produced ${NUM_UNSUPPRESSED_WARNINGS} warnings which are not suppressed!")
+    endif ()
+endif ()
+
 # ensure that all suppressions are used
 list(SORT USED_SUPPRESSIONS_INDEXES)
 list(REMOVE_DUPLICATES USED_SUPPRESSIONS_INDEXES)
@@ -110,15 +120,5 @@ if (SUPPRESSIONS_LINES)
     message(STATUS "Unused suppressions:\n${UNUSED_SUPPRESSIONS}")
     if (WERROR_UNUSED_SUPPRESSIONS)
         message(FATAL_ERROR "Unused suppressions detected in ${SUPPRESSIONS_FILE}!")
-    endif ()
-endif ()
-
-# report unsuppressed warnings
-if (UNSUPPRESSED_LINES)
-    list(JOIN UNSUPPRESSED_LINES "\n" UNSUPPRESSED_LOG)
-    message(STATUS "Clang Tidy output:\n${UNSUPPRESSED_LOG}")
-    if (WERROR) # emulate WarningsAsErrors
-        message(FATAL_ERROR
-            "Clang Tidy produced ${NUM_UNSUPPRESSED_WARNINGS} warnings which are not suppressed!")
     endif ()
 endif ()
