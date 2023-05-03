@@ -241,8 +241,12 @@ clang_tidy_add_custom_target(\${PROJECT_NAME}-clang-tidy
 
 # add cppcheck custom command
 include(cppcheck_utils)
-cppcheck_add_custom_command(TARGET \${PROJECT_NAME} SOURCE_DIR \${CMAKE_CURRENT_SOURCE_DIR}/gen
-    OPTIONS --suppress=variableScope
+cppcheck_add_custom_command(TARGET \${PROJECT_NAME}
+    SOURCE_DIR \${CMAKE_CURRENT_SOURCE_DIR}/gen
+    INCLUDE_DIR \${CMAKE_CURRENT_SOURCE_DIR}/gen
+    OPTIONS
+        --suppress=variableScope --suppress=uninitMemberVar
+        --suppress=noExplicitConstructor --suppress=duplicateCondition
 )
 
 add_test(compile_generated_cpp \${CMAKE_COMMAND} -E echo "Generated sources were successfully compiled!")
