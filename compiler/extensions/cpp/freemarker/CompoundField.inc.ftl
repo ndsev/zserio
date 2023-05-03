@@ -1023,13 +1023,18 @@ ${I}<@field_member_name field/>(::zserio::allocatorPropagatingCopy(<#rt>
         <#elseif field.compound.needsChildrenInitialization>
             <#local initializeCommand><@compound_get_field field/>.initializeChildren();</#local>
         </#if>
-    <#elseif field.array?? && field.array.elementCompound??>
-        <#if needs_field_initialization(field.array.elementCompound)>
-            <#local initializeCommand><@compound_get_field field/>.initializeElements(<#rt>
-                    <#lt><@element_initializer_name field.name/>(*this));</#local>
-        <#elseif field.array.elementCompound.needsChildrenInitialization>
-            <#local initializeCommand><@compound_get_field field/>.initializeElements(<#rt>
-                    <#lt><@element_children_initializer_name field.name/>());</#local>
+    <#elseif field.array??>
+        <#if field.array.elementCompound??>
+            <#if needs_field_initialization(field.array.elementCompound)>
+                <#local initializeCommand><@compound_get_field field/>.initializeElements(<#rt>
+                        <#lt><@element_initializer_name field.name/>(*this));</#local>
+            <#elseif field.array.elementCompound.needsChildrenInitialization>
+                <#local initializeCommand><@compound_get_field field/>.initializeElements(<#rt>
+                        <#lt><@element_children_initializer_name field.name/>());</#local>
+            </#if>
+        <#elseif field.array.elementBitSize?? && field.array.elementBitSize.isDynamicBitField>
+            <#local initializeCommand><@compound_get_field field/>.initializeArrayTraits(<#rt>
+                    <#lt><@array_traits field/>);</#local>
         </#if>
     </#if>
     <#if initializeCommand??>
@@ -1200,6 +1205,8 @@ ${I}        <@array_traits field/>, <@compound_get_field field/>);
         <#elseif field.array??>
             <#if field.array.elementCompound?? &&
                     needs_field_initialization(field.array.elementCompound)>
+                <#return true>
+            <#elseif field.array.elementBitSize?? && field.array.elementBitSize.isDynamicBitField>
                 <#return true>
             </#if>
         </#if>

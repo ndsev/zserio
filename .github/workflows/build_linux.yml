@@ -94,7 +94,7 @@ jobs:
          if [ -f "`which clang-tidy-14`" ] ; then
             export CLANG_TIDY_BIN=clang-tidy-14
          fi
-         # cpp_rt-linux32-clang works only for native linux32
+         # sanitizers do not work on cpp_rt-linux32-clang when cross-compiling
          scripts/build.sh cpp_rt-linux64-gcc cpp_rt-linux32-gcc cpp_rt-linux64-clang
       env:
         CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1 -DCMAKE_BUILD_TYPE=Debug"
@@ -107,17 +107,20 @@ jobs:
       run: scripts/release.sh
 
     - name: Run Zserio tests
+      # clang-tidy cannot be run because of time limit
       run: |
         unset JAVA_TOOL_OPTIONS # workaround https://github.com/actions/virtual-environments/issues/1437
         scripts/test.sh all-linux64-gcc cpp-linux32-gcc cpp-linux64-clang cpp-linux32-clang
       env:
         CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Release"
 
-    - name: Run Zserio C++ tests (Debug Build - gcc)
+    - name: Run Zserio C++ tests (Debug Build)
       # clang-tidy cannot be run because of time limit
-      run: scripts/test.sh cpp-linux64-gcc cpp-linux32-gcc cpp-linux64-clang cpp-linux32-clang
+      # sanitizers do not work on cpp-linux32-clang when cross-compiling
+      run: scripts/test.sh cpp-linux32-gcc cpp-linux64-gcc cpp-linux64-clang
       env:
         CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Debug"
+        SANITIZERS_ENABLED: 1
 
     - name: Compare all blobs created by Zserio tests
       run: |
@@ -128,7 +131,6 @@ jobs:
               build/test/cpp/linux32-gcc/release \
               build/test/cpp/linux64-clang/debug \
               build/test/cpp/linux64-clang/release \
-              build/test/cpp/linux32-clang/debug \
               build/test/cpp/linux32-clang/release \
               build/test/java \
               build/test/python

@@ -7,6 +7,8 @@ cppcoreguidelines-pro-type-member-init:gen/array_types_warning/packed_array_choi
 
 google-explicit-constructor:gen/array_types_warning/packed_array_unpackable_bool_element/TestBitmask.h
 
+performance-move-const-arg:gen/array_types_warning/packed_array_unpackable_bool_element/PackedArrayUnpackableBoolElement.cpp
+
 readability-braces-around-statements
 
 readability-make-member-function-const:gen/array_types_warning/packed_array_choice_has_no_packable_field/ChoiceWithoutPackableField.cpp

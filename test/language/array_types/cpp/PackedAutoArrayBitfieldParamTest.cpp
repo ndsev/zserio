@@ -41,6 +41,94 @@ const uint8_t PackedAutoArrayBitfieldParamTest::NUM_BITS_PARAM = 9;
 
 const size_t PackedAutoArrayBitfieldParamTest::DYNAMIC_BITFIELD_ARRAY_SIZE = (1U << 9U) - 1;
 
+TEST_F(PackedAutoArrayBitfieldParamTest, copyConstructor)
+{
+    ParameterizedBitfieldLength parameterizedBitfieldLengthOrig;
+    fillParameterizedBitfieldLength(parameterizedBitfieldLengthOrig);
+    parameterizedBitfieldLengthOrig.initialize(NUM_BITS_PARAM);
+    const size_t origBitSize = parameterizedBitfieldLengthOrig.bitSizeOf();
+
+    zserio::BitBuffer bitBufferOrig(origBitSize);
+    zserio::BitStreamWriter writerOrig(bitBufferOrig);
+    parameterizedBitfieldLengthOrig.write(writerOrig);
+
+    ParameterizedBitfieldLength parameterizedBitfieldLengthCopied(parameterizedBitfieldLengthOrig);
+    ASSERT_EQ(origBitSize, parameterizedBitfieldLengthCopied.bitSizeOf());
+
+    // check that PackedArrayTraits in the copied array was properly reinitialized:
+    // - change parameter in the parameterizedBitfieldLengthOrig to ensure that it's not
+    //   used in the parameterizedBitfieldLengthCopied
+    parameterizedBitfieldLengthOrig.initialize(0);
+    ASSERT_EQ(origBitSize, parameterizedBitfieldLengthCopied.bitSizeOf());
+}
+
+TEST_F(PackedAutoArrayBitfieldParamTest, moveConstructor)
+{
+    ParameterizedBitfieldLength parameterizedBitfieldLengthOrig;
+    fillParameterizedBitfieldLength(parameterizedBitfieldLengthOrig);
+    parameterizedBitfieldLengthOrig.initialize(NUM_BITS_PARAM);
+    const size_t origBitSize = parameterizedBitfieldLengthOrig.bitSizeOf();
+
+    zserio::BitBuffer bitBufferOrig(origBitSize);
+    zserio::BitStreamWriter writerOrig(bitBufferOrig);
+    parameterizedBitfieldLengthOrig.write(writerOrig);
+
+    ParameterizedBitfieldLength parameterizedBitfieldLengthMoved(std::move(parameterizedBitfieldLengthOrig));
+    ASSERT_EQ(origBitSize, parameterizedBitfieldLengthMoved.bitSizeOf());
+
+    // check that PackedArrayTraits in the moved array was properly reinitialized:
+    // - change parameter in the parameterizedBitfieldLengthOrig to ensure that it's not
+    //   used in the parameterizedBitfieldLengthMoved
+    parameterizedBitfieldLengthOrig.initialize(0);
+    ASSERT_EQ(origBitSize, parameterizedBitfieldLengthMoved.bitSizeOf());
+}
+
+TEST_F(PackedAutoArrayBitfieldParamTest, copyAssignmentOperator)
+{
+    ParameterizedBitfieldLength parameterizedBitfieldLengthCopied;
+    size_t origBitSize = 0;
+    {
+        ParameterizedBitfieldLength parameterizedBitfieldLengthOrig;
+        fillParameterizedBitfieldLength(parameterizedBitfieldLengthOrig);
+        parameterizedBitfieldLengthOrig.initialize(NUM_BITS_PARAM);
+        origBitSize = parameterizedBitfieldLengthOrig.bitSizeOf();
+
+        parameterizedBitfieldLengthCopied = parameterizedBitfieldLengthOrig;
+        ASSERT_EQ(origBitSize, parameterizedBitfieldLengthCopied.bitSizeOf());
+    }
+
+    // check that ArrayTraits in the copied array was properly reinitialized:
+    // - create a replacement for the parameterizedBitfieldLengthOrig on stack which will override the old
+    //   parameter to ensure that it's not used in the parameterizedBitfieldLengthCopied
+    ParameterizedBitfieldLength parameterizedBitfieldLengthOther;
+    parameterizedBitfieldLengthOther.initialize(0);
+
+    ASSERT_EQ(origBitSize, parameterizedBitfieldLengthCopied.bitSizeOf());
+}
+
+TEST_F(PackedAutoArrayBitfieldParamTest, moveAssignmentOperator)
+{
+    ParameterizedBitfieldLength parameterizedBitfieldLengthMoved;
+    size_t origBitSize = 0;
+    {
+        ParameterizedBitfieldLength parameterizedBitfieldLengthOrig;
+        fillParameterizedBitfieldLength(parameterizedBitfieldLengthOrig);
+        parameterizedBitfieldLengthOrig.initialize(NUM_BITS_PARAM);
+        origBitSize = parameterizedBitfieldLengthOrig.bitSizeOf();
+
+        parameterizedBitfieldLengthMoved = std::move(parameterizedBitfieldLengthOrig);
+        ASSERT_EQ(origBitSize, parameterizedBitfieldLengthMoved.bitSizeOf());
+    }
+
+    // check that ArrayTraits in the moved array was properly reinitialized:
+    // - create a replacement for the parameterizedBitfieldLengthOrig on stack which will override the old
+    //   parameter to ensure that it's not used in the parameterizedBitfieldLengthMoved
+    ParameterizedBitfieldLength parameterizedBitfieldLengthOther;
+    parameterizedBitfieldLengthOther.initialize(0);
+
+    ASSERT_EQ(origBitSize, parameterizedBitfieldLengthMoved.bitSizeOf());
+}
+
 TEST_F(PackedAutoArrayBitfieldParamTest, writeRead)
 {
     ParameterizedBitfieldLength parameterizedBitfieldLength;

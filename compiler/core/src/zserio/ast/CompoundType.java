@@ -126,6 +126,8 @@ public abstract class CompoundType extends TemplatableType
             if (typeInstantiation instanceof ArrayInstantiation)
             {
                 typeInstantiation = ((ArrayInstantiation)typeInstantiation).getElementTypeInstantiation();
+                if (typeInstantiation instanceof DynamicBitFieldInstantiation)
+                    return true;
             }
 
             final ZserioType fieldBaseType = typeInstantiation.getBaseType();

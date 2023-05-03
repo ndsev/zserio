@@ -11,6 +11,9 @@ bugprone-forwarding-reference-overload:gen/array_types/packed_fixed_array_uint8/
 bugprone-forwarding-reference-overload:gen/array_types/packed_variable_array_struct/TestPackedArray.h
 bugprone-forwarding-reference-overload:gen/array_types/packed_variable_array_struct/TestUnpackedArray.h
 
+bugprone-use-after-move:language/array_types/cpp/AutoArrayBitfieldParamTest.cpp
+bugprone-use-after-move:language/array_types/cpp/PackedAutoArrayBitfieldParamTest.cpp
+
 cert-err58-cpp:cpp/AutoArrayBitfieldParamTest.cpp
 cert-err58-cpp:cpp/AutoArrayStructRecursionTest.cpp
 cert-err58-cpp:cpp/AutoArraySubtypedUInt8Test.cpp
@@ -49,6 +52,8 @@ google-explicit-constructor:gen/array_types/packed_variable_array_struct/TestBit
 
 misc-no-recursion # reports also tested_release and some system headers
 
+performance-move-const-arg:gen/array_types/arrays_mapping/ArraysMapping.cpp
+performance-move-const-arg:gen/array_types/packed_arrays_mapping/PackedArraysMapping.cpp
 performance-move-const-arg:gen/array_types/packed_variable_array_struct/PackedVariableArray.cpp
 performance-move-const-arg:gen/array_types/packed_variable_array_struct/TestChoice.cpp
 performance-move-const-arg:gen/array_types/packed_variable_array_struct/TestStructure.cpp

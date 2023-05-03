@@ -323,6 +323,17 @@ public:
     }
 
     /**
+     * Sets new array traits instance. Needed e.g. when an object which holds the array is copied / moved.
+     *
+     * \param arrayTraits New instance of array traits.
+     */
+    void initializeArrayTraits(const ARRAY_TRAITS& arrayTraits)
+    {
+        m_arrayTraits = arrayTraits;
+        m_packedArrayTraits = PackedArrayTraits<ARRAY_TRAITS>(arrayTraits);
+    }
+
+    /**
     * Calculates bit size of this array.
     *
     * \param bitPosition Current bit position.

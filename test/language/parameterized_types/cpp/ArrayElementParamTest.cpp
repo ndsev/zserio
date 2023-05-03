@@ -105,6 +105,46 @@ TEST_F(ArrayElementParamTest, fieldConstructor)
     }
 }
 
+TEST_F(ArrayElementParamTest, copyConstructor)
+{
+    Database database;
+    fillDatabase(database);
+
+    void* headersPtr = database.getHeaders().data();
+    void* blocksPtr = database.getBlocks().data();
+
+    Database copiedDatabase(database);
+
+    ASSERT_NE(headersPtr, copiedDatabase.getHeaders().data());
+    ASSERT_NE(blocksPtr, copiedDatabase.getBlocks().data());
+
+    // check that blobs elements are properly initialized
+    for (size_t i = 0; i < copiedDatabase.getBlocks().size(); ++i)
+    {
+        ASSERT_EQ(&copiedDatabase.getBlocks().at(i).getHeader(), &copiedDatabase.getHeaders().at(i));
+    }
+}
+
+TEST_F(ArrayElementParamTest, copyAssignmentOperator)
+{
+    Database database;
+    fillDatabase(database);
+
+    void* headersPtr = database.getHeaders().data();
+    void* blocksPtr = database.getBlocks().data();
+
+    Database copiedDatabase;
+    copiedDatabase = database;
+    ASSERT_NE(headersPtr, copiedDatabase.getHeaders().data());
+    ASSERT_NE(blocksPtr, copiedDatabase.getBlocks().data());
+
+    // check that blobs elements are properly initialized
+    for (size_t i = 0; i < copiedDatabase.getBlocks().size(); ++i)
+    {
+        ASSERT_EQ(&copiedDatabase.getBlocks().at(i).getHeader(), &copiedDatabase.getHeaders().at(i));
+    }
+}
+
 TEST_F(ArrayElementParamTest, moveConstructor)
 {
     Database database;
@@ -114,8 +154,15 @@ TEST_F(ArrayElementParamTest, moveConstructor)
     void* blocksPtr = database.getBlocks().data();
 
     Database movedDatabase(std::move(database));
+
     ASSERT_EQ(headersPtr, movedDatabase.getHeaders().data());
     ASSERT_EQ(blocksPtr, movedDatabase.getBlocks().data());
+
+    // check that blobs elements are properly initialized
+    for (size_t i = 0; i < movedDatabase.getBlocks().size(); ++i)
+    {
+        ASSERT_EQ(&movedDatabase.getBlocks().at(i).getHeader(), &movedDatabase.getHeaders().at(i));
+    }
 }
 
 TEST_F(ArrayElementParamTest, moveAssignmentOperator)
@@ -130,6 +177,12 @@ TEST_F(ArrayElementParamTest, moveAssignmentOperator)
     movedDatabase = std::move(database);
     ASSERT_EQ(headersPtr, movedDatabase.getHeaders().data());
     ASSERT_EQ(blocksPtr, movedDatabase.getBlocks().data());
+
+    // check that blobs elements are properly initialized
+    for (size_t i = 0; i < movedDatabase.getBlocks().size(); ++i)
+    {
+        ASSERT_EQ(&movedDatabase.getBlocks().at(i).getHeader(), &movedDatabase.getHeaders().at(i));
+    }
 }
 
 TEST_F(ArrayElementParamTest, write)

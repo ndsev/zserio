@@ -126,7 +126,7 @@ google-explicit-constructor:test/zserio/HashCodeUtilTest.cpp:34
 google-explicit-constructor:test/zserio/TrackingAllocator.h:78
 
 # necessary for implementation
-misc-no-recursion:src/zserio/Array.h:884
+misc-no-recursion:src/zserio/Array.h:895
 misc-no-recursion:src/zserio/JsonParser.h:153
 misc-no-recursion:src/zserio/JsonParser.h:154
 misc-no-recursion:src/zserio/JsonParser.h:155
