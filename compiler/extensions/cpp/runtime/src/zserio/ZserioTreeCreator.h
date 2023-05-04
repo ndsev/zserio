@@ -552,7 +552,7 @@ private:
 };
 
 /** Typedef provided for convenience - using default std::allocator<uint8_t>. */
-using ZserioTreeCreator = BasicZserioTreeCreator<std::allocator<std::uint8_t>>;
+using ZserioTreeCreator = BasicZserioTreeCreator<std::allocator<uint8_t>>;
 
 template <typename ALLOC>
 BasicZserioTreeCreator<ALLOC>::BasicZserioTreeCreator(const IBasicTypeInfo<ALLOC>& typeInfo,

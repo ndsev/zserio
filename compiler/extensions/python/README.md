@@ -4,7 +4,7 @@ Zserio extension which generates Python serialization API from the Zserio schema
 
 For a **quick start** see the [Python Tutorial](https://github.com/ndsev/zserio-tutorial-python#zserio-python-quick-start-tutorial).
 
-For an **API documentation** see the [Python Runtime Library](https://zserio.org/doc/runtime/python).
+For an **API documentation** see the [Python Runtime Library](https://zserio.org/doc/runtime/latest/python).
 
 ## Auto-generated API helper
 
