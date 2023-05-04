@@ -448,7 +448,7 @@ TEST(DebugStringUtilTest, toJsonStreamDefault)
     IReflectablePtr reflectable = dummyObject.reflectable();
     ASSERT_TRUE(reflectable);
     ASSERT_EQ(0, reflectable->bitSizeOf());
-    std::array<uint8_t, 1> buffer;
+    std::array<uint8_t, 1> buffer = {};
     BitStreamWriter writer(buffer.data(), buffer.size());
     reflectable->write(writer);
     ASSERT_EQ("test"_sv, reflectable->getField("text")->getStringView());
@@ -817,7 +817,7 @@ TEST(DebugStringUtilTest, fromJsonStreamParameterizedTypeInfo)
 
     // improve coverage
     ASSERT_EQ(0, reflectable->bitSizeOf());
-    std::array<uint8_t, 1> buffer;
+    std::array<uint8_t, 1> buffer = {};
     BitStreamWriter writer(buffer.data(), buffer.size());
     reflectable->write(writer);
     ASSERT_THROW(reflectable->getField("wrong"), CppRuntimeException);

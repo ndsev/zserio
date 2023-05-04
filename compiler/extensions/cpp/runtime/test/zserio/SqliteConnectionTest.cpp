@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #include "sqlite3.h"
 
@@ -28,10 +29,11 @@ namespace
 
         int callback(size_t nColumns, char** colValues, char**)
         {
+            auto colValuesSpan = Span<char*>(colValues, nColumns);
             TRow row;
             row.reserve(nColumns);
-            for (size_t i = 0; i < nColumns; ++i)
-                row.push_back(std::string(colValues[i]));
+            for (const char* colValue : colValuesSpan)
+                row.emplace_back(colValue);
             result.push_back(row);
             return 0; // continue
         }

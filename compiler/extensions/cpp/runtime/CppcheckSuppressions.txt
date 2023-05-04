@@ -48,11 +48,12 @@ unusedStructMember:*/src/zserio/ITypeInfo.h:365
 unusedStructMember:*/src/zserio/ITypeInfo.h:368
 unusedStructMember:*/src/zserio/ITypeInfo.h:370
 unusedStructMember:*/src/zserio/ITypeInfo.h:371
-unusedStructMember:*/src/zserio/ITypeInfo.h:402
-unusedStructMember:*/src/zserio/ITypeInfo.h:425
-unusedStructMember:*/src/zserio/ITypeInfo.h:455
-unusedStructMember:*/src/zserio/ITypeInfo.h:456
+unusedStructMember:*/src/zserio/ITypeInfo.h:412
+unusedStructMember:*/src/zserio/ITypeInfo.h:435
+unusedStructMember:*/src/zserio/ITypeInfo.h:465
+unusedStructMember:*/src/zserio/ITypeInfo.h:466
 useStlAlgorithm:*/src/zserio/HashCodeUtil.h:104
 useStlAlgorithm:*/src/zserio/HashCodeUtil.h:153
 useStlAlgorithm:*/src/zserio/JsonWriter.h:497
 useStlAlgorithm:*/src/zserio/Walker.h:427
+useStlAlgorithm:*/test/zserio/SqliteConnectionTest.cpp:36

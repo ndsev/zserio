@@ -324,10 +324,9 @@ inline void write(PackingContextNode& contextNode, BitStreamWriter& out, DummyEn
 class ArrayTest : public ::testing::Test
 {
 public:
-    ArrayTest()
-    {
-        m_byteBuffer.fill(0);
-    }
+    ArrayTest() :
+            m_byteBuffer()
+    {}
 
 protected:
     template <typename RAW_ARRAY, typename ARRAY_TRAITS, typename ELEMENT_FACTORY = detail::DummyElementFactory>

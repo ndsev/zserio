@@ -133,11 +133,11 @@ TEST_F(BitStreamWriterTest, writeUnalignedData)
         ASSERT_THROW(writer.writeBits64(0, 1), CppRuntimeException);
 
         // check written value
-        uint8_t writtenTestValue = static_cast<uint8_t>(bitBuffer.getBuffer()[offset / 8U] << (offset % 8U));
+        uint8_t writtenTestValue = static_cast<uint8_t>(bitBuffer.getData()[offset / 8U] << (offset % 8U));
         if (offset % 8 != 0)
         {
             writtenTestValue |=
-                    static_cast<uint8_t>(bitBuffer.getBuffer()[offset / 8U + 1U] >> (8U - (offset % 8U)));
+                    static_cast<uint8_t>(bitBuffer.getData()[offset / 8U + 1U] >> (8U - (offset % 8U)));
         }
         ASSERT_EQ(testValue, writtenTestValue) << "Offset: " << offset;
     }
