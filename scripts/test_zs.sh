@@ -247,6 +247,7 @@ cppcheck_add_custom_command(TARGET \${PROJECT_NAME}
     OPTIONS
         --suppress=variableScope --suppress=uninitMemberVar
         --suppress=noExplicitConstructor --suppress=duplicateCondition
+        --suppress=syntaxError # needed on Windows
 )
 
 add_test(compile_generated_cpp \${CMAKE_COMMAND} -E echo "Generated sources were successfully compiled!")
