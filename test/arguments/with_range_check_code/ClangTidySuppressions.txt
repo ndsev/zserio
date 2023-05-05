@@ -18,3 +18,6 @@ readability-make-member-function-const:gen/with_range_check_code/varsize_range_c
 readability-make-member-function-const:gen/with_range_check_code/varuint16_range_check/VarUInt16RangeCheckCompound.cpp
 readability-make-member-function-const:gen/with_range_check_code/varuint32_range_check/VarUInt32RangeCheckCompound.cpp
 readability-make-member-function-const:gen/with_range_check_code/varuint64_range_check/VarUInt64RangeCheckCompound.cpp
+
+readability-simplify-boolean-expr:gen/with_range_check_code/choice_bit4_range_check/ChoiceBit4RangeCheckCompound.cpp
+readability-simplify-boolean-expr:gen/with_range_check_code/optional_bit31_range_check/OptionalBit31RangeCheckCompound.cpp

@@ -16,3 +16,5 @@ readability-make-member-function-const:gen/unused_type_warning/BoolChoice.cpp
 readability-make-member-function-const:gen/unused_type_warning/BoolStructure.cpp
 readability-make-member-function-const:gen/unused_type_warning/UnusedChoice.cpp
 readability-make-member-function-const:gen/unused_type_warning/UnusedStructure.cpp
+
+readability-simplify-boolean-expr:gen/unused_type_warning/BoolChoice.cpp

@@ -22,3 +22,6 @@ readability-make-member-function-const:gen/offsets/nested_offset/NestedOffset.cp
 readability-make-member-function-const:gen/offsets/optional_member_offset/OptionalMemberOffset.cpp
 readability-make-member-function-const:gen/offsets/packed_auto_array_offset/AutoArrayHolder.cpp
 readability-make-member-function-const:gen/offsets/uint64_offset/UInt64Offset.cpp
+
+readability-simplify-boolean-expr:gen/offsets/nested_offset/NestedOffsetChoice.cpp
+readability-simplify-boolean-expr:gen/offsets/optional_member_offset/OptionalMemberOffset.cpp

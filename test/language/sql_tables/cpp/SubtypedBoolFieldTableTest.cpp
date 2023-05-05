@@ -43,7 +43,7 @@ protected:
     static void fillRow(SubtypedBoolFieldTable::Row& row, size_t i)
     {
         row.setId(static_cast<int32_t>(i));
-        row.setBoolField(i % 2 == 0 ? true : false);
+        row.setBoolField(i % 2 == 0);
     }
 
     static void fillRows(vector_type<SubtypedBoolFieldTable::Row>& rows)

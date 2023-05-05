@@ -23,3 +23,5 @@ readability-make-member-function-const:gen/optional_members_warning/optional_ref
 readability-make-member-function-const:gen/optional_members_warning/optional_references_in_type_arguments/Another.cpp
 readability-make-member-function-const:gen/optional_members_warning/optional_references_in_type_arguments/ColorTones.cpp
 readability-make-member-function-const:gen/optional_members_warning/optional_references_in_type_arguments/Container.cpp
+
+readability-simplify-boolean-expr:gen/optional_members_warning/optional_references_in_optional_clause/Container.cpp

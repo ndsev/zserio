@@ -43,3 +43,4 @@ readability-make-member-function-const:gen_complex_allocation/complex_allocation
 readability-make-member-function-const:gen_complex_allocation/complex_allocation/allocation_union/UnionCompound.cpp
 readability-make-member-function-const:gen_sql_allocation/sql_allocation/DataBlob.cpp
 
+readability-simplify-boolean-expr:gen_complex_allocation/complex_allocation/allocation_choice/AllocationChoice.cpp

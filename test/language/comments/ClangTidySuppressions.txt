@@ -44,3 +44,7 @@ readability-make-member-function-const:gen/comments/markdown_doc/struct_comments
 readability-make-member-function-const:gen/comments/markdown_doc/struct_template_comments/Compound.cpp
 readability-make-member-function-const:gen/comments/markdown_doc/struct_template_comments/Field_uint32.cpp
 readability-make-member-function-const:gen/comments/mixed_doc/struct_comments/DirectionStructure.cpp
+
+readability-simplify-boolean-expr:gen/comments/classic_doc/struct_comments/DirectionStructure.cpp
+readability-simplify-boolean-expr:gen/comments/markdown_doc/struct_comments/DirectionStructure.cpp
+readability-simplify-boolean-expr:gen/comments/mixed_doc/struct_comments/DirectionStructure.cpp

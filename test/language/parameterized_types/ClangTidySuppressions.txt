@@ -75,4 +75,7 @@ readability-make-member-function-const:gen/parameterized_types/parameterized_par
 readability-make-member-function-const:gen/parameterized_types/simple_param/Item.cpp
 readability-make-member-function-const:gen/parameterized_types/subtyped_bitfield_param/SubtypedBitfieldParam.cpp
 
+readability-simplify-boolean-expr:gen/parameterized_types/grand_child_param/Item.cpp
+readability-simplify-boolean-expr:gen/parameterized_types/grand_child_param/ItemChoice.cpp
+
 readability-uppercase-literal-suffix:gen/parameterized_types/fixed_and_variable_param/ArrayHolder.cpp

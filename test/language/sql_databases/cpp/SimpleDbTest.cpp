@@ -49,10 +49,7 @@ protected:
             return false;
 
         const unsigned char* readTableName = sqlite3_column_text(statement.get(), 0);
-        if (readTableName == nullptr || checkTableName != reinterpret_cast<const char*>(readTableName))
-            return false;
-
-        return true;
+        return (readTableName != nullptr && checkTableName == reinterpret_cast<const char*>(readTableName));
     }
 
     const string_type m_dbFileName;

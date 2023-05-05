@@ -24,3 +24,5 @@ readability-make-member-function-const:gen/union_types/union_compatibility_check
 readability-make-member-function-const:gen/union_types/union_compatibility_check/CoordXY.cpp
 readability-make-member-function-const:gen/union_types/union_with_array/Data8.cpp
 readability-make-member-function-const:gen/union_types/union_with_parameterized_field/ArrayHolder.cpp
+
+readability-simplify-boolean-expr:gen/union_types/empty_union/EmptyUnion.cpp

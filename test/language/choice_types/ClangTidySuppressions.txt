@@ -50,3 +50,8 @@ readability-make-member-function-const:gen/choice_types/function_selector_choice
 readability-make-member-function-const:gen/choice_types/uint16_param_choice/UInt16ParamChoice.cpp
 readability-make-member-function-const:gen/choice_types/uint32_param_choice/UInt32ParamChoice.cpp
 readability-make-member-function-const:gen/choice_types/uint64_param_choice/UInt64ParamChoice.cpp
+
+readability-simplify-boolean-expr:gen/choice_types/bool_param_choice/BoolParamChoice.cpp
+readability-simplify-boolean-expr:gen/choice_types/empty_choice/EmptyChoice.cpp
+readability-simplify-boolean-expr:gen/choice_types/empty_choice_with_case/EmptyChoiceWithCase.cpp
+readability-simplify-boolean-expr:gen/choice_types/empty_choice_with_default/EmptyChoiceWithDefault.cpp

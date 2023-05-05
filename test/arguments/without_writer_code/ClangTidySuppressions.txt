@@ -22,3 +22,5 @@ readability-make-member-function-const:gen/without_writer_code/ItemChoiceHolder.
 readability-make-member-function-const:gen/without_writer_code/ItemChoice.cpp
 readability-make-member-function-const:gen/without_writer_code/Item.cpp
 readability-make-member-function-const:gen/without_writer_code/Tile.cpp
+
+readability-simplify-boolean-expr:gen/without_writer_code/ItemChoice.cpp

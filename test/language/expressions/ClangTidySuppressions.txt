@@ -44,4 +44,11 @@ readability-make-member-function-const:gen/expressions/question_mark/QuestionMar
 readability-make-member-function-const:gen/expressions/uint64_type/UInt64TypeExpression.cpp
 readability-make-member-function-const:gen/expressions/used_before_type/UsedBeforeTypeExpression.cpp
 
+readability-simplify-boolean-expr:gen/expressions/index_operator/Element.cpp
+readability-simplify-boolean-expr:gen/expressions/parameterized_array_type/ParameterizedArrayElement.cpp
+readability-simplify-boolean-expr:gen/expressions/question_mark/QuestionMarkExpression.cpp
+
 readability-uppercase-literal-suffix:gen/expressions/float_type/FloatTypeExpression.cpp
+readability-uppercase-literal-suffix:gen/expressions/question_mark/QuestionMarkExpression.cpp
+readability-uppercase-literal-suffix:gen/expressions/parameterized_array_type/ParameterizedArrayElement.cpp
+

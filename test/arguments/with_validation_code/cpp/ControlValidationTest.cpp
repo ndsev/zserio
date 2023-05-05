@@ -123,17 +123,13 @@ protected:
         bool beginTable(zserio::StringView tableName, size_t numberOfTableRows) override
         {
             ValidationObserver::beginTable(tableName, numberOfTableRows);
-            if (m_tablesToSkip.count(zserio::toString(tableName)) != 0)
-                return false;
-            return true;
+            return (m_tablesToSkip.count(zserio::toString(tableName)) == 0);
         }
 
         bool endTable(zserio::StringView tableName, size_t numberOfValidatedTableRows) override
         {
             ValidationObserver::endTable(tableName, numberOfValidatedTableRows);
-            if (zserio::StringView(m_tableToStopAfter) == tableName)
-                return false;
-            return true;
+            return (zserio::StringView(m_tableToStopAfter) != tableName);
         }
 
         bool reportError(zserio::StringView tableName, zserio::StringView fieldName,

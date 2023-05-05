@@ -9,3 +9,5 @@ readability-make-member-function-const:gen/builtin_types/all_builtin_types/AllBu
 readability-make-member-function-const:gen/builtin_types/all_builtin_types/ExternalStructure.cpp
 readability-make-member-function-const:gen/builtin_types/bitfield_function_length/Container.cpp
 readability-make-member-function-const:gen/builtin_types/bitfield_uint64_length/Container.cpp
+
+readability-simplify-boolean-expr:gen/builtin_types/all_builtin_types/AllBuiltInTypes.cpp

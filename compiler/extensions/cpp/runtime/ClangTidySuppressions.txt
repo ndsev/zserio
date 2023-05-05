@@ -34,9 +34,9 @@ cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/AnyHolder.h:60
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/CppRuntimeException.h:196
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/Span.h:112
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/StringView.h:897
-cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/ZserioTreeCreator.h:376
-cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/ZserioTreeCreator.h:378
-cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/ZserioTreeCreator.h:380
+cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/ZserioTreeCreator.h:367
+cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/ZserioTreeCreator.h:369
+cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/ZserioTreeCreator.h:371
 
 # bounds are checked naturally by implementation
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/StringConvertUtil.h:41
@@ -142,9 +142,9 @@ misc-no-recursion:src/zserio/Walker.h:73
 misc-no-recursion:src/zserio/Walker.h:74
 misc-no-recursion:src/zserio/Walker.h:75
 misc-no-recursion:src/zserio/ZserioTreeCreator.h:26
-misc-no-recursion:src/zserio/ZserioTreeCreator.h:226
-misc-no-recursion:src/zserio/ZserioTreeCreator.h:342
-misc-no-recursion:src/zserio/ZserioTreeCreator.h:349
+misc-no-recursion:src/zserio/ZserioTreeCreator.h:217
+misc-no-recursion:src/zserio/ZserioTreeCreator.h:333
+misc-no-recursion:src/zserio/ZserioTreeCreator.h:340
 
 modernize-use-equals-default:src/zserio/Span.h:79 # false-positive
 

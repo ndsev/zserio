@@ -62,7 +62,7 @@ protected:
         const size_t expectedNumElements = NUM_ELEMENTS;
         ASSERT_EQ(expectedNumElements, data.size());
         for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
-            ASSERT_EQ((i & 0x01U) ? true : false, data[i] != 0);
+            ASSERT_EQ((i & 0x01U) != 0, data[i] != 0);
     }
 
     void fillBoolIndexedOffsetArray(BoolIndexedOffsetArray& boolIndexedOffsetArray, bool createWrongOffsets)
@@ -84,7 +84,7 @@ protected:
         auto& data = boolIndexedOffsetArray.getData();
         data.reserve(NUM_ELEMENTS);
         for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
-            data.push_back(((i & 0x01U) != 0) ? true : false);
+            data.push_back((i & 0x01U) != 0);
     }
 
     static const uint8_t    NUM_ELEMENTS = 5;

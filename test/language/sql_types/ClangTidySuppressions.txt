@@ -13,3 +13,7 @@ google-explicit-constructor:gen/sql_types/TestBitmask.h
 readability-braces-around-statements
 
 readability-make-member-function-const:gen/sql_types/TestChoice.cpp
+
+readability-simplify-boolean-expr:gen/sql_types/TestChoice.cpp
+
+readability-simplify-boolean-expr:gen/sql_types/TestChoice.cpp

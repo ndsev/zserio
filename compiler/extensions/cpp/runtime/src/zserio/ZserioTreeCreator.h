@@ -30,10 +30,7 @@ template <typename T, typename U,
 bool checkArithmeticValueRanges(U value)
 {
     // value is unsigned
-    if (value > static_cast<U>(std::numeric_limits<T>::max()))
-        return false;
-
-    return true;
+    return (value <= static_cast<U>(std::numeric_limits<T>::max()));
 }
 
 template <typename T, typename U,
@@ -42,11 +39,8 @@ template <typename T, typename U,
 bool checkArithmeticValueRanges(U value)
 {
     // value is signed and it is converted to signed value
-    if (static_cast<int64_t>(value) < static_cast<int64_t>(std::numeric_limits<T>::min()) ||
-            static_cast<int64_t>(value) > static_cast<int64_t>(std::numeric_limits<T>::max()))
-        return false;
-
-    return true;
+    return (static_cast<int64_t>(value) >= static_cast<int64_t>(std::numeric_limits<T>::min()) &&
+            static_cast<int64_t>(value) <= static_cast<int64_t>(std::numeric_limits<T>::max()));
 }
 
 template <typename T, typename U,
@@ -55,10 +49,7 @@ template <typename T, typename U,
 bool checkArithmeticValueRanges(U value)
 {
     // value is signed and it is converted to unsigned value
-    if (value < 0 || static_cast<uint64_t>(value) > static_cast<uint64_t>(std::numeric_limits<T>::max()))
-        return false;
-
-    return true;
+    return (value >= 0 && static_cast<uint64_t>(value) <= static_cast<uint64_t>(std::numeric_limits<T>::max()));
 }
 
 template <typename T, typename ALLOC>

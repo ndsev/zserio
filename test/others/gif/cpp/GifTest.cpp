@@ -30,7 +30,7 @@ protected:
         inputStream.seekg(0, inputStream.beg);
         buffer.resize(fileSize);
         inputStream.read(reinterpret_cast<char*>(buffer.data()), static_cast<std::streamsize>(buffer.size()));
-        const bool result = (inputStream) ? true : false;
+        const bool result = static_cast<bool>((inputStream));
         inputStream.close();
 
         return result;

@@ -52,3 +52,5 @@ readability-make-member-function-const:gen/with_type_info_code/TS32.cpp
 readability-make-member-function-const:gen/with_type_info_code/WithTypeInfoCode.cpp
 
 readability-uppercase-literal-suffix:gen/with_type_info_code/SimpleStruct.cpp
+
+readability-simplify-boolean-expr:gen/with_type_info_code/RecursiveChoice.cpp

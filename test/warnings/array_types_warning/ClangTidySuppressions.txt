@@ -11,3 +11,5 @@ readability-braces-around-statements
 
 readability-make-member-function-const:gen/array_types_warning/packed_array_choice_has_no_packable_field/ChoiceWithoutPackableField.cpp
 readability-make-member-function-const:gen/array_types_warning/packed_array_struct_has_no_packable_field/StructWithoutPackable.cpp
+
+readability-simplify-boolean-expr:gen/array_types_warning/packed_array_choice_has_no_packable_field/ChoiceWithoutPackableField.cpp

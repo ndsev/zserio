@@ -7,3 +7,5 @@ readability-braces-around-statements
 
 readability-make-member-function-const:gen/indexed_offsets/compound_indexed_offset_array/Compound.cpp
 readability-make-member-function-const:gen/indexed_offsets/optional_nested_indexed_offset_array/Header.cpp
+
+readability-simplify-boolean-expr:gen/indexed_offsets/optional_indexed_offset_array/OptionalIndexedOffsetArray.cpp

@@ -322,7 +322,7 @@ size_t BasicJsonDecoder<ALLOC>::checkNumber(StringView input, bool& isDouble, bo
             ++inputIt;
             continue;
         }
-        if (isDouble == false && (*inputIt == '.' || *inputIt == 'e' || *inputIt == 'E'))
+        if (!isDouble && (*inputIt == '.' || *inputIt == 'e' || *inputIt == 'E'))
         {
             isDouble = true;
             if (*inputIt == 'e' || *inputIt == 'E')
