@@ -33,6 +33,8 @@ performance-move-const-arg:gen/comments/markdown_doc/struct_template_comments/Fi
 performance-move-const-arg:gen/comments/markdown_doc/struct_template_comments/StructTemplatedField.cpp
 performance-move-const-arg:gen/comments/mixed_doc/struct_comments/DirectionStructure.cpp
 
+readability-braces-around-statements
+
 readability-make-member-function-const:gen/comments/classic_doc/struct_comments/DirectionStructure.cpp
 readability-make-member-function-const:gen/comments/classic_doc/struct_template_comments/Compound.cpp
 readability-make-member-function-const:gen/comments/classic_doc/struct_template_comments/Field_uint32.cpp

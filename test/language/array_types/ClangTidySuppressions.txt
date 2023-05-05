@@ -58,6 +58,8 @@ performance-move-const-arg:gen/array_types/packed_variable_array_struct_recursio
 performance-move-const-arg:gen/array_types/variable_array_ternary_operator/VariableArrayElement.cpp
 performance-move-const-arg:gen/array_types/variable_array_ternary_operator/VariableArray.cpp
 
+readability-braces-around-statements
+
 readability-make-member-function-const:gen/array_types/packed_auto_array_struct_with_unpacked_field/TestStructure.cpp
 readability-make-member-function-const:gen/array_types/packed_variable_array_struct/PackedVariableArray.cpp
 readability-make-member-function-const:gen/array_types/packed_variable_array_struct/TestChoice.cpp

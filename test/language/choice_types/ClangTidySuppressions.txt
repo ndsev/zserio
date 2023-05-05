@@ -30,6 +30,8 @@ performance-move-const-arg:gen/choice_types/choice_compatibility_check/ChoiceVer
 performance-move-const-arg:gen/choice_types/choice_compatibility_check/HolderVersion1.cpp
 performance-move-const-arg:gen/choice_types/choice_compatibility_check/HolderVersion2.cpp
 
+readability-braces-around-statements
+
 readability-make-member-function-const:gen/choice_types/bitmask_param_choice/BitmaskParamChoice.cpp
 readability-make-member-function-const:gen/choice_types/bool_param_choice/BoolParamChoice.cpp
 readability-make-member-function-const:gen/choice_types/choice_compatibility_check/ChoiceVersion1.cpp

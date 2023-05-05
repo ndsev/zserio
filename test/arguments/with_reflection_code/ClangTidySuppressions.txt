@@ -20,6 +20,8 @@ hicpp-signed-bitwise:gen/with_reflection_code/Bitmask.h
 
 performance-move-const-arg:gen/with_reflection_code/Struct.cpp
 
+readability-braces-around-statements
+
 readability-make-member-function-const:gen/with_reflection_code/Child.cpp
 readability-make-member-function-const:gen/with_reflection_code/Choice.cpp
 readability-make-member-function-const:gen/with_reflection_code/Parameterized.cpp

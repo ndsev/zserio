@@ -3,5 +3,7 @@ bugprone-forwarding-reference-overload:gen/indexed_offsets/packed_indexed_offset
 cert-err58-cpp:cpp/PackedAutoIndexedOffsetArrayTest.cpp
 cert-err58-cpp:cpp/PackedIndexedOffsetArrayHolderTest.cpp
 
+readability-braces-around-statements
+
 readability-make-member-function-const:gen/indexed_offsets/compound_indexed_offset_array/Compound.cpp
 readability-make-member-function-const:gen/indexed_offsets/optional_nested_indexed_offset_array/Header.cpp

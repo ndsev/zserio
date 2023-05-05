@@ -27,6 +27,8 @@ performance-move-const-arg:gen_packages/single_import_precedence/top/SingleImpor
 performance-move-const-arg:gen_package_name_conflict/package_name_conflict/PackageNameConflictLocal.cpp
 performance-move-const-arg:gen_reader/reader/ParameterizedElement.cpp
 
+readability-braces-around-statements
+
 readability-make-member-function-const:gen_default_package/Child.cpp
 readability-make-member-function-const:gen_default_package/DefaultPackageStructure.cpp
 readability-make-member-function-const:gen_default_package/default_package_import/top/TopStructure.cpp

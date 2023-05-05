@@ -18,6 +18,8 @@ performance-move-const-arg:gen/union_types/union_compatibility_check/UnionVersio
 performance-move-const-arg:gen/union_types/union_with_parameter/TestUnion.cpp
 performance-move-const-arg:cpp/EmptyUnionTest.cpp
 
+readability-braces-around-statements
+
 readability-make-member-function-const:gen/union_types/union_compatibility_check/CoordXYZ.cpp
 readability-make-member-function-const:gen/union_types/union_compatibility_check/CoordXY.cpp
 readability-make-member-function-const:gen/union_types/union_with_array/Data8.cpp

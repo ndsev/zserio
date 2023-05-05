@@ -9,6 +9,8 @@ google-explicit-constructor:gen/subtypes/bitmask_subtype/Permission.h
 performance-move-const-arg:gen/subtypes/param_structure_subtype/ParameterizedSubtypeStruct.cpp
 performance-move-const-arg:gen/subtypes/subtype_imported/SubtypeImported.cpp
 
+readability-braces-around-statements
+
 readability-make-member-function-const:gen/subtypes/param_structure_subtype/ParameterizedStruct.cpp
 readability-make-member-function-const:gen/subtypes/param_structure_subtype/ParameterizedSubtypeStruct.cpp
 readability-make-member-function-const:gen/subtypes/subtype_imported/Test.cpp

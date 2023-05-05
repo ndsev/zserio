@@ -10,5 +10,7 @@ performance-move-const-arg:gen/structure_types/field_constructor_clashing/Compou
 performance-move-const-arg:cpp/EmptyStructureTest.cpp
 performance-move-const-arg:cpp/SimpleStructureTest.cpp
 
+readability-braces-around-statements
+
 readability-make-member-function-const:gen/structure_types/field_constructor_clashing/Field.cpp
 readability-make-member-function-const:gen/structure_types/simple_structure/SimpleStructure.cpp

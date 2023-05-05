@@ -151,3 +151,6 @@ modernize-use-equals-default:src/zserio/Span.h:79 # false-positive
 # intentional tests
 performance-move-const-arg:test/zserio/PolymorphicAllocatorTest.cpp:59
 performance-move-const-arg:test/zserio/PolymorphicAllocatorTest.cpp:79
+
+# just add two more lines making readability worse
+readability-braces-around-statements:

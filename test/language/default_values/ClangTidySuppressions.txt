@@ -2,6 +2,8 @@ google-explicit-constructor:gen/default_values/structure_default_values/Permissi
 
 hicpp-signed-bitwise:gen/default_values/structure_default_values/Permission.h
 
+readability-braces-around-statements
+
 readability-make-member-function-const:gen/default_values/structure_default_values/StructureDefaultValues.cpp
 
 readability-uppercase-literal-suffix:gen/default_values/structure_default_values/StructureDefaultValues.cpp

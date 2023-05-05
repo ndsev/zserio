@@ -185,6 +185,8 @@ performance-move-const-arg:gen/templates/union_templated_field/TemplatedUnion_Co
 performance-move-const-arg:gen/templates/union_templated_field/TemplatedUnion_float32_float64.cpp
 performance-move-const-arg:gen/templates/union_templated_field/TemplatedUnion_uint16_uint32.cpp
 
+readability-braces-around-statements
+
 readability-make-member-function-const:gen/templates/choice_templated_enum_selector/ChoiceTemplatedEnumSelector.cpp
 readability-make-member-function-const:gen/templates/choice_templated_enum_selector/TemplatedChoice_EnumFromOne.cpp
 readability-make-member-function-const:gen/templates/choice_templated_enum_selector/TemplatedChoice_EnumFromZero.cpp

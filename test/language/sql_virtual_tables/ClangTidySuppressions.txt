@@ -8,3 +8,5 @@ cppcoreguidelines-pro-type-reinterpret-cast:cpp/Fts5VirtualTableTest.cpp
 
 fuchsia-multiple-inheritance:gen/sql_virtual_tables/fts3_virtual_table/Fts3TestDb.h
 fuchsia-multiple-inheritance:gen/sql_virtual_tables/fts5_virtual_table/Fts5TestDb.h
+
+readability-braces-around-statements

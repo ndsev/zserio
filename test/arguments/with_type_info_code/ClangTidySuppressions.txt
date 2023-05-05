@@ -44,6 +44,8 @@ misc-no-recursion # reports also tested_release and some system headers
 performance-move-const-arg:gen/with_type_info_code/ComplexStruct.cpp
 performance-move-const-arg:gen/with_type_info_code/WithTypeInfoCode.cpp
 
+readability-braces-around-statements
+
 readability-make-member-function-const:gen/with_type_info_code/SimpleChoice.cpp
 readability-make-member-function-const:gen/with_type_info_code/SimpleStruct.cpp
 readability-make-member-function-const:gen/with_type_info_code/TS32.cpp

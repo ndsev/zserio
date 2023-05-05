@@ -1,5 +1,7 @@
 cppcoreguidelines-pro-type-member-init:gen/with_range_check_code/choice_bit4_range_check/ChoiceBit4RangeCheckCompound.cpp
 
+readability-braces-around-statements
+
 readability-make-member-function-const:gen/with_range_check_code/bit4_range_check/Bit4RangeCheckCompound.cpp
 readability-make-member-function-const:gen/with_range_check_code/choice_bit4_range_check/ChoiceBit4RangeCheckCompound.cpp
 readability-make-member-function-const:gen/with_range_check_code/dynamic_bit_range_check/DynamicBitRangeCheckCompound.cpp

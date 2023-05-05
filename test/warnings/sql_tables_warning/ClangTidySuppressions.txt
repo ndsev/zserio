@@ -20,3 +20,5 @@ fuchsia-multiple-inheritance:gen/sql_tables_warning/multiple_primary_keys_warnin
 fuchsia-multiple-inheritance:gen/sql_tables_warning/not_first_primary_key_warning/NotFirstPrimaryKeyDatabase.h
 fuchsia-multiple-inheritance:gen/sql_tables_warning/not_null_primary_key_warning/NotNullPrimaryKeyDatabase.h
 fuchsia-multiple-inheritance:gen/sql_tables_warning/no_primary_key_warning/NoPrimaryKeyDatabase.h
+
+readability-braces-around-statements

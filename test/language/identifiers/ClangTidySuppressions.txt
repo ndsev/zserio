@@ -11,6 +11,8 @@ cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen/identifiers/structure_na
 
 google-explicit-constructor:gen/identifiers/bitmask_name_clashing_with_java/String.h
 
+readability-braces-around-statements
+
 readability-make-member-function-const:gen/identifiers/structure_name_clashing_with_java/BigInteger.cpp
 readability-make-member-function-const:gen/identifiers/structure_name_clashing_with_java/Byte.cpp
 readability-make-member-function-const:gen/identifiers/structure_name_clashing_with_java/Double.cpp

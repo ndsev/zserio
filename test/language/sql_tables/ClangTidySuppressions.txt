@@ -58,6 +58,8 @@ performance-move-const-arg:gen/sql_tables/column_param_table/ParameterizedBlob.c
 performance-move-const-arg:gen/sql_tables/complex_table/TestBlob.cpp
 performance-move-const-arg:gen/sql_tables/const_param_table/ParameterizedBlob.cpp
 
+readability-braces-around-statements
+
 readability-make-member-function-const:gen/sql_tables/blob_field_with_children_initialization_table/BlobWithChildrenInitialization.cpp
 readability-make-member-function-const:gen/sql_tables/blob_field_with_children_initialization_table/ParameterizedArray.cpp
 readability-make-member-function-const:gen/sql_tables/blob_param_table/Parameters.cpp

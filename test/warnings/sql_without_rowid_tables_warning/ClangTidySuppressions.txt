@@ -3,3 +3,5 @@ cppcoreguidelines-pro-type-member-init:gen/sql_without_rowid_tables_warning/inte
 cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_without_rowid_tables_warning/integer_primary_key_warning/WithoutRowIdTable.cpp
 
 fuchsia-multiple-inheritance:gen/sql_without_rowid_tables_warning/integer_primary_key_warning/WithoutRowIdDatabase.h
+
+readability-braces-around-statements
