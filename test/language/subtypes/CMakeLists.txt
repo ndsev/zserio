@@ -33,7 +33,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/subtypes/uint16_subtype/TestStructure.h
 )
 
-zserio_add_library(TARGET subtypes_zs
+zserio_add_library(subtypes_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE subtypes.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -43,13 +43,16 @@ zserio_add_library(TARGET subtypes_zs
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
-add_test_sources(
-    cpp/BitmaskSubtypeTest.cpp
-    cpp/EnumSubtypeTest.cpp
-    cpp/ParamStructureSubtypeTest.cpp
-    cpp/StructureSubtypeTest.cpp
-    cpp/SubtypeImportedTest.cpp
-    cpp/UInt16SubtypeTest.cpp
+add_custom_test(subtypes
+    DEPENDS
+        subtypes_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/BitmaskSubtypeTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/EnumSubtypeTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ParamStructureSubtypeTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/StructureSubtypeTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/SubtypeImportedTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/UInt16SubtypeTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(subtypes_zs)

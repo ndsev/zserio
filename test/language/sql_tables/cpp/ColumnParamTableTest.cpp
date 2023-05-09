@@ -31,10 +31,16 @@ public:
         m_database->createSchema();
     }
 
-    ~ColumnParamTableTest()
+    ~ColumnParamTableTest() override
     {
         delete m_database;
     }
+
+    ColumnParamTableTest(const ColumnParamTableTest&) = delete;
+    ColumnParamTableTest& operator=(const ColumnParamTableTest&) = delete;
+
+    ColumnParamTableTest(ColumnParamTableTest&&) = delete;
+    ColumnParamTableTest& operator=(ColumnParamTableTest&&) = delete;
 
 protected:
     static void fillColumnParamTableRow(ColumnParamTable::Row& row, uint32_t blobId, const string_type& name)
@@ -87,16 +93,10 @@ protected:
             return false;
 
         const unsigned char* readTableName = sqlite3_column_text(statement.get(), 0);
-        if (readTableName == nullptr ||
-                checkTableName.compare(reinterpret_cast<const char*>(readTableName)) != 0)
-        {
-            return false;
-        }
-
-        return true;
+        return (readTableName != nullptr && checkTableName == reinterpret_cast<const char*>(readTableName));
     }
 
-    static const char DB_FILE_NAME[];
+    static const char* const DB_FILE_NAME;
 
     static const uint32_t PARAMETERIZED_BLOB_VALUE;
     static const uint32_t NUM_COLUMN_PARAM_TABLE_ROWS;
@@ -104,7 +104,7 @@ protected:
     sql_tables::TestDb* m_database;
 };
 
-const char ColumnParamTableTest::DB_FILE_NAME[] = "language/sql_tables/column_param_table_test.sqlite";
+const char* const ColumnParamTableTest::DB_FILE_NAME = "language/sql_tables/column_param_table_test.sqlite";
 
 const uint32_t ColumnParamTableTest::PARAMETERIZED_BLOB_VALUE = 0xABCD;
 const uint32_t ColumnParamTableTest::NUM_COLUMN_PARAM_TABLE_ROWS = 5;

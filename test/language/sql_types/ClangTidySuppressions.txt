@@ -1,0 +1,17 @@
+bugprone-signed-char-misuse:gen/sql_types/SqlTypesTable.cpp
+
+cppcoreguidelines-pro-type-member-init:gen/sql_types/SqlTypesTable.cpp
+cppcoreguidelines-pro-type-member-init:gen/sql_types/TestChoice.cpp
+
+cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_types/SqlTypesTable.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:cpp/SqlTypesTest.cpp
+
+fuchsia-multiple-inheritance:gen/sql_types/SqlTypesDb.h
+
+google-explicit-constructor:gen/sql_types/TestBitmask.h
+
+readability-braces-around-statements
+
+readability-make-member-function-const:gen/sql_types/TestChoice.cpp
+
+readability-simplify-boolean-expr:gen/sql_types/TestChoice.cpp

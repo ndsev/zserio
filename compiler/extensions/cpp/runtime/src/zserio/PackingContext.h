@@ -7,6 +7,8 @@
 #include "zserio/Types.h"
 #include "zserio/UniquePtr.h"
 #include "zserio/Vector.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace zserio
 {
@@ -21,7 +23,7 @@ inline uint8_t absDeltaBitLength(uint64_t absDelta)
     while (absDelta > 0)
     {
         result++;
-        absDelta >>= 1;
+        absDelta >>= 1U;
     }
 
     return result;
@@ -250,7 +252,7 @@ private:
         }
     }
 
-    size_t bitSizeOfDescriptor()
+    size_t bitSizeOfDescriptor() const
     {
         if (m_isPacked)
             return 1 + MAX_BIT_NUMBER_BITS;
@@ -279,7 +281,7 @@ private:
         return element;
     }
 
-    void writeDescriptor(BitStreamWriter& out)
+    void writeDescriptor(BitStreamWriter& out) const
     {
         out.writeBool(m_isPacked);
         if (m_isPacked)

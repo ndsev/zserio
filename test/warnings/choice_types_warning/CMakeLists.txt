@@ -6,7 +6,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/choice_types_warning/optional_references_in_selector/TestChoice.h
 )
 
-zserio_add_library(TARGET choice_types_warning_zs
+zserio_add_library(choice_types_warning_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE choice_types_warning.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -18,8 +18,11 @@ zserio_add_library(TARGET choice_types_warning_zs
     ZSERIO_LOG_FILENAME zserio_log.txt
 )
 
-add_test_sources(
-    cpp/ChoiceTypesWarningTest.cpp
+add_custom_test(choice_types_warning
+    DEPENDS
+        choice_types_warning_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ChoiceTypesWarningTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(choice_types_warning_zs)

@@ -1,5 +1,3 @@
-#include "math.h"
-
 #include "gtest/gtest.h"
 
 #include "expressions/parameter_type/ParameterTypeExpression.h"

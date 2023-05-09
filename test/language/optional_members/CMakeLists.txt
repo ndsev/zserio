@@ -24,7 +24,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/optional_members/optional_recursion/Block.h
 )
 
-zserio_add_library(TARGET optional_members_zs
+zserio_add_library(optional_members_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE optional_members.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -34,12 +34,15 @@ zserio_add_library(TARGET optional_members_zs
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
-add_test_sources(
-    cpp/AutoOptionalTest.cpp
-    cpp/OptionalArrayRecursionTest.cpp
-    cpp/OptionalArrayTest.cpp
-    cpp/OptionalExpressionTest.cpp
-    cpp/OptionalRecursionTest.cpp
+add_custom_test(optional_members
+    DEPENDS
+        optional_members_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/AutoOptionalTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/OptionalArrayRecursionTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/OptionalArrayTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/OptionalExpressionTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/OptionalRecursionTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(optional_members_zs)

@@ -115,7 +115,7 @@ public:
     /**
      * Virtual destructor.
      */
-    virtual ~IBasicTypeInfo() {}
+    virtual ~IBasicTypeInfo() = default;
 
     /**
      * Gets the schema name.
@@ -330,11 +330,24 @@ public:
     /**
      * Creates new instance of the zserio compound type.
      *
+     * \param allocator Allocator to use for allocation of new instance.
+     *
      * \return New instance of zserio compound type.
      *
      * \throw CppRuntimeException If the zserio type is not compound type.
      */
-    virtual IBasicReflectablePtr<ALLOC> createInstance(const ALLOC& allocator = ALLOC()) const = 0;
+    virtual IBasicReflectablePtr<ALLOC> createInstance(const ALLOC& allocator) const = 0;
+
+    /**
+     * Creates new instance of the zserio compound type.
+     *
+     * \note Default constructed allocator is used for allocation of new instance.
+     *
+     * \return New instance of zserio compound type.
+     *
+     * \throw CppRuntimeException If the zserio type is not compound type.
+     */
+    virtual IBasicReflectablePtr<ALLOC> createInstance() const = 0;
 };
 
 /**
@@ -343,6 +356,16 @@ public:
 template <typename ALLOC = std::allocator<uint8_t>>
 struct BasicFieldInfo
 {
+    BasicFieldInfo(StringView schemaName_, const IBasicTypeInfo<ALLOC>& typeInfo_,
+            Span<const StringView> typeArguments_, StringView alignment_, StringView offset_,
+            StringView initializer_, bool isOptional_, StringView optionalCondition_,
+            StringView constraint_, bool isArray_, StringView arrayLength_, bool isPacked_ ,bool isImplicit_) :
+            schemaName(schemaName_), typeInfo(typeInfo_), typeArguments(typeArguments_), alignment(alignment_),
+            offset(offset_), initializer(initializer_), isOptional(isOptional_),
+            optionalCondition(optionalCondition_), constraint(constraint_), isArray(isArray_),
+            arrayLength(arrayLength_), isPacked(isPacked_), isImplicit(isImplicit_)
+    {}
+
     StringView schemaName; /**< field schema name */
     const IBasicTypeInfo<ALLOC>& typeInfo; /**< reference to type information for a field type */
     Span<const StringView> typeArguments; /**< sequence of field type arguments */
@@ -394,6 +417,10 @@ struct BasicCaseInfo
  */
 struct ItemInfo
 {
+    ItemInfo(StringView schemaName_, uint64_t value_) :
+            schemaName(schemaName_), value(value_)
+    {}
+
     StringView schemaName; /**< enumeration item or bitmask value schema name */
     uint64_t value; /**< enumeration item or bitmask value cast to uint64_t */
 };
@@ -404,6 +431,13 @@ struct ItemInfo
 template <typename ALLOC = std::allocator<uint8_t>>
 struct BasicColumnInfo
 {
+    BasicColumnInfo(StringView schemaName_, const IBasicTypeInfo<ALLOC>& typeInfo_,
+            Span<const StringView> typeArguments_, StringView sqlTypeName_, StringView sqlConstraint_,
+            bool isVirtual_) :
+            schemaName(schemaName_), typeInfo(typeInfo_), typeArguments(typeArguments_),
+            sqlTypeName(sqlTypeName_), sqlConstraint(sqlConstraint_), isVirtual(isVirtual_)
+    {}
+
     StringView schemaName; /**< column schema name */
     const IBasicTypeInfo<ALLOC>& typeInfo; /**< reference to type information for a column type */
     Span<const StringView> typeArguments; /**< sequence of column type arguments */
@@ -437,6 +471,12 @@ struct BasicTemplateArgumentInfo
 template <typename ALLOC = std::allocator<uint8_t>>
 struct BasicMessageInfo
 {
+    BasicMessageInfo(StringView schemaName_, const IBasicTypeInfo<ALLOC>& typeInfo_,
+            bool isPublished_, bool isSubscribed_, StringView topic_) :
+            schemaName(schemaName_), typeInfo(typeInfo_),
+            isPublished(isPublished_), isSubscribed(isSubscribed_), topic(topic_)
+    {}
+
     StringView schemaName; /**< message schema name */
     const IBasicTypeInfo<ALLOC>& typeInfo; /**< reference to type information for a message type */
     bool isPublished; /**< true if the message is published */

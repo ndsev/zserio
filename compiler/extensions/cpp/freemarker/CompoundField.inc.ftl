@@ -309,10 +309,9 @@ ${I}{
 ${I}}
         <#elseif field.array?? && field.array.elementIntegerRange??>
 ${I}// check ranges
-${I}for (auto it = <@compound_get_field field/>.getRawArray().begin(); <#rt>
-            <#lt>it != <@compound_get_field field/>.getRawArray().end(); ++it)
+${I}for (auto value : <@compound_get_field field/>.getRawArray())
 ${I}{
-        <@compound_check_range_value "*it", field.name, compoundName, field.array.elementTypeInfo.typeFullName,
+        <@compound_check_range_value "value", field.name, compoundName, field.array.elementTypeInfo.typeFullName,
                 field.array.elementIntegerRange, indent + 1/>
 ${I}}
         </#if>

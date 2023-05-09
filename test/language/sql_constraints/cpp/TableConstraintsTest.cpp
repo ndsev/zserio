@@ -29,18 +29,24 @@ public:
         m_database->createSchema();
     }
 
-    ~TableConstraintsTest()
+    ~TableConstraintsTest() override
     {
         delete m_database;
     }
 
+    TableConstraintsTest(const TableConstraintsTest&) = delete;
+    TableConstraintsTest& operator=(const TableConstraintsTest&) = delete;
+
+    TableConstraintsTest(TableConstraintsTest&&) = delete;
+    TableConstraintsTest& operator=(TableConstraintsTest&&) = delete;
+
 protected:
-    static const char DB_FILE_NAME[];
+    static const char* const DB_FILE_NAME;
 
     sql_constraints::TestDb* m_database;
 };
 
-const char TableConstraintsTest::DB_FILE_NAME[] =
+const char* const TableConstraintsTest::DB_FILE_NAME =
         "language/sql_constraints/table_constraints_test.sqlite";
 
 TEST_F(TableConstraintsTest, primaryKey)

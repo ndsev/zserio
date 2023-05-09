@@ -29,10 +29,16 @@ public:
         m_database->createSchema();
     }
 
-    ~TableWithImplicitArrayTest()
+    ~TableWithImplicitArrayTest() override
     {
         delete m_database;
     }
+
+    TableWithImplicitArrayTest(const TableWithImplicitArrayTest&) = delete;
+    TableWithImplicitArrayTest& operator=(const TableWithImplicitArrayTest&) = delete;
+
+    TableWithImplicitArrayTest(TableWithImplicitArrayTest&&) = delete;
+    TableWithImplicitArrayTest& operator=(TableWithImplicitArrayTest&&) = delete;
 
 protected:
     static void fillRow(TableWithImplicitArray::Row& row, size_t i)
@@ -68,13 +74,13 @@ protected:
             checkRow(rows1[i], rows2[i]);
     }
 
-    static const char DB_FILE_NAME[];
+    static const char* const DB_FILE_NAME;
     static const size_t NUM_ROWS;
 
     allow_implicit_arrays::table_with_implicit_array::DbWithImplicitArray* m_database;
 };
 
-const char TableWithImplicitArrayTest::DB_FILE_NAME[] =
+const char* const TableWithImplicitArrayTest::DB_FILE_NAME =
         "arguments/allow_implicit_arrays/table_with_implicit_array_test.sqlite";
 const size_t TableWithImplicitArrayTest::NUM_ROWS = 5;
 

@@ -1,0 +1,9 @@
+cppcoreguidelines-pro-type-member-init:gen/sql_constraints/field_constraints/FieldConstraintsTable.cpp
+cppcoreguidelines-pro-type-member-init:gen/sql_constraints/table_constraints/TableConstraintsTable.cpp
+
+cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_constraints/field_constraints/FieldConstraintsTable.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_constraints/table_constraints/TableConstraintsTable.cpp
+
+fuchsia-multiple-inheritance:gen/sql_constraints/TestDb.h
+
+readability-braces-around-statements

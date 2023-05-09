@@ -30,10 +30,16 @@ public:
         m_database->createSchema();
     }
 
-    ~MultipleWithSameNameTest()
+    ~MultipleWithSameNameTest() override
     {
         delete m_database;
     }
+
+    MultipleWithSameNameTest(const MultipleWithSameNameTest&) = delete;
+    MultipleWithSameNameTest& operator=(const MultipleWithSameNameTest&) = delete;
+
+    MultipleWithSameNameTest(MultipleWithSameNameTest&&) = delete;
+    MultipleWithSameNameTest& operator=(MultipleWithSameNameTest&&) = delete;
 
 protected:
     void fillMultipleWithSameNameTableRow(MultipleWithSameNameTable::Row& row, uint32_t id,
@@ -43,7 +49,7 @@ protected:
         row.setName(name);
 
         row.setParameterized1(Parameterized1(id * 10));
-        row.setParameterized2(Parameterized2(static_cast<float>(id) * 1.5f));
+        row.setParameterized2(Parameterized2(static_cast<float>(id) * 1.5F));
     }
 
     void fillMultipleWithSameNameTableRows(vector_type<MultipleWithSameNameTable::Row>& rows)
@@ -78,12 +84,12 @@ protected:
     class MultipleParamsTableParameterProvider : public MultipleWithSameNameTable::IParameterProvider
     {
     public:
-        virtual uint32_t getParam1(MultipleWithSameNameTable::Row&)
+        uint32_t getParam1(MultipleWithSameNameTable::Row&) override
         {
             return PARAM1;
         }
 
-        virtual float getParam2(MultipleWithSameNameTable::Row&)
+        float getParam2(MultipleWithSameNameTable::Row&) override
         {
             return PARAM2;
         }
@@ -91,19 +97,19 @@ protected:
 
     ExplicitParametersDb* m_database;
 
-    static const char DB_FILE_NAME[];
+    static const char* const DB_FILE_NAME;
 
     static const uint32_t NUM_ROWS;
     static const uint32_t PARAM1;
     static const float PARAM2;
 };
 
-const char MultipleWithSameNameTest::DB_FILE_NAME[] =
+const char* const MultipleWithSameNameTest::DB_FILE_NAME =
         "language/explicit_parameters/multiple_with_same_name_test.sqlite";
 
 const uint32_t MultipleWithSameNameTest::NUM_ROWS = 5;
 const uint32_t MultipleWithSameNameTest::PARAM1 = 100;
-const float MultipleWithSameNameTest::PARAM2 = 10.0f;
+const float MultipleWithSameNameTest::PARAM2 = 10.0F;
 
 TEST_F(MultipleWithSameNameTest, readWithoutCondition)
 {

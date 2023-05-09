@@ -23,10 +23,16 @@ public:
         m_database->createSchema();
     }
 
-    ~SqlTypesTest()
+    ~SqlTypesTest() override
     {
         delete m_database;
     }
+
+    SqlTypesTest(const SqlTypesTest&) = delete;
+    SqlTypesTest& operator=(const SqlTypesTest&) = delete;
+
+    SqlTypesTest(SqlTypesTest&&) = delete;
+    SqlTypesTest& operator=(SqlTypesTest&&) = delete;
 
 protected:
     bool getSqlColumnTypes(std::map<std::string, std::string>& sqlColumnTypes)
@@ -57,12 +63,12 @@ protected:
         return true;
     }
 
-    static const char DB_FILE_NAME[];
+    static const char* const DB_FILE_NAME;
 
     sql_types::SqlTypesDb* m_database;
 };
 
-const char SqlTypesTest::DB_FILE_NAME[] = "language/sql_types/sql_types_test.sqlite";
+const char* const SqlTypesTest::DB_FILE_NAME = "language/sql_types/sql_types_test.sqlite";
 
 TEST_F(SqlTypesTest, unsignedIntegerTypes)
 {

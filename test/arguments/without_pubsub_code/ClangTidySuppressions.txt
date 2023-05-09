@@ -1,0 +1,6 @@
+readability-make-member-function-const:gen/without_pubsub_code/Request.cpp
+readability-make-member-function-const:gen/without_pubsub_code/Response.cpp
+
+performance-move-const-arg:gen/without_pubsub_code/Service.cpp
+
+readability-braces-around-statements

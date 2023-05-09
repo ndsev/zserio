@@ -1,0 +1,15 @@
+cppcoreguidelines-pro-type-member-init:gen/sql_without_rowid_tables/rowid_and_without_rowid_tables/OrdinaryRowIdTable.cpp
+cppcoreguidelines-pro-type-member-init:gen/sql_without_rowid_tables/rowid_and_without_rowid_tables/WithoutRowIdTable.cpp
+cppcoreguidelines-pro-type-member-init:gen/sql_without_rowid_tables/simple_without_rowid_table/SimpleWithoutRowIdTable.cpp
+
+cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_without_rowid_tables/rowid_and_without_rowid_tables/OrdinaryRowIdTable.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_without_rowid_tables/rowid_and_without_rowid_tables/WithoutRowIdTable.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_without_rowid_tables/simple_without_rowid_table/SimpleWithoutRowIdTable.cpp
+
+fuchsia-multiple-inheritance:gen/sql_without_rowid_tables/rowid_and_without_rowid_tables/RowIdAndWithoutRowIdDb.h
+fuchsia-multiple-inheritance:gen/sql_without_rowid_tables/simple_without_rowid_table/SimpleWithoutRowIdDb.h
+
+google-build-using-namespace:cpp/RowIdAndWithoutRowIdTablesTest.cpp
+google-build-using-namespace:cpp/SimpleWithoutRowIdTableTest.cpp
+
+readability-braces-around-statements

@@ -29,7 +29,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/structure_types/structure_inner_classes_clashing/OffsetInitializer_array.h
 )
 
-zserio_add_library(TARGET structure_types_zs
+zserio_add_library(structure_types_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE structure_types.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -39,13 +39,16 @@ zserio_add_library(TARGET structure_types_zs
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
-add_test_sources(
-    cpp/EmptyStructureTest.cpp
-    cpp/EmptyStructureWithParameterTest.cpp
-    cpp/FieldConstructorClashingTest.cpp
-    cpp/OneStringStructureTest.cpp
-    cpp/SimpleStructureTest.cpp
-    cpp/StructureInnerClassesClashingTest.cpp
+add_custom_test(structure_types
+    DEPENDS
+        structure_types_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/EmptyStructureTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/EmptyStructureWithParameterTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/FieldConstructorClashingTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/OneStringStructureTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/SimpleStructureTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/StructureInnerClassesClashingTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(structure_types_zs)

@@ -1,4 +1,5 @@
 #include <cstring>
+#include <array>
 
 #include "zserio/BitStreamReader.h"
 #include "zserio/CppRuntimeException.h"
@@ -11,24 +12,19 @@ namespace zserio
 class BitStreamReaderTest : public ::testing::Test
 {
 public:
-    BitStreamReaderTest() : m_reader(m_byteBuffer, BUFFER_SIZE)
+    BitStreamReaderTest() : m_byteBuffer(), m_reader(m_byteBuffer.data(), m_byteBuffer.size())
     {
-        memset(m_byteBuffer, 0, sizeof(m_byteBuffer) / sizeof(m_byteBuffer[0]));
+        m_byteBuffer.fill(0);
     }
 
 protected:
+    std::array<uint8_t, 16> m_byteBuffer;
     BitStreamReader m_reader;
-    static const size_t BUFFER_SIZE = 16;
-
-private:
-    uint8_t m_byteBuffer[BUFFER_SIZE];
 };
-
-const size_t BitStreamReaderTest::BUFFER_SIZE;
 
 TEST_F(BitStreamReaderTest, spanConstructor)
 {
-    const uint8_t data[] = {0xAE, 0xEA, 0x80};
+    const std::array<const uint8_t, 3> data = {0xAE, 0xEA, 0x80};
     const Span<const uint8_t> span(data);
     BitStreamReader reader(span);
 
@@ -40,12 +36,25 @@ TEST_F(BitStreamReaderTest, spanConstructor)
     ASSERT_THROW(reader.readBits(1), CppRuntimeException);
 }
 
+TEST_F(BitStreamReaderTest, spanConstructorWithBitSize)
+{
+    const std::array<const uint8_t, 3> data = {0xAE, 0xEA, 0x80};
+    const Span<const uint8_t> span(data);
+    BitStreamReader reader(span, 23);
+    ASSERT_THROW(BitStreamReader wrongReader(span, 25), CppRuntimeException);
+
+    ASSERT_EQ(23, reader.getBufferBitSize());
+    ASSERT_EQ(0xAEE, reader.readBits(12));
+    ASSERT_EQ(0xA, reader.readBits(4));
+    ASSERT_EQ(0x40, reader.readBits(7));
+
+    ASSERT_THROW(reader.readBits(1), CppRuntimeException);
+}
+
 TEST_F(BitStreamReaderTest, bitBufferConstructor)
 {
-    BitBuffer bitBuffer(17);
-    bitBuffer.getBuffer()[0] = 0xAE;
-    bitBuffer.getBuffer()[1] = 0xEA;
-    bitBuffer.getBuffer()[2] = 0x80;
+    const std::vector<uint8_t> data = {0xAE, 0xEA, 0x80};
+    BitBuffer bitBuffer(data, 17);
     BitStreamReader reader(bitBuffer);
 
     ASSERT_EQ(bitBuffer.getBitSize(), reader.getBufferBitSize());
@@ -61,10 +70,8 @@ TEST_F(BitStreamReaderTest, bitBufferConstructor)
 
 TEST_F(BitStreamReaderTest, bitBufferConstructorOverflow)
 {
-    BitBuffer bitBuffer(19);
-    bitBuffer.getBuffer()[0] = 0xFF;
-    bitBuffer.getBuffer()[1] = 0xFF;
-    bitBuffer.getBuffer()[2] = 0xF0;
+    const std::vector<uint8_t> data = {0xFF, 0xFF, 0xF0};
+    BitBuffer bitBuffer(data, 19);
     BitStreamReader reader(bitBuffer);
 
     ASSERT_EQ(bitBuffer.getBitSize(), reader.getBufferBitSize());
@@ -81,9 +88,9 @@ TEST_F(BitStreamReaderTest, readUnalignedData)
         BitBuffer buffer(8 + offset);
 
         // write test value at offset to data buffer
-        buffer.getBuffer()[offset / 8] |= testValue >> (offset % 8);
+        buffer.getData()[offset / 8U] |= static_cast<uint8_t>(testValue >> (offset % 8U));
         if (offset % 8 != 0) // don't write behind the buffer
-            buffer.getBuffer()[offset / 8 + 1] |= static_cast<uint8_t>(testValue << (8 - (offset % 8)));
+            buffer.getData()[offset / 8U + 1] |= static_cast<uint8_t>(testValue << (8U - (offset % 8U)));
 
         BitStreamReader reader(buffer);
 
@@ -101,11 +108,8 @@ TEST_F(BitStreamReaderTest, readUnalignedData)
 TEST_F(BitStreamReaderTest, readBits)
 {
     // check invalid bitlength acceptance
-    uint8_t numBits[] = { 255, 33 };
-    for (size_t i = 0; i < sizeof(numBits) / sizeof(numBits[0]); ++i)
-    {
-        ASSERT_THROW(m_reader.readBits(numBits[i]), CppRuntimeException);
-    }
+    ASSERT_THROW(m_reader.readBits(255), CppRuntimeException);
+    ASSERT_THROW(m_reader.readBits(33), CppRuntimeException);
 
     // return 0 for 0 bits
     ASSERT_EQ(0, m_reader.readBits(0));
@@ -114,11 +118,8 @@ TEST_F(BitStreamReaderTest, readBits)
 TEST_F(BitStreamReaderTest, readBits64)
 {
     // check invalid bit length acceptance
-    uint8_t numBits[] = { 255, 65 };
-    for (size_t i = 0; i < sizeof(numBits) / sizeof(numBits[0]); ++i)
-    {
-        ASSERT_THROW(m_reader.readBits64(numBits[i]), CppRuntimeException);
-    }
+    ASSERT_THROW(m_reader.readBits64(255), CppRuntimeException);
+    ASSERT_THROW(m_reader.readBits64(65), CppRuntimeException);
 
     // return 0 for 0 bits
     ASSERT_EQ(0, m_reader.readBits64(0));
@@ -127,11 +128,8 @@ TEST_F(BitStreamReaderTest, readBits64)
 TEST_F(BitStreamReaderTest, readSignedBits)
 {
     // check invalid bit length acceptance
-    uint8_t numBits[] = { 255, 33 };
-    for (size_t i = 0; i < sizeof(numBits) / sizeof(numBits[0]); ++i)
-    {
-        ASSERT_THROW(m_reader.readSignedBits(numBits[i]), CppRuntimeException);
-    }
+    ASSERT_THROW(m_reader.readSignedBits(255), CppRuntimeException);
+    ASSERT_THROW(m_reader.readSignedBits(33), CppRuntimeException);
 
     // return 0 for 0 bits
     ASSERT_EQ(0, m_reader.readSignedBits(0));
@@ -140,11 +138,8 @@ TEST_F(BitStreamReaderTest, readSignedBits)
 TEST_F(BitStreamReaderTest, readSignedBits64)
 {
     // check invalid bit length acceptance
-    uint8_t numBits[] = { 255, 65 };
-    for (size_t i = 0; i < sizeof(numBits) / sizeof(numBits[0]); ++i)
-    {
-        ASSERT_THROW(m_reader.readSignedBits64(numBits[i]), CppRuntimeException);
-    }
+    ASSERT_THROW(m_reader.readSignedBits64(255), CppRuntimeException);
+    ASSERT_THROW(m_reader.readSignedBits64(65), CppRuntimeException);
 
     // return 0 for 0 bits
     ASSERT_EQ(0, m_reader.readSignedBits64(0));
@@ -154,15 +149,15 @@ TEST_F(BitStreamReaderTest, readVarSize)
 {
     {
         // overflow, 2^32 - 1 is too much ({ 0x83, 0xFF, 0xFF, 0xFF, 0xFF } is the maximum)
-        uint8_t buffer[] = { 0x87, 0xFF, 0xFF, 0xFF, 0xFF };
-        zserio::BitStreamReader reader(buffer, sizeof(buffer) / sizeof(buffer[0]));
+        const std::array<uint8_t, 5> buffer = { 0x87, 0xFF, 0xFF, 0xFF, 0xFF };
+        zserio::BitStreamReader reader(buffer.data(), buffer.size());
         ASSERT_THROW(reader.readVarSize(), CppRuntimeException);
     }
 
     {
         // overflow, 2^36 - 1 is too much ({ 0x83, 0xFF, 0xFF, 0xFF, 0xFF } is the maximum)
-        uint8_t buffer[] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
-        zserio::BitStreamReader reader(buffer, sizeof(buffer) / sizeof(buffer[0]));
+        const std::array<uint8_t, 5> buffer = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
+        zserio::BitStreamReader reader(buffer.data(), buffer.size());
         ASSERT_THROW(reader.readVarSize(), CppRuntimeException);
     }
 }
@@ -176,7 +171,7 @@ TEST_F(BitStreamReaderTest, getBitPosition)
 
 TEST_F(BitStreamReaderTest, getBufferBitSize)
 {
-    ASSERT_EQ(BUFFER_SIZE * 8, m_reader.getBufferBitSize());
+    ASSERT_EQ(m_byteBuffer.size() * 8, m_reader.getBufferBitSize());
 }
 
 } // namespace zserio

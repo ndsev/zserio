@@ -1,0 +1,14 @@
+cppcoreguidelines-pro-type-member-init:gen/sql_virtual_columns/hidden_virtual_columns/HiddenVirtualColumnsTable.cpp
+cppcoreguidelines-pro-type-member-init:gen/sql_virtual_columns/simple_virtual_columns/SimpleVirtualColumnsTable.cpp
+
+cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_virtual_columns/hidden_virtual_columns/HiddenVirtualColumnsTable.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_virtual_columns/simple_virtual_columns/SimpleVirtualColumnsTable.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:cpp/HiddenVirtualColumnsTest.cpp
+cppcoreguidelines-pro-type-reinterpret-cast:cpp/SimpleVirtualColumnsTest.cpp
+
+fuchsia-multiple-inheritance:gen/sql_virtual_columns/hidden_virtual_columns/HiddenVirtualColumnsDb.h
+fuchsia-multiple-inheritance:gen/sql_virtual_columns/simple_virtual_columns/SimpleVirtualColumnsDb.h
+
+google-build-using-namespace:cpp/HiddenVirtualColumnsTest.cpp
+
+readability-braces-around-statements

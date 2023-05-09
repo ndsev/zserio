@@ -51,42 +51,42 @@ template <>
                 m_value(value)
         {}
 
-        virtual size_t bitSizeOf(size_t) const override
+        size_t bitSizeOf(size_t) const override
         {
             return ::zserio::bitSizeOf(m_value);
         }
 
-        virtual void write(::zserio::BitStreamWriter& writer) const override
+        void write(::zserio::BitStreamWriter& writer) const override
         {
             ::zserio::write(writer, m_value);
         }
 
-        virtual ::zserio::AnyHolder<> getAnyValue(const ::std::allocator<uint8_t>& allocator) const override
+        ::zserio::AnyHolder<> getAnyValue(const ::std::allocator<uint8_t>& allocator) const override
         {
             return ::zserio::AnyHolder<>(m_value, allocator);
         }
 
-        virtual ::zserio::AnyHolder<> getAnyValue(const ::std::allocator<uint8_t>& allocator) override
+        ::zserio::AnyHolder<> getAnyValue(const ::std::allocator<uint8_t>& allocator) override
         {
             return ::zserio::AnyHolder<>(m_value, allocator);
         }
 
-        virtual uint8_t getUInt8() const override
+        uint8_t getUInt8() const override
         {
             return static_cast<typename ::std::underlying_type<::test_object::std_allocator::SerializeEnum>::type>(m_value);
         }
 
-        virtual uint64_t toUInt() const override
+        uint64_t toUInt() const override
         {
             return static_cast<typename ::std::underlying_type<::test_object::std_allocator::SerializeEnum>::type>(m_value);
         }
 
-        virtual double toDouble() const override
+        double toDouble() const override
         {
             return static_cast<double>(toUInt());
         }
 
-        virtual ::zserio::string<> toString(
+        ::zserio::string<> toString(
                 const ::std::allocator<uint8_t>& allocator = ::std::allocator<uint8_t>()) const override
         {
             return ::zserio::string<>(::zserio::enumToString(m_value), allocator);
@@ -125,7 +125,7 @@ template <>
     case UINT8_C(0):
     case UINT8_C(1):
     case UINT8_C(2):
-        return ::test_object::std_allocator::SerializeEnum(rawValue);
+        return static_cast<::test_object::std_allocator::SerializeEnum>(rawValue);
     default:
         throw ::zserio::CppRuntimeException("Unknown value for enumeration SerializeEnum: ") << rawValue << "!";
     }

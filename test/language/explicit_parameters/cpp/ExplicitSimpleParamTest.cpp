@@ -30,10 +30,16 @@ public:
         m_database->createSchema();
     }
 
-    ~ExplicitSimpleParamTest()
+    ~ExplicitSimpleParamTest() override
     {
         delete m_database;
     }
+
+    ExplicitSimpleParamTest(const ExplicitSimpleParamTest&) = delete;
+    ExplicitSimpleParamTest& operator=(const ExplicitSimpleParamTest&) = delete;
+
+    ExplicitSimpleParamTest(ExplicitSimpleParamTest&&) = delete;
+    ExplicitSimpleParamTest& operator=(ExplicitSimpleParamTest&&) = delete;
 
 protected:
     void fillSimpleParamTableRow(SimpleParamTable::Row& row, uint32_t id, const string_type& name)
@@ -95,12 +101,12 @@ protected:
     class SimpleParamTableParameterProvider : public SimpleParamTable::IParameterProvider
     {
     public:
-        virtual uint32_t getCount1(SimpleParamTable::Row&)
+        uint32_t getCount1(SimpleParamTable::Row&) override
         {
             return SIMPLE_PARAM_TABLE_COUNT1;
         }
 
-        virtual uint32_t getCount2(SimpleParamTable::Row&)
+        uint32_t getCount2(SimpleParamTable::Row&) override
         {
             return SIMPLE_PARAM_TABLE_COUNT2;
         }
@@ -108,14 +114,14 @@ protected:
 
     ExplicitParametersDb* m_database;
 
-    static const char DB_FILE_NAME[];
+    static const char* const DB_FILE_NAME;
 
     static const uint32_t NUM_SIMPLE_PARAM_TABLE_ROWS;
     static const uint32_t SIMPLE_PARAM_TABLE_COUNT1;
     static const uint32_t SIMPLE_PARAM_TABLE_COUNT2;
 };
 
-const char ExplicitSimpleParamTest::DB_FILE_NAME[] =
+const char* const ExplicitSimpleParamTest::DB_FILE_NAME =
         "language/explicit_parameters/explicit_simple_param_test.sqlite";
 
 const uint32_t ExplicitSimpleParamTest::NUM_SIMPLE_PARAM_TABLE_ROWS = 5;

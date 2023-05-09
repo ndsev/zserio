@@ -34,12 +34,12 @@ TEST(AnyHolderTest, emptyConstructor)
 TEST(AnyHolderTest, lvalueConstructor)
 {
     std::vector<int> values{1, 2, 3};
-    void* origAddress = &values[0];
+    void* origAddress = values.data();
 
     AnyHolder<> any{values};
 
     const std::vector<int>& anyValues = any.get<std::vector<int>>();
-    ASSERT_NE(origAddress, &anyValues[0]);
+    ASSERT_NE(origAddress, anyValues.data());
     ASSERT_EQ(values, anyValues);
 }
 
@@ -47,12 +47,12 @@ TEST(AnyHolderTest, rvalueConstructor)
 {
     std::vector<int> values{1, 2, 3};
     std::vector<int> origValues{values};
-    void* origAddress = &values[0];
+    void* origAddress = values.data();
 
     AnyHolder<> any{std::move(values)};
 
     const std::vector<int>& anyValues = any.get<std::vector<int>>();
-    ASSERT_EQ(origAddress, &anyValues[0]);
+    ASSERT_EQ(origAddress, anyValues.data());
     ASSERT_EQ(origValues, anyValues);
 }
 
@@ -69,15 +69,15 @@ TEST(AnyHolderTest, copyConstructor)
     // check that vector is not moved to copiedAny
     std::vector<int> values{1, 2, 3};
     std::vector<int> origValues{values};
-    void* origAddress = &values[0];
+    void* origAddress = values.data();
     any = std::move(values);
     std::vector<int>& anyValues = any.get<std::vector<int>>();
-    ASSERT_EQ(origAddress, &anyValues[0]);
+    ASSERT_EQ(origAddress, anyValues.data());
 
     AnyHolder<> copiedAny{any};
 
     const std::vector<int>& copiedAnyValues = copiedAny.get<std::vector<int>>();
-    ASSERT_NE(origAddress, &copiedAnyValues[0]);
+    ASSERT_NE(origAddress, copiedAnyValues.data());
     ASSERT_EQ(origValues, copiedAnyValues);
 }
 
@@ -94,16 +94,16 @@ TEST(AnyHolderTest, copyAssignmentOperator)
     // check that vector is not moved to copiedAny
     std::vector<int> values{1, 2, 3};
     std::vector<int> origValues{values};
-    void* origAddress = &values[0];
+    void* origAddress = values.data();
     any = std::move(values);
     std::vector<int>& anyValues = any.get<std::vector<int>>();
-    ASSERT_EQ(origAddress, &anyValues[0]);
+    ASSERT_EQ(origAddress, anyValues.data());
 
     AnyHolder<> copiedAny;
     copiedAny = any;
 
     const std::vector<int>& copiedAnyValues = copiedAny.get<std::vector<int>>();
-    ASSERT_NE(origAddress, &copiedAnyValues[0]);
+    ASSERT_NE(origAddress, copiedAnyValues.data());
     ASSERT_EQ(origValues, copiedAnyValues);
 }
 
@@ -111,14 +111,14 @@ TEST(AnyHolderTest, moveConstructorValueOnHeap)
 {
     std::vector<int> values{1, 2, 3};
     std::vector<int> origValues{values};
-    void* origAddress = &values[0];
+    void* origAddress = values.data();
     AnyHolder<> any{std::move(values)};
 
     AnyHolder<> movedAny{std::move(any)};
     ASSERT_TRUE(movedAny.isType<std::vector<int>>());
 
     const std::vector<int>& movedAnyValues = movedAny.get<std::vector<int>>();
-    ASSERT_EQ(origAddress, &movedAnyValues[0]);
+    ASSERT_EQ(origAddress, movedAnyValues.data());
     ASSERT_EQ(origValues, movedAnyValues);
 }
 
@@ -140,7 +140,8 @@ TEST(AnyHolderTest, moveConstructorValueInPlace)
 
 TEST(AnyHolderTest, moveConstructorNoValue)
 {
-    TrackingAllocatorNonProp<uint8_t> alloc1, alloc2;
+    TrackingAllocatorNonProp<uint8_t> alloc1;
+    TrackingAllocatorNonProp<uint8_t> alloc2;
 
     AnyHolder<TrackingAllocatorNonProp<uint8_t>> any1(alloc1);
     AnyHolder<TrackingAllocatorNonProp<uint8_t>> any2(std::move(any1), alloc2);
@@ -152,14 +153,14 @@ TEST(AnyHolderTest, moveAssignmentOperatorValueOnHeap)
 {
     std::vector<int> values{1, 2, 3};
     std::vector<int> origValues{values};
-    void* origAddress = &values[0];
+    void* origAddress = values.data();
     AnyHolder<> any{std::move(values)};
 
     AnyHolder<> movedAny;
     movedAny = std::move(any);
 
     const std::vector<int>& movedAnyValues = movedAny.get<std::vector<int>>();
-    ASSERT_EQ(origAddress, &movedAnyValues[0]);
+    ASSERT_EQ(origAddress, movedAnyValues.data());
     ASSERT_EQ(origValues, movedAnyValues);
 
     TrackingAllocatorNonProp<uint8_t> alloc1;
@@ -194,12 +195,12 @@ TEST(AnyHolderTest, moveAssignmentOperatorValueInPlace)
 TEST(AnyHolderTest, lvalueAssignmentOperator)
 {
     std::vector<int> values{1, 2, 3};
-    void* origAddress = &values[0];
+    void* origAddress = values.data();
     AnyHolder<> any;
     any = values;
 
     const std::vector<int>& anyValues = any.get<std::vector<int>>();
-    ASSERT_NE(origAddress, &anyValues[0]);
+    ASSERT_NE(origAddress, anyValues.data());
     ASSERT_EQ(values, anyValues);
 
     any = values;
@@ -211,12 +212,12 @@ TEST(AnyHolderTest, rvalueAssignmentOperator)
 {
     std::vector<int> values{1, 2, 3};
     std::vector<int> origValues{values};
-    void* origAddress = &values[0];
+    void* origAddress = values.data();
     AnyHolder<> any;
     any = std::move(values);
 
     std::vector<int>& anyValues = any.get<std::vector<int>>();
-    ASSERT_EQ(origAddress, &anyValues[0]);
+    ASSERT_EQ(origAddress, anyValues.data());
     ASSERT_EQ(origValues, anyValues);
 }
 
@@ -252,7 +253,7 @@ TEST(AnyHolderTest, setGet)
     ASSERT_EQ(intValue, any.get<int>());
     ASSERT_THROW(any.get<float>(), CppRuntimeException);
 
-    const float floatValue = 3.14f;
+    const float floatValue = 3.14F;
     any.set(floatValue);
     ASSERT_THROW(any.get<int>(), CppRuntimeException);
     ASSERT_EQ(floatValue, any.get<float>());
@@ -276,7 +277,7 @@ TEST(AnyHolderTest, isType)
     any.set(intValue);
     ASSERT_TRUE(any.isType<int>());
 
-    const float floatValue = 3.14f;
+    const float floatValue = 3.14F;
     any.set(floatValue);
     ASSERT_TRUE(any.isType<float>());
     ASSERT_FALSE(any.isType<int>());

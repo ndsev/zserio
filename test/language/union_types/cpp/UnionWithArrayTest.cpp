@@ -1,3 +1,5 @@
+#include <array>
+
 #include "gtest/gtest.h"
 
 #include "union_types/union_with_array/TestUnion.h"
@@ -21,32 +23,32 @@ protected:
     static void writeArray8ToByteArray(zserio::BitStreamWriter& writer)
     {
         writer.writeVarSize(static_cast<uint32_t>(TestUnion::CHOICE_array8));
-        writer.writeVarSize(ARRAY8_SIZE);
-        for (size_t i = 0; i < ARRAY8_SIZE; ++i)
-            writer.writeSignedBits(ARRAY8[i], 8);
+        writer.writeVarSize(ARRAY8.size());
+        for (int8_t element : ARRAY8)
+            writer.writeSignedBits(element, 8);
     }
 
     static void writeArray16ToByteArray(zserio::BitStreamWriter& writer)
     {
         writer.writeVarSize(static_cast<uint32_t>(TestUnion::CHOICE_array16));
-        writer.writeVarSize(ARRAY16_SIZE);
-        for (size_t i = 0; i < ARRAY16_SIZE; ++i)
-            writer.writeSignedBits(ARRAY16[i], 16);
+        writer.writeVarSize(ARRAY16.size());
+        for (int16_t element : ARRAY16)
+            writer.writeSignedBits(element, 16);
     }
 
-    template <size_t N>
-    void checkArray(const int16_t(&array)[N], const vector_type<int16_t>& vector)
+    template <size_t SIZE>
+    void checkArray(const std::array<int16_t, SIZE>& array, const vector_type<int16_t>& vector)
     {
-        for (size_t i = 0; i < N; ++i)
+        for (size_t i = 0 ; i < array.size(); ++i)
         {
             ASSERT_EQ(array[i], vector.at(i));
         }
     }
 
-    template <size_t N>
-    void checkArray(const int8_t(&array)[N], const vector_type<Data8>& vector)
+    template <size_t SIZE>
+    void checkArray(const std::array<int8_t, SIZE>& array, const vector_type<Data8>& vector)
     {
-        for (size_t i = 0; i < N; ++i)
+        for (size_t i = 0 ; i < array.size(); ++i)
         {
             ASSERT_EQ(array[i], vector.at(i).getData());
         }
@@ -54,24 +56,24 @@ protected:
 
     vector_type<Data8> createArray8()
     {
-        vector_type<Data8> array8(ARRAY8_SIZE);
-        for (size_t i = 0; i < ARRAY8_SIZE; ++i)
+        vector_type<Data8> array8(ARRAY8.size());
+        for (size_t i = 0; i < ARRAY8.size(); ++i)
             array8[i].setData(ARRAY8[i]);
         return array8;
     }
 
     vector_type<int16_t> createArray16()
     {
-        return vector_type<int16_t>(ARRAY16, ARRAY16 + ARRAY16_SIZE);
+        return vector_type<int16_t>(ARRAY16.begin(), ARRAY16.end());
     }
 
     static const std::string BLOB_NAME_BASE;
 
     static constexpr size_t ARRAY8_SIZE = 4;
-    static const int8_t ARRAY8[ARRAY8_SIZE];
+    static const std::array<int8_t, ARRAY8_SIZE> ARRAY8;
     static constexpr size_t ARRAY8_BITSIZE = 8 + 8 + ARRAY8_SIZE * 8;
     static constexpr size_t ARRAY16_SIZE = 5;
-    static const int16_t ARRAY16[ARRAY16_SIZE];
+    static const std::array<int16_t, ARRAY16_SIZE> ARRAY16;
     static constexpr size_t ARRAY16_BITSIZE = 8 + 8 + ARRAY16_SIZE * 16;
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
@@ -81,10 +83,11 @@ const std::string UnionWithArrayTest::BLOB_NAME_BASE = "language/union_types/uni
 
 constexpr size_t UnionWithArrayTest::ARRAY8_SIZE;
 constexpr size_t UnionWithArrayTest::ARRAY8_BITSIZE;
-const int8_t UnionWithArrayTest::ARRAY8[ARRAY8_SIZE] = { -1, -2, -3, -4 };
+const std::array<int8_t, UnionWithArrayTest::ARRAY8_SIZE> UnionWithArrayTest::ARRAY8 = { -1, -2, -3, -4 };
 constexpr size_t UnionWithArrayTest::ARRAY16_SIZE;
 constexpr size_t UnionWithArrayTest::ARRAY16_BITSIZE;
-const int16_t UnionWithArrayTest::ARRAY16[ARRAY16_SIZE] = { -10, -20, -30, -40, -50 };
+const std::array<int16_t, UnionWithArrayTest::ARRAY16_SIZE> UnionWithArrayTest::ARRAY16 = {
+        -10, -20, -30, -40, -50 };
 
 TEST_F(UnionWithArrayTest, emptyConstructor)
 {
@@ -233,28 +236,28 @@ TEST_F(UnionWithArrayTest, array8)
 {
     TestUnion test;
     vector_type<Data8> data8(4);
-    void* ptr = &data8[0];
+    void* ptr = data8.data();
     test.setArray8(data8);
     ASSERT_EQ(4, test.getArray8().size());
-    ASSERT_NE(ptr, &test.getArray8()[0]);
+    ASSERT_NE(ptr, test.getArray8().data());
 
     test.setArray8(std::move(data8));
     ASSERT_EQ(4, test.getArray8().size());
-    ASSERT_EQ(ptr, &test.getArray8()[0]);
+    ASSERT_EQ(ptr, test.getArray8().data());
 }
 
 TEST_F(UnionWithArrayTest, array16)
 {
     TestUnion test;
     vector_type<int16_t> data16(4);
-    void* ptr = &data16[0];
+    void* ptr = data16.data();
     test.setArray16(data16);
     ASSERT_EQ(4, test.getArray16().size());
-    ASSERT_NE(ptr, &test.getArray16()[0]);
+    ASSERT_NE(ptr, test.getArray16().data());
 
     test.setArray16(std::move(data16));
     ASSERT_EQ(4, test.getArray16().size());
-    ASSERT_EQ(ptr, &test.getArray16()[0]);
+    ASSERT_EQ(ptr, test.getArray16().data());
 }
 
 TEST_F(UnionWithArrayTest, bitSizeOf)

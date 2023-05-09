@@ -19,7 +19,7 @@ set(ZSERIO_GENERATED_SOURCES_DEFAULT_PACKAGE
     ${ZSERIO_GEN_DEFAULT_PACKAGE_DIR}/AmalgamationStructure.h
 )
 
-zserio_add_library(TARGET with_sources_amalgamation_zs
+zserio_add_library(with_sources_amalgamation_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE with_sources_amalgamation.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -29,7 +29,7 @@ zserio_add_library(TARGET with_sources_amalgamation_zs
     ZSERIO_OPTIONS -withSourcesAmalgamation
 )
 
-zserio_add_library(TARGET default_package_amalgamation_zs
+zserio_add_library(default_package_amalgamation_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE default_package_amalgamation.zs
     OUT_DIR ${ZSERIO_GEN_DEFAULT_PACKAGE_DIR}
@@ -41,10 +41,14 @@ zserio_add_library(TARGET default_package_amalgamation_zs
 
 target_include_directories(with_sources_amalgamation_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 
-add_test_sources(
-    cpp/DefaultPackageAmalgamationTest.cpp
-    cpp/WithSourcesAmalgamationTest.cpp
+add_custom_test(with_sources_amalgamation
+    DEPENDS
+        with_sources_amalgamation_zs
+        default_package_amalgamation_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/DefaultPackageAmalgamationTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/WithSourcesAmalgamationTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
+        ${ZSERIO_GENERATED_SOURCES_DEFAULT_PACKAGE}
 )
-
-add_test_dependencies(with_sources_amalgamation_zs)
-add_test_dependencies(default_package_amalgamation_zs)

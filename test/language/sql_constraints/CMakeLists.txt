@@ -14,7 +14,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/sql_constraints/TestDb.h
 )
 
-zserio_add_library(TARGET sql_constraints_zs
+zserio_add_library(sql_constraints_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE sql_constraints.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -26,9 +26,12 @@ zserio_add_library(TARGET sql_constraints_zs
 
 target_include_directories(sql_constraints_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 
-add_test_sources(
-    cpp/FieldConstraintsTest.cpp
-    cpp/TableConstraintsTest.cpp
+add_custom_test(sql_constraints
+    DEPENDS
+        sql_constraints_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/FieldConstraintsTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/TableConstraintsTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(sql_constraints_zs)

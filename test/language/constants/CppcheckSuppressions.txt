@@ -1,0 +1,2 @@
+noExplicitConstructor:*/constants/Permission.h
+knownConditionTrueFalse:*/cpp/ConstantsTest.cpp

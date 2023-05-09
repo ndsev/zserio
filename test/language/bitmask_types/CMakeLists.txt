@@ -31,7 +31,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/bitmask_types/varuint_bitmask/Permission.h
 )
 
-zserio_add_library(TARGET bitmask_types_zs
+zserio_add_library(bitmask_types_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE bitmask_types.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -41,15 +41,18 @@ zserio_add_library(TARGET bitmask_types_zs
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
-add_test_sources(
-    cpp/BitfieldBitmaskTest.cpp
-    cpp/BitfieldConstBitmaskTest.cpp
-    cpp/BitmaskDefinedByConstantTest.cpp
-    cpp/BitmaskUsedByBitmaskTest.cpp
-    cpp/BitmaskWithoutNoneTest.cpp
-    cpp/UInt64BitmaskTest.cpp
-    cpp/UInt8BitmaskTest.cpp
-    cpp/VarUIntBitmaskTest.cpp
+add_custom_test(bitmask_types
+    DEPENDS
+        bitmask_types_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/BitfieldBitmaskTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/BitfieldConstBitmaskTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/BitmaskDefinedByConstantTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/BitmaskUsedByBitmaskTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/BitmaskWithoutNoneTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/UInt64BitmaskTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/UInt8BitmaskTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/VarUIntBitmaskTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(bitmask_types_zs)

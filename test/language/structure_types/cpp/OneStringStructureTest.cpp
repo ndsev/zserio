@@ -1,3 +1,5 @@
+#include <cstring>
+
 #include "gtest/gtest.h"
 
 #include "structure_types/one_string_structure/OneStringStructure.h"
@@ -25,15 +27,16 @@ protected:
 
     static const size_t EMPTY_ONE_STRING_STRUCTURE_BIT_SIZE;
 
-    static const char ONE_STRING[];
+    static const char* const ONE_STRING;
     static const size_t ONE_STRING_STRUCTURE_BIT_SIZE;
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 const std::string OneStringStructureTest::BLOB_NAME = "language/structure_types/one_string_structure.blob";
-const char OneStringStructureTest::ONE_STRING[] = "This is a string!";
-const size_t OneStringStructureTest::ONE_STRING_STRUCTURE_BIT_SIZE = (1 + sizeof(ONE_STRING) - 1) * 8;
+const char* const OneStringStructureTest::ONE_STRING = "This is a string!";
+const size_t OneStringStructureTest::ONE_STRING_STRUCTURE_BIT_SIZE =
+        (1 + strlen(OneStringStructureTest::ONE_STRING)) * 8;
 
 TEST_F(OneStringStructureTest, emptyConstructor)
 {

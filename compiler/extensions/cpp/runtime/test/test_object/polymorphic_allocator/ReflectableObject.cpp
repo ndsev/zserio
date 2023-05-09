@@ -102,7 +102,7 @@ const ::zserio::pmr::ITypeInfo& ReflectableObject::typeInfo()
     static const ::zserio::Span<::zserio::BasicTemplateArgumentInfo<allocator_type>> templateArguments;
 
     static const ::std::array<::zserio::StringView, 2> reflectableNestedTypeArguments = {
-        ::zserio::makeStringView("13"), 
+        ::zserio::makeStringView("13"),
         ::zserio::makeStringView("getStringField()")
     };
     static const ::std::array<::zserio::BasicFieldInfo<allocator_type>, 2> fields = {
@@ -170,17 +170,17 @@ const ::zserio::pmr::ITypeInfo& ReflectableObject::typeInfo()
                 m_object(object)
         {}
 
-        virtual size_t bitSizeOf(size_t bitPosition) const override
+        size_t bitSizeOf(size_t bitPosition) const override
         {
             return m_object.bitSizeOf(bitPosition);
         }
 
-        virtual void write(::zserio::BitStreamWriter& writer) const override
+        void write(::zserio::BitStreamWriter& writer) const override
         {
             m_object.write(writer);
         }
 
-        virtual ::zserio::pmr::IReflectableConstPtr getField(::zserio::StringView name) const override
+        ::zserio::pmr::IReflectableConstPtr getField(::zserio::StringView name) const override
         {
             if (name == ::zserio::makeStringView("stringField"))
             {
@@ -193,7 +193,7 @@ const ::zserio::pmr::ITypeInfo& ReflectableObject::typeInfo()
             throw ::zserio::CppRuntimeException("Field '") << name << "' doesn't exist in 'ReflectableObject'!";
         }
 
-        virtual ::zserio::pmr::AnyHolder getAnyValue(const allocator_type& allocator) const override
+        ::zserio::pmr::AnyHolder getAnyValue(const allocator_type& allocator) const override
         {
             return ::zserio::pmr::AnyHolder(::std::cref(m_object), allocator);
         }
@@ -215,27 +215,27 @@ const ::zserio::pmr::ITypeInfo& ReflectableObject::typeInfo()
                 m_object(object)
         {}
 
-        virtual void initializeChildren() override
+        void initializeChildren() override
         {
             m_object.initializeChildren();
         }
 
-        virtual size_t initializeOffsets(size_t bitPosition) override
+        size_t initializeOffsets(size_t bitPosition) override
         {
             return m_object.initializeOffsets(bitPosition);
         }
 
-        virtual size_t bitSizeOf(size_t bitPosition) const override
+        size_t bitSizeOf(size_t bitPosition) const override
         {
             return m_object.bitSizeOf(bitPosition);
         }
 
-        virtual void write(::zserio::BitStreamWriter& writer) const override
+        void write(::zserio::BitStreamWriter& writer) const override
         {
             m_object.write(writer);
         }
 
-        virtual ::zserio::pmr::IReflectableConstPtr getField(::zserio::StringView name) const override
+        ::zserio::pmr::IReflectableConstPtr getField(::zserio::StringView name) const override
         {
             if (name == ::zserio::makeStringView("stringField"))
             {
@@ -248,7 +248,7 @@ const ::zserio::pmr::ITypeInfo& ReflectableObject::typeInfo()
             throw ::zserio::CppRuntimeException("Field '") << name << "' doesn't exist in 'ReflectableObject'!";
         }
 
-        virtual ::zserio::pmr::IReflectablePtr getField(::zserio::StringView name) override
+        ::zserio::pmr::IReflectablePtr getField(::zserio::StringView name) override
         {
             if (name == ::zserio::makeStringView("stringField"))
             {
@@ -261,7 +261,7 @@ const ::zserio::pmr::ITypeInfo& ReflectableObject::typeInfo()
             throw ::zserio::CppRuntimeException("Field '") << name << "' doesn't exist in 'ReflectableObject'!";
         }
 
-        virtual void setField(::zserio::StringView name,
+        void setField(::zserio::StringView name,
                 const ::zserio::AnyHolder<allocator_type>& value) override
         {
             if (name == ::zserio::makeStringView("stringField"))
@@ -277,7 +277,7 @@ const ::zserio::pmr::ITypeInfo& ReflectableObject::typeInfo()
             throw ::zserio::CppRuntimeException("Field '") << name << "' doesn't exist in 'ReflectableObject'!";
         }
 
-        virtual ::zserio::pmr::IReflectablePtr createField(::zserio::StringView name) override
+        ::zserio::pmr::IReflectablePtr createField(::zserio::StringView name) override
         {
             if (name == ::zserio::makeStringView("stringField"))
             {
@@ -292,12 +292,12 @@ const ::zserio::pmr::ITypeInfo& ReflectableObject::typeInfo()
             throw ::zserio::CppRuntimeException("Field '") << name << "' doesn't exist in 'ReflectableObject'!";
         }
 
-        virtual ::zserio::pmr::AnyHolder getAnyValue(const allocator_type& allocator) const override
+        ::zserio::pmr::AnyHolder getAnyValue(const allocator_type& allocator) const override
         {
             return ::zserio::pmr::AnyHolder(::std::cref(m_object), allocator);
         }
 
-        virtual ::zserio::pmr::AnyHolder getAnyValue(const allocator_type& allocator) override
+        ::zserio::pmr::AnyHolder getAnyValue(const allocator_type& allocator) override
         {
             return ::zserio::pmr::AnyHolder(::std::ref(m_object), allocator);
         }

@@ -1,4 +1,5 @@
 #include <limits>
+#include <array>
 
 #include "zserio/BitStreamReader.h"
 #include "zserio/CppRuntimeException.h"
@@ -10,31 +11,24 @@ namespace zserio
 namespace
 {
     // max size calculated to prevent overflows in internal comparisons
-    static const size_t MAX_BUFFER_SIZE = std::numeric_limits<size_t>::max() / 8 - 4;
+    const size_t MAX_BUFFER_SIZE = std::numeric_limits<size_t>::max() / 8 - 4;
 
-    typedef BitStreamReader::BitPosType BitPosType;
-    typedef BitStreamReader::ReaderContext ReaderContext;
+    using BitPosType = BitStreamReader::BitPosType;
+    using ReaderContext = BitStreamReader::ReaderContext;
 
 #ifdef ZSERIO_RUNTIME_64BIT
-    typedef uint64_t BaseType;
-    typedef int64_t BaseSignedType;
+    using BaseType = uint64_t;
+    using BaseSignedType = int64_t;
 #else
-    typedef uint32_t BaseType;
-    typedef int32_t BaseSignedType;
+    using BaseType = uint32_t;
+    using BaseSignedType = int32_t;
 #endif
 
-    inline BaseType& getCacheBuffer(ReaderContext::BitCache& cache)
-    {
-#ifdef ZSERIO_RUNTIME_64BIT
-        return cache.buffer64;
-#else
-        return cache.buffer32;
-#endif
-    }
+    static_assert(sizeof(uintptr_t) == sizeof(BaseType), "Unexpected uintptr_t sizeof!");
 
-    static const BaseType MASK_TABLE[] =
-    {
 #ifdef ZSERIO_RUNTIME_64BIT
+    const std::array<BaseType, 65> MASK_TABLE =
+    {
         UINT64_C(0x00),
         UINT64_C(0x0001),     UINT64_C(0x0003),     UINT64_C(0x0007),     UINT64_C(0x000f),
         UINT64_C(0x001f),     UINT64_C(0x003f),     UINT64_C(0x007f),     UINT64_C(0x00ff),
@@ -61,7 +55,10 @@ namespace
         UINT64_C(0x07ffffffffffffff), UINT64_C(0x0fffffffffffffff),
         UINT64_C(0x1fffffffffffffff), UINT64_C(0x3fffffffffffffff),
         UINT64_C(0x7fffffffffffffff), UINT64_C(0xffffffffffffffff)
+    };
 #else
+    const std::array<BaseType, 33> MASK_TABLE =
+    {
         UINT32_C(0x00),
         UINT32_C(0x0001),     UINT32_C(0x0003),     UINT32_C(0x0007),     UINT32_C(0x000f),
         UINT32_C(0x001f),     UINT32_C(0x003f),     UINT32_C(0x007f),     UINT32_C(0x00ff),
@@ -71,87 +68,87 @@ namespace
         UINT32_C(0x001fffff), UINT32_C(0x003fffff), UINT32_C(0x007fffff), UINT32_C(0x00ffffff),
         UINT32_C(0x01ffffff), UINT32_C(0x03ffffff), UINT32_C(0x07ffffff), UINT32_C(0x0fffffff),
         UINT32_C(0x1fffffff), UINT32_C(0x3fffffff), UINT32_C(0x7fffffff), UINT32_C(0xffffffff)
-#endif
     };
+#endif
 
-    static const uint8_t VARINT_SIGN_1 = UINT8_C(0x80);
-    static const uint8_t VARINT_BYTE_1 = UINT8_C(0x3f);
-    static const uint8_t VARINT_BYTE_N = UINT8_C(0x7f);
-    static const uint8_t VARINT_HAS_NEXT_1 = UINT8_C(0x40);
-    static const uint8_t VARINT_HAS_NEXT_N = UINT8_C(0x80);
+    const uint8_t VARINT_SIGN_1 = UINT8_C(0x80);
+    const uint8_t VARINT_BYTE_1 = UINT8_C(0x3f);
+    const uint8_t VARINT_BYTE_N = UINT8_C(0x7f);
+    const uint8_t VARINT_HAS_NEXT_1 = UINT8_C(0x40);
+    const uint8_t VARINT_HAS_NEXT_N = UINT8_C(0x80);
 
-    static const uint8_t VARUINT_BYTE = UINT8_C(0x7f);
-    static const uint8_t VARUINT_HAS_NEXT = UINT8_C(0x80);
+    const uint8_t VARUINT_BYTE = UINT8_C(0x7f);
+    const uint8_t VARUINT_HAS_NEXT = UINT8_C(0x80);
 
-    static const uint32_t VARSIZE_MAX_VALUE = (UINT32_C(1) << 31) - 1;
+    const uint32_t VARSIZE_MAX_VALUE = (UINT32_C(1) << 31U) - 1;
 
 #ifdef ZSERIO_RUNTIME_64BIT
-    inline BaseType parse64(const uint8_t* buffer)
+    inline BaseType parse64(Span<const uint8_t>::const_iterator bufferIt)
     {
-        return static_cast<BaseType>(buffer[0]) << 56 |
-               static_cast<BaseType>(buffer[1]) << 48 |
-               static_cast<BaseType>(buffer[2]) << 40 |
-               static_cast<BaseType>(buffer[3]) << 32 |
-               static_cast<BaseType>(buffer[4]) << 24 |
-               static_cast<BaseType>(buffer[5]) << 16 |
-               static_cast<BaseType>(buffer[6]) << 8 |
-               static_cast<BaseType>(buffer[7]);
+        return static_cast<BaseType>(*bufferIt) << 56U |
+               static_cast<BaseType>(*(bufferIt + 1)) << 48U |
+               static_cast<BaseType>(*(bufferIt + 2)) << 40U |
+               static_cast<BaseType>(*(bufferIt + 3)) << 32U |
+               static_cast<BaseType>(*(bufferIt + 4)) << 24U |
+               static_cast<BaseType>(*(bufferIt + 5)) << 16U |
+               static_cast<BaseType>(*(bufferIt + 6)) << 8U |
+               static_cast<BaseType>(*(bufferIt + 7));
     }
 
-    inline BaseType parse56(const uint8_t* buffer)
+    inline BaseType parse56(Span<const uint8_t>::const_iterator bufferIt)
     {
-        return static_cast<BaseType>(buffer[0]) << 48 |
-               static_cast<BaseType>(buffer[1]) << 40 |
-               static_cast<BaseType>(buffer[2]) << 32 |
-               static_cast<BaseType>(buffer[3]) << 24 |
-               static_cast<BaseType>(buffer[4]) << 16 |
-               static_cast<BaseType>(buffer[5]) << 8 |
-               static_cast<BaseType>(buffer[6]);
+        return static_cast<BaseType>(*bufferIt) << 48U |
+               static_cast<BaseType>(*(bufferIt + 1)) << 40U |
+               static_cast<BaseType>(*(bufferIt + 2)) << 32U |
+               static_cast<BaseType>(*(bufferIt + 3)) << 24U |
+               static_cast<BaseType>(*(bufferIt + 4)) << 16U |
+               static_cast<BaseType>(*(bufferIt + 5)) << 8U |
+               static_cast<BaseType>(*(bufferIt + 6));
     }
 
-    inline BaseType parse48(const uint8_t* buffer)
+    inline BaseType parse48(Span<const uint8_t>::const_iterator bufferIt)
     {
-        return static_cast<BaseType>(buffer[0]) << 40 |
-               static_cast<BaseType>(buffer[1]) << 32 |
-               static_cast<BaseType>(buffer[2]) << 24 |
-               static_cast<BaseType>(buffer[3]) << 16 |
-               static_cast<BaseType>(buffer[4]) << 8 |
-               static_cast<BaseType>(buffer[5]);
+        return static_cast<BaseType>(*bufferIt) << 40U |
+               static_cast<BaseType>(*(bufferIt + 1)) << 32U |
+               static_cast<BaseType>(*(bufferIt + 2)) << 24U |
+               static_cast<BaseType>(*(bufferIt + 3)) << 16U |
+               static_cast<BaseType>(*(bufferIt + 4)) << 8U |
+               static_cast<BaseType>(*(bufferIt + 5));
     }
 
-    inline BaseType parse40(const uint8_t* buffer)
+    inline BaseType parse40(Span<const uint8_t>::const_iterator bufferIt)
     {
-        return static_cast<BaseType>(buffer[0]) << 32 |
-               static_cast<BaseType>(buffer[1]) << 24 |
-               static_cast<BaseType>(buffer[2]) << 16 |
-               static_cast<BaseType>(buffer[3]) << 8 |
-               static_cast<BaseType>(buffer[4]);
+        return static_cast<BaseType>(*bufferIt) << 32U |
+               static_cast<BaseType>(*(bufferIt + 1)) << 24U |
+               static_cast<BaseType>(*(bufferIt + 2)) << 16U |
+               static_cast<BaseType>(*(bufferIt + 3)) << 8U |
+               static_cast<BaseType>(*(bufferIt + 4));
     }
 #endif
-    inline BaseType parse32(const uint8_t* buffer)
+    inline BaseType parse32(Span<const uint8_t>::const_iterator bufferIt)
     {
-        return static_cast<BaseType>(buffer[0]) << 24 |
-               static_cast<BaseType>(buffer[1]) << 16 |
-               static_cast<BaseType>(buffer[2]) << 8 |
-               static_cast<BaseType>(buffer[3]);
+        return static_cast<BaseType>(*bufferIt) << 24U |
+               static_cast<BaseType>(*(bufferIt + 1)) << 16U |
+               static_cast<BaseType>(*(bufferIt + 2)) << 8U |
+               static_cast<BaseType>(*(bufferIt + 3));
     }
 
-    inline BaseType parse24(const uint8_t* buffer)
+    inline BaseType parse24(Span<const uint8_t>::const_iterator bufferIt)
     {
-        return static_cast<BaseType>(buffer[0]) << 16 |
-               static_cast<BaseType>(buffer[1]) << 8 |
-               static_cast<BaseType>(buffer[2]);
+        return static_cast<BaseType>(*bufferIt) << 16U |
+               static_cast<BaseType>(*(bufferIt + 1)) << 8U |
+               static_cast<BaseType>(*(bufferIt + 2));
     }
 
-    inline BaseType parse16(const uint8_t* buffer)
+    inline BaseType parse16(Span<const uint8_t>::const_iterator bufferIt)
     {
-        return static_cast<BaseType>(buffer[0]) << 8 |
-               static_cast<BaseType>(buffer[1]);
+        return static_cast<BaseType>(*bufferIt) << 8U |
+               static_cast<BaseType>(*(bufferIt + 1));
     }
 
-    inline BaseType parse8(const uint8_t* buffer)
+    inline BaseType parse8(Span<const uint8_t>::const_iterator bufferIt)
     {
-        return static_cast<BaseType>(buffer[0]);
+        return static_cast<BaseType>(*bufferIt);
     }
 
     /** Optimization which increases chances to inline checkNumBits and checkNumBits64. */
@@ -185,17 +182,16 @@ namespace
     inline void loadCacheNext(ReaderContext& ctx, uint8_t numBits)
     {
         static const uint8_t cacheBitSize = sizeof(BaseType) * 8;
-        BaseType& cacheBuffer = getCacheBuffer(ctx.cache);
 
         // ctx.bitIndex is always byte aligned and ctx.cacheNumBits is always zero in this call
-        const size_t byteIndex = ctx.bitIndex >> 3;
+        const size_t byteIndex = ctx.bitIndex >> 3U;
         if (ctx.bufferBitSize >= ctx.bitIndex + cacheBitSize)
         {
-            cacheBuffer =
+            ctx.cache =
 #ifdef ZSERIO_RUNTIME_64BIT
-                    parse64(ctx.buffer + byteIndex);
+                    parse64(ctx.buffer.begin() + byteIndex);
 #else
-                    parse32(ctx.buffer + byteIndex);
+                    parse32(ctx.buffer.begin() + byteIndex);
 #endif
             ctx.cacheNumBits = cacheBitSize;
         }
@@ -207,39 +203,39 @@ namespace
             ctx.cacheNumBits = static_cast<uint8_t>(ctx.bufferBitSize - ctx.bitIndex);
 
             // buffer must be always available in full bytes, even if some last bits are not used
-            const uint8_t alignedNumBits = (ctx.cacheNumBits + 7) & ~0x7;
+            const uint8_t alignedNumBits = (ctx.cacheNumBits + 7U) & ~0x7U;
 
             switch (alignedNumBits)
             {
 #ifdef ZSERIO_RUNTIME_64BIT
             case 64:
-                cacheBuffer = parse64(ctx.buffer + byteIndex);
+                ctx.cache = parse64(ctx.buffer.begin() + byteIndex);
                 break;
             case 56:
-                cacheBuffer = parse56(ctx.buffer + byteIndex);
+                ctx.cache = parse56(ctx.buffer.begin() + byteIndex);
                 break;
             case 48:
-                cacheBuffer = parse48(ctx.buffer + byteIndex);
+                ctx.cache = parse48(ctx.buffer.begin() + byteIndex);
                 break;
             case 40:
-                cacheBuffer = parse40(ctx.buffer + byteIndex);
+                ctx.cache = parse40(ctx.buffer.begin() + byteIndex);
                 break;
 #endif
             case 32:
-                cacheBuffer = parse32(ctx.buffer + byteIndex);
+                ctx.cache = parse32(ctx.buffer.begin() + byteIndex);
                 break;
             case 24:
-                cacheBuffer = parse24(ctx.buffer + byteIndex);
+                ctx.cache = parse24(ctx.buffer.begin() + byteIndex);
                 break;
             case 16:
-                cacheBuffer = parse16(ctx.buffer + byteIndex);
+                ctx.cache = parse16(ctx.buffer.begin() + byteIndex);
                 break;
             default: // 8
-                cacheBuffer = parse8(ctx.buffer + byteIndex);
+                ctx.cache = parse8(ctx.buffer.begin() + byteIndex);
                 break;
             }
 
-            cacheBuffer >>= alignedNumBits - ctx.cacheNumBits;
+            ctx.cache >>= static_cast<uint8_t>(alignedNumBits - ctx.cacheNumBits);
         }
     }
 
@@ -247,12 +243,10 @@ namespace
     inline BaseType readBitsImpl(ReaderContext& ctx, uint8_t numBits)
     {
         BaseType value = 0;
-        const BaseType& cacheBuffer = getCacheBuffer(ctx.cache);
-
         if (ctx.cacheNumBits < numBits)
         {
             // read all remaining cache bits
-            value = cacheBuffer & MASK_TABLE[ctx.cacheNumBits];
+            value = ctx.cache & MASK_TABLE[ctx.cacheNumBits];
             ctx.bitIndex += ctx.cacheNumBits;
             numBits -= ctx.cacheNumBits;
 
@@ -264,7 +258,7 @@ namespace
             if (numBits < sizeof(BaseType) * 8)
                 value <<= numBits;
         }
-        value |= ((cacheBuffer >> (ctx.cacheNumBits - numBits)) & MASK_TABLE[numBits]);
+        value |= ((ctx.cache >> static_cast<uint8_t>(ctx.cacheNumBits - numBits)) & MASK_TABLE[numBits]);
         ctx.cacheNumBits -= numBits;
         ctx.bitIndex += numBits;
 
@@ -280,8 +274,11 @@ namespace
         // Skip the signed overflow correction if numBits == typeSize.
         // In that case, the value that comes out the readBits function
         // is already correct.
-        if (numBits != 0 && numBits < typeSize && (value >= (static_cast<BaseType>(1) << (numBits - 1))))
+        if (numBits != 0 && numBits < typeSize &&
+                (value >= (static_cast<BaseType>(1) << static_cast<uint8_t>(numBits - 1))))
+        {
             value -= static_cast<BaseType>(1) << numBits;
+        }
 
         return static_cast<BaseSignedType>(value);
     }
@@ -303,44 +300,40 @@ namespace
 #endif
 } // namespace
 
-BitStreamReader::ReaderContext::ReaderContext(const uint8_t* constBuffer, size_t constBufferBitSize)
-:   buffer(const_cast<uint8_t*>(constBuffer)),
-    bufferBitSize(constBufferBitSize),
+BitStreamReader::ReaderContext::ReaderContext(Span<const uint8_t> readBuffer, size_t readBufferBitSize)
+:   buffer(readBuffer),
+    bufferBitSize(readBufferBitSize),
+    cache(0),
     cacheNumBits(0),
     bitIndex(0)
 {
-    Init();
-
-    const size_t bufferByteSize = (bufferBitSize + 7) / 8;
-    if (bufferByteSize > MAX_BUFFER_SIZE)
+    if (buffer.size() > MAX_BUFFER_SIZE)
     {
         throw CppRuntimeException("BitStreamReader: Buffer size exceeded limit '") << MAX_BUFFER_SIZE <<
                 "' bytes!";
     }
 }
 
-void BitStreamReader::ReaderContext::Init()
-{
-#ifdef ZSERIO_RUNTIME_64BIT
-    cache.buffer64 = 0;
-#else
-    cache.buffer32 = 0;
-#endif
-}
-
 BitStreamReader::BitStreamReader(const uint8_t* buffer, size_t bufferByteSize) :
-        BitStreamReader(buffer, bufferByteSize * 8, BitsTag())
+        BitStreamReader(Span<const uint8_t>(buffer, bufferByteSize))
 {}
 
 BitStreamReader::BitStreamReader(Span<const uint8_t> buffer) :
-        BitStreamReader(buffer.data(), buffer.size() * 8, BitsTag())
+        m_context(buffer, buffer.size() * 8)
 {}
+
+BitStreamReader::BitStreamReader(Span<const uint8_t> buffer, size_t bufferBitSize) :
+        m_context(buffer, bufferBitSize)
+{
+    if (buffer.size() < (bufferBitSize + 7) / 8)
+    {
+        throw CppRuntimeException("BitStreamReader: Wrong buffer bit size ('") << buffer.size() <<
+                "' < '" << (bufferBitSize + 7) / 8 << "')!";
+    }
+}
 
 BitStreamReader::BitStreamReader(const uint8_t* buffer, size_t bufferBitSize, BitsTag) :
-        m_context(buffer, bufferBitSize)
-{}
-
-BitStreamReader::~BitStreamReader()
+        m_context(Span<const uint8_t>(buffer, (bufferBitSize + 7) / 8), bufferBitSize)
 {}
 
 uint32_t BitStreamReader::readBits(uint8_t numBits)
@@ -398,117 +391,117 @@ int32_t BitStreamReader::readSignedBits(uint8_t numBits)
 int64_t BitStreamReader::readVarInt64()
 {
     uint8_t byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 1
-    const uint8_t sign = byte & VARINT_SIGN_1;
-    int64_t result = byte & VARINT_BYTE_1;
-    if (!(byte & VARINT_HAS_NEXT_1))
-        return sign ? -result : result;
+    const bool sign = (byte & VARINT_SIGN_1) != 0;
+    uint64_t result = byte & VARINT_BYTE_1;
+    if ((byte & VARINT_HAS_NEXT_1) == 0)
+        return sign ? -static_cast<int64_t>(result) : static_cast<int64_t>(result);
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 2
-    result = result << 7 | (byte & VARINT_BYTE_N);
-    if (!(byte & VARINT_HAS_NEXT_N))
-        return sign ? -result : result;
+    result = result << 7U | static_cast<uint8_t>(byte & VARINT_BYTE_N);
+    if ((byte & VARINT_HAS_NEXT_N) == 0)
+        return sign ? -static_cast<int64_t>(result) : static_cast<int64_t>(result);
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 3
-    result = result << 7 | (byte & VARINT_BYTE_N);
-    if (!(byte & VARINT_HAS_NEXT_N))
-        return sign ? -result : result;
+    result = static_cast<uint64_t>(result) << 7U | static_cast<uint8_t>(byte & VARINT_BYTE_N);
+    if ((byte & VARINT_HAS_NEXT_N) == 0)
+        return sign ? -static_cast<int64_t>(result) : static_cast<int64_t>(result);
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 4
-    result = result << 7 | (byte & VARINT_BYTE_N);
-    if (!(byte & VARINT_HAS_NEXT_N))
-        return sign ? -result : result;
+    result = result << 7U | static_cast<uint8_t>(byte & VARINT_BYTE_N);
+    if ((byte & VARINT_HAS_NEXT_N) == 0)
+        return sign ? -static_cast<int64_t>(result) : static_cast<int64_t>(result);
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 5
-    result = result << 7 | (byte & VARINT_BYTE_N);
-    if (!(byte & VARINT_HAS_NEXT_N))
-        return sign ? -result : result;
+    result = result << 7U | static_cast<uint8_t>(byte & VARINT_BYTE_N);
+    if ((byte & VARINT_HAS_NEXT_N) == 0)
+        return sign ? -static_cast<int64_t>(result) : static_cast<int64_t>(result);
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 6
-    result = result << 7 | (byte & VARINT_BYTE_N);
-    if (!(byte & VARINT_HAS_NEXT_N))
-        return sign ? -result : result;
+    result = result << 7U | static_cast<uint8_t>(byte & VARINT_BYTE_N);
+    if ((byte & VARINT_HAS_NEXT_N) == 0)
+        return sign ? -static_cast<int64_t>(result) : static_cast<int64_t>(result);
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 7
-    result = result << 7 | (byte & VARINT_BYTE_N);
-    if (!(byte & VARINT_HAS_NEXT_N))
-        return sign ? -result : result;
+    result = result << 7U | static_cast<uint8_t>(byte & VARINT_BYTE_N);
+    if ((byte & VARINT_HAS_NEXT_N) == 0)
+        return sign ? -static_cast<int64_t>(result) : static_cast<int64_t>(result);
 
-    result = result << 8 | static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 8
-    return sign ? -result : result;
+    result = result << 8U | static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 8
+    return sign ? -static_cast<int64_t>(result) : static_cast<int64_t>(result);
 }
 
 int32_t BitStreamReader::readVarInt32()
 {
     uint8_t byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 1
-    const uint8_t sign = byte & VARINT_SIGN_1;
-    int32_t result = byte & VARINT_BYTE_1;
+    const bool sign = (byte & VARINT_SIGN_1) != 0;
+    uint32_t result = byte & VARINT_BYTE_1;
     if ((byte & VARINT_HAS_NEXT_1) == 0)
-        return sign ? -result : result;
+        return sign ? -static_cast<int32_t>(result) : static_cast<int32_t>(result);
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 2
-    result = result << 7 | (byte & VARINT_BYTE_N);
+    result = result << 7U | static_cast<uint8_t>(byte & VARINT_BYTE_N);
     if ((byte & VARINT_HAS_NEXT_N) == 0)
-        return sign ? -result : result;
+        return sign ? -static_cast<int32_t>(result) : static_cast<int32_t>(result);
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 3
-    result = result << 7 | (byte & VARINT_BYTE_N);
+    result = result << 7U | static_cast<uint8_t>(byte & VARINT_BYTE_N);
     if ((byte & VARINT_HAS_NEXT_N) == 0)
-        return sign ? -result : result;
+        return sign ? -static_cast<int32_t>(result) : static_cast<int32_t>(result);
 
-    result = result << 8 | static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 4
-    return sign ? -result : result;
+    result = result << 8U | static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 4
+    return sign ? -static_cast<int32_t>(result) : static_cast<int32_t>(result);
 }
 
 int16_t BitStreamReader::readVarInt16()
 {
     uint8_t byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 1
-    const uint8_t sign = byte & VARINT_SIGN_1;
-    int16_t result = byte & VARINT_BYTE_1;
-    if (!(byte & VARINT_HAS_NEXT_1))
-        return sign ? -result : result;
+    const bool sign = (byte & VARINT_SIGN_1) != 0;
+    uint16_t result = byte & VARINT_BYTE_1;
+    if ((byte & VARINT_HAS_NEXT_1) == 0)
+        return sign ? static_cast<int16_t>(-result) : static_cast<int16_t>(result);
 
-    result = static_cast<int16_t>(result << 8) | static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 2
-    return sign ? -result : result;
+    result = static_cast<uint16_t>(result << 8U) | static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 2
+    return sign ? static_cast<int16_t>(-result) : static_cast<int16_t>(result);
 }
 
 uint64_t BitStreamReader::readVarUInt64()
 {
     uint8_t byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 1
     uint64_t result = byte & VARUINT_BYTE;
-    if (!(byte & VARUINT_HAS_NEXT))
+    if ((byte & VARUINT_HAS_NEXT) == 0)
         return result;
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 2
-    result = result << 7 | (byte & VARUINT_BYTE);
-    if (!(byte & VARUINT_HAS_NEXT))
+    result = result << 7U | static_cast<uint8_t>(byte & VARUINT_BYTE);
+    if ((byte & VARUINT_HAS_NEXT) == 0)
         return result;
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 3
-    result = result << 7 | (byte & VARUINT_BYTE);
-    if (!(byte & VARUINT_HAS_NEXT))
+    result = result << 7U | static_cast<uint8_t>(byte & VARUINT_BYTE);
+    if ((byte & VARUINT_HAS_NEXT) == 0)
         return result;
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 4
-    result = result << 7 | (byte & VARUINT_BYTE);
-    if (!(byte & VARUINT_HAS_NEXT))
+    result = result << 7U | static_cast<uint8_t>(byte & VARUINT_BYTE);
+    if ((byte & VARUINT_HAS_NEXT) == 0)
         return result;
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 5
-    result = result << 7 | (byte & VARUINT_BYTE);
-    if (!(byte & VARUINT_HAS_NEXT))
+    result = result << 7U | static_cast<uint8_t>(byte & VARUINT_BYTE);
+    if ((byte & VARUINT_HAS_NEXT) == 0)
         return result;
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 6
-    result = result << 7 | (byte & VARUINT_BYTE);
-    if (!(byte & VARUINT_HAS_NEXT))
+    result = result << 7U | static_cast<uint8_t>(byte & VARUINT_BYTE);
+    if ((byte & VARUINT_HAS_NEXT) == 0)
         return result;
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 7
-    result = result << 7 | (byte & VARUINT_BYTE);
-    if (!(byte & VARUINT_HAS_NEXT))
+    result = result << 7U | static_cast<uint8_t>(byte & VARUINT_BYTE);
+    if ((byte & VARUINT_HAS_NEXT) == 0)
         return result;
 
-    result = result << 8 | readBitsImpl(m_context, 8); // byte 8
+    result = result << 8U | static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 8
     return result;
 }
 
@@ -516,20 +509,20 @@ uint32_t BitStreamReader::readVarUInt32()
 {
     uint8_t byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 1
     uint32_t result = byte & VARUINT_BYTE;
-    if (!(byte & VARUINT_HAS_NEXT))
+    if ((byte & VARUINT_HAS_NEXT) == 0)
         return result;
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 2
-    result = result << 7 | (byte & VARUINT_BYTE);
-    if (!(byte & VARUINT_HAS_NEXT))
+    result = result << 7U | static_cast<uint8_t>(byte & VARUINT_BYTE);
+    if ((byte & VARUINT_HAS_NEXT) == 0)
         return result;
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 3
-    result = result << 7 | (byte & VARUINT_BYTE);
-    if (!(byte & VARUINT_HAS_NEXT))
+    result = result << 7U | static_cast<uint8_t>(byte & VARUINT_BYTE);
+    if ((byte & VARUINT_HAS_NEXT) == 0)
         return result;
 
-    result = result << 8 | static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 4
+    result = result << 8U | static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 4
     return result;
 }
 
@@ -537,103 +530,103 @@ uint16_t BitStreamReader::readVarUInt16()
 {
     uint8_t byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 1
     uint16_t result = byte & VARUINT_BYTE;
-    if (!(byte & VARUINT_HAS_NEXT))
+    if ((byte & VARUINT_HAS_NEXT) == 0)
         return result;
 
-    result = static_cast<uint16_t>(result << 8) | static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 2
+    result = static_cast<uint16_t>(result << 8U) | static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 2
     return result;
 }
 
 int64_t BitStreamReader::readVarInt()
 {
     uint8_t byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 1
-    const uint8_t sign = byte & VARINT_SIGN_1;
-    int64_t result = byte & VARINT_BYTE_1;
-    if (!(byte & VARINT_HAS_NEXT_1))
-        return sign ? (result == 0 ? INT64_MIN : -result) : result;
+    const bool sign = (byte & VARINT_SIGN_1) != 0;
+    uint64_t result = byte & VARINT_BYTE_1;
+    if ((byte & VARINT_HAS_NEXT_1) == 0)
+        return sign ? (result == 0 ? INT64_MIN : -static_cast<int64_t>(result)) : static_cast<int64_t>(result);
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 2
-    result = result << 7 | (byte & VARINT_BYTE_N);
-    if (!(byte & VARINT_HAS_NEXT_N))
-        return sign ? -result : result;
+    result = result << 7U | static_cast<uint8_t>(byte & VARINT_BYTE_N);
+    if ((byte & VARINT_HAS_NEXT_N) == 0)
+        return sign ? -static_cast<int64_t>(result) : static_cast<int64_t>(result);
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 3
-    result = result << 7 | (byte & VARINT_BYTE_N);
-    if (!(byte & VARINT_HAS_NEXT_N))
-        return sign ? -result : result;
+    result = result << 7U | static_cast<uint8_t>(byte & VARINT_BYTE_N);
+    if ((byte & VARINT_HAS_NEXT_N) == 0)
+        return sign ? -static_cast<int64_t>(result) : static_cast<int64_t>(result);
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 4
-    result = result << 7 | (byte & VARINT_BYTE_N);
-    if (!(byte & VARINT_HAS_NEXT_N))
-        return sign ? -result : result;
+    result = result << 7U | static_cast<uint8_t>(byte & VARINT_BYTE_N);
+    if ((byte & VARINT_HAS_NEXT_N) == 0)
+        return sign ? -static_cast<int64_t>(result) : static_cast<int64_t>(result);
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 5
-    result = result << 7 | (byte & VARINT_BYTE_N);
-    if (!(byte & VARINT_HAS_NEXT_N))
-        return sign ? -result : result;
+    result = result << 7U | static_cast<uint8_t>(byte & VARINT_BYTE_N);
+    if ((byte & VARINT_HAS_NEXT_N) == 0)
+        return sign ? -static_cast<int64_t>(result) : static_cast<int64_t>(result);
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 6
-    result = result << 7 | (byte & VARINT_BYTE_N);
-    if (!(byte & VARINT_HAS_NEXT_N))
-        return sign ? -result : result;
+    result = result << 7U | static_cast<uint8_t>(byte & VARINT_BYTE_N);
+    if ((byte & VARINT_HAS_NEXT_N) == 0)
+        return sign ? -static_cast<int64_t>(result) : static_cast<int64_t>(result);
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 7
-    result = result << 7 | (byte & VARINT_BYTE_N);
-    if (!(byte & VARINT_HAS_NEXT_N))
-        return sign ? -result : result;
+    result = result << 7U | static_cast<uint8_t>(byte & VARINT_BYTE_N);
+    if ((byte & VARINT_HAS_NEXT_N) == 0)
+        return sign ? -static_cast<int64_t>(result) : static_cast<int64_t>(result);
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 8
-    result = result << 7 | (byte & VARINT_BYTE_N);
-    if (!(byte & VARINT_HAS_NEXT_N))
-        return sign ? -result : result;
+    result = result << 7U | static_cast<uint8_t>(byte & VARINT_BYTE_N);
+    if ((byte & VARINT_HAS_NEXT_N) == 0)
+        return sign ? -static_cast<int64_t>(result) : static_cast<int64_t>(result);
 
-    result = result << 8 | static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 9
-    return sign ? -result : result;
+    result = result << 8U | static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 9
+    return sign ? -static_cast<int64_t>(result) : static_cast<int64_t>(result);
 }
 
 uint64_t BitStreamReader::readVarUInt()
 {
     uint8_t byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 1
     uint64_t result = byte & VARUINT_BYTE;
-    if (!(byte & VARUINT_HAS_NEXT))
+    if ((byte & VARUINT_HAS_NEXT) == 0)
         return result;
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 2
-    result = result << 7 | (byte & VARUINT_BYTE);
-    if (!(byte & VARUINT_HAS_NEXT))
+    result = result << 7U | static_cast<uint8_t>(byte & VARUINT_BYTE);
+    if ((byte & VARUINT_HAS_NEXT) == 0)
         return result;
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 3
-    result = result << 7 | (byte & VARUINT_BYTE);
-    if (!(byte & VARUINT_HAS_NEXT))
+    result = result << 7U | static_cast<uint8_t>(byte & VARUINT_BYTE);
+    if ((byte & VARUINT_HAS_NEXT) == 0)
         return result;
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 4
-    result = result << 7 | (byte & VARUINT_BYTE);
-    if (!(byte & VARUINT_HAS_NEXT))
+    result = result << 7U | static_cast<uint8_t>(byte & VARUINT_BYTE);
+    if ((byte & VARUINT_HAS_NEXT) == 0)
         return result;
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 5
-    result = result << 7 | (byte & VARUINT_BYTE);
-    if (!(byte & VARUINT_HAS_NEXT))
+    result = result << 7U | static_cast<uint8_t>(byte & VARUINT_BYTE);
+    if ((byte & VARUINT_HAS_NEXT) == 0)
         return result;
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 6
-    result = result << 7 | (byte & VARUINT_BYTE);
-    if (!(byte & VARUINT_HAS_NEXT))
+    result = result << 7U | static_cast<uint8_t>(byte & VARUINT_BYTE);
+    if ((byte & VARUINT_HAS_NEXT) == 0)
         return result;
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 7
-    result = result << 7 | (byte & VARUINT_BYTE);
-    if (!(byte & VARUINT_HAS_NEXT))
+    result = result << 7U | static_cast<uint8_t>(byte & VARUINT_BYTE);
+    if ((byte & VARUINT_HAS_NEXT) == 0)
         return result;
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 8
-    result = result << 7 | (byte & VARUINT_BYTE);
-    if (!(byte & VARUINT_HAS_NEXT))
+    result = result << 7U | static_cast<uint8_t>(byte & VARUINT_BYTE);
+    if ((byte & VARUINT_HAS_NEXT) == 0)
         return result;
 
-    result = result << 8 | static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 9
+    result = result << 8U | static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 9
     return result;
 }
 
@@ -641,25 +634,25 @@ uint32_t BitStreamReader::readVarSize()
 {
     uint8_t byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 1
     uint32_t result = byte & VARUINT_BYTE;
-    if (!(byte & VARUINT_HAS_NEXT))
+    if ((byte & VARUINT_HAS_NEXT) == 0)
         return result;
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 2
-    result = result << 7 | (byte & VARUINT_BYTE);
-    if (!(byte & VARUINT_HAS_NEXT))
+    result = result << 7U | static_cast<uint8_t>(byte & VARUINT_BYTE);
+    if ((byte & VARUINT_HAS_NEXT) == 0)
         return result;
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 3
-    result = result << 7 | (byte & VARUINT_BYTE);
-    if (!(byte & VARUINT_HAS_NEXT))
+    result = result << 7U | static_cast<uint8_t>(byte & VARUINT_BYTE);
+    if ((byte & VARUINT_HAS_NEXT) == 0)
         return result;
 
     byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 4
-    result = result << 7 | (byte & VARUINT_BYTE);
-    if (!(byte & VARUINT_HAS_NEXT))
+    result = result << 7U | static_cast<uint8_t>(byte & VARUINT_BYTE);
+    if ((byte & VARUINT_HAS_NEXT) == 0)
         return result;
 
-    result = result << 8 | static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 5
+    result = result << 8U | static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 5
     if (result > VARSIZE_MAX_VALUE)
         throw CppRuntimeException("BitStreamReader: Read value '") << result <<
                 "' is out of range for varsize type!";

@@ -26,7 +26,7 @@ protected:
         arrayHolder.setExtraValue(EXTRA_VALUE);
         arrayHolder.setHasBlack(color == Color::BLACK);
         arrayHolder.setHasRead((access & Access::Values::READ) == Access::Values::READ);
-        arrayHolder.setHasFloatBiggerThanOne(floatValue > 1.0f);
+        arrayHolder.setHasFloatBiggerThanOne(floatValue > 1.0F);
 
         arrayHolder.initialize(size, extraLimit, limitHolder, color, access, floatValue);
     }
@@ -64,7 +64,7 @@ protected:
         ASSERT_EQ(arrayHolder.getExtraValue(), reader.readBits(3));
         ASSERT_EQ(color == Color::BLACK, reader.readBool());
         ASSERT_EQ((access & Access::Values::READ) == Access::Values::READ, reader.readBool());
-        ASSERT_EQ(floatValue > 1.0f, reader.readBool());
+        ASSERT_EQ(floatValue > 1.0F, reader.readBool());
     }
 
     void checkFixedAndVariableParamInBitStream(zserio::BitStreamReader& reader,

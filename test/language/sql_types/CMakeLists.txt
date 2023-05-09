@@ -16,7 +16,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/sql_types/TestUnion.h
 )
 
-zserio_add_library(TARGET sql_types_zs
+zserio_add_library(sql_types_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE sql_types.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -28,8 +28,11 @@ zserio_add_library(TARGET sql_types_zs
 
 target_include_directories(sql_types_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 
-add_test_sources(
-    cpp/SqlTypesTest.cpp
+add_custom_test(sql_types
+    DEPENDS
+        sql_types_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/SqlTypesTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(sql_types_zs)

@@ -1,5 +1,6 @@
 #include <string>
 #include <memory>
+#include <array>
 
 #include "gtest/gtest.h"
 
@@ -129,15 +130,15 @@ protected:
 
         // externalField
         writer.writeVarSize(EXTERNAL_FIELD_VAR_SIZE);
-        writer.writeBits(EXTERNAL_FIELD_DATA >> (8 - (EXTERNAL_FIELD_VAR_SIZE % 8)), EXTERNAL_FIELD_VAR_SIZE);
+        writer.writeBits(EXTERNAL_FIELD_DATA >> (8U - (EXTERNAL_FIELD_VAR_SIZE % 8U)), EXTERNAL_FIELD_VAR_SIZE);
 
         // externalArray
         writer.writeVarSize(EXTERNAL_ARRAY_SIZE);
         writer.writeVarSize(EXTERNAL_ARRAY_ELEMENT0_VAR_SIZE);
-        writer.writeBits(EXTERNAL_ARRAY_ELEMENT0_DATA >> (8 - (EXTERNAL_ARRAY_ELEMENT0_VAR_SIZE % 8)),
+        writer.writeBits(EXTERNAL_ARRAY_ELEMENT0_DATA >> (8U - (EXTERNAL_ARRAY_ELEMENT0_VAR_SIZE % 8U)),
                 EXTERNAL_ARRAY_ELEMENT0_VAR_SIZE);
         writer.writeVarSize(EXTERNAL_ARRAY_ELEMENT1_VAR_SIZE);
-        writer.writeBits(EXTERNAL_ARRAY_ELEMENT1_DATA >> (8 - (EXTERNAL_ARRAY_ELEMENT1_VAR_SIZE % 8)),
+        writer.writeBits(EXTERNAL_ARRAY_ELEMENT1_DATA >> (8U - (EXTERNAL_ARRAY_ELEMENT1_VAR_SIZE % 8U)),
                 EXTERNAL_ARRAY_ELEMENT1_VAR_SIZE);
 
         // bytesField
@@ -217,13 +218,19 @@ protected:
                 STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y,
                 STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z);
         packedElementArray.emplace_back(
-                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X + STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
-                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y + STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
-                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z + STRUCT_PACKED_ELEMENT_ARRAY_DELTA);
+                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X +
+                        static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA),
+                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y +
+                        static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA),
+                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z +
+                        static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA));
         packedElementArray.emplace_back(
-                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X + STRUCT_PACKED_ELEMENT_ARRAY_DELTA * 2,
-                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y + STRUCT_PACKED_ELEMENT_ARRAY_DELTA * 2,
-                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z + STRUCT_PACKED_ELEMENT_ARRAY_DELTA * 2);
+                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X +
+                        static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA) * 2,
+                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y +
+                        static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA) * 2,
+                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z +
+                        static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA) * 2);
     }
 
     void fillOptionalField(allocation_struct_optional::AllocationStructOptional& structOptionalField,
@@ -247,34 +254,35 @@ protected:
 
     BitBuffer createExternalField(const allocator_type& allocator)
     {
-        const uint8_t externalFieldData[] = {static_cast<uint8_t>(EXTERNAL_FIELD_DATA >> 8),
+        const std::array<uint8_t, 2> externalFieldData = {static_cast<uint8_t>(EXTERNAL_FIELD_DATA >> 8U),
                 static_cast<uint8_t>(EXTERNAL_FIELD_DATA)};
 
-        return BitBuffer(externalFieldData, EXTERNAL_FIELD_VAR_SIZE, allocator);
+        return BitBuffer(externalFieldData.data(), EXTERNAL_FIELD_VAR_SIZE, allocator);
     }
 
     void fillExternalArray(vector_type<BitBuffer>& externalArray, const allocator_type& allocator)
     {
         externalArray.reserve(EXTERNAL_ARRAY_SIZE);
         externalArray.emplace_back(&EXTERNAL_ARRAY_ELEMENT0_DATA, EXTERNAL_ARRAY_ELEMENT0_VAR_SIZE, allocator);
-        const uint8_t externalElement1Data[] = {static_cast<uint8_t>(EXTERNAL_ARRAY_ELEMENT1_DATA >> 8),
+        const std::array<uint8_t, 2> externalElement1Data = {
+                static_cast<uint8_t>(EXTERNAL_ARRAY_ELEMENT1_DATA >> 8U),
                 static_cast<uint8_t>(EXTERNAL_ARRAY_ELEMENT1_DATA)};
-        externalArray.emplace_back(externalElement1Data, EXTERNAL_ARRAY_ELEMENT1_VAR_SIZE, allocator);
+        externalArray.emplace_back(externalElement1Data.data(), EXTERNAL_ARRAY_ELEMENT1_VAR_SIZE, allocator);
     }
 
     vector_type<uint8_t> createBytesField(const allocator_type& allocator)
     {
-        return vector_type<uint8_t>({static_cast<uint8_t>(BYTES_FIELD_DATA >> 8),
+        return vector_type<uint8_t>({static_cast<uint8_t>(BYTES_FIELD_DATA >> 8U),
                 static_cast<uint8_t>(BYTES_FIELD_DATA)}, allocator);
     }
 
     void fillBytesArray(vector_type<vector_type<uint8_t>>& bytesArray, const allocator_type& allocator)
     {
         bytesArray.reserve(BYTES_ARRAY_SIZE);
-        const uint8_t bytesArrayElement0Data[] = {static_cast<uint8_t>(BYTES_ARRAY_ELEMENT0_DATA >> 8),
+        const std::array<uint8_t, 2> bytesArrayElement0Data = {
+                static_cast<uint8_t>(BYTES_ARRAY_ELEMENT0_DATA >> 8U),
                 static_cast<uint8_t>(BYTES_ARRAY_ELEMENT0_DATA)};
-        bytesArray.emplace_back(bytesArrayElement0Data, bytesArrayElement0Data + BYTES_ARRAY_ELEMENT0_VAR_SIZE,
-                allocator);
+        bytesArray.emplace_back(bytesArrayElement0Data.begin(), bytesArrayElement0Data.end(), allocator);
         bytesArray.emplace_back(BYTES_ARRAY_ELEMENT1_VAR_SIZE, BYTES_ARRAY_ELEMENT1_DATA, allocator);
     }
 
@@ -383,20 +391,20 @@ protected:
         const auto& packedElementArray = structField.getPackedElementArray();
         ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_SIZE, packedElementArray.size());
         ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X, packedElementArray[0].getX());
-        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X + STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
-                packedElementArray[1].getX());
-        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X + STRUCT_PACKED_ELEMENT_ARRAY_DELTA * 2,
-                packedElementArray[2].getX());
+        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X +
+                static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA), packedElementArray[1].getX());
+        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X +
+                static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA) * 2, packedElementArray[2].getX());
         ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y, packedElementArray[0].getY());
-        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y + STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
-                packedElementArray[1].getY());
-        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y + STRUCT_PACKED_ELEMENT_ARRAY_DELTA * 2,
-                packedElementArray[2].getY());
+        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y +
+                static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA), packedElementArray[1].getY());
+        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y +
+                static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA) * 2, packedElementArray[2].getY());
         ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z, packedElementArray[0].getZ());
-        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z + STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
-                packedElementArray[1].getZ());
-        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z + STRUCT_PACKED_ELEMENT_ARRAY_DELTA * 2,
-                packedElementArray[2].getZ());
+        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z +
+                static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA), packedElementArray[1].getZ());
+        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z +
+                static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA) * 2, packedElementArray[2].getZ());
 
         // structOptionalField
         const auto& optionalField0 = mainStructure.getStructOptionalField();
@@ -415,7 +423,7 @@ protected:
         const auto& externalField = mainStructure.getExternalField();
         ASSERT_EQ(EXTERNAL_FIELD_VAR_SIZE, externalField.getBitSize());
         const uint8_t* externalFieldBuffer = externalField.getBuffer();
-        const uint16_t externalFieldData = (static_cast<uint16_t>(externalFieldBuffer[0] << 8)) |
+        const uint16_t externalFieldData = (static_cast<uint16_t>(externalFieldBuffer[0] << 8U)) |
                 (externalFieldBuffer[1]);
         ASSERT_EQ(EXTERNAL_FIELD_DATA, externalFieldData);
 
@@ -429,14 +437,14 @@ protected:
         const auto& externalArrayElement1 = externalArray[1];
         ASSERT_EQ(EXTERNAL_ARRAY_ELEMENT1_VAR_SIZE, externalArrayElement1.getBitSize());
         const uint8_t* externalBufferElement1 = externalArrayElement1.getBuffer();
-        const uint16_t externalDataElement1 = (static_cast<uint16_t>(externalBufferElement1[0] << 8)) |
+        const uint16_t externalDataElement1 = (static_cast<uint16_t>(externalBufferElement1[0] << 8U)) |
                 (externalBufferElement1[1]);
         ASSERT_EQ(EXTERNAL_ARRAY_ELEMENT1_DATA, externalDataElement1);
 
         // bytesField
         const auto& bytesField = mainStructure.getBytesField();
         ASSERT_EQ(BYTES_FIELD_VAR_SIZE, bytesField.size());
-        const uint16_t bytesFieldData = (static_cast<uint16_t>(bytesField[0] << 8)) | (bytesField[1]);
+        const uint16_t bytesFieldData = (static_cast<uint16_t>(bytesField[0] << 8U)) | (bytesField[1]);
         ASSERT_EQ(BYTES_FIELD_DATA, bytesFieldData);
 
         // bytesArray
@@ -444,7 +452,7 @@ protected:
         ASSERT_EQ(BYTES_ARRAY_SIZE, bytesArray.size());
         const auto& bytesArrayElement0 = bytesArray[0];
         ASSERT_EQ(BYTES_ARRAY_ELEMENT0_VAR_SIZE, bytesArrayElement0.size());
-        const uint16_t bytesDataElement0 = (static_cast<uint16_t>(bytesArrayElement0[0] << 8)) |
+        const uint16_t bytesDataElement0 = (static_cast<uint16_t>(bytesArrayElement0[0] << 8U)) |
                 (bytesArrayElement0[1]);
         ASSERT_EQ(BYTES_ARRAY_ELEMENT0_DATA, bytesDataElement0);
         const auto& bytesArrayElement1 = bytesArray[1];
@@ -1113,12 +1121,12 @@ private:
                 std::allocator_traits<allocator_type>::select_on_container_copy_construction(dummyAllocator));
     }
 
-    static const char* STRING_FIELD;
+    static const char* const STRING_FIELD;
 
     static const uint32_t STRING_ARRAY_SIZE;
-    static const char* STRING_ARRAY_ELEMENT0;
-    static const char* STRING_ARRAY_ELEMENT1;
-    static const char* STRING_ARRAY_ELEMENT2;
+    static const char* const STRING_ARRAY_ELEMENT0;
+    static const char* const STRING_ARRAY_ELEMENT1;
+    static const char* const STRING_ARRAY_ELEMENT2;
 
     static const uint32_t CHOICE_COMPOUND_ARRAY_SIZE;
     static const uint16_t CHOICE_COMPOUND_ELEMENT0_VALUE16;
@@ -1134,8 +1142,8 @@ private:
     static const uint8_t STRUCT_BIT7_ARRAY_ELEMENT0;
     static const uint8_t STRUCT_BIT7_ARRAY_ELEMENT1;
     static const uint8_t STRUCT_BIT7_ARRAY_ELEMENT2;
-    static const char* STRUCT_STRING_FIELD;
-    static const char* STRUCT_DEFAULT_STRING_FIELD;
+    static const char* const STRUCT_STRING_FIELD;
+    static const char* const STRUCT_DEFAULT_STRING_FIELD;
     static const uint32_t STRUCT_PACKED_UINT16_ARRAY_SIZE;
     static const uint16_t STRUCT_PACKED_UINT16_ARRAY_ELEMENT0;
     static const uint16_t STRUCT_PACKED_UINT16_ARRAY_ELEMENT1;
@@ -1150,10 +1158,10 @@ private:
     static const uint8_t STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER;
 
     static const uint32_t STRUCT_OPTIONAL_NAMES0_SIZE;
-    static const char* STRUCT_OPTIONAL_NAMES0_ELEMENT0;
-    static const char* STRUCT_OPTIONAL_NAMES0_ELEMENT1;
+    static const char* const STRUCT_OPTIONAL_NAMES0_ELEMENT0;
+    static const char* const STRUCT_OPTIONAL_NAMES0_ELEMENT1;
     static const uint32_t STRUCT_OPTIONAL_NAMES1_SIZE;
-    static const char* STRUCT_OPTIONAL_NAMES1_ELEMENT0;
+    static const char* const STRUCT_OPTIONAL_NAMES1_ELEMENT0;
 
     static const uint8_t EXTERNAL_FIELD_VAR_SIZE;
     static const uint16_t EXTERNAL_FIELD_DATA;
@@ -1182,12 +1190,15 @@ private:
 const bool ComplexAllocationTest::ARRAY_IN_UNION_AND_CHOICE = true;
 const bool ComplexAllocationTest::COMPOUND_IN_UNION_AND_CHOICE = false;
 
-const char* ComplexAllocationTest::STRING_FIELD = "String Field Must Be Longer Than 32 Bytes";
+const char* const ComplexAllocationTest::STRING_FIELD = "String Field Must Be Longer Than 32 Bytes";
 
 const uint32_t ComplexAllocationTest::STRING_ARRAY_SIZE = 3;
-const char* ComplexAllocationTest::STRING_ARRAY_ELEMENT0 = "String Array Element0 Must Be Longer Than 32 Bytes";
-const char* ComplexAllocationTest::STRING_ARRAY_ELEMENT1 = "String Array Element1 Must Be Longer Than 32 Bytes";
-const char* ComplexAllocationTest::STRING_ARRAY_ELEMENT2 = "String Array Element2 Must Be Longer Than 32 Bytes";
+const char* const ComplexAllocationTest::STRING_ARRAY_ELEMENT0 =
+        "String Array Element0 Must Be Longer Than 32 Bytes";
+const char* const ComplexAllocationTest::STRING_ARRAY_ELEMENT1 =
+        "String Array Element1 Must Be Longer Than 32 Bytes";
+const char* const ComplexAllocationTest::STRING_ARRAY_ELEMENT2 =
+        "String Array Element2 Must Be Longer Than 32 Bytes";
 
 const uint32_t ComplexAllocationTest::CHOICE_COMPOUND_ARRAY_SIZE = 2;
 const uint16_t ComplexAllocationTest::CHOICE_COMPOUND_ELEMENT0_VALUE16 = 0xAB;
@@ -1203,8 +1214,9 @@ const uint32_t ComplexAllocationTest::STRUCT_BIT7_ARRAY_SIZE = 3;
 const uint8_t ComplexAllocationTest::STRUCT_BIT7_ARRAY_ELEMENT0 = 0x2B;
 const uint8_t ComplexAllocationTest::STRUCT_BIT7_ARRAY_ELEMENT1 = 0x4D;
 const uint8_t ComplexAllocationTest::STRUCT_BIT7_ARRAY_ELEMENT2 = 0x6F;
-const char* ComplexAllocationTest::STRUCT_STRING_FIELD = "Structure String Field Must Be Longer Than 32 Bytes";
-const char* ComplexAllocationTest::STRUCT_DEFAULT_STRING_FIELD =
+const char* const ComplexAllocationTest::STRUCT_STRING_FIELD =
+        "Structure String Field Must Be Longer Than 32 Bytes";
+const char* const ComplexAllocationTest::STRUCT_DEFAULT_STRING_FIELD =
         "Structure Default String Field Must Be Longer Than 32 Bytes";
 const uint32_t ComplexAllocationTest::STRUCT_PACKED_UINT16_ARRAY_SIZE = 3;
 const uint16_t ComplexAllocationTest::STRUCT_PACKED_UINT16_ARRAY_ELEMENT0 = 0xCAFC;
@@ -1220,12 +1232,12 @@ const int8_t ComplexAllocationTest::STRUCT_PACKED_ELEMENT_ARRAY_DELTA = 1;
 const uint8_t ComplexAllocationTest::STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER = 1;
 
 const uint32_t ComplexAllocationTest::STRUCT_OPTIONAL_NAMES0_SIZE = 2;
-const char* ComplexAllocationTest::STRUCT_OPTIONAL_NAMES0_ELEMENT0 =
+const char* const ComplexAllocationTest::STRUCT_OPTIONAL_NAMES0_ELEMENT0 =
         "Optional Name00 Must Be Longer Than 32 Bytes";
-const char* ComplexAllocationTest::STRUCT_OPTIONAL_NAMES0_ELEMENT1 =
+const char* const ComplexAllocationTest::STRUCT_OPTIONAL_NAMES0_ELEMENT1 =
         "Optional Name01 Must Be Longer Than 32 Bytes";
 const uint32_t ComplexAllocationTest::STRUCT_OPTIONAL_NAMES1_SIZE = 1;
-const char* ComplexAllocationTest::STRUCT_OPTIONAL_NAMES1_ELEMENT0 =
+const char* const ComplexAllocationTest::STRUCT_OPTIONAL_NAMES1_ELEMENT0 =
         "Optional Name10 Must Be Longer Than 32 Bytes";
 
 const uint8_t ComplexAllocationTest::EXTERNAL_FIELD_VAR_SIZE = 11;

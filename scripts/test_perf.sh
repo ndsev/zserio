@@ -263,7 +263,7 @@ generate_cpp_files()
     local BUILD_SRC_DIR="${BUILD_DIR}/src"
     mkdir -p "${BUILD_SRC_DIR}"
     cat > "${BUILD_SRC_DIR}"/CMakeLists.txt << EOF
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.6.0)
 project(PerformanceTest)
 
 enable_testing()

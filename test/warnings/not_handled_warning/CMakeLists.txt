@@ -8,7 +8,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/not_handled_warning/Selector.h
 )
 
-zserio_add_library(TARGET not_handled_warning_zs
+zserio_add_library(not_handled_warning_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE not_handled_warning.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -20,8 +20,11 @@ zserio_add_library(TARGET not_handled_warning_zs
     ZSERIO_LOG_FILENAME zserio_log.txt
 )
 
-add_test_sources(
-    cpp/NotHandledWarningTest.cpp
+add_custom_test(not_handled_warning
+    DEPENDS
+        not_handled_warning_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/NotHandledWarningTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(not_handled_warning_zs)

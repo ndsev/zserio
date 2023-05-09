@@ -30,8 +30,8 @@ protected:
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
-const int64_t VarInt64RangeCheckTest::VARINT64_LOWER_BOUND = -((INT64_C(1) << 56) - 1);
-const int64_t VarInt64RangeCheckTest::VARINT64_UPPER_BOUND = (INT64_C(1) << 56) - 1;
+const int64_t VarInt64RangeCheckTest::VARINT64_LOWER_BOUND = -static_cast<int64_t>((UINT64_C(1) << 56U) - 1);
+const int64_t VarInt64RangeCheckTest::VARINT64_UPPER_BOUND = static_cast<int64_t>((UINT64_C(1) << 56U) - 1);
 
 TEST_F(VarInt64RangeCheckTest, varInt64LowerBound)
 {

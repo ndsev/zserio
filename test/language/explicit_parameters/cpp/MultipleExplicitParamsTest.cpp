@@ -30,10 +30,16 @@ public:
         m_database->createSchema();
     }
 
-    ~MultipleExplicitParamsTest()
+    ~MultipleExplicitParamsTest() override
     {
         delete m_database;
     }
+
+    MultipleExplicitParamsTest(const MultipleExplicitParamsTest&) = delete;
+    MultipleExplicitParamsTest& operator=(const MultipleExplicitParamsTest&) = delete;
+
+    MultipleExplicitParamsTest(MultipleExplicitParamsTest&&) = delete;
+    MultipleExplicitParamsTest& operator=(MultipleExplicitParamsTest&&) = delete;
 
 protected:
     void fillMultipleParamsTableRow(MultipleParamsTable::Row& row, uint32_t id, const string_type& name)
@@ -115,17 +121,17 @@ protected:
     class MultipleParamsTableParameterProvider : public MultipleParamsTable::IParameterProvider
     {
     public:
-        virtual uint32_t getCount1(MultipleParamsTable::Row&)
+        uint32_t getCount1(MultipleParamsTable::Row&) override
         {
             return MULTIPLE_PARAMS_COUNT1;
         }
 
-        virtual uint32_t getCount2(MultipleParamsTable::Row&)
+        uint32_t getCount2(MultipleParamsTable::Row&) override
         {
             return MULTIPLE_PARAMS_COUNT2;
         }
 
-        virtual uint32_t getCount(MultipleParamsTable::Row&)
+        uint32_t getCount(MultipleParamsTable::Row&) override
         {
             return MULTIPLE_PARAMS_COUNT;
         }
@@ -133,7 +139,7 @@ protected:
 
     ExplicitParametersDb* m_database;
 
-    static const char DB_FILE_NAME[];
+    static const char* const DB_FILE_NAME;
 
     static const uint32_t NUM_MULTIPLE_PARAMS_ROWS;
     static const uint32_t MULTIPLE_PARAMS_COUNT1;
@@ -141,7 +147,7 @@ protected:
     static const uint32_t MULTIPLE_PARAMS_COUNT;
 };
 
-const char MultipleExplicitParamsTest::DB_FILE_NAME[] =
+const char* const MultipleExplicitParamsTest::DB_FILE_NAME =
         "language/explicit_parameters/multiple_explicit_param_test.sqlite";
 
 const uint32_t MultipleExplicitParamsTest::NUM_MULTIPLE_PARAMS_ROWS = 5;

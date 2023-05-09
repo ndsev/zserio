@@ -111,7 +111,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/expressions/valueof_operator/ValueOfFunctions.h
 )
 
-zserio_add_library(TARGET expressions_zs
+zserio_add_library(expressions_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE expressions.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -121,33 +121,36 @@ zserio_add_library(TARGET expressions_zs
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
-add_test_sources(
-    cpp/ArrayTypeTest.cpp
-    cpp/BitmaskTypeTest.cpp
-    cpp/CastUInt64ToUInt8Test.cpp
-    cpp/CastUInt8ToUInt64Test.cpp
-    cpp/ConstTypeTest.cpp
-    cpp/EnumerationTypeTest.cpp
-    cpp/FieldTypeTest.cpp
-    cpp/FieldTypeWithClashTest.cpp
-    cpp/FloatTypeTest.cpp
-    cpp/FullConstTypeTest.cpp
-    cpp/FullEnumerationTypeTest.cpp
-    cpp/FunctionTypeTest.cpp
-    cpp/IndexOperatorTest.cpp
-    cpp/IsSetOperatorTest.cpp
-    cpp/LengthOfOperatorTest.cpp
-    cpp/ModuloOperatorTest.cpp
-    cpp/NegationOperatorTest.cpp
-    cpp/NumBitsOperatorTest.cpp
-    cpp/ParameterTypeTest.cpp
-    cpp/ParameterizedArrayTypeTest.cpp
-    cpp/ParenthesisTest.cpp
-    cpp/QuestionMarkTest.cpp
-    cpp/StringTypeTest.cpp
-    cpp/UInt64TypeTest.cpp
-    cpp/UsedBeforeTypeTest.cpp
-    cpp/ValueOfOperatorTest.cpp
+add_custom_test(expressions
+    DEPENDS
+        expressions_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ArrayTypeTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/BitmaskTypeTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/CastUInt64ToUInt8Test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/CastUInt8ToUInt64Test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ConstTypeTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/EnumerationTypeTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/FieldTypeTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/FieldTypeWithClashTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/FloatTypeTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/FullConstTypeTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/FullEnumerationTypeTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/FunctionTypeTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/IndexOperatorTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/IsSetOperatorTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/LengthOfOperatorTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ModuloOperatorTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/NegationOperatorTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/NumBitsOperatorTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ParameterTypeTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ParameterizedArrayTypeTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ParenthesisTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/QuestionMarkTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/StringTypeTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/UInt64TypeTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/UsedBeforeTypeTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ValueOfOperatorTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(expressions_zs)

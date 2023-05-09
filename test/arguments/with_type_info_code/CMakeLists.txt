@@ -46,7 +46,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/with_type_info_code/WithTypeInfoCode.h
 )
 
-zserio_add_library(TARGET with_type_info_code_zs
+zserio_add_library(with_type_info_code_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE with_type_info_code.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -58,11 +58,14 @@ zserio_add_library(TARGET with_type_info_code_zs
 
 target_include_directories(with_type_info_code_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 
-add_test_sources(
-    cpp/DebugStringTest.cpp
-    cpp/WithTypeInfoCodeCreator.cpp
-    cpp/WithTypeInfoCodeCreator.h
-    cpp/WithTypeInfoCodeTest.cpp
+add_custom_test(with_type_info_code
+    DEPENDS
+        with_type_info_code_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/DebugStringTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/WithTypeInfoCodeCreator.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/WithTypeInfoCodeCreator.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/WithTypeInfoCodeTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(with_type_info_code_zs)

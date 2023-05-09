@@ -23,22 +23,22 @@ public:
     }
 
 private:
-    virtual void* doAllocate(size_t bytes, size_t) override
+    void* doAllocate(size_t bytes, size_t) override
     {
         ++m_numAllocs;
         return ::operator new(bytes);
     }
 
-    virtual void doDeallocate(void* p, size_t, size_t) override
+    void doDeallocate(void* p, size_t, size_t) override
     {
         ++m_numDeallocs;
         ::operator delete(p);
     }
 
-    virtual bool doIsEqual(const MemoryResource& other) const noexcept override
+    bool doIsEqual(const MemoryResource& other) const noexcept override
     {
         auto otherPtr = dynamic_cast<const TestResource*>(&other);
-        return otherPtr && m_instanceId == otherPtr->m_instanceId;
+        return otherPtr != nullptr && m_instanceId == otherPtr->m_instanceId;
     }
 
     size_t m_numAllocs = 0;
@@ -50,14 +50,16 @@ TEST(MemoryResourceTest, allocateDeallocate)
 {
     TestResource res(1);
     auto p = res.allocate(10);
-    ASSERT_EQ(1, res.numAllocs());
+    EXPECT_EQ(1, res.numAllocs());
     res.deallocate(p, 10);
-    ASSERT_EQ(1, res.numDeallocs());
+    EXPECT_EQ(1, res.numDeallocs());
 }
 
 TEST(MemoryResourceTest, isEqual)
 {
-    TestResource res1(1), res1_1(1), res2(2);
+    TestResource res1(1);
+    TestResource res1_1(1);
+    TestResource res2(2);
     ASSERT_TRUE(res1.isEqual(res1));
     ASSERT_TRUE(res1.isEqual(res1_1));
     ASSERT_FALSE(res1.isEqual(res2));
@@ -65,7 +67,9 @@ TEST(MemoryResourceTest, isEqual)
 
 TEST(MemoryResourceTest, equalOp)
 {
-    TestResource res1(1), res1_1(1), res2(2);
+    TestResource res1(1);
+    TestResource res1_1(1);
+    TestResource res2(2);
     ASSERT_TRUE(res1 == res1);
     ASSERT_TRUE(res1 == res1_1);
     ASSERT_FALSE(res1 == res2);
@@ -73,7 +77,9 @@ TEST(MemoryResourceTest, equalOp)
 
 TEST(MemoryResourceTest, nonEqualOp)
 {
-    TestResource res1(1), res1_1(1), res2(2);
+    TestResource res1(1);
+    TestResource res1_1(1);
+    TestResource res2(2);
     ASSERT_FALSE(res1 != res1);
     ASSERT_FALSE(res1 != res1_1);
     ASSERT_TRUE(res1 != res2);

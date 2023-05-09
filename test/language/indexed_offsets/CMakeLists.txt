@@ -48,7 +48,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/indexed_offsets/varint32_indexed_offset_array/VarInt32IndexedOffsetArray.h
 )
 
-zserio_add_library(TARGET indexed_offsets_zs
+zserio_add_library(indexed_offsets_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE indexed_offsets.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -58,18 +58,21 @@ zserio_add_library(TARGET indexed_offsets_zs
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
-add_test_sources(
-    cpp/AutoIndexedOffsetArrayTest.cpp
-    cpp/Bit5IndexedOffsetArrayTest.cpp
-    cpp/BoolIndexedOffsetArrayTest.cpp
-    cpp/CompoundIndexedOffsetArrayTest.cpp
-    cpp/EmptyIndexedOffsetArrayTest.cpp
-    cpp/Int14IndexedOffsetArrayTest.cpp
-    cpp/OptionalIndexedOffsetArrayTest.cpp
-    cpp/OptionalNestedIndexedOffsetArrayTest.cpp
-    cpp/PackedAutoIndexedOffsetArrayTest.cpp
-    cpp/PackedIndexedOffsetArrayHolderTest.cpp
-    cpp/VarInt32IndexedOffsetArrayTest.cpp
+add_custom_test(indexed_offsets
+    DEPENDS
+        indexed_offsets_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/AutoIndexedOffsetArrayTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/Bit5IndexedOffsetArrayTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/BoolIndexedOffsetArrayTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/CompoundIndexedOffsetArrayTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/EmptyIndexedOffsetArrayTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/Int14IndexedOffsetArrayTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/OptionalIndexedOffsetArrayTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/OptionalNestedIndexedOffsetArrayTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedAutoIndexedOffsetArrayTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedIndexedOffsetArrayHolderTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/VarInt32IndexedOffsetArrayTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(indexed_offsets_zs)

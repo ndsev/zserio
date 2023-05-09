@@ -29,7 +29,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/unused_type_warning/UnusedUnion.h
 )
 
-zserio_add_library(TARGET unused_type_warning_zs
+zserio_add_library(unused_type_warning_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE unused_type_warning.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -43,8 +43,11 @@ zserio_add_library(TARGET unused_type_warning_zs
 
 target_include_directories(unused_type_warning_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 
-add_test_sources(
-    cpp/UnusedTypeWarningTest.cpp
+add_custom_test(unused_type_warning
+    DEPENDS
+        unused_type_warning_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/UnusedTypeWarningTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(unused_type_warning_zs)

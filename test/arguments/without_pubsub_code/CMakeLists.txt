@@ -9,7 +9,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/without_pubsub_code/Service.h
 )
 
-zserio_add_library(TARGET without_pubsub_code_zs
+zserio_add_library(without_pubsub_code_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE without_pubsub_code.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -19,8 +19,11 @@ zserio_add_library(TARGET without_pubsub_code_zs
     ZSERIO_OPTIONS -withoutPubsubCode -withoutSourcesAmalgamation
 )
 
-add_test_sources(
-    cpp/WithoutPubsubCodeTest.cpp
+add_custom_test(without_pubsub_code
+    DEPENDS
+        without_pubsub_code_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/WithoutPubsubCodeTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(without_pubsub_code_zs)

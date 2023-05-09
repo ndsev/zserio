@@ -15,10 +15,17 @@ namespace detail
 class AllocationTracker
 {
 public:
+    AllocationTracker() = default;
     ~AllocationTracker()
     {
         EXPECT_TRUE(m_allocations.empty());
     }
+
+    AllocationTracker(const AllocationTracker&) = default;
+    AllocationTracker& operator=(const AllocationTracker&) = default;
+
+    AllocationTracker(AllocationTracker&&) = default;
+    AllocationTracker& operator=(AllocationTracker&&) = default;
 
     void allocated(void* ptr)
     {
@@ -59,8 +66,13 @@ public:
     TrackingAllocatorImpl()
         : m_tracker(std::make_shared<detail::AllocationTracker>())
     {}
+    ~TrackingAllocatorImpl() = default;
+
     TrackingAllocatorImpl(const TrackingAllocatorImpl&) = default;
     TrackingAllocatorImpl& operator=(const TrackingAllocatorImpl&) = default;
+
+    TrackingAllocatorImpl(TrackingAllocatorImpl&&) = delete;
+    TrackingAllocatorImpl& operator=(TrackingAllocatorImpl&&) = delete;
 
     template <typename Other>
     TrackingAllocatorImpl(const TrackingAllocatorImpl<Other>& other) :

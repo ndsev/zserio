@@ -13,29 +13,29 @@ namespace test_utils
 class CountingValidationObserver : public zserio::IValidationObserver
 {
 public:
-    virtual void beginDatabase(size_t numberOfTables) override
+    void beginDatabase(size_t numberOfTables) override
     {
         m_numberOfTables += numberOfTables;
     }
 
-    virtual void endDatabase(size_t numberOfValidatedTables) override
+    void endDatabase(size_t numberOfValidatedTables) override
     {
         m_numberOfValidatedTables += numberOfValidatedTables;
     }
 
-    virtual bool beginTable(zserio::StringView, size_t numberOfRows) override
+    bool beginTable(zserio::StringView, size_t numberOfRows) override
     {
         m_numberOfRows += numberOfRows;
         return true;
     }
 
-    virtual bool endTable(zserio::StringView, size_t numberOfValidatedRows) override
+    bool endTable(zserio::StringView, size_t numberOfValidatedRows) override
     {
         m_numberOfValidatedRows += numberOfValidatedRows;
         return true;
     }
 
-    virtual bool reportError(zserio::StringView, zserio::StringView,
+    bool reportError(zserio::StringView, zserio::StringView,
             zserio::Span<const zserio::StringView>, ErrorType,
             zserio::StringView) override
     {
@@ -86,30 +86,30 @@ public:
         std::string message;
     };
 
-    virtual void beginDatabase(size_t numberOfTables) override
+    void beginDatabase(size_t numberOfTables) override
     {
         m_numberOfTables = numberOfTables;
     }
 
-    virtual void endDatabase(size_t numberOfValidatedTables) override
+    void endDatabase(size_t numberOfValidatedTables) override
     {
         m_numberOfValidatedTables = numberOfValidatedTables;
     }
 
-    virtual bool beginTable(zserio::StringView tableName, size_t numberOfRows) override
+    bool beginTable(zserio::StringView tableName, size_t numberOfRows) override
     {
         m_rowCountsMap[zserio::toString(tableName)] =
                 std::make_tuple(numberOfRows, static_cast<size_t>(0));
         return true;
     }
 
-    virtual bool endTable(zserio::StringView tableName, size_t numberOfValidatedRows) override
+    bool endTable(zserio::StringView tableName, size_t numberOfValidatedRows) override
     {
         std::get<1>(m_rowCountsMap[zserio::toString(tableName)]) = numberOfValidatedRows;
         return true;
     }
 
-    virtual bool reportError(zserio::StringView tableName, zserio::StringView fieldName,
+    bool reportError(zserio::StringView tableName, zserio::StringView fieldName,
             zserio::Span<const zserio::StringView> primaryKeyValues, ErrorType errorType,
             zserio::StringView message) override
     {

@@ -31,7 +31,8 @@ float convertUInt16ToFloat(uint16_t float16Value)
 {
     // decompose half precision float (float16)
     const uint16_t sign16Shifted = (float16Value & FLOAT16_SIGN_MASK);
-    const uint16_t exponent16 = (float16Value & FLOAT16_EXPONENT_MASK) >> FLOAT16_EXPONENT_BIT_POSITION;
+    const uint16_t exponent16 = static_cast<uint16_t>(float16Value & FLOAT16_EXPONENT_MASK) >>
+            FLOAT16_EXPONENT_BIT_POSITION;
     const uint16_t significand16 = (float16Value & FLOAT16_SIGNIFICAND_MASK);
 
     // calculate significand for single precision float (float32)
@@ -39,7 +40,7 @@ float convertUInt16ToFloat(uint16_t float16Value)
             (FLOAT32_SIGNIFICAND_NUM_BITS - FLOAT16_SIGNIFICAND_NUM_BITS);
 
     // calculate exponent for single precision float (float32)
-    uint32_t exponent32;
+    uint32_t exponent32 = 0;
     if (exponent16 == 0)
     {
         if (significand32 != 0)
@@ -50,15 +51,10 @@ float convertUInt16ToFloat(uint16_t float16Value)
             while ((significand32 & (FLOAT32_SIGNIFICAND_MASK + 1)) == 0)
             {
                 exponent32--;
-                significand32 <<= 1;
+                significand32 <<= 1U;
             }
             // mask out overflowed leading bit from significand (normalized has implicit leading bit 1)
             significand32 &= FLOAT32_SIGNIFICAND_MASK;
-        }
-        else
-        {
-            // zero
-            exponent32 = 0;
         }
     }
     else if (exponent16 == FLOAT16_EXPONENT_INFINITY_NAN)
@@ -97,7 +93,7 @@ uint16_t convertFloatToUInt16(float float32)
 
     // calculate exponent for half precision float (float16)
     bool needsRounding = false;
-    uint16_t exponent16;
+    uint16_t exponent16 = 0;
     if (exponent32 == 0)
     {
         if (significand32 != 0)
@@ -105,7 +101,6 @@ uint16_t convertFloatToUInt16(float float32)
             // subnormal (denormal) number will be zero
             significand16 = 0;
         }
-        exponent16 = 0;
     }
     else if (exponent32 == FLOAT32_EXPONENT_INFINITY_NAN)
     {
@@ -128,13 +123,11 @@ uint16_t convertFloatToUInt16(float float32)
             if (signedExponent16 <= static_cast<int16_t>(-FLOAT16_SIGNIFICAND_NUM_BITS))
             {
                 // too big underflow, set to zero
-                exponent16 = 0;
                 significand16 = 0;
             }
             else
             {
                 // we can still use subnormal numbers
-                exponent16 = 0;
                 const uint32_t fullSignificand32 = significand32 | (FLOAT32_SIGNIFICAND_MASK + 1);
                 const uint32_t significandShift = static_cast<uint32_t>(1 - signedExponent16);
                 significand16 = static_cast<uint16_t>(fullSignificand32 >>
@@ -157,7 +150,7 @@ uint16_t convertFloatToUInt16(float float32)
     const uint16_t sign16Shifted = static_cast<uint16_t>(sign32Shifted >> (FLOAT32_SIGN_BIT_POSITION -
             FLOAT16_SIGN_BIT_POSITION));
     const uint16_t exponent16Shifted = static_cast<uint16_t>(exponent16 << FLOAT16_EXPONENT_BIT_POSITION);
-    uint16_t float16Value = sign16Shifted | exponent16Shifted | significand16;
+    uint16_t float16Value = static_cast<uint16_t>(sign16Shifted | exponent16Shifted) | significand16;
 
     // check rounding
     if (needsRounding)

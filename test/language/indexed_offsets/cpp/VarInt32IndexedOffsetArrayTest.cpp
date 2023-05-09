@@ -89,7 +89,7 @@ protected:
     size_t getVarInt32IndexedOffsetArrayBitSize()
     {
         size_t bitSize = ELEMENT0_OFFSET * 8;
-        for (short i = 0; i < NUM_ELEMENTS; ++i)
+        for (int16_t i = 0; i < NUM_ELEMENTS; ++i)
             bitSize += zserio::bitSizeOfVarInt32(i);
 
         return bitSize;

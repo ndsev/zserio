@@ -30,10 +30,16 @@ public:
         m_database->createSchema();
     }
 
-    ~ExplicitSameAsFieldTest()
+    ~ExplicitSameAsFieldTest() override
     {
         delete m_database;
     }
+
+    ExplicitSameAsFieldTest(const ExplicitSameAsFieldTest&) = delete;
+    ExplicitSameAsFieldTest& operator=(const ExplicitSameAsFieldTest&) = delete;
+
+    ExplicitSameAsFieldTest(ExplicitSameAsFieldTest&&) = delete;
+    ExplicitSameAsFieldTest& operator=(ExplicitSameAsFieldTest&&) = delete;
 
 protected:
     void fillSameAsFieldTableRow(SameAsFieldTable::Row& row, uint32_t id, const string_type& name)
@@ -88,7 +94,7 @@ protected:
     class SameAsFieldTableParameterProvider : public SameAsFieldTable::IParameterProvider
     {
     public:
-        virtual uint32_t getCount(SameAsFieldTable::Row&)
+        uint32_t getCount(SameAsFieldTable::Row&) override
         {
             return SAME_AS_FIELD_TABLE_COUNT_EXPLICIT;
         }
@@ -96,14 +102,14 @@ protected:
 
     ExplicitParametersDb* m_database;
 
-    static const char DB_FILE_NAME[];
+    static const char* const DB_FILE_NAME;
 
     static const uint32_t NUM_SAME_AS_FIELD_TABLE_ROWS;
     static const uint32_t SAME_AS_FIELD_TABLE_COUNT;
     static const uint32_t SAME_AS_FIELD_TABLE_COUNT_EXPLICIT;
 };
 
-const char ExplicitSameAsFieldTest::DB_FILE_NAME[] =
+const char* const ExplicitSameAsFieldTest::DB_FILE_NAME =
         "language/explicit_parameters/explicit_same_as_field_test.sqlite";
 
 const uint32_t ExplicitSameAsFieldTest::NUM_SAME_AS_FIELD_TABLE_ROWS = 5;

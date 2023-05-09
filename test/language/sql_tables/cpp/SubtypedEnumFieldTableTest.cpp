@@ -28,10 +28,16 @@ public:
         m_database->createSchema();
     }
 
-    ~SubtypedEnumFieldTableTest()
+    ~SubtypedEnumFieldTableTest() override
     {
         delete m_database;
     }
+
+    SubtypedEnumFieldTableTest(const SubtypedEnumFieldTableTest&) = delete;
+    SubtypedEnumFieldTableTest& operator=(const SubtypedEnumFieldTableTest&) = delete;
+
+    SubtypedEnumFieldTableTest(SubtypedEnumFieldTableTest&&) = delete;
+    SubtypedEnumFieldTableTest& operator=(SubtypedEnumFieldTableTest&&) = delete;
 
 protected:
     static void fillRow(SubtypedEnumFieldTable::Row& row, size_t i)
@@ -69,13 +75,13 @@ protected:
             checkRow(rows1[i], rows2[i]);
     }
 
-    static const char DB_FILE_NAME[];
+    static const char* const DB_FILE_NAME;
     static const size_t NUM_ROWS;
 
     sql_tables::TestDb* m_database;
 };
 
-const char SubtypedEnumFieldTableTest::DB_FILE_NAME[] =
+const char* const SubtypedEnumFieldTableTest::DB_FILE_NAME =
         "language/sql_tables/subtyped_enum_field_table_test.sqlite";
 const size_t SubtypedEnumFieldTableTest::NUM_ROWS = 5;
 

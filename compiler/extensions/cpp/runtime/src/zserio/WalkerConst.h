@@ -1,6 +1,8 @@
 #ifndef ZSERIO_WALKER_CONST_H_INC
 #define ZSERIO_WALKER_CONST_H_INC
 
+#include <cstddef>
+
 namespace zserio
 {
 

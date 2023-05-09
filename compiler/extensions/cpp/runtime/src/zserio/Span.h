@@ -22,8 +22,7 @@ namespace detail
 template <typename T, std::size_t Extent>
 struct SpanStorage
 {
-    SpanStorage()
-    {}
+    SpanStorage() = default;
 
     SpanStorage(T* data, std::size_t) :
         m_data(data)
@@ -36,8 +35,7 @@ struct SpanStorage
 template <typename T>
 struct SpanStorage<T, dynamic_extent>
 {
-    SpanStorage()
-    {}
+    SpanStorage() = default;
 
     SpanStorage(T* data, std::size_t size) :
         m_data(data), m_size(size)

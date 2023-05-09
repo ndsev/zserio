@@ -32,10 +32,16 @@ public:
         m_database->createSchema();
     }
 
-    ~WithoutPkTableTest()
+    ~WithoutPkTableTest() override
     {
         delete m_database;
     }
+
+    WithoutPkTableTest(const WithoutPkTableTest&) = delete;
+    WithoutPkTableTest& operator=(const WithoutPkTableTest&) = delete;
+
+    WithoutPkTableTest(WithoutPkTableTest&&) = delete;
+    WithoutPkTableTest& operator=(WithoutPkTableTest&&) = delete;
 
 protected:
     static void fillWithoutPkTableRow(WithoutPkTable::Row& row, int32_t identifier, const string_type& name)
@@ -83,22 +89,16 @@ protected:
             return false;
 
         const unsigned char* readTableName = sqlite3_column_text(statement.get(), 0);
-        if (readTableName == nullptr ||
-                checkTableName.compare(reinterpret_cast<const char*>(readTableName)) != 0)
-        {
-            return false;
-        }
-
-        return true;
+        return (readTableName != nullptr && checkTableName == reinterpret_cast<const char*>(readTableName));
     }
 
-    static const char DB_FILE_NAME[];
+    static const char* const DB_FILE_NAME;
     static const int32_t NUM_WITHOUT_PK_TABLE_ROWS;
 
     sql_tables::TestDb* m_database;
 };
 
-const char WithoutPkTableTest::DB_FILE_NAME[] = "language/sql_tables/without_pk_table_test.sqlite";
+const char* const WithoutPkTableTest::DB_FILE_NAME = "language/sql_tables/without_pk_table_test.sqlite";
 const int32_t WithoutPkTableTest::NUM_WITHOUT_PK_TABLE_ROWS = 5;
 
 TEST_F(WithoutPkTableTest, deleteTable)

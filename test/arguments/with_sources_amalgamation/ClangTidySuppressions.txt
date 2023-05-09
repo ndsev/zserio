@@ -1,0 +1,15 @@
+bugprone-reserved-identifier:gen/_imported_tile_/Tile.h
+bugprone-reserved-identifier:gen/___/Empty.h
+
+cppcoreguidelines-pro-type-member-init:gen/with_sources_amalgamation/WithSourcesAmalgamation.cpp
+
+cppcoreguidelines-pro-type-reinterpret-cast:gen/with_sources_amalgamation/WithSourcesAmalgamation.cpp
+
+fuchsia-multiple-inheritance:gen/with_sources_amalgamation/WorldDb.h
+
+performance-move-const-arg:gen/with_sources_amalgamation/WithSourcesAmalgamation.cpp
+
+readability-braces-around-statements
+
+readability-make-member-function-const:gen/_imported_tile_/ImportedTile.cpp
+readability-make-member-function-const:gen_default_package/DefaultPackageAmalgamation.cpp

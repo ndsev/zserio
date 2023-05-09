@@ -48,7 +48,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/explicit_parameters/multiple_with_same_name/Parameterized2.h
 )
 
-zserio_add_library(TARGET explicit_parameters_zs
+zserio_add_library(explicit_parameters_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE explicit_parameters.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -60,14 +60,17 @@ zserio_add_library(TARGET explicit_parameters_zs
 
 target_include_directories(explicit_parameters_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 
-add_test_sources(
-    cpp/ExplicitBitmaskParamTest.cpp
-    cpp/ExplicitBlobParamTest.cpp
-    cpp/ExplicitEnumParamTest.cpp
-    cpp/ExplicitSameAsFieldTest.cpp
-    cpp/ExplicitSimpleParamTest.cpp
-    cpp/MultipleExplicitParamsTest.cpp
-    cpp/MultipleWithSameNameTest.cpp
+add_custom_test(explicit_parameters
+    DEPENDS
+        explicit_parameters_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ExplicitBitmaskParamTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ExplicitBlobParamTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ExplicitEnumParamTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ExplicitSameAsFieldTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ExplicitSimpleParamTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/MultipleExplicitParamsTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/MultipleWithSameNameTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(explicit_parameters_zs)

@@ -1,0 +1,27 @@
+bugprone-forwarding-reference-overload:gen/optional_members_warning/optional_references_in_offset/OptionalOffsetHolder.h
+bugprone-forwarding-reference-overload:gen/optional_members_warning/optional_references_in_type_arguments/ColorTones.h
+
+bugprone-unhandled-self-assignment:gen/optional_members_warning/optional_references_in_type_arguments/Container.cpp
+
+cppcoreguidelines-pro-type-member-init:gen/optional_members_warning/optional_references_in_type_arguments/ColorTones.cpp
+cppcoreguidelines-pro-type-member-init:gen/optional_members_warning/optional_references_in_type_arguments/Container.cpp
+
+misc-no-recursion # reports also tested_release and some system headers
+
+performance-move-const-arg:gen/optional_members_warning/optional_references_in_constraint/Container.cpp
+performance-move-const-arg:gen/optional_members_warning/optional_references_in_offset/Container.cpp
+performance-move-const-arg:gen/optional_members_warning/optional_references_in_type_arguments/Container.cpp
+
+readability-braces-around-statements
+
+readability-make-member-function-const:gen/optional_members_warning/optional_references_in_array_length/Container.cpp
+readability-make-member-function-const:gen/optional_members_warning/optional_references_in_bitfield_length/Container.cpp
+readability-make-member-function-const:gen/optional_members_warning/optional_references_in_constraint/Container.cpp
+readability-make-member-function-const:gen/optional_members_warning/optional_references_in_offset/Container.cpp
+readability-make-member-function-const:gen/optional_members_warning/optional_references_in_offset/OptionalOffsetHolder.cpp
+readability-make-member-function-const:gen/optional_members_warning/optional_references_in_optional_clause/Container.cpp
+readability-make-member-function-const:gen/optional_members_warning/optional_references_in_type_arguments/Another.cpp
+readability-make-member-function-const:gen/optional_members_warning/optional_references_in_type_arguments/ColorTones.cpp
+readability-make-member-function-const:gen/optional_members_warning/optional_references_in_type_arguments/Container.cpp
+
+readability-simplify-boolean-expr:gen/optional_members_warning/optional_references_in_optional_clause/Container.cpp

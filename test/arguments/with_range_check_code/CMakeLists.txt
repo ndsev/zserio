@@ -52,7 +52,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/with_range_check_code/varuint64_range_check/VarUInt64RangeCheckCompound.h
 )
 
-zserio_add_library(TARGET with_range_check_code_zs
+zserio_add_library(with_range_check_code_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE with_range_check_code.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -62,24 +62,27 @@ zserio_add_library(TARGET with_range_check_code_zs
     ZSERIO_OPTIONS -withRangeCheckCode -withoutSourcesAmalgamation
 )
 
-add_test_sources(
-    cpp/Bit4RangeCheckTest.cpp
-    cpp/ChoiceBit4RangeCheckTest.cpp
-    cpp/DynamicBitRangeCheckTest.cpp
-    cpp/DynamicIntRangeCheckTest.cpp
-    cpp/Int4RangeCheckTest.cpp
-    cpp/Int7ArrayRangeCheckTest.cpp
-    cpp/Int8RangeCheckTest.cpp
-    cpp/OptionalBit31RangeCheckTest.cpp
-    cpp/UInt8RangeCheckTest.cpp
-    cpp/UnionInt4RangeCheckTest.cpp
-    cpp/VarInt16RangeCheckTest.cpp
-    cpp/VarInt32RangeCheckTest.cpp
-    cpp/VarInt64RangeCheckTest.cpp
-    cpp/VarSizeRangeCheckTest.cpp
-    cpp/VarUInt16RangeCheckTest.cpp
-    cpp/VarUInt32RangeCheckTest.cpp
-    cpp/VarUInt64RangeCheckTest.cpp
+add_custom_test(with_range_check_code
+    DEPENDS
+        with_range_check_code_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/Bit4RangeCheckTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ChoiceBit4RangeCheckTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/DynamicBitRangeCheckTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/DynamicIntRangeCheckTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/Int4RangeCheckTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/Int7ArrayRangeCheckTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/Int8RangeCheckTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/OptionalBit31RangeCheckTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/UInt8RangeCheckTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/UnionInt4RangeCheckTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/VarInt16RangeCheckTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/VarInt32RangeCheckTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/VarInt64RangeCheckTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/VarSizeRangeCheckTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/VarUInt16RangeCheckTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/VarUInt32RangeCheckTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/VarUInt64RangeCheckTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(with_range_check_code_zs)

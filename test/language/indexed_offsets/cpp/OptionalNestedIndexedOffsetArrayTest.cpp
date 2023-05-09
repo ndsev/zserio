@@ -1,3 +1,5 @@
+#include <array>
+
 #include "gtest/gtest.h"
 
 #include "indexed_offsets/optional_nested_indexed_offset_array/OptionalNestedIndexedOffsetArray.h"
@@ -22,10 +24,10 @@ class OptionalNestedIndexedOffsetArrayTest : public ::testing::Test
 public:
     OptionalNestedIndexedOffsetArrayTest()
     {
-        const char* data[NUM_ELEMENTS] = {"Green", "Red", "Pink", "Blue", "Black"};
-        for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
-            m_data.push_back(data[i]);
+        const std::array<const char*, NUM_ELEMENTS> data = {"Green", "Red", "Pink", "Blue", "Black"};
+        m_data.assign(data.begin(), data.end());
     }
+
 protected:
     void writeOptionalNestedIndexedOffsetArrayToByteArray(zserio::BitStreamWriter& writer, uint16_t length,
             bool writeWrongOffsets)
@@ -36,7 +38,7 @@ protected:
         {
             const uint32_t wrongOffset = WRONG_OFFSET;
             uint32_t currentOffset = ELEMENT0_OFFSET;
-            for (uint8_t i = 0; i < length; ++i)
+            for (uint16_t i = 0; i < length; ++i)
             {
                 if ((i + 1) == length && writeWrongOffsets)
                     writer.writeBits(wrongOffset, 32);
@@ -46,7 +48,7 @@ protected:
             }
 
             // already aligned
-            for (uint8_t i = 0; i < length; ++i)
+            for (uint16_t i = 0; i < length; ++i)
                 writer.writeString(m_data[i]);
         }
 
@@ -60,7 +62,7 @@ protected:
         const vector_type<uint32_t>& offsets = optionalNestedIndexedOffsetArray.getHeader().getOffsets();
         ASSERT_EQ(length, offsets.size());
         uint32_t expectedOffset = ELEMENT0_OFFSET + offsetShift;
-        for (uint8_t i = 0; i < length; ++i)
+        for (uint16_t i = 0; i < length; ++i)
         {
             ASSERT_EQ(expectedOffset, offsets[i]);
             expectedOffset += static_cast<uint32_t>(zserio::bitSizeOfString(m_data[i]) / 8);
@@ -68,7 +70,7 @@ protected:
     }
 
     void checkOptionalNestedIndexedOffsetArray(
-            const OptionalNestedIndexedOffsetArray& optionalNestedIndexedOffsetArray, int16_t length)
+            const OptionalNestedIndexedOffsetArray& optionalNestedIndexedOffsetArray, uint16_t length)
     {
         ASSERT_EQ(length, optionalNestedIndexedOffsetArray.getHeader().getLength());
 
@@ -79,7 +81,7 @@ protected:
         {
             const vector_type<string_type>& data = optionalNestedIndexedOffsetArray.getData();
             ASSERT_EQ(length, data.size());
-            for (uint8_t i = 0; i < length; ++i)
+            for (uint16_t i = 0; i < length; ++i)
                 ASSERT_EQ(m_data[i], data[i]);
         }
 
@@ -97,7 +99,7 @@ protected:
         offsets.reserve(length);
         const uint32_t wrongOffset = WRONG_OFFSET;
         uint32_t currentOffset = ELEMENT0_OFFSET;
-        for (uint8_t i = 0; i < length; ++i)
+        for (uint16_t i = 0; i < length; ++i)
         {
             if ((i + 1) == length && createWrongOffsets)
                 offsets.push_back(wrongOffset);

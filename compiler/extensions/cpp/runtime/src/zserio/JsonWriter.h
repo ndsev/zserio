@@ -135,20 +135,20 @@ public:
      */
     void setEnumerableFormat(EnumerableFormat enumerableFormat);
 
-    virtual void beginRoot(const IBasicReflectableConstPtr<ALLOC>& compound) override;
-    virtual void endRoot(const IBasicReflectableConstPtr<ALLOC>& compound) override;
+    void beginRoot(const IBasicReflectableConstPtr<ALLOC>& compound) override;
+    void endRoot(const IBasicReflectableConstPtr<ALLOC>& compound) override;
 
-    virtual void beginArray(const IBasicReflectableConstPtr<ALLOC>& array,
+    void beginArray(const IBasicReflectableConstPtr<ALLOC>& array,
             const BasicFieldInfo<ALLOC>& fieldInfo) override;
-    virtual void endArray(const IBasicReflectableConstPtr<ALLOC>& array,
+    void endArray(const IBasicReflectableConstPtr<ALLOC>& array,
             const BasicFieldInfo<ALLOC>& fieldInfo) override;
 
-    virtual void beginCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
+    void beginCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
             const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
-    virtual void endCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
+    void endCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
             const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
 
-    virtual void visitValue(const IBasicReflectableConstPtr<ALLOC>& value,
+    void visitValue(const IBasicReflectableConstPtr<ALLOC>& value,
             const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
 
 private:
@@ -164,7 +164,7 @@ private:
 
     void writeIndent();
     void writeKey(StringView key);
-    void writeValue(const IBasicReflectableConstPtr<ALLOC>& value);
+    void writeValue(const IBasicReflectableConstPtr<ALLOC>& reflectable);
     void writeBitBuffer(const BasicBitBuffer<ALLOC>& bitBuffer);
     void writeBytes(Span<const uint8_t> value);
     void writeStringifiedEnum(const IBasicReflectableConstPtr<ALLOC>& reflectable);
@@ -451,11 +451,11 @@ void BasicJsonWriter<ALLOC>::writeBitBuffer(const BasicBitBuffer<ALLOC>& bitBuff
     beginItem();
     writeKey("buffer"_sv);
     beginArray();
-    const uint8_t* buffer = bitBuffer.getBuffer();
-    for (size_t i = 0; i < bitBuffer.getByteSize(); ++i)
+    Span<const uint8_t> buffer = bitBuffer.getData();
+    for (uint8_t element : buffer)
     {
         beginItem();
-        JsonEncoder::encodeIntegral(m_out, buffer[i]);
+        JsonEncoder::encodeIntegral(m_out, element);
         endItem();
     }
     endArray();

@@ -45,39 +45,40 @@ public:
      * \}
      */
 
-    virtual ~TypeInfoBase() override = 0;
+    ~TypeInfoBase() override = 0;
 
-    virtual StringView getSchemaName() const override;
-    virtual SchemaType getSchemaType() const override;
-    virtual CppType getCppType() const override;
-    virtual uint8_t getBitSize() const override;
+    StringView getSchemaName() const override;
+    SchemaType getSchemaType() const override;
+    CppType getCppType() const override;
+    uint8_t getBitSize() const override;
 
-    virtual Span<const BasicFieldInfo<ALLOC>> getFields() const override;
-    virtual Span<const BasicParameterInfo<ALLOC>> getParameters() const override;
-    virtual Span<const BasicFunctionInfo<ALLOC>> getFunctions() const override;
+    Span<const BasicFieldInfo<ALLOC>> getFields() const override;
+    Span<const BasicParameterInfo<ALLOC>> getParameters() const override;
+    Span<const BasicFunctionInfo<ALLOC>> getFunctions() const override;
 
-    virtual StringView getSelector() const override;
-    virtual Span<const BasicCaseInfo<ALLOC>> getCases() const override;
+    StringView getSelector() const override;
+    Span<const BasicCaseInfo<ALLOC>> getCases() const override;
 
-    virtual const IBasicTypeInfo<ALLOC>& getUnderlyingType() const override;
-    virtual Span<const StringView> getUnderlyingTypeArguments() const override;
-    virtual Span<const ItemInfo> getEnumItems() const override;
-    virtual Span<const ItemInfo> getBitmaskValues() const override;
+    const IBasicTypeInfo<ALLOC>& getUnderlyingType() const override;
+    Span<const StringView> getUnderlyingTypeArguments() const override;
+    Span<const ItemInfo> getEnumItems() const override;
+    Span<const ItemInfo> getBitmaskValues() const override;
 
-    virtual Span<const BasicColumnInfo<ALLOC>> getColumns() const override;
-    virtual StringView getSqlConstraint() const override;
-    virtual StringView getVirtualTableUsing() const override;
-    virtual bool isWithoutRowId() const override;
+    Span<const BasicColumnInfo<ALLOC>> getColumns() const override;
+    StringView getSqlConstraint() const override;
+    StringView getVirtualTableUsing() const override;
+    bool isWithoutRowId() const override;
 
-    virtual Span<const BasicTableInfo<ALLOC>> getTables() const override;
+    Span<const BasicTableInfo<ALLOC>> getTables() const override;
 
-    virtual StringView getTemplateName() const override;
-    virtual Span<const BasicTemplateArgumentInfo<ALLOC>> getTemplateArguments() const override;
+    StringView getTemplateName() const override;
+    Span<const BasicTemplateArgumentInfo<ALLOC>> getTemplateArguments() const override;
 
-    virtual Span<const BasicMessageInfo<ALLOC>> getMessages() const override;
-    virtual Span<const BasicMethodInfo<ALLOC>> getMethods() const override;
+    Span<const BasicMessageInfo<ALLOC>> getMessages() const override;
+    Span<const BasicMethodInfo<ALLOC>> getMethods() const override;
 
-    virtual IBasicReflectablePtr<ALLOC> createInstance(const ALLOC& allocator) const override;
+    IBasicReflectablePtr<ALLOC> createInstance(const ALLOC& allocator) const override;
+    IBasicReflectablePtr<ALLOC> createInstance() const override;
 
 private:
     StringView m_schemaName;
@@ -326,7 +327,7 @@ protected:
             uint8_t bitSize);
 
 public:
-    virtual uint8_t getBitSize() const override;
+    uint8_t getBitSize() const override;
 
     /**
      * Gets the type information of bool schema type.
@@ -453,10 +454,16 @@ public:
     TemplatableTypeInfoBase(StringView schemaName, SchemaType schemaType, CppType cppType,
             StringView templateName, Span<const BasicTemplateArgumentInfo<ALLOC>> templateArguments);
 
-    virtual ~TemplatableTypeInfoBase() override = 0;
+    ~TemplatableTypeInfoBase() override = 0;
 
-    virtual StringView getTemplateName() const override;
-    virtual Span<const BasicTemplateArgumentInfo<ALLOC>> getTemplateArguments() const override;
+    TemplatableTypeInfoBase(const TemplatableTypeInfoBase&) = default;
+    TemplatableTypeInfoBase& operator=(const TemplatableTypeInfoBase&) = default;
+
+    TemplatableTypeInfoBase(TemplatableTypeInfoBase&&) = default;
+    TemplatableTypeInfoBase& operator=(TemplatableTypeInfoBase&&) = default;
+
+    StringView getTemplateName() const override;
+    Span<const BasicTemplateArgumentInfo<ALLOC>> getTemplateArguments() const override;
 
 private:
     StringView m_templateName;
@@ -491,13 +498,19 @@ public:
             Span<const BasicFieldInfo<ALLOC>> fields, Span<const BasicParameterInfo<ALLOC>> parameters,
             Span<const BasicFunctionInfo<ALLOC>> functions);
 
-    virtual ~CompoundTypeInfoBase() override = 0;
+    ~CompoundTypeInfoBase() override = 0;
 
-    virtual Span<const BasicFieldInfo<ALLOC>> getFields() const override;
-    virtual Span<const BasicParameterInfo<ALLOC>> getParameters() const override;
-    virtual Span<const BasicFunctionInfo<ALLOC>> getFunctions() const override;
+    CompoundTypeInfoBase(const CompoundTypeInfoBase&) = default;
+    CompoundTypeInfoBase& operator=(const CompoundTypeInfoBase&) = default;
 
-    virtual IBasicReflectablePtr<ALLOC> createInstance(const ALLOC& allocator) const override;
+    CompoundTypeInfoBase(CompoundTypeInfoBase&&) = default;
+    CompoundTypeInfoBase& operator=(CompoundTypeInfoBase&&) = default;
+
+    Span<const BasicFieldInfo<ALLOC>> getFields() const override;
+    Span<const BasicParameterInfo<ALLOC>> getParameters() const override;
+    Span<const BasicFunctionInfo<ALLOC>> getFunctions() const override;
+
+    IBasicReflectablePtr<ALLOC> createInstance(const ALLOC& allocator) const override;
 
 private:
     CreateInstanceFunc m_createInstanceFunc;
@@ -583,8 +596,8 @@ public:
             Span<const BasicFunctionInfo<ALLOC>> functions, StringView selector,
             Span<const BasicCaseInfo<ALLOC>> cases);
 
-    virtual StringView getSelector() const override;
-    virtual Span<const BasicCaseInfo<ALLOC>> getCases() const override;
+    StringView getSelector() const override;
+    Span<const BasicCaseInfo<ALLOC>> getCases() const override;
 
 private:
     StringView m_selector;
@@ -610,8 +623,8 @@ public:
     TypeInfoWithUnderlyingTypeBase(StringView schemaName, SchemaType schemaType, CppType cppType,
             const IBasicTypeInfo<ALLOC>& underlyingType, Span<const StringView> underlyingTypeArguments);
 
-    virtual const IBasicTypeInfo<ALLOC>& getUnderlyingType() const override;
-    virtual Span<const StringView> getUnderlyingTypeArguments() const override;
+    const IBasicTypeInfo<ALLOC>& getUnderlyingType() const override;
+    Span<const StringView> getUnderlyingTypeArguments() const override;
 
 private:
     const IBasicTypeInfo<ALLOC>& m_underlyingType;
@@ -636,7 +649,7 @@ public:
     EnumTypeInfo(StringView schemaName, const IBasicTypeInfo<ALLOC>& underlyingType,
             Span<const StringView> underlyingTypeArguments, Span<const ItemInfo> enumItems);
 
-    virtual Span<const ItemInfo> getEnumItems() const override;
+    Span<const ItemInfo> getEnumItems() const override;
 
 private:
     Span<const ItemInfo> m_enumItems;
@@ -660,7 +673,7 @@ public:
     BitmaskTypeInfo(StringView schemaName, const IBasicTypeInfo<ALLOC>& underlyingType,
             Span<const StringView> underlyingTypeArguments, Span<const ItemInfo> bitmaskValues);
 
-    virtual Span<const ItemInfo> getBitmaskValues() const override;
+    Span<const ItemInfo> getBitmaskValues() const override;
 
 private:
     Span<const ItemInfo> m_bitmaskValues;
@@ -689,10 +702,10 @@ public:
             Span<const BasicColumnInfo<ALLOC>> columns, StringView sqlConstraint, StringView virtualTableUsing,
             bool isWithoutRowId);
 
-    virtual Span<const BasicColumnInfo<ALLOC>> getColumns() const override;
-    virtual StringView getSqlConstraint() const override;
-    virtual StringView getVirtualTableUsing() const override;
-    virtual bool isWithoutRowId() const override;
+    Span<const BasicColumnInfo<ALLOC>> getColumns() const override;
+    StringView getSqlConstraint() const override;
+    StringView getVirtualTableUsing() const override;
+    bool isWithoutRowId() const override;
 
 private:
     Span<const BasicColumnInfo<ALLOC>> m_columns;
@@ -716,7 +729,7 @@ public:
      */
     SqlDatabaseTypeInfo(StringView schemaName, Span<const BasicTableInfo<ALLOC>> tables);
 
-    virtual Span<const BasicTableInfo<ALLOC>> getTables() const override;
+    Span<const BasicTableInfo<ALLOC>> getTables() const override;
 
 private:
     Span<const BasicTableInfo<ALLOC>> m_tables;
@@ -737,7 +750,7 @@ public:
      */
     PubsubTypeInfo(StringView schemaName, Span<const BasicMessageInfo<ALLOC>> messages);
 
-    virtual Span<const BasicMessageInfo<ALLOC>> getMessages() const override;
+    Span<const BasicMessageInfo<ALLOC>> getMessages() const override;
 
 private:
     Span<const BasicMessageInfo<ALLOC>> m_messages;
@@ -758,7 +771,7 @@ public:
      */
     ServiceTypeInfo(StringView schemaName, Span<const BasicMethodInfo<ALLOC>> methods);
 
-    virtual Span<const BasicMethodInfo<ALLOC>> getMethods() const override;
+    Span<const BasicMethodInfo<ALLOC>> getMethods() const override;
 
 private:
     Span<const BasicMethodInfo<ALLOC>> m_methods;
@@ -784,6 +797,8 @@ public:
             m_typeInfoFunc(typeInfoFunc)
     {}
 
+    ~RecursiveTypeInfo() override = default;
+
     /**
      * Copying and moving is disallowed!
      * \{
@@ -797,37 +812,38 @@ public:
      * \}
      */
 
-    virtual StringView getSchemaName() const override;
-    virtual SchemaType getSchemaType() const override;
-    virtual CppType getCppType() const override;
-    virtual uint8_t getBitSize() const override;
+    StringView getSchemaName() const override;
+    SchemaType getSchemaType() const override;
+    CppType getCppType() const override;
+    uint8_t getBitSize() const override;
 
-    virtual Span<const BasicFieldInfo<ALLOC>> getFields() const override;
-    virtual Span<const BasicParameterInfo<ALLOC>> getParameters() const override;
-    virtual Span<const BasicFunctionInfo<ALLOC>> getFunctions() const override;
+    Span<const BasicFieldInfo<ALLOC>> getFields() const override;
+    Span<const BasicParameterInfo<ALLOC>> getParameters() const override;
+    Span<const BasicFunctionInfo<ALLOC>> getFunctions() const override;
 
-    virtual StringView getSelector() const override;
-    virtual Span<const BasicCaseInfo<ALLOC>> getCases() const override;
+    StringView getSelector() const override;
+    Span<const BasicCaseInfo<ALLOC>> getCases() const override;
 
-    virtual const IBasicTypeInfo<ALLOC>& getUnderlyingType() const override;
-    virtual Span<const StringView> getUnderlyingTypeArguments() const override;
-    virtual Span<const ItemInfo> getEnumItems() const override;
-    virtual Span<const ItemInfo> getBitmaskValues() const override;
+    const IBasicTypeInfo<ALLOC>& getUnderlyingType() const override;
+    Span<const StringView> getUnderlyingTypeArguments() const override;
+    Span<const ItemInfo> getEnumItems() const override;
+    Span<const ItemInfo> getBitmaskValues() const override;
 
-    virtual Span<const BasicColumnInfo<ALLOC>> getColumns() const override;
-    virtual StringView getSqlConstraint() const override;
-    virtual StringView getVirtualTableUsing() const override;
-    virtual bool isWithoutRowId() const override;
+    Span<const BasicColumnInfo<ALLOC>> getColumns() const override;
+    StringView getSqlConstraint() const override;
+    StringView getVirtualTableUsing() const override;
+    bool isWithoutRowId() const override;
 
-    virtual Span<const BasicTableInfo<ALLOC>> getTables() const override;
+    Span<const BasicTableInfo<ALLOC>> getTables() const override;
 
-    virtual StringView getTemplateName() const override;
-    virtual Span<const BasicTemplateArgumentInfo<ALLOC>> getTemplateArguments() const override;
+    StringView getTemplateName() const override;
+    Span<const BasicTemplateArgumentInfo<ALLOC>> getTemplateArguments() const override;
 
-    virtual Span<const BasicMessageInfo<ALLOC>> getMessages() const override;
-    virtual Span<const BasicMethodInfo<ALLOC>> getMethods() const override;
+    Span<const BasicMessageInfo<ALLOC>> getMessages() const override;
+    Span<const BasicMethodInfo<ALLOC>> getMethods() const override;
 
-    virtual IBasicReflectablePtr<ALLOC> createInstance(const ALLOC& allocator) const override;
+    IBasicReflectablePtr<ALLOC> createInstance(const ALLOC& allocator) const override;
+    IBasicReflectablePtr<ALLOC> createInstance() const override;
 
 private:
     TypeInfoFunc m_typeInfoFunc;
@@ -839,8 +855,7 @@ TypeInfoBase<ALLOC>::TypeInfoBase(StringView schemaName, SchemaType schemaType, 
 {}
 
 template <typename ALLOC>
-TypeInfoBase<ALLOC>::~TypeInfoBase()
-{}
+TypeInfoBase<ALLOC>::~TypeInfoBase() = default;
 
 template <typename ALLOC>
 StringView TypeInfoBase<ALLOC>::getSchemaName() const
@@ -978,6 +993,12 @@ template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> TypeInfoBase<ALLOC>::createInstance(const ALLOC&) const
 {
     throw CppRuntimeException("Type '") << getSchemaName() << "' is not a compound type!";
+}
+
+template <typename ALLOC>
+IBasicReflectablePtr<ALLOC> TypeInfoBase<ALLOC>::createInstance() const
+{
+    return createInstance(ALLOC());
 }
 
 template <typename ALLOC>
@@ -1542,8 +1563,7 @@ TemplatableTypeInfoBase<ALLOC>::TemplatableTypeInfoBase(StringView schemaName,
 {}
 
 template <typename ALLOC>
-TemplatableTypeInfoBase<ALLOC>::~TemplatableTypeInfoBase()
-{}
+TemplatableTypeInfoBase<ALLOC>::~TemplatableTypeInfoBase() = default;
 
 template <typename ALLOC>
 StringView TemplatableTypeInfoBase<ALLOC>::getTemplateName() const
@@ -1569,8 +1589,7 @@ CompoundTypeInfoBase<ALLOC>::CompoundTypeInfoBase(StringView schemaName, CreateI
 {}
 
 template <typename ALLOC>
-CompoundTypeInfoBase<ALLOC>::~CompoundTypeInfoBase()
-{}
+CompoundTypeInfoBase<ALLOC>::~CompoundTypeInfoBase() = default;
 
 template <typename ALLOC>
 Span<const BasicFieldInfo<ALLOC>> CompoundTypeInfoBase<ALLOC>::getFields() const
@@ -1896,6 +1915,12 @@ template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> RecursiveTypeInfo<ALLOC>::createInstance(const ALLOC& allocator) const
 {
     return m_typeInfoFunc().createInstance(allocator);
+}
+
+template <typename ALLOC>
+IBasicReflectablePtr<ALLOC> RecursiveTypeInfo<ALLOC>::createInstance() const
+{
+    return createInstance(ALLOC());
 }
 
 } // namespace zserio

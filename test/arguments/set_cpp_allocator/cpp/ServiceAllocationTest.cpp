@@ -28,10 +28,16 @@ public:
             greetingClient(localServiceClient, m_allocator)
     {}
 
-    ~ServiceAllocationTest()
+    ~ServiceAllocationTest() override
     {
         EXPECT_EQ(m_memoryResource.getNumDeallocations(), m_memoryResource.getNumAllocations());
     }
+
+    ServiceAllocationTest(const ServiceAllocationTest&) = delete;
+    ServiceAllocationTest& operator=(const ServiceAllocationTest&) = delete;
+
+    ServiceAllocationTest(ServiceAllocationTest&&) = delete;
+    ServiceAllocationTest& operator=(ServiceAllocationTest&&) = delete;
 
     const allocator_type& getAllocator()
     {
@@ -50,7 +56,7 @@ protected:
         explicit GreetingServiceImpl(const allocator_type& allocator) : GreetingService::Service(allocator)
         {}
 
-        virtual Greeting sendGreetingImpl(const Name& name, void* context) override
+        Greeting sendGreetingImpl(const Name& name, void* context) override
         {
             if (context != nullptr)
                 static_cast<CountingContext*>(context)->greetingCount++;

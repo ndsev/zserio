@@ -41,7 +41,7 @@ TEST_F(JsonDecoderTest, decodeNull)
     checkDecoderSuccess("null{}", 4, nullptr);
     checkDecoderSuccess("nullix", 4, nullptr);
 
-    checkDecoderFailure("nvalid", 4);
+    checkDecoderFailure("nvalid", 2);
     checkDecoderFailure("nul", 3);
 }
 
@@ -59,7 +59,7 @@ TEST_F(JsonDecoderTest, decodeFalse)
     checkDecoderSuccess("false", 5, false);
     checkDecoderSuccess("false {}", 5, false);
 
-    checkDecoderFailure("ffalse", 5);
+    checkDecoderFailure("ffalse", 2);
     checkDecoderFailure("fa", 2);
 }
 
@@ -101,7 +101,7 @@ TEST_F(JsonDecoderTest, decodePositiveInfinity)
         ASSERT_LT(0.0, decoderResult.value.get<double>());
     }
 
-    checkDecoderFailure("Infiniinfiny", 8);
+    checkDecoderFailure("Infiniinfiny", 7);
     checkDecoderFailure("Inf", 3);
 }
 
@@ -123,7 +123,7 @@ TEST_F(JsonDecoderTest, decodeNegativeInfinity)
         ASSERT_GT(0.0, decoderResult.value.get<double>());
     }
 
-    checkDecoderFailure("-Infinvalid", 9);
+    checkDecoderFailure("-Infinvalid", 7);
     checkDecoderFailure("-Infin", 6);
     checkDecoderFailure("-Infix", 6);
 }

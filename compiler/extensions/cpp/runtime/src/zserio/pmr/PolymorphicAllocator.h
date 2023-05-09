@@ -2,6 +2,10 @@
 #define ZSERIO_PMR_POLYMORPHIC_ALLOCATOR_H_INC
 
 #include <cstddef>
+#include <limits>
+#include <utility>
+#include <type_traits>
+
 #include "zserio/pmr/MemoryResource.h"
 #include "zserio/Types.h"
 
@@ -199,7 +203,7 @@ public:
     template<typename U>
     struct rebind
     {
-        typedef PolymorphicAllocator<U> other;
+        using other = PolymorphicAllocator<U>;
     };
 };
 
@@ -232,7 +236,7 @@ public:
     template<typename U>
     struct rebind
     {
-        typedef PropagatingPolymorphicAllocator<U> other;
+        using other = PropagatingPolymorphicAllocator<U>;
     };
 };
 

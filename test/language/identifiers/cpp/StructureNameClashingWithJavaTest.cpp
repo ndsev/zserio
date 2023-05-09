@@ -57,12 +57,12 @@ TEST_F(StructureNameClashingWithJavaTest, emptyConstructor)
 TEST_F(StructureNameClashingWithJavaTest, bitSizeOf)
 {
     StructureNameClashingWithJava structureNameClashingWithJava{
-        Byte{int8_t(0)},
-        Short{int16_t(0)},
-        Integer{int32_t(0)},
-        Long{int64_t(0)},
-        BigInteger{uint64_t(0)},
-        Float{0.0f},
+        Byte{static_cast<int8_t>(0)},
+        Short{static_cast<int16_t>(0)},
+        Integer{static_cast<int32_t>(0)},
+        Long{static_cast<int64_t>(0)},
+        BigInteger{static_cast<uint64_t>(0)},
+        Float{0.0F},
         Double{0.0},
         String{""}
     };

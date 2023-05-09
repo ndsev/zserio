@@ -6,7 +6,7 @@
 # This CMake file is designed to be included directly without any further dependencies.
 #
 
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.6.0)
 
 project(ZserioCppRuntimeTests)
 
@@ -14,6 +14,7 @@ enable_testing()
 
 set(CPPCHECK_HOME "" CACHE PATH "Home directory of cppcheck tool. If empty, cppcheck tool is not called.")
 set(SANITIZERS_ENABLED OFF CACHE BOOL "Whether the compiler sanitizers are enabled.")
+set(CLANG_TIDY_BIN "" CACHE STRING "Name of clang-tidy binary. If empty, clang-tidy tool is not called.")
 
 set(ZSERIO_PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../../..")
 set(CMAKE_MODULE_PATH "${ZSERIO_PROJECT_ROOT}/cmake")
@@ -71,14 +72,31 @@ install(DIRECTORY src/ DESTINATION cpp
         PATTERN "*.h"
         PATTERN "*.cpp")
 
+# add clang-tidy custom target
+include(clang_tidy_utils)
+clang_tidy_add_custom_target(ZserioCppRuntime-clang-tidy
+                             DEPENDS ZserioCppRuntime ZserioCppRuntimeTest
+                             SOURCES_GLOBS
+                                "${CMAKE_CURRENT_SOURCE_DIR}/src/zserio/*.cpp"
+                                "${CMAKE_CURRENT_SOURCE_DIR}/test/zserio/*.cpp"
+                             BUILD_PATH "${CMAKE_BINARY_DIR}"
+                             CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/ClangTidyConfig.txt"
+                             HEADER_FILTER
+                                ".*(src|test)/zserio/.*"
+                             SUPPRESSIONS_FILE "${CMAKE_CURRENT_SOURCE_DIR}/ClangTidySuppressions.txt"
+                             WERROR_UNUSED_SUPPRESSIONS ON)
+
 # add cppcheck custom command
 include(cppcheck_utils)
 cppcheck_add_custom_command(TARGET ZserioCppRuntime
-                            SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src"
-                                       "${CMAKE_CURRENT_SOURCE_DIR}/src/*/*.h"
-                                       "${CMAKE_CURRENT_SOURCE_DIR}/src/*/*/*.h"
-                                       "${CMAKE_CURRENT_SOURCE_DIR}/test/zserio"
-                                       "${CMAKE_CURRENT_SOURCE_DIR}/test/zserio/*.h"
+                            SOURCE_DIR
+                                "${CMAKE_CURRENT_SOURCE_DIR}/src/zserio"
+                                "${CMAKE_CURRENT_SOURCE_DIR}/src/zserio/*.h"
+                                "${CMAKE_CURRENT_SOURCE_DIR}/src/zserio/*/*.h"
+                                "${CMAKE_CURRENT_SOURCE_DIR}/test/zserio"
+                                "${CMAKE_CURRENT_SOURCE_DIR}/test/zserio/*.h"
+                            INCLUDE_DIR
+                                "${CMAKE_CURRENT_SOURCE_DIR}/src"
                             OPTIONS --library=googletest.cfg -UZSERIO_STANDARD_TYPES_HEADER)
 
 # build and install doxygen documentation
@@ -90,3 +108,6 @@ add_custom_target(ZserioCppRuntime-doxygen ALL
     COMMENT "Generating C++ runtime HTML documentation"
 )
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/zserio_doc DESTINATION cpp)
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/coverage/clang DESTINATION cpp/zserio_doc/coverage OPTIONAL)
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/coverage/gcc DESTINATION cpp/zserio_doc/coverage OPTIONAL)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/clang-tidy-report.txt DESTINATION cpp/zserio_doc/clang-tidy OPTIONAL)

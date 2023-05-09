@@ -40,10 +40,10 @@ protected:
                 database.connection(), ""_sv, tableName, columnName, allocator_type());
     }
 
-    const char* m_dbFileName;
-    const char* m_withoutRowIdTableName;
-    const char* m_ordinaryRowIdTableName;
-    const char* m_rowIdColumnName;
+    const char* const m_dbFileName;
+    const char* const m_withoutRowIdTableName;
+    const char* const m_ordinaryRowIdTableName;
+    const char* const m_rowIdColumnName;
 };
 
 TEST_F(RowIdAndWithoutRowIdTablesTest, checkRowIdColumn)

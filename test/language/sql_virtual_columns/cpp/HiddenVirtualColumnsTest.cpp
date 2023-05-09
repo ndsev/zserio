@@ -34,10 +34,16 @@ public:
         m_database->createSchema();
     }
 
-    ~HiddenVirtualColumnsTest()
+    ~HiddenVirtualColumnsTest() override
     {
         delete m_database;
     }
+
+    HiddenVirtualColumnsTest(const HiddenVirtualColumnsTest&) = delete;
+    HiddenVirtualColumnsTest& operator=(const HiddenVirtualColumnsTest&) = delete;
+
+    HiddenVirtualColumnsTest(HiddenVirtualColumnsTest&&) = delete;
+    HiddenVirtualColumnsTest& operator=(HiddenVirtualColumnsTest&&) = delete;
 
 protected:
     static void fillHiddenVirtualColumnsTableRow(HiddenVirtualColumnsTable::Row& row, int64_t docId,
@@ -92,10 +98,7 @@ protected:
             return false;
 
         const unsigned char* readTableName = sqlite3_column_text(statement.get(), 0);
-        if (readTableName == nullptr || m_tableName.compare(reinterpret_cast<const char*>(readTableName)) != 0)
-            return false;
-
-        return true;
+        return (readTableName != nullptr && m_tableName == reinterpret_cast<const char*>(readTableName));
     }
 
     bool isHiddenVirtualColumnInTable(const string_type& columnName)
@@ -104,14 +107,14 @@ protected:
                 m_database->connection(), ""_sv, m_tableName, columnName, allocator_type());
     }
 
-    static const char DB_FILE_NAME[];
+    static const char* const DB_FILE_NAME;
     static const int32_t NUM_TABLE_ROWS;
 
     string_type m_tableName;
     HiddenVirtualColumnsDb* m_database;
 };
 
-const char HiddenVirtualColumnsTest::DB_FILE_NAME[] =
+const char* const HiddenVirtualColumnsTest::DB_FILE_NAME =
         "language/sql_virtual_columns/hidden_virtual_columns_test.sqlite";
 const int32_t HiddenVirtualColumnsTest::NUM_TABLE_ROWS = 5;
 

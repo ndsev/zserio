@@ -30,7 +30,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/optional_members_warning/optional_references_in_type_arguments/SubtypedColorTones.h
 )
 
-zserio_add_library(TARGET optional_members_warning_zs
+zserio_add_library(optional_members_warning_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE optional_members_warning.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -42,8 +42,11 @@ zserio_add_library(TARGET optional_members_warning_zs
     ZSERIO_LOG_FILENAME zserio_log.txt
 )
 
-add_test_sources(
-    cpp/OptionalMembersWarningTest.cpp
+add_custom_test(optional_members_warning
+    DEPENDS
+        optional_members_warning_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/OptionalMembersWarningTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(optional_members_warning_zs)

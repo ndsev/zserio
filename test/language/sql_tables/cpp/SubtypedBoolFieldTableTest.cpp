@@ -28,16 +28,22 @@ public:
         m_database->createSchema();
     }
 
-    ~SubtypedBoolFieldTableTest()
+    ~SubtypedBoolFieldTableTest() override
     {
         delete m_database;
     }
+
+    SubtypedBoolFieldTableTest(const SubtypedBoolFieldTableTest&) = delete;
+    SubtypedBoolFieldTableTest& operator=(const SubtypedBoolFieldTableTest&) = delete;
+
+    SubtypedBoolFieldTableTest(SubtypedBoolFieldTableTest&&) = delete;
+    SubtypedBoolFieldTableTest& operator=(SubtypedBoolFieldTableTest&&) = delete;
 
 protected:
     static void fillRow(SubtypedBoolFieldTable::Row& row, size_t i)
     {
         row.setId(static_cast<int32_t>(i));
-        row.setBoolField(i % 2 == 0 ? true : false);
+        row.setBoolField(i % 2 == 0);
     }
 
     static void fillRows(vector_type<SubtypedBoolFieldTable::Row>& rows)
@@ -65,13 +71,13 @@ protected:
             checkRow(rows1[i], rows2[i]);
     }
 
-    static const char DB_FILE_NAME[];
+    static const char* const DB_FILE_NAME;
     static const size_t NUM_ROWS;
 
     sql_tables::TestDb* m_database;
 };
 
-const char SubtypedBoolFieldTableTest::DB_FILE_NAME[] =
+const char* const SubtypedBoolFieldTableTest::DB_FILE_NAME =
         "language/sql_tables/subtyped_bool_field_table_test.sqlite";
 const size_t SubtypedBoolFieldTableTest::NUM_ROWS = 5;
 

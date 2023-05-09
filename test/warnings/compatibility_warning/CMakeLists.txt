@@ -15,7 +15,7 @@ set(ZSERIO_GENERATED_SOURCES_ROOT_WITHOUT
     ${ZSERIO_GEN_DIR_ROOT_WITHOUT}/compatibility_warning/subpackage/TestStruct.h
 )
 
-zserio_add_library(TARGET root_with_diff_compatibility_warning_zs
+zserio_add_library(root_with_diff_compatibility_warning_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE compatibility_warning/root_with_diff_compatibility_warning.zs
     OUT_DIR ${ZSERIO_GEN_DIR_ROOT_WITH}
@@ -28,7 +28,7 @@ zserio_add_library(TARGET root_with_diff_compatibility_warning_zs
     APPEND_TO_ZSERIO_LOG_FILE ON
 )
 
-zserio_add_library(TARGET root_without_compatibility_warning_zs
+zserio_add_library(root_without_compatibility_warning_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE compatibility_warning/root_without_compatibility_warning.zs
     OUT_DIR ${ZSERIO_GEN_DIR_ROOT_WITHOUT}
@@ -41,9 +41,13 @@ zserio_add_library(TARGET root_without_compatibility_warning_zs
     APPEND_TO_ZSERIO_LOG_FILE ON
 )
 
-add_test_dependencies(root_with_diff_compatibility_warning_zs)
-add_test_dependencies(root_without_compatibility_warning_zs)
-
-add_test_sources(
-    cpp/CompatibilityWarningTest.cpp
+add_custom_test(compatibility_warning
+    DEPENDS
+        root_with_diff_compatibility_warning_zs
+        root_without_compatibility_warning_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/CompatibilityWarningTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES_ROOT_WITH}
+        ${ZSERIO_GENERATED_SOURCES_ROOT_WITHOUT}
 )

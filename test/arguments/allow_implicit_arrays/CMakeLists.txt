@@ -26,7 +26,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/allow_implicit_arrays/table_with_implicit_array/TableWithImplicitArray.h
 )
 
-zserio_add_library(TARGET allow_implicit_arrays_zs
+zserio_add_library(allow_implicit_arrays_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE allow_implicit_arrays.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -38,14 +38,17 @@ zserio_add_library(TARGET allow_implicit_arrays_zs
 
 target_include_directories(allow_implicit_arrays_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 
-add_test_sources(
-    cpp/ImplicitArrayBit8Test.cpp
-    cpp/ImplicitArrayFloat16Test.cpp
-    cpp/ImplicitArrayInt24Test.cpp
-    cpp/ImplicitArrayUInt64Test.cpp
-    cpp/ImplicitArrayUInt8Test.cpp
-    cpp/LengthOfWithImplicitArrayTest.cpp
-    cpp/TableWithImplicitArrayTest.cpp
+add_custom_test(allow_implicit_arrays
+    DEPENDS
+        allow_implicit_arrays_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ImplicitArrayBit8Test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ImplicitArrayFloat16Test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ImplicitArrayInt24Test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ImplicitArrayUInt64Test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ImplicitArrayUInt8Test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/LengthOfWithImplicitArrayTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/TableWithImplicitArrayTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(allow_implicit_arrays_zs)

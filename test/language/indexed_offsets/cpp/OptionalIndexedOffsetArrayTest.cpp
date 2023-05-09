@@ -1,3 +1,5 @@
+#include <array>
+
 #include "gtest/gtest.h"
 
 #include "indexed_offsets/optional_indexed_offset_array/OptionalIndexedOffsetArray.h"
@@ -21,10 +23,10 @@ class OptionalIndexedOffsetArrayTest : public ::testing::Test
 public:
     OptionalIndexedOffsetArrayTest()
     {
-        const char* data[NUM_ELEMENTS] = {"Green", "Red", "Pink", "Blue", "Black"};
-        for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
-            m_data.push_back(data[i]);
+        const std::array<const char*, NUM_ELEMENTS> data = {"Green", "Red", "Pink", "Blue", "Black"};
+        m_data.assign(data.begin(), data.end());
     }
+
 protected:
     void writeOptionalIndexedOffsetArrayToByteArray(zserio::BitStreamWriter& writer, bool hasOptional,
             bool writeWrongOffsets)

@@ -1,0 +1,156 @@
+# necessary for implementation
+bugprone-signed-char-misuse:src/zserio/PackingContext.h:119
+bugprone-signed-char-misuse:src/zserio/PackingContext.h:136
+bugprone-signed-char-misuse:src/zserio/PackingContext.h:199
+bugprone-signed-char-misuse:src/zserio/PackingContext.h:236
+bugprone-signed-char-misuse:src/zserio/PackingContext.h:280
+bugprone-signed-char-misuse:src/zserio/PackingContext.h:295
+
+# intentional tests
+bugprone-use-after-move:test/zserio/AnyHolderTest.cpp:148
+bugprone-use-after-move:test/zserio/HeapOptionalHolderTest.cpp:169
+bugprone-use-after-move:test/zserio/HeapOptionalHolderTest.cpp:186
+bugprone-use-after-move:test/zserio/HeapOptionalHolderTest.cpp:248
+bugprone-use-after-move:test/zserio/HeapOptionalHolderTest.cpp:257
+
+# necessary for implementation
+cppcoreguidelines-avoid-c-arrays:src/zserio/Span.h:111
+cppcoreguidelines-avoid-c-arrays:src/zserio/Span.h:122
+cppcoreguidelines-avoid-c-arrays:src/zserio/Span.h:134
+cppcoreguidelines-avoid-c-arrays:src/zserio/Span.h:146
+cppcoreguidelines-avoid-c-arrays:src/zserio/Span.h:158
+cppcoreguidelines-avoid-c-arrays:src/zserio/Span.h:170
+cppcoreguidelines-avoid-c-arrays:src/zserio/StringView.h:894
+cppcoreguidelines-avoid-c-arrays:test/zserio/SpanTest.cpp:46
+
+# necessary for implementation
+cppcoreguidelines-avoid-non-const-global-variables:src/zserio/pmr/MemoryResource.cpp:18
+
+# necessary for implementation
+cppcoreguidelines-pro-type-union-access:src/zserio/AnyHolder.h
+
+# necessary for implementation
+cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/AnyHolder.h:60
+cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/CppRuntimeException.h:196
+cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/Span.h:112
+cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/StringView.h:897
+cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/ZserioTreeCreator.h:367
+cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/ZserioTreeCreator.h:369
+cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/ZserioTreeCreator.h:371
+
+# bounds are checked naturally by implementation
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/StringConvertUtil.h:41
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/StringConvertUtil.h:42
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/StringConvertUtil.h:52
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/StringConvertUtil.h:53
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamReader.cpp:249
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamReader.cpp:261
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:146
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:157
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:168
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:174
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:179
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:185
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:367
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:430
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/JsonEncoder.cpp:89
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/JsonEncoder.cpp:90
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/Enums.h:94
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/Enums.h:107
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/TypeInfo.h:1475
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/TypeInfo.h:1554
+
+# necessary for implementation
+cppcoreguidelines-pro-bounds-pointer-arithmetic:src/zserio/BitBuffer.h:262
+cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/BitBufferTest.cpp:266
+cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/BitBufferTest.cpp:280
+cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/SpanTest.cpp:35
+cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/SpanTest.cpp:39
+cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/StringViewTest.cpp:157
+cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/StringViewTest.cpp:210
+cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/StringViewTest.cpp:82
+cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/StringViewTest.cpp:93
+
+cppcoreguidelines-pro-type-member-init:src/zserio/BitStreamWriter.h:71 # false positive
+cppcoreguidelines-pro-type-member-init:src/zserio/OptionalHolder.h:529 # uninitialized aligned storage
+cppcoreguidelines-pro-type-member-init:src/zserio/PackingContext.h:61 # checked by implementation
+cppcoreguidelines-pro-type-member-init:src/zserio/PackingContext.h:68 # checked by implementation
+cppcoreguidelines-pro-type-member-init:test/zserio/DebugStringUtilTest.cpp:187 # parameterized type
+cppcoreguidelines-pro-type-member-init:test/zserio/DebugStringUtilTest.cpp:192 # parameterized type
+cppcoreguidelines-pro-type-member-init:test/zserio/DebugStringUtilTest.cpp:203 # parameterized type
+
+# necessary for implementation
+cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/OptionalHolder.h
+cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/AnyHolder.h
+cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FloatUtil.cpp:164
+cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FloatUtil.cpp:171
+cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FloatUtil.cpp:178
+cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FloatUtil.cpp:185
+cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FileUtil.cpp:17
+cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/FileUtil.cpp:42
+# sqlite3_column_text to const char*
+cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/ValidationSqliteUtil.h:100
+cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/ValidationSqliteUtil.h:101
+cppcoreguidelines-pro-type-reinterpret-cast:test/zserio/SqliteConnectionTest.cpp:319
+
+# necessary for implementation
+fuchsia-multiple-inheritance:src/zserio/Reflectable.h:1068
+
+# necessary for readability
+google-build-using-namespace:test/zserio/ReflectableTest.cpp:24
+
+# intentional implementation
+google-explicit-constructor:src/zserio/OptionalHolder.h:204
+google-explicit-constructor:src/zserio/OptionalHolder.h:214
+google-explicit-constructor:src/zserio/OptionalHolder.h:224
+google-explicit-constructor:src/zserio/OptionalHolder.h:534
+google-explicit-constructor:src/zserio/OptionalHolder.h:542
+google-explicit-constructor:src/zserio/OptionalHolder.h:553
+google-explicit-constructor:src/zserio/pmr/PolymorphicAllocator.h:47
+google-explicit-constructor:src/zserio/pmr/PolymorphicAllocator.h:72
+google-explicit-constructor:src/zserio/Reflectable.h:1924
+google-explicit-constructor:src/zserio/Span.h:111
+google-explicit-constructor:src/zserio/Span.h:123
+google-explicit-constructor:src/zserio/Span.h:135
+google-explicit-constructor:src/zserio/Span.h:147
+google-explicit-constructor:src/zserio/Span.h:159
+google-explicit-constructor:src/zserio/Span.h:171
+google-explicit-constructor:src/zserio/StringView.h:54
+google-explicit-constructor:src/zserio/StringView.h:74
+google-explicit-constructor:src/zserio/UniquePtr.h:57
+google-explicit-constructor:src/zserio/UniquePtr.h:68
+google-explicit-constructor:test/zserio/ArrayTest.cpp:63
+google-explicit-constructor:test/zserio/AllocatorPropagatingCopyTest.cpp:30
+google-explicit-constructor:test/zserio/BuiltInOperatorsTest.cpp:26
+google-explicit-constructor:test/zserio/HashCodeUtilTest.cpp:34
+google-explicit-constructor:test/zserio/TrackingAllocator.h:78
+
+# necessary for implementation
+misc-no-recursion:src/zserio/Array.h:884
+misc-no-recursion:src/zserio/JsonParser.h:153
+misc-no-recursion:src/zserio/JsonParser.h:154
+misc-no-recursion:src/zserio/JsonParser.h:155
+misc-no-recursion:src/zserio/JsonParser.h:156
+misc-no-recursion:src/zserio/JsonParser.h:157
+misc-no-recursion:src/zserio/JsonParser.h:158
+misc-no-recursion:src/zserio/ReflectableUtil.h:133
+misc-no-recursion:src/zserio/ReflectableUtil.h:137
+misc-no-recursion:src/zserio/ReflectableUtil.h:148
+misc-no-recursion:src/zserio/Reflectable.h:919
+misc-no-recursion:src/zserio/Reflectable.h:947
+misc-no-recursion:src/zserio/Walker.h:73
+misc-no-recursion:src/zserio/Walker.h:74
+misc-no-recursion:src/zserio/Walker.h:75
+misc-no-recursion:src/zserio/ZserioTreeCreator.h:26
+misc-no-recursion:src/zserio/ZserioTreeCreator.h:217
+misc-no-recursion:src/zserio/ZserioTreeCreator.h:333
+misc-no-recursion:src/zserio/ZserioTreeCreator.h:340
+
+modernize-use-equals-default:src/zserio/Span.h:79 # false-positive
+
+# intentional tests
+performance-move-const-arg:test/zserio/PolymorphicAllocatorTest.cpp:59
+performance-move-const-arg:test/zserio/PolymorphicAllocatorTest.cpp:79
+
+# just add two more lines making readability worse
+readability-braces-around-statements:

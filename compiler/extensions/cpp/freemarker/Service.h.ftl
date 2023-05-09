@@ -57,7 +57,7 @@ public:
 
     /** Default destructor. */
 </#if>
-    virtual ~Service() override = default;
+    ~Service() override = default;
 
 <#if withCodeComments>
     /** Disables copy constructor. */
@@ -90,9 +90,9 @@ public:
      * \throw ServiceException if the call fails.
      */
 </#if>
-    virtual ${types.serviceDataPtr.name} callMethod(
+    ${types.serviceDataPtr.name} callMethod(
             ::zserio::StringView methodName, ::zserio::Span<const uint8_t> requestData,
-            void* context = nullptr) override;
+            void* context) override;
 
 <#if withCodeComments>
     /**

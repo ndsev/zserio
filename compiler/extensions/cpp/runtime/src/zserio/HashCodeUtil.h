@@ -57,7 +57,8 @@ namespace zserio
     inline typename std::enable_if<std::is_integral<T>::value && (sizeof(T) > 4), uint32_t>::type
             calcHashCode(uint32_t seedValue, T value)
     {
-        return calcHashCodeFirstTerm(seedValue) + static_cast<uint32_t>(value ^ (value >> 32));
+        const auto unsignedValue = static_cast<typename std::make_unsigned<T>::type>(value);
+        return calcHashCodeFirstTerm(seedValue) + static_cast<uint32_t>(unsignedValue ^ (unsignedValue >> 32U));
     }
 
     /**

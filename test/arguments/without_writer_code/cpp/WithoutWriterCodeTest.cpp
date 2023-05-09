@@ -623,14 +623,14 @@ protected:
             if (hasItem)
             {
                 // Item
-                writer.writeBits(PARAMS[i], 16);
+                writer.writeBits(PARAMS0, 16);
                 // ExtraParamUnion - choiceTag CHOICE_value32
                 writer.writeVarSize(static_cast<uint32_t>(ExtraParamUnion::CHOICE_value32));
                 writer.writeBits(EXTRA_PARAM, 32);
             }
             else
             {
-                writer.writeBits(PARAMS[i], 16);
+                writer.writeBits(PARAMS1, 16);
             }
         }
     }
@@ -659,7 +659,7 @@ protected:
         const ItemChoice& itemChoice0 = data[0].getItemChoice();
         ASSERT_TRUE(itemChoice0.getHasItem());
         const Item& item0 = itemChoice0.getItem();
-        ASSERT_EQ(PARAMS[0], item0.getParam());
+        ASSERT_EQ(PARAMS0, item0.getParam());
         ASSERT_EQ(ItemType::WITH_EXTRA_PARAM, item0.getItemType());
         ASSERT_EQ(ExtraParamUnion::CHOICE_value32, item0.getExtraParam().choiceTag());
         ASSERT_EQ(EXTRA_PARAM, item0.getExtraParam().getValue32());
@@ -668,7 +668,7 @@ protected:
         ASSERT_FALSE(data[1].getHasItem());
         const ItemChoice& itemChoice1 = data[1].getItemChoice();
         ASSERT_FALSE(itemChoice1.getHasItem());
-        ASSERT_EQ(PARAMS[1], itemChoice1.getParam());
+        ASSERT_EQ(PARAMS1, itemChoice1.getParam());
 
         auto reflectable = tile.reflectable();
         ASSERT_TRUE(reflectable);
@@ -680,26 +680,28 @@ protected:
     }
 
     static const std::string BLOB_NAME;
-    static const char* PATH;
+    static const char* const PATH;
     static const int32_t TILE_ID_EUROPE;
     static const int32_t TILE_ID_AMERICA;
     static const uint8_t VERSION_AVAILABILITY;
     static const uint8_t VERSION;
     static const uint32_t NUM_ELEMENTS;
-    static const uint16_t PARAMS[2];
+    static const uint16_t PARAMS0;
+    static const uint16_t PARAMS1;
     static const uint32_t EXTRA_PARAM;
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 const std::string WithoutWriterCode::BLOB_NAME = "arguments/without_writer_code/without_writer_code.blob";
-const char* WithoutWriterCode::PATH = "arguments/without_writer_code/gen/without_writer_code/";
+const char* const WithoutWriterCode::PATH = "arguments/without_writer_code/gen/without_writer_code/";
 const int32_t WithoutWriterCode::TILE_ID_EUROPE = 99;
 const int32_t WithoutWriterCode::TILE_ID_AMERICA = 11;
 const uint8_t WithoutWriterCode::VERSION_AVAILABILITY = 0x01;
 const uint8_t WithoutWriterCode::VERSION = 8;
 const uint32_t WithoutWriterCode::NUM_ELEMENTS = 2;
-const uint16_t WithoutWriterCode::PARAMS[2] = { 13, 21 };
+const uint16_t WithoutWriterCode::PARAMS0 = 13;
+const uint16_t WithoutWriterCode::PARAMS1 = 21;
 const uint32_t WithoutWriterCode::EXTRA_PARAM = 42;
 
 TEST_F(WithoutWriterCode, checkItemTypeMethods)

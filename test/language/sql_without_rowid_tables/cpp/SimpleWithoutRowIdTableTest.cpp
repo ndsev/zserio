@@ -39,9 +39,9 @@ protected:
                 database.connection(), ""_sv, tableName, columnName, allocator_type());
     }
 
-    const char* m_dbFileName;
-    const char* m_tableName;
-    const char* m_rowIdColumnName;
+    const char* const m_dbFileName;
+    const char* const m_tableName;
+    const char* const m_rowIdColumnName;
 };
 
 TEST_F(SimpleWithoutRowIdTableTest, checkRowIdColumn)

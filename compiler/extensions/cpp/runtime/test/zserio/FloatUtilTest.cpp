@@ -1,3 +1,5 @@
+#include <array>
+
 #include "zserio/FloatUtil.h"
 
 #include "gtest/gtest.h"
@@ -10,8 +12,10 @@ class FloatUtilTest : public ::testing::Test
 protected:
     uint16_t createFloat16Value(uint16_t sign, uint16_t exponent, uint16_t significand)
     {
-        return static_cast<uint16_t>((sign << FLOAT16_SIGN_BIT_POSITION) |
-                (exponent << FLOAT16_EXPONENT_BIT_POSITION) | significand);
+        return static_cast<uint16_t>(
+                (static_cast<uint32_t>(sign) << FLOAT16_SIGN_BIT_POSITION) |
+                (static_cast<uint32_t>(exponent) << FLOAT16_EXPONENT_BIT_POSITION) |
+                significand);
     }
 
     uint32_t createFloat32Value(uint32_t sign, uint32_t exponent, uint32_t significand)
@@ -62,8 +66,8 @@ protected:
         double   expectedDouble;
     };
 
-    static const TestFloat32Element TEST_FLOAT32_DATA[];
-    static const TestFloat64Element TEST_FLOAT64_DATA[];
+    static const std::array<TestFloat32Element, 8> TEST_FLOAT32_DATA;
+    static const std::array<TestFloat64Element, 8> TEST_FLOAT64_DATA;
 
 private:
     static const uint16_t FLOAT16_SIGN_BIT_POSITION;
@@ -76,28 +80,28 @@ private:
     static const uint64_t FLOAT64_EXPONENT_BIT_POSITION;
 };
 
-const FloatUtilTest::TestFloat32Element FloatUtilTest::TEST_FLOAT32_DATA[] =
+const std::array<FloatUtilTest::TestFloat32Element, 8> FloatUtilTest::TEST_FLOAT32_DATA =
 {
-    { 0, 0,   UINT32_C(0),         0.0f },
-    { 1, 0,   UINT32_C(0),        -0.0f },
-    { 0, 127, UINT32_C(0),        +1.0f },
-    { 1, 127, UINT32_C(0),        -1.0f },
-    { 0, 128, UINT32_C(0x600000),  3.5f },       // 2^1 (1 + 2^-1 + 2^-2)
-    { 0, 126, UINT32_C(0x600000),  0.875f },     // 2^-1 (1 + 2^-1 + 2^-2)
-    { 0, 130, UINT32_C(0x1E0000),  9.875f },     // 2^3 (1 + 2^-3 + 2^-4 + 2^-5 + 2^-6)
-    { 0, 126, UINT32_C(0x1E0000),  0.6171875f }  // 2^-3 (1 + 2^-3 + 2^-4 + 2^-5 + 2^-6)
+    TestFloat32Element{0, 0,   UINT32_C(0),        0.0F},
+    TestFloat32Element{1, 0,   UINT32_C(0),       -0.0F},
+    TestFloat32Element{0, 127, UINT32_C(0),       +1.0F},
+    TestFloat32Element{1, 127, UINT32_C(0),       -1.0F},
+    TestFloat32Element{0, 128, UINT32_C(0x600000), 3.5F},      // 2^1 (1 + 2^-1 + 2^-2)
+    TestFloat32Element{0, 126, UINT32_C(0x600000), 0.875F},    // 2^-1 (1 + 2^-1 + 2^-2)
+    TestFloat32Element{0, 130, UINT32_C(0x1E0000), 9.875F},    // 2^3 (1 + 2^-3 + 2^-4 + 2^-5 + 2^-6)
+    TestFloat32Element{0, 126, UINT32_C(0x1E0000), 0.6171875F} // 2^-3 (1 + 2^-3 + 2^-4 + 2^-5 + 2^-6)
 };
 
-const FloatUtilTest::TestFloat64Element FloatUtilTest::TEST_FLOAT64_DATA[] =
+const std::array<FloatUtilTest::TestFloat64Element, 8> FloatUtilTest::TEST_FLOAT64_DATA =
 {
-    { 0, 0,    UINT64_C(0),                 0.0 },
-    { 1, 0,    UINT64_C(0),                -0.0 },
-    { 0, 1023, UINT64_C(0),                +1.0 },
-    { 1, 1023, UINT64_C(0),                -1.0 },
-    { 0, 1024, UINT64_C(0xC000000000000),  3.5 },       // 2^1 (1 + 2^-1 + 2^-2)
-    { 0, 1022, UINT64_C(0xC000000000000),  0.875 },     // 2^-1 (1 + 2^-1 + 2^-2)
-    { 0, 1026, UINT64_C(0x3C00000000000),  9.875 },     // 2^3 (1 + 2^-3 + 2^-4 + 2^-5 + 2^-6)
-    { 0, 1022, UINT64_C(0x3C00000000000),  0.6171875 }  // 2^-3 (1 + 2^-3 + 2^-4 + 2^-5 + 2^-6)
+    TestFloat64Element{0, 0,    UINT64_C(0),                0.0},
+    TestFloat64Element{1, 0,    UINT64_C(0),               -0.0},
+    TestFloat64Element{0, 1023, UINT64_C(0),               +1.0},
+    TestFloat64Element{1, 1023, UINT64_C(0),               -1.0},
+    TestFloat64Element{0, 1024, UINT64_C(0xC000000000000), 3.5},      // 2^1 (1 + 2^-1 + 2^-2)
+    TestFloat64Element{0, 1022, UINT64_C(0xC000000000000), 0.875},    // 2^-1 (1 + 2^-1 + 2^-2)
+    TestFloat64Element{0, 1026, UINT64_C(0x3C00000000000), 9.875},    // 2^3 (1 + 2^-3 + 2^-4 + 2^-5 + 2^-6)
+    TestFloat64Element{0, 1022, UINT64_C(0x3C00000000000), 0.6171875} // 2^-3 (1 + 2^-3 + 2^-4 + 2^-5 + 2^-6)
 };
 
 const uint16_t FloatUtilTest::FLOAT16_SIGN_BIT_POSITION = UINT16_C(15);
@@ -113,11 +117,11 @@ TEST_F(FloatUtilTest, convertUInt16ToFloat)
 {
     // plus zero
     const uint16_t float16ValuePlusZero = createFloat16Value(0, 0, 0); // +0.0
-    checkFloat16ToFloat32Conversion(float16ValuePlusZero, 0.0f);
+    checkFloat16ToFloat32Conversion(float16ValuePlusZero, 0.0F);
 
     // minus zero
     const uint16_t float16ValueMinusZero = createFloat16Value(1, 0, 0); // -0.0
-    checkFloat16ToFloat32Conversion(float16ValueMinusZero, -0.0f);
+    checkFloat16ToFloat32Conversion(float16ValueMinusZero, -0.0F);
 
     // plus infinity
     const uint16_t float16ValuePlusInfinity = createFloat16Value(0, 0x1F, 0); // +INF
@@ -141,14 +145,14 @@ TEST_F(FloatUtilTest, convertUInt16ToFloat)
 
     // normal numbers
     const uint16_t float16ValueOne = createFloat16Value(0, 15, 0); // 1.0
-    checkFloat16ToFloat32Conversion(float16ValueOne, 1.0f);
+    checkFloat16ToFloat32Conversion(float16ValueOne, 1.0F);
 
     const uint16_t float16ValueOnePlus = createFloat16Value(0, 15, 0x01);    // 1.0 + 2^-10
     const uint32_t float32ValueOnePlus = createFloat32Value(0, 127, 0x2000); // 1.0 + 2^-10
     checkFloat16ToFloat32Conversion(float16ValueOnePlus, float32ValueOnePlus);
 
     const uint16_t float16ValueMax = createFloat16Value(0, 30, 0x3FF); // 2^15 (1 + 2^-1 + ... + 2^-10)
-    checkFloat16ToFloat32Conversion(float16ValueMax, 65504.0f);
+    checkFloat16ToFloat32Conversion(float16ValueMax, 65504.0F);
 
     // subnormal numbers
     const uint16_t float16ValueMinSubnormal = createFloat16Value(0, 0, 1);   // 2^-14 (2^-10)
@@ -165,11 +169,11 @@ TEST_F(FloatUtilTest, convertFloatToUInt16)
 {
     // plus zero
     const uint16_t float16ValuePlusZero = createFloat16Value(0, 0, 0); // +0.0
-    checkFloat32ToFloat16Conversion(0.0f, float16ValuePlusZero);
+    checkFloat32ToFloat16Conversion(0.0F, float16ValuePlusZero);
 
     // minus zero
     const uint16_t float16ValueMinusZero = createFloat16Value(1, 0, 0); // -0.0
-    checkFloat32ToFloat16Conversion(-0.0f, float16ValueMinusZero);
+    checkFloat32ToFloat16Conversion(-0.0F, float16ValueMinusZero);
 
     // plus infinity
     const uint32_t float32ValuePlusInfinity = createFloat32Value(0, 0xFF, 0); // +INF
@@ -193,14 +197,14 @@ TEST_F(FloatUtilTest, convertFloatToUInt16)
 
     // normal numbers
     const uint16_t float16ValueOne = createFloat16Value(0, 15, 0); // 1.0
-    checkFloat32ToFloat16Conversion(1.0f, float16ValueOne);
+    checkFloat32ToFloat16Conversion(1.0F, float16ValueOne);
 
     const uint32_t float32ValueOnePlus = createFloat32Value(0, 127, 0x2000); // 1.0 + 2^-10
     const uint16_t float16ValueOnePlus = createFloat16Value(0, 15, 0x01);    // 1.0 + 2^-10
     checkFloat32ToFloat16Conversion(float32ValueOnePlus, float16ValueOnePlus);
 
     const uint16_t float16ValueMax = createFloat16Value(0, 30, 0x3FF); // 2^15 (1 + 2^-1 + ... + 2^-10)
-    checkFloat32ToFloat16Conversion(65504.0f, float16ValueMax);
+    checkFloat32ToFloat16Conversion(65504.0F, float16ValueMax);
 
     // normal numbers converted to zero
     const uint32_t float32ValueUnderflow = createFloat32Value(0, 102, 0); // 2^-25
@@ -236,9 +240,8 @@ TEST_F(FloatUtilTest, convertFloatToUInt16)
 
 TEST_F(FloatUtilTest, convertUInt32ToFloat)
 {
-    for (uint32_t i = 0; i < sizeof(TEST_FLOAT32_DATA) / sizeof(TEST_FLOAT32_DATA[0]); ++i)
+    for (TestFloat32Element testElement : TEST_FLOAT32_DATA)
     {
-        const TestFloat32Element& testElement = TEST_FLOAT32_DATA[i];
         const uint32_t float32Value = createFloat32Value(testElement.sign, testElement.exponent,
                 testElement.significand);
         const float convertedFloat = convertUInt32ToFloat(float32Value);
@@ -249,9 +252,8 @@ TEST_F(FloatUtilTest, convertUInt32ToFloat)
 
 TEST_F(FloatUtilTest, convertFloatToUInt32)
 {
-    for (uint32_t i = 0; i < sizeof(TEST_FLOAT32_DATA) / sizeof(TEST_FLOAT32_DATA[0]); ++i)
+    for (TestFloat32Element testElement : TEST_FLOAT32_DATA)
     {
-        const TestFloat32Element& testElement = TEST_FLOAT32_DATA[i];
         const uint32_t convertedFloatValue = convertFloatToUInt32(testElement.expectedFloat);
         const uint32_t expectedFloatValue = createFloat32Value(testElement.sign, testElement.exponent,
                 testElement.significand);
@@ -262,9 +264,8 @@ TEST_F(FloatUtilTest, convertFloatToUInt32)
 
 TEST_F(FloatUtilTest, convertUInt64ToDouble)
 {
-    for (uint32_t i = 0; i < sizeof(TEST_FLOAT64_DATA) / sizeof(TEST_FLOAT64_DATA[0]); ++i)
+    for (TestFloat64Element testElement : TEST_FLOAT64_DATA)
     {
-        const TestFloat64Element& testElement = TEST_FLOAT64_DATA[i];
         const uint64_t float64Value = createFloat64Value(testElement.sign, testElement.exponent,
                 testElement.significand);
         const double convertedDouble = convertUInt64ToDouble(float64Value);
@@ -275,9 +276,8 @@ TEST_F(FloatUtilTest, convertUInt64ToDouble)
 
 TEST_F(FloatUtilTest, convertDoubleToUInt64)
 {
-    for (uint32_t i = 0; i < sizeof(TEST_FLOAT64_DATA) / sizeof(TEST_FLOAT64_DATA[0]); ++i)
+    for (TestFloat64Element testElement : TEST_FLOAT64_DATA)
     {
-        const TestFloat64Element& testElement = TEST_FLOAT64_DATA[i];
         const uint64_t convertedDoubleValue = convertDoubleToUInt64(testElement.expectedDouble);
         const uint64_t expectedDoubleValue = createFloat64Value(testElement.sign, testElement.exponent,
                 testElement.significand);

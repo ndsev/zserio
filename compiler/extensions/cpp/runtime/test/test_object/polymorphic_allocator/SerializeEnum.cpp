@@ -51,42 +51,42 @@ template <>
                 m_value(value)
         {}
 
-        virtual size_t bitSizeOf(size_t) const override
+        size_t bitSizeOf(size_t) const override
         {
             return ::zserio::bitSizeOf(m_value);
         }
 
-        virtual void write(::zserio::BitStreamWriter& writer) const override
+        void write(::zserio::BitStreamWriter& writer) const override
         {
             ::zserio::write(writer, m_value);
         }
 
-        virtual ::zserio::pmr::AnyHolder getAnyValue(const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator) const override
+        ::zserio::pmr::AnyHolder getAnyValue(const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator) const override
         {
             return ::zserio::pmr::AnyHolder(m_value, allocator);
         }
 
-        virtual ::zserio::pmr::AnyHolder getAnyValue(const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator) override
+        ::zserio::pmr::AnyHolder getAnyValue(const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator) override
         {
             return ::zserio::pmr::AnyHolder(m_value, allocator);
         }
 
-        virtual uint8_t getUInt8() const override
+        uint8_t getUInt8() const override
         {
             return static_cast<typename ::std::underlying_type<::test_object::polymorphic_allocator::SerializeEnum>::type>(m_value);
         }
 
-        virtual uint64_t toUInt() const override
+        uint64_t toUInt() const override
         {
             return static_cast<typename ::std::underlying_type<::test_object::polymorphic_allocator::SerializeEnum>::type>(m_value);
         }
 
-        virtual double toDouble() const override
+        double toDouble() const override
         {
             return static_cast<double>(toUInt());
         }
 
-        virtual ::zserio::pmr::string toString(
+        ::zserio::pmr::string toString(
                 const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator = ::zserio::pmr::PropagatingPolymorphicAllocator<>()) const override
         {
             return ::zserio::pmr::string(::zserio::enumToString(m_value), allocator);
@@ -125,7 +125,7 @@ template <>
     case UINT8_C(0):
     case UINT8_C(1):
     case UINT8_C(2):
-        return ::test_object::polymorphic_allocator::SerializeEnum(rawValue);
+        return static_cast<::test_object::polymorphic_allocator::SerializeEnum>(rawValue);
     default:
         throw ::zserio::CppRuntimeException("Unknown value for enumeration SerializeEnum: ") << rawValue << "!";
     }

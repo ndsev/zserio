@@ -18,7 +18,6 @@ endfunction()
 #    TARGET "name" - Specifies the target name. Default is "coverage".
 #    EXCLUDE_SOURCES "regex" - Skip source files with file paths that match the given regular expression.
 function(create_coverage_target)
-    include(CMakeParseArguments)
     cmake_parse_arguments(cov "" "INCOMPLETE_COVERAGE_FAIL;TARGET;EXCLUDE_SOURCES" "" ${ARGN})
 
     if (cov_TARGET)
@@ -27,7 +26,7 @@ function(create_coverage_target)
         set(cov_tgt_name "coverage")
     endif ()
 
-    set(cov_html_dir "${PROJECT_BINARY_DIR}/zserio_doc/${cov_tgt_name}")
+    set(cov_html_dir "${PROJECT_BINARY_DIR}/${cov_tgt_name}")
 
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
         set(cov_fail)

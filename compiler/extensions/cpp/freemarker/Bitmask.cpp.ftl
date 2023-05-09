@@ -72,12 +72,12 @@ ${types.reflectablePtr.name} ${name}::reflectable(const ${types.allocator.defaul
                 m_bitmask(bitmask)
         {}
 
-        virtual size_t bitSizeOf(size_t bitPosition) const override
+        size_t bitSizeOf(size_t bitPosition) const override
         {
             return m_bitmask.bitSizeOf(bitPosition);
         }
 
-        virtual void write(::zserio::BitStreamWriter&<#if withWriterCode> writer</#if>) const override
+        void write(::zserio::BitStreamWriter&<#if withWriterCode> writer</#if>) const override
         {
             <#if withWriterCode>
             m_bitmask.write(writer);
@@ -87,34 +87,33 @@ ${types.reflectablePtr.name} ${name}::reflectable(const ${types.allocator.defaul
             </#if>
         }
 
-        virtual ${types.anyHolder.name} getAnyValue(const ${types.allocator.default}& allocator) const override
+        ${types.anyHolder.name} getAnyValue(const ${types.allocator.default}& allocator) const override
         {
             return ${types.anyHolder.name}(m_bitmask, allocator);
         }
 
-        virtual ${types.anyHolder.name} getAnyValue(const ${types.allocator.default}& allocator) override
+        ${types.anyHolder.name} getAnyValue(const ${types.allocator.default}& allocator) override
         {
             return ${types.anyHolder.name}(m_bitmask, allocator);
         }
 
         <#-- bitmask is always unsigned -->
-        virtual ${underlyingTypeInfo.typeFullName} getUInt${underlyingTypeInfo.typeNumBits}() const override
+        ${underlyingTypeInfo.typeFullName} getUInt${underlyingTypeInfo.typeNumBits}() const override
         {
             return m_bitmask.getValue();
         }
 
-        virtual uint64_t toUInt() const override
+        uint64_t toUInt() const override
         {
             return m_bitmask.getValue();
         }
 
-        virtual double toDouble() const override
+        double toDouble() const override
         {
             return static_cast<double>(toUInt());
         }
 
-        virtual ${types.string.name} toString(
-                const ${types.allocator.default}& allocator = ${types.allocator.default}()) const override
+        ${types.string.name} toString(const ${types.allocator.default}& allocator) const override
         {
             return m_bitmask.toString(allocator);
         }

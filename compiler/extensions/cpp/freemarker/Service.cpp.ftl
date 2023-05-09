@@ -97,12 +97,12 @@ ${types.serviceDataPtr.name} Service::${method.name}Method(
         </#if>
         {}
 
-        virtual ${types.reflectableConstPtr.name} getReflectable() const override
+        ${types.reflectableConstPtr.name} getReflectable() const override
         {
             return m_serviceData.getReflectable();
         }
 
-        virtual ::zserio::Span<const uint8_t> getData() const override
+        ::zserio::Span<const uint8_t> getData() const override
         {
             return m_serviceData.getData();
         }

@@ -1,5 +1,6 @@
 #include <iomanip>
 #include <cmath>
+#include <array>
 
 #include "zserio/JsonEncoder.h"
 
@@ -30,7 +31,7 @@ void JsonEncoder::encodeFloatingPoint(std::ostream& os, double value)
     }
     else
     {
-        double intPart;
+        double intPart = 1e16;
         const double fractPart = std::modf(value, &intPart);
         // trying to get closer to behavior of Python
         if (fractPart == 0.0 && intPart > -1e16 && intPart < 1e16)
@@ -46,7 +47,7 @@ void JsonEncoder::encodeFloatingPoint(std::ostream& os, double value)
 
 void JsonEncoder::encodeString(std::ostream& os, StringView value)
 {
-    static const char* HEX = "0123456789abcdef";
+    static const std::array<char, 17> HEX = {"0123456789abcdef"};
 
     os.put('"');
     for (char ch : value)
@@ -85,8 +86,8 @@ void JsonEncoder::encodeString(std::ostream& os, StringView value)
                 os.put('u');
                 os.put('0');
                 os.put('0');
-                os.put(HEX[(ch >> 4) & 0xf]);
-                os.put(HEX[ch & 0xf]);
+                os.put(HEX[static_cast<uint8_t>(static_cast<uint8_t>(ch) >> 4U) & 0xFU]);
+                os.put(HEX[static_cast<uint8_t>(ch) & 0xFU]);
             }
             else
             {

@@ -57,7 +57,7 @@ protected:
     std::unique_ptr<BlobTableValidationDb> m_database;
 
 private:
-    static const char DB_FILE_NAME[];
+    static const char* const DB_FILE_NAME;
 
     static constexpr uint32_t ROW_ID = 0;
     static constexpr bool HAS_NAN = true;
@@ -66,7 +66,7 @@ private:
     static constexpr int8_t END_VALUE = 0x23;
 };
 
-const char BlobTableValidationTest::DB_FILE_NAME[] =
+const char* const BlobTableValidationTest::DB_FILE_NAME =
         "arguments/with_validation_code/blob_table_validation_test.sqlite";
 
 constexpr uint32_t BlobTableValidationTest::ROW_ID;

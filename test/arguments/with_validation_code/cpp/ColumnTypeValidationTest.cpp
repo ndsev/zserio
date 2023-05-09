@@ -35,16 +35,16 @@ protected:
         {
             auto& row = rows.at(i - 1);
             row.setId(static_cast<int8_t>(i));
-            row.setInt8Value(-1 * static_cast<int8_t>(i));
-            row.setInt16Value(-2 * static_cast<int8_t>(i));
+            row.setInt8Value(static_cast<int8_t>(-1 * static_cast<int8_t>(i)));
+            row.setInt16Value(static_cast<int16_t>(-2 * static_cast<int8_t>(i)));
             row.setInt32Value(-3 * static_cast<int8_t>(i));
             row.setInt64Value(-4 * static_cast<int8_t>(i));
             row.setUint8Value(1 * static_cast<uint8_t>(i));
             row.setUint16Value(2 * static_cast<uint16_t>(i));
             row.setUint32Value(3 * static_cast<uint32_t>(i));
             row.setUint64Value(4 * i);
-            row.setFloat16Value(1.1f * static_cast<float>(i));
-            row.setFloat32Value(1.2f * static_cast<float>(i));
+            row.setFloat16Value(1.1F * static_cast<float>(i));
+            row.setFloat32Value(1.2F * static_cast<float>(i));
             row.setFloat64Value(1.3 * static_cast<double>(i));
             row.setStringValue("stringValue" + zserio::toString(i, m_database->get_allocator()));
         }
@@ -63,7 +63,7 @@ protected:
         m_database->connection().executeUpdate(sql);
     }
 
-    static const char DB_FILE_NAME[];
+    static const char* const DB_FILE_NAME;
 
     static constexpr size_t ENTRY_COUNT = 2;
 
@@ -72,7 +72,7 @@ protected:
 private:
 };
 
-const char ColumnTypeValidationTest::DB_FILE_NAME[] =
+const char* const ColumnTypeValidationTest::DB_FILE_NAME =
         "arguments/with_validation_code/column_type_validation_test.sqlite";
 constexpr size_t ColumnTypeValidationTest::ENTRY_COUNT;
 

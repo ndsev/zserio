@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <cstring>
+#include <algorithm>
 
 #include "zserio/BitBuffer.h"
 #include "zserio/CppRuntimeException.h"
@@ -28,7 +29,7 @@ public:
     };
 
     /** Type for bit position. */
-    typedef size_t BitPosType;
+    using BitPosType = size_t;
 
     /**
      * Constructor from externally allocated byte buffer.
@@ -54,20 +55,28 @@ public:
     explicit BitStreamWriter(Span<uint8_t> buffer);
 
     /**
+     * Constructor from externally allocated byte buffer with exact bit size.
+     *
+     * \param buffer External buffer to create from as a Span.
+     * \param bufferBitSize Size of the buffer in bits.
+     */
+    explicit BitStreamWriter(Span<uint8_t> buffer, size_t bufferBitSize);
+
+    /**
      * Constructor from externally allocated bit buffer.
      *
      * \param bitBuffer External bit buffer to create from.
      */
     template <typename ALLOC>
     explicit BitStreamWriter(BasicBitBuffer<ALLOC>& bitBuffer) :
-            BitStreamWriter(bitBuffer.getBuffer(), bitBuffer.getBitSize(), BitsTag())
+            BitStreamWriter(bitBuffer.getData(), bitBuffer.getBitSize())
     {
     }
 
     /**
      * Destructor.
      */
-    ~BitStreamWriter();
+    ~BitStreamWriter() = default;
 
     /**
      * Copying and moving is disallowed!
@@ -230,31 +239,30 @@ public:
         const size_t bitSize = bitBuffer.getBitSize();
         writeVarSize(convertSizeToUInt32(bitSize));
 
-        const uint8_t* buffer = bitBuffer.getBuffer();
+        Span<const uint8_t> buffer = bitBuffer.getData();
         size_t numBytesToWrite = bitSize / 8;
         const uint8_t numRestBits = static_cast<uint8_t>(bitSize - numBytesToWrite * 8);
         const BitPosType beginBitPosition = getBitPosition();
-        if ((beginBitPosition & 0x07) != 0)
+        const Span<const uint8_t>::iterator itEnd = buffer.begin() + numBytesToWrite;
+        if ((beginBitPosition & 0x07U) != 0)
         {
             // we are not aligned to byte
-            while (numBytesToWrite > 0)
-            {
-                writeUnsignedBits(*buffer, 8);
-                buffer++;
-                numBytesToWrite--;
-            }
+            for (Span<const uint8_t>::iterator it = buffer.begin(); it != itEnd; ++it)
+                writeUnsignedBits(*it, 8);
         }
         else
         {
             // we are aligned to byte
             setBitPosition(beginBitPosition + numBytesToWrite * 8);
             if (hasWriteBuffer())
-                memcpy(m_buffer + beginBitPosition / 8, buffer, numBytesToWrite);
-            buffer += numBytesToWrite;
+            {
+                std::copy(buffer.begin(), buffer.begin() + numBytesToWrite,
+                        m_buffer.data() + beginBitPosition / 8);
+            }
         }
 
         if (numRestBits > 0)
-            writeUnsignedBits(*buffer >> (8 - numRestBits), numRestBits);
+            writeUnsignedBits(*itEnd >> (8U - numRestBits), numRestBits);
     }
 
     /**
@@ -267,9 +275,9 @@ public:
     /**
      * Sets current bit position. Use with caution!
      *
-     * \param pos New bit position.
+     * \param position New bit position.
      */
-    void setBitPosition(BitPosType pos);
+    void setBitPosition(BitPosType position);
 
     /**
      * Moves current bit position to perform the requested bit alignment.
@@ -283,7 +291,7 @@ public:
      *
      * \return True when a buffer is assigned. False otherwise.
      */
-    bool hasWriteBuffer() const { return m_buffer != nullptr; }
+    bool hasWriteBuffer() const { return m_buffer.data() != nullptr; }
 
     /**
      * Gets the write buffer.
@@ -291,6 +299,13 @@ public:
      * \return Pointer to the beginning of write buffer.
      */
     const uint8_t* getWriteBuffer() const;
+
+    /**
+     * Gets the write buffer as span.
+     *
+     * \return Span which represents the write buffer.
+     */
+    Span<const uint8_t> getBuffer() const;
 
     /**
      * Gets size of the underlying buffer in bits.
@@ -309,7 +324,7 @@ private:
     void checkCapacity(size_t bitSize) const;
     void throwInsufficientCapacityException() const;
 
-    uint8_t* m_buffer;
+    Span<uint8_t> m_buffer;
     size_t m_bitIndex;
     size_t m_bufferBitSize;
 };

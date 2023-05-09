@@ -1,0 +1,10 @@
+cppcoreguidelines-pro-type-member-init:gen/company/appl/SimpleChoice.cpp
+
+misc-redundant-expression:gen/company/appl/SimpleStructure.cpp
+
+performance-move-const-arg:gen/company/appl/SimpleStructure.cpp
+
+readability-braces-around-statements
+
+readability-make-member-function-const:gen/company/appl/SimpleChoice.cpp
+readability-make-member-function-const:gen/company/appl/SimpleStructure.cpp

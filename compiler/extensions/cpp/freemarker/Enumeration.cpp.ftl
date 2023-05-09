@@ -60,12 +60,12 @@ ${types.reflectablePtr.name} enumReflectable(${fullName} value, const ${types.al
                 m_value(value)
         {}
 
-        virtual size_t bitSizeOf(size_t) const override
+        size_t bitSizeOf(size_t) const override
         {
             return ::zserio::bitSizeOf(m_value);
         }
 
-        virtual void write(::zserio::BitStreamWriter&<#if withWriterCode> writer</#if>) const override
+        void write(::zserio::BitStreamWriter&<#if withWriterCode> writer</#if>) const override
         {
             <#if withWriterCode>
             ::zserio::write(writer, m_value);
@@ -75,34 +75,33 @@ ${types.reflectablePtr.name} enumReflectable(${fullName} value, const ${types.al
             </#if>
         }
 
-        virtual ${types.anyHolder.name} getAnyValue(const ${types.allocator.default}& allocator) const override
+        ${types.anyHolder.name} getAnyValue(const ${types.allocator.default}& allocator) const override
         {
             return ${types.anyHolder.name}(m_value, allocator);
         }
 
-        virtual ${types.anyHolder.name} getAnyValue(const ${types.allocator.default}& allocator) override
+        ${types.anyHolder.name} getAnyValue(const ${types.allocator.default}& allocator) override
         {
             return ${types.anyHolder.name}(m_value, allocator);
         }
 
-        virtual ${underlyingTypeInfo.typeFullName} get<#rt>
+        ${underlyingTypeInfo.typeFullName} get<#rt>
                 <#lt><#if !underlyingTypeInfo.isSigned>U</#if>Int${underlyingTypeInfo.typeNumBits}() const override
         {
             return static_cast<typename ::std::underlying_type<${fullName}>::type>(m_value);
         }
 
-        virtual <#if underlyingTypeInfo.isSigned>int64_t toInt()<#else>uint64_t toUInt()</#if> const override
+        <#if underlyingTypeInfo.isSigned>int64_t toInt()<#else>uint64_t toUInt()</#if> const override
         {
             return static_cast<typename ::std::underlying_type<${fullName}>::type>(m_value);
         }
 
-        virtual double toDouble() const override
+        double toDouble() const override
         {
             return static_cast<double>(<#if underlyingTypeInfo.isSigned>toInt()<#else>toUInt()</#if>);
         }
 
-        virtual ${types.string.name} toString(
-                const ${types.allocator.default}& allocator = ${types.allocator.default}()) const override
+        ${types.string.name} toString(const ${types.allocator.default}& allocator) const override
         {
             return ${types.string.name}(::zserio::enumToString(m_value), allocator);
         }
@@ -140,7 +139,7 @@ ${fullName} valueToEnum(
 <#list items as item>
     case ${item.value}:
 </#list>
-        return ${fullName}(rawValue);
+        return static_cast<${fullName}>(rawValue);
     default:
         throw ::zserio::CppRuntimeException("Unknown value for enumeration ${name}: ") << rawValue << "!";
     }

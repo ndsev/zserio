@@ -13,7 +13,7 @@
 #     IGNORE_ERRORS Whether to ignore errors.
 #     LOG_FILENAME Name of file where to store the zserio error log.
 #     APPEND_TO_LOG_FILE Whether to append errors to the zserio error log.
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.6.0)
 
 separate_arguments(OPTIONS)
 separate_arguments(EXTRA_OPTIONS)

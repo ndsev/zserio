@@ -65,7 +65,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/constants/VARUINT_MIN_CONSTANT.h
 )
 
-zserio_add_library(TARGET constants_zs
+zserio_add_library(constants_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE constants.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -75,8 +75,11 @@ zserio_add_library(TARGET constants_zs
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
-add_test_sources(
-    cpp/ConstantsTest.cpp
+add_custom_test(constants
+    DEPENDS
+        constants_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ConstantsTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(constants_zs)

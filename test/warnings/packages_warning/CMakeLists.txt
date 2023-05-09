@@ -12,7 +12,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/packages_warning/single_type_already_imported_warning/TopDatabase.h
 )
 
-zserio_add_library(TARGET packages_warning_zs
+zserio_add_library(packages_warning_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE packages_warning.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -26,8 +26,11 @@ zserio_add_library(TARGET packages_warning_zs
 
 target_include_directories(packages_warning_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 
-add_test_sources(
-    cpp/PackagesWarningTest.cpp
+add_custom_test(packages_warning
+    DEPENDS
+        packages_warning_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackagesWarningTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(packages_warning_zs)

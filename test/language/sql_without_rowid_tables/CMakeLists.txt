@@ -13,7 +13,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/sql_without_rowid_tables/simple_without_rowid_table/SimpleWithoutRowIdTable.h
 )
 
-zserio_add_library(TARGET sql_without_rowid_zs
+zserio_add_library(sql_without_rowid_tables_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE sql_without_rowid_tables.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -23,11 +23,14 @@ zserio_add_library(TARGET sql_without_rowid_zs
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
-target_include_directories(sql_without_rowid_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
+target_include_directories(sql_without_rowid_tables_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 
-add_test_sources(
-    cpp/RowIdAndWithoutRowIdTablesTest.cpp
-    cpp/SimpleWithoutRowIdTableTest.cpp
+add_custom_test(sql_without_rowid_tables
+    DEPENDS
+        sql_without_rowid_tables_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/RowIdAndWithoutRowIdTablesTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/SimpleWithoutRowIdTableTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(sql_without_rowid_zs)

@@ -44,9 +44,9 @@ protected:
         const size_t expectedNumElements = NUM_ELEMENTS;
         ASSERT_EQ(expectedNumElements, offsets.size());
         uint32_t expectedOffset = ELEMENT0_OFFSET + offsetShift;
-        for (auto it = offsets.begin(); it != offsets.end(); ++it)
+        for (auto offset : offsets)
         {
-            ASSERT_EQ(expectedOffset, *it);
+            ASSERT_EQ(expectedOffset, offset);
             expectedOffset += ALIGNED_ELEMENT_BYTE_SIZE;
         }
     }

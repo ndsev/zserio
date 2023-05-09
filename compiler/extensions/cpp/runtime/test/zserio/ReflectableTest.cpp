@@ -718,7 +718,7 @@ TEST_F(ReflectableTest, fixedUnsignedBitField31) // mapped to uint32_t
 TEST_F(ReflectableTest, fixedUnsignedBitField33) // mapped to uint64_t
 {
     const uint8_t numBits = 33;
-    const uint64_t value = static_cast<uint64_t>(UINT32_MAX) << 1;
+    const uint64_t value = static_cast<uint64_t>(UINT32_MAX) << 1U;
     auto reflectable = ReflectableFactory::getFixedUnsignedBitField(numBits, value);
     checkUnsignedIntegral(value, reflectable, &IReflectable::getUInt64,
             std::bind(&BitStreamReader::readBits64, _1, numBits), numBits);
@@ -820,7 +820,7 @@ TEST_F(ReflectableTest, dynamicUnsignedBitField33) // mapped to uint64_t
 {
     const uint8_t maxBitSize = 64;
     const uint8_t numBits = 33;
-    const uint64_t value = static_cast<uint64_t>(UINT32_MAX) << 1;
+    const uint64_t value = static_cast<uint64_t>(UINT32_MAX) << 1U;
     auto reflectable = ReflectableFactory::getDynamicUnsignedBitField(maxBitSize, value, numBits);
     checkUnsignedIntegral(value, reflectable, &IReflectable::getUInt64,
             std::bind(&BitStreamReader::readBits64, _1, numBits), numBits);
@@ -903,7 +903,7 @@ TEST_F(ReflectableTest, varsizeReflectable)
 
 TEST_F(ReflectableTest, float16Reflectable)
 {
-    const float value = 2.0f;
+    const float value = 2.0F;
     auto reflectable = ReflectableFactory::getFloat16(value);
     checkFloatingPoint(value, reflectable, &IReflectable::getFloat,
             std::bind(&BitStreamReader::readFloat16, _1));
@@ -911,7 +911,7 @@ TEST_F(ReflectableTest, float16Reflectable)
 
 TEST_F(ReflectableTest, float32Reflectable)
 {
-    const float value = 1.2f;
+    const float value = 1.2F;
     auto reflectable = ReflectableFactory::getFloat32(value);
     checkFloatingPoint(value, reflectable, &IReflectable::getFloat,
             std::bind(&BitStreamReader::readFloat32, _1));

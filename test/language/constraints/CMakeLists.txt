@@ -25,7 +25,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/constraints/union_constraints/UnionConstraints.h
 )
 
-zserio_add_library(TARGET constraints_zs
+zserio_add_library(constraints_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE constraints.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -35,13 +35,16 @@ zserio_add_library(TARGET constraints_zs
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
-add_test_sources(
-    cpp/ArrayLengthofConstraintTest.cpp
-    cpp/ChoiceConstraintsTest.cpp
-    cpp/LiteralConstraintTest.cpp
-    cpp/StructureConstraintsTest.cpp
-    cpp/StructureBitmaskConstraintsTest.cpp
-    cpp/UnionConstraintsTest.cpp
+add_custom_test(constraints
+    DEPENDS
+        constraints_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ArrayLengthofConstraintTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ChoiceConstraintsTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/LiteralConstraintTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/StructureConstraintsTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/StructureBitmaskConstraintsTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/UnionConstraintsTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(constraints_zs)

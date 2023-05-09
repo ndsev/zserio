@@ -12,17 +12,17 @@ TEST(FileUtilTest, writeReadByteBufferBitSize)
     const std::string fileName = "FileUtilTest_byteBufferBitSize.bin";
 
     auto buffer = std::vector<uint8_t>{0xAB, 0xCD, 0xF0};
-    writeBufferToFile(&buffer[0], 20, BitsTag(), fileName);
+    writeBufferToFile(buffer.data(), 20, BitsTag(), fileName);
 
     BitBuffer readBitBuffer = readBufferFromFile(fileName);
     ASSERT_EQ(24, readBitBuffer.getBitSize());
     for (size_t i = 0; i < 3; ++i)
     {
-        ASSERT_EQ(buffer[i], readBitBuffer.getBuffer()[i]);
+        ASSERT_EQ(buffer[i], readBitBuffer.getData()[i]);
     }
 
     const std::string invalidFileName = "";
-    ASSERT_THROW(writeBufferToFile(&buffer[0], 20, BitsTag(), invalidFileName), CppRuntimeException);
+    ASSERT_THROW(writeBufferToFile(buffer.data(), 20, BitsTag(), invalidFileName), CppRuntimeException);
     ASSERT_THROW(readBufferFromFile(invalidFileName), CppRuntimeException);
 }
 
@@ -31,13 +31,13 @@ TEST(FileUtilTest, writeReadByteBufferByteSize)
     const std::string fileName = "FileUtilTest_byteBufferByteSize.bin";
 
     auto buffer = std::vector<uint8_t>{0xAB, 0xCD, 0xF0};
-    writeBufferToFile(&buffer[0], buffer.size(), fileName);
+    writeBufferToFile(buffer.data(), buffer.size(), fileName);
 
     BitBuffer readBitBuffer = readBufferFromFile(fileName);
     ASSERT_EQ(24, readBitBuffer.getBitSize());
     for (size_t i = 0; i < 3; ++i)
     {
-        ASSERT_EQ(buffer[i], readBitBuffer.getBuffer()[i]);
+        ASSERT_EQ(buffer[i], readBitBuffer.getData()[i]);
     }
 }
 
@@ -52,7 +52,7 @@ TEST(FileUtilTest, writeReadBitBuffer)
     ASSERT_EQ(24, readBitBuffer.getBitSize());
     for (size_t i = 0; i < 3; ++i)
     {
-        ASSERT_EQ(bitBuffer.getBuffer()[i], readBitBuffer.getBuffer()[i]);
+        ASSERT_EQ(bitBuffer.getData()[i], readBitBuffer.getData()[i]);
     }
 }
 
@@ -71,7 +71,7 @@ TEST(FileUtilTest, writeReadBitStreamWriter)
     ASSERT_EQ(24, readBitBuffer.getBitSize());
     for (size_t i = 0; i < 3; ++i)
     {
-        ASSERT_EQ(bitBuffer.getBuffer()[i], readBitBuffer.getBuffer()[i]);
+        ASSERT_EQ(bitBuffer.getData()[i], readBitBuffer.getData()[i]);
     }
 }
 

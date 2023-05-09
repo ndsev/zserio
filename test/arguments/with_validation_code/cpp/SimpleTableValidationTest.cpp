@@ -1,4 +1,5 @@
 #include <memory>
+#include <algorithm>
 
 #include "gtest/gtest.h"
 
@@ -30,13 +31,13 @@ protected:
     class SimpleTableParameterProvider : public SimpleTable::IParameterProvider
     {
     public:
-        virtual uint32_t getLocalCount1(SimpleTable::Row&) override
+        uint32_t getLocalCount1(SimpleTable::Row&) override
         {
             ++m_localCount1CallCount;
             return SIMPLE_TABLE_LOCAL_COUNT;
         }
 
-        size_t getLocalCount1CallCount()
+        size_t getLocalCount1CallCount() const
         {
             return m_localCount1CallCount;
         }
@@ -48,12 +49,12 @@ protected:
     class TestParameterProvider : public SimpleTableValidationDb::IParameterProvider
     {
     public:
-        virtual SimpleTable::IParameterProvider& getSimpleTableParameterProvider() override
+        SimpleTable::IParameterProvider& getSimpleTableParameterProvider() override
         {
             return simpleTableParameterProvider;
         }
 
-        size_t getLocalCount1CallCount()
+        size_t getLocalCount1CallCount() const
         {
             return simpleTableParameterProvider.getLocalCount1CallCount();
         }
@@ -76,7 +77,7 @@ protected:
         connection.endTransaction(wasTransactionStarted);
     }
 
-    static const char DB_FILE_NAME[];
+    static const char* const DB_FILE_NAME;
 
     static constexpr uint64_t ENTRY_COUNT = 5;
     static constexpr uint32_t SIMPLE_TABLE_LOCAL_COUNT = 10;
@@ -111,8 +112,7 @@ private:
         rootStruct.initialize(count);
         auto& filler = rootStruct.getFiller();
         filler.resize(rootStruct.getCount());
-        for (size_t i = 0; i < filler.size(); ++i)
-            filler[i] = static_cast<uint8_t>(id);
+        std::fill(filler.begin(), filler.end(), id);
         rootStruct.initializeOffsets();
 
         return rootStruct;
@@ -161,7 +161,7 @@ private:
     }
 };
 
-const char SimpleTableValidationTest::DB_FILE_NAME[] =
+const char* const SimpleTableValidationTest::DB_FILE_NAME =
         "arguments/with_validation_code/simple_table_validation_test.sqlite";
 constexpr uint64_t SimpleTableValidationTest::ENTRY_COUNT;
 constexpr uint32_t SimpleTableValidationTest::SIMPLE_TABLE_LOCAL_COUNT;
@@ -226,7 +226,7 @@ TEST_F(SimpleTableValidationTest, validateSingleTable)
 
     TestParameterProvider parameterProvider;
     ValidationObserver validationObserver;
-    bool continueValidation;
+    bool continueValidation = false;
     const bool isValidated = simpleTable.validate(validationObserver,
             parameterProvider.getSimpleTableParameterProvider(), continueValidation);
 
@@ -538,7 +538,7 @@ TEST_F(SimpleTableValidationTest, validateSkipTable)
     class SkippingObserver : public ValidationObserver
     {
     public:
-        virtual bool beginTable(zserio::StringView tableName, size_t numberOfTableRows) override
+        bool beginTable(zserio::StringView tableName, size_t numberOfTableRows) override
         {
             ValidationObserver::beginTable(tableName, numberOfTableRows);
             return false;

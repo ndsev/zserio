@@ -65,7 +65,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/comments/mixed_doc/struct_comments/DirectionStructure.h
 )
 
-zserio_add_library(TARGET comments_zs
+zserio_add_library(comments_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE comments.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -77,7 +77,9 @@ zserio_add_library(TARGET comments_zs
 
 target_include_directories(comments_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 
-add_test_sources(
+add_custom_test(comments
+    DEPENDS
+        comments_zs
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(comments_zs)

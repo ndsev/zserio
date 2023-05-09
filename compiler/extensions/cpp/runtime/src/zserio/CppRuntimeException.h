@@ -5,8 +5,10 @@
 #include <exception>
 #include <string>
 #include <vector>
+#include <array>
 
 #include "zserio/StringConvertUtil.h"
+#include "zserio/Span.h"
 #include "zserio/Traits.h"
 
 namespace zserio
@@ -58,12 +60,9 @@ public:
     void append(const char* message, size_t messageLen);
 
 private:
-    void appendImpl(const char* message, size_t numCharsToAppend);
+    void appendImpl(Span<const char> message);
 
-    // Note: If you move this to public section, old MSVC 2015 compiler will fail with internal compiler error!
-    static constexpr size_t BUFFER_SIZE = 512;
-
-    char m_buffer[BUFFER_SIZE]; // note that fixed sized array is deeply copied on copy operations and its OK
+    std::array<char, 512> m_buffer; // note fixed sized array is deeply copied on copy operations and it's OK
     size_t m_len = 0;
 };
 
@@ -118,7 +117,7 @@ CppRuntimeException& operator<<(CppRuntimeException& exception, double value);
 template <typename T, typename std::enable_if<std::is_integral<T>::value, int>::type = 0>
 CppRuntimeException& operator<<(CppRuntimeException& exception, T value)
 {
-    char buffer[24];
+    std::array<char, 24> buffer = {};
     const char* stringValue = convertIntToString(buffer, value);
     return exception << stringValue;
 }
@@ -195,7 +194,7 @@ detail::CppRuntimeExceptionRValueInsertion<CPP_RUNTIME_EXCEPTION, T>
 operator<<(CPP_RUNTIME_EXCEPTION&& exception, const T& value)
 {
     exception << value;
-    return std::move(exception);
+    return std::forward<CPP_RUNTIME_EXCEPTION>(exception);
 }
 
 } // namespace zserio

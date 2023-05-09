@@ -63,12 +63,12 @@ private:
         ASSERT_EQ(SQLITE_DONE, sqlite3_step(statement.get()));
     }
 
-    static const char DB_FILE_NAME[];
+    static const char* const DB_FILE_NAME;
 };
 
 constexpr size_t FullRangeTableValidationTest::NUM_TABLE_ROWS;
 
-const char FullRangeTableValidationTest::DB_FILE_NAME[] =
+const char* const FullRangeTableValidationTest::DB_FILE_NAME =
         "arguments/with_validation_code/full_range_table_validation_test.sqlite";
 
 TEST_F(FullRangeTableValidationTest, validate)

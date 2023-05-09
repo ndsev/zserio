@@ -1,4 +1,5 @@
 #include <limits>
+#include <array>
 
 #include "gtest/gtest.h"
 
@@ -14,7 +15,7 @@ TEST(StringConvertUtilTest, convertInt8)
 {
     using type = int8_t;
     const type value = std::numeric_limits<type>::min();
-    char buffer[24];
+    std::array<char, 24> buffer = {};
     const char* valueInString = convertIntToString(buffer, value);
     EXPECT_EQ(std::to_string(value), valueInString);
 
@@ -25,7 +26,7 @@ TEST(StringConvertUtilTest, convertUInt8)
 {
     using type = uint8_t;
     const type value = std::numeric_limits<type>::max();
-    char buffer[24];
+    std::array<char, 24> buffer = {};
     const char* valueInString = convertIntToString(buffer, value);
     EXPECT_EQ(std::to_string(value), valueInString);
 
@@ -36,7 +37,7 @@ TEST(StringConvertUtilTest, convertInt16)
 {
     using type = int16_t;
     const type value = std::numeric_limits<type>::min();
-    char buffer[24];
+    std::array<char, 24> buffer = {};
     const char* valueInString = convertIntToString(buffer, value);
     EXPECT_EQ(std::to_string(value), valueInString);
 
@@ -47,7 +48,7 @@ TEST(StringConvertUtilTest, convertUInt16)
 {
     using type = uint16_t;
     const type value = std::numeric_limits<type>::max();
-    char buffer[24];
+    std::array<char, 24> buffer = {};
     const char* valueInString = convertIntToString(buffer, value);
     EXPECT_EQ(std::to_string(value), valueInString);
 
@@ -58,7 +59,7 @@ TEST(StringConvertUtilTest, convertInt32)
 {
     using type = int32_t;
     const type value = std::numeric_limits<type>::min();
-    char buffer[24];
+    std::array<char, 24> buffer = {};
     const char* valueInString = convertIntToString(buffer, value);
     EXPECT_EQ(std::to_string(value), valueInString);
 
@@ -69,7 +70,7 @@ TEST(StringConvertUtilTest, convertUInt32)
 {
     using type = uint32_t;
     const type value = std::numeric_limits<type>::max();
-    char buffer[24];
+    std::array<char, 24> buffer = {};
     const char* valueInString = convertIntToString(buffer, value);
     EXPECT_EQ(std::to_string(value), valueInString);
 
@@ -80,7 +81,7 @@ TEST(StringConvertUtilTest, convertInt64)
 {
     using type = int64_t;
     const type value = std::numeric_limits<type>::min();
-    char buffer[24];
+    std::array<char, 24> buffer = {};
     const char* valueInString = convertIntToString(buffer, value);
     EXPECT_EQ(std::to_string(value), valueInString);
 
@@ -91,7 +92,7 @@ TEST(StringConvertUtilTest, convertUInt64)
 {
     using type = uint64_t;
     const type value = std::numeric_limits<type>::max();
-    char buffer[24];
+    std::array<char, 24> buffer = {};
     const char* valueInString = convertIntToString(buffer, value);
     EXPECT_EQ(std::to_string(value), valueInString);
 
@@ -100,14 +101,37 @@ TEST(StringConvertUtilTest, convertUInt64)
 
 TEST(StringConvertUtilTest, convertFloat)
 {
-    char buffer[48];
-    EXPECT_EQ(std::string("13579.247"), convertFloatToString(buffer, 13579.2468f));
-    EXPECT_EQ(std::string("-2468.123"), convertFloatToString(buffer, -2468.123456789f));
-    EXPECT_EQ(std::string("1.0"), convertFloatToString(buffer, 1.0f));
-    EXPECT_EQ(std::string("10000000000.0"), convertFloatToString(buffer, 1E10f));
-    EXPECT_EQ(std::string("-10000000000.0"), convertFloatToString(buffer, -1E10f));
-    EXPECT_EQ(std::string("+Inf"), convertFloatToString(buffer, 1E20f));
-    EXPECT_EQ(std::string("-Inf"), convertFloatToString(buffer, -1E20f));
+    std::array<char, 24> integerBuffer = {};
+    std::array<char, 24> floatingBuffer = {};
+    const char* integerString = "";
+    const char* floatingString = "";
+    convertFloatToString(integerBuffer, floatingBuffer, 13579.2468F, integerString, floatingString);
+    EXPECT_EQ(std::string("13579"), integerString);
+    EXPECT_EQ(std::string("247"), floatingString);
+
+    convertFloatToString(integerBuffer, floatingBuffer, -2468.123456789F, integerString, floatingString);
+    EXPECT_EQ(std::string("-2468"), integerString);
+    EXPECT_EQ(std::string("123"), floatingString);
+
+    convertFloatToString(integerBuffer, floatingBuffer, 1.0F, integerString, floatingString);
+    EXPECT_EQ(std::string("1"), integerString);
+    EXPECT_EQ(std::string("0"), floatingString);
+
+    convertFloatToString(integerBuffer, floatingBuffer, 1E10F, integerString, floatingString);
+    EXPECT_EQ(std::string("10000000000"), integerString);
+    EXPECT_EQ(std::string("0"), floatingString);
+
+    convertFloatToString(integerBuffer, floatingBuffer, -1E10F, integerString, floatingString);
+    EXPECT_EQ(std::string("-10000000000"), integerString);
+    EXPECT_EQ(std::string("0"), floatingString);
+
+    convertFloatToString(integerBuffer, floatingBuffer, 1E20F, integerString, floatingString);
+    EXPECT_EQ(std::string("+Inf"), integerString);
+    EXPECT_EQ(nullptr, floatingString);
+
+    convertFloatToString(integerBuffer, floatingBuffer, -1E20F, integerString, floatingString);
+    EXPECT_EQ(std::string("-Inf"), integerString);
+    EXPECT_EQ(nullptr, floatingString);
 }
 
 TEST(StringConvertUtilTest, convertBool)
@@ -123,8 +147,8 @@ TEST(StringConvertUtilTest, convertStringView)
 {
     EXPECT_EQ(std::string(), toString(StringView()));
     EXPECT_EQ("test", toString(StringView("test")));
-    const char buffer[4] = { 't', 'e', 's', 't' };
-    EXPECT_EQ("test", toString(StringView(buffer, sizeof(buffer))));
+    const std::array<char, 4> buffer = { 't', 'e', 's', 't' };
+    EXPECT_EQ("test", toString(StringView(buffer.data(), buffer.size())));
 }
 
 } // namespace zserio

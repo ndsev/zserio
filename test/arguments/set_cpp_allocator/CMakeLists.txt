@@ -54,7 +54,7 @@ set(ZSERIO_GENERATED_SOURCES_SQL_ALLOCATION
     ${ZSERIO_GEN_DIR_SQL_ALLOCATION}/sql_allocation/SqlAllocationTable.h
 )
 
-zserio_add_library(TARGET complex_allocation_zs
+zserio_add_library(complex_allocation_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE complex_allocation.zs
     OUT_DIR ${ZSERIO_GEN_DIR_COMPLEX_ALLOCATION}
@@ -64,7 +64,7 @@ zserio_add_library(TARGET complex_allocation_zs
     ZSERIO_OPTIONS -setCppAllocator polymorphic -withoutSourcesAmalgamation
 )
 
-zserio_add_library(TARGET pubsub_allocation_zs
+zserio_add_library(pubsub_allocation_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE pubsub_allocation.zs
     OUT_DIR ${ZSERIO_GEN_DIR_PUBSUB_ALLOCATION}
@@ -74,7 +74,7 @@ zserio_add_library(TARGET pubsub_allocation_zs
     ZSERIO_OPTIONS -setCppAllocator polymorphic -withoutSourcesAmalgamation
 )
 
-zserio_add_library(TARGET service_allocation_zs
+zserio_add_library(service_allocation_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE service_allocation.zs
     OUT_DIR ${ZSERIO_GEN_DIR_SERVICE_ALLOCATION}
@@ -84,7 +84,7 @@ zserio_add_library(TARGET service_allocation_zs
     ZSERIO_OPTIONS -setCppAllocator polymorphic -withoutSourcesAmalgamation
 )
 
-zserio_add_library(TARGET sql_allocation_zs
+zserio_add_library(sql_allocation_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE sql_allocation.zs
     OUT_DIR ${ZSERIO_GEN_DIR_SQL_ALLOCATION}
@@ -96,14 +96,20 @@ zserio_add_library(TARGET sql_allocation_zs
 
 target_include_directories(sql_allocation_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 
-add_test_sources(
-    cpp/ComplexAllocationTest.cpp
-    cpp/PubsubAllocationTest.cpp
-    cpp/ServiceAllocationTest.cpp
-    cpp/SqlAllocationTest.cpp
+add_custom_test(set_cpp_allocator
+    DEPENDS
+        complex_allocation_zs
+        pubsub_allocation_zs
+        service_allocation_zs
+        sql_allocation_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ComplexAllocationTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PubsubAllocationTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ServiceAllocationTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/SqlAllocationTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES_COMPLEX_ALLOCATION}
+        ${ZSERIO_GENERATED_SOURCES_PUBSUB_ALLOCATION}
+        ${ZSERIO_GENERATED_SOURCES_SERVICE_ALLOCATION}
+        ${ZSERIO_GENERATED_SOURCES_SQL_ALLOCATION}
 )
-
-add_test_dependencies(complex_allocation_zs)
-add_test_dependencies(pubsub_allocation_zs)
-add_test_dependencies(service_allocation_zs)
-add_test_dependencies(sql_allocation_zs)

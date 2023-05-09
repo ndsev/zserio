@@ -17,7 +17,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/sql_databases/db_with_relocation/Tile.h
 )
 
-zserio_add_library(TARGET sql_databases_zs
+zserio_add_library(sql_databases_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE sql_databases.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -29,9 +29,13 @@ zserio_add_library(TARGET sql_databases_zs
 
 target_include_directories(sql_databases_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 
-add_test_sources(
-    cpp/DbWithRelocationTest.cpp
-    cpp/SimpleDbTest.cpp
+add_custom_test(sql_databases
+    DEPENDS
+        sql_databases_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/DbWithRelocationTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/SimpleDbTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
 
-add_test_dependencies(sql_databases_zs)

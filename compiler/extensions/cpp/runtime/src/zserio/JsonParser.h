@@ -27,7 +27,7 @@ public:
         /**
          * Destructor.
          */
-        virtual ~IObserver() {}
+        virtual ~IObserver() = default;
 
         /**
          * Called when a JSON object begins - i.e. on '{'.
@@ -162,7 +162,7 @@ private:
 
     void checkToken(JsonToken token);
     void consumeToken(JsonToken token);
-    void throwUnexpectedToken(Span<const JsonToken> expecting) const;
+    JsonParserException createUnexpectedTokenException(Span<const JsonToken> expecting) const;
 
     static const std::array<JsonToken, 3> ELEMENT_TOKENS;
 
@@ -189,7 +189,7 @@ void BasicJsonParser<ALLOC>::parseElement()
     else if (token == JsonToken::VALUE)
         parseValue();
     else
-        throwUnexpectedToken(ELEMENT_TOKENS);
+        throw createUnexpectedTokenException(ELEMENT_TOKENS);
 }
 
 template <typename ALLOC>
@@ -300,7 +300,7 @@ template <typename ALLOC>
 void BasicJsonParser<ALLOC>::checkToken(JsonToken token)
 {
     if (m_tokenizer.getToken() != token)
-        throwUnexpectedToken({{token}});
+        throw createUnexpectedTokenException({{token}});
 }
 
 template <typename ALLOC>
@@ -311,7 +311,8 @@ void BasicJsonParser<ALLOC>::consumeToken(JsonToken token)
 }
 
 template <typename ALLOC>
-void BasicJsonParser<ALLOC>::throwUnexpectedToken(Span<const JsonToken> expecting) const
+JsonParserException BasicJsonParser<ALLOC>::createUnexpectedTokenException(
+        Span<const JsonToken> expecting) const
 {
     JsonParserException error("JsonParser:");
     error << getLine() << ":" << getColumn() << ": unexpected token: " << m_tokenizer.getToken();
@@ -330,7 +331,7 @@ void BasicJsonParser<ALLOC>::throwUnexpectedToken(Span<const JsonToken> expectin
         }
         error << "]!";
     }
-    throw error;
+    return error;
 }
 
 /** Typedef to Json Parser provided for convenience - using default std::allocator<uint8_t>. */

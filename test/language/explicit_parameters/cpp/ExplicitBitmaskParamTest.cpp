@@ -30,10 +30,16 @@ public:
         m_database->createSchema();
     }
 
-    ~ExplicitBitmaskParamTest()
+    ~ExplicitBitmaskParamTest() override
     {
         delete m_database;
     }
+
+    ExplicitBitmaskParamTest(const ExplicitBitmaskParamTest&) = delete;
+    ExplicitBitmaskParamTest& operator=(const ExplicitBitmaskParamTest&) = delete;
+
+    ExplicitBitmaskParamTest(ExplicitBitmaskParamTest&&) = delete;
+    ExplicitBitmaskParamTest& operator=(ExplicitBitmaskParamTest&&) = delete;
 
 protected:
     void fillBitmaskParamTableRow(BitmaskParamTable::Row& row, uint32_t id, const string_type& name)
@@ -96,12 +102,12 @@ protected:
     class BitmaskParamTableParameterProvider : public BitmaskParamTable::IParameterProvider
     {
     public:
-        virtual TestBitmask getCount1(BitmaskParamTable::Row&)
+        TestBitmask getCount1(BitmaskParamTable::Row&) override
         {
             return BITMASK_PARAM_TABLE_COUNT1;
         }
 
-        virtual TestBitmask getCount2(BitmaskParamTable::Row&)
+        TestBitmask getCount2(BitmaskParamTable::Row&) override
         {
             return BITMASK_PARAM_TABLE_COUNT2;
         }
@@ -109,14 +115,14 @@ protected:
 
     ExplicitParametersDb* m_database;
 
-    static const char DB_FILE_NAME[];
+    static const char* const DB_FILE_NAME;
 
     static const uint32_t NUM_BITMASK_PARAM_TABLE_ROWS;
     static const TestBitmask BITMASK_PARAM_TABLE_COUNT1;
     static const TestBitmask BITMASK_PARAM_TABLE_COUNT2;
 };
 
-const char ExplicitBitmaskParamTest::DB_FILE_NAME[] =
+const char* const ExplicitBitmaskParamTest::DB_FILE_NAME =
         "language/explicit_parameters/explicit_bitmask_param_test.sqlite";
 
 const uint32_t ExplicitBitmaskParamTest::NUM_BITMASK_PARAM_TABLE_ROWS = 5;

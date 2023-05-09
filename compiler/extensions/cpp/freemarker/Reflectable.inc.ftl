@@ -1,7 +1,7 @@
 <#include "TypeInfo.inc.ftl">
 <#macro reflectable_initialize_children needsChildrenInitialization indent=2>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}virtual void initializeChildren() override
+${I}void initializeChildren() override
 ${I}{
     <#if needsChildrenInitialization>
 ${I}    m_object.initializeChildren();
@@ -11,7 +11,7 @@ ${I}}
 
 <#macro reflectable_initialize compoundName parameterList indent=2>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}virtual void initialize(
+${I}void initialize(
 ${I}        const ::zserio::vector<::zserio::AnyHolder<allocator_type>, allocator_type>& typeArguments) override
 ${I}{
 ${I}    if (typeArguments.size() != ${parameterList?size})
@@ -40,7 +40,7 @@ ${I}}
 
 <#macro reflectable_get_field compoundName fieldList isConst indent=2>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}virtual <#if isConst>${types.reflectableConstPtr.name}<#else>${types.reflectablePtr.name}</#if> getField(<#rt>
+${I}<#if isConst>${types.reflectableConstPtr.name}<#else>${types.reflectablePtr.name}</#if> getField(<#rt>
         <#lt>::zserio::StringView name) <#if isConst>const </#if>override
 ${I}{
     <#list fieldList as field>
@@ -64,7 +64,7 @@ ${I}}
 
 <#macro reflectable_create_field compoundName fieldList indent=2>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}virtual ${types.reflectablePtr.name} createField(::zserio::StringView name) override
+${I}${types.reflectablePtr.name} createField(::zserio::StringView name) override
 ${I}{
     <#list fieldList as field>
 ${I}    if (name == ::zserio::makeStringView("${field.name}"))
@@ -80,7 +80,7 @@ ${I}}
 
 <#macro reflectable_set_field compoundName fieldList indent=2>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}virtual void setField(::zserio::StringView name,
+${I}void setField(::zserio::StringView name,
 ${I}        const ::zserio::AnyHolder<allocator_type>& value) override
 ${I}{
     <#list fieldList as field>
@@ -121,7 +121,7 @@ ${I}}
 
 <#macro reflectable_get_parameter compoundName parametersList isConst indent=2>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}virtual <#if isConst>${types.reflectableConstPtr.name}<#else>${types.reflectablePtr.name}</#if> getParameter(<#rt>
+${I}<#if isConst>${types.reflectableConstPtr.name}<#else>${types.reflectablePtr.name}</#if> getParameter(<#rt>
         <#lt>::zserio::StringView name) <#if isConst>const </#if>override
 ${I}{
     <#list parametersList as parameter>
@@ -136,7 +136,7 @@ ${I}}
 
 <#macro reflectable_call_function compoundName functionList isConst indent=2>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}virtual <#if isConst>${types.reflectableConstPtr.name}<#else>${types.reflectablePtr.name}</#if> callFunction(<#rt>
+${I}<#if isConst>${types.reflectableConstPtr.name}<#else>${types.reflectablePtr.name}</#if> callFunction(<#rt>
         <#lt>::zserio::StringView name) <#if isConst>const </#if>override
 ${I}{
     <#list functionList as function>

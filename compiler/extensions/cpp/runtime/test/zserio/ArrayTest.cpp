@@ -1,6 +1,7 @@
 #include <string>
 #include <vector>
 #include <limits>
+#include <array>
 
 #include "zserio/Array.h"
 #include "zserio/ArrayTraits.h"
@@ -42,25 +43,25 @@ enum class DummyEnum : uint8_t
 class DummyBitmask
 {
 public:
-    typedef uint8_t underlying_type;
+    using underlying_type = uint8_t;
 
-    struct Values
+    enum class Values : underlying_type
     {
-        static const DummyBitmask CREATE;
-        static const DummyBitmask READ;
-        static const DummyBitmask WRITE;
+        CREATE = UINT8_C(1),
+        READ = UINT8_C(2),
+        WRITE = UINT8_C(8)
     };
 
     explicit DummyBitmask(BitStreamReader& in) :
-        m_value(readValue(in))
-    {}
-
-    explicit DummyBitmask(underlying_type value) :
-        m_value(value)
+            m_value(readValue(in))
     {}
 
     DummyBitmask(PackingContextNode& contextNode, BitStreamReader& in) :
-        m_value(readValue(contextNode, in))
+            m_value(readValue(contextNode, in))
+    {}
+
+    constexpr DummyBitmask(Values value) noexcept :
+            m_value(static_cast<underlying_type>(value))
     {}
 
     static void createPackingContext(PackingContextNode& contextNode)
@@ -123,10 +124,6 @@ private:
     underlying_type m_value;
 };
 
-const DummyBitmask DummyBitmask::Values::CREATE = DummyBitmask(UINT8_C(1));
-const DummyBitmask DummyBitmask::Values::READ = DummyBitmask(UINT8_C(2));
-const DummyBitmask DummyBitmask::Values::WRITE = DummyBitmask(UINT8_C(8));
-
 class ElementBitSize
 {
 public:
@@ -185,12 +182,12 @@ public:
         return endBitPosition - bitPosition;
     }
 
-    size_t initializeOffsets(size_t bitPosition)
+    size_t initializeOffsets(size_t bitPosition) const
     {
         return bitPosition + bitSizeOf(bitPosition);
     }
 
-    size_t initializeOffsets(PackingContextNode& contextNode, size_t bitPosition = 0)
+    size_t initializeOffsets(PackingContextNode& contextNode, size_t bitPosition = 0) const
     {
         size_t endBitPosition = bitPosition;
 
@@ -262,7 +259,7 @@ inline DummyEnum valueToEnum(typename std::underlying_type<DummyEnum>::type rawV
     case UINT8_C(0):
     case UINT8_C(1):
     case UINT8_C(2):
-        return DummyEnum(rawValue);
+        return static_cast<DummyEnum>(rawValue);
     default:
         throw CppRuntimeException("Unknown value for enumeration DummyEnum: ") << rawValue << "!";
     }
@@ -327,10 +324,9 @@ inline void write(PackingContextNode& contextNode, BitStreamWriter& out, DummyEn
 class ArrayTest : public ::testing::Test
 {
 public:
-    ArrayTest()
-    {
-        memset(m_byteBuffer, 0, sizeof(m_byteBuffer) / sizeof(m_byteBuffer[0]));
-    }
+    ArrayTest() :
+            m_byteBuffer()
+    {}
 
 protected:
     template <typename RAW_ARRAY, typename ARRAY_TRAITS, typename ELEMENT_FACTORY = detail::DummyElementFactory>
@@ -416,12 +412,12 @@ private:
             ASSERT_EQ(expectedBitSize, bitSize);
             ASSERT_EQ(i + bitSize, array.initializeOffsets(i));
 
-            BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
+            BitStreamWriter writer(m_byteBuffer.data(), m_byteBuffer.size());
             writer.writeBits(0, i);
             array.write(writer);
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
-            BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
+            BitStreamReader reader(m_byteBuffer.data(), writer.getBitPosition(), BitsTag());
             ASSERT_EQ(0, reader.readBits(i));
             Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL> readArray{arrayTraits};
             readArray.read(reader, rawArray.size(), elementFactory);
@@ -444,12 +440,12 @@ private:
             ASSERT_EQ(expectedBitSize, bitSize);
             ASSERT_EQ(i + bitSize, array.initializeOffsets(i));
 
-            BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
+            BitStreamWriter writer(m_byteBuffer.data(), m_byteBuffer.size());
             writer.writeBits(0, i);
             array.write(writer);
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
-            BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
+            BitStreamReader reader(m_byteBuffer.data(), writer.getBitPosition(), BitsTag());
             ASSERT_EQ(0, reader.readBits(i));
             Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO> readArray{arrayTraits};
             readArray.read(reader, elementFactory);
@@ -473,12 +469,12 @@ private:
             ASSERT_EQ(alignTo(8, i) - i + expectedBitSize, bitSize);
             ASSERT_EQ(i + bitSize, array.initializeOffsets(i, ArrayTestOffsetInitializer()));
 
-            BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
+            BitStreamWriter writer(m_byteBuffer.data(), m_byteBuffer.size());
             writer.writeBits(0, i);
             array.write(writer, ArrayTestOffsetChecker());
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
-            BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
+            BitStreamReader reader(m_byteBuffer.data(), writer.getBitPosition(), BitsTag());
             ASSERT_EQ(0, reader.readBits(i));
             Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED,
                     ArrayTestOffsetChecker, ArrayTestOffsetInitializer> readArray{arrayTraits};
@@ -504,12 +500,12 @@ private:
             ASSERT_EQ(alignTo(8, i) - i + expectedBitSize, bitSize);
             ASSERT_EQ(i + bitSize, array.initializeOffsets(i, ArrayTestOffsetInitializer()));
 
-            BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
+            BitStreamWriter writer(m_byteBuffer.data(), m_byteBuffer.size());
             writer.writeBits(0, i);
             array.write(writer, ArrayTestOffsetChecker());
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
-            BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
+            BitStreamReader reader(m_byteBuffer.data(), writer.getBitPosition(), BitsTag());
             ASSERT_EQ(0, reader.readBits(i));
             Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED_AUTO,
                     ArrayTestOffsetChecker, ArrayTestOffsetInitializer> readArray{arrayTraits};
@@ -537,12 +533,12 @@ private:
             ASSERT_EQ(expectedBitSize, bitSize);
             ASSERT_EQ(i + bitSize, array.initializeOffsets(i));
 
-            BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
+            BitStreamWriter writer(m_byteBuffer.data(), m_byteBuffer.size());
             writer.writeBits(0, i);
             array.write(writer);
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
-            BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
+            BitStreamReader reader(m_byteBuffer.data(), writer.getBitPosition(), BitsTag());
             ASSERT_EQ(0, reader.readBits(i));
             Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::IMPLICIT> readArray{arrayTraits};
             readArray.read(reader);
@@ -575,12 +571,12 @@ private:
             }
             ASSERT_EQ(i + bitSize, array.initializeOffsetsPacked(i));
 
-            BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
+            BitStreamWriter writer(m_byteBuffer.data(), m_byteBuffer.size());
             writer.writeBits(0, i);
             array.writePacked(writer);
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
-            BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
+            BitStreamReader reader(m_byteBuffer.data(), writer.getBitPosition(), BitsTag());
             ASSERT_EQ(0, reader.readBits(i));
             Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL> readArray{arrayTraits};
             readArray.readPacked(reader, rawArray.size(), elementFactory);
@@ -606,12 +602,12 @@ private:
             }
             ASSERT_EQ(i + bitSize, array.initializeOffsetsPacked(i));
 
-            BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
+            BitStreamWriter writer(m_byteBuffer.data(), m_byteBuffer.size());
             writer.writeBits(0, i);
             array.writePacked(writer);
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
-            BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
+            BitStreamReader reader(m_byteBuffer.data(), writer.getBitPosition(), BitsTag());
             ASSERT_EQ(0, reader.readBits(i));
             Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO> readArray{arrayTraits};
             readArray.readPacked(reader, elementFactory);
@@ -638,12 +634,12 @@ private:
             }
             ASSERT_EQ(i + bitSize, array.initializeOffsetsPacked(i, ArrayTestOffsetInitializer()));
 
-            BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
+            BitStreamWriter writer(m_byteBuffer.data(), m_byteBuffer.size());
             writer.writeBits(0, i);
             array.writePacked(writer, ArrayTestOffsetChecker());
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
-            BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
+            BitStreamReader reader(m_byteBuffer.data(), writer.getBitPosition(), BitsTag());
             ASSERT_EQ(0, reader.readBits(i));
             Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED,
                     ArrayTestOffsetChecker, ArrayTestOffsetInitializer> readArray{arrayTraits};
@@ -672,12 +668,12 @@ private:
             }
             ASSERT_EQ(i + bitSize, array.initializeOffsetsPacked(i, ArrayTestOffsetInitializer()));
 
-            BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
+            BitStreamWriter writer(m_byteBuffer.data(), m_byteBuffer.size());
             writer.writeBits(0, i);
             array.writePacked(writer, ArrayTestOffsetChecker());
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
-            BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
+            BitStreamReader reader(m_byteBuffer.data(), writer.getBitPosition(), BitsTag());
             ASSERT_EQ(0, reader.readBits(i));
             Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED_AUTO,
                     ArrayTestOffsetChecker, ArrayTestOffsetInitializer> readArray{arrayTraits};
@@ -691,58 +687,69 @@ private:
     }
 
     static const size_t AUTO_LENGTH_BIT_SIZE = 8;
-    static const size_t BUFFER_SIZE = 256;
     static const size_t UNKNOWN_BIT_SIZE = std::numeric_limits<size_t>::max();
 
-    uint8_t m_byteBuffer[BUFFER_SIZE];
+    std::array<uint8_t, 256> m_byteBuffer;
 };
 
 TEST_F(ArrayTest, intField4Array)
 {
     const size_t numBits = 4;
-    std::vector<int8_t> rawArray = {-(1 << (numBits - 1)), 7, (1 << (numBits - 1)) - 1};
+    std::vector<int8_t> rawArray = {
+            -static_cast<int8_t>(1U << (numBits - 1)),
+            7,
+            static_cast<int8_t>(1U << (numBits - 1)) - 1};
     testArray(rawArray, BitFieldArrayTraits<int8_t>(numBits), numBits);
 }
 
 TEST_F(ArrayTest, intField12Array)
 {
     const size_t numBits = 12;
-    std::vector<int16_t> rawArray = {-(1 << (numBits - 1)), 7, (1 << (numBits - 1)) - 1};
+    std::vector<int16_t> rawArray = {
+            -static_cast<int16_t>(1U << (numBits - 1)),
+            7,
+            static_cast<int16_t>(1U << (numBits - 1)) - 1};
     testArray(rawArray, BitFieldArrayTraits<int16_t>(numBits), numBits);
 }
 
 TEST_F(ArrayTest, intField20Array)
 {
     const size_t numBits = 20;
-    std::vector<int32_t> rawArray = {-(1 << (numBits - 1)), 7, (1 << (numBits - 1)) - 1};
+    std::vector<int32_t> rawArray = {
+            -static_cast<int32_t>(1U << (numBits - 1)),
+            7,
+            static_cast<int32_t>(1U << (numBits - 1)) - 1};
     testArray(rawArray, BitFieldArrayTraits<int32_t>(numBits), numBits);
 }
 
 TEST_F(ArrayTest, intField36Array)
 {
     const size_t numBits = 36;
-    std::vector<int64_t> rawArray = {-(INT64_C(1) << (numBits - 1)), 7, (INT64_C(1) << (numBits - 1)) - 1};
+    std::vector<int64_t> rawArray = {
+            -static_cast<int64_t>(UINT64_C(1) << (numBits - 1)),
+            7,
+            static_cast<int64_t>(UINT64_C(1) << (numBits - 1)) - 1};
     testArray(rawArray, BitFieldArrayTraits<int64_t>(numBits), numBits);
 }
 
 TEST_F(ArrayTest, bitField4Array)
 {
     const size_t numBits = 4;
-    std::vector<uint8_t> rawArray = {0, 7, (1 << numBits) - 1};
+    std::vector<uint8_t> rawArray = {0, 7, (1U << numBits) - 1};
     testArray(rawArray, BitFieldArrayTraits<uint8_t>(numBits), numBits);
 }
 
 TEST_F(ArrayTest, bitField12Array)
 {
     const size_t numBits = 12;
-    std::vector<uint16_t> rawArray = {0, 7, (1 << numBits) - 1};
+    std::vector<uint16_t> rawArray = {0, 7, (1U << numBits) - 1};
     testArray(rawArray, BitFieldArrayTraits<uint16_t>(numBits), numBits);
 }
 
 TEST_F(ArrayTest, bitField20Array)
 {
     const size_t numBits = 20;
-    std::vector<uint32_t> rawArray = {0, 7, (1 << numBits) - 1};
+    std::vector<uint32_t> rawArray = {0, 7, (1U << numBits) - 1};
     testArray(rawArray, BitFieldArrayTraits<uint32_t>(numBits), numBits);
 }
 
@@ -756,7 +763,10 @@ TEST_F(ArrayTest, bitField36Array)
 TEST_F(ArrayTest, dynamicIntField4Array)
 {
     const size_t numBits = 4;
-    std::vector<int8_t> rawArray = {-(1 << (numBits - 1)), 7, (1 << (numBits - 1)) - 1};
+    std::vector<int8_t> rawArray = {
+            -static_cast<int8_t>(1U << (numBits - 1)),
+            7,
+            static_cast<int8_t>(1U << (numBits - 1)) - 1};
     const ElementBitSize elementBitSize(numBits);
     testArray(rawArray, DynamicBitFieldArrayTraits<int8_t, ElementBitSize>(elementBitSize), numBits);
 }
@@ -764,7 +774,10 @@ TEST_F(ArrayTest, dynamicIntField4Array)
 TEST_F(ArrayTest, dynamicIntField12Array)
 {
     const size_t numBits = 12;
-    std::vector<int16_t> rawArray = {-(1 << (numBits - 1)), 7, (1 << (numBits - 1)) - 1};
+    std::vector<int16_t> rawArray = {
+            -static_cast<int16_t>(1U << (numBits - 1)),
+            7,
+            static_cast<int16_t>(1U << (numBits - 1)) - 1};
     const ElementBitSize elementBitSize(numBits);
     testArray(rawArray, DynamicBitFieldArrayTraits<int16_t, ElementBitSize>(elementBitSize), numBits);
 }
@@ -772,7 +785,10 @@ TEST_F(ArrayTest, dynamicIntField12Array)
 TEST_F(ArrayTest, dynamicIntField20Array)
 {
     const size_t numBits = 20;
-    std::vector<int32_t> rawArray = {-(1 << (numBits - 1)), 7, (1 << (numBits - 1)) - 1};
+    std::vector<int32_t> rawArray = {
+            -static_cast<int32_t>(1U << (numBits - 1)),
+            7,
+            static_cast<int32_t>(1U << (numBits - 1)) - 1};
     const ElementBitSize elementBitSize(numBits);
     testArray(rawArray, DynamicBitFieldArrayTraits<int32_t, ElementBitSize>(elementBitSize), numBits);
 }
@@ -780,7 +796,10 @@ TEST_F(ArrayTest, dynamicIntField20Array)
 TEST_F(ArrayTest, dynamicIntField36Array)
 {
     const size_t numBits = 36;
-    std::vector<int64_t> rawArray = {-(INT64_C(1) << (numBits - 1)), 7, (INT64_C(1) << (numBits - 1)) - 1};
+    std::vector<int64_t> rawArray = {
+            -static_cast<int64_t>(UINT64_C(1) << (numBits - 1)),
+            7,
+            static_cast<int64_t>(UINT64_C(1) << (numBits - 1)) - 1};
     const ElementBitSize elementBitSize(numBits);
     testArray(rawArray, DynamicBitFieldArrayTraits<int64_t, ElementBitSize>(elementBitSize), numBits);
 }
@@ -788,7 +807,7 @@ TEST_F(ArrayTest, dynamicIntField36Array)
 TEST_F(ArrayTest, dynamicBitField4Array)
 {
     const size_t numBits = 4;
-    std::vector<uint8_t> rawArray = {0, 7, (1 << numBits) - 1};
+    std::vector<uint8_t> rawArray = {0, 7, (1U << numBits) - 1};
     const ElementBitSize elementBitSize(numBits);
     testArray(rawArray, DynamicBitFieldArrayTraits<uint8_t, ElementBitSize>(elementBitSize), numBits);
 }
@@ -796,7 +815,7 @@ TEST_F(ArrayTest, dynamicBitField4Array)
 TEST_F(ArrayTest, dynamicBitField12Array)
 {
     const size_t numBits = 12;
-    std::vector<uint16_t> rawArray = {0, 7, (1 << numBits) - 1};
+    std::vector<uint16_t> rawArray = {0, 7, (1U << numBits) - 1};
     const ElementBitSize elementBitSize(numBits);
     testArray(rawArray, DynamicBitFieldArrayTraits<uint16_t, ElementBitSize>(elementBitSize), numBits);
 }
@@ -804,7 +823,7 @@ TEST_F(ArrayTest, dynamicBitField12Array)
 TEST_F(ArrayTest, dynamicBitField20Array)
 {
     const size_t numBits = 20;
-    std::vector<uint32_t> rawArray = {0, 7, (1 << numBits) - 1};
+    std::vector<uint32_t> rawArray = {0, 7, (1U << numBits) - 1};
     const ElementBitSize elementBitSize(numBits);
     testArray(rawArray, DynamicBitFieldArrayTraits<uint32_t, ElementBitSize>(elementBitSize), numBits);
 }
@@ -867,14 +886,18 @@ TEST_F(ArrayTest, stdUInt64Array)
 
 TEST_F(ArrayTest, varInt16Array)
 {
-    std::vector<int16_t> rawArray = {1 << 5, 1 << (5 + 8)};
+    std::vector<int16_t> rawArray = {static_cast<int16_t>(1U << 5U), static_cast<int16_t>(1U << (5U + 8))};
     const size_t bitSize = 8 * (1 + 2);
     testArray(rawArray, VarIntNNArrayTraits<int16_t>(), bitSize, bitSize);
 }
 
 TEST_F(ArrayTest, varInt32Array)
 {
-    std::vector<int32_t> rawArray = {1 << 5, 1 << (5 + 7), 1 << (5 + 7 + 7), 1 << (5 + 7 + 7 + 8)};
+    std::vector<int32_t> rawArray = {
+            static_cast<int32_t>(1U << 5U),
+            static_cast<int32_t>(1U << (5U + 7)),
+            static_cast<int32_t>(1U << (5U + 7 + 7)),
+            static_cast<int32_t>(1U << (5U + 7 + 7 + 8))};
     const size_t bitSize = 8 * (1 + 2 + 3 + 4);
     testArray(rawArray, VarIntNNArrayTraits<int32_t>(), bitSize, bitSize);
 }
@@ -882,28 +905,28 @@ TEST_F(ArrayTest, varInt32Array)
 TEST_F(ArrayTest, varInt64Array)
 {
     std::vector<int64_t> rawArray = {
-            INT64_C(1) << 5,
-            INT64_C(1) << (5 + 7),
-            INT64_C(1) << (5 + 7 + 7),
-            INT64_C(1) << (5 + 7 + 7 + 7),
-            INT64_C(1) << (5 + 7 + 7 + 7 + 7),
-            INT64_C(1) << (5 + 7 + 7 + 7 + 7 + 7),
-            INT64_C(1) << (5 + 7 + 7 + 7 + 7 + 7 + 7),
-            INT64_C(1) << (5 + 7 + 7 + 7 + 7 + 7 + 7 + 8)};
+            static_cast<int64_t>(UINT64_C(1) << 5U),
+            static_cast<int64_t>(UINT64_C(1) << (5U + 7)),
+            static_cast<int64_t>(UINT64_C(1) << (5U + 7 + 7)),
+            static_cast<int64_t>(UINT64_C(1) << (5U + 7 + 7 + 7)),
+            static_cast<int64_t>(UINT64_C(1) << (5U + 7 + 7 + 7 + 7)),
+            static_cast<int64_t>(UINT64_C(1) << (5U + 7 + 7 + 7 + 7 + 7)),
+            static_cast<int64_t>(UINT64_C(1) << (5U + 7 + 7 + 7 + 7 + 7 + 7)),
+            static_cast<int64_t>(UINT64_C(1) << (5U + 7 + 7 + 7 + 7 + 7 + 7 + 8))};
     const size_t bitSize = 8 * (1 + 2 + 3 + 4 + 5 + 6 + 7 + 8);
     testArray(rawArray, VarIntNNArrayTraits<int64_t>(), bitSize, bitSize);
 }
 
 TEST_F(ArrayTest, varUInt16Array)
 {
-    std::vector<uint16_t> rawArray = {1 << 6, 1 << (6 + 8)};
+    std::vector<uint16_t> rawArray = {1U << 6U, 1U << (6U + 8)};
     const size_t bitSize = 8 * (1 + 2);
     testArray(rawArray, VarIntNNArrayTraits<uint16_t>(), bitSize, bitSize);
 }
 
 TEST_F(ArrayTest, varUInt32Array)
 {
-    std::vector<uint32_t> rawArray = {1 << 6, 1 << (6 + 7), 1 << (6 + 7 + 7), 1 << (6 + 7 + 7 + 8)};
+    std::vector<uint32_t> rawArray = {1U << 6U, 1U << (6U + 7), 1U << (6U + 7 + 7), 1U << (6U + 7 + 7 + 8)};
     const size_t bitSize = 8 * (1 + 2 + 3 + 4);
     testArray(rawArray, VarIntNNArrayTraits<uint32_t>(), bitSize, bitSize);
 }
@@ -911,14 +934,14 @@ TEST_F(ArrayTest, varUInt32Array)
 TEST_F(ArrayTest, varUInt64Array)
 {
     std::vector<uint64_t> rawArray = {
-            UINT64_C(1) << 6,
-            UINT64_C(1) << (6 + 7),
-            UINT64_C(1) << (6 + 7 + 7),
-            UINT64_C(1) << (6 + 7 + 7 + 7),
-            UINT64_C(1) << (6 + 7 + 7 + 7 + 7),
-            UINT64_C(1) << (6 + 7 + 7 + 7 + 7 + 7),
-            UINT64_C(1) << (6 + 7 + 7 + 7 + 7 + 7 + 7),
-            UINT64_C(1) << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 8)};
+            UINT64_C(1) << 6U,
+            UINT64_C(1) << (6U + 7),
+            UINT64_C(1) << (6U + 7 + 7),
+            UINT64_C(1) << (6U + 7 + 7 + 7),
+            UINT64_C(1) << (6U + 7 + 7 + 7 + 7),
+            UINT64_C(1) << (6U + 7 + 7 + 7 + 7 + 7),
+            UINT64_C(1) << (6U + 7 + 7 + 7 + 7 + 7 + 7),
+            UINT64_C(1) << (6U + 7 + 7 + 7 + 7 + 7 + 7 + 8)};
     const size_t bitSize = 8 * (1 + 2 + 3 + 4 + 5 + 6 + 7 + 8);
     testArray(rawArray, VarIntNNArrayTraits<uint64_t>(), bitSize, bitSize);
 }
@@ -930,29 +953,29 @@ TEST_F(ArrayTest, varIntArray)
     rawArray.push_back(0);
     rawArray.push_back(-1);
     rawArray.push_back(1);
-    rawArray.push_back(-(INT64_C(1) << 6) + 1);
-    rawArray.push_back((INT64_C(1) << 6) - 1);
+    rawArray.push_back(-static_cast<int64_t>(UINT64_C(1) << 6U) + 1);
+    rawArray.push_back(static_cast<int64_t>(UINT64_C(1) << 6U) - 1);
     // 2 bytes
-    rawArray.push_back(-(INT64_C(1) << 13) + 1);
-    rawArray.push_back((INT64_C(1) << 13) - 1);
+    rawArray.push_back(-static_cast<int64_t>(UINT64_C(1) << 13U) + 1);
+    rawArray.push_back(static_cast<int64_t>(UINT64_C(1) << 13U) - 1);
     // 3 bytes
-    rawArray.push_back(-(INT64_C(1) << 20) + 1);
-    rawArray.push_back((INT64_C(1) << 20) - 1);
+    rawArray.push_back(-static_cast<int64_t>(UINT64_C(1) << 20U) + 1);
+    rawArray.push_back(static_cast<int64_t>(UINT64_C(1) << 20U) - 1);
     // 4 bytes
-    rawArray.push_back(-(INT64_C(1) << 27) + 1);
-    rawArray.push_back((INT64_C(1) << 27) - 1);
+    rawArray.push_back(-static_cast<int64_t>(UINT64_C(1) << 27U) + 1);
+    rawArray.push_back(static_cast<int64_t>(UINT64_C(1) << 27U) - 1);
     // 5 bytes
-    rawArray.push_back(-(INT64_C(1) << 34) + 1);
-    rawArray.push_back((INT64_C(1) << 34) - 1);
+    rawArray.push_back(-static_cast<int64_t>(UINT64_C(1) << 34U) + 1);
+    rawArray.push_back(static_cast<int64_t>(UINT64_C(1) << 34U) - 1);
     // 6 bytes
-    rawArray.push_back(-(INT64_C(1) << 41) + 1);
-    rawArray.push_back((INT64_C(1) << 41) - 1);
+    rawArray.push_back(-static_cast<int64_t>(UINT64_C(1) << 41U) + 1);
+    rawArray.push_back(static_cast<int64_t>(UINT64_C(1) << 41U) - 1);
     // 7 bytes
-    rawArray.push_back(-(INT64_C(1) << 48) + 1);
-    rawArray.push_back((INT64_C(1) << 48) - 1);
+    rawArray.push_back(-static_cast<int64_t>(UINT64_C(1) << 48U) + 1);
+    rawArray.push_back(static_cast<int64_t>(UINT64_C(1) << 48U) - 1);
     // 8 bytes
-    rawArray.push_back(-(INT64_C(1) << 55) + 1);
-    rawArray.push_back((INT64_C(1) << 55) - 1);
+    rawArray.push_back(-static_cast<int64_t>(UINT64_C(1) << 55U) + 1);
+    rawArray.push_back(static_cast<int64_t>(UINT64_C(1) << 55U) - 1);
     // 9 bytes
     rawArray.push_back(INT64_MIN + 1);
     rawArray.push_back(INT64_MAX);
@@ -968,21 +991,21 @@ TEST_F(ArrayTest, varUIntArray)
     // 1 byte
     rawArray.push_back(0);
     rawArray.push_back(1);
-    rawArray.push_back((UINT64_C(1) << 7) - 1);
+    rawArray.push_back((UINT64_C(1) << 7U) - 1);
     // 2 bytes
-    rawArray.push_back((UINT64_C(1) << 14) - 1);
+    rawArray.push_back((UINT64_C(1) << 14U) - 1);
     // 3 bytes
-    rawArray.push_back((UINT64_C(1) << 21) - 1);
+    rawArray.push_back((UINT64_C(1) << 21U) - 1);
     // 4 bytes
-    rawArray.push_back((UINT64_C(1) << 28) - 1);
+    rawArray.push_back((UINT64_C(1) << 28U) - 1);
     // 5 bytes
-    rawArray.push_back((UINT64_C(1) << 35) - 1);
+    rawArray.push_back((UINT64_C(1) << 35U) - 1);
     // 6 bytes
-    rawArray.push_back((UINT64_C(1) << 42) - 1);
+    rawArray.push_back((UINT64_C(1) << 42U) - 1);
     // 7 bytes
-    rawArray.push_back((UINT64_C(1) << 49) - 1);
+    rawArray.push_back((UINT64_C(1) << 49U) - 1);
     // 8 bytes
-    rawArray.push_back((UINT64_C(1) << 56) - 1);
+    rawArray.push_back((UINT64_C(1) << 56U) - 1);
     // 9 bytes
     rawArray.push_back(UINT64_MAX);
     const size_t bitSize = 8 * (2 + (1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9));
@@ -992,11 +1015,11 @@ TEST_F(ArrayTest, varUIntArray)
 TEST_F(ArrayTest, varSizeArray)
 {
     std::vector<uint32_t> rawArray = {
-            UINT32_C(1) << 6,
-            UINT32_C(1) << (6 + 7),
-            UINT32_C(1) << (6 + 7 + 7),
-            UINT32_C(1) << (6 + 7 + 7 + 7),
-            UINT32_C(1) << (1 + 7 + 7 + 7 + 8)};
+            UINT32_C(1) << 6U,
+            UINT32_C(1) << (6U + 7),
+            UINT32_C(1) << (6U + 7 + 7),
+            UINT32_C(1) << (6U + 7 + 7 + 7),
+            UINT32_C(1) << (1U + 7 + 7 + 7 + 8)};
     const size_t bitSize = 8 * (1 + 2 + 3 + 4 + 5);
     testArray(rawArray, VarSizeArrayTraits(), bitSize, bitSize);
 }
@@ -1192,14 +1215,14 @@ TEST_F(ArrayTest, intField16PackedArray)
 TEST_F(ArrayTest, varUInt64PackedArray)
 {
     std::vector<uint64_t> rawArray = {
-            UINT64_C(1) << 6,
-            UINT64_C(1) << (6 + 7),
-            UINT64_C(1) << (6 + 7 + 7),
-            UINT64_C(1) << (6 + 7 + 7 + 7),
-            UINT64_C(1) << (6 + 7 + 7 + 7 + 7),
-            UINT64_C(1) << (6 + 7 + 7 + 7 + 7 + 7),
-            UINT64_C(1) << (6 + 7 + 7 + 7 + 7 + 7 + 7),
-            UINT64_C(1) << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 8)};
+            UINT64_C(1) << 6U,
+            UINT64_C(1) << (6U + 7),
+            UINT64_C(1) << (6U + 7 + 7),
+            UINT64_C(1) << (6U + 7 + 7 + 7),
+            UINT64_C(1) << (6U + 7 + 7 + 7 + 7),
+            UINT64_C(1) << (6U + 7 + 7 + 7 + 7 + 7),
+            UINT64_C(1) << (6U + 7 + 7 + 7 + 7 + 7 + 7),
+            UINT64_C(1) << (6U + 7 + 7 + 7 + 7 + 7 + 7 + 8)};
     testPackedArray(rawArray, VarIntNNArrayTraits<uint64_t>());
 
     std::vector<uint64_t> unpackedRawArray = {UINT64_C(5000000), 0, 0, 0, 0, 0, 0};

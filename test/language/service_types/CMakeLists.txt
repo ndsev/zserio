@@ -30,7 +30,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/service_types/complex_types_service/RGBModel.h
 )
 
-zserio_add_library(TARGET service_types_zs
+zserio_add_library(service_types_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE service_types.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -40,9 +40,12 @@ zserio_add_library(TARGET service_types_zs
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
-add_test_sources(
-    cpp/SimpleServiceTest.cpp
-    cpp/ComplexTypesServiceTest.cpp
+add_custom_test(service_types
+    DEPENDS
+        service_types_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/SimpleServiceTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ComplexTypesServiceTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(service_types_zs)

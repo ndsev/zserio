@@ -33,10 +33,16 @@ public:
         m_database->createSchema();
     }
 
-    ~BlobParamTableTest()
+    ~BlobParamTableTest() override
     {
         delete m_database;
     }
+
+    BlobParamTableTest(const BlobParamTableTest&) = delete;
+    BlobParamTableTest& operator=(const BlobParamTableTest&) = delete;
+
+    BlobParamTableTest(BlobParamTableTest&&) = delete;
+    BlobParamTableTest& operator=(BlobParamTableTest&&) = delete;
 
 protected:
     static void fillBlobParamTableRowWithNullValues(BlobParamTable::Row& row, uint32_t blobId)
@@ -128,23 +134,17 @@ protected:
             return false;
 
         const unsigned char* readTableName = sqlite3_column_text(statement.get(), 0);
-        if (readTableName == nullptr ||
-                checkTableName.compare(reinterpret_cast<const char*>(readTableName)) != 0)
-        {
-            return false;
-        }
-
-        return true;
+        return (readTableName != nullptr && checkTableName == reinterpret_cast<const char*>(readTableName));
     }
 
-    static const char DB_FILE_NAME[];
+    static const char* const DB_FILE_NAME;
 
     static const uint32_t NUM_BLOB_PARAM_TABLE_ROWS;
 
     sql_tables::TestDb* m_database;
 };
 
-const char BlobParamTableTest::DB_FILE_NAME[] = "language/sql_tables/blob_param_table_test.sqlite";
+const char* const BlobParamTableTest::DB_FILE_NAME = "language/sql_tables/blob_param_table_test.sqlite";
 
 const uint32_t BlobParamTableTest::NUM_BLOB_PARAM_TABLE_ROWS = 20;
 

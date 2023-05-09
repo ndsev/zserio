@@ -110,7 +110,7 @@ set(ZSERIO_GENERATED_SOURCES_DOC_COMMENT_MISSING
     ${ZSERIO_GEN_DIR_DOC_COMMENT_MISSING}/doc_comment_missing_warning/documented/DocumentedUnionType.h
 )
 
-zserio_add_library(TARGET comments_warning_zs
+zserio_add_library(comments_warning_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE comments_warning.zs
     OUT_DIR ${ZSERIO_GEN_DIR_COMMENTS}
@@ -122,7 +122,7 @@ zserio_add_library(TARGET comments_warning_zs
     ZSERIO_LOG_FILENAME zserio_log_comments.txt
 )
 
-zserio_add_library(TARGET doc_comment_missing_warning_zs
+zserio_add_library(doc_comment_missing_warning_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE doc_comment_missing_warning.zs
     OUT_DIR ${ZSERIO_GEN_DIR_DOC_COMMENT_MISSING}
@@ -137,10 +137,14 @@ zserio_add_library(TARGET doc_comment_missing_warning_zs
 target_include_directories(comments_warning_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 target_include_directories(doc_comment_missing_warning_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 
-add_test_sources(
-    cpp/CommentsWarningTest.cpp
-    cpp/DocCommentMissingWarningTest.cpp
+add_custom_test(comments_warning
+    DEPENDS
+        comments_warning_zs
+        doc_comment_missing_warning_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/CommentsWarningTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/DocCommentMissingWarningTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES_COMMENTS}
+        ${ZSERIO_GENERATED_SOURCES_DOC_COMMENT_MISSING}
 )
-
-add_test_dependencies(comments_warning_zs)
-add_test_dependencies(doc_comment_missing_warning_zs)

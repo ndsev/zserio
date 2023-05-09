@@ -1,4 +1,4 @@
-#include "math.h"
+#include <cmath>
 
 #include "gtest/gtest.h"
 
@@ -19,7 +19,7 @@ namespace
         if (value == 1)
             return 1;
 
-        return static_cast<uint8_t>(log2(value - 1) + 1);
+        return static_cast<uint8_t>(log2(static_cast<double>(value - 1)) + 1);
     }
 }
 
@@ -48,7 +48,7 @@ TEST(NumBitsOperatorTest, GetNumBits16)
 TEST(NumBitsOperatorTest, GetNumBits32)
 {
     NumBitsFunctions numBitsFunctions;
-    for (uint32_t value32 = 1; value32 < (UINT32_C(1) << 31); value32<<=1)
+    for (uint32_t value32 = 1; value32 < (1U << 31U); value32 <<= 1U)
     {
         numBitsFunctions.setValue32(value32);
         ASSERT_EQ(calculateExpectedNumBits(value32), numBitsFunctions.funcGetNumBits32()) <<
@@ -59,7 +59,7 @@ TEST(NumBitsOperatorTest, GetNumBits32)
 TEST(NumBitsOperatorTest, GetNumBits64)
 {
     NumBitsFunctions numBitsFunctions;
-    for (uint64_t value64 = 1; value64 < (UINT64_C(1) << 48); value64<<=1)
+    for (uint64_t value64 = 1; value64 < (UINT64_C(1) << 48U); value64 <<= 1U)
     {
         numBitsFunctions.setValue64(value64);
         ASSERT_EQ(calculateExpectedNumBits(value64), numBitsFunctions.funcGetNumBits64())

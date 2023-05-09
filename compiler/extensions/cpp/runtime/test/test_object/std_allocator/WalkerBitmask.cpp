@@ -52,42 +52,42 @@ const ::zserio::ITypeInfo& WalkerBitmask::typeInfo()
                 m_bitmask(bitmask)
         {}
 
-        virtual size_t bitSizeOf(size_t bitPosition) const override
+        size_t bitSizeOf(size_t bitPosition) const override
         {
             return m_bitmask.bitSizeOf(bitPosition);
         }
 
-        virtual void write(::zserio::BitStreamWriter& writer) const override
+        void write(::zserio::BitStreamWriter& writer) const override
         {
             m_bitmask.write(writer);
         }
 
-        virtual ::zserio::AnyHolder<> getAnyValue(const ::std::allocator<uint8_t>& allocator) const override
+        ::zserio::AnyHolder<> getAnyValue(const ::std::allocator<uint8_t>& allocator) const override
         {
             return ::zserio::AnyHolder<>(m_bitmask, allocator);
         }
 
-        virtual ::zserio::AnyHolder<> getAnyValue(const ::std::allocator<uint8_t>& allocator) override
+        ::zserio::AnyHolder<> getAnyValue(const ::std::allocator<uint8_t>& allocator) override
         {
             return ::zserio::AnyHolder<>(m_bitmask, allocator);
         }
 
-        virtual uint32_t getUInt32() const override
+        uint32_t getUInt32() const override
         {
             return m_bitmask.getValue();
         }
 
-        virtual uint64_t toUInt() const override
+        uint64_t toUInt() const override
         {
             return m_bitmask.getValue();
         }
 
-        virtual double toDouble() const override
+        double toDouble() const override
         {
             return static_cast<double>(toUInt());
         }
 
-        virtual ::zserio::string<> toString(
+        ::zserio::string<> toString(
                 const ::std::allocator<uint8_t>& allocator = ::std::allocator<uint8_t>()) const override
         {
             return m_bitmask.toString(allocator);

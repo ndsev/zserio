@@ -194,7 +194,7 @@ compiler_set_warnings_as_errors()"
     fi
 
     cat > ${BUILD_DIR}/CMakeLists.txt << EOF
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.6.0)
 project(test_zs_${TEST_NAME})
 
 enable_testing()
@@ -202,6 +202,8 @@ enable_testing()
 set(ZSERIO_ROOT "${HOST_ZSERIO_ROOT}" CACHE PATH "")
 set(ZSERIO_RELEASE "${HOST_ZSERIO_RELEASE}" CACHE PATH "")
 set(CMAKE_MODULE_PATH "\${ZSERIO_ROOT}/cmake")
+set(CPPCHECK_HOME "" CACHE PATH "Home directory of cppcheck tool. If empty, cppcheck tool is not called.")
+set(CLANG_TIDY_BIN "" CACHE STRING "Name of clang-tidy binary. If empty, clang-tidy tool is not called.")
 
 # cmake helpers
 include(cmake_utils)
@@ -220,16 +222,32 @@ include(zserio_utils)
 set(ZSERIO_RUNTIME_LIBRARY_DIR "\${ZSERIO_RELEASE}/runtime_libs/${RUNTIME_LIBRARY_SUBDIR}")
 zserio_add_runtime_library(RUNTIME_LIBRARY_DIR "\${ZSERIO_RUNTIME_LIBRARY_DIR}")
 
-file(GLOB_RECURSE SOURCES RELATIVE "\${CMAKE_CURRENT_SOURCE_DIR}" "gen/*.cpp" "gen/*.h")
+file(GLOB_RECURSE SOURCES "gen/*.cpp" "gen/*.h")
 add_library(\${PROJECT_NAME} \${SOURCES})
 set_target_properties(\${PROJECT_NAME} PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS NO)
 target_include_directories(\${PROJECT_NAME} PUBLIC "\${CMAKE_CURRENT_SOURCE_DIR}/gen")
 target_link_libraries(\${PROJECT_NAME} ZserioCppRuntime)${SQLITE_USE}
 
+# clang-tidy
+include(clang_tidy_utils)
+clang_tidy_add_custom_target(\${PROJECT_NAME}-clang-tidy
+    DEPENDS \${PROJECT_NAME}
+    SOURCES "\${SOURCES}"
+    BUILD_PATH "\${CMAKE_BINARY_DIR}"
+    CONFIG_FILE "\${ZSERIO_ROOT}/compiler/extensions/cpp/runtime/ClangTidyConfig.txt"
+    HEADER_FILTER "\${CMAKE_CURRENT_SOURCE_DIR}/gen/.*"
+    WERROR OFF
+)
+
 # add cppcheck custom command
 include(cppcheck_utils)
-cppcheck_add_custom_command(TARGET \${PROJECT_NAME} SOURCE_DIR \${CMAKE_CURRENT_SOURCE_DIR}/gen
-    OPTIONS --suppress=variableScope
+cppcheck_add_custom_command(TARGET \${PROJECT_NAME}
+    SOURCE_DIR \${CMAKE_CURRENT_SOURCE_DIR}/gen
+    INCLUDE_DIR \${CMAKE_CURRENT_SOURCE_DIR}/gen
+    OPTIONS
+        --suppress=variableScope --suppress=uninitMemberVar
+        --suppress=noExplicitConstructor --suppress=duplicateCondition
+        --suppress=syntaxError # needed on Windows
 )
 
 add_test(compile_generated_cpp \${CMAKE_COMMAND} -E echo "Generated sources were successfully compiled!")

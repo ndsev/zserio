@@ -60,7 +60,7 @@ TEST(CppRuntimeExceptionTest, appendBool)
 
 TEST(CppRuntimeExceptionTest, appendFloat)
 {
-    const float value = 123.456f;
+    const float value = 123.456F;
     CppRuntimeException exception = CppRuntimeException() << value;
     ASSERT_EQ(std::string("123.456"), exception.what());
 }
@@ -82,7 +82,7 @@ TEST(CppRuntimeExceptionTest, appendInt)
 class Bitmask
 {
 public:
-    typedef uint8_t underlying_type;
+    using underlying_type = uint8_t;
 
     enum class Values : underlying_type
     {

@@ -1,0 +1,3 @@
+readability-braces-around-statements
+
+readability-make-member-function-const:gen/functions_warning/optional_references_in_function/SingleOptionalFieldFunction.cpp

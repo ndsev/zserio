@@ -33,10 +33,16 @@ public:
         m_database->createSchema();
     }
 
-    ~BlobOffsetsParamTableTest()
+    ~BlobOffsetsParamTableTest() override
     {
         delete m_database;
     }
+
+    BlobOffsetsParamTableTest(const BlobOffsetsParamTableTest&) = delete;
+    BlobOffsetsParamTableTest& operator=(const BlobOffsetsParamTableTest&) = delete;
+
+    BlobOffsetsParamTableTest(BlobOffsetsParamTableTest&&) = delete;
+    BlobOffsetsParamTableTest& operator=(BlobOffsetsParamTableTest&&) = delete;
 
 protected:
     static void fillBlobOffsetsParamTableRow(BlobOffsetsParamTable::Row& row, uint32_t blobId,
@@ -98,23 +104,17 @@ protected:
             return false;
 
         const unsigned char* readTableName = sqlite3_column_text(statement.get(), 0);
-        if (readTableName == nullptr ||
-                checkTableName.compare(reinterpret_cast<const char*>(readTableName)) != 0)
-        {
-            return false;
-        }
-
-        return true;
+        return (readTableName != nullptr && checkTableName == reinterpret_cast<const char*>(readTableName));
     }
 
-    static const char DB_FILE_NAME[];
+    static const char* const DB_FILE_NAME;
 
     static const uint32_t NUM_BLOB_OFFSETS_PARAM_TABLE_ROWS;
 
     sql_tables::TestDb* m_database;
 };
 
-const char BlobOffsetsParamTableTest::DB_FILE_NAME[] =
+const char* const BlobOffsetsParamTableTest::DB_FILE_NAME =
         "language/sql_tables/blob_offsets_param_table_test.sqlite";
 
 const uint32_t BlobOffsetsParamTableTest::NUM_BLOB_OFFSETS_PARAM_TABLE_ROWS = 20;

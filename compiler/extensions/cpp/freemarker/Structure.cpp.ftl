@@ -154,18 +154,18 @@ const ${types.typeInfo.name}& ${name}::typeInfo()
         <@reflectable_initialize name compoundParametersData.list/>
         </#if>
 
-        virtual size_t initializeOffsets(size_t bitPosition) override
+        size_t initializeOffsets(size_t bitPosition) override
         {
             return m_object.initializeOffsets(bitPosition);
         }
     </#if>
 
-        virtual size_t bitSizeOf(size_t bitPosition) const override
+        size_t bitSizeOf(size_t bitPosition) const override
         {
             return m_object.bitSizeOf(bitPosition);
         }
 
-        virtual void write(::zserio::BitStreamWriter&<#if withWriterCode> writer</#if>) const override
+        void write(::zserio::BitStreamWriter&<#if withWriterCode> writer</#if>) const override
         {
     <#if withWriterCode>
             m_object.write(writer);
@@ -203,13 +203,13 @@ const ${types.typeInfo.name}& ${name}::typeInfo()
         </#if>
     </#if>
 
-        virtual ${types.anyHolder.name} getAnyValue(const allocator_type& allocator) const override
+        ${types.anyHolder.name} getAnyValue(const allocator_type& allocator) const override
         {
             return ${types.anyHolder.name}(::std::cref(m_object), allocator);
         }
     <#if !isConst>
 
-        virtual ${types.anyHolder.name} getAnyValue(const allocator_type& allocator) override
+        ${types.anyHolder.name} getAnyValue(const allocator_type& allocator) override
         {
             return ${types.anyHolder.name}(::std::ref(m_object), allocator);
         }

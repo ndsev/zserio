@@ -1,2 +1,0 @@
-// gtest asserts are converted to normal asserts using cppcheck's config googletest.cfg
-assertWithSideEffect

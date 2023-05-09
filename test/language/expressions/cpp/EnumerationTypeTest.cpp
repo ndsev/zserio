@@ -1,5 +1,3 @@
-#include "math.h"
-
 #include "gtest/gtest.h"
 
 #include "expressions/enumeration_type/EnumerationTypeExpression.h"

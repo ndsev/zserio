@@ -12,7 +12,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/pubsub_types/simple_pubsub/UInt64Value.h
 )
 
-zserio_add_library(TARGET pubsub_types_zs
+zserio_add_library(pubsub_types_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE pubsub_types.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -22,8 +22,11 @@ zserio_add_library(TARGET pubsub_types_zs
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
-add_test_sources(
-    cpp/SimplePubsubTest.cpp
+add_custom_test(pubsub_types
+    DEPENDS
+        pubsub_types_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/SimplePubsubTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(pubsub_types_zs)

@@ -15,7 +15,7 @@ class BoolParamChoiceTest : public ::testing::Test
 protected:
     void writeBoolParamChoiceToByteArray(zserio::BitStreamWriter& writer, bool selector, int32_t value)
     {
-        if (selector == true)
+        if (selector)
             writer.writeSignedBits(value, 8);
         else
             writer.writeSignedBits(value, 16);

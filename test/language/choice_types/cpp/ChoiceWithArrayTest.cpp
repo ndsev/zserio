@@ -31,15 +31,15 @@ TEST(ChoiceWithArrayTest, setters)
     ASSERT_THROW(choice16.getArray8(), zserio::CppRuntimeException);
 
     vector_type<Data8> data8 = { Data8{1}, Data8{2}, Data8{3} };
-    const void* dataPtr = &data8[0];
+    const void* dataPtr = data8.data();
     TestChoice choiceData8Copied;
     choiceData8Copied.setArray8(data8);
     choiceData8Copied.initialize(8);
-    ASSERT_NE(dataPtr, &choiceData8Copied.getArray8()[0]);
+    ASSERT_NE(dataPtr, choiceData8Copied.getArray8().data());
     TestChoice choiceData8Moved;
     choiceData8Moved.setArray8(std::move(data8));
     choiceData8Moved.initialize(8);
-    ASSERT_EQ(dataPtr, &choiceData8Moved.getArray8()[0]);
+    ASSERT_EQ(dataPtr, choiceData8Moved.getArray8().data());
 }
 
 TEST(ChoiceWithArrayTest, moveConstructor)
@@ -47,9 +47,9 @@ TEST(ChoiceWithArrayTest, moveConstructor)
     TestChoice choice8;
     choice8.setArray8(vector_type<Data8>{ Data8{1}, Data8{2} , Data8{3} });
     choice8.initialize(8);
-    const void* dataPtr = &choice8.getArray8()[0];
+    const void* dataPtr = choice8.getArray8().data();
     TestChoice choice8Moved(std::move(choice8));
-    ASSERT_EQ(dataPtr, &choice8Moved.getArray8()[0]);
+    ASSERT_EQ(dataPtr, choice8Moved.getArray8().data());
 }
 
 TEST(ChoiceWithArrayTest, moveAssignmentOperator)
@@ -57,10 +57,10 @@ TEST(ChoiceWithArrayTest, moveAssignmentOperator)
     TestChoice choice8;
     choice8.setArray8(vector_type<Data8>{ Data8{1}, Data8{2} , Data8{3} });
     choice8.initialize(8);
-    const void* dataPtr = &choice8.getArray8()[0];
+    const void* dataPtr = choice8.getArray8().data();
     TestChoice choice8Moved;
     choice8Moved = std::move(choice8);
-    ASSERT_EQ(dataPtr, &choice8Moved.getArray8()[0]);
+    ASSERT_EQ(dataPtr, choice8Moved.getArray8().data());
 }
 
 TEST(ChoiceWithArrayTest, array8)
@@ -68,13 +68,13 @@ TEST(ChoiceWithArrayTest, array8)
     TestChoice testChoice;
     testChoice.initialize(8);
     vector_type<Data8> data8(4);
-    const void* dataPtr = &data8[0];
+    const void* dataPtr = data8.data();
     testChoice.setArray8(data8);
     ASSERT_EQ(4, testChoice.getArray8().size());
-    ASSERT_NE(dataPtr, &testChoice.getArray8()[0]);
+    ASSERT_NE(dataPtr, testChoice.getArray8().data());
 
     testChoice.setArray8(std::move(data8));
-    ASSERT_EQ(dataPtr, &testChoice.getArray8()[0]);
+    ASSERT_EQ(dataPtr, testChoice.getArray8().data());
 }
 
 TEST(ChoiceWithArrayTest, array16)
@@ -82,13 +82,13 @@ TEST(ChoiceWithArrayTest, array16)
     TestChoice testChoice;
     testChoice.initialize(16);
     vector_type<int16_t> array16(4);
-    const void* dataPtr = &array16[0];
+    const void* dataPtr = array16.data();
     testChoice.setArray16(array16);
     ASSERT_EQ(4, testChoice.getArray16().size());
-    ASSERT_NE(dataPtr, &testChoice.getArray16()[0]);
+    ASSERT_NE(dataPtr, testChoice.getArray16().data());
 
     testChoice.setArray16(std::move(array16));
-    ASSERT_EQ(dataPtr, &testChoice.getArray16()[0]);
+    ASSERT_EQ(dataPtr, testChoice.getArray16().data());
 }
 
 TEST(ChoiceWithArrayTest, writeReadFileArray8)

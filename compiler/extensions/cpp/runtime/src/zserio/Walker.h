@@ -65,9 +65,9 @@ public:
     /**
      * Walks given reflectable zserio compound object.
      *
-     * \param reflectable Zserio compound object to walk.
+     * \param compound Zserio compound object to walk.
      */
-    void walk(const IBasicReflectableConstPtr<ALLOC>& reflectable);
+    void walk(const IBasicReflectableConstPtr<ALLOC>& compound);
 
 private:
     void walkFields(const IBasicReflectableConstPtr<ALLOC>& compound, const IBasicTypeInfo<ALLOC>& typeInfo);
@@ -110,20 +110,20 @@ public:
      * \}
      */
 
-    virtual void beginRoot(const IBasicReflectableConstPtr<ALLOC>&) override {}
-    virtual void endRoot(const IBasicReflectableConstPtr<ALLOC>&) override {}
+    void beginRoot(const IBasicReflectableConstPtr<ALLOC>&) override {}
+    void endRoot(const IBasicReflectableConstPtr<ALLOC>&) override {}
 
-    virtual void beginArray(const IBasicReflectableConstPtr<ALLOC>&,
+    void beginArray(const IBasicReflectableConstPtr<ALLOC>&,
             const BasicFieldInfo<ALLOC>&) override {}
-    virtual void endArray(const IBasicReflectableConstPtr<ALLOC>&,
+    void endArray(const IBasicReflectableConstPtr<ALLOC>&,
             const BasicFieldInfo<ALLOC>&) override {}
 
-    virtual void beginCompound(const IBasicReflectableConstPtr<ALLOC>&,
+    void beginCompound(const IBasicReflectableConstPtr<ALLOC>&,
             const BasicFieldInfo<ALLOC>&, size_t) override {}
-    virtual void endCompound(const IBasicReflectableConstPtr<ALLOC>&,
+    void endCompound(const IBasicReflectableConstPtr<ALLOC>&,
             const BasicFieldInfo<ALLOC>&, size_t) override {}
 
-    virtual void visitValue(const IBasicReflectableConstPtr<ALLOC>&,
+    void visitValue(const IBasicReflectableConstPtr<ALLOC>&,
             const BasicFieldInfo<ALLOC>&, size_t) override {}
 };
 
@@ -157,35 +157,35 @@ public:
      * \}
      */
 
-    virtual bool beforeArray(const IBasicReflectableConstPtr<ALLOC>&, const BasicFieldInfo<ALLOC>&) override
+    bool beforeArray(const IBasicReflectableConstPtr<ALLOC>&, const BasicFieldInfo<ALLOC>&) override
     {
         return true;
     }
 
-    virtual bool afterArray(const IBasicReflectableConstPtr<ALLOC>&, const BasicFieldInfo<ALLOC>&) override
+    bool afterArray(const IBasicReflectableConstPtr<ALLOC>&, const BasicFieldInfo<ALLOC>&) override
     {
         return true;
     }
 
-    virtual bool beforeCompound(const IBasicReflectableConstPtr<ALLOC>&,
+    bool beforeCompound(const IBasicReflectableConstPtr<ALLOC>&,
             const BasicFieldInfo<ALLOC>&, size_t) override
     {
         return true;
     }
 
-    virtual bool afterCompound(const IBasicReflectableConstPtr<ALLOC>&,
+    bool afterCompound(const IBasicReflectableConstPtr<ALLOC>&,
             const BasicFieldInfo<ALLOC>&, size_t) override
     {
         return true;
     }
 
-    virtual bool beforeValue(const IBasicReflectableConstPtr<ALLOC>&,
+    bool beforeValue(const IBasicReflectableConstPtr<ALLOC>&,
             const BasicFieldInfo<ALLOC>&, size_t) override
     {
         return true;
     }
 
-    virtual bool afterValue(const IBasicReflectableConstPtr<ALLOC>&,
+    bool afterValue(const IBasicReflectableConstPtr<ALLOC>&,
             const BasicFieldInfo<ALLOC>&, size_t) override
     {
         return true;
@@ -224,19 +224,19 @@ public:
      * \}
      */
 
-    virtual bool beforeArray(const IBasicReflectableConstPtr<ALLOC>& array,
+    bool beforeArray(const IBasicReflectableConstPtr<ALLOC>& array,
             const BasicFieldInfo<ALLOC>& fieldInfo) override;
-    virtual bool afterArray(const IBasicReflectableConstPtr<ALLOC>& array,
+    bool afterArray(const IBasicReflectableConstPtr<ALLOC>& array,
             const BasicFieldInfo<ALLOC>& fieldInfo) override;
 
-    virtual bool beforeCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
+    bool beforeCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
             const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
-    virtual bool afterCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
+    bool afterCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
             const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
 
-    virtual bool beforeValue(const IBasicReflectableConstPtr<ALLOC>& value,
+    bool beforeValue(const IBasicReflectableConstPtr<ALLOC>& value,
             const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
-    virtual bool afterValue(const IBasicReflectableConstPtr<ALLOC>& value,
+    bool afterValue(const IBasicReflectableConstPtr<ALLOC>& value,
             const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
 
 private:
@@ -285,19 +285,19 @@ public:
      * \}
      */
 
-    virtual bool beforeArray(const IBasicReflectableConstPtr<ALLOC>& array,
+    bool beforeArray(const IBasicReflectableConstPtr<ALLOC>& array,
             const BasicFieldInfo<ALLOC>& fieldInfo) override;
-    virtual bool afterArray(const IBasicReflectableConstPtr<ALLOC>& array,
+    bool afterArray(const IBasicReflectableConstPtr<ALLOC>& array,
             const BasicFieldInfo<ALLOC>& fieldInfo) override;
 
-    virtual bool beforeCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
+    bool beforeCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
             const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
-    virtual bool afterCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
+    bool afterCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
             const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
 
-    virtual bool beforeValue(const IBasicReflectableConstPtr<ALLOC>& value,
+    bool beforeValue(const IBasicReflectableConstPtr<ALLOC>& value,
             const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
-    virtual bool afterValue(const IBasicReflectableConstPtr<ALLOC>& value,
+    bool afterValue(const IBasicReflectableConstPtr<ALLOC>& value,
             const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
 
 private:
@@ -344,19 +344,19 @@ public:
      * \}
      */
 
-    virtual bool beforeArray(const IBasicReflectableConstPtr<ALLOC>& array,
+    bool beforeArray(const IBasicReflectableConstPtr<ALLOC>& array,
             const BasicFieldInfo<ALLOC>& fieldInfo) override;
-    virtual bool afterArray(const IBasicReflectableConstPtr<ALLOC>& array,
+    bool afterArray(const IBasicReflectableConstPtr<ALLOC>& array,
             const BasicFieldInfo<ALLOC>& fieldInfo) override;
 
-    virtual bool beforeCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
+    bool beforeCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
             const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
-    virtual bool afterCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
+    bool afterCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
             const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
 
-    virtual bool beforeValue(const IBasicReflectableConstPtr<ALLOC>& value,
+    bool beforeValue(const IBasicReflectableConstPtr<ALLOC>& value,
             const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
-    virtual bool afterValue(const IBasicReflectableConstPtr<ALLOC>& value,
+    bool afterValue(const IBasicReflectableConstPtr<ALLOC>& value,
             const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
 
 private:
@@ -403,19 +403,19 @@ public:
      * \}
      */
 
-    virtual bool beforeArray(const IBasicReflectableConstPtr<ALLOC>& array,
+    bool beforeArray(const IBasicReflectableConstPtr<ALLOC>& array,
             const BasicFieldInfo<ALLOC>& fieldInfo) override;
-    virtual bool afterArray(const IBasicReflectableConstPtr<ALLOC>& array,
+    bool afterArray(const IBasicReflectableConstPtr<ALLOC>& array,
             const BasicFieldInfo<ALLOC>& fieldInfo) override;
 
-    virtual bool beforeCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
+    bool beforeCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
             const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
-    virtual bool afterCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
+    bool afterCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
             const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
 
-    virtual bool beforeValue(const IBasicReflectableConstPtr<ALLOC>& value,
+    bool beforeValue(const IBasicReflectableConstPtr<ALLOC>& value,
             const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
-    virtual bool afterValue(const IBasicReflectableConstPtr<ALLOC>& value,
+    bool afterValue(const IBasicReflectableConstPtr<ALLOC>& value,
             const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
 
 private:
@@ -667,7 +667,7 @@ public:
         return m_matches;
     }
 
-    virtual bool beforeArray(const IBasicReflectableConstPtr<ALLOC>&,
+    bool beforeArray(const IBasicReflectableConstPtr<ALLOC>&,
             const BasicFieldInfo<ALLOC>& fieldInfo) override
     {
         m_currentPath.emplace_back(fieldInfo.schemaName.data(), fieldInfo.schemaName.size());
@@ -677,13 +677,13 @@ public:
         return !m_matches;
     }
 
-    virtual bool afterArray(const IBasicReflectableConstPtr<ALLOC>&, const BasicFieldInfo<ALLOC>&) override
+    bool afterArray(const IBasicReflectableConstPtr<ALLOC>&, const BasicFieldInfo<ALLOC>&) override
     {
         m_currentPath.pop_back();
         return !m_matches; // terminate when the match is already found
     }
 
-    virtual bool beforeCompound(const IBasicReflectableConstPtr<ALLOC>&,
+    bool beforeCompound(const IBasicReflectableConstPtr<ALLOC>&,
             const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override
     {
         appendPath(fieldInfo, elementIndex);
@@ -693,14 +693,14 @@ public:
         return !m_matches;
     }
 
-    virtual bool afterCompound(const IBasicReflectableConstPtr<ALLOC>&, const BasicFieldInfo<ALLOC>& fieldInfo,
+    bool afterCompound(const IBasicReflectableConstPtr<ALLOC>&, const BasicFieldInfo<ALLOC>& fieldInfo,
             size_t elementIndex) override
     {
         popPath(fieldInfo, elementIndex);
         return !m_matches; // terminate when the match is already found
     }
 
-    virtual bool beforeValue(const IBasicReflectableConstPtr<ALLOC>&, const BasicFieldInfo<ALLOC>& fieldInfo,
+    bool beforeValue(const IBasicReflectableConstPtr<ALLOC>&, const BasicFieldInfo<ALLOC>& fieldInfo,
             size_t elementIndex) override
     {
         appendPath(fieldInfo, elementIndex);
@@ -709,7 +709,7 @@ public:
         return !m_matches; // terminate when the match is already found
     }
 
-    virtual bool afterValue(const IBasicReflectableConstPtr<ALLOC>&, const BasicFieldInfo<ALLOC>& fieldInfo,
+    bool afterValue(const IBasicReflectableConstPtr<ALLOC>&, const BasicFieldInfo<ALLOC>& fieldInfo,
             size_t elementIndex) override
     {
         popPath(fieldInfo, elementIndex);

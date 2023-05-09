@@ -1,39 +1,40 @@
+#include <string>
+#include <array>
+
 #include "gtest/gtest.h"
 
 #include "zserio/StringView.h"
 
-#include <string>
-
 namespace zserio
 {
 
-TEST(StringViewTest, PtrConstructor)
+TEST(StringViewTest, ptrConstructor)
 {
-    const char* str = "karbanatek";
+    const char* str = "everything";
     StringView sv(str);
     ASSERT_EQ(str, sv.data());
     ASSERT_EQ(10, sv.size());
 }
 
-TEST(StringViewTest, PtrCountConstructor)
+TEST(StringViewTest, ptrCountConstructor)
 {
-    const char* str = "karbanatek";
+    const char* str = "everything";
     StringView sv(str, 9);
     ASSERT_EQ(str, sv.data());
     ASSERT_EQ(9, sv.size());
 }
 
-TEST(StringViewTest, StringConstructor)
+TEST(StringViewTest, stringConstructor)
 {
-    std::string str = "karbanatek";
+    std::string str = "everything";
     StringView sv(str);
     ASSERT_EQ(str.data(), sv.data());
     ASSERT_EQ(str.size(), sv.size());
 }
 
-TEST(StringViewTest, BeginEnd)
+TEST(StringViewTest, beginEnd)
 {
-    std::string str = "karbanatek";
+    std::string str = "everything";
     StringView sv(str);
 
     auto itStr = str.begin();
@@ -51,9 +52,9 @@ TEST(StringViewTest, BeginEnd)
     }
 }
 
-TEST(StringViewTest, RbeginRend)
+TEST(StringViewTest, rBeginRend)
 {
-    std::string str = "karbanatek";
+    std::string str = "everything";
     StringView sv(str);
 
     auto itStr = str.rbegin();
@@ -71,9 +72,9 @@ TEST(StringViewTest, RbeginRend)
     }
 }
 
-TEST(StringViewTest, ArrayAccess)
+TEST(StringViewTest, arrayAccess)
 {
-    const char* str = "karbanatek";
+    const char* str = "everything";
     StringView sv(str);
 
     for (size_t i = 0; i < sv.size(); ++i)
@@ -82,9 +83,9 @@ TEST(StringViewTest, ArrayAccess)
     }
 }
 
-TEST(StringViewTest, At)
+TEST(StringViewTest, at)
 {
-    const char* str = "karbanatek";
+    const char* str = "everything";
     StringView sv(str);
 
     for (size_t i = 0; i < sv.size(); ++i)
@@ -95,60 +96,60 @@ TEST(StringViewTest, At)
     ASSERT_THROW(sv.at(11), CppRuntimeException);
 }
 
-TEST(StringViewTest, Front)
+TEST(StringViewTest, front)
 {
-    const char* str = "nevim";
+    const char* str = "nothing";
     StringView sv(str);
     ASSERT_EQ('n', sv.front());
 }
 
-TEST(StringViewTest, Back)
+TEST(StringViewTest, back)
 {
-    const char* str = "nevim";
+    const char* str = "beam";
     StringView sv(str);
     ASSERT_EQ('m', sv.back());
 }
 
-TEST(StringViewTest, Data)
+TEST(StringViewTest, data)
 {
-    const char* str = "Karbanatek";
+    const char* str = "Everything";
     StringView sv(str);
     ASSERT_EQ(str, sv.data());
 }
 
-TEST(StringViewTest, Size)
+TEST(StringViewTest, size)
 {
-    const char* str = "Karbanatek";
+    const char* str = "Everything";
     StringView sv(str);
     ASSERT_EQ(10, sv.size());
 }
 
-TEST(StringViewTest, Length)
+TEST(StringViewTest, length)
 {
-    const char* str = "Karbanatek";
+    const char* str = "Everything";
     StringView sv(str);
     ASSERT_EQ(10, sv.length());
 }
 
-TEST(StringViewTest, MaxSize)
+TEST(StringViewTest, maxSize)
 {
-    const char* str = "Karbanatek";
+    const char* str = "Everything";
     StringView sv(str);
-    ASSERT_LE((1u << 16), sv.max_size());
+    ASSERT_LE(1U << 16U, sv.max_size());
 }
 
-TEST(StringViewTest, Empty)
+TEST(StringViewTest, empty)
 {
-    const char* str = "Karbanatek";
+    const char* str = "Everything";
     StringView sv(str);
     StringView svEmpty;
     ASSERT_FALSE(sv.empty());
     ASSERT_TRUE(svEmpty.empty());
 }
 
-TEST(StringViewTest, RemovePrefix)
+TEST(StringViewTest, removePrefix)
 {
-    const char* str = "Karbanatek";
+    const char* str = "Everything";
     StringView sv(str);
 
     sv.remove_prefix(2);
@@ -159,9 +160,9 @@ TEST(StringViewTest, RemovePrefix)
     ASSERT_TRUE(sv.empty());
 }
 
-TEST(StringViewTest, RemoveSuffix)
+TEST(StringViewTest, removeSuffix)
 {
-    const char* str = "Karbanatek";
+    const char* str = "Everything";
     StringView sv(str);
 
     sv.remove_suffix(2);
@@ -172,9 +173,9 @@ TEST(StringViewTest, RemoveSuffix)
     ASSERT_TRUE(sv.empty());
 }
 
-TEST(StringViewTest, Swap)
+TEST(StringViewTest, swap)
 {
-    const char* str1 = "karbanatek";
+    const char* str1 = "everything";
     const char* str2 = "another string";
     StringView sv1(str1);
     StringView sv2(str2);
@@ -185,24 +186,24 @@ TEST(StringViewTest, Swap)
     ASSERT_EQ(str1, sv2.data());
 }
 
-TEST(StringViewTest, Copy)
+TEST(StringViewTest, copy)
 {
-    const char* str = "karbanatek";
+    const char* str = "everything";
     StringView sv(str);
-    char buffer[6] = {0x55, 0x55, 0x55, 0x55, 0x55, 0x55};
-    sv.copy(buffer, 5, 1);
-    ASSERT_EQ('a', buffer[0]);
-    ASSERT_EQ('r', buffer[1]);
-    ASSERT_EQ('b', buffer[2]);
-    ASSERT_EQ('a', buffer[3]);
-    ASSERT_EQ('n', buffer[4]);
+    std::array<char, 6> buffer = {0x55, 0x55, 0x55, 0x55, 0x55, 0x55};
+    sv.copy(buffer.data(), buffer.size() - 1, 1);
+    ASSERT_EQ('v', buffer[0]);
+    ASSERT_EQ('e', buffer[1]);
+    ASSERT_EQ('r', buffer[2]);
+    ASSERT_EQ('y', buffer[3]);
+    ASSERT_EQ('t', buffer[4]);
     ASSERT_EQ(0x55, buffer[5]);
-    ASSERT_THROW(sv.copy(buffer, 5, 11), CppRuntimeException);
+    ASSERT_THROW(sv.copy(buffer.data(), buffer.size() - 1, 11), CppRuntimeException);
 }
 
-TEST(StringViewTest, Substr)
+TEST(StringViewTest, substr)
 {
-    const char* str = "karbanatek";
+    const char* str = "everything";
     StringView sv(str);
     StringView subView = sv.substr(2, 5);
     ASSERT_EQ(5, subView.size());
@@ -211,7 +212,7 @@ TEST(StringViewTest, Substr)
     ASSERT_THROW(sv.substr(11), CppRuntimeException);
 }
 
-TEST(StringViewTest, CompareStringView)
+TEST(StringViewTest, compareStringView)
 {
     StringView aaa("aaa");
     StringView bbb("bbb");
@@ -225,7 +226,7 @@ TEST(StringViewTest, CompareStringView)
     ASSERT_GT(0, aaa.compare(aaaa));
 }
 
-TEST(StringViewTest, CompareStringViewSub)
+TEST(StringViewTest, compareStringViewSub)
 {
     StringView aaa("aaa");
     StringView saaas("saaas");
@@ -241,7 +242,7 @@ TEST(StringViewTest, CompareStringViewSub)
     ASSERT_GT(0, saaas.compare(1, 3, aaaa));
 }
 
-TEST(StringViewTest, CompareStringViewSubSub)
+TEST(StringViewTest, compareStringViewSubSub)
 {
     StringView aaa("aaa");
     StringView saaas("saaas");
@@ -256,7 +257,7 @@ TEST(StringViewTest, CompareStringViewSubSub)
     ASSERT_GT(0, saaas.compare(1, 3, saaaas, 1, 4));
 }
 
-TEST(StringViewTest, CompareChar)
+TEST(StringViewTest, compareChar)
 {
     StringView aaa("aaa");
     StringView bbb("bbb");
@@ -268,7 +269,7 @@ TEST(StringViewTest, CompareChar)
     ASSERT_GT(0, aaa.compare("aaaa"));
 }
 
-TEST(StringViewTest, CompareCharSub)
+TEST(StringViewTest, compareCharSub)
 {
     StringView saaas("saaas");
     StringView sbbbs("sbbbs");
@@ -280,7 +281,7 @@ TEST(StringViewTest, CompareCharSub)
     ASSERT_GT(0, saaas.compare(1, 3, "aaaa"));
 }
 
-TEST(StringViewTest, CompareCharSubSub)
+TEST(StringViewTest, compareCharSubSub)
 {
     StringView saaas("saaas");
     StringView sbbbs("sbbbs");
@@ -292,7 +293,7 @@ TEST(StringViewTest, CompareCharSubSub)
     ASSERT_GT(0, saaas.compare(1, 3, "saaaas", 1, 4));
 }
 
-TEST(StringViewTest, Find)
+TEST(StringViewTest, find)
 {
     StringView str("karkarbanatek");
 
@@ -330,7 +331,7 @@ TEST(StringViewTest, Find)
     ASSERT_EQ(StringView::npos, str.find(search7, 8));
 }
 
-TEST(StringViewTest, FindChar)
+TEST(StringViewTest, findChar)
 {
     StringView str("karkarbanatek");
 
@@ -343,7 +344,7 @@ TEST(StringViewTest, FindChar)
     ASSERT_EQ(StringView::npos, str.find('m', 0));
 }
 
-TEST(StringViewTest, FindCharStrLen)
+TEST(StringViewTest, findCharStrLen)
 {
     StringView str("karkarbanatek");
 
@@ -370,7 +371,7 @@ TEST(StringViewTest, FindCharStrLen)
     ASSERT_EQ(StringView::npos, str.find("tekk", 11, 4));
 }
 
-TEST(StringViewTest, FindCharStr)
+TEST(StringViewTest, findCharStr)
 {
     StringView str("karkarbanatek");
 
@@ -397,7 +398,7 @@ TEST(StringViewTest, FindCharStr)
     ASSERT_EQ(StringView::npos, str.find("tekk", 11));
 }
 
-TEST(StringViewTest, Rfind)
+TEST(StringViewTest, rfind)
 {
     StringView str("karkarbanatek");
 
@@ -430,7 +431,7 @@ TEST(StringViewTest, Rfind)
     ASSERT_EQ(StringView::npos, str.rfind(search6, 6));
 }
 
-TEST(StringViewTest, RfindChar)
+TEST(StringViewTest, rFindChar)
 {
     StringView str("karkarbanatek");
 
@@ -444,7 +445,7 @@ TEST(StringViewTest, RfindChar)
     ASSERT_EQ(StringView::npos, str.rfind('m', 12));
 }
 
-TEST(StringViewTest, RfindCharStr)
+TEST(StringViewTest, rFindCharStr)
 {
     StringView str("karkarbanatek");
 
@@ -471,7 +472,7 @@ TEST(StringViewTest, RfindCharStr)
     ASSERT_EQ(StringView::npos, str.rfind("tekk", 6));
 }
 
-TEST(StringViewTest, RfindCharStrLen)
+TEST(StringViewTest, rFindCharStrLen)
 {
     StringView str("karkarbanatek");
 
@@ -498,7 +499,7 @@ TEST(StringViewTest, RfindCharStrLen)
     ASSERT_EQ(StringView::npos, str.rfind("tekk", 6, 4));
 }
 
-TEST(StringViewTest, FindFirstOf)
+TEST(StringViewTest, findFirstOf)
 {
     StringView str("karbanatekx");
 
@@ -516,7 +517,7 @@ TEST(StringViewTest, FindFirstOf)
     ASSERT_EQ(StringView::npos, str.find_first_of(StringView("kbt"), 10));
 }
 
-TEST(StringViewTest, FindFirstOfChar)
+TEST(StringViewTest, findFirstOfChar)
 {
     StringView str("karbanatekx");
 
@@ -530,7 +531,7 @@ TEST(StringViewTest, FindFirstOfChar)
     ASSERT_EQ(StringView::npos, str.find_first_of('k', 10));
 }
 
-TEST(StringViewTest, FindFirstOfCharStr)
+TEST(StringViewTest, findFirstOfCharStr)
 {
     StringView str("karbanatekx");
 
@@ -548,7 +549,7 @@ TEST(StringViewTest, FindFirstOfCharStr)
     ASSERT_EQ(StringView::npos, str.find_first_of("kbt", 10));
 }
 
-TEST(StringViewTest, FindFirstOfCharStrLen)
+TEST(StringViewTest, findFirstOfCharStrLen)
 {
     StringView str("karbanatekx");
 
@@ -566,7 +567,7 @@ TEST(StringViewTest, FindFirstOfCharStrLen)
     ASSERT_EQ(StringView::npos, str.find_first_of("kbt", 10, 3));
 }
 
-TEST(StringViewTest, FindLastOf)
+TEST(StringViewTest, findLastOf)
 {
     StringView str("karbanatekx");
 
@@ -582,7 +583,7 @@ TEST(StringViewTest, FindLastOf)
     ASSERT_EQ(0, str.find_last_of(StringView("kbt"), 0));
 }
 
-TEST(StringViewTest, FindLastOfChar)
+TEST(StringViewTest, findLastOfChar)
 {
     StringView str("karbanatekx");
 
@@ -594,7 +595,7 @@ TEST(StringViewTest, FindLastOfChar)
     ASSERT_EQ(StringView::npos, str.find_last_of('e', 7));
 }
 
-TEST(StringViewTest, FindLastOfCharStrLen)
+TEST(StringViewTest, findLastOfCharStrLen)
 {
     StringView str("karbanatekx");
 
@@ -610,7 +611,7 @@ TEST(StringViewTest, FindLastOfCharStrLen)
     ASSERT_EQ(0, str.find_last_of("kbt", 0, 3));
 }
 
-TEST(StringViewTest, FindLastOfCharStr)
+TEST(StringViewTest, findLastOfCharStr)
 {
     StringView str("karbanatekx");
 
@@ -626,7 +627,7 @@ TEST(StringViewTest, FindLastOfCharStr)
     ASSERT_EQ(0, str.find_last_of("kbt", 0));
 }
 
-TEST(StringViewTest, FindFirstNotOf)
+TEST(StringViewTest, findFirstNotOf)
 {
     StringView str("karbanatekx");
 
@@ -642,7 +643,7 @@ TEST(StringViewTest, FindFirstNotOf)
     ASSERT_EQ(StringView::npos, str.find_first_not_of(StringView("tekx"), 8));
 }
 
-TEST(StringViewTest, FindFirstNotOfChar)
+TEST(StringViewTest, findFirstNotOfChar)
 {
     StringView str("karbanatekx");
 
@@ -653,7 +654,7 @@ TEST(StringViewTest, FindFirstNotOfChar)
     ASSERT_EQ(7, str.find_first_not_of('a', 7));
 }
 
-TEST(StringViewTest, FindFirstNotOfCharStrLen)
+TEST(StringViewTest, findFirstNotOfCharStrLen)
 {
     StringView str("karbanatekx");
 
@@ -669,7 +670,7 @@ TEST(StringViewTest, FindFirstNotOfCharStrLen)
     ASSERT_EQ(StringView::npos, str.find_first_not_of("tekx", 8, 4));
 }
 
-TEST(StringViewTest, FindFirstNotOfCharStr)
+TEST(StringViewTest, findFirstNotOfCharStr)
 {
     StringView str("karbanatekx");
 
@@ -685,7 +686,7 @@ TEST(StringViewTest, FindFirstNotOfCharStr)
     ASSERT_EQ(StringView::npos, str.find_first_not_of("tekx", 8));
 }
 
-TEST(StringViewTest, FindLastNotOf)
+TEST(StringViewTest, findLastNotOf)
 {
     StringView str("karbanatekx");
 
@@ -700,7 +701,7 @@ TEST(StringViewTest, FindLastNotOf)
     ASSERT_EQ(0, str.find_last_not_of(StringView("arb"), 0));
 }
 
-TEST(StringViewTest, FindLastNotOfChar)
+TEST(StringViewTest, findLastNotOfChar)
 {
     StringView str("karbanatekx");
 
@@ -712,7 +713,7 @@ TEST(StringViewTest, FindLastNotOfChar)
     ASSERT_EQ(StringView::npos, str.find_last_not_of('k', 0));
 }
 
-TEST(StringViewTest, FindLastNotOfCharStrLen)
+TEST(StringViewTest, findLastNotOfCharStrLen)
 {
     StringView str("karbanatekx");
 
@@ -727,7 +728,7 @@ TEST(StringViewTest, FindLastNotOfCharStrLen)
     ASSERT_EQ(0, str.find_last_not_of("arb", 0, 3));
 }
 
-TEST(StringViewTest, FindLastNotOfCharStr)
+TEST(StringViewTest, findLastNotOfCharStr)
 {
     StringView str("karbanatekx");
 

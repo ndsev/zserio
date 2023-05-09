@@ -20,9 +20,6 @@ protected:
         switch (selector.getValue())
         {
         case static_cast<Selector::underlying_type>(Selector::Values::BLACK):
-            writer.writeSignedBits(value, 8);
-            break;
-
         case static_cast<Selector::underlying_type>(Selector::Values::WHITE):
             writer.writeSignedBits(value, 8);
             break;

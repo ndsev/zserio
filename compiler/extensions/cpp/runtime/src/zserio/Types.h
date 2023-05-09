@@ -5,7 +5,7 @@
 #ifdef ZSERIO_STANDARD_TYPES_HEADER
     #include ZSERIO_STANDARD_TYPES_HEADER
 #else
-    #include <stdint.h>
+    #include <cstdint>
 #endif // ifdef ZSERIO_STANDARD_TYPES_HEADER
 
 #endif // ifndef ZSERIO_TYPES_H_INC

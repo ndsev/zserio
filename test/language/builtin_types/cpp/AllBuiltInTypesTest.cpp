@@ -33,7 +33,6 @@ protected:
         return bitBuffer;
     }
 
-protected:
     AllBuiltInTypes  m_allBuiltInTypes;
 
     static const std::string BLOB_NAME;
@@ -211,7 +210,7 @@ TEST_F(AllBuiltInTypesTest, intfield64Type)
 
 TEST_F(AllBuiltInTypesTest, variableIntfieldType)
 {
-    const int16_t variableIntfieldTypeMax = INT16_C((1 << 13) - 1);
+    const int16_t variableIntfieldTypeMax = static_cast<int16_t>((1U << 13U) - 1);
     m_allBuiltInTypes.setVariableIntfieldType(variableIntfieldTypeMax);
     const int16_t variableIntfieldType = m_allBuiltInTypes.getVariableIntfieldType();
     ASSERT_EQ(variableIntfieldTypeMax, variableIntfieldType);
@@ -251,7 +250,7 @@ TEST_F(AllBuiltInTypesTest, float64Type)
 
 TEST_F(AllBuiltInTypesTest, varuint16Type)
 {
-    const uint16_t maxVaruint16Type = (UINT16_C(1) << 15) - 1;
+    const uint16_t maxVaruint16Type = static_cast<uint16_t>((1U << 15U) - 1);
     m_allBuiltInTypes.setVaruint16Type(maxVaruint16Type);
     const uint16_t varuint16Type = m_allBuiltInTypes.getVaruint16Type();
     ASSERT_EQ(maxVaruint16Type, varuint16Type);
@@ -259,7 +258,7 @@ TEST_F(AllBuiltInTypesTest, varuint16Type)
 
 TEST_F(AllBuiltInTypesTest, varuint32Type)
 {
-    const uint32_t maxVaruint32Type = (UINT32_C(1) << 29) - 1;
+    const uint32_t maxVaruint32Type = (UINT32_C(1) << 29U) - 1;
     m_allBuiltInTypes.setVaruint32Type(maxVaruint32Type);
     const uint32_t varuint32Type = m_allBuiltInTypes.getVaruint32Type();
     ASSERT_EQ(maxVaruint32Type, varuint32Type);
@@ -267,7 +266,7 @@ TEST_F(AllBuiltInTypesTest, varuint32Type)
 
 TEST_F(AllBuiltInTypesTest, varuint64Type)
 {
-    const uint64_t maxVaruint64Type = (UINT64_C(1) << 57) - 1;
+    const uint64_t maxVaruint64Type = (UINT64_C(1) << 57U) - 1;
     m_allBuiltInTypes.setVaruint64Type(maxVaruint64Type);
     const uint64_t varuint64Type = m_allBuiltInTypes.getVaruint64Type();
     ASSERT_EQ(maxVaruint64Type, varuint64Type);
@@ -288,7 +287,7 @@ TEST_F(AllBuiltInTypesTest, varuintType)
 
 TEST_F(AllBuiltInTypesTest, varsizeType)
 {
-    const uint32_t maxVarSizeType = (UINT32_C(1) << 31) - 1;
+    const uint32_t maxVarSizeType = (UINT32_C(1) << 31U) - 1;
     m_allBuiltInTypes.setVarsizeType(maxVarSizeType);
     const uint32_t varsizeType = m_allBuiltInTypes.getVarsizeType();
     ASSERT_EQ(maxVarSizeType, varsizeType);
@@ -296,7 +295,7 @@ TEST_F(AllBuiltInTypesTest, varsizeType)
 
 TEST_F(AllBuiltInTypesTest, varint16Type)
 {
-    const int16_t maxVarint16Type = (INT16_C(1) << 14) - 1;
+    const int16_t maxVarint16Type = static_cast<int16_t>((1U << 14U) - 1);
     m_allBuiltInTypes.setVarint16Type(maxVarint16Type);
     const int16_t varint16Type = m_allBuiltInTypes.getVarint16Type();
     ASSERT_EQ(maxVarint16Type, varint16Type);
@@ -304,7 +303,7 @@ TEST_F(AllBuiltInTypesTest, varint16Type)
 
 TEST_F(AllBuiltInTypesTest, varint32Type)
 {
-    const int32_t maxVarint32Type = (INT32_C(1) << 28) - 1;
+    const int32_t maxVarint32Type = static_cast<int32_t>((1U << 28U) - 1);
     m_allBuiltInTypes.setVarint32Type(maxVarint32Type);
     const int32_t varint32Type = m_allBuiltInTypes.getVarint32Type();
     ASSERT_EQ(maxVarint32Type, varint32Type);
@@ -312,7 +311,7 @@ TEST_F(AllBuiltInTypesTest, varint32Type)
 
 TEST_F(AllBuiltInTypesTest, varint64Type)
 {
-    const int64_t maxVarint64Type = (INT64_C(1) << 56) - 1;
+    const int64_t maxVarint64Type = static_cast<int64_t>((UINT64_C(1) << 56) - 1);
     m_allBuiltInTypes.setVarint64Type(maxVarint64Type);
     const int64_t varint64Type = m_allBuiltInTypes.getVarint64Type();
     ASSERT_EQ(maxVarint64Type, varint64Type);
@@ -343,7 +342,7 @@ TEST_F(AllBuiltInTypesTest, stringType)
     const string_type testString("TEST");
     m_allBuiltInTypes.setStringType(testString);
     const string_type& stringType = m_allBuiltInTypes.getStringType();
-    ASSERT_TRUE(stringType.compare(testString) == 0);
+    ASSERT_EQ(stringType, testString);
 }
 
 TEST_F(AllBuiltInTypesTest, externType)
@@ -386,20 +385,20 @@ TEST_F(AllBuiltInTypesTest, bitSizeOf)
     m_allBuiltInTypes.setIntfield16Type(std::numeric_limits<int16_t>::max());
     m_allBuiltInTypes.setIntfield32Type(std::numeric_limits<int32_t>::max());
     m_allBuiltInTypes.setIntfield64Type(std::numeric_limits<int64_t>::max());
-    const int16_t variableIntfieldTypeMax = INT16_C((1 << 13) - 1);
+    const int16_t variableIntfieldTypeMax = static_cast<int16_t>((1U << 13U) - 1);
     m_allBuiltInTypes.setVariableIntfieldType(variableIntfieldTypeMax);
     m_allBuiltInTypes.setVariableIntfield8Type(std::numeric_limits<int8_t>::max());
     m_allBuiltInTypes.setFloat16Type(std::numeric_limits<float>::max());
     m_allBuiltInTypes.setFloat32Type(std::numeric_limits<float>::max());
     m_allBuiltInTypes.setFloat64Type(std::numeric_limits<double>::max());
-    m_allBuiltInTypes.setVaruint16Type((UINT16_C(1) << 15) - 1);
-    m_allBuiltInTypes.setVaruint32Type((UINT32_C(1) << 29) - 1);
-    m_allBuiltInTypes.setVaruint64Type((UINT64_C(1) << 57) - 1);
+    m_allBuiltInTypes.setVaruint16Type(static_cast<uint16_t>((1U << 15U) - 1));
+    m_allBuiltInTypes.setVaruint32Type((UINT32_C(1) << 29U) - 1);
+    m_allBuiltInTypes.setVaruint64Type((UINT64_C(1) << 57U) - 1);
     m_allBuiltInTypes.setVaruintType(std::numeric_limits<uint64_t>::max());
-    m_allBuiltInTypes.setVarsizeType((UINT32_C(1) << 31) - 1);
-    m_allBuiltInTypes.setVarint16Type((INT16_C(1) << 14) - 1);
-    m_allBuiltInTypes.setVarint32Type((INT32_C(1) << 28) - 1);
-    m_allBuiltInTypes.setVarint64Type((INT64_C(1) << 56) - 1);
+    m_allBuiltInTypes.setVarsizeType((UINT32_C(1) << 31U) - 1);
+    m_allBuiltInTypes.setVarint16Type(static_cast<int16_t>((1U << 14U) - 1));
+    m_allBuiltInTypes.setVarint32Type(static_cast<int32_t>((1U << 28U) - 1));
+    m_allBuiltInTypes.setVarint64Type(static_cast<int64_t>((UINT64_C(1) << 56U) - 1));
     m_allBuiltInTypes.setVarintType(std::numeric_limits<int64_t>::max());
     m_allBuiltInTypes.setStringType("TEST");
     m_allBuiltInTypes.setExternType(getExternalBitBuffer());
@@ -432,20 +431,20 @@ TEST_F(AllBuiltInTypesTest, readWrite)
     m_allBuiltInTypes.setIntfield16Type(std::numeric_limits<int16_t>::max());
     m_allBuiltInTypes.setIntfield32Type(std::numeric_limits<int32_t>::max());
     m_allBuiltInTypes.setIntfield64Type(std::numeric_limits<int64_t>::max());
-    const int16_t variableIntfieldTypeMax = INT16_C((1 << 13) - 1);
+    const int16_t variableIntfieldTypeMax = static_cast<int16_t>((1U << 13U) - 1);
     m_allBuiltInTypes.setVariableIntfieldType(variableIntfieldTypeMax);
     m_allBuiltInTypes.setVariableIntfield8Type(std::numeric_limits<int8_t>::max());
-    m_allBuiltInTypes.setFloat16Type(1.0f);
+    m_allBuiltInTypes.setFloat16Type(1.0F);
     m_allBuiltInTypes.setFloat32Type(std::numeric_limits<float>::max());
     m_allBuiltInTypes.setFloat64Type(std::numeric_limits<double>::max());
-    m_allBuiltInTypes.setVaruint16Type((UINT16_C(1) << 15) - 1);
-    m_allBuiltInTypes.setVaruint32Type((UINT32_C(1) << 29) - 1);
-    m_allBuiltInTypes.setVaruint64Type((UINT64_C(1) << 57) - 1);
+    m_allBuiltInTypes.setVaruint16Type(static_cast<uint16_t>((1U << 15U) - 1));
+    m_allBuiltInTypes.setVaruint32Type((UINT32_C(1) << 29U) - 1);
+    m_allBuiltInTypes.setVaruint64Type((UINT64_C(1) << 57U) - 1);
     m_allBuiltInTypes.setVaruintType(std::numeric_limits<uint64_t>::max());
-    m_allBuiltInTypes.setVarsizeType((UINT32_C(1) << 31) - 1);
-    m_allBuiltInTypes.setVarint16Type((INT16_C(1) << 14) - 1);
-    m_allBuiltInTypes.setVarint32Type((INT32_C(1) << 28) - 1);
-    m_allBuiltInTypes.setVarint64Type((INT64_C(1) << 56) - 1);
+    m_allBuiltInTypes.setVarsizeType((UINT32_C(1) << 31U) - 1);
+    m_allBuiltInTypes.setVarint16Type(static_cast<int16_t>((1U << 14U) - 1));
+    m_allBuiltInTypes.setVarint32Type(static_cast<int32_t>((1U << 28U) - 1));
+    m_allBuiltInTypes.setVarint64Type(static_cast<int64_t>((UINT64_C(1) << 56U) - 1));
     m_allBuiltInTypes.setVarintType(std::numeric_limits<int64_t>::max());
     m_allBuiltInTypes.setStringType("TEST");
     m_allBuiltInTypes.setExternType(getExternalBitBuffer());

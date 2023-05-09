@@ -1,0 +1,15 @@
+bugprone-forwarding-reference-overload:gen/array_types_warning/packed_array_template_has_no_packable_field/T_packable.h
+bugprone-forwarding-reference-overload:gen/array_types_warning/packed_array_template_has_no_packable_field/T_str.h
+bugprone-forwarding-reference-overload:gen/array_types_warning/packed_array_template_has_no_packable_field/T_u32.h
+bugprone-forwarding-reference-overload:gen/array_types_warning/packed_array_template_has_no_packable_field/T_unpackable.h
+
+cppcoreguidelines-pro-type-member-init:gen/array_types_warning/packed_array_choice_has_no_packable_field/ChoiceWithoutPackableField.cpp
+
+google-explicit-constructor:gen/array_types_warning/packed_array_unpackable_bool_element/TestBitmask.h
+
+readability-braces-around-statements
+
+readability-make-member-function-const:gen/array_types_warning/packed_array_choice_has_no_packable_field/ChoiceWithoutPackableField.cpp
+readability-make-member-function-const:gen/array_types_warning/packed_array_struct_has_no_packable_field/StructWithoutPackable.cpp
+
+readability-simplify-boolean-expr:gen/array_types_warning/packed_array_choice_has_no_packable_field/ChoiceWithoutPackableField.cpp

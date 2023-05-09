@@ -1009,7 +1009,7 @@ protected:
         ASSERT_EQ(typeInfo.getSchemaName(), fieldRecursion.typeInfo.getSchemaName());
         ASSERT_EQ(typeInfo.getSchemaType(), fieldRecursion.typeInfo.getSchemaType());
         ASSERT_EQ(typeInfo.getCppType(), fieldRecursion.typeInfo.getCppType());
-        ASSERT_EQ(&typeInfo.getFields()[0], &fieldRecursion.typeInfo.getFields()[0]);
+        ASSERT_EQ(typeInfo.getFields().data(), fieldRecursion.typeInfo.getFields().data());
 
         ASSERT_EQ(0, fieldRecursion.typeArguments.size());
         ASSERT_EQ(""_sv, fieldRecursion.alignment);
@@ -1030,7 +1030,7 @@ protected:
         ASSERT_EQ(typeInfo.getSchemaName(), arrayRecursion.typeInfo.getSchemaName());
         ASSERT_EQ(typeInfo.getSchemaType(), arrayRecursion.typeInfo.getSchemaType());
         ASSERT_EQ(typeInfo.getCppType(), arrayRecursion.typeInfo.getCppType());
-        ASSERT_EQ(&typeInfo.getFields()[0], &arrayRecursion.typeInfo.getFields()[0]);
+        ASSERT_EQ(typeInfo.getFields().data(), arrayRecursion.typeInfo.getFields().data());
 
         ASSERT_EQ(0, arrayRecursion.typeArguments.size());
         ASSERT_EQ(""_sv, arrayRecursion.alignment);
@@ -1082,7 +1082,7 @@ protected:
         ASSERT_EQ(typeInfo.getSchemaName(), recursive.typeInfo.getSchemaName());
         ASSERT_EQ(typeInfo.getSchemaType(), recursive.typeInfo.getSchemaType());
         ASSERT_EQ(typeInfo.getCppType(), recursive.typeInfo.getCppType());
-        ASSERT_EQ(&typeInfo.getFields()[0], &recursive.typeInfo.getFields()[0]);
+        ASSERT_EQ(typeInfo.getFields().data(), recursive.typeInfo.getFields().data());
 
         ASSERT_EQ(0, recursive.typeArguments.size());
         ASSERT_EQ(""_sv, recursive.alignment);
@@ -1132,7 +1132,7 @@ protected:
         ASSERT_EQ(typeInfo.getSchemaName(), recursive.typeInfo.getSchemaName());
         ASSERT_EQ(typeInfo.getSchemaType(), recursive.typeInfo.getSchemaType());
         ASSERT_EQ(typeInfo.getCppType(), recursive.typeInfo.getCppType());
-        ASSERT_EQ(&typeInfo.getFields()[0], &recursive.typeInfo.getFields()[0]);
+        ASSERT_EQ(typeInfo.getFields().data(), recursive.typeInfo.getFields().data());
 
         ASSERT_EQ(2, recursive.typeArguments.size());
         ASSERT_EQ("getParam2()"_sv, recursive.typeArguments[0]);

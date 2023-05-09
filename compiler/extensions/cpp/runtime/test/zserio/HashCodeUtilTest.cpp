@@ -22,7 +22,7 @@ enum class Color : uint8_t
 class Permissions
 {
 public:
-    typedef uint8_t underlying_type;
+    using underlying_type = uint8_t;
 
     enum class Values : underlying_type
     {
@@ -107,13 +107,13 @@ TEST(HashCodeUtilTest, simpleTypes)
     const int64_t int64Value = -1;
     EXPECT_EQ(HASH_PRIME_NUMBER, calcHashCode(hashSeed, int64Value));
 
-    const float floatValue = 10.0f;
+    const float floatValue = 10.0F;
     EXPECT_EQ(HASH_PRIME_NUMBER + convertFloatToUInt32(floatValue), calcHashCode(hashSeed, floatValue));
 
     const double doubleValue = 10.0;
     const uint64_t uint64DoubleValue = convertDoubleToUInt64(doubleValue);
     const uint32_t expectedHashCode = HASH_PRIME_NUMBER +
-            static_cast<uint32_t>(uint64DoubleValue ^ (uint64DoubleValue >> 32));
+            static_cast<uint32_t>(uint64DoubleValue ^ (uint64DoubleValue >> 32U));
     EXPECT_EQ(expectedHashCode, calcHashCode(hashSeed, doubleValue));
 }
 
@@ -168,7 +168,7 @@ TEST(HashCodeUtilTest, objectType)
 TEST(HashCodeUtilTest, emptyOptionalHolderType)
 {
     const uint32_t hashSeed = 1;
-    const InplaceOptionalHolder<DummyObject> optionalHolder;
+    const InplaceOptionalHolder<DummyObject> optionalHolder{};
     EXPECT_EQ(HASH_PRIME_NUMBER, calcHashCode(hashSeed, optionalHolder));
 }
 

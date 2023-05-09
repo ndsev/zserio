@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <istream>
+#include <array>
 
 #include "zserio/AnyHolder.h"
 #include "zserio/CppRuntimeException.h"
@@ -122,7 +123,7 @@ private:
     void setTokenValue();
 
     static constexpr size_t BUFFER_SIZE = 64 * 1024;
-    char m_buffer[BUFFER_SIZE];
+    std::array<char, BUFFER_SIZE> m_buffer;
 
     std::istream& m_in;
     BasicJsonDecoder<ALLOC> m_decoder;
@@ -167,8 +168,8 @@ JsonToken BasicJsonTokenizer<ALLOC>::next()
 template <typename ALLOC>
 string<ALLOC> BasicJsonTokenizer<ALLOC>::readContent(const ALLOC& allocator)
 {
-    const size_t count = static_cast<size_t>(m_in.rdbuf()->sgetn(m_buffer, BUFFER_SIZE));
-    return string<ALLOC>(m_buffer, count, allocator);
+    const size_t count = static_cast<size_t>(m_in.rdbuf()->sgetn(m_buffer.data(), BUFFER_SIZE));
+    return string<ALLOC>(m_buffer.data(), count, allocator);
 }
 
 template <typename ALLOC>
@@ -207,7 +208,7 @@ bool BasicJsonTokenizer<ALLOC>::decodeNext()
         setPosition(m_pos + 1, m_columnNumber + 1);
         break;
     default:
-        m_decoderResult = m_decoder.decodeValue(m_content.c_str() + m_pos);
+        m_decoderResult = m_decoder.decodeValue(StringView(m_content.data()).substr(m_pos));
         if (m_pos + m_decoderResult.numReadChars >= m_content.size())
             return false; // we are at the end of chunk => read more
 
@@ -289,13 +290,10 @@ void BasicJsonTokenizer<ALLOC>::setTokenValue()
 {
     if (!m_decoderResult.value.hasValue())
     {
-        JsonParserException excpt("JsonTokenizer:");
-        excpt << m_lineNumber << ":" << m_tokenColumnNumber << ": ";
-        if (m_decoderResult.integerOverflow)
-            excpt << "Value is outside of the 64-bit integer range!";
-        else
-            excpt << "Unknown token!";
-        throw excpt;
+        throw JsonParserException("JsonTokenizer:") << m_lineNumber << ":" << m_tokenColumnNumber << ": " <<
+                (m_decoderResult.integerOverflow
+                        ? "Value is outside of the 64-bit integer range!"
+                        : "Unknown token!");
     }
 
     setToken(JsonToken::VALUE, std::move(m_decoderResult.value));

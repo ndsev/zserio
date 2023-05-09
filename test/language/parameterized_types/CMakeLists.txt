@@ -77,7 +77,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/parameterized_types/subtyped_bitfield_param/SubtypedBitfieldParamHolder.h
 )
 
-zserio_add_library(TARGET parameterized_types_zs
+zserio_add_library(parameterized_types_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE parameterized_types.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -87,18 +87,21 @@ zserio_add_library(TARGET parameterized_types_zs
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
-add_test_sources(
-    cpp/ArrayElementParamTest.cpp
-    cpp/BytesParamTest.cpp
-    cpp/DynamicBitfieldParamTest.cpp
-    cpp/ExternParamTest.cpp
-    cpp/FixedAndVariableParamTest.cpp
-    cpp/GrandChildParamTest.cpp
-    cpp/PackedArrayElementParamTest.cpp
-    cpp/ParameterizedInnerClassesClashingTest.cpp
-    cpp/ParameterizedParamTest.cpp
-    cpp/SimpleParamTest.cpp
-    cpp/SubtypedBitfieldParamTest.cpp
+add_custom_test(parameterized_types
+    DEPENDS
+        parameterized_types_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ArrayElementParamTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/BytesParamTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/DynamicBitfieldParamTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ExternParamTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/FixedAndVariableParamTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/GrandChildParamTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedArrayElementParamTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ParameterizedInnerClassesClashingTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ParameterizedParamTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/SimpleParamTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/SubtypedBitfieldParamTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(parameterized_types_zs)

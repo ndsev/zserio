@@ -10,7 +10,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/alignment/optional_member_alignment/OptionalMemberAlignment.h
 )
 
-zserio_add_library(TARGET alignment_zs
+zserio_add_library(alignment_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE alignment.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -20,10 +20,13 @@ zserio_add_library(TARGET alignment_zs
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
-add_test_sources(
-    cpp/AutoOptionalMemberAlignmentTest.cpp
-    cpp/BitAlignmentTest.cpp
-    cpp/OptionalMemberAlignmentTest.cpp
+add_custom_test(alignment
+    DEPENDS
+        alignment_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/AutoOptionalMemberAlignmentTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/BitAlignmentTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/OptionalMemberAlignmentTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(alignment_zs)

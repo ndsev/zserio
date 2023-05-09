@@ -1,5 +1,4 @@
 uninitMemberVar:*/choice_array/ItemRef.cpp
-uninitMemberVar:*/choice_array/ItemRef.cpp
 uninitMemberVar:*/structure_array_param/ChildStructure.cpp
 uninitMemberVar:*/structure_array_param/ChildStructure.h
 uninitMemberVar:*/structure_optional/ValueConsumer.cpp

@@ -588,7 +588,7 @@ TEST_F(TypeInfoTest, recursiveTypeInfo)
     ASSERT_EQ(typeInfo.getCppType(), recursiveTypeInfo.getCppType());
     ASSERT_THROW(recursiveTypeInfo.getBitSize(), CppRuntimeException);
 
-    ASSERT_EQ(&typeInfo.getFields()[0], &recursiveTypeInfo.getFields()[0]);
+    ASSERT_EQ(typeInfo.getFields().data(), recursiveTypeInfo.getFields().data());
     ASSERT_EQ(0, recursiveTypeInfo.getParameters().size());
     ASSERT_EQ(0, recursiveTypeInfo.getFunctions().size());
 

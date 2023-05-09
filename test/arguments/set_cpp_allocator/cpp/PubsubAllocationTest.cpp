@@ -30,11 +30,17 @@ public:
             greetingPubsub(*m_testPubsub, m_allocator)
     {}
 
-    ~PubsubAllocationTest()
+    ~PubsubAllocationTest() override
     {
         m_testPubsub.reset();
         EXPECT_EQ(m_memoryResource.getNumDeallocations(), m_memoryResource.getNumAllocations());
     }
+
+    PubsubAllocationTest(const PubsubAllocationTest&) = delete;
+    PubsubAllocationTest& operator=(const PubsubAllocationTest&) = delete;
+
+    PubsubAllocationTest(PubsubAllocationTest&&) = delete;
+    PubsubAllocationTest& operator=(PubsubAllocationTest&&) = delete;
 
     const allocator_type& getAllocator()
     {
@@ -56,7 +62,7 @@ protected:
         {}
 
     protected:
-        virtual void processPublishContext(void* context) override
+        void processPublishContext(void* context) override
         {
             if (context == nullptr)
                 return;
@@ -64,7 +70,7 @@ protected:
             static_cast<CountingContext*>(context)->publishCount++;
         }
 
-        virtual void processSubscribeContext(void* context) override
+        void processSubscribeContext(void* context) override
         {
             if (context == nullptr)
                 return;
@@ -80,7 +86,7 @@ protected:
                 m_greetingPubsub(pubsub), m_allocator(allocator)
         {}
 
-        void operator()(zserio::StringView topic, const Name& name)
+        void operator()(zserio::StringView topic, const Name& name) override
         {
             ASSERT_EQ("pubsub_allocation/name_to_use_for_greeting"_sv, topic);
             Greeting greeting{prepareGreeting(name.getName()), m_allocator};
@@ -126,7 +132,7 @@ protected: // must be behind m_allocator
     GreetingPubsub greetingPubsub;
 };
 
-TEST_F(PubsubAllocationTest, sendGreetingPubusub)
+TEST_F(PubsubAllocationTest, sendGreetingPubsub)
 {
     auto idName = greetingPubsub.subscribeName(std::allocate_shared<NameCallback>(
             getAllocator(), greetingPubsub, getAllocator()));

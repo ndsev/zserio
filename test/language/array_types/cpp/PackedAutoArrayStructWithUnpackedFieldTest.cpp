@@ -1,3 +1,5 @@
+#include <array>
+
 #include "gtest/gtest.h"
 
 #include "array_types/packed_auto_array_struct_with_unpacked_field/PackedAutoArray.h"
@@ -16,14 +18,14 @@ protected:
     {
         PackedAutoArray packedAutoArray;
         auto& array = packedAutoArray.getArray();
-        for (size_t i = 0; i < sizeof(UINT8_FIELD); ++i)
+        for (size_t i = 0; i < UINT8_FIELD.size(); ++i)
             array.emplace_back(UINT8_FIELD[i], UNPACKED_FIELD[i]);
 
         return packedAutoArray;
     }
 
-    static const uint8_t UINT8_FIELD[10];
-    static const uint64_t UNPACKED_FIELD[10];
+    static const std::array<uint8_t, 10> UINT8_FIELD;
+    static const std::array<uint64_t, 10> UNPACKED_FIELD;
 
     static const uint8_t UINT8_MAX_BIT_NUMBER;
     static const size_t PACKED_AUTO_ARRAY_BIT_SIZE;
@@ -31,9 +33,10 @@ protected:
     static const std::string BLOB_NAME;
 };
 
-const uint8_t PackedAutoArrayStructWithUnpackedFieldTest::UINT8_FIELD[] = {0, 2, 4, 6, 8, 10, 12, 14, 16, 18};
-const uint64_t PackedAutoArrayStructWithUnpackedFieldTest::UNPACKED_FIELD[] =
-        {5000000, 0, 1, 0, 1, 0, 1, 0, 1, 0};
+const std::array<uint8_t, 10> PackedAutoArrayStructWithUnpackedFieldTest::UINT8_FIELD = {
+        0, 2, 4, 6, 8, 10, 12, 14, 16, 18};
+const std::array<uint64_t, 10> PackedAutoArrayStructWithUnpackedFieldTest::UNPACKED_FIELD = {
+        5000000, 0, 1, 0, 1, 0, 1, 0, 1, 0};
 
 const uint8_t PackedAutoArrayStructWithUnpackedFieldTest::UINT8_MAX_BIT_NUMBER = 2;
 const size_t PackedAutoArrayStructWithUnpackedFieldTest::PACKED_AUTO_ARRAY_BIT_SIZE =

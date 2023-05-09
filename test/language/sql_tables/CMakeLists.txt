@@ -75,7 +75,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/sql_tables/TestDb.h
 )
 
-zserio_add_library(TARGET sql_tables_zs
+zserio_add_library(sql_tables_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE sql_tables.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -88,20 +88,23 @@ zserio_add_library(TARGET sql_tables_zs
 
 target_include_directories(sql_tables_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 
-add_test_sources(
-    cpp/BlobFieldWithChildrenInitializationTableTest.cpp
-    cpp/BlobOffsetsParamTableTest.cpp
-    cpp/BlobParamTableTest.cpp
-    cpp/ColumnParamTableTest.cpp
-    cpp/ComplexTableTest.cpp
-    cpp/ConstParamTableTest.cpp
-    cpp/DynamicBitFieldEnumFieldTableTest.cpp
-    cpp/MultiplePkTableTest.cpp
-    cpp/SubtypedBitmaskFieldTableTest.cpp
-    cpp/SubtypedBoolFieldTableTest.cpp
-    cpp/SubtypedEnumFieldTableTest.cpp
-    cpp/SubtypedTableTest.cpp
-    cpp/WithoutPkTableTest.cpp
+add_custom_test(sql_tables
+    DEPENDS
+        sql_tables_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/BlobFieldWithChildrenInitializationTableTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/BlobOffsetsParamTableTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/BlobParamTableTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ColumnParamTableTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ComplexTableTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ConstParamTableTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/DynamicBitFieldEnumFieldTableTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/MultiplePkTableTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/SubtypedBitmaskFieldTableTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/SubtypedBoolFieldTableTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/SubtypedEnumFieldTableTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/SubtypedTableTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/WithoutPkTableTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(sql_tables_zs)

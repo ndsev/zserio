@@ -68,7 +68,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/with_validation_code/virtual_table_validation/TestTable.h
 )
 
-zserio_add_library(TARGET with_validation_code_zs
+zserio_add_library(with_validation_code_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE with_validation_code.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -80,16 +80,19 @@ zserio_add_library(TARGET with_validation_code_zs
 
 target_include_directories(with_validation_code_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 
-add_test_sources(
-    cpp/BlobTableValidationTest.cpp
-    cpp/ColumnTypeValidationTest.cpp
-    cpp/ConstraintTableValidationTest.cpp
-    cpp/ControlValidationTest.cpp
-    cpp/DependTableValidationTest.cpp
-    cpp/FullRangeTableValidationTest.cpp
-    cpp/HiddenColumnTableValidationTest.cpp
-    cpp/SimpleTableValidationTest.cpp
-    cpp/VirtualTableValidationTest.cpp
+add_custom_test(with_validation_code
+    DEPENDS
+        with_validation_code_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/BlobTableValidationTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ColumnTypeValidationTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ConstraintTableValidationTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ControlValidationTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/DependTableValidationTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/FullRangeTableValidationTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/HiddenColumnTableValidationTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/SimpleTableValidationTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/VirtualTableValidationTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(with_validation_code_zs)

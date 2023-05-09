@@ -237,6 +237,11 @@ public:
     {}
 
     /**
+     * Destructor.
+     */
+    ~heap_optional_holder() = default;
+
+    /**
      * Copy constructor.
      *
      * \param other Other holder to copy.
@@ -272,7 +277,6 @@ public:
     heap_optional_holder(heap_optional_holder&& other, const allocator_type& allocator) :
             m_storage(move_initialize(std::move(other), allocator))
     {
-        other.reset();
     }
 
     /**
@@ -311,7 +315,6 @@ public:
             allocator_traits::propagate_on_container_move_assignment::value ?
                 other.m_storage.get_deleter().get_allocator() :
                 m_storage.get_deleter().get_allocator());
-        other.reset();
 
         return *this;
     }
@@ -359,7 +362,7 @@ public:
      */
     bool hasValue() const noexcept
     {
-        return bool(m_storage);
+        return static_cast<bool>(m_storage);
     }
 
     /**
@@ -429,7 +432,7 @@ public:
     /**
      * Constructor.
      */
-    in_place_storage() {}
+    in_place_storage() = default;
 
     /**
      * Destructor.
@@ -506,10 +509,10 @@ private:
     // Caution!
     // We use static constants as a WORKAROUND for a GCC 8/9 bug observed when cross-compiling with -m32 flag.
     // The compilers somehow spoils the aligned storage when alignof(T) is used directly as the template
-    // argument which leads to "*** stack smashing detected ***" error (as observed in some langauge tests).
+    // argument which leads to "*** stack smashing detected ***" error (as observed in some language tests).
     static constexpr size_t SIZEOF_T = sizeof(T);
     static constexpr size_t ALIGNOF_T = alignof(T);
-    typedef typename std::aligned_storage<SIZEOF_T, ALIGNOF_T>::type AlignedStorage;
+    using AlignedStorage = typename std::aligned_storage<SIZEOF_T, ALIGNOF_T>::type;
     AlignedStorage m_inPlace;
 };
 
@@ -523,8 +526,7 @@ public:
     /**
      * Empty constructor which creates an unset holder.
      */
-    constexpr inplace_optional_holder() noexcept
-    {}
+    constexpr inplace_optional_holder() noexcept = default;
 
     /**
      * Constructor from zserio::NullOpt constant to create an unset holder.

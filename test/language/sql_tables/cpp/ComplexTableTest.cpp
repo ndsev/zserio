@@ -32,10 +32,16 @@ public:
         m_database->createSchema();
     }
 
-    ~ComplexTableTest()
+    ~ComplexTableTest() override
     {
         delete m_database;
     }
+
+    ComplexTableTest(const ComplexTableTest&) = delete;
+    ComplexTableTest& operator=(const ComplexTableTest&) = delete;
+
+    ComplexTableTest(ComplexTableTest&&) = delete;
+    ComplexTableTest& operator=(ComplexTableTest&&) = delete;
 
 protected:
     static void fillComplexTableRowWithNullValues(ComplexTable::Row& row, uint64_t blobId)
@@ -68,7 +74,7 @@ protected:
         row.setAge(std::numeric_limits<int64_t>::max());
         row.setName(name);
         row.setIsValid(true);
-        row.setSalary(9.9f);
+        row.setSalary(9.9F);
         row.setBonus(5.5);
         row.setValue(0x34);
         row.setColor(TestEnum::RED);
@@ -182,24 +188,18 @@ protected:
             return false;
 
         const unsigned char* readTableName = sqlite3_column_text(statement.get(), 0);
-        if (readTableName == nullptr ||
-                checkTableName.compare(reinterpret_cast<const char*>(readTableName)) != 0)
-        {
-            return false;
-        }
-
-        return true;
+        return (readTableName != nullptr && checkTableName == reinterpret_cast<const char*>(readTableName));
     }
 
     class ComplexTableParameterProvider : public ComplexTable::IParameterProvider
     {
-        virtual uint32_t getCount(ComplexTable::Row&)
+        uint32_t getCount(ComplexTable::Row&) override
         {
             return static_cast<uint32_t>(COMPLEX_TABLE_COUNT);
         }
     };
 
-    static const char DB_FILE_NAME[];
+    static const char* const DB_FILE_NAME;
 
     static const size_t NUM_COMPLEX_TABLE_ROWS;
     static const size_t COMPLEX_TABLE_COUNT;
@@ -208,7 +208,7 @@ protected:
     sql_tables::TestDb* m_database;
 };
 
-const char ComplexTableTest::DB_FILE_NAME[] = "language/sql_tables/complex_table_test.sqlite";
+const char* const ComplexTableTest::DB_FILE_NAME = "language/sql_tables/complex_table_test.sqlite";
 
 const size_t ComplexTableTest::NUM_COMPLEX_TABLE_ROWS = 5;
 const size_t ComplexTableTest::COMPLEX_TABLE_COUNT = 10;

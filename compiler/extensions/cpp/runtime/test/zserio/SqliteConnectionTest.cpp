@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #include "sqlite3.h"
 
@@ -18,8 +19,8 @@ namespace
     class SqliteResultAccumulator
     {
     public:
-        typedef std::vector<std::string> TRow;
-        typedef std::vector<TRow> TResult;
+        using TRow = std::vector<std::string>;
+        using TResult = std::vector<TRow>;
 
         TResult const& getResult() const
         {
@@ -28,10 +29,11 @@ namespace
 
         int callback(size_t nColumns, char** colValues, char**)
         {
+            auto colValuesSpan = Span<char*>(colValues, nColumns);
             TRow row;
             row.reserve(nColumns);
-            for (size_t i = 0; i < nColumns; ++i)
-                row.push_back(std::string(colValues[i]));
+            for (const char* colValue : colValuesSpan)
+                row.emplace_back(colValue);
             result.push_back(row);
             return 0; // continue
         }
@@ -46,7 +48,7 @@ namespace
     }
 } // namespace
 
-static const char SQLITE3_MEM_DB[] = ":memory:";
+static const char* const SQLITE3_MEM_DB = ":memory:";
 
 TEST(SqliteConnectionTest, emptyConstructor)
 {
@@ -83,7 +85,7 @@ TEST(SqliteConnectionTest, internalConstructor)
     ASSERT_EQ(SqliteConnection::INTERNAL_CONNECTION, db.getConnectionType());
 
     db.reset();
-    ASSERT_EQ(NULL, db.getConnection());
+    ASSERT_EQ(nullptr, db.getConnection());
 
     ASSERT_EQ(SQLITE_OK, sqlite3_shutdown());
 }
@@ -99,7 +101,7 @@ TEST(SqliteConnectionTest, defaultInternalConstructor)
     ASSERT_EQ(SqliteConnection::INTERNAL_CONNECTION, db.getConnectionType());
 
     db.reset();
-    ASSERT_EQ(NULL, db.getConnection());
+    ASSERT_EQ(nullptr, db.getConnection());
 
     ASSERT_EQ(SQLITE_OK, sqlite3_shutdown());
 }
@@ -116,7 +118,7 @@ TEST(SqliteConnectionTest, resetExternal)
     ASSERT_EQ(SqliteConnection::EXTERNAL_CONNECTION, db.getConnectionType());
 
     db.reset();
-    ASSERT_EQ(NULL, db.getConnection());
+    ASSERT_EQ(nullptr, db.getConnection());
 
     result = sqlite3_close(externalConnection);
     ASSERT_EQ(SQLITE_OK, result);
@@ -136,7 +138,7 @@ TEST(SqliteConnectionTest, resetInternal)
     ASSERT_EQ(SqliteConnection::INTERNAL_CONNECTION, db.getConnectionType());
 
     db.reset();
-    ASSERT_EQ(NULL, db.getConnection());
+    ASSERT_EQ(nullptr, db.getConnection());
 
     ASSERT_EQ(SQLITE_OK, sqlite3_shutdown());
 }
@@ -153,7 +155,7 @@ TEST(SqliteConnectionTest, resetDefaultInternal)
     ASSERT_EQ(SqliteConnection::INTERNAL_CONNECTION, db.getConnectionType());
 
     db.reset();
-    ASSERT_EQ(NULL, db.getConnection());
+    ASSERT_EQ(nullptr, db.getConnection());
 
     ASSERT_EQ(SQLITE_OK, sqlite3_shutdown());
 }
@@ -258,7 +260,7 @@ TEST(SqliteConnectionTest, reset)
     ASSERT_EQ(internalConnection, db.getConnection());
 
     db.reset();
-    ASSERT_EQ(NULL, db.getConnection());
+    ASSERT_EQ(nullptr, db.getConnection());
 
     ASSERT_EQ(SQLITE_OK, sqlite3_shutdown());
 }
@@ -314,7 +316,7 @@ TEST(SqliteConnectionTest, prepareStatement)
     ASSERT_EQ(SQLITE_ROW, result);
 
     ASSERT_EQ(1, sqlite3_column_count(statement));
-    const std::string resultString(reinterpret_cast<char const*>(sqlite3_column_text(statement, 0)));
+    const std::string resultString(reinterpret_cast<const char*>(sqlite3_column_text(statement, 0)));
     ASSERT_EQ("1", resultString);
 
     result = sqlite3_step(statement);

@@ -26,11 +26,11 @@ protected:
         }
 
         auto& blocks = database.getBlocks();
-        for (auto it = headers.begin(); it != headers.end(); ++it)
+        for (const auto& header : headers)
         {
             Block block;
             auto& items = block.getItems();
-            const uint16_t numItems = it->getNumItems();
+            const uint16_t numItems = header.getNumItems();
             for (uint16_t j = 0; j < numItems; ++j)
                 items.push_back(j * 2);
             blocks.push_back(block);

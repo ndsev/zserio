@@ -11,7 +11,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/sql_virtual_tables/fts5_virtual_table/Fts5TestDb.h
 )
 
-zserio_add_library(TARGET sql_virtual_tables_zs
+zserio_add_library(sql_virtual_tables_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE sql_virtual_tables.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -23,9 +23,12 @@ zserio_add_library(TARGET sql_virtual_tables_zs
 
 target_include_directories(sql_virtual_tables_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 
-add_test_sources(
-    cpp/Fts3VirtualTableTest.cpp
-    cpp/Fts5VirtualTableTest.cpp
+add_custom_test(sql_virtual_tables
+    DEPENDS
+        sql_virtual_tables_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/Fts3VirtualTableTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/Fts5VirtualTableTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(sql_virtual_tables_zs)

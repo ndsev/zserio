@@ -6,7 +6,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/sql_without_rowid_tables_warning/integer_primary_key_warning/WithoutRowIdTable.h
 )
 
-zserio_add_library(TARGET sql_without_rowid_tables_warning_zs
+zserio_add_library(sql_without_rowid_tables_warning_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE sql_without_rowid_tables_warning.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -20,8 +20,11 @@ zserio_add_library(TARGET sql_without_rowid_tables_warning_zs
 
 target_include_directories(sql_without_rowid_tables_warning_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 
-add_test_sources(
-    cpp/SqlWithoutRowIdTablesWarningTest.cpp
+add_custom_test(sql_without_row_id_tables_warning
+    DEPENDS
+        sql_without_rowid_tables_warning_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/SqlWithoutRowIdTablesWarningTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(sql_without_rowid_tables_warning_zs)

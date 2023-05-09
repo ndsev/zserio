@@ -21,7 +21,7 @@ TEST(FunctionTemplatedReturnTypeTest, readWrite)
     functionTemplatedReturnType.setUint32Test(TestStructure_uint32{zserio::NullOpt, Holder_uint32{42}});
     functionTemplatedReturnType.setStringTest(TestStructure_string{zserio::NullOpt,
             Holder_string{string_type{"string"}}});
-    functionTemplatedReturnType.setFloatTest(TestStructure_float32{4.2f, zserio::NullOpt});
+    functionTemplatedReturnType.setFloatTest(TestStructure_float32{4.2F, zserio::NullOpt});
     functionTemplatedReturnType.initializeChildren();
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
@@ -31,7 +31,7 @@ TEST(FunctionTemplatedReturnTypeTest, readWrite)
     // write first to ensure that initializeChildren is called
     ASSERT_EQ(42, functionTemplatedReturnType.getUint32Test().funcGet());
     ASSERT_EQ("string"_sv, functionTemplatedReturnType.getStringTest().funcGet());
-    ASSERT_EQ(4.2f, functionTemplatedReturnType.getFloatTest().funcGet());
+    ASSERT_EQ(4.2F, functionTemplatedReturnType.getFloatTest().funcGet());
 
     zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     FunctionTemplatedReturnType readFunctionTemplatedReturnType(reader);

@@ -32,8 +32,6 @@ void assertFalse(bool value)
 class DummyObjectInitialize
 {
 public:
-    DummyObjectInitialize() {}
-
     void initialize() {}
 };
 
@@ -46,8 +44,6 @@ public:
 class DummyObjectReflectable
 {
 public:
-    DummyObjectReflectable() {}
-
     IReflectablePtr reflectable()
     {
         return nullptr;

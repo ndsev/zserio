@@ -1,0 +1,1 @@
+cert-err58-cpp:cpp/BitfieldEnumTest.cpp

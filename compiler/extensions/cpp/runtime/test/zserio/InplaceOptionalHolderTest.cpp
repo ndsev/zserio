@@ -46,9 +46,9 @@ TEST_F(InplaceOptionalHolderTest, nullOptConstructor)
 TEST_F(InplaceOptionalHolderTest, lvalueConstructor)
 {
     std::vector<int> values{1, 2, 3};
-    void* origAddress = &values[0];
+    void* origAddress = values.data();
     InplaceOptionalHolder<std::vector<int>> optional{values};
-    ASSERT_NE(origAddress, &(*optional)[0]);
+    ASSERT_NE(origAddress, (*optional).data());
     ASSERT_EQ(values, *optional);
 
     // check initializer list
@@ -61,9 +61,9 @@ TEST_F(InplaceOptionalHolderTest, rvalueConstructor)
 {
     std::vector<int> values{1, 2, 3};
     std::vector<int> origValues{values};
-    void* origAddress = &values[0];
+    void* origAddress = values.data();
     InplaceOptionalHolder<std::vector<int>> optional{std::move(values)};
-    ASSERT_EQ(origAddress, &(*optional)[0]);
+    ASSERT_EQ(origAddress, (*optional).data());
     ASSERT_EQ(origValues, *optional);
 }
 
@@ -78,9 +78,9 @@ TEST_F(InplaceOptionalHolderTest, copyConstructor)
     ASSERT_EQ(intValue, *optionalCopy);
 
     InplaceOptionalHolder<std::vector<int>> optionalVector{std::vector<int>{1, 2, 3}};
-    void* origAddress = &(*optionalVector)[0];
+    void* origAddress = (*optionalVector).data();
     InplaceOptionalHolder<std::vector<int>> optionalVectorCopy{optionalVector};
-    ASSERT_NE(origAddress, &(*optionalVectorCopy)[0]);
+    ASSERT_NE(origAddress, (*optionalVectorCopy).data());
     ASSERT_EQ(*optionalVector, *optionalVectorCopy);
 
     InplaceOptionalHolder<DummyObject> optionalObject(DummyObject{10});
@@ -100,10 +100,10 @@ TEST_F(InplaceOptionalHolderTest, copyAssignmentOperator)
     ASSERT_EQ(intValue, *optionalCopy);
 
     InplaceOptionalHolder<std::vector<int>> optionalVector{std::vector<int>{1, 2, 3}};
-    void* origAddress = &((*optionalVector)[0]);
+    void* origAddress = (*optionalVector).data();
     InplaceOptionalHolder<std::vector<int>> optionalVectorCopy;
     optionalVectorCopy = optionalVector;
-    ASSERT_NE(origAddress, &((*optionalVectorCopy)[0]));
+    ASSERT_NE(origAddress, ((*optionalVectorCopy).data()));
     ASSERT_EQ(*optionalVector, *optionalVectorCopy);
 }
 
@@ -111,9 +111,9 @@ TEST_F(InplaceOptionalHolderTest, moveConstructor)
 {
     InplaceOptionalHolder<std::vector<int>> optionalVector{std::vector<int>{1, 2, 3}};
     std::vector<int> origValues{*optionalVector};
-    void* origAddress = &((*optionalVector)[0]);
+    void* origAddress = (*optionalVector).data();
     InplaceOptionalHolder<std::vector<int>> optionalVectorMoved{std::move(optionalVector)};
-    ASSERT_EQ(origAddress, &((*optionalVectorMoved)[0]));
+    ASSERT_EQ(origAddress, ((*optionalVectorMoved).data()));
     ASSERT_EQ(origValues, *optionalVectorMoved);
 }
 
@@ -128,20 +128,20 @@ TEST_F(InplaceOptionalHolderTest, moveAssignmentOperator)
 {
     InplaceOptionalHolder<std::vector<int>> optionalVector{std::vector<int>{1, 2, 3}};
     std::vector<int> origValues{*optionalVector};
-    void* origAddress = &(*optionalVector)[0];
+    void* origAddress = (*optionalVector).data();
     InplaceOptionalHolder<std::vector<int>> optionalVectorMoved;
     optionalVectorMoved = std::move(optionalVector);
-    ASSERT_EQ(origAddress, &(*optionalVectorMoved)[0]);
+    ASSERT_EQ(origAddress, (*optionalVectorMoved).data());
     ASSERT_EQ(origValues, *optionalVectorMoved);
 }
 
 TEST_F(InplaceOptionalHolderTest, lvalueAssignmentOperator)
 {
     std::vector<int> values{1, 2, 3};
-    void* origAddress = &values[0];
+    void* origAddress = values.data();
     InplaceOptionalHolder<std::vector<int>> optional;
     optional = values;
-    ASSERT_NE(origAddress, &(*optional)[0]);
+    ASSERT_NE(origAddress, (*optional).data());
     ASSERT_EQ(values, *optional);
 }
 
@@ -149,10 +149,10 @@ TEST_F(InplaceOptionalHolderTest, rvalueAssignmentOperator)
 {
     std::vector<int> values{1, 2, 3};
     std::vector<int> origValues{values};
-    void* origAddress = &values[0];
+    void* origAddress = values.data();
     InplaceOptionalHolder<std::vector<int>> optional;
     optional = std::move(values);
-    ASSERT_EQ(origAddress, &(*optional)[0]);
+    ASSERT_EQ(origAddress, (*optional).data());
     ASSERT_EQ(origValues, *optional);
 }
 
@@ -203,7 +203,7 @@ TEST_F(InplaceOptionalHolderTest, setGet)
 
     InplaceOptionalHolder<float> optionalFloat;
     ASSERT_THROW(*optionalFloat, CppRuntimeException);
-    const float floatValue = 3.14f;
+    const float floatValue = 3.14F;
     optionalFloat = floatValue;
     ASSERT_EQ(floatValue, optionalFloat.value());
 

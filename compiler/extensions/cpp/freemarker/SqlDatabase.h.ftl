@@ -73,7 +73,7 @@ public:
 <#if withCodeComments>
     /** Typedef for table relocation map which maps tables to different databases. */
 </#if>
-    typedef <@map_type_name types.string.name, types.string.name/> TRelocationMap;
+    using TRelocationMap = <@map_type_name types.string.name, types.string.name/>;
 
 <#if withCodeComments>
     /**
@@ -134,7 +134,7 @@ public:
 <#if withCodeComments>
     /** Default destructor. */
 </#if>
-    virtual ~${name}() override;
+    ~${name}() override;
 
 <#if withCodeComments>
     /** Disables copy constructor. */
@@ -200,7 +200,7 @@ public:
      * Creates all tables in the database.
      */
     </#if>
-    virtual void createSchema() override;
+    void createSchema() override;
     <#if withCodeComments>
 
     /**
@@ -209,14 +209,14 @@ public:
      * \param withoutRowIdTableNamesBlackList Set of rowid table names which should not be created.
      */
     </#if>
-    virtual void createSchema(const <@set_type_name types.string.name/>& withoutRowIdTableNamesBlackList);
+    void createSchema(const <@set_type_name types.string.name/>& withoutRowIdTableNamesBlackList);
     <#if withCodeComments>
 
     /**
      * Deletes all tables from the database.
      */
     </#if>
-    virtual void deleteSchema() override;
+    void deleteSchema() override;
 </#if>
 <#if withValidationCode>
 

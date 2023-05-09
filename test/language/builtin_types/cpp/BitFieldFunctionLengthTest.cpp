@@ -29,7 +29,6 @@ protected:
                 );
     }
 
-protected:
     static const std::string BLOB_NAME;
 };
 

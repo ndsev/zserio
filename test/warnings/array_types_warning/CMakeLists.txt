@@ -67,7 +67,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/array_types_warning/packed_array_unpackable_string_element/PackedArrayUnpackableStringElement.h
 )
 
-zserio_add_library(TARGET array_types_warning_zs
+zserio_add_library(array_types_warning_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE array_types_warning.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -79,8 +79,11 @@ zserio_add_library(TARGET array_types_warning_zs
     ZSERIO_LOG_FILENAME zserio_log.txt
 )
 
-add_test_sources(
-    cpp/ArrayTypesWarningTest.cpp
+add_custom_test(array_types_warning
+    DEPENDS
+        array_types_warning_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ArrayTypesWarningTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(array_types_warning_zs)

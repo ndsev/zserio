@@ -120,23 +120,19 @@ protected:
                 m_numberOfErrorsInRowsToSkipRestOfTheTable(numberOfErrorsInRowsToSkipRestOfTheTable)
         {}
 
-        virtual bool beginTable(zserio::StringView tableName, size_t numberOfTableRows) override
+        bool beginTable(zserio::StringView tableName, size_t numberOfTableRows) override
         {
             ValidationObserver::beginTable(tableName, numberOfTableRows);
-            if (m_tablesToSkip.count(zserio::toString(tableName)) != 0)
-                return false;
-            return true;
+            return (m_tablesToSkip.count(zserio::toString(tableName)) == 0);
         }
 
-        virtual bool endTable(zserio::StringView tableName, size_t numberOfValidatedTableRows) override
+        bool endTable(zserio::StringView tableName, size_t numberOfValidatedTableRows) override
         {
             ValidationObserver::endTable(tableName, numberOfValidatedTableRows);
-            if (zserio::StringView(m_tableToStopAfter) == tableName)
-                return false;
-            return true;
+            return (zserio::StringView(m_tableToStopAfter) != tableName);
         }
 
-        virtual bool reportError(zserio::StringView tableName, zserio::StringView fieldName,
+        bool reportError(zserio::StringView tableName, zserio::StringView fieldName,
             zserio::Span<const zserio::StringView> primaryKeyValues, ErrorType errorType,
             zserio::StringView message) override
         {
@@ -158,14 +154,14 @@ protected:
     };
 
 private:
-    static const char DB_FILE_NAME[];
+    static const char* const DB_FILE_NAME;
 };
 
 constexpr uint32_t ControlValidationTest::TABLE1_NUM_ROWS;
 constexpr uint32_t ControlValidationTest::TABLE2_NUM_ROWS;
 constexpr uint32_t ControlValidationTest::TABLE3_NUM_ROWS;
 
-const char ControlValidationTest::DB_FILE_NAME[] =
+const char* const ControlValidationTest::DB_FILE_NAME =
         "arguments/with_validation_code/control_validation_test.sqlite";
 
 TEST_F(ControlValidationTest, validate)
@@ -417,13 +413,13 @@ TEST_F(ControlValidationTest, validateSkipTableAndTerminateValidationAfterFirstS
     class SkipAndTerminateObserver : public ValidationObserver
     {
     public:
-        virtual bool endTable(zserio::StringView tableName, size_t numberOfValidatedTableRows) override
+        bool endTable(zserio::StringView tableName, size_t numberOfValidatedTableRows) override
         {
             ValidationObserver::endTable(tableName, numberOfValidatedTableRows);
             return !m_wasSchemaError; // terminate if an schema error occurred
         }
 
-        virtual bool reportError(zserio::StringView tableName, zserio::StringView fieldName,
+        bool reportError(zserio::StringView tableName, zserio::StringView fieldName,
             zserio::Span<const zserio::StringView> primaryKeyValues, ErrorType errorType,
             zserio::StringView message) override
         {

@@ -32,10 +32,16 @@ public:
         m_database->createSchema();
     }
 
-    ~Fts3VirtualTableTest()
+    ~Fts3VirtualTableTest() override
     {
         delete m_database;
     }
+
+    Fts3VirtualTableTest(const Fts3VirtualTableTest&) = delete;
+    Fts3VirtualTableTest& operator=(const Fts3VirtualTableTest&) = delete;
+
+    Fts3VirtualTableTest(Fts3VirtualTableTest&&) = delete;
+    Fts3VirtualTableTest& operator=(Fts3VirtualTableTest&&) = delete;
 
 protected:
     static void fillFts3VirtualTableRow(Fts3VirtualTable::Row& row, const string_type& title,
@@ -85,22 +91,16 @@ protected:
             return false;
 
         const unsigned char* readTableName = sqlite3_column_text(statement.get(), 0);
-        if (readTableName == nullptr ||
-                checkTableName.compare(reinterpret_cast<const char*>(readTableName)) != 0)
-        {
-            return false;
-        }
-
-        return true;
+        return (readTableName != nullptr && checkTableName == reinterpret_cast<const char*>(readTableName));
     }
 
-    static const char DB_FILE_NAME[];
+    static const char* const DB_FILE_NAME;
     static const int32_t NUM_VIRTUAL_TABLE_ROWS;
 
     sql_virtual_tables::fts3_virtual_table::Fts3TestDb* m_database;
 };
 
-const char Fts3VirtualTableTest::DB_FILE_NAME[] = "language/sql_virtual_tables/fts3_virtual_table_test.sqlite";
+const char* const Fts3VirtualTableTest::DB_FILE_NAME = "language/sql_virtual_tables/fts3_virtual_table_test.sqlite";
 const int32_t Fts3VirtualTableTest::NUM_VIRTUAL_TABLE_ROWS = 5;
 
 TEST_F(Fts3VirtualTableTest, deleteTable)

@@ -29,8 +29,8 @@ protected:
         const size_t fileSize = static_cast<size_t>(inputStream.tellg());
         inputStream.seekg(0, inputStream.beg);
         buffer.resize(fileSize);
-        inputStream.read(reinterpret_cast<char*>(&buffer[0]), static_cast<std::streamsize>(buffer.size()));
-        const bool result = (inputStream) ? true : false;
+        inputStream.read(reinterpret_cast<char*>(buffer.data()), static_cast<std::streamsize>(buffer.size()));
+        const bool result = static_cast<bool>((inputStream));
         inputStream.close();
 
         return result;
@@ -38,8 +38,8 @@ protected:
 
     void convertUInt8ArrayToString(const vector_type<uint8_t>& array, string_type& outputString)
     {
-        for (vector_type<uint8_t>::const_iterator it = array.begin(); it != array.end(); ++it)
-            outputString.append(1, static_cast<char>(*it));
+        for (uint8_t u8 : array)
+            outputString.append(1, static_cast<char>(u8));
     }
 };
 
@@ -48,7 +48,7 @@ TEST_F(GifTest, OnePixGif)
     const string_type onePixGifFileName("others/gif/data/1pix.gif");
     vector_type<uint8_t> buffer;
     ASSERT_TRUE(readFileToBuffer(onePixGifFileName, buffer));
-    zserio::BitStreamReader reader(&buffer[0], buffer.size());
+    zserio::BitStreamReader reader(buffer.data(), buffer.size());
     const GifFile gifFile(reader);
 
     string_type fileFormat;

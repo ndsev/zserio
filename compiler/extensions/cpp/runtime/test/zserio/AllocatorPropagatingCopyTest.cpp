@@ -50,15 +50,21 @@ public:
         return m_allocator;
     }
 
-    RegularWithAllocatorSupport(const allocator_type& allocator = allocator_type())
+    explicit RegularWithAllocatorSupport(const allocator_type& allocator = allocator_type())
         : m_allocator(allocator)
     {}
+
+    ~RegularWithAllocatorSupport() = default;
 
     RegularWithAllocatorSupport(const RegularWithAllocatorSupport& other)
         : m_allocator(AllocTraits::select_on_container_copy_construction(other.m_allocator))
     {}
 
+    RegularWithAllocatorSupport& operator=(const RegularWithAllocatorSupport&) = delete;
+
     RegularWithAllocatorSupport(RegularWithAllocatorSupport&&) = default;
+
+    RegularWithAllocatorSupport& operator=(RegularWithAllocatorSupport&&) = delete;
 
     RegularWithAllocatorSupport(PropagateAllocatorT, const RegularWithAllocatorSupport&,
             const allocator_type& allocator) :
@@ -121,7 +127,7 @@ TEST(AllocatorPropagatingCopyTest, copyInplaceOptional)
 {
     RegularWithAllocatorSupport::allocator_type allocator;
 
-    const InplaceOptionalHolder<RegularWithAllocatorSupport> emptyOptional;
+    const InplaceOptionalHolder<RegularWithAllocatorSupport> emptyOptional{};
     InplaceOptionalHolder<RegularWithAllocatorSupport>
             emptyOptionalCopy(allocatorPropagatingCopy(emptyOptional, allocator));
 

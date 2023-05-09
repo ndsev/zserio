@@ -58,7 +58,7 @@ inline Color valueToEnum<Color>(typename std::underlying_type<Color>::type rawVa
     case UINT8_C(2):
     case UINT8_C(3):
     case UINT8_C(7):
-        return Color(rawValue);
+        return static_cast<Color>(rawValue);
     default:
         throw CppRuntimeException("Unknown value for enumeration Color: ") << rawValue << "!";
     }
@@ -150,8 +150,8 @@ TEST(EnumsTest, initializeOffsets)
 
 TEST(EnumsTest, writeAndRead)
 {
-    static uint8_t WRITE_BUFFER[1];
-    BitStreamWriter out(WRITE_BUFFER, sizeof(WRITE_BUFFER));
+    std::array<uint8_t, 1> writeBuffer = {0};
+    BitStreamWriter out(writeBuffer.data(), writeBuffer.size());
     const Color writeColor = Color::NONE;
     write(out, writeColor);
 

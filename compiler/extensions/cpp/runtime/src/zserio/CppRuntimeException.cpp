@@ -1,4 +1,5 @@
-#include <string.h>
+#include <cstring>
+#include <array>
 #include <algorithm>
 
 #include "zserio/CppRuntimeException.h"
@@ -6,38 +7,39 @@
 namespace zserio
 {
 
-CppRuntimeException::CppRuntimeException(const char* message)
+CppRuntimeException::CppRuntimeException(const char* message) :
+        m_buffer()
 {
     append(message);
 }
 
 const char* CppRuntimeException::what() const noexcept
 {
-    return m_buffer;
+    return m_buffer.data();
 }
 
 void CppRuntimeException::append(const char* message)
 {
-    const size_t available = BUFFER_SIZE - 1 - m_len;
+    const size_t available = m_buffer.size() - 1 - m_len;
     const size_t numCharsToAppend = strnlen(message, available);
-    appendImpl(message, numCharsToAppend);
+    appendImpl(Span<const char>(message, numCharsToAppend));
 }
 
 void CppRuntimeException::append(const char* message, size_t messageLen)
 {
-    const size_t available = BUFFER_SIZE - 1 - m_len;
+    const size_t available = m_buffer.size() - 1 - m_len;
     const size_t numCharsToAppend = std::min(messageLen, available);
-    appendImpl(message, numCharsToAppend);
+    appendImpl(Span<const char>(message, numCharsToAppend));
 }
 
-void CppRuntimeException::appendImpl(const char* message, size_t numCharsToAppend)
+void CppRuntimeException::appendImpl(Span<const char> message)
 {
-    if (numCharsToAppend > 0)
+    if (message.size() > 0)
     {
-        memcpy(m_buffer + m_len, message, numCharsToAppend);
-        m_len += numCharsToAppend;
+        std::copy(message.begin(), message.end(), m_buffer.begin() + m_len);
+        m_len += message.size();
     }
-    *(m_buffer + m_len) = 0;
+    m_buffer.at(m_len) = 0;
 }
 
 CppRuntimeException& operator<<(CppRuntimeException& exception, const char* message)
@@ -53,9 +55,16 @@ CppRuntimeException& operator<<(CppRuntimeException& exception, bool value)
 
 CppRuntimeException& operator<<(CppRuntimeException& exception, float value)
 {
-    char buffer[48];
-    const char* stringValue = convertFloatToString(buffer, value);
-    return exception << stringValue;
+    std::array<char, 24> integerPartBuffer = {};
+    std::array<char, 24> floatingPartBuffer = {};
+    const char* integerPartString = nullptr;
+    const char* floatingPartString = nullptr;
+    convertFloatToString(integerPartBuffer, floatingPartBuffer, value, integerPartString, floatingPartString);
+    CppRuntimeException& result = exception << integerPartString;
+    if (floatingPartString != nullptr)
+        result = result << "." << floatingPartString;
+
+    return result;
 }
 
 CppRuntimeException& operator<<(CppRuntimeException& exception, double value)

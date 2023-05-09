@@ -185,7 +185,7 @@ TEST(JsonReaderTest, readObject)
     ASSERT_EQ(13, reflectable->getField("nested")->getParameter("param")->getUInt32());
     ASSERT_EQ(10, reflectable->find("nested.value")->getUInt32());
     ASSERT_EQ("nested"_sv, reflectable->find("nested.text")->getStringView());
-    ASSERT_EQ(BitBuffer({{0xCB, 0xF0}}, 12), reflectable->find("nested.externData")->getBitBuffer());
+    ASSERT_EQ(BitBuffer({0xCB, 0xF0}, 12), reflectable->find("nested.externData")->getBitBuffer());
     const Span<const uint8_t> bytesData = reflectable->find("nested.bytesData")->getBytes();
     ASSERT_EQ(2, bytesData.size());
     ASSERT_EQ(0xCA, bytesData[0]);
@@ -197,7 +197,7 @@ TEST(JsonReaderTest, readObject)
     ASSERT_EQ(1, reflectable->getField("nestedArray")->size());
     ASSERT_EQ(5, reflectable->getField("nestedArray")->at(0)->getField("value")->getUInt32());
     ASSERT_EQ("nestedArray"_sv, reflectable->getField("nestedArray")->at(0)->getField("text")->getStringView());
-    ASSERT_EQ(BitBuffer({{0xCA, 0xFE}}, 15),
+    ASSERT_EQ(BitBuffer({0xCA, 0xFE}, 15),
             reflectable->getField("nestedArray")->at(0)->getField("externData")->getBitBuffer());
     const Span<const uint8_t> nestedBytesData =
             reflectable->getField("nestedArray")->at(0)->getField("bytesData")->getBytes();
@@ -214,7 +214,7 @@ TEST(JsonReaderTest, readObject)
     ASSERT_EQ("text"_sv, reflectable->getField("textArray")->at(2)->getStringView());
     ASSERT_EQ("array"_sv, reflectable->getField("textArray")->at(3)->getStringView());
     ASSERT_EQ(1, reflectable->getField("externArray")->size());
-    ASSERT_EQ(BitBuffer({{0xDE, 0xD1}}, 13), reflectable->getField("externArray")->at(0)->getBitBuffer());
+    ASSERT_EQ(BitBuffer({0xDE, 0xD1}, 13), reflectable->getField("externArray")->at(0)->getBitBuffer());
     ASSERT_EQ(1, reflectable->getField("bytesArray")->size());
     Span<const uint8_t> bytesElement = reflectable->getField("bytesArray")->at(0)->getBytes();
     ASSERT_EQ(1, bytesElement.size());
@@ -312,7 +312,7 @@ TEST(JsonReaderTest, readUnorderedBitBuffer)
     ASSERT_EQ(13, reflectable->getField("nested")->getParameter("param")->getUInt32());
     ASSERT_EQ(10, reflectable->find("nested.value")->getUInt32());
     ASSERT_EQ("nested"_sv, reflectable->find("nested.text")->getStringView());
-    ASSERT_EQ(BitBuffer({{0xCB, 0xF0}}, 12), reflectable->find("nested.externData")->getBitBuffer());
+    ASSERT_EQ(BitBuffer({0xCB, 0xF0}, 12), reflectable->find("nested.externData")->getBitBuffer());
     const Span<const uint8_t> bytesData = reflectable->find("nested.bytesData")->getBytes();
     ASSERT_EQ(2, bytesData.size());
     ASSERT_EQ(0xCA, bytesData[0]);

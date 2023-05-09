@@ -11,7 +11,8 @@ namespace test_utils
 class ZserioErrorOutput
 {
 public:
-    ZserioErrorOutput(const std::string& prefix, const std::string& fileName = ZSERIO_ERROR_OUTPUT_FILE_NAME)
+    explicit ZserioErrorOutput(const std::string& prefix,
+            const std::string& fileName = ZSERIO_ERROR_OUTPUT_FILE_NAME)
     {
         const std::string errorsFileName = prefix + "/" + fileName;
         std::ifstream errorsFile(errorsFileName);

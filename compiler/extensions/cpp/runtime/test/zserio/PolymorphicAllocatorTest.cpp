@@ -12,19 +12,19 @@ namespace
 class TestResource : public zserio::pmr::MemoryResource
 {
 public:
-    virtual void* doAllocate(size_t bytes, size_t) override
+    void* doAllocate(size_t bytes, size_t) override
     {
         ++m_numAllocations;
         return ::operator new(bytes);
     }
 
-    virtual void doDeallocate(void* p, size_t, size_t) override
+    void doDeallocate(void* p, size_t, size_t) override
     {
         --m_numAllocations;
         ::operator delete(p);
     }
 
-    virtual bool doIsEqual(const MemoryResource& other) const noexcept override
+    bool doIsEqual(const MemoryResource& other) const noexcept override
     {
         return this == &other;
     }
@@ -76,7 +76,7 @@ TEST(PropagatingPolymorphicAllocatorTest, constructorAndResource)
     pmr::PropagatingPolymorphicAllocator<> allocator2Copy(allocator2);
     ASSERT_EQ(&resource, allocator2Copy.resource());
 
-    pmr::PropagatingPolymorphicAllocator<> allocator2Moved(allocator2);
+    pmr::PropagatingPolymorphicAllocator<> allocator2Moved(std::move(allocator2));
     ASSERT_EQ(&resource, allocator2Moved.resource());
 }
 

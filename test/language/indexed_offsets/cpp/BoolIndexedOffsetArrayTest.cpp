@@ -31,7 +31,7 @@ protected:
 
         for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
         {
-            writer.writeBits(i & 0x01, ELEMENT_SIZE);
+            writer.writeBits(i & 0x01U, ELEMENT_SIZE);
             if ((i + 1) != NUM_ELEMENTS)
                 writer.writeBits(0, ALIGNED_ELEMENT_SIZE - ELEMENT_SIZE);
         }
@@ -43,9 +43,9 @@ protected:
         const size_t expectedNumElements = NUM_ELEMENTS;
         ASSERT_EQ(expectedNumElements, offsets.size());
         uint32_t expectedOffset = ELEMENT0_OFFSET + offsetShift;
-        for (auto it = offsets.begin(); it != offsets.end(); ++it)
+        for (auto offset : offsets)
         {
-            ASSERT_EQ(expectedOffset, *it);
+            ASSERT_EQ(expectedOffset, offset);
             expectedOffset += ALIGNED_ELEMENT_BYTE_SIZE;
         }
     }
@@ -62,7 +62,7 @@ protected:
         const size_t expectedNumElements = NUM_ELEMENTS;
         ASSERT_EQ(expectedNumElements, data.size());
         for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
-            ASSERT_EQ((i & 0x01) ? true : false, data[i] != 0);
+            ASSERT_EQ((i & 0x01U) != 0, data[i] != 0);
     }
 
     void fillBoolIndexedOffsetArray(BoolIndexedOffsetArray& boolIndexedOffsetArray, bool createWrongOffsets)
@@ -84,7 +84,7 @@ protected:
         auto& data = boolIndexedOffsetArray.getData();
         data.reserve(NUM_ELEMENTS);
         for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
-            data.push_back((i & 0x01) ? true : false);
+            data.push_back((i & 0x01U) != 0);
     }
 
     static const uint8_t    NUM_ELEMENTS = 5;

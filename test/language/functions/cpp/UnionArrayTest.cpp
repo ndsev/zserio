@@ -1,4 +1,5 @@
 #include <vector>
+#include <array>
 
 #include "gtest/gtest.h"
 
@@ -17,39 +18,23 @@ namespace union_array
 
 class UnionArrayTest : public ::testing::Test
 {
-public:
-    UnionArrayTest()
-    {
-        uint8_t ElementsA[NUM_ITEM_ELEMENTS] = {12, 42, 17};
-        uint8_t ElementsB[NUM_ITEM_ELEMENTS] = {13, 18, 14};
-
-        for (uint16_t i = 0; i < NUM_ITEM_ELEMENTS; ++i)
-        {
-            m_items[i].setA(ElementsA[i]);
-            m_items[i].setB(ElementsB[i]);
-        }
-
-        m_explicitItem.setA(27);
-        m_explicitItem.setB(29);
-    }
-
 protected:
     void writeInnerToByteArray(zserio::BitStreamWriter& writer, uint16_t pos)
     {
-        writer.writeBits(NUM_ITEM_ELEMENTS, 16);
+        writer.writeBits(ITEMS.size(), 16);
 
-        for (uint16_t i = 0; i < NUM_ITEM_ELEMENTS; ++i)
+        for (Item item : ITEMS)
         {
-            writer.writeBits(m_items[i].getA(), 8);
-            writer.writeBits(m_items[i].getB(), 8);
+            writer.writeBits(item.getA(), 8);
+            writer.writeBits(item.getB(), 8);
         }
 
-        const uint8_t isExplicit = (pos >= NUM_ITEM_ELEMENTS) ? 1 : 0;
+        const uint8_t isExplicit = (pos >= ITEMS.size()) ? 1 : 0;
         writer.writeVarSize(isExplicit != 0 ? 0 : 1); // choice tag
         if (isExplicit != 0)
         {
-            writer.writeBits(m_explicitItem.getA(), 8);
-            writer.writeBits(m_explicitItem.getB(), 8);
+            writer.writeBits(EXPLICIT_ITEM.getA(), 8);
+            writer.writeBits(EXPLICIT_ITEM.getB(), 8);
         }
         else
         {
@@ -60,16 +45,16 @@ protected:
     void fillInner(Inner& inner, uint16_t pos)
     {
         OuterArray outerArray;
-        outerArray.setNumElements(NUM_ITEM_ELEMENTS);
+        outerArray.setNumElements(ITEMS.size());
         auto& values = outerArray.getValues();
-        values.assign(&m_items[0], &m_items[NUM_ITEM_ELEMENTS]);
+        values.assign(ITEMS.begin(), ITEMS.end());
         inner.setOuterArray(outerArray);
 
-        const uint8_t isExplicit = (pos >= NUM_ITEM_ELEMENTS) ? 1 : 0;
+        const uint8_t isExplicit = (pos >= ITEMS.size()) ? 1 : 0;
         ItemRef& itemRef = inner.getRef();
         if (isExplicit != 0)
         {
-            itemRef.setItem(m_explicitItem);
+            itemRef.setItem(EXPLICIT_ITEM);
         }
         else
         {
@@ -83,16 +68,16 @@ protected:
     {
         Inner inner;
         fillInner(inner, pos);
-        const uint8_t isExplicit = (pos >= NUM_ITEM_ELEMENTS) ? 1 : 0;
+        const uint8_t isExplicit = (pos >= ITEMS.size()) ? 1 : 0;
         if (isExplicit != 0)
         {
             const Item readElement = inner.getRef().funcGetItem();
-            ASSERT_EQ(m_explicitItem, readElement);
+            ASSERT_EQ(EXPLICIT_ITEM, readElement);
         }
         else
         {
             const Item readElement = inner.getRef().funcGetElement();
-            ASSERT_EQ(m_items[pos], readElement);
+            ASSERT_EQ(ITEMS[pos], readElement);
         }
 
         zserio::BitBuffer writtenBitBuffer = zserio::BitBuffer(1024 * 8);
@@ -110,12 +95,18 @@ protected:
         ASSERT_EQ(inner, readInner);
     }
 
-    static const uint16_t NUM_ITEM_ELEMENTS = 3;
+    static const std::array<Item, 3> ITEMS;
 
 private:
-    Item m_items[NUM_ITEM_ELEMENTS];
-    Item m_explicitItem;
+    static const Item EXPLICIT_ITEM;
 };
+
+const std::array<Item, 3> UnionArrayTest::ITEMS =
+{
+    Item{12, 13}, Item{42, 18}, Item{17, 14}
+};
+
+const Item UnionArrayTest::EXPLICIT_ITEM = {27, 29};
 
 TEST_F(UnionArrayTest, checkUnionArrayFunctionElement0)
 {
@@ -134,7 +125,7 @@ TEST_F(UnionArrayTest, checkUnionArrayFunctionElement2)
 
 TEST_F(UnionArrayTest, checkUnionArrayFunctionExplicitElement)
 {
-    checkUnionArrayFunction(NUM_ITEM_ELEMENTS);
+    checkUnionArrayFunction(ITEMS.size());
 }
 
 } // namespace union_array

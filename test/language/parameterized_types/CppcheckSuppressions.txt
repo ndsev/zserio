@@ -1,3 +1,5 @@
+knownConditionTrueFalse:*/cpp/SimpleParamTest.cpp:142
+noExplicitConstructor:*/parameterized_types/fixed_and_variable_param/Access.h
 uninitMemberVar:*/parameterized_types/array_element_param/Block.cpp
 uninitMemberVar:*/parameterized_types/array_element_param/Block.h
 uninitMemberVar:*/parameterized_types/bytes_param/Parameterized.cpp
@@ -21,5 +23,5 @@ uninitMemberVar:*/parameterized_types/parameterized_param/ParameterizedParam.cpp
 uninitMemberVar:*/parameterized_types/parameterized_param/ParameterizedParam.h
 uninitMemberVar:*/parameterized_types/simple_param/Item.cpp
 uninitMemberVar:*/parameterized_types/simple_param/Item.h
-
-noExplicitConstructor:*/parameterized_types/fixed_and_variable_param/Access.h
+uninitMemberVar:*/parameterized_types/subtyped_bitfield_param/SubtypedBitfieldParam.cpp
+uninitMemberVar:*/parameterized_types/subtyped_bitfield_param/SubtypedBitfieldParam.h

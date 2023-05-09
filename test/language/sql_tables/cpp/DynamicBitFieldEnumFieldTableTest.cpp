@@ -28,10 +28,16 @@ public:
         m_database->createSchema();
     }
 
-    ~DynamicBitFieldEnumFieldTableTest()
+    ~DynamicBitFieldEnumFieldTableTest() override
     {
         delete m_database;
     }
+
+    DynamicBitFieldEnumFieldTableTest(const DynamicBitFieldEnumFieldTableTest&) = delete;
+    DynamicBitFieldEnumFieldTableTest& operator=(const DynamicBitFieldEnumFieldTableTest&) = delete;
+
+    DynamicBitFieldEnumFieldTableTest(DynamicBitFieldEnumFieldTableTest&&) = delete;
+    DynamicBitFieldEnumFieldTableTest& operator=(DynamicBitFieldEnumFieldTableTest&&) = delete;
 
 protected:
     static void fillRow(DynamicBitFieldEnumFieldTable::Row& row, size_t i)
@@ -70,13 +76,13 @@ protected:
             checkRow(rows1[i], rows2[i]);
     }
 
-    static const char DB_FILE_NAME[];
+    static const char* const DB_FILE_NAME;
     static const size_t NUM_ROWS;
 
     sql_tables::TestDb* m_database;
 };
 
-const char DynamicBitFieldEnumFieldTableTest::DB_FILE_NAME[] =
+const char* const DynamicBitFieldEnumFieldTableTest::DB_FILE_NAME =
         "language/sql_tables/dynamic_bit_field_enum_field_table_test.sqlite";
 const size_t DynamicBitFieldEnumFieldTableTest::NUM_ROWS = 5;
 

@@ -1,1 +1,0 @@
-noExplicitConstructor:*/constants/Permission.h

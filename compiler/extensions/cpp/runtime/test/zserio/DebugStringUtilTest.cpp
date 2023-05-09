@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 
 #include <sstream>
+#include <array>
 
 #include "zserio/CppRuntimeException.h"
 #include "zserio/StringView.h"
@@ -30,9 +31,13 @@ struct DummyObject
             m_text_(text_)
     {}
 
+    ~DummyObject() = default;
+
     DummyObject(const DummyObject& other) = delete;
+    DummyObject& operator=(const DummyObject& other) = delete;
 
     DummyObject(DummyObject&& other) = default;
+    DummyObject& operator=(DummyObject&& other) = delete;
 
     static const IBasicTypeInfo<ALLOC>& typeInfo()
     {
@@ -69,16 +74,16 @@ struct DummyObject
                     m_owner(owner)
             {}
 
-            virtual size_t bitSizeOf(size_t) const override
+            size_t bitSizeOf(size_t) const override
             {
                 return 0;
             }
 
-            virtual void write(BitStreamWriter&) const override
+            void write(BitStreamWriter&) const override
             {
             }
 
-            virtual IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override
+            IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override
             {
                 if (name == makeStringView("text"))
                 {
@@ -87,7 +92,7 @@ struct DummyObject
                 throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyNested'!";
             }
 
-            virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
+            AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
             {
                 return AnyHolder<ALLOC>(std::cref(m_owner), allocator);
             }
@@ -114,16 +119,16 @@ struct DummyObject
                     m_owner(owner)
             {}
 
-            virtual size_t bitSizeOf(size_t) const override
+            size_t bitSizeOf(size_t) const override
             {
                 return 0;
             }
 
-            virtual void write(BitStreamWriter&) const override
+            void write(BitStreamWriter&) const override
             {
             }
 
-            virtual IBasicReflectablePtr<ALLOC> getField(StringView name) override
+            IBasicReflectablePtr<ALLOC> getField(StringView name) override
             {
                 if (name == makeStringView("text"))
                 {
@@ -132,7 +137,7 @@ struct DummyObject
                 throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyNested'!";
             }
 
-            virtual void setField(StringView name, const AnyHolder<ALLOC>& any) override
+            void setField(StringView name, const AnyHolder<ALLOC>& any) override
             {
                 if (name == makeStringView("text"))
                 {
@@ -142,12 +147,12 @@ struct DummyObject
                 throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyNested'!";
             }
 
-            virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
+            AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
             {
                 return AnyHolder<ALLOC>(std::cref(m_owner), allocator);
             }
 
-            virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) override
+            AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) override
             {
                 return AnyHolder<ALLOC>(std::ref(m_owner), allocator);
             }
@@ -190,7 +195,10 @@ public:
             m_text_(text_)
     {}
 
+    ~ParameterizedDummyObject() = default;
+
     ParameterizedDummyObject(const ParameterizedDummyObject& other) = delete;
+    ParameterizedDummyObject& operator=(const ParameterizedDummyObject& other) = delete;
 
     ParameterizedDummyObject(ParameterizedDummyObject&& other) :
         m_text_(std::move(other.m_text_))
@@ -200,6 +208,8 @@ public:
         else
             m_isInitialized = false;
     }
+
+    ParameterizedDummyObject& operator=(ParameterizedDummyObject&& other) = delete;
 
     static const IBasicTypeInfo<ALLOC>& typeInfo()
     {
@@ -265,15 +275,15 @@ public:
                     m_object(object)
             {}
 
-            virtual size_t bitSizeOf(size_t) const override
+            size_t bitSizeOf(size_t) const override
             {
                 return 0;
             }
 
-            virtual void write(BitStreamWriter&) const override
+            void write(BitStreamWriter&) const override
             {}
 
-            virtual IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override
+            IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override
             {
                 if (name == makeStringView("text"))
                 {
@@ -283,7 +293,7 @@ public:
                         "' doesn't exist in 'ParameterizedDummyObject'!";
             }
 
-            virtual IBasicReflectableConstPtr<ALLOC> getParameter(StringView name) const override
+            IBasicReflectableConstPtr<ALLOC> getParameter(StringView name) const override
             {
                 if (name == makeStringView("param"))
                 {
@@ -321,7 +331,7 @@ public:
                     m_object(object)
             {}
 
-            virtual void initialize(
+            void initialize(
                     const vector<AnyHolder<allocator_type>, allocator_type>& typeArguments) override
             {
                 if (typeArguments.size() != 1)
@@ -335,15 +345,15 @@ public:
                 );
             }
 
-            virtual size_t bitSizeOf(size_t) const override
+            size_t bitSizeOf(size_t) const override
             {
                 return 0;
             }
 
-            virtual void write(BitStreamWriter&) const override
+            void write(BitStreamWriter&) const override
             {}
 
-            virtual IBasicReflectablePtr<ALLOC> getField(StringView name) override
+            IBasicReflectablePtr<ALLOC> getField(StringView name) override
             {
                 if (name == makeStringView("text"))
                 {
@@ -353,7 +363,7 @@ public:
                         "' doesn't exist in 'ParameterizedDummyObject'!";
             }
 
-            virtual void setField(StringView name,
+            void setField(StringView name,
                     const AnyHolder<allocator_type>& value) override
             {
                 if (name == makeStringView("text"))
@@ -365,7 +375,7 @@ public:
                         "' doesn't exist in 'ParameterizedDummyObject'!";
             }
 
-            virtual IBasicReflectablePtr<ALLOC> getParameter(StringView name) override
+            IBasicReflectablePtr<ALLOC> getParameter(StringView name) override
             {
                 if (name == makeStringView("param"))
                 {
@@ -375,12 +385,12 @@ public:
                         "' doesn't exist in 'ParameterizedDummyObject'!";
             }
 
-            virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
+            AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
             {
                 return AnyHolder<ALLOC>(std::cref(m_object), allocator);
             }
 
-            virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) override
+            AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) override
             {
                 return AnyHolder<ALLOC>(std::ref(m_object), allocator);
             }
@@ -438,8 +448,8 @@ TEST(DebugStringUtilTest, toJsonStreamDefault)
     IReflectablePtr reflectable = dummyObject.reflectable();
     ASSERT_TRUE(reflectable);
     ASSERT_EQ(0, reflectable->bitSizeOf());
-    uint8_t buffer[1];
-    BitStreamWriter writer(buffer, 1);
+    std::array<uint8_t, 1> buffer = {};
+    BitStreamWriter writer(buffer.data(), buffer.size());
     reflectable->write(writer);
     ASSERT_EQ("test"_sv, reflectable->getField("text")->getStringView());
     ASSERT_THROW(reflectable->getField("wrong"), CppRuntimeException);
@@ -807,8 +817,8 @@ TEST(DebugStringUtilTest, fromJsonStreamParameterizedTypeInfo)
 
     // improve coverage
     ASSERT_EQ(0, reflectable->bitSizeOf());
-    uint8_t buffer[1];
-    BitStreamWriter writer(buffer, 1);
+    std::array<uint8_t, 1> buffer = {};
+    BitStreamWriter writer(buffer.data(), buffer.size());
     reflectable->write(writer);
     ASSERT_THROW(reflectable->getField("wrong"), CppRuntimeException);
     const AnyHolder<> value(0);

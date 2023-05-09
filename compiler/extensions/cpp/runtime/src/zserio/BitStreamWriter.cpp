@@ -1,5 +1,7 @@
 #include <cstring>
 #include <fstream>
+#include <array>
+#include <algorithm>
 
 #include "zserio/CppRuntimeException.h"
 #include "zserio/BitSizeOfCalculator.h"
@@ -9,7 +11,7 @@
 namespace zserio
 {
 
-static const uint32_t MAX_U32_VALUES[] =
+static const std::array<uint32_t, 33> MAX_U32_VALUES =
 {
     0x00U,
     0x0001U,     0x0003U,     0x0007U,     0x000fU,
@@ -22,7 +24,7 @@ static const uint32_t MAX_U32_VALUES[] =
     0x1fffffffU, 0x3fffffffU, 0x7fffffffU, 0xffffffffU,
 };
 
-static const int32_t MIN_I32_VALUES[] =
+static const std::array<int32_t, 33> MIN_I32_VALUES =
 {
     0,
    -0x0001,     -0x0002,     -0x0004,     -0x0008,
@@ -35,7 +37,7 @@ static const int32_t MIN_I32_VALUES[] =
    -0x10000000, -0x20000000, -0x40000000, INT32_MIN
 };
 
-static const int32_t MAX_I32_VALUES[] =
+static const std::array<int32_t, 33> MAX_I32_VALUES =
 {
     0x00,
     0x0000,      0x0001,      0x0003,      0x0007,
@@ -48,7 +50,7 @@ static const int32_t MAX_I32_VALUES[] =
     0x0fffffff,  0x1fffffff,  0x3fffffff,  0x7fffffff
 };
 
-static const uint64_t MAX_U64_VALUES[] =
+static const std::array<uint64_t, 65> MAX_U64_VALUES =
 {
     0x00ULL,
     0x0001ULL,             0x0003ULL,             0x0007ULL,             0x000fULL,
@@ -69,7 +71,7 @@ static const uint64_t MAX_U64_VALUES[] =
     0x1fffffffffffffffULL, 0x3fffffffffffffffULL, 0x7fffffffffffffffULL, 0xffffffffffffffffULL
 };
 
-static const int64_t MIN_I64_VALUES[] =
+static const std::array<int64_t, 65> MIN_I64_VALUES =
 {
     0LL,
    -0x0001LL,             -0x0002LL,             -0x0004LL,             -0x0008LL,
@@ -90,7 +92,7 @@ static const int64_t MIN_I64_VALUES[] =
    -0x1000000000000000LL, -0x2000000000000000LL, -0x4000000000000000LL, INT64_MIN
 };
 
-static const int64_t MAX_I64_VALUES[] =
+static const std::array<int64_t, 65> MAX_I64_VALUES =
 {
     0x00LL,
     0x0000LL,              0x0001LL,              0x0003LL,             0x0007LL,
@@ -112,21 +114,31 @@ static const int64_t MAX_I64_VALUES[] =
 };
 
 BitStreamWriter::BitStreamWriter(uint8_t* buffer, size_t bufferBitSize, BitsTag) :
-        m_buffer(buffer),
+        m_buffer(buffer, (bufferBitSize + 7) / 8),
         m_bitIndex(0),
         m_bufferBitSize(bufferBitSize)
 {}
 
 BitStreamWriter::BitStreamWriter(uint8_t* buffer, size_t bufferByteSize) :
-        BitStreamWriter(buffer, bufferByteSize * 8, BitsTag())
+        BitStreamWriter(Span<uint8_t>(buffer, bufferByteSize))
 {}
 
 BitStreamWriter::BitStreamWriter(Span<uint8_t> buffer) :
-        BitStreamWriter(buffer.data(), buffer.size() * 8, BitsTag())
+        m_buffer(buffer),
+        m_bitIndex(0),
+        m_bufferBitSize(buffer.size() * 8)
 {}
 
-BitStreamWriter::~BitStreamWriter()
+BitStreamWriter::BitStreamWriter(Span<uint8_t> buffer, size_t bufferBitSize) :
+        m_buffer(buffer),
+        m_bitIndex(0),
+        m_bufferBitSize(bufferBitSize)
 {
+    if (buffer.size() < (bufferBitSize + 7) / 8)
+    {
+        throw CppRuntimeException("BitStreamWriter: Wrong buffer bit size ('") << buffer.size() <<
+                "' < '" << (bufferBitSize + 7) / 8 << "')!";
+    }
 }
 
 void BitStreamWriter::writeBits(uint32_t data, uint8_t numBits)
@@ -245,7 +257,7 @@ void BitStreamWriter::writeBytes(Span<const uint8_t> data)
     writeVarSize(convertSizeToUInt32(len));
 
     const BitPosType beginBitPosition = getBitPosition();
-    if ((beginBitPosition & 0x07) != 0)
+    if ((beginBitPosition & 0x07U) != 0)
     {
         // we are not aligned to byte
         for (size_t i = 0; i < len; ++i)
@@ -256,7 +268,7 @@ void BitStreamWriter::writeBytes(Span<const uint8_t> data)
         // we are aligned to bytes
         setBitPosition(beginBitPosition + len * 8);
         if (hasWriteBuffer())
-            memcpy(m_buffer + beginBitPosition / 8, data.data(), len);
+            std::copy(data.begin(), data.end(), m_buffer.begin() + beginBitPosition / 8);
     }
 }
 
@@ -266,7 +278,7 @@ void BitStreamWriter::writeString(StringView data)
     writeVarSize(convertSizeToUInt32(len));
 
     const BitPosType beginBitPosition = getBitPosition();
-    if ((beginBitPosition & 0x07) != 0)
+    if ((beginBitPosition & 0x07U) != 0)
     {
         // we are not aligned to byte
         for (size_t i = 0; i < len; ++i)
@@ -277,7 +289,7 @@ void BitStreamWriter::writeString(StringView data)
         // we are aligned to bytes
         setBitPosition(beginBitPosition + len * 8);
         if (hasWriteBuffer())
-            memcpy(m_buffer + beginBitPosition / 8, data.data(), len);
+            std::copy(data.begin(), data.begin() + len, m_buffer.data() + beginBitPosition / 8);
     }
 }
 
@@ -306,6 +318,11 @@ void BitStreamWriter::alignTo(size_t alignment)
 
 const uint8_t* BitStreamWriter::getWriteBuffer() const
 {
+    return m_buffer.data();
+}
+
+Span<const uint8_t> BitStreamWriter::getBuffer() const
+{
     return m_buffer;
 }
 
@@ -320,7 +337,7 @@ void BitStreamWriter::writeUnsignedBits(uint32_t data, uint8_t numBits)
     checkCapacity(m_bitIndex + numBits);
 
     uint8_t restNumBits = numBits;
-    const uint8_t bitsUsed = m_bitIndex & 0x07;
+    const uint8_t bitsUsed = m_bitIndex & 0x07U;
     uint8_t bitsFree = 8 - bitsUsed;
     size_t byteIndex = m_bitIndex / 8;
 
@@ -328,7 +345,7 @@ void BitStreamWriter::writeUnsignedBits(uint32_t data, uint8_t numBits)
     {
         // first part
         const uint8_t shiftNum = restNumBits - bitsFree;
-        const uint8_t maskedByte = m_buffer[byteIndex] & ~(0xFF >> bitsUsed);
+        const uint8_t maskedByte = m_buffer[byteIndex] & ~(0xFFU >> bitsUsed);
         m_buffer[byteIndex++] = maskedByte | static_cast<uint8_t>(data >> shiftNum);
         restNumBits -= bitsFree;
 
@@ -348,7 +365,8 @@ void BitStreamWriter::writeUnsignedBits(uint32_t data, uint8_t numBits)
     {
         const uint8_t shiftNum = bitsFree - restNumBits;
         const uint32_t mask = MAX_U32_VALUES[restNumBits];
-        const uint8_t maskedByte = m_buffer[byteIndex] & ~static_cast<uint8_t>(mask << shiftNum);
+        const uint8_t maskedByte = m_buffer[byteIndex] &
+                static_cast<uint8_t>(~static_cast<uint8_t>(mask << shiftNum));
         m_buffer[byteIndex] = maskedByte | static_cast<uint8_t>((data & mask) << shiftNum);
     }
 
@@ -363,7 +381,7 @@ inline void BitStreamWriter::writeUnsignedBits64(uint64_t data, uint8_t numBits)
     }
     else
     {
-        writeUnsignedBits(static_cast<uint32_t>(data >> 32), numBits - 32);
+        writeUnsignedBits(static_cast<uint32_t>(data >> 32U), numBits - 32);
         writeUnsignedBits(static_cast<uint32_t>(data), 32);
     }
 }
@@ -379,10 +397,10 @@ inline void BitStreamWriter::writeUnsignedVarNum(uint64_t value, size_t maxVarBy
     writeVarNum(value, false, false, maxVarBytes, numVarBytes);
 }
 
-inline void BitStreamWriter::writeVarNum(uint64_t value, bool isSigned, bool isNegative, size_t maxVarBytes,
+inline void BitStreamWriter::writeVarNum(uint64_t value, bool hasSign, bool isNegative, size_t maxVarBytes,
         size_t numVarBytes)
 {
-    static const uint64_t bitMasks[8] = { 0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x7F, 0xFF };
+    static const std::array<uint64_t, 8> bitMasks = { 0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x7F, 0xFF };
     const bool hasMaxByteRange = (numVarBytes == maxVarBytes);
 
     for (size_t i = 0; i < numVarBytes; i++)
@@ -390,17 +408,17 @@ inline void BitStreamWriter::writeVarNum(uint64_t value, bool isSigned, bool isN
         uint8_t byte = 0x00;
         uint8_t numBits = 8;
         const bool hasNextByte = (i < numVarBytes - 1);
-        const bool hasSignBit = (isSigned && i == 0);
+        const bool hasSignBit = (hasSign && i == 0);
         if (hasSignBit)
         {
             if (isNegative)
-                byte |= 0x80;
+                byte |= 0x80U;
             numBits--;
         }
         if (hasNextByte)
         {
             numBits--;
-            byte |= (0x01 << numBits); // use bit 6 if signed bit is present, use bit 7 otherwise
+            byte |= (0x01U << numBits); // use bit 6 if signed bit is present, use bit 7 otherwise
         }
         else // this is the last byte
         {

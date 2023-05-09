@@ -1,15 +1,15 @@
 set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 set(ZSERIO_GENERATED_SOURCES
+    # Service files are not generated
     ${ZSERIO_GEN_DIR}/without_service_code/Pubsub.cpp
     ${ZSERIO_GEN_DIR}/without_service_code/Pubsub.h
     ${ZSERIO_GEN_DIR}/without_service_code/Response.cpp
     ${ZSERIO_GEN_DIR}/without_service_code/Response.h
     ${ZSERIO_GEN_DIR}/without_service_code/Request.cpp
     ${ZSERIO_GEN_DIR}/without_service_code/Request.h
-    # Service files are not generated
 )
 
-zserio_add_library(TARGET without_service_code_zs
+zserio_add_library(without_service_code_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE without_service_code.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
@@ -19,8 +19,11 @@ zserio_add_library(TARGET without_service_code_zs
     ZSERIO_OPTIONS -withoutServiceCode -withoutSourcesAmalgamation
 )
 
-add_test_sources(
-    cpp/WithoutServiceCodeTest.cpp
+add_custom_test(without_service_code
+    DEPENDS
+        without_service_code_zs
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/WithoutServiceCodeTest.cpp
+    GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
 )
-
-add_test_dependencies(without_service_code_zs)

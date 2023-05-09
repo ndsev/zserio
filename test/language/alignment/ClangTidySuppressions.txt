@@ -1,0 +1,7 @@
+readability-braces-around-statements
+
+readability-make-member-function-const:gen/alignment/auto_optional_member_alignment/AutoOptionalMemberAlignment.cpp
+readability-make-member-function-const:gen/alignment/bit_alignment/BitAlignment.cpp
+readability-make-member-function-const:gen/alignment/optional_member_alignment/OptionalMemberAlignment.cpp
+
+readability-simplify-boolean-expr:gen/alignment/optional_member_alignment/OptionalMemberAlignment.cpp

@@ -85,7 +85,10 @@ private:
         for (uint32_t i = 0; i < response.getLength(); ++i)
         {
             const RGBModel& rgb = data.at(i).getRgb();
-            uint8_t c, m, y, k;
+            uint8_t c = 0;
+            uint8_t m = 0;
+            uint8_t y = 0;
+            uint8_t k = 0;
             convertRgbToCmyk(rgb.getRed(), rgb.getGreen(), rgb.getBlue(), c, m, y, k);
             cmykData[i].setCyan(c);
             cmykData[i].setMagenta(m);
@@ -102,7 +105,9 @@ private:
         for (uint32_t i = 0; i < response.getLength(); ++i)
         {
             const CMYKModel& cmyk = data.at(i).getCmyk();
-            uint8_t r, g, b;
+            uint8_t r = 0;
+            uint8_t g = 0;
+            uint8_t b = 0;
             convertCmykToRgb(cmyk.getCyan(), cmyk.getMagenta(), cmyk.getYellow(), cmyk.getKey(), r, g, b);
             rgbData[i].setRed(r);
             rgbData[i].setGreen(g);
@@ -115,11 +120,14 @@ class ComplexTypesServiceTest : public ::testing::Test
 {
 public:
     ComplexTypesServiceTest()
-    :   localServiceClient(service), client(localServiceClient)
+    :   localServiceClient(service), client(localServiceClient), cmykValues()
     {
         for (size_t i = 0; i < 3; ++i)
         {
-            uint8_t c, m, y, k;
+            uint8_t c = 0;
+            uint8_t m = 0;
+            uint8_t y = 0;
+            uint8_t k = 0;
             convertRgbToCmyk(rgbValues[i][0], rgbValues[i][1], rgbValues[i][2], c, m, y, k);
             cmykValues[i][0] = c;
             cmykValues[i][1] = m;
@@ -133,13 +141,14 @@ protected:
     LocalServiceClient localServiceClient;
     ComplexTypesService::Client client;
 
-    // note that conversion is slightly inaccurate and therefore this values are carefully choosen
+    // note that conversion is slightly inaccurate and therefore this values are carefully chosen
     // to provide consistent results for the test needs
-    static constexpr uint8_t rgbValues[3][3] = { { 0 ,128, 255 }, { 222, 222, 0 }, { 65, 196, 31 } };
-    uint8_t cmykValues[3][4];
+    static constexpr std::array<std::array<uint8_t, 3>, 3> rgbValues = {{
+            { 0 ,128, 255 }, { 222, 222, 0 }, { 65, 196, 31 } }};
+    std::array<std::array<uint8_t, 4>, 3> cmykValues;
 };
 
-constexpr uint8_t ComplexTypesServiceTest::rgbValues[3][3];
+constexpr std::array<std::array<uint8_t, 3>, 3> ComplexTypesServiceTest::rgbValues;
 
 TEST_F(ComplexTypesServiceTest, serviceFullName)
 {
@@ -229,7 +238,7 @@ TEST_F(ComplexTypesServiceTest, cmykToRgb)
 
 TEST_F(ComplexTypesServiceTest, invalidServiceMethod)
 {
-    ASSERT_THROW(service.callMethod("nonexistentMethod"_sv, {}), zserio::ServiceException);
+    ASSERT_THROW(service.callMethod("nonexistentMethod"_sv, {}, nullptr), zserio::ServiceException);
 }
 
 } // namespace complex_types_service

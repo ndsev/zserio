@@ -28,10 +28,16 @@ public:
         m_database->createSchema();
     }
 
-    ~SubtypedTableTest()
+    ~SubtypedTableTest() override
     {
         delete m_database;
     }
+
+    SubtypedTableTest(const SubtypedTableTest&) = delete;
+    SubtypedTableTest& operator=(const SubtypedTableTest&) = delete;
+
+    SubtypedTableTest(SubtypedTableTest&&) = delete;
+    SubtypedTableTest& operator=(SubtypedTableTest&&) = delete;
 
 protected:
     bool isTableInDb()
@@ -47,21 +53,15 @@ protected:
             return false;
 
         const unsigned char* readTableName = sqlite3_column_text(statement.get(), 0);
-        if (readTableName == nullptr ||
-                checkTableName.compare(reinterpret_cast<const char*>(readTableName)) != 0)
-        {
-            return false;
-        }
-
-        return true;
+        return (readTableName != nullptr && checkTableName == reinterpret_cast<const char*>(readTableName));
     }
 
-    static const char DB_FILE_NAME[];
+    static const char* const DB_FILE_NAME;
 
     sql_tables::TestDb* m_database;
 };
 
-const char SubtypedTableTest::DB_FILE_NAME[] = "language/sql_tables/subtyped_table_test.sqlite";
+const char* const SubtypedTableTest::DB_FILE_NAME = "language/sql_tables/subtyped_table_test.sqlite";
 
 TEST_F(SubtypedTableTest, testSubtypedTable)
 {

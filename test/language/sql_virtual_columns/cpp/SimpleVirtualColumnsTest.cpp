@@ -32,10 +32,16 @@ public:
         m_database->createSchema();
     }
 
-    ~SimpleVirtualColumnsTest()
+    ~SimpleVirtualColumnsTest() override
     {
         delete m_database;
     }
+
+    SimpleVirtualColumnsTest(const SimpleVirtualColumnsTest&) = delete;
+    SimpleVirtualColumnsTest& operator=(const SimpleVirtualColumnsTest&) = delete;
+
+    SimpleVirtualColumnsTest(SimpleVirtualColumnsTest&&) = delete;
+    SimpleVirtualColumnsTest& operator=(SimpleVirtualColumnsTest&&) = delete;
 
 protected:
     static void fillSimpleVirtualColumnsTableRow(SimpleVirtualColumnsTable::Row& row,
@@ -82,10 +88,7 @@ protected:
             return false;
 
         const unsigned char* readTableName = sqlite3_column_text(statement.get(), 0);
-        if (readTableName == nullptr || m_tableName.compare(reinterpret_cast<const char*>(readTableName)) != 0)
-            return false;
-
-        return true;
+        return (readTableName != nullptr && m_tableName == reinterpret_cast<const char*>(readTableName));
     }
 
     bool isVirtualColumnInTable()
@@ -103,7 +106,7 @@ protected:
 
             const unsigned char* readColumnName = sqlite3_column_text(statement.get(), 1);
             if (readColumnName != nullptr &&
-                    m_virtualColumnName.compare(reinterpret_cast<const char*>(readColumnName)) == 0)
+                    m_virtualColumnName == reinterpret_cast<const char*>(readColumnName))
             {
                 isFound = true;
             }
@@ -112,7 +115,7 @@ protected:
         return isFound;
     }
 
-    static const char DB_FILE_NAME[];
+    static const char* const DB_FILE_NAME;
     static const int32_t NUM_TABLE_ROWS;
 
     string_type m_tableName;
@@ -120,7 +123,7 @@ protected:
     SimpleVirtualColumnsDb* m_database;
 };
 
-const char SimpleVirtualColumnsTest::DB_FILE_NAME[] =
+const char* const SimpleVirtualColumnsTest::DB_FILE_NAME =
         "language/sql_virtual_columns/simple_virtual_columns_test.sqlite";
 const int32_t SimpleVirtualColumnsTest::NUM_TABLE_ROWS = 5;
 
