@@ -5,7 +5,6 @@
 [![](https://github.com/ndsev/zserio/actions/workflows/build_linux.yml/badge.svg)](https://github.com/ndsev/zserio/actions/workflows/build_linux.yml)
 [![](https://github.com/ndsev/zserio/actions/workflows/build_windows.yml/badge.svg)](https://github.com/ndsev/zserio/actions/workflows/build_windows.yml)
 [![](https://img.shields.io/endpoint?url=https://zserio.org/doc/runtime/latest/cpp/coverage/clang/coverage_github_badge.json)](https://zserio.org/doc/runtime/latest/cpp/coverage/clang)
-[![](https://img.shields.io/endpoint?url=https://zserio.org/doc/runtime/latest/cpp/coverage/gcc/coverage_github_badge.json)](https://zserio.org/doc/runtime/latest/cpp/coverage/gcc)
 [![](https://img.shields.io/endpoint?url=https://zserio.org/doc/runtime/latest/java/coverage/coverage_github_badge.json)](https://zserio.org/doc/runtime/latest/java/coverage)
 [![](https://img.shields.io/endpoint?url=https://zserio.org/doc/runtime/latest/python/coverage/coverage_github_badge.json)](https://zserio.org/doc/runtime/latest/python/coverage)
 [![](https://img.shields.io/github/release-date/ndsev/zserio)](https://github.com/ndsev/zserio/releases/latest)

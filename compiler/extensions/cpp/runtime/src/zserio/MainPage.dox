@@ -8,9 +8,5 @@
  * - Serialization (`SerializeUtil.h` module)
  * - Debug string output (`DebugStringUtil.h` module)
  *
- * Test coverage report of this library is available for <a href="coverage/gcc/index.html">gcc</a> and for
- * <a href="coverage/clang/index.html">clang</a>. Please note that <a href="coverage/gcc/index.html">gcc</a>
- * coverage report has many uncovered branches because of
- * <a href="https://gcovr.com/en/stable/faq.html#why-does-c-code-have-so-many-uncovered-branches">
- * different measurement approach</a>.
+ * <a href="coverage/clang/index.html">Test coverage report</a> of this library is available as well.
  */
