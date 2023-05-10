@@ -1921,7 +1921,11 @@ template <typename T, typename ALLOC = typename T::allocator_type>
 class ReflectableOwner : public IBasicReflectable<ALLOC>
 {
 public:
-    ReflectableOwner(const ALLOC& allocator = ALLOC()) :
+    ReflectableOwner() :
+            ReflectableOwner(ALLOC())
+    {}
+
+    explicit ReflectableOwner(const ALLOC& allocator) :
             m_object(allocator),
             m_reflectable(m_object.reflectable(allocator))
     {}

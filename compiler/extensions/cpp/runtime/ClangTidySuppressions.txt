@@ -100,7 +100,6 @@ google-explicit-constructor:src/zserio/OptionalHolder.h:542
 google-explicit-constructor:src/zserio/OptionalHolder.h:553
 google-explicit-constructor:src/zserio/pmr/PolymorphicAllocator.h:47
 google-explicit-constructor:src/zserio/pmr/PolymorphicAllocator.h:72
-google-explicit-constructor:src/zserio/Reflectable.h:1924
 google-explicit-constructor:src/zserio/Span.h:111
 google-explicit-constructor:src/zserio/Span.h:123
 google-explicit-constructor:src/zserio/Span.h:135
@@ -174,7 +173,6 @@ google-build-using-namespace:test/zserio/ReflectableTest.cpp:24
 google-explicit-constructor:test/zserio/ArrayTest.cpp:63
 google-explicit-constructor:test/zserio/BuiltInOperatorsTest.cpp:26
 google-explicit-constructor:test/zserio/HashCodeUtilTest.cpp:34
-google-explicit-constructor:test/zserio/AllocatorPropagatingCopyTest.cpp:30
 google-explicit-constructor:test/zserio/TrackingAllocator.h:78
 
 # Intentional tests.

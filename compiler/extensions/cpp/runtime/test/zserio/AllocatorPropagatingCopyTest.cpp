@@ -27,7 +27,7 @@ public:
         return m_allocator;
     }
 
-    RegularTypeWithStdAllocator(const allocator_type& allocator = allocator_type())
+    explicit RegularTypeWithStdAllocator(const allocator_type& allocator = allocator_type())
         : m_allocator(allocator)
     {}
 
