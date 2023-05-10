@@ -26,12 +26,12 @@ The following describes features which minimize the risk of Zserio C++ runtime l
 Clang-tidy tool is run using [this configuration](https://github.com/ndsev/zserio/blob/master/compiler/extensions/cpp/runtime/ClangTidyConfig.txt).
 The clang-tidy report from the latest C++ runtime library is available [here](https://zserio.org/doc/runtime/latest/cpp/clang-tidy/clang-tidy-report.txt).
 
-Because C++ runtime library is very low level (e.g. it mimic `std::span` or `std::string_view` standard
+Because C++ runtime library is very low level (e.g. it mimics `std::span` or `std::string_view` standard
 abstraction from C++17), it was not possible to fix all clang-tidy findings.
 
 Therefore all clang-tidy findings have been carefully checked and filtered out using definitions in clang-tidy
 [suppression file](https://github.com/ndsev/zserio/blob/master/compiler/extensions/cpp/runtime/ClangTidySuppressions.txt).
-This suppression file contains as well the brief reasoning why these findings cannot be fixed. This solution
+This suppression file contains as well the brief reasoning why these findings were not fixed. This solution
 with suppression file has been chosen not to pollute C++ runtime sources with `// NOLINT` comments and to
 allow implementation of warnings-as-error feature. The clang-tidy suppression file is automatically used
 during compilation using `CMake`.

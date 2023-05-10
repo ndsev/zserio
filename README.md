@@ -39,6 +39,7 @@ More documentation? Go to the [Documentation](#documentation).
 
 At the moment the following code generators are available
 - [C++ Generator](compiler/extensions/cpp/README.md) with [C++ Runtime Library](https://zserio.org/doc/runtime/latest/cpp)
+  supporting [functional safety](compiler/extensions/cpp/README.md#functional-safety-features)
 - [Java Generator](compiler/extensions/java/README.md) with [Java Runtime Library](https://zserio.org/doc/runtime/latest/java)
 - [Python Generator](compiler/extensions/python/README.md) with [Python Runtime Library](https://zserio.org/doc/runtime/latest/python)
 
