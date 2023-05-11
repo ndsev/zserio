@@ -6,17 +6,22 @@ For a **quick start** see the [C++ Tutorial](https://github.com/ndsev/zserio-tut
 
 For an **API documentation** see the [C++ Runtime Library](https://zserio.org/doc/runtime/latest/cpp).
 
-## Functional Safety Features
+## Functional Safety
+
+Zserio's C++ support is designed with a strong focus on functional safety, aiming to ensure the reliability,
+integrity, and robustness of the system while reducing the risk of software-induced hazards. This section
+provides an overview of the functional safety measures implemented, highlighting development practices that
+contribute to the framework's safety and trustworthiness.
 
 ### C++ Runtime Library
 
 The following describes features which minimize the risk of Zserio C++ runtime library malfunctioning behavior:
 
-- Supported compilers (minimum versions): gcc 5.4.0, clang 8, MinGW 5.4.0, MSVC 2017
-- Warnings are treaded as errors for all supported compilers
-- All features are properly tested by unit tests for all supported compilers (>600 tests)
-- Implemented automatic check of test coverage threshold with the for
-  [clang](https://zserio.org/doc/runtime/latest/cpp/coverage/clang/index.html) builds (>98%)
+- Supported compilers (minimum versions): gcc 5.4.0, Clang 8, MinGW 5.4.0, MSVC 2017
+- Warnings are treated as errors for all supported compilers
+- All features are properly tested by [unit test](runtime/test/) for all supported compilers (>600 tests)
+- Implemented automatic test coverage threshold check using [llvm-cov](https://llvm.org/docs/CommandGuide/llvm-cov.html) and Clang 8 (see
+  [coverage report](https://zserio.org/doc/runtime/latest/cpp/coverage/clang/index.html) which fulfills a line coverage threshold of 98%)
 - AddressSanitizer is run with no findings
 - UndefinedBehaviourSanitizer is run with no findings
 - C++ runtime library sources are checked by static analysis tool clang-tidy version 14
@@ -26,41 +31,40 @@ The following describes features which minimize the risk of Zserio C++ runtime l
 Clang-tidy tool is run using [this configuration](https://github.com/ndsev/zserio/blob/master/compiler/extensions/cpp/runtime/ClangTidyConfig.txt).
 The clang-tidy report from the latest C++ runtime library is available [here](https://zserio.org/doc/runtime/latest/cpp/clang-tidy/clang-tidy-report.txt).
 
-Because C++ runtime library is very low level (e.g. it mimics `std::span` or `std::string_view` standard
-abstraction from C++17), it was not possible to fix all clang-tidy findings.
+Due to compatibility and functional safety considerations (as there are no available MISRA/AUTOSAR guidelines
+for C++ standards newer than C++14), zserio is constrained to utilize the C++11 standard. Consequently, certain
+clang-tidy findings remain unresolved at present. This is mainly attributed to zserio's C++ runtime library,
+which operates at a lower level and emulates standard abstractions like std::span or std::string_view introduced
+in C++17.
 
 Therefore all clang-tidy findings have been carefully checked and filtered out using definitions in clang-tidy
-[suppression file](https://github.com/ndsev/zserio/blob/master/compiler/extensions/cpp/runtime/ClangTidySuppressions.txt).
+[suppression file](runtime/ClangTidySuppressions.txt).
 This suppression file contains as well the brief reasoning why these findings were not fixed. This solution
 with suppression file has been chosen not to pollute C++ runtime sources with `// NOLINT` comments and to
 allow implementation of warnings-as-error feature. The clang-tidy suppression file is automatically used
-during compilation using `CMake`.
-
+during compilation using CMake (see [CMake runtime configuration](runtime/CMakeLists.txt)).
 
 ### C++ Generated Code
 
 The following describes features which minimize the risk of Zserio C++ generated code malfunctioning behavior:
 
 - Supported compilers (minimum versions): gcc 5.4.0, clang 8, MinGW 5.4.0, MSVC 2017
-- Warnings are treaded as errors for all supported compilers
-- All features are properly tested by unit tests for all supported compilers (>1700 tests)
-- Generated C++ sources are checked by static analysis tool clang-tidy version 14 using
-  [this configuration](https://github.com/ndsev/zserio/blob/master/compiler/extensions/cpp/runtime/ClangTidyConfig.txt)
+- Warnings are treated as errors for all supported compilers
+- All zserio language features are properly tested by [unit tests](../../../test) for all supported compilers
+  (>1700 tests)
+- Unit tests check C++ code generated from small zserio schemas (>70 schemas)
+- Generated sources are checked by static analysis tool clang-tidy version 14 using
+  [this configuration](runtime/ClangTidyConfig.txt)
 
 ### Exceptions
 
-Zserio C++ runtime library together with the C++ generated code can throw a `zserio::CppRuntimeException` in
-some rare circumstances, mainly
+In functional-critical systems, the primary use case of zserio involves reading data. The zserio C++ runtime
+library, along with the generated C++ code, may throw a `zserio::CppRuntimeException` in rare circumstances.
+These exceptions can occur during reading, writing, and within its reflection functionality. While there are
+numerous possibilities for when the `zserio::CppRuntimeException` exception can be thrown, this section
+focuses specifically on describing exceptions that may occur during reading.
 
-- during parsing (reading)
-- during writing
-- in reflection code
-- in type info code
-
-Because there are hundreds possibilities when exception `zserio::CppRuntimeException` can be thrown, the
-following section contains only description of exceptions during parsing.
-
-#### Exceptions During Parsing
+#### Exceptions During Reading
 
 The following table describes all possibilities when C++ generated code can throw
 a `zserio::CppRuntimeException` during parsing of binary data:
