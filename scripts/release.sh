@@ -554,14 +554,17 @@ update_web_pages()
     if [ $? -ne 0 ] ; then
         return 1
     fi
+    echo "Done"
+
+    echo -ne "Creating Zserio runtime library GitHub badges..."
+    create_github_badge_jsons "${DEST_RUNTIME_DIR}" "${ZSERIO_VERSION}"
+    echo "Done"
+
+    echo -ne "Copying Zserio runtime libraries latest version..."
     local DEST_LATEST_DIR="${ZSERIO_PROJECT_ROOT}/doc/runtime/latest"
     rm -rf "${DEST_LATEST_DIR}"
     mkdir -p "${DEST_LATEST_DIR}"
     cp -r "${DEST_RUNTIME_DIR}"/* "${DEST_LATEST_DIR}"
-    echo "Done"
-
-    echo -ne "Creating Zserio runtime library GitHub badges..."
-    create_github_badge_jsons "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_VERSION}"
     echo "Done"
 
     # This is necessary because Jekyll ignores Python runtime doc directories that start with underscores.
@@ -578,7 +581,7 @@ update_web_pages()
         stderr_echo "Git failed with return code ${GIT_RESULT}!"
         return 1
     fi
-    "${GIT}" -C "${ZSERIO_PROJECT_ROOT}" push --set-upstream origin web-pages --force
+    "${GIT}" -C "${ZSERIO_PROJECT_ROOT}" push --set-upstream origin web-pages
     local GIT_RESULT=$?
     if [ ${GIT_RESULT} -ne 0 ] ; then
         stderr_echo "Git failed with return code ${GIT_RESULT}!"
@@ -599,22 +602,22 @@ update_web_pages()
 create_github_badge_jsons()
 {
     exit_if_argc_ne $# 2
-    local ZSERIO_PROJECT_ROOT="$1"; shift
+    local ZSERIO_RUNTIME_DIR="$1"; shift
     local ZSERIO_VERSION="$1"; shift
 
-    local CLANG_COVERAGE_DIR="${ZSERIO_PROJECT_ROOT}"/doc/runtime/cpp/coverage/clang
+    local CLANG_COVERAGE_DIR="${ZSERIO_RUNTIME_DIR}"/cpp/coverage/clang
     local CLANG_LINES_COVERAGE=`cat "${CLANG_COVERAGE_DIR}"/coverage_report.txt | grep TOTAL | \
             tr -s ' ' | cut -d' ' -f 10`
     create_github_badge_json "${CLANG_COVERAGE_DIR}"/coverage_github_badge.json \
             "C++ clang runtime ${ZSERIO_VERSION} coverage" "${CLANG_LINES_COVERAGE}"
 
-    local GCC_COVERAGE_DIR="${ZSERIO_PROJECT_ROOT}"/doc/runtime/cpp/coverage/gcc
+    local GCC_COVERAGE_DIR="${ZSERIO_RUNTIME_DIR}"/cpp/coverage/gcc
     local GCC_LINES_COVERAGE=`cat "${GCC_COVERAGE_DIR}"/coverage_report.txt | grep lines: | \
             tr -s ' ' | cut -d' ' -f 2`
     create_github_badge_json "${GCC_COVERAGE_DIR}"/coverage_github_badge.json \
             "C++ gcc runtime ${ZSERIO_VERSION} coverage" "${GCC_LINES_COVERAGE}"
 
-    local JAVA_COVERAGE_DIR="${ZSERIO_PROJECT_ROOT}"/doc/runtime/java/coverage
+    local JAVA_COVERAGE_DIR="${ZSERIO_RUNTIME_DIR}"/java/coverage
     local JAVA_COVERAGE_REPORT=`cat "${JAVA_COVERAGE_DIR}"/jacoco_report.xml`
     local JAVA_LINES_MISSED=`echo ${JAVA_COVERAGE_REPORT##*INSTRUCTION} | cut -d'"' -f3`
     local JAVA_LINES_COVERED=`echo ${JAVA_COVERAGE_REPORT##*INSTRUCTION} | cut -d'"' -f5`
@@ -624,7 +627,7 @@ create_github_badge_jsons()
             "Java runtime ${ZSERIO_VERSION} coverage" \
             "${JAVA_LINES_COVERAGE:0:-2}.${JAVA_LINES_COVERAGE: -2}%"
 
-    local PYTHON_COVERAGE_DIR="${ZSERIO_PROJECT_ROOT}"/doc/runtime/python/coverage
+    local PYTHON_COVERAGE_DIR="${ZSERIO_RUNTIME_DIR}"/python/coverage
     local PYTHON_LINES_VALID=`cat "${PYTHON_COVERAGE_DIR}"/coverage_report.xml | grep lines-covered | \
             cut -d' ' -f 4 | cut -d= -f2 | tr -d \"`
     local PYTHON_LINES_COVERED=`cat "${PYTHON_COVERAGE_DIR}"/coverage_report.xml | grep lines-covered | \
