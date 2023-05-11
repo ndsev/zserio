@@ -50,18 +50,9 @@ The following describes features which minimize the risk of Zserio C++ generated
 
 ### Exceptions
 
-Zserio C++ runtime library together with the C++ generated code can throw a `zserio::CppRuntimeException` in
-some rare circumstances, mainly
+In functional-critical systems, the primary use case of zserio involves reading data. The zserio C++ runtime library, along with the generated C++ code, may throw a `zserio::CppRuntimeException` in rare circumstances. These exceptions can occur during reading, writing, and within its reflection functionality. While there are numerous possibilities for when the `zserio::CppRuntimeException` exception can be thrown, this section focuses specifically on describing exceptions that may occur during reading.
 
-- during parsing (reading)
-- during writing
-- in reflection code
-- in type info code
-
-Because there are hundreds possibilities when exception `zserio::CppRuntimeException` can be thrown, the
-following section contains only description of exceptions during parsing.
-
-#### Exceptions During Parsing
+#### Exceptions During Reading
 
 The following table describes all possibilities when C++ generated code can throw
 a `zserio::CppRuntimeException` during parsing of binary data:
