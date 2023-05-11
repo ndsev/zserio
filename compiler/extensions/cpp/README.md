@@ -17,9 +17,9 @@ contribute to the framework's safety and trustworthiness.
 
 The following describes features which minimize the risk of Zserio C++ runtime library malfunctioning behavior:
 
-- Supported compilers (minimum versions): gcc 5.4.0, clang 8, MinGW 5.4.0, MSVC 2017
+- Supported compilers (minimum versions): gcc 5.4.0, Clang 8, MinGW 5.4.0, MSVC 2017
 - Warnings are treated as errors for all supported compilers
-- All features are properly tested by unit tests for all supported compilers (>600 tests)
+- All features are properly tested by [unit test](runtime/test/) for all supported compilers (>600 tests)
 - Implemented automatic test coverage threshold check using [llvm-cov](https://llvm.org/docs/CommandGuide/llvm-cov.html) and Clang 8 (see
   [coverage report](https://zserio.org/doc/runtime/latest/cpp/coverage/clang/index.html) which fulfills a line coverage threshold of 98%)
 - AddressSanitizer is run with no findings
@@ -50,8 +50,10 @@ The following describes features which minimize the risk of Zserio C++ generated
 
 - Supported compilers (minimum versions): gcc 5.4.0, clang 8, MinGW 5.4.0, MSVC 2017
 - Warnings are treated as errors for all supported compilers
-- All features are properly tested by unit tests for all supported compilers (>1700 tests)
-- Generated C++ sources are checked by static analysis tool clang-tidy version 14 using
+- All zserio language features are properly tested by [unit tests](../../test) for all supported compilers
+  (>1700 tests)
+- Unit tests check C++ code generated from small zserio schemas (>70 schemas)
+- Generated sources are checked by static analysis tool clang-tidy version 14 using
   [this configuration](runtime/ClangTidyConfig.txt)
 
 ### Exceptions
