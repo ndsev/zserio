@@ -38,7 +38,9 @@ More documentation? Go to the [Documentation](#documentation).
 ## Language support
 
 At the moment the following code generators are available
-- C++: [Generator](compiler/extensions/cpp/README.md) and [Runtime Library](https://zserio.org/doc/runtime/latest/cpp) using C++11, and developed with special attention to [functional safety](compiler/extensions/cpp/README.md#functional-safety-features) and [performance](https://github.com/ndsev/zserio-protobuf-benchmarks)
+- C++: [Generator](compiler/extensions/cpp/README.md) and [Runtime Library](https://zserio.org/doc/runtime/latest/cpp) using C++11,
+and developed with special attention to [functional safety](compiler/extensions/cpp/README.md#functional-safety)
+and [performance](https://github.com/ndsev/zserio-protobuf-benchmarks)
 - Java: [Generator](compiler/extensions/java/README.md) and [Runtime Library](https://zserio.org/doc/runtime/latest/java)
 - Python: [Generator](compiler/extensions/python/README.md) and [Runtime Library](https://zserio.org/doc/runtime/latest/python)
 

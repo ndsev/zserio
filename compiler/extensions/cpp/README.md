@@ -8,7 +8,10 @@ For an **API documentation** see the [C++ Runtime Library](https://zserio.org/do
 
 ## Functional Safety
 
-Zserio's C++ support is designed with a strong focus on functional safety, aiming to ensure the reliability, integrity, and robustness of the system while reducing the risk of software-induced hazards. This section provides an overview of the functional safety measures implemented, highlighting development practices that contribute to the framework's safety and trustworthiness.
+Zserio's C++ support is designed with a strong focus on functional safety, aiming to ensure the reliability,
+integrity, and robustness of the system while reducing the risk of software-induced hazards. This section
+provides an overview of the functional safety measures implemented, highlighting development practices that
+contribute to the framework's safety and trustworthiness.
 
 ### C++ Runtime Library
 
@@ -28,7 +31,11 @@ The following describes features which minimize the risk of Zserio C++ runtime l
 Clang-tidy tool is run using [this configuration](https://github.com/ndsev/zserio/blob/master/compiler/extensions/cpp/runtime/ClangTidyConfig.txt).
 The clang-tidy report from the latest C++ runtime library is available [here](https://zserio.org/doc/runtime/latest/cpp/clang-tidy/clang-tidy-report.txt).
 
-Due to compatibility and functional safety considerations (as there are no available MISRA/AUTOSAR guidelines for C++ standards newer than C++14), zserio is constrained to utilize the C++11 standard. Consequently, certain clang-tidy findings remain unresolved at present. This is mainly attributed to zserio's C++ runtime library, which operates at a lower level and emulates standard abstractions like std::span or std::string_view introduced in C++17.
+Due to compatibility and functional safety considerations (as there are no available MISRA/AUTOSAR guidelines
+for C++ standards newer than C++14), zserio is constrained to utilize the C++11 standard. Consequently, certain
+clang-tidy findings remain unresolved at present. This is mainly attributed to zserio's C++ runtime library,
+which operates at a lower level and emulates standard abstractions like std::span or std::string_view introduced
+in C++17.
 
 Therefore all clang-tidy findings have been carefully checked and filtered out using definitions in clang-tidy
 [suppression file](https://github.com/ndsev/zserio/blob/master/compiler/extensions/cpp/runtime/ClangTidySuppressions.txt).
@@ -36,7 +43,6 @@ This suppression file contains as well the brief reasoning why these findings we
 with suppression file has been chosen not to pollute C++ runtime sources with `// NOLINT` comments and to
 allow implementation of warnings-as-error feature. The clang-tidy suppression file is automatically used
 during compilation using `CMake`.
-
 
 ### C++ Generated Code
 
@@ -50,7 +56,11 @@ The following describes features which minimize the risk of Zserio C++ generated
 
 ### Exceptions
 
-In functional-critical systems, the primary use case of zserio involves reading data. The zserio C++ runtime library, along with the generated C++ code, may throw a `zserio::CppRuntimeException` in rare circumstances. These exceptions can occur during reading, writing, and within its reflection functionality. While there are numerous possibilities for when the `zserio::CppRuntimeException` exception can be thrown, this section focuses specifically on describing exceptions that may occur during reading.
+In functional-critical systems, the primary use case of zserio involves reading data. The zserio C++ runtime
+library, along with the generated C++ code, may throw a `zserio::CppRuntimeException` in rare circumstances.
+These exceptions can occur during reading, writing, and within its reflection functionality. While there are
+numerous possibilities for when the `zserio::CppRuntimeException` exception can be thrown, this section
+focuses specifically on describing exceptions that may occur during reading.
 
 #### Exceptions During Reading
 
