@@ -18,10 +18,10 @@ contribute to the framework's safety and trustworthiness.
 The following describes features which minimize the risk of Zserio C++ runtime library malfunctioning behavior:
 
 - Supported compilers (minimum versions): gcc 5.4.0, clang 8, MinGW 5.4.0, MSVC 2017
-- Warnings are treaded as errors for all supported compilers
+- Warnings are treated as errors for all supported compilers
 - All features are properly tested by unit tests for all supported compilers (>600 tests)
-- Implemented automatic check of test coverage threshold with the for
-  [clang](https://zserio.org/doc/runtime/latest/cpp/coverage/clang/index.html) builds (>98%)
+- Implemented automatic test coverage threshold check using [llvm-cov](https://llvm.org/docs/CommandGuide/llvm-cov.html) and Clang 8 (see
+  [coverage report](https://zserio.org/doc/runtime/latest/cpp/coverage/clang/index.html) which fulfills a line coverage threshold of 98%)
 - AddressSanitizer is run with no findings
 - UndefinedBehaviourSanitizer is run with no findings
 - C++ runtime library sources are checked by static analysis tool clang-tidy version 14
@@ -38,21 +38,21 @@ which operates at a lower level and emulates standard abstractions like std::spa
 in C++17.
 
 Therefore all clang-tidy findings have been carefully checked and filtered out using definitions in clang-tidy
-[suppression file](https://github.com/ndsev/zserio/blob/master/compiler/extensions/cpp/runtime/ClangTidySuppressions.txt).
+[suppression file](runtime/ClangTidySuppressions.txt).
 This suppression file contains as well the brief reasoning why these findings were not fixed. This solution
 with suppression file has been chosen not to pollute C++ runtime sources with `// NOLINT` comments and to
 allow implementation of warnings-as-error feature. The clang-tidy suppression file is automatically used
-during compilation using `CMake`.
+during compilation using CMake (see [CMake Runtime Configuration](runtime/CMakeLists.txt)).
 
 ### C++ Generated Code
 
 The following describes features which minimize the risk of Zserio C++ generated code malfunctioning behavior:
 
 - Supported compilers (minimum versions): gcc 5.4.0, clang 8, MinGW 5.4.0, MSVC 2017
-- Warnings are treaded as errors for all supported compilers
+- Warnings are treated as errors for all supported compilers
 - All features are properly tested by unit tests for all supported compilers (>1700 tests)
 - Generated C++ sources are checked by static analysis tool clang-tidy version 14 using
-  [this configuration](https://github.com/ndsev/zserio/blob/master/compiler/extensions/cpp/runtime/ClangTidyConfig.txt)
+  [this configuration](runtime/ClangTidyConfig.txt)
 
 ### Exceptions
 
