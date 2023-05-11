@@ -6,7 +6,9 @@ For a **quick start** see the [C++ Tutorial](https://github.com/ndsev/zserio-tut
 
 For an **API documentation** see the [C++ Runtime Library](https://zserio.org/doc/runtime/latest/cpp).
 
-## Functional Safety Features
+## Functional Safety
+
+Zserio's C++ support is designed with a strong focus on functional safety, aiming to ensure the reliability, integrity, and robustness of the system while reducing the risk of software-induced hazards. This section provides an overview of the functional safety measures implemented, highlighting development practices that contribute to the framework's safety and trustworthiness.
 
 ### C++ Runtime Library
 
