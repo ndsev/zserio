@@ -655,7 +655,20 @@ bool ${name}::validateField${field.name?cap_first}(::zserio::IValidationObserver
             </#if>
         </#list>
 
-<@vector_type_name types.string.name/> ${name}::getRowKeyValuesHolder(sqlite3_stmt* statement)
+<#assign needsStatementArgument=false/>
+<#if hasPrimaryKeyField>
+    <#list fields as field>
+        <#if field.isPrimaryKey>
+            <#if !field.sqlTypeData.isBlob>
+                <#assign needsStatementArgument=true/>
+                <#break>
+            </#if>
+         </#if>
+    </#list>
+<#else>
+    <#assign needsStatementArgument=true/>
+</#if>
+<@vector_type_name types.string.name/> ${name}::getRowKeyValuesHolder(sqlite3_stmt*<#if needsStatementArgument> statement</#if>)
 {
     <@vector_type_name types.string.name/> rowKeyValuesHolder{get_allocator_ref()};
 
