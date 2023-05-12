@@ -246,7 +246,7 @@ cppcheck_add_custom_command(TARGET \${PROJECT_NAME}
     INCLUDE_DIR \${CMAKE_CURRENT_SOURCE_DIR}/gen
     OPTIONS
         --suppress=variableScope --suppress=uninitMemberVar
-        --suppress=noExplicitConstructor --suppress=duplicateCondition
+        --suppress=noExplicitConstructor --suppress=duplicateCondition --suppress=duplicateExpression
         --suppress=syntaxError # needed on Windows
 )
 
