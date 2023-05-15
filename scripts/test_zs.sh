@@ -152,6 +152,11 @@ EOF
     <Match>
         <!-- Method names should start with a lower case letter. -->
         <Bug code="Nm"/>
+    </Match>
+    <Match>
+        <!-- Integral division result cast to double or float. -->
+        <Bug code="ICAST"/>
+        <Method name="funcPercentageValue"/>
     </Match>${SPOTBUGS_FILTER_SQLITE}
 </FindBugsFilter>
 EOF
