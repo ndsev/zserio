@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
-   viewBox="0 0 65.006119 19.505059"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   viewBox="0 0 60.000001 15.327502"
    id="zserio-logo"
    version="1.1"
    sodipodi:docname="Zserio.svg"
-   width="65.006119"
-   height="19.505058"
-   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:dc="http://purl.org/dc/elements/1.1/">
+   width="60"
+   height="15.327502"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)">
   <metadata
      id="metadata21">
     <rdf:RDF>
@@ -37,31 +37,19 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1920"
-     inkscape:window-height="935"
+     inkscape:window-width="1807"
+     inkscape:window-height="1062"
      id="namedview17"
      showgrid="false"
-     inkscape:zoom="10.393597"
-     inkscape:cx="40.313281"
-     inkscape:cy="12.988766"
-     inkscape:window-x="0"
-     inkscape:window-y="32"
-     inkscape:window-maximized="1"
-     inkscape:showpageshadow="2"
-     inkscape:pagecheckerboard="0"
-     inkscape:deskcolor="#d1d1d1"
-     inkscape:current-layer="zserio-logo" />
-  <rect
-     style="fill:#ffffff;stroke:none;stroke-width:1.15207"
-     id="rect388"
-     width="65.006119"
-     height="19.505058"
-     x="0"
-     y="0" />
+     inkscape:zoom="21.12269"
+     inkscape:cx="27.774903"
+     inkscape:cy="0.02581937"
+     inkscape:window-x="113"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1" />
   <g
      id="zserio-logo-serio"
-     fill="currentColor"
-     transform="translate(2.4819595,2.1419962)">
+     fill="currentColor">
     <path
        d="m 21.733415,11.886839 q 0,1.508249 -1.251904,2.474278 -1.242093,0.966048 -3.400868,0.966048 -1.222375,0 -2.24756,-0.285874 -1.015376,-0.295725 -1.705339,-0.640746 v -2.079999 h 0.09857 q 0.877324,0.660455 1.951776,1.054813 1.074434,0.38445 2.06028,0.38445 1.222375,0 1.912339,-0.394309 0.689963,-0.394309 0.690033,-1.242094 0,-0.650605 -0.37459,-0.985767 -0.37459,-0.335162 -1.439184,-0.571739 -0.394309,-0.08872 -1.035094,-0.207009 -0.630886,-0.118294 -1.153309,-0.256297 -1.449092,-0.384449 -2.06028,-1.1237795 -0.601318,-0.74918 -0.601318,-1.8335618 0,-0.6801737 0.276016,-1.2815312 0.285874,-0.6013179 0.857614,-1.0744331 0.552031,-0.4633054 1.399746,-0.7294612 0.857614,-0.2760152 1.912338,-0.2760152 0.985757,0 1.991214,0.2464369 1.015375,0.2365873 1.68562,0.5815989 V 6.593252 h -0.09857 Q 20.491193,6.0707998 19.475886,5.7159287 18.460511,5.3511981 17.484672,5.3511981 q -1.015375,0 -1.715248,0.394309 -0.699893,0.3844494 -0.699893,1.1533088 0,0.6801737 0.423878,1.0251853 0.414018,0.3450117 1.340589,0.5618801 0.512592,0.1182937 1.143499,0.2365873 0.640745,0.1182937 1.064623,0.2168685 1.291341,0.2957242 1.991214,1.0153751 0.699893,0.7294608 0.699893,1.9320578 z"
        inkscape:connector-curvature="0"
@@ -89,17 +77,7 @@
   </g>
   <path
      id="zserio-logo-z"
-     d="M 12.881457,17.469241 H 2.4819595 V 15.192152 L 8.3176683,8.9916935 H 2.7185865 V 6.3991022 H 12.773251 V 8.6367531 L 7.0262281,14.827302 h 5.8554269 z"
+     d="M 10.399498,15.327245 H 0 V 13.050156 L 5.8357087,6.8496973 H 0.23662698 V 4.257106 H 10.291292 V 6.4947569 L 4.5442685,12.685306 h 5.8554275 z"
      inkscape:connector-curvature="0"
      style="fill:#ff0000" />
-  <rect
-     style="fill:none;stroke:#000000;stroke-width:0.390712;stroke-dasharray:none;stroke-opacity:1"
-     id="rect1104"
-     width="62.883789"
-     height="17.748129"
-     x="1.1559464"
-     y="0.92408222"
-     inkscape:export-filename="Zserio.png"
-     inkscape:export-xdpi="2658.2114"
-     inkscape:export-ydpi="2658.2114" />
 </svg>
