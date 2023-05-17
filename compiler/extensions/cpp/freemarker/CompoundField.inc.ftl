@@ -92,7 +92,7 @@ ${I}return <@field_member_type_name field/>(::zserio::NullOpt<#if field.holderNe
         <#elseif field.typeInfo.isEnum>
             <#local readCommand>::zserio::read<<@field_cpp_type_name field/>>(<@compound_field_packing_context_node field, index/>, in)</#local>
         <#else>
-            <#local readCommand><@compound_field_packing_context_node field, index/>.getContext().read(<@array_traits field/>, in)</#local>
+            <#local readCommand><@compound_field_packing_context_node field, index/>.getContext().read<<@array_traits_type_name field/>>(<#if array_traits_needs_owner(field)>*this, </#if>in)</#local>
         </#if>
     <#elseif field.runtimeFunction??>
         <#local readCommandArgs>
@@ -114,12 +114,9 @@ ${I}return <@field_member_type_name field/>(::zserio::NullOpt<#if field.holderNe
         <#local readCommand><@field_cpp_type_name field/>(in)</#local>
     </#if>
     <#if field.array??>
-${I}<@array_typedef_name field/> readField(<@array_traits field/>, allocator);
-${I}readField.read<@array_field_packed_suffix field, packed/>(in<#rt>
-        <#if field.array.length??>, static_cast<size_t>(${field.array.length})</#if><#t>
-        <#if field.array.traits.requiresElementFactory>, <@element_factory_name field.name/>(*this)</#if><#t>
-        <#if field.offset?? && field.offset.containsIndex>, <@offset_checker_name field.name/>(*this)</#if><#t>
-        <#lt>);
+${I}<@array_typedef_name field/> readField(allocator);
+${I}readField.read<@array_field_packed_suffix field, packed/>(<#if array_needs_owner(field)>*this, </#if>in<#rt>
+        <#lt><#if field.array.length??>, static_cast<size_t>(${field.array.length})</#if>);
     <@compound_check_constraint_field field, name, "Read", indent/>
 
 ${I}return <@compound_read_field_retval field, "readField", true/>;
@@ -218,8 +215,8 @@ ${I}<@compound_get_field field/>.write(<@compound_field_packing_context_node fie
         <#elseif field.typeInfo.isEnum>
 ${I}::zserio::write(<@compound_field_packing_context_node field, index/>, out, <@compound_get_field field/>);
         <#else>
-${I}<@compound_field_packing_context_node field, index/>.getContext().write(
-${I}        <@array_traits field/>, out, <@compound_get_field field/>);
+${I}<@compound_field_packing_context_node field, index/>.getContext().write<<@array_traits_type_name field/>>(<#rt>
+        <#lt><#if array_traits_needs_owner(field)>*this, </#if>out, <@compound_get_field field/>);
         </#if>
     <#elseif field.runtimeFunction??>
 ${I}out.write${field.runtimeFunction.suffix}(<@compound_get_field field/><#if field.runtimeFunction.arg??>,<#rt>
@@ -227,8 +224,7 @@ ${I}out.write${field.runtimeFunction.suffix}(<@compound_get_field field/><#if fi
     <#elseif field.typeInfo.isEnum>
 ${I}::zserio::write(out, <@compound_get_field field/>);
     <#elseif field.array??>
-${I}<@compound_get_field field/>.write<@array_field_packed_suffix field, packed/>(out<#rt>
-        <#lt><#if field.offset?? && field.offset.containsIndex>, <@offset_checker_name field.name/>(*this)</#if>);
+${I}<@compound_get_field field/>.write<@array_field_packed_suffix field, packed/>(<#if array_needs_owner(field)>*this, </#if>out);
     <#else>
 ${I}<@compound_get_field field/>.write(out);
     </#if>
@@ -352,9 +348,8 @@ ${I}}
     ${field.typeInfo.typeFullName}<<#t>
             <@vector_type_name field.array.elementTypeInfo.typeFullName/>, <@array_traits_type_name field/>, <#t>
             <@array_type_enum field/><#t>
-    <#if field.offset?? && field.offset.containsIndex>
-            , <@offset_checker_name field.name/><#t>
-            <#if withWriterCode>, <@offset_initializer_name field.name/></#if><#t>
+    <#if needs_array_expressions(field)>
+            , <@array_expressions_name field.name/><#t>
     </#if>
     ><#t>
 </#macro>
@@ -364,6 +359,7 @@ ${I}}
         ${field.array.traits.name}<#t>
         <#if field.array.traits.isTemplated>
                 <${field.array.elementTypeInfo.typeFullName}<#t>
+                <#if field.array.traits.requiresElementFixedBitSize>, ${field.array.elementBitSize.value}</#if><#t>
                 <#if field.array.traits.requiresElementDynamicBitSize>, <@element_bit_size_name field.name/></#if><#t>
                 <#if field.array.traits.requiresElementFactory>, <@element_factory_name field.name/></#if>><#t>
         </#if>
@@ -371,32 +367,23 @@ ${I}}
         ${field.typeInfo.arrayTraits.name}<#t>
         <#if field.typeInfo.arrayTraits.isTemplated>
                 <${field.typeInfo.typeFullName}<#t>
+                <#if field.typeInfo.arrayTraits.requiresElementFixedBitSize>, ${field.bitSize.value}</#if><#t>
                 <#if field.typeInfo.arrayTraits.requiresElementDynamicBitSize>, <@element_bit_size_name field.name/></#if><#t>
                 <#if field.typeInfo.arrayTraits.requiresElementFactory>, <@element_factory_name field.name/></#if>><#t>
         </#if>
     </#if>
 </#macro>
 
-<#macro array_traits field>
-    <@array_traits_type_name field/>
-            (<#t>
-    <#if field.array??>
-        <#if field.array.traits.requiresElementFixedBitSize>
-            static_cast<uint8_t>(${field.array.elementBitSize.value})<#t>
-        </#if>
-        <#if field.array.traits.requiresElementDynamicBitSize>
-            <@element_bit_size_name field.name/>(*this)<#t>
-        </#if>
-    <#else>
-        <#if field.typeInfo.arrayTraits.requiresElementFixedBitSize>
-            static_cast<uint8_t>(${field.bitSize.value})<#t>
-        </#if>
-        <#if field.typeInfo.arrayTraits.requiresElementDynamicBitSize>
-            <@element_bit_size_name field.name/>(*this)<#t>
-        </#if>
-    </#if>
-            )<#t>
-</#macro>
+<#function array_traits_needs_owner field>
+    <#return (field.typeInfo.arrayTraits.requiresElementDynamicBitSize && needs_element_bit_size_owner(field)) ||
+            field.typeInfo.arrayTraits.requiresElementFactory>
+</#function>
+
+<#function array_needs_owner field>
+    <#return (field.array.traits.requiresElementDynamicBitSize && needs_element_bit_size_owner(field)) ||
+            field.array.traits.requiresElementFactory ||
+            needs_array_expressions(field)>
+</#function>
 
 <#macro array_type_enum field>
     ::zserio::ArrayType::<#t>
@@ -424,29 +411,42 @@ ${I}}
     <#return false>
 </#function>
 
-<#macro offset_checker_name fieldName>
-    ZserioOffsetChecker_${fieldName}<#t>
+<#function needs_array_expressions field>
+    <#return needs_field_offset_checker(field) || (field.array?? && field.array.elementCompound?? &&
+                (needs_field_initialization(field.array.elementCompound) ||
+                        field.array.elementCompound.needsChildrenInitialization))>
+</#function>
+
+<#macro array_expressions_name fieldName>
+    ZserioArrayExpressions_${fieldName}<#t>
 </#macro>
 
-<#macro declare_offset_checker compoundName field>
-    class <@offset_checker_name field.name/>
+<#macro declare_array_expressions compoundName field>
+    class <@array_expressions_name field.name/>
     {
     public:
-        explicit <@offset_checker_name field.name/>(const ${compoundName}& owner);
+        using OwnerType = ${compoundName};
 
-        void checkOffset(size_t index, size_t byteOffset) const;
-
-    private:
-        std::reference_wrapper<const ${compoundName}> m_ownerRef;
+    <#if needs_field_offset_checker(field)>
+        static void checkOffset(const ${compoundName}& owner, size_t index, size_t byteOffset);
+        <#if withWriterCode>
+        static void initializeOffset(${compoundName}& owner, size_t index, size_t byteOffset);
+        </#if>
+    </#if>
+    <#if field.array.elementCompound?? &&
+            (needs_field_initialization(field.array.elementCompound) ||
+                    field.array.elementCompound.needsChildrenInitialization)>
+        static void initializeElement(<#if !withWriterCode>const </#if>${compoundName}& owner,
+                ${field.array.elementTypeInfo.typeFullName}& element, size_t index);
+    </#if>
     };
+
 </#macro>
 
-<#macro define_offset_checker_methods compoundName field>
-${compoundName}::<@offset_checker_name field.name/>::<@offset_checker_name field.name/>(const ${compoundName}& owner) :
-        m_ownerRef(owner)
-{}
-
-void ${compoundName}::<@offset_checker_name field.name/>::checkOffset(size_t index, size_t byteOffset) const
+<#macro define_array_expressions_methods compoundName field>
+    <#if needs_field_offset_checker(field)>
+void ${compoundName}::<@array_expressions_name field.name/>::checkOffset(const ${compoundName}& owner,
+        size_t index, size_t byteOffset)
 {
     if (byteOffset != (${field.offset.indirectGetter}))
     {
@@ -454,40 +454,34 @@ void ${compoundName}::<@offset_checker_name field.name/>::checkOffset(size_t ind
                 byteOffset << " != " << (${field.offset.indirectGetter}) << "!";
     }
 }
-</#macro>
 
-<#function needs_offset_initializer field>
-    <#return field.array?? && field.offset?? && field.offset.containsIndex>
-</#function>
-
-<#macro offset_initializer_name fieldName>
-    ZserioOffsetInitializer_${fieldName}<#t>
-</#macro>
-
-<#macro declare_offset_initializer compoundName field>
-    class <@offset_initializer_name field.name/>
-    {
-    public:
-        explicit <@offset_initializer_name field.name/>(${compoundName}& owner);
-
-        void initializeOffset(size_t index, size_t byteOffset) const;
-
-    private:
-        std::reference_wrapper<${compoundName}> m_ownerRef;
-    };
-</#macro>
-
-<#macro define_offset_initializer_methods compoundName field>
-${compoundName}::<@offset_initializer_name field.name/>::<@offset_initializer_name field.name/>(<#rt>
-        <#lt>${compoundName}& owner) :
-        m_ownerRef(owner)
-{}
-
-void ${compoundName}::<@offset_initializer_name field.name/>::initializeOffset(size_t index, size_t byteOffset) const
+        <#if withWriterCode>
+void ${compoundName}::<@array_expressions_name field.name/>::initializeOffset(${compoundName}& owner,
+        size_t index, size_t byteOffset)
 {
     const ${field.offset.typeInfo.typeFullName} value = static_cast<${field.offset.typeInfo.typeFullName}>(byteOffset);
     ${field.offset.indirectSetter};
 }
+
+        </#if>
+    </#if>
+    <#if field.array.elementCompound?? &&
+            (needs_field_initialization(field.array.elementCompound) ||
+                    field.array.elementCompound.needsChildrenInitialization)>
+void ${compoundName}::<@array_expressions_name field.name/>::initializeElement(<#rt>
+        <#if !withWriterCode>const </#if>${compoundName}&<#t>
+        <#lt><#if needs_field_initialization_owner(field.array.elementCompound)> owner</#if>,
+        ${field.array.elementTypeInfo.typeFullName}& element, size_t<#rt>
+        <#lt><#if needs_field_initialization_index(field.array.elementCompound)> index</#if>)
+{
+        <#if needs_field_initialization(field.array.elementCompound)>
+    element.initialize(<@compound_field_compound_ctor_params field.array.elementCompound, true/>);
+        <#elseif field.array.elementCompound.needsChildrenInitialization>
+    element.initializeChildren();
+        </#if>
+}
+
+    </#if>
 </#macro>
 
 <#function needs_field_element_factory field>
@@ -502,18 +496,16 @@ void ${compoundName}::<@offset_initializer_name field.name/>::initializeOffset(s
     class <@element_factory_name field.name/>
     {
     public:
-        explicit <@element_factory_name field.name/>(${compoundName}& owner);
+        using OwnerType = ${compoundName};
 
-        void create(<@vector_type_name field.array.elementTypeInfo.typeFullName/>& array,
-                ::zserio::BitStreamReader& in, size_t index) const;
+        static ${field.array.elementTypeInfo.typeFullName} create(<#if !withWriterCode>const </#if>${compoundName}& owner,
+                ::zserio::BitStreamReader& in, const ${types.allocator.default}& allocator, size_t index);
 
-        void create(${types.packingContextNode.name}& contextNode,
-                <@vector_type_name field.array.elementTypeInfo.typeFullName/>& array,
-                ::zserio::BitStreamReader& in, size_t index) const;
-
-    private:
-        std::reference_wrapper<${compoundName}> m_ownerRef;
+        static ${field.array.elementTypeInfo.typeFullName} create(<#if !withWriterCode>const </#if>${compoundName}& owner,
+                ${types.packingContextNode.name}& contextNode, ::zserio::BitStreamReader& in,
+                const ${types.allocator.default}& allocator, size_t index);
     };
+
 </#macro>
 
 <#macro define_element_factory_methods compoundName field>
@@ -522,85 +514,33 @@ void ${compoundName}::<@offset_initializer_name field.name/>::initializeOffset(s
             <@compound_field_compound_ctor_params field.array.elementCompound, true/><#t>
         </#if>
     </#local>
-${compoundName}::<@element_factory_name field.name/>::<@element_factory_name field.name/>(${compoundName}& owner) :
-        m_ownerRef(owner)
-{}
-
-void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
-        <#lt><@vector_type_name field.array.elementTypeInfo.typeFullName/>& array,
-        ::zserio::BitStreamReader& in, size_t index) const
+${field.array.elementTypeInfo.typeFullName} ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
+        <#if !withWriterCode>const </#if>${compoundName}&<#t>
+        <#lt><#if needs_field_initialization_owner(field.array.elementCompound)> owner</#if>,
+        ::zserio::BitStreamReader& in, const ${types.allocator.default}& allocator, size_t<#rt>
+        <#lt><#if needs_field_initialization_index(field.array.elementCompound)> index</#if>)
 {
-    (void)index;
-    array.emplace_back(in<#rt>
+    return ${field.array.elementTypeInfo.typeFullName}(in<#rt>
     <#if extraConstructorArguments?has_content>
             , ${extraConstructorArguments}<#t>
     </#if>
-            <#lt>, array.get_allocator());
+            <#lt>, allocator);
 }
 
-void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
-        <#lt>${types.packingContextNode.name}& contextNode,
-        <@vector_type_name field.array.elementTypeInfo.typeFullName/>& array, <#rt>
-        <#lt>::zserio::BitStreamReader& in, size_t index) const
+${field.array.elementTypeInfo.typeFullName} ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
+        <#if !withWriterCode>const </#if>${compoundName}&<#t>
+        <#lt><#if needs_field_initialization_owner(field.array.elementCompound)> owner</#if>,
+        ${types.packingContextNode.name}& contextNode, ::zserio::BitStreamReader& in,
+        const ${types.allocator.default}& allocator, size_t<#rt>
+        <#if needs_field_initialization_index(field.array.elementCompound)> index</#if>)
 {
-    (void)index;
-    array.emplace_back(contextNode, in<#rt>
+    return ${field.array.elementTypeInfo.typeFullName}(contextNode, in<#rt>
     <#if extraConstructorArguments?has_content>
             , ${extraConstructorArguments}<#t>
     </#if>
-            <#lt>, array.get_allocator());
+            <#lt>, allocator);
 }
-</#macro>
 
-<#macro element_initializer_name fieldName>
-    ZserioElementInitializer_${fieldName}<#t>
-</#macro>
-
-<#macro declare_element_initializer compoundName field>
-    class <@element_initializer_name field.name/>
-    {
-    public:
-        explicit <@element_initializer_name field.name/>(${compoundName}& owner);
-
-        void initialize(${field.array.elementTypeInfo.typeFullName}& element, size_t index) const;
-
-    private:
-        std::reference_wrapper<${compoundName}> m_ownerRef;
-    };
-</#macro>
-
-<#macro define_element_initializer_methods compoundName field>
-${compoundName}::<@element_initializer_name field.name/>::<@element_initializer_name field.name/>(<#rt>
-        <#lt>${compoundName}& owner) :
-        m_ownerRef(owner)
-{}
-
-void ${compoundName}::<@element_initializer_name field.name/>::initialize(<#rt>
-        <#lt>${field.array.elementTypeInfo.typeFullName}& element, size_t index) const
-{
-    (void)index;
-    element.initialize(<@compound_field_compound_ctor_params field.array.elementCompound, true/>);
-}
-</#macro>
-
-<#macro element_children_initializer_name fieldName>
-    ZserioElementChildrenInitializer_${fieldName}<#t>
-</#macro>
-
-<#macro declare_element_children_initializer field>
-    class <@element_children_initializer_name field.name/>
-    {
-    public:
-        void initialize(${field.array.elementTypeInfo.typeFullName}& element, size_t) const;
-    };
-</#macro>
-
-<#macro define_element_children_initializer_methods compoundName field>
-void ${compoundName}::<@element_children_initializer_name field.name/>::initialize(<#rt>
-        <#lt>${field.array.elementTypeInfo.typeFullName}& element, size_t) const
-{
-    element.initializeChildren();
-}
 </#macro>
 
 <#function needs_field_element_bit_size field>
@@ -613,25 +553,30 @@ void ${compoundName}::<@element_children_initializer_name field.name/>::initiali
 </#macro>
 
 <#macro declare_element_bit_size compoundName field>
+    <#local needsOwner=needs_element_bit_size_owner(field)>
     class <@element_bit_size_name field.name/>
     {
     public:
-        explicit <@element_bit_size_name field.name/>(const ${compoundName}& owner);
+    <#if needsOwner>
+        using OwnerType = ${compoundName};
 
-        uint8_t get() const;
-
-    private:
-        std::reference_wrapper<const ${compoundName}> m_ownerRef;
+    </#if>
+        static uint8_t get(<#if needsOwner>const ${compoundName}& owner</#if>);
     };
+
 </#macro>
 
-<#macro define_element_bit_size_methods compoundName field>
-${compoundName}::<@element_bit_size_name field.name/>::<@element_bit_size_name field.name/>(<#rt>
-        <#lt>const ${compoundName}& owner) :
-        m_ownerRef(owner)
-{}
+<#function needs_element_bit_size_owner field>
+    <#if field.array??>
+        <#return field.array.elementBitSize.needsOwner>
+    <#else>
+        <#return field.bitSize.needsOwner>
+    </#if>
+</#function>
 
-uint8_t ${compoundName}::<@element_bit_size_name field.name/>::get() const
+<#macro define_element_bit_size_methods compoundName field>
+uint8_t ${compoundName}::<@element_bit_size_name field.name/>::get(<#rt>
+        <#lt><#if needs_element_bit_size_owner(field)>const ${compoundName}& owner</#if>)
 {
     <#if field.array??>
     return static_cast<uint8_t>(${field.array.elementBitSize.ownerIndirectValue});
@@ -639,64 +584,33 @@ uint8_t ${compoundName}::<@element_bit_size_name field.name/>::get() const
     return static_cast<uint8_t>(${field.bitSize.ownerIndirectValue});
     </#if>
 }
+
 </#macro>
 
 <#macro inner_classes_declaration compoundName fieldList>
     <#list fieldList as field>
-        <#if needs_field_offset_checker(field)>
-    <@declare_offset_checker compoundName, field/>
-
-            <#if withWriterCode>
-    <@declare_offset_initializer compoundName, field/>
-
-            </#if>
+        <#if needs_array_expressions(field)>
+    <@declare_array_expressions compoundName, field/>
         </#if>
         <#if needs_field_element_factory(field)>
     <@declare_element_factory compoundName, field/>
-
-            <#if field.array.elementCompound??>
-                <#if needs_field_initialization(field.array.elementCompound)>
-    <@declare_element_initializer compoundName, field/>
-
-                <#elseif field.array.elementCompound.needsChildrenInitialization>
-    <@declare_element_children_initializer field/>
-
-                </#if>
-            </#if>
         </#if>
         <#if needs_field_element_bit_size(field)>
     <@declare_element_bit_size compoundName, field/>
-
         </#if>
     </#list>
 </#macro>
 
 <#macro inner_classes_definition compoundName fieldList>
     <#list fieldList as field>
-        <#if needs_field_offset_checker(field)>
-<@define_offset_checker_methods compoundName, field/>
-
-            <#if withWriterCode>
-<@define_offset_initializer_methods compoundName, field/>
-
-            </#if>
+        <#if needs_array_expressions(field)>
+<@define_array_expressions_methods compoundName, field/>
         </#if>
         <#if needs_field_element_factory(field)>
 <@define_element_factory_methods compoundName, field/>
-
-            <#if field.array.elementCompound??>
-                <#if needs_field_initialization(field.array.elementCompound)>
-<@define_element_initializer_methods compoundName, field/>
-
-                <#elseif field.array.elementCompound.needsChildrenInitialization>
-<@define_element_children_initializer_methods compoundName, field/>
-
-                </#if>
-            </#if>
         </#if>
         <#if needs_field_element_bit_size(field)>
 <@define_element_bit_size_methods compoundName, field/>
-
         </#if>
     </#list>
 </#macro>
@@ -767,8 +681,8 @@ ${I}        <@compound_field_packing_context_node field, index/>, endBitPosition
 ${I}endBitPosition += ::zserio::bitSizeOf(
 ${I}        <@compound_field_packing_context_node field, index/>, <@compound_get_field field/>);
         <#else>
-${I}endBitPosition += <@compound_field_packing_context_node field, index/>.getContext().bitSizeOf(
-${I}        <@array_traits field/>, <@compound_get_field field/>);
+${I}endBitPosition += <@compound_field_packing_context_node field, index/>.getContext().bitSizeOf<<@array_traits_type_name field/>>(<#rt>
+        <#lt><#if array_traits_needs_owner(field)>*this, </#if><@compound_get_field field/>);
         </#if>
     <#elseif field.typeInfo.isEnum>
 ${I}endBitPosition += ::zserio::bitSizeOf(<@compound_get_field field/>);
@@ -781,7 +695,7 @@ ${I}endBitPosition += ${field.bitSize.value};
     <#elseif field.runtimeFunction??>
 ${I}endBitPosition += ::zserio::bitSizeOf${field.runtimeFunction.suffix}(<@compound_get_field field/>);
     <#elseif field.array??>
-${I}endBitPosition += <@compound_get_field field/>.bitSizeOf<@array_field_packed_suffix field, packed/>(endBitPosition);
+${I}endBitPosition += <@compound_get_field field/>.bitSizeOf<@array_field_packed_suffix field, packed/>(<#if array_needs_owner(field)>*this, </#if>endBitPosition);
     <#else>
 ${I}endBitPosition += <@compound_get_field field/>.bitSizeOf(endBitPosition);
     </#if>
@@ -822,8 +736,8 @@ ${I}        <@compound_field_packing_context_node field, index/>, endBitPosition
 ${I}endBitPosition = ::zserio::initializeOffsets(
 ${I}        <@compound_field_packing_context_node field, index/>, endBitPosition, <@compound_get_field field/>);
         <#else>
-${I}endBitPosition += <@compound_field_packing_context_node field, index/>.getContext().bitSizeOf(
-${I}        <@array_traits field/>, <@compound_get_field field/>);
+${I}endBitPosition += <@compound_field_packing_context_node field, index/>.getContext().bitSizeOf<<@array_traits_type_name field/>>(<#rt>
+        <#lt><#if array_traits_needs_owner(field)>*this, </#if><@compound_get_field field/>);
         </#if>
     <#elseif field.typeInfo.isEnum>
 ${I}endBitPosition = ::zserio::initializeOffsets(endBitPosition, <@compound_get_field field/>);
@@ -836,12 +750,8 @@ ${I}endBitPosition += ${field.bitSize.value};
     <#elseif field.runtimeFunction??>
 ${I}endBitPosition += ::zserio::bitSizeOf${field.runtimeFunction.suffix}(<@compound_get_field field/>);
     <#elseif field.array??>
-${I}endBitPosition = <@compound_get_field field/>.initializeOffsets<@array_field_packed_suffix field, packed/>(
-${I}        endBitPosition<#rt>
-        <#if field.offset?? && field.offset.containsIndex>
-            , <@offset_initializer_name field.name/>(*this)<#t>
-        </#if>
-            <#lt>);
+${I}endBitPosition = <@compound_get_field field/>.initializeOffsets<@array_field_packed_suffix field, packed/>(<#rt>
+        <#lt><#if array_needs_owner(field)>*this, </#if>endBitPosition);
     <#else>
 ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPosition);
     </#if>
@@ -932,8 +842,7 @@ ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPositi
         <#else>
             <@array_typedef_name field/>
         </#if>
-                    (::std::forward<ZSERIO_T_${field.name}>(<@field_argument_name field/>), <#t>
-                    <@array_traits field/>)<#t>
+                    (::std::forward<ZSERIO_T_${field.name}>(<@field_argument_name field/>))<#t>
     <#else>
         ::std::forward<ZSERIO_T_${field.name}>(<@field_argument_name field/>)<#t>
     </#if>
@@ -941,8 +850,7 @@ ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPositi
 
 <#macro compound_setter_field_value field>
     <#if field.array??>
-        <@array_typedef_name field/>(<@field_argument_name field/>, <#t>
-                <@array_traits field/>)<#t>
+        <@array_typedef_name field/>(<@field_argument_name field/>)<#t>
     <#else>
         <@field_argument_name field/><#t>
     </#if>
@@ -950,8 +858,7 @@ ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPositi
 
 <#macro compound_setter_field_rvalue field>
     <#if field.array??>
-        <@array_typedef_name field/>(std::move(<@field_argument_name field/>), <#t>
-                <@array_traits field/>)<#t>
+        <@array_typedef_name field/>(std::move(<@field_argument_name field/>))<#t>
     <#else>
         ::std::move(<@field_argument_name field/>)<#t>
     </#if>
@@ -1023,18 +930,11 @@ ${I}<@field_member_name field/>(::zserio::allocatorPropagatingCopy(<#rt>
         <#elseif field.compound.needsChildrenInitialization>
             <#local initializeCommand><@compound_get_field field/>.initializeChildren();</#local>
         </#if>
-    <#elseif field.array??>
-        <#if field.array.elementCompound??>
-            <#if needs_field_initialization(field.array.elementCompound)>
-                <#local initializeCommand><@compound_get_field field/>.initializeElements(<#rt>
-                        <#lt><@element_initializer_name field.name/>(*this));</#local>
-            <#elseif field.array.elementCompound.needsChildrenInitialization>
-                <#local initializeCommand><@compound_get_field field/>.initializeElements(<#rt>
-                        <#lt><@element_children_initializer_name field.name/>());</#local>
-            </#if>
-        <#elseif field.array.elementBitSize?? && field.array.elementBitSize.isDynamicBitField>
-            <#local initializeCommand><@compound_get_field field/>.initializeArrayTraits(<#rt>
-                    <#lt><@array_traits field/>);</#local>
+    <#elseif field.array?? && field.array.elementCompound??>
+        <#if needs_field_initialization(field.array.elementCompound)>
+            <#local initializeCommand><@compound_get_field field/>.initializeElements(*this);</#local>
+        <#elseif field.array.elementCompound.needsChildrenInitialization>
+            <#local initializeCommand><@compound_get_field field/>.initializeElements(*this);</#local>
         </#if>
     </#if>
     <#if initializeCommand??>
@@ -1132,8 +1032,8 @@ ${I}<@compound_get_field field/>.initPackingContext(<@compound_field_packing_con
 ${I}::zserio::initPackingContext(<@compound_field_packing_context_node field, index/>,
 ${I}        <@compound_get_field field/>);
     <#else>
-${I}<@compound_field_packing_context_node field, index/>.getContext().init(
-${I}        <@array_traits field/>, <@compound_get_field field/>);
+${I}<@compound_field_packing_context_node field, index/>.getContext().init<<@array_traits_type_name field/>>(<#rt>
+        <#lt><#if array_traits_needs_owner(field)>*this, </#if><@compound_get_field field/>);
     </#if>
 </#macro>
 
@@ -1196,6 +1096,28 @@ ${I}        <@array_traits field/>, <@compound_get_field field/>);
     <#return false>
 </#function>
 
+<#function needs_field_initialization_owner field>
+    <#if field.instantiatedParameters?has_content>
+        <#list field.instantiatedParameters as instantiatedParameter>
+            <#if instantiatedParameter.needsOwner>
+                <#return true>
+            </#if>
+        </#list>
+    </#if>
+    <#return false>
+</#function>
+
+<#function needs_field_initialization_index field>
+    <#if field.instantiatedParameters?has_content>
+        <#list field.instantiatedParameters as instantiatedParameter>
+            <#if instantiatedParameter.needsIndex>
+                <#return true>
+            </#if>
+        </#list>
+    </#if>
+    <#return false>
+</#function>
+
 <#function has_field_with_initialization fieldList>
     <#list fieldList as field>
         <#if field.compound??>
@@ -1205,8 +1127,6 @@ ${I}        <@array_traits field/>, <@compound_get_field field/>);
         <#elseif field.array??>
             <#if field.array.elementCompound?? &&
                     needs_field_initialization(field.array.elementCompound)>
-                <#return true>
-            <#elseif field.array.elementBitSize?? && field.array.elementBitSize.isDynamicBitField>
                 <#return true>
             </#if>
         </#if>

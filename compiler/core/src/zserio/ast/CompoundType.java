@@ -124,11 +124,7 @@ public abstract class CompoundType extends TemplatableType
         {
             TypeInstantiation typeInstantiation = field.getTypeInstantiation();
             if (typeInstantiation instanceof ArrayInstantiation)
-            {
                 typeInstantiation = ((ArrayInstantiation)typeInstantiation).getElementTypeInstantiation();
-                if (typeInstantiation instanceof DynamicBitFieldInstantiation)
-                    return true;
-            }
 
             final ZserioType fieldBaseType = typeInstantiation.getBaseType();
             if (fieldBaseType instanceof CompoundType)
@@ -137,7 +133,9 @@ public abstract class CompoundType extends TemplatableType
                 // compound type can have itself as an optional field
                 if (!childCompoundType.getTypeParameters().isEmpty() ||
                         (childCompoundType != this && childCompoundType.needsChildrenInitialization()))
+                {
                     return true;
+                }
             }
         }
 

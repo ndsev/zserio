@@ -353,8 +353,8 @@ void SerializeObject::createPackingContext(::zserio::PackingContextNode& context
 
 void SerializeObject::initPackingContext(::zserio::PackingContextNode& contextNode) const
 {
-    contextNode.getChildren().at(0).getContext().init(
-            ::zserio::StdIntArrayTraits<int8_t>(), m_param_);
+    contextNode.getChildren().at(0).getContext().init<::zserio::StdIntArrayTraits<int8_t>>(
+            m_param_);
     m_nested_.initPackingContext(contextNode.getChildren().at(1));
 }
 
@@ -372,8 +372,8 @@ size_t SerializeObject::bitSizeOf(::zserio::PackingContextNode& contextNode, siz
 {
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += contextNode.getChildren().at(0).getContext().bitSizeOf(
-            ::zserio::StdIntArrayTraits<int8_t>(), m_param_);
+    endBitPosition += contextNode.getChildren().at(0).getContext().bitSizeOf<::zserio::StdIntArrayTraits<int8_t>>(
+            m_param_);
     endBitPosition += m_nested_.bitSizeOf(
             contextNode.getChildren().at(1), endBitPosition);
 
@@ -394,8 +394,8 @@ size_t SerializeObject::initializeOffsets(::zserio::PackingContextNode& contextN
 {
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += contextNode.getChildren().at(0).getContext().bitSizeOf(
-            ::zserio::StdIntArrayTraits<int8_t>(), m_param_);
+    endBitPosition += contextNode.getChildren().at(0).getContext().bitSizeOf<::zserio::StdIntArrayTraits<int8_t>>(
+            m_param_);
     endBitPosition = m_nested_.initializeOffsets(
             contextNode.getChildren().at(1), endBitPosition);
 
@@ -439,8 +439,8 @@ void SerializeObject::write(::zserio::BitStreamWriter& out) const
 
 void SerializeObject::write(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const
 {
-    contextNode.getChildren().at(0).getContext().write(
-            ::zserio::StdIntArrayTraits<int8_t>(), out, m_param_);
+    contextNode.getChildren().at(0).getContext().write<::zserio::StdIntArrayTraits<int8_t>>(
+            out, m_param_);
 
     // check parameters
     if (m_nested_.getParam() != static_cast<int8_t>(getParam()))
@@ -458,7 +458,7 @@ int8_t SerializeObject::readParam(::zserio::BitStreamReader& in)
 
 int8_t SerializeObject::readParam(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in)
 {
-    return contextNode.getChildren().at(0).getContext().read(::zserio::StdIntArrayTraits<int8_t>(), in);
+    return contextNode.getChildren().at(0).getContext().read<::zserio::StdIntArrayTraits<int8_t>>(in);
 }
 
 ::test_object::std_allocator::SerializeNested SerializeObject::readNested(::zserio::BitStreamReader& in,

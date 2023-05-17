@@ -57,6 +57,14 @@ struct EnumTraits<${fullName}>
     }};
 
     static constexpr const char* enumName = "${name}";
+<#if underlyingTypeInfo.arrayTraits.isTemplated && underlyingTypeInfo.arrayTraits.requiresElementDynamicBitSize>
+
+    class ZserioElementBitSize
+    {
+    public:
+        static uint8_t get();
+    };
+</#if>
 };
 <#if withTypeInfoCode>
 

@@ -107,7 +107,7 @@ void WalkerBitmask::createPackingContext(::zserio::PackingContextNode& contextNo
 
 void WalkerBitmask::initPackingContext(::zserio::PackingContextNode& contextNode) const
 {
-    contextNode.getContext().init(::zserio::StdIntArrayTraits<::test_object::std_allocator::WalkerBitmask::underlying_type>(),
+    contextNode.getContext().init<::zserio::StdIntArrayTraits<::test_object::std_allocator::WalkerBitmask::underlying_type>>(
             m_value);
 }
 
@@ -118,8 +118,7 @@ size_t WalkerBitmask::bitSizeOf(size_t) const
 
 size_t WalkerBitmask::bitSizeOf(::zserio::PackingContextNode& contextNode, size_t) const
 {
-    return contextNode.getContext().bitSizeOf(
-            ::zserio::StdIntArrayTraits<::test_object::std_allocator::WalkerBitmask::underlying_type>(),
+    return contextNode.getContext().bitSizeOf<::zserio::StdIntArrayTraits<::test_object::std_allocator::WalkerBitmask::underlying_type>>(
             m_value);
 }
 
@@ -147,8 +146,7 @@ void WalkerBitmask::write(::zserio::BitStreamWriter& out) const
 
 void WalkerBitmask::write(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const
 {
-    contextNode.getContext().write(
-            ::zserio::StdIntArrayTraits<::test_object::std_allocator::WalkerBitmask::underlying_type>(),
+    contextNode.getContext().write<::zserio::StdIntArrayTraits<::test_object::std_allocator::WalkerBitmask::underlying_type>>(
             out, m_value);
 }
 
@@ -169,8 +167,8 @@ WalkerBitmask::underlying_type WalkerBitmask::readValue(::zserio::BitStreamReade
 WalkerBitmask::underlying_type WalkerBitmask::readValue(::zserio::PackingContextNode& contextNode,
         ::zserio::BitStreamReader& in)
 {
-    return contextNode.getContext().read(
-            ::zserio::StdIntArrayTraits<::test_object::std_allocator::WalkerBitmask::underlying_type>(), in);
+    return contextNode.getContext().read<::zserio::StdIntArrayTraits<::test_object::std_allocator::WalkerBitmask::underlying_type>>(
+            in);
 }
 
 } // namespace std_allocator

@@ -27,7 +27,7 @@ noExplicitConstructor:*/src/zserio/StringView.h:74
 noExplicitConstructor:*/src/zserio/UniquePtr.h:57
 noExplicitConstructor:*/src/zserio/UniquePtr.h:68
 noExplicitConstructor:*/src/zserio/pmr/PolymorphicAllocator.h:72
-noExplicitConstructor:*/test/zserio/ArrayTest.cpp:63
+noExplicitConstructor:*/test/zserio/ArrayTest.cpp:166
 noExplicitConstructor:*/test/zserio/BuiltInOperatorsTest.cpp:26
 noExplicitConstructor:*/test/zserio/HashCodeUtilTest.cpp:34
 noExplicitConstructor:*/test/zserio/TrackingAllocator.h:78

@@ -23,8 +23,7 @@
 <#if has_field_with_constraint(fieldList)>
 #include <zserio/ConstraintException.h>
 </#if>
-<#if (withReflectionCode && has_non_simple_parameter(compoundParametersData)) ||
-        has_inner_classes(name, fieldList)>
+<#if (withReflectionCode && has_non_simple_parameter(compoundParametersData))> 
 #include <functional>
 </#if>
 <@system_includes cppSystemIncludes/>
@@ -53,7 +52,7 @@
                 ::zserio::NullOpt<#if field.holderNeedsAllocator>, allocator</#if><#t>
             <#else>
                 <#if field.array??>
-                    <@array_traits field/>, allocator<#t>
+                    allocator<#t>
                 <#else>
                     <#if field.needsAllocator>allocator<#elseif field.typeInfo.isSimple>${field.typeInfo.typeFullName}()</#if><#t>
                 </#if>

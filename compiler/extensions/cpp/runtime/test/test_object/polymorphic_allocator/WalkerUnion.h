@@ -35,17 +35,15 @@ private:
     class ZserioElementFactory_nestedArray
     {
     public:
-        explicit ZserioElementFactory_nestedArray(WalkerUnion& owner);
+        using OwnerType = WalkerUnion;
 
-        void create(::zserio::pmr::vector<::test_object::polymorphic_allocator::WalkerNested>& array,
-                ::zserio::BitStreamReader& in, size_t index) const;
+        static WalkerNested create(const OwnerType& owner,
+                ::zserio::BitStreamReader& in,
+                const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t index);
 
-        void create(::zserio::pmr::PackingContextNode& contextNode,
-                ::zserio::pmr::vector<::test_object::polymorphic_allocator::WalkerNested>& array,
-                ::zserio::BitStreamReader& in, size_t index) const;
-
-    private:
-        std::reference_wrapper<WalkerUnion> m_ownerRef;
+        static WalkerNested create(const OwnerType& owner,
+                ::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamReader& in,
+                const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t index);
     };
 
     using ZserioArrayType_nestedArray = ::zserio::Array<::zserio::pmr::vector<::test_object::polymorphic_allocator::WalkerNested>, ::zserio::ObjectArrayTraits<::test_object::polymorphic_allocator::WalkerNested, ZserioElementFactory_nestedArray>, ::zserio::ArrayType::AUTO>;

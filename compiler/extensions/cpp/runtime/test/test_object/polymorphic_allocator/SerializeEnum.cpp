@@ -142,7 +142,7 @@ uint32_t enumHashCode<::test_object::polymorphic_allocator::SerializeEnum>(::tes
 template <>
 void initPackingContext(::zserio::pmr::PackingContextNode& contextNode, ::test_object::polymorphic_allocator::SerializeEnum value)
 {
-    contextNode.getContext().init(::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::polymorphic_allocator::SerializeEnum>::type>(),
+    contextNode.getContext().init<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::polymorphic_allocator::SerializeEnum>::type>>(
             ::zserio::enumToValue(value));
 }
 
@@ -155,8 +155,7 @@ size_t bitSizeOf(::test_object::polymorphic_allocator::SerializeEnum)
 template <>
 size_t bitSizeOf(::zserio::pmr::PackingContextNode& contextNode, ::test_object::polymorphic_allocator::SerializeEnum value)
 {
-    return contextNode.getContext().bitSizeOf(
-            ::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::polymorphic_allocator::SerializeEnum>::type>(),
+    return contextNode.getContext().bitSizeOf<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::polymorphic_allocator::SerializeEnum>::type>>(
             ::zserio::enumToValue(value));
 }
 
@@ -184,8 +183,8 @@ template <>
 template <>
 ::test_object::polymorphic_allocator::SerializeEnum read(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamReader& in)
 {
-    return valueToEnum<::test_object::polymorphic_allocator::SerializeEnum>(contextNode.getContext().read(
-            ::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::polymorphic_allocator::SerializeEnum>::type>(), in));
+    return valueToEnum<::test_object::polymorphic_allocator::SerializeEnum>(contextNode.getContext().read<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::polymorphic_allocator::SerializeEnum>::type>>(
+            in));
 }
 
 template <>
@@ -197,8 +196,7 @@ void write(::zserio::BitStreamWriter& out, ::test_object::polymorphic_allocator:
 template <>
 void write(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out, ::test_object::polymorphic_allocator::SerializeEnum value)
 {
-    contextNode.getContext().write(
-            ::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::polymorphic_allocator::SerializeEnum>::type>(),
+    contextNode.getContext().write<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::polymorphic_allocator::SerializeEnum>::type>>(
             out, ::zserio::enumToValue(value));
 }
 

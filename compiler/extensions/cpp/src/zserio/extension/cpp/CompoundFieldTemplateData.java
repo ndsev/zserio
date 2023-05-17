@@ -264,8 +264,10 @@ public class CompoundFieldTemplateData
                 final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(includeCollector);
                 expression = cppExpressionFormatter.formatGetter(argumentExpression);
                 final ExpressionFormatter cppOwnerIndirectExpressionFormatter =
-                        context.getIndirectExpressionFormatter(includeCollector, "m_ownerRef.get()");
+                        context.getIndirectExpressionFormatter(includeCollector, "owner");
                 indirectExpression = cppOwnerIndirectExpressionFormatter.formatGetter(argumentExpression);
+                needsOwner = argumentExpression.requiresOwnerContext();
+                needsIndex = argumentExpression.containsIndex();
                 final TypeReference parameterTypeReference =
                         instantiatedParameter.getParameter().getTypeReference();
                 final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
@@ -283,6 +285,16 @@ public class CompoundFieldTemplateData
                 return indirectExpression;
             }
 
+            public boolean getNeedsOwner()
+            {
+                return needsOwner;
+            }
+
+            public boolean getNeedsIndex()
+            {
+                return needsIndex;
+            }
+
             public NativeTypeInfoTemplateData getTypeInfo()
             {
                 return typeInfo;
@@ -290,6 +302,8 @@ public class CompoundFieldTemplateData
 
             private final String expression;
             private final String indirectExpression;
+            private final boolean needsOwner;
+            private final boolean needsIndex;
             private final NativeTypeInfoTemplateData typeInfo;
         }
 
@@ -329,7 +343,7 @@ public class CompoundFieldTemplateData
             final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(includeCollector);
             getter = cppExpressionFormatter.formatGetter(offsetExpression);
             final ExpressionFormatter cppOwnerIndirectExpressionFormatter =
-                    context.getIndirectExpressionFormatter(includeCollector, "m_ownerRef.get()");
+                    context.getIndirectExpressionFormatter(includeCollector, "owner");
             indirectGetter = cppOwnerIndirectExpressionFormatter.formatGetter(offsetExpression);
             setter = cppExpressionFormatter.formatSetter(offsetExpression);
             indirectSetter = cppOwnerIndirectExpressionFormatter.formatSetter(offsetExpression);

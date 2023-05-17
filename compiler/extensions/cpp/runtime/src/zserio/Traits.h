@@ -56,6 +56,24 @@ struct decltype_get_value
     using type = U;
 };
 
+template <typename T, typename U = decltype(&T::initializeOffset)>
+struct decltype_initialize_offset
+{
+    using type = U;
+};
+
+template <typename T, typename U = decltype(&T::checkOffset)>
+struct decltype_check_offset
+{
+    using type = U;
+};
+
+template <typename T, typename U = decltype(&T::initializeElement)>
+struct decltype_initialize_element
+{
+    using type = U;
+};
+
 template <typename ...T>
 using void_t = void;
 
@@ -85,6 +103,32 @@ struct is_first_allocator : std::false_type
 
 template <typename T, typename ...ARGS>
 struct is_first_allocator<T, ARGS...> : is_allocator<T>
+{};
+/** \} */
+
+/**
+ * Trait used to check whether the type has an OwnerType.
+ * \{
+ */
+template <typename T, typename = void>
+struct has_owner_type : std::false_type
+{};
+
+template <typename T>
+struct has_owner_type<T, detail::void_t<typename T::OwnerType>> : std::true_type
+{};
+/** \} */
+
+/**
+ * Trait used to check whether the type has an allocator_type.
+ * \{
+ */
+template <typename T, typename = void>
+struct has_allocator : std::false_type
+{};
+
+template <typename T>
+struct has_allocator<T, detail::void_t<typename T::allocator_type>> : std::true_type
 {};
 /** \} */
 
@@ -127,6 +171,54 @@ template <typename T>
 struct has_reflectable<T, detail::void_t<typename detail::decltype_reflectable<T>::type>> : std::true_type
 {};
 /** \} */
+
+/**
+ * Trait used to check whether the type T has initializeOffset method.
+ * \{
+ */
+template <typename T, typename = void>
+struct has_initialize_offset : std::false_type
+{};
+
+template <typename T>
+struct has_initialize_offset<T,
+        detail::void_t<typename detail::decltype_initialize_offset<T>::type>> : std::true_type
+{};
+/**
+ * \}
+ */
+
+/**
+ * Trait used to check whether the type T has checkOffset method.
+ * \{
+ */
+template <typename T, typename = void>
+struct has_check_offset : std::false_type
+{};
+
+template <typename T>
+struct has_check_offset<T,
+        detail::void_t<typename detail::decltype_check_offset<T>::type>> : std::true_type
+{};
+/**
+ * \}
+ */
+
+/**
+ * Trait used to check whether the type T has initializeElement method.
+ * \{
+ */
+template <typename T, typename = void>
+struct has_initialize_element : std::false_type
+{};
+
+template <typename T>
+struct has_initialize_element<T,
+        detail::void_t<typename detail::decltype_initialize_element<T>::type>> : std::true_type
+{};
+/**
+ * \}
+ */
 
 /**
  * Trait used to check whether the type T is a zserio bitmask.

@@ -108,7 +108,7 @@ void CreatorBitmask::createPackingContext(::zserio::pmr::PackingContextNode& con
 
 void CreatorBitmask::initPackingContext(::zserio::pmr::PackingContextNode& contextNode) const
 {
-    contextNode.getContext().init(::zserio::StdIntArrayTraits<::test_object::polymorphic_allocator::CreatorBitmask::underlying_type>(),
+    contextNode.getContext().init<::zserio::StdIntArrayTraits<::test_object::polymorphic_allocator::CreatorBitmask::underlying_type>>(
             m_value);
 }
 
@@ -119,8 +119,7 @@ size_t CreatorBitmask::bitSizeOf(size_t) const
 
 size_t CreatorBitmask::bitSizeOf(::zserio::pmr::PackingContextNode& contextNode, size_t) const
 {
-    return contextNode.getContext().bitSizeOf(
-            ::zserio::StdIntArrayTraits<::test_object::polymorphic_allocator::CreatorBitmask::underlying_type>(),
+    return contextNode.getContext().bitSizeOf<::zserio::StdIntArrayTraits<::test_object::polymorphic_allocator::CreatorBitmask::underlying_type>>(
             m_value);
 }
 
@@ -148,8 +147,7 @@ void CreatorBitmask::write(::zserio::BitStreamWriter& out) const
 
 void CreatorBitmask::write(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const
 {
-    contextNode.getContext().write(
-            ::zserio::StdIntArrayTraits<::test_object::polymorphic_allocator::CreatorBitmask::underlying_type>(),
+    contextNode.getContext().write<::zserio::StdIntArrayTraits<::test_object::polymorphic_allocator::CreatorBitmask::underlying_type>>(
             out, m_value);
 }
 
@@ -172,8 +170,8 @@ CreatorBitmask::underlying_type CreatorBitmask::readValue(::zserio::BitStreamRea
 CreatorBitmask::underlying_type CreatorBitmask::readValue(::zserio::pmr::PackingContextNode& contextNode,
         ::zserio::BitStreamReader& in)
 {
-    return contextNode.getContext().read(
-            ::zserio::StdIntArrayTraits<::test_object::polymorphic_allocator::CreatorBitmask::underlying_type>(), in);
+    return contextNode.getContext().read<::zserio::StdIntArrayTraits<::test_object::polymorphic_allocator::CreatorBitmask::underlying_type>>(
+            in);
 }
 
 } // namespace polymorphic_allocator

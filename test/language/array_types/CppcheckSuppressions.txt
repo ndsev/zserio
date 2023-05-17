@@ -2,7 +2,9 @@ noExplicitConstructor:*/array_types/arrays_mapping/TestBitmask.h
 noExplicitConstructor:*/array_types/packed_arrays_mapping/TestBitmask.h
 noExplicitConstructor:*/array_types/packed_variable_array_struct/TestBitmask.h
 uninitMemberVar:*/array_types/auto_array_bitfield_param/ParameterizedBitfieldLength.cpp
+uninitMemberVar:*/array_types/auto_array_bitfield_param/ParameterizedBitfieldLength.h
 uninitMemberVar:*/array_types/packed_auto_array_bitfield_param/ParameterizedBitfieldLength.cpp
+uninitMemberVar:*/array_types/packed_auto_array_bitfield_param/ParameterizedBitfieldLength.h
 uninitMemberVar:*/array_types/packed_variable_array_struct_recursion/Block.cpp
 uninitMemberVar:*/array_types/packed_variable_array_struct_recursion/Block.h
 uninitMemberVar:*/array_types/packed_variable_array_struct/TestChoice.cpp

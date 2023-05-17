@@ -20,12 +20,20 @@
 <@user_includes cppUserIncludes, false/>
 <@namespace_begin package.path/>
 
-<#macro bitmask_array_traits arrayTraits fullName bitSize>
+<#if underlyingTypeInfo.arrayTraits.isTemplated && underlyingTypeInfo.arrayTraits.requiresElementDynamicBitSize>
+uint8_t ${name}::ZserioElementBitSize::get()
+{
+    return ${bitSize.value};
+}
+
+</#if>
+<#macro bitmask_array_traits_type_name arrayTraits fullName bitSize>
     ${arrayTraits.name}<#t>
     <#if arrayTraits.isTemplated>
-            <${fullName}::underlying_type><#t>
+            <${fullName}::underlying_type<#t>
+            <#if arrayTraits.requiresElementFixedBitSize>, ${bitSize.value}</#if><#t>
+            <#if arrayTraits.requiresElementDynamicBitSize>, ZserioElementBitSize</#if>><#t>
     </#if>
-    (<#if arrayTraits.requiresElementFixedBitSize>${bitSize.value}</#if>)<#t>
 </#macro>
 ${name}::${name}(::zserio::BitStreamReader& in) :
         m_value(readValue(in))
@@ -134,7 +142,7 @@ void ${name}::createPackingContext(${types.packingContextNode.name}& contextNode
 
 void ${name}::initPackingContext(${types.packingContextNode.name}& contextNode) const
 {
-    contextNode.getContext().init(<@bitmask_array_traits underlyingTypeInfo.arrayTraits, fullName, bitSize!/>,
+    contextNode.getContext().init<<@bitmask_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(
             m_value);
 }
 
@@ -149,8 +157,7 @@ size_t ${name}::bitSizeOf(size_t) const
 
 size_t ${name}::bitSizeOf(${types.packingContextNode.name}& contextNode, size_t) const
 {
-    return contextNode.getContext().bitSizeOf(
-            <@bitmask_array_traits underlyingTypeInfo.arrayTraits, fullName, bitSize!/>,
+    return contextNode.getContext().bitSizeOf<<@bitmask_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(
             m_value);
 }
 <#if withWriterCode>
@@ -181,8 +188,7 @@ void ${name}::write(::zserio::BitStreamWriter& out) const
 
 void ${name}::write(${types.packingContextNode.name}& contextNode, ::zserio::BitStreamWriter& out) const
 {
-    contextNode.getContext().write(
-            <@bitmask_array_traits underlyingTypeInfo.arrayTraits, fullName, bitSize!/>,
+    contextNode.getContext().write<<@bitmask_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(
             out, m_value);
 }
 </#if>
@@ -214,7 +220,7 @@ ${name}::underlying_type ${name}::readValue(::zserio::BitStreamReader& in)
 ${name}::underlying_type ${name}::readValue(${types.packingContextNode.name}& contextNode,
         ::zserio::BitStreamReader& in)
 {
-    return contextNode.getContext().read(
-            <@bitmask_array_traits underlyingTypeInfo.arrayTraits, fullName, bitSize!/>, in);
+    return contextNode.getContext().read<<@bitmask_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(
+            in);
 }
 <@namespace_end package.path/>

@@ -36,33 +36,27 @@ private:
     class ZserioElementFactory_unionArray
     {
     public:
-        explicit ZserioElementFactory_unionArray(WalkerObject& owner);
+        using OwnerType = WalkerObject;
 
-        void create(::zserio::pmr::vector<::test_object::polymorphic_allocator::WalkerUnion>& array,
-                ::zserio::BitStreamReader& in, size_t index) const;
+        static WalkerUnion create(const WalkerObject& owner, ::zserio::BitStreamReader& in,
+                const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t index);
 
-        void create(::zserio::pmr::PackingContextNode& contextNode,
-                ::zserio::pmr::vector<::test_object::polymorphic_allocator::WalkerUnion>& array,
-                ::zserio::BitStreamReader& in, size_t index) const;
-
-    private:
-        std::reference_wrapper<WalkerObject> m_ownerRef;
+        static WalkerUnion create(const WalkerObject& owner,
+                ::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamReader& in,
+                const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t index);
     };
 
     class ZserioElementFactory_optionalUnionArray
     {
     public:
-        explicit ZserioElementFactory_optionalUnionArray(WalkerObject& owner);
+        using OwnerType = WalkerObject;
 
-        void create(::zserio::pmr::vector<::test_object::polymorphic_allocator::WalkerUnion>& array,
-                ::zserio::BitStreamReader& in, size_t index) const;
+        static WalkerUnion create(const WalkerObject& owner, ::zserio::BitStreamReader& in,
+                const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t index);
 
-        void create(::zserio::pmr::PackingContextNode& contextNode,
-                ::zserio::pmr::vector<::test_object::polymorphic_allocator::WalkerUnion>& array,
-                ::zserio::BitStreamReader& in, size_t index) const;
-
-    private:
-        std::reference_wrapper<WalkerObject> m_ownerRef;
+        static WalkerUnion create(const WalkerObject& owner,
+                ::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamReader& in,
+                const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t index);
     };
 
     using ZserioArrayType_unionArray = ::zserio::Array<::zserio::pmr::vector<::test_object::polymorphic_allocator::WalkerUnion>, ::zserio::ObjectArrayTraits<::test_object::polymorphic_allocator::WalkerUnion, ZserioElementFactory_unionArray>, ::zserio::ArrayType::AUTO>;

@@ -109,7 +109,7 @@ void ReflectableBitmask::createPackingContext(::zserio::pmr::PackingContextNode&
 
 void ReflectableBitmask::initPackingContext(::zserio::pmr::PackingContextNode& contextNode) const
 {
-    contextNode.getContext().init(::zserio::StdIntArrayTraits<::test_object::polymorphic_allocator::ReflectableBitmask::underlying_type>(),
+    contextNode.getContext().init<::zserio::StdIntArrayTraits<::test_object::polymorphic_allocator::ReflectableBitmask::underlying_type>>(
             m_value);
 }
 
@@ -120,8 +120,7 @@ size_t ReflectableBitmask::bitSizeOf(size_t) const
 
 size_t ReflectableBitmask::bitSizeOf(::zserio::pmr::PackingContextNode& contextNode, size_t) const
 {
-    return contextNode.getContext().bitSizeOf(
-            ::zserio::StdIntArrayTraits<::test_object::polymorphic_allocator::ReflectableBitmask::underlying_type>(),
+    return contextNode.getContext().bitSizeOf<::zserio::StdIntArrayTraits<::test_object::polymorphic_allocator::ReflectableBitmask::underlying_type>>(
             m_value);
 }
 
@@ -149,8 +148,7 @@ void ReflectableBitmask::write(::zserio::BitStreamWriter& out) const
 
 void ReflectableBitmask::write(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const
 {
-    contextNode.getContext().write(
-            ::zserio::StdIntArrayTraits<::test_object::polymorphic_allocator::ReflectableBitmask::underlying_type>(),
+    contextNode.getContext().write<::zserio::StdIntArrayTraits<::test_object::polymorphic_allocator::ReflectableBitmask::underlying_type>>(
             out, m_value);
 }
 
@@ -175,8 +173,8 @@ ReflectableBitmask::underlying_type ReflectableBitmask::readValue(::zserio::BitS
 ReflectableBitmask::underlying_type ReflectableBitmask::readValue(::zserio::pmr::PackingContextNode& contextNode,
         ::zserio::BitStreamReader& in)
 {
-    return contextNode.getContext().read(
-            ::zserio::StdIntArrayTraits<::test_object::polymorphic_allocator::ReflectableBitmask::underlying_type>(), in);
+    return contextNode.getContext().read<::zserio::StdIntArrayTraits<::test_object::polymorphic_allocator::ReflectableBitmask::underlying_type>>(
+            in);
 }
 
 } // namespace polymorphic_allocator

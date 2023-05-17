@@ -313,16 +313,7 @@ public class CppNativeMapper
     {
         final boolean isSigned = instantiation.getBaseType().isSigned();
         final int maxBitSize = instantiation.getMaxBitSize();
-        if (instantiation.getLengthExpression().getIntegerValue() != null)
-        {
-            // dynamic bit field type with constant bit size => map it as fixed
-            return mapBitFieldType(isSigned, maxBitSize);
-        }
-        else
-        {
-            // dynamic bit field type with dynamic bit size => map it as dynamic
-            return mapDynamicBitFieldType(isSigned, maxBitSize);
-        }
+        return mapDynamicBitFieldType(isSigned, maxBitSize);
     }
 
     private static CppNativeType mapBitFieldType(boolean isSigned, int numBits)

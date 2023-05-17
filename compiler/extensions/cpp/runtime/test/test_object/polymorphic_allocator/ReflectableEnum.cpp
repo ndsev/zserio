@@ -142,7 +142,7 @@ uint32_t enumHashCode<::test_object::polymorphic_allocator::ReflectableEnum>(::t
 template <>
 void initPackingContext(::zserio::pmr::PackingContextNode& contextNode, ::test_object::polymorphic_allocator::ReflectableEnum value)
 {
-    contextNode.getContext().init(::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::polymorphic_allocator::ReflectableEnum>::type>(),
+    contextNode.getContext().init<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::polymorphic_allocator::ReflectableEnum>::type>>(
             ::zserio::enumToValue(value));
 }
 
@@ -155,8 +155,7 @@ size_t bitSizeOf(::test_object::polymorphic_allocator::ReflectableEnum)
 template <>
 size_t bitSizeOf(::zserio::pmr::PackingContextNode& contextNode, ::test_object::polymorphic_allocator::ReflectableEnum value)
 {
-    return contextNode.getContext().bitSizeOf(
-            ::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::polymorphic_allocator::ReflectableEnum>::type>(),
+    return contextNode.getContext().bitSizeOf<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::polymorphic_allocator::ReflectableEnum>::type>>(
             ::zserio::enumToValue(value));
 }
 
@@ -184,8 +183,8 @@ template <>
 template <>
 ::test_object::polymorphic_allocator::ReflectableEnum read(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamReader& in)
 {
-    return valueToEnum<::test_object::polymorphic_allocator::ReflectableEnum>(contextNode.getContext().read(
-            ::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::polymorphic_allocator::ReflectableEnum>::type>(), in));
+    return valueToEnum<::test_object::polymorphic_allocator::ReflectableEnum>(contextNode.getContext().read<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::polymorphic_allocator::ReflectableEnum>::type>>(
+            in));
 }
 
 template <>
@@ -197,8 +196,7 @@ void write(::zserio::BitStreamWriter& out, ::test_object::polymorphic_allocator:
 template <>
 void write(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out, ::test_object::polymorphic_allocator::ReflectableEnum value)
 {
-    contextNode.getContext().write(
-            ::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::polymorphic_allocator::ReflectableEnum>::type>(),
+    contextNode.getContext().write<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::polymorphic_allocator::ReflectableEnum>::type>>(
             out, ::zserio::enumToValue(value));
 }
 

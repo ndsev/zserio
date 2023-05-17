@@ -293,6 +293,14 @@ public:
             ${types.string.name}::allocator_type()) const;
 
 private:
+<#if underlyingTypeInfo.arrayTraits.isTemplated && underlyingTypeInfo.arrayTraits.requiresElementDynamicBitSize>
+    class ZserioElementBitSize
+    {
+    public:
+        static uint8_t get();
+    };
+
+</#if>
     static underlying_type readValue(::zserio::BitStreamReader& in);
     static underlying_type readValue(${types.packingContextNode.name}& contextNode,
             ::zserio::BitStreamReader& in);

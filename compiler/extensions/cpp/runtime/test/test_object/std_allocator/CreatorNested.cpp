@@ -672,8 +672,8 @@ void CreatorNested::createPackingContext(::zserio::PackingContextNode& contextNo
 
 void CreatorNested::initPackingContext(::zserio::PackingContextNode& contextNode) const
 {
-    contextNode.getChildren().at(0).getContext().init(
-            ::zserio::StdIntArrayTraits<uint32_t>(), m_value_);
+    contextNode.getChildren().at(0).getContext().init<::zserio::StdIntArrayTraits<uint32_t>>(
+            m_value_);
     ::zserio::initPackingContext(contextNode.getChildren().at(4),
             m_creatorEnum_);
     m_creatorBitmask_.initPackingContext(contextNode.getChildren().at(5));
@@ -697,8 +697,8 @@ size_t CreatorNested::bitSizeOf(::zserio::PackingContextNode& contextNode, size_
 {
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += contextNode.getChildren().at(0).getContext().bitSizeOf(
-            ::zserio::StdIntArrayTraits<uint32_t>(), m_value_);
+    endBitPosition += contextNode.getChildren().at(0).getContext().bitSizeOf<::zserio::StdIntArrayTraits<uint32_t>>(
+            m_value_);
     endBitPosition += ::zserio::bitSizeOfString(m_text_);
     endBitPosition += ::zserio::bitSizeOfBitBuffer(m_externData_);
     endBitPosition += ::zserio::bitSizeOfBytes(m_bytesData_);
@@ -728,8 +728,8 @@ size_t CreatorNested::initializeOffsets(::zserio::PackingContextNode& contextNod
 {
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += contextNode.getChildren().at(0).getContext().bitSizeOf(
-            ::zserio::StdIntArrayTraits<uint32_t>(), m_value_);
+    endBitPosition += contextNode.getChildren().at(0).getContext().bitSizeOf<::zserio::StdIntArrayTraits<uint32_t>>(
+            m_value_);
     endBitPosition += ::zserio::bitSizeOfString(m_text_);
     endBitPosition += ::zserio::bitSizeOfBitBuffer(m_externData_);
     endBitPosition += ::zserio::bitSizeOfBytes(m_bytesData_);
@@ -785,8 +785,8 @@ void CreatorNested::write(::zserio::BitStreamWriter& out) const
 
 void CreatorNested::write(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const
 {
-    contextNode.getChildren().at(0).getContext().write(
-            ::zserio::StdIntArrayTraits<uint32_t>(), out, m_value_);
+    contextNode.getChildren().at(0).getContext().write<::zserio::StdIntArrayTraits<uint32_t>>(
+            out, m_value_);
     out.writeString(m_text_);
     out.writeBitBuffer(m_externData_);
     out.writeBytes(m_bytesData_);
@@ -801,7 +801,7 @@ uint32_t CreatorNested::readValue(::zserio::BitStreamReader& in)
 
 uint32_t CreatorNested::readValue(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in)
 {
-    return contextNode.getChildren().at(0).getContext().read(::zserio::StdIntArrayTraits<uint32_t>(), in);
+    return contextNode.getChildren().at(0).getContext().read<::zserio::StdIntArrayTraits<uint32_t>>(in);
 }
 
 ::zserio::string<> CreatorNested::readText(::zserio::BitStreamReader& in,

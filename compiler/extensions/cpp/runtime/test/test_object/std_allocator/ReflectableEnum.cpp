@@ -142,7 +142,7 @@ uint32_t enumHashCode<::test_object::std_allocator::ReflectableEnum>(::test_obje
 template <>
 void initPackingContext(::zserio::PackingContextNode& contextNode, ::test_object::std_allocator::ReflectableEnum value)
 {
-    contextNode.getContext().init(::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::std_allocator::ReflectableEnum>::type>(),
+    contextNode.getContext().init<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::std_allocator::ReflectableEnum>::type>>(
             ::zserio::enumToValue(value));
 }
 
@@ -155,8 +155,7 @@ size_t bitSizeOf(::test_object::std_allocator::ReflectableEnum)
 template <>
 size_t bitSizeOf(::zserio::PackingContextNode& contextNode, ::test_object::std_allocator::ReflectableEnum value)
 {
-    return contextNode.getContext().bitSizeOf(
-            ::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::std_allocator::ReflectableEnum>::type>(),
+    return contextNode.getContext().bitSizeOf<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::std_allocator::ReflectableEnum>::type>>(
             ::zserio::enumToValue(value));
 }
 
@@ -184,8 +183,8 @@ template <>
 template <>
 ::test_object::std_allocator::ReflectableEnum read(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in)
 {
-    return valueToEnum<::test_object::std_allocator::ReflectableEnum>(contextNode.getContext().read(
-            ::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::std_allocator::ReflectableEnum>::type>(), in));
+    return valueToEnum<::test_object::std_allocator::ReflectableEnum>(contextNode.getContext().read<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::std_allocator::ReflectableEnum>::type>>(
+            in));
 }
 
 template <>
@@ -197,8 +196,7 @@ void write(::zserio::BitStreamWriter& out, ::test_object::std_allocator::Reflect
 template <>
 void write(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out, ::test_object::std_allocator::ReflectableEnum value)
 {
-    contextNode.getContext().write(
-            ::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::std_allocator::ReflectableEnum>::type>(),
+    contextNode.getContext().write<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::std_allocator::ReflectableEnum>::type>>(
             out, ::zserio::enumToValue(value));
 }
 

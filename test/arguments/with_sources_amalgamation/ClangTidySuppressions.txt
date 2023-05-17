@@ -7,6 +7,12 @@ cppcoreguidelines-pro-type-reinterpret-cast:gen/with_sources_amalgamation/WithSo
 
 fuchsia-multiple-inheritance:gen/with_sources_amalgamation/WorldDb.h
 
+google-explicit-constructor:gen/with_sources_amalgamation/Group.h
+google-explicit-constructor:gen/with_sources_amalgamation/Permission.h
+
+hicpp-signed-bitwise:gen/with_sources_amalgamation/Group.h
+hicpp-signed-bitwise:gen/with_sources_amalgamation/Permission.h
+
 performance-move-const-arg:gen/with_sources_amalgamation/WithSourcesAmalgamation.cpp
 
 readability-braces-around-statements

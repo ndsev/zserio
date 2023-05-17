@@ -22,8 +22,7 @@
 <#if has_field_with_constraint(fieldList)>
 #include <zserio/ConstraintException.h>
 </#if>
-<#if (withReflectionCode && has_non_simple_parameter(compoundParametersData)) ||
-        has_inner_classes(name, fieldList)>
+<#if (withReflectionCode && has_non_simple_parameter(compoundParametersData))>
 #include <functional>
 </#if>
 <@system_includes cppSystemIncludes/>
@@ -369,8 +368,8 @@ void ${name}::createPackingContext(${types.packingContextNode.name}&<#if fieldLi
 void ${name}::initPackingContext(${types.packingContextNode.name}&<#if fieldList?has_content> contextNode</#if>) const
 {
 <#if fieldList?has_content>
-    contextNode.getChildren()[0].getContext().init(
-            ${choiceTagArrayTraits}(), static_cast<uint32_t>(m_choiceTag));
+    contextNode.getChildren()[0].getContext().init<${choiceTagArrayTraits}>(
+            static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {
@@ -415,7 +414,7 @@ size_t ${name}::bitSizeOf(${types.packingContextNode.name}&<#if fieldList?has_co
 <#if fieldList?has_content>
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += contextNode.getChildren()[0].getContext().bitSizeOf(${choiceTagArrayTraits}(),
+    endBitPosition += contextNode.getChildren()[0].getContext().bitSizeOf<${choiceTagArrayTraits}>(
             static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
@@ -466,7 +465,7 @@ size_t ${name}::initializeOffsets(${types.packingContextNode.name}&<#if fieldLis
     <#if fieldList?has_content>
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += contextNode.getChildren()[0].getContext().bitSizeOf(${choiceTagArrayTraits}(),
+    endBitPosition += contextNode.getChildren()[0].getContext().bitSizeOf<${choiceTagArrayTraits}>(
             static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
@@ -566,7 +565,7 @@ void ${name}::write(${types.packingContextNode.name}&<#if fieldList?has_content>
         ::zserio::BitStreamWriter&<#if fieldList?has_content> out</#if>) const<#lt>
 {
     <#if fieldList?has_content>
-    contextNode.getChildren()[0].getContext().write(${choiceTagArrayTraits}(),
+    contextNode.getChildren()[0].getContext().write<${choiceTagArrayTraits}>(
             out, static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
@@ -592,7 +591,7 @@ ${name}::ChoiceTag ${name}::readChoiceTag(::zserio::BitStreamReader& in)
 ${name}::ChoiceTag ${name}::readChoiceTag(${types.packingContextNode.name}& contextNode, ::zserio::BitStreamReader& in)
 {
     return static_cast<${name}::ChoiceTag>(static_cast<int32_t>(
-            contextNode.getChildren()[0].getContext().read(${choiceTagArrayTraits}(), in)));
+            contextNode.getChildren()[0].getContext().read<${choiceTagArrayTraits}>(in)));
 }
 
 ${types.anyHolder.name} ${name}::readObject(::zserio::BitStreamReader& in, const allocator_type& allocator)

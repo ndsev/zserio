@@ -434,8 +434,8 @@ void SerializeNested::initPackingContext(::zserio::pmr::PackingContextNode& cont
 {
     if (getParam() >= 0)
     {
-        contextNode.getChildren().at(1).getContext().init(
-                ::zserio::StdIntArrayTraits<uint32_t>(), m_optionalValue_.value());
+        contextNode.getChildren().at(1).getContext().init<::zserio::StdIntArrayTraits<uint32_t>>(
+                m_optionalValue_.value());
     }
 }
 
@@ -461,8 +461,8 @@ size_t SerializeNested::bitSizeOf(::zserio::pmr::PackingContextNode& contextNode
     if (getParam() >= 0)
     {
         endBitPosition = ::zserio::alignTo(8, endBitPosition);
-        endBitPosition += contextNode.getChildren().at(1).getContext().bitSizeOf(
-                ::zserio::StdIntArrayTraits<uint32_t>(), m_optionalValue_.value());
+        endBitPosition += contextNode.getChildren().at(1).getContext().bitSizeOf<::zserio::StdIntArrayTraits<uint32_t>>(
+                m_optionalValue_.value());
     }
 
     return endBitPosition - bitPosition;
@@ -500,8 +500,8 @@ size_t SerializeNested::initializeOffsets(::zserio::pmr::PackingContextNode& con
                     static_cast<uint8_t>(endBitPosition / 8);
             setOffset(value);
         }
-        endBitPosition += contextNode.getChildren().at(1).getContext().bitSizeOf(
-                ::zserio::StdIntArrayTraits<uint32_t>(), m_optionalValue_.value());
+        endBitPosition += contextNode.getChildren().at(1).getContext().bitSizeOf<::zserio::StdIntArrayTraits<uint32_t>>(
+                m_optionalValue_.value());
     }
 
     return endBitPosition;
@@ -562,8 +562,8 @@ void SerializeNested::write(::zserio::pmr::PackingContextNode& contextNode, ::zs
             throw ::zserio::CppRuntimeException("Write: Wrong offset for field SerializeNested.optionalValue: ") <<
                     (out.getBitPosition() / 8) << " != " << (getOffset()) << "!";
         }
-        contextNode.getChildren().at(1).getContext().write(
-                ::zserio::StdIntArrayTraits<uint32_t>(), out, m_optionalValue_.value());
+        contextNode.getChildren().at(1).getContext().write<::zserio::StdIntArrayTraits<uint32_t>>(
+                out, m_optionalValue_.value());
     }
 }
 
@@ -600,7 +600,7 @@ uint8_t SerializeNested::readOffset(::zserio::BitStreamReader& in)
             throw ::zserio::CppRuntimeException("Read: Wrong offset for field SerializeNested.optionalValue: ") <<
                     (in.getBitPosition() / 8) << " != " << (getOffset()) << "!";
         }
-        return ::zserio::InplaceOptionalHolder<uint32_t>(contextNode.getChildren().at(1).getContext().read(::zserio::StdIntArrayTraits<uint32_t>(), in));
+        return ::zserio::InplaceOptionalHolder<uint32_t>(contextNode.getChildren().at(1).getContext().read<::zserio::StdIntArrayTraits<uint32_t>>(in));
     }
 
     return ::zserio::InplaceOptionalHolder<uint32_t>(::zserio::NullOpt);

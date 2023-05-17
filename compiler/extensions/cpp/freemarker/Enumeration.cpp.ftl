@@ -17,17 +17,25 @@
 <@user_includes cppUserIncludes, false/>
 <@namespace_begin ["zserio"]/>
 
-<#macro enum_array_traits arrayTraits fullName bitSize>
+<#macro enum_array_traits_type_name arrayTraits fullName bitSize>
     ${arrayTraits.name}<#t>
     <#if arrayTraits.isTemplated>
-            <typename ::std::underlying_type<${fullName}>::type><#t>
+            <typename ::std::underlying_type<${fullName}>::type<#t>
+            <#if arrayTraits.requiresElementFixedBitSize>, ${bitSize.value}</#if><#t>
+            <#if arrayTraits.requiresElementDynamicBitSize>, EnumTraits<${fullName}>::ZserioElementBitSize</#if>><#t>
     </#if>
-    (<#if arrayTraits.requiresElementFixedBitSize>${bitSize.value}</#if>)<#t>
 </#macro>
 // This is full specialization of enumeration traits and methods for ${name} enumeration.
 constexpr ::std::array<const char*, ${items?size}> EnumTraits<${fullName}>::names;
 constexpr ::std::array<${fullName}, ${items?size}> EnumTraits<${fullName}>::values;
 constexpr const char* EnumTraits<${fullName}>::enumName;
+<#if underlyingTypeInfo.arrayTraits.isTemplated && underlyingTypeInfo.arrayTraits.requiresElementDynamicBitSize>
+
+uint8_t EnumTraits<${fullName}>::ZserioElementBitSize::get()
+{
+    return ${bitSize.value};
+}
+</#if>
 <#if withTypeInfoCode>
 
 template <>
@@ -156,7 +164,7 @@ uint32_t enumHashCode<${fullName}>(${fullName} value)
 template <>
 void initPackingContext(${types.packingContextNode.name}& contextNode, ${fullName} value)
 {
-    contextNode.getContext().init(<@enum_array_traits underlyingTypeInfo.arrayTraits, fullName, bitSize!/>,
+    contextNode.getContext().init<<@enum_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(
             ::zserio::enumToValue(value));
 }
 
@@ -173,8 +181,7 @@ size_t bitSizeOf(${fullName}<#if !runtimeFunction.arg??> value</#if>)
 template <>
 size_t bitSizeOf(${types.packingContextNode.name}& contextNode, ${fullName} value)
 {
-    return contextNode.getContext().bitSizeOf(
-            <@enum_array_traits underlyingTypeInfo.arrayTraits, fullName, bitSize!/>,
+    return contextNode.getContext().bitSizeOf<<@enum_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(
             ::zserio::enumToValue(value));
 }
 <#if withWriterCode>
@@ -204,8 +211,8 @@ ${fullName} read(::zserio::BitStreamReader& in)
 template <>
 ${fullName} read(${types.packingContextNode.name}& contextNode, ::zserio::BitStreamReader& in)
 {
-    return valueToEnum<${fullName}>(contextNode.getContext().read(
-            <@enum_array_traits underlyingTypeInfo.arrayTraits, fullName, bitSize!/>, in));
+    return valueToEnum<${fullName}>(contextNode.getContext().read<<@enum_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(
+            in));
 }
 <#if withWriterCode>
 
@@ -219,8 +226,7 @@ void write(::zserio::BitStreamWriter& out, ${fullName} value)
 template <>
 void write(${types.packingContextNode.name}& contextNode, ::zserio::BitStreamWriter& out, ${fullName} value)
 {
-    contextNode.getContext().write(
-            <@enum_array_traits underlyingTypeInfo.arrayTraits, fullName, bitSize!/>,
+    contextNode.getContext().write<<@enum_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(
             out, ::zserio::enumToValue(value));
 }
 </#if>

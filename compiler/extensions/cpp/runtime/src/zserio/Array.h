@@ -3,145 +3,309 @@
 
 #include <cstdlib>
 #include <type_traits>
-#include <vector>
-#include <string>
 
 #include "zserio/AllocatorPropagatingCopy.h"
 #include "zserio/ArrayTraits.h"
-#include "zserio/Traits.h"
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-#include "zserio/BitPositionUtil.h"
-#include "zserio/VarSizeUtil.h"
 #include "zserio/BitSizeOfCalculator.h"
-#include "zserio/Enums.h"
-#include "zserio/UniquePtr.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 #include "zserio/PackingContext.h"
+#include "zserio/Traits.h"
+#include "zserio/UniquePtr.h"
+#include "zserio/VarSizeUtil.h"
 
 namespace zserio
 {
-
 namespace detail
 {
 
-// dummy element factory used for arrays which traits don't need element factory
-struct DummyElementFactory
+// array expressions for arrays which do not need expressions
+struct DummyArrayExpressions
 {};
 
-// helper traits to choose proper element factory
-template <typename ARRAY_TRAITS>
-struct ElementFactoryTraits
+// array owner for arrays which do not need the owner
+struct DummyArrayOwner
+{};
+
+// helper trait to choose the owner type for an array from combination of ARRAY_TRAITS and ARRAY_EXPRESSIONS
+template <typename ARRAY_TRAITS, typename ARRAY_EXPRESSIONS, typename = void>
+struct array_owner_type
 {
-    using type = DummyElementFactory;
+    using type = DummyArrayOwner;
 };
 
-// specialization for object array traits which has info about the real element factory
-template <typename T, typename ELEMENT_FACTORY>
-struct ElementFactoryTraits<ObjectArrayTraits<T, ELEMENT_FACTORY>>
+template <typename ARRAY_TRAITS, typename ARRAY_EXPRESSIONS>
+struct array_owner_type<ARRAY_TRAITS, ARRAY_EXPRESSIONS,
+        typename std::enable_if<has_owner_type<ARRAY_TRAITS>::value>::type>
 {
-    using type = ELEMENT_FACTORY;
+    using type = typename ARRAY_TRAITS::OwnerType;
 };
 
-// using typedef to simplify accessing the element factory type
-template <typename ARRAY_TRAITS>
-using ElementFactory = typename ElementFactoryTraits<ARRAY_TRAITS>::type;
-
-// helper function to hide noncompilable code in a "dead" branch
-template <typename ARRAY_TRAITS, typename std::enable_if<ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT, int>::type = 0>
-size_t arrayTraitsConstBitSizeOf(const ARRAY_TRAITS& arrayTraits)
+template <typename ARRAY_TRAITS, typename ARRAY_EXPRESSIONS>
+struct array_owner_type<ARRAY_TRAITS, ARRAY_EXPRESSIONS,
+        typename std::enable_if<!has_owner_type<ARRAY_TRAITS>::value &&
+                has_owner_type<ARRAY_EXPRESSIONS>::value>::type>
 {
-    return arrayTraits.bitSizeOf();
+    using type = typename ARRAY_EXPRESSIONS::OwnerType;
+};
+
+// calls the initializeOffset static method on ARRAY_EXPRESSIONS if available
+template <typename ARRAY_EXPRESSIONS, typename OWNER_TYPE,
+        typename std::enable_if<has_initialize_offset<ARRAY_EXPRESSIONS>::value, int>::type = 0>
+void initializeOffset(OWNER_TYPE& owner, size_t index, size_t bitPosition)
+{
+    ARRAY_EXPRESSIONS::initializeOffset(owner, index, bitPosition);
 }
 
-template <typename ARRAY_TRAITS, typename std::enable_if<!ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT, int>::type = 0>
-size_t arrayTraitsConstBitSizeOf(const ARRAY_TRAITS&)
+template <typename ARRAY_EXPRESSIONS, typename OWNER_TYPE,
+        typename std::enable_if<!has_initialize_offset<ARRAY_EXPRESSIONS>::value, int>::type = 0>
+void initializeOffset(OWNER_TYPE&, size_t, size_t)
+{}
+
+// calls the checkOffset static method on ARRAY_EXPRESSIONS if available
+template <typename ARRAY_EXPRESSIONS, typename OWNER_TYPE,
+        typename std::enable_if<has_check_offset<ARRAY_EXPRESSIONS>::value, int>::type = 0>
+void checkOffset(const OWNER_TYPE& owner, size_t index, size_t bitPosition)
+{
+    ARRAY_EXPRESSIONS::checkOffset(owner, index, bitPosition);
+}
+
+template <typename ARRAY_EXPRESSIONS, typename OWNER_TYPE,
+        typename std::enable_if<!has_check_offset<ARRAY_EXPRESSIONS>::value, int>::type = 0>
+void checkOffset(const OWNER_TYPE&, size_t, size_t)
+{}
+
+// call the initContext method properly on packed array traits
+template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT_NODE,
+        typename std::enable_if<has_owner_type<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
+void packedArrayTraitsInitContext(const OWNER_TYPE& owner, PACKING_CONTEXT_NODE& contextNode,
+        typename PACKED_ARRAY_TRAITS::ElementType element)
+{
+    PACKED_ARRAY_TRAITS::initContext(owner, contextNode, element);
+}
+
+template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT_NODE,
+        typename std::enable_if<!has_owner_type<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
+void packedArrayTraitsInitContext(const OWNER_TYPE&, PACKING_CONTEXT_NODE& contextNode,
+        typename PACKED_ARRAY_TRAITS::ElementType element)
+{
+    PACKED_ARRAY_TRAITS::initContext(contextNode, element);
+}
+
+// calls the bitSizeOf method properly on array traits which have constant bit size
+template <typename ARRAY_TRAITS, typename OWNER_TYPE,
+        typename std::enable_if<
+                ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT && has_owner_type<ARRAY_TRAITS>::value, int>::type = 0>
+size_t arrayTraitsConstBitSizeOf(const OWNER_TYPE& owner)
+{
+    return ARRAY_TRAITS::bitSizeOf(owner);
+}
+
+template <typename ARRAY_TRAITS, typename OWNER_TYPE,
+        typename std::enable_if<
+                ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT && !has_owner_type<ARRAY_TRAITS>::value, int>::type = 0>
+size_t arrayTraitsConstBitSizeOf(const OWNER_TYPE&)
+{
+    return ARRAY_TRAITS::bitSizeOf();
+}
+
+template <typename ARRAY_TRAITS, typename OWNER_TYPE,
+        typename std::enable_if<!ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT, int>::type = 0>
+size_t arrayTraitsConstBitSizeOf(const OWNER_TYPE&)
 {
     return 0; // never comes here, specialization needed only for proper compilation
 }
 
-// helper function to call read on array traits which need element factory (ObjectArrayTraits)
-template <typename RAW_ARRAY, typename ARRAY_TRAITS, typename ELEMENT_FACTORY>
-void arrayTraitsRead(RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
-        const ELEMENT_FACTORY& elementFactory, BitStreamReader& in, size_t index)
+// calls the bitSizeOf method properly on array traits which haven't constant bit size
+template <typename ARRAY_TRAITS, typename OWNER_TYPE,
+        typename std::enable_if<has_owner_type<ARRAY_TRAITS>::value, int>::type = 0>
+size_t arrayTraitsBitSizeOf(const OWNER_TYPE& owner, size_t bitPosition,
+        const typename ARRAY_TRAITS::ElementType& element)
 {
-    arrayTraits.read(elementFactory, rawArray, in, index);
+    return ARRAY_TRAITS::bitSizeOf(owner, bitPosition, element);
 }
 
-// helper traits to check if T has allocator_type typedef
-template <typename T, typename = void>
-struct is_allocator_based : std::false_type
-{};
-
-// specialization for types which have allocator_type typdef
-template <typename T>
-struct is_allocator_based<T, void_t<typename T::allocator_type>> : std::true_type
-{};
-
-// overload for DummyElementFactory which is used for array traits which don't need element factory
-template <typename RAW_ARRAY, typename ARRAY_TRAITS,
-        typename std::enable_if<!is_allocator_based<ARRAY_TRAITS>::value, int>::type = 0>
-void arrayTraitsRead(RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, const detail::DummyElementFactory&,
-        BitStreamReader& in, size_t)
+template <typename ARRAY_TRAITS, typename OWNER_TYPE,
+        typename std::enable_if<!has_owner_type<ARRAY_TRAITS>::value, int>::type = 0>
+size_t arrayTraitsBitSizeOf(const OWNER_TYPE&, size_t bitPosition,
+        const typename ARRAY_TRAITS::ElementType& element)
 {
-    rawArray.push_back(arrayTraits.read(in));
+    return ARRAY_TRAITS::bitSizeOf(bitPosition, element);
 }
 
-// overload for array traits which are based on allocator
-template <typename RAW_ARRAY, typename ARRAY_TRAITS,
-        typename std::enable_if<is_allocator_based<ARRAY_TRAITS>::value, int>::type = 0>
-void arrayTraitsRead(RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
-        const detail::DummyElementFactory&, BitStreamReader& in, size_t)
+// calls the bitSizeOf method properly on packed array traits which haven't constant bit size
+template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT_NODE,
+        typename std::enable_if<has_owner_type<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
+size_t packedArrayTraitsBitSizeOf(const OWNER_TYPE& owner, PACKING_CONTEXT_NODE& contextNode,
+        size_t bitPosition, const typename PACKED_ARRAY_TRAITS::ElementType& element)
 {
-    rawArray.push_back(arrayTraits.read(in, rawArray.get_allocator()));
+    return PACKED_ARRAY_TRAITS::bitSizeOf(owner, contextNode, bitPosition, element);
 }
 
-// helper function to call read on packed array traits which need element factory (i.e. objects)
-template <typename RAW_ARRAY, typename PACKED_ARRAY_TRAITS, typename ELEMENT_FACTORY,
-        typename PACKED_CONTEXT_NODE>
-void packedArrayTraitsRead(RAW_ARRAY& rawArray, const PACKED_ARRAY_TRAITS& packedArrayTraits,
-        const ELEMENT_FACTORY& elementFactory, PACKED_CONTEXT_NODE& contextNode,
+template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT_NODE,
+        typename std::enable_if<!has_owner_type<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
+size_t packedArrayTraitsBitSizeOf(const OWNER_TYPE&, PACKING_CONTEXT_NODE& contextNode, size_t bitPosition,
+        const typename PACKED_ARRAY_TRAITS::ElementType& element)
+{
+    return PACKED_ARRAY_TRAITS::bitSizeOf(contextNode, bitPosition, element);
+}
+
+// calls the initializeOffsets method properly on array traits
+template <typename ARRAY_TRAITS, typename OWNER_TYPE,
+        typename std::enable_if<has_owner_type<ARRAY_TRAITS>::value, int>::type = 0>
+size_t arrayTraitsInitializeOffsets(OWNER_TYPE& owner, size_t bitPosition,
+        typename ARRAY_TRAITS::ElementType& element)
+{
+    return ARRAY_TRAITS::initializeOffsets(owner, bitPosition, element);
+}
+
+template <typename ARRAY_TRAITS, typename OWNER_TYPE,
+        typename std::enable_if<!has_owner_type<ARRAY_TRAITS>::value &&
+                !std::is_scalar<typename ARRAY_TRAITS::ElementType>::value, int>::type = 0>
+size_t arrayTraitsInitializeOffsets(OWNER_TYPE&, size_t bitPosition,
+        const typename ARRAY_TRAITS::ElementType& element)
+{
+    return ARRAY_TRAITS::initializeOffsets(bitPosition, element);
+}
+
+template <typename ARRAY_TRAITS, typename OWNER_TYPE,
+        typename std::enable_if<!has_owner_type<ARRAY_TRAITS>::value &&
+                std::is_scalar<typename ARRAY_TRAITS::ElementType>::value, int>::type = 0>
+size_t arrayTraitsInitializeOffsets(OWNER_TYPE&, size_t bitPosition, typename ARRAY_TRAITS::ElementType element)
+{
+    return ARRAY_TRAITS::initializeOffsets(bitPosition, element);
+}
+
+// calls the initializeOffsets method properly on packed array traits
+template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT_NODE,
+        typename std::enable_if<has_owner_type<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
+size_t packedArrayTraitsInitializeOffsets(OWNER_TYPE& owner, PACKING_CONTEXT_NODE& contextNode,
+        size_t bitPosition, typename PACKED_ARRAY_TRAITS::ElementType& element)
+{
+    return PACKED_ARRAY_TRAITS::initializeOffsets(owner, contextNode, bitPosition, element);
+}
+
+template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT_NODE,
+        typename std::enable_if<!has_owner_type<PACKED_ARRAY_TRAITS>::value &&
+                !std::is_scalar<typename PACKED_ARRAY_TRAITS::ElementType>::value, int>::type = 0>
+size_t packedArrayTraitsInitializeOffsets(OWNER_TYPE&, PACKING_CONTEXT_NODE& contextNode,
+        size_t bitPosition, const typename PACKED_ARRAY_TRAITS::ElementType& element)
+{
+    return PACKED_ARRAY_TRAITS::initializeOffsets(contextNode, bitPosition, element);
+}
+
+template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT_NODE,
+        typename std::enable_if<!has_owner_type<PACKED_ARRAY_TRAITS>::value &&
+                std::is_scalar<typename PACKED_ARRAY_TRAITS::ElementType>::value, int>::type = 0>
+size_t packedArrayTraitsInitializeOffsets(OWNER_TYPE&, PACKING_CONTEXT_NODE& contextNode,
+        size_t bitPosition, typename PACKED_ARRAY_TRAITS::ElementType element)
+{
+    return PACKED_ARRAY_TRAITS::initializeOffsets(contextNode, bitPosition, element);
+}
+
+// calls the read method properly on array traits
+template <typename ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY,
+        typename std::enable_if<has_owner_type<ARRAY_TRAITS>::value &&
+                !has_allocator<ARRAY_TRAITS>::value, int>::type = 0>
+void arrayTraitsRead(const OWNER_TYPE& owner, RAW_ARRAY& rawArray, BitStreamReader& in, size_t index)
+{
+    return rawArray.push_back(ARRAY_TRAITS::read(owner, in, index));
+}
+
+template <typename ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY,
+        typename std::enable_if<has_owner_type<ARRAY_TRAITS>::value &&
+                has_allocator<ARRAY_TRAITS>::value, int>::type = 0>
+void arrayTraitsRead(OWNER_TYPE& owner, RAW_ARRAY& rawArray, BitStreamReader& in, size_t index)
+{
+    return rawArray.push_back(ARRAY_TRAITS::read(owner, in, rawArray.get_allocator(), index));
+}
+
+template <typename ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY,
+        typename std::enable_if<!has_owner_type<ARRAY_TRAITS>::value &&
+                !has_allocator<ARRAY_TRAITS>::value, int>::type = 0>
+void arrayTraitsRead(const OWNER_TYPE&, RAW_ARRAY& rawArray, BitStreamReader& in, size_t index)
+{
+    return rawArray.push_back(ARRAY_TRAITS::read(in, index));
+}
+
+template <typename ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY,
+        typename std::enable_if<!has_owner_type<ARRAY_TRAITS>::value &&
+                has_allocator<ARRAY_TRAITS>::value, int>::type = 0>
+void arrayTraitsRead(const OWNER_TYPE&, RAW_ARRAY& rawArray, BitStreamReader& in, size_t index)
+{
+    return rawArray.push_back(ARRAY_TRAITS::read(in, rawArray.get_allocator(), index));
+}
+
+// calls the read method properly on packed array traits
+template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY, typename PACKING_CONTEXT_NODE,
+        typename std::enable_if<has_owner_type<PACKED_ARRAY_TRAITS>::value &&
+                has_allocator<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
+void packedArrayTraitsRead(OWNER_TYPE& owner, RAW_ARRAY& rawArray, PACKING_CONTEXT_NODE& contextNode,
         BitStreamReader& in, size_t index)
 {
-    packedArrayTraits.read(contextNode, elementFactory, rawArray, in, index);
+    rawArray.push_back(PACKED_ARRAY_TRAITS::read(owner, contextNode, in, rawArray.get_allocator(), index));
 }
 
-// overload for DummyElementFactory which is used for array traits which don't need element factory
-template <typename RAW_ARRAY, typename PACKED_ARRAY_TRAITS, typename PACKED_CONTEXT_NODE>
-void packedArrayTraitsRead(RAW_ARRAY& rawArray, const PACKED_ARRAY_TRAITS& packedArrayTraits,
-        const detail::DummyElementFactory&, PACKED_CONTEXT_NODE& contextNode, BitStreamReader& in, size_t)
+template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY, typename PACKING_CONTEXT_NODE,
+        typename std::enable_if<!has_owner_type<PACKED_ARRAY_TRAITS>::value &&
+                has_allocator<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
+void packedArrayTraitsRead(const OWNER_TYPE&, RAW_ARRAY& rawArray, PACKING_CONTEXT_NODE& contextNode,
+        BitStreamReader& in, size_t index)
 {
-    rawArray.push_back(packedArrayTraits.read(contextNode, in));
+    rawArray.push_back(PACKED_ARRAY_TRAITS::read(contextNode, in, rawArray.get_allocator(), index));
 }
 
-// dummy offset initializer used for arrays which don't need to initialize offsets
-struct DummyOffsetInitializer
-{};
-
-// helper function to call initializeOffset on an offset initializer
-template <typename OFFSET_INITIALIZER>
-void initializeOffset(const OFFSET_INITIALIZER& offsetInitializer, size_t index, size_t byteOffset)
+template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY, typename PACKING_CONTEXT_NODE,
+        typename std::enable_if<has_owner_type<PACKED_ARRAY_TRAITS>::value &&
+                !has_allocator<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
+void packedArrayTraitsRead(const OWNER_TYPE& owner, RAW_ARRAY& rawArray, PACKING_CONTEXT_NODE& contextNode,
+        BitStreamReader& in, size_t index)
 {
-    offsetInitializer.initializeOffset(index, byteOffset);
+    rawArray.push_back(PACKED_ARRAY_TRAITS::read(owner, contextNode, in, index));
 }
 
-// overload for DummyOffsetInitializer which does nothing
-inline void initializeOffset(const DummyOffsetInitializer&, size_t, size_t)
-{}
-
-// dummy offset checker used for arrays which don't need to check offsets.
-struct DummyOffsetChecker
-{};
-
-// helper function to call checkOffset on an offset checker
-template <typename OFFSET_CHECKER>
-void checkOffset(const OFFSET_CHECKER& offsetChecker, size_t index, size_t byteOffset)
+template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY, typename PACKING_CONTEXT_NODE,
+        typename std::enable_if<!has_owner_type<PACKED_ARRAY_TRAITS>::value &&
+                !has_allocator<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
+void packedArrayTraitsRead(const OWNER_TYPE&, RAW_ARRAY& rawArray, PACKING_CONTEXT_NODE& contextNode,
+        BitStreamReader& in, size_t index)
 {
-    offsetChecker.checkOffset(index, byteOffset);
+    rawArray.push_back(PACKED_ARRAY_TRAITS::read(contextNode, in, index));
 }
 
-// overload for DummyOffsetChecker which does nothing
-inline void checkOffset(const DummyOffsetChecker&, size_t, size_t)
-{}
+// call the write method properly on array traits
+template <typename ARRAY_TRAITS, typename OWNER_TYPE,
+        typename std::enable_if<has_owner_type<ARRAY_TRAITS>::value, int>::type = 0>
+void arrayTraitsWrite(const OWNER_TYPE& owner,
+        BitStreamWriter& out, const typename ARRAY_TRAITS::ElementType& element)
+{
+    return ARRAY_TRAITS::write(owner, out, element);
+}
+
+template <typename ARRAY_TRAITS, typename OWNER_TYPE,
+        typename std::enable_if<!has_owner_type<ARRAY_TRAITS>::value, int>::type = 0>
+void arrayTraitsWrite(const OWNER_TYPE&,
+        BitStreamWriter& out, const typename ARRAY_TRAITS::ElementType& element)
+{
+    return ARRAY_TRAITS::write(out, element);
+}
+
+// call the write method properly on packed array traits
+template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT_NODE,
+        typename std::enable_if<has_owner_type<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
+void packedArrayTraitsWrite(const OWNER_TYPE& owner, PACKING_CONTEXT_NODE& contextNode,
+        BitStreamWriter& out, const typename PACKED_ARRAY_TRAITS::ElementType& element)
+{
+    return PACKED_ARRAY_TRAITS::write(owner, contextNode, out, element);
+}
+
+template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT_NODE,
+        typename std::enable_if<!has_owner_type<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
+void packedArrayTraitsWrite(const OWNER_TYPE&, PACKING_CONTEXT_NODE& contextNode,
+        BitStreamWriter& out, const typename PACKED_ARRAY_TRAITS::ElementType& element)
+{
+    return PACKED_ARRAY_TRAITS::write(contextNode, out, element);
+}
 
 } // namespace detail
 
@@ -163,8 +327,7 @@ enum ArrayType
  * The wrapper is used to encapsulate logic of operations with zserio arrays.
  */
 template <typename RAW_ARRAY, typename ARRAY_TRAITS, ArrayType ARRAY_TYPE,
-        typename OFFSET_CHECKER = detail::DummyOffsetChecker,
-        typename OFFSET_INITIALIZER = detail::DummyOffsetInitializer>
+        typename ARRAY_EXPRESSIONS = detail::DummyArrayExpressions>
 class Array
 {
 public:
@@ -174,47 +337,59 @@ public:
     /** Typedef for array traits. */
     using ArrayTraits = ARRAY_TRAITS;
 
+    /** Typedef for array expressions. */
+    using ArrayExpressions = ARRAY_EXPRESSIONS;
+
+    /**
+     * Typedef for the array's owner type.
+     *
+     * Owner type is needed for proper expressions evaluation. If neither traits nor array need the owner
+     * for expressions evaluation, detail::DummyArrayOwner is used and such array do not need the owner at all.
+     */
+    using OwnerType = typename detail::array_owner_type<ArrayTraits, ArrayExpressions>::type;
+
     /** Typedef for allocator type. */
     using allocator_type = typename RawArray::allocator_type;
 
     /**
      * Empty constructor.
      *
-     * \param arrayTraits Array traits.
      * \param allocator Allocator to use for the raw array.
      */
-    explicit Array(const ARRAY_TRAITS& arrayTraits, const allocator_type& allocator = allocator_type()) :
-            m_rawArray(allocator), m_arrayTraits(arrayTraits), m_packedArrayTraits(m_arrayTraits)
+    explicit Array(const allocator_type& allocator = allocator_type()) :
+            m_rawArray(allocator)
     {}
 
     /**
      * Constructor from l-value raw array.
      *
      * \param rawArray Raw array.
-     * \param arrayTraits Array traits.
      */
-    Array(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits) :
-            m_rawArray(rawArray), m_arrayTraits(arrayTraits), m_packedArrayTraits(m_arrayTraits)
+    explicit Array(const RawArray& rawArray) :
+            m_rawArray(rawArray)
     {}
 
     /**
      * Constructor from r-value raw array.
      *
      * \param rawArray Raw array.
-     * \param arrayTraits Array traits.
      */
-    Array(RAW_ARRAY&& rawArray, const ARRAY_TRAITS& arrayTraits) :
-            m_rawArray(std::move(rawArray)), m_arrayTraits(arrayTraits), m_packedArrayTraits(m_arrayTraits)
+    explicit Array(RawArray&& rawArray) :
+            m_rawArray(std::move(rawArray))
     {}
+
+    /**
+     * Default destructor.
+     */
+    ~Array() = default;
 
     /**
      * Copy constructor.
      *
      * \param other Source array to copy.
      */
-    Array(const Array& other)
-    :       m_rawArray(other.m_rawArray), m_arrayTraits(other.m_arrayTraits),
-            m_packedArrayTraits(other.m_packedArrayTraits)
+    Array(const Array& other) :
+            m_rawArray(other.m_rawArray)
     {
         if (other.m_packingContextNode)
             createContext();
@@ -224,14 +399,10 @@ public:
      * Copy assignment operator.
      *
      * \param other Source array to copy.
-     *
-     * \return Reference to this array.
      */
     Array& operator=(const Array& other)
     {
         m_rawArray = other.m_rawArray;
-        m_arrayTraits = other.m_arrayTraits;
-        m_packedArrayTraits = other.m_packedArrayTraits;
 
         if (other.m_packingContextNode)
             createContext();
@@ -241,10 +412,9 @@ public:
 
     /**
      * Method generated by default.
+     *
      * \{
      */
-    ~Array() = default;
-
     Array(Array&& other) = default;
     Array& operator=(Array&& other) = default;
     /**
@@ -257,10 +427,8 @@ public:
      * \param other Source array to copy.
      * \param allocator Allocator to propagate during copying.
      */
-    Array(::zserio::PropagateAllocatorT,
-            const Array& other, const allocator_type& allocator) :
-            m_rawArray(::zserio::allocatorPropagatingCopy(other.m_rawArray, allocator)),
-            m_arrayTraits(other.m_arrayTraits), m_packedArrayTraits(other.m_packedArrayTraits)
+    Array(PropagateAllocatorT, const Array& other, const allocator_type& allocator) :
+            m_rawArray(allocatorPropagatingCopy(other.m_rawArray, allocator))
     {
         if (other.m_packingContextNode)
             createContext();
@@ -289,6 +457,8 @@ public:
     /**
      * Operator equality.
      *
+     * \param other Array to compare.
+     *
      * \return True when the underlying raw arrays have same contents, false otherwise.
      */
     bool operator==(const Array& other) const
@@ -307,40 +477,280 @@ public:
     }
 
     /**
-    * Initializes array elements using the given element initializer.
-    *
-    * \param elementInitializer Initializer which knows how to initialize a single array element.
-    */
-    template <typename ELEMENT_INITIALIZER>
-    void initializeElements(const ELEMENT_INITIALIZER& elementInitializer)
+     * Initializes array elements.
+     *
+     * \param owner Array owner.
+     */
+    template <typename ARRAY_EXPRESSIONS_ = ArrayExpressions,
+            typename std::enable_if<has_initialize_element<ARRAY_EXPRESSIONS_>::value, int>::type = 0>
+    void initializeElements(OwnerType& owner)
     {
         size_t index = 0;
         for (auto&& element : m_rawArray)
         {
-            elementInitializer.initialize(element, index);
+            ArrayExpressions::initializeElement(owner, element, index);
             index++;
         }
     }
 
     /**
-     * Sets new array traits instance. Needed e.g. when an object which holds the array is copied / moved.
+     * Calculates bit size of this array.
      *
-     * \param arrayTraits New instance of array traits.
+     * Available for arrays which do not need the owner.
+     *
+     * \param bitPosition Current bit position.
+     *
+     * \return Bit size of the array.
      */
-    void initializeArrayTraits(const ARRAY_TRAITS& arrayTraits)
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    size_t bitSizeOf(size_t bitPosition) const
     {
-        m_arrayTraits = arrayTraits;
-        m_packedArrayTraits = PackedArrayTraits<ARRAY_TRAITS>(arrayTraits);
+        return bitSizeOfImpl(detail::DummyArrayOwner(), bitPosition);
     }
 
     /**
-    * Calculates bit size of this array.
-    *
-    * \param bitPosition Current bit position.
-    *
-    * \return Bit size of the array.
-    */
-    size_t bitSizeOf(size_t bitPosition) const
+     * Calculates bit size of this array.
+     *
+     * Available for arrays which need the owner.
+     *
+     * \param owner Array owner.
+     * \param bitPosition Current bit position.
+     *
+     * \return Bit size of the array.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    size_t bitSizeOf(const OwnerType& owner, size_t bitPosition) const
+    {
+        return bitSizeOfImpl(owner, bitPosition);
+    }
+
+    /**
+     * Returns length of the packed array stored in the bit stream in bits.
+     *
+     * Available for arrays which do not need the owner.
+     *
+     * \param bitPosition Current bit stream position.
+     *
+     * \return Length of the array stored in the bit stream in bits.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    size_t bitSizeOfPacked(size_t bitPosition) const
+    {
+        return bitSizeOfPackedImpl(detail::DummyArrayOwner(), bitPosition);
+    }
+
+    /**
+     * Returns length of the packed array stored in the bit stream in bits.
+     *
+     * Available for arrays which need the owner.
+     *
+     * \param owner Array owner.
+     * \param bitPosition Current bit stream position.
+     *
+     * \return Length of the array stored in the bit stream in bits.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    size_t bitSizeOfPacked(const OwnerType& ownerType, size_t bitPosition) const
+    {
+        return bitSizeOfPackedImpl(ownerType, bitPosition);
+    }
+
+    /**
+     * Initializes indexed offsets.
+     *
+     * Available for arrays which do not need the owner.
+     *
+     * \param bitPosition Current bit position.
+     *
+     * \return Updated bit position which points to the first bit after the array.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    size_t initializeOffsets(size_t bitPosition)
+    {
+        detail::DummyArrayOwner owner;
+        return initializeOffsetsImpl(owner, bitPosition);
+    }
+
+    /**
+     * Initializes indexed offsets.
+     *
+     * Available for arrays which need the owner.
+     *
+     * \param owner Array owner.
+     * \param bitPosition Current bit position.
+     *
+     * \return Updated bit position which points to the first bit after the array.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    size_t initializeOffsets(OwnerType& owner, size_t bitPosition)
+    {
+        return initializeOffsetsImpl(owner, bitPosition);
+    }
+
+    /**
+     * Initializes indexed offsets for the packed array.
+     *
+     * Available for arrays which do not need the owner.
+     *
+     * \param bitPosition Current bit stream position.
+     *
+     * \return Updated bit stream position which points to the first bit after the array.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    size_t initializeOffsetsPacked(size_t bitPosition)
+    {
+        detail::DummyArrayOwner owner;
+        return initializeOffsetsPackedImpl(owner, bitPosition);
+    }
+
+    /**
+     * Initializes indexed offsets for the packed array.
+     *
+     * Available for arrays which need the owner.
+     *
+     * \param owner Array owner.
+     * \param bitPosition Current bit stream position.
+     *
+     * \return Updated bit stream position which points to the first bit after the array.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    size_t initializeOffsetsPacked(OwnerType& owner, size_t bitPosition)
+    {
+        return initializeOffsetsPackedImpl(owner, bitPosition);
+    }
+
+    /**
+     * Reads the array from the bit stream.
+     *
+     * Available for arrays which do not need the owner.
+     *
+     * \param in Bit stream reader to use for reading.
+     * \param arrayLength Array length. Not needed for auto / implicit arrays.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    void read(BitStreamReader& in, size_t arrayLength = 0)
+    {
+        detail::DummyArrayOwner owner;
+        readImpl(owner, in, arrayLength);
+    }
+
+    /**
+     * Reads the array from the bit stream.
+     *
+     * Available for arrays which need the owner.
+     *
+     * \param owner Array owner.
+     * \param in Bit stream reader to use for reading.
+     * \param arrayLength Array length. Not needed for auto / implicit arrays.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    void read(OwnerType& owner, BitStreamReader& in, size_t arrayLength = 0)
+    {
+        readImpl(owner, in, arrayLength);
+    }
+
+    /**
+     * Reads packed array from the bit stream.
+     *
+     * Available for arrays which do not need the owner.
+     *
+     * \param in Bit stream from which to read.
+     * \param arrayLength Number of elements to read or 0 in case of auto arrays.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    void readPacked(BitStreamReader& in, size_t arrayLength = 0)
+    {
+        detail::DummyArrayOwner owner;
+        readPackedImpl(owner, in, arrayLength);
+    }
+
+    /**
+     * Reads packed array from the bit stream.
+     *
+     * Available for arrays which need the owner.
+     *
+     * \param owner Array owner.
+     * \param in Bit stream from which to read.
+     * \param arrayLength Number of elements to read or 0 in case of auto arrays.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    void readPacked(OwnerType& owner, BitStreamReader& in, size_t arrayLength = 0)
+    {
+        readPackedImpl(owner, in, arrayLength);
+    }
+
+    /**
+     * Writes the array to the bit stream.
+     *
+     * Available for arrays which do not need the owner.
+     *
+     * \param out Bit stream write to use for writing.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    void write(BitStreamWriter& out) const
+    {
+        writeImpl(detail::DummyArrayOwner(), out);
+    }
+
+    /**
+     * Writes the array to the bit stream.
+     *
+     * Available for arrays which need the owner.
+     *
+     * \param owner Array owner.
+     * \param out Bit stream write to use for writing.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    void write(const OwnerType& owner, BitStreamWriter& out) const
+    {
+        writeImpl(owner, out);
+    }
+
+    /**
+     * Writes packed array to the bit stream.
+     *
+     * Available for arrays which do not need the owner.
+     *
+     * \param out Bit stream where to write.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    void writePacked(BitStreamWriter& out) const
+    {
+        writePackedImpl(detail::DummyArrayOwner(), out);
+    }
+
+    /**
+     * Writes packed array to the bit stream.
+     *
+     * Available for arrays which need the owner.
+     *
+     * \param owner Array owner.
+     * \param out Bit stream where to write.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    void writePacked(const OwnerType& owner, BitStreamWriter& out) const
+    {
+        writePackedImpl(owner, out);
+    }
+
+private:
+    size_t bitSizeOfImpl(const OwnerType& owner, size_t bitPosition) const
     {
         size_t endBitPosition = bitPosition;
 
@@ -348,9 +758,9 @@ public:
         if (ARRAY_TYPE == ArrayType::AUTO || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
             endBitPosition += zserio::bitSizeOfVarSize(convertSizeToUInt32(size));
 
-        if (ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT && size > 0)
+        if (ArrayTraits::IS_BITSIZEOF_CONSTANT && size > 0)
         {
-            const size_t elementBitSize = detail::arrayTraitsConstBitSizeOf(m_arrayTraits);
+            const size_t elementBitSize = detail::arrayTraitsConstBitSizeOf<ArrayTraits>(owner);
             if (ARRAY_TYPE == ArrayType::ALIGNED || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
             {
                 endBitPosition = alignTo(8, endBitPosition);
@@ -367,21 +777,16 @@ public:
             {
                 if (ARRAY_TYPE == ArrayType::ALIGNED || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
                     endBitPosition = alignTo(8, endBitPosition);
-                endBitPosition += m_arrayTraits.bitSizeOf(endBitPosition, m_rawArray[index]);
+
+                endBitPosition += detail::arrayTraitsBitSizeOf<ArrayTraits>(
+                        owner, endBitPosition, m_rawArray[index]);
             }
         }
 
         return endBitPosition - bitPosition;
     }
 
-    /**
-     * Returns length of the packed array stored in the bit stream in bits.
-     *
-     * \param bitPosition Current bit stream position.
-     *
-     * \return Length of the array stored in the bit stream in bits.
-     */
-    size_t bitSizeOfPacked(size_t bitPosition) const
+    size_t bitSizeOfPackedImpl(const OwnerType& owner, size_t bitPosition) const
     {
         static_assert(ARRAY_TYPE != ArrayType::IMPLICIT, "Implicit array cannot be packed!");
 
@@ -395,28 +800,24 @@ public:
         {
             auto& contextNode = getPackingContextNode();
             for (size_t index = 0; index < size; ++index)
-                m_packedArrayTraits.initContext(contextNode, m_rawArray[index]);
+            {
+                detail::packedArrayTraitsInitContext<PackedArrayTraits<ArrayTraits>>(
+                        owner, contextNode, m_rawArray[index]);
+            }
 
             for (size_t index = 0; index < size; ++index)
             {
                 if (ARRAY_TYPE == ArrayType::ALIGNED || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
                     endBitPosition = alignTo(8, endBitPosition);
-                endBitPosition += m_packedArrayTraits.bitSizeOf(contextNode, endBitPosition, m_rawArray[index]);
+                endBitPosition += detail::packedArrayTraitsBitSizeOf<PackedArrayTraits<ArrayTraits>>(
+                        owner, contextNode, endBitPosition, m_rawArray[index]);
             }
         }
 
         return endBitPosition - bitPosition;
     }
 
-    /**
-     * Initializes indexed offsets.
-     *
-     * \param bitPosition Current bit position.
-     * \param offsetInitializer Initializer which initializes offsets for each element.
-     *
-     * \return Updated bit position which points to the first bit after the array.
-     */
-    size_t initializeOffsets(size_t bitPosition, const OFFSET_INITIALIZER& offsetInitializer)
+    size_t initializeOffsetsImpl(OwnerType& owner, size_t bitPosition)
     {
         size_t endBitPosition = bitPosition;
 
@@ -429,23 +830,16 @@ public:
             if (ARRAY_TYPE == ArrayType::ALIGNED || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
             {
                 endBitPosition = alignTo(8, endBitPosition);
-                detail::initializeOffset(offsetInitializer, index, endBitPosition / 8);
+                detail::initializeOffset<ArrayExpressions>(owner, index, endBitPosition / 8);
             }
-            endBitPosition = m_arrayTraits.initializeOffsets(endBitPosition, m_rawArray[index]);
+            endBitPosition = detail::arrayTraitsInitializeOffsets<ArrayTraits>(
+                    owner, endBitPosition, m_rawArray[index]);
         }
 
         return endBitPosition;
     }
 
-    /**
-     * Initializes indexed offsets for the packed array.
-     *
-     * \param bitPosition Current bit stream position.
-     * \param offsetInitializer Initializer which initializes offsets for each element.
-     *
-     * \return Updated bit stream position which points to the first bit after the array.
-     */
-    size_t initializeOffsetsPacked(size_t bitPosition, const OFFSET_INITIALIZER& offsetInitializer)
+    size_t initializeOffsetsPackedImpl(OwnerType& owner, size_t bitPosition)
     {
         static_assert(ARRAY_TYPE != ArrayType::IMPLICIT, "Implicit array cannot be packed!");
 
@@ -459,45 +853,36 @@ public:
         {
             auto& contextNode = getPackingContextNode();
             for (size_t index = 0; index < size; ++index)
-                m_packedArrayTraits.initContext(contextNode, m_rawArray[index]);
+            {
+                detail::packedArrayTraitsInitContext<PackedArrayTraits<ArrayTraits>>(
+                        owner, contextNode, m_rawArray[index]);
+            }
 
             for (size_t index = 0; index < size; ++index)
             {
                 if (ARRAY_TYPE == ArrayType::ALIGNED || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
                 {
                     endBitPosition = alignTo(8, endBitPosition);
-                    detail::initializeOffset(offsetInitializer, index, endBitPosition / 8);
+                    detail::initializeOffset<ARRAY_EXPRESSIONS>(owner, index, endBitPosition / 8);
                 }
-                endBitPosition = m_packedArrayTraits.initializeOffsets(
-                        contextNode, endBitPosition, m_rawArray[index]);
+                endBitPosition = detail::packedArrayTraitsInitializeOffsets<PackedArrayTraits<ArrayTraits>>(
+                        owner, contextNode, endBitPosition, m_rawArray[index]);
             }
         }
 
         return endBitPosition;
     }
 
-    /**
-     * Reads the array from the bit stream.
-     *
-     * This method has all possible arguments and from generated code is used for aligned object arrays.
-     *
-     * \param in Bit stream reader to use for reading.
-     * \param arrayLength Array length. Empty for auto / implicit arrays.
-     * \param elementFactory Factory which knows how to create a single array element.
-     * \param offsetChecker Offset checker.
-     */
-    void read(BitStreamReader& in, size_t arrayLength,
-            const detail::ElementFactory<ARRAY_TRAITS>& elementFactory,
-            const OFFSET_CHECKER& offsetChecker)
+    void readImpl(OwnerType& owner, BitStreamReader& in, size_t arrayLength)
     {
-        static_assert(ARRAY_TYPE != ArrayType::IMPLICIT || ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT,
+        static_assert(ARRAY_TYPE != ArrayType::IMPLICIT || ArrayTraits::IS_BITSIZEOF_CONSTANT,
                 "Implicit array elements must have constant bit size!");
 
         size_t readSize = arrayLength;
         if (ARRAY_TYPE == ArrayType::IMPLICIT)
         {
             const size_t remainingBits = in.getBufferBitSize() - in.getBitPosition();
-            readSize = remainingBits / detail::arrayTraitsConstBitSizeOf(m_arrayTraits);
+            readSize = remainingBits / detail::arrayTraitsConstBitSizeOf<ArrayTraits>(owner);
         }
         else if (ARRAY_TYPE == ArrayType::AUTO || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
         {
@@ -511,25 +896,13 @@ public:
             if (ARRAY_TYPE == ArrayType::ALIGNED || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
             {
                 in.alignTo(8);
-                detail::checkOffset(offsetChecker, index, in.getBitPosition() / 8);
+                detail::checkOffset<ArrayExpressions>(owner, index, in.getBitPosition() / 8);
             }
-            detail::arrayTraitsRead(m_rawArray, m_arrayTraits, elementFactory, in, index);
+            detail::arrayTraitsRead<ArrayTraits>(owner, m_rawArray, in, index);
         }
     }
 
-    /**
-     * Reads packed array from the bit stream.
-     *
-     * This method has all possible arguments and from generated code is used for aligned object arrays.
-     *
-     * \param in Bit stream from which to read.
-     * \param arrayLength Number of elements to read or 0 in case of auto arrays.
-     * \param elementFactory Factory which knows how to create a single array element.
-     * \param offsetChecker Offset checker used to check offsets before writing.
-     */
-    void readPacked(BitStreamReader& in, size_t arrayLength,
-            const detail::ElementFactory<ARRAY_TRAITS>& elementFactory,
-            const OFFSET_CHECKER& offsetChecker)
+    void readPackedImpl(OwnerType& owner, BitStreamReader& in, size_t arrayLength = 0)
     {
         static_assert(ARRAY_TYPE != ArrayType::IMPLICIT, "Implicit array cannot be packed!");
 
@@ -550,21 +923,15 @@ public:
                 if (ARRAY_TYPE == ArrayType::ALIGNED || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
                 {
                     in.alignTo(8);
-                    detail::checkOffset(offsetChecker, index, in.getBitPosition() / 8);
+                    detail::checkOffset<ArrayExpressions>(owner, index, in.getBitPosition() / 8);
                 }
-                detail::packedArrayTraitsRead(m_rawArray, m_packedArrayTraits, elementFactory,
-                        contextNode, in, index);
+                detail::packedArrayTraitsRead<PackedArrayTraits<ArrayTraits>>(
+                        owner, m_rawArray, contextNode, in, index);
             }
         }
     }
 
-    /**
-     * Writes the array to the bit stream.
-     *
-     * \param out Bit stream write to use for writing.
-     * \param offsetChecker Offset checker used to check offsets before writing.
-     */
-    void write(BitStreamWriter& out, const OFFSET_CHECKER& offsetChecker) const
+    void writeImpl(const OwnerType& owner, BitStreamWriter& out) const
     {
         const size_t size = m_rawArray.size();
         if (ARRAY_TYPE == ArrayType::AUTO || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
@@ -575,19 +942,13 @@ public:
             if (ARRAY_TYPE == ArrayType::ALIGNED || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
             {
                 out.alignTo(8);
-                detail::checkOffset(offsetChecker, index, out.getBitPosition() / 8);
+                detail::checkOffset<ArrayExpressions>(owner, index, out.getBitPosition() / 8);
             }
-            m_arrayTraits.write(out, m_rawArray[index]);
+            detail::arrayTraitsWrite<ArrayTraits>(owner, out, m_rawArray[index]);
         }
     }
 
-    /**
-     * Writes packed array to the bit stream.
-     *
-     * \param out Bit stream where to write.
-     * \param offsetChecker Offset checker used to check offsets before writing.
-     */
-    void writePacked(BitStreamWriter& out, const OFFSET_CHECKER& offsetChecker) const
+    void writePackedImpl(const OwnerType& owner, BitStreamWriter& out) const
     {
         static_assert(ARRAY_TYPE != ArrayType::IMPLICIT, "Implicit array cannot be packed!");
 
@@ -599,279 +960,24 @@ public:
         {
             auto& contextNode = getPackingContextNode();
             for (size_t index = 0; index < size; ++index)
-                m_packedArrayTraits.initContext(contextNode, m_rawArray[index]);
+            {
+                detail::packedArrayTraitsInitContext<PackedArrayTraits<ArrayTraits>>(
+                        owner, contextNode, m_rawArray[index]);
+            }
 
             for (size_t index = 0; index < size; ++index)
             {
                 if (ARRAY_TYPE == ArrayType::ALIGNED || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
                 {
                     out.alignTo(8);
-                    detail::checkOffset(offsetChecker, index, out.getBitPosition() / 8);
+                    detail::checkOffset<ArrayExpressions>(owner, index, out.getBitPosition() / 8);
                 }
-                m_packedArrayTraits.write(contextNode, out, m_rawArray[index]);
+                detail::packedArrayTraitsWrite<PackedArrayTraits<ArrayTraits>>(
+                        owner, contextNode, out, m_rawArray[index]);
             }
         }
     }
 
-    // public methods overloads follow
-
-    /**
-     * Initializes indexed offsets.
-     *
-     * Overloaded method used for unaligned arrays.
-     *
-     * \return Updated bit position which points to the first bit after the array.
-     */
-    size_t initializeOffsets(size_t bitPosition)
-    {
-        return initializeOffsets(bitPosition, detail::DummyOffsetInitializer());
-    }
-
-    /**
-     * Initializes indexed offsets for the packed array.
-     *
-     * Overloaded method used for unaligned arrays.
-     *
-     * \param bitPosition Current bit stream position.
-     *
-     * \return Updated bit stream position which points to the first bit after the array.
-     */
-    size_t initializeOffsetsPacked(size_t bitPosition)
-    {
-        return initializeOffsetsPacked(bitPosition, detail::DummyOffsetInitializer());
-    }
-
-    /**
-     * Reads the array from the bit stream.
-     *
-     * Overloaded method used for unaligned auto / implicit non-object arrays.
-     *
-     * \param in Bit stream reader to use for reading.
-     */
-    void read(BitStreamReader& in)
-    {
-        static_assert(ARRAY_TYPE == ArrayType::AUTO || ARRAY_TYPE == ArrayType::ALIGNED_AUTO ||
-                ARRAY_TYPE == ArrayType::IMPLICIT, "Allowed only for auto / implicit arrays!");
-        read(in, 0, detail::DummyElementFactory(), detail::DummyOffsetChecker());
-    }
-
-    /**
-     * Reads the array from the bit stream.
-     *
-     * Overloaded method used for aligned auto / implicit non-object arrays.
-     *
-     * \param in Bit stream reader to use for reading.
-     * \param offsetChecker Offset checker.
-     */
-    void read(BitStreamReader& in, const OFFSET_CHECKER& offsetChecker)
-    {
-        static_assert(ARRAY_TYPE == ArrayType::AUTO || ARRAY_TYPE == ArrayType::ALIGNED_AUTO ||
-                ARRAY_TYPE == ArrayType::IMPLICIT, "Allowed only for auto / implicit arrays!");
-        read(in, 0, detail::DummyElementFactory(), offsetChecker);
-    }
-
-    /**
-     * Reads the array from the bit stream.
-     *
-     * Overloaded method used for unaligned auto object arrays.
-     *
-     * \param in Bit stream reader to use for reading.
-     * \param elementFactory Factory which knows how to create a single array element.
-     */
-    void read(BitStreamReader& in, const detail::ElementFactory<ARRAY_TRAITS>& elementFactory)
-    {
-        static_assert(ARRAY_TYPE == ArrayType::AUTO || ARRAY_TYPE == ArrayType::ALIGNED_AUTO ||
-                ARRAY_TYPE == ArrayType::IMPLICIT, "Allowed only for auto / implicit arrays!");
-        read(in, 0, elementFactory, detail::DummyOffsetChecker());
-    }
-
-    /**
-     * Reads the array from the bit stream.
-     *
-     * Overloaded method used for aligned auto object arrays.
-     *
-     * \param in Bit stream reader to use for reading.
-     * \param elementFactory Factory which knows how to create a single array element.
-     * \param offsetChecker Offset checker.
-     */
-    void read(BitStreamReader& in, const detail::ElementFactory<ARRAY_TRAITS>& elementFactory,
-            const OFFSET_CHECKER& offsetChecker)
-    {
-        static_assert(ARRAY_TYPE == ArrayType::AUTO || ARRAY_TYPE == ArrayType::ALIGNED_AUTO ||
-                ARRAY_TYPE == ArrayType::IMPLICIT, "Allowed only for auto / implicit arrays!");
-        read(in, 0, elementFactory, offsetChecker);
-    }
-
-    /**
-     * Reads the array from the bit stream.
-     *
-     * Overloaded method used for unaligned non-object arrays.
-     *
-     * \param in Bit stream reader to use for reading.
-     * \param arrayLength Array length. Empty for auto / implicit arrays.
-     */
-    void read(BitStreamReader& in, size_t arrayLength)
-    {
-        read(in, arrayLength, detail::DummyElementFactory(), detail::DummyOffsetChecker());
-    }
-
-    /**
-     * Reads the array from the bit stream.
-     *
-     * Overloaded method used for aligned non-object arrays.
-     *
-     * \param in Bit stream reader to use for reading.
-     * \param arrayLength Array length. Empty for auto / implicit arrays.
-     * \param offsetChecker Offset checker.
-     */
-    void read(BitStreamReader& in, size_t arrayLength, const OFFSET_CHECKER& offsetChecker)
-    {
-        read(in, arrayLength, detail::DummyElementFactory(), offsetChecker);
-    }
-
-    /**
-     * Reads the array from the bit stream.
-     *
-     * Overloaded method used for unaligned object arrays.
-     *
-     * \param in Bit stream reader to use for reading.
-     * \param arrayLength Array length. Empty for auto / implicit arrays.
-     * \param elementFactory Factory which knows how to create a single array element.
-     */
-    void read(BitStreamReader& in, size_t arrayLength,
-            const detail::ElementFactory<ARRAY_TRAITS>& elementFactory)
-    {
-        read(in, arrayLength, elementFactory, detail::DummyOffsetChecker());
-    }
-
-    /**
-     * Reads packed array from the bit stream.
-     *
-     * Overloaded method used for unaligned auto non-object arrays.
-     *
-     * \param in Bit stream from which to read.
-     */
-    void readPacked(BitStreamReader& in)
-    {
-        static_assert(ARRAY_TYPE == ArrayType::AUTO || ARRAY_TYPE == ArrayType::ALIGNED_AUTO,
-                "Allowed only for auto arrays!");
-        readPacked(in, 0, detail::DummyElementFactory(), detail::DummyOffsetChecker());
-    }
-
-    /**
-     * Reads packed array from the bit stream.
-     *
-     * Overloaded method used for aligned auto non-object arrays.
-     *
-     * \param in Bit stream from which to read.
-     * \param offsetChecker Offset checker used to check offsets before writing.
-     */
-    void readPacked(BitStreamReader& in, const OFFSET_CHECKER& offsetChecker)
-    {
-        static_assert(ARRAY_TYPE == ArrayType::AUTO || ARRAY_TYPE == ArrayType::ALIGNED_AUTO,
-                "Allowed only for auto arrays!");
-        readPacked(in, 0, detail::DummyElementFactory(), offsetChecker);
-    }
-
-    /**
-     * Reads packed array from the bit stream.
-     *
-     * Overloaded method used for unaligned auto object arrays.
-     *
-     * \param in Bit stream from which to read.
-     * \param elementFactory Factory which knows how to create a single array element.
-     */
-    void readPacked(BitStreamReader& in, const detail::ElementFactory<ARRAY_TRAITS>& elementFactory)
-    {
-        static_assert(ARRAY_TYPE == ArrayType::AUTO || ARRAY_TYPE == ArrayType::ALIGNED_AUTO,
-                "Allowed only for auto arrays!");
-        readPacked(in, 0, elementFactory, detail::DummyOffsetChecker());
-    }
-
-    /**
-     * Reads packed array from the bit stream.
-     *
-     * Overloaded method used for aligned auto object arrays.
-     *
-     * \param in Bit stream from which to read.
-     * \param elementFactory Factory which knows how to create a single array element.
-     * \param offsetChecker Offset checker used to check offsets before writing.
-     */
-    void readPacked(BitStreamReader& in, const detail::ElementFactory<ARRAY_TRAITS>& elementFactory,
-            const OFFSET_CHECKER& offsetChecker)
-    {
-        static_assert(ARRAY_TYPE == ArrayType::AUTO || ARRAY_TYPE == ArrayType::ALIGNED_AUTO,
-                "Allowed only for auto arrays!");
-        readPacked(in, 0, elementFactory, offsetChecker);
-    }
-
-    /**
-     * Reads packed array from the bit stream.
-     *
-     * Overloaded method used for unaligned non-object arrays.
-     *
-     * \param in Bit stream from which to read.
-     * \param arrayLength Number of elements to read or 0 in case of auto arrays.
-     */
-    void readPacked(BitStreamReader& in, size_t arrayLength)
-    {
-        readPacked(in, arrayLength, detail::DummyElementFactory(), detail::DummyOffsetChecker());
-    }
-
-    /**
-     * Reads packed array from the bit stream.
-     *
-     * Overloaded method used for aligned non-object arrays.
-     *
-     * \param in Bit stream from which to read.
-     * \param arrayLength Number of elements to read or 0 in case of auto arrays.
-     * \param offsetChecker Offset checker used to check offsets before writing.
-     */
-    void readPacked(BitStreamReader& in, size_t arrayLength, const OFFSET_CHECKER& offsetChecker)
-    {
-        readPacked(in, arrayLength, detail::DummyElementFactory(), offsetChecker);
-    }
-
-    /**
-     * Reads packed array from the bit stream.
-     *
-     * Overloaded method used for unaligned object arrays.
-     *
-     * \param in Bit stream from which to read.
-     * \param arrayLength Number of elements to read or 0 in case of auto arrays.
-     * \param elementFactory Factory which knows how to create a single array element.
-     */
-    void readPacked(BitStreamReader& in, size_t arrayLength,
-            const detail::ElementFactory<ARRAY_TRAITS>& elementFactory)
-    {
-        readPacked(in, arrayLength, elementFactory, detail::DummyOffsetChecker());
-    }
-
-    /**
-     * Writes the array to the bit stream.
-     *
-     * Overloaded method used for unaligned arrays.
-     *
-     * \param out Bit stream write to use for writing.
-     */
-    void write(BitStreamWriter& out) const
-    {
-        write(out, detail::DummyOffsetChecker());
-    }
-
-    /**
-     * Writes packed array to the bit stream.
-     *
-     * Overloaded method used for unaligned arrays.
-     *
-     * \param out Bit stream where to write.
-     */
-    void writePacked(BitStreamWriter& out) const
-    {
-        writePacked(out, detail::DummyOffsetChecker());
-    }
-
-private:
     // RebindAlloc is used here to prevent multiple instantiations of the PackingContextNode template
     using PackingContextNodeType = BasicPackingContextNode<RebindAlloc<allocator_type, uint8_t>>;
 
@@ -889,7 +995,7 @@ private:
     {
         m_packingContextNode = allocate_unique<PackingContextNodeType>(
                 m_rawArray.get_allocator(), m_rawArray.get_allocator());
-        m_packedArrayTraits.createContext(*m_packingContextNode);
+        PackedArrayTraits<ArrayTraits>::createContext(*m_packingContextNode);
     }
 
     static void resetContext(PackingContextNodeType& contextNode)
@@ -906,8 +1012,7 @@ private:
     }
 
     RawArray m_rawArray;
-    ARRAY_TRAITS m_arrayTraits;
-    PackedArrayTraits<ARRAY_TRAITS> m_packedArrayTraits;
+
     // mutable context is ok since it's just a cache and we need to keep bitSizeOfPacked method const
     mutable unique_ptr<PackingContextNodeType,
             RebindAlloc<allocator_type, PackingContextNodeType>> m_packingContextNode;
@@ -917,17 +1022,17 @@ private:
  * Helper for creating an optional array within templated field constructor, where the raw array can be
  * actually the NullOpt.
  */
-template <typename ARRAY, typename RAW_ARRAY, typename ARRAY_TRAITS>
-ARRAY createOptionalArray(RAW_ARRAY&& rawArray, const ARRAY_TRAITS& arrayTraits)
+template <typename ARRAY, typename RAW_ARRAY>
+ARRAY createOptionalArray(RAW_ARRAY&& rawArray)
 {
-    return ARRAY(std::forward<RAW_ARRAY>(rawArray), arrayTraits);
+    return ARRAY(std::forward<RAW_ARRAY>(rawArray));
 }
 
 /**
  * Overload for NullOpt.
  */
-template <typename ARRAY, typename ARRAY_TRAITS>
-NullOptType createOptionalArray(NullOptType, const ARRAY_TRAITS&)
+template <typename ARRAY>
+NullOptType createOptionalArray(NullOptType)
 {
     return NullOpt;
 }

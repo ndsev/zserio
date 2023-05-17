@@ -204,7 +204,7 @@ TEST(HashCodeUtilTest, arrayType)
 {
     const uint32_t hashSeed = 1;
     Array<std::vector<int32_t>, StdIntArrayTraits<int32_t>, ArrayType::NORMAL> arrayValue(
-            std::vector<int32_t>{{3, 7}}, StdIntArrayTraits<int32_t>());
+            std::vector<int32_t>{{3, 7}});
     const uint32_t rawArrayHashCode = (HASH_PRIME_NUMBER * HASH_SEED + 3) * HASH_PRIME_NUMBER + 7;
     EXPECT_EQ(HASH_PRIME_NUMBER + rawArrayHashCode, calcHashCode(hashSeed, arrayValue));
 }

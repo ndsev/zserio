@@ -35,31 +35,25 @@ private:
     class ZserioElementFactory_nestedArray
     {
     public:
-        explicit ZserioElementFactory_nestedArray(CreatorObject& owner);
+        using OwnerType = CreatorObject;
 
-        void create(::zserio::vector<::test_object::std_allocator::CreatorNested>& array,
-                ::zserio::BitStreamReader& in, size_t index) const;
+        static CreatorNested create(const OwnerType& owner,
+                ::zserio::BitStreamReader& in, const ::std::allocator<uint8_t>& allocator, size_t index);
 
-        void create(::zserio::PackingContextNode& contextNode,
-                ::zserio::vector<::test_object::std_allocator::CreatorNested>& array,
-                ::zserio::BitStreamReader& in, size_t index) const;
-
-    private:
-        std::reference_wrapper<CreatorObject> m_ownerRef;
+        static CreatorNested create(const OwnerType& owner, ::zserio::PackingContextNode& contextNode,
+                ::zserio::BitStreamReader& in, const ::std::allocator<uint8_t>& allocator, size_t index);
     };
 
-    class ZserioElementInitializer_nestedArray
+    class ZserioArrayExpressions_nestedArray
     {
     public:
-        explicit ZserioElementInitializer_nestedArray(CreatorObject& owner);
+        using OwnerType = CreatorObject;
 
-        void initialize(::test_object::std_allocator::CreatorNested& element, size_t index) const;
-
-    private:
-        std::reference_wrapper<CreatorObject> m_ownerRef;
+        static void initializeElement(const OwnerType& owner,
+                ::test_object::std_allocator::CreatorNested& element, size_t index);
     };
 
-    using ZserioArrayType_nestedArray = ::zserio::Array<::zserio::vector<::test_object::std_allocator::CreatorNested>, ::zserio::ObjectArrayTraits<::test_object::std_allocator::CreatorNested, ZserioElementFactory_nestedArray>, ::zserio::ArrayType::AUTO>;
+    using ZserioArrayType_nestedArray = ::zserio::Array<::zserio::vector<::test_object::std_allocator::CreatorNested>, ::zserio::ObjectArrayTraits<::test_object::std_allocator::CreatorNested, ZserioElementFactory_nestedArray>, ::zserio::ArrayType::AUTO, ZserioArrayExpressions_nestedArray>;
     using ZserioArrayType_textArray = ::zserio::Array<::zserio::vector<::zserio::string<>>, ::zserio::StringArrayTraits, ::zserio::ArrayType::AUTO>;
     using ZserioArrayType_externArray = ::zserio::Array<::zserio::vector<::zserio::BitBuffer>, ::zserio::BitBufferArrayTraits, ::zserio::ArrayType::AUTO>;
     using ZserioArrayType_bytesArray = ::zserio::Array<::zserio::vector<::zserio::vector<uint8_t>>, ::zserio::BytesArrayTraits, ::zserio::ArrayType::AUTO>;

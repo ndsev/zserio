@@ -20,22 +20,20 @@ namespace test_object
 namespace polymorphic_allocator
 {
 
-WalkerUnion::ZserioElementFactory_nestedArray::ZserioElementFactory_nestedArray(WalkerUnion& owner) :
-        m_ownerRef(owner)
-{}
-
-void WalkerUnion::ZserioElementFactory_nestedArray::create(::zserio::pmr::vector<::test_object::polymorphic_allocator::WalkerNested>& array,
-        ::zserio::BitStreamReader& in, size_t index) const
+WalkerNested WalkerUnion::ZserioElementFactory_nestedArray::create(const WalkerUnion&,
+        ::zserio::BitStreamReader& in,
+        const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t index)
 {
     (void)index;
-    array.emplace_back(in, array.get_allocator());
+    return WalkerNested(in, allocator);
 }
 
-void WalkerUnion::ZserioElementFactory_nestedArray::create(::zserio::pmr::PackingContextNode& contextNode,
-        ::zserio::pmr::vector<::test_object::polymorphic_allocator::WalkerNested>& array, ::zserio::BitStreamReader& in, size_t index) const
+WalkerNested WalkerUnion::ZserioElementFactory_nestedArray::create(const WalkerUnion&,
+        ::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamReader& in,
+        const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t index)
 {
     (void)index;
-    array.emplace_back(contextNode, in, array.get_allocator());
+    return WalkerNested(contextNode, in, allocator);
 }
 
 WalkerUnion::WalkerUnion(const allocator_type& allocator) noexcept :
@@ -384,13 +382,13 @@ const ::zserio::pmr::vector<::test_object::polymorphic_allocator::WalkerNested>&
 void WalkerUnion::setNestedArray(const ::zserio::pmr::vector<::test_object::polymorphic_allocator::WalkerNested>& nestedArray_)
 {
     m_choiceTag = CHOICE_nestedArray;
-    m_objectChoice = ZserioArrayType_nestedArray(nestedArray_, ::zserio::ObjectArrayTraits<::test_object::polymorphic_allocator::WalkerNested, ZserioElementFactory_nestedArray>());
+    m_objectChoice = ZserioArrayType_nestedArray(nestedArray_);
 }
 
 void WalkerUnion::setNestedArray(::zserio::pmr::vector<::test_object::polymorphic_allocator::WalkerNested>&& nestedArray_)
 {
     m_choiceTag = CHOICE_nestedArray;
-    m_objectChoice = ZserioArrayType_nestedArray(std::move(nestedArray_), ::zserio::ObjectArrayTraits<::test_object::polymorphic_allocator::WalkerNested, ZserioElementFactory_nestedArray>());
+    m_objectChoice = ZserioArrayType_nestedArray(std::move(nestedArray_));
 }
 
 WalkerUnion::ChoiceTag WalkerUnion::choiceTag() const
@@ -409,14 +407,14 @@ void WalkerUnion::createPackingContext(::zserio::pmr::PackingContextNode& contex
 
 void WalkerUnion::initPackingContext(::zserio::pmr::PackingContextNode& contextNode) const
 {
-    contextNode.getChildren().at(0).getContext().init(
-            ::zserio::VarSizeArrayTraits(), static_cast<uint32_t>(m_choiceTag));
+    contextNode.getChildren().at(0).getContext().init<::zserio::VarSizeArrayTraits>(
+            static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {
     case CHOICE_value:
-        contextNode.getChildren().at(1).getContext().init(
-                ::zserio::StdIntArrayTraits<uint32_t>(), m_objectChoice.get<uint32_t>());
+        contextNode.getChildren().at(1).getContext().init<::zserio::StdIntArrayTraits<uint32_t>>(
+                m_objectChoice.get<uint32_t>());
         break;
     case CHOICE_text:
         break;
@@ -442,7 +440,7 @@ size_t WalkerUnion::bitSizeOf(size_t bitPosition) const
         endBitPosition += ::zserio::bitSizeOfString(m_objectChoice.get<::zserio::pmr::string>());
         break;
     case CHOICE_nestedArray:
-        endBitPosition += m_objectChoice.get<ZserioArrayType_nestedArray>().bitSizeOf(endBitPosition);
+        endBitPosition += m_objectChoice.get<ZserioArrayType_nestedArray>().bitSizeOf(*this, endBitPosition);
         break;
     default:
         throw ::zserio::CppRuntimeException("No match in union WalkerUnion!");
@@ -455,20 +453,20 @@ size_t WalkerUnion::bitSizeOf(::zserio::pmr::PackingContextNode& contextNode, si
 {
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += contextNode.getChildren().at(0).getContext().bitSizeOf(::zserio::VarSizeArrayTraits(),
+    endBitPosition += contextNode.getChildren().at(0).getContext().bitSizeOf<::zserio::VarSizeArrayTraits>(
             static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {
     case CHOICE_value:
-        endBitPosition += contextNode.getChildren().at(1).getContext().bitSizeOf(
-                ::zserio::StdIntArrayTraits<uint32_t>(), m_objectChoice.get<uint32_t>());
+        endBitPosition += contextNode.getChildren().at(1).getContext().bitSizeOf<::zserio::StdIntArrayTraits<uint32_t>>(
+                m_objectChoice.get<uint32_t>());
         break;
     case CHOICE_text:
         endBitPosition += ::zserio::bitSizeOfString(m_objectChoice.get<::zserio::pmr::string>());
         break;
     case CHOICE_nestedArray:
-        endBitPosition += m_objectChoice.get<ZserioArrayType_nestedArray>().bitSizeOfPacked(endBitPosition);
+        endBitPosition += m_objectChoice.get<ZserioArrayType_nestedArray>().bitSizeOfPacked(*this, endBitPosition);
         break;
     default:
         throw ::zserio::CppRuntimeException("No match in union WalkerUnion!");
@@ -493,7 +491,7 @@ size_t WalkerUnion::initializeOffsets(size_t bitPosition)
         break;
     case CHOICE_nestedArray:
         endBitPosition = m_objectChoice.get<ZserioArrayType_nestedArray>().initializeOffsets(
-                endBitPosition);
+                *this, endBitPosition);
         break;
     default:
         throw ::zserio::CppRuntimeException("No match in union WalkerUnion!");
@@ -506,21 +504,21 @@ size_t WalkerUnion::initializeOffsets(::zserio::pmr::PackingContextNode& context
 {
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += contextNode.getChildren().at(0).getContext().bitSizeOf(::zserio::VarSizeArrayTraits(),
+    endBitPosition += contextNode.getChildren().at(0).getContext().bitSizeOf<::zserio::VarSizeArrayTraits>(
             static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {
     case CHOICE_value:
-        endBitPosition += contextNode.getChildren().at(1).getContext().bitSizeOf(
-                ::zserio::StdIntArrayTraits<uint32_t>(), m_objectChoice.get<uint32_t>());
+        endBitPosition += contextNode.getChildren().at(1).getContext().bitSizeOf<::zserio::StdIntArrayTraits<uint32_t>>(
+                m_objectChoice.get<uint32_t>());
         break;
     case CHOICE_text:
         endBitPosition += ::zserio::bitSizeOfString(m_objectChoice.get<::zserio::pmr::string>());
         break;
     case CHOICE_nestedArray:
         endBitPosition = m_objectChoice.get<ZserioArrayType_nestedArray>().initializeOffsetsPacked(
-                endBitPosition);
+                *this, endBitPosition);
         break;
     default:
         throw ::zserio::CppRuntimeException("No match in union WalkerUnion!");
@@ -596,7 +594,7 @@ void WalkerUnion::write(::zserio::BitStreamWriter& out) const
         out.writeString(m_objectChoice.get<::zserio::pmr::string>());
         break;
     case CHOICE_nestedArray:
-        m_objectChoice.get<ZserioArrayType_nestedArray>().write(out);
+        m_objectChoice.get<ZserioArrayType_nestedArray>().write(*this, out);
         break;
     default:
         throw ::zserio::CppRuntimeException("No match in union WalkerUnion!");
@@ -605,20 +603,20 @@ void WalkerUnion::write(::zserio::BitStreamWriter& out) const
 
 void WalkerUnion::write(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const
 {
-    contextNode.getChildren().at(0).getContext().write(::zserio::VarSizeArrayTraits(),
+    contextNode.getChildren().at(0).getContext().write<::zserio::VarSizeArrayTraits>(
             out, static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {
     case CHOICE_value:
-        contextNode.getChildren().at(1).getContext().write(
-                ::zserio::StdIntArrayTraits<uint32_t>(), out, m_objectChoice.get<uint32_t>());
+        contextNode.getChildren().at(1).getContext().write<::zserio::StdIntArrayTraits<uint32_t>>(
+                out, m_objectChoice.get<uint32_t>());
         break;
     case CHOICE_text:
         out.writeString(m_objectChoice.get<::zserio::pmr::string>());
         break;
     case CHOICE_nestedArray:
-        m_objectChoice.get<ZserioArrayType_nestedArray>().writePacked(out);
+        m_objectChoice.get<ZserioArrayType_nestedArray>().writePacked(*this, out);
         break;
     default:
         throw ::zserio::CppRuntimeException("No match in union WalkerUnion!");
@@ -633,7 +631,7 @@ WalkerUnion::ChoiceTag WalkerUnion::readChoiceTag(::zserio::BitStreamReader& in)
 WalkerUnion::ChoiceTag WalkerUnion::readChoiceTag(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamReader& in)
 {
     return static_cast<WalkerUnion::ChoiceTag>(static_cast<int32_t>(
-            contextNode.getChildren().at(0).getContext().read(::zserio::VarSizeArrayTraits(), in)));
+            contextNode.getChildren().at(0).getContext().read<::zserio::VarSizeArrayTraits>(in)));
 }
 
 ::zserio::pmr::AnyHolder WalkerUnion::readObject(::zserio::BitStreamReader& in, const allocator_type& allocator)
@@ -646,8 +644,8 @@ WalkerUnion::ChoiceTag WalkerUnion::readChoiceTag(::zserio::pmr::PackingContextN
         return ::zserio::pmr::AnyHolder(static_cast<::zserio::pmr::string>(in.readString(allocator)), allocator);
     case CHOICE_nestedArray:
         {
-            ZserioArrayType_nestedArray readField(::zserio::ObjectArrayTraits<::test_object::polymorphic_allocator::WalkerNested, ZserioElementFactory_nestedArray>(), allocator);
-            readField.read(in, ZserioElementFactory_nestedArray(*this));
+            ZserioArrayType_nestedArray readField(allocator);
+            readField.read(*this, in);
 
             return ::zserio::pmr::AnyHolder(::std::move(readField), allocator);
         }
@@ -662,13 +660,13 @@ WalkerUnion::ChoiceTag WalkerUnion::readChoiceTag(::zserio::pmr::PackingContextN
     switch (m_choiceTag)
     {
     case CHOICE_value:
-        return ::zserio::pmr::AnyHolder(contextNode.getChildren().at(1).getContext().read(::zserio::StdIntArrayTraits<uint32_t>(), in), allocator);
+        return ::zserio::pmr::AnyHolder(contextNode.getChildren().at(1).getContext().read<::zserio::StdIntArrayTraits<uint32_t>>(in), allocator);
     case CHOICE_text:
         return ::zserio::pmr::AnyHolder(static_cast<::zserio::pmr::string>(in.readString(allocator)), allocator);
     case CHOICE_nestedArray:
         {
-            ZserioArrayType_nestedArray readField(::zserio::ObjectArrayTraits<::test_object::polymorphic_allocator::WalkerNested, ZserioElementFactory_nestedArray>(), allocator);
-            readField.readPacked(in, ZserioElementFactory_nestedArray(*this));
+            ZserioArrayType_nestedArray readField(allocator);
+            readField.readPacked(*this, in);
 
             return ::zserio::pmr::AnyHolder(::std::move(readField), allocator);
         }

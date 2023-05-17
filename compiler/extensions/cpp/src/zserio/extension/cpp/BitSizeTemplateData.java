@@ -17,16 +17,18 @@ public class BitSizeTemplateData
         this.ownerIndirectValue = null;
         this.objectIndirectValue = null;
         this.rowIndirectValue = null;
+        this.needsOwner = false;
         this.isDynamicBitField = false;
     }
 
     public BitSizeTemplateData(String value, String ownerIndirectValue, String objectIndirectValue,
-            String rowIndirectValue)
+            String rowIndirectValue, boolean needsOwner)
     {
         this.value = value;
         this.ownerIndirectValue = ownerIndirectValue;
         this.objectIndirectValue = objectIndirectValue;
         this.rowIndirectValue = rowIndirectValue;
+        this.needsOwner = needsOwner;
         this.isDynamicBitField = true;
     }
 
@@ -50,6 +52,11 @@ public class BitSizeTemplateData
         return rowIndirectValue;
     }
 
+    public boolean getNeedsOwner()
+    {
+        return needsOwner;
+    }
+
     public boolean getIsDynamicBitField()
     {
         return isDynamicBitField;
@@ -66,26 +73,32 @@ public class BitSizeTemplateData
         }
         else if (typeInstantiation instanceof DynamicBitFieldInstantiation)
         {
+            final DynamicBitFieldInstantiation dynamicBitFieldInstantiation =
+                    (DynamicBitFieldInstantiation)typeInstantiation;
+
             final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(includeCollector);
             final String value = cppExpressionFormatter.formatGetter(
-                    ((DynamicBitFieldInstantiation)typeInstantiation).getLengthExpression());
+                    dynamicBitFieldInstantiation.getLengthExpression());
 
             final ExpressionFormatter cppOwnerIndirectExpressionFormatter =
-                    context.getIndirectExpressionFormatter(includeCollector, "m_ownerRef.get()");
+                    context.getIndirectExpressionFormatter(includeCollector, "owner");
             final String ownerIndirectValue = cppOwnerIndirectExpressionFormatter.formatGetter(
-                    ((DynamicBitFieldInstantiation)typeInstantiation).getLengthExpression());
+                    dynamicBitFieldInstantiation.getLengthExpression());
 
             final ExpressionFormatter cppObjectIndirectExpressionFormatter =
                     context.getIndirectExpressionFormatter(includeCollector, "m_object");
             final String objectIndirectValue = cppObjectIndirectExpressionFormatter.formatGetter(
-                    ((DynamicBitFieldInstantiation)typeInstantiation).getLengthExpression());
+                    dynamicBitFieldInstantiation.getLengthExpression());
 
             final ExpressionFormatter cppRowIndirectExpressionFormatter =
                     context.getIndirectExpressionFormatter(includeCollector, "row");
             final String rowIndirectValue = cppRowIndirectExpressionFormatter.formatGetter(
-                    ((DynamicBitFieldInstantiation)typeInstantiation).getLengthExpression());
+                    dynamicBitFieldInstantiation.getLengthExpression());
 
-            return new BitSizeTemplateData(value, ownerIndirectValue, objectIndirectValue, rowIndirectValue);
+            final boolean needsOwner = dynamicBitFieldInstantiation.getLengthExpression().requiresOwnerContext();
+
+            return new BitSizeTemplateData(value, ownerIndirectValue, objectIndirectValue, rowIndirectValue,
+                    needsOwner);
         }
         else
         {
@@ -97,5 +110,6 @@ public class BitSizeTemplateData
     private final String ownerIndirectValue;
     private final String objectIndirectValue;
     private final String rowIndirectValue;
+    private final boolean needsOwner;
     private final boolean isDynamicBitField;
 }

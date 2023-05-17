@@ -424,8 +424,7 @@ void ReflectableNested::createPackingContext(::zserio::pmr::PackingContextNode& 
 
 void ReflectableNested::initPackingContext(::zserio::pmr::PackingContextNode& contextNode) const
 {
-    contextNode.getChildren().at(0).getContext().init(
-            ::zserio::BitFieldArrayTraits<uint32_t>(static_cast<uint8_t>(UINT8_C(31))), m_value_);
+    contextNode.getChildren().at(0).getContext().init<::zserio::BitFieldArrayTraits<uint32_t, 31>>(m_value_);
 }
 
 size_t ReflectableNested::bitSizeOf(size_t bitPosition) const
@@ -441,8 +440,8 @@ size_t ReflectableNested::bitSizeOf(::zserio::pmr::PackingContextNode& contextNo
 {
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += contextNode.getChildren().at(0).getContext().bitSizeOf(
-            ::zserio::BitFieldArrayTraits<uint32_t>(static_cast<uint8_t>(UINT8_C(31))), m_value_);
+    endBitPosition += contextNode.getChildren().at(0).getContext().bitSizeOf<::zserio::BitFieldArrayTraits<uint32_t, 31>>(
+            m_value_);
 
     return endBitPosition - bitPosition;
 }
@@ -460,8 +459,8 @@ size_t ReflectableNested::initializeOffsets(::zserio::pmr::PackingContextNode& c
 {
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += contextNode.getChildren().at(0).getContext().bitSizeOf(
-            ::zserio::BitFieldArrayTraits<uint32_t>(static_cast<uint8_t>(UINT8_C(31))), m_value_);
+    endBitPosition += contextNode.getChildren().at(0).getContext().bitSizeOf<::zserio::BitFieldArrayTraits<uint32_t, 31>>(
+            m_value_);
 
     return endBitPosition;
 }
@@ -497,8 +496,8 @@ void ReflectableNested::write(::zserio::BitStreamWriter& out) const
 
 void ReflectableNested::write(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const
 {
-    contextNode.getChildren().at(0).getContext().write(
-            ::zserio::BitFieldArrayTraits<uint32_t>(static_cast<uint8_t>(UINT8_C(31))), out, m_value_);
+    contextNode.getChildren().at(0).getContext().write<::zserio::BitFieldArrayTraits<uint32_t, 31>>(
+            out, m_value_);
 }
 
 uint32_t ReflectableNested::readValue(::zserio::BitStreamReader& in)
@@ -508,7 +507,7 @@ uint32_t ReflectableNested::readValue(::zserio::BitStreamReader& in)
 
 uint32_t ReflectableNested::readValue(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamReader& in)
 {
-    return contextNode.getChildren().at(0).getContext().read(::zserio::BitFieldArrayTraits<uint32_t>(static_cast<uint8_t>(UINT8_C(31))), in);
+    return contextNode.getChildren().at(0).getContext().read<::zserio::BitFieldArrayTraits<uint32_t, 31>>(in);
 }
 
 } // namespace polymorphic_allocator

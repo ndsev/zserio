@@ -3,12 +3,13 @@
 
 #include <type_traits>
 
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 #include "zserio/RebindAlloc.h"
+#include "zserio/Traits.h"
 #include "zserio/Types.h"
 #include "zserio/UniquePtr.h"
 #include "zserio/Vector.h"
-#include "zserio/BitStreamReader.h"
-#include "zserio/BitStreamWriter.h"
 
 namespace zserio
 {
@@ -105,13 +106,14 @@ public:
     /**
      * Calls the initialization step for a single element.
      *
+     * \param owner Owner of the packed element.
      * \param element Current element.
      */
-    template <typename ARRAY_TRAITS>
-    void init(const ARRAY_TRAITS& arrayTraits, typename ARRAY_TRAITS::ElementType element)
+    template <typename ARRAY_TRAITS, typename OWNER_TYPE>
+    void init(const OWNER_TYPE& owner, typename ARRAY_TRAITS::ElementType element)
     {
         m_numElements++;
-        m_unpackedBitSize += bitSizeOfUnpacked(arrayTraits, element);
+        m_unpackedBitSize += bitSizeOfUnpacked<ARRAY_TRAITS>(owner, element);
 
         if (!m_initStarted)
         {
@@ -141,24 +143,24 @@ public:
     /**
      * Returns length of the packed element stored in the bit stream in bits.
      *
-     * \param arrayTraits Standard array traits.
+     * \param owner Owner of the packed element.
      * \param element Value of the current element.
      *
      * \return Length of the packed element stored in the bit stream in bits.
      */
-    template <typename ARRAY_TRAITS>
-    size_t bitSizeOf(const ARRAY_TRAITS& arrayTraits, typename ARRAY_TRAITS::ElementType element)
+    template <typename ARRAY_TRAITS, typename OWNER_TYPE>
+    size_t bitSizeOf(const OWNER_TYPE& owner, typename ARRAY_TRAITS::ElementType element)
     {
         if (!m_processingStarted)
         {
             m_processingStarted = true;
             finishInit();
 
-            return bitSizeOfDescriptor() + bitSizeOfUnpacked(arrayTraits, element);
+            return bitSizeOfDescriptor() + bitSizeOfUnpacked<ARRAY_TRAITS>(owner, element);
         }
         else if (!m_isPacked)
         {
-            return bitSizeOfUnpacked(arrayTraits, element);
+            return bitSizeOfUnpacked<ARRAY_TRAITS>(owner, element);
         }
         else
         {
@@ -169,24 +171,24 @@ public:
     /**
      * Reads a packed element from the bit stream.
      *
-     * \param arrayTraits Standard array traits.
+     * \param owner Owner of the packed element.
      * \param in Bit stream reader.
      *
      * \return Value of the packed element.
      */
-    template <typename ARRAY_TRAITS>
-    typename ARRAY_TRAITS::ElementType read(const ARRAY_TRAITS& arrayTraits, BitStreamReader& in)
+    template <typename ARRAY_TRAITS, typename OWNER_TYPE>
+    typename ARRAY_TRAITS::ElementType read(const OWNER_TYPE& owner, BitStreamReader& in)
     {
         if (!m_processingStarted)
         {
             m_processingStarted = true;
             readDescriptor(in);
 
-            return readUnpacked(arrayTraits, in);
+            return readUnpacked<ARRAY_TRAITS>(owner, in);
         }
         else if (!m_isPacked)
         {
-            return readUnpacked(arrayTraits, in);
+            return readUnpacked<ARRAY_TRAITS>(owner, in);
         }
         else
         {
@@ -206,13 +208,12 @@ public:
     /**
      * Writes the packed element to the bit stream.
      *
-     * \param arrayTraits Standard array traits.
+     * \param owner Owner of the packed element.
      * \param out Bit stream writer.
      * \param element Value of the current element.
      */
-    template <typename ARRAY_TRAITS>
-    void write(const ARRAY_TRAITS& arrayTraits, BitStreamWriter& out,
-            typename ARRAY_TRAITS::ElementType element)
+    template <typename ARRAY_TRAITS, typename OWNER_TYPE>
+    void write(const OWNER_TYPE& owner, BitStreamWriter& out, typename ARRAY_TRAITS::ElementType element)
     {
         if (!m_processingStarted)
         {
@@ -220,11 +221,11 @@ public:
             finishInit();
             writeDescriptor(out);
 
-            writeUnpacked(arrayTraits, out, element);
+            writeUnpacked<ARRAY_TRAITS>(owner, out, element);
         }
         else if (!m_isPacked)
         {
-            writeUnpacked(arrayTraits, out, element);
+            writeUnpacked<ARRAY_TRAITS>(owner, out, element);
         }
         else
         {
@@ -238,7 +239,61 @@ public:
         }
     }
 
+    // overloads with dummy owner
+
+    /**
+     * Calls the initialization step for a single element.
+     *
+     * \param element Current element.
+     */
+    template <typename ARRAY_TRAITS>
+    void init(typename ARRAY_TRAITS::ElementType element)
+    {
+        init<ARRAY_TRAITS>(DummyOwner(), element);
+    }
+
+    /**
+     * Returns length of the packed element stored in the bit stream in bits.
+     *
+     * \param element Value of the current element.
+     *
+     * \return Length of the packed element stored in the bit stream in bits.
+     */
+    template <typename ARRAY_TRAITS>
+    size_t bitSizeOf(typename ARRAY_TRAITS::ElementType element)
+    {
+        return bitSizeOf<ARRAY_TRAITS>(DummyOwner(), element);
+    }
+
+    /**
+     * Reads a packed element from the bit stream.
+     *
+     * \param in Bit stream reader.
+     *
+     * \return Value of the packed element.
+     */
+    template <typename ARRAY_TRAITS>
+    typename ARRAY_TRAITS::ElementType read(BitStreamReader& in)
+    {
+        return read<ARRAY_TRAITS>(DummyOwner(), in);
+    }
+
+    /**
+     * Writes the packed element to the bit stream.
+     *
+     * \param out Bit stream writer.
+     * \param element Value of the current element.
+     */
+    template <typename ARRAY_TRAITS>
+    void write(BitStreamWriter& out, typename ARRAY_TRAITS::ElementType element)
+    {
+        write<ARRAY_TRAITS>(DummyOwner(), out, element);
+    }
+
 private:
+    struct DummyOwner
+    {};
+
     void finishInit()
     {
         if (m_isPacked)
@@ -260,10 +315,20 @@ private:
             return 1;
     }
 
-    template <typename ARRAY_TRAITS>
-    static size_t bitSizeOfUnpacked(const ARRAY_TRAITS& arrayTraits, typename ARRAY_TRAITS::ElementType element)
+    template <typename ARRAY_TRAITS,
+            typename std::enable_if<has_owner_type<ARRAY_TRAITS>::value, int>::type = 0>
+    static size_t bitSizeOfUnpacked(const typename ARRAY_TRAITS::OwnerType& owner,
+            typename ARRAY_TRAITS::ElementType element)
     {
-        return arrayTraits.bitSizeOf(element);
+        return ARRAY_TRAITS::bitSizeOf(owner, element);
+    }
+
+    template <typename ARRAY_TRAITS,
+            typename std::enable_if<!has_owner_type<ARRAY_TRAITS>::value, int>::type = 0>
+    static size_t bitSizeOfUnpacked(const DummyOwner&,
+            typename ARRAY_TRAITS::ElementType element)
+    {
+        return ARRAY_TRAITS::bitSizeOf(element);
     }
 
     void readDescriptor(BitStreamReader& in)
@@ -273,10 +338,21 @@ private:
             m_maxBitNumber = static_cast<uint8_t>(in.readBits(MAX_BIT_NUMBER_BITS));
     }
 
-    template <typename ARRAY_TRAITS>
-    typename ARRAY_TRAITS::ElementType readUnpacked(const ARRAY_TRAITS& arrayTraits, BitStreamReader& in)
+    template <typename ARRAY_TRAITS,
+            typename std::enable_if<has_owner_type<ARRAY_TRAITS>::value, int>::type = 0>
+    typename ARRAY_TRAITS::ElementType readUnpacked(const typename ARRAY_TRAITS::OwnerType& owner,
+            BitStreamReader& in)
     {
-        const auto element = arrayTraits.read(in);
+        const auto element = ARRAY_TRAITS::read(owner, in);
+        m_previousElement = static_cast<uint64_t>(element);
+        return element;
+    }
+
+    template <typename ARRAY_TRAITS,
+            typename std::enable_if<!has_owner_type<ARRAY_TRAITS>::value, int>::type = 0>
+    typename ARRAY_TRAITS::ElementType readUnpacked(const DummyOwner&, BitStreamReader& in)
+    {
+        const auto element = ARRAY_TRAITS::read(in);
         m_previousElement = static_cast<uint64_t>(element);
         return element;
     }
@@ -288,12 +364,21 @@ private:
             out.writeBits(m_maxBitNumber, MAX_BIT_NUMBER_BITS);
     }
 
-    template <typename ARRAY_TRAITS>
-    void writeUnpacked(const ARRAY_TRAITS& arrayTraits, BitStreamWriter& out,
-            typename ARRAY_TRAITS::ElementType element)
+    template <typename ARRAY_TRAITS,
+            typename std::enable_if<has_owner_type<ARRAY_TRAITS>::value, int>::type = 0>
+    void writeUnpacked(const typename ARRAY_TRAITS::OwnerType& owner,
+            BitStreamWriter& out, typename ARRAY_TRAITS::ElementType element)
     {
         m_previousElement = static_cast<uint64_t>(element);
-        arrayTraits.write(out, element);
+        ARRAY_TRAITS::write(owner, out, element);
+    }
+
+    template <typename ARRAY_TRAITS,
+            typename std::enable_if<!has_owner_type<ARRAY_TRAITS>::value, int>::type = 0>
+    void writeUnpacked(const DummyOwner&, BitStreamWriter& out, typename ARRAY_TRAITS::ElementType element)
+    {
+        m_previousElement = static_cast<uint64_t>(element);
+        ARRAY_TRAITS::write(out, element);
     }
 
     static const uint8_t MAX_BIT_NUMBER_BITS = 6;
