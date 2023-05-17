@@ -100,6 +100,7 @@ jobs:
       shell: bash
 
     - name: Run Zserio tests
+      # -DZSERIO_ENABLE_WERROR=1 fails for mingw because of false positive warning
       run: |
         ant -version
         scripts/test.sh all-windows64-mingw cpp-windows64-msvc
@@ -111,7 +112,7 @@ jobs:
       run: scripts/test.sh cpp-windows64-mingw # cpp-windows64-msvc - allocation tests does not work debug
       shell: bash
       env:
-        CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Debug"
+        CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1 -DCMAKE_BUILD_TYPE=Debug"
 
     - name: Compare all blobs created by Zserio tests
       run: |

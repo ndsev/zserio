@@ -108,6 +108,7 @@ jobs:
 
     - name: Run Zserio tests
       # clang-tidy cannot be run because of time limit
+      # -DZSERIO_ENABLE_WERROR=1 fails for gcc because of false positive warning
       run: |
         unset JAVA_TOOL_OPTIONS # workaround https://github.com/actions/virtual-environments/issues/1437
         scripts/test.sh all-linux64-gcc cpp-linux32-gcc cpp-linux64-clang cpp-linux32-clang
@@ -119,7 +120,7 @@ jobs:
       # sanitizers do not work on cpp-linux32-clang when cross-compiling
       run: scripts/test.sh cpp-linux32-gcc cpp-linux64-gcc cpp-linux64-clang
       env:
-        CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Debug"
+        CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1  -DCMAKE_BUILD_TYPE=Debug"
         SANITIZERS_ENABLED: 1
 
     - name: Compare all blobs created by Zserio tests
