@@ -10,7 +10,7 @@ namespace zserio
  * Base class for allocator-holding classes, so that the empty base class
  * optimization may happen.
  */
-template<typename ALLOC>
+template <typename ALLOC>
 class AllocatorHolder
 {
 public:

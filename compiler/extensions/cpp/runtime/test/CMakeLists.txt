@@ -88,6 +88,7 @@ set(TEST_OBJECT_SRCS
 )
 
 set(ZSERIO_CPP_RUNTIME_TEST_SRCS
+    zserio/AllocatorHolderTest.cpp
     zserio/AllocatorPropagatingCopyTest.cpp
     zserio/AnyHolderTest.cpp
     zserio/ArrayTest.cpp
