@@ -35,7 +35,6 @@ namespace detail
     {
     public:
         virtual ~IHolder() = default;
-        virtual bool isSet() const = 0;
         virtual IHolder* clone(const ALLOC& allocator) const = 0;
         virtual IHolder* clone(void* storage) const = 0;
         virtual IHolder* move(const ALLOC& allocator) = 0;
@@ -49,11 +48,6 @@ namespace detail
     class HolderBase : public IHolder<ALLOC>
     {
     public:
-        void reset()
-        {
-            m_typedHolder.reset();
-        }
-
         template <typename U = T>
         void set(U&& value)
         {
@@ -68,11 +62,6 @@ namespace detail
         const T& get() const
         {
             return m_typedHolder.value();
-        }
-
-        bool isSet() const override
-        {
-            return m_typedHolder.hasValue();
         }
 
         bool isType(detail::TypeIdHolder::type_id typeId) const override
@@ -105,7 +94,7 @@ namespace detail
     public:
         using this_type = HeapHolder<T, ALLOC>;
 
-        explicit HeapHolder(ConstructTag) {}
+        explicit HeapHolder(ConstructTag) noexcept {}
 
         static this_type* create(const ALLOC& allocator)
         {
@@ -114,16 +103,9 @@ namespace detail
 
             AllocType typedAlloc = allocator;
             typename AllocTraits::pointer ptr = AllocTraits::allocate(typedAlloc, 1);
-            try
-            {
-                AllocTraits::construct(typedAlloc, std::addressof(*ptr), ConstructTag{});
-                return ptr;
-            }
-            catch (...)
-            {
-                AllocTraits::deallocate(typedAlloc, std::addressof(*ptr), 1);
-                throw;
-            }
+            // this never throws because HeapHolder constructor never throws
+            AllocTraits::construct(typedAlloc, std::addressof(*ptr), ConstructTag{});
+            return ptr;
         }
 
         IHolder<ALLOC>* clone(const ALLOC& allocator) const override
@@ -133,7 +115,6 @@ namespace detail
             return holder;
         }
 
-        // due to gcovr bug, exclusion markers must be defined in this way
         IHolder<ALLOC>* clone(void*) const override
         {
             throw CppRuntimeException("AnyHolder: Unexpected clone call.");
@@ -146,7 +127,6 @@ namespace detail
             return holder;
         }
 
-        // due to gcovr bug, exclusion markers must be defined in this way
         IHolder<ALLOC>* move(void*) override
         {
             throw CppRuntimeException("AnyHolder: Unexpected clone call.");
@@ -175,7 +155,6 @@ namespace detail
             return new (storage) this_type();
         }
 
-        // due to gcovr bug, exclusion markers must be defined in this way
         IHolder<ALLOC>* clone(const ALLOC&) const override
         {
             throw CppRuntimeException("AnyHolder: Unexpected clone call.");
@@ -188,7 +167,6 @@ namespace detail
             return holder;
         }
 
-        // due to gcovr bug, exclusion markers must be defined in this way
         IHolder<ALLOC>* move(const ALLOC&) override
         {
             throw CppRuntimeException("AnyHolder: Unexpected clone call.");
@@ -280,7 +258,6 @@ public:
     AnyHolder(const AnyHolder& other) :
         AllocatorHolder<ALLOC>(AllocTraits::select_on_container_copy_construction(other.get_allocator_ref()))
     {
-        m_untypedHolder.heap = nullptr;
         copy(other);
     }
 
@@ -292,7 +269,6 @@ public:
      */
     AnyHolder(const AnyHolder& other, const ALLOC& allocator) : AllocatorHolder<ALLOC>(allocator)
     {
-        m_untypedHolder.heap = nullptr;
         copy(other);
     }
 
@@ -324,7 +300,6 @@ public:
      */
     AnyHolder(AnyHolder&& other) noexcept : AllocatorHolder<ALLOC>(std::move(other.get_allocator_ref()))
     {
-        m_untypedHolder.heap = nullptr;
         move(std::move(other));
     }
 
@@ -336,7 +311,6 @@ public:
      */
     AnyHolder(AnyHolder&& other, const ALLOC& allocator) : AllocatorHolder<ALLOC>(allocator)
     {
-        m_untypedHolder.heap = nullptr;
         move(std::move(other));
     }
 
@@ -441,7 +415,7 @@ public:
      */
     bool hasValue() const
     {
-        return hasHolder() && getUntypedHolder()->isSet();
+        return hasHolder();
     }
 
 private:
@@ -455,6 +429,10 @@ private:
         else if (other.m_untypedHolder.heap != nullptr)
         {
             m_untypedHolder.heap = other.getUntypedHolder()->clone(get_allocator_ref());
+        }
+        else
+        {
+            m_untypedHolder.heap = nullptr;
         }
     }
 
@@ -480,6 +458,10 @@ private:
                 m_untypedHolder.heap = other.getUntypedHolder()->move(get_allocator_ref());
                 other.clearHolder();
             }
+        }
+        else
+        {
+            m_untypedHolder.heap = nullptr;
         }
     }
 

@@ -27,7 +27,7 @@ cppcoreguidelines-pro-type-union-access:src/zserio/AnyHolder.h
 
 # This is necessary to filter out because all of the following can easily happen if the template parameter
 # is a raw pointer (e.g. 'const char*').
-cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/AnyHolder.h:60
+cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/AnyHolder.h:54
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/CppRuntimeException.h:196
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/ZserioTreeCreator.h:367
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:src/zserio/ZserioTreeCreator.h:369
@@ -139,7 +139,6 @@ modernize-use-equals-default:src/zserio/Span.h:79
 readability-braces-around-statements:
 
 # Intentional tests.
-bugprone-use-after-move:test/zserio/AnyHolderTest.cpp:148
 bugprone-use-after-move:test/zserio/HeapOptionalHolderTest.cpp:169
 bugprone-use-after-move:test/zserio/HeapOptionalHolderTest.cpp:186
 bugprone-use-after-move:test/zserio/HeapOptionalHolderTest.cpp:248
