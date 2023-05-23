@@ -32,6 +32,10 @@ set(TEST_OBJECT_SRCS
     test_object/polymorphic_allocator/CreatorNested.h
     test_object/polymorphic_allocator/CreatorObject.cpp
     test_object/polymorphic_allocator/CreatorObject.h
+    test_object/polymorphic_allocator/DebugStringObject.cpp
+    test_object/polymorphic_allocator/DebugStringObject.h
+    test_object/polymorphic_allocator/DebugStringParamObject.cpp
+    test_object/polymorphic_allocator/DebugStringParamObject.h
     test_object/polymorphic_allocator/ReflectableBitmask.cpp
     test_object/polymorphic_allocator/ReflectableBitmask.h
     test_object/polymorphic_allocator/ReflectableEnum.cpp
@@ -63,6 +67,10 @@ set(TEST_OBJECT_SRCS
     test_object/std_allocator/CreatorNested.h
     test_object/std_allocator/CreatorObject.cpp
     test_object/std_allocator/CreatorObject.h
+    test_object/std_allocator/DebugStringObject.cpp
+    test_object/std_allocator/DebugStringObject.h
+    test_object/std_allocator/DebugStringParamObject.cpp
+    test_object/std_allocator/DebugStringParamObject.h
     test_object/std_allocator/ReflectableBitmask.cpp
     test_object/std_allocator/ReflectableBitmask.h
     test_object/std_allocator/ReflectableEnum.cpp

@@ -117,3 +117,13 @@ struct SerializeObject
     int8 param;
     SerializeNested(param) nested;
 };
+
+struct DebugStringObject
+{
+    string text = "test";
+};
+
+struct DebugStringParamObject(int32 param)
+{
+    string text = "test";
+};

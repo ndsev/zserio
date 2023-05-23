@@ -157,11 +157,6 @@ cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/StringViewTest.cpp:2
 cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/StringViewTest.cpp:82
 cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/StringViewTest.cpp:93
 
-# Intentional tests (generated zserio parameterized types).
-cppcoreguidelines-pro-type-member-init:test/zserio/DebugStringUtilTest.cpp:187
-cppcoreguidelines-pro-type-member-init:test/zserio/DebugStringUtilTest.cpp:192
-cppcoreguidelines-pro-type-member-init:test/zserio/DebugStringUtilTest.cpp:203
-
 # Intentional tests.
 cppcoreguidelines-pro-type-reinterpret-cast:test/zserio/SqliteConnectionTest.cpp:319
 
