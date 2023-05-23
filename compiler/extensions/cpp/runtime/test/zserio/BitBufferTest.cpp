@@ -1,9 +1,13 @@
 #include <utility>
+#include <vector>
+#include <array>
+
+#include "gtest/gtest.h"
 
 #include "zserio/CppRuntimeException.h"
 #include "zserio/BitBuffer.h"
 
-#include "gtest/gtest.h"
+#include "TrackingAllocator.h"
 
 namespace zserio
 {
@@ -11,6 +15,14 @@ namespace zserio
 TEST(BitBufferTest, emptyConstructor)
 {
     const BitBuffer bitBuffer;
+    ASSERT_EQ(0, bitBuffer.getBitSize());
+    ASSERT_EQ(0, bitBuffer.getByteSize());
+}
+
+TEST(BitBufferTest, allocatorConstructor)
+{
+    const std::allocator<uint8_t> allocator;
+    const BitBuffer bitBuffer(allocator);
     ASSERT_EQ(0, bitBuffer.getBitSize());
     ASSERT_EQ(0, bitBuffer.getByteSize());
 }
@@ -161,13 +173,17 @@ TEST(BitBufferTest, copyConstructor)
     }
 }
 
-TEST(BitBufferTest, assignmentOperator)
+TEST(BitBufferTest, copyConstructorWithAllocator)
 {
+    const TrackingAllocator<uint8_t> allocator;
     const size_t bitSize = 11;
-    const std::vector<uint8_t> buffer = {0xAB, 0xE0};
-    const BitBuffer bitBuffer(buffer, bitSize);
+    const std::array<uint8_t, 2> data = {0xAB, 0xE0};
+    Span<const uint8_t> buffer(data);
+    const BasicBitBuffer<TrackingAllocator<uint8_t>> bitBuffer(buffer, bitSize, allocator);
+    const size_t numAllocations = allocator.numAllocs();
 
-    const BitBuffer copiedBitBuffer = bitBuffer;
+    const TrackingAllocator<uint8_t> newAllocator;
+    const BasicBitBuffer<TrackingAllocator<uint8_t>> copiedBitBuffer(bitBuffer, newAllocator);
     ASSERT_EQ(bitBuffer.getBitSize(), copiedBitBuffer.getBitSize());
     ASSERT_EQ(bitBuffer.getByteSize(), copiedBitBuffer.getByteSize());
     const Span<const uint8_t> copiedBuffer = copiedBitBuffer.getData();
@@ -177,6 +193,34 @@ TEST(BitBufferTest, assignmentOperator)
         ASSERT_EQ(element, copiedBuffer[index]);
         ++index;
     }
+    ASSERT_EQ(numAllocations, allocator.numAllocs());
+    ASSERT_NE(0, newAllocator.numAllocs());
+}
+
+TEST(BitBufferTest, assignmentOperator)
+{
+    const size_t bitSize = 11;
+    const std::vector<uint8_t> buffer = {0xAB, 0xE0};
+    const BitBuffer bitBuffer(buffer, bitSize);
+
+    BitBuffer copiedBitBuffer;
+    copiedBitBuffer = bitBuffer;
+    ASSERT_EQ(bitBuffer.getBitSize(), copiedBitBuffer.getBitSize());
+    ASSERT_EQ(bitBuffer.getByteSize(), copiedBitBuffer.getByteSize());
+    const Span<const uint8_t> copiedBuffer = copiedBitBuffer.getData();
+    size_t index = 0;
+    for (uint8_t element : buffer)
+    {
+        ASSERT_EQ(element, copiedBuffer[index]);
+        ++index;
+    }
+
+    BitBuffer anotherBitBuffer;
+    const void* origDataAddress = &copiedBitBuffer.getData()[0];
+    anotherBitBuffer = std::move(copiedBitBuffer);
+    ASSERT_EQ(bitBuffer.getBitSize(), anotherBitBuffer.getBitSize());
+    ASSERT_EQ(bitBuffer.getByteSize(), anotherBitBuffer.getByteSize());
+    ASSERT_EQ(origDataAddress, &anotherBitBuffer.getData()[0]);
 }
 
 TEST(BitBufferTest, moveConstructor)
@@ -185,12 +229,30 @@ TEST(BitBufferTest, moveConstructor)
     const std::vector<uint8_t> buffer = {0xAB, 0xE0};
     const size_t byteSize = buffer.size();
     BitBuffer bitBuffer(buffer, bitSize);
-    const uint8_t* bufferStart = bitBuffer.getBuffer();
+    const uint8_t* bufferStart = &bitBuffer.getData()[0];
 
     const BitBuffer movedBitBuffer(std::move(bitBuffer));
     ASSERT_EQ(bitSize, movedBitBuffer.getBitSize());
     ASSERT_EQ(byteSize, movedBitBuffer.getByteSize());
     ASSERT_EQ(bufferStart, movedBitBuffer.getBuffer());
+}
+
+TEST(BitBufferTest, moveConstructorWithAllocator)
+{
+    const TrackingAllocator<uint8_t> allocator;
+    const size_t bitSize = 11;
+    const std::array<uint8_t, 2> data = {0xAB, 0xE0};
+    Span<const uint8_t> buffer(data);
+    const size_t byteSize = buffer.size();
+    BasicBitBuffer<TrackingAllocator<uint8_t>> bitBuffer(buffer, bitSize, allocator);
+    const size_t numAllocations = allocator.numAllocs();
+
+    const TrackingAllocator<uint8_t> newAllocator;
+    const BasicBitBuffer<TrackingAllocator<uint8_t>> movedBitBuffer(std::move(bitBuffer), newAllocator);
+    ASSERT_EQ(bitSize, movedBitBuffer.getBitSize());
+    ASSERT_EQ(byteSize, movedBitBuffer.getByteSize());
+    ASSERT_EQ(numAllocations, allocator.numAllocs());
+    ASSERT_NE(0, newAllocator.numAllocs());
 }
 
 TEST(BitBufferTest, moveAssignmentOperator)

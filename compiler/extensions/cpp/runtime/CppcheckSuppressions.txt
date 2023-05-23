@@ -12,6 +12,8 @@ knownConditionTrueFalse:*/test/zserio/AnyHolderTest.cpp:253
 knownConditionTrueFalse:*/test/zserio/AnyHolderTest.cpp:264
 knownConditionTrueFalse:*/test/zserio/AnyHolderTest.cpp:279
 knownConditionTrueFalse:*/test/zserio/AnyHolderTest.cpp:291
+knownConditionTrueFalse:*/test/zserio/BitBufferTest.cpp:196
+knownConditionTrueFalse:*/test/zserio/BitBufferTest.cpp:254
 mismatchingContainers:*/test/zserio/AnyHolderTest.cpp:100
 noExplicitConstructor:*/src/zserio/OptionalHolder.h:204
 noExplicitConstructor:*/src/zserio/OptionalHolder.h:214

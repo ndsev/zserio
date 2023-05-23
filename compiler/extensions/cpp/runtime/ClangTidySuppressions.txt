@@ -148,8 +148,8 @@ bugprone-use-after-move:test/zserio/HeapOptionalHolderTest.cpp:257
 cppcoreguidelines-avoid-c-arrays:test/zserio/SpanTest.cpp:46
 
 # Intentional tests.
-cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/BitBufferTest.cpp:266
-cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/BitBufferTest.cpp:280
+cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/BitBufferTest.cpp:328
+cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/BitBufferTest.cpp:342
 cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/SpanTest.cpp:35
 cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/SpanTest.cpp:39
 cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/StringViewTest.cpp:157
