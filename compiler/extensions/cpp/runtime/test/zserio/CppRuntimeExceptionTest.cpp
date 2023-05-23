@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <array>
+#include <limits>
 
 #include "gtest/gtest.h"
 
@@ -63,6 +64,14 @@ TEST(CppRuntimeExceptionTest, appendFloat)
     const float value = 123.456F;
     CppRuntimeException exception = CppRuntimeException() << value;
     ASSERT_EQ(std::string("123.456"), exception.what());
+
+    const float valueWithoutFloatingPart = 123.0F;
+    exception = CppRuntimeException() << valueWithoutFloatingPart;
+    ASSERT_EQ(std::string("123.0"), exception.what());
+
+    const float valueInfinity = std::numeric_limits<float>::infinity();
+    exception = CppRuntimeException() << valueInfinity;
+    ASSERT_EQ(std::string("+Inf"), exception.what());
 }
 
 TEST(CppRuntimeExceptionTest, appendDouble)
