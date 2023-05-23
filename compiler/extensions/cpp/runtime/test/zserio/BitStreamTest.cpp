@@ -154,7 +154,7 @@ protected:
         ASSERT_EQ(UINT64_C(0xCAFEC0DEDEADFACE), reader.readBits64(64));
     }
 
-    void testSetBitPosition(BitStreamWriter& writer, bool isInternal)
+    void testSetBitPosition(BitStreamWriter& writer)
     {
         ASSERT_EQ(0, writer.getBitPosition());
         writer.writeBits(1, 1);
@@ -163,18 +163,15 @@ protected:
         ASSERT_EQ(4, writer.getBitPosition());
         writer.writeBits(5, 5);
         ASSERT_EQ(9, writer.getBitPosition());
-        if (!isInternal)
+        if (writer.hasWriteBuffer())
         {
-            if (writer.hasWriteBuffer())
-            {
-                ASSERT_THROW(writer.setBitPosition(m_byteBuffer.size() * 8 + 1), CppRuntimeException);
-            }
-            else
-            {
-                // dummy buffer
-                writer.setBitPosition(m_byteBuffer.size() * 8 + 1);
-                ASSERT_EQ(m_byteBuffer.size() * 8 + 1, writer.getBitPosition());
-            }
+            ASSERT_THROW(writer.setBitPosition(m_byteBuffer.size() * 8 + 1), CppRuntimeException);
+        }
+        else
+        {
+            // dummy buffer
+            writer.setBitPosition(m_byteBuffer.size() * 8 + 1);
+            ASSERT_EQ(m_byteBuffer.size() * 8 + 1, writer.getBitPosition());
         }
         writer.setBitPosition(4);
         ASSERT_EQ(4, writer.getBitPosition());
@@ -280,11 +277,25 @@ TEST_F(BitStreamTest, alignedBytes)
 
 TEST_F(BitStreamTest, readVarInt64)
 {
-    const std::array<int64_t, 19> values =
+    const std::array<int64_t, 33> values =
     {
-        0,
-        -262144,
-        262144,
+        INT64_C(0),
+        INT64_C(-32),
+        INT64_C(32),
+        INT64_C(-4096),
+        INT64_C(4096),
+        INT64_C(-524288),
+        INT64_C(524288),
+        INT64_C(-67108864),
+        INT64_C(67108864),
+        INT64_C(-8589934592),
+        INT64_C(8589934592),
+        INT64_C(-1099511627776),
+        INT64_C(1099511627776),
+        INT64_C(-140737488355328),
+        INT64_C(140737488355328),
+        INT64_C(-18014398509481984),
+        INT64_C(18014398509481984),
 
         ( INT64_C(1) << (0 ) ),
         ( INT64_C(1) << (6 ) ) - 1,
@@ -319,11 +330,17 @@ TEST_F(BitStreamTest, readVarInt64)
 
 TEST_F(BitStreamTest, readVarInt32)
 {
-    const std::array<int32_t, 11> values =
+    const std::array<int32_t, 17> values =
     {
-        0,
-        -65536,
-        65536,
+        static_cast<int32_t>(0),
+        static_cast<int32_t>(-32),
+        static_cast<int32_t>(32),
+        static_cast<int32_t>(-4096),
+        static_cast<int32_t>(4096),
+        static_cast<int32_t>(-524288),
+        static_cast<int32_t>(524288),
+        static_cast<int32_t>(-67108864),
+        static_cast<int32_t>(67108864),
 
         static_cast<int32_t>(1U << (0U)),
         static_cast<int32_t>(1U << (6U)) - 1,
@@ -346,11 +363,13 @@ TEST_F(BitStreamTest, readVarInt32)
 
 TEST_F(BitStreamTest, readVarInt16)
 {
-    const std::array<int16_t, 7> values =
+    const std::array<int16_t, 9> values =
     {
-        0,
-        -8192,
-        8192,
+        static_cast<int16_t>(0),
+        static_cast<int16_t>(-32),
+        static_cast<int16_t>(32),
+        static_cast<int16_t>(-4096),
+        static_cast<int16_t>(4096),
 
         static_cast<int16_t>(1U << (0U)),
         static_cast<int16_t>(1U << (6U)) - 1,
@@ -676,8 +695,8 @@ TEST_F(BitStreamTest, readBytes)
 
 TEST_F(BitStreamTest, setBitPosition)
 {
-    testSetBitPosition(m_externalWriter, false);
-    testSetBitPosition(m_dummyWriter, false);
+    testSetBitPosition(m_externalWriter);
+    testSetBitPosition(m_dummyWriter);
 }
 
 TEST_F(BitStreamTest, alignTo)
