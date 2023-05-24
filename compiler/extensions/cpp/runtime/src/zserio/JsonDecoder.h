@@ -140,8 +140,8 @@ private:
     static char decodeHex(char ch);
     size_t checkNumber(StringView input, bool& isDouble, bool& isSigned);
     DecoderResult decodeNumber(StringView input);
-    DecoderResult decodeSigned(StringView input, size_t numChars);
-    DecoderResult decodeUnsigned(StringView input, size_t numChars);
+    DecoderResult decodeSigned(StringView input);
+    DecoderResult decodeUnsigned(StringView input);
     DecoderResult decodeDouble(StringView input, size_t numChars);
 };
 
@@ -334,7 +334,11 @@ size_t BasicJsonDecoder<ALLOC>::checkNumber(StringView input, bool& isDouble, bo
         break; // end of a number
     }
 
-    return static_cast<size_t>(inputIt - input.begin());
+    const size_t numberLen = static_cast<size_t>(inputIt - input.begin());
+    if (isSigned && numberLen == 1)
+        return 0; // single minus is not a number
+
+    return numberLen;
 }
 
 template <typename ALLOC>
@@ -346,42 +350,38 @@ typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeN
     if (numChars == 0)
         return DecoderResult(1, get_allocator());
 
+    // for decodeSigned and decodeUnsigned, we know that all numChars will be processed because checkNumber
+    // already checked this
     if (isDouble)
         return decodeDouble(input, numChars);
     else if (isSigned)
-        return decodeSigned(input, numChars);
+        return decodeSigned(input);
     else
-        return decodeUnsigned(input, numChars);
+        return decodeUnsigned(input);
 }
 
 template <typename ALLOC>
-typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeSigned(
-        StringView input, size_t numChars)
+typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeSigned(StringView input)
 {
     char* pEnd = nullptr;
     errno = 0; // no library function sets its value back to zero once changed
     const int64_t value = std::strtoll(input.begin(), &pEnd, 10);
-    if (static_cast<size_t>(pEnd - input.begin()) != numChars)
-        return DecoderResult(numChars, get_allocator());
 
     const bool overflow = (errno == ERANGE);
 
-    return DecoderResult(numChars, value, overflow, get_allocator());
+    return DecoderResult(static_cast<size_t>(pEnd - input.begin()), value, overflow, get_allocator());
 }
 
 template <typename ALLOC>
-typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeUnsigned(
-        StringView input, size_t numChars)
+typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeUnsigned(StringView input)
 {
     char* pEnd = nullptr;
     errno = 0; // no library function sets its value back to zero once changed
     const uint64_t value = std::strtoull(input.begin(), &pEnd, 10);
-    if (static_cast<size_t>(pEnd - input.begin()) != numChars)
-        return DecoderResult(numChars, get_allocator());
 
     const bool overflow = (errno == ERANGE);
 
-    return DecoderResult(numChars, value, overflow, get_allocator());
+    return DecoderResult(static_cast<size_t>(pEnd - input.begin()), value, overflow, get_allocator());
 }
 
 template <typename ALLOC>

@@ -136,6 +136,7 @@ TEST_F(JsonDecoderTest, decodeSignedIntegral)
 
     checkDecoderFailure("--10", 1);
     checkDecoderFailure("-", 1);
+    checkDecoderFailure("-A", 1);
 }
 
 TEST_F(JsonDecoderTest, decodeUnsignedIntegral)
@@ -145,7 +146,9 @@ TEST_F(JsonDecoderTest, decodeUnsignedIntegral)
     checkDecoderSuccess("9223372036854775807", 19, static_cast<uint64_t>(INT64_MAX));
     checkDecoderSuccess("18446744073709551615", 20, UINT64_MAX);
 
+    checkDecoderFailure("+", 1);
     checkDecoderFailure("+10", 1);
+    checkDecoderFailure("184467440737095516156", 21);
 }
 
 TEST_F(JsonDecoderTest, decodeDouble)
@@ -199,7 +202,15 @@ TEST_F(JsonDecoderTest, decodeString)
     checkDecoderFailure("\"\\u001x\"", 7);
     checkDecoderFailure("\"unterminated", 13);
     checkDecoderFailure("\"wrong escape \\", 15);
-    checkDecoderFailure("\"wrong unicode escape \\u0", 25);
+    checkDecoderFailure("\"wrong unicode escape - 0 char \\u", 33);
+    checkDecoderFailure("\"wrong unicode escape - 1 char \\u0", 34);
+    checkDecoderFailure("\"wrong unicode escape - 1 char \\u1", 34);
+    checkDecoderFailure("\"wrong unicode escape - 2 chars \\u00", 36);
+    checkDecoderFailure("\"wrong unicode escape - 2 chars \\u01", 36);
+    checkDecoderFailure("\"wrong unicode escape - 3 chars \\u00-", 37);
+    checkDecoderFailure("\"wrong unicode escape - 3 chars \\u00A", 37);
+    checkDecoderFailure("\"wrong unicode escape - 3 chars \\u00G", 37);
+    checkDecoderFailure("\"wrong unicode escape - 4 chars \\u000G", 38);
     checkDecoderFailure("\"unknown escape \\x", 18);
 }
 
