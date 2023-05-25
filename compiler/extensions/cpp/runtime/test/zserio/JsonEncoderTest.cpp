@@ -111,6 +111,11 @@ TEST(JsonEncoderTest, encodeFloatingPoint)
             << "Value '" << os.str() << "' does not match to neither '1e+20' nor '1e+020'";
 
     os.str("");
+    JsonEncoder::encodeFloatingPoint(os, -1e+16);
+    ASSERT_TRUE("-1e+16" == os.str() || "-1e+016" == os.str())
+            << "Value '" << os.str() << "' does not match to neither '-1e+16' nor '-1e+016'";
+
+    os.str("");
     JsonEncoder::encodeFloatingPoint(os, static_cast<double>(NAN));
     ASSERT_EQ("NaN", os.str());
     os.str("");
