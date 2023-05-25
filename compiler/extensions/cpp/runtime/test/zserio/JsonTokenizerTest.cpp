@@ -40,13 +40,13 @@ TEST(JsonTokenizerTest, tokens)
 
 TEST(JsonTokenizerTest, lineColumn)
 {
-    std::stringstream str("\n{\r   \"key\"  \n :\n10}\r");
+    std::stringstream str("\n\t{\r   \"key\"  \r\n\t :\n10}\r");
     JsonTokenizer tokenizer(str, std::allocator<uint8_t>());
 
     ASSERT_EQ(JsonToken::BEGIN_OBJECT, tokenizer.next());
     ASSERT_EQ('{', tokenizer.getValue().get<char>());
     ASSERT_EQ(2, tokenizer.getLine());
-    ASSERT_EQ(1, tokenizer.getColumn());
+    ASSERT_EQ(2, tokenizer.getColumn());
 
     ASSERT_EQ(JsonToken::VALUE, tokenizer.next());
     ASSERT_EQ("key", tokenizer.getValue().get<string<>>());
@@ -56,7 +56,7 @@ TEST(JsonTokenizerTest, lineColumn)
     ASSERT_EQ(JsonToken::KEY_SEPARATOR, tokenizer.next());
     ASSERT_EQ(':', tokenizer.getValue().get<char>());
     ASSERT_EQ(4, tokenizer.getLine());
-    ASSERT_EQ(2, tokenizer.getColumn());
+    ASSERT_EQ(3, tokenizer.getColumn());
 
     ASSERT_EQ(JsonToken::VALUE, tokenizer.next());
     ASSERT_EQ(10, tokenizer.getValue().get<uint64_t>());
