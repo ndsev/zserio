@@ -10,6 +10,7 @@
 #include "zserio/StringView.h"
 #include "zserio/ZserioTreeCreator.h"
 #include "zserio/UniquePtr.h"
+#include "zserio/SizeConvertUtil.h"
 
 namespace zserio
 {
@@ -322,13 +323,7 @@ void BitBufferAdapter<ALLOC>::visitValue(uint64_t uintValue)
     }
     else if (m_state == VISIT_VALUE_BITSIZE)
     {
-        if (uintValue != static_cast<uint64_t>(static_cast<size_t>(uintValue)))
-        {
-            throw CppRuntimeException("JsonReader: Cannot create size_t for Bit Buffer size from value '") <<
-                    uintValue << "'!";
-        }
-
-        m_bitSize = static_cast<size_t>(uintValue);
+        m_bitSize = convertUInt64ToSize(uintValue);
         m_state = VISIT_KEY;
     }
     else

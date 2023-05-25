@@ -11,7 +11,7 @@
 #include "zserio/BitStreamReader.h"
 #include "zserio/Enums.h"
 #include "zserio/Traits.h"
-#include "zserio/VarSizeUtil.h"
+#include "zserio/SizeConvertUtil.h"
 
 namespace zserio
 {

@@ -7,7 +7,7 @@
 #include "zserio/Types.h"
 #include "zserio/BitBuffer.h"
 #include "zserio/BitPositionUtil.h"
-#include "zserio/VarSizeUtil.h"
+#include "zserio/SizeConvertUtil.h"
 #include "zserio/StringView.h"
 #include "zserio/Span.h"
 

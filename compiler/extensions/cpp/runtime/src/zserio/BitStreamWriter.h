@@ -10,7 +10,7 @@
 #include "zserio/Span.h"
 #include "zserio/StringView.h"
 #include "zserio/Types.h"
-#include "zserio/VarSizeUtil.h"
+#include "zserio/SizeConvertUtil.h"
 
 namespace zserio
 {

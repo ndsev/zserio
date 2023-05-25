@@ -140,7 +140,7 @@ set(ZSERIO_CPP_RUNTIME_TEST_SRCS
     zserio/TypeInfoUtilTest.cpp
     zserio/UniquePtrTest.cpp
     zserio/ValidationSqliteUtilTest.cpp
-    zserio/VarSizeUtilTest.cpp
+    zserio/SizeConvertUtilTest.cpp
     zserio/WalkerTest.cpp
     zserio/ZserioTreeCreatorTest.cpp
 )
@@ -155,7 +155,7 @@ endif ()
 
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)
     # allows bit stream reader and var size util optimizations for 64bit platforms
-    set_property(SOURCE zserio/VarSizeUtilTest.cpp
+    set_property(SOURCE zserio/SizeConvertUtilTest.cpp
                  APPEND PROPERTY COMPILE_DEFINITIONS ZSERIO_RUNTIME_64BIT)
 endif ()
 

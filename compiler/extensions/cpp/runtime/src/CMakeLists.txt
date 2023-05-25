@@ -99,8 +99,8 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/Types.h
     zserio/UniquePtr.h
     zserio/ValidationSqliteUtil.h
-    zserio/VarSizeUtil.cpp
-    zserio/VarSizeUtil.h
+    zserio/SizeConvertUtil.cpp
+    zserio/SizeConvertUtil.h
     zserio/Walker.h
     zserio/WalkerConst.h
     zserio/ZserioTreeCreator.h
@@ -109,7 +109,7 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
 
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)
     # allows bit stream reader and var size util optimizations for 64bit platforms
-    set_property(SOURCE zserio/BitStreamReader.cpp zserio/VarSizeUtil.cpp
+    set_property(SOURCE zserio/BitStreamReader.cpp zserio/SizeConvertUtil.cpp
                  APPEND PROPERTY COMPILE_DEFINITIONS ZSERIO_RUNTIME_64BIT)
 endif ()
 
