@@ -41,9 +41,18 @@ TEST_F(HeapOptionalHolderTest, emptyConstructor)
 
 TEST_F(HeapOptionalHolderTest, nullOptConstructor)
 {
-    TrackingAllocator<int> alloc;
-    HeapOptionalHolder<int, TrackingAllocator<int>> optional{zserio::NullOpt, alloc};
-    ASSERT_EQ(alloc, optional.get_allocator());
+    {
+        NullOptType nullOpt{int()};
+        TrackingAllocator<int> alloc;
+        HeapOptionalHolder<int, TrackingAllocator<int>> optional{nullOpt, alloc};
+        ASSERT_EQ(alloc, optional.get_allocator());
+    }
+
+    {
+        TrackingAllocator<int> alloc;
+        HeapOptionalHolder<int, TrackingAllocator<int>> optional{NullOpt, alloc};
+        ASSERT_EQ(alloc, optional.get_allocator());
+    }
 }
 
 TEST_F(HeapOptionalHolderTest, lvalueConstructor)
@@ -175,11 +184,15 @@ TEST_F(HeapOptionalHolderTest, moveConstructorAllocator)
     TrackingAllocator<int> alloc;
     TrackingAllocator<int> alloc2;
 
-    HeapOptionalHolder<int, TrackingAllocator<int>> optional(13, alloc);
-    HeapOptionalHolder<int, TrackingAllocator<int>> optionalMoved(std::move(optional), alloc2);
+    HeapOptionalHolder<int, TrackingAllocator<int>> optionalDiff(13, alloc);
+    HeapOptionalHolder<int, TrackingAllocator<int>> optionalDiffMoved(std::move(optionalDiff), alloc2);
+    ASSERT_EQ(*optionalDiffMoved, 13);
+    ASSERT_EQ(optionalDiffMoved.get_allocator(), alloc2);
 
-    ASSERT_EQ(*optionalMoved, 13);
-    ASSERT_EQ(optionalMoved.get_allocator(), alloc2);
+    HeapOptionalHolder<int, TrackingAllocator<int>> optionalSame(13, alloc);
+    HeapOptionalHolder<int, TrackingAllocator<int>> optionalSameMoved(std::move(optionalSame), alloc);
+    ASSERT_EQ(*optionalSameMoved, 13);
+    ASSERT_EQ(optionalSameMoved.get_allocator(), alloc);
 
     HeapOptionalHolder<int, TrackingAllocator<int>> emptyOptional(alloc);
     HeapOptionalHolder<int, TrackingAllocator<int>> emptyMoved(std::move(emptyOptional), alloc2);
@@ -188,7 +201,7 @@ TEST_F(HeapOptionalHolderTest, moveConstructorAllocator)
     ASSERT_EQ(emptyOptional.get_allocator(), alloc);
     ASSERT_EQ(emptyMoved.get_allocator(), alloc2);
 
-    ASSERT_EQ(alloc.numAllocs(), 1U);
+    ASSERT_EQ(alloc.numAllocs(), 2U);
     ASSERT_EQ(alloc2.numAllocs(), 1U);
 }
 
@@ -201,6 +214,10 @@ TEST_F(HeapOptionalHolderTest, copyAssignmentOperator)
     ASSERT_THROW(*optional, CppRuntimeException);
     const int intValue = 0xDEAD;
     optional = intValue;
+
+    HeapOptionalHolder<int, TrackingAllocator<int>>& optionalRef(optional);
+    optionalRef = optional;
+    ASSERT_EQ(intValue, *optionalRef);
 
     HeapOptionalHolder<int, TrackingAllocator<int>> optionalCopy;
     optionalCopy = optional;
@@ -241,6 +258,14 @@ TEST_F(HeapOptionalHolderTest, moveAssignmentOperator)
             std::vector<int>{1, 2, 3}, allocVec};
     std::vector<int> origValues{*optionalVector};
     void* origAddress = (*optionalVector).data();
+
+    HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optionalVectorCopy =
+            optionalVector;
+    HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>>& optionalVectorRef =
+            optionalVectorCopy;
+    optionalVectorRef = std::move(optionalVectorCopy);
+    ASSERT_TRUE(optionalVectorRef.hasValue());
+
     HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optionalVectorMoved;
     optionalVectorMoved = std::move(optionalVector);
     ASSERT_EQ(origAddress, (*optionalVectorMoved).data());

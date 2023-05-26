@@ -402,21 +402,25 @@ private:
 
     static storage_type copy_initialize(const heap_optional_holder& other, const allocator_type& allocator)
     {
-        return other.hasValue() ?
-                zserio::allocate_unique<T, allocator_type>(allocator, *other) :
-                storage_type(nullptr, allocator);
+        if (other.hasValue())
+            return zserio::allocate_unique<T, allocator_type>(allocator, *other);
+        else
+            return storage_type(nullptr, allocator);
     }
 
     static storage_type move_initialize(heap_optional_holder&& other, const allocator_type& allocator)
     {
         if (other.hasValue())
         {
-            return allocator == other.m_storage.get_deleter().get_allocator() ?
-                    std::move(other.m_storage) :
-                    zserio::allocate_unique<T, allocator_type>(allocator, std::move(*other));
+            if (allocator == other.m_storage.get_deleter().get_allocator())
+                return std::move(other.m_storage);
+
+            return zserio::allocate_unique<T, allocator_type>(allocator, std::move(*other));
         }
         else
+        {
             return storage_type(nullptr, allocator);
+        }
     }
 
     storage_type m_storage;

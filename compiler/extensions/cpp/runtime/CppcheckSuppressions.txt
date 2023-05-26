@@ -18,9 +18,9 @@ mismatchingContainers:*/test/zserio/AnyHolderTest.cpp:100
 noExplicitConstructor:*/src/zserio/OptionalHolder.h:204
 noExplicitConstructor:*/src/zserio/OptionalHolder.h:214
 noExplicitConstructor:*/src/zserio/OptionalHolder.h:224
-noExplicitConstructor:*/src/zserio/OptionalHolder.h:534
-noExplicitConstructor:*/src/zserio/OptionalHolder.h:542
-noExplicitConstructor:*/src/zserio/OptionalHolder.h:553
+noExplicitConstructor:*/src/zserio/OptionalHolder.h:538
+noExplicitConstructor:*/src/zserio/OptionalHolder.h:546
+noExplicitConstructor:*/src/zserio/OptionalHolder.h:557
 noExplicitConstructor:*/src/zserio/Span.h:111
 noExplicitConstructor:*/src/zserio/Span.h:123
 noExplicitConstructor:*/src/zserio/Span.h:135
@@ -62,3 +62,5 @@ useStlAlgorithm:*/src/zserio/HashCodeUtil.h:153
 useStlAlgorithm:*/src/zserio/JsonWriter.h:497
 useStlAlgorithm:*/src/zserio/Walker.h:427
 useStlAlgorithm:*/test/zserio/SqliteConnectionTest.cpp:36
+constVariable:*/test/zserio/HeapOptionalHolderTest.cpp:218
+constVariable:*/test/zserio/InplaceOptionalHolderTest.cpp:106

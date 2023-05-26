@@ -39,8 +39,16 @@ TEST_F(InplaceOptionalHolderTest, emptyConstructor)
 
 TEST_F(InplaceOptionalHolderTest, nullOptConstructor)
 {
-    InplaceOptionalHolder<int> optional{zserio::NullOpt};
-    ASSERT_FALSE(optional.hasValue());
+    {
+        NullOptType nullOpt{int()};
+        InplaceOptionalHolder<int> optional{nullOpt};
+        ASSERT_FALSE(optional.hasValue());
+    }
+
+    {
+        InplaceOptionalHolder<int> optional{NullOpt};
+        ASSERT_FALSE(optional.hasValue());
+    }
 }
 
 TEST_F(InplaceOptionalHolderTest, lvalueConstructor)
@@ -95,6 +103,10 @@ TEST_F(InplaceOptionalHolderTest, copyAssignmentOperator)
     const int intValue = 0xDEAD;
     optional = intValue;
 
+    InplaceOptionalHolder<int>& optionalRef(optional);
+    optionalRef = optional;
+    ASSERT_EQ(intValue, *optionalRef);
+
     InplaceOptionalHolder<int> optionalCopy;
     optionalCopy = optional;
     ASSERT_EQ(intValue, *optionalCopy);
@@ -105,6 +117,11 @@ TEST_F(InplaceOptionalHolderTest, copyAssignmentOperator)
     optionalVectorCopy = optionalVector;
     ASSERT_NE(origAddress, ((*optionalVectorCopy).data()));
     ASSERT_EQ(*optionalVector, *optionalVectorCopy);
+
+    InplaceOptionalHolder<std::vector<int>> emptyOptionalVector;
+    InplaceOptionalHolder<std::vector<int>> emptyOptionalVectorCopy;
+    emptyOptionalVectorCopy = emptyOptionalVector;
+    ASSERT_EQ(false, emptyOptionalVectorCopy.hasValue());
 }
 
 TEST_F(InplaceOptionalHolderTest, moveConstructor)
@@ -115,13 +132,26 @@ TEST_F(InplaceOptionalHolderTest, moveConstructor)
     InplaceOptionalHolder<std::vector<int>> optionalVectorMoved{std::move(optionalVector)};
     ASSERT_EQ(origAddress, ((*optionalVectorMoved).data()));
     ASSERT_EQ(origValues, *optionalVectorMoved);
+
+    InplaceOptionalHolder<std::vector<int>> emptyOptionalVector;
+    InplaceOptionalHolder<std::vector<int>> emptyOptionalVectorMoved{std::move(emptyOptionalVector)};
+    ASSERT_EQ(false, emptyOptionalVectorMoved.hasValue());
 }
 
 TEST_F(InplaceOptionalHolderTest, forwardingConstructor)
 {
-    std::vector<int> src = {0, 13, 42};
-    InplaceOptionalHolder<std::vector<int>> optional{ zserio::InPlace, src.begin(), src.end() };
-    ASSERT_EQ(src, *optional);
+    {
+        InPlaceT inPlace{};
+        std::vector<int> src = {0, 13, 42};
+        InplaceOptionalHolder<std::vector<int>> optional{inPlace, src.begin(), src.end()};
+        ASSERT_EQ(src, *optional);
+    }
+
+    {
+        std::vector<int> src = {0, 13, 42};
+        InplaceOptionalHolder<std::vector<int>> optional{InPlace, src.begin(), src.end()};
+        ASSERT_EQ(src, *optional);
+    }
 }
 
 TEST_F(InplaceOptionalHolderTest, moveAssignmentOperator)
@@ -129,10 +159,21 @@ TEST_F(InplaceOptionalHolderTest, moveAssignmentOperator)
     InplaceOptionalHolder<std::vector<int>> optionalVector{std::vector<int>{1, 2, 3}};
     std::vector<int> origValues{*optionalVector};
     void* origAddress = (*optionalVector).data();
+
+    InplaceOptionalHolder<std::vector<int>>& optionalVectorRef(optionalVector);
+    optionalVectorRef = std::move(optionalVector);
+    ASSERT_EQ(origAddress, (*optionalVectorRef).data());
+    ASSERT_EQ(origValues, *optionalVectorRef);
+
     InplaceOptionalHolder<std::vector<int>> optionalVectorMoved;
-    optionalVectorMoved = std::move(optionalVector);
+    optionalVectorMoved = std::move(optionalVectorRef);
     ASSERT_EQ(origAddress, (*optionalVectorMoved).data());
     ASSERT_EQ(origValues, *optionalVectorMoved);
+
+    InplaceOptionalHolder<std::vector<int>> emptyOptionalVector;
+    InplaceOptionalHolder<std::vector<int>> emptyOptionalVectorMoved;
+    emptyOptionalVectorMoved = std::move(emptyOptionalVector);
+    ASSERT_EQ(false, emptyOptionalVectorMoved.hasValue());
 }
 
 TEST_F(InplaceOptionalHolderTest, lvalueAssignmentOperator)
