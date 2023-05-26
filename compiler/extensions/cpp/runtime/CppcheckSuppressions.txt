@@ -44,7 +44,7 @@ returnStdMoveLocal:*/src/zserio/DebugStringUtil.h:605
 shadowFunction:*/test/zserio/ReflectableUtilTest.cpp:200
 shadowFunction:*/test/zserio/ReflectableUtilTest.cpp:201
 shadowFunction:*/test/zserio/TypeInfoTest.cpp:434
-uninitMemberVar:*/src/zserio/Reflectable.h:169
+uninitMemberVar:*/src/zserio/Reflectable.h:170
 uninitMemberVar:*/test/zserio/DebugStringUtilTest.cpp:187
 uninitMemberVar:*/test/zserio/DebugStringUtilTest.cpp:192
 unusedStructMember:*/src/zserio/ValidationSqliteUtil.h:29

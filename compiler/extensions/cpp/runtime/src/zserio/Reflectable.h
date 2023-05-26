@@ -59,6 +59,7 @@ public:
     size_t initializeOffsets() override;
     size_t bitSizeOf(size_t bitPosition) const override;
     size_t bitSizeOf() const override;
+    void write(BitStreamWriter& writer) const override;
 
     IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override;
     IBasicReflectablePtr<ALLOC> getField(StringView name) override;
@@ -2696,6 +2697,12 @@ template <typename ALLOC>
 size_t ReflectableBase<ALLOC>::bitSizeOf() const
 {
     return bitSizeOf(0);
+}
+
+template <typename ALLOC>
+void ReflectableBase<ALLOC>::write(BitStreamWriter&) const
+{
+    throw CppRuntimeException("Type '") << getTypeInfo().getSchemaName() << "' is not implemented!";
 }
 
 template <typename ALLOC>

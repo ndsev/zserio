@@ -89,7 +89,7 @@ cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/ValidationSqliteUtil.h:10
 cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/ValidationSqliteUtil.h:101
 
 # This multiple inheritance is intended and we think that to avoid it would mean much more obscure design.
-fuchsia-multiple-inheritance:src/zserio/Reflectable.h:1068
+fuchsia-multiple-inheritance:src/zserio/Reflectable.h:1069
 
 # This is necessary for implementation of low level implementation to mimic standard C++17 abstractions.
 google-explicit-constructor:src/zserio/OptionalHolder.h:204
@@ -122,8 +122,8 @@ misc-no-recursion:src/zserio/JsonParser.h:158
 misc-no-recursion:src/zserio/ReflectableUtil.h:133
 misc-no-recursion:src/zserio/ReflectableUtil.h:137
 misc-no-recursion:src/zserio/ReflectableUtil.h:148
-misc-no-recursion:src/zserio/Reflectable.h:919
-misc-no-recursion:src/zserio/Reflectable.h:947
+misc-no-recursion:src/zserio/Reflectable.h:920
+misc-no-recursion:src/zserio/Reflectable.h:948
 misc-no-recursion:src/zserio/Walker.h:73
 misc-no-recursion:src/zserio/Walker.h:74
 misc-no-recursion:src/zserio/Walker.h:75
