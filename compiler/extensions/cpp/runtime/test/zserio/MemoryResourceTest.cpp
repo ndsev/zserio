@@ -38,7 +38,9 @@ private:
     bool doIsEqual(const MemoryResource& other) const noexcept override
     {
         auto otherPtr = dynamic_cast<const TestResource*>(&other);
-        return otherPtr != nullptr && m_instanceId == otherPtr->m_instanceId;
+        EXPECT_TRUE(otherPtr != nullptr);
+
+        return m_instanceId == otherPtr->m_instanceId;
     }
 
     size_t m_numAllocs = 0;
