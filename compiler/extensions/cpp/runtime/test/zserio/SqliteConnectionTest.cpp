@@ -355,8 +355,12 @@ TEST(SqliteConnectionTest, startEndTransaction)
     ASSERT_EQ(1, row.size());
     ASSERT_EQ("1", row.front());
 
-    db.reset();
+    db.executeUpdate("BEGIN");
+    const bool transactionNotStarted = db.startTransaction();
+    ASSERT_FALSE(transactionNotStarted);
+    db.endTransaction(transactionNotStarted);
 
+    db.reset();
     ASSERT_EQ(SQLITE_OK, sqlite3_shutdown());
 }
 
