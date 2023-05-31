@@ -449,15 +449,8 @@ public:
     in_place_storage& operator=(const in_place_storage&) = delete;
     /** \} */
 
-    /**
-     * Move constructor.
-     *
-     * \param other Other storage to move.
-     */
-    in_place_storage(in_place_storage&& other) noexcept(std::is_nothrow_move_constructible<T>::value)
-    {
-        move(std::move(other));
-    }
+    /** Move constructor is disabled. */
+    in_place_storage(in_place_storage&& other) = delete;
 
     /**
      * Move assignment operator.

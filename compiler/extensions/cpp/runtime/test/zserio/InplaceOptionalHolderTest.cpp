@@ -136,6 +136,14 @@ TEST_F(InplaceOptionalHolderTest, moveConstructor)
     InplaceOptionalHolder<std::vector<int>> emptyOptionalVector;
     InplaceOptionalHolder<std::vector<int>> emptyOptionalVectorMoved{std::move(emptyOptionalVector)};
     ASSERT_EQ(false, emptyOptionalVectorMoved.hasValue());
+
+    InplaceOptionalHolder<int> optionalInt{1};
+    InplaceOptionalHolder<int> optionalIntMoved{std::move(optionalInt)};
+    ASSERT_EQ(1, *optionalIntMoved);
+
+    InplaceOptionalHolder<int> emptyOptionalInt;
+    InplaceOptionalHolder<int> emptyOptionalIntMoved{std::move(emptyOptionalInt)};
+    ASSERT_EQ(false, emptyOptionalIntMoved.hasValue());
 }
 
 TEST_F(InplaceOptionalHolderTest, forwardingConstructor)
