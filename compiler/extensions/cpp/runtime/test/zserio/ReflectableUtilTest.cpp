@@ -150,6 +150,18 @@ TEST(ReflectableUtilTest, equalFloatingPoints)
     ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getFloat64(-1.0),
             ReflectableFactory::getFloat64(1.0)));
 
+    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getFloat64(std::numeric_limits<double>::epsilon()),
+            ReflectableFactory::getFloat64(std::numeric_limits<double>::epsilon())));
+    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getFloat64(std::numeric_limits<double>::min()),
+            ReflectableFactory::getFloat64(std::numeric_limits<double>::min())));
+
+    ASSERT_TRUE(ReflectableUtil::equal(
+            ReflectableFactory::getFloat64(1.0 + std::numeric_limits<double>::epsilon()),
+            ReflectableFactory::getFloat64(1.0)));
+    ASSERT_TRUE(ReflectableUtil::equal(
+            ReflectableFactory::getFloat64(std::numeric_limits<double>::denorm_min() * 2),
+            ReflectableFactory::getFloat64(std::numeric_limits<double>::denorm_min())));
+
     ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getFloat64(static_cast<double>(NAN)),
             ReflectableFactory::getFloat64(static_cast<double>(NAN))));
     ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getFloat64(static_cast<double>(INFINITY)),
@@ -157,10 +169,25 @@ TEST(ReflectableUtilTest, equalFloatingPoints)
     ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getFloat64(-static_cast<double>(INFINITY)),
             ReflectableFactory::getFloat64(-static_cast<double>(INFINITY))));
 
+    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getFloat64(0.0),
+            ReflectableFactory::getFloat64(static_cast<double>(INFINITY))));
+    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getFloat64(static_cast<double>(INFINITY)),
+            ReflectableFactory::getFloat64(0.0)));
+
+    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getFloat64(0.0),
+            ReflectableFactory::getFloat64(static_cast<double>(NAN))));
+    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getFloat64(static_cast<double>(NAN)),
+            ReflectableFactory::getFloat64(0.0)));
+
     ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getFloat64(static_cast<double>(NAN)),
             ReflectableFactory::getFloat64(static_cast<double>(INFINITY))));
     ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getFloat64(static_cast<double>(INFINITY)),
+            ReflectableFactory::getFloat64(static_cast<double>(NAN))));
+
+    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getFloat64(static_cast<double>(INFINITY)),
             ReflectableFactory::getFloat64(-static_cast<double>(INFINITY))));
+    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getFloat64(-static_cast<double>(INFINITY)),
+            ReflectableFactory::getFloat64(static_cast<double>(INFINITY))));
 }
 
 TEST(ReflectableUtilTest, equalStrings)
@@ -183,6 +210,24 @@ TEST(ReflectableUtilTest, equalBitBuffers)
             ReflectableFactory::getBitBuffer(BitBuffer())));
     ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getBitBuffer(BitBuffer({0xAB}, 8)),
             ReflectableFactory::getBitBuffer(BitBuffer({0xAB}, 8))));
+    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getBitBuffer(BitBuffer({0xAB}, 8)),
+            ReflectableFactory::getBitBuffer(BitBuffer())));
+}
+
+TEST(ReflectableUtilTest, equalBytes)
+{
+    vector<uint8_t> bytesData1{{0xCA, 0xFE}};
+    vector<uint8_t> bytesData2{{0xCA, 0xDE}};
+    vector<uint8_t> bytesEmpty;
+
+    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getBytes(bytesEmpty),
+            ReflectableFactory::getBytes(bytesEmpty)));
+    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getBytes(bytesData1),
+            ReflectableFactory::getBytes(bytesData1)));
+    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getBytes(bytesData1),
+            ReflectableFactory::getBytes(bytesEmpty)));
+    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getBytes(bytesData1),
+            ReflectableFactory::getBytes(bytesData2)));
 }
 
 TEST(ReflectableUtilTest, equalEnums)
@@ -255,9 +300,38 @@ TEST(ReflectableUtilTest, equalCompounds)
 
     ASSERT_FALSE(ReflectableUtil::equal(nested1.reflectable(), nested2.reflectable()));
 
+    // non array and array
+    ASSERT_FALSE(ReflectableUtil::equal(creator1.reflectable()->getField("textArray")->at(0),
+            creator1.reflectable()->getField("textArray")));
+
     // array and non array
     ASSERT_FALSE(ReflectableUtil::equal(creator1.reflectable()->getField("textArray"),
             creator1.reflectable()->getField("textArray")->at(0)));
+}
+
+TEST(ReflectableUtilTest, equalWrong)
+{
+    class WrongTypeInfo : public TypeInfoBase<std::allocator<uint8_t>>
+    {
+    public:
+        WrongTypeInfo(StringView schemaName, SchemaType schemaType, CppType cppType) :
+                TypeInfoBase(schemaName, schemaType, cppType)
+        {}
+    };
+
+    const WrongTypeInfo wrongTypeInfo = {
+        "int<>"_sv, SchemaType::DYNAMIC_SIGNED_BITFIELD, CppType::PUBSUB};
+    IBasicReflectablePtr<> wrongReflectable =
+            std::allocate_shared<Int32Reflectable<std::allocator<uint8_t>>>(std::allocator<uint8_t>(),
+                    wrongTypeInfo, 0xAB, 31);
+    ASSERT_THROW(ReflectableUtil::equal(wrongReflectable, wrongReflectable), CppRuntimeException);
+
+    const WrongTypeInfo wrongTypeInfoDiffName = {
+        "diff"_sv, SchemaType::DYNAMIC_SIGNED_BITFIELD, CppType::PUBSUB};
+    IBasicReflectablePtr<> wrongReflectableDiffName =
+            std::allocate_shared<Int32Reflectable<std::allocator<uint8_t>>>(std::allocator<uint8_t>(),
+                    wrongTypeInfoDiffName, 0xAB, 31);
+    ASSERT_FALSE(ReflectableUtil::equal(wrongReflectable, wrongReflectableDiffName));
 }
 
 TEST(ReflectableUtilTest, getValueArithmeticType)
