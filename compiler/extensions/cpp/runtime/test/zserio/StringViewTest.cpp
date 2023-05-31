@@ -286,11 +286,11 @@ TEST(StringViewTest, compareCharSubSub)
     StringView saaas("saaas");
     StringView sbbbs("sbbbs");
 
-    ASSERT_LT(0, sbbbs.compare(1, 3, "saaas", 1, 3));
-    ASSERT_GT(0, saaas.compare(1, 3, "sbbbs", 1, 3));
-    ASSERT_EQ(0, saaas.compare(1, 3, "saaas", 1, 3));
-    ASSERT_LT(0, saaas.compare(1, 3, "saaas", 1, 2));
-    ASSERT_GT(0, saaas.compare(1, 3, "saaaas", 1, 4));
+    ASSERT_LT(0, sbbbs.compare(1, 3, "aaas", 3));
+    ASSERT_GT(0, saaas.compare(1, 3, "bbbs", 3));
+    ASSERT_EQ(0, saaas.compare(1, 3, "aaas", 3));
+    ASSERT_LT(0, saaas.compare(1, 3, "aaas", 2));
+    ASSERT_GT(0, saaas.compare(1, 3, "aaaas", 4));
 }
 
 TEST(StringViewTest, find)
@@ -581,6 +581,10 @@ TEST(StringViewTest, findLastOf)
     ASSERT_EQ(0, str.find_last_of(StringView("kbt"), 2));
     ASSERT_EQ(0, str.find_last_of(StringView("kbt"), 1));
     ASSERT_EQ(0, str.find_last_of(StringView("kbt"), 0));
+
+    StringView empty("");
+    ASSERT_EQ(StringView::npos, empty.find_last_of(StringView("text"), 0));
+    ASSERT_EQ(StringView::npos, empty.find_last_of(StringView(""), 0));
 }
 
 TEST(StringViewTest, findLastOfChar)
@@ -699,6 +703,10 @@ TEST(StringViewTest, findLastNotOf)
     ASSERT_EQ(5, str.find_last_not_of(StringView("arb"), 5));
     ASSERT_EQ(0, str.find_last_not_of(StringView("arb"), 4));
     ASSERT_EQ(0, str.find_last_not_of(StringView("arb"), 0));
+
+    StringView empty("");
+    ASSERT_EQ(StringView::npos, empty.find_last_not_of(StringView("text"), 0));
+    ASSERT_EQ(StringView::npos, empty.find_last_not_of(StringView(""), 0));
 }
 
 TEST(StringViewTest, findLastNotOfChar)
@@ -743,10 +751,63 @@ TEST(StringViewTest, findLastNotOfCharStr)
     ASSERT_EQ(0, str.find_last_not_of("arb", 0));
 }
 
+TEST(StringViewTest, comparisonOperator)
+{
+    StringView str1("text");
+    StringView str2("text");
+    StringView str3("texts");
+    ASSERT_TRUE(str1 == str2);
+    ASSERT_TRUE(str1 != str3);
+    ASSERT_TRUE(str1 < str3);
+    ASSERT_TRUE(str1 <= str3);
+    ASSERT_TRUE(str3 > str2);
+    ASSERT_TRUE(str3 >= str2);
+}
+
+TEST(StringViewTest, makeStringView)
+{
+    StringView str1 = makeStringView("text");
+    char textWithoutTermZero[] = {'t', 'e', 'x', 't'};
+    StringView str2 = makeStringView(textWithoutTermZero);
+    ASSERT_EQ(str1, str2);
+
+    StringView empty = makeStringView("");
+    ASSERT_EQ(""_sv, empty);
+}
+
+TEST(StringViewTest, stringViewToString)
+{
+    StringView str("text");
+    const std::string convertedStr = stringViewToString(str);
+    ASSERT_EQ("text", convertedStr);
+}
+
+TEST(StringViewTest, appendStringViewToString)
+{
+    StringView str("text");
+    std::string convertedStr("another ");
+    convertedStr += str;
+    ASSERT_EQ("another text", convertedStr);
+}
+
+TEST(StringViewTest, toString)
+{
+    StringView str("text");
+    const std::string convertedStr = toString(str);
+    ASSERT_EQ("text", convertedStr);
+}
+
 TEST(StringViewTest, cppRuntimeExceptionOperator)
 {
     CppRuntimeException exception = CppRuntimeException() << "test"_sv;
     ASSERT_STREQ("test", exception.what());
+}
+
+TEST(StringViewTest, literal)
+{
+    StringView str1("text");
+    StringView str2 = "text"_sv;
+    ASSERT_EQ(str2, str1);
 }
 
 } // namespace zserio
