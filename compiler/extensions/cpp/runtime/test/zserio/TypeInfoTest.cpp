@@ -615,6 +615,7 @@ TEST_F(TypeInfoTest, recursiveTypeInfo)
     ASSERT_THROW(recursiveTypeInfo.getMethods(), CppRuntimeException);
 
     ASSERT_THROW(recursiveTypeInfo.createInstance(std::allocator<uint8_t>()), CppRuntimeException);
+    ASSERT_THROW(recursiveTypeInfo.createInstance(), CppRuntimeException);
 }
 
 } // namespace zserio
