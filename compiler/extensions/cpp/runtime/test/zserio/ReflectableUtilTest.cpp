@@ -232,22 +232,22 @@ TEST(ReflectableUtilTest, equalBytes)
 
 TEST(ReflectableUtilTest, equalEnums)
 {
-    const CreatorEnum one = CreatorEnum::ONE;
-    const CreatorEnum two = CreatorEnum::TWO;
+    const CreatorEnum oneEnum = CreatorEnum::ONE;
+    const CreatorEnum twoEnum = CreatorEnum::TWO;
 
-    ASSERT_TRUE(ReflectableUtil::equal(enumReflectable(one), enumReflectable(one)));
-    ASSERT_TRUE(ReflectableUtil::equal(enumReflectable(two), enumReflectable(two)));
-    ASSERT_FALSE(ReflectableUtil::equal(enumReflectable(one), enumReflectable(two)));
+    ASSERT_TRUE(ReflectableUtil::equal(enumReflectable(oneEnum), enumReflectable(oneEnum)));
+    ASSERT_TRUE(ReflectableUtil::equal(enumReflectable(twoEnum), enumReflectable(twoEnum)));
+    ASSERT_FALSE(ReflectableUtil::equal(enumReflectable(oneEnum), enumReflectable(twoEnum)));
 }
 
 TEST(ReflectableUtilTest, equalBitmasks)
 {
-    const CreatorBitmask read = CreatorBitmask::Values::READ;
-    const CreatorBitmask write = CreatorBitmask::Values::WRITE;
+    const CreatorBitmask readBitmask = CreatorBitmask::Values::READ;
+    const CreatorBitmask writeBitmask = CreatorBitmask::Values::WRITE;
 
-    ASSERT_TRUE(ReflectableUtil::equal(read.reflectable(), read.reflectable()));
-    ASSERT_TRUE(ReflectableUtil::equal(write.reflectable(), write.reflectable()));
-    ASSERT_FALSE(ReflectableUtil::equal(write.reflectable(), read.reflectable()));
+    ASSERT_TRUE(ReflectableUtil::equal(readBitmask.reflectable(), readBitmask.reflectable()));
+    ASSERT_TRUE(ReflectableUtil::equal(writeBitmask.reflectable(), writeBitmask.reflectable()));
+    ASSERT_FALSE(ReflectableUtil::equal(writeBitmask.reflectable(), readBitmask.reflectable()));
 }
 
 TEST(ReflectableUtilTest, equalCompounds)
