@@ -293,28 +293,45 @@ TEST(SpanTest, staticSubspan)
 {
     std::vector<int> vec = { 0, 13, 42, 666, 13 };
     Span<int> span(vec);
-    Span<int, 3> spanSub = span.subspan<1, 3>();
-    ASSERT_EQ(3, spanSub.size());
-    ASSERT_TRUE(std::equal(span.begin() + 1, span.begin() + 4, spanSub.begin()));
+    Span<int> spanSub1 = span.subspan<1>();
+    ASSERT_EQ(4, spanSub1.size());
+    ASSERT_TRUE(std::equal(span.begin() + 1, span.begin() + 5, spanSub1.begin()));
+
+    Span<int> spanSub2 = span.subspan<1, 3>();
+    ASSERT_EQ(3, spanSub2.size());
+    ASSERT_TRUE(std::equal(span.begin() + 1, span.begin() + 4, spanSub2.begin()));
 
     Span<int, 5> spanStatic(vec.data(), 3);
-    Span<int, 3> spanSubStatic = spanStatic.subspan<1, 3>();
-    ASSERT_EQ(3, spanSubStatic.size());
-    ASSERT_TRUE(std::equal(spanStatic.begin() + 1, spanStatic.begin() + 4, spanSubStatic.begin()));
+    Span<int> spanSubStatic1 = spanStatic.subspan<1>();
+    ASSERT_EQ(4, spanSubStatic1.size());
+    ASSERT_TRUE(std::equal(spanStatic.begin() + 1, spanStatic.begin() + 5, spanSubStatic1.begin()));
+
+    Span<int, 3> spanSubStatic2 = spanStatic.subspan<1, 3>();
+    ASSERT_EQ(3, spanSubStatic2.size());
+    ASSERT_TRUE(std::equal(spanStatic.begin() + 1, spanStatic.begin() + 4, spanSubStatic2.begin()));
 }
 
 TEST(SpanTest, subspan)
 {
     std::vector<int> vec = { 0, 13, 42, 666, 13 };
     Span<int> span(vec);
-    Span<int> spanSub = span.subspan(1, 3);
-    ASSERT_EQ(3, spanSub.size());
-    ASSERT_TRUE(std::equal(span.begin() + 1, span.begin() + 4, spanSub.begin()));
+    Span<int> spanSubDyn1 = span.subspan(1);
+    ASSERT_EQ(4, spanSubDyn1.size());
+    ASSERT_TRUE(std::equal(span.begin() + 1, span.begin() + 5, spanSubDyn1.begin()));
+
+    Span<int> spanSubDyn2 = span.subspan(1, 3);
+    ASSERT_EQ(3, spanSubDyn2.size());
+    ASSERT_TRUE(std::equal(span.begin() + 1, span.begin() + 4, spanSubDyn2.begin()));
 
     Span<int, 5> spanStatic(vec.data(), 3);
-    Span<int> spanSubStatic = spanStatic.subspan(1, 3);
-    ASSERT_EQ(3, spanSubStatic.size());
-    ASSERT_TRUE(std::equal(spanStatic.begin() + 1, spanStatic.begin() + 4, spanSubStatic.begin()));
+    Span<int> spanSubStatic1 = spanStatic.subspan(1);
+    ASSERT_EQ(4, spanSubStatic1.size());
+    ASSERT_TRUE(std::equal(spanStatic.begin() + 1, spanStatic.begin() + 5, spanSubStatic1.begin()));
+
+    Span<int> spanSubStatic2 = spanStatic.subspan(1, 3);
+    ASSERT_EQ(3, spanSubStatic2.size());
+    ASSERT_TRUE(std::equal(spanStatic.begin() + 1, spanStatic.begin() + 4, spanSubStatic2.begin()));
 }
 
 } // namespace zserio
+
