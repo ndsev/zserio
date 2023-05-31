@@ -19,20 +19,16 @@ namespace test_object
 namespace std_allocator
 {
 
-::test_object::std_allocator::WalkerNested WalkerUnion::ZserioElementFactory_nestedArray::create(WalkerUnion& owner,
-        ::zserio::BitStreamReader& in, const ::std::allocator<uint8_t>& allocator, size_t index)
+::test_object::std_allocator::WalkerNested WalkerUnion::ZserioElementFactory_nestedArray::create(WalkerUnion&,
+        ::zserio::BitStreamReader& in, const ::std::allocator<uint8_t>& allocator, size_t)
 {
-    (void)owner;
-    (void)index;
     return ::test_object::std_allocator::WalkerNested(in, allocator);
 }
 
-::test_object::std_allocator::WalkerNested WalkerUnion::ZserioElementFactory_nestedArray::create(WalkerUnion& owner,
+::test_object::std_allocator::WalkerNested WalkerUnion::ZserioElementFactory_nestedArray::create(WalkerUnion&,
         ::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in,
-        const ::std::allocator<uint8_t>& allocator, size_t index)
+        const ::std::allocator<uint8_t>& allocator, size_t        )
 {
-    (void)owner;
-    (void)index;
     return ::test_object::std_allocator::WalkerNested(contextNode, in, allocator);
 }
 

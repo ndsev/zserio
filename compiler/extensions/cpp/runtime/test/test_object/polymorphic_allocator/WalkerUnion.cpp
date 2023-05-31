@@ -19,20 +19,16 @@ namespace test_object
 namespace polymorphic_allocator
 {
 
-::test_object::polymorphic_allocator::WalkerNested WalkerUnion::ZserioElementFactory_nestedArray::create(WalkerUnion& owner,
-        ::zserio::BitStreamReader& in, const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t index)
+::test_object::polymorphic_allocator::WalkerNested WalkerUnion::ZserioElementFactory_nestedArray::create(WalkerUnion&,
+        ::zserio::BitStreamReader& in, const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t)
 {
-    (void)owner;
-    (void)index;
     return ::test_object::polymorphic_allocator::WalkerNested(in, allocator);
 }
 
-::test_object::polymorphic_allocator::WalkerNested WalkerUnion::ZserioElementFactory_nestedArray::create(WalkerUnion& owner,
+::test_object::polymorphic_allocator::WalkerNested WalkerUnion::ZserioElementFactory_nestedArray::create(WalkerUnion&,
         ::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamReader& in,
-        const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t index)
+        const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t        )
 {
-    (void)owner;
-    (void)index;
     return ::test_object::polymorphic_allocator::WalkerNested(contextNode, in, allocator);
 }
 

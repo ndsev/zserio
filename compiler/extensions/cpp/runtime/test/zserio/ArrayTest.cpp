@@ -3,16 +3,24 @@
 #include <limits>
 #include <array>
 
+#include "gtest/gtest.h"
+
 #include "zserio/Array.h"
 #include "zserio/ArrayTraits.h"
 #include "zserio/Enums.h"
 #include "zserio/CppRuntimeException.h"
 #include "zserio/BitBuffer.h"
 
-#include "gtest/gtest.h"
+#include "test_object/std_allocator/ArrayBitmask.h"
+#include "test_object/std_allocator/ArrayEnum.h"
+#include "test_object/std_allocator/ArrayObject.h"
 
 namespace zserio
 {
+
+using ArrayEnum = test_object::std_allocator::ArrayEnum;
+using ArrayBitmask = test_object::std_allocator::ArrayBitmask;
+using ArrayObject = test_object::std_allocator::ArrayObject;
 
 namespace
 {
@@ -20,426 +28,179 @@ namespace
 class ArrayTestOwner
 {};
 
-template <typename ARRAY,
-        typename std::enable_if<std::is_same<ArrayTestOwner, typename ARRAY::OwnerType>::value ,int>::type = 0>
-size_t arrayBitSizeOf(const ARRAY& array, size_t bitPosition)
+class ArrayTestOwnerWithBitSize
 {
-    return array.bitSizeOf(ArrayTestOwner(), bitPosition);
+public:
+    explicit ArrayTestOwnerWithBitSize(uint8_t bitSize) :
+            m_bitSize(bitSize)
+    {}
+
+    uint8_t getBitSize() const
+    {
+        return m_bitSize;
+    }
+
+private:
+    uint8_t m_bitSize;
+};
+
+template <typename ARRAY, typename OWNER_TYPE>
+size_t arrayBitSizeOf(const ARRAY& array, const OWNER_TYPE& owner, size_t bitPosition)
+{
+    return array.bitSizeOf(owner, bitPosition);
 }
 
-template <typename ARRAY,
-        typename std::enable_if<!std::is_same<ArrayTestOwner, typename ARRAY::OwnerType>::value ,int>::type = 0>
-size_t arrayBitSizeOf(const ARRAY& array, size_t bitPosition)
+template <typename ARRAY>
+size_t arrayBitSizeOf(const ARRAY& array, const detail::DummyArrayOwner&, size_t bitPosition)
 {
     return array.bitSizeOf(bitPosition);
 }
 
-template <typename ARRAY,
-        typename std::enable_if<std::is_same<ArrayTestOwner, typename ARRAY::OwnerType>::value ,int>::type = 0>
-size_t arrayBitSizeOfPacked(const ARRAY& array, size_t bitPosition)
+template <typename ARRAY, typename OWNER_TYPE>
+size_t arrayBitSizeOfPacked(const ARRAY& array, const OWNER_TYPE& owner, size_t bitPosition)
 {
-    return array.bitSizeOfPacked(ArrayTestOwner(), bitPosition);
+    return array.bitSizeOfPacked(owner, bitPosition);
 }
 
-template <typename ARRAY,
-        typename std::enable_if<!std::is_same<ArrayTestOwner, typename ARRAY::OwnerType>::value ,int>::type = 0>
-size_t arrayBitSizeOfPacked(const ARRAY& array, size_t bitPosition)
+template <typename ARRAY>
+size_t arrayBitSizeOfPacked(const ARRAY& array, const detail::DummyArrayOwner&, size_t bitPosition)
 {
     return array.bitSizeOfPacked(bitPosition);
 }
 
-template <typename ARRAY,
-        typename std::enable_if<std::is_same<ArrayTestOwner, typename ARRAY::OwnerType>::value ,int>::type = 0>
-size_t arrayInitializeOffsets(ARRAY& array, size_t bitPosition)
+template <typename ARRAY, typename OWNER_TYPE>
+size_t arrayInitializeOffsets(ARRAY& array, OWNER_TYPE& owner, size_t bitPosition)
 {
-    ArrayTestOwner owner;
     return array.initializeOffsets(owner, bitPosition);
 }
 
-template <typename ARRAY,
-        typename std::enable_if<!std::is_same<ArrayTestOwner, typename ARRAY::OwnerType>::value ,int>::type = 0>
-size_t arrayInitializeOffsets(ARRAY& array, size_t bitPosition)
+template <typename ARRAY>
+size_t arrayInitializeOffsets(ARRAY& array, detail::DummyArrayOwner&, size_t bitPosition)
 {
     return array.initializeOffsets(bitPosition);
 }
 
-template <typename ARRAY,
-        typename std::enable_if<std::is_same<ArrayTestOwner, typename ARRAY::OwnerType>::value ,int>::type = 0>
-size_t arrayInitializeOffsetsPacked(ARRAY& array, size_t bitPosition)
+template <typename ARRAY, typename OWNER_TYPE>
+size_t arrayInitializeOffsetsPacked(ARRAY& array, OWNER_TYPE& owner, size_t bitPosition)
 {
-    ArrayTestOwner owner;
     return array.initializeOffsetsPacked(owner, bitPosition);
 }
 
-template <typename ARRAY,
-        typename std::enable_if<!std::is_same<ArrayTestOwner, typename ARRAY::OwnerType>::value ,int>::type = 0>
-size_t arrayInitializeOffsetsPacked(ARRAY& array, size_t bitPosition)
+template <typename ARRAY>
+size_t arrayInitializeOffsetsPacked(ARRAY& array, detail::DummyArrayOwner&, size_t bitPosition)
 {
     return array.initializeOffsetsPacked(bitPosition);
 }
 
-template <typename ARRAY,
-        typename std::enable_if<std::is_same<ArrayTestOwner, typename ARRAY::OwnerType>::value ,int>::type = 0>
-void arrayRead(ARRAY& array, BitStreamReader& in, size_t arrayLength = 0)
+template <typename ARRAY, typename OWNER_TYPE>
+void arrayRead(ARRAY& array, OWNER_TYPE& owner, BitStreamReader& in, size_t arrayLength = 0)
 {
-    ArrayTestOwner owner;
     array.read(owner, in, arrayLength);
 }
 
-template <typename ARRAY,
-        typename std::enable_if<!std::is_same<ArrayTestOwner, typename ARRAY::OwnerType>::value ,int>::type = 0>
-void arrayRead(ARRAY& array, BitStreamReader& in, size_t arrayLength = 0)
+template <typename ARRAY>
+void arrayRead(ARRAY& array, detail::DummyArrayOwner&, BitStreamReader& in, size_t arrayLength = 0)
 {
     array.read(in, arrayLength);
 }
 
-template <typename ARRAY,
-        typename std::enable_if<std::is_same<ArrayTestOwner, typename ARRAY::OwnerType>::value ,int>::type = 0>
-void arrayReadPacked(ARRAY& array, BitStreamReader& in, size_t arrayLength = 0)
+template <typename ARRAY, typename OWNER_TYPE>
+void arrayReadPacked(ARRAY& array, OWNER_TYPE& owner, BitStreamReader& in, size_t arrayLength = 0)
 {
-    ArrayTestOwner owner;
     array.readPacked(owner, in, arrayLength);
 }
 
-template <typename ARRAY,
-        typename std::enable_if<!std::is_same<ArrayTestOwner, typename ARRAY::OwnerType>::value ,int>::type = 0>
-void arrayReadPacked(ARRAY& array, BitStreamReader& in, size_t arrayLength = 0)
+template <typename ARRAY>
+void arrayReadPacked(ARRAY& array, detail::DummyArrayOwner&, BitStreamReader& in, size_t arrayLength = 0)
 {
     array.readPacked(in, arrayLength);
 }
 
-template <typename ARRAY,
-        typename std::enable_if<std::is_same<ArrayTestOwner, typename ARRAY::OwnerType>::value ,int>::type = 0>
-void arrayWrite(ARRAY& array, BitStreamWriter& out)
+template <typename ARRAY, typename OWNER_TYPE>
+void arrayWrite(ARRAY& array, const OWNER_TYPE& owner, BitStreamWriter& out)
 {
-    array.write(ArrayTestOwner(), out);
+    array.write(owner, out);
 }
 
-template <typename ARRAY,
-        typename std::enable_if<!std::is_same<ArrayTestOwner, typename ARRAY::OwnerType>::value ,int>::type = 0>
-void arrayWrite(ARRAY& array, BitStreamWriter& out)
+template <typename ARRAY>
+void arrayWrite(ARRAY& array, const detail::DummyArrayOwner&, BitStreamWriter& out)
 {
     array.write(out);
 }
 
-template <typename ARRAY,
-        typename std::enable_if<std::is_same<ArrayTestOwner, typename ARRAY::OwnerType>::value ,int>::type = 0>
-void arrayWritePacked(ARRAY& array, BitStreamWriter& out)
+template <typename ARRAY, typename OWNER_TYPE>
+void arrayWritePacked(ARRAY& array, const OWNER_TYPE& owner, BitStreamWriter& out)
 {
-    array.writePacked(ArrayTestOwner(), out);
+    array.writePacked(owner, out);
 }
 
-template <typename ARRAY,
-        typename std::enable_if<!std::is_same<ArrayTestOwner, typename ARRAY::OwnerType>::value ,int>::type = 0>
-void arrayWritePacked(ARRAY& array, BitStreamWriter& out)
+template <typename ARRAY>
+void arrayWritePacked(ARRAY& array, const detail::DummyArrayOwner&, BitStreamWriter& out)
 {
     array.writePacked(out);
 }
 
-enum class DummyEnum : uint8_t
-{
-    VALUE1 = UINT8_C(0),
-    VALUE2 = UINT8_C(1),
-    VALUE3 = UINT8_C(2)
-};
-
-class DummyBitmask
+class ElementBitSizeWithOwner
 {
 public:
-    using underlying_type = uint8_t;
+    using OwnerType = ArrayTestOwnerWithBitSize;
 
-    enum class Values : underlying_type
+    static uint8_t get(const ArrayTestOwnerWithBitSize& owner)
     {
-        CREATE = UINT8_C(1),
-        READ = UINT8_C(2),
-        WRITE = UINT8_C(8)
-    };
-
-    explicit DummyBitmask(BitStreamReader& in) :
-            m_value(readValue(in))
-    {}
-
-    DummyBitmask(PackingContextNode& contextNode, BitStreamReader& in) :
-            m_value(readValue(contextNode, in))
-    {}
-
-    constexpr DummyBitmask(Values value) noexcept :
-            m_value(static_cast<underlying_type>(value))
-    {}
-
-    static void createPackingContext(PackingContextNode& contextNode)
-    {
-        contextNode.createContext();
+        return owner.getBitSize();
     }
-
-    void initPackingContext(PackingContextNode& contextNode) const
-    {
-        contextNode.getContext().init<StdIntArrayTraits<underlying_type>>(m_value);
-    }
-
-    size_t bitSizeOf(size_t = 0) const
-    {
-        return UINT8_C(8);
-    }
-
-    size_t bitSizeOf(PackingContextNode& contextNode, size_t) const
-    {
-        return contextNode.getContext().bitSizeOf<StdIntArrayTraits<underlying_type>>(m_value);
-    }
-
-    size_t initializeOffsets(size_t bitPosition) const
-    {
-        return bitPosition + bitSizeOf(bitPosition);
-    }
-
-    size_t initializeOffsets(PackingContextNode& contextNode, size_t bitPosition) const
-    {
-        return bitPosition + bitSizeOf(contextNode, bitPosition);
-    }
-
-    bool operator==(const DummyBitmask& other) const
-    {
-        return m_value == other.m_value;
-    }
-
-    void write(BitStreamWriter& out) const
-    {
-        out.writeBits(m_value, UINT8_C(8));
-    }
-
-    void write(PackingContextNode& contextNode, BitStreamWriter& out) const
-    {
-        contextNode.getContext().write<StdIntArrayTraits<underlying_type>>(out, m_value);
-    }
-
-private:
-    static underlying_type readValue(BitStreamReader& in)
-    {
-        return static_cast<underlying_type>(in.readBits(UINT8_C(8)));
-    }
-
-    static underlying_type readValue(PackingContextNode& contextNode,
-            BitStreamReader& in)
-    {
-        return contextNode.getContext().read<StdIntArrayTraits<underlying_type>>(in);
-    }
-
-    underlying_type m_value;
 };
 
 template <uint8_t BIT_SIZE>
-class ElementBitSize
+class ElementBitSizeWithoutOwner
 {
 public:
-    using OwnerType = ArrayTestOwner;
-
-    static uint8_t get(const ArrayTestOwner&)
+    static uint8_t get()
     {
         return BIT_SIZE;
     }
 };
 
-class DummyObject
-{
-public:
-    using allocator_type = std::allocator<uint8_t>;
-
-    explicit DummyObject(uint32_t value, const allocator_type& = allocator_type()) :
-            m_value(value)
-    {}
-    explicit DummyObject(BitStreamReader& in, const allocator_type& = allocator_type()) :
-            m_value(in.readBits(31))
-    {}
-
-    DummyObject(PackingContextNode& contextNode, BitStreamReader& in, const allocator_type& = allocator_type())
-    {
-        auto& context = contextNode.getChildren().at(0).getContext();
-        m_value = context.read<BitFieldArrayTraits<uint32_t, 31>>(in);
-    }
-
-    static void createPackingContext(PackingContextNode& contextNode)
-    {
-        auto& child = contextNode.createChild();
-        child.createContext();
-    }
-
-    void initPackingContext(PackingContextNode& contextNode) const
-    {
-        auto& context = contextNode.getChildren().at(0).getContext();
-        context.init<BitFieldArrayTraits<uint32_t, 31>>(m_value);
-    }
-
-    void initialize(uint32_t value)
-    {
-        m_value = value;
-    }
-
-    size_t bitSizeOf(size_t = 0) const
-    {
-        return 31; // to make an unaligned type
-    }
-
-    size_t bitSizeOf(PackingContextNode& contextNode, size_t bitPosition = 0) const
-    {
-        size_t endBitPosition = bitPosition;
-
-        auto& context = contextNode.getChildren().at(0).getContext();
-        endBitPosition += context.bitSizeOf<BitFieldArrayTraits<uint32_t, 31>>(m_value);
-
-        return endBitPosition - bitPosition;
-    }
-
-    size_t initializeOffsets(size_t bitPosition) const
-    {
-        return bitPosition + bitSizeOf(bitPosition);
-    }
-
-    size_t initializeOffsets(PackingContextNode& contextNode, size_t bitPosition = 0) const
-    {
-        size_t endBitPosition = bitPosition;
-
-        auto& context = contextNode.getChildren().at(0).getContext();
-        endBitPosition += context.bitSizeOf<BitFieldArrayTraits<uint32_t, 31>>(m_value);
-
-        return endBitPosition;
-    }
-
-    bool operator==(const DummyObject& other) const
-    {
-        return m_value == other.m_value;
-    }
-
-    uint32_t getValue() const
-    {
-        return m_value;
-    }
-
-    void write(BitStreamWriter& out) const
-    {
-        out.writeBits(m_value, static_cast<uint8_t>(bitSizeOf()));
-    }
-
-    void write(PackingContextNode& contextNode, BitStreamWriter& out) const
-    {
-        auto& context = contextNode.getChildren().at(0).getContext();
-        context.write<BitFieldArrayTraits<uint32_t, 31>>(out, m_value);
-    }
-
-private:
-    uint32_t m_value;
-};
-
-class ArrayTestArrayExpressions
+class ArrayObjectArrayExpressions
 {
 public:
     using OwnerType = ArrayTestOwner;
 
     static void initializeOffset(ArrayTestOwner&, size_t, size_t)
-    {
-    }
+    {}
 
     static void checkOffset(const ArrayTestOwner&, size_t, size_t)
-    {
-    }
+    {}
 
-    static void initializeElement(ArrayTestOwner&, DummyObject& element, size_t)
+    static void initializeElement(ArrayTestOwner&, ArrayObject& element, size_t)
     {
-        element.initialize(ELEMENT_VALUE);
+        // set value instead of call initialize, just for test
+        element.setValue(ELEMENT_VALUE);
     }
 
     static const uint32_t ELEMENT_VALUE = 0x12;
 };
 
-class DummyObjectElementFactory
+class ArrayObjectElementFactory
 {
 public:
     using OwnerType = ArrayTestOwner;
     using allocator_type = std::allocator<uint8_t>;
 
-    static DummyObject create(OwnerType&, BitStreamReader& in,
+    static ArrayObject create(OwnerType&, BitStreamReader& in,
             const allocator_type& allocator, size_t)
     {
-        return DummyObject(in, allocator);
+        return ArrayObject(in, allocator);
     }
 
-    static DummyObject create(OwnerType&, PackingContextNode& contextNode, BitStreamReader& in,
+    static ArrayObject create(OwnerType&, PackingContextNode& contextNode, BitStreamReader& in,
             const allocator_type& allocator, size_t)
     {
-        return DummyObject(contextNode, in, allocator);
+        return ArrayObject(contextNode, in, allocator);
     }
 };
 
 } // namespace
-
-template <>
-inline DummyEnum valueToEnum(typename std::underlying_type<DummyEnum>::type rawValue)
-{
-    switch (rawValue)
-    {
-    case UINT8_C(0):
-    case UINT8_C(1):
-    case UINT8_C(2):
-        return static_cast<DummyEnum>(rawValue);
-    default:
-        throw CppRuntimeException("Unknown value for enumeration DummyEnum: ") << rawValue << "!";
-    }
-}
-
-template <>
-void initPackingContext<PackingContextNode, DummyEnum>(PackingContextNode& contextNode, DummyEnum value)
-{
-    return contextNode.getContext().init<StdIntArrayTraits<uint8_t>>(enumToValue(value));
-}
-
-template <>
-inline size_t bitSizeOf<DummyEnum>(DummyEnum)
-{
-    return UINT8_C(8);
-}
-
-template <>
-inline size_t bitSizeOf<PackingContextNode, DummyEnum>(PackingContextNode& contextNode, DummyEnum value)
-{
-    return contextNode.getContext().bitSizeOf<StdIntArrayTraits<uint8_t>>(enumToValue(value));
-}
-
-template <>
-inline size_t initializeOffsets<DummyEnum>(size_t bitPosition, DummyEnum value)
-{
-    return bitPosition + bitSizeOf(value);
-}
-
-template <>
-inline size_t initializeOffsets<PackingContextNode, DummyEnum>(
-        PackingContextNode& contextNode, size_t bitPosition, DummyEnum value)
-{
-    return bitPosition + bitSizeOf(contextNode, value);
-}
-
-template <>
-inline DummyEnum read<DummyEnum>(BitStreamReader& in)
-{
-    return valueToEnum<DummyEnum>(
-            static_cast<typename std::underlying_type<DummyEnum>::type>(in.readBits(UINT8_C(8))));
-}
-
-template <>
-inline DummyEnum read(PackingContextNode& contextNode, BitStreamReader& in)
-{
-    return valueToEnum<DummyEnum>(contextNode.getContext().read<StdIntArrayTraits<uint8_t>>(in));
-}
-
-template <>
-inline void write<DummyEnum>(BitStreamWriter& out, DummyEnum value)
-{
-    out.writeBits(enumToValue(value), UINT8_C(8));
-}
-
-template <>
-inline void write(PackingContextNode& contextNode, BitStreamWriter& out, DummyEnum value)
-{
-    contextNode.getContext().write<StdIntArrayTraits<uint8_t>>(out, enumToValue(value));
-}
 
 class ArrayTest : public ::testing::Test
 {
@@ -449,55 +210,71 @@ public:
     {}
 
 protected:
-    template <typename ARRAY_TRAITS, typename RAW_ARRAY>
-    void testArray(const RAW_ARRAY& rawArray, size_t elementBitSize)
+    template <typename ARRAY_TRAITS, typename RAW_ARRAY,
+            typename ARRAY_EXPRESSIONS = detail::DummyArrayExpressions,
+            typename OWNER_TYPE = typename detail::array_owner_type<ARRAY_TRAITS, ARRAY_EXPRESSIONS>::type,
+            typename std::enable_if<!std::is_integral<OWNER_TYPE>::value, int>::type = 0>
+    void testArray(const RAW_ARRAY& rawArray, size_t elementBitSize, OWNER_TYPE owner = OWNER_TYPE())
     {
         const size_t arraySize = rawArray.size();
         const size_t unalignedBitSize = elementBitSize * arraySize;
         const size_t alignedBitSize = (arraySize > 0)
                 ? alignTo(8, elementBitSize) * (arraySize - 1) + elementBitSize
                 : 0;
-        testArray<ARRAY_TRAITS>(rawArray, unalignedBitSize, alignedBitSize);
+        testArray<ARRAY_TRAITS>(rawArray, unalignedBitSize, alignedBitSize, owner);
     }
 
-    template <typename ARRAY_TRAITS, typename RAW_ARRAY>
-    void testArray(const RAW_ARRAY& rawArray, size_t unalignedBitSize, size_t alignedBitSize)
+    template <typename ARRAY_TRAITS, typename RAW_ARRAY,
+            typename ARRAY_EXPRESSIONS = detail::DummyArrayExpressions,
+            typename OWNER_TYPE = typename detail::array_owner_type<ARRAY_TRAITS, ARRAY_EXPRESSIONS>::type>
+    void testArray(const RAW_ARRAY& rawArray, size_t unalignedBitSize, size_t alignedBitSize,
+            OWNER_TYPE owner = OWNER_TYPE())
     {
-        testArrayNormal<ARRAY_TRAITS>(rawArray, unalignedBitSize);
-        testArrayAuto<ARRAY_TRAITS>(rawArray, AUTO_LENGTH_BIT_SIZE + unalignedBitSize);
-        testArrayAligned<ARRAY_TRAITS>(rawArray, alignedBitSize);
-        testArrayAlignedAuto<ARRAY_TRAITS>(rawArray, AUTO_LENGTH_BIT_SIZE + alignedBitSize);
-        testArrayImplicit<ARRAY_TRAITS>(rawArray, unalignedBitSize);
+        testArrayNormal<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(rawArray, unalignedBitSize, owner);
+        testArrayAuto<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(
+                rawArray, AUTO_LENGTH_BIT_SIZE + unalignedBitSize, owner);
+        testArrayAligned<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(rawArray, alignedBitSize, owner);
+        testArrayAlignedAuto<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(
+                rawArray, AUTO_LENGTH_BIT_SIZE + alignedBitSize, owner);
+        testArrayImplicit<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(rawArray, unalignedBitSize, owner);
     }
 
     template <typename ARRAY_TRAITS, typename RAW_ARRAY>
     void testArrayInitializeElements(const RAW_ARRAY& rawArray)
     {
-        using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL, ArrayTestArrayExpressions>;
+        using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL, ArrayObjectArrayExpressions>;
 
         ArrayT array(rawArray);
         ArrayTestOwner owner;
         array.initializeElements(owner);
-        const uint32_t expectedValue = ArrayTestArrayExpressions::ELEMENT_VALUE;
+        const uint32_t expectedValue = ArrayObjectArrayExpressions::ELEMENT_VALUE;
         for (const auto& element : array.getRawArray())
             ASSERT_EQ(expectedValue, element.getValue());
     }
 
-    template <typename ARRAY_TRAITS, typename RAW_ARRAY>
-    void testPackedArray(const RAW_ARRAY& rawArray)
+    template <typename ARRAY_TRAITS, typename RAW_ARRAY,
+            typename ARRAY_EXPRESSIONS = detail::DummyArrayExpressions,
+            typename OWNER_TYPE = typename detail::array_owner_type<ARRAY_TRAITS, ARRAY_EXPRESSIONS>::type>
+    void testPackedArray(const RAW_ARRAY& rawArray, OWNER_TYPE owner = OWNER_TYPE())
     {
-        testPackedArray<ARRAY_TRAITS>(rawArray, UNKNOWN_BIT_SIZE, UNKNOWN_BIT_SIZE);
+        testPackedArray<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(
+                rawArray, UNKNOWN_BIT_SIZE, UNKNOWN_BIT_SIZE, owner);
     }
 
-    template <typename ARRAY_TRAITS, typename RAW_ARRAY>
-    void testPackedArray(const RAW_ARRAY& rawArray, size_t unalignedBitSize, size_t alignedBitSize)
+    template <typename ARRAY_TRAITS, typename RAW_ARRAY,
+            typename ARRAY_EXPRESSIONS = detail::DummyArrayExpressions,
+            typename OWNER_TYPE = typename detail::array_owner_type<ARRAY_TRAITS, ARRAY_EXPRESSIONS>::type>
+    void testPackedArray(const RAW_ARRAY& rawArray, size_t unalignedBitSize, size_t alignedBitSize,
+            OWNER_TYPE owner = OWNER_TYPE())
     {
-        testPackedArrayNormal<ARRAY_TRAITS>(rawArray, unalignedBitSize);
-        testPackedArrayAuto<ARRAY_TRAITS>(rawArray, (unalignedBitSize != UNKNOWN_BIT_SIZE) ?
-                AUTO_LENGTH_BIT_SIZE + unalignedBitSize : UNKNOWN_BIT_SIZE);
-        testPackedArrayAligned<ARRAY_TRAITS>(rawArray, alignedBitSize);
-        testPackedArrayAlignedAuto<ARRAY_TRAITS>(rawArray, (alignedBitSize != UNKNOWN_BIT_SIZE) ?
-                AUTO_LENGTH_BIT_SIZE + alignedBitSize : UNKNOWN_BIT_SIZE);
+        testPackedArrayNormal<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(rawArray, unalignedBitSize, owner);
+        testPackedArrayAuto<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(rawArray,
+                (unalignedBitSize != UNKNOWN_BIT_SIZE)
+                        ? AUTO_LENGTH_BIT_SIZE + unalignedBitSize : UNKNOWN_BIT_SIZE, owner);
+        testPackedArrayAligned<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(rawArray, alignedBitSize, owner);
+        testPackedArrayAlignedAuto<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(rawArray,
+                (alignedBitSize != UNKNOWN_BIT_SIZE)
+                        ? AUTO_LENGTH_BIT_SIZE + alignedBitSize : UNKNOWN_BIT_SIZE, owner);
     }
 
     size_t calcPackedBitSize(size_t elementBitSize, size_t arraySize, size_t maxDeltaBitSize)
@@ -518,287 +295,320 @@ protected:
     static const size_t PACKING_DESCRIPTOR_BITSIZE = 1 + 6;
 
 private:
-    template <typename ARRAY_TRAITS, typename RAW_ARRAY>
-    void testArrayNormal(const RAW_ARRAY& rawArray, size_t expectedBitSize)
+    template <typename ARRAY_TRAITS, typename RAW_ARRAY, typename ARRAY_EXPRESSIONS, typename OWNER_TYPE>
+    void testArrayNormal(const RAW_ARRAY& rawArray, size_t expectedBitSize, OWNER_TYPE& owner)
     {
-        using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL>;
+        using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL, ARRAY_EXPRESSIONS>;
 
         for (uint8_t i = 0; i < 8; ++i)
         {
             ArrayT array(rawArray);
 
-            const size_t bitSize = arrayBitSizeOf(array, i);
+            const size_t bitSize = arrayBitSizeOf(array, owner, i);
             ASSERT_EQ(expectedBitSize, bitSize);
-            ASSERT_EQ(i + bitSize, arrayInitializeOffsets(array, i));
+            ASSERT_EQ(i + bitSize, arrayInitializeOffsets(array, owner, i));
 
             BitStreamWriter writer(m_byteBuffer.data(), m_byteBuffer.size());
             writer.writeBits(0, i);
-            arrayWrite(array, writer);
+            arrayWrite(array, owner, writer);
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
             BitStreamReader reader(m_byteBuffer.data(), writer.getBitPosition(), BitsTag());
             ASSERT_EQ(0, reader.readBits(i));
             ArrayT readArray;
-            arrayRead(readArray, reader, rawArray.size());
+            arrayRead(readArray, owner, reader, rawArray.size());
             ASSERT_EQ(array, readArray);
 
-            ArrayT arrayCopy(array);
-            ASSERT_EQ(array, arrayCopy);
+            testArrayCopiesAndMoves(array);
         }
     }
 
-    template <typename ARRAY_TRAITS, typename RAW_ARRAY>
-    void testArrayAuto(const RAW_ARRAY& rawArray, size_t expectedBitSize)
+    template <typename ARRAY_TRAITS, typename RAW_ARRAY, typename ARRAY_EXPRESSIONS, typename OWNER_TYPE>
+    void testArrayAuto(const RAW_ARRAY& rawArray, size_t expectedBitSize, OWNER_TYPE& owner)
     {
-        using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO>;
+        using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO, ARRAY_EXPRESSIONS>;
 
         for (uint8_t i = 0; i < 8; ++i)
         {
             ArrayT array(rawArray);
 
-            const size_t bitSize = arrayBitSizeOf(array, i);
+            const size_t bitSize = arrayBitSizeOf(array, owner, i);
             ASSERT_EQ(expectedBitSize, bitSize);
-            ASSERT_EQ(i + bitSize, arrayInitializeOffsets(array, i));
+            ASSERT_EQ(i + bitSize, arrayInitializeOffsets(array, owner, i));
 
             BitStreamWriter writer(m_byteBuffer.data(), m_byteBuffer.size());
             writer.writeBits(0, i);
-            arrayWrite(array, writer);
+            arrayWrite(array, owner, writer);
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
             BitStreamReader reader(m_byteBuffer.data(), writer.getBitPosition(), BitsTag());
             ASSERT_EQ(0, reader.readBits(i));
             ArrayT readArray;
-            arrayRead(readArray, reader);
+            arrayRead(readArray, owner, reader);
             ASSERT_EQ(array, readArray);
 
-            ArrayT arrayCopy(array);
-            ASSERT_EQ(array, arrayCopy);
+            testArrayCopiesAndMoves(array);
         }
     }
 
-    template <typename ARRAY_TRAITS, typename RAW_ARRAY>
-    void testArrayAligned(const RAW_ARRAY& rawArray, size_t expectedBitSize)
+    template <typename ARRAY_TRAITS, typename RAW_ARRAY, typename ARRAY_EXPRESSIONS, typename OWNER_TYPE>
+    void testArrayAligned(const RAW_ARRAY& rawArray, size_t expectedBitSize, OWNER_TYPE& owner)
     {
-        using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED, ArrayTestArrayExpressions>;
+        using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED, ARRAY_EXPRESSIONS>;
 
         for (uint8_t i = 0; i < 8; ++i)
         {
             ArrayT array(rawArray);
 
-            const size_t bitSize = arrayBitSizeOf(array, i);
-            ASSERT_EQ(alignTo(8, i) - i + expectedBitSize, bitSize);
-            ASSERT_EQ(i + bitSize, arrayInitializeOffsets(array, i));
+            const size_t bitSize = arrayBitSizeOf(array, owner, i);
+            if (expectedBitSize == 0)
+            {
+                ASSERT_EQ(expectedBitSize, bitSize);
+            }
+            else
+            {
+                ASSERT_EQ(alignTo(8, i) - i + expectedBitSize, bitSize);
+            }
+            ASSERT_EQ(i + bitSize, arrayInitializeOffsets(array, owner, i));
 
             BitStreamWriter writer(m_byteBuffer.data(), m_byteBuffer.size());
             writer.writeBits(0, i);
-            arrayWrite(array, writer);
+            arrayWrite(array, owner, writer);
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
             BitStreamReader reader(m_byteBuffer.data(), writer.getBitPosition(), BitsTag());
             ASSERT_EQ(0, reader.readBits(i));
             ArrayT readArray;
-            arrayRead(readArray, reader, rawArray.size());
+            arrayRead(readArray, owner, reader, rawArray.size());
             ASSERT_EQ(array, readArray);
 
-            ArrayT arrayCopy(array);
-            ASSERT_EQ(array, arrayCopy);
+            testArrayCopiesAndMoves(array);
         }
     }
 
-    template <typename ARRAY_TRAITS, typename RAW_ARRAY>
-    void testArrayAlignedAuto(const RAW_ARRAY& rawArray, size_t expectedBitSize)
+    template <typename ARRAY_TRAITS, typename RAW_ARRAY, typename ARRAY_EXPRESSIONS, typename OWNER_TYPE>
+    void testArrayAlignedAuto(const RAW_ARRAY& rawArray, size_t expectedBitSize, OWNER_TYPE& owner)
     {
-        using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED_AUTO, ArrayTestArrayExpressions>;
+        using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED_AUTO, ARRAY_EXPRESSIONS>;
 
         for (uint8_t i = 0; i < 8; ++i)
         {
             ArrayT array(rawArray);
 
-            const size_t bitSize = arrayBitSizeOf(array, i);
-            ASSERT_EQ(alignTo(8, i) - i + expectedBitSize, bitSize);
-            ASSERT_EQ(i + bitSize, arrayInitializeOffsets(array, i));
+            const size_t bitSize = arrayBitSizeOf(array, owner, i);
+
+            if (expectedBitSize == AUTO_LENGTH_BIT_SIZE)
+            {
+                ASSERT_EQ(expectedBitSize, bitSize);
+            }
+            else
+            {
+                ASSERT_EQ(alignTo(8, i) - i + expectedBitSize, bitSize) << expectedBitSize;
+            }
+            ASSERT_EQ(i + bitSize, arrayInitializeOffsets(array, owner, i));
 
             BitStreamWriter writer(m_byteBuffer.data(), m_byteBuffer.size());
             writer.writeBits(0, i);
-            arrayWrite(array, writer);
+            arrayWrite(array, owner, writer);
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
             BitStreamReader reader(m_byteBuffer.data(), writer.getBitPosition(), BitsTag());
             ASSERT_EQ(0, reader.readBits(i));
             ArrayT readArray;
-            arrayRead(readArray, reader);
+            arrayRead(readArray, owner, reader);
             ASSERT_EQ(array, readArray);
 
-            ArrayT arrayCopy(array);
-            ASSERT_EQ(array, arrayCopy);
+            testArrayCopiesAndMoves(array);
         }
     }
 
-    template <typename ARRAY_TRAITS, typename RAW_ARRAY,
+    template <typename ARRAY_TRAITS, typename RAW_ARRAY, typename ARRAY_EXPRESSIONS, typename OWNER_TYPE,
             typename std::enable_if<ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT, int>::type = 0>
-    void testArrayImplicit(const RAW_ARRAY& rawArray, size_t expectedBitSize)
+    void testArrayImplicit(const RAW_ARRAY& rawArray, size_t expectedBitSize, OWNER_TYPE& owner)
     {
-        using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::IMPLICIT>;
+        using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::IMPLICIT, ARRAY_EXPRESSIONS>;
 
-        if (detail::arrayTraitsConstBitSizeOf<ARRAY_TRAITS>(ArrayTestOwner()) % 8 != 0)
+        if (detail::arrayTraitsConstBitSizeOf<ARRAY_TRAITS>(owner) % 8 != 0)
+            return; // implicit array allowed for types with constant bitsize rounded to bytes
 
         for (uint8_t i = 0; i < 8; ++i)
         {
             ArrayT array(rawArray);
 
-            const size_t bitSize = arrayBitSizeOf(array, i);
+            const size_t bitSize = arrayBitSizeOf(array, owner, i);
             ASSERT_EQ(expectedBitSize, bitSize);
-            ASSERT_EQ(i + bitSize, arrayInitializeOffsets(array, i));
+            ASSERT_EQ(i + bitSize, arrayInitializeOffsets(array, owner, i));
 
             BitStreamWriter writer(m_byteBuffer.data(), m_byteBuffer.size());
             writer.writeBits(0, i);
-            arrayWrite(array, writer);
+            arrayWrite(array, owner, writer);
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
             BitStreamReader reader(m_byteBuffer.data(), writer.getBitPosition(), BitsTag());
             ASSERT_EQ(0, reader.readBits(i));
             ArrayT readArray;
-            arrayRead(readArray, reader);
+            arrayRead(readArray, owner, reader);
             ASSERT_EQ(array, readArray);
 
-            ArrayT arrayCopy(array);
-            ASSERT_EQ(array, arrayCopy);
+            testArrayCopiesAndMoves(array);
         }
     }
 
-    template <typename ARRAY_TRAITS, typename RAW_ARRAY,
+    template <typename ARRAY_TRAITS, typename RAW_ARRAY, typename ARRAY_EXPRESSIONS, typename OWNER_TYPE,
             typename std::enable_if<!ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT, int>::type = 0>
-    void testArrayImplicit(const RAW_ARRAY&, size_t)
+    void testArrayImplicit(const RAW_ARRAY&, size_t, OWNER_TYPE&)
     {
         // implicit array not allowed for types with non-constant bitsize, so skip the test
     }
 
-    template <typename ARRAY_TRAITS, typename RAW_ARRAY>
-    void testPackedArrayNormal(const RAW_ARRAY& rawArray, size_t expectedBitSize)
+    template <typename ARRAY_TRAITS, typename RAW_ARRAY, typename ARRAY_EXPRESSIONS, typename OWNER_TYPE>
+    void testPackedArrayNormal(const RAW_ARRAY& rawArray, size_t expectedBitSize, OWNER_TYPE& owner)
     {
-        using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL, ArrayTestOwner>;
+        using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL, ARRAY_EXPRESSIONS>;
 
         for (uint8_t i = 0; i < 8; ++i)
         {
             ArrayT array(rawArray);
 
-            const size_t bitSize = arrayBitSizeOfPacked(array, i);
+            const size_t bitSize = arrayBitSizeOfPacked(array, owner, i);
             if (expectedBitSize != UNKNOWN_BIT_SIZE)
             {
                 ASSERT_EQ(expectedBitSize, bitSize);
             }
-            ASSERT_EQ(i + bitSize, arrayInitializeOffsetsPacked(array, i));
+            ASSERT_EQ(i + bitSize, arrayInitializeOffsetsPacked(array, owner, i));
 
             BitStreamWriter writer(m_byteBuffer.data(), m_byteBuffer.size());
             writer.writeBits(0, i);
-            arrayWritePacked(array, writer);
+            arrayWritePacked(array, owner, writer);
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
             BitStreamReader reader(m_byteBuffer.data(), writer.getBitPosition(), BitsTag());
             ASSERT_EQ(0, reader.readBits(i));
             ArrayT readArray;
-            arrayReadPacked(readArray, reader, rawArray.size());
+            arrayReadPacked(readArray, owner, reader, rawArray.size());
             ASSERT_EQ(array, readArray);
 
-            ArrayT arrayCopy(array);
-            ASSERT_EQ(array, arrayCopy);
+            testArrayCopiesAndMoves(array);
         }
     }
 
-    template <typename ARRAY_TRAITS, typename RAW_ARRAY>
-    void testPackedArrayAuto(const RAW_ARRAY& rawArray, size_t expectedBitSize)
+    template <typename ARRAY_TRAITS, typename RAW_ARRAY, typename ARRAY_EXPRESSIONS, typename OWNER_TYPE>
+    void testPackedArrayAuto(const RAW_ARRAY& rawArray, size_t expectedBitSize, OWNER_TYPE& owner)
     {
-        using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO>;
+        using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO, ARRAY_EXPRESSIONS>;
 
         for (uint8_t i = 0; i < 8; ++i)
         {
             ArrayT array(rawArray);
 
-            const size_t bitSize = arrayBitSizeOfPacked(array, i);
+            const size_t bitSize = arrayBitSizeOfPacked(array, owner, i);
             if (expectedBitSize != UNKNOWN_BIT_SIZE)
             {
                 ASSERT_EQ(expectedBitSize, bitSize);
             }
-            ASSERT_EQ(i + bitSize, arrayInitializeOffsetsPacked(array, i));
+            ASSERT_EQ(i + bitSize, arrayInitializeOffsetsPacked(array, owner, i));
 
             BitStreamWriter writer(m_byteBuffer.data(), m_byteBuffer.size());
             writer.writeBits(0, i);
-            arrayWritePacked(array, writer);
+            arrayWritePacked(array, owner, writer);
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
             BitStreamReader reader(m_byteBuffer.data(), writer.getBitPosition(), BitsTag());
             ASSERT_EQ(0, reader.readBits(i));
             ArrayT readArray;
-            arrayReadPacked(readArray, reader);
+            arrayReadPacked(readArray, owner, reader);
             ASSERT_EQ(array, readArray);
 
-            ArrayT arrayCopy(array);
-            ASSERT_EQ(array, arrayCopy);
+            testArrayCopiesAndMoves(array);
         }
     }
 
-    template <typename ARRAY_TRAITS, typename RAW_ARRAY>
-    void testPackedArrayAligned(const RAW_ARRAY& rawArray, size_t expectedBitSize)
+    template <typename ARRAY_TRAITS, typename RAW_ARRAY, typename ARRAY_EXPRESSIONS, typename OWNER_TYPE>
+    void testPackedArrayAligned(const RAW_ARRAY& rawArray, size_t expectedBitSize, OWNER_TYPE& owner)
     {
-        using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED, ArrayTestArrayExpressions>;
+        using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED, ARRAY_EXPRESSIONS>;
 
         for (uint8_t i = 0; i < 8; ++i)
         {
             ArrayT array(rawArray);
 
-            const size_t bitSize = arrayBitSizeOfPacked(array, i);
+            const size_t bitSize = arrayBitSizeOfPacked(array, owner, i);
             if (expectedBitSize != UNKNOWN_BIT_SIZE && i == 0)
             {
                 ASSERT_EQ(expectedBitSize, bitSize);
             }
-            ASSERT_EQ(i + bitSize, arrayInitializeOffsetsPacked(array, i));
+            ASSERT_EQ(i + bitSize, arrayInitializeOffsetsPacked(array, owner, i));
 
             BitStreamWriter writer(m_byteBuffer.data(), m_byteBuffer.size());
             writer.writeBits(0, i);
-            arrayWritePacked(array, writer);
+            arrayWritePacked(array, owner, writer);
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
             BitStreamReader reader(m_byteBuffer.data(), writer.getBitPosition(), BitsTag());
             ASSERT_EQ(0, reader.readBits(i));
             ArrayT readArray;
-            arrayReadPacked(readArray, reader, rawArray.size());
+            arrayReadPacked(readArray, owner, reader, rawArray.size());
             ASSERT_EQ(array, readArray);
 
-            ArrayT arrayCopy(array);
-            ASSERT_EQ(array, arrayCopy);
+            testArrayCopiesAndMoves(array);
         }
     }
 
-    template <typename ARRAY_TRAITS, typename RAW_ARRAY>
-    void testPackedArrayAlignedAuto(const RAW_ARRAY& rawArray, size_t expectedBitSize)
+    template <typename ARRAY_TRAITS, typename RAW_ARRAY, typename ARRAY_EXPRESSIONS, typename OWNER_TYPE>
+    void testPackedArrayAlignedAuto(const RAW_ARRAY& rawArray, size_t expectedBitSize, OWNER_TYPE& owner)
     {
-        using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED_AUTO, ArrayTestArrayExpressions>;
+        using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED_AUTO, ARRAY_EXPRESSIONS>;
 
         for (uint8_t i = 0; i < 8; ++i)
         {
             ArrayT array(rawArray);
 
-            const size_t bitSize = arrayBitSizeOfPacked(array, i);
+            const size_t bitSize = arrayBitSizeOfPacked(array, owner, i);
             if (expectedBitSize != UNKNOWN_BIT_SIZE && i == 0)
             {
                 ASSERT_EQ(expectedBitSize, bitSize);
             }
-            ASSERT_EQ(i + bitSize, arrayInitializeOffsetsPacked(array, i));
+            ASSERT_EQ(i + bitSize, arrayInitializeOffsetsPacked(array, owner, i));
 
             BitStreamWriter writer(m_byteBuffer.data(), m_byteBuffer.size());
             writer.writeBits(0, i);
-            arrayWritePacked(array, writer);
+            arrayWritePacked(array, owner, writer);
             ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
             BitStreamReader reader(m_byteBuffer.data(), writer.getBitPosition(), BitsTag());
             ASSERT_EQ(0, reader.readBits(i));
             ArrayT readArray;
-            arrayReadPacked(readArray, reader);
+            arrayReadPacked(readArray, owner, reader);
             ASSERT_EQ(array, readArray);
 
-            ArrayT arrayCopy(array);
-            ASSERT_EQ(array, arrayCopy);
+            testArrayCopiesAndMoves(array);
         }
+    }
+
+    template <typename ARRAY>
+    void testArrayCopiesAndMoves(const ARRAY& array)
+    {
+        ARRAY arrayCopy(array);
+        ASSERT_EQ(array, arrayCopy);
+        ASSERT_EQ(array.getRawArray(), arrayCopy.getRawArray());
+
+        ARRAY arrayCopyAssigned;
+        arrayCopyAssigned = array;
+        ASSERT_EQ(array, arrayCopyAssigned);
+        ASSERT_EQ(array.getRawArray(), arrayCopyAssigned.getRawArray());
+
+        const ARRAY arrayMoved = std::move(arrayCopy);
+        ASSERT_EQ(array, arrayMoved);
+        ASSERT_EQ(array.getRawArray(), arrayMoved.getRawArray());
+
+        ARRAY arrayMoveAssigned;
+        arrayMoveAssigned = std::move(arrayCopyAssigned);
+        ASSERT_EQ(array, arrayMoveAssigned);
+        ASSERT_EQ(array.getRawArray(), arrayMoveAssigned.getRawArray());
+
+        ARRAY arrayCopyWithPropagateAllocator(PropagateAllocator, array, std::allocator<uint8_t>());
+        ASSERT_EQ(array, arrayCopyWithPropagateAllocator);
+        ASSERT_EQ(array.getRawArray(), arrayCopyWithPropagateAllocator.getRawArray());
     }
 
     static const size_t AUTO_LENGTH_BIT_SIZE = 8;
@@ -815,6 +625,9 @@ TEST_F(ArrayTest, intField4Array)
             7,
             static_cast<int8_t>(1U << (NUM_BITS - 1)) - 1};
     testArray<BitFieldArrayTraits<int8_t, NUM_BITS>>(rawArray, NUM_BITS);
+
+    // empty
+    testArray<BitFieldArrayTraits<int8_t, NUM_BITS>>(std::vector<int8_t>(), NUM_BITS);
 }
 
 TEST_F(ArrayTest, intField12Array)
@@ -852,6 +665,9 @@ TEST_F(ArrayTest, bitField4Array)
     constexpr size_t NUM_BITS = 4;
     std::vector<uint8_t> rawArray = {0, 7, (1U << NUM_BITS) - 1};
     testArray<BitFieldArrayTraits<uint8_t, NUM_BITS>>(rawArray, NUM_BITS);
+
+    // empty
+    testArray<BitFieldArrayTraits<uint8_t, NUM_BITS>>(std::vector<uint8_t>(), NUM_BITS);
 }
 
 TEST_F(ArrayTest, bitField12Array)
@@ -882,7 +698,20 @@ TEST_F(ArrayTest, dynamicIntField4Array)
             -static_cast<int8_t>(1U << (NUM_BITS - 1)),
             7,
             static_cast<int8_t>(1U << (NUM_BITS - 1)) - 1};
-    testArray<DynamicBitFieldArrayTraits<int8_t, ElementBitSize<NUM_BITS>>>(rawArray, NUM_BITS);
+    testArray<DynamicBitFieldArrayTraits<int8_t, ElementBitSizeWithOwner>>(rawArray, NUM_BITS,
+            ArrayTestOwnerWithBitSize(NUM_BITS));
+
+    // empty
+    testArray<DynamicBitFieldArrayTraits<int8_t, ElementBitSizeWithoutOwner<NUM_BITS>>>(
+            std::vector<int8_t>(), NUM_BITS);
+}
+
+TEST_F(ArrayTest, dynamicIntField8Array)
+{
+    constexpr size_t NUM_BITS = 8; // aligned to allow implicit array
+    std::vector<int8_t> rawArray = {INT8_MIN, 7, INT8_MAX};
+    testArray<DynamicBitFieldArrayTraits<int8_t, ElementBitSizeWithOwner>>(rawArray, NUM_BITS,
+            ArrayTestOwnerWithBitSize(NUM_BITS));
 }
 
 TEST_F(ArrayTest, dynamicIntField12Array)
@@ -892,7 +721,7 @@ TEST_F(ArrayTest, dynamicIntField12Array)
             -static_cast<int16_t>(1U << (NUM_BITS - 1)),
             7,
             static_cast<int16_t>(1U << (NUM_BITS - 1)) - 1};
-    testArray<DynamicBitFieldArrayTraits<int16_t, ElementBitSize<NUM_BITS>>>(rawArray, NUM_BITS);
+    testArray<DynamicBitFieldArrayTraits<int16_t, ElementBitSizeWithoutOwner<NUM_BITS>>>(rawArray, NUM_BITS);
 }
 
 TEST_F(ArrayTest, dynamicIntField20Array)
@@ -902,7 +731,8 @@ TEST_F(ArrayTest, dynamicIntField20Array)
             -static_cast<int32_t>(1U << (NUM_BITS - 1)),
             7,
             static_cast<int32_t>(1U << (NUM_BITS - 1)) - 1};
-    testArray<DynamicBitFieldArrayTraits<int32_t, ElementBitSize<NUM_BITS>>>(rawArray, NUM_BITS);
+    testArray<DynamicBitFieldArrayTraits<int32_t, ElementBitSizeWithOwner>>(rawArray, NUM_BITS,
+            ArrayTestOwnerWithBitSize(NUM_BITS));
 }
 
 TEST_F(ArrayTest, dynamicIntField36Array)
@@ -912,41 +742,58 @@ TEST_F(ArrayTest, dynamicIntField36Array)
             -static_cast<int64_t>(UINT64_C(1) << (NUM_BITS - 1)),
             7,
             static_cast<int64_t>(UINT64_C(1) << (NUM_BITS - 1)) - 1};
-    testArray<DynamicBitFieldArrayTraits<int64_t, ElementBitSize<NUM_BITS>>>(rawArray, NUM_BITS);
+    testArray<DynamicBitFieldArrayTraits<int64_t, ElementBitSizeWithoutOwner<NUM_BITS>>>(rawArray, NUM_BITS);
 }
 
 TEST_F(ArrayTest, dynamicBitField4Array)
 {
     constexpr size_t NUM_BITS = 4;
     std::vector<uint8_t> rawArray = {0, 7, (1U << NUM_BITS) - 1};
-    testArray<DynamicBitFieldArrayTraits<uint8_t, ElementBitSize<NUM_BITS>>>(rawArray, NUM_BITS);
+    testArray<DynamicBitFieldArrayTraits<uint8_t, ElementBitSizeWithOwner>>(rawArray, NUM_BITS,
+            ArrayTestOwnerWithBitSize(NUM_BITS));
+
+    // empty
+    testArray<DynamicBitFieldArrayTraits<uint8_t, ElementBitSizeWithoutOwner<NUM_BITS>>>(
+            std::vector<uint8_t>(), NUM_BITS);
+}
+
+TEST_F(ArrayTest, dynamicBitField8Array)
+{
+    constexpr size_t NUM_BITS = 8; // aligned to allow implicit array
+    std::vector<uint8_t> rawArray = {0, 7, UINT8_MAX};
+    testArray<DynamicBitFieldArrayTraits<uint8_t, ElementBitSizeWithOwner>>(rawArray, NUM_BITS,
+            ArrayTestOwnerWithBitSize(NUM_BITS));
 }
 
 TEST_F(ArrayTest, dynamicBitField12Array)
 {
     constexpr size_t NUM_BITS = 12;
     std::vector<uint16_t> rawArray = {0, 7, (1U << NUM_BITS) - 1};
-    testArray<DynamicBitFieldArrayTraits<uint16_t, ElementBitSize<NUM_BITS>>>(rawArray, NUM_BITS);
+    testArray<DynamicBitFieldArrayTraits<uint16_t, ElementBitSizeWithoutOwner<NUM_BITS>>>(rawArray, NUM_BITS);
 }
 
 TEST_F(ArrayTest, dynamicBitField20Array)
 {
     constexpr size_t NUM_BITS = 20;
     std::vector<uint32_t> rawArray = {0, 7, (1U << NUM_BITS) - 1};
-    testArray<DynamicBitFieldArrayTraits<uint32_t, ElementBitSize<NUM_BITS>>>(rawArray, NUM_BITS);
+    testArray<DynamicBitFieldArrayTraits<uint32_t, ElementBitSizeWithOwner>>(rawArray, NUM_BITS,
+            ArrayTestOwnerWithBitSize(NUM_BITS));
 }
 
 TEST_F(ArrayTest, dynamicBitField36Array)
 {
     constexpr size_t NUM_BITS = 36;
     std::vector<uint64_t> rawArray = {0, 7, (UINT64_C(1) << NUM_BITS) - 1};
-    testArray<DynamicBitFieldArrayTraits<uint64_t, ElementBitSize<NUM_BITS>>>(rawArray, NUM_BITS);
+    testArray<DynamicBitFieldArrayTraits<uint64_t, ElementBitSizeWithoutOwner<NUM_BITS>>>(rawArray, NUM_BITS);
 }
 
 TEST_F(ArrayTest, stdInt8Array)
 {
     std::vector<int8_t> rawArray = {INT8_MIN, 7, INT8_MAX};
     testArray<StdIntArrayTraits<int8_t>>(rawArray, 8);
+
+    // empty
+    testArray<StdIntArrayTraits<int8_t>>(std::vector<int8_t>(), 8);
 }
 
 TEST_F(ArrayTest, stdInt16Array)
@@ -971,6 +818,9 @@ TEST_F(ArrayTest, stdUInt8Array)
 {
     std::vector<uint8_t> rawArray = {0, 7, UINT8_MAX};
     testArray<StdIntArrayTraits<uint8_t>>(rawArray, 8);
+
+    // empty
+    testArray<StdIntArrayTraits<uint8_t>>(std::vector<uint8_t>(), 8);
 }
 
 TEST_F(ArrayTest, stdUInt16Array)
@@ -996,6 +846,9 @@ TEST_F(ArrayTest, varInt16Array)
     std::vector<int16_t> rawArray = {static_cast<int16_t>(1U << 5U), static_cast<int16_t>(1U << (5U + 8))};
     const size_t bitSize = 8 * (1 + 2);
     testArray<VarIntNNArrayTraits<int16_t>>(rawArray, bitSize, bitSize);
+
+    // empty
+    testArray<VarIntNNArrayTraits<int16_t>>(std::vector<int16_t>(), 0, 0);
 }
 
 TEST_F(ArrayTest, varInt32Array)
@@ -1007,6 +860,9 @@ TEST_F(ArrayTest, varInt32Array)
             static_cast<int32_t>(1U << (5U + 7 + 7 + 8))};
     const size_t bitSize = 8 * (1 + 2 + 3 + 4);
     testArray<VarIntNNArrayTraits<int32_t>>(rawArray, bitSize, bitSize);
+
+    // empty
+    testArray<VarIntNNArrayTraits<int32_t>>(std::vector<int32_t>(), 0, 0);
 }
 
 TEST_F(ArrayTest, varInt64Array)
@@ -1022,6 +878,9 @@ TEST_F(ArrayTest, varInt64Array)
             static_cast<int64_t>(UINT64_C(1) << (5U + 7 + 7 + 7 + 7 + 7 + 7 + 8))};
     const size_t bitSize = 8 * (1 + 2 + 3 + 4 + 5 + 6 + 7 + 8);
     testArray<VarIntNNArrayTraits<int64_t>>(rawArray, bitSize, bitSize);
+
+    // empty
+    testArray<VarIntNNArrayTraits<int64_t>>(std::vector<int64_t>(), 0, 0);
 }
 
 TEST_F(ArrayTest, varUInt16Array)
@@ -1029,6 +888,9 @@ TEST_F(ArrayTest, varUInt16Array)
     std::vector<uint16_t> rawArray = {1U << 6U, 1U << (6U + 8)};
     const size_t bitSize = 8 * (1 + 2);
     testArray<VarIntNNArrayTraits<uint16_t>>(rawArray, bitSize, bitSize);
+
+    // empty
+    testArray<VarIntNNArrayTraits<uint16_t>>(std::vector<uint16_t>(), 0, 0);
 }
 
 TEST_F(ArrayTest, varUInt32Array)
@@ -1036,6 +898,9 @@ TEST_F(ArrayTest, varUInt32Array)
     std::vector<uint32_t> rawArray = {1U << 6U, 1U << (6U + 7), 1U << (6U + 7 + 7), 1U << (6U + 7 + 7 + 8)};
     const size_t bitSize = 8 * (1 + 2 + 3 + 4);
     testArray<VarIntNNArrayTraits<uint32_t>>(rawArray, bitSize, bitSize);
+
+    // empty
+    testArray<VarIntNNArrayTraits<uint32_t>>(std::vector<uint32_t>(), 0, 0);
 }
 
 TEST_F(ArrayTest, varUInt64Array)
@@ -1051,6 +916,9 @@ TEST_F(ArrayTest, varUInt64Array)
             UINT64_C(1) << (6U + 7 + 7 + 7 + 7 + 7 + 7 + 8)};
     const size_t bitSize = 8 * (1 + 2 + 3 + 4 + 5 + 6 + 7 + 8);
     testArray<VarIntNNArrayTraits<uint64_t>>(rawArray, bitSize, bitSize);
+
+    // empty
+    testArray<VarIntNNArrayTraits<uint64_t>>(std::vector<uint64_t>(), 0, 0);
 }
 
 TEST_F(ArrayTest, varIntArray)
@@ -1090,6 +958,9 @@ TEST_F(ArrayTest, varIntArray)
     rawArray.push_back(INT64_MIN);
     const size_t bitSize = 8 * (3 + 2 * (1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9) + 1);
     testArray<VarIntArrayTraits<int64_t>>(rawArray, bitSize, bitSize);
+
+    // empty
+    testArray<VarIntArrayTraits<int64_t>>(std::vector<int64_t>(), 0, 0);
 }
 
 TEST_F(ArrayTest, varUIntArray)
@@ -1117,6 +988,9 @@ TEST_F(ArrayTest, varUIntArray)
     rawArray.push_back(UINT64_MAX);
     const size_t bitSize = 8 * (2 + (1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9));
     testArray<VarIntArrayTraits<uint64_t>>(rawArray, bitSize, bitSize);
+
+    // empty
+    testArray<VarIntArrayTraits<uint64_t>>(std::vector<uint64_t>(), 0, 0);
 }
 
 TEST_F(ArrayTest, varSizeArray)
@@ -1129,6 +1003,9 @@ TEST_F(ArrayTest, varSizeArray)
             UINT32_C(1) << (1U + 7 + 7 + 7 + 8)};
     const size_t bitSize = 8 * (1 + 2 + 3 + 4 + 5);
     testArray<VarSizeArrayTraits>(rawArray, bitSize, bitSize);
+
+    // empty
+    testArray<VarSizeArrayTraits>(std::vector<uint32_t>(), 0, 0);
 }
 
 TEST_F(ArrayTest, float16Array)
@@ -1136,6 +1013,9 @@ TEST_F(ArrayTest, float16Array)
     const size_t elementBitSize = 16;
     std::vector<float> rawArray = {-9.0, 0.0,  10.0};
     testArray<Float16ArrayTraits>(rawArray, elementBitSize);
+
+    // empty
+    testArray<Float16ArrayTraits>(std::vector<float>(), elementBitSize);
 }
 
 TEST_F(ArrayTest, float32Array)
@@ -1143,6 +1023,9 @@ TEST_F(ArrayTest, float32Array)
     const size_t elementBitSize = 32;
     std::vector<float> rawArray = {-9.0, 0.0,  10.0};
     testArray<Float32ArrayTraits>(rawArray, elementBitSize);
+
+    // empty
+    testArray<Float32ArrayTraits>(std::vector<float>(), elementBitSize);
 }
 
 TEST_F(ArrayTest, float64Array)
@@ -1150,6 +1033,9 @@ TEST_F(ArrayTest, float64Array)
     const size_t elementBitSize = 64;
     std::vector<double> rawArray = {-9.0, 0.0, 10.0};
     testArray<Float64ArrayTraits>(rawArray, elementBitSize);
+
+    // empty
+    testArray<Float64ArrayTraits>(std::vector<double>(), elementBitSize);
 }
 
 TEST_F(ArrayTest, boolArray)
@@ -1157,6 +1043,9 @@ TEST_F(ArrayTest, boolArray)
     const size_t elementBitSize = 1;
     std::vector<bool> rawArray = {false, true};
     testArray<BoolArrayTraits>(rawArray, elementBitSize);
+
+    // empty
+    testArray<BoolArrayTraits>(std::vector<bool>(), elementBitSize);
 }
 
 TEST_F(ArrayTest, bytesArray)
@@ -1166,6 +1055,9 @@ TEST_F(ArrayTest, bytesArray)
     const size_t elementBitSize = bytesLengthBitSize + bytesBitSize;
     std::vector<std::vector<uint8_t>> rawArray = {{ {{ 1, 255 }}, {{ 127, 128 }} }};
     testArray<BytesArrayTraits>(rawArray, elementBitSize);
+
+    // empty
+    testArray<BytesArrayTraits>(std::vector<std::vector<uint8_t>>(), elementBitSize);
 }
 
 TEST_F(ArrayTest, stringArray)
@@ -1175,6 +1067,9 @@ TEST_F(ArrayTest, stringArray)
     const size_t elementBitSize = stringLengthBitSize + stringBitSize;
     std::vector<std::string> rawArray = {"String0", "String1", "String2"};
     testArray<StringArrayTraits>(rawArray, elementBitSize);
+
+    // empty
+    testArray<StringArrayTraits>(std::vector<std::string>(), 0);
 }
 
 TEST_F(ArrayTest, bitBufferArray)
@@ -1185,31 +1080,46 @@ TEST_F(ArrayTest, bitBufferArray)
     std::vector<BitBuffer> rawArray = {BitBuffer(bitBufferBitSize), BitBuffer(bitBufferBitSize),
             BitBuffer(bitBufferBitSize)};
     testArray<BitBufferArrayTraits>(rawArray, elementBitSize);
+
+    // empty
+    testArray<BitBufferArrayTraits>(std::vector<BitBuffer>(), 0);
 }
 
 TEST_F(ArrayTest, enumArray)
 {
-    std::vector<DummyEnum> rawArray = {DummyEnum::VALUE1, DummyEnum::VALUE2, DummyEnum::VALUE3};
+    std::vector<ArrayEnum> rawArray = {ArrayEnum::VALUE1, ArrayEnum::VALUE2, ArrayEnum::VALUE3};
     const size_t elementBitSize = 8;
-    testArray<EnumArrayTraits<DummyEnum>>(rawArray, elementBitSize);
+    testArray<EnumArrayTraits<ArrayEnum>>(rawArray, elementBitSize);
 
-    std::vector<DummyEnum> invalidRawArray = {static_cast<DummyEnum>(10)};
-    ASSERT_THROW(testArray<EnumArrayTraits<DummyEnum>>(invalidRawArray, elementBitSize), CppRuntimeException);
+    // empty
+    testArray<EnumArrayTraits<ArrayEnum>>(std::vector<ArrayEnum>(), elementBitSize);
+
+    std::vector<ArrayEnum> invalidRawArray = {static_cast<ArrayEnum>(10)};
+    ASSERT_THROW(testArray<EnumArrayTraits<ArrayEnum>>(invalidRawArray, elementBitSize), CppRuntimeException);
 }
 
 TEST_F(ArrayTest, bitmaskArray)
 {
-    std::vector<DummyBitmask> rawArray = {DummyBitmask::Values::READ, DummyBitmask::Values::WRITE,
-            DummyBitmask::Values::CREATE};
+    std::vector<ArrayBitmask> rawArray = {ArrayBitmask::Values::READ, ArrayBitmask::Values::WRITE,
+            ArrayBitmask::Values::CREATE};
     const size_t elementBitSize = 8;
-    testArray<BitmaskArrayTraits<DummyBitmask>>(rawArray, elementBitSize);
+    testArray<BitmaskArrayTraits<ArrayBitmask>>(rawArray, elementBitSize);
+
+    // empty
+    testArray<BitmaskArrayTraits<ArrayBitmask>>(std::vector<ArrayBitmask>(), elementBitSize);
 }
 
 TEST_F(ArrayTest, objectArray)
 {
-    std::vector<DummyObject> rawArray = {DummyObject(0xAB), DummyObject(0xCD), DummyObject(0xEF)};
-    testArrayInitializeElements<ObjectArrayTraits<DummyObject, DummyObjectElementFactory>>(rawArray);
-    testArray<ObjectArrayTraits<DummyObject, DummyObjectElementFactory>>(rawArray, 31);
+    std::vector<ArrayObject> rawArray = {ArrayObject(0xAB), ArrayObject(0xCD), ArrayObject(0xEF)};
+    testArrayInitializeElements<ObjectArrayTraits<ArrayObject, ArrayObjectElementFactory>>(rawArray);
+    testArray<ObjectArrayTraits<ArrayObject, ArrayObjectElementFactory>, std::vector<ArrayObject>,
+            ArrayObjectArrayExpressions>(rawArray, 31);
+
+    // empty
+    testArray<ObjectArrayTraits<ArrayObject, ArrayObjectElementFactory>, std::vector<ArrayObject>,
+            ArrayObjectArrayExpressions>(std::vector<ArrayObject>(), 31);
+
 }
 
 TEST_F(ArrayTest, stdInt8PackedArray)
@@ -1319,13 +1229,12 @@ TEST_F(ArrayTest, intField16PackedArray)
 
 TEST_F(ArrayTest, dynamicBitField8PackedArray)
 {
-    using ArrayTraits = DynamicBitFieldArrayTraits<uint8_t, ElementBitSize<8>>;
-
     // will not be packed because unpacked 8bit values will be more efficient
     std::vector<uint8_t> rawArray1 = {UINT8_MAX, 0, 10, 20, 30, 40}; // max_bit_number 8, delta needs 9 bits
     const size_t array1BitSizeOf = 1 + 6 * 8;
     const size_t array1AlignedBitSizeOf = 1 + 8 + /* alignment */ 7 + 5 * 8;
-    testPackedArray<ArrayTraits>(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf);
+    testPackedArray<DynamicBitFieldArrayTraits<uint8_t, ElementBitSizeWithOwner>>(
+            rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, ArrayTestOwnerWithBitSize(8));
 
     // will not be packed because unpacked 8bit values will be more efficient
     // (6 bits more are needed to store max_bit_number in descriptor if packing was enabled)
@@ -1333,7 +1242,8 @@ TEST_F(ArrayTest, dynamicBitField8PackedArray)
             {UINT8_MAX, UINT8_MAX / 2 + 1, 10, 20, 30, 40}; // max_bit_number 7, delta needs 8 bits
     const size_t array2BitSizeOf = 1 + 6 * 8;
     const size_t array2AlignedBitSizeOf = 1 + 8 + /* alignment */ 7 + 5 * 8;
-    testPackedArray<ArrayTraits>(rawArray2, array2BitSizeOf, array2AlignedBitSizeOf);
+    testPackedArray<DynamicBitFieldArrayTraits<uint8_t, ElementBitSizeWithoutOwner<8>>>(
+            rawArray2, array2BitSizeOf, array2AlignedBitSizeOf);
 }
 
 TEST_F(ArrayTest, varUInt64PackedArray)
@@ -1356,23 +1266,47 @@ TEST_F(ArrayTest, varUInt64PackedArray)
             unpackedBitSizeOf, unpackedAlignedBitSizeOf);
 }
 
+TEST_F(ArrayTest, varSizePackedArray)
+{
+    std::vector<uint32_t> rawArray = {
+            UINT32_C(1) << 6U,
+            UINT32_C(1) << (6U + 7),
+            UINT32_C(1) << (6U + 7 + 7),
+            UINT32_C(1) << (6U + 7 + 7 + 7),
+            UINT32_C(1) << (1U + 7 + 7 + 7 + 8)};
+    testPackedArray<VarSizeArrayTraits>(rawArray);
+}
+
 TEST_F(ArrayTest, enumPackedArray)
 {
-    std::vector<DummyEnum> rawArray = {DummyEnum::VALUE1, DummyEnum::VALUE2, DummyEnum::VALUE3};
-    testPackedArray<EnumArrayTraits<DummyEnum>>(rawArray);
+    std::vector<ArrayEnum> rawArray = {ArrayEnum::VALUE1, ArrayEnum::VALUE2, ArrayEnum::VALUE3};
+    testPackedArray<EnumArrayTraits<ArrayEnum>>(rawArray);
 }
 
 TEST_F(ArrayTest, bitmaskPackedArray)
 {
-    std::vector<DummyBitmask> rawArray = {DummyBitmask::Values::READ, DummyBitmask::Values::WRITE,
-            DummyBitmask::Values::CREATE};
-    testPackedArray<BitmaskArrayTraits<DummyBitmask>>(rawArray);
+    std::vector<ArrayBitmask> rawArray = {ArrayBitmask::Values::READ, ArrayBitmask::Values::WRITE,
+            ArrayBitmask::Values::CREATE};
+    testPackedArray<BitmaskArrayTraits<ArrayBitmask>>(rawArray);
 }
 
 TEST_F(ArrayTest, objectPackedArray)
 {
-    std::vector<DummyObject> rawArray = {DummyObject(0xAB), DummyObject(0xCD), DummyObject(0xEF)};
-    testPackedArray<ObjectArrayTraits<DummyObject, DummyObjectElementFactory>>(rawArray);
+    std::vector<ArrayObject> rawArray = {ArrayObject(0xAB), ArrayObject(0xCD), ArrayObject(0xEF)};
+    testPackedArray<ObjectArrayTraits<ArrayObject, ArrayObjectElementFactory>, std::vector<ArrayObject>,
+            ArrayObjectArrayExpressions>(rawArray);
+}
+
+TEST_F(ArrayTest, createOptionalArray)
+{
+    using ArrayT = Array<std::vector<uint8_t>, BitFieldArrayTraits<uint8_t, 8>, ArrayType::NORMAL>;
+    InplaceOptionalHolder<ArrayT> optionalArray = createOptionalArray<ArrayT>(NullOpt);
+    ASSERT_FALSE(optionalArray.hasValue());
+
+    const std::vector<uint8_t> array = {0, 7, UINT8_MAX};
+    optionalArray = createOptionalArray<ArrayT>(array);
+    ASSERT_TRUE(optionalArray.hasValue());
+    ASSERT_EQ(array, optionalArray->getRawArray());
 }
 
 } // namespace zserio

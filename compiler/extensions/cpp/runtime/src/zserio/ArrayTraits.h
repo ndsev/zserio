@@ -203,8 +203,6 @@ public:
 
     /** Determines whether the bit size of the single element is constant. */
     static constexpr bool IS_BITSIZEOF_CONSTANT = true;
-    /** Determines whether the bit size depends on current bit position. */
-    static constexpr bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -287,8 +285,6 @@ public:
 
     /** Determines whether the bit size of the single element is constant. */
     static constexpr bool IS_BITSIZEOF_CONSTANT = true;
-    /** Determines whether the bit size depends on current bit position. */
-    static constexpr bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -384,8 +380,6 @@ public:
 
     /** Determines whether the bit size of the single element is constant. */
     static constexpr bool IS_BITSIZEOF_CONSTANT = true;
-    /** Determines whether the bit size depends on current bit position. */
-    static constexpr bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -464,8 +458,6 @@ struct StdIntArrayTraits
 
     /** Determines whether the bit size of the single element is constant. */
     static constexpr bool IS_BITSIZEOF_CONSTANT = true;
-    /** Determines whether the bit size depends on current bit position. */
-    static constexpr bool NEEDS_BITSIZEOF_POSITION = false;
 
 private:
     static constexpr uint8_t NUM_BITS = sizeof(T) * 8;
@@ -548,8 +540,6 @@ struct VarIntNNArrayTraits<int16_t>
 
     /** Determines whether the bit size of the single element is constant. */
     static constexpr bool IS_BITSIZEOF_CONSTANT = false;
-    /** Determines whether the bit size depends on current bit position. */
-    static constexpr bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -623,8 +613,6 @@ struct VarIntNNArrayTraits<int32_t>
 
     /** Determines whether the bit size of the single element is constant. */
     static constexpr bool IS_BITSIZEOF_CONSTANT = false;
-    /** Determines whether the bit size depends on current bit position. */
-    static constexpr bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -698,8 +686,6 @@ struct VarIntNNArrayTraits<int64_t>
 
     /** Determines whether the bit size of the single element is constant. */
     static constexpr bool IS_BITSIZEOF_CONSTANT = false;
-    /** Determines whether the bit size depends on current bit position. */
-    static constexpr bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -773,8 +759,6 @@ struct VarIntNNArrayTraits<uint16_t>
 
     /** Determines whether the bit size of the single element is constant. */
     static constexpr bool IS_BITSIZEOF_CONSTANT = false;
-    /** Determines whether the bit size depends on current bit position. */
-    static constexpr bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -848,8 +832,6 @@ struct VarIntNNArrayTraits<uint32_t>
 
     /** Determines whether the bit size of the single element is constant. */
     static constexpr bool IS_BITSIZEOF_CONSTANT = false;
-    /** Determines whether the bit size depends on current bit position. */
-    static constexpr bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -923,8 +905,6 @@ struct VarIntNNArrayTraits<uint64_t>
 
     /** Determines whether the bit size of the single element is constant. */
     static constexpr bool IS_BITSIZEOF_CONSTANT = false;
-    /** Determines whether the bit size depends on current bit position. */
-    static constexpr bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -1004,8 +984,6 @@ struct VarIntArrayTraits<int64_t>
 
     /** Determines whether the bit size of the single element is constant. */
     static constexpr bool IS_BITSIZEOF_CONSTANT = false;
-    /** Determines whether the bit size depends on current bit position. */
-    static constexpr bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -1079,8 +1057,6 @@ struct VarIntArrayTraits<uint64_t>
 
     /** Determines whether the bit size of the single element is constant. */
     static constexpr bool IS_BITSIZEOF_CONSTANT = false;
-    /** Determines whether the bit size depends on current bit position. */
-    static constexpr bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -1153,8 +1129,6 @@ struct VarSizeArrayTraits
 
     /** Determines whether the bit size of the single element is constant. */
     static constexpr bool IS_BITSIZEOF_CONSTANT = false;
-    /** Determines whether the bit size depends on current bit position. */
-    static constexpr bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -1173,16 +1147,6 @@ struct Float16ArrayTraits
     static size_t bitSizeOf()
     {
         return 16;
-    }
-
-    /**
-     * Calculates bit size of the array element.
-     *
-     * \return Bit size of the array element.
-     */
-    static size_t bitSizeOf(ElementType)
-    {
-        return bitSizeOf();
     }
 
     /**
@@ -1233,8 +1197,6 @@ struct Float16ArrayTraits
 
     /** Determines whether the bit size of the single element is constant. */
     static constexpr bool IS_BITSIZEOF_CONSTANT = true;
-    /** Determines whether the bit size depends on current bit position. */
-    static constexpr bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -1253,16 +1215,6 @@ struct Float32ArrayTraits
     static size_t bitSizeOf()
     {
         return 32;
-    }
-
-    /**
-     * Calculates bit size of the array element.
-     *
-     * \return Bit size of the array element.
-     */
-    static size_t bitSizeOf(ElementType)
-    {
-        return bitSizeOf();
     }
 
     /**
@@ -1313,8 +1265,6 @@ struct Float32ArrayTraits
 
     /** Determines whether the bit size of the single element is constant. */
     static constexpr bool IS_BITSIZEOF_CONSTANT = true;
-    /** Determines whether the bit size depends on current bit position. */
-    static constexpr bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -1333,16 +1283,6 @@ struct Float64ArrayTraits
     static size_t bitSizeOf()
     {
         return 64;
-    }
-
-    /**
-     * Calculates bit size of the array element.
-     *
-     * \return Bit size of the array element.
-     */
-    static size_t bitSizeOf(ElementType)
-    {
-        return bitSizeOf();
     }
 
     /**
@@ -1393,8 +1333,6 @@ struct Float64ArrayTraits
 
     /** Determines whether the bit size of the single element is constant. */
     static constexpr bool IS_BITSIZEOF_CONSTANT = true;
-    /** Determines whether the bit size depends on current bit position. */
-    static constexpr bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -1413,16 +1351,6 @@ struct BoolArrayTraits
     static size_t bitSizeOf()
     {
         return 1;
-    }
-
-    /**
-     * Calculates bit size of the array element.
-     *
-     * \return Bit size of the array element.
-     */
-    static size_t bitSizeOf(ElementType)
-    {
-        return bitSizeOf();
     }
 
     /**
@@ -1473,8 +1401,6 @@ struct BoolArrayTraits
 
     /** Determines whether the bit size of the single element is constant. */
     static constexpr bool IS_BITSIZEOF_CONSTANT = true;
-    /** Determines whether the bit size depends on current bit position. */
-    static constexpr bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -1496,21 +1422,9 @@ struct BasicBytesArrayTraits
      *
      * \return Bit size of the array element.
      */
-    static size_t bitSizeOf(const ElementType& element)
-    {
-        return zserio::bitSizeOfBytes(element);
-    }
-
-    /**
-     * Calculates bit size of the array element.
-     *
-     * \param element Element to use for calculation.
-     *
-     * \return Bit size of the array element.
-     */
     static size_t bitSizeOf(size_t, const ElementType& element)
     {
-        return bitSizeOf(element);
+        return zserio::bitSizeOfBytes(element);
     }
 
     /**
@@ -1551,8 +1465,6 @@ struct BasicBytesArrayTraits
 
     /** Determines whether the bit size of the single element is constant. */
     static constexpr bool IS_BITSIZEOF_CONSTANT = false;
-    /** Determines whether the bit size depends on current bit position. */
-    static constexpr bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 using BytesArrayTraits = BasicBytesArrayTraits<>;
@@ -1576,21 +1488,9 @@ struct BasicStringArrayTraits
      *
      * \return Bit size of the array element.
      */
-    static size_t bitSizeOf(const ElementType& element)
-    {
-        return zserio::bitSizeOfString(element);
-    }
-
-    /**
-     * Calculates bit size of the array element.
-     *
-     * \param element Element to use for calculation.
-     *
-     * \return Bit size of the array element.
-     */
     static size_t bitSizeOf(size_t, const ElementType& element)
     {
-        return bitSizeOf(element);
+        return zserio::bitSizeOfString(element);
     }
 
     /**
@@ -1631,8 +1531,6 @@ struct BasicStringArrayTraits
 
     /** Determines whether the bit size of the single element is constant. */
     static constexpr bool IS_BITSIZEOF_CONSTANT = false;
-    /** Determines whether the bit size depends on current bit position. */
-    static constexpr bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 using StringArrayTraits = BasicStringArrayTraits<>;
@@ -1656,21 +1554,9 @@ struct BasicBitBufferArrayTraits
      *
      * \return Bit size of the array element.
      */
-    static size_t bitSizeOf(const ElementType& element)
-    {
-        return zserio::bitSizeOfBitBuffer(element);
-    }
-
-    /**
-     * Calculates bit size of the array element.
-     *
-     * \param element Element to use for calculation.
-     *
-     * \return Bit size of the array element.
-     */
     static size_t bitSizeOf(size_t, const ElementType& element)
     {
-        return bitSizeOf(element);
+        return zserio::bitSizeOfBitBuffer(element);
     }
 
     /**
@@ -1709,8 +1595,6 @@ struct BasicBitBufferArrayTraits
 
     /** Determines whether the bit size of the single element is constant. */
     static constexpr bool IS_BITSIZEOF_CONSTANT = false;
-    /** Determines whether the bit size depends on current bit position. */
-    static constexpr bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 using BitBufferArrayTraits = BasicBitBufferArrayTraits<>;
@@ -1731,21 +1615,9 @@ struct EnumArrayTraits
      *
      * \return Bit size of the array element.
      */
-    static size_t bitSizeOf(ElementType element)
-    {
-        return zserio::bitSizeOf(element);
-    }
-
-    /**
-     * Calculates bit size of the array element.
-     *
-     * \param element Element to use for calculation.
-     *
-     * \return Bit size of the array element.
-     */
     static size_t bitSizeOf(size_t, ElementType element)
     {
-        return bitSizeOf(element);
+        return zserio::bitSizeOf(element);
     }
 
     /**
@@ -1787,8 +1659,6 @@ struct EnumArrayTraits
     // Be aware that T can be varuint, so bitSizeOf cannot return constant value.
     /** Determines whether the bit size of the single element is constant. */
     static constexpr bool IS_BITSIZEOF_CONSTANT = false;
-    /** Determines whether the bit size depends on current bit position. */
-    static constexpr bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -1807,21 +1677,9 @@ struct BitmaskArrayTraits
      *
      * \return Bit size of the array element.
      */
-    static size_t bitSizeOf(ElementType element)
-    {
-        return element.bitSizeOf();
-    }
-
-    /**
-     * Calculates bit size of the array element.
-     *
-     * \param element Element to use for calculation.
-     *
-     * \return Bit size of the array element.
-     */
     static size_t bitSizeOf(size_t, ElementType element)
     {
-        return bitSizeOf(element);
+        return element.bitSizeOf();
     }
 
     /**
@@ -1863,8 +1721,6 @@ struct BitmaskArrayTraits
     // Be aware that T can be varuint, so bitSizeOf cannot return constant value.
     /** Determines whether the bit size of the single element is constant. */
     static constexpr bool IS_BITSIZEOF_CONSTANT = false;
-    /** Determines whether the bit size depends on current bit position. */
-    static constexpr bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -1935,8 +1791,6 @@ public:
 
     /** Determines whether the bit size of the single element is constant. */
     static constexpr bool IS_BITSIZEOF_CONSTANT = false;
-    /** Determines whether the bit size depends on current bit position. */
-    static constexpr bool NEEDS_BITSIZEOF_POSITION = true;
 };
 
 namespace detail

@@ -20,37 +20,29 @@ namespace test_object
 namespace polymorphic_allocator
 {
 
-::test_object::polymorphic_allocator::WalkerUnion WalkerObject::ZserioElementFactory_unionArray::create(WalkerObject& owner,
-        ::zserio::BitStreamReader& in, const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t index)
+::test_object::polymorphic_allocator::WalkerUnion WalkerObject::ZserioElementFactory_unionArray::create(WalkerObject&,
+        ::zserio::BitStreamReader& in, const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t)
 {
-    (void)owner;
-    (void)index;
     return ::test_object::polymorphic_allocator::WalkerUnion(in, allocator);
 }
 
-::test_object::polymorphic_allocator::WalkerUnion WalkerObject::ZserioElementFactory_unionArray::create(WalkerObject& owner,
+::test_object::polymorphic_allocator::WalkerUnion WalkerObject::ZserioElementFactory_unionArray::create(WalkerObject&,
         ::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamReader& in,
-        const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t index)
+        const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t        )
 {
-    (void)owner;
-    (void)index;
     return ::test_object::polymorphic_allocator::WalkerUnion(contextNode, in, allocator);
 }
 
-::test_object::polymorphic_allocator::WalkerUnion WalkerObject::ZserioElementFactory_optionalUnionArray::create(WalkerObject& owner,
-        ::zserio::BitStreamReader& in, const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t index)
+::test_object::polymorphic_allocator::WalkerUnion WalkerObject::ZserioElementFactory_optionalUnionArray::create(WalkerObject&,
+        ::zserio::BitStreamReader& in, const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t)
 {
-    (void)owner;
-    (void)index;
     return ::test_object::polymorphic_allocator::WalkerUnion(in, allocator);
 }
 
-::test_object::polymorphic_allocator::WalkerUnion WalkerObject::ZserioElementFactory_optionalUnionArray::create(WalkerObject& owner,
+::test_object::polymorphic_allocator::WalkerUnion WalkerObject::ZserioElementFactory_optionalUnionArray::create(WalkerObject&,
         ::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamReader& in,
-        const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t index)
+        const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t        )
 {
-    (void)owner;
-    (void)index;
     return ::test_object::polymorphic_allocator::WalkerUnion(contextNode, in, allocator);
 }
 

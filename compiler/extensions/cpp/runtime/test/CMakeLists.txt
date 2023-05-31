@@ -24,6 +24,12 @@ if (SANITIZERS_ENABLED)
 endif ()
 
 set(TEST_OBJECT_SRCS
+    test_object/polymorphic_allocator/ArrayBitmask.cpp
+    test_object/polymorphic_allocator/ArrayBitmask.h
+    test_object/polymorphic_allocator/ArrayEnum.cpp
+    test_object/polymorphic_allocator/ArrayEnum.h
+    test_object/polymorphic_allocator/ArrayObject.cpp
+    test_object/polymorphic_allocator/ArrayObject.h
     test_object/polymorphic_allocator/CreatorBitmask.cpp
     test_object/polymorphic_allocator/CreatorBitmask.h
     test_object/polymorphic_allocator/CreatorEnum.cpp
@@ -59,6 +65,12 @@ set(TEST_OBJECT_SRCS
     test_object/polymorphic_allocator/WalkerUnion.cpp
     test_object/polymorphic_allocator/WalkerUnion.h
 
+    test_object/std_allocator/ArrayBitmask.cpp
+    test_object/std_allocator/ArrayBitmask.h
+    test_object/std_allocator/ArrayEnum.cpp
+    test_object/std_allocator/ArrayEnum.h
+    test_object/std_allocator/ArrayObject.cpp
+    test_object/std_allocator/ArrayObject.h
     test_object/std_allocator/CreatorBitmask.cpp
     test_object/std_allocator/CreatorBitmask.h
     test_object/std_allocator/CreatorEnum.cpp

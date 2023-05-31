@@ -20,37 +20,29 @@ namespace test_object
 namespace std_allocator
 {
 
-::test_object::std_allocator::WalkerUnion WalkerObject::ZserioElementFactory_unionArray::create(WalkerObject& owner,
-        ::zserio::BitStreamReader& in, const ::std::allocator<uint8_t>& allocator, size_t index)
+::test_object::std_allocator::WalkerUnion WalkerObject::ZserioElementFactory_unionArray::create(WalkerObject&,
+        ::zserio::BitStreamReader& in, const ::std::allocator<uint8_t>& allocator, size_t)
 {
-    (void)owner;
-    (void)index;
     return ::test_object::std_allocator::WalkerUnion(in, allocator);
 }
 
-::test_object::std_allocator::WalkerUnion WalkerObject::ZserioElementFactory_unionArray::create(WalkerObject& owner,
+::test_object::std_allocator::WalkerUnion WalkerObject::ZserioElementFactory_unionArray::create(WalkerObject&,
         ::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in,
-        const ::std::allocator<uint8_t>& allocator, size_t index)
+        const ::std::allocator<uint8_t>& allocator, size_t        )
 {
-    (void)owner;
-    (void)index;
     return ::test_object::std_allocator::WalkerUnion(contextNode, in, allocator);
 }
 
-::test_object::std_allocator::WalkerUnion WalkerObject::ZserioElementFactory_optionalUnionArray::create(WalkerObject& owner,
-        ::zserio::BitStreamReader& in, const ::std::allocator<uint8_t>& allocator, size_t index)
+::test_object::std_allocator::WalkerUnion WalkerObject::ZserioElementFactory_optionalUnionArray::create(WalkerObject&,
+        ::zserio::BitStreamReader& in, const ::std::allocator<uint8_t>& allocator, size_t)
 {
-    (void)owner;
-    (void)index;
     return ::test_object::std_allocator::WalkerUnion(in, allocator);
 }
 
-::test_object::std_allocator::WalkerUnion WalkerObject::ZserioElementFactory_optionalUnionArray::create(WalkerObject& owner,
+::test_object::std_allocator::WalkerUnion WalkerObject::ZserioElementFactory_optionalUnionArray::create(WalkerObject&,
         ::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in,
-        const ::std::allocator<uint8_t>& allocator, size_t index)
+        const ::std::allocator<uint8_t>& allocator, size_t        )
 {
-    (void)owner;
-    (void)index;
     return ::test_object::std_allocator::WalkerUnion(contextNode, in, allocator);
 }
 

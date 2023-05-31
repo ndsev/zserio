@@ -16,6 +16,7 @@
 
 namespace zserio
 {
+
 namespace detail
 {
 
@@ -107,13 +108,6 @@ template <typename ARRAY_TRAITS, typename OWNER_TYPE,
 size_t arrayTraitsConstBitSizeOf(const OWNER_TYPE&)
 {
     return ARRAY_TRAITS::bitSizeOf();
-}
-
-template <typename ARRAY_TRAITS, typename OWNER_TYPE,
-        typename std::enable_if<!ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT, int>::type = 0>
-size_t arrayTraitsConstBitSizeOf(const OWNER_TYPE&)
-{
-    return 0; // never comes here, specialization needed only for proper compilation
 }
 
 // calls the bitSizeOf method properly on array traits which haven't constant bit size
@@ -247,15 +241,6 @@ void packedArrayTraitsRead(OWNER_TYPE& owner, RAW_ARRAY& rawArray, PACKING_CONTE
 }
 
 template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY, typename PACKING_CONTEXT_NODE,
-        typename std::enable_if<!has_owner_type<PACKED_ARRAY_TRAITS>::value &&
-                has_allocator<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
-void packedArrayTraitsRead(const OWNER_TYPE&, RAW_ARRAY& rawArray, PACKING_CONTEXT_NODE& contextNode,
-        BitStreamReader& in, size_t index)
-{
-    rawArray.push_back(PACKED_ARRAY_TRAITS::read(contextNode, in, rawArray.get_allocator(), index));
-}
-
-template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY, typename PACKING_CONTEXT_NODE,
         typename std::enable_if<has_owner_type<PACKED_ARRAY_TRAITS>::value &&
                 !has_allocator<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
 void packedArrayTraitsRead(const OWNER_TYPE& owner, RAW_ARRAY& rawArray, PACKING_CONTEXT_NODE& contextNode,
@@ -263,6 +248,9 @@ void packedArrayTraitsRead(const OWNER_TYPE& owner, RAW_ARRAY& rawArray, PACKING
 {
     rawArray.push_back(PACKED_ARRAY_TRAITS::read(owner, contextNode, in, index));
 }
+
+// note: types which doesn't have owner and have allocator are never packed (e.g. string, bytes ...)
+//       and thus such specialization is not needed
 
 template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY, typename PACKING_CONTEXT_NODE,
         typename std::enable_if<!has_owner_type<PACKED_ARRAY_TRAITS>::value &&
@@ -750,37 +738,85 @@ public:
     }
 
 private:
+    template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
+            typename std::enable_if<
+                    ARRAY_TYPE_ != ArrayType::AUTO && ARRAY_TYPE_ != ArrayType::ALIGNED_AUTO, int>::type = 0>
+    static void addBitSizeOfArrayLength(size_t&, size_t)
+    {}
+
+    template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
+            typename std::enable_if<
+                    ARRAY_TYPE_ == ArrayType::AUTO || ARRAY_TYPE_ == ArrayType::ALIGNED_AUTO, int>::type = 0>
+    static void addBitSizeOfArrayLength(size_t& bitPosition, size_t arrayLength)
+    {
+        bitPosition += bitSizeOfVarSize(convertSizeToUInt32(arrayLength));
+    }
+
+    template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
+            typename std::enable_if<
+                    ARRAY_TYPE_ != ArrayType::ALIGNED && ARRAY_TYPE_ != ArrayType::ALIGNED_AUTO, int>::type = 0>
+    static size_t constBitSizeOfElements(size_t, size_t arrayLength, size_t elementBitSize)
+    {
+        return arrayLength * elementBitSize;
+    }
+
+    template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
+            typename std::enable_if<
+                    ARRAY_TYPE_ == ArrayType::ALIGNED || ARRAY_TYPE_ == ArrayType::ALIGNED_AUTO, int>::type = 0>
+    static size_t constBitSizeOfElements(size_t bitPosition, size_t arrayLength, size_t elementBitSize)
+    {
+        size_t endBitPosition = alignTo(8, bitPosition);
+        endBitPosition += elementBitSize + (arrayLength - 1) * alignTo(8, elementBitSize);
+
+        return endBitPosition - bitPosition;
+    }
+
+    template <typename ARRAY_TRAITS_ = ArrayTraits,
+            typename std::enable_if<ARRAY_TRAITS_::IS_BITSIZEOF_CONSTANT, int>::type = 0>
     size_t bitSizeOfImpl(const OwnerType& owner, size_t bitPosition) const
     {
         size_t endBitPosition = bitPosition;
 
-        const size_t size = m_rawArray.size();
-        if (ARRAY_TYPE == ArrayType::AUTO || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
-            endBitPosition += zserio::bitSizeOfVarSize(convertSizeToUInt32(size));
+        const size_t arrayLength = m_rawArray.size();
+        addBitSizeOfArrayLength(endBitPosition, arrayLength);
 
-        if (ArrayTraits::IS_BITSIZEOF_CONSTANT && size > 0)
+        if (arrayLength > 0)
         {
             const size_t elementBitSize = detail::arrayTraitsConstBitSizeOf<ArrayTraits>(owner);
-            if (ARRAY_TYPE == ArrayType::ALIGNED || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
-            {
-                endBitPosition = alignTo(8, endBitPosition);
-                endBitPosition += elementBitSize + (size - 1) * alignTo(8, elementBitSize);
-            }
-            else
-            {
-                endBitPosition += size * elementBitSize;
-            }
+            endBitPosition += constBitSizeOfElements(endBitPosition, arrayLength, elementBitSize);
         }
-        else
-        {
-            for (size_t index = 0; index < size; ++index)
-            {
-                if (ARRAY_TYPE == ArrayType::ALIGNED || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
-                    endBitPosition = alignTo(8, endBitPosition);
 
-                endBitPosition += detail::arrayTraitsBitSizeOf<ArrayTraits>(
-                        owner, endBitPosition, m_rawArray[index]);
-            }
+        return endBitPosition - bitPosition;
+    }
+
+    template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
+            typename std::enable_if<
+                    ARRAY_TYPE_ != ArrayType::ALIGNED && ARRAY_TYPE_ != ArrayType::ALIGNED_AUTO, int>::type = 0>
+    static void alignBitPosition(size_t&)
+    {}
+
+    template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
+            typename std::enable_if<
+                    ARRAY_TYPE_ == ArrayType::ALIGNED || ARRAY_TYPE_ == ArrayType::ALIGNED_AUTO, int>::type = 0>
+    static void alignBitPosition(size_t& bitPosition)
+    {
+        bitPosition = alignTo(8, bitPosition);
+    }
+
+    template <typename ARRAY_TRAITS_ = ArrayTraits,
+            typename std::enable_if<!ARRAY_TRAITS_::IS_BITSIZEOF_CONSTANT, int>::type = 0>
+    size_t bitSizeOfImpl(const OwnerType& owner, size_t bitPosition) const
+    {
+        size_t endBitPosition = bitPosition;
+
+        const size_t arrayLength = m_rawArray.size();
+        addBitSizeOfArrayLength(endBitPosition, arrayLength);
+
+        for (size_t index = 0; index < arrayLength; ++index)
+        {
+            alignBitPosition(endBitPosition);
+            endBitPosition += detail::arrayTraitsBitSizeOf<ArrayTraits>(
+                    owner, endBitPosition, m_rawArray[index]);
         }
 
         return endBitPosition - bitPosition;
@@ -792,23 +828,21 @@ private:
 
         size_t endBitPosition = bitPosition;
 
-        const size_t size = m_rawArray.size();
-        if (ARRAY_TYPE == ArrayType::AUTO || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
-            endBitPosition += zserio::bitSizeOfVarSize(convertSizeToUInt32(size));
+        const size_t arrayLength = m_rawArray.size();
+        addBitSizeOfArrayLength(endBitPosition, arrayLength);
 
-        if (size > 0)
+        if (arrayLength > 0)
         {
             auto& contextNode = getPackingContextNode();
-            for (size_t index = 0; index < size; ++index)
+            for (size_t index = 0; index < arrayLength; ++index)
             {
                 detail::packedArrayTraitsInitContext<PackedArrayTraits<ArrayTraits>>(
                         owner, contextNode, m_rawArray[index]);
             }
 
-            for (size_t index = 0; index < size; ++index)
+            for (size_t index = 0; index < arrayLength; ++index)
             {
-                if (ARRAY_TYPE == ArrayType::ALIGNED || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
-                    endBitPosition = alignTo(8, endBitPosition);
+                alignBitPosition(endBitPosition);
                 endBitPosition += detail::packedArrayTraitsBitSizeOf<PackedArrayTraits<ArrayTraits>>(
                         owner, contextNode, endBitPosition, m_rawArray[index]);
             }
@@ -817,21 +851,31 @@ private:
         return endBitPosition - bitPosition;
     }
 
+    template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
+            typename std::enable_if<
+                    ARRAY_TYPE_ != ArrayType::ALIGNED && ARRAY_TYPE_ != ArrayType::ALIGNED_AUTO, int>::type = 0>
+    static void initializeOffset(OwnerType&, size_t, size_t&)
+    {}
+
+    template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
+            typename std::enable_if<
+                    ARRAY_TYPE_ == ArrayType::ALIGNED || ARRAY_TYPE_ == ArrayType::ALIGNED_AUTO, int>::type = 0>
+    static void initializeOffset(OwnerType& owner, size_t index, size_t& bitPosition)
+    {
+        bitPosition = alignTo(8, bitPosition);
+        detail::initializeOffset<ArrayExpressions>(owner, index, bitPosition / 8);
+    }
+
     size_t initializeOffsetsImpl(OwnerType& owner, size_t bitPosition)
     {
         size_t endBitPosition = bitPosition;
 
-        const size_t size = m_rawArray.size();
-        if (ARRAY_TYPE == ArrayType::AUTO || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
-            endBitPosition += zserio::bitSizeOfVarSize(convertSizeToUInt32(size));
+        const size_t arrayLength = m_rawArray.size();
+        addBitSizeOfArrayLength(endBitPosition, arrayLength);
 
-        for (size_t index = 0; index < size; ++index)
+        for (size_t index = 0; index < arrayLength; ++index)
         {
-            if (ARRAY_TYPE == ArrayType::ALIGNED || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
-            {
-                endBitPosition = alignTo(8, endBitPosition);
-                detail::initializeOffset<ArrayExpressions>(owner, index, endBitPosition / 8);
-            }
+            initializeOffset(owner, index, endBitPosition);
             endBitPosition = detail::arrayTraitsInitializeOffsets<ArrayTraits>(
                     owner, endBitPosition, m_rawArray[index]);
         }
@@ -845,26 +889,21 @@ private:
 
         size_t endBitPosition = bitPosition;
 
-        const size_t size = m_rawArray.size();
-        if (ARRAY_TYPE == ArrayType::AUTO || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
-            endBitPosition += zserio::bitSizeOfVarSize(convertSizeToUInt32(size));
+        const size_t arrayLength = m_rawArray.size();
+        addBitSizeOfArrayLength(endBitPosition, arrayLength);
 
-        if (size > 0)
+        if (arrayLength > 0)
         {
             auto& contextNode = getPackingContextNode();
-            for (size_t index = 0; index < size; ++index)
+            for (size_t index = 0; index < arrayLength; ++index)
             {
                 detail::packedArrayTraitsInitContext<PackedArrayTraits<ArrayTraits>>(
                         owner, contextNode, m_rawArray[index]);
             }
 
-            for (size_t index = 0; index < size; ++index)
+            for (size_t index = 0; index < arrayLength; ++index)
             {
-                if (ARRAY_TYPE == ArrayType::ALIGNED || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
-                {
-                    endBitPosition = alignTo(8, endBitPosition);
-                    detail::initializeOffset<ARRAY_EXPRESSIONS>(owner, index, endBitPosition / 8);
-                }
+                initializeOffset(owner, index, endBitPosition);
                 endBitPosition = detail::packedArrayTraitsInitializeOffsets<PackedArrayTraits<ArrayTraits>>(
                         owner, contextNode, endBitPosition, m_rawArray[index]);
             }
@@ -873,31 +912,59 @@ private:
         return endBitPosition;
     }
 
-    void readImpl(OwnerType& owner, BitStreamReader& in, size_t arrayLength)
+    template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
+            typename std::enable_if<
+                    ARRAY_TYPE_ != ArrayType::AUTO &&
+                    ARRAY_TYPE_ != ArrayType::ALIGNED_AUTO &&
+                    ARRAY_TYPE_ != ArrayType::IMPLICIT, int>::type = 0>
+    static size_t readArrayLength(OwnerType&, BitStreamReader&, size_t arrayLength)
+    {
+        return arrayLength;
+    }
+
+    template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
+            typename std::enable_if<
+                    ARRAY_TYPE_ == ArrayType::AUTO || ARRAY_TYPE_ == ArrayType::ALIGNED_AUTO, int>::type = 0>
+    static size_t readArrayLength(OwnerType&, BitStreamReader& in, size_t)
+    {
+        return in.readVarSize();
+    }
+
+    template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
+            typename std::enable_if<ARRAY_TYPE_ == ArrayType::IMPLICIT, int>::type = 0>
+    static size_t readArrayLength(OwnerType& owner, BitStreamReader& in, size_t)
     {
         static_assert(ARRAY_TYPE != ArrayType::IMPLICIT || ArrayTraits::IS_BITSIZEOF_CONSTANT,
                 "Implicit array elements must have constant bit size!");
 
-        size_t readSize = arrayLength;
-        if (ARRAY_TYPE == ArrayType::IMPLICIT)
-        {
-            const size_t remainingBits = in.getBufferBitSize() - in.getBitPosition();
-            readSize = remainingBits / detail::arrayTraitsConstBitSizeOf<ArrayTraits>(owner);
-        }
-        else if (ARRAY_TYPE == ArrayType::AUTO || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
-        {
-            readSize = in.readVarSize();
-        }
+        const size_t remainingBits = in.getBufferBitSize() - in.getBitPosition();
+        return remainingBits / detail::arrayTraitsConstBitSizeOf<ArrayTraits>(owner);
+    }
+
+    template <typename IO, typename OWNER_TYPE, ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
+            typename std::enable_if<
+                    ARRAY_TYPE_ != ArrayType::ALIGNED && ARRAY_TYPE_ != ArrayType::ALIGNED_AUTO, int>::type = 0>
+    static void alignAndCheckOffset(IO&, OWNER_TYPE&, size_t)
+    {}
+
+    template <typename IO, typename OWNER_TYPE, ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
+            typename std::enable_if<
+                    ARRAY_TYPE_ == ArrayType::ALIGNED || ARRAY_TYPE_ == ArrayType::ALIGNED_AUTO, int>::type = 0>
+    static void alignAndCheckOffset(IO& io, OWNER_TYPE& owner, size_t index)
+    {
+        io.alignTo(8);
+        detail::checkOffset<ArrayExpressions>(owner, index, io.getBitPosition() / 8);
+    }
+
+    void readImpl(OwnerType& owner, BitStreamReader& in, size_t arrayLength)
+    {
+        size_t readLength = readArrayLength(owner, in, arrayLength);
 
         m_rawArray.clear();
-        m_rawArray.reserve(readSize);
-        for (size_t index = 0; index < readSize; ++index)
+        m_rawArray.reserve(readLength);
+        for (size_t index = 0; index < readLength; ++index)
         {
-            if (ARRAY_TYPE == ArrayType::ALIGNED || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
-            {
-                in.alignTo(8);
-                detail::checkOffset<ArrayExpressions>(owner, index, in.getBitPosition() / 8);
-            }
+            alignAndCheckOffset(in, owner, index);
             detail::arrayTraitsRead<ArrayTraits>(owner, m_rawArray, in, index);
         }
     }
@@ -906,44 +973,47 @@ private:
     {
         static_assert(ARRAY_TYPE != ArrayType::IMPLICIT, "Implicit array cannot be packed!");
 
-        size_t readSize = arrayLength;
-        if (ARRAY_TYPE == ArrayType::AUTO || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
-            readSize = in.readVarSize();
+        size_t readLength = readArrayLength(owner, in, arrayLength);
 
         m_rawArray.clear();
 
-        if (readSize > 0)
+        if (readLength > 0)
         {
-            m_rawArray.reserve(readSize);
+            m_rawArray.reserve(readLength);
 
             auto& contextNode = getPackingContextNode();
 
-            for (size_t index = 0; index < readSize; ++index)
+            for (size_t index = 0; index < readLength; ++index)
             {
-                if (ARRAY_TYPE == ArrayType::ALIGNED || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
-                {
-                    in.alignTo(8);
-                    detail::checkOffset<ArrayExpressions>(owner, index, in.getBitPosition() / 8);
-                }
+                alignAndCheckOffset(in, owner, index);
                 detail::packedArrayTraitsRead<PackedArrayTraits<ArrayTraits>>(
                         owner, m_rawArray, contextNode, in, index);
             }
         }
     }
 
+    template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
+            typename std::enable_if<
+                    ARRAY_TYPE_ != ArrayType::AUTO && ARRAY_TYPE_ != ArrayType::ALIGNED_AUTO, int>::type = 0>
+    static void writeArrayLength(BitStreamWriter&, size_t)
+    {}
+
+    template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
+            typename std::enable_if<
+                    ARRAY_TYPE_ == ArrayType::AUTO || ARRAY_TYPE_ == ArrayType::ALIGNED_AUTO, int>::type = 0>
+    static void writeArrayLength(BitStreamWriter& out, size_t arrayLength)
+    {
+        out.writeVarSize(convertSizeToUInt32(arrayLength));
+    }
+
     void writeImpl(const OwnerType& owner, BitStreamWriter& out) const
     {
-        const size_t size = m_rawArray.size();
-        if (ARRAY_TYPE == ArrayType::AUTO || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
-            out.writeVarSize(convertSizeToUInt32(size));
+        const size_t arrayLength = m_rawArray.size();
+        writeArrayLength(out, arrayLength);
 
-        for (size_t index = 0; index < size; ++index)
+        for (size_t index = 0; index < arrayLength; ++index)
         {
-            if (ARRAY_TYPE == ArrayType::ALIGNED || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
-            {
-                out.alignTo(8);
-                detail::checkOffset<ArrayExpressions>(owner, index, out.getBitPosition() / 8);
-            }
+            alignAndCheckOffset(out, owner, index);
             detail::arrayTraitsWrite<ArrayTraits>(owner, out, m_rawArray[index]);
         }
     }
@@ -952,26 +1022,21 @@ private:
     {
         static_assert(ARRAY_TYPE != ArrayType::IMPLICIT, "Implicit array cannot be packed!");
 
-        const size_t size = m_rawArray.size();
-        if (ARRAY_TYPE == ArrayType::AUTO || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
-            out.writeVarSize(convertSizeToUInt32(size));
+        const size_t arrayLength = m_rawArray.size();
+        writeArrayLength(out, arrayLength);
 
-        if (size > 0)
+        if (arrayLength > 0)
         {
             auto& contextNode = getPackingContextNode();
-            for (size_t index = 0; index < size; ++index)
+            for (size_t index = 0; index < arrayLength; ++index)
             {
                 detail::packedArrayTraitsInitContext<PackedArrayTraits<ArrayTraits>>(
                         owner, contextNode, m_rawArray[index]);
             }
 
-            for (size_t index = 0; index < size; ++index)
+            for (size_t index = 0; index < arrayLength; ++index)
             {
-                if (ARRAY_TYPE == ArrayType::ALIGNED || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
-                {
-                    out.alignTo(8);
-                    detail::checkOffset<ArrayExpressions>(owner, index, out.getBitPosition() / 8);
-                }
+                alignAndCheckOffset(out, owner, index);
                 detail::packedArrayTraitsWrite<PackedArrayTraits<ArrayTraits>>(
                         owner, contextNode, out, m_rawArray[index]);
             }

@@ -112,7 +112,7 @@ google-explicit-constructor:src/zserio/UniquePtr.h:57
 google-explicit-constructor:src/zserio/UniquePtr.h:68
 
 # This is necessary because of implementation. Zserio naturally supports recursion.
-misc-no-recursion:src/zserio/Array.h:1001
+misc-no-recursion:src/zserio/Array.h:1066
 misc-no-recursion:src/zserio/JsonParser.h:153
 misc-no-recursion:src/zserio/JsonParser.h:154
 misc-no-recursion:src/zserio/JsonParser.h:155
@@ -164,8 +164,7 @@ cppcoreguidelines-pro-type-reinterpret-cast:test/zserio/SqliteConnectionTest.cpp
 # Intentional tests. It is necessary for readability.
 google-build-using-namespace:test/zserio/ReflectableTest.cpp:24
 
-# Intentional tests (the first three are generated zserio types).
-google-explicit-constructor:test/zserio/ArrayTest.cpp:166
+# Intentional tests (the first two are generated zserio types).
 google-explicit-constructor:test/zserio/BuiltInOperatorsTest.cpp:26
 google-explicit-constructor:test/zserio/HashCodeUtilTest.cpp:34
 google-explicit-constructor:test/zserio/TrackingAllocator.h:78

@@ -21,27 +21,21 @@ namespace std_allocator
 {
 
 void CreatorObject::ZserioArrayExpressions_nestedArray::initializeElement(CreatorObject& owner,
-        ::test_object::std_allocator::CreatorNested& element, size_t index)
+        ::test_object::std_allocator::CreatorNested& element, size_t)
 {
-    (void)owner;
-    (void)index;
     element.initialize(static_cast<uint32_t>(owner.getValue()));
 }
 
 ::test_object::std_allocator::CreatorNested CreatorObject::ZserioElementFactory_nestedArray::create(CreatorObject& owner,
-        ::zserio::BitStreamReader& in, const ::std::allocator<uint8_t>& allocator, size_t index)
+        ::zserio::BitStreamReader& in, const ::std::allocator<uint8_t>& allocator, size_t)
 {
-    (void)owner;
-    (void)index;
     return ::test_object::std_allocator::CreatorNested(in, static_cast<uint32_t>(owner.getValue()), allocator);
 }
 
 ::test_object::std_allocator::CreatorNested CreatorObject::ZserioElementFactory_nestedArray::create(CreatorObject& owner,
         ::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in,
-        const ::std::allocator<uint8_t>& allocator, size_t index)
+        const ::std::allocator<uint8_t>& allocator, size_t        )
 {
-    (void)owner;
-    (void)index;
     return ::test_object::std_allocator::CreatorNested(contextNode, in, static_cast<uint32_t>(owner.getValue()), allocator);
 }
 
