@@ -137,6 +137,7 @@ set(ZSERIO_CPP_RUNTIME_TEST_SRCS
     zserio/FileUtilTest.cpp
     zserio/MemoryResourceTest.cpp
     zserio/NewDeleteResourceTest.cpp
+    zserio/PackingContextTest.cpp
     zserio/PolymorphicAllocatorTest.cpp
     zserio/PubsubExceptionTest.cpp
     zserio/ReflectableTest.cpp
