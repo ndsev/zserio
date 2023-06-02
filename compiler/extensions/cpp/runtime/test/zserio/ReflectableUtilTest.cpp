@@ -6,15 +6,15 @@
 #include "zserio/Reflectable.h"
 #include "zserio/TypeInfo.h"
 
-#include "test_object/std_allocator/CreatorBitmask.h"
-#include "test_object/std_allocator/CreatorEnum.h"
-#include "test_object/std_allocator/CreatorNested.h"
-#include "test_object/std_allocator/CreatorObject.h"
+#include "test_object/std_allocator/ReflectableUtilBitmask.h"
+#include "test_object/std_allocator/ReflectableUtilEnum.h"
+#include "test_object/std_allocator/ReflectableUtilUnion.h"
 
-using test_object::std_allocator::CreatorBitmask;
-using test_object::std_allocator::CreatorEnum;
-using test_object::std_allocator::CreatorNested;
-using test_object::std_allocator::CreatorObject;
+using test_object::std_allocator::ReflectableUtilBitmask;
+using test_object::std_allocator::ReflectableUtilEnum;
+using test_object::std_allocator::ReflectableUtilChoice;
+using test_object::std_allocator::ReflectableUtilObject;
+using test_object::std_allocator::ReflectableUtilUnion;
 
 namespace zserio
 {
@@ -232,8 +232,8 @@ TEST(ReflectableUtilTest, equalBytes)
 
 TEST(ReflectableUtilTest, equalEnums)
 {
-    const CreatorEnum oneEnum = CreatorEnum::ONE;
-    const CreatorEnum twoEnum = CreatorEnum::TWO;
+    const ReflectableUtilEnum oneEnum = ReflectableUtilEnum::ONE;
+    const ReflectableUtilEnum twoEnum = ReflectableUtilEnum::TWO;
 
     ASSERT_TRUE(ReflectableUtil::equal(enumReflectable(oneEnum), enumReflectable(oneEnum)));
     ASSERT_TRUE(ReflectableUtil::equal(enumReflectable(twoEnum), enumReflectable(twoEnum)));
@@ -242,8 +242,8 @@ TEST(ReflectableUtilTest, equalEnums)
 
 TEST(ReflectableUtilTest, equalBitmasks)
 {
-    const CreatorBitmask readBitmask = CreatorBitmask::Values::READ;
-    const CreatorBitmask writeBitmask = CreatorBitmask::Values::WRITE;
+    const ReflectableUtilBitmask readBitmask = ReflectableUtilBitmask::Values::READ;
+    const ReflectableUtilBitmask writeBitmask = ReflectableUtilBitmask::Values::WRITE;
 
     ASSERT_TRUE(ReflectableUtil::equal(readBitmask.reflectable(), readBitmask.reflectable()));
     ASSERT_TRUE(ReflectableUtil::equal(writeBitmask.reflectable(), writeBitmask.reflectable()));
@@ -252,61 +252,79 @@ TEST(ReflectableUtilTest, equalBitmasks)
 
 TEST(ReflectableUtilTest, equalCompounds)
 {
-    CreatorObject creator1 = CreatorObject();
-    creator1.setTextArray({{{"one"}, {"two"}}});
-    creator1.initializeChildren();
+    ReflectableUtilUnion compound1 = ReflectableUtilUnion();
+    compound1.setReflectableUtilEnum(ReflectableUtilEnum::ONE);
+    compound1.initializeChildren();
 
-    CreatorObject creator2 = CreatorObject(); // larger array
-    creator2.setTextArray({{{"one"}, {"two"}, {"three"}}});
-    creator2.initializeChildren();
+    ReflectableUtilUnion compound2 = ReflectableUtilUnion();
+    compound2.setReflectableUtilEnum(ReflectableUtilEnum::TWO); // different enum value
+    compound2.initializeChildren();
 
-    CreatorObject creator3 = CreatorObject();
-    creator3.setTextArray({{{"one"}, {"something else"}}}); // difference in array element
-    creator3.initializeChildren();
+    ReflectableUtilUnion compound3 = ReflectableUtilUnion();
+    compound3.setReflectableUtilBitmask(ReflectableUtilBitmask::Values::READ);
+    compound3.initializeChildren();
 
-    CreatorObject creator4 = CreatorObject(); // extern array set
-    creator4.setTextArray({{{"one"}, {"two"}}});
-    creator4.setExternArray({{}});
-    creator4.initializeChildren();
+    ReflectableUtilUnion compound4 = ReflectableUtilUnion();
+    compound4.setReflectableUtilObject(ReflectableUtilObject(0, ReflectableUtilChoice()));
+    compound4.initializeChildren();
 
-    CreatorObject creator5 = CreatorObject(); // optional bool set
-    creator5.setTextArray({{{"one"}, {"two"}}});
-    creator5.setOptionalBool(true);
-    creator5.initializeChildren();
+    ReflectableUtilUnion compound5 = ReflectableUtilUnion();
+    compound5.setReflectableUtilObject(ReflectableUtilObject(1, ReflectableUtilChoice()));
+    compound5.getReflectableUtilObject().getReflectableUtilChoice().setArray(std::vector<uint32_t>());
+    compound5.initializeChildren();
 
-    CreatorObject creator6 = CreatorObject(); // optional nested set
-    creator6.setTextArray({{{"one"}, {"two"}}});
-    creator6.setOptionalNested(CreatorNested());
-    creator6.initializeChildren();
+    ReflectableUtilUnion compound6 = ReflectableUtilUnion();
+    compound6.setReflectableUtilObject(ReflectableUtilObject(1, ReflectableUtilChoice()));
+    compound6.getReflectableUtilObject().getReflectableUtilChoice().setArray(std::vector<uint32_t>{{1, 2, 3}});
+    compound6.initializeChildren();
 
-    ASSERT_TRUE(ReflectableUtil::equal(creator1.reflectable(), creator1.reflectable()));
-    ASSERT_TRUE(ReflectableUtil::equal(creator2.reflectable(), creator2.reflectable()));
-    ASSERT_TRUE(ReflectableUtil::equal(creator3.reflectable(), creator3.reflectable()));
-    ASSERT_TRUE(ReflectableUtil::equal(creator4.reflectable(), creator4.reflectable()));
-    ASSERT_TRUE(ReflectableUtil::equal(creator5.reflectable(), creator5.reflectable()));
-    ASSERT_TRUE(ReflectableUtil::equal(creator6.reflectable(), creator6.reflectable()));
+    ASSERT_TRUE(ReflectableUtil::equal(compound1.reflectable(), compound1.reflectable()));
+    ASSERT_TRUE(ReflectableUtil::equal(compound2.reflectable(), compound2.reflectable()));
+    ASSERT_TRUE(ReflectableUtil::equal(compound3.reflectable(), compound3.reflectable()));
+    ASSERT_TRUE(ReflectableUtil::equal(compound4.reflectable(), compound4.reflectable()));
+    ASSERT_TRUE(ReflectableUtil::equal(compound5.reflectable(), compound5.reflectable()));
+    ASSERT_TRUE(ReflectableUtil::equal(compound6.reflectable(), compound6.reflectable()));
 
-    ASSERT_FALSE(ReflectableUtil::equal(creator1.reflectable(), creator2.reflectable()));
-    ASSERT_FALSE(ReflectableUtil::equal(creator1.reflectable(), creator3.reflectable()));
-    ASSERT_FALSE(ReflectableUtil::equal(creator1.reflectable(), creator4.reflectable()));
-    ASSERT_FALSE(ReflectableUtil::equal(creator1.reflectable(), creator5.reflectable()));
-    ASSERT_FALSE(ReflectableUtil::equal(creator1.reflectable(), creator6.reflectable()));
+    ASSERT_FALSE(ReflectableUtil::equal(compound1.reflectable(), compound2.reflectable()));
+    ASSERT_FALSE(ReflectableUtil::equal(compound1.reflectable(), compound3.reflectable()));
+    ASSERT_FALSE(ReflectableUtil::equal(compound1.reflectable(), compound4.reflectable()));
+    ASSERT_FALSE(ReflectableUtil::equal(compound1.reflectable(), compound5.reflectable()));
+    ASSERT_FALSE(ReflectableUtil::equal(compound1.reflectable(), compound6.reflectable()));
 
-    CreatorNested nested1 = CreatorNested();
-    nested1.initialize(0);
+    // unequal fields in choice
+    ASSERT_FALSE(ReflectableUtil::equal(compound5.reflectable(), compound6.reflectable()));
 
-    CreatorNested nested2 = CreatorNested();
-    nested2.initialize(1);
+    // unequal parameters in choice
+    ReflectableUtilChoice choice1;
+    choice1.initialize(0);
+    ReflectableUtilChoice choice2;
+    choice2.initialize(3);
+    ASSERT_FALSE(ReflectableUtil::equal(choice1.reflectable(), choice2.reflectable()));
 
-    ASSERT_FALSE(ReflectableUtil::equal(nested1.reflectable(), nested2.reflectable()));
+    // array and not array
+    std::vector<ReflectableUtilUnion> compoundArray(1);
+    ASSERT_FALSE(ReflectableUtil::equal(compound1.reflectable(),
+            ReflectableFactory::getCompoundArray(compoundArray)));
+    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getCompoundArray(compoundArray),
+            compound1.reflectable()));
+}
 
-    // non array and array
-    ASSERT_FALSE(ReflectableUtil::equal(creator1.reflectable()->getField("textArray")->at(0),
-            creator1.reflectable()->getField("textArray")));
+TEST(ReflectableUtilTest, equalArrays)
+{
+    std::vector<uint32_t> array1 = {1, 2, 3};
+    std::vector<uint32_t> array2 = {1, 2, 4};
+    std::vector<uint32_t> array3 = {1, 2};
 
-    // array and non array
-    ASSERT_FALSE(ReflectableUtil::equal(creator1.reflectable()->getField("textArray"),
-            creator1.reflectable()->getField("textArray")->at(0)));
+    auto array1Reflectable = ReflectableFactory::getBuiltinArray(BuiltinTypeInfo<>::getUInt32(), array1);
+    auto array2Reflectable = ReflectableFactory::getBuiltinArray(BuiltinTypeInfo<>::getUInt32(), array2);
+    auto array3Reflectable = ReflectableFactory::getBuiltinArray(BuiltinTypeInfo<>::getUInt32(), array3);
+
+    ASSERT_TRUE(ReflectableUtil::equal(array1Reflectable, array1Reflectable));
+    ASSERT_TRUE(ReflectableUtil::equal(array2Reflectable, array2Reflectable));
+    ASSERT_TRUE(ReflectableUtil::equal(array3Reflectable, array3Reflectable));
+
+    ASSERT_FALSE(ReflectableUtil::equal(array1Reflectable, array2Reflectable));
+    ASSERT_FALSE(ReflectableUtil::equal(array1Reflectable, array3Reflectable));
 }
 
 TEST(ReflectableUtilTest, equalWrong)
@@ -381,32 +399,34 @@ TEST(ReflectableUtilTest, getValueBitBuffer)
 
 TEST(ReflectableUtilTest, getValueEnum)
 {
-    CreatorEnum creatorEnum = CreatorEnum::ONE;
-    auto reflectable = enumReflectable(creatorEnum);
-    ASSERT_EQ(creatorEnum, ReflectableUtil::getValue<CreatorEnum>(reflectable));
+    ReflectableUtilEnum reflectableUtilEnum = ReflectableUtilEnum::ONE;
+    auto reflectable = enumReflectable(reflectableUtilEnum);
+    ASSERT_EQ(reflectableUtilEnum, ReflectableUtil::getValue<ReflectableUtilEnum>(reflectable));
 }
 
 TEST(ReflectableUtilTest, getValueBitmask)
 {
-    CreatorBitmask creatorBitmask = CreatorBitmask::Values::READ;
-    auto reflectable = creatorBitmask.reflectable();
-    ASSERT_EQ(creatorBitmask, ReflectableUtil::getValue<CreatorBitmask>(reflectable));
+    ReflectableUtilBitmask reflectableUtilBitmask = ReflectableUtilBitmask::Values::READ;
+    auto reflectable = reflectableUtilBitmask.reflectable();
+    ASSERT_EQ(reflectableUtilBitmask, ReflectableUtil::getValue<ReflectableUtilBitmask>(reflectable));
 }
 
 TEST(ReflectableUtilTest, getValueCompound)
 {
-    CreatorObject creatorObject;
-    auto reflectable = creatorObject.reflectable();
-    ASSERT_EQ(&creatorObject, &ReflectableUtil::getValue<CreatorObject>(reflectable));
+    ReflectableUtilUnion reflectableUtilUnion;
+    auto reflectable = reflectableUtilUnion.reflectable();
+    ASSERT_EQ(&reflectableUtilUnion, &ReflectableUtil::getValue<ReflectableUtilUnion>(reflectable));
 
-    CreatorObject& creatorObjectRef = ReflectableUtil::getValue<CreatorObject>(reflectable);
-    creatorObjectRef.setValue(32);
-    ASSERT_EQ(32, creatorObject.getValue());
+    ReflectableUtilUnion& reflectableUtilUnionRef =
+            ReflectableUtil::getValue<ReflectableUtilUnion>(reflectable);
+    reflectableUtilUnionRef.setReflectableUtilBitmask(ReflectableUtilBitmask::Values::WRITE);
+    ASSERT_EQ(ReflectableUtilBitmask::Values::WRITE, reflectableUtilUnion.getReflectableUtilBitmask());
 
-    auto constReflectable = static_cast<const CreatorObject&>(creatorObject).reflectable();
-    const CreatorObject& creatorObjectConstRef = ReflectableUtil::getValue<CreatorObject>(constReflectable);
-    ASSERT_EQ(32, creatorObjectConstRef.getValue());
-    ASSERT_EQ(&creatorObject, &creatorObjectConstRef);
+    auto constReflectable = static_cast<const ReflectableUtilUnion&>(reflectableUtilUnion).reflectable();
+    const ReflectableUtilUnion& reflectableUtilUnionConstRef =
+            ReflectableUtil::getValue<ReflectableUtilUnion>(constReflectable);
+    ASSERT_EQ(ReflectableUtilBitmask::Values::WRITE, reflectableUtilUnionConstRef.getReflectableUtilBitmask());
+    ASSERT_EQ(&reflectableUtilUnion, &reflectableUtilUnionConstRef);
 }
 
 TEST(ReflectableUtilTest, getValueBuiltinArray)
@@ -425,11 +445,11 @@ TEST(ReflectableUtilTest, getValueBuiltinArray)
 
 TEST(ReflectableUtilTest, getValueCompoundArray)
 {
-    CreatorObject creatorObject;
-    auto reflectable = ReflectableFactory::getCompoundArray(creatorObject.getNestedArray());
-    std::vector<CreatorNested>& nestedArrayRef =
-            ReflectableUtil::getValue<std::vector<CreatorNested>>(reflectable);
-    ASSERT_EQ(&creatorObject.getNestedArray(), &nestedArrayRef);
+    std::vector<ReflectableUtilUnion> reflectableUtilUnionArray;
+    auto reflectable = ReflectableFactory::getCompoundArray(reflectableUtilUnionArray);
+    std::vector<ReflectableUtilUnion>& reflectableUtilUnionArrayRef =
+            ReflectableUtil::getValue<std::vector<ReflectableUtilUnion>>(reflectable);
+    ASSERT_EQ(&reflectableUtilUnionArray, &reflectableUtilUnionArrayRef);
 }
 
 } // namespace zserio

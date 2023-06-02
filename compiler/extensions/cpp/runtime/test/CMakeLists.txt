@@ -50,6 +50,16 @@ set(TEST_OBJECT_SRCS
     test_object/polymorphic_allocator/ReflectableNested.h
     test_object/polymorphic_allocator/ReflectableObject.cpp
     test_object/polymorphic_allocator/ReflectableObject.h
+    test_object/polymorphic_allocator/ReflectableUtilBitmask.cpp
+    test_object/polymorphic_allocator/ReflectableUtilBitmask.h
+    test_object/polymorphic_allocator/ReflectableUtilEnum.cpp
+    test_object/polymorphic_allocator/ReflectableUtilEnum.h
+    test_object/polymorphic_allocator/ReflectableUtilChoice.cpp
+    test_object/polymorphic_allocator/ReflectableUtilChoice.h
+    test_object/polymorphic_allocator/ReflectableUtilObject.cpp
+    test_object/polymorphic_allocator/ReflectableUtilObject.h
+    test_object/polymorphic_allocator/ReflectableUtilUnion.cpp
+    test_object/polymorphic_allocator/ReflectableUtilUnion.h
     test_object/polymorphic_allocator/SerializeEnum.cpp
     test_object/polymorphic_allocator/SerializeEnum.h
     test_object/polymorphic_allocator/SerializeNested.cpp
@@ -91,6 +101,16 @@ set(TEST_OBJECT_SRCS
     test_object/std_allocator/ReflectableNested.h
     test_object/std_allocator/ReflectableObject.cpp
     test_object/std_allocator/ReflectableObject.h
+    test_object/std_allocator/ReflectableUtilBitmask.cpp
+    test_object/std_allocator/ReflectableUtilBitmask.h
+    test_object/std_allocator/ReflectableUtilEnum.cpp
+    test_object/std_allocator/ReflectableUtilEnum.h
+    test_object/std_allocator/ReflectableUtilChoice.cpp
+    test_object/std_allocator/ReflectableUtilChoice.h
+    test_object/std_allocator/ReflectableUtilObject.cpp
+    test_object/std_allocator/ReflectableUtilObject.h
+    test_object/std_allocator/ReflectableUtilUnion.cpp
+    test_object/std_allocator/ReflectableUtilUnion.h
     test_object/std_allocator/SerializeEnum.cpp
     test_object/std_allocator/SerializeEnum.h
     test_object/std_allocator/SerializeNested.cpp

@@ -98,6 +98,40 @@ struct ReflectableObject
     ReflectableNested(13, stringField) reflectableNested;
 };
 
+bitmask uint8 ReflectableUtilBitmask
+{
+    READ,
+    WRITE
+};
+
+enum int8 ReflectableUtilEnum
+{
+    ONE,
+    TWO
+};
+
+choice ReflectableUtilChoice(uint8 param) on param
+{
+    case 1:
+    case 2:
+        uint32 array[];
+    default:
+        ;
+};
+
+struct ReflectableUtilObject
+{
+    uint8 choiceParam;
+    ReflectableUtilChoice(choiceParam) reflectableUtilChoice;
+};
+
+union ReflectableUtilUnion
+{
+    ReflectableUtilEnum reflectableUtilEnum;
+    ReflectableUtilBitmask reflectableUtilBitmask;
+    ReflectableUtilObject reflectableUtilObject;
+};
+
 enum uint8 SerializeEnum
 {
     VALUE1,

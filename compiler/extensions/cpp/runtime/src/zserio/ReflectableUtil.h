@@ -210,7 +210,7 @@ bool ReflectableUtil::compoundsEqual(const IBasicReflectableConstPtr<ALLOC>& lhs
         if (!lhsCompound->getChoice().empty())
         {
             auto lhsField = lhsCompound->getField(lhsCompound->getChoice());
-            auto rhsField = rhsCompound->getField(lhsCompound->getChoice());
+            auto rhsField = rhsCompound->getField(rhsCompound->getChoice());
             if (!equal<ALLOC>(lhsField, rhsField))
                 return false;
         }
