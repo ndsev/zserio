@@ -68,6 +68,8 @@ set(TEST_OBJECT_SRCS
     test_object/polymorphic_allocator/SerializeObject.h
     test_object/polymorphic_allocator/WalkerBitmask.cpp
     test_object/polymorphic_allocator/WalkerBitmask.h
+    test_object/polymorphic_allocator/WalkerChoice.cpp
+    test_object/polymorphic_allocator/WalkerChoice.h
     test_object/polymorphic_allocator/WalkerNested.cpp
     test_object/polymorphic_allocator/WalkerNested.h
     test_object/polymorphic_allocator/WalkerObject.cpp
@@ -119,6 +121,8 @@ set(TEST_OBJECT_SRCS
     test_object/std_allocator/SerializeObject.h
     test_object/std_allocator/WalkerBitmask.cpp
     test_object/std_allocator/WalkerBitmask.h
+    test_object/std_allocator/WalkerChoice.cpp
+    test_object/std_allocator/WalkerChoice.h
     test_object/std_allocator/WalkerNested.cpp
     test_object/std_allocator/WalkerNested.h
     test_object/std_allocator/WalkerObject.cpp

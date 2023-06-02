@@ -22,6 +22,7 @@
 #include <zserio/pmr/String.h>
 #include <zserio/pmr/Vector.h>
 
+#include <test_object/polymorphic_allocator/WalkerChoice.h>
 #include <test_object/polymorphic_allocator/WalkerNested.h>
 #include <test_object/polymorphic_allocator/WalkerUnion.h>
 
@@ -74,13 +75,16 @@ public:
     template <typename ZSERIO_T_nested = ::test_object::polymorphic_allocator::WalkerNested,
             typename ZSERIO_T_text = ::zserio::pmr::string,
             typename ZSERIO_T_unionArray = ::zserio::pmr::vector<::test_object::polymorphic_allocator::WalkerUnion>,
-            typename ZSERIO_T_optionalUnionArray = ::zserio::pmr::vector<::test_object::polymorphic_allocator::WalkerUnion>>
+            typename ZSERIO_T_optionalUnionArray = ::zserio::pmr::vector<::test_object::polymorphic_allocator::WalkerUnion>,
+            typename ZSERIO_T_choiceField = ::test_object::polymorphic_allocator::WalkerChoice>
     WalkerObject(
             uint32_t identifier_,
             ZSERIO_T_nested&& nested_,
             ZSERIO_T_text&& text_,
             ZSERIO_T_unionArray&& unionArray_,
             ZSERIO_T_optionalUnionArray&& optionalUnionArray_,
+            uint8_t choiceSelector_,
+            ZSERIO_T_choiceField&& choiceField_,
             const allocator_type& allocator = allocator_type()) :
             WalkerObject(allocator)
     {
@@ -89,6 +93,8 @@ public:
         m_text_ = ::std::forward<ZSERIO_T_text>(text_);
         m_unionArray_ = ZserioArrayType_unionArray(::std::forward<ZSERIO_T_unionArray>(unionArray_));
         m_optionalUnionArray_ = ::zserio::createOptionalArray<ZserioArrayType_optionalUnionArray>(::std::forward<ZSERIO_T_optionalUnionArray>(optionalUnionArray_));
+        m_choiceSelector_ = choiceSelector_;
+        m_choiceField_ = ::std::forward<ZSERIO_T_choiceField>(choiceField_);
     }
 
     explicit WalkerObject(::zserio::BitStreamReader& in, const allocator_type& allocator = allocator_type());
@@ -97,11 +103,11 @@ public:
 
     ~WalkerObject() = default;
 
-    WalkerObject(const WalkerObject&) = default;
-    WalkerObject& operator=(const WalkerObject&) = default;
+    WalkerObject(const WalkerObject& other);
+    WalkerObject& operator=(const WalkerObject& other);
 
-    WalkerObject(WalkerObject&&) = default;
-    WalkerObject& operator=(WalkerObject&&) = default;
+    WalkerObject(WalkerObject&& other);
+    WalkerObject& operator=(WalkerObject&& other);
 
     WalkerObject(::zserio::PropagateAllocatorT,
             const WalkerObject& other, const allocator_type& allocator);
@@ -109,6 +115,8 @@ public:
     static const ::zserio::pmr::ITypeInfo& typeInfo();
     ::zserio::pmr::IReflectableConstPtr reflectable(const allocator_type& allocator = allocator_type()) const;
     ::zserio::pmr::IReflectablePtr reflectable(const allocator_type& allocator = allocator_type());
+
+    void initializeChildren();
 
     uint32_t getIdentifier() const;
     void setIdentifier(uint32_t identifier_);
@@ -138,6 +146,14 @@ public:
     bool isOptionalUnionArrayUsed() const;
     bool isOptionalUnionArraySet() const;
     void resetOptionalUnionArray();
+
+    uint8_t getChoiceSelector() const;
+    void setChoiceSelector(uint8_t choiceSelector_);
+
+    const ::test_object::polymorphic_allocator::WalkerChoice& getChoiceField() const;
+    ::test_object::polymorphic_allocator::WalkerChoice& getChoiceField();
+    void setChoiceField(const ::test_object::polymorphic_allocator::WalkerChoice& choiceField_);
+    void setChoiceField(::test_object::polymorphic_allocator::WalkerChoice&& choiceField_);
 
     static void createPackingContext(::zserio::pmr::PackingContextNode& contextNode);
     void initPackingContext(::zserio::pmr::PackingContextNode& contextNode) const;
@@ -172,12 +188,22 @@ private:
             const allocator_type& allocator);
     ::zserio::InplaceOptionalHolder<ZserioArrayType_optionalUnionArray> readOptionalUnionArray(::zserio::pmr::PackingContextNode& contextNode,
             ::zserio::BitStreamReader& in, const allocator_type& allocator);
+    uint8_t readChoiceSelector(::zserio::BitStreamReader& in);
+    uint8_t readChoiceSelector(::zserio::pmr::PackingContextNode& contextNode,
+            ::zserio::BitStreamReader& in);
+    ::test_object::polymorphic_allocator::WalkerChoice readChoiceField(::zserio::BitStreamReader& in,
+            const allocator_type& allocator);
+    ::test_object::polymorphic_allocator::WalkerChoice readChoiceField(::zserio::pmr::PackingContextNode& contextNode,
+            ::zserio::BitStreamReader& in, const allocator_type& allocator);
 
+    bool m_areChildrenInitialized;
     uint32_t m_identifier_;
     ::zserio::InplaceOptionalHolder<::test_object::polymorphic_allocator::WalkerNested> m_nested_;
     ::zserio::pmr::string m_text_;
     ZserioArrayType_unionArray m_unionArray_;
     ::zserio::InplaceOptionalHolder<ZserioArrayType_optionalUnionArray> m_optionalUnionArray_;
+    uint8_t m_choiceSelector_;
+    ::test_object::polymorphic_allocator::WalkerChoice m_choiceField_;
 };
 
 } // namespace polymorphic_allocator

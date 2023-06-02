@@ -13,11 +13,13 @@
 #include "test_object/std_allocator/WalkerBitmask.h"
 #include "test_object/std_allocator/WalkerNested.h"
 #include "test_object/std_allocator/WalkerUnion.h"
+#include "test_object/std_allocator/WalkerChoice.h"
 #include "test_object/std_allocator/WalkerObject.h"
 
 using test_object::std_allocator::WalkerBitmask;
 using test_object::std_allocator::WalkerNested;
 using test_object::std_allocator::WalkerUnion;
+using test_object::std_allocator::WalkerChoice;
 using test_object::std_allocator::WalkerObject;
 
 namespace zserio
@@ -33,13 +35,18 @@ WalkerObject createWalkerObject(uint32_t identifier = 13, bool createNested = tr
     unionArray[0].setText("1");
     unionArray[1].setValue(2);
     unionArray[2].setNestedArray(std::vector<WalkerNested>{{WalkerNested{"nestedArray"}}});
+    const uint8_t choiceSelector = 0;
+    WalkerChoice choiceField;
+    choiceField.initialize(choiceSelector);
     if (createNested)
     {
-        return WalkerObject(identifier, WalkerNested("nested"), "test", std::move(unionArray), NullOpt);
+        return WalkerObject(identifier, WalkerNested("nested"), "test", std::move(unionArray), NullOpt,
+                choiceSelector, choiceField);
     }
     else
     {
-        return WalkerObject(identifier, NullOpt, "test", std::move(unionArray), NullOpt);
+        return WalkerObject(identifier, NullOpt, "test", std::move(unionArray), NullOpt,
+                choiceSelector, choiceField);
     }
 }
 
@@ -206,7 +213,7 @@ TEST(WalkerTest, walk)
     ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("endArray"_sv).at(1)->getTypeInfo().getSchemaName());
 
-    ASSERT_EQ(5, observer.getCaptures("beginCompound"_sv).size());
+    ASSERT_EQ(6, observer.getCaptures("beginCompound"_sv).size());
     ASSERT_EQ("test_object.std_allocator.WalkerNested"_sv,
             observer.getCaptures("beginCompound"_sv).at(0)->getTypeInfo().getSchemaName());
     ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
@@ -217,8 +224,10 @@ TEST(WalkerTest, walk)
             observer.getCaptures("beginCompound"_sv).at(3)->getTypeInfo().getSchemaName());
     ASSERT_EQ("test_object.std_allocator.WalkerNested"_sv,
             observer.getCaptures("beginCompound"_sv).at(4)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("test_object.std_allocator.WalkerChoice"_sv,
+            observer.getCaptures("beginCompound"_sv).at(5)->getTypeInfo().getSchemaName());
 
-    ASSERT_EQ(5, observer.getCaptures("endCompound"_sv).size());
+    ASSERT_EQ(6, observer.getCaptures("endCompound"_sv).size());
     ASSERT_EQ("test_object.std_allocator.WalkerNested"_sv,
             observer.getCaptures("endCompound"_sv).at(0)->getTypeInfo().getSchemaName());
     ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
@@ -229,8 +238,10 @@ TEST(WalkerTest, walk)
             observer.getCaptures("endCompound"_sv).at(3)->getTypeInfo().getSchemaName());
     ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("endCompound"_sv).at(4)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("test_object.std_allocator.WalkerChoice"_sv,
+            observer.getCaptures("endCompound"_sv).at(5)->getTypeInfo().getSchemaName());
 
-    ASSERT_EQ(7, observer.getCaptures("visitValue"_sv).size());
+    ASSERT_EQ(8, observer.getCaptures("visitValue"_sv).size());
     ASSERT_EQ(13, observer.getCaptures("visitValue"_sv).at(0)->toUInt());
     ASSERT_EQ("nested", observer.getCaptures("visitValue"_sv).at(1)->toString());
     ASSERT_EQ("test", observer.getCaptures("visitValue"_sv).at(2)->toString());
@@ -238,6 +249,117 @@ TEST(WalkerTest, walk)
     ASSERT_EQ(2, observer.getCaptures("visitValue"_sv).at(4)->toUInt());
     ASSERT_EQ("nestedArray", observer.getCaptures("visitValue"_sv).at(5)->toString());
     ASSERT_EQ(nullptr, observer.getCaptures("visitValue"_sv).at(6));
+    ASSERT_EQ(0, observer.getCaptures("visitValue"_sv).at(7)->toUInt());
+}
+
+TEST(WalkerTest, walkWrongUnionField)
+{
+    // use case: union field has wrong field name in type info (this could not happen in generated code,
+    //           therefore we need some object here)
+    class WalkerWrongUnion
+    {
+    public:
+        using allocator_type = ::std::allocator<uint8_t>;
+
+        enum ChoiceTag : int32_t
+        {
+            CHOICE_value = 0,
+            UNDEFINED_CHOICE = -1
+        };
+
+        WalkerWrongUnion() noexcept :
+                WalkerWrongUnion(allocator_type())
+        {}
+
+        explicit WalkerWrongUnion(const allocator_type& allocator) noexcept :
+                m_choiceTag(UNDEFINED_CHOICE), m_objectChoice(allocator)
+        {}
+
+        static const ::zserio::ITypeInfo& typeInfo()
+        {
+            static const ::zserio::StringView templateName;
+            static const ::zserio::Span<::zserio::BasicTemplateArgumentInfo<allocator_type>> templateArguments;
+
+            static const ::std::array<::zserio::BasicFieldInfo<allocator_type>, 1> fields = {
+                ::zserio::BasicFieldInfo<allocator_type>{
+                    ::zserio::makeStringView("value"), // schemaName
+                    ::zserio::BuiltinTypeInfo<allocator_type>::getUInt32(), // typeInfo
+                    {}, // typeArguments
+                    {}, // alignment
+                    {}, // offset
+                    {}, // initializer
+                    false, // isOptional
+                    {}, // optionalClause
+                    {}, // constraint
+                    false, // isArray
+                    {}, // arrayLength
+                    false, // isPacked
+                    false // isImplicit
+                }
+            };
+
+            static const ::zserio::Span<::zserio::BasicParameterInfo<allocator_type>> parameters;
+
+            static const ::zserio::Span<::zserio::BasicFunctionInfo<allocator_type>> functions;
+
+            static const ::zserio::UnionTypeInfo<allocator_type> typeInfo = {
+                ::zserio::makeStringView("WalkerWrongUnion"), nullptr,
+                templateName, templateArguments,
+                fields, parameters, functions
+            };
+
+            return typeInfo;
+        }
+
+        ::zserio::IReflectablePtr reflectable(const allocator_type& allocator = allocator_type())
+        {
+            class Reflectable : public ::zserio::ReflectableAllocatorHolderBase<allocator_type>
+            {
+            public:
+                explicit Reflectable(WalkerWrongUnion&, const allocator_type& allocator) :
+                        ::zserio::ReflectableAllocatorHolderBase<allocator_type>(WalkerWrongUnion::typeInfo(), allocator)
+                {}
+
+                ::zserio::StringView getChoice() const override
+                {
+                    return ::zserio::makeStringView("wrong"); // this would be "value" in generated code
+                }
+            };
+
+            return std::allocate_shared<Reflectable>(allocator, *this, allocator);
+        }
+
+        void setValue(uint32_t value_)
+        {
+            m_choiceTag = CHOICE_value;
+            m_objectChoice = value_;
+        }
+
+    private:
+        ChoiceTag m_choiceTag;
+        ::zserio::AnyHolder<> m_objectChoice;
+    };
+
+    TestWalkObserver observer;
+    DefaultWalkFilter defaultFilter;
+    Walker walker(observer, defaultFilter);
+
+    WalkerWrongUnion walkerWrongUnion;
+    walkerWrongUnion.setValue(0);
+    walker.walk(walkerWrongUnion.reflectable());
+
+    ASSERT_EQ("WalkerWrongUnion"_sv,
+            observer.getCaptures("beginRoot"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("WalkerWrongUnion"_sv,
+            observer.getCaptures("endRoot"_sv).at(0)->getTypeInfo().getSchemaName());
+
+    ASSERT_EQ(0, observer.getCaptures("beginArray"_sv).size());
+    ASSERT_EQ(0, observer.getCaptures("endArray"_sv).size());
+
+    ASSERT_EQ(0, observer.getCaptures("beginCompound"_sv).size());
+    ASSERT_EQ(0, observer.getCaptures("endCompound"_sv).size());
+
+    ASSERT_EQ(0, observer.getCaptures("visitValue"_sv).size());
 }
 
 TEST(WalkerTest, walkWrongOptionalCondition)
@@ -266,7 +388,7 @@ TEST(WalkerTest, walkWrongOptionalCondition)
     ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("endArray"_sv).at(1)->getTypeInfo().getSchemaName());
 
-    ASSERT_EQ(4, observer.getCaptures("beginCompound"_sv).size());
+    ASSERT_EQ(5, observer.getCaptures("beginCompound"_sv).size());
     ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("beginCompound"_sv).at(0)->getTypeInfo().getSchemaName());
     ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
@@ -275,8 +397,10 @@ TEST(WalkerTest, walkWrongOptionalCondition)
             observer.getCaptures("beginCompound"_sv).at(2)->getTypeInfo().getSchemaName());
     ASSERT_EQ("test_object.std_allocator.WalkerNested"_sv,
             observer.getCaptures("beginCompound"_sv).at(3)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("test_object.std_allocator.WalkerChoice"_sv,
+            observer.getCaptures("beginCompound"_sv).at(4)->getTypeInfo().getSchemaName());
 
-    ASSERT_EQ(4, observer.getCaptures("endCompound"_sv).size());
+    ASSERT_EQ(5, observer.getCaptures("endCompound"_sv).size());
     ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("endCompound"_sv).at(0)->getTypeInfo().getSchemaName());
     ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
@@ -285,8 +409,10 @@ TEST(WalkerTest, walkWrongOptionalCondition)
             observer.getCaptures("endCompound"_sv).at(2)->getTypeInfo().getSchemaName());
     ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("endCompound"_sv).at(3)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("test_object.std_allocator.WalkerChoice"_sv,
+            observer.getCaptures("endCompound"_sv).at(4)->getTypeInfo().getSchemaName());
 
-    ASSERT_EQ(7, observer.getCaptures("visitValue"_sv).size());
+    ASSERT_EQ(8, observer.getCaptures("visitValue"_sv).size());
     ASSERT_EQ(13, observer.getCaptures("visitValue"_sv).at(0)->toUInt());
     ASSERT_EQ(nullptr, observer.getCaptures("visitValue"_sv).at(1));
     ASSERT_EQ("test", observer.getCaptures("visitValue"_sv).at(2)->toString());
@@ -294,6 +420,7 @@ TEST(WalkerTest, walkWrongOptionalCondition)
     ASSERT_EQ(2, observer.getCaptures("visitValue"_sv).at(4)->toUInt());
     ASSERT_EQ("nestedArray", observer.getCaptures("visitValue"_sv).at(5)->toString());
     ASSERT_EQ(nullptr, observer.getCaptures("visitValue"_sv).at(6));
+    ASSERT_EQ(0, observer.getCaptures("visitValue"_sv).at(7)->toUInt());
 }
 
 TEST(WalkerTest, walkSkipCompound)
@@ -321,10 +448,11 @@ TEST(WalkerTest, walkSkipCompound)
     ASSERT_TRUE(observer.getCaptures("beginCompound"_sv).empty());
     ASSERT_TRUE(observer.getCaptures("endCompound"_sv).empty());
 
-    ASSERT_EQ(3, observer.getCaptures("visitValue"_sv).size());
+    ASSERT_EQ(4, observer.getCaptures("visitValue"_sv).size());
     ASSERT_EQ(13, observer.getCaptures("visitValue"_sv).at(0)->toUInt());
     ASSERT_EQ("test", observer.getCaptures("visitValue"_sv).at(1)->toString());
     ASSERT_EQ(nullptr, observer.getCaptures("visitValue"_sv).at(2));
+    ASSERT_EQ(0, observer.getCaptures("visitValue"_sv).at(3)->toUInt());
 }
 
 TEST(WalkerTest, walkSkipSiblings)
@@ -403,24 +531,29 @@ TEST(WalkerTest, walkOnlyFirstElement)
     ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("endArray"_sv).at(0)->getTypeInfo().getSchemaName());
 
-    ASSERT_EQ(2, observer.getCaptures("beginCompound"_sv).size());
+    ASSERT_EQ(3, observer.getCaptures("beginCompound"_sv).size());
     ASSERT_EQ("test_object.std_allocator.WalkerNested"_sv,
             observer.getCaptures("beginCompound"_sv).at(0)->getTypeInfo().getSchemaName());
     ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("beginCompound"_sv).at(1)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("test_object.std_allocator.WalkerChoice"_sv,
+            observer.getCaptures("beginCompound"_sv).at(2)->getTypeInfo().getSchemaName());
 
-    ASSERT_EQ(2, observer.getCaptures("endCompound"_sv).size());
+    ASSERT_EQ(3, observer.getCaptures("endCompound"_sv).size());
     ASSERT_EQ("test_object.std_allocator.WalkerNested"_sv,
             observer.getCaptures("endCompound"_sv).at(0)->getTypeInfo().getSchemaName());
     ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("endCompound"_sv).at(1)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("test_object.std_allocator.WalkerChoice"_sv,
+            observer.getCaptures("endCompound"_sv).at(2)->getTypeInfo().getSchemaName());
 
-    ASSERT_EQ(5, observer.getCaptures("visitValue"_sv).size());
+    ASSERT_EQ(6, observer.getCaptures("visitValue"_sv).size());
     ASSERT_EQ(13, observer.getCaptures("visitValue"_sv).at(0)->toUInt());
     ASSERT_EQ("nested", observer.getCaptures("visitValue"_sv).at(1)->toString());
     ASSERT_EQ("test", observer.getCaptures("visitValue"_sv).at(2)->toString());
     ASSERT_EQ("1", observer.getCaptures("visitValue"_sv).at(3)->toString());
     ASSERT_EQ(nullptr, observer.getCaptures("visitValue"_sv).at(4));
+    ASSERT_EQ(0, observer.getCaptures("visitValue"_sv).at(5)->toUInt());
 }
 
 TEST(DefaultWalkObserverTest, allMethods)
@@ -576,7 +709,11 @@ TEST(RegexWalkFilterTest, regexArrayNoMatch)
     std::vector<WalkerUnion> unionArray;
     unionArray.resize(1);
     unionArray[0].setNestedArray(std::vector<WalkerNested>{{WalkerNested{"nestedArray"}}});
-    WalkerObject walkerObject (13, WalkerNested("nested"), "test", std::move(unionArray), NullOpt);
+    const uint8_t choiceSelector = 8;
+    WalkerChoice choiceField;
+    choiceField.setValue8(0xAB);
+    WalkerObject walkerObject (13, WalkerNested("nested"), "test", std::move(unionArray), NullOpt,
+            choiceSelector, choiceField);
     IReflectableConstPtr walkerReflectable = walkerObject.reflectable();
 
     const FieldInfo& unionArrayFieldInfo = walkerObject.typeInfo().getFields()[3];

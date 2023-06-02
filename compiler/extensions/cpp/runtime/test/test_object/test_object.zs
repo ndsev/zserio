@@ -59,6 +59,24 @@ union WalkerUnion
     WalkerNested nestedArray[];
 };
 
+choice WalkerChoice(uint8 selector) on selector
+{
+    case 8:
+        uint8 value8;
+
+    case 16:
+        uint16 value16;
+
+    case 32:
+        uint32 value32;
+
+    case 64:
+        uint64 value64;
+
+    default:
+        ;
+};
+
 struct WalkerObject
 {
     uint32 identifier;
@@ -66,6 +84,8 @@ struct WalkerObject
     string text;
     WalkerUnion unionArray[];
     optional WalkerUnion optionalUnionArray[];
+    uint8 choiceSelector;
+    WalkerChoice(choiceSelector) choiceField;
 };
 
 enum int8 ReflectableEnum
