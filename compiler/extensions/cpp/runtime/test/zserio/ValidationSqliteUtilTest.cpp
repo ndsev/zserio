@@ -69,6 +69,20 @@ TEST_F(ValidationSqliteUtilTest, getNumberOfTableRows)
     ASSERT_THROW(Util::getNumberOfTableRows(connection, "NONEXISTING"_sv, "test"_sv, allocator_type()),
             SqliteException);
 
+    ASSERT_THROW({
+        try
+        {
+            Util::getNumberOfTableRows(connection, ""_sv, "(SELECT load_extension('unknown'))"_sv,
+                    allocator_type());
+        }
+        catch (const SqliteException& e)
+        {
+            ASSERT_STREQ("ValidationSqliteUtils.getNumberOfTableRows: sqlite3_step() failed: SQL logic error",
+                    e.what());
+            throw;
+        }
+    }, SqliteException);
+
     connection.executeUpdate("CREATE TABLE test(id INTEGER PRIMARY KEY NOT NULL, value INTEGER NOT NULL)");
     ASSERT_EQ(0, Util::getNumberOfTableRows(connection, ""_sv, "test"_sv, allocator_type()));
 
