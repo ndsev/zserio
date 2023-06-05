@@ -197,6 +197,12 @@ namespace detail
         detail::IHolder<ALLOC>* heap;
         MaxInPlaceType inPlace;
     };
+
+    template <typename T, typename ALLOC>
+    using has_non_heap_holder = std::integral_constant<bool,
+            sizeof(NonHeapHolder<T, ALLOC>) <= sizeof(typename UntypedHolder<ALLOC>::MaxInPlaceType) &&
+            std::is_nothrow_move_constructible<T>::value &&
+                alignof(T) <= alignof(typename UntypedHolder<ALLOC>::MaxInPlaceType)>;
 } // namespace detail
 
 /**
@@ -380,7 +386,7 @@ public:
     T& get()
     {
         checkType<T>();
-        return getHolder<T>()->get();
+        return getHolder<T>(detail::has_non_heap_holder<T, ALLOC>())->get();
     }
 
     /**
@@ -394,7 +400,7 @@ public:
     const T& get() const
     {
         checkType<T>();
-        return getHolder<T>()->get();
+        return getHolder<T>(detail::has_non_heap_holder<T, ALLOC>())->get();
     }
 
     /**
@@ -486,16 +492,12 @@ private:
         if (hasHolder())
         {
             if (getUntypedHolder()->isType(detail::TypeIdHolder::get<T>()))
-                return getHolder<T>();
+                return getHolder<T>(detail::has_non_heap_holder<T, ALLOC>());
 
             clearHolder();
         }
 
-        return createHolderImpl<T>(std::integral_constant<bool,
-            sizeof(detail::NonHeapHolder<T, ALLOC>) <=
-                    sizeof(typename detail::UntypedHolder<ALLOC>::MaxInPlaceType) &&
-            std::is_nothrow_move_constructible<T>::value &&
-            alignof(T) <= alignof(typename detail::UntypedHolder<ALLOC>::MaxInPlaceType)>());
+        return createHolderImpl<T>(detail::has_non_heap_holder<T, ALLOC>());
     }
 
     template <typename T>
@@ -553,19 +555,27 @@ private:
     }
 
     template <typename T>
-    detail::HolderBase<T, ALLOC>* getHolder()
+    detail::HolderBase<T, ALLOC>* getHolder(std::true_type)
     {
-        return m_isInPlace ?
-                static_cast<detail::HolderBase<T, ALLOC>*>(getInplaceHolder<T>()) :
-                static_cast<detail::HolderBase<T, ALLOC>*>(getHeapHolder<T>());
+        return static_cast<detail::HolderBase<T, ALLOC>*>(getInplaceHolder<T>());
     }
 
     template <typename T>
-    const detail::HolderBase<T, ALLOC>* getHolder() const
+    detail::HolderBase<T, ALLOC>* getHolder(std::false_type)
     {
-        return m_isInPlace ?
-                static_cast<const detail::HolderBase<T, ALLOC>*>(getInplaceHolder<T>()) :
-                static_cast<const detail::HolderBase<T, ALLOC>*>(getHeapHolder<T>());
+        return static_cast<detail::HolderBase<T, ALLOC>*>(getHeapHolder<T>());
+    }
+
+    template <typename T>
+    const detail::HolderBase<T, ALLOC>* getHolder(std::true_type) const
+    {
+        return static_cast<const detail::HolderBase<T, ALLOC>*>(getInplaceHolder<T>());
+    }
+
+    template <typename T>
+    const detail::HolderBase<T, ALLOC>* getHolder(std::false_type) const
+    {
+        return static_cast<const detail::HolderBase<T, ALLOC>*>(getHeapHolder<T>());
     }
 
     detail::IHolder<ALLOC>* getUntypedHolder()
