@@ -273,7 +273,7 @@ AnyHolder<ALLOC> parseBitmaskNumericStringValue(const char* stringValue, const I
     char *pEnd = nullptr;
     errno = 0;
     uint64_t value = std::strtoull(stringValue, &pEnd, 10);
-    if (static_cast<size_t>(pEnd - stringValue) == 0 || errno == ERANGE)
+    if (errno == ERANGE)
         return AnyHolder<ALLOC>(allocator);
     return makeAnyValue(typeInfo.getUnderlyingType(), value, allocator);
 }

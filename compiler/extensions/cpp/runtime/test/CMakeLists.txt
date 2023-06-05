@@ -38,6 +38,8 @@ set(TEST_OBJECT_SRCS
     test_object/polymorphic_allocator/CreatorNested.h
     test_object/polymorphic_allocator/CreatorObject.cpp
     test_object/polymorphic_allocator/CreatorObject.h
+    test_object/polymorphic_allocator/CreatorUnsignedEnum.cpp
+    test_object/polymorphic_allocator/CreatorUnsignedEnum.h
     test_object/polymorphic_allocator/DebugStringObject.cpp
     test_object/polymorphic_allocator/DebugStringObject.h
     test_object/polymorphic_allocator/DebugStringParamObject.cpp
@@ -91,6 +93,8 @@ set(TEST_OBJECT_SRCS
     test_object/std_allocator/CreatorNested.h
     test_object/std_allocator/CreatorObject.cpp
     test_object/std_allocator/CreatorObject.h
+    test_object/std_allocator/CreatorUnsignedEnum.cpp
+    test_object/std_allocator/CreatorUnsignedEnum.h
     test_object/std_allocator/DebugStringObject.cpp
     test_object/std_allocator/DebugStringObject.h
     test_object/std_allocator/DebugStringParamObject.cpp

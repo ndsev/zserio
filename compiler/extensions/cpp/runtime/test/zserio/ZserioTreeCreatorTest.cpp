@@ -9,11 +9,13 @@
 #include "test_object/std_allocator/CreatorEnum.h"
 #include "test_object/std_allocator/CreatorNested.h"
 #include "test_object/std_allocator/CreatorObject.h"
+#include "test_object/std_allocator/CreatorUnsignedEnum.h"
 
 using test_object::std_allocator::CreatorBitmask;
 using test_object::std_allocator::CreatorEnum;
 using test_object::std_allocator::CreatorNested;
 using test_object::std_allocator::CreatorObject;
+using test_object::std_allocator::CreatorUnsignedEnum;
 
 namespace zserio
 {
@@ -172,6 +174,12 @@ TEST(ZserioTreeCreator, makeAnyValue)
     ASSERT_EQ(enumToValue(CreatorEnum::MinusOne), any.get<int8_t>());
     ASSERT_THROW(detail::makeAnyValue(enumTypeInfo<CreatorEnum>(), "NONEXISTING"_sv, allocator),
             CppRuntimeException);
+    ASSERT_THROW(detail::makeAnyValue(enumTypeInfo<CreatorEnum>(), "{nonexisting}"_sv, allocator),
+            CppRuntimeException);
+    ASSERT_THROW(detail::makeAnyValue(enumTypeInfo<CreatorEnum>(), "nonexisting"_sv, allocator),
+            CppRuntimeException);
+    ASSERT_THROW(detail::makeAnyValue(enumTypeInfo<CreatorEnum>(), "_nonexisting"_sv, allocator),
+            CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(enumTypeInfo<CreatorEnum>(), "***"_sv, allocator),
             CppRuntimeException);
     // check all string overloads!
@@ -190,6 +198,16 @@ TEST(ZserioTreeCreator, makeAnyValue)
             CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(enumTypeInfo<CreatorEnum>(), ""_sv, allocator), CppRuntimeException);
 
+    // unsigned enum
+    any = detail::makeAnyValue(enumTypeInfo<CreatorUnsignedEnum>(), CreatorUnsignedEnum::ONE, allocator);
+    ASSERT_EQ(CreatorUnsignedEnum::ONE, any.get<CreatorUnsignedEnum>());
+    any = detail::makeAnyValue(enumTypeInfo<CreatorUnsignedEnum>(), 0, allocator);
+    ASSERT_EQ(enumToValue(CreatorUnsignedEnum::ONE), any.get<uint8_t>());
+    any = detail::makeAnyValue(enumTypeInfo<CreatorUnsignedEnum>(), "ONE"_sv, allocator);
+    ASSERT_EQ(enumToValue(CreatorUnsignedEnum::ONE), any.get<uint8_t>());
+    any = detail::makeAnyValue(enumTypeInfo<CreatorUnsignedEnum>(), "TWO"_sv, allocator);
+    ASSERT_EQ(enumToValue(CreatorUnsignedEnum::TWO), any.get<uint8_t>());
+
     // bitmask
     any = detail::makeAnyValue(CreatorBitmask::typeInfo(), CreatorBitmask(CreatorBitmask::Values::READ), allocator);
     ASSERT_EQ(CreatorBitmask::Values::READ, any.get<CreatorBitmask>());
@@ -205,6 +223,10 @@ TEST(ZserioTreeCreator, makeAnyValue)
             any.get<uint8_t>());
     ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), "NONEXISTING"_sv, allocator),
             CppRuntimeException);
+    ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), "READ "_sv, allocator),
+            CppRuntimeException);
+    ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), "READ |"_sv, allocator),
+            CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), "READ | NONEXISTING"_sv, allocator),
             CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), "READ * NONEXISTING"_sv, allocator),
@@ -212,6 +234,8 @@ TEST(ZserioTreeCreator, makeAnyValue)
     ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), "***"_sv, allocator),
             CppRuntimeException);
     any = detail::makeAnyValue(CreatorBitmask::typeInfo(), "7 /* READ | WRITE */"_sv, allocator);
+    ASSERT_EQ(7, any.get<uint8_t>());
+    any = detail::makeAnyValue(CreatorBitmask::typeInfo(), "7"_sv, allocator);
     ASSERT_EQ(7, any.get<uint8_t>());
     // check all string overloads!
     any = detail::makeAnyValue(CreatorBitmask::typeInfo(), "4 /* no match */"_sv, allocator);
@@ -225,6 +249,14 @@ TEST(ZserioTreeCreator, makeAnyValue)
     ASSERT_EQ(4, any.get<uint8_t>());
     // out-of-range uint64_t
     ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), "99999999999999999999"_sv, allocator),
+            CppRuntimeException);
+    ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), "@WRONG"_sv, allocator),
+            CppRuntimeException);
+    ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), "_UNKNOWN"_sv, allocator),
+            CppRuntimeException);
+    ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), "unknown"_sv, allocator),
+            CppRuntimeException);
+    ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), "{unknown}"_sv, allocator),
             CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), ""_sv, allocator), CppRuntimeException);
 }

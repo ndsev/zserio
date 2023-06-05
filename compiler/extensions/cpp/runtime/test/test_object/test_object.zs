@@ -13,6 +13,12 @@ enum int8 CreatorEnum
     MinusOne = -1
 };
 
+enum uint8 CreatorUnsignedEnum
+{
+    ONE,
+    TWO
+};
+
 bitmask uint8 CreatorBitmask
 {
     READ = 1,
