@@ -254,103 +254,34 @@ TEST(WalkerTest, walk)
 
 TEST(WalkerTest, walkWrongUnionField)
 {
-    // use case: union field has wrong field name in type info (this could not happen in generated code,
-    //           therefore we need some object here)
-    class WalkerWrongUnion
+    // use case: union field has wrong field name in type info (this cannot happen in generated code,
+    //           therefore we need some wrong reflectable here)
+    using allocator_type = ::std::allocator<uint8_t>;
+
+    class Reflectable : public ::zserio::ReflectableAllocatorHolderBase<allocator_type>
     {
     public:
-        using allocator_type = ::std::allocator<uint8_t>;
-
-        enum ChoiceTag : int32_t
-        {
-            CHOICE_value = 0,
-            UNDEFINED_CHOICE = -1
-        };
-
-        WalkerWrongUnion() noexcept :
-                WalkerWrongUnion(allocator_type())
+        explicit Reflectable(WalkerUnion&, const allocator_type& allocator) :
+                ::zserio::ReflectableAllocatorHolderBase<allocator_type>(WalkerUnion::typeInfo(), allocator)
         {}
 
-        explicit WalkerWrongUnion(const allocator_type& allocator) noexcept :
-                m_choiceTag(UNDEFINED_CHOICE), m_objectChoice(allocator)
-        {}
-
-        static const ::zserio::ITypeInfo& typeInfo()
+        ::zserio::StringView getChoice() const override
         {
-            static const ::zserio::StringView templateName;
-            static const ::zserio::Span<::zserio::BasicTemplateArgumentInfo<allocator_type>> templateArguments;
-
-            static const ::std::array<::zserio::BasicFieldInfo<allocator_type>, 1> fields = {
-                ::zserio::BasicFieldInfo<allocator_type>{
-                    ::zserio::makeStringView("value"), // schemaName
-                    ::zserio::BuiltinTypeInfo<allocator_type>::getUInt32(), // typeInfo
-                    {}, // typeArguments
-                    {}, // alignment
-                    {}, // offset
-                    {}, // initializer
-                    false, // isOptional
-                    {}, // optionalClause
-                    {}, // constraint
-                    false, // isArray
-                    {}, // arrayLength
-                    false, // isPacked
-                    false // isImplicit
-                }
-            };
-
-            static const ::zserio::Span<::zserio::BasicParameterInfo<allocator_type>> parameters;
-
-            static const ::zserio::Span<::zserio::BasicFunctionInfo<allocator_type>> functions;
-
-            static const ::zserio::UnionTypeInfo<allocator_type> typeInfo = {
-                ::zserio::makeStringView("WalkerWrongUnion"), nullptr,
-                templateName, templateArguments,
-                fields, parameters, functions
-            };
-
-            return typeInfo;
+            return ::zserio::makeStringView("wrong"); // this would be "value" in generated code
         }
-
-        ::zserio::IReflectablePtr reflectable(const allocator_type& allocator = allocator_type())
-        {
-            class Reflectable : public ::zserio::ReflectableAllocatorHolderBase<allocator_type>
-            {
-            public:
-                explicit Reflectable(WalkerWrongUnion&, const allocator_type& allocator) :
-                        ::zserio::ReflectableAllocatorHolderBase<allocator_type>(WalkerWrongUnion::typeInfo(), allocator)
-                {}
-
-                ::zserio::StringView getChoice() const override
-                {
-                    return ::zserio::makeStringView("wrong"); // this would be "value" in generated code
-                }
-            };
-
-            return std::allocate_shared<Reflectable>(allocator, *this, allocator);
-        }
-
-        void setValue(uint32_t value_)
-        {
-            m_choiceTag = CHOICE_value;
-            m_objectChoice = value_;
-        }
-
-    private:
-        ChoiceTag m_choiceTag;
-        ::zserio::AnyHolder<> m_objectChoice;
     };
 
     TestWalkObserver observer;
     DefaultWalkFilter defaultFilter;
     Walker walker(observer, defaultFilter);
 
-    WalkerWrongUnion walkerWrongUnion;
-    walkerWrongUnion.setValue(0);
-    walker.walk(walkerWrongUnion.reflectable());
+    WalkerUnion walkerUnion;
+    walkerUnion.setValue(0);
+    walker.walk(std::allocate_shared<Reflectable>(allocator_type(), walkerUnion, allocator_type()));
 
-    ASSERT_EQ("WalkerWrongUnion"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("beginRoot"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("WalkerWrongUnion"_sv,
+    ASSERT_EQ("test_object.std_allocator.WalkerUnion"_sv,
             observer.getCaptures("endRoot"_sv).at(0)->getTypeInfo().getSchemaName());
 
     ASSERT_EQ(0, observer.getCaptures("beginArray"_sv).size());
