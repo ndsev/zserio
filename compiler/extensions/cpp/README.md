@@ -21,7 +21,7 @@ The following describes features which minimize the risk of Zserio C++ runtime l
 - Warnings are treated as errors for all supported compilers
 - All features are properly tested by [unit test](runtime/test/) for all supported compilers (>600 tests)
 - Implemented automatic test coverage threshold check using [llvm-cov](https://llvm.org/docs/CommandGuide/llvm-cov.html) and Clang 8 (see
-  [coverage report](https://zserio.org/doc/runtime/latest/cpp/coverage/clang/index.html) which fulfills a line coverage threshold of 98%)
+  [coverage report](https://zserio.org/doc/runtime/latest/cpp/coverage/clang/index.html) which fulfills a line coverage threshold of 99%)
 - AddressSanitizer is run with no findings
 - UndefinedBehaviourSanitizer is run with no findings
 - C++ runtime library sources are checked by static analysis tool clang-tidy version 14
