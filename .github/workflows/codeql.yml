@@ -1,0 +1,68 @@
+name: "CodeQL"
+
+on:
+  push:
+    branches: [ "master", '*-ci' ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ${{ 'ubuntu-latest' }}
+    timeout-minutes: ${{ 360 }}
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'cpp', 'java', 'python' ]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        submodules: recursive
+
+    - name: Install dependencies
+      run: sudo apt-get install cmake doxygen graphviz
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install virtualenv
+        python -m pip install gcovr
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: ${{ matrix.language }}
+        config: |
+          queries:
+            - uses: security-extended
+            - uses: security-and-quality
+          paths-ignore:
+            - '3rdparty/**/*'
+
+    - run: |
+        echo "Run, Build Application using script"
+        ./scripts/build.sh all-linux64-clang
+        ./scripts/release.sh
+        if [[ "${{matrix.language}}" == "cpp" ]] ; then
+           ./scripts/test.sh cpp-linux64-clang
+        elif [[ "${{matrix.language}}" == "java" ]] ; then
+           ./scripts/test.sh java
+        elif [[ "${{matrix.language}}" == "python" ]] ; then
+           ./scripts/test.sh python
+        fi
+      env:
+        CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Release"
+        CMAKE_BUILD_OPTIONS: "-j2"
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
+      with:
+        category: "/language:${{matrix.language}}"
