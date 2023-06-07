@@ -65,7 +65,8 @@ class HtmlRuntimeEmitter
                 if (!jarEntry.isDirectory())
                 {
                     final String jarEntryName = jarEntry.getName();
-                    if (jarEntryName.startsWith(resourceDir))
+                    // check if entry does not contain ".." to be sure that we are not outside of destination
+                    if (!jarEntryName.contains("..") && jarEntryName.startsWith(resourceDir))
                         availableResources.add(jarEntryName);
                 }
             }
