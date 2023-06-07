@@ -183,21 +183,25 @@ public class SimpleDbTest
     private boolean isTableInDb(WorldDb database, String checkTableName) throws SQLException
     {
         // check if database does contain table
-        final String sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" +
-                checkTableName + "'";
+        final String sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name=?";
 
         try (
             final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);
-            final ResultSet resultSet = statement.executeQuery();
         )
         {
-            if (!resultSet.next())
-                return false;
+            statement.setString(1, checkTableName);
+            try (
+                final ResultSet resultSet = statement.executeQuery();
+            )
+            {
+                if (!resultSet.next())
+                    return false;
 
-            // read table name
-            final String readTableName = resultSet.getString(1);
-            if (resultSet.wasNull() || !readTableName.equals(checkTableName))
-                return false;
+                // read table name
+                final String readTableName = resultSet.getString(1);
+                if (resultSet.wasNull() || !readTableName.equals(checkTableName))
+                    return false;
+            }
         }
 
         return true;
