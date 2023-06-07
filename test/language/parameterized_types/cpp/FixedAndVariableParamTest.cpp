@@ -22,7 +22,7 @@ protected:
         auto& array = arrayHolder.getArray();
         array.clear();
         for (uint32_t i = 0; i < size; ++i)
-            array.push_back(i * i);
+            array.push_back(static_cast<uint32_t>(i * i));
         arrayHolder.setExtraValue(EXTRA_VALUE);
         arrayHolder.setHasBlack(color == Color::BLACK);
         arrayHolder.setHasRead((access & Access::Values::READ) == Access::Values::READ);
