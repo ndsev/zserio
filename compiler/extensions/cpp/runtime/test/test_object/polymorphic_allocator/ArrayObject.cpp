@@ -110,7 +110,7 @@ const ::zserio::pmr::ITypeInfo& ArrayObject::typeInfo()
         {
             if (name == ::zserio::makeStringView("value"))
             {
-                return ::zserio::pmr::ReflectableFactory::getFixedUnsignedBitField(UINT8_C(31), m_object.getValue(), get_allocator());
+                return ::zserio::pmr::ReflectableFactory::getFixedUnsignedBitField(m_object.getValue(), UINT8_C(31), get_allocator());
             }
             throw ::zserio::CppRuntimeException("Field '") << name << "' doesn't exist in 'ArrayObject'!";
         }
@@ -160,7 +160,7 @@ const ::zserio::pmr::ITypeInfo& ArrayObject::typeInfo()
         {
             if (name == ::zserio::makeStringView("value"))
             {
-                return ::zserio::pmr::ReflectableFactory::getFixedUnsignedBitField(UINT8_C(31), m_object.getValue(), get_allocator());
+                return ::zserio::pmr::ReflectableFactory::getFixedUnsignedBitField(m_object.getValue(), UINT8_C(31), get_allocator());
             }
             throw ::zserio::CppRuntimeException("Field '") << name << "' doesn't exist in 'ArrayObject'!";
         }
@@ -169,7 +169,7 @@ const ::zserio::pmr::ITypeInfo& ArrayObject::typeInfo()
         {
             if (name == ::zserio::makeStringView("value"))
             {
-                return ::zserio::pmr::ReflectableFactory::getFixedUnsignedBitField(UINT8_C(31), m_object.getValue(), get_allocator());
+                return ::zserio::pmr::ReflectableFactory::getFixedUnsignedBitField(m_object.getValue(), UINT8_C(31), get_allocator());
             }
             throw ::zserio::CppRuntimeException("Field '") << name << "' doesn't exist in 'ArrayObject'!";
         }
@@ -190,7 +190,7 @@ const ::zserio::pmr::ITypeInfo& ArrayObject::typeInfo()
             if (name == ::zserio::makeStringView("value"))
             {
                 m_object.setValue(uint32_t());
-                return ::zserio::pmr::ReflectableFactory::getFixedUnsignedBitField(UINT8_C(31), m_object.getValue(), get_allocator());
+                return ::zserio::pmr::ReflectableFactory::getFixedUnsignedBitField(m_object.getValue(), UINT8_C(31), get_allocator());
             }
             throw ::zserio::CppRuntimeException("Field '") << name << "' doesn't exist in 'ArrayObject'!";
         }

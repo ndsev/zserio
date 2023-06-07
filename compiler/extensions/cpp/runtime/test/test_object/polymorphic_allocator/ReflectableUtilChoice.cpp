@@ -179,7 +179,7 @@ const ::zserio::pmr::ITypeInfo& ReflectableUtilChoice::typeInfo()
         {
             if (name == ::zserio::makeStringView("array"))
             {
-                return ::zserio::pmr::ReflectableFactory::getBuiltinArray(::zserio::BuiltinTypeInfo<allocator_type>::getUInt32(), m_object.getArray(), get_allocator());
+                return ::zserio::pmr::ReflectableFactory::getUInt32Array(m_object.getArray(), get_allocator());
             }
             throw ::zserio::CppRuntimeException("Field '") << name << "' doesn't exist in 'ReflectableUtilChoice'!";
         }
@@ -264,7 +264,7 @@ const ::zserio::pmr::ITypeInfo& ReflectableUtilChoice::typeInfo()
         {
             if (name == ::zserio::makeStringView("array"))
             {
-                return ::zserio::pmr::ReflectableFactory::getBuiltinArray(::zserio::BuiltinTypeInfo<allocator_type>::getUInt32(), m_object.getArray(), get_allocator());
+                return ::zserio::pmr::ReflectableFactory::getUInt32Array(m_object.getArray(), get_allocator());
             }
             throw ::zserio::CppRuntimeException("Field '") << name << "' doesn't exist in 'ReflectableUtilChoice'!";
         }
@@ -273,7 +273,7 @@ const ::zserio::pmr::ITypeInfo& ReflectableUtilChoice::typeInfo()
         {
             if (name == ::zserio::makeStringView("array"))
             {
-                return ::zserio::pmr::ReflectableFactory::getBuiltinArray(::zserio::BuiltinTypeInfo<allocator_type>::getUInt32(), m_object.getArray(), get_allocator());
+                return ::zserio::pmr::ReflectableFactory::getUInt32Array(m_object.getArray(), get_allocator());
             }
             throw ::zserio::CppRuntimeException("Field '") << name << "' doesn't exist in 'ReflectableUtilChoice'!";
         }
@@ -294,7 +294,7 @@ const ::zserio::pmr::ITypeInfo& ReflectableUtilChoice::typeInfo()
             if (name == ::zserio::makeStringView("array"))
             {
                 m_object.setArray(::zserio::pmr::vector<uint32_t>(get_allocator()));
-                return ::zserio::pmr::ReflectableFactory::getBuiltinArray(::zserio::BuiltinTypeInfo<allocator_type>::getUInt32(), m_object.getArray(), get_allocator());
+                return ::zserio::pmr::ReflectableFactory::getUInt32Array(m_object.getArray(), get_allocator());
             }
             throw ::zserio::CppRuntimeException("Field '") << name << "' doesn't exist in 'ReflectableUtilChoice'!";
         }

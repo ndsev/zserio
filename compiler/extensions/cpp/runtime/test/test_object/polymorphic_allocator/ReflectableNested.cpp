@@ -181,7 +181,7 @@ const ::zserio::pmr::ITypeInfo& ReflectableNested::typeInfo()
         {
             if (name == ::zserio::makeStringView("value"))
             {
-                return ::zserio::pmr::ReflectableFactory::getFixedUnsignedBitField(UINT8_C(31), m_object.getValue(), get_allocator());
+                return ::zserio::pmr::ReflectableFactory::getFixedUnsignedBitField(m_object.getValue(), UINT8_C(31), get_allocator());
             }
             throw ::zserio::CppRuntimeException("Field '") << name << "' doesn't exist in 'ReflectableNested'!";
         }
@@ -190,7 +190,7 @@ const ::zserio::pmr::ITypeInfo& ReflectableNested::typeInfo()
         {
             if (name == ::zserio::makeStringView("dummyParam"))
             {
-                return ::zserio::pmr::ReflectableFactory::getFixedSignedBitField(UINT8_C(31), m_object.getDummyParam(), get_allocator());
+                return ::zserio::pmr::ReflectableFactory::getFixedSignedBitField(m_object.getDummyParam(), UINT8_C(31), get_allocator());
             }
             if (name == ::zserio::makeStringView("stringParam"))
             {
@@ -203,7 +203,7 @@ const ::zserio::pmr::ITypeInfo& ReflectableNested::typeInfo()
         {
             if (name == ::zserio::makeStringView("getValue"))
             {
-                return ::zserio::pmr::ReflectableFactory::getFixedUnsignedBitField(UINT8_C(31), m_object.funcGetValue(), get_allocator());
+                return ::zserio::pmr::ReflectableFactory::getFixedUnsignedBitField(m_object.funcGetValue(), UINT8_C(31), get_allocator());
             }
             throw ::zserio::CppRuntimeException("Function '") << name << "' doesn't exist in 'ReflectableNested'!";
         }
@@ -268,7 +268,7 @@ const ::zserio::pmr::ITypeInfo& ReflectableNested::typeInfo()
         {
             if (name == ::zserio::makeStringView("value"))
             {
-                return ::zserio::pmr::ReflectableFactory::getFixedUnsignedBitField(UINT8_C(31), m_object.getValue(), get_allocator());
+                return ::zserio::pmr::ReflectableFactory::getFixedUnsignedBitField(m_object.getValue(), UINT8_C(31), get_allocator());
             }
             throw ::zserio::CppRuntimeException("Field '") << name << "' doesn't exist in 'ReflectableNested'!";
         }
@@ -277,7 +277,7 @@ const ::zserio::pmr::ITypeInfo& ReflectableNested::typeInfo()
         {
             if (name == ::zserio::makeStringView("value"))
             {
-                return ::zserio::pmr::ReflectableFactory::getFixedUnsignedBitField(UINT8_C(31), m_object.getValue(), get_allocator());
+                return ::zserio::pmr::ReflectableFactory::getFixedUnsignedBitField(m_object.getValue(), UINT8_C(31), get_allocator());
             }
             throw ::zserio::CppRuntimeException("Field '") << name << "' doesn't exist in 'ReflectableNested'!";
         }
@@ -298,7 +298,7 @@ const ::zserio::pmr::ITypeInfo& ReflectableNested::typeInfo()
             if (name == ::zserio::makeStringView("value"))
             {
                 m_object.setValue(uint32_t());
-                return ::zserio::pmr::ReflectableFactory::getFixedUnsignedBitField(UINT8_C(31), m_object.getValue(), get_allocator());
+                return ::zserio::pmr::ReflectableFactory::getFixedUnsignedBitField(m_object.getValue(), UINT8_C(31), get_allocator());
             }
             throw ::zserio::CppRuntimeException("Field '") << name << "' doesn't exist in 'ReflectableNested'!";
         }
@@ -307,7 +307,7 @@ const ::zserio::pmr::ITypeInfo& ReflectableNested::typeInfo()
         {
             if (name == ::zserio::makeStringView("dummyParam"))
             {
-                return ::zserio::pmr::ReflectableFactory::getFixedSignedBitField(UINT8_C(31), m_object.getDummyParam(), get_allocator());
+                return ::zserio::pmr::ReflectableFactory::getFixedSignedBitField(m_object.getDummyParam(), UINT8_C(31), get_allocator());
             }
             if (name == ::zserio::makeStringView("stringParam"))
             {
@@ -320,7 +320,7 @@ const ::zserio::pmr::ITypeInfo& ReflectableNested::typeInfo()
         {
             if (name == ::zserio::makeStringView("dummyParam"))
             {
-                return ::zserio::pmr::ReflectableFactory::getFixedSignedBitField(UINT8_C(31), m_object.getDummyParam(), get_allocator());
+                return ::zserio::pmr::ReflectableFactory::getFixedSignedBitField(m_object.getDummyParam(), UINT8_C(31), get_allocator());
             }
             if (name == ::zserio::makeStringView("stringParam"))
             {
@@ -333,7 +333,7 @@ const ::zserio::pmr::ITypeInfo& ReflectableNested::typeInfo()
         {
             if (name == ::zserio::makeStringView("getValue"))
             {
-                return ::zserio::pmr::ReflectableFactory::getFixedUnsignedBitField(UINT8_C(31), m_object.funcGetValue(), get_allocator());
+                return ::zserio::pmr::ReflectableFactory::getFixedUnsignedBitField(m_object.funcGetValue(), UINT8_C(31), get_allocator());
             }
             throw ::zserio::CppRuntimeException("Function '") << name << "' doesn't exist in 'ReflectableNested'!";
         }
@@ -342,7 +342,7 @@ const ::zserio::pmr::ITypeInfo& ReflectableNested::typeInfo()
         {
             if (name == ::zserio::makeStringView("getValue"))
             {
-                return ::zserio::pmr::ReflectableFactory::getFixedUnsignedBitField(UINT8_C(31), m_object.funcGetValue(), get_allocator());
+                return ::zserio::pmr::ReflectableFactory::getFixedUnsignedBitField(m_object.funcGetValue(), UINT8_C(31), get_allocator());
             }
             throw ::zserio::CppRuntimeException("Function '") << name << "' doesn't exist in 'ReflectableNested'!";
         }

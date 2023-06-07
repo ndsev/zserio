@@ -385,21 +385,21 @@ const ::zserio::pmr::ITypeInfo& CreatorObject::typeInfo()
             }
             if (name == ::zserio::makeStringView("textArray"))
             {
-                return ::zserio::pmr::ReflectableFactory::getBuiltinArray(::zserio::BuiltinTypeInfo<allocator_type>::getString(), m_object.getTextArray(), get_allocator());
+                return ::zserio::pmr::ReflectableFactory::getStringArray(m_object.getTextArray(), get_allocator());
             }
             if (name == ::zserio::makeStringView("externArray"))
             {
                 if (!m_object.isExternArraySet())
                     return nullptr;
 
-                return ::zserio::pmr::ReflectableFactory::getBuiltinArray(::zserio::BuiltinTypeInfo<allocator_type>::getBitBuffer(), m_object.getExternArray(), get_allocator());
+                return ::zserio::pmr::ReflectableFactory::getBitBufferArray(m_object.getExternArray(), get_allocator());
             }
             if (name == ::zserio::makeStringView("bytesArray"))
             {
                 if (!m_object.isBytesArraySet())
                     return nullptr;
 
-                return ::zserio::pmr::ReflectableFactory::getBuiltinArray(::zserio::BuiltinTypeInfo<allocator_type>::getBytes(), m_object.getBytesArray(), get_allocator());
+                return ::zserio::pmr::ReflectableFactory::getBytesArray(m_object.getBytesArray(), get_allocator());
             }
             if (name == ::zserio::makeStringView("optionalBool"))
             {
@@ -480,21 +480,21 @@ const ::zserio::pmr::ITypeInfo& CreatorObject::typeInfo()
             }
             if (name == ::zserio::makeStringView("textArray"))
             {
-                return ::zserio::pmr::ReflectableFactory::getBuiltinArray(::zserio::BuiltinTypeInfo<allocator_type>::getString(), m_object.getTextArray(), get_allocator());
+                return ::zserio::pmr::ReflectableFactory::getStringArray(m_object.getTextArray(), get_allocator());
             }
             if (name == ::zserio::makeStringView("externArray"))
             {
                 if (!m_object.isExternArraySet())
                     return nullptr;
 
-                return ::zserio::pmr::ReflectableFactory::getBuiltinArray(::zserio::BuiltinTypeInfo<allocator_type>::getBitBuffer(), m_object.getExternArray(), get_allocator());
+                return ::zserio::pmr::ReflectableFactory::getBitBufferArray(m_object.getExternArray(), get_allocator());
             }
             if (name == ::zserio::makeStringView("bytesArray"))
             {
                 if (!m_object.isBytesArraySet())
                     return nullptr;
 
-                return ::zserio::pmr::ReflectableFactory::getBuiltinArray(::zserio::BuiltinTypeInfo<allocator_type>::getBytes(), m_object.getBytesArray(), get_allocator());
+                return ::zserio::pmr::ReflectableFactory::getBytesArray(m_object.getBytesArray(), get_allocator());
             }
             if (name == ::zserio::makeStringView("optionalBool"))
             {
@@ -533,21 +533,21 @@ const ::zserio::pmr::ITypeInfo& CreatorObject::typeInfo()
             }
             if (name == ::zserio::makeStringView("textArray"))
             {
-                return ::zserio::pmr::ReflectableFactory::getBuiltinArray(::zserio::BuiltinTypeInfo<allocator_type>::getString(), m_object.getTextArray(), get_allocator());
+                return ::zserio::pmr::ReflectableFactory::getStringArray(m_object.getTextArray(), get_allocator());
             }
             if (name == ::zserio::makeStringView("externArray"))
             {
                 if (!m_object.isExternArraySet())
                     return nullptr;
 
-                return ::zserio::pmr::ReflectableFactory::getBuiltinArray(::zserio::BuiltinTypeInfo<allocator_type>::getBitBuffer(), m_object.getExternArray(), get_allocator());
+                return ::zserio::pmr::ReflectableFactory::getBitBufferArray(m_object.getExternArray(), get_allocator());
             }
             if (name == ::zserio::makeStringView("bytesArray"))
             {
                 if (!m_object.isBytesArraySet())
                     return nullptr;
 
-                return ::zserio::pmr::ReflectableFactory::getBuiltinArray(::zserio::BuiltinTypeInfo<allocator_type>::getBytes(), m_object.getBytesArray(), get_allocator());
+                return ::zserio::pmr::ReflectableFactory::getBytesArray(m_object.getBytesArray(), get_allocator());
             }
             if (name == ::zserio::makeStringView("optionalBool"))
             {
@@ -666,17 +666,17 @@ const ::zserio::pmr::ITypeInfo& CreatorObject::typeInfo()
             if (name == ::zserio::makeStringView("textArray"))
             {
                 m_object.setTextArray(::zserio::pmr::vector<::zserio::pmr::string>(get_allocator()));
-                return ::zserio::pmr::ReflectableFactory::getBuiltinArray(::zserio::BuiltinTypeInfo<allocator_type>::getString(), m_object.getTextArray(), get_allocator());
+                return ::zserio::pmr::ReflectableFactory::getStringArray(m_object.getTextArray(), get_allocator());
             }
             if (name == ::zserio::makeStringView("externArray"))
             {
                 m_object.setExternArray(::zserio::pmr::vector<::zserio::pmr::BitBuffer>(get_allocator()));
-                return ::zserio::pmr::ReflectableFactory::getBuiltinArray(::zserio::BuiltinTypeInfo<allocator_type>::getBitBuffer(), m_object.getExternArray(), get_allocator());
+                return ::zserio::pmr::ReflectableFactory::getBitBufferArray(m_object.getExternArray(), get_allocator());
             }
             if (name == ::zserio::makeStringView("bytesArray"))
             {
                 m_object.setBytesArray(::zserio::pmr::vector<::zserio::pmr::vector<uint8_t>>(get_allocator()));
-                return ::zserio::pmr::ReflectableFactory::getBuiltinArray(::zserio::BuiltinTypeInfo<allocator_type>::getBytes(), m_object.getBytesArray(), get_allocator());
+                return ::zserio::pmr::ReflectableFactory::getBytesArray(m_object.getBytesArray(), get_allocator());
             }
             if (name == ::zserio::makeStringView("optionalBool"))
             {

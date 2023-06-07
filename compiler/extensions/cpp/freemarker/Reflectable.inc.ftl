@@ -161,8 +161,9 @@ ${I}}
             ${types.reflectableFactory.name}::getEnumArray(<#t>
                     m_object.${field.getterName}(), get_allocator())<#t>
         <#else>
-            ${types.reflectableFactory.name}::getBuiltinArray(<#t>
-                    <@type_info field.array.elementTypeInfo/>, m_object.${field.getterName}(), <#t>
+            ${types.reflectableFactory.name}::get${field.array.elementTypeInfo.typeInfoGetter.suffix}Array(<#t>
+                    m_object.${field.getterName}(), <#t>
+                    <#if field.array.elementTypeInfo.typeInfoGetter.arg??>${field.array.elementTypeInfo.typeInfoGetter.arg}, </#if><#t>
             <#if field.array.elementBitSize?? && field.array.elementBitSize.objectIndirectValue??>
                     static_cast<uint8_t>(${field.array.elementBitSize.objectIndirectValue}), <#t>
             </#if>
@@ -171,8 +172,8 @@ ${I}}
     <#else>
         <#if field.typeInfo.typeInfoGetter??>
             ${types.reflectableFactory.name}::get${field.typeInfo.typeInfoGetter.suffix}(<#t>
-                    <#if field.typeInfo.typeInfoGetter.arg??>${field.typeInfo.typeInfoGetter.arg}, </#if><#t>
                     m_object.${field.getterName}(), <#t>
+                    <#if field.typeInfo.typeInfoGetter.arg??>${field.typeInfo.typeInfoGetter.arg}, </#if><#t>
             <#if field.bitSize?? && field.bitSize.objectIndirectValue??>
                     static_cast<uint8_t>(${field.bitSize.objectIndirectValue}), <#t>
             </#if>
@@ -188,8 +189,9 @@ ${I}}
 <#macro reflectable_parameter_create parameter>
     <#if parameter.typeInfo.typeInfoGetter??>
         ${types.reflectableFactory.name}::get${parameter.typeInfo.typeInfoGetter.suffix}(<#t>
+                m_object.${parameter.getterName}(), <#t>
                 <#if parameter.typeInfo.typeInfoGetter.arg??>${parameter.typeInfo.typeInfoGetter.arg}, </#if><#t>
-                m_object.${parameter.getterName}(), get_allocator())<#t>
+                get_allocator())<#t>
     <#elseif parameter.typeInfo.isEnum>
         ::zserio::enumReflectable(m_object.${parameter.getterName}(), get_allocator())<#t>
     <#else>
@@ -200,8 +202,9 @@ ${I}}
 <#macro reflectable_function_create function>
     <#if function.returnTypeInfo.typeInfoGetter??>
         ${types.reflectableFactory.name}::get${function.returnTypeInfo.typeInfoGetter.suffix}(<#t>
+                m_object.${function.name}(), <#t>
                 <#if function.returnTypeInfo.typeInfoGetter.arg??>${function.returnTypeInfo.typeInfoGetter.arg}, </#if><#t>
-                m_object.${function.name}(), get_allocator())<#t>
+                get_allocator())<#t>
     <#elseif function.returnTypeInfo.isEnum>
         ::zserio::enumReflectable(m_object.${function.name}(), get_allocator())<#t>
     <#else>

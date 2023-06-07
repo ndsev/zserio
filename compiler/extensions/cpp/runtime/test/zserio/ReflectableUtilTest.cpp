@@ -315,9 +315,9 @@ TEST(ReflectableUtilTest, equalArrays)
     std::vector<uint32_t> array2 = {1, 2, 4};
     std::vector<uint32_t> array3 = {1, 2};
 
-    auto array1Reflectable = ReflectableFactory::getBuiltinArray(BuiltinTypeInfo<>::getUInt32(), array1);
-    auto array2Reflectable = ReflectableFactory::getBuiltinArray(BuiltinTypeInfo<>::getUInt32(), array2);
-    auto array3Reflectable = ReflectableFactory::getBuiltinArray(BuiltinTypeInfo<>::getUInt32(), array3);
+    auto array1Reflectable = ReflectableFactory::getUInt32Array(array1);
+    auto array2Reflectable = ReflectableFactory::getUInt32Array(array2);
+    auto array3Reflectable = ReflectableFactory::getUInt32Array(array3);
 
     ASSERT_TRUE(ReflectableUtil::equal(array1Reflectable, array1Reflectable));
     ASSERT_TRUE(ReflectableUtil::equal(array2Reflectable, array2Reflectable));
@@ -329,7 +329,8 @@ TEST(ReflectableUtilTest, equalArrays)
 
 TEST(ReflectableUtilTest, equalWrong)
 {
-    class WrongTypeInfo : public TypeInfoBase<std::allocator<uint8_t>>
+    using allocator_type = ::std::allocator<uint8_t>;
+    class WrongTypeInfo : public TypeInfoBase<allocator_type>
     {
     public:
         WrongTypeInfo(StringView schemaName, SchemaType schemaType, CppType cppType) :
@@ -338,17 +339,24 @@ TEST(ReflectableUtilTest, equalWrong)
     };
 
     const WrongTypeInfo wrongTypeInfo = {
-        "int<>"_sv, SchemaType::DYNAMIC_SIGNED_BITFIELD, CppType::PUBSUB};
-    IBasicReflectablePtr<> wrongReflectable =
-            std::allocate_shared<Int32Reflectable<std::allocator<uint8_t>>>(std::allocator<uint8_t>(),
-                    wrongTypeInfo, 0xAB, 31);
-    ASSERT_THROW(ReflectableUtil::equal(wrongReflectable, wrongReflectable), CppRuntimeException);
-
+            "int<>"_sv, SchemaType::DYNAMIC_SIGNED_BITFIELD, CppType::PUBSUB};
     const WrongTypeInfo wrongTypeInfoDiffName = {
-        "diff"_sv, SchemaType::DYNAMIC_SIGNED_BITFIELD, CppType::PUBSUB};
-    IBasicReflectablePtr<> wrongReflectableDiffName =
-            std::allocate_shared<Int32Reflectable<std::allocator<uint8_t>>>(std::allocator<uint8_t>(),
-                    wrongTypeInfoDiffName, 0xAB, 31);
+            "diff"_sv, SchemaType::DYNAMIC_SIGNED_BITFIELD, CppType::PUBSUB};
+
+    class Reflectable : public ::zserio::ReflectableAllocatorHolderBase<allocator_type>
+    {
+    public:
+        explicit Reflectable(const TypeInfoBase<allocator_type>& typeInfo, const allocator_type& allocator) :
+                ::zserio::ReflectableAllocatorHolderBase<allocator_type>(typeInfo, allocator)
+        {}
+    };
+
+    auto wrongReflectable = std::allocate_shared<Reflectable>(allocator_type(), wrongTypeInfo,
+            allocator_type());
+    auto wrongReflectableDiffName = std::allocate_shared<Reflectable>(allocator_type(), wrongTypeInfoDiffName,
+            allocator_type());
+
+    ASSERT_THROW(ReflectableUtil::equal(wrongReflectable, wrongReflectable), CppRuntimeException);
     ASSERT_FALSE(ReflectableUtil::equal(wrongReflectable, wrongReflectableDiffName));
 }
 
@@ -432,12 +440,12 @@ TEST(ReflectableUtilTest, getValueCompound)
 TEST(ReflectableUtilTest, getValueBuiltinArray)
 {
     std::vector<uint8_t> uint8Array{{1, 2, 3}};
-    auto reflectable = ReflectableFactory::getBuiltinArray(BuiltinTypeInfo<>::getUInt8(), uint8Array);
+    auto reflectable = ReflectableFactory::getUInt8Array(uint8Array);
     std::vector<uint8_t>& uint8ArrayRef = ReflectableUtil::getValue<std::vector<uint8_t>>(reflectable);
     ASSERT_EQ(&uint8Array, &uint8ArrayRef);
 
-    auto constReflectable = ReflectableFactory::getBuiltinArray(BuiltinTypeInfo<>::getUInt8(),
-            static_cast<const std::vector<uint8_t>&>(uint8Array));
+    auto constReflectable = ReflectableFactory::getUInt8Array(
+                static_cast<const std::vector<uint8_t>&>(uint8Array));
     const std::vector<uint8_t>& uint8ArrayConstRef =
             ReflectableUtil::getValue<std::vector<uint8_t>>(constReflectable);
     ASSERT_EQ(&uint8Array, &uint8ArrayConstRef);

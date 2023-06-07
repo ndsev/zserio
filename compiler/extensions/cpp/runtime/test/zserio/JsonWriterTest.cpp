@@ -478,18 +478,26 @@ TEST_F(JsonWriterTest, bitmaskValue)
 
 TEST_F(JsonWriterTest, unexpectedValue)
 {
-    std::vector<uint8_t> uint8Array{{1, 2, 3}};
-    const std::array<FieldInfo, 1> fields{BOOL_FIELD_INFO};
-    const StructTypeInfo<std::allocator<uint8_t>> structTypeInfo(
-            "Struct"_sv, nullptr, ""_sv, {}, fields, {}, {});
-    auto reflectable = ReflectableFactory::getBuiltinArray(structTypeInfo, uint8Array);
+    using allocator_type = ::std::allocator<uint8_t>;
+
+    const StructTypeInfo<allocator_type> structTypeInfo("Struct"_sv, nullptr, ""_sv, {}, {}, {}, {});
+    class Reflectable : public ::zserio::ReflectableAllocatorHolderBase<allocator_type>
+    {
+    public:
+        explicit Reflectable(const StructTypeInfo<allocator_type>& structTypeInfo,
+                const allocator_type& allocator) :
+                ::zserio::ReflectableAllocatorHolderBase<allocator_type>(structTypeInfo, allocator)
+        {}
+    };
+    auto reflectable = std::allocate_shared<Reflectable>(allocator_type(), structTypeInfo, allocator_type());
+
     ASSERT_THROW({
         try
         {
             std::ostringstream os;
             JsonWriter jsonWriter(os);
             IWalkObserver& observer = jsonWriter;
-            observer.visitValue(reflectable, ARRAY_FIELD_INFO, WALKER_NOT_ELEMENT);
+            observer.visitValue(reflectable, BOOL_FIELD_INFO, WALKER_NOT_ELEMENT);
         }
         catch (const CppRuntimeException& e)
         {

@@ -208,189 +208,9 @@ protected:
     using Base = BuiltinReflectableBase<ALLOC, T>;
 
 public:
-    IntegralReflectableBase(const IBasicTypeInfo<ALLOC>& typeInfo, T value, uint8_t dynamicBitSize) :
-            Base(typeInfo, value), m_dynamicBitSize(dynamicBitSize)
+    IntegralReflectableBase(const IBasicTypeInfo<ALLOC>& typeInfo, T value) :
+            Base(typeInfo, value)
     {}
-
-    size_t bitSizeOf(size_t) const override
-    {
-        const IBasicTypeInfo<ALLOC>& typeInfo = Base::getTypeInfo();
-        switch (typeInfo.getSchemaType())
-        {
-        case SchemaType::BOOL:
-            return 1;
-        case SchemaType::INT8:
-            return 8;
-        case SchemaType::INT16:
-            return 16;
-        case SchemaType::INT32:
-            return 32;
-        case SchemaType::INT64:
-            return 64;
-        case SchemaType::UINT8:
-            return 8;
-        case SchemaType::UINT16:
-            return 16;
-        case SchemaType::UINT32:
-            return 32;
-        case SchemaType::UINT64:
-            return 64;
-        case SchemaType::VARINT16:
-            return zserio::bitSizeOfVarInt16(static_cast<int16_t>(Base::getValue()));
-        case SchemaType::VARINT32:
-            return zserio::bitSizeOfVarInt32(static_cast<int32_t>(Base::getValue()));
-        case SchemaType::VARINT64:
-            return zserio::bitSizeOfVarInt64(static_cast<int64_t>(Base::getValue()));
-        case SchemaType::VARINT:
-            return zserio::bitSizeOfVarInt(static_cast<int64_t>(Base::getValue()));
-        case SchemaType::VARUINT16:
-            return zserio::bitSizeOfVarUInt16(static_cast<uint16_t>(Base::getValue()));
-        case SchemaType::VARUINT32:
-            return zserio::bitSizeOfVarUInt32(static_cast<uint32_t>(Base::getValue()));
-        case SchemaType::VARUINT64:
-            return zserio::bitSizeOfVarUInt64(static_cast<uint64_t>(Base::getValue()));
-        case SchemaType::VARUINT:
-            return zserio::bitSizeOfVarUInt(static_cast<uint64_t>(Base::getValue()));
-        case SchemaType::VARSIZE:
-            return zserio::bitSizeOfVarSize(static_cast<uint32_t>(Base::getValue()));
-        case SchemaType::FIXED_SIGNED_BITFIELD:
-        case SchemaType::FIXED_UNSIGNED_BITFIELD:
-            return typeInfo.getBitSize();
-        case SchemaType::DYNAMIC_SIGNED_BITFIELD:
-        case SchemaType::DYNAMIC_UNSIGNED_BITFIELD:
-            return m_dynamicBitSize;
-        default:
-            throw CppRuntimeException("IntegralReflectableBase::bitSizeOf - Unexpected integral type!");
-        }
-    }
-
-    void write(BitStreamWriter& writer) const override
-    {
-        const IBasicTypeInfo<ALLOC>& typeInfo = Base::getTypeInfo();
-        switch (typeInfo.getSchemaType())
-        {
-        case SchemaType::BOOL:
-            writer.writeBool(static_cast<bool>(Base::getValue()));
-            break;
-        case SchemaType::INT8:
-            writer.writeSignedBits(static_cast<int8_t>(Base::getValue()), 8);
-            break;
-        case SchemaType::INT16:
-            writer.writeSignedBits(static_cast<int16_t>(Base::getValue()), 16);
-            break;
-        case SchemaType::INT32:
-            writer.writeSignedBits(static_cast<int32_t>(Base::getValue()), 32);
-            break;
-        case SchemaType::INT64:
-            writer.writeSignedBits64(static_cast<int64_t>(Base::getValue()), 64);
-            break;
-        case SchemaType::UINT8:
-            writer.writeBits(static_cast<uint8_t>(Base::getValue()), 8);
-            break;
-        case SchemaType::UINT16:
-            writer.writeBits(static_cast<uint16_t>(Base::getValue()), 16);
-            break;
-        case SchemaType::UINT32:
-            writer.writeBits(static_cast<uint32_t>(Base::getValue()), 32);
-            break;
-        case SchemaType::UINT64:
-            writer.writeBits64(static_cast<uint64_t>(Base::getValue()), 64);
-            break;
-        case SchemaType::VARINT16:
-            writer.writeVarInt16(static_cast<int16_t>(Base::getValue()));
-            break;
-        case SchemaType::VARINT32:
-            writer.writeVarInt32(static_cast<int32_t>(Base::getValue()));
-            break;
-        case SchemaType::VARINT64:
-            writer.writeVarInt64(static_cast<int64_t>(Base::getValue()));
-            break;
-        case SchemaType::VARINT:
-            writer.writeVarInt(static_cast<int64_t>(Base::getValue()));
-            break;
-        case SchemaType::VARUINT16:
-            writer.writeVarUInt16(static_cast<uint16_t>(Base::getValue()));
-            break;
-        case SchemaType::VARUINT32:
-            writer.writeVarUInt32(static_cast<uint32_t>(Base::getValue()));
-            break;
-        case SchemaType::VARUINT64:
-            writer.writeVarUInt64(static_cast<uint64_t>(Base::getValue()));
-            break;
-        case SchemaType::VARUINT:
-            writer.writeVarUInt(static_cast<uint64_t>(Base::getValue()));
-            break;
-        case SchemaType::VARSIZE:
-            writer.writeVarSize(static_cast<uint32_t>(Base::getValue()));
-            break;
-        case SchemaType::FIXED_SIGNED_BITFIELD:
-            switch (typeInfo.getCppType())
-            {
-            case CppType::INT8:
-            case CppType::INT16:
-            case CppType::INT32:
-                writer.writeSignedBits(static_cast<int32_t>(Base::getValue()), typeInfo.getBitSize());
-                break;
-            case CppType::INT64:
-                writer.writeSignedBits64(static_cast<int64_t>(Base::getValue()), typeInfo.getBitSize());
-                break;
-            default:
-                throw CppRuntimeException("IntegralReflectableBase::write - "
-                        "Unexpected type for fixed signed bitfield!");
-            }
-            break;
-        case SchemaType::FIXED_UNSIGNED_BITFIELD:
-            switch (typeInfo.getCppType())
-            {
-            case CppType::UINT8:
-            case CppType::UINT16:
-            case CppType::UINT32:
-                writer.writeBits(static_cast<uint32_t>(Base::getValue()), typeInfo.getBitSize());
-                break;
-            case CppType::UINT64:
-                writer.writeBits64(static_cast<uint64_t>(Base::getValue()), typeInfo.getBitSize());
-                break;
-            default:
-                throw CppRuntimeException("IntegralReflectableBase::write - "
-                        "Unexpected type for fixed unsigned bitfield!");
-            }
-            break;
-        case SchemaType::DYNAMIC_SIGNED_BITFIELD:
-            switch (typeInfo.getCppType())
-            {
-            case CppType::INT8:
-            case CppType::INT16:
-            case CppType::INT32:
-                writer.writeSignedBits(static_cast<int32_t>(Base::getValue()), m_dynamicBitSize);
-                break;
-            case CppType::INT64:
-                writer.writeSignedBits64(static_cast<int64_t>(Base::getValue()), m_dynamicBitSize);
-                break;
-            default:
-                throw CppRuntimeException("IntegralReflectableBase::write - "
-                        "Unexpected type for dynamic signed bitfield!");
-            }
-            break;
-        case SchemaType::DYNAMIC_UNSIGNED_BITFIELD:
-            switch (typeInfo.getCppType())
-            {
-            case CppType::UINT8:
-            case CppType::UINT16:
-            case CppType::UINT32:
-                writer.writeBits(static_cast<uint32_t>(Base::getValue()), m_dynamicBitSize);
-                break;
-            case CppType::UINT64:
-                writer.writeBits64(static_cast<uint64_t>(Base::getValue()), m_dynamicBitSize);
-                break;
-            default:
-                throw CppRuntimeException("IntegralReflectableBase::write - "
-                        "Unexpected type for dynamic unsigned bitfield!");
-            }
-            break;
-        default:
-            throw CppRuntimeException("IntegralReflectableBase::write - Unexpected integral type!");
-        }
-    }
 
     double toDouble() const override
     {
@@ -401,9 +221,6 @@ public:
     {
         return ::zserio::toString<ALLOC>(Base::getValue(), allocator);
     }
-
-private:
-    uint8_t m_dynamicBitSize;
 };
 
 /**
@@ -419,7 +236,7 @@ protected:
 
     using Base = IntegralReflectableBase<ALLOC, T>;
 
-    using Base::IntegralReflectableBase;
+    using Base::Base;
 
 public:
     int64_t toInt() const override
@@ -441,7 +258,7 @@ protected:
 
     using Base = IntegralReflectableBase<ALLOC, T>;
 
-    using Base::IntegralReflectableBase;
+    using Base::Base;
 
 public:
     uint64_t toUInt() const override
@@ -460,9 +277,21 @@ private:
     using Base = UnsignedReflectableBase<ALLOC, bool>;
 
 public:
-    BoolReflectable(const IBasicTypeInfo<ALLOC>& typeInfo, bool value, uint8_t dynamicBitSize) :
-            Base(typeInfo, value, dynamicBitSize)
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getBool;
+
+    explicit BoolReflectable(bool value) :
+            Base(typeInfo(), value)
     {}
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return 1;
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeBool(Base::getValue());
+    }
 
     bool getBool() const override
     {
@@ -471,19 +300,19 @@ public:
 };
 
 /**
- * Reflectable for values of int8_t type.
+ * Base class for 8-bit signed integral reflectables.
+ *
+ * Implements getInt8() conversion.
  */
 template <typename ALLOC>
-class Int8Reflectable : public SignedReflectableBase<ALLOC, int8_t>
+class Int8ReflectableBase : public SignedReflectableBase<ALLOC, int8_t>
 {
-private:
+protected:
     using Base = SignedReflectableBase<ALLOC, int8_t>;
 
-public:
-    Int8Reflectable(const IBasicTypeInfo<ALLOC>& typeInfo, int8_t value, uint8_t dynamicBitSize) :
-            Base(typeInfo, value, dynamicBitSize)
-    {}
+    using Base::Base;
 
+public:
     int8_t getInt8() const override
     {
         return Base::getValue();
@@ -491,19 +320,19 @@ public:
 };
 
 /**
- * Reflectable for values of int16_t type.
+ * Base class for 16-bit signed integral reflectables.
+ *
+ * Implements getInt16() conversion.
  */
 template <typename ALLOC>
-class Int16Reflectable : public SignedReflectableBase<ALLOC, int16_t>
+class Int16ReflectableBase : public SignedReflectableBase<ALLOC, int16_t>
 {
-private:
+protected:
     using Base = SignedReflectableBase<ALLOC, int16_t>;
 
-public:
-    Int16Reflectable(const IBasicTypeInfo<ALLOC>& typeInfo, int16_t value, uint8_t dynamicBitSize) :
-            Base(typeInfo, value, dynamicBitSize)
-    {}
+    using Base::Base;
 
+public:
     int16_t getInt16() const override
     {
         return Base::getValue();
@@ -511,19 +340,19 @@ public:
 };
 
 /**
- * Reflectable for values of int32_t type.
+ * Base class for 32-bit signed integral reflectables.
+ *
+ * Implements getInt32() conversion.
  */
 template <typename ALLOC>
-class Int32Reflectable : public SignedReflectableBase<ALLOC, int32_t>
+class Int32ReflectableBase : public SignedReflectableBase<ALLOC, int32_t>
 {
-private:
+protected:
     using Base = SignedReflectableBase<ALLOC, int32_t>;
 
-public:
-    Int32Reflectable(const IBasicTypeInfo<ALLOC>& typeInfo, int32_t value, uint8_t dynamicBitSize) :
-            Base(typeInfo, value, dynamicBitSize)
-    {}
+    using Base::Base;
 
+public:
     int32_t getInt32() const override
     {
         return Base::getValue();
@@ -531,19 +360,19 @@ public:
 };
 
 /**
- * Reflectable for values of int64_t type.
+ * Base class for 64-bit signed integral reflectables.
+ *
+ * Implements getInt64() conversion.
  */
 template <typename ALLOC>
-class Int64Reflectable : public SignedReflectableBase<ALLOC, int64_t>
+class Int64ReflectableBase : public SignedReflectableBase<ALLOC, int64_t>
 {
-private:
+protected:
     using Base = SignedReflectableBase<ALLOC, int64_t>;
 
-public:
-    Int64Reflectable(const IBasicTypeInfo<ALLOC>& typeInfo, int64_t value, uint8_t dynamicBitSize) :
-            Base(typeInfo, value, dynamicBitSize)
-    {}
+    using Base::Base;
 
+public:
     int64_t getInt64() const override
     {
         return Base::getValue();
@@ -551,19 +380,19 @@ public:
 };
 
 /**
- * Reflectable for values of uint8_t type.
+ * Base class for 8-bit unsigned integral reflectables.
+ *
+ * Implements getUInt8() conversion.
  */
 template <typename ALLOC>
-class UInt8Reflectable : public UnsignedReflectableBase<ALLOC, uint8_t>
+class UInt8ReflectableBase : public UnsignedReflectableBase<ALLOC, uint8_t>
 {
-private:
+protected:
     using Base = UnsignedReflectableBase<ALLOC, uint8_t>;
 
-public:
-    UInt8Reflectable(const IBasicTypeInfo<ALLOC>& typeInfo, uint8_t value, uint8_t dynamicBitSize) :
-            Base(typeInfo, value, dynamicBitSize)
-    {}
+    using Base::Base;
 
+public:
     uint8_t getUInt8() const override
     {
         return Base::getValue();
@@ -571,19 +400,19 @@ public:
 };
 
 /**
- * Reflectable for values of uint16_t type.
+ * Base class for 16-bit unsigned integral reflectables.
+ *
+ * Implements getUInt16() conversion.
  */
 template <typename ALLOC>
-class UInt16Reflectable : public UnsignedReflectableBase<ALLOC, uint16_t>
+class UInt16ReflectableBase : public UnsignedReflectableBase<ALLOC, uint16_t>
 {
-private:
+protected:
     using Base = UnsignedReflectableBase<ALLOC, uint16_t>;
 
-public:
-    UInt16Reflectable(const IBasicTypeInfo<ALLOC>& typeInfo, uint16_t value, uint8_t dynamicBitSize) :
-            Base(typeInfo, value, dynamicBitSize)
-    {}
+    using Base::Base;
 
+public:
     uint16_t getUInt16() const override
     {
         return Base::getValue();
@@ -591,19 +420,19 @@ public:
 };
 
 /**
- * Reflectable for values of uint32_t type.
+ * Base class for 32-bit unsigned integral reflectables.
+ *
+ * Implements getUInt32() conversion.
  */
 template <typename ALLOC>
-class UInt32Reflectable : public UnsignedReflectableBase<ALLOC, uint32_t>
+class UInt32ReflectableBase : public UnsignedReflectableBase<ALLOC, uint32_t>
 {
-private:
+protected:
     using Base = UnsignedReflectableBase<ALLOC, uint32_t>;
 
-public:
-    UInt32Reflectable(const IBasicTypeInfo<ALLOC>& typeInfo, uint32_t value, uint8_t dynamicBitSize) :
-            Base(typeInfo, value, dynamicBitSize)
-    {}
+    using Base::Base;
 
+public:
     uint32_t getUInt32() const override
     {
         return Base::getValue();
@@ -611,22 +440,1045 @@ public:
 };
 
 /**
- * Reflectable for values of uint64_t type.
+ * Base class for 64-bit unsigned integral reflectables.
+ *
+ * Implements getUInt64() conversion.
  */
 template <typename ALLOC>
-class UInt64Reflectable : public UnsignedReflectableBase<ALLOC, uint64_t>
+class UInt64ReflectableBase : public UnsignedReflectableBase<ALLOC, uint64_t>
 {
-private:
+protected:
     using Base = UnsignedReflectableBase<ALLOC, uint64_t>;
 
-public:
-    UInt64Reflectable(const IBasicTypeInfo<ALLOC>& typeInfo, uint64_t value, uint8_t dynamicBitSize) :
-            Base(typeInfo, value, dynamicBitSize)
-    {}
+    using Base::Base;
 
+public:
     uint64_t getUInt64() const override
     {
         return Base::getValue();
+    }
+};
+
+/**
+ * Reflectable for int8 type.
+ */
+template <typename ALLOC>
+class Int8Reflectable : public Int8ReflectableBase<ALLOC>
+{
+private:
+    using Base = Int8ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getInt8;
+
+    explicit Int8Reflectable(int8_t value) :
+            Base(typeInfo(), value)
+    {}
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return 8;
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeSignedBits(Base::getValue(), 8);
+    }
+};
+
+/**
+ * Reflectable for int16 type.
+ */
+template <typename ALLOC>
+class Int16Reflectable : public Int16ReflectableBase<ALLOC>
+{
+private:
+    using Base = Int16ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getInt16;
+
+    explicit Int16Reflectable(int16_t value) :
+            Base(typeInfo(), value)
+    {}
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return 16;
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeSignedBits(Base::getValue(), 16);
+    }
+};
+
+/**
+ * Reflectable for int32 type.
+ */
+template <typename ALLOC>
+class Int32Reflectable : public Int32ReflectableBase<ALLOC>
+{
+private:
+    using Base = Int32ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getInt32;
+
+    explicit Int32Reflectable(int32_t value) :
+            Base(typeInfo(), value)
+    {}
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return 32;
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeSignedBits(Base::getValue(), 32);
+    }
+};
+
+/**
+ * Reflectable for int64 type.
+ */
+template <typename ALLOC>
+class Int64Reflectable : public Int64ReflectableBase<ALLOC>
+{
+private:
+    using Base = Int64ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getInt64;
+
+    explicit Int64Reflectable(int64_t value) :
+            Base(typeInfo(), value)
+    {}
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return 64;
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeSignedBits64(Base::getValue(), 64);
+    }
+};
+
+/**
+ * Reflectable for uint8 type.
+ */
+template <typename ALLOC>
+class UInt8Reflectable : public UInt8ReflectableBase<ALLOC>
+{
+private:
+    using Base = UInt8ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getUInt8;
+
+    explicit UInt8Reflectable(uint8_t value) :
+            Base(typeInfo(), value)
+    {}
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return 8;
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeBits(Base::getValue(), 8);
+    }
+};
+
+/**
+ * Reflectable for uint16 type.
+ */
+template <typename ALLOC>
+class UInt16Reflectable : public UInt16ReflectableBase<ALLOC>
+{
+private:
+    using Base = UInt16ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getUInt16;
+
+    explicit UInt16Reflectable(uint16_t value) :
+            Base(typeInfo(), value)
+    {}
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return 16;
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeBits(Base::getValue(), 16);
+    }
+};
+
+/**
+ * Reflectable for uint32 type.
+ */
+template <typename ALLOC>
+class UInt32Reflectable : public UInt32ReflectableBase<ALLOC>
+{
+private:
+    using Base = UInt32ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getUInt32;
+
+    explicit UInt32Reflectable(uint32_t value) :
+            Base(typeInfo(), value)
+    {}
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return 32;
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeBits(Base::getValue(), 32);
+    }
+};
+
+/**
+ * Reflectable for uint64 type.
+ */
+template <typename ALLOC>
+class UInt64Reflectable : public UInt64ReflectableBase<ALLOC>
+{
+private:
+    using Base = UInt64ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getUInt64;
+
+    explicit UInt64Reflectable(uint64_t value) :
+            Base(typeInfo(), value)
+    {}
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return 64;
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeBits64(Base::getValue(), 64);
+    }
+};
+
+template <typename ALLOC, typename T>
+class FixedSignedBitFieldReflectable;
+
+template <typename ALLOC>
+class FixedSignedBitFieldReflectable<ALLOC, int8_t> : public Int8ReflectableBase<ALLOC>
+{
+private:
+    using Base = Int8ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getFixedSignedBitField;
+
+    FixedSignedBitFieldReflectable(int8_t value, uint8_t bitSize) :
+            Base(typeInfo(bitSize), value)
+    {
+        if (bitSize > 8)
+        {
+            throw CppRuntimeException("FixedSignedBitFieldReflectable ") <<
+                    " - invalid bit size '" << bitSize << "' for 'int8_t' value!";
+        }
+    }
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return Base::getTypeInfo().getBitSize();
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeSignedBits(Base::getValue(), Base::getTypeInfo().getBitSize());
+    }
+};
+
+template <typename ALLOC>
+class FixedSignedBitFieldReflectable<ALLOC, int16_t> : public Int16ReflectableBase<ALLOC>
+{
+private:
+    using Base = Int16ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getFixedSignedBitField;
+
+    FixedSignedBitFieldReflectable(int16_t value, uint8_t bitSize) :
+            Base(typeInfo(bitSize), value)
+    {
+        if (bitSize <= 8 || bitSize > 16)
+        {
+            throw CppRuntimeException("FixedSignedBitFieldReflectable ") <<
+                    " - invalid bit size '" << bitSize << "' for 'int16_t' value!";
+        }
+    }
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return Base::getTypeInfo().getBitSize();
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeSignedBits(Base::getValue(), Base::getTypeInfo().getBitSize());
+    }
+};
+
+template <typename ALLOC>
+class FixedSignedBitFieldReflectable<ALLOC, int32_t> : public Int32ReflectableBase<ALLOC>
+{
+private:
+    using Base = Int32ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getFixedSignedBitField;
+
+    FixedSignedBitFieldReflectable(int32_t value, uint8_t bitSize) :
+            Base(typeInfo(bitSize), value)
+    {
+        if (bitSize <= 16 || bitSize > 32)
+        {
+            throw CppRuntimeException("FixedSignedBitFieldReflectable ") <<
+                    " - invalid bit size '" << bitSize << "' for 'int32_t' value!";
+        }
+    }
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return Base::getTypeInfo().getBitSize();
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeSignedBits(Base::getValue(), Base::getTypeInfo().getBitSize());
+    }
+};
+
+template <typename ALLOC>
+class FixedSignedBitFieldReflectable<ALLOC, int64_t> : public Int64ReflectableBase<ALLOC>
+{
+private:
+    using Base = Int64ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getFixedSignedBitField;
+
+    FixedSignedBitFieldReflectable(int64_t value, uint8_t bitSize) :
+            Base(typeInfo(bitSize), value)
+    {
+        if (bitSize <= 32) // check for maximum bit size (64) is done in type info
+        {
+            throw CppRuntimeException("FixedSignedBitFieldReflectable ") <<
+                    " - invalid bit size '" << bitSize << "' for 'int64_t' value!";
+        }
+    }
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return Base::getTypeInfo().getBitSize();
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeSignedBits64(Base::getValue(), Base::getTypeInfo().getBitSize());
+    }
+};
+
+template <typename ALLOC, typename T>
+class FixedUnsignedBitFieldReflectable;
+
+template <typename ALLOC>
+class FixedUnsignedBitFieldReflectable<ALLOC, uint8_t> : public UInt8ReflectableBase<ALLOC>
+{
+private:
+    using Base = UInt8ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getFixedUnsignedBitField;
+
+    FixedUnsignedBitFieldReflectable(uint8_t value, uint8_t bitSize) :
+            Base(typeInfo(bitSize), value)
+    {
+        if (bitSize > 8)
+        {
+            throw CppRuntimeException("FixedUnsignedBitFieldReflectable") <<
+                    " - invalid bit size '" << bitSize << "' for 'uint8_t' value!";
+        }
+    }
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return Base::getTypeInfo().getBitSize();
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeBits(Base::getValue(), Base::getTypeInfo().getBitSize());
+    }
+};
+
+template <typename ALLOC>
+class FixedUnsignedBitFieldReflectable<ALLOC, uint16_t> : public UInt16ReflectableBase<ALLOC>
+{
+private:
+    using Base = UInt16ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getFixedUnsignedBitField;
+
+    FixedUnsignedBitFieldReflectable(uint16_t value, uint8_t bitSize) :
+            Base(typeInfo(bitSize), value)
+    {
+        if (bitSize <= 8 || bitSize > 16)
+        {
+            throw CppRuntimeException("FixedUnsignedBitFieldReflectable") <<
+                    " - invalid bit size '" << bitSize << "' for 'uint16_t' value!";
+        }
+    }
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return Base::getTypeInfo().getBitSize();
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeBits(Base::getValue(), Base::getTypeInfo().getBitSize());
+    }
+};
+
+template <typename ALLOC>
+class FixedUnsignedBitFieldReflectable<ALLOC, uint32_t> : public UInt32ReflectableBase<ALLOC>
+{
+private:
+    using Base = UInt32ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getFixedUnsignedBitField;
+
+    FixedUnsignedBitFieldReflectable(uint32_t value, uint8_t bitSize) :
+            Base(typeInfo(bitSize), value)
+    {
+        if (bitSize <= 16 || bitSize > 32)
+        {
+            throw CppRuntimeException("FixedUnsignedBitFieldReflectable") <<
+                    " - invalid bit size '" << bitSize << "' for 'uint32_t' value!";
+        }
+    }
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return Base::getTypeInfo().getBitSize();
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeBits(Base::getValue(), Base::getTypeInfo().getBitSize());
+    }
+};
+
+template <typename ALLOC>
+class FixedUnsignedBitFieldReflectable<ALLOC, uint64_t> : public UInt64ReflectableBase<ALLOC>
+{
+private:
+    using Base = UInt64ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getFixedUnsignedBitField;
+
+    FixedUnsignedBitFieldReflectable(uint64_t value, uint8_t bitSize) :
+            Base(typeInfo(bitSize), value)
+    {
+        if (bitSize <= 32) // check for maximum bit size (64) is done in type info
+        {
+            throw CppRuntimeException("FixedUnsignedBitFieldReflectable") <<
+                    " - invalid bit size '" << bitSize << "' for 'uint64_t' value!";
+        }
+    }
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return Base::getTypeInfo().getBitSize();
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeBits64(Base::getValue(), Base::getTypeInfo().getBitSize());
+    }
+};
+
+template <typename ALLOC, typename T>
+class DynamicSignedBitFieldReflectable;
+
+template <typename ALLOC>
+class DynamicSignedBitFieldReflectable<ALLOC, int8_t> : public Int8ReflectableBase<ALLOC>
+{
+private:
+    using Base = Int8ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getDynamicSignedBitField;
+
+    DynamicSignedBitFieldReflectable(int8_t value, uint8_t maxBitSize, uint8_t dynamicBitSize) :
+            Base(typeInfo(maxBitSize), value), m_dynamicBitSize(dynamicBitSize)
+    {
+        if (maxBitSize > 8)
+        {
+            throw CppRuntimeException("DynamicSignedBitFieldReflectable") <<
+                    " - invalid max bit size '" << maxBitSize << "' for 'int8_t' value!";
+        }
+
+        if (dynamicBitSize > maxBitSize)
+        {
+            throw CppRuntimeException("DynamicSignedBitFieldReflectable - dynamic bit size '") <<
+                    dynamicBitSize << "' is greater than max bit size '" << maxBitSize << "'!";
+        }
+    }
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return m_dynamicBitSize;
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeSignedBits(Base::getValue(), m_dynamicBitSize);
+    }
+
+private:
+    uint8_t m_dynamicBitSize;
+};
+
+template <typename ALLOC>
+class DynamicSignedBitFieldReflectable<ALLOC, int16_t> : public Int16ReflectableBase<ALLOC>
+{
+private:
+    using Base = Int16ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getDynamicSignedBitField;
+
+    DynamicSignedBitFieldReflectable(int16_t value, uint8_t maxBitSize, uint8_t dynamicBitSize) :
+            Base(typeInfo(maxBitSize), value), m_dynamicBitSize(dynamicBitSize)
+    {
+        if (maxBitSize <= 8 || maxBitSize > 16)
+        {
+            throw CppRuntimeException("DynamicSignedBitFieldReflectable") <<
+                    " - invalid max bit size '" << maxBitSize << "' for 'int16_t' value!";
+        }
+
+        if (dynamicBitSize > maxBitSize)
+        {
+            throw CppRuntimeException("DynamicSignedBitFieldReflectable - dynamic bit size '") <<
+                    dynamicBitSize << "' is greater than max bit size '" << maxBitSize << "'!";
+        }
+    }
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return m_dynamicBitSize;
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeSignedBits(Base::getValue(), m_dynamicBitSize);
+    }
+
+private:
+    uint8_t m_dynamicBitSize;
+};
+
+template <typename ALLOC>
+class DynamicSignedBitFieldReflectable<ALLOC, int32_t> : public Int32ReflectableBase<ALLOC>
+{
+private:
+    using Base = Int32ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getDynamicSignedBitField;
+
+    DynamicSignedBitFieldReflectable(int32_t value, uint8_t maxBitSize, uint8_t dynamicBitSize) :
+            Base(typeInfo(maxBitSize), value), m_dynamicBitSize(dynamicBitSize)
+    {
+        if (maxBitSize <= 16 || maxBitSize > 32)
+        {
+            throw CppRuntimeException("DynamicSignedBitFieldReflectable") <<
+                    " - invalid max bit size '" << maxBitSize << "' for 'int32_t' value!";
+        }
+
+        if (dynamicBitSize > maxBitSize)
+        {
+            throw CppRuntimeException("DynamicSignedBitFieldReflectable - dynamic bit size '") <<
+                    dynamicBitSize << "' is greater than max bit size '" << maxBitSize << "'!";
+        }
+    }
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return m_dynamicBitSize;
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeSignedBits(Base::getValue(), m_dynamicBitSize);
+    }
+
+private:
+    uint8_t m_dynamicBitSize;
+};
+
+template <typename ALLOC>
+class DynamicSignedBitFieldReflectable<ALLOC, int64_t> : public Int64ReflectableBase<ALLOC>
+{
+private:
+    using Base = Int64ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getDynamicSignedBitField;
+
+    DynamicSignedBitFieldReflectable(int64_t value, uint8_t maxBitSize, uint8_t dynamicBitSize) :
+            Base(typeInfo(maxBitSize), value), m_dynamicBitSize(dynamicBitSize)
+    {
+        if (maxBitSize <= 32) // check for maximum bit size (64) is done in type info
+        {
+            throw CppRuntimeException("DynamicSignedBitFieldReflectable") <<
+                    " - invalid max bit size '" << maxBitSize << "' for 'int64_t' value!";
+        }
+
+        if (dynamicBitSize > maxBitSize)
+        {
+            throw CppRuntimeException("DynamicSignedBitFieldReflectable - dynamic bit size '") <<
+                    dynamicBitSize << "' is greater than max bit size '" << maxBitSize << "'!";
+        }
+    }
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return m_dynamicBitSize;
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeSignedBits64(Base::getValue(), m_dynamicBitSize);
+    }
+
+private:
+    uint8_t m_dynamicBitSize;
+};
+
+template <typename ALLOC, typename T>
+class DynamicUnsignedBitFieldReflectable;
+
+template <typename ALLOC>
+class DynamicUnsignedBitFieldReflectable<ALLOC, uint8_t> : public UInt8ReflectableBase<ALLOC>
+{
+private:
+    using Base = UInt8ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getDynamicUnsignedBitField;
+
+    DynamicUnsignedBitFieldReflectable(uint8_t value, uint8_t maxBitSize, uint8_t dynamicBitSize) :
+            Base(typeInfo(maxBitSize), value), m_dynamicBitSize(dynamicBitSize)
+    {
+        if (maxBitSize > 8)
+        {
+            throw CppRuntimeException("DynamicUnsignedBitFieldReflectable") <<
+                    " - invalid max bit size '" << maxBitSize << "' for 'uint8_t' value!";
+        }
+
+        if (dynamicBitSize > maxBitSize)
+        {
+            throw CppRuntimeException("DynamicSignedBitFieldReflectable - dynamic bit size '") <<
+                    dynamicBitSize << "' is greater than max bit size '" << maxBitSize << "'!";
+        }
+    }
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return m_dynamicBitSize;
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeBits(Base::getValue(), m_dynamicBitSize);
+    }
+
+private:
+    uint8_t m_dynamicBitSize;
+};
+
+template <typename ALLOC>
+class DynamicUnsignedBitFieldReflectable<ALLOC, uint16_t> : public UInt16ReflectableBase<ALLOC>
+{
+private:
+    using Base = UInt16ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getDynamicUnsignedBitField;
+
+    DynamicUnsignedBitFieldReflectable(uint16_t value, uint8_t maxBitSize, uint8_t dynamicBitSize) :
+            Base(typeInfo(maxBitSize), value), m_dynamicBitSize(dynamicBitSize)
+    {
+        if (maxBitSize <= 8 || maxBitSize > 16)
+        {
+            throw CppRuntimeException("DynamicUnsignedBitFieldReflectable") <<
+                    " - invalid max bit size '" << maxBitSize << "' for 'uint16_t' value!";
+        }
+
+        if (dynamicBitSize > maxBitSize)
+        {
+            throw CppRuntimeException("DynamicSignedBitFieldReflectable - dynamic bit size '") <<
+                    dynamicBitSize << "' is greater than max bit size '" << maxBitSize << "'!";
+        }
+    }
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return m_dynamicBitSize;
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeBits(Base::getValue(), m_dynamicBitSize);
+    }
+
+private:
+    uint8_t m_dynamicBitSize;
+};
+
+template <typename ALLOC>
+class DynamicUnsignedBitFieldReflectable<ALLOC, uint32_t> : public UInt32ReflectableBase<ALLOC>
+{
+private:
+    using Base = UInt32ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getDynamicUnsignedBitField;
+
+    DynamicUnsignedBitFieldReflectable(uint32_t value, uint8_t maxBitSize, uint8_t dynamicBitSize) :
+            Base(typeInfo(maxBitSize), value), m_dynamicBitSize(dynamicBitSize)
+    {
+        if (maxBitSize <= 16 || maxBitSize > 32)
+        {
+            throw CppRuntimeException("DynamicUnsignedBitFieldReflectable") <<
+                    " - invalid max bit size '" << maxBitSize << "' for 'uint32_t' value!";
+        }
+
+        if (dynamicBitSize > maxBitSize)
+        {
+            throw CppRuntimeException("DynamicSignedBitFieldReflectable - dynamic bit size '") <<
+                    dynamicBitSize << "' is greater than max bit size '" << maxBitSize << "'!";
+        }
+    }
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return m_dynamicBitSize;
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeBits(Base::getValue(), m_dynamicBitSize);
+    }
+
+private:
+    uint8_t m_dynamicBitSize;
+};
+
+template <typename ALLOC>
+class DynamicUnsignedBitFieldReflectable<ALLOC, uint64_t> : public UInt64ReflectableBase<ALLOC>
+{
+private:
+    using Base = UInt64ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getDynamicUnsignedBitField;
+
+    DynamicUnsignedBitFieldReflectable(uint64_t value, uint8_t maxBitSize, uint8_t dynamicBitSize) :
+            Base(typeInfo(maxBitSize), value), m_dynamicBitSize(dynamicBitSize)
+    {
+        if (maxBitSize <= 32) // check for maximum bit size (64) is done in type info
+        {
+            throw CppRuntimeException("DynamicUnsignedBitFieldReflectable") <<
+                    " - invalid max bit size '" << maxBitSize << "' for 'uint64_t' value!";
+        }
+
+        if (dynamicBitSize > maxBitSize)
+        {
+            throw CppRuntimeException("DynamicSignedBitFieldReflectable - dynamic bit size '") <<
+                    dynamicBitSize << "' is greater than max bit size '" << maxBitSize << "'!";
+        }
+    }
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return m_dynamicBitSize;
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeBits64(Base::getValue(), m_dynamicBitSize);
+    }
+
+private:
+    uint8_t m_dynamicBitSize;
+};
+
+/**
+ * Reflectable for varint16 type.
+ */
+template <typename ALLOC>
+class VarInt16Reflectable : public Int16ReflectableBase<ALLOC>
+{
+private:
+    using Base = Int16ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getVarInt16;
+
+    explicit VarInt16Reflectable(int16_t value) :
+            Base(typeInfo(), value)
+    {}
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return zserio::bitSizeOfVarInt16(Base::getValue());
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeVarInt16(Base::getValue());
+    }
+};
+
+/**
+ * Reflectable for varint32 type.
+ */
+template <typename ALLOC>
+class VarInt32Reflectable : public Int32ReflectableBase<ALLOC>
+{
+private:
+    using Base = Int32ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getVarInt32;
+
+    explicit VarInt32Reflectable(int32_t value) :
+            Base(typeInfo(), value)
+    {}
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return zserio::bitSizeOfVarInt32(Base::getValue());
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeVarInt32(Base::getValue());
+    }
+};
+
+/**
+ * Reflectable for varint64 type.
+ */
+template <typename ALLOC>
+class VarInt64Reflectable : public Int64ReflectableBase<ALLOC>
+{
+private:
+    using Base = Int64ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getVarInt64;
+
+    explicit VarInt64Reflectable(int64_t value) :
+            Base(typeInfo(), value)
+    {}
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return zserio::bitSizeOfVarInt64(Base::getValue());
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeVarInt64(Base::getValue());
+    }
+};
+
+/**
+ * Reflectable for varint type.
+ */
+template <typename ALLOC>
+class VarIntReflectable : public Int64ReflectableBase<ALLOC>
+{
+private:
+    using Base = Int64ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getVarInt;
+
+    explicit VarIntReflectable(int64_t value) :
+            Base(typeInfo(), value)
+    {}
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return zserio::bitSizeOfVarInt(Base::getValue());
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeVarInt(Base::getValue());
+    }
+};
+
+/**
+ * Reflectable for varuint16 type.
+ */
+template <typename ALLOC>
+class VarUInt16Reflectable : public UInt16ReflectableBase<ALLOC>
+{
+private:
+    using Base = UInt16ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getVarUInt16;
+
+    explicit VarUInt16Reflectable(uint16_t value) :
+            Base(typeInfo(), value)
+    {}
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return zserio::bitSizeOfVarUInt16(Base::getValue());
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeVarUInt16(Base::getValue());
+    }
+};
+
+/**
+ * Reflectable for varuint32 type.
+ */
+template <typename ALLOC>
+class VarUInt32Reflectable : public UInt32ReflectableBase<ALLOC>
+{
+private:
+    using Base = UInt32ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getVarUInt32;
+
+    explicit VarUInt32Reflectable(uint32_t value) :
+            Base(typeInfo(), value)
+    {}
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return zserio::bitSizeOfVarUInt32(Base::getValue());
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeVarUInt32(Base::getValue());
+    }
+};
+
+/**
+ * Reflectable for varuint64 type.
+ */
+template <typename ALLOC>
+class VarUInt64Reflectable : public UInt64ReflectableBase<ALLOC>
+{
+private:
+    using Base = UInt64ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getVarUInt64;
+
+    explicit VarUInt64Reflectable(uint64_t value) :
+            Base(typeInfo(), value)
+    {}
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return zserio::bitSizeOfVarUInt64(Base::getValue());
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeVarUInt64(Base::getValue());
+    }
+};
+
+/**
+ * Reflectable for varuint type.
+ */
+template <typename ALLOC>
+class VarUIntReflectable : public UInt64ReflectableBase<ALLOC>
+{
+private:
+    using Base = UInt64ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getVarUInt;
+
+    explicit VarUIntReflectable(uint64_t value) :
+            Base(typeInfo(), value)
+    {}
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return zserio::bitSizeOfVarUInt(Base::getValue());
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeVarUInt(Base::getValue());
+    }
+};
+
+/**
+ * Reflectable for varsize type.
+ */
+template <typename ALLOC>
+class VarSizeReflectable : public UInt32ReflectableBase<ALLOC>
+{
+private:
+    using Base = UInt32ReflectableBase<ALLOC>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getVarSize;
+
+    explicit VarSizeReflectable(uint32_t value) :
+            Base(typeInfo(), value)
+    {}
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return zserio::bitSizeOfVarUInt(Base::getValue());
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeVarSize(Base::getValue());
     }
 };
 
@@ -650,33 +1502,61 @@ public:
 };
 
 /**
- * Reflectable for values of float type.
+ * Reflectable for values of 16-bit float type.
  */
 template <typename ALLOC>
-class FloatReflectable : public FloatingPointReflectableBase<ALLOC, float>
+class Float16Reflectable : public FloatingPointReflectableBase<ALLOC, float>
 {
 private:
     using Base = FloatingPointReflectableBase<ALLOC, float>;
 
 public:
-    FloatReflectable(const IBasicTypeInfo<ALLOC>& typeInfo, float value) :
-            Base(typeInfo, value)
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getFloat16;
+
+    explicit Float16Reflectable(float value) :
+            Base(typeInfo(), value)
     {}
 
     size_t bitSizeOf(size_t) const override
     {
-        if (Base::getTypeInfo().getSchemaType() == SchemaType::FLOAT16)
-            return 16;
-        else
-            return 32;
+        return 16;
     }
 
     void write(BitStreamWriter& writer) const override
     {
-        if (Base::getTypeInfo().getSchemaType() == SchemaType::FLOAT16)
-            writer.writeFloat16(Base::getValue());
-        else
-            writer.writeFloat32(Base::getValue());
+        writer.writeFloat16(Base::getValue());
+    }
+
+    float getFloat() const override
+    {
+        return Base::getValue();
+    }
+};
+
+/**
+ * Reflectable for values of 32-bit float type.
+ */
+template <typename ALLOC>
+class Float32Reflectable : public FloatingPointReflectableBase<ALLOC, float>
+{
+private:
+    using Base = FloatingPointReflectableBase<ALLOC, float>;
+
+public:
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getFloat32;
+
+    explicit Float32Reflectable(float value) :
+            Base(typeInfo(), value)
+    {}
+
+    size_t bitSizeOf(size_t) const override
+    {
+        return 32;
+    }
+
+    void write(BitStreamWriter& writer) const override
+    {
+        writer.writeFloat32(Base::getValue());
     }
 
     float getFloat() const override
@@ -689,14 +1569,16 @@ public:
  * Reflectable for values of double type.
  */
 template <typename ALLOC>
-class DoubleReflectable : public FloatingPointReflectableBase<ALLOC, double>
+class Float64Reflectable : public FloatingPointReflectableBase<ALLOC, double>
 {
 private:
     using Base = FloatingPointReflectableBase<ALLOC, double>;
 
 public:
-    DoubleReflectable(const IBasicTypeInfo<ALLOC>& typeInfo, double value) :
-            Base(typeInfo, value)
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getFloat64;
+
+    explicit Float64Reflectable(double value) :
+            Base(typeInfo(), value)
     {}
 
     size_t bitSizeOf(size_t) const override
@@ -725,8 +1607,10 @@ private:
     using Base = BuiltinReflectableBase<ALLOC, Span<const uint8_t>>;
 
 public:
-    explicit BytesReflectable(const IBasicTypeInfo<ALLOC>& typeInfo, Span<const uint8_t> value) :
-            Base(typeInfo, value)
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getBytes;
+
+    explicit BytesReflectable(Span<const uint8_t> value) :
+            Base(typeInfo(), value)
     {}
 
     size_t bitSizeOf(size_t) const override
@@ -755,8 +1639,10 @@ private:
     using Base = BuiltinReflectableBase<ALLOC, StringView>;
 
 public:
-    explicit StringReflectable(const IBasicTypeInfo<ALLOC>& typeInfo, StringView value) :
-            Base(typeInfo, value)
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getString;
+
+    explicit StringReflectable(StringView value) :
+            Base(typeInfo(), value)
     {}
 
     size_t bitSizeOf(size_t) const override
@@ -790,8 +1676,10 @@ private:
     using Base = BuiltinReflectableBase<ALLOC, BasicBitBuffer<ALLOC>>;
 
 public:
-    explicit BitBufferReflectable(const IBasicTypeInfo<ALLOC>& typeInfo, const BasicBitBuffer<ALLOC>& value) :
-            Base(typeInfo, value)
+    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getBitBuffer;
+
+    explicit BitBufferReflectable(const BasicBitBuffer<ALLOC>& value) :
+            Base(typeInfo(), value)
     {}
 
     size_t bitSizeOf(size_t) const override
@@ -971,95 +1859,6 @@ IBasicReflectablePtr<ALLOC> getFromObject(IBasicReflectable<ALLOC>& object, Stri
     return nullptr;
 }
 
-template <typename ALLOC, typename T>
-struct ReflectableTraits
-{
-};
-
-template <typename ALLOC>
-struct ReflectableTraits<ALLOC, bool>
-{
-    using Type = BoolReflectable<ALLOC>;
-};
-
-template <typename ALLOC>
-struct ReflectableTraits<ALLOC, int8_t>
-{
-    using Type = Int8Reflectable<ALLOC>;
-};
-
-template <typename ALLOC>
-struct ReflectableTraits<ALLOC, int16_t>
-{
-    using Type = Int16Reflectable<ALLOC>;
-};
-
-template <typename ALLOC>
-struct ReflectableTraits<ALLOC, int32_t>
-{
-    using Type = Int32Reflectable<ALLOC>;
-};
-
-template <typename ALLOC>
-struct ReflectableTraits<ALLOC, int64_t>
-{
-    using Type = Int64Reflectable<ALLOC>;
-};
-
-template <typename ALLOC>
-struct ReflectableTraits<ALLOC, uint8_t>
-{
-    using Type = UInt8Reflectable<ALLOC>;
-};
-
-template <typename ALLOC>
-struct ReflectableTraits<ALLOC, uint16_t>
-{
-    using Type = UInt16Reflectable<ALLOC>;
-};
-
-template <typename ALLOC>
-struct ReflectableTraits<ALLOC, uint32_t>
-{
-    using Type = UInt32Reflectable<ALLOC>;
-};
-
-template <typename ALLOC>
-struct ReflectableTraits<ALLOC, uint64_t>
-{
-    using Type = UInt64Reflectable<ALLOC>;
-};
-
-template <typename ALLOC>
-struct ReflectableTraits<ALLOC, float>
-{
-    using Type = FloatReflectable<ALLOC>;
-};
-
-template <typename ALLOC>
-struct ReflectableTraits<ALLOC, double>
-{
-    using Type = DoubleReflectable<ALLOC>;
-};
-
-template <typename ALLOC>
-struct ReflectableTraits<ALLOC, vector<uint8_t, ALLOC>>
-{
-    using Type = BytesReflectable<ALLOC>;
-};
-
-template <typename ALLOC>
-struct ReflectableTraits<ALLOC, string<ALLOC>>
-{
-    using Type = StringReflectable<ALLOC>;
-};
-
-template <typename ALLOC>
-struct ReflectableTraits<ALLOC, BasicBitBuffer<ALLOC>>
-{
-    using Type = BitBufferReflectable<ALLOC>;
-};
-
 } // namespace detail
 
 /**
@@ -1086,7 +1885,7 @@ private:
     using Base = ReflectableAllocatorHolderBase<ALLOC>;
 
 public:
-    using Base::ReflectableAllocatorHolderBase;
+    using Base::Base;
     using Base::getTypeInfo;
 
     void initializeChildren() override;
@@ -1113,7 +1912,7 @@ private:
     using Base = ReflectableAllocatorHolderBase<ALLOC>;
 
 public:
-    using Base::ReflectableAllocatorHolderBase;
+    using Base::Base;
     using Base::getTypeInfo;
 
     bool isArray() const override
@@ -1124,7 +1923,6 @@ public:
     void initializeChildren() override;
     void initialize(const vector<AnyHolder<ALLOC>, ALLOC>& typeArguments) override;
     size_t initializeOffsets(size_t bitPosition) override;
-    size_t initializeOffsets() override;
     size_t bitSizeOf(size_t bitPosition) const override;
     void write(BitStreamWriter& writer) const override;
 
@@ -1138,6 +1936,9 @@ public:
     IBasicReflectablePtr<ALLOC> callFunction(StringView name) override;
 
     StringView getChoice() const override;
+
+    IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override;
+    IBasicReflectablePtr<ALLOC> operator[](size_t index) override;
 
     bool getBool() const override;
     int8_t getInt8() const override;
@@ -1172,7 +1973,7 @@ private:
     using Base = ReflectableArrayBase<ALLOC>;
 
 public:
-    using Base::ReflectableArrayBase;
+    using Base::Base;
     using Base::getTypeInfo;
 
     void resize(size_t index) override;
@@ -1185,17 +1986,16 @@ public:
 };
 
 /**
- * Reflectable for arrays of builtin types (except integral types).
+ * Reflectable for arrays of builtin types (except bit field arrays).
  */
 /** \{ */
-template <typename ALLOC, typename RAW_ARRAY>
+template <typename ALLOC, typename RAW_ARRAY, typename ELEMENT_REFLECTABLE>
 class BuiltinReflectableConstArray : public ReflectableConstArrayBase<ALLOC>
 {
 private:
     using Base = ReflectableConstArrayBase<ALLOC>;
 
-    using BuiltinReflectable =
-            typename detail::ReflectableTraits<ALLOC, typename RAW_ARRAY::value_type>::Type;
+    using ElementReflectable = ELEMENT_REFLECTABLE;
 
 public:
     using Base::getTypeInfo;
@@ -1203,9 +2003,8 @@ public:
     using Base::operator[];
     using Base::getAnyValue;
 
-    BuiltinReflectableConstArray(const IBasicTypeInfo<ALLOC>& typeInfo, const ALLOC& allocator,
-            const RAW_ARRAY& rawArray) :
-            Base(typeInfo, allocator), m_rawArray(rawArray)
+    BuiltinReflectableConstArray(const ALLOC& allocator, const RAW_ARRAY& rawArray) :
+            Base(ElementReflectable::typeInfo(), allocator), m_rawArray(rawArray)
     {}
 
     size_t size() const override
@@ -1221,13 +2020,7 @@ public:
                     getTypeInfo().getSchemaName() << "' of size " << size() << "!";
         }
 
-        return std::allocate_shared<BuiltinReflectable>(
-                Base::get_allocator(), Base::getTypeInfo(), m_rawArray[index]);
-    }
-
-    IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
-    {
-        return at(index);
+        return std::allocate_shared<ElementReflectable>(Base::get_allocator(), m_rawArray[index]);
     }
 
     AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
@@ -1239,21 +2032,19 @@ private:
     const RAW_ARRAY& m_rawArray;
 };
 
-template <typename ALLOC, typename RAW_ARRAY>
+template <typename ALLOC, typename RAW_ARRAY, typename ELEMENT_REFLECTABLE>
 class BuiltinReflectableArray : public ReflectableArrayBase<ALLOC>
 {
 private:
     using Base = ReflectableArrayBase<ALLOC>;
 
-    using BuiltinReflectable =
-            typename detail::ReflectableTraits<ALLOC, typename RAW_ARRAY::value_type>::Type;
+    using ElementReflectable = ELEMENT_REFLECTABLE;
 
 public:
     using Base::getTypeInfo;
 
-    BuiltinReflectableArray(const IBasicTypeInfo<ALLOC>& typeInfo, const ALLOC& allocator,
-            RAW_ARRAY& rawArray) :
-            Base(typeInfo, allocator), m_rawArray(rawArray)
+    BuiltinReflectableArray(const ALLOC& allocator, RAW_ARRAY& rawArray) :
+            Base(ElementReflectable::typeInfo(), allocator), m_rawArray(rawArray)
     {}
 
     size_t size() const override
@@ -1274,8 +2065,7 @@ public:
                     getTypeInfo().getSchemaName() << "' of size " << size() << "!";
         }
 
-        return std::allocate_shared<BuiltinReflectable>(
-                Base::get_allocator(), Base::getTypeInfo(), m_rawArray[index]);
+        return std::allocate_shared<ElementReflectable>(Base::get_allocator(), m_rawArray[index]);
     }
 
     IBasicReflectablePtr<ALLOC> at(size_t index) override
@@ -1286,18 +2076,7 @@ public:
                     getTypeInfo().getSchemaName() << "' of size " << size() << "!";
         }
 
-        return std::allocate_shared<BuiltinReflectable>(
-                Base::get_allocator(), Base::getTypeInfo(), m_rawArray[index]);
-    }
-
-    IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
-    {
-        return at(index);
-    }
-
-    IBasicReflectablePtr<ALLOC> operator[](size_t index) override
-    {
-        return at(index);
+        return std::allocate_shared<ElementReflectable>(Base::get_allocator(), m_rawArray[index]);
     }
 
     void setAt(const AnyHolder<ALLOC>& value, size_t index) override
@@ -1332,20 +2111,16 @@ private:
 /** \} */
 
 /**
- * Reflectable for arrays of builtin integral types.
- *
- * Holds dynamic bit size even for types where it has no sense (in that case it's 0).
- * This solution was chosen for simplicity.
+ * Reflectable for arrays of fixed bit fields.
  */
 /** \{ */
-template <typename ALLOC, typename RAW_ARRAY>
-class IntegralReflectableConstArray : public ReflectableConstArrayBase<ALLOC>
+template <typename ALLOC, typename RAW_ARRAY, typename ELEMENT_REFLECTABLE>
+class FixedBitFieldReflectableConstArray : public ReflectableConstArrayBase<ALLOC>
 {
 private:
     using Base = ReflectableConstArrayBase<ALLOC>;
 
-    using IntegralReflectable =
-            typename detail::ReflectableTraits<ALLOC, typename RAW_ARRAY::value_type>::Type;
+    using ElementReflectable = ELEMENT_REFLECTABLE;
 
 public:
     using Base::getTypeInfo;
@@ -1353,9 +2128,8 @@ public:
     using Base::operator[];
     using Base::getAnyValue;
 
-    IntegralReflectableConstArray(const IBasicTypeInfo<ALLOC>& typeInfo, const ALLOC& allocator,
-            const RAW_ARRAY& rawArray, uint8_t dynamicBitSize) :
-            Base(typeInfo, allocator), m_rawArray(rawArray), m_dynamicBitSize(dynamicBitSize)
+    FixedBitFieldReflectableConstArray(const ALLOC& allocator, const RAW_ARRAY& rawArray, uint8_t bitSize) :
+            Base(ElementReflectable::typeInfo(bitSize), allocator), m_rawArray(rawArray)
     {}
 
     size_t size() const override
@@ -1371,13 +2145,8 @@ public:
                     getTypeInfo().getSchemaName() << "' of size " << size() << "!";
         }
 
-        return std::allocate_shared<IntegralReflectable>(
-                Base::get_allocator(), Base::getTypeInfo(), m_rawArray[index], m_dynamicBitSize);
-    }
-
-    IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
-    {
-        return at(index);
+        return std::allocate_shared<ElementReflectable>(
+                Base::get_allocator(), m_rawArray[index], getTypeInfo().getBitSize());
     }
 
     AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
@@ -1387,24 +2156,21 @@ public:
 
 private:
     const RAW_ARRAY& m_rawArray;
-    uint8_t m_dynamicBitSize;
 };
 
-template <typename ALLOC, typename RAW_ARRAY>
-class IntegralReflectableArray : public ReflectableArrayBase<ALLOC>
+template <typename ALLOC, typename RAW_ARRAY, typename ELEMENT_REFLECTABLE>
+class FixedBitFieldReflectableArray : public ReflectableArrayBase<ALLOC>
 {
 private:
     using Base = ReflectableArrayBase<ALLOC>;
 
-    using IntegralReflectable =
-            typename detail::ReflectableTraits<ALLOC, typename RAW_ARRAY::value_type>::Type;
+    using ElementReflectable = ELEMENT_REFLECTABLE;
 
 public:
     using Base::getTypeInfo;
 
-    IntegralReflectableArray(const IBasicTypeInfo<ALLOC>& typeInfo, const ALLOC& allocator,
-            RAW_ARRAY& rawArray, uint8_t dynamicBitSize) :
-            Base(typeInfo, allocator), m_rawArray(rawArray), m_dynamicBitSize(dynamicBitSize)
+    FixedBitFieldReflectableArray(const ALLOC& allocator, RAW_ARRAY& rawArray, uint8_t bitSize) :
+            Base(ElementReflectable::typeInfo(bitSize), allocator), m_rawArray(rawArray)
     {}
 
     size_t size() const override
@@ -1425,8 +2191,8 @@ public:
                     getTypeInfo().getSchemaName() << "' of size " << size() << "!";
         }
 
-        return std::allocate_shared<IntegralReflectable>(
-                Base::get_allocator(), Base::getTypeInfo(), m_rawArray[index], m_dynamicBitSize);
+        return std::allocate_shared<ElementReflectable>(
+                Base::get_allocator(), m_rawArray[index], getTypeInfo().getBitSize());
     }
 
     IBasicReflectablePtr<ALLOC> at(size_t index) override
@@ -1437,18 +2203,8 @@ public:
                     getTypeInfo().getSchemaName() << "' of size " << size() << "!";
         }
 
-        return std::allocate_shared<IntegralReflectable>(
-                Base::get_allocator(), Base::getTypeInfo(), m_rawArray[index], m_dynamicBitSize);
-    }
-
-    IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
-    {
-        return at(index);
-    }
-
-    IBasicReflectablePtr<ALLOC> operator[](size_t index) override
-    {
-        return at(index);
+        return std::allocate_shared<ElementReflectable>(
+                Base::get_allocator(), m_rawArray[index], getTypeInfo().getBitSize());
     }
 
     void setAt(const AnyHolder<ALLOC>& value, size_t index) override
@@ -1479,8 +2235,310 @@ public:
 
 private:
     RAW_ARRAY& m_rawArray;
-    uint8_t m_dynamicBitSize;
 };
+/** \} */
+
+/**
+ * Reflectable for arrays of dynamic bit fields.
+ */
+/** \{ */
+template <typename ALLOC, typename RAW_ARRAY, typename ELEMENT_REFLECTABLE>
+class DynamicBitFieldReflectableConstArray : public ReflectableConstArrayBase<ALLOC>
+{
+private:
+    using Base = ReflectableConstArrayBase<ALLOC>;
+
+    using ElementReflectable = ELEMENT_REFLECTABLE;
+
+public:
+    using Base::getTypeInfo;
+    using Base::at;
+    using Base::operator[];
+    using Base::getAnyValue;
+
+    DynamicBitFieldReflectableConstArray(const ALLOC& allocator,
+            const RAW_ARRAY& rawArray, uint8_t maxBitSize, uint8_t dynamicBitSize) :
+            Base(ElementReflectable::typeInfo(maxBitSize), allocator),
+            m_rawArray(rawArray), m_maxBitSize(maxBitSize), m_dynamicBitSize(dynamicBitSize)
+    {}
+
+    size_t size() const override
+    {
+        return m_rawArray.size();
+    }
+
+    IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
+    {
+        if (index >= size())
+        {
+            throw CppRuntimeException("Index ") << index << " out of range for reflectable array '" <<
+                    getTypeInfo().getSchemaName() << "' of size " << size() << "!";
+        }
+
+        return std::allocate_shared<ElementReflectable>(
+                Base::get_allocator(), m_rawArray[index], m_maxBitSize, m_dynamicBitSize);
+    }
+
+    AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
+    {
+        return AnyHolder<ALLOC>(std::cref(m_rawArray), allocator);
+    }
+
+private:
+    const RAW_ARRAY& m_rawArray;
+    const uint8_t m_maxBitSize;
+    const uint8_t m_dynamicBitSize;
+};
+
+template <typename ALLOC, typename RAW_ARRAY, typename ELEMENT_REFLECTABLE>
+class DynamicBitFieldReflectableArray : public ReflectableArrayBase<ALLOC>
+{
+private:
+    using Base = ReflectableArrayBase<ALLOC>;
+
+    using ElementReflectable = ELEMENT_REFLECTABLE;
+
+public:
+    using Base::getTypeInfo;
+
+    DynamicBitFieldReflectableArray(const ALLOC& allocator,
+            RAW_ARRAY& rawArray, uint8_t maxBitSize, uint8_t dynamicBitSize) :
+            Base(ElementReflectable::typeInfo(maxBitSize), allocator),
+            m_rawArray(rawArray), m_maxBitSize(maxBitSize), m_dynamicBitSize(dynamicBitSize)
+    {}
+
+    size_t size() const override
+    {
+        return m_rawArray.size();
+    }
+
+    void resize(size_t size) override
+    {
+        m_rawArray.resize(size);
+    }
+
+    IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
+    {
+        if (index >= size())
+        {
+            throw CppRuntimeException("Index ") << index << " out of range for reflectable array '" <<
+                    getTypeInfo().getSchemaName() << "' of size " << size() << "!";
+        }
+
+        return std::allocate_shared<ElementReflectable>(
+                Base::get_allocator(), m_rawArray[index], m_maxBitSize, m_dynamicBitSize);
+    }
+
+    IBasicReflectablePtr<ALLOC> at(size_t index) override
+    {
+        if (index >= size())
+        {
+            throw CppRuntimeException("Index ") << index << " out of range for reflectable array '" <<
+                    getTypeInfo().getSchemaName() << "' of size " << size() << "!";
+        }
+
+        return std::allocate_shared<ElementReflectable>(
+                Base::get_allocator(), m_rawArray[index], m_maxBitSize, m_dynamicBitSize);
+    }
+
+    void setAt(const AnyHolder<ALLOC>& value, size_t index) override
+    {
+        if (index >= size())
+        {
+            throw CppRuntimeException("Index ") << index << " out of range for reflectable array '" <<
+                    getTypeInfo().getSchemaName() << "' of size " << size() << "!";
+        }
+
+        m_rawArray[index] = value.template get<typename RAW_ARRAY::value_type>();
+    }
+
+    void append(const AnyHolder<ALLOC>& value) override
+    {
+        m_rawArray.push_back(value.template get<typename RAW_ARRAY::value_type>());
+    }
+
+    AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
+    {
+        return AnyHolder<ALLOC>(std::cref(m_rawArray), allocator);
+    }
+
+    AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) override
+    {
+        return AnyHolder<ALLOC>(std::ref(m_rawArray), allocator);
+    }
+
+private:
+    RAW_ARRAY& m_rawArray;
+    const uint8_t m_maxBitSize;
+    const uint8_t m_dynamicBitSize;
+};
+/** \} */
+
+/**
+ * Typedef to a builtin array.
+ */
+/** \{ */
+template <typename ALLOC, typename RAW_ARRAY>
+using BoolReflectableConstArray = BuiltinReflectableConstArray<ALLOC, RAW_ARRAY, BoolReflectable<ALLOC>>;
+template <typename ALLOC, typename RAW_ARRAY>
+using BoolReflectableArray = BuiltinReflectableArray<ALLOC, RAW_ARRAY, BoolReflectable<ALLOC>>;
+
+template <typename ALLOC, typename RAW_ARRAY>
+using Int8ReflectableConstArray = BuiltinReflectableConstArray<ALLOC, RAW_ARRAY, Int8Reflectable<ALLOC>>;
+template <typename ALLOC, typename RAW_ARRAY>
+using Int8ReflectableArray = BuiltinReflectableArray<ALLOC, RAW_ARRAY, Int8Reflectable<ALLOC>>;
+
+template <typename ALLOC, typename RAW_ARRAY>
+using Int16ReflectableConstArray = BuiltinReflectableConstArray<ALLOC, RAW_ARRAY, Int16Reflectable<ALLOC>>;
+template <typename ALLOC, typename RAW_ARRAY>
+using Int16ReflectableArray = BuiltinReflectableArray<ALLOC, RAW_ARRAY, Int16Reflectable<ALLOC>>;
+
+template <typename ALLOC, typename RAW_ARRAY>
+using Int32ReflectableConstArray = BuiltinReflectableConstArray<ALLOC, RAW_ARRAY, Int32Reflectable<ALLOC>>;
+template <typename ALLOC, typename RAW_ARRAY>
+using Int32ReflectableArray = BuiltinReflectableArray<ALLOC, RAW_ARRAY, Int32Reflectable<ALLOC>>;
+
+template <typename ALLOC, typename RAW_ARRAY>
+using Int64ReflectableConstArray = BuiltinReflectableConstArray<ALLOC, RAW_ARRAY, Int64Reflectable<ALLOC>>;
+template <typename ALLOC, typename RAW_ARRAY>
+using Int64ReflectableArray = BuiltinReflectableArray<ALLOC, RAW_ARRAY, Int64Reflectable<ALLOC>>;
+
+template <typename ALLOC, typename RAW_ARRAY>
+using UInt8ReflectableConstArray = BuiltinReflectableConstArray<ALLOC, RAW_ARRAY, UInt8Reflectable<ALLOC>>;
+template <typename ALLOC, typename RAW_ARRAY>
+using UInt8ReflectableArray = BuiltinReflectableArray<ALLOC, RAW_ARRAY, UInt8Reflectable<ALLOC>>;
+
+template <typename ALLOC, typename RAW_ARRAY>
+using UInt16ReflectableConstArray = BuiltinReflectableConstArray<ALLOC, RAW_ARRAY, UInt16Reflectable<ALLOC>>;
+template <typename ALLOC, typename RAW_ARRAY>
+using UInt16ReflectableArray = BuiltinReflectableArray<ALLOC, RAW_ARRAY, UInt16Reflectable<ALLOC>>;
+
+template <typename ALLOC, typename RAW_ARRAY>
+using UInt32ReflectableConstArray = BuiltinReflectableConstArray<ALLOC, RAW_ARRAY, UInt32Reflectable<ALLOC>>;
+template <typename ALLOC, typename RAW_ARRAY>
+using UInt32ReflectableArray = BuiltinReflectableArray<ALLOC, RAW_ARRAY, UInt32Reflectable<ALLOC>>;
+
+template <typename ALLOC, typename RAW_ARRAY>
+using UInt64ReflectableConstArray = BuiltinReflectableConstArray<ALLOC, RAW_ARRAY, UInt64Reflectable<ALLOC>>;
+template <typename ALLOC, typename RAW_ARRAY>
+using UInt64ReflectableArray = BuiltinReflectableArray<ALLOC, RAW_ARRAY, UInt64Reflectable<ALLOC>>;
+
+template <typename ALLOC, typename RAW_ARRAY>
+using FixedSignedBitFieldReflectableConstArray = FixedBitFieldReflectableConstArray<ALLOC, RAW_ARRAY,
+        FixedSignedBitFieldReflectable<ALLOC, typename RAW_ARRAY::value_type>>;
+template <typename ALLOC, typename RAW_ARRAY>
+using FixedSignedBitFieldReflectableArray = FixedBitFieldReflectableArray<ALLOC, RAW_ARRAY,
+        FixedSignedBitFieldReflectable<ALLOC, typename RAW_ARRAY::value_type>>;
+
+template <typename ALLOC, typename RAW_ARRAY>
+using FixedUnsignedBitFieldReflectableConstArray = FixedBitFieldReflectableConstArray<ALLOC, RAW_ARRAY,
+        FixedUnsignedBitFieldReflectable<ALLOC, typename RAW_ARRAY::value_type>>;
+template <typename ALLOC, typename RAW_ARRAY>
+using FixedUnsignedBitFieldReflectableArray = FixedBitFieldReflectableArray<ALLOC, RAW_ARRAY,
+        FixedUnsignedBitFieldReflectable<ALLOC, typename RAW_ARRAY::value_type>>;
+
+template <typename ALLOC, typename RAW_ARRAY>
+using DynamicSignedBitFieldReflectableConstArray = DynamicBitFieldReflectableConstArray<ALLOC, RAW_ARRAY,
+        DynamicSignedBitFieldReflectable<ALLOC, typename RAW_ARRAY::value_type>>;
+template <typename ALLOC, typename RAW_ARRAY>
+using DynamicSignedBitFieldReflectableArray = DynamicBitFieldReflectableArray<ALLOC, RAW_ARRAY,
+        DynamicSignedBitFieldReflectable<ALLOC, typename RAW_ARRAY::value_type>>;
+
+template <typename ALLOC, typename RAW_ARRAY>
+using DynamicUnsignedBitFieldReflectableConstArray = DynamicBitFieldReflectableConstArray<ALLOC, RAW_ARRAY,
+        DynamicUnsignedBitFieldReflectable<ALLOC, typename RAW_ARRAY::value_type>>;
+template <typename ALLOC, typename RAW_ARRAY>
+using DynamicUnsignedBitFieldReflectableArray = DynamicBitFieldReflectableArray<ALLOC, RAW_ARRAY,
+        DynamicUnsignedBitFieldReflectable<ALLOC, typename RAW_ARRAY::value_type>>;
+
+template <typename ALLOC, typename RAW_ARRAY>
+using VarInt16ReflectableConstArray = BuiltinReflectableConstArray<ALLOC, RAW_ARRAY,
+        VarInt16Reflectable<ALLOC>>;
+template <typename ALLOC, typename RAW_ARRAY>
+using VarInt16ReflectableArray = BuiltinReflectableArray<ALLOC, RAW_ARRAY, VarInt16Reflectable<ALLOC>>;
+
+template <typename ALLOC, typename RAW_ARRAY>
+using VarInt32ReflectableConstArray = BuiltinReflectableConstArray<ALLOC, RAW_ARRAY,
+        VarInt32Reflectable<ALLOC>>;
+template <typename ALLOC, typename RAW_ARRAY>
+using VarInt32ReflectableArray = BuiltinReflectableArray<ALLOC, RAW_ARRAY, VarInt32Reflectable<ALLOC>>;
+
+template <typename ALLOC, typename RAW_ARRAY>
+using VarInt64ReflectableConstArray = BuiltinReflectableConstArray<ALLOC, RAW_ARRAY,
+        VarInt64Reflectable<ALLOC>>;
+template <typename ALLOC, typename RAW_ARRAY>
+using VarInt64ReflectableArray = BuiltinReflectableArray<ALLOC, RAW_ARRAY, VarInt64Reflectable<ALLOC>>;
+
+template <typename ALLOC, typename RAW_ARRAY>
+using VarIntReflectableConstArray = BuiltinReflectableConstArray<ALLOC, RAW_ARRAY, VarIntReflectable<ALLOC>>;
+template <typename ALLOC, typename RAW_ARRAY>
+using VarIntReflectableArray = BuiltinReflectableArray<ALLOC, RAW_ARRAY, VarIntReflectable<ALLOC>>;
+
+template <typename ALLOC, typename RAW_ARRAY>
+using VarUInt16ReflectableConstArray = BuiltinReflectableConstArray<ALLOC, RAW_ARRAY,
+        VarUInt16Reflectable<ALLOC>>;
+template <typename ALLOC, typename RAW_ARRAY>
+using VarUInt16ReflectableArray = BuiltinReflectableArray<ALLOC, RAW_ARRAY, VarUInt16Reflectable<ALLOC>>;
+
+template <typename ALLOC, typename RAW_ARRAY>
+using VarUInt32ReflectableConstArray = BuiltinReflectableConstArray<ALLOC, RAW_ARRAY,
+        VarUInt32Reflectable<ALLOC>>;
+template <typename ALLOC, typename RAW_ARRAY>
+using VarUInt32ReflectableArray = BuiltinReflectableArray<ALLOC, RAW_ARRAY, VarUInt32Reflectable<ALLOC>>;
+
+template <typename ALLOC, typename RAW_ARRAY>
+using VarUInt64ReflectableConstArray = BuiltinReflectableConstArray<ALLOC, RAW_ARRAY,
+        VarUInt64Reflectable<ALLOC>>;
+template <typename ALLOC, typename RAW_ARRAY>
+using VarUInt64ReflectableArray = BuiltinReflectableArray<ALLOC, RAW_ARRAY, VarUInt64Reflectable<ALLOC>>;
+
+template <typename ALLOC, typename RAW_ARRAY>
+using VarUIntReflectableConstArray = BuiltinReflectableConstArray<ALLOC, RAW_ARRAY,
+        VarUIntReflectable<ALLOC>>;
+template <typename ALLOC, typename RAW_ARRAY>
+using VarUIntReflectableArray = BuiltinReflectableArray<ALLOC, RAW_ARRAY, VarUIntReflectable<ALLOC>>;
+
+template <typename ALLOC, typename RAW_ARRAY>
+using VarSizeReflectableConstArray = BuiltinReflectableConstArray<ALLOC, RAW_ARRAY,
+        VarSizeReflectable<ALLOC>>;
+template <typename ALLOC, typename RAW_ARRAY>
+using VarSizeReflectableArray = BuiltinReflectableArray<ALLOC, RAW_ARRAY, VarSizeReflectable<ALLOC>>;
+
+template <typename ALLOC, typename RAW_ARRAY>
+using Float16ReflectableConstArray = BuiltinReflectableConstArray<ALLOC, RAW_ARRAY,
+        Float16Reflectable<ALLOC>>;
+template <typename ALLOC, typename RAW_ARRAY>
+using Float16ReflectableArray = BuiltinReflectableArray<ALLOC, RAW_ARRAY, Float16Reflectable<ALLOC>>;
+
+template <typename ALLOC, typename RAW_ARRAY>
+using Float32ReflectableConstArray = BuiltinReflectableConstArray<ALLOC, RAW_ARRAY,
+        Float32Reflectable<ALLOC>>;
+template <typename ALLOC, typename RAW_ARRAY>
+using Float32ReflectableArray = BuiltinReflectableArray<ALLOC, RAW_ARRAY, Float32Reflectable<ALLOC>>;
+
+template <typename ALLOC, typename RAW_ARRAY>
+using Float64ReflectableConstArray = BuiltinReflectableConstArray<ALLOC, RAW_ARRAY,
+        Float64Reflectable<ALLOC>>;
+template <typename ALLOC, typename RAW_ARRAY>
+using Float64ReflectableArray = BuiltinReflectableArray<ALLOC, RAW_ARRAY, Float64Reflectable<ALLOC>>;
+
+template <typename ALLOC, typename RAW_ARRAY>
+using BytesReflectableConstArray = BuiltinReflectableConstArray<ALLOC, RAW_ARRAY,
+        BytesReflectable<ALLOC>>;
+template <typename ALLOC, typename RAW_ARRAY>
+using BytesReflectableArray = BuiltinReflectableArray<ALLOC, RAW_ARRAY, BytesReflectable<ALLOC>>;
+
+template <typename ALLOC, typename RAW_ARRAY>
+using StringReflectableConstArray = BuiltinReflectableConstArray<ALLOC, RAW_ARRAY,
+        StringReflectable<ALLOC>>;
+template <typename ALLOC, typename RAW_ARRAY>
+using StringReflectableArray = BuiltinReflectableArray<ALLOC, RAW_ARRAY, StringReflectable<ALLOC>>;
+
+template <typename ALLOC, typename RAW_ARRAY>
+using BitBufferReflectableConstArray = BuiltinReflectableConstArray<ALLOC, RAW_ARRAY,
+        BitBufferReflectable<ALLOC>>;
+template <typename ALLOC, typename RAW_ARRAY>
+using BitBufferReflectableArray = BuiltinReflectableArray<ALLOC, RAW_ARRAY, BitBufferReflectable<ALLOC>>;
 /** \} */
 
 /**
@@ -1519,11 +2577,6 @@ public:
         }
 
         return m_rawArray[index].reflectable(Base::get_allocator());
-    }
-
-    IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
-    {
-        return at(index);
     }
 
     AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
@@ -1580,16 +2633,6 @@ public:
         }
 
         return m_rawArray[index].reflectable(Base::get_allocator());
-    }
-
-    IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
-    {
-        return at(index);
-    }
-
-    IBasicReflectablePtr<ALLOC> operator[](size_t index) override
-    {
-        return at(index);
     }
 
     void setAt(const AnyHolder<ALLOC>& value, size_t index) override
@@ -1659,11 +2702,6 @@ public:
         return m_rawArray[index].reflectable(Base::get_allocator());
     }
 
-    IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
-    {
-        return at(index);
-    }
-
     AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
     {
         return AnyHolder<ALLOC>(std::cref(m_rawArray), allocator);
@@ -1719,16 +2757,6 @@ public:
         }
 
         return m_rawArray[index].reflectable(Base::get_allocator());
-    }
-
-    IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
-    {
-        return at(index);
-    }
-
-    IBasicReflectablePtr<ALLOC> operator[](size_t index) override
-    {
-        return at(index);
     }
 
     void setAt(const AnyHolder<ALLOC>& value, size_t index) override
@@ -1804,11 +2832,6 @@ public:
         return enumReflectable(m_rawArray[index], Base::get_allocator());
     }
 
-    IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
-    {
-        return at(index);
-    }
-
     AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
     {
         return AnyHolder<ALLOC>(std::cref(m_rawArray), allocator);
@@ -1864,16 +2887,6 @@ public:
         }
 
         return enumReflectable(m_rawArray[index], Base::get_allocator());
-    }
-
-    IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
-    {
-        return at(index);
-    }
-
-    IBasicReflectablePtr<ALLOC> operator[](size_t index) override
-    {
-        return at(index);
     }
 
     void setAt(const AnyHolder<ALLOC>& value, size_t index) override
@@ -2146,455 +3159,613 @@ class BasicReflectableFactory
 public:
     static IBasicReflectablePtr<ALLOC> getBool(bool value, const ALLOC& allocator = ALLOC())
     {
-        return std::allocate_shared<BoolReflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo<ALLOC>::getBool(), value, static_cast<uint8_t>(0));
+        return std::allocate_shared<BoolReflectable<ALLOC>>(allocator, value);
     }
 
     static IBasicReflectablePtr<ALLOC> getInt8(int8_t value, const ALLOC& allocator = ALLOC())
     {
-        return std::allocate_shared<Int8Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo<ALLOC>::getInt8(), value, static_cast<uint8_t>(0));
+        return std::allocate_shared<Int8Reflectable<ALLOC>>(allocator, value);
     }
 
     static IBasicReflectablePtr<ALLOC> getInt16(int16_t value, const ALLOC& allocator = ALLOC())
     {
-        return std::allocate_shared<Int16Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo<ALLOC>::getInt16(), value, static_cast<uint8_t>(0));
+        return std::allocate_shared<Int16Reflectable<ALLOC>>(allocator, value);
     }
 
     static IBasicReflectablePtr<ALLOC> getInt32(int32_t value, const ALLOC& allocator = ALLOC())
     {
-        return std::allocate_shared<Int32Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo<ALLOC>::getInt32(), value, static_cast<uint8_t>(0));
+        return std::allocate_shared<Int32Reflectable<ALLOC>>(allocator, value);
     }
 
     static IBasicReflectablePtr<ALLOC> getInt64(int64_t value, const ALLOC& allocator = ALLOC())
     {
-        return std::allocate_shared<Int64Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo<ALLOC>::getInt64(), value, static_cast<uint8_t>(0));
+        return std::allocate_shared<Int64Reflectable<ALLOC>>(allocator, value);
     }
 
     static IBasicReflectablePtr<ALLOC> getUInt8(uint8_t value, const ALLOC& allocator = ALLOC())
     {
-        return std::allocate_shared<UInt8Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo<ALLOC>::getUInt8(), value, static_cast<uint8_t>(0));
+        return std::allocate_shared<UInt8Reflectable<ALLOC>>(allocator, value);
     }
 
     static IBasicReflectablePtr<ALLOC> getUInt16(uint16_t value, const ALLOC& allocator = ALLOC())
     {
-        return std::allocate_shared<UInt16Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo<ALLOC>::getUInt16(), value, static_cast<uint8_t>(0));
+        return std::allocate_shared<UInt16Reflectable<ALLOC>>(allocator, value);
     }
 
     static IBasicReflectablePtr<ALLOC> getUInt32(uint32_t value, const ALLOC& allocator = ALLOC())
     {
-        return std::allocate_shared<UInt32Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo<ALLOC>::getUInt32(), value, static_cast<uint8_t>(0));
+        return std::allocate_shared<UInt32Reflectable<ALLOC>>(allocator, value);
     }
 
     static IBasicReflectablePtr<ALLOC> getUInt64(uint64_t value, const ALLOC& allocator = ALLOC())
     {
-        return std::allocate_shared<UInt64Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo<ALLOC>::getUInt64(), value, static_cast<uint8_t>(0));
+        return std::allocate_shared<UInt64Reflectable<ALLOC>>(allocator, value);
+    }
+
+    template <typename T, typename std::enable_if<std::is_signed<T>::value, int>::type = 0>
+    static IBasicReflectablePtr<ALLOC> getFixedSignedBitField(
+            T value, uint8_t bitSize, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<FixedSignedBitFieldReflectable<ALLOC, T>>(allocator, value, bitSize);
+    }
+
+    template <typename T, typename std::enable_if<std::is_unsigned<T>::value, int>::type = 0>
+    static IBasicReflectablePtr<ALLOC> getFixedUnsignedBitField(
+            T value, uint8_t bitSize, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<FixedUnsignedBitFieldReflectable<ALLOC, T>>(allocator, value, bitSize);
+    }
+
+    template <typename T, typename std::enable_if<std::is_signed<T>::value, int>::type = 0>
+    static IBasicReflectablePtr<ALLOC> getDynamicSignedBitField(
+            T value, uint8_t maxBitSize, uint8_t dynamicBitSize, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<DynamicSignedBitFieldReflectable<ALLOC, T>>(
+                allocator, value, maxBitSize, dynamicBitSize);
+    }
+
+    // for dynamic signed bit field given by a type reference (e.g. parameter, function return type)
+    static IBasicReflectablePtr<ALLOC> getDynamicSignedBitField(
+            int64_t value, uint8_t maxBitSize, const ALLOC& allocator = ALLOC())
+    {
+        if (maxBitSize != 64)
+        {
+            throw CppRuntimeException("ReflectableFactory::getDynamicSignedBitField - ") <<
+                    "maxBitSize != 64 for referenced dynamic bit field!";
+        }
+
+        return getDynamicSignedBitField(value, maxBitSize, maxBitSize, allocator);
+    }
+
+    template <typename T, typename std::enable_if<std::is_unsigned<T>::value, int>::type = 0>
+    static IBasicReflectablePtr<ALLOC> getDynamicUnsignedBitField(
+            T value, uint8_t maxBitSize, uint8_t dynamicBitSize, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<DynamicUnsignedBitFieldReflectable<ALLOC, T>>(
+                allocator, value, maxBitSize, dynamicBitSize);
+    }
+
+    // for dynamic unsigned bit field given a by type reference (e.g. parameter, function return type)
+    static IBasicReflectablePtr<ALLOC> getDynamicUnsignedBitField(
+            uint64_t value, uint8_t maxBitSize, const ALLOC& allocator = ALLOC())
+    {
+        if (maxBitSize != 64)
+        {
+            throw CppRuntimeException("ReflectableFactory::getDynamicUnsignedBitField - ") <<
+                    "maxBitSize != 64 for referenced dynamic bit field!";
+        }
+
+        return getDynamicUnsignedBitField(value, maxBitSize, maxBitSize, allocator);
     }
 
     static IBasicReflectablePtr<ALLOC> getVarInt16(
             int16_t value, const ALLOC& allocator = ALLOC())
     {
-        return std::allocate_shared<Int16Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo<ALLOC>::getVarInt16(), value, static_cast<uint8_t>(0));
+        return std::allocate_shared<VarInt16Reflectable<ALLOC>>(allocator, value);
     }
 
     static IBasicReflectablePtr<ALLOC> getVarInt32(
             int32_t value, const ALLOC& allocator = ALLOC())
     {
-        return std::allocate_shared<Int32Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo<ALLOC>::getVarInt32(), value, static_cast<uint8_t>(0));
+        return std::allocate_shared<VarInt32Reflectable<ALLOC>>(allocator, value);
     }
 
     static IBasicReflectablePtr<ALLOC> getVarInt64(
             int64_t value, const ALLOC& allocator = ALLOC())
     {
-        return std::allocate_shared<Int64Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo<ALLOC>::getVarInt64(), value, static_cast<uint8_t>(0));
+        return std::allocate_shared<VarInt64Reflectable<ALLOC>>(allocator, value);
     }
 
     static IBasicReflectablePtr<ALLOC> getVarInt(int64_t value, const ALLOC& allocator = ALLOC())
     {
-        return std::allocate_shared<Int64Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo<ALLOC>::getVarInt(), value, static_cast<uint8_t>(0));
+        return std::allocate_shared<VarIntReflectable<ALLOC>>(allocator, value);
     }
 
     static IBasicReflectablePtr<ALLOC> getVarUInt16(
             uint16_t value, const ALLOC& allocator = ALLOC())
     {
-        return std::allocate_shared<UInt16Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo<ALLOC>::getVarUInt16(), value, static_cast<uint8_t>(0));
+        return std::allocate_shared<VarUInt16Reflectable<ALLOC>>(allocator, value);
     }
 
     static IBasicReflectablePtr<ALLOC> getVarUInt32(
             uint32_t value, const ALLOC& allocator = ALLOC())
     {
-        return std::allocate_shared<UInt32Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo<ALLOC>::getVarUInt32(), value, static_cast<uint8_t>(0));
+        return std::allocate_shared<VarUInt32Reflectable<ALLOC>>(allocator, value);
     }
 
     static IBasicReflectablePtr<ALLOC> getVarUInt64(
             uint64_t value, const ALLOC& allocator = ALLOC())
     {
-        return std::allocate_shared<UInt64Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo<ALLOC>::getVarUInt64(), value, static_cast<uint8_t>(0));
+        return std::allocate_shared<VarUInt64Reflectable<ALLOC>>(allocator, value);
     }
 
     static IBasicReflectablePtr<ALLOC> getVarUInt(
             uint64_t value, const ALLOC& allocator = ALLOC())
     {
-        return std::allocate_shared<UInt64Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo<ALLOC>::getVarUInt(), value, static_cast<uint8_t>(0));
+        return std::allocate_shared<VarUIntReflectable<ALLOC>>(allocator, value);
     }
 
     static IBasicReflectablePtr<ALLOC> getVarSize(
             uint32_t value, const ALLOC& allocator = ALLOC())
     {
-        return std::allocate_shared<UInt32Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo<ALLOC>::getVarSize(), value, static_cast<uint8_t>(0));
+        return std::allocate_shared<VarSizeReflectable<ALLOC>>(allocator, value);
     }
 
     static IBasicReflectablePtr<ALLOC> getFloat16(float value, const ALLOC& allocator = ALLOC())
     {
-        return std::allocate_shared<FloatReflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo<ALLOC>::getFloat16(), value);
+        return std::allocate_shared<Float16Reflectable<ALLOC>>(allocator, value);
     }
 
     static IBasicReflectablePtr<ALLOC> getFloat32(float value, const ALLOC& allocator = ALLOC())
     {
-        return std::allocate_shared<FloatReflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo<ALLOC>::getFloat32(), value);
+        return std::allocate_shared<Float32Reflectable<ALLOC>>(allocator, value);
     }
 
     static IBasicReflectablePtr<ALLOC> getFloat64(double value, const ALLOC& allocator = ALLOC())
     {
-        return std::allocate_shared<DoubleReflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo<ALLOC>::getFloat64(), value);
+        return std::allocate_shared<Float64Reflectable<ALLOC>>(allocator, value);
     }
 
     static IBasicReflectablePtr<ALLOC> getBytes(Span<const uint8_t> value, const ALLOC& allocator = ALLOC())
     {
-        return std::allocate_shared<BytesReflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo<ALLOC>::getBytes(), value);
+        return std::allocate_shared<BytesReflectable<ALLOC>>(allocator, value);
     }
 
     static IBasicReflectablePtr<ALLOC> getString(StringView value, const ALLOC& allocator = ALLOC())
     {
-        return std::allocate_shared<StringReflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo<ALLOC>::getString(), value);
+        return std::allocate_shared<StringReflectable<ALLOC>>(allocator, value);
     }
 
     static IBasicReflectablePtr<ALLOC> getBitBuffer(
             const BasicBitBuffer<ALLOC>& value, const ALLOC& allocator = ALLOC())
     {
-        return std::allocate_shared<BitBufferReflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo<ALLOC>::getBitBuffer(), value);
+        return std::allocate_shared<BitBufferReflectable<ALLOC>>(allocator, value);
     }
 
-    static IBasicReflectablePtr<ALLOC> getFixedSignedBitField(
-            uint8_t bitSize, int8_t value, const ALLOC& allocator = ALLOC())
+    template <typename RAW_ARRAY>
+    static IBasicReflectableConstPtr<ALLOC> getBoolArray(
+            const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
     {
-        if (bitSize > 8)
-        {
-            throw CppRuntimeException("BasicReflectableFactory::getFixedSignedBitField") <<
-                    " - invalid bit size '" << bitSize << "' for 'int8_t' value!";
-        }
-        return std::allocate_shared<Int8Reflectable<ALLOC>>(allocator,
-                BuiltinTypeInfo<ALLOC>::getFixedSignedBitField(bitSize), value, static_cast<uint8_t>(0));
+        return std::allocate_shared<BoolReflectableConstArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
     }
 
-    static IBasicReflectablePtr<ALLOC> getFixedSignedBitField(
-            uint8_t bitSize, int16_t value, const ALLOC& allocator = ALLOC())
+    template <typename RAW_ARRAY>
+    static IBasicReflectablePtr<ALLOC> getBoolArray(RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
     {
-        if (bitSize <= 8 || bitSize > 16)
-        {
-            throw CppRuntimeException("BasicReflectableFactory::getFixedSignedBitField") <<
-                    " - invalid bit size '" << bitSize << "' for 'int16_t' value!";
-        }
-        return std::allocate_shared<Int16Reflectable<ALLOC>>(allocator,
-                BuiltinTypeInfo<ALLOC>::getFixedSignedBitField(bitSize), value, static_cast<uint8_t>(0));
+        return std::allocate_shared<BoolReflectableArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
     }
 
-    static IBasicReflectablePtr<ALLOC> getFixedSignedBitField(
-            uint8_t bitSize, int32_t value, const ALLOC& allocator = ALLOC())
+    template <typename RAW_ARRAY>
+    static IBasicReflectableConstPtr<ALLOC> getInt8Array(
+            const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
     {
-        if (bitSize <= 16 || bitSize > 32)
-        {
-            throw CppRuntimeException("BasicReflectableFactory::getFixedSignedBitField") <<
-                    " - invalid bit size '" << bitSize << "' for 'int32_t' value!";
-        }
-        return std::allocate_shared<Int32Reflectable<ALLOC>>(allocator,
-                BuiltinTypeInfo<ALLOC>::getFixedSignedBitField(bitSize), value, static_cast<uint8_t>(0));
+        return std::allocate_shared<Int8ReflectableConstArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
     }
 
-    static IBasicReflectablePtr<ALLOC> getFixedSignedBitField(
-            uint8_t bitSize, int64_t value, const ALLOC& allocator = ALLOC())
+    template <typename RAW_ARRAY>
+    static IBasicReflectablePtr<ALLOC> getInt8Array(RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
     {
-        if (bitSize <= 32 || bitSize > 64)
-        {
-            throw CppRuntimeException("BasicReflectableFactory::getFixedSignedBitField") <<
-                    " - invalid bit size '" << bitSize << "' for 'int64_t' value!";
-        }
-        return std::allocate_shared<Int64Reflectable<ALLOC>>(allocator,
-                BuiltinTypeInfo<ALLOC>::getFixedSignedBitField(bitSize), value, static_cast<uint8_t>(0));
+        return std::allocate_shared<Int8ReflectableArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
     }
 
-    static IBasicReflectablePtr<ALLOC> getFixedUnsignedBitField(
-            uint8_t bitSize, uint8_t value, const ALLOC& allocator = ALLOC())
+    template <typename RAW_ARRAY>
+    static IBasicReflectableConstPtr<ALLOC> getInt16Array(
+            const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
     {
-        if (bitSize > 8)
-        {
-            throw CppRuntimeException("BasicReflectableFactory::getFixedUnsignedBitField") <<
-                    " - invalid bit size '" << bitSize << "' for 'uint8_t' value!";
-        }
-        return std::allocate_shared<UInt8Reflectable<ALLOC>>(allocator,
-                BuiltinTypeInfo<ALLOC>::getFixedUnsignedBitField(bitSize), value, static_cast<uint8_t>(0));
+        return std::allocate_shared<Int16ReflectableConstArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
     }
 
-    static IBasicReflectablePtr<ALLOC> getFixedUnsignedBitField(
-            uint8_t bitSize, uint16_t value, const ALLOC& allocator = ALLOC())
+    template <typename RAW_ARRAY>
+    static IBasicReflectablePtr<ALLOC> getInt16Array(RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
     {
-        if (bitSize <= 8 || bitSize > 16)
-        {
-            throw CppRuntimeException("BasicReflectableFactory::getFixedUnsignedBitField") <<
-                    " - invalid bit size '" << bitSize << "' for 'uint16_t' value!";
-        }
-        return std::allocate_shared<UInt16Reflectable<ALLOC>>(allocator,
-                BuiltinTypeInfo<ALLOC>::getFixedUnsignedBitField(bitSize), value, static_cast<uint8_t>(0));
+        return std::allocate_shared<Int16ReflectableArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
     }
 
-    static IBasicReflectablePtr<ALLOC> getFixedUnsignedBitField(
-            uint8_t bitSize, uint32_t value, const ALLOC& allocator = ALLOC())
+    template <typename RAW_ARRAY>
+    static IBasicReflectableConstPtr<ALLOC> getInt32Array(
+            const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
     {
-        if (bitSize <= 16 || bitSize > 32)
-        {
-            throw CppRuntimeException("BasicReflectableFactory::getFixedUnsignedBitField") <<
-                    " - invalid bit size '" << bitSize << "' for 'uint32_t' value!";
-        }
-        return std::allocate_shared<UInt32Reflectable<ALLOC>>(allocator,
-                BuiltinTypeInfo<ALLOC>::getFixedUnsignedBitField(bitSize), value, static_cast<uint8_t>(0));
+        return std::allocate_shared<Int32ReflectableConstArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
     }
 
-    static IBasicReflectablePtr<ALLOC> getFixedUnsignedBitField(
-            uint8_t bitSize, uint64_t value, const ALLOC& allocator = ALLOC())
+    template <typename RAW_ARRAY>
+    static IBasicReflectablePtr<ALLOC> getInt32Array(RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
     {
-        if (bitSize <= 32 || bitSize > 64)
-        {
-            throw CppRuntimeException("BasicReflectableFactory::getFixedUnsignedBitField") <<
-                    " - invalid bit size '" << bitSize << "' for 'uint64_t' value!";
-        }
-        return std::allocate_shared<UInt64Reflectable<ALLOC>>(allocator,
-                BuiltinTypeInfo<ALLOC>::getFixedUnsignedBitField(bitSize), value, static_cast<uint8_t>(0));
+        return std::allocate_shared<Int32ReflectableArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
     }
 
-    static IBasicReflectablePtr<ALLOC> getDynamicSignedBitField(
-            uint8_t maxBitSize, int8_t value, uint8_t dynamicBitSize, const ALLOC& allocator = ALLOC())
+    template <typename RAW_ARRAY>
+    static IBasicReflectableConstPtr<ALLOC> getInt64Array(
+            const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
     {
-        if (maxBitSize > 8)
-        {
-            throw CppRuntimeException("BasicReflectableFactory::getDynamicSignedBitField") <<
-                    " - invalid max bit size '" << maxBitSize << "' for 'int8_t' value!";
-        }
-        return std::allocate_shared<Int8Reflectable<ALLOC>>(allocator,
-                BuiltinTypeInfo<ALLOC>::getDynamicSignedBitField(maxBitSize), value, dynamicBitSize);
+        return std::allocate_shared<Int64ReflectableConstArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
     }
 
-    static IBasicReflectablePtr<ALLOC> getDynamicSignedBitField(
-            uint8_t maxBitSize, int16_t value, uint8_t dynamicBitSize, const ALLOC& allocator = ALLOC())
+    template <typename RAW_ARRAY>
+    static IBasicReflectablePtr<ALLOC> getInt64Array(RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
     {
-        if (maxBitSize <= 8 || maxBitSize > 16)
-        {
-            throw CppRuntimeException("BasicReflectableFactory::getDynamicSignedBitField") <<
-                    " - invalid max bit size '" << maxBitSize << "' for 'int16_t' value!";
-        }
-        return std::allocate_shared<Int16Reflectable<ALLOC>>(allocator,
-                BuiltinTypeInfo<ALLOC>::getDynamicSignedBitField(maxBitSize), value, dynamicBitSize);
+        return std::allocate_shared<Int64ReflectableArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
     }
 
-    static IBasicReflectablePtr<ALLOC> getDynamicSignedBitField(
-            uint8_t maxBitSize, int32_t value, uint8_t dynamicBitSize, const ALLOC& allocator = ALLOC())
+    template <typename RAW_ARRAY>
+    static IBasicReflectableConstPtr<ALLOC> getUInt8Array(
+            const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
     {
-        if (maxBitSize <= 16 || maxBitSize > 32)
-        {
-            throw CppRuntimeException("BasicReflectableFactory::getDynamicSignedBitField") <<
-                    " - invalid max bit size '" << maxBitSize << "' for 'int32_t' value!";
-        }
-        return std::allocate_shared<Int32Reflectable<ALLOC>>(allocator,
-                BuiltinTypeInfo<ALLOC>::getDynamicSignedBitField(maxBitSize), value, dynamicBitSize);
+        return std::allocate_shared<UInt8ReflectableConstArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
     }
 
-    static IBasicReflectablePtr<ALLOC> getDynamicSignedBitField(
-            uint8_t maxBitSize, int64_t value, uint8_t dynamicBitSize, const ALLOC& allocator = ALLOC())
+    template <typename RAW_ARRAY>
+    static IBasicReflectablePtr<ALLOC> getUInt8Array(RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
     {
-        if (maxBitSize <= 32 || maxBitSize > 64)
-        {
-            throw CppRuntimeException("BasicReflectableFactory::getDynamicSignedBitField") <<
-                    " - invalid max bit size '" << maxBitSize << "' for 'int64_t' value!";
-        }
-        return std::allocate_shared<Int64Reflectable<ALLOC>>(allocator,
-                BuiltinTypeInfo<ALLOC>::getDynamicSignedBitField(maxBitSize), value, dynamicBitSize);
+        return std::allocate_shared<UInt8ReflectableArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
     }
 
-    static IBasicReflectablePtr<ALLOC> getDynamicSignedBitField(
-            uint8_t maxBitSize, int64_t value, const ALLOC& allocator = ALLOC())
+    template <typename RAW_ARRAY>
+    static IBasicReflectableConstPtr<ALLOC> getUInt16Array(
+            const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
     {
-        if (maxBitSize != 64)
-        {
-            throw CppRuntimeException("BasicReflectableFactory::getDynamicSignedBitField") <<
-                    " - invalid max bit size '" << maxBitSize << "' for 'int64_t' value!";
-        }
-        return std::allocate_shared<Int64Reflectable<ALLOC>>(allocator,
-                BuiltinTypeInfo<ALLOC>::getDynamicSignedBitField(maxBitSize), value, maxBitSize);
+        return std::allocate_shared<UInt16ReflectableConstArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
     }
 
-    static IBasicReflectablePtr<ALLOC> getDynamicUnsignedBitField(
-            uint8_t maxBitSize, uint8_t value, uint8_t dynamicBitSize, const ALLOC& allocator = ALLOC())
+    template <typename RAW_ARRAY>
+    static IBasicReflectablePtr<ALLOC> getUInt16Array(RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
     {
-        if (maxBitSize > 8)
-        {
-            throw CppRuntimeException("BasicReflectableFactory::getDynamicUnsignedBitField") <<
-                    " - invalid max bit size '" << maxBitSize << "' for 'uint8_t' value!";
-        }
-        return std::allocate_shared<UInt8Reflectable<ALLOC>>(allocator,
-                BuiltinTypeInfo<ALLOC>::getDynamicUnsignedBitField(maxBitSize), value, dynamicBitSize);
+        return std::allocate_shared<UInt16ReflectableArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
     }
 
-    static IBasicReflectablePtr<ALLOC> getDynamicUnsignedBitField(
-            uint8_t maxBitSize, uint16_t value, uint8_t dynamicBitSize, const ALLOC& allocator = ALLOC())
+    template <typename RAW_ARRAY>
+    static IBasicReflectableConstPtr<ALLOC> getUInt32Array(
+            const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
     {
-        if (maxBitSize <= 8 || maxBitSize > 16)
-        {
-            throw CppRuntimeException("BasicReflectableFactory::getDynamicUnsignedBitField") <<
-                    " - invalid max bit size '" << maxBitSize << "' for 'uint16_t' value!";
-        }
-        return std::allocate_shared<UInt16Reflectable<ALLOC>>(allocator,
-                BuiltinTypeInfo<ALLOC>::getDynamicUnsignedBitField(maxBitSize), value, dynamicBitSize);
+        return std::allocate_shared<UInt32ReflectableConstArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
     }
 
-    static IBasicReflectablePtr<ALLOC> getDynamicUnsignedBitField(
-            uint8_t maxBitSize, uint32_t value, uint8_t dynamicBitSize, const ALLOC& allocator = ALLOC())
+    template <typename RAW_ARRAY>
+    static IBasicReflectablePtr<ALLOC> getUInt32Array(RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
     {
-        if (maxBitSize <= 16 || maxBitSize > 32)
-        {
-            throw CppRuntimeException("BasicReflectableFactory::getDynamicUnsignedBitField") <<
-                    " - invalid max bit size '" << maxBitSize << "' for 'uint32_t' value!";
-        }
-        return std::allocate_shared<UInt32Reflectable<ALLOC>>(allocator,
-                BuiltinTypeInfo<ALLOC>::getDynamicUnsignedBitField(maxBitSize), value, dynamicBitSize);
+        return std::allocate_shared<UInt32ReflectableArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
     }
 
-    static IBasicReflectablePtr<ALLOC> getDynamicUnsignedBitField(
-            uint8_t maxBitSize, uint64_t value, uint8_t dynamicBitSize, const ALLOC& allocator = ALLOC())
+    template <typename RAW_ARRAY>
+    static IBasicReflectableConstPtr<ALLOC> getUInt64Array(
+            const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
     {
-        if (maxBitSize <= 32 || maxBitSize > 64)
-        {
-            throw CppRuntimeException("BasicReflectableFactory::getDynamicUnsignedBitField") <<
-                    " - invalid max bit size '" << maxBitSize << "' for 'uint64_t' value!";
-        }
-        return std::allocate_shared<UInt64Reflectable<ALLOC>>(allocator,
-                BuiltinTypeInfo<ALLOC>::getDynamicUnsignedBitField(maxBitSize), value, dynamicBitSize);
+        return std::allocate_shared<UInt64ReflectableConstArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
     }
 
-    static IBasicReflectablePtr<ALLOC> getDynamicUnsignedBitField(
-            uint8_t maxBitSize, uint64_t value, const ALLOC& allocator = ALLOC())
+    template <typename RAW_ARRAY>
+    static IBasicReflectablePtr<ALLOC> getUInt64Array(RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
     {
-        if (maxBitSize != 64)
-        {
-            throw CppRuntimeException("BasicReflectableFactory::getDynamicUnsignedBitField") <<
-                    " - invalid max bit size '" << maxBitSize << "' for 'uint64_t' value!";
-        }
-        return std::allocate_shared<UInt64Reflectable<ALLOC>>(allocator,
-                BuiltinTypeInfo<ALLOC>::getDynamicUnsignedBitField(maxBitSize), value, maxBitSize);
+        return std::allocate_shared<UInt64ReflectableArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
     }
 
-    template <typename RAW_ARRAY,
-            typename std::enable_if<!std::is_integral<typename RAW_ARRAY::value_type>::value, int>::type = 0>
-    static IBasicReflectableConstPtr<ALLOC> getBuiltinArray(
-            const IBasicTypeInfo<ALLOC>& typeInfo, const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    template <typename RAW_ARRAY>
+    static IBasicReflectableConstPtr<ALLOC> getFixedSignedBitFieldArray(
+            const RAW_ARRAY& rawArray, uint8_t bitSize, const ALLOC& allocator = ALLOC())
     {
-        return std::allocate_shared<BuiltinReflectableConstArray<ALLOC, RAW_ARRAY>>(
-                allocator, typeInfo, allocator, rawArray);
+        return std::allocate_shared<FixedSignedBitFieldReflectableConstArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray, bitSize);
     }
 
-    template <typename RAW_ARRAY,
-            typename std::enable_if<!std::is_integral<typename RAW_ARRAY::value_type>::value, int>::type = 0>
-    static IBasicReflectablePtr<ALLOC> getBuiltinArray(
-            const IBasicTypeInfo<ALLOC>& typeInfo, RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    template <typename RAW_ARRAY>
+    static IBasicReflectablePtr<ALLOC> getFixedSignedBitFieldArray(
+                RAW_ARRAY& rawArray, uint8_t bitSize, const ALLOC& allocator = ALLOC())
     {
-        return std::allocate_shared<BuiltinReflectableArray<ALLOC, RAW_ARRAY>>(
-                allocator, typeInfo, allocator, rawArray);
+        return std::allocate_shared<FixedSignedBitFieldReflectableArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray, bitSize);
     }
 
-    template <typename RAW_ARRAY,
-            typename std::enable_if<std::is_integral<typename RAW_ARRAY::value_type>::value, int>::type = 0>
-    static IBasicReflectableConstPtr<ALLOC> getBuiltinArray(
-            const IBasicTypeInfo<ALLOC>& typeInfo, const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    template <typename RAW_ARRAY>
+    static IBasicReflectableConstPtr<ALLOC> getFixedUnsignedBitFieldArray(
+            const RAW_ARRAY& rawArray, uint8_t bitSize, const ALLOC& allocator = ALLOC())
     {
-        if (typeInfo.getSchemaType() == SchemaType::DYNAMIC_SIGNED_BITFIELD ||
-                typeInfo.getSchemaType() == SchemaType::DYNAMIC_UNSIGNED_BITFIELD)
-        {
-            throw CppRuntimeException("BasicReflectableFactory::getBuiltinArray"
-                    " - dynamic bit field array must be created with dynamicBitSize argument!");
-        }
-
-        return std::allocate_shared<IntegralReflectableConstArray<ALLOC, RAW_ARRAY>>(
-                allocator, typeInfo, allocator, rawArray, static_cast<uint8_t>(0));
+        return std::allocate_shared<FixedUnsignedBitFieldReflectableConstArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray, bitSize);
     }
 
-    template <typename RAW_ARRAY,
-            typename std::enable_if<std::is_integral<typename RAW_ARRAY::value_type>::value, int>::type = 0>
-    static IBasicReflectablePtr<ALLOC> getBuiltinArray(
-            const IBasicTypeInfo<ALLOC>& typeInfo, RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    template <typename RAW_ARRAY>
+    static IBasicReflectablePtr<ALLOC> getFixedUnsignedBitFieldArray(
+            RAW_ARRAY& rawArray, uint8_t bitSize, const ALLOC& allocator = ALLOC())
     {
-        if (typeInfo.getSchemaType() == SchemaType::DYNAMIC_SIGNED_BITFIELD ||
-                typeInfo.getSchemaType() == SchemaType::DYNAMIC_UNSIGNED_BITFIELD)
-        {
-            throw CppRuntimeException("BasicReflectableFactory::getBuiltinArray"
-                    " - dynamic bit field array must be created with dynamicBitSize argument!");
-        }
-
-        return std::allocate_shared<IntegralReflectableArray<ALLOC, RAW_ARRAY>>(
-                allocator, typeInfo, allocator, rawArray, static_cast<uint8_t>(0));
+        return std::allocate_shared<FixedUnsignedBitFieldReflectableArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray, bitSize);
     }
 
-    template <typename RAW_ARRAY,
-            typename std::enable_if<std::is_integral<typename RAW_ARRAY::value_type>::value, int>::type = 0>
-    static IBasicReflectableConstPtr<ALLOC> getBuiltinArray(
-            const IBasicTypeInfo<ALLOC>& typeInfo, const RAW_ARRAY& rawArray, uint8_t dynamicBitSize,
+    template <typename RAW_ARRAY>
+    static IBasicReflectableConstPtr<ALLOC> getDynamicSignedBitFieldArray(
+            const RAW_ARRAY& rawArray, uint8_t maxBitSize, uint8_t dynamicBitSize,
             const ALLOC& allocator = ALLOC())
     {
-        if (typeInfo.getSchemaType() != SchemaType::DYNAMIC_SIGNED_BITFIELD &&
-                typeInfo.getSchemaType() != SchemaType::DYNAMIC_UNSIGNED_BITFIELD)
-        {
-            throw CppRuntimeException("BasicReflectableFactory::getBuiltinArray"
-                    " - expected a dynamic bit field array!");
-        }
-
-        return std::allocate_shared<IntegralReflectableConstArray<ALLOC, RAW_ARRAY>>(
-                allocator, typeInfo, allocator, rawArray, dynamicBitSize);
+        return std::allocate_shared<DynamicSignedBitFieldReflectableConstArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray, maxBitSize, dynamicBitSize);
     }
 
-    template <typename RAW_ARRAY,
-            typename std::enable_if<std::is_integral<typename RAW_ARRAY::value_type>::value, int>::type = 0>
-    static IBasicReflectablePtr<ALLOC> getBuiltinArray(
-            const IBasicTypeInfo<ALLOC>& typeInfo, RAW_ARRAY& rawArray, uint8_t dynamicBitSize,
+    template <typename RAW_ARRAY>
+    static IBasicReflectablePtr<ALLOC> getDynamicSignedBitFieldArray(
+            RAW_ARRAY& rawArray, uint8_t maxBitSize, uint8_t dynamicBitSize, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<DynamicSignedBitFieldReflectableArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray, maxBitSize, dynamicBitSize);
+    }
+
+    template <typename RAW_ARRAY>
+    static IBasicReflectableConstPtr<ALLOC> getDynamicUnsignedBitFieldArray(
+            const RAW_ARRAY& rawArray, uint8_t maxBitSize, uint8_t dynamicBitSize,
             const ALLOC& allocator = ALLOC())
     {
-        if (typeInfo.getSchemaType() != SchemaType::DYNAMIC_SIGNED_BITFIELD &&
-                typeInfo.getSchemaType() != SchemaType::DYNAMIC_UNSIGNED_BITFIELD)
-        {
-            throw CppRuntimeException("BasicReflectableFactory::getBuiltinArray"
-                    " - expected a dynamic bit field array!");
-        }
+        return std::allocate_shared<DynamicUnsignedBitFieldReflectableConstArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray, maxBitSize, dynamicBitSize);
+    }
 
-        return std::allocate_shared<IntegralReflectableArray<ALLOC, RAW_ARRAY>>(
-                allocator, typeInfo, allocator, rawArray, dynamicBitSize);
+    template <typename RAW_ARRAY>
+    static IBasicReflectablePtr<ALLOC> getDynamicUnsignedBitFieldArray(
+            RAW_ARRAY& rawArray, uint8_t maxBitSize, uint8_t dynamicBitSize, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<DynamicUnsignedBitFieldReflectableArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray, maxBitSize, dynamicBitSize);
+    }
+
+    template <typename RAW_ARRAY>
+    static IBasicReflectableConstPtr<ALLOC> getVarInt16Array(
+            const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<VarInt16ReflectableConstArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
+    }
+
+    template <typename RAW_ARRAY>
+    static IBasicReflectablePtr<ALLOC> getVarInt16Array(RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<VarInt16ReflectableArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
+    }
+
+    template <typename RAW_ARRAY>
+    static IBasicReflectableConstPtr<ALLOC> getVarInt32Array(
+            const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<VarInt32ReflectableConstArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
+    }
+
+    template <typename RAW_ARRAY>
+    static IBasicReflectablePtr<ALLOC> getVarInt32Array(RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<VarInt32ReflectableArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
+    }
+
+    template <typename RAW_ARRAY>
+    static IBasicReflectableConstPtr<ALLOC> getVarInt64Array(
+            const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<VarInt64ReflectableConstArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
+    }
+
+    template <typename RAW_ARRAY>
+    static IBasicReflectablePtr<ALLOC> getVarInt64Array(RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<VarInt64ReflectableArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
+    }
+
+    template <typename RAW_ARRAY>
+    static IBasicReflectableConstPtr<ALLOC> getVarIntArray(
+            const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<VarIntReflectableConstArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
+    }
+
+    template <typename RAW_ARRAY>
+    static IBasicReflectablePtr<ALLOC> getVarIntArray(RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<VarIntReflectableArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
+    }
+
+    template <typename RAW_ARRAY>
+    static IBasicReflectableConstPtr<ALLOC> getVarUInt16Array(
+            const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<VarUInt16ReflectableConstArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
+    }
+
+    template <typename RAW_ARRAY>
+    static IBasicReflectablePtr<ALLOC> getVarUInt16Array(RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<VarUInt16ReflectableArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
+    }
+
+    template <typename RAW_ARRAY>
+    static IBasicReflectableConstPtr<ALLOC> getVarUInt32Array(
+            const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<VarUInt32ReflectableConstArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
+    }
+
+    template <typename RAW_ARRAY>
+    static IBasicReflectablePtr<ALLOC> getVarUInt32Array(RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<VarUInt32ReflectableArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
+    }
+
+    template <typename RAW_ARRAY>
+    static IBasicReflectableConstPtr<ALLOC> getVarUInt64Array(
+            const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<VarUInt64ReflectableConstArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
+    }
+
+    template <typename RAW_ARRAY>
+    static IBasicReflectablePtr<ALLOC> getVarUInt64Array(RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<VarUInt64ReflectableArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
+    }
+
+    template <typename RAW_ARRAY>
+    static IBasicReflectableConstPtr<ALLOC> getVarUIntArray(
+            const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<VarUIntReflectableConstArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
+    }
+
+    template <typename RAW_ARRAY>
+    static IBasicReflectablePtr<ALLOC> getVarUIntArray(RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<VarUIntReflectableArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
+    }
+
+    template <typename RAW_ARRAY>
+    static IBasicReflectableConstPtr<ALLOC> getVarSizeArray(
+            const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<VarSizeReflectableConstArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
+    }
+
+    template <typename RAW_ARRAY>
+    static IBasicReflectablePtr<ALLOC> getVarSizeArray(RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<VarSizeReflectableArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
+    }
+
+    template <typename RAW_ARRAY>
+    static IBasicReflectableConstPtr<ALLOC> getFloat16Array(
+            const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<Float16ReflectableConstArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
+    }
+
+    template <typename RAW_ARRAY>
+    static IBasicReflectablePtr<ALLOC> getFloat16Array(RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<Float16ReflectableArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
+    }
+
+    template <typename RAW_ARRAY>
+    static IBasicReflectableConstPtr<ALLOC> getFloat32Array(
+            const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<Float32ReflectableConstArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
+    }
+
+    template <typename RAW_ARRAY>
+    static IBasicReflectablePtr<ALLOC> getFloat32Array(RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<Float32ReflectableArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
+    }
+
+    template <typename RAW_ARRAY>
+    static IBasicReflectableConstPtr<ALLOC> getFloat64Array(
+            const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<Float64ReflectableConstArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
+    }
+
+    template <typename RAW_ARRAY>
+    static IBasicReflectablePtr<ALLOC> getFloat64Array(RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<Float64ReflectableArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
+    }
+
+    template <typename RAW_ARRAY>
+    static IBasicReflectableConstPtr<ALLOC> getBytesArray(
+            const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BytesReflectableConstArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
+    }
+
+    template <typename RAW_ARRAY>
+    static IBasicReflectablePtr<ALLOC> getBytesArray(RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BytesReflectableArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
+    }
+
+    template <typename RAW_ARRAY>
+    static IBasicReflectableConstPtr<ALLOC> getStringArray(
+            const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<StringReflectableConstArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
+    }
+
+    template <typename RAW_ARRAY>
+    static IBasicReflectablePtr<ALLOC> getStringArray(RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<StringReflectableArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
+    }
+
+    template <typename RAW_ARRAY>
+    static IBasicReflectableConstPtr<ALLOC> getBitBufferArray(
+            const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BitBufferReflectableConstArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
+    }
+
+    template <typename RAW_ARRAY>
+    static IBasicReflectablePtr<ALLOC> getBitBufferArray(RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BitBufferReflectableArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
     }
 
     template <typename RAW_ARRAY>
@@ -3040,12 +4211,6 @@ size_t ReflectableArrayBase<ALLOC>::initializeOffsets(size_t)
 }
 
 template <typename ALLOC>
-size_t ReflectableArrayBase<ALLOC>::initializeOffsets()
-{
-    return initializeOffsets(0);
-}
-
-template <typename ALLOC>
 size_t ReflectableArrayBase<ALLOC>::bitSizeOf(size_t) const
 {
     throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
@@ -3109,6 +4274,18 @@ template <typename ALLOC>
 StringView ReflectableArrayBase<ALLOC>::getChoice() const
 {
     throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
+}
+
+template <typename ALLOC>
+IBasicReflectableConstPtr<ALLOC> ReflectableArrayBase<ALLOC>::operator[](size_t index) const
+{
+    return this->at(index);
+}
+
+template <typename ALLOC>
+IBasicReflectablePtr<ALLOC> ReflectableArrayBase<ALLOC>::operator[](size_t index)
+{
+    return this->at(index);
 }
 
 template <typename ALLOC>
@@ -3222,37 +4399,37 @@ string<ALLOC> ReflectableArrayBase<ALLOC>::toString(const ALLOC&) const
 template <typename ALLOC>
 void ReflectableConstArrayBase<ALLOC>::resize(size_t)
 {
-    throw CppRuntimeException("Reflectable '") << getTypeInfo().getSchemaName() << "' is constant array!";
+    throw CppRuntimeException("Reflectable '") << getTypeInfo().getSchemaName() << "' is a constant array!";
 }
 
 template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> ReflectableConstArrayBase<ALLOC>::at(size_t)
 {
-    throw CppRuntimeException("Reflectable '") << getTypeInfo().getSchemaName() << "' is constant array!";
+    throw CppRuntimeException("Reflectable '") << getTypeInfo().getSchemaName() << "' is a constant array!";
 }
 
 template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> ReflectableConstArrayBase<ALLOC>::operator[](size_t)
 {
-    throw CppRuntimeException("Reflectable '") << getTypeInfo().getSchemaName() << "' is constant array!";
+    throw CppRuntimeException("Reflectable '") << getTypeInfo().getSchemaName() << "' is a constant array!";
 }
 
 template <typename ALLOC>
 void ReflectableConstArrayBase<ALLOC>::setAt(const AnyHolder<ALLOC>&, size_t)
 {
-    throw CppRuntimeException("Reflectable '") << getTypeInfo().getSchemaName() << "' is constant array!";
+    throw CppRuntimeException("Reflectable '") << getTypeInfo().getSchemaName() << "' is a constant array!";
 }
 
 template <typename ALLOC>
 void ReflectableConstArrayBase<ALLOC>::append(const AnyHolder<ALLOC>&)
 {
-    throw CppRuntimeException("Reflectable '") << getTypeInfo().getSchemaName() << "' is constant array!";
+    throw CppRuntimeException("Reflectable '") << getTypeInfo().getSchemaName() << "' is a constant array!";
 }
 
 template <typename ALLOC>
 AnyHolder<ALLOC> ReflectableConstArrayBase<ALLOC>::getAnyValue(const ALLOC&)
 {
-    throw CppRuntimeException("Reflectable '") << getTypeInfo().getSchemaName() << "' is constant array!";
+    throw CppRuntimeException("Reflectable '") << getTypeInfo().getSchemaName() << "' is a constant array!";
 }
 
 } // namespace zserio
