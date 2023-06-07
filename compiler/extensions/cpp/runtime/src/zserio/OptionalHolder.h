@@ -292,9 +292,8 @@ public:
             return *this;
 
         m_storage = copy_initialize(other,
-            allocator_traits::propagate_on_container_copy_assignment::value ?
-                other.m_storage.get_deleter().get_allocator() :
-                m_storage.get_deleter().get_allocator());
+                select_allocator(other.m_storage.get_deleter().get_allocator(),
+                        typename allocator_traits::propagate_on_container_copy_assignment()));
 
         return *this;
     }
@@ -312,9 +311,8 @@ public:
             return *this;
 
         m_storage = move_initialize(std::move(other),
-            allocator_traits::propagate_on_container_move_assignment::value ?
-                other.m_storage.get_deleter().get_allocator() :
-                m_storage.get_deleter().get_allocator());
+            select_allocator(other.m_storage.get_deleter().get_allocator(),
+                    typename allocator_traits::propagate_on_container_move_assignment()));
 
         return *this;
     }
@@ -392,6 +390,16 @@ public:
     }
 
 private:
+    allocator_type select_allocator(allocator_type other_allocator, std::true_type)
+    {
+        return other_allocator;
+    }
+
+    allocator_type select_allocator(allocator_type, std::false_type)
+    {
+        return m_storage.get_deleter().get_allocator(); // current allocator
+    }
+
     template <typename U = T>
     void set(U&& value)
     {
