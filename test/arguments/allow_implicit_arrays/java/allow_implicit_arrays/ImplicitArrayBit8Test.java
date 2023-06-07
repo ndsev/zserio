@@ -19,8 +19,8 @@ public class ImplicitArrayBit8Test
     {
         final int numElements = 44;
         final short[] array = new short[numElements];
-        for (short i = 0; i < numElements; ++i)
-            array[i] = i;
+        for (int i = 0; i < numElements; ++i)
+            array[i] = (short)i;
 
         final ImplicitArray implicitArray = new ImplicitArray(array);
         final int bitPosition = 2;
@@ -78,8 +78,8 @@ public class ImplicitArrayBit8Test
     {
         try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
-            for (short i = 0; i < numElements; ++i)
-                writer.writeUnsignedByte(i);
+            for (int i = 0; i < numElements; ++i)
+                writer.writeUnsignedByte((short)i);
 
             return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
         }

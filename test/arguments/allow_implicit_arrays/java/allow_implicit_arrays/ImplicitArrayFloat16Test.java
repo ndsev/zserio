@@ -78,7 +78,7 @@ public class ImplicitArrayFloat16Test
     {
         try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
-            for (short i = 0; i < numElements; ++i)
+            for (int i = 0; i < numElements; ++i)
                 writer.writeFloat16((float)i);
 
             return new BitBuffer(writer.toByteArray(), writer.getBitPosition());

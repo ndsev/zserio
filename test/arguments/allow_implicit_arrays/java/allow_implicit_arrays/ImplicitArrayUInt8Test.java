@@ -78,8 +78,8 @@ public class ImplicitArrayUInt8Test
     {
         try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
-            for (short i = 0; i < numElements; ++i)
-                writer.writeUnsignedByte(i);
+            for (int i = 0; i < numElements; ++i)
+                writer.writeUnsignedByte((short)i);
 
             return new BitBuffer(writer.toByteArray(), writer.getBitPosition());
         }
