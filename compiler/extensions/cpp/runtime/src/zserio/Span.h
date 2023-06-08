@@ -354,15 +354,25 @@ public:
      *
      * \return Subspan of given number of elements beginning at given index.
      */
-    template <size_type Offset, size_type Count = dynamic_extent>
+    /** \{ */
+    template <size_type Offset, size_type Count = dynamic_extent,
+            typename std::enable_if<Count == dynamic_extent, int>::type = 0>
     constexpr SubspanReturnType<Offset, Count> subspan() const
     {
-        static_assert((Extent == dynamic_extent) ||
-            (Offset <= Extent && (Count == dynamic_extent || Offset + Count <= Extent)),
+        static_assert((Extent == dynamic_extent) || (Offset <= Extent),
                 "Requested number of characters out of range.");
-        return SubspanReturnType<Offset, Count>(data() + Offset,
-                Count != dynamic_extent ? Count : size() - Offset);
+        return SubspanReturnType<Offset, Count>(data() + Offset, size() - Offset);
     }
+
+    template <size_type Offset, size_type Count,
+            typename std::enable_if<Count != dynamic_extent, int>::type = 0>
+    constexpr SubspanReturnType<Offset, Count> subspan() const
+    {
+        static_assert((Extent == dynamic_extent) || (Offset <= Extent && Offset + Count <= Extent),
+                "Requested number of characters out of range.");
+        return SubspanReturnType<Offset, Count>(data() + Offset, Count);
+    }
+    /** \} */
 
     /**
      * Get subspan of given number of elements beginning at given index.
