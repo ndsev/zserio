@@ -64,10 +64,8 @@ public:
 template <typename T>
 void JsonEncoder::encodeIntegral(std::ostream& os, T value)
 {
-    if (std::is_signed<T>::value)
-        os << static_cast<int64_t>(value);
-    else
-        os << static_cast<uint64_t>(value);
+    using U = typename std::conditional<std::is_signed<T>::value, int64_t, uint64_t>::type;
+    os << static_cast<U>(value);
 }
 
 } // namespace zserio
