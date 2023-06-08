@@ -893,8 +893,8 @@ constexpr bool operator>=(BasicStringView<CharT, Traits> lhs, BasicStringView<Ch
 template<typename CharT, size_t N>
 constexpr BasicStringView<CharT> makeStringView(const CharT(&str)[N])
 {
-    // Note: strip the very last null terminator, if it is there
-    return BasicStringView<CharT>(str, (N > 0 && str[N - 1] == CharT()) ? (N - 1) : N);
+    static_assert(N != 0, "Zero length arrays C++ extension is not supported!");
+    return BasicStringView<CharT>(str, str[N - 1] == CharT() ? (N - 1) : N);
 }
 
 /**
