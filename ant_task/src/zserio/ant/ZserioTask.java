@@ -64,6 +64,17 @@ import org.apache.tools.ant.types.Path;
  */
 public class ZserioTask extends Task
 {
+    @SuppressWarnings("unchecked")
+    @Override
+    public ZserioTask clone() throws CloneNotSupportedException
+    {
+        ZserioTask cloned = (ZserioTask)super.clone();
+        cloned.classpath = (Vector<Path>)classpath.clone();
+        cloned.arguments = (Vector<Argument>)arguments.clone();
+
+        return cloned;
+    }
+
     /*
      * "Interface" to ant task attributes.
      *
