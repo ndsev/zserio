@@ -161,10 +161,12 @@ TEST(EmptyUnionWithParameterTest, operatorEquality)
 {
     EmptyUnionWithParameter emptyUnionWithParameter1;
     EmptyUnionWithParameter emptyUnionWithParameter2;
-    ASSERT_THROW(emptyUnionWithParameter1.operator==(emptyUnionWithParameter2), zserio::CppRuntimeException);
+    ASSERT_THROW(ASSERT_FALSE(emptyUnionWithParameter1 == emptyUnionWithParameter2),
+            zserio::CppRuntimeException);
 
     emptyUnionWithParameter1.initialize(1);
-    ASSERT_THROW(emptyUnionWithParameter1.operator==(emptyUnionWithParameter2), zserio::CppRuntimeException);
+    ASSERT_THROW(ASSERT_FALSE(emptyUnionWithParameter1 == emptyUnionWithParameter2),
+            zserio::CppRuntimeException);
 
     emptyUnionWithParameter2.initialize(1);
     ASSERT_TRUE(emptyUnionWithParameter1 == emptyUnionWithParameter2);

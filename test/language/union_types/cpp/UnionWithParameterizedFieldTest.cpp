@@ -229,7 +229,7 @@ TEST_F(UnionWithParameterizedFieldTest, operatorEquality)
     testUnion2.initializeChildren();
     ASSERT_FALSE(testUnion1 == testUnion2);
     testUnion1.setArrayHolder(ArrayHolder{vector_type<uint32_t>(10)});
-    ASSERT_THROW(testUnion1.operator==(testUnion2), zserio::CppRuntimeException);
+    ASSERT_THROW(ASSERT_FALSE(testUnion1 == testUnion2), zserio::CppRuntimeException);
     testUnion1.initializeChildren();
     ASSERT_TRUE(testUnion1 == testUnion2);
 }

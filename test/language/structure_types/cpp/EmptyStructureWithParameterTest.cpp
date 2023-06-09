@@ -152,11 +152,11 @@ TEST(EmptyStructureWithParameterTest, operatorEquality)
 {
     EmptyStructureWithParameter emptyStructureWithParameter1;
     EmptyStructureWithParameter emptyStructureWithParameter2;
-    ASSERT_THROW(emptyStructureWithParameter1.operator==(emptyStructureWithParameter2),
+    ASSERT_THROW(ASSERT_FALSE(emptyStructureWithParameter1 == emptyStructureWithParameter2),
             zserio::CppRuntimeException);
 
     emptyStructureWithParameter1.initialize(1);
-    ASSERT_THROW(emptyStructureWithParameter1.operator==(emptyStructureWithParameter2),
+    ASSERT_THROW(ASSERT_FALSE(emptyStructureWithParameter1 == emptyStructureWithParameter2),
             zserio::CppRuntimeException);
 
     emptyStructureWithParameter2.initialize(1);
