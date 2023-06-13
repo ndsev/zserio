@@ -97,6 +97,7 @@ structureDeclaration
 structureFieldDefinition
     :   fieldAlignment?
         fieldOffset?
+        EXTEND?
         OPTIONAL?
         fieldTypeId
         fieldInitializer?

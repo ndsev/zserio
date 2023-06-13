@@ -66,6 +66,8 @@ public class StructureType extends CompoundType
         checkSymbolNames();
         checkSqlTableFields();
 
+        checkExtendedFields();
+
         checkImplicitArrays();
     }
 
@@ -93,6 +95,40 @@ public class StructureType extends CompoundType
         }
 
         return true;
+    }
+
+    private void checkExtendedFields()
+    {
+        // once first extended field is found, all following fields must be also extended
+        Field firstExtendedField = null;
+        for (Field field : getFields())
+        {
+            if (containsExtendedField(field))
+            {
+                final ParserStackedException stackedException = new ParserStackedException(
+                        field.getLocation(), "Field '" + field.getName() + "' is a compound which contains " +
+                        "an extended field!");
+                trackExtendedField(field, stackedException);
+                throw stackedException;
+            }
+
+            if (firstExtendedField == null)
+            {
+                if (field.isExtended())
+                    firstExtendedField = field;
+            }
+            else
+            {
+                if (!field.isExtended())
+                {
+                    final ParserStackedException stackedException = new ParserStackedException(
+                            field.getLocation(), "Field '" + field.getName() + "' follows an extended field " +
+                            "and is not marked as extended!");
+                    stackedException.pushMessage(firstExtendedField.getLocation(), "    extened field is used here");
+                    throw stackedException;
+                }
+            }
+        }
     }
 
     private void checkImplicitArrays()
