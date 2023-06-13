@@ -1,0 +1,58 @@
+name: "CodeQL Autosar"
+
+on:
+  push:
+    branches: [ "master", '*-ci' ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  analyze:
+    name: codeql_autosar
+    runs-on: ${{ 'ubuntu-latest' }}
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        submodules: recursive
+
+    - name: Install specific version of Coding Standards CodeQL queries
+      run: |
+        wget https://github.com/github/codeql-coding-standards/releases/download/v2.18.0/code-scanning-cpp-query-pack-2.18.0.zip -P "${GITHUB_WORKSPACE}/build"
+        unzip "${GITHUB_WORKSPACE}/build/code-scanning-cpp-query-pack-2.18.0.zip" -d "${GITHUB_WORKSPACE}/build"
+    - name: Install dependencies
+      run: sudo apt-get install cmake doxygen graphviz
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install virtualenv
+
+    - name: Prebuild C++ runtime library using clang
+      run: |
+        ./scripts/build.sh cpp_rt-linux64-clang
+        rm -r ./build/runtime_libs/cpp/linux64-clang/release/runtime/CMakeFiles/ZserioCppRuntime.dir/zserio
+      env:
+        CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Release"
+        CMAKE_BUILD_OPTIONS: "-j2"
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: cpp
+        config: |
+          disable-default-queries: true
+          queries:
+            - uses: "./build/codeql-coding-standards/cpp/autosar/src/codeql-suites/autosar-default.qls"
+
+    - name: Build only C++ runtime library without tests using clang
+      run: ./scripts/build.sh cpp_rt-linux64-clang
+      env:
+        CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Release"
+        CMAKE_BUILD_OPTIONS: "-j2"
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
+      with:
+        category: "autosar"

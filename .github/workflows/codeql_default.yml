@@ -1,4 +1,4 @@
-name: "CodeQL"
+name: "CodeQL Default"
 
 on:
   push:
@@ -8,18 +8,9 @@ on:
 
 jobs:
   analyze:
-    name: Analyze
+    name: codeql_default
     runs-on: ${{ 'ubuntu-latest' }}
     timeout-minutes: ${{ 360 }}
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [ 'cpp', 'java', 'python' ]
 
     steps:
     - name: Checkout repository
@@ -34,12 +25,11 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install virtualenv
-        python -m pip install gcovr
 
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v2
       with:
-        languages: ${{ matrix.language }}
+        languages: cpp, java, python
         config: |
           queries:
             - uses: security-extended
@@ -47,17 +37,11 @@ jobs:
           paths-ignore:
             - '3rdparty/**/*'
 
-    - run: |
-        echo "Run, Build Application using script"
+    - name: Build and test Zserio
+      run: |
         ./scripts/build.sh all-linux64-clang
         ./scripts/release.sh
-        if [[ "${{matrix.language}}" == "cpp" ]] ; then
-           ./scripts/test.sh cpp-linux64-clang
-        elif [[ "${{matrix.language}}" == "java" ]] ; then
-           ./scripts/test.sh java
-        elif [[ "${{matrix.language}}" == "python" ]] ; then
-           ./scripts/test.sh python
-        fi
+        ./scripts/test.sh all-linux64-clang
       env:
         CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Release"
         CMAKE_BUILD_OPTIONS: "-j2"
@@ -65,4 +49,4 @@ jobs:
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
       with:
-        category: "/language:${{matrix.language}}"
+        category: "default"
