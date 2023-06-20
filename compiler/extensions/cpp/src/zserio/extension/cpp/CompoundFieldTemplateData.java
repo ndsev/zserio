@@ -49,6 +49,8 @@ public class CompoundFieldTemplateData
         setterName = AccessorNameFormatter.getSetterName(field);
         readerName = AccessorNameFormatter.getReaderName(field);
 
+        isExtended = field.isExtended();
+        isPresentIndicatorName = AccessorNameFormatter.getIsPresentIndicatorName(field);
         isPackable = field.isPackable();
 
         integerRange = createIntegerRange(context, fieldTypeInstantiation, includeCollector);
@@ -103,6 +105,16 @@ public class CompoundFieldTemplateData
     public String getReaderName()
     {
         return readerName;
+    }
+
+    public boolean getIsExtended()
+    {
+        return isExtended;
+    }
+
+    public String getIsPresentIndicatorName()
+    {
+        return isPresentIndicatorName;
     }
 
     public boolean getIsPackable()
@@ -674,6 +686,8 @@ public class CompoundFieldTemplateData
     private final String getterName;
     private final String setterName;
     private final String readerName;
+    private final boolean isExtended;
+    private final String isPresentIndicatorName;
     private final boolean isPackable;
     private final IntegerRange integerRange;
     private final String alignmentValue;

@@ -32,33 +32,34 @@
 <@user_includes cppUserIncludes, false/>
 <@namespace_begin package.path/>
 
+<#macro field_default_constructor_arguments field>
+    <#if field.initializer??>
+        <#-- cannot be compound or array since it has initializer! -->
+        <#if field.optional??>
+            <#if field.holderNeedsAllocator>allocator<#else>::zserio::InPlace</#if>, <#t>
+        </#if>
+        <#if field.typeInfo.isString>
+        ::zserio::stringViewToString(${field.initializer}, allocator)<#t>
+        <#else>
+        static_cast<${field.typeInfo.typeFullName}>(${field.initializer})<#t>
+        <#if field.needsAllocator>, allocator</#if><#t>
+        </#if>
+    <#else>
+        <#if field.optional??>
+            ::zserio::NullOpt<#if field.holderNeedsAllocator>, allocator</#if><#t>
+        <#else>
+            <#if field.array??>
+                allocator<#t>
+            <#else>
+                <#if field.needsAllocator>allocator<#elseif field.typeInfo.isSimple>${field.typeInfo.typeFullName}()</#if><#t>
+            </#if>
+        </#if>
+    </#if>
+</#macro>
 <@inner_classes_definition name, fieldList/>
 <#macro empty_constructor_field_initialization>
     <#list fieldList as field>
-        <@field_member_name field/>(<#rt>
-        <#if field.initializer??>
-            <#-- cannot be compound or array since it has initializer! -->
-            <#if field.optional??>
-                <#if field.holderNeedsAllocator>allocator<#else>::zserio::InPlace</#if>, <#t>
-            </#if>
-            <#if field.typeInfo.isString>
-            ::zserio::stringViewToString(${field.initializer}, allocator)<#t>
-            <#else>
-            static_cast<${field.typeInfo.typeFullName}>(${field.initializer})<#t>
-            <#if field.needsAllocator>, allocator</#if><#t>
-            </#if>
-        <#else>
-            <#if field.optional??>
-                ::zserio::NullOpt<#if field.holderNeedsAllocator>, allocator</#if><#t>
-            <#else>
-                <#if field.array??>
-                    allocator<#t>
-                <#else>
-                    <#if field.needsAllocator>allocator<#elseif field.typeInfo.isSimple>${field.typeInfo.typeFullName}()</#if><#t>
-                </#if>
-            </#if>
-        </#if>
-        <#lt>)<#if field?has_next>,</#if>
+        <@field_member_name field/>(<@field_default_constructor_arguments field/>)<#if field?has_next>,</#if>
     </#list>
 </#macro>
 <#if withWriterCode>
@@ -260,6 +261,9 @@ void ${name}::initializeChildren()
     <#if needs_field_setter(field)>
 void ${name}::${field.setterName}(<@field_raw_cpp_argument_type_name field/> <@field_argument_name field/>)
 {
+        <#if field.isExtended>
+    m_numPresentFields = ${fieldList?size};
+        </#if>
     <@field_member_name field/> = <@compound_setter_field_value field/>;
 }
 
@@ -267,7 +271,17 @@ void ${name}::${field.setterName}(<@field_raw_cpp_argument_type_name field/> <@f
     <#if needs_field_rvalue_setter(field)>
 void ${name}::${field.setterName}(<@field_raw_cpp_type_name field/>&& <@field_argument_name field/>)
 {
+        <#if field.isExtended>
+    m_numPresentFields = ${fieldList?size};
+        </#if>
     <@field_member_name field/> = <@compound_setter_field_rvalue field/>;
+}
+
+    </#if>
+    <#if field.isExtended>
+bool ${name}::${field.isPresentIndicatorName}() const
+{
+    return m_numPresentFields > ${field?index};
 }
 
     </#if>
@@ -285,6 +299,9 @@ bool ${name}::${field.optional.isSetIndicatorName}() const
 
 void ${name}::${field.optional.resetterName}()
 {
+            <#if field.isExtended>
+    m_numPresentFields = ${fieldList?size};
+            </#if>
     <@field_member_name field/>.reset();
 }
 
@@ -376,6 +393,17 @@ size_t ${name}::initializeOffsets(${types.packingContextNode.name}&<#rt>
 }
 </#if>
 
+<#macro structure_compare_field field indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.optional??>
+        <#-- if optional is not auto and is used the other should be is used as well because all previous paramaters
+             and fields were the same. -->
+${I}(!${field.optional.isUsedIndicatorName}() ? !other.${field.optional.isUsedIndicatorName}() : <#rt>
+            (<@field_member_name field/> == other.<@field_member_name field/>))<#t>
+    <#else>
+${I}(<@field_member_name field/> == other.<@field_member_name field/>)<#rt>
+    </#if>
+</#macro>
 bool ${name}::operator==(const ${name}&<#if compoundParametersData.list?has_content || fieldList?has_content> other</#if>) const
 {
 <#if compoundParametersData.list?has_content || fieldList?has_content>
@@ -384,13 +412,12 @@ bool ${name}::operator==(const ${name}&<#if compoundParametersData.list?has_cont
         return
                 <@compound_parameter_comparison compoundParametersData, fieldList?has_content/>
     <#list fieldList as field>
-        <#if field.optional??>
-                <#-- if optional is not auto and is used the other should be is used as well because all previous paramaters
-                and fields were the same. -->
-                ((!${field.optional.isUsedIndicatorName}()) ? !other.${field.optional.isUsedIndicatorName}() : <#rt>
-                <#lt>(<@field_member_name field/> == other.<@field_member_name field/>))<#if field?has_next> &&<#else>;</#if>
+        <#if field.isExtended>
+                (!${field.isPresentIndicatorName}() ?
+                        !other.${field.isPresentIndicatorName}() :
+                        (other.${field.isPresentIndicatorName}() && <@structure_compare_field field, 0/>))<#if field?has_next> &&<#else>;</#if>
         <#else>
-                (<@field_member_name field/> == other.<@field_member_name field/>)<#if field?has_next> &&<#else>;</#if>
+                <#lt><@structure_compare_field field, 4/><#if field?has_next> &&<#else>;</#if>
         </#if>
     </#list>
     }
@@ -399,17 +426,28 @@ bool ${name}::operator==(const ${name}&<#if compoundParametersData.list?has_cont
     return true;
 }
 
+<#macro structure_hash_code_field field indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.optional??>
+${I}if (${field.optional.isUsedIndicatorName}())
+${I}    result = ::zserio::calcHashCode(result, <@field_member_name field/>);
+    <#else>
+${I}result = ::zserio::calcHashCode(result, <@field_member_name field/>);
+    </#if>
+</#macro>
 uint32_t ${name}::hashCode() const
 {
     uint32_t result = ::zserio::HASH_SEED;
 
     <@compound_parameter_hash_code compoundParametersData/>
 <#list fieldList as field>
-    <#if field.optional??>
-    if (${field.optional.isUsedIndicatorName}())
-        result = ::zserio::calcHashCode(result, <@field_member_name field/>);
+    <#if field.isExtended>
+    if (${field.isPresentIndicatorName}())
+    {
+        <@structure_hash_code_field field, 2/>
+    }
     <#else>
-    result = ::zserio::calcHashCode(result, <@field_member_name field/>);
+    <@structure_hash_code_field field, 1/>
     </#if>
     <#if !field?has_next>
 
@@ -461,6 +499,16 @@ void ${name}::write(${types.packingContextNode.name}&<#rt>
     </#if>
     <#lt>)
 {
+    <#if field.isExtended>
+    if (::zserio::alignTo(UINT8_C(8), in.getBitPosition()) >= in.getBufferBitSize())
+    {
+        return <#if !field.typeInfo.isSimple><@field_member_type_name field/>(</#if><#rt>
+                <#lt><@field_default_constructor_arguments field/><#if !field.typeInfo.isSimple>)</#if>;
+    }
+    m_numPresentFields = ${field?index + 1};
+    in.alignTo(UINT32_C(8));
+
+    </#if>
     <@compound_read_field field, name, 1/>
 }
     <#if field.isPackable>
@@ -472,6 +520,16 @@ void ${name}::write(${types.packingContextNode.name}&<#rt>
         </#if>
         <#lt>)
 {
+    <#if field.isExtended>
+    if (::zserio::alignTo(UINT8_C(8), in.getBitPosition()) >= in.getBufferBitSize())
+    {
+        return <#if !field.typeInfo.isSimple><@field_member_type_name field/>(</#if><#rt>
+                <#lt><@field_default_constructor_arguments field/><#if !field.typeInfo.isSimple>)</#if>;
+    }
+    m_numPresentFields = ${field?index + 1};
+    in.alignTo(UINT32_C(8));
+
+    </#if>
     <@compound_read_field field, name, 1, true, field?index/>
 }
     </#if>

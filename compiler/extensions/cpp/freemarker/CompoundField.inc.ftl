@@ -187,6 +187,19 @@ ${I}}
 
 <#macro compound_write_field field compoundName indent packed=false index=0>
     <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.isExtended>
+${I}if (${field.isPresentIndicatorName}())
+${I}{
+${I}    out.alignTo(UINT32_C(8));
+        <@compound_write_field_optional field, compoundName, indent + 1, packed, index/>
+${I}}
+    <#else>
+    <@compound_write_field_optional field, compoundName, indent, packed, index/>
+    </#if>
+</#macro>
+
+<#macro compound_write_field_optional field compoundName indent packed index>
+    <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
 ${I}if (<@field_optional_condition field/>)
 ${I}{
@@ -656,6 +669,19 @@ ${I}endBitPosition = ::zserio::alignTo(8, endBitPosition);
 
 <#macro compound_bitsizeof_field field indent packed=false index=0>
     <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.isExtended>
+${I}if (${field.isPresentIndicatorName}())
+${I}{
+${I}    endBitPosition = ::zserio::alignTo(UINT8_C(8), endBitPosition);
+        <@compound_bitsizeof_field_optional field, indent + 1, packed, index/>
+${I}}
+    <#else>
+    <@compound_bitsizeof_field_optional field, indent, packed, index/>
+    </#if>
+</#macro>
+
+<#macro compound_bitsizeof_field_optional field indent packed index>
+    <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
         <#if !field.optional.clause??>
             <#-- auto optional field -->
@@ -702,6 +728,19 @@ ${I}endBitPosition += <@compound_get_field field/>.bitSizeOf(endBitPosition);
 </#macro>
 
 <#macro compound_initialize_offsets_field field indent packed=false index=0>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.isExtended>
+${I}if (${field.isPresentIndicatorName}())
+${I}{
+${I}    endBitPosition = ::zserio::alignTo(UINT8_C(8), endBitPosition);
+        <@compound_initialize_offsets_field_optional field, indent + 1, packed, index/>
+${I}}
+    <#else>
+    <@compound_initialize_offsets_field_optional field, indent, packed, index/>
+    </#if>
+</#macro>
+
+<#macro compound_initialize_offsets_field_optional field indent packed index>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
         <#if !field.optional.clause??>
@@ -1176,5 +1215,14 @@ ${I}<@compound_field_packing_context_node field, index/>.getContext().init<<@arr
     <#if field.array?? || field.constraint??>
         <#return true>
     </#if>
+    <#return false>
+</#function>
+
+<#function needs_extended_fields_info fieldList>
+    <#list fieldList as field>
+        <#if field.isExtended>
+            <#return true>
+        </#if>
+    </#list>
     <#return false>
 </#function>
