@@ -52,7 +52,7 @@ TEST_F(ExtendedUnalignedFieldTest, defaultConstructor)
 {
     Extended extended;
 
-    // always present when not read from the stream
+    // always present when not read from stream
     ASSERT_TRUE(extended.isExtendedValuePresent());
 
     // default initialized
@@ -119,6 +119,8 @@ TEST_F(ExtendedUnalignedFieldTest, writeReadExtended)
 {
     Extended extended(2, UINT64_MAX);
     auto bitBuffer = zserio::serialize(extended);
+    ASSERT_EQ(EXTENDED_BIT_SIZE, bitBuffer.getBitSize());
+
     auto readExtended = zserio::deserialize<Extended>(bitBuffer);
     ASSERT_TRUE(readExtended.isExtendedValuePresent());
     ASSERT_EQ(extended, readExtended);

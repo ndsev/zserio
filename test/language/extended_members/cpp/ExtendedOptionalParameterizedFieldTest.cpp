@@ -63,7 +63,7 @@ TEST_F(ExtendedOptionalParameterizedFieldTest, defaultConstructor)
 {
     Extended extended;
 
-    // always present when not read from the stream
+    // always present when not read from stream
     ASSERT_TRUE(extended.isExtendedValuePresent());
 
     // default initialized
@@ -151,6 +151,8 @@ TEST_F(ExtendedOptionalParameterizedFieldTest, writeReadExtendedWithoutOptional)
 {
     Extended extended(0, zserio::NullOpt);
     auto bitBuffer = zserio::serialize(extended);
+    ASSERT_EQ(EXTENDED_BIT_SIZE_WITHOUT_OPTIONAL, bitBuffer.getBitSize());
+
     auto readExtended = zserio::deserialize<Extended>(bitBuffer);
     ASSERT_TRUE(readExtended.isExtendedValuePresent());
     ASSERT_FALSE(readExtended.isExtendedValueSet());
@@ -165,6 +167,8 @@ TEST_F(ExtendedOptionalParameterizedFieldTest, writeReadExtendedWithOptional)
     Extended extended(static_cast<uint16_t>(ARRAY.size()), Parameterized());
     extended.getExtendedValue().setArray(ARRAY);
     auto bitBuffer = zserio::serialize(extended);
+    ASSERT_EQ(EXTENDED_BIT_SIZE_WITH_OPTIONAL, bitBuffer.getBitSize());
+
     auto readExtended = zserio::deserialize<Extended>(bitBuffer);
     ASSERT_TRUE(readExtended.isExtendedValuePresent());
     ASSERT_TRUE(readExtended.isExtendedValueSet());

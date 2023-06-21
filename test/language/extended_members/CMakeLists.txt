@@ -14,6 +14,15 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/extended_members/extended_compound_field/Original.cpp
     ${ZSERIO_GEN_DIR}/extended_members/extended_compound_field/Original.h
 
+    ${ZSERIO_GEN_DIR}/extended_members/extended_field_in_template/Compound.cpp
+    ${ZSERIO_GEN_DIR}/extended_members/extended_field_in_template/Compound.h
+    ${ZSERIO_GEN_DIR}/extended_members/extended_field_in_template/ExtendedCompound.cpp
+    ${ZSERIO_GEN_DIR}/extended_members/extended_field_in_template/ExtendedCompound.h
+    ${ZSERIO_GEN_DIR}/extended_members/extended_field_in_template/ExtendedSimple.cpp
+    ${ZSERIO_GEN_DIR}/extended_members/extended_field_in_template/ExtendedSimple.h
+    ${ZSERIO_GEN_DIR}/extended_members/extended_field_in_template/Original.cpp
+    ${ZSERIO_GEN_DIR}/extended_members/extended_field_in_template/Original.h
+
     ${ZSERIO_GEN_DIR}/extended_members/extended_optional_parameterized_field/Extended.cpp
     ${ZSERIO_GEN_DIR}/extended_members/extended_optional_parameterized_field/Extended.h
     ${ZSERIO_GEN_DIR}/extended_members/extended_optional_parameterized_field/Original.cpp
@@ -37,6 +46,15 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/extended_members/multiple_extended_fields/Extended1.h
     ${ZSERIO_GEN_DIR}/extended_members/multiple_extended_fields/Original.cpp
     ${ZSERIO_GEN_DIR}/extended_members/multiple_extended_fields/Original.h
+
+    ${ZSERIO_GEN_DIR}/extended_members/multiple_extended_fields_various_types/Extended2.cpp
+    ${ZSERIO_GEN_DIR}/extended_members/multiple_extended_fields_various_types/Extended2.h
+    ${ZSERIO_GEN_DIR}/extended_members/multiple_extended_fields_various_types/Extended1.cpp
+    ${ZSERIO_GEN_DIR}/extended_members/multiple_extended_fields_various_types/Extended1.h
+    ${ZSERIO_GEN_DIR}/extended_members/multiple_extended_fields_various_types/Original.cpp
+    ${ZSERIO_GEN_DIR}/extended_members/multiple_extended_fields_various_types/Original.h
+    ${ZSERIO_GEN_DIR}/extended_members/multiple_extended_fields_various_types/Union.cpp
+    ${ZSERIO_GEN_DIR}/extended_members/multiple_extended_fields_various_types/Union.h
 )
 
 zserio_add_library(extended_members_zs
@@ -55,10 +73,12 @@ add_custom_test(extended_members
     SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ExtendedChoiceFieldTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ExtendedCompoundFieldTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ExtendedFieldInTemplateTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ExtendedOptionalParameterizedFieldTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ExtendedSimpleFieldTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ExtendedUnalignedFieldTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/MultipleExtendedFieldsTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/MultipleExtendedFieldsVariousTypesTest.cpp
     GENERATED_SOURCES
         ${ZSERIO_GENERATED_SOURCES}
 )

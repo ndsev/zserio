@@ -61,7 +61,7 @@ TEST_F(ExtendedCompoundFieldTest, defaultConstructor)
 {
     Extended extended;
 
-    // always present when not read from the stream
+    // always present when not read from stream
     ASSERT_TRUE(extended.isExtendedValuePresent());
 
     // default initialized
@@ -128,6 +128,8 @@ TEST_F(ExtendedCompoundFieldTest, writeReadExtended)
 {
     Extended extended(42, Compound(COMPOUND_ARRAY));
     auto bitBuffer = zserio::serialize(extended);
+    ASSERT_EQ(EXTENDED_BIT_SIZE_WITH_ARRAY, bitBuffer.getBitSize());
+
     auto readExtended = zserio::deserialize<Extended>(bitBuffer);
     ASSERT_TRUE(readExtended.isExtendedValuePresent());
     ASSERT_EQ(extended, readExtended);

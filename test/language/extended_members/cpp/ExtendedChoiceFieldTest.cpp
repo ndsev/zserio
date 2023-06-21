@@ -66,7 +66,7 @@ TEST_F(ExtendedChoiceFieldTest, defaultConstructor)
 {
     Extended extended;
 
-    // always present when not read from the stream
+    // always present when not read from stream
     ASSERT_TRUE(extended.isExtendedValuePresent());
 
     // default initialized
@@ -177,6 +177,8 @@ TEST_F(ExtendedChoiceFieldTest, writeReadExtendedEmpty)
 {
     Extended extended(0, Choice());
     auto bitBuffer = zserio::serialize(extended);
+    ASSERT_EQ(EXTENDED_BIT_SIZE_EMPTY, bitBuffer.getBitSize());
+
     auto readExtended = zserio::deserialize<Extended>(bitBuffer);
     ASSERT_FALSE(readExtended.isExtendedValuePresent());
     ASSERT_FALSE(extended == readExtended);
@@ -190,6 +192,8 @@ TEST_F(ExtendedChoiceFieldTest, writeReadExtendedValue)
     Extended extended(1, Choice());
     extended.getExtendedValue().setValue(42);
     auto bitBuffer = zserio::serialize(extended);
+    ASSERT_EQ(EXTENDED_BIT_SIZE_VALUE, bitBuffer.getBitSize());
+
     auto readExtended = zserio::deserialize<Extended>(bitBuffer);
     ASSERT_TRUE(readExtended.isExtendedValuePresent());
     ASSERT_EQ(extended, readExtended);
@@ -203,6 +207,8 @@ TEST_F(ExtendedChoiceFieldTest, writeReadExtendedValues)
     Extended extended(static_cast<uint32_t>(VALUES.size()), Choice());
     extended.getExtendedValue().setValues(VALUES);
     auto bitBuffer = zserio::serialize(extended);
+    ASSERT_EQ(EXTENDED_BIT_SIZE_VALUES, bitBuffer.getBitSize());
+
     auto readExtended = zserio::deserialize<Extended>(bitBuffer);
     ASSERT_TRUE(readExtended.isExtendedValuePresent());
     ASSERT_EQ(extended, readExtended);
