@@ -64,6 +64,23 @@ public class UnionType extends CompoundType
 
         checkSymbolNames();
         checkSqlTableFields();
+
+        checkExtendedFields();
+    }
+
+    private void checkExtendedFields()
+    {
+        for (Field field : getFields())
+        {
+            // nested fields cannot contain extended fields
+            if (containsExtendedField(field))
+            {
+                final ParserStackedException stackedException = new ParserStackedException(
+                        field.getLocation(), "Field '" + field.getName() + "' contains an extended field!");
+                trackExtendedField(field, stackedException);
+                throw stackedException;
+            }
+        }
     }
 
     @Override

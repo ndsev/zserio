@@ -77,13 +77,13 @@ TEST_F(MultipleExtendedFieldsTest, defaultConstructor)
 
 TEST_F(MultipleExtendedFieldsTest, fieldConstructor)
 {
-    Extended2 extended2(42, 2, DEFAULT_EXTENDED_VALUE2);
+    Extended2 extended2(42, 2, "other");
     ASSERT_TRUE(extended2.isExtendedValue1Present());
     ASSERT_TRUE(extended2.isExtendedValue2Present());
 
     ASSERT_EQ(42, extended2.getValue());
     ASSERT_EQ(2, extended2.getExtendedValue1());
-    ASSERT_EQ(DEFAULT_EXTENDED_VALUE2, extended2.getExtendedValue2());
+    ASSERT_EQ("other", extended2.getExtendedValue2());
 }
 
 TEST_F(MultipleExtendedFieldsTest, operatorEquality)

@@ -103,11 +103,11 @@ public class StructureType extends CompoundType
         Field firstExtendedField = null;
         for (Field field : getFields())
         {
+            // nested fields cannot contain extended fields
             if (containsExtendedField(field))
             {
                 final ParserStackedException stackedException = new ParserStackedException(
-                        field.getLocation(), "Field '" + field.getName() + "' is a compound which contains " +
-                        "an extended field!");
+                        field.getLocation(), "Field '" + field.getName() + "' contains an extended field!");
                 trackExtendedField(field, stackedException);
                 throw stackedException;
             }
@@ -124,7 +124,7 @@ public class StructureType extends CompoundType
                     final ParserStackedException stackedException = new ParserStackedException(
                             field.getLocation(), "Field '" + field.getName() + "' follows an extended field " +
                             "and is not marked as extended!");
-                    stackedException.pushMessage(firstExtendedField.getLocation(), "    extened field is used here");
+                    stackedException.pushMessage(firstExtendedField.getLocation(), "    extended field used here");
                     throw stackedException;
                 }
             }

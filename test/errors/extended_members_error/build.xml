@@ -1,0 +1,50 @@
+<project name="extended_members_error" basedir="." default="run">
+    <testProperties testPath="errors/extended_members_error" testName="extended_members_error"/>
+
+    <target name="prepare">
+        <testPrepare testName="extended_members_error"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="extended_members_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="extended_members_error.zs.gen_is_uptodate">
+        <testGenClean testName="extended_members_error"/>
+        <testGen testName="extended_members_error" zsFile="extended_deep_nested_error.zs" ignoreErrors="true"/>
+        <testGen testName="extended_members_error" zsFile="extended_in_choice_error.zs" ignoreErrors="true"/>
+        <testGen testName="extended_members_error" zsFile="extended_in_recursion_error.zs" ignoreErrors="true"/>
+        <testGen testName="extended_members_error" zsFile="extended_in_union_error.zs" ignoreErrors="true"/>
+        <testGen testName="extended_members_error" zsFile="extended_multiple_not_last_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="extended_members_error" zsFile="extended_nested_in_array_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="extended_members_error" zsFile="extended_nested_in_choice_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="extended_members_error" zsFile="extended_nested_in_union_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="extended_members_error" zsFile="extended_not_last_error.zs" ignoreErrors="true"/>
+        <testGen testName="extended_members_error" zsFile="extended_not_last_in_template_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="extended_members_error" zsFile="extended_not_top_level_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="extended_members_error" zsFile="extended_not_top_level_in_template_error.zs"
+            ignoreErrors="true"/>
+    </target>
+
+    <target name="compile" depends="gen">
+        <testCompile testName="extended_members_error" srcPath="${extended_members_error.base_dir}/java"/>
+    </target>
+
+    <target name="spotbugs" depends="compile" if="spotbugs.home_dir">
+        <testSpotBugs testName="extended_members_error" srcPath="${extended_members_error.base_dir}/java"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testName="extended_members_error"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="extended_members_error"/>
+    </target>
+</project>
