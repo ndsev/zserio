@@ -13,6 +13,8 @@ namespace extended_choice_field
 {
 
 using allocator_type = Extended::allocator_type;
+template <typename T>
+using vector_type = zserio::vector<T, allocator_type>;
 
 class ExtendedChoiceFieldTest : public ::testing::Test
 {
@@ -51,7 +53,7 @@ protected:
     static const size_t EXTENDED_BIT_SIZE_EMPTY;
     static const size_t EXTENDED_BIT_SIZE_VALUE;
 
-    static const std::vector<uint32_t> VALUES;
+    static const vector_type<uint32_t> VALUES;
     static const size_t EXTENDED_BIT_SIZE_VALUES;
 };
 
@@ -59,7 +61,7 @@ const size_t ExtendedChoiceFieldTest::ORIGINAL_BIT_SIZE = 4 * 8;
 const size_t ExtendedChoiceFieldTest::EXTENDED_BIT_SIZE_EMPTY = ORIGINAL_BIT_SIZE;
 const size_t ExtendedChoiceFieldTest::EXTENDED_BIT_SIZE_VALUE = ORIGINAL_BIT_SIZE + 4 * 8;
 
-const std::vector<uint32_t> ExtendedChoiceFieldTest::VALUES = { 0, 1, 2, 3, 4 };
+const vector_type<uint32_t> ExtendedChoiceFieldTest::VALUES = { 0, 1, 2, 3, 4 };
 const size_t ExtendedChoiceFieldTest::EXTENDED_BIT_SIZE_VALUES = ORIGINAL_BIT_SIZE + VALUES.size() * 4 * 8;
 
 TEST_F(ExtendedChoiceFieldTest, defaultConstructor)

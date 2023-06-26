@@ -1,22 +1,18 @@
 #include "gtest/gtest.h"
 
-#include "extended_members/extended_compound_field/Original.h"
-#include "extended_members/extended_compound_field/Extended.h"
+#include "extended_members/extended_empty_structure/Original.h"
+#include "extended_members/extended_empty_structure/Extended.h"
 
 #include "zserio/SerializeUtil.h"
-#include "zserio/BitSizeOfCalculator.h"
-#include "zserio/SizeConvertUtil.h"
 
 namespace extended_members
 {
-namespace extended_compound_field
+namespace extended_empty_structure
 {
 
 using allocator_type = Extended::allocator_type;
-template <typename T>
-using vector_type = zserio::vector<T, allocator_type>;
 
-class ExtendedCompoundFieldTest : public ::testing::Test
+class ExtendedEmptyStructureTest : public ::testing::Test
 {
 protected:
     void checkCopyAndMove(const Extended& extended, bool expectedIsPresent)
@@ -29,7 +25,8 @@ protected:
         ASSERT_EQ(expectedIsPresent, movedExtended.isExtendedValuePresent());
         ASSERT_EQ(extended, movedExtended);
 
-        Extended copiedWithPropagateAllocatorExtended(zserio::PropagateAllocator, extended, allocator_type());
+        Extended copiedWithPropagateAllocatorExtended(
+                zserio::PropagateAllocator, extended, allocator_type());
         ASSERT_EQ(expectedIsPresent, copiedWithPropagateAllocatorExtended.isExtendedValuePresent());
         ASSERT_EQ(extended, copiedWithPropagateAllocatorExtended);
 
@@ -44,22 +41,14 @@ protected:
         ASSERT_EQ(extended, moveAssignedExtended);
     }
 
-    static const vector_type<uint32_t> COMPOUND_ARRAY;
-
     static const size_t ORIGINAL_BIT_SIZE;
-    static const size_t EXTENDED_BIT_SIZE_DEFAULT;
-    static const size_t EXTENDED_BIT_SIZE_WITH_ARRAY;
+    static const size_t EXTENDED_BIT_SIZE;
 };
 
-const vector_type<uint32_t> ExtendedCompoundFieldTest::COMPOUND_ARRAY = { 0, 1, 2, 3, 4 };
+const size_t ExtendedEmptyStructureTest::ORIGINAL_BIT_SIZE = 0;
+const size_t ExtendedEmptyStructureTest::EXTENDED_BIT_SIZE = ORIGINAL_BIT_SIZE + 4 * 8;
 
-const size_t ExtendedCompoundFieldTest::ORIGINAL_BIT_SIZE = 4 * 8;
-const size_t ExtendedCompoundFieldTest::EXTENDED_BIT_SIZE_DEFAULT = 4 * 8 + zserio::bitSizeOfVarSize(0);
-const size_t ExtendedCompoundFieldTest::EXTENDED_BIT_SIZE_WITH_ARRAY = ORIGINAL_BIT_SIZE +
-        zserio::bitSizeOfVarSize(zserio::convertSizeToUInt32(COMPOUND_ARRAY.size())) +
-        COMPOUND_ARRAY.size() * 4 * 8;
-
-TEST_F(ExtendedCompoundFieldTest, defaultConstructor)
+TEST_F(ExtendedEmptyStructureTest, defaultConstructor)
 {
     Extended extended;
 
@@ -67,88 +56,75 @@ TEST_F(ExtendedCompoundFieldTest, defaultConstructor)
     ASSERT_TRUE(extended.isExtendedValuePresent());
 
     // default initialized
-    ASSERT_EQ(0, extended.getValue());
-    ASSERT_EQ(0, extended.getExtendedValue().getArray().size());
+    ASSERT_EQ(0, extended.getExtendedValue());
 }
 
-TEST_F(ExtendedCompoundFieldTest, fieldConstructor)
+TEST_F(ExtendedEmptyStructureTest, fieldConstructor)
 {
-    Extended extended(42, Compound(COMPOUND_ARRAY));
+    Extended extended(UINT32_MAX);
     ASSERT_TRUE(extended.isExtendedValuePresent());
 
-    ASSERT_EQ(42, extended.getValue());
-    ASSERT_EQ(COMPOUND_ARRAY, extended.getExtendedValue().getArray());
+    ASSERT_EQ(UINT32_MAX, extended.getExtendedValue());
 }
 
-TEST_F(ExtendedCompoundFieldTest, operatorEquality)
+TEST_F(ExtendedEmptyStructureTest, operatorEquality)
 {
     Extended extended1;
     Extended extended2;
     ASSERT_EQ(extended1, extended2);
 
-    extended1.setValue(13);
+    extended2.setExtendedValue(UINT32_MAX);
     ASSERT_FALSE(extended1 == extended2);
-    extended2.setValue(13);
-    ASSERT_EQ(extended1, extended2);
-
-    extended2.setExtendedValue(Compound(COMPOUND_ARRAY));
-    ASSERT_FALSE(extended1 == extended2);
-    extended1.setExtendedValue(Compound(COMPOUND_ARRAY));
+    extended1.setExtendedValue(UINT32_MAX);
     ASSERT_EQ(extended1, extended2);
 }
 
-TEST_F(ExtendedCompoundFieldTest, hashCode)
+TEST_F(ExtendedEmptyStructureTest, hashCode)
 {
     Extended extended1;
     Extended extended2;
     ASSERT_EQ(extended1.hashCode(), extended2.hashCode());
 
-    extended1.setValue(13);
+    extended2.setExtendedValue(42);
     ASSERT_NE(extended1.hashCode(), extended2.hashCode());
-    extended2.setValue(13);
-    ASSERT_EQ(extended1.hashCode(), extended2.hashCode());
-
-    extended2.setExtendedValue(Compound(COMPOUND_ARRAY));
-    ASSERT_NE(extended1.hashCode(), extended2.hashCode());
-    extended1.setExtendedValue(Compound(COMPOUND_ARRAY));
+    extended1.setExtendedValue(42);
     ASSERT_EQ(extended1.hashCode(), extended2.hashCode());
 }
 
-TEST_F(ExtendedCompoundFieldTest, bitSizeOf)
+TEST_F(ExtendedEmptyStructureTest, bitSizeOf)
 {
     Extended extended;
-    ASSERT_EQ(EXTENDED_BIT_SIZE_DEFAULT, extended.bitSizeOf());
+    ASSERT_EQ(EXTENDED_BIT_SIZE, extended.bitSizeOf());
 }
 
-TEST_F(ExtendedCompoundFieldTest, initializeOffsets)
+TEST_F(ExtendedEmptyStructureTest, initializeOffsets)
 {
     Extended extended;
-    ASSERT_EQ(EXTENDED_BIT_SIZE_DEFAULT, extended.initializeOffsets(0));
+    ASSERT_EQ(EXTENDED_BIT_SIZE, extended.initializeOffsets(0));
 }
 
-TEST_F(ExtendedCompoundFieldTest, writeReadExtended)
+TEST_F(ExtendedEmptyStructureTest, writeReadExtended)
 {
-    Extended extended(42, Compound(COMPOUND_ARRAY));
+    Extended extended(UINT32_MAX);
     auto bitBuffer = zserio::serialize(extended);
-    ASSERT_EQ(EXTENDED_BIT_SIZE_WITH_ARRAY, bitBuffer.getBitSize());
+    ASSERT_EQ(EXTENDED_BIT_SIZE, bitBuffer.getBitSize());
 
     auto readExtended = zserio::deserialize<Extended>(bitBuffer);
     ASSERT_TRUE(readExtended.isExtendedValuePresent());
     ASSERT_EQ(extended, readExtended);
 
     checkCopyAndMove(extended, true);
-    checkCopyAndMove(readExtended, true);
 }
 
-TEST_F(ExtendedCompoundFieldTest, writeOriginalReadExtened)
+TEST_F(ExtendedEmptyStructureTest, writeOriginalReadExtened)
 {
-    Original original(42);
+    Original original;
     auto bitBuffer = zserio::serialize(original);
     auto readExtended = zserio::deserialize<Extended>(bitBuffer);
     ASSERT_FALSE(readExtended.isExtendedValuePresent());
 
     // extended value is default constructed
-    ASSERT_EQ(Compound(), readExtended.getExtendedValue());
+    ASSERT_EQ(0, readExtended.getExtendedValue());
 
     // bit size as original
     ASSERT_EQ(ORIGINAL_BIT_SIZE, readExtended.bitSizeOf());
@@ -156,7 +132,7 @@ TEST_F(ExtendedCompoundFieldTest, writeOriginalReadExtened)
     // initialize offsets as original
     ASSERT_EQ(ORIGINAL_BIT_SIZE, readExtended.initializeOffsets(0));
 
-    // writes as original
+    // write as original
     bitBuffer = zserio::serialize(readExtended);
     ASSERT_EQ(ORIGINAL_BIT_SIZE, bitBuffer.getBitSize());
 
@@ -167,33 +143,32 @@ TEST_F(ExtendedCompoundFieldTest, writeOriginalReadExtened)
     checkCopyAndMove(readExtended, false);
 
     // setter makes the value present!
-    readExtended.setExtendedValue(Compound(COMPOUND_ARRAY));
+    readExtended.setExtendedValue(UINT32_MAX);
     ASSERT_TRUE(readExtended.isExtendedValuePresent());
 
     // bit size as extended
-    ASSERT_EQ(EXTENDED_BIT_SIZE_WITH_ARRAY, readExtended.bitSizeOf());
+    ASSERT_EQ(EXTENDED_BIT_SIZE, readExtended.bitSizeOf());
 
     // initialize offsets as extended
-    ASSERT_EQ(EXTENDED_BIT_SIZE_WITH_ARRAY, readExtended.initializeOffsets(0));
+    ASSERT_EQ(EXTENDED_BIT_SIZE, readExtended.initializeOffsets(0));
 
-    // write as extended
+    // writes as extended
     bitBuffer = zserio::serialize(readExtended);
-    ASSERT_EQ(EXTENDED_BIT_SIZE_WITH_ARRAY, bitBuffer.getBitSize());
+    ASSERT_EQ(EXTENDED_BIT_SIZE, bitBuffer.getBitSize());
 
     checkCopyAndMove(readExtended, true);
 }
 
-TEST_F(ExtendedCompoundFieldTest, writeExtendedReadOriginal)
+TEST_F(ExtendedEmptyStructureTest, writeExtendedReadOriginal)
 {
-    Extended extended(42, Compound(COMPOUND_ARRAY));
+    Extended extended(UINT32_MAX);
     auto bitBuffer = zserio::serialize(extended);
-    ASSERT_EQ(EXTENDED_BIT_SIZE_WITH_ARRAY, bitBuffer.getBitSize());
+    ASSERT_EQ(EXTENDED_BIT_SIZE, bitBuffer.getBitSize());
 
     zserio::BitStreamReader reader(bitBuffer);
     Original readOriginal(reader);
-    ASSERT_EQ(extended.getValue(), readOriginal.getValue());
     ASSERT_EQ(ORIGINAL_BIT_SIZE, reader.getBitPosition());
 }
 
-} // namespace extended_compound_field
+} // namespace extended_empty_structure
 } // namespace extended_members

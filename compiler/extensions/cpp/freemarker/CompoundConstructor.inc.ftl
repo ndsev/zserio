@@ -26,6 +26,7 @@
     <#local hasInitializers= needs_compound_initialization(compoundConstructorsData) ||
             has_field_with_initialization(compoundConstructorsData.fieldList) ||
             memberInitializationMacroName != ""/>
+    <#local numExtendedFields=num_extended_fields(compoundConstructorsData.fieldList)/>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
         <#lt>const allocator_type&<#rt>
         <#lt><#if empty_constructor_needs_allocator(compoundConstructorsData.fieldList)> allocator</#if>) <#rt>
@@ -36,8 +37,8 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
         m_areChildrenInitialized(false)<#if memberInitializationMacroName != "">,</#if>
     </#if>
     <#if memberInitializationMacroName != "">
-        <#if needs_extended_fields_info(compoundConstructorsData.fieldList)>
-        m_numPresentFields(${compoundConstructorsData.fieldList?size}),
+        <#if (numExtendedFields > 0)>
+        m_numExtendedFields(${numExtendedFields}),
         </#if>
         <@.vars[memberInitializationMacroName]/>
     </#if>
@@ -107,8 +108,8 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
         m_areChildrenInitialized(true)<#if memberInitializationMacroName != "">,</#if>
     </#if>
     <#if memberInitializationMacroName != "">
-        <#if needs_extended_fields_info(compoundConstructorsData.fieldList)>
-        m_numPresentFields(0),
+        <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
+        m_numExtendedFields(0),
         </#if>
         <@.vars[memberInitializationMacroName] packed/>
     </#if>
@@ -144,8 +145,8 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 <#macro compound_copy_constructor_definition compoundConstructorsData>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
         <#lt>const ${compoundConstructorsData.compoundName}& other)<#if compoundConstructorsData.fieldList?has_content> :</#if>
-    <#if needs_extended_fields_info(compoundConstructorsData.fieldList)>
-        m_numPresentFields(other.m_numPresentFields),
+    <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
+        m_numExtendedFields(other.m_numExtendedFields),
     </#if>
     <#list compoundConstructorsData.fieldList as field>
         <@compound_copy_constructor_initializer_field field, field?has_next, 2/>
@@ -173,8 +174,8 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundName}::operator=(<#rt>
     <#lt>const ${compoundConstructorsData.compoundName}& other)
 {
-    <#if needs_extended_fields_info(compoundConstructorsData.fieldList)>
-    m_numPresentFields = other.m_numPresentFields;
+    <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
+    m_numExtendedFields = other.m_numExtendedFields;
     </#if>
     <#list compoundConstructorsData.fieldList as field>
         <@compound_assignment_field field, 1/>
@@ -202,8 +203,8 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
 <#macro compound_move_constructor_definition compoundConstructorsData>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
         <#lt>${compoundConstructorsData.compoundName}&& other)<#if compoundConstructorsData.fieldList?has_content> :</#if>
-    <#if needs_extended_fields_info(compoundConstructorsData.fieldList)>
-        m_numPresentFields(other.m_numPresentFields),
+    <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
+        m_numExtendedFields(other.m_numExtendedFields),
     </#if>
     <#list compoundConstructorsData.fieldList as field>
         <@compound_move_constructor_initializer_field field, field?has_next, 2/>
@@ -231,8 +232,8 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundName}::operator=(<#rt>
     <#lt>${compoundConstructorsData.compoundName}&& other)
 {
-    <#if needs_extended_fields_info(compoundConstructorsData.fieldList)>
-    m_numPresentFields = other.m_numPresentFields;
+    <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
+    m_numExtendedFields = other.m_numExtendedFields;
     </#if>
     <#list compoundConstructorsData.fieldList as field>
         <@compound_move_assignment_field field, 1/>
@@ -267,8 +268,8 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
         <#lt><#if compoundConstructorsData.fieldList?has_content || initialization?has_content> other</#if>,<#rt>
         <#lt> const allocator_type&<#if compoundConstructorsData.fieldList?has_content> allocator</#if>)<#rt>
         <#lt><#if compoundConstructorsData.fieldList?has_content> :</#if>
-    <#if needs_extended_fields_info(compoundConstructorsData.fieldList)>
-        m_numPresentFields(other.m_numPresentFields),
+    <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
+        m_numExtendedFields(other.m_numExtendedFields),
     </#if>
     <#list compoundConstructorsData.fieldList as field>
         <@compound_allocator_propagating_copy_constructor_initializer_field field, field?has_next, 2/>

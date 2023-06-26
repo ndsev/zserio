@@ -13,6 +13,9 @@ namespace extended_optional_parameterized_field
 {
 
 using allocator_type = Extended::allocator_type;
+using string_type = zserio::string<allocator_type>;
+template <typename T>
+using vector_type = zserio::vector<T, allocator_type>;
 
 class ExtendedOptionalParameterizedFieldTest : public ::testing::Test
 {
@@ -42,14 +45,14 @@ protected:
         ASSERT_EQ(extended, moveAssignedExtended);
     }
 
-    static const std::vector<std::string> ARRAY;
+    static const vector_type<string_type> ARRAY;
 
     static const size_t ORIGINAL_BIT_SIZE;
     static const size_t EXTENDED_BIT_SIZE_WITHOUT_OPTIONAL;
     static const size_t EXTENDED_BIT_SIZE_WITH_OPTIONAL;
 };
 
-const std::vector<std::string> ExtendedOptionalParameterizedFieldTest::ARRAY = { "this", "is", "test" };
+const vector_type<string_type> ExtendedOptionalParameterizedFieldTest::ARRAY = { "this", "is", "test" };
 
 const size_t ExtendedOptionalParameterizedFieldTest::ORIGINAL_BIT_SIZE = 11;
 const size_t ExtendedOptionalParameterizedFieldTest::EXTENDED_BIT_SIZE_WITHOUT_OPTIONAL =
@@ -57,7 +60,7 @@ const size_t ExtendedOptionalParameterizedFieldTest::EXTENDED_BIT_SIZE_WITHOUT_O
 const size_t ExtendedOptionalParameterizedFieldTest::EXTENDED_BIT_SIZE_WITH_OPTIONAL =
         zserio::alignTo(8, ORIGINAL_BIT_SIZE) + 1 +
         std::accumulate(ARRAY.begin(), ARRAY.end(), static_cast<size_t>(0),
-                [](size_t size, const std::string& str) { return size + zserio::bitSizeOfString(str); });
+                [](size_t size, const string_type& str) { return size + zserio::bitSizeOfString(str); });
 
 TEST_F(ExtendedOptionalParameterizedFieldTest, defaultConstructor)
 {

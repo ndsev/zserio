@@ -34,7 +34,7 @@
 <@user_includes headerUserIncludes/>
 <@namespace_begin package.path/>
 
-<#assign needsExtendedFieldsInfo=needs_extended_fields_info(fieldList)>
+<#assign numExtendedFields=num_extended_fields(fieldList)>
 <#if withCodeComments && docComments??>
 <@doc_comments docComments/>
 </#if>
@@ -362,8 +362,8 @@ private:
 </#list>
     <@compound_parameter_members compoundParametersData/>
     <@compound_constructor_members compoundConstructorsData/>
-<#if needsExtendedFieldsInfo>
-    uint32_t m_numPresentFields;
+<#if (numExtendedFields > 0)>
+    uint32_t m_numExtendedFields;
 </#if>
 <#list fieldList as field>
     <@field_member_type_name field/> <@field_member_name field/>;

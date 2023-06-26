@@ -14,6 +14,11 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/extended_members/extended_compound_field/Original.cpp
     ${ZSERIO_GEN_DIR}/extended_members/extended_compound_field/Original.h
 
+    ${ZSERIO_GEN_DIR}/extended_members/extended_empty_structure/Extended.cpp
+    ${ZSERIO_GEN_DIR}/extended_members/extended_empty_structure/Extended.h
+    ${ZSERIO_GEN_DIR}/extended_members/extended_empty_structure/Original.cpp
+    ${ZSERIO_GEN_DIR}/extended_members/extended_empty_structure/Original.h
+
     ${ZSERIO_GEN_DIR}/extended_members/extended_field_in_template/Compound.cpp
     ${ZSERIO_GEN_DIR}/extended_members/extended_field_in_template/Compound.h
     ${ZSERIO_GEN_DIR}/extended_members/extended_field_in_template/ExtendedCompound.cpp
@@ -22,6 +27,11 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/extended_members/extended_field_in_template/ExtendedSimple.h
     ${ZSERIO_GEN_DIR}/extended_members/extended_field_in_template/Original.cpp
     ${ZSERIO_GEN_DIR}/extended_members/extended_field_in_template/Original.h
+
+    ${ZSERIO_GEN_DIR}/extended_members/extended_indexed_offsets/Original.cpp
+    ${ZSERIO_GEN_DIR}/extended_members/extended_indexed_offsets/Original.h
+    ${ZSERIO_GEN_DIR}/extended_members/extended_indexed_offsets/Extended.cpp
+    ${ZSERIO_GEN_DIR}/extended_members/extended_indexed_offsets/Extended.h
 
     ${ZSERIO_GEN_DIR}/extended_members/extended_optional_parameterized_field/Extended.cpp
     ${ZSERIO_GEN_DIR}/extended_members/extended_optional_parameterized_field/Extended.h
@@ -73,7 +83,9 @@ add_custom_test(extended_members
     SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ExtendedChoiceFieldTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ExtendedCompoundFieldTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ExtendedEmptyStructureTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ExtendedFieldInTemplateTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ExtendedIndexedOffsetsTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ExtendedOptionalParameterizedFieldTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ExtendedSimpleFieldTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ExtendedUnalignedFieldTest.cpp

@@ -1051,14 +1051,26 @@ ${I}${field.typeInfo.typeFullName} <#t>
 <#macro compound_init_packing_context_field field index indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.isPackable && !field.array??>
-        <#if field.optional??>
+        <#if field.isExtended>
+${I}if (${field.isPresentIndicatorName}())
+${I}{
+        <@compound_init_packing_context_field_optional field, index, indent + 1/>
+${I}}
+        <#else>
+    <@compound_init_packing_context_field_optional field, index, indent/>
+        </#if>
+    </#if>
+</#macro>
+
+<#macro compound_init_packing_context_field_optional field index indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.optional??>
 ${I}if (<@field_optional_condition field/>)
 ${I}{
         <@compound_init_packing_context_field_inner field, index, indent+1/>
 ${I}}
-        <#else>
+    <#else>
     <@compound_init_packing_context_field_inner field, index, indent/>
-        </#if>
     </#if>
 </#macro>
 
@@ -1218,11 +1230,12 @@ ${I}<@compound_field_packing_context_node field, index/>.getContext().init<<@arr
     <#return false>
 </#function>
 
-<#function needs_extended_fields_info fieldList>
+<#function num_extended_fields fieldList>
+    <#local numExtended=0/>
     <#list fieldList as field>
         <#if field.isExtended>
-            <#return true>
+            <#local numExtended=numExtended+1/>
         </#if>
     </#list>
-    <#return false>
+    <#return numExtended>
 </#function>

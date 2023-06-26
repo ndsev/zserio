@@ -15,6 +15,10 @@ namespace multiple_extended_fields_various_types
 {
 
 using allocator_type = Extended2::allocator_type;
+using string_type = zserio::string<allocator_type>;
+template <typename T>
+using vector_type = zserio::vector<T, allocator_type>;
+using BitBuffer = zserio::BasicBitBuffer<zserio::RebindAlloc<allocator_type, uint8_t>>;
 
 class MultipleExtendedFieldsVariousTypesTest : public ::testing::Test
 {
@@ -121,7 +125,7 @@ protected:
         bitSize += zserio::bitSizeOfVarSize(EXTENDED_VALUE5);
         bitSize = zserio::alignTo(8, bitSize);
         bitSize += std::accumulate(EXTENDED_VALUE_6.begin(), EXTENDED_VALUE_6.end(), static_cast<size_t>(0),
-                [](size_t size, const std::string& str)
+                [](size_t size, const string_type& str)
                 {
                     return size + zserio::bitSizeOfString(str);
                 });
@@ -136,10 +140,10 @@ protected:
 
     static constexpr int8_t VALUE = -13;
     static constexpr uint32_t EXTENDED_VALUE1 = 42;
-    static const zserio::BitBuffer EXTENDED_VALUE2;
-    static const std::vector<uint8_t> EXTENDED_VALUE3;
+    static const BitBuffer EXTENDED_VALUE2;
+    static const vector_type<uint8_t> EXTENDED_VALUE3;
     static constexpr uint32_t EXTENDED_VALUE5 = 3;
-    static const std::vector<std::string> EXTENDED_VALUE_6;
+    static const vector_type<string_type> EXTENDED_VALUE_6;
     static constexpr uint64_t EXTENDED_VALUE9 = 7; // bit<EXTENDED_VALUE5> == bit<3>
 
     static const size_t ORIGINAL_BIT_SIZE;
@@ -149,11 +153,11 @@ protected:
 
 constexpr int8_t MultipleExtendedFieldsVariousTypesTest::VALUE;
 constexpr uint32_t MultipleExtendedFieldsVariousTypesTest::EXTENDED_VALUE1;
-const zserio::BitBuffer MultipleExtendedFieldsVariousTypesTest::EXTENDED_VALUE2 =
-        zserio::BitBuffer({ 0xCA, 0xFE }, 16);
-const std::vector<uint8_t> MultipleExtendedFieldsVariousTypesTest::EXTENDED_VALUE3 = { 0xDE, 0xAD };
+const BitBuffer MultipleExtendedFieldsVariousTypesTest::EXTENDED_VALUE2 =
+        BitBuffer({ 0xCA, 0xFE }, 16);
+const vector_type<uint8_t> MultipleExtendedFieldsVariousTypesTest::EXTENDED_VALUE3 = { 0xDE, 0xAD };
 constexpr uint32_t MultipleExtendedFieldsVariousTypesTest::EXTENDED_VALUE5;
-const std::vector<std::string> MultipleExtendedFieldsVariousTypesTest::EXTENDED_VALUE_6 =
+const vector_type<string_type> MultipleExtendedFieldsVariousTypesTest::EXTENDED_VALUE_6 =
         { "this", "is", "test" };
 constexpr uint64_t MultipleExtendedFieldsVariousTypesTest::EXTENDED_VALUE9;
 
@@ -171,12 +175,12 @@ TEST_F(MultipleExtendedFieldsVariousTypesTest, defaultConstructor)
     // default constructed
     ASSERT_FALSE(extended2.isExtendedValue1Set());
     ASSERT_FALSE(extended2.isExtendedValue1Used());
-    ASSERT_EQ(zserio::BitBuffer(), extended2.getExtendedValue2());
-    ASSERT_EQ(std::vector<uint8_t>(), extended2.getExtendedValue3());
+    ASSERT_EQ(BitBuffer(), extended2.getExtendedValue2());
+    ASSERT_EQ(vector_type<uint8_t>(), extended2.getExtendedValue3());
     ASSERT_FALSE(extended2.isExtendedValue4Set());
     ASSERT_FALSE(extended2.isExtendedValue4Used());
     ASSERT_EQ(0, extended2.getExtendedValue5());
-    ASSERT_EQ(std::vector<std::string>(), extended2.getExtendedValue6());
+    ASSERT_EQ(vector_type<string_type>(), extended2.getExtendedValue6());
     ASSERT_FALSE(extended2.getExtendedValue7().isInitialized());
     ASSERT_FALSE(extended2.isExtendedValue8Set());
     ASSERT_FALSE(extended2.isExtendedValue8Used());
@@ -282,12 +286,12 @@ TEST_F(MultipleExtendedFieldsVariousTypesTest, writeOriginalReadExtended2)
     // extended fields are default constructed
     ASSERT_FALSE(readExtended2.isExtendedValue1Set());
     ASSERT_FALSE(readExtended2.isExtendedValue1Used());
-    ASSERT_EQ(zserio::BitBuffer(), readExtended2.getExtendedValue2());
-    ASSERT_EQ(std::vector<uint8_t>(), readExtended2.getExtendedValue3());
+    ASSERT_EQ(BitBuffer(), readExtended2.getExtendedValue2());
+    ASSERT_EQ(vector_type<uint8_t>(), readExtended2.getExtendedValue3());
     ASSERT_FALSE(readExtended2.isExtendedValue4Set());
     ASSERT_FALSE(readExtended2.isExtendedValue4Used());
     ASSERT_EQ(0, readExtended2.getExtendedValue5());
-    ASSERT_EQ(std::vector<std::string>(), readExtended2.getExtendedValue6());
+    ASSERT_EQ(vector_type<string_type>(), readExtended2.getExtendedValue6());
     ASSERT_FALSE(readExtended2.getExtendedValue7().isInitialized());
     ASSERT_FALSE(readExtended2.isExtendedValue8Set());
     ASSERT_FALSE(readExtended2.isExtendedValue8Used());
@@ -336,7 +340,7 @@ TEST_F(MultipleExtendedFieldsVariousTypesTest, writeExtended1ReadExtended2)
     ASSERT_FALSE(readExtended2.isExtendedValue4Set());
     ASSERT_FALSE(readExtended2.isExtendedValue4Used());
     ASSERT_EQ(0, readExtended2.getExtendedValue5());
-    ASSERT_EQ(std::vector<std::string>(), readExtended2.getExtendedValue6());
+    ASSERT_EQ(vector_type<string_type>(), readExtended2.getExtendedValue6());
     ASSERT_FALSE(readExtended2.getExtendedValue7().isInitialized());
     ASSERT_FALSE(readExtended2.isExtendedValue8Set());
     ASSERT_FALSE(readExtended2.isExtendedValue8Used());
@@ -363,18 +367,20 @@ TEST_F(MultipleExtendedFieldsVariousTypesTest, writeExtended1ReadExtended2)
 
     checkCopyAndMove(readExtended2, true, false);
 
-    // any setter makes all values present!
+    // setter of actually present field will not make all fields present
     Extended2 readExtended2Setter2 = readExtended2;
     readExtended2Setter2.setExtendedValue2(EXTENDED_VALUE2); // set value from Extended1
     readExtended2Setter2.initializeChildren();
-    checkAllExtendedFieldsPresent(readExtended2Setter2, true);
+    checkExtended1FieldsPresent(readExtended2Setter2, true);
+    checkExtended2FieldsPresent(readExtended2Setter2, false);
 
+    // setter of non-present field will make all fields present
     Extended2 readExtended2Setter5 = readExtended2;
     readExtended2Setter5.setExtendedValue5(EXTENDED_VALUE5); // set value from Extended2
     readExtended2Setter5.initializeChildren();
     checkAllExtendedFieldsPresent(readExtended2Setter5, true);
 
-    checkCopyAndMove(readExtended2Setter2, true, true);
+    checkCopyAndMove(readExtended2Setter2, true, false);
     checkCopyAndMove(readExtended2Setter5, true, true);
 }
 

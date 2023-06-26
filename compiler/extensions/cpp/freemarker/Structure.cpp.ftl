@@ -32,6 +32,10 @@
 <@user_includes cppUserIncludes, false/>
 <@namespace_begin package.path/>
 
+<#assign numExtendedFields=num_extended_fields(fieldList)>
+<#function extended_field_index numFields numExtendedFields fieldIndex>
+    <#return fieldIndex - (numFields - numExtendedFields)>
+</#function>
 <#macro field_default_constructor_arguments field>
     <#if field.initializer??>
         <#-- cannot be compound or array since it has initializer! -->
@@ -262,7 +266,8 @@ void ${name}::initializeChildren()
 void ${name}::${field.setterName}(<@field_raw_cpp_argument_type_name field/> <@field_argument_name field/>)
 {
         <#if field.isExtended>
-    m_numPresentFields = ${fieldList?size};
+    if (!${field.isPresentIndicatorName}())
+        m_numExtendedFields = ${numExtendedFields};
         </#if>
     <@field_member_name field/> = <@compound_setter_field_value field/>;
 }
@@ -272,7 +277,7 @@ void ${name}::${field.setterName}(<@field_raw_cpp_argument_type_name field/> <@f
 void ${name}::${field.setterName}(<@field_raw_cpp_type_name field/>&& <@field_argument_name field/>)
 {
         <#if field.isExtended>
-    m_numPresentFields = ${fieldList?size};
+    m_numExtendedFields = ${numExtendedFields};
         </#if>
     <@field_member_name field/> = <@compound_setter_field_rvalue field/>;
 }
@@ -281,7 +286,7 @@ void ${name}::${field.setterName}(<@field_raw_cpp_type_name field/>&& <@field_ar
     <#if field.isExtended>
 bool ${name}::${field.isPresentIndicatorName}() const
 {
-    return m_numPresentFields > ${field?index};
+    return m_numExtendedFields > ${extended_field_index(fieldList?size, numExtendedFields, field?index)};
 }
 
     </#if>
@@ -300,7 +305,7 @@ bool ${name}::${field.optional.isSetIndicatorName}() const
 void ${name}::${field.optional.resetterName}()
 {
             <#if field.isExtended>
-    m_numPresentFields = ${fieldList?size};
+    m_numExtendedFields = ${numExtendedFields};
             </#if>
     <@field_member_name field/>.reset();
 }
@@ -505,7 +510,7 @@ void ${name}::write(${types.packingContextNode.name}&<#rt>
         return <#if !field.typeInfo.isSimple><@field_member_type_name field/>(</#if><#rt>
                 <#lt><@field_default_constructor_arguments field/><#if !field.typeInfo.isSimple>)</#if>;
     }
-    m_numPresentFields = ${field?index + 1};
+    ++m_numExtendedFields;
     in.alignTo(UINT32_C(8));
 
     </#if>
@@ -526,7 +531,7 @@ void ${name}::write(${types.packingContextNode.name}&<#rt>
         return <#if !field.typeInfo.isSimple><@field_member_type_name field/>(</#if><#rt>
                 <#lt><@field_default_constructor_arguments field/><#if !field.typeInfo.isSimple>)</#if>;
     }
-    m_numPresentFields = ${field?index + 1};
+    ++m_numExtendedFields;
     in.alignTo(UINT32_C(8));
 
     </#if>

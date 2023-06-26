@@ -13,6 +13,7 @@ namespace multiple_extended_fields
 {
 
 using allocator_type = Extended2::allocator_type;
+using string_type = zserio::string<allocator_type>;
 
 class MultipleExtendedFieldsTest : public ::testing::Test
 {
@@ -47,14 +48,14 @@ protected:
         ASSERT_EQ(extended2, moveAssignedExtended2);
     }
 
-    static const std::string DEFAULT_EXTENDED_VALUE2;
+    static const string_type DEFAULT_EXTENDED_VALUE2;
 
     static const size_t ORIGINAL_BIT_SIZE;
     static const size_t EXTENDED1_BIT_SIZE;
     static const size_t EXTENDED2_BIT_SIZE;
 };
 
-const std::string MultipleExtendedFieldsTest::DEFAULT_EXTENDED_VALUE2 = "test";
+const string_type MultipleExtendedFieldsTest::DEFAULT_EXTENDED_VALUE2 = "test";
 
 const size_t MultipleExtendedFieldsTest::ORIGINAL_BIT_SIZE = 4 * 8;
 const size_t MultipleExtendedFieldsTest::EXTENDED1_BIT_SIZE = ORIGINAL_BIT_SIZE + 4;
@@ -77,13 +78,13 @@ TEST_F(MultipleExtendedFieldsTest, defaultConstructor)
 
 TEST_F(MultipleExtendedFieldsTest, fieldConstructor)
 {
-    Extended2 extended2(42, 2, "other");
+    Extended2 extended2(42, 2, string_type("other"));
     ASSERT_TRUE(extended2.isExtendedValue1Present());
     ASSERT_TRUE(extended2.isExtendedValue2Present());
 
     ASSERT_EQ(42, extended2.getValue());
     ASSERT_EQ(2, extended2.getExtendedValue1());
-    ASSERT_EQ("other", extended2.getExtendedValue2());
+    ASSERT_EQ(string_type("other"), extended2.getExtendedValue2());
 }
 
 TEST_F(MultipleExtendedFieldsTest, operatorEquality)
@@ -102,9 +103,9 @@ TEST_F(MultipleExtendedFieldsTest, operatorEquality)
     extended1.setExtendedValue1(2);
     ASSERT_EQ(extended1, extended2);
 
-    extended1.setExtendedValue2("value");
+    extended1.setExtendedValue2(string_type("value"));
     ASSERT_FALSE(extended1 == extended2);
-    extended2.setExtendedValue2("value");
+    extended2.setExtendedValue2(string_type("value"));
     ASSERT_EQ(extended1, extended2);
 }
 
@@ -124,9 +125,9 @@ TEST_F(MultipleExtendedFieldsTest, hashCode)
     extended1.setExtendedValue1(2);
     ASSERT_EQ(extended1.hashCode(), extended2.hashCode());
 
-    extended1.setExtendedValue2("value");
+    extended1.setExtendedValue2(string_type("value"));
     ASSERT_NE(extended1.hashCode(), extended2.hashCode());
-    extended2.setExtendedValue2("value");
+    extended2.setExtendedValue2(string_type("value"));
     ASSERT_EQ(extended1.hashCode(), extended2.hashCode());
 }
 
@@ -245,32 +246,39 @@ TEST_F(MultipleExtendedFieldsTest, writeExtended1ReadExtended2)
 
     checkCopyAndMove(readExtended2, true, false);
 
-    // any setter makes all values present!
+    // setter of actually present field will not make all fields present
     Extended2 readExtended2Setter1 = readExtended2;
     readExtended2Setter1.setExtendedValue1(2);
     ASSERT_TRUE(readExtended2Setter1.isExtendedValue1Present());
-    ASSERT_TRUE(readExtended2Setter1.isExtendedValue2Present());
+    ASSERT_FALSE(readExtended2Setter1.isExtendedValue2Present());
 
+    // setter of non-present field makes all fields present
     Extended2 readExtended2Setter2 = readExtended2;
     readExtended2Setter2.setExtendedValue2(DEFAULT_EXTENDED_VALUE2);
     ASSERT_TRUE(readExtended2Setter2.isExtendedValue1Present());
     ASSERT_TRUE(readExtended2Setter2.isExtendedValue2Present());
 
+    // bit size as extended1
+    ASSERT_EQ(EXTENDED1_BIT_SIZE, readExtended2Setter1.bitSizeOf());
+
     // bit size as extended2
-    ASSERT_EQ(EXTENDED2_BIT_SIZE, readExtended2Setter1.bitSizeOf());
     ASSERT_EQ(EXTENDED2_BIT_SIZE, readExtended2Setter2.bitSizeOf());
 
+    // initialize offsets as extended1
+    ASSERT_EQ(EXTENDED1_BIT_SIZE, readExtended2Setter1.initializeOffsets(0));
+
     // initialize offsets as extended2
-    ASSERT_EQ(EXTENDED2_BIT_SIZE, readExtended2Setter1.initializeOffsets(0));
     ASSERT_EQ(EXTENDED2_BIT_SIZE, readExtended2Setter2.initializeOffsets(0));
 
-    // writes as extended2
+    // writes as extended1
     bitBuffer = zserio::serialize(readExtended2Setter1);
-    ASSERT_EQ(EXTENDED2_BIT_SIZE, bitBuffer.getBitSize());
+    ASSERT_EQ(EXTENDED1_BIT_SIZE, bitBuffer.getBitSize());
+
+    // writes as extended2
     bitBuffer = zserio::serialize(readExtended2Setter2);
     ASSERT_EQ(EXTENDED2_BIT_SIZE, bitBuffer.getBitSize());
 
-    checkCopyAndMove(readExtended2Setter1, true, true);
+    checkCopyAndMove(readExtended2Setter1, true, false);
     checkCopyAndMove(readExtended2Setter2, true, true);
 }
 
