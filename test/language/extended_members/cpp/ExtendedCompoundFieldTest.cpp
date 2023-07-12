@@ -140,7 +140,7 @@ TEST_F(ExtendedCompoundFieldTest, writeReadExtended)
     checkCopyAndMove(readExtended, true);
 }
 
-TEST_F(ExtendedCompoundFieldTest, writeOriginalReadExtened)
+TEST_F(ExtendedCompoundFieldTest, writeOriginalReadExtended)
 {
     Original original(42);
     auto bitBuffer = zserio::serialize(original);

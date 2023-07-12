@@ -96,7 +96,7 @@ protected:
         extended2.setExtendedValue3(EXTENDED_VALUE3);
         extended2.resetExtendedValue4();
         extended2.setExtendedValue5(EXTENDED_VALUE5);
-        extended2.setExtendedValue6(EXTENDED_VALUE_6);
+        extended2.setExtendedValue6(EXTENDED_VALUE6);
         extended2.getExtendedValue7().setValueU32(UINT32_MAX);
         extended2.resetExtendedValue8();
         extended2.setExtendedValue9(EXTENDED_VALUE9);
@@ -124,7 +124,7 @@ protected:
         bitSize = zserio::alignTo(8, bitSize);
         bitSize += zserio::bitSizeOfVarSize(EXTENDED_VALUE5);
         bitSize = zserio::alignTo(8, bitSize);
-        bitSize += std::accumulate(EXTENDED_VALUE_6.begin(), EXTENDED_VALUE_6.end(), static_cast<size_t>(0),
+        bitSize += std::accumulate(EXTENDED_VALUE6.begin(), EXTENDED_VALUE6.end(), static_cast<size_t>(0),
                 [](size_t size, const string_type& str)
                 {
                     return size + zserio::bitSizeOfString(str);
@@ -143,7 +143,7 @@ protected:
     static const BitBuffer EXTENDED_VALUE2;
     static const vector_type<uint8_t> EXTENDED_VALUE3;
     static constexpr uint32_t EXTENDED_VALUE5 = 3;
-    static const vector_type<string_type> EXTENDED_VALUE_6;
+    static const vector_type<string_type> EXTENDED_VALUE6;
     static constexpr uint64_t EXTENDED_VALUE9 = 7; // bit<EXTENDED_VALUE5> == bit<3>
 
     static const size_t ORIGINAL_BIT_SIZE;
@@ -157,7 +157,7 @@ const BitBuffer MultipleExtendedFieldsVariousTypesTest::EXTENDED_VALUE2 =
         BitBuffer({ 0xCA, 0xFE }, 16);
 const vector_type<uint8_t> MultipleExtendedFieldsVariousTypesTest::EXTENDED_VALUE3 = { 0xDE, 0xAD };
 constexpr uint32_t MultipleExtendedFieldsVariousTypesTest::EXTENDED_VALUE5;
-const vector_type<string_type> MultipleExtendedFieldsVariousTypesTest::EXTENDED_VALUE_6 =
+const vector_type<string_type> MultipleExtendedFieldsVariousTypesTest::EXTENDED_VALUE6 =
         { "this", "is", "test" };
 constexpr uint64_t MultipleExtendedFieldsVariousTypesTest::EXTENDED_VALUE9;
 
@@ -192,7 +192,7 @@ TEST_F(MultipleExtendedFieldsVariousTypesTest, fieldConstructor)
 {
     Union extendedValue7;
     Extended2 extended2(VALUE, EXTENDED_VALUE1, EXTENDED_VALUE2, EXTENDED_VALUE3, zserio::NullOpt,
-            EXTENDED_VALUE5, EXTENDED_VALUE_6, extendedValue7, zserio::NullOpt, EXTENDED_VALUE9);
+            EXTENDED_VALUE5, EXTENDED_VALUE6, extendedValue7, zserio::NullOpt, EXTENDED_VALUE9);
 
     checkAllExtendedFieldsPresent(extended2, true);
 
@@ -204,7 +204,7 @@ TEST_F(MultipleExtendedFieldsVariousTypesTest, fieldConstructor)
     ASSERT_FALSE(extended2.isExtendedValue4Set());
     ASSERT_FALSE(extended2.isExtendedValue4Used());
     ASSERT_EQ(EXTENDED_VALUE5, extended2.getExtendedValue5());
-    ASSERT_EQ(EXTENDED_VALUE_6, extended2.getExtendedValue6());
+    ASSERT_EQ(EXTENDED_VALUE6, extended2.getExtendedValue6());
     ASSERT_FALSE(extended2.getExtendedValue7().isInitialized());
     ASSERT_FALSE(extended2.isExtendedValue8Set());
     ASSERT_FALSE(extended2.isExtendedValue8Used());
@@ -367,6 +367,15 @@ TEST_F(MultipleExtendedFieldsVariousTypesTest, writeExtended1ReadExtended2)
 
     checkCopyAndMove(readExtended2, true, false);
 
+    // resetter of actually present optional field will not make all fields present
+    Extended2 readExtended2Setter1 = readExtended2;
+    EXPECT_TRUE(readExtended2Setter1.isExtendedValue1Set());
+    readExtended2Setter1.resetExtendedValue1(); // reset value from Extended1
+    readExtended2Setter1.initializeChildren();
+    ASSERT_FALSE(readExtended2Setter1.isExtendedValue1Set());
+    checkExtended1FieldsPresent(readExtended2Setter1, true);
+    checkExtended2FieldsPresent(readExtended2Setter1, false);
+
     // setter of actually present field will not make all fields present
     Extended2 readExtended2Setter2 = readExtended2;
     readExtended2Setter2.setExtendedValue2(EXTENDED_VALUE2); // set value from Extended1
@@ -380,6 +389,7 @@ TEST_F(MultipleExtendedFieldsVariousTypesTest, writeExtended1ReadExtended2)
     readExtended2Setter5.initializeChildren();
     checkAllExtendedFieldsPresent(readExtended2Setter5, true);
 
+    checkCopyAndMove(readExtended2Setter1, true, false);
     checkCopyAndMove(readExtended2Setter2, true, false);
     checkCopyAndMove(readExtended2Setter5, true, true);
 }

@@ -209,7 +209,7 @@ TEST_F(ExtendedFieldInTemplateTest, writeReadExtendedCompound)
     checkCopyAndMove(extended, true);
 }
 
-TEST_F(ExtendedFieldInTemplateTest, writeOriginalReadExtenedSimple)
+TEST_F(ExtendedFieldInTemplateTest, writeOriginalReadExtendedSimple)
 {
     Original original(42);
     auto bitBuffer = zserio::serialize(original);
@@ -252,7 +252,7 @@ TEST_F(ExtendedFieldInTemplateTest, writeOriginalReadExtenedSimple)
     checkCopyAndMove(readExtended, true);
 }
 
-TEST_F(ExtendedFieldInTemplateTest, writeOriginalReadExtenedCompound)
+TEST_F(ExtendedFieldInTemplateTest, writeOriginalReadExtendedCompound)
 {
     Original original(42);
     auto bitBuffer = zserio::serialize(original);

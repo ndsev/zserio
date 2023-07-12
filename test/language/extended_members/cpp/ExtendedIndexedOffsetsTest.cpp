@@ -145,7 +145,7 @@ TEST_F(ExtendedIndexedOffsetsTest, writeReadExtended)
     checkCopyAndMove(extended, true);
 }
 
-TEST_F(ExtendedIndexedOffsetsTest, writeOriginalReadExtened)
+TEST_F(ExtendedIndexedOffsetsTest, writeOriginalReadExtended)
 {
     Original original(OFFSETS);
     auto bitBuffer = zserio::serialize(original);

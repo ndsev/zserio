@@ -181,7 +181,7 @@ TEST_F(ExtendedOptionalParameterizedFieldTest, writeReadExtendedWithOptional)
     checkCopyAndMove(extended, true);
 }
 
-TEST_F(ExtendedOptionalParameterizedFieldTest, writeOriginalReadExtened)
+TEST_F(ExtendedOptionalParameterizedFieldTest, writeOriginalReadExtended)
 {
     Original original(static_cast<uint16_t>(ARRAY.size()));
     auto bitBuffer = zserio::serialize(original);

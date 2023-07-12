@@ -127,7 +127,7 @@ TEST_F(ExtendedSimpleFieldTest, writeReadExtended)
     checkCopyAndMove(extended, true);
 }
 
-TEST_F(ExtendedSimpleFieldTest, writeOriginalReadExtened)
+TEST_F(ExtendedSimpleFieldTest, writeOriginalReadExtended)
 {
     Original original(42);
     auto bitBuffer = zserio::serialize(original);

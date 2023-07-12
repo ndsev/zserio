@@ -128,7 +128,7 @@ TEST_F(ExtendedUnalignedFieldTest, writeReadExtended)
     checkCopyAndMove(extended, true);
 }
 
-TEST_F(ExtendedUnalignedFieldTest, writeOriginalReadExtened)
+TEST_F(ExtendedUnalignedFieldTest, writeOriginalReadExtended)
 {
     Original original(2);
     auto bitBuffer = zserio::serialize(original);

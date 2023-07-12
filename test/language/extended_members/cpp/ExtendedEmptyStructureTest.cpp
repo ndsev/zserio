@@ -116,7 +116,7 @@ TEST_F(ExtendedEmptyStructureTest, writeReadExtended)
     checkCopyAndMove(extended, true);
 }
 
-TEST_F(ExtendedEmptyStructureTest, writeOriginalReadExtened)
+TEST_F(ExtendedEmptyStructureTest, writeOriginalReadExtended)
 {
     Original original;
     auto bitBuffer = zserio::serialize(original);

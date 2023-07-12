@@ -305,7 +305,8 @@ bool ${name}::${field.optional.isSetIndicatorName}() const
 void ${name}::${field.optional.resetterName}()
 {
             <#if field.isExtended>
-    m_numExtendedFields = ${numExtendedFields};
+    if (!${field.isPresentIndicatorName}())
+        m_numExtendedFields = ${numExtendedFields};
             </#if>
     <@field_member_name field/>.reset();
 }
