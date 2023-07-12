@@ -46,6 +46,12 @@ class GeneratedSymbolsErrorTest(unittest.TestCase):
         compileErroneousZserio(__file__,
                                "generated_symbols/structure_is_used_indicator_property_clash_error.zs",
                                cls.errors)
+        compileErroneousZserio(__file__,
+                               "generated_symbols/structure_is_present_indicator_function_clash_error.zs",
+                               cls.errors)
+        compileErroneousZserio(__file__,
+                               "generated_symbols/structure_is_present_indicator_property_clash_error.zs",
+                               cls.errors)
         compileErroneousZserio(__file__, "generated_symbols/structure_public_method_property_clash_error.zs",
                                cls.errors)
         compileErroneousZserio(__file__, "generated_symbols/template_invalid_property_name_private_error.zs",
@@ -228,6 +234,26 @@ class GeneratedSymbolsErrorTest(unittest.TestCase):
             [
                 ":6:12: Property name 'is_field_used' generated for symbol 'isFieldUsed' " +
                 "clashes with generated indicator for optional field 'field' defined at 5:21!",
+                "[ERROR] Python Generator: Property name clash detected!"
+            ]
+        )
+
+    def testStructureIsPresentIndicatorFunctionClash(self):
+        assertErrorsPresent(self,
+            "generated_symbols/structure_is_present_indicator_function_clash_error.zs",
+            [
+                ":7:19: Function name 'is_field_present' generated for symbol 'isFieldPresent' " +
+                "clashes with generated indicator for optional field 'field' defined at 5:19!",
+                "[ERROR] Python Generator: Function name clash detected!"
+            ]
+        )
+
+    def testStructureIsPresentIndicatorPropertyClash(self):
+        assertErrorsPresent(self,
+            "generated_symbols/structure_is_present_indicator_property_clash_error.zs",
+            [
+                ":6:19: Property name 'is_field_present' generated for symbol 'isFieldPresent' " +
+                "clashes with generated indicator for optional field 'field' defined at 5:19!",
                 "[ERROR] Python Generator: Property name clash detected!"
             ]
         )
