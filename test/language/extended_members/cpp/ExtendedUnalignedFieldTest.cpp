@@ -92,9 +92,9 @@ TEST_F(ExtendedUnalignedFieldTest, hashCode)
     Extended extended2;
     ASSERT_EQ(extended1.hashCode(), extended2.hashCode());
 
-    extended1.setValue(13);
+    extended1.setValue(2);
     ASSERT_NE(extended1.hashCode(), extended2.hashCode());
-    extended2.setValue(13);
+    extended2.setValue(2);
     ASSERT_EQ(extended1.hashCode(), extended2.hashCode());
 
     extended2.setExtendedValue(42);

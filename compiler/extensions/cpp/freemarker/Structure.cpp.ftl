@@ -23,7 +23,7 @@
 <#if has_field_with_constraint(fieldList)>
 #include <zserio/ConstraintException.h>
 </#if>
-<#if (withReflectionCode && has_non_simple_parameter(compoundParametersData))> 
+<#if (withReflectionCode && has_non_simple_parameter(compoundParametersData))>
 #include <functional>
 </#if>
 <@system_includes cppSystemIncludes/>
@@ -277,7 +277,8 @@ void ${name}::${field.setterName}(<@field_raw_cpp_argument_type_name field/> <@f
 void ${name}::${field.setterName}(<@field_raw_cpp_type_name field/>&& <@field_argument_name field/>)
 {
         <#if field.isExtended>
-    m_numExtendedFields = ${numExtendedFields};
+    if (!${field.isPresentIndicatorName}())
+        m_numExtendedFields = ${numExtendedFields};
         </#if>
     <@field_member_name field/> = <@compound_setter_field_rvalue field/>;
 }

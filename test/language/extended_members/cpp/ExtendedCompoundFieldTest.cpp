@@ -54,7 +54,8 @@ protected:
 const vector_type<uint32_t> ExtendedCompoundFieldTest::COMPOUND_ARRAY = { 0, 1, 2, 3, 4 };
 
 const size_t ExtendedCompoundFieldTest::ORIGINAL_BIT_SIZE = 4 * 8;
-const size_t ExtendedCompoundFieldTest::EXTENDED_BIT_SIZE_DEFAULT = 4 * 8 + zserio::bitSizeOfVarSize(0);
+const size_t ExtendedCompoundFieldTest::EXTENDED_BIT_SIZE_DEFAULT = ORIGINAL_BIT_SIZE +
+        zserio::bitSizeOfVarSize(0);
 const size_t ExtendedCompoundFieldTest::EXTENDED_BIT_SIZE_WITH_ARRAY = ORIGINAL_BIT_SIZE +
         zserio::bitSizeOfVarSize(zserio::convertSizeToUInt32(COMPOUND_ARRAY.size())) +
         COMPOUND_ARRAY.size() * 4 * 8;

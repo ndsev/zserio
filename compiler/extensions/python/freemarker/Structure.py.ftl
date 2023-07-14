@@ -31,7 +31,7 @@ class ${name}:
         None<#t>
         </#if>
     </#if>
-</#macro> 
+</#macro>
 <#if constructorAnnotatedParamList?has_content || fieldList?has_content>
     def __init__(
             self<#if constructorAnnotatedParamList?has_content>,

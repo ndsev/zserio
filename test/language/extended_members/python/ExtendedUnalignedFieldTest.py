@@ -43,9 +43,9 @@ class ExtendedUnalignedFieldTest(unittest.TestCase):
         extended2 = self.api.Extended()
         self.assertEqual(hash(extended1), hash(extended2))
 
-        extended1.value = 13
+        extended1.value = 2
         self.assertNotEqual(hash(extended1), hash(extended2))
-        extended2.value = 13
+        extended2.value = 2
         self.assertEqual(hash(extended1), hash(extended2))
 
         extended2.extended_value = 42

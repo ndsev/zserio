@@ -222,5 +222,5 @@ DEFAULT_EXTENDED_VALUE2 = "test"
 
 ORIGINAL_BIT_SIZE = 4 * 8
 EXTENDED1_BIT_SIZE = ORIGINAL_BIT_SIZE + 4
-EXTENDED2_BIT_SIZE = (zserio.bitposition.alignto(8, (EXTENDED1_BIT_SIZE)) +
+EXTENDED2_BIT_SIZE = (zserio.bitposition.alignto(8, EXTENDED1_BIT_SIZE) +
                       zserio.bitsizeof.bitsizeof_string(DEFAULT_EXTENDED_VALUE2))

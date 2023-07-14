@@ -18,9 +18,13 @@
 <#if withCodeComments && docComments??>
 <@doc_comments docComments/>
 </#if>
+<#assign numExtendedFields=num_extended_fields(fieldList)>
+<#function extended_field_index numFields numExtendedFields fieldIndex>
+    <#return fieldIndex - (numFields - numExtendedFields)>
+</#function>
 public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </#if>zserio.runtime.SizeOf
 {
-    <@compound_constructors compoundConstructorsData/>
+    <@compound_constructors compoundConstructorsData, numExtendedFields/>
 <#if withWriterCode && fieldList?has_content>
     <#assign constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData/></#assign>
     <#if withCodeComments>
@@ -187,6 +191,10 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
     public void ${field.setterName}(${field.typeInfo.typeFullName} <@field_argument_name field/>)
     {
         <@range_check field.rangeCheckData, name/>
+        <#if field.isExtended>
+        if (!${field.isPresentIndicatorName}())
+            this.numExtendedFields = ${numExtendedFields};
+        </#if>
         <#if field.array??>
             <#assign rawArray><@field_argument_name field/></#assign>
             <#if field.optional??>
@@ -204,6 +212,20 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
         <#else>
         this.<@field_member_name field/> = <@field_argument_name field/>;
         </#if>
+    }
+
+    </#if>
+    <#if field.isExtended>
+        <#if withCodeComments>
+    /**
+     * Checks if the extended field ${field.name} is present.
+     *
+     * @return True if the extended field ${field.name} is present, otherwise false.
+     */
+        </#if>
+    public boolean ${field.isPresentIndicatorName}()
+    {
+        return numExtendedFields > ${extended_field_index(fieldList?size, numExtendedFields, field?index)};
     }
 
     </#if>
@@ -240,7 +262,11 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
             </#if>
     public void ${field.optional.resetterName}()
     {
-        <@field_member_name field/> = null;
+            <#if field.isExtended>
+        if (!${field.isPresentIndicatorName}())
+            this.numExtendedFields = ${numExtendedFields};
+            </#if>
+        this.<@field_member_name field/> = null;
     }
 
         </#if>
@@ -310,7 +336,17 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
     {
 <#if fieldList?has_content>
     <#list fieldList as field>
+        <#if field.isExtended>
+    if (zserio.runtime.BitPositionUtil.alignTo(java.lang.Byte.SIZE, in.getBitPosition()) < in.getBufferBitSize())
+    {
+        ++this.numExtendedFields;
+        in.alignTo(java.lang.Byte.SIZE);
+
+        <@compound_read_field field, name, 3/>
+    }
+        <#else>
     <@compound_read_field field, name, 2/>
+        </#if>
         <#if field_has_next>
 
         </#if>
@@ -339,7 +375,17 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
     {
 <#if fieldList?has_content>
     <#list fieldList as field>
+        <#if field.isExtended>
+    if (zserio.runtime.BitPositionUtil.alignTo(java.lang.Byte.SIZE, in.getBitPosition()) < in.getBufferBitSize())
+    {
+        ++this.numExtendedFields;
+        in.alignTo(java.lang.Byte.SIZE);
+
+        <@compound_read_field field, name, 3, true, field?index/>
+    }
+        <#else>
     <@compound_read_field field, name, 2, true, field?index/>
+        </#if>
         <#if field_has_next>
 
         </#if>
@@ -441,6 +487,9 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
 
 </#if>
 <@compound_parameter_members compoundParametersData/>
+<#if (numExtendedFields > 0)>
+    private int numExtendedFields;
+</#if>
 <#macro field_java_type_member_name field>
     <#if field.array??>
         ${field.array.wrapperJavaTypeName}<#t>

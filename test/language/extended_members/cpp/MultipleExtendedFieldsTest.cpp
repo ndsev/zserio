@@ -59,7 +59,7 @@ const string_type MultipleExtendedFieldsTest::DEFAULT_EXTENDED_VALUE2 = "test";
 
 const size_t MultipleExtendedFieldsTest::ORIGINAL_BIT_SIZE = 4 * 8;
 const size_t MultipleExtendedFieldsTest::EXTENDED1_BIT_SIZE = ORIGINAL_BIT_SIZE + 4;
-const size_t MultipleExtendedFieldsTest::EXTENDED2_BIT_SIZE = zserio::alignTo(8, (EXTENDED1_BIT_SIZE)) +
+const size_t MultipleExtendedFieldsTest::EXTENDED2_BIT_SIZE = zserio::alignTo(8, EXTENDED1_BIT_SIZE) +
         zserio::bitSizeOfString(DEFAULT_EXTENDED_VALUE2);
 
 TEST_F(MultipleExtendedFieldsTest, defaultConstructor)

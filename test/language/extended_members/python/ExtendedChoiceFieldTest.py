@@ -90,7 +90,7 @@ class ExtendedChoiceFieldTest(unittest.TestCase):
 
         readExtended = zserio.deserialize(self.api.Extended, bitBuffer)
         self.assertFalse(readExtended.is_extended_value_present())
-        self.assertFalse(extended == readExtended)
+        self.assertNotEqual(extended, readExtended)
 
     def testWriteReadExtendedValue(self):
         extended = self.api.Extended(1, self.api.Choice(1))

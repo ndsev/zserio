@@ -523,7 +523,7 @@ ${I}                                        f"<{lowerbound}, {upperbound}>!")
 <#macro compound_init_packing_context_field field index indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.isPackable && !field.array??>
-        <#if field.isExtended> 
+        <#if field.isExtended>
 ${I}if self.${field.isPresentIndicatorName}():
         <@compound_init_packing_context_field_optional field, index, indent+1/>
         <#else>

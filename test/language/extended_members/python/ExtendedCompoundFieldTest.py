@@ -121,7 +121,7 @@ class ExtendedCompoundFieldTest(unittest.TestCase):
 
 COMPOUND_ARRAY = [ 0, 1, 2, 3, 4 ]
 ORIGINAL_BIT_SIZE = 4 * 8
-EXTENDED_BIT_SIZE_DEFAULT = 4 * 8 + zserio.bitsizeof.bitsizeof_varsize(0)
+EXTENDED_BIT_SIZE_DEFAULT = ORIGINAL_BIT_SIZE + zserio.bitsizeof.bitsizeof_varsize(0)
 EXTENDED_BIT_SIZE_WITH_ARRAY = (ORIGINAL_BIT_SIZE +
                                 zserio.bitsizeof.bitsizeof_varsize(len(COMPOUND_ARRAY)) +
                                 len(COMPOUND_ARRAY) * 4 * 8)
