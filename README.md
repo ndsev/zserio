@@ -66,70 +66,7 @@ powerful low-level access.
 It features simple and compound data structures and provides advanced features for controlling at design time
 what writers will be able to fill in.
 
-Although it does not have a wire format, we have added some convenience keywords lately that encapsulate some
-functionality. You can find more information on [Zserio Invisibles](doc/ZserioInvisibles.md).
-
-## Quick Sample
-
-The following shows a sample of data (schema) which describe employee using Zserio language:
-
-```
-package tutorial;
-
-struct Employee
-{
-    uint8   age;
-    string  name;
-    uint16  salary;
-    Role    role;
-};
-
-enum uint8 Role
-{
-    DEVELOPER = 0,
-    TEAM_LEAD = 1,
-    CTO       = 2,
-};
-```
-
-If we use the schema above and serialize one employee with
-
-- age = 32
-- name = Joe Smith
-- salary = 5000 $
-- role = DEVELOPER
-
-the resulting binary stream looks like the following:
-
-```
-Offset(d) 00 01 02 03 04 05 06 07 08 09 10 11 12 13
-
-00000000  20 09 4A 6F 65 20 53 6D 69 74 68 13 88 00
-```
-
-Byte position | value             | value (hex)                | comment
-------------- | ----------------- | -------------------------- | -----------------------
-0             | 32 (age)          | 20                         | `uint8` is fixed size 8 bit value
-1             | 9 (string length) | 09                         | string length is encoded in `varsize` field before actual string
-2-10          | Joe Smith         | 4A 6F 65 20 53 6D 69 74 68 | UTF-8 encoded string
-11-12         | 5000              | 13 88                      | `uint16` always uses 2 bytes
-13            | 0                 | 00                         | enum is of size `uint8` so it uses 1 byte
-
-and the resulting text stream (JSON) looks like the following:
-
-```
-{
-    "age": 32,
-    "name": "Joe Smith",
-    "salary": 5000,
-    "role": "DEVELOPER"
-}
-```
-
-Please note that in contrast to other serialization mechanisms Zserio supports as well variable integers which
-do not provide the full range of values but rather stick to the indicated size. Example: a `varuint64` will be
-using max 8 bytes whilst not providing the full range of a `uint64_t` but a `varuint` will be using max
-9 bytes and providing the full range of a `uint64_t`.
+Zserio does have a very simple wire format described at [Zserio Encoding Guide](doc/ZserioEncodingGuide.md).
 
 ## Quick Start
 
@@ -170,10 +107,10 @@ based on [Streamlit](https://streamlit.io).
 Documentation of the schema language can be found in the
 [Zserio Language Overview](doc/ZserioLanguageOverview.md).
 
-Explanation of more hidden schema language features can be found in the
-[Zserio Invisibles](doc/ZserioInvisibles.md).
-
 Schema language reference can be found in [Quick Reference](doc/ZserioQuickReference.md).
+
+Explanation how zserio encodes data to the wire can be found in the
+[Zserio Encoding Guide](doc/ZserioEncodingGuide.md).
 
 User Guide can be found in the [Zserio Compiler User Guide](doc/ZserioUserGuide.md).
 
