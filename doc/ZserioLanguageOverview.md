@@ -103,15 +103,6 @@ These types correspond to unsigned or signed integers represented as sequences o
 respectively. Negative values are represented in two's complement, i.e. the hex byte FF is 255 as `uint8`
 or -1 as `int8`.
 
-The default byte order is big endian. Thus, for multi-byte integers, the most significant byte comes first.
-Within each byte, the most significant bit comes first.
-
-
-**Example**
-
-The byte stream `02 01` (hex) interpreted as `int16` has the decimal value 513. As a bit stream, this looks
-like `0000 0010 0000 0001`. Bit 0 is `0`, bit 15 is `1`.
-
 ### Bit Field Types
 
 #### Unsigned Bit Field Types
@@ -247,9 +238,8 @@ struct TestStructure
 
 ### String Type
 
-A String type is denoted by `string`. It is represented by a length field (stored as a `varsize`) followed by
-a sequence of bytes (8 bits) in UTF-8 encoding. The string type allows a reader to skip the byte sequence since
-its length is known upfront.
+A String type is denoted by `string`. It is represented by a length field followed by a sequence of bytes
+in UTF-8 encoding. The string type allows a reader to skip the byte sequence since its length is known upfront.
 
 **Example**
 ```
@@ -263,7 +253,7 @@ struct TestStructure
 
 External type is a zserio built-in type which format is not known by zserio. It is handled as arbitrary bit
 sequence which is passed to application for further processing. It is denoted by zserio keyword `extern`. It is
-represented by a number of bits (stored as a `varsize`) followed by a bit sequence.
+represented by a number of bits followed by a bit sequence.
 
 **Example**
 ```
@@ -281,7 +271,7 @@ struct StructureWithExternalField
 ### Bytes Type
 
 Bytes type is a zserio built-in type for raw bytes sequences. It is denoted by zserio keyword `bytes`. It is
-represented by a number of bytes (stored as a `varsize`) followed by a byte sequence.
+represented by a number of bytes followed by a byte sequence.
 
 **Example**
 ```
@@ -372,7 +362,7 @@ In the example above, `EXECUTABLE` is auto-assigned to 1, `READABLE` is manually
 `WRITABLE` is assigned by finding the first unused bit to value 4.
 
 A bitmask type provides its own lexical scope. The member names must be unique within each bitmask type.
-In expressions outside of the defining type, bitmask members must alway be prefixed by the type name and a dot,
+In expressions outside of the defining type, bitmask members must always be prefixed by the type name and a dot,
 e.g. `Permission.WRITABLE`.
 
 Bitmasks support all basic bit operations:
@@ -427,11 +417,6 @@ struct MyStructure
 };
 ```
 
-This type has a total length of 16 bits or 2 bytes. As a bit stream, bits 0-3 correspond to member `a`,
-bits 4-11 represent an unsigned integer `b`, followed by member `c` in bits 12-15. Note that member `b`
-overlaps a byte boundary, when the entire type is byte aligned. But `MyStructure` may also be embedded into
-another type where it may not be byte-aligned.
-
 ### Choice Types
 
 A choice type depends on a _selector expression_ following the `on` keyword. Each branch of the choice type is
@@ -442,10 +427,10 @@ will directly select the branch labeled with a literal value equal to the select
 ```
 choice VarCoordXY(uint8 width) on width
 {
-    case  8: CoordXY8  coord8;
-    case 16: CoordXY16 coord16;
-    case 24: CoordXY24 coord24;
-    case 32: CoordXY32 coord32;
+    case  8: bit:8  coord8;
+    case 16: bit:16 coord16;
+    case 24: bit:24 coord24;
+    case 32: bit:32 coord32;
 };
 ```
 
@@ -482,8 +467,7 @@ choice AreaAttributes(AreaType type) on type
 An union type corresponds to exactly one of its members, which are also called branches. Union type is
 an automatic choice type, which automatically handles the selector according to the last used branch
 (i.e. last called setter). The selector is stored in a bitstream automatically before the union branch
-data to allow selection of the proper branch during parsing. Position of the selector in bitstream is
-implementation defined.
+data to allow selection of the proper branch during parsing.
 
 When a specific handling of selector is needed (e.g. when the selector is already known in a parent),
 it might be better to use choice types instead of unions.
@@ -911,9 +895,6 @@ offsets[@index]: // implies align(8) before each data[i]
     bit:5   data[2];
 };
 ```
-
-The size of the `IndexedBit5Array` type will be 64+1+7+5+3+5=85 bits. The size of offset array `data` will be
-5+3+5=13 bits.
 
 [top](#language-guide)
 
