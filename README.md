@@ -21,8 +21,8 @@
 Zserio is a framework for serializing structured data with a compact and efficient way with low overhead.
 
 You can define your structured data in [Zserio language](doc/ZserioLanguageOverview.md) and then you can use
-special generated source code in [several languages](#language-support) to easily write and read your data to and from a binary or
-text stream.
+special generated source code in [several languages](#language-support) to easily write and read your data to
+and from a [binary](doc/ZserioEncodingGuide.md) or [text](doc/ZserioJsonGuide.md) stream.
 
 No time to read? Go to the [quick start](#quick-start) or [download latest release](https://github.com/ndsev/zserio/releases/latest).
 
@@ -68,6 +68,9 @@ what writers will be able to fill in.
 
 Zserio does have a very simple wire format described at [Zserio Encoding Guide](doc/ZserioEncodingGuide.md).
 
+Zserio supports as well serialization and deserialization in JSON format described at
+[Zserio JSON Guide](doc/ZserioJsonGuide.md).
+
 ## Quick Start
 
 To be able to serialize data with Zserio, you have to follow these basic steps:
@@ -109,8 +112,11 @@ Documentation of the schema language can be found in the
 
 Schema language reference can be found in [Quick Reference](doc/ZserioQuickReference.md).
 
-Explanation how zserio encodes data to the wire can be found in the
+Explanation how zserio encodes data to the wire format can be found in the
 [Zserio Encoding Guide](doc/ZserioEncodingGuide.md).
+
+Explanation how zserio encodes data to the JSON format can be found in the
+[Zserio JSON Guide](doc/ZserioJsonGuide.md).
 
 User Guide can be found in the [Zserio Compiler User Guide](doc/ZserioUserGuide.md).
 
