@@ -383,6 +383,15 @@ TEST_F(MultipleExtendedFieldsVariousTypesTest, writeExtended1ReadExtended2)
     checkExtended1FieldsPresent(readExtended2Setter2, true);
     checkExtended2FieldsPresent(readExtended2Setter2, false);
 
+    // r-value setter of actually present field will not make all fields present
+    Extended2 readExtended2RvalueSetter2 = readExtended2;
+    {
+        BitBuffer extendedValue2 = EXTENDED_VALUE2;
+        readExtended2RvalueSetter2.setExtendedValue2(std::move(extendedValue2));
+    }
+    checkExtended1FieldsPresent(readExtended2RvalueSetter2, true);
+    checkExtended2FieldsPresent(readExtended2RvalueSetter2, false);
+
     // setter of non-present field will make all fields present
     Extended2 readExtended2Setter5 = readExtended2;
     readExtended2Setter5.setExtendedValue5(EXTENDED_VALUE5); // set value from Extended2
