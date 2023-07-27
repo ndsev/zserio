@@ -101,6 +101,7 @@ const ::zserio::ITypeInfo& ReflectableUtilChoice::typeInfo()
             ::zserio::makeStringView("array"), // schemaName
             ::zserio::BuiltinTypeInfo<allocator_type>::getUInt32(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer

@@ -109,6 +109,7 @@ const ::zserio::ITypeInfo& ReflectableUtilObject::typeInfo()
             ::zserio::makeStringView("choiceParam"), // schemaName
             ::zserio::BuiltinTypeInfo<allocator_type>::getUInt8(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
@@ -124,6 +125,7 @@ const ::zserio::ITypeInfo& ReflectableUtilObject::typeInfo()
             ::zserio::makeStringView("reflectableUtilChoice"), // schemaName
             ::test_object::std_allocator::ReflectableUtilChoice::typeInfo(), // typeInfo
             reflectableUtilChoiceTypeArguments, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer

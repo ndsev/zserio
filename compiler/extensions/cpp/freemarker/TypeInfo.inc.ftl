@@ -120,6 +120,7 @@ ${I}    <@field_info_type_arguments_var_name field/>, // typeArguments
     <#else>
 ${I}    {}, // typeArguments
     </#if>
+${I}    <#if field.isExtended>true<#else>false</#if>, // isExtended
 ${I}    <#if field.alignmentValue??>::zserio::makeStringView("${field.alignmentValue}")<#else>{}</#if>, // alignment
 ${I}    <#if field.offset??>::zserio::makeStringView("${field.offset.getter}")<#else>{}</#if>, // offset
 <#-- We need to use j_string builtin here because initializer can be string literal with quotes. -->

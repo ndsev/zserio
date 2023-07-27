@@ -101,3 +101,14 @@ choice Choice(Selector selector) on selector
         return unionField.bitmaskField;
     }
 };
+
+struct Original
+{
+    uint32 field;
+};
+
+struct Extended
+{
+    uint32 field;
+    extend string extendedField;
+};

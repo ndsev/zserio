@@ -21,6 +21,7 @@ public class FieldInfo
      * @param setterName Field setter name.
      * @param typeInfo Field type info.
      * @param typeArguments Field type arguments.
+     * @param isExtended Flag whether the field is extended.
      * @param alignment Field alignment or null in case of no alignment.
      * @param offset Field offset or null in case of no offset.
      * @param initializer Field initializer or null in case of no initializer.
@@ -35,7 +36,7 @@ public class FieldInfo
      * @param isImplicit Flag whether the field is an implicit array.
      */
     public FieldInfo(String schemaName, String getterName, String setterName, TypeInfo typeInfo,
-            List<BiFunction<Object, Integer, Object>> typeArguments, IntSupplier alignment,
+            List<BiFunction<Object, Integer, Object>> typeArguments, boolean isExtended, IntSupplier alignment,
             BiFunction<Object, Integer, Object> offset, Supplier<Object> initializer, boolean isOptional,
             Predicate<Object> optionalCondition, String isUsedIndicatorName, String isSetIndicatorName,
             Predicate<Object> constraint, boolean isArray, ToIntFunction<Object> arrayLength,
@@ -46,6 +47,7 @@ public class FieldInfo
         this.setterName = setterName;
         this.typeInfo = typeInfo;
         this.typeArguments = typeArguments;
+        this.isExtended = isExtended;
         this.alignment = alignment;
         this.offset = offset;
         this.initializer = initializer;
@@ -108,6 +110,16 @@ public class FieldInfo
     public List<BiFunction<Object, Integer, Object>> getTypeArguments()
     {
         return Collections.unmodifiableList(typeArguments);
+    }
+
+    /**
+     * Gets whether the field is extended.
+     *
+     * @return True if the field is extended, false otherwise.
+     */
+    public boolean isExtended()
+    {
+        return isExtended;
     }
 
     /**
@@ -235,6 +247,7 @@ public class FieldInfo
     private final String setterName;
     private final TypeInfo typeInfo;
     private final List<BiFunction<Object, Integer, Object>> typeArguments;
+    private final boolean isExtended;
     private final IntSupplier alignment;
     private final BiFunction<Object, Integer, Object> offset;
     private final Supplier<Object> initializer;
@@ -245,6 +258,6 @@ public class FieldInfo
     private final Predicate<Object> constraint;
     private final boolean isArray;
     private final ToIntFunction<Object> arrayLength;
-    boolean isPacked;
-    boolean isImplicit;
+    private final boolean isPacked;
+    private final boolean isImplicit;
 }

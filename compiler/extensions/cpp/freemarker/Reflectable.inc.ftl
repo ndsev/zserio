@@ -46,6 +46,10 @@ ${I}{
     <#list fieldList as field>
 ${I}    if (name == ::zserio::makeStringView("${field.name}"))
 ${I}    {
+        <#if field.isExtended>
+${I}        if (!m_object.${field.isPresentIndicatorName}())
+${I}            return nullptr;
+        </#if>
         <#if field.optional??>
             <#if withWriterCode>
 ${I}        if (!m_object.${field.optional.isSetIndicatorName}())

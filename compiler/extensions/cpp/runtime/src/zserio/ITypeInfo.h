@@ -357,18 +357,19 @@ template <typename ALLOC = std::allocator<uint8_t>>
 struct BasicFieldInfo
 {
     BasicFieldInfo(StringView schemaName_, const IBasicTypeInfo<ALLOC>& typeInfo_,
-            Span<const StringView> typeArguments_, StringView alignment_, StringView offset_,
+            Span<const StringView> typeArguments_, bool isExtended_, StringView alignment_, StringView offset_,
             StringView initializer_, bool isOptional_, StringView optionalCondition_,
             StringView constraint_, bool isArray_, StringView arrayLength_, bool isPacked_ ,bool isImplicit_) :
-            schemaName(schemaName_), typeInfo(typeInfo_), typeArguments(typeArguments_), alignment(alignment_),
-            offset(offset_), initializer(initializer_), isOptional(isOptional_),
-            optionalCondition(optionalCondition_), constraint(constraint_), isArray(isArray_),
-            arrayLength(arrayLength_), isPacked(isPacked_), isImplicit(isImplicit_)
+            schemaName(schemaName_), typeInfo(typeInfo_), typeArguments(typeArguments_),
+            isExtended(isExtended_), alignment(alignment_), offset(offset_), initializer(initializer_),
+            isOptional(isOptional_), optionalCondition(optionalCondition_), constraint(constraint_),
+            isArray(isArray_), arrayLength(arrayLength_), isPacked(isPacked_), isImplicit(isImplicit_)
     {}
 
     StringView schemaName; /**< field schema name */
     const IBasicTypeInfo<ALLOC>& typeInfo; /**< reference to type information for a field type */
     Span<const StringView> typeArguments; /**< sequence of field type arguments */
+    bool isExtended; /**< true if field is extended */
     StringView alignment; /**< field alignment or empty in case of no alignment */
     StringView offset; /**< field offset or empty in case of no alignment */
     StringView initializer; /**< field initializer or empty in case of no alignment */

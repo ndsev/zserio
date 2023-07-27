@@ -190,6 +190,7 @@ const ::zserio::ITypeInfo& CreatorObject::typeInfo()
             ::zserio::makeStringView("value"), // schemaName
             ::zserio::BuiltinTypeInfo<allocator_type>::getUInt32(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
@@ -205,6 +206,7 @@ const ::zserio::ITypeInfo& CreatorObject::typeInfo()
             ::zserio::makeStringView("nested"), // schemaName
             ::test_object::std_allocator::CreatorNested::typeInfo(), // typeInfo
             nestedTypeArguments, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
@@ -220,6 +222,7 @@ const ::zserio::ITypeInfo& CreatorObject::typeInfo()
             ::zserio::makeStringView("text"), // schemaName
             ::zserio::BuiltinTypeInfo<allocator_type>::getString(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
@@ -235,6 +238,7 @@ const ::zserio::ITypeInfo& CreatorObject::typeInfo()
             ::zserio::makeStringView("nestedArray"), // schemaName
             ::test_object::std_allocator::CreatorNested::typeInfo(), // typeInfo
             nestedArrayTypeArguments, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
@@ -250,6 +254,7 @@ const ::zserio::ITypeInfo& CreatorObject::typeInfo()
             ::zserio::makeStringView("textArray"), // schemaName
             ::zserio::BuiltinTypeInfo<allocator_type>::getString(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
@@ -265,6 +270,7 @@ const ::zserio::ITypeInfo& CreatorObject::typeInfo()
             ::zserio::makeStringView("externArray"), // schemaName
             ::zserio::BuiltinTypeInfo<allocator_type>::getBitBuffer(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
@@ -280,6 +286,7 @@ const ::zserio::ITypeInfo& CreatorObject::typeInfo()
             ::zserio::makeStringView("bytesArray"), // schemaName
             ::zserio::BuiltinTypeInfo<allocator_type>::getBytes(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
@@ -295,6 +302,7 @@ const ::zserio::ITypeInfo& CreatorObject::typeInfo()
             ::zserio::makeStringView("optionalBool"), // schemaName
             ::zserio::BuiltinTypeInfo<allocator_type>::getBool(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
@@ -310,6 +318,7 @@ const ::zserio::ITypeInfo& CreatorObject::typeInfo()
             ::zserio::makeStringView("optionalNested"), // schemaName
             ::test_object::std_allocator::CreatorNested::typeInfo(), // typeInfo
             optionalNestedTypeArguments, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
@@ -1109,10 +1118,10 @@ bool CreatorObject::operator==(const CreatorObject& other) const
                 (m_text_ == other.m_text_) &&
                 (m_nestedArray_ == other.m_nestedArray_) &&
                 (m_textArray_ == other.m_textArray_) &&
-                ((!isExternArrayUsed()) ? !other.isExternArrayUsed() : (m_externArray_ == other.m_externArray_)) &&
-                ((!isBytesArrayUsed()) ? !other.isBytesArrayUsed() : (m_bytesArray_ == other.m_bytesArray_)) &&
-                ((!isOptionalBoolUsed()) ? !other.isOptionalBoolUsed() : (m_optionalBool_ == other.m_optionalBool_)) &&
-                ((!isOptionalNestedUsed()) ? !other.isOptionalNestedUsed() : (m_optionalNested_ == other.m_optionalNested_));
+                (!isExternArrayUsed() ? !other.isExternArrayUsed() : (m_externArray_ == other.m_externArray_)) &&
+                (!isBytesArrayUsed() ? !other.isBytesArrayUsed() : (m_bytesArray_ == other.m_bytesArray_)) &&
+                (!isOptionalBoolUsed() ? !other.isOptionalBoolUsed() : (m_optionalBool_ == other.m_optionalBool_)) &&
+                (!isOptionalNestedUsed() ? !other.isOptionalNestedUsed() : (m_optionalNested_ == other.m_optionalNested_));
     }
 
     return true;

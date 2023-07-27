@@ -183,6 +183,7 @@ protected:
         checkSimpleStruct(simpleStructField.typeInfo);
 
         ASSERT_EQ(0, simpleStructField.typeArguments.size());
+        ASSERT_EQ(false, simpleStructField.isExtended);
         ASSERT_EQ(""_sv, simpleStructField.alignment);
         ASSERT_EQ(""_sv, simpleStructField.offset);
         ASSERT_EQ(""_sv, simpleStructField.initializer);
@@ -201,6 +202,7 @@ protected:
         checkComplexStruct(complexStructField.typeInfo);
 
         ASSERT_EQ(0, complexStructField.typeArguments.size());
+        ASSERT_EQ(false, complexStructField.isExtended);
         ASSERT_EQ(""_sv, complexStructField.alignment);
         ASSERT_EQ(""_sv, complexStructField.offset);
         ASSERT_EQ(""_sv, complexStructField.initializer);
@@ -220,6 +222,7 @@ protected:
 
         ASSERT_EQ(1, parameterizedStructField.typeArguments.size());
         ASSERT_EQ("getSimpleStruct()"_sv, parameterizedStructField.typeArguments[0]);
+        ASSERT_EQ(false, parameterizedStructField.isExtended);
         ASSERT_EQ(""_sv, parameterizedStructField.alignment);
         ASSERT_EQ(""_sv, parameterizedStructField.offset);
         ASSERT_EQ(""_sv, parameterizedStructField.initializer);
@@ -238,6 +241,7 @@ protected:
         checkRecursiveStruct(recursiveStructField.typeInfo);
 
         ASSERT_EQ(0, recursiveStructField.typeArguments.size());
+        ASSERT_EQ(false, recursiveStructField.isExtended);
         ASSERT_EQ(""_sv, recursiveStructField.alignment);
         ASSERT_EQ(""_sv, recursiveStructField.offset);
         ASSERT_EQ(""_sv, recursiveStructField.initializer);
@@ -256,6 +260,7 @@ protected:
         checkRecursiveUnion(recursiveUnion.typeInfo);
 
         ASSERT_EQ(0, recursiveUnion.typeArguments.size());
+        ASSERT_EQ(false, recursiveUnion.isExtended);
         ASSERT_EQ(""_sv, recursiveUnion.alignment);
         ASSERT_EQ(""_sv, recursiveUnion.offset);
         ASSERT_EQ(""_sv, recursiveUnion.initializer);
@@ -276,6 +281,7 @@ protected:
         ASSERT_EQ(2, recursiveChoice.typeArguments.size());
         ASSERT_EQ("true"_sv, recursiveChoice.typeArguments[0]);
         ASSERT_EQ("false"_sv, recursiveChoice.typeArguments[1]);
+        ASSERT_EQ(false, recursiveChoice.isExtended);
         ASSERT_EQ(""_sv, recursiveChoice.alignment);
         ASSERT_EQ(""_sv, recursiveChoice.offset);
         ASSERT_EQ(""_sv, recursiveChoice.initializer);
@@ -294,6 +300,7 @@ protected:
         checkTestEnum(selectorField.typeInfo);
 
         ASSERT_EQ(0, selectorField.typeArguments.size());
+        ASSERT_EQ(false, selectorField.isExtended);
         ASSERT_EQ(""_sv, selectorField.alignment);
         ASSERT_EQ(""_sv, selectorField.offset);
         ASSERT_EQ(""_sv, selectorField.initializer);
@@ -313,6 +320,7 @@ protected:
 
         ASSERT_EQ(1, simpleChoiceField.typeArguments.size());
         ASSERT_EQ("getSelector()"_sv, simpleChoiceField.typeArguments[0]);
+        ASSERT_EQ(false, simpleChoiceField.isExtended);
         ASSERT_EQ(""_sv, simpleChoiceField.alignment);
         ASSERT_EQ(""_sv, simpleChoiceField.offset);
         ASSERT_EQ(""_sv, simpleChoiceField.initializer);
@@ -331,6 +339,7 @@ protected:
         checkTS32(templatedStructField.typeInfo);
 
         ASSERT_EQ(0, templatedStructField.typeArguments.size());
+        ASSERT_EQ(false, templatedStructField.isExtended);
         ASSERT_EQ(""_sv, templatedStructField.alignment);
         ASSERT_EQ(""_sv, templatedStructField.offset);
         ASSERT_EQ(""_sv, templatedStructField.initializer);
@@ -350,6 +359,7 @@ protected:
 
         ASSERT_EQ(1, templatedParameterizedStructField.typeArguments.size());
         ASSERT_EQ("getTemplatedStruct()"_sv, templatedParameterizedStructField.typeArguments[0]);
+        ASSERT_EQ(false, templatedParameterizedStructField.isExtended);
         ASSERT_EQ(""_sv, templatedParameterizedStructField.alignment);
         ASSERT_EQ(""_sv, templatedParameterizedStructField.offset);
         ASSERT_EQ(""_sv, templatedParameterizedStructField.initializer);
@@ -370,6 +380,7 @@ protected:
         ASSERT_EQ(zserio::CppType::BIT_BUFFER, externDataField.typeInfo.getCppType());
 
         ASSERT_EQ(0, externDataField.typeArguments.size());
+        ASSERT_EQ(false, externDataField.isExtended);
         ASSERT_EQ(""_sv, externDataField.alignment);
         ASSERT_EQ(""_sv, externDataField.offset);
         ASSERT_EQ(""_sv, externDataField.initializer);
@@ -390,6 +401,7 @@ protected:
         ASSERT_EQ(zserio::CppType::BIT_BUFFER, externArrayField.typeInfo.getCppType());
 
         ASSERT_EQ(0, externArrayField.typeArguments.size());
+        ASSERT_EQ(false, externArrayField.isExtended);
         ASSERT_EQ(""_sv, externArrayField.alignment);
         ASSERT_EQ(""_sv, externArrayField.offset);
         ASSERT_EQ(""_sv, externArrayField.initializer);
@@ -410,6 +422,7 @@ protected:
         ASSERT_EQ(zserio::CppType::BYTES, bytesDataField.typeInfo.getCppType());
 
         ASSERT_EQ(0, bytesDataField.typeArguments.size());
+        ASSERT_EQ(false, bytesDataField.isExtended);
         ASSERT_EQ(""_sv, bytesDataField.alignment);
         ASSERT_EQ(""_sv, bytesDataField.offset);
         ASSERT_EQ(""_sv, bytesDataField.initializer);
@@ -430,6 +443,7 @@ protected:
         ASSERT_EQ(zserio::CppType::BYTES, bytesArrayField.typeInfo.getCppType());
 
         ASSERT_EQ(0, bytesArrayField.typeArguments.size());
+        ASSERT_EQ(true, bytesArrayField.isExtended);
         ASSERT_EQ(""_sv, bytesArrayField.alignment);
         ASSERT_EQ(""_sv, bytesArrayField.offset);
         ASSERT_EQ(""_sv, bytesArrayField.initializer);
@@ -451,6 +465,7 @@ protected:
         ASSERT_EQ(32, implicitArrayField.typeInfo.getBitSize());
 
         ASSERT_EQ(0, implicitArrayField.typeArguments.size());
+        ASSERT_EQ(true, implicitArrayField.isExtended);
         ASSERT_EQ(""_sv, implicitArrayField.alignment);
         ASSERT_EQ(""_sv, implicitArrayField.offset);
         ASSERT_EQ(""_sv, implicitArrayField.initializer);
@@ -488,6 +503,7 @@ protected:
         ASSERT_EQ(32, fieldU32Field.typeInfo.getBitSize());
 
         ASSERT_EQ(0, fieldU32Field.typeArguments.size());
+        ASSERT_EQ(false, fieldU32Field.isExtended);
         ASSERT_EQ("8"_sv, fieldU32Field.alignment);
         ASSERT_EQ(""_sv, fieldU32Field.offset);
         ASSERT_EQ("10"_sv, fieldU32Field.initializer);
@@ -509,6 +525,7 @@ protected:
         ASSERT_EQ(32, fieldOffsetField.typeInfo.getBitSize());
 
         ASSERT_EQ(0, fieldOffsetField.typeArguments.size());
+        ASSERT_EQ(false, fieldOffsetField.isExtended);
         ASSERT_EQ(""_sv, fieldOffsetField.alignment);
         ASSERT_EQ(""_sv, fieldOffsetField.offset);
         ASSERT_EQ(""_sv, fieldOffsetField.initializer);
@@ -529,6 +546,7 @@ protected:
         ASSERT_EQ(zserio::CppType::STRING, fieldStringField.typeInfo.getCppType());
 
         ASSERT_EQ(0, fieldStringField.typeArguments.size());
+        ASSERT_EQ(false, fieldStringField.isExtended);
         ASSERT_EQ(""_sv, fieldStringField.alignment);
         ASSERT_EQ("getFieldOffset()"_sv, fieldStringField.offset);
         ASSERT_EQ("::zserio::makeStringView(\"MyString\")"_sv, fieldStringField.initializer);
@@ -550,6 +568,7 @@ protected:
         ASSERT_EQ(1, fieldBoolField.typeInfo.getBitSize());
 
         ASSERT_EQ(0, fieldBoolField.typeArguments.size());
+        ASSERT_EQ(false, fieldBoolField.isExtended);
         ASSERT_EQ(""_sv, fieldBoolField.alignment);
         ASSERT_EQ(""_sv, fieldBoolField.offset);
         ASSERT_EQ("false"_sv, fieldBoolField.initializer);
@@ -571,6 +590,7 @@ protected:
         ASSERT_EQ(16, fieldFloat16Field.typeInfo.getBitSize());
 
         ASSERT_EQ(0, fieldFloat16Field.typeArguments.size());
+        ASSERT_EQ(false, fieldFloat16Field.isExtended);
         ASSERT_EQ(""_sv, fieldFloat16Field.alignment);
         ASSERT_EQ(""_sv, fieldFloat16Field.offset);
         ASSERT_EQ("1.0f"_sv, fieldFloat16Field.initializer);
@@ -592,6 +612,7 @@ protected:
         ASSERT_EQ(32, fieldFloat32Field.typeInfo.getBitSize());
 
         ASSERT_EQ(0, fieldFloat32Field.typeArguments.size());
+        ASSERT_EQ(false, fieldFloat32Field.isExtended);
         ASSERT_EQ(""_sv, fieldFloat32Field.alignment);
         ASSERT_EQ(""_sv, fieldFloat32Field.offset);
         ASSERT_EQ(""_sv, fieldFloat32Field.initializer);
@@ -613,6 +634,7 @@ protected:
         ASSERT_EQ(64, fieldFloat64Field.typeInfo.getBitSize());
 
         ASSERT_EQ(0, fieldFloat64Field.typeArguments.size());
+        ASSERT_EQ(false, fieldFloat64Field.isExtended);
         ASSERT_EQ(""_sv, fieldFloat64Field.alignment);
         ASSERT_EQ(""_sv, fieldFloat64Field.offset);
         ASSERT_EQ("2.0"_sv, fieldFloat64Field.initializer);
@@ -656,6 +678,7 @@ protected:
         checkSimpleStruct(simpleStructField.typeInfo);
 
         ASSERT_EQ(0, simpleStructField.typeArguments.size());
+        ASSERT_EQ(false, simpleStructField.isExtended);
         ASSERT_EQ(""_sv, simpleStructField.alignment);
         ASSERT_EQ(""_sv, simpleStructField.offset);
         ASSERT_EQ(""_sv, simpleStructField.initializer);
@@ -674,6 +697,7 @@ protected:
         checkSimpleStruct(anotherSimpleStructField.typeInfo);
 
         ASSERT_EQ(0, anotherSimpleStructField.typeArguments.size());
+        ASSERT_EQ(false, anotherSimpleStructField.isExtended);
         ASSERT_EQ(""_sv, anotherSimpleStructField.alignment);
         ASSERT_EQ(""_sv, anotherSimpleStructField.offset);
         ASSERT_EQ(""_sv, anotherSimpleStructField.initializer);
@@ -692,6 +716,7 @@ protected:
         checkSimpleStruct(optionalSimpleStructField.typeInfo);
 
         ASSERT_EQ(0, optionalSimpleStructField.typeArguments.size());
+        ASSERT_EQ(false, optionalSimpleStructField.isExtended);
         ASSERT_EQ(""_sv, optionalSimpleStructField.alignment);
         ASSERT_EQ(""_sv, optionalSimpleStructField.offset);
         ASSERT_EQ(""_sv, optionalSimpleStructField.initializer);
@@ -713,6 +738,7 @@ protected:
         ASSERT_EQ(32, arrayField.typeInfo.getBitSize());
 
         ASSERT_EQ(0, arrayField.typeArguments.size());
+        ASSERT_EQ(false, arrayField.isExtended);
         ASSERT_EQ(""_sv, arrayField.alignment);
         ASSERT_EQ(""_sv, arrayField.offset);
         ASSERT_EQ(""_sv, arrayField.initializer);
@@ -734,6 +760,7 @@ protected:
         ASSERT_EQ(5, arrayWithLenField.typeInfo.getBitSize());
 
         ASSERT_EQ(0, arrayWithLenField.typeArguments.size());
+        ASSERT_EQ(false, arrayWithLenField.isExtended);
         ASSERT_EQ(""_sv, arrayWithLenField.alignment);
         ASSERT_EQ(""_sv, arrayWithLenField.offset);
         ASSERT_EQ(""_sv, arrayWithLenField.initializer);
@@ -754,6 +781,7 @@ protected:
         ASSERT_EQ(1, paramStructArrayField.typeArguments.size());
         ASSERT_EQ("((index % 2) == 0) ? getSimpleStruct() : getAnotherSimpleStruct()"_sv,
                 paramStructArrayField.typeArguments[0]);
+        ASSERT_EQ(false, paramStructArrayField.isExtended);
         ASSERT_EQ(""_sv, paramStructArrayField.alignment);
         ASSERT_EQ(""_sv, paramStructArrayField.offset);
         ASSERT_EQ(""_sv, paramStructArrayField.initializer);
@@ -775,6 +803,7 @@ protected:
 
         ASSERT_EQ(1, dynamicBitFieldField.typeArguments.size());
         ASSERT_EQ("getSimpleStruct().getFieldU32()"_sv, dynamicBitFieldField.typeArguments[0]);
+        ASSERT_EQ(false, dynamicBitFieldField.isExtended);
         ASSERT_EQ(""_sv, dynamicBitFieldField.alignment);
         ASSERT_EQ(""_sv, dynamicBitFieldField.offset);
         ASSERT_EQ(""_sv, dynamicBitFieldField.initializer);
@@ -798,6 +827,7 @@ protected:
         ASSERT_EQ(1, dynamicBitFieldArrayField.typeArguments.size());
         ASSERT_EQ("getDynamicBitField() * 2"_sv,
                 dynamicBitFieldArrayField.typeArguments[0]);
+        ASSERT_EQ(false, dynamicBitFieldArrayField.isExtended);
         ASSERT_EQ(""_sv, dynamicBitFieldArrayField.alignment);
         ASSERT_EQ(""_sv, dynamicBitFieldArrayField.offset);
         ASSERT_EQ(""_sv, dynamicBitFieldArrayField.initializer);
@@ -816,6 +846,7 @@ protected:
         checkTestEnum(optionalEnumField.typeInfo);
 
         ASSERT_EQ(0, optionalEnumField.typeArguments.size());
+        ASSERT_EQ(false, optionalEnumField.isExtended);
         ASSERT_EQ(""_sv, optionalEnumField.alignment);
         ASSERT_EQ(""_sv, optionalEnumField.offset);
         ASSERT_EQ(""_sv, optionalEnumField.initializer);
@@ -834,6 +865,7 @@ protected:
         checkTestBitmask(optionalBitmaskField.typeInfo);
 
         ASSERT_EQ(0, optionalBitmaskField.typeArguments.size());
+        ASSERT_EQ(false, optionalBitmaskField.isExtended);
         ASSERT_EQ(""_sv, optionalBitmaskField.alignment);
         ASSERT_EQ(""_sv, optionalBitmaskField.offset);
         ASSERT_EQ(""_sv, optionalBitmaskField.initializer);
@@ -854,6 +886,7 @@ protected:
         ASSERT_EQ(zserio::CppType::BIT_BUFFER, optionalExternField.typeInfo.getCppType());
 
         ASSERT_EQ(0, optionalExternField.typeArguments.size());
+        ASSERT_EQ(false, optionalExternField.isExtended);
         ASSERT_EQ(""_sv, optionalExternField.alignment);
         ASSERT_EQ(""_sv, optionalExternField.offset);
         ASSERT_EQ(""_sv, optionalExternField.initializer);
@@ -874,6 +907,7 @@ protected:
         ASSERT_EQ(zserio::CppType::BYTES, optionalBytesField.typeInfo.getCppType());
 
         ASSERT_EQ(0, optionalBytesField.typeArguments.size());
+        ASSERT_EQ(false, optionalBytesField.isExtended);
         ASSERT_EQ(""_sv, optionalBytesField.alignment);
         ASSERT_EQ(""_sv, optionalBytesField.offset);
         ASSERT_EQ(""_sv, optionalBytesField.initializer);
@@ -892,6 +926,7 @@ protected:
         checkTestEnum(enumArrayField.typeInfo);
 
         ASSERT_EQ(0, enumArrayField.typeArguments.size());
+        ASSERT_EQ(false, enumArrayField.isExtended);
         ASSERT_EQ(""_sv, enumArrayField.alignment);
         ASSERT_EQ(""_sv, enumArrayField.offset);
         ASSERT_EQ(""_sv, enumArrayField.initializer);
@@ -910,6 +945,7 @@ protected:
         checkTestBitmask(bitmaskArrayField.typeInfo);
 
         ASSERT_EQ(0, bitmaskArrayField.typeArguments.size());
+        ASSERT_EQ(false, bitmaskArrayField.isExtended);
         ASSERT_EQ(""_sv, bitmaskArrayField.alignment);
         ASSERT_EQ(""_sv, bitmaskArrayField.offset);
         ASSERT_EQ(""_sv, bitmaskArrayField.initializer);
@@ -954,6 +990,7 @@ protected:
         ASSERT_EQ(8, arrayField.typeInfo.getBitSize());
 
         ASSERT_EQ(0, arrayField.typeArguments.size());
+        ASSERT_EQ(false, arrayField.isExtended);
         ASSERT_EQ(""_sv, arrayField.alignment);
         ASSERT_EQ(""_sv, arrayField.offset);
         ASSERT_EQ(""_sv, arrayField.initializer);
@@ -991,6 +1028,7 @@ protected:
         ASSERT_EQ(32, fieldU32Field.typeInfo.getBitSize());
 
         ASSERT_EQ(0, fieldU32Field.typeArguments.size());
+        ASSERT_EQ(false, fieldU32Field.isExtended);
         ASSERT_EQ(""_sv, fieldU32Field.alignment);
         ASSERT_EQ(""_sv, fieldU32Field.offset);
         ASSERT_EQ(""_sv, fieldU32Field.initializer);
@@ -1012,6 +1050,7 @@ protected:
         ASSERT_EQ(typeInfo.getFields().data(), fieldRecursion.typeInfo.getFields().data());
 
         ASSERT_EQ(0, fieldRecursion.typeArguments.size());
+        ASSERT_EQ(false, fieldRecursion.isExtended);
         ASSERT_EQ(""_sv, fieldRecursion.alignment);
         ASSERT_EQ(""_sv, fieldRecursion.offset);
         ASSERT_EQ(""_sv, fieldRecursion.initializer);
@@ -1033,6 +1072,7 @@ protected:
         ASSERT_EQ(typeInfo.getFields().data(), arrayRecursion.typeInfo.getFields().data());
 
         ASSERT_EQ(0, arrayRecursion.typeArguments.size());
+        ASSERT_EQ(false, arrayRecursion.isExtended);
         ASSERT_EQ(""_sv, arrayRecursion.alignment);
         ASSERT_EQ(""_sv, arrayRecursion.offset);
         ASSERT_EQ(""_sv, arrayRecursion.initializer);
@@ -1064,6 +1104,7 @@ protected:
         ASSERT_EQ(32, fieldU32Field.typeInfo.getBitSize());
 
         ASSERT_EQ(0, fieldU32Field.typeArguments.size());
+        ASSERT_EQ(false, fieldU32Field.isExtended);
         ASSERT_EQ(""_sv, fieldU32Field.alignment);
         ASSERT_EQ(""_sv, fieldU32Field.offset);
         ASSERT_EQ(""_sv, fieldU32Field.initializer);
@@ -1085,6 +1126,7 @@ protected:
         ASSERT_EQ(typeInfo.getFields().data(), recursive.typeInfo.getFields().data());
 
         ASSERT_EQ(0, recursive.typeArguments.size());
+        ASSERT_EQ(false, recursive.isExtended);
         ASSERT_EQ(""_sv, recursive.alignment);
         ASSERT_EQ(""_sv, recursive.offset);
         ASSERT_EQ(""_sv, recursive.initializer);
@@ -1137,6 +1179,7 @@ protected:
         ASSERT_EQ(2, recursive.typeArguments.size());
         ASSERT_EQ("getParam2()"_sv, recursive.typeArguments[0]);
         ASSERT_EQ("false"_sv, recursive.typeArguments[1]);
+        ASSERT_EQ(false, recursive.isExtended);
         ASSERT_EQ(""_sv, recursive.alignment);
         ASSERT_EQ(""_sv, recursive.offset);
         ASSERT_EQ(""_sv, recursive.initializer);
@@ -1158,6 +1201,7 @@ protected:
         ASSERT_EQ(32, fieldU32Field.typeInfo.getBitSize());
 
         ASSERT_EQ(0, fieldU32Field.typeArguments.size());
+        ASSERT_EQ(false, fieldU32Field.isExtended);
         ASSERT_EQ(""_sv, fieldU32Field.alignment);
         ASSERT_EQ(""_sv, fieldU32Field.offset);
         ASSERT_EQ(""_sv, fieldU32Field.initializer);
@@ -1240,6 +1284,7 @@ protected:
         checkSimpleUnion(fieldTwoField.typeInfo);
 
         ASSERT_EQ(0, fieldTwoField.typeArguments.size());
+        ASSERT_EQ(false, fieldTwoField.isExtended);
         ASSERT_EQ(""_sv, fieldTwoField.alignment);
         ASSERT_EQ(""_sv, fieldTwoField.offset);
         ASSERT_EQ(""_sv, fieldTwoField.initializer);
@@ -1260,6 +1305,7 @@ protected:
         ASSERT_EQ(zserio::CppType::STRING, fieldDefaultField.typeInfo.getCppType());
 
         ASSERT_EQ(0, fieldDefaultField.typeArguments.size());
+        ASSERT_EQ(false, fieldDefaultField.isExtended);
         ASSERT_EQ(""_sv, fieldDefaultField.alignment);
         ASSERT_EQ(""_sv, fieldDefaultField.offset);
         ASSERT_EQ(""_sv, fieldDefaultField.initializer);
@@ -1324,6 +1370,7 @@ protected:
         checkTestBitmask(testBitmaskField.typeInfo);
 
         ASSERT_EQ(0, testBitmaskField.typeArguments.size());
+        ASSERT_EQ(false, testBitmaskField.isExtended);
         ASSERT_EQ(""_sv, testBitmaskField.alignment);
         ASSERT_EQ(""_sv, testBitmaskField.offset);
         ASSERT_EQ(""_sv, testBitmaskField.initializer);
@@ -1342,6 +1389,7 @@ protected:
         checkSimpleStruct(simpleStructField.typeInfo);
 
         ASSERT_EQ(0, simpleStructField.typeArguments.size());
+        ASSERT_EQ(false, simpleStructField.isExtended);
         ASSERT_EQ(""_sv, simpleStructField.alignment);
         ASSERT_EQ(""_sv, simpleStructField.offset);
         ASSERT_EQ(""_sv, simpleStructField.initializer);
@@ -1418,6 +1466,7 @@ protected:
         ASSERT_EQ(32, fieldField.typeInfo.getBitSize());
 
         ASSERT_EQ(0, fieldField.typeArguments.size());
+        ASSERT_EQ(false, fieldField.isExtended);
         ASSERT_EQ(""_sv, fieldField.alignment);
         ASSERT_EQ(""_sv, fieldField.offset);
         ASSERT_EQ(""_sv, fieldField.initializer);
@@ -1464,6 +1513,7 @@ protected:
         ASSERT_EQ(32, arrayField.typeInfo.getBitSize());
 
         ASSERT_EQ(0, arrayField.typeArguments.size());
+        ASSERT_EQ(false, arrayField.isExtended);
         ASSERT_EQ(""_sv, arrayField.alignment);
         ASSERT_EQ(""_sv, arrayField.offset);
         ASSERT_EQ(""_sv, arrayField.initializer);

@@ -142,6 +142,7 @@ const ::zserio::ITypeInfo& CreatorNested::typeInfo()
             ::zserio::makeStringView("value"), // schemaName
             ::zserio::BuiltinTypeInfo<allocator_type>::getUInt32(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
@@ -157,6 +158,7 @@ const ::zserio::ITypeInfo& CreatorNested::typeInfo()
             ::zserio::makeStringView("text"), // schemaName
             ::zserio::BuiltinTypeInfo<allocator_type>::getString(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
@@ -172,6 +174,7 @@ const ::zserio::ITypeInfo& CreatorNested::typeInfo()
             ::zserio::makeStringView("externData"), // schemaName
             ::zserio::BuiltinTypeInfo<allocator_type>::getBitBuffer(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
@@ -187,6 +190,7 @@ const ::zserio::ITypeInfo& CreatorNested::typeInfo()
             ::zserio::makeStringView("bytesData"), // schemaName
             ::zserio::BuiltinTypeInfo<allocator_type>::getBytes(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
@@ -202,6 +206,7 @@ const ::zserio::ITypeInfo& CreatorNested::typeInfo()
             ::zserio::makeStringView("creatorEnum"), // schemaName
             ::zserio::enumTypeInfo<::test_object::std_allocator::CreatorEnum, allocator_type>(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
@@ -217,6 +222,7 @@ const ::zserio::ITypeInfo& CreatorNested::typeInfo()
             ::zserio::makeStringView("creatorBitmask"), // schemaName
             ::test_object::std_allocator::CreatorBitmask::typeInfo(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer

@@ -102,7 +102,7 @@ const ::zserio::pmr::ITypeInfo& ReflectableObject::typeInfo()
     static const ::zserio::Span<::zserio::BasicTemplateArgumentInfo<allocator_type>> templateArguments;
 
     static const ::std::array<::zserio::StringView, 2> reflectableNestedTypeArguments = {
-        ::zserio::makeStringView("13"), 
+        ::zserio::makeStringView("13"),
         ::zserio::makeStringView("getStringField()")
     };
     static const ::std::array<::zserio::BasicFieldInfo<allocator_type>, 2> fields = {
@@ -110,6 +110,7 @@ const ::zserio::pmr::ITypeInfo& ReflectableObject::typeInfo()
             ::zserio::makeStringView("stringField"), // schemaName
             ::zserio::BuiltinTypeInfo<allocator_type>::getString(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
@@ -125,6 +126,7 @@ const ::zserio::pmr::ITypeInfo& ReflectableObject::typeInfo()
             ::zserio::makeStringView("reflectableNested"), // schemaName
             ::test_object::polymorphic_allocator::ReflectableNested::typeInfo(), // typeInfo
             reflectableNestedTypeArguments, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer

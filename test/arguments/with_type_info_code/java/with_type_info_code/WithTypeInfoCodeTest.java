@@ -403,6 +403,7 @@ public class WithTypeInfoCodeTest
         checkSimpleStruct(simpleStructField.getTypeInfo());
 
         assertEquals(0, simpleStructField.getTypeArguments().size());
+        assertFalse(simpleStructField.isExtended());
         assertEquals(null, simpleStructField.getAlignment());
         assertEquals(null, simpleStructField.getOffset());
         assertEquals(null, simpleStructField.getInitializer());
@@ -425,6 +426,7 @@ public class WithTypeInfoCodeTest
         checkComplexStruct(complexStructField.getTypeInfo());
 
         assertEquals(0, complexStructField.getTypeArguments().size());
+        assertFalse(complexStructField.isExtended());
         assertEquals(null, complexStructField.getAlignment());
         assertEquals(null, complexStructField.getOffset());
         assertEquals(null, complexStructField.getInitializer());
@@ -449,6 +451,7 @@ public class WithTypeInfoCodeTest
         assertEquals(1, parameterizedStructField.getTypeArguments().size());
         assertEquals(withTypeInfoCode.getSimpleStruct(),
                 parameterizedStructField.getTypeArguments().get(0).apply(withTypeInfoCode, null));
+        assertFalse(parameterizedStructField.isExtended());
         assertEquals(null, parameterizedStructField.getAlignment());
         assertEquals(null, parameterizedStructField.getOffset());
         assertEquals(null, parameterizedStructField.getInitializer());
@@ -471,6 +474,7 @@ public class WithTypeInfoCodeTest
         checkRecursiveStruct(recursiveStructField.getTypeInfo());
 
         assertEquals(0, recursiveStructField.getTypeArguments().size());
+        assertFalse(recursiveStructField.isExtended());
         assertEquals(null, recursiveStructField.getAlignment());
         assertEquals(null, recursiveStructField.getOffset());
         assertEquals(null, recursiveStructField.getInitializer());
@@ -493,6 +497,7 @@ public class WithTypeInfoCodeTest
         checkRecursiveUnion(recursiveUnion.getTypeInfo());
 
         assertEquals(0, recursiveUnion.getTypeArguments().size());
+        assertFalse(recursiveUnion.isExtended());
         assertEquals(null, recursiveUnion.getAlignment());
         assertEquals(null, recursiveUnion.getOffset());
         assertEquals(null, recursiveUnion.getInitializer());
@@ -517,6 +522,7 @@ public class WithTypeInfoCodeTest
         assertEquals(2, recursiveChoiceField.getTypeArguments().size());
         assertEquals(true, recursiveChoiceField.getTypeArguments().get(0).apply(withTypeInfoCode, null));
         assertEquals(false, recursiveChoiceField.getTypeArguments().get(1).apply(withTypeInfoCode, null));
+        assertFalse(recursiveChoiceField.isExtended());
         assertEquals(null, recursiveChoiceField.getAlignment());
         assertEquals(null, recursiveChoiceField.getOffset());
         assertEquals(null, recursiveChoiceField.getInitializer());
@@ -539,6 +545,7 @@ public class WithTypeInfoCodeTest
         checkTestEnum(selectorField.getTypeInfo());
 
         assertEquals(0, selectorField.getTypeArguments().size());
+        assertFalse(selectorField.isExtended());
         assertEquals(null, selectorField.getAlignment());
         assertEquals(null, selectorField.getOffset());
         assertEquals(null, selectorField.getInitializer());
@@ -563,6 +570,7 @@ public class WithTypeInfoCodeTest
         assertEquals(1, simpleChoiceField.getTypeArguments().size());
         assertEquals(withTypeInfoCode.getSelector(),
                 simpleChoiceField.getTypeArguments().get(0).apply(withTypeInfoCode, null));
+        assertFalse(simpleChoiceField.isExtended());
         assertEquals(null, simpleChoiceField.getAlignment());
         assertEquals(null, simpleChoiceField.getOffset());
         assertEquals(null, simpleChoiceField.getInitializer());
@@ -585,6 +593,7 @@ public class WithTypeInfoCodeTest
         checkTS32(templatedStructField.getTypeInfo());
 
         assertEquals(0, templatedStructField.getTypeArguments().size());
+        assertFalse(templatedStructField.isExtended());
         assertEquals(null, templatedStructField.getAlignment());
         assertEquals(null, templatedStructField.getOffset());
         assertEquals(null, templatedStructField.getInitializer());
@@ -609,6 +618,7 @@ public class WithTypeInfoCodeTest
         assertEquals(1, templatedParameterizedStructField.getTypeArguments().size());
         assertEquals(withTypeInfoCode.getTemplatedStruct(),
                 templatedParameterizedStructField.getTypeArguments().get(0).apply(withTypeInfoCode, null));
+        assertFalse(templatedParameterizedStructField.isExtended());
         assertEquals(null, templatedParameterizedStructField.getAlignment());
         assertEquals(null, templatedParameterizedStructField.getOffset());
         assertEquals(null, templatedParameterizedStructField.getInitializer());
@@ -634,6 +644,7 @@ public class WithTypeInfoCodeTest
         assertEquals(BitBuffer.class, externDataField.getTypeInfo().getJavaClass());
 
         assertEquals(0, externDataField.getTypeArguments().size());
+        assertFalse(externDataField.isExtended());
         assertEquals(null, externDataField.getAlignment());
         assertEquals(null, externDataField.getOffset());
         assertEquals(null, externDataField.getInitializer());
@@ -659,6 +670,7 @@ public class WithTypeInfoCodeTest
         assertEquals(BitBuffer.class, externArrayField.getTypeInfo().getJavaClass());
 
         assertEquals(0, externArrayField.getTypeArguments().size());
+        assertFalse(externArrayField.isExtended());
         assertEquals(null, externArrayField.getAlignment());
         assertEquals(null, externArrayField.getOffset());
         assertEquals(null, externArrayField.getInitializer());
@@ -684,6 +696,7 @@ public class WithTypeInfoCodeTest
         assertEquals(byte[].class, bytesDataField.getTypeInfo().getJavaClass());
 
         assertEquals(0, bytesDataField.getTypeArguments().size());
+        assertFalse(bytesDataField.isExtended());
         assertEquals(null, bytesDataField.getAlignment());
         assertEquals(null, bytesDataField.getOffset());
         assertEquals(null, bytesDataField.getInitializer());
@@ -709,6 +722,7 @@ public class WithTypeInfoCodeTest
         assertEquals(byte[].class, bytesArrayField.getTypeInfo().getJavaClass());
 
         assertEquals(0, bytesArrayField.getTypeArguments().size());
+        assertTrue(bytesArrayField.isExtended());
         assertEquals(null, bytesArrayField.getAlignment());
         assertEquals(null, bytesArrayField.getOffset());
         assertEquals(null, bytesArrayField.getInitializer());
@@ -735,6 +749,7 @@ public class WithTypeInfoCodeTest
         assertEquals(32, implicitArrayField.getTypeInfo().getBitSize());
 
         assertEquals(0, implicitArrayField.getTypeArguments().size());
+        assertTrue(implicitArrayField.isExtended());
         assertEquals(null, implicitArrayField.getAlignment());
         assertEquals(null, implicitArrayField.getOffset());
         assertEquals(null, implicitArrayField.getInitializer());
@@ -806,6 +821,7 @@ public class WithTypeInfoCodeTest
         assertEquals(32, fieldOffsetField.getTypeInfo().getBitSize());
 
         assertEquals(0, fieldOffsetField.getTypeArguments().size());
+        assertFalse(fieldOffsetField.isExtended());
         assertEquals(null, fieldOffsetField.getAlignment());
         assertEquals(null, fieldOffsetField.getOffset());
         assertEquals(null, fieldOffsetField.getInitializer());
@@ -831,6 +847,7 @@ public class WithTypeInfoCodeTest
         assertEquals(String.class, fieldStringField.getTypeInfo().getJavaClass());
 
         assertEquals(0, fieldStringField.getTypeArguments().size());
+        assertFalse(fieldStringField.isExtended());
         assertEquals(null, fieldStringField.getAlignment());
         assertEquals((long)10, fieldStringField.getOffset().apply(simpleStruct, null));
         assertEquals("MyString", fieldStringField.getInitializer().get());
@@ -857,6 +874,7 @@ public class WithTypeInfoCodeTest
         assertEquals(1, fieldBoolField.getTypeInfo().getBitSize());
 
         assertEquals(0, fieldBoolField.getTypeArguments().size());
+        assertFalse(fieldBoolField.isExtended());
         assertEquals(null, fieldBoolField.getAlignment());
         assertEquals(null, fieldBoolField.getOffset());
         assertEquals(false, fieldBoolField.getInitializer().get());
@@ -883,6 +901,7 @@ public class WithTypeInfoCodeTest
         assertEquals(16, fieldFloat16Field.getTypeInfo().getBitSize());
 
         assertEquals(0, fieldFloat16Field.getTypeArguments().size());
+        assertFalse(fieldFloat16Field.isExtended());
         assertEquals(null, fieldFloat16Field.getAlignment());
         assertEquals(null, fieldFloat16Field.getOffset());
         assertEquals(1.0f, fieldFloat16Field.getInitializer().get());
@@ -909,6 +928,7 @@ public class WithTypeInfoCodeTest
         assertEquals(32, fieldFloat32Field.getTypeInfo().getBitSize());
 
         assertEquals(0, fieldFloat32Field.getTypeArguments().size());
+        assertFalse(fieldFloat32Field.isExtended());
         assertEquals(null, fieldFloat32Field.getAlignment());
         assertEquals(null, fieldFloat32Field.getOffset());
         assertEquals(null, fieldFloat32Field.getInitializer());
@@ -935,6 +955,7 @@ public class WithTypeInfoCodeTest
         assertEquals(64, fieldFloat64Field.getTypeInfo().getBitSize());
 
         assertEquals(0, fieldFloat64Field.getTypeArguments().size());
+        assertFalse(fieldFloat64Field.isExtended());
         assertEquals(null, fieldFloat64Field.getAlignment());
         assertEquals(null, fieldFloat64Field.getOffset());
         assertEquals(2.0, fieldFloat64Field.getInitializer().get());
@@ -992,6 +1013,7 @@ public class WithTypeInfoCodeTest
         checkSimpleStruct(simpleStructField.getTypeInfo());
 
         assertEquals(0, simpleStructField.getTypeArguments().size());
+        assertFalse(simpleStructField.isExtended());
         assertEquals(null, simpleStructField.getAlignment());
         assertEquals(null, simpleStructField.getOffset());
         assertEquals(null, simpleStructField.getInitializer());
@@ -1014,6 +1036,7 @@ public class WithTypeInfoCodeTest
         checkSimpleStruct(anotherSimpleStructField.getTypeInfo());
 
         assertEquals(0, anotherSimpleStructField.getTypeArguments().size());
+        assertFalse(anotherSimpleStructField.isExtended());
         assertEquals(null, anotherSimpleStructField.getAlignment());
         assertEquals(null, anotherSimpleStructField.getOffset());
         assertEquals(null, anotherSimpleStructField.getInitializer());
@@ -1036,6 +1059,7 @@ public class WithTypeInfoCodeTest
         checkSimpleStruct(optionalSimpleStructField.getTypeInfo());
 
         assertEquals(0, optionalSimpleStructField.getTypeArguments().size());
+        assertFalse(optionalSimpleStructField.isExtended());
         assertEquals(null, optionalSimpleStructField.getAlignment());
         assertEquals(null, optionalSimpleStructField.getOffset());
         assertEquals(null, optionalSimpleStructField.getInitializer());
@@ -1062,6 +1086,7 @@ public class WithTypeInfoCodeTest
         assertEquals(32, arrayField.getTypeInfo().getBitSize());
 
         assertEquals(0, arrayField.getTypeArguments().size());
+        assertFalse(arrayField.isExtended());
         assertEquals(null, arrayField.getAlignment());
         assertEquals(null, arrayField.getOffset());
         assertEquals(null, arrayField.getInitializer());
@@ -1088,6 +1113,7 @@ public class WithTypeInfoCodeTest
         assertEquals(5, arrayWithLenField.getTypeInfo().getBitSize());
 
         assertEquals(0, arrayWithLenField.getTypeArguments().size());
+        assertFalse(arrayWithLenField.isExtended());
         assertEquals(null, arrayWithLenField.getAlignment());
         assertEquals(null, arrayWithLenField.getOffset());
         assertEquals(null, arrayWithLenField.getInitializer());
@@ -1112,6 +1138,7 @@ public class WithTypeInfoCodeTest
         assertEquals(1, paramStructArrayField.getTypeArguments().size());
         assertEquals(complexStruct.getSimpleStruct(),
                 paramStructArrayField.getTypeArguments().get(0).apply(complexStruct, 0));
+        assertFalse(paramStructArrayField.isExtended());
         assertEquals(null, paramStructArrayField.getAlignment());
         assertEquals(null, paramStructArrayField.getOffset());
         assertEquals(null, paramStructArrayField.getInitializer());
@@ -1138,6 +1165,7 @@ public class WithTypeInfoCodeTest
 
         assertEquals(1, dynamicBitFieldField.getTypeArguments().size());
         assertEquals((long)0, dynamicBitFieldField.getTypeArguments().get(0).apply(complexStruct, null));
+        assertFalse(dynamicBitFieldField.isExtended());
         assertEquals(null, dynamicBitFieldField.getAlignment());
         assertEquals(null, dynamicBitFieldField.getOffset());
         assertEquals(null, dynamicBitFieldField.getInitializer());
@@ -1165,6 +1193,7 @@ public class WithTypeInfoCodeTest
 
         assertEquals(1, dynamicBitFieldArrayField.getTypeArguments().size());
         assertEquals((long)20, dynamicBitFieldArrayField.getTypeArguments().get(0).apply(complexStruct, null));
+        assertFalse(dynamicBitFieldArrayField.isExtended());
         assertEquals(null, dynamicBitFieldArrayField.getAlignment());
         assertEquals(null, dynamicBitFieldArrayField.getOffset());
         assertEquals(null, dynamicBitFieldArrayField.getInitializer());
@@ -1187,6 +1216,7 @@ public class WithTypeInfoCodeTest
         checkTestEnum(optionalEnumField.getTypeInfo());
 
         assertEquals(0, optionalEnumField.getTypeArguments().size());
+        assertFalse(optionalEnumField.isExtended());
         assertEquals(null, optionalEnumField.getAlignment());
         assertEquals(null, optionalEnumField.getOffset());
         assertEquals(null, optionalEnumField.getInitializer());
@@ -1209,6 +1239,7 @@ public class WithTypeInfoCodeTest
         checkTestBitmask(optionalBitmaskField.getTypeInfo());
 
         assertEquals(0, optionalBitmaskField.getTypeArguments().size());
+        assertFalse(optionalBitmaskField.isExtended());
         assertEquals(null, optionalBitmaskField.getAlignment());
         assertEquals(null, optionalBitmaskField.getOffset());
         assertEquals(null, optionalBitmaskField.getInitializer());
@@ -1234,6 +1265,7 @@ public class WithTypeInfoCodeTest
         assertEquals(BitBuffer.class, optionalExternField.getTypeInfo().getJavaClass());
 
         assertEquals(0, optionalExternField.getTypeArguments().size());
+        assertFalse(optionalExternField.isExtended());
         assertEquals(null, optionalExternField.getAlignment());
         assertEquals(null, optionalExternField.getOffset());
         assertEquals(null, optionalExternField.getInitializer());
@@ -1259,6 +1291,7 @@ public class WithTypeInfoCodeTest
         assertEquals(byte[].class, optionalBytesField.getTypeInfo().getJavaClass());
 
         assertEquals(0, optionalBytesField.getTypeArguments().size());
+        assertFalse(optionalBytesField.isExtended());
         assertEquals(null, optionalBytesField.getAlignment());
         assertEquals(null, optionalBytesField.getOffset());
         assertEquals(null, optionalBytesField.getInitializer());
@@ -1281,6 +1314,7 @@ public class WithTypeInfoCodeTest
         checkTestEnum(enumArrayField.getTypeInfo());
 
         assertEquals(0, enumArrayField.getTypeArguments().size());
+        assertFalse(enumArrayField.isExtended());
         assertEquals(null, enumArrayField.getAlignment());
         assertEquals(null, enumArrayField.getOffset());
         assertEquals(null, enumArrayField.getInitializer());
@@ -1303,6 +1337,7 @@ public class WithTypeInfoCodeTest
         checkTestBitmask(bitmaskArrayField.getTypeInfo());
 
         assertEquals(0, bitmaskArrayField.getTypeArguments().size());
+        assertFalse(bitmaskArrayField.isExtended());
         assertEquals(null, bitmaskArrayField.getAlignment());
         assertEquals(null, bitmaskArrayField.getOffset());
         assertEquals(null, bitmaskArrayField.getInitializer());
@@ -1355,6 +1390,7 @@ public class WithTypeInfoCodeTest
         assertEquals(8, arrayField.getTypeInfo().getBitSize());
 
         assertEquals(0, arrayField.getTypeArguments().size());
+        assertFalse(arrayField.isExtended());
         assertEquals(null, arrayField.getAlignment());
         assertEquals(null, arrayField.getOffset());
         assertEquals(null, arrayField.getInitializer());
@@ -1398,6 +1434,7 @@ public class WithTypeInfoCodeTest
         assertEquals(32, fieldU32Field.getTypeInfo().getBitSize());
 
         assertEquals(0, fieldU32Field.getTypeArguments().size());
+        assertFalse(fieldU32Field.isExtended());
         assertEquals(null, fieldU32Field.getAlignment());
         assertEquals(null, fieldU32Field.getOffset());
         assertEquals(null, fieldU32Field.getInitializer());
@@ -1424,6 +1461,7 @@ public class WithTypeInfoCodeTest
         assertEquals(typeInfo.getFields().size(), fieldRecursion.getTypeInfo().getFields().size());
 
         assertEquals(0, fieldRecursion.getTypeArguments().size());
+        assertFalse(fieldRecursion.isExtended());
         assertEquals(null, fieldRecursion.getAlignment());
         assertEquals(null, fieldRecursion.getOffset());
         assertEquals(null, fieldRecursion.getInitializer());
@@ -1450,6 +1488,7 @@ public class WithTypeInfoCodeTest
         assertEquals(typeInfo.getFields().size(), arrayRecursion.getTypeInfo().getFields().size());
 
         assertEquals(0, arrayRecursion.getTypeArguments().size());
+        assertFalse(arrayRecursion.isExtended());
         assertEquals(null, arrayRecursion.getAlignment());
         assertEquals(null, arrayRecursion.getOffset());
         assertEquals(null, arrayRecursion.getInitializer());
@@ -1487,6 +1526,7 @@ public class WithTypeInfoCodeTest
         assertEquals(32, fieldU32Field.getTypeInfo().getBitSize());
 
         assertEquals(0, fieldU32Field.getTypeArguments().size());
+        assertFalse(fieldU32Field.isExtended());
         assertEquals(null, fieldU32Field.getAlignment());
         assertEquals(null, fieldU32Field.getOffset());
         assertEquals(null, fieldU32Field.getInitializer());
@@ -1513,6 +1553,7 @@ public class WithTypeInfoCodeTest
         assertEquals(typeInfo.getFields().size(), recursive.getTypeInfo().getFields().size());
 
         assertEquals(0, recursive.getTypeArguments().size());
+        assertFalse(recursive.isExtended());
         assertEquals(null, recursive.getAlignment());
         assertEquals(null, recursive.getOffset());
         assertEquals(null, recursive.getInitializer());
@@ -1576,6 +1617,7 @@ public class WithTypeInfoCodeTest
         assertEquals(2, recursive.getTypeArguments().size());
         assertEquals(false, recursive.getTypeArguments().get(0).apply(recursiveChoice, null));
         assertEquals(false, recursive.getTypeArguments().get(1).apply(recursiveChoice, null));
+        assertFalse(recursive.isExtended());
         assertEquals(null, recursive.getAlignment());
         assertEquals(null, recursive.getOffset());
         assertEquals(null, recursive.getInitializer());
@@ -1602,6 +1644,7 @@ public class WithTypeInfoCodeTest
         assertEquals(32, fieldU32Field.getTypeInfo().getBitSize());
 
         assertEquals(0, fieldU32Field.getTypeArguments().size());
+        assertFalse(fieldU32Field.isExtended());
         assertEquals(null, fieldU32Field.getAlignment());
         assertEquals(null, fieldU32Field.getOffset());
         assertEquals(null, fieldU32Field.getInitializer());
@@ -1698,6 +1741,7 @@ public class WithTypeInfoCodeTest
         checkSimpleUnion(fieldTwoField.getTypeInfo());
 
         assertEquals(0, fieldTwoField.getTypeArguments().size());
+        assertFalse(fieldTwoField.isExtended());
         assertEquals(null, fieldTwoField.getAlignment());
         assertEquals(null, fieldTwoField.getOffset());
         assertEquals(null, fieldTwoField.getInitializer());
@@ -1723,6 +1767,7 @@ public class WithTypeInfoCodeTest
         assertEquals(String.class, fieldDefaultField.getTypeInfo().getJavaClass());
 
         assertEquals(0, fieldDefaultField.getTypeArguments().size());
+        assertFalse(fieldDefaultField.isExtended());
         assertEquals(null, fieldDefaultField.getAlignment());
         assertEquals(null, fieldDefaultField.getOffset());
         assertEquals(null, fieldDefaultField.getInitializer());
@@ -1797,6 +1842,7 @@ public class WithTypeInfoCodeTest
         checkTestBitmask(testBitmaskField.getTypeInfo());
 
         assertEquals(0, testBitmaskField.getTypeArguments().size());
+        assertFalse(testBitmaskField.isExtended());
         assertEquals(null, testBitmaskField.getAlignment());
         assertEquals(null, testBitmaskField.getOffset());
         assertEquals(null, testBitmaskField.getInitializer());
@@ -1819,6 +1865,7 @@ public class WithTypeInfoCodeTest
         checkSimpleStruct(simpleStructField.getTypeInfo());
 
         assertEquals(0, simpleStructField.getTypeArguments().size());
+        assertFalse(simpleStructField.isExtended());
         assertEquals(null, simpleStructField.getAlignment());
         assertEquals(null, simpleStructField.getOffset());
         assertEquals(null, simpleStructField.getInitializer());
@@ -1903,6 +1950,7 @@ public class WithTypeInfoCodeTest
         assertEquals(32, fieldField.getTypeInfo().getBitSize());
 
         assertEquals(0, fieldField.getTypeArguments().size());
+        assertFalse(fieldField.isExtended());
         assertEquals(null, fieldField.getAlignment());
         assertEquals(null, fieldField.getOffset());
         assertEquals(null, fieldField.getInitializer());
@@ -1959,6 +2007,7 @@ public class WithTypeInfoCodeTest
         assertEquals(32, arrayField.getTypeInfo().getBitSize());
 
         assertEquals(0, arrayField.getTypeArguments().size());
+        assertFalse(arrayField.isExtended());
         assertEquals(null, arrayField.getAlignment());
         assertEquals(null, arrayField.getOffset());
         assertEquals(null, arrayField.getInitializer());

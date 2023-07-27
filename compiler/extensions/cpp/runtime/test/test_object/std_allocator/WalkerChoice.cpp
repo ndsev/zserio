@@ -101,6 +101,7 @@ const ::zserio::ITypeInfo& WalkerChoice::typeInfo()
             ::zserio::makeStringView("value8"), // schemaName
             ::zserio::BuiltinTypeInfo<allocator_type>::getUInt8(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
@@ -116,6 +117,7 @@ const ::zserio::ITypeInfo& WalkerChoice::typeInfo()
             ::zserio::makeStringView("value16"), // schemaName
             ::zserio::BuiltinTypeInfo<allocator_type>::getUInt16(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
@@ -131,6 +133,7 @@ const ::zserio::ITypeInfo& WalkerChoice::typeInfo()
             ::zserio::makeStringView("value32"), // schemaName
             ::zserio::BuiltinTypeInfo<allocator_type>::getUInt32(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
@@ -146,6 +149,7 @@ const ::zserio::ITypeInfo& WalkerChoice::typeInfo()
             ::zserio::makeStringView("value64"), // schemaName
             ::zserio::BuiltinTypeInfo<allocator_type>::getUInt64(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer

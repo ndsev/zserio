@@ -109,6 +109,7 @@ const ::zserio::ITypeInfo& SerializeObject::typeInfo()
             ::zserio::makeStringView("param"), // schemaName
             ::zserio::BuiltinTypeInfo<allocator_type>::getInt8(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
@@ -124,6 +125,7 @@ const ::zserio::ITypeInfo& SerializeObject::typeInfo()
             ::zserio::makeStringView("nested"), // schemaName
             ::test_object::std_allocator::SerializeNested::typeInfo(), // typeInfo
             nestedTypeArguments, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
