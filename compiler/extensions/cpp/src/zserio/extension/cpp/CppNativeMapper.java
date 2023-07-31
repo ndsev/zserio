@@ -76,8 +76,6 @@ public class CppNativeMapper
         bytesType = new NativeBytesType(typesContext, stdUInt8Type);
         bitBufferType = new NativeRuntimeAllocArrayableType(typesContext.getBitBuffer(),
                 allocatorDefinition, stdUInt8Type, typesContext.getBitBufferArrayTraits());
-        packingContextNodeType = new NativeRuntimeAllocType(typesContext.getPackingContextNode(),
-                allocatorDefinition, stdUInt8Type);
         typeInfoType = new NativeRuntimeAllocType(typesContext.getTypeInfo(),
                 allocatorDefinition, stdUInt8Type);
         reflectableFactoryType = new NativeRuntimeAllocType(typesContext.getRelectableFactory(),
@@ -224,11 +222,6 @@ public class CppNativeMapper
         return bitBufferType;
     }
 
-    public NativeRuntimeAllocType getPackingContextNodeType()
-    {
-        return packingContextNodeType;
-    }
-
     public NativeRuntimeAllocType getTypeInfoType()
     {
         return typeInfoType;
@@ -305,7 +298,10 @@ public class CppNativeMapper
                     elementInstantiation.getClass().getName() + "' in CppNativeMapper!");
         }
 
-        return new NativeArrayType((CppNativeArrayableType)nativeType, vectorType);
+        final String arrayName = (!instantiation.isPackable()) ? "UnpackedArray" :
+            ( (instantiation.isPacked()) ? "PackedArray" : "Array" );
+
+        return new NativeArrayType(arrayName, (CppNativeArrayableType)nativeType, vectorType);
     }
 
     private static CppNativeType mapDynamicBitFieldInstantiation(DynamicBitFieldInstantiation instantiation)
@@ -610,7 +606,6 @@ public class CppNativeMapper
     private final NativeRuntimeAllocType setType;
     private final CppNativeArrayableType bytesType;
     private final NativeRuntimeAllocArrayableType bitBufferType;
-    private final NativeRuntimeAllocType packingContextNodeType;
     private final NativeRuntimeAllocType typeInfoType;
     private final NativeRuntimeAllocType reflectableFactoryType;
     private final NativeRuntimeAllocType reflectablePtrType;

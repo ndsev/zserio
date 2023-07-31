@@ -5,9 +5,10 @@ package zserio.extension.cpp.types;
  */
 public class NativeArrayType extends NativeRuntimeType
 {
-    public NativeArrayType(CppNativeArrayableType elementType, NativeRuntimeAllocType nativeVectorType)
+    public NativeArrayType(String arrayName, CppNativeArrayableType elementType,
+            NativeRuntimeAllocType nativeVectorType)
     {
-        super("Array", "zserio/Array.h");
+        super(arrayName, "zserio/Array.h");
 
         this.arrayTraits = elementType.getArrayTraits();
 

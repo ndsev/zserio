@@ -14,6 +14,9 @@
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/AllocatorPropagatingCopy.h>
+<#if has_field_with_packing_context(fieldList)>
+#include <zserio/PackingContext.h>
+</#if>
 <#if withTypeInfoCode>
 <@type_includes types.typeInfo/>
     <#if withReflectionCode>
@@ -22,7 +25,6 @@
 </#if>
 <@type_includes types.anyHolder/>
 <@type_includes types.allocator/>
-<@type_includes types.packingContextNode/>
 <@system_includes headerSystemIncludes/>
 <@user_includes headerUserIncludes/>
 <@namespace_begin package.path/>
@@ -55,6 +57,7 @@ public:
 </#if>
         UNDEFINED_CHOICE = -1
     };
+    <@compound_declare_packing_context fieldList/>
 <#if withWriterCode>
 
     <@compound_default_constructor compoundConstructorsData/>
@@ -63,10 +66,12 @@ public:
 </#if>
 
     <@compound_read_constructor_declaration compoundConstructorsData/>
-<#if withCodeComments>
+<#if has_field_with_packing_context(fieldList)>
+    <#if withCodeComments>
 
-</#if>
+    </#if>
     <@compound_read_constructor_declaration compoundConstructorsData, true/>
+</#if>
 
 <#if withCodeComments>
     /** Default destructor. */
@@ -168,28 +173,19 @@ public:
     <@compound_field_accessors_declaration field/>
 </#list>
     <@compound_functions_declaration compoundFunctionsData/>
-
-<#if withCodeComments>
-    /**
-     * Creates context for packed arrays.
-     *
-     * Called only internally if packed arrays are used.
-     *
-     * \param contextNode Context for packed arrays.
-     */
-</#if>
-    static void createPackingContext(${types.packingContextNode.name}& contextNode);
-<#if withCodeComments>
+<#if has_field_with_packing_context(fieldList)>
+    <#if withCodeComments>
 
     /**
      * Initializes context for packed arrays.
      *
      * Called only internally if packed arrays are used.
      *
-     * \param contextNode Context for packed arrays.
+     * \param context Context for packed arrays.
      */
+    </#if>
+    void initPackingContext(ZserioPackingContext& context) const;
 </#if>
-    void initPackingContext(${types.packingContextNode.name}& contextNode) const;
 
 <#if withCodeComments>
     /**
@@ -201,20 +197,22 @@ public:
      */
 </#if>
     size_t bitSizeOf(size_t bitPosition = 0) const;
-<#if withCodeComments>
+<#if has_field_with_packing_context(fieldList)>
+    <#if withCodeComments>
 
     /**
      * Calculates size of the serialized object in bits for packed arrays.
      *
      * Called only internally if packed arrays are used.
      *
-     * \param contextNode Context for packed arrays.
+     * \param context Context for packed arrays.
      * \param bitPosition Bit stream position calculated from zero where the object will be serialized.
      *
      * \return Number of bits which are needed to store serialized object.
      */
+    </#if>
+    size_t bitSizeOf(ZserioPackingContext& context, size_t bitPosition) const;
 </#if>
-    size_t bitSizeOf(${types.packingContextNode.name}& contextNode, size_t bitPosition) const;
 <#if withWriterCode>
 
     <#if withCodeComments>
@@ -229,7 +227,8 @@ public:
      */
     </#if>
     size_t initializeOffsets(size_t bitPosition = 0);
-    <#if withCodeComments>
+    <#if has_field_with_packing_context(fieldList)>
+        <#if withCodeComments>
 
     /**
      * Initializes offsets in this Zserio type and in all its fields for packed arrays.
@@ -237,13 +236,14 @@ public:
      * This method sets offsets in this Zserio type and in all fields recursively.
      * Called only internally if packed arrays are used.
      *
-     * \param contextNode Context for packed arrays.
+     * \param context Context for packed arrays.
      * \param bitPosition Bit stream position calculated from zero where the object will be serialized.
      *
      * \return Bit stream position calculated from zero updated to the first byte after serialized object.
      */
+        </#if>
+    size_t initializeOffsets(ZserioPackingContext& context, size_t bitPosition);
     </#if>
-    size_t initializeOffsets(${types.packingContextNode.name}& contextNode, size_t bitPosition);
 </#if>
 
 <#if withCodeComments>
@@ -275,25 +275,29 @@ public:
      */
     </#if>
     void write(::zserio::BitStreamWriter& out) const;
-    <#if withCodeComments>
+    <#if has_field_with_packing_context(fieldList)>
+        <#if withCodeComments>
 
     /**
      * Serializes this Zserio object to the bit stream for packed arrays.
      *
      * Called only internally if packed arrays are used.
      *
-     * \param contextNode Context for packed arrays.
+     * \param context Context for packed arrays.
      * \param out Bit stream writer where to serialize this Zserio object.
      */
+        </#if>
+    void write(ZserioPackingContext& context, ::zserio::BitStreamWriter& out) const;
     </#if>
-    void write(${types.packingContextNode.name}& contextNode, ::zserio::BitStreamWriter& out) const;
 </#if>
 
 private:
 <#if fieldList?has_content>
     ${types.anyHolder.name} readObject(::zserio::BitStreamReader& in, const allocator_type& allocator);
-    ${types.anyHolder.name} readObject(${types.packingContextNode.name}& contextNode,
-            ::zserio::BitStreamReader& in, const allocator_type& allocator);
+    <#if has_field_with_packing_context(fieldList)>
+    ${types.anyHolder.name} readObject(ZserioPackingContext& context, ::zserio::BitStreamReader& in,
+            const allocator_type& allocator);
+    </#if>
     ${types.anyHolder.name} copyObject(const allocator_type& allocator) const;
 
 </#if>

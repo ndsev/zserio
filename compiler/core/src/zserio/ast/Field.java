@@ -236,7 +236,7 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
     /**
      * Evaluates the compound field.
      *
-     * This method calculates and sets isUnpackable flag.
+     * This method calculates and sets isPackable flag.
      */
     void evaluate()
     {

@@ -33,8 +33,6 @@ public class TypesContext
                     true, false, "zserio/OptionalHolder.h");
             bitBuffer = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BitBuffer",
                     false, false, "zserio/BitBuffer.h");
-            packingContextNode = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "PackingContextNode",
-                    false, false, "zserio/PackingContext.h");
             bytesArrayTraits = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BytesArrayTraits",
                     false, false, "zserio/ArrayTraits.h");
             stringArrayTraits = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "StringArrayTraits",
@@ -84,8 +82,6 @@ public class TypesContext
                     true, false, "zserio/pmr/HeapOptionalHolder.h");
             bitBuffer = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "BitBuffer",
                     false, false, "zserio/pmr/BitBuffer.h");
-            packingContextNode = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "PackingContextNode",
-                    false, false, "zserio/pmr/PackingContext.h");
             bytesArrayTraits = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "BytesArrayTraits",
                     false, false, "zserio/pmr/ArrayTraits.h");
             stringArrayTraits = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "StringArrayTraits",
@@ -135,8 +131,6 @@ public class TypesContext
                     true, true, "zserio/OptionalHolder.h");
             bitBuffer = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicBitBuffer",
                     true, true, "zserio/BitBuffer.h");
-            packingContextNode = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicPackingContextNode",
-                    true, true, "zserio/Array.h");
             bytesArrayTraits = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicBytesArrayTraits",
                     true, true, "zserio/ArrayTraits.h");
             stringArrayTraits = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicStringArrayTraits",
@@ -252,11 +246,6 @@ public class TypesContext
     public NativeTypeDefinition getBitBuffer()
     {
         return bitBuffer;
-    }
-
-    public NativeTypeDefinition getPackingContextNode()
-    {
-        return packingContextNode;
     }
 
     public NativeTypeDefinition getBytesArrayTraits()
@@ -383,7 +372,6 @@ public class TypesContext
     private final NativeTypeDefinition anyHolder;
     private final NativeTypeDefinition uniquePtr;
     private final NativeTypeDefinition bitBuffer;
-    private final NativeTypeDefinition packingContextNode;
     private final NativeTypeDefinition bytesArrayTraits;
     private final NativeTypeDefinition stringArrayTraits;
     private final NativeTypeDefinition bitBufferArrayTraits;

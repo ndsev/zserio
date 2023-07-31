@@ -243,7 +243,7 @@ public class CompoundFieldTemplateData
             }
         }
 
-        public Compound(TemplateDataContext context,CompoundType compoundType,
+        public Compound(TemplateDataContext context, CompoundType compoundType,
                 IncludeCollector includeCollector) throws ZserioExtensionException
         {
             instantiatedParameters = new ArrayList<InstantiatedParameterData>();
