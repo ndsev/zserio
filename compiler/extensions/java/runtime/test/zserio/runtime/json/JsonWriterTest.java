@@ -456,6 +456,7 @@ public class JsonWriterTest
             "setText", // setterName
             BuiltinTypeInfo.getString(), // typeInfo
             new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+            false, // isExtended
             null, // alignment
             null, // offset
             null, // initializer
@@ -476,6 +477,7 @@ public class JsonWriterTest
             "setBoolField", // setterName
             BuiltinTypeInfo.getBool(), // typeInfo
             new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+            false, // isExtended
             null, // alignment
             null, // offset
             null, // initializer
@@ -496,6 +498,7 @@ public class JsonWriterTest
             "setInt32Field", // setterName
             BuiltinTypeInfo.getInt32(), // typeInfo
             new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+            false, // isExtended
             null, // alignment
             null, // offset
             null, // initializer
@@ -516,6 +519,7 @@ public class JsonWriterTest
             "setUint64Field", // setterName
             BuiltinTypeInfo.getUInt64(), // typeInfo
             new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+            false, // isExtended
             null, // alignment
             null, // offset
             null, // initializer
@@ -536,6 +540,7 @@ public class JsonWriterTest
             "setFloatField", // setterName
             BuiltinTypeInfo.getFloat32(), // typeInfo
             new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+            false, // isExtended
             null, // alignment
             null, // offset
             null, // initializer
@@ -556,6 +561,7 @@ public class JsonWriterTest
             "setDoubleField", // setterName
             BuiltinTypeInfo.getFloat64(), // typeInfo
             new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+            false, // isExtended
             null, // alignment
             null, // offset
             null, // initializer
@@ -595,6 +601,7 @@ public class JsonWriterTest
                     )
             ),
             new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+            false, // isExtended
             null, // alignment
             null, // offset
             null, // initializer
@@ -622,6 +629,7 @@ public class JsonWriterTest
                             new ItemInfo("UINT64_MAX", new BigInteger("18446744073709551615")))
             ),
             new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+            false, // isExtended
             null, // alignment
             null, // offset
             null, // initializer
@@ -661,6 +669,7 @@ public class JsonWriterTest
                     )
             ),
             new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+            false, // isExtended
             null, // alignment
             null, // offset
             null, // initializer
@@ -688,6 +697,7 @@ public class JsonWriterTest
                             new ItemInfo("UINT64_MAX", new BigInteger("18446744073709551615")))
             ),
             new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+            false, // isExtended
             null, // alignment
             null, // offset
             null, // initializer
@@ -708,6 +718,7 @@ public class JsonWriterTest
             "setIdentifier", // setterName
             BuiltinTypeInfo.getUInt32(), // typeInfo
             new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+            false, // isExtended
             null, // alignment
             null, // offset
             null, // initializer
@@ -728,6 +739,7 @@ public class JsonWriterTest
             "setData", // setterName
             BuiltinTypeInfo.getBitBuffer(), // typeInfo
             new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+            false, // isExtended
             null, // alignment
             null, // offset
             null, // initializer
@@ -748,6 +760,7 @@ public class JsonWriterTest
             "setBytesData", // setterName
             BuiltinTypeInfo.getBytes(), // typeInfo
             new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+            false, // isExtended
             null, // alignment
             null, // offset
             null, // initializer
@@ -782,6 +795,7 @@ public class JsonWriterTest
             "setNested", // setterName
             DUMMY_TYPE_INFO, // typeInfo
             new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+            false, // isExtended
             null, // alignment
             null, // offset
             null, // initializer
@@ -802,6 +816,7 @@ public class JsonWriterTest
             "setArray", // setterName
             BuiltinTypeInfo.getUInt32(), // typeInfo
             new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+            false, // isExtended
             null, // alignment
             null, // offset
             null, // initializer

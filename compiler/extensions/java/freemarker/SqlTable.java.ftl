@@ -299,7 +299,7 @@ public class ${name}
      * 1. Table schema validation.
      *
      *    Table schema is read from database and checked according to the schema. It's checked if number of
-     *    columns are correct and if each column has expected type and expected 'isNotNull' and 'isPrimaryKey' 
+     *    columns are correct and if each column has expected type and expected 'isNotNull' and 'isPrimaryKey'
      *    flags.
      *
      * 2. Validation of column value types.

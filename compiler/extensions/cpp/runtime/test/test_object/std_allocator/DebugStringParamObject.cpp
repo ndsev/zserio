@@ -103,6 +103,7 @@ const ::zserio::ITypeInfo& DebugStringParamObject::typeInfo()
             ::zserio::makeStringView("text"), // schemaName
             ::zserio::BuiltinTypeInfo<allocator_type>::getString(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             ::zserio::makeStringView("::zserio::makeStringView(\"test\")"), // initializer

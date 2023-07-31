@@ -67,6 +67,7 @@ const ::zserio::ITypeInfo& WalkerUnion::typeInfo()
             ::zserio::makeStringView("value"), // schemaName
             ::zserio::BuiltinTypeInfo<allocator_type>::getUInt32(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
@@ -82,6 +83,7 @@ const ::zserio::ITypeInfo& WalkerUnion::typeInfo()
             ::zserio::makeStringView("text"), // schemaName
             ::zserio::BuiltinTypeInfo<allocator_type>::getString(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
@@ -97,6 +99,7 @@ const ::zserio::ITypeInfo& WalkerUnion::typeInfo()
             ::zserio::makeStringView("nestedArray"), // schemaName
             ::test_object::std_allocator::WalkerNested::typeInfo(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer

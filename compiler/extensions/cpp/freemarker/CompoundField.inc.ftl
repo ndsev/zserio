@@ -65,7 +65,7 @@ ${I}if (${field.optional.clause})
 ${I}if (in.readBool())
         </#if>
 ${I}{
-        <@compound_read_field_inner field, compoundName, indent + 1, packed, index/>
+        <@compound_read_field_inner field, compoundName, indent+1, packed, index/>
 ${I}}
 
 ${I}return <@field_member_type_name field/>(::zserio::NullOpt<#if field.holderNeedsAllocator>, allocator</#if>);
@@ -187,13 +187,26 @@ ${I}}
 
 <#macro compound_write_field field compoundName indent packed=false index=0>
     <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.isExtended>
+${I}if (${field.isPresentIndicatorName}())
+${I}{
+${I}    out.alignTo(UINT32_C(8));
+        <@compound_write_field_optional field, compoundName, indent+1, packed, index/>
+${I}}
+    <#else>
+    <@compound_write_field_optional field, compoundName, indent, packed, index/>
+    </#if>
+</#macro>
+
+<#macro compound_write_field_optional field compoundName indent packed index>
+    <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
 ${I}if (<@field_optional_condition field/>)
 ${I}{
         <#if !field.optional.clause??>
 ${I}    out.writeBool(true);
         </#if>
-        <@compound_write_field_inner field, compoundName, indent + 1, packed, index/>
+        <@compound_write_field_inner field, compoundName, indent+1, packed, index/>
 ${I}}
         <#if !field.optional.clause??>
 ${I}else
@@ -301,14 +314,14 @@ ${I}// check range
             <#local fieldValue><@compound_get_field field/></#local>
 ${I}{
         <@compound_check_range_value fieldValue, field.name, compoundName, field.typeInfo.typeFullName,
-                field.integerRange, indent + 1/>
+                field.integerRange, indent+1/>
 ${I}}
         <#elseif field.array?? && field.array.elementIntegerRange??>
 ${I}// check ranges
 ${I}for (auto value : <@compound_get_field field/>.getRawArray())
 ${I}{
         <@compound_check_range_value "value", field.name, compoundName, field.array.elementTypeInfo.typeFullName,
-                field.array.elementIntegerRange, indent + 1/>
+                field.array.elementIntegerRange, indent+1/>
 ${I}}
         </#if>
     </#if>
@@ -656,6 +669,19 @@ ${I}endBitPosition = ::zserio::alignTo(8, endBitPosition);
 
 <#macro compound_bitsizeof_field field indent packed=false index=0>
     <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.isExtended>
+${I}if (${field.isPresentIndicatorName}())
+${I}{
+${I}    endBitPosition = ::zserio::alignTo(UINT8_C(8), endBitPosition);
+        <@compound_bitsizeof_field_optional field, indent+1, packed, index/>
+${I}}
+    <#else>
+    <@compound_bitsizeof_field_optional field, indent, packed, index/>
+    </#if>
+</#macro>
+
+<#macro compound_bitsizeof_field_optional field indent packed index>
+    <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
         <#if !field.optional.clause??>
             <#-- auto optional field -->
@@ -702,6 +728,19 @@ ${I}endBitPosition += <@compound_get_field field/>.bitSizeOf(endBitPosition);
 </#macro>
 
 <#macro compound_initialize_offsets_field field indent packed=false index=0>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.isExtended>
+${I}if (${field.isPresentIndicatorName}())
+${I}{
+${I}    endBitPosition = ::zserio::alignTo(UINT8_C(8), endBitPosition);
+        <@compound_initialize_offsets_field_optional field, indent+1, packed, index/>
+${I}}
+    <#else>
+    <@compound_initialize_offsets_field_optional field, indent, packed, index/>
+    </#if>
+</#macro>
+
+<#macro compound_initialize_offsets_field_optional field indent packed index>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
         <#if !field.optional.clause??>
@@ -1012,14 +1051,26 @@ ${I}${field.typeInfo.typeFullName} <#t>
 <#macro compound_init_packing_context_field field index indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.isPackable && !field.array??>
-        <#if field.optional??>
+        <#if field.isExtended>
+${I}if (${field.isPresentIndicatorName}())
+${I}{
+        <@compound_init_packing_context_field_optional field, index, indent+1/>
+${I}}
+        <#else>
+    <@compound_init_packing_context_field_optional field, index, indent/>
+        </#if>
+    </#if>
+</#macro>
+
+<#macro compound_init_packing_context_field_optional field index indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.optional??>
 ${I}if (<@field_optional_condition field/>)
 ${I}{
         <@compound_init_packing_context_field_inner field, index, indent+1/>
 ${I}}
-        <#else>
+    <#else>
     <@compound_init_packing_context_field_inner field, index, indent/>
-        </#if>
     </#if>
 </#macro>
 
@@ -1177,4 +1228,14 @@ ${I}<@compound_field_packing_context_node field, index/>.getContext().init<<@arr
         <#return true>
     </#if>
     <#return false>
+</#function>
+
+<#function num_extended_fields fieldList>
+    <#local numExtended=0/>
+    <#list fieldList as field>
+        <#if field.isExtended>
+            <#local numExtended=numExtended+1/>
+        </#if>
+    </#list>
+    <#return numExtended>
 </#function>

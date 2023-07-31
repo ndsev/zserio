@@ -35,6 +35,7 @@ ${I}        <@type_info field.array.elementTypeInfo/>, // typeInfo
 ${I}        <@type_info field.typeInfo/>, // typeInfo
     </#if>
 ${I}        <@field_info_type_arguments field/>, // typeArguments
+${I}        ${field.isExtended?c}, // isExtended
 ${I}        <#if field.alignmentValue??>() -> ${field.alignmentValue}<#else>null</#if>, // alignment
 ${I}        <#if field.offset??>(obj, index) -> ${field.offset.lambdaGetter}<#else>null</#if>, // offset
 ${I}        <#if field.initializer??>() -> ${field.initializer}<#else>null</#if>, // initializer

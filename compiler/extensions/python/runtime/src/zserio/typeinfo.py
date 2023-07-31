@@ -271,6 +271,10 @@ class MemberInfo:
             single 'self' argument, which is an object providing property-like getters for column names
             used in expressions
 
+        * `(MemberAttribute.EXTENDED, None)`
+
+          * denotes that the member field is extended, the value is always None
+
         * `(MemberAttribute.ALIGN, lambda: 8)`
 
           * denotes that the member field has an alignment, the value is a lambda function which returns the
@@ -371,6 +375,7 @@ class MemberAttribute(enum.Enum):
 
     PROPERTY_NAME = enum.auto()
     TYPE_ARGUMENTS = enum.auto()
+    EXTENDED = enum.auto()
     ALIGN = enum.auto()
     OFFSET = enum.auto()
     INITIALIZER = enum.auto()

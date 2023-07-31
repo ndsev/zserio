@@ -133,8 +133,8 @@ struct WithTypeInfoCode
     extern externData;
     extern externArray[];
     bytes bytesData;
-    bytes bytesArray[];
-    implicit uint32 implicitArray[];
+    extend bytes bytesArray[];
+    extend implicit uint32 implicitArray[];
 };
 
 sql_table SqlTable

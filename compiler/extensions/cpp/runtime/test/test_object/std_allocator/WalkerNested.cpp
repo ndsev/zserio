@@ -51,6 +51,7 @@ const ::zserio::ITypeInfo& WalkerNested::typeInfo()
             ::zserio::makeStringView("text"), // schemaName
             ::zserio::BuiltinTypeInfo<allocator_type>::getString(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer

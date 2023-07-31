@@ -43,7 +43,7 @@ returnStdMoveLocal:*/src/zserio/DebugStringUtil.h:542
 returnStdMoveLocal:*/src/zserio/DebugStringUtil.h:605
 shadowFunction:*/test/zserio/ReflectableUtilTest.cpp:200
 shadowFunction:*/test/zserio/ReflectableUtilTest.cpp:201
-shadowFunction:*/test/zserio/TypeInfoTest.cpp:434
+shadowFunction:*/test/zserio/TypeInfoTest.cpp:435
 uninitMemberVar:*/src/zserio/Reflectable.h:170
 uninitMemberVar:*/src/zserio/Reflectable.h:1053
 uninitMemberVar:*/src/zserio/Reflectable.h:1212
@@ -55,7 +55,7 @@ unusedStructMember:*/src/zserio/ITypeInfo.h:365
 unusedStructMember:*/src/zserio/ITypeInfo.h:368
 unusedStructMember:*/src/zserio/ITypeInfo.h:370
 unusedStructMember:*/src/zserio/ITypeInfo.h:371
-unusedStructMember:*/src/zserio/ITypeInfo.h:412
+unusedStructMember:*/src/zserio/ITypeInfo.h:413
 unusedStructMember:*/src/zserio/ITypeInfo.h:435
 unusedStructMember:*/src/zserio/ITypeInfo.h:465
 unusedStructMember:*/src/zserio/ITypeInfo.h:466

@@ -267,6 +267,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     @Override
     public Field visitStructureFieldDefinition(ZserioParser.StructureFieldDefinitionContext ctx)
     {
+        final boolean isExtended = ctx.EXTEND() != null;
         final FieldTypeId fieldTypeId = visitFieldTypeId(ctx.fieldTypeId());
         final boolean isAutoOptional = ctx.OPTIONAL() != null;
         final Expression alignmentExpr = visitFieldAlignment(ctx.fieldAlignment());
@@ -277,9 +278,9 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
 
         final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
-        return new Field(fieldTypeId.getLocation(), fieldTypeId.getTypeInstantation(), fieldTypeId.getName(),
-                isAutoOptional, alignmentExpr, offsetExpr, initializerExpr, optionalClauseExpr, constraintExpr,
-                docComments);
+        return new Field(fieldTypeId.getLocation(), isExtended, fieldTypeId.getTypeInstantiation(),
+                fieldTypeId.getName(), isAutoOptional, alignmentExpr, offsetExpr, initializerExpr,
+                optionalClauseExpr, constraintExpr, docComments);
     }
 
     @Override
@@ -403,7 +404,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
 
         final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
-        return new Field(fieldTypeId.getLocation(), fieldTypeId.getTypeInstantation(), fieldTypeId.getName(),
+        return new Field(fieldTypeId.getLocation(), fieldTypeId.getTypeInstantiation(), fieldTypeId.getName(),
                 constraintExpr, docComments);
     }
 
@@ -1222,7 +1223,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
             return location;
         }
 
-        public TypeInstantiation getTypeInstantation()
+        public TypeInstantiation getTypeInstantiation()
         {
             return typeInstantiation;
         }

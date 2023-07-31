@@ -110,6 +110,7 @@ const ::zserio::ITypeInfo& SerializeNested::typeInfo()
             ::zserio::makeStringView("offset"), // schemaName
             ::zserio::BuiltinTypeInfo<allocator_type>::getUInt8(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
@@ -125,6 +126,7 @@ const ::zserio::ITypeInfo& SerializeNested::typeInfo()
             ::zserio::makeStringView("optionalValue"), // schemaName
             ::zserio::BuiltinTypeInfo<allocator_type>::getUInt32(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             ::zserio::makeStringView("getOffset()"), // offset
             {}, // initializer
@@ -513,7 +515,7 @@ bool SerializeNested::operator==(const SerializeNested& other) const
         return
                 (getParam() == other.getParam()) &&
                 (m_offset_ == other.m_offset_) &&
-                ((!isOptionalValueUsed()) ? !other.isOptionalValueUsed() : (m_optionalValue_ == other.m_optionalValue_));
+                (!isOptionalValueUsed() ? !other.isOptionalValueUsed() : (m_optionalValue_ == other.m_optionalValue_));
     }
 
     return true;

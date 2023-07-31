@@ -50,6 +50,8 @@ public final class CompoundFieldTemplateData
         getterName = AccessorNameFormatter.getGetterName(field);
         setterName = AccessorNameFormatter.getSetterName(field);
 
+        isExtended = field.isExtended();
+        isPresentIndicatorName = AccessorNameFormatter.getIsPresentIndicatorName(field);
         isPackable = field.isPackable();
 
         final boolean withRangeCheckCode = context.getWithRangeCheckCode();
@@ -96,6 +98,16 @@ public final class CompoundFieldTemplateData
     public String getSetterName()
     {
         return setterName;
+    }
+
+    public boolean getIsExtended()
+    {
+        return isExtended;
+    }
+
+    public String getIsPresentIndicatorName()
+    {
+        return isPresentIndicatorName;
     }
 
     public boolean getIsPackable()
@@ -584,6 +596,8 @@ public final class CompoundFieldTemplateData
     private final NativeTypeInfoTemplateData typeInfo;
     private final String getterName;
     private final String setterName;
+    private final boolean isExtended;
+    private final String isPresentIndicatorName;
     private final boolean isPackable;
     private final RangeCheckTemplateData rangeCheckData;
     private final Optional optional;

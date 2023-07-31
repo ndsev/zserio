@@ -20,6 +20,7 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
      * Constructor from Structure types.
      *
      * @param location           AST node location.
+     * @param isExtended         Whether the field is defined using the 'extend' keyword.
      * @param typeInstantiation  Field type instantiation.
      * @param name               Field name.
      * @param isAutoOptional     Auto optional flag.
@@ -30,11 +31,11 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
      * @param constraintExpr     Constraint expression or null if it's not defined.
      * @param docComments        List of documentation comments belonging to this node.
      */
-    public Field(AstLocation location, TypeInstantiation typeInstantiation, String name, boolean isAutoOptional,
-            Expression alignmentExpr, Expression offsetExpr, Expression initializerExpr,
+    public Field(AstLocation location, boolean isExtended, TypeInstantiation typeInstantiation, String name,
+            boolean isAutoOptional, Expression alignmentExpr, Expression offsetExpr, Expression initializerExpr,
             Expression optionalClauseExpr, Expression constraintExpr, List<DocComment> docComments)
     {
-        this(location, typeInstantiation, name, isAutoOptional, alignmentExpr, offsetExpr,
+        this(location, isExtended, typeInstantiation, name, isAutoOptional, alignmentExpr, offsetExpr,
                 initializerExpr, optionalClauseExpr, constraintExpr, false, null, docComments);
     }
 
@@ -47,10 +48,10 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
      * @param constraintExpr         Constraint expression or null if it's not defined.
      * @param docComments            List of documentation comments belonging to this node.
      */
-    public Field(AstLocation location, TypeInstantiation fieldTypeInstantiation, String name,
-            Expression constraintExpr, List<DocComment> docComments)
+    public Field(AstLocation location, TypeInstantiation fieldTypeInstantiation,
+            String name, Expression constraintExpr, List<DocComment> docComments)
     {
-        this(location, fieldTypeInstantiation, name, false, null, null, null, null, constraintExpr,
+        this(location, false, fieldTypeInstantiation, name, false, null, null, null, null, constraintExpr,
                 false, null, docComments);
     }
 
@@ -67,7 +68,7 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
     public Field(AstLocation location, TypeInstantiation fieldTypeInstantiation, String name, boolean isVirtual,
             SqlConstraint sqlConstraint, List<DocComment> docComments)
     {
-        this(location, fieldTypeInstantiation, name, false, null, null, null, null, null, isVirtual,
+        this(location, false, fieldTypeInstantiation, name, false, null, null, null, null, null, isVirtual,
                 sqlConstraint, docComments);
     }
 
@@ -82,7 +83,7 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
     public Field(AstLocation location, TypeInstantiation fieldTypeInstantiation, String name,
             List<DocComment> docComments)
     {
-        this(location, fieldTypeInstantiation, name, false, null, null, null, null, null, false, null,
+        this(location, false, fieldTypeInstantiation, name, false, null, null, null, null, null, false, null,
                 docComments);
     }
 
@@ -116,6 +117,16 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
     public String getName()
     {
         return name;
+    }
+
+    /**
+     * Gets flag which indicates if the field has been defined using "extend" keyword in Zserio.
+     *
+     * @return True when the field is extended.
+     */
+    public boolean isExtended()
+    {
+        return isExtended;
     }
 
     /**
@@ -341,8 +352,8 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
         final SqlConstraint instantiatedSqlConstraint = getSqlConstraint() == null ? null :
                 getSqlConstraint().instantiate(templateParameters, templateArguments);
 
-        return new Field(getLocation(), instantiatedTypeInstantiation, name, isAutoOptional,
-                instantiatedAlignmentExpr, instantiatedOffsetExpr, instantiatedInitializerExpr,
+        return new Field(getLocation(), isExtended, instantiatedTypeInstantiation, name,
+                isAutoOptional, instantiatedAlignmentExpr, instantiatedOffsetExpr, instantiatedInitializerExpr,
                 instantiatedOptionalClauseExpr, instantiatedConstraintExpr,
                 isVirtual, instantiatedSqlConstraint, getDocComments());
     }
@@ -547,12 +558,14 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
         return true;
     }
 
-    private Field(AstLocation location, TypeInstantiation typeInstantiation, String name,
+    private Field(AstLocation location, boolean isExtended, TypeInstantiation typeInstantiation, String name,
             boolean isAutoOptional, Expression alignmentExpr, Expression offsetExpr, Expression initializerExpr,
             Expression optionalClauseExpr, Expression constraintExpr, boolean isVirtual,
             SqlConstraint sqlConstraint, List<DocComment> docComments)
     {
         super(location, docComments);
+
+        this.isExtended = isExtended;
 
         this.typeInstantiation = typeInstantiation;
         this.name = name;
@@ -569,6 +582,8 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
 
         this.isPackable = true;
     }
+
+    private final boolean isExtended;
 
     private final TypeInstantiation typeInstantiation;
     private final String name;

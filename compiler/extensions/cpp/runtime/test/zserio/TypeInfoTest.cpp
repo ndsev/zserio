@@ -21,6 +21,7 @@ public:
                 "recursive"_sv,
                 recursiveTypeInfo,
                 {},
+                false, // isExtended
                 {},
                 {},
                 {},

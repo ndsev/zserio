@@ -52,6 +52,7 @@ const ::zserio::pmr::ITypeInfo& DebugStringObject::typeInfo()
             ::zserio::makeStringView("text"), // schemaName
             ::zserio::BuiltinTypeInfo<allocator_type>::getString(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             ::zserio::makeStringView("::zserio::makeStringView(\"test\")"), // initializer

@@ -24,5 +24,6 @@ readability-braces-around-statements
 
 readability-make-member-function-const:gen/with_reflection_code/Child.cpp
 readability-make-member-function-const:gen/with_reflection_code/Choice.cpp
+readability-make-member-function-const:gen/with_reflection_code/Original.cpp
 readability-make-member-function-const:gen/with_reflection_code/Parameterized.cpp
 readability-make-member-function-const:gen/with_reflection_code/Struct.cpp

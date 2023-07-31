@@ -14,7 +14,24 @@ class ${name}:
 <@doc_comments docComments, 1/>
 
 </#if>
+<#assign numExtendedFields=num_extended_fields(fieldList)>
+<#function extended_field_index numFields numExtendedFields fieldIndex>
+    <#return fieldIndex - (numFields - numExtendedFields)>
+</#function>
 <#assign constructorAnnotatedParamList><@compound_constructor_annotated_parameters compoundParametersData, 3/></#assign>
+<#macro field_default_value field>
+    <#if field.initializer??>
+        ${field.initializer}<#t>
+    <#elseif field.optional??>
+        None<#t>
+    <#else>
+        <#if field.typeInfo.isBuiltin>
+        ${field.typeInfo.typeFullName}()<#t>
+        <#else>
+        None<#t>
+        </#if>
+    </#if>
+</#macro>
 <#if constructorAnnotatedParamList?has_content || fieldList?has_content>
     def __init__(
             self<#if constructorAnnotatedParamList?has_content>,
@@ -22,17 +39,7 @@ class ${name}:
     <#list fieldList as field>
             <#lt>,
             <#nt><@field_argument_name field/>: <@field_annotation_argument_type_name field, name/> = <#rt>
-        <#if field.initializer??>
-            ${field.initializer}<#t>
-        <#elseif field.optional??>
-            None<#t>
-        <#else>
-            <#if field.typeInfo.isBuiltin>
-            ${field.typeInfo.typeFullName}()<#t>
-            <#else>
-            None<#t>
-            </#if>
-        </#if>
+            <@field_default_value field/>
     </#list>
             <#lt>) -> None:
     <#if withCodeComments>
@@ -47,6 +54,9 @@ class ${name}:
 
     </#if>
         <@compound_constructor_parameter_assignments compoundParametersData/>
+    <#if (numExtendedFields > 0)>
+        self._num_extended_fields = ${fieldList?size}
+    </#if>
     <#list fieldList as field>
         <@compound_setter_field field, 2/>
     </#list>
@@ -69,6 +79,9 @@ class ${name}:
 </#if>
         self = object.__new__(cls)
         <@compound_constructor_parameter_assignments compoundParametersData/>
+<#if (numExtendedFields > 0)>
+        self._num_extended_fields = 0
+</#if>
 
         self.read(zserio_reader)
 
@@ -94,6 +107,9 @@ class ${name}:
 </#if>
         self = object.__new__(cls)
         <@compound_constructor_parameter_assignments compoundParametersData/>
+<#if (numExtendedFields > 0)>
+        self._num_extended_fields = 0
+</#if>
 
         self.read_packed(zserio_context_node, zserio_reader)
 
@@ -152,7 +168,12 @@ class ${name}:
 <#macro structure_compare_fields fieldList indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#list fieldList as field>
+        <#if field.isExtended>
+(not other.${field.isPresentIndicatorName}() if not self.${field.isPresentIndicatorName}() else <#rt>
+(other.${field.isPresentIndicatorName}() and <@compound_compare_field field/>))<#rt>
+        <#else>
 <@compound_compare_field field/><#rt>
+        </#if>
         <#if field?has_next>
  and
 ${I}<#rt>
@@ -181,7 +202,12 @@ ${I}<#rt>
         result = zserio.hashcode.HASH_SEED
         <@compound_hashcode_parameters compoundParametersData/>
 <#list fieldList as field>
-        <@compound_hashcode_field field/>
+        <#if field.isExtended>
+        if self.${field.isPresentIndicatorName}():
+            <@compound_hashcode_field field, 3/>
+        <#else>
+        <@compound_hashcode_field field, 2/>
+        </#if>
 </#list>
 
         return result
@@ -243,7 +269,24 @@ ${I}<#rt>
         """
 
         </#if>
+        <#if field.isExtended>
+        if not self.${field.isPresentIndicatorName}():
+            self._num_extended_fields = ${numExtendedFields}
+        </#if>
         <@compound_setter_field field, 2/>
+    </#if>
+    <#if field.isExtended>
+
+    def ${field.isPresentIndicatorName}(self) -> bool:
+        <#if withCodeComments>
+        """
+        Checks if the extended field ${field.name} is present.
+
+        :returns: True if the extended field ${field.name} is present, otherwise False.
+        """
+
+        </#if>
+        return self._num_extended_fields > ${extended_field_index(fieldList?size, numExtendedFields, field?index)}
     </#if>
     <#if field.optional??>
 
@@ -277,6 +320,10 @@ ${I}<#rt>
         """
 
             </#if>
+        <#if field.isExtended>
+        if not self.${field.isPresentIndicatorName}():
+            self._num_extended_fields = ${numExtendedFields}
+        </#if>
         self.<@field_member_name field/> = None
         </#if>
     </#if>
@@ -473,9 +520,23 @@ ${I}<#rt>
 </#if>
 <#if fieldList?has_content>
     <#list fieldList as field>
-        <@compound_read_field field, name, 2/>
-        <#if field?has_next && needsReadNewLines>
+        <#if field.isExtended>
+        if zserio.bitposition.alignto(8, zserio_reader.bitposition) >= zserio_reader.buffer_bitsize:
+            <@field_argument_name field/> = <@field_default_value field/>
+            <@compound_setter_field field, 3/>
+        else:
+            self._num_extended_fields += 1
+            zserio_reader.alignto(8)
 
+            <@compound_read_field field, name, 3/>
+            <#if field?has_next>
+
+            </#if>
+        <#else>
+        <@compound_read_field field, name, 2/>
+            <#if field?has_next && needsReadNewLines>
+
+            </#if>
         </#if>
     </#list>
 <#else>
@@ -501,7 +562,18 @@ ${I}<#rt>
 
     </#if>
     <#list fieldList as field>
+        <#if field.isExtended>
+        if zserio.bitposition.alignto(8, zserio_reader.bitposition) >= zserio_reader.buffer_bitsize:
+            <@field_argument_name field/> = <@field_default_value field/>
+            <@compound_setter_field field, 3/>
+        else:
+            self._num_extended_fields += 1
+            zserio_reader.alignto(8)
+
+            <@compound_read_field field, name, 3, true, field?index/>
+        <#else>
         <@compound_read_field field, name, 2, true, field?index/>
+        </#if>
         <#if field?has_next>
 
         </#if>

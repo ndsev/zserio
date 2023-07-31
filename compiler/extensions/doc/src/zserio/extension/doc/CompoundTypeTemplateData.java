@@ -146,6 +146,7 @@ public class CompoundTypeTemplateData extends PackageTemplateDataBase
             }
 
             docComments = new DocCommentsTemplateData(context, field.getDocComments());
+            isExtended = field.isExtended();
             isVirtual = field.isVirtual();
             isAutoOptional = field.isOptional() && field.getOptionalClauseExpr() == null;
             alignmentExpression = formatExpression(field.getAlignmentExpr(), docExpressionFormatter);
@@ -181,6 +182,11 @@ public class CompoundTypeTemplateData extends PackageTemplateDataBase
         public DocCommentsTemplateData getDocComments()
         {
             return docComments;
+        }
+
+        public boolean getIsExtended()
+        {
+            return isExtended;
         }
 
         public boolean getIsVirtual()
@@ -249,6 +255,7 @@ public class CompoundTypeTemplateData extends PackageTemplateDataBase
         private final List<String> typeArguments = new ArrayList<String>();
         private final String dynamicBitFieldLengthExpression;
         private final DocCommentsTemplateData docComments;
+        private final boolean isExtended;
         private final boolean isVirtual;
         private final boolean isAutoOptional;
         private final String alignmentExpression;

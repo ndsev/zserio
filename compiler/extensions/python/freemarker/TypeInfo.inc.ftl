@@ -128,6 +128,9 @@ ${I})<#if comma>,</#if>
     <#if typeArguments?has_content>
         <#local attributes+=["zserio.typeinfo.MemberAttribute.TYPE_ARGUMENTS : ${typeArguments}"]>
     </#if>
+    <#if field.isExtended>
+        <#local attributes+=["zserio.typeinfo.MemberAttribute.EXTENDED : None"]>
+    </#if>
     <#if field.alignmentValue??>
         <#local attributes+=["zserio.typeinfo.MemberAttribute.ALIGN : (lambda: ${field.alignmentValue})"]>
     </#if>

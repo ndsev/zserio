@@ -1,5 +1,5 @@
 <#include "CompoundParameter.inc.ftl">
-<#macro compound_constructors compoundConstructorsData>
+<#macro compound_constructors compoundConstructorsData numExtendedFields=0>
     <#local name=compoundConstructorsData.compoundName>
     <#local constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData/></#local>
     <#if withWriterCode>
@@ -15,6 +15,9 @@
     public ${name}(${constructorArgumentTypeList})
     {
         <@compound_constructors_set_parameters compoundConstructorsData/>
+        <#if (numExtendedFields > 0)>
+        this.numExtendedFields = ${numExtendedFields};
+        </#if>
     }
 
     </#if>
@@ -34,6 +37,9 @@
             throws java.io.IOException
     {
         <@compound_constructors_set_parameters compoundConstructorsData/>
+        <#if (numExtendedFields > 0)>
+        this.numExtendedFields = 0;
+        </#if>
         <#if constructorArgumentTypeList?has_content>
 
         </#if>
@@ -60,6 +66,9 @@
             throws java.io.IOException
     {
         <@compound_constructors_set_parameters compoundConstructorsData/>
+        <#if (numExtendedFields > 0)>
+        this.numExtendedFields = 0;
+        </#if>
         <#if constructorArgumentTypeList?has_content>
 
         </#if>

@@ -1,0 +1,22 @@
+<FindBugsFilter>
+    <Match>
+        <!-- May expose internal representation by returning reference to mutable object - this is ok -->
+        <Bug code="EI"/>
+        <Or>
+            <And>
+                <Class name="~extended_members\.multiple_extended_fields_various_types\.Extended.*"/>
+                <Method name="getExtendedValue3"/>
+            </And>
+        </Or>
+    </Match>
+    <Match>
+        <!-- May expose internal representation by storing reference to mutable object - this is ok -->
+        <Bug code="EI2"/>
+        <Or>
+            <And>
+                <Class name="~extended_members\.multiple_extended_fields_various_types\.Extended.*"/>
+                <Method name="setExtendedValue3"/>
+            </And>
+        </Or>
+    </Match>
+</FindBugsFilter>

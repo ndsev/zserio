@@ -638,6 +638,7 @@ public class TypeInfoTest
                             "setRecursive", // setterName
                             new RecursiveTypeInfo(new RecursiveTypeInfoGetter()), // typeInfo
                             new ArrayList<BiFunction<Object, Integer, Object>>(), // typeArguments
+                            false, // isExtended
                             null, // alignment
                             null, // offset
                             null, // initializer

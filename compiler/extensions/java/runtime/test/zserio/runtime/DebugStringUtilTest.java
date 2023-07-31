@@ -287,6 +287,7 @@ public class DebugStringUtilTest
             "text", "getText", "setText",
             BuiltinTypeInfo.getString(),
             new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+            false, // isExtended
             null, // alignment
             null, // offset
             null, // initializer

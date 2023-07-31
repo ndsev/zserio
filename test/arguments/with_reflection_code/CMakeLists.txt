@@ -10,6 +10,10 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/with_reflection_code/Empty.cpp
     ${ZSERIO_GEN_DIR}/with_reflection_code/Empty.h
     ${ZSERIO_GEN_DIR}/with_reflection_code/EmptyString.h
+    ${ZSERIO_GEN_DIR}/with_reflection_code/Extended.cpp
+    ${ZSERIO_GEN_DIR}/with_reflection_code/Extended.h
+    ${ZSERIO_GEN_DIR}/with_reflection_code/Original.cpp
+    ${ZSERIO_GEN_DIR}/with_reflection_code/Original.h
     ${ZSERIO_GEN_DIR}/with_reflection_code/Parameterized.cpp
     ${ZSERIO_GEN_DIR}/with_reflection_code/Parameterized.h
     ${ZSERIO_GEN_DIR}/with_reflection_code/Selector.h

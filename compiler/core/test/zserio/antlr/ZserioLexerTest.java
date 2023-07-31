@@ -100,6 +100,7 @@ public class ZserioLexerTest
                 "default " +
                 "enum " +
                 "explicit " +
+                "extend " +
                 "extern " +
                 "float16 " +
                 "float32 " +
@@ -170,6 +171,7 @@ public class ZserioLexerTest
         checkToken(lexer, ZserioLexer.DEFAULT);
         checkToken(lexer, ZserioLexer.ENUM);
         checkToken(lexer, ZserioLexer.EXPLICIT);
+        checkToken(lexer, ZserioLexer.EXTEND);
         checkToken(lexer, ZserioLexer.EXTERN);
         checkToken(lexer, ZserioLexer.FLOAT16);
         checkToken(lexer, ZserioLexer.FLOAT32);

@@ -249,6 +249,61 @@ public abstract class CompoundType extends TemplatableType
         }
     }
 
+    protected boolean containsExtendedField(Field field)
+    {
+        final TypeInstantiation typeInstantiation = field.getTypeInstantiation();
+        ZserioType fieldBaseType = typeInstantiation.getBaseType();
+        final boolean isArray = typeInstantiation instanceof ArrayInstantiation;
+        if (isArray)
+        {
+            final ArrayInstantiation arrayInstantiation = (ArrayInstantiation)typeInstantiation;
+            fieldBaseType = arrayInstantiation.getElementTypeInstantiation().getBaseType();
+        }
+
+        if (fieldBaseType instanceof CompoundType)
+        {
+            final CompoundType childCompoundType = (CompoundType)fieldBaseType;
+            for (Field childField : childCompoundType.getFields())
+            {
+                if (childField.isExtended())
+                    return true;
+
+                if (childCompoundType != this && childCompoundType.containsExtendedField(childField))
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected void trackExtendedField(Field field, ParserStackedException stackedException)
+    {
+        final TypeInstantiation typeInstantiation = field.getTypeInstantiation();
+        ZserioType fieldBaseType = typeInstantiation.getBaseType();
+        if (typeInstantiation instanceof ArrayInstantiation)
+        {
+            final ArrayInstantiation arrayInstantiation = (ArrayInstantiation)typeInstantiation;
+            fieldBaseType = arrayInstantiation.getElementTypeInstantiation().getBaseType();
+        }
+
+        if (fieldBaseType instanceof CompoundType)
+        {
+            final CompoundType childCompoundType = (CompoundType)fieldBaseType;
+            for (Field childField : childCompoundType.getFields())
+            {
+                if (childField.isExtended())
+                {
+                    stackedException.pushMessage(childField.getLocation(), "    extended field used here");
+                }
+                else if (childCompoundType != this && childCompoundType.containsExtendedField(childField))
+                {
+                    stackedException.pushMessage(childField.getLocation(), "    extended field used here");
+                    childCompoundType.trackExtendedField(childField, stackedException);
+                }
+            }
+        }
+    }
+
     protected boolean hasBranchWithoutImplicitArray()
     {
         throw new InternalError("CompoundType.hasBranchWithoutImplicitArray() is not implemented!");

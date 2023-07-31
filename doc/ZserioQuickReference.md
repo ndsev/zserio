@@ -113,6 +113,16 @@ choice VarCoordXY(uint8 width) on width
 };
 ```
 
+**Extended Members**
+```
+struct TopLevelBlob
+{
+    uint32 data[];                    // last field in version 1
+    extend ExtendedData extendedData; // added in version 2
+    extend bool additionalFlag;       // added in version 3
+};
+```
+
 **Constraints**
 ```
 struct GraphicControlExtension

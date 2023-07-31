@@ -175,6 +175,7 @@ const ::zserio::pmr::ITypeInfo& WalkerObject::typeInfo()
             ::zserio::makeStringView("identifier"), // schemaName
             ::zserio::BuiltinTypeInfo<allocator_type>::getUInt32(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
@@ -190,6 +191,7 @@ const ::zserio::pmr::ITypeInfo& WalkerObject::typeInfo()
             ::zserio::makeStringView("nested"), // schemaName
             ::test_object::polymorphic_allocator::WalkerNested::typeInfo(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
@@ -205,6 +207,7 @@ const ::zserio::pmr::ITypeInfo& WalkerObject::typeInfo()
             ::zserio::makeStringView("text"), // schemaName
             ::zserio::BuiltinTypeInfo<allocator_type>::getString(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
@@ -220,6 +223,7 @@ const ::zserio::pmr::ITypeInfo& WalkerObject::typeInfo()
             ::zserio::makeStringView("unionArray"), // schemaName
             ::test_object::polymorphic_allocator::WalkerUnion::typeInfo(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
@@ -235,6 +239,7 @@ const ::zserio::pmr::ITypeInfo& WalkerObject::typeInfo()
             ::zserio::makeStringView("optionalUnionArray"), // schemaName
             ::test_object::polymorphic_allocator::WalkerUnion::typeInfo(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
@@ -250,6 +255,7 @@ const ::zserio::pmr::ITypeInfo& WalkerObject::typeInfo()
             ::zserio::makeStringView("choiceSelector"), // schemaName
             ::zserio::BuiltinTypeInfo<allocator_type>::getUInt8(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
@@ -265,6 +271,7 @@ const ::zserio::pmr::ITypeInfo& WalkerObject::typeInfo()
             ::zserio::makeStringView("choiceField"), // schemaName
             ::test_object::polymorphic_allocator::WalkerChoice::typeInfo(), // typeInfo
             choiceFieldTypeArguments, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
@@ -868,10 +875,10 @@ bool WalkerObject::operator==(const WalkerObject& other) const
     {
         return
                 (m_identifier_ == other.m_identifier_) &&
-                ((!isNestedUsed()) ? !other.isNestedUsed() : (m_nested_ == other.m_nested_)) &&
+                (!isNestedUsed() ? !other.isNestedUsed() : (m_nested_ == other.m_nested_)) &&
                 (m_text_ == other.m_text_) &&
                 (m_unionArray_ == other.m_unionArray_) &&
-                ((!isOptionalUnionArrayUsed()) ? !other.isOptionalUnionArrayUsed() : (m_optionalUnionArray_ == other.m_optionalUnionArray_)) &&
+                (!isOptionalUnionArrayUsed() ? !other.isOptionalUnionArrayUsed() : (m_optionalUnionArray_ == other.m_optionalUnionArray_)) &&
                 (m_choiceSelector_ == other.m_choiceSelector_) &&
                 (m_choiceField_ == other.m_choiceField_);
     }

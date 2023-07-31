@@ -51,6 +51,7 @@ const ::zserio::pmr::ITypeInfo& ArrayObject::typeInfo()
             ::zserio::makeStringView("value"), // schemaName
             ::zserio::BuiltinTypeInfo<allocator_type>::getFixedUnsignedBitField(UINT8_C(31)), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer

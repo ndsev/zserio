@@ -54,6 +54,7 @@ const ::zserio::ITypeInfo& ReflectableUtilUnion::typeInfo()
             ::zserio::makeStringView("reflectableUtilEnum"), // schemaName
             ::zserio::enumTypeInfo<::test_object::std_allocator::ReflectableUtilEnum, allocator_type>(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
@@ -69,6 +70,7 @@ const ::zserio::ITypeInfo& ReflectableUtilUnion::typeInfo()
             ::zserio::makeStringView("reflectableUtilBitmask"), // schemaName
             ::test_object::std_allocator::ReflectableUtilBitmask::typeInfo(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer
@@ -84,6 +86,7 @@ const ::zserio::ITypeInfo& ReflectableUtilUnion::typeInfo()
             ::zserio::makeStringView("reflectableUtilObject"), // schemaName
             ::test_object::std_allocator::ReflectableUtilObject::typeInfo(), // typeInfo
             {}, // typeArguments
+            false, // isExtended
             {}, // alignment
             {}, // offset
             {}, // initializer

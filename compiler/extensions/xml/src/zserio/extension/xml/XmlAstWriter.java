@@ -258,6 +258,8 @@ public class XmlAstWriter implements ZserioAstVisitor
     {
         final Element fieldXmlElement = xmlDoc.createElement("FIELD");
         fieldXmlElement.setAttribute("name", field.getName());
+        if (field.isExtended())
+            fieldXmlElement.setAttribute("isExtended", "true");
         if (field.isOptional())
             fieldXmlElement.setAttribute("isOptional", "true");
         if (field.isVirtual())

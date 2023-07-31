@@ -1,7 +1,10 @@
 #include "gtest/gtest.h"
 
 #include "with_reflection_code/Choice.h"
+#include "with_reflection_code/Original.h"
+#include "with_reflection_code/Extended.h"
 
+#include "zserio/SerializeUtil.h"
 #include "zserio/StringView.h"
 #include "zserio/TypeInfoUtil.h"
 #include "zserio/ZserioTreeCreator.h"
@@ -669,6 +672,34 @@ TEST_F(WithReflectionCodeTest, childOptionalInconsistencies)
     child.resetNicknames();
     ASSERT_THROW(child.getNicknames(), zserio::CppRuntimeException);
     ASSERT_EQ(nullptr, reflectable->getField("nicknames")); // reflectable doesn't throw for missing optional!
+}
+
+TEST_F(WithReflectionCodeTest, checkExtendedField)
+{
+    Original original(42);
+    auto bitBuffer = zserio::serialize(original);
+    auto extended = zserio::deserialize<Extended>(bitBuffer);
+    auto reflectable = extended.reflectable();
+
+    ASSERT_EQ(42, (*reflectable)["field"]->toUInt());
+
+    ASSERT_EQ(nullptr, (*reflectable)["extendedField"]); // not present
+    ASSERT_EQ(nullptr, reflectable->getField("extendedField"));
+
+    extended.setExtendedField("hello world");
+
+    ASSERT_NE(nullptr, (*reflectable)["extendedField"]); // present
+    ASSERT_EQ("hello world", reflectable->getField("extendedField")->toString());
+
+    // create using reflectable
+    ZserioTreeCreator creator(Extended::typeInfo());
+    creator.beginRoot();
+    reflectable = creator.endRoot();
+    ASSERT_NE(nullptr, (*reflectable)["extendedField"]); // is present
+    ASSERT_EQ("", reflectable->getField("extendedField")->toString()); // default constructed
+
+    reflectable->setField("extendedField", AnyHolder(string_type("hello world")));
+    ASSERT_EQ("hello world", reflectable->getField("extendedField")->toString());
 }
 
 } // namespace with_reflection_code

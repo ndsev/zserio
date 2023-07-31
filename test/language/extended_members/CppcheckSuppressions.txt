@@ -1,0 +1,13 @@
+knownConditionTrueFalse:*/cpp/ExtendedChoiceFieldTest.cpp
+knownConditionTrueFalse:*/cpp/ExtendedCompoundFieldTest.cpp
+knownConditionTrueFalse:*/cpp/ExtendedEmptyStructureTest.cpp
+knownConditionTrueFalse:*/cpp/ExtendedIndexedOffsetsTest.cpp
+knownConditionTrueFalse:*/cpp/ExtendedOptionalParameterizedFieldTest.cpp
+knownConditionTrueFalse:*/cpp/ExtendedUnalignedFieldTest.cpp
+knownConditionTrueFalse:*/cpp/ExtendedSimpleFieldTest.cpp
+knownConditionTrueFalse:*/cpp/MultipleExtendedFieldsTest.cpp
+knownConditionTrueFalse:*/cpp/MultipleExtendedFieldsVariousTypesTest.cpp
+uninitMemberVar:*/extended_members/extended_choice_field/Choice.cpp
+uninitMemberVar:*/extended_members/extended_optional_parameterized_field/Parameterized.cpp
+uninitMemberVar:*/extended_members/extended_optional_parameterized_field/Parameterized.h
+uninitMemberVar:*/extended_members/multiple_extended_fields_various_types/Union.cpp

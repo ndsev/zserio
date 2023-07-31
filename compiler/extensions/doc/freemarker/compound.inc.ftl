@@ -10,6 +10,7 @@
 <#macro compound_field field columnCount indent>
     <#local I>${""?left_pad(indent * 2)}</#local>
     <#local typePrefix>
+        <#if field.isExtended>extend </#if><#t>
         <#if field.isVirtual>sql_virtual </#if><#t>
         <#if field.isAutoOptional>optional </#if><#t>
         <#if field.isArrayImplicit>implicit </#if><#t>

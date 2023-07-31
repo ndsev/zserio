@@ -40,6 +40,8 @@ public final class CompoundFieldTemplateData
         typeInfo = new NativeTypeInfoTemplateData(nativeType, fieldTypeInstantiation);
         propertyName = AccessorNameFormatter.getPropertyName(field);
 
+        isExtended = field.isExtended();
+        isPresentIndicatorName = AccessorNameFormatter.getIsPresentIndicatorName(field);
         isPackable = field.isPackable();
 
         final ExpressionFormatter pythonExpressionFormatter =
@@ -82,6 +84,16 @@ public final class CompoundFieldTemplateData
     public String getPropertyName()
     {
         return propertyName;
+    }
+
+    public boolean getIsExtended()
+    {
+        return isExtended;
+    }
+
+    public String getIsPresentIndicatorName()
+    {
+        return isPresentIndicatorName;
     }
 
     public boolean getIsPackable()
@@ -571,6 +583,8 @@ public final class CompoundFieldTemplateData
     private final String snakeCaseName;
     private final NativeTypeInfoTemplateData typeInfo;
     private final String propertyName;
+    private final boolean isExtended;
+    private final String isPresentIndicatorName;
     private final boolean isPackable;
 
     private final RangeCheck rangeCheck;

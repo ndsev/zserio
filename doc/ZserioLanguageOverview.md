@@ -500,6 +500,51 @@ union SimpleUnion
 In this example, the union `SimpleUnion` has two branches `value8` and `value16`. The syntax of a member
 definition is the same as in structure types.
 
+### Extended Members
+
+Any **top-level** structure type can have extended members. Extended members can be only at the end of the
+structure and allows to extend schema while preserves ability to read data created by older schemas
+(backward compatibility).
+
+**Example**
+```
+struct TopLevelBlob
+{
+    uint32 data[];
+    extend ExtendedData extendedData;
+};
+
+struct ExtendedData
+{
+    varint additionalData[];
+};
+```
+
+Extended member is defined by `extend` keyword which must be before the field definition. Extended member does
+not have any additional footprint in the bitstream. The only difference is that generators know that the parsed
+bitstream can terminate before any of the extended field.
+
+Multiple extended fields are allowed but once used, all other consecutive fields must also be marked as
+extended. It's up to user's responsibility that extended fields are not placed before fields which were
+extended in previous versions.
+
+**Example**
+```
+struct TopLevelBlob
+{
+    uint32 data[];                    // last field in version 1
+    extend ExtendedData extendedData; // added in version 2
+    extend bool additionalFlag;       // added in version 3
+};
+
+struct ExtendedData
+{
+    varint additionalData[];
+};
+```
+
+> Since `2.12.0`
+
 ### Constraints
 
 A constraint may be specified for any member of a compound type. After decoding a member with a constraint,

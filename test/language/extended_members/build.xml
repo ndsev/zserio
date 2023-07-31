@@ -1,0 +1,36 @@
+<project name="extended_members" basedir="." default="run">
+    <testProperties testPath="language/extended_members" testName="extended_members"/>
+
+    <target name="prepare">
+        <testPrepare testName="extended_members"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="extended_members"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="extended_members.zs.gen_is_uptodate">
+        <testGenClean testName="extended_members"/>
+        <testGen testName="extended_members" zsFile="extended_members.zs"/>
+    </target>
+
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="extended_members"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
+        <testCompile testName="extended_members"/>
+    </target>
+
+    <target name="spotbugs" depends="compile" if="spotbugs.home_dir">
+        <testSpotBugs testName="extended_members"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testName="extended_members"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="extended_members"/>
+    </target>
+</project>
