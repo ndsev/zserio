@@ -1,11 +1,11 @@
 # This is necessary for implementation. We intentionally store all possible array element types in 'uint64_t'
 # type to be able to implement delta compression.
-bugprone-signed-char-misuse:src/zserio/PackingContext.h:121
-bugprone-signed-char-misuse:src/zserio/PackingContext.h:138
-bugprone-signed-char-misuse:src/zserio/PackingContext.h:201
-bugprone-signed-char-misuse:src/zserio/PackingContext.h:237
-bugprone-signed-char-misuse:src/zserio/PackingContext.h:356
-bugprone-signed-char-misuse:src/zserio/PackingContext.h:380
+bugprone-signed-char-misuse:src/zserio/PackingContext.h:119
+bugprone-signed-char-misuse:src/zserio/PackingContext.h:136
+bugprone-signed-char-misuse:src/zserio/PackingContext.h:199
+bugprone-signed-char-misuse:src/zserio/PackingContext.h:235
+bugprone-signed-char-misuse:src/zserio/PackingContext.h:360
+bugprone-signed-char-misuse:src/zserio/PackingContext.h:385
 
 # This is necessary for implementation of low level implementation of Span and StringView to mimic standard
 # C++17 'std::span' and 'std::string_view' abstractions.

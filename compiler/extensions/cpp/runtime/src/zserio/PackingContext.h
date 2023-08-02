@@ -93,10 +93,8 @@ public:
      */
     void reset()
     {
-        m_isPacked = false;
         m_maxBitNumber = 0;
-        m_initStarted = false;
-        m_processingStarted = false;
+        m_flags = 0x00;
 
         m_unpackedBitSize = 0;
         m_firstElementBitSize = 0;
@@ -115,17 +113,17 @@ public:
         m_numElements++;
         m_unpackedBitSize += bitSizeOfUnpacked<ARRAY_TRAITS>(owner, element);
 
-        if (!m_initStarted)
+        if (!isFlagSet(INIT_STARTED_FLAG))
         {
-            m_initStarted = true;
+            setFlag(INIT_STARTED_FLAG);
             m_previousElement = static_cast<uint64_t>(element);
-            m_firstElementBitSize = m_unpackedBitSize;
+            m_firstElementBitSize = static_cast<uint8_t>(m_unpackedBitSize);
         }
         else
         {
             if (m_maxBitNumber <= MAX_BIT_NUMBER_LIMIT)
             {
-                m_isPacked = true;
+                setFlag(IS_PACKED_FLAG);
                 const auto previousElement = static_cast<typename ARRAY_TRAITS::ElementType>(
                         m_previousElement);
                 const uint8_t maxBitNumber = detail::calcBitLength(element, previousElement);
@@ -133,7 +131,7 @@ public:
                 {
                     m_maxBitNumber = maxBitNumber;
                     if (m_maxBitNumber > MAX_BIT_NUMBER_LIMIT)
-                        m_isPacked = false;
+                        resetFlag(IS_PACKED_FLAG);
                 }
                 m_previousElement = static_cast<uint64_t>(element);
             }
@@ -151,14 +149,14 @@ public:
     template <typename ARRAY_TRAITS, typename OWNER_TYPE>
     size_t bitSizeOf(const OWNER_TYPE& owner, typename ARRAY_TRAITS::ElementType element)
     {
-        if (!m_processingStarted)
+        if (!isFlagSet(PROCESSING_STARTED_FLAG))
         {
-            m_processingStarted = true;
+            setFlag(PROCESSING_STARTED_FLAG);
             finishInit();
 
             return bitSizeOfDescriptor() + bitSizeOfUnpacked<ARRAY_TRAITS>(owner, element);
         }
-        else if (!m_isPacked)
+        else if (!isFlagSet(IS_PACKED_FLAG))
         {
             return bitSizeOfUnpacked<ARRAY_TRAITS>(owner, element);
         }
@@ -179,14 +177,14 @@ public:
     template <typename ARRAY_TRAITS, typename OWNER_TYPE>
     typename ARRAY_TRAITS::ElementType read(const OWNER_TYPE& owner, BitStreamReader& in)
     {
-        if (!m_processingStarted)
+        if (!isFlagSet(PROCESSING_STARTED_FLAG))
         {
-            m_processingStarted = true;
+            setFlag(PROCESSING_STARTED_FLAG);
             readDescriptor(in);
 
             return readUnpacked<ARRAY_TRAITS>(owner, in);
         }
-        else if (!m_isPacked)
+        else if (!isFlagSet(IS_PACKED_FLAG))
         {
             return readUnpacked<ARRAY_TRAITS>(owner, in);
         }
@@ -215,15 +213,15 @@ public:
     template <typename ARRAY_TRAITS, typename OWNER_TYPE>
     void write(const OWNER_TYPE& owner, BitStreamWriter& out, typename ARRAY_TRAITS::ElementType element)
     {
-        if (!m_processingStarted)
+        if (!isFlagSet(PROCESSING_STARTED_FLAG))
         {
-            m_processingStarted = true;
+            setFlag(PROCESSING_STARTED_FLAG);
             finishInit();
             writeDescriptor(out);
 
             writeUnpacked<ARRAY_TRAITS>(owner, out, element);
         }
-        else if (!m_isPacked)
+        else if (!isFlagSet(IS_PACKED_FLAG))
         {
             writeUnpacked<ARRAY_TRAITS>(owner, out, element);
         }
@@ -296,20 +294,20 @@ private:
 
     void finishInit()
     {
-        if (m_isPacked)
+        if (isFlagSet(IS_PACKED_FLAG))
         {
             const size_t deltaBitSize = m_maxBitNumber + (m_maxBitNumber > 0 ? 1 : 0);
             const size_t packedBitSizeWithDescriptor = 1 + MAX_BIT_NUMBER_BITS + // descriptor
                     m_firstElementBitSize + (m_numElements - 1) * deltaBitSize;
             const size_t unpackedBitSizeWithDescriptor = 1 + m_unpackedBitSize;
             if (packedBitSizeWithDescriptor >= unpackedBitSizeWithDescriptor)
-                m_isPacked = false;
+                resetFlag(IS_PACKED_FLAG);
         }
     }
 
     size_t bitSizeOfDescriptor() const
     {
-        if (m_isPacked)
+        if (isFlagSet(IS_PACKED_FLAG))
             return 1 + MAX_BIT_NUMBER_BITS;
         else
             return 1;
@@ -333,9 +331,15 @@ private:
 
     void readDescriptor(BitStreamReader& in)
     {
-        m_isPacked = in.readBool();
-        if (m_isPacked)
+        if (in.readBool())
+        {
+            setFlag(IS_PACKED_FLAG);
             m_maxBitNumber = static_cast<uint8_t>(in.readBits(MAX_BIT_NUMBER_BITS));
+        }
+        else
+        {
+            resetFlag(IS_PACKED_FLAG);
+        }
     }
 
     template <typename ARRAY_TRAITS,
@@ -359,8 +363,9 @@ private:
 
     void writeDescriptor(BitStreamWriter& out) const
     {
-        out.writeBool(m_isPacked);
-        if (m_isPacked)
+        const bool isPacked = isFlagSet(IS_PACKED_FLAG);
+        out.writeBool(isPacked);
+        if (isPacked)
             out.writeBits(m_maxBitNumber, MAX_BIT_NUMBER_BITS);
     }
 
@@ -381,18 +386,35 @@ private:
         ARRAY_TRAITS::write(out, element);
     }
 
+    void setFlag(uint8_t flagMask)
+    {
+        m_flags |= flagMask;
+    }
+
+    void resetFlag(uint8_t flagMask)
+    {
+        m_flags &= static_cast<uint8_t>(~flagMask);
+    }
+
+    bool isFlagSet(uint8_t flagMask) const
+    {
+        return ((m_flags & flagMask) != 0);
+    }
+
     static const uint8_t MAX_BIT_NUMBER_BITS = 6;
     static const uint8_t MAX_BIT_NUMBER_LIMIT = 62;
 
-    uint64_t m_previousElement;
-    bool m_isPacked = false;
-    uint8_t m_maxBitNumber = 0;
-    bool m_initStarted = false;
-    bool m_processingStarted = false;
+    static const uint8_t INIT_STARTED_FLAG = 0x01;
+    static const uint8_t IS_PACKED_FLAG = 0x02;
+    static const uint8_t PROCESSING_STARTED_FLAG = 0x04;
 
+    uint64_t m_previousElement;
+    uint8_t m_maxBitNumber = 0;
+    uint8_t m_flags = 0x00;
+
+    uint8_t m_firstElementBitSize = 0;
+    uint32_t m_numElements = 0;
     size_t m_unpackedBitSize = 0;
-    size_t m_firstElementBitSize = 0;
-    size_t m_numElements = 0;
 };
 
 /**
