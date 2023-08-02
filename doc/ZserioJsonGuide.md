@@ -3,6 +3,9 @@
 Zserio supports encoding in JSON to have readable format allowing users convenient way of data inspection, e.g.
 for debugging purposes. This JSON encoding is described by this document.
 
+> Note that JSON debug string is available only when `-withTypeInfoCode` option is used.
+> Moreover in C++ it's available only when `-withReflectionCode` option is used.
+
 [Simple Example](#simple-example)
 
 [JSON Mapping](#json-mapping)
@@ -85,8 +88,8 @@ error. This behavior allows users to update Zserio object partially which might 
 purposes. However, users should be aware that partial update of Zserio object might leave object in inconsistent
 state.
 
-In another hand, generation of JSON data from an inconsistent Zserio object is not possible and fails
-with error.
+> Note that it's also not required to have a fully initialized object to be able to write it to JSON data.
+> Thus it's possible to use JSON format for debugging in both directions, reading and writing.
 
 The JSON encoding is described for all Zserio types in the table below:
 

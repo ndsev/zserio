@@ -22,7 +22,7 @@ Zserio is a framework for serializing structured data with a compact and efficie
 
 You can define your structured data in [Zserio language](doc/ZserioLanguageOverview.md) and then you can use
 special generated source code in [several languages](#language-support) to easily write and read your data to
-and from a [binary](doc/ZserioEncodingGuide.md) or [text](doc/ZserioJsonGuide.md) stream.
+and from a [binary](doc/ZserioEncodingGuide.md) or a [text](doc/ZserioJsonGuide.md) stream.
 
 No time to read? Go to the [quick start](#quick-start) or [download latest release](https://github.com/ndsev/zserio/releases/latest).
 
