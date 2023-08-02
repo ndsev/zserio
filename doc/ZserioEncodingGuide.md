@@ -61,14 +61,13 @@ If we use the schema above and serialize one employee with
 the resulting bit stream looks like the following:
 
 ```
-Offset   00 01 02 03 04 05 06 07 08 09 10 11 12 13
-
-00000000 20 09 4A 6F 65 20 53 6D 69 74 68 13 88 00
+Offset   00 01 02 03 04 05 06 07  08 09 10 11 12 13
+00000000 20 09 4A 6F 65 20 53 6D  69 74 68 13 88 00
 ```
 
 Detailed description of bit stream:
 
-Byte position | value             | value (hex)                | comment
+Byte position | Value             | Value (hex)                | Description
 ------------- | ----------------- | -------------------------- | -----------------------
 0             | 32 (age)          | 20                         | `uint8` is fixed size 8 bit value
 1             | 9 (string length) | 09                         | string length is encoded in `varsize` field before actual string
@@ -90,38 +89,147 @@ If the type size is not byte aligned, exact number of bits are encoded (e.g. `bi
 
 **Example**
 
-The decimal value `513` interpreted as `int16` is encoded as a hex byte stream `02 01`. As a bit stream, this
-looks like `0000 0010 0000 0001`. Bit 0 is `1`, bit 15 is `0`.
+The decimal value `513` interpreted as `int16`:
+
+```
+Offset   00 01
+00000000 02 01
+```
+
+Byte position | Value | Value (hex) | Value (bit)          | Description
+------------- | ----- | ----------- | -------------------- | -------
+0-1           | 513   | 02 01       | 0000 0010 0000 0001  | bit 0 is `1`, bit 15 is `0`
+
+### Variable Integer Types
+
+The internal layout of the variable integer types is:
+
+Data Type   | Byte | Description
+----------- | ---- | -----------
+varint16    | 0    | 1 bit sign, 1 bit has next byte, 6 bits value
+<sup></sup> | 1    | 8 bits value
+varuint16   | 0    | 1 bit has next byte, 7 bits value
+<sup></sup> | 1    | 8 bits value
+varint32    | 0    | 1 bit sign, 1 bit has next byte, 6 bits value
+<sup></sup> | 1    | 1 bit has next byte, 7 bits value
+<sup></sup> | 2    | 1 bit has next byte, 7 bits value
+<sup></sup> | 3    | 8 bits value
+varuint32   | 0    | 1 bit has next byte, 7 bits value
+<sup></sup> | 1    | 1 bit has next byte, 7 bits value
+<sup></sup> | 2    | 1 bit has next byte, 7 bits value
+<sup></sup> | 3    | 8 bits value
+varint64    | 0    | 1 bit sign, 1 bit has next byte, 6 bits value
+<sup></sup> | 1    | 1 bit has next byte, 7 bits value
+<sup></sup> | 2    | 1 bit has next byte, 7 bits value
+<sup></sup> | 3    | 1 bit has next byte, 7 bits value
+<sup></sup> | 4    | 1 bit has next byte, 7 bits value
+<sup></sup> | 5    | 1 bit has next byte, 7 bits value
+<sup></sup> | 6    | 1 bit has next byte, 7 bits value
+<sup></sup> | 7    | 8 bits value
+varuint64   | 0    | 1 bit has next byte, 7 bits value
+<sup></sup> | 1    | 1 bit has next byte, 7 bits value
+<sup></sup> | 2    | 1 bit has next byte, 7 bits value
+<sup></sup> | 3    | 1 bit has next byte, 7 bits value
+<sup></sup> | 4    | 1 bit has next byte, 7 bits value
+<sup></sup> | 5    | 1 bit has next byte, 7 bits value
+<sup></sup> | 6    | 1 bit has next byte, 7 bits value
+<sup></sup> | 7    | 8 bits value
+varint      | 0    | 1 bit sign, 1 bit has next byte, 6 bits value
+<sup></sup> | 1    | 1 bit has next byte, 7 bits value
+<sup></sup> | 2    | 1 bit has next byte, 7 bits value
+<sup></sup> | 3    | 1 bit has next byte, 7 bits value
+<sup></sup> | 4    | 1 bit has next byte, 7 bits value
+<sup></sup> | 5    | 1 bit has next byte, 7 bits value
+<sup></sup> | 6    | 1 bit has next byte, 7 bits value
+<sup></sup> | 7    | 1 bit has next byte, 7 bits value
+<sup></sup> | 8    | 8 bits value
+varuint     | 0    | 1 bit has next byte, 7 bits value
+<sup></sup> | 1    | 1 bit has next byte, 7 bits value
+<sup></sup> | 2    | 1 bit has next byte, 7 bits value
+<sup></sup> | 3    | 1 bit has next byte, 7 bits value
+<sup></sup> | 4    | 1 bit has next byte, 7 bits value
+<sup></sup> | 5    | 1 bit has next byte, 7 bits value
+<sup></sup> | 6    | 1 bit has next byte, 7 bits value
+<sup></sup> | 7    | 1 bit has next byte, 7 bits value
+<sup></sup> | 8    | 8 bits value
+varsize     | 0    | 1 bit has next byte, 7 bits value
+<sup></sup> | 1    | 1 bit has next byte, 7 bits value
+<sup></sup> | 2    | 1 bit has next byte, 7 bits value
+<sup></sup> | 3    | 1 bit has next byte, 7 bits value
+<sup></sup> | 4    | 8 bits value
+
+> Minimum size is always 1 byte, the other bytes are present only when previous *has next byte* bit is set
+> to `1`
 
 ### String Type
 
-[String type](ZserioLanguageOverview.md#string-type) is encoded by a length field (stored as a `varsize`)
+[String type](ZserioLanguageOverview.md#string-type) is encoded by a length field
 followed by a sequence of bytes (8 bits) in UTF-8 encoding.
+
+| Byte position | Description |
+| ------------- | ----------- |
+| 0-4           | length of the string encoded as `varsize` |
+| ~             | UTF-8 encoded string |
 
 **Example**
 
-The string `Zserio is cool` is encoded as a hex byte stream
-`14 5a 73 65 72 69 6f 20 69 73 20 63 6f 6f 6c` where first byte `14` denotes length of the string in
-bytes (hex).
+The string *"Zserio is cool"* will be encoded as a bit stream:
+
+```
+Offset   00 01 02 03 04 05 06 07  08 09 10 11 12 13 14
+00000000 0e 5a 73 65 72 69 6f 20  69 73 20 63 6f 6f 6c
+```
+
+| Byte position | Value              | Value (hex) | Description
+| ------------- | ------------------ | ----------- | ------------
+| 0             | 14                 | 0e          | length of the string encoded as `varsize`
+| 1-14          | *"Zserio is cool"* | 5a 73 65 72 69 6f 20 69 73 20 63 6f 6f 6c | UTF-8 encoded string
 
 ### Extern Type
 
-[Extern type](ZserioLanguageOverview.md#extern-type) is encoded by a field which represents number of bits
-(stored as a `varsize`) followed by a bit sequence.
+[Extern type](ZserioLanguageOverview.md#extern-type) is encoded by a field which represents number of bits followed by a bit sequence.
+
+| Byte position | Description |
+| ------------- | ----------- |
+| 0-4           | number of bits encoded as `varsize` |
+| ~             | bit sequence |
 
 **Example**
 
-The bit sequence `1010 0101 11` is encoded as a hex byte stream `0A A5 C0` (last 6 bits from the last
-byte is not used). As a bit stream, this looks like `0000 1010 1010 0101 11`.
+The bit sequence `1010010111` will be encoded as a bit stream `00001010 101001011 11`:
+
+```
+Offset   00 01 02
+00000000 0a a5 c0
+```
+
+| Byte position |  Value       | Value (hex) | Description |
+| ------------- | ------------ | ----------- | ----------- |
+| 0             | 10           | 0a          | number of bits encoded as `varsize` |
+| 1-2           | `10100101 11` | a5 c0      | bit sequence (last 6 bits from the last byte is not used) |
 
 ### Bytes Type
 
-[Bytes type](ZserioLanguageOverview.md#bytes-type) is encoded by a field which represents number of bytes
-(stored as a `varsize`) followed by a byte sequence.
+[Bytes type](ZserioLanguageOverview.md#bytes-type) is encoded by a field which represents number of bytes followed by a byte sequence.
+
+| Byte position | Description |
+| ------------- | ----------- |
+| 0-4           | number of bytes encoded as `varsize` |
+| ~             | byte sequence |
 
 **Example**
 
-The byte sequence `DE AD BE EF` is encoded as a hex byte stream `04 DE AD BE EF`.
+The byte sequence `de ad be ef` will be encoded as a bit stream:
+
+```
+Offset   00 01 02 03 04
+00000000 04 de ad be ef
+```
+
+| Byte position | Value (hex) | Description |
+| ------------- | ----------- | ----------- |
+| 0             | 04          | number of bytes encoded as `varsize` |
+| 1-4           | de ad be ef | byte sequence |
 
 ## Enumeration Types
 
@@ -139,7 +247,7 @@ enum bit:3 Color
 };
 ```
 
-The enumeration value `RED` is encoded as a bit stream `010`.
+The enumeration value `RED` will be encoded as a bit stream `010`.
 
 ## Bitmask Types
 
@@ -156,7 +264,12 @@ bitmask uint8 Permission
 };
 ```
 
-The bitmask value `READABLE` is encoded as a hex byte stream `02`.
+The bitmask value `READABLE` will be encoded as a bit stream `00000010`:
+
+```
+Offset   00
+00000000 02
+```
 
 ## Structure Types
 
@@ -168,16 +281,27 @@ alignment between fields.
 ```
 struct MyStructure
 {
-    bit:4 a;
-    uint8 b;
-    bit:4 c;
+    bit:4 a = 7;
+    uint8 b = 127;
+    bit:4 c = 13;
 };
 ```
 
-This type has a total length of 16 bits or 2 bytes. As a bit stream, bit offsets 0-3 correspond to member `a`,
-bit offsets 4-11 represent an unsigned integer `b`, followed by member `c` in bit offsets 12-15. Note that
-member `b` overlaps a byte boundary, when the entire type is byte aligned. But `MyStructure` may also be
-embedded into another type where it may not be byte-aligned.
+The structure using the default values is encoded as a bit stream `01110111 11111101`:
+
+```
+Offset   00 01
+00000000 77 fd
+```
+
+Byte position | Bit position | Value | Value (hex) | Description
+------------- | ------------ | ----- | ----------- | -----------
+0             | 0-3          | 7     | 7           | field `a`, 4 bits
+0-1           | 4-11         | 127   | 7f          | field `b`, 8 bits (1 byte)
+1             | 12-15        | 13    | d           | field `c`, 4 bits
+
+> Note that member `b` overlaps a byte boundary, when the entire type is byte aligned. But `MyStructure` may
+> also be embedded into another type where it may not be byte-aligned.
 
 ## Choice Types
 
@@ -195,14 +319,25 @@ choice VarCoordXY(uint8 width) on width
 };
 ```
 
-If the selector `width` is `24` and `coord24` field is `BE DE AD`, then choice type will be encoded
-as a hex byte stream `BE DE AD`.
+If the selector `width` is `24` and `coord24` field is `be de ad`, then the choice type will be encoded as
+a bit stream `10111110 11011110 10101101`:
+
+```
+Offset   00 01 02
+00000000 be de ad
+```
+
+> Note that parameter is not part of the choice payload.
 
 ## Union Types
 
-[Union types](ZserioLanguageOverview.md#union-types) are encoded by a field which represents order number
-of the selected branch (counted from zero from the beginning stored as a `varsize`) followed by a field from
-selected branch.
+[Union types](ZserioLanguageOverview.md#union-types) are encoded by a choice tag which represents order number
+of the selected branch (counted from zero) followed by a field from selected branch.
+
+Byte position | Description
+------------- | -----------
+0-4           | choice tag encoded as `varsize`
+~             | field data from the selected branch
 
 **Example**
 
@@ -214,8 +349,18 @@ union SimpleUnion
 };
 ```
 
-If the selected branch is `value16` with the value `DE AD`, then union type will be encoded as a hex byte
-stream `01 DE AD`.
+If the selected branch is `value16` with the value `de ad`, then the union type will be encoded as a bit stream
+`00000001 11011110 10101101`:
+
+```
+Offset   00 01 02
+00000000 01 DE AD
+```
+
+Byte position | Value | Value (hex) | Description
+------------- | ----- | ----------- | -----------
+0             | 1     | 01          | choice tag encoded as a `varsize`, value corresponds to the used field index counted from 0
+1-2           | 57005 | de ad       | `uint16` always uses 2 bytes
 
 Union types are an automatic choice types and can be always replaced by choice types with the selector field.
 The following shows choice type which corresponds to the previous `SimpleUnion` example:
@@ -245,14 +390,19 @@ choice SimpleValue(ChoiceTag choiceTag) on choiceTag
 };
 ```
 
-Both examples from above result in the exact same byte stream.
+Both examples from above result in the exact same bit stream.
 
 ## Optional Members
 
 [Optional members](ZserioLanguageOverview.md#optional-members) are encoded in the same way as other
 fields except of the optional members which are defined without `if` clause using a keyword `optional`. Such
-auto optional members are encoded by single bit which indicates if whether optional member is present or not
+auto optional members are encoded by single bit which indicates whether optional member is present or not
 followed by encoded value.
+
+Bit position | Description
+------------ | -----------
+1            | presence flag
+~            | field data
 
 **Example**
 
@@ -263,11 +413,22 @@ struct Container
 };
 ```
 
-If the `autoOptionalInt` values is set to the value `3E DE AD EF`, then this optional member will be encoded
-as a hex byte stream `9F 6F 56 F7 80` (last 7 bits from the last byte is not used). As a bit stream, this
-looks like `1001 1111 0110 1111 0101 0110 1111 0111 1`.
+If the `autoOptionalInt` values is set to the value `1054780911`, then the structure will be encoded
+as a bit stream `10011111 01101111 01010110 11110111 1`:
 
-If the `autoOptionalInt` value is not set, then this optional member will be encoded as a single bit `0`.
+```
+Offset   00 01 02 03 04
+00000000 9F 6F 56 F7 80
+```
+
+Byte position | Bit position | value      |  value (hex) | Description
+------------- | ------------ | ---------- |  ----------- | -----------
+0             | 0            | 1          |  1           | optional field is present
+0-4           | 1-32         | 1054780911 |  3E DE AD EF | `int32` always uses 4 bytes, last 7 bits from the last byte are not used
+
+> Thus the whole bit stream size is 33 bits.
+
+If the `autoOptionalInt` value is not set, then the structure will be encoded as a single bit `0`.
 
 Optional members defined using `optional` keyword are an automatic optional members and can be always replaced
 by optional members with `if` clause. The following shows optional member with `if` clause which corresponds
@@ -304,20 +465,44 @@ struct ArrayExample
 
 ```
 
-If the `header[0]` is set to `BE` and the `header[1]` is set to `EB` and `numItems` to `02` and `list[0]`
-to `AB` and `list[1]` to `BA`, then the `ArrayExample` structure will be encoded as a hex byte stream
-`BE EB 00 02 AB BA`.
+Assuming the `ArrayExample` fields:
+```
+header = [be, eb]
+numItems = 2
+list = [ab, ba]
+```
+
+The structure will be encoded as a bit stream:
+```
+Offset   00 01 02 03 04 05
+00000000 be eb 00 02 ab ba
+```
+
+Byte position | Value (hex) | Description
+------------- | ----------- | -----------
+0             | be          | `header[0]`
+1             | eb          | `header[1]`
+2-3           | 00 02       | `numItems`, `int16` always uses 2
+4             | ab          | `list[0]`
+5             | ba          | `list[1]`
+
+> Note that arrays lengths don't need any additional payload.
 
 ### Implicit Length Arrays
 
 [Implicit length arrays](ZserioLanguageOverview.md#implicit-length-arrays) are encoded in the same way as fixed
-or variable length arrays.
+or variable length arrays. The decoder will continue matching instances of the element type until the end of the stream is
+reached.
 
 ### Auto Length Arrays
 
 [Auto length arrays](ZserioLanguageOverview.md#auto-length-arrays) are encoded by a field which represents
-number of array elements (stored as a `varsize`) followed by array values encoded in the same way as variable
-length arrays.
+number of array elements followed by array values encoded in the same way as variable length arrays.
+
+Byte position | Description
+------------- | -----------
+0-4           | number of array elements stored as a `varsize`
+~             | array elements data
 
 **Example**
 
@@ -328,8 +513,22 @@ struct AutoArray
 };
 ```
 
-If the `list[0]` is set to `BE` and the `list[1]` is set to `EB`, then the `AutoArray` structure will be
-encoded as a hex byte stream `02 BE EB`.
+Assuming the `AutoArray` fields:
+```
+list = [be, eb]
+```
+
+The structure will be encoded as a bit stream:
+```
+Offset   00 01 02
+00000000 02 BE EB
+```
+
+Byte position | Value (hex) | Description
+------------- | ----------- | -----------
+0             | 02          | array length encoded as `varsize`
+1             | be          | list[0]
+2             | eb          | list[1]
 
 Auto length arrays are an automatic arrays and can be always replaced by variable length arrays. The following
 shows variable length array which corresponds to the previous `AutoArray` example:
@@ -360,6 +559,10 @@ struct PackingDescriptor
 };
 ```
 
+> `PackingDescriptor.maxBitNumber` is maximum bit number used for all deltas (counted from zero). Since delta
+> can also be negative, the delta encoding needs an extra bit for the **sign**. Note that it's necessary to walk
+> through the whole array to determine the proper `maxBitNumber` before writing.
+
 **Example**
 
 ```
@@ -369,20 +572,51 @@ struct PackedArray
 };
 ```
 
-Consider that the `list` array is filled by the following decimal values `11 12 15 22 23`. Then, the deltas
-(differences between sequential elements) are `1 3 7 1`. Thus, the maximum delta is `7` which defines
-the maximum bit number used for all deltas as `2` (`maxBitNumber` counted from zero). Then,
-`PackingDescriptor` will be encoded as a 7-bit stream `1 000010` followed by the first array element
-`0000 1011` followed by four 3-bit delta values `001 011 111 001`. Putting all together this packed
-array of integers will be encoded as a bit stream `1000 0100 0001 0110 0101 1111 001` which is 27 bits
-instead of original 40 bits (five `uint8` elements).
+Assuming the `PackedArray` fields:
+```
+list = [11, 12, 15, 22, 23] # decimal values
+```
 
-Now consider that the `list` array is filled by the decimal values `0 250 251 252 253`. Then, the deltas
-are `250 1 1 1`. Thus, the number of bits necessary for deltas will be `8` which would leave length of
-delta compressed array bigger than original array (because of `PackingDescriptor`). In this case, packed
-array will be encoded by the single bit `0` (`isPacked` will be `false` followed by the uncompressed array
-elements. Putting all together this packed array of integers will be encoded as bit stream
-`0 0000 0000 1111 1010 1111 1011 1111 1100 1111 1101` which is 41 bits instead of original 40 bits.
+The structure will be encoded as a bit stream `10000110 00010110 00100110 1110001`:
+```
+Offset  00 01 02 03
+0000000 86 16 26 e2
+```
+
+Bit position | Value | Value (bin) | Description
+------------ | ----- | ----------- | -----------
+0            | 1     | 1           | `PackingDescriptor.isPacked` - packed, the deltas (differences between sequential elements) are `1, 3, 7, 1`, thus the maximum delta is `7`
+1-6          | 3     | 000011      | `PackingDescriptor.maxBitNumber`, maximum delta `7` defines the maximum bit number used for all deltas as `3` (4 bits including sign)
+7-14         | 11    | 00001011    | `list[0]` - first array element, `uint8` always uses 1 byte
+15-17        | 1     | 0001         | 4-bit delta for the `list[1]`
+18-20        | 3     | 0011         | 4-bit delta for the `list[2]`
+21-23        | 7     | 0111         | 4-bit delta for the `list[3]`
+24-26        | 1     | 0001         | 4-bit delta for the `list[4]`
+
+> This is 31 bits instead of original 40 bits (five `uint8` elements).
+
+Now consider another values:
+```
+list = [0, 250, 251, 252, 253]
+```
+
+The structure will be encoded as a bit stream `00000000 01111101 01111101 11111110 01111110 1`:
+```
+Offset   00 01 02 03 04 05
+00000000 00 7d 7d fe 7e 80
+```
+
+Bit position | Value | Value (bin) | Description
+------------ | ----- | ----------- | -----------
+0            | 0     | 0           | `PackingDescriptor.isPacked` - not packed, the deltas are `250, 1, 1, 1`, thus the number of bits necessary for deltas will be `8` which would leave length of delta compressed array bigger than original array
+1-8          | 0     | 00000000    | `list[0]`
+9-16         | 250   | 11111010    | `list[1]`
+17-24        | 251   | 11111011    | `list[2]`
+25-32        | 252   | 11111100    | `list[3]`
+33-40        | 253   | 11111101    | `list[3]`
+
+> In this case, the packed array will be encoded by the single bit `0` (`isPacked` will be `false`) followed by the
+> uncompressed array elements - it's 41 bits instead of original 40 bits.
 
 Packed arrays of integers can be always replaced by normal schema without packed functionality.
 The following shows packed array of integers which corresponds to the previous `PackedArray` example:
@@ -410,21 +644,26 @@ struct PackedArray
 };
 ```
 
-Both examples from above result in the exact same byte stream.
+Both examples from above result in the exact same bit stream.
 
 ### Packed Arrays of Compounds
 
-[Packed arrays of compounds](ZserioLanguageOverview.md#packed-arrays) are encoded compound by compound.
-If the compound field is packable than the first compound element will contain `PackingDescriptor` followed
-by the first compound element field. Each other compound elements will contain delta.
+[Packed arrays of compounds](ZserioLanguageOverview.md#packed-arrays) are encoded compound element by
+compound element.
+
+If the compound field is packable than the field in the first compound element will contain `PackingDescriptor`
+followed by the field value. Each field in following compound elements will contain delta of the next
+field value (if `PackingDescriptor.isPacked = 1`, otherwise it will contain the field value).
+
+If the compound field is unpackable, it's value is simply written in the stream.
 
 **Example**
 
 ```
 struct PackableStructure
 {
-    uint32 value;
-    string text;
+    uint32 value; // packable
+    string text;  // unpackable
 };
 
 struct PackedArray
@@ -432,6 +671,45 @@ struct PackedArray
     packed PackableStructure list[5];
 };
 ```
+
+Assuming the `PackedArray` fields:
+```
+list = [
+    PackableStructure(0, "a"),
+    PackableStructure(10, "b"),
+    PackableStructure(20, "c"),
+    PackableStructure(30, "d")
+    PackableStructure(40, "e")
+]
+```
+
+The structure will be encoded as a bit stream:
+```
+Offset   00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15
+00000000 88 00 00 00 00 02 c2 a0 16 25 00 b1 a8 05 91 40
+00000010 2c a0
+```
+Bit position | Value | Value (hex, `bin`) | Description
+------------ | ----- | ------------------ | -----------
+0            | 1     | `1`                | `PackingDescriptor.isPacked` for `value` - packed, max delta is `10`
+1-6          | 4     | 4                  | `PackingDescriptor.maxBitNumber` for `value` - maximum delta `10` defines maximum bit number as `4`
+7-38         | 0     | 00 00 00 00        | `list[0].value` - first element, `uint32` always uses 4 bytes
+39-46        | 1     | 01                 | length of `list[0].text` string, encoded as `varsize`
+47-54        | "a"   | 61                 | UTF-8 encoded string "a"
+55-59        | 10    | `01010`            | 5-bit delta for the `list[1].value`
+60-67        | 1     | 01                 | length of `list[1].text` string, encoded as `varsize`
+68-75        | "b"   | 62                 | UTF-8 encoded string "b"
+76-80        | 10    | `01010`            | 5-bit delta for the `list[2].value`
+81-88        | 1     | 01                 | length of `list[2].text` string, encoded as `varsize`
+89-96        | "c"   | 63                 | UTF-8 encoded string "c"
+99-101       | 10    | `01010`            | 5-bit delta for the `list[3].value`
+102-109      | 1     | 01                 | length of `list[3].text` string, encoded as `varsize`
+110-117      | "d"   | 64                 | UTF-8 encoded string "d"
+118-122      | 10    | `01010`            | 5-bit delta for the `list[4].value`
+123-130      | 1     | 01                 | length of `list[4].text` string, encoded as `varsize`
+131-138      | "d"   | 65                 | UTF-8 encoded string "e"
+
+> This is 139 bits instead of 240 bits which would be used without packing (`5 * (32 + 16`)).
 
 Packed arrays of compounds can be always replaced by normal schema without packed functionality.
 The following shows packed array of compounds  which corresponds to the previous `PackedArray` example:
@@ -464,7 +742,7 @@ struct PackedArray
 };
 ```
 
-Both examples from above result in the exact same byte stream.
+Both examples from above result in the exact same bit stream.
 
 Packed arrays of choices and unions are encoding in the same way, meaning that all fields corresponded to the
 same case are considered as an array. If such array is empty, nothing is encoded in the bit stream.
@@ -495,6 +773,61 @@ struct PackedArray
     packed PackableStructure list[5];
 };
 ```
+
+Assuming the `PackedArray` fields:
+```
+list = [
+    PackableStructure(10, "a", InnerStructure(1000, 65535)),
+    PackableStructure(20, "b", InnerStructure(950, 0)),
+    PackableStructure(30, "c", InnerStructure(1000, 65535)),
+    PackableStructure(40, "d", InnerStructure(950, 0)),
+    PackableStructure(50, "e", InnerStructure(1000, 65535)),
+]
+```
+
+The structure will be encoded as a bit stream:
+```
+Offset   00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15
+00000000 88 00 00 00 00 02 c3 18 00 00 00 00 00 00 0f a1
+00000010 ff fe a0 16 29 c0 00 0a 01 63 65 ff fe a0 16 49
+00000020 c0 00 0a 01 65 65 ff fe
+```
+
+Bit position | Value | Value (hex, `bin`) | Description
+------------ | ----- | ------------------ | -----------
+0            | 1     | `1`                | `PackingDescriptor.isPacked` for `value32` - packed, max delta is `10`
+1-6          | 4     | 4                  | `PackingDescriptor.maxBitNumber` for `value32` - maximum delta `10` defines maximum bit number as `4`
+7-38         | 0     | 00 00 00 00        | `list[0].value32` - first element, `uint32` always uses 4 bytes
+39-46        | 1     | 01                 | length of `list[0].text` string, encoded as `varsize`
+47-54        | "a"   | 61                 | UTF-8 encoded string "a"
+55           | 1     | `1`                | `PackingDescriptor.isPacked` for `value64` - packed, max delta is `50`
+56-61        | 6     | 6                  | `PackingDescriptor.maxBitNumber` for `value64` - maximum delta `50` defines maximum bit number as `6`
+62-125       | 1000  | 3e8                | `list[0].innerStructure.value64` - first element, `uint64` always uses 8 bytes
+126          | 0     | `0`                | `PackingDescriptor.isPacked` for `value16` - not packed, max delta is `65535`
+127-142      | 65535 | ff ff              | `list[0].innerStructure.value16` - first element, `uint16` always uses 2 bytes
+143-147      | 10    | `01010`            | 5-bit delta for the `list[1].value32`
+148-155      | 1     | 01                 | length of `list[1].text` string, encoded as `varsize`
+156-163      | "b"   | 62                 | UTF-8 encoded string "b"
+164-170      | -50   | `1001110`          | 7-bit delta for `list[1].innerStructure.value64`
+171-186      | 0     | 00 00              | `list[1].innerStructure.value16` - `uint16` always uses 2 bytes
+187-191      | 10    | `01010`            | 5-bit delta for the `list[2].value32`
+192-199      | 1     | 01                 | length of `list[2].text` string, encoded as `varsize`
+200-207      | "b"   | 62                 | UTF-8 encoded string "b"
+208-214      | -50   | `1001110`          | 7-bit delta for `list[2].innerStructure.value64`
+215-230      | 0     | 00 00              | `list[2].innerStructure.value16` - `uint16` always uses 2 bytes
+231-235      | 10    | `01010`            | 5-bit delta for the `list[3].value32`
+236-243      | 1     | 01                 | length of `list[3].text` string, encoded as `varsize`
+244-251      | "b"   | 62                 | UTF-8 encoded string "b"
+252-258      | -50   | `1001110`          | 7-bit delta for `list[3].innerStructure.value64`
+259-274      | 0     | 00 00              | `list[3].innerStructure.value16` - `uint16` always uses 2 bytes
+275-279      | 10    | `01010`            | 5-bit delta for the `list[4].value32`
+280-287      | 1     | 01                 | length of `list[4].text` string, encoded as `varsize`
+288-295      | "b"   | 62                 | UTF-8 encoded string "b"
+296-302      | -50   | `1001110`          | 7-bit delta for `list[4].innerStructure.value64`
+303-318      | 0     | 00 00              | `list[4].innerStructure.value16` - `uint16` always uses 2 bytes
+
+> This is 319 bits instead of 640 bits which would be used without packing (`5 * (32 + 16 + 64 + 16)`).
+> Note that `value16` is not packed because it would be worse than
 
 Packed arrays of nested compounds can be always replaced by normal schema without packed functionality.
 The following shows packed array of nested compounds  which corresponds to the previous `PackedArray` example:
@@ -569,14 +902,18 @@ align(32):
 };
 ```
 
-This type has a total length 64 bits or 8 bytes. As a bit stream, bit offsets 0-10 correspond to member `a`,
-bit offsets 11-31 are not used (padding), followed by member `b` in bit offsets 32-63. Note that without
-the alignment modifier, the size of this type would be 43 bits.
+Bit position | Description
+------------ | -----------
+0-10         | member `a`
+11-31        | unused padding (all bits set to `0`) caused by the alignment to 32-bits
+32-63        | member `b`
+
+> The total length is 64 bits (8 bytes).
+> Note that without the alignment modifier, the size of this type would be 43 bits.
 
 ### Offsets
 
-[Offsets](ZserioLanguageOverview.md#offsets) might be encoded by padding of zero bits between fields if
-a structure field with offset is not byte-aligned. Otherwise, offsets do not have any effect to encoding.
+[Offsets](ZserioLanguageOverview.md#offsets) is encoded by automatic alignment of field with offset to 8 bits.
 
 **Example**
 
@@ -591,15 +928,20 @@ offset:
 };
 ```
 
-This type has a total length 64 bits or 8 bytes. As a bit stream, bit offsets 0-31 correspond to member
-`offset`, bit offsets 32-42 correspond to member `a`, bit offsets 43-47 are not used (padding), followed by
-member `b` in bit offsets 48-63. Note that without the offset modifier, the size of this type would be 59 bits.
+Bit position | Description
+------------ | -----------
+0-31         | member `offset`
+32-42        | member `a`
+43-47        | padding caused by alignment to 8-bits (caused by `offset:`)
+48-63        | member `b`
+
+> The total length 64 bits (8 bytes).
+> Note that without the offset modifier, the size of this type would be 59 bits.
 
 ### Indexed Offsets
 
-[Indexed offsets](ZserioLanguageOverview.md#indexed-offsets) might be encoded by padding of zero bits before
-array element if an array element with offset is not byte-aligned. Otherwise, indexed offsets do not have any
-effect to encoding.
+[Indexed offsets](ZserioLanguageOverview.md#indexed-offsets) are encoded by automatic alignment of each
+array element (of array which has indexed offsets) to 8 bits.
 
 ```
 struct IndexedOffsetsExample
@@ -612,10 +954,14 @@ offsets[@index]:
 };
 ```
 
-This type has a total length 32+32+1+7+5+3+5=85 bits. The size of offset array `data` is 5+3+5=13 bits.
-As a bit stream, bit offsets 0-31 correspond to member `offsets[0]`, bit offsets 32-63 correspond to member
-`offsets[1]`, bit offset 64 correspond to member `spacer`, bit offsets 65-71 are not used (padding). Then,
-it follows member `data[0]` in bit offsets 72-76, bit offsets 77-79 are not used (padding) and bit offsets
-80-84 correspond to member `data[1]`.
+Bit position | Description
+------------ | -----------
+0-31         | `offsets[0]`
+32-63        | `offsets[1]`
+64           | `spacer` (1-bit value)
+65-71        | 7-bit padding caused by alignment to 8-bits
+72-76        | `data[0]` (5-bits value)
+77-79        | 3-bit padding caused by alignment to 8-bits
+80-84        | `data[1]` (5-bits value)
 
 [top](#zserio-encoding-guide)

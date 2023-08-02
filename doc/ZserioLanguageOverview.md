@@ -164,61 +164,7 @@ varsize      | `0 to 2147483647`                             | `5`
 
 >Note that `varint` and `varuint` can handle all `int64` and `uint64` values respectively.
 
-The internal layout of the variable integer types is:
-
-Data Type    | Byte Layout
------------- | -----------------------------------------------------
-varint16     | `[byte 1]: 1 bit sign, 1 bit has next byte, 6 bits value`
- <sup></sup> | `[byte 2]: 8 bits value`
-varuint16    | `[byte 1]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 2]: 8 bits value`
-varint32     | `[byte 1]: 1 bit sign, 1 bit has next byte, 6 bits value`
- <sup></sup> | `[byte 2]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 3]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 4]: 8 bits value`
-varuint32    | `[byte 1]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 2]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 3]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 4]: 8 bits value`
-varint64     | `[byte 1]: 1 bit sign, 1 bit has next byte, 6 bits value`
- <sup></sup> | `[byte 2]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 3]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 4]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 5]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 6]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 7]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 8]: 8 bits value`
-varuint64    | `[byte 1]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 2]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 3]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 4]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 5]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 6]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 7]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 8]: 8 bits value`
-varint       | `[byte 1]: 1 bit sign, 1 bit has next byte, 6 bits value`
- <sup></sup> | `[byte 2]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 3]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 4]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 5]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 6]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 7]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 8]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 9]: 8 bits value`
-varuint      | `[byte 1]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 2]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 3]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 4]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 5]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 6]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 7]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 8]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 9]: 8 bits value`
-varsize      | `[byte 1]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 2]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 3]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 4]: 1 bit has next byte, 7 bits value`
- <sup></sup> | `[byte 5]: 8 bits value`
+For encoding details see [encoding guide](ZserioEncodingGuide.md#variable-integer-types).
 
 > Note that `varsize` is available since `2.0.0`.
 
@@ -690,9 +636,9 @@ notation, e.g. `list[2]` is the third element of the `list` array.
 
 ### Implicit Length Arrays
 
-An array type may have an implicit length indicated by an `implicit` keyword and an empty pair of brackets.
-In this case, the decoder will continue matching instances of the element type until the end of the stream is
-reached. Implicit arrays must be at the end of the BLOB. It might also be the complete BLOB.
+An array type may have an implicit length indicated by an `implicit` keyword and an empty pair of brackets. Implicit arrays must be at the end of the BLOB. It might also be the complete BLOB.
+
+For encoding details see [encoding guide](ZserioEncodingGuide.md#implicit-array-types).
 
 **Example**
 ```
