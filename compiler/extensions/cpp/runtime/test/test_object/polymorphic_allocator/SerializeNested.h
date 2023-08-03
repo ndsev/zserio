@@ -10,10 +10,10 @@
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/AllocatorPropagatingCopy.h>
+#include <zserio/PackingContext.h>
 #include <zserio/pmr/ITypeInfo.h>
 #include <zserio/pmr/IReflectable.h>
 #include <zserio/pmr/PolymorphicAllocator.h>
-#include <zserio/pmr/PackingContext.h>
 #include <zserio/OptionalHolder.h>
 #include <zserio/ArrayTraits.h>
 #include <zserio/Types.h>
@@ -27,6 +27,15 @@ class SerializeNested
 {
 public:
     using allocator_type = ::zserio::pmr::PropagatingPolymorphicAllocator<>;
+
+    class ZserioPackingContext
+    {
+    public:
+        ::zserio::DeltaContext& getOptionalValue() { return m_optionalValue_; }
+
+    private:
+        ::zserio::DeltaContext m_optionalValue_;
+    };
 
     SerializeNested() noexcept :
             SerializeNested(allocator_type())
@@ -47,7 +56,7 @@ public:
 
     explicit SerializeNested(::zserio::BitStreamReader& in,
             int8_t param_, const allocator_type& allocator = allocator_type());
-    explicit SerializeNested(::zserio::pmr::PackingContextNode& contextNode,
+    explicit SerializeNested(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in,
             int8_t param_, const allocator_type& allocator = allocator_type());
 
@@ -81,25 +90,24 @@ public:
     bool isOptionalValueSet() const;
     void resetOptionalValue();
 
-    static void createPackingContext(::zserio::pmr::PackingContextNode& contextNode);
-    void initPackingContext(::zserio::pmr::PackingContextNode& contextNode) const;
+    void initPackingContext(ZserioPackingContext& context) const;
 
     size_t bitSizeOf(size_t bitPosition = 0) const;
-    size_t bitSizeOf(::zserio::pmr::PackingContextNode& contextNode, size_t bitPosition) const;
+    size_t bitSizeOf(ZserioPackingContext& context, size_t bitPosition) const;
 
     size_t initializeOffsets(size_t bitPosition = 0);
-    size_t initializeOffsets(::zserio::pmr::PackingContextNode& contextNode, size_t bitPosition);
+    size_t initializeOffsets(ZserioPackingContext& context, size_t bitPosition);
 
     bool operator==(const SerializeNested& other) const;
     uint32_t hashCode() const;
 
     void write(::zserio::BitStreamWriter& out) const;
-    void write(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const;
+    void write(ZserioPackingContext& context, ::zserio::BitStreamWriter& out) const;
 
 private:
     uint8_t readOffset(::zserio::BitStreamReader& in);
     ::zserio::InplaceOptionalHolder<uint32_t> readOptionalValue(::zserio::BitStreamReader& in);
-    ::zserio::InplaceOptionalHolder<uint32_t> readOptionalValue(::zserio::pmr::PackingContextNode& contextNode,
+    ::zserio::InplaceOptionalHolder<uint32_t> readOptionalValue(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in);
 
     int8_t m_param_;

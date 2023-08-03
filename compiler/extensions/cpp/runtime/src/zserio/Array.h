@@ -50,6 +50,19 @@ struct array_owner_type<ARRAY_TRAITS, ARRAY_EXPRESSIONS,
     using type = typename ARRAY_EXPRESSIONS::OwnerType;
 };
 
+// helper trait to choose packing context type for an array from an element type T
+template <typename T, typename = void>
+struct packing_context_type
+{
+    using type = DeltaContext;
+};
+
+template <typename T>
+struct packing_context_type<T, typename std::enable_if<has_zserio_packing_context<T>::value>::type>
+{
+    using type = typename T::ZserioPackingContext;
+};
+
 // calls the initializeOffset static method on ARRAY_EXPRESSIONS if available
 template <typename ARRAY_EXPRESSIONS, typename OWNER_TYPE,
         typename std::enable_if<has_initialize_offset<ARRAY_EXPRESSIONS>::value, int>::type = 0>
@@ -77,20 +90,20 @@ void checkOffset(const OWNER_TYPE&, size_t, size_t)
 {}
 
 // call the initContext method properly on packed array traits
-template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT_NODE,
+template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT,
         typename std::enable_if<has_owner_type<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
-void packedArrayTraitsInitContext(const OWNER_TYPE& owner, PACKING_CONTEXT_NODE& contextNode,
+void packedArrayTraitsInitContext(const OWNER_TYPE& owner, PACKING_CONTEXT& packingContext,
         typename PACKED_ARRAY_TRAITS::ElementType element)
 {
-    PACKED_ARRAY_TRAITS::initContext(owner, contextNode, element);
+    PACKED_ARRAY_TRAITS::initContext(owner, packingContext, element);
 }
 
-template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT_NODE,
+template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT,
         typename std::enable_if<!has_owner_type<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
-void packedArrayTraitsInitContext(const OWNER_TYPE&, PACKING_CONTEXT_NODE& contextNode,
+void packedArrayTraitsInitContext(const OWNER_TYPE&, PACKING_CONTEXT& packingContext,
         typename PACKED_ARRAY_TRAITS::ElementType element)
 {
-    PACKED_ARRAY_TRAITS::initContext(contextNode, element);
+    PACKED_ARRAY_TRAITS::initContext(packingContext, element);
 }
 
 // calls the bitSizeOf method properly on array traits which have constant bit size
@@ -128,20 +141,20 @@ size_t arrayTraitsBitSizeOf(const OWNER_TYPE&, size_t bitPosition,
 }
 
 // calls the bitSizeOf method properly on packed array traits which haven't constant bit size
-template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT_NODE,
+template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT,
         typename std::enable_if<has_owner_type<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
-size_t packedArrayTraitsBitSizeOf(const OWNER_TYPE& owner, PACKING_CONTEXT_NODE& contextNode,
+size_t packedArrayTraitsBitSizeOf(const OWNER_TYPE& owner, PACKING_CONTEXT& packingContext,
         size_t bitPosition, const typename PACKED_ARRAY_TRAITS::ElementType& element)
 {
-    return PACKED_ARRAY_TRAITS::bitSizeOf(owner, contextNode, bitPosition, element);
+    return PACKED_ARRAY_TRAITS::bitSizeOf(owner, packingContext, bitPosition, element);
 }
 
-template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT_NODE,
+template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT,
         typename std::enable_if<!has_owner_type<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
-size_t packedArrayTraitsBitSizeOf(const OWNER_TYPE&, PACKING_CONTEXT_NODE& contextNode, size_t bitPosition,
+size_t packedArrayTraitsBitSizeOf(const OWNER_TYPE&, PACKING_CONTEXT& packingContext, size_t bitPosition,
         const typename PACKED_ARRAY_TRAITS::ElementType& element)
 {
-    return PACKED_ARRAY_TRAITS::bitSizeOf(contextNode, bitPosition, element);
+    return PACKED_ARRAY_TRAITS::bitSizeOf(packingContext, bitPosition, element);
 }
 
 // calls the initializeOffsets method properly on array traits
@@ -171,30 +184,30 @@ size_t arrayTraitsInitializeOffsets(OWNER_TYPE&, size_t bitPosition, typename AR
 }
 
 // calls the initializeOffsets method properly on packed array traits
-template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT_NODE,
+template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT,
         typename std::enable_if<has_owner_type<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
-size_t packedArrayTraitsInitializeOffsets(OWNER_TYPE& owner, PACKING_CONTEXT_NODE& contextNode,
+size_t packedArrayTraitsInitializeOffsets(OWNER_TYPE& owner, PACKING_CONTEXT& packingContext,
         size_t bitPosition, typename PACKED_ARRAY_TRAITS::ElementType& element)
 {
-    return PACKED_ARRAY_TRAITS::initializeOffsets(owner, contextNode, bitPosition, element);
+    return PACKED_ARRAY_TRAITS::initializeOffsets(owner, packingContext, bitPosition, element);
 }
 
-template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT_NODE,
+template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT,
         typename std::enable_if<!has_owner_type<PACKED_ARRAY_TRAITS>::value &&
                 !std::is_scalar<typename PACKED_ARRAY_TRAITS::ElementType>::value, int>::type = 0>
-size_t packedArrayTraitsInitializeOffsets(OWNER_TYPE&, PACKING_CONTEXT_NODE& contextNode,
+size_t packedArrayTraitsInitializeOffsets(OWNER_TYPE&, PACKING_CONTEXT& packingContext,
         size_t bitPosition, const typename PACKED_ARRAY_TRAITS::ElementType& element)
 {
-    return PACKED_ARRAY_TRAITS::initializeOffsets(contextNode, bitPosition, element);
+    return PACKED_ARRAY_TRAITS::initializeOffsets(packingContext, bitPosition, element);
 }
 
-template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT_NODE,
+template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT,
         typename std::enable_if<!has_owner_type<PACKED_ARRAY_TRAITS>::value &&
                 std::is_scalar<typename PACKED_ARRAY_TRAITS::ElementType>::value, int>::type = 0>
-size_t packedArrayTraitsInitializeOffsets(OWNER_TYPE&, PACKING_CONTEXT_NODE& contextNode,
+size_t packedArrayTraitsInitializeOffsets(OWNER_TYPE&, PACKING_CONTEXT& packingContext,
         size_t bitPosition, typename PACKED_ARRAY_TRAITS::ElementType element)
 {
-    return PACKED_ARRAY_TRAITS::initializeOffsets(contextNode, bitPosition, element);
+    return PACKED_ARRAY_TRAITS::initializeOffsets(packingContext, bitPosition, element);
 }
 
 // calls the read method properly on array traits
@@ -231,34 +244,34 @@ void arrayTraitsRead(const OWNER_TYPE&, RAW_ARRAY& rawArray, BitStreamReader& in
 }
 
 // calls the read method properly on packed array traits
-template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY, typename PACKING_CONTEXT_NODE,
+template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY, typename PACKING_CONTEXT,
         typename std::enable_if<has_owner_type<PACKED_ARRAY_TRAITS>::value &&
                 has_allocator<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
-void packedArrayTraitsRead(OWNER_TYPE& owner, RAW_ARRAY& rawArray, PACKING_CONTEXT_NODE& contextNode,
+void packedArrayTraitsRead(OWNER_TYPE& owner, RAW_ARRAY& rawArray, PACKING_CONTEXT& packingContext,
         BitStreamReader& in, size_t index)
 {
-    rawArray.push_back(PACKED_ARRAY_TRAITS::read(owner, contextNode, in, rawArray.get_allocator(), index));
+    rawArray.push_back(PACKED_ARRAY_TRAITS::read(owner, packingContext, in, rawArray.get_allocator(), index));
 }
 
-template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY, typename PACKING_CONTEXT_NODE,
+template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY, typename PACKING_CONTEXT,
         typename std::enable_if<has_owner_type<PACKED_ARRAY_TRAITS>::value &&
                 !has_allocator<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
-void packedArrayTraitsRead(const OWNER_TYPE& owner, RAW_ARRAY& rawArray, PACKING_CONTEXT_NODE& contextNode,
+void packedArrayTraitsRead(const OWNER_TYPE& owner, RAW_ARRAY& rawArray, PACKING_CONTEXT& packingContext,
         BitStreamReader& in, size_t index)
 {
-    rawArray.push_back(PACKED_ARRAY_TRAITS::read(owner, contextNode, in, index));
+    rawArray.push_back(PACKED_ARRAY_TRAITS::read(owner, packingContext, in, index));
 }
 
 // note: types which doesn't have owner and have allocator are never packed (e.g. string, bytes ...)
 //       and thus such specialization is not needed
 
-template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY, typename PACKING_CONTEXT_NODE,
+template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY, typename PACKING_CONTEXT,
         typename std::enable_if<!has_owner_type<PACKED_ARRAY_TRAITS>::value &&
                 !has_allocator<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
-void packedArrayTraitsRead(const OWNER_TYPE&, RAW_ARRAY& rawArray, PACKING_CONTEXT_NODE& contextNode,
+void packedArrayTraitsRead(const OWNER_TYPE&, RAW_ARRAY& rawArray, PACKING_CONTEXT& packingContext,
         BitStreamReader& in, size_t index)
 {
-    rawArray.push_back(PACKED_ARRAY_TRAITS::read(contextNode, in, index));
+    rawArray.push_back(PACKED_ARRAY_TRAITS::read(packingContext, in, index));
 }
 
 // call the write method properly on array traits
@@ -279,20 +292,20 @@ void arrayTraitsWrite(const OWNER_TYPE&,
 }
 
 // call the write method properly on packed array traits
-template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT_NODE,
+template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT,
         typename std::enable_if<has_owner_type<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
-void packedArrayTraitsWrite(const OWNER_TYPE& owner, PACKING_CONTEXT_NODE& contextNode,
+void packedArrayTraitsWrite(const OWNER_TYPE& owner, PACKING_CONTEXT& packingContext,
         BitStreamWriter& out, const typename PACKED_ARRAY_TRAITS::ElementType& element)
 {
-    return PACKED_ARRAY_TRAITS::write(owner, contextNode, out, element);
+    return PACKED_ARRAY_TRAITS::write(owner, packingContext, out, element);
 }
 
-template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT_NODE,
+template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT,
         typename std::enable_if<!has_owner_type<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
-void packedArrayTraitsWrite(const OWNER_TYPE&, PACKING_CONTEXT_NODE& contextNode,
+void packedArrayTraitsWrite(const OWNER_TYPE&, PACKING_CONTEXT& packingContext,
         BitStreamWriter& out, const typename PACKED_ARRAY_TRAITS::ElementType& element)
 {
-    return PACKED_ARRAY_TRAITS::write(contextNode, out, element);
+    return PACKED_ARRAY_TRAITS::write(packingContext, out, element);
 }
 
 } // namespace detail
@@ -310,13 +323,10 @@ enum ArrayType
 };
 
 /**
- * Array wrapper for zserio arrays.
- *
- * The wrapper is used to encapsulate logic of operations with zserio arrays.
+ * Array base.
  */
-template <typename RAW_ARRAY, typename ARRAY_TRAITS, ArrayType ARRAY_TYPE,
-        typename ARRAY_EXPRESSIONS = detail::DummyArrayExpressions>
-class Array
+template <typename RAW_ARRAY, typename ARRAY_TRAITS, typename ARRAY_EXPRESSIONS>
+class ArrayBase
 {
 public:
     /** Typedef for raw array type. */
@@ -344,7 +354,7 @@ public:
      *
      * \param allocator Allocator to use for the raw array.
      */
-    explicit Array(const allocator_type& allocator = allocator_type()) :
+    explicit ArrayBase(const allocator_type& allocator = allocator_type()) :
             m_rawArray(allocator)
     {}
 
@@ -353,7 +363,7 @@ public:
      *
      * \param rawArray Raw array.
      */
-    explicit Array(const RawArray& rawArray) :
+    explicit ArrayBase(const RawArray& rawArray) :
             m_rawArray(rawArray)
     {}
 
@@ -362,49 +372,20 @@ public:
      *
      * \param rawArray Raw array.
      */
-    explicit Array(RawArray&& rawArray) :
+    explicit ArrayBase(RawArray&& rawArray) :
             m_rawArray(std::move(rawArray))
     {}
-
-    /**
-     * Default destructor.
-     */
-    ~Array() = default;
-
-    /**
-     * Copy constructor.
-     *
-     * \param other Source array to copy.
-     */
-    Array(const Array& other) :
-            m_rawArray(other.m_rawArray)
-    {
-        if (other.m_packingContextNode)
-            createContext();
-    }
-
-    /**
-     * Copy assignment operator.
-     *
-     * \param other Source array to copy.
-     */
-    Array& operator=(const Array& other)
-    {
-        m_rawArray = other.m_rawArray;
-
-        if (other.m_packingContextNode)
-            createContext();
-
-        return *this;
-    }
 
     /**
      * Method generated by default.
      *
      * \{
      */
-    Array(Array&& other) = default;
-    Array& operator=(Array&& other) = default;
+    ~ArrayBase() = default;
+    ArrayBase(const ArrayBase& other) = default;
+    ArrayBase& operator=(const ArrayBase& other) = default;
+    ArrayBase(ArrayBase&& other) = default;
+    ArrayBase& operator=(ArrayBase&& other) = default;
     /**
      * \}
      */
@@ -415,41 +396,18 @@ public:
      * \param other Source array to copy.
      * \param allocator Allocator to propagate during copying.
      */
-    Array(PropagateAllocatorT, const Array& other, const allocator_type& allocator) :
+    ArrayBase(PropagateAllocatorT, const ArrayBase& other, const allocator_type& allocator) :
             m_rawArray(allocatorPropagatingCopy(other.m_rawArray, allocator))
-    {
-        if (other.m_packingContextNode)
-            createContext();
-    }
-
-    /**
-     * Gets raw array.
-     *
-     * \return Constant reference to the raw array.
-     */
-    const RawArray& getRawArray() const
-    {
-        return m_rawArray;
-    }
-
-    /**
-     * Gets raw array.
-     *
-     * \return Reference to the raw array.
-     */
-    RawArray& getRawArray()
-    {
-        return m_rawArray;
-    }
+    {}
 
     /**
      * Operator equality.
      *
-     * \param other Array to compare.
+     * \param other ArrayBase to compare.
      *
      * \return True when the underlying raw arrays have same contents, false otherwise.
      */
-    bool operator==(const Array& other) const
+    bool operator==(const ArrayBase& other) const
     {
         return m_rawArray == other.m_rawArray;
     }
@@ -482,262 +440,39 @@ public:
     }
 
     /**
-     * Calculates bit size of this array.
+     * Gets raw array.
      *
-     * Available for arrays which do not need the owner.
-     *
-     * \param bitPosition Current bit position.
-     *
-     * \return Bit size of the array.
+     * \return Constant reference to the raw array.
      */
-    template <typename OWNER_TYPE_ = OwnerType,
-            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
-    size_t bitSizeOf(size_t bitPosition) const
+    const RawArray& getRawArray() const
     {
-        return bitSizeOfImpl(detail::DummyArrayOwner(), bitPosition);
+        return m_rawArray;
     }
 
     /**
-     * Calculates bit size of this array.
+     * Gets raw array.
      *
-     * Available for arrays which need the owner.
-     *
-     * \param owner Array owner.
-     * \param bitPosition Current bit position.
-     *
-     * \return Bit size of the array.
+     * \return Reference to the raw array.
      */
-    template <typename OWNER_TYPE_ = OwnerType,
-            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
-    size_t bitSizeOf(const OwnerType& owner, size_t bitPosition) const
+    RawArray& getRawArray()
     {
-        return bitSizeOfImpl(owner, bitPosition);
-    }
-
-    /**
-     * Returns length of the packed array stored in the bit stream in bits.
-     *
-     * Available for arrays which do not need the owner.
-     *
-     * \param bitPosition Current bit stream position.
-     *
-     * \return Length of the array stored in the bit stream in bits.
-     */
-    template <typename OWNER_TYPE_ = OwnerType,
-            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
-    size_t bitSizeOfPacked(size_t bitPosition) const
-    {
-        return bitSizeOfPackedImpl(detail::DummyArrayOwner(), bitPosition);
-    }
-
-    /**
-     * Returns length of the packed array stored in the bit stream in bits.
-     *
-     * Available for arrays which need the owner.
-     *
-     * \param owner Array owner.
-     * \param bitPosition Current bit stream position.
-     *
-     * \return Length of the array stored in the bit stream in bits.
-     */
-    template <typename OWNER_TYPE_ = OwnerType,
-            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
-    size_t bitSizeOfPacked(const OwnerType& ownerType, size_t bitPosition) const
-    {
-        return bitSizeOfPackedImpl(ownerType, bitPosition);
-    }
-
-    /**
-     * Initializes indexed offsets.
-     *
-     * Available for arrays which do not need the owner.
-     *
-     * \param bitPosition Current bit position.
-     *
-     * \return Updated bit position which points to the first bit after the array.
-     */
-    template <typename OWNER_TYPE_ = OwnerType,
-            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
-    size_t initializeOffsets(size_t bitPosition)
-    {
-        detail::DummyArrayOwner owner;
-        return initializeOffsetsImpl(owner, bitPosition);
-    }
-
-    /**
-     * Initializes indexed offsets.
-     *
-     * Available for arrays which need the owner.
-     *
-     * \param owner Array owner.
-     * \param bitPosition Current bit position.
-     *
-     * \return Updated bit position which points to the first bit after the array.
-     */
-    template <typename OWNER_TYPE_ = OwnerType,
-            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
-    size_t initializeOffsets(OwnerType& owner, size_t bitPosition)
-    {
-        return initializeOffsetsImpl(owner, bitPosition);
-    }
-
-    /**
-     * Initializes indexed offsets for the packed array.
-     *
-     * Available for arrays which do not need the owner.
-     *
-     * \param bitPosition Current bit stream position.
-     *
-     * \return Updated bit stream position which points to the first bit after the array.
-     */
-    template <typename OWNER_TYPE_ = OwnerType,
-            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
-    size_t initializeOffsetsPacked(size_t bitPosition)
-    {
-        detail::DummyArrayOwner owner;
-        return initializeOffsetsPackedImpl(owner, bitPosition);
-    }
-
-    /**
-     * Initializes indexed offsets for the packed array.
-     *
-     * Available for arrays which need the owner.
-     *
-     * \param owner Array owner.
-     * \param bitPosition Current bit stream position.
-     *
-     * \return Updated bit stream position which points to the first bit after the array.
-     */
-    template <typename OWNER_TYPE_ = OwnerType,
-            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
-    size_t initializeOffsetsPacked(OwnerType& owner, size_t bitPosition)
-    {
-        return initializeOffsetsPackedImpl(owner, bitPosition);
-    }
-
-    /**
-     * Reads the array from the bit stream.
-     *
-     * Available for arrays which do not need the owner.
-     *
-     * \param in Bit stream reader to use for reading.
-     * \param arrayLength Array length. Not needed for auto / implicit arrays.
-     */
-    template <typename OWNER_TYPE_ = OwnerType,
-            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
-    void read(BitStreamReader& in, size_t arrayLength = 0)
-    {
-        detail::DummyArrayOwner owner;
-        readImpl(owner, in, arrayLength);
-    }
-
-    /**
-     * Reads the array from the bit stream.
-     *
-     * Available for arrays which need the owner.
-     *
-     * \param owner Array owner.
-     * \param in Bit stream reader to use for reading.
-     * \param arrayLength Array length. Not needed for auto / implicit arrays.
-     */
-    template <typename OWNER_TYPE_ = OwnerType,
-            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
-    void read(OwnerType& owner, BitStreamReader& in, size_t arrayLength = 0)
-    {
-        readImpl(owner, in, arrayLength);
-    }
-
-    /**
-     * Reads packed array from the bit stream.
-     *
-     * Available for arrays which do not need the owner.
-     *
-     * \param in Bit stream from which to read.
-     * \param arrayLength Number of elements to read or 0 in case of auto arrays.
-     */
-    template <typename OWNER_TYPE_ = OwnerType,
-            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
-    void readPacked(BitStreamReader& in, size_t arrayLength = 0)
-    {
-        detail::DummyArrayOwner owner;
-        readPackedImpl(owner, in, arrayLength);
-    }
-
-    /**
-     * Reads packed array from the bit stream.
-     *
-     * Available for arrays which need the owner.
-     *
-     * \param owner Array owner.
-     * \param in Bit stream from which to read.
-     * \param arrayLength Number of elements to read or 0 in case of auto arrays.
-     */
-    template <typename OWNER_TYPE_ = OwnerType,
-            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
-    void readPacked(OwnerType& owner, BitStreamReader& in, size_t arrayLength = 0)
-    {
-        readPackedImpl(owner, in, arrayLength);
-    }
-
-    /**
-     * Writes the array to the bit stream.
-     *
-     * Available for arrays which do not need the owner.
-     *
-     * \param out Bit stream write to use for writing.
-     */
-    template <typename OWNER_TYPE_ = OwnerType,
-            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
-    void write(BitStreamWriter& out) const
-    {
-        writeImpl(detail::DummyArrayOwner(), out);
-    }
-
-    /**
-     * Writes the array to the bit stream.
-     *
-     * Available for arrays which need the owner.
-     *
-     * \param owner Array owner.
-     * \param out Bit stream write to use for writing.
-     */
-    template <typename OWNER_TYPE_ = OwnerType,
-            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
-    void write(const OwnerType& owner, BitStreamWriter& out) const
-    {
-        writeImpl(owner, out);
-    }
-
-    /**
-     * Writes packed array to the bit stream.
-     *
-     * Available for arrays which do not need the owner.
-     *
-     * \param out Bit stream where to write.
-     */
-    template <typename OWNER_TYPE_ = OwnerType,
-            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
-    void writePacked(BitStreamWriter& out) const
-    {
-        writePackedImpl(detail::DummyArrayOwner(), out);
-    }
-
-    /**
-     * Writes packed array to the bit stream.
-     *
-     * Available for arrays which need the owner.
-     *
-     * \param owner Array owner.
-     * \param out Bit stream where to write.
-     */
-    template <typename OWNER_TYPE_ = OwnerType,
-            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
-    void writePacked(const OwnerType& owner, BitStreamWriter& out) const
-    {
-        writePackedImpl(owner, out);
+        return m_rawArray;
     }
 
 private:
+    RawArray m_rawArray;
+};
+
+/**
+ * Common implementation for array methods.
+ */
+template <typename ARRAY_BASE, ArrayType ARRAY_TYPE>
+struct ArrayMethods
+{
+    using ArrayTraits = typename ARRAY_BASE::ArrayTraits;
+    using ArrayExpressions = typename ARRAY_BASE::ArrayExpressions;
+    using OwnerType = typename ARRAY_BASE::OwnerType;
+
     template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
             typename std::enable_if<
                     ARRAY_TYPE_ != ArrayType::AUTO && ARRAY_TYPE_ != ArrayType::ALIGNED_AUTO, int>::type = 0>
@@ -755,43 +490,6 @@ private:
     template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
             typename std::enable_if<
                     ARRAY_TYPE_ != ArrayType::ALIGNED && ARRAY_TYPE_ != ArrayType::ALIGNED_AUTO, int>::type = 0>
-    static size_t constBitSizeOfElements(size_t, size_t arrayLength, size_t elementBitSize)
-    {
-        return arrayLength * elementBitSize;
-    }
-
-    template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
-            typename std::enable_if<
-                    ARRAY_TYPE_ == ArrayType::ALIGNED || ARRAY_TYPE_ == ArrayType::ALIGNED_AUTO, int>::type = 0>
-    static size_t constBitSizeOfElements(size_t bitPosition, size_t arrayLength, size_t elementBitSize)
-    {
-        size_t endBitPosition = alignTo(8, bitPosition);
-        endBitPosition += elementBitSize + (arrayLength - 1) * alignTo(8, elementBitSize);
-
-        return endBitPosition - bitPosition;
-    }
-
-    template <typename ARRAY_TRAITS_ = ArrayTraits,
-            typename std::enable_if<ARRAY_TRAITS_::IS_BITSIZEOF_CONSTANT, int>::type = 0>
-    size_t bitSizeOfImpl(const OwnerType& owner, size_t bitPosition) const
-    {
-        size_t endBitPosition = bitPosition;
-
-        const size_t arrayLength = m_rawArray.size();
-        addBitSizeOfArrayLength(endBitPosition, arrayLength);
-
-        if (arrayLength > 0)
-        {
-            const size_t elementBitSize = detail::arrayTraitsConstBitSizeOf<ArrayTraits>(owner);
-            endBitPosition += constBitSizeOfElements(endBitPosition, arrayLength, elementBitSize);
-        }
-
-        return endBitPosition - bitPosition;
-    }
-
-    template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
-            typename std::enable_if<
-                    ARRAY_TYPE_ != ArrayType::ALIGNED && ARRAY_TYPE_ != ArrayType::ALIGNED_AUTO, int>::type = 0>
     static void alignBitPosition(size_t&)
     {}
 
@@ -803,52 +501,19 @@ private:
         bitPosition = alignTo(8, bitPosition);
     }
 
-    template <typename ARRAY_TRAITS_ = ArrayTraits,
-            typename std::enable_if<!ARRAY_TRAITS_::IS_BITSIZEOF_CONSTANT, int>::type = 0>
-    size_t bitSizeOfImpl(const OwnerType& owner, size_t bitPosition) const
+    template <typename IO, typename OWNER_TYPE, ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
+            typename std::enable_if<
+                    ARRAY_TYPE_ != ArrayType::ALIGNED && ARRAY_TYPE_ != ArrayType::ALIGNED_AUTO, int>::type = 0>
+    static void alignAndCheckOffset(IO&, OWNER_TYPE&, size_t)
+    {}
+
+    template <typename IO, typename OWNER_TYPE, ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
+            typename std::enable_if<
+                    ARRAY_TYPE_ == ArrayType::ALIGNED || ARRAY_TYPE_ == ArrayType::ALIGNED_AUTO, int>::type = 0>
+    static void alignAndCheckOffset(IO& io, OWNER_TYPE& owner, size_t index)
     {
-        size_t endBitPosition = bitPosition;
-
-        const size_t arrayLength = m_rawArray.size();
-        addBitSizeOfArrayLength(endBitPosition, arrayLength);
-
-        for (size_t index = 0; index < arrayLength; ++index)
-        {
-            alignBitPosition(endBitPosition);
-            endBitPosition += detail::arrayTraitsBitSizeOf<ArrayTraits>(
-                    owner, endBitPosition, m_rawArray[index]);
-        }
-
-        return endBitPosition - bitPosition;
-    }
-
-    size_t bitSizeOfPackedImpl(const OwnerType& owner, size_t bitPosition) const
-    {
-        static_assert(ARRAY_TYPE != ArrayType::IMPLICIT, "Implicit array cannot be packed!");
-
-        size_t endBitPosition = bitPosition;
-
-        const size_t arrayLength = m_rawArray.size();
-        addBitSizeOfArrayLength(endBitPosition, arrayLength);
-
-        if (arrayLength > 0)
-        {
-            auto& contextNode = getPackingContextNode();
-            for (size_t index = 0; index < arrayLength; ++index)
-            {
-                detail::packedArrayTraitsInitContext<PackedArrayTraits<ArrayTraits>>(
-                        owner, contextNode, m_rawArray[index]);
-            }
-
-            for (size_t index = 0; index < arrayLength; ++index)
-            {
-                alignBitPosition(endBitPosition);
-                endBitPosition += detail::packedArrayTraitsBitSizeOf<PackedArrayTraits<ArrayTraits>>(
-                        owner, contextNode, endBitPosition, m_rawArray[index]);
-            }
-        }
-
-        return endBitPosition - bitPosition;
+        io.alignTo(8);
+        detail::checkOffset<ArrayExpressions>(owner, index, io.getBitPosition() / 8);
     }
 
     template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
@@ -864,52 +529,6 @@ private:
     {
         bitPosition = alignTo(8, bitPosition);
         detail::initializeOffset<ArrayExpressions>(owner, index, bitPosition / 8);
-    }
-
-    size_t initializeOffsetsImpl(OwnerType& owner, size_t bitPosition)
-    {
-        size_t endBitPosition = bitPosition;
-
-        const size_t arrayLength = m_rawArray.size();
-        addBitSizeOfArrayLength(endBitPosition, arrayLength);
-
-        for (size_t index = 0; index < arrayLength; ++index)
-        {
-            initializeOffset(owner, index, endBitPosition);
-            endBitPosition = detail::arrayTraitsInitializeOffsets<ArrayTraits>(
-                    owner, endBitPosition, m_rawArray[index]);
-        }
-
-        return endBitPosition;
-    }
-
-    size_t initializeOffsetsPackedImpl(OwnerType& owner, size_t bitPosition)
-    {
-        static_assert(ARRAY_TYPE != ArrayType::IMPLICIT, "Implicit array cannot be packed!");
-
-        size_t endBitPosition = bitPosition;
-
-        const size_t arrayLength = m_rawArray.size();
-        addBitSizeOfArrayLength(endBitPosition, arrayLength);
-
-        if (arrayLength > 0)
-        {
-            auto& contextNode = getPackingContextNode();
-            for (size_t index = 0; index < arrayLength; ++index)
-            {
-                detail::packedArrayTraitsInitContext<PackedArrayTraits<ArrayTraits>>(
-                        owner, contextNode, m_rawArray[index]);
-            }
-
-            for (size_t index = 0; index < arrayLength; ++index)
-            {
-                initializeOffset(owner, index, endBitPosition);
-                endBitPosition = detail::packedArrayTraitsInitializeOffsets<PackedArrayTraits<ArrayTraits>>(
-                        owner, contextNode, endBitPosition, m_rawArray[index]);
-            }
-        }
-
-        return endBitPosition;
     }
 
     template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
@@ -941,57 +560,6 @@ private:
         return remainingBits / detail::arrayTraitsConstBitSizeOf<ArrayTraits>(owner);
     }
 
-    template <typename IO, typename OWNER_TYPE, ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
-            typename std::enable_if<
-                    ARRAY_TYPE_ != ArrayType::ALIGNED && ARRAY_TYPE_ != ArrayType::ALIGNED_AUTO, int>::type = 0>
-    static void alignAndCheckOffset(IO&, OWNER_TYPE&, size_t)
-    {}
-
-    template <typename IO, typename OWNER_TYPE, ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
-            typename std::enable_if<
-                    ARRAY_TYPE_ == ArrayType::ALIGNED || ARRAY_TYPE_ == ArrayType::ALIGNED_AUTO, int>::type = 0>
-    static void alignAndCheckOffset(IO& io, OWNER_TYPE& owner, size_t index)
-    {
-        io.alignTo(8);
-        detail::checkOffset<ArrayExpressions>(owner, index, io.getBitPosition() / 8);
-    }
-
-    void readImpl(OwnerType& owner, BitStreamReader& in, size_t arrayLength)
-    {
-        size_t readLength = readArrayLength(owner, in, arrayLength);
-
-        m_rawArray.clear();
-        m_rawArray.reserve(readLength);
-        for (size_t index = 0; index < readLength; ++index)
-        {
-            alignAndCheckOffset(in, owner, index);
-            detail::arrayTraitsRead<ArrayTraits>(owner, m_rawArray, in, index);
-        }
-    }
-
-    void readPackedImpl(OwnerType& owner, BitStreamReader& in, size_t arrayLength = 0)
-    {
-        static_assert(ARRAY_TYPE != ArrayType::IMPLICIT, "Implicit array cannot be packed!");
-
-        size_t readLength = readArrayLength(owner, in, arrayLength);
-
-        m_rawArray.clear();
-
-        if (readLength > 0)
-        {
-            m_rawArray.reserve(readLength);
-
-            auto& contextNode = getPackingContextNode();
-
-            for (size_t index = 0; index < readLength; ++index)
-            {
-                alignAndCheckOffset(in, owner, index);
-                detail::packedArrayTraitsRead<PackedArrayTraits<ArrayTraits>>(
-                        owner, m_rawArray, contextNode, in, index);
-            }
-        }
-    }
-
     template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
             typename std::enable_if<
                     ARRAY_TYPE_ != ArrayType::AUTO && ARRAY_TYPE_ != ArrayType::ALIGNED_AUTO, int>::type = 0>
@@ -1005,82 +573,807 @@ private:
     {
         out.writeVarSize(convertSizeToUInt32(arrayLength));
     }
+};
 
-    void writeImpl(const OwnerType& owner, BitStreamWriter& out) const
+/**
+ * Common implementation for unpacked array methods.
+ */
+template <typename ARRAY_BASE, ArrayType ARRAY_TYPE>
+struct UnpackedArrayMethods
+{
+    using RawArray = typename ARRAY_BASE::RawArray;
+    using ArrayTraits = typename ARRAY_BASE::ArrayTraits;
+    using OwnerType = typename ARRAY_BASE::OwnerType;
+
+    template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
+            typename std::enable_if<
+                    ARRAY_TYPE_ != ArrayType::ALIGNED && ARRAY_TYPE_ != ArrayType::ALIGNED_AUTO, int>::type = 0>
+    static size_t constBitSizeOfElements(size_t, size_t arrayLength, size_t elementBitSize)
     {
-        const size_t arrayLength = m_rawArray.size();
-        writeArrayLength(out, arrayLength);
-
-        for (size_t index = 0; index < arrayLength; ++index)
-        {
-            alignAndCheckOffset(out, owner, index);
-            detail::arrayTraitsWrite<ArrayTraits>(owner, out, m_rawArray[index]);
-        }
+        return arrayLength * elementBitSize;
     }
 
-    void writePackedImpl(const OwnerType& owner, BitStreamWriter& out) const
+    template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
+            typename std::enable_if<
+                    ARRAY_TYPE_ == ArrayType::ALIGNED || ARRAY_TYPE_ == ArrayType::ALIGNED_AUTO, int>::type = 0>
+    static size_t constBitSizeOfElements(size_t bitPosition, size_t arrayLength, size_t elementBitSize)
     {
-        static_assert(ARRAY_TYPE != ArrayType::IMPLICIT, "Implicit array cannot be packed!");
+        size_t endBitPosition = alignTo(8, bitPosition);
+        endBitPosition += elementBitSize + (arrayLength - 1) * alignTo(8, elementBitSize);
 
-        const size_t arrayLength = m_rawArray.size();
-        writeArrayLength(out, arrayLength);
+        return endBitPosition - bitPosition;
+    }
+
+    template <typename ARRAY_TRAITS_ = ArrayTraits,
+            typename std::enable_if<ARRAY_TRAITS_::IS_BITSIZEOF_CONSTANT, int>::type = 0>
+    static size_t bitSizeOf(const RawArray& rawArray, const OwnerType& owner, size_t bitPosition)
+    {
+        size_t endBitPosition = bitPosition;
+
+        const size_t arrayLength = rawArray.size();
+        ArrayMethods<ARRAY_BASE, ARRAY_TYPE>::addBitSizeOfArrayLength(endBitPosition, arrayLength);
 
         if (arrayLength > 0)
         {
-            auto& contextNode = getPackingContextNode();
+            const size_t elementBitSize = detail::arrayTraitsConstBitSizeOf<ArrayTraits>(owner);
+            endBitPosition += constBitSizeOfElements(endBitPosition, arrayLength, elementBitSize);
+        }
+
+        return endBitPosition - bitPosition;
+    }
+
+    template <typename ARRAY_TRAITS_ = ArrayTraits,
+            typename std::enable_if<!ARRAY_TRAITS_::IS_BITSIZEOF_CONSTANT, int>::type = 0>
+    static size_t bitSizeOf(const RawArray& rawArray, const OwnerType& owner, size_t bitPosition)
+    {
+        size_t endBitPosition = bitPosition;
+
+        const size_t arrayLength = rawArray.size();
+        ArrayMethods<ARRAY_BASE, ARRAY_TYPE>::addBitSizeOfArrayLength(endBitPosition, arrayLength);
+
+        for (size_t index = 0; index < arrayLength; ++index)
+        {
+            ArrayMethods<ARRAY_BASE, ARRAY_TYPE>::alignBitPosition(endBitPosition);
+            endBitPosition += detail::arrayTraitsBitSizeOf<ArrayTraits>(
+                    owner, endBitPosition, rawArray[index]);
+        }
+
+        return endBitPosition - bitPosition;
+    }
+
+    static size_t initializeOffsets(RawArray& rawArray, OwnerType& owner, size_t bitPosition)
+    {
+        size_t endBitPosition = bitPosition;
+
+        const size_t arrayLength = rawArray.size();
+        ArrayMethods<ARRAY_BASE, ARRAY_TYPE>::addBitSizeOfArrayLength(endBitPosition, arrayLength);
+
+        for (size_t index = 0; index < arrayLength; ++index)
+        {
+            ArrayMethods<ARRAY_BASE, ARRAY_TYPE>::initializeOffset(owner, index, endBitPosition);
+            endBitPosition = detail::arrayTraitsInitializeOffsets<ArrayTraits>(
+                    owner, endBitPosition, rawArray[index]);
+        }
+
+        return endBitPosition;
+    }
+
+    static void read(RawArray& rawArray, OwnerType& owner, BitStreamReader& in, size_t arrayLength)
+    {
+        size_t readLength = ArrayMethods<ARRAY_BASE, ARRAY_TYPE>::readArrayLength(owner, in, arrayLength);
+
+        rawArray.clear();
+        rawArray.reserve(readLength);
+        for (size_t index = 0; index < readLength; ++index)
+        {
+            ArrayMethods<ARRAY_BASE, ARRAY_TYPE>::alignAndCheckOffset(in, owner, index);
+            detail::arrayTraitsRead<ArrayTraits>(owner, rawArray, in, index);
+        }
+    }
+
+    static void write(const RawArray& rawArray, const OwnerType& owner, BitStreamWriter& out)
+    {
+        const size_t arrayLength = rawArray.size();
+        ArrayMethods<ARRAY_BASE, ARRAY_TYPE>::writeArrayLength(out, arrayLength);
+
+        for (size_t index = 0; index < arrayLength; ++index)
+        {
+            ArrayMethods<ARRAY_BASE, ARRAY_TYPE>::alignAndCheckOffset(out, owner, index);
+            detail::arrayTraitsWrite<ArrayTraits>(owner, out, rawArray[index]);
+        }
+    }
+};
+
+/**
+ * Common implementation for packed array methods.
+ */
+template <typename ARRAY_BASE, ArrayType ARRAY_TYPE>
+struct PackedArrayMethods
+{
+    using RawArray = typename ARRAY_BASE::RawArray;
+    using ArrayTraits = typename ARRAY_BASE::ArrayTraits;
+    using OwnerType = typename ARRAY_BASE::OwnerType;
+    using PackingContext = typename detail::packing_context_type<typename RawArray::value_type>::type;
+
+    static size_t bitSizeOfPacked(const RawArray& rawArray, const OwnerType& owner, size_t bitPosition)
+    {
+        static_assert(ARRAY_TYPE != ArrayType::IMPLICIT, "Implicit array cannot be packed!");
+
+        size_t endBitPosition = bitPosition;
+
+        const size_t arrayLength = rawArray.size();
+        ArrayMethods<ARRAY_BASE, ARRAY_TYPE>::addBitSizeOfArrayLength(endBitPosition, arrayLength);
+
+        if (arrayLength > 0)
+        {
+            PackingContext packingContext;
+
             for (size_t index = 0; index < arrayLength; ++index)
             {
                 detail::packedArrayTraitsInitContext<PackedArrayTraits<ArrayTraits>>(
-                        owner, contextNode, m_rawArray[index]);
+                        owner, packingContext, rawArray[index]);
             }
 
             for (size_t index = 0; index < arrayLength; ++index)
             {
-                alignAndCheckOffset(out, owner, index);
-                detail::packedArrayTraitsWrite<PackedArrayTraits<ArrayTraits>>(
-                        owner, contextNode, out, m_rawArray[index]);
+                ArrayMethods<ARRAY_BASE, ARRAY_TYPE>::alignBitPosition(endBitPosition);
+                endBitPosition += detail::packedArrayTraitsBitSizeOf<PackedArrayTraits<ArrayTraits>>(
+                        owner, packingContext, endBitPosition, rawArray[index]);
+            }
+        }
+
+        return endBitPosition - bitPosition;
+    }
+
+    static size_t initializeOffsetsPacked(RawArray& rawArray, OwnerType& owner, size_t bitPosition)
+    {
+        static_assert(ARRAY_TYPE != ArrayType::IMPLICIT, "Implicit array cannot be packed!");
+
+        size_t endBitPosition = bitPosition;
+
+        const size_t arrayLength = rawArray.size();
+        ArrayMethods<ARRAY_BASE, ARRAY_TYPE>::addBitSizeOfArrayLength(endBitPosition, arrayLength);
+
+        if (arrayLength > 0)
+        {
+            PackingContext packingContext;
+
+            for (size_t index = 0; index < arrayLength; ++index)
+            {
+                detail::packedArrayTraitsInitContext<PackedArrayTraits<ArrayTraits>>(
+                        owner, packingContext, rawArray[index]);
+            }
+
+            for (size_t index = 0; index < arrayLength; ++index)
+            {
+                ArrayMethods<ARRAY_BASE, ARRAY_TYPE>::initializeOffset(owner, index, endBitPosition);
+                endBitPosition = detail::packedArrayTraitsInitializeOffsets<PackedArrayTraits<ArrayTraits>>(
+                        owner, packingContext, endBitPosition, rawArray[index]);
+            }
+        }
+
+        return endBitPosition;
+    }
+
+    static void readPacked(RawArray& rawArray, OwnerType& owner, BitStreamReader& in, size_t arrayLength = 0)
+    {
+        static_assert(ARRAY_TYPE != ArrayType::IMPLICIT, "Implicit array cannot be packed!");
+
+        size_t readLength = ArrayMethods<ARRAY_BASE, ARRAY_TYPE>::readArrayLength(owner, in, arrayLength);
+
+        rawArray.clear();
+
+        if (readLength > 0)
+        {
+            rawArray.reserve(readLength);
+
+            PackingContext packingContext;
+
+            for (size_t index = 0; index < readLength; ++index)
+            {
+                ArrayMethods<ARRAY_BASE, ARRAY_TYPE>::alignAndCheckOffset(in, owner, index);
+                detail::packedArrayTraitsRead<PackedArrayTraits<ArrayTraits>>(
+                        owner, rawArray, packingContext, in, index);
             }
         }
     }
 
-    // RebindAlloc is used here to prevent multiple instantiations of the PackingContextNode template
-    using PackingContextNodeType = BasicPackingContextNode<RebindAlloc<allocator_type, uint8_t>>;
-
-    PackingContextNodeType& getPackingContextNode() const
+    static void writePacked(const RawArray& rawArray, const OwnerType& owner, BitStreamWriter& out)
     {
-        if (!m_packingContextNode) // lazy init
-            createContext();
-        else
-            resetContext(*m_packingContextNode);
+        static_assert(ARRAY_TYPE != ArrayType::IMPLICIT, "Implicit array cannot be packed!");
 
-        return *m_packingContextNode;
-    }
+        const size_t arrayLength = rawArray.size();
+        ArrayMethods<ARRAY_BASE, ARRAY_TYPE>::writeArrayLength(out, arrayLength);
 
-    void createContext() const
-    {
-        m_packingContextNode = allocate_unique<PackingContextNodeType>(
-                m_rawArray.get_allocator(), m_rawArray.get_allocator());
-        PackedArrayTraits<ArrayTraits>::createContext(*m_packingContextNode);
-    }
-
-    static void resetContext(PackingContextNodeType& contextNode)
-    {
-        if (contextNode.hasContext())
+        if (arrayLength > 0)
         {
-            contextNode.getContext().reset();
-        }
-        else
-        {
-            for (auto& childNode : contextNode.getChildren())
-                resetContext(childNode);
+            PackingContext packingContext;
+
+            for (size_t index = 0; index < arrayLength; ++index)
+            {
+                detail::packedArrayTraitsInitContext<PackedArrayTraits<ArrayTraits>>(
+                        owner, packingContext, rawArray[index]);
+            }
+
+            for (size_t index = 0; index < arrayLength; ++index)
+            {
+                ArrayMethods<ARRAY_BASE, ARRAY_TYPE>::alignAndCheckOffset(out, owner, index);
+                detail::packedArrayTraitsWrite<PackedArrayTraits<ArrayTraits>>(
+                        owner, packingContext, out, rawArray[index]);
+            }
         }
     }
+};
 
-    RawArray m_rawArray;
+/**
+ * Array wrapper for zserio arrays which are never packed.
+ */
+template <typename RAW_ARRAY, typename ARRAY_TRAITS, ArrayType ARRAY_TYPE,
+        typename ARRAY_EXPRESSIONS = detail::DummyArrayExpressions>
+class UnpackedArray : public ArrayBase<RAW_ARRAY, ARRAY_TRAITS, ARRAY_EXPRESSIONS>
+{
+private:
+    using Base = ArrayBase<RAW_ARRAY, ARRAY_TRAITS, ARRAY_EXPRESSIONS>;
 
-    // mutable context is ok since it's just a cache and we need to keep bitSizeOfPacked method const
-    mutable unique_ptr<PackingContextNodeType,
-            RebindAlloc<allocator_type, PackingContextNodeType>> m_packingContextNode;
+    using UnpackedMethods = UnpackedArrayMethods<Base, ARRAY_TYPE>;
+
+public:
+    using OwnerType = typename Base::OwnerType;
+    using Base::Base;
+    using Base::getRawArray;
+
+    /**
+     * Calculates bit size of this array.
+     *
+     * Available for arrays which do not need the owner.
+     *
+     * \param bitPosition Current bit position.
+     *
+     * \return Bit size of the array.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    size_t bitSizeOf(size_t bitPosition) const
+    {
+        return UnpackedMethods::bitSizeOf(getRawArray(), detail::DummyArrayOwner(), bitPosition);
+    }
+
+    /**
+     * Calculates bit size of this array.
+     *
+     * Available for arrays which need the owner.
+     *
+     * \param owner Array owner.
+     * \param bitPosition Current bit position.
+     *
+     * \return Bit size of the array.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    size_t bitSizeOf(const OwnerType& owner, size_t bitPosition) const
+    {
+        return UnpackedMethods::bitSizeOf(getRawArray(), owner, bitPosition);
+    }
+
+    /**
+     * Initializes indexed offsets.
+     *
+     * Available for arrays which do not need the owner.
+     *
+     * \param bitPosition Current bit position.
+     *
+     * \return Updated bit position which points to the first bit after the array.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    size_t initializeOffsets(size_t bitPosition)
+    {
+        detail::DummyArrayOwner owner;
+        return UnpackedMethods::initializeOffsets(getRawArray(), owner, bitPosition);
+    }
+
+    /**
+     * Initializes indexed offsets.
+     *
+     * Available for arrays which need the owner.
+     *
+     * \param owner Array owner.
+     * \param bitPosition Current bit position.
+     *
+     * \return Updated bit position which points to the first bit after the array.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    size_t initializeOffsets(OwnerType& owner, size_t bitPosition)
+    {
+        return UnpackedMethods::initializeOffsets(getRawArray(), owner, bitPosition);
+    }
+
+    /**
+     * Reads the array from the bit stream.
+     *
+     * Available for arrays which do not need the owner.
+     *
+     * \param in Bit stream reader to use for reading.
+     * \param arrayLength Array length. Not needed for auto / implicit arrays.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    void read(BitStreamReader& in, size_t arrayLength = 0)
+    {
+        detail::DummyArrayOwner owner;
+        UnpackedMethods::read(getRawArray(), owner, in, arrayLength);
+    }
+
+    /**
+     * Reads the array from the bit stream.
+     *
+     * Available for arrays which need the owner.
+     *
+     * \param owner Array owner.
+     * \param in Bit stream reader to use for reading.
+     * \param arrayLength Array length. Not needed for auto / implicit arrays.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    void read(OwnerType& owner, BitStreamReader& in, size_t arrayLength = 0)
+    {
+        UnpackedMethods::read(getRawArray(), owner, in, arrayLength);
+    }
+
+    /**
+     * Writes the array to the bit stream.
+     *
+     * Available for arrays which do not need the owner.
+     *
+     * \param out Bit stream write to use for writing.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    void write(BitStreamWriter& out) const
+    {
+        UnpackedMethods::write(getRawArray(), detail::DummyArrayOwner(), out);
+    }
+
+    /**
+     * Writes the array to the bit stream.
+     *
+     * Available for arrays which need the owner.
+     *
+     * \param owner Array owner.
+     * \param out Bit stream write to use for writing.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    void write(const OwnerType& owner, BitStreamWriter& out) const
+    {
+        UnpackedMethods::write(getRawArray(), owner, out);
+    }
+};
+
+/**
+ * Array wrapper for zserio arrays which are explicitly packed (and the type is packable) - i.e. always packed.
+ */
+template <typename RAW_ARRAY, typename ARRAY_TRAITS, ArrayType ARRAY_TYPE,
+        typename ARRAY_EXPRESSIONS = detail::DummyArrayExpressions>
+class PackedArray : public ArrayBase<RAW_ARRAY, ARRAY_TRAITS, ARRAY_EXPRESSIONS>
+{
+private:
+    using Base = ArrayBase<RAW_ARRAY, ARRAY_TRAITS, ARRAY_EXPRESSIONS>;
+
+    using PackedMethods = PackedArrayMethods<Base, ARRAY_TYPE>;
+
+public:
+    using OwnerType = typename Base::OwnerType;
+    using Base::Base;
+    using Base::getRawArray;
+
+    /**
+     * Returns length of the packed array stored in the bit stream in bits.
+     *
+     * Available for arrays which do not need the owner.
+     *
+     * \param bitPosition Current bit stream position.
+     *
+     * \return Length of the array stored in the bit stream in bits.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    size_t bitSizeOfPacked(size_t bitPosition) const
+    {
+        return PackedMethods::bitSizeOfPacked(getRawArray(), detail::DummyArrayOwner(), bitPosition);
+    }
+
+    /**
+     * Returns length of the packed array stored in the bit stream in bits.
+     *
+     * Available for arrays which need the owner.
+     *
+     * \param owner Array owner.
+     * \param bitPosition Current bit stream position.
+     *
+     * \return Length of the array stored in the bit stream in bits.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    size_t bitSizeOfPacked(const OwnerType& ownerType, size_t bitPosition) const
+    {
+        return PackedMethods::bitSizeOfPacked(getRawArray(), ownerType, bitPosition);
+    }
+
+    /**
+     * Initializes indexed offsets for the packed array.
+     *
+     * Available for arrays which do not need the owner.
+     *
+     * \param bitPosition Current bit stream position.
+     *
+     * \return Updated bit stream position which points to the first bit after the array.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    size_t initializeOffsetsPacked(size_t bitPosition)
+    {
+        detail::DummyArrayOwner owner;
+        return PackedMethods::initializeOffsetsPacked(getRawArray(), owner, bitPosition);
+    }
+
+    /**
+     * Initializes indexed offsets for the packed array.
+     *
+     * Available for arrays which need the owner.
+     *
+     * \param owner Array owner.
+     * \param bitPosition Current bit stream position.
+     *
+     * \return Updated bit stream position which points to the first bit after the array.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    size_t initializeOffsetsPacked(OwnerType& owner, size_t bitPosition)
+    {
+        return PackedMethods::initializeOffsetsPacked(getRawArray(), owner, bitPosition);
+    }
+
+    /**
+     * Reads packed array from the bit stream.
+     *
+     * Available for arrays which do not need the owner.
+     *
+     * \param in Bit stream from which to read.
+     * \param arrayLength Number of elements to read or 0 in case of auto arrays.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    void readPacked(BitStreamReader& in, size_t arrayLength = 0)
+    {
+        detail::DummyArrayOwner owner;
+        PackedMethods::readPacked(getRawArray(), owner, in, arrayLength);
+    }
+
+    /**
+     * Reads packed array from the bit stream.
+     *
+     * Available for arrays which need the owner.
+     *
+     * \param owner Array owner.
+     * \param in Bit stream from which to read.
+     * \param arrayLength Number of elements to read or 0 in case of auto arrays.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    void readPacked(OwnerType& owner, BitStreamReader& in, size_t arrayLength = 0)
+    {
+        PackedMethods::readPacked(getRawArray(), owner, in, arrayLength);
+    }
+
+    /**
+     * Writes packed array to the bit stream.
+     *
+     * Available for arrays which do not need the owner.
+     *
+     * \param out Bit stream where to write.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    void writePacked(BitStreamWriter& out) const
+    {
+        PackedMethods::writePacked(getRawArray(), detail::DummyArrayOwner(), out);
+    }
+
+    /**
+     * Writes packed array to the bit stream.
+     *
+     * Available for arrays which need the owner.
+     *
+     * \param owner Array owner.
+     * \param out Bit stream where to write.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    void writePacked(const OwnerType& owner, BitStreamWriter& out) const
+    {
+        PackedMethods::writePacked(getRawArray(), owner, out);
+    }
+};
+
+/**
+ * Array wrapper for zserio arrays which are not explicitly packed but the element type is packable
+ * and thus it can be packed if requested from a parent.
+ */
+/**
+ * Array wrapper for zserio arrays which are never packed.
+ */
+template <typename RAW_ARRAY, typename ARRAY_TRAITS, ArrayType ARRAY_TYPE,
+        typename ARRAY_EXPRESSIONS = detail::DummyArrayExpressions>
+class Array : public ArrayBase<RAW_ARRAY, ARRAY_TRAITS, ARRAY_EXPRESSIONS>
+{
+private:
+    using Base = ArrayBase<RAW_ARRAY, ARRAY_TRAITS, ARRAY_EXPRESSIONS>;
+
+    using UnpackedMethods = UnpackedArrayMethods<Base, ARRAY_TYPE>;
+    using PackedMethods = PackedArrayMethods<Base, ARRAY_TYPE>;
+
+public:
+    using OwnerType = typename Base::OwnerType;
+    using Base::Base;
+    using Base::getRawArray;
+
+    /**
+     * Calculates bit size of this array.
+     *
+     * Available for arrays which do not need the owner.
+     *
+     * \param bitPosition Current bit position.
+     *
+     * \return Bit size of the array.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    size_t bitSizeOf(size_t bitPosition) const
+    {
+        return UnpackedMethods::bitSizeOf(getRawArray(), detail::DummyArrayOwner(), bitPosition);
+    }
+
+    /**
+     * Calculates bit size of this array.
+     *
+     * Available for arrays which need the owner.
+     *
+     * \param owner Array owner.
+     * \param bitPosition Current bit position.
+     *
+     * \return Bit size of the array.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    size_t bitSizeOf(const OwnerType& owner, size_t bitPosition) const
+    {
+        return UnpackedMethods::bitSizeOf(getRawArray(), owner, bitPosition);
+    }
+
+    /**
+     * Initializes indexed offsets.
+     *
+     * Available for arrays which do not need the owner.
+     *
+     * \param bitPosition Current bit position.
+     *
+     * \return Updated bit position which points to the first bit after the array.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    size_t initializeOffsets(size_t bitPosition)
+    {
+        detail::DummyArrayOwner owner;
+        return UnpackedMethods::initializeOffsets(getRawArray(), owner, bitPosition);
+    }
+
+    /**
+     * Initializes indexed offsets.
+     *
+     * Available for arrays which need the owner.
+     *
+     * \param owner Array owner.
+     * \param bitPosition Current bit position.
+     *
+     * \return Updated bit position which points to the first bit after the array.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    size_t initializeOffsets(OwnerType& owner, size_t bitPosition)
+    {
+        return UnpackedMethods::initializeOffsets(getRawArray(), owner, bitPosition);
+    }
+
+    /**
+     * Reads the array from the bit stream.
+     *
+     * Available for arrays which do not need the owner.
+     *
+     * \param in Bit stream reader to use for reading.
+     * \param arrayLength Array length. Not needed for auto / implicit arrays.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    void read(BitStreamReader& in, size_t arrayLength = 0)
+    {
+        detail::DummyArrayOwner owner;
+        UnpackedMethods::read(getRawArray(), owner, in, arrayLength);
+    }
+
+    /**
+     * Reads the array from the bit stream.
+     *
+     * Available for arrays which need the owner.
+     *
+     * \param owner Array owner.
+     * \param in Bit stream reader to use for reading.
+     * \param arrayLength Array length. Not needed for auto / implicit arrays.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    void read(OwnerType& owner, BitStreamReader& in, size_t arrayLength = 0)
+    {
+        UnpackedMethods::read(getRawArray(), owner, in, arrayLength);
+    }
+
+    /**
+     * Writes the array to the bit stream.
+     *
+     * Available for arrays which do not need the owner.
+     *
+     * \param out Bit stream write to use for writing.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    void write(BitStreamWriter& out) const
+    {
+        UnpackedMethods::write(getRawArray(), detail::DummyArrayOwner(), out);
+    }
+
+    /**
+     * Writes the array to the bit stream.
+     *
+     * Available for arrays which need the owner.
+     *
+     * \param owner Array owner.
+     * \param out Bit stream write to use for writing.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    void write(const OwnerType& owner, BitStreamWriter& out) const
+    {
+        UnpackedMethods::write(getRawArray(), owner, out);
+    }
+
+    /**
+     * Returns length of the packed array stored in the bit stream in bits.
+     *
+     * Available for arrays which do not need the owner.
+     *
+     * \param bitPosition Current bit stream position.
+     *
+     * \return Length of the array stored in the bit stream in bits.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    size_t bitSizeOfPacked(size_t bitPosition) const
+    {
+        return PackedMethods::bitSizeOfPacked(getRawArray(), detail::DummyArrayOwner(), bitPosition);
+    }
+
+    /**
+     * Returns length of the packed array stored in the bit stream in bits.
+     *
+     * Available for arrays which need the owner.
+     *
+     * \param owner Array owner.
+     * \param bitPosition Current bit stream position.
+     *
+     * \return Length of the array stored in the bit stream in bits.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    size_t bitSizeOfPacked(const OwnerType& ownerType, size_t bitPosition) const
+    {
+        return PackedMethods::bitSizeOfPacked(getRawArray(), ownerType, bitPosition);
+    }
+
+    /**
+     * Initializes indexed offsets for the packed array.
+     *
+     * Available for arrays which do not need the owner.
+     *
+     * \param bitPosition Current bit stream position.
+     *
+     * \return Updated bit stream position which points to the first bit after the array.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    size_t initializeOffsetsPacked(size_t bitPosition)
+    {
+        detail::DummyArrayOwner owner;
+        return PackedMethods::initializeOffsetsPacked(getRawArray(), owner, bitPosition);
+    }
+
+    /**
+     * Initializes indexed offsets for the packed array.
+     *
+     * Available for arrays which need the owner.
+     *
+     * \param owner Array owner.
+     * \param bitPosition Current bit stream position.
+     *
+     * \return Updated bit stream position which points to the first bit after the array.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    size_t initializeOffsetsPacked(OwnerType& owner, size_t bitPosition)
+    {
+        return PackedMethods::initializeOffsetsPacked(getRawArray(), owner, bitPosition);
+    }
+
+    /**
+     * Reads packed array from the bit stream.
+     *
+     * Available for arrays which do not need the owner.
+     *
+     * \param in Bit stream from which to read.
+     * \param arrayLength Number of elements to read or 0 in case of auto arrays.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    void readPacked(BitStreamReader& in, size_t arrayLength = 0)
+    {
+        detail::DummyArrayOwner owner;
+        PackedMethods::readPacked(getRawArray(), owner, in, arrayLength);
+    }
+
+    /**
+     * Reads packed array from the bit stream.
+     *
+     * Available for arrays which need the owner.
+     *
+     * \param owner Array owner.
+     * \param in Bit stream from which to read.
+     * \param arrayLength Number of elements to read or 0 in case of auto arrays.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    void readPacked(OwnerType& owner, BitStreamReader& in, size_t arrayLength = 0)
+    {
+        PackedMethods::readPacked(getRawArray(), owner, in, arrayLength);
+    }
+
+    /**
+     * Writes packed array to the bit stream.
+     *
+     * Available for arrays which do not need the owner.
+     *
+     * \param out Bit stream where to write.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    void writePacked(BitStreamWriter& out) const
+    {
+        PackedMethods::writePacked(getRawArray(), detail::DummyArrayOwner(), out);
+    }
+
+    /**
+     * Writes packed array to the bit stream.
+     *
+     * Available for arrays which need the owner.
+     *
+     * \param owner Array owner.
+     * \param out Bit stream where to write.
+     */
+    template <typename OWNER_TYPE_ = OwnerType,
+            typename std::enable_if<!std::is_same<OWNER_TYPE_, detail::DummyArrayOwner>::value, int>::type = 0>
+    void writePacked(const OwnerType& owner, BitStreamWriter& out) const
+    {
+        PackedMethods::writePacked(getRawArray(), owner, out);
+    }
 };
 
 /**

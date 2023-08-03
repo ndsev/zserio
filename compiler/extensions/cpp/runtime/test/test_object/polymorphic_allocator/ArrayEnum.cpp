@@ -140,9 +140,9 @@ uint32_t enumHashCode<::test_object::polymorphic_allocator::ArrayEnum>(::test_ob
 }
 
 template <>
-void initPackingContext(::zserio::pmr::PackingContextNode& contextNode, ::test_object::polymorphic_allocator::ArrayEnum value)
+void initPackingContext(::zserio::DeltaContext& context, ::test_object::polymorphic_allocator::ArrayEnum value)
 {
-    contextNode.getContext().init<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::polymorphic_allocator::ArrayEnum>::type>>(
+    context.init<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::polymorphic_allocator::ArrayEnum>::type>>(
             ::zserio::enumToValue(value));
 }
 
@@ -153,9 +153,9 @@ size_t bitSizeOf(::test_object::polymorphic_allocator::ArrayEnum)
 }
 
 template <>
-size_t bitSizeOf(::zserio::pmr::PackingContextNode& contextNode, ::test_object::polymorphic_allocator::ArrayEnum value)
+size_t bitSizeOf(::zserio::DeltaContext& context, ::test_object::polymorphic_allocator::ArrayEnum value)
 {
-    return contextNode.getContext().bitSizeOf<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::polymorphic_allocator::ArrayEnum>::type>>(
+    return context.bitSizeOf<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::polymorphic_allocator::ArrayEnum>::type>>(
             ::zserio::enumToValue(value));
 }
 
@@ -166,10 +166,9 @@ size_t initializeOffsets(size_t bitPosition, ::test_object::polymorphic_allocato
 }
 
 template <>
-size_t initializeOffsets(::zserio::pmr::PackingContextNode& contextNode,
-        size_t bitPosition, ::test_object::polymorphic_allocator::ArrayEnum value)
+size_t initializeOffsets(::zserio::DeltaContext& context, size_t bitPosition, ::test_object::polymorphic_allocator::ArrayEnum value)
 {
-    return bitPosition + bitSizeOf(contextNode, value);
+    return bitPosition + bitSizeOf(context, value);
 }
 
 template <>
@@ -181,9 +180,9 @@ template <>
 }
 
 template <>
-::test_object::polymorphic_allocator::ArrayEnum read(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamReader& in)
+::test_object::polymorphic_allocator::ArrayEnum read(::zserio::DeltaContext& context, ::zserio::BitStreamReader& in)
 {
-    return valueToEnum<::test_object::polymorphic_allocator::ArrayEnum>(contextNode.getContext().read<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::polymorphic_allocator::ArrayEnum>::type>>(
+    return valueToEnum<::test_object::polymorphic_allocator::ArrayEnum>(context.read<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::polymorphic_allocator::ArrayEnum>::type>>(
             in));
 }
 
@@ -194,9 +193,9 @@ void write(::zserio::BitStreamWriter& out, ::test_object::polymorphic_allocator:
 }
 
 template <>
-void write(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out, ::test_object::polymorphic_allocator::ArrayEnum value)
+void write(::zserio::DeltaContext& context, ::zserio::BitStreamWriter& out, ::test_object::polymorphic_allocator::ArrayEnum value)
 {
-    contextNode.getContext().write<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::polymorphic_allocator::ArrayEnum>::type>>(
+    context.write<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::polymorphic_allocator::ArrayEnum>::type>>(
             out, ::zserio::enumToValue(value));
 }
 

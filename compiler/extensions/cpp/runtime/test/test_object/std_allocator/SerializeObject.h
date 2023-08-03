@@ -10,10 +10,10 @@
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/AllocatorPropagatingCopy.h>
+#include <zserio/PackingContext.h>
 #include <zserio/ITypeInfo.h>
 #include <zserio/IReflectable.h>
 #include <memory>
-#include <zserio/PackingContext.h>
 #include <zserio/ArrayTraits.h>
 #include <zserio/Types.h>
 
@@ -28,6 +28,17 @@ class SerializeObject
 {
 public:
     using allocator_type = ::std::allocator<uint8_t>;
+
+    class ZserioPackingContext
+    {
+    public:
+        ::zserio::DeltaContext& getParam() { return m_param_; }
+        ::test_object::std_allocator::SerializeNested::ZserioPackingContext& getNested() { return m_nested_; }
+
+    private:
+        ::zserio::DeltaContext m_param_;
+        ::test_object::std_allocator::SerializeNested::ZserioPackingContext m_nested_;
+    };
 
     SerializeObject() noexcept :
             SerializeObject(allocator_type())
@@ -47,7 +58,7 @@ public:
     }
 
     explicit SerializeObject(::zserio::BitStreamReader& in, const allocator_type& allocator = allocator_type());
-    explicit SerializeObject(::zserio::PackingContextNode& contextNode,
+    explicit SerializeObject(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in, const allocator_type& allocator = allocator_type());
 
     ~SerializeObject() = default;
@@ -75,28 +86,27 @@ public:
     void setNested(const ::test_object::std_allocator::SerializeNested& nested_);
     void setNested(::test_object::std_allocator::SerializeNested&& nested_);
 
-    static void createPackingContext(::zserio::PackingContextNode& contextNode);
-    void initPackingContext(::zserio::PackingContextNode& contextNode) const;
+    void initPackingContext(ZserioPackingContext& context) const;
 
     size_t bitSizeOf(size_t bitPosition = 0) const;
-    size_t bitSizeOf(::zserio::PackingContextNode& contextNode, size_t bitPosition) const;
+    size_t bitSizeOf(ZserioPackingContext& context, size_t bitPosition) const;
 
     size_t initializeOffsets(size_t bitPosition = 0);
-    size_t initializeOffsets(::zserio::PackingContextNode& contextNode, size_t bitPosition);
+    size_t initializeOffsets(ZserioPackingContext& context, size_t bitPosition);
 
     bool operator==(const SerializeObject& other) const;
     uint32_t hashCode() const;
 
     void write(::zserio::BitStreamWriter& out) const;
-    void write(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const;
+    void write(ZserioPackingContext& context, ::zserio::BitStreamWriter& out) const;
 
 private:
     int8_t readParam(::zserio::BitStreamReader& in);
-    int8_t readParam(::zserio::PackingContextNode& contextNode,
+    int8_t readParam(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in);
     ::test_object::std_allocator::SerializeNested readNested(::zserio::BitStreamReader& in,
             const allocator_type& allocator);
-    ::test_object::std_allocator::SerializeNested readNested(::zserio::PackingContextNode& contextNode,
+    ::test_object::std_allocator::SerializeNested readNested(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in, const allocator_type& allocator);
 
     bool m_areChildrenInitialized;

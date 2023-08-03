@@ -13,7 +13,6 @@
 #include <zserio/ITypeInfo.h>
 #include <zserio/IReflectable.h>
 #include <memory>
-#include <zserio/PackingContext.h>
 #include <zserio/ArrayTraits.h>
 #include <zserio/String.h>
 #include <zserio/Types.h>
@@ -46,9 +45,6 @@ public:
 
     explicit DebugStringParamObject(::zserio::BitStreamReader& in,
             int32_t param_, const allocator_type& allocator = allocator_type());
-    explicit DebugStringParamObject(::zserio::PackingContextNode& contextNode,
-            ::zserio::BitStreamReader& in,
-            int32_t param_, const allocator_type& allocator = allocator_type());
 
     ~DebugStringParamObject() = default;
 
@@ -76,20 +72,14 @@ public:
     void setText(const ::zserio::string<>& text_);
     void setText(::zserio::string<>&& text_);
 
-    static void createPackingContext(::zserio::PackingContextNode& contextNode);
-    void initPackingContext(::zserio::PackingContextNode& contextNode) const;
-
     size_t bitSizeOf(size_t bitPosition = 0) const;
-    size_t bitSizeOf(::zserio::PackingContextNode& contextNode, size_t bitPosition) const;
 
     size_t initializeOffsets(size_t bitPosition = 0);
-    size_t initializeOffsets(::zserio::PackingContextNode& contextNode, size_t bitPosition);
 
     bool operator==(const DebugStringParamObject& other) const;
     uint32_t hashCode() const;
 
     void write(::zserio::BitStreamWriter& out) const;
-    void write(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const;
 
 private:
     ::zserio::string<> readText(::zserio::BitStreamReader& in,

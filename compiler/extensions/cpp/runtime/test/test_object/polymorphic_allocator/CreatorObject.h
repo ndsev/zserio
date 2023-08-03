@@ -10,10 +10,10 @@
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/AllocatorPropagatingCopy.h>
+#include <zserio/PackingContext.h>
 #include <zserio/pmr/ITypeInfo.h>
 #include <zserio/pmr/IReflectable.h>
 #include <zserio/pmr/PolymorphicAllocator.h>
-#include <zserio/pmr/PackingContext.h>
 #include <zserio/OptionalHolder.h>
 #include <zserio/Array.h>
 #include <zserio/ArrayTraits.h>
@@ -51,7 +51,7 @@ private:
                 ::zserio::BitStreamReader& in, const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t index);
 
         static ::test_object::polymorphic_allocator::CreatorNested create(CreatorObject& owner,
-                ::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamReader& in,
+                ::test_object::polymorphic_allocator::CreatorNested::ZserioPackingContext& context, ::zserio::BitStreamReader& in,
                 const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t index);
     };
 
@@ -62,6 +62,21 @@ private:
 
 public:
     using allocator_type = ::zserio::pmr::PropagatingPolymorphicAllocator<>;
+
+    class ZserioPackingContext
+    {
+    public:
+        ::zserio::DeltaContext& getValue() { return m_value_; }
+        ::test_object::polymorphic_allocator::CreatorNested::ZserioPackingContext& getNested() { return m_nested_; }
+        ::test_object::polymorphic_allocator::CreatorNested::ZserioPackingContext& getNestedArray() { return m_nestedArray_; }
+        ::test_object::polymorphic_allocator::CreatorNested::ZserioPackingContext& getOptionalNested() { return m_optionalNested_; }
+
+    private:
+        ::zserio::DeltaContext m_value_;
+        ::test_object::polymorphic_allocator::CreatorNested::ZserioPackingContext m_nested_;
+        ::test_object::polymorphic_allocator::CreatorNested::ZserioPackingContext m_nestedArray_;
+        ::test_object::polymorphic_allocator::CreatorNested::ZserioPackingContext m_optionalNested_;
+    };
 
     CreatorObject() noexcept :
             CreatorObject(allocator_type())
@@ -102,7 +117,7 @@ public:
     }
 
     explicit CreatorObject(::zserio::BitStreamReader& in, const allocator_type& allocator = allocator_type());
-    explicit CreatorObject(::zserio::pmr::PackingContextNode& contextNode,
+    explicit CreatorObject(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in, const allocator_type& allocator = allocator_type());
 
     ~CreatorObject() = default;
@@ -175,34 +190,33 @@ public:
     bool isOptionalNestedSet() const;
     void resetOptionalNested();
 
-    static void createPackingContext(::zserio::pmr::PackingContextNode& contextNode);
-    void initPackingContext(::zserio::pmr::PackingContextNode& contextNode) const;
+    void initPackingContext(ZserioPackingContext& context) const;
 
     size_t bitSizeOf(size_t bitPosition = 0) const;
-    size_t bitSizeOf(::zserio::pmr::PackingContextNode& contextNode, size_t bitPosition) const;
+    size_t bitSizeOf(ZserioPackingContext& context, size_t bitPosition) const;
 
     size_t initializeOffsets(size_t bitPosition = 0);
-    size_t initializeOffsets(::zserio::pmr::PackingContextNode& contextNode, size_t bitPosition);
+    size_t initializeOffsets(ZserioPackingContext& context, size_t bitPosition);
 
     bool operator==(const CreatorObject& other) const;
     uint32_t hashCode() const;
 
     void write(::zserio::BitStreamWriter& out) const;
-    void write(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const;
+    void write(ZserioPackingContext& context, ::zserio::BitStreamWriter& out) const;
 
 private:
     uint32_t readValue(::zserio::BitStreamReader& in);
-    uint32_t readValue(::zserio::pmr::PackingContextNode& contextNode,
+    uint32_t readValue(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in);
     ::test_object::polymorphic_allocator::CreatorNested readNested(::zserio::BitStreamReader& in,
             const allocator_type& allocator);
-    ::test_object::polymorphic_allocator::CreatorNested readNested(::zserio::pmr::PackingContextNode& contextNode,
+    ::test_object::polymorphic_allocator::CreatorNested readNested(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in, const allocator_type& allocator);
     ::zserio::pmr::string readText(::zserio::BitStreamReader& in,
             const allocator_type& allocator);
     ZserioArrayType_nestedArray readNestedArray(::zserio::BitStreamReader& in,
             const allocator_type& allocator);
-    ZserioArrayType_nestedArray readNestedArray(::zserio::pmr::PackingContextNode& contextNode,
+    ZserioArrayType_nestedArray readNestedArray(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in, const allocator_type& allocator);
     ZserioArrayType_textArray readTextArray(::zserio::BitStreamReader& in,
             const allocator_type& allocator);
@@ -213,7 +227,7 @@ private:
     ::zserio::InplaceOptionalHolder<bool> readOptionalBool(::zserio::BitStreamReader& in);
     ::zserio::InplaceOptionalHolder<::test_object::polymorphic_allocator::CreatorNested> readOptionalNested(::zserio::BitStreamReader& in,
             const allocator_type& allocator);
-    ::zserio::InplaceOptionalHolder<::test_object::polymorphic_allocator::CreatorNested> readOptionalNested(::zserio::pmr::PackingContextNode& contextNode,
+    ::zserio::InplaceOptionalHolder<::test_object::polymorphic_allocator::CreatorNested> readOptionalNested(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in, const allocator_type& allocator);
 
     bool m_areChildrenInitialized;

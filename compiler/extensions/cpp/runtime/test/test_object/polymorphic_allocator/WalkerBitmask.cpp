@@ -20,8 +20,8 @@ WalkerBitmask::WalkerBitmask(::zserio::BitStreamReader& in) :
         m_value(readValue(in))
 {}
 
-WalkerBitmask::WalkerBitmask(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamReader& in) :
-        m_value(readValue(contextNode, in))
+WalkerBitmask::WalkerBitmask(::zserio::DeltaContext& context, ::zserio::BitStreamReader& in) :
+        m_value(readValue(context, in))
 {}
 
 const ::zserio::pmr::ITypeInfo& WalkerBitmask::typeInfo()
@@ -99,15 +99,9 @@ const ::zserio::pmr::ITypeInfo& WalkerBitmask::typeInfo()
     return ::std::allocate_shared<Reflectable>(allocator, *this);
 }
 
-void WalkerBitmask::createPackingContext(::zserio::pmr::PackingContextNode& contextNode)
+void WalkerBitmask::initPackingContext(::zserio::DeltaContext& context) const
 {
-    contextNode.createContext();
-}
-
-void WalkerBitmask::initPackingContext(::zserio::pmr::PackingContextNode& contextNode) const
-{
-    contextNode.getContext().init<::zserio::StdIntArrayTraits<::test_object::polymorphic_allocator::WalkerBitmask::underlying_type>>(
-            m_value);
+    context.init<::zserio::StdIntArrayTraits<::test_object::polymorphic_allocator::WalkerBitmask::underlying_type>>(m_value);
 }
 
 size_t WalkerBitmask::bitSizeOf(size_t) const
@@ -115,10 +109,9 @@ size_t WalkerBitmask::bitSizeOf(size_t) const
     return UINT8_C(32);
 }
 
-size_t WalkerBitmask::bitSizeOf(::zserio::pmr::PackingContextNode& contextNode, size_t) const
+size_t WalkerBitmask::bitSizeOf(::zserio::DeltaContext& context, size_t) const
 {
-    return contextNode.getContext().bitSizeOf<::zserio::StdIntArrayTraits<::test_object::polymorphic_allocator::WalkerBitmask::underlying_type>>(
-            m_value);
+    return context.bitSizeOf<::zserio::StdIntArrayTraits<::test_object::polymorphic_allocator::WalkerBitmask::underlying_type>>(m_value);
 }
 
 size_t WalkerBitmask::initializeOffsets(size_t bitPosition) const
@@ -126,9 +119,9 @@ size_t WalkerBitmask::initializeOffsets(size_t bitPosition) const
     return bitPosition + bitSizeOf(bitPosition);
 }
 
-size_t WalkerBitmask::initializeOffsets(::zserio::pmr::PackingContextNode& contextNode, size_t bitPosition) const
+size_t WalkerBitmask::initializeOffsets(::zserio::DeltaContext& context, size_t bitPosition) const
 {
-    return bitPosition + bitSizeOf(contextNode, bitPosition);
+    return bitPosition + bitSizeOf(context, bitPosition);
 }
 
 uint32_t WalkerBitmask::hashCode() const
@@ -143,10 +136,9 @@ void WalkerBitmask::write(::zserio::BitStreamWriter& out) const
     out.writeBits(m_value, UINT8_C(32));
 }
 
-void WalkerBitmask::write(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const
+void WalkerBitmask::write(::zserio::DeltaContext& context, ::zserio::BitStreamWriter& out) const
 {
-    contextNode.getContext().write<::zserio::StdIntArrayTraits<::test_object::polymorphic_allocator::WalkerBitmask::underlying_type>>(
-            out, m_value);
+    context.write<::zserio::StdIntArrayTraits<::test_object::polymorphic_allocator::WalkerBitmask::underlying_type>>(out, m_value);
 }
 
 ::zserio::pmr::string WalkerBitmask::toString(const ::zserio::pmr::string::allocator_type& allocator) const
@@ -163,10 +155,9 @@ WalkerBitmask::underlying_type WalkerBitmask::readValue(::zserio::BitStreamReade
     return static_cast<underlying_type>(in.readBits(UINT8_C(32)));
 }
 
-WalkerBitmask::underlying_type WalkerBitmask::readValue(::zserio::pmr::PackingContextNode& contextNode,
-        ::zserio::BitStreamReader& in)
+WalkerBitmask::underlying_type WalkerBitmask::readValue(::zserio::DeltaContext& context, ::zserio::BitStreamReader& in)
 {
-    return contextNode.getContext().read<::zserio::StdIntArrayTraits<::test_object::polymorphic_allocator::WalkerBitmask::underlying_type>>(
+    return context.read<::zserio::StdIntArrayTraits<::test_object::polymorphic_allocator::WalkerBitmask::underlying_type>>(
             in);
 }
 

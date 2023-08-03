@@ -33,11 +33,11 @@ WalkerChoice::WalkerChoice(::zserio::BitStreamReader& in,
 {
 }
 
-WalkerChoice::WalkerChoice(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamReader& in,
+WalkerChoice::WalkerChoice(WalkerChoice::ZserioPackingContext& context, ::zserio::BitStreamReader& in,
         uint8_t selector_, const allocator_type& allocator) :
         m_selector_(selector_),
         m_isInitialized(true),
-        m_objectChoice(readObject(contextNode, in, allocator), allocator)
+        m_objectChoice(readObject(context, in, allocator), allocator)
 {
 }
 
@@ -568,31 +568,21 @@ WalkerChoice::ChoiceTag WalkerChoice::choiceTag() const
     }
 }
 
-void WalkerChoice::createPackingContext(::zserio::pmr::PackingContextNode& contextNode)
-{
-    contextNode.reserveChildren(4);
-
-    contextNode.createChild().createContext();
-    contextNode.createChild().createContext();
-    contextNode.createChild().createContext();
-    contextNode.createChild().createContext();
-}
-
-void WalkerChoice::initPackingContext(::zserio::pmr::PackingContextNode& contextNode) const
+void WalkerChoice::initPackingContext(WalkerChoice::ZserioPackingContext& context) const
 {
     switch (getSelector())
     {
     case 8:
-        contextNode.getChildren()[0].getContext().init<::zserio::StdIntArrayTraits<uint8_t>>(m_objectChoice.get<uint8_t>());
+        context.getValue8().init<::zserio::StdIntArrayTraits<uint8_t>>(m_objectChoice.get<uint8_t>());
         break;
     case 16:
-        contextNode.getChildren()[1].getContext().init<::zserio::StdIntArrayTraits<uint16_t>>(m_objectChoice.get<uint16_t>());
+        context.getValue16().init<::zserio::StdIntArrayTraits<uint16_t>>(m_objectChoice.get<uint16_t>());
         break;
     case 32:
-        contextNode.getChildren()[2].getContext().init<::zserio::StdIntArrayTraits<uint32_t>>(m_objectChoice.get<uint32_t>());
+        context.getValue32().init<::zserio::StdIntArrayTraits<uint32_t>>(m_objectChoice.get<uint32_t>());
         break;
     case 64:
-        contextNode.getChildren()[3].getContext().init<::zserio::StdIntArrayTraits<uint64_t>>(m_objectChoice.get<uint64_t>());
+        context.getValue64().init<::zserio::StdIntArrayTraits<uint64_t>>(m_objectChoice.get<uint64_t>());
         break;
     default:
         // empty
@@ -626,23 +616,23 @@ size_t WalkerChoice::bitSizeOf(size_t bitPosition) const
     return endBitPosition - bitPosition;
 }
 
-size_t WalkerChoice::bitSizeOf(::zserio::pmr::PackingContextNode& contextNode, size_t bitPosition) const
+size_t WalkerChoice::bitSizeOf(WalkerChoice::ZserioPackingContext& context, size_t bitPosition) const
 {
     size_t endBitPosition = bitPosition;
 
     switch (getSelector())
     {
     case 8:
-        endBitPosition += contextNode.getChildren()[0].getContext().bitSizeOf<::zserio::StdIntArrayTraits<uint8_t>>(m_objectChoice.get<uint8_t>());
+        endBitPosition += context.getValue8().bitSizeOf<::zserio::StdIntArrayTraits<uint8_t>>(m_objectChoice.get<uint8_t>());
         break;
     case 16:
-        endBitPosition += contextNode.getChildren()[1].getContext().bitSizeOf<::zserio::StdIntArrayTraits<uint16_t>>(m_objectChoice.get<uint16_t>());
+        endBitPosition += context.getValue16().bitSizeOf<::zserio::StdIntArrayTraits<uint16_t>>(m_objectChoice.get<uint16_t>());
         break;
     case 32:
-        endBitPosition += contextNode.getChildren()[2].getContext().bitSizeOf<::zserio::StdIntArrayTraits<uint32_t>>(m_objectChoice.get<uint32_t>());
+        endBitPosition += context.getValue32().bitSizeOf<::zserio::StdIntArrayTraits<uint32_t>>(m_objectChoice.get<uint32_t>());
         break;
     case 64:
-        endBitPosition += contextNode.getChildren()[3].getContext().bitSizeOf<::zserio::StdIntArrayTraits<uint64_t>>(m_objectChoice.get<uint64_t>());
+        endBitPosition += context.getValue64().bitSizeOf<::zserio::StdIntArrayTraits<uint64_t>>(m_objectChoice.get<uint64_t>());
         break;
     default:
         // empty
@@ -678,23 +668,23 @@ size_t WalkerChoice::initializeOffsets(size_t bitPosition)
     return endBitPosition;
 }
 
-size_t WalkerChoice::initializeOffsets(::zserio::pmr::PackingContextNode& contextNode, size_t bitPosition)
+size_t WalkerChoice::initializeOffsets(WalkerChoice::ZserioPackingContext& context, size_t bitPosition)
 {
     size_t endBitPosition = bitPosition;
 
     switch (getSelector())
     {
     case 8:
-        endBitPosition += contextNode.getChildren()[0].getContext().bitSizeOf<::zserio::StdIntArrayTraits<uint8_t>>(m_objectChoice.get<uint8_t>());
+        endBitPosition += context.getValue8().bitSizeOf<::zserio::StdIntArrayTraits<uint8_t>>(m_objectChoice.get<uint8_t>());
         break;
     case 16:
-        endBitPosition += contextNode.getChildren()[1].getContext().bitSizeOf<::zserio::StdIntArrayTraits<uint16_t>>(m_objectChoice.get<uint16_t>());
+        endBitPosition += context.getValue16().bitSizeOf<::zserio::StdIntArrayTraits<uint16_t>>(m_objectChoice.get<uint16_t>());
         break;
     case 32:
-        endBitPosition += contextNode.getChildren()[2].getContext().bitSizeOf<::zserio::StdIntArrayTraits<uint32_t>>(m_objectChoice.get<uint32_t>());
+        endBitPosition += context.getValue32().bitSizeOf<::zserio::StdIntArrayTraits<uint32_t>>(m_objectChoice.get<uint32_t>());
         break;
     case 64:
-        endBitPosition += contextNode.getChildren()[3].getContext().bitSizeOf<::zserio::StdIntArrayTraits<uint64_t>>(m_objectChoice.get<uint64_t>());
+        endBitPosition += context.getValue64().bitSizeOf<::zserio::StdIntArrayTraits<uint64_t>>(m_objectChoice.get<uint64_t>());
         break;
     default:
         // empty
@@ -787,21 +777,21 @@ void WalkerChoice::write(::zserio::BitStreamWriter& out) const
     }
 }
 
-void WalkerChoice::write(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const
+void WalkerChoice::write(WalkerChoice::ZserioPackingContext& context, ::zserio::BitStreamWriter& out) const
 {
     switch (getSelector())
     {
     case 8:
-        contextNode.getChildren()[0].getContext().write<::zserio::StdIntArrayTraits<uint8_t>>(out, m_objectChoice.get<uint8_t>());
+        context.getValue8().write<::zserio::StdIntArrayTraits<uint8_t>>(out, m_objectChoice.get<uint8_t>());
         break;
     case 16:
-        contextNode.getChildren()[1].getContext().write<::zserio::StdIntArrayTraits<uint16_t>>(out, m_objectChoice.get<uint16_t>());
+        context.getValue16().write<::zserio::StdIntArrayTraits<uint16_t>>(out, m_objectChoice.get<uint16_t>());
         break;
     case 32:
-        contextNode.getChildren()[2].getContext().write<::zserio::StdIntArrayTraits<uint32_t>>(out, m_objectChoice.get<uint32_t>());
+        context.getValue32().write<::zserio::StdIntArrayTraits<uint32_t>>(out, m_objectChoice.get<uint32_t>());
         break;
     case 64:
-        contextNode.getChildren()[3].getContext().write<::zserio::StdIntArrayTraits<uint64_t>>(out, m_objectChoice.get<uint64_t>());
+        context.getValue64().write<::zserio::StdIntArrayTraits<uint64_t>>(out, m_objectChoice.get<uint64_t>());
         break;
     default:
         // empty
@@ -826,19 +816,19 @@ void WalkerChoice::write(::zserio::pmr::PackingContextNode& contextNode, ::zseri
     }
 }
 
-::zserio::pmr::AnyHolder WalkerChoice::readObject(::zserio::pmr::PackingContextNode& contextNode,
+::zserio::pmr::AnyHolder WalkerChoice::readObject(WalkerChoice::ZserioPackingContext& context,
         ::zserio::BitStreamReader& in, const allocator_type& allocator)
 {
     switch (getSelector())
     {
     case 8:
-        return ::zserio::pmr::AnyHolder(contextNode.getChildren()[0].getContext().read<::zserio::StdIntArrayTraits<uint8_t>>(in), allocator);
+        return ::zserio::pmr::AnyHolder(context.getValue8().read<::zserio::StdIntArrayTraits<uint8_t>>(in), allocator);
     case 16:
-        return ::zserio::pmr::AnyHolder(contextNode.getChildren()[1].getContext().read<::zserio::StdIntArrayTraits<uint16_t>>(in), allocator);
+        return ::zserio::pmr::AnyHolder(context.getValue16().read<::zserio::StdIntArrayTraits<uint16_t>>(in), allocator);
     case 32:
-        return ::zserio::pmr::AnyHolder(contextNode.getChildren()[2].getContext().read<::zserio::StdIntArrayTraits<uint32_t>>(in), allocator);
+        return ::zserio::pmr::AnyHolder(context.getValue32().read<::zserio::StdIntArrayTraits<uint32_t>>(in), allocator);
     case 64:
-        return ::zserio::pmr::AnyHolder(contextNode.getChildren()[3].getContext().read<::zserio::StdIntArrayTraits<uint64_t>>(in), allocator);
+        return ::zserio::pmr::AnyHolder(context.getValue64().read<::zserio::StdIntArrayTraits<uint64_t>>(in), allocator);
     default:
         return ::zserio::pmr::AnyHolder(allocator);
     }

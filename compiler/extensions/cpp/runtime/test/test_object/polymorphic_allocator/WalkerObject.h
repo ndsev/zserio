@@ -10,10 +10,10 @@
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/AllocatorPropagatingCopy.h>
+#include <zserio/PackingContext.h>
 #include <zserio/pmr/ITypeInfo.h>
 #include <zserio/pmr/IReflectable.h>
 #include <zserio/pmr/PolymorphicAllocator.h>
-#include <zserio/pmr/PackingContext.h>
 #include <zserio/OptionalHolder.h>
 #include <zserio/Array.h>
 #include <zserio/ArrayTraits.h>
@@ -43,7 +43,7 @@ private:
                 ::zserio::BitStreamReader& in, const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t index);
 
         static ::test_object::polymorphic_allocator::WalkerUnion create(WalkerObject& owner,
-                ::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamReader& in,
+                ::test_object::polymorphic_allocator::WalkerUnion::ZserioPackingContext& context, ::zserio::BitStreamReader& in,
                 const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t index);
     };
 
@@ -56,7 +56,7 @@ private:
                 ::zserio::BitStreamReader& in, const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t index);
 
         static ::test_object::polymorphic_allocator::WalkerUnion create(WalkerObject& owner,
-                ::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamReader& in,
+                ::test_object::polymorphic_allocator::WalkerUnion::ZserioPackingContext& context, ::zserio::BitStreamReader& in,
                 const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t index);
     };
 
@@ -65,6 +65,23 @@ private:
 
 public:
     using allocator_type = ::zserio::pmr::PropagatingPolymorphicAllocator<>;
+
+    class ZserioPackingContext
+    {
+    public:
+        ::zserio::DeltaContext& getIdentifier() { return m_identifier_; }
+        ::test_object::polymorphic_allocator::WalkerUnion::ZserioPackingContext& getUnionArray() { return m_unionArray_; }
+        ::test_object::polymorphic_allocator::WalkerUnion::ZserioPackingContext& getOptionalUnionArray() { return m_optionalUnionArray_; }
+        ::zserio::DeltaContext& getChoiceSelector() { return m_choiceSelector_; }
+        ::test_object::polymorphic_allocator::WalkerChoice::ZserioPackingContext& getChoiceField() { return m_choiceField_; }
+
+    private:
+        ::zserio::DeltaContext m_identifier_;
+        ::test_object::polymorphic_allocator::WalkerUnion::ZserioPackingContext m_unionArray_;
+        ::test_object::polymorphic_allocator::WalkerUnion::ZserioPackingContext m_optionalUnionArray_;
+        ::zserio::DeltaContext m_choiceSelector_;
+        ::test_object::polymorphic_allocator::WalkerChoice::ZserioPackingContext m_choiceField_;
+    };
 
     WalkerObject() noexcept :
             WalkerObject(allocator_type())
@@ -98,7 +115,7 @@ public:
     }
 
     explicit WalkerObject(::zserio::BitStreamReader& in, const allocator_type& allocator = allocator_type());
-    explicit WalkerObject(::zserio::pmr::PackingContextNode& contextNode,
+    explicit WalkerObject(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in, const allocator_type& allocator = allocator_type());
 
     ~WalkerObject() = default;
@@ -155,45 +172,44 @@ public:
     void setChoiceField(const ::test_object::polymorphic_allocator::WalkerChoice& choiceField_);
     void setChoiceField(::test_object::polymorphic_allocator::WalkerChoice&& choiceField_);
 
-    static void createPackingContext(::zserio::pmr::PackingContextNode& contextNode);
-    void initPackingContext(::zserio::pmr::PackingContextNode& contextNode) const;
+    void initPackingContext(ZserioPackingContext& context) const;
 
     size_t bitSizeOf(size_t bitPosition = 0) const;
-    size_t bitSizeOf(::zserio::pmr::PackingContextNode& contextNode, size_t bitPosition) const;
+    size_t bitSizeOf(ZserioPackingContext& context, size_t bitPosition) const;
 
     size_t initializeOffsets(size_t bitPosition = 0);
-    size_t initializeOffsets(::zserio::pmr::PackingContextNode& contextNode, size_t bitPosition);
+    size_t initializeOffsets(ZserioPackingContext& context, size_t bitPosition);
 
     bool operator==(const WalkerObject& other) const;
     uint32_t hashCode() const;
 
     void write(::zserio::BitStreamWriter& out) const;
-    void write(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const;
+    void write(ZserioPackingContext& context, ::zserio::BitStreamWriter& out) const;
 
 private:
     uint32_t readIdentifier(::zserio::BitStreamReader& in);
-    uint32_t readIdentifier(::zserio::pmr::PackingContextNode& contextNode,
+    uint32_t readIdentifier(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in);
     ::zserio::InplaceOptionalHolder<::test_object::polymorphic_allocator::WalkerNested> readNested(::zserio::BitStreamReader& in,
             const allocator_type& allocator);
-    ::zserio::InplaceOptionalHolder<::test_object::polymorphic_allocator::WalkerNested> readNested(::zserio::pmr::PackingContextNode& contextNode,
+    ::zserio::InplaceOptionalHolder<::test_object::polymorphic_allocator::WalkerNested> readNested(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in, const allocator_type& allocator);
     ::zserio::pmr::string readText(::zserio::BitStreamReader& in,
             const allocator_type& allocator);
     ZserioArrayType_unionArray readUnionArray(::zserio::BitStreamReader& in,
             const allocator_type& allocator);
-    ZserioArrayType_unionArray readUnionArray(::zserio::pmr::PackingContextNode& contextNode,
+    ZserioArrayType_unionArray readUnionArray(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in, const allocator_type& allocator);
     ::zserio::InplaceOptionalHolder<ZserioArrayType_optionalUnionArray> readOptionalUnionArray(::zserio::BitStreamReader& in,
             const allocator_type& allocator);
-    ::zserio::InplaceOptionalHolder<ZserioArrayType_optionalUnionArray> readOptionalUnionArray(::zserio::pmr::PackingContextNode& contextNode,
+    ::zserio::InplaceOptionalHolder<ZserioArrayType_optionalUnionArray> readOptionalUnionArray(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in, const allocator_type& allocator);
     uint8_t readChoiceSelector(::zserio::BitStreamReader& in);
-    uint8_t readChoiceSelector(::zserio::pmr::PackingContextNode& contextNode,
+    uint8_t readChoiceSelector(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in);
     ::test_object::polymorphic_allocator::WalkerChoice readChoiceField(::zserio::BitStreamReader& in,
             const allocator_type& allocator);
-    ::test_object::polymorphic_allocator::WalkerChoice readChoiceField(::zserio::pmr::PackingContextNode& contextNode,
+    ::test_object::polymorphic_allocator::WalkerChoice readChoiceField(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in, const allocator_type& allocator);
 
     bool m_areChildrenInitialized;

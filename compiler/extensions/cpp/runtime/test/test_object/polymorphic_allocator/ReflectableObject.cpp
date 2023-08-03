@@ -34,10 +34,10 @@ ReflectableObject::ReflectableObject(::zserio::BitStreamReader& in, const alloca
 {
 }
 
-ReflectableObject::ReflectableObject(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamReader& in, const allocator_type& allocator) :
+ReflectableObject::ReflectableObject(ReflectableObject::ZserioPackingContext& context, ::zserio::BitStreamReader& in, const allocator_type& allocator) :
         m_areChildrenInitialized(true),
         m_stringField_(readStringField(in, allocator)),
-        m_reflectableNested_(readReflectableNested(contextNode, in, allocator))
+        m_reflectableNested_(readReflectableNested(context, in, allocator))
 {
 }
 
@@ -102,7 +102,7 @@ const ::zserio::pmr::ITypeInfo& ReflectableObject::typeInfo()
     static const ::zserio::Span<::zserio::BasicTemplateArgumentInfo<allocator_type>> templateArguments;
 
     static const ::std::array<::zserio::StringView, 2> reflectableNestedTypeArguments = {
-        ::zserio::makeStringView("13"),
+        ::zserio::makeStringView("13"), 
         ::zserio::makeStringView("getStringField()")
     };
     static const ::std::array<::zserio::BasicFieldInfo<allocator_type>, 2> fields = {
@@ -358,17 +358,9 @@ void ReflectableObject::setReflectableNested(::test_object::polymorphic_allocato
     m_reflectableNested_ = ::std::move(reflectableNested_);
 }
 
-void ReflectableObject::createPackingContext(::zserio::pmr::PackingContextNode& contextNode)
+void ReflectableObject::initPackingContext(ReflectableObject::ZserioPackingContext& context) const
 {
-    contextNode.reserveChildren(2);
-
-    contextNode.createChild();
-    ::test_object::polymorphic_allocator::ReflectableNested::createPackingContext(contextNode.createChild());
-}
-
-void ReflectableObject::initPackingContext(::zserio::pmr::PackingContextNode& contextNode) const
-{
-    m_reflectableNested_.initPackingContext(contextNode.getChildren()[1]);
+    m_reflectableNested_.initPackingContext(context.getReflectableNested());
 }
 
 size_t ReflectableObject::bitSizeOf(size_t bitPosition) const
@@ -381,13 +373,12 @@ size_t ReflectableObject::bitSizeOf(size_t bitPosition) const
     return endBitPosition - bitPosition;
 }
 
-size_t ReflectableObject::bitSizeOf(::zserio::pmr::PackingContextNode& contextNode, size_t bitPosition) const
+size_t ReflectableObject::bitSizeOf(ReflectableObject::ZserioPackingContext& context, size_t bitPosition) const
 {
     size_t endBitPosition = bitPosition;
 
     endBitPosition += ::zserio::bitSizeOfString(m_stringField_);
-    endBitPosition += m_reflectableNested_.bitSizeOf(
-            contextNode.getChildren()[1], endBitPosition);
+    endBitPosition += m_reflectableNested_.bitSizeOf(context.getReflectableNested(), endBitPosition);
 
     return endBitPosition - bitPosition;
 }
@@ -402,13 +393,12 @@ size_t ReflectableObject::initializeOffsets(size_t bitPosition)
     return endBitPosition;
 }
 
-size_t ReflectableObject::initializeOffsets(::zserio::pmr::PackingContextNode& contextNode, size_t bitPosition)
+size_t ReflectableObject::initializeOffsets(ReflectableObject::ZserioPackingContext& context, size_t bitPosition)
 {
     size_t endBitPosition = bitPosition;
 
     endBitPosition += ::zserio::bitSizeOfString(m_stringField_);
-    endBitPosition = m_reflectableNested_.initializeOffsets(
-            contextNode.getChildren()[1], endBitPosition);
+    endBitPosition = m_reflectableNested_.initializeOffsets(context.getReflectableNested(), endBitPosition);
 
     return endBitPosition;
 }
@@ -452,7 +442,7 @@ void ReflectableObject::write(::zserio::BitStreamWriter& out) const
     m_reflectableNested_.write(out);
 }
 
-void ReflectableObject::write(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const
+void ReflectableObject::write(ReflectableObject::ZserioPackingContext& context, ::zserio::BitStreamWriter& out) const
 {
     out.writeString(m_stringField_);
 
@@ -466,7 +456,7 @@ void ReflectableObject::write(::zserio::pmr::PackingContextNode& contextNode, ::
     {
         throw ::zserio::CppRuntimeException("Write: Inconsistent parameter stringParam for field ReflectableObject.reflectableNested!");
     }
-    m_reflectableNested_.write(contextNode.getChildren()[1], out);
+    m_reflectableNested_.write(context.getReflectableNested(), out);
 }
 
 ::zserio::pmr::string ReflectableObject::readStringField(::zserio::BitStreamReader& in,
@@ -481,9 +471,9 @@ void ReflectableObject::write(::zserio::pmr::PackingContextNode& contextNode, ::
     return ::test_object::polymorphic_allocator::ReflectableNested(in, static_cast<int32_t>(13), getStringField(), allocator);
 }
 
-::test_object::polymorphic_allocator::ReflectableNested ReflectableObject::readReflectableNested(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamReader& in, const allocator_type& allocator)
+::test_object::polymorphic_allocator::ReflectableNested ReflectableObject::readReflectableNested(ReflectableObject::ZserioPackingContext& context, ::zserio::BitStreamReader& in, const allocator_type& allocator)
 {
-    return ::test_object::polymorphic_allocator::ReflectableNested(contextNode.getChildren()[1], in, static_cast<int32_t>(13), getStringField(), allocator);
+    return ::test_object::polymorphic_allocator::ReflectableNested(context.getReflectableNested(), in, static_cast<int32_t>(13), getStringField(), allocator);
 }
 
 } // namespace polymorphic_allocator

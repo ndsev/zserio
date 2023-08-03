@@ -30,11 +30,6 @@ WalkerNested::WalkerNested(::zserio::BitStreamReader& in, const allocator_type& 
 {
 }
 
-WalkerNested::WalkerNested(::zserio::pmr::PackingContextNode&, ::zserio::BitStreamReader& in, const allocator_type& allocator) :
-        m_text_(readText(in, allocator))
-{
-}
-
 WalkerNested::WalkerNested(::zserio::PropagateAllocatorT,
         const WalkerNested& other, const allocator_type& allocator) :
         m_text_(::zserio::allocatorPropagatingCopy(other.m_text_, allocator))
@@ -233,17 +228,6 @@ void WalkerNested::setText(::zserio::pmr::string&& text_)
     m_text_ = ::std::move(text_);
 }
 
-void WalkerNested::createPackingContext(::zserio::pmr::PackingContextNode& contextNode)
-{
-    contextNode.reserveChildren(1);
-
-    contextNode.createChild();
-}
-
-void WalkerNested::initPackingContext(::zserio::pmr::PackingContextNode&) const
-{
-}
-
 size_t WalkerNested::bitSizeOf(size_t bitPosition) const
 {
     size_t endBitPosition = bitPosition;
@@ -253,25 +237,7 @@ size_t WalkerNested::bitSizeOf(size_t bitPosition) const
     return endBitPosition - bitPosition;
 }
 
-size_t WalkerNested::bitSizeOf(::zserio::pmr::PackingContextNode&, size_t bitPosition) const
-{
-    size_t endBitPosition = bitPosition;
-
-    endBitPosition += ::zserio::bitSizeOfString(m_text_);
-
-    return endBitPosition - bitPosition;
-}
-
 size_t WalkerNested::initializeOffsets(size_t bitPosition)
-{
-    size_t endBitPosition = bitPosition;
-
-    endBitPosition += ::zserio::bitSizeOfString(m_text_);
-
-    return endBitPosition;
-}
-
-size_t WalkerNested::initializeOffsets(::zserio::pmr::PackingContextNode&, size_t bitPosition)
 {
     size_t endBitPosition = bitPosition;
 
@@ -301,11 +267,6 @@ uint32_t WalkerNested::hashCode() const
 }
 
 void WalkerNested::write(::zserio::BitStreamWriter& out) const
-{
-    out.writeString(m_text_);
-}
-
-void WalkerNested::write(::zserio::pmr::PackingContextNode&, ::zserio::BitStreamWriter& out) const
 {
     out.writeString(m_text_);
 }

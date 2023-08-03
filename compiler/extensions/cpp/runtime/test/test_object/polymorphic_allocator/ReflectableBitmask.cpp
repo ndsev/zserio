@@ -20,8 +20,8 @@ ReflectableBitmask::ReflectableBitmask(::zserio::BitStreamReader& in) :
         m_value(readValue(in))
 {}
 
-ReflectableBitmask::ReflectableBitmask(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamReader& in) :
-        m_value(readValue(contextNode, in))
+ReflectableBitmask::ReflectableBitmask(::zserio::DeltaContext& context, ::zserio::BitStreamReader& in) :
+        m_value(readValue(context, in))
 {}
 
 const ::zserio::pmr::ITypeInfo& ReflectableBitmask::typeInfo()
@@ -101,15 +101,9 @@ const ::zserio::pmr::ITypeInfo& ReflectableBitmask::typeInfo()
     return ::std::allocate_shared<Reflectable>(allocator, *this);
 }
 
-void ReflectableBitmask::createPackingContext(::zserio::pmr::PackingContextNode& contextNode)
+void ReflectableBitmask::initPackingContext(::zserio::DeltaContext& context) const
 {
-    contextNode.createContext();
-}
-
-void ReflectableBitmask::initPackingContext(::zserio::pmr::PackingContextNode& contextNode) const
-{
-    contextNode.getContext().init<::zserio::StdIntArrayTraits<::test_object::polymorphic_allocator::ReflectableBitmask::underlying_type>>(
-            m_value);
+    context.init<::zserio::StdIntArrayTraits<::test_object::polymorphic_allocator::ReflectableBitmask::underlying_type>>(m_value);
 }
 
 size_t ReflectableBitmask::bitSizeOf(size_t) const
@@ -117,10 +111,9 @@ size_t ReflectableBitmask::bitSizeOf(size_t) const
     return UINT8_C(8);
 }
 
-size_t ReflectableBitmask::bitSizeOf(::zserio::pmr::PackingContextNode& contextNode, size_t) const
+size_t ReflectableBitmask::bitSizeOf(::zserio::DeltaContext& context, size_t) const
 {
-    return contextNode.getContext().bitSizeOf<::zserio::StdIntArrayTraits<::test_object::polymorphic_allocator::ReflectableBitmask::underlying_type>>(
-            m_value);
+    return context.bitSizeOf<::zserio::StdIntArrayTraits<::test_object::polymorphic_allocator::ReflectableBitmask::underlying_type>>(m_value);
 }
 
 size_t ReflectableBitmask::initializeOffsets(size_t bitPosition) const
@@ -128,9 +121,9 @@ size_t ReflectableBitmask::initializeOffsets(size_t bitPosition) const
     return bitPosition + bitSizeOf(bitPosition);
 }
 
-size_t ReflectableBitmask::initializeOffsets(::zserio::pmr::PackingContextNode& contextNode, size_t bitPosition) const
+size_t ReflectableBitmask::initializeOffsets(::zserio::DeltaContext& context, size_t bitPosition) const
 {
-    return bitPosition + bitSizeOf(contextNode, bitPosition);
+    return bitPosition + bitSizeOf(context, bitPosition);
 }
 
 uint32_t ReflectableBitmask::hashCode() const
@@ -145,10 +138,9 @@ void ReflectableBitmask::write(::zserio::BitStreamWriter& out) const
     out.writeBits(m_value, UINT8_C(8));
 }
 
-void ReflectableBitmask::write(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const
+void ReflectableBitmask::write(::zserio::DeltaContext& context, ::zserio::BitStreamWriter& out) const
 {
-    contextNode.getContext().write<::zserio::StdIntArrayTraits<::test_object::polymorphic_allocator::ReflectableBitmask::underlying_type>>(
-            out, m_value);
+    context.write<::zserio::StdIntArrayTraits<::test_object::polymorphic_allocator::ReflectableBitmask::underlying_type>>(out, m_value);
 }
 
 ::zserio::pmr::string ReflectableBitmask::toString(const ::zserio::pmr::string::allocator_type& allocator) const
@@ -169,10 +161,9 @@ ReflectableBitmask::underlying_type ReflectableBitmask::readValue(::zserio::BitS
     return static_cast<underlying_type>(in.readBits(UINT8_C(8)));
 }
 
-ReflectableBitmask::underlying_type ReflectableBitmask::readValue(::zserio::pmr::PackingContextNode& contextNode,
-        ::zserio::BitStreamReader& in)
+ReflectableBitmask::underlying_type ReflectableBitmask::readValue(::zserio::DeltaContext& context, ::zserio::BitStreamReader& in)
 {
-    return contextNode.getContext().read<::zserio::StdIntArrayTraits<::test_object::polymorphic_allocator::ReflectableBitmask::underlying_type>>(
+    return context.read<::zserio::StdIntArrayTraits<::test_object::polymorphic_allocator::ReflectableBitmask::underlying_type>>(
             in);
 }
 

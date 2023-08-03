@@ -120,6 +120,19 @@ struct has_owner_type<T, detail::void_t<typename T::OwnerType>> : std::true_type
 /** \} */
 
 /**
+ * Trait used to check whether the type has an ZserioPackingContext.
+ * \{
+ */
+template <typename T, typename = void>
+struct has_zserio_packing_context : std::false_type
+{};
+
+template <typename T>
+struct has_zserio_packing_context<T, detail::void_t<typename T::ZserioPackingContext>> : std::true_type
+{};
+/** \} */
+
+/**
  * Trait used to check whether the type has an allocator_type.
  * \{
  */

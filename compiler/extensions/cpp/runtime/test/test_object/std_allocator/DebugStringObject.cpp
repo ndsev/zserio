@@ -31,11 +31,6 @@ DebugStringObject::DebugStringObject(::zserio::BitStreamReader& in, const alloca
 {
 }
 
-DebugStringObject::DebugStringObject(::zserio::PackingContextNode&, ::zserio::BitStreamReader& in, const allocator_type& allocator) :
-        m_text_(readText(in, allocator))
-{
-}
-
 DebugStringObject::DebugStringObject(::zserio::PropagateAllocatorT,
         const DebugStringObject& other, const allocator_type& allocator) :
         m_text_(::zserio::allocatorPropagatingCopy(other.m_text_, allocator))
@@ -234,17 +229,6 @@ void DebugStringObject::setText(::zserio::string<>&& text_)
     m_text_ = ::std::move(text_);
 }
 
-void DebugStringObject::createPackingContext(::zserio::PackingContextNode& contextNode)
-{
-    contextNode.reserveChildren(1);
-
-    contextNode.createChild();
-}
-
-void DebugStringObject::initPackingContext(::zserio::PackingContextNode&) const
-{
-}
-
 size_t DebugStringObject::bitSizeOf(size_t bitPosition) const
 {
     size_t endBitPosition = bitPosition;
@@ -254,25 +238,7 @@ size_t DebugStringObject::bitSizeOf(size_t bitPosition) const
     return endBitPosition - bitPosition;
 }
 
-size_t DebugStringObject::bitSizeOf(::zserio::PackingContextNode&, size_t bitPosition) const
-{
-    size_t endBitPosition = bitPosition;
-
-    endBitPosition += ::zserio::bitSizeOfString(m_text_);
-
-    return endBitPosition - bitPosition;
-}
-
 size_t DebugStringObject::initializeOffsets(size_t bitPosition)
-{
-    size_t endBitPosition = bitPosition;
-
-    endBitPosition += ::zserio::bitSizeOfString(m_text_);
-
-    return endBitPosition;
-}
-
-size_t DebugStringObject::initializeOffsets(::zserio::PackingContextNode&, size_t bitPosition)
 {
     size_t endBitPosition = bitPosition;
 
@@ -302,11 +268,6 @@ uint32_t DebugStringObject::hashCode() const
 }
 
 void DebugStringObject::write(::zserio::BitStreamWriter& out) const
-{
-    out.writeString(m_text_);
-}
-
-void DebugStringObject::write(::zserio::PackingContextNode&, ::zserio::BitStreamWriter& out) const
 {
     out.writeString(m_text_);
 }

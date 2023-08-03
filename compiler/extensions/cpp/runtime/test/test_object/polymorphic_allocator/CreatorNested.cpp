@@ -44,16 +44,16 @@ CreatorNested::CreatorNested(::zserio::BitStreamReader& in,
 {
 }
 
-CreatorNested::CreatorNested(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamReader& in,
+CreatorNested::CreatorNested(CreatorNested::ZserioPackingContext& context, ::zserio::BitStreamReader& in,
         uint32_t param_, const allocator_type& allocator) :
         m_param_(param_),
         m_isInitialized(true),
-        m_value_(readValue(contextNode, in)),
+        m_value_(readValue(context, in)),
         m_text_(readText(in, allocator)),
         m_externData_(readExternData(in, allocator)),
         m_bytesData_(readBytesData(in, allocator)),
-        m_creatorEnum_(readCreatorEnum(contextNode, in)),
-        m_creatorBitmask_(readCreatorBitmask(contextNode, in))
+        m_creatorEnum_(readCreatorEnum(context, in)),
+        m_creatorBitmask_(readCreatorBitmask(context, in))
 {
 }
 
@@ -666,24 +666,11 @@ void CreatorNested::setCreatorBitmask(::test_object::polymorphic_allocator::Crea
     m_creatorBitmask_ = creatorBitmask_;
 }
 
-void CreatorNested::createPackingContext(::zserio::pmr::PackingContextNode& contextNode)
+void CreatorNested::initPackingContext(CreatorNested::ZserioPackingContext& context) const
 {
-    contextNode.reserveChildren(6);
-
-    contextNode.createChild().createContext();
-    contextNode.createChild();
-    contextNode.createChild();
-    contextNode.createChild();
-    contextNode.createChild().createContext();
-    ::test_object::polymorphic_allocator::CreatorBitmask::createPackingContext(contextNode.createChild());
-}
-
-void CreatorNested::initPackingContext(::zserio::pmr::PackingContextNode& contextNode) const
-{
-    contextNode.getChildren()[0].getContext().init<::zserio::StdIntArrayTraits<uint32_t>>(m_value_);
-    ::zserio::initPackingContext(contextNode.getChildren()[4],
-            m_creatorEnum_);
-    m_creatorBitmask_.initPackingContext(contextNode.getChildren()[5]);
+    context.getValue().init<::zserio::StdIntArrayTraits<uint32_t>>(m_value_);
+    ::zserio::initPackingContext(context.getCreatorEnum(), m_creatorEnum_);
+    m_creatorBitmask_.initPackingContext(context.getCreatorBitmask());
 }
 
 size_t CreatorNested::bitSizeOf(size_t bitPosition) const
@@ -700,18 +687,16 @@ size_t CreatorNested::bitSizeOf(size_t bitPosition) const
     return endBitPosition - bitPosition;
 }
 
-size_t CreatorNested::bitSizeOf(::zserio::pmr::PackingContextNode& contextNode, size_t bitPosition) const
+size_t CreatorNested::bitSizeOf(CreatorNested::ZserioPackingContext& context, size_t bitPosition) const
 {
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += contextNode.getChildren()[0].getContext().bitSizeOf<::zserio::StdIntArrayTraits<uint32_t>>(m_value_);
+    endBitPosition += context.getValue().bitSizeOf<::zserio::StdIntArrayTraits<uint32_t>>(m_value_);
     endBitPosition += ::zserio::bitSizeOfString(m_text_);
     endBitPosition += ::zserio::bitSizeOfBitBuffer(m_externData_);
     endBitPosition += ::zserio::bitSizeOfBytes(m_bytesData_);
-    endBitPosition += ::zserio::bitSizeOf(
-            contextNode.getChildren()[4], m_creatorEnum_);
-    endBitPosition += m_creatorBitmask_.bitSizeOf(
-            contextNode.getChildren()[5], endBitPosition);
+    endBitPosition += ::zserio::bitSizeOf(context.getCreatorEnum(), m_creatorEnum_);
+    endBitPosition += m_creatorBitmask_.bitSizeOf(context.getCreatorBitmask(), endBitPosition);
 
     return endBitPosition - bitPosition;
 }
@@ -730,18 +715,17 @@ size_t CreatorNested::initializeOffsets(size_t bitPosition)
     return endBitPosition;
 }
 
-size_t CreatorNested::initializeOffsets(::zserio::pmr::PackingContextNode& contextNode, size_t bitPosition)
+size_t CreatorNested::initializeOffsets(CreatorNested::ZserioPackingContext& context, size_t bitPosition)
 {
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += contextNode.getChildren()[0].getContext().bitSizeOf<::zserio::StdIntArrayTraits<uint32_t>>(m_value_);
+    endBitPosition += context.getValue().bitSizeOf<::zserio::StdIntArrayTraits<uint32_t>>(m_value_);
     endBitPosition += ::zserio::bitSizeOfString(m_text_);
     endBitPosition += ::zserio::bitSizeOfBitBuffer(m_externData_);
     endBitPosition += ::zserio::bitSizeOfBytes(m_bytesData_);
-    endBitPosition = ::zserio::initializeOffsets(
-            contextNode.getChildren()[4], endBitPosition, m_creatorEnum_);
-    endBitPosition = m_creatorBitmask_.initializeOffsets(
-            contextNode.getChildren()[5], endBitPosition);
+    endBitPosition = ::zserio::initializeOffsets(context.getCreatorEnum(), endBitPosition,
+        m_creatorEnum_);
+    endBitPosition = m_creatorBitmask_.initializeOffsets(context.getCreatorBitmask(), endBitPosition);
 
     return endBitPosition;
 }
@@ -788,14 +772,14 @@ void CreatorNested::write(::zserio::BitStreamWriter& out) const
     m_creatorBitmask_.write(out);
 }
 
-void CreatorNested::write(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const
+void CreatorNested::write(CreatorNested::ZserioPackingContext& context, ::zserio::BitStreamWriter& out) const
 {
-    contextNode.getChildren()[0].getContext().write<::zserio::StdIntArrayTraits<uint32_t>>(out, m_value_);
+    context.getValue().write<::zserio::StdIntArrayTraits<uint32_t>>(out, m_value_);
     out.writeString(m_text_);
     out.writeBitBuffer(m_externData_);
     out.writeBytes(m_bytesData_);
-    ::zserio::write(contextNode.getChildren()[4], out, m_creatorEnum_);
-    m_creatorBitmask_.write(contextNode.getChildren()[5], out);
+    ::zserio::write(context.getCreatorEnum(), out, m_creatorEnum_);
+    m_creatorBitmask_.write(context.getCreatorBitmask(), out);
 }
 
 uint32_t CreatorNested::readValue(::zserio::BitStreamReader& in)
@@ -803,9 +787,9 @@ uint32_t CreatorNested::readValue(::zserio::BitStreamReader& in)
     return static_cast<uint32_t>(in.readBits(UINT8_C(32)));
 }
 
-uint32_t CreatorNested::readValue(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamReader& in)
+uint32_t CreatorNested::readValue(CreatorNested::ZserioPackingContext& context, ::zserio::BitStreamReader& in)
 {
-    return contextNode.getChildren()[0].getContext().read<::zserio::StdIntArrayTraits<uint32_t>>(in);
+    return context.getValue().read<::zserio::StdIntArrayTraits<uint32_t>>(in);
 }
 
 ::zserio::pmr::string CreatorNested::readText(::zserio::BitStreamReader& in,
@@ -831,9 +815,9 @@ uint32_t CreatorNested::readValue(::zserio::pmr::PackingContextNode& contextNode
     return ::zserio::read<::test_object::polymorphic_allocator::CreatorEnum>(in);
 }
 
-::test_object::polymorphic_allocator::CreatorEnum CreatorNested::readCreatorEnum(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamReader& in)
+::test_object::polymorphic_allocator::CreatorEnum CreatorNested::readCreatorEnum(CreatorNested::ZserioPackingContext& context, ::zserio::BitStreamReader& in)
 {
-    return ::zserio::read<::test_object::polymorphic_allocator::CreatorEnum>(contextNode.getChildren()[4], in);
+    return ::zserio::read<::test_object::polymorphic_allocator::CreatorEnum>(context.getCreatorEnum(), in);
 }
 
 ::test_object::polymorphic_allocator::CreatorBitmask CreatorNested::readCreatorBitmask(::zserio::BitStreamReader& in)
@@ -841,9 +825,9 @@ uint32_t CreatorNested::readValue(::zserio::pmr::PackingContextNode& contextNode
     return ::test_object::polymorphic_allocator::CreatorBitmask(in);
 }
 
-::test_object::polymorphic_allocator::CreatorBitmask CreatorNested::readCreatorBitmask(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamReader& in)
+::test_object::polymorphic_allocator::CreatorBitmask CreatorNested::readCreatorBitmask(CreatorNested::ZserioPackingContext& context, ::zserio::BitStreamReader& in)
 {
-    return ::test_object::polymorphic_allocator::CreatorBitmask(contextNode.getChildren()[5], in);
+    return ::test_object::polymorphic_allocator::CreatorBitmask(context.getCreatorBitmask(), in);
 }
 
 } // namespace polymorphic_allocator

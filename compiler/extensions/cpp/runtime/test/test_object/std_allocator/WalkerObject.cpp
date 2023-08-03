@@ -27,10 +27,10 @@ namespace std_allocator
 }
 
 ::test_object::std_allocator::WalkerUnion WalkerObject::ZserioElementFactory_unionArray::create(WalkerObject&,
-        ::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in,
-        const ::std::allocator<uint8_t>& allocator, size_t        )
+        ::test_object::std_allocator::WalkerUnion::ZserioPackingContext& context, ::zserio::BitStreamReader& in,
+        const ::std::allocator<uint8_t>& allocator, size_t)
 {
-    return ::test_object::std_allocator::WalkerUnion(contextNode, in, allocator);
+    return ::test_object::std_allocator::WalkerUnion(context, in, allocator);
 }
 
 ::test_object::std_allocator::WalkerUnion WalkerObject::ZserioElementFactory_optionalUnionArray::create(WalkerObject&,
@@ -40,10 +40,10 @@ namespace std_allocator
 }
 
 ::test_object::std_allocator::WalkerUnion WalkerObject::ZserioElementFactory_optionalUnionArray::create(WalkerObject&,
-        ::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in,
-        const ::std::allocator<uint8_t>& allocator, size_t        )
+        ::test_object::std_allocator::WalkerUnion::ZserioPackingContext& context, ::zserio::BitStreamReader& in,
+        const ::std::allocator<uint8_t>& allocator, size_t)
 {
-    return ::test_object::std_allocator::WalkerUnion(contextNode, in, allocator);
+    return ::test_object::std_allocator::WalkerUnion(context, in, allocator);
 }
 
 WalkerObject::WalkerObject(const allocator_type& allocator) noexcept :
@@ -70,15 +70,15 @@ WalkerObject::WalkerObject(::zserio::BitStreamReader& in, const allocator_type& 
 {
 }
 
-WalkerObject::WalkerObject(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in, const allocator_type& allocator) :
+WalkerObject::WalkerObject(WalkerObject::ZserioPackingContext& context, ::zserio::BitStreamReader& in, const allocator_type& allocator) :
         m_areChildrenInitialized(true),
-        m_identifier_(readIdentifier(contextNode, in)),
-        m_nested_(readNested(contextNode, in, allocator)),
+        m_identifier_(readIdentifier(context, in)),
+        m_nested_(readNested(context, in, allocator)),
         m_text_(readText(in, allocator)),
-        m_unionArray_(readUnionArray(contextNode, in, allocator)),
-        m_optionalUnionArray_(readOptionalUnionArray(contextNode, in, allocator)),
-        m_choiceSelector_(readChoiceSelector(contextNode, in)),
-        m_choiceField_(readChoiceField(contextNode, in, allocator))
+        m_unionArray_(readUnionArray(context, in, allocator)),
+        m_optionalUnionArray_(readOptionalUnionArray(context, in, allocator)),
+        m_choiceSelector_(readChoiceSelector(context, in)),
+        m_choiceField_(readChoiceField(context, in, allocator))
 {
 }
 
@@ -753,28 +753,15 @@ void WalkerObject::setChoiceField(::test_object::std_allocator::WalkerChoice&& c
     m_choiceField_ = ::std::move(choiceField_);
 }
 
-void WalkerObject::createPackingContext(::zserio::PackingContextNode& contextNode)
+void WalkerObject::initPackingContext(WalkerObject::ZserioPackingContext& context) const
 {
-    contextNode.reserveChildren(7);
-
-    contextNode.createChild().createContext();
-    ::test_object::std_allocator::WalkerNested::createPackingContext(contextNode.createChild());
-    contextNode.createChild();
-    contextNode.createChild();
-    contextNode.createChild();
-    contextNode.createChild().createContext();
-    ::test_object::std_allocator::WalkerChoice::createPackingContext(contextNode.createChild());
-}
-
-void WalkerObject::initPackingContext(::zserio::PackingContextNode& contextNode) const
-{
-    contextNode.getChildren()[0].getContext().init<::zserio::StdIntArrayTraits<uint32_t>>(m_identifier_);
+    context.getIdentifier().init<::zserio::StdIntArrayTraits<uint32_t>>(m_identifier_);
     if (getIdentifier() != 0)
     {
-        m_nested_.value().initPackingContext(contextNode.getChildren()[1]);
+        m_nested_.value().initPackingContext(context.getNested());
     }
-    contextNode.getChildren()[5].getContext().init<::zserio::StdIntArrayTraits<uint8_t>>(m_choiceSelector_);
-    m_choiceField_.initPackingContext(contextNode.getChildren()[6]);
+    context.getChoiceSelector().init<::zserio::StdIntArrayTraits<uint8_t>>(m_choiceSelector_);
+    m_choiceField_.initPackingContext(context.getChoiceField());
 }
 
 size_t WalkerObject::bitSizeOf(size_t bitPosition) const
@@ -799,15 +786,14 @@ size_t WalkerObject::bitSizeOf(size_t bitPosition) const
     return endBitPosition - bitPosition;
 }
 
-size_t WalkerObject::bitSizeOf(::zserio::PackingContextNode& contextNode, size_t bitPosition) const
+size_t WalkerObject::bitSizeOf(WalkerObject::ZserioPackingContext& context, size_t bitPosition) const
 {
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += contextNode.getChildren()[0].getContext().bitSizeOf<::zserio::StdIntArrayTraits<uint32_t>>(m_identifier_);
+    endBitPosition += context.getIdentifier().bitSizeOf<::zserio::StdIntArrayTraits<uint32_t>>(m_identifier_);
     if (getIdentifier() != 0)
     {
-        endBitPosition += m_nested_.value().bitSizeOf(
-                contextNode.getChildren()[1], endBitPosition);
+        endBitPosition += m_nested_.value().bitSizeOf(context.getNested(), endBitPosition);
     }
     endBitPosition += ::zserio::bitSizeOfString(m_text_);
     endBitPosition += m_unionArray_.bitSizeOfPacked(*this, endBitPosition);
@@ -816,9 +802,8 @@ size_t WalkerObject::bitSizeOf(::zserio::PackingContextNode& contextNode, size_t
     {
         endBitPosition += m_optionalUnionArray_.value().bitSizeOfPacked(*this, endBitPosition);
     }
-    endBitPosition += contextNode.getChildren()[5].getContext().bitSizeOf<::zserio::StdIntArrayTraits<uint8_t>>(m_choiceSelector_);
-    endBitPosition += m_choiceField_.bitSizeOf(
-            contextNode.getChildren()[6], endBitPosition);
+    endBitPosition += context.getChoiceSelector().bitSizeOf<::zserio::StdIntArrayTraits<uint8_t>>(m_choiceSelector_);
+    endBitPosition += m_choiceField_.bitSizeOf(context.getChoiceField(), endBitPosition);
 
     return endBitPosition - bitPosition;
 }
@@ -845,15 +830,14 @@ size_t WalkerObject::initializeOffsets(size_t bitPosition)
     return endBitPosition;
 }
 
-size_t WalkerObject::initializeOffsets(::zserio::PackingContextNode& contextNode, size_t bitPosition)
+size_t WalkerObject::initializeOffsets(WalkerObject::ZserioPackingContext& context, size_t bitPosition)
 {
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += contextNode.getChildren()[0].getContext().bitSizeOf<::zserio::StdIntArrayTraits<uint32_t>>(m_identifier_);
+    endBitPosition += context.getIdentifier().bitSizeOf<::zserio::StdIntArrayTraits<uint32_t>>(m_identifier_);
     if (getIdentifier() != 0)
     {
-        endBitPosition = m_nested_.value().initializeOffsets(
-                contextNode.getChildren()[1], endBitPosition);
+        endBitPosition = m_nested_.value().initializeOffsets(context.getNested(), endBitPosition);
     }
     endBitPosition += ::zserio::bitSizeOfString(m_text_);
     endBitPosition = m_unionArray_.initializeOffsetsPacked(*this, endBitPosition);
@@ -862,9 +846,8 @@ size_t WalkerObject::initializeOffsets(::zserio::PackingContextNode& contextNode
     {
         endBitPosition = m_optionalUnionArray_.value().initializeOffsetsPacked(*this, endBitPosition);
     }
-    endBitPosition += contextNode.getChildren()[5].getContext().bitSizeOf<::zserio::StdIntArrayTraits<uint8_t>>(m_choiceSelector_);
-    endBitPosition = m_choiceField_.initializeOffsets(
-            contextNode.getChildren()[6], endBitPosition);
+    endBitPosition += context.getChoiceSelector().bitSizeOf<::zserio::StdIntArrayTraits<uint8_t>>(m_choiceSelector_);
+    endBitPosition = m_choiceField_.initializeOffsets(context.getChoiceField(), endBitPosition);
 
     return endBitPosition;
 }
@@ -937,13 +920,13 @@ void WalkerObject::write(::zserio::BitStreamWriter& out) const
     m_choiceField_.write(out);
 }
 
-void WalkerObject::write(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const
+void WalkerObject::write(WalkerObject::ZserioPackingContext& context, ::zserio::BitStreamWriter& out) const
 {
-    contextNode.getChildren()[0].getContext().write<::zserio::StdIntArrayTraits<uint32_t>>(out, m_identifier_);
+    context.getIdentifier().write<::zserio::StdIntArrayTraits<uint32_t>>(out, m_identifier_);
 
     if (getIdentifier() != 0)
     {
-        m_nested_.value().write(contextNode.getChildren()[1], out);
+        m_nested_.value().write(context.getNested(), out);
     }
 
     out.writeString(m_text_);
@@ -960,7 +943,7 @@ void WalkerObject::write(::zserio::PackingContextNode& contextNode, ::zserio::Bi
         out.writeBool(false);
     }
 
-    contextNode.getChildren()[5].getContext().write<::zserio::StdIntArrayTraits<uint8_t>>(out, m_choiceSelector_);
+    context.getChoiceSelector().write<::zserio::StdIntArrayTraits<uint8_t>>(out, m_choiceSelector_);
 
     // check parameters
     if (m_choiceField_.getSelector() != static_cast<uint8_t>(getChoiceSelector()))
@@ -968,7 +951,7 @@ void WalkerObject::write(::zserio::PackingContextNode& contextNode, ::zserio::Bi
         throw ::zserio::CppRuntimeException("Write: Wrong parameter selector for field WalkerObject.choiceField: ") <<
                 m_choiceField_.getSelector() << " != " << static_cast<uint8_t>(getChoiceSelector()) << "!";
     }
-    m_choiceField_.write(contextNode.getChildren()[6], out);
+    m_choiceField_.write(context.getChoiceField(), out);
 }
 
 uint32_t WalkerObject::readIdentifier(::zserio::BitStreamReader& in)
@@ -976,9 +959,9 @@ uint32_t WalkerObject::readIdentifier(::zserio::BitStreamReader& in)
     return static_cast<uint32_t>(in.readBits(UINT8_C(32)));
 }
 
-uint32_t WalkerObject::readIdentifier(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in)
+uint32_t WalkerObject::readIdentifier(WalkerObject::ZserioPackingContext& context, ::zserio::BitStreamReader& in)
 {
-    return contextNode.getChildren()[0].getContext().read<::zserio::StdIntArrayTraits<uint32_t>>(in);
+    return context.getIdentifier().read<::zserio::StdIntArrayTraits<uint32_t>>(in);
 }
 
 ::zserio::InplaceOptionalHolder<::test_object::std_allocator::WalkerNested> WalkerObject::readNested(::zserio::BitStreamReader& in,
@@ -992,11 +975,11 @@ uint32_t WalkerObject::readIdentifier(::zserio::PackingContextNode& contextNode,
     return ::zserio::InplaceOptionalHolder<::test_object::std_allocator::WalkerNested>(::zserio::NullOpt);
 }
 
-::zserio::InplaceOptionalHolder<::test_object::std_allocator::WalkerNested> WalkerObject::readNested(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in, const allocator_type& allocator)
+::zserio::InplaceOptionalHolder<::test_object::std_allocator::WalkerNested> WalkerObject::readNested(WalkerObject::ZserioPackingContext& context, ::zserio::BitStreamReader& in, const allocator_type& allocator)
 {
     if (getIdentifier() != 0)
     {
-        return ::zserio::InplaceOptionalHolder<::test_object::std_allocator::WalkerNested>(::test_object::std_allocator::WalkerNested(contextNode.getChildren()[1], in, allocator));
+        return ::zserio::InplaceOptionalHolder<::test_object::std_allocator::WalkerNested>(::test_object::std_allocator::WalkerNested(context.getNested(), in, allocator));
     }
 
     return ::zserio::InplaceOptionalHolder<::test_object::std_allocator::WalkerNested>(::zserio::NullOpt);
@@ -1017,7 +1000,7 @@ WalkerObject::ZserioArrayType_unionArray WalkerObject::readUnionArray(::zserio::
     return readField;
 }
 
-WalkerObject::ZserioArrayType_unionArray WalkerObject::readUnionArray(::zserio::PackingContextNode&, ::zserio::BitStreamReader& in, const allocator_type& allocator)
+WalkerObject::ZserioArrayType_unionArray WalkerObject::readUnionArray(WalkerObject::ZserioPackingContext& context, ::zserio::BitStreamReader& in, const allocator_type& allocator)
 {
     ZserioArrayType_unionArray readField(allocator);
     readField.readPacked(*this, in);
@@ -1039,7 +1022,7 @@ WalkerObject::ZserioArrayType_unionArray WalkerObject::readUnionArray(::zserio::
     return ::zserio::InplaceOptionalHolder<ZserioArrayType_optionalUnionArray>(::zserio::NullOpt);
 }
 
-::zserio::InplaceOptionalHolder<WalkerObject::ZserioArrayType_optionalUnionArray> WalkerObject::readOptionalUnionArray(::zserio::PackingContextNode&, ::zserio::BitStreamReader& in, const allocator_type& allocator)
+::zserio::InplaceOptionalHolder<WalkerObject::ZserioArrayType_optionalUnionArray> WalkerObject::readOptionalUnionArray(WalkerObject::ZserioPackingContext& context, ::zserio::BitStreamReader& in, const allocator_type& allocator)
 {
     if (in.readBool())
     {
@@ -1057,9 +1040,9 @@ uint8_t WalkerObject::readChoiceSelector(::zserio::BitStreamReader& in)
     return static_cast<uint8_t>(in.readBits(UINT8_C(8)));
 }
 
-uint8_t WalkerObject::readChoiceSelector(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in)
+uint8_t WalkerObject::readChoiceSelector(WalkerObject::ZserioPackingContext& context, ::zserio::BitStreamReader& in)
 {
-    return contextNode.getChildren()[5].getContext().read<::zserio::StdIntArrayTraits<uint8_t>>(in);
+    return context.getChoiceSelector().read<::zserio::StdIntArrayTraits<uint8_t>>(in);
 }
 
 ::test_object::std_allocator::WalkerChoice WalkerObject::readChoiceField(::zserio::BitStreamReader& in,
@@ -1068,9 +1051,9 @@ uint8_t WalkerObject::readChoiceSelector(::zserio::PackingContextNode& contextNo
     return ::test_object::std_allocator::WalkerChoice(in, static_cast<uint8_t>(getChoiceSelector()), allocator);
 }
 
-::test_object::std_allocator::WalkerChoice WalkerObject::readChoiceField(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in, const allocator_type& allocator)
+::test_object::std_allocator::WalkerChoice WalkerObject::readChoiceField(WalkerObject::ZserioPackingContext& context, ::zserio::BitStreamReader& in, const allocator_type& allocator)
 {
-    return ::test_object::std_allocator::WalkerChoice(contextNode.getChildren()[6], in, static_cast<uint8_t>(getChoiceSelector()), allocator);
+    return ::test_object::std_allocator::WalkerChoice(context.getChoiceField(), in, static_cast<uint8_t>(getChoiceSelector()), allocator);
 }
 
 } // namespace std_allocator

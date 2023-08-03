@@ -11,9 +11,9 @@
 #include <zserio/Enums.h>
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
+#include <zserio/PackingContext.h>
 #include <zserio/pmr/ITypeInfo.h>
 #include <zserio/pmr/IReflectable.h>
-#include <zserio/pmr/PackingContext.h>
 #include <zserio/ArrayTraits.h>
 #include <zserio/Types.h>
 
@@ -73,36 +73,33 @@ template <>
 uint32_t enumHashCode<::test_object::polymorphic_allocator::ReflectableEnum>(::test_object::polymorphic_allocator::ReflectableEnum value);
 
 template <>
-void initPackingContext<::zserio::pmr::PackingContextNode, ::test_object::polymorphic_allocator::ReflectableEnum>(
-        ::zserio::pmr::PackingContextNode& contextNode, ::test_object::polymorphic_allocator::ReflectableEnum value);
+void initPackingContext<::zserio::DeltaContext, ::test_object::polymorphic_allocator::ReflectableEnum>(::zserio::DeltaContext& context, ::test_object::polymorphic_allocator::ReflectableEnum value);
 
 template <>
 size_t bitSizeOf<::test_object::polymorphic_allocator::ReflectableEnum>(::test_object::polymorphic_allocator::ReflectableEnum value);
 
 template <>
-size_t bitSizeOf<::zserio::pmr::PackingContextNode, ::test_object::polymorphic_allocator::ReflectableEnum>(
-        ::zserio::pmr::PackingContextNode& contextNode, ::test_object::polymorphic_allocator::ReflectableEnum value);
+size_t bitSizeOf<::zserio::DeltaContext, ::test_object::polymorphic_allocator::ReflectableEnum>(::zserio::DeltaContext& context, ::test_object::polymorphic_allocator::ReflectableEnum value);
 
 template <>
 size_t initializeOffsets<::test_object::polymorphic_allocator::ReflectableEnum>(size_t bitPosition, ::test_object::polymorphic_allocator::ReflectableEnum value);
 
 template <>
-size_t initializeOffsets<::zserio::pmr::PackingContextNode, ::test_object::polymorphic_allocator::ReflectableEnum>(
-        ::zserio::pmr::PackingContextNode& contextNode, size_t bitPosition, ::test_object::polymorphic_allocator::ReflectableEnum value);
+size_t initializeOffsets<::zserio::DeltaContext, ::test_object::polymorphic_allocator::ReflectableEnum>(::zserio::DeltaContext& context, size_t bitPosition,
+        ::test_object::polymorphic_allocator::ReflectableEnum value);
 
 template <>
 ::test_object::polymorphic_allocator::ReflectableEnum read<::test_object::polymorphic_allocator::ReflectableEnum>(::zserio::BitStreamReader& in);
 
 template <>
-::test_object::polymorphic_allocator::ReflectableEnum read<::test_object::polymorphic_allocator::ReflectableEnum, ::zserio::pmr::PackingContextNode>(
-        ::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamReader& in);
+::test_object::polymorphic_allocator::ReflectableEnum read<::test_object::polymorphic_allocator::ReflectableEnum, ::zserio::DeltaContext>(::zserio::DeltaContext& context, ::zserio::BitStreamReader& in);
 
 template <>
 void write<::test_object::polymorphic_allocator::ReflectableEnum>(::zserio::BitStreamWriter& out, ::test_object::polymorphic_allocator::ReflectableEnum value);
 
 template <>
-void write<::zserio::pmr::PackingContextNode, ::test_object::polymorphic_allocator::ReflectableEnum>(
-        ::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out, ::test_object::polymorphic_allocator::ReflectableEnum value);
+void write<::zserio::DeltaContext, ::test_object::polymorphic_allocator::ReflectableEnum>(::zserio::DeltaContext& context, ::zserio::BitStreamWriter& out,
+        ::test_object::polymorphic_allocator::ReflectableEnum value);
 
 } // namespace zserio
 

@@ -25,13 +25,6 @@ namespace polymorphic_allocator
     return ::test_object::polymorphic_allocator::WalkerNested(in, allocator);
 }
 
-::test_object::polymorphic_allocator::WalkerNested WalkerUnion::ZserioElementFactory_nestedArray::create(WalkerUnion&,
-        ::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamReader& in,
-        const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t        )
-{
-    return ::test_object::polymorphic_allocator::WalkerNested(contextNode, in, allocator);
-}
-
 WalkerUnion::WalkerUnion(const allocator_type& allocator) noexcept :
         m_choiceTag(UNDEFINED_CHOICE),
         m_objectChoice(allocator)
@@ -44,9 +37,9 @@ WalkerUnion::WalkerUnion(::zserio::BitStreamReader& in, const allocator_type& al
 {
 }
 
-WalkerUnion::WalkerUnion(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamReader& in, const allocator_type& allocator) :
-        m_choiceTag(readChoiceTag(contextNode, in)),
-        m_objectChoice(readObject(contextNode, in, allocator))
+WalkerUnion::WalkerUnion(WalkerUnion::ZserioPackingContext& context, ::zserio::BitStreamReader& in, const allocator_type& allocator) :
+        m_choiceTag(readChoiceTag(context, in)),
+        m_objectChoice(readObject(context, in, allocator))
 {
 }
 
@@ -395,26 +388,14 @@ WalkerUnion::ChoiceTag WalkerUnion::choiceTag() const
     return m_choiceTag;
 }
 
-void WalkerUnion::createPackingContext(::zserio::pmr::PackingContextNode& contextNode)
+void WalkerUnion::initPackingContext(WalkerUnion::ZserioPackingContext& context) const
 {
-    contextNode.reserveChildren(4);
-
-    contextNode.createChild().createContext();
-
-    contextNode.createChild().createContext();
-    contextNode.createChild();
-    contextNode.createChild();
-}
-
-void WalkerUnion::initPackingContext(::zserio::pmr::PackingContextNode& contextNode) const
-{
-    contextNode.getChildren()[0].getContext().init<::zserio::VarSizeArrayTraits>(
-            static_cast<uint32_t>(m_choiceTag));
+    context.getChoiceTag().init<::zserio::VarSizeArrayTraits>(static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {
     case CHOICE_value:
-        contextNode.getChildren()[1].getContext().init<::zserio::StdIntArrayTraits<uint32_t>>(m_objectChoice.get<uint32_t>());
+        context.getValue().init<::zserio::StdIntArrayTraits<uint32_t>>(m_objectChoice.get<uint32_t>());
         break;
     case CHOICE_text:
         break;
@@ -449,17 +430,16 @@ size_t WalkerUnion::bitSizeOf(size_t bitPosition) const
     return endBitPosition - bitPosition;
 }
 
-size_t WalkerUnion::bitSizeOf(::zserio::pmr::PackingContextNode& contextNode, size_t bitPosition) const
+size_t WalkerUnion::bitSizeOf(WalkerUnion::ZserioPackingContext& context, size_t bitPosition) const
 {
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += contextNode.getChildren()[0].getContext().bitSizeOf<::zserio::VarSizeArrayTraits>(
-            static_cast<uint32_t>(m_choiceTag));
+    endBitPosition += context.getChoiceTag().bitSizeOf<::zserio::VarSizeArrayTraits>(static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {
     case CHOICE_value:
-        endBitPosition += contextNode.getChildren()[1].getContext().bitSizeOf<::zserio::StdIntArrayTraits<uint32_t>>(m_objectChoice.get<uint32_t>());
+        endBitPosition += context.getValue().bitSizeOf<::zserio::StdIntArrayTraits<uint32_t>>(m_objectChoice.get<uint32_t>());
         break;
     case CHOICE_text:
         endBitPosition += ::zserio::bitSizeOfString(m_objectChoice.get<::zserio::pmr::string>());
@@ -498,17 +478,16 @@ size_t WalkerUnion::initializeOffsets(size_t bitPosition)
     return endBitPosition;
 }
 
-size_t WalkerUnion::initializeOffsets(::zserio::pmr::PackingContextNode& contextNode, size_t bitPosition)
+size_t WalkerUnion::initializeOffsets(WalkerUnion::ZserioPackingContext& context, size_t bitPosition)
 {
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += contextNode.getChildren()[0].getContext().bitSizeOf<::zserio::VarSizeArrayTraits>(
-            static_cast<uint32_t>(m_choiceTag));
+    endBitPosition += context.getChoiceTag().bitSizeOf<::zserio::VarSizeArrayTraits>(static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {
     case CHOICE_value:
-        endBitPosition += contextNode.getChildren()[1].getContext().bitSizeOf<::zserio::StdIntArrayTraits<uint32_t>>(m_objectChoice.get<uint32_t>());
+        endBitPosition += context.getValue().bitSizeOf<::zserio::StdIntArrayTraits<uint32_t>>(m_objectChoice.get<uint32_t>());
         break;
     case CHOICE_text:
         endBitPosition += ::zserio::bitSizeOfString(m_objectChoice.get<::zserio::pmr::string>());
@@ -597,15 +576,14 @@ void WalkerUnion::write(::zserio::BitStreamWriter& out) const
     }
 }
 
-void WalkerUnion::write(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const
+void WalkerUnion::write(WalkerUnion::ZserioPackingContext}& context, ::zserio::BitStreamWriter& out) const
 {
-    contextNode.getChildren()[0].getContext().write<::zserio::VarSizeArrayTraits>(
-            out, static_cast<uint32_t>(m_choiceTag));
+    context.getChoiceTag().write<::zserio::VarSizeArrayTraits>(out, static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {
     case CHOICE_value:
-        contextNode.getChildren()[1].getContext().write<::zserio::StdIntArrayTraits<uint32_t>>(out, m_objectChoice.get<uint32_t>());
+        context.getValue().write<::zserio::StdIntArrayTraits<uint32_t>>(out, m_objectChoice.get<uint32_t>());
         break;
     case CHOICE_text:
         out.writeString(m_objectChoice.get<::zserio::pmr::string>());
@@ -623,10 +601,9 @@ WalkerUnion::ChoiceTag WalkerUnion::readChoiceTag(::zserio::BitStreamReader& in)
     return static_cast<WalkerUnion::ChoiceTag>(static_cast<int32_t>(in.readVarSize()));
 }
 
-WalkerUnion::ChoiceTag WalkerUnion::readChoiceTag(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamReader& in)
+WalkerUnion::ChoiceTag WalkerUnion::readChoiceTag(WalkerUnion::ZserioPackingContext& context, ::zserio::BitStreamReader& in)
 {
-    return static_cast<WalkerUnion::ChoiceTag>(static_cast<int32_t>(
-            contextNode.getChildren()[0].getContext().read<::zserio::VarSizeArrayTraits>(in)));
+    return static_cast<WalkerUnion::ChoiceTag>(static_cast<int32_t>(context.getChoiceTag().read<::zserio::VarSizeArrayTraits>(in)));
 }
 
 ::zserio::pmr::AnyHolder WalkerUnion::readObject(::zserio::BitStreamReader& in, const allocator_type& allocator)
@@ -649,13 +626,13 @@ WalkerUnion::ChoiceTag WalkerUnion::readChoiceTag(::zserio::pmr::PackingContextN
     }
 }
 
-::zserio::pmr::AnyHolder WalkerUnion::readObject(::zserio::pmr::PackingContextNode& contextNode,
+::zserio::pmr::AnyHolder WalkerUnion::readObject(WalkerUnion::ZserioPackingContext& context,
         ::zserio::BitStreamReader& in, const allocator_type& allocator)
 {
     switch (m_choiceTag)
     {
     case CHOICE_value:
-        return ::zserio::pmr::AnyHolder(contextNode.getChildren()[1].getContext().read<::zserio::StdIntArrayTraits<uint32_t>>(in), allocator);
+        return ::zserio::pmr::AnyHolder(context.getValue().read<::zserio::StdIntArrayTraits<uint32_t>>(in), allocator);
     case CHOICE_text:
         return ::zserio::pmr::AnyHolder(static_cast<::zserio::pmr::string>(in.readString(allocator)), allocator);
     case CHOICE_nestedArray:

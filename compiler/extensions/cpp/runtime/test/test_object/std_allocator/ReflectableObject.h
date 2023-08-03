@@ -10,10 +10,10 @@
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/AllocatorPropagatingCopy.h>
+#include <zserio/PackingContext.h>
 #include <zserio/ITypeInfo.h>
 #include <zserio/IReflectable.h>
 #include <memory>
-#include <zserio/PackingContext.h>
 #include <zserio/ArrayTraits.h>
 #include <zserio/String.h>
 #include <zserio/Types.h>
@@ -29,6 +29,15 @@ class ReflectableObject
 {
 public:
     using allocator_type = ::std::allocator<uint8_t>;
+
+    class ZserioPackingContext
+    {
+    public:
+        ::test_object::std_allocator::ReflectableNested::ZserioPackingContext& getReflectableNested() { return m_reflectableNested_; }
+
+    private:
+        ::test_object::std_allocator::ReflectableNested::ZserioPackingContext m_reflectableNested_;
+    };
 
     ReflectableObject() noexcept :
             ReflectableObject(allocator_type())
@@ -50,7 +59,7 @@ public:
     }
 
     explicit ReflectableObject(::zserio::BitStreamReader& in, const allocator_type& allocator = allocator_type());
-    explicit ReflectableObject(::zserio::PackingContextNode& contextNode,
+    explicit ReflectableObject(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in, const allocator_type& allocator = allocator_type());
 
     ~ReflectableObject() = default;
@@ -80,27 +89,26 @@ public:
     void setReflectableNested(const ::test_object::std_allocator::ReflectableNested& reflectableNested_);
     void setReflectableNested(::test_object::std_allocator::ReflectableNested&& reflectableNested_);
 
-    static void createPackingContext(::zserio::PackingContextNode& contextNode);
-    void initPackingContext(::zserio::PackingContextNode& contextNode) const;
+    void initPackingContext(ZserioPackingContext& context) const;
 
     size_t bitSizeOf(size_t bitPosition = 0) const;
-    size_t bitSizeOf(::zserio::PackingContextNode& contextNode, size_t bitPosition) const;
+    size_t bitSizeOf(ZserioPackingContext& context, size_t bitPosition) const;
 
     size_t initializeOffsets(size_t bitPosition = 0);
-    size_t initializeOffsets(::zserio::PackingContextNode& contextNode, size_t bitPosition);
+    size_t initializeOffsets(ZserioPackingContext& context, size_t bitPosition);
 
     bool operator==(const ReflectableObject& other) const;
     uint32_t hashCode() const;
 
     void write(::zserio::BitStreamWriter& out) const;
-    void write(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const;
+    void write(ZserioPackingContext& context, ::zserio::BitStreamWriter& out) const;
 
 private:
     ::zserio::string<> readStringField(::zserio::BitStreamReader& in,
             const allocator_type& allocator);
     ::test_object::std_allocator::ReflectableNested readReflectableNested(::zserio::BitStreamReader& in,
             const allocator_type& allocator);
-    ::test_object::std_allocator::ReflectableNested readReflectableNested(::zserio::PackingContextNode& contextNode,
+    ::test_object::std_allocator::ReflectableNested readReflectableNested(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in, const allocator_type& allocator);
 
     bool m_areChildrenInitialized;

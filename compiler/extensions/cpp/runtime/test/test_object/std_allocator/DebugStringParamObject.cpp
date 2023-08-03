@@ -35,14 +35,6 @@ DebugStringParamObject::DebugStringParamObject(::zserio::BitStreamReader& in,
 {
 }
 
-DebugStringParamObject::DebugStringParamObject(::zserio::PackingContextNode&, ::zserio::BitStreamReader& in,
-        int32_t param_, const allocator_type& allocator) :
-        m_param_(param_),
-        m_isInitialized(true),
-        m_text_(readText(in, allocator))
-{
-}
-
 DebugStringParamObject::DebugStringParamObject(const DebugStringParamObject& other) :
         m_text_(other.m_text_)
 {
@@ -351,17 +343,6 @@ void DebugStringParamObject::setText(::zserio::string<>&& text_)
     m_text_ = ::std::move(text_);
 }
 
-void DebugStringParamObject::createPackingContext(::zserio::PackingContextNode& contextNode)
-{
-    contextNode.reserveChildren(1);
-
-    contextNode.createChild();
-}
-
-void DebugStringParamObject::initPackingContext(::zserio::PackingContextNode&) const
-{
-}
-
 size_t DebugStringParamObject::bitSizeOf(size_t bitPosition) const
 {
     size_t endBitPosition = bitPosition;
@@ -371,25 +352,7 @@ size_t DebugStringParamObject::bitSizeOf(size_t bitPosition) const
     return endBitPosition - bitPosition;
 }
 
-size_t DebugStringParamObject::bitSizeOf(::zserio::PackingContextNode&, size_t bitPosition) const
-{
-    size_t endBitPosition = bitPosition;
-
-    endBitPosition += ::zserio::bitSizeOfString(m_text_);
-
-    return endBitPosition - bitPosition;
-}
-
 size_t DebugStringParamObject::initializeOffsets(size_t bitPosition)
-{
-    size_t endBitPosition = bitPosition;
-
-    endBitPosition += ::zserio::bitSizeOfString(m_text_);
-
-    return endBitPosition;
-}
-
-size_t DebugStringParamObject::initializeOffsets(::zserio::PackingContextNode&, size_t bitPosition)
 {
     size_t endBitPosition = bitPosition;
 
@@ -421,11 +384,6 @@ uint32_t DebugStringParamObject::hashCode() const
 }
 
 void DebugStringParamObject::write(::zserio::BitStreamWriter& out) const
-{
-    out.writeString(m_text_);
-}
-
-void DebugStringParamObject::write(::zserio::PackingContextNode&, ::zserio::BitStreamWriter& out) const
 {
     out.writeString(m_text_);
 }

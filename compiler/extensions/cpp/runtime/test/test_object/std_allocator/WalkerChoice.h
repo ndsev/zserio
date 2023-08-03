@@ -10,11 +10,11 @@
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/AllocatorPropagatingCopy.h>
+#include <zserio/PackingContext.h>
 #include <zserio/ITypeInfo.h>
 #include <zserio/IReflectable.h>
 #include <zserio/AnyHolder.h>
 #include <memory>
-#include <zserio/PackingContext.h>
 #include <zserio/ArrayTraits.h>
 #include <zserio/Types.h>
 
@@ -37,6 +37,21 @@ public:
         UNDEFINED_CHOICE = -1
     };
 
+    class ZserioPackingContext
+    {
+    public:
+        ::zserio::DeltaContext& getValue8() { return m_value8_; }
+        ::zserio::DeltaContext& getValue16() { return m_value16_; }
+        ::zserio::DeltaContext& getValue32() { return m_value32_; }
+        ::zserio::DeltaContext& getValue64() { return m_value64_; }
+
+    private:
+        ::zserio::DeltaContext m_value8_;
+        ::zserio::DeltaContext m_value16_;
+        ::zserio::DeltaContext m_value32_;
+        ::zserio::DeltaContext m_value64_;
+    };
+
     WalkerChoice() noexcept :
             WalkerChoice(allocator_type())
     {}
@@ -45,7 +60,7 @@ public:
 
     explicit WalkerChoice(::zserio::BitStreamReader& in,
             uint8_t selector_, const allocator_type& allocator = allocator_type());
-    explicit WalkerChoice(::zserio::PackingContextNode& contextNode,
+    explicit WalkerChoice(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in,
             uint8_t selector_, const allocator_type& allocator = allocator_type());
 
@@ -84,25 +99,24 @@ public:
     uint64_t getValue64() const;
     void setValue64(uint64_t value64_);
 
-    static void createPackingContext(::zserio::PackingContextNode& contextNode);
-    void initPackingContext(::zserio::PackingContextNode& contextNode) const;
+    void initPackingContext(ZserioPackingContext& context) const;
 
     size_t bitSizeOf(size_t bitPosition = 0) const;
-    size_t bitSizeOf(::zserio::PackingContextNode& contextNode, size_t bitPosition) const;
+    size_t bitSizeOf(ZserioPackingContext& context, size_t bitPosition) const;
 
     size_t initializeOffsets(size_t bitPosition = 0);
-    size_t initializeOffsets(::zserio::PackingContextNode& contextNode, size_t bitPosition);
+    size_t initializeOffsets(ZserioPackingContext& context, size_t bitPosition);
 
     bool operator==(const WalkerChoice& other) const;
     uint32_t hashCode() const;
 
     void write(::zserio::BitStreamWriter& out) const;
-    void write(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const;
+    void write(ZserioPackingContext& context, ::zserio::BitStreamWriter& out) const;
 
 private:
     ::zserio::AnyHolder<> readObject(::zserio::BitStreamReader& in, const allocator_type& allocator);
-    ::zserio::AnyHolder<> readObject(::zserio::PackingContextNode& contextNode,
-            ::zserio::BitStreamReader& in, const allocator_type& allocator);
+    ::zserio::AnyHolder<> readObject(ZserioPackingContext& context, ::zserio::BitStreamReader& in,
+            const allocator_type& allocator);
     ::zserio::AnyHolder<> copyObject(const allocator_type& allocator) const;
 
     uint8_t m_selector_;

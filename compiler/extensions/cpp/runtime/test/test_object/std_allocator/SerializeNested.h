@@ -10,10 +10,10 @@
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/AllocatorPropagatingCopy.h>
+#include <zserio/PackingContext.h>
 #include <zserio/ITypeInfo.h>
 #include <zserio/IReflectable.h>
 #include <memory>
-#include <zserio/PackingContext.h>
 #include <zserio/OptionalHolder.h>
 #include <zserio/ArrayTraits.h>
 #include <zserio/Types.h>
@@ -27,6 +27,15 @@ class SerializeNested
 {
 public:
     using allocator_type = ::std::allocator<uint8_t>;
+
+    class ZserioPackingContext
+    {
+    public:
+        ::zserio::DeltaContext& getOptionalValue() { return m_optionalValue_; }
+
+    private:
+        ::zserio::DeltaContext m_optionalValue_;
+    };
 
     SerializeNested() noexcept :
             SerializeNested(allocator_type())
@@ -47,7 +56,7 @@ public:
 
     explicit SerializeNested(::zserio::BitStreamReader& in,
             int8_t param_, const allocator_type& allocator = allocator_type());
-    explicit SerializeNested(::zserio::PackingContextNode& contextNode,
+    explicit SerializeNested(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in,
             int8_t param_, const allocator_type& allocator = allocator_type());
 
@@ -81,25 +90,24 @@ public:
     bool isOptionalValueSet() const;
     void resetOptionalValue();
 
-    static void createPackingContext(::zserio::PackingContextNode& contextNode);
-    void initPackingContext(::zserio::PackingContextNode& contextNode) const;
+    void initPackingContext(ZserioPackingContext& context) const;
 
     size_t bitSizeOf(size_t bitPosition = 0) const;
-    size_t bitSizeOf(::zserio::PackingContextNode& contextNode, size_t bitPosition) const;
+    size_t bitSizeOf(ZserioPackingContext& context, size_t bitPosition) const;
 
     size_t initializeOffsets(size_t bitPosition = 0);
-    size_t initializeOffsets(::zserio::PackingContextNode& contextNode, size_t bitPosition);
+    size_t initializeOffsets(ZserioPackingContext& context, size_t bitPosition);
 
     bool operator==(const SerializeNested& other) const;
     uint32_t hashCode() const;
 
     void write(::zserio::BitStreamWriter& out) const;
-    void write(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const;
+    void write(ZserioPackingContext& context, ::zserio::BitStreamWriter& out) const;
 
 private:
     uint8_t readOffset(::zserio::BitStreamReader& in);
     ::zserio::InplaceOptionalHolder<uint32_t> readOptionalValue(::zserio::BitStreamReader& in);
-    ::zserio::InplaceOptionalHolder<uint32_t> readOptionalValue(::zserio::PackingContextNode& contextNode,
+    ::zserio::InplaceOptionalHolder<uint32_t> readOptionalValue(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in);
 
     int8_t m_param_;

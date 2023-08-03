@@ -117,25 +117,25 @@ void arrayReadPacked(ARRAY& array, detail::DummyArrayOwner&, BitStreamReader& in
 }
 
 template <typename ARRAY, typename OWNER_TYPE>
-void arrayWrite(ARRAY& array, const OWNER_TYPE& owner, BitStreamWriter& out)
+void arrayWrite(const ARRAY& array, const OWNER_TYPE& owner, BitStreamWriter& out)
 {
     array.write(owner, out);
 }
 
 template <typename ARRAY>
-void arrayWrite(ARRAY& array, const detail::DummyArrayOwner&, BitStreamWriter& out)
+void arrayWrite(const ARRAY& array, const detail::DummyArrayOwner&, BitStreamWriter& out)
 {
     array.write(out);
 }
 
 template <typename ARRAY, typename OWNER_TYPE>
-void arrayWritePacked(ARRAY& array, const OWNER_TYPE& owner, BitStreamWriter& out)
+void arrayWritePacked(const ARRAY& array, const OWNER_TYPE& owner, BitStreamWriter& out)
 {
     array.writePacked(owner, out);
 }
 
 template <typename ARRAY>
-void arrayWritePacked(ARRAY& array, const detail::DummyArrayOwner&, BitStreamWriter& out)
+void arrayWritePacked(const ARRAY& array, const detail::DummyArrayOwner&, BitStreamWriter& out)
 {
     array.writePacked(out);
 }
@@ -193,7 +193,7 @@ public:
         return ArrayObject(in, allocator);
     }
 
-    static ArrayObject create(OwnerType&, PackingContextNode& contextNode, BitStreamReader& in,
+    static ArrayObject create(OwnerType&, ArrayObject::ZserioPackingContext& contextNode, BitStreamReader& in,
             const allocator_type& allocator, size_t)
     {
         return ArrayObject(contextNode, in, allocator);
@@ -230,21 +230,43 @@ protected:
     void testArray(const RAW_ARRAY& rawArray, size_t unalignedBitSize, size_t alignedBitSize,
             OWNER_TYPE owner = OWNER_TYPE())
     {
-        testArrayNormal<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(rawArray, unalignedBitSize, owner);
-        testArrayAuto<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(
+        testArray<UnpackedArray, ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS, OWNER_TYPE>(
+                rawArray, unalignedBitSize, alignedBitSize, owner);
+        testArray<Array, ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS, OWNER_TYPE>(
+                rawArray, unalignedBitSize, alignedBitSize, owner);
+    }
+
+    template <template <typename, typename, ArrayType, typename> class ARRAY,
+            typename ARRAY_TRAITS, typename RAW_ARRAY,
+            typename ARRAY_EXPRESSIONS = detail::DummyArrayExpressions,
+            typename OWNER_TYPE = typename detail::array_owner_type<ARRAY_TRAITS, ARRAY_EXPRESSIONS>::type>
+    void testArray(const RAW_ARRAY& rawArray, size_t unalignedBitSize, size_t alignedBitSize,
+            OWNER_TYPE owner)
+    {
+        testArrayNormal<ARRAY, ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(rawArray, unalignedBitSize, owner);
+        testArrayAuto<ARRAY, ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(
                 rawArray, AUTO_LENGTH_BIT_SIZE + unalignedBitSize, owner);
-        testArrayAligned<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(rawArray, alignedBitSize, owner);
-        testArrayAlignedAuto<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(
+        testArrayAligned<ARRAY, ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(rawArray, alignedBitSize, owner);
+        testArrayAlignedAuto<ARRAY, ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(
                 rawArray, AUTO_LENGTH_BIT_SIZE + alignedBitSize, owner);
-        testArrayImplicit<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(rawArray, unalignedBitSize, owner);
+        testArrayImplicit<ARRAY, ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(rawArray, unalignedBitSize, owner);
     }
 
     template <typename ARRAY_TRAITS, typename RAW_ARRAY>
     void testArrayInitializeElements(const RAW_ARRAY& rawArray)
     {
-        using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL, ArrayObjectArrayExpressions>;
+        testArrayInitializeElements<UnpackedArray<
+                RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL, ArrayObjectArrayExpressions>>(rawArray);
+        testArrayInitializeElements<PackedArray<
+                RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL, ArrayObjectArrayExpressions>>(rawArray);
+        testArrayInitializeElements<Array<
+                RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL, ArrayObjectArrayExpressions>>(rawArray);
+    }
 
-        ArrayT array(rawArray);
+    template <typename ARRAY>
+    void testArrayInitializeElements(const typename ARRAY::RawArray& rawArray)
+    {
+        ARRAY array(rawArray);
         ArrayTestOwner owner;
         array.initializeElements(owner);
         const uint32_t expectedValue = ArrayObjectArrayExpressions::ELEMENT_VALUE;
@@ -267,13 +289,28 @@ protected:
     void testPackedArray(const RAW_ARRAY& rawArray, size_t unalignedBitSize, size_t alignedBitSize,
             OWNER_TYPE owner = OWNER_TYPE())
     {
-        testPackedArrayNormal<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(rawArray, unalignedBitSize, owner);
-        testPackedArrayAuto<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(rawArray,
-                (unalignedBitSize != UNKNOWN_BIT_SIZE)
+        testPackedArray<PackedArray, ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS, OWNER_TYPE>(
+                rawArray, unalignedBitSize, alignedBitSize, owner);
+        testPackedArray<Array, ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS, OWNER_TYPE>(
+                rawArray, unalignedBitSize, alignedBitSize, owner);
+    }
+
+    template <template <typename, typename, ArrayType, typename> class ARRAY,
+            typename ARRAY_TRAITS, typename RAW_ARRAY,
+            typename ARRAY_EXPRESSIONS = detail::DummyArrayExpressions,
+            typename OWNER_TYPE = typename detail::array_owner_type<ARRAY_TRAITS, ARRAY_EXPRESSIONS>::type>
+    void testPackedArray(const RAW_ARRAY& rawArray, size_t unalignedBitSize, size_t alignedBitSize,
+            OWNER_TYPE owner = OWNER_TYPE())
+    {
+        testPackedArrayNormal<ARRAY, ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(
+                rawArray, unalignedBitSize, owner);
+        testPackedArrayAuto<ARRAY, ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(
+                rawArray, (unalignedBitSize != UNKNOWN_BIT_SIZE)
                         ? AUTO_LENGTH_BIT_SIZE + unalignedBitSize : UNKNOWN_BIT_SIZE, owner);
-        testPackedArrayAligned<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(rawArray, alignedBitSize, owner);
-        testPackedArrayAlignedAuto<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(rawArray,
-                (alignedBitSize != UNKNOWN_BIT_SIZE)
+        testPackedArrayAligned<ARRAY, ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(
+                rawArray, alignedBitSize, owner);
+        testPackedArrayAlignedAuto<ARRAY, ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(
+                rawArray, (alignedBitSize != UNKNOWN_BIT_SIZE)
                         ? AUTO_LENGTH_BIT_SIZE + alignedBitSize : UNKNOWN_BIT_SIZE, owner);
     }
 
@@ -295,10 +332,11 @@ protected:
     static const size_t PACKING_DESCRIPTOR_BITSIZE = 1 + 6;
 
 private:
-    template <typename ARRAY_TRAITS, typename RAW_ARRAY, typename ARRAY_EXPRESSIONS, typename OWNER_TYPE>
+    template <template <typename, typename, ArrayType, typename> class ARRAY,
+            typename ARRAY_TRAITS, typename RAW_ARRAY, typename ARRAY_EXPRESSIONS, typename OWNER_TYPE>
     void testArrayNormal(const RAW_ARRAY& rawArray, size_t expectedBitSize, OWNER_TYPE& owner)
     {
-        using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL, ARRAY_EXPRESSIONS>;
+        using ArrayT = ARRAY<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL, ARRAY_EXPRESSIONS>;
 
         for (uint8_t i = 0; i < 8; ++i)
         {
@@ -323,10 +361,11 @@ private:
         }
     }
 
-    template <typename ARRAY_TRAITS, typename RAW_ARRAY, typename ARRAY_EXPRESSIONS, typename OWNER_TYPE>
+    template <template <typename, typename, ArrayType, typename> class ARRAY,
+            typename ARRAY_TRAITS, typename RAW_ARRAY, typename ARRAY_EXPRESSIONS, typename OWNER_TYPE>
     void testArrayAuto(const RAW_ARRAY& rawArray, size_t expectedBitSize, OWNER_TYPE& owner)
     {
-        using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO, ARRAY_EXPRESSIONS>;
+        using ArrayT = ARRAY<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO, ARRAY_EXPRESSIONS>;
 
         for (uint8_t i = 0; i < 8; ++i)
         {
@@ -351,10 +390,11 @@ private:
         }
     }
 
-    template <typename ARRAY_TRAITS, typename RAW_ARRAY, typename ARRAY_EXPRESSIONS, typename OWNER_TYPE>
+    template <template <typename, typename, ArrayType, typename> class ARRAY,
+            typename ARRAY_TRAITS, typename RAW_ARRAY, typename ARRAY_EXPRESSIONS, typename OWNER_TYPE>
     void testArrayAligned(const RAW_ARRAY& rawArray, size_t expectedBitSize, OWNER_TYPE& owner)
     {
-        using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED, ARRAY_EXPRESSIONS>;
+        using ArrayT = ARRAY<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED, ARRAY_EXPRESSIONS>;
 
         for (uint8_t i = 0; i < 8; ++i)
         {
@@ -386,10 +426,11 @@ private:
         }
     }
 
-    template <typename ARRAY_TRAITS, typename RAW_ARRAY, typename ARRAY_EXPRESSIONS, typename OWNER_TYPE>
+    template <template <typename, typename, ArrayType, typename> class ARRAY,
+            typename ARRAY_TRAITS, typename RAW_ARRAY, typename ARRAY_EXPRESSIONS, typename OWNER_TYPE>
     void testArrayAlignedAuto(const RAW_ARRAY& rawArray, size_t expectedBitSize, OWNER_TYPE& owner)
     {
-        using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED_AUTO, ARRAY_EXPRESSIONS>;
+        using ArrayT = ARRAY<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED_AUTO, ARRAY_EXPRESSIONS>;
 
         for (uint8_t i = 0; i < 8; ++i)
         {
@@ -422,11 +463,12 @@ private:
         }
     }
 
-    template <typename ARRAY_TRAITS, typename RAW_ARRAY, typename ARRAY_EXPRESSIONS, typename OWNER_TYPE,
+    template <template <typename, typename, ArrayType, typename> class ARRAY,
+            typename ARRAY_TRAITS, typename RAW_ARRAY, typename ARRAY_EXPRESSIONS, typename OWNER_TYPE,
             typename std::enable_if<ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT, int>::type = 0>
     void testArrayImplicit(const RAW_ARRAY& rawArray, size_t expectedBitSize, OWNER_TYPE& owner)
     {
-        using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::IMPLICIT, ARRAY_EXPRESSIONS>;
+        using ArrayT = ARRAY<RAW_ARRAY, ARRAY_TRAITS, ArrayType::IMPLICIT, ARRAY_EXPRESSIONS>;
 
         if (detail::arrayTraitsConstBitSizeOf<ARRAY_TRAITS>(owner) % 8 != 0)
             return; // implicit array allowed for types with constant bitsize rounded to bytes
@@ -454,17 +496,19 @@ private:
         }
     }
 
-    template <typename ARRAY_TRAITS, typename RAW_ARRAY, typename ARRAY_EXPRESSIONS, typename OWNER_TYPE,
+    template <template <typename, typename, ArrayType, typename> class ARRAY,
+            typename ARRAY_TRAITS, typename RAW_ARRAY, typename ARRAY_EXPRESSIONS, typename OWNER_TYPE,
             typename std::enable_if<!ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT, int>::type = 0>
     void testArrayImplicit(const RAW_ARRAY&, size_t, OWNER_TYPE&)
     {
         // implicit array not allowed for types with non-constant bitsize, so skip the test
     }
 
-    template <typename ARRAY_TRAITS, typename RAW_ARRAY, typename ARRAY_EXPRESSIONS, typename OWNER_TYPE>
+    template <template <typename, typename, ArrayType, typename> class ARRAY,
+            typename ARRAY_TRAITS, typename RAW_ARRAY, typename ARRAY_EXPRESSIONS, typename OWNER_TYPE>
     void testPackedArrayNormal(const RAW_ARRAY& rawArray, size_t expectedBitSize, OWNER_TYPE& owner)
     {
-        using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL, ARRAY_EXPRESSIONS>;
+        using ArrayT = ARRAY<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL, ARRAY_EXPRESSIONS>;
 
         for (uint8_t i = 0; i < 8; ++i)
         {
@@ -492,10 +536,11 @@ private:
         }
     }
 
-    template <typename ARRAY_TRAITS, typename RAW_ARRAY, typename ARRAY_EXPRESSIONS, typename OWNER_TYPE>
+    template <template <typename, typename, ArrayType, typename> class ARRAY,
+            typename ARRAY_TRAITS, typename RAW_ARRAY, typename ARRAY_EXPRESSIONS, typename OWNER_TYPE>
     void testPackedArrayAuto(const RAW_ARRAY& rawArray, size_t expectedBitSize, OWNER_TYPE& owner)
     {
-        using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO, ARRAY_EXPRESSIONS>;
+        using ArrayT = ARRAY<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO, ARRAY_EXPRESSIONS>;
 
         for (uint8_t i = 0; i < 8; ++i)
         {
@@ -523,10 +568,11 @@ private:
         }
     }
 
-    template <typename ARRAY_TRAITS, typename RAW_ARRAY, typename ARRAY_EXPRESSIONS, typename OWNER_TYPE>
+    template <template <typename, typename, ArrayType, typename> class ARRAY,
+            typename ARRAY_TRAITS, typename RAW_ARRAY, typename ARRAY_EXPRESSIONS, typename OWNER_TYPE>
     void testPackedArrayAligned(const RAW_ARRAY& rawArray, size_t expectedBitSize, OWNER_TYPE& owner)
     {
-        using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED, ARRAY_EXPRESSIONS>;
+        using ArrayT = ARRAY<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED, ARRAY_EXPRESSIONS>;
 
         for (uint8_t i = 0; i < 8; ++i)
         {
@@ -554,10 +600,11 @@ private:
         }
     }
 
-    template <typename ARRAY_TRAITS, typename RAW_ARRAY, typename ARRAY_EXPRESSIONS, typename OWNER_TYPE>
+    template <template <typename, typename, ArrayType, typename> class ARRAY,
+            typename ARRAY_TRAITS, typename RAW_ARRAY, typename ARRAY_EXPRESSIONS, typename OWNER_TYPE>
     void testPackedArrayAlignedAuto(const RAW_ARRAY& rawArray, size_t expectedBitSize, OWNER_TYPE& owner)
     {
-        using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED_AUTO, ARRAY_EXPRESSIONS>;
+        using ArrayT = ARRAY<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED_AUTO, ARRAY_EXPRESSIONS>;
 
         for (uint8_t i = 0; i < 8; ++i)
         {

@@ -30,8 +30,8 @@ ArrayObject::ArrayObject(::zserio::BitStreamReader& in, const allocator_type&) :
 {
 }
 
-ArrayObject::ArrayObject(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in, const allocator_type&) :
-        m_value_(readValue(contextNode, in))
+ArrayObject::ArrayObject(ArrayObject::ZserioPackingContext& context, ::zserio::BitStreamReader& in, const allocator_type&) :
+        m_value_(readValue(context, in))
 {
 }
 
@@ -223,16 +223,9 @@ void ArrayObject::setValue(uint32_t value_)
     m_value_ = value_;
 }
 
-void ArrayObject::createPackingContext(::zserio::PackingContextNode& contextNode)
+void ArrayObject::initPackingContext(ArrayObject::ZserioPackingContext& context) const
 {
-    contextNode.reserveChildren(1);
-
-    contextNode.createChild().createContext();
-}
-
-void ArrayObject::initPackingContext(::zserio::PackingContextNode& contextNode) const
-{
-    contextNode.getChildren()[0].getContext().init<::zserio::BitFieldArrayTraits<uint32_t, UINT8_C(31)>>(m_value_);
+    context.getValue().init<::zserio::BitFieldArrayTraits<uint32_t, UINT8_C(31)>>(m_value_);
 }
 
 size_t ArrayObject::bitSizeOf(size_t bitPosition) const
@@ -244,11 +237,11 @@ size_t ArrayObject::bitSizeOf(size_t bitPosition) const
     return endBitPosition - bitPosition;
 }
 
-size_t ArrayObject::bitSizeOf(::zserio::PackingContextNode& contextNode, size_t bitPosition) const
+size_t ArrayObject::bitSizeOf(ArrayObject::ZserioPackingContext& context, size_t bitPosition) const
 {
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += contextNode.getChildren()[0].getContext().bitSizeOf<::zserio::BitFieldArrayTraits<uint32_t, UINT8_C(31)>>(m_value_);
+    endBitPosition += context.getValue().bitSizeOf<::zserio::BitFieldArrayTraits<uint32_t, UINT8_C(31)>>(m_value_);
 
     return endBitPosition - bitPosition;
 }
@@ -262,11 +255,11 @@ size_t ArrayObject::initializeOffsets(size_t bitPosition)
     return endBitPosition;
 }
 
-size_t ArrayObject::initializeOffsets(::zserio::PackingContextNode& contextNode, size_t bitPosition)
+size_t ArrayObject::initializeOffsets(ArrayObject::ZserioPackingContext& context, size_t bitPosition)
 {
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += contextNode.getChildren()[0].getContext().bitSizeOf<::zserio::BitFieldArrayTraits<uint32_t, UINT8_C(31)>>(m_value_);
+    endBitPosition += context.getValue().bitSizeOf<::zserio::BitFieldArrayTraits<uint32_t, UINT8_C(31)>>(m_value_);
 
     return endBitPosition;
 }
@@ -296,9 +289,9 @@ void ArrayObject::write(::zserio::BitStreamWriter& out) const
     out.writeBits(m_value_, UINT8_C(31));
 }
 
-void ArrayObject::write(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const
+void ArrayObject::write(ArrayObject::ZserioPackingContext& context, ::zserio::BitStreamWriter& out) const
 {
-    contextNode.getChildren()[0].getContext().write<::zserio::BitFieldArrayTraits<uint32_t, UINT8_C(31)>>(out, m_value_);
+    context.getValue().write<::zserio::BitFieldArrayTraits<uint32_t, UINT8_C(31)>>(out, m_value_);
 }
 
 uint32_t ArrayObject::readValue(::zserio::BitStreamReader& in)
@@ -306,9 +299,9 @@ uint32_t ArrayObject::readValue(::zserio::BitStreamReader& in)
     return static_cast<uint32_t>(in.readBits(UINT8_C(31)));
 }
 
-uint32_t ArrayObject::readValue(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in)
+uint32_t ArrayObject::readValue(ArrayObject::ZserioPackingContext& context, ::zserio::BitStreamReader& in)
 {
-    return contextNode.getChildren()[0].getContext().read<::zserio::BitFieldArrayTraits<uint32_t, UINT8_C(31)>>(in);
+    return context.getValue().read<::zserio::BitFieldArrayTraits<uint32_t, UINT8_C(31)>>(in);
 }
 
 } // namespace std_allocator

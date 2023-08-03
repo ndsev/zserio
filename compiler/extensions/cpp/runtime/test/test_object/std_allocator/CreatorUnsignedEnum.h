@@ -11,9 +11,9 @@
 #include <zserio/Enums.h>
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
+#include <zserio/PackingContext.h>
 #include <zserio/ITypeInfo.h>
 #include <zserio/IReflectable.h>
-#include <zserio/PackingContext.h>
 #include <zserio/ArrayTraits.h>
 #include <zserio/Types.h>
 
@@ -70,36 +70,33 @@ template <>
 uint32_t enumHashCode<::test_object::std_allocator::CreatorUnsignedEnum>(::test_object::std_allocator::CreatorUnsignedEnum value);
 
 template <>
-void initPackingContext<::zserio::PackingContextNode, ::test_object::std_allocator::CreatorUnsignedEnum>(
-        ::zserio::PackingContextNode& contextNode, ::test_object::std_allocator::CreatorUnsignedEnum value);
+void initPackingContext<::zserio::DeltaContext, ::test_object::std_allocator::CreatorUnsignedEnum>(::zserio::DeltaContext& context, ::test_object::std_allocator::CreatorUnsignedEnum value);
 
 template <>
 size_t bitSizeOf<::test_object::std_allocator::CreatorUnsignedEnum>(::test_object::std_allocator::CreatorUnsignedEnum value);
 
 template <>
-size_t bitSizeOf<::zserio::PackingContextNode, ::test_object::std_allocator::CreatorUnsignedEnum>(
-        ::zserio::PackingContextNode& contextNode, ::test_object::std_allocator::CreatorUnsignedEnum value);
+size_t bitSizeOf<::zserio::DeltaContext, ::test_object::std_allocator::CreatorUnsignedEnum>(::zserio::DeltaContext& context, ::test_object::std_allocator::CreatorUnsignedEnum value);
 
 template <>
 size_t initializeOffsets<::test_object::std_allocator::CreatorUnsignedEnum>(size_t bitPosition, ::test_object::std_allocator::CreatorUnsignedEnum value);
 
 template <>
-size_t initializeOffsets<::zserio::PackingContextNode, ::test_object::std_allocator::CreatorUnsignedEnum>(
-        ::zserio::PackingContextNode& contextNode, size_t bitPosition, ::test_object::std_allocator::CreatorUnsignedEnum value);
+size_t initializeOffsets<::zserio::DeltaContext, ::test_object::std_allocator::CreatorUnsignedEnum>(::zserio::DeltaContext& context, size_t bitPosition,
+        ::test_object::std_allocator::CreatorUnsignedEnum value);
 
 template <>
 ::test_object::std_allocator::CreatorUnsignedEnum read<::test_object::std_allocator::CreatorUnsignedEnum>(::zserio::BitStreamReader& in);
 
 template <>
-::test_object::std_allocator::CreatorUnsignedEnum read<::test_object::std_allocator::CreatorUnsignedEnum, ::zserio::PackingContextNode>(
-        ::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in);
+::test_object::std_allocator::CreatorUnsignedEnum read<::test_object::std_allocator::CreatorUnsignedEnum, ::zserio::DeltaContext>(::zserio::DeltaContext& context, ::zserio::BitStreamReader& in);
 
 template <>
 void write<::test_object::std_allocator::CreatorUnsignedEnum>(::zserio::BitStreamWriter& out, ::test_object::std_allocator::CreatorUnsignedEnum value);
 
 template <>
-void write<::zserio::PackingContextNode, ::test_object::std_allocator::CreatorUnsignedEnum>(
-        ::zserio::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out, ::test_object::std_allocator::CreatorUnsignedEnum value);
+void write<::zserio::DeltaContext, ::test_object::std_allocator::CreatorUnsignedEnum>(::zserio::DeltaContext& context, ::zserio::BitStreamWriter& out,
+        ::test_object::std_allocator::CreatorUnsignedEnum value);
 
 } // namespace zserio
 

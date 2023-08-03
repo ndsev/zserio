@@ -10,10 +10,10 @@
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/AllocatorPropagatingCopy.h>
+#include <zserio/PackingContext.h>
 #include <zserio/ITypeInfo.h>
 #include <zserio/IReflectable.h>
 #include <memory>
-#include <zserio/PackingContext.h>
 #include <zserio/ArrayTraits.h>
 #include <zserio/Types.h>
 
@@ -28,6 +28,17 @@ class ReflectableUtilObject
 {
 public:
     using allocator_type = ::std::allocator<uint8_t>;
+
+    class ZserioPackingContext
+    {
+    public:
+        ::zserio::DeltaContext& getChoiceParam() { return m_choiceParam_; }
+        ::test_object::std_allocator::ReflectableUtilChoice::ZserioPackingContext& getReflectableUtilChoice() { return m_reflectableUtilChoice_; }
+
+    private:
+        ::zserio::DeltaContext m_choiceParam_;
+        ::test_object::std_allocator::ReflectableUtilChoice::ZserioPackingContext m_reflectableUtilChoice_;
+    };
 
     ReflectableUtilObject() noexcept :
             ReflectableUtilObject(allocator_type())
@@ -47,7 +58,7 @@ public:
     }
 
     explicit ReflectableUtilObject(::zserio::BitStreamReader& in, const allocator_type& allocator = allocator_type());
-    explicit ReflectableUtilObject(::zserio::PackingContextNode& contextNode,
+    explicit ReflectableUtilObject(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in, const allocator_type& allocator = allocator_type());
 
     ~ReflectableUtilObject() = default;
@@ -75,28 +86,27 @@ public:
     void setReflectableUtilChoice(const ::test_object::std_allocator::ReflectableUtilChoice& reflectableUtilChoice_);
     void setReflectableUtilChoice(::test_object::std_allocator::ReflectableUtilChoice&& reflectableUtilChoice_);
 
-    static void createPackingContext(::zserio::PackingContextNode& contextNode);
-    void initPackingContext(::zserio::PackingContextNode& contextNode) const;
+    void initPackingContext(ZserioPackingContext& context) const;
 
     size_t bitSizeOf(size_t bitPosition = 0) const;
-    size_t bitSizeOf(::zserio::PackingContextNode& contextNode, size_t bitPosition) const;
+    size_t bitSizeOf(ZserioPackingContext& context, size_t bitPosition) const;
 
     size_t initializeOffsets(size_t bitPosition = 0);
-    size_t initializeOffsets(::zserio::PackingContextNode& contextNode, size_t bitPosition);
+    size_t initializeOffsets(ZserioPackingContext& context, size_t bitPosition);
 
     bool operator==(const ReflectableUtilObject& other) const;
     uint32_t hashCode() const;
 
     void write(::zserio::BitStreamWriter& out) const;
-    void write(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const;
+    void write(ZserioPackingContext& context, ::zserio::BitStreamWriter& out) const;
 
 private:
     uint8_t readChoiceParam(::zserio::BitStreamReader& in);
-    uint8_t readChoiceParam(::zserio::PackingContextNode& contextNode,
+    uint8_t readChoiceParam(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in);
     ::test_object::std_allocator::ReflectableUtilChoice readReflectableUtilChoice(::zserio::BitStreamReader& in,
             const allocator_type& allocator);
-    ::test_object::std_allocator::ReflectableUtilChoice readReflectableUtilChoice(::zserio::PackingContextNode& contextNode,
+    ::test_object::std_allocator::ReflectableUtilChoice readReflectableUtilChoice(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in, const allocator_type& allocator);
 
     bool m_areChildrenInitialized;

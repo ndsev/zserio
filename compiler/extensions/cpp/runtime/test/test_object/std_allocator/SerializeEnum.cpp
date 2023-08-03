@@ -140,9 +140,9 @@ uint32_t enumHashCode<::test_object::std_allocator::SerializeEnum>(::test_object
 }
 
 template <>
-void initPackingContext(::zserio::PackingContextNode& contextNode, ::test_object::std_allocator::SerializeEnum value)
+void initPackingContext(::zserio::DeltaContext& context, ::test_object::std_allocator::SerializeEnum value)
 {
-    contextNode.getContext().init<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::std_allocator::SerializeEnum>::type>>(
+    context.init<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::std_allocator::SerializeEnum>::type>>(
             ::zserio::enumToValue(value));
 }
 
@@ -153,9 +153,9 @@ size_t bitSizeOf(::test_object::std_allocator::SerializeEnum)
 }
 
 template <>
-size_t bitSizeOf(::zserio::PackingContextNode& contextNode, ::test_object::std_allocator::SerializeEnum value)
+size_t bitSizeOf(::zserio::DeltaContext& context, ::test_object::std_allocator::SerializeEnum value)
 {
-    return contextNode.getContext().bitSizeOf<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::std_allocator::SerializeEnum>::type>>(
+    return context.bitSizeOf<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::std_allocator::SerializeEnum>::type>>(
             ::zserio::enumToValue(value));
 }
 
@@ -166,10 +166,9 @@ size_t initializeOffsets(size_t bitPosition, ::test_object::std_allocator::Seria
 }
 
 template <>
-size_t initializeOffsets(::zserio::PackingContextNode& contextNode,
-        size_t bitPosition, ::test_object::std_allocator::SerializeEnum value)
+size_t initializeOffsets(::zserio::DeltaContext& context, size_t bitPosition, ::test_object::std_allocator::SerializeEnum value)
 {
-    return bitPosition + bitSizeOf(contextNode, value);
+    return bitPosition + bitSizeOf(context, value);
 }
 
 template <>
@@ -181,9 +180,9 @@ template <>
 }
 
 template <>
-::test_object::std_allocator::SerializeEnum read(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in)
+::test_object::std_allocator::SerializeEnum read(::zserio::DeltaContext& context, ::zserio::BitStreamReader& in)
 {
-    return valueToEnum<::test_object::std_allocator::SerializeEnum>(contextNode.getContext().read<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::std_allocator::SerializeEnum>::type>>(
+    return valueToEnum<::test_object::std_allocator::SerializeEnum>(context.read<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::std_allocator::SerializeEnum>::type>>(
             in));
 }
 
@@ -194,9 +193,9 @@ void write(::zserio::BitStreamWriter& out, ::test_object::std_allocator::Seriali
 }
 
 template <>
-void write(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out, ::test_object::std_allocator::SerializeEnum value)
+void write(::zserio::DeltaContext& context, ::zserio::BitStreamWriter& out, ::test_object::std_allocator::SerializeEnum value)
 {
-    contextNode.getContext().write<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::std_allocator::SerializeEnum>::type>>(
+    context.write<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::std_allocator::SerializeEnum>::type>>(
             out, ::zserio::enumToValue(value));
 }
 
