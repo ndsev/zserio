@@ -307,12 +307,17 @@ zserio_add_runtime_library(RUNTIME_LIBRARY_DIR "\${ZSERIO_RUNTIME_LIBRARY_DIR}")
 
 file(GLOB_RECURSE SOURCES RELATIVE "\${CMAKE_CURRENT_SOURCE_DIR}" "gen/*.cpp" "gen/*.h")
 
+# add SQLite3 library
+include(sqlite_utils)
+sqlite_add_library(\${CMAKE_CURRENT_SOURCE_DIR}/../../../../..)
+
 add_executable(\${PROJECT_NAME} PerformanceTest.cpp \${SOURCES})
 # CXX_EXTENSIONS are necessary for old MinGW32 to support clock_gettime method
 set_target_properties(\${PROJECT_NAME} PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS YES)
 
 target_include_directories(\${PROJECT_NAME} PUBLIC "\${CMAKE_CURRENT_SOURCE_DIR}/gen")
-target_link_libraries(\${PROJECT_NAME} ZserioCppRuntime)
+target_include_directories(\${PROJECT_NAME} SYSTEM PRIVATE \${SQLITE_INCDIR})
+target_link_libraries(\${PROJECT_NAME} ZserioCppRuntime \${SQLITE_LIBRARY})
 
 add_test(NAME PerformanceTest COMMAND \${PROJECT_NAME} \${LOG_PATH} \${INPUT_SWITCH} \${INPUT_PATH})
 EOF
@@ -330,6 +335,7 @@ EOF
 #include <zserio/BitStreamWriter.h>
 #include <zserio/DebugStringUtil.h>
 #include <zserio/SerializeUtil.h>
+#include <zserio/UniquePtr.h>
 
 #include <${BLOB_INCLUDE_PATH}>
 
@@ -378,8 +384,54 @@ private:
     }
 #endif
 };
+EOF
 
-static zserio::BitBuffer readBlobBuffer(bool inputIsJson, const char* inputPath)
+if [[ "${ZSERIO_EXTRA_ARGS}" == *"polymorphic"* ]]; then
+    cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
+
+class TrackerMemoryResource : public zserio::pmr::MemoryResource
+{
+public:
+    size_t getAllocatedSize() const
+    {
+        return allocatedSize;
+    }
+
+    size_t getDeallocatedSize() const
+    {
+        return deallocatedSize;
+    }
+
+private:
+    void* doAllocate(size_t bytes, size_t) override
+    {
+        allocatedSize += bytes;
+        return ::operator new(bytes);
+    }
+
+    void doDeallocate(void* p, size_t bytes, size_t) override
+    {
+        deallocatedSize += bytes;
+        ::operator delete(p);
+    }
+
+    bool doIsEqual(const MemoryResource& other) const noexcept override
+    {
+        return this == &other;
+    }
+
+    size_t allocatedSize = 0;
+    size_t deallocatedSize = 0;
+};
+EOF
+fi
+
+    cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
+
+using allocator_type = ${BLOB_CLASS_FULL_NAME}::allocator_type;
+using BitBuffer = zserio::BasicBitBuffer<zserio::RebindAlloc<allocator_type, uint8_t>>;
+
+static BitBuffer readBlobBuffer(bool inputIsJson, const char* inputPath)
 {
     if (inputIsJson)
     {
@@ -389,7 +441,7 @@ static zserio::BitBuffer readBlobBuffer(bool inputIsJson, const char* inputPath)
         // serialize to binary file for further analysis
         zserio::serializeToFile(blob, "${TOP_LEVEL_PACKAGE_NAME}.blob");
 
-        return zserio::serialize(blob);
+        return zserio::serialize<${BLOB_CLASS_FULL_NAME}, allocator_type>(blob);
     }
     else
     {
@@ -402,8 +454,7 @@ static zserio::BitBuffer readBlobBuffer(bool inputIsJson, const char* inputPath)
         is.close();
 
         auto blob = zserio::deserializeFromFile<${BLOB_CLASS_FULL_NAME}>(inputPath);
-        auto bitBuffer = zserio::serialize(blob);
-
+        auto bitBuffer = zserio::serialize<${BLOB_CLASS_FULL_NAME}, allocator_type>(blob);
         if (bitBuffer.getByteSize() != blobByteSize)
         {
             throw zserio::CppRuntimeException("Read only ") << bitBuffer.getByteSize()
@@ -438,7 +489,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    zserio::BitBuffer bitBuffer;
+    BitBuffer bitBuffer;
     try
     {
         bitBuffer = readBlobBuffer(inputIsJson, inputPath);
@@ -448,11 +499,26 @@ int main(int argc, char* argv[])
         std::cerr << e.what() << std::endl;
         return 1;
     }
-
-    // prepare test buffer
-    zserio::BitStreamReader blobReader(bitBuffer);
-    ${BLOB_CLASS_FULL_NAME} blobFromFile(blobReader);
 EOF
+
+if [[ "${ZSERIO_EXTRA_ARGS}" == *"polymorphic"* ]]; then
+    cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
+
+    // calculate blob memory size
+    TrackerMemoryResource memoryResource;
+    const allocator_type allocator(&memoryResource);
+    zserio::BitStreamReader blobReader(bitBuffer);
+    auto memoryBlob = zserio::allocate_unique<${BLOB_CLASS_FULL_NAME}>(allocator, blobReader, allocator);
+    const size_t blobMemorySize = memoryResource.getAllocatedSize();
+    const size_t blobDeallocMemorySize = memoryResource.getDeallocatedSize();
+    if (blobDeallocMemorySize != 0)
+    {
+        std::cerr << "Memory deallocation during blob parsing occurred (" << blobDeallocMemorySize << ")!"
+                << std::endl;
+        return 1;
+    }
+EOF
+fi
 
 if [[ "${TEST_CONFIG}" != "WRITE" ]] ; then
     cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
@@ -520,13 +586,24 @@ cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
     // process results
     double totalDuration = static_cast<double>(stop - start) / 1000.;
     double stepDuration = totalDuration / numIterations;
-    double kBSize = static_cast<double>(bitBuffer.getByteSize()) / 1000.;
+    double blobkBSize = static_cast<double>(bitBuffer.getByteSize()) / 1000.;
     std::cout << std::fixed << std::setprecision(3);
     std::cout << "Total Duration: " << totalDuration << "ms" << std::endl;
     std::cout << "Iterations:     " << numIterations << std::endl;
     std::cout << "Step Duration:  " << stepDuration << "ms" << std::endl;
-    std::cout << "Blob Size:      " << bitBuffer.getBitSize() << " bits" << "(" << kBSize << " kB)"
+    std::cout << "Blob Size:      " << bitBuffer.getBitSize() << " bits" << "(" << blobkBSize << " kB)"
               << std::endl;
+EOF
+
+if [[ "${ZSERIO_EXTRA_ARGS}" == *"polymorphic"* ]]; then
+    cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
+    double blobMemorykBSize = static_cast<double>(blobMemorySize) / 1000.;
+    std::cout << "Blob in Memory: " << blobMemorySize << " bytes" << "(" << blobMemorykBSize << " kB)"
+              << std::endl;
+EOF
+fi
+
+cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
 
     // write results to file
     std::ofstream logFile(logPath);
@@ -534,7 +611,17 @@ cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
     logFile << totalDuration << "ms "
             << numIterations << " "
             << stepDuration << "ms "
-            << kBSize << "kB" << std::endl;
+            << blobkBSize << "kB "
+EOF
+
+if [[ "${ZSERIO_EXTRA_ARGS}" == *"polymorphic"* ]]; then
+    cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
+            << blobMemorykBSize << "kB"
+EOF
+fi
+
+cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
+            << std::endl;
 
     return 0;
 }
