@@ -10,7 +10,7 @@
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/AllocatorPropagatingCopy.h>
-#include <zserio/PackingContext.h>
+#include <zserio/DeltaContext.h>
 #include <zserio/ITypeInfo.h>
 #include <zserio/IReflectable.h>
 #include <zserio/AnyHolder.h>

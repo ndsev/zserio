@@ -1,5 +1,5 @@
-#ifndef ZSERIO_PACKING_CONTEXT_H_INC
-#define ZSERIO_PACKING_CONTEXT_H_INC
+#ifndef ZSERIO_DELTA_CONTEXT_H_INC
+#define ZSERIO_DELTA_CONTEXT_H_INC
 
 #include <type_traits>
 
@@ -395,4 +395,4 @@ private:
 
 } // namespace zserio
 
-#endif // ZSERIO_PACKING_CONTEXT_H_INC
+#endif // ZSERIO_DELTA_CONTEXT_H_INC

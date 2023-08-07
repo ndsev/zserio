@@ -29,7 +29,6 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/pmr/MemoryResource.h
     zserio/pmr/NewDeleteResource.cpp
     zserio/pmr/NewDeleteResource.h
-    zserio/pmr/PackingContext.h
     zserio/pmr/PolymorphicAllocator.h
     zserio/pmr/Reflectable.h
     zserio/pmr/Set.h
@@ -82,7 +81,7 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/JsonTokenizer.h
     zserio/JsonWriter.h
     zserio/OptionalHolder.h
-    zserio/PackingContext.h
+    zserio/DeltaContext.h
     zserio/PubsubException.h
     zserio/Reflectable.h
     zserio/SerializeUtil.h

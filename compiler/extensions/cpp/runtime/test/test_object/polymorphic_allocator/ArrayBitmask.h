@@ -8,7 +8,7 @@
 
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
-#include <zserio/PackingContext.h>
+#include <zserio/DeltaContext.h>
 #include <zserio/pmr/ITypeInfo.h>
 #include <zserio/pmr/IReflectable.h>
 #include <zserio/pmr/ArrayTraits.h>

@@ -1,11 +1,11 @@
 # This is necessary for implementation. We intentionally store all possible array element types in 'uint64_t'
 # type to be able to implement delta compression.
-bugprone-signed-char-misuse:src/zserio/PackingContext.h:119
-bugprone-signed-char-misuse:src/zserio/PackingContext.h:136
-bugprone-signed-char-misuse:src/zserio/PackingContext.h:199
-bugprone-signed-char-misuse:src/zserio/PackingContext.h:235
-bugprone-signed-char-misuse:src/zserio/PackingContext.h:360
-bugprone-signed-char-misuse:src/zserio/PackingContext.h:385
+bugprone-signed-char-misuse:src/zserio/DeltaContext.h:119
+bugprone-signed-char-misuse:src/zserio/DeltaContext.h:136
+bugprone-signed-char-misuse:src/zserio/DeltaContext.h:199
+bugprone-signed-char-misuse:src/zserio/DeltaContext.h:235
+bugprone-signed-char-misuse:src/zserio/DeltaContext.h:360
+bugprone-signed-char-misuse:src/zserio/DeltaContext.h:385
 
 # This is necessary for implementation of low level implementation of Span and StringView to mimic standard
 # C++17 'std::span' and 'std::string_view' abstractions.
@@ -69,8 +69,8 @@ cppcoreguidelines-pro-type-member-init:src/zserio/BitStreamWriter.h:71
 # This is aligned storage which we want to leave uninitialized.
 cppcoreguidelines-pro-type-member-init:src/zserio/OptionalHolder.h:534
 # This member in the following two use cases is checked by implementation (lazy initialization).
-cppcoreguidelines-pro-type-member-init:src/zserio/PackingContext.h:62
-cppcoreguidelines-pro-type-member-init:src/zserio/PackingContext.h:69
+cppcoreguidelines-pro-type-member-init:src/zserio/DeltaContext.h:62
+cppcoreguidelines-pro-type-member-init:src/zserio/DeltaContext.h:69
 
 # This is necessary for implementation of low level implementation of AnyHolder and OptionalHolder to mimic
 # standard C++17 'any' and 'optional' abstractions.

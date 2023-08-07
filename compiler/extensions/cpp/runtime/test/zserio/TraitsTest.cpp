@@ -152,7 +152,6 @@ TEST(TraitsTest, isFieldConstructorEnabled)
     assertFalse(has_field_ctor<std::allocator<uint8_t>, DummyObjectInitialize, std::allocator<uint8_t>>::value);
     assertFalse(has_field_ctor<BitStreamReader, DummyObjectInitialize, std::allocator<uint8_t>>::value);
     assertFalse(has_field_ctor<PropagateAllocatorT, DummyObjectInitialize, std::allocator<uint8_t>>::value);
-    assertFalse(has_field_ctor<PackingContextNode, DummyObjectInitialize, std::allocator<uint8_t>>::value);
 }
 
 } // namespace zserio

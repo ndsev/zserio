@@ -15,7 +15,7 @@
 #include <zserio/BitStreamWriter.h>
 #include <zserio/AllocatorPropagatingCopy.h>
 <#if has_field_with_packing_context(fieldList)>
-#include <zserio/PackingContext.h>
+#include <zserio/DeltaContext.h>
 </#if>
 <#if withTypeInfoCode>
 <@type_includes types.typeInfo/>

@@ -14,7 +14,7 @@
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/AllocatorPropagatingCopy.h>
-#include <zserio/PackingContext.h>
+#include <zserio/DeltaContext.h>
 <#if !fieldList?has_content>
 #include <zserio/Array.h>
 </#if>

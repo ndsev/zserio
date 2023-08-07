@@ -12,7 +12,7 @@
 #include "zserio/Enums.h"
 #include "zserio/Traits.h"
 #include "zserio/SizeConvertUtil.h"
-#include "zserio/PackingContext.h"
+#include "zserio/DeltaContext.h"
 
 namespace zserio
 {

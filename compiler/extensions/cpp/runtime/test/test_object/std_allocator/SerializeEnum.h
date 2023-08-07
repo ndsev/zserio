@@ -11,7 +11,7 @@
 #include <zserio/Enums.h>
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
-#include <zserio/PackingContext.h>
+#include <zserio/DeltaContext.h>
 #include <zserio/ITypeInfo.h>
 #include <zserio/IReflectable.h>
 #include <zserio/ArrayTraits.h>

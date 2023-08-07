@@ -9,7 +9,7 @@
 #include "zserio/BitSizeOfCalculator.h"
 #include "zserio/BitStreamReader.h"
 #include "zserio/BitStreamWriter.h"
-#include "zserio/PackingContext.h"
+#include "zserio/DeltaContext.h"
 #include "zserio/Traits.h"
 #include "zserio/UniquePtr.h"
 #include "zserio/SizeConvertUtil.h"

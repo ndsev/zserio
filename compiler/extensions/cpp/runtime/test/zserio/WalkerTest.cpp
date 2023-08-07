@@ -6,7 +6,6 @@
 #include "zserio/Reflectable.h"
 #include "zserio/Array.h"
 #include "zserio/ArrayTraits.h"
-#include "zserio/PackingContext.h"
 #include "zserio/BitStreamWriter.h"
 #include "zserio/OptionalHolder.h"
 

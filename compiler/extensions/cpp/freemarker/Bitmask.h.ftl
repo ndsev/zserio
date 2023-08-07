@@ -6,7 +6,7 @@
 
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
-#include <zserio/PackingContext.h>
+#include <zserio/DeltaContext.h>
 <#if !bitSize??>
 #include <zserio/BitSizeOfCalculator.h>
 </#if>
