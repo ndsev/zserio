@@ -77,15 +77,14 @@ Byte position | Value             | Value (hex)                | Description
 
 ## Built-in Types
 
-All [integer built-in types](ZserioLanguageOverview.md#integer-built-in-types),
-[bit field types](ZserioLanguageOverview.md#bit-field-types),
-[floating point types](ZserioLanguageOverview.md#floating-point-types),
-[variable integer types](ZserioLanguageOverview.md#variable-integer-types) and
-[boolean type](ZserioLanguageOverview.md#boolean-type) are encoded as they are using big endian byte order.
-Thus, for multi-byte integers, the most significant byte comes first.
+### Integer Built-in Types
+
+All [integer built-in types](ZserioLanguageOverview.md#integer-built-in-types) are encoded as they are using
+big endian byte order. Thus, for multi-byte integers, the most significant byte comes first.
 Within each byte, the most significant bit comes first.
 
-If the type size is not byte aligned, exact number of bits are encoded (e.g. `bit:2` is encoded in two bits).
+Negative values are represented in two's complement, i.e. the hex byte `FF` is `255` as `uint8` or
+`-1` as `int8`.
 
 **Example**
 
@@ -100,9 +99,63 @@ Byte position | Value | Value (hex) | Value (bit)          | Description
 ------------- | ----- | ----------- | -------------------- | -------
 0-1           | 513   | 02 01       | 0000 0010 0000 0001  | bit 0 is `1`, bit 15 is `0`
 
+**Example**
+
+The decimal value `-513` interpreted as `int16`:
+
+```
+Offset   00 01
+00000000 FD FF
+```
+
+Byte position | Value | Value (hex) | Value (bit)          | Description
+------------- | ----- | ----------- | -------------------- | -------
+0-1           | -513  | FD FF       | 1111 1101 1111 1111  | The most significant bit (bit 15) is the first one
+
+### Bit Field Types
+
+All [bit field types](ZserioLanguageOverview.md#bit-field-types) are encoded as they are using big endian byte
+order. Thus, for multi-byte integers, the most significant byte comes first.
+Within each byte, the most significant bit comes first.
+
+If the type size is not byte aligned, exact number of bits are encoded (e.g. `bit:2` is encoded in two bits).
+
+**Example**
+
+The decimal value `513` interpreted as `bit:12`:
+
+```
+Offset   00 01
+00000000 20 10
+```
+
+Byte position | Value | Value (hex) | Value (bit)     | Description
+------------- | ----- | ----------- | --------------- | -------
+0-1           | 513   | 20 10       | 0010 0000 0001  | Only the first 4 bits of the second byte is used.
+
+### Floating Point Types
+
+All [floating point types](ZserioLanguageOverview.md#floating-point-types) are encoded as
+16-bits/32-bits/64-bits integer numbers using their 16-bits/32-bits/64-bits floating point format defined
+by IEEE 754 specification.
+
+**Example**
+
+The floating point value `8.0` interpreted as `float16`:
+
+```
+Offset   00 01
+00000000 48 00
+```
+
+Byte position | Value | Value (hex) | Value (bit)          | Description
+------------- | ----- | ----------- | -------------------- | -------
+0-1           | 8.0   | 48 00       | 0100 1000 0000 0000  | The most significant bit (bit 15) is the first one
+
 ### Variable Integer Types
 
-The internal layout of the variable integer types is:
+All [variable integer types](ZserioLanguageOverview.md#variable-integer-types) are encoded according to the
+following table:
 
 Data Type   | Byte | Description
 ----------- | ---- | -----------
@@ -160,6 +213,11 @@ varsize     | 0    | 1 bit has next byte, 7 bits value
 
 > Minimum size is always 1 byte, the other bytes are present only when previous *has next byte* bit is set
 > to `1`
+
+### Boolean Type
+
+[Boolean type](ZserioLanguageOverview.md#boolean-type) is encoded as a single bit. `true` is encoded
+as a single bit `1` and `false` is encoded as a single bit `0`.
 
 ### String Type
 

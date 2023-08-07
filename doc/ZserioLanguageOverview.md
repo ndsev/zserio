@@ -3,6 +3,9 @@
 This document contains a detailed specification of the zserio schema language. The Zserio Language Overview
 document is targeted for developers who write zserio schema definitions.
 
+This document does not describe the details how Zserio encodes data to the binary stream. Encoding details
+are described in [Zserio Encoding Guide](ZserioEncodingGuide.md#variable-integer-types).
+
 Zserio is a serialization schema language for modeling binary data types, bitstreams or file formats. Based
 on the zserio language it is possible to automatically generate encoders and decoders for a given schema
 in various target languages (e.g. Java, C++, Python).
@@ -100,8 +103,7 @@ signed   | `int8`, `int16`, `int32`, `int64`
 
 
 These types correspond to unsigned or signed integers represented as sequences of 8, 16, 32 or 64 bits,
-respectively. Negative values are represented in two's complement, i.e. the hex byte FF is 255 as `uint8`
-or -1 as `int8`.
+respectively.
 
 ### Bit Field Types
 
@@ -164,14 +166,11 @@ varsize      | `0 to 2147483647`                             | `5`
 
 >Note that `varint` and `varuint` can handle all `int64` and `uint64` values respectively.
 
-For encoding details see [encoding guide](ZserioEncodingGuide.md#variable-integer-types).
-
 > Note that `varsize` is available since `2.0.0`.
 
 ### Boolean Type
 
-In zserio, booleans are denoted by `bool`. A boolean is stored in a single bit. Both `true` and `false` are
-available as built-in keywords that are stored as a 1 or 0, respectively.
+In zserio, booleans are denoted by `bool`. Both `true` and `false` are available as built-in keywords.
 
 **Example**
 ```
