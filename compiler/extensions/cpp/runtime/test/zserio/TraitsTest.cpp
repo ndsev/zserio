@@ -8,7 +8,6 @@
 #include "zserio/AnyHolder.h"
 #include "zserio/BitStreamReader.h"
 #include "zserio/BitStreamWriter.h"
-#include "zserio/PackingContext.h"
 #include "zserio/Reflectable.h"
 #include "zserio/pmr/PolymorphicAllocator.h"
 
@@ -48,6 +47,13 @@ public:
     {
         return nullptr;
     }
+};
+
+class DummyObjectWithPackingContext
+{
+public:
+    struct ZserioPackingContext
+    {};
 };
 
 class DummyBitmask
@@ -148,10 +154,14 @@ TEST(TraitsTest, isFieldConstructorEnabled)
     assertTrue(has_field_ctor<std::string, DummyObjectInitialize, std::allocator<uint8_t>>::value);
     assertTrue(has_field_ctor<
             DummyObjectInitializeChildren, DummyObjectInitialize, std::allocator<uint8_t>>::value);
+    assertTrue(has_field_ctor<DummyObjectWithPackingContext::ZserioPackingContext,
+            DummyObjectInitialize, std::allocator<uint8_t>>::value);
     assertFalse(has_field_ctor<DummyObjectInitialize, DummyObjectInitialize, std::allocator<uint8_t>>::value);
     assertFalse(has_field_ctor<std::allocator<uint8_t>, DummyObjectInitialize, std::allocator<uint8_t>>::value);
     assertFalse(has_field_ctor<BitStreamReader, DummyObjectInitialize, std::allocator<uint8_t>>::value);
     assertFalse(has_field_ctor<PropagateAllocatorT, DummyObjectInitialize, std::allocator<uint8_t>>::value);
+    assertFalse(has_field_ctor<DummyObjectWithPackingContext::ZserioPackingContext,
+            DummyObjectWithPackingContext, std::allocator<uint8_t>>::value);
 }
 
 } // namespace zserio
