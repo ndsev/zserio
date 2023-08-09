@@ -237,10 +237,7 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
         if (typeInstantiation instanceof ArrayInstantiation)
             return ((ArrayInstantiation)typeInstantiation).isPackable();
 
-        if (fieldBaseType instanceof CompoundType)
-            return ((CompoundType)fieldBaseType).hasPackableField();
-
-        return ArrayInstantiation.isSimpleTypePackable(fieldBaseType);
+        return ArrayInstantiation.isTypePackable(fieldBaseType);
     }
 
     /**

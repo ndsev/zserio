@@ -98,10 +98,8 @@ public class ArrayInstantiation extends TypeInstantiation
             return false;
 
         final ZserioType elementBaseType = getElementTypeInstantiation().getBaseType();
-        if (elementBaseType instanceof CompoundType)
-            return ((CompoundType)elementBaseType).hasPackableField();
 
-        return isSimpleTypePackable(elementBaseType);
+        return isTypePackable(elementBaseType);
     }
 
     @Override
@@ -169,13 +167,26 @@ public class ArrayInstantiation extends TypeInstantiation
     }
 
     /**
-     * Check whether the baseType is packable.
+     * Check whether the base type is packable.
      *
      * @param baseType Base type to check.
      *
      * @return True when the base type is packable, false otherwise.
      */
-    static boolean isSimpleTypePackable(ZserioType baseType)
+    static boolean isTypePackable(ZserioType baseType)
+    {
+        // unions are always packable due to choiceTag
+        if (baseType instanceof UnionType)
+            return true;
+
+        // compound is packable if it contains at least one packable field
+        if (baseType instanceof CompoundType)
+            return ((CompoundType)baseType).hasPackableField();
+
+        return isSimpleTypePackable(baseType);
+    }
+
+    private static boolean isSimpleTypePackable(ZserioType baseType)
     {
         return baseType instanceof IntegerType ||
                 baseType instanceof EnumType || baseType instanceof BitmaskType;
