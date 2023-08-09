@@ -151,28 +151,22 @@ public abstract class CompoundType extends TemplatableType
     {
         for (Field field : fields)
         {
-            if (field.isPackable())
+            // prevent cycle in recursion
+            TypeInstantiation typeInstantiation = field.getTypeInstantiation();
+            if (typeInstantiation instanceof ArrayInstantiation)
             {
-                TypeInstantiation typeInstantiation = field.getTypeInstantiation();
-                if (typeInstantiation instanceof ArrayInstantiation)
-                {
-                    typeInstantiation = ((ArrayInstantiation)typeInstantiation).getElementTypeInstantiation();
-                }
-
-                final ZserioType fieldBaseType = typeInstantiation.getBaseType();
-                if (fieldBaseType instanceof CompoundType)
-                {
-                    final CompoundType childCompoundType = (CompoundType)fieldBaseType;
-                    // compound type can have itself in recursion
-                    if (childCompoundType != this && childCompoundType.hasPackableField())
-                        return true;
-                }
-                else
-                {
-                    // non-compound type is packable if Field.isPackable() returns true
-                    return true;
-                }
+                typeInstantiation = ((ArrayInstantiation)typeInstantiation).getElementTypeInstantiation();
             }
+            final ZserioType fieldBaseType = typeInstantiation.getBaseType();
+            if (fieldBaseType instanceof CompoundType)
+            {
+                final CompoundType childCompoundType = (CompoundType)fieldBaseType;
+                if (childCompoundType == this)
+                    continue;
+            }
+
+            if (field.isPackable())
+                return true;
         }
 
         return false;

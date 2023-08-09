@@ -223,35 +223,33 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
     /**
      * Gets flag which indicates if the field is is packable.
      *
-     * Currently this is true for integral fields which fulfill other requirements to be packable and also
-     * for all compounds, which however can have no packable fields at all.
+     * Currently this is true for integral fields and also for all compounds
+     * which have at least one packable field. It is also true for arrays of such types.
      *
-     * @return true if the field is packable.
+     * @return True if the field is packable.
      */
     public boolean isPackable()
     {
-        return isPackable;
+        if (usedAsOffset)
+            return false;
+
+        ZserioType fieldBaseType = typeInstantiation.getBaseType();
+        if (typeInstantiation instanceof ArrayInstantiation)
+            return ((ArrayInstantiation)typeInstantiation).isPackable();
+
+        if (fieldBaseType instanceof CompoundType)
+            return ((CompoundType)fieldBaseType).hasPackableField();
+
+        return ArrayInstantiation.isSimpleTypePackable(fieldBaseType);
     }
 
     /**
      * Evaluates the compound field.
      *
-     * This method calculates and sets isPackable flag.
+     * This method calculates and sets usedAsOffset flag.
      */
     void evaluate()
     {
-        ZserioType fieldBaseType = typeInstantiation.getBaseType();
-        if (typeInstantiation instanceof ArrayInstantiation)
-        {
-            final ArrayInstantiation arrayInstantiation = (ArrayInstantiation)typeInstantiation;
-            if (arrayInstantiation.isImplicit())
-                isPackable = false;
-            fieldBaseType = arrayInstantiation.getElementTypeInstantiation().getBaseType();
-        }
-
-        if (!(fieldBaseType instanceof CompoundType) && !ArrayInstantiation.isSimpleTypePackable(fieldBaseType))
-            isPackable = false;
-
         if (offsetExpr != null)
         {
             // the offset must be evaluated to the field (single or array) => mark it as not packable
@@ -266,7 +264,7 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
                     throw new ParserException(offsetExpr, "Packed array cannot be used as offset array!");
                 }
 
-                referencedField.isPackable = false;
+                referencedField.usedAsOffset = true;
             }
         }
     }
@@ -580,7 +578,7 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
         this.isVirtual = isVirtual;
         this.sqlConstraint = sqlConstraint;
 
-        this.isPackable = true;
+        this.usedAsOffset = false;
     }
 
     private final boolean isExtended;
@@ -598,5 +596,5 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
     private final boolean isVirtual;
     private final SqlConstraint sqlConstraint;
 
-    private boolean isPackable;
+    private boolean usedAsOffset;
 }

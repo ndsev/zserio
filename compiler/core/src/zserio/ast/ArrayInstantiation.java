@@ -87,6 +87,23 @@ public class ArrayInstantiation extends TypeInstantiation
         return lengthExpression;
     }
 
+    /**
+     * Gets flag which indicates if the array is packable.
+     *
+     * @return True if the array is packable.
+     */
+    public boolean isPackable()
+    {
+        if (isImplicit())
+            return false;
+
+        final ZserioType elementBaseType = getElementTypeInstantiation().getBaseType();
+        if (elementBaseType instanceof CompoundType)
+            return ((CompoundType)elementBaseType).hasPackableField();
+
+        return isSimpleTypePackable(elementBaseType);
+    }
+
     @Override
     public ArrayType getBaseType()
     {
