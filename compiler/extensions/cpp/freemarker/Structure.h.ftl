@@ -42,13 +42,15 @@
 </#if>
 class ${name}
 {
+public:
+    <@compound_declare_packing_context fieldList/>
+
 <@top_private_section_declarations name, fieldList/>
 public:
 <#if withCodeComments>
     /** Definition for allocator type. */
 </#if>
     using allocator_type = ${types.allocator.default};
-    <@compound_declare_packing_context fieldList/>
 <#if withWriterCode>
 
     <@compound_default_constructor compoundConstructorsData/>

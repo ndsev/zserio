@@ -507,7 +507,7 @@ void ${name}::write(${name}::ZserioPackingContext&<#if uses_packing_context(fiel
     <#if needs_field_packing_context(field)>
 
 <@field_member_type_name field, name/> ${name}::${field.readerName}(<#rt>
-        <#lt>${name}::ZserioPackingContext&<#if uses_packing_context(fieldList)> context</#if>, <#rt>
+        <#lt>${name}::ZserioPackingContext&<#if uses_field_packing_context(field)> context</#if>, <#rt>
         ::zserio::BitStreamReader& in<#t>
         <#if field.needsAllocator || field.holderNeedsAllocator>
         , const allocator_type& allocator<#t>

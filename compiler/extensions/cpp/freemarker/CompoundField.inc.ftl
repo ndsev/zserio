@@ -340,7 +340,7 @@ ${I}}
 </#macro>
 
 <#macro array_field_packed_suffix field packed>
-    <#if field.isPackable && !field.array.elementIsRecursive && (packed || field.array.isPacked)>
+    <#if field.isPackable && (packed || field.array.isPacked)>
         Packed<#t>
     </#if>
 </#macro>
@@ -350,7 +350,7 @@ ${I}}
 </#macro>
 
 <#macro array_type_name field>
-    <#if field.array.elementIsRecursive>::zserio::UnpackedArray<#else>${field.typeInfo.typeFullName}</#if><<#t>
+    ${field.typeInfo.typeFullName}<<#t>
             <@vector_type_name field.array.elementTypeInfo.typeFullName/>, <@array_traits_type_name field/>, <#t>
             <@array_type_enum field/><#t>
     <#if needs_array_expressions(field)>
@@ -521,7 +521,6 @@ void ${compoundName}::<@array_expressions_name field.name/>::initializeElement(<
             <@compound_field_compound_ctor_params field.array.elementCompound, true/><#t>
         </#if>
     </#local>
-
 ${field.array.elementTypeInfo.typeFullName} ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
         <#if !withWriterCode>const </#if>${compoundName}&<#t>
         <#lt><#if needs_field_initialization_owner(field.array.elementCompound)> owner</#if>,
@@ -1265,9 +1264,16 @@ ${I}context.${field.getterName}().init<<@array_traits_type_name field/>>(<#rt>
     <#return false>
 </#function>
 
+<#function uses_field_packing_context field>
+    <#if needs_field_packing_context(field) && !field.array??>
+        <#return true>
+    </#if>
+    <#return false>
+</#function>
+
 <#function uses_packing_context fieldList>
     <#list fieldList as field>
-        <#if needs_field_packing_context(field) && !field.array??>
+        <#if uses_field_packing_context(field)>
             <#return true>
         </#if>
     </#list>
