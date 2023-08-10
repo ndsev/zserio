@@ -47,16 +47,14 @@
 <#macro read_constructor_field_initialization packed>
     <#if fieldList?has_content>
         m_choiceTag(readChoiceTag(<#if packed>context, </#if>in)),
-        m_objectChoice(readObject(<#if packed>context, </#if>in, allocator))
+        m_objectChoice(readObject(<#if packed && hasPackableField>context, </#if>in, allocator))
     <#else>
         m_choiceTag(UNDEFINED_CHOICE)
     </#if>
 </#macro>
 <@compound_read_constructor_definition compoundConstructorsData, "read_constructor_field_initialization"/>
-<#if has_field_with_packing_context(fieldList)>
 
-    <@compound_read_constructor_definition compoundConstructorsData, "read_constructor_field_initialization", true/>
-</#if>
+<@compound_read_constructor_definition compoundConstructorsData, "read_constructor_field_initialization", true/>
 
 <#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
 ${name}::${name}(const ${name}& other) :
@@ -589,7 +587,7 @@ ${types.anyHolder.name} ${name}::readObject(::zserio::BitStreamReader& in, const
         throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
 }
-<#if has_field_with_packing_context(fieldList)>
+<#if hasPackableField>
 
 ${types.anyHolder.name} ${name}::readObject(${name}::ZserioPackingContext&<#if uses_packing_context(fieldList)> context</#if>,
         ::zserio::BitStreamReader& in, const allocator_type& allocator)

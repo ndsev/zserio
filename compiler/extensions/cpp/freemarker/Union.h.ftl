@@ -282,7 +282,7 @@ private:
     ChoiceTag readChoiceTag(::zserio::BitStreamReader& in);
     ChoiceTag readChoiceTag(ZserioPackingContext& context, ::zserio::BitStreamReader& in);
     ${types.anyHolder.name} readObject(::zserio::BitStreamReader& in, const allocator_type& allocator);
-    <#if has_field_with_packing_context(fieldList)>
+    <#if hasPackableField>
     ${types.anyHolder.name} readObject(ZserioPackingContext& context, ::zserio::BitStreamReader& in,
             const allocator_type& allocator);
     </#if>

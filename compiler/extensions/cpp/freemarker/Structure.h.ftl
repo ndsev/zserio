@@ -14,7 +14,7 @@
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/AllocatorPropagatingCopy.h>
-<#if has_field_with_packing_context(fieldList)>
+<#if hasPackableField>
 #include <zserio/DeltaContext.h>
 </#if>
 <#if withTypeInfoCode>
@@ -88,7 +88,7 @@ public:
 </#if>
 
     <@compound_read_constructor_declaration compoundConstructorsData/>
-<#if has_field_with_packing_context(fieldList)>
+<#if hasPackableField>
     <#if withCodeComments>
 
     </#if>
@@ -226,7 +226,7 @@ public:
     </#if>
 </#list>
     <@compound_functions_declaration compoundFunctionsData/>
-<#if has_field_with_packing_context(fieldList)>
+<#if hasPackableField>
 
     <#if withCodeComments>
     /**
@@ -250,7 +250,7 @@ public:
      */
 </#if>
     size_t bitSizeOf(size_t bitPosition = 0) const;
-<#if has_field_with_packing_context(fieldList)>
+<#if hasPackableField>
     <#if withCodeComments>
 
     /**
@@ -280,7 +280,7 @@ public:
      */
     </#if>
     size_t initializeOffsets(size_t bitPosition = 0);
-    <#if has_field_with_packing_context(fieldList)>
+    <#if hasPackableField>
         <#if withCodeComments>
 
     /**
@@ -328,7 +328,7 @@ public:
      */
     </#if>
     void write(::zserio::BitStreamWriter& out) const;
-    <#if has_field_with_packing_context(fieldList)>
+    <#if hasPackableField>
         <#if withCodeComments>
 
     /**
@@ -352,7 +352,7 @@ private:
             const allocator_type& allocator<#rt>
     </#if>
     <#lt>);
-    <#if needs_field_packing_context(field)>
+    <#if field.isPackable>
     <@field_member_type_name field/> ${field.readerName}(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in<#rt>
         <#if field.needsAllocator || field.holderNeedsAllocator>

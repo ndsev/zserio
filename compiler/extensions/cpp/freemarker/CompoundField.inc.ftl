@@ -69,7 +69,7 @@ ${I}return <@field_member_type_name field/>(::zserio::NullOpt<#if field.holderNe
 <#macro compound_read_field_inner field compoundName indent packed>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <@compound_read_field_prolog field, compoundName, indent/>
-    <#if packed && needs_field_packing_context(field) && !field.array??>
+    <#if packed && uses_field_packing_context(field)>
         <#if field.compound?? || field.typeInfo.isBitmask>
             <#local compoundParamsArguments>
                 <#if field.compound??>
@@ -214,7 +214,7 @@ ${I}}
 <#macro compound_write_field_inner field compoundName indent packed>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <@compound_write_field_prolog field, compoundName, indent/>
-    <#if packed && needs_field_packing_context(field) && !field.array??>
+    <#if packed && uses_field_packing_context(field)>
         <#if field.compound?? || field.typeInfo.isBitmask>
 ${I}<@compound_get_field field/>.write(context.${field.getterName}(), out);
         <#elseif field.typeInfo.isEnum>
@@ -505,7 +505,7 @@ void ${compoundName}::<@array_expressions_name field.name/>::initializeElement(<
 
         static ${field.array.elementTypeInfo.typeFullName} create(<#if !withWriterCode>const </#if>${compoundName}& owner,
                 ::zserio::BitStreamReader& in, const ${types.allocator.default}& allocator, size_t index);
-    <#if needs_field_packing_context(field)>
+    <#if field.isPackable>
 
         static ${field.array.elementTypeInfo.typeFullName} create(<#if !withWriterCode>const </#if>${compoundName}& owner,
                 ${field.array.elementTypeInfo.typeFullName}::ZserioPackingContext& context, ::zserio::BitStreamReader& in,
@@ -533,7 +533,7 @@ ${field.array.elementTypeInfo.typeFullName} ${compoundName}::<@element_factory_n
     </#if>
             <#lt>, allocator);
 }
-    <#if needs_field_packing_context(field)>
+    <#if field.isPackable>
 
 ${field.array.elementTypeInfo.typeFullName} ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
         <#if !withWriterCode>const </#if>${compoundName}&<#t>
@@ -694,7 +694,7 @@ ${I}}
 <#macro compound_bitsizeof_field_inner field indent packed>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <@compound_align_field field, indent/>
-    <#if packed && needs_field_packing_context(field) && !field.array??>
+    <#if packed && uses_field_packing_context(field)>
         <#if field.compound?? || field.typeInfo.isBitmask>
 ${I}endBitPosition += <@compound_get_field field/>.bitSizeOf(context.${field.getterName}(), endBitPosition);
         <#elseif field.typeInfo.isEnum>
@@ -760,7 +760,7 @@ ${I}            static_cast<${field.offset.typeInfo.typeFullName}>(endBitPositio
 ${I}    ${field.offset.setter};
 ${I}}
     </#if>
-    <#if packed && needs_field_packing_context(field) && !field.array??>
+    <#if packed && uses_field_packing_context(field)>
         <#if field.compound?? || field.typeInfo.isBitmask>
 ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(context.${field.getterName}(), endBitPosition);
         <#elseif field.typeInfo.isEnum>
@@ -1030,7 +1030,7 @@ ${I}${field.typeInfo.typeFullName} <#t>
 
 <#macro compound_init_packing_context_field field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
-    <#if needs_field_packing_context(field) && !field.array??>
+    <#if uses_field_packing_context(field)>
         <#if field.isExtended>
 ${I}if (${field.isPresentIndicatorName}())
 ${I}{
@@ -1078,7 +1078,7 @@ ${I}context.${field.getterName}().init<<@array_traits_type_name field/>>(<#rt>
 </#macro>
 
 <#macro compound_declare_packing_context fieldList hasChoiceTag=false>
-    <#if hasChoiceTag || has_field_with_packing_context(fieldList)>
+    <#if hasChoiceTag || hasPackableField>
 
         <#if withCodeComments>
     /**
@@ -1093,8 +1093,15 @@ ${I}context.${field.getterName}().init<<@array_traits_type_name field/>>(<#rt>
         ::zserio::DeltaContext& getChoiceTag() { return m_choiceTag; }
             </#if>
             <#list fieldList as field>
-                <#if needs_field_packing_context(field) && !field.array??>
-        <@field_packing_context_type_name field/>& ${field.getterName}() { return <@field_member_name field/>; }
+                <#if uses_field_packing_context(field)>
+        <@field_packing_context_type_name field/>& ${field.getterName}()
+        {
+            <#if field.optional?? && field.optional.isRecursive>
+                return *this;
+            <#else>
+                return <@field_member_name field/>;
+            </#if>
+        }
                 </#if>
             </#list>
 
@@ -1103,7 +1110,7 @@ ${I}context.${field.getterName}().init<<@array_traits_type_name field/>>(<#rt>
         ::zserio::DeltaContext m_choiceTag;
             </#if>
             <#list fieldList as field>
-                <#if needs_field_packing_context(field) && !field.array??>
+                <#if uses_field_packing_context(field) && !(field.optional?? && field.optional.isRecursive)>
         <@field_packing_context_type_name field/> <@field_member_name field/>;
                 </#if>
             </#list>
@@ -1248,24 +1255,8 @@ ${I}context.${field.getterName}().init<<@array_traits_type_name field/>>(<#rt>
     <#return numExtended>
 </#function>
 
-<#function needs_field_packing_context field>
-    <#if field.isPackable>
-        <#return true>
-    </#if>
-    <#return false>
-</#function>
-
-<#function has_field_with_packing_context fieldList>
-    <#list fieldList as field>
-        <#if needs_field_packing_context(field)>
-            <#return true>
-        </#if>
-    </#list>
-    <#return false>
-</#function>
-
 <#function uses_field_packing_context field>
-    <#if needs_field_packing_context(field) && !field.array??>
+    <#if field.isPackable && !field.array??>
         <#return true>
     </#if>
     <#return false>

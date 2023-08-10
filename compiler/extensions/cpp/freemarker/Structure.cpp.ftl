@@ -73,7 +73,7 @@
 </#if>
 <#macro read_constructor_field_initialization packed>
     <#list fieldList as field>
-        <@field_member_name field/>(${field.readerName}(<#if packed && needs_field_packing_context(field)>context, </#if>in<#rt>
+        <@field_member_name field/>(${field.readerName}(<#if packed && field.isPackable>context, </#if>in<#rt>
         <#if field.needsAllocator || field.holderNeedsAllocator>
                 , allocator<#t>
         </#if>
@@ -82,9 +82,9 @@
 </#macro>
 <#assign readConstructorInitMacroName><#if fieldList?has_content>read_constructor_field_initialization</#if></#assign>
 <@compound_read_constructor_definition compoundConstructorsData, readConstructorInitMacroName/>
-<#if has_field_with_packing_context(fieldList)>
+<#if hasPackableField>
 
-    <@compound_read_constructor_definition compoundConstructorsData, readConstructorInitMacroName, true/>
+<@compound_read_constructor_definition compoundConstructorsData, readConstructorInitMacroName, true/>
 </#if>
 
 <#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
@@ -318,7 +318,7 @@ void ${name}::${field.optional.resetterName}()
     </#if>
 </#list>
 <@compound_functions_definition name, compoundFunctionsData/>
-<#if has_field_with_packing_context(fieldList)>
+<#if hasPackableField>
 void ${name}::initPackingContext(${name}::ZserioPackingContext&<#if uses_packing_context(fieldList)> context</#if>) const
 {
     <#list fieldList as field>
@@ -341,7 +341,7 @@ size_t ${name}::bitSizeOf(size_t<#if fieldList?has_content> bitPosition</#if>) c
     return 0;
 </#if>
 }
-<#if has_field_with_packing_context(fieldList)>
+<#if hasPackableField>
 
 size_t ${name}::bitSizeOf(${name}::ZserioPackingContext&<#if uses_packing_context(fieldList)> context</#if>, <#rt>
         <#lt>size_t bitPosition) const
@@ -371,7 +371,7 @@ size_t ${name}::initializeOffsets(size_t bitPosition)
     return bitPosition;
     </#if>
 }
-    <#if has_field_with_packing_context(fieldList)>
+    <#if hasPackableField>
 
 size_t ${name}::initializeOffsets(${name}::ZserioPackingContext&<#if uses_packing_context(fieldList)> context</#if>, <#rt>
         <#lt>size_t bitPosition)
@@ -469,7 +469,7 @@ void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#
         </#list>
     </#if>
 }
-    <#if has_field_with_packing_context(fieldList)>
+    <#if hasPackableField>
 
 void ${name}::write(${name}::ZserioPackingContext&<#if uses_packing_context(fieldList)> context</#if>, <#rt>
         <#lt>::zserio::BitStreamWriter& out) const
@@ -504,7 +504,7 @@ void ${name}::write(${name}::ZserioPackingContext&<#if uses_packing_context(fiel
     </#if>
     <@compound_read_field field, name, 1/>
 }
-    <#if needs_field_packing_context(field)>
+    <#if field.isPackable>
 
 <@field_member_type_name field, name/> ${name}::${field.readerName}(<#rt>
         <#lt>${name}::ZserioPackingContext&<#if uses_field_packing_context(field)> context</#if>, <#rt>
