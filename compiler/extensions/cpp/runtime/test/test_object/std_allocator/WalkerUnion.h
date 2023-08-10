@@ -38,13 +38,9 @@ private:
 
         static ::test_object::std_allocator::WalkerNested create(WalkerUnion& owner,
                 ::zserio::BitStreamReader& in, const ::std::allocator<uint8_t>& allocator, size_t index);
-
-        static ::test_object::std_allocator::WalkerNested create(WalkerUnion& owner,
-                ::test_object::std_allocator::WalkerNested::ZserioPackingContext& context, ::zserio::BitStreamReader& in,
-                const ::std::allocator<uint8_t>& allocator, size_t index);
     };
 
-    using ZserioArrayType_nestedArray = ::zserio::Array<::zserio::vector<::test_object::std_allocator::WalkerNested>, ::zserio::ObjectArrayTraits<::test_object::std_allocator::WalkerNested, ZserioElementFactory_nestedArray>, ::zserio::ArrayType::AUTO>;
+    using ZserioArrayType_nestedArray = ::zserio::UnpackedArray<::zserio::vector<::test_object::std_allocator::WalkerNested>, ::zserio::ObjectArrayTraits<::test_object::std_allocator::WalkerNested, ZserioElementFactory_nestedArray>, ::zserio::ArrayType::AUTO>;
 
 public:
     using allocator_type = ::std::allocator<uint8_t>;
@@ -61,7 +57,10 @@ public:
     {
     public:
         ::zserio::DeltaContext& getChoiceTag() { return m_choiceTag; }
-        ::zserio::DeltaContext& getValue() { return m_value_; }
+        ::zserio::DeltaContext& getValue()
+        {
+                return m_value_;
+        }
 
     private:
         ::zserio::DeltaContext m_choiceTag;

@@ -32,6 +32,30 @@ namespace polymorphic_allocator
 
 class CreatorObject
 {
+public:
+
+    class ZserioPackingContext
+    {
+    public:
+        ::zserio::DeltaContext& getValue()
+        {
+                return m_value_;
+        }
+        ::test_object::polymorphic_allocator::CreatorNested::ZserioPackingContext& getNested()
+        {
+                return m_nested_;
+        }
+        ::test_object::polymorphic_allocator::CreatorNested::ZserioPackingContext& getOptionalNested()
+        {
+                return m_optionalNested_;
+        }
+
+    private:
+        ::zserio::DeltaContext m_value_;
+        ::test_object::polymorphic_allocator::CreatorNested::ZserioPackingContext m_nested_;
+        ::test_object::polymorphic_allocator::CreatorNested::ZserioPackingContext m_optionalNested_;
+    };
+
 private:
     class ZserioArrayExpressions_nestedArray
     {
@@ -56,27 +80,12 @@ private:
     };
 
     using ZserioArrayType_nestedArray = ::zserio::Array<::zserio::pmr::vector<::test_object::polymorphic_allocator::CreatorNested>, ::zserio::ObjectArrayTraits<::test_object::polymorphic_allocator::CreatorNested, ZserioElementFactory_nestedArray>, ::zserio::ArrayType::AUTO, ZserioArrayExpressions_nestedArray>;
-    using ZserioArrayType_textArray = ::zserio::Array<::zserio::pmr::vector<::zserio::pmr::string>, ::zserio::pmr::StringArrayTraits, ::zserio::ArrayType::AUTO>;
-    using ZserioArrayType_externArray = ::zserio::Array<::zserio::pmr::vector<::zserio::pmr::BitBuffer>, ::zserio::pmr::BitBufferArrayTraits, ::zserio::ArrayType::AUTO>;
-    using ZserioArrayType_bytesArray = ::zserio::Array<::zserio::pmr::vector<::zserio::pmr::vector<uint8_t>>, ::zserio::pmr::BytesArrayTraits, ::zserio::ArrayType::AUTO>;
+    using ZserioArrayType_textArray = ::zserio::UnpackedArray<::zserio::pmr::vector<::zserio::pmr::string>, ::zserio::pmr::StringArrayTraits, ::zserio::ArrayType::AUTO>;
+    using ZserioArrayType_externArray = ::zserio::UnpackedArray<::zserio::pmr::vector<::zserio::pmr::BitBuffer>, ::zserio::pmr::BitBufferArrayTraits, ::zserio::ArrayType::AUTO>;
+    using ZserioArrayType_bytesArray = ::zserio::UnpackedArray<::zserio::pmr::vector<::zserio::pmr::vector<uint8_t>>, ::zserio::pmr::BytesArrayTraits, ::zserio::ArrayType::AUTO>;
 
 public:
     using allocator_type = ::zserio::pmr::PropagatingPolymorphicAllocator<>;
-
-    class ZserioPackingContext
-    {
-    public:
-        ::zserio::DeltaContext& getValue() { return m_value_; }
-        ::test_object::polymorphic_allocator::CreatorNested::ZserioPackingContext& getNested() { return m_nested_; }
-        ::test_object::polymorphic_allocator::CreatorNested::ZserioPackingContext& getNestedArray() { return m_nestedArray_; }
-        ::test_object::polymorphic_allocator::CreatorNested::ZserioPackingContext& getOptionalNested() { return m_optionalNested_; }
-
-    private:
-        ::zserio::DeltaContext m_value_;
-        ::test_object::polymorphic_allocator::CreatorNested::ZserioPackingContext m_nested_;
-        ::test_object::polymorphic_allocator::CreatorNested::ZserioPackingContext m_nestedArray_;
-        ::test_object::polymorphic_allocator::CreatorNested::ZserioPackingContext m_optionalNested_;
-    };
 
     CreatorObject() noexcept :
             CreatorObject(allocator_type())

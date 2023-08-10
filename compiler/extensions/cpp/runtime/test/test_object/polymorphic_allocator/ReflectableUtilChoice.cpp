@@ -399,7 +399,7 @@ ReflectableUtilChoice::ChoiceTag ReflectableUtilChoice::choiceTag() const
     }
 }
 
-void ReflectableUtilChoice::initPackingContext(ReflectableUtilChoice::ZserioPackingContext& context) const
+void ReflectableUtilChoice::initPackingContext(ReflectableUtilChoice::ZserioPackingContext&) const
 {
     switch (getParam())
     {
@@ -430,7 +430,7 @@ size_t ReflectableUtilChoice::bitSizeOf(size_t bitPosition) const
     return endBitPosition - bitPosition;
 }
 
-size_t ReflectableUtilChoice::bitSizeOf(ReflectableUtilChoice::ZserioPackingContext& context, size_t bitPosition) const
+size_t ReflectableUtilChoice::bitSizeOf(ReflectableUtilChoice::ZserioPackingContext&, size_t bitPosition) const
 {
     size_t endBitPosition = bitPosition;
 
@@ -466,7 +466,7 @@ size_t ReflectableUtilChoice::initializeOffsets(size_t bitPosition)
     return endBitPosition;
 }
 
-size_t ReflectableUtilChoice::initializeOffsets(ReflectableUtilChoice::ZserioPackingContext& context, size_t bitPosition)
+size_t ReflectableUtilChoice::initializeOffsets(ReflectableUtilChoice::ZserioPackingContext&, size_t bitPosition)
 {
     size_t endBitPosition = bitPosition;
 
@@ -540,7 +540,7 @@ void ReflectableUtilChoice::write(::zserio::BitStreamWriter& out) const
     }
 }
 
-void ReflectableUtilChoice::write(ReflectableUtilChoice::ZserioPackingContext& context, ::zserio::BitStreamWriter& out) const
+void ReflectableUtilChoice::write(ReflectableUtilChoice::ZserioPackingContext&, ::zserio::BitStreamWriter& out) const
 {
     switch (getParam())
     {
@@ -571,7 +571,7 @@ void ReflectableUtilChoice::write(ReflectableUtilChoice::ZserioPackingContext& c
     }
 }
 
-::zserio::pmr::AnyHolder ReflectableUtilChoice::readObject(ReflectableUtilChoice::ZserioPackingContext& context,
+::zserio::pmr::AnyHolder ReflectableUtilChoice::readObject(ReflectableUtilChoice::ZserioPackingContext&,
         ::zserio::BitStreamReader& in, const allocator_type& allocator)
 {
     switch (getParam())

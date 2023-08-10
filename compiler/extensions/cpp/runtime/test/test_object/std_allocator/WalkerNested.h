@@ -24,6 +24,8 @@ namespace std_allocator
 class WalkerNested
 {
 public:
+
+public:
     using allocator_type = ::std::allocator<uint8_t>;
 
     WalkerNested() noexcept :

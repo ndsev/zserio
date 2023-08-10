@@ -58,7 +58,10 @@ public:
     {
     public:
         ::zserio::DeltaContext& getChoiceTag() { return m_choiceTag; }
-        ::zserio::DeltaContext& getValue() { return m_value_; }
+        ::zserio::DeltaContext& getValue()
+        {
+                return m_value_;
+        }
 
     private:
         ::zserio::DeltaContext m_choiceTag;

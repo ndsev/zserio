@@ -40,10 +40,22 @@ public:
     class ZserioPackingContext
     {
     public:
-        ::zserio::DeltaContext& getValue8() { return m_value8_; }
-        ::zserio::DeltaContext& getValue16() { return m_value16_; }
-        ::zserio::DeltaContext& getValue32() { return m_value32_; }
-        ::zserio::DeltaContext& getValue64() { return m_value64_; }
+        ::zserio::DeltaContext& getValue8()
+        {
+                return m_value8_;
+        }
+        ::zserio::DeltaContext& getValue16()
+        {
+                return m_value16_;
+        }
+        ::zserio::DeltaContext& getValue32()
+        {
+                return m_value32_;
+        }
+        ::zserio::DeltaContext& getValue64()
+        {
+                return m_value64_;
+        }
 
     private:
         ::zserio::DeltaContext m_value8_;
@@ -98,7 +110,6 @@ public:
 
     uint64_t getValue64() const;
     void setValue64(uint64_t value64_);
-
     void initPackingContext(ZserioPackingContext& context) const;
 
     size_t bitSizeOf(size_t bitPosition = 0) const;

@@ -26,16 +26,21 @@ namespace polymorphic_allocator
 class SerializeNested
 {
 public:
-    using allocator_type = ::zserio::pmr::PropagatingPolymorphicAllocator<>;
 
     class ZserioPackingContext
     {
     public:
-        ::zserio::DeltaContext& getOptionalValue() { return m_optionalValue_; }
+        ::zserio::DeltaContext& getOptionalValue()
+        {
+                return m_optionalValue_;
+        }
 
     private:
         ::zserio::DeltaContext m_optionalValue_;
     };
+
+public:
+    using allocator_type = ::zserio::pmr::PropagatingPolymorphicAllocator<>;
 
     SerializeNested() noexcept :
             SerializeNested(allocator_type())

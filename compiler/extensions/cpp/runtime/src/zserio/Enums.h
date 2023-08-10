@@ -110,11 +110,11 @@ const char* enumToString(T value)
 /**
  * Initializes packing context for the given enum item.
  *
- * \param contextNode Packing context node.
+ * \param context Packing context.
  * \param value Enum item.
  */
-template <typename PACKING_CONTEXT_NODE, typename T>
-void initPackingContext(PACKING_CONTEXT_NODE& contextNode, T value);
+template <typename PACKING_CONTEXT, typename T>
+void initPackingContext(PACKING_CONTEXT& context, T value);
 
 /**
  * Gets bit size of the given enum item.
@@ -133,13 +133,13 @@ size_t bitSizeOf(T value);
  *
  * Note that T can be varuint, so bitSizeOf cannot return constant value and depends on the concrete item.
  *
- * \param contextNode Packing context node.
+ * \param context Packing context.
  * \param value Enum item.
  *
  * \return Bit size of the enum item.
  */
-template <typename PACKING_CONTEXT_NODE, typename T>
-size_t bitSizeOf(PACKING_CONTEXT_NODE& contextNode, T value);
+template <typename PACKING_CONTEXT, typename T>
+size_t bitSizeOf(PACKING_CONTEXT& context, T value);
 
 /**
  * Initializes offsets for the enum item.
@@ -161,14 +161,14 @@ size_t initializeOffsets(size_t bitPosition, T value);
  * Note that T can be varuint, so initializeOffsets cannot return constant value and
  * depends on the concrete item.
  *
- * \param contextNode Packing context node.
+ * \param context Packing context.
  * \param bitPosition Current bit position.
  * \param value Enum item.
  *
  * \return Updated bit position which points to the first bit after the enum item.
  */
-template <typename PACKING_CONTEXT_NODE, typename T>
-size_t initializeOffsets(PACKING_CONTEXT_NODE& contextNode, size_t bitPosition, T value);
+template <typename PACKING_CONTEXT, typename T>
+size_t initializeOffsets(PACKING_CONTEXT& context, size_t bitPosition, T value);
 
 /**
  * Reads an enum item.
@@ -183,13 +183,13 @@ T read(BitStreamReader& in);
 /**
  * Reads an enum item which is inside a packed array.
  *
- * \param contextNode Packing context node.
+ * \param context Packing context.
  * \param in Bit stream reader.
  *
  * \return Enum item read from the bit stream.
  */
-template <typename T, typename PACKING_CONTEXT_NODE>
-T read(PACKING_CONTEXT_NODE& contextNode, BitStreamReader& in);
+template <typename T, typename PACKING_CONTEXT>
+T read(PACKING_CONTEXT& context, BitStreamReader& in);
 
 /**
  * Writes the enum item to the given bit stream.
@@ -203,12 +203,12 @@ void write(BitStreamWriter& out, T value);
 /**
  * Writes the enum item which is inside a packed array to the given bit stream.
  *
- * \param contextNode Packing context node.
+ * \param context Packing context.
  * \param out Bit stream writer.
  * \param value Enum item to write.
  */
-template <typename PACKING_CONTEXT_NODE, typename T>
-void write(PACKING_CONTEXT_NODE& contextNode, BitStreamWriter& out, T value);
+template <typename PACKING_CONTEXT, typename T>
+void write(PACKING_CONTEXT& context, BitStreamWriter& out, T value);
 
 /**
  * Appends any enumeration value to the exception's description.

@@ -31,20 +31,31 @@ namespace std_allocator
 class CreatorNested
 {
 public:
-    using allocator_type = ::std::allocator<uint8_t>;
 
     class ZserioPackingContext
     {
     public:
-        ::zserio::DeltaContext& getValue() { return m_value_; }
-        ::zserio::DeltaContext& getCreatorEnum() { return m_creatorEnum_; }
-        ::zserio::DeltaContext& getCreatorBitmask() { return m_creatorBitmask_; }
+        ::zserio::DeltaContext& getValue()
+        {
+                return m_value_;
+        }
+        ::zserio::DeltaContext& getCreatorEnum()
+        {
+                return m_creatorEnum_;
+        }
+        ::zserio::DeltaContext& getCreatorBitmask()
+        {
+                return m_creatorBitmask_;
+        }
 
     private:
         ::zserio::DeltaContext m_value_;
         ::zserio::DeltaContext m_creatorEnum_;
         ::zserio::DeltaContext m_creatorBitmask_;
     };
+
+public:
+    using allocator_type = ::std::allocator<uint8_t>;
 
     CreatorNested() noexcept :
             CreatorNested(allocator_type())

@@ -31,6 +31,30 @@ namespace std_allocator
 
 class CreatorObject
 {
+public:
+
+    class ZserioPackingContext
+    {
+    public:
+        ::zserio::DeltaContext& getValue()
+        {
+                return m_value_;
+        }
+        ::test_object::std_allocator::CreatorNested::ZserioPackingContext& getNested()
+        {
+                return m_nested_;
+        }
+        ::test_object::std_allocator::CreatorNested::ZserioPackingContext& getOptionalNested()
+        {
+                return m_optionalNested_;
+        }
+
+    private:
+        ::zserio::DeltaContext m_value_;
+        ::test_object::std_allocator::CreatorNested::ZserioPackingContext m_nested_;
+        ::test_object::std_allocator::CreatorNested::ZserioPackingContext m_optionalNested_;
+    };
+
 private:
     class ZserioArrayExpressions_nestedArray
     {
@@ -55,27 +79,12 @@ private:
     };
 
     using ZserioArrayType_nestedArray = ::zserio::Array<::zserio::vector<::test_object::std_allocator::CreatorNested>, ::zserio::ObjectArrayTraits<::test_object::std_allocator::CreatorNested, ZserioElementFactory_nestedArray>, ::zserio::ArrayType::AUTO, ZserioArrayExpressions_nestedArray>;
-    using ZserioArrayType_textArray = ::zserio::Array<::zserio::vector<::zserio::string<>>, ::zserio::StringArrayTraits, ::zserio::ArrayType::AUTO>;
-    using ZserioArrayType_externArray = ::zserio::Array<::zserio::vector<::zserio::BitBuffer>, ::zserio::BitBufferArrayTraits, ::zserio::ArrayType::AUTO>;
-    using ZserioArrayType_bytesArray = ::zserio::Array<::zserio::vector<::zserio::vector<uint8_t>>, ::zserio::BytesArrayTraits, ::zserio::ArrayType::AUTO>;
+    using ZserioArrayType_textArray = ::zserio::UnpackedArray<::zserio::vector<::zserio::string<>>, ::zserio::StringArrayTraits, ::zserio::ArrayType::AUTO>;
+    using ZserioArrayType_externArray = ::zserio::UnpackedArray<::zserio::vector<::zserio::BitBuffer>, ::zserio::BitBufferArrayTraits, ::zserio::ArrayType::AUTO>;
+    using ZserioArrayType_bytesArray = ::zserio::UnpackedArray<::zserio::vector<::zserio::vector<uint8_t>>, ::zserio::BytesArrayTraits, ::zserio::ArrayType::AUTO>;
 
 public:
     using allocator_type = ::std::allocator<uint8_t>;
-
-    class ZserioPackingContext
-    {
-    public:
-        ::zserio::DeltaContext& getValue() { return m_value_; }
-        ::test_object::std_allocator::CreatorNested::ZserioPackingContext& getNested() { return m_nested_; }
-        ::test_object::std_allocator::CreatorNested::ZserioPackingContext& getNestedArray() { return m_nestedArray_; }
-        ::test_object::std_allocator::CreatorNested::ZserioPackingContext& getOptionalNested() { return m_optionalNested_; }
-
-    private:
-        ::zserio::DeltaContext m_value_;
-        ::test_object::std_allocator::CreatorNested::ZserioPackingContext m_nested_;
-        ::test_object::std_allocator::CreatorNested::ZserioPackingContext m_nestedArray_;
-        ::test_object::std_allocator::CreatorNested::ZserioPackingContext m_optionalNested_;
-    };
 
     CreatorObject() noexcept :
             CreatorObject(allocator_type())

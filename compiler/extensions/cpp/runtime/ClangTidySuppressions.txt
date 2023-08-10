@@ -1,11 +1,11 @@
 # This is necessary for implementation. We intentionally store all possible array element types in 'uint64_t'
 # type to be able to implement delta compression.
-bugprone-signed-char-misuse:src/zserio/DeltaContext.h:119
-bugprone-signed-char-misuse:src/zserio/DeltaContext.h:136
-bugprone-signed-char-misuse:src/zserio/DeltaContext.h:199
-bugprone-signed-char-misuse:src/zserio/DeltaContext.h:235
-bugprone-signed-char-misuse:src/zserio/DeltaContext.h:360
-bugprone-signed-char-misuse:src/zserio/DeltaContext.h:385
+bugprone-signed-char-misuse:src/zserio/DeltaContext.h:95
+bugprone-signed-char-misuse:src/zserio/DeltaContext.h:112
+bugprone-signed-char-misuse:src/zserio/DeltaContext.h:175
+bugprone-signed-char-misuse:src/zserio/DeltaContext.h:211
+bugprone-signed-char-misuse:src/zserio/DeltaContext.h:336
+bugprone-signed-char-misuse:src/zserio/DeltaContext.h:361
 
 # This is necessary for implementation of low level implementation of Span and StringView to mimic standard
 # C++17 'std::span' and 'std::string_view' abstractions.
@@ -112,7 +112,6 @@ google-explicit-constructor:src/zserio/UniquePtr.h:57
 google-explicit-constructor:src/zserio/UniquePtr.h:68
 
 # This is necessary because of implementation. Zserio naturally supports recursion.
-misc-no-recursion:src/zserio/Array.h:1066
 misc-no-recursion:src/zserio/JsonParser.h:153
 misc-no-recursion:src/zserio/JsonParser.h:154
 misc-no-recursion:src/zserio/JsonParser.h:155

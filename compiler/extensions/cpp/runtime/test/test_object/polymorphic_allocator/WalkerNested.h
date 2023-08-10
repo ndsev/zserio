@@ -24,6 +24,8 @@ namespace polymorphic_allocator
 class WalkerNested
 {
 public:
+
+public:
     using allocator_type = ::zserio::pmr::PropagatingPolymorphicAllocator<>;
 
     WalkerNested() noexcept :

@@ -32,7 +32,6 @@ namespace polymorphic_allocator
 {
     return ::test_object::polymorphic_allocator::WalkerUnion(context, in, allocator);
 }
-
 ::test_object::polymorphic_allocator::WalkerUnion WalkerObject::ZserioElementFactory_optionalUnionArray::create(WalkerObject&,
         ::zserio::BitStreamReader& in, const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t)
 {
@@ -45,7 +44,6 @@ namespace polymorphic_allocator
 {
     return ::test_object::polymorphic_allocator::WalkerUnion(context, in, allocator);
 }
-
 WalkerObject::WalkerObject(const allocator_type& allocator) noexcept :
         m_areChildrenInitialized(false),
         m_identifier_(uint32_t()),
@@ -73,7 +71,7 @@ WalkerObject::WalkerObject(::zserio::BitStreamReader& in, const allocator_type& 
 WalkerObject::WalkerObject(WalkerObject::ZserioPackingContext& context, ::zserio::BitStreamReader& in, const allocator_type& allocator) :
         m_areChildrenInitialized(true),
         m_identifier_(readIdentifier(context, in)),
-        m_nested_(readNested(context, in, allocator)),
+        m_nested_(readNested(in, allocator)),
         m_text_(readText(in, allocator)),
         m_unionArray_(readUnionArray(context, in, allocator)),
         m_optionalUnionArray_(readOptionalUnionArray(context, in, allocator)),
@@ -756,10 +754,6 @@ void WalkerObject::setChoiceField(::test_object::polymorphic_allocator::WalkerCh
 void WalkerObject::initPackingContext(WalkerObject::ZserioPackingContext& context) const
 {
     context.getIdentifier().init<::zserio::StdIntArrayTraits<uint32_t>>(m_identifier_);
-    if (getIdentifier() != 0)
-    {
-        m_nested_.value().initPackingContext(context.getNested());
-    }
     context.getChoiceSelector().init<::zserio::StdIntArrayTraits<uint8_t>>(m_choiceSelector_);
     m_choiceField_.initPackingContext(context.getChoiceField());
 }
@@ -793,7 +787,7 @@ size_t WalkerObject::bitSizeOf(WalkerObject::ZserioPackingContext& context, size
     endBitPosition += context.getIdentifier().bitSizeOf<::zserio::StdIntArrayTraits<uint32_t>>(m_identifier_);
     if (getIdentifier() != 0)
     {
-        endBitPosition += m_nested_.value().bitSizeOf(context.getNested(), endBitPosition);
+        endBitPosition += m_nested_.value().bitSizeOf(endBitPosition);
     }
     endBitPosition += ::zserio::bitSizeOfString(m_text_);
     endBitPosition += m_unionArray_.bitSizeOfPacked(*this, endBitPosition);
@@ -837,7 +831,7 @@ size_t WalkerObject::initializeOffsets(WalkerObject::ZserioPackingContext& conte
     endBitPosition += context.getIdentifier().bitSizeOf<::zserio::StdIntArrayTraits<uint32_t>>(m_identifier_);
     if (getIdentifier() != 0)
     {
-        endBitPosition = m_nested_.value().initializeOffsets(context.getNested(), endBitPosition);
+        endBitPosition = m_nested_.value().initializeOffsets(endBitPosition);
     }
     endBitPosition += ::zserio::bitSizeOfString(m_text_);
     endBitPosition = m_unionArray_.initializeOffsetsPacked(*this, endBitPosition);
@@ -926,7 +920,7 @@ void WalkerObject::write(WalkerObject::ZserioPackingContext& context, ::zserio::
 
     if (getIdentifier() != 0)
     {
-        m_nested_.value().write(context.getNested(), out);
+        m_nested_.value().write(out);
     }
 
     out.writeString(m_text_);
@@ -975,16 +969,6 @@ uint32_t WalkerObject::readIdentifier(WalkerObject::ZserioPackingContext& contex
     return ::zserio::InplaceOptionalHolder<::test_object::polymorphic_allocator::WalkerNested>(::zserio::NullOpt);
 }
 
-::zserio::InplaceOptionalHolder<::test_object::polymorphic_allocator::WalkerNested> WalkerObject::readNested(WalkerObject::ZserioPackingContext& context, ::zserio::BitStreamReader& in, const allocator_type& allocator)
-{
-    if (getIdentifier() != 0)
-    {
-        return ::zserio::InplaceOptionalHolder<::test_object::polymorphic_allocator::WalkerNested>(::test_object::polymorphic_allocator::WalkerNested(context.getNested(), in, allocator));
-    }
-
-    return ::zserio::InplaceOptionalHolder<::test_object::polymorphic_allocator::WalkerNested>(::zserio::NullOpt);
-}
-
 ::zserio::pmr::string WalkerObject::readText(::zserio::BitStreamReader& in,
         const allocator_type& allocator)
 {
@@ -1000,7 +984,7 @@ WalkerObject::ZserioArrayType_unionArray WalkerObject::readUnionArray(::zserio::
     return readField;
 }
 
-WalkerObject::ZserioArrayType_unionArray WalkerObject::readUnionArray(WalkerObject::ZserioPackingContext& context, ::zserio::BitStreamReader& in, const allocator_type& allocator)
+WalkerObject::ZserioArrayType_unionArray WalkerObject::readUnionArray(WalkerObject::ZserioPackingContext&, ::zserio::BitStreamReader& in, const allocator_type& allocator)
 {
     ZserioArrayType_unionArray readField(allocator);
     readField.readPacked(*this, in);
@@ -1022,7 +1006,7 @@ WalkerObject::ZserioArrayType_unionArray WalkerObject::readUnionArray(WalkerObje
     return ::zserio::InplaceOptionalHolder<ZserioArrayType_optionalUnionArray>(::zserio::NullOpt);
 }
 
-::zserio::InplaceOptionalHolder<WalkerObject::ZserioArrayType_optionalUnionArray> WalkerObject::readOptionalUnionArray(WalkerObject::ZserioPackingContext& context, ::zserio::BitStreamReader& in, const allocator_type& allocator)
+::zserio::InplaceOptionalHolder<WalkerObject::ZserioArrayType_optionalUnionArray> WalkerObject::readOptionalUnionArray(WalkerObject::ZserioPackingContext&, ::zserio::BitStreamReader& in, const allocator_type& allocator)
 {
     if (in.readBool())
     {

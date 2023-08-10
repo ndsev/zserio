@@ -25,16 +25,21 @@ namespace polymorphic_allocator
 class ArrayObject
 {
 public:
-    using allocator_type = ::zserio::pmr::PropagatingPolymorphicAllocator<>;
 
     class ZserioPackingContext
     {
     public:
-        ::zserio::DeltaContext& getValue() { return m_value_; }
+        ::zserio::DeltaContext& getValue()
+        {
+                return m_value_;
+        }
 
     private:
         ::zserio::DeltaContext m_value_;
     };
+
+public:
+    using allocator_type = ::zserio::pmr::PropagatingPolymorphicAllocator<>;
 
     ArrayObject() noexcept :
             ArrayObject(allocator_type())

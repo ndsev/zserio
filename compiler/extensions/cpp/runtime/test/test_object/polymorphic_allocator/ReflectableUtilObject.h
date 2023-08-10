@@ -27,18 +27,26 @@ namespace polymorphic_allocator
 class ReflectableUtilObject
 {
 public:
-    using allocator_type = ::zserio::pmr::PropagatingPolymorphicAllocator<>;
 
     class ZserioPackingContext
     {
     public:
-        ::zserio::DeltaContext& getChoiceParam() { return m_choiceParam_; }
-        ::test_object::polymorphic_allocator::ReflectableUtilChoice::ZserioPackingContext& getReflectableUtilChoice() { return m_reflectableUtilChoice_; }
+        ::zserio::DeltaContext& getChoiceParam()
+        {
+                return m_choiceParam_;
+        }
+        ::test_object::polymorphic_allocator::ReflectableUtilChoice::ZserioPackingContext& getReflectableUtilChoice()
+        {
+                return m_reflectableUtilChoice_;
+        }
 
     private:
         ::zserio::DeltaContext m_choiceParam_;
         ::test_object::polymorphic_allocator::ReflectableUtilChoice::ZserioPackingContext m_reflectableUtilChoice_;
     };
+
+public:
+    using allocator_type = ::zserio::pmr::PropagatingPolymorphicAllocator<>;
 
     ReflectableUtilObject() noexcept :
             ReflectableUtilObject(allocator_type())

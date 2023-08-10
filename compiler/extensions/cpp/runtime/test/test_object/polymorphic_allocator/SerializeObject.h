@@ -27,18 +27,26 @@ namespace polymorphic_allocator
 class SerializeObject
 {
 public:
-    using allocator_type = ::zserio::pmr::PropagatingPolymorphicAllocator<>;
 
     class ZserioPackingContext
     {
     public:
-        ::zserio::DeltaContext& getParam() { return m_param_; }
-        ::test_object::polymorphic_allocator::SerializeNested::ZserioPackingContext& getNested() { return m_nested_; }
+        ::zserio::DeltaContext& getParam()
+        {
+                return m_param_;
+        }
+        ::test_object::polymorphic_allocator::SerializeNested::ZserioPackingContext& getNested()
+        {
+                return m_nested_;
+        }
 
     private:
         ::zserio::DeltaContext m_param_;
         ::test_object::polymorphic_allocator::SerializeNested::ZserioPackingContext m_nested_;
     };
+
+public:
+    using allocator_type = ::zserio::pmr::PropagatingPolymorphicAllocator<>;
 
     SerializeObject() noexcept :
             SerializeObject(allocator_type())

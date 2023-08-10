@@ -41,11 +41,6 @@ public:
 
     class ZserioPackingContext
     {
-    public:
-        ::zserio::DeltaContext& getArray() { return m_array_; }
-
-    private:
-        ::zserio::DeltaContext m_array_;
     };
 
     ReflectableUtilChoice() noexcept :
@@ -87,7 +82,6 @@ public:
     ::zserio::vector<uint32_t>& getArray();
     void setArray(const ::zserio::vector<uint32_t>& array_);
     void setArray(::zserio::vector<uint32_t>&& array_);
-
     void initPackingContext(ZserioPackingContext& context) const;
 
     size_t bitSizeOf(size_t bitPosition = 0) const;

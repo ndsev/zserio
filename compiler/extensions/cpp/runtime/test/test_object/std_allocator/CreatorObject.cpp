@@ -38,7 +38,6 @@ void CreatorObject::ZserioArrayExpressions_nestedArray::initializeElement(Creato
 {
     return ::test_object::std_allocator::CreatorNested(context, in, static_cast<uint32_t>(owner.getValue()), allocator);
 }
-
 CreatorObject::CreatorObject(const allocator_type& allocator) noexcept :
         m_areChildrenInitialized(false),
         m_value_(uint32_t()),
@@ -1295,7 +1294,7 @@ CreatorObject::ZserioArrayType_nestedArray CreatorObject::readNestedArray(::zser
     return readField;
 }
 
-CreatorObject::ZserioArrayType_nestedArray CreatorObject::readNestedArray(CreatorObject::ZserioPackingContext& context, ::zserio::BitStreamReader& in, const allocator_type& allocator)
+CreatorObject::ZserioArrayType_nestedArray CreatorObject::readNestedArray(CreatorObject::ZserioPackingContext&, ::zserio::BitStreamReader& in, const allocator_type& allocator)
 {
     ZserioArrayType_nestedArray readField(allocator);
     readField.readPacked(*this, in);

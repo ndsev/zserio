@@ -43,9 +43,18 @@ public:
     {
     public:
         ::zserio::DeltaContext& getChoiceTag() { return m_choiceTag; }
-        ::zserio::DeltaContext& getReflectableUtilEnum() { return m_reflectableUtilEnum_; }
-        ::zserio::DeltaContext& getReflectableUtilBitmask() { return m_reflectableUtilBitmask_; }
-        ::test_object::polymorphic_allocator::ReflectableUtilObject::ZserioPackingContext& getReflectableUtilObject() { return m_reflectableUtilObject_; }
+        ::zserio::DeltaContext& getReflectableUtilEnum()
+        {
+                return m_reflectableUtilEnum_;
+        }
+        ::zserio::DeltaContext& getReflectableUtilBitmask()
+        {
+                return m_reflectableUtilBitmask_;
+        }
+        ::test_object::polymorphic_allocator::ReflectableUtilObject::ZserioPackingContext& getReflectableUtilObject()
+        {
+                return m_reflectableUtilObject_;
+        }
 
     private:
         ::zserio::DeltaContext m_choiceTag;

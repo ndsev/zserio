@@ -24,7 +24,6 @@ namespace polymorphic_allocator
 {
     return ::test_object::polymorphic_allocator::WalkerNested(in, allocator);
 }
-
 WalkerUnion::WalkerUnion(const allocator_type& allocator) noexcept :
         m_choiceTag(UNDEFINED_CHOICE),
         m_objectChoice(allocator)
@@ -445,7 +444,7 @@ size_t WalkerUnion::bitSizeOf(WalkerUnion::ZserioPackingContext& context, size_t
         endBitPosition += ::zserio::bitSizeOfString(m_objectChoice.get<::zserio::pmr::string>());
         break;
     case CHOICE_nestedArray:
-        endBitPosition += m_objectChoice.get<ZserioArrayType_nestedArray>().bitSizeOfPacked(*this, endBitPosition);
+        endBitPosition += m_objectChoice.get<ZserioArrayType_nestedArray>().bitSizeOf(*this, endBitPosition);
         break;
     default:
         throw ::zserio::CppRuntimeException("No match in union WalkerUnion!");
@@ -493,7 +492,7 @@ size_t WalkerUnion::initializeOffsets(WalkerUnion::ZserioPackingContext& context
         endBitPosition += ::zserio::bitSizeOfString(m_objectChoice.get<::zserio::pmr::string>());
         break;
     case CHOICE_nestedArray:
-        endBitPosition = m_objectChoice.get<ZserioArrayType_nestedArray>().initializeOffsetsPacked(*this, endBitPosition);
+        endBitPosition = m_objectChoice.get<ZserioArrayType_nestedArray>().initializeOffsets(*this, endBitPosition);
         break;
     default:
         throw ::zserio::CppRuntimeException("No match in union WalkerUnion!");
@@ -576,7 +575,7 @@ void WalkerUnion::write(::zserio::BitStreamWriter& out) const
     }
 }
 
-void WalkerUnion::write(WalkerUnion::ZserioPackingContext}& context, ::zserio::BitStreamWriter& out) const
+void WalkerUnion::write(WalkerUnion::ZserioPackingContext& context, ::zserio::BitStreamWriter& out) const
 {
     context.getChoiceTag().write<::zserio::VarSizeArrayTraits>(out, static_cast<uint32_t>(m_choiceTag));
 
@@ -589,7 +588,7 @@ void WalkerUnion::write(WalkerUnion::ZserioPackingContext}& context, ::zserio::B
         out.writeString(m_objectChoice.get<::zserio::pmr::string>());
         break;
     case CHOICE_nestedArray:
-        m_objectChoice.get<ZserioArrayType_nestedArray>().writePacked(*this, out);
+        m_objectChoice.get<ZserioArrayType_nestedArray>().write(*this, out);
         break;
     default:
         throw ::zserio::CppRuntimeException("No match in union WalkerUnion!");
@@ -638,7 +637,7 @@ WalkerUnion::ChoiceTag WalkerUnion::readChoiceTag(WalkerUnion::ZserioPackingCont
     case CHOICE_nestedArray:
         {
             ZserioArrayType_nestedArray readField(allocator);
-            readField.readPacked(*this, in);
+            readField.read(*this, in);
 
             return ::zserio::pmr::AnyHolder(::std::move(readField), allocator);
         }

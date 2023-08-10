@@ -29,16 +29,21 @@ namespace polymorphic_allocator
 class ReflectableObject
 {
 public:
-    using allocator_type = ::zserio::pmr::PropagatingPolymorphicAllocator<>;
 
     class ZserioPackingContext
     {
     public:
-        ::test_object::polymorphic_allocator::ReflectableNested::ZserioPackingContext& getReflectableNested() { return m_reflectableNested_; }
+        ::test_object::polymorphic_allocator::ReflectableNested::ZserioPackingContext& getReflectableNested()
+        {
+                return m_reflectableNested_;
+        }
 
     private:
         ::test_object::polymorphic_allocator::ReflectableNested::ZserioPackingContext m_reflectableNested_;
     };
+
+public:
+    using allocator_type = ::zserio::pmr::PropagatingPolymorphicAllocator<>;
 
     ReflectableObject() noexcept :
             ReflectableObject(allocator_type())

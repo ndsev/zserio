@@ -26,16 +26,21 @@ namespace std_allocator
 class ReflectableNested
 {
 public:
-    using allocator_type = ::std::allocator<uint8_t>;
 
     class ZserioPackingContext
     {
     public:
-        ::zserio::DeltaContext& getValue() { return m_value_; }
+        ::zserio::DeltaContext& getValue()
+        {
+                return m_value_;
+        }
 
     private:
         ::zserio::DeltaContext m_value_;
     };
+
+public:
+    using allocator_type = ::std::allocator<uint8_t>;
 
     ReflectableNested() noexcept :
             ReflectableNested(allocator_type())

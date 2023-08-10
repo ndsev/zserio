@@ -597,7 +597,7 @@ void ReflectableUtilUnion::write(::zserio::BitStreamWriter& out) const
     }
 }
 
-void ReflectableUtilUnion::write(ReflectableUtilUnion::ZserioPackingContext}& context, ::zserio::BitStreamWriter& out) const
+void ReflectableUtilUnion::write(ReflectableUtilUnion::ZserioPackingContext& context, ::zserio::BitStreamWriter& out) const
 {
     context.getChoiceTag().write<::zserio::VarSizeArrayTraits>(out, static_cast<uint32_t>(m_choiceTag));
 

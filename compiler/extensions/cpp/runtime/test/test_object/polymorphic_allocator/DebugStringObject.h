@@ -24,6 +24,8 @@ namespace polymorphic_allocator
 class DebugStringObject
 {
 public:
+
+public:
     using allocator_type = ::zserio::pmr::PropagatingPolymorphicAllocator<>;
 
     DebugStringObject() noexcept :

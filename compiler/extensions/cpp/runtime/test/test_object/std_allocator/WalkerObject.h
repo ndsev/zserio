@@ -32,6 +32,30 @@ namespace std_allocator
 
 class WalkerObject
 {
+public:
+
+    class ZserioPackingContext
+    {
+    public:
+        ::zserio::DeltaContext& getIdentifier()
+        {
+                return m_identifier_;
+        }
+        ::zserio::DeltaContext& getChoiceSelector()
+        {
+                return m_choiceSelector_;
+        }
+        ::test_object::std_allocator::WalkerChoice::ZserioPackingContext& getChoiceField()
+        {
+                return m_choiceField_;
+        }
+
+    private:
+        ::zserio::DeltaContext m_identifier_;
+        ::zserio::DeltaContext m_choiceSelector_;
+        ::test_object::std_allocator::WalkerChoice::ZserioPackingContext m_choiceField_;
+    };
+
 private:
     class ZserioElementFactory_unionArray
     {
@@ -64,23 +88,6 @@ private:
 
 public:
     using allocator_type = ::std::allocator<uint8_t>;
-
-    class ZserioPackingContext
-    {
-    public:
-        ::zserio::DeltaContext& getIdentifier() { return m_identifier_; }
-        ::test_object::std_allocator::WalkerUnion::ZserioPackingContext& getUnionArray() { return m_unionArray_; }
-        ::test_object::std_allocator::WalkerUnion::ZserioPackingContext& getOptionalUnionArray() { return m_optionalUnionArray_; }
-        ::zserio::DeltaContext& getChoiceSelector() { return m_choiceSelector_; }
-        ::test_object::std_allocator::WalkerChoice::ZserioPackingContext& getChoiceField() { return m_choiceField_; }
-
-    private:
-        ::zserio::DeltaContext m_identifier_;
-        ::test_object::std_allocator::WalkerUnion::ZserioPackingContext m_unionArray_;
-        ::test_object::std_allocator::WalkerUnion::ZserioPackingContext m_optionalUnionArray_;
-        ::zserio::DeltaContext m_choiceSelector_;
-        ::test_object::std_allocator::WalkerChoice::ZserioPackingContext m_choiceField_;
-    };
 
     WalkerObject() noexcept :
             WalkerObject(allocator_type())
@@ -191,8 +198,6 @@ private:
             ::zserio::BitStreamReader& in);
     ::zserio::InplaceOptionalHolder<::test_object::std_allocator::WalkerNested> readNested(::zserio::BitStreamReader& in,
             const allocator_type& allocator);
-    ::zserio::InplaceOptionalHolder<::test_object::std_allocator::WalkerNested> readNested(ZserioPackingContext& context,
-            ::zserio::BitStreamReader& in, const allocator_type& allocator);
     ::zserio::string<> readText(::zserio::BitStreamReader& in,
             const allocator_type& allocator);
     ZserioArrayType_unionArray readUnionArray(::zserio::BitStreamReader& in,
