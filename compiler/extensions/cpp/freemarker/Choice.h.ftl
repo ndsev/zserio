@@ -34,7 +34,6 @@
 </#if>
 class ${name}
 {
-<@top_private_section_declarations name, fieldList/>
 public:
 <#if withCodeComments>
     /** Definition for allocator type. */
@@ -292,6 +291,7 @@ public:
 </#if>
 
 private:
+    <@private_section_declarations name, fieldList/>
 <#if fieldList?has_content>
     ${types.anyHolder.name} readObject(::zserio::BitStreamReader& in, const allocator_type& allocator);
     <#if hasPackableField>

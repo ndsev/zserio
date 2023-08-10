@@ -44,9 +44,6 @@ class ${name}
 {
 public:
     <@compound_declare_packing_context fieldList/>
-
-<@top_private_section_declarations name, fieldList/>
-public:
 <#if withCodeComments>
     /** Definition for allocator type. */
 </#if>
@@ -345,6 +342,7 @@ public:
 </#if>
 
 private:
+    <@private_section_declarations name, fieldList/>
 <#list fieldList as field>
     <@field_member_type_name field/> ${field.readerName}(::zserio::BitStreamReader& in<#rt>
     <#if field.needsAllocator || field.holderNeedsAllocator>

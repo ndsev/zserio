@@ -635,21 +635,14 @@ uint8_t ${compoundName}::<@element_bit_size_name field.name/>::get(<#rt>
     using <@array_typedef_name field/> = <@array_type_name field/>;
         </#if>
     </#list>
+    <#if fieldList?has_content>
+
+    </#if>
 </#macro>
 
-<#macro top_private_section_declarations compoundName fieldList>
-    <#local innerClasses><@inner_classes_declaration compoundName, fieldList/></#local>
-    <#local arraysTypedefs><@arrays_typedefs fieldList/></#local>
-    <#if innerClasses?has_content || arraysTypedefs?has_content>
-private:
-        <#if innerClasses?has_content>
-    ${innerClasses}<#t>
-        </#if>
-        <#if arraysTypedefs?has_content>
-    ${arraysTypedefs}<#t>
-
-        </#if>
-    </#if>
+<#macro private_section_declarations compoundName fieldList>
+    <@inner_classes_declaration compoundName, fieldList/>
+    <@arrays_typedefs fieldList/>
 </#macro>
 
 <#macro compound_align_field field indent>
