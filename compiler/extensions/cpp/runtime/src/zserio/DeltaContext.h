@@ -384,7 +384,7 @@ private:
     static const uint8_t IS_PACKED_FLAG = 0x02;
     static const uint8_t PROCESSING_STARTED_FLAG = 0x04;
 
-    uint64_t m_previousElement;
+    uint64_t m_previousElement = 0;
     uint8_t m_maxBitNumber = 0;
     uint8_t m_flags = 0x00;
 

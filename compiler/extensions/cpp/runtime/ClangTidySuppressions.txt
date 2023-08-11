@@ -68,9 +68,6 @@ cppcoreguidelines-pro-bounds-pointer-arithmetic:src/zserio/BitBuffer.h:262
 cppcoreguidelines-pro-type-member-init:src/zserio/BitStreamWriter.h:71
 # This is aligned storage which we want to leave uninitialized.
 cppcoreguidelines-pro-type-member-init:src/zserio/OptionalHolder.h:534
-# This member in the following two use cases is checked by implementation (lazy initialization).
-cppcoreguidelines-pro-type-member-init:src/zserio/DeltaContext.h:62
-cppcoreguidelines-pro-type-member-init:src/zserio/DeltaContext.h:69
 
 # This is necessary for implementation of low level implementation of AnyHolder and OptionalHolder to mimic
 # standard C++17 'any' and 'optional' abstractions.
