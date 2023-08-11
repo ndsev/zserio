@@ -36,9 +36,9 @@ TEST_F(PackedArrayUnionHasNoPackableFieldTest, writeRead)
 
     auto& array3 = packedArrayUnionHasNoPackableField.getArray3();
     array3.resize(3);
-    array3[0].setField1(4.0f);
-    array3[1].setField1(1.0f);
-    array3[2].setField1(0.0f);
+    array3[0].setField1(4.0F);
+    array3[1].setField1(1.0F);
+    array3[2].setField1(0.0F);
 
     zserio::serializeToFile(packedArrayUnionHasNoPackableField, BLOB_NAME);
     auto readPackedArrayUnionHasNoPackableField =

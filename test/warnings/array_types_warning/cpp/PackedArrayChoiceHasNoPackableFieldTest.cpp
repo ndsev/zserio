@@ -43,11 +43,11 @@ TEST_F(PackedArrayChoiceHasNoPackableFieldTest, writeRead)
     auto& array4 = packedArrayChoiceHasNoPackableField.getArray4();
     array4.resize(3);
     array4[0].initialize(true);
-    array4[0].setField1(4.0f);
+    array4[0].setField1(4.0F);
     array4[1].initialize(true);
-    array4[1].setField1(1.0f);
+    array4[1].setField1(1.0F);
     array4[2].initialize(true);
-    array4[2].setField1(0.0f);
+    array4[2].setField1(0.0F);
 
     zserio::serializeToFile(packedArrayChoiceHasNoPackableField, BLOB_NAME);
     auto readPackedArrayChoiceHasNoPackableField =

@@ -46,11 +46,11 @@ TEST_F(PackedArrayStructHasNoPackableFieldTest, writeRead)
     }});
 
     packedArrayStructHasNoPackableField.setArray4({{
-        StructWithoutPackable(4.0f, BitBuffer(vector_type<uint8_t>({0xF0}), 5), 0, "A",
+        StructWithoutPackable(4.0F, BitBuffer(vector_type<uint8_t>({0xF0}), 5), 0, "A",
                 {{0, 0, 0}}, {{true, false, true}}),
-        StructWithoutPackable(1.0f, BitBuffer(vector_type<uint8_t>({0xE0}), 5), 0, "B",
+        StructWithoutPackable(1.0F, BitBuffer(vector_type<uint8_t>({0xE0}), 5), 0, "B",
                 {{0, 0, 0}}, {{true, false, true}}),
-        StructWithoutPackable(0.0f, BitBuffer(vector_type<uint8_t>({0xD0}), 5), 0, "C",
+        StructWithoutPackable(0.0F, BitBuffer(vector_type<uint8_t>({0xD0}), 5), 0, "C",
                 {{0, 0, 0}}, {{true, false, true}})
     }});
 

@@ -11,6 +11,10 @@ namespace array_types_warning
 {
 namespace packed_array_template_has_no_packable_field
 {
+using allocator_type = T_u32::allocator_type;
+template <typename T>
+using vector_type = zserio::vector<T, allocator_type>;
+using string_type = zserio::string<allocator_type>;
 
 class PackedArrayTemplateHasNoPackableFieldTest : public ::testing::Test
 {
@@ -23,7 +27,7 @@ const std::string PackedArrayTemplateHasNoPackableFieldTest::BLOB_NAME_BASE =
 
 TEST_F(PackedArrayTemplateHasNoPackableFieldTest, writeReadU32)
 {
-    T_u32 u32({{0, 1, 2, 3, 4, 5}});
+    T_u32 u32(vector_type<uint32_t>{{0, 1, 2, 3, 4, 5}});
 
     const std::string blobName = BLOB_NAME_BASE + "_u32.blob";
     zserio::serializeToFile(u32, blobName);
@@ -33,7 +37,7 @@ TEST_F(PackedArrayTemplateHasNoPackableFieldTest, writeReadU32)
 
 TEST_F(PackedArrayTemplateHasNoPackableFieldTest, writeReadStr)
 {
-    T_str str({{"A", "B", "C", "D", "E", "F"}});
+    T_str str(vector_type<string_type>{{"A", "B", "C", "D", "E", "F"}});
 
     const std::string blobName = BLOB_NAME_BASE + "_str.blob";
     zserio::serializeToFile(str, blobName);
@@ -43,7 +47,7 @@ TEST_F(PackedArrayTemplateHasNoPackableFieldTest, writeReadStr)
 
 TEST_F(PackedArrayTemplateHasNoPackableFieldTest, writeReadPackable)
 {
-    T_packable packable({{
+    T_packable packable(vector_type<Packable>{{
         Packable(0, 4.0, "A"),
         Packable(1, 1.0, "B"),
         Packable(2, 0.0, "C"),
@@ -57,7 +61,7 @@ TEST_F(PackedArrayTemplateHasNoPackableFieldTest, writeReadPackable)
 
 TEST_F(PackedArrayTemplateHasNoPackableFieldTest, writeReadUnpackable)
 {
-    T_unpackable unpackable({{
+    T_unpackable unpackable(vector_type<Unpackable>{{
         Unpackable(4.0, "A"),
         Unpackable(1.0, "B"),
         Unpackable(0.0, "C"),
