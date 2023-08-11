@@ -23,12 +23,6 @@ struct BasicMethodNames
     // TODO[Mi-L@]: Since we don't know allocator name provided by user, we use just the fixed substring here
 
     // all compounds
-    static constexpr const char* CREATE_PACKING_CONTEXT_DECLARATION =
-            "static void createPackingContext(";
-    static constexpr const char* INIT_PACKING_CONTEXT_DECLARATION =
-            "void initPackingContext(";
-    static constexpr const char* BIT_SIZE_OF_PACKED_DECLARATION =
-            "size_t bitSizeOf(::zserio::BasicPackingContextNode<";
     static constexpr const char* TYPE_INFO_DECLARATION =
             "typeInfo();";
     static constexpr const char* REFLECTABLE_CONST_DECLARATION =
@@ -42,29 +36,31 @@ struct BasicMethodNames
     static constexpr const char* ITEM_TYPE_REFLECTABLE =
             "enumReflectable(::without_writer_code::ItemType value,";
     static constexpr const char* ITEM_TYPE_INIT_PACKING_CONTEXT_DECLARATION =
-            "void initPackingContext<::zserio::BasicPackingContextNode<";
+            "void initPackingContext<::zserio::DeltaContext";
     static constexpr const char* ITEM_TYPE_INIT_PACKING_CONTEXT_DEFINITION =
-            "void initPackingContext(::zserio::BasicPackingContextNode<";
+            "void initPackingContext(::zserio::DeltaContext";
     static constexpr const char* ITEM_TYPE_BIT_SIZE_OF_PACKED_DECLARATION =
-            "size_t bitSizeOf<::zserio::BasicPackingContextNode<";
+            "size_t bitSizeOf<::zserio::DeltaContext";
     static constexpr const char* ITEM_TYPE_BIT_SIZE_OF_PACKED_DEFINITION =
-            "size_t bitSizeOf(::zserio::BasicPackingContextNode<";
+            "size_t bitSizeOf(::zserio::DeltaContext";
     static constexpr const char* ITEM_TYPE_READ_PACKED_DECLARATION =
-            "ItemType read<::without_writer_code::ItemType, ::zserio::BasicPackingContextNode<";
+            "ItemType read<::without_writer_code::ItemType, ::zserio::DeltaContext>";
     static constexpr const char* ITEM_TYPE_READ_PACKED_DEFINITION =
-            "ItemType read(::zserio::BasicPackingContextNode<";
+            "ItemType read(::zserio::DeltaContext";
 
     // VersionAvailability
     static constexpr const char* VERSION_AVAILABILITY_READ_CTOR_PACKED_DECLARATION =
-            "VersionAvailability(::zserio::BasicPackingContextNode<";
+            "VersionAvailability(::zserio::DeltaContext";
     static constexpr const char* VERSION_AVAILABILITY_READ_CTOR_PACKED_DEFINITION =
-            "VersionAvailability::VersionAvailability(::zserio::BasicPackingContextNode<";
-    static constexpr const char* VERSION_AVAILABILITY_CREATE_PACKING_CONTEXT_DEFINITION =
-            "void VersionAvailability::createPackingContext(::zserio::BasicPackingContextNode<";
+            "VersionAvailability::VersionAvailability(::zserio::DeltaContext";
+    static constexpr const char* VERSION_AVAILABILITY_INIT_PACKING_CONTEXT_DECLARATION =
+            "void initPackingContext(::zserio::DeltaContext";
     static constexpr const char* VERSION_AVAILABILITY_INIT_PACKING_CONTEXT_DEFINITION =
-            "void VersionAvailability::initPackingContext(::zserio::BasicPackingContextNode<";
+            "void VersionAvailability::initPackingContext(::zserio::DeltaContext";
+    static constexpr const char* VERSION_AVAILABILITY_BIT_SIZE_OF_PACKED_DECLARATION =
+            "size_t bitSizeOf(::zserio::DeltaContext";
     static constexpr const char* VERSION_AVAILABILITY_BIT_SIZE_OF_PACKED_DEFINITION =
-            "size_t VersionAvailability::bitSizeOf(::zserio::BasicPackingContextNode<";
+            "size_t VersionAvailability::bitSizeOf(::zserio::DeltaContext";
     static constexpr const char* VERSION_AVAILABILITY_TYPE_INFO_DEFINITION =
             "VersionAvailability::typeInfo()";
     static constexpr const char* VERSION_AVAILABILITY_REFLECTABLE_DECLARATION =
@@ -78,15 +74,17 @@ struct BasicMethodNames
 
     // ExtraParamUnion
     static constexpr const char* EXTRA_PARAM_UNION_READ_CTOR_PACKED_DECLARATION =
-            "ExtraParamUnion(::zserio::BasicPackingContextNode<";
+            "ExtraParamUnion(ZserioPackingContext";
     static constexpr const char* EXTRA_PARAM_UNION_READ_CTOR_PACKED_DEFINITION =
-            "ExtraParamUnion::ExtraParamUnion(::zserio::BasicPackingContextNode<";
-    static constexpr const char* EXTRA_PARAM_UNION_CREATE_PACKING_CONTEXT_DEFINITION =
-            "void ExtraParamUnion::createPackingContext(::zserio::BasicPackingContextNode<";
+            "ExtraParamUnion::ExtraParamUnion(ExtraParamUnion::ZserioPackingContext";
+    static constexpr const char* EXTRA_PARAM_UNION_INIT_PACKING_CONTEXT_DECLARATION =
+            "void initPackingContext(ZserioPackingContext";
     static constexpr const char* EXTRA_PARAM_UNION_INIT_PACKING_CONTEXT_DEFINITION =
-            "void ExtraParamUnion::initPackingContext(::zserio::BasicPackingContextNode<";
+            "void ExtraParamUnion::initPackingContext(ExtraParamUnion::ZserioPackingContext";
+    static constexpr const char* EXTRA_PARAM_UNION_BIT_SIZE_OF_PACKED_DECLARATION =
+            "size_t bitSizeOf(ZserioPackingContext";
     static constexpr const char* EXTRA_PARAM_UNION_BIT_SIZE_OF_PACKED_DEFINITION =
-            "size_t ExtraParamUnion::bitSizeOf(::zserio::BasicPackingContextNode<";
+            "size_t ExtraParamUnion::bitSizeOf(ExtraParamUnion::ZserioPackingContext";
     static constexpr const char* EXTRA_PARAM_UNION_TYPE_INFO_DEFINITION =
             "ExtraParamUnion::typeInfo()";
     static constexpr const char* EXTRA_PARAM_UNION_REFLECTABLE_CONST_DEFINITION =
@@ -96,15 +94,17 @@ struct BasicMethodNames
 
     // Item
     static constexpr const char* ITEM_READ_CTOR_PACKED_DECLARATION =
-            "Item(::zserio::BasicPackingContextNode<";
+            "Item(ZserioPackingContext";
     static constexpr const char* ITEM_READ_CTOR_PACKED_DEFINITION =
-            "Item::Item(::zserio::BasicPackingContextNode<";
-    static constexpr const char* ITEM_CREATE_PACKING_CONTEXT_DEFINITION =
-            "void Item::createPackingContext(::zserio::BasicPackingContextNode<";
+            "Item::Item(Item::ZserioPackingContext";
+    static constexpr const char* ITEM_INIT_PACKING_CONTEXT_DECLARATION =
+            "void initPackingContext(ZserioPackingContext";
     static constexpr const char* ITEM_INIT_PACKING_CONTEXT_DEFINITION =
-            "void Item::initPackingContext(::zserio::BasicPackingContextNode<";
+            "void Item::initPackingContext(Item::ZserioPackingContext";
+    static constexpr const char* ITEM_BIT_SIZE_OF_PACKED_DECLARATION =
+            "size_t bitSizeOf(ZserioPackingContext";
     static constexpr const char* ITEM_BIT_SIZE_OF_PACKED_DEFINITION =
-            "size_t Item::bitSizeOf(::zserio::BasicPackingContextNode<";
+            "size_t Item::bitSizeOf(Item::ZserioPackingContext";
     static constexpr const char* ITEM_TYPE_INFO_DEFINITION =
             "Item::typeInfo()";
     static constexpr const char* ITEM_REFLECTABLE_CONST_DEFINITION =
@@ -114,15 +114,17 @@ struct BasicMethodNames
 
     // ItemChoice
     static constexpr const char* ITEM_CHOICE_READ_CTOR_PACKED_DECLARATION =
-            "ItemChoice(::zserio::BasicPackingContextNode<";
+            "ItemChoice(ZserioPackingContext";
     static constexpr const char* ITEM_CHOICE_READ_CTOR_PACKED_DEFINITION =
-            "ItemChoice::ItemChoice(::zserio::BasicPackingContextNode<";
-    static constexpr const char* ITEM_CHOICE_CREATE_PACKING_CONTEXT_DEFINITION =
-            "void ItemChoice::createPackingContext(::zserio::BasicPackingContextNode<";
+            "ItemChoice::ItemChoice(ItemChoice::ZserioPackingContext";
+    static constexpr const char* ITEM_CHOICE_INIT_PACKING_CONTEXT_DECLARATION =
+            "void initPackingContext(ZserioPackingContext";
     static constexpr const char* ITEM_CHOICE_INIT_PACKING_CONTEXT_DEFINITION =
-            "void ItemChoice::initPackingContext(::zserio::BasicPackingContextNode<";
+            "void ItemChoice::initPackingContext(ItemChoice::ZserioPackingContext";
+    static constexpr const char* ITEM_CHOICE_BIT_SIZE_OF_PACKED_DECLARATION =
+            "size_t bitSizeOf(ItemChoice::ZserioPackingContext";
     static constexpr const char* ITEM_CHOICE_BIT_SIZE_OF_PACKED_DEFINITION =
-            "size_t ItemChoice::bitSizeOf(::zserio::BasicPackingContextNode<";
+            "size_t ItemChoice::bitSizeOf(ItemChoice::ZserioPackingContext";
     static constexpr const char* ITEM_CHOICE_TYPE_INFO_DEFINITION =
             "ItemChoice::typeInfo()";
     static constexpr const char* ITEM_CHOICE_REFLECTABLE_CONST_DEFINITION =
@@ -132,15 +134,17 @@ struct BasicMethodNames
 
     // ItemChoiceHolder
     static constexpr const char* ITEM_CHOICE_HOLDER_READ_CTOR_PACKED_DECLARATION =
-            "ItemChoiceHolder(::zserio::BasicPackingContextNode<";
+            "ItemChoiceHolder(ZserioPackingContext";
     static constexpr const char* ITEM_CHOICE_HOLDER_READ_CTOR_PACKED_DEFINITION =
-            "ItemChoiceHolder::ItemChoiceHolder(::zserio::BasicPackingContextNode<";
-    static constexpr const char* ITEM_CHOICE_HOLDER_CREATE_PACKING_CONTEXT_DEFINITION =
-            "void ItemChoiceHolder::createPackingContext(::zserio::BasicPackingContextNode<";
+            "ItemChoiceHolder::ItemChoiceHolder(ItemChoiceHolder::ZserioPackingContext";
+    static constexpr const char* ITEM_CHOICE_HOLDER_INIT_PACKING_CONTEXT_DECLARATION =
+            "void initPackingContext(ZserioPackingContext";
     static constexpr const char* ITEM_CHOICE_HOLDER_INIT_PACKING_CONTEXT_DEFINITION =
-            "void ItemChoiceHolder::initPackingContext(::zserio::BasicPackingContextNode<";
+            "void ItemChoiceHolder::initPackingContext(ItemChoiceHolder::ZserioPackingContext";
+    static constexpr const char* ITEM_CHOICE_HOLDER_BIT_SIZE_OF_PACKED_DECLARATION =
+            "size_t bitSizeOf(ZserioPackingContext";
     static constexpr const char* ITEM_CHOICE_HOLDER_BIT_SIZE_OF_PACKED_DEFINITION =
-            "size_t ItemChoiceHolder::bitSizeOf(::zserio::BasicPackingContextNode<";
+            "size_t ItemChoiceHolder::bitSizeOf(ItemChoiceHolder::ZserioPackingContext";
     static constexpr const char* ITEM_CHOICE_HOLDER_TYPE_INFO_DEFINITION =
             "ItemChoiceHolder::typeInfo()";
     static constexpr const char* ITEM_CHOICE_HOLDER_REFLECTABLE_CONST_DEFINITION =
@@ -150,15 +154,17 @@ struct BasicMethodNames
 
     // Tile
     static constexpr const char* TILE_READ_CTOR_PACKED_DECLARATION =
-            "Tile(::zserio::BasicPackingContextNode<";
+            "Tile(ZserioPackingContext";
     static constexpr const char* TILE_READ_CTOR_PACKED_DEFINITION =
-            "Tile::Tile(::zserio::BasicPackingContextNode<";
-    static constexpr const char* TILE_CREATE_PACKING_CONTEXT_DEFINITION =
-            "void Tile::createPackingContext(::zserio::BasicPackingContextNode<";
+            "Tile::Tile(Tile::ZserioPackingContext";
+    static constexpr const char* TILE_INIT_PACKING_CONTEXT_DECLARATION =
+            "void initPackingContext(ZserioPackingContext";
     static constexpr const char* TILE_INIT_PACKING_CONTEXT_DEFINITION =
-            "void Tile::initPackingContext(::zserio::BasicPackingContextNode<";
+            "void Tile::initPackingContext(Tile::ZserioPackingContext";
+    static constexpr const char* TILE_BIT_SIZE_OF_PACKED_DECLARATION =
+            "size_t bitSizeOf(ZserioPackingContext";
     static constexpr const char* TILE_BIT_SIZE_OF_PACKED_DEFINITION =
-            "size_t Tile::bitSizeOf(::zserio::BasicPackingContextNode<";
+            "size_t Tile::bitSizeOf(Tile::ZserioPackingContext";
     static constexpr const char* TILE_TYPE_INFO_DEFINITION =
             "Tile::typeInfo()";
     static constexpr const char* TILE_REFLECTABLE_CONST_DEFINITION =
@@ -183,12 +189,6 @@ template <>
 struct BasicMethodNames<zserio::pmr::PropagatingPolymorphicAllocator<uint8_t>>
 {
     // all compounds
-    static constexpr const char* CREATE_PACKING_CONTEXT_DECLARATION =
-            "static void createPackingContext(::zserio::pmr::PackingContextNode& contextNode);";
-    static constexpr const char* INIT_PACKING_CONTEXT_DECLARATION =
-            "void initPackingContext(::zserio::pmr::PackingContextNode& contextNode) const;";
-    static constexpr const char* BIT_SIZE_OF_PACKED_DECLARATION =
-            "size_t bitSizeOf(::zserio::pmr::PackingContextNode& contextNode, size_t bitPosition) const;";
     static constexpr const char* TYPE_INFO_DECLARATION =
             "static const ::zserio::pmr::ITypeInfo& typeInfo();";
     static constexpr const char* REFLECTABLE_CONST_DECLARATION =
@@ -202,31 +202,33 @@ struct BasicMethodNames<zserio::pmr::PropagatingPolymorphicAllocator<uint8_t>>
     static constexpr const char* ITEM_TYPE_REFLECTABLE =
             ":zserio::pmr::IReflectablePtr enumReflectable(::without_writer_code::ItemType value,";
     static constexpr const char* ITEM_TYPE_INIT_PACKING_CONTEXT_DECLARATION =
-            "void initPackingContext<::zserio::pmr::PackingContextNode, ::without_writer_code::ItemType>";
+            "void initPackingContext<::zserio::DeltaContext, ::without_writer_code::ItemType>";
     static constexpr const char* ITEM_TYPE_INIT_PACKING_CONTEXT_DEFINITION =
-            "void initPackingContext(::zserio::pmr::PackingContextNode& contextNode, "
+            "void initPackingContext(::zserio::DeltaContext& context, "
                     "::without_writer_code::ItemType";
     static constexpr const char* ITEM_TYPE_BIT_SIZE_OF_PACKED_DECLARATION =
-            "size_t bitSizeOf<::zserio::pmr::PackingContextNode, ::without_writer_code::ItemType>";
+            "size_t bitSizeOf<::zserio::DeltaContext, ::without_writer_code::ItemType>";
     static constexpr const char* ITEM_TYPE_BIT_SIZE_OF_PACKED_DEFINITION =
-            "size_t bitSizeOf(::zserio::pmr::PackingContextNode& contextNode, "
+            "size_t bitSizeOf(::zserio::DeltaContext& context, "
                     "::without_writer_code::ItemType";
     static constexpr const char* ITEM_TYPE_READ_PACKED_DECLARATION =
-            "ItemType read<::without_writer_code::ItemType, ::zserio::pmr::PackingContextNode>";
+            "ItemType read<::without_writer_code::ItemType, ::zserio::DeltaContext>";
     static constexpr const char* ITEM_TYPE_READ_PACKED_DEFINITION =
-            "ItemType read(::zserio::pmr::PackingContextNode& contextNode, ";
+            "ItemType read(::zserio::DeltaContext& context, ";
 
     // VersionAvailability
     static constexpr const char* VERSION_AVAILABILITY_READ_CTOR_PACKED_DECLARATION =
-            "VersionAvailability(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamReader&";
+            "VersionAvailability(::zserio::DeltaContext& context, ::zserio::BitStreamReader&";
     static constexpr const char* VERSION_AVAILABILITY_READ_CTOR_PACKED_DEFINITION =
-            "VersionAvailability::VersionAvailability(::zserio::pmr::PackingContextNode& contextNode";
-    static constexpr const char* VERSION_AVAILABILITY_CREATE_PACKING_CONTEXT_DEFINITION =
-            "void VersionAvailability::createPackingContext(::zserio::pmr::PackingContextNode& contextNode";
+            "VersionAvailability::VersionAvailability(::zserio::DeltaContext& context";
+    static constexpr const char* VERSION_AVAILABILITY_INIT_PACKING_CONTEXT_DECLARATION =
+            "void initPackingContext(::zserio::DeltaContext& context";
     static constexpr const char* VERSION_AVAILABILITY_INIT_PACKING_CONTEXT_DEFINITION =
-            "void VersionAvailability::initPackingContext(::zserio::pmr::PackingContextNode& contextNode";
+            "void VersionAvailability::initPackingContext(::zserio::DeltaContext& context";
+    static constexpr const char* VERSION_AVAILABILITY_BIT_SIZE_OF_PACKED_DECLARATION =
+            "size_t bitSizeOf(::zserio::DeltaContext& context";
     static constexpr const char* VERSION_AVAILABILITY_BIT_SIZE_OF_PACKED_DEFINITION =
-            "size_t VersionAvailability::bitSizeOf(::zserio::pmr::PackingContextNode& contextNode";
+            "size_t VersionAvailability::bitSizeOf(::zserio::DeltaContext& context";
     static constexpr const char* VERSION_AVAILABILITY_TYPE_INFO_DEFINITION =
             "const ::zserio::pmr::ITypeInfo& VersionAvailability::typeInfo()";
     static constexpr const char* VERSION_AVAILABILITY_REFLECTABLE_DECLARATION =
@@ -241,15 +243,17 @@ struct BasicMethodNames<zserio::pmr::PropagatingPolymorphicAllocator<uint8_t>>
 
     // ExtraParamUnion
     static constexpr const char* EXTRA_PARAM_UNION_READ_CTOR_PACKED_DECLARATION =
-            "ExtraParamUnion(::zserio::pmr::PackingContextNode& contextNode,";
+            "ExtraParamUnion(ZserioPackingContext& context";
     static constexpr const char* EXTRA_PARAM_UNION_READ_CTOR_PACKED_DEFINITION =
-            "ExtraParamUnion::ExtraParamUnion(::zserio::pmr::PackingContextNode& contextNode";
-    static constexpr const char* EXTRA_PARAM_UNION_CREATE_PACKING_CONTEXT_DEFINITION =
-            "void ExtraParamUnion::createPackingContext(::zserio::pmr::PackingContextNode& contextNode";
+            "ExtraParamUnion::ExtraParamUnion(ExtraParamUnion::ZserioPackingContext& context";
+    static constexpr const char* EXTRA_PARAM_UNION_INIT_PACKING_CONTEXT_DECLARATION =
+            "void initPackingContext(ZserioPackingContext& context";
     static constexpr const char* EXTRA_PARAM_UNION_INIT_PACKING_CONTEXT_DEFINITION =
-            "void ExtraParamUnion::initPackingContext(::zserio::pmr::PackingContextNode& contextNode";
+            "void ExtraParamUnion::initPackingContext(ExtraParamUnion::ZserioPackingContext& context";
+    static constexpr const char* EXTRA_PARAM_UNION_BIT_SIZE_OF_PACKED_DECLARATION =
+            "size_t bitSizeOf(ZserioPackingContext& context";
     static constexpr const char* EXTRA_PARAM_UNION_BIT_SIZE_OF_PACKED_DEFINITION =
-            "size_t ExtraParamUnion::bitSizeOf(::zserio::pmr::PackingContextNode& contextNode";
+            "size_t ExtraParamUnion::bitSizeOf(ExtraParamUnion::ZserioPackingContext& context";
     static constexpr const char* EXTRA_PARAM_UNION_TYPE_INFO_DEFINITION =
             "const ::zserio::pmr::ITypeInfo& ExtraParamUnion::typeInfo()";
     static constexpr const char* EXTRA_PARAM_UNION_REFLECTABLE_CONST_DEFINITION =
@@ -259,15 +263,17 @@ struct BasicMethodNames<zserio::pmr::PropagatingPolymorphicAllocator<uint8_t>>
 
     // Item
     static constexpr const char* ITEM_READ_CTOR_PACKED_DECLARATION =
-            "Item(::zserio::pmr::PackingContextNode& contextNode,";
+            "Item(ZserioPackingContext& context";
     static constexpr const char* ITEM_READ_CTOR_PACKED_DEFINITION =
-            "Item::Item(::zserio::pmr::PackingContextNode& contextNode";
-    static constexpr const char* ITEM_CREATE_PACKING_CONTEXT_DEFINITION =
-            "void Item::createPackingContext(::zserio::pmr::PackingContextNode& contextNode";
+            "Item::Item(Item::ZserioPackingContext& context";
+    static constexpr const char* ITEM_INIT_PACKING_CONTEXT_DECLARATION =
+            "void initPackingContext(ZserioPackingContext& context";
     static constexpr const char* ITEM_INIT_PACKING_CONTEXT_DEFINITION =
-            "void Item::initPackingContext(::zserio::pmr::PackingContextNode& contextNode";
+            "void Item::initPackingContext(Item::ZserioPackingContext& context";
+    static constexpr const char* ITEM_BIT_SIZE_OF_PACKED_DECLARATION =
+            "size_t bitSizeOf(ZserioPackingContext& context";
     static constexpr const char* ITEM_BIT_SIZE_OF_PACKED_DEFINITION =
-            "size_t Item::bitSizeOf(::zserio::pmr::PackingContextNode& contextNode";
+            "size_t Item::bitSizeOf(Item::ZserioPackingContext& context";
     static constexpr const char* ITEM_TYPE_INFO_DEFINITION =
             "const ::zserio::pmr::ITypeInfo& Item::typeInfo()";
     static constexpr const char* ITEM_REFLECTABLE_CONST_DEFINITION =
@@ -277,15 +283,17 @@ struct BasicMethodNames<zserio::pmr::PropagatingPolymorphicAllocator<uint8_t>>
 
     // ItemChoice
     static constexpr const char* ITEM_CHOICE_READ_CTOR_PACKED_DECLARATION =
-            "ItemChoice(::zserio::pmr::PackingContextNode& contextNode,";
+            "ItemChoice(ZserioPackingContext& context";
     static constexpr const char* ITEM_CHOICE_READ_CTOR_PACKED_DEFINITION =
-            "ItemChoice::ItemChoice(::zserio::pmr::PackingContextNode& contextNode";
-    static constexpr const char* ITEM_CHOICE_CREATE_PACKING_CONTEXT_DEFINITION =
-            "void ItemChoice::createPackingContext(::zserio::pmr::PackingContextNode& contextNode";
+            "ItemChoice::ItemChoice(ItemChoice::ZserioPackingContext& context";
+    static constexpr const char* ITEM_CHOICE_INIT_PACKING_CONTEXT_DECLARATION =
+            "void initPackingContext(ZserioPackingContext& context";
     static constexpr const char* ITEM_CHOICE_INIT_PACKING_CONTEXT_DEFINITION =
-            "void ItemChoice::initPackingContext(::zserio::pmr::PackingContextNode& contextNode";
+            "void ItemChoice::initPackingContext(ItemChoice::ZserioPackingContext& context";
+    static constexpr const char* ITEM_CHOICE_BIT_SIZE_OF_PACKED_DECLARATION =
+            "size_t bitSizeOf(ZserioPackingContext& context";
     static constexpr const char* ITEM_CHOICE_BIT_SIZE_OF_PACKED_DEFINITION =
-            "size_t ItemChoice::bitSizeOf(::zserio::pmr::PackingContextNode& contextNode";
+            "size_t ItemChoice::bitSizeOf(ItemChoice::ZserioPackingContext& context";
     static constexpr const char* ITEM_CHOICE_TYPE_INFO_DEFINITION =
             "const ::zserio::pmr::ITypeInfo& ItemChoice::typeInfo()";
     static constexpr const char* ITEM_CHOICE_REFLECTABLE_CONST_DEFINITION =
@@ -295,15 +303,17 @@ struct BasicMethodNames<zserio::pmr::PropagatingPolymorphicAllocator<uint8_t>>
 
     // ItemChoiceHolder
     static constexpr const char* ITEM_CHOICE_HOLDER_READ_CTOR_PACKED_DECLARATION =
-            "ItemChoiceHolder(::zserio::pmr::PackingContextNode& contextNode,";
+            "ItemChoiceHolder(ZserioPackingContext& context";
     static constexpr const char* ITEM_CHOICE_HOLDER_READ_CTOR_PACKED_DEFINITION =
-            "ItemChoiceHolder::ItemChoiceHolder(::zserio::pmr::PackingContextNode& contextNode";
-    static constexpr const char* ITEM_CHOICE_HOLDER_CREATE_PACKING_CONTEXT_DEFINITION =
-            "void ItemChoiceHolder::createPackingContext(::zserio::pmr::PackingContextNode& contextNode";
+            "ItemChoiceHolder::ItemChoiceHolder(ItemChoiceHolder::ZserioPackingContext& context";
+    static constexpr const char* ITEM_CHOICE_HOLDER_INIT_PACKING_CONTEXT_DECLARATION =
+            "void initPackingContext(ZserioPackingContext& context";
     static constexpr const char* ITEM_CHOICE_HOLDER_INIT_PACKING_CONTEXT_DEFINITION =
-            "void ItemChoiceHolder::initPackingContext(::zserio::pmr::PackingContextNode& contextNode";
+            "void ItemChoiceHolder::initPackingContext(ItemChoiceHolder::ZserioPackingContext& context";
+    static constexpr const char* ITEM_CHOICE_HOLDER_BIT_SIZE_OF_PACKED_DECLARATION =
+            "size_t bitSizeOf(ZserioPackingContext& context";
     static constexpr const char* ITEM_CHOICE_HOLDER_BIT_SIZE_OF_PACKED_DEFINITION =
-            "size_t ItemChoiceHolder::bitSizeOf(::zserio::pmr::PackingContextNode& contextNode";
+            "size_t ItemChoiceHolder::bitSizeOf(ItemChoiceHolder::ZserioPackingContext& context";
     static constexpr const char* ITEM_CHOICE_HOLDER_TYPE_INFO_DEFINITION =
             "const ::zserio::pmr::ITypeInfo& ItemChoiceHolder::typeInfo()";
     static constexpr const char* ITEM_CHOICE_HOLDER_REFLECTABLE_CONST_DEFINITION =
@@ -313,15 +323,17 @@ struct BasicMethodNames<zserio::pmr::PropagatingPolymorphicAllocator<uint8_t>>
 
     // Tile
     static constexpr const char* TILE_READ_CTOR_PACKED_DECLARATION =
-            "Tile(::zserio::pmr::PackingContextNode& contextNode,";
+            "Tile(ZserioPackingContext& context";
     static constexpr const char* TILE_READ_CTOR_PACKED_DEFINITION =
-            "Tile::Tile(::zserio::pmr::PackingContextNode& contextNode";
-    static constexpr const char* TILE_CREATE_PACKING_CONTEXT_DEFINITION =
-            "void Tile::createPackingContext(::zserio::pmr::PackingContextNode& contextNode";
+            "Tile::Tile(Tile::ZserioPackingContext& context";
+    static constexpr const char* TILE_INIT_PACKING_CONTEXT_DECLARATION =
+            "void initPackingContext(ZserioPackingContext& context";
     static constexpr const char* TILE_INIT_PACKING_CONTEXT_DEFINITION =
-            "void Tile::initPackingContext(::zserio::pmr::PackingContextNode& contextNode";
+            "void Tile::initPackingContext(Tile::ZserioPackingContext& context";
+    static constexpr const char* TILE_BIT_SIZE_OF_PACKED_DECLARATION =
+            "size_t bitSizeOf(ZserioPackingContext& context";
     static constexpr const char* TILE_BIT_SIZE_OF_PACKED_DEFINITION =
-            "size_t Tile::bitSizeOf(::zserio::pmr::PackingContextNode& contextNode";
+            "size_t Tile::bitSizeOf(Tile::ZserioPackingContext& context";
     static constexpr const char* TILE_TYPE_INFO_DEFINITION =
             "const ::zserio::pmr::ITypeInfo& Tile::typeInfo()";
     static constexpr const char* TILE_REFLECTABLE_CONST_DEFINITION =
@@ -348,12 +360,6 @@ template <>
 struct BasicMethodNames<std::allocator<uint8_t>>
 {
     // all compounds
-    static constexpr const char* CREATE_PACKING_CONTEXT_DECLARATION =
-            "static void createPackingContext(::zserio::PackingContextNode& contextNode);";
-    static constexpr const char* INIT_PACKING_CONTEXT_DECLARATION =
-            "void initPackingContext(::zserio::PackingContextNode& contextNode) const;";
-    static constexpr const char* BIT_SIZE_OF_PACKED_DECLARATION =
-            "size_t bitSizeOf(::zserio::PackingContextNode& contextNode, size_t bitPosition) const;";
     static constexpr const char* TYPE_INFO_DECLARATION =
             "static const ::zserio::ITypeInfo& typeInfo();";
     static constexpr const char* REFLECTABLE_CONST_DECLARATION =
@@ -367,31 +373,33 @@ struct BasicMethodNames<std::allocator<uint8_t>>
     static constexpr const char* ITEM_TYPE_REFLECTABLE =
             "::zserio::IReflectablePtr enumReflectable(::without_writer_code::ItemType value,";
     static constexpr const char* ITEM_TYPE_INIT_PACKING_CONTEXT_DECLARATION =
-            "void initPackingContext<::zserio::PackingContextNode, ::without_writer_code::ItemType>";
+            "void initPackingContext<::zserio::DeltaContext, ::without_writer_code::ItemType>";
     static constexpr const char* ITEM_TYPE_INIT_PACKING_CONTEXT_DEFINITION =
-            "void initPackingContext(::zserio::PackingContextNode& contextNode, "
+            "void initPackingContext(::zserio::DeltaContext& context, "
                     "::without_writer_code::ItemType";
     static constexpr const char* ITEM_TYPE_BIT_SIZE_OF_PACKED_DECLARATION =
-            "size_t bitSizeOf<::zserio::PackingContextNode, ::without_writer_code::ItemType>";
+            "size_t bitSizeOf<::zserio::DeltaContext, ::without_writer_code::ItemType>";
     static constexpr const char* ITEM_TYPE_BIT_SIZE_OF_PACKED_DEFINITION =
-            "size_t bitSizeOf(::zserio::PackingContextNode& contextNode, "
+            "size_t bitSizeOf(::zserio::DeltaContext& context, "
                     "::without_writer_code::ItemType";
     static constexpr const char* ITEM_TYPE_READ_PACKED_DECLARATION =
-            "ItemType read<::without_writer_code::ItemType, ::zserio::PackingContextNode>";
+            "ItemType read<::without_writer_code::ItemType, ::zserio::DeltaContext>";
     static constexpr const char* ITEM_TYPE_READ_PACKED_DEFINITION =
-            "ItemType read(::zserio::PackingContextNode& contextNode, ";
+            "ItemType read(::zserio::DeltaContext& context, ";
 
     // VersionAvailability
     static constexpr const char* VERSION_AVAILABILITY_READ_CTOR_PACKED_DECLARATION =
-            "VersionAvailability(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader&";
+            "VersionAvailability(::zserio::DeltaContext& context, ::zserio::BitStreamReader&";
     static constexpr const char* VERSION_AVAILABILITY_READ_CTOR_PACKED_DEFINITION =
-            "VersionAvailability::VersionAvailability(::zserio::PackingContextNode& contextNode";
-    static constexpr const char* VERSION_AVAILABILITY_CREATE_PACKING_CONTEXT_DEFINITION =
-            "void VersionAvailability::createPackingContext(::zserio::PackingContextNode& contextNode";
+            "VersionAvailability::VersionAvailability(::zserio::DeltaContext& context";
+    static constexpr const char* VERSION_AVAILABILITY_INIT_PACKING_CONTEXT_DECLARATION =
+            "void initPackingContext(::zserio::DeltaContext& context";
     static constexpr const char* VERSION_AVAILABILITY_INIT_PACKING_CONTEXT_DEFINITION =
-            "void VersionAvailability::initPackingContext(::zserio::PackingContextNode& contextNode";
+            "void VersionAvailability::initPackingContext(::zserio::DeltaContext& context";
+    static constexpr const char* VERSION_AVAILABILITY_BIT_SIZE_OF_PACKED_DECLARATION =
+            "size_t bitSizeOf(::zserio::DeltaContext& context";
     static constexpr const char* VERSION_AVAILABILITY_BIT_SIZE_OF_PACKED_DEFINITION =
-            "size_t VersionAvailability::bitSizeOf(::zserio::PackingContextNode& contextNode";
+            "size_t VersionAvailability::bitSizeOf(::zserio::DeltaContext& context";
     static constexpr const char* VERSION_AVAILABILITY_TYPE_INFO_DEFINITION =
             "const ::zserio::ITypeInfo& VersionAvailability::typeInfo()";
     static constexpr const char* VERSION_AVAILABILITY_REFLECTABLE_DECLARATION =
@@ -406,15 +414,17 @@ struct BasicMethodNames<std::allocator<uint8_t>>
 
     // ExtraParamUnion
     static constexpr const char* EXTRA_PARAM_UNION_READ_CTOR_PACKED_DECLARATION =
-            "ExtraParamUnion(::zserio::PackingContextNode& contextNode,";
+            "ExtraParamUnion(ZserioPackingContext& context";
     static constexpr const char* EXTRA_PARAM_UNION_READ_CTOR_PACKED_DEFINITION =
-            "ExtraParamUnion::ExtraParamUnion(::zserio::PackingContextNode& contextNode";
-    static constexpr const char* EXTRA_PARAM_UNION_CREATE_PACKING_CONTEXT_DEFINITION =
-            "void ExtraParamUnion::createPackingContext(::zserio::PackingContextNode& contextNode";
+            "ExtraParamUnion::ExtraParamUnion(ExtraParamUnion::ZserioPackingContext& context";
+    static constexpr const char* EXTRA_PARAM_UNION_INIT_PACKING_CONTEXT_DECLARATION =
+            "void initPackingContext(ZserioPackingContext& context";
     static constexpr const char* EXTRA_PARAM_UNION_INIT_PACKING_CONTEXT_DEFINITION =
-            "void ExtraParamUnion::initPackingContext(::zserio::PackingContextNode& contextNode";
+            "void ExtraParamUnion::initPackingContext(ExtraParamUnion::ZserioPackingContext& context";
+    static constexpr const char* EXTRA_PARAM_UNION_BIT_SIZE_OF_PACKED_DECLARATION =
+            "size_t bitSizeOf(ZserioPackingContext& context";
     static constexpr const char* EXTRA_PARAM_UNION_BIT_SIZE_OF_PACKED_DEFINITION =
-            "size_t ExtraParamUnion::bitSizeOf(::zserio::PackingContextNode& contextNode";
+            "size_t ExtraParamUnion::bitSizeOf(ExtraParamUnion::ZserioPackingContext& context";
     static constexpr const char* EXTRA_PARAM_UNION_TYPE_INFO_DEFINITION =
             "const ::zserio::ITypeInfo& ExtraParamUnion::typeInfo()";
     static constexpr const char* EXTRA_PARAM_UNION_REFLECTABLE_CONST_DEFINITION =
@@ -424,15 +434,17 @@ struct BasicMethodNames<std::allocator<uint8_t>>
 
     // Item
     static constexpr const char* ITEM_READ_CTOR_PACKED_DECLARATION =
-            "Item(::zserio::PackingContextNode& contextNode,";
+            "Item(ZserioPackingContext& context";
     static constexpr const char* ITEM_READ_CTOR_PACKED_DEFINITION =
-            "Item::Item(::zserio::PackingContextNode& contextNode";
-    static constexpr const char* ITEM_CREATE_PACKING_CONTEXT_DEFINITION =
-            "void Item::createPackingContext(::zserio::PackingContextNode& contextNode";
+            "Item::Item(Item::ZserioPackingContext& context";
+    static constexpr const char* ITEM_INIT_PACKING_CONTEXT_DECLARATION =
+            "void initPackingContext(ZserioPackingContext& context";
     static constexpr const char* ITEM_INIT_PACKING_CONTEXT_DEFINITION =
-            "void Item::initPackingContext(::zserio::PackingContextNode& contextNode";
+            "void Item::initPackingContext(Item::ZserioPackingContext& context";
+    static constexpr const char* ITEM_BIT_SIZE_OF_PACKED_DECLARATION =
+            "size_t bitSizeOf(ZserioPackingContext& context";
     static constexpr const char* ITEM_BIT_SIZE_OF_PACKED_DEFINITION =
-            "size_t Item::bitSizeOf(::zserio::PackingContextNode& contextNode";
+            "size_t Item::bitSizeOf(Item::ZserioPackingContext& context";
     static constexpr const char* ITEM_TYPE_INFO_DEFINITION =
             "const ::zserio::ITypeInfo& Item::typeInfo()";
     static constexpr const char* ITEM_REFLECTABLE_CONST_DEFINITION =
@@ -442,15 +454,17 @@ struct BasicMethodNames<std::allocator<uint8_t>>
 
     // ItemChoice
     static constexpr const char* ITEM_CHOICE_READ_CTOR_PACKED_DECLARATION =
-            "ItemChoice(::zserio::PackingContextNode& contextNode,";
+            "ItemChoice(ZserioPackingContext& context";
     static constexpr const char* ITEM_CHOICE_READ_CTOR_PACKED_DEFINITION =
-            "ItemChoice::ItemChoice(::zserio::PackingContextNode& contextNode";
-    static constexpr const char* ITEM_CHOICE_CREATE_PACKING_CONTEXT_DEFINITION =
-            "void ItemChoice::createPackingContext(::zserio::PackingContextNode& contextNode";
+            "ItemChoice::ItemChoice(ItemChoice::ZserioPackingContext& context";
+    static constexpr const char* ITEM_CHOICE_INIT_PACKING_CONTEXT_DECLARATION =
+            "void initPackingContext(ZserioPackingContext& context";
     static constexpr const char* ITEM_CHOICE_INIT_PACKING_CONTEXT_DEFINITION =
-            "void ItemChoice::initPackingContext(::zserio::PackingContextNode& contextNode";
+            "void ItemChoice::initPackingContext(ItemChoice::ZserioPackingContext& context";
+    static constexpr const char* ITEM_CHOICE_BIT_SIZE_OF_PACKED_DECLARATION =
+            "size_t bitSizeOf(ZserioPackingContext& context";
     static constexpr const char* ITEM_CHOICE_BIT_SIZE_OF_PACKED_DEFINITION =
-            "size_t ItemChoice::bitSizeOf(::zserio::PackingContextNode& contextNode";
+            "size_t ItemChoice::bitSizeOf(ItemChoice::ZserioPackingContext& context";
     static constexpr const char* ITEM_CHOICE_TYPE_INFO_DEFINITION =
             "const ::zserio::ITypeInfo& ItemChoice::typeInfo()";
     static constexpr const char* ITEM_CHOICE_REFLECTABLE_CONST_DEFINITION =
@@ -460,15 +474,17 @@ struct BasicMethodNames<std::allocator<uint8_t>>
 
     // ItemChoiceHolder
     static constexpr const char* ITEM_CHOICE_HOLDER_READ_CTOR_PACKED_DECLARATION =
-            "ItemChoiceHolder(::zserio::PackingContextNode& contextNode,";
+            "ItemChoiceHolder(ZserioPackingContext& context";
     static constexpr const char* ITEM_CHOICE_HOLDER_READ_CTOR_PACKED_DEFINITION =
-            "ItemChoiceHolder::ItemChoiceHolder(::zserio::PackingContextNode& contextNode";
-    static constexpr const char* ITEM_CHOICE_HOLDER_CREATE_PACKING_CONTEXT_DEFINITION =
-            "void ItemChoiceHolder::createPackingContext(::zserio::PackingContextNode& contextNode";
+            "ItemChoiceHolder::ItemChoiceHolder(ItemChoiceHolder::ZserioPackingContext& context";
+    static constexpr const char* ITEM_CHOICE_HOLDER_INIT_PACKING_CONTEXT_DECLARATION =
+            "void initPackingContext(ZserioPackingContext& context";
     static constexpr const char* ITEM_CHOICE_HOLDER_INIT_PACKING_CONTEXT_DEFINITION =
-            "void ItemChoiceHolder::initPackingContext(::zserio::PackingContextNode& contextNode";
+            "void ItemChoiceHolder::initPackingContext(ItemChoiceHolder::ZserioPackingContext& context";
+    static constexpr const char* ITEM_CHOICE_HOLDER_BIT_SIZE_OF_PACKED_DECLARATION =
+            "size_t bitSizeOf(ZserioPackingContext& context";
     static constexpr const char* ITEM_CHOICE_HOLDER_BIT_SIZE_OF_PACKED_DEFINITION =
-            "size_t ItemChoiceHolder::bitSizeOf(::zserio::PackingContextNode& contextNode";
+            "size_t ItemChoiceHolder::bitSizeOf(ItemChoiceHolder::ZserioPackingContext& context";
     static constexpr const char* ITEM_CHOICE_HOLDER_TYPE_INFO_DEFINITION =
             "const ::zserio::ITypeInfo& ItemChoiceHolder::typeInfo()";
     static constexpr const char* ITEM_CHOICE_HOLDER_REFLECTABLE_CONST_DEFINITION =
@@ -478,15 +494,17 @@ struct BasicMethodNames<std::allocator<uint8_t>>
 
     // Tile
     static constexpr const char* TILE_READ_CTOR_PACKED_DECLARATION =
-            "Tile(::zserio::PackingContextNode& contextNode,";
+            "Tile(ZserioPackingContext& context";
     static constexpr const char* TILE_READ_CTOR_PACKED_DEFINITION =
-            "Tile::Tile(::zserio::PackingContextNode& contextNode";
-    static constexpr const char* TILE_CREATE_PACKING_CONTEXT_DEFINITION =
-            "void Tile::createPackingContext(::zserio::PackingContextNode& contextNode";
+            "Tile::Tile(Tile::ZserioPackingContext& context";
+    static constexpr const char* TILE_INIT_PACKING_CONTEXT_DECLARATION =
+            "void initPackingContext(ZserioPackingContext& context";
     static constexpr const char* TILE_INIT_PACKING_CONTEXT_DEFINITION =
-            "void Tile::initPackingContext(::zserio::PackingContextNode& contextNode";
+            "void Tile::initPackingContext(Tile::ZserioPackingContext& context";
+    static constexpr const char* TILE_BIT_SIZE_OF_PACKED_DECLARATION =
+            "size_t bitSizeOf(ZserioPackingContext& context";
     static constexpr const char* TILE_BIT_SIZE_OF_PACKED_DEFINITION =
-            "size_t Tile::bitSizeOf(::zserio::PackingContextNode& contextNode";
+            "size_t Tile::bitSizeOf(Tile::ZserioPackingContext& context";
     static constexpr const char* TILE_TYPE_INFO_DEFINITION =
             "const ::zserio::ITypeInfo& Tile::typeInfo()";
     static constexpr const char* TILE_REFLECTABLE_CONST_DEFINITION =
@@ -749,9 +767,7 @@ TEST_F(WithoutWriterCode, checkVersionAvailabilityMethods)
     assertMethodPresent(type, "VersionAvailability(VersionAvailability&&) = default;", nullptr);
     assertMethodPresent(type, "VersionAvailability& operator=(VersionAvailability&&) = default;", nullptr);
 
-    assertMethodPresent(type, MethodNames::CREATE_PACKING_CONTEXT_DECLARATION,
-            MethodNames::VERSION_AVAILABILITY_CREATE_PACKING_CONTEXT_DEFINITION);
-    assertMethodPresent(type, MethodNames::INIT_PACKING_CONTEXT_DECLARATION,
+    assertMethodPresent(type, MethodNames::VERSION_AVAILABILITY_INIT_PACKING_CONTEXT_DECLARATION,
             MethodNames::VERSION_AVAILABILITY_INIT_PACKING_CONTEXT_DEFINITION);
 
     assertMethodPresent(type, MethodNames::TYPE_INFO_DECLARATION,
@@ -763,7 +779,7 @@ TEST_F(WithoutWriterCode, checkVersionAvailabilityMethods)
     assertMethodPresent(type, "constexpr underlying_type getValue() const", nullptr);
     assertMethodPresent(type, "size_t bitSizeOf(size_t bitPosition = 0) const",
             "size_t VersionAvailability::bitSizeOf(size_t) const");
-    assertMethodPresent(type, MethodNames::BIT_SIZE_OF_PACKED_DECLARATION,
+    assertMethodPresent(type, MethodNames::VERSION_AVAILABILITY_BIT_SIZE_OF_PACKED_DECLARATION,
             MethodNames::VERSION_AVAILABILITY_BIT_SIZE_OF_PACKED_DEFINITION);
     assertMethodPresent(type, "uint32_t hashCode() const", "uint32_t VersionAvailability::hashCode() const");
     assertMethodPresent(type, MethodNames::TO_STRING_DECLARATION,
@@ -792,9 +808,7 @@ TEST_F(WithoutWriterCode, checkExtraParamUnionMethods)
     assertMethodPresent(type, "ExtraParamUnion(::zserio::PropagateAllocatorT,",
             "ExtraParamUnion::ExtraParamUnion(::zserio::PropagateAllocatorT,");
 
-    assertMethodPresent(type, MethodNames::CREATE_PACKING_CONTEXT_DECLARATION,
-            MethodNames::EXTRA_PARAM_UNION_CREATE_PACKING_CONTEXT_DEFINITION);
-    assertMethodPresent(type, MethodNames::INIT_PACKING_CONTEXT_DECLARATION,
+    assertMethodPresent(type, MethodNames::EXTRA_PARAM_UNION_INIT_PACKING_CONTEXT_DECLARATION,
             MethodNames::EXTRA_PARAM_UNION_INIT_PACKING_CONTEXT_DEFINITION);
 
     assertMethodPresent(type, MethodNames::TYPE_INFO_DECLARATION,
@@ -806,7 +820,7 @@ TEST_F(WithoutWriterCode, checkExtraParamUnionMethods)
     assertMethodPresent(type, "uint16_t getValue16(", "uint16_t ExtraParamUnion::getValue16(");
     assertMethodPresent(type, "uint32_t getValue32(", "uint32_t ExtraParamUnion::getValue32(");
     assertMethodPresent(type, "size_t bitSizeOf(", "size_t ExtraParamUnion::bitSizeOf(");
-    assertMethodPresent(type, MethodNames::BIT_SIZE_OF_PACKED_DECLARATION,
+    assertMethodPresent(type, MethodNames::EXTRA_PARAM_UNION_BIT_SIZE_OF_PACKED_DECLARATION,
             MethodNames::EXTRA_PARAM_UNION_BIT_SIZE_OF_PACKED_DEFINITION);
     assertMethodPresent(type, "bool operator==(", "bool ExtraParamUnion::operator==(");
     assertMethodPresent(type, "uint32_t hashCode(", "uint32_t ExtraParamUnion::hashCode(");
@@ -837,9 +851,7 @@ TEST_F(WithoutWriterCode, checkItemMethods)
     assertMethodPresent(type, "Item(::zserio::PropagateAllocatorT,",
             "Item::Item(::zserio::PropagateAllocatorT,");
 
-    assertMethodPresent(type, MethodNames::CREATE_PACKING_CONTEXT_DECLARATION,
-            MethodNames::ITEM_CREATE_PACKING_CONTEXT_DEFINITION);
-    assertMethodPresent(type, MethodNames::INIT_PACKING_CONTEXT_DECLARATION,
+    assertMethodPresent(type, MethodNames::ITEM_INIT_PACKING_CONTEXT_DECLARATION,
             MethodNames::ITEM_INIT_PACKING_CONTEXT_DEFINITION);
 
     assertMethodPresent(type, MethodNames::TYPE_INFO_DECLARATION,
@@ -854,7 +866,7 @@ TEST_F(WithoutWriterCode, checkItemMethods)
     assertMethodPresent(type, "& getExtraParam(", "& Item::getExtraParam(");
     assertMethodPresent(type, "bool isExtraParamUsed(", "bool Item::isExtraParamUsed(");
     assertMethodPresent(type, "size_t bitSizeOf(", "size_t Item::bitSizeOf(");
-    assertMethodPresent(type, MethodNames::BIT_SIZE_OF_PACKED_DECLARATION,
+    assertMethodPresent(type, MethodNames::ITEM_BIT_SIZE_OF_PACKED_DECLARATION,
             MethodNames::ITEM_BIT_SIZE_OF_PACKED_DEFINITION);
     assertMethodPresent(type, "bool operator==(", "bool Item::operator==(");
     assertMethodPresent(type, "uint32_t hashCode(", "uint32_t Item::hashCode(");
@@ -884,9 +896,7 @@ TEST_F(WithoutWriterCode, checkItemChoiceMethods)
     assertMethodPresent(type, "ItemChoice(::zserio::PropagateAllocatorT,",
             "ItemChoice::ItemChoice(::zserio::PropagateAllocatorT,");
 
-    assertMethodPresent(type, MethodNames::CREATE_PACKING_CONTEXT_DECLARATION,
-            MethodNames::ITEM_CHOICE_CREATE_PACKING_CONTEXT_DEFINITION);
-    assertMethodPresent(type, MethodNames::INIT_PACKING_CONTEXT_DECLARATION,
+    assertMethodPresent(type, MethodNames::ITEM_CHOICE_INIT_PACKING_CONTEXT_DECLARATION,
             MethodNames::ITEM_CHOICE_INIT_PACKING_CONTEXT_DEFINITION);
 
     assertMethodPresent(type, MethodNames::TYPE_INFO_DECLARATION,
@@ -901,7 +911,7 @@ TEST_F(WithoutWriterCode, checkItemChoiceMethods)
     assertMethodPresent(type, "Item& getItem(", "Item& ItemChoice::getItem(");
     assertMethodPresent(type, "uint16_t getParam(", "uint16_t ItemChoice::getParam(");
     assertMethodPresent(type, "size_t bitSizeOf(", "size_t ItemChoice::bitSizeOf(");
-    assertMethodPresent(type, MethodNames::BIT_SIZE_OF_PACKED_DECLARATION,
+    assertMethodPresent(type, MethodNames::ITEM_CHOICE_BIT_SIZE_OF_PACKED_DECLARATION,
             MethodNames::ITEM_CHOICE_BIT_SIZE_OF_PACKED_DEFINITION);
     assertMethodPresent(type, "bool operator==(", "bool ItemChoice::operator==(");
     assertMethodPresent(type, "uint32_t hashCode(", "uint32_t ItemChoice::hashCode(");
@@ -933,9 +943,7 @@ TEST_F(WithoutWriterCode, checkItemChoiceHolderMethods)
     assertMethodPresent(type, "ItemChoiceHolder(::zserio::PropagateAllocatorT,",
             "ItemChoiceHolder::ItemChoiceHolder(::zserio::PropagateAllocatorT,");
 
-    assertMethodPresent(type, MethodNames::CREATE_PACKING_CONTEXT_DECLARATION,
-            MethodNames::ITEM_CHOICE_HOLDER_CREATE_PACKING_CONTEXT_DEFINITION);
-    assertMethodPresent(type, MethodNames::INIT_PACKING_CONTEXT_DECLARATION,
+    assertMethodPresent(type, MethodNames::ITEM_CHOICE_HOLDER_INIT_PACKING_CONTEXT_DECLARATION,
             MethodNames::ITEM_CHOICE_HOLDER_INIT_PACKING_CONTEXT_DEFINITION);
 
     assertMethodPresent(type, MethodNames::TYPE_INFO_DECLARATION,
@@ -947,7 +955,7 @@ TEST_F(WithoutWriterCode, checkItemChoiceHolderMethods)
     assertMethodPresent(type, "bool getHasItem(", "bool ItemChoiceHolder::getHasItem(");
     assertMethodPresent(type, "ItemChoice& getItemChoice(", "ItemChoice& ItemChoiceHolder::getItemChoice(");
     assertMethodPresent(type, "size_t bitSizeOf(", "size_t ItemChoiceHolder::bitSizeOf(");
-    assertMethodPresent(type, MethodNames::BIT_SIZE_OF_PACKED_DECLARATION,
+    assertMethodPresent(type, MethodNames::ITEM_CHOICE_HOLDER_BIT_SIZE_OF_PACKED_DECLARATION,
             MethodNames::ITEM_CHOICE_HOLDER_BIT_SIZE_OF_PACKED_DEFINITION);
     assertMethodPresent(type, "bool operator==(", "bool ItemChoiceHolder::operator==(");
     assertMethodPresent(type, "uint32_t hashCode(", "uint32_t ItemChoiceHolder::hashCode(");
@@ -983,9 +991,7 @@ TEST_F(WithoutWriterCode, checkTileMethods)
     assertMethodPresent(type, "Tile(::zserio::PropagateAllocatorT,",
             "Tile::Tile(::zserio::PropagateAllocatorT,");
 
-    assertMethodPresent(type, MethodNames::CREATE_PACKING_CONTEXT_DECLARATION,
-            MethodNames::TILE_CREATE_PACKING_CONTEXT_DEFINITION);
-    assertMethodPresent(type, MethodNames::INIT_PACKING_CONTEXT_DECLARATION,
+    assertMethodPresent(type, MethodNames::TILE_INIT_PACKING_CONTEXT_DECLARATION,
             MethodNames::TILE_INIT_PACKING_CONTEXT_DEFINITION);
 
     assertMethodPresent(type, MethodNames::TYPE_INFO_DECLARATION,
@@ -1006,7 +1012,7 @@ TEST_F(WithoutWriterCode, checkTileMethods)
     assertMethodPresent(type, "& getOffsets() const", "& Tile::getOffsets() const");
     assertMethodPresent(type, "& getData() const", "& Tile::getData() const");
     assertMethodPresent(type, "size_t bitSizeOf(", "size_t Tile::bitSizeOf(");
-    assertMethodPresent(type, MethodNames::BIT_SIZE_OF_PACKED_DECLARATION,
+    assertMethodPresent(type, MethodNames::TILE_BIT_SIZE_OF_PACKED_DECLARATION,
             MethodNames::TILE_BIT_SIZE_OF_PACKED_DEFINITION);
     assertMethodPresent(type, "bool operator==(", "bool Tile::operator==");
     assertMethodPresent(type, "uint32_t hashCode(", "uint32_t Tile::hashCode(");
