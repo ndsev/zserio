@@ -1071,45 +1071,44 @@ ${I}context.${field.getterName}().init<<@array_traits_type_name field/>>(<#rt>
 </#macro>
 
 <#macro compound_declare_packing_context fieldList hasChoiceTag=false>
-    <#if hasChoiceTag || hasPackableField>
-
-        <#if withCodeComments>
-    /**
-     * Defines context structure which keeps additional data needed for packed arrays during compression.
-     */
-        </#if>
+    <#if withCodeComments>
+    /** Defines context structure which keeps additional data needed for packed arrays during compression. */
+    </#if>
     class ZserioPackingContext
     {
-        <#if hasChoiceTag || uses_packing_context(fieldList)>
+    <#if hasChoiceTag || uses_packing_context(fieldList)>
     public:
-            <#if hasChoiceTag>
-        ::zserio::DeltaContext& getChoiceTag() { return m_choiceTag; }
-            </#if>
-            <#list fieldList as field>
-                <#if uses_field_packing_context(field)>
+        <#if hasChoiceTag>
+        ::zserio::DeltaContext& getChoiceTag()
+        {
+            return m_choiceTag;
+        }
+
+        </#if>
+        <#list fieldList as field>
+            <#if uses_field_packing_context(field)>
         <@field_packing_context_type_name field/>& ${field.getterName}()
         {
-            <#if field.optional?? && field.optional.isRecursive>
-                return *this;
-            <#else>
-                return <@field_member_name field/>;
-            </#if>
+                <#if field.optional?? && field.optional.isRecursive>
+            return *this;
+                <#else>
+            return <@field_member_name field/>;
+                </#if>
         }
-                </#if>
-            </#list>
 
-    private:
-            <#if hasChoiceTag>
-        ::zserio::DeltaContext m_choiceTag;
             </#if>
-            <#list fieldList as field>
-                <#if uses_field_packing_context(field) && !(field.optional?? && field.optional.isRecursive)>
-        <@field_packing_context_type_name field/> <@field_member_name field/>;
-                </#if>
-            </#list>
+        </#list>
+    private:
+        <#if hasChoiceTag>
+        ::zserio::DeltaContext m_choiceTag;
         </#if>
-    };
+        <#list fieldList as field>
+            <#if uses_field_packing_context(field) && !(field.optional?? && field.optional.isRecursive)>
+        <@field_packing_context_type_name field/> <@field_member_name field/>;
+            </#if>
+        </#list>
     </#if>
+    };
 </#macro>
 
 <#function has_optional_field fieldList>

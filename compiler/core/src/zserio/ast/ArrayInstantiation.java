@@ -175,13 +175,9 @@ public class ArrayInstantiation extends TypeInstantiation
      */
     static boolean isTypePackable(ZserioType baseType)
     {
-        // unions are always packable due to choiceTag
-        if (baseType instanceof UnionType)
-            return true;
-
         // compound is packable if it contains at least one packable field
         if (baseType instanceof CompoundType)
-            return ((CompoundType)baseType).hasPackableField();
+            return ((CompoundType)baseType).isPackable();
 
         return isSimpleTypePackable(baseType);
     }
@@ -202,7 +198,7 @@ public class ArrayInstantiation extends TypeInstantiation
             if (elementBaseType instanceof CompoundType)
             {
                 final CompoundType elementCompoundType = (CompoundType)elementBaseType;
-                if (!elementCompoundType.hasPackableField())
+                if (!elementCompoundType.isPackable())
                 {
                     // in case of empty structures, we are not able to check correctness => such warning should
                     // be enabled explicitly by command line

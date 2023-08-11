@@ -143,11 +143,13 @@ public abstract class CompoundType extends TemplatableType
     }
 
     /**
-     * Check if this compound type or any of its subfields contains some packable field.
+     * Check if this compound type is packable.
+     *
+     * The compound type is packable if any of its subfields contains some packable field.
      *
      * @return True if this compound type contains some packable field.
      */
-    public boolean hasPackableField()
+    public boolean isPackable()
     {
         for (Field field : fields)
         {

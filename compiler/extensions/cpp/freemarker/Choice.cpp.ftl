@@ -45,7 +45,7 @@
 </#macro>
 <#assign readConstructorInitMacroName><#if fieldList?has_content>read_constructor_field_initialization</#if></#assign>
 <@compound_read_constructor_definition compoundConstructorsData, readConstructorInitMacroName/>
-<#if hasPackableField>
+<#if isPackable>
 
 <@compound_read_constructor_definition compoundConstructorsData, readConstructorInitMacroName, true/>
 </#if>
@@ -363,7 +363,7 @@ ${name}::ChoiceTag ${name}::choiceTag() const
     return UNDEFINED_CHOICE;
 </#if>
 }
-<#if hasPackableField>
+<#if isPackable>
 
 <#macro init_packing_context_member member packed index indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
@@ -405,7 +405,7 @@ size_t ${name}::bitSizeOf(size_t<#if fieldList?has_content> bitPosition</#if>) c
     return 0;
 </#if>
 }
-<#if hasPackableField>
+<#if isPackable>
 
 size_t ${name}::bitSizeOf(${name}::ZserioPackingContext&<#if uses_packing_context(fieldList)> context</#if>, <#rt>
         <#lt>size_t bitPosition) const
@@ -442,7 +442,7 @@ size_t ${name}::initializeOffsets(size_t bitPosition)
     return bitPosition;
     </#if>
 }
-    <#if hasPackableField>
+    <#if isPackable>
 
 size_t ${name}::initializeOffsets(${name}::ZserioPackingContext&<#if uses_packing_context(fieldList)> context</#if>, <#rt>
         <#lt>size_t bitPosition)
@@ -530,7 +530,7 @@ void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#
     <@choice_switch "choice_write_member", "choice_no_match", selectorExpression, 1/>
     </#if>
 }
-    <#if hasPackableField>
+    <#if isPackable>
 
 void ${name}::write(${name}::ZserioPackingContext&<#if uses_packing_context(fieldList)> context</#if>, <#rt>
         <#lt>::zserio::BitStreamWriter& out) const
@@ -559,7 +559,7 @@ ${types.anyHolder.name} ${name}::readObject(::zserio::BitStreamReader& in, const
 {
     <@choice_switch "choice_read_member", "choice_no_match", selectorExpression, 1/>
 }
-<#if hasPackableField>
+<#if isPackable>
 
 ${types.anyHolder.name} ${name}::readObject(${name}::ZserioPackingContext&<#if uses_packing_context(fieldList)> context</#if>,
         ::zserio::BitStreamReader& in, const allocator_type& allocator)

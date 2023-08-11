@@ -47,14 +47,16 @@
 <#macro read_constructor_field_initialization packed>
     <#if fieldList?has_content>
         m_choiceTag(readChoiceTag(<#if packed>context, </#if>in)),
-        m_objectChoice(readObject(<#if packed && hasPackableField>context, </#if>in, allocator))
+        m_objectChoice(readObject(<#if packed>context, </#if>in, allocator))
     <#else>
         m_choiceTag(UNDEFINED_CHOICE)
     </#if>
 </#macro>
 <@compound_read_constructor_definition compoundConstructorsData, "read_constructor_field_initialization"/>
+<#if isPackable>
 
 <@compound_read_constructor_definition compoundConstructorsData, "read_constructor_field_initialization", true/>
+</#if>
 
 <#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
 ${name}::${name}(const ${name}& other) :
@@ -351,11 +353,11 @@ ${name}::ChoiceTag ${name}::choiceTag() const
 {
     return m_choiceTag;
 }
+<#if isPackable>
 
 void ${name}::initPackingContext(${name}::ZserioPackingContext& context) const
 {
     context.getChoiceTag().init<${choiceTagArrayTraits}>(static_cast<uint32_t>(m_choiceTag));
-<#if fieldList?has_content>
 
     switch (m_choiceTag)
     {
@@ -367,8 +369,8 @@ void ${name}::initPackingContext(${name}::ZserioPackingContext& context) const
     default:
         throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
-</#if>
 }
+</#if>
 
 size_t ${name}::bitSizeOf(size_t<#if fieldList?has_content> bitPosition</#if>) const
 {
@@ -393,13 +395,13 @@ size_t ${name}::bitSizeOf(size_t<#if fieldList?has_content> bitPosition</#if>) c
     return 0;
 </#if>
 }
+<#if isPackable>
 
 size_t ${name}::bitSizeOf(${name}::ZserioPackingContext& context, size_t bitPosition) const
 {
     size_t endBitPosition = bitPosition;
 
     endBitPosition += context.getChoiceTag().bitSizeOf<${choiceTagArrayTraits}>(static_cast<uint32_t>(m_choiceTag));
-<#if fieldList?has_content>
 
     switch (m_choiceTag)
     {
@@ -411,10 +413,10 @@ size_t ${name}::bitSizeOf(${name}::ZserioPackingContext& context, size_t bitPosi
     default:
         throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
-</#if>
 
     return endBitPosition - bitPosition;
 }
+</#if>
 <#if withWriterCode>
 
 size_t ${name}::initializeOffsets(size_t bitPosition)
@@ -440,13 +442,13 @@ size_t ${name}::initializeOffsets(size_t bitPosition)
     return bitPosition;
     </#if>
 }
+    <#if isPackable>
 
 size_t ${name}::initializeOffsets(${name}::ZserioPackingContext& context, size_t bitPosition)
 {
     size_t endBitPosition = bitPosition;
 
     endBitPosition += context.getChoiceTag().bitSizeOf<${choiceTagArrayTraits}>(static_cast<uint32_t>(m_choiceTag));
-    <#if fieldList?has_content>
 
     switch (m_choiceTag)
     {
@@ -458,10 +460,10 @@ size_t ${name}::initializeOffsets(${name}::ZserioPackingContext& context, size_t
     default:
         throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
-    </#if>
 
     return endBitPosition;
 }
+    </#if>
 </#if>
 
 bool ${name}::operator==(const ${name}& other) const
@@ -538,11 +540,11 @@ void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#
     }
     </#if>
 }
+    <#if isPackable>
 
 void ${name}::write(${name}::ZserioPackingContext& context, ::zserio::BitStreamWriter& out) const
 {
     context.getChoiceTag().write<${choiceTagArrayTraits}>(out, static_cast<uint32_t>(m_choiceTag));
-    <#if fieldList?has_content>
 
     switch (m_choiceTag)
     {
@@ -554,8 +556,8 @@ void ${name}::write(${name}::ZserioPackingContext& context, ::zserio::BitStreamW
     default:
         throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
-    </#if>
 }
+    </#if>
 </#if>
 <#if fieldList?has_content>
 
@@ -587,7 +589,7 @@ ${types.anyHolder.name} ${name}::readObject(::zserio::BitStreamReader& in, const
         throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
 }
-<#if hasPackableField>
+<#if isPackable>
 
 ${types.anyHolder.name} ${name}::readObject(${name}::ZserioPackingContext&<#if uses_packing_context(fieldList)> context</#if>,
         ::zserio::BitStreamReader& in, const allocator_type& allocator)

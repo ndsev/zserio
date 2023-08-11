@@ -41,15 +41,6 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/array_types_warning/packed_array_template_has_no_packable_field/Unpackable.cpp
     ${ZSERIO_GEN_DIR}/array_types_warning/packed_array_template_has_no_packable_field/Unpackable.h
 
-    ${ZSERIO_GEN_DIR}/array_types_warning/packed_array_union_has_no_packable_field/PackedArrayUnionHasNoPackableField.cpp
-    ${ZSERIO_GEN_DIR}/array_types_warning/packed_array_union_has_no_packable_field/PackedArrayUnionHasNoPackableField.h
-    ${ZSERIO_GEN_DIR}/array_types_warning/packed_array_union_has_no_packable_field/StructWithPackable.cpp
-    ${ZSERIO_GEN_DIR}/array_types_warning/packed_array_union_has_no_packable_field/StructWithPackable.h
-    ${ZSERIO_GEN_DIR}/array_types_warning/packed_array_union_has_no_packable_field/StructWithPackableArray.cpp
-    ${ZSERIO_GEN_DIR}/array_types_warning/packed_array_union_has_no_packable_field/StructWithPackableArray.h
-    ${ZSERIO_GEN_DIR}/array_types_warning/packed_array_union_has_no_packable_field/UnionWithoutPackableField.cpp
-    ${ZSERIO_GEN_DIR}/array_types_warning/packed_array_union_has_no_packable_field/UnionWithoutPackableField.h
-
     ${ZSERIO_GEN_DIR}/array_types_warning/packed_array_unpackable_bool_element/PackedArrayUnpackableBoolElement.cpp
     ${ZSERIO_GEN_DIR}/array_types_warning/packed_array_unpackable_bool_element/PackedArrayUnpackableBoolElement.h
     ${ZSERIO_GEN_DIR}/array_types_warning/packed_array_unpackable_bool_element/TestBitmask.cpp
@@ -78,7 +69,7 @@ zserio_add_library(array_types_warning_zs
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
     ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
-    EXPECTED_WARNINGS 12
+    EXPECTED_WARNINGS 11
     ZSERIO_LOG_FILENAME zserio_log.txt
 )
 

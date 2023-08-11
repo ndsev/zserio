@@ -14,7 +14,7 @@
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/AllocatorPropagatingCopy.h>
-<#if hasPackableField>
+<#if isPackable>
 #include <zserio/DeltaContext.h>
 </#if>
 <#if withTypeInfoCode>
@@ -43,7 +43,10 @@
 class ${name}
 {
 public:
+<#if isPackable>
     <@compound_declare_packing_context fieldList/>
+
+</#if>
 <#if withCodeComments>
     /** Definition for allocator type. */
 </#if>
@@ -85,7 +88,7 @@ public:
 </#if>
 
     <@compound_read_constructor_declaration compoundConstructorsData/>
-<#if hasPackableField>
+<#if isPackable>
     <#if withCodeComments>
 
     </#if>
@@ -223,7 +226,7 @@ public:
     </#if>
 </#list>
     <@compound_functions_declaration compoundFunctionsData/>
-<#if hasPackableField>
+<#if isPackable>
 
     <#if withCodeComments>
     /**
@@ -247,7 +250,7 @@ public:
      */
 </#if>
     size_t bitSizeOf(size_t bitPosition = 0) const;
-<#if hasPackableField>
+<#if isPackable>
     <#if withCodeComments>
 
     /**
@@ -277,7 +280,7 @@ public:
      */
     </#if>
     size_t initializeOffsets(size_t bitPosition = 0);
-    <#if hasPackableField>
+    <#if isPackable>
         <#if withCodeComments>
 
     /**
@@ -325,7 +328,7 @@ public:
      */
     </#if>
     void write(::zserio::BitStreamWriter& out) const;
-    <#if hasPackableField>
+    <#if isPackable>
         <#if withCodeComments>
 
     /**

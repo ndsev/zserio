@@ -14,7 +14,9 @@
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/AllocatorPropagatingCopy.h>
+<#if isPackable>
 #include <zserio/DeltaContext.h>
+</#if>
 <#if !fieldList?has_content>
 #include <zserio/Array.h>
 </#if>
@@ -51,7 +53,10 @@ public:
 </#list>
         UNDEFINED_CHOICE = -1
     };
+<#if isPackable>
+
     <@compound_declare_packing_context fieldList, true/>
+</#if>
 <#if withWriterCode>
 
     <@compound_default_constructor compoundConstructorsData/>
@@ -60,10 +65,12 @@ public:
 </#if>
 
     <@compound_read_constructor_declaration compoundConstructorsData/>
-<#if withCodeComments>
+<#if isPackable>
+    <#if withCodeComments>
 
-</#if>
+    </#if>
     <@compound_read_constructor_declaration compoundConstructorsData, true/>
+</#if>
 
 <#if withCodeComments>
     /** Default destructor. */
@@ -165,8 +172,8 @@ public:
     <@compound_field_accessors_declaration field/>
 </#list>
     <@compound_functions_declaration compoundFunctionsData/>
-
-<#if withCodeComments>
+<#if isPackable>
+    <#if withCodeComments>
 
     /**
      * Initializes context for packed arrays.
@@ -175,8 +182,9 @@ public:
      *
      * \param context Context for packed arrays.
      */
-</#if>
+    </#if>
     void initPackingContext(ZserioPackingContext& context) const;
+</#if>
 
 <#if withCodeComments>
     /**
@@ -188,7 +196,8 @@ public:
      */
 </#if>
     size_t bitSizeOf(size_t bitPosition = 0) const;
-<#if withCodeComments>
+<#if isPackable>
+    <#if withCodeComments>
 
     /**
      * Calculates size of the serialized object in bits for packed arrays.
@@ -200,8 +209,9 @@ public:
      *
      * \return Number of bits which are needed to store serialized object.
      */
-</#if>
+    </#if>
     size_t bitSizeOf(ZserioPackingContext& context, size_t bitPosition) const;
+</#if>
 <#if withWriterCode>
 
     <#if withCodeComments>
@@ -216,7 +226,8 @@ public:
      */
     </#if>
     size_t initializeOffsets(size_t bitPosition = 0);
-    <#if withCodeComments>
+    <#if isPackable>
+        <#if withCodeComments>
 
     /**
      * Initializes offsets in this Zserio type and in all its fields for packed arrays.
@@ -229,8 +240,9 @@ public:
      *
      * \return Bit stream position calculated from zero updated to the first byte after serialized object.
      */
-    </#if>
+        </#if>
     size_t initializeOffsets(ZserioPackingContext& context, size_t bitPosition);
+    </#if>
 </#if>
 
 <#if withCodeComments>
@@ -262,7 +274,8 @@ public:
      */
     </#if>
     void write(::zserio::BitStreamWriter& out) const;
-    <#if withCodeComments>
+    <#if isPackable>
+        <#if withCodeComments>
 
     /**
      * Serializes this Zserio object to the bit stream for packed arrays.
@@ -272,8 +285,9 @@ public:
      * \param context Context for packed arrays.
      * \param out Bit stream writer where to serialize this Zserio object.
      */
-    </#if>
+        </#if>
     void write(ZserioPackingContext& context, ::zserio::BitStreamWriter& out) const;
+    </#if>
 </#if>
 
 private:
@@ -282,7 +296,7 @@ private:
     ChoiceTag readChoiceTag(::zserio::BitStreamReader& in);
     ChoiceTag readChoiceTag(ZserioPackingContext& context, ::zserio::BitStreamReader& in);
     ${types.anyHolder.name} readObject(::zserio::BitStreamReader& in, const allocator_type& allocator);
-    <#if hasPackableField>
+    <#if isPackable>
     ${types.anyHolder.name} readObject(ZserioPackingContext& context, ::zserio::BitStreamReader& in,
             const allocator_type& allocator);
     </#if>

@@ -32,7 +32,7 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         compoundConstructorsData = new CompoundConstructorTemplateData(compoundType, compoundParametersData,
                 fieldList);
 
-        hasPackableField = compoundType.hasPackableField();
+        isPackable = compoundType.isPackable();
 
         // TODO[Mi-L@] Similar logic is done in freemarker template function (has_field_with_initialization).
         //             Try to unify the logic!
@@ -61,9 +61,9 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         return compoundConstructorsData;
     }
 
-    public boolean getHasPackableField()
+    public boolean getIsPackable()
     {
-        return hasPackableField;
+        return isPackable;
     }
 
     public boolean getNeedsChildrenInitialization()
@@ -81,7 +81,7 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
     private final CompoundFunctionTemplateData compoundFunctionsData;
     private final CompoundConstructorTemplateData compoundConstructorsData;
 
-    private final boolean hasPackableField;
+    private final boolean isPackable;
     private final boolean needsChildrenInitialization;
 
     private final TemplateInstantiationTemplateData templateInstantiation;
