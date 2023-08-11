@@ -37,6 +37,17 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_bitfield_param/ParameterizedBitfieldLength.cpp
     ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_bitfield_param/ParameterizedBitfieldLength.h
 
+    ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_empty_compounds/EmptyChoice.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_empty_compounds/EmptyChoice.h
+    ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_empty_compounds/EmptyStruct.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_empty_compounds/EmptyStruct.h
+    ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_empty_compounds/EmptyUnion.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_empty_compounds/EmptyUnion.h
+    ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_empty_compounds/Main.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_empty_compounds/Main.h
+    ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_empty_compounds/PackedAutoArray.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_empty_compounds/PackedAutoArray.h
+
     ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_struct_recursion/PackedAutoArrayRecursion.cpp
     ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_struct_recursion/PackedAutoArrayRecursion.h
 
@@ -136,6 +147,7 @@ add_custom_test(array_types
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/FixedArrayUInt8Test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedArraysMappingTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedAutoArrayBitfieldParamTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedAutoArrayEmptyCompoundsTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedAutoArrayStructRecursionTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedAutoArrayStructWithBytesTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedAutoArrayStructWithExternTest.cpp

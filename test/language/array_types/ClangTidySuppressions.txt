@@ -20,6 +20,7 @@ cert-err58-cpp:cpp/AutoArraySubtypedUInt8Test.cpp
 cert-err58-cpp:cpp/AutoArrayUInt8Test.cpp
 cert-err58-cpp:cpp/FixedArrayUInt8Test.cpp
 cert-err58-cpp:cpp/PackedAutoArrayBitfieldParamTest.cpp
+cert-err58-cpp:cpp/PackedAutoArrayEmptyCompoundsTest.cpp
 cert-err58-cpp:cpp/PackedAutoArrayStructRecursionTest.cpp
 cert-err58-cpp:cpp/PackedAutoArrayStructWithBytesTest.cpp
 cert-err58-cpp:cpp/PackedAutoArrayStructWithExternTest.cpp
@@ -40,10 +41,11 @@ cppcoreguidelines-pro-bounds-constant-array-index:cpp/PackedAutoArrayStructWithU
 
 cppcoreguidelines-pro-type-member-init:gen/array_types/auto_array_bitfield_param/ParameterizedBitfieldLength.cpp
 cppcoreguidelines-pro-type-member-init:gen/array_types/packed_auto_array_bitfield_param/ParameterizedBitfieldLength.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/packed_auto_array_empty_compounds/EmptyChoice.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/packed_variable_array_struct_recursion/Block.cpp
 cppcoreguidelines-pro-type-member-init:gen/array_types/packed_variable_array_struct/TestChoice.cpp
 cppcoreguidelines-pro-type-member-init:gen/array_types/packed_variable_array_struct/TestPackedArray.cpp
 cppcoreguidelines-pro-type-member-init:gen/array_types/packed_variable_array_struct/TestUnpackedArray.cpp
-cppcoreguidelines-pro-type-member-init:gen/array_types/packed_variable_array_struct_recursion/Block.cpp
 cppcoreguidelines-pro-type-member-init:gen/array_types/variable_array_ternary_operator/VariableArrayElement.cpp
 
 google-explicit-constructor:gen/array_types/arrays_mapping/TestBitmask.h
@@ -54,22 +56,27 @@ misc-no-recursion # reports also tested_release and some system headers
 
 performance-move-const-arg:gen/array_types/arrays_mapping/ArraysMapping.cpp
 performance-move-const-arg:gen/array_types/packed_arrays_mapping/PackedArraysMapping.cpp
+performance-move-const-arg:gen/array_types/packed_auto_array_empty_compounds/Main.cpp
+performance-move-const-arg:gen/array_types/packed_variable_array_struct_recursion/Block.cpp
+performance-move-const-arg:gen/array_types/packed_variable_array_struct_recursion/PackedVariableArray.cpp
 performance-move-const-arg:gen/array_types/packed_variable_array_struct/PackedVariableArray.cpp
 performance-move-const-arg:gen/array_types/packed_variable_array_struct/TestChoice.cpp
 performance-move-const-arg:gen/array_types/packed_variable_array_struct/TestStructure.cpp
 performance-move-const-arg:gen/array_types/packed_variable_array_struct/TestUnion.cpp
-performance-move-const-arg:gen/array_types/packed_variable_array_struct_recursion/Block.cpp
-performance-move-const-arg:gen/array_types/packed_variable_array_struct_recursion/PackedVariableArray.cpp
-performance-move-const-arg:gen/array_types/variable_array_ternary_operator/VariableArrayElement.cpp
 performance-move-const-arg:gen/array_types/variable_array_ternary_operator/VariableArray.cpp
+performance-move-const-arg:gen/array_types/variable_array_ternary_operator/VariableArrayElement.cpp
 
 readability-braces-around-statements
 
+readability-make-member-function-const:gen/array_types/packed_auto_array_empty_compounds/Main.cpp
 readability-make-member-function-const:gen/array_types/packed_auto_array_struct_with_unpacked_field/TestStructure.cpp
+readability-make-member-function-const:gen/array_types/packed_variable_array_struct_recursion/Block.cpp
 readability-make-member-function-const:gen/array_types/packed_variable_array_struct/PackedVariableArray.cpp
 readability-make-member-function-const:gen/array_types/packed_variable_array_struct/TestChoice.cpp
 readability-make-member-function-const:gen/array_types/packed_variable_array_struct/TestStructure.cpp
 readability-make-member-function-const:gen/array_types/packed_variable_array_struct/Value32.cpp
-readability-make-member-function-const:gen/array_types/packed_variable_array_struct_recursion/Block.cpp
 readability-make-member-function-const:gen/array_types/packed_variable_array_uint8/PackedVariableArray.cpp
 readability-make-member-function-const:gen/array_types/variable_array_ternary_operator/VariableArrayElement.cpp
+
+readability-simplify-boolean-expr:gen/array_types/packed_auto_array_empty_compounds/EmptyChoice.cpp
+readability-simplify-boolean-expr:gen/array_types/packed_auto_array_empty_compounds/EmptyUnion.cpp

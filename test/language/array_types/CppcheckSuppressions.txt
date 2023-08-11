@@ -14,3 +14,4 @@ uninitMemberVar:*/array_types/packed_variable_array_struct/TestUnpackedArray.cpp
 uninitMemberVar:*/array_types/packed_variable_array_struct/TestUnpackedArray.h
 uninitMemberVar:*/array_types/variable_array_ternary_operator/VariableArrayElement.cpp
 uninitMemberVar:*/array_types/variable_array_ternary_operator/VariableArrayElement.h
+uninitMemberVar:*/array_types/packed_auto_array_empty_compounds/EmptyChoice.cpp
