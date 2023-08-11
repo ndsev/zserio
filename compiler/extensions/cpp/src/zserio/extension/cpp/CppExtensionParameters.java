@@ -189,11 +189,11 @@ public class CppExtensionParameters
     {
         if (allocatorDefinition == TypesContext.STD_ALLOCATOR)
         {
-            description.add("stdAllocator");
+            description.add(StdAllocator + "Allocator");
         }
         else if (allocatorDefinition == TypesContext.PROPAGATING_POLYMORPHIC_ALLOCATOR)
         {
-            description.add("polymorhpicAllocator");
+            description.add(PolymorphicAllocator + "Allocator");
         }
         else
         {
