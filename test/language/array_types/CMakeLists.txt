@@ -69,6 +69,15 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_uint8/PackedAutoArray.cpp
     ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_uint8/PackedAutoArray.h
 
+    ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_union_has_no_packable_field/PackedAutoArrayUnionHasNoPackableField.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_union_has_no_packable_field/PackedAutoArrayUnionHasNoPackableField.h
+    ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_union_has_no_packable_field/StructWithPackable.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_union_has_no_packable_field/StructWithPackable.h
+    ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_union_has_no_packable_field/StructWithPackableArray.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_union_has_no_packable_field/StructWithPackableArray.h
+    ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_union_has_no_packable_field/UnionWithoutPackableField.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_union_has_no_packable_field/UnionWithoutPackableField.h
+
     ${ZSERIO_GEN_DIR}/array_types/packed_fixed_array_uint8/PackedFixedArray.h
     ${ZSERIO_GEN_DIR}/array_types/packed_fixed_array_uint8/PackedFixedArray.cpp
 
@@ -153,6 +162,7 @@ add_custom_test(array_types
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedAutoArrayStructWithExternTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedAutoArrayStructWithUnpackedFieldTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedAutoArrayUInt8Test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedAutoArrayUnionHasNoPackableFieldTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedFixedArrayUInt8Test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedVariableArrayStructRecursionTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedVariableArrayStructTest.cpp

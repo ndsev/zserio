@@ -87,4 +87,4 @@ class ArrayTypesWarningTest(unittest.TestCase):
             ]
         )
 
-EXPECTED_WARNINGS=12
+EXPECTED_WARNINGS=11

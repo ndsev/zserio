@@ -26,6 +26,7 @@ cert-err58-cpp:cpp/PackedAutoArrayStructWithBytesTest.cpp
 cert-err58-cpp:cpp/PackedAutoArrayStructWithExternTest.cpp
 cert-err58-cpp:cpp/PackedAutoArrayStructWithUnpackedFieldTest.cpp
 cert-err58-cpp:cpp/PackedAutoArrayUInt8Test.cpp
+cert-err58-cpp:cpp/PackedAutoArrayUnionHasNoPackableFieldTest.cpp
 cert-err58-cpp:cpp/PackedFixedArrayUInt8Test.cpp
 cert-err58-cpp:cpp/PackedVariableArrayStructRecursionTest.cpp
 cert-err58-cpp:cpp/PackedVariableArrayStructTest.cpp
@@ -38,6 +39,9 @@ cert-err58-cpp:cpp/VariableArrayTernaryOperatorTest.cpp
 cppcoreguidelines-pro-bounds-constant-array-index:cpp/PackedAutoArrayStructWithBytesTest.cpp
 cppcoreguidelines-pro-bounds-constant-array-index:cpp/PackedAutoArrayStructWithExternTest.cpp
 cppcoreguidelines-pro-bounds-constant-array-index:cpp/PackedAutoArrayStructWithUnpackedFieldTest.cpp
+
+cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen/array_types/packed_auto_array_union_has_no_packable_field/StructWithPackable.h
+cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen/array_types/packed_auto_array_union_has_no_packable_field/StructWithPackableArray.h
 
 cppcoreguidelines-pro-type-member-init:gen/array_types/auto_array_bitfield_param/ParameterizedBitfieldLength.cpp
 cppcoreguidelines-pro-type-member-init:gen/array_types/packed_auto_array_bitfield_param/ParameterizedBitfieldLength.cpp

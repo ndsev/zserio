@@ -81,7 +81,6 @@ add_custom_test(array_types_warning
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedArrayChoiceHasNoPackableFieldTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedArrayStructHasNoPackableFieldTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedArrayTemplateHasNoPackableFieldTest.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedArrayUnionHasNoPackableFieldTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedArrayUnpackableBoolElementTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedArrayUnpackableBytesElementTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedArrayUnpackableExternElementTest.cpp

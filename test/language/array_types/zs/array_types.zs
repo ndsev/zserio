@@ -16,6 +16,7 @@ import array_types.packed_auto_array_struct_with_bytes.*;
 import array_types.packed_auto_array_struct_with_extern.*;
 import array_types.packed_auto_array_struct_with_unpacked_field.*;
 import array_types.packed_auto_array_uint8.*;
+import array_types.packed_auto_array_union_has_no_packable_field.*;
 import array_types.packed_fixed_array_uint8.*;
 import array_types.packed_variable_array_struct_recursion.*;
 import array_types.packed_variable_array_struct.*;

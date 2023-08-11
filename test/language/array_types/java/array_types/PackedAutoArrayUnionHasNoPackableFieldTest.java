@@ -1,11 +1,11 @@
-package array_types_warning.packed_array_union_has_no_packable_field;
+package array_types.packed_auto_array_union_has_no_packable_field;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.SerializeUtil;
 
-public class PackedArrayUnionHasNoPackableFieldTest
+public class PackedAutoArrayUnionHasNoPackableFieldTest
 {
     @Test
     public void writeRead()
@@ -29,14 +29,14 @@ public class PackedArrayUnionHasNoPackableFieldTest
         array3[1].setField1(1.0f);
         array3[2].setField1(0.0f);
 
-        final PackedArrayUnionHasNoPackableField packedArrayUnionHasNoPackableField =
-                new PackedArrayUnionHasNoPackableField(array1, array2, array3);
+        final PackedAutoArrayUnionHasNoPackableField packedAutoArrayUnionHasNoPackableField =
+                new PackedAutoArrayUnionHasNoPackableField(array1, array2, array3);
 
-        SerializeUtil.serializeToFile(packedArrayUnionHasNoPackableField, BLOB_NAME);
-        final PackedArrayUnionHasNoPackableField readPackedArrayUnionHasNoPackableField =
-                SerializeUtil.deserializeFromFile(PackedArrayUnionHasNoPackableField.class, BLOB_NAME);
-        assertEquals(packedArrayUnionHasNoPackableField, readPackedArrayUnionHasNoPackableField);
+        SerializeUtil.serializeToFile(packedAutoArrayUnionHasNoPackableField, BLOB_NAME);
+        final PackedAutoArrayUnionHasNoPackableField readPackedAutoArrayUnionHasNoPackableField =
+                SerializeUtil.deserializeFromFile(PackedAutoArrayUnionHasNoPackableField.class, BLOB_NAME);
+        assertEquals(packedAutoArrayUnionHasNoPackableField, readPackedAutoArrayUnionHasNoPackableField);
     }
 
-    private static final String BLOB_NAME = "packed_array_union_has_no_packable_field.blob";
+    private static final String BLOB_NAME = "packed_auto_array_union_has_no_packable_field.blob";
 }
