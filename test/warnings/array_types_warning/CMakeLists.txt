@@ -57,6 +57,9 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/array_types_warning/packed_array_unpackable_bool_element/TestEnum.cpp
     ${ZSERIO_GEN_DIR}/array_types_warning/packed_array_unpackable_bool_element/TestEnum.h
 
+    ${ZSERIO_GEN_DIR}/array_types_warning/packed_array_unpackable_bytes_element/PackedArrayUnpackableBytesElement.cpp
+    ${ZSERIO_GEN_DIR}/array_types_warning/packed_array_unpackable_bytes_element/PackedArrayUnpackableBytesElement.h
+
     ${ZSERIO_GEN_DIR}/array_types_warning/packed_array_unpackable_extern_element/PackedArrayUnpackableExternElement.cpp
     ${ZSERIO_GEN_DIR}/array_types_warning/packed_array_unpackable_extern_element/PackedArrayUnpackableExternElement.h
 
@@ -84,6 +87,15 @@ add_custom_test(array_types_warning
         array_types_warning_zs
     SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ArrayTypesWarningTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedArrayChoiceHasNoPackableFieldTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedArrayStructHasNoPackableFieldTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedArrayTemplateHasNoPackableFieldTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedArrayUnionHasNoPackableFieldTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedArrayUnpackableBoolElementTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedArrayUnpackableBytesElementTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedArrayUnpackableExternElementTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedArrayUnpackableFloatElementTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedArrayUnpackableStringElementTest.cpp
     GENERATED_SOURCES
         ${ZSERIO_GENERATED_SOURCES}
 )

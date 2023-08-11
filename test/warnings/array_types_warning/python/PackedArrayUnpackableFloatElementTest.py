@@ -1,0 +1,27 @@
+import unittest
+import os
+import zserio
+
+from testutils import getZserioApi, getApiDir
+from ArrayTypesWarningTest import EXPECTED_WARNINGS
+
+class PackedArrayUnpackableFloatElementTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.api = getZserioApi(__file__, "array_types_warning.zs",
+                               expectedWarnings=EXPECTED_WARNINGS).packed_array_unpackable_float_element
+
+    def testWriteRead(self):
+        packedArrayUnpackableFloatElement = self.api.PackedArrayUnpackableFloatElement(
+            [10, 11, 12],
+            [4.0, 1.0, 0.0]
+        )
+
+        zserio.serialize_to_file(packedArrayUnpackableFloatElement, self.BLOB_NAME)
+        readPackedArrayUnpackableFloatElement = zserio.deserialize_from_file(
+            self.api.PackedArrayUnpackableFloatElement, self.BLOB_NAME
+        )
+        self.assertEqual(packedArrayUnpackableFloatElement, readPackedArrayUnpackableFloatElement)
+
+    BLOB_NAME = os.path.join(getApiDir(os.path.dirname(__file__)),
+                             "packed_array_unpackable_float_element.blob")
