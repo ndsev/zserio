@@ -126,18 +126,27 @@ public class PerformanceTest
         // prepare byte array
         byte[] blobBuffer = readBlobBuffer(inputIsJson, inputPath);
 
+        // calculate blob memory size
         final ByteArrayBitStreamReader blobReader = new ByteArrayBitStreamReader(blobBuffer);
+        System.gc();
+        Thread.sleep(1000);
+        final long startHeapSize = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+        final ${BLOB_FULL_NAME} memoryBlob = new ${BLOB_FULL_NAME}(blobReader);
+        final long endHeapSize = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+        final long blobMemorySize = endHeapSize - startHeapSize;
+        final long blobSize = blobReader.getBitPosition();
+
+        // run the test
 EOF
 
     if [[ "${TEST_CONFIG}" == "WRITE" ]] ; then
         cat >> "${BUILD_DIR}"/src/PerformanceTest.java << EOF
-        final ${BLOB_FULL_NAME} blobFromFile = new ${BLOB_FULL_NAME}(blobReader);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(blobBuffer);
+        final ${BLOB_FULL_NAME} blob = new ${BLOB_FULL_NAME}(reader);
 EOF
     fi
 
     cat >> "${BUILD_DIR}"/src/PerformanceTest.java << EOF
-
-        // run the test
         final long startTime = System.nanoTime();
         for (int i = 0; i < numIterations; ++i)
         {
@@ -162,7 +171,7 @@ EOF
         "WRITE")
             cat >> "${BUILD_DIR}"/src/PerformanceTest.java << EOF
             final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-            blobFromFile.write(writer);
+            blob.write(writer);
 EOF
             ;;
     esac
@@ -175,16 +184,20 @@ EOF
         final long duration = stopTime - startTime;
         final double totalDuration = duration / 1000000.;
         final double stepDuration = totalDuration / numIterations;
+        final double blobKbSize = blobSize/ 8. / 1000.;
+        final double blobMemoryKbSize = blobMemorySize / 1000.;
         System.out.println("Total Duration: " + String.format("%.3f", totalDuration) + "ms");
         System.out.println("Iterations:     " + numIterations);
         System.out.println("Step Duration:  " + String.format("%.3f", stepDuration) + "ms");
-        System.out.println("Blob Size:      " + blobReader.getBitPosition() + " bits (" +
-                String.format("%.3f", blobBuffer.length / 1000.) + " kB)");
+        System.out.println("Blob Size:      " + blobSize + " bits (" +
+                String.format("%.3f", blobKbSize) + " kB)");
+        System.out.println("Blob in Memory: " + blobMemorySize + " bytes (" +
+                String.format("%.3f", blobMemoryKbSize) + " kB)");
 
         // write results to file
         PrintStream logFile = new PrintStream(new File(logPath));
-        logFile.println(String.format("%.03fms %d %.03fms %.03fkB",
-                totalDuration, numIterations, stepDuration, blobBuffer.length / 1000.));
+        logFile.println(String.format("%.03fms %d %.03fms %.03fkB %.03fkB",
+                totalDuration, numIterations, stepDuration, blobKbSize, blobMemoryKbSize));
         logFile.close();
     }
 
@@ -517,15 +530,20 @@ if [[ "${ZSERIO_EXTRA_ARGS}" == *"polymorphic"* ]]; then
                 << std::endl;
         return 1;
     }
+
+    // run the test
 EOF
 fi
 
 if [[ "${TEST_CONFIG}" != "WRITE" ]] ; then
     cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
-
-    // run the test
     std::vector<${BLOB_CLASS_FULL_NAME}> readBlobs;
     readBlobs.reserve(static_cast<size_t>(numIterations));
+EOF
+else
+    cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
+    zserio::BitStreamReader reader(bitBuffer);
+    auto readBlob = ${BLOB_CLASS_FULL_NAME}(reader);
 EOF
 fi
 
@@ -563,7 +581,7 @@ EOF
         "WRITE")
             cat >> "${BUILD_SRC_DIR}"/PerformanceTest.cpp << EOF
         zserio::BitStreamWriter writer(bitBuffer);
-        blobFromFile.write(writer);
+        readBlob.write(writer);
 EOF
             ;;
     esac
@@ -646,6 +664,7 @@ generate_python_perftest()
 import os
 import sys
 import argparse
+import tracemalloc
 from timeit import default_timer as timer
 EOF
 
@@ -670,12 +689,12 @@ def read_blob_buffer(input_is_json, input_path):
 
         return zserio.serialize_to_bytes(blob)
     else:
-        blobByteSize = os.path.getsize(input_path)
+        blob_byte_size = os.path.getsize(input_path)
 
         blob = zserio.deserialize_from_file(api.${BLOB_API_PATH}, input_path)
         blob_buffer = zserio.serialize_to_bytes(blob)
 
-        assert len(blob_buffer) == blobByteSize
+        assert len(blob_buffer) == blob_byte_size
 
         return blob_buffer
 
@@ -684,21 +703,33 @@ def performance_test(log_path, input_is_json, input_path, num_iterations):
 
     # prepare byte array
     blob_buffer = read_blob_buffer(input_is_json, input_path)
+
+    # calculate blob memory size
+    blob_reader = zserio.BitStreamReader(blob_buffer)
+    tracemalloc.start()
+    memory_blob = api.${BLOB_API_PATH}.from_reader(blob_reader)
+    blob_memory_size = tracemalloc.get_traced_memory()[1]
+    tracemalloc.stop()
+    blob_size = blob_reader.bitposition
+
+    # run the test
+EOF
+
+    if [[ "${TEST_CONFIG}" == "WRITE" ]] ; then
+        cat >> "${BUILD_DIR}/src/perftest.py" << EOF
     reader_from_file = zserio.BitStreamReader(blob_buffer)
     blob_from_file = api.${BLOB_API_PATH}.from_reader(reader_from_file)
-
 EOF
+    fi
 
     if [[ ${PROFILE} == 1 ]] ; then
         cat >> "${BUILD_DIR}/src/perftest.py" << EOF
-    # run the test
     pr = cProfile.Profile()
     pr.enable()
     start = timer()
 EOF
     else
         cat >> "${BUILD_DIR}/src/perftest.py" << EOF
-    # run the test
     start = timer()
 EOF
     fi
@@ -750,15 +781,18 @@ EOF
     # process results
     total_duration = (stop - start) * 1000
     step_duration = total_duration / num_iterations
-    kb_size = len(blob_buffer) / 1000.
+    blob_kb_size = blob_size / 8. / 1000.
+    blob_memory_kb_size = blob_memory_size / 1000.
     print("Total Duration: %.03fms" % total_duration)
     print("Iterations:     %d" % num_iterations)
     print("Step Duration:  %.03fms" % step_duration)
-    print("Blob Size:      %d bits (%.03f kB)" % (reader_from_file.bitposition, kb_size))
+    print("Blob Size:      %d bits (%.03f kB)" % (blob_size, blob_kb_size))
+    print("Blob in Memory: %d bytes (%.03f kB)" % (blob_memory_size, blob_memory_kb_size))
 
     # write results to file
     log_file = open(log_path, "w")
-    log_file.write("%.03fms %d %.03fms %.03fkB" % (total_duration, num_iterations, step_duration, kb_size))
+    log_file.write("%.03fms %d %.03fms %.03fkB %.03fkB" % (total_duration, num_iterations, step_duration,
+                   blob_kb_size, blob_memory_kb_size))
 
 if __name__ == "__main__":
     sys.setrecursionlimit(5000) # empiric constant to prevent failing during testing on recursive blobs
@@ -960,34 +994,34 @@ test_perf()
     else
         echo "Blob file: ${SWITCH_BLOB_PATH##*/}"
     fi
-    for i in {1..86} ; do echo -n "=" ; done ; echo
-    printf "| %-21s | %14s | %10s | %15s | %10s |\n" \
-           "Generator" "Total Duration" "Iterations" "Step Duration" "Blob Size"
-    echo -n "|" ; for i in {1..84} ; do echo -n "-" ; done ; echo "|"
+    for i in {1..103} ; do echo -n "=" ; done ; echo
+    printf "| %-21s | %14s | %10s | %15s | %10s | %10s |\n" \
+           "Generator" "Total Duration" "Iterations" "Step Duration" "Blob Size" "Blob in Memory"
+    echo -n "|" ; for i in {1..101} ; do echo -n "-" ; done ; echo "|"
     if [[ ${PARAM_JAVA} == 1 ]] ; then
         local RESULTS=($(cat ${TEST_OUT_DIR}/java/PerformanceTest.log))
-        printf "| %-21s | %14s | %10s | %15s | %10s |\n" \
-               "Java" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]} ${RESULTS[3]}
+        printf "| %-21s | %14s | %10s | %15s | %10s | %14s |\n" \
+               "Java" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]} ${RESULTS[3]} ${RESULTS[4]}
     fi
     if [[ ${#CPP_TARGETS[@]} != 0 ]] ; then
         for CPP_TARGET in "${CPP_TARGETS[@]}" ; do
             local PERF_TEST_FILE=$(${FIND} "${TEST_OUT_DIR}/cpp/${CPP_TARGET}" -name "PerformanceTest.log")
             local RESULTS=($(cat ${PERF_TEST_FILE}))
-            printf "| %-21s | %14s | %10s | %15s | %10s |\n" \
-                   "C++ (${CPP_TARGET})" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]} ${RESULTS[3]}
+            printf "| %-21s | %14s | %10s | %15s | %10s | %14s |\n" \
+                   "C++ (${CPP_TARGET})" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]} ${RESULTS[3]} ${RESULTS[4]}
         done
     fi
     if [[ ${PARAM_PYTHON} == 1 ]] ; then
         local RESULTS=($(cat ${TEST_OUT_DIR}/python/python-pure/PerformanceTest.log))
-        printf "| %-21s | %14s | %10s | %15s | %10s |\n" \
-               "Python" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]} ${RESULTS[3]}
+        printf "| %-21s | %14s | %10s | %15s | %10s | %14s |\n" \
+               "Python" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]} ${RESULTS[3]} ${RESULTS[4]}
     fi
     if [[ ${PARAM_PYTHON_CPP} == 1 ]] ; then
         local RESULTS=($(cat ${TEST_OUT_DIR}/python/python-cpp/PerformanceTest.log))
-        printf "| %-21s | %14s | %10s | %15s | %10s |\n" \
-               "Python (C++)" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]} ${RESULTS[3]}
+        printf "| %-21s | %14s | %10s | %15s | %10s | %14s |\n" \
+               "Python (C++)" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]} ${RESULTS[3]} ${RESULTS[4]}
     fi
-    for i in {1..86} ; do echo -n "=" ; done ; echo
+    for i in {1..103} ; do echo -n "=" ; done ; echo
     echo
 
     return 0
