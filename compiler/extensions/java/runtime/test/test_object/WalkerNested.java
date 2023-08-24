@@ -17,12 +17,6 @@ public class WalkerNested implements zserio.runtime.io.Writer, zserio.runtime.Si
         read(in);
     }
 
-    public WalkerNested(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in)
-            throws java.io.IOException
-    {
-        read(contextNode, in);
-    }
-
     public WalkerNested(
             java.lang.String text_)
     {
@@ -68,16 +62,6 @@ public class WalkerNested implements zserio.runtime.io.Writer, zserio.runtime.Si
         );
     }
 
-    public static void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
-    {
-        contextNode.createChild();
-    }
-
-    @Override
-    public void initPackingContext(zserio.runtime.array.PackingContextNode contextNode)
-    {
-    }
-
     @Override
     public int bitSizeOf()
     {
@@ -86,16 +70,6 @@ public class WalkerNested implements zserio.runtime.io.Writer, zserio.runtime.Si
 
     @Override
     public int bitSizeOf(long bitPosition)
-    {
-        long endBitPosition = bitPosition;
-
-        endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfString(text_);
-
-        return (int)(endBitPosition - bitPosition);
-    }
-
-    @Override
-    public int bitSizeOf(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
     {
         long endBitPosition = bitPosition;
 
@@ -144,12 +118,6 @@ public class WalkerNested implements zserio.runtime.io.Writer, zserio.runtime.Si
         text_ = in.readString();
     }
 
-    public void read(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in)
-            throws java.io.IOException
-    {
-        text_ = in.readString();
-    }
-
     @Override
     public long initializeOffsets()
     {
@@ -167,24 +135,7 @@ public class WalkerNested implements zserio.runtime.io.Writer, zserio.runtime.Si
     }
 
     @Override
-    public long initializeOffsets(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
-    {
-        long endBitPosition = bitPosition;
-
-        endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfString(text_);
-
-        return endBitPosition;
-    }
-
-    @Override
     public void write(zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
-    {
-        out.writeString(text_);
-    }
-
-    @Override
-    public void write(zserio.runtime.array.PackingContextNode contextNode,
-            zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
     {
         out.writeString(text_);
     }

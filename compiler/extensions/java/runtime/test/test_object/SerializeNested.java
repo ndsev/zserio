@@ -5,8 +5,23 @@
 
 package test_object;
 
-public class SerializeNested implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
+public class SerializeNested implements zserio.runtime.io.PackableWriter, zserio.runtime.PackableSizeOf
 {
+    public static final class ZserioPackingContext extends zserio.runtime.array.PackingContext
+    {
+        public ZserioPackingContext()
+        {
+            optionalValue_ = new zserio.runtime.array.DeltaContext();
+        }
+
+        public zserio.runtime.array.DeltaContext getOptionalValue()
+        {
+            return optionalValue_;
+        }
+
+        private zserio.runtime.array.DeltaContext optionalValue_;
+    };
+
     public SerializeNested(
             byte param_)
     {
@@ -22,13 +37,13 @@ public class SerializeNested implements zserio.runtime.io.Writer, zserio.runtime
         read(in);
     }
 
-    public SerializeNested(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in,
+    public SerializeNested(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamReader in,
             byte param_)
             throws java.io.IOException
     {
         this.param_ = param_;
 
-        read(contextNode, in);
+        read(context, in);
     }
 
     public SerializeNested(
@@ -106,19 +121,13 @@ public class SerializeNested implements zserio.runtime.io.Writer, zserio.runtime
         );
     }
 
-    public static void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
-    {
-        contextNode.createChild();
-        contextNode.createChild().createContext();
-    }
-
     @Override
-    public void initPackingContext(zserio.runtime.array.PackingContextNode contextNode)
+    public void initPackingContext(zserio.runtime.array.PackingContext context)
     {
+        final ZserioPackingContext zserioContext = context.cast();
         if (isOptionalValueUsed())
         {
-            contextNode.getChildren().get(1).getContext().init(
-                    new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)),
+            zserioContext.getOptionalValue().init(new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)),
                     new zserio.runtime.array.ArrayElement.LongArrayElement(optionalValue_));
         }
     }
@@ -145,16 +154,16 @@ public class SerializeNested implements zserio.runtime.io.Writer, zserio.runtime
     }
 
     @Override
-    public int bitSizeOf(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
+    public int bitSizeOf(zserio.runtime.array.PackingContext context, long bitPosition)
     {
+        final ZserioPackingContext zserioContext = context.cast();
         long endBitPosition = bitPosition;
 
         endBitPosition += 8;
         if (isOptionalValueUsed())
         {
             endBitPosition = zserio.runtime.BitPositionUtil.alignTo(java.lang.Byte.SIZE, endBitPosition);
-            endBitPosition += contextNode.getChildren().get(1).getContext().bitSizeOf(
-                    new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)),
+            endBitPosition += zserioContext.getOptionalValue().bitSizeOf(new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)),
                     new zserio.runtime.array.ArrayElement.LongArrayElement(optionalValue_));
         }
 
@@ -248,9 +257,10 @@ public class SerializeNested implements zserio.runtime.io.Writer, zserio.runtime
         }
     }
 
-    public void read(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in)
+    public void read(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamReader in)
             throws java.io.IOException
     {
+        final ZserioPackingContext zserioContext = context.cast();
         offset_ = in.readUnsignedByte();
 
         if (getParam() >= 0)
@@ -262,8 +272,7 @@ public class SerializeNested implements zserio.runtime.io.Writer, zserio.runtime
                         in.getBytePosition() + " != " + (getOffset()) + "!");
             }
             optionalValue_ = ((zserio.runtime.array.ArrayElement.LongArrayElement)
-                    contextNode.getChildren().get(1).getContext().read(
-                            new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)), in)).get();
+                    zserioContext.getOptionalValue().read(new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)), in)).get();
         }
     }
 
@@ -293,8 +302,9 @@ public class SerializeNested implements zserio.runtime.io.Writer, zserio.runtime
     }
 
     @Override
-    public long initializeOffsets(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
+    public long initializeOffsets(zserio.runtime.array.PackingContext context, long bitPosition)
     {
+        final ZserioPackingContext zserioContext = context.cast();
         long endBitPosition = bitPosition;
 
         endBitPosition += 8;
@@ -305,8 +315,7 @@ public class SerializeNested implements zserio.runtime.io.Writer, zserio.runtime
                 final short value = (short)zserio.runtime.BitPositionUtil.bitsToBytes(endBitPosition);
                 setOffset(value);
             }
-            endBitPosition += contextNode.getChildren().get(1).getContext().bitSizeOf(
-                    new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)),
+            endBitPosition += zserioContext.getOptionalValue().bitSizeOf(new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)),
                     new zserio.runtime.array.ArrayElement.LongArrayElement(optionalValue_));
         }
 
@@ -331,9 +340,10 @@ public class SerializeNested implements zserio.runtime.io.Writer, zserio.runtime
     }
 
     @Override
-    public void write(zserio.runtime.array.PackingContextNode contextNode,
-            zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
+    public void write(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamWriter out)
+            throws java.io.IOException
     {
+        final ZserioPackingContext zserioContext = context.cast();
         out.writeUnsignedByte(offset_);
 
         if (isOptionalValueUsed())
@@ -344,8 +354,7 @@ public class SerializeNested implements zserio.runtime.io.Writer, zserio.runtime
                 throw new zserio.runtime.ZserioError("Write: Wrong offset for field SerializeNested.optionalValue: " +
                         out.getBytePosition() + " != " + (getOffset()) + "!");
             }
-            contextNode.getChildren().get(1).getContext().write(
-                    new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)), out,
+            zserioContext.getOptionalValue().write(new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)), out,
                     new zserio.runtime.array.ArrayElement.LongArrayElement(optionalValue_));
         }
     }

@@ -5,8 +5,30 @@
 
 package test_object;
 
-public class WalkerUnion implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
+public class WalkerUnion implements zserio.runtime.io.PackableWriter, zserio.runtime.PackableSizeOf
 {
+    public static final class ZserioPackingContext extends zserio.runtime.array.PackingContext
+    {
+        public ZserioPackingContext()
+        {
+            choiceTag = new zserio.runtime.array.DeltaContext();
+            value_ = new zserio.runtime.array.DeltaContext();
+        }
+
+        public zserio.runtime.array.DeltaContext getChoiceTag()
+        {
+            return choiceTag;
+        }
+
+        public zserio.runtime.array.DeltaContext getValue()
+        {
+            return value_;
+        }
+
+        private zserio.runtime.array.DeltaContext choiceTag;
+        private zserio.runtime.array.DeltaContext value_;
+    };
+
     public WalkerUnion()
     {
     }
@@ -17,10 +39,10 @@ public class WalkerUnion implements zserio.runtime.io.Writer, zserio.runtime.Siz
         read(in);
     }
 
-    public WalkerUnion(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in)
+    public WalkerUnion(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamReader in)
             throws java.io.IOException
     {
-        read(contextNode, in);
+        read(context, in);
     }
 
     public static zserio.runtime.typeinfo.TypeInfo typeInfo()
@@ -107,27 +129,18 @@ public class WalkerUnion implements zserio.runtime.io.Writer, zserio.runtime.Siz
         return choiceTag;
     }
 
-    public static void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
-    {
-        contextNode.createChild().createContext();
-
-        contextNode.createChild().createContext();
-        contextNode.createChild();
-        contextNode.createChild();
-    }
-
     @Override
-    public void initPackingContext(zserio.runtime.array.PackingContextNode contextNode)
+    public void initPackingContext(zserio.runtime.array.PackingContext context)
     {
-        contextNode.getChildren().get(0).getContext().init(
+        final ZserioPackingContext zserioContext = context.cast();
+        zserioContext.getChoiceTag().init(
                 new zserio.runtime.array.ArrayTraits.VarSizeArrayTraits(),
                 new zserio.runtime.array.ArrayElement.IntArrayElement(choiceTag));
 
         switch (choiceTag)
         {
         case CHOICE_value:
-            contextNode.getChildren().get(1).getContext().init(
-                    new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)),
+            zserioContext.getValue().init(new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)),
                     new zserio.runtime.array.ArrayElement.LongArrayElement(getValue()));
             break;
         case CHOICE_text:
@@ -171,26 +184,26 @@ public class WalkerUnion implements zserio.runtime.io.Writer, zserio.runtime.Siz
     }
 
     @Override
-    public int bitSizeOf(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
+    public int bitSizeOf(zserio.runtime.array.PackingContext context, long bitPosition)
     {
+        final ZserioPackingContext zserioContext = context.cast();
         long endBitPosition = bitPosition;
 
-        endBitPosition += contextNode.getChildren().get(0).getContext().bitSizeOf(
+        endBitPosition += zserioContext.getChoiceTag().bitSizeOf(
                 new zserio.runtime.array.ArrayTraits.VarSizeArrayTraits(),
                 new zserio.runtime.array.ArrayElement.IntArrayElement(choiceTag));
 
         switch (choiceTag)
         {
         case CHOICE_value:
-            endBitPosition += contextNode.getChildren().get(1).getContext().bitSizeOf(
-                    new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)),
+            endBitPosition += zserioContext.getValue().bitSizeOf(new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)),
                     new zserio.runtime.array.ArrayElement.LongArrayElement(getValue()));
             break;
         case CHOICE_text:
             endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfString(getText());
             break;
         case CHOICE_nestedArray:
-            endBitPosition += ((zserio.runtime.array.Array)objectChoice).bitSizeOfPacked(endBitPosition);
+            endBitPosition += ((zserio.runtime.array.Array)objectChoice).bitSizeOf(endBitPosition);
             break;
         default:
             throw new zserio.runtime.ZserioError("No match in union WalkerUnion!");
@@ -307,19 +320,19 @@ public class WalkerUnion implements zserio.runtime.io.Writer, zserio.runtime.Siz
         }
     }
 
-    public void read(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in)
+    public void read(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamReader in)
             throws java.io.IOException
     {
+        final ZserioPackingContext zserioContext = context.cast();
         choiceTag = ((zserio.runtime.array.ArrayElement.IntArrayElement)
-                contextNode.getChildren().get(0).getContext().read(
+                zserioContext.getChoiceTag().read(
                         new zserio.runtime.array.ArrayTraits.VarSizeArrayTraits(), in)).get();
 
         switch (choiceTag)
         {
         case CHOICE_value:
             objectChoice = ((zserio.runtime.array.ArrayElement.LongArrayElement)
-                    contextNode.getChildren().get(1).getContext().read(
-                            new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)), in)).get();
+                    zserioContext.getValue().read(new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)), in)).get();
             break;
         case CHOICE_text:
             objectChoice = in.readString();
@@ -329,7 +342,7 @@ public class WalkerUnion implements zserio.runtime.io.Writer, zserio.runtime.Siz
                     new zserio.runtime.array.RawArray.ObjectRawArray<>(test_object.WalkerNested.class),
                     new zserio.runtime.array.ArrayTraits.WriteObjectArrayTraits<test_object.WalkerNested>(new ZserioElementFactory_nestedArray()),
                     zserio.runtime.array.ArrayType.AUTO);
-            ((zserio.runtime.array.Array)objectChoice).readPacked(in);
+            ((zserio.runtime.array.Array)objectChoice).read(in);
             break;
         default:
             throw new zserio.runtime.ZserioError("No match in union WalkerUnion!");
@@ -368,26 +381,26 @@ public class WalkerUnion implements zserio.runtime.io.Writer, zserio.runtime.Siz
     }
 
     @Override
-    public long initializeOffsets(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
+    public long initializeOffsets(zserio.runtime.array.PackingContext context, long bitPosition)
     {
+        final ZserioPackingContext zserioContext = context.cast();
         long endBitPosition = bitPosition;
 
-        endBitPosition += contextNode.getChildren().get(0).getContext().bitSizeOf(
+        endBitPosition += zserioContext.getChoiceTag().bitSizeOf(
                 new zserio.runtime.array.ArrayTraits.VarSizeArrayTraits(),
                 new zserio.runtime.array.ArrayElement.IntArrayElement(choiceTag));
 
         switch (choiceTag)
         {
         case CHOICE_value:
-            endBitPosition += contextNode.getChildren().get(1).getContext().bitSizeOf(
-                    new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)),
+            endBitPosition += zserioContext.getValue().bitSizeOf(new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)),
                     new zserio.runtime.array.ArrayElement.LongArrayElement(getValue()));
             break;
         case CHOICE_text:
             endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfString(getText());
             break;
         case CHOICE_nestedArray:
-            endBitPosition = ((zserio.runtime.array.Array)objectChoice).initializeOffsetsPacked(endBitPosition);
+            endBitPosition = ((zserio.runtime.array.Array)objectChoice).initializeOffsets(endBitPosition);
             break;
         default:
             throw new zserio.runtime.ZserioError("No match in union WalkerUnion!");
@@ -418,25 +431,25 @@ public class WalkerUnion implements zserio.runtime.io.Writer, zserio.runtime.Siz
     }
 
     @Override
-    public void write(zserio.runtime.array.PackingContextNode contextNode,
-            zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
+    public void write(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamWriter out)
+            throws java.io.IOException
     {
-        contextNode.getChildren().get(0).getContext().write(
+        final ZserioPackingContext zserioContext = context.cast();
+        zserioContext.getChoiceTag().write(
                 new zserio.runtime.array.ArrayTraits.VarSizeArrayTraits(), out,
                 new zserio.runtime.array.ArrayElement.IntArrayElement(choiceTag));
 
         switch (choiceTag)
         {
         case CHOICE_value:
-            contextNode.getChildren().get(1).getContext().write(
-                    new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)), out,
+            zserioContext.getValue().write(new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)), out,
                     new zserio.runtime.array.ArrayElement.LongArrayElement(getValue()));
             break;
         case CHOICE_text:
             out.writeString(getText());
             break;
         case CHOICE_nestedArray:
-            ((zserio.runtime.array.Array)objectChoice).writePacked(out);
+            ((zserio.runtime.array.Array)objectChoice).write(out);
             break;
         default:
             throw new zserio.runtime.ZserioError("No match in union WalkerUnion!");
@@ -455,19 +468,6 @@ public class WalkerUnion implements zserio.runtime.io.Writer, zserio.runtime.Siz
                 throws java.io.IOException
         {
             return new test_object.WalkerNested(in);
-        }
-
-        @Override
-        public void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
-        {
-            test_object.WalkerNested.createPackingContext(contextNode);
-        }
-
-        @Override
-        public test_object.WalkerNested create(zserio.runtime.array.PackingContextNode contextNode,
-                zserio.runtime.io.BitStreamReader in, int index) throws java.io.IOException
-        {
-            return new test_object.WalkerNested(contextNode, in);
         }
     }
 

@@ -1,3 +1,9 @@
+/*
+ * Compiled from the 'test' directory using the following command line options:
+ *
+ * -src test_object test_object.zs -java . -withTypeInfoCode
+ */
+
 package test_object;
 
 enum int8 CreatorEnum
@@ -80,4 +86,9 @@ struct SerializeObject
 {
     int8 param;
     SerializeNested(param) nested;
+};
+
+struct ArrayObject
+{
+    bit:3 value;
 };

@@ -7,11 +7,11 @@ import zserio.ast.PackageName;
  */
 public class NativeCompoundType extends NativeArrayableType
 {
-    public NativeCompoundType(PackageName packageName, String name, boolean withWriterCode)
+    public NativeCompoundType(PackageName packageName, String name, boolean withWriterCode, boolean isPackable)
     {
         super(packageName, name,
                 new NativeObjectRawArray(),
-                new NativeObjectArrayTraits(packageName, name, withWriterCode),
+                new NativeObjectArrayTraits(packageName, name, withWriterCode, isPackable),
                 new NativeObjectArrayElement(packageName, name));
     }
 

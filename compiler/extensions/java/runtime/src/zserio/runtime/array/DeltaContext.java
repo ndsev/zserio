@@ -16,7 +16,7 @@ import zserio.runtime.io.BitStreamWriter;
  * element present in the array. After the full initialization, only a single method (bitSizeOf, read, write)
  * can be repeatedly called for exactly the same sequence of packable elements.
  */
-public class DeltaContext
+public class DeltaContext extends PackingContext
 {
     /**
      * Calls the initialization step for a single element.
@@ -32,7 +32,7 @@ public class DeltaContext
         if (previousElement == null)
         {
             previousElement = element.toBigInteger();
-            firstElementBitSize = unpackedBitSize;
+            firstElementBitSize = (byte)unpackedBitSize;
         }
         else
         {
@@ -212,12 +212,12 @@ public class DeltaContext
     private static final byte MAX_BIT_NUMBER_BITS = 6;
     private static final byte MAX_BIT_NUMBER_LIMIT = 62;
 
+    private BigInteger previousElement; // BigInteger covers all integral array element values
+    private byte maxBitNumber = 0;
     private boolean isPacked = false;
     private boolean processingStarted = false;
-    private byte maxBitNumber = 0;
-    private BigInteger previousElement; // BigInteger covers all integral array element values
 
-    private int unpackedBitSize = 0;
-    private int firstElementBitSize = 0;
+    private byte firstElementBitSize = 0;
     private int numElements = 0;
+    private int unpackedBitSize = 0;
 }

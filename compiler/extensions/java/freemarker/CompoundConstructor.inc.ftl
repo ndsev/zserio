@@ -45,23 +45,24 @@
         </#if>
         read(in);
     }
+    <#if isPackable>
 
-    <#if withCodeComments>
+        <#if withCodeComments>
     /**
      * Read constructor.
      * <p>
      * Called only internally if packed arrays are used.
      *
-     * @param contextNode Context for packed arrays.
+     * @param context Context for packed arrays.
      * @param in Bit stream reader to use.
-        <#list compoundConstructorsData.compoundParametersData.list as compoundParameter>
+            <#list compoundConstructorsData.compoundParametersData.list as compoundParameter>
      * @param <@parameter_argument_name compoundParameter/> Value of the parameter {@link #${compoundParameter.getterName}() ${compoundParameter.name}}.
-        </#list>
+            </#list>
      *
      * @throws IOException If the reading from bit stream failed.
      */
-    </#if>
-    public ${name}(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in<#rt>
+        </#if>
+    public ${name}(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamReader in<#rt>
             <#lt><#if constructorArgumentTypeList?has_content>,${constructorArgumentTypeList}</#if>)
             throws java.io.IOException
     {
@@ -72,9 +73,9 @@
         <#if constructorArgumentTypeList?has_content>
 
         </#if>
-        read(contextNode, in);
+        read(context, in);
     }
-
+    </#if>
 </#macro>
 
 <#macro compound_constructors_set_parameters compoundConstructorsData>

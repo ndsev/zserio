@@ -5,7 +5,7 @@
 
 package test_object;
 
-public enum CreatorEnum implements zserio.runtime.io.Writer, zserio.runtime.SizeOf,
+public enum CreatorEnum implements zserio.runtime.io.PackableWriter, zserio.runtime.PackableSizeOf,
         zserio.runtime.ZserioEnum
 {
     ONE((byte)0),
@@ -43,15 +43,11 @@ public enum CreatorEnum implements zserio.runtime.io.Writer, zserio.runtime.Size
             );
     }
 
-    public static void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
-    {
-        contextNode.createContext();
-    }
-
     @Override
-    public void initPackingContext(zserio.runtime.array.PackingContextNode contextNode)
+    public void initPackingContext(zserio.runtime.array.PackingContext context)
     {
-        contextNode.getContext().init(
+        final zserio.runtime.array.DeltaContext deltaContext = context.cast();
+        deltaContext.init(
                 new zserio.runtime.array.ArrayTraits.SignedBitFieldByteArrayTraits(8),
                 new zserio.runtime.array.ArrayElement.ByteArrayElement(value));
     }
@@ -69,9 +65,10 @@ public enum CreatorEnum implements zserio.runtime.io.Writer, zserio.runtime.Size
     }
 
     @Override
-    public int bitSizeOf(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
+    public int bitSizeOf(zserio.runtime.array.PackingContext context, long bitPosition)
     {
-        return contextNode.getContext().bitSizeOf(
+        final zserio.runtime.array.DeltaContext deltaContext = context.cast();
+        return deltaContext.bitSizeOf(
                 new zserio.runtime.array.ArrayTraits.SignedBitFieldByteArrayTraits(8),
                 new zserio.runtime.array.ArrayElement.ByteArrayElement(value));
     }
@@ -89,9 +86,9 @@ public enum CreatorEnum implements zserio.runtime.io.Writer, zserio.runtime.Size
     }
 
     @Override
-    public long initializeOffsets(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
+    public long initializeOffsets(zserio.runtime.array.PackingContext context, long bitPosition)
     {
-        return bitPosition + bitSizeOf(contextNode, bitPosition);
+        return bitPosition + bitSizeOf(context, bitPosition);
     }
 
     @Override
@@ -101,10 +98,11 @@ public enum CreatorEnum implements zserio.runtime.io.Writer, zserio.runtime.Size
     }
 
     @Override
-    public void write(zserio.runtime.array.PackingContextNode contextNode,
-            zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
+    public void write(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamWriter out)
+            throws java.io.IOException
     {
-        contextNode.getContext().write(
+        final zserio.runtime.array.DeltaContext deltaContext = context.cast();
+        deltaContext.write(
                 new zserio.runtime.array.ArrayTraits.SignedBitFieldByteArrayTraits(8), out,
                 new zserio.runtime.array.ArrayElement.ByteArrayElement(value));
     }
@@ -114,11 +112,12 @@ public enum CreatorEnum implements zserio.runtime.io.Writer, zserio.runtime.Size
         return toEnum(in.readByte());
     }
 
-    public static CreatorEnum readEnum(zserio.runtime.array.PackingContextNode contextNode,
+    public static CreatorEnum readEnum(zserio.runtime.array.PackingContext context,
             zserio.runtime.io.BitStreamReader in) throws java.io.IOException
     {
+        final zserio.runtime.array.DeltaContext deltaContext = context.cast();
         return toEnum(((zserio.runtime.array.ArrayElement.ByteArrayElement)
-                contextNode.getContext().read(
+                deltaContext.read(
                         new zserio.runtime.array.ArrayTraits.SignedBitFieldByteArrayTraits(8), in)).get());
     }
 

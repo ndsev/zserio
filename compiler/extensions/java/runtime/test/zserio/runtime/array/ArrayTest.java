@@ -12,14 +12,12 @@ import java.math.BigInteger;
 
 import zserio.runtime.BitPositionUtil;
 import zserio.runtime.BitSizeOfCalculator;
-import zserio.runtime.HashCodeUtil;
-import zserio.runtime.SizeOf;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
-import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.Writer;
+
+import test_object.ArrayObject;
 
 public class ArrayTest
 {
@@ -464,19 +462,19 @@ public class ArrayTest
     @Test
     public void writeObjectArray() throws IOException
     {
-        final RawArray rawArray1 = new RawArray.ObjectRawArray<ArrayTestObject>(ArrayTestObject.class,
-                new ArrayTestObject[] {new ArrayTestObject((byte)1), new ArrayTestObject((byte)2)});
+        final RawArray rawArray1 = new RawArray.ObjectRawArray<ArrayObject>(ArrayObject.class,
+                new ArrayObject[] {new ArrayObject((byte)1), new ArrayObject((byte)2)});
         final int array1BitSizeOf = 2 * 3;
         final int array1AlignedBitSizeOf = 3 + 5 + 3;
-        final RawArray rawArray2 = new RawArray.ObjectRawArray<ArrayTestObject>(ArrayTestObject.class,
-                new ArrayTestObject[] {new ArrayTestObject((byte)1), new ArrayTestObject((byte)3)});
-        final RawArray emptyRawArray = new RawArray.ObjectRawArray<ArrayTestObject>(ArrayTestObject.class);
-        final ArrayTraits arrayTraits = new ArrayTraits.WriteObjectArrayTraits<ArrayTestObject>(
+        final RawArray rawArray2 = new RawArray.ObjectRawArray<ArrayObject>(ArrayObject.class,
+                new ArrayObject[] {new ArrayObject((byte)1), new ArrayObject((byte)3)});
+        final RawArray emptyRawArray = new RawArray.ObjectRawArray<ArrayObject>(ArrayObject.class);
+        final ArrayTraits arrayTraits = new ArrayTraits.WriteObjectArrayTraits<ArrayObject>(
                 new ArrayTestElementFactory());
         testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);
 
         final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);
-        final ArrayTestObject[] expectedRawArray = rawArray1.getRawArray();
+        final ArrayObject[] expectedRawArray = rawArray1.getRawArray();
         assertArrayEquals(expectedRawArray, normalArray1.getRawArray());
         assertEquals(expectedRawArray.length, normalArray1.size());
     }
@@ -754,181 +752,46 @@ public class ArrayTest
     @Test
     public void writeObjectPackedArray() throws IOException
     {
-        final RawArray rawArray = new RawArray.ObjectRawArray<ArrayTestObject>(ArrayTestObject.class,
-                new ArrayTestObject[] {
-                        new ArrayTestObject((byte)0),
-                        new ArrayTestObject((byte)1),
-                        new ArrayTestObject((byte)2),
-                        new ArrayTestObject((byte)3),
-                        new ArrayTestObject((byte)4)});
-        final RawArray emptyRawArray = new RawArray.ObjectRawArray<ArrayTestObject>(ArrayTestObject.class);
-        final ArrayTraits arrayTraits = new ArrayTraits.WriteObjectArrayTraits<ArrayTestObject>(
-                new ArrayTestElementFactory());
+        final RawArray rawArray = new RawArray.ObjectRawArray<ArrayObject>(ArrayObject.class,
+                new ArrayObject[] {
+                        new ArrayObject((byte)0),
+                        new ArrayObject((byte)1),
+                        new ArrayObject((byte)2),
+                        new ArrayObject((byte)3),
+                        new ArrayObject((byte)4)});
+        final RawArray emptyRawArray = new RawArray.ObjectRawArray<ArrayObject>(ArrayObject.class);
+        final ArrayTraits arrayTraits = new ArrayTraits.WritePackableObjectArrayTraits<ArrayObject>(
+                new PackableArrayTestElementFactory());
         testPackedArray(rawArray, emptyRawArray, arrayTraits);
     }
 
-    private static class ArrayTestObject implements Writer, SizeOf
+    private static class ArrayTestElementFactory implements ElementFactory<ArrayObject>
     {
-        public ArrayTestObject(zserio.runtime.io.BitStreamReader reader) throws IOException
-        {
-            read(reader);
-        }
-
-        public ArrayTestObject(PackingContextNode contextNode, zserio.runtime.io.BitStreamReader reader)
-                throws IOException
-        {
-            read(contextNode, reader);
-        }
-
-        public ArrayTestObject(byte value)
-        {
-            setValue(value);
-        }
-
-        public static void createPackingContext(PackingContextNode contextNode)
-        {
-            contextNode.createChild().createContext();
-        }
-
         @Override
-        public void initPackingContext(PackingContextNode contextNode)
+        public ArrayObject create(BitStreamReader reader, int index) throws IOException
         {
-            contextNode.getChildren().get(0).getContext().init(
-                    new ArrayTraits.BitFieldByteArrayTraits(3), new ArrayElement.ByteArrayElement(value));
+            return new ArrayObject(reader);
         }
-
-        @Override
-        public int bitSizeOf()
-        {
-            return bitSizeOf(0);
-        }
-
-        @Override
-        public int bitSizeOf(long bitPosition)
-        {
-            long endBitPosition = bitPosition;
-
-            endBitPosition += 3;
-
-            return (int)(endBitPosition - bitPosition);
-        }
-
-        @Override
-        public int bitSizeOf(PackingContextNode contextNode, long bitPosition)
-        {
-            long endBitPosition = bitPosition;
-
-            endBitPosition += contextNode.getChildren().get(0).getContext().bitSizeOf(
-                    new ArrayTraits.BitFieldByteArrayTraits(3), new ArrayElement.ByteArrayElement(value));
-
-            return (int)(endBitPosition - bitPosition);
-        }
-
-        public void setValue(byte value)
-        {
-            this.value = value;
-        }
-
-        @Override
-        public boolean equals(java.lang.Object obj)
-        {
-            if (obj instanceof ArrayTestObject)
-            {
-                final ArrayTestObject that = (ArrayTestObject)obj;
-                return value == that.value;
-            }
-
-            return false;
-        }
-
-        @Override
-        public int hashCode()
-        {
-            int result = HashCodeUtil.HASH_SEED;
-
-            result = HashCodeUtil.calcHashCode(result, value);
-
-            return result;
-        }
-
-        public void read(zserio.runtime.io.BitStreamReader reader) throws java.io.IOException
-        {
-            value = (byte)reader.readBits(3);
-        }
-
-        public void read(PackingContextNode contextNode, zserio.runtime.io.BitStreamReader reader)
-                throws IOException
-        {
-            value = ((ArrayElement.ByteArrayElement)
-                    contextNode.getChildren().get(0).getContext().read(
-                            new ArrayTraits.BitFieldByteArrayTraits(3), reader)).get();
-
-        }
-
-        @Override
-        public long initializeOffsets()
-        {
-            return initializeOffsets(0);
-        }
-
-        @Override
-        public long initializeOffsets(long bitPosition)
-        {
-            long endBitPosition = bitPosition;
-
-            endBitPosition += 3;
-
-            return endBitPosition;
-        }
-
-        @Override
-        public long initializeOffsets(PackingContextNode contextNode, long bitPosition)
-        {
-            long endBitPosition = bitPosition;
-
-            endBitPosition += contextNode.getChildren().get(0).getContext().bitSizeOf(
-                    new ArrayTraits.BitFieldByteArrayTraits(3), new ArrayElement.ByteArrayElement(value));
-
-            return endBitPosition;
-        }
-
-        @Override
-        public void write(zserio.runtime.io.BitStreamWriter writer)
-                throws java.io.IOException, zserio.runtime.ZserioError
-        {
-            writer.writeBits(value, 3);
-        }
-
-        @Override
-        public void write(PackingContextNode contextNode, BitStreamWriter writer) throws IOException
-        {
-            contextNode.getChildren().get(0).getContext().write(
-                    new ArrayTraits.BitFieldByteArrayTraits(3), writer,
-                    new ArrayElement.ByteArrayElement(value));
-        }
-
-        private byte value;
     }
 
-    private static class ArrayTestElementFactory implements ElementFactory<ArrayTestObject>
+    private static class PackableArrayTestElementFactory implements PackableElementFactory<ArrayObject>
     {
         @Override
-        public ArrayTestObject create(BitStreamReader reader, int index) throws IOException
+        public ArrayObject create(BitStreamReader reader, int index) throws IOException
         {
-            return new ArrayTestObject(reader);
+            return new ArrayObject(reader);
         }
 
         @Override
-        public ArrayTestObject create(PackingContextNode contextNode, BitStreamReader reader, int index)
-                throws IOException
+        public PackingContext createPackingContext()
         {
-            return new ArrayTestObject(contextNode, reader);
+            return new ArrayObject.ZserioPackingContext();
         }
 
         @Override
-        public void createPackingContext(PackingContextNode contextNode)
+        public ArrayObject create(PackingContext context, BitStreamReader in, int index) throws IOException
         {
-            ArrayTestObject.createPackingContext(contextNode);
+            return new ArrayObject(context, in);
         }
     }
 

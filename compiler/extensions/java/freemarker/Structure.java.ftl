@@ -22,10 +22,16 @@
 <#function extended_field_index numFields numExtendedFields fieldIndex>
     <#return fieldIndex - (numFields - numExtendedFields)>
 </#function>
-public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </#if>zserio.runtime.SizeOf
+public class ${name} implements <#if withWriterCode>zserio.runtime.io.<#if isPackable>Packable</#if>Writer, <#rt>
+        <#lt></#if>zserio.runtime.<#if isPackable>Packable</#if>SizeOf
 {
+<#if isPackable>
+    <@compound_declare_packing_context fieldList/>
+
+</#if>
     <@compound_constructors compoundConstructorsData, numExtendedFields/>
 <#if withWriterCode && fieldList?has_content>
+
     <#assign constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData/></#assign>
     <#if withCodeComments>
     /**
@@ -52,9 +58,9 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
         ${field.setterName}(<@field_argument_name field/>);
     </#list>
     }
-
 </#if>
 <#if withTypeInfoCode>
+
     <#if withCodeComments>
     /**
      * Gets static information about this Zserio type useful for generic introspection.
@@ -82,31 +88,20 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
                 fieldList, parameterList, functionList
         );
     }
-
 </#if>
-<#if withCodeComments>
-    /**
-     * Creates context for packed arrays.
-     * <p>
-     * Called only internally if packed arrays are used.
-     *
-     * @param contextNode Context for packed arrays.
-     */
-</#if>
-    public static void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
-    {
-<#list fieldList as field>
-    <@compound_create_packing_context_field field/>
-</#list>
-    }
+<#if isPackable>
 
     @Override
-    public void initPackingContext(zserio.runtime.array.PackingContextNode contextNode)
+    public void initPackingContext(zserio.runtime.array.PackingContext context)
     {
-<#list fieldList as field>
-    <@compound_init_packing_context_field field, field?index, 2/>
-</#list>
+    <#if uses_packing_context(fieldList)>
+        final ZserioPackingContext zserioContext = context.cast();
+        <#list fieldList as field>
+        <@compound_init_packing_context_field field, 2/>
+        </#list>
+    </#if>
     }
+</#if>
 
     @Override
     public int bitSizeOf()
@@ -129,22 +124,23 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
         return 0;
 </#if>
     }
+<#if isPackable>
 
     @Override
-    public int bitSizeOf(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
+    public int bitSizeOf(zserio.runtime.array.PackingContext context, long bitPosition)
     {
-<#if fieldList?has_content>
+    <#if uses_packing_context(fieldList)>
+        final ZserioPackingContext zserioContext = context.cast();
+    </#if>
         long endBitPosition = bitPosition;
 
     <#list fieldList as field>
-        <@compound_bitsizeof_field field, 2, true, field?index/>
+        <@compound_bitsizeof_field field, 2, true/>
     </#list>
 
         return (int)(endBitPosition - bitPosition);
-<#else>
-        return 0;
-</#if>
     }
+</#if>
 
     <@compound_parameter_accessors compoundParametersData/>
 <#list fieldList as field>
@@ -357,23 +353,26 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
     </#if>
 </#if>
     }
+<#if isPackable>
 
-<#if withCodeComments>
+    <#if withCodeComments>
     /**
      * Deserializes this Zserio object from the bit stream.
      * <p>
      * Called only internally if packed arrays are used.
      *
-     * @param contextNode Context for packed arrays.
+     * @param context Context for packed arrays.
      * @param in Bit stream reader to use.
      *
      * @throws IOException If the reading from the bit stream failed.
      */
-</#if>
-    public void read(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in)
+    </#if>
+    public void read(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamReader in)
             throws java.io.IOException
     {
-<#if fieldList?has_content>
+    <#if uses_packing_context(fieldList)>
+        final ZserioPackingContext zserioContext = context.cast();
+    </#if>
     <#list fieldList as field>
         <#if field.isExtended>
     if (zserio.runtime.BitPositionUtil.alignTo(java.lang.Byte.SIZE, in.getBitPosition()) < in.getBufferBitSize())
@@ -381,10 +380,10 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
         ++this.numExtendedFields;
         in.alignTo(java.lang.Byte.SIZE);
 
-        <@compound_read_field field, name, 3, true, field?index/>
+        <@compound_read_field field, name, 3, true/>
     }
         <#else>
-    <@compound_read_field field, name, 2, true, field?index/>
+    <@compound_read_field field, name, 2, true/>
         </#if>
         <#if field_has_next>
 
@@ -394,8 +393,8 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
 
         checkConstraints();
     </#if>
-</#if>
     }
+</#if>
 <#if withWriterCode>
 
     @Override
@@ -419,22 +418,23 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
         return bitPosition;
     </#if>
     }
+    <#if isPackable>
 
     @Override
-    public long initializeOffsets(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
+    public long initializeOffsets(zserio.runtime.array.PackingContext context, long bitPosition)
     {
-    <#if fieldList?has_content>
+        <#if uses_packing_context(fieldList)>
+        final ZserioPackingContext zserioContext = context.cast();
+        </#if>
         long endBitPosition = bitPosition;
 
         <#list fieldList as field>
-        <@compound_initialize_offsets_field field, 2, true, field?index/>
+        <@compound_initialize_offsets_field field, 2, true/>
         </#list>
 
         return endBitPosition;
-    <#else>
-        return bitPosition;
-    </#if>
     }
+    </#if>
 
     @Override
     public void write(zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
@@ -452,24 +452,27 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
         </#list>
     </#if>
     }
+    <#if isPackable>
 
     @Override
-    public void write(zserio.runtime.array.PackingContextNode contextNode,
-            zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
+    public void write(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamWriter out)
+            throws java.io.IOException
     {
-    <#if fieldList?has_content>
+        <#if uses_packing_context(fieldList)>
+        final ZserioPackingContext zserioContext = context.cast();
+        </#if>
         <#if hasFieldWithConstraint>
         checkConstraints();
 
         </#if>
         <#list fieldList as field>
-        <@compound_write_field field, name, 2, true, field?index/>
+        <@compound_write_field field, name, 2, true/>
             <#if field_has_next>
 
             </#if>
         </#list>
-    </#if>
     }
+    </#if>
 </#if>
 <#if hasFieldWithConstraint>
 

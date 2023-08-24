@@ -543,7 +543,8 @@ final class JavaNativeMapper
         {
             final PackageName packageName = compoundType.getPackage().getPackageName();
             final String name = compoundType.getName();
-            final JavaNativeType javaType = new NativeCompoundType(packageName, name, withWriterCode);
+            final JavaNativeType javaType = new NativeCompoundType(packageName, name, withWriterCode,
+                    compoundType.isPackable());
 
             return new JavaNativeTypes(javaType);
         }

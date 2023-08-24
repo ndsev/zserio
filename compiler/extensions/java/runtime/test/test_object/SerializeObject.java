@@ -5,8 +5,30 @@
 
 package test_object;
 
-public class SerializeObject implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
+public class SerializeObject implements zserio.runtime.io.PackableWriter, zserio.runtime.PackableSizeOf
 {
+    public static final class ZserioPackingContext extends zserio.runtime.array.PackingContext
+    {
+        public ZserioPackingContext()
+        {
+            param_ = new zserio.runtime.array.DeltaContext();
+            nested_ = new test_object.SerializeNested.ZserioPackingContext();
+        }
+
+        public zserio.runtime.array.DeltaContext getParam()
+        {
+            return param_;
+        }
+
+        public test_object.SerializeNested.ZserioPackingContext getNested()
+        {
+            return nested_;
+        }
+
+        private zserio.runtime.array.DeltaContext param_;
+        private test_object.SerializeNested.ZserioPackingContext nested_;
+    };
+
     public SerializeObject()
     {
     }
@@ -17,10 +39,10 @@ public class SerializeObject implements zserio.runtime.io.Writer, zserio.runtime
         read(in);
     }
 
-    public SerializeObject(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in)
+    public SerializeObject(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamReader in)
             throws java.io.IOException
     {
-        read(contextNode, in);
+        read(context, in);
     }
 
     public SerializeObject(
@@ -90,19 +112,13 @@ public class SerializeObject implements zserio.runtime.io.Writer, zserio.runtime
         );
     }
 
-    public static void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
-    {
-        contextNode.createChild().createContext();
-        test_object.SerializeNested.createPackingContext(contextNode.createChild());
-    }
-
     @Override
-    public void initPackingContext(zserio.runtime.array.PackingContextNode contextNode)
+    public void initPackingContext(zserio.runtime.array.PackingContext context)
     {
-        contextNode.getChildren().get(0).getContext().init(
-                new zserio.runtime.array.ArrayTraits.SignedBitFieldByteArrayTraits((int)(8)),
+        final ZserioPackingContext zserioContext = context.cast();
+        zserioContext.getParam().init(new zserio.runtime.array.ArrayTraits.SignedBitFieldByteArrayTraits((int)(8)),
                 new zserio.runtime.array.ArrayElement.ByteArrayElement(param_));
-        nested_.initPackingContext(contextNode.getChildren().get(1));
+        nested_.initPackingContext(zserioContext.getNested());
     }
 
     @Override
@@ -123,15 +139,14 @@ public class SerializeObject implements zserio.runtime.io.Writer, zserio.runtime
     }
 
     @Override
-    public int bitSizeOf(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
+    public int bitSizeOf(zserio.runtime.array.PackingContext context, long bitPosition)
     {
+        final ZserioPackingContext zserioContext = context.cast();
         long endBitPosition = bitPosition;
 
-        endBitPosition += contextNode.getChildren().get(0).getContext().bitSizeOf(
-                new zserio.runtime.array.ArrayTraits.SignedBitFieldByteArrayTraits((int)(8)),
+        endBitPosition += zserioContext.getParam().bitSizeOf(new zserio.runtime.array.ArrayTraits.SignedBitFieldByteArrayTraits((int)(8)),
                 new zserio.runtime.array.ArrayElement.ByteArrayElement(param_));
-        endBitPosition += nested_.bitSizeOf(contextNode.getChildren().get(1),
-                endBitPosition);
+        endBitPosition += nested_.bitSizeOf(zserioContext.getNested(), endBitPosition);
 
         return (int)(endBitPosition - bitPosition);
     }
@@ -190,14 +205,14 @@ public class SerializeObject implements zserio.runtime.io.Writer, zserio.runtime
         nested_ = new test_object.SerializeNested(in, (byte)(getParam()));
     }
 
-    public void read(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in)
+    public void read(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamReader in)
             throws java.io.IOException
     {
+        final ZserioPackingContext zserioContext = context.cast();
         param_ = ((zserio.runtime.array.ArrayElement.ByteArrayElement)
-                contextNode.getChildren().get(0).getContext().read(
-                        new zserio.runtime.array.ArrayTraits.SignedBitFieldByteArrayTraits((int)(8)), in)).get();
+                zserioContext.getParam().read(new zserio.runtime.array.ArrayTraits.SignedBitFieldByteArrayTraits((int)(8)), in)).get();
 
-        nested_ = new test_object.SerializeNested(contextNode.getChildren().get(1), in, (byte)(getParam()));
+        nested_ = new test_object.SerializeNested(zserioContext.getNested(), in, (byte)(getParam()));
     }
 
     @Override
@@ -218,15 +233,14 @@ public class SerializeObject implements zserio.runtime.io.Writer, zserio.runtime
     }
 
     @Override
-    public long initializeOffsets(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
+    public long initializeOffsets(zserio.runtime.array.PackingContext context, long bitPosition)
     {
+        final ZserioPackingContext zserioContext = context.cast();
         long endBitPosition = bitPosition;
 
-        endBitPosition += contextNode.getChildren().get(0).getContext().bitSizeOf(
-                new zserio.runtime.array.ArrayTraits.SignedBitFieldByteArrayTraits((int)(8)),
+        endBitPosition += zserioContext.getParam().bitSizeOf(new zserio.runtime.array.ArrayTraits.SignedBitFieldByteArrayTraits((int)(8)),
                 new zserio.runtime.array.ArrayElement.ByteArrayElement(param_));
-        endBitPosition = nested_.initializeOffsets(contextNode.getChildren().get(1),
-                endBitPosition);
+        endBitPosition = nested_.initializeOffsets(zserioContext.getNested(), endBitPosition);
 
         return endBitPosition;
     }
@@ -246,14 +260,14 @@ public class SerializeObject implements zserio.runtime.io.Writer, zserio.runtime
     }
 
     @Override
-    public void write(zserio.runtime.array.PackingContextNode contextNode,
-            zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
+    public void write(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamWriter out)
+            throws java.io.IOException
     {
-        contextNode.getChildren().get(0).getContext().write(
-                new zserio.runtime.array.ArrayTraits.SignedBitFieldByteArrayTraits((int)(8)), out,
+        final ZserioPackingContext zserioContext = context.cast();
+        zserioContext.getParam().write(new zserio.runtime.array.ArrayTraits.SignedBitFieldByteArrayTraits((int)(8)), out,
                 new zserio.runtime.array.ArrayElement.ByteArrayElement(param_));
 
-        nested_.write(contextNode.getChildren().get(1), out);
+        nested_.write(zserioContext.getNested(), out);
     }
 
     private byte param_;
