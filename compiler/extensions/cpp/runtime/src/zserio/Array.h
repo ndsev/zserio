@@ -92,18 +92,18 @@ void checkOffset(const OWNER_TYPE&, size_t, size_t)
 // call the initContext method properly on packed array traits
 template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT,
         typename std::enable_if<has_owner_type<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
-void packedArrayTraitsInitContext(const OWNER_TYPE& owner, PACKING_CONTEXT& packingContext,
+void packedArrayTraitsInitContext(const OWNER_TYPE& owner, PACKING_CONTEXT& context,
         typename PACKED_ARRAY_TRAITS::ElementType element)
 {
-    PACKED_ARRAY_TRAITS::initContext(owner, packingContext, element);
+    PACKED_ARRAY_TRAITS::initContext(owner, context, element);
 }
 
 template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT,
         typename std::enable_if<!has_owner_type<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
-void packedArrayTraitsInitContext(const OWNER_TYPE&, PACKING_CONTEXT& packingContext,
+void packedArrayTraitsInitContext(const OWNER_TYPE&, PACKING_CONTEXT& context,
         typename PACKED_ARRAY_TRAITS::ElementType element)
 {
-    PACKED_ARRAY_TRAITS::initContext(packingContext, element);
+    PACKED_ARRAY_TRAITS::initContext(context, element);
 }
 
 // calls the bitSizeOf method properly on array traits which have constant bit size
@@ -143,18 +143,18 @@ size_t arrayTraitsBitSizeOf(const OWNER_TYPE&, size_t bitPosition,
 // calls the bitSizeOf method properly on packed array traits which haven't constant bit size
 template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT,
         typename std::enable_if<has_owner_type<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
-size_t packedArrayTraitsBitSizeOf(const OWNER_TYPE& owner, PACKING_CONTEXT& packingContext,
+size_t packedArrayTraitsBitSizeOf(const OWNER_TYPE& owner, PACKING_CONTEXT& context,
         size_t bitPosition, const typename PACKED_ARRAY_TRAITS::ElementType& element)
 {
-    return PACKED_ARRAY_TRAITS::bitSizeOf(owner, packingContext, bitPosition, element);
+    return PACKED_ARRAY_TRAITS::bitSizeOf(owner, context, bitPosition, element);
 }
 
 template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT,
         typename std::enable_if<!has_owner_type<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
-size_t packedArrayTraitsBitSizeOf(const OWNER_TYPE&, PACKING_CONTEXT& packingContext, size_t bitPosition,
+size_t packedArrayTraitsBitSizeOf(const OWNER_TYPE&, PACKING_CONTEXT& context, size_t bitPosition,
         const typename PACKED_ARRAY_TRAITS::ElementType& element)
 {
-    return PACKED_ARRAY_TRAITS::bitSizeOf(packingContext, bitPosition, element);
+    return PACKED_ARRAY_TRAITS::bitSizeOf(context, bitPosition, element);
 }
 
 // calls the initializeOffsets method properly on array traits
@@ -186,28 +186,28 @@ size_t arrayTraitsInitializeOffsets(OWNER_TYPE&, size_t bitPosition, typename AR
 // calls the initializeOffsets method properly on packed array traits
 template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT,
         typename std::enable_if<has_owner_type<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
-size_t packedArrayTraitsInitializeOffsets(OWNER_TYPE& owner, PACKING_CONTEXT& packingContext,
+size_t packedArrayTraitsInitializeOffsets(OWNER_TYPE& owner, PACKING_CONTEXT& context,
         size_t bitPosition, typename PACKED_ARRAY_TRAITS::ElementType& element)
 {
-    return PACKED_ARRAY_TRAITS::initializeOffsets(owner, packingContext, bitPosition, element);
+    return PACKED_ARRAY_TRAITS::initializeOffsets(owner, context, bitPosition, element);
 }
 
 template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT,
         typename std::enable_if<!has_owner_type<PACKED_ARRAY_TRAITS>::value &&
                 !std::is_scalar<typename PACKED_ARRAY_TRAITS::ElementType>::value, int>::type = 0>
-size_t packedArrayTraitsInitializeOffsets(OWNER_TYPE&, PACKING_CONTEXT& packingContext,
+size_t packedArrayTraitsInitializeOffsets(OWNER_TYPE&, PACKING_CONTEXT& context,
         size_t bitPosition, const typename PACKED_ARRAY_TRAITS::ElementType& element)
 {
-    return PACKED_ARRAY_TRAITS::initializeOffsets(packingContext, bitPosition, element);
+    return PACKED_ARRAY_TRAITS::initializeOffsets(context, bitPosition, element);
 }
 
 template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT,
         typename std::enable_if<!has_owner_type<PACKED_ARRAY_TRAITS>::value &&
                 std::is_scalar<typename PACKED_ARRAY_TRAITS::ElementType>::value, int>::type = 0>
-size_t packedArrayTraitsInitializeOffsets(OWNER_TYPE&, PACKING_CONTEXT& packingContext,
+size_t packedArrayTraitsInitializeOffsets(OWNER_TYPE&, PACKING_CONTEXT& context,
         size_t bitPosition, typename PACKED_ARRAY_TRAITS::ElementType element)
 {
-    return PACKED_ARRAY_TRAITS::initializeOffsets(packingContext, bitPosition, element);
+    return PACKED_ARRAY_TRAITS::initializeOffsets(context, bitPosition, element);
 }
 
 // calls the read method properly on array traits
@@ -247,19 +247,19 @@ void arrayTraitsRead(const OWNER_TYPE&, RAW_ARRAY& rawArray, BitStreamReader& in
 template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY, typename PACKING_CONTEXT,
         typename std::enable_if<has_owner_type<PACKED_ARRAY_TRAITS>::value &&
                 has_allocator<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
-void packedArrayTraitsRead(OWNER_TYPE& owner, RAW_ARRAY& rawArray, PACKING_CONTEXT& packingContext,
+void packedArrayTraitsRead(OWNER_TYPE& owner, RAW_ARRAY& rawArray, PACKING_CONTEXT& context,
         BitStreamReader& in, size_t index)
 {
-    rawArray.push_back(PACKED_ARRAY_TRAITS::read(owner, packingContext, in, rawArray.get_allocator(), index));
+    rawArray.push_back(PACKED_ARRAY_TRAITS::read(owner, context, in, rawArray.get_allocator(), index));
 }
 
 template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY, typename PACKING_CONTEXT,
         typename std::enable_if<has_owner_type<PACKED_ARRAY_TRAITS>::value &&
                 !has_allocator<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
-void packedArrayTraitsRead(const OWNER_TYPE& owner, RAW_ARRAY& rawArray, PACKING_CONTEXT& packingContext,
+void packedArrayTraitsRead(const OWNER_TYPE& owner, RAW_ARRAY& rawArray, PACKING_CONTEXT& context,
         BitStreamReader& in, size_t index)
 {
-    rawArray.push_back(PACKED_ARRAY_TRAITS::read(owner, packingContext, in, index));
+    rawArray.push_back(PACKED_ARRAY_TRAITS::read(owner, context, in, index));
 }
 
 // note: types which doesn't have owner and have allocator are never packed (e.g. string, bytes ...)
@@ -268,10 +268,10 @@ void packedArrayTraitsRead(const OWNER_TYPE& owner, RAW_ARRAY& rawArray, PACKING
 template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY, typename PACKING_CONTEXT,
         typename std::enable_if<!has_owner_type<PACKED_ARRAY_TRAITS>::value &&
                 !has_allocator<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
-void packedArrayTraitsRead(const OWNER_TYPE&, RAW_ARRAY& rawArray, PACKING_CONTEXT& packingContext,
+void packedArrayTraitsRead(const OWNER_TYPE&, RAW_ARRAY& rawArray, PACKING_CONTEXT& context,
         BitStreamReader& in, size_t index)
 {
-    rawArray.push_back(PACKED_ARRAY_TRAITS::read(packingContext, in, index));
+    rawArray.push_back(PACKED_ARRAY_TRAITS::read(context, in, index));
 }
 
 // call the write method properly on array traits
@@ -294,18 +294,18 @@ void arrayTraitsWrite(const OWNER_TYPE&,
 // call the write method properly on packed array traits
 template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT,
         typename std::enable_if<has_owner_type<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
-void packedArrayTraitsWrite(const OWNER_TYPE& owner, PACKING_CONTEXT& packingContext,
+void packedArrayTraitsWrite(const OWNER_TYPE& owner, PACKING_CONTEXT& context,
         BitStreamWriter& out, const typename PACKED_ARRAY_TRAITS::ElementType& element)
 {
-    return PACKED_ARRAY_TRAITS::write(owner, packingContext, out, element);
+    return PACKED_ARRAY_TRAITS::write(owner, context, out, element);
 }
 
 template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT,
         typename std::enable_if<!has_owner_type<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
-void packedArrayTraitsWrite(const OWNER_TYPE&, PACKING_CONTEXT& packingContext,
+void packedArrayTraitsWrite(const OWNER_TYPE&, PACKING_CONTEXT& context,
         BitStreamWriter& out, const typename PACKED_ARRAY_TRAITS::ElementType& element)
 {
-    return PACKED_ARRAY_TRAITS::write(packingContext, out, element);
+    return PACKED_ARRAY_TRAITS::write(context, out, element);
 }
 
 } // namespace detail
@@ -706,19 +706,19 @@ struct PackedArrayMethods
 
         if (arrayLength > 0)
         {
-            PackingContext packingContext;
+            PackingContext context;
 
             for (size_t index = 0; index < arrayLength; ++index)
             {
                 detail::packedArrayTraitsInitContext<PackedArrayTraits<ArrayTraits>>(
-                        owner, packingContext, rawArray[index]);
+                        owner, context, rawArray[index]);
             }
 
             for (size_t index = 0; index < arrayLength; ++index)
             {
                 ArrayMethods<ARRAY_BASE, ARRAY_TYPE>::alignBitPosition(endBitPosition);
                 endBitPosition += detail::packedArrayTraitsBitSizeOf<PackedArrayTraits<ArrayTraits>>(
-                        owner, packingContext, endBitPosition, rawArray[index]);
+                        owner, context, endBitPosition, rawArray[index]);
             }
         }
 
@@ -736,19 +736,19 @@ struct PackedArrayMethods
 
         if (arrayLength > 0)
         {
-            PackingContext packingContext;
+            PackingContext context;
 
             for (size_t index = 0; index < arrayLength; ++index)
             {
                 detail::packedArrayTraitsInitContext<PackedArrayTraits<ArrayTraits>>(
-                        owner, packingContext, rawArray[index]);
+                        owner, context, rawArray[index]);
             }
 
             for (size_t index = 0; index < arrayLength; ++index)
             {
                 ArrayMethods<ARRAY_BASE, ARRAY_TYPE>::initializeOffset(owner, index, endBitPosition);
                 endBitPosition = detail::packedArrayTraitsInitializeOffsets<PackedArrayTraits<ArrayTraits>>(
-                        owner, packingContext, endBitPosition, rawArray[index]);
+                        owner, context, endBitPosition, rawArray[index]);
             }
         }
 
@@ -767,13 +767,13 @@ struct PackedArrayMethods
         {
             rawArray.reserve(readLength);
 
-            PackingContext packingContext;
+            PackingContext context;
 
             for (size_t index = 0; index < readLength; ++index)
             {
                 ArrayMethods<ARRAY_BASE, ARRAY_TYPE>::alignAndCheckOffset(in, owner, index);
                 detail::packedArrayTraitsRead<PackedArrayTraits<ArrayTraits>>(
-                        owner, rawArray, packingContext, in, index);
+                        owner, rawArray, context, in, index);
             }
         }
     }
@@ -787,19 +787,19 @@ struct PackedArrayMethods
 
         if (arrayLength > 0)
         {
-            PackingContext packingContext;
+            PackingContext context;
 
             for (size_t index = 0; index < arrayLength; ++index)
             {
                 detail::packedArrayTraitsInitContext<PackedArrayTraits<ArrayTraits>>(
-                        owner, packingContext, rawArray[index]);
+                        owner, context, rawArray[index]);
             }
 
             for (size_t index = 0; index < arrayLength; ++index)
             {
                 ArrayMethods<ARRAY_BASE, ARRAY_TYPE>::alignAndCheckOffset(out, owner, index);
                 detail::packedArrayTraitsWrite<PackedArrayTraits<ArrayTraits>>(
-                        owner, packingContext, out, rawArray[index]);
+                        owner, context, out, rawArray[index]);
             }
         }
     }
