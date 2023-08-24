@@ -77,7 +77,6 @@ ${I}throw ::zserio::CppRuntimeException("No match in choice ${name}!");
 </#macro>
 <#macro choice_switch memberActionMacroName noMatchMacroName selectorExpression indent packed=false>
     <#local I>${""?left_pad(indent * 4)}</#local>
-    <#local fieldIndex=0>
     <#if canUseNativeSwitch>
 ${I}switch (${selectorExpression})
 ${I}{
@@ -85,14 +84,12 @@ ${I}{
             <#list caseMember.expressionList as expression>
 ${I}case ${expression}:
             </#list>
-        <@.vars[memberActionMacroName] caseMember, packed, fieldIndex, indent+1/>
-            <#if caseMember.compoundField??><#local fieldIndex+=1></#if>
+        <@.vars[memberActionMacroName] caseMember, packed, indent+1/>
         </#list>
         <#if !isDefaultUnreachable>
 ${I}default:
             <#if defaultMember??>
-        <@.vars[memberActionMacroName] defaultMember, packed, fieldIndex, indent+1/>
-                <#if defaultMember.compoundField??><#local fieldIndex+=1></#if>
+        <@.vars[memberActionMacroName] defaultMember, packed, indent+1/>
             <#else>
         <@.vars[noMatchMacroName] name, indent+1/>
             </#if>
@@ -108,16 +105,14 @@ ${I}<#if caseMember?index != 0>else </#if>if (<@choice_selector_condition caseMe
 ${I}else
             </#if>
 ${I}{
-        <@.vars[memberActionMacroName] caseMember, packed, fieldIndex, indent+1/>
-            <#if caseMember.compoundField??><#local fieldIndex+=1></#if>
+        <@.vars[memberActionMacroName] caseMember, packed, indent+1/>
 ${I}}
         </#list>
         <#if !isDefaultUnreachable>
 ${I}else
 ${I}{
             <#if defaultMember??>
-        <@.vars[memberActionMacroName] defaultMember, packed, fieldIndex, indent+1/>
-                <#if defaultMember.compoundField??><#local fieldIndex+=1></#if>
+        <@.vars[memberActionMacroName] defaultMember, packed, indent+1/>
             <#else>
         <@.vars[noMatchMacroName] name, indent+1/>
             </#if>
@@ -164,7 +159,7 @@ const ${types.typeInfo.name}& ${name}::typeInfo()
 }
 
     <#if withReflectionCode>
-<#macro choice_get_choice member packed index indent>
+<#macro choice_get_choice member packed indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
 ${I}return ::zserio::makeStringView("${member.compoundField.name}");
@@ -292,7 +287,7 @@ ${I}return {};
 <@compound_initialize_definition compoundConstructorsData, needsChildrenInitialization/>
 
 </#if>
-<#macro choice_initialize_children_member member packed index indent>
+<#macro choice_initialize_children_member member packed indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
     <@compound_initialize_children_field member.compoundField, indent/>
@@ -347,7 +342,7 @@ void ${name}::${field.setterName}(<@field_raw_cpp_type_name field/>&& <@field_ar
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}return UNDEFINED_CHOICE;
 </#macro>
-<#macro choice_tag_member member packed index indent>
+<#macro choice_tag_member member packed indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
 ${I}return <@choice_tag_name member.compoundField/>;
@@ -365,7 +360,7 @@ ${name}::ChoiceTag ${name}::choiceTag() const
 }
 <#if isPackable>
 
-<#macro init_packing_context_member member packed index indent>
+<#macro init_packing_context_member member packed indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
     <@compound_init_packing_context_field member.compoundField, indent/>
@@ -382,7 +377,7 @@ void ${name}::initPackingContext(${name}::ZserioPackingContext&<#if uses_packing
 }
 </#if>
 
-<#macro choice_bitsizeof_member member packed index indent>
+<#macro choice_bitsizeof_member member packed indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
     <@compound_bitsizeof_field member.compoundField, indent, packed/>
@@ -419,7 +414,7 @@ size_t ${name}::bitSizeOf(${name}::ZserioPackingContext&<#if uses_packing_contex
 </#if>
 <#if withWriterCode>
 
-<#macro choice_initialize_offsets_member member packed index indent>
+<#macro choice_initialize_offsets_member member packed indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
     <@compound_initialize_offsets_field member.compoundField, indent, packed/>
@@ -456,7 +451,7 @@ size_t ${name}::initializeOffsets(${name}::ZserioPackingContext&<#if uses_packin
     </#if>
 </#if>
 
-<#macro choice_compare_member member packed index indent>
+<#macro choice_compare_member member packed indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
 ${I}return (!m_objectChoice.hasValue() && !other.m_objectChoice.hasValue()) ||
@@ -486,7 +481,7 @@ bool ${name}::operator==(const ${name}& other) const
 ${I}break;
     </#if>
 </#macro>
-<#macro choice_hash_code_member member packed index indent>
+<#macro choice_hash_code_member member packed indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
 ${I}result = ::zserio::calcHashCode(result, m_objectChoice.get<<@field_cpp_type_name member.compoundField/>>());
@@ -513,7 +508,7 @@ uint32_t ${name}::hashCode() const
 }
 <#if withWriterCode>
 
-<#macro choice_write_member member packed index indent>
+<#macro choice_write_member member packed indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
     <@compound_write_field member.compoundField, name, indent, packed/>
@@ -541,7 +536,7 @@ void ${name}::write(${name}::ZserioPackingContext&<#if uses_packing_context(fiel
 </#if>
 <#if fieldList?has_content>
 
-<#macro choice_read_member member packed index indent>
+<#macro choice_read_member member packed indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
         <#if needs_field_read_local_variable(member.compoundField)>
@@ -568,7 +563,7 @@ ${types.anyHolder.name} ${name}::readObject(${name}::ZserioPackingContext&<#if u
 }
 </#if>
 
-<#macro choice_copy_object member packed index indent>
+<#macro choice_copy_object member packed indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
 ${I}return ::zserio::allocatorPropagatingCopy<<@field_cpp_type_name member.compoundField/>>(m_objectChoice, allocator);
