@@ -112,27 +112,30 @@ public class Array
         if (arrayType == ArrayType.AUTO)
             endBitPosition += BitSizeOfCalculator.getBitSizeOfVarSize(size);
 
-        if (arrayTraits.isBitSizeOfConstant() && size > 0)
+        if (size > 0)
         {
-            final int elementSize = arrayTraits.bitSizeOf(endBitPosition, ArrayElement.Dummy);
-            if (offsetInitializer == null)
+            if (arrayTraits.isBitSizeOfConstant())
             {
-                endBitPosition += size * elementSize;
+                final int elementSize = arrayTraits.bitSizeOf(endBitPosition, ArrayElement.Dummy);
+                if (offsetInitializer == null)
+                {
+                    endBitPosition += size * elementSize;
+                }
+                else
+                {
+                    endBitPosition = BitPositionUtil.alignTo(Byte.SIZE, endBitPosition);
+                    endBitPosition += elementSize + (size - 1) * BitPositionUtil.alignTo(Byte.SIZE, elementSize);
+                }
             }
             else
             {
-                endBitPosition = BitPositionUtil.alignTo(Byte.SIZE, endBitPosition);
-                endBitPosition += elementSize + (size - 1) * BitPositionUtil.alignTo(Byte.SIZE, elementSize);
-            }
-        }
-        else
-        {
-            for (int index = 0; index < size; ++index)
-            {
-                if (offsetInitializer != null)
-                    endBitPosition = BitPositionUtil.alignTo(Byte.SIZE, endBitPosition);
+                for (int index = 0; index < size; ++index)
+                {
+                    if (offsetInitializer != null)
+                        endBitPosition = BitPositionUtil.alignTo(Byte.SIZE, endBitPosition);
 
-                endBitPosition += arrayTraits.bitSizeOf(endBitPosition, rawArray.getElement(index));
+                    endBitPosition += arrayTraits.bitSizeOf(endBitPosition, rawArray.getElement(index));
+                }
             }
         }
 

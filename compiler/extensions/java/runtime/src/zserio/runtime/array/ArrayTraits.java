@@ -1368,11 +1368,6 @@ public interface ArrayTraits
                     "ArrayTraits: write is not implemented for read only ObjectArrayTraits!");
         }
 
-        protected ElementFactory<E> getElementFactory()
-        {
-            return elementFactory;
-        }
-
         private final ElementFactory<E> elementFactory;
     }
 
@@ -1390,12 +1385,6 @@ public interface ArrayTraits
         public WriteObjectArrayTraits(ElementFactory<E> elementFactory)
         {
             super(elementFactory);
-        }
-
-        @Override
-        public PackedArrayTraits getPackedArrayTraits()
-        {
-            return null;
         }
 
         @SuppressWarnings("unchecked")
