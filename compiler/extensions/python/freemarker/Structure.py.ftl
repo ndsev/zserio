@@ -86,34 +86,36 @@ class ${name}:
         self.read(zserio_reader)
 
         return self
+<#if isPackable>
 
     @classmethod
     def from_reader_packed(
             cls: typing.Type['${name}'],
-            zserio_context_node: zserio.array.PackingContextNode,
+            zserio_context: ${name}.ZserioPackingContext,
             zserio_reader: zserio.BitStreamReader<#if constructorAnnotatedParamList?has_content>,
             <#lt>${constructorAnnotatedParamList}</#if>) -> '${name}':
-<#if withCodeComments>
+    <#if withCodeComments>
         """
         Returns new object instance constructed from bit stream reader.
 
         Called only internally if packed arrays are used.
 
-        :param zserio_context_node: Context for packed arrays.
+        :param zserio_context: Context for packed arrays.
         :param zserio_reader: Bit stream reader to use.
         <@compound_parameter_doc_comment compoundParametersData/>
         """
 
-</#if>
+    </#if>
         self = object.__new__(cls)
         <@compound_constructor_parameter_assignments compoundParametersData/>
-<#if (numExtendedFields > 0)>
+    <#if (numExtendedFields > 0)>
         self._num_extended_fields = 0
-</#if>
+    </#if>
 
-        self.read_packed(zserio_context_node, zserio_reader)
+        self.read_packed(zserio_context, zserio_reader)
 
         return self
+</#if>
 <#if withTypeInfoCode>
 
     @staticmethod
@@ -347,44 +349,26 @@ ${I}<#rt>
     </#if>
         return ${function.resultExpression}
 </#list>
+<#if isPackable>
 
-    @staticmethod
-    def create_packing_context(zserio_context_node: zserio.array.PackingContextNode) -> None:
-<#if withCodeComments>
-        """
-        Creates context for packed arrays.
-
-        Called only internally if packed arrays are used.
-
-        :param zserio_context_node: Context for packed arrays.
-        """
-
-</#if>
-<#if fieldList?has_content>
-    <#list fieldList as field>
-        <@compound_create_packing_context_field field/>
-    </#list>
-<#else>
-        del zserio_context_node
-</#if>
-
-    def init_packing_context(self, zserio_context_node: zserio.array.PackingContextNode) -> None:
-<#if withCodeComments>
+    def init_packing_context(self, zserio_context: ${name}.ZserioPackingContext) -> None:
+    <#if withCodeComments>
         """
         Initializes context for packed arrays.
 
         Called only internally if packed arrays are used.
 
-        :param zserio_context_node: Context for packed arrays.
+        :param zserio_context: Context for packed arrays.
         """
 
-</#if>
-<#if compound_needs_packing_context_node(fieldList)>
-    <#list fieldList as field>
-        <@compound_init_packing_context_field field, field?index, 2/>
-    </#list>
-<#else>
-        del zserio_context_node
+    </#if>
+    <#if uses_packing_context(fieldList)>
+        <#list fieldList as field>
+        <@compound_init_packing_context_field field, 2/>
+        </#list>
+    <#else>
+        del zserio_context
+    </#if>
 </#if>
 
     def bitsizeof(self, bitposition: int = 0) -> int:
@@ -410,38 +394,39 @@ ${I}<#rt>
 
         return 0
 </#if>
+<#if isPackable>
 
-    def bitsizeof_packed(self, zserio_context_node: zserio.array.PackingContextNode,
-                         bitposition: int = 0) -> int:
-<#if withCodeComments>
+    def bitsizeof_packed(self, zserio_context: ${name}.ZserioPackingContext, bitposition: int = 0) -> int:
+    <#if withCodeComments>
         """
         Calculates size of the serialized object in bits for packed arrays.
 
         Called only internally if packed arrays are used.
 
-        :param zserio_context_node: Context for packed arrays.
+        :param zserio_context: Context for packed arrays.
         :param bitposition: Bit stream position calculated from zero where the object will be serialized.
 
         :returns: Number of bits which are needed to store serialized object.
         """
 
-</#if>
-<#if fieldList?has_content>
-    <#if !compound_needs_packing_context_node(fieldList)>
-        del zserio_context_node
-
     </#if>
+    <#if fieldList?has_content>
+        <#if !uses_packing_context(fieldList)>
+        del zserio_context
+
+        </#if>
         end_bitposition = bitposition
-    <#list fieldList as field>
-        <@compound_bitsizeof_field field, 2, true, field?index/>
-    </#list>
+        <#list fieldList as field>
+        <@compound_bitsizeof_field field, 2, true/>
+        </#list>
 
         return end_bitposition - bitposition
-<#else>
-        del zserio_context_node
+    <#else>
+        del zserio_context
         del bitposition
 
         return 0
+    </#if>
 </#if>
 <#if withWriterCode>
 
@@ -468,37 +453,38 @@ ${I}<#rt>
     <#else>
         return bitposition
     </#if>
+    <#if isPackable>
 
-    def initialize_offsets_packed(self, zserio_context_node: zserio.array.PackingContextNode,
-                                  bitposition: int) -> int:
-    <#if withCodeComments>
+    def initialize_offsets_packed(self, zserio_context: ${name}.ZserioPackingContext, bitposition: int) -> int:
+        <#if withCodeComments>
         """
         Initializes offsets in this Zserio type and in all its fields for packed arrays.
 
         This method sets offsets in this Zserio type and in all fields recursively.
         Called only internally if packed arrays are used.
 
-        :param zserio_context_node: Context for packed arrays.
+        :param zserio_context: Context for packed arrays.
         :param bitposition: Bit stream position calculated from zero where the object will be serialized.
 
         :returns: Bit stream position calculated from zero updated to the first byte after serialized object.
         """
 
-    </#if>
-    <#if fieldList?has_content>
-        <#if !compound_needs_packing_context_node(fieldList)>
-        del zserio_context_node
-
         </#if>
+        <#if fieldList?has_content>
+            <#if !uses_packing_context(fieldList)>
+        del zserio_context
+
+            </#if>
         end_bitposition = bitposition
-        <#list fieldList as field>
-        <@compound_initialize_offsets_field field, 2, true, field?index/>
-        </#list>
+            <#list fieldList as field>
+        <@compound_initialize_offsets_field field, 2, true/>
+            </#list>
 
         return end_bitposition
-    <#else>
-        del zserio_context_node
+        <#else>
+        del zserio_context
         return bitposition
+        </#if>
     </#if>
 </#if>
 
@@ -542,27 +528,27 @@ ${I}<#rt>
 <#else>
         del zserio_reader
 </#if>
+<#if isPackable>
 
-    def read_packed(self, zserio_context_node: zserio.array.PackingContextNode,
-                    zserio_reader: zserio.BitStreamReader) -> None:
-<#if withCodeComments>
+    def read_packed(self, zserio_context: ${name}.ZserioPackingContext, zserio_reader: zserio.BitStreamReader) -> None:
+    <#if withCodeComments>
         """
         Deserializes this Zserio object from the bit stream.
 
         Called only internally if packed arrays are used.
 
-        :param zserio_context_node: Context for packed arrays.
+        :param zserio_context: Context for packed arrays.
         :param zserio_reader: Bit stream reader to use.
         """
 
-</#if>
-<#if fieldList?has_content>
-    <#if !compound_needs_packing_context_node(fieldList)>
-        del zserio_context_node
-
     </#if>
-    <#list fieldList as field>
-        <#if field.isExtended>
+    <#if fieldList?has_content>
+        <#if !uses_packing_context(fieldList)>
+        del zserio_context
+
+        </#if>
+        <#list fieldList as field>
+            <#if field.isExtended>
         if zserio.bitposition.alignto(8, zserio_reader.bitposition) >= zserio_reader.buffer_bitsize:
             <@field_argument_name field/> = <@field_default_value field/>
             <@compound_setter_field field, 3/>
@@ -570,17 +556,18 @@ ${I}<#rt>
             self._num_extended_fields += 1
             zserio_reader.alignto(8)
 
-            <@compound_read_field field, name, 3, true, field?index/>
-        <#else>
-        <@compound_read_field field, name, 2, true, field?index/>
-        </#if>
-        <#if field?has_next>
+            <@compound_read_field field, name, 3, true/>
+            <#else>
+        <@compound_read_field field, name, 2, true/>
+            </#if>
+            <#if field?has_next>
 
-        </#if>
-    </#list>
-<#else>
-        del zserio_context_node
+            </#if>
+        </#list>
+    <#else>
+        del zserio_context
         del zserio_reader
+    </#if>
 </#if>
 <#if withWriterCode>
 
@@ -610,40 +597,43 @@ ${I}<#rt>
     <#else>
         del zserio_writer
     </#if>
+    <#if isPackable>
 
-    def write_packed(self, zserio_context_node: zserio.array.PackingContextNode,
+    def write_packed(self, zserio_context: ${name}.ZserioPackingContext,
                      zserio_writer: zserio.BitStreamWriter) -> None:
-    <#if withCodeComments>
+        <#if withCodeComments>
         """
         Serializes this Zserio object to the bit stream.
 
         Called only internally if packed arrays are used.
 
-        :param zserio_context_node: Context for packed arrays.
+        :param zserio_context: Context for packed arrays.
         :param zserio_writer: Bit stream writer where to serialize this Zserio object.
         """
 
-    </#if>
-    <#if fieldList?has_content>
-        <#if !compound_needs_packing_context_node(fieldList)>
-        del zserio_context_node
-
         </#if>
-        <#list fieldList as field>
-        <@compound_write_field field, name, 2, true, field?index/>
-            <#if field?has_next>
+        <#if fieldList?has_content>
+            <#if !uses_packing_context(fieldList)>
+        del zserio_context
 
             </#if>
-        </#list>
-    <#else>
-        del zserio_context_node
+            <#list fieldList as field>
+        <@compound_write_field field, name, 2, true/>
+                <#if field?has_next>
+
+                </#if>
+            </#list>
+        <#else>
+        del zserio_context
         del zserio_writer
+        </#if>
     </#if>
 </#if>
+    <@define_packing_context isPackable, fieldList/>
 <#list fieldList as field>
     <@define_offset_checker field, name/>
     <#if withWriterCode>
-        <@define_offset_setter field/>
+    <@define_offset_setter field/>
     </#if>
-    <@define_element_creator field, name/>
+    <@define_element_factory field, name/>
 </#list>

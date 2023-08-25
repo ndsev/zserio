@@ -31,9 +31,10 @@ class SerializeEnum(enum.Enum):
 
     @classmethod
     def from_reader_packed(cls: typing.Type['SerializeEnum'],
-                           context_node: zserio.array.PackingContextNode,
+                           delta_context: zserio.array.DeltaContext,
                            reader: zserio.BitStreamReader) -> 'SerializeEnum':
-        return cls(context_node.context.read(zserio.array.BitFieldArrayTraits(8), reader))
+        return cls(delta_context.read(zserio.array.BitFieldArrayTraits(8),
+                                      reader))
 
     @staticmethod
     def type_info():
@@ -54,31 +55,28 @@ class SerializeEnum(enum.Enum):
         return result
 
     @staticmethod
-    def create_packing_context(context_node: zserio.array.PackingContextNode) -> None:
-        context_node.create_context()
+    def create_packing_context() -> zserio.array.DeltaContext:
+        return zserio.array.DeltaContext()
 
-    def init_packing_context(self, context_node: zserio.array.PackingContextNode) -> None:
-        context_node.context.init(zserio.array.BitFieldArrayTraits(8),
-                                  self.value)
+    def init_packing_context(self, delta_context: zserio.array.DeltaContext) -> None:
+        delta_context.init(zserio.array.BitFieldArrayTraits(8),
+                           self.value)
 
     def bitsizeof(self, _bitposition: int = 0) -> int:
         return 8
 
-    def bitsizeof_packed(self, context_node: zserio.array.PackingContextNode,
-                         _bitposition: int) -> int:
-        return context_node.context.bitsizeof(zserio.array.BitFieldArrayTraits(8),
-                                              self.value)
+    def bitsizeof_packed(self, delta_context: zserio.array.DeltaContext, _bitposition: int) -> int:
+        return delta_context.bitsizeof(zserio.array.BitFieldArrayTraits(8),
+                                       self.value)
 
     def initialize_offsets(self, bitposition: int = 0) -> int:
         return bitposition + self.bitsizeof(bitposition)
 
-    def initialize_offsets_packed(self, context_node: zserio.array.PackingContextNode,
-                                  bitposition: int) -> int:
-        return bitposition + self.bitsizeof_packed(context_node, bitposition)
+    def initialize_offsets_packed(self, delta_context: zserio.array.DeltaContext, bitposition: int) -> int:
+        return bitposition + self.bitsizeof_packed(delta_context, bitposition)
 
     def write(self, writer: zserio.BitStreamWriter) -> None:
         writer.write_bits(self.value, 8)
 
-    def write_packed(self, context_node: zserio.array.PackingContextNode,
-                     writer: zserio.BitStreamWriter) -> None:
-        context_node.context.write(zserio.array.BitFieldArrayTraits(8), writer, self.value)
+    def write_packed(self, delta_context: zserio.array.DeltaContext, writer: zserio.BitStreamWriter) -> None:
+        delta_context.write(zserio.array.BitFieldArrayTraits(8), writer, self.value)

@@ -29,11 +29,11 @@ class SerializeObject:
     @classmethod
     def from_reader_packed(
             cls: typing.Type['SerializeObject'],
-            zserio_context_node: zserio.array.PackingContextNode,
+            zserio_context: SerializeObject.ZserioPackingContext,
             zserio_reader: zserio.BitStreamReader) -> 'SerializeObject':
         self = object.__new__(cls)
 
-        self.read_packed(zserio_context_node, zserio_reader)
+        self.read_packed(zserio_context, zserio_reader)
 
         return self
 
@@ -90,14 +90,9 @@ class SerializeObject:
     def nested(self, nested_: typing.Union[test_object.serialize_nested.SerializeNested, None]) -> None:
         self._nested_ = nested_
 
-    @staticmethod
-    def create_packing_context(zserio_context_node: zserio.array.PackingContextNode) -> None:
-        zserio_context_node.create_child().create_context()
-        test_object.serialize_nested.SerializeNested.create_packing_context(zserio_context_node.create_child())
-
-    def init_packing_context(self, zserio_context_node: zserio.array.PackingContextNode) -> None:
-        zserio_context_node.get_child_context(0).init(zserio.array.SignedBitFieldArrayTraits(8), self._param_)
-        self._nested_.init_packing_context(zserio_context_node.children[1])
+    def init_packing_context(self, zserio_context: SerializeObject.ZserioPackingContext) -> None:
+        zserio_context.param.init(zserio.array.SignedBitFieldArrayTraits(8), self._param_)
+        self._nested_.init_packing_context(zserio_context.nested)
 
     def bitsizeof(self, bitposition: int = 0) -> int:
         end_bitposition = bitposition
@@ -106,11 +101,10 @@ class SerializeObject:
 
         return end_bitposition - bitposition
 
-    def bitsizeof_packed(self, zserio_context_node: zserio.array.PackingContextNode,
-                         bitposition: int = 0) -> int:
+    def bitsizeof_packed(self, zserio_context: SerializeObject.ZserioPackingContext, bitposition: int = 0) -> int:
         end_bitposition = bitposition
-        end_bitposition += zserio_context_node.get_child_context(0).bitsizeof(zserio.array.SignedBitFieldArrayTraits(8), self._param_)
-        end_bitposition += self._nested_.bitsizeof_packed(zserio_context_node.children[1], end_bitposition)
+        end_bitposition += zserio_context.param.bitsizeof(zserio.array.SignedBitFieldArrayTraits(8), self._param_)
+        end_bitposition += self._nested_.bitsizeof_packed(zserio_context.nested, end_bitposition)
 
         return end_bitposition - bitposition
 
@@ -121,11 +115,10 @@ class SerializeObject:
 
         return end_bitposition
 
-    def initialize_offsets_packed(self, zserio_context_node: zserio.array.PackingContextNode,
-                                  bitposition: int) -> int:
+    def initialize_offsets_packed(self, zserio_context: SerializeObject.ZserioPackingContext, bitposition: int) -> int:
         end_bitposition = bitposition
-        end_bitposition += zserio_context_node.get_child_context(0).bitsizeof(zserio.array.SignedBitFieldArrayTraits(8), self._param_)
-        end_bitposition = self._nested_.initialize_offsets_packed(zserio_context_node.children[1], end_bitposition)
+        end_bitposition += zserio_context.param.bitsizeof(zserio.array.SignedBitFieldArrayTraits(8), self._param_)
+        end_bitposition = self._nested_.initialize_offsets_packed(zserio_context.nested, end_bitposition)
 
         return end_bitposition
 
@@ -133,11 +126,10 @@ class SerializeObject:
         self._param_ = zserio_reader.read_signed_bits(8)
         self._nested_ = test_object.serialize_nested.SerializeNested.from_reader(zserio_reader, self._param_)
 
-    def read_packed(self, zserio_context_node: zserio.array.PackingContextNode,
-                    zserio_reader: zserio.BitStreamReader) -> None:
-        self._param_ = zserio_context_node.get_child_context(0).read(zserio.array.SignedBitFieldArrayTraits(8), zserio_reader)
+    def read_packed(self, zserio_context: SerializeObject.ZserioPackingContext, zserio_reader: zserio.BitStreamReader) -> None:
+        self._param_ = zserio_context.param.read(zserio.array.SignedBitFieldArrayTraits(8), zserio_reader)
 
-        self._nested_ = test_object.serialize_nested.SerializeNested.from_reader_packed(zserio_context_node.children[1], zserio_reader, self._param_)
+        self._nested_ = test_object.serialize_nested.SerializeNested.from_reader_packed(zserio_context.nested, zserio_reader, self._param_)
 
     def write(self, zserio_writer: zserio.BitStreamWriter) -> None:
         zserio_writer.write_signed_bits(self._param_, 8)
@@ -148,12 +140,25 @@ class SerializeObject:
                                                 f"{self._nested_.param} != {self._param_}!")
         self._nested_.write(zserio_writer)
 
-    def write_packed(self, zserio_context_node: zserio.array.PackingContextNode,
+    def write_packed(self, zserio_context: SerializeObject.ZserioPackingContext,
                      zserio_writer: zserio.BitStreamWriter) -> None:
-        zserio_context_node.get_child_context(0).write(zserio.array.SignedBitFieldArrayTraits(8), zserio_writer, self._param_)
+        zserio_context.param.write(zserio.array.SignedBitFieldArrayTraits(8), zserio_writer, self._param_)
 
         # check parameters
         if self._nested_.param != (self._param_):
             raise zserio.PythonRuntimeException("Wrong parameter param for field SerializeObject.nested: "
                                                 f"{self._nested_.param} != {self._param_}!")
-        self._nested_.write_packed(zserio_context_node.children[1], zserio_writer)
+        self._nested_.write_packed(zserio_context.nested, zserio_writer)
+
+    class ZserioPackingContext:
+        def __init__(self):
+            self._param_ = zserio.array.DeltaContext()
+            self._nested_ = test_object.serialize_nested.SerializeNested.ZserioPackingContext()
+
+        @property
+        def param(self):
+            return self._param_
+
+        @property
+        def nested(self):
+            return self._nested_

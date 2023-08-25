@@ -268,9 +268,8 @@ public class CompoundFieldTemplateData
 
         public static class InstantiatedParameterData
         {
-            public InstantiatedParameterData(TemplateDataContext context,
-                    InstantiatedParameter instantiatedParameter, IncludeCollector includeCollector)
-                            throws ZserioExtensionException
+            public InstantiatedParameterData(TemplateDataContext context, InstantiatedParameter instantiatedParameter,
+                    IncludeCollector includeCollector) throws ZserioExtensionException
             {
                 final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
                 final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(includeCollector);

@@ -26,8 +26,15 @@ class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
 {
     public PythonExpressionFormattingPolicy(TemplateDataContext context, ImportCollector importCollector)
     {
+        this(context, importCollector, PYTHON_SELF_PREFIX);
+    }
+
+    public PythonExpressionFormattingPolicy(TemplateDataContext context, ImportCollector importCollector,
+            String accessPrefix)
+    {
         this.context = context;
         this.importCollector = importCollector;
+        this.accessPrefix = accessPrefix;
     }
 
     @Override
@@ -343,11 +350,16 @@ class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
         return new TernaryExpressionFormattingPython(expr, "(", ") if (", ") else (", ")");
     }
 
+    protected String getAccessPrefix()
+    {
+        return accessPrefix;
+    }
+
     protected void formatFieldAccessor(StringBuilder result, boolean isMostLeftId, Field field,
             boolean isSetter)
     {
         if (isMostLeftId)
-            result.append(PYTHON_SELF_PREFIX);
+            result.append(getAccessPrefix());
 
         if (isSetter)
         {
@@ -363,7 +375,7 @@ class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
     protected void formatParameterAccessor(StringBuilder result, boolean isMostLeftId, Parameter param)
     {
         if (isMostLeftId)
-            result.append(PYTHON_SELF_PREFIX);
+            result.append(getAccessPrefix());
 
         result.append(AccessorNameFormatter.getPropertyName(param));
 
@@ -441,7 +453,7 @@ class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
             // [functionCall]()
             final Function function = (Function)resolvedSymbol;
             if (isMostLeftId)
-                result.append(PYTHON_SELF_PREFIX);
+                result.append(getAccessPrefix());
             result.append(AccessorNameFormatter.getFunctionName(function));
         }
         else if (resolvedSymbol instanceof Constant)
@@ -486,12 +498,13 @@ class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
 
     private final TemplateDataContext context;
     private final ImportCollector importCollector;
+    private final String accessPrefix;
 
-    private final static String PYTHON_BINARY_LITERAL_PREFIX = "0b";
-    private final static String PYTHON_HEXADECIMAL_LITERAL_PREFIX = "0x";
-    private final static String PYTHON_OCTAL_LITERAL_PREFIX = "0o";
+    private static final String PYTHON_BINARY_LITERAL_PREFIX = "0b";
+    private static final String PYTHON_HEXADECIMAL_LITERAL_PREFIX = "0x";
+    private static final String PYTHON_OCTAL_LITERAL_PREFIX = "0o";
 
-    private final static String PYTHON_PROPERTY_ASSIGNMENT = " = value";
+    private static final String PYTHON_PROPERTY_ASSIGNMENT = " = value";
 
-    protected final static String PYTHON_SELF_PREFIX = "self.";
+    private static final String PYTHON_SELF_PREFIX = "self.";
 }

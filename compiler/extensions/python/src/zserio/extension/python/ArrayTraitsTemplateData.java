@@ -22,9 +22,9 @@ public class ArrayTraitsTemplateData
         return nativeTraits.getRequiresElementBitSize();
     }
 
-    public boolean getRequiresElementCreator()
+    public boolean getRequiresElementFactory()
     {
-        return nativeTraits.getRequiresElementCreator();
+        return nativeTraits.getRequiresElementFactory();
     }
 
     private final NativeArrayTraits nativeTraits;

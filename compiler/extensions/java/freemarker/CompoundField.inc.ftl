@@ -533,7 +533,7 @@ ${I}<@compound_get_field field/>.initPackingContext(zserioContext.${field.getter
             <@compound_field_compound_ctor_params field.array.elementCompound/><#t>
         </#if>
     </#local>
-    private <#if !field.array.requiresParentContext>static </#if>final class <@element_factory_name field.name/> <#rt>
+    private <#if !field.array.requiresOwnerContext>static </#if>final class <@element_factory_name field.name/> <#rt>
         <#lt>implements zserio.runtime.array.<#if field.isPackable>Packable</#if>ElementFactory<${field.array.elementTypeInfo.typeFullName}>
     {
         @Override

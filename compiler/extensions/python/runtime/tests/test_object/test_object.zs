@@ -1,3 +1,9 @@
+/*
+ * Compile from the 'tests' directory using the following command line options:
+ *
+ * -src test_object test_object.zs -python . -withTypeInfoCode
+ */
+
 package test_object;
 
 enum int8 CreatorEnum

@@ -42,13 +42,13 @@ class CreatorNested:
     @classmethod
     def from_reader_packed(
             cls: typing.Type['CreatorNested'],
-            zserio_context_node: zserio.array.PackingContextNode,
+            zserio_context: CreatorNested.ZserioPackingContext,
             zserio_reader: zserio.BitStreamReader,
             param_: int) -> 'CreatorNested':
         self = object.__new__(cls)
         self._param_ = param_
 
-        self.read_packed(zserio_context_node, zserio_reader)
+        self.read_packed(zserio_context, zserio_reader)
 
         return self
 
@@ -183,19 +183,10 @@ class CreatorNested:
     def creator_bitmask(self, creator_bitmask_: typing.Union[test_object.creator_bitmask.CreatorBitmask, None]) -> None:
         self._creator_bitmask_ = creator_bitmask_
 
-    @staticmethod
-    def create_packing_context(zserio_context_node: zserio.array.PackingContextNode) -> None:
-        zserio_context_node.create_child().create_context()
-        zserio_context_node.create_child()
-        zserio_context_node.create_child()
-        zserio_context_node.create_child()
-        test_object.creator_enum.CreatorEnum.create_packing_context(zserio_context_node.create_child())
-        test_object.creator_bitmask.CreatorBitmask.create_packing_context(zserio_context_node.create_child())
-
-    def init_packing_context(self, zserio_context_node: zserio.array.PackingContextNode) -> None:
-        zserio_context_node.get_child_context(0).init(zserio.array.BitFieldArrayTraits(32), self._value_)
-        self._creator_enum_.init_packing_context(zserio_context_node.children[4])
-        self._creator_bitmask_.init_packing_context(zserio_context_node.children[5])
+    def init_packing_context(self, zserio_context: CreatorNested.ZserioPackingContext) -> None:
+        zserio_context.value.init(zserio.array.BitFieldArrayTraits(32), self._value_)
+        self._creator_enum_.init_packing_context(zserio_context.creator_enum)
+        self._creator_bitmask_.init_packing_context(zserio_context.creator_bitmask)
 
     def bitsizeof(self, bitposition: int = 0) -> int:
         end_bitposition = bitposition
@@ -208,15 +199,14 @@ class CreatorNested:
 
         return end_bitposition - bitposition
 
-    def bitsizeof_packed(self, zserio_context_node: zserio.array.PackingContextNode,
-                         bitposition: int = 0) -> int:
+    def bitsizeof_packed(self, zserio_context: CreatorNested.ZserioPackingContext, bitposition: int = 0) -> int:
         end_bitposition = bitposition
-        end_bitposition += zserio_context_node.get_child_context(0).bitsizeof(zserio.array.BitFieldArrayTraits(32), self._value_)
+        end_bitposition += zserio_context.value.bitsizeof(zserio.array.BitFieldArrayTraits(32), self._value_)
         end_bitposition += zserio.bitsizeof.bitsizeof_string(self._text_)
         end_bitposition += zserio.bitsizeof.bitsizeof_bitbuffer(self._extern_data_)
         end_bitposition += zserio.bitsizeof.bitsizeof_bytes(self._bytes_data_)
-        end_bitposition += self._creator_enum_.bitsizeof_packed(zserio_context_node.children[4], end_bitposition)
-        end_bitposition += self._creator_bitmask_.bitsizeof_packed(zserio_context_node.children[5], end_bitposition)
+        end_bitposition += self._creator_enum_.bitsizeof_packed(zserio_context.creator_enum, end_bitposition)
+        end_bitposition += self._creator_bitmask_.bitsizeof_packed(zserio_context.creator_bitmask, end_bitposition)
 
         return end_bitposition - bitposition
 
@@ -231,15 +221,14 @@ class CreatorNested:
 
         return end_bitposition
 
-    def initialize_offsets_packed(self, zserio_context_node: zserio.array.PackingContextNode,
-                                  bitposition: int) -> int:
+    def initialize_offsets_packed(self, zserio_context: CreatorNested.ZserioPackingContext, bitposition: int) -> int:
         end_bitposition = bitposition
-        end_bitposition += zserio_context_node.get_child_context(0).bitsizeof(zserio.array.BitFieldArrayTraits(32), self._value_)
+        end_bitposition += zserio_context.value.bitsizeof(zserio.array.BitFieldArrayTraits(32), self._value_)
         end_bitposition += zserio.bitsizeof.bitsizeof_string(self._text_)
         end_bitposition += zserio.bitsizeof.bitsizeof_bitbuffer(self._extern_data_)
         end_bitposition += zserio.bitsizeof.bitsizeof_bytes(self._bytes_data_)
-        end_bitposition = self._creator_enum_.initialize_offsets_packed(zserio_context_node.children[4], end_bitposition)
-        end_bitposition = self._creator_bitmask_.initialize_offsets_packed(zserio_context_node.children[5], end_bitposition)
+        end_bitposition = self._creator_enum_.initialize_offsets_packed(zserio_context.creator_enum, end_bitposition)
+        end_bitposition = self._creator_bitmask_.initialize_offsets_packed(zserio_context.creator_bitmask, end_bitposition)
 
         return end_bitposition
 
@@ -251,9 +240,8 @@ class CreatorNested:
         self._creator_enum_ = test_object.creator_enum.CreatorEnum.from_reader(zserio_reader)
         self._creator_bitmask_ = test_object.creator_bitmask.CreatorBitmask.from_reader(zserio_reader)
 
-    def read_packed(self, zserio_context_node: zserio.array.PackingContextNode,
-                    zserio_reader: zserio.BitStreamReader) -> None:
-        self._value_ = zserio_context_node.get_child_context(0).read(zserio.array.BitFieldArrayTraits(32), zserio_reader)
+    def read_packed(self, zserio_context: CreatorNested.ZserioPackingContext, zserio_reader: zserio.BitStreamReader) -> None:
+        self._value_ = zserio_context.value.read(zserio.array.BitFieldArrayTraits(32), zserio_reader)
 
         self._text_ = zserio_reader.read_string()
 
@@ -261,9 +249,9 @@ class CreatorNested:
 
         self._bytes_data_ = zserio_reader.read_bytes()
 
-        self._creator_enum_ = test_object.creator_enum.CreatorEnum.from_reader_packed(zserio_context_node.children[4], zserio_reader)
+        self._creator_enum_ = test_object.creator_enum.CreatorEnum.from_reader_packed(zserio_context.creator_enum, zserio_reader)
 
-        self._creator_bitmask_ = test_object.creator_bitmask.CreatorBitmask.from_reader_packed(zserio_context_node.children[5], zserio_reader)
+        self._creator_bitmask_ = test_object.creator_bitmask.CreatorBitmask.from_reader_packed(zserio_context.creator_bitmask, zserio_reader)
 
     def write(self, zserio_writer: zserio.BitStreamWriter) -> None:
         zserio_writer.write_bits(self._value_, 32)
@@ -273,9 +261,9 @@ class CreatorNested:
         self._creator_enum_.write(zserio_writer)
         self._creator_bitmask_.write(zserio_writer)
 
-    def write_packed(self, zserio_context_node: zserio.array.PackingContextNode,
+    def write_packed(self, zserio_context: CreatorNested.ZserioPackingContext,
                      zserio_writer: zserio.BitStreamWriter) -> None:
-        zserio_context_node.get_child_context(0).write(zserio.array.BitFieldArrayTraits(32), zserio_writer, self._value_)
+        zserio_context.value.write(zserio.array.BitFieldArrayTraits(32), zserio_writer, self._value_)
 
         zserio_writer.write_string(self._text_)
 
@@ -283,6 +271,24 @@ class CreatorNested:
 
         zserio_writer.write_bytes(self._bytes_data_)
 
-        self._creator_enum_.write_packed(zserio_context_node.children[4], zserio_writer)
+        self._creator_enum_.write_packed(zserio_context.creator_enum, zserio_writer)
 
-        self._creator_bitmask_.write_packed(zserio_context_node.children[5], zserio_writer)
+        self._creator_bitmask_.write_packed(zserio_context.creator_bitmask, zserio_writer)
+
+    class ZserioPackingContext:
+        def __init__(self):
+            self._value_ = zserio.array.DeltaContext()
+            self._creator_enum_ = zserio.array.DeltaContext()
+            self._creator_bitmask_ = zserio.array.DeltaContext()
+
+        @property
+        def value(self):
+            return self._value_
+
+        @property
+        def creator_enum(self):
+            return self._creator_enum_
+
+        @property
+        def creator_bitmask(self):
+            return self._creator_bitmask_

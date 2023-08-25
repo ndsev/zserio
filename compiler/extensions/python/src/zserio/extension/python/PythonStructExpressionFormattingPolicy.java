@@ -14,13 +14,19 @@ class PythonStructExpressionFormattingPolicy extends PythonExpressionFormattingP
         super(context, importCollector);
     }
 
+    public PythonStructExpressionFormattingPolicy(TemplateDataContext context,
+            ImportCollector importCollector, String accessPrefix)
+    {
+        super(context, importCollector, accessPrefix);
+    }
+
     @Override
     protected void formatFieldAccessor(StringBuilder result, boolean isFirstInDot, Field field,
             boolean isSetter)
     {
         if (isFirstInDot && !isSetter)
         {
-            result.append(PYTHON_SELF_PREFIX);
+            result.append(getAccessPrefix());
             result.append(AccessorNameFormatter.getMemberName(field));
         }
         else
@@ -34,7 +40,7 @@ class PythonStructExpressionFormattingPolicy extends PythonExpressionFormattingP
     {
         if (isFirstInDot)
         {
-            result.append(PYTHON_SELF_PREFIX);
+            result.append(getAccessPrefix());
             result.append(AccessorNameFormatter.getMemberName(param));
         }
         else

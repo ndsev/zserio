@@ -5,7 +5,7 @@ from zserio.array import (Array, BitFieldArrayTraits, SignedBitFieldArrayTraits,
                           VarSizeArrayTraits, VarInt16ArrayTraits, VarInt32ArrayTraits, VarInt64ArrayTraits,
                           VarIntArrayTraits, Float16ArrayTraits, Float32ArrayTraits, Float64ArrayTraits,
                           BytesArrayTraits, StringArrayTraits, BoolArrayTraits, BitBufferArrayTraits,
-                          ObjectArrayTraits, PackingContextNode)
+                          ObjectArrayTraits, DeltaContext)
 from zserio.bitposition import alignto
 from zserio.bitbuffer import BitBuffer
 from zserio.bitreader import BitStreamReader
@@ -165,18 +165,16 @@ class ArrayTest(unittest.TestCase):
             self._value = value
 
         @classmethod
-        def create(cls, reader, _index):
-            instance = cls()
-            instance.read(reader)
-
-            return instance
+        def from_reader(cls, zserio_reader: BitStreamReader):
+            self = object.__new__(cls)
+            self.read(zserio_reader)
+            return self
 
         @classmethod
-        def create_packed(cls, context_node, reader, _index):
-            instance = cls()
-            instance.read_packed(context_node, reader)
-
-            return instance
+        def from_reader_packed(cls, zserio_context, zserio_reader: BitStreamReader):
+            self = object.__new__(cls)
+            self.read_packed(zserio_context, zserio_reader)
+            return self
 
         def __eq__(self, other):
             return self._value == other._value
@@ -184,56 +182,68 @@ class ArrayTest(unittest.TestCase):
         def __hash__(self):
             return hash(self._value)
 
-        @staticmethod
-        def create_packing_context(context_node):
-            context_node.create_child().create_context()
+        class ZserioPackingContext:
+            def __init__(self):
+                self._value = DeltaContext()
 
-        def init_packing_context(self, context_node):
-            context = context_node.children[0].context
-            context.init(BitFieldArrayTraits(31), self._value)
+            @property
+            def value(self):
+                return self._value
+
+        def init_packing_context(self, context):
+            context.value.init(BitFieldArrayTraits(31), self._value)
 
         @staticmethod
         def bitsizeof(_bitposition):
             return 31 # to make an unaligned type
 
-        def bitsizeof_packed(self, context_node, bitposition):
+        def bitsizeof_packed(self, context, bitposition):
             end_bitposition = bitposition
 
-            context = context_node.children[0].context
-            end_bitposition += context.bitsizeof(BitFieldArrayTraits(31), self._value)
+            end_bitposition += context.value.bitsizeof(BitFieldArrayTraits(31), self._value)
 
             return end_bitposition - bitposition
 
         def initialize_offsets(self, bitposition):
             return bitposition + self.bitsizeof(bitposition)
 
-        def initialize_offsets_packed(self, context_node, bitposition):
+        def initialize_offsets_packed(self, context, bitposition):
             end_bitposition = bitposition
 
-            context = context_node.children[0].context
-            end_bitposition += context.bitsizeof(BitFieldArrayTraits(31), self._value)
+            end_bitposition += context.value.bitsizeof(BitFieldArrayTraits(31), self._value)
 
             return end_bitposition
 
         def read(self, reader):
             self._value = reader.read_bits(self.bitsizeof(0))
 
-        def read_packed(self, context_node, reader):
-            context = context_node.children[0].context
-            self._value = context.read(BitFieldArrayTraits(31), reader)
+        def read_packed(self, context, reader):
+            self._value = context.value.read(BitFieldArrayTraits(31), reader)
 
         def write(self, writer, *, zserio_call_initialize_offsets=True):
             del zserio_call_initialize_offsets
             writer.write_bits(self._value, self.bitsizeof(0))
 
-        def write_packed(self, context_node, writer):
-            context = context_node.children[0].context
-            context.write(BitFieldArrayTraits(31), writer, self._value)
+        def write_packed(self, context, writer):
+            context.value.write(BitFieldArrayTraits(31), writer, self._value)
+
+    class DummyObjectElementFactory:
+        IS_OBJECT_PACKABLE = True
+
+        @staticmethod
+        def create(reader, _index):
+            return ArrayTest.DummyObject.from_reader(reader)
+
+        @staticmethod
+        def create_packing_context():
+            return ArrayTest.DummyObject.ZserioPackingContext()
+
+        @staticmethod
+        def create_packed(context, reader, _index):
+            return ArrayTest.DummyObject.from_reader_packed(context, reader)
 
     def test_object_array(self):
-        array_traits = ObjectArrayTraits(ArrayTest.DummyObject.create,
-                                         ArrayTest.DummyObject.create_packed,
-                                         ArrayTest.DummyObject.create_packing_context)
+        array_traits = ObjectArrayTraits(ArrayTest.DummyObjectElementFactory)
         array1_values = [ArrayTest.DummyObject(1), ArrayTest.DummyObject(2)]
         array1_bitsizeof = 2 * 31
         array1_aligned_bitsizeof = 31 + 1 + 31
@@ -325,20 +335,9 @@ class ArrayTest(unittest.TestCase):
         self._test_packed_array(array_traits, [UINT64_MAX, UINT64_MAX // 2, UINT64_MIN])
 
     def test_object_packed_array(self):
-        array_traits = ObjectArrayTraits(ArrayTest.DummyObject.create,
-                                         ArrayTest.DummyObject.create_packed,
-                                         ArrayTest.DummyObject.create_packing_context)
+        array_traits = ObjectArrayTraits(ArrayTest.DummyObjectElementFactory)
         self._test_packed_array(array_traits, [ArrayTest.DummyObject(1), ArrayTest.DummyObject(2)])
         self._test_packed_array(array_traits, [ArrayTest.DummyObject(3), ArrayTest.DummyObject(4)])
-
-    def test_packing_context_node(self):
-        with self.assertRaises(AssertionError):
-            self.assertIsNone(PackingContextNode().context)
-
-        node = PackingContextNode()
-        child = node.create_child()
-        child.create_context()
-        self.assertIsNotNone(node.get_child_context(0))
 
     @staticmethod
     def _set_offset_method(_index, _bitoffset):

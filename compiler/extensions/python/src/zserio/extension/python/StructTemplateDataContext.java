@@ -20,4 +20,12 @@ public class StructTemplateDataContext extends TemplateDataContext
 
         return new ExpressionFormatter(expressionFormattingPolicy);
     }
+
+    public ExpressionFormatter getPythonOwnerIndirectExpressionFormatter(ImportCollector importCollector)
+    {
+        final ExpressionFormattingPolicy expressionFormattingPolicy = new PythonStructExpressionFormattingPolicy(
+                this, importCollector, TemplateDataContext.PYTHON_OWNER_PREFIX);
+
+        return new ExpressionFormatter(expressionFormattingPolicy);
+    }
 }

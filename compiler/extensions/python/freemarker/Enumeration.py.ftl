@@ -54,7 +54,7 @@ class ${name}(enum.Enum):
 
     @classmethod
     def from_reader_packed(cls: typing.Type['${name}'],
-                           context_node: zserio.array.PackingContextNode,
+                           delta_context: zserio.array.DeltaContext,
                            reader: zserio.BitStreamReader) -> '${name}':
 <#if withCodeComments>
         """
@@ -62,12 +62,13 @@ class ${name}(enum.Enum):
 
         Called only internally if packed arrays are used.
 
-        :param context_node: Context for packed arrays.
+        :param delta_context: Context for packed arrays.
         :param reader: Bit stream reader to use.
         """
 
 </#if>
-        return cls(context_node.context.read(<@array_traits_create underlyingTypeInfo.arrayTraits, bitSize!/>, reader))
+        return cls(delta_context.read(<@array_traits_create underlyingTypeInfo.arrayTraits, bitSize!/>,
+                                      reader))
 <#if withTypeInfoCode>
 
     @staticmethod
@@ -102,32 +103,32 @@ class ${name}(enum.Enum):
         return result
 
     @staticmethod
-    def create_packing_context(context_node: zserio.array.PackingContextNode) -> None:
+    def create_packing_context() -> zserio.array.DeltaContext:
 <#if withCodeComments>
         """
         Creates context for packed arrays.
 
         Called only internally if packed arrays are used.
 
-        :param context_node: Context for packed arrays.
+        :returns: Context for packed arrays.
         """
 
 </#if>
-        context_node.create_context()
+        return zserio.array.DeltaContext()
 
-    def init_packing_context(self, context_node: zserio.array.PackingContextNode) -> None:
+    def init_packing_context(self, delta_context: zserio.array.DeltaContext) -> None:
 <#if withCodeComments>
         """
         Initializes context for packed arrays.
 
         Called only internally if packed arrays are used.
 
-        :param context_node: Context for packed arrays.
+        :param delta_context: Context for packed arrays.
         """
 
 </#if>
-        context_node.context.init(<@array_traits_create underlyingTypeInfo.arrayTraits, bitSize!/>,
-                                  self.value)
+        delta_context.init(<@array_traits_create underlyingTypeInfo.arrayTraits, bitSize!/>,
+                           self.value)
 
     def bitsizeof(self, _bitposition: int = 0) -> int:
 <#if withCodeComments>
@@ -146,23 +147,22 @@ class ${name}(enum.Enum):
         return zserio.bitsizeof.bitsizeof_${runtimeFunction.suffix}(self.value)
 </#if>
 
-    def bitsizeof_packed(self, context_node: zserio.array.PackingContextNode,
-                         _bitposition: int) -> int:
+    def bitsizeof_packed(self, delta_context: zserio.array.DeltaContext, _bitposition: int) -> int:
 <#if withCodeComments>
         """
         Calculates size of the serialized object in bits for packed arrays.
 
         Called only internally if packed arrays are used.
 
-        :param context_node: Context for packed arrays.
+        :param delta_context: Context for packed arrays.
         :param _bitposition: Bit stream position calculated from zero where the object will be serialized.
 
         :returns: Number of bits which are needed to store serialized object.
         """
 
 </#if>
-        return context_node.context.bitsizeof(<@array_traits_create underlyingTypeInfo.arrayTraits, bitSize!/>,
-                                              self.value)
+        return delta_context.bitsizeof(<@array_traits_create underlyingTypeInfo.arrayTraits, bitSize!/>,
+                                       self.value)
 <#if withWriterCode>
 
     def initialize_offsets(self, bitposition: int = 0) -> int:
@@ -180,8 +180,7 @@ class ${name}(enum.Enum):
     </#if>
         return bitposition + self.bitsizeof(bitposition)
 
-    def initialize_offsets_packed(self, context_node: zserio.array.PackingContextNode,
-                                  bitposition: int) -> int:
+    def initialize_offsets_packed(self, delta_context: zserio.array.DeltaContext, bitposition: int) -> int:
     <#if withCodeComments>
         """
         Initializes offsets in this enumeration object.
@@ -189,14 +188,14 @@ class ${name}(enum.Enum):
         Enumeration objects cannot have any offsets, thus this method just update bit stream position.
         Called only internally if packed arrays are used.
 
-        :param context_node: Context for packed arrays.
+        :param delta_context: Context for packed arrays.
         :param bitposition: Bit stream position calculated from zero where the object will be serialized.
 
         :returns: Bit stream position calculated from zero updated to the first byte after serialized object.
         """
 
     </#if>
-        return bitposition + self.bitsizeof_packed(context_node, bitposition)
+        return bitposition + self.bitsizeof_packed(delta_context, bitposition)
 
     def write(self, writer: zserio.BitStreamWriter) -> None:
     <#if withCodeComments>
@@ -210,18 +209,17 @@ class ${name}(enum.Enum):
         writer.write_${runtimeFunction.suffix}(self.value<#rt>
                                                <#lt><#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>)
 
-    def write_packed(self, context_node: zserio.array.PackingContextNode,
-                     writer: zserio.BitStreamWriter) -> None:
+    def write_packed(self, delta_context: zserio.array.DeltaContext, writer: zserio.BitStreamWriter) -> None:
     <#if withCodeComments>
         """
         Serializes this enumeratin object to the bit stream.
 
         Called only internally if packed arrays are used.
 
-        :param zserio_context_node: Context for packed arrays.
+        :param delta_context: Context for packed arrays.
         :param writer: Bit stream writer where to serialize this enumeration object.
         """
 
     </#if>
-        context_node.context.write(<@array_traits_create underlyingTypeInfo.arrayTraits, bitSize!/>, writer, self.value)
+        delta_context.write(<@array_traits_create underlyingTypeInfo.arrayTraits, bitSize!/>, writer, self.value)
 </#if>

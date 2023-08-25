@@ -31,6 +31,8 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
             fieldList.add(new CompoundFieldTemplateData(context, compoundType, fieldType, this));
         }
 
+        isPackable = compoundType.isPackable();
+
         templateInstantiation = TemplateInstantiationTemplateData.create(context, compoundType, this);
     }
 
@@ -54,6 +56,11 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         return fieldList;
     }
 
+    public boolean getIsPackable()
+    {
+        return isPackable;
+    }
+
     public TemplateInstantiationTemplateData getTemplateInstantiation()
     {
         return templateInstantiation;
@@ -63,5 +70,6 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
     private final CompoundParameterTemplateData compoundParametersData;
     private final CompoundFunctionTemplateData compoundFunctionsData;
     private final List<CompoundFieldTemplateData> fieldList;
+    private final boolean isPackable;
     private final TemplateInstantiationTemplateData templateInstantiation;
 }

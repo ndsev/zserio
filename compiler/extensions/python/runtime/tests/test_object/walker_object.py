@@ -20,11 +20,11 @@ class WalkerObject:
         self._identifier_ = identifier_
         self._nested_ = nested_
         self._text_ = text_
-        self._union_array_ = zserio.array.Array(zserio.array.ObjectArrayTraits(self._element_creator_union_array, self._packed_element_creator_union_array, test_object.walker_union.WalkerUnion.create_packing_context), union_array_, is_auto=True)
+        self._union_array_ = zserio.array.Array(zserio.array.ObjectArrayTraits(self.ZserioElementFactory_union_array()), union_array_, is_auto=True)
         if optional_union_array_ is None:
             self._optional_union_array_ = None
         else:
-            self._optional_union_array_ = zserio.array.Array(zserio.array.ObjectArrayTraits(self._element_creator_optional_union_array, self._packed_element_creator_optional_union_array, test_object.walker_union.WalkerUnion.create_packing_context), optional_union_array_, is_auto=True)
+            self._optional_union_array_ = zserio.array.Array(zserio.array.ObjectArrayTraits(self.ZserioElementFactory_optional_union_array()), optional_union_array_, is_auto=True)
 
     @classmethod
     def from_reader(
@@ -39,11 +39,11 @@ class WalkerObject:
     @classmethod
     def from_reader_packed(
             cls: typing.Type['WalkerObject'],
-            zserio_context_node: zserio.array.PackingContextNode,
+            zserio_context: WalkerObject.ZserioPackingContext,
             zserio_reader: zserio.BitStreamReader) -> 'WalkerObject':
         self = object.__new__(cls)
 
-        self.read_packed(zserio_context_node, zserio_reader)
+        self.read_packed(zserio_context, zserio_reader)
 
         return self
 
@@ -156,7 +156,7 @@ class WalkerObject:
 
     @union_array.setter
     def union_array(self, union_array_: typing.List[test_object.walker_union.WalkerUnion]) -> None:
-        self._union_array_ = zserio.array.Array(zserio.array.ObjectArrayTraits(self._element_creator_union_array, self._packed_element_creator_union_array, test_object.walker_union.WalkerUnion.create_packing_context), union_array_, is_auto=True)
+        self._union_array_ = zserio.array.Array(zserio.array.ObjectArrayTraits(self.ZserioElementFactory_union_array()), union_array_, is_auto=True)
 
     @property
     def optional_union_array(self) -> typing.Optional[typing.List[test_object.walker_union.WalkerUnion]]:
@@ -167,7 +167,7 @@ class WalkerObject:
         if optional_union_array_ is None:
             self._optional_union_array_ = None
         else:
-            self._optional_union_array_ = zserio.array.Array(zserio.array.ObjectArrayTraits(self._element_creator_optional_union_array, self._packed_element_creator_optional_union_array, test_object.walker_union.WalkerUnion.create_packing_context), optional_union_array_, is_auto=True)
+            self._optional_union_array_ = zserio.array.Array(zserio.array.ObjectArrayTraits(self.ZserioElementFactory_optional_union_array()), optional_union_array_, is_auto=True)
 
     def is_optional_union_array_used(self) -> bool:
         return self.is_optional_union_array_set()
@@ -178,18 +178,8 @@ class WalkerObject:
     def reset_optional_union_array(self) -> None:
         self._optional_union_array_ = None
 
-    @staticmethod
-    def create_packing_context(zserio_context_node: zserio.array.PackingContextNode) -> None:
-        zserio_context_node.create_child().create_context()
-        test_object.walker_nested.WalkerNested.create_packing_context(zserio_context_node.create_child())
-        zserio_context_node.create_child()
-        zserio_context_node.create_child()
-        zserio_context_node.create_child()
-
-    def init_packing_context(self, zserio_context_node: zserio.array.PackingContextNode) -> None:
-        zserio_context_node.get_child_context(0).init(zserio.array.BitFieldArrayTraits(32), self._identifier_)
-        if self.is_nested_used():
-            self._nested_.init_packing_context(zserio_context_node.children[1])
+    def init_packing_context(self, zserio_context: WalkerObject.ZserioPackingContext) -> None:
+        zserio_context.identifier.init(zserio.array.BitFieldArrayTraits(32), self._identifier_)
 
     def bitsizeof(self, bitposition: int = 0) -> int:
         end_bitposition = bitposition
@@ -204,12 +194,11 @@ class WalkerObject:
 
         return end_bitposition - bitposition
 
-    def bitsizeof_packed(self, zserio_context_node: zserio.array.PackingContextNode,
-                         bitposition: int = 0) -> int:
+    def bitsizeof_packed(self, zserio_context: WalkerObject.ZserioPackingContext, bitposition: int = 0) -> int:
         end_bitposition = bitposition
-        end_bitposition += zserio_context_node.get_child_context(0).bitsizeof(zserio.array.BitFieldArrayTraits(32), self._identifier_)
+        end_bitposition += zserio_context.identifier.bitsizeof(zserio.array.BitFieldArrayTraits(32), self._identifier_)
         if self.is_nested_used():
-            end_bitposition += self._nested_.bitsizeof_packed(zserio_context_node.children[1], end_bitposition)
+            end_bitposition += self._nested_.bitsizeof(end_bitposition)
         end_bitposition += zserio.bitsizeof.bitsizeof_string(self._text_)
         end_bitposition += self._union_array_.bitsizeof_packed(end_bitposition)
         end_bitposition += 1
@@ -231,12 +220,11 @@ class WalkerObject:
 
         return end_bitposition
 
-    def initialize_offsets_packed(self, zserio_context_node: zserio.array.PackingContextNode,
-                                  bitposition: int) -> int:
+    def initialize_offsets_packed(self, zserio_context: WalkerObject.ZserioPackingContext, bitposition: int) -> int:
         end_bitposition = bitposition
-        end_bitposition += zserio_context_node.get_child_context(0).bitsizeof(zserio.array.BitFieldArrayTraits(32), self._identifier_)
+        end_bitposition += zserio_context.identifier.bitsizeof(zserio.array.BitFieldArrayTraits(32), self._identifier_)
         if self.is_nested_used():
-            end_bitposition = self._nested_.initialize_offsets_packed(zserio_context_node.children[1], end_bitposition)
+            end_bitposition = self._nested_.initialize_offsets(end_bitposition)
         end_bitposition += zserio.bitsizeof.bitsizeof_string(self._text_)
         end_bitposition = self._union_array_.initialize_offsets_packed(end_bitposition)
         end_bitposition += 1
@@ -252,27 +240,26 @@ class WalkerObject:
         else:
             self._nested_ = None
         self._text_ = zserio_reader.read_string()
-        self._union_array_ = zserio.array.Array.from_reader(zserio.array.ObjectArrayTraits(self._element_creator_union_array, self._packed_element_creator_union_array, test_object.walker_union.WalkerUnion.create_packing_context), zserio_reader, is_auto=True)
+        self._union_array_ = zserio.array.Array.from_reader(zserio.array.ObjectArrayTraits(self.ZserioElementFactory_union_array()), zserio_reader, is_auto=True)
         if zserio_reader.read_bool():
-            self._optional_union_array_ = zserio.array.Array.from_reader(zserio.array.ObjectArrayTraits(self._element_creator_optional_union_array, self._packed_element_creator_optional_union_array, test_object.walker_union.WalkerUnion.create_packing_context), zserio_reader, is_auto=True)
+            self._optional_union_array_ = zserio.array.Array.from_reader(zserio.array.ObjectArrayTraits(self.ZserioElementFactory_optional_union_array()), zserio_reader, is_auto=True)
         else:
             self._optional_union_array_ = None
 
-    def read_packed(self, zserio_context_node: zserio.array.PackingContextNode,
-                    zserio_reader: zserio.BitStreamReader) -> None:
-        self._identifier_ = zserio_context_node.get_child_context(0).read(zserio.array.BitFieldArrayTraits(32), zserio_reader)
+    def read_packed(self, zserio_context: WalkerObject.ZserioPackingContext, zserio_reader: zserio.BitStreamReader) -> None:
+        self._identifier_ = zserio_context.identifier.read(zserio.array.BitFieldArrayTraits(32), zserio_reader)
 
         if self.is_nested_used():
-            self._nested_ = test_object.walker_nested.WalkerNested.from_reader_packed(zserio_context_node.children[1], zserio_reader)
+            self._nested_ = test_object.walker_nested.WalkerNested.from_reader(zserio_reader)
         else:
             self._nested_ = None
 
         self._text_ = zserio_reader.read_string()
 
-        self._union_array_ = zserio.array.Array.from_reader_packed(zserio.array.ObjectArrayTraits(self._element_creator_union_array, self._packed_element_creator_union_array, test_object.walker_union.WalkerUnion.create_packing_context), zserio_reader, is_auto=True)
+        self._union_array_ = zserio.array.Array.from_reader_packed(zserio.array.ObjectArrayTraits(self.ZserioElementFactory_union_array()), zserio_reader, is_auto=True)
 
         if zserio_reader.read_bool():
-            self._optional_union_array_ = zserio.array.Array.from_reader_packed(zserio.array.ObjectArrayTraits(self._element_creator_optional_union_array, self._packed_element_creator_optional_union_array, test_object.walker_union.WalkerUnion.create_packing_context), zserio_reader, is_auto=True)
+            self._optional_union_array_ = zserio.array.Array.from_reader_packed(zserio.array.ObjectArrayTraits(self.ZserioElementFactory_optional_union_array()), zserio_reader, is_auto=True)
         else:
             self._optional_union_array_ = None
 
@@ -288,12 +275,12 @@ class WalkerObject:
         else:
             zserio_writer.write_bool(False)
 
-    def write_packed(self, zserio_context_node: zserio.array.PackingContextNode,
+    def write_packed(self, zserio_context: WalkerObject.ZserioPackingContext,
                      zserio_writer: zserio.BitStreamWriter) -> None:
-        zserio_context_node.get_child_context(0).write(zserio.array.BitFieldArrayTraits(32), zserio_writer, self._identifier_)
+        zserio_context.identifier.write(zserio.array.BitFieldArrayTraits(32), zserio_writer, self._identifier_)
 
         if self.is_nested_used():
-            self._nested_.write_packed(zserio_context_node.children[1], zserio_writer)
+            self._nested_.write(zserio_writer)
 
         zserio_writer.write_string(self._text_)
 
@@ -305,22 +292,46 @@ class WalkerObject:
         else:
             zserio_writer.write_bool(False)
 
-    def _element_creator_union_array(self, zserio_reader: zserio.BitStreamReader, zserio_index: int) -> test_object.walker_union.WalkerUnion:
-        del zserio_index
-        return test_object.walker_union.WalkerUnion.from_reader(zserio_reader)
+    class ZserioPackingContext:
+        def __init__(self):
+            self._identifier_ = zserio.array.DeltaContext()
 
-    def _packed_element_creator_union_array(
-            self, zserio_context_node: zserio.array.PackingContextNode,
-            zserio_reader: zserio.BitStreamReader, zserio_index: int) -> test_object.walker_union.WalkerUnion:
-        del zserio_index
-        return test_object.walker_union.WalkerUnion.from_reader_packed(zserio_context_node, zserio_reader)
+        @property
+        def identifier(self):
+            return self._identifier_
 
-    def _element_creator_optional_union_array(self, zserio_reader: zserio.BitStreamReader, zserio_index: int) -> test_object.walker_union.WalkerUnion:
-        del zserio_index
-        return test_object.walker_union.WalkerUnion.from_reader(zserio_reader)
+    class ZserioElementFactory_union_array:
+        IS_OBJECT_PACKABLE = True
 
-    def _packed_element_creator_optional_union_array(
-            self, zserio_context_node: zserio.array.PackingContextNode,
-            zserio_reader: zserio.BitStreamReader, zserio_index: int) -> test_object.walker_union.WalkerUnion:
-        del zserio_index
-        return test_object.walker_union.WalkerUnion.from_reader_packed(zserio_context_node, zserio_reader)
+        @staticmethod
+        def create(zserio_reader: zserio.BitStreamReader, zserio_index: int) -> test_object.walker_union.WalkerUnion:
+            del zserio_index
+            return test_object.walker_union.WalkerUnion.from_reader(zserio_reader)
+
+        @staticmethod
+        def create_packing_context() -> test_object.walker_union.WalkerUnion.ZserioPackingContext:
+            return test_object.walker_union.WalkerUnion.ZserioPackingContext()
+
+        @staticmethod
+        def create_packed(zserio_context: test_object.walker_union.WalkerUnion.ZserioPackingContext,
+                          zserio_reader: zserio.BitStreamReader, zserio_index: int) -> test_object.walker_union.WalkerUnion:
+            del zserio_index
+            return test_object.walker_union.WalkerUnion.from_reader_packed(zserio_context, zserio_reader)
+
+    class ZserioElementFactory_optional_union_array:
+        IS_OBJECT_PACKABLE = True
+
+        @staticmethod
+        def create(zserio_reader: zserio.BitStreamReader, zserio_index: int) -> test_object.walker_union.WalkerUnion:
+            del zserio_index
+            return test_object.walker_union.WalkerUnion.from_reader(zserio_reader)
+
+        @staticmethod
+        def create_packing_context() -> test_object.walker_union.WalkerUnion.ZserioPackingContext:
+            return test_object.walker_union.WalkerUnion.ZserioPackingContext()
+
+        @staticmethod
+        def create_packed(zserio_context: test_object.walker_union.WalkerUnion.ZserioPackingContext,
+                          zserio_reader: zserio.BitStreamReader, zserio_index: int) -> test_object.walker_union.WalkerUnion:
+            del zserio_index
+            return test_object.walker_union.WalkerUnion.from_reader_packed(zserio_context, zserio_reader)

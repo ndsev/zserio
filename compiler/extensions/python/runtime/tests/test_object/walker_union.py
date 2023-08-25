@@ -29,7 +29,7 @@ class WalkerUnion:
             if self._choice_tag != self.UNDEFINED_CHOICE:
                 raise zserio.PythonRuntimeException("Calling constructor of union WalkerUnion is ambiguous!")
             self._choice_tag = self.CHOICE_NESTED_ARRAY
-            self._choice = zserio.array.Array(zserio.array.ObjectArrayTraits(self._element_creator_nested_array, self._packed_element_creator_nested_array, test_object.walker_nested.WalkerNested.create_packing_context), nested_array_, is_auto=True)
+            self._choice = zserio.array.Array(zserio.array.ObjectArrayTraits(self.ZserioElementFactory_nested_array()), nested_array_, is_auto=True)
 
     @classmethod
     def from_reader(
@@ -44,14 +44,13 @@ class WalkerUnion:
     @classmethod
     def from_reader_packed(
             cls: typing.Type['WalkerUnion'],
-            zserio_context_node: zserio.array.PackingContextNode,
+            zserio_context: WalkerUnion.ZserioPackingContext,
             zserio_reader: zserio.BitStreamReader) -> 'WalkerUnion':
         self = object.__new__(cls)
 
-        self.read_packed(zserio_context_node, zserio_reader)
+        self.read_packed(zserio_context, zserio_reader)
 
         return self
-
 
     @staticmethod
     def type_info() -> zserio.typeinfo.TypeInfo:
@@ -129,25 +128,17 @@ class WalkerUnion:
     @nested_array.setter
     def nested_array(self, nested_array_: typing.List[test_object.walker_nested.WalkerNested]) -> None:
         self._choice_tag = self.CHOICE_NESTED_ARRAY
-        self._choice = zserio.array.Array(zserio.array.ObjectArrayTraits(self._element_creator_nested_array, self._packed_element_creator_nested_array, test_object.walker_nested.WalkerNested.create_packing_context), nested_array_, is_auto=True)
+        self._choice = zserio.array.Array(zserio.array.ObjectArrayTraits(self.ZserioElementFactory_nested_array()), nested_array_, is_auto=True)
 
     @property
     def choice_tag(self) -> int:
         return self._choice_tag
 
-    @staticmethod
-    def create_packing_context(zserio_context_node: zserio.array.PackingContextNode) -> None:
-        zserio_context_node.create_child().create_context()
-
-        zserio_context_node.create_child().create_context()
-        zserio_context_node.create_child()
-        zserio_context_node.create_child()
-
-
-    def init_packing_context(self, zserio_context_node: zserio.array.PackingContextNode) -> None:
-        zserio_context_node.get_child_context(0).init(zserio.array.VarSizeArrayTraits(), self._choice_tag)
+    def init_packing_context(self, zserio_context: WalkerUnion.ZserioPackingContext) -> None:
+        zserio_context.choice_tag.init(zserio.array.VarSizeArrayTraits(),
+                                       self._choice_tag)
         if self._choice_tag == self.CHOICE_VALUE:
-            zserio_context_node.get_child_context(1).init(zserio.array.BitFieldArrayTraits(32), self._choice)
+            zserio_context.value.init(zserio.array.BitFieldArrayTraits(32), self._choice)
         elif self._choice_tag == self.CHOICE_TEXT:
             pass
         elif self._choice_tag == self.CHOICE_NESTED_ARRAY:
@@ -171,19 +162,19 @@ class WalkerUnion:
 
         return end_bitposition - bitposition
 
-    def bitsizeof_packed(self, zserio_context_node: zserio.array.PackingContextNode,
+    def bitsizeof_packed(self, zserio_context: WalkerUnion.ZserioPackingContext,
                          bitposition: int = 0) -> int:
         end_bitposition = bitposition
 
-        end_bitposition += zserio_context_node.get_child_context(0).bitsizeof(zserio.array.VarSizeArrayTraits(),
-                                                                              self._choice_tag)
+        end_bitposition += zserio_context.choice_tag.bitsizeof(zserio.array.VarSizeArrayTraits(),
+                                                               self._choice_tag)
 
         if self._choice_tag == self.CHOICE_VALUE:
-            end_bitposition += zserio_context_node.get_child_context(1).bitsizeof(zserio.array.BitFieldArrayTraits(32), self._choice)
+            end_bitposition += zserio_context.value.bitsizeof(zserio.array.BitFieldArrayTraits(32), self._choice)
         elif self._choice_tag == self.CHOICE_TEXT:
             end_bitposition += zserio.bitsizeof.bitsizeof_string(self._choice)
         elif self._choice_tag == self.CHOICE_NESTED_ARRAY:
-            end_bitposition += self._choice.bitsizeof_packed(end_bitposition)
+            end_bitposition += self._choice.bitsizeof(end_bitposition)
         else:
             raise zserio.PythonRuntimeException("No match in union WalkerUnion!")
 
@@ -205,19 +196,19 @@ class WalkerUnion:
 
         return end_bitposition
 
-    def initialize_offsets_packed(self, zserio_context_node: zserio.array.PackingContextNode,
+    def initialize_offsets_packed(self, zserio_context: WalkerUnion.ZserioPackingContext,
                                   bitposition: int) -> int:
         end_bitposition = bitposition
 
-        end_bitposition += zserio_context_node.get_child_context(0).bitsizeof(zserio.array.VarSizeArrayTraits(),
-                                                                              self._choice_tag)
+        end_bitposition += zserio_context.choice_tag.bitsizeof(zserio.array.VarSizeArrayTraits(),
+                                                               self._choice_tag)
 
         if self._choice_tag == self.CHOICE_VALUE:
-            end_bitposition += zserio_context_node.get_child_context(1).bitsizeof(zserio.array.BitFieldArrayTraits(32), self._choice)
+            end_bitposition += zserio_context.value.bitsizeof(zserio.array.BitFieldArrayTraits(32), self._choice)
         elif self._choice_tag == self.CHOICE_TEXT:
             end_bitposition += zserio.bitsizeof.bitsizeof_string(self._choice)
         elif self._choice_tag == self.CHOICE_NESTED_ARRAY:
-            end_bitposition = self._choice.initialize_offsets_packed(end_bitposition)
+            end_bitposition = self._choice.initialize_offsets(end_bitposition)
         else:
             raise zserio.PythonRuntimeException("No match in union WalkerUnion!")
 
@@ -231,21 +222,21 @@ class WalkerUnion:
         elif self._choice_tag == self.CHOICE_TEXT:
             self._choice = zserio_reader.read_string()
         elif self._choice_tag == self.CHOICE_NESTED_ARRAY:
-            self._choice = zserio.array.Array.from_reader(zserio.array.ObjectArrayTraits(self._element_creator_nested_array, self._packed_element_creator_nested_array, test_object.walker_nested.WalkerNested.create_packing_context), zserio_reader, is_auto=True)
+            self._choice = zserio.array.Array.from_reader(zserio.array.ObjectArrayTraits(self.ZserioElementFactory_nested_array()), zserio_reader, is_auto=True)
         else:
             raise zserio.PythonRuntimeException("No match in union WalkerUnion!")
 
-    def read_packed(self, zserio_context_node: zserio.array.PackingContextNode,
+    def read_packed(self, zserio_context: WalkerUnion.ZserioPackingContext,
                     zserio_reader: zserio.BitStreamReader) -> None:
-        self._choice_tag = zserio_context_node.get_child_context(0).read(zserio.array.VarSizeArrayTraits(),
-                                                                         zserio_reader)
+        self._choice_tag = zserio_context.choice_tag.read(zserio.array.VarSizeArrayTraits(),
+                                                          zserio_reader)
 
         if self._choice_tag == self.CHOICE_VALUE:
-            self._choice = zserio_context_node.get_child_context(1).read(zserio.array.BitFieldArrayTraits(32), zserio_reader)
+            self._choice = zserio_context.value.read(zserio.array.BitFieldArrayTraits(32), zserio_reader)
         elif self._choice_tag == self.CHOICE_TEXT:
             self._choice = zserio_reader.read_string()
         elif self._choice_tag == self.CHOICE_NESTED_ARRAY:
-            self._choice = zserio.array.Array.from_reader_packed(zserio.array.ObjectArrayTraits(self._element_creator_nested_array, self._packed_element_creator_nested_array, test_object.walker_nested.WalkerNested.create_packing_context), zserio_reader, is_auto=True)
+            self._choice = zserio.array.Array.from_reader(zserio.array.ObjectArrayTraits(self.ZserioElementFactory_nested_array()), zserio_reader, is_auto=True)
         else:
             raise zserio.PythonRuntimeException("No match in union WalkerUnion!")
 
@@ -261,29 +252,40 @@ class WalkerUnion:
         else:
             raise zserio.PythonRuntimeException("No match in union WalkerUnion!")
 
-    def write_packed(self, zserio_context_node: zserio.array.PackingContextNode,
+    def write_packed(self, zserio_context: WalkerUnion.ZserioPackingContext,
                     zserio_writer: zserio.BitStreamWriter) -> None:
-        zserio_context_node.get_child_context(0).write(zserio.array.VarSizeArrayTraits(),
-                                                       zserio_writer, self._choice_tag)
+        zserio_context.choice_tag.write(zserio.array.VarSizeArrayTraits(),
+                                        zserio_writer, self._choice_tag)
 
         if self._choice_tag == self.CHOICE_VALUE:
-            zserio_context_node.get_child_context(1).write(zserio.array.BitFieldArrayTraits(32), zserio_writer, self._choice)
+            zserio_context.value.write(zserio.array.BitFieldArrayTraits(32), zserio_writer, self._choice)
         elif self._choice_tag == self.CHOICE_TEXT:
             zserio_writer.write_string(self._choice)
         elif self._choice_tag == self.CHOICE_NESTED_ARRAY:
-            self._choice.write_packed(zserio_writer)
+            self._choice.write(zserio_writer)
         else:
             raise zserio.PythonRuntimeException("No match in union WalkerUnion!")
 
-    def _element_creator_nested_array(self, zserio_reader: zserio.BitStreamReader, zserio_index: int) -> test_object.walker_nested.WalkerNested:
-        del zserio_index
-        return test_object.walker_nested.WalkerNested.from_reader(zserio_reader)
+    class ZserioPackingContext:
+        def __init__(self):
+            self._choice_tag = zserio.array.DeltaContext()
+            self._value_ = zserio.array.DeltaContext()
 
-    def _packed_element_creator_nested_array(
-            self, zserio_context_node: zserio.array.PackingContextNode,
-            zserio_reader: zserio.BitStreamReader, zserio_index: int) -> test_object.walker_nested.WalkerNested:
-        del zserio_index
-        return test_object.walker_nested.WalkerNested.from_reader_packed(zserio_context_node, zserio_reader)
+        @property
+        def choice_tag(self):
+            return self._choice_tag
+
+        @property
+        def value(self):
+            return self._value_
+
+    class ZserioElementFactory_nested_array:
+        IS_OBJECT_PACKABLE = False
+
+        @staticmethod
+        def create(zserio_reader: zserio.BitStreamReader, zserio_index: int) -> test_object.walker_nested.WalkerNested:
+            del zserio_index
+            return test_object.walker_nested.WalkerNested.from_reader(zserio_reader)
 
     CHOICE_VALUE = 0
     CHOICE_TEXT = 1

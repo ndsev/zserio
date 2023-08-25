@@ -352,6 +352,8 @@ public final class CompoundFieldTemplateData
                     pythonNativeMapper.getPythonType(elementTypeInstantiation);
             importCollector.importType(elementNativeType);
 
+            requiresOwnerContext = createRequiresOwnerContext(elementTypeInstantiation);
+
             elementTypeInfo = new NativeTypeInfoTemplateData(elementNativeType, elementTypeInstantiation);
             final ZserioType elementBaseType = elementTypeInstantiation.getBaseType();
             elementIsRecursive = (elementBaseType == parentType);
@@ -372,6 +374,11 @@ public final class CompoundFieldTemplateData
         public String getLength()
         {
             return length;
+        }
+
+        public boolean getRequiresOwnerContext()
+        {
+            return requiresOwnerContext;
         }
 
         public NativeTypeInfoTemplateData getElementTypeInfo()
@@ -404,9 +411,32 @@ public final class CompoundFieldTemplateData
             return pythonExpressionFormatter.formatGetter(lengthExpression);
         }
 
+        private static boolean createRequiresOwnerContext(TypeInstantiation elementTypeInstantiation)
+        {
+            /*
+             * Array length expression (Foo field[expr];) is not needed here because it's handled by the array
+             * class itself, it's not propagated to the array factory.
+             * But an array can be composed of type instantiations and these need to be handled.
+             */
+            if (elementTypeInstantiation instanceof ParameterizedTypeInstantiation)
+            {
+                final ParameterizedTypeInstantiation parameterizedInstantiation =
+                        (ParameterizedTypeInstantiation)elementTypeInstantiation;
+                for (InstantiatedParameter instantiatedParameter :
+                        parameterizedInstantiation.getInstantiatedParameters())
+                {
+                    if (instantiatedParameter.getArgumentExpression().requiresOwnerContext())
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
         private final boolean isImplicit;
         private final boolean isPacked;
         private final String length;
+        private final boolean requiresOwnerContext;
         private final NativeTypeInfoTemplateData elementTypeInfo;
         private final boolean elementIsRecursive;
         private final BitSize elementBitSize;
@@ -421,11 +451,9 @@ public final class CompoundFieldTemplateData
         {
             this(context, parameterizedTypeInstantiation.getBaseType(), importCollector);
 
-            final ExpressionFormatter pythonExpressionFormatter =
-                    context.getPythonExpressionFormatter(importCollector);
             for (InstantiatedParameter param : parameterizedTypeInstantiation.getInstantiatedParameters())
             {
-                instantiatedParameters.add(new InstantiatedParameterData(pythonExpressionFormatter, param));
+                instantiatedParameters.add(new InstantiatedParameterData(context, param, importCollector));
             }
         }
 
@@ -448,11 +476,16 @@ public final class CompoundFieldTemplateData
 
         public static class InstantiatedParameterData
         {
-            public InstantiatedParameterData(ExpressionFormatter pythonExpressionFormatter,
-                    InstantiatedParameter instantiatedParameter) throws ZserioExtensionException
+            public InstantiatedParameterData(TemplateDataContext context, InstantiatedParameter instantiatedParameter,
+                    ImportCollector importCollector) throws ZserioExtensionException
             {
                 final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
+                final ExpressionFormatter pythonExpressionFormatter =
+                        context.getPythonExpressionFormatter(importCollector);
                 expression = pythonExpressionFormatter.formatGetter(argumentExpression);
+                final ExpressionFormatter pythonOwnerIndirectExpressionFormatter =
+                        context.getPythonOwnerIndirectExpressionFormatter(importCollector);
+                indirectExpression = pythonOwnerIndirectExpressionFormatter.formatGetter(argumentExpression);
                 containsIndex = argumentExpression.containsIndex();
             }
 
@@ -461,12 +494,18 @@ public final class CompoundFieldTemplateData
                 return expression;
             }
 
+            public String getIndirectExpression()
+            {
+                return indirectExpression;
+            }
+
             public boolean getContainsIndex()
             {
                 return containsIndex;
             }
 
             private final String expression;
+            private final String indirectExpression;
             private final boolean containsIndex;
         }
 

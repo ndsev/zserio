@@ -1,5 +1,5 @@
 /*
- * Compiled from the 'test' directory using the following command line options:
+ * Compile from the 'test' directory using the following command line options:
  *
  * -src test_object test_object.zs -java . -withTypeInfoCode
  */

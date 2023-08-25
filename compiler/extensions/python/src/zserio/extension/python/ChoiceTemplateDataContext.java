@@ -13,10 +13,20 @@ public class ChoiceTemplateDataContext extends TemplateDataContext
         super(pythonParameters);
     }
 
+    @Override
     public ExpressionFormatter getPythonExpressionFormatter(ImportCollector importCollector)
     {
         final ExpressionFormattingPolicy expressionFormattingPolicy =
                 new PythonChoiceExpressionFormattingPolicy(this, importCollector);
+
+        return new ExpressionFormatter(expressionFormattingPolicy);
+    }
+
+    @Override
+    public ExpressionFormatter getPythonOwnerIndirectExpressionFormatter(ImportCollector importCollector)
+    {
+        final ExpressionFormattingPolicy expressionFormattingPolicy = new PythonChoiceExpressionFormattingPolicy(
+                this, importCollector, TemplateDataContext.PYTHON_OWNER_PREFIX);
 
         return new ExpressionFormatter(expressionFormattingPolicy);
     }
