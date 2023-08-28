@@ -579,9 +579,11 @@ ${I}self.<@field_member_name field/>.init_packing_context(zserio_context.${field
         """
         Defines context structure which keeps additional data needed for packed arrays during compression.
         """
-
         </#if>
         <#if hasChoiceTag || uses_packing_context(fieldList)>
+            <#if withCodeComments>
+
+            </#if>
         def __init__(self):
             <#local has_packing_context_member=false/>
             <#if hasChoiceTag>
@@ -615,7 +617,7 @@ ${I}self.<@field_member_name field/>.init_packing_context(zserio_context.${field
                     </#if>
                 </#if>
             </#list>
-        <#else>
+        <#elseif !withCodeComments>
         pass
         </#if>
     </#if>
