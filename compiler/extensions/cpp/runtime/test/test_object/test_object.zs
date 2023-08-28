@@ -6,6 +6,7 @@
  * 2. -withTypeInfoCode -withReflectionCode -withoutSourcesAmalgamation -setCppAllocator polymorphic
  *    -setTopLevelPackage test_object.polymorphic_allocator
  */
+
 enum int8 CreatorEnum
 {
     ONE,

@@ -87,3 +87,22 @@ struct SerializeObject
     int8 param;
     SerializeNested(param) nested;
 };
+
+bitmask uint8 ArrayBitmask
+{
+    CREATE,
+    READ,
+    WRITE
+};
+
+enum int8 ArrayEnum
+{
+    VALUE1,
+    VALUE2,
+    VALUE3
+};
+
+struct ArrayObject
+{
+    bit:31 value;
+};

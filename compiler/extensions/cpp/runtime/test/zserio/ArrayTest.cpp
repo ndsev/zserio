@@ -1166,7 +1166,6 @@ TEST_F(ArrayTest, objectArray)
     // empty
     testArray<ObjectArrayTraits<ArrayObject, ArrayObjectElementFactory>, std::vector<ArrayObject>,
             ArrayObjectArrayExpressions>(std::vector<ArrayObject>(), 31);
-
 }
 
 TEST_F(ArrayTest, stdInt8PackedArray)

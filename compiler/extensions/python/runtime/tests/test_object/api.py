@@ -12,3 +12,6 @@ from test_object.walker_object import WalkerObject
 from test_object.serialize_enum import SerializeEnum
 from test_object.serialize_nested import SerializeNested
 from test_object.serialize_object import SerializeObject
+from test_object.array_bitmask import ArrayBitmask
+from test_object.array_enum import ArrayEnum
+from test_object.array_object import ArrayObject
