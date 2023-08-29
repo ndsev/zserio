@@ -33,21 +33,22 @@ namespace std_allocator
 class WalkerObject
 {
 public:
-
     class ZserioPackingContext
     {
     public:
         ::zserio::DeltaContext& getIdentifier()
         {
-                return m_identifier_;
+            return m_identifier_;
         }
+
         ::zserio::DeltaContext& getChoiceSelector()
         {
-                return m_choiceSelector_;
+            return m_choiceSelector_;
         }
+
         ::test_object::std_allocator::WalkerChoice::ZserioPackingContext& getChoiceField()
         {
-                return m_choiceField_;
+            return m_choiceField_;
         }
 
     private:
@@ -56,37 +57,6 @@ public:
         ::test_object::std_allocator::WalkerChoice::ZserioPackingContext m_choiceField_;
     };
 
-private:
-    class ZserioElementFactory_unionArray
-    {
-    public:
-        using OwnerType = WalkerObject;
-
-        static ::test_object::std_allocator::WalkerUnion create(WalkerObject& owner,
-                ::zserio::BitStreamReader& in, const ::std::allocator<uint8_t>& allocator, size_t index);
-
-        static ::test_object::std_allocator::WalkerUnion create(WalkerObject& owner,
-                ::test_object::std_allocator::WalkerUnion::ZserioPackingContext& context, ::zserio::BitStreamReader& in,
-                const ::std::allocator<uint8_t>& allocator, size_t index);
-    };
-
-    class ZserioElementFactory_optionalUnionArray
-    {
-    public:
-        using OwnerType = WalkerObject;
-
-        static ::test_object::std_allocator::WalkerUnion create(WalkerObject& owner,
-                ::zserio::BitStreamReader& in, const ::std::allocator<uint8_t>& allocator, size_t index);
-
-        static ::test_object::std_allocator::WalkerUnion create(WalkerObject& owner,
-                ::test_object::std_allocator::WalkerUnion::ZserioPackingContext& context, ::zserio::BitStreamReader& in,
-                const ::std::allocator<uint8_t>& allocator, size_t index);
-    };
-
-    using ZserioArrayType_unionArray = ::zserio::Array<::zserio::vector<::test_object::std_allocator::WalkerUnion>, ::zserio::ObjectArrayTraits<::test_object::std_allocator::WalkerUnion, ZserioElementFactory_unionArray>, ::zserio::ArrayType::AUTO>;
-    using ZserioArrayType_optionalUnionArray = ::zserio::Array<::zserio::vector<::test_object::std_allocator::WalkerUnion>, ::zserio::ObjectArrayTraits<::test_object::std_allocator::WalkerUnion, ZserioElementFactory_optionalUnionArray>, ::zserio::ArrayType::AUTO>;
-
-public:
     using allocator_type = ::std::allocator<uint8_t>;
 
     WalkerObject() noexcept :
@@ -193,6 +163,35 @@ public:
     void write(ZserioPackingContext& context, ::zserio::BitStreamWriter& out) const;
 
 private:
+    class ZserioElementFactory_unionArray
+    {
+    public:
+        using OwnerType = WalkerObject;
+
+        static ::test_object::std_allocator::WalkerUnion create(WalkerObject& owner,
+                ::zserio::BitStreamReader& in, const ::std::allocator<uint8_t>& allocator, size_t index);
+
+        static ::test_object::std_allocator::WalkerUnion create(WalkerObject& owner,
+                ::test_object::std_allocator::WalkerUnion::ZserioPackingContext& context, ::zserio::BitStreamReader& in,
+                const ::std::allocator<uint8_t>& allocator, size_t index);
+    };
+
+    class ZserioElementFactory_optionalUnionArray
+    {
+    public:
+        using OwnerType = WalkerObject;
+
+        static ::test_object::std_allocator::WalkerUnion create(WalkerObject& owner,
+                ::zserio::BitStreamReader& in, const ::std::allocator<uint8_t>& allocator, size_t index);
+
+        static ::test_object::std_allocator::WalkerUnion create(WalkerObject& owner,
+                ::test_object::std_allocator::WalkerUnion::ZserioPackingContext& context, ::zserio::BitStreamReader& in,
+                const ::std::allocator<uint8_t>& allocator, size_t index);
+    };
+
+    using ZserioArrayType_unionArray = ::zserio::Array<::zserio::vector<::test_object::std_allocator::WalkerUnion>, ::zserio::ObjectArrayTraits<::test_object::std_allocator::WalkerUnion, ZserioElementFactory_unionArray>, ::zserio::ArrayType::AUTO>;
+    using ZserioArrayType_optionalUnionArray = ::zserio::Array<::zserio::vector<::test_object::std_allocator::WalkerUnion>, ::zserio::ObjectArrayTraits<::test_object::std_allocator::WalkerUnion, ZserioElementFactory_optionalUnionArray>, ::zserio::ArrayType::AUTO>;
+
     uint32_t readIdentifier(::zserio::BitStreamReader& in);
     uint32_t readIdentifier(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in);

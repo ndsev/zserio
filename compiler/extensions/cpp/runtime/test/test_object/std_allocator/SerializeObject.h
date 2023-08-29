@@ -27,17 +27,17 @@ namespace std_allocator
 class SerializeObject
 {
 public:
-
     class ZserioPackingContext
     {
     public:
         ::zserio::DeltaContext& getParam()
         {
-                return m_param_;
+            return m_param_;
         }
+
         ::test_object::std_allocator::SerializeNested::ZserioPackingContext& getNested()
         {
-                return m_nested_;
+            return m_nested_;
         }
 
     private:
@@ -45,7 +45,6 @@ public:
         ::test_object::std_allocator::SerializeNested::ZserioPackingContext m_nested_;
     };
 
-public:
     using allocator_type = ::std::allocator<uint8_t>;
 
     SerializeObject() noexcept :

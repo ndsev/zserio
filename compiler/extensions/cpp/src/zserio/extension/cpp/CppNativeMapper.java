@@ -298,10 +298,7 @@ public class CppNativeMapper
                     elementInstantiation.getClass().getName() + "' in CppNativeMapper!");
         }
 
-        final String arrayName = (!instantiation.isPackable()) ? "UnpackedArray" :
-            ( (instantiation.isPacked()) ? "PackedArray" : "Array" );
-
-        return new NativeArrayType(arrayName, (CppNativeArrayableType)nativeType, vectorType);
+        return new NativeArrayType((CppNativeArrayableType)nativeType, vectorType);
     }
 
     private static CppNativeType mapDynamicBitFieldInstantiation(DynamicBitFieldInstantiation instantiation)

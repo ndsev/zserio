@@ -27,9 +27,6 @@ namespace std_allocator
 
 class ReflectableUtilChoice
 {
-private:
-    using ZserioArrayType_array = ::zserio::Array<::zserio::vector<uint32_t>, ::zserio::StdIntArrayTraits<uint32_t>, ::zserio::ArrayType::AUTO>;
-
 public:
     using allocator_type = ::std::allocator<uint8_t>;
 
@@ -97,6 +94,8 @@ public:
     void write(ZserioPackingContext& context, ::zserio::BitStreamWriter& out) const;
 
 private:
+    using ZserioArrayType_array = ::zserio::Array<::zserio::vector<uint32_t>, ::zserio::StdIntArrayTraits<uint32_t>, ::zserio::ArrayType::AUTO>;
+
     ::zserio::AnyHolder<> readObject(::zserio::BitStreamReader& in, const allocator_type& allocator);
     ::zserio::AnyHolder<> readObject(ZserioPackingContext& context, ::zserio::BitStreamReader& in,
             const allocator_type& allocator);

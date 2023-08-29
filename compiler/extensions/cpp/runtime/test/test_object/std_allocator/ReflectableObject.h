@@ -28,20 +28,18 @@ namespace std_allocator
 class ReflectableObject
 {
 public:
-
     class ZserioPackingContext
     {
     public:
         ::test_object::std_allocator::ReflectableNested::ZserioPackingContext& getReflectableNested()
         {
-                return m_reflectableNested_;
+            return m_reflectableNested_;
         }
 
     private:
         ::test_object::std_allocator::ReflectableNested::ZserioPackingContext m_reflectableNested_;
     };
 
-public:
     using allocator_type = ::std::allocator<uint8_t>;
 
     ReflectableObject() noexcept :

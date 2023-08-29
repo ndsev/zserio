@@ -27,17 +27,17 @@ namespace std_allocator
 class ReflectableUtilObject
 {
 public:
-
     class ZserioPackingContext
     {
     public:
         ::zserio::DeltaContext& getChoiceParam()
         {
-                return m_choiceParam_;
+            return m_choiceParam_;
         }
+
         ::test_object::std_allocator::ReflectableUtilChoice::ZserioPackingContext& getReflectableUtilChoice()
         {
-                return m_reflectableUtilChoice_;
+            return m_reflectableUtilChoice_;
         }
 
     private:
@@ -45,7 +45,6 @@ public:
         ::test_object::std_allocator::ReflectableUtilChoice::ZserioPackingContext m_reflectableUtilChoice_;
     };
 
-public:
     using allocator_type = ::std::allocator<uint8_t>;
 
     ReflectableUtilObject() noexcept :

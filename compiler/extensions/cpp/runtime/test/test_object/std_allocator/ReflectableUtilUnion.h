@@ -42,18 +42,24 @@ public:
     class ZserioPackingContext
     {
     public:
-        ::zserio::DeltaContext& getChoiceTag() { return m_choiceTag; }
+        ::zserio::DeltaContext& getChoiceTag()
+        {
+            return m_choiceTag;
+        }
+
         ::zserio::DeltaContext& getReflectableUtilEnum()
         {
-                return m_reflectableUtilEnum_;
+            return m_reflectableUtilEnum_;
         }
+
         ::zserio::DeltaContext& getReflectableUtilBitmask()
         {
-                return m_reflectableUtilBitmask_;
+            return m_reflectableUtilBitmask_;
         }
+
         ::test_object::std_allocator::ReflectableUtilObject::ZserioPackingContext& getReflectableUtilObject()
         {
-                return m_reflectableUtilObject_;
+            return m_reflectableUtilObject_;
         }
 
     private:
@@ -102,7 +108,6 @@ public:
     ::test_object::std_allocator::ReflectableUtilObject& getReflectableUtilObject();
     void setReflectableUtilObject(const ::test_object::std_allocator::ReflectableUtilObject& reflectableUtilObject_);
     void setReflectableUtilObject(::test_object::std_allocator::ReflectableUtilObject&& reflectableUtilObject_);
-
     void initPackingContext(ZserioPackingContext& context) const;
 
     size_t bitSizeOf(size_t bitPosition = 0) const;

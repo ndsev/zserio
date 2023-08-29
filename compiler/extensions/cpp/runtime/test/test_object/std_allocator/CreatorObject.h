@@ -32,21 +32,22 @@ namespace std_allocator
 class CreatorObject
 {
 public:
-
     class ZserioPackingContext
     {
     public:
         ::zserio::DeltaContext& getValue()
         {
-                return m_value_;
+            return m_value_;
         }
+
         ::test_object::std_allocator::CreatorNested::ZserioPackingContext& getNested()
         {
-                return m_nested_;
+            return m_nested_;
         }
+
         ::test_object::std_allocator::CreatorNested::ZserioPackingContext& getOptionalNested()
         {
-                return m_optionalNested_;
+            return m_optionalNested_;
         }
 
     private:
@@ -55,35 +56,6 @@ public:
         ::test_object::std_allocator::CreatorNested::ZserioPackingContext m_optionalNested_;
     };
 
-private:
-    class ZserioArrayExpressions_nestedArray
-    {
-    public:
-        using OwnerType = CreatorObject;
-
-        static void initializeElement(CreatorObject& owner,
-                ::test_object::std_allocator::CreatorNested& element, size_t index);
-    };
-
-    class ZserioElementFactory_nestedArray
-    {
-    public:
-        using OwnerType = CreatorObject;
-
-        static ::test_object::std_allocator::CreatorNested create(CreatorObject& owner,
-                ::zserio::BitStreamReader& in, const ::std::allocator<uint8_t>& allocator, size_t index);
-
-        static ::test_object::std_allocator::CreatorNested create(CreatorObject& owner,
-                ::test_object::std_allocator::CreatorNested::ZserioPackingContext& context, ::zserio::BitStreamReader& in,
-                const ::std::allocator<uint8_t>& allocator, size_t index);
-    };
-
-    using ZserioArrayType_nestedArray = ::zserio::Array<::zserio::vector<::test_object::std_allocator::CreatorNested>, ::zserio::ObjectArrayTraits<::test_object::std_allocator::CreatorNested, ZserioElementFactory_nestedArray>, ::zserio::ArrayType::AUTO, ZserioArrayExpressions_nestedArray>;
-    using ZserioArrayType_textArray = ::zserio::UnpackedArray<::zserio::vector<::zserio::string<>>, ::zserio::StringArrayTraits, ::zserio::ArrayType::AUTO>;
-    using ZserioArrayType_externArray = ::zserio::UnpackedArray<::zserio::vector<::zserio::BitBuffer>, ::zserio::BitBufferArrayTraits, ::zserio::ArrayType::AUTO>;
-    using ZserioArrayType_bytesArray = ::zserio::UnpackedArray<::zserio::vector<::zserio::vector<uint8_t>>, ::zserio::BytesArrayTraits, ::zserio::ArrayType::AUTO>;
-
-public:
     using allocator_type = ::std::allocator<uint8_t>;
 
     CreatorObject() noexcept :
@@ -213,6 +185,33 @@ public:
     void write(ZserioPackingContext& context, ::zserio::BitStreamWriter& out) const;
 
 private:
+    class ZserioArrayExpressions_nestedArray
+    {
+    public:
+        using OwnerType = CreatorObject;
+
+        static void initializeElement(CreatorObject& owner,
+                ::test_object::std_allocator::CreatorNested& element, size_t index);
+    };
+
+    class ZserioElementFactory_nestedArray
+    {
+    public:
+        using OwnerType = CreatorObject;
+
+        static ::test_object::std_allocator::CreatorNested create(CreatorObject& owner,
+                ::zserio::BitStreamReader& in, const ::std::allocator<uint8_t>& allocator, size_t index);
+
+        static ::test_object::std_allocator::CreatorNested create(CreatorObject& owner,
+                ::test_object::std_allocator::CreatorNested::ZserioPackingContext& context, ::zserio::BitStreamReader& in,
+                const ::std::allocator<uint8_t>& allocator, size_t index);
+    };
+
+    using ZserioArrayType_nestedArray = ::zserio::Array<::zserio::vector<::test_object::std_allocator::CreatorNested>, ::zserio::ObjectArrayTraits<::test_object::std_allocator::CreatorNested, ZserioElementFactory_nestedArray>, ::zserio::ArrayType::AUTO, ZserioArrayExpressions_nestedArray>;
+    using ZserioArrayType_textArray = ::zserio::Array<::zserio::vector<::zserio::string<>>, ::zserio::StringArrayTraits, ::zserio::ArrayType::AUTO>;
+    using ZserioArrayType_externArray = ::zserio::Array<::zserio::vector<::zserio::BitBuffer>, ::zserio::BitBufferArrayTraits, ::zserio::ArrayType::AUTO>;
+    using ZserioArrayType_bytesArray = ::zserio::Array<::zserio::vector<::zserio::vector<uint8_t>>, ::zserio::BytesArrayTraits, ::zserio::ArrayType::AUTO>;
+
     uint32_t readValue(::zserio::BitStreamReader& in);
     uint32_t readValue(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in);

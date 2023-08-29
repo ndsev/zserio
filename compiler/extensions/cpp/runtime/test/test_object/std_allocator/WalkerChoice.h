@@ -42,19 +42,22 @@ public:
     public:
         ::zserio::DeltaContext& getValue8()
         {
-                return m_value8_;
+            return m_value8_;
         }
+
         ::zserio::DeltaContext& getValue16()
         {
-                return m_value16_;
+            return m_value16_;
         }
+
         ::zserio::DeltaContext& getValue32()
         {
-                return m_value32_;
+            return m_value32_;
         }
+
         ::zserio::DeltaContext& getValue64()
         {
-                return m_value64_;
+            return m_value64_;
         }
 
     private:

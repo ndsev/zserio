@@ -25,8 +25,6 @@ namespace std_allocator
 class DebugStringParamObject
 {
 public:
-
-public:
     using allocator_type = ::std::allocator<uint8_t>;
 
     DebugStringParamObject() noexcept :

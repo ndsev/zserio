@@ -26,20 +26,18 @@ namespace std_allocator
 class SerializeNested
 {
 public:
-
     class ZserioPackingContext
     {
     public:
         ::zserio::DeltaContext& getOptionalValue()
         {
-                return m_optionalValue_;
+            return m_optionalValue_;
         }
 
     private:
         ::zserio::DeltaContext m_optionalValue_;
     };
 
-public:
     using allocator_type = ::std::allocator<uint8_t>;
 
     SerializeNested() noexcept :

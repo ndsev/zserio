@@ -630,12 +630,14 @@ uint8_t ${compoundName}::<@element_bit_size_name field.name/>::get(<#rt>
 </#function>
 
 <#macro arrays_typedefs fieldList>
+    <#local has_array_field=false/>
     <#list fieldList as field>
         <#if field.array??>
+            <#local has_array_field=true/>
     using <@array_typedef_name field/> = <@array_type_name field/>;
         </#if>
     </#list>
-    <#if fieldList?has_content>
+    <#if has_array_field>
 
     </#if>
 </#macro>

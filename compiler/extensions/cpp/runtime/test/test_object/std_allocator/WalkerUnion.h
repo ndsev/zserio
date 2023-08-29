@@ -30,18 +30,6 @@ namespace std_allocator
 
 class WalkerUnion
 {
-private:
-    class ZserioElementFactory_nestedArray
-    {
-    public:
-        using OwnerType = WalkerUnion;
-
-        static ::test_object::std_allocator::WalkerNested create(WalkerUnion& owner,
-                ::zserio::BitStreamReader& in, const ::std::allocator<uint8_t>& allocator, size_t index);
-    };
-
-    using ZserioArrayType_nestedArray = ::zserio::UnpackedArray<::zserio::vector<::test_object::std_allocator::WalkerNested>, ::zserio::ObjectArrayTraits<::test_object::std_allocator::WalkerNested, ZserioElementFactory_nestedArray>, ::zserio::ArrayType::AUTO>;
-
 public:
     using allocator_type = ::std::allocator<uint8_t>;
 
@@ -56,10 +44,14 @@ public:
     class ZserioPackingContext
     {
     public:
-        ::zserio::DeltaContext& getChoiceTag() { return m_choiceTag; }
+        ::zserio::DeltaContext& getChoiceTag()
+        {
+            return m_choiceTag;
+        }
+
         ::zserio::DeltaContext& getValue()
         {
-                return m_value_;
+            return m_value_;
         }
 
     private:
@@ -106,7 +98,6 @@ public:
     ::zserio::vector<::test_object::std_allocator::WalkerNested>& getNestedArray();
     void setNestedArray(const ::zserio::vector<::test_object::std_allocator::WalkerNested>& nestedArray_);
     void setNestedArray(::zserio::vector<::test_object::std_allocator::WalkerNested>&& nestedArray_);
-
     void initPackingContext(ZserioPackingContext& context) const;
 
     size_t bitSizeOf(size_t bitPosition = 0) const;
@@ -122,6 +113,17 @@ public:
     void write(ZserioPackingContext& context, ::zserio::BitStreamWriter& out) const;
 
 private:
+    class ZserioElementFactory_nestedArray
+    {
+    public:
+        using OwnerType = WalkerUnion;
+
+        static ::test_object::std_allocator::WalkerNested create(WalkerUnion& owner,
+                ::zserio::BitStreamReader& in, const ::std::allocator<uint8_t>& allocator, size_t index);
+    };
+
+    using ZserioArrayType_nestedArray = ::zserio::Array<::zserio::vector<::test_object::std_allocator::WalkerNested>, ::zserio::ObjectArrayTraits<::test_object::std_allocator::WalkerNested, ZserioElementFactory_nestedArray>, ::zserio::ArrayType::AUTO>;
+
     ChoiceTag readChoiceTag(::zserio::BitStreamReader& in);
     ChoiceTag readChoiceTag(ZserioPackingContext& context, ::zserio::BitStreamReader& in);
     ::zserio::AnyHolder<> readObject(::zserio::BitStreamReader& in, const allocator_type& allocator);
