@@ -456,7 +456,7 @@ ${I}                                        f"<{lowerbound}, {upperbound}>!")
 </#macro>
 
 <#macro element_factory_name field>
-    ZserioElementFactory_${field.snakeCaseName}<#t>
+    _ZserioElementFactory_${field.snakeCaseName}<#t>
 </#macro>
 
 <#macro define_element_factory field compoundName>
