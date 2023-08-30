@@ -402,11 +402,6 @@ public abstract class CompoundType extends TemplatableType
             {
                 return true; // may be empty array
             }
-            else if (arrayInstantiation.isPacked())
-            {
-                // when cannot be zero length array, packed array will always contain at least some descriptor
-                return false;
-            }
 
             final TypeInstantiation elementInstantiation = arrayInstantiation.getElementTypeInstantiation();
             fieldBaseType = elementInstantiation.getBaseType();

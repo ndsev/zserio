@@ -12,6 +12,11 @@ struct MaybeEmpty(bool empty)
     uint32 array[] if !empty;
 };
 
+struct MayNotBeEmpty
+{
+    uint32 field1;
+};
+
 struct ImplicitArrayWithAutoOptionalBehindError
 {
     bool empty;
@@ -19,5 +24,6 @@ struct ImplicitArrayWithAutoOptionalBehindError
     StructWithImplicit structWithImplicit;
     MaybeEmpty(true) array[1+len]; // ok, MaybeEmpty may be empty while the array has non-zero length
     packed MaybeEmpty(true) packedArray1[len]; // packed array, but the array can have zero length
-    packed MaybeEmpty(true) packedArray2[1+len]; // packed array needs to write a descriptor!
+    packed MaybeEmpty(true) packedArray2[1+len]; // packed array, may be empty while has non-zero length
+    packed MayNotBeEmpty packedArray3[1+len]; // may not be empty, error
 };

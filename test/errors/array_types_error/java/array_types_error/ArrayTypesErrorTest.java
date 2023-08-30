@@ -170,9 +170,9 @@ public class ArrayTypesErrorTest
         final String errors[] =
         {
             "implicit_array_with_packed_array_behind_error.zs:5:21:     implicit array is used here",
-            "implicit_array_with_packed_array_behind_error.zs:19:24:     implicit array is used here",
-            "implicit_array_with_packed_array_behind_error.zs:22:29: " +
-                    "Field 'packedArray2' follows an implicit array!"
+            "implicit_array_with_packed_array_behind_error.zs:24:24:     implicit array is used here",
+            "implicit_array_with_packed_array_behind_error.zs:28:26: " +
+                    "Field 'packedArray3' follows an implicit array!"
         };
         assertTrue(zserioErrors.isPresent(errors));
     };
