@@ -243,7 +243,7 @@ public class CompoundFieldTemplateData
             }
         }
 
-        public Compound(TemplateDataContext context,CompoundType compoundType,
+        public Compound(TemplateDataContext context, CompoundType compoundType,
                 IncludeCollector includeCollector) throws ZserioExtensionException
         {
             instantiatedParameters = new ArrayList<InstantiatedParameterData>();
@@ -268,9 +268,8 @@ public class CompoundFieldTemplateData
 
         public static class InstantiatedParameterData
         {
-            public InstantiatedParameterData(TemplateDataContext context,
-                    InstantiatedParameter instantiatedParameter, IncludeCollector includeCollector)
-                            throws ZserioExtensionException
+            public InstantiatedParameterData(TemplateDataContext context, InstantiatedParameter instantiatedParameter,
+                    IncludeCollector includeCollector) throws ZserioExtensionException
             {
                 final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
                 final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(includeCollector);

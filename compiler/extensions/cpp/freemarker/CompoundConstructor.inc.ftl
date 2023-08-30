@@ -54,7 +54,7 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
         <#if packed>
      * Called only internally if packed arrays are used.
      *
-     * \param contextNode Context for packed arrays.
+     * \param context Context for packed arrays.
         </#if>
      * \param in Bit stream reader to use.
         <#list compoundConstructorsData.compoundParametersData.list as compoundParameter>
@@ -66,7 +66,7 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
     <#local constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData, 3/></#local>
     explicit ${compoundConstructorsData.compoundName}(<#rt>
     <#if packed>
-            <#lt>${types.packingContextNode.name}& contextNode,
+            <#lt>ZserioPackingContext& context,
             <#nt><#rt><#-- trim only newline -->
     </#if>
             ::zserio::BitStreamReader& in<#t>
@@ -85,7 +85,7 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
             memberInitializationMacroName != ""/>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
     <#if packed>
-        ${types.packingContextNode.name}&<#if read_constructor_needs_packing_context_node(fieldList)> contextNode</#if>, <#t>
+        ${compoundConstructorsData.compoundName}::ZserioPackingContext& context, <#t>
     </#if>
         ::zserio::BitStreamReader&<#if compoundConstructorsData.fieldList?has_content> in</#if><#t>
     <#if constructorArgumentTypeList?has_content>
@@ -373,15 +373,6 @@ bool ${compoundConstructorsData.compoundName}::isInitialized() const
 <#function read_constructor_needs_allocator fieldList>
     <#list fieldList as field>
         <#if field.holderNeedsAllocator || field.needsAllocator>
-            <#return true>
-        </#if>
-    </#list>
-    <#return false>
-</#function>
-
-<#function read_constructor_needs_packing_context_node fieldList>
-    <#list fieldList as field>
-        <#if field.usesAnyHolder || field.isPackable>
             <#return true>
         </#if>
     </#list>

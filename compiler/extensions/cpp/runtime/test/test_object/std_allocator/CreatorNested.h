@@ -10,10 +10,10 @@
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/AllocatorPropagatingCopy.h>
+#include <zserio/DeltaContext.h>
 #include <zserio/ITypeInfo.h>
 #include <zserio/IReflectable.h>
 #include <memory>
-#include <zserio/PackingContext.h>
 #include <zserio/ArrayTraits.h>
 #include <zserio/BitBuffer.h>
 #include <zserio/String.h>
@@ -31,6 +31,30 @@ namespace std_allocator
 class CreatorNested
 {
 public:
+    class ZserioPackingContext
+    {
+    public:
+        ::zserio::DeltaContext& getValue()
+        {
+            return m_value_;
+        }
+
+        ::zserio::DeltaContext& getCreatorEnum()
+        {
+            return m_creatorEnum_;
+        }
+
+        ::zserio::DeltaContext& getCreatorBitmask()
+        {
+            return m_creatorBitmask_;
+        }
+
+    private:
+        ::zserio::DeltaContext m_value_;
+        ::zserio::DeltaContext m_creatorEnum_;
+        ::zserio::DeltaContext m_creatorBitmask_;
+    };
+
     using allocator_type = ::std::allocator<uint8_t>;
 
     CreatorNested() noexcept :
@@ -62,7 +86,7 @@ public:
 
     explicit CreatorNested(::zserio::BitStreamReader& in,
             uint32_t param_, const allocator_type& allocator = allocator_type());
-    explicit CreatorNested(::zserio::PackingContextNode& contextNode,
+    explicit CreatorNested(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in,
             uint32_t param_, const allocator_type& allocator = allocator_type());
 
@@ -111,24 +135,23 @@ public:
     ::test_object::std_allocator::CreatorBitmask getCreatorBitmask() const;
     void setCreatorBitmask(::test_object::std_allocator::CreatorBitmask creatorBitmask_);
 
-    static void createPackingContext(::zserio::PackingContextNode& contextNode);
-    void initPackingContext(::zserio::PackingContextNode& contextNode) const;
+    void initPackingContext(ZserioPackingContext& context) const;
 
     size_t bitSizeOf(size_t bitPosition = 0) const;
-    size_t bitSizeOf(::zserio::PackingContextNode& contextNode, size_t bitPosition) const;
+    size_t bitSizeOf(ZserioPackingContext& context, size_t bitPosition) const;
 
     size_t initializeOffsets(size_t bitPosition = 0);
-    size_t initializeOffsets(::zserio::PackingContextNode& contextNode, size_t bitPosition);
+    size_t initializeOffsets(ZserioPackingContext& context, size_t bitPosition);
 
     bool operator==(const CreatorNested& other) const;
     uint32_t hashCode() const;
 
     void write(::zserio::BitStreamWriter& out) const;
-    void write(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const;
+    void write(ZserioPackingContext& context, ::zserio::BitStreamWriter& out) const;
 
 private:
     uint32_t readValue(::zserio::BitStreamReader& in);
-    uint32_t readValue(::zserio::PackingContextNode& contextNode,
+    uint32_t readValue(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in);
     ::zserio::string<> readText(::zserio::BitStreamReader& in,
             const allocator_type& allocator);
@@ -137,10 +160,10 @@ private:
     ::zserio::vector<uint8_t> readBytesData(::zserio::BitStreamReader& in,
             const allocator_type& allocator);
     ::test_object::std_allocator::CreatorEnum readCreatorEnum(::zserio::BitStreamReader& in);
-    ::test_object::std_allocator::CreatorEnum readCreatorEnum(::zserio::PackingContextNode& contextNode,
+    ::test_object::std_allocator::CreatorEnum readCreatorEnum(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in);
     ::test_object::std_allocator::CreatorBitmask readCreatorBitmask(::zserio::BitStreamReader& in);
-    ::test_object::std_allocator::CreatorBitmask readCreatorBitmask(::zserio::PackingContextNode& contextNode,
+    ::test_object::std_allocator::CreatorBitmask readCreatorBitmask(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in);
 
     uint32_t m_param_;

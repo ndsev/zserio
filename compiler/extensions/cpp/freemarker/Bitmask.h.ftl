@@ -6,6 +6,7 @@
 
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
+#include <zserio/DeltaContext.h>
 <#if !bitSize??>
 #include <zserio/BitSizeOfCalculator.h>
 </#if>
@@ -16,7 +17,6 @@
     </#if>
 </#if>
 <@type_includes types.string/>
-<@type_includes types.packingContextNode/>
 <@system_includes headerSystemIncludes/>
 <@user_includes headerUserIncludes/>
 <@namespace_begin package.path/>
@@ -67,11 +67,11 @@ public:
      *
      * Called only internally if packed arrays are used.
      *
-     * \param contextNode Context for packed arrays.
+     * \param context Context for packed arrays.
      * \param in Bit stream reader to use.
      */
 </#if>
-    ${name}(${types.packingContextNode.name}& contextNode, ::zserio::BitStreamReader& in);
+    ${name}(::zserio::DeltaContext& context, ::zserio::BitStreamReader& in);
 <#if withCodeComments>
 
     /**
@@ -172,26 +172,16 @@ public:
     }
 
 <#if withCodeComments>
-    /**
-     * Creates context for packed arrays.
-     *
-     * Called only internally if packed arrays are used.
-     *
-     * \param contextNode Context for packed arrays.
-     */
-</#if>
-    static void createPackingContext(${types.packingContextNode.name}& contextNode);
-<#if withCodeComments>
 
     /**
      * Initializes context for packed arrays.
      *
      * Called only internally if packed arrays are used.
      *
-     * \param contextNode Context for packed arrays.
+     * \param context Context for packed arrays.
      */
 </#if>
-    void initPackingContext(${types.packingContextNode.name}& contextNode) const;
+    void initPackingContext(::zserio::DeltaContext& context) const;
 
 <#if withCodeComments>
     /**
@@ -210,13 +200,13 @@ public:
      *
      * Called only internally if packed arrays are used.
      *
-     * \param contextNode Context for packed arrays.
+     * \param context Context for packed arrays.
      * \param bitPosition Bit stream position calculated from zero where the object will be serialized.
      *
      * \return Number of bits which are needed to store serialized object.
      */
 </#if>
-    size_t bitSizeOf(${types.packingContextNode.name}& contextNode, size_t bitPosition) const;
+    size_t bitSizeOf(::zserio::DeltaContext& context, size_t bitPosition) const;
 <#if withWriterCode>
 
     <#if withCodeComments>
@@ -239,13 +229,13 @@ public:
      * This method sets offsets in this Zserio type and in all fields recursively.
      * Called only internally if packed arrays are used.
      *
-     * \param contextNode Context for packed arrays.
+     * \param context Context for packed arrays.
      * \param bitPosition Bit stream position calculated from zero where the object will be serialized.
      *
      * \return Bit stream position calculated from zero updated to the first byte after serialized object.
      */
     </#if>
-    size_t initializeOffsets(${types.packingContextNode.name}& contextNode, size_t bitPosition) const;
+    size_t initializeOffsets(::zserio::DeltaContext& context, size_t bitPosition) const;
 </#if>
 
 <#if withCodeComments>
@@ -273,11 +263,11 @@ public:
      *
      * Called only internally if packed arrays are used.
      *
-     * \param contextNode Context for packed arrays.
+     * \param context Context for packed arrays.
      * \param out Bit stream writer where to serialize this Zserio object.
      */
     </#if>
-    void write(${types.packingContextNode.name}& contextNode, ::zserio::BitStreamWriter& out) const;
+    void write(::zserio::DeltaContext& context, ::zserio::BitStreamWriter& out) const;
 </#if>
 
 <#if withCodeComments>
@@ -302,8 +292,7 @@ private:
 
 </#if>
     static underlying_type readValue(::zserio::BitStreamReader& in);
-    static underlying_type readValue(${types.packingContextNode.name}& contextNode,
-            ::zserio::BitStreamReader& in);
+    static underlying_type readValue(::zserio::DeltaContext& context, ::zserio::BitStreamReader& in);
 
     underlying_type m_value;
 };

@@ -10,11 +10,11 @@ public class NativeArrayTraits
         this(name, false, false);
     }
 
-    public NativeArrayTraits(String name, boolean requiresElementBitSize, boolean requiresElementCreator)
+    public NativeArrayTraits(String name, boolean requiresElementBitSize, boolean requiresElementFactory)
     {
         this.name = name;
         this.requiresElementBitSize = requiresElementBitSize;
-        this.requiresElementCreator = requiresElementCreator;
+        this.requiresElementFactory = requiresElementFactory;
     }
 
     public String getName()
@@ -27,12 +27,12 @@ public class NativeArrayTraits
         return requiresElementBitSize;
     }
 
-    public boolean getRequiresElementCreator()
+    public boolean getRequiresElementFactory()
     {
-        return requiresElementCreator;
+        return requiresElementFactory;
     }
 
     private final String name;
     private final boolean requiresElementBitSize;
-    private final boolean requiresElementCreator;
+    private final boolean requiresElementFactory;
 };

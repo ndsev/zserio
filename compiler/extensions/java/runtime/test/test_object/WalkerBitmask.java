@@ -5,7 +5,7 @@
 
 package test_object;
 
-public class WalkerBitmask implements zserio.runtime.io.Writer, zserio.runtime.SizeOf,
+public class WalkerBitmask implements zserio.runtime.io.PackableWriter, zserio.runtime.PackableSizeOf,
         zserio.runtime.ZserioBitmask
 {
     public WalkerBitmask()
@@ -28,11 +28,12 @@ public class WalkerBitmask implements zserio.runtime.io.Writer, zserio.runtime.S
         value = in.readUnsignedInt();
     }
 
-    public WalkerBitmask(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in)
+    public WalkerBitmask(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamReader in)
             throws java.io.IOException
     {
+        final zserio.runtime.array.DeltaContext deltaContext = context.cast();
         value = ((zserio.runtime.array.ArrayElement.LongArrayElement)
-                contextNode.getContext().read(
+                deltaContext.read(
                         new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits(32), in)).get();
     }
 
@@ -49,15 +50,11 @@ public class WalkerBitmask implements zserio.runtime.io.Writer, zserio.runtime.S
         );
     }
 
-    public static void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
-    {
-        contextNode.createContext();
-    }
-
     @Override
-    public void initPackingContext(zserio.runtime.array.PackingContextNode contextNode)
+    public void initPackingContext(zserio.runtime.array.PackingContext context)
     {
-        contextNode.getContext().init(
+        final zserio.runtime.array.DeltaContext deltaContext = context.cast();
+        deltaContext.init(
                 new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits(32),
                 new zserio.runtime.array.ArrayElement.LongArrayElement(value));
     }
@@ -75,9 +72,10 @@ public class WalkerBitmask implements zserio.runtime.io.Writer, zserio.runtime.S
     }
 
     @Override
-    public int bitSizeOf(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
+    public int bitSizeOf(zserio.runtime.array.PackingContext context, long bitPosition)
     {
-        return contextNode.getContext().bitSizeOf(
+        final zserio.runtime.array.DeltaContext deltaContext = context.cast();
+        return deltaContext.bitSizeOf(
                 new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits(32),
                 new zserio.runtime.array.ArrayElement.LongArrayElement(value));
     }
@@ -95,9 +93,9 @@ public class WalkerBitmask implements zserio.runtime.io.Writer, zserio.runtime.S
     }
 
     @Override
-    public long initializeOffsets(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
+    public long initializeOffsets(zserio.runtime.array.PackingContext context, long bitPosition)
     {
-        return bitPosition + bitSizeOf(contextNode, bitPosition);
+        return bitPosition + bitSizeOf(context, bitPosition);
     }
 
     @Override
@@ -136,10 +134,11 @@ public class WalkerBitmask implements zserio.runtime.io.Writer, zserio.runtime.S
     }
 
     @Override
-    public void write(zserio.runtime.array.PackingContextNode contextNode,
-            zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
+    public void write(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamWriter out)
+            throws java.io.IOException
     {
-        contextNode.getContext().write(
+        final zserio.runtime.array.DeltaContext deltaContext = context.cast();
+        deltaContext.write(
                 new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits(32), out,
                 new zserio.runtime.array.ArrayElement.LongArrayElement(value));
     }

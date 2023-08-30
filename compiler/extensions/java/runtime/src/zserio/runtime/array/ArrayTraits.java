@@ -5,11 +5,13 @@ import java.math.BigInteger;
 
 import zserio.runtime.BitSizeOfCalculator;
 import zserio.runtime.SizeOf;
+import zserio.runtime.PackableSizeOf;
 import zserio.runtime.array.ArrayElement.IntegralArrayElement;
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.Writer;
+import zserio.runtime.io.PackableWriter;
 
 /**
  * Interface for array traits.
@@ -1330,7 +1332,7 @@ public interface ArrayTraits
         @Override
         public PackedArrayTraits getPackedArrayTraits()
         {
-            return new PackedArrayTraits.ObjectPackedArrayTraits<>(elementFactory);
+            return null;
         }
 
         @Override
@@ -1366,11 +1368,6 @@ public interface ArrayTraits
                     "ArrayTraits: write is not implemented for read only ObjectArrayTraits!");
         }
 
-        protected ElementFactory<E> getElementFactory()
-        {
-            return elementFactory;
-        }
-
         private final ElementFactory<E> elementFactory;
     }
 
@@ -1386,6 +1383,101 @@ public interface ArrayTraits
          * @param elementFactory Element factory to construct from.
          */
         public WriteObjectArrayTraits(ElementFactory<E> elementFactory)
+        {
+            super(elementFactory);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public long initializeOffsets(long bitPosition, ArrayElement element)
+        {
+            return ((ArrayElement.ObjectArrayElement<E>)element).get().initializeOffsets(bitPosition);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
+        {
+            ((ArrayElement.ObjectArrayElement<E>)element).get().write(writer);
+        }
+    }
+
+    /**
+     * Array traits for zserio packable object arrays (without writer part) which are mapped to Java zserio
+     * object array.
+     */
+    public static class PackableObjectArrayTraits<E extends PackableSizeOf> implements ArrayTraits
+    {
+        /**
+         * Constructor from element factory.
+         *
+         * @param elementFactory Element factory to construct from.
+         */
+        public PackableObjectArrayTraits(PackableElementFactory<E> elementFactory)
+        {
+            this.elementFactory = elementFactory;
+        }
+
+        @Override
+        public PackedArrayTraits getPackedArrayTraits()
+        {
+            return new PackedArrayTraits.ObjectPackedArrayTraits<>(getElementFactory());
+        }
+
+        @Override
+        public boolean isBitSizeOfConstant()
+        {
+            return false;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public int bitSizeOf(long bitPosition, ArrayElement element)
+        {
+            return ((ArrayElement.ObjectArrayElement<E>)element).get().bitSizeOf(bitPosition);
+        }
+
+        @Override
+        public long initializeOffsets(long bitPosition, ArrayElement element)
+        {
+            throw new UnsupportedOperationException(
+                    "ArrayTraits: initializeOffsets is not implemented for read only ObjectArrayTraits!");
+        }
+
+        @Override
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException
+        {
+            return new ArrayElement.ObjectArrayElement<>(elementFactory.create(reader, index));
+        }
+
+        @Override
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
+        {
+            throw new UnsupportedOperationException(
+                    "ArrayTraits: write is not implemented for read only ObjectArrayTraits!");
+        }
+
+        protected PackableElementFactory<E> getElementFactory()
+        {
+            return elementFactory;
+        }
+
+        private final PackableElementFactory<E> elementFactory;
+    }
+
+    /**
+     * Array traits for zserio packable object arrays (with writer part) which are mapped to Java zserio
+     * object array.
+     */
+    public static class WritePackableObjectArrayTraits<E extends PackableWriter & PackableSizeOf>
+            extends PackableObjectArrayTraits<E>
+    {
+        /**
+         * Constructor from element factory.
+         *
+         * @param elementFactory Element factory to construct from.
+         */
+        public WritePackableObjectArrayTraits(PackableElementFactory<E> elementFactory)
         {
             super(elementFactory);
         }

@@ -107,9 +107,10 @@ run_benchmark()
         fi
 
         RESULTS=($(cat ${LOG}))
-        printf "| %-22s | %-22s | %-22s | %10s | %10s | %10s | %10s | %10s |\n" \
+        printf "| %-22s | %-24s | %-22s | %12s | %10s | %10s | %10s | %10s | %14s |\n" \
                "${BENCHMARK_ZS}" "${DATASET_FILENAME}" "${TARGET}" \
-               ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]} ${RESULTS[3]} "${ZIP_SIZE}" >> "${LOG_FILE}"
+               ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]} ${RESULTS[3]} "${ZIP_SIZE}" ${RESULTS[4]} \
+               >> "${LOG_FILE}"
     done
 
     return 0
@@ -138,18 +139,19 @@ run_benchmarks()
 
     local LOG_FILE="${BENCHMARKS_OUT_DIR}/benchmarks.log"
     rm -f ${LOG_FILE}
-    printf "| %-22s | %-22s | %-22s | %10s | %10s | %10s | %10s | %10s |\n" \
-           "Benchmark" "Dataset" "Target" "Total Time" "Iterations" "Step Time" "Blob Size" "Zip Size" >> \
-           "${LOG_FILE}"
-    printf "| %-22s | %-22s | %-22s | %10s | %10s | %10s | %10s | %10s |\n" \
+    printf "| %-22s | %-24s | %-22s | %12s | %10s | %10s | %10s | %10s | %14s |\n" \
+           "Benchmark" "Dataset" "Target" "Total Time" "Iterations" "Step Time" "Blob Size" "Zip Size" \
+           "Blob in Memory" >> "${LOG_FILE}"
+    printf "| %-22s | %-24s | %-22s | %12s | %10s | %10s | %10s | %10s | %14s |\n" \
             "$(for i in {1..22} ; do echo -n "-" ; done)" \
+            "$(for i in {1..24} ; do echo -n "-" ; done)" \
             "$(for i in {1..22} ; do echo -n "-" ; done)" \
-            "$(for i in {1..22} ; do echo -n "-" ; done)" \
+            "$(for i in {1..12} ; do echo -n "-" ; done)" \
             "$(for i in {1..10} ; do echo -n "-" ; done)" \
             "$(for i in {1..10} ; do echo -n "-" ; done)" \
             "$(for i in {1..10} ; do echo -n "-" ; done)" \
             "$(for i in {1..10} ; do echo -n "-" ; done)" \
-            "$(for i in {1..10} ; do echo -n "-" ; done)" >> "${LOG_FILE}"
+            "$(for i in {1..14} ; do echo -n "-" ; done)" >> "${LOG_FILE}"
 
     if [[ ! -d "${DATASETS_DIR}" ]] ; then
         stderr_echo "Datasets dir '${DATASETS_DIR}' does not exists!"

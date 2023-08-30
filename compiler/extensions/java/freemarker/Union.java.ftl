@@ -13,10 +13,16 @@
 <#if withCodeComments && docComments??>
 <@doc_comments docComments/>
 </#if>
-public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </#if>zserio.runtime.SizeOf
+public class ${name} implements <#if withWriterCode>zserio.runtime.io.<#if isPackable>Packable</#if>Writer, <#rt>
+        <#lt></#if>zserio.runtime.<#if isPackable>Packable</#if>SizeOf
 {
+<#if isPackable>
+    <@compound_declare_packing_context fieldList, true/>
+
+</#if>
     <@compound_constructors compoundConstructorsData/>
 <#if withTypeInfoCode>
+
     <#if withCodeComments>
     /**
      * Gets static information about this Zserio type useful for generic introspection.
@@ -44,8 +50,8 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
                 fieldList, parameterList, functionList
         );
     }
-
 </#if>
+
 <#if withCodeComments>
     /**
      * Gets the current choice tag.
@@ -57,32 +63,13 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
     {
         return choiceTag;
     }
-
-<#if withCodeComments>
-    /**
-     * Creates context for packed arrays.
-     * <p>
-     * Called only internally if packed arrays are used.
-     *
-     * @param contextNode Context for packed arrays.
-     */
-</#if>
-    public static void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
-    {
-<#if fieldList?has_content>
-        contextNode.createChild().createContext();<#-- choice tag -->
-
-    <#list fieldList as field>
-        <@compound_create_packing_context_field field/>
-    </#list>
-</#if>
-    }
+<#if isPackable>
 
     @Override
-    public void initPackingContext(zserio.runtime.array.PackingContextNode contextNode)
+    public void initPackingContext(zserio.runtime.array.PackingContext context)
     {
-<#if fieldList?has_content>
-        contextNode.getChildren().get(0).getContext().init(
+        final ZserioPackingContext zserioContext = context.cast();
+        zserioContext.getChoiceTag().init(
                 new ${choiceTagArrayTraits}(),
                 new ${choiceTagArrayElement}(choiceTag));
 
@@ -90,14 +77,14 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
         {
     <#list fieldList as field>
         case <@choice_tag_name field/>:
-            <@compound_init_packing_context_field field, field?index + 1, 3/>
+            <@compound_init_packing_context_field field, 3/>
             break;
     </#list>
         default:
             throw new zserio.runtime.ZserioError("No match in union ${name}!");
         }
-</#if>
     }
+</#if>
 
     @Override
     public int bitSizeOf()
@@ -129,33 +116,32 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
         return 0;
 </#if>
     }
+<#if isPackable>
 
     @Override
-    public int bitSizeOf(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
+    public int bitSizeOf(zserio.runtime.array.PackingContext context, long bitPosition)
     {
-<#if fieldList?has_content>
+        final ZserioPackingContext zserioContext = context.cast();
         long endBitPosition = bitPosition;
 
-        endBitPosition += contextNode.getChildren().get(0).getContext().bitSizeOf(
+        endBitPosition += zserioContext.getChoiceTag().bitSizeOf(
                 new ${choiceTagArrayTraits}(),
                 new ${choiceTagArrayElement}(choiceTag));
 
         switch (choiceTag)
         {
-    <#list fieldList as field>
+        <#list fieldList as field>
         case <@choice_tag_name field/>:
-            <@compound_bitsizeof_field field, 3, true, field?index + 1/>
+            <@compound_bitsizeof_field field, 3, true/>
             break;
-    </#list>
+        </#list>
         default:
             throw new zserio.runtime.ZserioError("No match in union ${name}!");
         }
 
         return (int)(endBitPosition - bitPosition);
-<#else>
-        return 0;
-</#if>
     }
+</#if>
 
 <@compound_parameter_accessors compoundParametersData/>
 <#list fieldList as field>
@@ -293,40 +279,41 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
         }
 </#if>
     }
+<#if isPackable>
 
-<#if withCodeComments>
+    <#if withCodeComments>
     /**
      * Deserializes this Zserio object from the bit stream.
      * <p>
      * Called only internally if packed arrays are used.
      *
-     * @param contextNode Context for packed arrays.
+     * @param context Context for packed arrays.
      * @param in Bit stream reader to use.
      *
      * @throws IOException If the reading from the bit stream failed.
      */
-</#if>
-    public void read(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in)
+    </#if>
+    public void read(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamReader in)
             throws java.io.IOException
     {
-<#if fieldList?has_content>
+        final ZserioPackingContext zserioContext = context.cast();
         choiceTag = ((${choiceTagArrayElement})
-                contextNode.getChildren().get(0).getContext().read(
+                zserioContext.getChoiceTag().read(
                         new ${choiceTagArrayTraits}(), in)).get();
 
         switch (choiceTag)
         {
     <#list fieldList as field>
         case <@choice_tag_name field/>:
-            <@compound_read_field field, name, 3, true, field?index + 1/>
+            <@compound_read_field field, name, 3, true/>
             <@compound_check_constraint_field field, name, 3/>
             break;
     </#list>
         default:
             throw new zserio.runtime.ZserioError("No match in union ${name}!");
         }
-</#if>
     }
+</#if>
 <#if withWriterCode>
 
     @Override
@@ -359,14 +346,15 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
         return bitPosition;
     </#if>
     }
+    <#if isPackable>
 
     @Override
-    public long initializeOffsets(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
+    public long initializeOffsets(zserio.runtime.array.PackingContext context, long bitPosition)
     {
-    <#if fieldList?has_content>
+        final ZserioPackingContext zserioContext = context.cast();
         long endBitPosition = bitPosition;
 
-        endBitPosition += contextNode.getChildren().get(0).getContext().bitSizeOf(
+        endBitPosition += zserioContext.getChoiceTag().bitSizeOf(
                 new ${choiceTagArrayTraits}(),
                 new ${choiceTagArrayElement}(choiceTag));
 
@@ -374,7 +362,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
         {
         <#list fieldList as field>
         case <@choice_tag_name field/>:
-            <@compound_initialize_offsets_field field, 3, true, field?index + 1/>
+            <@compound_initialize_offsets_field field, 3, true/>
             break;
         </#list>
         default:
@@ -382,10 +370,8 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
         }
 
         return endBitPosition;
-    <#else>
-        return bitPosition;
-    </#if>
     }
+    </#if>
 
     @Override
     public void write(zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
@@ -406,13 +392,14 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
         };
     </#if>
     }
+    <#if isPackable>
 
     @Override
-    public void write(zserio.runtime.array.PackingContextNode contextNode,
-            zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
+    public void write(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamWriter out)
+            throws java.io.IOException
     {
-    <#if fieldList?has_content>
-        contextNode.getChildren().get(0).getContext().write(
+        final ZserioPackingContext zserioContext = context.cast();
+        zserioContext.getChoiceTag().write(
                 new ${choiceTagArrayTraits}(), out,
                 new ${choiceTagArrayElement}(choiceTag));
 
@@ -421,14 +408,14 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
         <#list fieldList as field>
         case <@choice_tag_name field/>:
             <@compound_check_constraint_field field, name, 3/>
-            <@compound_write_field field, name, 3, true, field?index + 1/>
+            <@compound_write_field field, name, 3, true/>
             break;
         </#list>
         default:
             throw new zserio.runtime.ZserioError("No match in union ${name}!");
         };
-    </#if>
     }
+    </#if>
 </#if>
 
 <#list fieldList as field>

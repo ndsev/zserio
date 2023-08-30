@@ -2,12 +2,12 @@ package zserio.runtime.array;
 
 import java.io.IOException;
 
-import zserio.runtime.SizeOf;
+import zserio.runtime.PackableSizeOf;
 import zserio.runtime.array.ArrayElement.IntegralArrayElement;
 import zserio.runtime.array.ArrayTraits.IntegralArrayTraits;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.Writer;
+import zserio.runtime.io.PackableWriter;
 
 /**
  * Interface for packed array traits.
@@ -19,42 +19,42 @@ public interface PackedArrayTraits
      *
      * @return Packing context node with the created context.
      */
-    public PackingContextNode createContext();
+    public PackingContext createContext();
 
     /**
      * Calls context initialization step for the current element.
      *
-     * @param contextNode Packing context node which keeps the context.
+     * @param context Packing context node which keeps the context.
      * @param element Current element.
      */
-    public void initContext(PackingContextNode contextNode, ArrayElement element);
+    public void initContext(PackingContext context, ArrayElement element);
 
     /**
      * Returns length of the array element stored in the bit stream in bits.
      *
-     * @param contextNode Packing context node.
+     * @param context Packing context node.
      * @param bitPosition Current bit stream position.
      * @param element Current element.
      *
      * @return Length of the array element stored in the bit stream in bits.
      */
-    public int bitSizeOf(PackingContextNode contextNode, long bitPosition, ArrayElement element);
+    public int bitSizeOf(PackingContext context, long bitPosition, ArrayElement element);
 
     /**
      * Calls indexed offsets initialization for the current element.
      *
-     * @param contextNode Packing context node.
+     * @param context Packing context node.
      * @param bitPosition Current bit stream position.
      * @param element Current element.
      *
      * @return Updated bit stream position which points to the first bit after this element.
      */
-    public long initializeOffsets(PackingContextNode contextNode, long bitPosition, ArrayElement element);
+    public long initializeOffsets(PackingContext context, long bitPosition, ArrayElement element);
 
     /**
      * Reads an element from the bit stream.
      *
-     * @param contextNode Packing context node.
+     * @param context Packing context node.
      * @param reader Bit stream reader.
      * @param index Index of the current element.
      *
@@ -62,20 +62,18 @@ public interface PackedArrayTraits
      *
      * @throws IOException Failure during bit stream manipulation.
      */
-    public ArrayElement read(PackingContextNode contextNode, BitStreamReader reader, int index)
-            throws IOException;
+    public ArrayElement read(PackingContext context, BitStreamReader reader, int index) throws IOException;
 
     /**
      * Writes the element to the bit stream.
      *
-     * @param contextNode Packing context node.
+     * @param context Packing context node.
      * @param writer Bit stream writer.
      * @param element Element to write.
      *
      * @throws IOException Failure during bit stream manipulation.
      */
-    public void write(PackingContextNode contextNode, BitStreamWriter writer, ArrayElement element)
-            throws IOException;
+    public void write(PackingContext context, BitStreamWriter writer, ArrayElement element) throws IOException;
 
     /**
      * Packed array traits for arrays of integral types.
@@ -95,43 +93,45 @@ public interface PackedArrayTraits
         }
 
         @Override
-        public PackingContextNode createContext()
+        public PackingContext createContext()
         {
-            final PackingContextNode contextNode = new PackingContextNode();
-            contextNode.createContext();
-            return contextNode;
+            return new DeltaContext();
         }
 
         @Override
-        public void initContext(PackingContextNode contextNode, ArrayElement element)
+        public void initContext(PackingContext context, ArrayElement element)
         {
-            contextNode.getContext().init(arrayTraits, (IntegralArrayElement)element);
+            final DeltaContext deltaContext = context.cast();
+            deltaContext.init(arrayTraits, (IntegralArrayElement)element);
         }
 
         @Override
-        public int bitSizeOf(PackingContextNode contextNode, long bitPosition, ArrayElement element)
+        public int bitSizeOf(PackingContext context, long bitPosition, ArrayElement element)
         {
-            return contextNode.getContext().bitSizeOf(arrayTraits, (IntegralArrayElement)element);
+            final DeltaContext deltaContext = context.cast();
+            return deltaContext.bitSizeOf(arrayTraits, (IntegralArrayElement)element);
         }
 
         @Override
-        public long initializeOffsets(PackingContextNode contextNode, long bitPosition, ArrayElement element)
+        public long initializeOffsets(PackingContext context, long bitPosition, ArrayElement element)
         {
-            return bitPosition + bitSizeOf(contextNode, bitPosition, element);
+            return bitPosition + bitSizeOf(context, bitPosition, element);
         }
 
         @Override
-        public IntegralArrayElement read(PackingContextNode contextNode, BitStreamReader reader, int index)
+        public IntegralArrayElement read(PackingContext context, BitStreamReader reader, int index)
                 throws IOException
         {
-            return contextNode.getContext().read(arrayTraits, reader);
+            final DeltaContext deltaContext = context.cast();
+            return deltaContext.read(arrayTraits, reader);
         }
 
         @Override
-        public void write(PackingContextNode contextNode, BitStreamWriter writer, ArrayElement element)
+        public void write(PackingContext context, BitStreamWriter writer, ArrayElement element)
                 throws IOException
         {
-            contextNode.getContext().write(arrayTraits, writer, (IntegralArrayElement)element);
+            final DeltaContext deltaContext = context.cast();
+            deltaContext.write(arrayTraits, writer, (IntegralArrayElement)element);
         }
 
         private final IntegralArrayTraits arrayTraits;
@@ -140,69 +140,67 @@ public interface PackedArrayTraits
     /**
      * Packed array traits for zserio object arrays (without writer part).
      */
-    public static class ObjectPackedArrayTraits<E extends SizeOf> implements PackedArrayTraits
+    public static class ObjectPackedArrayTraits<E extends PackableSizeOf> implements PackedArrayTraits
     {
         /**
          * Constructor.
          *
          * @param elementFactory Element factory to construct from.
          */
-        public ObjectPackedArrayTraits(ElementFactory<E> elementFactory)
+        public ObjectPackedArrayTraits(PackableElementFactory<E> elementFactory)
         {
             this.elementFactory = elementFactory;
         }
 
         @Override
-        public PackingContextNode createContext()
+        public PackingContext createContext()
         {
-            final PackingContextNode contextNode = new PackingContextNode();
-            elementFactory.createPackingContext(contextNode);
-            return contextNode;
+            return elementFactory.createPackingContext();
         }
 
         @SuppressWarnings("unchecked")
         @Override
-        public void initContext(PackingContextNode contextNode, ArrayElement element)
+        public void initContext(PackingContext context, ArrayElement element)
         {
-            ((ArrayElement.ObjectArrayElement<E>)element).get().initPackingContext(contextNode);
+            ((ArrayElement.ObjectArrayElement<E>)element).get().initPackingContext(context);
         }
 
         @SuppressWarnings("unchecked")
         @Override
-        public int bitSizeOf(PackingContextNode contextNode, long bitPosition, ArrayElement element)
+        public int bitSizeOf(PackingContext context, long bitPosition, ArrayElement element)
         {
-            return ((ArrayElement.ObjectArrayElement<E>)element).get().bitSizeOf(contextNode, bitPosition);
+            return ((ArrayElement.ObjectArrayElement<E>)element).get().bitSizeOf(context, bitPosition);
         }
 
         @Override
-        public long initializeOffsets(PackingContextNode contextNode, long bitPosition, ArrayElement element)
+        public long initializeOffsets(PackingContext context, long bitPosition, ArrayElement element)
         {
             throw new UnsupportedOperationException("PackedArrayTraits: " +
                     "initializeOffsets is not implemented for read only PackedObjectArrayTraits!");
         }
 
         @Override
-        public ArrayElement read(PackingContextNode contextNode, BitStreamReader reader, int index)
+        public ArrayElement read(PackingContext context, BitStreamReader reader, int index)
                 throws IOException
         {
-            return new ArrayElement.ObjectArrayElement<>(elementFactory.create(contextNode, reader, index));
+            return new ArrayElement.ObjectArrayElement<>(elementFactory.create(context, reader, index));
         }
 
         @Override
-        public void write(PackingContextNode contextNode, BitStreamWriter writer, ArrayElement element)
+        public void write(PackingContext context, BitStreamWriter writer, ArrayElement element)
                 throws IOException
         {
             throw new UnsupportedOperationException(
                     "PackedArrayTraits: write is not implemented for read only PackedObjectArrayTraits!");
         }
 
-        private final ElementFactory<E> elementFactory;
+        private final PackableElementFactory<E> elementFactory;
     }
 
     /**
      * Packed array traits for zserio object arrays (with writer part).
      */
-    public static class WriteObjectPackedArrayTraits<E extends Writer & SizeOf>
+    public static class WriteObjectPackedArrayTraits<E extends PackableWriter & PackableSizeOf>
             extends ObjectPackedArrayTraits<E>
     {
         /**
@@ -210,25 +208,25 @@ public interface PackedArrayTraits
          *
          * @param elementFactory Element factory to construct from.
          */
-        public WriteObjectPackedArrayTraits(ElementFactory<E> elementFactory)
+        public WriteObjectPackedArrayTraits(PackableElementFactory<E> elementFactory)
         {
             super(elementFactory);
         }
 
         @SuppressWarnings("unchecked")
         @Override
-        public long initializeOffsets(PackingContextNode contextNode, long bitPosition, ArrayElement element)
+        public long initializeOffsets(PackingContext context, long bitPosition, ArrayElement element)
         {
             return ((ArrayElement.ObjectArrayElement<E>)element).get().initializeOffsets(
-                    contextNode, bitPosition);
+                    context, bitPosition);
         }
 
         @SuppressWarnings("unchecked")
         @Override
-        public void write(PackingContextNode contextNode, BitStreamWriter writer, ArrayElement element)
+        public void write(PackingContext context, BitStreamWriter writer, ArrayElement element)
                 throws IOException
         {
-            ((ArrayElement.ObjectArrayElement<E>)element).get().write(contextNode, writer);
+            ((ArrayElement.ObjectArrayElement<E>)element).get().write(context, writer);
         }
     }
 }

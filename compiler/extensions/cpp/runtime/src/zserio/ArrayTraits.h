@@ -12,6 +12,7 @@
 #include "zserio/Enums.h"
 #include "zserio/Traits.h"
 #include "zserio/SizeConvertUtil.h"
+#include "zserio/DeltaContext.h"
 
 namespace zserio
 {
@@ -1822,28 +1823,16 @@ public:
     using ElementType = typename ARRAY_TRAITS::ElementType;
 
     /**
-     * Creates packing context.
-     *
-     * \param contextNode Packing context node where the context is created.
-     */
-    template <typename PACKING_CONTEXT_NODE>
-    static void createContext(PACKING_CONTEXT_NODE& contextNode)
-    {
-        contextNode.createContext();
-    }
-
-    /**
      * Calls context initialization step for the current element.
      *
      * Available for traits which do not need the owner.
      *
-     * \param contextNode Packing context node which keeps the context.
+     * \param deltaContext Delta context.
      * \param element Current element.
      */
-    template <typename PACKING_CONTEXT_NODE>
-    static void initContext(PACKING_CONTEXT_NODE& contextNode, ElementType element)
+    static void initContext(DeltaContext& deltaContext, ElementType element)
     {
-        contextNode.getContext().template init<ArrayTraits>(element);
+        deltaContext.template init<ArrayTraits>(element);
     }
 
     /**
@@ -1851,15 +1840,14 @@ public:
      *
      * Available for traits which do not need the owner.
      *
-     * \param contextNode Packing context node.
+     * \param deltaContext Delta context.
      * \param element Current element.
      *
      * \return Length of the array element stored in the bit stream in bits.
      */
-    template <typename PACKING_CONTEXT_NODE>
-    static size_t bitSizeOf(PACKING_CONTEXT_NODE& contextNode, size_t, ElementType element)
+    static size_t bitSizeOf(DeltaContext& deltaContext, size_t, ElementType element)
     {
-        return contextNode.getContext().template bitSizeOf<ArrayTraits>(element);
+        return deltaContext.template bitSizeOf<ArrayTraits>(element);
     }
 
     /**
@@ -1867,16 +1855,15 @@ public:
      *
      * Available for traits which do not need the owner.
      *
-     * \param contextNode Packing context node.
+     * \param deltaContext Delta context.
      * \param bitPosition Current bit stream position.
      * \param element Current element.
      *
      * \return Updated bit stream position which points to the first bit after this element.
      */
-    template <typename PACKING_CONTEXT_NODE>
-    static size_t initializeOffsets(PACKING_CONTEXT_NODE& contextNode, size_t bitPosition, ElementType element)
+    static size_t initializeOffsets(DeltaContext& deltaContext, size_t bitPosition, ElementType element)
     {
-        return bitPosition + bitSizeOf(contextNode, bitPosition, element);
+        return bitPosition + bitSizeOf(deltaContext, bitPosition, element);
     }
 
     /**
@@ -1884,15 +1871,14 @@ public:
      *
      * Available for traits which do not need the owner.
      *
-     * \param contextNode Packing context node.
+     * \param deltaContext Delta context.
      * \param in Bit stream reader.
      *
      * \return Read element value.
      */
-    template <typename PACKING_CONTEXT_NODE>
-    static ElementType read(PACKING_CONTEXT_NODE& contextNode, BitStreamReader& in, size_t = 0)
+    static ElementType read(DeltaContext& deltaContext, BitStreamReader& in, size_t = 0)
     {
-        return contextNode.getContext().template read<ArrayTraits>(in);
+        return deltaContext.template read<ArrayTraits>(in);
     }
 
     /**
@@ -1900,19 +1886,20 @@ public:
      *
      * Available for traits which do not need the owner.
      *
-     * \param contextNode Packing context node.
+     * \param deltaContext Delta context.
      * \param out Bit stream writer.
      * \param element Element to write.
      */
-    template <typename PACKING_CONTEXT_NODE>
-    static void write(PACKING_CONTEXT_NODE& contextNode, BitStreamWriter& out, ElementType element)
+    static void write(DeltaContext& deltaContext, BitStreamWriter& out, ElementType element)
     {
-        contextNode.getContext().template write<ArrayTraits>(out, element);
+        deltaContext.template write<ArrayTraits>(out, element);
     }
 };
 
 /**
  * Specialization of packed array traits for traits which needs the array's owner.
+ *
+ * This packed array traits are used for all packable built-in types which needs the array's owner.
  */
 template <typename ARRAY_TRAITS>
 class PackedArrayTraits<ARRAY_TRAITS, typename std::enable_if<has_owner_type<ARRAY_TRAITS>::value>::type>
@@ -1928,30 +1915,17 @@ public:
     using OwnerType = typename ARRAY_TRAITS::OwnerType;
 
     /**
-     * Creates packing context.
-     *
-     * \param contextNode Packing context node where the context is created.
-     */
-    template <typename PACKING_CONTEXT_NODE>
-    static void createContext(PACKING_CONTEXT_NODE& contextNode)
-    {
-        contextNode.createContext();
-    }
-
-    /**
      * Calls context initialization step for the current element.
      *
      * Available for traits which need the owner.
      *
      * \param owner Owner of the current array.
-     * \param contextNode Packing context node which keeps the context.
+     * \param deltaContext Delta context node which keeps the context.
      * \param element Current element.
      */
-    template <typename PACKING_CONTEXT_NODE>
-    static void initContext(const OwnerType& owner,
-            PACKING_CONTEXT_NODE& contextNode, ElementType element)
+    static void initContext(const OwnerType& owner, DeltaContext& deltaContext, ElementType element)
     {
-        contextNode.getContext().template init<ArrayTraits>(owner, element);
+        deltaContext.template init<ArrayTraits>(owner, element);
     }
 
     /**
@@ -1960,16 +1934,15 @@ public:
      * Available for traits which need the owner.
      *
      * \param owner Owner of the current array.
-     * \param contextNode Packing context node.
+     * \param deltaContext Delta context.
      * \param element Current element.
      *
      * \return Length of the array element stored in the bit stream in bits.
      */
-    template <typename PACKING_CONTEXT_NODE>
     static size_t bitSizeOf(const OwnerType& owner,
-            PACKING_CONTEXT_NODE& contextNode, size_t, ElementType element)
+            DeltaContext& deltaContext, size_t, ElementType element)
     {
-        return contextNode.getContext().template bitSizeOf<ArrayTraits>(owner, element);
+        return deltaContext.template bitSizeOf<ArrayTraits>(owner, element);
     }
 
     /**
@@ -1978,17 +1951,16 @@ public:
      * Available for traits which need the owner.
      *
      * \param owner Owner of the current array.
-     * \param contextNode Packing context node.
+     * \param deltaContext Delta context.
      * \param bitPosition Current bit stream position.
      * \param element Current element.
      *
      * \return Updated bit stream position which points to the first bit after this element.
      */
-    template <typename PACKING_CONTEXT_NODE>
     static size_t initializeOffsets(const OwnerType& owner,
-            PACKING_CONTEXT_NODE& contextNode, size_t bitPosition, ElementType element)
+            DeltaContext& deltaContext, size_t bitPosition, ElementType element)
     {
-        return bitPosition + bitSizeOf(owner, contextNode, bitPosition, element);
+        return bitPosition + bitSizeOf(owner, deltaContext, bitPosition, element);
     }
 
     /**
@@ -1997,16 +1969,14 @@ public:
      * Available for traits which need the owner.
      *
      * \param owner Owner of the current array.
-     * \param contextNode Packing context node.
+     * \param deltaContext Delta context.
      * \param in Bit stream reader.
      *
      * \return Read element value.
      */
-    template <typename PACKING_CONTEXT_NODE>
-    static ElementType read(const OwnerType& owner,
-            PACKING_CONTEXT_NODE& contextNode, BitStreamReader& in, size_t = 0)
+    static ElementType read(const OwnerType& owner, DeltaContext& deltaContext, BitStreamReader& in, size_t = 0)
     {
-        return contextNode.getContext().template read<ArrayTraits>(owner, in);
+        return deltaContext.template read<ArrayTraits>(owner, in);
     }
 
     /**
@@ -2015,15 +1985,14 @@ public:
      * Available for traits which need the owner.
      *
      * \param owner Owner of the current array.
-     * \param contextNode Packing context node.
+     * \param deltaContext Delta context.
      * \param out Bit stream writer.
      * \param element Element to write.
      */
-    template <typename PACKING_CONTEXT_NODE>
     static void write(const OwnerType& owner,
-            PACKING_CONTEXT_NODE& contextNode, BitStreamWriter& out, ElementType element)
+            DeltaContext& deltaContext, BitStreamWriter& out, ElementType element)
     {
-        contextNode.getContext().template write<ArrayTraits>(owner, out, element);
+        deltaContext.template write<ArrayTraits>(owner, out, element);
     }
 };
 
@@ -2041,83 +2010,67 @@ public:
     using ElementType = T;
 
     /**
-     * Creates packing context.
-     *
-     * \param contextNode Packing context node where the context is created.
-     */
-    template <typename PACKING_CONTEXT_NODE>
-    static void createContext(PACKING_CONTEXT_NODE& contextNode)
-    {
-        contextNode.createContext();
-    }
-
-    /**
      * Calls context initialization step for the current element.
      *
-     * \param contextNode Packing context node which keeps the context.
+     * \param deltaContext Delta context.
      * \param element Current element.
      */
-    template <typename PACKING_CONTEXT_NODE>
-    static void initContext(PACKING_CONTEXT_NODE& contextNode, ElementType element)
+    static void initContext(DeltaContext& deltaContext, ElementType element)
     {
-        zserio::initPackingContext(contextNode, element);
+        zserio::initPackingContext(deltaContext, element);
     }
 
     /**
      * Returns length of the array element stored in the bit stream in bits.
      *
-     * \param contextNode Packing context node.
+     * \param deltaContext Delta context.
      * \param element Current element.
      *
      * \return Length of the array element stored in the bit stream in bits.
      */
-    template <typename PACKING_CONTEXT_NODE>
-    static size_t bitSizeOf(PACKING_CONTEXT_NODE& contextNode, size_t, ElementType element)
+    static size_t bitSizeOf(DeltaContext& deltaContext, size_t, ElementType element)
     {
-        return zserio::bitSizeOf(contextNode, element);
+        return zserio::bitSizeOf(deltaContext, element);
     }
 
     /**
      * Calls indexed offsets initialization for the current element.
      *
-     * \param contextNode Packing context node.
+     * \param deltaContext Delta context.
      * \param bitPosition Current bit stream position.
      * \param element Current element.
      *
      * \return Updated bit stream position which points to the first bit after this element.
      */
-    template <typename PACKING_CONTEXT_NODE>
-    static size_t initializeOffsets(PACKING_CONTEXT_NODE& contextNode,
+    static size_t initializeOffsets(DeltaContext& deltaContext,
             size_t bitPosition, ElementType element)
     {
-        return zserio::initializeOffsets(contextNode, bitPosition, element);
+        return zserio::initializeOffsets(deltaContext, bitPosition, element);
     }
 
     /**
      * Reads an element from the bit stream.
      *
-     * \param contextNode Packing context node.
+     * \param deltaContext Delta context.
      * \param in Bit stream reader.
      *
      * \return Read element value.
      */
-    template <typename PACKING_CONTEXT_NODE>
-    static ElementType read(PACKING_CONTEXT_NODE& contextNode, BitStreamReader& in, size_t = 0)
+    static ElementType read(DeltaContext& deltaContext, BitStreamReader& in, size_t = 0)
     {
-        return zserio::read<ElementType>(contextNode, in);
+        return zserio::read<ElementType>(deltaContext, in);
     }
 
     /**
      * Writes the element to the bit stream.
      *
-     * \param contextNode Packing context node.
+     * \param deltaContext Delta context.
      * \param out Bit stream writer.
      * \param element Element to write.
      */
-    template <typename PACKING_CONTEXT_NODE>
-    static void write(PACKING_CONTEXT_NODE& contextNode, BitStreamWriter& out, ElementType element)
+    static void write(DeltaContext& deltaContext, BitStreamWriter& out, ElementType element)
     {
-        zserio::write(contextNode, out, element);
+        zserio::write(deltaContext, out, element);
     }
 };
 
@@ -2135,84 +2088,66 @@ public:
     using ElementType = T;
 
     /**
-     * Creates packing context.
-     *
-     * \param contextNode Packing context node where the appropriate subtree of contexts will be created.
-     */
-    template <typename PACKING_CONTEXT_NODE>
-    static void createContext(PACKING_CONTEXT_NODE& contextNode)
-    {
-        ElementType::createPackingContext(contextNode);
-    }
-
-    /**
      * Calls context initialization step for the current element.
      *
-     * \param contextNode Packing context node which keeps the appropriate subtree of contexts.
+     * \param deltaContext Delta context.
      */
-    template <typename PACKING_CONTEXT_NODE>
-    static void initContext(PACKING_CONTEXT_NODE& contextNode, const ElementType& element)
+    static void initContext(DeltaContext& deltaContext, const ElementType& element)
     {
-        element.initPackingContext(contextNode);
+        element.initPackingContext(deltaContext);
     }
 
     /**
      * Returns length of the array element stored in the bit stream in bits.
      *
-     * \param contextNode Packing context node which keeps the appropriate subtree of contexts.
+     * \param deltaContext Delta context.
      * \param bitPosition Current bit stream position.
      * \param element Current element.
      *
      * \return Length of the array element stored in the bit stream in bits.
      */
-    template <typename PACKING_CONTEXT_NODE>
-    static size_t bitSizeOf(PACKING_CONTEXT_NODE& contextNode, size_t bitPosition, const ElementType& element)
+    static size_t bitSizeOf(DeltaContext& deltaContext, size_t bitPosition, const ElementType& element)
     {
-        return element.bitSizeOf(contextNode, bitPosition);
+        return element.bitSizeOf(deltaContext, bitPosition);
     }
 
     /**
      * Calls indexed offsets initialization for the current element.
      *
-     * \param contextNode Packing context node which keeps the appropriate subtree of contexts.
+     * \param deltaContext Delta context.
      * \param bitPosition Current bit stream position.
      * \param element Current element.
      *
      * \return Updated bit stream position which points to the first bit after this element.
      */
-    template <typename PACKING_CONTEXT_NODE>
-    static size_t initializeOffsets(PACKING_CONTEXT_NODE& contextNode, size_t bitPosition,
-            const ElementType& element)
+    static size_t initializeOffsets(DeltaContext& deltaContext, size_t bitPosition, const ElementType& element)
     {
-        return element.initializeOffsets(contextNode, bitPosition);
+        return element.initializeOffsets(deltaContext, bitPosition);
     }
 
     /**
      * Reads an element from the bit stream.
      *
-     * \param contextNode Packing context node which keeps the appropriate subtree of contexts.
+     * \param deltaContext Delta context.
      * \param in Bit stream reader.
      *
      * \return Read element.
      */
-    template <typename PACKING_CONTEXT_NODE>
-    static ElementType read(PACKING_CONTEXT_NODE& contextNode, BitStreamReader& in,
-            size_t = 0)
+    static ElementType read(DeltaContext& deltaContext, BitStreamReader& in, size_t = 0)
     {
-        return ElementType(contextNode, in);
+        return ElementType(deltaContext, in);
     }
 
     /**
      * Writes the element to the bit stream.
      *
-     * \param contextNode Packing context node which keeps the appropriate subtree of contexts.
+     * \param deltaContext Delta context.
      * \param out Bit stream writer.
      * \param element Element to write.
      */
-    template <typename PACKING_CONTEXT_NODE>
-    static void write(PACKING_CONTEXT_NODE& contextNode, BitStreamWriter& out, const ElementType& element)
+    static void write(DeltaContext& deltaContext, BitStreamWriter& out, const ElementType& element)
     {
-        element.write(contextNode, out);
+        element.write(deltaContext, out);
     }
 };
 
@@ -2238,88 +2173,77 @@ public:
     using OwnerType = typename ArrayTraits::OwnerType;
 
     /**
-     * Creates packing context.
-     *
-     * \param contextNode Packing context node where the appropriate subtree of contexts will be created.
-     */
-    template <typename PACKING_CONTEXT_NODE>
-    static void createContext(PACKING_CONTEXT_NODE& contextNode)
-    {
-        ElementType::createPackingContext(contextNode);
-    }
-
-    /**
      * Calls context initialization step for the current element.
      *
-     * \param contextNode Packing context node which keeps the appropriate subtree of contexts.
+     * \param packingContext Packing context node which keeps the appropriate subtree of contexts.
      */
-    template <typename PACKING_CONTEXT_NODE>
+    template <typename PACKING_CONTEXT>
     static void initContext(const typename ArrayTraits::OwnerType&,
-            PACKING_CONTEXT_NODE& contextNode, const ElementType& element)
+            PACKING_CONTEXT& packingContext, const ElementType& element)
     {
-        element.initPackingContext(contextNode);
+        element.initPackingContext(packingContext);
     }
 
     /**
      * Returns length of the array element stored in the bit stream in bits.
      *
-     * \param contextNode Packing context node which keeps the appropriate subtree of contexts.
+     * \param packingContext Packing context node which keeps the appropriate subtree of contexts.
      * \param bitPosition Current bit stream position.
      * \param element Current element.
      *
      * \return Length of the array element stored in the bit stream in bits.
      */
-    template <typename PACKING_CONTEXT_NODE>
+    template <typename PACKING_CONTEXT>
     static size_t bitSizeOf(const typename ArrayTraits::OwnerType&,
-            PACKING_CONTEXT_NODE& contextNode, size_t bitPosition, const ElementType& element)
+            PACKING_CONTEXT& packingContext, size_t bitPosition, const ElementType& element)
     {
-        return element.bitSizeOf(contextNode, bitPosition);
+        return element.bitSizeOf(packingContext, bitPosition);
     }
 
     /**
      * Calls indexed offsets initialization for the current element.
      *
-     * \param contextNode Packing context node which keeps the appropriate subtree of contexts.
+     * \param packingContext Packing context node which keeps the appropriate subtree of contexts.
      * \param bitPosition Current bit stream position.
      * \param element Current element.
      *
      * \return Updated bit stream position which points to the first bit after this element.
      */
-    template <typename PACKING_CONTEXT_NODE>
+    template <typename PACKING_CONTEXT>
     static size_t initializeOffsets(const typename ArrayTraits::OwnerType&,
-            PACKING_CONTEXT_NODE& contextNode, size_t bitPosition, ElementType& element)
+            PACKING_CONTEXT& packingContext, size_t bitPosition, ElementType& element)
     {
-        return element.initializeOffsets(contextNode, bitPosition);
+        return element.initializeOffsets(packingContext, bitPosition);
     }
 
     /**
      * Reads an element from the bit stream.
      *
      * \param owner Owner of the current array.
-     * \param contextNode Packing context node which keeps the appropriate subtree of contexts.
+     * \param packingContext Packing context node which keeps the appropriate subtree of contexts.
      * \param in Bit stream reader.
      * \param allocator Allocator to use.
      * \param index Index of the current element.
      */
-    template <typename PACKING_CONTEXT_NODE>
+    template <typename PACKING_CONTEXT>
     static ElementType read(typename ArrayTraits::OwnerType& owner,
-            PACKING_CONTEXT_NODE& contextNode, BitStreamReader& in, const allocator_type& allocator, size_t index)
+            PACKING_CONTEXT& packingContext, BitStreamReader& in, const allocator_type& allocator, size_t index)
     {
-        return ELEMENT_FACTORY::create(owner, contextNode, in, allocator, index);
+        return ELEMENT_FACTORY::create(owner, packingContext, in, allocator, index);
     }
 
     /**
      * Writes the element to the bit stream.
      *
-     * \param contextNode Packing context node which keeps the appropriate subtree of contexts.
+     * \param packingContext Packing context node which keeps the appropriate subtree of contexts.
      * \param out Bit stream writer.
      * \param element Element to write.
      */
-    template <typename PACKING_CONTEXT_NODE>
+    template <typename PACKING_CONTEXT>
     static void write(const typename ArrayTraits::OwnerType&,
-            PACKING_CONTEXT_NODE& contextNode, BitStreamWriter& out, const ElementType& element)
+            PACKING_CONTEXT& packingContext, BitStreamWriter& out, const ElementType& element)
     {
-        element.write(contextNode, out);
+        element.write(packingContext, out);
     }
 };
 

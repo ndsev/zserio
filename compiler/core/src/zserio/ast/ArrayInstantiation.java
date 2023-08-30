@@ -87,6 +87,21 @@ public class ArrayInstantiation extends TypeInstantiation
         return lengthExpression;
     }
 
+    /**
+     * Gets flag which indicates if the array is packable.
+     *
+     * @return True if the array is packable.
+     */
+    public boolean isPackable()
+    {
+        if (isImplicit())
+            return false;
+
+        final ZserioType elementBaseType = getElementTypeInstantiation().getBaseType();
+
+        return isTypePackable(elementBaseType);
+    }
+
     @Override
     public ArrayType getBaseType()
     {
@@ -152,13 +167,22 @@ public class ArrayInstantiation extends TypeInstantiation
     }
 
     /**
-     * Check whether the baseType is packable.
+     * Check whether the base type is packable.
      *
      * @param baseType Base type to check.
      *
      * @return True when the base type is packable, false otherwise.
      */
-    static boolean isSimpleTypePackable(ZserioType baseType)
+    static boolean isTypePackable(ZserioType baseType)
+    {
+        // compound is packable if it contains at least one packable field
+        if (baseType instanceof CompoundType)
+            return ((CompoundType)baseType).isPackable();
+
+        return isSimpleTypePackable(baseType);
+    }
+
+    private static boolean isSimpleTypePackable(ZserioType baseType)
     {
         return baseType instanceof IntegerType ||
                 baseType instanceof EnumType || baseType instanceof BitmaskType;
@@ -174,7 +198,7 @@ public class ArrayInstantiation extends TypeInstantiation
             if (elementBaseType instanceof CompoundType)
             {
                 final CompoundType elementCompoundType = (CompoundType)elementBaseType;
-                if (!elementCompoundType.hasPackableField())
+                if (!elementCompoundType.isPackable())
                 {
                     // in case of empty structures, we are not able to check correctness => such warning should
                     // be enabled explicitly by command line

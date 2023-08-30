@@ -112,27 +112,30 @@ public class Array
         if (arrayType == ArrayType.AUTO)
             endBitPosition += BitSizeOfCalculator.getBitSizeOfVarSize(size);
 
-        if (arrayTraits.isBitSizeOfConstant() && size > 0)
+        if (size > 0)
         {
-            final int elementSize = arrayTraits.bitSizeOf(endBitPosition, ArrayElement.Dummy);
-            if (offsetInitializer == null)
+            if (arrayTraits.isBitSizeOfConstant())
             {
-                endBitPosition += size * elementSize;
+                final int elementSize = arrayTraits.bitSizeOf(endBitPosition, ArrayElement.Dummy);
+                if (offsetInitializer == null)
+                {
+                    endBitPosition += size * elementSize;
+                }
+                else
+                {
+                    endBitPosition = BitPositionUtil.alignTo(Byte.SIZE, endBitPosition);
+                    endBitPosition += elementSize + (size - 1) * BitPositionUtil.alignTo(Byte.SIZE, elementSize);
+                }
             }
             else
             {
-                endBitPosition = BitPositionUtil.alignTo(Byte.SIZE, endBitPosition);
-                endBitPosition += elementSize + (size - 1) * BitPositionUtil.alignTo(Byte.SIZE, elementSize);
-            }
-        }
-        else
-        {
-            for (int index = 0; index < size; ++index)
-            {
-                if (offsetInitializer != null)
-                    endBitPosition = BitPositionUtil.alignTo(Byte.SIZE, endBitPosition);
+                for (int index = 0; index < size; ++index)
+                {
+                    if (offsetInitializer != null)
+                        endBitPosition = BitPositionUtil.alignTo(Byte.SIZE, endBitPosition);
 
-                endBitPosition += arrayTraits.bitSizeOf(endBitPosition, rawArray.getElement(index));
+                    endBitPosition += arrayTraits.bitSizeOf(endBitPosition, rawArray.getElement(index));
+                }
             }
         }
 
@@ -157,9 +160,9 @@ public class Array
 
         if (size > 0)
         {
-            final PackingContextNode contextNode = packedArrayTraits.createContext();
+            final PackingContext context = packedArrayTraits.createContext();
             for (int index = 0; index < size; ++index)
-                packedArrayTraits.initContext(contextNode, rawArray.getElement(index));
+                packedArrayTraits.initContext(context, rawArray.getElement(index));
 
             for (int index = 0; index < size; ++index)
             {
@@ -167,7 +170,7 @@ public class Array
                     endBitPosition = BitPositionUtil.alignTo(Byte.SIZE, endBitPosition);
 
                 endBitPosition += packedArrayTraits.bitSizeOf(
-                        contextNode, endBitPosition, rawArray.getElement(index));
+                        context, endBitPosition, rawArray.getElement(index));
             }
         }
 
@@ -220,9 +223,9 @@ public class Array
 
         if (size > 0)
         {
-            final PackingContextNode contextNode = packedArrayTraits.createContext();
+            final PackingContext context = packedArrayTraits.createContext();
             for (int index = 0; index < size; ++index)
-                packedArrayTraits.initContext(contextNode, rawArray.getElement(index));
+                packedArrayTraits.initContext(context, rawArray.getElement(index));
 
             for (int index= 0; index < size; ++index)
             {
@@ -233,7 +236,7 @@ public class Array
                 }
 
                 endBitPosition = packedArrayTraits.initializeOffsets(
-                        contextNode, endBitPosition, rawArray.getElement(index));
+                        context, endBitPosition, rawArray.getElement(index));
             }
         }
 
@@ -330,7 +333,7 @@ public class Array
 
         if (readSize > 0)
         {
-            final PackingContextNode contextNode = packedArrayTraits.createContext();
+            final PackingContext context = packedArrayTraits.createContext();
 
             for (int index = 0; index < readSize; ++index)
             {
@@ -340,7 +343,7 @@ public class Array
                     offsetChecker.checkOffset(index, reader.getBytePosition());
                 }
 
-                final ArrayElement element = packedArrayTraits.read(contextNode, reader, index);
+                final ArrayElement element = packedArrayTraits.read(context, reader, index);
                 rawArray.setElement(element, index);
             }
         }
@@ -388,9 +391,9 @@ public class Array
 
         if (size > 0)
         {
-            final PackingContextNode contextNode = packedArrayTraits.createContext();
+            final PackingContext context = packedArrayTraits.createContext();
             for (int index = 0; index < size; ++index)
-                packedArrayTraits.initContext(contextNode, rawArray.getElement(index));
+                packedArrayTraits.initContext(context, rawArray.getElement(index));
 
             for (int index = 0; index < size; ++index)
             {
@@ -400,7 +403,7 @@ public class Array
                     offsetChecker.checkOffset(index, writer.getBytePosition());
                 }
 
-                packedArrayTraits.write(contextNode, writer, rawArray.getElement(index));
+                packedArrayTraits.write(context, writer, rawArray.getElement(index));
             }
         }
     }

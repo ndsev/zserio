@@ -310,7 +310,7 @@ public final class CompoundFieldTemplateData
             elementTypeInfo = new NativeTypeInfoTemplateData(elementNativeType, elementTypeInstantiation);
 
             requiresElementClass = nativeRawArray.requiresElementClass();
-            requiresParentContext = createRequiresParentContext(elementTypeInstantiation);
+            requiresOwnerContext = createRequiresOwnerContext(elementTypeInstantiation);
 
             elementBitSize = BitSizeTemplateData.create(elementTypeInstantiation, javaExpressionFormatter,
                     javaLambdaExpressionFormatter);
@@ -363,9 +363,9 @@ public final class CompoundFieldTemplateData
             return requiresElementClass;
         }
 
-        public boolean getRequiresParentContext()
+        public boolean getRequiresOwnerContext()
         {
-            return requiresParentContext;
+            return requiresOwnerContext;
         }
 
         public BitSizeTemplateData getElementBitSize()
@@ -393,7 +393,7 @@ public final class CompoundFieldTemplateData
             return javaExpressionFormatter.formatGetter(lengthExpression);
         }
 
-        private static boolean createRequiresParentContext(TypeInstantiation elementTypeInstantiation)
+        private static boolean createRequiresOwnerContext(TypeInstantiation elementTypeInstantiation)
         {
             /*
              * Array length expression (Foo field[expr];) is not needed here because it's handled by the array
@@ -424,7 +424,7 @@ public final class CompoundFieldTemplateData
         private final ArrayTraitsTemplateData arrayTraits;
         private final NativeTypeInfoTemplateData elementTypeInfo;
         private final boolean requiresElementClass;
-        private final boolean requiresParentContext;
+        private final boolean requiresOwnerContext;
         private final BitSizeTemplateData elementBitSize;
         private final Compound elementCompound;
         private final boolean elementIsRecursive;

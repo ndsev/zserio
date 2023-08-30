@@ -34,7 +34,6 @@ ${I}throw new zserio.runtime.ZserioError("No match in choice ${name}: " + ${sele
         !isSelectorExpressionLong && !selectorExpressionBitmaskTypeName??>
 <#macro choice_switch memberActionMacroName noMatchMacroName indent packed=false>
     <#local I>${""?left_pad(indent * 4)}</#local>
-    <#local fieldIndex=0>
     <#if isSwitchAllowed>
 ${I}switch (${selectorExpression})
 ${I}{
@@ -42,14 +41,12 @@ ${I}{
             <#list caseMember.caseList as case>
 ${I}case ${case.expressionForCase}:
             </#list>
-        <@.vars[memberActionMacroName] caseMember, indent + 1, packed, fieldIndex/>
-            <#if caseMember.compoundField??><#local fieldIndex+=1></#if>
+        <@.vars[memberActionMacroName] caseMember, indent + 1, packed/>
         </#list>
         <#if !isDefaultUnreachable>
 ${I}default:
             <#if defaultMember??>
-        <@.vars[memberActionMacroName] defaultMember, indent + 1, packed, fieldIndex/>
-                <#if defaultMember.compoundField??><#local fieldIndex+=1></#if>
+        <@.vars[memberActionMacroName] defaultMember, indent + 1, packed/>
             <#else>
         <@.vars[noMatchMacroName] name, indent+1/>
             </#if>
@@ -73,16 +70,14 @@ ${I}<#if caseMember_index != 0>else </#if>if (<@choice_selector_condition caseMe
 ${I}else
             </#if>
 ${I}{
-        <@.vars[memberActionMacroName] caseMember, indent + 1, packed, fieldIndex/>
-            <#if caseMember.compoundField??><#local fieldIndex+=1></#if>
+        <@.vars[memberActionMacroName] caseMember, indent + 1, packed/>
 ${I}}
         </#list>
         <#if !isDefaultUnreachable>
 ${I}else
 ${I}{
             <#if defaultMember??>
-        <@.vars[memberActionMacroName] defaultMember, indent + 1, packed, fieldIndex/>
-                <#if defaultMember.compoundField??><#local fieldIndex+=1></#if>
+        <@.vars[memberActionMacroName] defaultMember, indent + 1, packed/>
             <#else>
         <@.vars[noMatchMacroName] name, indent+1/>
             </#if>
@@ -94,10 +89,16 @@ ${I}}
 <#if withCodeComments && docComments??>
 <@doc_comments docComments/>
 </#if>
-public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </#if>zserio.runtime.SizeOf
+public class ${name} implements <#if withWriterCode>zserio.runtime.io.<#if isPackable>Packable</#if>Writer, <#rt>
+        <#lt></#if>zserio.runtime.<#if isPackable>Packable</#if>SizeOf
 {
+<#if isPackable>
+    <@compound_declare_packing_context fieldList/>
+
+</#if>
     <@compound_constructors compoundConstructorsData/>
 <#if withTypeInfoCode>
+
     <#if withCodeComments>
     /**
      * Gets static information about this Zserio type useful for generic introspection.
@@ -127,13 +128,13 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
                 fieldList, parameterList, functionList, "${selectorExpression?j_string}", caseList
         );
     }
-
 </#if>
+
 <#macro choice_tag_no_match name indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}return UNDEFINED_CHOICE;
 </#macro>
-<#macro choice_tag_member member indent packed index>
+<#macro choice_tag_member member indent packed>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
 ${I}return <@choice_tag_name member.compoundField/>;
@@ -156,35 +157,12 @@ ${I}return UNDEFINED_CHOICE;
         return UNDEFINED_CHOICE;
 </#if>
     }
+<#if isPackable>
 
-<#if withCodeComments>
-    /**
-     * Creates context for packed arrays.
-     * <p>
-     * Called only internally if packed arrays are used.
-     *
-     * @param contextNode Context for packed arrays.
-     */
-</#if>
-    public static void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
-    {
-<#list fieldList as field>
-    <@compound_create_packing_context_field field/>
-</#list>
-    }
-
-<#function choice_needs_init_packing_context fieldList>
-    <#list fieldList as field>
-        <#if field.isPackable && !field.array??>
-            <#return true>
-        </#if>
-    </#list>
-    <#return false>
-</#function>
-<#macro choice_init_packing_context_member member indent packed index>
+<#macro choice_init_packing_context_member member indent packed>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
-        <@compound_init_packing_context_field member.compoundField, index, indent/>
+        <@compound_init_packing_context_field member.compoundField, indent/>
     <#else>
 ${I}// empty
     </#if>
@@ -193,12 +171,14 @@ ${I}break;
     </#if>
 </#macro>
     @Override
-    public void initPackingContext(zserio.runtime.array.PackingContextNode contextNode)
+    public void initPackingContext(zserio.runtime.array.PackingContext context)
     {
-<#if choice_needs_init_packing_context(fieldList)>
+    <#if uses_packing_context(fieldList)>
+        final ZserioPackingContext zserioContext = context.cast();
         <@choice_switch "choice_init_packing_context_member", "choice_no_match", 2, true/>
-</#if>
+    </#if>
     }
+</#if>
 
     @Override
     public int bitSizeOf()
@@ -206,10 +186,10 @@ ${I}break;
         return bitSizeOf(0);
     }
 
-<#macro choice_bitsizeof_member member indent packed index>
+<#macro choice_bitsizeof_member member indent packed>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
-        <@compound_bitsizeof_field member.compoundField, indent, packed, index/>
+        <@compound_bitsizeof_field member.compoundField, indent, packed/>
     <#else>
 ${I}// empty
     </#if>
@@ -230,20 +210,21 @@ ${I}break;
         return 0;
 </#if>
     }
+<#if isPackable>
 
     @Override
-    public int bitSizeOf(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
+    public int bitSizeOf(zserio.runtime.array.PackingContext context, long bitPosition)
     {
-<#if fieldList?has_content>
+    <#if uses_packing_context(fieldList)>
+        final ZserioPackingContext zserioContext = context.cast();
+    </#if>
         long endBitPosition = bitPosition;
 
         <@choice_switch "choice_bitsizeof_member", "choice_no_match", 2, true/>
 
         return (int)(endBitPosition - bitPosition);
-<#else>
-        return 0;
-</#if>
     }
+</#if>
 
 <@compound_parameter_accessors compoundParametersData/>
 <#list fieldList as field>
@@ -327,7 +308,7 @@ ${I}break;
 ${I}break;
     </#if>
 </#macro>
-<#macro choice_hash_code_member member indent packed index>
+<#macro choice_hash_code_member member indent packed>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
 ${I}result = zserio.runtime.HashCodeUtil.calcHashCode(result, <#rt>
@@ -359,10 +340,10 @@ ${I}break;
         return result;
     }
 
-<#macro choice_read_member member indent packed index>
+<#macro choice_read_member member indent packed>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
-        <@compound_read_field member.compoundField, name, indent, packed, index/>
+        <@compound_read_field member.compoundField, name, indent, packed/>
         <@compound_check_constraint_field member.compoundField, name, indent/>
     <#else>
 ${I}// empty
@@ -386,26 +367,29 @@ ${I}break;
         <@choice_switch "choice_read_member", "choice_no_match", 2/>
 </#if>
     }
+<#if isPackable>
 
-<#if withCodeComments>
+    <#if withCodeComments>
     /**
      * Deserializes this Zserio object from the bit stream.
      * <p>
      * Called only internally if packed arrays are used.
      *
-     * @param contextNode Context for packed arrays.
+     * @param context Context for packed arrays.
      * @param in Bit stream reader to use.
      *
      * @throws IOException If the reading from the bit stream failed.
      */
-</#if>
-    public void read(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in)
+    </#if>
+    public void read(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamReader in)
             throws java.io.IOException
     {
-<#if fieldList?has_content>
+    <#if uses_packing_context(fieldList)>
+        final ZserioPackingContext zserioContext = context.cast();
+    </#if>
         <@choice_switch "choice_read_member", "choice_no_match", 2, true/>
-</#if>
     }
+</#if>
 <#if withWriterCode>
 
     @Override
@@ -414,15 +398,15 @@ ${I}break;
         return initializeOffsets(0);
     }
 
-<#macro choice_initialize_offsets_member member indent packed index>
+<#macro choice_initialize_offsets_member member indent packed>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
         <#if isSwitchAllowed>
 ${I}{
-        <@compound_initialize_offsets_field member.compoundField, indent + 1, packed, index/>
+        <@compound_initialize_offsets_field member.compoundField, indent + 1, packed/>
 ${I}}
         <#else>
-    <@compound_initialize_offsets_field member.compoundField, indent, packed, index/>
+    <@compound_initialize_offsets_field member.compoundField, indent, packed/>
         </#if>
     <#else>
 ${I}// empty
@@ -444,26 +428,27 @@ ${I}break;
         return bitPosition;
     </#if>
     }
+<#if isPackable>
 
     @Override
-    public long initializeOffsets(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
+    public long initializeOffsets(zserio.runtime.array.PackingContext context, long bitPosition)
     {
-    <#if fieldList?has_content>
+    <#if uses_packing_context(fieldList)>
+        final ZserioPackingContext zserioContext = context.cast();
+    </#if>
         long endBitPosition = bitPosition;
 
         <@choice_switch "choice_initialize_offsets_member", "choice_no_match", 2, true/>
 
         return endBitPosition;
-    <#else>
-        return bitPosition;
-    </#if>
     }
+</#if>
 
-<#macro choice_write_member member indent packed index>
+<#macro choice_write_member member indent packed>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
         <@compound_check_constraint_field member.compoundField, name, indent/>
-        <@compound_write_field member.compoundField, name, indent, packed, index/>
+        <@compound_write_field member.compoundField, name, indent, packed/>
     <#else>
 ${I}// empty
     </#if>
@@ -478,15 +463,18 @@ ${I}break;
         <@choice_switch "choice_write_member", "choice_no_match", 2/>
     </#if>
     }
+    <#if isPackable>
 
     @Override
-    public void write(zserio.runtime.array.PackingContextNode contextNode,
-            zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
+    public void write(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamWriter out)
+            throws java.io.IOException
     {
-    <#if fieldList?has_content>
+        <#if uses_packing_context(fieldList)>
+        final ZserioPackingContext zserioContext = context.cast();
+        </#if>
         <@choice_switch "choice_write_member", "choice_no_match", 2, true/>
-    </#if>
     }
+    </#if>
 </#if>
 
 <#list fieldList as field>

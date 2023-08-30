@@ -117,25 +117,25 @@ void arrayReadPacked(ARRAY& array, detail::DummyArrayOwner&, BitStreamReader& in
 }
 
 template <typename ARRAY, typename OWNER_TYPE>
-void arrayWrite(ARRAY& array, const OWNER_TYPE& owner, BitStreamWriter& out)
+void arrayWrite(const ARRAY& array, const OWNER_TYPE& owner, BitStreamWriter& out)
 {
     array.write(owner, out);
 }
 
 template <typename ARRAY>
-void arrayWrite(ARRAY& array, const detail::DummyArrayOwner&, BitStreamWriter& out)
+void arrayWrite(const ARRAY& array, const detail::DummyArrayOwner&, BitStreamWriter& out)
 {
     array.write(out);
 }
 
 template <typename ARRAY, typename OWNER_TYPE>
-void arrayWritePacked(ARRAY& array, const OWNER_TYPE& owner, BitStreamWriter& out)
+void arrayWritePacked(const ARRAY& array, const OWNER_TYPE& owner, BitStreamWriter& out)
 {
     array.writePacked(owner, out);
 }
 
 template <typename ARRAY>
-void arrayWritePacked(ARRAY& array, const detail::DummyArrayOwner&, BitStreamWriter& out)
+void arrayWritePacked(const ARRAY& array, const detail::DummyArrayOwner&, BitStreamWriter& out)
 {
     array.writePacked(out);
 }
@@ -193,7 +193,7 @@ public:
         return ArrayObject(in, allocator);
     }
 
-    static ArrayObject create(OwnerType&, PackingContextNode& contextNode, BitStreamReader& in,
+    static ArrayObject create(OwnerType&, ArrayObject::ZserioPackingContext& contextNode, BitStreamReader& in,
             const allocator_type& allocator, size_t)
     {
         return ArrayObject(contextNode, in, allocator);
@@ -242,9 +242,7 @@ protected:
     template <typename ARRAY_TRAITS, typename RAW_ARRAY>
     void testArrayInitializeElements(const RAW_ARRAY& rawArray)
     {
-        using ArrayT = Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL, ArrayObjectArrayExpressions>;
-
-        ArrayT array(rawArray);
+        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL, ArrayObjectArrayExpressions> array(rawArray);
         ArrayTestOwner owner;
         array.initializeElements(owner);
         const uint32_t expectedValue = ArrayObjectArrayExpressions::ELEMENT_VALUE;
@@ -267,13 +265,15 @@ protected:
     void testPackedArray(const RAW_ARRAY& rawArray, size_t unalignedBitSize, size_t alignedBitSize,
             OWNER_TYPE owner = OWNER_TYPE())
     {
-        testPackedArrayNormal<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(rawArray, unalignedBitSize, owner);
-        testPackedArrayAuto<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(rawArray,
-                (unalignedBitSize != UNKNOWN_BIT_SIZE)
+        testPackedArrayNormal<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(
+                rawArray, unalignedBitSize, owner);
+        testPackedArrayAuto<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(
+                rawArray, (unalignedBitSize != UNKNOWN_BIT_SIZE)
                         ? AUTO_LENGTH_BIT_SIZE + unalignedBitSize : UNKNOWN_BIT_SIZE, owner);
-        testPackedArrayAligned<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(rawArray, alignedBitSize, owner);
-        testPackedArrayAlignedAuto<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(rawArray,
-                (alignedBitSize != UNKNOWN_BIT_SIZE)
+        testPackedArrayAligned<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(
+                rawArray, alignedBitSize, owner);
+        testPackedArrayAlignedAuto<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(
+                rawArray, (alignedBitSize != UNKNOWN_BIT_SIZE)
                         ? AUTO_LENGTH_BIT_SIZE + alignedBitSize : UNKNOWN_BIT_SIZE, owner);
     }
 
@@ -1119,7 +1119,6 @@ TEST_F(ArrayTest, objectArray)
     // empty
     testArray<ObjectArrayTraits<ArrayObject, ArrayObjectElementFactory>, std::vector<ArrayObject>,
             ArrayObjectArrayExpressions>(std::vector<ArrayObject>(), 31);
-
 }
 
 TEST_F(ArrayTest, stdInt8PackedArray)

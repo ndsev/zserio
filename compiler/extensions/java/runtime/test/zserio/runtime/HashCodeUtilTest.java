@@ -10,7 +10,6 @@ import zserio.runtime.array.Array;
 import zserio.runtime.array.ArrayTraits;
 import zserio.runtime.array.ArrayType;
 import zserio.runtime.array.RawArray;
-import zserio.runtime.array.PackingContextNode;
 
 public class HashCodeUtilTest
 {
@@ -298,10 +297,6 @@ public class HashCodeUtilTest
         }
 
         @Override
-        public void initPackingContext(PackingContextNode contextNode)
-        {}
-
-        @Override
         public int bitSizeOf()
         {
             return 0;
@@ -309,12 +304,6 @@ public class HashCodeUtilTest
 
         @Override
         public int bitSizeOf(long position)
-        {
-            return 0;
-        }
-
-        @Override
-        public int bitSizeOf(PackingContextNode contextNode, long position)
         {
             return 0;
         }
@@ -359,10 +348,6 @@ public class HashCodeUtilTest
         }
 
         @Override
-        public void initPackingContext(PackingContextNode contextNode)
-        {}
-
-        @Override
         public int bitSizeOf()
         {
             return 0;
@@ -370,12 +355,6 @@ public class HashCodeUtilTest
 
         @Override
         public int bitSizeOf(long position)
-        {
-            return 0;
-        }
-
-        @Override
-        public int bitSizeOf(PackingContextNode contextNode, long position)
         {
             return 0;
         }
@@ -413,10 +392,6 @@ public class HashCodeUtilTest
         }
 
         @Override
-        public void initPackingContext(PackingContextNode contextNode)
-        {}
-
-        @Override
         public int bitSizeOf()
         {
             return 0;
@@ -424,12 +399,6 @@ public class HashCodeUtilTest
 
         @Override
         public int bitSizeOf(long position)
-        {
-            return 0;
-        }
-
-        @Override
-        public int bitSizeOf(PackingContextNode contextNode, long position)
         {
             return 0;
         }

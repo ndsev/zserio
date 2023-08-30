@@ -39,8 +39,8 @@ ${name}::${name}(::zserio::BitStreamReader& in) :
         m_value(readValue(in))
 {}
 
-${name}::${name}(${types.packingContextNode.name}& contextNode, ::zserio::BitStreamReader& in) :
-        m_value(readValue(contextNode, in))
+${name}::${name}(::zserio::DeltaContext& context, ::zserio::BitStreamReader& in) :
+        m_value(readValue(context, in))
 {}
 <#if upperBound??>
 
@@ -135,15 +135,9 @@ ${types.reflectablePtr.name} ${name}::reflectable(const ${types.allocator.defaul
     </#if>
 </#if>
 
-void ${name}::createPackingContext(${types.packingContextNode.name}& contextNode)
+void ${name}::initPackingContext(::zserio::DeltaContext& context) const
 {
-    contextNode.createContext();
-}
-
-void ${name}::initPackingContext(${types.packingContextNode.name}& contextNode) const
-{
-    contextNode.getContext().init<<@bitmask_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(
-            m_value);
+    context.init<<@bitmask_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(m_value);
 }
 
 size_t ${name}::bitSizeOf(size_t) const
@@ -155,10 +149,9 @@ size_t ${name}::bitSizeOf(size_t) const
 </#if>
 }
 
-size_t ${name}::bitSizeOf(${types.packingContextNode.name}& contextNode, size_t) const
+size_t ${name}::bitSizeOf(::zserio::DeltaContext& context, size_t) const
 {
-    return contextNode.getContext().bitSizeOf<<@bitmask_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(
-            m_value);
+    return context.bitSizeOf<<@bitmask_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(m_value);
 }
 <#if withWriterCode>
 
@@ -167,9 +160,9 @@ size_t ${name}::initializeOffsets(size_t bitPosition) const
     return bitPosition + bitSizeOf(bitPosition);
 }
 
-size_t ${name}::initializeOffsets(${types.packingContextNode.name}& contextNode, size_t bitPosition) const
+size_t ${name}::initializeOffsets(::zserio::DeltaContext& context, size_t bitPosition) const
 {
-    return bitPosition + bitSizeOf(contextNode, bitPosition);
+    return bitPosition + bitSizeOf(context, bitPosition);
 }
 </#if>
 
@@ -186,10 +179,9 @@ void ${name}::write(::zserio::BitStreamWriter& out) const
     out.write${runtimeFunction.suffix}(m_value<#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>);
 }
 
-void ${name}::write(${types.packingContextNode.name}& contextNode, ::zserio::BitStreamWriter& out) const
+void ${name}::write(::zserio::DeltaContext& context, ::zserio::BitStreamWriter& out) const
 {
-    contextNode.getContext().write<<@bitmask_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(
-            out, m_value);
+    context.write<<@bitmask_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(out, m_value);
 }
 </#if>
 
@@ -217,10 +209,9 @@ ${name}::underlying_type ${name}::readValue(::zserio::BitStreamReader& in)
     return static_cast<underlying_type>(in.read${runtimeFunction.suffix}(${runtimeFunction.arg!}));
 }
 
-${name}::underlying_type ${name}::readValue(${types.packingContextNode.name}& contextNode,
-        ::zserio::BitStreamReader& in)
+${name}::underlying_type ${name}::readValue(::zserio::DeltaContext& context, ::zserio::BitStreamReader& in)
 {
-    return contextNode.getContext().read<<@bitmask_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(
+    return context.read<<@bitmask_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(
             in);
 }
 <@namespace_end package.path/>

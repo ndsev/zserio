@@ -140,9 +140,9 @@ uint32_t enumHashCode<::test_object::std_allocator::CreatorEnum>(::test_object::
 }
 
 template <>
-void initPackingContext(::zserio::PackingContextNode& contextNode, ::test_object::std_allocator::CreatorEnum value)
+void initPackingContext(::zserio::DeltaContext& context, ::test_object::std_allocator::CreatorEnum value)
 {
-    contextNode.getContext().init<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::std_allocator::CreatorEnum>::type>>(
+    context.init<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::std_allocator::CreatorEnum>::type>>(
             ::zserio::enumToValue(value));
 }
 
@@ -153,9 +153,9 @@ size_t bitSizeOf(::test_object::std_allocator::CreatorEnum)
 }
 
 template <>
-size_t bitSizeOf(::zserio::PackingContextNode& contextNode, ::test_object::std_allocator::CreatorEnum value)
+size_t bitSizeOf(::zserio::DeltaContext& context, ::test_object::std_allocator::CreatorEnum value)
 {
-    return contextNode.getContext().bitSizeOf<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::std_allocator::CreatorEnum>::type>>(
+    return context.bitSizeOf<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::std_allocator::CreatorEnum>::type>>(
             ::zserio::enumToValue(value));
 }
 
@@ -166,10 +166,9 @@ size_t initializeOffsets(size_t bitPosition, ::test_object::std_allocator::Creat
 }
 
 template <>
-size_t initializeOffsets(::zserio::PackingContextNode& contextNode,
-        size_t bitPosition, ::test_object::std_allocator::CreatorEnum value)
+size_t initializeOffsets(::zserio::DeltaContext& context, size_t bitPosition, ::test_object::std_allocator::CreatorEnum value)
 {
-    return bitPosition + bitSizeOf(contextNode, value);
+    return bitPosition + bitSizeOf(context, value);
 }
 
 template <>
@@ -181,9 +180,9 @@ template <>
 }
 
 template <>
-::test_object::std_allocator::CreatorEnum read(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in)
+::test_object::std_allocator::CreatorEnum read(::zserio::DeltaContext& context, ::zserio::BitStreamReader& in)
 {
-    return valueToEnum<::test_object::std_allocator::CreatorEnum>(contextNode.getContext().read<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::std_allocator::CreatorEnum>::type>>(
+    return valueToEnum<::test_object::std_allocator::CreatorEnum>(context.read<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::std_allocator::CreatorEnum>::type>>(
             in));
 }
 
@@ -194,9 +193,9 @@ void write(::zserio::BitStreamWriter& out, ::test_object::std_allocator::Creator
 }
 
 template <>
-void write(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out, ::test_object::std_allocator::CreatorEnum value)
+void write(::zserio::DeltaContext& context, ::zserio::BitStreamWriter& out, ::test_object::std_allocator::CreatorEnum value)
 {
-    contextNode.getContext().write<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::std_allocator::CreatorEnum>::type>>(
+    context.write<::zserio::StdIntArrayTraits<typename ::std::underlying_type<::test_object::std_allocator::CreatorEnum>::type>>(
             out, ::zserio::enumToValue(value));
 }
 

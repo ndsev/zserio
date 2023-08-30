@@ -20,8 +20,8 @@ CreatorBitmask::CreatorBitmask(::zserio::BitStreamReader& in) :
         m_value(readValue(in))
 {}
 
-CreatorBitmask::CreatorBitmask(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in) :
-        m_value(readValue(contextNode, in))
+CreatorBitmask::CreatorBitmask(::zserio::DeltaContext& context, ::zserio::BitStreamReader& in) :
+        m_value(readValue(context, in))
 {}
 
 const ::zserio::ITypeInfo& CreatorBitmask::typeInfo()
@@ -100,15 +100,9 @@ const ::zserio::ITypeInfo& CreatorBitmask::typeInfo()
     return ::std::allocate_shared<Reflectable>(allocator, *this);
 }
 
-void CreatorBitmask::createPackingContext(::zserio::PackingContextNode& contextNode)
+void CreatorBitmask::initPackingContext(::zserio::DeltaContext& context) const
 {
-    contextNode.createContext();
-}
-
-void CreatorBitmask::initPackingContext(::zserio::PackingContextNode& contextNode) const
-{
-    contextNode.getContext().init<::zserio::StdIntArrayTraits<::test_object::std_allocator::CreatorBitmask::underlying_type>>(
-            m_value);
+    context.init<::zserio::StdIntArrayTraits<::test_object::std_allocator::CreatorBitmask::underlying_type>>(m_value);
 }
 
 size_t CreatorBitmask::bitSizeOf(size_t) const
@@ -116,10 +110,9 @@ size_t CreatorBitmask::bitSizeOf(size_t) const
     return UINT8_C(8);
 }
 
-size_t CreatorBitmask::bitSizeOf(::zserio::PackingContextNode& contextNode, size_t) const
+size_t CreatorBitmask::bitSizeOf(::zserio::DeltaContext& context, size_t) const
 {
-    return contextNode.getContext().bitSizeOf<::zserio::StdIntArrayTraits<::test_object::std_allocator::CreatorBitmask::underlying_type>>(
-            m_value);
+    return context.bitSizeOf<::zserio::StdIntArrayTraits<::test_object::std_allocator::CreatorBitmask::underlying_type>>(m_value);
 }
 
 size_t CreatorBitmask::initializeOffsets(size_t bitPosition) const
@@ -127,9 +120,9 @@ size_t CreatorBitmask::initializeOffsets(size_t bitPosition) const
     return bitPosition + bitSizeOf(bitPosition);
 }
 
-size_t CreatorBitmask::initializeOffsets(::zserio::PackingContextNode& contextNode, size_t bitPosition) const
+size_t CreatorBitmask::initializeOffsets(::zserio::DeltaContext& context, size_t bitPosition) const
 {
-    return bitPosition + bitSizeOf(contextNode, bitPosition);
+    return bitPosition + bitSizeOf(context, bitPosition);
 }
 
 uint32_t CreatorBitmask::hashCode() const
@@ -144,10 +137,9 @@ void CreatorBitmask::write(::zserio::BitStreamWriter& out) const
     out.writeBits(m_value, UINT8_C(8));
 }
 
-void CreatorBitmask::write(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const
+void CreatorBitmask::write(::zserio::DeltaContext& context, ::zserio::BitStreamWriter& out) const
 {
-    contextNode.getContext().write<::zserio::StdIntArrayTraits<::test_object::std_allocator::CreatorBitmask::underlying_type>>(
-            out, m_value);
+    context.write<::zserio::StdIntArrayTraits<::test_object::std_allocator::CreatorBitmask::underlying_type>>(out, m_value);
 }
 
 ::zserio::string<> CreatorBitmask::toString(const ::zserio::string<>::allocator_type& allocator) const
@@ -166,10 +158,9 @@ CreatorBitmask::underlying_type CreatorBitmask::readValue(::zserio::BitStreamRea
     return static_cast<underlying_type>(in.readBits(UINT8_C(8)));
 }
 
-CreatorBitmask::underlying_type CreatorBitmask::readValue(::zserio::PackingContextNode& contextNode,
-        ::zserio::BitStreamReader& in)
+CreatorBitmask::underlying_type CreatorBitmask::readValue(::zserio::DeltaContext& context, ::zserio::BitStreamReader& in)
 {
-    return contextNode.getContext().read<::zserio::StdIntArrayTraits<::test_object::std_allocator::CreatorBitmask::underlying_type>>(
+    return context.read<::zserio::StdIntArrayTraits<::test_object::std_allocator::CreatorBitmask::underlying_type>>(
             in);
 }
 

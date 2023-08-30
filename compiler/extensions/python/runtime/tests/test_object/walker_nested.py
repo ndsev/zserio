@@ -22,17 +22,6 @@ class WalkerNested:
 
         return self
 
-    @classmethod
-    def from_reader_packed(
-            cls: typing.Type['WalkerNested'],
-            zserio_context_node: zserio.array.PackingContextNode,
-            zserio_reader: zserio.BitStreamReader) -> 'WalkerNested':
-        self = object.__new__(cls)
-
-        self.read_packed(zserio_context_node, zserio_reader)
-
-        return self
-
     @staticmethod
     def type_info() -> zserio.typeinfo.TypeInfo:
         field_list: typing.List[zserio.typeinfo.MemberInfo] = [
@@ -69,23 +58,7 @@ class WalkerNested:
     def text(self, text_: str) -> None:
         self._text_ = text_
 
-    @staticmethod
-    def create_packing_context(zserio_context_node: zserio.array.PackingContextNode) -> None:
-        zserio_context_node.create_child()
-
-    def init_packing_context(self, zserio_context_node: zserio.array.PackingContextNode) -> None:
-        del zserio_context_node
-
     def bitsizeof(self, bitposition: int = 0) -> int:
-        end_bitposition = bitposition
-        end_bitposition += zserio.bitsizeof.bitsizeof_string(self._text_)
-
-        return end_bitposition - bitposition
-
-    def bitsizeof_packed(self, zserio_context_node: zserio.array.PackingContextNode,
-                         bitposition: int = 0) -> int:
-        del zserio_context_node
-
         end_bitposition = bitposition
         end_bitposition += zserio.bitsizeof.bitsizeof_string(self._text_)
 
@@ -97,29 +70,8 @@ class WalkerNested:
 
         return end_bitposition
 
-    def initialize_offsets_packed(self, zserio_context_node: zserio.array.PackingContextNode,
-                                  bitposition: int) -> int:
-        del zserio_context_node
-
-        end_bitposition = bitposition
-        end_bitposition += zserio.bitsizeof.bitsizeof_string(self._text_)
-
-        return end_bitposition
-
     def read(self, zserio_reader: zserio.BitStreamReader) -> None:
         self._text_ = zserio_reader.read_string()
 
-    def read_packed(self, zserio_context_node: zserio.array.PackingContextNode,
-                    zserio_reader: zserio.BitStreamReader) -> None:
-        del zserio_context_node
-
-        self._text_ = zserio_reader.read_string()
-
     def write(self, zserio_writer: zserio.BitStreamWriter) -> None:
-        zserio_writer.write_string(self._text_)
-
-    def write_packed(self, zserio_context_node: zserio.array.PackingContextNode,
-                     zserio_writer: zserio.BitStreamWriter) -> None:
-        del zserio_context_node
-
         zserio_writer.write_string(self._text_)

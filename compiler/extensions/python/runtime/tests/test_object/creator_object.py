@@ -23,7 +23,7 @@ class CreatorObject:
         self._value_ = value_
         self._nested_ = nested_
         self._text_ = text_
-        self._nested_array_ = zserio.array.Array(zserio.array.ObjectArrayTraits(self._element_creator_nested_array, self._packed_element_creator_nested_array, test_object.creator_nested.CreatorNested.create_packing_context), nested_array_, is_auto=True)
+        self._nested_array_ = zserio.array.Array(zserio.array.ObjectArrayTraits(self.ZserioElementFactory_nested_array(self)), nested_array_, is_auto=True)
         self._text_array_ = zserio.array.Array(zserio.array.StringArrayTraits(), text_array_, is_auto=True)
         if extern_array_ is None:
             self._extern_array_ = None
@@ -49,11 +49,11 @@ class CreatorObject:
     @classmethod
     def from_reader_packed(
             cls: typing.Type['CreatorObject'],
-            zserio_context_node: zserio.array.PackingContextNode,
+            zserio_context: CreatorObject.ZserioPackingContext,
             zserio_reader: zserio.BitStreamReader) -> 'CreatorObject':
         self = object.__new__(cls)
 
-        self.read_packed(zserio_context_node, zserio_reader)
+        self.read_packed(zserio_context, zserio_reader)
 
         return self
 
@@ -202,7 +202,7 @@ class CreatorObject:
 
     @nested_array.setter
     def nested_array(self, nested_array_: typing.List[test_object.creator_nested.CreatorNested]) -> None:
-        self._nested_array_ = zserio.array.Array(zserio.array.ObjectArrayTraits(self._element_creator_nested_array, self._packed_element_creator_nested_array, test_object.creator_nested.CreatorNested.create_packing_context), nested_array_, is_auto=True)
+        self._nested_array_ = zserio.array.Array(zserio.array.ObjectArrayTraits(self.ZserioElementFactory_nested_array(self)), nested_array_, is_auto=True)
 
     @property
     def text_array(self) -> typing.List[str]:
@@ -286,23 +286,11 @@ class CreatorObject:
     def reset_optional_nested(self) -> None:
         self._optional_nested_ = None
 
-    @staticmethod
-    def create_packing_context(zserio_context_node: zserio.array.PackingContextNode) -> None:
-        zserio_context_node.create_child().create_context()
-        test_object.creator_nested.CreatorNested.create_packing_context(zserio_context_node.create_child())
-        zserio_context_node.create_child()
-        zserio_context_node.create_child()
-        zserio_context_node.create_child()
-        zserio_context_node.create_child()
-        zserio_context_node.create_child()
-        zserio_context_node.create_child()
-        test_object.creator_nested.CreatorNested.create_packing_context(zserio_context_node.create_child())
-
-    def init_packing_context(self, zserio_context_node: zserio.array.PackingContextNode) -> None:
-        zserio_context_node.get_child_context(0).init(zserio.array.BitFieldArrayTraits(32), self._value_)
-        self._nested_.init_packing_context(zserio_context_node.children[1])
+    def init_packing_context(self, zserio_context: CreatorObject.ZserioPackingContext) -> None:
+        zserio_context.value.init(zserio.array.BitFieldArrayTraits(32), self._value_)
+        self._nested_.init_packing_context(zserio_context.nested)
         if self.is_optional_nested_used():
-            self._optional_nested_.init_packing_context(zserio_context_node.children[8])
+            self._optional_nested_.init_packing_context(zserio_context.optional_nested)
 
     def bitsizeof(self, bitposition: int = 0) -> int:
         end_bitposition = bitposition
@@ -326,11 +314,10 @@ class CreatorObject:
 
         return end_bitposition - bitposition
 
-    def bitsizeof_packed(self, zserio_context_node: zserio.array.PackingContextNode,
-                         bitposition: int = 0) -> int:
+    def bitsizeof_packed(self, zserio_context: CreatorObject.ZserioPackingContext, bitposition: int = 0) -> int:
         end_bitposition = bitposition
-        end_bitposition += zserio_context_node.get_child_context(0).bitsizeof(zserio.array.BitFieldArrayTraits(32), self._value_)
-        end_bitposition += self._nested_.bitsizeof_packed(zserio_context_node.children[1], end_bitposition)
+        end_bitposition += zserio_context.value.bitsizeof(zserio.array.BitFieldArrayTraits(32), self._value_)
+        end_bitposition += self._nested_.bitsizeof_packed(zserio_context.nested, end_bitposition)
         end_bitposition += zserio.bitsizeof.bitsizeof_string(self._text_)
         end_bitposition += self._nested_array_.bitsizeof_packed(end_bitposition)
         end_bitposition += self._text_array_.bitsizeof(end_bitposition)
@@ -345,7 +332,7 @@ class CreatorObject:
             end_bitposition += 1
         end_bitposition += 1
         if self.is_optional_nested_used():
-            end_bitposition += self._optional_nested_.bitsizeof_packed(zserio_context_node.children[8], end_bitposition)
+            end_bitposition += self._optional_nested_.bitsizeof_packed(zserio_context.optional_nested, end_bitposition)
 
         return end_bitposition - bitposition
 
@@ -371,11 +358,10 @@ class CreatorObject:
 
         return end_bitposition
 
-    def initialize_offsets_packed(self, zserio_context_node: zserio.array.PackingContextNode,
-                                  bitposition: int) -> int:
+    def initialize_offsets_packed(self, zserio_context: CreatorObject.ZserioPackingContext, bitposition: int) -> int:
         end_bitposition = bitposition
-        end_bitposition += zserio_context_node.get_child_context(0).bitsizeof(zserio.array.BitFieldArrayTraits(32), self._value_)
-        end_bitposition = self._nested_.initialize_offsets_packed(zserio_context_node.children[1], end_bitposition)
+        end_bitposition += zserio_context.value.bitsizeof(zserio.array.BitFieldArrayTraits(32), self._value_)
+        end_bitposition = self._nested_.initialize_offsets_packed(zserio_context.nested, end_bitposition)
         end_bitposition += zserio.bitsizeof.bitsizeof_string(self._text_)
         end_bitposition = self._nested_array_.initialize_offsets_packed(end_bitposition)
         end_bitposition = self._text_array_.initialize_offsets(end_bitposition)
@@ -390,7 +376,7 @@ class CreatorObject:
             end_bitposition += 1
         end_bitposition += 1
         if self.is_optional_nested_used():
-            end_bitposition = self._optional_nested_.initialize_offsets_packed(zserio_context_node.children[8], end_bitposition)
+            end_bitposition = self._optional_nested_.initialize_offsets_packed(zserio_context.optional_nested, end_bitposition)
 
         return end_bitposition
 
@@ -398,7 +384,7 @@ class CreatorObject:
         self._value_ = zserio_reader.read_bits(32)
         self._nested_ = test_object.creator_nested.CreatorNested.from_reader(zserio_reader, self._value_)
         self._text_ = zserio_reader.read_string()
-        self._nested_array_ = zserio.array.Array.from_reader(zserio.array.ObjectArrayTraits(self._element_creator_nested_array, self._packed_element_creator_nested_array, test_object.creator_nested.CreatorNested.create_packing_context), zserio_reader, is_auto=True)
+        self._nested_array_ = zserio.array.Array.from_reader(zserio.array.ObjectArrayTraits(self.ZserioElementFactory_nested_array(self)), zserio_reader, is_auto=True)
         self._text_array_ = zserio.array.Array.from_reader(zserio.array.StringArrayTraits(), zserio_reader, is_auto=True)
         if zserio_reader.read_bool():
             self._extern_array_ = zserio.array.Array.from_reader(zserio.array.BitBufferArrayTraits(), zserio_reader, is_auto=True)
@@ -417,15 +403,14 @@ class CreatorObject:
         else:
             self._optional_nested_ = None
 
-    def read_packed(self, zserio_context_node: zserio.array.PackingContextNode,
-                    zserio_reader: zserio.BitStreamReader) -> None:
-        self._value_ = zserio_context_node.get_child_context(0).read(zserio.array.BitFieldArrayTraits(32), zserio_reader)
+    def read_packed(self, zserio_context: CreatorObject.ZserioPackingContext, zserio_reader: zserio.BitStreamReader) -> None:
+        self._value_ = zserio_context.value.read(zserio.array.BitFieldArrayTraits(32), zserio_reader)
 
-        self._nested_ = test_object.creator_nested.CreatorNested.from_reader_packed(zserio_context_node.children[1], zserio_reader, self._value_)
+        self._nested_ = test_object.creator_nested.CreatorNested.from_reader_packed(zserio_context.nested, zserio_reader, self._value_)
 
         self._text_ = zserio_reader.read_string()
 
-        self._nested_array_ = zserio.array.Array.from_reader_packed(zserio.array.ObjectArrayTraits(self._element_creator_nested_array, self._packed_element_creator_nested_array, test_object.creator_nested.CreatorNested.create_packing_context), zserio_reader, is_auto=True)
+        self._nested_array_ = zserio.array.Array.from_reader_packed(zserio.array.ObjectArrayTraits(self.ZserioElementFactory_nested_array(self)), zserio_reader, is_auto=True)
 
         self._text_array_ = zserio.array.Array.from_reader(zserio.array.StringArrayTraits(), zserio_reader, is_auto=True)
 
@@ -445,7 +430,7 @@ class CreatorObject:
             self._optional_bool_ = None
 
         if zserio_reader.read_bool():
-            self._optional_nested_ = test_object.creator_nested.CreatorNested.from_reader_packed(zserio_context_node.children[8], zserio_reader, self._value_)
+            self._optional_nested_ = test_object.creator_nested.CreatorNested.from_reader_packed(zserio_context.optional_nested, zserio_reader, self._value_)
         else:
             self._optional_nested_ = None
 
@@ -492,15 +477,15 @@ class CreatorObject:
         else:
             zserio_writer.write_bool(False)
 
-    def write_packed(self, zserio_context_node: zserio.array.PackingContextNode,
+    def write_packed(self, zserio_context: CreatorObject.ZserioPackingContext,
                      zserio_writer: zserio.BitStreamWriter) -> None:
-        zserio_context_node.get_child_context(0).write(zserio.array.BitFieldArrayTraits(32), zserio_writer, self._value_)
+        zserio_context.value.write(zserio.array.BitFieldArrayTraits(32), zserio_writer, self._value_)
 
         # check parameters
         if self._nested_.param != (self._value_):
             raise zserio.PythonRuntimeException("Wrong parameter param for field CreatorObject.nested: "
                                                 f"{self._nested_.param} != {self._value_}!")
-        self._nested_.write_packed(zserio_context_node.children[1], zserio_writer)
+        self._nested_.write_packed(zserio_context.nested, zserio_writer)
 
         zserio_writer.write_string(self._text_)
 
@@ -532,16 +517,43 @@ class CreatorObject:
             if self._optional_nested_.param != (self._value_):
                 raise zserio.PythonRuntimeException("Wrong parameter param for field CreatorObject.optionalNested: "
                                                     f"{self._optional_nested_.param} != {self._value_}!")
-            self._optional_nested_.write_packed(zserio_context_node.children[8], zserio_writer)
+            self._optional_nested_.write_packed(zserio_context.optional_nested, zserio_writer)
         else:
             zserio_writer.write_bool(False)
 
-    def _element_creator_nested_array(self, zserio_reader: zserio.BitStreamReader, zserio_index: int) -> test_object.creator_nested.CreatorNested:
-        del zserio_index
-        return test_object.creator_nested.CreatorNested.from_reader(zserio_reader, self._value_)
+    class ZserioPackingContext:
+        def __init__(self):
+            self._value_ = zserio.array.DeltaContext()
+            self._nested_ = test_object.creator_nested.CreatorNested.ZserioPackingContext()
+            self._optional_nested_ = test_object.creator_nested.CreatorNested.ZserioPackingContext()
 
-    def _packed_element_creator_nested_array(
-            self, zserio_context_node: zserio.array.PackingContextNode,
-            zserio_reader: zserio.BitStreamReader, zserio_index: int) -> test_object.creator_nested.CreatorNested:
-        del zserio_index
-        return test_object.creator_nested.CreatorNested.from_reader_packed(zserio_context_node, zserio_reader, self._value_)
+        @property
+        def value(self):
+            return self._value_
+
+        @property
+        def nested(self):
+            return self._nested_
+
+        @property
+        def optional_nested(self):
+            return self._optional_nested_
+
+    class ZserioElementFactory_nested_array:
+        IS_OBJECT_PACKABLE = True
+
+        def __init__(self, owner):
+            self._owner = owner
+
+        def create(self, zserio_reader: zserio.BitStreamReader, zserio_index: int) -> test_object.creator_nested.CreatorNested:
+            del zserio_index
+            return test_object.creator_nested.CreatorNested.from_reader(zserio_reader, self._owner._value_)
+
+        @staticmethod
+        def create_packing_context() -> test_object.creator_nested.CreatorNested.ZserioPackingContext:
+            return test_object.creator_nested.CreatorNested.ZserioPackingContext()
+
+        def create_packed(self, zserio_context: test_object.creator_nested.CreatorNested.ZserioPackingContext,
+                          zserio_reader: zserio.BitStreamReader, zserio_index: int) -> test_object.creator_nested.CreatorNested:
+            del zserio_index
+            return test_object.creator_nested.CreatorNested.from_reader_packed(zserio_context, zserio_reader, self._owner._value_)

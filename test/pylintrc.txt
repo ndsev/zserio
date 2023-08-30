@@ -33,7 +33,7 @@ attr-rgx=^[a-z_0-9]+$ # 't1', 'p' or 'p_' do not conform to snake_case
 class-attribute-rgx=^[A-Z_][A-Z_0-9]*$ # 'A' does not conform to UPPER_CASE
 
 # Naming style matching correct class names.
-class-rgx=^[A-Z][A-Za-z0-9_]*$ # templates with '_' does not conform to PascalCase
+class-rgx=[^\W\da-z]\w*$ # templates with '_' does not conform to PascalCase
 
 # Naming style matching correct constant names.
 const-naming-style=UPPER_CASE

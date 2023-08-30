@@ -22,21 +22,18 @@ ${I}raise zserio.PythonRuntimeException("No match in choice ${name}!")
 <#macro choice_if memberActionMacroName noMatchMacroName packed=false>
         selector = ${selector}
 
-    <#local fieldIndex=0>
     <#list caseMemberList as caseMember>
         <#if caseMember?has_next || !isDefaultUnreachable>
         <#if caseMember?is_first>if <#else>elif </#if><@choice_selector_condition caseMember.expressionList/>:
         <#else>
         else:
         </#if>
-        <@.vars[memberActionMacroName] caseMember, 3, packed, fieldIndex/>
-            <#if caseMember.compoundField??><#local fieldIndex+=1></#if>
+        <@.vars[memberActionMacroName] caseMember, 3, packed/>
     </#list>
     <#if !isDefaultUnreachable>
         else:
         <#if defaultMember??>
-            <@.vars[memberActionMacroName] defaultMember, 3, packed, fieldIndex/>
-            <#if defaultMember.compoundField??><#local fieldIndex+=1></#if>
+            <@.vars[memberActionMacroName] defaultMember, 3, packed/>
         <#else>
             <@.vars[noMatchMacroName] name, 3/>
         </#if>
@@ -116,37 +113,39 @@ class ${name}:
 
         return cls(${constructorParamList})
 </#if>
+<#if isPackable>
 
     @classmethod
     def from_reader_packed(
             cls: typing.Type['${name}'],
-            zserio_context_node: zserio.array.PackingContextNode,
+            zserio_context: ${name}.ZserioPackingContext,
             zserio_reader: zserio.BitStreamReader<#if constructorAnnotatedParamList?has_content>,
             <#lt>${constructorAnnotatedParamList}</#if>) -> '${name}':
-<#if withCodeComments>
+    <#if withCodeComments>
         """
         Returns new object instance constructed from bit stream reader.
 
         Called only internally if packed arrays are used.
 
-        :param zserio_context_node: Context for packed arrays.
+        :param zserio_context: Context for packed arrays.
         :param zserio_reader: Bit stream reader to use.
         <@compound_parameter_doc_comment compoundParametersData/>
         """
 
-</#if>
-<#if fieldList?has_content>
+    </#if>
+    <#if fieldList?has_content>
         self = object.__new__(cls)
         <@compound_constructor_parameter_assignments compoundParametersData/>
 
-        self.read_packed(zserio_context_node, zserio_reader)
+        self.read_packed(zserio_context, zserio_reader)
 
         return self
-<#else>
-        del zserio_context_node
+    <#else>
+        del zserio_context
         del zserio_reader
 
         return cls(${constructorParamList})
+    </#if>
 </#if>
 <#if withTypeInfoCode>
 
@@ -208,7 +207,7 @@ class ${name}:
 
         return False
 
-<#macro choice_hashcode_member member indent packed index>
+<#macro choice_hashcode_member member indent packed>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
 ${I}result = zserio.hashcode.calc_hashcode_${member.compoundField.typeInfo.hashCodeFunc.suffix}(result, self._choice)
@@ -313,7 +312,7 @@ ${I}pass
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}return self.UNDEFINED_CHOICE
 </#macro>
-<#macro choice_tag_member member indent packed index>
+<#macro choice_tag_member member indent packed>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
 ${I}return self.<@choice_tag_name member.compoundField/>
@@ -336,31 +335,12 @@ ${I}return self.UNDEFINED_CHOICE
 <#else>
         return self.UNDEFINED_CHOICE
 </#if>
+<#if isPackable>
 
-    @staticmethod
-    def create_packing_context(zserio_context_node: zserio.array.PackingContextNode) -> None:
-<#if withCodeComments>
-        """
-        Creates context for packed arrays.
-
-        Called only internally if packed arrays are used.
-
-        :param zserio_context_node: Context for packed arrays.
-        """
-
-</#if>
-<#if fieldList?has_content>
-    <#list fieldList as field>
-        <@compound_create_packing_context_field field/>
-    </#list>
-<#else>
-        del zserio_context_node
-</#if>
-
-<#macro choice_init_packing_context_member member indent packed index>
+<#macro choice_init_packing_context_member member indent packed>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
-        <#local initCode><@compound_init_packing_context_field member.compoundField, index, indent/></#local>
+        <#local initCode><@compound_init_packing_context_field member.compoundField, indent/></#local>
         <#if initCode?has_content>
 ${initCode}<#rt>
         <#else>
@@ -370,26 +350,27 @@ ${I}pass
 ${I}pass
     </#if>
 </#macro>
-    def init_packing_context(self, zserio_context_node: zserio.array.PackingContextNode) -> None:
-<#if withCodeComments>
+    def init_packing_context(self, zserio_context: ${name}.ZserioPackingContext) -> None:
+    <#if withCodeComments>
         """
         Initializes context for packed arrays.
 
         Called only internally if packed arrays are used.
 
-        :param zserio_context_node: Context for packed arrays.
+        :param zserio_context: Context for packed arrays.
         """
 
-</#if>
-<#if compound_needs_packing_context_node(fieldList)>
+    </#if>
+    <#if uses_packing_context(fieldList)>
         <@choice_if "choice_init_packing_context_member", "choice_no_match", true/>
-<#else>
-        del zserio_context_node
+    <#else>
+        del zserio_context
+    </#if>
 </#if>
 
-<#macro choice_bitsizeof_member member indent packed index>
+<#macro choice_bitsizeof_member member indent packed>
     <#if member.compoundField??>
-        <@compound_bitsizeof_field member.compoundField, indent, packed, index/>
+        <@compound_bitsizeof_field member.compoundField, indent, packed/>
     <#else>
         <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}pass
@@ -417,42 +398,45 @@ ${I}pass
 
         return 0
 </#if>
+<#if isPackable>
 
-    def bitsizeof_packed(self, zserio_context_node: zserio.array.PackingContextNode,
+    def bitsizeof_packed(self, zserio_context: ${name}.ZserioPackingContext,
                          bitposition: int = 0) -> int:
-<#if withCodeComments>
+    <#if withCodeComments>
         """
         Calculates size of the serialized object in bits for packed arrays.
 
         Called only internally if packed arrays are used.
 
-        :param zserio_context_node: Context for packed arrays.
+        :param zserio_context: Context for packed arrays.
         :param bitposition: Bit stream position calculated from zero where the object will be serialized.
 
         :returns: Number of bits which are needed to store serialized object.
         """
 
-</#if>
-<#if !compound_needs_packing_context_node(fieldList)>
-        del zserio_context_node
+    </#if>
+    <#if fieldList?has_content>
+        <#if !uses_packing_context(fieldList)>
+        del zserio_context
 
-</#if>
-<#if fieldList?has_content>
+        </#if>
         end_bitposition = bitposition
 
         <@choice_if "choice_bitsizeof_member", "choice_no_match", true/>
 
         return end_bitposition - bitposition
-<#else>
+    <#else>
+        del zserio_context
         del bitposition
 
         return 0
+    </#if>
 </#if>
 <#if withWriterCode>
 
-<#macro choice_initialize_offsets_member member indent packed index>
+<#macro choice_initialize_offsets_member member indent packed>
     <#if member.compoundField??>
-        <@compound_initialize_offsets_field member.compoundField, indent, packed, index/>
+        <@compound_initialize_offsets_field member.compoundField, indent, packed/>
     <#else>
         <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}pass
@@ -480,41 +464,44 @@ ${I}pass
     <#else>
         return bitposition
     </#if>
+    <#if isPackable>
 
-    def initialize_offsets_packed(self, zserio_context_node: zserio.array.PackingContextNode,
+    def initialize_offsets_packed(self, zserio_context: ${name}.ZserioPackingContext,
                                   bitposition: int) -> int:
-    <#if withCodeComments>
+        <#if withCodeComments>
         """
         Initializes offsets in this Zserio type and in all its fields for packed arrays.
 
         This method sets offsets in this Zserio type and in all fields recursively.
         Called only internally if packed arrays are used.
 
-        :param zserio_context_node: Context for packed arrays.
+        :param zserio_context: Context for packed arrays.
         :param bitposition: Bit stream position calculated from zero where the object will be serialized.
 
         :returns: Bit stream position calculated from zero updated to the first byte after serialized object.
         """
 
-    </#if>
-    <#if !compound_needs_packing_context_node(fieldList)>
-        del zserio_context_node
+        </#if>
+        <#if fieldList?has_content>
+            <#if !uses_packing_context(fieldList)>
+        del zserio_context
 
-    </#if>
-    <#if fieldList?has_content>
+            </#if>
         end_bitposition = bitposition
 
         <@choice_if "choice_initialize_offsets_member", "choice_no_match", true/>
 
         return end_bitposition
-    <#else>
+        <#else>
+        del zserio_context
         return bitposition
+        </#if>
     </#if>
 </#if>
 
-<#macro choice_read_member member indent packed index>
+<#macro choice_read_member member indent packed>
     <#if member.compoundField??>
-        <@compound_read_field member.compoundField, name, indent, packed, index/>
+        <@compound_read_field member.compoundField, name, indent, packed/>
     <#else>
         <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}pass
@@ -534,35 +521,37 @@ ${I}pass
 <#else>
         del zserio_reader
 </#if>
+<#if isPackable>
 
-    def read_packed(self, zserio_context_node: zserio.array.PackingContextNode,
+    def read_packed(self, zserio_context: ${name}.ZserioPackingContext,
                     zserio_reader: zserio.BitStreamReader) -> None:
-<#if withCodeComments>
+    <#if withCodeComments>
         """
         Deserializes this Zserio object from the bit stream.
 
         Called only internally if packed arrays are used.
 
-        :param zserio_context_node: Context for packed arrays.
+        :param zserio_context: Context for packed arrays.
         :param zserio_reader: Bit stream reader to use.
         """
 
-</#if>
-<#if fieldList?has_content>
-    <#if !compound_needs_packing_context_node(fieldList)>
-        del zserio_context_node
-
     </#if>
+    <#if fieldList?has_content>
+        <#if !uses_packing_context(fieldList)>
+        del zserio_context
+
+        </#if>
         <@choice_if "choice_read_member", "choice_no_match", true/>
-<#else>
-        del zserio_context_node
+    <#else>
+        del zserio_context
         del zserio_reader
+    </#if>
 </#if>
 <#if withWriterCode>
 
-<#macro choice_write_member member indent packed index>
+<#macro choice_write_member member indent packed>
     <#if member.compoundField??>
-        <@compound_write_field member.compoundField, name, indent, packed, index/>
+        <@compound_write_field member.compoundField, name, indent, packed/>
     <#else>
         <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}pass
@@ -582,33 +571,36 @@ ${I}pass
     <#else>
         del zserio_writer
     </#if>
+    <#if isPackable>
 
-    def write_packed(self, zserio_context_node: zserio.array.PackingContextNode,
+    def write_packed(self, zserio_context: ${name}.ZserioPackingContext,
                      zserio_writer: zserio.BitStreamWriter) -> None:
-    <#if withCodeComments>
+        <#if withCodeComments>
         """
         Serializes this Zserio object to the bit stream.
 
         Called only internally if packed arrays are used.
 
-        :param zserio_context_node: Context for packed arrays.
+        :param zserio_context: Context for packed arrays.
         :param zserio_writer: Bit stream writer where to serialize this Zserio object.
         """
 
-    </#if>
-    <#if fieldList?has_content>
-        <#if !compound_needs_packing_context_node(fieldList)>
-        del zserio_context_node
-
         </#if>
+        <#if fieldList?has_content>
+            <#if !uses_packing_context(fieldList)>
+        del zserio_context
+
+            </#if>
         <@choice_if "choice_write_member", "choice_no_match", true/>
-    <#else>
-        del zserio_context_node
+        <#else>
+        del zserio_context
         del zserio_writer
+        </#if>
     </#if>
 </#if>
+    <@define_packing_context isPackable, fieldList/>
 <#list fieldList as field>
-    <@define_element_creator field, name/>
+    <@define_element_factory field, name/>
 </#list>
 
 <#list fieldList as field>

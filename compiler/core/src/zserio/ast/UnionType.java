@@ -58,6 +58,13 @@ public class UnionType extends CompoundType
     }
 
     @Override
+    public boolean isPackable()
+    {
+        // non empty unions are always packable due to choiceTag
+        return !getFields().isEmpty();
+    }
+
+    @Override
     void check()
     {
         super.check();

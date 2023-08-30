@@ -5,8 +5,23 @@
 
 package test_object;
 
-public class WalkerObject implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
+public class WalkerObject implements zserio.runtime.io.PackableWriter, zserio.runtime.PackableSizeOf
 {
+    public static final class ZserioPackingContext extends zserio.runtime.array.PackingContext
+    {
+        public ZserioPackingContext()
+        {
+            identifier_ = new zserio.runtime.array.DeltaContext();
+        }
+
+        public zserio.runtime.array.DeltaContext getIdentifier()
+        {
+            return identifier_;
+        }
+
+        private zserio.runtime.array.DeltaContext identifier_;
+    };
+
     public WalkerObject()
     {
     }
@@ -17,10 +32,10 @@ public class WalkerObject implements zserio.runtime.io.Writer, zserio.runtime.Si
         read(in);
     }
 
-    public WalkerObject(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in)
+    public WalkerObject(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamReader in)
             throws java.io.IOException
     {
-        read(contextNode, in);
+        read(context, in);
     }
 
     public WalkerObject(
@@ -156,25 +171,12 @@ public class WalkerObject implements zserio.runtime.io.Writer, zserio.runtime.Si
         );
     }
 
-    public static void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
-    {
-        contextNode.createChild().createContext();
-        test_object.WalkerNested.createPackingContext(contextNode.createChild());
-        contextNode.createChild();
-        contextNode.createChild();
-        contextNode.createChild();
-    }
-
     @Override
-    public void initPackingContext(zserio.runtime.array.PackingContextNode contextNode)
+    public void initPackingContext(zserio.runtime.array.PackingContext context)
     {
-        contextNode.getChildren().get(0).getContext().init(
-                new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)),
+        final ZserioPackingContext zserioContext = context.cast();
+        zserioContext.getIdentifier().init(new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)),
                 new zserio.runtime.array.ArrayElement.LongArrayElement(identifier_));
-        if (isNestedUsed())
-        {
-            nested_.initPackingContext(contextNode.getChildren().get(1));
-        }
     }
 
     @Override
@@ -205,17 +207,16 @@ public class WalkerObject implements zserio.runtime.io.Writer, zserio.runtime.Si
     }
 
     @Override
-    public int bitSizeOf(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
+    public int bitSizeOf(zserio.runtime.array.PackingContext context, long bitPosition)
     {
+        final ZserioPackingContext zserioContext = context.cast();
         long endBitPosition = bitPosition;
 
-        endBitPosition += contextNode.getChildren().get(0).getContext().bitSizeOf(
-                new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)),
+        endBitPosition += zserioContext.getIdentifier().bitSizeOf(new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)),
                 new zserio.runtime.array.ArrayElement.LongArrayElement(identifier_));
         if (isNestedUsed())
         {
-            endBitPosition += nested_.bitSizeOf(contextNode.getChildren().get(1),
-                    endBitPosition);
+            endBitPosition += nested_.bitSizeOf(endBitPosition);
         }
         endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfString(text_);
         endBitPosition += unionArray_.bitSizeOfPacked(endBitPosition);
@@ -282,7 +283,7 @@ public class WalkerObject implements zserio.runtime.io.Writer, zserio.runtime.Si
     {
         this.unionArray_ = new zserio.runtime.array.Array(
                 new zserio.runtime.array.RawArray.ObjectRawArray<>(test_object.WalkerUnion.class, unionArray_),
-                new zserio.runtime.array.ArrayTraits.WriteObjectArrayTraits<test_object.WalkerUnion>(new ZserioElementFactory_unionArray()),
+                new zserio.runtime.array.ArrayTraits.WritePackableObjectArrayTraits<test_object.WalkerUnion>(new ZserioElementFactory_unionArray()),
                 zserio.runtime.array.ArrayType.AUTO);
     }
 
@@ -301,7 +302,7 @@ public class WalkerObject implements zserio.runtime.io.Writer, zserio.runtime.Si
         {
             this.optionalUnionArray_ = new zserio.runtime.array.Array(
                     new zserio.runtime.array.RawArray.ObjectRawArray<>(test_object.WalkerUnion.class, optionalUnionArray_),
-                    new zserio.runtime.array.ArrayTraits.WriteObjectArrayTraits<test_object.WalkerUnion>(new ZserioElementFactory_optionalUnionArray()),
+                    new zserio.runtime.array.ArrayTraits.WritePackableObjectArrayTraits<test_object.WalkerUnion>(new ZserioElementFactory_optionalUnionArray()),
                     zserio.runtime.array.ArrayType.AUTO);
         }
     }
@@ -371,7 +372,7 @@ public class WalkerObject implements zserio.runtime.io.Writer, zserio.runtime.Si
 
         unionArray_ = new zserio.runtime.array.Array(
                 new zserio.runtime.array.RawArray.ObjectRawArray<>(test_object.WalkerUnion.class),
-                new zserio.runtime.array.ArrayTraits.WriteObjectArrayTraits<test_object.WalkerUnion>(new ZserioElementFactory_unionArray()),
+                new zserio.runtime.array.ArrayTraits.WritePackableObjectArrayTraits<test_object.WalkerUnion>(new ZserioElementFactory_unionArray()),
                 zserio.runtime.array.ArrayType.AUTO);
         unionArray_.read(in);
 
@@ -379,29 +380,29 @@ public class WalkerObject implements zserio.runtime.io.Writer, zserio.runtime.Si
         {
             optionalUnionArray_ = new zserio.runtime.array.Array(
                     new zserio.runtime.array.RawArray.ObjectRawArray<>(test_object.WalkerUnion.class),
-                    new zserio.runtime.array.ArrayTraits.WriteObjectArrayTraits<test_object.WalkerUnion>(new ZserioElementFactory_optionalUnionArray()),
+                    new zserio.runtime.array.ArrayTraits.WritePackableObjectArrayTraits<test_object.WalkerUnion>(new ZserioElementFactory_optionalUnionArray()),
                     zserio.runtime.array.ArrayType.AUTO);
             optionalUnionArray_.read(in);
         }
     }
 
-    public void read(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in)
+    public void read(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamReader in)
             throws java.io.IOException
     {
+        final ZserioPackingContext zserioContext = context.cast();
         identifier_ = ((zserio.runtime.array.ArrayElement.LongArrayElement)
-                contextNode.getChildren().get(0).getContext().read(
-                        new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)), in)).get();
+                zserioContext.getIdentifier().read(new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)), in)).get();
 
         if (getIdentifier() != 0)
         {
-            nested_ = new test_object.WalkerNested(contextNode.getChildren().get(1), in);
+            nested_ = new test_object.WalkerNested(in);
         }
 
         text_ = in.readString();
 
         unionArray_ = new zserio.runtime.array.Array(
                 new zserio.runtime.array.RawArray.ObjectRawArray<>(test_object.WalkerUnion.class),
-                new zserio.runtime.array.ArrayTraits.WriteObjectArrayTraits<test_object.WalkerUnion>(new ZserioElementFactory_unionArray()),
+                new zserio.runtime.array.ArrayTraits.WritePackableObjectArrayTraits<test_object.WalkerUnion>(new ZserioElementFactory_unionArray()),
                 zserio.runtime.array.ArrayType.AUTO);
         unionArray_.readPacked(in);
 
@@ -409,7 +410,7 @@ public class WalkerObject implements zserio.runtime.io.Writer, zserio.runtime.Si
         {
             optionalUnionArray_ = new zserio.runtime.array.Array(
                     new zserio.runtime.array.RawArray.ObjectRawArray<>(test_object.WalkerUnion.class),
-                    new zserio.runtime.array.ArrayTraits.WriteObjectArrayTraits<test_object.WalkerUnion>(new ZserioElementFactory_optionalUnionArray()),
+                    new zserio.runtime.array.ArrayTraits.WritePackableObjectArrayTraits<test_object.WalkerUnion>(new ZserioElementFactory_optionalUnionArray()),
                     zserio.runtime.array.ArrayType.AUTO);
             optionalUnionArray_.readPacked(in);
         }
@@ -443,17 +444,16 @@ public class WalkerObject implements zserio.runtime.io.Writer, zserio.runtime.Si
     }
 
     @Override
-    public long initializeOffsets(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
+    public long initializeOffsets(zserio.runtime.array.PackingContext context, long bitPosition)
     {
+        final ZserioPackingContext zserioContext = context.cast();
         long endBitPosition = bitPosition;
 
-        endBitPosition += contextNode.getChildren().get(0).getContext().bitSizeOf(
-                new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)),
+        endBitPosition += zserioContext.getIdentifier().bitSizeOf(new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)),
                 new zserio.runtime.array.ArrayElement.LongArrayElement(identifier_));
         if (isNestedUsed())
         {
-            endBitPosition = nested_.initializeOffsets(contextNode.getChildren().get(1),
-                    endBitPosition);
+            endBitPosition = nested_.initializeOffsets(endBitPosition);
         }
         endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfString(text_);
         endBitPosition = unionArray_.initializeOffsetsPacked(endBitPosition);
@@ -492,16 +492,16 @@ public class WalkerObject implements zserio.runtime.io.Writer, zserio.runtime.Si
     }
 
     @Override
-    public void write(zserio.runtime.array.PackingContextNode contextNode,
-            zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
+    public void write(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamWriter out)
+            throws java.io.IOException
     {
-        contextNode.getChildren().get(0).getContext().write(
-                new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)), out,
+        final ZserioPackingContext zserioContext = context.cast();
+        zserioContext.getIdentifier().write(new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)), out,
                 new zserio.runtime.array.ArrayElement.LongArrayElement(identifier_));
 
         if (isNestedUsed())
         {
-            nested_.write(contextNode.getChildren().get(1), out);
+            nested_.write(out);
         }
 
         out.writeString(text_);
@@ -519,7 +519,7 @@ public class WalkerObject implements zserio.runtime.io.Writer, zserio.runtime.Si
         }
     }
 
-    private static final class ZserioElementFactory_unionArray implements zserio.runtime.array.ElementFactory<test_object.WalkerUnion>
+    private static final class ZserioElementFactory_unionArray implements zserio.runtime.array.PackableElementFactory<test_object.WalkerUnion>
     {
         @Override
         public test_object.WalkerUnion create(zserio.runtime.io.BitStreamReader in, int index)
@@ -529,20 +529,20 @@ public class WalkerObject implements zserio.runtime.io.Writer, zserio.runtime.Si
         }
 
         @Override
-        public void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
+        public zserio.runtime.array.PackingContext createPackingContext()
         {
-            test_object.WalkerUnion.createPackingContext(contextNode);
+            return new test_object.WalkerUnion.ZserioPackingContext();
         }
 
         @Override
-        public test_object.WalkerUnion create(zserio.runtime.array.PackingContextNode contextNode,
+        public test_object.WalkerUnion create(zserio.runtime.array.PackingContext context,
                 zserio.runtime.io.BitStreamReader in, int index) throws java.io.IOException
         {
-            return new test_object.WalkerUnion(contextNode, in);
+            return new test_object.WalkerUnion(context, in);
         }
     }
 
-    private static final class ZserioElementFactory_optionalUnionArray implements zserio.runtime.array.ElementFactory<test_object.WalkerUnion>
+    private static final class ZserioElementFactory_optionalUnionArray implements zserio.runtime.array.PackableElementFactory<test_object.WalkerUnion>
     {
         @Override
         public test_object.WalkerUnion create(zserio.runtime.io.BitStreamReader in, int index)
@@ -552,16 +552,16 @@ public class WalkerObject implements zserio.runtime.io.Writer, zserio.runtime.Si
         }
 
         @Override
-        public void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
+        public zserio.runtime.array.PackingContext createPackingContext()
         {
-            test_object.WalkerUnion.createPackingContext(contextNode);
+            return new test_object.WalkerUnion.ZserioPackingContext();
         }
 
         @Override
-        public test_object.WalkerUnion create(zserio.runtime.array.PackingContextNode contextNode,
+        public test_object.WalkerUnion create(zserio.runtime.array.PackingContext context,
                 zserio.runtime.io.BitStreamReader in, int index) throws java.io.IOException
         {
-            return new test_object.WalkerUnion(contextNode, in);
+            return new test_object.WalkerUnion(context, in);
         }
     }
 

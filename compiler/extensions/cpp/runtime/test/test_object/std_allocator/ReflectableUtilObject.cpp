@@ -34,10 +34,10 @@ ReflectableUtilObject::ReflectableUtilObject(::zserio::BitStreamReader& in, cons
 {
 }
 
-ReflectableUtilObject::ReflectableUtilObject(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in, const allocator_type& allocator) :
+ReflectableUtilObject::ReflectableUtilObject(ReflectableUtilObject::ZserioPackingContext& context, ::zserio::BitStreamReader& in, const allocator_type& allocator) :
         m_areChildrenInitialized(true),
-        m_choiceParam_(readChoiceParam(contextNode, in)),
-        m_reflectableUtilChoice_(readReflectableUtilChoice(contextNode, in, allocator))
+        m_choiceParam_(readChoiceParam(context, in)),
+        m_reflectableUtilChoice_(readReflectableUtilChoice(context, in, allocator))
 {
 }
 
@@ -347,18 +347,10 @@ void ReflectableUtilObject::setReflectableUtilChoice(::test_object::std_allocato
     m_reflectableUtilChoice_ = ::std::move(reflectableUtilChoice_);
 }
 
-void ReflectableUtilObject::createPackingContext(::zserio::PackingContextNode& contextNode)
+void ReflectableUtilObject::initPackingContext(ReflectableUtilObject::ZserioPackingContext& context) const
 {
-    contextNode.reserveChildren(2);
-
-    contextNode.createChild().createContext();
-    ::test_object::std_allocator::ReflectableUtilChoice::createPackingContext(contextNode.createChild());
-}
-
-void ReflectableUtilObject::initPackingContext(::zserio::PackingContextNode& contextNode) const
-{
-    contextNode.getChildren()[0].getContext().init<::zserio::StdIntArrayTraits<uint8_t>>(m_choiceParam_);
-    m_reflectableUtilChoice_.initPackingContext(contextNode.getChildren()[1]);
+    context.getChoiceParam().init<::zserio::StdIntArrayTraits<uint8_t>>(m_choiceParam_);
+    m_reflectableUtilChoice_.initPackingContext(context.getReflectableUtilChoice());
 }
 
 size_t ReflectableUtilObject::bitSizeOf(size_t bitPosition) const
@@ -371,13 +363,12 @@ size_t ReflectableUtilObject::bitSizeOf(size_t bitPosition) const
     return endBitPosition - bitPosition;
 }
 
-size_t ReflectableUtilObject::bitSizeOf(::zserio::PackingContextNode& contextNode, size_t bitPosition) const
+size_t ReflectableUtilObject::bitSizeOf(ReflectableUtilObject::ZserioPackingContext& context, size_t bitPosition) const
 {
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += contextNode.getChildren()[0].getContext().bitSizeOf<::zserio::StdIntArrayTraits<uint8_t>>(m_choiceParam_);
-    endBitPosition += m_reflectableUtilChoice_.bitSizeOf(
-            contextNode.getChildren()[1], endBitPosition);
+    endBitPosition += context.getChoiceParam().bitSizeOf<::zserio::StdIntArrayTraits<uint8_t>>(m_choiceParam_);
+    endBitPosition += m_reflectableUtilChoice_.bitSizeOf(context.getReflectableUtilChoice(), endBitPosition);
 
     return endBitPosition - bitPosition;
 }
@@ -392,13 +383,12 @@ size_t ReflectableUtilObject::initializeOffsets(size_t bitPosition)
     return endBitPosition;
 }
 
-size_t ReflectableUtilObject::initializeOffsets(::zserio::PackingContextNode& contextNode, size_t bitPosition)
+size_t ReflectableUtilObject::initializeOffsets(ReflectableUtilObject::ZserioPackingContext& context, size_t bitPosition)
 {
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += contextNode.getChildren()[0].getContext().bitSizeOf<::zserio::StdIntArrayTraits<uint8_t>>(m_choiceParam_);
-    endBitPosition = m_reflectableUtilChoice_.initializeOffsets(
-            contextNode.getChildren()[1], endBitPosition);
+    endBitPosition += context.getChoiceParam().bitSizeOf<::zserio::StdIntArrayTraits<uint8_t>>(m_choiceParam_);
+    endBitPosition = m_reflectableUtilChoice_.initializeOffsets(context.getReflectableUtilChoice(), endBitPosition);
 
     return endBitPosition;
 }
@@ -438,9 +428,9 @@ void ReflectableUtilObject::write(::zserio::BitStreamWriter& out) const
     m_reflectableUtilChoice_.write(out);
 }
 
-void ReflectableUtilObject::write(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const
+void ReflectableUtilObject::write(ReflectableUtilObject::ZserioPackingContext& context, ::zserio::BitStreamWriter& out) const
 {
-    contextNode.getChildren()[0].getContext().write<::zserio::StdIntArrayTraits<uint8_t>>(out, m_choiceParam_);
+    context.getChoiceParam().write<::zserio::StdIntArrayTraits<uint8_t>>(out, m_choiceParam_);
 
     // check parameters
     if (m_reflectableUtilChoice_.getParam() != static_cast<uint8_t>(getChoiceParam()))
@@ -448,7 +438,7 @@ void ReflectableUtilObject::write(::zserio::PackingContextNode& contextNode, ::z
         throw ::zserio::CppRuntimeException("Write: Wrong parameter param for field ReflectableUtilObject.reflectableUtilChoice: ") <<
                 m_reflectableUtilChoice_.getParam() << " != " << static_cast<uint8_t>(getChoiceParam()) << "!";
     }
-    m_reflectableUtilChoice_.write(contextNode.getChildren()[1], out);
+    m_reflectableUtilChoice_.write(context.getReflectableUtilChoice(), out);
 }
 
 uint8_t ReflectableUtilObject::readChoiceParam(::zserio::BitStreamReader& in)
@@ -456,9 +446,9 @@ uint8_t ReflectableUtilObject::readChoiceParam(::zserio::BitStreamReader& in)
     return static_cast<uint8_t>(in.readBits(UINT8_C(8)));
 }
 
-uint8_t ReflectableUtilObject::readChoiceParam(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in)
+uint8_t ReflectableUtilObject::readChoiceParam(ReflectableUtilObject::ZserioPackingContext& context, ::zserio::BitStreamReader& in)
 {
-    return contextNode.getChildren()[0].getContext().read<::zserio::StdIntArrayTraits<uint8_t>>(in);
+    return context.getChoiceParam().read<::zserio::StdIntArrayTraits<uint8_t>>(in);
 }
 
 ::test_object::std_allocator::ReflectableUtilChoice ReflectableUtilObject::readReflectableUtilChoice(::zserio::BitStreamReader& in,
@@ -467,9 +457,9 @@ uint8_t ReflectableUtilObject::readChoiceParam(::zserio::PackingContextNode& con
     return ::test_object::std_allocator::ReflectableUtilChoice(in, static_cast<uint8_t>(getChoiceParam()), allocator);
 }
 
-::test_object::std_allocator::ReflectableUtilChoice ReflectableUtilObject::readReflectableUtilChoice(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in, const allocator_type& allocator)
+::test_object::std_allocator::ReflectableUtilChoice ReflectableUtilObject::readReflectableUtilChoice(ReflectableUtilObject::ZserioPackingContext& context, ::zserio::BitStreamReader& in, const allocator_type& allocator)
 {
-    return ::test_object::std_allocator::ReflectableUtilChoice(contextNode.getChildren()[1], in, static_cast<uint8_t>(getChoiceParam()), allocator);
+    return ::test_object::std_allocator::ReflectableUtilChoice(context.getReflectableUtilChoice(), in, static_cast<uint8_t>(getChoiceParam()), allocator);
 }
 
 } // namespace std_allocator

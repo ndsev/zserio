@@ -31,13 +31,13 @@ class SerializeNested:
     @classmethod
     def from_reader_packed(
             cls: typing.Type['SerializeNested'],
-            zserio_context_node: zserio.array.PackingContextNode,
+            zserio_context: SerializeNested.ZserioPackingContext,
             zserio_reader: zserio.BitStreamReader,
             param_: int) -> 'SerializeNested':
         self = object.__new__(cls)
         self._param_ = param_
 
-        self.read_packed(zserio_context_node, zserio_reader)
+        self.read_packed(zserio_context, zserio_reader)
 
         return self
 
@@ -122,14 +122,9 @@ class SerializeNested:
     def reset_optional_value(self) -> None:
         self._optional_value_ = None
 
-    @staticmethod
-    def create_packing_context(zserio_context_node: zserio.array.PackingContextNode) -> None:
-        zserio_context_node.create_child()
-        zserio_context_node.create_child().create_context()
-
-    def init_packing_context(self, zserio_context_node: zserio.array.PackingContextNode) -> None:
+    def init_packing_context(self, zserio_context: SerializeNested.ZserioPackingContext) -> None:
         if self.is_optional_value_used():
-            zserio_context_node.get_child_context(1).init(zserio.array.BitFieldArrayTraits(32), self._optional_value_)
+            zserio_context.optional_value.init(zserio.array.BitFieldArrayTraits(32), self._optional_value_)
 
     def bitsizeof(self, bitposition: int = 0) -> int:
         end_bitposition = bitposition
@@ -140,13 +135,12 @@ class SerializeNested:
 
         return end_bitposition - bitposition
 
-    def bitsizeof_packed(self, zserio_context_node: zserio.array.PackingContextNode,
-                         bitposition: int = 0) -> int:
+    def bitsizeof_packed(self, zserio_context: SerializeNested.ZserioPackingContext, bitposition: int = 0) -> int:
         end_bitposition = bitposition
         end_bitposition += 8
         if self.is_optional_value_used():
             end_bitposition = zserio.bitposition.alignto(8, end_bitposition)
-            end_bitposition += zserio_context_node.get_child_context(1).bitsizeof(zserio.array.BitFieldArrayTraits(32), self._optional_value_)
+            end_bitposition += zserio_context.optional_value.bitsizeof(zserio.array.BitFieldArrayTraits(32), self._optional_value_)
 
         return end_bitposition - bitposition
 
@@ -162,8 +156,7 @@ class SerializeNested:
 
         return end_bitposition
 
-    def initialize_offsets_packed(self, zserio_context_node: zserio.array.PackingContextNode,
-                                  bitposition: int) -> int:
+    def initialize_offsets_packed(self, zserio_context: SerializeNested.ZserioPackingContext, bitposition: int) -> int:
         end_bitposition = bitposition
         end_bitposition += 8
         if self.is_optional_value_used():
@@ -171,7 +164,7 @@ class SerializeNested:
             # initialize offset
             value = zserio.bitposition.bits_to_bytes(end_bitposition)
             self.offset = value
-            end_bitposition += zserio_context_node.get_child_context(1).bitsizeof(zserio.array.BitFieldArrayTraits(32), self._optional_value_)
+            end_bitposition += zserio_context.optional_value.bitsizeof(zserio.array.BitFieldArrayTraits(32), self._optional_value_)
 
         return end_bitposition
 
@@ -188,8 +181,7 @@ class SerializeNested:
         else:
             self._optional_value_ = None
 
-    def read_packed(self, zserio_context_node: zserio.array.PackingContextNode,
-                    zserio_reader: zserio.BitStreamReader) -> None:
+    def read_packed(self, zserio_context: SerializeNested.ZserioPackingContext, zserio_reader: zserio.BitStreamReader) -> None:
         self._offset_ = zserio_reader.read_bits(8)
 
         if self.is_optional_value_used():
@@ -198,7 +190,7 @@ class SerializeNested:
             if zserio_reader.bitposition != zserio.bitposition.bytes_to_bits(self._offset_):
                 raise zserio.PythonRuntimeException("Wrong offset for field SerializeNested.optionalValue: "
                                                     f"{zserio_reader.bitposition} != {zserio.bitposition.bytes_to_bits(self._offset_)}!")
-            self._optional_value_ = zserio_context_node.get_child_context(1).read(zserio.array.BitFieldArrayTraits(32), zserio_reader)
+            self._optional_value_ = zserio_context.optional_value.read(zserio.array.BitFieldArrayTraits(32), zserio_reader)
         else:
             self._optional_value_ = None
 
@@ -213,7 +205,7 @@ class SerializeNested:
                                                     f"{zserio_writer.bitposition} != {zserio.bitposition.bytes_to_bits(self._offset_)}!")
             zserio_writer.write_bits(self._optional_value_, 32)
 
-    def write_packed(self, zserio_context_node: zserio.array.PackingContextNode,
+    def write_packed(self, zserio_context: SerializeNested.ZserioPackingContext,
                      zserio_writer: zserio.BitStreamWriter) -> None:
         zserio_writer.write_bits(self._offset_, 8)
 
@@ -223,4 +215,12 @@ class SerializeNested:
             if zserio_writer.bitposition != zserio.bitposition.bytes_to_bits(self._offset_):
                 raise zserio.PythonRuntimeException("Wrong offset for field SerializeNested.optionalValue: "
                                                     f"{zserio_writer.bitposition} != {zserio.bitposition.bytes_to_bits(self._offset_)}!")
-            zserio_context_node.get_child_context(1).write(zserio.array.BitFieldArrayTraits(32), zserio_writer, self._optional_value_)
+            zserio_context.optional_value.write(zserio.array.BitFieldArrayTraits(32), zserio_writer, self._optional_value_)
+
+    class ZserioPackingContext:
+        def __init__(self):
+            self._optional_value_ = zserio.array.DeltaContext()
+
+        @property
+        def optional_value(self):
+            return self._optional_value_

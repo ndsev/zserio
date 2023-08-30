@@ -22,14 +22,6 @@
     </#if>
 </#macro>
 
-<#macro compound_field_packing_context_node field index>
-    <#if field.optional?? && field.optional.isRecursive>
-        contextNode<#t>
-    <#else>
-        contextNode.getChildren().get(${index})<#t>
-    </#if>
-</#macro>
-
 <#macro choice_tag_name field>
     CHOICE_${field.name}<#t>
 </#macro>
@@ -125,7 +117,7 @@ ${I}}
     </#list>
 </#macro>
 
-<#macro compound_read_field field compoundName indent packed=false index=0>
+<#macro compound_read_field field compoundName indent packed=false>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
         <#if field.optional.clause??>
@@ -134,14 +126,14 @@ ${I}if (${field.optional.clause})
 ${I}if (in.readBool())
         </#if>
 ${I}{
-        <@compound_read_field_inner field, compoundName, indent + 1, packed, index/>
+        <@compound_read_field_inner field, compoundName, indent + 1, packed/>
 ${I}}
     <#else>
-        <@compound_read_field_inner field, compoundName, indent, packed, index/>
+        <@compound_read_field_inner field, compoundName, indent, packed/>
     </#if>
 </#macro>
 
-<#macro compound_read_field_inner field compoundName indent packed index>
+<#macro compound_read_field_inner field compoundName indent packed>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.alignmentValue??>
 ${I}in.alignTo(${field.alignmentValue});
@@ -152,17 +144,16 @@ ${I}in.alignTo(${field.alignmentValue});
     <#if packed && field.isPackable && !field.array??>
         <#if field.typeInfo.isIntegral>
 ${I}<@field_member_name field/> = ((${field.typeInfo.arrayableInfo.arrayElement})
-${I}        <@compound_field_packing_context_node field, index/>.getContext().read(
-${I}                <@array_traits field/>, in)).get();
+${I}        zserioContext.${field.getterName}().read(<@array_traits field/>, in)).get();
         <#elseif field.typeInfo.isEnum>
-${I}<@field_member_name field/> = ${field.typeInfo.typeFullName}.readEnum(<@compound_field_packing_context_node field, index/>, in);
+${I}<@field_member_name field/> = ${field.typeInfo.typeFullName}.readEnum(zserioContext.${field.getterName}(), in);
         <#else>
             <#local compoundParamsArguments>
                 <#if field.compound??><#-- can be a bitmask -->
                     <@compound_field_compound_ctor_params field.compound/>
                 </#if>
             </#local>
-${I}<@field_member_name field/> = new ${field.typeInfo.typeFullName}(<@compound_field_packing_context_node field, index/>, in<#rt>
+${I}<@field_member_name field/> = new ${field.typeInfo.typeFullName}(zserioContext.${field.getterName}(), in<#rt>
         <#lt><#if compoundParamsArguments?has_content>, ${compoundParamsArguments}</#if>);
         </#if>
     <#elseif field.array??>
@@ -196,20 +187,20 @@ ${I}            out.getBytePosition() + " != " + <@compound_field_get_offset fie
 ${I}}
 </#macro>
 
-<#macro compound_write_field field compoundName indent packed=false index=0>
+<#macro compound_write_field field compoundName indent packed=false>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.isExtended>
 ${I}if (${field.isPresentIndicatorName}())
 ${I}{
 ${I}    out.alignTo(java.lang.Byte.SIZE);
-        <@compound_write_field_optional field, compoundName, indent+1, packed, index/>
+        <@compound_write_field_optional field, compoundName, indent+1, packed/>
 ${I}}
     <#else>
-    <@compound_write_field_optional field, compoundName, indent, packed, index/>
+    <@compound_write_field_optional field, compoundName, indent, packed/>
     </#if>
 </#macro>
 
-<#macro compound_write_field_optional field compoundName indent packed index>
+<#macro compound_write_field_optional field compoundName indent packed>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
 ${I}if (${field.optional.isUsedIndicatorName}())
@@ -217,7 +208,7 @@ ${I}{
         <#if !field.optional.clause??>
 ${I}    out.writeBool(true);
         </#if>
-        <@compound_write_field_inner field, compoundName, indent + 1, packed, index/>
+        <@compound_write_field_inner field, compoundName, indent + 1, packed/>
 ${I}}
         <#if !field.optional.clause??>
 ${I}else
@@ -226,11 +217,11 @@ ${I}    out.writeBool(false);
 ${I}}
         </#if>
     <#else>
-        <@compound_write_field_inner field, compoundName, indent, packed, index/>
+        <@compound_write_field_inner field, compoundName, indent, packed/>
     </#if>
 </#macro>
 
-<#macro compound_write_field_inner field compoundName indent packed index>
+<#macro compound_write_field_inner field compoundName indent packed>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.alignmentValue??>
 ${I}out.alignTo(${field.alignmentValue});
@@ -240,11 +231,10 @@ ${I}out.alignTo(${field.alignmentValue});
     </#if>
     <#if packed && field.isPackable && !field.array??>
         <#if field.typeInfo.isIntegral>
-${I}<@compound_field_packing_context_node field, index/>.getContext().write(
-${I}        <@array_traits field/>, out,
+${I}zserioContext.${field.getterName}().write(<@array_traits field/>, out,
 ${I}        new ${field.typeInfo.arrayableInfo.arrayElement}(<@compound_get_field field/>));
         <#else>
-${I}<@compound_get_field field/>.write(<@compound_field_packing_context_node field, index/>, out);
+${I}<@compound_get_field field/>.write(zserioContext.${field.getterName}(), out);
         </#if>
     <#elseif field.array??>
         <#if field.array.length??>
@@ -343,20 +333,20 @@ ${I}endBitPosition = zserio.runtime.BitPositionUtil.alignTo(java.lang.Byte.SIZE,
     </#if>
 </#macro>
 
-<#macro compound_bitsizeof_field field indent packed=false index=0>
+<#macro compound_bitsizeof_field field indent packed=false>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.isExtended>
 ${I}if (${field.isPresentIndicatorName}())
 ${I}{
 ${I}    endBitPosition = zserio.runtime.BitPositionUtil.alignTo(java.lang.Byte.SIZE, endBitPosition);
-        <@compound_bitsizeof_field_optional field, indent+1, packed, index/>
+        <@compound_bitsizeof_field_optional field, indent+1, packed/>
 ${I}}
     <#else>
-    <@compound_bitsizeof_field_optional field, indent, packed, index/>
+    <@compound_bitsizeof_field_optional field, indent, packed/>
     </#if>
 </#macro>
 
-<#macro compound_bitsizeof_field_optional field indent packed index>
+<#macro compound_bitsizeof_field_optional field indent packed>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
         <#if !field.optional.clause??>
@@ -365,24 +355,22 @@ ${I}endBitPosition += 1;
         </#if>
 ${I}if (${field.optional.isUsedIndicatorName}())
 ${I}{
-        <@compound_bitsizeof_field_inner field, indent+1, packed, index/>
+        <@compound_bitsizeof_field_inner field, indent+1, packed/>
 ${I}}
     <#else>
-    <@compound_bitsizeof_field_inner field, indent, packed, index/>
+    <@compound_bitsizeof_field_inner field, indent, packed/>
     </#if>
 </#macro>
 
-<#macro compound_bitsizeof_field_inner field indent packed index>
+<#macro compound_bitsizeof_field_inner field indent packed>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <@compound_align_field field, indent/>
     <#if packed && field.isPackable && !field.array??>
         <#if field.typeInfo.isIntegral>
-${I}endBitPosition += <@compound_field_packing_context_node field, index/>.getContext().bitSizeOf(
-${I}        <@array_traits field/>,
+${I}endBitPosition += zserioContext.${field.getterName}().bitSizeOf(<@array_traits field/>,
 ${I}        new ${field.typeInfo.arrayableInfo.arrayElement}(<@compound_get_field field/>));
         <#else>
-${I}endBitPosition += <@compound_get_field field/>.bitSizeOf(<@compound_field_packing_context_node field, index/>,
-${I}        endBitPosition);
+${I}endBitPosition += <@compound_get_field field/>.bitSizeOf(zserioContext.${field.getterName}(), endBitPosition);
         </#if>
     <#elseif field.array??>
 ${I}endBitPosition += <@compound_get_field field/>.bitSizeOf<@array_field_packed_suffix field, packed/>(endBitPosition);
@@ -395,20 +383,20 @@ ${I}endBitPosition += <@compound_get_field field/>.bitSizeOf(endBitPosition);
     </#if>
 </#macro>
 
-<#macro compound_initialize_offsets_field field indent packed=false index=0>
+<#macro compound_initialize_offsets_field field indent packed=false>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.isExtended>
 ${I}if (${field.isPresentIndicatorName}())
 ${I}{
 ${I}    endBitPosition = zserio.runtime.BitPositionUtil.alignTo(java.lang.Byte.SIZE, endBitPosition);
-        <@compound_initialize_offsets_field_optional field, indent+1, packed, index/>
+        <@compound_initialize_offsets_field_optional field, indent+1, packed/>
 ${I}}
     <#else>
-    <@compound_initialize_offsets_field_optional field, indent, packed, index/>
+    <@compound_initialize_offsets_field_optional field, indent, packed/>
     </#if>
 </#macro>
 
-<#macro compound_initialize_offsets_field_optional field indent packed index>
+<#macro compound_initialize_offsets_field_optional field indent packed>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
         <#if !field.optional.clause??>
@@ -417,14 +405,14 @@ ${I}endBitPosition += 1;
                 </#if>
 ${I}if (${field.optional.isUsedIndicatorName}())
 ${I}{
-        <@compound_initialize_offsets_field_inner field, indent+1, packed, index/>
+        <@compound_initialize_offsets_field_inner field, indent+1, packed/>
 ${I}}
     <#else>
-    <@compound_initialize_offsets_field_inner field, indent, packed, index/>
+    <@compound_initialize_offsets_field_inner field, indent, packed/>
     </#if>
 </#macro>
 
-<#macro compound_initialize_offsets_field_inner field indent packed index>
+<#macro compound_initialize_offsets_field_inner field indent packed>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <@compound_align_field field, indent/>
     <#if field.offset?? && !field.offset.containsIndex>
@@ -440,12 +428,10 @@ ${I}}
         </#if>
     <#if packed && field.isPackable && !field.array??>
         <#if field.typeInfo.isIntegral>
-${I}endBitPosition += <@compound_field_packing_context_node field, index/>.getContext().bitSizeOf(
-${I}        <@array_traits field/>,
+${I}endBitPosition += zserioContext.${field.getterName}().bitSizeOf(<@array_traits field/>,
 ${I}        new ${field.typeInfo.arrayableInfo.arrayElement}(<@compound_get_field field/>));
         <#else>
-${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(<@compound_field_packing_context_node field, index/>,
-${I}        endBitPosition);
+${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(zserioContext.${field.getterName}(), endBitPosition);
         </#if>
     <#elseif field.array??>
 ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets<@array_field_packed_suffix field, packed/>(endBitPosition);
@@ -460,53 +446,40 @@ ${I}endBitPosition += <@compound_get_field field/>.bitSizeOf(endBitPosition);
     </#if>
 </#macro>
 
-<#macro compound_create_packing_context_field field>
-    <#if field.isPackable && !field.array?? && !(field.optional?? && field.optional.isRecursive)>
-        <#if field.typeInfo.isIntegral>
-        contextNode.createChild().createContext();
-        <#else>
-        ${field.typeInfo.typeFullName}.createPackingContext(contextNode.createChild());
-        </#if>
-    <#else>
-        contextNode.createChild();
-    </#if>
-</#macro>
-
-<#macro compound_init_packing_context_field field index indent>
+<#macro compound_init_packing_context_field field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
-    <#if field.isPackable && !field.array??>
+    <#if uses_field_packing_context(field)>
         <#if field.isExtended>
 ${I}if (${field.isPresentIndicatorName}())
 ${I}{
-        <@compound_init_packing_context_field_optional field, index, indent+1/>
+        <@compound_init_packing_context_field_optional field, indent+1/>
 ${I}}
         <#else>
-    <@compound_init_packing_context_field_optional field, index, indent/>
+    <@compound_init_packing_context_field_optional field, indent/>
         </#if>
     </#if>
 </#macro>
 
-<#macro compound_init_packing_context_field_optional field index indent>
+<#macro compound_init_packing_context_field_optional field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
 ${I}if (${field.optional.isUsedIndicatorName}())
 ${I}{
-        <@compound_init_packing_context_field_inner field, index, indent+1/>
+        <@compound_init_packing_context_field_inner field, indent+1/>
 ${I}}
     <#else>
-    <@compound_init_packing_context_field_inner field, index, indent/>
+    <@compound_init_packing_context_field_inner field, indent/>
     </#if>
 </#macro>
 
-<#macro compound_init_packing_context_field_inner field index indent>
+<#macro compound_init_packing_context_field_inner field indent>
     <#-- arrays are solved in compound_init_packing_context_field -->
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.typeInfo.isIntegral>
-${I}<@compound_field_packing_context_node field, index/>.getContext().init(
-${I}        <@array_traits field/>,
+${I}zserioContext.${field.getterName}().init(<@array_traits field/>,
 ${I}        new ${field.typeInfo.arrayableInfo.arrayElement}(<@compound_get_field field/>));
     <#else>
-${I}<@compound_get_field field/>.initPackingContext(<@compound_field_packing_context_node field, index/>);
+${I}<@compound_get_field field/>.initPackingContext(zserioContext.${field.getterName}());
     </#if>
 </#macro>
 
@@ -560,8 +533,8 @@ ${I}<@compound_get_field field/>.initPackingContext(<@compound_field_packing_con
             <@compound_field_compound_ctor_params field.array.elementCompound/><#t>
         </#if>
     </#local>
-    private <#if !field.array.requiresParentContext>static </#if>final class <@element_factory_name field.name/> <#rt>
-        <#lt>implements zserio.runtime.array.ElementFactory<${field.array.elementTypeInfo.typeFullName}>
+    private <#if !field.array.requiresOwnerContext>static </#if>final class <@element_factory_name field.name/> <#rt>
+        <#lt>implements zserio.runtime.array.<#if field.isPackable>Packable</#if>ElementFactory<${field.array.elementTypeInfo.typeFullName}>
     {
         @Override
         public ${field.array.elementTypeInfo.typeFullName} create(zserio.runtime.io.BitStreamReader in, int index)
@@ -573,23 +546,25 @@ ${I}<@compound_get_field field/>.initPackingContext(<@compound_field_packing_con
             return new ${field.array.elementTypeInfo.typeFullName}(in<#if extraConstructorArguments?has_content>, ${extraConstructorArguments}</#if>);
     </#if>
         }
+    <#if field.isPackable>
 
         @Override
-        public void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
+        public zserio.runtime.array.PackingContext createPackingContext()
         {
-            ${field.array.elementTypeInfo.typeFullName}.createPackingContext(contextNode);
+            return new <@field_packing_context_type_name field/>();
         }
 
         @Override
-        public ${field.array.elementTypeInfo.typeFullName} create(zserio.runtime.array.PackingContextNode contextNode,
+        public ${field.array.elementTypeInfo.typeFullName} create(zserio.runtime.array.PackingContext context,
                 zserio.runtime.io.BitStreamReader in, int index) throws java.io.IOException
         {
-    <#if field.array.elementTypeInfo.isEnum>
-            return ${field.array.elementTypeInfo.typeFullName}.readEnum(contextNode, in);
-    <#else>
-            return new ${field.array.elementTypeInfo.typeFullName}(contextNode, in<#if extraConstructorArguments?has_content>, ${extraConstructorArguments}</#if>);
-    </#if>
+        <#if field.array.elementTypeInfo.isEnum>
+            return ${field.array.elementTypeInfo.typeFullName}.readEnum(context, in);
+        <#else>
+            return new ${field.array.elementTypeInfo.typeFullName}(context, in<#if extraConstructorArguments?has_content>, ${extraConstructorArguments}</#if>);
+        </#if>
         }
+    </#if>
     }
 </#macro>
 
@@ -610,6 +585,67 @@ ${I}<@compound_get_field field/>.initPackingContext(<@compound_field_packing_con
     </#if>
 </#macro>
 
+<#macro field_packing_context_type_name field>
+    <#if field.compound??>
+        ${field.typeInfo.typeFullName}.ZserioPackingContext<#t>
+    <#elseif field.array?? && field.array.elementCompound??>
+        ${field.array.elementTypeInfo.typeFullName}.ZserioPackingContext<#t>
+    <#else>
+        zserio.runtime.array.DeltaContext<#t>
+    </#if>
+</#macro>
+
+<#macro compound_declare_packing_context fieldList hasChoiceTag=false>
+    <#if withCodeComments>
+    /** Defines context structure which keeps additional data needed for packed arrays during compression. */
+    </#if>
+    public static final class ZserioPackingContext extends zserio.runtime.array.PackingContext
+    {
+    <#if hasChoiceTag || uses_packing_context(fieldList)>
+        public ZserioPackingContext()
+        {
+            <#if hasChoiceTag>
+            choiceTag = new zserio.runtime.array.DeltaContext();
+            </#if>
+            <#list fieldList as field>
+                <#if uses_field_packing_context(field) && !(field.optional?? && field.optional.isRecursive)>
+            ${field.name}_ = new <@field_packing_context_type_name field/>();
+                </#if>
+            </#list>
+        }
+
+        <#if hasChoiceTag>
+        public zserio.runtime.array.DeltaContext getChoiceTag()
+        {
+            return choiceTag;
+        }
+
+        </#if>
+        <#list fieldList as field>
+            <#if uses_field_packing_context(field)>
+        public <@field_packing_context_type_name field/> ${field.getterName}()
+        {
+                <#if field.optional?? && field.optional.isRecursive>
+            return this;
+                <#else>
+            return ${field.name}_;
+                </#if>
+        }
+
+            </#if>
+        </#list>
+        <#if hasChoiceTag>
+        private zserio.runtime.array.DeltaContext choiceTag;
+        </#if>
+        <#list fieldList as field>
+            <#if uses_field_packing_context(field) && !(field.optional?? && field.optional.isRecursive)>
+        private <@field_packing_context_type_name field/> ${field.name}_;
+            </#if>
+        </#list>
+    </#if>
+    };
+</#macro>
+
 <#function num_extended_fields fieldList>
     <#local numExtended=0/>
     <#list fieldList as field>
@@ -618,4 +654,20 @@ ${I}<@compound_get_field field/>.initPackingContext(<@compound_field_packing_con
         </#if>
     </#list>
     <#return numExtended>
+</#function>
+
+<#function uses_field_packing_context field>
+    <#if field.isPackable && !field.array??>
+        <#return true>
+    </#if>
+    <#return false>
+</#function>
+
+<#function uses_packing_context fieldList>
+    <#list fieldList as field>
+        <#if uses_field_packing_context(field)>
+            <#return true>
+        </#if>
+    </#list>
+    <#return false>
 </#function>

@@ -1,11 +1,13 @@
 import unittest
 
+from test_object.api import ArrayObject, ArrayEnum, ArrayBitmask
+
 from zserio.array import (Array, BitFieldArrayTraits, SignedBitFieldArrayTraits,
                           VarUInt16ArrayTraits, VarUInt32ArrayTraits, VarUInt64ArrayTraits, VarUIntArrayTraits,
                           VarSizeArrayTraits, VarInt16ArrayTraits, VarInt32ArrayTraits, VarInt64ArrayTraits,
                           VarIntArrayTraits, Float16ArrayTraits, Float32ArrayTraits, Float64ArrayTraits,
                           BytesArrayTraits, StringArrayTraits, BoolArrayTraits, BitBufferArrayTraits,
-                          ObjectArrayTraits, PackingContextNode)
+                          ObjectArrayTraits, DeltaContext)
 from zserio.bitposition import alignto
 from zserio.bitbuffer import BitBuffer
 from zserio.bitreader import BitStreamReader
@@ -160,84 +162,73 @@ class ArrayTest(unittest.TestCase):
         array2_values = [BitBuffer(bytes([0xBA, 0xE0]), 11), BitBuffer(bytes([0xBA, 0xDC, 0xFE]), 23)]
         self._test_array(array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof, array2_values)
 
-    class DummyObject:
-        def __init__(self, value = int()):
-            self._value = value
-
-        @classmethod
-        def create(cls, reader, _index):
-            instance = cls()
-            instance.read(reader)
-
-            return instance
-
-        @classmethod
-        def create_packed(cls, context_node, reader, _index):
-            instance = cls()
-            instance.read_packed(context_node, reader)
-
-            return instance
-
-        def __eq__(self, other):
-            return self._value == other._value
-
-        def __hash__(self):
-            return hash(self._value)
+    class ArrayEnumElementFactory:
+        IS_OBJECT_PACKABLE = True
 
         @staticmethod
-        def create_packing_context(context_node):
-            context_node.create_child().create_context()
-
-        def init_packing_context(self, context_node):
-            context = context_node.children[0].context
-            context.init(BitFieldArrayTraits(31), self._value)
+        def create(reader, _index):
+            return ArrayEnum.from_reader(reader)
 
         @staticmethod
-        def bitsizeof(_bitposition):
-            return 31 # to make an unaligned type
+        def create_packing_context():
+            return DeltaContext()
 
-        def bitsizeof_packed(self, context_node, bitposition):
-            end_bitposition = bitposition
+        @staticmethod
+        def create_packed(context, reader, _index):
+            return ArrayEnum.from_reader_packed(context, reader)
 
-            context = context_node.children[0].context
-            end_bitposition += context.bitsizeof(BitFieldArrayTraits(31), self._value)
+    def test_enum_array(self):
+        array_traits = ObjectArrayTraits(ArrayTest.ArrayEnumElementFactory)
+        array1_values = [ArrayEnum.VALUE1, ArrayEnum.VALUE2, ArrayEnum.VALUE3]
+        array1_bitsizeof = 3 * 8
+        array1_aligned_bitsizeof = array1_bitsizeof
+        array2_values = [ArrayEnum.VALUE1, ArrayEnum.VALUE1, ArrayEnum.VALUE1]
+        self._test_array(array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof, array2_values)
 
-            return end_bitposition - bitposition
+    class ArrayBitmaskElementFactory:
+        IS_OBJECT_PACKABLE = True
 
-        def initialize_offsets(self, bitposition):
-            return bitposition + self.bitsizeof(bitposition)
+        @staticmethod
+        def create(reader, _index):
+            return ArrayBitmask.from_reader(reader)
 
-        def initialize_offsets_packed(self, context_node, bitposition):
-            end_bitposition = bitposition
+        @staticmethod
+        def create_packing_context():
+            return DeltaContext()
 
-            context = context_node.children[0].context
-            end_bitposition += context.bitsizeof(BitFieldArrayTraits(31), self._value)
+        @staticmethod
+        def create_packed(context, reader, _index):
+            return ArrayBitmask.from_reader_packed(context, reader)
 
-            return end_bitposition
+    def test_bitmask_array(self):
+        array_traits = ObjectArrayTraits(ArrayTest.ArrayBitmaskElementFactory)
+        array1_values = [ArrayBitmask.Values.READ, ArrayBitmask.Values.WRITE, ArrayBitmask.Values.CREATE]
+        array1_bitsizeof = 3 * 8
+        array1_aligned_bitsizeof = array1_bitsizeof
+        array2_values = [ArrayBitmask.Values.READ, ArrayBitmask.Values.READ, ArrayBitmask.Values.READ]
+        self._test_array(array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof, array2_values)
 
-        def read(self, reader):
-            self._value = reader.read_bits(self.bitsizeof(0))
+    class ArrayObjectElementFactory:
+        IS_OBJECT_PACKABLE = True
 
-        def read_packed(self, context_node, reader):
-            context = context_node.children[0].context
-            self._value = context.read(BitFieldArrayTraits(31), reader)
+        @staticmethod
+        def create(reader, _index):
+            return ArrayObject.from_reader(reader)
 
-        def write(self, writer, *, zserio_call_initialize_offsets=True):
-            del zserio_call_initialize_offsets
-            writer.write_bits(self._value, self.bitsizeof(0))
+        @staticmethod
+        def create_packing_context():
+            return ArrayObject.ZserioPackingContext()
 
-        def write_packed(self, context_node, writer):
-            context = context_node.children[0].context
-            context.write(BitFieldArrayTraits(31), writer, self._value)
+        @staticmethod
+        def create_packed(context, reader, _index):
+            return ArrayObject.from_reader_packed(context, reader)
 
     def test_object_array(self):
-        array_traits = ObjectArrayTraits(ArrayTest.DummyObject.create,
-                                         ArrayTest.DummyObject.create_packed,
-                                         ArrayTest.DummyObject.create_packing_context)
-        array1_values = [ArrayTest.DummyObject(1), ArrayTest.DummyObject(2)]
-        array1_bitsizeof = 2 * 31
-        array1_aligned_bitsizeof = 31 + 1 + 31
-        array2_values = [ArrayTest.DummyObject(3), ArrayTest.DummyObject(4)]
+        array_traits = ObjectArrayTraits(ArrayTest.ArrayObjectElementFactory)
+        array1_values = [ArrayObject(0xAB), ArrayObject(0xCD), ArrayObject(0xEF)]
+        array1_bitsizeof = 3 * 31
+        array1_aligned_bitsizeof = 31 + 1 + 31 + 1 + 31
+        array2_values = [ArrayObject(0x01), ArrayObject(0x02), ArrayObject(0x03)]
         self._test_array(array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof, array2_values)
 
     def test_bitfield_packed_array(self):
@@ -324,21 +315,20 @@ class ArrayTest(unittest.TestCase):
         self._test_packed_array(array_traits, [UINT64_MIN, UINT64_MAX])
         self._test_packed_array(array_traits, [UINT64_MAX, UINT64_MAX // 2, UINT64_MIN])
 
+    def test_enum_packed_array(self):
+        array_traits = ObjectArrayTraits(ArrayTest.ArrayEnumElementFactory)
+        self._test_packed_array(array_traits, [ArrayEnum.VALUE1, ArrayEnum.VALUE2, ArrayEnum.VALUE3])
+
+    def test_bitmask_packed_array(self):
+        array_traits = ObjectArrayTraits(ArrayTest.ArrayBitmaskElementFactory)
+        self._test_packed_array(array_traits, [
+            ArrayBitmask.Values.READ, ArrayBitmask.Values.WRITE, ArrayBitmask.Values.CREATE
+        ])
+
     def test_object_packed_array(self):
-        array_traits = ObjectArrayTraits(ArrayTest.DummyObject.create,
-                                         ArrayTest.DummyObject.create_packed,
-                                         ArrayTest.DummyObject.create_packing_context)
-        self._test_packed_array(array_traits, [ArrayTest.DummyObject(1), ArrayTest.DummyObject(2)])
-        self._test_packed_array(array_traits, [ArrayTest.DummyObject(3), ArrayTest.DummyObject(4)])
-
-    def test_packing_context_node(self):
-        with self.assertRaises(AssertionError):
-            self.assertIsNone(PackingContextNode().context)
-
-        node = PackingContextNode()
-        child = node.create_child()
-        child.create_context()
-        self.assertIsNotNone(node.get_child_context(0))
+        array_traits = ObjectArrayTraits(ArrayTest.ArrayObjectElementFactory)
+        self._test_packed_array(array_traits, [ArrayObject(0xAB), ArrayObject(0xCD), ArrayObject(0xEF)])
+        self._test_packed_array(array_traits, [ArrayObject(0x01), ArrayObject(0x02), ArrayObject(0x03)])
 
     @staticmethod
     def _set_offset_method(_index, _bitoffset):

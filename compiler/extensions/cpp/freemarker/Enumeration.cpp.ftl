@@ -162,9 +162,9 @@ uint32_t enumHashCode<${fullName}>(${fullName} value)
 }
 
 template <>
-void initPackingContext(${types.packingContextNode.name}& contextNode, ${fullName} value)
+void initPackingContext(::zserio::DeltaContext& context, ${fullName} value)
 {
-    contextNode.getContext().init<<@enum_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(
+    context.init<<@enum_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(
             ::zserio::enumToValue(value));
 }
 
@@ -179,9 +179,9 @@ size_t bitSizeOf(${fullName}<#if !runtimeFunction.arg??> value</#if>)
 }
 
 template <>
-size_t bitSizeOf(${types.packingContextNode.name}& contextNode, ${fullName} value)
+size_t bitSizeOf(::zserio::DeltaContext& context, ${fullName} value)
 {
-    return contextNode.getContext().bitSizeOf<<@enum_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(
+    return context.bitSizeOf<<@enum_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(
             ::zserio::enumToValue(value));
 }
 <#if withWriterCode>
@@ -193,10 +193,9 @@ size_t initializeOffsets(size_t bitPosition, ${fullName} value)
 }
 
 template <>
-size_t initializeOffsets(${types.packingContextNode.name}& contextNode,
-        size_t bitPosition, ${fullName} value)
+size_t initializeOffsets(::zserio::DeltaContext& context, size_t bitPosition, ${fullName} value)
 {
-    return bitPosition + bitSizeOf(contextNode, value);
+    return bitPosition + bitSizeOf(context, value);
 }
 </#if>
 
@@ -209,9 +208,9 @@ ${fullName} read(::zserio::BitStreamReader& in)
 }
 
 template <>
-${fullName} read(${types.packingContextNode.name}& contextNode, ::zserio::BitStreamReader& in)
+${fullName} read(::zserio::DeltaContext& context, ::zserio::BitStreamReader& in)
 {
-    return valueToEnum<${fullName}>(contextNode.getContext().read<<@enum_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(
+    return valueToEnum<${fullName}>(context.read<<@enum_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(
             in));
 }
 <#if withWriterCode>
@@ -224,9 +223,9 @@ void write(::zserio::BitStreamWriter& out, ${fullName} value)
 }
 
 template <>
-void write(${types.packingContextNode.name}& contextNode, ::zserio::BitStreamWriter& out, ${fullName} value)
+void write(::zserio::DeltaContext& context, ::zserio::BitStreamWriter& out, ${fullName} value)
 {
-    contextNode.getContext().write<<@enum_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(
+    context.write<<@enum_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(
             out, ::zserio::enumToValue(value));
 }
 </#if>

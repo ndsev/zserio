@@ -36,6 +36,14 @@ class TemplateDataContext
         return new ExpressionFormatter(expressionFormattingPolicy);
     }
 
+    public ExpressionFormatter getPythonOwnerIndirectExpressionFormatter(ImportCollector importCollector)
+    {
+        final ExpressionFormattingPolicy expressionFormattingPolicy =
+                new PythonExpressionFormattingPolicy(this, importCollector, PYTHON_OWNER_PREFIX);
+
+        return new ExpressionFormatter(expressionFormattingPolicy);
+    }
+
     public ExpressionFormatter getPythonSqlIndirectExpressionFormatter(ImportCollector importCollector)
     {
         final ExpressionFormattingPolicy expressionFormattingPolicy =
@@ -68,6 +76,8 @@ class TemplateDataContext
     {
         return generatorDescription;
     }
+
+    protected static final String PYTHON_OWNER_PREFIX = "self._owner.";
 
     private final PythonNativeMapper pythonNativeMapper;
 

@@ -46,15 +46,17 @@
 </#if>
 <#macro read_constructor_field_initialization packed>
     <#if fieldList?has_content>
-        m_choiceTag(readChoiceTag(<#if packed>contextNode, </#if>in)),
-        m_objectChoice(readObject(<#if packed>contextNode, </#if>in, allocator))
+        m_choiceTag(readChoiceTag(<#if packed>context, </#if>in)),
+        m_objectChoice(readObject(<#if packed>context, </#if>in, allocator))
     <#else>
         m_choiceTag(UNDEFINED_CHOICE)
     </#if>
 </#macro>
 <@compound_read_constructor_definition compoundConstructorsData, "read_constructor_field_initialization"/>
+<#if isPackable>
 
 <@compound_read_constructor_definition compoundConstructorsData, "read_constructor_field_initialization", true/>
+</#if>
 
 <#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
 ${name}::${name}(const ${name}& other) :
@@ -351,38 +353,24 @@ ${name}::ChoiceTag ${name}::choiceTag() const
 {
     return m_choiceTag;
 }
+<#if isPackable>
 
-void ${name}::createPackingContext(${types.packingContextNode.name}&<#if fieldList?has_content> contextNode</#if>)
+void ${name}::initPackingContext(${name}::ZserioPackingContext& context) const
 {
-<#if fieldList?has_content>
-    contextNode.reserveChildren(${fieldList?size + 1});
-
-    contextNode.createChild().createContext();<#-- choice tag -->
-
-    <#list fieldList as field>
-    <@compound_create_packing_context_field field/>
-    </#list>
-</#if>
-}
-
-void ${name}::initPackingContext(${types.packingContextNode.name}&<#if fieldList?has_content> contextNode</#if>) const
-{
-<#if fieldList?has_content>
-    contextNode.getChildren()[0].getContext().init<${choiceTagArrayTraits}>(
-            static_cast<uint32_t>(m_choiceTag));
+    context.getChoiceTag().init<${choiceTagArrayTraits}>(static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {
     <#list fieldList as field>
     case <@choice_tag_name field/>:
-        <@compound_init_packing_context_field field, field?index + 1, 2/>
+        <@compound_init_packing_context_field field, 2/>
         break;
     </#list>
     default:
         throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
-</#if>
 }
+</#if>
 
 size_t ${name}::bitSizeOf(size_t<#if fieldList?has_content> bitPosition</#if>) const
 {
@@ -407,21 +395,19 @@ size_t ${name}::bitSizeOf(size_t<#if fieldList?has_content> bitPosition</#if>) c
     return 0;
 </#if>
 }
+<#if isPackable>
 
-size_t ${name}::bitSizeOf(${types.packingContextNode.name}&<#if fieldList?has_content> contextNode</#if>, <#rt>
-        <#lt>size_t<#if fieldList?has_content> bitPosition</#if>) const
+size_t ${name}::bitSizeOf(${name}::ZserioPackingContext& context, size_t bitPosition) const
 {
-<#if fieldList?has_content>
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += contextNode.getChildren()[0].getContext().bitSizeOf<${choiceTagArrayTraits}>(
-            static_cast<uint32_t>(m_choiceTag));
+    endBitPosition += context.getChoiceTag().bitSizeOf<${choiceTagArrayTraits}>(static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {
     <#list fieldList as field>
     case <@choice_tag_name field/>:
-        <@compound_bitsizeof_field field, 2, true, field?index + 1/>
+        <@compound_bitsizeof_field field, 2, true/>
         break;
     </#list>
     default:
@@ -429,10 +415,8 @@ size_t ${name}::bitSizeOf(${types.packingContextNode.name}&<#if fieldList?has_co
     }
 
     return endBitPosition - bitPosition;
-<#else>
-    return 0;
-</#if>
 }
+</#if>
 <#if withWriterCode>
 
 size_t ${name}::initializeOffsets(size_t bitPosition)
@@ -458,21 +442,19 @@ size_t ${name}::initializeOffsets(size_t bitPosition)
     return bitPosition;
     </#if>
 }
+    <#if isPackable>
 
-size_t ${name}::initializeOffsets(${types.packingContextNode.name}&<#if fieldList?has_content> contextNode</#if>, <#rt>
-        <#lt>size_t bitPosition)
+size_t ${name}::initializeOffsets(${name}::ZserioPackingContext& context, size_t bitPosition)
 {
-    <#if fieldList?has_content>
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += contextNode.getChildren()[0].getContext().bitSizeOf<${choiceTagArrayTraits}>(
-            static_cast<uint32_t>(m_choiceTag));
+    endBitPosition += context.getChoiceTag().bitSizeOf<${choiceTagArrayTraits}>(static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {
         <#list fieldList as field>
     case <@choice_tag_name field/>:
-        <@compound_initialize_offsets_field field, 2, true, field?index + 1/>
+        <@compound_initialize_offsets_field field, 2, true/>
         break;
         </#list>
     default:
@@ -480,10 +462,8 @@ size_t ${name}::initializeOffsets(${types.packingContextNode.name}&<#if fieldLis
     }
 
     return endBitPosition;
-    <#else>
-    return bitPosition;
-    </#if>
 }
+    </#if>
 </#if>
 
 bool ${name}::operator==(const ${name}& other) const
@@ -560,26 +540,24 @@ void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#
     }
     </#if>
 }
+    <#if isPackable>
 
-void ${name}::write(${types.packingContextNode.name}&<#if fieldList?has_content> contextNode</#if>, <#rt>
-        ::zserio::BitStreamWriter&<#if fieldList?has_content> out</#if>) const<#lt>
+void ${name}::write(${name}::ZserioPackingContext& context, ::zserio::BitStreamWriter& out) const
 {
-    <#if fieldList?has_content>
-    contextNode.getChildren()[0].getContext().write<${choiceTagArrayTraits}>(
-            out, static_cast<uint32_t>(m_choiceTag));
+    context.getChoiceTag().write<${choiceTagArrayTraits}>(out, static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {
         <#list fieldList as field>
     case <@choice_tag_name field/>:
-        <@compound_write_field field, name, 2, true, field?index + 1/>
+        <@compound_write_field field, name, 2, true/>
         break;
         </#list>
     default:
         throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
-    </#if>
 }
+    </#if>
 </#if>
 <#if fieldList?has_content>
 
@@ -588,10 +566,9 @@ ${name}::ChoiceTag ${name}::readChoiceTag(::zserio::BitStreamReader& in)
     return static_cast<${name}::ChoiceTag>(static_cast<int32_t>(in.readVarSize()));
 }
 
-${name}::ChoiceTag ${name}::readChoiceTag(${types.packingContextNode.name}& contextNode, ::zserio::BitStreamReader& in)
+${name}::ChoiceTag ${name}::readChoiceTag(${name}::ZserioPackingContext& context, ::zserio::BitStreamReader& in)
 {
-    return static_cast<${name}::ChoiceTag>(static_cast<int32_t>(
-            contextNode.getChildren()[0].getContext().read<${choiceTagArrayTraits}>(in)));
+    return static_cast<${name}::ChoiceTag>(static_cast<int32_t>(context.getChoiceTag().read<${choiceTagArrayTraits}>(in)));
 }
 
 ${types.anyHolder.name} ${name}::readObject(::zserio::BitStreamReader& in, const allocator_type& allocator)
@@ -612,27 +589,28 @@ ${types.anyHolder.name} ${name}::readObject(::zserio::BitStreamReader& in, const
         throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
 }
+<#if isPackable>
 
-${types.anyHolder.name} ${name}::readObject(${types.packingContextNode.name}&<#rt>
-        <#lt><#if needs_packing_context_node(fieldList)> contextNode</#if>,
+${types.anyHolder.name} ${name}::readObject(${name}::ZserioPackingContext&<#if uses_packing_context(fieldList)> context</#if>,
         ::zserio::BitStreamReader& in, const allocator_type& allocator)
 {
     switch (m_choiceTag)
     {
-        <#list fieldList as field>
+    <#list fieldList as field>
     case <@choice_tag_name field/>:
-            <#if needs_field_read_local_variable(field)>
+        <#if needs_field_read_local_variable(field)>
         {
-            <@compound_read_field field, name, 3, true, field?index + 1/>
+            <@compound_read_field field, name, 3, true/>
         }
-            <#else>
-        <@compound_read_field field, name, 2, true, field?index + 1/>
-            </#if>
-        </#list>
+        <#else>
+        <@compound_read_field field, name, 2, true/>
+        </#if>
+    </#list>
     default:
         throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
 }
+</#if>
 
 ${types.anyHolder.name} ${name}::copyObject(const allocator_type& allocator) const
 {

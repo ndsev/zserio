@@ -8,11 +8,11 @@
 
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
+#include <zserio/DeltaContext.h>
 #include <zserio/ITypeInfo.h>
 #include <zserio/IReflectable.h>
 #include <zserio/ArrayTraits.h>
 #include <zserio/String.h>
-#include <zserio/PackingContext.h>
 #include <zserio/ArrayTraits.h>
 #include <zserio/Types.h>
 
@@ -37,7 +37,7 @@ public:
     {}
 
     explicit CreatorBitmask(::zserio::BitStreamReader& in);
-    CreatorBitmask(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in);
+    CreatorBitmask(::zserio::DeltaContext& context, ::zserio::BitStreamReader& in);
     constexpr CreatorBitmask(Values value) noexcept :
             m_value(static_cast<underlying_type>(value))
     {}
@@ -67,27 +67,25 @@ public:
         return m_value;
     }
 
-    static void createPackingContext(::zserio::PackingContextNode& contextNode);
-    void initPackingContext(::zserio::PackingContextNode& contextNode) const;
+    void initPackingContext(::zserio::DeltaContext& context) const;
 
     size_t bitSizeOf(size_t bitPosition = 0) const;
-    size_t bitSizeOf(::zserio::PackingContextNode& contextNode, size_t bitPosition) const;
+    size_t bitSizeOf(::zserio::DeltaContext& context, size_t bitPosition) const;
 
     size_t initializeOffsets(size_t bitPosition = 0) const;
-    size_t initializeOffsets(::zserio::PackingContextNode& contextNode, size_t bitPosition) const;
+    size_t initializeOffsets(::zserio::DeltaContext& context, size_t bitPosition) const;
 
     uint32_t hashCode() const;
 
     void write(::zserio::BitStreamWriter& out) const;
-    void write(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const;
+    void write(::zserio::DeltaContext& context, ::zserio::BitStreamWriter& out) const;
 
     ::zserio::string<> toString(const ::zserio::string<>::allocator_type& allocator =
             ::zserio::string<>::allocator_type()) const;
 
 private:
     static underlying_type readValue(::zserio::BitStreamReader& in);
-    static underlying_type readValue(::zserio::PackingContextNode& contextNode,
-            ::zserio::BitStreamReader& in);
+    static underlying_type readValue(::zserio::DeltaContext& context, ::zserio::BitStreamReader& in);
 
     underlying_type m_value;
 };

@@ -11,9 +11,9 @@
 #include <zserio/Enums.h>
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
+#include <zserio/DeltaContext.h>
 #include <zserio/ITypeInfo.h>
 #include <zserio/IReflectable.h>
-#include <zserio/PackingContext.h>
 #include <zserio/ArrayTraits.h>
 #include <zserio/Types.h>
 
@@ -73,36 +73,33 @@ template <>
 uint32_t enumHashCode<::test_object::std_allocator::ArrayEnum>(::test_object::std_allocator::ArrayEnum value);
 
 template <>
-void initPackingContext<::zserio::PackingContextNode, ::test_object::std_allocator::ArrayEnum>(
-        ::zserio::PackingContextNode& contextNode, ::test_object::std_allocator::ArrayEnum value);
+void initPackingContext<::zserio::DeltaContext, ::test_object::std_allocator::ArrayEnum>(::zserio::DeltaContext& context, ::test_object::std_allocator::ArrayEnum value);
 
 template <>
 size_t bitSizeOf<::test_object::std_allocator::ArrayEnum>(::test_object::std_allocator::ArrayEnum value);
 
 template <>
-size_t bitSizeOf<::zserio::PackingContextNode, ::test_object::std_allocator::ArrayEnum>(
-        ::zserio::PackingContextNode& contextNode, ::test_object::std_allocator::ArrayEnum value);
+size_t bitSizeOf<::zserio::DeltaContext, ::test_object::std_allocator::ArrayEnum>(::zserio::DeltaContext& context, ::test_object::std_allocator::ArrayEnum value);
 
 template <>
 size_t initializeOffsets<::test_object::std_allocator::ArrayEnum>(size_t bitPosition, ::test_object::std_allocator::ArrayEnum value);
 
 template <>
-size_t initializeOffsets<::zserio::PackingContextNode, ::test_object::std_allocator::ArrayEnum>(
-        ::zserio::PackingContextNode& contextNode, size_t bitPosition, ::test_object::std_allocator::ArrayEnum value);
+size_t initializeOffsets<::zserio::DeltaContext, ::test_object::std_allocator::ArrayEnum>(::zserio::DeltaContext& context, size_t bitPosition,
+        ::test_object::std_allocator::ArrayEnum value);
 
 template <>
 ::test_object::std_allocator::ArrayEnum read<::test_object::std_allocator::ArrayEnum>(::zserio::BitStreamReader& in);
 
 template <>
-::test_object::std_allocator::ArrayEnum read<::test_object::std_allocator::ArrayEnum, ::zserio::PackingContextNode>(
-        ::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in);
+::test_object::std_allocator::ArrayEnum read<::test_object::std_allocator::ArrayEnum, ::zserio::DeltaContext>(::zserio::DeltaContext& context, ::zserio::BitStreamReader& in);
 
 template <>
 void write<::test_object::std_allocator::ArrayEnum>(::zserio::BitStreamWriter& out, ::test_object::std_allocator::ArrayEnum value);
 
 template <>
-void write<::zserio::PackingContextNode, ::test_object::std_allocator::ArrayEnum>(
-        ::zserio::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out, ::test_object::std_allocator::ArrayEnum value);
+void write<::zserio::DeltaContext, ::test_object::std_allocator::ArrayEnum>(::zserio::DeltaContext& context, ::zserio::BitStreamWriter& out,
+        ::test_object::std_allocator::ArrayEnum value);
 
 } // namespace zserio
 

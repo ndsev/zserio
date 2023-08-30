@@ -31,9 +31,9 @@ ReflectableUtilUnion::ReflectableUtilUnion(::zserio::BitStreamReader& in, const 
 {
 }
 
-ReflectableUtilUnion::ReflectableUtilUnion(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in, const allocator_type& allocator) :
-        m_choiceTag(readChoiceTag(contextNode, in)),
-        m_objectChoice(readObject(contextNode, in, allocator))
+ReflectableUtilUnion::ReflectableUtilUnion(ReflectableUtilUnion::ZserioPackingContext& context, ::zserio::BitStreamReader& in, const allocator_type& allocator) :
+        m_choiceTag(readChoiceTag(context, in)),
+        m_objectChoice(readObject(context, in, allocator))
 {
 }
 
@@ -406,33 +406,20 @@ ReflectableUtilUnion::ChoiceTag ReflectableUtilUnion::choiceTag() const
     return m_choiceTag;
 }
 
-void ReflectableUtilUnion::createPackingContext(::zserio::PackingContextNode& contextNode)
+void ReflectableUtilUnion::initPackingContext(ReflectableUtilUnion::ZserioPackingContext& context) const
 {
-    contextNode.reserveChildren(4);
-
-    contextNode.createChild().createContext();
-
-    contextNode.createChild().createContext();
-    ::test_object::std_allocator::ReflectableUtilBitmask::createPackingContext(contextNode.createChild());
-    ::test_object::std_allocator::ReflectableUtilObject::createPackingContext(contextNode.createChild());
-}
-
-void ReflectableUtilUnion::initPackingContext(::zserio::PackingContextNode& contextNode) const
-{
-    contextNode.getChildren()[0].getContext().init<::zserio::VarSizeArrayTraits>(
-            static_cast<uint32_t>(m_choiceTag));
+    context.getChoiceTag().init<::zserio::VarSizeArrayTraits>(static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {
     case CHOICE_reflectableUtilEnum:
-        ::zserio::initPackingContext(contextNode.getChildren()[1],
-                m_objectChoice.get<::test_object::std_allocator::ReflectableUtilEnum>());
+        ::zserio::initPackingContext(context.getReflectableUtilEnum(), m_objectChoice.get<::test_object::std_allocator::ReflectableUtilEnum>());
         break;
     case CHOICE_reflectableUtilBitmask:
-        m_objectChoice.get<::test_object::std_allocator::ReflectableUtilBitmask>().initPackingContext(contextNode.getChildren()[2]);
+        m_objectChoice.get<::test_object::std_allocator::ReflectableUtilBitmask>().initPackingContext(context.getReflectableUtilBitmask());
         break;
     case CHOICE_reflectableUtilObject:
-        m_objectChoice.get<::test_object::std_allocator::ReflectableUtilObject>().initPackingContext(contextNode.getChildren()[3]);
+        m_objectChoice.get<::test_object::std_allocator::ReflectableUtilObject>().initPackingContext(context.getReflectableUtilObject());
         break;
     default:
         throw ::zserio::CppRuntimeException("No match in union ReflectableUtilUnion!");
@@ -463,26 +450,22 @@ size_t ReflectableUtilUnion::bitSizeOf(size_t bitPosition) const
     return endBitPosition - bitPosition;
 }
 
-size_t ReflectableUtilUnion::bitSizeOf(::zserio::PackingContextNode& contextNode, size_t bitPosition) const
+size_t ReflectableUtilUnion::bitSizeOf(ReflectableUtilUnion::ZserioPackingContext& context, size_t bitPosition) const
 {
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += contextNode.getChildren()[0].getContext().bitSizeOf<::zserio::VarSizeArrayTraits>(
-            static_cast<uint32_t>(m_choiceTag));
+    endBitPosition += context.getChoiceTag().bitSizeOf<::zserio::VarSizeArrayTraits>(static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {
     case CHOICE_reflectableUtilEnum:
-        endBitPosition += ::zserio::bitSizeOf(
-                contextNode.getChildren()[1], m_objectChoice.get<::test_object::std_allocator::ReflectableUtilEnum>());
+        endBitPosition += ::zserio::bitSizeOf(context.getReflectableUtilEnum(), m_objectChoice.get<::test_object::std_allocator::ReflectableUtilEnum>());
         break;
     case CHOICE_reflectableUtilBitmask:
-        endBitPosition += m_objectChoice.get<::test_object::std_allocator::ReflectableUtilBitmask>().bitSizeOf(
-                contextNode.getChildren()[2], endBitPosition);
+        endBitPosition += m_objectChoice.get<::test_object::std_allocator::ReflectableUtilBitmask>().bitSizeOf(context.getReflectableUtilBitmask(), endBitPosition);
         break;
     case CHOICE_reflectableUtilObject:
-        endBitPosition += m_objectChoice.get<::test_object::std_allocator::ReflectableUtilObject>().bitSizeOf(
-                contextNode.getChildren()[3], endBitPosition);
+        endBitPosition += m_objectChoice.get<::test_object::std_allocator::ReflectableUtilObject>().bitSizeOf(context.getReflectableUtilObject(), endBitPosition);
         break;
     default:
         throw ::zserio::CppRuntimeException("No match in union ReflectableUtilUnion!");
@@ -515,26 +498,23 @@ size_t ReflectableUtilUnion::initializeOffsets(size_t bitPosition)
     return endBitPosition;
 }
 
-size_t ReflectableUtilUnion::initializeOffsets(::zserio::PackingContextNode& contextNode, size_t bitPosition)
+size_t ReflectableUtilUnion::initializeOffsets(ReflectableUtilUnion::ZserioPackingContext& context, size_t bitPosition)
 {
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += contextNode.getChildren()[0].getContext().bitSizeOf<::zserio::VarSizeArrayTraits>(
-            static_cast<uint32_t>(m_choiceTag));
+    endBitPosition += context.getChoiceTag().bitSizeOf<::zserio::VarSizeArrayTraits>(static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {
     case CHOICE_reflectableUtilEnum:
-        endBitPosition = ::zserio::initializeOffsets(
-                contextNode.getChildren()[1], endBitPosition, m_objectChoice.get<::test_object::std_allocator::ReflectableUtilEnum>());
+        endBitPosition = ::zserio::initializeOffsets(context.getReflectableUtilEnum(), endBitPosition,
+        m_objectChoice.get<::test_object::std_allocator::ReflectableUtilEnum>());
         break;
     case CHOICE_reflectableUtilBitmask:
-        endBitPosition = m_objectChoice.get<::test_object::std_allocator::ReflectableUtilBitmask>().initializeOffsets(
-                contextNode.getChildren()[2], endBitPosition);
+        endBitPosition = m_objectChoice.get<::test_object::std_allocator::ReflectableUtilBitmask>().initializeOffsets(context.getReflectableUtilBitmask(), endBitPosition);
         break;
     case CHOICE_reflectableUtilObject:
-        endBitPosition = m_objectChoice.get<::test_object::std_allocator::ReflectableUtilObject>().initializeOffsets(
-                contextNode.getChildren()[3], endBitPosition);
+        endBitPosition = m_objectChoice.get<::test_object::std_allocator::ReflectableUtilObject>().initializeOffsets(context.getReflectableUtilObject(), endBitPosition);
         break;
     default:
         throw ::zserio::CppRuntimeException("No match in union ReflectableUtilUnion!");
@@ -617,21 +597,20 @@ void ReflectableUtilUnion::write(::zserio::BitStreamWriter& out) const
     }
 }
 
-void ReflectableUtilUnion::write(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const
+void ReflectableUtilUnion::write(ReflectableUtilUnion::ZserioPackingContext& context, ::zserio::BitStreamWriter& out) const
 {
-    contextNode.getChildren()[0].getContext().write<::zserio::VarSizeArrayTraits>(
-            out, static_cast<uint32_t>(m_choiceTag));
+    context.getChoiceTag().write<::zserio::VarSizeArrayTraits>(out, static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {
     case CHOICE_reflectableUtilEnum:
-        ::zserio::write(contextNode.getChildren()[1], out, m_objectChoice.get<::test_object::std_allocator::ReflectableUtilEnum>());
+        ::zserio::write(context.getReflectableUtilEnum(), out, m_objectChoice.get<::test_object::std_allocator::ReflectableUtilEnum>());
         break;
     case CHOICE_reflectableUtilBitmask:
-        m_objectChoice.get<::test_object::std_allocator::ReflectableUtilBitmask>().write(contextNode.getChildren()[2], out);
+        m_objectChoice.get<::test_object::std_allocator::ReflectableUtilBitmask>().write(context.getReflectableUtilBitmask(), out);
         break;
     case CHOICE_reflectableUtilObject:
-        m_objectChoice.get<::test_object::std_allocator::ReflectableUtilObject>().write(contextNode.getChildren()[3], out);
+        m_objectChoice.get<::test_object::std_allocator::ReflectableUtilObject>().write(context.getReflectableUtilObject(), out);
         break;
     default:
         throw ::zserio::CppRuntimeException("No match in union ReflectableUtilUnion!");
@@ -643,10 +622,9 @@ ReflectableUtilUnion::ChoiceTag ReflectableUtilUnion::readChoiceTag(::zserio::Bi
     return static_cast<ReflectableUtilUnion::ChoiceTag>(static_cast<int32_t>(in.readVarSize()));
 }
 
-ReflectableUtilUnion::ChoiceTag ReflectableUtilUnion::readChoiceTag(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in)
+ReflectableUtilUnion::ChoiceTag ReflectableUtilUnion::readChoiceTag(ReflectableUtilUnion::ZserioPackingContext& context, ::zserio::BitStreamReader& in)
 {
-    return static_cast<ReflectableUtilUnion::ChoiceTag>(static_cast<int32_t>(
-            contextNode.getChildren()[0].getContext().read<::zserio::VarSizeArrayTraits>(in)));
+    return static_cast<ReflectableUtilUnion::ChoiceTag>(static_cast<int32_t>(context.getChoiceTag().read<::zserio::VarSizeArrayTraits>(in)));
 }
 
 ::zserio::AnyHolder<> ReflectableUtilUnion::readObject(::zserio::BitStreamReader& in, const allocator_type& allocator)
@@ -664,17 +642,17 @@ ReflectableUtilUnion::ChoiceTag ReflectableUtilUnion::readChoiceTag(::zserio::Pa
     }
 }
 
-::zserio::AnyHolder<> ReflectableUtilUnion::readObject(::zserio::PackingContextNode& contextNode,
+::zserio::AnyHolder<> ReflectableUtilUnion::readObject(ReflectableUtilUnion::ZserioPackingContext& context,
         ::zserio::BitStreamReader& in, const allocator_type& allocator)
 {
     switch (m_choiceTag)
     {
     case CHOICE_reflectableUtilEnum:
-        return ::zserio::AnyHolder<>(::zserio::read<::test_object::std_allocator::ReflectableUtilEnum>(contextNode.getChildren()[1], in), allocator);
+        return ::zserio::AnyHolder<>(::zserio::read<::test_object::std_allocator::ReflectableUtilEnum>(context.getReflectableUtilEnum(), in), allocator);
     case CHOICE_reflectableUtilBitmask:
-        return ::zserio::AnyHolder<>(::test_object::std_allocator::ReflectableUtilBitmask(contextNode.getChildren()[2], in), allocator);
+        return ::zserio::AnyHolder<>(::test_object::std_allocator::ReflectableUtilBitmask(context.getReflectableUtilBitmask(), in), allocator);
     case CHOICE_reflectableUtilObject:
-        return ::zserio::AnyHolder<>(::test_object::std_allocator::ReflectableUtilObject(contextNode.getChildren()[3], in, allocator), allocator);
+        return ::zserio::AnyHolder<>(::test_object::std_allocator::ReflectableUtilObject(context.getReflectableUtilObject(), in, allocator), allocator);
     default:
         throw ::zserio::CppRuntimeException("No match in union ReflectableUtilUnion!");
     }

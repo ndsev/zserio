@@ -14,7 +14,7 @@ new ${arrayableInfo.arrayTraits.name}(<#rt>
 <#if withCodeComments && docComments??>
 <@doc_comments docComments/>
 </#if>
-public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </#if>zserio.runtime.SizeOf,
+public class ${name} implements <#if withWriterCode>zserio.runtime.io.PackableWriter, </#if>zserio.runtime.PackableSizeOf,
         zserio.runtime.ZserioBitmask
 {
 <#if withCodeComments>
@@ -71,17 +71,18 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
      * <p>
      * Called only internally if packed arrays are used.
      *
-     * @param contextNode Context for packed arrays.
+     * @param context Context for packed arrays.
      * @param in Bit stream reader to use.
      *
      * @throws IOException If the reading from the bit stream failed.
      */
 </#if>
-    public ${name}(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in)
+    public ${name}(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamReader in)
             throws java.io.IOException
     {
+        final zserio.runtime.array.DeltaContext deltaContext = context.cast();
         value = ((${underlyingTypeInfo.arrayableInfo.arrayElement})
-                contextNode.getContext().read(
+                deltaContext.read(
                         <@bitmask_array_traits underlyingTypeInfo.arrayableInfo, bitSize!/>, in)).get();
     }
 <#if withTypeInfoCode>
@@ -109,24 +110,11 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
     }
 </#if>
 
-<#if withCodeComments>
-    /**
-     * Creates context for packed arrays.
-     * <p>
-     * Called only internally if packed arrays are used.
-     *
-     * @param contextNode Context for packed arrays.
-     */
-</#if>
-    public static void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
-    {
-        contextNode.createContext();
-    }
-
     @Override
-    public void initPackingContext(zserio.runtime.array.PackingContextNode contextNode)
+    public void initPackingContext(zserio.runtime.array.PackingContext context)
     {
-        contextNode.getContext().init(
+        final zserio.runtime.array.DeltaContext deltaContext = context.cast();
+        deltaContext.init(
                 <@bitmask_array_traits underlyingTypeInfo.arrayableInfo, bitSize!/>,
                 new ${underlyingTypeInfo.arrayableInfo.arrayElement}(value));
     }
@@ -148,9 +136,10 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
     }
 
     @Override
-    public int bitSizeOf(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
+    public int bitSizeOf(zserio.runtime.array.PackingContext context, long bitPosition)
     {
-        return contextNode.getContext().bitSizeOf(
+        final zserio.runtime.array.DeltaContext deltaContext = context.cast();
+        return deltaContext.bitSizeOf(
                 <@bitmask_array_traits underlyingTypeInfo.arrayableInfo, bitSize!/>,
                 new ${underlyingTypeInfo.arrayableInfo.arrayElement}(value));
     }
@@ -169,9 +158,9 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
     }
 
     @Override
-    public long initializeOffsets(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
+    public long initializeOffsets(zserio.runtime.array.PackingContext context, long bitPosition)
     {
-        return bitPosition + bitSizeOf(contextNode, bitPosition);
+        return bitPosition + bitSizeOf(context, bitPosition);
     }
 </#if>
 
@@ -222,10 +211,11 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Writer, </
     }
 
     @Override
-    public void write(zserio.runtime.array.PackingContextNode contextNode,
-            zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
+    public void write(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamWriter out)
+            throws java.io.IOException
     {
-        contextNode.getContext().write(
+        final zserio.runtime.array.DeltaContext deltaContext = context.cast();
+        deltaContext.write(
                 <@bitmask_array_traits underlyingTypeInfo.arrayableInfo, bitSize!/>, out,
                 new ${underlyingTypeInfo.arrayableInfo.arrayElement}(value));
     }

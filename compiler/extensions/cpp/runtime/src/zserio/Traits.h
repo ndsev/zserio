@@ -120,6 +120,19 @@ struct has_owner_type<T, detail::void_t<typename T::OwnerType>> : std::true_type
 /** \} */
 
 /**
+ * Trait used to check whether the type has an ZserioPackingContext.
+ * \{
+ */
+template <typename T, typename = void>
+struct has_zserio_packing_context : std::false_type
+{};
+
+template <typename T>
+struct has_zserio_packing_context<T, detail::void_t<typename T::ZserioPackingContext>> : std::true_type
+{};
+/** \} */
+
+/**
  * Trait used to check whether the type has an allocator_type.
  * \{
  */
@@ -237,7 +250,7 @@ struct is_bitmask<T, detail::void_t<typename detail::decltype_get_value<T>::type
  */
 
 /**
- * Traits used to check whether the type T is a Span.
+ * Trait used to check whether the type T is a Span.
  * \{
  */
 template <typename>
@@ -253,16 +266,29 @@ struct is_span<Span<T, Extent>> : std::true_type
 
 /**
  * Trait used to enable field constructor only for suitable compound types (using SFINAE).
+ * \{
  */
+template <typename FIELD_TYPE, typename COMPOUND_TYPE, typename ALLOCATOR_TYPE, typename = void>
+struct is_field_constructor_enabled : std::enable_if<
+        !std::is_same<typename std::decay<FIELD_TYPE>::type, ALLOCATOR_TYPE>::value &&
+        !std::is_same<typename std::decay<FIELD_TYPE>::type, BitStreamReader>::value &&
+        !std::is_same<typename std::decay<FIELD_TYPE>::type, COMPOUND_TYPE>::value &&
+        !std::is_same<typename std::decay<FIELD_TYPE>::type, PropagateAllocatorT>::value,
+        int>
+{};
+
 template <typename FIELD_TYPE, typename COMPOUND_TYPE, typename ALLOCATOR_TYPE>
-using is_field_constructor_enabled = std::enable_if<
+struct is_field_constructor_enabled<FIELD_TYPE, COMPOUND_TYPE, ALLOCATOR_TYPE,
+        detail::void_t<typename COMPOUND_TYPE::ZserioPackingContext>> : std::enable_if<
         !std::is_same<typename std::decay<FIELD_TYPE>::type, ALLOCATOR_TYPE>::value &&
         !std::is_same<typename std::decay<FIELD_TYPE>::type, BitStreamReader>::value &&
         !std::is_same<typename std::decay<FIELD_TYPE>::type, COMPOUND_TYPE>::value &&
         !std::is_same<typename std::decay<FIELD_TYPE>::type, PropagateAllocatorT>::value &&
         !std::is_same<typename std::decay<FIELD_TYPE>::type,
-                BasicPackingContextNode<RebindAlloc<ALLOCATOR_TYPE, uint8_t>>>::value,
-        int>;
+                typename COMPOUND_TYPE::ZserioPackingContext>::value,
+        int>
+{};
+/** \} */
 
 /**
  * Helper type used for convenient use of is_field_constructor_enabled.

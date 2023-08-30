@@ -5,8 +5,37 @@
 
 package test_object;
 
-public class CreatorNested implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
+public class CreatorNested implements zserio.runtime.io.PackableWriter, zserio.runtime.PackableSizeOf
 {
+    public static final class ZserioPackingContext extends zserio.runtime.array.PackingContext
+    {
+        public ZserioPackingContext()
+        {
+            value_ = new zserio.runtime.array.DeltaContext();
+            creatorEnum_ = new zserio.runtime.array.DeltaContext();
+            creatorBitmask_ = new zserio.runtime.array.DeltaContext();
+        }
+
+        public zserio.runtime.array.DeltaContext getValue()
+        {
+            return value_;
+        }
+
+        public zserio.runtime.array.DeltaContext getCreatorEnum()
+        {
+            return creatorEnum_;
+        }
+
+        public zserio.runtime.array.DeltaContext getCreatorBitmask()
+        {
+            return creatorBitmask_;
+        }
+
+        private zserio.runtime.array.DeltaContext value_;
+        private zserio.runtime.array.DeltaContext creatorEnum_;
+        private zserio.runtime.array.DeltaContext creatorBitmask_;
+    };
+
     public CreatorNested(
             long param_)
     {
@@ -22,13 +51,13 @@ public class CreatorNested implements zserio.runtime.io.Writer, zserio.runtime.S
         read(in);
     }
 
-    public CreatorNested(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in,
+    public CreatorNested(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamReader in,
             long param_)
             throws java.io.IOException
     {
         this.param_ = param_;
 
-        read(contextNode, in);
+        read(context, in);
     }
 
     public CreatorNested(
@@ -194,24 +223,14 @@ public class CreatorNested implements zserio.runtime.io.Writer, zserio.runtime.S
         );
     }
 
-    public static void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
-    {
-        contextNode.createChild().createContext();
-        contextNode.createChild();
-        contextNode.createChild();
-        contextNode.createChild();
-        test_object.CreatorEnum.createPackingContext(contextNode.createChild());
-        test_object.CreatorBitmask.createPackingContext(contextNode.createChild());
-    }
-
     @Override
-    public void initPackingContext(zserio.runtime.array.PackingContextNode contextNode)
+    public void initPackingContext(zserio.runtime.array.PackingContext context)
     {
-        contextNode.getChildren().get(0).getContext().init(
-                new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)),
+        final ZserioPackingContext zserioContext = context.cast();
+        zserioContext.getValue().init(new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)),
                 new zserio.runtime.array.ArrayElement.LongArrayElement(value_));
-        creatorEnum_.initPackingContext(contextNode.getChildren().get(4));
-        creatorBitmask_.initPackingContext(contextNode.getChildren().get(5));
+        creatorEnum_.initPackingContext(zserioContext.getCreatorEnum());
+        creatorBitmask_.initPackingContext(zserioContext.getCreatorBitmask());
     }
 
     @Override
@@ -236,20 +255,18 @@ public class CreatorNested implements zserio.runtime.io.Writer, zserio.runtime.S
     }
 
     @Override
-    public int bitSizeOf(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
+    public int bitSizeOf(zserio.runtime.array.PackingContext context, long bitPosition)
     {
+        final ZserioPackingContext zserioContext = context.cast();
         long endBitPosition = bitPosition;
 
-        endBitPosition += contextNode.getChildren().get(0).getContext().bitSizeOf(
-                new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)),
+        endBitPosition += zserioContext.getValue().bitSizeOf(new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)),
                 new zserio.runtime.array.ArrayElement.LongArrayElement(value_));
         endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfString(text_);
         endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfBitBuffer(externData_);
         endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfBytes(bytesData_);
-        endBitPosition += creatorEnum_.bitSizeOf(contextNode.getChildren().get(4),
-                endBitPosition);
-        endBitPosition += creatorBitmask_.bitSizeOf(contextNode.getChildren().get(5),
-                endBitPosition);
+        endBitPosition += creatorEnum_.bitSizeOf(zserioContext.getCreatorEnum(), endBitPosition);
+        endBitPosition += creatorBitmask_.bitSizeOf(zserioContext.getCreatorBitmask(), endBitPosition);
 
         return (int)(endBitPosition - bitPosition);
     }
@@ -371,12 +388,12 @@ public class CreatorNested implements zserio.runtime.io.Writer, zserio.runtime.S
         creatorBitmask_ = new test_object.CreatorBitmask(in);
     }
 
-    public void read(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in)
+    public void read(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamReader in)
             throws java.io.IOException
     {
+        final ZserioPackingContext zserioContext = context.cast();
         value_ = ((zserio.runtime.array.ArrayElement.LongArrayElement)
-                contextNode.getChildren().get(0).getContext().read(
-                        new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)), in)).get();
+                zserioContext.getValue().read(new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)), in)).get();
 
         text_ = in.readString();
 
@@ -384,9 +401,9 @@ public class CreatorNested implements zserio.runtime.io.Writer, zserio.runtime.S
 
         bytesData_ = in.readBytes();
 
-        creatorEnum_ = test_object.CreatorEnum.readEnum(contextNode.getChildren().get(4), in);
+        creatorEnum_ = test_object.CreatorEnum.readEnum(zserioContext.getCreatorEnum(), in);
 
-        creatorBitmask_ = new test_object.CreatorBitmask(contextNode.getChildren().get(5), in);
+        creatorBitmask_ = new test_object.CreatorBitmask(zserioContext.getCreatorBitmask(), in);
     }
 
     @Override
@@ -411,20 +428,18 @@ public class CreatorNested implements zserio.runtime.io.Writer, zserio.runtime.S
     }
 
     @Override
-    public long initializeOffsets(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
+    public long initializeOffsets(zserio.runtime.array.PackingContext context, long bitPosition)
     {
+        final ZserioPackingContext zserioContext = context.cast();
         long endBitPosition = bitPosition;
 
-        endBitPosition += contextNode.getChildren().get(0).getContext().bitSizeOf(
-                new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)),
+        endBitPosition += zserioContext.getValue().bitSizeOf(new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)),
                 new zserio.runtime.array.ArrayElement.LongArrayElement(value_));
         endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfString(text_);
         endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfBitBuffer(externData_);
         endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfBytes(bytesData_);
-        endBitPosition = creatorEnum_.initializeOffsets(contextNode.getChildren().get(4),
-                endBitPosition);
-        endBitPosition = creatorBitmask_.initializeOffsets(contextNode.getChildren().get(5),
-                endBitPosition);
+        endBitPosition = creatorEnum_.initializeOffsets(zserioContext.getCreatorEnum(), endBitPosition);
+        endBitPosition = creatorBitmask_.initializeOffsets(zserioContext.getCreatorBitmask(), endBitPosition);
 
         return endBitPosition;
     }
@@ -446,11 +461,11 @@ public class CreatorNested implements zserio.runtime.io.Writer, zserio.runtime.S
     }
 
     @Override
-    public void write(zserio.runtime.array.PackingContextNode contextNode,
-            zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
+    public void write(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamWriter out)
+            throws java.io.IOException
     {
-        contextNode.getChildren().get(0).getContext().write(
-                new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)), out,
+        final ZserioPackingContext zserioContext = context.cast();
+        zserioContext.getValue().write(new zserio.runtime.array.ArrayTraits.BitFieldLongArrayTraits((int)(32)), out,
                 new zserio.runtime.array.ArrayElement.LongArrayElement(value_));
 
         out.writeString(text_);
@@ -459,9 +474,9 @@ public class CreatorNested implements zserio.runtime.io.Writer, zserio.runtime.S
 
         out.writeBytes(bytesData_);
 
-        creatorEnum_.write(contextNode.getChildren().get(4), out);
+        creatorEnum_.write(zserioContext.getCreatorEnum(), out);
 
-        creatorBitmask_.write(contextNode.getChildren().get(5), out);
+        creatorBitmask_.write(zserioContext.getCreatorBitmask(), out);
     }
 
     private final long param_;

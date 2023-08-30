@@ -47,15 +47,6 @@ class ArrayTypesWarningTest(unittest.TestCase):
             ]
         )
 
-    def testPackedArrayUnionHasNoPackableField(self):
-        assertWarningsPresent(self,
-            "array_types_warning.zs",
-            [
-                "packed_array_union_has_no_packable_field.zs:25:12: "
-                "'UnionWithoutPackableField' doesn't contain any packable field."
-            ]
-        )
-
     def testPackedArrayUnpackableBoolElement(self):
         assertWarningsPresent(self,
             "array_types_warning.zs",
@@ -96,4 +87,4 @@ class ArrayTypesWarningTest(unittest.TestCase):
             ]
         )
 
-EXPECTED_WARNINGS=12
+EXPECTED_WARNINGS=11
