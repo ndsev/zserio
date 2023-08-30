@@ -104,5 +104,5 @@ enum int8 ArrayEnum
 
 struct ArrayObject
 {
-    bit:3 value;
+    bit:31 value;
 };

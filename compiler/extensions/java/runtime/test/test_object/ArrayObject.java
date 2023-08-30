@@ -39,7 +39,7 @@ public class ArrayObject implements zserio.runtime.io.PackableWriter, zserio.run
     }
 
     public ArrayObject(
-            byte value_)
+            int value_)
     {
         setValue(value_);
     }
@@ -55,7 +55,7 @@ public class ArrayObject implements zserio.runtime.io.PackableWriter, zserio.run
                                 "value", // schemaName
                                 "getValue", // getterName
                                 "setValue", // setterName
-                                zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo.getFixedUnsignedBitField((byte)3), // typeInfo
+                                zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo.getFixedUnsignedBitField((byte)31), // typeInfo
                                 new java.util.ArrayList<java.util.function.BiFunction<java.lang.Object, java.lang.Integer, java.lang.Object>>(), // typeArguments
                                 false, // isExtended
                                 null, // alignment
@@ -87,8 +87,8 @@ public class ArrayObject implements zserio.runtime.io.PackableWriter, zserio.run
     public void initPackingContext(zserio.runtime.array.PackingContext context)
     {
         final ZserioPackingContext zserioContext = context.cast();
-        zserioContext.getValue().init(new zserio.runtime.array.ArrayTraits.BitFieldByteArrayTraits((int)(3)),
-                new zserio.runtime.array.ArrayElement.ByteArrayElement(value_));
+        zserioContext.getValue().init(new zserio.runtime.array.ArrayTraits.BitFieldIntArrayTraits((int)(31)),
+                new zserio.runtime.array.ArrayElement.IntArrayElement(value_));
     }
 
     @Override
@@ -102,7 +102,7 @@ public class ArrayObject implements zserio.runtime.io.PackableWriter, zserio.run
     {
         long endBitPosition = bitPosition;
 
-        endBitPosition += 3;
+        endBitPosition += 31;
 
         return (int)(endBitPosition - bitPosition);
     }
@@ -113,18 +113,18 @@ public class ArrayObject implements zserio.runtime.io.PackableWriter, zserio.run
         final ZserioPackingContext zserioContext = context.cast();
         long endBitPosition = bitPosition;
 
-        endBitPosition += zserioContext.getValue().bitSizeOf(new zserio.runtime.array.ArrayTraits.BitFieldByteArrayTraits((int)(3)),
-                new zserio.runtime.array.ArrayElement.ByteArrayElement(value_));
+        endBitPosition += zserioContext.getValue().bitSizeOf(new zserio.runtime.array.ArrayTraits.BitFieldIntArrayTraits((int)(31)),
+                new zserio.runtime.array.ArrayElement.IntArrayElement(value_));
 
         return (int)(endBitPosition - bitPosition);
     }
 
-    public byte getValue()
+    public int getValue()
     {
         return value_;
     }
 
-    public void setValue(byte value_)
+    public void setValue(int value_)
     {
         this.value_ = value_;
     }
@@ -156,15 +156,15 @@ public class ArrayObject implements zserio.runtime.io.PackableWriter, zserio.run
     public void read(zserio.runtime.io.BitStreamReader in)
             throws java.io.IOException
     {
-        value_ = (byte)in.readBits(3);
+        value_ = (int)in.readBits(31);
     }
 
     public void read(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamReader in)
             throws java.io.IOException
     {
         final ZserioPackingContext zserioContext = context.cast();
-        value_ = ((zserio.runtime.array.ArrayElement.ByteArrayElement)
-                zserioContext.getValue().read(new zserio.runtime.array.ArrayTraits.BitFieldByteArrayTraits((int)(3)), in)).get();
+        value_ = ((zserio.runtime.array.ArrayElement.IntArrayElement)
+                zserioContext.getValue().read(new zserio.runtime.array.ArrayTraits.BitFieldIntArrayTraits((int)(31)), in)).get();
     }
 
     @Override
@@ -178,7 +178,7 @@ public class ArrayObject implements zserio.runtime.io.PackableWriter, zserio.run
     {
         long endBitPosition = bitPosition;
 
-        endBitPosition += 3;
+        endBitPosition += 31;
 
         return endBitPosition;
     }
@@ -189,8 +189,8 @@ public class ArrayObject implements zserio.runtime.io.PackableWriter, zserio.run
         final ZserioPackingContext zserioContext = context.cast();
         long endBitPosition = bitPosition;
 
-        endBitPosition += zserioContext.getValue().bitSizeOf(new zserio.runtime.array.ArrayTraits.BitFieldByteArrayTraits((int)(3)),
-                new zserio.runtime.array.ArrayElement.ByteArrayElement(value_));
+        endBitPosition += zserioContext.getValue().bitSizeOf(new zserio.runtime.array.ArrayTraits.BitFieldIntArrayTraits((int)(31)),
+                new zserio.runtime.array.ArrayElement.IntArrayElement(value_));
 
         return endBitPosition;
     }
@@ -198,7 +198,7 @@ public class ArrayObject implements zserio.runtime.io.PackableWriter, zserio.run
     @Override
     public void write(zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
     {
-        out.writeBits(value_, 3);
+        out.writeBits(value_, 31);
     }
 
     @Override
@@ -206,9 +206,9 @@ public class ArrayObject implements zserio.runtime.io.PackableWriter, zserio.run
             throws java.io.IOException
     {
         final ZserioPackingContext zserioContext = context.cast();
-        zserioContext.getValue().write(new zserio.runtime.array.ArrayTraits.BitFieldByteArrayTraits((int)(3)), out,
-                new zserio.runtime.array.ArrayElement.ByteArrayElement(value_));
+        zserioContext.getValue().write(new zserio.runtime.array.ArrayTraits.BitFieldIntArrayTraits((int)(31)), out,
+                new zserio.runtime.array.ArrayElement.IntArrayElement(value_));
     }
 
-    private byte value_;
+    private int value_;
 }

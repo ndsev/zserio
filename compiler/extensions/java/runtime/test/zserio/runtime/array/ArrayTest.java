@@ -512,8 +512,8 @@ public class ArrayTest
     {
         final RawArray rawArray1 = new RawArray.ObjectRawArray<ArrayObject>(ArrayObject.class,
                 new ArrayObject[] {new ArrayObject((byte)1), new ArrayObject((byte)2)});
-        final int array1BitSizeOf = 2 * 3;
-        final int array1AlignedBitSizeOf = 3 + 5 + 3;
+        final int array1BitSizeOf = 2 * 31;
+        final int array1AlignedBitSizeOf = 31 + 1 + 31;
         final RawArray rawArray2 = new RawArray.ObjectRawArray<ArrayObject>(ArrayObject.class,
                 new ArrayObject[] {new ArrayObject((byte)1), new ArrayObject((byte)3)});
         final RawArray emptyRawArray = new RawArray.ObjectRawArray<ArrayObject>(ArrayObject.class);
