@@ -52,6 +52,13 @@ TEST_F(ArrayTypesWarningTest, packedArrayTemplateHasNoPackableField)
     ASSERT_TRUE(zserioWarnings.isPresent(warnings2));
 }
 
+TEST_F(ArrayTypesWarningTest, packedArrayUnionHasNoPackableField)
+{
+    const std::string warning = "packed_array_union_has_no_packable_field.zs:25:12: "
+            "Union 'UnionWithoutPackableField' doesn't contain any packable field.";
+    ASSERT_TRUE(zserioWarnings.isPresent(warning));
+}
+
 TEST_F(ArrayTypesWarningTest, packedArrayUnpackableBoolElement)
 {
     const std::string warning = "packed_array_unpackable_bool_element.zs:23:12: "

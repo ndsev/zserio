@@ -15,7 +15,7 @@
     </target>
 
     <target name="gen.checkWarnings" depends="gen">
-        <testGenCheckWarnings testName="array_types_warning" expectedWarnings="11"/>
+        <testGenCheckWarnings testName="array_types_warning" expectedWarnings="12"/>
     </target>
 
     <target name="compile" depends="gen.checkWarnings">

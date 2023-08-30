@@ -57,6 +57,14 @@ public class ArrayTypesWarningTest
     }
 
     @Test
+    public void packedArrayUnionHasNoPackableField()
+    {
+        final String warning = "packed_array_union_has_no_packable_field.zs:25:12: " +
+                "Union 'UnionWithoutPackableField' doesn't contain any packable field.";
+        assertTrue(zserioWarnings.isPresent(warning));
+    }
+
+    @Test
     public void packedArrayUnpackableBoolElement()
     {
         final String warning = "packed_array_unpackable_bool_element.zs:23:12: " +

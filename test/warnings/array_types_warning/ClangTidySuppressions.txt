@@ -6,6 +6,7 @@ bugprone-forwarding-reference-overload:gen/array_types_warning/packed_array_temp
 cert-err58-cpp:cpp/PackedArrayChoiceHasNoPackableFieldTest.cpp
 cert-err58-cpp:cpp/PackedArrayStructHasNoPackableFieldTest.cpp
 cert-err58-cpp:cpp/PackedArrayTemplateHasNoPackableFieldTest.cpp
+cert-err58-cpp:cpp/PackedArrayUnionHasNoPackableFieldTest.cpp
 cert-err58-cpp:cpp/PackedArrayUnpackableBoolElementTest.cpp
 cert-err58-cpp:cpp/PackedArrayUnpackableBytesElementTest.cpp
 cert-err58-cpp:cpp/PackedArrayUnpackableExternElementTest.cpp
@@ -17,6 +18,8 @@ cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen/array_types_warning/pack
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen/array_types_warning/packed_array_struct_has_no_packable_field/StructWithoutPackable.h
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen/array_types_warning/packed_array_struct_has_no_packable_field/StructWithPackable.h
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen/array_types_warning/packed_array_struct_has_no_packable_field/StructWithPackableArray.h
+cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen/array_types_warning/packed_array_union_has_no_packable_field/StructWithPackable.h
+cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen/array_types_warning/packed_array_union_has_no_packable_field/StructWithPackableArray.h
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen/array_types_warning/packed_array_template_has_no_packable_field/Packable.h
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen/array_types_warning/packed_array_template_has_no_packable_field/Unpackable.h
 

@@ -688,6 +688,7 @@ delta compression which is applied for packed arrays of:
 - enumeration types
 - bitmask types
 - compound types which contain integer types, enumeration, bitmask types or inner packable arrays
+- all union types (even if do not contain any packable fields because selector is always packable integer type)
 
 **Example**
 ```

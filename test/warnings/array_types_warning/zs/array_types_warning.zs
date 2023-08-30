@@ -8,3 +8,4 @@ import array_types_warning.packed_array_unpackable_extern_element.*;
 import array_types_warning.packed_array_unpackable_bytes_element.*;
 import array_types_warning.packed_array_unpackable_float_element.*;
 import array_types_warning.packed_array_unpackable_string_element.*;
+import array_types_warning.packed_array_union_has_no_packable_field.*;

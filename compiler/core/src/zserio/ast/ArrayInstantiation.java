@@ -206,21 +206,29 @@ public class ArrayInstantiation extends TypeInstantiation
                     {
                         printUnpackableWarning(warningsConfig, currentTemplateInstantiation,
                                 "Keyword 'packed' doesn't have any effect. " +
-                                "'" + elementBaseType.getName() + "' doesn't contain any packable field.");
+                                "'" + elementCompoundType.getName() + "' doesn't contain any packable field.",
+                                WarningsConfig.UNPACKABLE_ARRAY);
                     }
+                }
+                else if (elementCompoundType instanceof UnionType && !elementCompoundType.hasPackableField())
+                {
+                    printUnpackableWarning(warningsConfig, currentTemplateInstantiation,
+                            "Union '" + elementCompoundType.getName() + "' doesn't contain any packable field.",
+                            WarningsConfig.UNPACKABLE_UNION);
                 }
             }
             else if (!(isSimpleTypePackable(elementBaseType)))
             {
                 printUnpackableWarning(warningsConfig, currentTemplateInstantiation,
                         "Keyword 'packed' doesn't have any effect. " +
-                        "'" + elementBaseType.getName() + "' is not packable element type.");
+                        "'" + elementBaseType.getName() + "' is not packable element type.",
+                        WarningsConfig.UNPACKABLE_ARRAY);
             }
         }
     }
 
     private void printUnpackableWarning(WarningsConfig warningsConfig,
-            ZserioTemplatableType currentTemplateInstantiation, String message)
+            ZserioTemplatableType currentTemplateInstantiation, String message, String warningSpecifier)
     {
         if (currentTemplateInstantiation != null && warningsConfig.isEnabled(WarningsConfig.UNPACKABLE_ARRAY))
         {
@@ -233,7 +241,7 @@ public class ArrayInstantiation extends TypeInstantiation
             }
         }
         ZserioToolPrinter.printWarning(getElementTypeInstantiation(), message,
-                warningsConfig, WarningsConfig.UNPACKABLE_ARRAY);
+                warningsConfig, warningSpecifier);
     }
 
     private boolean checkImplicitArrayElementType()

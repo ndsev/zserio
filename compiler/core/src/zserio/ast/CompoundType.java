@@ -151,27 +151,7 @@ public abstract class CompoundType extends TemplatableType
      */
     public boolean isPackable()
     {
-        for (Field field : fields)
-        {
-            // prevent cycle in recursion
-            TypeInstantiation typeInstantiation = field.getTypeInstantiation();
-            if (typeInstantiation instanceof ArrayInstantiation)
-            {
-                typeInstantiation = ((ArrayInstantiation)typeInstantiation).getElementTypeInstantiation();
-            }
-            final ZserioType fieldBaseType = typeInstantiation.getBaseType();
-            if (fieldBaseType instanceof CompoundType)
-            {
-                final CompoundType childCompoundType = (CompoundType)fieldBaseType;
-                if (childCompoundType == this)
-                    continue;
-            }
-
-            if (field.isPackable())
-                return true;
-        }
-
-        return false;
+        return hasPackableField();
     }
 
     /**
@@ -243,6 +223,31 @@ public abstract class CompoundType extends TemplatableType
             if (!(fieldBaseType instanceof SqlTableType))
                 throw new ParserException(field, "Field '" + field.getName() + "' is not a sql table!");
         }
+    }
+
+    protected boolean hasPackableField()
+    {
+        for (Field field : fields)
+        {
+            // prevent cycle in recursion
+            TypeInstantiation typeInstantiation = field.getTypeInstantiation();
+            if (typeInstantiation instanceof ArrayInstantiation)
+            {
+                typeInstantiation = ((ArrayInstantiation)typeInstantiation).getElementTypeInstantiation();
+            }
+            final ZserioType fieldBaseType = typeInstantiation.getBaseType();
+            if (fieldBaseType instanceof CompoundType)
+            {
+                final CompoundType childCompoundType = (CompoundType)fieldBaseType;
+                if (childCompoundType == this)
+                    continue;
+            }
+
+            if (field.isPackable())
+                return true;
+        }
+
+        return false;
     }
 
     protected boolean containsExtendedField(Field field)

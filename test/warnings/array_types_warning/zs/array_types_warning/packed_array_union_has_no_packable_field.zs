@@ -1,4 +1,4 @@
-package array_types.packed_auto_array_union_has_no_packable_field;
+package array_types_warning.packed_array_union_has_no_packable_field;
 
 struct StructWithPackable
 {
@@ -18,7 +18,7 @@ union UnionWithoutPackableField // choiceTag is still packable
     extern field2;
 };
 
-struct PackedAutoArrayUnionHasNoPackableField
+struct PackedArrayUnionHasNoPackableField
 {
     packed StructWithPackable array1[];
     packed StructWithPackableArray array2[];

@@ -1,1 +1,1 @@
-ZSERIO_ARGS=-withoutWarnings unpackable-array
+ZSERIO_ARGS=-withoutWarnings unpackable-array unpackable-union

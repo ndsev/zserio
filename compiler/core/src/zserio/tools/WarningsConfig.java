@@ -51,6 +51,9 @@ public class WarningsConfig
                 "Warn when a packed array is used on arrays of unpackable elements. Can be fired either for " +
                 "arrays of unpackable simple types (e.g. string) or for arrays of compounds which " +
                 "contain only unpackable types. The packed keyword has no effect when this warnings is fired.");
+        addWarning(UNPACKABLE_UNION, true,
+                "Warn when a packed array of unions doesn't contain any packable fields and thus only selector " +
+                "is packed, which may unintentionaly break alignment of the union fields.");
         addWarning(UNUSED, false, "Warn about defined, but unused types.");
     }
 
@@ -247,6 +250,8 @@ public class WarningsConfig
     public static final String SQL_PRIMARY_KEY = "sql-primary-key";
     /** Option name for unpackable array warnings. */
     public static final String UNPACKABLE_ARRAY = "unpackable-array";
+    /** Option name for arrays of unpackable unions warnings. */
+    public static final String UNPACKABLE_UNION = "unpackable-union";
     /** Option name for unused type warnings. */
     public static final String UNUSED = "unused";
 
