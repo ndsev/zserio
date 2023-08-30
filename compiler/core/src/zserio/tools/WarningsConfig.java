@@ -50,7 +50,7 @@ public class WarningsConfig
         addWarning(UNPACKABLE_ARRAY, true,
                 "Warn when a packed array is used on arrays of unpackable elements. Can be fired either for " +
                 "arrays of unpackable simple types (e.g. string) or for arrays of compounds which " +
-                "contain only unpackable types.");
+                "contain only unpackable types. The packed keyword has no effect when this warnings is fired.");
         addWarning(UNUSED, false, "Warn about defined, but unused types.");
     }
 

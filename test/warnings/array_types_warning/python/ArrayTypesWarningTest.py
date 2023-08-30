@@ -14,6 +14,7 @@ class ArrayTypesWarningTest(unittest.TestCase):
             "array_types_warning.zs",
             [
                 "packed_array_choice_has_no_packable_field.zs:40:12: "
+                "Keyword 'packed' doesn't have any effect. "
                 "'ChoiceWithoutPackableField' doesn't contain any packable field."
             ]
         )
@@ -23,6 +24,7 @@ class ArrayTypesWarningTest(unittest.TestCase):
             "array_types_warning.zs",
             [
                 "packed_array_struct_has_no_packable_field.zs:48:12: "
+                "Keyword 'packed' doesn't have any effect. "
                 "'StructWithoutPackable' doesn't contain any packable field."
             ]
         )
@@ -33,7 +35,8 @@ class ArrayTypesWarningTest(unittest.TestCase):
             [
                 "packed_array_template_has_no_packable_field.zs:22:13: "
                 "    In instantiation of 'Template' required from here",
-                "packed_array_template_has_no_packable_field.zs:5:12: 'string' is not packable element type."
+                "packed_array_template_has_no_packable_field.zs:5:12: "
+                "Keyword 'packed' doesn't have any effect. 'string' is not packable element type."
             ]
         )
 
@@ -43,7 +46,7 @@ class ArrayTypesWarningTest(unittest.TestCase):
                 "packed_array_template_has_no_packable_field.zs:24:13: "
                 "    In instantiation of 'Template' required from here",
                 "packed_array_template_has_no_packable_field.zs:5:12: "
-                "'Unpackable' doesn't contain any packable field."
+                "Keyword 'packed' doesn't have any effect. 'Unpackable' doesn't contain any packable field."
             ]
         )
 
@@ -51,7 +54,8 @@ class ArrayTypesWarningTest(unittest.TestCase):
         assertWarningsPresent(self,
             "array_types_warning.zs",
             [
-                "packed_array_unpackable_bool_element.zs:23:12: 'bool' is not packable element type."
+                "packed_array_unpackable_bool_element.zs:23:12: "
+                "Keyword 'packed' doesn't have any effect. 'bool' is not packable element type."
             ]
         )
 
@@ -59,7 +63,8 @@ class ArrayTypesWarningTest(unittest.TestCase):
         assertWarningsPresent(self,
             "array_types_warning.zs",
             [
-                "packed_array_unpackable_bytes_element.zs:6:12: 'bytes' is not packable element type."
+                "packed_array_unpackable_bytes_element.zs:6:12: "
+                "Keyword 'packed' doesn't have any effect. 'bytes' is not packable element type."
             ]
         )
 
@@ -67,7 +72,8 @@ class ArrayTypesWarningTest(unittest.TestCase):
         assertWarningsPresent(self,
             "array_types_warning.zs",
             [
-                "packed_array_unpackable_extern_element.zs:6:12: 'extern' is not packable element type."
+                "packed_array_unpackable_extern_element.zs:6:12: "
+                "Keyword 'packed' doesn't have any effect. 'extern' is not packable element type."
             ]
         )
 
@@ -75,7 +81,8 @@ class ArrayTypesWarningTest(unittest.TestCase):
         assertWarningsPresent(self,
             "array_types_warning.zs",
             [
-                "packed_array_unpackable_float_element.zs:6:12: 'float64' is not packable element type."
+                "packed_array_unpackable_float_element.zs:6:12: "
+                "Keyword 'packed' doesn't have any effect. 'float64' is not packable element type."
             ]
         )
 
@@ -83,7 +90,8 @@ class ArrayTypesWarningTest(unittest.TestCase):
         assertWarningsPresent(self,
             "array_types_warning.zs",
             [
-                "packed_array_unpackable_string_element.zs:6:12: 'string' is not packable element type."
+                "packed_array_unpackable_string_element.zs:6:12: "
+                "Keyword 'packed' doesn't have any effect. 'string' is not packable element type."
             ]
         )
 

@@ -55,7 +55,7 @@ public class ArrayInstantiation extends TypeInstantiation
     /**
      * Gets whether the array is a packed array.
      *
-     * Note that packed arrays can be defined only for integral types or for structures which contain
+     * Note that packed arrays can be defined only for integral types or for compounds which contain
      * packable fields.
      *
      * @return True if the array is packed, false otherwise.
@@ -205,6 +205,7 @@ public class ArrayInstantiation extends TypeInstantiation
                     if (!elementCompoundType.getFields().isEmpty())
                     {
                         printUnpackableWarning(warningsConfig, currentTemplateInstantiation,
+                                "Keyword 'packed' doesn't have any effect. " +
                                 "'" + elementBaseType.getName() + "' doesn't contain any packable field.");
                     }
                 }
@@ -212,6 +213,7 @@ public class ArrayInstantiation extends TypeInstantiation
             else if (!(isSimpleTypePackable(elementBaseType)))
             {
                 printUnpackableWarning(warningsConfig, currentTemplateInstantiation,
+                        "Keyword 'packed' doesn't have any effect. " +
                         "'" + elementBaseType.getName() + "' is not packable element type.");
             }
         }

@@ -18,6 +18,7 @@ protected:
 TEST_F(ArrayTypesWarningTest, packedArrayChoiceHasNoPackableField)
 {
     const std::string warning = "packed_array_choice_has_no_packable_field.zs:40:12: "
+            "Keyword 'packed' doesn't have any effect. "
             "'ChoiceWithoutPackableField' doesn't contain any packable field.";
     ASSERT_TRUE(zserioWarnings.isPresent(warning));
 }
@@ -25,6 +26,7 @@ TEST_F(ArrayTypesWarningTest, packedArrayChoiceHasNoPackableField)
 TEST_F(ArrayTypesWarningTest, packedArrayStructHasNoPackableField)
 {
     const std::string warning = "packed_array_struct_has_no_packable_field.zs:48:12: "
+            "Keyword 'packed' doesn't have any effect. "
             "'StructWithoutPackable' doesn't contain any packable field.";
     ASSERT_TRUE(zserioWarnings.isPresent(warning));
 }
@@ -34,8 +36,9 @@ TEST_F(ArrayTypesWarningTest, packedArrayTemplateHasNoPackableField)
     const std::vector<std::string> warnings1 =
     {
         "packed_array_template_has_no_packable_field.zs:22:13: "
-                  "    In instantiation of 'Template' required from here",
-        "packed_array_template_has_no_packable_field.zs:5:12: 'string' is not packable element type."
+                "    In instantiation of 'Template' required from here",
+        "packed_array_template_has_no_packable_field.zs:5:12: "
+                "Keyword 'packed' doesn't have any effect. 'string' is not packable element type."
     };
     ASSERT_TRUE(zserioWarnings.isPresent(warnings1));
 
@@ -44,42 +47,42 @@ TEST_F(ArrayTypesWarningTest, packedArrayTemplateHasNoPackableField)
         "packed_array_template_has_no_packable_field.zs:24:13: "
                 "    In instantiation of 'Template' required from here",
         "packed_array_template_has_no_packable_field.zs:5:12: "
-                "'Unpackable' doesn't contain any packable field."
+                "Keyword 'packed' doesn't have any effect. 'Unpackable' doesn't contain any packable field."
     };
     ASSERT_TRUE(zserioWarnings.isPresent(warnings2));
 }
 
 TEST_F(ArrayTypesWarningTest, packedArrayUnpackableBoolElement)
 {
-    const std::string warning =
-            "packed_array_unpackable_bool_element.zs:23:12: 'bool' is not packable element type.";
+    const std::string warning = "packed_array_unpackable_bool_element.zs:23:12: "
+            "Keyword 'packed' doesn't have any effect. 'bool' is not packable element type.";
     ASSERT_TRUE(zserioWarnings.isPresent(warning));
 }
 
 TEST_F(ArrayTypesWarningTest, packedArrayUnpackableBytesElement)
 {
-    const std::string warning =
-            "packed_array_unpackable_bytes_element.zs:6:12: 'bytes' is not packable element type.";
+    const std::string warning = "packed_array_unpackable_bytes_element.zs:6:12: "
+            "Keyword 'packed' doesn't have any effect. 'bytes' is not packable element type.";
     ASSERT_TRUE(zserioWarnings.isPresent(warning));
 }
 
 TEST_F(ArrayTypesWarningTest, packedArrayUnpackableExternElement)
 {
-    const std::string warning =
-            "packed_array_unpackable_extern_element.zs:6:12: 'extern' is not packable element type.";
+    const std::string warning = "packed_array_unpackable_extern_element.zs:6:12: "
+            "Keyword 'packed' doesn't have any effect. 'extern' is not packable element type.";
     ASSERT_TRUE(zserioWarnings.isPresent(warning));
 }
 
 TEST_F(ArrayTypesWarningTest, packedArrayUnpackableFloatElement)
 {
-    const std::string warning =
-            "packed_array_unpackable_float_element.zs:6:12: 'float64' is not packable element type.";
+    const std::string warning = "packed_array_unpackable_float_element.zs:6:12: "
+            "Keyword 'packed' doesn't have any effect. 'float64' is not packable element type.";
     ASSERT_TRUE(zserioWarnings.isPresent(warning));
 }
 
 TEST_F(ArrayTypesWarningTest, packedArrayUnpackableStringElement)
 {
-    const std::string warning =
-            "packed_array_unpackable_string_element.zs:6:12: 'string' is not packable element type.";
+    const std::string warning = "packed_array_unpackable_string_element.zs:6:12: "
+            "Keyword 'packed' doesn't have any effect. 'string' is not packable element type.";
     ASSERT_TRUE(zserioWarnings.isPresent(warning));
 }
