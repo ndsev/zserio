@@ -1,6 +1,6 @@
 # A function to set pthread library correctly.
 function(compiler_set_pthread)
-    if (UNIX AND "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    if ((UNIX AND "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread" PARENT_SCOPE)
     endif ()
 endfunction()

@@ -307,6 +307,7 @@ include(cmake_utils)
 
 # setup compiler
 include(compiler_utils)
+compiler_set_pthread()
 compiler_set_static_clibs()
 if (MSVC)
     set(CMAKE_CXX_FLAGS "\${CMAKE_CXX_FLAGS} /bigobj")
@@ -326,7 +327,7 @@ sqlite_add_library(\${CMAKE_CURRENT_SOURCE_DIR}/../../../../..)
 
 add_executable(\${PROJECT_NAME} PerformanceTest.cpp \${SOURCES})
 # CXX_EXTENSIONS are necessary for old MinGW32 to support clock_gettime method
-set_target_properties(\${PROJECT_NAME} PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS YES)
+set_target_properties(\${PROJECT_NAME} PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS NO)
 
 target_include_directories(\${PROJECT_NAME} PUBLIC "\${CMAKE_CURRENT_SOURCE_DIR}/gen")
 target_include_directories(\${PROJECT_NAME} SYSTEM PRIVATE \${SQLITE_INCDIR})
