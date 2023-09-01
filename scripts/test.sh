@@ -57,6 +57,7 @@ compare_test_data()
     local MSYS_WORKAROUND_TEMP=("${!1}"); shift
     local TEST_SUITES=("${MSYS_WORKAROUND_TEMP[@]}")
 
+    echo
     echo "Comparing data created by tests"
 
     local TOTAL_BLOBS=0
@@ -110,7 +111,11 @@ compare_test_data()
         TOTAL_JSONS=$((TOTAL_JSONS+NUM_JSONS))
     done
 
-    echo "Successfully compared ${TOTAL_BLOBS} BLOBs and ${TOTAL_JSONS} JSONs."
+    if [[ $((TOTAL_BLOBS+TOTAL_JSONS)) -gt 0 ]] ; then
+        echo "Successfully compared ${TOTAL_BLOBS} BLOBs and ${TOTAL_JSONS} JSONs."
+    else
+        echo "Nothing to compare."
+    fi
     echo
 }
 

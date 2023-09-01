@@ -64,9 +64,9 @@ zserio_add_library(gif_zs
 )
 
 add_custom_command(OUTPUT gif_data_copy
-                   COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data
+                   COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/data/others/gif
                            ${CMAKE_CURRENT_BINARY_DIR}/data
-                   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/data
+                   DEPENDS ${CMAKE_SOURCE_DIR}/data/others/gif
                    COMMENT "Copying data directory for gif test")
 add_custom_target(gif_data_copy_target DEPENDS gif_data_copy)
 add_dependencies(gif_zs gif_data_copy_target)
