@@ -3,7 +3,7 @@
 	url = https://github.com/google/googletest.git
 [submodule "benchmarks/datasets"]
 	path = benchmarks/datasets
-	url = https://github.com/ndsev/zserio-datasets.git
+	url = https://github.com/ndsev/zserio-benchmarks-datasets.git
 	branch = master
 [submodule "test/data"]
 	path = test/data

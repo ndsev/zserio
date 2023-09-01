@@ -29,7 +29,7 @@ size are reported. BLOB size after zip compression is reported as well.
 [addressbook.zs]: https://github.com/ndsev/zserio/blob/master/benchmarks/addressbook/addressbook.zs
 [addressbook_align.zs]: https://github.com/ndsev/zserio/blob/master/benchmarks/addressbook/addressbook_align.zs
 [addressbook_packed.zs]: https://github.com/ndsev/zserio/blob/master/benchmarks/addressbook/addressbook_packed.zs
-[addressbook.json]: https://github.com/ndsev/zserio-datasets/blob/master/addressbook/addressbook.json
+[addressbook.json]: https://github.com/ndsev/zserio-benchmarks-datasets/blob/master/addressbook/addressbook.json
 
 | Benchmark                | Dataset            | Target                 |      Time | Blob Size  | Zip Size |
 | ------------------------ | ------------------ | ---------------------- | --------- | ---------- | -------- |
@@ -61,7 +61,7 @@ such schema can be worse compressed, e.g. by `zip` algorithm.
 ### Apollo
 
 [apollo.zs]: https://github.com/ndsev/zserio/blob/master/benchmarks/apollo/apollo.zs
-[apollo.zs.json]: https://github.com/ndsev/zserio-datasets/blob/master/apollo/apollo.zs.json
+[apollo.zs.json]: https://github.com/ndsev/zserio-benchmarks-datasets/blob/master/apollo/apollo.zs.json
 
 | Benchmark              | Dataset                | Target                 |      Time | Blob Size  | Zip Size |
 | ---------------------- | ---------------------- | ---------------------- | --------- | ---------- | -------- |
@@ -75,8 +75,8 @@ such schema can be worse compressed, e.g. by `zip` algorithm.
 [carsales.zs]: https://github.com/ndsev/zserio/blob/master/benchmarks/carsales/carsales.zs
 [carsales_align.zs]: https://github.com/ndsev/zserio/blob/master/benchmarks/carsales/carsales_align.zs
 [carsales_packed.zs]: https://github.com/ndsev/zserio/blob/master/benchmarks/carsales/carsales_packed.zs
-[carsales.json]: https://github.com/ndsev/zserio-datasets/blob/master/carsales/carsales.json
-[carsales_sorted.json]: https://github.com/ndsev/zserio-datasets/blob/master/carsales/carsales_sorted.json
+[carsales.json]: https://github.com/ndsev/zserio-benchmarks-datasets/blob/master/carsales/carsales.json
+[carsales_sorted.json]: https://github.com/ndsev/zserio-benchmarks-datasets/blob/master/carsales/carsales_sorted.json
 
 | Benchmark              | Dataset                | Target                 |      Time | Blob Size | Zip Size |
 | ---------------------- | ---------------------- | ---------------------- | --------- | --------- | -------- |
@@ -118,7 +118,7 @@ and `price`. This should improve used delta compression of the array `carSales`.
 
 [simpletrace.zs]: https://github.com/ndsev/zserio/blob/master/benchmarks/simpletrace/simpletrace.zs
 [simpletrace_packed.zs]: https://github.com/ndsev/zserio/blob/master/benchmarks/simpletrace/simpletrace_packed.zs
-[prague-groebenzell.json]: https://github.com/ndsev/zserio-datasets/blob/master/simpletrace/prague-groebenzell.json
+[prague-groebenzell.json]: https://github.com/ndsev/zserio-benchmarks-datasets/blob/master/simpletrace/prague-groebenzell.json
 
 | Benchmark              | Dataset                   | Target               |      Time | Blob Size | Zip Size |
 | ---------------------- | ------------------------- | -------------------- | --------- | --------- | -------- |
@@ -140,7 +140,7 @@ such schema can be worse compressed, e.g. by `zip` algorithm.
 ## How to Add New Benchmark
 
 - Add new dataset (e.g. `new_benchmark`) in JSON format
-  into [datasets repository](https://github.com/ndsev/zserio-datasets)
+  into [datasets repository](https://github.com/ndsev/zserio-benchmarks-datasets)
 - Add new schema (e.g. `new_benchmark`) in Zserio format into
   [benchmarks directory](https://github.com/ndsev/zserio/tree/master/benchmarks)
 - Make sure that the first structure in the schema file is the top level structure
