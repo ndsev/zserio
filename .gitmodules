@@ -5,3 +5,6 @@
 	path = benchmarks/datasets
 	url = https://github.com/ndsev/zserio-datasets.git
 	branch = master
+[submodule "test/data"]
+	path = test/data
+	url = https://github.com/ndsev/zserio-test-data.git

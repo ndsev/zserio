@@ -48,6 +48,72 @@ get_test_suites()
     return 0
 }
 
+# Compare BLOBs and JSONs created by tests.
+compare_test_data()
+{
+    exit_if_argc_ne $# 3
+    local TEST_SRC_DIR="$1"; shift
+    local TEST_OUT_DIR="$1"; shift
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
+    local TEST_SUITES=("${MSYS_WORKAROUND_TEMP[@]}")
+
+    echo "Comparing data created by tests"
+
+    local TOTAL_BLOBS=0
+    local TOTAL_JSONS=0
+    for TEST_SUITE in "${TEST_SUITES[@]}"; do
+        local TEST_DATA_DIR="${TEST_SRC_DIR}/data/${TEST_SUITE}"
+        local TEST_SUITE_DIR="${TEST_OUT_DIR}/${TEST_SUITE}"
+
+        local FIND_PARAMS="-name *.blob -o -name *.json -not -path *.mypy_cache* -not -name compile_commands.json"
+        local TEST_SUITE_FILES=($("${FIND}" "${TEST_SUITE_DIR}" ${FIND_PARAMS} | sort))
+        local NUM_DATA_FILES=${#TEST_SUITE_FILES[@]}
+        local CMP_RESULT=0
+        local TEST_DATA_FILES=($("${FIND}" "${TEST_DATA_DIR}" ${FIND_PARAMS} | sort))
+
+        if [ ${NUM_DATA_FILES} -ne ${#TEST_DATA_FILES[@]} ] ; then
+            stderr_echo "Wrong number of data files!"
+            stderr_echo "\"${TEST_SUITE_DIR}\" contains ${NUM_DATA_FILES} data files," \
+                        "while \"${TEST_DATA_DIR}\" contains ${#TEST_DATA_FILES[@]} data files!"
+            echo
+            return 1
+        fi
+
+        echo -n "${TEST_SUITE} ... "
+        local NUM_BLOBS=0
+        local NUM_JSONS=0
+        for i in ${!TEST_SUITE_FILES[@]} ; do
+            if [[ "${TEST_SUITE_FILES[$i]}" == *.blob ]] ; then
+                NUM_BLOBS=$((NUM_BLOBS+1))
+                cmp "${TEST_SUITE_FILES[$i]}" "${TEST_DATA_FILES[$i]}"
+                if [ $? -ne 0 ] ; then
+                    CMP_RESULT=1
+                fi
+            else
+                NUM_JSONS=$((NUM_JSONS+1))
+                diff --strip-trailing-cr "${TEST_SUITE_FILES[$i]}" "${TEST_DATA_FILES[$i]}"
+                if [ $? -ne 0 ] ; then
+                    CMP_RESULT=1
+                fi
+            fi
+        done
+
+        if [ ${CMP_RESULT} -ne 0 ] ; then
+            stderr_echo "Comparison failed!"
+            echo
+            return 1
+        fi
+
+        echo "${NUM_BLOBS} BLOBs, ${NUM_JSONS} JSONs"
+
+        TOTAL_BLOBS=$((TOTAL_BLOBS+NUM_BLOBS))
+        TOTAL_JSONS=$((TOTAL_JSONS+NUM_JSONS))
+    done
+
+    echo "Successfully compared ${TOTAL_BLOBS} BLOBs and ${TOTAL_JSONS} JSONs."
+    echo
+}
+
 # Run Zserio C++ tests
 test_cpp()
 {
@@ -93,6 +159,16 @@ test_cpp()
         stderr_echo "${MESSAGE} failed!"
         return 1
     fi
+
+    for TARGET in "${CPP_TARGETS[@]}"; do
+        local BUILD_TYPE="release"
+        if [[ "${CMAKE_EXTRA_ARGS}" == *-DCMAKE_BUILD_TYPE=?ebug* ]] ; then
+            BUILD_TYPE="debug"
+        fi
+
+        compare_test_data "${TEST_SRC_DIR}" "${TEST_OUT_DIR}/cpp/${TARGET}/${BUILD_TYPE}" TEST_SUITES[@]
+    done
+
     echo -e "FINISHED - ${MESSAGE}\n"
 
     return 0
@@ -135,6 +211,9 @@ test_java()
         stderr_echo "${MESSAGE} failed!"
         return 1
     fi
+
+    compare_test_data "${TEST_SRC_DIR}" "${TEST_OUT_DIR}/java/" TEST_SUITES[@]
+
     echo -e "FINISHED - ${MESSAGE}\n"
 
     return 0
@@ -216,6 +295,9 @@ test_python()
             return 1
         fi
     fi
+
+    compare_test_data "${TEST_SRC_DIR}" "${TEST_OUT_DIR}/python" TEST_SUITES[@]
+
     echo -e "FINISHED - ${MESSAGE}\n"
 
     return 0

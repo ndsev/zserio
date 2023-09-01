@@ -114,31 +114,25 @@ jobs:
       env:
         CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1 -DCMAKE_BUILD_TYPE=Debug"
 
-    - name: Compare all blobs created by Zserio tests
-      run: |
-        scripts/compare_test_data.sh \
-              build/test/cpp/windows64-mingw/debug \
-              build/test/cpp/windows64-mingw/release \
-              build/test/cpp/windows64-msvc/release \
-              build/test/java \
-              build/test/python
-      shell: bash
-
     - name: Run Zserio integration tests for repeated generation
       run: scripts/test_gen.sh all-windows64-mingw cpp-windows64-msvc
       shell: bash
 
     - name: Run Zserio tests and compares produced BLOBs to check binary compatibility
-      run: scripts/test_compat.sh
+      run: scripts/test_compat_api.sh all-windows64-msvc
       shell: bash
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        CPPCHECK_HOME: ""
+        SPOTBUGS_HOME: ""
+        PYLINT_ENABLED: 0
+        MYPY_ENABLED: 0
 
     - name: Run Zserio performance tests
       run: |
         scripts/test_perf.sh cpp-windows64-mingw cpp-windows64-msvc python python-cpp java \
               --source-dir test/others/gif/zs --source gif.zs \
-              --blob-name gif.GifFile --blob-file test/others/gif/data/1pix.gif \
+              --blob-name gif.GifFile --blob-file test/data/others/gif/1pix.gif \
               --num-iterations 1000 --test-config READ_WRITE
       shell: bash
 

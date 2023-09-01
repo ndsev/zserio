@@ -276,7 +276,7 @@ parse_arguments()
     eval ${SWITCH_PURGE_OUT}=0
 
     local NUM_PARAMS=0
-    local PARAM_ARRAY=();
+    local PARAM_ARRAY=()
     local ARG="$1"
     while [ $# -ne 0 ] ; do
         case "${ARG}" in

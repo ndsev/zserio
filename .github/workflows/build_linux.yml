@@ -123,19 +123,6 @@ jobs:
         CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1  -DCMAKE_BUILD_TYPE=Debug"
         SANITIZERS_ENABLED: 1
 
-    - name: Compare all blobs created by Zserio tests
-      run: |
-        scripts/compare_test_data.sh \
-              build/test/cpp/linux64-gcc/debug \
-              build/test/cpp/linux64-gcc/release \
-              build/test/cpp/linux32-gcc/debug \
-              build/test/cpp/linux32-gcc/release \
-              build/test/cpp/linux64-clang/debug \
-              build/test/cpp/linux64-clang/release \
-              build/test/cpp/linux32-clang/release \
-              build/test/java \
-              build/test/python
-
     - name: Run Zserio integration tests for repeated generation
       run: |
         unset JAVA_TOOL_OPTIONS # workaround https://github.com/actions/virtual-environments/issues/1437
@@ -144,9 +131,13 @@ jobs:
     - name: Run Zserio tests and compares produced BLOBs to check binary compatibility
       run: |
         unset JAVA_TOOL_OPTIONS # workaround https://github.com/actions/virtual-environments/issues/1437
-        scripts/test_compat.sh
+        scripts/test_compat_api.sh all-linux64-clang
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        CPPCHECK_HOME: ""
+        SPOTBUGS_HOME: ""
+        PYLINT_ENABLED: 0
+        MYPY_ENABLED: 0
 
     - name: Run Zserio performance tests
       run: |
@@ -154,7 +145,7 @@ jobs:
         scripts/test_perf.sh cpp-linux64-gcc cpp-linux64-clang cpp-linux32-gcc cpp-linux32-clang \
               python python-cpp java \
               --source-dir test/others/gif/zs --source gif.zs \
-              --blob-name gif.GifFile --blob-file test/others/gif/data/1pix.gif \
+              --blob-name gif.GifFile --blob-file test/data/others/gif/1pix.gif \
               --num-iterations 1000 --test-config READ_WRITE
 
     - name: Run Zserio benchmarks

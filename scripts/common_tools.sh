@@ -740,8 +740,7 @@ compile_cpp_for_target()
     # detect build type
     local BUILD_TYPE="Release"
     local BUILD_TYPE_LOWER_CASE="release"
-    if [[ "${CMAKE_EXTRA_ARGS}" == *"-DCMAKE_BUILD_TYPE=Debug"* ||
-          "${CMAKE_EXTRA_ARGS}" == *"-DCMAKE_BUILD_TYPE=debug"* ]] ; then
+    if [[ "${CMAKE_EXTRA_ARGS}" == *-DCMAKE_BUILD_TYPE=?ebug* ]] ; then
         BUILD_TYPE="Debug";
         BUILD_TYPE_LOWER_CASE="debug"
     fi
