@@ -21,8 +21,8 @@ size are reported. BLOB size after zip compression is reported as well.
 ## Results
 
 - Used platform: 64-bit Linux Mint 21.1, Intel(R) Core(TM) i7-9850H CPU @ 2.60GHz
-- Used compilers: gcc 11.3.0, Java 1.8.0_362, Python 3.10.6
-- Used Zserio version: 3.10
+- Used compilers: gcc 11.4.0, Java 1.8.0_382, Python 3.10.12
+- Used Zserio version: 3.12
 
 ### Addressbook
 
@@ -35,16 +35,16 @@ size are reported. BLOB size after zip compression is reported as well.
 | ------------------------ | ------------------ | ---------------------- | --------- | ---------- | -------- |
 | [addressbook.zs]         | [addressbook.json] | C++ (linux64-gcc)      |   1.478ms |  305.838kB |    222kB |
 | [addressbook_align.zs]   | [addressbook.json] | C++ (linux64-gcc)      |   0.844ms |  311.424kB |    177kB |
-| [addressbook_packed.zs]  | [addressbook.json] | C++ (linux64-gcc)      |   1.965ms |  297.619kB |    234kB |
-| [addressbook.zs]         | [addressbook.json] | Java                   |   2.740ms |  305.838kB |    222kB |
-| [addressbook_align.zs]   | [addressbook.json] | Java                   |   1.798ms |  311.424kB |    177kB |
-| [addressbook_packed.zs]  | [addressbook.json] | Java                   |   3.956ms |  297.619kB |    234kB |
-| [addressbook.zs]         | [addressbook.json] | Python                 | 227.234ms |  305.838kB |    222kB |
-| [addressbook_align.zs]   | [addressbook.json] | Python                 |  94.606ms |  311.424kB |    177kB |
-| [addressbook_packed.zs]  | [addressbook.json] | Python                 | 264.133ms |  297.619kB |    234kB |
-| [addressbook.zs]         | [addressbook.json] | Python (C++)           |  72.413ms |  305.838kB |    222kB |
-| [addressbook_align.zs]   | [addressbook.json] | Python (C++)           |  67.399ms |  311.424kB |    177kB |
-| [addressbook_packed.zs]  | [addressbook.json] | Python (C++)           |  86.664ms |  297.619kB |    234kB |
+| [addressbook_packed.zs]  | [addressbook.json] | C++ (linux64-gcc)      |   1.574ms |  297.619kB |    234kB |
+| [addressbook.zs]         | [addressbook.json] | Java                   |   2.618ms |  305.838kB |    222kB |
+| [addressbook_align.zs]   | [addressbook.json] | Java                   |   1.677ms |  311.424kB |    177kB |
+| [addressbook_packed.zs]  | [addressbook.json] | Java                   |   3.174ms |  297.619kB |    234kB |
+| [addressbook.zs]         | [addressbook.json] | Python                 | 212.694ms |  305.838kB |    222kB |
+| [addressbook_align.zs]   | [addressbook.json] | Python                 |  82.406ms |  311.424kB |    177kB |
+| [addressbook_packed.zs]  | [addressbook.json] | Python                 | 245.361ms |  297.619kB |    234kB |
+| [addressbook.zs]         | [addressbook.json] | Python (C++)           |  49.357ms |  305.838kB |    222kB |
+| [addressbook_align.zs]   | [addressbook.json] | Python (C++)           |  48.737ms |  311.424kB |    177kB |
+| [addressbook_packed.zs]  | [addressbook.json] | Python (C++)           |  62.915ms |  297.619kB |    234kB |
 
 #### Schema align
 
@@ -66,9 +66,9 @@ such schema can be worse compressed, e.g. by `zip` algorithm.
 | Benchmark              | Dataset                | Target                 |      Time | Blob Size  | Zip Size |
 | ---------------------- | ---------------------- | ---------------------- | --------- | ---------- | -------- |
 | [apollo.zs]            | [apollo.zs.json]       | C++ (linux64-gcc)      |   0.244ms |  226.507kB |    144kB |
-| [apollo.zs]            | [apollo.zs.json]       | Java                   |   1.011ms |  226.507kB |    144kB |
-| [apollo.zs]            | [apollo.zs.json]       | Python                 |  44.921ms |  226.507kB |    144kB |
-| [apollo.zs]            | [apollo.zs.json]       | Python (C++)           |  20.356ms |  226.507kB |    144kB |
+| [apollo.zs]            | [apollo.zs.json]       | Java                   |   0.965ms |  226.507kB |    144kB |
+| [apollo.zs]            | [apollo.zs.json]       | Python                 |  46.898ms |  226.507kB |    144kB |
+| [apollo.zs]            | [apollo.zs.json]       | Python (C++)           |  19.126ms |  226.507kB |    144kB |
 
 ### CarSales
 
@@ -82,20 +82,20 @@ such schema can be worse compressed, e.g. by `zip` algorithm.
 | ---------------------- | ---------------------- | ---------------------- | --------- | --------- | -------- |
 | [carsales.zs]          | [carsales.json]        | C++ (linux64-gcc)      |   1.374ms | 280.340kB |    259kB |
 | [carsales_align.zs]    | [carsales.json]        | C++ (linux64-gcc)      |   0.925ms | 295.965kB |    205kB |
-| [carsales_packed.zs]   | [carsales.json]        | C++ (linux64-gcc)      |   1.526ms | 273.909kB |    234kB |
-| [carsales_packed.zs]   | [carsales_sorted.json] | C++ (linux64-gcc)      |   1.424ms | 262.546kB |    238kB |
-| [carsales.zs]          | [carsales.json]        | Java                   |   3.141ms | 280.340kB |    259kB |
-| [carsales_align.zs]    | [carsales.json]        | Java                   |   2.253ms | 295.965kB |    205kB |
-| [carsales_packed.zs]   | [carsales.json]        | Java                   |   4.271ms | 273.909kB |    234kB |
-| [carsales_packed.zs]   | [carsales_sorted.json] | Java                   |   5.253ms | 262.546kB |    238kB |
-| [carsales.zs]          | [carsales.json]        | Python                 | 219.316ms | 280.340kB |    259kB |
-| [carsales_align.zs]    | [carsales.json]        | Python                 | 110.704ms | 295.965kB |    205kB |
-| [carsales_packed.zs]   | [carsales.json]        | Python                 | 259.067ms | 273.909kB |    234kB |
-| [carsales_packed.zs]   | [carsales_sorted.json] | Python                 | 244.723ms | 262.546kB |    238kB |
-| [carsales.zs]          | [carsales.json]        | Python (C++)           |  52.544ms | 280.340kB |    259kB |
-| [carsales_align.zs]    | [carsales.json]        | Python (C++)           |  52.074ms | 295.965kB |    205kB |
-| [carsales_packed.zs]   | [carsales.json]        | Python (C++)           |  87.963ms | 273.909kB |    234kB |
-| [carsales_packed.zs]   | [carsales_sorted.json] | Python (C++)           |  90.626ms | 262.546kB |    238kB |
+| [carsales_packed.zs]   | [carsales.json]        | C++ (linux64-gcc)      |   1.644ms | 273.909kB |    234kB |
+| [carsales_packed.zs]   | [carsales_sorted.json] | C++ (linux64-gcc)      |   1.552ms | 262.546kB |    238kB |
+| [carsales.zs]          | [carsales.json]        | Java                   |   2.942ms | 280.340kB |    259kB |
+| [carsales_align.zs]    | [carsales.json]        | Java                   |   1.893ms | 295.965kB |    205kB |
+| [carsales_packed.zs]   | [carsales.json]        | Java                   |   3.761ms | 273.909kB |    234kB |
+| [carsales_packed.zs]   | [carsales_sorted.json] | Java                   |   3.558ms | 262.546kB |    238kB |
+| [carsales.zs]          | [carsales.json]        | Python                 | 224.082ms | 280.340kB |    259kB |
+| [carsales_align.zs]    | [carsales.json]        | Python                 | 105.024ms | 295.965kB |    205kB |
+| [carsales_packed.zs]   | [carsales.json]        | Python                 | 260.414ms | 273.909kB |    234kB |
+| [carsales_packed.zs]   | [carsales_sorted.json] | Python                 | 245.950ms | 262.546kB |    238kB |
+| [carsales.zs]          | [carsales.json]        | Python (C++)           |  45.355ms | 280.340kB |    259kB |
+| [carsales_align.zs]    | [carsales.json]        | Python (C++)           |  45.631ms | 295.965kB |    205kB |
+| [carsales_packed.zs]   | [carsales.json]        | Python (C++)           |  76.779ms | 273.909kB |    234kB |
+| [carsales_packed.zs]   | [carsales_sorted.json] | Python (C++)           |  78.773ms | 262.546kB |    238kB |
 
 #### Schema align
 
@@ -123,13 +123,13 @@ and `price`. This should improve used delta compression of the array `carSales`.
 | Benchmark              | Dataset                   | Target               |      Time | Blob Size | Zip Size |
 | ---------------------- | ------------------------- | -------------------- | --------- | --------- | -------- |
 | [simpletrace.zs]       | [prague-groebenzell.json] | C++ (linux64-gcc)    |   0.221ms |  87.042kB |     66kB |
-| [simpletrace_packed.zs]| [prague-groebenzell.json] | C++ (linux64-gcc)    |   0.143ms |  40.266kB |     41kB |
-| [simpletrace.zs]       | [prague-groebenzell.json] | Java                 |   0.697ms |  87.042kB |     66kB |
-| [simpletrace_packed.zs]| [prague-groebenzell.json] | Java                 |   1.316ms |  40.266kB |     41kB |
-| [simpletrace.zs]       | [prague-groebenzell.json] | Python               |  69.940ms |  87.042kB |     66kB |
-| [simpletrace_packed.zs]| [prague-groebenzell.json] | Python               |  28.147ms |  40.266kB |     41kB |
-| [simpletrace.zs]       | [prague-groebenzell.json] | Python (C++)         |   9.777ms |  87.042kB |     66kB |
-| [simpletrace_packed.zs]| [prague-groebenzell.json] | Python (C++)         |  18.400ms |  40.266kB |     41kB |
+| [simpletrace_packed.zs]| [prague-groebenzell.json] | C++ (linux64-gcc)    |   0.145ms |  40.266kB |     41kB |
+| [simpletrace.zs]       | [prague-groebenzell.json] | Java                 |   0.425ms |  87.042kB |     66kB |
+| [simpletrace_packed.zs]| [prague-groebenzell.json] | Java                 |   1.145ms |  40.266kB |     41kB |
+| [simpletrace.zs]       | [prague-groebenzell.json] | Python               |  65.112ms |  87.042kB |     66kB |
+| [simpletrace_packed.zs]| [prague-groebenzell.json] | Python               |  26.664ms |  40.266kB |     41kB |
+| [simpletrace.zs]       | [prague-groebenzell.json] | Python (C++)         |   9.541ms |  87.042kB |     66kB |
+| [simpletrace_packed.zs]| [prague-groebenzell.json] | Python (C++)         |  17.136ms |  40.266kB |     41kB |
 
 #### Schema packed
 
