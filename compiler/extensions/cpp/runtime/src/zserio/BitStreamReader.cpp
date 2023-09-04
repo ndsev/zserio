@@ -4,6 +4,7 @@
 #include "zserio/BitStreamReader.h"
 #include "zserio/CppRuntimeException.h"
 #include "zserio/FloatUtil.h"
+#include "zserio/RuntimeArch.h"
 
 namespace zserio
 {
@@ -23,8 +24,6 @@ namespace
     using BaseType = uint32_t;
     using BaseSignedType = int32_t;
 #endif
-
-    static_assert(sizeof(uintptr_t) == sizeof(BaseType), "Unexpected uintptr_t sizeof!");
 
 #ifdef ZSERIO_RUNTIME_64BIT
     const std::array<BaseType, 65> MASK_TABLE =

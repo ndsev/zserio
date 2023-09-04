@@ -3,6 +3,7 @@
 
 #include "zserio/CppRuntimeException.h"
 #include "zserio/SizeConvertUtil.h"
+#include "zserio/RuntimeArch.h"
 
 namespace zserio
 {

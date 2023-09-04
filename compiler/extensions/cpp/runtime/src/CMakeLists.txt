@@ -106,12 +106,6 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/ZserioTreeCreator.cpp
 )
 
-if (CMAKE_SIZEOF_VOID_P EQUAL 8)
-    # allows bit stream reader and var size util optimizations for 64bit platforms
-    set_property(SOURCE zserio/BitStreamReader.cpp zserio/SizeConvertUtil.cpp
-                 APPEND PROPERTY COMPILE_DEFINITIONS ZSERIO_RUNTIME_64BIT)
-endif ()
-
 add_library(${PROJECT_NAME} STATIC ${ZSERIO_CPP_RUNTIME_LIB_SRCS})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS NO)

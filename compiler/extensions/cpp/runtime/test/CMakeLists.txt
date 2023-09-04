@@ -193,12 +193,6 @@ if (MSVC)
     set_property(SOURCE zserio/ReflectableTest.cpp zserio/ArrayTest.cpp APPEND PROPERTY COMPILE_OPTIONS /bigobj)
 endif ()
 
-if (CMAKE_SIZEOF_VOID_P EQUAL 8)
-    # allows bit stream reader and var size util optimizations for 64bit platforms
-    set_property(SOURCE zserio/SizeConvertUtilTest.cpp
-                 APPEND PROPERTY COMPILE_DEFINITIONS ZSERIO_RUNTIME_64BIT)
-endif ()
-
 add_executable(${PROJECT_NAME}
     ${TEST_OBJECT_SRCS}
     ${ZSERIO_CPP_RUNTIME_TEST_SRCS}

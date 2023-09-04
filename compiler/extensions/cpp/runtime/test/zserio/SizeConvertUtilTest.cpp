@@ -3,6 +3,7 @@
 
 #include "zserio/SizeConvertUtil.h"
 #include "zserio/CppRuntimeException.h"
+#include "zserio/RuntimeArch.h"
 
 #include "gtest/gtest.h"
 

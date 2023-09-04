@@ -43,8 +43,8 @@ cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/StringConvertUtil.h
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/StringConvertUtil.h:42
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/StringConvertUtil.h:52
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/StringConvertUtil.h:53
-cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamReader.cpp:249
-cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamReader.cpp:261
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamReader.cpp:248
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamReader.cpp:260
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:146
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:157
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:168
