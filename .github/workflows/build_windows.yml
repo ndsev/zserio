@@ -118,7 +118,7 @@ jobs:
       run: scripts/test_gen.sh all-windows64-mingw cpp-windows64-msvc
       shell: bash
 
-    - name: Run Zserio tests and compares produced BLOBs to check binary compatibility
+    - name: Run Zserio API compatibility checks
       run: scripts/test_compat_api.sh all-windows64-msvc
       shell: bash
       env:

@@ -128,7 +128,7 @@ jobs:
         unset JAVA_TOOL_OPTIONS # workaround https://github.com/actions/virtual-environments/issues/1437
         scripts/test_gen.sh all-linux64-gcc cpp-linux32-gcc cpp-linux64-clang cpp-linux32-clang
 
-    - name: Run Zserio tests and compares produced BLOBs to check binary compatibility
+    - name: Run Zserio API compatibility checks
       run: |
         unset JAVA_TOOL_OPTIONS # workaround https://github.com/actions/virtual-environments/issues/1437
         scripts/test_compat_api.sh all-linux64-clang
