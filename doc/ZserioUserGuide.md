@@ -291,6 +291,10 @@ disable some smaller set of warnings or just a single warning.
   be fired either for arrays of unpackable simple types (e.g. string) or
   for arrays of compounds which contain only unpackable types. Enabled
   by default.
+- `unpackable-union`
+  Warn when a packed array of unions doesn't contain any packable fields
+  and thus only selector is packed, which may unintentionally break
+  alignment of the union fields. Enabled by default.
 - `unused`
   Warn about defined, but unused types. Disabled by default.
 

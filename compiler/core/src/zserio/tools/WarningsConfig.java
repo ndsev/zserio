@@ -53,7 +53,7 @@ public class WarningsConfig
                 "contain only unpackable types. The packed keyword has no effect when this warnings is fired.");
         addWarning(UNPACKABLE_UNION, true,
                 "Warn when a packed array of unions doesn't contain any packable fields and thus only selector " +
-                "is packed, which may unintentionaly break alignment of the union fields.");
+                "is packed, which may unintentionally break alignment of the union fields.");
         addWarning(UNUSED, false, "Warn about defined, but unused types.");
     }
 
