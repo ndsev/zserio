@@ -8,6 +8,8 @@
 
 <@include_guard_begin package.path, name/>
 
+<@runtime_version_check generatorVersion/>
+
 <#if withWriterCode && fieldList?has_content>
 #include <zserio/Traits.h>
 </#if>

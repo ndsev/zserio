@@ -50,6 +50,14 @@ ${generatorDescription}
 #endif // <@include_guard_name packagePath, typeName/>
 </#macro>
 
+<#macro runtime_version_check generatorVersion>
+#include <zserio/CppRuntimeVersion.h>
+#if CPP_EXTENSION_RUNTIME_VERSION_NUMBER != ${generatorVersion.versionNumber}
+    #error Version mismatch between Zserio runtime library and Zserio compiler!
+    #error Please update your Zserio runtime library to the version ${generatorVersion.versionString}.
+#endif
+</#macro>
+
 <#macro namespace_begin packagePath>
     <#if packagePath?has_content>
 

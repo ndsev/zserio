@@ -4,6 +4,8 @@
 
 <@include_guard_begin package.path, name/>
 
+<@runtime_version_check generatorVersion/>
+
 <@system_includes headerSystemIncludes/>
 <@user_includes headerUserIncludes/>
 <@namespace_begin package.path/>

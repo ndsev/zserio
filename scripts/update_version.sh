@@ -6,12 +6,27 @@ source "${SCRIPT_DIR}/common_tools.sh"
 # Update Zserio version in a single file.
 update_version_in_file()
 {
-    exit_if_argc_ne $# 2
+    exit_if_argc_ne $# 3
     local VERSION_FILE="${1}"; shift
     local NEW_VERSION_STRING="${1}"; shift
+    local NEW_VERSION_NUMBER="${1}"; shift
 
-    echo -ne "Updating version to ${NEW_VERSION_STRING} in '${VERSION_FILE}'..."
+    echo -ne "Updating version string to ${NEW_VERSION_STRING} in '${VERSION_FILE}'..."
     sed -i -e 's/[0-9]\+\.[0-9]\+\.[0-9]\+\(\-[A-Za-z0-9]\+\)\?/'"${NEW_VERSION_STRING}"'/' "${VERSION_FILE}"
+    local SED_RESULT=$?
+    if [ ${SED_RESULT} -ne 0 ] ; then
+        stderr_echo "Failed with return code ${SED_RESULT}!"
+        return 1
+    fi
+
+    sed -i -e 's/NUMBER\ =\ [0-9]\+/'NUMBER\ =\ ${NEW_VERSION_NUMBER}'/' "${VERSION_FILE}"
+    local SED_RESULT=$?
+    if [ ${SED_RESULT} -ne 0 ] ; then
+        stderr_echo "Failed with return code ${SED_RESULT}!"
+        return 1
+    fi
+
+    sed -i -e 's/NUMBER\ [0-9]\+/'NUMBER\ ${NEW_VERSION_NUMBER}'/' "${VERSION_FILE}"
     local SED_RESULT=$?
     if [ ${SED_RESULT} -ne 0 ] ; then
         stderr_echo "Failed with return code ${SED_RESULT}!"
@@ -25,9 +40,10 @@ update_version_in_file()
 # Update Zserio version in local copy of Git repository.
 update_version()
 {
-    exit_if_argc_ne $# 2
+    exit_if_argc_ne $# 3
     local ZSERIO_SOURCE_DIR="${1}"; shift
     local NEW_VERSION_STRING="${1}"; shift
+    local NEW_VERSION_NUMBER="${1}"; shift
 
     # find all files with version
     local PYTHON_RUNTIME_VERSION_FILE="${ZSERIO_SOURCE_DIR}/extensions/python/runtime/src/zserio/__init__.py"
@@ -41,7 +57,7 @@ update_version()
     for VERSION_FILE in ${VERSION_FILES}
     do
         if [[ "${VERSION_FILE}" != "${COMPATIBILITY_VERSION_FILE}" ]] ; then
-            update_version_in_file "${VERSION_FILE}" "${NEW_VERSION_STRING}"
+            update_version_in_file "${VERSION_FILE}" "${NEW_VERSION_STRING}" ${NEW_VERSION_NUMBER}
             if [ $? -ne 0 ] ; then
                 return 1
             fi
@@ -141,8 +157,13 @@ main()
         return 1
     fi
 
+    # calculate new version number from string
+    local NEW_VERSION_ARRAY=(${NEW_VERSION_STRING//./ })
+    local NEW_VERSION_NUMBER=$(printf "%d%03d%03d" ${NEW_VERSION_ARRAY[0]} ${NEW_VERSION_ARRAY[1]} \
+            ${NEW_VERSION_ARRAY[2]})
+
     # update version
-    update_version "${SCRIPT_DIR}/../compiler" "${NEW_VERSION_STRING}"
+    update_version "${SCRIPT_DIR}/../compiler" "${NEW_VERSION_STRING}" ${NEW_VERSION_NUMBER}
     if [ $? -ne 0 ] ; then
         return 1
     fi

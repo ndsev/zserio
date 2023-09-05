@@ -17,6 +17,8 @@ public abstract class CppTemplateData implements IncludeCollector
     public CppTemplateData(TemplateDataContext context)
     {
         generatorDescription = context.getGeneratorDescription();
+        generatorVersion = new GeneratorVersionTemplateData(context.getGeneratorVersionString(),
+                context.getGeneratorVersionNumber());
 
         withWriterCode = context.getWithWriterCode();
         withValidationCode = context.getWithValidationCode();
@@ -36,6 +38,11 @@ public abstract class CppTemplateData implements IncludeCollector
     public String getGeneratorDescription()
     {
         return generatorDescription;
+    }
+
+    public GeneratorVersionTemplateData getGeneratorVersion()
+    {
+        return generatorVersion;
     }
 
     public boolean getWithWriterCode()
@@ -154,6 +161,28 @@ public abstract class CppTemplateData implements IncludeCollector
         }
 
         private final PackageName packageName;
+    }
+
+    public static class GeneratorVersionTemplateData
+    {
+        public GeneratorVersionTemplateData(String versionString, long versionNumber)
+        {
+            this.versionString = versionString;
+            this.versionNumber = Long.toString(versionNumber);
+        }
+
+        public String getVersionString()
+        {
+            return versionString;
+        }
+
+        public String getVersionNumber()
+        {
+            return versionNumber;
+        }
+
+        private final String versionString;
+        private final String versionNumber;
     }
 
     public static class TypesTemplateData
@@ -403,6 +432,7 @@ public abstract class CppTemplateData implements IncludeCollector
     }
 
     private final String generatorDescription;
+    private final GeneratorVersionTemplateData generatorVersion;
 
     private final boolean withWriterCode;
     private final boolean withValidationCode;

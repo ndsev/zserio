@@ -28,6 +28,8 @@ final class TemplateDataContext
                         CppExtensionVersion.VERSION_STRING + ".\n" +
                 " * Generator setup: " + cppParameters.getParametersDescription() + ".\n" +
                 " */";
+        generatorVersionString = CppExtensionVersion.VERSION_STRING;
+        generatorVersionNumber = CppExtensionVersion.VERSION_NUMBER;
     }
 
     public CppNativeMapper getCppNativeMapper()
@@ -92,6 +94,16 @@ final class TemplateDataContext
         return generatorDescription;
     }
 
+    public String getGeneratorVersionString()
+    {
+        return generatorVersionString;
+    }
+
+    public long getGeneratorVersionNumber()
+    {
+        return generatorVersionNumber;
+    }
+
     private final TypesContext typesContext;
 
     private final CppNativeMapper cppNativeMapper;
@@ -103,4 +115,6 @@ final class TemplateDataContext
     private final boolean withReflectionCode;
     private final boolean withCodeComments;
     private final String generatorDescription;
+    private final String generatorVersionString;
+    private final long generatorVersionNumber;
 }

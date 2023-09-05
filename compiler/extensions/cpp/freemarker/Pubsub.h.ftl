@@ -5,6 +5,8 @@
 
 <@include_guard_begin package.path, name/>
 
+<@runtime_version_check generatorVersion/>
+
 #include <memory>
 #include <zserio/AllocatorHolder.h>
 #include <zserio/IPubsub.h>

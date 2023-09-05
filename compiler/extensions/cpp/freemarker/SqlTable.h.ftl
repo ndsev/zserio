@@ -5,6 +5,8 @@
 
 <@include_guard_begin package.path, name/>
 
+<@runtime_version_check generatorVersion/>
+
 #include <memory>
 #include <sqlite3.h>
 <@type_includes types.vector/>

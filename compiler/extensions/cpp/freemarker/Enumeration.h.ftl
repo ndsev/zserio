@@ -4,6 +4,8 @@
 
 <@include_guard_begin package.path, name/>
 
+<@runtime_version_check generatorVersion/>
+
 #include <array>
 
 #include <zserio/Enums.h>
