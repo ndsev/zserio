@@ -139,7 +139,7 @@ jobs:
     - name: Run Zserio benchmarks
       run: |
         scripts/benchmark.sh cpp-windows64-mingw cpp-windows64-msvc python python-cpp java \
-              --num-iterations 10
+              --num-iterations 1
       shell: bash
 
     - name: Archive Zserio release artifacts

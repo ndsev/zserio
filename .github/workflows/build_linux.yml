@@ -152,7 +152,7 @@ jobs:
       run: |
         unset JAVA_TOOL_OPTIONS # workaround https://github.com/actions/virtual-environments/issues/1437
         scripts/benchmark.sh cpp-linux64-gcc cpp-linux64-clang cpp-linux32-gcc cpp-linux32-clang \
-              python python-cpp java --num-iterations 10
+              python python-cpp java --num-iterations 1
 
     - name: Archive Zserio release artifacts
       uses: actions/upload-artifact@v3
