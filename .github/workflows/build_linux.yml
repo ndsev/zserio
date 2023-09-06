@@ -131,7 +131,7 @@ jobs:
     - name: Run Zserio API compatibility checks
       run: |
         unset JAVA_TOOL_OPTIONS # workaround https://github.com/actions/virtual-environments/issues/1437
-        scripts/test_compat_api.sh all-linux64-clang
+        scripts/test_compat_api.sh java python cpp-linux64-clang
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         CPPCHECK_HOME: ""

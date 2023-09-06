@@ -108,18 +108,14 @@ jobs:
       env:
         CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Release"
 
-    - name: Run Zserio C++ tests (Debug Build)
-      run: scripts/test.sh cpp-windows64-mingw # cpp-windows64-msvc - allocation tests does not work debug
-      shell: bash
-      env:
-        CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1 -DCMAKE_BUILD_TYPE=Debug"
+    # Zserio C++ tests (Debug Build) has been skipped because of 6-hours run limit
 
     - name: Run Zserio integration tests for repeated generation
       run: scripts/test_gen.sh all-windows64-mingw cpp-windows64-msvc
       shell: bash
 
     - name: Run Zserio API compatibility checks
-      run: scripts/test_compat_api.sh all-windows64-msvc
+      run: scripts/test_compat_api.sh java python cpp-linux64-msvc
       shell: bash
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
