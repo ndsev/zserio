@@ -5,8 +5,6 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 
 import org.apache.tools.ant.BuildException;
@@ -82,8 +80,8 @@ public class ToolWrapper
             // correct execution. Hence we need to force java to look for
             // classes in our URLClassLoader before any other classLoader
             // is used.
-            final ClassLoaderCreator classLoaderCreator = new ClassLoaderCreator(urls);
-            final ClassLoader classLoader = AccessController.doPrivileged(classLoaderCreator);
+            final ClassLoader classLoader = new PreferLocalClassLoader(
+                    new URLClassLoader(urls, null), this.getClass().getClassLoader());
 
             Class<?> clazz = Class.forName(className, true, classLoader);
 
@@ -123,22 +121,6 @@ public class ToolWrapper
             throw new BuildException(
                     "Failed to exec main on " + className + ": " + e.getMessage(), e);
         }
-    }
-
-    static private class ClassLoaderCreator implements PrivilegedAction<ClassLoader>
-    {
-        public ClassLoaderCreator(URL[] urls)
-        {
-            this.urls = urls;
-        }
-
-        public ClassLoader run()
-        {
-            return new PreferLocalClassLoader(new URLClassLoader(urls, null),
-                    this.getClass().getClassLoader());
-        }
-
-        private final URL[] urls;
     }
 
     private final String            className;

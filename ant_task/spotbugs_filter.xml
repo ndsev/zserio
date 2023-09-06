@@ -1,0 +1,8 @@
+<FindBugsFilter>
+    <Match>
+        <!-- Suppressed because SecurityManager is depracated and marked for removal in Java 17. -->
+        <!-- This code creates a classloader, which needs permission if a security manage is installed. -->
+        <Class name="zserio.ant.ToolWrapper"/>
+        <Bug pattern="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED"/>
+    </Match>
+</FindBugsFilter>

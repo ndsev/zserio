@@ -81,6 +81,7 @@ spotbugs.home_dir           - Location of the spotbugs tool. If not set, spotbug
         <spotbugs home="${spotbugs.home_dir}"
             output="html"
             outputFile="${zserio_ant_task.spotbugs.out_dir}/spotbugs.html"
+            excludeFilter="${zserio_ant_task.base_dir}/spotbugs_filter.xml"
             reportLevel="low"
             errorProperty="zserio_ant_task.is_failed"
             warningsProperty="zserio_ant_task.is_failed">
