@@ -51,14 +51,16 @@ get_test_suites()
 # Compare BLOBs and JSONs created by tests.
 compare_test_data()
 {
-    exit_if_argc_ne $# 3
+    exit_if_argc_ne $# 4
     local TEST_SRC_DIR="$1"; shift
     local TEST_OUT_DIR="$1"; shift
     local MSYS_WORKAROUND_TEMP=("${!1}"); shift
     local TEST_SUITES=("${MSYS_WORKAROUND_TEMP[@]}")
+    local PLATFORM_NAME="$1"; shift
 
     echo
-    echo "Comparing data created by tests"
+    echo "Comparing data created by ${PLATFORM_NAME} tests"
+    echo
 
     local TOTAL_BLOBS=0
     local TOTAL_JSONS=0
@@ -66,49 +68,61 @@ compare_test_data()
         local TEST_DATA_DIR="${TEST_SRC_DIR}/data/${TEST_SUITE}"
         local TEST_SUITE_DIR="${TEST_OUT_DIR}/${TEST_SUITE}"
 
-        local FIND_PARAMS="-name *.blob -o -name *.json -not -path *.mypy_cache* -not -name compile_commands.json"
-        local TEST_SUITE_FILES=($("${FIND}" "${TEST_SUITE_DIR}" ${FIND_PARAMS} | sort))
-        local NUM_DATA_FILES=${#TEST_SUITE_FILES[@]}
-        local CMP_RESULT=0
-        local TEST_DATA_FILES=($("${FIND}" "${TEST_DATA_DIR}" ${FIND_PARAMS} | sort))
-
-        if [ ${NUM_DATA_FILES} -ne ${#TEST_DATA_FILES[@]} ] ; then
-            stderr_echo "Wrong number of data files!"
-            stderr_echo "\"${TEST_SUITE_DIR}\" contains ${NUM_DATA_FILES} data files," \
-                        "while \"${TEST_DATA_DIR}\" contains ${#TEST_DATA_FILES[@]} data files!"
-            echo
-            return 1
-        fi
-
-        echo -n "${TEST_SUITE} ... "
-        local NUM_BLOBS=0
-        local NUM_JSONS=0
-        for i in ${!TEST_SUITE_FILES[@]} ; do
-            if [[ "${TEST_SUITE_FILES[$i]}" == *.blob ]] ; then
-                NUM_BLOBS=$((NUM_BLOBS+1))
-                cmp "${TEST_SUITE_FILES[$i]}" "${TEST_DATA_FILES[$i]}"
-                if [ $? -ne 0 ] ; then
-                    CMP_RESULT=1
-                fi
+        # check if test suite exists for this platform
+        if [ -d "${TEST_SUITE_DIR}" ] ; then
+            local FIND_PARAMS="-name *.blob -o -name *.json -not -path *.mypy_cache* -not -name compile_commands.json"
+            local TEST_SUITE_FILES=($("${FIND}" "${TEST_SUITE_DIR}" ${FIND_PARAMS} | sort))
+            local NUM_DATA_FILES=${#TEST_SUITE_FILES[@]}
+            # if referenced data directory does not exist, find would fail with error
+            if [ -d "${TEST_DATA_DIR}" ] ; then
+                local TEST_DATA_FILES=($("${FIND}" "${TEST_DATA_DIR}" ${FIND_PARAMS} | sort))
             else
-                NUM_JSONS=$((NUM_JSONS+1))
-                diff --strip-trailing-cr "${TEST_SUITE_FILES[$i]}" "${TEST_DATA_FILES[$i]}"
-                if [ $? -ne 0 ] ; then
-                    CMP_RESULT=1
-                fi
+                local TEST_DATA_FILES=()
             fi
-        done
 
-        if [ ${CMP_RESULT} -ne 0 ] ; then
-            stderr_echo "Comparison failed!"
-            echo
-            return 1
+            if [ ${NUM_DATA_FILES} -ne ${#TEST_DATA_FILES[@]} ] ; then
+                stderr_echo "Wrong number of data files!"
+                stderr_echo "\"${TEST_SUITE_DIR}\" contains ${NUM_DATA_FILES} data files," \
+                            "while \"${TEST_DATA_DIR}\" contains ${#TEST_DATA_FILES[@]} data files!"
+                echo
+                return 1
+            fi
+
+            echo -n "${TEST_SUITE} ... "
+            local NUM_BLOBS=0
+            local NUM_JSONS=0
+            local CMP_RESULT=0
+            for i in ${!TEST_SUITE_FILES[@]} ; do
+                if [[ "${TEST_SUITE_FILES[$i]}" == *.blob ]] ; then
+                    NUM_BLOBS=$((NUM_BLOBS+1))
+                    cmp "${TEST_SUITE_FILES[$i]}" "${TEST_DATA_FILES[$i]}"
+                    if [ $? -ne 0 ] ; then
+                        CMP_RESULT=1
+                    fi
+                else
+                    NUM_JSONS=$((NUM_JSONS+1))
+                    diff --strip-trailing-cr "${TEST_SUITE_FILES[$i]}" "${TEST_DATA_FILES[$i]}"
+                    if [ $? -ne 0 ] ; then
+                        CMP_RESULT=1
+                    fi
+                fi
+            done
+
+            if [ ${CMP_RESULT} -ne 0 ] ; then
+                stderr_echo "Comparison failed!"
+                echo
+                return 1
+            fi
+
+            if [ ${NUM_BLOBS} -eq 0 -a ${NUM_JSONS} -eq 0 ] ; then
+                echo "N/A"
+            else
+                echo "${NUM_BLOBS} BLOBs, ${NUM_JSONS} JSONs"
+            fi
+
+            TOTAL_BLOBS=$((TOTAL_BLOBS+NUM_BLOBS))
+            TOTAL_JSONS=$((TOTAL_JSONS+NUM_JSONS))
         fi
-
-        echo "${NUM_BLOBS} BLOBs, ${NUM_JSONS} JSONs"
-
-        TOTAL_BLOBS=$((TOTAL_BLOBS+NUM_BLOBS))
-        TOTAL_JSONS=$((TOTAL_JSONS+NUM_JSONS))
     done
 
     if [[ $((TOTAL_BLOBS+TOTAL_JSONS)) -gt 0 ]] ; then
@@ -116,7 +130,6 @@ compare_test_data()
     else
         echo "Nothing to compare."
     fi
-    echo
 }
 
 # Run Zserio C++ tests
@@ -171,7 +184,12 @@ test_cpp()
             BUILD_TYPE="debug"
         fi
 
-        compare_test_data "${TEST_SRC_DIR}" "${TEST_OUT_DIR}/cpp/${TARGET}/${BUILD_TYPE}" TEST_SUITES[@]
+        compare_test_data "${TEST_SRC_DIR}" "${TEST_OUT_DIR}/cpp/${TARGET}/${BUILD_TYPE}" TEST_SUITES[@] \
+                "C++ ${TARGET}"
+        if [ $? -ne 0 ] ; then
+            stderr_echo "${MESSAGE} failed!"
+            return 1
+        fi
     done
 
     echo -e "FINISHED - ${MESSAGE}\n"
@@ -217,7 +235,11 @@ test_java()
         return 1
     fi
 
-    compare_test_data "${TEST_SRC_DIR}" "${TEST_OUT_DIR}/java/" TEST_SUITES[@]
+    compare_test_data "${TEST_SRC_DIR}" "${TEST_OUT_DIR}/java/" TEST_SUITES[@] "Java"
+    if [ $? -ne 0 ] ; then
+        stderr_echo "${MESSAGE} failed!"
+        return 1
+    fi
 
     echo -e "FINISHED - ${MESSAGE}\n"
 
@@ -301,7 +323,11 @@ test_python()
         fi
     fi
 
-    compare_test_data "${TEST_SRC_DIR}" "${TEST_OUT_DIR}/python" TEST_SUITES[@]
+    compare_test_data "${TEST_SRC_DIR}" "${TEST_OUT_DIR}/python" TEST_SUITES[@] "Python"
+    if [ $? -ne 0 ] ; then
+        stderr_echo "${MESSAGE} failed!"
+        return 1
+    fi
 
     echo -e "FINISHED - ${MESSAGE}\n"
 
