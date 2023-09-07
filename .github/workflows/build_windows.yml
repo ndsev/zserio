@@ -14,7 +14,6 @@ jobs:
         os: ["windows-latest"]
         python-version: ["3.8", "3.9", "3.10", "3.11"]
     env:
-      ANT: "/c/ProgramData/chocolatey/lib/ant/tools/apache-ant-1.10.13/bin/ant"
       CPPCHECK_HOME: "/c/Program Files/Cppcheck"
       SPOTBUGS_HOME: "${{github.workspace}}/spotbugs-3.1.12"
       PYLINT_ENABLED: 1
@@ -40,6 +39,11 @@ jobs:
         echo "SPOTBUGS_HOME=/${SPOTBUGS_HOME}" | sed -e 's/\\/\//g' -e 's/://' >> ${GITHUB_ENV}
         echo "NU_HTML_VALIDATOR=/${NU_HTML_VALIDATOR}" | sed -e 's/\\/\//g' -e 's/://' >> ${GITHUB_ENV}
         echo "JAVA_HOME=/${JAVA_HOME}" | sed -e 's/\\/\//g' -e 's/://' >> ${GITHUB_ENV}
+      shell: bash
+
+    - name: Set ANT variable
+      run: |
+        echo "ANT=/${ANT_HOME}/bin/ant" | sed -e 's/\\/\//g' -e 's/://' >> ${GITHUB_ENV}
       shell: bash
 
     - name: Set up Python ${{matrix.python-version}}
@@ -102,7 +106,6 @@ jobs:
     - name: Run Zserio tests
       # -DZSERIO_ENABLE_WERROR=1 fails for mingw because of false positive warning
       run: |
-        ant -version
         scripts/test.sh all-windows64-mingw cpp-windows64-msvc
       shell: bash
       env:
@@ -115,7 +118,7 @@ jobs:
       shell: bash
 
     - name: Run Zserio API compatibility checks
-      run: scripts/test_compat_api.sh java python cpp-linux64-msvc
+      run: scripts/test_compat_api.sh java python cpp-windows64-msvc
       shell: bash
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
