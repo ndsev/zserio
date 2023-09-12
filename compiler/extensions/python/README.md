@@ -6,6 +6,12 @@ For a **quick start** see the [Python Tutorial](https://github.com/ndsev/zserio-
 
 For an **API documentation** see the [Python Runtime Library](https://zserio.org/doc/runtime/latest/python).
 
+## Supported Python Version
+
+Zserio Python generator supports the Python 3.8, 3.9, 3.10 and 3.11.
+
+Although newer Python versions are not tested, they should work as well as long as they are backward compatible.
+
 ## Auto-generated API helper
 
 Python Generator generates each package symbol in its own Python module (i.e. file). It's necessary in order

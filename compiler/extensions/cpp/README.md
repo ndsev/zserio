@@ -6,6 +6,25 @@ For a **quick start** see the [C++ Tutorial](https://github.com/ndsev/zserio-tut
 
 For an **API documentation** see the [C++ Runtime Library](https://zserio.org/doc/runtime/latest/cpp).
 
+## Supported Platforms
+
+Zserio C++ generator supports the following platforms:
+
+- 64-bit Linux
+- 32-bit Linux
+- 64-bit Windows
+
+## Supported Compilers
+
+Zserio C++ generator supports the following C++ compilers:
+
+- g++ 5.4.0
+- clang 8.0.0
+- MinGW 5.4.0
+- MSVC 2017
+
+Although newer C++ compilers are not tested, they should work as well as long as they are backward compatible.
+
 ## Functional Safety
 
 Zserio's C++ support is designed with a strong focus on functional safety, aiming to ensure the reliability,
