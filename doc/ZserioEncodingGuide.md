@@ -205,7 +205,7 @@ varuint     | 0    | 1 bit has next byte, 7 bits value
 <sup></sup> | 6    | 1 bit has next byte, 7 bits value
 <sup></sup> | 7    | 1 bit has next byte, 7 bits value
 <sup></sup> | 8    | 8 bits value
-varsize     | 0    | 1 bit has next byte, 7 bits value
+varsize     | 0    | 1 bit has next byte, 2-7 bits value (*)
 <sup></sup> | 1    | 1 bit has next byte, 7 bits value
 <sup></sup> | 2    | 1 bit has next byte, 7 bits value
 <sup></sup> | 3    | 1 bit has next byte, 7 bits value
@@ -213,6 +213,9 @@ varsize     | 0    | 1 bit has next byte, 7 bits value
 
 > Minimum size is always 1 byte, the other bytes are present only when previous *has next byte* bit is set
 > to `1`
+
+> (*) Maximum number stored in `varsize` is `2^31-1` which means `31` value bits. In this case, the first
+> byte contains only 2 low significant bits. For example, the first encoded byte for `2^31-1` will be `0x83`.
 
 ### Boolean Type
 

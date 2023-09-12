@@ -152,19 +152,22 @@ signed values. This is a special type of integer that uses only the bytes needed
 
 The value ranges of the variable integer types are:
 
-Data Type    | Value Range                                   | Max Bytes
------------- | --------------------------------------------- | ---------
-varint16     | `-16383 to 16383`                             | `2`
-varint32     | `-268435455 to 268435455`                     | `4`
-varint64     | `-72057594037927935 to 72057594037927935`     | `8`
-varint       | `-9223372036854775808 to 9223372036854775807` | `9`
-varuint16    | `0 to 32767`                                  | `2`
-varuint32    | `0 to 536870911`                              | `4`
-varuint64    | `0 to 144115188075855871`                     | `8`
-varuint      | `0 to 18446744073709551615`                   | `9`
-varsize      | `0 to 2147483647`                             | `5`
+Data Type    | Value Range                                        | Max Value | Max Bytes
+------------ | -------------------------------------------------- | --------- |---------- 
+varint16     | `-16383 to 16383`                                | `2^14-1` | `2`
+varint32     | `-268435455 to 268435455`                       | `2^28-1` | `4`
+varint64     | `-72057594037927935 to 72057594037927935`     | `2^56-1` | `8`
+varint       | `-9223372036854775808 to 9223372036854775807` | `2^63-1`| `9`
+varuint16    | `0 to 32767`                                      | `2^15-1` | `2`
+varuint32    | `0 to 536870911`                                  | `2^29-1` | `4`
+varuint64    | `0 to 144115188075855871`                        | `2^57-1` | `8`
+varuint      | `0 to 18446744073709551615`                      | `2^64-1` | `9`
+varsize      | `0 to 2147483647`                                | `2^31-1` | `5`
 
->Note that `varint` and `varuint` can handle all `int64` and `uint64` values respectively.
+> Note that `varint` and `varuint` can handle all `int64` and `uint64` values respectively.
+
+> Note that `varsize` is designed for array size type to allow compatibility across languages. Because of that
+> its range is limited to the biggest value of 32-bit signed integer and does not cover all available bits.
 
 > Note that `varsize` is available since `2.0.0`.
 
