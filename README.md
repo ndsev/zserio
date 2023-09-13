@@ -118,6 +118,9 @@ Explanation how zserio encodes data to the wire format can be found in the
 Explanation how zserio encodes data to the JSON format can be found in the
 [Zserio JSON Guide](doc/ZserioJsonGuide.md).
 
+Explanation how zserio schema can be extended not to break backward or forward compatibility can be found in the
+[Zserio Schema Evolution Guide](doc/ZserioSchemaEvolutionGuide.md).
+
 User Guide can be found in the [Zserio Compiler User Guide](doc/ZserioUserGuide.md).
 
 Build instructions can be found in the [Zserio Compiler Build Instructions](doc/ZserioBuildInstructions.md).
