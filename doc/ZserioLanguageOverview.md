@@ -772,8 +772,6 @@ stringOffset:
 In this example, offset indicates that the value of `stringOffset` contains the byte offset of member
 `stringTable` from the beginning of the stream.
 
-Offsets are checked by decoders and encoders automatically. Offsets can be set before encoding automatically.
-
 Since offsets always refer to byte offsets, a given member within a structure type cannot have an offset if it
 is not guaranteed to be byte-aligned. To overcome this restriction, a byte alignment is inserted automatically:
 

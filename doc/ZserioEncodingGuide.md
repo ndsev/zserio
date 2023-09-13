@@ -999,6 +999,8 @@ Bit position | Description
 > The total length 64 bits (8 bytes).
 > Note that without the offset modifier, the size of this type would be 59 bits.
 
+Offsets are checked by decoders and encoders automatically. Offsets can be set before encoding automatically.
+
 ### Indexed Offsets
 
 [Indexed offsets](ZserioLanguageOverview.md#indexed-offsets) are encoded by automatic alignment of each
@@ -1024,5 +1026,8 @@ Bit position | Description
 72-76        | `data[0]` (5-bits value)
 77-79        | 3-bit padding caused by alignment to 8-bits
 80-84        | `data[1]` (5-bits value)
+
+Indexed offsets can be set before encoding automatically however an application is responsible to resize
+correctly the array which holds indexed offsets.
 
 [top](#zserio-encoding-guide)
