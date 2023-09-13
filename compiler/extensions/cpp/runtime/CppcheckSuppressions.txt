@@ -43,7 +43,7 @@ returnStdMoveLocal:*/src/zserio/DebugStringUtil.h:542
 returnStdMoveLocal:*/src/zserio/DebugStringUtil.h:605
 shadowFunction:*/test/zserio/ReflectableUtilTest.cpp:200
 shadowFunction:*/test/zserio/ReflectableUtilTest.cpp:201
-shadowFunction:*/test/zserio/TypeInfoTest.cpp:435
+shadowFunction:*/test/zserio/TypeInfoTest.cpp:436
 uninitMemberVar:*/src/zserio/Reflectable.h:170
 uninitMemberVar:*/src/zserio/Reflectable.h:1053
 uninitMemberVar:*/src/zserio/Reflectable.h:1212

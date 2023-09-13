@@ -365,7 +365,7 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
             result.append("::");
         }
 
-        result.append(enumItem.getName());
+        result.append(AccessorNameFormatter.getEnumeratorName(enumItem));
     }
 
     private void formatBitmaskValue(StringBuilder result, boolean isMostLeftId, BitmaskValue bitmaskValue,

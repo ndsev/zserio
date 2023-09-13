@@ -215,9 +215,40 @@ ${fullName} read(::zserio::DeltaContext& context, ::zserio::BitStreamReader& in)
 }
 <#if withWriterCode>
 
+<#function has_removed_items items>
+    <#list items as item>
+        <#if item.isRemoved>
+            <#return true>
+        </#if>
+    </#list>
+    <#return false>
+</#function>
+<#macro removed_items_check items>
+    <#local isFirst=true/>
+    if (<#rt>
+    <#list items as item>
+        <#if item.isRemoved>
+            <#if isFirst>
+                <#local isFirst=false/>
+            value == ${item.fullName}<#t>
+            <#else>
+                <#lt> ||
+            value == ${item.fullName}<#rt>
+            </#if>
+        </#if>
+    </#list>
+    <#lt>)
+    {
+        throw ::zserio::CppRuntimeException("Trying to write removed enumeration item '") <<
+                ::zserio::enumToString(value) << "'!";
+    }
+</#macro>
 template <>
 void write(::zserio::BitStreamWriter& out, ${fullName} value)
 {
+    <#if has_removed_items(items)>
+    <@removed_items_check items/>
+    </#if>
     out.write${runtimeFunction.suffix}(::zserio::enumToValue(value)<#rt>
             <#lt><#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>);
 }
@@ -225,6 +256,9 @@ void write(::zserio::BitStreamWriter& out, ${fullName} value)
 template <>
 void write(::zserio::DeltaContext& context, ::zserio::BitStreamWriter& out, ${fullName} value)
 {
+    <#if has_removed_items(items)>
+    <@removed_items_check items/>
+    </#if>
     context.write<<@enum_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(
             out, ::zserio::enumToValue(value));
 }

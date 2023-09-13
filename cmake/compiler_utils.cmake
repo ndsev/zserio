@@ -35,11 +35,22 @@ endfunction()
 # Prepares warnings setup for current target
 function(compiler_get_test_warnings_setup VARNAME)
     compiler_get_warnings_setup(WARNINGS_SETUP)
-    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+        set(WARNINGS_SETUP_LIST
+                "-Wno-deprecated-declarations" # used by zserio @deprecated feature (DeprecatedAttribute.h)
+        )
+        string(REPLACE ";" " " WARNINGS_SETUP "${WARNINGS_SETUP} ${WARNINGS_SETUP_LIST}")
+    elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
         set(WARNINGS_SETUP_LIST
                 "-Wno-float-equal"
                 "-Wno-unused-private-field"
                 "-Wno-reserved-id-macro"
+                "-Wno-deprecated-declarations" # used by zserio @deprecated feature (DeprecatedAttribute.h)
+        )
+        string(REPLACE ";" " " WARNINGS_SETUP "${WARNINGS_SETUP} ${WARNINGS_SETUP_LIST}")
+    elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+        set(WARNINGS_SETUP_LIST
+                "/wd4996" # used by zserio @deprecated feature (DeprecatedAttribute.h)
         )
         string(REPLACE ";" " " WARNINGS_SETUP "${WARNINGS_SETUP} ${WARNINGS_SETUP_LIST}")
     endif ()

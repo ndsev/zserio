@@ -27,9 +27,9 @@ const ::zserio::ITypeInfo& enumTypeInfo<::test_object::std_allocator::ArrayEnum,
     static const ::zserio::Span<::zserio::StringView> underlyingTypeArguments;
 
     static const ::std::array<::zserio::ItemInfo, 3> items = {
-        ::zserio::ItemInfo{ ::zserio::makeStringView("VALUE1"), static_cast<uint64_t>(INT8_C(0)) },
-        ::zserio::ItemInfo{ ::zserio::makeStringView("VALUE2"), static_cast<uint64_t>(INT8_C(1)) },
-        ::zserio::ItemInfo{ ::zserio::makeStringView("VALUE3"), static_cast<uint64_t>(INT8_C(2)) }
+        ::zserio::ItemInfo{ ::zserio::makeStringView("VALUE1"), static_cast<uint64_t>(INT8_C(0)), false, false},
+        ::zserio::ItemInfo{ ::zserio::makeStringView("VALUE2"), static_cast<uint64_t>(INT8_C(1)), false, false},
+        ::zserio::ItemInfo{ ::zserio::makeStringView("VALUE3"), static_cast<uint64_t>(INT8_C(2)), false, false}
     };
 
     static const ::zserio::EnumTypeInfo<allocator_type> typeInfo = {

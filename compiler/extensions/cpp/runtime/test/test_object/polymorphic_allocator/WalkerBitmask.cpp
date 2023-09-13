@@ -31,7 +31,7 @@ const ::zserio::pmr::ITypeInfo& WalkerBitmask::typeInfo()
     static const ::zserio::Span<::zserio::StringView> underlyingTypeArguments;
 
     static const ::std::array<::zserio::ItemInfo, 1> values = {
-        ::zserio::ItemInfo{ ::zserio::makeStringView("ZERO"), static_cast<uint64_t>(UINT32_C(1)) }
+        ::zserio::ItemInfo{ ::zserio::makeStringView("ZERO"), static_cast<uint64_t>(UINT32_C(1)), false, false}
     };
 
     static const ::zserio::BitmaskTypeInfo<allocator_type> typeInfo = {
