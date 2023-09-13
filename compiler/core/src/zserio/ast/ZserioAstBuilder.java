@@ -456,13 +456,15 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     public EnumItem visitEnumItem(ZserioParser.EnumItemContext ctx)
     {
         final AstLocation location = new AstLocation(ctx.getStart());
+        final boolean isDeprecated = ctx.DEPRECATED() != null;
+        final boolean isRemoved = ctx.REMOVED() != null;
         final String name = ctx.id().getText();
         final ZserioParser.ExpressionContext exprCtx = ctx.expression();
         final Expression valueExpression = (exprCtx != null) ? (Expression)visit(exprCtx) : null;
 
         final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
-        return new EnumItem(location, name, valueExpression, docComments);
+        return new EnumItem(location, name, valueExpression, isDeprecated, isRemoved, docComments);
     }
 
     @Override

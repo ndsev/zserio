@@ -14,14 +14,19 @@ public class EnumItem extends DocumentableAstNode implements ScopeSymbol
      * @param location        AST node location.
      * @param name            Name of the enumeration item.
      * @param valueExpression Expression value of the enumeration item.
+     * @param isDeprecated    Flag whether this enum item is marked as deprecated.
+     * @param isRemoved       Flag whether this enum item is marked as removed.
      * @param docComments     List of documentation comments belonging to this node.
      */
-    public EnumItem(AstLocation location, String name, Expression valueExpression, List<DocComment> docComments)
+    public EnumItem(AstLocation location, String name, Expression valueExpression,
+            boolean isDeprecated, boolean isRemoved, List<DocComment> docComments)
     {
         super(location, docComments);
 
         this.name = name;
         this.valueExpression = valueExpression;
+        this.isDeprecated = isDeprecated;
+        this.isRemoved = isRemoved;
     }
 
     @Override
@@ -66,6 +71,26 @@ public class EnumItem extends DocumentableAstNode implements ScopeSymbol
     }
 
     /**
+     * Gets whether this enumeration item is deprecated.
+     *
+     * @return Returns true when this item is deprecated, false otherwise.
+     */
+    public boolean isDeprecated()
+    {
+        return isDeprecated;
+    }
+
+    /**
+     * Gets whether this enumeration item is removed.
+     *
+     * @return Returns true when this item is removed, false otherwise.
+     */
+    public boolean isRemoved()
+    {
+        return isRemoved;
+    }
+
+    /**
      * Sets the default integer value which represents the enumeration item.
      *
      * This method is called only if enumeration item value is not defined in the language.
@@ -101,6 +126,8 @@ public class EnumItem extends DocumentableAstNode implements ScopeSymbol
 
     private final String name;
     private final Expression valueExpression;
+    private final boolean isDeprecated;
+    private final boolean isRemoved;
 
     private BigInteger value = null;
     private boolean isEvaluated = false;

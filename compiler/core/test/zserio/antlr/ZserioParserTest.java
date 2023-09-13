@@ -225,6 +225,13 @@ public class ZserioParserTest
                         "(enumItem (id TWO)) " +
                 "} ;)");
 
+        checkParseTree("enumDeclaration", "enum uint8 E { @removed ONE = 1, @deprecated TWO };",
+                "(enumDeclaration enum (typeInstantiation (typeReference (builtinType (intType uint8)))) " +
+                "(id E) { " +
+                        "(enumItem @removed (id ONE) = (expression (literal 1))) , " +
+                        "(enumItem @deprecated (id TWO)) " +
+                "} ;)");
+
         // trailing COMMA is allowed!
         checkParseTree("enumDeclaration", "enum uint8 E { ONE = 1, TWO, };",
                 "(enumDeclaration enum (typeInstantiation (typeReference (builtinType (intType uint8)))) " +
@@ -232,6 +239,11 @@ public class ZserioParserTest
                         "(enumItem (id ONE) = (expression (literal 1))) , " +
                         "(enumItem (id TWO)) , " +
                 "} ;)");
+
+        assertParseError("enumDeclaration", "enum uint8 E { @deprecated @removed ONE };",
+                "extraneous input '@removed' expecting ID");
+        assertParseError("enumDeclaration", "enum uint8 E { @removed @deprecated ONE };",
+                "extraneous input '@deprecated' expecting ID");
     }
 
     @Test
