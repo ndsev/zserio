@@ -82,7 +82,7 @@ function(create_coverage_target)
                 ${cov_exclude}
             COMMAND bash -c "${LLVM_COV_BIN} report ${cov_test_exectable} \
                     -instr-profile=${cov_binary_dir}/runtime.profdata ${cov_exclude} \
-                    >= ${cov_html_clang_dir}/coverage_report.txt"
+                    > ${cov_html_clang_dir}/coverage_report.txt"
             COMMAND bash -c "(( $(echo \" \
                 `${LLVM_COV_BIN} report ${cov_test_exectable} \
                     -instr-profile=${cov_binary_dir}/runtime.profdata ${cov_exclude} | grep TOTAL | \
