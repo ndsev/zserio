@@ -200,12 +200,14 @@ private:
     public:
         using OwnerType = CreatorObject;
 
-        static ::test_object::polymorphic_allocator::CreatorNested create(CreatorObject& owner,
-                ::zserio::BitStreamReader& in, const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t index);
+        static void create(CreatorObject& owner,
+                ::zserio::pmr::vector<::test_object::polymorphic_allocator::CreatorNested>& array,
+                ::zserio::BitStreamReader& in, size_t index);
 
-        static ::test_object::polymorphic_allocator::CreatorNested create(CreatorObject& owner,
-                ::test_object::polymorphic_allocator::CreatorNested::ZserioPackingContext& context, ::zserio::BitStreamReader& in,
-                const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t index);
+        static void create(CreatorObject& owner,
+                ::zserio::pmr::vector<::test_object::polymorphic_allocator::CreatorNested>& array,
+                ::test_object::polymorphic_allocator::CreatorNested::ZserioPackingContext& context,
+                ::zserio::BitStreamReader& in, size_t index);
     };
 
     using ZserioArrayType_nestedArray = ::zserio::Array<::zserio::pmr::vector<::test_object::polymorphic_allocator::CreatorNested>, ::zserio::ObjectArrayTraits<::test_object::polymorphic_allocator::CreatorNested, ZserioElementFactory_nestedArray>, ::zserio::ArrayType::AUTO, ZserioArrayExpressions_nestedArray>;

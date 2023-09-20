@@ -20,24 +20,6 @@ namespace test_object
 namespace polymorphic_allocator
 {
 
-void CreatorObject::ZserioArrayExpressions_nestedArray::initializeElement(CreatorObject& owner,
-        ::test_object::polymorphic_allocator::CreatorNested& element, size_t)
-{
-    element.initialize(static_cast<uint32_t>(owner.getValue()));
-}
-
-::test_object::polymorphic_allocator::CreatorNested CreatorObject::ZserioElementFactory_nestedArray::create(CreatorObject& owner,
-        ::zserio::BitStreamReader& in, const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t)
-{
-    return ::test_object::polymorphic_allocator::CreatorNested(in, static_cast<uint32_t>(owner.getValue()), allocator);
-}
-
-::test_object::polymorphic_allocator::CreatorNested CreatorObject::ZserioElementFactory_nestedArray::create(CreatorObject& owner,
-        ::test_object::polymorphic_allocator::CreatorNested::ZserioPackingContext& context, ::zserio::BitStreamReader& in,
-        const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t)
-{
-    return ::test_object::polymorphic_allocator::CreatorNested(context, in, static_cast<uint32_t>(owner.getValue()), allocator);
-}
 CreatorObject::CreatorObject(const allocator_type& allocator) noexcept :
         m_areChildrenInitialized(false),
         m_value_(uint32_t()),
@@ -1258,6 +1240,27 @@ void CreatorObject::write(CreatorObject::ZserioPackingContext& context, ::zserio
     }
 }
 
+void CreatorObject::ZserioArrayExpressions_nestedArray::initializeElement(CreatorObject& owner,
+        ::test_object::polymorphic_allocator::CreatorNested& element, size_t)
+{
+    element.initialize(static_cast<uint32_t>(owner.getValue()));
+}
+
+void CreatorObject::ZserioElementFactory_nestedArray::create(CreatorObject&         owner,
+        ::zserio::pmr::vector<::test_object::polymorphic_allocator::CreatorNested>& array,
+        ::zserio::BitStreamReader& in, size_t)
+{
+    array.emplace_back(in, static_cast<uint32_t>(owner.getValue()), array.get_allocator());
+}
+
+void CreatorObject::ZserioElementFactory_nestedArray::create(CreatorObject&         owner,
+        ::zserio::pmr::vector<::test_object::polymorphic_allocator::CreatorNested>& array,
+        ::test_object::polymorphic_allocator::CreatorNested::ZserioPackingContext& context, ::zserio::BitStreamReader& in,
+        size_t)
+{
+    array.emplace_back(context, in, static_cast<uint32_t>(owner.getValue()), array.get_allocator());
+}
+
 uint32_t CreatorObject::readValue(::zserio::BitStreamReader& in)
 {
     return static_cast<uint32_t>(in.readBits(UINT8_C(32)));
@@ -1267,7 +1270,6 @@ uint32_t CreatorObject::readValue(CreatorObject::ZserioPackingContext& context, 
 {
     return context.getValue().read<::zserio::StdIntArrayTraits<uint32_t>>(in);
 }
-
 ::test_object::polymorphic_allocator::CreatorNested CreatorObject::readNested(::zserio::BitStreamReader& in,
         const allocator_type& allocator)
 {
@@ -1278,13 +1280,11 @@ uint32_t CreatorObject::readValue(CreatorObject::ZserioPackingContext& context, 
 {
     return ::test_object::polymorphic_allocator::CreatorNested(context.getNested(), in, static_cast<uint32_t>(getValue()), allocator);
 }
-
 ::zserio::pmr::string CreatorObject::readText(::zserio::BitStreamReader& in,
         const allocator_type& allocator)
 {
     return static_cast<::zserio::pmr::string>(in.readString(allocator));
 }
-
 CreatorObject::ZserioArrayType_nestedArray CreatorObject::readNestedArray(::zserio::BitStreamReader& in,
         const allocator_type& allocator)
 {
@@ -1301,7 +1301,6 @@ CreatorObject::ZserioArrayType_nestedArray CreatorObject::readNestedArray(Creato
 
     return readField;
 }
-
 CreatorObject::ZserioArrayType_textArray CreatorObject::readTextArray(::zserio::BitStreamReader& in,
         const allocator_type& allocator)
 {
@@ -1310,7 +1309,6 @@ CreatorObject::ZserioArrayType_textArray CreatorObject::readTextArray(::zserio::
 
     return readField;
 }
-
 ::zserio::InplaceOptionalHolder<CreatorObject::ZserioArrayType_externArray> CreatorObject::readExternArray(::zserio::BitStreamReader& in,
         const allocator_type& allocator)
 {
@@ -1324,7 +1322,6 @@ CreatorObject::ZserioArrayType_textArray CreatorObject::readTextArray(::zserio::
 
     return ::zserio::InplaceOptionalHolder<ZserioArrayType_externArray>(::zserio::NullOpt);
 }
-
 ::zserio::InplaceOptionalHolder<CreatorObject::ZserioArrayType_bytesArray> CreatorObject::readBytesArray(::zserio::BitStreamReader& in,
         const allocator_type& allocator)
 {
@@ -1338,7 +1335,6 @@ CreatorObject::ZserioArrayType_textArray CreatorObject::readTextArray(::zserio::
 
     return ::zserio::InplaceOptionalHolder<ZserioArrayType_bytesArray>(::zserio::NullOpt);
 }
-
 ::zserio::InplaceOptionalHolder<bool> CreatorObject::readOptionalBool(::zserio::BitStreamReader& in)
 {
     if (in.readBool())
@@ -1348,7 +1344,6 @@ CreatorObject::ZserioArrayType_textArray CreatorObject::readTextArray(::zserio::
 
     return ::zserio::InplaceOptionalHolder<bool>(::zserio::NullOpt);
 }
-
 ::zserio::InplaceOptionalHolder<::test_object::polymorphic_allocator::CreatorNested> CreatorObject::readOptionalNested(::zserio::BitStreamReader& in,
         const allocator_type& allocator)
 {

@@ -450,7 +450,6 @@ int8_t SerializeObject::readParam(SerializeObject::ZserioPackingContext& context
 {
     return context.getParam().read<::zserio::StdIntArrayTraits<int8_t>>(in);
 }
-
 ::test_object::polymorphic_allocator::SerializeNested SerializeObject::readNested(::zserio::BitStreamReader& in,
         const allocator_type& allocator)
 {

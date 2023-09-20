@@ -19,11 +19,6 @@ namespace test_object
 namespace polymorphic_allocator
 {
 
-::test_object::polymorphic_allocator::WalkerNested WalkerUnion::ZserioElementFactory_nestedArray::create(WalkerUnion&,
-        ::zserio::BitStreamReader& in, const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t)
-{
-    return ::test_object::polymorphic_allocator::WalkerNested(in, allocator);
-}
 WalkerUnion::WalkerUnion(const allocator_type& allocator) noexcept :
         m_choiceTag(UNDEFINED_CHOICE),
         m_objectChoice(allocator)
@@ -593,6 +588,13 @@ void WalkerUnion::write(WalkerUnion::ZserioPackingContext& context, ::zserio::Bi
     default:
         throw ::zserio::CppRuntimeException("No match in union WalkerUnion!");
     }
+}
+
+void WalkerUnion::ZserioElementFactory_nestedArray::create(WalkerUnion&        ,
+        ::zserio::pmr::vector<::test_object::polymorphic_allocator::WalkerNested>& array,
+        ::zserio::BitStreamReader& in, size_t)
+{
+    array.emplace_back(in, array.get_allocator());
 }
 
 WalkerUnion::ChoiceTag WalkerUnion::readChoiceTag(::zserio::BitStreamReader& in)

@@ -791,25 +791,21 @@ uint32_t CreatorNested::readValue(CreatorNested::ZserioPackingContext& context, 
 {
     return context.getValue().read<::zserio::StdIntArrayTraits<uint32_t>>(in);
 }
-
 ::zserio::string<> CreatorNested::readText(::zserio::BitStreamReader& in,
         const allocator_type& allocator)
 {
     return static_cast<::zserio::string<>>(in.readString(allocator));
 }
-
 ::zserio::BitBuffer CreatorNested::readExternData(::zserio::BitStreamReader& in,
         const allocator_type& allocator)
 {
     return static_cast<::zserio::BitBuffer>(in.readBitBuffer(allocator));
 }
-
 ::zserio::vector<uint8_t> CreatorNested::readBytesData(::zserio::BitStreamReader& in,
         const allocator_type& allocator)
 {
     return static_cast<::zserio::vector<uint8_t>>(in.readBytes(allocator));
 }
-
 ::test_object::std_allocator::CreatorEnum CreatorNested::readCreatorEnum(::zserio::BitStreamReader& in)
 {
     return ::zserio::read<::test_object::std_allocator::CreatorEnum>(in);
@@ -819,7 +815,6 @@ uint32_t CreatorNested::readValue(CreatorNested::ZserioPackingContext& context, 
 {
     return ::zserio::read<::test_object::std_allocator::CreatorEnum>(context.getCreatorEnum(), in);
 }
-
 ::test_object::std_allocator::CreatorBitmask CreatorNested::readCreatorBitmask(::zserio::BitStreamReader& in)
 {
     return ::test_object::std_allocator::CreatorBitmask(in);

@@ -31,7 +31,6 @@
 <@user_includes cppUserIncludes, false/>
 <@namespace_begin package.path/>
 
-<@inner_classes_definition name, fieldList/>
 <#if withWriterCode>
 <#macro empty_constructor_field_initialization>
         m_objectChoice(allocator)
@@ -536,6 +535,7 @@ void ${name}::write(${name}::ZserioPackingContext&<#if uses_packing_context(fiel
 </#if>
 <#if fieldList?has_content>
 
+<@inner_classes_definition name, fieldList/>
 <#macro choice_read_member member packed indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>

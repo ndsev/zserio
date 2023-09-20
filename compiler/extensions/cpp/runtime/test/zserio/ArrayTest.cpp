@@ -187,16 +187,15 @@ public:
     using OwnerType = ArrayTestOwner;
     using allocator_type = std::allocator<uint8_t>;
 
-    static ArrayObject create(OwnerType&, BitStreamReader& in,
-            const allocator_type& allocator, size_t)
+    static void create(OwnerType&, std::vector<ArrayObject>& array, BitStreamReader& in, size_t)
     {
-        return ArrayObject(in, allocator);
+        array.emplace_back(in, array.get_allocator());
     }
 
-    static ArrayObject create(OwnerType&, ArrayObject::ZserioPackingContext& contextNode, BitStreamReader& in,
-            const allocator_type& allocator, size_t)
+    static void create(OwnerType&, std::vector<ArrayObject>& array,
+            ArrayObject::ZserioPackingContext& contextNode, BitStreamReader& in, size_t)
     {
-        return ArrayObject(contextNode, in, allocator);
+        array.emplace_back(contextNode, in, array.get_allocator());
     }
 };
 

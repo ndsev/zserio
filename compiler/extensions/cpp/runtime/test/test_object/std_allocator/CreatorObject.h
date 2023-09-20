@@ -199,12 +199,14 @@ private:
     public:
         using OwnerType = CreatorObject;
 
-        static ::test_object::std_allocator::CreatorNested create(CreatorObject& owner,
-                ::zserio::BitStreamReader& in, const ::std::allocator<uint8_t>& allocator, size_t index);
+        static void create(CreatorObject& owner,
+                ::zserio::vector<::test_object::std_allocator::CreatorNested>& array,
+                ::zserio::BitStreamReader& in, size_t index);
 
-        static ::test_object::std_allocator::CreatorNested create(CreatorObject& owner,
-                ::test_object::std_allocator::CreatorNested::ZserioPackingContext& context, ::zserio::BitStreamReader& in,
-                const ::std::allocator<uint8_t>& allocator, size_t index);
+        static void create(CreatorObject& owner,
+                ::zserio::vector<::test_object::std_allocator::CreatorNested>& array,
+                ::test_object::std_allocator::CreatorNested::ZserioPackingContext& context,
+                ::zserio::BitStreamReader& in, size_t index);
     };
 
     using ZserioArrayType_nestedArray = ::zserio::Array<::zserio::vector<::test_object::std_allocator::CreatorNested>, ::zserio::ObjectArrayTraits<::test_object::std_allocator::CreatorNested, ZserioElementFactory_nestedArray>, ::zserio::ArrayType::AUTO, ZserioArrayExpressions_nestedArray>;

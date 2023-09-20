@@ -503,13 +503,15 @@ void ${compoundName}::<@array_expressions_name field.name/>::initializeElement(<
     public:
         using OwnerType = ${compoundName};
 
-        static ${field.array.elementTypeInfo.typeFullName} create(<#if !withWriterCode>const </#if>${compoundName}& owner,
-                ::zserio::BitStreamReader& in, const ${types.allocator.default}& allocator, size_t index);
+        static void create(<#if !withWriterCode>const </#if>${compoundName}& owner,
+                <@vector_type_name field.array.elementTypeInfo.typeFullName/>& array,
+                ::zserio::BitStreamReader& in, size_t index);
     <#if field.isPackable>
 
-        static ${field.array.elementTypeInfo.typeFullName} create(<#if !withWriterCode>const </#if>${compoundName}& owner,
-                ${field.array.elementTypeInfo.typeFullName}::ZserioPackingContext& context, ::zserio::BitStreamReader& in,
-                const ${types.allocator.default}& allocator, size_t index);
+        static void create(<#if !withWriterCode>const </#if>${compoundName}& owner,
+                <@vector_type_name field.array.elementTypeInfo.typeFullName/>& array,
+                ${field.array.elementTypeInfo.typeFullName}::ZserioPackingContext& context,
+                ::zserio::BitStreamReader& in, size_t index);
     </#if>
     };
 
@@ -521,33 +523,35 @@ void ${compoundName}::<@array_expressions_name field.name/>::initializeElement(<
             <@compound_field_compound_ctor_params field.array.elementCompound, true/><#t>
         </#if>
     </#local>
-${field.array.elementTypeInfo.typeFullName} ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
+void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
         <#if !withWriterCode>const </#if>${compoundName}&<#t>
-        <#lt><#if needs_field_initialization_owner(field.array.elementCompound)> owner</#if>,
-        ::zserio::BitStreamReader& in, const ${types.allocator.default}& allocator, size_t<#rt>
+        <#if needs_field_initialization_owner(field.array.elementCompound)> owner</#if>,
+        <@vector_type_name field.array.elementTypeInfo.typeFullName/>& array,
+        ::zserio::BitStreamReader& in, size_t<#rt>
         <#lt><#if needs_field_initialization_index(field.array.elementCompound)> index</#if>)
 {
-    return ${field.array.elementTypeInfo.typeFullName}(in<#rt>
+    array.emplace_back(in<#rt>
     <#if extraConstructorArguments?has_content>
             , ${extraConstructorArguments}<#t>
     </#if>
-            <#lt>, allocator);
+            <#lt>, array.get_allocator());
 }
-    <#if field.isPackable>
 
-${field.array.elementTypeInfo.typeFullName} ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
+    <#if field.isPackable>
+void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
         <#if !withWriterCode>const </#if>${compoundName}&<#t>
-        <#lt><#if needs_field_initialization_owner(field.array.elementCompound)> owner</#if>,
+        <#if needs_field_initialization_owner(field.array.elementCompound)> owner</#if>,
+        <@vector_type_name field.array.elementTypeInfo.typeFullName/>& array,
         ${field.array.elementTypeInfo.typeFullName}::ZserioPackingContext& context, ::zserio::BitStreamReader& in,
-        const ${types.allocator.default}& allocator, size_t<#rt>
-        <#lt><#if needs_field_initialization_index(field.array.elementCompound)> index</#if>)
+        size_t<#if needs_field_initialization_index(field.array.elementCompound)> index</#if>)
 {
-    return ${field.array.elementTypeInfo.typeFullName}(context, in<#rt>
-    <#if extraConstructorArguments?has_content>
+    array.emplace_back(context, in<#rt>
+        <#if extraConstructorArguments?has_content>
             , ${extraConstructorArguments}<#t>
-    </#if>
-            <#lt>, allocator);
+        </#if>
+            <#lt>, array.get_allocator());
 }
+
     </#if>
 </#macro>
 

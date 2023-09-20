@@ -464,7 +464,6 @@ void ReflectableObject::write(ReflectableObject::ZserioPackingContext& context, 
 {
     return static_cast<::zserio::string<>>(in.readString(allocator));
 }
-
 ::test_object::std_allocator::ReflectableNested ReflectableObject::readReflectableNested(::zserio::BitStreamReader& in,
         const allocator_type& allocator)
 {

@@ -450,7 +450,6 @@ uint8_t ReflectableUtilObject::readChoiceParam(ReflectableUtilObject::ZserioPack
 {
     return context.getChoiceParam().read<::zserio::StdIntArrayTraits<uint8_t>>(in);
 }
-
 ::test_object::polymorphic_allocator::ReflectableUtilChoice ReflectableUtilObject::readReflectableUtilChoice(::zserio::BitStreamReader& in,
         const allocator_type& allocator)
 {

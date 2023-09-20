@@ -32,7 +32,6 @@
 <#assign choiceTagArrayTraits="::zserio::VarSizeArrayTraits">
 <@namespace_begin package.path/>
 
-<@inner_classes_definition name, fieldList/>
 <#macro empty_constructor_field_initialization>
         m_choiceTag(UNDEFINED_CHOICE)<#rt>
         <#if fieldList?has_content>
@@ -561,6 +560,7 @@ void ${name}::write(${name}::ZserioPackingContext& context, ::zserio::BitStreamW
 </#if>
 <#if fieldList?has_content>
 
+<@inner_classes_definition name, fieldList/>
 ${name}::ChoiceTag ${name}::readChoiceTag(::zserio::BitStreamReader& in)
 {
     return static_cast<${name}::ChoiceTag>(static_cast<int32_t>(in.readVarSize()));

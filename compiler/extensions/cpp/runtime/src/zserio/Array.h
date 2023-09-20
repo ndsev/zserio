@@ -216,7 +216,7 @@ template <typename ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY,
                 !has_allocator<ARRAY_TRAITS>::value, int>::type = 0>
 void arrayTraitsRead(const OWNER_TYPE& owner, RAW_ARRAY& rawArray, BitStreamReader& in, size_t index)
 {
-    return rawArray.push_back(ARRAY_TRAITS::read(owner, in, index));
+    rawArray.push_back(ARRAY_TRAITS::read(owner, in, index));
 }
 
 template <typename ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY,
@@ -224,7 +224,7 @@ template <typename ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY,
                 has_allocator<ARRAY_TRAITS>::value, int>::type = 0>
 void arrayTraitsRead(OWNER_TYPE& owner, RAW_ARRAY& rawArray, BitStreamReader& in, size_t index)
 {
-    return rawArray.push_back(ARRAY_TRAITS::read(owner, in, rawArray.get_allocator(), index));
+    ARRAY_TRAITS::read(owner, rawArray, in, index);
 }
 
 template <typename ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY,
@@ -232,7 +232,7 @@ template <typename ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY,
                 !has_allocator<ARRAY_TRAITS>::value, int>::type = 0>
 void arrayTraitsRead(const OWNER_TYPE&, RAW_ARRAY& rawArray, BitStreamReader& in, size_t index)
 {
-    return rawArray.push_back(ARRAY_TRAITS::read(in, index));
+    rawArray.push_back(ARRAY_TRAITS::read(in, index));
 }
 
 template <typename ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY,
@@ -240,7 +240,7 @@ template <typename ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY,
                 has_allocator<ARRAY_TRAITS>::value, int>::type = 0>
 void arrayTraitsRead(const OWNER_TYPE&, RAW_ARRAY& rawArray, BitStreamReader& in, size_t index)
 {
-    return rawArray.push_back(ARRAY_TRAITS::read(in, rawArray.get_allocator(), index));
+    ARRAY_TRAITS::read(rawArray, in, index);
 }
 
 // calls the read method properly on packed array traits
@@ -250,7 +250,7 @@ template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY,
 void packedArrayTraitsRead(OWNER_TYPE& owner, RAW_ARRAY& rawArray, PACKING_CONTEXT& context,
         BitStreamReader& in, size_t index)
 {
-    rawArray.push_back(PACKED_ARRAY_TRAITS::read(owner, context, in, rawArray.get_allocator(), index));
+    PACKED_ARRAY_TRAITS::read(owner, rawArray, context, in, index);
 }
 
 template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY, typename PACKING_CONTEXT,
@@ -280,7 +280,7 @@ template <typename ARRAY_TRAITS, typename OWNER_TYPE,
 void arrayTraitsWrite(const OWNER_TYPE& owner,
         BitStreamWriter& out, const typename ARRAY_TRAITS::ElementType& element)
 {
-    return ARRAY_TRAITS::write(owner, out, element);
+    ARRAY_TRAITS::write(owner, out, element);
 }
 
 template <typename ARRAY_TRAITS, typename OWNER_TYPE,
@@ -288,7 +288,7 @@ template <typename ARRAY_TRAITS, typename OWNER_TYPE,
 void arrayTraitsWrite(const OWNER_TYPE&,
         BitStreamWriter& out, const typename ARRAY_TRAITS::ElementType& element)
 {
-    return ARRAY_TRAITS::write(out, element);
+    ARRAY_TRAITS::write(out, element);
 }
 
 // call the write method properly on packed array traits
@@ -297,7 +297,7 @@ template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CO
 void packedArrayTraitsWrite(const OWNER_TYPE& owner, PACKING_CONTEXT& context,
         BitStreamWriter& out, const typename PACKED_ARRAY_TRAITS::ElementType& element)
 {
-    return PACKED_ARRAY_TRAITS::write(owner, context, out, element);
+    PACKED_ARRAY_TRAITS::write(owner, context, out, element);
 }
 
 template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT,
@@ -305,7 +305,7 @@ template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CO
 void packedArrayTraitsWrite(const OWNER_TYPE&, PACKING_CONTEXT& context,
         BitStreamWriter& out, const typename PACKED_ARRAY_TRAITS::ElementType& element)
 {
-    return PACKED_ARRAY_TRAITS::write(context, out, element);
+    PACKED_ARRAY_TRAITS::write(context, out, element);
 }
 
 } // namespace detail

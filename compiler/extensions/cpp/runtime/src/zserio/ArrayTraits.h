@@ -1444,13 +1444,13 @@ struct BasicBytesArrayTraits
     /**
      * Reads the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
-     *
-     * \return Read element.
      */
-    static ElementType read(BitStreamReader& in, const allocator_type& allocator, size_t = 0)
+    template <typename RAW_ARRAY>
+    static void read(RAW_ARRAY& rawArray, BitStreamReader& in, size_t = 0)
     {
-        return in.readBytes(allocator);
+        rawArray.emplace_back(in.readBytes(rawArray.get_allocator()));
     }
 
     /**
@@ -1510,13 +1510,13 @@ struct BasicStringArrayTraits
     /**
      * Reads the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
-     *
-     * \return Read element.
      */
-    static ElementType read(BitStreamReader& in, const allocator_type& allocator, size_t = 0)
+    template <typename RAW_ARRAY>
+    static void read(RAW_ARRAY& rawArray, BitStreamReader& in, size_t = 0)
     {
-        return in.readString(allocator);
+        rawArray.emplace_back(in.readString(rawArray.get_allocator()));
     }
 
     /**
@@ -1576,11 +1576,13 @@ struct BasicBitBufferArrayTraits
     /**
      * Reads the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
      */
-    static ElementType read(BitStreamReader& in, const allocator_type& allocator, size_t = 0)
+    template <typename RAW_ARRAY>
+    static void read(RAW_ARRAY& rawArray, BitStreamReader& in, size_t = 0)
     {
-        return in.readBitBuffer(allocator);
+        rawArray.emplace_back(in.readBitBuffer(rawArray.get_allocator()));
     }
 
     /**
@@ -1769,14 +1771,16 @@ public:
     /**
      * Reads the single array element.
      *
-     * \param elementFactory Factory which knows how to create a single array element.
+     * \param owner Owner of the array.
+     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
      * \param index Index need in case of parameterized type which depends on the current index.
      */
-    static ElementType read(OwnerType& owner, BitStreamReader& in, const allocator_type& allocator,
-            size_t index)
+    template <typename RAW_ARRAY>
+    static void read(OwnerType& owner, RAW_ARRAY& rawArray,
+            BitStreamReader& in, size_t index)
     {
-        return ELEMENT_FACTORY::create(owner, in, allocator, index);
+        ELEMENT_FACTORY::create(owner, rawArray, in, index);
     }
 
     /**
@@ -2219,17 +2223,18 @@ public:
     /**
      * Reads an element from the bit stream.
      *
-     * \param owner Owner of the current array.
+     * \param owner Owner of the array.
+     * \param rawArray Raw array to use.
      * \param packingContext Packing context node which keeps the appropriate subtree of contexts.
      * \param in Bit stream reader.
      * \param allocator Allocator to use.
      * \param index Index of the current element.
      */
-    template <typename PACKING_CONTEXT>
-    static ElementType read(typename ArrayTraits::OwnerType& owner,
-            PACKING_CONTEXT& packingContext, BitStreamReader& in, const allocator_type& allocator, size_t index)
+    template <typename RAW_ARRAY, typename PACKING_CONTEXT>
+    static void read(typename ArrayTraits::OwnerType& owner, RAW_ARRAY& rawArray,
+            PACKING_CONTEXT& packingContext, BitStreamReader& in, size_t index)
     {
-        return ELEMENT_FACTORY::create(owner, packingContext, in, allocator, index);
+        ELEMENT_FACTORY::create(owner, rawArray, packingContext, in, index);
     }
 
     /**

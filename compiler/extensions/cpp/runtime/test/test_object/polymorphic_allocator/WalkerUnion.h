@@ -119,8 +119,9 @@ private:
     public:
         using OwnerType = WalkerUnion;
 
-        static ::test_object::polymorphic_allocator::WalkerNested create(WalkerUnion& owner,
-                ::zserio::BitStreamReader& in, const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t index);
+        static void create(WalkerUnion& owner,
+                ::zserio::pmr::vector<::test_object::polymorphic_allocator::WalkerNested>& array,
+                ::zserio::BitStreamReader& in, size_t index);
     };
 
     using ZserioArrayType_nestedArray = ::zserio::Array<::zserio::pmr::vector<::test_object::polymorphic_allocator::WalkerNested>, ::zserio::ObjectArrayTraits<::test_object::polymorphic_allocator::WalkerNested, ZserioElementFactory_nestedArray>, ::zserio::ArrayType::AUTO>;

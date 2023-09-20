@@ -563,7 +563,6 @@ uint8_t SerializeNested::readOffset(::zserio::BitStreamReader& in)
 {
     return static_cast<uint8_t>(in.readBits(UINT8_C(8)));
 }
-
 ::zserio::InplaceOptionalHolder<uint32_t> SerializeNested::readOptionalValue(::zserio::BitStreamReader& in)
 {
     if (getParam() >= 0)

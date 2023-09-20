@@ -60,7 +60,6 @@
         </#if>
     </#if>
 </#macro>
-<@inner_classes_definition name, fieldList/>
 <#macro empty_constructor_field_initialization>
     <#list fieldList as field>
         <@field_member_name field/>(<@field_default_constructor_arguments field/>)<#if field?has_next>,</#if>
@@ -483,8 +482,11 @@ void ${name}::write(${name}::ZserioPackingContext&<#if uses_packing_context(fiel
 }
     </#if>
 </#if>
-<#list fieldList as field>
+<#if fieldList?has_content>
 
+<@inner_classes_definition name, fieldList/>
+</#if>
+<#list fieldList as field>
 <@field_member_type_name field, name/> ${name}::${field.readerName}(::zserio::BitStreamReader& in<#rt>
     <#if field.needsAllocator || field.holderNeedsAllocator>
         <#lt>,

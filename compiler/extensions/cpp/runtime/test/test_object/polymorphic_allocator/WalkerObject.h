@@ -169,12 +169,14 @@ private:
     public:
         using OwnerType = WalkerObject;
 
-        static ::test_object::polymorphic_allocator::WalkerUnion create(WalkerObject& owner,
-                ::zserio::BitStreamReader& in, const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t index);
+        static void create(WalkerObject& owner,
+                ::zserio::pmr::vector<::test_object::polymorphic_allocator::WalkerUnion>& array,
+                ::zserio::BitStreamReader& in, size_t index);
 
-        static ::test_object::polymorphic_allocator::WalkerUnion create(WalkerObject& owner,
-                ::test_object::polymorphic_allocator::WalkerUnion::ZserioPackingContext& context, ::zserio::BitStreamReader& in,
-                const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t index);
+        static void create(WalkerObject& owner,
+                ::zserio::pmr::vector<::test_object::polymorphic_allocator::WalkerUnion>& array,
+                ::test_object::polymorphic_allocator::WalkerUnion::ZserioPackingContext& context,
+                ::zserio::BitStreamReader& in, size_t index);
     };
 
     class ZserioElementFactory_optionalUnionArray
@@ -182,12 +184,14 @@ private:
     public:
         using OwnerType = WalkerObject;
 
-        static ::test_object::polymorphic_allocator::WalkerUnion create(WalkerObject& owner,
-                ::zserio::BitStreamReader& in, const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t index);
+        static void create(WalkerObject& owner,
+                ::zserio::pmr::vector<::test_object::polymorphic_allocator::WalkerUnion>& array,
+                ::zserio::BitStreamReader& in, size_t index);
 
-        static ::test_object::polymorphic_allocator::WalkerUnion create(WalkerObject& owner,
-                ::test_object::polymorphic_allocator::WalkerUnion::ZserioPackingContext& context, ::zserio::BitStreamReader& in,
-                const ::zserio::pmr::PropagatingPolymorphicAllocator<>& allocator, size_t index);
+        static void create(WalkerObject& owner,
+                ::zserio::pmr::vector<::test_object::polymorphic_allocator::WalkerUnion>& array,
+                ::test_object::polymorphic_allocator::WalkerUnion::ZserioPackingContext& context,
+                ::zserio::BitStreamReader& in, size_t index);
     };
 
     using ZserioArrayType_unionArray = ::zserio::Array<::zserio::pmr::vector<::test_object::polymorphic_allocator::WalkerUnion>, ::zserio::ObjectArrayTraits<::test_object::polymorphic_allocator::WalkerUnion, ZserioElementFactory_unionArray>, ::zserio::ArrayType::AUTO>;
