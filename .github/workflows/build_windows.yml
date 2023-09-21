@@ -66,6 +66,7 @@ jobs:
     - name: Install dependecies
       run: |
         choco install wget
+        choco install doxygen.portable
         choco install graphviz
         choco install zip
       shell: bash
