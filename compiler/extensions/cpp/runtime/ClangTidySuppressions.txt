@@ -134,6 +134,9 @@ modernize-use-equals-default:src/zserio/Span.h:79
 # This is completely filtered out because it just would add two more lines making readability even worse.
 readability-braces-around-statements:
 
+# This must be preprocessor define because version is checked during compilation time.
+cppcoreguidelines-macro-usage:src/zserio/CppRuntimeVersion.h:12
+
 # Intentional tests.
 bugprone-use-after-move:test/zserio/HeapOptionalHolderTest.cpp:178
 bugprone-use-after-move:test/zserio/HeapOptionalHolderTest.cpp:199

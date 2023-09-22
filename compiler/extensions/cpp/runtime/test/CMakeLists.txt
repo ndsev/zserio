@@ -150,6 +150,7 @@ set(ZSERIO_CPP_RUNTIME_TEST_SRCS
     zserio/BuiltInOperatorsTest.cpp
     zserio/ConstraintExceptionTest.cpp
     zserio/CppRuntimeExceptionTest.cpp
+    zserio/CppRuntimeVersionTest.cpp
     zserio/DebugStringUtilTest.cpp
     zserio/EnumsTest.cpp
     zserio/FloatUtilTest.cpp
