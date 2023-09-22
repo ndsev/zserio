@@ -21,6 +21,9 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.PackableWri
     <#if withCodeComments && item.docComments??>
     <@doc_comments item.docComments, 1/>
     </#if>
+    <#if item.isDeprecated>
+    @Deprecated
+    </#if>
     ${item.name}(${item.value})<#if item_has_next>,<#else>;</#if>
 </#list>
 
@@ -64,7 +67,7 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.PackableWri
                 <@underlying_type_info_type_arguments bitSize!/>,
                 java.util.Arrays.asList(
     <#list items as item>
-                        <@item_info item.name, item.value, isBigInteger/><#if item?has_next>,</#if>
+                        <@item_info item.schemaName, item.value, isBigInteger, item.isDeprecated, item.isRemoved/><#if item?has_next>,</#if>
     </#list>
                 )
             );
@@ -124,9 +127,39 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.PackableWri
         return bitPosition + bitSizeOf(context, bitPosition);
     }
 
+<#function has_removed_items items>
+    <#list items as item>
+        <#if item.isRemoved>
+            <#return true>
+        </#if>
+    </#list>
+    <#return false>
+</#function>
+<#macro removed_items_check items>
+    <#local isFirst=true/>
+        if (<#rt>
+    <#list items as item>
+        <#if item.isRemoved>
+            <#if isFirst>
+                <#local isFirst=false/>
+                this == ${item.name}<#t>
+            <#else>
+                <#lt> ||
+                this == ${item.name}<#rt>
+            </#if>
+        </#if>
+    </#list>
+        <#lt>)
+        {
+            throw new zserio.runtime.ZserioError("Trying to write removed enumeration item '" + this + "'!");
+        }
+</#macro>
     @Override
     public void write(zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
     {
+    <#if has_removed_items(items)>
+        <@removed_items_check items/>
+    </#if>
         out.write${runtimeFunction.suffix}(getValue()<#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>);
     }
 
@@ -135,6 +168,9 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.PackableWri
             throws java.io.IOException
     {
         final zserio.runtime.array.DeltaContext deltaContext = context.cast();
+    <#if has_removed_items(items)>
+        <@removed_items_check items/>
+    </#if>
         deltaContext.write(
                 <@enum_array_traits underlyingTypeInfo.arrayableInfo, bitSize!/>, out,
                 new ${underlyingTypeInfo.arrayableInfo.arrayElement}(value));

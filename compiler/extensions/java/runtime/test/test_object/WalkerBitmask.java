@@ -45,7 +45,7 @@ public class WalkerBitmask implements zserio.runtime.io.PackableWriter, zserio.r
                 zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo.getUInt32(),
                 new java.util.ArrayList<java.util.function.Supplier<java.lang.Object>>(),
                 java.util.Arrays.asList(
-                            new zserio.runtime.typeinfo.ItemInfo("ZERO", java.math.BigInteger.valueOf(1L))
+                        new zserio.runtime.typeinfo.ItemInfo("ZERO", java.math.BigInteger.valueOf(1L), false, false)
                 )
         );
     }

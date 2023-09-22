@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -389,7 +390,8 @@ public class TypeInfoTest
     {
         final TypeInfo underlyingTypeInfo = BuiltinTypeInfo.getInt8();
         final EnumTypeInfo enumTypeInfo = new EnumTypeInfo("", null,
-                underlyingTypeInfo, new ArrayList<Supplier<Object>>(), new ArrayList<ItemInfo>());
+                underlyingTypeInfo, new ArrayList<Supplier<Object>>(), Arrays.asList(
+                        new ItemInfo("ONE", BigInteger.ONE, false, false)));
         assertEquals("", enumTypeInfo.getSchemaName());
         assertEquals(SchemaType.ENUM, enumTypeInfo.getSchemaType());
         assertEquals(JavaType.ENUM, enumTypeInfo.getJavaType());
@@ -405,7 +407,11 @@ public class TypeInfoTest
 
         assertEquals(underlyingTypeInfo, enumTypeInfo.getUnderlyingType());
         assertEquals(0, enumTypeInfo.getUnderlyingTypeArguments().size());
-        assertEquals(0, enumTypeInfo.getEnumItems().size());
+        assertEquals(1, enumTypeInfo.getEnumItems().size());
+        assertEquals("ONE", enumTypeInfo.getEnumItems().get(0).getSchemaName());
+        assertEquals(BigInteger.ONE, enumTypeInfo.getEnumItems().get(0).getValue());
+        assertEquals(false, enumTypeInfo.getEnumItems().get(0).isDeprecated());
+        assertEquals(false, enumTypeInfo.getEnumItems().get(0).isRemoved());
         assertThrows(ZserioError.class, () -> enumTypeInfo.getBitmaskValues());
 
         assertThrows(ZserioError.class, () -> enumTypeInfo.getColumns());
@@ -428,7 +434,8 @@ public class TypeInfoTest
     {
         final TypeInfo underlyingTypeInfo = BuiltinTypeInfo.getInt8();
         final BitmaskTypeInfo bitmaskTypeInfo = new BitmaskTypeInfo("", null,
-                underlyingTypeInfo, new ArrayList<Supplier<Object>>(), new ArrayList<ItemInfo>());
+                underlyingTypeInfo, new ArrayList<Supplier<Object>>(), Arrays.asList(
+                        new ItemInfo("FIRST_BIT", BigInteger.ONE, false, false)));
         assertEquals("", bitmaskTypeInfo.getSchemaName());
         assertEquals(SchemaType.BITMASK, bitmaskTypeInfo.getSchemaType());
         assertEquals(JavaType.BITMASK, bitmaskTypeInfo.getJavaType());
@@ -445,7 +452,11 @@ public class TypeInfoTest
         assertEquals(underlyingTypeInfo, bitmaskTypeInfo.getUnderlyingType());
         assertEquals(0, bitmaskTypeInfo.getUnderlyingTypeArguments().size());
         assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getEnumItems());
-        assertEquals(0, bitmaskTypeInfo.getBitmaskValues().size());
+        assertEquals(1, bitmaskTypeInfo.getBitmaskValues().size());
+        assertEquals("FIRST_BIT", bitmaskTypeInfo.getBitmaskValues().get(0).getSchemaName());
+        assertEquals(BigInteger.ONE, bitmaskTypeInfo.getBitmaskValues().get(0).getValue());
+        assertEquals(false, bitmaskTypeInfo.getBitmaskValues().get(0).isDeprecated());
+        assertEquals(false, bitmaskTypeInfo.getBitmaskValues().get(0).isRemoved());
 
         assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getColumns());
         assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getSqlConstraint());

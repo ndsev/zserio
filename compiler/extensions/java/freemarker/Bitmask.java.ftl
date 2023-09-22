@@ -103,7 +103,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.PackableWr
                 <@underlying_type_info_type_arguments bitSize!/>,
                 java.util.Arrays.asList(
     <#list values as value>
-                        <@item_info value.name, value.value, isBigInteger/><#if value?has_next>,</#if>
+                        <@item_info value.name, value.value, isBigInteger, false, false/><#if value?has_next>,</#if>
     </#list>
                 )
         );

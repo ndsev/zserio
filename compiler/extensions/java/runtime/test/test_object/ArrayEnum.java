@@ -36,9 +36,9 @@ public enum ArrayEnum implements zserio.runtime.io.PackableWriter, zserio.runtim
                 zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo.getInt8(),
                 new java.util.ArrayList<java.util.function.Supplier<java.lang.Object>>(),
                 java.util.Arrays.asList(
-                            new zserio.runtime.typeinfo.ItemInfo("VALUE1", java.math.BigInteger.valueOf((byte)0)),
-                            new zserio.runtime.typeinfo.ItemInfo("VALUE2", java.math.BigInteger.valueOf((byte)1)),
-                            new zserio.runtime.typeinfo.ItemInfo("VALUE3", java.math.BigInteger.valueOf((byte)2))
+                        new zserio.runtime.typeinfo.ItemInfo("VALUE1", java.math.BigInteger.valueOf((byte)0), false, false),
+                        new zserio.runtime.typeinfo.ItemInfo("VALUE2", java.math.BigInteger.valueOf((byte)1), false, false),
+                        new zserio.runtime.typeinfo.ItemInfo("VALUE3", java.math.BigInteger.valueOf((byte)2), false, false)
                 )
             );
     }

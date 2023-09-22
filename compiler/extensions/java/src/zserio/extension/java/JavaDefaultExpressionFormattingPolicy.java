@@ -434,7 +434,12 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
 
     protected abstract String getIdentifierForTypeEnum(EnumType resolvedType,
             JavaNativeMapper javaNativeMapper) throws ZserioExtensionException;
-    protected abstract String getIdentifierForEnumItem(EnumItem enumItem);
+
+    protected String getIdentifierForEnumItem(EnumItem enumItem)
+    {
+        return AccessorNameFormatter.getEnumeratorName(enumItem);
+    }
+
     protected abstract String getDotSeparatorForEnumItem();
     protected abstract String getAccessPrefixForCompoundType(ZserioType owner);
 
