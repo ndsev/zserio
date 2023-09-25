@@ -138,17 +138,18 @@ Check out as well the [Zserio Types Mapping](doc/ZserioTypesMapping.md) for type
 
 ### Extensions
 
-Zserio extension is a Java [extension](https://docs.oracle.com/javase/tutorial/ext/index.html) which must
-implement [`zserio.tools.Extension`](https://github.com/ndsev/zserio/blob/master/compiler/core/src/zserio/tools/Extension.java)
+Zserio extension is any Java [extension](https://docs.oracle.com/javase/tutorial/ext/index.html) which
+implements [`zserio.tools.Extension`](https://github.com/ndsev/zserio/blob/master/compiler/core/src/zserio/tools/Extension.java)
 interface.
+
+For example, if you need to implement a new code generator for Zserio, you need to implement special Zserio
+extension. Or another example could be a Zserio extension which only prints some schema statistics and it does
+not generate anything.
 
 Each Zserio extension should be packed in a single jar file.
 
 All Zserio extensions which are available on the Java classpath are automatically loaded during Zserio compiler
 startup.
-
-For example, if you need to implement a new code generator for Zserio, you need to implement special Zserio
-extension.
 
 More information how to implement a new Zserio extension can be found in the
 [Zserio extension sample](https://github.com/ndsev/zserio-extension-sample#zserio-extension-sample).
