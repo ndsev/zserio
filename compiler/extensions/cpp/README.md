@@ -6,6 +6,10 @@ For a **quick start** see the [C++ Tutorial](https://github.com/ndsev/zserio-tut
 
 For an **API documentation** see the [C++ Runtime Library](https://zserio.org/doc/runtime/latest/cpp).
 
+## Supported C++ Standard
+
+Zserio C++ generator supports the C++11 standard which was published as ISO/IEC 14882:2011.
+
 ## Supported Platforms
 
 Zserio C++ generator supports the following platforms:
