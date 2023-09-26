@@ -846,6 +846,9 @@ test_perf()
     fi
 
     # generate sources using zserio
+    local PYTHON_VERSION_STRING
+    get_python_version_string PYTHON_VERSION_STRING
+    local TEST_PYTHON_OUT_DIR="${TEST_OUT_DIR}/python/${PYTHON_VERSION_STRING}"
     if [[ ${SWITCH_RUN_ONLY} == 0 ]] ; then
         local ZSERIO_ARGS=("-withTypeInfoCode" "-withReflectionCode")
         if [[ ${#CPP_TARGETS[@]} -ne 0 ]] ; then
@@ -857,8 +860,8 @@ test_perf()
             ZSERIO_ARGS+=("-java" "${TEST_OUT_DIR}/java/gen")
         fi
         if [[ ${PARAM_PYTHON} == 1 || ${PARAM_PYTHON_CPP} == 1 ]] ; then
-            rm -rf "${TEST_OUT_DIR}/python"
-            ZSERIO_ARGS+=("-python" "${TEST_OUT_DIR}/python/gen")
+            rm -rf "${PYTHON_TEST_OUT_DIR}"
+            ZSERIO_ARGS+=("-python" "${TEST_PYTHON_OUT_DIR}/gen")
         fi
 
         run_zserio_tool "${UNPACKED_ZSERIO_RELEASE_DIR}" "${TEST_OUT_DIR}" \
@@ -919,7 +922,7 @@ test_perf()
         fi
 
         if [[ ${SWITCH_RUN_ONLY} == 0 ]] ; then
-            generate_python_perftest "${TEST_OUT_DIR}/python" "${SWITCH_BLOB_NAME}" ${SWITCH_NUM_ITERATIONS} \
+            generate_python_perftest "${TEST_PYTHON_OUT_DIR}" "${SWITCH_BLOB_NAME}" ${SWITCH_NUM_ITERATIONS} \
                                      ${SWITCH_TEST_CONFIG} ${SWITCH_PROFILE}
         fi
 
@@ -932,11 +935,11 @@ test_perf()
         local PYTHON_RUNTIME_DIR="${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/python"
 
         if [[ ${PARAM_PYTHON} == 1 ]] ; then
-            mkdir -p "${TEST_OUT_DIR}/python/python-pure"
-            pushd "${TEST_OUT_DIR}/python/python-pure" > /dev/null
+            mkdir -p "${TEST_PYTHON_OUT_DIR}/python-pure"
+            pushd "${TEST_PYTHON_OUT_DIR}/python-pure" > /dev/null
             ZSERIO_PYTHOM_IMPLEMENTATION="python" \
-            PYTHONPATH="${PYTHON_RUNTIME_DIR}:${TEST_OUT_DIR}/python/gen" \
-            python ${TEST_OUT_DIR}/python/src/perftest.py \
+            PYTHONPATH="${PYTHON_RUNTIME_DIR}:${TEST_PYTHON_OUT_DIR}/gen" \
+            python ${TEST_PYTHON_OUT_DIR}/src/perftest.py \
                    --log-path="PerformanceTest.log" ${IS_JSON} --input-path "${INPUT_PATH}"
             if [ $? -ne 0 ] ; then
                 popd > /dev/null
@@ -948,7 +951,7 @@ test_perf()
         if [[ ${PARAM_PYTHON_CPP} == 1 ]] ; then
             if [[ ${SWITCH_RUN_ONLY} == 0 ]] ; then
                 python "${PYTHON_RUNTIME_DIR}/zserio_cpp/setup.py" build \
-                       --build-base="${TEST_OUT_DIR}/python/zserio_cpp" \
+                       --build-base="${TEST_PYTHON_OUT_DIR}/zserio_cpp" \
                        --cpp-runtime-dir=${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/cpp
                 if [ $? -ne 0 ] ; then
                     stderr_echo "Failed to build C++ runtime binding to Python!"
@@ -957,17 +960,17 @@ test_perf()
             fi
 
             local ZSERIO_CPP_DIR
-            ZSERIO_CPP_DIR=$(ls -d1 "${TEST_OUT_DIR}/python/zserio_cpp/lib"*)
+            ZSERIO_CPP_DIR=$(ls -d1 "${TEST_PYTHON_OUT_DIR}/zserio_cpp/lib"*)
             if [ $? -ne 0 ] ; then
                 stderr_echo "Failed to locate C++ runtime binding to Python!"
                 return 1
             fi
 
-            mkdir -p "${TEST_OUT_DIR}/python/python-cpp"
-            pushd "${TEST_OUT_DIR}/python/python-cpp" > /dev/null
+            mkdir -p "${TEST_PYTHON_OUT_DIR}/python-cpp"
+            pushd "${TEST_PYTHON_OUT_DIR}/python-cpp" > /dev/null
             ZSERIO_PYTHOM_IMPLEMENTATION="cpp" \
-            PYTHONPATH="${PYTHON_RUNTIME_DIR}:${TEST_OUT_DIR}/python/gen:${ZSERIO_CPP_DIR}" \
-            python ${TEST_OUT_DIR}/python/src/perftest.py \
+            PYTHONPATH="${PYTHON_RUNTIME_DIR}:${TEST_PYTHON_OUT_DIR}/gen:${ZSERIO_CPP_DIR}" \
+            python ${TEST_PYTHON_OUT_DIR}/src/perftest.py \
                    --log-path="PerformanceTest.log" ${IS_JSON} --input-path "${INPUT_PATH}"
             if [ $? -ne 0 ] ; then
                 popd > /dev/null
@@ -980,9 +983,9 @@ test_perf()
             local PROFDATA_FILE="PerformanceTest.prof"
             echo ""
             echo "Python profiling finished, use one of the following commands for analysis:"
-            echo "    python3 -m pstats ${TEST_OUT_DIR}/python/${PROFDATA_FILE}"
-            echo "    python3 -m snakeviz ${TEST_OUT_DIR}/python/${PROFDATA_FILE}"
-            echo "    python3 -m pyprof2calltree -k -i ${TEST_OUT_DIR}/python/${PROFDATA_FILE}"
+            echo "    python3 -m pstats ${TEST_PYTHON_OUT_DIR}/${PROFDATA_FILE}"
+            echo "    python3 -m snakeviz ${TEST_PYTHON_OUT_DIR}/${PROFDATA_FILE}"
+            echo "    python3 -m pyprof2calltree -k -i ${TEST_PYTHON_OUT_DIR}/${PROFDATA_FILE}"
         fi
     fi
 
@@ -1013,12 +1016,12 @@ test_perf()
         done
     fi
     if [[ ${PARAM_PYTHON} == 1 ]] ; then
-        local RESULTS=($(cat ${TEST_OUT_DIR}/python/python-pure/PerformanceTest.log))
+        local RESULTS=($(cat ${TEST_PYTHON_OUT_DIR}/python-pure/PerformanceTest.log))
         printf "| %-21s | %14s | %10s | %15s | %10s | %14s |\n" \
                "Python" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]} ${RESULTS[3]} ${RESULTS[4]}
     fi
     if [[ ${PARAM_PYTHON_CPP} == 1 ]] ; then
-        local RESULTS=($(cat ${TEST_OUT_DIR}/python/python-cpp/PerformanceTest.log))
+        local RESULTS=($(cat ${TEST_PYTHON_OUT_DIR}/python-cpp/PerformanceTest.log))
         printf "| %-21s | %14s | %10s | %15s | %10s | %14s |\n" \
                "Python (C++)" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]} ${RESULTS[3]} ${RESULTS[4]}
     fi

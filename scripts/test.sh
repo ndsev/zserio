@@ -262,8 +262,12 @@ test_python()
     local MESSAGE="Zserio Python tests"
     echo "STARTING - ${MESSAGE}"
 
+    local PYTHON_VERSION_STRING
+    get_python_version_string PYTHON_VERSION_STRING
+    local TEST_PYTHON_OUT_DIR="${TEST_OUT_DIR}/python/${PYTHON_VERSION_STRING}"
+
     if [[ ${SWITCH_CLEAN} == 1 ]] ; then
-        rm -rf "${TEST_OUT_DIR}/python"
+        rm -rf "${TEST_PYTHON_OUT_DIR}"
     else
         activate_python_virtualenv "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}"
         if [ $? -ne 0 ] ; then
@@ -271,14 +275,14 @@ test_python()
         fi
 
         python "${UNPACKED_ZSERIO_RELEASE_DIR}"/runtime_libs/python/zserio_cpp/setup.py build \
-                --build-base="${TEST_OUT_DIR}/python/zserio_cpp" \
+                --build-base="${TEST_PYTHON_OUT_DIR}/zserio_cpp" \
                 --cpp-runtime-dir="${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/cpp/"
         if [ $? -ne 0 ] ; then
             stderr_echo "Failed to build C++ runtime binding to Python!"
             return 1
         fi
         local ZSERIO_CPP_DIR
-        ZSERIO_CPP_DIR=$(ls -d1 "${TEST_OUT_DIR}/python/zserio_cpp/lib"*)
+        ZSERIO_CPP_DIR=$(ls -d1 "${TEST_PYTHON_OUT_DIR}/zserio_cpp/lib"*)
         if [ $? -ne 0 ] ; then
             stderr_echo "Failed to locate C++ runtime binding to Python!"
             return 1
@@ -293,7 +297,7 @@ test_python()
         done
 
         local TEST_ARGS=("--release_dir=${UNPACKED_ZSERIO_RELEASE_DIR}"
-                         "--build_dir=${TEST_OUT_DIR}/python"
+                         "--build_dir=${TEST_PYTHON_OUT_DIR}"
                          "--java=${JAVA_BIN}")
         TEST_ARGS+=("--filter=${TEST_FILTER}")
         local TEST_FILE="${TEST_SRC_DIR}/tests.py"
@@ -323,7 +327,7 @@ test_python()
         fi
     fi
 
-    compare_test_data "${TEST_SRC_DIR}" "${TEST_OUT_DIR}/python" TEST_SUITES[@] "Python"
+    compare_test_data "${TEST_SRC_DIR}" "${TEST_PYTHON_OUT_DIR}" TEST_SUITES[@] "Python"
     if [ $? -ne 0 ] ; then
         stderr_echo "${MESSAGE} failed!"
         return 1

@@ -100,9 +100,9 @@ run_benchmark()
             TARGET="C++ (${TARGET})"
         elif [[ "${TARGET}" == "java/"* ]] ; then
             TARGET="Java"
-        elif [[ "${TARGET}" == "python/python-pure"* ]] ; then
+        elif [[ "${TARGET}" == *"python-pure/"* ]] ; then
             TARGET="Python"
-        elif [[ "${TARGET}" == "python/python-cpp"* ]] ; then
+        elif [[ "${TARGET}" == *"python-cpp/"* ]] ; then
             TARGET="Python (C++)"
         fi
 

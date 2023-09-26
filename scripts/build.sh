@@ -621,7 +621,9 @@ main()
         echo "${ACTION_DESCRIPTION} Zserio Python runtime library."
         echo
 
-        local PYTHON_RUNTIME_BUILD_DIR="${ZSERIO_BUILD_DIR}/runtime_libs/python"
+        local PYTHON_VERSION_STRING
+        get_python_version_string PYTHON_VERSION_STRING
+        local PYTHON_RUNTIME_BUILD_DIR="${ZSERIO_BUILD_DIR}/runtime_libs/python/${PYTHON_VERSION_STRING}"
         if [[ ${SWITCH_CLEAN} == 1 ]] ; then
             rm -rf "${PYTHON_RUNTIME_BUILD_DIR}/"
         else

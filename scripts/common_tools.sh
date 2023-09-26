@@ -208,6 +208,19 @@ get_python_version()
     done
 }
 
+# Get python subdirectory name according to the python version.
+get_python_version_string()
+{
+    exit_if_argc_ne $# 1
+    local PYTHON_VERSION_STRING_OUT="$1"; shift
+
+    local PYTHON_VERSION=()
+    get_python_version "${PYTHON}" PYTHON_VERSION
+    local PYTHON_VERSION_NAME="${PYTHON_VERSION[@]}"
+
+    eval ${PYTHON_VERSION_STRING_OUT}="'${PYTHON_VERSION_NAME// /.}'"
+}
+
 # Check python version.
 check_python_version()
 {
@@ -276,7 +289,9 @@ activate_python_virtualenv()
     local ZSERIO_PROJECT_ROOT="$1"; shift
     local ZSERIO_BUILD_DIR="$1"; shift
 
-    local PYTHON_VIRTUALENV_ROOT="${PYTHON_VIRTUALENV:-"${ZSERIO_BUILD_DIR}/pyenv"}"
+    local PYTHON_VERSION_STRING
+    get_python_version_string PYTHON_VERSION_STRING
+    local PYTHON_VIRTUALENV_ROOT="${PYTHON_VIRTUALENV:-"${ZSERIO_BUILD_DIR}/pyenv/${PYTHON_VERSION_STRING}"}"
     local PYTHON_VIRTUALENV_ACTIVATE
     detect_python_virtualenv_activate "${PYTHON_VIRTUALENV_ROOT}" PYTHON_VIRTUALENV_ACTIVATE
 
