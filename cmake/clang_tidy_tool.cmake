@@ -22,13 +22,13 @@ execute_process(
         --config-file "${CONFIG_FILE}"
         --header-filter "${HEADER_FILTER}"
     OUTPUT_VARIABLE CLANG_TIDY_OUTPUT
-    ERROR_VARIABLE CLANG_TIDY_ERROR_OUTPUT # currently ignored
+    ERROR_VARIABLE CLANG_TIDY_ERROR_OUTPUT
     RESULT_VARIABLE CLANG_TIDY_RESULT
 )
 
 file(APPEND "${OUTPUT_FILE}" "${CLANG_TIDY_OUTPUT}")
 
 if (NOT ${CLANG_TIDY_RESULT} EQUAL 0)
-    message(STATUS "Clang Tidy output:\n${CLANG_TIDY_OUTPUT}")
+    message(STATUS "Clang Tidy output:\n${CLANG_TIDY_OUTPUT}\n${CLANG_TIDY_ERROR_OUTPUT}")
     message(FATAL_ERROR "Clang Tidy Tool failed!")
 endif ()
