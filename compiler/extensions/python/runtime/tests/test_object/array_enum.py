@@ -41,9 +41,9 @@ class ArrayEnum(enum.Enum):
         attribute_list = {
             zserio.typeinfo.TypeAttribute.UNDERLYING_TYPE : zserio.typeinfo.TypeInfo('int8', int),
             zserio.typeinfo.TypeAttribute.ENUM_ITEMS: [
-                zserio.typeinfo.ItemInfo('VALUE1', ArrayEnum.VALUE1),
-                zserio.typeinfo.ItemInfo('VALUE2', ArrayEnum.VALUE2),
-                zserio.typeinfo.ItemInfo('VALUE3', ArrayEnum.VALUE3)
+                zserio.typeinfo.ItemInfo('VALUE1', ArrayEnum.VALUE1, False, False),
+                zserio.typeinfo.ItemInfo('VALUE2', ArrayEnum.VALUE2, False, False),
+                zserio.typeinfo.ItemInfo('VALUE3', ArrayEnum.VALUE3, False, False)
             ]
         }
 

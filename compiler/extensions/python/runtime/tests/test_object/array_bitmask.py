@@ -39,9 +39,9 @@ class ArrayBitmask:
         attribute_list = {
             zserio.typeinfo.TypeAttribute.UNDERLYING_TYPE : zserio.typeinfo.TypeInfo('uint8', int),
             zserio.typeinfo.TypeAttribute.BITMASK_VALUES: [
-                zserio.typeinfo.ItemInfo('CREATE', ArrayBitmask.Values.CREATE),
-                zserio.typeinfo.ItemInfo('READ', ArrayBitmask.Values.READ),
-                zserio.typeinfo.ItemInfo('WRITE', ArrayBitmask.Values.WRITE)
+                zserio.typeinfo.ItemInfo('CREATE', ArrayBitmask.Values.CREATE, False, False),
+                zserio.typeinfo.ItemInfo('READ', ArrayBitmask.Values.READ, False, False),
+                zserio.typeinfo.ItemInfo('WRITE', ArrayBitmask.Values.WRITE, False, False)
             ]
         }
 

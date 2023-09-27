@@ -99,6 +99,8 @@ class TypeInfoTest(unittest.TestCase):
         self.assertIsNone(case_info.field)
 
     def test_item_info(self):
-        item_info = ItemInfo("one", TypeInfoTest.DummyEnum.ONE)
+        item_info = ItemInfo("one", TypeInfoTest.DummyEnum.ONE, False, False)
         self.assertEqual("one", item_info.schema_name)
         self.assertEqual(TypeInfoTest.DummyEnum.ONE, item_info.py_item)
+        self.assertEqual(False, item_info.is_deprecated)
+        self.assertEqual(False, item_info.is_removed)

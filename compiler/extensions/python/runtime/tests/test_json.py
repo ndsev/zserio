@@ -40,9 +40,9 @@ class JsonWriterTest(unittest.TestCase):
 
         test_enum_type_info = TypeInfo("TestEnum", TestEnum, attributes={
             TypeAttribute.ENUM_ITEMS : [
-                ItemInfo("ZERO", TestEnum.ZERO),
-                ItemInfo("One", TestEnum.ONE),
-                ItemInfo("MINUS_ONE", TestEnum.MINUS_ONE)
+                ItemInfo("ZERO", TestEnum.ZERO, False, False),
+                ItemInfo("One", TestEnum.ONE, False, False),
+                ItemInfo("MINUS_ONE", TestEnum.MINUS_ONE, False, False)
             ]
         })
 
@@ -88,9 +88,9 @@ class JsonWriterTest(unittest.TestCase):
 
         test_bitmask_type_info = TypeInfo("TestBitmask", TestBitmask, attributes={
             TypeAttribute.BITMASK_VALUES : [
-                ItemInfo("ZERO", TestBitmask.Values.ZERO),
-                ItemInfo("One", TestBitmask.Values.ONE),
-                ItemInfo("TWO", TestBitmask.Values.TWO)
+                ItemInfo("ZERO", TestBitmask.Values.ZERO, False, False),
+                ItemInfo("One", TestBitmask.Values.ONE, False, False),
+                ItemInfo("TWO", TestBitmask.Values.TWO, False, False)
             ]
         })
 

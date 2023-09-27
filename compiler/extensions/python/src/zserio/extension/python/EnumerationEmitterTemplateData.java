@@ -22,7 +22,6 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
     {
         super(context, enumType, enumType);
 
-        importPackage("enum");
         importPackage("typing");
         importPackage("zserio");
 
@@ -70,8 +69,10 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         public EnumItemData(TemplateDataContext context, EnumItem enumItem) throws ZserioExtensionException
         {
             schemaName = enumItem.getName();
-            name = PythonSymbolConverter.enumItemToSymbol(enumItem.getName());
+            name = PythonSymbolConverter.enumItemToSymbol(enumItem.getName(), enumItem.isRemoved());
             value = PythonLiteralFormatter.formatDecimalLiteral(enumItem.getValue());
+            isDeprecated = enumItem.isDeprecated();
+            isRemoved = enumItem.isRemoved();
             docComments = DocCommentsDataCreator.createData(context, enumItem);
         }
 
@@ -90,6 +91,16 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
             return value;
         }
 
+        public boolean getIsDeprecated()
+        {
+            return isDeprecated;
+        }
+
+        public boolean getIsRemoved()
+        {
+            return isRemoved;
+        }
+
         public DocCommentsTemplateData getDocComments()
         {
             return docComments;
@@ -98,6 +109,8 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         private final String schemaName;
         private final String name;
         private final String value;
+        private final boolean isDeprecated;
+        private final boolean isRemoved;
         private final DocCommentsTemplateData docComments;
     }
 

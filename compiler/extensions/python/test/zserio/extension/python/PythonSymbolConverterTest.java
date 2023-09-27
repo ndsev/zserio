@@ -24,12 +24,25 @@ public class PythonSymbolConverterTest
     @Test
     public void enumItemToSymbol()
     {
-        assertEquals("MY_LONG_ENUM_ITEM", PythonSymbolConverter.enumItemToSymbol("MY_LONG_ENUM_ITEM"));
-        assertEquals("MY_LONG_ENUM_ITEM", PythonSymbolConverter.enumItemToSymbol("MyLongEnumItem"));
-        assertEquals("MY_LONG_ENUM_ITEM", PythonSymbolConverter.enumItemToSymbol("my_long_enum_item"));
-        assertEquals("MY_LONG6_ENUM_ITEM", PythonSymbolConverter.enumItemToSymbol("MyLong6EnumItem"));
-        assertEquals("MY_LONG6ACD_ENUM_ITEM", PythonSymbolConverter.enumItemToSymbol("MyLong6ACDEnumItem"));
-        assertEquals("MY_LONG_6ACD_ENUM_ITEM", PythonSymbolConverter.enumItemToSymbol("MyLong_6ACD_EnumItem"));
+        assertEquals("MY_LONG_ENUM_ITEM", PythonSymbolConverter.enumItemToSymbol("MY_LONG_ENUM_ITEM", false));
+        assertEquals("MY_LONG_ENUM_ITEM", PythonSymbolConverter.enumItemToSymbol("MyLongEnumItem", false));
+        assertEquals("MY_LONG_ENUM_ITEM", PythonSymbolConverter.enumItemToSymbol("my_long_enum_item", false));
+        assertEquals("MY_LONG6_ENUM_ITEM", PythonSymbolConverter.enumItemToSymbol("MyLong6EnumItem", false));
+        assertEquals("MY_LONG6ACD_ENUM_ITEM", PythonSymbolConverter.enumItemToSymbol("MyLong6ACDEnumItem", false));
+        assertEquals("MY_LONG_6ACD_ENUM_ITEM", PythonSymbolConverter.enumItemToSymbol("MyLong_6ACD_EnumItem", false));
+
+        assertEquals("ZSERIO_REMOVED_MY_LONG_ENUM_ITEM",
+                PythonSymbolConverter.enumItemToSymbol("MY_LONG_ENUM_ITEM", true));
+        assertEquals("ZSERIO_REMOVED_MY_LONG_ENUM_ITEM",
+                PythonSymbolConverter.enumItemToSymbol("MyLongEnumItem", true));
+        assertEquals("ZSERIO_REMOVED_MY_LONG_ENUM_ITEM",
+                PythonSymbolConverter.enumItemToSymbol("my_long_enum_item", true));
+        assertEquals("ZSERIO_REMOVED_MY_LONG6_ENUM_ITEM",
+                PythonSymbolConverter.enumItemToSymbol("MyLong6EnumItem", true));
+        assertEquals("ZSERIO_REMOVED_MY_LONG6ACD_ENUM_ITEM",
+                PythonSymbolConverter.enumItemToSymbol("MyLong6ACDEnumItem", true));
+        assertEquals("ZSERIO_REMOVED_MY_LONG_6ACD_ENUM_ITEM",
+                PythonSymbolConverter.enumItemToSymbol("MyLong_6ACD_EnumItem", true));
     }
 
     @Test

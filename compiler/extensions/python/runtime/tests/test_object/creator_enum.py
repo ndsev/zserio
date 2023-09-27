@@ -41,9 +41,9 @@ class CreatorEnum(enum.Enum):
         attribute_list = {
             zserio.typeinfo.TypeAttribute.UNDERLYING_TYPE : zserio.typeinfo.TypeInfo('int8', int),
             zserio.typeinfo.TypeAttribute.ENUM_ITEMS: [
-                zserio.typeinfo.ItemInfo('ONE', CreatorEnum.ONE),
-                zserio.typeinfo.ItemInfo('TWO', CreatorEnum.TWO),
-                zserio.typeinfo.ItemInfo('MinusOne', CreatorEnum.MINUS_ONE)
+                zserio.typeinfo.ItemInfo('ONE', CreatorEnum.ONE, False, False),
+                zserio.typeinfo.ItemInfo('TWO', CreatorEnum.TWO, False, False),
+                zserio.typeinfo.ItemInfo('MinusOne', CreatorEnum.MINUS_ONE, False, False)
             ]
         }
 

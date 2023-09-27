@@ -8,13 +8,13 @@
 <@future_annotations/>
 <@all_imports packageImports symbolImports typeImports/>
 
-class ${name}(enum.Enum):
+class ${name}(zserio.Enum):
 <#if withCodeComments && docComments??>
 <@doc_comments docComments, 1/>
 
 </#if>
 <#list items as item>
-    ${item.name} = ${item.value}
+    ${item.name} = ${item.value}<#if item.isDeprecated>, zserio.DeprecatedItem</#if>
     <#if withCodeComments && item.docComments??>
     <@doc_comments item.docComments, 1/>
     </#if>
@@ -88,7 +88,8 @@ class ${name}(enum.Enum):
     </#if>
             zserio.typeinfo.TypeAttribute.ENUM_ITEMS: [
     <#list items as item>
-                zserio.typeinfo.ItemInfo('${item.schemaName}', ${name}.${item.name})<#if item?has_next>,</#if>
+                zserio.typeinfo.ItemInfo('${item.schemaName}', ${name}.${item.name}, <#rt>
+                        <#lt>${item.isDeprecated?then("True", "False")}, ${item.isRemoved?then("True", "False")})<#if item?has_next>,</#if>
     </#list>
             ]
         }
@@ -197,6 +198,34 @@ class ${name}(enum.Enum):
     </#if>
         return bitposition + self.bitsizeof_packed(delta_context, bitposition)
 
+<#function get_removed_items items>
+    <#local removedItems=[]>
+    <#list items as item>
+        <#if item.isRemoved>
+            <#local removedItems += [item]>
+        </#if>
+    </#list>
+    <#return removedItems>
+</#function>
+<#macro removed_items_check items>
+    <#local removedItems=get_removed_items(items)>
+    <#if removedItems?has_content>
+        <#if removedItems?size == 1>
+        if self == ${name}.${removedItems[0].name}:
+        <#else>
+        if self in (<#rt>
+            <#list removedItems as item>
+                    ${name}.${item.name}<#t>
+                <#if item?has_next>
+                    <#lt>,
+                    <#nt><#rt><#-- trim only newline -->
+                </#if>
+            </#list>
+            <#lt>):
+        </#if>
+            raise zserio.PythonRuntimeException(f"Trying to write removed enumeration item '{self}'!")
+    </#if>
+</#macro>
     def write(self, writer: zserio.BitStreamWriter) -> None:
     <#if withCodeComments>
         """
@@ -206,6 +235,7 @@ class ${name}(enum.Enum):
         """
 
     </#if>
+        <@removed_items_check items/>
         writer.write_${runtimeFunction.suffix}(self.value<#rt>
                                                <#lt><#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>)
 
@@ -221,5 +251,6 @@ class ${name}(enum.Enum):
         """
 
     </#if>
+        <@removed_items_check items/>
         delta_context.write(<@array_traits_create underlyingTypeInfo.arrayTraits, bitSize!/>, writer, self.value)
 </#if>

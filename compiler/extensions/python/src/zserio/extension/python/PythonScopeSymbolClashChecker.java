@@ -8,6 +8,7 @@ import java.util.Set;
 import zserio.ast.BitmaskType;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
+import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
@@ -63,8 +64,11 @@ class PythonScopeSymbolClashChecker extends DefaultTreeWalker
     public void beginEnumeration(EnumType enumType) throws ZserioExtensionException
     {
         final Map<String, String> symbolMap = new HashMap<String, String>();
-        for (ScopeSymbol symbol : enumType.getItems())
-            addSymbol(symbolMap, symbol, PythonSymbolConverter.enumItemToSymbol(symbol.getName()));
+        for (EnumItem enumItem: enumType.getItems())
+        {
+            addSymbol(symbolMap, enumItem,
+                    PythonSymbolConverter.enumItemToSymbol(enumItem.getName(), enumItem.isRemoved()));
+        }
     }
 
     @Override

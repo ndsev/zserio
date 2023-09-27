@@ -439,7 +439,7 @@ class ItemInfo:
     Item info class which provides information about items of generated enumerable types.
     """
 
-    def __init__(self, schema_name: str, py_item: typing.Any):
+    def __init__(self, schema_name: str, py_item: typing.Any, is_deprecated: bool, is_removed: bool):
         """
         Constructor.
 
@@ -449,6 +449,8 @@ class ItemInfo:
 
         self._schema_name = schema_name
         self._py_item = py_item
+        self._is_deprecated = is_deprecated
+        self._is_removed = is_removed
 
     @property
     def schema_name(self) -> str:
@@ -469,3 +471,23 @@ class ItemInfo:
         """
 
         return self._py_item
+
+    @property
+    def is_deprecated(self) -> bool:
+        """
+        Gets flag whether the item is deprecated.
+
+        :returns: True when the item is deprecated, false otherwise.
+        """
+
+        return self._is_deprecated
+
+    @property
+    def is_removed(self) -> bool:
+        """
+        Gets flag whether the item is removed.
+
+        :returns: True when the item is removed, false otherwise.
+        """
+
+        return self._is_removed
