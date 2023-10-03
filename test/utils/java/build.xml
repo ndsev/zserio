@@ -20,6 +20,10 @@ spotbugs.home_dir       - Location of the spotbugs tool. If not set, spotbugs is
 
     <property name="test_utils.jar_file" value="${test_utils.build_dir}/jar/test_utils.jar"/>
 
+    <property name="3rdparty.jar_dir" location="${zserio.root_dir}/3rdparty/java"/>
+    <property name="3rdparty.junit.jar_file"
+        location="${3rdparty.jar_dir}/junit-platform-console-standalone-1.8.2.jar"/>
+
     <target name="prepare">
         <mkdir dir="${test_utils.build_dir}/classes"/>
     </target>
@@ -30,6 +34,9 @@ spotbugs.home_dir       - Location of the spotbugs tool. If not set, spotbugs is
         <javac destdir="${test_utils.classes_dir}" debug="on" encoding="utf8" includeAntRuntime="false">
             <compilerarg value="-Xlint:all"/>
             <compilerarg value="-Werror"/>
+            <classpath>
+                <pathelement location="${3rdparty.junit.jar_file}"/>
+            </classpath>
             <src location="${test_utils.src_dir}"/>
         </javac>
     </target>

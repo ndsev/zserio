@@ -11,7 +11,9 @@
 
     <target name="gen" depends="gen.check" unless="enumeration_types.zs.gen_is_uptodate">
         <testGenClean testName="enumeration_types"/>
-        <testGen testName="enumeration_types" zsFile="enumeration_types.zs"/>
+        <testGen testName="enumeration_types" zsFile="enumeration_types.zs">
+            <arg name="withTypeInfoCode"/>
+        </testGen>
     </target>
 
     <target name="gen.checkWarnings" depends="gen">
