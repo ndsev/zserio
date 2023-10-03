@@ -136,6 +136,7 @@ set(TEST_OBJECT_SRCS
 )
 
 set(ZSERIO_CPP_RUNTIME_TEST_SRCS
+    zserio/deprecated_attribute/DeprecatedAttributeTest.cpp
     zserio/AllocatorHolderTest.cpp
     zserio/AllocatorPropagatingCopyTest.cpp
     zserio/AnyHolderTest.cpp
@@ -206,3 +207,7 @@ target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${SQLITE_INCDIR})
 target_link_libraries(${PROJECT_NAME} PRIVATE ZserioCppRuntime gtest_main ${SQLITE_LIBRARY})
 
 gtest_add_tests(${PROJECT_NAME} "--gtest_output=xml" ${ZSERIO_CPP_RUNTIME_TEST_SRCS})
+
+add_subdirectory(zserio/deprecated_attribute)
+set_source_files_properties(zserio/deprecated_attribute/DeprecatedAttributeTest.cpp
+    PROPERTIES COMPILE_DEFINITIONS ${DEPRECATED_ATTRIBUTE_COMPILE_DEFINITIONS})

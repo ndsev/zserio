@@ -70,8 +70,10 @@ function(create_coverage_target)
             ${cov_tgt_name}
             COMMAND ${CMAKE_COMMAND} -E make_directory ${cov_binary_dir}
             # run tests again because ctest runs tests separately (default.profraw contains only the last test)
-            COMMAND ${cov_test_exectable} > /dev/null
-            COMMAND ${LLVM_PROFDATA_BIN} merge --sparse default.profraw -o ${cov_binary_dir}/runtime.profdata
+            COMMAND bash -c "cd ${ZserioCppRuntimeTest_BINARY_DIR} && ${cov_test_exectable} > /dev/null"
+            COMMAND ${LLVM_PROFDATA_BIN} merge
+                --sparse ${ZserioCppRuntimeTest_BINARY_DIR}/default.profraw
+                -o ${cov_binary_dir}/runtime.profdata
             COMMAND ${LLVM_COV_BIN} show ${cov_test_exectable}
                 -show-expansions -show-line-counts -show-regions -use-color
                 -instr-profile=${cov_binary_dir}/runtime.profdata
