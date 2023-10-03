@@ -51,6 +51,9 @@ public class EnumerationTemplateData extends PackageTemplateDataBase
             value = hasValueExpression ? docExpressionFormatter.formatGetter(valueExpression) :
                     enumItem.getValue().toString();
 
+            isDeprecated = enumItem.isDeprecated();
+            isRemoved = enumItem.isRemoved();
+
             docComments = new DocCommentsTemplateData(context, enumItem.getDocComments());
 
             seeSymbols = new ArrayList<SeeSymbolTemplateData>();
@@ -84,6 +87,16 @@ public class EnumerationTemplateData extends PackageTemplateDataBase
             return value;
         }
 
+        public boolean getIsDeprecated()
+        {
+            return isDeprecated;
+        }
+
+        public boolean getIsRemoved()
+        {
+            return isRemoved;
+        }
+
         public DocCommentsTemplateData getDocComments()
         {
             return docComments;
@@ -97,6 +110,8 @@ public class EnumerationTemplateData extends PackageTemplateDataBase
         private final SymbolTemplateData symbol;
         private final boolean hasValueExpression;
         private final String value;
+        private final boolean isDeprecated;
+        private final boolean isRemoved;
         private final DocCommentsTemplateData docComments;
         private final List<SeeSymbolTemplateData> seeSymbols;
     }
