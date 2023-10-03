@@ -7,7 +7,8 @@ from testutils import getZserioApi
 class BitfieldEnumTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "enumeration_types.zs").bitfield_const_enum
+        cls.api = getZserioApi(__file__, "enumeration_types.zs",
+                               extraArgs=["-withTypeInfoCode"]).bitfield_const_enum
 
     def testValues(self):
         self.assertEqual(NONE_VALUE, self.api.Color.NONE.value)

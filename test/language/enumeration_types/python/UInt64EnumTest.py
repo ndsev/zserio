@@ -7,7 +7,7 @@ from testutils import getZserioApi
 class UInt64EnumTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "enumeration_types.zs").uint64_enum
+        cls.api = getZserioApi(__file__, "enumeration_types.zs", extraArgs=["-withTypeInfoCode"]).uint64_enum
 
     def testValues(self):
         self.assertEqual(NONE_COLOR_VALUE, self.api.DarkColor.NONE_COLOR.value)
@@ -21,7 +21,7 @@ class UInt64EnumTest(unittest.TestCase):
         self.assertEqual(self.api.DarkColor.from_name("DARK_BLUE"), self.api.DarkColor.DARK_BLUE)
         self.assertEqual(self.api.DarkColor.from_name("DARK_GREEN"), self.api.DarkColor.DARK_GREEN)
         with self.assertRaises(zserio.PythonRuntimeException):
-            self.api.DarkColor.from_name("NONEXISTING")
+            self.api.DarkColor.from_name("noneColor")
 
     def testFromReader(self):
         writer = zserio.BitStreamWriter()

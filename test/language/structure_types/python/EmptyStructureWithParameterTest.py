@@ -6,7 +6,8 @@ from testutils import getZserioApi
 class EmptyStructureTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "structure_types.zs").empty_structure_with_parameter
+        cls.api = getZserioApi(__file__, "structure_types.zs",
+                               extraArgs=["-withTypeInfoCode"]).empty_structure_with_parameter
 
     def testParamConstructor(self):
         emptyStructureWithParameter = self.api.EmptyStructureWithParameter(1)

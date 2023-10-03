@@ -7,7 +7,8 @@ from testutils import getZserioApi
 class FieldConstructorClashingTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "structure_types.zs").field_constructor_clashing
+        cls.api = getZserioApi(__file__, "structure_types.zs",
+                               extraArgs=["-withTypeInfoCode"]).field_constructor_clashing
 
     def testWriteRead(self):
         fieldConstructorClashing = self._createFieldConstructorClashing()

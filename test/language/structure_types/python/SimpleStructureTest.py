@@ -6,7 +6,8 @@ from testutils import getZserioApi
 class SimpleStructureTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "structure_types.zs").simple_structure
+        cls.api = getZserioApi(__file__, "structure_types.zs",
+                               extraArgs=["-withTypeInfoCode"]).simple_structure
 
     def testConstructor(self):
         simpleStructure = self.api.SimpleStructure()
