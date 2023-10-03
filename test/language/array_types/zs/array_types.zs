@@ -11,6 +11,7 @@ import array_types.fixed_array_uint8.*;
 import array_types.packed_arrays_mapping.*;
 import array_types.packed_auto_array_bitfield_param.*;
 import array_types.packed_auto_array_empty_compounds.*;
+import array_types.packed_auto_array_removed_enum_item.*;
 import array_types.packed_auto_array_struct_recursion.*;
 import array_types.packed_auto_array_struct_with_bytes.*;
 import array_types.packed_auto_array_struct_with_extern.*;

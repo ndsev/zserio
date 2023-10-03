@@ -1233,16 +1233,23 @@ protected:
         const ItemInfo& OneItem = items[0];
         ASSERT_EQ("One"_sv, OneItem.schemaName);
         ASSERT_EQ(0, OneItem.value);
+        ASSERT_FALSE(OneItem.isDeprecated);
+        ASSERT_FALSE(OneItem.isRemoved);
 
         // TWO
         const ItemInfo& TwoItem = items[1];
         ASSERT_EQ("_TWO"_sv, TwoItem.schemaName);
         ASSERT_EQ(5, TwoItem.value);
+        ASSERT_FALSE(TwoItem.isDeprecated);
+        ASSERT_FALSE(TwoItem.isRemoved);
 
         // ItemThree
         const ItemInfo& ItemThreeItem = items[2];
         ASSERT_EQ("ItemThree"_sv, ItemThreeItem.schemaName);
         ASSERT_EQ(6, ItemThreeItem.value);
+        ASSERT_FALSE(ItemThreeItem.isDeprecated);
+        ASSERT_FALSE(ItemThreeItem.isRemoved);
+
     }
 
     void checkSimpleChoice(const ITypeInfo& typeInfo)
