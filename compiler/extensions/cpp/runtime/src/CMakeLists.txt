@@ -93,6 +93,7 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/SqliteFinalizer.h
     zserio/StringConvertUtil.h
     zserio/StringView.h
+    zserio/Traits.h
     zserio/TypeInfo.h
     zserio/TypeInfoUtil.cpp
     zserio/TypeInfoUtil.h
