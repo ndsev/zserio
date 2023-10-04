@@ -72,36 +72,30 @@ compare_test_data()
         if [ -d "${TEST_SUITE_DIR}" ] ; then
             local FIND_PARAMS="-name *.blob -o -name *.json -not -path *.mypy_cache* -not -name compile_commands.json"
             local TEST_SUITE_FILES=($("${FIND}" "${TEST_SUITE_DIR}" ${FIND_PARAMS} | sort))
-            local NUM_DATA_FILES=${#TEST_SUITE_FILES[@]}
-            # if referenced data directory does not exist, find would fail with error
-            if [ -d "${TEST_DATA_DIR}" ] ; then
-                local TEST_DATA_FILES=($("${FIND}" "${TEST_DATA_DIR}" ${FIND_PARAMS} | sort))
-            else
-                local TEST_DATA_FILES=()
-            fi
-
-            if [ ${NUM_DATA_FILES} -ne ${#TEST_DATA_FILES[@]} ] ; then
-                stderr_echo "Wrong number of data files!"
-                stderr_echo "\"${TEST_SUITE_DIR}\" contains ${NUM_DATA_FILES} data files," \
-                            "while \"${TEST_DATA_DIR}\" contains ${#TEST_DATA_FILES[@]} data files!"
-                echo
-                return 1
-            fi
 
             echo -n "${TEST_SUITE} ... "
             local NUM_BLOBS=0
             local NUM_JSONS=0
             local CMP_RESULT=0
-            for i in ${!TEST_SUITE_FILES[@]} ; do
-                if [[ "${TEST_SUITE_FILES[$i]}" == *.blob ]] ; then
+            for TEST_SUITE_FILE in ${TEST_SUITE_FILES[@]} ; do
+                local FILE_NAME="${TEST_SUITE_FILE##*/}"
+                local TEST_DATA_FILE="${TEST_DATA_DIR}/${FILE_NAME}"
+
+                if [ ! -e "${TEST_DATA_FILE}" ] ; then
+                    stderr_echo "Data file '${TEST_DATA_FILE}' doesn't exist!"
+                    echo
+                    return 1
+                fi
+
+                if [[ "${FILE_NAME}" == *.blob ]] ; then
                     NUM_BLOBS=$((NUM_BLOBS+1))
-                    cmp "${TEST_SUITE_FILES[$i]}" "${TEST_DATA_FILES[$i]}"
+                    cmp "${TEST_SUITE_FILE}" "${TEST_DATA_FILE}"
                     if [ $? -ne 0 ] ; then
                         CMP_RESULT=1
                     fi
                 else
                     NUM_JSONS=$((NUM_JSONS+1))
-                    diff --strip-trailing-cr "${TEST_SUITE_FILES[$i]}" "${TEST_DATA_FILES[$i]}"
+                    diff --strip-trailing-cr "${TEST_SUITE_FILE}" "${TEST_DATA_FILE}"
                     if [ $? -ne 0 ] ; then
                         CMP_RESULT=1
                     fi
