@@ -364,7 +364,6 @@ parse_arguments()
                 ;;
 
             "zserio")
-                eval ${PARAM_CORE_OUT}=1
                 eval ${PARAM_ZSERIO_OUT}=1
                 ;;
 
@@ -458,7 +457,8 @@ main()
           ${PARAM_JAVA_RUNTIME} != 0 ||
           ${PARAM_PYTHON} != 0 ||
           ${PARAM_XML} != 0 ||
-          ${PARAM_DOC} != 0 ]] ; then
+          ${PARAM_DOC} != 0 ||
+          ${PARAM_ZSERIO} != 0 ]] ; then
         set_global_java_variables
         if [ $? -ne 0 ] ; then
             return 1
@@ -526,8 +526,9 @@ main()
     fi
 
     # build Zserio core
-    if [[ ${PARAM_CORE} == 1 ]] ; then
-        echo "${ACTION_DESCRIPTION} Zserio compiler with all extensions."
+    if [[ ${PARAM_CORE} == 1 || ${PARAM_CPP} == 1 || ${PARAM_JAVA} == 1 || ${PARAM_PYTHON} == 1 ||
+            ${PARAM_XML} == 1 ||  ${PARAM_DOC} == 1 || ${PARAM_ZSERIO} == 1 ]] ; then
+        echo "${ACTION_DESCRIPTION} Zserio compiler core."
         echo
         compile_java "${ZSERIO_PROJECT_ROOT}/build.xml" ANT_PROPS[@] zserio_core.${JAVA_TARGET}
         if [ $? -ne 0 ] ; then
@@ -537,7 +538,7 @@ main()
     fi
 
     # build Zserio C++ extension
-    if [[ ${PARAM_CPP} == 1 ]] ; then
+    if [[ ${PARAM_CPP} == 1 || ${PARAM_ZSERIO} == 1 ]] ; then
         echo "${ACTION_DESCRIPTION} Zserio C++ extension."
         echo
         compile_java "${ZSERIO_PROJECT_ROOT}/compiler/extensions/cpp/build.xml" ANT_PROPS[@] ${JAVA_TARGET}
@@ -584,7 +585,7 @@ main()
     fi
 
     # build Zserio Java extension
-    if [[ ${PARAM_JAVA} == 1 ]] ; then
+    if [[ ${PARAM_JAVA} == 1 || ${PARAM_ZSERIO} == 1 ]] ; then
         echo "${ACTION_DESCRIPTION} Zserio Java extension."
         echo
         compile_java "${ZSERIO_PROJECT_ROOT}/compiler/extensions/java/build.xml" ANT_PROPS[@] ${JAVA_TARGET}
@@ -607,7 +608,7 @@ main()
     fi
 
     # build Zserio Python extension
-    if [[ ${PARAM_PYTHON} == 1 ]] ; then
+    if [[ ${PARAM_PYTHON} == 1 || ${PARAM_ZSERIO} == 1 ]] ; then
         echo "${ACTION_DESCRIPTION} Zserio Python extension."
         compile_java "${ZSERIO_PROJECT_ROOT}/compiler/extensions/python/build.xml" ANT_PROPS[@] ${JAVA_TARGET}
         if [ $? -ne 0 ] ; then
@@ -659,7 +660,7 @@ main()
     fi
 
     # build Zserio XML extension
-    if [[ ${PARAM_XML} == 1 ]] ; then
+    if [[ ${PARAM_XML} == 1 || ${PARAM_ZSERIO} == 1 ]] ; then
         echo "${ACTION_DESCRIPTION} Zserio XML extension."
         echo
         compile_java "${ZSERIO_PROJECT_ROOT}/compiler/extensions/xml/build.xml" ANT_PROPS[@] ${JAVA_TARGET}
@@ -670,7 +671,7 @@ main()
     fi
 
     # build Zserio Documentation extension
-    if [[ ${PARAM_DOC} == 1 ]] ; then
+    if [[ ${PARAM_DOC} == 1 || ${PARAM_ZSERIO} == 1 ]] ; then
         echo "${ACTION_DESCRIPTION} Zserio Documentation extension."
         echo
         compile_java "${ZSERIO_PROJECT_ROOT}/compiler/extensions/doc/build.xml" ANT_PROPS[@] ${JAVA_TARGET}
