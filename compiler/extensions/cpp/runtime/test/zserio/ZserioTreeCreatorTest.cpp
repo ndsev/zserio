@@ -264,9 +264,9 @@ TEST(ZserioTreeCreator, makeAnyValue)
 TEST(ZserioTreeCreatorTest, parseBitmaskStringValue)
 {
     static const ::std::array<ItemInfo, 3> values = {
-        ItemInfo{ makeStringView("READ"), static_cast<uint64_t>(1) },
-        ItemInfo{ makeStringView("READ_EXT"), static_cast<uint64_t>(2) },
-        ItemInfo{ makeStringView("READ_EXT_EXT"), static_cast<uint64_t>(4) }
+        ItemInfo{ makeStringView("READ"), static_cast<uint64_t>(1), false, false },
+        ItemInfo{ makeStringView("READ_EXT"), static_cast<uint64_t>(2), false, false },
+        ItemInfo{ makeStringView("READ_EXT_EXT"), static_cast<uint64_t>(4), false, false }
     };
 
     static const BitmaskTypeInfo<std::allocator<uint8_t>> typeInfo = {

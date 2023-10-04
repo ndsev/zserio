@@ -418,12 +418,14 @@ struct BasicCaseInfo
  */
 struct ItemInfo
 {
-    ItemInfo(StringView schemaName_, uint64_t value_) :
-            schemaName(schemaName_), value(value_)
+    ItemInfo(StringView schemaName_, uint64_t value_, bool isDeprecated_, bool isRemoved_) :
+            schemaName(schemaName_), value(value_), isDeprecated(isDeprecated_), isRemoved(isRemoved_)
     {}
 
     StringView schemaName; /**< enumeration item or bitmask value schema name */
     uint64_t value; /**< enumeration item or bitmask value cast to uint64_t */
+    bool isDeprecated; /**< flag whether the item is deprecated */
+    bool isRemoved; /**< flag whether the item is removed */
 };
 
 /**

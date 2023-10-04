@@ -36,9 +36,9 @@ public enum CreatorEnum implements zserio.runtime.io.PackableWriter, zserio.runt
                 zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo.getInt8(),
                 new java.util.ArrayList<java.util.function.Supplier<java.lang.Object>>(),
                 java.util.Arrays.asList(
-                            new zserio.runtime.typeinfo.ItemInfo("ONE", java.math.BigInteger.valueOf((byte)0)),
-                            new zserio.runtime.typeinfo.ItemInfo("TWO", java.math.BigInteger.valueOf((byte)1)),
-                            new zserio.runtime.typeinfo.ItemInfo("MinusOne", java.math.BigInteger.valueOf((byte)-1))
+                        new zserio.runtime.typeinfo.ItemInfo("ONE", java.math.BigInteger.valueOf((byte)0), false, false),
+                        new zserio.runtime.typeinfo.ItemInfo("TWO", java.math.BigInteger.valueOf((byte)1), false, false),
+                        new zserio.runtime.typeinfo.ItemInfo("MinusOne", java.math.BigInteger.valueOf((byte)-1), false , false)
                 )
             );
     }

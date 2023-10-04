@@ -245,7 +245,8 @@ public class DocCommentsTemplateData
         {
             if (scopeSymbol instanceof EnumItem)
             {
-                return "." + PythonSymbolConverter.enumItemToSymbol(scopeSymbol.getName());
+                final EnumItem enumItem = (EnumItem)scopeSymbol;
+                return "." + PythonSymbolConverter.enumItemToSymbol(enumItem.getName(), enumItem.isRemoved());
             }
             else if (scopeSymbol instanceof BitmaskValue)
             {

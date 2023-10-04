@@ -36,11 +36,18 @@ ${I}    <tr class="doc"><td colspan=2 class="indent">
 ${I}    </td></tr>
     </#if>
 ${I}    <tr>
+    <#if item.isDeprecated>
+        <#assign itemPrefix="@deprecated "/>
+    <#elseif item.isRemoved>
+        <#assign itemPrefix="@removed "/>
+    <#else>
+        <#assign itemPrefix=""/>
+    </#if>
     <#if item.hasValueExpression>
-${I}      <td class="indent"><@symbol_reference item.symbol/></td>
+${I}      <td class="indent">${itemPrefix}<@symbol_reference item.symbol/></td>
 ${I}      <td class="value-expression">= ${item.value}<#if item?has_next>,</#if></td>
     <#else>
-${I}      <td class="indent"><@symbol_reference item.symbol/><#if item?has_next>,</#if></td><td></td>
+${I}      <td class="indent">${itemPrefix}<@symbol_reference item.symbol/><#if item?has_next>,</#if></td><td></td>
     </#if>
 ${I}    </tr>
 ${I}  </tbody>

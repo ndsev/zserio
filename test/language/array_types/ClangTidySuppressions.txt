@@ -3,6 +3,7 @@ bugprone-forwarding-reference-overload:gen/array_types/auto_array_subtyped_uint8
 bugprone-forwarding-reference-overload:gen/array_types/auto_array_uint8/AutoArray.h
 bugprone-forwarding-reference-overload:gen/array_types/fixed_array_uint8/FixedArray.h
 bugprone-forwarding-reference-overload:gen/array_types/packed_auto_array_bitfield_param/ParameterizedBitfieldLength.h
+bugprone-forwarding-reference-overload:gen/array_types/packed_auto_array_removed_enum_item/PackedAutoArrayRemovedEnumItem.h
 bugprone-forwarding-reference-overload:gen/array_types/packed_auto_array_struct_with_bytes/PackedAutoArray.h
 bugprone-forwarding-reference-overload:gen/array_types/packed_auto_array_struct_with_extern/PackedAutoArray.h
 bugprone-forwarding-reference-overload:gen/array_types/packed_auto_array_struct_with_unpacked_field/PackedAutoArray.h
@@ -21,6 +22,7 @@ cert-err58-cpp:cpp/AutoArrayUInt8Test.cpp
 cert-err58-cpp:cpp/FixedArrayUInt8Test.cpp
 cert-err58-cpp:cpp/PackedAutoArrayBitfieldParamTest.cpp
 cert-err58-cpp:cpp/PackedAutoArrayEmptyCompoundsTest.cpp
+cert-err58-cpp:cpp/PackedAutoArrayRemovedEnumItemTest.cpp
 cert-err58-cpp:cpp/PackedAutoArrayStructRecursionTest.cpp
 cert-err58-cpp:cpp/PackedAutoArrayStructWithBytesTest.cpp
 cert-err58-cpp:cpp/PackedAutoArrayStructWithExternTest.cpp
@@ -51,6 +53,8 @@ cppcoreguidelines-pro-type-member-init:gen/array_types/variable_array_ternary_op
 google-explicit-constructor:gen/array_types/arrays_mapping/TestBitmask.h
 google-explicit-constructor:gen/array_types/packed_arrays_mapping/TestBitmask.h
 google-explicit-constructor:gen/array_types/packed_variable_array_struct/TestBitmask.h
+
+hicpp-multiway-paths-covered:gen/array_types/packed_auto_array_removed_enum_item/Traffic.cpp
 
 misc-no-recursion # reports also tested_release and some system headers
 

@@ -31,9 +31,9 @@ const ::zserio::pmr::ITypeInfo& ReflectableBitmask::typeInfo()
     static const ::zserio::Span<::zserio::StringView> underlyingTypeArguments;
 
     static const ::std::array<::zserio::ItemInfo, 3> values = {
-        ::zserio::ItemInfo{ ::zserio::makeStringView("CREATE"), static_cast<uint64_t>(UINT8_C(1)) },
-        ::zserio::ItemInfo{ ::zserio::makeStringView("READ"), static_cast<uint64_t>(UINT8_C(2)) },
-        ::zserio::ItemInfo{ ::zserio::makeStringView("WRITE"), static_cast<uint64_t>(UINT8_C(4)) }
+        ::zserio::ItemInfo{ ::zserio::makeStringView("CREATE"), static_cast<uint64_t>(UINT8_C(1)), false, false},
+        ::zserio::ItemInfo{ ::zserio::makeStringView("READ"), static_cast<uint64_t>(UINT8_C(2)), false, false},
+        ::zserio::ItemInfo{ ::zserio::makeStringView("WRITE"), static_cast<uint64_t>(UINT8_C(4)), false, false}
     };
 
     static const ::zserio::BitmaskTypeInfo<allocator_type> typeInfo = {

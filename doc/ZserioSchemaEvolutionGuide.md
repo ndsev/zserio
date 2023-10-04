@@ -31,12 +31,30 @@ left in the bit stream.
 struct TopLevelStructure
 {
     uint32 fieldInVersion1;
-    varuint newFieldInVersion2; // old appl will stop parsing here
+    varuint newFieldInVersion2; // old application will stop parsing here
 };
 ```
 
 Old applications will parse successfully new `TopLevelStructure` by reading only the first field
 `fieldInVersion1` leaving field `newFieldInVersion2` unread in the bit stream.
+
+### Enumeration Item Removal
+
+The forward compatible enumeration item removal is possible by annotation
+[`@removed`](ZserioLanguageOverview.md#removed-annotation). This annotation ensures that enumeration item values
+do not change and will be compatible for old applications.
+
+**Example**
+
+```
+enum bit:8 DarkColor
+{
+    NONE,
+    DARK_RED,
+    @removed DARK_BLUE, // old application will never parse this enumeration item
+    DARK_GREEN
+};
+```
 
 ## Backward Compatible Changes
 
@@ -53,7 +71,7 @@ This keyword will indicate an optional extension which does not have to be encod
 struct TopLevelStructure
 {
     uint32 fieldInVersion1;
-    extend varuint newFieldInVersion2; // new appl will check end of stream here
+    extend varuint newFieldInVersion2; // new application will check end of stream here
 };
 ```
 
@@ -79,13 +97,13 @@ choice UInt16Choice(uint16 selector) on selector
         VariantB b;
 
     case 3:
-        VariantC newInVersion2; // new appl will never parse this case
+        VariantC newInVersion2; // new application will never parse this case
 
     // default case must be either omitted or must be empty!
 };
 ```
 
-### Enumeration Extension
+### Enumeration Item Addition
 
 The backward compatibility of adding a new enumeration item without change of existed enumeration items works
 automatically. This is because all old enumeration items are known for a new application.
@@ -98,8 +116,26 @@ enum bit:8 DarkColor
     NONE,
     DARK_RED,
     DARK_BLUE,
+    DARK_GREEN,
+    DARK_NEW_IN_VERSION2 // new application will never parse this item
+};
+```
+
+### Enumeration Item Removal
+
+The backward compatible enumeration item removal is possible by annotation
+[`@removed`](ZserioLanguageOverview.md#removed-annotation). This annotation ensures that enumeration item values
+do not change and that new applications will still parse removed enumeration items.
+
+**Example**
+
+```
+enum bit:8 DarkColor
+{
+    NONE,
+    DARK_RED,
+    @removed DARK_BLUE, // new application will parse this item (but should fire an error during serialization)
     DARK_GREEN
-    DARK_NEW_IN_VERSION2; // new appl will never parse this item
 };
 ```
 

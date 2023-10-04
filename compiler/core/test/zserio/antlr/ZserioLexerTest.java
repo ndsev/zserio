@@ -98,6 +98,7 @@ public class ZserioLexerTest
                 "choice " +
                 "const " +
                 "default " +
+                "@deprecated " +
                 "enum " +
                 "explicit " +
                 "extend " +
@@ -125,6 +126,7 @@ public class ZserioLexerTest
                 "packed " +
                 "publish " +
                 "pubsub " +
+                "@removed " +
                 "return " +
                 "rule " +
                 "rule_group " +
@@ -169,6 +171,7 @@ public class ZserioLexerTest
         checkToken(lexer, ZserioLexer.CHOICE);
         checkToken(lexer, ZserioLexer.CONST);
         checkToken(lexer, ZserioLexer.DEFAULT);
+        checkToken(lexer, ZserioLexer.DEPRECATED);
         checkToken(lexer, ZserioLexer.ENUM);
         checkToken(lexer, ZserioLexer.EXPLICIT);
         checkToken(lexer, ZserioLexer.EXTEND);
@@ -196,6 +199,7 @@ public class ZserioLexerTest
         checkToken(lexer, ZserioLexer.PACKED);
         checkToken(lexer, ZserioLexer.PUBLISH);
         checkToken(lexer, ZserioLexer.PUBSUB);
+        checkToken(lexer, ZserioLexer.REMOVED);
         checkToken(lexer, ZserioLexer.RETURN);
         checkToken(lexer, ZserioLexer.RULE);
         checkToken(lexer, ZserioLexer.RULE_GROUP);

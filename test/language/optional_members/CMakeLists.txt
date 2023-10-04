@@ -13,6 +13,11 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/optional_members/optional_array/Data8.cpp
     ${ZSERIO_GEN_DIR}/optional_members/optional_array/Data8.h
 
+    ${ZSERIO_GEN_DIR}/optional_members/optional_expression_with_removed_enum_item/Compound.cpp
+    ${ZSERIO_GEN_DIR}/optional_members/optional_expression_with_removed_enum_item/Compound.h
+    ${ZSERIO_GEN_DIR}/optional_members/optional_expression_with_removed_enum_item/Numbers.cpp
+    ${ZSERIO_GEN_DIR}/optional_members/optional_expression_with_removed_enum_item/Numbers.h
+
     ${ZSERIO_GEN_DIR}/optional_members/optional_expression/BasicColor.cpp
     ${ZSERIO_GEN_DIR}/optional_members/optional_expression/BasicColor.h
     ${ZSERIO_GEN_DIR}/optional_members/optional_expression/BlackColor.cpp
@@ -42,6 +47,7 @@ add_custom_test(optional_members
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/OptionalArrayRecursionTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/OptionalArrayTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/OptionalExpressionTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/OptionalExpressionWithRemovedEnumItemTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/OptionalRecursionTest.cpp
     GENERATED_SOURCES
         ${ZSERIO_GENERATED_SOURCES}

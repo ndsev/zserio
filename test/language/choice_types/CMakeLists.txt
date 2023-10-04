@@ -58,6 +58,11 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/choice_types/enum_param_choice/Selector.h
     ${ZSERIO_GEN_DIR}/choice_types/enum_param_choice/White.h
 
+    ${ZSERIO_GEN_DIR}/choice_types/enum_with_removed_item_param_choice/EnumWithRemovedItemParamChoice.cpp
+    ${ZSERIO_GEN_DIR}/choice_types/enum_with_removed_item_param_choice/EnumWithRemovedItemParamChoice.h
+    ${ZSERIO_GEN_DIR}/choice_types/enum_with_removed_item_param_choice/Selector.cpp
+    ${ZSERIO_GEN_DIR}/choice_types/enum_with_removed_item_param_choice/Selector.h
+
     ${ZSERIO_GEN_DIR}/choice_types/expression_selector_choice/ExpressionSelectorChoice.cpp
     ${ZSERIO_GEN_DIR}/choice_types/expression_selector_choice/ExpressionSelectorChoice.h
 
@@ -126,6 +131,7 @@ add_custom_test(choice_types
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/EmptyChoiceWithCaseTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/EmptyChoiceWithDefaultTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/EnumParamChoiceTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/EnumWithRemovedItemParamChoiceTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ExpressionSelectorChoiceTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/FullBitmaskParamChoiceTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/FullEnumParamChoiceTest.cpp

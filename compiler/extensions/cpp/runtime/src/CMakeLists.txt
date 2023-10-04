@@ -57,6 +57,7 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/CppRuntimeException.h
     zserio/CppRuntimeVersion.h
     zserio/DebugStringUtil.h
+    zserio/DeprecatedAttribute.h
     zserio/Enums.h
     zserio/FloatUtil.cpp
     zserio/FloatUtil.h

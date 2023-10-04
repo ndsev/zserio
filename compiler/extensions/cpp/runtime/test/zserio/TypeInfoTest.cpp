@@ -432,7 +432,8 @@ TEST_F(TypeInfoTest, sqlDatabaseTypeInfo)
 TEST_F(TypeInfoTest, enumTypeInfo)
 {
     const ITypeInfo& underlyingTypeInfo = BuiltinTypeInfo<>::getInt8();
-    const EnumTypeInfo<std::allocator<uint8_t>> enumTypeInfo(""_sv, underlyingTypeInfo, {}, {});
+    std::array<ItemInfo, 1> enumItems = { ItemInfo("ONE"_sv, 1, false, false) };
+    const EnumTypeInfo<std::allocator<uint8_t>> enumTypeInfo(""_sv, underlyingTypeInfo, {}, enumItems);
     ASSERT_EQ(""_sv, enumTypeInfo.getSchemaName());
     ASSERT_EQ(SchemaType::ENUM, enumTypeInfo.getSchemaType());
     ASSERT_EQ(CppType::ENUM, enumTypeInfo.getCppType());
@@ -447,7 +448,11 @@ TEST_F(TypeInfoTest, enumTypeInfo)
 
     ASSERT_EQ(&underlyingTypeInfo, &enumTypeInfo.getUnderlyingType());
     ASSERT_EQ(0, enumTypeInfo.getUnderlyingTypeArguments().size());
-    ASSERT_EQ(0, enumTypeInfo.getEnumItems().size());
+    ASSERT_EQ(1, enumTypeInfo.getEnumItems().size());
+    ASSERT_EQ("ONE"_sv, enumTypeInfo.getEnumItems()[0].schemaName);
+    ASSERT_EQ(1, enumTypeInfo.getEnumItems()[0].value);
+    ASSERT_FALSE(enumTypeInfo.getEnumItems()[0].isDeprecated);
+    ASSERT_FALSE(enumTypeInfo.getEnumItems()[0].isRemoved);
     ASSERT_THROW(enumTypeInfo.getBitmaskValues(), CppRuntimeException);
 
     ASSERT_THROW(enumTypeInfo.getColumns(), CppRuntimeException);
@@ -470,7 +475,9 @@ TEST_F(TypeInfoTest, enumTypeInfo)
 TEST_F(TypeInfoTest, bitmaskTypeInfo)
 {
     const ITypeInfo& underlyingTypeInfo = BuiltinTypeInfo<>::getInt8();
-    const BitmaskTypeInfo<std::allocator<uint8_t>> bitmaskTypeInfo(""_sv, underlyingTypeInfo, {}, {});
+    std::array<ItemInfo, 1> bitmaskValues = { ItemInfo("FIRST_BIT"_sv, 1, false, false )};
+    const BitmaskTypeInfo<std::allocator<uint8_t>> bitmaskTypeInfo(""_sv, underlyingTypeInfo, {},
+            bitmaskValues);
     ASSERT_EQ(""_sv, bitmaskTypeInfo.getSchemaName());
     ASSERT_EQ(SchemaType::BITMASK, bitmaskTypeInfo.getSchemaType());
     ASSERT_EQ(CppType::BITMASK, bitmaskTypeInfo.getCppType());
@@ -486,7 +493,11 @@ TEST_F(TypeInfoTest, bitmaskTypeInfo)
     ASSERT_EQ(&underlyingTypeInfo, &bitmaskTypeInfo.getUnderlyingType());
     ASSERT_EQ(0, bitmaskTypeInfo.getUnderlyingTypeArguments().size());
     ASSERT_THROW(bitmaskTypeInfo.getEnumItems(), CppRuntimeException);
-    ASSERT_EQ(0, bitmaskTypeInfo.getBitmaskValues().size());
+    ASSERT_EQ(1, bitmaskTypeInfo.getBitmaskValues().size());
+    ASSERT_EQ("FIRST_BIT"_sv, bitmaskTypeInfo.getBitmaskValues()[0].schemaName);
+    ASSERT_EQ(1, bitmaskTypeInfo.getBitmaskValues()[0].value);
+    ASSERT_EQ(false, bitmaskTypeInfo.getBitmaskValues()[0].isDeprecated);
+    ASSERT_EQ(false, bitmaskTypeInfo.getBitmaskValues()[0].isRemoved);
 
     ASSERT_THROW(bitmaskTypeInfo.getColumns(), CppRuntimeException);
     ASSERT_THROW(bitmaskTypeInfo.getSqlConstraint(), CppRuntimeException);

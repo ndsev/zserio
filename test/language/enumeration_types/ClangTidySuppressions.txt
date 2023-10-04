@@ -1,1 +1,5 @@
 cert-err58-cpp:cpp/BitfieldEnumTest.cpp
+
+google-build-using-namespace:cpp/DeprecatedEnumItemTest.cpp
+google-build-using-namespace:cpp/MultipleRemovedEnumItemsTest.cpp
+google-build-using-namespace:cpp/RemovedEnumItemTest.cpp

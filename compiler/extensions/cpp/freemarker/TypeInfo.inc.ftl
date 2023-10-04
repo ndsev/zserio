@@ -96,7 +96,7 @@ ${I}static const <@info_array_type "::zserio::ItemInfo", items?size/> ${varName}
     <#if items?has_content>
         <#lt> = {
         <#list items as item>
-        <@item_info item.name, item.value, item?has_next, indent+1/>
+        <@item_info item.schemaName, item.value, item.isDeprecated, item.isRemoved, item?has_next, indent+1/>
         </#list>
 ${I}};
     <#else>
@@ -242,10 +242,11 @@ ${I}}
     </#if>
 </#macro>
 
-<#macro item_info name value comma indent>
+<#macro item_info name value isDeprecated isRemoved comma indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}::zserio::ItemInfo{ ::zserio::makeStringView("${name}"), <#rt>
-        <#lt>static_cast<uint64_t>(${value}) }<#if comma>,</#if>
+        <#lt>static_cast<uint64_t>(${value}), <#if isDeprecated>true<#else>false</#if>, <#rt>
+        <#lt><#if isRemoved>true<#else>false</#if>}<#if comma>,</#if>
 </#macro>
 
 <#macro column_info field comma indent=2>

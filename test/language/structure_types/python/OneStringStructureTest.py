@@ -7,7 +7,8 @@ from testutils import getZserioApi, getApiDir
 class OneStringStructureTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "structure_types.zs").one_string_structure
+        cls.api = getZserioApi(__file__, "structure_types.zs",
+                               extraArgs=["-withTypeInfoCode"]).one_string_structure
 
     def testConstructor(self):
         oneStringStructure = self.api.OneStringStructure()

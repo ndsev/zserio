@@ -27,6 +27,11 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/structure_types/structure_inner_classes_clashing/OffsetChecker_array.h
     ${ZSERIO_GEN_DIR}/structure_types/structure_inner_classes_clashing/OffsetInitializer_array.cpp
     ${ZSERIO_GEN_DIR}/structure_types/structure_inner_classes_clashing/OffsetInitializer_array.h
+
+    ${ZSERIO_GEN_DIR}/structure_types/structure_with_removed_enum_item_field/StructureWithRemovedEnumItemField.cpp
+    ${ZSERIO_GEN_DIR}/structure_types/structure_with_removed_enum_item_field/StructureWithRemovedEnumItemField.h
+    ${ZSERIO_GEN_DIR}/structure_types/structure_with_removed_enum_item_field/Enumeration.cpp
+    ${ZSERIO_GEN_DIR}/structure_types/structure_with_removed_enum_item_field/Enumeration.h
 )
 
 zserio_add_library(structure_types_zs
@@ -36,7 +41,7 @@ zserio_add_library(structure_types_zs
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
     ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation
+    ZSERIO_OPTIONS -withoutSourcesAmalgamation -withTypeInfoCode -withReflectionCode
 )
 
 add_custom_test(structure_types
@@ -49,6 +54,7 @@ add_custom_test(structure_types
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/OneStringStructureTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/SimpleStructureTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/StructureInnerClassesClashingTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/StructureWithRemovedEnumItemFieldTest.cpp
     GENERATED_SOURCES
         ${ZSERIO_GENERATED_SOURCES}
 )

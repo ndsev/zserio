@@ -5,7 +5,8 @@ from testutils import getZserioApi
 class EnumUsedByEnumTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "enumeration_types.zs").enum_used_by_enum
+        cls.api = getZserioApi(__file__, "enumeration_types.zs",
+                               extraArgs=["-withTypeInfoCode"]).enum_used_by_enum
 
     def testLightColor(self):
         self.assertEqual(VALUE_LIGHT_RED, self.api.LightColor.LIGHT_RED.value)

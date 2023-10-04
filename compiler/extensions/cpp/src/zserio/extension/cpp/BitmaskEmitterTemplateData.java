@@ -85,10 +85,16 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
         public BitmaskValueData(TemplateDataContext context, NativeIntegralType nativeBaseType,
                 BitmaskValue bitmaskValue) throws ZserioExtensionException
         {
+            schemaName = bitmaskValue.getName();
             name = bitmaskValue.getName();
             value = nativeBaseType.formatLiteral(bitmaskValue.getValue());
             isZero = bitmaskValue.getValue().equals(BigInteger.ZERO);
             docComments = DocCommentsDataCreator.createData(context, bitmaskValue);
+        }
+
+        public String getSchemaName()
+        {
+            return schemaName;
         }
 
         public String getName()
@@ -101,6 +107,16 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
             return value;
         }
 
+        public boolean getIsDeprecated()
+        {
+            return false;
+        }
+
+        public boolean getIsRemoved()
+        {
+            return false;
+        }
+
         public boolean getIsZero()
         {
             return isZero;
@@ -111,6 +127,7 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
             return docComments;
         }
 
+        private final String schemaName;
         private final String name;
         private final String value;
         private final boolean isZero;

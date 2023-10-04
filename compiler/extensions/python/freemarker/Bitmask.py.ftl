@@ -91,7 +91,7 @@ class ${name}:
     </#if>
             zserio.typeinfo.TypeAttribute.BITMASK_VALUES: [
     <#list values as value>
-                zserio.typeinfo.ItemInfo('${value.schemaName}', ${name}.Values.${value.name})<#if value?has_next>,</#if>
+                zserio.typeinfo.ItemInfo('${value.schemaName}', ${name}.Values.${value.name}, False, False)<#if value?has_next>,</#if>
     </#list>
             ]
         }

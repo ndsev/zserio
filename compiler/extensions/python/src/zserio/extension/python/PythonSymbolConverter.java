@@ -15,9 +15,9 @@ public class PythonSymbolConverter
         return toLowerSnakeCase(pythonSymbolName);
     }
 
-    public static String enumItemToSymbol(String enumItemName)
+    public static String enumItemToSymbol(String enumItemName, boolean isRemoved)
     {
-        return toUpperSnakeCase(enumItemName);
+        return isRemoved ? REMOVED_ENUMERATOR_PREFIX + toUpperSnakeCase(enumItemName) : toUpperSnakeCase(enumItemName);
     }
 
     public static String bitmaskValueToSymbol(String bitmaskValueName)
@@ -63,4 +63,5 @@ public class PythonSymbolConverter
     private static final Pattern CAMEL_CASE_PATTERN_2 = Pattern.compile("([0-9A-Z])([A-Z][a-z])");
 
     private static final String REPLACEMENT_WITH_UNDERSCORE = "$1_$2";
+    private static final String REMOVED_ENUMERATOR_PREFIX = "ZSERIO_REMOVED_";
 }

@@ -30,8 +30,9 @@ class FieldConstraintsTest(unittest.TestCase):
         rowDict['sqlNotNull'] = None
         with self.assertRaises(apsw.ConstraintError) as context:
             self._writeRowDict(rowDict)
-            self.assertTrue(
-                "NOT NULL constraint failed: fieldConstraintsTable.sqlNotNull" in str(context.exception))
+        self.assertTrue(
+            "NOT NULL constraint failed: fieldConstraintsTable.sqlNotNull" in str(context.exception),
+            str(context.exception))
 
     def testSqlDefaultNull(self):
         rowDict = self._createRowDict()
@@ -43,35 +44,40 @@ class FieldConstraintsTest(unittest.TestCase):
         rowDict['sqlCheckConstant'] = self.WRONG_CONSTRAINTS_CONSTANT
         with self.assertRaises(apsw.ConstraintError) as context:
             self._writeRowDict(rowDict)
-            self.assertTrue("CHECK constraint failed: fieldConstraintsTable" in str(context.exception))
+        self.assertTrue("CHECK constraint failed: sqlCheckConstant" in str(context.exception),
+                        str(context.exception))
 
     def testSqlCheckImportedConstant(self):
         rowDict = self._createRowDict()
         rowDict['sqlCheckImportedConstant'] = self.WRONG_IMPORTED_CONSTRAINTS_CONSTANT
         with self.assertRaises(apsw.ConstraintError) as context:
             self._writeRowDict(rowDict)
-            self.assertTrue("CHECK constraint failed: fieldConstraintsTable" in str(context.exception))
+        self.assertTrue("CHECK constraint failed: sqlCheckImportedConstant" in str(context.exception),
+                        str(context.exception))
 
     def testSqlCheckUnicodeEscape(self):
         rowDict = self._createRowDict()
         rowDict['sqlCheckUnicodeEscape'] = self.WRONG_UNICODE_ESCAPE_CONST
         with self.assertRaises(apsw.ConstraintError) as context:
             self._writeRowDict(rowDict)
-            self.assertTrue("CHECK constraint failed: fieldConstraintsTable" in str(context.exception))
+        self.assertTrue("CHECK constraint failed: sqlCheckUnicodeEscape" in str(context.exception),
+                        str(context.exception))
 
     def testSqlCheckHexEscape(self):
         rowDict = self._createRowDict()
         rowDict['sqlCheckHexEscape'] = self.WRONG_HEX_ESCAPE_CONST
         with self.assertRaises(apsw.ConstraintError) as context:
             self._writeRowDict(rowDict)
-            self.assertTrue("CHECK constraint failed: fieldConstraintsTable" in str(context.exception))
+        self.assertTrue("CHECK constraint failed: sqlCheckHexEscape" in str(context.exception),
+                        str(context.exception))
 
     def testSqlCheckOctalEscape(self):
         rowDict = self._createRowDict()
         rowDict['sqlCheckOctalEscape'] = self.WRONG_OCTAL_ESCAPE_CONST
         with self.assertRaises(apsw.ConstraintError) as context:
             self._writeRowDict(rowDict)
-            self.assertTrue("CHECK constraint failed: fieldConstraintsTable" in str(context.exception))
+        self.assertTrue("CHECK constraint failed: sqlCheckOctalEscape" in str(context.exception),
+                        str(context.exception))
 
     def _createRowDict(self):
         return {

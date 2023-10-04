@@ -34,5 +34,5 @@ public class PackedAutoArrayEmptyCompoundsTest
         assertEquals(packedAutoArray, readPackedAutoArray);
     }
 
-    private static final String BLOB_NAME = "packed_auto_array_empty_blobs.blob";
+    private static final String BLOB_NAME = "packed_auto_array_empty_compounds.blob";
 }

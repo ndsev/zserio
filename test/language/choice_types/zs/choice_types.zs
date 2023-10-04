@@ -9,6 +9,7 @@ import choice_types.empty_choice.*;
 import choice_types.empty_choice_with_case.*;
 import choice_types.empty_choice_with_default.*;
 import choice_types.enum_param_choice.*;
+import choice_types.enum_with_removed_item_param_choice.*;
 import choice_types.expression_selector_choice.*;
 import choice_types.full_bitmask_param_choice.*;
 import choice_types.full_enum_param_choice.*;

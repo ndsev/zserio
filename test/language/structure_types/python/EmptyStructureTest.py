@@ -6,7 +6,8 @@ from testutils import getZserioApi
 class EmptyStructureTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "structure_types.zs").empty_structure
+        cls.api = getZserioApi(__file__, "structure_types.zs",
+                               extraArgs=["-withTypeInfoCode"]).empty_structure
 
     def testFromReader(self):
         reader = zserio.BitStreamReader(bytes())

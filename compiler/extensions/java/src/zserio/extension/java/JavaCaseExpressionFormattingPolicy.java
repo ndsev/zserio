@@ -25,12 +25,6 @@ public class JavaCaseExpressionFormattingPolicy extends JavaDefaultExpressionFor
     }
 
     @Override
-    protected String getIdentifierForEnumItem(EnumItem enumItem)
-    {
-        return enumItem.getName();
-    }
-
-    @Override
     protected String getDotSeparatorForEnumItem()
     {
         return "";

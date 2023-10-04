@@ -1680,16 +1680,22 @@ public class WithTypeInfoCodeTest
         final ItemInfo OneItem = items.get(0);
         assertEquals("One", OneItem.getSchemaName());
         assertEquals(0, OneItem.getValue().intValue());
+        assertFalse(OneItem.isDeprecated());
+        assertFalse(OneItem.isRemoved());
 
         // TWO
         final ItemInfo TwoItem = items.get(1);
         assertEquals("_TWO", TwoItem.getSchemaName());
         assertEquals(5, TwoItem.getValue().intValue());
+        assertFalse(TwoItem.isDeprecated());
+        assertFalse(TwoItem.isRemoved());
 
         // ItemThree
         final ItemInfo ItemThreeItem = items.get(2);
         assertEquals("ItemThree", ItemThreeItem.getSchemaName());
         assertEquals(6, ItemThreeItem.getValue().intValue());
+        assertFalse(ItemThreeItem.isDeprecated());
+        assertFalse(ItemThreeItem.isRemoved());
     }
 
     private void checkSimpleChoice(TypeInfo typeInfo)

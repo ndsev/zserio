@@ -48,6 +48,11 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_empty_compounds/PackedAutoArray.cpp
     ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_empty_compounds/PackedAutoArray.h
 
+    ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_removed_enum_item/PackedAutoArrayRemovedEnumItem.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_removed_enum_item/PackedAutoArrayRemovedEnumItem.h
+    ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_removed_enum_item/Traffic.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_removed_enum_item/Traffic.h
+
     ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_struct_recursion/PackedAutoArrayRecursion.cpp
     ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_struct_recursion/PackedAutoArrayRecursion.h
 
@@ -148,6 +153,7 @@ add_custom_test(array_types
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedArraysMappingTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedAutoArrayBitfieldParamTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedAutoArrayEmptyCompoundsTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedAutoArrayRemovedEnumItemTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedAutoArrayStructRecursionTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedAutoArrayStructWithBytesTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedAutoArrayStructWithExternTest.cpp

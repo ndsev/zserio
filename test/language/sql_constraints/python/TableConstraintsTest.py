@@ -29,9 +29,10 @@ class TableConstraintsTest(unittest.TestCase):
         row2 = (1, 1, 2, 1)
         with self.assertRaises(apsw.ConstraintError) as context:
             self._constraintsTable.write([row1, row2])
-            self.assertTrue(
-                "UNIQUE constraint failed: tableConstraintsTable.primaryKey1, "
-                "tableConstraintsTable.primaryKey2" in str(context.exception))
+        self.assertTrue(
+            "UNIQUE constraint failed: tableConstraintsTable.primaryKey1, "
+            "tableConstraintsTable.primaryKey2" in str(context.exception),
+            str(context.exception))
 
     def testUnique(self):
         row = (1, 1, 1, 1)
@@ -42,6 +43,7 @@ class TableConstraintsTest(unittest.TestCase):
         row2 = (2, 1, 1, 1)
         with self.assertRaises(apsw.ConstraintError) as context:
             self._constraintsTable.write([row1, row2])
-            self.assertTrue(
-                "UNIQUE constraint failed: tableConstraintsTable.uniqueValue1, "
-                "tableConstraintsTable.uniqueValue2" in str(context.exception))
+        self.assertTrue(
+            "UNIQUE constraint failed: tableConstraintsTable.uniqueValue1, "
+            "tableConstraintsTable.uniqueValue2" in str(context.exception),
+            str(context.exception))

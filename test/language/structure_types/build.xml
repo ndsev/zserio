@@ -11,7 +11,9 @@
 
     <target name="gen" depends="gen.check" unless="structure_types.zs.gen_is_uptodate">
         <testGenClean testName="structure_types"/>
-        <testGen testName="structure_types" zsFile="structure_types.zs"/>
+        <testGen testName="structure_types" zsFile="structure_types.zs">
+            <arg name="withTypeInfoCode"/>
+        </testGen>
     </target>
 
     <target name="gen.checkWarnings" depends="gen">

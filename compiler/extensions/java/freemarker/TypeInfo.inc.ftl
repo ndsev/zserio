@@ -172,9 +172,10 @@ ${I}        () -> ${case.expressionForIf}<#if case?has_next>,</#if>
 ${I}),
 </#macro>
 
-<#macro item_info name value isBigInteger>
-    new zserio.runtime.typeinfo.ItemInfo("${name}", <#rt>
-            <#lt><#if isBigInteger>${value}<#else>java.math.BigInteger.valueOf(${value})</#if>)<#t>
+<#macro item_info name value isBigInteger isDeprecated isRemoved>
+    new zserio.runtime.typeinfo.ItemInfo("${name}", <#t>
+            <#if isBigInteger>${value}<#else>java.math.BigInteger.valueOf(${value})</#if>, <#t>
+            ${isDeprecated?c}, ${isRemoved?c})<#t>
 </#macro>
 
 <#macro underlying_type_info_type_arguments bitSize>

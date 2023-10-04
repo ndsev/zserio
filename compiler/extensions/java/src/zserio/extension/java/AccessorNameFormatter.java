@@ -2,6 +2,7 @@ package zserio.extension.java;
 
 import java.util.Locale;
 
+import zserio.ast.EnumItem;
 import zserio.ast.Field;
 import zserio.ast.Function;
 import zserio.ast.Parameter;
@@ -51,6 +52,11 @@ final class AccessorNameFormatter
         return getAccessorName(FUNCTION_NAME_PREFIX, function.getName());
     }
 
+    public static String getEnumeratorName(EnumItem enumItem)
+    {
+        return enumItem.isRemoved() ? REMOVED_ENUMERATOR_PREFIX + enumItem.getName() : enumItem.getName();
+    }
+
     private static String getAccessorName(String accessorNamePrefix, String memberName)
     {
         return getAccessorName(accessorNamePrefix, memberName, "");
@@ -81,4 +87,5 @@ final class AccessorNameFormatter
     private static final String GETTER_NAME_PREFIX = "get";
     private static final String SETTER_NAME_PREFIX = "set";
     private static final String FUNCTION_NAME_PREFIX = "func";
+    private static final String REMOVED_ENUMERATOR_PREFIX ="ZSERIO_REMOVED_";
 }

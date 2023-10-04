@@ -341,6 +341,10 @@ public class XmlAstWriter implements ZserioAstVisitor
         xmlElement.setAttribute("name", enumItem.getName());
         if (enumItem.getValue() != null)
             xmlElement.setAttribute("value", enumItem.getValue().toString());
+        if (enumItem.isDeprecated())
+            xmlElement.setAttribute("isDeprecated", "true");
+        if (enumItem.isRemoved())
+            xmlElement.setAttribute("isRemoved", "true");
         visitAstNode(enumItem, xmlElement);
     }
 

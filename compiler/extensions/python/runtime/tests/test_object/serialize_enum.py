@@ -41,9 +41,9 @@ class SerializeEnum(enum.Enum):
         attribute_list = {
             zserio.typeinfo.TypeAttribute.UNDERLYING_TYPE : zserio.typeinfo.TypeInfo('uint8', int),
             zserio.typeinfo.TypeAttribute.ENUM_ITEMS: [
-                zserio.typeinfo.ItemInfo('VALUE1', SerializeEnum.VALUE1),
-                zserio.typeinfo.ItemInfo('VALUE2', SerializeEnum.VALUE2),
-                zserio.typeinfo.ItemInfo('VALUE3', SerializeEnum.VALUE3)
+                zserio.typeinfo.ItemInfo('VALUE1', SerializeEnum.VALUE1, False, False),
+                zserio.typeinfo.ItemInfo('VALUE2', SerializeEnum.VALUE2, False, False),
+                zserio.typeinfo.ItemInfo('VALUE3', SerializeEnum.VALUE3, False, False)
             ]
         }
 

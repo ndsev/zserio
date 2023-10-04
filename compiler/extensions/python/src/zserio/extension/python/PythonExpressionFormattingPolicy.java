@@ -393,7 +393,7 @@ class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
             result.append(PythonFullNameFormatter.getFullName(nativeEnumType));
             result.append(".");
         }
-        result.append(PythonSymbolConverter.enumItemToSymbol(enumItem.getName()));
+        result.append(PythonSymbolConverter.enumItemToSymbol(enumItem.getName(), enumItem.isRemoved()));
     }
 
     private void formatBitmaskValue(StringBuilder result, boolean isMostLeftId, BitmaskValue bitmaskValue,

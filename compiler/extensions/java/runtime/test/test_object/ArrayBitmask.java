@@ -45,9 +45,9 @@ public class ArrayBitmask implements zserio.runtime.io.PackableWriter, zserio.ru
                 zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo.getUInt8(),
                 new java.util.ArrayList<java.util.function.Supplier<java.lang.Object>>(),
                 java.util.Arrays.asList(
-                            new zserio.runtime.typeinfo.ItemInfo("CREATE", java.math.BigInteger.valueOf((short)1)),
-                            new zserio.runtime.typeinfo.ItemInfo("READ", java.math.BigInteger.valueOf((short)2)),
-                            new zserio.runtime.typeinfo.ItemInfo("WRITE", java.math.BigInteger.valueOf((short)4))
+                        new zserio.runtime.typeinfo.ItemInfo("CREATE", java.math.BigInteger.valueOf((short)1), false, false),
+                        new zserio.runtime.typeinfo.ItemInfo("READ", java.math.BigInteger.valueOf((short)2), false, false),
+                        new zserio.runtime.typeinfo.ItemInfo("WRITE", java.math.BigInteger.valueOf((short)4), false, false)
                 )
         );
     }

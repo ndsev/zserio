@@ -584,16 +584,22 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         item_info = items[0]
         self.assertEqual("One", item_info.schema_name)
         self.assertEqual(self.api.TestEnum.ONE, item_info.py_item)
+        self.assertFalse(item_info.is_deprecated)
+        self.assertFalse(item_info.is_removed)
 
         # TWO
         item_info = items[1]
         self.assertEqual("_TWO", item_info.schema_name)
         self.assertEqual(self.api.TestEnum._TWO, item_info.py_item)
+        self.assertFalse(item_info.is_deprecated)
+        self.assertFalse(item_info.is_removed)
 
         # ThreeItem
         item_info = items[2]
         self.assertEqual("ItemThree", item_info.schema_name)
         self.assertEqual(self.api.TestEnum.ITEM_THREE, item_info.py_item)
+        self.assertFalse(item_info.is_deprecated)
+        self.assertFalse(item_info.is_removed)
 
     def _checkTestBitmask(self, type_info):
         self.assertEqual("with_type_info_code.TestBitmask", type_info.schema_name)

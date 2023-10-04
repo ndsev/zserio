@@ -595,9 +595,9 @@ public class JsonWriterTest
                     BuiltinTypeInfo.getInt8(), // underlyingType
                     new ArrayList<java.util.function.Supplier<Object>>(), // underlyingTypeArguments
                     Arrays.asList( // enumItems
-                            new ItemInfo("ZERO", BigInteger.valueOf(0)),
-                            new ItemInfo("One", BigInteger.valueOf(1)),
-                            new ItemInfo("MINUS_ONE", BigInteger.valueOf(-1))
+                            new ItemInfo("ZERO", BigInteger.valueOf(0), false, false),
+                            new ItemInfo("One", BigInteger.valueOf(1), false, false),
+                            new ItemInfo("MINUS_ONE", BigInteger.valueOf(-1), false, false)
                     )
             ),
             new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
@@ -626,7 +626,7 @@ public class JsonWriterTest
                     BuiltinTypeInfo.getUInt64(), // underlyingType
                     new ArrayList<java.util.function.Supplier<Object>>(), // underlyingTypeArguments
                     Arrays.asList( // enumItems
-                            new ItemInfo("UINT64_MAX", new BigInteger("18446744073709551615")))
+                            new ItemInfo("UINT64_MAX", new BigInteger("18446744073709551615"), false, false))
             ),
             new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
             false, // isExtended
@@ -663,9 +663,9 @@ public class JsonWriterTest
                     BuiltinTypeInfo.getInt8(), // underlyingType
                     new ArrayList<java.util.function.Supplier<Object>>(), // underlyingTypeArguments
                     Arrays.asList( // bitmaskValues
-                            new ItemInfo("ZERO", BigInteger.valueOf(0)),
-                            new ItemInfo("One", BigInteger.valueOf(1)),
-                            new ItemInfo("TWO", BigInteger.valueOf(2))
+                            new ItemInfo("ZERO", BigInteger.valueOf(0), false, false),
+                            new ItemInfo("One", BigInteger.valueOf(1), false, false),
+                            new ItemInfo("TWO", BigInteger.valueOf(2), false, false)
                     )
             ),
             new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
@@ -694,7 +694,7 @@ public class JsonWriterTest
                     BuiltinTypeInfo.getUInt64(), // underlyingType
                     new ArrayList<java.util.function.Supplier<Object>>(), // underlyingTypeArguments
                     Arrays.asList( // bitmaskValues
-                            new ItemInfo("UINT64_MAX", new BigInteger("18446744073709551615")))
+                            new ItemInfo("UINT64_MAX", new BigInteger("18446744073709551615"), false, false))
             ),
             new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
             false, // isExtended

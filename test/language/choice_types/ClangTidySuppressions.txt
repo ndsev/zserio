@@ -13,6 +13,7 @@ cppcoreguidelines-pro-type-member-init:gen/choice_types/empty_choice/EmptyChoice
 cppcoreguidelines-pro-type-member-init:gen/choice_types/empty_choice_with_case/EmptyChoiceWithCase.cpp
 cppcoreguidelines-pro-type-member-init:gen/choice_types/empty_choice_with_default/EmptyChoiceWithDefault.cpp
 cppcoreguidelines-pro-type-member-init:gen/choice_types/enum_param_choice/EnumParamChoice.cpp
+cppcoreguidelines-pro-type-member-init:gen/choice_types/enum_with_removed_item_param_choice/EnumWithRemovedItemParamChoice.cpp
 cppcoreguidelines-pro-type-member-init:gen/choice_types/expression_selector_choice/ExpressionSelectorChoice.cpp
 cppcoreguidelines-pro-type-member-init:gen/choice_types/full_enum_param_choice/FullEnumParamChoice.cpp
 cppcoreguidelines-pro-type-member-init:gen/choice_types/function_returning_literal_selector_choice/Selector.cpp
@@ -24,6 +25,8 @@ cppcoreguidelines-pro-type-member-init:gen/choice_types/uint64_param_choice/UInt
 
 google-explicit-constructor:gen/choice_types/bitmask_param_choice/Selector.h
 google-explicit-constructor:gen/choice_types/full_bitmask_param_choice/Selector.h
+
+hicpp-multiway-paths-covered:gen/choice_types/enum_with_removed_item_param_choice/Selector.cpp
 
 performance-move-const-arg:gen/choice_types/choice_compatibility_check/ChoiceVersion1.cpp
 performance-move-const-arg:gen/choice_types/choice_compatibility_check/ChoiceVersion2.cpp
@@ -43,6 +46,7 @@ readability-make-member-function-const:gen/choice_types/choice_compatibility_che
 readability-make-member-function-const:gen/choice_types/choice_with_array/Data8.cpp
 readability-make-member-function-const:gen/choice_types/default_empty_choice/DefaultEmptyChoice.cpp
 readability-make-member-function-const:gen/choice_types/enum_param_choice/EnumParamChoice.cpp
+readability-make-member-function-const:gen/choice_types/enum_with_removed_item_param_choice/EnumWithRemovedItemParamChoice.cpp
 readability-make-member-function-const:gen/choice_types/expression_selector_choice/ExpressionSelectorChoice.cpp
 readability-make-member-function-const:gen/choice_types/full_bitmask_param_choice/FullBitmaskParamChoice.cpp
 readability-make-member-function-const:gen/choice_types/full_enum_param_choice/FullEnumParamChoice.cpp

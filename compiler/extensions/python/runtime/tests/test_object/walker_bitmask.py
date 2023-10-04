@@ -39,7 +39,7 @@ class WalkerBitmask:
         attribute_list = {
             zserio.typeinfo.TypeAttribute.UNDERLYING_TYPE : zserio.typeinfo.TypeInfo('uint32', int),
             zserio.typeinfo.TypeAttribute.BITMASK_VALUES: [
-                zserio.typeinfo.ItemInfo('ZERO', WalkerBitmask.Values.ZERO)
+                zserio.typeinfo.ItemInfo('ZERO', WalkerBitmask.Values.ZERO, False, False)
             ]
         }
 

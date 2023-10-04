@@ -16,6 +16,7 @@ from zserio.bitbuffer import BitBuffer
 from zserio.bitreader import BitStreamReader
 from zserio.bitwriter import BitStreamWriter
 from zserio.creator import ZserioTreeCreator
+from zserio.enum import Enum, DeprecatedItem
 from zserio.exception import PythonRuntimeException
 from zserio.service import ServiceData, ServiceInterface, ServiceClientInterface, ServiceException
 from zserio.pubsub import PubsubInterface, PubsubException
@@ -38,6 +39,7 @@ from zserio import bitwriter
 from zserio import builtin
 from zserio import creator
 from zserio import debugstring
+from zserio import enum
 from zserio import exception
 # from zserio import float is omitted intentionally because of pylint error (redefined-builtin)
 from zserio import hashcode

@@ -28,12 +28,6 @@ public class JavaExpressionFormattingPolicy extends JavaDefaultExpressionFormatt
     }
 
     @Override
-    protected String getIdentifierForEnumItem(EnumItem enumItem)
-    {
-        return enumItem.getName();
-    }
-
-    @Override
     protected String getDotSeparatorForEnumItem()
     {
         return ".";

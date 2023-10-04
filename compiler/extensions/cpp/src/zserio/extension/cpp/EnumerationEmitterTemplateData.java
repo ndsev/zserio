@@ -63,11 +63,19 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         public EnumItemData(TemplateDataContext context, NativeIntegralType nativeBaseType,
                 CppNativeType nativeEnumType, EnumItem enumItem) throws ZserioExtensionException
         {
-            name = enumItem.getName();
+            schemaName = enumItem.getName();
+            name = AccessorNameFormatter.getEnumeratorName(enumItem);
             fullName = CppFullNameFormatter.getFullName(nativeEnumType.getPackageName(),
-                    nativeEnumType.getName(), enumItem.getName());
+                    nativeEnumType.getName(), name);
             value = nativeBaseType.formatLiteral(enumItem.getValue());
+            isDeprecated = enumItem.isDeprecated();
+            isRemoved = enumItem.isRemoved();
             docComments = DocCommentsDataCreator.createData(context, enumItem);
+        }
+
+        public String getSchemaName()
+        {
+            return schemaName;
         }
 
         public String getName()
@@ -85,14 +93,27 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
             return value;
         }
 
+        public boolean getIsDeprecated()
+        {
+            return isDeprecated;
+        }
+
+        public boolean getIsRemoved()
+        {
+            return isRemoved;
+        }
+
         public DocCommentsTemplateData getDocComments()
         {
             return docComments;
         }
 
+        private final String schemaName;
         private final String name;
         private final String fullName;
         private final String value;
+        private final boolean isDeprecated;
+        private final boolean isRemoved;
         private final DocCommentsTemplateData docComments;
     };
 
