@@ -59,6 +59,8 @@ described in zserio, giving the developer overall control of the data schema use
 
 [SQLite Extension](#sqlite-extension)
 
+[Annotations](#annotations)
+
 [Compiler Directives](#compiler-directives)
 
 [Background & History](#background--history)
@@ -153,7 +155,7 @@ signed values. This is a special type of integer that uses only the bytes needed
 The value ranges of the variable integer types are:
 
 Data Type    | Value Range                                        | Max Value | Max Bytes
------------- | -------------------------------------------------- | --------- |---------- 
+------------ | -------------------------------------------------- | --------- |----------
 varint16     | `-16383 to 16383`                                | `2^14-1` | `2`
 varint32     | `-268435455 to 268435455`                       | `2^28-1` | `4`
 varint64     | `-72057594037927935 to 72057594037927935`     | `2^56-1` | `8`
@@ -256,10 +258,10 @@ const int32 j = -5678;
 
 ## Enumeration Types
 
-An enumeration type has a base type which is an integer type or a bit field type. The members of an enumeration
-have a name and a value which may be assigned explicitly or implicitly. A member that does not have
+An enumeration type has a base type which is an integer type or a bit field type. The items of an enumeration
+have a name and a value which may be assigned explicitly or implicitly. An item that does not have
 an initializer gets assigned the value of its predecessor incremented by 1, or the value 0 if it is the first
-member.
+item.
 
 **Example**
 
@@ -273,27 +275,29 @@ enum bit:3 Color
 };
 ```
 
-In the example above, `BLUE` has the value 3. When decoding a member of type `Color`, the decoder will read
+In the example above, `BLUE` has the value 3. When decoding an item of type `Color`, the decoder will read
 3 bits from the stream and report an error when the integer value of these 3 bits is not one of 0, 2, 3 or 7.
 
-An enumeration type provides its own lexical scope, similar to Java and dissimilar to C++. The member names
+An enumeration type provides its own lexical scope, similar to Java and dissimilar to C++. The item names
 must be unique within each enumeration type, but may be reused in other contexts with different meanings.
-Referring to the example, any other enumeration type `Foo` may also contain a member named `NONE`.
+Referring to the example, any other enumeration type `Foo` may also contain an item named `NONE`.
 
-In expressions outside of the defining type, enumeration members must always be prefixed by the type name
+In expressions outside of the defining type, enumeration items must always be prefixed by the type name
 and a dot, e.g. `Color.NONE`.
 
 The enumeration value represented by integer type can be referenced as `valueof(enumeration)`,
 see [valueof Operator](#valueof-operator).
 
+Enumeration items can be [`@deprecated`](#deprecated-annotation) or [`@removed`](#removed-annotation).
+
 [top](#language-guide)
 
 ## Bitmask Types
 
-A bitmask type has a base type which is an unsigned integer or unsigned bit field type. The members of a bitmask
-have a name and a value which may be assigned explicitly or implicitly. A member that does not have
+A bitmask type has a base type which is an unsigned integer or unsigned bit field type. The values of a bitmask
+have a name and a value which may be assigned explicitly or implicitly. A value that does not have
 an initializer gets assigned the value calculated from its predecessor by finding the first unused bit.
-If the unspecified member is the first one, it will be assigned to 1.
+If the unspecified value is the first one, it will be assigned to 1.
 
 **Example**
 
@@ -309,8 +313,8 @@ bitmask uint8 Permission
 In the example above, `EXECUTABLE` is auto-assigned to 1, `READABLE` is manually assigned to 2 and the
 `WRITABLE` is assigned by finding the first unused bit to value 4.
 
-A bitmask type provides its own lexical scope. The member names must be unique within each bitmask type.
-In expressions outside of the defining type, bitmask members must always be prefixed by the type name and a dot,
+A bitmask type provides its own lexical scope. The value names must be unique within each bitmask type.
+In expressions outside of the defining type, bitmask values must always be prefixed by the type name and a dot,
 e.g. `Permission.WRITABLE`.
 
 Bitmasks support all basic bit operations:
@@ -339,7 +343,7 @@ In the example above, the `availability` parameter defines available version for
 `versionString` are present only if the `availability` contains the `VERSION_NUMBER` and `VERSION_STRING` masks
 respectively.
 
->Note that the bitmask can contain a member which is manually assigned to 0 and which represents an empty
+>Note that the bitmask can contain a value which is manually assigned to 0 and which represents an empty
 bitmask (e.g. `NONE = 0`). Such `NONE` mask can be useful in expressions.
 
 The bitmask value represented by integer type can be referenced as `valueof(Permission.EXECUTABLE)`,
@@ -2017,6 +2021,49 @@ choice                                   | `BLOB`
 union                                    | `BLOB`
 
 [top](#language-guide)
+
+## Annotations
+
+Zserio annotations are syntactic metadata that can be added to Zserio sources. Annotations usually have no
+direct effect but can be used by generators to modify generated code appropriately. Annotations starts with `@`
+and are placed before a language element.
+
+### Deprecated Annotation
+
+Annotation `@deprecated` denotes that the language element is being deprecated and should not be used anymore.
+Generators are allowed to generate a code which will fire a warning when an appropriate generated element is
+used by an application.
+
+```
+enum uint8 Traffic
+{
+    NONE = 0,
+    @deprecated HEAVY,
+    LIGHT
+    MID
+};
+```
+
+> Since `2.12.0` (supported only by enumeration items).
+
+### Removed Annotation
+
+Annotation `@removed` denotes that the language element was removed from the schema and is left there only for
+the sake of backward compatibility. Generators are allowed to omit (or hide) an appropriate generated element
+in a way that it will be still possible to read old BLOBS, while it should be forbidden to use such elements
+during serialization.
+
+```
+enum uint8 Traffic
+{
+    NONE = 0,
+    @removed HEAVY,
+    LIGHT
+    MID
+};
+```
+
+> Since `2.12.0` (supported only by enumeration items).
 
 ## Compiler Directives
 
