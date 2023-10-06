@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JsonParser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.json</a> &gt; <span class="el_source">JsonParser.java</span></div><h1>JsonParser.java</h1><pre class="source lang-java linenums">package zserio.runtime.json;
+
+import java.io.Reader;
+
+/**
+ * Json Parser.
+ *
+ * Parses the JSON on the fly and calls an observer.
+ */
+class JsonParser
+{
+    /**
+     * Constructor.
+     *
+     * @param reader Text stream to parse.
+     * @param observer Observer to use.
+     */
+    public JsonParser(Reader reader, Observer observer)
+<span class="fc" id="L19">    {</span>
+<span class="fc" id="L20">        this.tokenizer = new JsonTokenizer(reader);</span>
+<span class="fc" id="L21">        this.observer = observer;</span>
+<span class="fc" id="L22">    }</span>
+
+    /**
+     * Parses single JSON element from the text stream.
+     *
+     * @return True when end-of-file is reached, false otherwise (i.e. another JSON element is present).
+     */
+    public boolean parse()
+    {
+<span class="fc bfc" id="L31" title="All 2 branches covered.">        if (tokenizer.getToken() == JsonToken.BEGIN_OF_FILE)</span>
+<span class="fc" id="L32">            tokenizer.next();</span>
+
+<span class="fc bfc" id="L34" title="All 2 branches covered.">        if (tokenizer.getToken() == JsonToken.END_OF_FILE)</span>
+<span class="fc" id="L35">            return true;</span>
+
+<span class="fc" id="L37">        parseElement();</span>
+
+<span class="fc bfc" id="L39" title="All 2 branches covered.">        return tokenizer.getToken() == JsonToken.END_OF_FILE;</span>
+    }
+
+    /**
+     * Gets current line number.
+     *
+     * @return Line number.
+     */
+    public int getLine()
+    {
+<span class="fc" id="L49">        return tokenizer.getLine();</span>
+    }
+
+    /**
+     * Gets current column number.
+     *
+     * @return Column number.
+     */
+    public int getColumn()
+    {
+<span class="fc" id="L59">        return tokenizer.getColumn();</span>
+    }
+
+    /**
+     * Json parser observer.
+     */
+    static interface Observer
+    {
+        /**
+         * Called when a JSON object begins - i.e. on '{'.
+         */
+        public void beginObject();
+
+        /**
+         * Called when a JSON object ends - i.e. on '}'.
+         */
+        public void endObject();
+
+        /**
+         * Called when a JSON array begins - i.e. on '['.
+         */
+        public void beginArray();
+
+        /**
+         * Called when a JSON array ends - i.e. on ']'.
+         */
+        public void endArray();
+
+        /**
+         * Called on a JSON key.
+         *
+         * @param key Key value.
+         */
+        public void visitKey(String key);
+
+        /**
+         * Called on a JSON value.
+         *
+         * @param value JSON value.
+         */
+        public void visitValue(Object value);
+    }
+
+    private void parseElement()
+    {
+<span class="fc" id="L104">        final JsonToken token = tokenizer.getToken();</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">        if (token == JsonToken.BEGIN_ARRAY)</span>
+<span class="fc" id="L106">            parseArray();</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">        else if (token == JsonToken.BEGIN_OBJECT)</span>
+<span class="fc" id="L108">            parseObject();</span>
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">        else if (token == JsonToken.VALUE)</span>
+<span class="fc" id="L110">            parseValue();</span>
+        else
+<span class="nc" id="L112">            throwUnexpectedToken(ELEMENT_TOKENS);</span>
+<span class="fc" id="L113">    }</span>
+
+    private void parseArray()
+    {
+<span class="fc" id="L117">        observer.beginArray();</span>
+<span class="fc" id="L118">        final JsonToken token = tokenizer.next();</span>
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">        for (JsonToken elementToken : ELEMENT_TOKENS)</span>
+        {
+<span class="fc bfc" id="L121" title="All 2 branches covered.">            if (token == elementToken)</span>
+            {
+<span class="fc" id="L123">                parseElements();</span>
+<span class="fc" id="L124">                break;</span>
+            }
+        }
+
+<span class="fc" id="L128">        consumeToken(JsonToken.END_ARRAY);</span>
+<span class="fc" id="L129">        observer.endArray();</span>
+<span class="fc" id="L130">    }</span>
+
+    private void parseElements()
+    {
+<span class="fc" id="L134">        parseElement();</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">        while (tokenizer.getToken() == JsonToken.ITEM_SEPARATOR)</span>
+        {
+<span class="fc" id="L137">            tokenizer.next();</span>
+<span class="fc" id="L138">            parseElement();</span>
+        }
+<span class="fc" id="L140">    }</span>
+
+    private void parseObject()
+    {
+<span class="fc" id="L144">        observer.beginObject();</span>
+<span class="fc" id="L145">        final JsonToken token = tokenizer.next();</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">        if (token == JsonToken.VALUE)</span>
+<span class="fc" id="L147">            parseMembers();</span>
+
+<span class="fc" id="L149">        consumeToken(JsonToken.END_OBJECT);</span>
+<span class="fc" id="L150">        observer.endObject();</span>
+<span class="fc" id="L151">    }</span>
+
+    private void parseMembers()
+    {
+<span class="fc" id="L155">        parseMember();</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">        while (tokenizer.getToken() == JsonToken.ITEM_SEPARATOR)</span>
+        {
+<span class="fc" id="L158">            tokenizer.next();</span>
+<span class="fc" id="L159">            parseMember();</span>
+        }
+<span class="fc" id="L161">    }</span>
+
+    private void parseMember()
+    {
+<span class="fc" id="L165">        checkToken(JsonToken.VALUE);</span>
+<span class="fc" id="L166">        final Object key = tokenizer.getValue();</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">        if (!(key instanceof String))</span>
+        {
+<span class="fc" id="L169">            throw new JsonParserError(&quot;JsonParser:&quot; + tokenizer.getLine() + &quot;:&quot; + tokenizer.getColumn() +</span>
+                    &quot;: Key must be a string value!&quot;);
+        }
+<span class="fc" id="L172">        observer.visitKey((String)key);</span>
+<span class="fc" id="L173">        tokenizer.next();</span>
+
+<span class="fc" id="L175">        consumeToken(JsonToken.KEY_SEPARATOR);</span>
+
+<span class="fc" id="L177">        parseElement();</span>
+<span class="fc" id="L178">    }</span>
+
+    private void parseValue()
+    {
+<span class="fc" id="L182">        observer.visitValue(tokenizer.getValue());</span>
+<span class="fc" id="L183">        tokenizer.next();</span>
+<span class="fc" id="L184">    }</span>
+
+    private void consumeToken(JsonToken expectedToken)
+    {
+<span class="fc" id="L188">        checkToken(expectedToken);</span>
+<span class="fc" id="L189">        tokenizer.next();</span>
+<span class="fc" id="L190">    }</span>
+
+    private void checkToken(JsonToken expectedToken)
+    {
+<span class="fc bfc" id="L194" title="All 2 branches covered.">        if (tokenizer.getToken() != expectedToken)</span>
+<span class="nc" id="L195">            throwUnexpectedToken(new JsonToken[] {expectedToken});</span>
+<span class="fc" id="L196">    }</span>
+
+    private void throwUnexpectedToken(JsonToken[] expecting)
+    {
+<span class="fc" id="L200">        String msg = &quot;JsonParser:&quot; + tokenizer.getLine() + &quot;:&quot; + tokenizer.getColumn() +</span>
+<span class="fc" id="L201">                &quot;: Unexpected token: &quot; + tokenizer.getToken();</span>
+<span class="fc" id="L202">        final Object value = tokenizer.getValue();</span>
+<span class="pc bpc" id="L203" title="1 of 2 branches missed.">        if (value != null)</span>
+        {
+<span class="fc" id="L205">            msg += &quot; ('&quot; + value + &quot;')&quot;;</span>
+        }
+<span class="fc bfc" id="L207" title="All 2 branches covered.">        if (expecting.length == 1)</span>
+        {
+<span class="fc" id="L209">            msg += &quot;, expecting &quot; + expecting[0] + &quot;!&quot;;</span>
+        }
+        else
+        {
+<span class="fc" id="L213">            final StringBuilder builder = new StringBuilder();</span>
+<span class="fc" id="L214">            int i = 0;</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">            for (; i &lt; expecting.length - 1; ++i)</span>
+            {
+<span class="fc" id="L217">                builder.append(expecting[i].toString());</span>
+<span class="fc" id="L218">                builder.append(&quot;, &quot;);</span>
+            }
+<span class="fc" id="L220">            builder.append(expecting[i].toString());</span>
+<span class="fc" id="L221">            msg += &quot;, expecting one of [&quot; + builder.toString() + &quot;]!&quot;;</span>
+        }
+
+<span class="fc" id="L224">        throw new JsonParserError(msg);</span>
+    }
+
+<span class="fc" id="L227">    static JsonToken[] ELEMENT_TOKENS =</span>
+            new JsonToken[] {JsonToken.BEGIN_OBJECT, JsonToken.BEGIN_ARRAY, JsonToken.VALUE};
+
+    private final JsonTokenizer tokenizer;
+    private final Observer observer;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
