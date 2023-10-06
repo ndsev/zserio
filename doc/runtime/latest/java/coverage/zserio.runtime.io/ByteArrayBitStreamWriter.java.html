@@ -1,0 +1,817 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ByteArrayBitStreamWriter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.io</a> &gt; <span class="el_source">ByteArrayBitStreamWriter.java</span></div><h1>ByteArrayBitStreamWriter.java</h1><pre class="source lang-java linenums">package zserio.runtime.io;
+
+import java.io.EOFException;
+import java.io.IOException;
+import java.math.BigInteger;
+import zserio.runtime.BitSizeOfCalculator;
+import zserio.runtime.FloatUtil;
+import zserio.runtime.BitFieldUtil;
+import zserio.runtime.ZserioError;
+import zserio.runtime.VarSizeUtil;
+
+/**
+ * A bit stream writer using byte array.
+ */
+public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements BitStreamWriter
+{
+    /**
+     * Constructs a new byte array bit stream writer with default capacity and the default endian byte order.
+     */
+    public ByteArrayBitStreamWriter()
+    {
+<span class="fc" id="L22">        this(DEFAULT_INITIAL_CAPACITY);</span>
+<span class="fc" id="L23">    }</span>
+
+    /**
+     * Constructs a new byte array bit stream writer with the given buffer capacity.
+     *
+     * @param initialCapacity Underlying byte array capacity in bytes.
+     */
+    public ByteArrayBitStreamWriter(final int initialCapacity)
+<span class="fc" id="L31">    {</span>
+<span class="fc bfc" id="L32" title="All 4 branches covered.">        if (initialCapacity &lt; 0 || initialCapacity &gt; MAX_BUFFER_SIZE)</span>
+<span class="fc" id="L33">            throw new IllegalArgumentException(&quot;ByteArrayBitStreamWriter: Requested initial capacity &quot; +</span>
+                    initialCapacity + &quot; of underlying array is out of bounds [1, &quot; + MAX_BUFFER_SIZE + &quot;].&quot;);
+
+<span class="fc" id="L36">        this.buffer = new byte[initialCapacity];</span>
+<span class="fc" id="L37">    }</span>
+
+    @Override
+    public void writeSignedBits(final long value, final int numBits) throws IOException
+    {
+<span class="fc" id="L42">        checkRange(numBits);</span>
+
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        if (numBits != 64)</span>
+        {
+<span class="fc" id="L46">            final long lowerBound = BitFieldUtil.getBitFieldLowerBound(numBits, true);</span>
+<span class="fc" id="L47">            final long upperBound = BitFieldUtil.getBitFieldUpperBound(numBits, true);</span>
+
+<span class="pc bpc" id="L49" title="1 of 4 branches missed.">            if (value &lt; lowerBound || value &gt; upperBound)</span>
+<span class="fc" id="L50">                throw new IllegalArgumentException(&quot;ByteArrayBitStreamWriter: Value &quot; + value + &quot; does not &quot; +</span>
+                        &quot;fit into &quot; + numBits + &quot; bits.&quot;);
+        }
+        // else: all values are OK
+
+<span class="fc" id="L55">        writeBitsImpl(value, numBits);</span>
+<span class="fc" id="L56">    }</span>
+
+    @Override
+    public void writeBits(final long value, final int numBits) throws IOException
+    {
+        // the MSB must be zero
+<span class="fc bfc" id="L62" title="All 4 branches covered.">        if (numBits &lt;= 0 || numBits &gt;= 64)</span>
+<span class="fc" id="L63">            throw new IllegalArgumentException(&quot;ByteArrayBitStreamWriter: Number of written bits &quot; + numBits +</span>
+                    &quot; is out of range [1, 64].&quot;);
+
+<span class="fc" id="L66">        final long lowerBound = 0;</span>
+<span class="fc" id="L67">        final long upperBound = BitFieldUtil.getBitFieldUpperBound(numBits, false);</span>
+
+<span class="fc bfc" id="L69" title="All 4 branches covered.">        if (value &lt; lowerBound || value &gt; upperBound)</span>
+<span class="fc" id="L70">            throw new IllegalArgumentException(&quot;ByteArrayBitStreamWriter: Written value &quot; + value +</span>
+                    &quot; does not fit into &quot; + numBits + &quot; bits.&quot;);
+
+<span class="fc" id="L73">        writeBitsImpl(value, numBits);</span>
+<span class="fc" id="L74">    }</span>
+
+    @Override
+    public void writeByte(final byte v) throws IOException
+    {
+<span class="fc bfc" id="L79" title="All 2 branches covered.">        if (bitOffset == 0)</span>
+        {
+<span class="fc" id="L81">            write(v);</span>
+        }
+        else
+        {
+<span class="fc" id="L85">            writeSignedBits(v, 8);</span>
+        }
+<span class="fc" id="L87">    }</span>
+
+    @Override
+    public void writeUnsignedByte(final short value) throws IOException
+    {
+<span class="fc bfc" id="L92" title="All 2 branches covered.">        if (value &lt; 0)</span>
+<span class="fc" id="L93">            throw new IllegalArgumentException(&quot;ByteArrayBitStreamWriter: Can't write unsigned byte. Value &quot; +</span>
+                    value + &quot; is negative.&quot;);
+
+<span class="fc" id="L96">        writeBits(value, 8);</span>
+<span class="fc" id="L97">    }</span>
+
+    @Override
+    public void writeShort(final short v) throws IOException
+    {
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        if (bitOffset == 0)</span>
+        {
+<span class="fc" id="L104">            final byte b0 = (byte)v;</span>
+<span class="fc" id="L105">            final byte b1 = (byte)(v &gt;&gt; 8);</span>
+
+<span class="fc" id="L107">            ensureCapacity(16);</span>
+
+<span class="fc" id="L109">            buffer[bytePosition++] = b1;</span>
+<span class="fc" id="L110">            buffer[bytePosition++] = b0;</span>
+<span class="fc" id="L111">        }</span>
+        else
+        {
+<span class="fc" id="L114">            writeSignedBits(v, 16);</span>
+        }
+<span class="fc" id="L116">    }</span>
+
+    @Override
+    public void writeUnsignedShort(final int value) throws IOException
+    {
+<span class="fc bfc" id="L121" title="All 2 branches covered.">        if (value &lt; 0)</span>
+<span class="fc" id="L122">            throw new IllegalArgumentException(&quot;ByteArrayBitStreamWriter: Can't write unsigned short. Value &quot; +</span>
+                    value + &quot; is negative.&quot;);
+
+<span class="fc" id="L125">        writeBits(value, 16);</span>
+<span class="fc" id="L126">    }</span>
+
+    @Override
+    public void writeInt(final int v) throws IOException
+    {
+<span class="fc bfc" id="L131" title="All 2 branches covered.">        if (bitOffset == 0)</span>
+        {
+<span class="fc" id="L133">            final byte b0 = (byte)v;</span>
+<span class="fc" id="L134">            final byte b1 = (byte)(v &gt;&gt; 8);</span>
+<span class="fc" id="L135">            final byte b2 = (byte)(v &gt;&gt; 16);</span>
+<span class="fc" id="L136">            final byte b3 = (byte)(v &gt;&gt; 24);</span>
+
+<span class="fc" id="L138">            ensureCapacity(32);</span>
+
+<span class="fc" id="L140">            buffer[bytePosition++] = b3;</span>
+<span class="fc" id="L141">            buffer[bytePosition++] = b2;</span>
+<span class="fc" id="L142">            buffer[bytePosition++] = b1;</span>
+<span class="fc" id="L143">            buffer[bytePosition++] = b0;</span>
+<span class="fc" id="L144">        }</span>
+        else
+        {
+<span class="fc" id="L147">            writeSignedBits(v, 32);</span>
+        }
+<span class="fc" id="L149">    }</span>
+
+    @Override
+    public void writeUnsignedInt(final long value) throws IOException
+    {
+<span class="fc bfc" id="L154" title="All 2 branches covered.">        if (value &lt; 0)</span>
+<span class="fc" id="L155">            throw new IllegalArgumentException(&quot;ByteArrayBitStreamWriter: Can't write unsigned integer. &quot; +</span>
+                    &quot;Value &quot; + value + &quot; is negative.&quot;);
+
+<span class="fc" id="L158">        writeBits(value, 32);</span>
+<span class="fc" id="L159">    }</span>
+
+    @Override
+    public void writeLong(final long v) throws IOException
+    {
+<span class="fc bfc" id="L164" title="All 2 branches covered.">        if (bitOffset == 0)</span>
+        {
+<span class="fc" id="L166">            final byte b0 = (byte)v;</span>
+<span class="fc" id="L167">            final byte b1 = (byte)(v &gt;&gt; 8);</span>
+<span class="fc" id="L168">            final byte b2 = (byte)(v &gt;&gt; 16);</span>
+<span class="fc" id="L169">            final byte b3 = (byte)(v &gt;&gt; 24);</span>
+<span class="fc" id="L170">            final byte b4 = (byte)(v &gt;&gt; 32);</span>
+<span class="fc" id="L171">            final byte b5 = (byte)(v &gt;&gt; 40);</span>
+<span class="fc" id="L172">            final byte b6 = (byte)(v &gt;&gt; 48);</span>
+<span class="fc" id="L173">            final byte b7 = (byte)(v &gt;&gt; 56);</span>
+
+<span class="fc" id="L175">            ensureCapacity(64);</span>
+
+<span class="fc" id="L177">            buffer[bytePosition++] = b7;</span>
+<span class="fc" id="L178">            buffer[bytePosition++] = b6;</span>
+<span class="fc" id="L179">            buffer[bytePosition++] = b5;</span>
+<span class="fc" id="L180">            buffer[bytePosition++] = b4;</span>
+<span class="fc" id="L181">            buffer[bytePosition++] = b3;</span>
+<span class="fc" id="L182">            buffer[bytePosition++] = b2;</span>
+<span class="fc" id="L183">            buffer[bytePosition++] = b1;</span>
+<span class="fc" id="L184">            buffer[bytePosition++] = b0;</span>
+<span class="fc" id="L185">        }</span>
+        else
+        {
+<span class="fc" id="L188">            writeSignedBits(v, 64);</span>
+        }
+<span class="fc" id="L190">    }</span>
+
+    @Override
+    public void writeBigInteger(final BigInteger value, final int numBits) throws IOException
+    {
+        // total number of bits including sign bit for negative numbers
+<span class="fc bfc" id="L196" title="All 2 branches covered.">        final boolean isNegative = value.signum() &lt; 0;</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">        final int valueBits = value.bitLength() + (isNegative ? +1 : 0);</span>
+<span class="pc bpc" id="L198" title="1 of 2 branches missed.">        if (valueBits &gt; numBits)</span>
+<span class="nc" id="L199">            throw new IllegalArgumentException(&quot;ByteArrayBitStreamWriter: Written value &quot; + value +</span>
+                    &quot; does not fit into &quot; + numBits + &quot; bits.&quot;);
+
+<span class="fc bfc" id="L202" title="All 2 branches covered.">        if (valueBits &lt; numBits)</span>
+        {
+<span class="fc" id="L204">            final int paddingBits = numBits - valueBits;</span>
+<span class="fc bfc" id="L205" title="All 2 branches covered.">            if (isNegative)</span>
+<span class="fc" id="L206">                writeOnes(paddingBits);</span>
+            else
+<span class="fc" id="L208">                writeZeros(paddingBits);</span>
+        }
+
+<span class="fc" id="L211">        final byte[] bytes = value.toByteArray();</span>
+
+        // only write the significant bits
+        // (BigInteger.toByteArray() is happy to return a leading padding byte)
+<span class="fc" id="L215">        int bitsToWrite = 8 - (8 * bytes.length - valueBits);</span>
+
+<span class="fc bfc" id="L217" title="All 2 branches covered.">        for (byte b : bytes)</span>
+        {
+<span class="fc bfc" id="L219" title="All 2 branches covered.">            if (bitsToWrite != 0)</span>
+<span class="fc" id="L220">                writeBitsImpl(((long)b) &amp; 0xffL, bitsToWrite);</span>
+
+<span class="fc" id="L222">            bitsToWrite = 8;</span>
+        }
+<span class="fc" id="L224">    }</span>
+
+    @Override
+    public void writeFloat16(final float value) throws IOException
+    {
+<span class="fc" id="L229">        writeShort(FloatUtil.convertFloatToShort(value));</span>
+<span class="fc" id="L230">    }</span>
+
+    @Override
+    public void writeFloat32(final float value) throws IOException
+    {
+<span class="fc" id="L235">        writeInt(FloatUtil.convertFloatToInt(value));</span>
+<span class="fc" id="L236">    }</span>
+
+    @Override
+    public void writeFloat64(final double value) throws IOException
+    {
+<span class="fc" id="L241">        writeLong(FloatUtil.convertDoubleToLong(value));</span>
+<span class="fc" id="L242">    }</span>
+
+    @Override
+    public void writeBytes(final byte[] value) throws IOException
+    {
+<span class="fc" id="L247">        writeVarSize(value.length);</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">        if (bitOffset != 0)</span>
+        {
+            // we are not aligned to byte
+<span class="fc bfc" id="L251" title="All 2 branches covered.">            for (byte b : value)</span>
+<span class="fc" id="L252">                writeBitsImpl(b, 8);</span>
+        }
+        else
+        {
+            // we are aligned to byte
+<span class="fc" id="L257">            write(value);</span>
+        }
+<span class="fc" id="L259">    }</span>
+
+    @Override
+    public void writeString(final String value) throws IOException
+    {
+<span class="fc" id="L264">        final byte[] bytes = value.getBytes(DEFAULT_CHARSET_NAME);</span>
+<span class="fc" id="L265">        writeVarSize(bytes.length);</span>
+<span class="fc bfc" id="L266" title="All 2 branches covered.">        if (bitOffset != 0)</span>
+        {
+            // we are not aligned to byte
+<span class="fc bfc" id="L269" title="All 2 branches covered.">            for (byte b : bytes)</span>
+<span class="fc" id="L270">                writeBitsImpl(b, 8);</span>
+        }
+        else
+        {
+            // we are aligned to byte
+<span class="fc" id="L275">            write(bytes);</span>
+        }
+<span class="fc" id="L277">    }</span>
+
+    @Override
+    public void writeBool(final boolean value) throws IOException
+    {
+<span class="fc bfc" id="L282" title="All 2 branches covered.">        writeBits(value ? 1 : 0, 1);</span>
+<span class="fc" id="L283">    }</span>
+
+    @Override
+    public void writeVarInt16(final short value) throws IOException
+    {
+        try
+        {
+<span class="fc" id="L290">            writeVarNum(value, true, 2, BitSizeOfCalculator.getBitSizeOfVarInt16(value) / 8);</span>
+        }
+<span class="fc" id="L292">        catch (ZserioError e)</span>
+        {
+<span class="fc" id="L294">            throw new IOException(e.getMessage());</span>
+<span class="fc" id="L295">        }</span>
+<span class="fc" id="L296">    }</span>
+
+    @Override
+    public void writeVarUInt16(final short value) throws IOException
+    {
+        try
+        {
+<span class="fc" id="L303">            writeVarNum(value, false, 2, BitSizeOfCalculator.getBitSizeOfVarUInt16(value) / 8);</span>
+        }
+<span class="fc" id="L305">        catch (ZserioError e)</span>
+        {
+<span class="fc" id="L307">            throw new IOException(e.getMessage());</span>
+<span class="fc" id="L308">        }</span>
+<span class="fc" id="L309">    }</span>
+
+    @Override
+    public void writeVarInt32(final int value) throws IOException
+    {
+        try
+        {
+<span class="fc" id="L316">            writeVarNum(value, true, 4, BitSizeOfCalculator.getBitSizeOfVarInt32(value) / 8);</span>
+        }
+<span class="fc" id="L318">        catch (ZserioError e)</span>
+        {
+<span class="fc" id="L320">            throw new IOException(e.getMessage());</span>
+<span class="fc" id="L321">        }</span>
+<span class="fc" id="L322">    }</span>
+
+    @Override
+    public void writeVarUInt32(final int value) throws IOException
+    {
+        try
+        {
+<span class="fc" id="L329">            writeVarNum(value, false, 4, BitSizeOfCalculator.getBitSizeOfVarUInt32(value) / 8);</span>
+        }
+<span class="fc" id="L331">        catch (ZserioError e)</span>
+        {
+<span class="fc" id="L333">            throw new IOException(e.getMessage());</span>
+<span class="fc" id="L334">        }</span>
+<span class="fc" id="L335">    }</span>
+
+    @Override
+    public void writeVarInt64(final long value) throws IOException
+    {
+        try
+        {
+<span class="fc" id="L342">            writeVarNum(value, true, 8, BitSizeOfCalculator.getBitSizeOfVarInt64(value) / 8);</span>
+        }
+<span class="fc" id="L344">        catch (ZserioError e)</span>
+        {
+<span class="fc" id="L346">            throw new IOException(e.getMessage());</span>
+<span class="fc" id="L347">        }</span>
+<span class="fc" id="L348">    }</span>
+
+    @Override
+    public void writeVarUInt64(final long value) throws IOException
+    {
+        try
+        {
+<span class="fc" id="L355">            writeVarNum(value, false, 8, BitSizeOfCalculator.getBitSizeOfVarUInt64(value) / 8);</span>
+        }
+<span class="fc" id="L357">        catch (ZserioError e)</span>
+        {
+<span class="fc" id="L359">            throw new IOException(e.getMessage());</span>
+<span class="fc" id="L360">        }</span>
+<span class="fc" id="L361">    }</span>
+
+    @Override
+    public void writeVarInt(final long value) throws IOException
+    {
+<span class="fc bfc" id="L366" title="All 2 branches covered.">        if (value == Long.MIN_VALUE)</span>
+        {
+<span class="fc" id="L368">            writeByte(VARINT_MIN_VALUE);</span>
+        }
+        else
+        {
+            try
+            {
+<span class="fc" id="L374">                writeVarNum(value, true, 9, BitSizeOfCalculator.getBitSizeOfVarInt(value) / 8);</span>
+            }
+<span class="nc" id="L376">            catch (ZserioError e)</span>
+            {
+<span class="nc" id="L378">                throw new IOException(e.getMessage());</span>
+<span class="fc" id="L379">            }</span>
+        }
+<span class="fc" id="L381">    }</span>
+
+    @Override
+    public void writeVarUInt(final BigInteger value) throws IOException
+    {
+<span class="fc" id="L386">        int numBytes = 0;</span>
+        try
+        {
+            // contains validity check
+<span class="fc" id="L390">            numBytes = BitSizeOfCalculator.getBitSizeOfVarUInt(value) / 8;</span>
+        }
+<span class="fc" id="L392">        catch (ZserioError e)</span>
+        {
+<span class="fc" id="L394">            throw new IOException(e.getMessage());</span>
+<span class="fc" id="L395">        }</span>
+
+<span class="fc bfc" id="L397" title="All 2 branches covered.">        final int extraShift = numBytes == VARUINT_MAX_BYTES ? 1 : 0;</span>
+<span class="fc" id="L398">        int shift = (numBytes - 1) * 7;</span>
+
+        // first byte
+<span class="fc bfc" id="L401" title="All 2 branches covered.">        writeBool(numBytes &gt; 1); // has next byte</span>
+<span class="fc" id="L402">        writeBits(value.shiftRight(shift + extraShift).and(VARUINT_BITMASK).longValue(), 7);</span>
+
+        // middle bytes
+<span class="fc bfc" id="L405" title="All 2 branches covered.">        for (int i = numBytes - 1; i &gt; 1; i--)</span>
+        {
+<span class="fc" id="L407">            shift = (i - 1) * 7;</span>
+<span class="fc" id="L408">            writeBool(true); // has next byte</span>
+<span class="fc" id="L409">            writeBits(value.shiftRight(shift + extraShift).and(VARUINT_BITMASK).longValue(), 7);</span>
+        }
+
+        // last byte
+<span class="fc bfc" id="L413" title="All 2 branches covered.">        if (numBytes &gt; 1)</span>
+        {
+<span class="fc bfc" id="L415" title="All 2 branches covered.">            if (numBytes == VARUINT_MAX_BYTES)</span>
+            {
+                // last possible byte of varuint doesn't have the &quot;has next byte&quot; bit
+<span class="fc" id="L418">                writeBits(value.and(VARUINT_9TH_BITMASK).longValue(), 8);</span>
+            }
+            else
+            {
+<span class="fc" id="L422">                writeBool(false); // has next byte</span>
+<span class="fc" id="L423">                writeBits(value.and(VARUINT_BITMASK).longValue(), 7);</span>
+            }
+        }
+<span class="fc" id="L426">    }</span>
+
+    @Override
+    public void writeVarSize(final int value) throws IOException
+    {
+        try
+        {
+<span class="fc" id="L433">            writeVarNum(value, false, 5, BitSizeOfCalculator.getBitSizeOfVarSize(value) / 8);</span>
+        }
+<span class="fc" id="L435">        catch (ZserioError e)</span>
+        {
+<span class="fc" id="L437">            throw new IOException(e.getMessage());</span>
+<span class="fc" id="L438">        }</span>
+<span class="fc" id="L439">    }</span>
+
+    @Override
+    public void writeBitBuffer(final BitBuffer bitBuffer) throws IOException
+    {
+<span class="fc" id="L444">        final long bitSize = bitBuffer.getBitSize();</span>
+<span class="fc" id="L445">        writeVarSize(VarSizeUtil.convertBitBufferSizeToInt(bitSize));</span>
+
+<span class="fc" id="L447">        final byte[] writeBuffer = bitBuffer.getBuffer();</span>
+<span class="fc" id="L448">        final int numBytesToWrite = (int)(bitSize / 8);</span>
+<span class="fc" id="L449">        final byte numRestBits = (byte)(bitSize - (long)numBytesToWrite * 8);</span>
+<span class="fc bfc" id="L450" title="All 2 branches covered.">        if (bitOffset != 0)</span>
+        {
+            // we are not aligned to byte
+<span class="fc bfc" id="L453" title="All 2 branches covered.">            for (int i = 0; i &lt; numBytesToWrite; ++i)</span>
+<span class="fc" id="L454">                writeBitsImpl(writeBuffer[i], 8);</span>
+        }
+        else
+        {
+            // we are aligned to byte
+<span class="fc" id="L459">            write(writeBuffer, 0, numBytesToWrite);</span>
+        }
+
+<span class="pc bpc" id="L462" title="1 of 2 branches missed.">        if (numRestBits &gt; 0)</span>
+<span class="fc" id="L463">            writeBitsImpl(writeBuffer[numBytesToWrite] &gt;&gt; (8 - numRestBits), numRestBits);</span>
+<span class="fc" id="L464">    }</span>
+
+    @Override
+    public void alignTo(final int alignVal) throws IOException
+    {
+<span class="fc" id="L469">        final long offset = getBitPosition() % alignVal;</span>
+<span class="fc bfc" id="L470" title="All 2 branches covered.">        if (offset != 0)</span>
+        {
+<span class="fc" id="L472">            final int skip = (int)(alignVal - offset);</span>
+<span class="fc" id="L473">            skipBits(skip);</span>
+        }
+<span class="fc" id="L475">    }</span>
+
+    @Override
+    public void close() throws IOException
+    {
+        // nothing to do
+<span class="fc" id="L481">    }</span>
+
+    /**
+     * Returns the underlying buffer content as byte array.
+     *
+     * @return A byte array containing the buffer values.
+     *
+     * @throws IOException If stream manipulation failed.
+     */
+    public byte[] toByteArray() throws IOException
+    {
+<span class="fc" id="L492">        final long bitPos = getBitPosition();</span>
+<span class="fc" id="L493">        flushBits();</span>
+<span class="fc" id="L494">        final byte[] dest = new byte[bytePosition];</span>
+<span class="fc" id="L495">        System.arraycopy(buffer, 0, dest, 0, dest.length);</span>
+<span class="fc" id="L496">        setBitPosition(bitPos);</span>
+<span class="fc" id="L497">        return dest;</span>
+    }
+
+    private void skipBits(final int bitCnt) throws IOException
+    {
+<span class="fc" id="L502">        writeBits(0, bitCnt);</span>
+<span class="fc" id="L503">    }</span>
+
+    private void write(final int b) throws IOException
+    {
+<span class="fc" id="L507">        flushBits();</span>
+<span class="fc" id="L508">        ensureCapacity(8);</span>
+<span class="fc" id="L509">        buffer[bytePosition++] = (byte)b;</span>
+<span class="fc" id="L510">    }</span>
+
+    private void write(final byte[] src) throws IOException
+    {
+<span class="fc" id="L514">        write(src, 0, src.length);</span>
+<span class="fc" id="L515">    }</span>
+
+    private void write(final byte[] src, final int offset, final int length) throws IOException
+    {
+<span class="fc" id="L519">        flushBits();</span>
+<span class="fc" id="L520">        ensureCapacity(8 * length);</span>
+<span class="fc" id="L521">        System.arraycopy(src, offset, buffer, bytePosition, length);</span>
+<span class="fc" id="L522">        this.bytePosition += length;</span>
+<span class="fc" id="L523">    }</span>
+
+    /**
+     * Writes given number of zero bits to the bit stream.
+     *
+     * @param count Number of zeros to write.
+     *
+     * @throws IOException If the bits cannot be written.
+     */
+    private void writeZeros(int count) throws IOException
+    {
+<span class="fc bfc" id="L534" title="All 2 branches covered.">        while (count &gt; 0)</span>
+        {
+            // write in 64 - 1 chunks (maximum allowed by writeBits())
+<span class="fc" id="L537">            final int bitsToWrite = Math.min(64 - 1, count);</span>
+<span class="fc" id="L538">            writeBits(0, bitsToWrite);</span>
+<span class="fc" id="L539">            count -= bitsToWrite;</span>
+<span class="fc" id="L540">        }</span>
+<span class="fc" id="L541">    }</span>
+
+    /**
+     * Writes given number of one bits to the bit stream.
+     *
+     * @param count Number of ones to write.
+     *
+     * @throws IOException If the bits cannot be written.
+     */
+    private void writeOnes(int count) throws IOException
+    {
+<span class="fc bfc" id="L552" title="All 2 branches covered.">        while (count &gt; 0)</span>
+        {
+            // write in 64 - 2 chunks to avoid overflow ( 1L &lt;&lt; bitsToWrite must stay positive)
+<span class="fc" id="L555">            final int bitsToWrite = Math.min(64 - 2, count);</span>
+<span class="fc" id="L556">            final long valueToWrite = (1L &lt;&lt; bitsToWrite) - 1L;</span>
+<span class="fc" id="L557">            writeBits(valueToWrite, bitsToWrite);</span>
+<span class="fc" id="L558">            count -= bitsToWrite;</span>
+<span class="fc" id="L559">        }</span>
+<span class="fc" id="L560">    }</span>
+
+    /**
+     * If the bit offset is non-zero, forces the remaining bits in the current byte to 0 and advances the stream
+     * position by one.
+     *
+     * @exception IOException If some stream manipulation error occurred.
+     */
+    private final void flushBits() throws IOException
+    {
+<span class="fc bfc" id="L570" title="All 2 branches covered.">        if (bitOffset != 0)</span>
+        {
+<span class="fc" id="L572">            final int offset = bitOffset;</span>
+<span class="fc" id="L573">            int partialByte = read();</span>
+<span class="pc bpc" id="L574" title="1 of 2 branches missed.">            if (partialByte &lt; 0)</span>
+            {
+<span class="nc" id="L576">                partialByte = 0;</span>
+<span class="nc" id="L577">                bitOffset = 0;</span>
+            }
+            else
+            {
+<span class="fc" id="L581">                bytePosition--;</span>
+<span class="fc" id="L582">                partialByte &amp;= -1 &lt;&lt; (8 - offset);</span>
+            }
+<span class="fc" id="L584">            write(partialByte);</span>
+        }
+<span class="fc" id="L586">    }</span>
+
+    /**
+     * Writes a variable value with a given sign and the maximum number of variable bytes.
+     *
+     * @param value       Variable value to write.
+     * @param isSigned    A flag indicating if the value is signed.
+     * @param maxVarBytes The maximum number of variable bytes.
+     * @param numVarBytes The number of variable bytes.
+     *
+     * @throws IOException If the bytes cannot be written.
+     */
+    private void writeVarNum(final long value, final boolean isSigned, final int maxVarBytes,
+            final int numVarBytes) throws IOException
+    {
+<span class="fc bfc" id="L601" title="All 2 branches covered.">        final long absValue = (value &lt; 0 ? -value : value);</span>
+<span class="fc bfc" id="L602" title="All 2 branches covered.">        final boolean max = numVarBytes == maxVarBytes;</span>
+<span class="fc bfc" id="L603" title="All 2 branches covered.">        for (int i = 0; i &lt; numVarBytes; i++)</span>
+        {
+<span class="fc bfc" id="L605" title="All 2 branches covered.">            final boolean hasNextByte = i &lt; numVarBytes - 1;</span>
+<span class="fc bfc" id="L606" title="All 4 branches covered.">            final int extra = max &amp;&amp; hasNextByte ? 1 : 0;</span>
+<span class="fc" id="L607">            final int shift = (numVarBytes - (i + 1)) * 7 + extra;</span>
+
+<span class="fc" id="L609">            long b = 0;</span>
+<span class="fc" id="L610">            int numBits = 8;</span>
+<span class="fc bfc" id="L611" title="All 4 branches covered.">            if (isSigned &amp;&amp; i == 0)</span>
+            {
+<span class="fc bfc" id="L613" title="All 2 branches covered.">                b |= (value &lt; 0 ? 1 : 0) &lt;&lt; --numBits;</span>
+            }
+<span class="fc bfc" id="L615" title="All 2 branches covered.">            if (hasNextByte)</span>
+            {
+<span class="fc" id="L617">                b |= 1L &lt;&lt; --numBits;</span>
+            }
+<span class="fc bfc" id="L619" title="All 2 branches covered.">            else if (!max)</span>
+            {
+<span class="fc" id="L621">                numBits--;</span>
+            }
+<span class="fc" id="L623">            b |= (absValue &gt;&gt; shift) &amp; (-1L &gt;&gt;&gt; (64 - numBits));</span>
+<span class="fc" id="L624">            writeBits(b, 8);</span>
+        }
+<span class="fc" id="L626">    }</span>
+
+    /**
+     * Writes given number of bits of value to bit stream.
+     *
+     * @param value   Value to write.
+     * @param numBits Number of bits of value to write.
+     *
+     * @throws IOException If the writing failed.
+     */
+    private void writeBitsImpl(final long value, final int numBits) throws IOException
+    {
+<span class="fc" id="L638">        ensureCapacity(numBits);</span>
+
+        /*
+         * Write pre-existing bytes if we're not at the head of the buffer.
+         */
+<span class="fc" id="L643">        int nBits = numBits;</span>
+<span class="fc bfc" id="L644" title="All 4 branches covered.">        if (bytePosition &gt; 0 || bitOffset &gt; 0)</span>
+        {
+<span class="fc" id="L646">            final int initialOffset = bitOffset;</span>
+<span class="fc" id="L647">            int partialByte = read();</span>
+<span class="fc" id="L648">            bytePosition--;</span>
+
+<span class="fc bfc" id="L650" title="All 2 branches covered.">            if (nBits + initialOffset &lt; 8)</span>
+            {
+<span class="fc" id="L652">                final int shift = 8 - (initialOffset + nBits);</span>
+<span class="fc" id="L653">                final int mask = -1 &gt;&gt;&gt; (32 - nBits);</span>
+<span class="fc" id="L654">                partialByte &amp;= ~(mask &lt;&lt; shift);</span>
+<span class="fc" id="L655">                partialByte |= ((value &amp; mask) &lt;&lt; shift);</span>
+<span class="fc" id="L656">                buffer[bytePosition] = (byte)partialByte;</span>
+<span class="fc" id="L657">                bitOffset = initialOffset + nBits;</span>
+<span class="fc" id="L658">                nBits = 0;</span>
+<span class="fc" id="L659">            }</span>
+            else
+            {
+<span class="fc" id="L662">                final int sliceBits = 8 - initialOffset;</span>
+<span class="fc" id="L663">                final int mask = -1 &gt;&gt;&gt; (32 - sliceBits);</span>
+<span class="fc" id="L664">                partialByte &amp;= ~mask;</span>
+<span class="fc" id="L665">                partialByte |= ((value &gt;&gt; (nBits - sliceBits)) &amp; mask);</span>
+<span class="fc" id="L666">                buffer[bytePosition++] = (byte)partialByte;</span>
+<span class="fc" id="L667">                nBits -= sliceBits;</span>
+            }
+        }
+
+        /*
+         * Write full bytes.
+         */
+<span class="fc bfc" id="L674" title="All 2 branches covered.">        if (nBits &gt;= 8)</span>
+        {
+<span class="fc" id="L676">            final int remaining = nBits &amp; BYTE_MOD_MASK;</span>
+<span class="fc bfc" id="L677" title="All 2 branches covered.">            for (int numBytes = nBits / 8; numBytes &gt; 0; numBytes--)</span>
+            {
+<span class="fc" id="L679">                final int shift = (numBytes - 1) * 8 + remaining;</span>
+<span class="fc bfc" id="L680" title="All 2 branches covered.">                final byte byteVal = (byte)((shift == 0 ? value : value &gt;&gt; shift) &amp; 0xff);</span>
+<span class="fc" id="L681">                buffer[bytePosition++] = byteVal;</span>
+            }
+<span class="fc" id="L683">            nBits = remaining;</span>
+        }
+
+        /*
+         * Write remaining bits.
+         */
+<span class="fc bfc" id="L689" title="All 2 branches covered.">        if (nBits != 0)</span>
+        {
+<span class="fc" id="L691">            int partialByte = read();</span>
+<span class="fc" id="L692">            final int shift = 8 - nBits;</span>
+<span class="fc" id="L693">            final int mask = -1 &gt;&gt;&gt; (32 - nBits);</span>
+<span class="fc" id="L694">            partialByte &amp;= ~(mask &lt;&lt; shift);</span>
+<span class="fc" id="L695">            partialByte |= (value &amp; mask) &lt;&lt; shift;</span>
+<span class="fc" id="L696">            buffer[--bytePosition] = (byte)partialByte;</span>
+<span class="fc" id="L697">            bitOffset = nBits;</span>
+        }
+<span class="fc" id="L699">    }</span>
+
+    /**
+     * Resets the bit offset and returns the next unsigned byte.
+     *
+     * @return Read next unsigned byte.
+     *
+     * @throws IOException If the reading failed.
+     */
+    private int read() throws IOException
+    {
+<span class="fc" id="L710">        bitOffset = 0;</span>
+<span class="fc" id="L711">        return nextUnsignedByte();</span>
+    }
+
+    /**
+     * Returns the next unsigned byte without resetting the bit offset.
+     *
+     * @return Read next byte.
+     *
+     * @throws IOException If the reading failed.
+     */
+    private int nextUnsignedByte() throws IOException
+    {
+<span class="fc" id="L723">        return nextByte() &amp; 0xff;</span>
+    }
+
+    /**
+     * Returns the next byte without resetting the bit offset.
+     *
+     * @return Read next byte.
+     *
+     * @throws IOException If the reading failed.
+     */
+    private byte nextByte() throws IOException
+    {
+<span class="pc bpc" id="L735" title="1 of 2 branches missed.">        if (bytePosition &gt;= buffer.length)</span>
+<span class="nc" id="L736">            throw new EOFException(&quot;ByteArrayBitStreamWriter: Internal error, attemp to read beyond end of &quot; +</span>
+                    &quot;the buffer. Byte position is &quot; + bytePosition + &quot;. Buffer length is &quot; + buffer.length +
+                    &quot;.&quot;);
+
+<span class="fc" id="L740">        return buffer[bytePosition++];</span>
+    }
+
+    /**
+     * Increases the capacity of the underlying buffer to ensure that it can hold at least the given number of
+     * bytes.
+     *
+     * @param minCapacity The desired minimum capacity.
+     *
+     * @throws OutOfMemoryError If the requested size exceeded the VM limit.
+     */
+    private void growBuffer(final int minCapacity)
+    {
+<span class="fc" id="L753">        final int oldCapacity = buffer.length;</span>
+<span class="fc" id="L754">        int newCapacity = oldCapacity + (oldCapacity &gt;&gt; 1);</span>
+<span class="fc bfc" id="L755" title="All 2 branches covered.">        if (newCapacity - minCapacity &lt; 0)</span>
+        {
+<span class="fc" id="L757">            newCapacity = minCapacity;</span>
+        }
+<span class="pc bpc" id="L759" title="1 of 2 branches missed.">        if (newCapacity - MAX_BUFFER_SIZE &gt; 0)</span>
+        {
+<span class="nc bnc" id="L761" title="All 2 branches missed.">            if (minCapacity &lt; 0)</span>
+<span class="nc" id="L762">                throw new OutOfMemoryError(&quot;ByteArrayBitStreamWriter: Reached maximum capacity of underlying &quot; +</span>
+                        &quot;buffer (&quot; + MAX_BUFFER_SIZE + &quot; bytes).&quot;);
+
+<span class="nc" id="L765">            newCapacity = MAX_BUFFER_SIZE;</span>
+        }
+
+<span class="fc" id="L768">        final byte[] newBuffer = new byte[newCapacity];</span>
+<span class="fc" id="L769">        System.arraycopy(buffer, 0, newBuffer, 0, oldCapacity);</span>
+<span class="fc" id="L770">        buffer = newBuffer;</span>
+<span class="fc" id="L771">    }</span>
+
+    /**
+     * Method checks if the given next numBits can be stored in the buffer depending on the current byte
+     * position. If the buffer is to small for the numBits the buffer is extended.
+     *
+     * @param numBits Number of bits as integer value to check.
+     */
+    private void ensureCapacity(final int numBits)
+    {
+<span class="fc" id="L781">        final int extraBits = numBits &amp; BYTE_MOD_MASK;</span>
+<span class="fc" id="L782">        final int numBytes = (numBits / 8);</span>
+<span class="fc bfc" id="L783" title="All 2 branches covered.">        final int newPosition = bytePosition + numBytes + (extraBits &gt; 0 ? 1 : 0);</span>
+<span class="fc bfc" id="L784" title="All 2 branches covered.">        if (newPosition &gt;= buffer.length - 1)</span>
+        {
+<span class="fc" id="L786">            growBuffer(newPosition + 1);</span>
+        }
+<span class="fc" id="L788">    }</span>
+
+    /**
+     * The underlying byte array.
+     */
+    protected byte[] buffer;
+
+    /**
+     * The default initial buffer capacity.
+     */
+    private static final int DEFAULT_INITIAL_CAPACITY = 8192;
+
+    /**
+     * The maximum size to allocate for a buffer. Some VMs reserve an additional header word in the underlying
+     * array.
+     */
+    private static final int MAX_BUFFER_SIZE = Integer.MAX_VALUE - 8;
+
+    /** Minimum VarInt value is Long.MIN_VALUE but it is encoded as -0. */
+    private static final byte VARINT_MIN_VALUE = (byte)0x80;
+
+    /** Maximum number of bytes needed to encode VarUInt. */
+    private static final int VARUINT_MAX_BYTES = 9;
+
+    /** Bitmask for value in VarUInt byte (except of the 9th byte). */
+<span class="fc" id="L813">    private static final BigInteger VARUINT_BITMASK = BigInteger.valueOf(0x7F);</span>
+    /** Bitmask for value in VarUInt's 9th byte. */
+<span class="fc" id="L815">    private static final BigInteger VARUINT_9TH_BITMASK = BigInteger.valueOf(0xFF);</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>zserio.cppbind &#8212; Zserio 2.12.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=4a6762d5" />
+    <script src="../../_static/documentation_options.js?v=63f0a439"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for zserio.cppbind</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The module provides helper for importing of optimized C++ classes.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+
+<span class="n">ZSERIO_PYTHON_IMPLEMENTATION_ENV</span> <span class="o">=</span> <span class="s2">&quot;ZSERIO_PYTHON_IMPLEMENTATION&quot;</span>
+<span class="n">ZSERIO_CPP_MODULE</span> <span class="o">=</span> <span class="s2">&quot;zserio_cpp&quot;</span>
+
+<div class="viewcode-block" id="import_cpp_class">
+<a class="viewcode-back" href="../../zserio.cppbind.html#zserio.cppbind.import_cpp_class">[docs]</a>
+<span class="k">def</span> <span class="nf">import_cpp_class</span><span class="p">(</span><span class="n">cppname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">exception_class</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Type</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tries to import optimized C++ implementation of the given python class if &#39;ZSERIO_PYTHON_IMPLEMENTATION&#39;</span>
+<span class="sd">    environment variable is either unset or set to &#39;cpp&#39;.</span>
+
+<span class="sd">    Depending on the content of the &#39;ZSERIO_PYTHON_IMPLEMENTATION&#39; environment variable,</span>
+<span class="sd">    it either fails when no C++ implementation is available (&#39;cpp&#39;) or ignores missing implementation</span>
+<span class="sd">    and just return the original python class (None) or even does not try to load the C++ implementation if</span>
+<span class="sd">    the variable is set to anyhing else (e.g. &#39;python&#39;).</span>
+
+<span class="sd">    :param pyclass: Pure python class implemenation for which the C++ optimized version should be loaded.</span>
+<span class="sd">    :param cppname: Name of optimized C++ class in case that it differs from the pyclass name.</span>
+<span class="sd">    :param exception_class: Exception to raise in case of an error.</span>
+<span class="sd">    :returns: Requested implemenation of the given pyclass.</span>
+<span class="sd">    :raises PythonRuntimeException: When the requested implementation is not available.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">exception_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># we need to break cyclic import from zserio.exception</span>
+        <span class="c1"># pylint: disable-next=cyclic-import,import-outside-toplevel</span>
+        <span class="kn">from</span> <span class="nn">zserio.exception</span> <span class="kn">import</span> <span class="n">PythonRuntimeException</span>
+        <span class="n">exception_class</span> <span class="o">=</span> <span class="n">PythonRuntimeException</span>
+
+    <span class="n">impl</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="n">ZSERIO_PYTHON_IMPLEMENTATION_ENV</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">impl</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;python&quot;</span><span class="p">,</span> <span class="s2">&quot;cpp&quot;</span><span class="p">,</span> <span class="s2">&quot;c++&quot;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="n">exception_class</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Zserio Python runtime implementation &#39;</span><span class="si">{</span><span class="n">impl</span><span class="si">}</span><span class="s2">&#39; is not available!&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">impl</span> <span class="o">!=</span> <span class="s2">&quot;python&quot;</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">ZSERIO_CPP_MODULE</span><span class="p">),</span> <span class="n">cppname</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">ImportError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">impl</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;cpp&quot;</span><span class="p">,</span> <span class="s2">&quot;c++&quot;</span><span class="p">]:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Zserio C++ implementation of &#39;</span><span class="si">{</span><span class="n">cppname</span><span class="si">}</span><span class="s2">&#39; is not available!&quot;</span>
+                <span class="k">raise</span> <span class="n">exception_class</span><span class="p">(</span><span class="n">message</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/Zserio.png" alt="Logo"/>
+            </a></p><h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../zserio.html">zserio package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../zserio.html#zserio.VERSION_STRING"><code class="docutils literal notranslate"><span class="pre">VERSION_STRING</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../zserio.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.array.html">zserio.array module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.bitbuffer.html">zserio.bitbuffer module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.bitfield.html">zserio.bitfield module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.bitposition.html">zserio.bitposition module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.bitreader.html">zserio.bitreader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.bitsizeof.html">zserio.bitsizeof module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.bitwriter.html">zserio.bitwriter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.builtin.html">zserio.builtin module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.cppbind.html">zserio.cppbind module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.creator.html">zserio.creator module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.debugstring.html">zserio.debugstring module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.enum.html">zserio.enum module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.exception.html">zserio.exception module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.float.html">zserio.float module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.hashcode.html">zserio.hashcode module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.json.html">zserio.json module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.limits.html">zserio.limits module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.pubsub.html">zserio.pubsub module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.serialization.html">zserio.serialization module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.service.html">zserio.service module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.typeinfo.html">zserio.typeinfo module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.walker.html">zserio.walker module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;Copyright (c) 2018-2022, Navigation Data Standard e.v..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

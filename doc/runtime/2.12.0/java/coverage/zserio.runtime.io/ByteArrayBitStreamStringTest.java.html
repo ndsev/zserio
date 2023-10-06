@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ByteArrayBitStreamStringTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.io</a> &gt; <span class="el_source">ByteArrayBitStreamStringTest.java</span></div><h1>ByteArrayBitStreamStringTest.java</h1><pre class="source lang-java linenums">package zserio.runtime.io;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.io.Reader;
+
+<span class="fc" id="L13">public class ByteArrayBitStreamStringTest</span>
+{
+    @Test
+    public void readStrings() throws IOException
+    {
+<span class="fc" id="L18">        try (final ByteArrayOutputStream baos = new ByteArrayOutputStream())</span>
+        {
+<span class="fc" id="L20">            try (final PrintStream os = new PrintStream(baos, false, &quot;UTF-8&quot;))</span>
+            {
+                // note that all lengths fits to first byte of varuint64
+<span class="fc" id="L23">                os.write(7);</span>
+<span class="fc" id="L24">                os.print(&quot;HAMBURG&quot;);</span>
+<span class="fc" id="L25">                os.write(8); // Ü is C3 9C in UTF8</span>
+<span class="fc" id="L26">                os.print(&quot;MÜNCHEN&quot;);</span>
+<span class="fc" id="L27">                os.write(5); // Ö is C3 96 in UTF8</span>
+<span class="fc" id="L28">                os.print(&quot;KÖLN&quot;);</span>
+            }
+
+<span class="fc" id="L31">            try (final ByteArrayBitStreamReader in = new ByteArrayBitStreamReader(baos.toByteArray()))</span>
+            {
+<span class="fc" id="L33">                final String hh = in.readString();</span>
+<span class="fc" id="L34">                assertEquals(&quot;HAMBURG&quot;, hh);</span>
+
+<span class="fc" id="L36">                final String m = in.readString();</span>
+<span class="fc" id="L37">                assertEquals(&quot;MÜNCHEN&quot;, m);</span>
+
+<span class="fc" id="L39">                final String k = in.readString();</span>
+<span class="fc" id="L40">                assertEquals(&quot;KÖLN&quot;, k);</span>
+            }
+        }
+<span class="fc" id="L43">    }</span>
+
+    @Test
+    public void writeZserioAndReadJdk() throws IOException
+    {
+<span class="fc" id="L48">        writeZserioAndReadJdk(&quot;HAMBURG&quot;, &quot;MUNCHEN&quot;, &quot;KOLN&quot;);</span>
+<span class="fc" id="L49">    }</span>
+
+    @Test
+    public void writeZserioAndReadJdkUmlaut() throws IOException
+    {
+<span class="fc" id="L54">        writeZserioAndReadJdk(&quot;HAMBURG&quot;, &quot;MÜNCHEN&quot;, &quot;KÖLN&quot;);</span>
+<span class="fc" id="L55">    }</span>
+
+    @Test
+    public void writeZserioAndReadZserio() throws IOException
+    {
+<span class="fc" id="L60">        writeZserioAndReadZserio(&quot;HAMBURG&quot;, &quot;MUNCHEN&quot;, &quot;KOLN&quot;);</span>
+<span class="fc" id="L61">    }</span>
+
+    @Test
+    public void writeZserioAndReadZserioUmlaut() throws IOException
+    {
+<span class="fc" id="L66">        writeZserioAndReadZserio(&quot;HAMBURG&quot;, &quot;MÜNCHEN&quot;, &quot;KÖLN&quot;);</span>
+<span class="fc" id="L67">    }</span>
+
+    @Test
+    public void writeAndReadUnaligned() throws IOException
+    {
+<span class="fc" id="L72">        writeZserioAndReadZserioUnaligned(&quot;HAMBURG&quot;, &quot;MUNCHEN&quot;, &quot;KOLN&quot;);</span>
+<span class="fc" id="L73">    }</span>
+
+    @Test
+    public void writeAndReadUnalignedUmlaut() throws IOException
+    {
+<span class="fc" id="L78">        writeZserioAndReadZserioUnaligned(&quot;HAMBURG&quot;, &quot;MÜNCHEN&quot;, &quot;KÖLN&quot;);</span>
+<span class="fc" id="L79">    }</span>
+
+    private void writeZserioAndReadJdk(final String s1, final String s2, final String s3) throws IOException
+    {
+<span class="fc" id="L83">        final char[] charBuffer = new char[80];</span>
+        int numChars;
+
+<span class="fc" id="L86">        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+        {
+<span class="fc" id="L88">            writer.writeString(s1);</span>
+<span class="fc" id="L89">            writer.writeString(s2);</span>
+<span class="fc" id="L90">            writer.writeString(s3);</span>
+
+<span class="fc" id="L92">            try (final Reader fileReader = new InputStreamReader(</span>
+<span class="fc" id="L93">                    new ByteArrayInputStream(writer.toByteArray()), &quot;UTF-8&quot;))</span>
+            {
+<span class="fc" id="L95">                numChars = fileReader.read(charBuffer);</span>
+            }
+        }
+
+<span class="fc" id="L99">        final byte[] buffer = new String(charBuffer, 0, numChars).getBytes(&quot;UTF-8&quot;);</span>
+
+<span class="fc" id="L101">        final byte b1 = buffer[0];</span>
+<span class="fc" id="L102">        final String ss1 = new String(buffer, 1, b1, &quot;UTF-8&quot;);</span>
+<span class="fc" id="L103">        assertEquals(s1, ss1);</span>
+<span class="fc" id="L104">        final byte b2 = buffer[1 + b1];</span>
+<span class="fc" id="L105">        final String ss2 = new String(buffer, 1 + b1 + 1, b2, &quot;UTF-8&quot;);</span>
+<span class="fc" id="L106">        assertEquals(s2, ss2);</span>
+<span class="fc" id="L107">        final byte b3 = buffer[1 + b1 + 1 + b2];</span>
+<span class="fc" id="L108">        final String ss3 = new String(buffer, 1 + b1 + 1 + b2 + 1, b3, &quot;UTF-8&quot;);</span>
+<span class="fc" id="L109">        assertEquals(s3, ss3);</span>
+<span class="fc" id="L110">        assertEquals(b1 + b2 + b3 + 3, buffer.length);</span>
+<span class="fc" id="L111">    }</span>
+
+    private void writeZserioAndReadZserio(final String s1, final String s2, final String s3) throws IOException
+    {
+<span class="fc" id="L115">        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+        {
+<span class="fc" id="L117">            writer.writeString(s1);</span>
+<span class="fc" id="L118">            writer.writeString(s2);</span>
+<span class="fc" id="L119">            writer.writeString(s3);</span>
+
+<span class="fc" id="L121">            try (final ByteArrayBitStreamReader in = new ByteArrayBitStreamReader(writer.toByteArray()))</span>
+            {
+<span class="fc" id="L123">                final String hh = in.readString();</span>
+<span class="fc" id="L124">                assertEquals(s1, hh);</span>
+
+<span class="fc" id="L126">                final String m = in.readString();</span>
+<span class="fc" id="L127">                assertEquals(s2, m);</span>
+
+<span class="fc" id="L129">                final String k = in.readString();</span>
+<span class="fc" id="L130">                assertEquals(s3, k);</span>
+            }
+        }
+<span class="fc" id="L133">    }</span>
+
+    private void writeZserioAndReadZserioUnaligned(final String s1, final String s2, final String s3) throws IOException
+    {
+<span class="fc" id="L137">        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+        {
+<span class="fc" id="L139">            writer.writeBits(7, 4);</span>
+<span class="fc" id="L140">            writer.writeString(s1);</span>
+<span class="fc" id="L141">            writer.writeString(s2);</span>
+<span class="fc" id="L142">            writer.writeString(s3);</span>
+
+<span class="fc" id="L144">            try (final ByteArrayBitStreamReader in = new ByteArrayBitStreamReader(writer.toByteArray()))</span>
+            {
+<span class="fc" id="L146">                final long b = in.readBits(4);</span>
+<span class="fc" id="L147">                assertEquals(7, b);</span>
+
+<span class="fc" id="L149">                final String hh = in.readString();</span>
+<span class="fc" id="L150">                assertEquals(s1, hh);</span>
+
+<span class="fc" id="L152">                final String m = in.readString();</span>
+<span class="fc" id="L153">                assertEquals(s2, m);</span>
+
+<span class="fc" id="L155">                final String k = in.readString();</span>
+<span class="fc" id="L156">                assertEquals(s3, k);</span>
+            }
+        }
+<span class="fc" id="L159">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

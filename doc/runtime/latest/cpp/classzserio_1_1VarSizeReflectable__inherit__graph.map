@@ -1,0 +1,8 @@
+<map id="zserio::VarSizeReflectable&lt; ALLOC &gt;" name="zserio::VarSizeReflectable&lt; ALLOC &gt;">
+<area shape="rect" id="node2" href="$classzserio_1_1UInt32ReflectableBase.html" title="zserio::UInt32Reflectable\lBase\&lt; ALLOC \&gt;" alt="" coords="15,452,193,493"/>
+<area shape="rect" id="node3" href="$classzserio_1_1UnsignedReflectableBase.html" title="zserio::UnsignedReflectable\lBase\&lt; ALLOC, uint32_t \&gt;" alt="" coords="5,363,203,404"/>
+<area shape="rect" id="node4" href="$classzserio_1_1IntegralReflectableBase.html" title="zserio::IntegralReflectable\lBase\&lt; ALLOC, uint32_t \&gt;" alt="" coords="11,273,197,315"/>
+<area shape="rect" id="node5" href="$classzserio_1_1BuiltinReflectableBase.html" title="zserio::BuiltinReflectable\lBase\&lt; ALLOC, uint32_t \&gt;" alt="" coords="11,184,197,225"/>
+<area shape="rect" id="node6" href="$classzserio_1_1ReflectableBase.html" title="zserio::ReflectableBase\l\&lt; ALLOC \&gt;" alt="" coords="19,95,189,136"/>
+<area shape="rect" id="node7" href="$classzserio_1_1IBasicReflectable.html" title="zserio::IBasicReflectable\l\&lt; ALLOC \&gt;" alt="" coords="17,5,191,47"/>
+</map>

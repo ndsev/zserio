@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ArrayElement.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.array</a> &gt; <span class="el_source">ArrayElement.java</span></div><h1>ArrayElement.java</h1><pre class="source lang-java linenums">package zserio.runtime.array;
+
+import java.math.BigInteger;
+
+/**
+ * Common interface for all array elements.
+ */
+public interface ArrayElement
+{
+    /**
+     * Dummy element instantiation used by array wrapper where element is not applicable.
+     */
+<span class="fc" id="L13">    public static ArrayElement Dummy = new DummyElement();</span>
+
+    /**
+     * Interface for elements of integral arrays.
+     */
+    public static interface IntegralArrayElement extends ArrayElement
+    {
+        /**
+         * Converts the element value to big integer.
+         *
+         * @return Element value as BigInteger.
+         */
+        public BigInteger toBigInteger();
+    }
+
+    /**
+     * Dummy array element.
+     */
+<span class="fc" id="L31">    public static class DummyElement implements ArrayElement</span>
+    {}
+
+    /**
+     * Array element for bytes.
+     */
+    public static class ByteArrayElement implements IntegralArrayElement
+    {
+        /**
+         * Constructor.
+         *
+         * @param element Element to construct from.
+         */
+        public ByteArrayElement(byte element)
+<span class="fc" id="L45">        {</span>
+<span class="fc" id="L46">            this.element = element;</span>
+<span class="fc" id="L47">        }</span>
+
+        @Override
+        public BigInteger toBigInteger()
+        {
+<span class="fc" id="L52">            return BigInteger.valueOf(element);</span>
+        }
+
+        /**
+         * Gets the element value.
+         *
+         * @return Element value.
+         */
+        public byte get()
+        {
+<span class="fc" id="L62">            return element;</span>
+        }
+
+        private final byte element;
+    }
+
+    /**
+     * Array element for shorts.
+     */
+    public static class ShortArrayElement implements IntegralArrayElement
+    {
+        /**
+         * Constructor.
+         *
+         * @param element Element to construct from.
+         */
+        public ShortArrayElement(short element)
+<span class="fc" id="L79">        {</span>
+<span class="fc" id="L80">            this.element = element;</span>
+<span class="fc" id="L81">        }</span>
+
+        @Override
+        public BigInteger toBigInteger()
+        {
+<span class="fc" id="L86">            return BigInteger.valueOf(element);</span>
+        }
+
+        /**
+         * Gets the element value.
+         *
+         * @return Element value.
+         */
+        public short get()
+        {
+<span class="fc" id="L96">            return element;</span>
+        }
+
+        private final short element;
+    }
+
+    /**
+     * Array element for ints.
+     */
+    public static class IntArrayElement implements IntegralArrayElement
+    {
+        /**
+         * Constructor.
+         *
+         * @param element Element to construct from.
+         */
+        public IntArrayElement(int element)
+<span class="fc" id="L113">        {</span>
+<span class="fc" id="L114">            this.element = element;</span>
+<span class="fc" id="L115">        }</span>
+
+        @Override
+        public BigInteger toBigInteger()
+        {
+<span class="fc" id="L120">            return BigInteger.valueOf(element);</span>
+        }
+
+        /**
+         * Gets the element value.
+         *
+         * @return Element value.
+         */
+        public int get()
+        {
+<span class="fc" id="L130">            return element;</span>
+        }
+
+        private final int element;
+    }
+
+    /**
+     * Array element for longs.
+     */
+    public static class LongArrayElement implements IntegralArrayElement
+    {
+        /**
+         * Constructor.
+         *
+         * @param element Element to construct from.
+         */
+        public LongArrayElement(long element)
+<span class="fc" id="L147">        {</span>
+<span class="fc" id="L148">            this.element = element;</span>
+<span class="fc" id="L149">        }</span>
+
+        @Override
+        public BigInteger toBigInteger()
+        {
+<span class="fc" id="L154">            return BigInteger.valueOf(element);</span>
+        }
+
+        /**
+         * Gets the element value.
+         *
+         * @return Element value.
+         */
+        public long get()
+        {
+<span class="fc" id="L164">            return element;</span>
+        }
+
+        private final long element;
+    }
+
+    /**
+     * Array element for big integers.
+     */
+    public static class BigIntegerArrayElement implements IntegralArrayElement
+    {
+        /**
+         * Constructor.
+         *
+         * @param element Element to construct from.
+         */
+        public BigIntegerArrayElement(BigInteger element)
+<span class="fc" id="L181">        {</span>
+<span class="fc" id="L182">            this.element = element;</span>
+<span class="fc" id="L183">        }</span>
+
+        @Override
+        public BigInteger toBigInteger()
+        {
+<span class="fc" id="L188">            return element;</span>
+        }
+
+        /**
+         * Gets the element value.
+         *
+         * @return Element value.
+         */
+        public BigInteger get()
+        {
+<span class="fc" id="L198">            return element;</span>
+        }
+
+        private final BigInteger element;
+    }
+
+    /**
+     * Array element for floats.
+     */
+    public static class FloatArrayElement implements ArrayElement
+    {
+        /**
+         * Constructor.
+         *
+         * @param element Element to construct from.
+         */
+        public FloatArrayElement(float element)
+<span class="fc" id="L215">        {</span>
+<span class="fc" id="L216">            this.element = element;</span>
+<span class="fc" id="L217">        }</span>
+
+        /**
+         * Gets the element value.
+         *
+         * @return Element value.
+         */
+        public float get()
+        {
+<span class="fc" id="L226">            return element;</span>
+        }
+
+        private final float element;
+    }
+
+    /**
+     * Array element for doubles.
+     */
+    public static class DoubleArrayElement implements ArrayElement
+    {
+        /**
+         * Constructor.
+         *
+         * @param element Element to construct from.
+         */
+        public DoubleArrayElement(double element)
+<span class="fc" id="L243">        {</span>
+<span class="fc" id="L244">            this.element = element;</span>
+<span class="fc" id="L245">        }</span>
+
+        /**
+         * Gets the element value.
+         *
+         * @return Element value.
+         */
+        public double get()
+        {
+<span class="fc" id="L254">            return element;</span>
+        }
+
+        private final double element;
+    }
+
+    /**
+     * Array element for booleans.
+     */
+    public static class BooleanArrayElement implements ArrayElement
+    {
+        /**
+         * Constructor.
+         *
+         * @param element Element to construct from.
+         */
+        public BooleanArrayElement(boolean element)
+<span class="fc" id="L271">        {</span>
+<span class="fc" id="L272">            this.element = element;</span>
+<span class="fc" id="L273">        }</span>
+
+        /**
+         * Gets the element value.
+         *
+         * @return Element value.
+         */
+        public boolean get()
+        {
+<span class="fc" id="L282">            return element;</span>
+        }
+
+        private final boolean element;
+    }
+
+    /**
+     * Array element for objects.
+     */
+    public static class ObjectArrayElement&lt;E&gt; implements ArrayElement
+    {
+        /**
+         * Constructor.
+         *
+         * @param element Element to construct from.
+         */
+        public ObjectArrayElement(E element)
+<span class="fc" id="L299">        {</span>
+<span class="fc" id="L300">            this.element = element;</span>
+<span class="fc" id="L301">        }</span>
+
+        /**
+         * Gets the element value.
+         *
+         * @return Element value.
+         */
+        public E get()
+        {
+<span class="fc" id="L310">            return element;</span>
+        }
+
+        private final E element;
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

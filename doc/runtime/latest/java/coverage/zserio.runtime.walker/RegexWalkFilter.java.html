@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RegexWalkFilter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.walker</a> &gt; <span class="el_source">RegexWalkFilter.java</span></div><h1>RegexWalkFilter.java</h1><pre class="source lang-java linenums">package zserio.runtime.walker;
+
+import java.lang.reflect.Array;
+import java.util.Stack;
+import java.util.regex.Pattern;
+
+import zserio.runtime.typeinfo.FieldInfo;
+import zserio.runtime.typeinfo.TypeInfoUtil;
+
+/**
+ * Walk filter which allows to walk only paths matching the given regex.
+ *
+ *  The path is constructed from field names within the root object, thus the root object
+ *  itself is not part of the path.
+ *
+ *  Array elements have the index appended to the path so that e.g. &quot;compound.arrayField[0]&quot; will match
+ *  only the first element in the array &quot;arrayField&quot;.
+ */
+public class RegexWalkFilter implements WalkFilter
+{
+    /**
+     * Constructor.
+     *
+     * @param pathRegex Path regex to use for filtering.
+     */
+    public RegexWalkFilter(String pathRegex)
+<span class="fc" id="L27">    {</span>
+<span class="fc" id="L28">        this.pathRegex = pathRegex;</span>
+<span class="fc" id="L29">        this.currentPath = new Stack&lt;String&gt;();</span>
+<span class="fc" id="L30">    }</span>
+
+    @Override
+    public boolean beforeArray(Object array, FieldInfo fieldInfo)
+    {
+<span class="fc" id="L35">        currentPath.push(fieldInfo.getSchemaName());</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">        if (Pattern.matches(pathRegex, getCurrentPath()))</span>
+<span class="fc" id="L37">            return true; // the array itself matches</span>
+
+        // try to find match in each element and continue into the array only if some match is found
+<span class="fc" id="L40">        final int length = Array.getLength(array);</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        for (int i = 0; i &lt; length; ++i)</span>
+        {
+<span class="fc" id="L43">            currentPath.set(currentPath.size() - 1, fieldInfo.getSchemaName() + &quot;[&quot; + i + &quot;]&quot;);</span>
+<span class="fc" id="L44">            final Object element = Array.get(array, i);</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">            if (matchSubtree(element, fieldInfo))</span>
+<span class="fc" id="L46">                return true;</span>
+        }
+<span class="fc" id="L48">        currentPath.set(currentPath.size() - 1, fieldInfo.getSchemaName());</span>
+
+<span class="fc" id="L50">        return false;</span>
+    }
+
+    @Override
+    public boolean afterArray(Object array, FieldInfo fieldInfo)
+    {
+<span class="fc" id="L56">        currentPath.pop();</span>
+<span class="fc" id="L57">        return true;</span>
+    }
+
+    @Override
+    public boolean beforeCompound(Object compound, FieldInfo fieldInfo, int elementIndex)
+    {
+<span class="fc" id="L63">        appendPath(fieldInfo, elementIndex);</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        if (Pattern.matches(pathRegex, getCurrentPath()))</span>
+<span class="fc" id="L65">            return true; // the compound itself matches</span>
+
+<span class="fc" id="L67">        return matchSubtree(compound, fieldInfo);</span>
+    }
+
+    @Override
+    public boolean afterCompound(Object compound, FieldInfo fieldInfo, int elementIndex)
+    {
+<span class="fc" id="L73">        popPath(fieldInfo, elementIndex);</span>
+<span class="fc" id="L74">        return true;</span>
+    }
+
+    @Override
+    public boolean beforeValue(Object value, FieldInfo fieldInfo, int elementIndex)
+    {
+<span class="fc" id="L80">        appendPath(fieldInfo, elementIndex);</span>
+<span class="fc" id="L81">        return matchSubtree(value, fieldInfo);</span>
+    }
+
+    @Override
+    public boolean afterValue(Object value, FieldInfo fieldInfo, int elementIndex)
+    {
+<span class="fc" id="L87">        popPath(fieldInfo, elementIndex);</span>
+<span class="fc" id="L88">        return true;</span>
+    }
+
+    boolean matchSubtree(Object member, FieldInfo fieldInfo)
+    {
+<span class="fc bfc" id="L93" title="All 4 branches covered.">        if (member != null &amp;&amp; TypeInfoUtil.isCompound(fieldInfo.getTypeInfo().getSchemaType()))</span>
+        {
+            // is a not null compound, try to find match within its subtree
+<span class="fc" id="L96">            final DefaultWalkObserver defaultObserver = new DefaultWalkObserver();</span>
+<span class="fc" id="L97">            final SubtreeRegexWalkFilter subtreeFilter = new SubtreeRegexWalkFilter(currentPath, pathRegex);</span>
+<span class="fc" id="L98">            final Walker walker = new Walker(defaultObserver, subtreeFilter);</span>
+<span class="fc" id="L99">            walker.walk(member);</span>
+<span class="fc" id="L100">            return subtreeFilter.matches();</span>
+        }
+        else
+        {
+            // try to match a simple value or null compound
+<span class="fc" id="L105">            return Pattern.matches(pathRegex, getCurrentPath());</span>
+        }
+    }
+
+    private String getCurrentPath()
+    {
+<span class="fc" id="L111">        return getCurrentPathImpl(currentPath);</span>
+    }
+
+    private void appendPath(FieldInfo fieldInfo, int elementIndex)
+    {
+<span class="fc" id="L116">        appendPathImpl(currentPath, fieldInfo, elementIndex);</span>
+<span class="fc" id="L117">    }</span>
+
+    private void popPath(FieldInfo fieldInfo, int elementIndex)
+    {
+<span class="fc" id="L121">        popPathImpl(currentPath, fieldInfo, elementIndex);</span>
+<span class="fc" id="L122">    }</span>
+
+    private static String getCurrentPathImpl(Stack&lt;String&gt; currentPath)
+    {
+<span class="fc" id="L126">        return String.join(&quot;.&quot;, currentPath);</span>
+    }
+
+    private static void appendPathImpl(Stack&lt;String&gt; currentPath, FieldInfo fieldInfo, int elementIndex)
+    {
+<span class="fc bfc" id="L131" title="All 2 branches covered.">        if (elementIndex == WalkerConst.NOT_ELEMENT)</span>
+<span class="fc" id="L132">            currentPath.push(fieldInfo.getSchemaName());</span>
+        else
+<span class="fc" id="L134">            currentPath.set(currentPath.size() - 1, fieldInfo.getSchemaName() + &quot;[&quot; + elementIndex + &quot;]&quot;);</span>
+<span class="fc" id="L135">    }</span>
+
+    private static void popPathImpl(Stack&lt;String&gt; currentPath, FieldInfo fieldInfo, int elementIndex)
+    {
+<span class="fc bfc" id="L139" title="All 2 branches covered.">        if (elementIndex == WalkerConst.NOT_ELEMENT)</span>
+<span class="fc" id="L140">            currentPath.pop();</span>
+        else
+<span class="fc" id="L142">            currentPath.set(currentPath.size() -1, fieldInfo.getSchemaName());</span>
+<span class="fc" id="L143">    }</span>
+
+    /**
+     * Walks whole subtree and in case of match stops walking. Used to check whether any path
+     * within the subtree matches given regex.
+     */
+    private static class SubtreeRegexWalkFilter implements WalkFilter
+    {
+        public SubtreeRegexWalkFilter(Stack&lt;String&gt; currentPath, String pathRegex)
+<span class="fc" id="L152">        {</span>
+<span class="fc" id="L153">            this.currentPath = currentPath;</span>
+<span class="fc" id="L154">            this.pathRegex = pathRegex;</span>
+
+<span class="fc" id="L156">            matches = false;</span>
+<span class="fc" id="L157">        }</span>
+
+        public boolean matches()
+        {
+<span class="fc" id="L161">            return matches;</span>
+        }
+
+        @Override
+        public boolean beforeArray(Object array, FieldInfo fieldInfo)
+        {
+<span class="fc" id="L167">            currentPath.push(fieldInfo.getSchemaName());</span>
+<span class="fc" id="L168">            matches = Pattern.matches(pathRegex, getCurrentPath());</span>
+
+            // terminate when the match is already found (note that array is never None here)
+<span class="fc bfc" id="L171" title="All 2 branches covered.">            return !matches;</span>
+        }
+
+        @Override
+        public boolean afterArray(Object array, FieldInfo fieldInfo)
+        {
+<span class="fc" id="L177">            currentPath.pop();</span>
+
+            // terminate when the match is already found
+<span class="fc bfc" id="L180" title="All 2 branches covered.">            return !matches;</span>
+        }
+
+        @Override
+        public boolean beforeCompound(Object compound, FieldInfo fieldInfo, int elementIndex)
+        {
+<span class="fc" id="L186">            appendPath(fieldInfo, elementIndex);</span>
+<span class="fc" id="L187">            matches = Pattern.matches(pathRegex, getCurrentPath());</span>
+
+            //  terminate when the match is already found (note that compound is never None here)
+<span class="pc bpc" id="L190" title="1 of 2 branches missed.">            return !matches;</span>
+        }
+
+        @Override
+        public boolean afterCompound(Object compound, FieldInfo fieldInfo, int elementIndex)
+        {
+<span class="fc" id="L196">            popPath(fieldInfo, elementIndex);</span>
+
+            // terminate when the match is already found
+<span class="pc bpc" id="L199" title="1 of 2 branches missed.">            return !matches;</span>
+        }
+
+        @Override
+        public boolean beforeValue(Object value, FieldInfo fieldInfo, int elementIndex)
+        {
+<span class="fc" id="L205">            appendPath(fieldInfo, elementIndex);</span>
+<span class="fc" id="L206">            matches = Pattern.matches(pathRegex, getCurrentPath());</span>
+
+            // terminate when the match is already found
+<span class="fc bfc" id="L209" title="All 2 branches covered.">            return !matches;</span>
+        }
+
+        @Override
+        public boolean afterValue(Object value, FieldInfo fieldInfo, int elementIndex)
+        {
+<span class="fc" id="L215">            popPath(fieldInfo, elementIndex);</span>
+
+            // terminate when the match is already found
+<span class="fc bfc" id="L218" title="All 2 branches covered.">            return !matches;</span>
+        }
+
+        private String getCurrentPath()
+        {
+<span class="fc" id="L223">            return RegexWalkFilter.getCurrentPathImpl(currentPath);</span>
+        }
+
+        private void appendPath(FieldInfo fieldInfo, int elementIndex)
+        {
+<span class="fc" id="L228">            RegexWalkFilter.appendPathImpl(currentPath, fieldInfo, elementIndex);</span>
+<span class="fc" id="L229">        }</span>
+
+        private void popPath(FieldInfo fieldInfo, int elementIndex)
+        {
+<span class="fc" id="L233">            RegexWalkFilter.popPathImpl(currentPath, fieldInfo, elementIndex);</span>
+<span class="fc" id="L234">        }</span>
+
+        private final Stack&lt;String&gt; currentPath;
+        private final String pathRegex;
+
+        private boolean matches;
+    };
+
+    private final String pathRegex;
+    private final Stack&lt;String&gt; currentPath;
+};
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>zserio.typeinfo &#8212; Zserio 2.12.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=4a6762d5" />
+    <script src="../../_static/documentation_options.js?v=63f0a439"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for zserio.typeinfo</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The module contains classes for type info.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">import</span> <span class="nn">enum</span>
+
+<div class="viewcode-block" id="TypeInfo">
+<a class="viewcode-back" href="../../zserio.typeinfo.html#zserio.typeinfo.TypeInfo">[docs]</a>
+<span class="k">class</span> <span class="nc">TypeInfo</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Type info class which provides information about generated types.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">py_type</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Type</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+                 <span class="n">attributes</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="s1">&#39;TypeAttribute&#39;</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Type info constructor.</span>
+
+<span class="sd">        :param schema_name: Zserio schema full type name.</span>
+<span class="sd">        :param py_type: Reference to the generated type.</span>
+<span class="sd">        :param attributes: List of type attributes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_schema_name</span> <span class="o">=</span> <span class="n">schema_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_py_type</span> <span class="o">=</span> <span class="n">py_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span> <span class="o">=</span> <span class="n">attributes</span> <span class="k">if</span> <span class="n">attributes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">schema_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the full type name as is defined in Zserio schema.</span>
+
+<span class="sd">        :returns: Zserio schema full type name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schema_name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">py_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Type</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets Python type generated for this Zserio type.</span>
+
+<span class="sd">        :returns: Python type.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_py_type</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="s1">&#39;TypeAttribute&#39;</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets dictionary with type attributes.</span>
+
+<span class="sd">        Attribute is a an arbitrary value which type is given by the key, which is TypeAttribute enumeration.</span>
+
+<span class="sd">        * `(TypeAttribute.UNDERLYING_TYPE, TypeInfo(...))`</span>
+
+<span class="sd">          * denotes that the type has an underlying type (e.g. enum or bitmask),</span>
+<span class="sd">            the value is a TypeInfo of the underlying type</span>
+
+<span class="sd">        * `(TypeAttribute.UNDERLYING_TYPE_ARGUMENTS, [lambda: 5])`</span>
+
+<span class="sd">          * keeps type arguments of the underlying type when it is a dynamic bit field,</span>
+<span class="sd">            the value is a lambda function which returns the argument constant value</span>
+
+<span class="sd">        * `(TypeAttribute.ENUM_ITEMS, [ItemInfo(...), ItemInfo(...), ...])`</span>
+
+<span class="sd">          * denotes that the type is an enumeration, the value contains list of enum items ItemInfo</span>
+
+<span class="sd">        * `(TypeAttribute.BITMASK_VALUES, [ItemInfo(...), ItemInfo(...), ...])`</span>
+
+<span class="sd">          * denotes that the type is a bitmask, the value contains list of bitmask values ItemInfo</span>
+
+<span class="sd">        * `(TypeAttribute.FIELDS,  [MemberInfo(...), MemberInfo(...), ...])`</span>
+
+<span class="sd">          * denotes that the type is a compound type, the value contains list of fields MemberInfo,</span>
+<span class="sd">            the attribute is present even for empty compounds and then it contains the empty list</span>
+
+<span class="sd">        * `(TypeAttribute.PARAMETERS, [MemberInfo(...), MemberInfo(...), ...])`</span>
+
+<span class="sd">          * denotes that the compound type is parameterized type, the value contains non-empty list of</span>
+<span class="sd">            parameters MemberInfo, for non-parameterized types the attribute is not present</span>
+
+<span class="sd">        * `(TypeAttribute.FUNCTIONS, [MemberInfo(...), MemberInfo(...), ...])`</span>
+
+<span class="sd">          * denotes that the compound type has functions, the value contains non-empty list of functions</span>
+<span class="sd">            MemberInfo, for compounds without functions the attribute is not present</span>
+
+<span class="sd">        * `(TypeAttribute.SELECTOR, None`) `(TypeAttribute.SELECTOR, lambda self: self.param1)`</span>
+
+<span class="sd">          * denotes that the type is either a union (when the value is None) or choice when the</span>
+<span class="sd">            value contains the selector expression as a lambda function taking single parent argument</span>
+
+<span class="sd">        * `(TypeAttribute.CASES, [CaseInfo(...), CaseInfo(...), ...])`</span>
+
+<span class="sd">          * denotes that the type is a choice, the value contains list of CaseInfo for each choice case</span>
+<span class="sd">          * note that the TypeAttribute.FIELDS attribute is present also in choices</span>
+
+<span class="sd">        * `(TypeAttribute.TEMPLATE_NAME, &#39;TemplatedStructure&#39;)`</span>
+
+<span class="sd">          * denotes that the type is a template instantiation, the value contains the template name</span>
+
+<span class="sd">        * `(TypeAttribute.TEMPLATE_ARGUMENTS, [test.TemplateArg.type_info(), ...])`</span>
+
+<span class="sd">          * present when the type is a template instantiation, the value contains list of template arguments</span>
+<span class="sd">            TypeInfo</span>
+
+<span class="sd">        * `(TypeAttribute.COLUMNS, [MemberInfo(...), MemberInfo(...), ...])`</span>
+
+<span class="sd">          * denotes that the type is a SQL table, the value contains list of columns MemberInfo</span>
+
+<span class="sd">        * `(TypeAttribute.TABLES, [MemberInfo(...), MemberInfo(...), ...])`</span>
+
+<span class="sd">          * denotes that the type is a SQL database, the value contain list of tables MemberInfo</span>
+
+<span class="sd">        * `(TypeAttribute.SQL_CONSTRAINT, &#39;PRIMARY KEY(columnA)&#39;)`</span>
+
+<span class="sd">          * denotes that the SQL table contains a SQL constraint</span>
+
+<span class="sd">        * `(TypeAttribute.VIRTUAL_TABLE_USING, &#39;fts4&#39;)`</span>
+
+<span class="sd">          * denotes that the SQL table is a virtual table, the value contains the used virtual table module</span>
+
+<span class="sd">        * `(TypeAttribute.WITHOUT_ROWID, None)`</span>
+
+<span class="sd">          * denotes that the SQL table is a WITHOUT ROWID table, the value is always None</span>
+
+<span class="sd">        * `(TypeAttribute.MESSAGES, [MemberInfo(...), MemberInfo(...), ...])`</span>
+
+<span class="sd">          * denotes that the type is a pub-sub, the value contains list of messages MemberInfo</span>
+
+<span class="sd">        * `(TypeAttribute.METHODS, [MemberInfo(...), MemberInfo(...), ...])`</span>
+
+<span class="sd">          * denotes that the type is a service, the value contains list of methods MemberInfo</span>
+
+<span class="sd">        :returns Type attributes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span></div>
+
+
+<div class="viewcode-block" id="RecursiveTypeInfo">
+<a class="viewcode-back" href="../../zserio.typeinfo.html#zserio.typeinfo.RecursiveTypeInfo">[docs]</a>
+<span class="k">class</span> <span class="nc">RecursiveTypeInfo</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Type info for recursive types used as a wrapper around generated static type_info method to prevent</span>
+<span class="sd">    infinite recursion in type info definition.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_info_func</span> <span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">[[],</span> <span class="n">TypeInfo</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor.</span>
+
+<span class="sd">        :param type_info_func: Generated static type_info method to wrap.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_type_info_func</span> <span class="o">=</span> <span class="n">type_info_func</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_type_info</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">schema_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        See :py:attr:`TypeInfo.schema_name`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_type_info</span><span class="p">()</span><span class="o">.</span><span class="n">schema_name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">py_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Type</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        See :py:attr:`TypeInfo.py_type`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_type_info</span><span class="p">()</span><span class="o">.</span><span class="n">py_type</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="s1">&#39;TypeAttribute&#39;</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        See :py:attr:`TypeInfo.attributes`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_type_info</span><span class="p">()</span><span class="o">.</span><span class="n">attributes</span>
+
+    <span class="k">def</span> <span class="nf">_get_type_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type_info</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_type_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type_info_func</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type_info</span></div>
+
+
+<div class="viewcode-block" id="TypeAttribute">
+<a class="viewcode-back" href="../../zserio.typeinfo.html#zserio.typeinfo.TypeAttribute">[docs]</a>
+<span class="k">class</span> <span class="nc">TypeAttribute</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Type attribute type to be used in TypeInfo.</span>
+
+<span class="sd">    Determines type of the second element in the attribute tuple returned in attributes list from TypeInfo.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">UNDERLYING_TYPE</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">UNDERLYING_TYPE_ARGUMENTS</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">ENUM_ITEMS</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">BITMASK_VALUES</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">FIELDS</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">PARAMETERS</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">FUNCTIONS</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">SELECTOR</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">CASES</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">TEMPLATE_NAME</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">TEMPLATE_ARGUMENTS</span><span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">COLUMNS</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">TABLES</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">SQL_CONSTRAINT</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">VIRTUAL_TABLE_USING</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">WITHOUT_ROWID</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">MESSAGES</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">METHODS</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="MemberInfo">
+<a class="viewcode-back" href="../../zserio.typeinfo.html#zserio.typeinfo.MemberInfo">[docs]</a>
+<span class="k">class</span> <span class="nc">MemberInfo</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Member info class which provides information about members of compound types.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">typeinfo</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">TypeInfo</span><span class="p">,</span> <span class="n">RecursiveTypeInfo</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span>
+                 <span class="n">attributes</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="s1">&#39;MemberAttribute&#39;</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Member info constructor.</span>
+
+<span class="sd">        :param schema_name: Name of the member as is defined in Zserio schema.</span>
+<span class="sd">        :param type_info: Type info of the member.</span>
+<span class="sd">        :param attributes: List of member attributes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_schema_name</span> <span class="o">=</span> <span class="n">schema_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_type_info</span> <span class="o">=</span> <span class="n">typeinfo</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span> <span class="o">=</span> <span class="n">attributes</span> <span class="k">if</span> <span class="n">attributes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">schema_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets name of the member as is defined in Zserio schema.</span>
+
+<span class="sd">        :returns: Member name in Zserio schema.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schema_name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">type_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">TypeInfo</span><span class="p">,</span> <span class="n">RecursiveTypeInfo</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets type info of this member.</span>
+
+<span class="sd">        :returns: Type info.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type_info</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="s1">&#39;MemberAttribute&#39;</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets dictionary with member attributes.</span>
+
+<span class="sd">        Attribute is a an arbitrary value which type is given by the key, which is MemberAttribute enumeration.</span>
+<span class="sd">        All expressions are stored as strings.</span>
+
+<span class="sd">        **Possible attributes:**</span>
+
+<span class="sd">        * `(MemberAttribute.PROPERTY_NAME, &#39;field1&#39;)`</span>
+
+<span class="sd">          * contains name of the property generated in Python</span>
+
+<span class="sd">        * `(MemberAttribute.TYPE_ARGUMENTS, [(lambda self, zserio_index: self.field1), ...])`</span>
+
+<span class="sd">          * for compound type members, keeps type arguments for parameterized types or dynamic bit fields,</span>
+<span class="sd">            the value contains list of lambda functions evaluating particular arguments expression,</span>
+<span class="sd">            where the lambdas take parent and an element index (which can be None if not used) as arguments</span>
+
+<span class="sd">          * for members of sql tables, keeps type arguments for columns, the value contains list of</span>
+<span class="sd">            lambdas where the lambdas take either single explicit parameter argument for explicit parameters or</span>
+<span class="sd">            single &#39;self&#39; argument, which is an object providing property-like getters for column names</span>
+<span class="sd">            used in expressions</span>
+
+<span class="sd">        * `(MemberAttribute.EXTENDED, None)`</span>
+
+<span class="sd">          * denotes that the member field is extended, the value is always None</span>
+
+<span class="sd">        * `(MemberAttribute.ALIGN, lambda: 8)`</span>
+
+<span class="sd">          * denotes that the member field has an alignment, the value is a lambda function which returns the</span>
+<span class="sd">            alignment constant value</span>
+
+<span class="sd">        * `(MemberAttribute.OFFSET, lambda self: self.offset_field)`</span>
+
+<span class="sd">          * denotes that the member field has an offset, the value contains the offset expression</span>
+<span class="sd">            as a lambda function taking single parent argument</span>
+
+<span class="sd">        * `(MemberAttribute.INITIALIZER, lambda: 10)`</span>
+
+<span class="sd">          * denotes that the member field has an initializer, the value is a lambda function which returns the</span>
+<span class="sd">            the initializer constant value</span>
+
+<span class="sd">        * `(MemberAttribute.OPTIONAL, None)`, `(MemberAttribute.OPTIONAL, lambda self: self.field1 != 0)`</span>
+
+<span class="sd">          * denotes that the member is an optional, when the value is None, then it&#39;s an auto optional,</span>
+<span class="sd">            otherwise it contains the optional clause as a lambda function taking single parent argument</span>
+
+<span class="sd">        * `(MemberAttribute.IS_USED_INDICATOR_NAME, &#39;is_field_used)`</span>
+
+<span class="sd">          * if the member is an optional, the value contains the &quot;is_used&quot; indicator name generated in Python</span>
+
+<span class="sd">        * `(MemberAttribute.IS_SET_INDICATOR_NAME, &#39;is_field_set)`</span>
+
+<span class="sd">          * if the member is an optional, the value contains the &quot;is_set&quot; indicator name generated in Python</span>
+
+<span class="sd">        * `(MemberAttribute.CONSTRAINT, lambda self: field &gt; 10)`</span>
+
+<span class="sd">          * denotes that the member has a constraint, the value contains the constraint expression</span>
+<span class="sd">            as a lambda function taking single parent argument</span>
+
+<span class="sd">        * `(MemberAttribute.FUNCTION_NAME, &#39;function_name&#39;)`</span>
+
+<span class="sd">          * keeps the generated function name</span>
+
+<span class="sd">        * `MemberAttribute.FUNCTION_RESULT, lambda self: self.field1 + 5)`</span>
+
+<span class="sd">          * keeps the result expression of a function as a lambda function taking single parent argument</span>
+
+<span class="sd">        * `(MemberAttribute.ARRAY_LENGTH, None)`, `(MemberAttribute.ARRAY_LENGTH, lambda self: self.field1 + 1)`</span>
+
+<span class="sd">          * denotes that the member is an array, when the value is None, then it&#39;s an auto array,</span>
+<span class="sd">            otherwise it contains the length expression as a lambda function taking single parent argument</span>
+
+<span class="sd">        * `(MemberAttribute.IMPLICIT, None)`</span>
+
+<span class="sd">          * denotes that the member is an implicit array, the value is always None</span>
+
+<span class="sd">        * `(MemberAttribute.PACKED, None)`</span>
+
+<span class="sd">          * denotes that the member is a packed array, the value is always None</span>
+
+<span class="sd">        * `(MemberAttribute.SQL_TYPE_NAME, &#39;INTEGER&#39;)`</span>
+
+<span class="sd">          * keeps SQLite type name used for this column</span>
+
+<span class="sd">        * `(MemberAttribute.SQL_CONSTRAINT, &#39;PRIMARY KEY NOT NULL&#39;)`</span>
+
+<span class="sd">          * denotes that the member has a SQL constraint</span>
+
+<span class="sd">        * `(MemberAttribute.VIRTUAL, None)`</span>
+
+<span class="sd">          * denotes that the column in a SQL table is virtual</span>
+
+<span class="sd">        * `(MemberAttribute.TOPIC, &#39;topic/definition&#39;)`</span>
+
+<span class="sd">          * keeps the topic definition of a pub-sub message</span>
+
+<span class="sd">        * `(MemberAttribute.PUBLISH, &#39;publish_message_name&#39;)`</span>
+
+<span class="sd">          * denotes that the pub-sub message is published, the value contains the publishing method name</span>
+
+<span class="sd">        * `(MemberAttribute.SUBSCRIBE, &#39;subscribe_message_name&#39;)`</span>
+
+<span class="sd">          * denotes that the pub-sub message is subscribed, the value contains the subscribing method name</span>
+
+<span class="sd">        * `(MemberAttribute.CLIENT_METHOD_NAME, &#39;client_method_name&#39;)`</span>
+
+<span class="sd">          * keeps the name of the method in the generated Client class</span>
+
+<span class="sd">        * `(MemberAttribute.REQUEST_TYPE, request_type.type_info())`</span>
+
+<span class="sd">          * keeps the request type TypeInfo, note that response type is in the method TypeInfo</span>
+
+<span class="sd">        :returns: Member attributes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span></div>
+
+
+<div class="viewcode-block" id="MemberAttribute">
+<a class="viewcode-back" href="../../zserio.typeinfo.html#zserio.typeinfo.MemberAttribute">[docs]</a>
+<span class="k">class</span> <span class="nc">MemberAttribute</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Member attribute type to be used in MemberInfo.</span>
+
+<span class="sd">    Determines type of the second element in the attribute tuple returned in attributes list from MemberInfo.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">PROPERTY_NAME</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">TYPE_ARGUMENTS</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">EXTENDED</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">ALIGN</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">OFFSET</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">INITIALIZER</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">OPTIONAL</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">IS_USED_INDICATOR_NAME</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">IS_SET_INDICATOR_NAME</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">CONSTRAINT</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">FUNCTION_NAME</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">FUNCTION_RESULT</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">ARRAY_LENGTH</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">IMPLICIT</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">PACKED</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">SQL_TYPE_NAME</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">SQL_CONSTRAINT</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">VIRTUAL</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">TOPIC</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">PUBLISH</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">SUBSCRIBE</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">CLIENT_METHOD_NAME</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">REQUEST_TYPE</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="CaseInfo">
+<a class="viewcode-back" href="../../zserio.typeinfo.html#zserio.typeinfo.CaseInfo">[docs]</a>
+<span class="k">class</span> <span class="nc">CaseInfo</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Case info class which provides information about choice cases in generated choices.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case_expressions</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span> <span class="n">field</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">MemberInfo</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor.</span>
+
+<span class="sd">        :param case_expressions: List of case expression in the choice case. When empty, it&#39;s a default case.</span>
+<span class="sd">        :param field: Field associated with the choice case, can be empty.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case_expressions</span> <span class="o">=</span> <span class="n">case_expressions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_field</span> <span class="o">=</span> <span class="n">field</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">case_expressions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets case expressions in the choice case. An empty list denotes the default case.</span>
+
+<span class="sd">        :returns: List of case expressions as evaluated constant values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case_expressions</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">field</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">MemberInfo</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets field associated with the choice case. Can be empty.</span>
+
+<span class="sd">        :returns: Field MemberInfo.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_field</span></div>
+
+
+
+<div class="viewcode-block" id="ItemInfo">
+<a class="viewcode-back" href="../../zserio.typeinfo.html#zserio.typeinfo.ItemInfo">[docs]</a>
+<span class="k">class</span> <span class="nc">ItemInfo</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Item info class which provides information about items of generated enumerable types.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">py_item</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">is_deprecated</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">is_removed</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor.</span>
+
+<span class="sd">        :param schema_name: Name of the item as is defined in Zserio schema.</span>
+<span class="sd">        :param py_item: Reference to the generated item.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_schema_name</span> <span class="o">=</span> <span class="n">schema_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_py_item</span> <span class="o">=</span> <span class="n">py_item</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_deprecated</span> <span class="o">=</span> <span class="n">is_deprecated</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_removed</span> <span class="o">=</span> <span class="n">is_removed</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">schema_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets name of the item as is defined in Zserio schema.</span>
+
+<span class="sd">        :returns: Item name in Zserio schema.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schema_name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">py_item</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets reference to the item generated in Python.</span>
+
+<span class="sd">        :returns: Python item.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_py_item</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_deprecated</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets flag whether the item is deprecated.</span>
+
+<span class="sd">        :returns: True when the item is deprecated, false otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_deprecated</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_removed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets flag whether the item is removed.</span>
+
+<span class="sd">        :returns: True when the item is removed, false otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_removed</span></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/Zserio.png" alt="Logo"/>
+            </a></p><h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../zserio.html">zserio package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../zserio.html#zserio.VERSION_STRING"><code class="docutils literal notranslate"><span class="pre">VERSION_STRING</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../zserio.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.array.html">zserio.array module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.bitbuffer.html">zserio.bitbuffer module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.bitfield.html">zserio.bitfield module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.bitposition.html">zserio.bitposition module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.bitreader.html">zserio.bitreader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.bitsizeof.html">zserio.bitsizeof module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.bitwriter.html">zserio.bitwriter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.builtin.html">zserio.builtin module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.cppbind.html">zserio.cppbind module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.creator.html">zserio.creator module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.debugstring.html">zserio.debugstring module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.enum.html">zserio.enum module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.exception.html">zserio.exception module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.float.html">zserio.float module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.hashcode.html">zserio.hashcode module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.json.html">zserio.json module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.limits.html">zserio.limits module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.pubsub.html">zserio.pubsub module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.serialization.html">zserio.serialization module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.service.html">zserio.service module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.typeinfo.html">zserio.typeinfo module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.walker.html">zserio.walker module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;Copyright (c) 2018-2022, Navigation Data Standard e.v..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
