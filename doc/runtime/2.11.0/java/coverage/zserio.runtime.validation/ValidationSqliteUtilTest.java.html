@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ValidationSqliteUtilTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.validation</a> &gt; <span class="el_source">ValidationSqliteUtilTest.java</span></div><h1>ValidationSqliteUtilTest.java</h1><pre class="source lang-java linenums">package zserio.runtime.validation;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import org.junit.jupiter.api.Test;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.Map;
+import java.util.Properties;
+
+import zserio.runtime.SqlDatabaseReader;
+
+<span class="fc" id="L23">public class ValidationSqliteUtilTest</span>
+{
+    static
+    {
+        try
+        {
+<span class="fc" id="L29">            Class.forName(&quot;org.sqlite.JDBC&quot;);</span>
+        }
+<span class="nc" id="L31">        catch (ClassNotFoundException excpt)</span>
+        {
+<span class="nc" id="L33">            throw new RuntimeException(&quot;Can't register SQLite JDBC driver!&quot;);</span>
+<span class="fc" id="L34">        }</span>
+<span class="fc" id="L35">    }</span>
+
+    @Test
+    public void getColumnTypes() throws SQLException
+    {
+<span class="fc" id="L40">        final String TABLE_NAME = &quot;ColumnTypesTestTable&quot;;</span>
+
+<span class="fc" id="L42">        try (final TestSqlDatabase testDatabase = new TestSqlDatabase())</span>
+        {
+<span class="fc" id="L44">            testDatabase.executeUpdate(&quot;CREATE TABLE &quot; + TABLE_NAME +</span>
+                    &quot;(col1 TEXT, col2 INTEGER NOT NULL PRIMARY KEY, col3 BLOB);&quot;);
+<span class="fc" id="L46">            final Map&lt;String, ValidationSqliteUtil.ColumnDescription&gt; schema =</span>
+<span class="fc" id="L47">                    ValidationSqliteUtil.getTableSchema(testDatabase.connection(), null, TABLE_NAME);</span>
+
+<span class="fc" id="L49">            final ValidationSqliteUtil.ColumnDescription col1 = schema.remove(&quot;col1&quot;);</span>
+<span class="fc" id="L50">            assertEquals(&quot;col1&quot;, col1.getName());</span>
+<span class="fc" id="L51">            assertEquals(&quot;TEXT&quot;, col1.getType());</span>
+<span class="fc" id="L52">            assertEquals(false, col1.isNotNull());</span>
+<span class="fc" id="L53">            assertEquals(false, col1.isPrimaryKey());</span>
+
+<span class="fc" id="L55">            final ValidationSqliteUtil.ColumnDescription col2 = schema.remove(&quot;col2&quot;);</span>
+<span class="fc" id="L56">            assertEquals(&quot;col2&quot;, col2.getName());</span>
+<span class="fc" id="L57">            assertEquals(&quot;INTEGER&quot;, col2.getType());</span>
+<span class="fc" id="L58">            assertEquals(true, col2.isNotNull());</span>
+<span class="fc" id="L59">            assertEquals(true, col2.isPrimaryKey());</span>
+
+<span class="fc" id="L61">            final ValidationSqliteUtil.ColumnDescription col3 = schema.remove(&quot;col3&quot;);</span>
+<span class="fc" id="L62">            assertEquals(&quot;col3&quot;, col3.getName());</span>
+<span class="fc" id="L63">            assertEquals(&quot;BLOB&quot;, col3.getType());</span>
+<span class="fc" id="L64">            assertEquals(false, col3.isNotNull());</span>
+<span class="fc" id="L65">            assertEquals(false, col3.isPrimaryKey());</span>
+
+<span class="fc" id="L67">            assertTrue(schema.isEmpty());</span>
+        }
+<span class="fc" id="L69">    }</span>
+
+    @Test
+    public void isHiddenColumnInTable() throws SQLException
+    {
+<span class="fc" id="L74">        final String TABLE_NAME = &quot;HiddenColumnTestTable&quot;;</span>
+
+<span class="fc" id="L76">        try (final TestSqlDatabase testDatabase = new TestSqlDatabase())</span>
+        {
+<span class="fc" id="L78">            testDatabase.executeUpdate(&quot;CREATE VIRTUAL TABLE &quot; + TABLE_NAME + &quot; USING fts4 &quot; +</span>
+                    &quot;(substitutionId TEXT NOT NULL);&quot;);
+<span class="fc" id="L80">            assertTrue(ValidationSqliteUtil.isHiddenColumnInTable(testDatabase.connection(), null, TABLE_NAME,</span>
+                    &quot;docId&quot;));
+<span class="fc" id="L82">            assertFalse(ValidationSqliteUtil.isHiddenColumnInTable(testDatabase.connection(), null, TABLE_NAME,</span>
+                    &quot;languageCode&quot;));
+        }
+<span class="fc" id="L85">    }</span>
+
+    @Test
+    public void sqlTypeToSqliteType() throws SQLException
+    {
+<span class="fc" id="L90">        final String tableName = &quot;sqlTypeToSqliteTypeTable&quot;;</span>
+<span class="fc" id="L91">        try (final TestSqlDatabase testDatabase = new TestSqlDatabase())</span>
+        {
+<span class="fc" id="L93">            testDatabase.executeUpdate(&quot;CREATE TABLE &quot; + tableName + &quot;(id INTEGER PRIMARY KEY, &quot; +</span>
+                    &quot;integerCol INTEGER, realCol REAL, textCol TEXT, blobCol BLOB)&quot;);
+
+<span class="fc" id="L96">            testDatabase.executeUpdate(&quot;INSERT INTO &quot; + tableName + &quot; VALUES (0, NULL, NULL, NULL, NULL)&quot;);</span>
+<span class="fc" id="L97">            testDatabase.executeUpdate(&quot;INSERT INTO &quot; + tableName + &quot; VALUES (1, 13, 1.3, 'STRING', x'00')&quot;);</span>
+<span class="fc" id="L98">            testDatabase.executeUpdate(&quot;INSERT INTO &quot; + tableName + &quot; VALUES (2, 1.3, 'STRING', x'00', 13)&quot;);</span>
+<span class="fc" id="L99">            try (</span>
+<span class="fc" id="L100">                final Statement stmt = testDatabase.connection().createStatement();</span>
+<span class="fc" id="L101">                final ResultSet resultSet = stmt.executeQuery(&quot;SELECT * FROM &quot; + tableName);</span>
+            )
+            {
+                // first row checks NULL values
+                // note that different versions of Xerial JDBC returns different types
+<span class="fc" id="L106">                assertTrue(resultSet.next());</span>
+<span class="fc" id="L107">                ResultSetMetaData metaData = resultSet.getMetaData();</span>
+<span class="fc" id="L108">                assertEquals(Types.INTEGER,</span>
+<span class="fc" id="L109">                        ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(1)));</span>
+<span class="fc" id="L110">                assertThat(ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(2)),</span>
+<span class="fc" id="L111">                        anyOf(is(Types.INTEGER), is(Types.NULL)));</span>
+<span class="fc" id="L112">                assertThat(ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(3)),</span>
+<span class="fc" id="L113">                        anyOf(is(Types.REAL), is(Types.NULL)));</span>
+<span class="fc" id="L114">                assertThat(ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(4)),</span>
+<span class="fc" id="L115">                        anyOf(is(Types.VARCHAR), is(Types.NULL)));</span>
+<span class="fc" id="L116">                assertThat(ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(5)),</span>
+<span class="fc" id="L117">                        anyOf(is(Types.BLOB), is(Types.NULL)));</span>
+
+                // second row checks correct values
+<span class="fc" id="L120">                assertTrue(resultSet.next());</span>
+<span class="fc" id="L121">                metaData = resultSet.getMetaData();</span>
+<span class="fc" id="L122">                assertEquals(Types.INTEGER,</span>
+<span class="fc" id="L123">                        ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(1)));</span>
+<span class="fc" id="L124">                assertEquals(Types.INTEGER,</span>
+<span class="fc" id="L125">                        ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(2)));</span>
+<span class="fc" id="L126">                assertEquals(Types.REAL,</span>
+<span class="fc" id="L127">                        ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(3)));</span>
+<span class="fc" id="L128">                assertEquals(Types.VARCHAR,</span>
+<span class="fc" id="L129">                        ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(4)));</span>
+<span class="fc" id="L130">                assertEquals(Types.BLOB,</span>
+<span class="fc" id="L131">                        ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(5)));</span>
+
+                // third row checks types mismatch - i.e. checks dynamic typing in SQLite
+<span class="fc" id="L134">                assertTrue(resultSet.next());</span>
+<span class="fc" id="L135">                metaData = resultSet.getMetaData();</span>
+<span class="fc" id="L136">                assertEquals(Types.INTEGER,</span>
+<span class="fc" id="L137">                        ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(1)));</span>
+<span class="fc" id="L138">                assertEquals(Types.REAL,</span>
+<span class="fc" id="L139">                        ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(2)));</span>
+<span class="fc" id="L140">                assertEquals(Types.VARCHAR,</span>
+<span class="fc" id="L141">                        ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(3)));</span>
+<span class="fc" id="L142">                assertEquals(Types.BLOB,</span>
+<span class="fc" id="L143">                        ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(4)));</span>
+<span class="fc" id="L144">                assertEquals(Types.INTEGER,</span>
+<span class="fc" id="L145">                        ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(5)));</span>
+            }
+        }
+<span class="fc" id="L148">    }</span>
+
+    private static class TestSqlDatabase implements SqlDatabaseReader
+    {
+        public TestSqlDatabase() throws SQLException
+<span class="fc" id="L153">        {</span>
+<span class="fc" id="L154">            final String uriPath = &quot;jdbc:sqlite::memory:&quot;;</span>
+<span class="fc" id="L155">            final Properties connectionProps = new Properties();</span>
+<span class="fc" id="L156">            connectionProps.setProperty(&quot;flags&quot;, &quot;CREATE&quot;);</span>
+
+<span class="fc" id="L158">            connection = DriverManager.getConnection(uriPath, connectionProps);</span>
+<span class="fc" id="L159">        }</span>
+
+        @Override
+        public void close() throws SQLException
+        {
+<span class="fc" id="L164">            connection.close();</span>
+<span class="fc" id="L165">        }</span>
+
+        @Override
+        public Connection connection()
+        {
+<span class="fc" id="L170">            return connection;</span>
+        }
+
+        public void executeUpdate(String sql) throws SQLException
+        {
+<span class="fc" id="L175">            try (final Statement statement = connection.createStatement())</span>
+            {
+<span class="fc" id="L177">                statement.executeUpdate(sql);</span>
+            }
+<span class="fc" id="L179">        }</span>
+
+        private final Connection connection;
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

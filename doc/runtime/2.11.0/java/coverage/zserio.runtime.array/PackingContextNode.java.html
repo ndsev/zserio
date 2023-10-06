@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PackingContextNode.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.array</a> &gt; <span class="el_source">PackingContextNode.java</span></div><h1>PackingContextNode.java</h1><pre class="source lang-java linenums">package zserio.runtime.array;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import zserio.runtime.ZserioError;
+
+/**
+ * Packing context node.
+ *
+ * This class is used to handle a tree of contexts created by appropriate PackedArrayTraits.
+ * For built-in packable types only a single context is kept. However for Zserio objects, a tree
+ * of all packable fields is created recursively.
+ *
+ * When the context node has no children and no context, then it's so called dummy context which is used
+ * for unpackable fields or nested arrays.
+ */
+<span class="fc" id="L18">public class PackingContextNode</span>
+{
+    /**
+     * Creates a new child.
+     *
+     * @return The child which was just created.
+     */
+    public PackingContextNode createChild()
+    {
+<span class="fc" id="L27">        final PackingContextNode child = new PackingContextNode();</span>
+<span class="fc" id="L28">        children.add(child);</span>
+<span class="fc" id="L29">        return child;</span>
+    }
+
+    /**
+     * Gets list of children of the current node.
+     *
+     * @return List of children.
+     */
+    public List&lt;PackingContextNode&gt; getChildren()
+    {
+<span class="fc" id="L39">        return children;</span>
+    }
+
+    /**
+     * Creates a new packing context within the current node.
+     */
+    public void createContext()
+    {
+<span class="fc" id="L47">        deltaContext = new DeltaContext();</span>
+<span class="fc" id="L48">    }</span>
+
+    /**
+     * Gets packing context assigned to this node.
+     *
+     * Can be called only when the context exists!
+     *
+     * @return Packing context.
+     */
+    public DeltaContext getContext()
+    {
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">        if (deltaContext == null)</span>
+<span class="nc" id="L60">            throw new ZserioError(&quot;DeltaContext: PackingContextNode is not a leaf!&quot;);</span>
+
+<span class="fc" id="L62">        return deltaContext;</span>
+    }
+
+<span class="fc" id="L65">    private final ArrayList&lt;PackingContextNode&gt; children = new ArrayList&lt;PackingContextNode&gt;();</span>
+<span class="fc" id="L66">    private DeltaContext deltaContext = null;</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

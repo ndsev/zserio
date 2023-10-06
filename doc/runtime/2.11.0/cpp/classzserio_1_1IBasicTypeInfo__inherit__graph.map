@@ -1,0 +1,18 @@
+<map id="zserio::IBasicTypeInfo&lt; ALLOC &gt;" name="zserio::IBasicTypeInfo&lt; ALLOC &gt;">
+<area shape="rect" id="node2" href="$classzserio_1_1RecursiveTypeInfo.html" title="zserio::RecursiveTypeInfo\l\&lt; ALLOC \&gt;" alt="" coords="209,104,388,145"/>
+<area shape="rect" id="node3" href="$classzserio_1_1TypeInfoBase.html" title="zserio::TypeInfoBase\l\&lt; ALLOC \&gt;" alt="" coords="223,169,374,211"/>
+<area shape="rect" id="node4" href="$classzserio_1_1BuiltinTypeInfo.html" title="zserio::BuiltinTypeInfo\l\&lt; ALLOC \&gt;" alt="" coords="464,5,623,47"/>
+<area shape="rect" id="node6" href="$classzserio_1_1PubsubTypeInfo.html" title="zserio::PubsubTypeInfo\l\&lt; ALLOC \&gt;" alt="" coords="460,71,627,112"/>
+<area shape="rect" id="node7" href="$classzserio_1_1ServiceTypeInfo.html" title="zserio::ServiceTypeInfo\l\&lt; ALLOC \&gt;" alt="" coords="460,136,627,177"/>
+<area shape="rect" id="node8" href="$classzserio_1_1SqlDatabaseTypeInfo.html" title="zserio::SqlDatabaseTypeInfo\l\&lt; ALLOC \&gt;" alt="" coords="443,201,644,243"/>
+<area shape="rect" id="node9" href="$classzserio_1_1TemplatableTypeInfoBase.html" title="zserio::TemplatableTypeInfo\lBase\&lt; ALLOC \&gt;" alt="" coords="445,267,641,308"/>
+<area shape="rect" id="node15" href="$classzserio_1_1TypeInfoWithUnderlyingTypeBase.html" title="zserio::TypeInfoWithUnderlying\lTypeBase\&lt; ALLOC \&gt;" alt="" coords="436,332,651,373"/>
+<area shape="rect" id="node5" href="$classzserio_1_1FixedSizeBuiltinTypeInfo.html" title="zserio::FixedSizeBuiltin\lTypeInfo\&lt; ALLOC \&gt;" alt="" coords="710,5,877,47"/>
+<area shape="rect" id="node10" href="$classzserio_1_1CompoundTypeInfoBase.html" title="zserio::CompoundTypeInfo\lBase\&lt; ALLOC \&gt;" alt="" coords="699,201,888,243"/>
+<area shape="rect" id="node14" href="$classzserio_1_1SqlTableTypeInfo.html" title="zserio::SqlTableTypeInfo\l\&lt; ALLOC \&gt;" alt="" coords="708,267,879,308"/>
+<area shape="rect" id="node11" href="$classzserio_1_1ChoiceTypeInfo.html" title="zserio::ChoiceTypeInfo\l\&lt; ALLOC \&gt;" alt="" coords="936,136,1099,177"/>
+<area shape="rect" id="node12" href="$classzserio_1_1StructTypeInfo.html" title="zserio::StructTypeInfo\l\&lt; ALLOC \&gt;" alt="" coords="938,201,1097,243"/>
+<area shape="rect" id="node13" href="$classzserio_1_1UnionTypeInfo.html" title="zserio::UnionTypeInfo\l\&lt; ALLOC \&gt;" alt="" coords="939,267,1095,308"/>
+<area shape="rect" id="node16" href="$classzserio_1_1BitmaskTypeInfo.html" title="zserio::BitmaskTypeInfo\l\&lt; ALLOC \&gt;" alt="" coords="708,332,879,373"/>
+<area shape="rect" id="node17" href="$classzserio_1_1EnumTypeInfo.html" title="zserio::EnumTypeInfo\l\&lt; ALLOC \&gt;" alt="" coords="715,397,871,439"/>
+</map>

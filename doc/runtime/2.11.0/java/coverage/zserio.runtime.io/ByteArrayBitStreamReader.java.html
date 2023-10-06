@@ -1,0 +1,805 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ByteArrayBitStreamReader.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.io</a> &gt; <span class="el_source">ByteArrayBitStreamReader.java</span></div><h1>ByteArrayBitStreamReader.java</h1><pre class="source lang-java linenums">package zserio.runtime.io;
+
+import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
+import java.io.IOException;
+import java.math.BigInteger;
+
+import zserio.runtime.FloatUtil;
+
+/**
+ * A bit stream reader using byte array.
+ */
+public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements BitStreamReader
+{
+    /**
+     * Constructs object containing given bytes with a given byte order.
+     *
+     * @param bytes Array of bytes to construct from.
+     */
+    public ByteArrayBitStreamReader(final byte[] bytes)
+<span class="fc" id="L21">    {</span>
+<span class="fc" id="L22">        this.buffer = new byte[bytes.length];</span>
+<span class="fc" id="L23">        System.arraycopy(bytes, 0, this.buffer, 0, bytes.length);</span>
+<span class="fc" id="L24">        this.lastByteBits = 8;</span>
+<span class="fc" id="L25">    }</span>
+
+    /**
+     * Constructs object using given bit buffer.
+     *
+     * @param bitBuffer Bit buffer to construct from.
+     */
+    public ByteArrayBitStreamReader(final BitBuffer bitBuffer)
+<span class="fc" id="L33">    {</span>
+<span class="fc" id="L34">        buffer = bitBuffer.getBuffer();</span>
+<span class="fc" id="L35">        final byte lastBits = (byte)(bitBuffer.getBitSize() % 8);</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">        lastByteBits = lastBits == 0 ? 8 : lastBits;</span>
+<span class="fc" id="L37">    }</span>
+
+    /**
+     * Constructs object containing given bytes with a given byte order with exact bit size.
+     *
+     * @param bytes Array of bytes to construct from.
+     * @param bitSize Size of the buffer in bits.
+     */
+    public ByteArrayBitStreamReader(final byte[] bytes, long bitSize)
+<span class="fc" id="L46">    {</span>
+<span class="fc" id="L47">        this.buffer = new byte[bytes.length];</span>
+<span class="fc" id="L48">        System.arraycopy(bytes, 0, this.buffer, 0, bytes.length);</span>
+<span class="fc" id="L49">        final byte lastBits = (byte)(bitSize % 8);</span>
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">        lastByteBits = lastBits == 0 ? 8 : lastBits;</span>
+<span class="fc" id="L51">    }</span>
+
+    @Override
+    public long readSignedBits(final int numBits) throws IOException
+    {
+<span class="fc" id="L56">        long result = readBits(numBits);</span>
+
+        /*
+         * Perform a sign extension if needed.
+         * 1L &lt;&lt; 64 in Java is not 0L, but 1L, so treat numBits == 64 as a special case
+         * (numBits == 64 does not need sign extension anyway)
+         */
+<span class="fc bfc" id="L63" title="All 4 branches covered.">        if (numBits &lt; 64 &amp;&amp; (result &amp; (1L &lt;&lt; (numBits - 1))) != 0)</span>
+        {
+<span class="fc" id="L65">            result |= (-1L &lt;&lt; numBits);</span>
+        }
+<span class="fc" id="L67">        return result;</span>
+    }
+
+    @Override
+    public long readBits(final int numBits) throws IOException
+    {
+<span class="fc" id="L73">        checkRange(numBits);</span>
+
+<span class="fc" id="L75">        int bitsToRead = bitOffset + numBits;</span>
+<span class="fc" id="L76">        long accum = nextUnsignedByte() &amp; BIT_MASKS[bitOffset];</span>
+<span class="fc" id="L77">        bitsToRead -= 8;</span>
+
+<span class="fc bfc" id="L79" title="All 2 branches covered.">        if (bitsToRead &lt; 0)</span>
+        {
+            // less than already read byte is needed
+<span class="fc" id="L82">            accum = accum &gt;&gt;&gt; -bitsToRead;</span>
+<span class="fc" id="L83">            bytePosition--; // consumed only few bits</span>
+        }
+        else
+        {
+            // full bytes
+<span class="fc bfc" id="L88" title="All 2 branches covered.">            while (bitsToRead &gt;= 8)</span>
+            {
+<span class="fc" id="L90">                accum = (accum &lt;&lt; 8) | nextUnsignedByte();</span>
+<span class="fc" id="L91">                bitsToRead -= 8;</span>
+            }
+
+            // last few bits
+<span class="fc bfc" id="L95" title="All 2 branches covered.">            if (bitsToRead &gt; 0)</span>
+            {
+<span class="fc" id="L97">                accum = (accum &lt;&lt; bitsToRead) | (nextUnsignedByte() &gt;&gt;&gt; (8 - bitsToRead));</span>
+<span class="fc" id="L98">                bytePosition--; // consumed only few bits</span>
+            }
+        }
+
+<span class="fc" id="L102">        bitOffset = (bitOffset + numBits) &amp; BYTE_MOD_MASK;</span>
+
+<span class="fc bfc" id="L104" title="All 2 branches covered.">        if (bytePosition == buffer.length) // consumed full last byte</span>
+        {
+<span class="fc bfc" id="L106" title="All 2 branches covered.">            if (lastByteBits &lt; 8) // check if whole byte is available</span>
+            {
+<span class="fc" id="L108">                throw new IOException(&quot;ByteArrayBitStreamReader: Unable to read bit on offset position &quot; +</span>
+                        lastByteBits + &quot; in the last byte.&quot;);
+            }
+        }
+<span class="fc bfc" id="L112" title="All 2 branches covered.">        else if (bytePosition + 1 &gt;= buffer.length) // consumed last byte only partially or not at all</span>
+        {
+<span class="fc bfc" id="L114" title="All 2 branches covered.">            if (bitOffset &gt; lastByteBits) // check if we didn't read more bits than available</span>
+            {
+<span class="fc" id="L116">                throw new IOException(&quot;ByteArrayBitStreamReader: Unable to read bit on offset position &quot; +</span>
+                        bitOffset + &quot; in the last byte.&quot;);
+            }
+        }
+
+<span class="fc" id="L121">        return accum;</span>
+    }
+
+    @Override
+    public byte readByte() throws IOException
+    {
+        byte result;
+<span class="fc bfc" id="L128" title="All 2 branches covered.">        if (bitOffset == 0)</span>
+        {
+<span class="fc" id="L130">            result = nextByte();</span>
+        }
+        else
+        {
+<span class="fc" id="L134">            result = (byte)readBits(8);</span>
+        }
+<span class="fc" id="L136">        return result;</span>
+    }
+
+    @Override
+    public short readUnsignedByte() throws IOException
+    {
+<span class="fc" id="L142">        return (short)(readByte() &amp; 0xff);</span>
+    }
+
+    @Override
+    public short readShort() throws IOException
+    {
+        short result;
+<span class="fc bfc" id="L149" title="All 2 branches covered.">        if (bitOffset == 0)</span>
+        {
+<span class="fc" id="L151">            final byte b0 = nextByte();</span>
+<span class="fc" id="L152">            final byte b1 = nextByte();</span>
+<span class="fc" id="L153">            result = makeShort(b0, b1);</span>
+<span class="fc" id="L154">        }</span>
+        else
+        {
+<span class="fc" id="L157">            result = (short) readBits(16);</span>
+        }
+<span class="fc" id="L159">        return result;</span>
+    }
+
+    @Override
+    public int readUnsignedShort() throws IOException
+    {
+<span class="fc" id="L165">        return readShort() &amp; 0xffff;</span>
+    }
+
+    @Override
+    public int readInt() throws IOException
+    {
+        int result;
+<span class="fc bfc" id="L172" title="All 2 branches covered.">        if (bitOffset == 0)</span>
+        {
+<span class="fc" id="L174">            final byte b0 = nextByte();</span>
+<span class="fc" id="L175">            final byte b1 = nextByte();</span>
+<span class="fc" id="L176">            final byte b2 = nextByte();</span>
+<span class="fc" id="L177">            final byte b3 = nextByte();</span>
+<span class="fc" id="L178">            result = makeInt(b0, b1, b2, b3);</span>
+<span class="fc" id="L179">        }</span>
+        else
+        {
+<span class="fc" id="L182">            result = (int)readBits(32);</span>
+        }
+<span class="fc" id="L184">        return result;</span>
+    }
+
+    @Override
+    public long readUnsignedInt() throws IOException
+    {
+<span class="fc" id="L190">        return readInt() &amp; 0xffffffffL;</span>
+    }
+
+    @Override
+    public long readLong() throws IOException
+    {
+        long result;
+<span class="fc bfc" id="L197" title="All 2 branches covered.">        if (bitOffset == 0)</span>
+        {
+<span class="fc" id="L199">            final byte b0 = nextByte();</span>
+<span class="fc" id="L200">            final byte b1 = nextByte();</span>
+<span class="fc" id="L201">            final byte b2 = nextByte();</span>
+<span class="fc" id="L202">            final byte b3 = nextByte();</span>
+<span class="fc" id="L203">            final byte b4 = nextByte();</span>
+<span class="fc" id="L204">            final byte b5 = nextByte();</span>
+<span class="fc" id="L205">            final byte b6 = nextByte();</span>
+<span class="fc" id="L206">            final byte b7 = nextByte();</span>
+<span class="fc" id="L207">            result = makeLong(b0, b1, b2, b3, b4, b5, b6, b7);</span>
+<span class="fc" id="L208">        }</span>
+        else
+        {
+<span class="fc" id="L211">            result = readBits(64);</span>
+        }
+<span class="fc" id="L213">        return result;</span>
+    }
+
+    @Override
+    public BigInteger readBigInteger(final int numBits) throws IOException
+    {
+<span class="fc" id="L219">        BigInteger result = BigInteger.ZERO;</span>
+<span class="fc" id="L220">        int bitsToRead = numBits;</span>
+<span class="fc bfc" id="L221" title="All 2 branches covered.">        if (bitsToRead &gt; 8)</span>
+        {
+<span class="fc bfc" id="L223" title="All 2 branches covered.">            if (bitOffset != 0)</span>
+            {
+<span class="fc" id="L225">                final int prefixLength = 8 - bitOffset;</span>
+<span class="fc" id="L226">                final long mostSignificantBits = readBits(prefixLength);</span>
+<span class="fc" id="L227">                result = BigInteger.valueOf(mostSignificantBits);</span>
+<span class="fc" id="L228">                bitsToRead -= prefixLength;</span>
+            }
+
+<span class="fc" id="L231">            final int numBytes = bitsToRead / 8;</span>
+<span class="fc" id="L232">            final byte[] b = new byte[numBytes];</span>
+<span class="fc" id="L233">            readFully(b);</span>
+<span class="fc" id="L234">            final BigInteger i = new BigInteger(1, b);</span>
+<span class="fc" id="L235">            result = result.shiftLeft(8 * numBytes);</span>
+<span class="fc" id="L236">            result = result.or(i);</span>
+<span class="fc" id="L237">            bitsToRead &amp;= BYTE_MOD_MASK;</span>
+        }
+<span class="fc bfc" id="L239" title="All 2 branches covered.">        if (bitsToRead &gt; 0)</span>
+        {
+<span class="fc" id="L241">            final long value = readBits(bitsToRead);</span>
+<span class="fc" id="L242">            result = result.shiftLeft(bitsToRead);</span>
+<span class="fc" id="L243">            result = result.or(BigInteger.valueOf(value));</span>
+        }
+<span class="fc" id="L245">        return result;</span>
+    }
+
+    @Override
+    public BigInteger readSignedBigInteger(final int numBits) throws IOException
+    {
+<span class="fc" id="L251">        BigInteger result = readBigInteger(numBits);</span>
+<span class="fc bfc" id="L252" title="All 2 branches covered.">        if (result.testBit(numBits - 1))</span>
+        {
+<span class="fc" id="L254">            result = result.subtract(BigInteger.ONE.shiftLeft(numBits));</span>
+        }
+<span class="fc" id="L256">        return result;</span>
+    }
+
+    @Override
+    public float readFloat16() throws IOException
+    {
+<span class="fc" id="L262">        final short halfPrecisionFloatValue = readShort();</span>
+
+<span class="fc" id="L264">        return FloatUtil.convertShortToFloat(halfPrecisionFloatValue);</span>
+    }
+
+    @Override
+    public float readFloat32() throws IOException
+    {
+<span class="fc" id="L270">        final int singlePrecisionFloatValue = readInt();</span>
+
+<span class="fc" id="L272">        return FloatUtil.convertIntToFloat(singlePrecisionFloatValue);</span>
+    }
+
+    @Override
+    public double readFloat64() throws IOException
+    {
+<span class="fc" id="L278">        final long doublePrecisionFloatValue = readLong();</span>
+
+<span class="fc" id="L280">        return FloatUtil.convertLongToDouble(doublePrecisionFloatValue);</span>
+    }
+
+    @Override
+    public byte[] readBytes() throws IOException
+    {
+<span class="fc" id="L286">        final int length = readVarSize();</span>
+<span class="fc" id="L287">        final byte[] bytesValue = new byte[length];</span>
+<span class="fc bfc" id="L288" title="All 2 branches covered.">        if (bitOffset != 0)</span>
+        {
+            // we are not aligned to byte
+<span class="fc bfc" id="L291" title="All 2 branches covered.">            for (int i = 0; i &lt; length; ++i)</span>
+<span class="fc" id="L292">                bytesValue[i] = (byte)readBits(8);</span>
+        }
+        else
+        {
+            // we are aligned to byte
+<span class="fc" id="L297">            read(bytesValue, 0, length);</span>
+        }
+
+<span class="fc" id="L300">        return bytesValue;</span>
+    }
+
+    @Override
+    public String readString() throws IOException
+    {
+<span class="fc" id="L306">        final int length = readVarSize();</span>
+<span class="fc" id="L307">        final byte[] readBuffer = new byte[length];</span>
+<span class="fc bfc" id="L308" title="All 2 branches covered.">        if (bitOffset != 0)</span>
+        {
+            // we are not aligned to byte
+<span class="fc bfc" id="L311" title="All 2 branches covered.">            for (int i = 0; i &lt; length; ++i)</span>
+<span class="fc" id="L312">                readBuffer[i] = (byte)readBits(8);</span>
+        }
+        else
+        {
+            // we are aligned to byte
+<span class="fc" id="L317">            read(readBuffer, 0, length);</span>
+        }
+
+<span class="fc" id="L320">        return new String(readBuffer, DEFAULT_CHARSET_NAME);</span>
+    }
+
+    @Override
+    public boolean readBool() throws IOException
+    {
+<span class="fc bfc" id="L326" title="All 2 branches covered.">        return readBits(1) == 1;</span>
+    }
+
+    @Override
+    public short readVarInt16() throws IOException
+    {
+<span class="fc" id="L332">        short b = (short)readBits(8); // byte 1</span>
+<span class="fc bfc" id="L333" title="All 2 branches covered.">        final boolean sign = (b &amp; VARINT_SIGN_1) != 0;</span>
+<span class="fc" id="L334">        short result = (short)(b &amp; VARINT_BYTE_1);</span>
+<span class="fc bfc" id="L335" title="All 2 branches covered.">        if ((b &amp; VARINT_HAS_NEXT_1) == 0)</span>
+<span class="fc bfc" id="L336" title="All 2 branches covered.">            return sign == true ? (short)-result : result;</span>
+
+        // byte 2
+<span class="fc" id="L339">        result = (short)(result &lt;&lt; 8 | readBits(8));</span>
+<span class="fc bfc" id="L340" title="All 2 branches covered.">        return sign == true ? (short)-result : result;</span>
+    }
+
+    @Override
+    public int readVarInt32() throws IOException
+    {
+<span class="fc" id="L346">        int b = (int)readBits(8); // byte 1</span>
+<span class="fc bfc" id="L347" title="All 2 branches covered.">        final boolean sign = (b &amp; VARINT_SIGN_1) != 0;</span>
+<span class="fc" id="L348">        int result = b &amp; VARINT_BYTE_1;</span>
+<span class="fc bfc" id="L349" title="All 2 branches covered.">        if ((b &amp; VARINT_HAS_NEXT_1) == 0)</span>
+<span class="fc bfc" id="L350" title="All 2 branches covered.">            return sign == true ? -result : result;</span>
+
+<span class="fc" id="L352">        b = (int)readBits(8); // byte 2</span>
+<span class="fc" id="L353">        result = result &lt;&lt; 7 | (b &amp; VARINT_BYTE_N);</span>
+<span class="fc bfc" id="L354" title="All 2 branches covered.">        if ((b &amp; VARINT_HAS_NEXT_N) == 0)</span>
+<span class="fc bfc" id="L355" title="All 2 branches covered.">            return sign == true ? -result : result;</span>
+
+<span class="fc" id="L357">        b = (int)readBits(8); // byte 3</span>
+<span class="fc" id="L358">        result = result &lt;&lt; 7 | (b &amp; VARINT_BYTE_N);</span>
+<span class="fc bfc" id="L359" title="All 2 branches covered.">        if ((b &amp; VARINT_HAS_NEXT_N) == 0)</span>
+<span class="fc bfc" id="L360" title="All 2 branches covered.">            return sign == true ? -result : result;</span>
+
+        // byte 4
+<span class="fc" id="L363">        result = result &lt;&lt; 8 | (int)readBits(8);</span>
+<span class="fc bfc" id="L364" title="All 2 branches covered.">        return sign == true ? -result : result;</span>
+    }
+
+    @Override
+    public long readVarInt64() throws IOException
+    {
+<span class="fc" id="L370">        long b = readBits(8); // byte 1</span>
+<span class="fc bfc" id="L371" title="All 2 branches covered.">        final boolean sign = (b &amp; VARINT_SIGN_1) != 0;</span>
+<span class="fc" id="L372">        long result = b &amp; VARINT_BYTE_1;</span>
+<span class="fc bfc" id="L373" title="All 2 branches covered.">        if ((b &amp; VARINT_HAS_NEXT_1) == 0)</span>
+<span class="fc bfc" id="L374" title="All 2 branches covered.">            return sign == true ? -result : result;</span>
+
+<span class="fc" id="L376">        b = readBits(8); // byte 2</span>
+<span class="fc" id="L377">        result = result &lt;&lt; 7 | (b &amp; VARINT_BYTE_N);</span>
+<span class="fc bfc" id="L378" title="All 2 branches covered.">        if ((b &amp; VARINT_HAS_NEXT_N) == 0)</span>
+<span class="fc bfc" id="L379" title="All 2 branches covered.">            return sign == true ? -result : result;</span>
+
+<span class="fc" id="L381">        b = readBits(8); // byte 3</span>
+<span class="fc" id="L382">        result = result &lt;&lt; 7 | (b &amp; VARINT_BYTE_N);</span>
+<span class="fc bfc" id="L383" title="All 2 branches covered.">        if ((b &amp; VARINT_HAS_NEXT_N) == 0)</span>
+<span class="fc bfc" id="L384" title="All 2 branches covered.">            return sign == true ? -result : result;</span>
+
+<span class="fc" id="L386">        b = readBits(8); // byte 4</span>
+<span class="fc" id="L387">        result = result &lt;&lt; 7 | (b &amp; VARINT_BYTE_N);</span>
+<span class="fc bfc" id="L388" title="All 2 branches covered.">        if ((b &amp; VARINT_HAS_NEXT_N) == 0)</span>
+<span class="fc bfc" id="L389" title="All 2 branches covered.">            return sign == true ? -result : result;</span>
+
+<span class="fc" id="L391">        b = readBits(8); // byte 5</span>
+<span class="fc" id="L392">        result = result &lt;&lt; 7 | (b &amp; VARINT_BYTE_N);</span>
+<span class="fc bfc" id="L393" title="All 2 branches covered.">        if ((b &amp; VARINT_HAS_NEXT_N) == 0)</span>
+<span class="fc bfc" id="L394" title="All 2 branches covered.">            return sign == true ? -result : result;</span>
+
+<span class="fc" id="L396">        b = readBits(8); // byte 6</span>
+<span class="fc" id="L397">        result = result &lt;&lt; 7 | (b &amp; VARINT_BYTE_N);</span>
+<span class="fc bfc" id="L398" title="All 2 branches covered.">        if ((b &amp; VARINT_HAS_NEXT_N) == 0)</span>
+<span class="fc bfc" id="L399" title="All 2 branches covered.">            return sign == true ? -result : result;</span>
+
+<span class="fc" id="L401">        b = readBits(8); // byte 7</span>
+<span class="fc" id="L402">        result = result &lt;&lt; 7 | (b &amp; VARINT_BYTE_N);</span>
+<span class="fc bfc" id="L403" title="All 2 branches covered.">        if ((b &amp; VARINT_HAS_NEXT_N) == 0)</span>
+<span class="fc bfc" id="L404" title="All 2 branches covered.">            return sign == true ? -result : result;</span>
+
+        // byte 8
+<span class="fc" id="L407">        result = result &lt;&lt; 8 | readBits(8);</span>
+<span class="fc bfc" id="L408" title="All 2 branches covered.">        return sign == true ? -result : result;</span>
+    }
+
+    @Override
+    public short readVarUInt16() throws IOException
+    {
+<span class="fc" id="L414">        short b = (short)readBits(8); // byte 1</span>
+<span class="fc" id="L415">        short result = (short)(b &amp; VARUINT_BYTE);</span>
+<span class="fc bfc" id="L416" title="All 2 branches covered.">        if ((b &amp; VARUINT_HAS_NEXT) == 0)</span>
+<span class="fc" id="L417">            return result;</span>
+
+        // byte 2
+<span class="fc" id="L420">        result = (short)(result &lt;&lt; 8 | readBits(8));</span>
+<span class="fc" id="L421">        return result;</span>
+    }
+
+    @Override
+    public int readVarUInt32() throws IOException
+    {
+<span class="fc" id="L427">        int b = (int)readBits(8); // byte 1</span>
+<span class="fc" id="L428">        int result = b &amp; VARUINT_BYTE;</span>
+<span class="fc bfc" id="L429" title="All 2 branches covered.">        if ((b &amp; VARUINT_HAS_NEXT) == 0)</span>
+<span class="fc" id="L430">            return result;</span>
+
+<span class="fc" id="L432">        b = (int)readBits(8); // byte 2</span>
+<span class="fc" id="L433">        result = result &lt;&lt; 7 | (b &amp; VARINT_BYTE_N);</span>
+<span class="fc bfc" id="L434" title="All 2 branches covered.">        if ((b &amp; VARINT_HAS_NEXT_N) == 0)</span>
+<span class="fc" id="L435">            return result;</span>
+
+<span class="fc" id="L437">        b = (int)readBits(8); // byte 3</span>
+<span class="fc" id="L438">        result = result &lt;&lt; 7 | (b &amp; VARINT_BYTE_N);</span>
+<span class="fc bfc" id="L439" title="All 2 branches covered.">        if ((b &amp; VARINT_HAS_NEXT_N) == 0)</span>
+<span class="fc" id="L440">            return result;</span>
+
+        // byte 4
+<span class="fc" id="L443">        result = result &lt;&lt; 8 | (int)readBits(8);</span>
+<span class="fc" id="L444">        return result;</span>
+    }
+
+    @Override
+    public long readVarUInt64() throws IOException
+    {
+<span class="fc" id="L450">        long b = readBits(8); // byte 1</span>
+<span class="fc" id="L451">        long result = b &amp; VARUINT_BYTE;</span>
+<span class="fc bfc" id="L452" title="All 2 branches covered.">        if ((b &amp; VARUINT_HAS_NEXT) == 0)</span>
+<span class="fc" id="L453">            return result;</span>
+
+<span class="fc" id="L455">        b = readBits(8); // byte 2</span>
+<span class="fc" id="L456">        result = result &lt;&lt; 7 | (b &amp; VARINT_BYTE_N);</span>
+<span class="fc bfc" id="L457" title="All 2 branches covered.">        if ((b &amp; VARINT_HAS_NEXT_N) == 0)</span>
+<span class="fc" id="L458">            return result;</span>
+
+<span class="fc" id="L460">        b = readBits(8); // byte 3</span>
+<span class="fc" id="L461">        result = result &lt;&lt; 7 | (b &amp; VARINT_BYTE_N);</span>
+<span class="fc bfc" id="L462" title="All 2 branches covered.">        if ((b &amp; VARINT_HAS_NEXT_N) == 0)</span>
+<span class="fc" id="L463">            return result;</span>
+
+<span class="fc" id="L465">        b = readBits(8); // byte 4</span>
+<span class="fc" id="L466">        result = result &lt;&lt; 7 | (b &amp; VARINT_BYTE_N);</span>
+<span class="fc bfc" id="L467" title="All 2 branches covered.">        if ((b &amp; VARINT_HAS_NEXT_N) == 0)</span>
+<span class="fc" id="L468">            return result;</span>
+
+<span class="fc" id="L470">        b = readBits(8); // byte 5</span>
+<span class="fc" id="L471">        result = result &lt;&lt; 7 | (b &amp; VARINT_BYTE_N);</span>
+<span class="fc bfc" id="L472" title="All 2 branches covered.">        if ((b &amp; VARINT_HAS_NEXT_N) == 0)</span>
+<span class="fc" id="L473">            return result;</span>
+
+<span class="fc" id="L475">        b = readBits(8); // byte 6</span>
+<span class="fc" id="L476">        result = result &lt;&lt; 7 | (b &amp; VARINT_BYTE_N);</span>
+<span class="fc bfc" id="L477" title="All 2 branches covered.">        if ((b &amp; VARINT_HAS_NEXT_N) == 0)</span>
+<span class="fc" id="L478">            return result;</span>
+
+<span class="fc" id="L480">        b = readBits(8); // byte 7</span>
+<span class="fc" id="L481">        result = result &lt;&lt; 7 | (b &amp; VARINT_BYTE_N);</span>
+<span class="fc bfc" id="L482" title="All 2 branches covered.">        if ((b &amp; VARINT_HAS_NEXT_N) == 0)</span>
+<span class="fc" id="L483">            return result;</span>
+
+        // byte 8
+<span class="fc" id="L486">        result = result &lt;&lt; 8 | readBits(8);</span>
+<span class="fc" id="L487">        return result;</span>
+    }
+
+    @Override
+    public long readVarInt() throws IOException
+    {
+<span class="fc" id="L493">        long b = readBits(8); // byte 1</span>
+<span class="fc bfc" id="L494" title="All 2 branches covered.">        final boolean sign = (b &amp; VARINT_SIGN_1) != 0;</span>
+<span class="fc" id="L495">        long result = b &amp; VARINT_BYTE_1;</span>
+<span class="fc bfc" id="L496" title="All 2 branches covered.">        if ((b &amp; VARINT_HAS_NEXT_1) == 0)</span>
+<span class="fc bfc" id="L497" title="All 4 branches covered.">            return sign == true ? (result == 0 ? Long.MIN_VALUE : -result) : result;</span>
+
+<span class="fc" id="L499">        b = readBits(8); // byte 2</span>
+<span class="fc" id="L500">        result = result &lt;&lt; 7 | (b &amp; VARINT_BYTE_N);</span>
+<span class="fc bfc" id="L501" title="All 2 branches covered.">        if ((b &amp; VARINT_HAS_NEXT_N) == 0)</span>
+<span class="fc bfc" id="L502" title="All 2 branches covered.">            return sign == true ? -result : result;</span>
+
+<span class="fc" id="L504">        b = readBits(8); // byte 3</span>
+<span class="fc" id="L505">        result = result &lt;&lt; 7 | (b &amp; VARINT_BYTE_N);</span>
+<span class="fc bfc" id="L506" title="All 2 branches covered.">        if ((b &amp; VARINT_HAS_NEXT_N) == 0)</span>
+<span class="fc bfc" id="L507" title="All 2 branches covered.">            return sign == true ? -result : result;</span>
+
+<span class="fc" id="L509">        b = readBits(8); // byte 4</span>
+<span class="fc" id="L510">        result = result &lt;&lt; 7 | (b &amp; VARINT_BYTE_N);</span>
+<span class="fc bfc" id="L511" title="All 2 branches covered.">        if ((b &amp; VARINT_HAS_NEXT_N) == 0)</span>
+<span class="fc bfc" id="L512" title="All 2 branches covered.">            return sign == true ? -result : result;</span>
+
+<span class="fc" id="L514">        b = readBits(8); // byte 5</span>
+<span class="fc" id="L515">        result = result &lt;&lt; 7 | (b &amp; VARINT_BYTE_N);</span>
+<span class="fc bfc" id="L516" title="All 2 branches covered.">        if ((b &amp; VARINT_HAS_NEXT_N) == 0)</span>
+<span class="fc bfc" id="L517" title="All 2 branches covered.">            return sign == true ? -result : result;</span>
+
+<span class="fc" id="L519">        b = readBits(8); // byte 6</span>
+<span class="fc" id="L520">        result = result &lt;&lt; 7 | (b &amp; VARINT_BYTE_N);</span>
+<span class="fc bfc" id="L521" title="All 2 branches covered.">        if ((b &amp; VARINT_HAS_NEXT_N) == 0)</span>
+<span class="fc bfc" id="L522" title="All 2 branches covered.">            return sign == true ? -result : result;</span>
+
+<span class="fc" id="L524">        b = readBits(8); // byte 7</span>
+<span class="fc" id="L525">        result = result &lt;&lt; 7 | (b &amp; VARINT_BYTE_N);</span>
+<span class="fc bfc" id="L526" title="All 2 branches covered.">        if ((b &amp; VARINT_HAS_NEXT_N) == 0)</span>
+<span class="fc bfc" id="L527" title="All 2 branches covered.">            return sign == true ? -result : result;</span>
+
+<span class="fc" id="L529">        b = readBits(8); // byte 8</span>
+<span class="fc" id="L530">        result = result &lt;&lt; 7 | (b &amp; VARINT_BYTE_N);</span>
+<span class="fc bfc" id="L531" title="All 2 branches covered.">        if ((b &amp; VARINT_HAS_NEXT_N) == 0)</span>
+<span class="fc bfc" id="L532" title="All 2 branches covered.">            return sign == true ? -result : result;</span>
+
+        // byte 9
+<span class="fc" id="L535">        result = result &lt;&lt; 8 | readBits(8);</span>
+<span class="fc bfc" id="L536" title="All 2 branches covered.">        return sign == true ? -result : result;</span>
+    }
+
+    @Override
+    public BigInteger readVarUInt() throws IOException
+    {
+<span class="fc" id="L542">        long b = readBits(8); // byte 1</span>
+<span class="fc" id="L543">        BigInteger result = BigInteger.valueOf(b &amp; VARUINT_BYTE);</span>
+<span class="fc bfc" id="L544" title="All 2 branches covered.">        if ((b &amp; VARUINT_HAS_NEXT) == 0)</span>
+<span class="fc" id="L545">            return result;</span>
+
+<span class="fc" id="L547">        b = readBits(8); // byte 2</span>
+<span class="fc" id="L548">        result = result.shiftLeft(7).or(BigInteger.valueOf(b &amp; VARUINT_BYTE));</span>
+<span class="fc bfc" id="L549" title="All 2 branches covered.">        if ((b &amp; VARUINT_HAS_NEXT) == 0)</span>
+<span class="fc" id="L550">            return result;</span>
+
+<span class="fc" id="L552">        b = readBits(8); // byte 3</span>
+<span class="fc" id="L553">        result = result.shiftLeft(7).or(BigInteger.valueOf(b &amp; VARUINT_BYTE));</span>
+<span class="fc bfc" id="L554" title="All 2 branches covered.">        if ((b &amp; VARUINT_HAS_NEXT) == 0)</span>
+<span class="fc" id="L555">            return result;</span>
+
+<span class="fc" id="L557">        b = readBits(8); // byte 4</span>
+<span class="fc" id="L558">        result = result.shiftLeft(7).or(BigInteger.valueOf(b &amp; VARUINT_BYTE));</span>
+<span class="fc bfc" id="L559" title="All 2 branches covered.">        if ((b &amp; VARUINT_HAS_NEXT) == 0)</span>
+<span class="fc" id="L560">            return result;</span>
+
+<span class="fc" id="L562">        b = readBits(8); // byte 5</span>
+<span class="fc" id="L563">        result = result.shiftLeft(7).or(BigInteger.valueOf(b &amp; VARUINT_BYTE));</span>
+<span class="fc bfc" id="L564" title="All 2 branches covered.">        if ((b &amp; VARUINT_HAS_NEXT) == 0)</span>
+<span class="fc" id="L565">            return result;</span>
+
+<span class="fc" id="L567">        b = readBits(8); // byte 6</span>
+<span class="fc" id="L568">        result = result.shiftLeft(7).or(BigInteger.valueOf(b &amp; VARUINT_BYTE));</span>
+<span class="fc bfc" id="L569" title="All 2 branches covered.">        if ((b &amp; VARUINT_HAS_NEXT) == 0)</span>
+<span class="fc" id="L570">            return result;</span>
+
+<span class="fc" id="L572">        b = readBits(8); // byte 7</span>
+<span class="fc" id="L573">        result = result.shiftLeft(7).or(BigInteger.valueOf(b &amp; VARUINT_BYTE));</span>
+<span class="fc bfc" id="L574" title="All 2 branches covered.">        if ((b &amp; VARUINT_HAS_NEXT) == 0)</span>
+<span class="fc" id="L575">            return result;</span>
+
+<span class="fc" id="L577">        b = readBits(8); // byte 8</span>
+<span class="fc" id="L578">        result = result.shiftLeft(7).or(BigInteger.valueOf(b &amp; VARUINT_BYTE));</span>
+<span class="fc bfc" id="L579" title="All 2 branches covered.">        if ((b &amp; VARUINT_HAS_NEXT) == 0)</span>
+<span class="fc" id="L580">            return result;</span>
+
+        // byte 9
+<span class="fc" id="L583">        result = result.shiftLeft(8).or(BigInteger.valueOf(readBits(8) &amp; 0xFF));</span>
+<span class="fc" id="L584">        return result;</span>
+    }
+
+    @Override
+    public int readVarSize() throws IOException
+    {
+<span class="fc" id="L590">        long b = readBits(8); // byte 1</span>
+<span class="fc" id="L591">        long result = b &amp; VARUINT_BYTE;</span>
+<span class="fc bfc" id="L592" title="All 2 branches covered.">        if ((b &amp; VARUINT_HAS_NEXT) == 0)</span>
+<span class="fc" id="L593">            return (int)result;</span>
+
+<span class="fc" id="L595">        b = readBits(8); // byte 2</span>
+<span class="fc" id="L596">        result = result &lt;&lt; 7 | (b &amp; VARINT_BYTE_N);</span>
+<span class="fc bfc" id="L597" title="All 2 branches covered.">        if ((b &amp; VARINT_HAS_NEXT_N) == 0)</span>
+<span class="fc" id="L598">            return (int)result;</span>
+
+<span class="fc" id="L600">        b = readBits(8); // byte 3</span>
+<span class="fc" id="L601">        result = result &lt;&lt; 7 | (b &amp; VARINT_BYTE_N);</span>
+<span class="fc bfc" id="L602" title="All 2 branches covered.">        if ((b &amp; VARINT_HAS_NEXT_N) == 0)</span>
+<span class="fc" id="L603">            return (int)result;</span>
+
+<span class="fc" id="L605">        b = readBits(8); // byte 4</span>
+<span class="fc" id="L606">        result = result &lt;&lt; 7 | (b &amp; VARINT_BYTE_N);</span>
+<span class="fc bfc" id="L607" title="All 2 branches covered.">        if ((b &amp; VARINT_HAS_NEXT_N) == 0)</span>
+<span class="fc" id="L608">            return (int)result;</span>
+
+        // byte 5
+<span class="fc" id="L611">        result = result &lt;&lt; 8 | (int)readBits(8);</span>
+<span class="fc bfc" id="L612" title="All 2 branches covered.">        if (result &gt; VARSIZE_MAX_VALUE)</span>
+<span class="fc" id="L613">            throw new IOException(&quot;ByteArrayBitStreamReader: Read value '&quot; + result +</span>
+                    &quot;' is out of range for varsize type!&quot;);
+
+<span class="fc" id="L616">        return (int)result;</span>
+    }
+
+    @Override
+    public BitBuffer readBitBuffer() throws IOException
+    {
+<span class="fc" id="L622">        final int bitSize = readVarSize();</span>
+<span class="fc" id="L623">        final int numBytesToRead = bitSize / 8;</span>
+<span class="fc" id="L624">        final byte numRestBits = (byte)(bitSize - numBytesToRead * 8);</span>
+<span class="fc" id="L625">        final int byteSize = (bitSize + 7) / 8;</span>
+<span class="fc" id="L626">        final byte[] readBuffer = new byte[byteSize];</span>
+<span class="fc bfc" id="L627" title="All 2 branches covered.">        if (bitOffset != 0)</span>
+        {
+            // we are not aligned to byte
+<span class="fc bfc" id="L630" title="All 2 branches covered.">            for (int i = 0; i &lt; numBytesToRead; ++i)</span>
+<span class="fc" id="L631">                readBuffer[i] = (byte)readBits(8);</span>
+        }
+        else
+        {
+            // we are aligned to byte
+<span class="fc" id="L636">            read(readBuffer, 0, numBytesToRead);</span>
+        }
+
+<span class="pc bpc" id="L639" title="1 of 2 branches missed.">        if (numRestBits != 0)</span>
+<span class="fc" id="L640">            readBuffer[numBytesToRead] = (byte)(readBits(numRestBits) &lt;&lt; (8 - numRestBits));</span>
+
+<span class="fc" id="L642">        return new BitBuffer(readBuffer, bitSize);</span>
+    }
+
+    @Override
+    public void alignTo(final int alignVal) throws IOException
+    {
+<span class="fc" id="L648">        final long offset = getBitPosition() % alignVal;</span>
+<span class="fc bfc" id="L649" title="All 2 branches covered.">        if (offset != 0)</span>
+        {
+<span class="fc" id="L651">            final int skip = (int)(alignVal - offset);</span>
+<span class="fc" id="L652">            skipBits(skip);</span>
+        }
+<span class="fc" id="L654">    }</span>
+
+    @Override
+    public long getBufferBitSize()
+    {
+<span class="fc" id="L659">        return ((long)buffer.length) * 8 - 8 + lastByteBits;</span>
+    }
+
+    @Override
+    public void close() throws IOException
+    {
+        // nothing to do
+<span class="fc" id="L666">    }</span>
+
+    protected byte[] getBuffer()
+    {
+<span class="fc" id="L670">        return buffer;</span>
+    }
+
+    private void readFully(final byte[] b) throws IOException
+    {
+<span class="fc" id="L675">        readFully(b, 0, b.length);</span>
+<span class="fc" id="L676">    }</span>
+
+    private void readFully(final byte[] dest, final int offset, final int length) throws IOException
+    {
+<span class="fc" id="L680">        int count = read(dest, offset, length);</span>
+<span class="pc bpc" id="L681" title="1 of 2 branches missed.">        if (count != length)</span>
+<span class="nc" id="L682">            throw new EOFException(&quot;ByteArrayBitStreamReader: Wrong number of read bytes. Read was &quot; + count +</span>
+                    &quot; but requested was &quot; + length + &quot;.&quot;);
+<span class="fc" id="L684">    }</span>
+
+    private int read(final byte[] dest, final int offset, final int length)
+    {
+<span class="fc" id="L688">        System.arraycopy(buffer, bytePosition, dest, offset, length);</span>
+<span class="fc" id="L689">        bytePosition += length;</span>
+<span class="fc" id="L690">        return length;</span>
+    }
+
+    private void skipBits(final int bitCnt) throws IOException
+    {
+<span class="fc" id="L695">        setBitPosition(getBitPosition() + bitCnt);</span>
+<span class="fc" id="L696">    }</span>
+
+    /**
+     * Returns the next byte without resetting the bit offset.
+     *
+     * @return Read next byte.
+     *
+     * @throws IOException If the reading failed.
+     */
+    private byte nextByte() throws IOException
+    {
+<span class="fc bfc" id="L707" title="All 2 branches covered.">        if (bytePosition &gt;= buffer.length)</span>
+<span class="fc" id="L708">            throw new IOException(&quot;ByteArrayBitStreamReader: Unable to read byte on offset position &quot; +</span>
+                    (bytePosition + 1) + &quot;. It's beyond end of the stream with length &quot; + buffer.length + &quot;.&quot;);
+
+<span class="fc" id="L711">        return buffer[bytePosition++];</span>
+    }
+
+    /**
+     * Returns the next unsigned byte without resetting the bit offset.
+     *
+     * @return Read next byte.
+     *
+     * @throws IOException If the reading failed.
+     */
+    private int nextUnsignedByte() throws IOException
+    {
+<span class="fc" id="L723">        return nextByte() &amp; 0xff;</span>
+    }
+
+    /**
+     * Creates a short value as concatenation of the given two bytes.
+     *
+     * @param b1 Byte which represents bit 8 to 15.
+     * @param b0 Byte which represents bit 0 to 7.
+     *
+     * @return Concatenated short value.
+     */
+    private static short makeShort(final byte b1, final byte b0)
+    {
+<span class="fc" id="L736">        return (short)((b1 &lt;&lt; 8) | (b0 &amp; 0xff));</span>
+    }
+
+    /**
+     * Creates an integer as concatenation of the given four byte values.
+     *
+     * @param b3 Byte which represents bit 24 to 31.
+     * @param b2 Byte which represents bit 16 to 23.
+     * @param b1 Byte which represents bit 8 to 15.
+     * @param b0 Byte which represents bit 0 to 7.
+     *
+     * @return The concatenated integer value.
+     */
+    private static int makeInt(final byte b3, final byte b2, final byte b1, final byte b0)
+    {
+<span class="fc" id="L751">        return (((b3) &lt;&lt; 24) | ((b2 &amp; 0xff) &lt;&lt; 16) | ((b1 &amp; 0xff) &lt;&lt; 8) | ((b0 &amp; 0xff)));</span>
+    }
+
+    /**
+     * Creates a long as concatenation of the given eight byte values.
+     *
+     * @param b7 Byte which represents bit 56 to 63.
+     * @param b6 Byte which represents bit 48 to 55.
+     * @param b5 Byte which represents bit 40 to 47.
+     * @param b4 Byte which represents bit 32 to 39.
+     * @param b3 Byte which represents bit 24 to 31.
+     * @param b2 Byte which represents bit 16 to 23.
+     * @param b1 Byte which represents bit 8 to 15.
+     * @param b0 Byte which represents bit 0 to 7.
+     *
+     * @return The concatenation of the eight byte values as long value.
+     */
+    private static long makeLong(final byte b7, final byte b6, final byte b5, final byte b4, final byte b3,
+            final byte b2, final byte b1, final byte b0)
+    {
+<span class="fc" id="L771">        return ((((long)b7) &lt;&lt; 56) | (((long)b6 &amp; 0xff) &lt;&lt; 48) | (((long)b5 &amp; 0xff) &lt;&lt; 40) |</span>
+                (((long)b4 &amp; 0xff) &lt;&lt; 32) | (((long)b3 &amp; 0xff) &lt;&lt; 24) | (((long)b2 &amp; 0xff) &lt;&lt; 16) |
+                (((long)b1 &amp; 0xff) &lt;&lt; 8) | (((long)b0 &amp; 0xff)));
+    }
+
+    /**
+     * Bit masks to mask appropriate bits during unaligned reading.
+     */
+<span class="fc" id="L779">    private static final int BIT_MASKS[] = { 0xff, 0x7f, 0x3f, 0x1f, 0x0f, 0x07, 0x03, 0x01 };</span>
+
+    /** Variable length integer sing bit mask for first byte. */
+    private static final short VARINT_SIGN_1 = 0x80;
+    /** Variable length integer value bit mask for first byte. */
+    private static final short VARINT_BYTE_1 = 0x3f;
+    /** Variable length integer value bit mask for intermediate bytes. */
+    private static final short VARINT_BYTE_N = 0x7f;
+    /** Variable length integer 'has next' bit mask for first byte. */
+    private static final short VARINT_HAS_NEXT_1 = 0x40;
+    /** Variable length integer 'has next' bit mask for intermediate bytes. */
+    private static final short VARINT_HAS_NEXT_N = 0x80;
+
+    /** Variable length integer value bit mask. */
+    private static final short VARUINT_BYTE = 0x7f;
+    /** Variable length integer 'has next' bit mask. */
+    private static final short VARUINT_HAS_NEXT = 0x80;
+
+    private static final long VARSIZE_MAX_VALUE = (1 &lt;&lt; 31) - 1;
+
+    /**
+     * The underlying byte array.
+     */
+    private final byte[] buffer;
+    private final byte lastByteBits;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

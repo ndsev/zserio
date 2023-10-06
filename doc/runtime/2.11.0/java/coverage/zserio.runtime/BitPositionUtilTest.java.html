@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BitPositionUtilTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime</a> &gt; <span class="el_source">BitPositionUtilTest.java</span></div><h1>BitPositionUtilTest.java</h1><pre class="source lang-java linenums">package zserio.runtime;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+
+<span class="fc" id="L7">public class BitPositionUtilTest</span>
+{
+    @Test
+    public void alignTo()
+    {
+<span class="fc" id="L12">        final long bitPosition = 5;</span>
+<span class="fc" id="L13">        assertEquals(5, BitPositionUtil.alignTo(0, bitPosition));</span>
+<span class="fc" id="L14">        assertEquals(5, BitPositionUtil.alignTo(1, bitPosition));</span>
+<span class="fc" id="L15">        assertEquals(6, BitPositionUtil.alignTo(2, bitPosition));</span>
+<span class="fc" id="L16">        assertEquals(6, BitPositionUtil.alignTo(3, bitPosition));</span>
+<span class="fc" id="L17">        assertEquals(8, BitPositionUtil.alignTo(4, bitPosition));</span>
+<span class="fc" id="L18">        assertEquals(5, BitPositionUtil.alignTo(5, bitPosition));</span>
+<span class="fc" id="L19">        assertEquals(6, BitPositionUtil.alignTo(6, bitPosition));</span>
+<span class="fc" id="L20">        assertEquals(7, BitPositionUtil.alignTo(7, bitPosition));</span>
+<span class="fc" id="L21">        assertEquals(8, BitPositionUtil.alignTo(8, bitPosition));</span>
+<span class="fc" id="L22">    }</span>
+
+    @Test
+    public void bitsToBytes()
+    {
+<span class="fc" id="L27">        assertEquals(1, BitPositionUtil.bitsToBytes(8L));</span>
+<span class="fc" id="L28">        assertEquals(3, BitPositionUtil.bitsToBytes(24L));</span>
+
+<span class="pc" id="L30">        assertThrows(ZserioError.class, () -&gt; BitPositionUtil.bitsToBytes(4L));</span>
+<span class="pc" id="L31">        assertThrows(ZserioError.class, () -&gt; BitPositionUtil.bitsToBytes(9L));</span>
+<span class="fc" id="L32">    }</span>
+
+    @Test
+    public void bytesToBits()
+    {
+<span class="fc" id="L37">        assertEquals(0, BitPositionUtil.bytesToBits(0L));</span>
+<span class="fc" id="L38">        assertEquals(8, BitPositionUtil.bytesToBits(1L));</span>
+<span class="fc" id="L39">        assertEquals(16, BitPositionUtil.bytesToBits(2L));</span>
+<span class="fc" id="L40">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

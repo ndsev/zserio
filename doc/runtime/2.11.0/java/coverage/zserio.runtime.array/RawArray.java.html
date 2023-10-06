@@ -1,0 +1,978 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RawArray.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.array</a> &gt; <span class="el_source">RawArray.java</span></div><h1>RawArray.java</h1><pre class="source lang-java linenums">package zserio.runtime.array;
+
+import java.math.BigInteger;
+import java.util.Arrays;
+
+import zserio.runtime.HashCodeUtil;
+import zserio.runtime.SizeOf;
+import zserio.runtime.ZserioEnum;
+import zserio.runtime.io.BitBuffer;
+
+/**
+ * Interface for classes which holds raw array.
+ *
+ * This interface gives the same abstraction for Java native arrays of primitive types like int[] and for
+ * Java native arrays of objects. Using the Java native arrays for primitive types is preferred because
+ * ArrayList of primitive types wrapper like Integer brings performance penalty during boxing/unboxing.
+ */
+public interface RawArray
+{
+    /**
+     * Gets the raw array size.
+     *
+     * @return Number of elements stored in the raw array.
+     */
+    public int size();
+
+    /**
+     * Resets the raw array.
+     *
+     * @param capacity Desired capacity of the raw array after reset.
+     */
+    public void reset(int capacity);
+
+    /**
+     * Gets the underlying raw array.
+     *
+     * @param &lt;T&gt; Java array type to be returned.
+     *
+     * @return The underlying raw array.
+     */
+    public &lt;T&gt; T getRawArray();
+
+    /**
+     * Sets the raw array element.
+     *
+     * @param element Raw array element to set.
+     * @param index Index of element to set.
+     */
+    public void setElement(ArrayElement element, int index);
+
+    /**
+     * Gets the raw array element.
+     *
+     * @param index Index of element.
+     *
+     * @return The raw array element.
+     */
+    public ArrayElement getElement(int index);
+
+    /**
+     * Raw array for Java native array of bytes.
+     */
+    public static class ByteRawArray implements RawArray
+    {
+        /**
+         * Empty constructor.
+         */
+        public ByteRawArray()
+<span class="fc" id="L69">        {</span>
+<span class="fc" id="L70">        }</span>
+
+        /**
+         * Constructor from raw array.
+         *
+         * @param rawArray Raw array to construct from.
+         */
+        public ByteRawArray(byte[] rawArray)
+<span class="fc" id="L78">        {</span>
+<span class="fc" id="L79">            this.rawArray = rawArray;</span>
+<span class="fc" id="L80">        }</span>
+
+        @Override
+        public boolean equals(java.lang.Object obj)
+        {
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">            return (obj instanceof ByteRawArray) ? Arrays.equals(rawArray, ((ByteRawArray)obj).rawArray) :</span>
+                false;
+        }
+
+        @Override
+        public int hashCode()
+        {
+<span class="fc" id="L92">            return HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, rawArray);</span>
+        }
+
+        @Override
+        public int size()
+        {
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">            return (rawArray == null) ? 0 : rawArray.length;</span>
+        }
+
+        @Override
+        public void reset(int capacity)
+        {
+<span class="fc" id="L104">            rawArray = new byte[capacity];</span>
+<span class="fc" id="L105">        }</span>
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public &lt;T&gt; T getRawArray()
+        {
+<span class="fc" id="L111">            return (T)rawArray;</span>
+        }
+
+        @Override
+        public void setElement(ArrayElement element, int index)
+        {
+<span class="fc" id="L117">            rawArray[index] = ((ArrayElement.ByteArrayElement)element).get();</span>
+<span class="fc" id="L118">        }</span>
+
+        @Override
+        public ArrayElement getElement(int index)
+        {
+<span class="fc" id="L123">            return new ArrayElement.ByteArrayElement(rawArray[index]);</span>
+        }
+
+        private byte[] rawArray;
+    }
+
+    /**
+     * Raw array for Java native array of shorts.
+     */
+    public static class ShortRawArray implements RawArray
+    {
+        /**
+         * Empty constructor.
+         */
+        public ShortRawArray()
+<span class="fc" id="L138">        {</span>
+<span class="fc" id="L139">        }</span>
+
+        /**
+         * Constructor from raw array.
+         *
+         * @param rawArray Raw array to construct from.
+         */
+        public ShortRawArray(short[] rawArray)
+<span class="fc" id="L147">        {</span>
+<span class="fc" id="L148">            this.rawArray = rawArray;</span>
+<span class="fc" id="L149">        }</span>
+
+        @Override
+        public boolean equals(java.lang.Object obj)
+        {
+<span class="pc bpc" id="L154" title="1 of 2 branches missed.">            return (obj instanceof ShortRawArray) ? Arrays.equals(rawArray, ((ShortRawArray)obj).rawArray) :</span>
+                false;
+        }
+
+        @Override
+        public int hashCode()
+        {
+<span class="fc" id="L161">            return HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, rawArray);</span>
+        }
+
+        @Override
+        public int size()
+        {
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">            return (rawArray == null) ? 0 : rawArray.length;</span>
+        }
+
+        @Override
+        public void reset(int capacity)
+        {
+<span class="fc" id="L173">            rawArray = new short[capacity];</span>
+<span class="fc" id="L174">        }</span>
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public &lt;T&gt; T getRawArray()
+        {
+<span class="fc" id="L180">            return (T)rawArray;</span>
+        }
+
+        @Override
+        public void setElement(ArrayElement element, int index)
+        {
+<span class="fc" id="L186">            rawArray[index] = ((ArrayElement.ShortArrayElement)element).get();</span>
+<span class="fc" id="L187">        }</span>
+
+        @Override
+        public ArrayElement getElement(int index)
+        {
+<span class="fc" id="L192">            return new ArrayElement.ShortArrayElement(rawArray[index]);</span>
+        }
+
+        private short[] rawArray;
+    }
+
+    /**
+     * Raw array for Java native array of ints.
+     */
+    public static class IntRawArray implements RawArray
+    {
+        /**
+         * Empty constructor.
+         */
+        public IntRawArray()
+<span class="fc" id="L207">        {</span>
+<span class="fc" id="L208">        }</span>
+
+        /**
+         * Constructor from raw array.
+         *
+         * @param rawArray Raw array to construct from.
+         */
+        public IntRawArray(int[] rawArray)
+<span class="fc" id="L216">        {</span>
+<span class="fc" id="L217">            this.rawArray = rawArray;</span>
+<span class="fc" id="L218">        }</span>
+
+        @Override
+        public boolean equals(java.lang.Object obj)
+        {
+<span class="pc bpc" id="L223" title="1 of 2 branches missed.">            return (obj instanceof IntRawArray) ? Arrays.equals(rawArray, ((IntRawArray)obj).rawArray) : false;</span>
+        }
+
+        @Override
+        public int hashCode()
+        {
+<span class="fc" id="L229">            return HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, rawArray);</span>
+        }
+
+        @Override
+        public int size()
+        {
+<span class="pc bpc" id="L235" title="1 of 2 branches missed.">            return (rawArray == null) ? 0 : rawArray.length;</span>
+        }
+
+        @Override
+        public void reset(int capacity)
+        {
+<span class="fc" id="L241">            rawArray = new int[capacity];</span>
+<span class="fc" id="L242">        }</span>
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public &lt;T&gt; T getRawArray()
+        {
+<span class="fc" id="L248">            return (T)rawArray;</span>
+        }
+
+        @Override
+        public void setElement(ArrayElement element, int index)
+        {
+<span class="fc" id="L254">            rawArray[index] = ((ArrayElement.IntArrayElement)element).get();</span>
+<span class="fc" id="L255">        }</span>
+
+        @Override
+        public ArrayElement getElement(int index)
+        {
+<span class="fc" id="L260">            return new ArrayElement.IntArrayElement(rawArray[index]);</span>
+        }
+
+        private int[] rawArray;
+    }
+
+    /**
+     * Raw array for Java native array of longs.
+     */
+    public static class LongRawArray implements RawArray
+    {
+        /**
+         * Empty constructor.
+         */
+        public LongRawArray()
+<span class="fc" id="L275">        {</span>
+<span class="fc" id="L276">        }</span>
+
+        /**
+         * Constructor from raw array.
+         *
+         * @param rawArray Raw array to construct from.
+         */
+        public LongRawArray(long[] rawArray)
+<span class="fc" id="L284">        {</span>
+<span class="fc" id="L285">            this.rawArray = rawArray;</span>
+<span class="fc" id="L286">        }</span>
+
+        @Override
+        public boolean equals(java.lang.Object obj)
+        {
+<span class="pc bpc" id="L291" title="1 of 2 branches missed.">            return (obj instanceof LongRawArray) ? Arrays.equals(rawArray, ((LongRawArray)obj).rawArray) :</span>
+                false;
+        }
+
+        @Override
+        public int hashCode()
+        {
+<span class="fc" id="L298">            return HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, rawArray);</span>
+        }
+
+        @Override
+        public int size()
+        {
+<span class="pc bpc" id="L304" title="1 of 2 branches missed.">            return (rawArray == null) ? 0 : rawArray.length;</span>
+        }
+
+        @Override
+        public void reset(int capacity)
+        {
+<span class="fc" id="L310">            rawArray = new long[capacity];</span>
+<span class="fc" id="L311">        }</span>
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public &lt;T&gt; T getRawArray()
+        {
+<span class="fc" id="L317">            return (T)rawArray;</span>
+        }
+
+        @Override
+        public void setElement(ArrayElement element, int index)
+        {
+<span class="fc" id="L323">            rawArray[index] = ((ArrayElement.LongArrayElement)element).get();</span>
+<span class="fc" id="L324">        }</span>
+
+        @Override
+        public ArrayElement getElement(int index)
+        {
+<span class="fc" id="L329">            return new ArrayElement.LongArrayElement(rawArray[index]);</span>
+        }
+
+        private long[] rawArray;
+    }
+
+    /**
+     * Raw array for Java native array of BigIntegers.
+     */
+    public static class BigIntegerRawArray implements RawArray
+    {
+        /**
+         * Empty constructor.
+         */
+        public BigIntegerRawArray()
+<span class="fc" id="L344">        {</span>
+<span class="fc" id="L345">        }</span>
+
+        /**
+         * Constructor from raw array.
+         *
+         * @param rawArray Raw array to construct from.
+         */
+        public BigIntegerRawArray(BigInteger[] rawArray)
+<span class="fc" id="L353">        {</span>
+<span class="fc" id="L354">            this.rawArray = rawArray;</span>
+<span class="fc" id="L355">        }</span>
+
+        @Override
+        public boolean equals(java.lang.Object obj)
+        {
+<span class="pc bpc" id="L360" title="1 of 2 branches missed.">            return (obj instanceof BigIntegerRawArray) ?</span>
+<span class="pc" id="L361">                    Arrays.equals(rawArray, ((BigIntegerRawArray)obj).rawArray) : false;</span>
+        }
+
+        @Override
+        public int hashCode()
+        {
+<span class="fc" id="L367">            return HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, rawArray);</span>
+        }
+
+        @Override
+        public int size()
+        {
+<span class="pc bpc" id="L373" title="1 of 2 branches missed.">            return (rawArray == null) ? 0 : rawArray.length;</span>
+        }
+
+        @Override
+        public void reset(int capacity)
+        {
+<span class="fc" id="L379">            rawArray = new BigInteger[capacity];</span>
+<span class="fc" id="L380">        }</span>
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public &lt;T&gt; T getRawArray()
+        {
+<span class="fc" id="L386">            return (T)rawArray;</span>
+        }
+
+        @Override
+        public void setElement(ArrayElement element, int index)
+        {
+<span class="fc" id="L392">            rawArray[index] = ((ArrayElement.BigIntegerArrayElement)element).get();</span>
+<span class="fc" id="L393">        }</span>
+
+        @Override
+        public ArrayElement getElement(int index)
+        {
+<span class="fc" id="L398">            return new ArrayElement.BigIntegerArrayElement(rawArray[index]);</span>
+        }
+
+        private BigInteger[] rawArray;
+    }
+
+    /**
+     * Raw array for Java native array of floats.
+     */
+    public static class FloatRawArray implements RawArray
+    {
+        /**
+         * Empty constructor.
+         */
+        public FloatRawArray()
+<span class="fc" id="L413">        {</span>
+<span class="fc" id="L414">        }</span>
+
+        /**
+         * Constructor from raw array.
+         *
+         * @param rawArray Raw array to construct from.
+         */
+        public FloatRawArray(float[] rawArray)
+<span class="fc" id="L422">        {</span>
+<span class="fc" id="L423">            this.rawArray = rawArray;</span>
+<span class="fc" id="L424">        }</span>
+
+        @Override
+        public boolean equals(java.lang.Object obj)
+        {
+<span class="pc bpc" id="L429" title="1 of 2 branches missed.">            return (obj instanceof FloatRawArray) ? Arrays.equals(rawArray, ((FloatRawArray)obj).rawArray) :</span>
+                false;
+        }
+
+        @Override
+        public int hashCode()
+        {
+<span class="fc" id="L436">            return HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, rawArray);</span>
+        }
+
+        @Override
+        public int size()
+        {
+<span class="pc bpc" id="L442" title="1 of 2 branches missed.">            return (rawArray == null) ? 0 : rawArray.length;</span>
+        }
+
+        @Override
+        public void reset(int capacity)
+        {
+<span class="fc" id="L448">            rawArray = new float[capacity];</span>
+<span class="fc" id="L449">        }</span>
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public &lt;T&gt; T getRawArray()
+        {
+<span class="fc" id="L455">            return (T)rawArray;</span>
+        }
+
+        @Override
+        public void setElement(ArrayElement element, int index)
+        {
+<span class="fc" id="L461">            rawArray[index] = ((ArrayElement.FloatArrayElement)element).get();</span>
+<span class="fc" id="L462">        }</span>
+
+        @Override
+        public ArrayElement getElement(int index)
+        {
+<span class="fc" id="L467">            return new ArrayElement.FloatArrayElement(rawArray[index]);</span>
+        }
+
+        private float[] rawArray;
+    }
+
+    /**
+     * Raw array for Java native array of doubles.
+     */
+    public static class DoubleRawArray implements RawArray
+    {
+        /**
+         * Empty constructor.
+         */
+        public DoubleRawArray()
+<span class="fc" id="L482">        {</span>
+<span class="fc" id="L483">        }</span>
+
+        /**
+         * Constructor from raw array.
+         *
+         * @param rawArray Raw array to construct from.
+         */
+        public DoubleRawArray(double[] rawArray)
+<span class="fc" id="L491">        {</span>
+<span class="fc" id="L492">            this.rawArray = rawArray;</span>
+<span class="fc" id="L493">        }</span>
+
+        @Override
+        public boolean equals(java.lang.Object obj)
+        {
+<span class="pc bpc" id="L498" title="1 of 2 branches missed.">            return (obj instanceof DoubleRawArray) ? Arrays.equals(rawArray, ((DoubleRawArray)obj).rawArray) :</span>
+                false;
+        }
+
+        @Override
+        public int hashCode()
+        {
+<span class="fc" id="L505">            return HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, rawArray);</span>
+        }
+
+        @Override
+        public int size()
+        {
+<span class="pc bpc" id="L511" title="1 of 2 branches missed.">            return (rawArray == null) ? 0 : rawArray.length;</span>
+        }
+
+        @Override
+        public void reset(int capacity)
+        {
+<span class="fc" id="L517">            rawArray = new double[capacity];</span>
+<span class="fc" id="L518">        }</span>
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public &lt;T&gt; T getRawArray()
+        {
+<span class="fc" id="L524">            return (T)rawArray;</span>
+        }
+
+        @Override
+        public void setElement(ArrayElement element, int index)
+        {
+<span class="fc" id="L530">            rawArray[index] = ((ArrayElement.DoubleArrayElement)element).get();</span>
+<span class="fc" id="L531">        }</span>
+
+        @Override
+        public ArrayElement getElement(int index)
+        {
+<span class="fc" id="L536">            return new ArrayElement.DoubleArrayElement(rawArray[index]);</span>
+        }
+
+        private double[] rawArray;
+    }
+
+    /**
+     * Raw array for Java native array of booleans.
+     */
+    public static class BooleanRawArray implements RawArray
+    {
+        /**
+         * Empty constructor.
+         */
+        public BooleanRawArray()
+<span class="fc" id="L551">        {</span>
+<span class="fc" id="L552">        }</span>
+
+        /**
+         * Constructor from raw array.
+         *
+         * @param rawArray Raw array to construct from.
+         */
+        public BooleanRawArray(boolean[] rawArray)
+<span class="fc" id="L560">        {</span>
+<span class="fc" id="L561">            this.rawArray = rawArray;</span>
+<span class="fc" id="L562">        }</span>
+
+        @Override
+        public boolean equals(java.lang.Object obj)
+        {
+<span class="pc bpc" id="L567" title="1 of 2 branches missed.">            return (obj instanceof BooleanRawArray) ? Arrays.equals(rawArray, ((BooleanRawArray)obj).rawArray) :</span>
+                false;
+        }
+
+        @Override
+        public int hashCode()
+        {
+<span class="fc" id="L574">            return HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, rawArray);</span>
+        }
+
+        @Override
+        public int size()
+        {
+<span class="pc bpc" id="L580" title="1 of 2 branches missed.">            return (rawArray == null) ? 0 : rawArray.length;</span>
+        }
+
+        @Override
+        public void reset(int capacity)
+        {
+<span class="fc" id="L586">            rawArray = new boolean[capacity];</span>
+<span class="fc" id="L587">        }</span>
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public &lt;T&gt; T getRawArray()
+        {
+<span class="fc" id="L593">            return (T)rawArray;</span>
+        }
+
+        @Override
+        public void setElement(ArrayElement element, int index)
+        {
+<span class="fc" id="L599">            rawArray[index] = ((ArrayElement.BooleanArrayElement)element).get();</span>
+<span class="fc" id="L600">        }</span>
+
+        @Override
+        public ArrayElement getElement(int index)
+        {
+<span class="fc" id="L605">            return new ArrayElement.BooleanArrayElement(rawArray[index]);</span>
+        }
+
+        private boolean[] rawArray;
+    }
+
+    /**
+     * Raw array for Java native array of bytes.
+     */
+    public static class BytesRawArray implements RawArray
+    {
+        /**
+         * Empty constructor.
+         */
+        public BytesRawArray()
+<span class="fc" id="L620">        {</span>
+<span class="fc" id="L621">        }</span>
+
+        /**
+         * Constructor from raw array.
+         *
+         * @param rawArray Raw array to construct from.
+         */
+        public BytesRawArray(byte[][] rawArray)
+<span class="fc" id="L629">        {</span>
+<span class="fc" id="L630">            this.rawArray = rawArray;</span>
+<span class="fc" id="L631">        }</span>
+
+        @Override
+        public boolean equals(java.lang.Object obj)
+        {
+<span class="pc bpc" id="L636" title="1 of 2 branches missed.">            return (obj instanceof BytesRawArray) ? Arrays.deepEquals(rawArray, ((BytesRawArray)obj).rawArray) :</span>
+                false;
+        }
+
+        @Override
+        public int hashCode()
+        {
+<span class="fc" id="L643">            return HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, rawArray);</span>
+        }
+
+        @Override
+        public int size()
+        {
+<span class="pc bpc" id="L649" title="1 of 2 branches missed.">            return (rawArray == null) ? 0 : rawArray.length;</span>
+        }
+
+        @Override
+        public void reset(int capacity)
+        {
+<span class="fc" id="L655">            rawArray = new byte[capacity][];</span>
+<span class="fc" id="L656">        }</span>
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public &lt;T&gt; T getRawArray()
+        {
+<span class="fc" id="L662">            return (T)rawArray;</span>
+        }
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public void setElement(ArrayElement element, int index)
+        {
+<span class="fc" id="L669">            rawArray[index] = ((ArrayElement.ObjectArrayElement&lt;byte[]&gt;)element).get();</span>
+<span class="fc" id="L670">        }</span>
+
+        @Override
+        public ArrayElement getElement(int index)
+        {
+<span class="fc" id="L675">            return new ArrayElement.ObjectArrayElement&lt;&gt;(rawArray[index]);</span>
+        }
+
+        private byte[][] rawArray;
+    }
+
+    /**
+     * Raw array for Java native array of Strings.
+     */
+    public static class StringRawArray implements RawArray
+    {
+        /**
+         * Empty constructor.
+         */
+        public StringRawArray()
+<span class="fc" id="L690">        {</span>
+<span class="fc" id="L691">        }</span>
+
+        /**
+         * Constructor from raw array.
+         *
+         * @param rawArray Raw array to construct from.
+         */
+        public StringRawArray(String[] rawArray)
+<span class="fc" id="L699">        {</span>
+<span class="fc" id="L700">            this.rawArray = rawArray;</span>
+<span class="fc" id="L701">        }</span>
+
+        @Override
+        public boolean equals(java.lang.Object obj)
+        {
+<span class="pc bpc" id="L706" title="1 of 2 branches missed.">            return (obj instanceof StringRawArray) ? Arrays.equals(rawArray, ((StringRawArray)obj).rawArray) :</span>
+                false;
+        }
+
+        @Override
+        public int hashCode()
+        {
+<span class="fc" id="L713">            return HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, rawArray);</span>
+        }
+
+        @Override
+        public int size()
+        {
+<span class="pc bpc" id="L719" title="1 of 2 branches missed.">            return (rawArray == null) ? 0 : rawArray.length;</span>
+        }
+
+        @Override
+        public void reset(int capacity)
+        {
+<span class="fc" id="L725">            rawArray = new String[capacity];</span>
+<span class="fc" id="L726">        }</span>
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public &lt;T&gt; T getRawArray()
+        {
+<span class="fc" id="L732">            return (T)rawArray;</span>
+        }
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public void setElement(ArrayElement element, int index)
+        {
+<span class="fc" id="L739">            rawArray[index] = ((ArrayElement.ObjectArrayElement&lt;String&gt;)element).get();</span>
+<span class="fc" id="L740">        }</span>
+
+        @Override
+        public ArrayElement getElement(int index)
+        {
+<span class="fc" id="L745">            return new ArrayElement.ObjectArrayElement&lt;&gt;(rawArray[index]);</span>
+        }
+
+        private String[] rawArray;
+    }
+
+    /**
+     * Raw array for Java native array of BitBuffer.
+     */
+    public static class BitBufferRawArray implements RawArray
+    {
+        /**
+         * Empty constructor.
+         */
+        public BitBufferRawArray()
+<span class="fc" id="L760">        {</span>
+<span class="fc" id="L761">        }</span>
+
+        /**
+         * Constructor from raw array.
+         *
+         * @param rawArray Raw array to construct from.
+         */
+        public BitBufferRawArray(BitBuffer[] rawArray)
+<span class="fc" id="L769">        {</span>
+<span class="fc" id="L770">            this.rawArray = rawArray;</span>
+<span class="fc" id="L771">        }</span>
+
+        @Override
+        public boolean equals(java.lang.Object obj)
+        {
+<span class="pc bpc" id="L776" title="1 of 2 branches missed.">            return (obj instanceof BitBufferRawArray)</span>
+<span class="pc" id="L777">                    ? Arrays.equals(rawArray, ((BitBufferRawArray)obj).rawArray)</span>
+                    : false;
+        }
+
+        @Override
+        public int hashCode()
+        {
+<span class="fc" id="L784">            return HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, rawArray);</span>
+        }
+
+        @Override
+        public int size()
+        {
+<span class="pc bpc" id="L790" title="1 of 2 branches missed.">            return (rawArray == null) ? 0 : rawArray.length;</span>
+        }
+
+        @Override
+        public void reset(int capacity)
+        {
+<span class="fc" id="L796">            rawArray = new BitBuffer[capacity];</span>
+<span class="fc" id="L797">        }</span>
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public &lt;T&gt; T getRawArray()
+        {
+<span class="fc" id="L803">            return (T)rawArray;</span>
+        }
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public void setElement(ArrayElement element, int index)
+        {
+<span class="fc" id="L810">            rawArray[index] = ((ArrayElement.ObjectArrayElement&lt;BitBuffer&gt;)element).get();</span>
+<span class="fc" id="L811">        }</span>
+
+        @Override
+        public ArrayElement getElement(int index)
+        {
+<span class="fc" id="L816">            return new ArrayElement.ObjectArrayElement&lt;&gt;(rawArray[index]);</span>
+        }
+
+        private BitBuffer[] rawArray;
+    }
+
+    /**
+     * Raw array for Java native array of enums.
+     */
+    public static class EnumRawArray&lt;E extends ZserioEnum &amp; SizeOf&gt; implements RawArray
+    {
+        /**
+         * Constructor from element class object.
+         *
+         * @param elementClass Element class object.
+         */
+        public EnumRawArray(Class&lt;E&gt; elementClass)
+<span class="nc" id="L833">        {</span>
+<span class="nc" id="L834">            this.elementClass = elementClass;</span>
+<span class="nc" id="L835">        }</span>
+
+        /**
+         * Constructor from raw array.
+         *
+         * @param elementClass Element class object.
+         * @param rawArray     Raw array to construct from.
+         */
+        public EnumRawArray(Class&lt;E&gt; elementClass, E[] rawArray)
+<span class="nc" id="L844">        {</span>
+<span class="nc" id="L845">            this.elementClass = elementClass;</span>
+<span class="nc" id="L846">            this.rawArray = rawArray;</span>
+<span class="nc" id="L847">        }</span>
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public boolean equals(java.lang.Object obj)
+        {
+<span class="nc bnc" id="L853" title="All 2 branches missed.">            return (obj instanceof EnumRawArray) ?</span>
+<span class="nc" id="L854">                    Arrays.equals(rawArray, ((EnumRawArray&lt;E&gt;)obj).rawArray) : false;</span>
+        }
+
+        @Override
+        public int hashCode()
+        {
+<span class="nc" id="L860">            return HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, rawArray);</span>
+        }
+
+        @Override
+        public int size()
+        {
+<span class="nc bnc" id="L866" title="All 2 branches missed.">            return (rawArray == null) ? 0 : rawArray.length;</span>
+        }
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public void reset(int capacity)
+        {
+<span class="nc" id="L873">            rawArray = (E[])java.lang.reflect.Array.newInstance(elementClass, capacity);</span>
+<span class="nc" id="L874">        }</span>
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public &lt;T&gt; T getRawArray()
+        {
+<span class="nc" id="L880">            return (T)rawArray;</span>
+        }
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public void setElement(ArrayElement element, int index)
+        {
+<span class="nc" id="L887">            rawArray[index] = ((ArrayElement.ObjectArrayElement&lt;E&gt;)element).get();</span>
+<span class="nc" id="L888">        }</span>
+
+        @Override
+        public ArrayElement getElement(int index)
+        {
+<span class="nc" id="L893">            return new ArrayElement.ObjectArrayElement&lt;&gt;(rawArray[index]);</span>
+        }
+
+        private final Class&lt;E&gt; elementClass;
+        private E[] rawArray;
+    }
+
+    /**
+     * Raw array for Java native array of objects.
+     */
+    public static class ObjectRawArray&lt;E extends SizeOf&gt; implements RawArray
+    {
+        /**
+         * Constructor from element class object.
+         *
+         * @param elementClass Element class object.
+         */
+        public ObjectRawArray(Class&lt;E&gt; elementClass)
+<span class="fc" id="L911">        {</span>
+<span class="fc" id="L912">            this.elementClass = elementClass;</span>
+<span class="fc" id="L913">        }</span>
+
+        /**
+         * Constructor from raw array.
+         *
+         * @param elementClass Element class object.
+         * @param rawArray     Raw array to construct from.
+         */
+        public ObjectRawArray(Class&lt;E&gt; elementClass, E[] rawArray)
+<span class="fc" id="L922">        {</span>
+<span class="fc" id="L923">            this.elementClass = elementClass;</span>
+<span class="fc" id="L924">            this.rawArray = rawArray;</span>
+<span class="fc" id="L925">        }</span>
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public boolean equals(java.lang.Object obj)
+        {
+<span class="pc bpc" id="L931" title="1 of 2 branches missed.">            return (obj instanceof ObjectRawArray) ?</span>
+<span class="pc" id="L932">                    Arrays.equals(rawArray, ((ObjectRawArray&lt;E&gt;)obj).rawArray) : false;</span>
+        }
+
+        @Override
+        public int hashCode()
+        {
+<span class="fc" id="L938">            return HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, rawArray);</span>
+        }
+
+        @Override
+        public int size()
+        {
+<span class="pc bpc" id="L944" title="1 of 2 branches missed.">            return (rawArray == null) ? 0 : rawArray.length;</span>
+        }
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public void reset(int capacity)
+        {
+<span class="fc" id="L951">            rawArray = (E[])java.lang.reflect.Array.newInstance(elementClass, capacity);</span>
+<span class="fc" id="L952">        }</span>
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public &lt;T&gt; T getRawArray()
+        {
+<span class="fc" id="L958">            return (T)rawArray;</span>
+        }
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public void setElement(ArrayElement element, int index)
+        {
+<span class="fc" id="L965">            rawArray[index] = ((ArrayElement.ObjectArrayElement&lt;E&gt;)element).get();</span>
+<span class="fc" id="L966">        }</span>
+
+        @Override
+        public ArrayElement getElement(int index)
+        {
+<span class="fc" id="L971">            return new ArrayElement.ObjectArrayElement&lt;&gt;(rawArray[index]);</span>
+        }
+
+        private final Class&lt;E&gt; elementClass;
+        private E[] rawArray;
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

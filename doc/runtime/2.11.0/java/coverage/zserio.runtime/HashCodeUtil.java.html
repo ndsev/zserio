@@ -1,0 +1,551 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HashCodeUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime</a> &gt; <span class="el_source">HashCodeUtil.java</span></div><h1>HashCodeUtil.java</h1><pre class="source lang-java linenums">package zserio.runtime;
+
+import java.math.BigInteger;
+
+import zserio.runtime.array.Array;
+import zserio.runtime.io.BitBuffer;
+
+/**
+ * Utilities for hash code calculation.
+ */
+<span class="nc" id="L11">public class HashCodeUtil</span>
+{
+    /**
+     * Calculates hash code for a boolean value.
+     *
+     * @param seedValue Seed value (current hash code).
+     * @param value Value to use.
+     *
+     * @return Calculated hash code.
+     */
+    public static int calcHashCode(int seedValue, boolean value)
+    {
+<span class="fc bfc" id="L23" title="All 2 branches covered.">        return calcHashCode(seedValue, value ? 1 : 0);</span>
+    }
+
+    /**
+     * Calculates hash code for a Boolean value.
+     *
+     * @param seedValue Seed value (current hash code).
+     * @param value Value to use.
+     *
+     * @return Calculated hash code.
+     */
+    public static int calcHashCode(int seedValue, Boolean value)
+    {
+<span class="fc bfc" id="L36" title="All 2 branches covered.">        if (value == null)</span>
+<span class="fc" id="L37">            return calcHashCode(seedValue, 0);</span>
+
+<span class="fc" id="L39">        return calcHashCode(seedValue, value.booleanValue());</span>
+    }
+
+    /**
+     * Calculates hash code for an Byte value.
+     *
+     * @param seedValue Seed value (current hash code).
+     * @param value Value to use.
+     *
+     * @return Calculated hash code.
+     */
+    public static int calcHashCode(int seedValue, Byte value)
+    {
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        if (value == null)</span>
+<span class="fc" id="L53">            return calcHashCode(seedValue, 0);</span>
+
+<span class="fc" id="L55">        return calcHashCode(seedValue, value.byteValue());</span>
+    }
+
+    /**
+     * Calculates hash code for an Short value.
+     *
+     * @param seedValue Seed value (current hash code).
+     * @param value Value to use.
+     *
+     * @return Calculated hash code.
+     */
+    public static int calcHashCode(int seedValue, Short value)
+    {
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        if (value == null)</span>
+<span class="fc" id="L69">            return calcHashCode(seedValue, 0);</span>
+
+<span class="fc" id="L71">        return calcHashCode(seedValue, value.shortValue());</span>
+    }
+
+    /**
+     * Calculates hash code for an int value.
+     *
+     * @param seedValue Seed value (current hash code).
+     * @param value Value to use.
+     *
+     * @return Calculated hash code.
+     */
+    public static int calcHashCode(int seedValue, int value)
+    {
+<span class="fc" id="L84">        return HASH_PRIME_NUMBER * seedValue + value;</span>
+    }
+
+    /**
+     * Calculates hash code for an Integer value.
+     *
+     * @param seedValue Seed value (current hash code).
+     * @param value Value to use.
+     *
+     * @return Calculated hash code.
+     */
+    public static int calcHashCode(int seedValue, Integer value)
+    {
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        if (value == null)</span>
+<span class="fc" id="L98">            return calcHashCode(seedValue, 0);</span>
+
+<span class="fc" id="L100">        return calcHashCode(seedValue, value.intValue());</span>
+    }
+
+    /**
+     * Calculates hash code for a long value.
+     *
+     * @param seedValue Seed value (current hash code).
+     * @param value Value to use.
+     *
+     * @return Calculated hash code.
+     */
+    public static int calcHashCode(int seedValue, long value)
+    {
+<span class="fc" id="L113">        return calcHashCode(seedValue, (int)(value ^ (value &gt;&gt;&gt; 32)));</span>
+    }
+
+    /**
+     * Calculates hash code for a Long value.
+     *
+     * @param seedValue Seed value (current hash code).
+     * @param value Value to use.
+     *
+     * @return Calculated hash code.
+     */
+    public static int calcHashCode(int seedValue, Long value)
+    {
+<span class="fc bfc" id="L126" title="All 2 branches covered.">        if (value == null)</span>
+<span class="fc" id="L127">            return calcHashCode(seedValue, 0);</span>
+
+<span class="fc" id="L129">        return calcHashCode(seedValue, value.longValue());</span>
+    }
+
+    /**
+     * Calculates hash code for a float value.
+     *
+     * @param seedValue Seed value (current hash code).
+     * @param value Value to use.
+     *
+     * @return Calculated hash code.
+     */
+    public static int calcHashCode(int seedValue, float value)
+    {
+<span class="fc" id="L142">        return calcHashCode(seedValue, FloatUtil.convertFloatToInt(value));</span>
+    }
+
+    /**
+     * Calculates hash code for a Float value.
+     *
+     * @param seedValue Seed value (current hash code).
+     * @param value Value to use.
+     *
+     * @return Calculated hash code.
+     */
+    public static int calcHashCode(int seedValue, Float value)
+    {
+<span class="fc bfc" id="L155" title="All 2 branches covered.">        if (value == null)</span>
+<span class="fc" id="L156">            return calcHashCode(seedValue, 0);</span>
+
+<span class="fc" id="L158">        return calcHashCode(seedValue, value.floatValue());</span>
+    }
+
+    /**
+     * Calculates hash code for a double value.
+     *
+     * @param seedValue Seed value (current hash code).
+     * @param value Value to use.
+     *
+     * @return Calculated hash code.
+     */
+    public static int calcHashCode(int seedValue, double value)
+    {
+<span class="fc" id="L171">        return calcHashCode(seedValue, FloatUtil.convertDoubleToLong(value));</span>
+    }
+
+    /**
+     * Calculates hash code for a Double value.
+     *
+     * @param seedValue Seed value (current hash code).
+     * @param value Value to use.
+     *
+     * @return Calculated hash code.
+     */
+    public static int calcHashCode(int seedValue, Double value)
+    {
+<span class="fc bfc" id="L184" title="All 2 branches covered.">        if (value == null)</span>
+<span class="fc" id="L185">            return calcHashCode(seedValue, 0);</span>
+
+<span class="fc" id="L187">        return calcHashCode(seedValue, value.doubleValue());</span>
+    }
+
+    /**
+     * Calculates hash code for a BigInteger value.
+     *
+     * @param seedValue Seed value (current hash code).
+     * @param value Value to use.
+     *
+     * @return Calculated hash code.
+     */
+    public static int calcHashCode(int seedValue, BigInteger value)
+    {
+<span class="pc bpc" id="L200" title="1 of 2 branches missed.">        if (value == null)</span>
+<span class="nc" id="L201">            return calcHashCode(seedValue, 0);</span>
+
+<span class="fc" id="L203">        return calcHashCode(seedValue, value.xor(value.shiftRight(32)).intValue());</span>
+    }
+
+    /**
+     * Calculates hash code for a String value.
+     *
+     * @param seedValue Seed value (current hash code).
+     * @param value Value to use.
+     *
+     * @return Calculated hash code.
+     */
+    public static int calcHashCode(int seedValue, String value)
+    {
+<span class="fc bfc" id="L216" title="All 2 branches covered.">        if (value == null)</span>
+<span class="fc" id="L217">            return calcHashCode(seedValue, 0);</span>
+
+<span class="fc" id="L219">        int result = seedValue;</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">        for (int i = 0; i &lt; value.length(); ++i)</span>
+<span class="fc" id="L221">            result = calcHashCode(result, (int)value.charAt(i));</span>
+
+<span class="fc" id="L223">        return result;</span>
+    }
+
+    /**
+     * Calculates hash code for BitBuffer value.
+     *
+     * @param seedValue Seed value (current hash code).
+     * @param value Value to use.
+     *
+     * @return Calculated hash code.
+     */
+    public static int calcHashCode(int seedValue, BitBuffer value)
+    {
+<span class="fc" id="L236">        return calcHashCodeForObject(seedValue, value);</span>
+    }
+
+    /**
+     * Calculates hash code for a ZserioEnum value.
+     *
+     * @param seedValue Seed value (current hash code).
+     * @param value Value to use.
+     * @param &lt;T&gt; Concrete Java type implementing ZserioEnum.
+     *
+     * @return Calculated hash code.
+     */
+    public static &lt;T extends ZserioEnum &amp; SizeOf&gt; int calcHashCode(int seedValue, T value)
+    {
+<span class="fc bfc" id="L250" title="All 2 branches covered.">        if (value == null)</span>
+<span class="fc" id="L251">            return calcHashCode(seedValue, 0);</span>
+
+<span class="fc" id="L253">        final Number enumValue = value.getGenericValue();</span>
+<span class="pc bpc" id="L254" title="1 of 2 branches missed.">        if (enumValue instanceof BigInteger)</span>
+<span class="nc" id="L255">            return calcHashCode(seedValue, calcHashCode(HASH_SEED, (BigInteger)enumValue));</span>
+        else
+<span class="fc" id="L257">            return calcHashCode(seedValue, calcHashCode(HASH_SEED, enumValue.longValue()));</span>
+    }
+
+    /**
+     * Calculates hash code for an SizeOf value.
+     *
+     * Note: This is intended to be used by generated objects (including ZserioBitmask).
+     *
+     * @param seedValue Seed value (current hash code).
+     * @param value Value to use.
+     * @param &lt;T&gt; Concrete Java type implementing SizeOf.
+     *
+     * @return Calculated hash code.
+     */
+    public static &lt;T extends SizeOf&gt; int calcHashCode(int seedValue, T value)
+    {
+<span class="fc" id="L273">        return calcHashCodeForObject(seedValue, value);</span>
+    }
+
+    /**
+     * Calculates hash code for an Array value.
+     *
+     * @param seedValue Seed value (current hash code).
+     * @param value Value to use.
+     *
+     * @return Calculated hash code.
+     */
+    public static int calcHashCode(int seedValue, Array value)
+    {
+<span class="fc" id="L286">        return calcHashCodeForObject(seedValue, value);</span>
+    }
+
+    /**
+     * Calculates hash code for a boolean raw array value.
+     *
+     * @param seedValue Seed value (current hash code).
+     * @param value Value to use.
+     *
+     * @return Calculated hash code.
+     */
+    public static int calcHashCode(int seedValue, boolean[] value)
+    {
+<span class="fc bfc" id="L299" title="All 2 branches covered.">        if (value == null)</span>
+<span class="fc" id="L300">            return calcHashCode(seedValue, 0);</span>
+
+<span class="fc" id="L302">        int result = seedValue;</span>
+<span class="fc bfc" id="L303" title="All 2 branches covered.">        for (boolean element : value)</span>
+<span class="fc" id="L304">            result = calcHashCode(result, element);</span>
+<span class="fc" id="L305">        return result;</span>
+    }
+
+    /**
+     * Calculates hash code for a byte raw array value.
+     *
+     * @param seedValue Seed value (current hash code).
+     * @param value Value to use.
+     *
+     * @return Calculated hash code.
+     */
+    public static int calcHashCode(int seedValue, byte[] value)
+    {
+<span class="fc bfc" id="L318" title="All 2 branches covered.">        if (value == null)</span>
+<span class="fc" id="L319">            return calcHashCode(seedValue, 0);</span>
+
+<span class="fc" id="L321">        int result = seedValue;</span>
+<span class="fc bfc" id="L322" title="All 2 branches covered.">        for (byte element : value)</span>
+<span class="fc" id="L323">            result = calcHashCode(result, element);</span>
+<span class="fc" id="L324">        return result;</span>
+    }
+
+    /**
+     * Calculates hash code for a short raw array value.
+     *
+     * @param seedValue Seed value (current hash code).
+     * @param value Value to use.
+     *
+     * @return Calculated hash code.
+     */
+    public static int calcHashCode(int seedValue, short[] value)
+    {
+<span class="fc bfc" id="L337" title="All 2 branches covered.">        if (value == null)</span>
+<span class="fc" id="L338">            return calcHashCode(seedValue, 0);</span>
+
+<span class="fc" id="L340">        int result = seedValue;</span>
+<span class="fc bfc" id="L341" title="All 2 branches covered.">        for (short element : value)</span>
+<span class="fc" id="L342">            result = calcHashCode(result, element);</span>
+<span class="fc" id="L343">        return result;</span>
+    }
+
+    /**
+     * Calculates hash code for an int raw array value.
+     *
+     * @param seedValue Seed value (current hash code).
+     * @param value Value to use.
+     *
+     * @return Calculated hash code.
+     */
+    public static int calcHashCode(int seedValue, int[] value)
+    {
+<span class="fc bfc" id="L356" title="All 2 branches covered.">        if (value == null)</span>
+<span class="fc" id="L357">            return calcHashCode(seedValue, 0);</span>
+
+<span class="fc" id="L359">        int result = seedValue;</span>
+<span class="fc bfc" id="L360" title="All 2 branches covered.">        for (int element : value)</span>
+<span class="fc" id="L361">            result = calcHashCode(result, element);</span>
+<span class="fc" id="L362">        return result;</span>
+    }
+
+    /**
+     * Calculates hash code for a long raw array value.
+     *
+     * @param seedValue Seed value (current hash code).
+     * @param value Value to use.
+     *
+     * @return Calculated hash code.
+     */
+    public static int calcHashCode(int seedValue, long[] value)
+    {
+<span class="fc bfc" id="L375" title="All 2 branches covered.">        if (value == null)</span>
+<span class="fc" id="L376">            return calcHashCode(seedValue, 0);</span>
+
+<span class="fc" id="L378">        int result = seedValue;</span>
+<span class="fc bfc" id="L379" title="All 2 branches covered.">        for (long element : value)</span>
+<span class="fc" id="L380">            result = calcHashCode(result, element);</span>
+<span class="fc" id="L381">        return result;</span>
+    }
+
+    /**
+     * Calculates hash code for a float raw array value.
+     *
+     * @param seedValue Seed value (current hash code).
+     * @param value Value to use.
+     *
+     * @return Calculated hash code.
+     */
+    public static int calcHashCode(int seedValue, float[] value)
+    {
+<span class="fc bfc" id="L394" title="All 2 branches covered.">        if (value == null)</span>
+<span class="fc" id="L395">            return calcHashCode(seedValue, 0);</span>
+
+<span class="fc" id="L397">        int result = seedValue;</span>
+<span class="fc bfc" id="L398" title="All 2 branches covered.">        for (float element : value)</span>
+<span class="fc" id="L399">            result = calcHashCode(result, element);</span>
+<span class="fc" id="L400">        return result;</span>
+    }
+
+    /**
+     * Calculates hash code for a double raw array value.
+     *
+     * @param seedValue Seed value (current hash code).
+     * @param value Value to use.
+     *
+     * @return Calculated hash code.
+     */
+    public static int calcHashCode(int seedValue, double[] value)
+    {
+<span class="fc bfc" id="L413" title="All 2 branches covered.">        if (value == null)</span>
+<span class="fc" id="L414">            return calcHashCode(seedValue, 0);</span>
+
+<span class="fc" id="L416">        int result = seedValue;</span>
+<span class="fc bfc" id="L417" title="All 2 branches covered.">        for (double element : value)</span>
+<span class="fc" id="L418">            result = calcHashCode(result, element);</span>
+<span class="fc" id="L419">        return result;</span>
+    }
+
+    /**
+     * Calculates hash code for a BigInteger raw array value.
+     *
+     * @param seedValue Seed value (current hash code).
+     * @param value Value to use.
+     *
+     * @return Calculated hash code.
+     */
+    public static int calcHashCode(int seedValue, BigInteger[] value)
+    {
+<span class="fc bfc" id="L432" title="All 2 branches covered.">        if (value == null)</span>
+<span class="fc" id="L433">            return calcHashCode(seedValue, 0);</span>
+
+<span class="fc" id="L435">        int result = seedValue;</span>
+<span class="fc bfc" id="L436" title="All 2 branches covered.">        for (BigInteger element : value)</span>
+<span class="fc" id="L437">            result = calcHashCode(result, element);</span>
+<span class="fc" id="L438">        return result;</span>
+    }
+
+    /**
+     * Calculates hash code for a bytes raw array value.
+     *
+     * @param seedValue Seed value (current hash code).
+     * @param value Value to use.
+     *
+     * @return Calculated hash code.
+     */
+    public static int calcHashCode(int seedValue, byte[][] value)
+    {
+<span class="pc bpc" id="L451" title="1 of 2 branches missed.">        if (value == null)</span>
+<span class="nc" id="L452">            return calcHashCode(seedValue, 0);</span>
+
+<span class="fc" id="L454">        int result = seedValue;</span>
+<span class="fc bfc" id="L455" title="All 2 branches covered.">        for (byte[] element : value)</span>
+<span class="fc" id="L456">            result = calcHashCode(result, element);</span>
+<span class="fc" id="L457">        return result;</span>
+    }
+
+    /**
+     * Calculates hash code for a String raw array value.
+     *
+     * @param seedValue Seed value (current hash code).
+     * @param value Value to use.
+     *
+     * @return Calculated hash code.
+     */
+    public static int calcHashCode(int seedValue, String[] value)
+    {
+<span class="fc bfc" id="L470" title="All 2 branches covered.">        if (value == null)</span>
+<span class="fc" id="L471">            return calcHashCode(seedValue, 0);</span>
+
+<span class="fc" id="L473">        int result = seedValue;</span>
+<span class="fc bfc" id="L474" title="All 2 branches covered.">        for (String element : value)</span>
+<span class="fc" id="L475">            result = calcHashCode(result, element);</span>
+<span class="fc" id="L476">        return result;</span>
+    }
+
+    /**
+     * Calculates hash code for a BitBuffer raw array value.
+     *
+     * @param seedValue Seed value (current hash code).
+     * @param value Value to use.
+     *
+     * @return Calculated hash code.
+     */
+    public static int calcHashCode(int seedValue, BitBuffer[] value)
+    {
+<span class="fc bfc" id="L489" title="All 2 branches covered.">        if (value == null)</span>
+<span class="fc" id="L490">            return calcHashCode(seedValue, 0);</span>
+
+<span class="fc" id="L492">        int result = seedValue;</span>
+<span class="fc bfc" id="L493" title="All 2 branches covered.">        for (BitBuffer element : value)</span>
+<span class="fc" id="L494">            result = calcHashCode(result, element);</span>
+<span class="fc" id="L495">        return result;</span>
+    }
+
+    /**
+     * Calculates hash code for a ZserioEnum raw array value.
+     *
+     * @param seedValue Seed value (current hash code).
+     * @param value Value to use.
+     * @param &lt;T&gt; Concrete Java type implementing ZserioEnum.
+     *
+     * @return Calculated hash code.
+     */
+    public static &lt;T extends ZserioEnum &amp; SizeOf&gt; int calcHashCode(int seedValue, T[] value)
+    {
+<span class="fc bfc" id="L509" title="All 2 branches covered.">        if (value == null)</span>
+<span class="fc" id="L510">            return calcHashCode(seedValue, 0);</span>
+
+<span class="fc" id="L512">        int result = seedValue;</span>
+<span class="fc bfc" id="L513" title="All 2 branches covered.">        for (T element : value)</span>
+<span class="fc" id="L514">            result = calcHashCode(result, element);</span>
+<span class="fc" id="L515">        return result;</span>
+    }
+
+    /**
+     * Calculates hash code for a generated object (including ZserioBitmask) raw array value.
+     *
+     * @param seedValue Seed value (current hash code).
+     * @param value Value to use.
+     * @param &lt;T&gt; Concrete Java type implementing SizeOf.
+     *
+     * @return Calculated hash code.
+     */
+    public static &lt;T extends SizeOf&gt; int calcHashCode(int seedValue, T[] value)
+    {
+<span class="fc bfc" id="L529" title="All 2 branches covered.">        if (value == null)</span>
+<span class="fc" id="L530">            return calcHashCode(seedValue, 0);</span>
+
+<span class="fc" id="L532">        int result = seedValue;</span>
+<span class="fc bfc" id="L533" title="All 2 branches covered.">        for (T element : value)</span>
+<span class="fc" id="L534">            result = calcHashCode(result, element);</span>
+<span class="fc" id="L535">        return result;</span>
+    }
+
+    private static int calcHashCodeForObject(int seedValue, Object value)
+    {
+<span class="fc bfc" id="L540" title="All 2 branches covered.">        if (value == null)</span>
+<span class="fc" id="L541">            return calcHashCode(seedValue, 0);</span>
+
+<span class="fc" id="L543">        return calcHashCode(seedValue, value.hashCode());</span>
+    }
+
+    /** Initial seed for hash calculation. */
+    public static final int HASH_SEED = 23;
+    /** Prime number for hash calculation. */
+    public static final int HASH_PRIME_NUMBER = 37;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
