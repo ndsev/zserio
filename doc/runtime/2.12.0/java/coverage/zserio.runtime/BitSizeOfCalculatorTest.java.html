@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BitSizeOfCalculatorTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime</a> &gt; <span class="el_source">BitSizeOfCalculatorTest.java</span></div><h1>BitSizeOfCalculatorTest.java</h1><pre class="source lang-java linenums">package zserio.runtime;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+
+import java.math.BigInteger;
+
+import zserio.runtime.io.BitBuffer;
+
+<span class="fc" id="L11">public class BitSizeOfCalculatorTest</span>
+{
+    @Test
+    public void getBitSizeOfVarInt16()
+    {
+<span class="fc" id="L16">        assertEquals(8, BitSizeOfCalculator.getBitSizeOfVarInt16((short)63));</span>
+<span class="fc" id="L17">        assertEquals(8, BitSizeOfCalculator.getBitSizeOfVarInt16((short)-63));</span>
+<span class="fc" id="L18">        assertEquals(16, BitSizeOfCalculator.getBitSizeOfVarInt16((short)-16383));</span>
+<span class="fc" id="L19">        assertEquals(16, BitSizeOfCalculator.getBitSizeOfVarInt16((short)16383));</span>
+
+<span class="pc" id="L21">        assertThrows(ZserioError.class, () -&gt; BitSizeOfCalculator.getBitSizeOfVarInt16((short) (1 &lt;&lt; (6 + 8))));</span>
+<span class="fc" id="L22">    }</span>
+
+    @Test
+    public void getBitSizeOfVarInt32()
+    {
+<span class="fc" id="L27">        assertEquals(8, BitSizeOfCalculator.getBitSizeOfVarInt32((short)0));</span>
+<span class="fc" id="L28">        assertEquals(16, BitSizeOfCalculator.getBitSizeOfVarInt32((short)8191));</span>
+<span class="fc" id="L29">        assertEquals(24, BitSizeOfCalculator.getBitSizeOfVarInt32((short)8192));</span>
+<span class="fc" id="L30">        assertEquals(32, BitSizeOfCalculator.getBitSizeOfVarInt32((short)1 &lt;&lt; 20));</span>
+
+<span class="pc" id="L32">        assertThrows(ZserioError.class, () -&gt; BitSizeOfCalculator.getBitSizeOfVarInt32(1 &lt;&lt; (6 + 7 + 7 + 8)));</span>
+<span class="fc" id="L33">    }</span>
+
+    @Test
+    public void getBitSizeOfVarInt64()
+    {
+<span class="fc" id="L38">        assertEquals(8, BitSizeOfCalculator.getBitSizeOfVarInt64(1L &lt;&lt; 5));</span>
+<span class="fc" id="L39">        assertEquals(16, BitSizeOfCalculator.getBitSizeOfVarInt64(1L &lt;&lt; 6));</span>
+<span class="fc" id="L40">        assertEquals(24, BitSizeOfCalculator.getBitSizeOfVarInt64(1L &lt;&lt; 13));</span>
+<span class="fc" id="L41">        assertEquals(32, BitSizeOfCalculator.getBitSizeOfVarInt64(1L &lt;&lt; 20));</span>
+<span class="fc" id="L42">        assertEquals(40, BitSizeOfCalculator.getBitSizeOfVarInt64(1L &lt;&lt; 27));</span>
+<span class="fc" id="L43">        assertEquals(48, BitSizeOfCalculator.getBitSizeOfVarInt64(1L &lt;&lt; 34));</span>
+<span class="fc" id="L44">        assertEquals(56, BitSizeOfCalculator.getBitSizeOfVarInt64(1L &lt;&lt; 41));</span>
+<span class="fc" id="L45">        assertEquals(56, BitSizeOfCalculator.getBitSizeOfVarInt64((1L &lt;&lt; 48) - 1));</span>
+<span class="fc" id="L46">        assertEquals(64, BitSizeOfCalculator.getBitSizeOfVarInt64(1L &lt;&lt; 48));</span>
+
+<span class="fc" id="L48">        assertThrows(ZserioError.class,</span>
+<span class="nc" id="L49">                () -&gt; BitSizeOfCalculator.getBitSizeOfVarInt64(1L &lt;&lt; (6 + 7 + 7 + 7 + 7 + 7 + 7 + 8)));</span>
+<span class="fc" id="L50">    }</span>
+
+    @Test
+    public void getBitSizeOfVarUInt16()
+    {
+<span class="fc" id="L55">        assertEquals(8, BitSizeOfCalculator.getBitSizeOfVarUInt16((short)0));</span>
+<span class="fc" id="L56">        assertEquals(8, BitSizeOfCalculator.getBitSizeOfVarUInt16((short)64));</span>
+<span class="fc" id="L57">        assertEquals(16, BitSizeOfCalculator.getBitSizeOfVarUInt16((short)128));</span>
+
+<span class="pc" id="L59">        assertThrows(ZserioError.class, () -&gt; BitSizeOfCalculator.getBitSizeOfVarUInt16((short)-1));</span>
+<span class="fc" id="L60">    }</span>
+
+    @Test
+    public void getBitSizeOfVarUInt32()
+    {
+<span class="fc" id="L65">        assertEquals(8, BitSizeOfCalculator.getBitSizeOfVarUInt32(64));</span>
+<span class="fc" id="L66">        assertEquals(16, BitSizeOfCalculator.getBitSizeOfVarUInt32(1 &lt;&lt; 7));</span>
+<span class="fc" id="L67">        assertEquals(24, BitSizeOfCalculator.getBitSizeOfVarUInt32(1 &lt;&lt; 14));</span>
+<span class="fc" id="L68">        assertEquals(32, BitSizeOfCalculator.getBitSizeOfVarUInt32(1 &lt;&lt; 21));</span>
+
+<span class="pc" id="L70">        assertThrows(ZserioError.class, () -&gt; BitSizeOfCalculator.getBitSizeOfVarUInt32(-1));</span>
+<span class="pc" id="L71">        assertThrows(ZserioError.class, () -&gt; BitSizeOfCalculator.getBitSizeOfVarUInt32(1 &lt;&lt; (7 + 7 + 7 + 8)));</span>
+<span class="fc" id="L72">    }</span>
+
+    @Test
+    public void getBitSizeOfVarUInt64()
+    {
+<span class="fc" id="L77">        assertEquals(8, BitSizeOfCalculator.getBitSizeOfVarUInt64(1L &lt;&lt; 6));</span>
+<span class="fc" id="L78">        assertEquals(16, BitSizeOfCalculator.getBitSizeOfVarUInt64(1L &lt;&lt; 7));</span>
+<span class="fc" id="L79">        assertEquals(24, BitSizeOfCalculator.getBitSizeOfVarUInt64(1L &lt;&lt; 14));</span>
+<span class="fc" id="L80">        assertEquals(32, BitSizeOfCalculator.getBitSizeOfVarUInt64(1L &lt;&lt; 21));</span>
+<span class="fc" id="L81">        assertEquals(40, BitSizeOfCalculator.getBitSizeOfVarUInt64(1L &lt;&lt; 28));</span>
+<span class="fc" id="L82">        assertEquals(48, BitSizeOfCalculator.getBitSizeOfVarUInt64(1L &lt;&lt; 35));</span>
+<span class="fc" id="L83">        assertEquals(56, BitSizeOfCalculator.getBitSizeOfVarUInt64(1L &lt;&lt; 42));</span>
+<span class="fc" id="L84">        assertEquals(56, BitSizeOfCalculator.getBitSizeOfVarUInt64((1L &lt;&lt; 49) - 1));</span>
+<span class="fc" id="L85">        assertEquals(64, BitSizeOfCalculator.getBitSizeOfVarUInt64(1L &lt;&lt; 49));</span>
+
+<span class="pc" id="L87">        assertThrows(ZserioError.class, () -&gt; BitSizeOfCalculator.getBitSizeOfVarUInt64(-1L));</span>
+<span class="fc" id="L88">        assertThrows(ZserioError.class,</span>
+<span class="nc" id="L89">                () -&gt; BitSizeOfCalculator.getBitSizeOfVarUInt64(1L &lt;&lt; (7 + 7 + 7 + 7 + 7 + 7 + 7 + 8)));</span>
+<span class="fc" id="L90">    }</span>
+
+    @Test
+    public void getBitSizeOfVarInt()
+    {
+<span class="fc" id="L95">        assertEquals(8, BitSizeOfCalculator.getBitSizeOfVarInt(0));</span>
+<span class="fc" id="L96">        assertEquals(8, BitSizeOfCalculator.getBitSizeOfVarInt(-(1L &lt;&lt; 6) + 1));</span>
+<span class="fc" id="L97">        assertEquals(8, BitSizeOfCalculator.getBitSizeOfVarInt((1L &lt;&lt; 6) - 1));</span>
+<span class="fc" id="L98">        assertEquals(16, BitSizeOfCalculator.getBitSizeOfVarInt(-(1L &lt;&lt; 6)));</span>
+<span class="fc" id="L99">        assertEquals(16, BitSizeOfCalculator.getBitSizeOfVarInt((1L &lt;&lt; 6)));</span>
+<span class="fc" id="L100">        assertEquals(16, BitSizeOfCalculator.getBitSizeOfVarInt(-(1L &lt;&lt; 13) + 1));</span>
+<span class="fc" id="L101">        assertEquals(16, BitSizeOfCalculator.getBitSizeOfVarInt((1L &lt;&lt; 13) - 1));</span>
+<span class="fc" id="L102">        assertEquals(24, BitSizeOfCalculator.getBitSizeOfVarInt(-(1L &lt;&lt; 13)));</span>
+<span class="fc" id="L103">        assertEquals(24, BitSizeOfCalculator.getBitSizeOfVarInt((1L &lt;&lt; 13)));</span>
+<span class="fc" id="L104">        assertEquals(24, BitSizeOfCalculator.getBitSizeOfVarInt(-(1L &lt;&lt; 20) + 1));</span>
+<span class="fc" id="L105">        assertEquals(24, BitSizeOfCalculator.getBitSizeOfVarInt((1L &lt;&lt; 20) - 1));</span>
+<span class="fc" id="L106">        assertEquals(32, BitSizeOfCalculator.getBitSizeOfVarInt(-(1L &lt;&lt; 20)));</span>
+<span class="fc" id="L107">        assertEquals(32, BitSizeOfCalculator.getBitSizeOfVarInt((1L &lt;&lt; 20)));</span>
+<span class="fc" id="L108">        assertEquals(32, BitSizeOfCalculator.getBitSizeOfVarInt(-(1L &lt;&lt; 27) + 1));</span>
+<span class="fc" id="L109">        assertEquals(32, BitSizeOfCalculator.getBitSizeOfVarInt((1L &lt;&lt; 27) - 1));</span>
+<span class="fc" id="L110">        assertEquals(40, BitSizeOfCalculator.getBitSizeOfVarInt(-(1L &lt;&lt; 27)));</span>
+<span class="fc" id="L111">        assertEquals(40, BitSizeOfCalculator.getBitSizeOfVarInt((1L &lt;&lt; 27)));</span>
+<span class="fc" id="L112">        assertEquals(40, BitSizeOfCalculator.getBitSizeOfVarInt(-(1L &lt;&lt; 34) + 1));</span>
+<span class="fc" id="L113">        assertEquals(40, BitSizeOfCalculator.getBitSizeOfVarInt((1L &lt;&lt; 34) - 1));</span>
+<span class="fc" id="L114">        assertEquals(48, BitSizeOfCalculator.getBitSizeOfVarInt(-(1L &lt;&lt; 34)));</span>
+<span class="fc" id="L115">        assertEquals(48, BitSizeOfCalculator.getBitSizeOfVarInt((1L &lt;&lt; 34)));</span>
+<span class="fc" id="L116">        assertEquals(48, BitSizeOfCalculator.getBitSizeOfVarInt(-(1L &lt;&lt; 41) + 1));</span>
+<span class="fc" id="L117">        assertEquals(48, BitSizeOfCalculator.getBitSizeOfVarInt((1L &lt;&lt; 41) - 1));</span>
+<span class="fc" id="L118">        assertEquals(56, BitSizeOfCalculator.getBitSizeOfVarInt(-(1L &lt;&lt; 41)));</span>
+<span class="fc" id="L119">        assertEquals(56, BitSizeOfCalculator.getBitSizeOfVarInt((1L &lt;&lt; 41)));</span>
+<span class="fc" id="L120">        assertEquals(56, BitSizeOfCalculator.getBitSizeOfVarInt(-(1L &lt;&lt; 48) + 1));</span>
+<span class="fc" id="L121">        assertEquals(56, BitSizeOfCalculator.getBitSizeOfVarInt((1L &lt;&lt; 48) - 1));</span>
+<span class="fc" id="L122">        assertEquals(64, BitSizeOfCalculator.getBitSizeOfVarInt(-(1L &lt;&lt; 48)));</span>
+<span class="fc" id="L123">        assertEquals(64, BitSizeOfCalculator.getBitSizeOfVarInt((1L &lt;&lt; 48)));</span>
+<span class="fc" id="L124">        assertEquals(64, BitSizeOfCalculator.getBitSizeOfVarInt(-(1L &lt;&lt; 55) + 1));</span>
+<span class="fc" id="L125">        assertEquals(64, BitSizeOfCalculator.getBitSizeOfVarInt((1L &lt;&lt; 55) - 1));</span>
+<span class="fc" id="L126">        assertEquals(72, BitSizeOfCalculator.getBitSizeOfVarInt(-(1L &lt;&lt; 55)));</span>
+<span class="fc" id="L127">        assertEquals(72, BitSizeOfCalculator.getBitSizeOfVarInt((1L &lt;&lt; 55)));</span>
+<span class="fc" id="L128">        assertEquals(72, BitSizeOfCalculator.getBitSizeOfVarInt(Long.MIN_VALUE + 1));</span>
+<span class="fc" id="L129">        assertEquals(72, BitSizeOfCalculator.getBitSizeOfVarInt(Long.MAX_VALUE - 1));</span>
+
+        // special case, Long.MIN_VALUE is stored as -0
+<span class="fc" id="L132">        assertEquals(8, BitSizeOfCalculator.getBitSizeOfVarInt(Long.MIN_VALUE));</span>
+<span class="fc" id="L133">    }</span>
+
+    @Test
+    public void getBitSizeOfVarUInt()
+    {
+<span class="fc" id="L138">        assertEquals(8, BitSizeOfCalculator.getBitSizeOfVarUInt(BigInteger.ZERO));</span>
+<span class="fc" id="L139">        assertEquals(8, BitSizeOfCalculator.getBitSizeOfVarUInt(</span>
+<span class="fc" id="L140">                BigInteger.ONE.shiftLeft(7).subtract(BigInteger.ONE)));</span>
+<span class="fc" id="L141">        assertEquals(16, BitSizeOfCalculator.getBitSizeOfVarUInt(BigInteger.ONE.shiftLeft(7)));</span>
+<span class="fc" id="L142">        assertEquals(16, BitSizeOfCalculator.getBitSizeOfVarUInt(</span>
+<span class="fc" id="L143">                BigInteger.ONE.shiftLeft(14).subtract(BigInteger.ONE)));</span>
+<span class="fc" id="L144">        assertEquals(24, BitSizeOfCalculator.getBitSizeOfVarUInt(BigInteger.ONE.shiftLeft(14)));</span>
+<span class="fc" id="L145">        assertEquals(24, BitSizeOfCalculator.getBitSizeOfVarUInt(</span>
+<span class="fc" id="L146">                BigInteger.ONE.shiftLeft(21).subtract(BigInteger.ONE)));</span>
+<span class="fc" id="L147">        assertEquals(32, BitSizeOfCalculator.getBitSizeOfVarUInt(BigInteger.ONE.shiftLeft(21)));</span>
+<span class="fc" id="L148">        assertEquals(32, BitSizeOfCalculator.getBitSizeOfVarUInt(</span>
+<span class="fc" id="L149">                BigInteger.ONE.shiftLeft(28).subtract(BigInteger.ONE)));</span>
+<span class="fc" id="L150">        assertEquals(40, BitSizeOfCalculator.getBitSizeOfVarUInt(BigInteger.ONE.shiftLeft(28)));</span>
+<span class="fc" id="L151">        assertEquals(40, BitSizeOfCalculator.getBitSizeOfVarUInt(</span>
+<span class="fc" id="L152">                BigInteger.ONE.shiftLeft(35).subtract(BigInteger.ONE)));</span>
+<span class="fc" id="L153">        assertEquals(48, BitSizeOfCalculator.getBitSizeOfVarUInt(BigInteger.ONE.shiftLeft(35)));</span>
+<span class="fc" id="L154">        assertEquals(48, BitSizeOfCalculator.getBitSizeOfVarUInt(</span>
+<span class="fc" id="L155">                BigInteger.ONE.shiftLeft(42).subtract(BigInteger.ONE)));</span>
+<span class="fc" id="L156">        assertEquals(56, BitSizeOfCalculator.getBitSizeOfVarUInt(BigInteger.ONE.shiftLeft(42)));</span>
+<span class="fc" id="L157">        assertEquals(56, BitSizeOfCalculator.getBitSizeOfVarUInt(</span>
+<span class="fc" id="L158">                BigInteger.ONE.shiftLeft(49).subtract(BigInteger.ONE)));</span>
+<span class="fc" id="L159">        assertEquals(64, BitSizeOfCalculator.getBitSizeOfVarUInt(BigInteger.ONE.shiftLeft(49)));</span>
+<span class="fc" id="L160">        assertEquals(64, BitSizeOfCalculator.getBitSizeOfVarUInt(</span>
+<span class="fc" id="L161">                BigInteger.ONE.shiftLeft(56).subtract(BigInteger.ONE)));</span>
+<span class="fc" id="L162">        assertEquals(72, BitSizeOfCalculator.getBitSizeOfVarUInt(BigInteger.ONE.shiftLeft(56)));</span>
+<span class="fc" id="L163">        assertEquals(72, BitSizeOfCalculator.getBitSizeOfVarUInt(</span>
+<span class="fc" id="L164">                BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE)));</span>
+<span class="fc" id="L165">    }</span>
+
+    @Test
+    public void getBitSizeOfVarUIntNegative()
+    {
+<span class="pc" id="L170">        assertThrows(ZserioError.class, () -&gt; BitSizeOfCalculator.getBitSizeOfVarUInt(BigInteger.ONE.negate()));</span>
+<span class="fc" id="L171">    }</span>
+
+    @Test
+    public void getBitSizeOfVarUIntTooBig()
+    {
+<span class="fc" id="L176">        assertThrows(ZserioError.class,</span>
+<span class="nc" id="L177">                () -&gt; BitSizeOfCalculator.getBitSizeOfVarUInt(BigInteger.ONE.shiftLeft(64)));</span>
+<span class="fc" id="L178">    }</span>
+
+    @Test
+    public void getBitSizeOfVarSize()
+    {
+<span class="fc" id="L183">        assertEquals(8, BitSizeOfCalculator.getBitSizeOfVarSize(0));</span>
+
+<span class="fc" id="L185">        assertEquals(8, BitSizeOfCalculator.getBitSizeOfVarSize(1 &lt;&lt; 0));</span>
+<span class="fc" id="L186">        assertEquals(8, BitSizeOfCalculator.getBitSizeOfVarSize((1 &lt;&lt; 7) - 1));</span>
+
+<span class="fc" id="L188">        assertEquals(16, BitSizeOfCalculator.getBitSizeOfVarSize(1 &lt;&lt; 7));</span>
+<span class="fc" id="L189">        assertEquals(16, BitSizeOfCalculator.getBitSizeOfVarSize((1 &lt;&lt; 14) - 1));</span>
+
+<span class="fc" id="L191">        assertEquals(24, BitSizeOfCalculator.getBitSizeOfVarSize(1 &lt;&lt; 14));</span>
+<span class="fc" id="L192">        assertEquals(24, BitSizeOfCalculator.getBitSizeOfVarSize((1 &lt;&lt; 21) - 1));</span>
+
+<span class="fc" id="L194">        assertEquals(32, BitSizeOfCalculator.getBitSizeOfVarSize(1 &lt;&lt; 21));</span>
+<span class="fc" id="L195">        assertEquals(32, BitSizeOfCalculator.getBitSizeOfVarSize((1 &lt;&lt; 28) - 1));</span>
+
+<span class="fc" id="L197">        assertEquals(40, BitSizeOfCalculator.getBitSizeOfVarSize(1 &lt;&lt; 28));</span>
+<span class="fc" id="L198">        assertEquals(40, BitSizeOfCalculator.getBitSizeOfVarSize((1 &lt;&lt; 31) - 1));</span>
+<span class="fc" id="L199">    }</span>
+
+    @Test
+    public void getBitSizeOfVarSizeNegative()
+    {
+<span class="pc" id="L204">        assertThrows(ZserioError.class, () -&gt; BitSizeOfCalculator.getBitSizeOfVarSize(-1));</span>
+<span class="fc" id="L205">    }</span>
+
+    @Test
+    public void getBitSizeOfVarSizeTooBig()
+    {
+<span class="pc" id="L210">        assertThrows(ZserioError.class, () -&gt; BitSizeOfCalculator.getBitSizeOfVarSize(1 &lt;&lt; 31));</span>
+<span class="fc" id="L211">    }</span>
+
+    @Test
+    public void getBitSizeOfString()
+    {
+<span class="fc" id="L216">        assertEquals((1 + 1) * 8, BitSizeOfCalculator.getBitSizeOfString(&quot;T&quot;));</span>
+<span class="fc" id="L217">        assertEquals((1 + 4) * 8, BitSizeOfCalculator.getBitSizeOfString(&quot;Test&quot;));</span>
+
+<span class="fc" id="L219">        final int testStringLength = 1 &lt;&lt; 7;</span>
+<span class="fc" id="L220">        final String testString = new String(new char[testStringLength]);</span>
+<span class="fc" id="L221">        assertEquals((2 + testStringLength) * 8, BitSizeOfCalculator.getBitSizeOfString(testString));</span>
+<span class="fc" id="L222">    }</span>
+
+    @Test
+    public void getBitSizeOfBitBuffer()
+    {
+<span class="fc" id="L227">        final BitBuffer testBitBuffer1 = new BitBuffer(new byte[]{(byte)0xAB, (byte)0x03}, 8);</span>
+<span class="fc" id="L228">        assertEquals(8 + 8, BitSizeOfCalculator.getBitSizeOfBitBuffer(testBitBuffer1));</span>
+
+<span class="fc" id="L230">        final BitBuffer testBitBuffer2 = new BitBuffer(new byte[]{(byte)0xAB, (byte)0x03}, 11);</span>
+<span class="fc" id="L231">        assertEquals(8 + 11, BitSizeOfCalculator.getBitSizeOfBitBuffer(testBitBuffer2));</span>
+
+<span class="fc" id="L233">        final BitBuffer testBitBuffer3 = new BitBuffer(new byte[]{(byte)0xAB, (byte)0xCD}, 16);</span>
+<span class="fc" id="L234">        assertEquals(8 + 16, BitSizeOfCalculator.getBitSizeOfBitBuffer(testBitBuffer3));</span>
+
+<span class="fc" id="L236">        final BitBuffer testBitBuffer4 = new BitBuffer(new byte[]{(byte)0xAB, (byte)0xCD});</span>
+<span class="fc" id="L237">        assertEquals(8 + 16, BitSizeOfCalculator.getBitSizeOfBitBuffer(testBitBuffer4));</span>
+
+<span class="fc" id="L239">        final BitBuffer testBitBuffer5 = new BitBuffer(new byte[16], 127);</span>
+<span class="fc" id="L240">        assertEquals(8 + 15 * 8 + 7, BitSizeOfCalculator.getBitSizeOfBitBuffer(testBitBuffer5));</span>
+
+<span class="fc" id="L242">        final BitBuffer testBitBuffer6 = new BitBuffer(new byte[16], 128);</span>
+<span class="fc" id="L243">        assertEquals(16 + 16 * 8, BitSizeOfCalculator.getBitSizeOfBitBuffer(testBitBuffer6));</span>
+<span class="fc" id="L244">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

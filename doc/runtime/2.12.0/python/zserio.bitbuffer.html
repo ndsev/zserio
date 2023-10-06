@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>zserio.bitbuffer module &#8212; Zserio 2.12.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=4a6762d5" />
+    <script src="_static/documentation_options.js?v=63f0a439"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="zserio.bitfield module" href="zserio.bitfield.html" />
+    <link rel="prev" title="zserio.array module" href="zserio.array.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-zserio.bitbuffer">
+<span id="zserio-bitbuffer-module"></span><h1>zserio.bitbuffer module<a class="headerlink" href="#module-zserio.bitbuffer" title="Link to this heading">¶</a></h1>
+<p>The module implements abstraction for holding bit sequence.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="zserio.bitbuffer.BitBuffer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zserio.bitbuffer.</span></span><span class="sig-name descname"><span class="pre">BitBuffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">buffer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bitsize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zserio/bitbuffer.html#BitBuffer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.bitbuffer.BitBuffer" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Bit buffer.</p>
+<p>Because bit buffer size does not have to be byte aligned (divisible by 8), it’s possible that not all bits
+of the last byte are used. In this case, only most significant bits of the corresponded size are used.</p>
+<p>Constructs bit buffer from bytes buffer and bit size.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>buffer</strong> – Bytes-like buffer to construct from.</p></li>
+<li><p><strong>bitsize</strong> – Number of bits stored in buffer to use.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="zserio.exception.html#zserio.exception.PythonRuntimeException" title="zserio.exception.PythonRuntimeException"><strong>PythonRuntimeException</strong></a> – If bitsize is out of range.</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="zserio.bitbuffer.BitBuffer.bitsize">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bitsize</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#zserio.bitbuffer.BitBuffer.bitsize" title="Link to this definition">¶</a></dt>
+<dd><p>Gets the number of bits stored in the bit buffer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Size of the bit buffer in bits.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="zserio.bitbuffer.BitBuffer.buffer">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">buffer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bytes</span></em><a class="headerlink" href="#zserio.bitbuffer.BitBuffer.buffer" title="Link to this definition">¶</a></dt>
+<dd><p>Gets the underlying byte buffer.</p>
+<p>Not all bits of the last byte must be used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The underlying byte buffer.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/Zserio.png" alt="Logo"/>
+            </a></p><h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="zserio.html">zserio package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="zserio.html#zserio.VERSION_STRING"><code class="docutils literal notranslate"><span class="pre">VERSION_STRING</span></code></a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="zserio.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="zserio.array.html">zserio.array module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">zserio.bitbuffer module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.bitfield.html">zserio.bitfield module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.bitposition.html">zserio.bitposition module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.bitreader.html">zserio.bitreader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.bitsizeof.html">zserio.bitsizeof module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.bitwriter.html">zserio.bitwriter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.builtin.html">zserio.builtin module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.cppbind.html">zserio.cppbind module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.creator.html">zserio.creator module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.debugstring.html">zserio.debugstring module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.enum.html">zserio.enum module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.exception.html">zserio.exception module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.float.html">zserio.float module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.hashcode.html">zserio.hashcode module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.json.html">zserio.json module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.limits.html">zserio.limits module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.pubsub.html">zserio.pubsub module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.serialization.html">zserio.serialization module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.service.html">zserio.service module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.typeinfo.html">zserio.typeinfo module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.walker.html">zserio.walker module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">zserio.bitbuffer module</a><ul>
+<li><a class="reference internal" href="#zserio.bitbuffer.BitBuffer"><code class="docutils literal notranslate"><span class="pre">BitBuffer</span></code></a><ul>
+<li><a class="reference internal" href="#zserio.bitbuffer.BitBuffer.bitsize"><code class="docutils literal notranslate"><span class="pre">BitBuffer.bitsize</span></code></a></li>
+<li><a class="reference internal" href="#zserio.bitbuffer.BitBuffer.buffer"><code class="docutils literal notranslate"><span class="pre">BitBuffer.buffer</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;Copyright (c) 2018-2022, Navigation Data Standard e.v..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

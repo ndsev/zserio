@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ZserioTreeCreatorTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.creator</a> &gt; <span class="el_source">ZserioTreeCreatorTest.java</span></div><h1>ZserioTreeCreatorTest.java</h1><pre class="source lang-java linenums">package zserio.runtime.creator;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
+
+import zserio.runtime.ZserioError;
+import zserio.runtime.io.BitBuffer;
+
+import test_object.CreatorBitmask;
+import test_object.CreatorEnum;
+import test_object.CreatorObject;
+
+<span class="fc" id="L18">public class ZserioTreeCreatorTest</span>
+{
+    @Test
+    public void createObject()
+    {
+<span class="fc" id="L23">        final ZserioTreeCreator creator = new ZserioTreeCreator(CreatorObject.typeInfo());</span>
+<span class="fc" id="L24">        creator.beginRoot();</span>
+<span class="fc" id="L25">        final Object obj = creator.endRoot();</span>
+<span class="fc" id="L26">        assertTrue(obj instanceof CreatorObject);</span>
+<span class="fc" id="L27">        assertNotNull(obj);</span>
+<span class="fc" id="L28">    }</span>
+
+    @Test
+    public void createObjectSetFields()
+    {
+<span class="fc" id="L33">        final ZserioTreeCreator creator = new ZserioTreeCreator(CreatorObject.typeInfo());</span>
+<span class="fc" id="L34">        creator.beginRoot();</span>
+<span class="fc" id="L35">        creator.setValue(&quot;value&quot;, (long)13);</span>
+<span class="fc" id="L36">        creator.setValue(&quot;text&quot;, &quot;test&quot;);</span>
+<span class="fc" id="L37">        final Object obj = creator.endRoot();</span>
+<span class="fc" id="L38">        assertTrue(obj instanceof CreatorObject);</span>
+<span class="fc" id="L39">        assertNotNull(obj);</span>
+
+<span class="fc" id="L41">        final CreatorObject creatorObject = (CreatorObject)obj;</span>
+<span class="fc" id="L42">        assertEquals((long)13, creatorObject.getValue());</span>
+<span class="fc" id="L43">        assertEquals(&quot;test&quot;, creatorObject.getText());</span>
+<span class="fc" id="L44">    }</span>
+
+    @Test
+    public void createObjectFull()
+    {
+<span class="fc" id="L49">        final ZserioTreeCreator creator = new ZserioTreeCreator(CreatorObject.typeInfo());</span>
+<span class="fc" id="L50">        creator.beginRoot();</span>
+<span class="fc" id="L51">        creator.setValue(&quot;value&quot;, (long)13);</span>
+<span class="fc" id="L52">        creator.setValue(&quot;text&quot;, &quot;test&quot;);</span>
+<span class="fc" id="L53">        creator.beginCompound(&quot;nested&quot;);</span>
+<span class="fc" id="L54">        creator.setValue(&quot;value&quot;, (long)10);</span>
+<span class="fc" id="L55">        creator.setValue(&quot;text&quot;, &quot;nested&quot;);</span>
+<span class="fc" id="L56">        creator.setValue(&quot;externData&quot;, new BitBuffer(new byte[] {0x3c}, 6));</span>
+<span class="fc" id="L57">        creator.setValue(&quot;bytesData&quot;, new byte[] {(byte)0xff});</span>
+<span class="fc" id="L58">        creator.setValue(&quot;creatorEnum&quot;, CreatorEnum.ONE);</span>
+<span class="fc" id="L59">        creator.setValue(&quot;creatorBitmask&quot;, CreatorBitmask.Values.WRITE);</span>
+<span class="fc" id="L60">        creator.endCompound();</span>
+<span class="fc" id="L61">        creator.beginArray(&quot;nestedArray&quot;);</span>
+<span class="fc" id="L62">        creator.beginCompoundElement();</span>
+<span class="fc" id="L63">        creator.setValue(&quot;value&quot;, (long)5);</span>
+<span class="fc" id="L64">        creator.setValue(&quot;text&quot;, &quot;nestedArray&quot;);</span>
+<span class="fc" id="L65">        creator.setValue(&quot;creatorEnum&quot;, CreatorEnum.TWO);</span>
+<span class="fc" id="L66">        creator.setValue(&quot;creatorBitmask&quot;, CreatorBitmask.Values.READ);</span>
+<span class="fc" id="L67">        creator.endCompoundElement();</span>
+<span class="fc" id="L68">        creator.endArray();</span>
+<span class="fc" id="L69">        creator.beginArray(&quot;textArray&quot;);</span>
+<span class="fc" id="L70">        creator.addValueElement(&quot;this&quot;);</span>
+<span class="fc" id="L71">        creator.addValueElement(&quot;is&quot;);</span>
+<span class="fc" id="L72">        creator.addValueElement(&quot;text&quot;);</span>
+<span class="fc" id="L73">        creator.addValueElement(&quot;array&quot;);</span>
+<span class="fc" id="L74">        creator.endArray();</span>
+<span class="fc" id="L75">        creator.beginArray(&quot;externArray&quot;);</span>
+<span class="fc" id="L76">        creator.addValueElement(new BitBuffer(new byte[] {0x0f}, 4));</span>
+<span class="fc" id="L77">        creator.endArray();</span>
+<span class="fc" id="L78">        creator.beginArray(&quot;bytesArray&quot;);</span>
+<span class="fc" id="L79">        creator.addValueElement(new byte[] {(byte)0xca, (byte)0xfe});</span>
+<span class="fc" id="L80">        creator.endArray();</span>
+<span class="fc" id="L81">        creator.setValue(&quot;optionalBool&quot;, false);</span>
+<span class="fc" id="L82">        creator.beginCompound(&quot;optionalNested&quot;);</span>
+<span class="fc" id="L83">        creator.setValue(&quot;text&quot;, &quot;optionalNested&quot;);</span>
+<span class="fc" id="L84">        creator.endCompound();</span>
+<span class="fc" id="L85">        final Object obj = creator.endRoot();</span>
+<span class="fc" id="L86">        assertTrue(obj instanceof CreatorObject);</span>
+<span class="fc" id="L87">        assertNotNull(obj);</span>
+
+<span class="fc" id="L89">        final CreatorObject creatorObject = (CreatorObject)obj;</span>
+<span class="fc" id="L90">        assertEquals(13, creatorObject.getValue());</span>
+<span class="fc" id="L91">        assertEquals(&quot;test&quot;, creatorObject.getText());</span>
+<span class="fc" id="L92">        assertEquals(13, creatorObject.getNested().getParam());</span>
+<span class="fc" id="L93">        assertEquals(10, creatorObject.getNested().getValue());</span>
+<span class="fc" id="L94">        assertEquals(&quot;nested&quot;, creatorObject.getNested().getText());</span>
+<span class="fc" id="L95">        assertArrayEquals(new byte[] {0x3c}, creatorObject.getNested().getExternData().getBuffer());</span>
+<span class="fc" id="L96">        assertArrayEquals(new byte[] {(byte)0xff}, creatorObject.getNested().getBytesData());</span>
+<span class="fc" id="L97">        assertEquals(6, creatorObject.getNested().getExternData().getBitSize());</span>
+<span class="fc" id="L98">        assertEquals(CreatorEnum.ONE, creatorObject.getNested().getCreatorEnum());</span>
+<span class="fc" id="L99">        assertEquals(CreatorBitmask.Values.WRITE, creatorObject.getNested().getCreatorBitmask());</span>
+<span class="fc" id="L100">        assertEquals(1, creatorObject.getNestedArray().length);</span>
+<span class="fc" id="L101">        assertEquals(5, creatorObject.getNestedArray()[0].getValue());</span>
+<span class="fc" id="L102">        assertEquals(&quot;nestedArray&quot;, creatorObject.getNestedArray()[0].getText());</span>
+<span class="fc" id="L103">        assertEquals(CreatorEnum.TWO, creatorObject.getNestedArray()[0].getCreatorEnum());</span>
+<span class="fc" id="L104">        assertEquals(CreatorBitmask.Values.READ, creatorObject.getNestedArray()[0].getCreatorBitmask());</span>
+<span class="fc" id="L105">        assertArrayEquals(new String[] {&quot;this&quot;, &quot;is&quot;, &quot;text&quot;, &quot;array&quot;}, creatorObject.getTextArray());</span>
+<span class="fc" id="L106">        assertEquals(1, creatorObject.getExternArray().length);</span>
+<span class="fc" id="L107">        assertArrayEquals(new byte[] {0x0f}, creatorObject.getExternArray()[0].getBuffer());</span>
+<span class="fc" id="L108">        assertEquals(1, creatorObject.getBytesArray().length);</span>
+<span class="fc" id="L109">        assertArrayEquals(new byte[] {(byte)0xca, (byte)0xfe}, creatorObject.getBytesArray()[0]);</span>
+<span class="fc" id="L110">        assertEquals(4, creatorObject.getExternArray()[0].getBitSize());</span>
+<span class="fc" id="L111">        assertEquals(false, creatorObject.getOptionalBool());</span>
+<span class="fc" id="L112">        assertEquals(&quot;optionalNested&quot;, creatorObject.getOptionalNested().getText());</span>
+<span class="fc" id="L113">    }</span>
+
+    @Test
+    public void exceptionsBeforeRoot()
+    {
+<span class="fc" id="L118">        final ZserioTreeCreator creator = new ZserioTreeCreator(CreatorObject.typeInfo());</span>
+
+<span class="pc" id="L120">        assertThrows(ZserioError.class, () -&gt; creator.endRoot());</span>
+<span class="pc" id="L121">        assertThrows(ZserioError.class, () -&gt; creator.beginArray(&quot;nestedArray&quot;));</span>
+<span class="pc" id="L122">        assertThrows(ZserioError.class, () -&gt; creator.endArray());</span>
+<span class="pc" id="L123">        assertThrows(ZserioError.class, () -&gt; creator.beginCompound(&quot;nested&quot;));</span>
+<span class="pc" id="L124">        assertThrows(ZserioError.class, () -&gt; creator.endCompound());</span>
+<span class="pc" id="L125">        assertThrows(ZserioError.class, () -&gt; creator.setValue(&quot;value&quot;, 13));</span>
+<span class="pc" id="L126">        assertThrows(ZserioError.class, () -&gt; creator.beginCompoundElement());</span>
+<span class="pc" id="L127">        assertThrows(ZserioError.class, () -&gt; creator.endCompoundElement());</span>
+<span class="pc" id="L128">        assertThrows(ZserioError.class, () -&gt; creator.addValueElement(13));</span>
+<span class="fc" id="L129">    }</span>
+
+    @Test
+    public void exceptionsInRoot()
+    {
+<span class="fc" id="L134">        final ZserioTreeCreator creator = new ZserioTreeCreator(CreatorObject.typeInfo());</span>
+<span class="fc" id="L135">        creator.beginRoot();</span>
+
+<span class="pc" id="L137">        assertThrows(ZserioError.class, () -&gt; creator.beginRoot());</span>
+<span class="pc" id="L138">        assertThrows(ZserioError.class, () -&gt; creator.beginArray(&quot;nonexistent&quot;));</span>
+<span class="pc" id="L139">        assertThrows(ZserioError.class, () -&gt; creator.beginArray(&quot;nested&quot;)); // not an array</span>
+<span class="pc" id="L140">        assertThrows(ZserioError.class, () -&gt; creator.endArray());</span>
+<span class="pc" id="L141">        assertThrows(ZserioError.class, () -&gt; creator.beginCompound(&quot;nonexistent&quot;));</span>
+<span class="pc" id="L142">        assertThrows(ZserioError.class, () -&gt; creator.beginCompound(&quot;nestedArray&quot;)); // is array</span>
+<span class="pc" id="L143">        assertThrows(ZserioError.class, () -&gt; creator.endCompound());</span>
+<span class="pc" id="L144">        assertThrows(ZserioError.class, () -&gt; creator.setValue(&quot;nonexistent&quot;, 13));</span>
+<span class="pc" id="L145">        assertThrows(ZserioError.class, () -&gt; creator.setValue(&quot;nestedArray&quot;, 13)); // is array</span>
+<span class="pc" id="L146">        assertThrows(ZserioError.class, () -&gt; creator.beginCompoundElement());</span>
+<span class="pc" id="L147">        assertThrows(ZserioError.class, () -&gt; creator.endCompoundElement());</span>
+<span class="pc" id="L148">        assertThrows(ZserioError.class, () -&gt; creator.addValueElement(13));</span>
+<span class="fc" id="L149">    }</span>
+
+    @Test
+    public void exceptionsInCompound()
+    {
+<span class="fc" id="L154">        final ZserioTreeCreator creator = new ZserioTreeCreator(CreatorObject.typeInfo());</span>
+<span class="fc" id="L155">        creator.beginRoot();</span>
+<span class="fc" id="L156">        creator.beginCompound(&quot;nested&quot;);</span>
+
+<span class="pc" id="L158">        assertThrows(ZserioError.class, () -&gt; creator.beginRoot());</span>
+<span class="pc" id="L159">        assertThrows(ZserioError.class, () -&gt; creator.endRoot());</span>
+<span class="pc" id="L160">        assertThrows(ZserioError.class, () -&gt; creator.beginArray(&quot;nonexistent&quot;));</span>
+<span class="pc" id="L161">        assertThrows(ZserioError.class, () -&gt; creator.beginArray(&quot;value&quot;)); // not an array</span>
+<span class="pc" id="L162">        assertThrows(ZserioError.class, () -&gt; creator.endArray());</span>
+<span class="pc" id="L163">        assertThrows(ZserioError.class, () -&gt; creator.beginCompound(&quot;nonexistent&quot;));</span>
+<span class="pc" id="L164">        assertThrows(ZserioError.class, () -&gt; creator.beginCompound(&quot;text&quot;)); // not a compound</span>
+<span class="pc" id="L165">        assertThrows(ZserioError.class, () -&gt; creator.setValue(&quot;nonexistent&quot;, &quot;test&quot;));</span>
+<span class="pc" id="L166">        assertThrows(ZserioError.class, () -&gt; creator.setValue(&quot;value&quot;, &quot;test&quot;)); // wrong type</span>
+<span class="pc" id="L167">        assertThrows(ZserioError.class, () -&gt; creator.beginCompoundElement());</span>
+<span class="pc" id="L168">        assertThrows(ZserioError.class, () -&gt; creator.endCompoundElement());</span>
+<span class="pc" id="L169">        assertThrows(ZserioError.class, () -&gt; creator.addValueElement(13));</span>
+<span class="pc" id="L170">        assertThrows(ZserioError.class, () -&gt; creator.getElementType());</span>
+<span class="fc" id="L171">    }</span>
+
+    @Test
+    public void exceptionsInCompoundArray()
+    {
+<span class="fc" id="L176">        final ZserioTreeCreator creator = new ZserioTreeCreator(CreatorObject.typeInfo());</span>
+<span class="fc" id="L177">        creator.beginRoot();</span>
+<span class="fc" id="L178">        creator.beginArray(&quot;nestedArray&quot;);</span>
+
+<span class="pc" id="L180">        assertThrows(ZserioError.class, () -&gt; creator.beginRoot());</span>
+<span class="pc" id="L181">        assertThrows(ZserioError.class, () -&gt; creator.endRoot());</span>
+<span class="pc" id="L182">        assertThrows(ZserioError.class, () -&gt; creator.beginArray(&quot;nonexistent&quot;));</span>
+<span class="pc" id="L183">        assertThrows(ZserioError.class, () -&gt; creator.beginCompound(&quot;nonexistent&quot;));</span>
+<span class="pc" id="L184">        assertThrows(ZserioError.class, () -&gt; creator.endCompound());</span>
+<span class="pc" id="L185">        assertThrows(ZserioError.class, () -&gt; creator.setValue(&quot;nonexistent&quot;, 13));</span>
+<span class="pc" id="L186">        assertThrows(ZserioError.class, () -&gt; creator.endCompoundElement());</span>
+<span class="pc" id="L187">        assertThrows(ZserioError.class, () -&gt; creator.addValueElement(13));</span>
+<span class="pc" id="L188">        assertThrows(ZserioError.class, () -&gt; creator.getFieldType(&quot;nonexistent&quot;));</span>
+<span class="fc" id="L189">    }</span>
+
+    @Test
+    public void exceptionsInSimpleArray()
+    {
+<span class="fc" id="L194">        final ZserioTreeCreator creator = new ZserioTreeCreator(CreatorObject.typeInfo());</span>
+<span class="fc" id="L195">        creator.beginRoot();</span>
+<span class="fc" id="L196">        creator.beginArray(&quot;textArray&quot;);</span>
+
+<span class="pc" id="L198">        assertThrows(ZserioError.class, () -&gt; creator.beginRoot());</span>
+<span class="pc" id="L199">        assertThrows(ZserioError.class, () -&gt; creator.endRoot());</span>
+<span class="pc" id="L200">        assertThrows(ZserioError.class, () -&gt; creator.beginArray(&quot;nonexistent&quot;));</span>
+<span class="pc" id="L201">        assertThrows(ZserioError.class, () -&gt; creator.beginCompound(&quot;nonexistent&quot;));</span>
+<span class="pc" id="L202">        assertThrows(ZserioError.class, () -&gt; creator.endCompound());</span>
+<span class="pc" id="L203">        assertThrows(ZserioError.class, () -&gt; creator.setValue(&quot;nonexistent&quot;, 13));</span>
+<span class="pc" id="L204">        assertThrows(ZserioError.class, () -&gt; creator.beginCompoundElement());</span>
+<span class="pc" id="L205">        assertThrows(ZserioError.class, () -&gt; creator.endCompoundElement());</span>
+<span class="pc" id="L206">        assertThrows(ZserioError.class, () -&gt; creator.beginCompoundElement());</span>
+<span class="pc" id="L207">        assertThrows(ZserioError.class, () -&gt; creator.addValueElement(13)); // wrong type</span>
+<span class="pc" id="L208">        assertThrows(ZserioError.class, () -&gt; creator.getFieldType(&quot;nonexistent&quot;));</span>
+<span class="fc" id="L209">    }</span>
+
+    @Test
+    public void exceptionsInCompoundElement()
+    {
+<span class="fc" id="L214">        final ZserioTreeCreator creator = new ZserioTreeCreator(CreatorObject.typeInfo());</span>
+<span class="fc" id="L215">        creator.beginRoot();</span>
+<span class="fc" id="L216">        creator.beginArray(&quot;nestedArray&quot;);</span>
+<span class="fc" id="L217">        creator.beginCompoundElement();</span>
+
+<span class="pc" id="L219">        assertThrows(ZserioError.class, () -&gt; creator.beginRoot());</span>
+<span class="pc" id="L220">        assertThrows(ZserioError.class, () -&gt; creator.endRoot());</span>
+<span class="pc" id="L221">        assertThrows(ZserioError.class, () -&gt; creator.beginArray(&quot;nonexistent&quot;));</span>
+<span class="pc" id="L222">        assertThrows(ZserioError.class, () -&gt; creator.endArray());</span>
+<span class="pc" id="L223">        assertThrows(ZserioError.class, () -&gt; creator.beginCompound(&quot;nonexistent&quot;));</span>
+<span class="pc" id="L224">        assertThrows(ZserioError.class, () -&gt; creator.endCompound());</span>
+<span class="pc" id="L225">        assertThrows(ZserioError.class, () -&gt; creator.setValue(&quot;nonexistent&quot;, 13));</span>
+<span class="pc" id="L226">        assertThrows(ZserioError.class, () -&gt; creator.beginCompoundElement());</span>
+<span class="pc" id="L227">        assertThrows(ZserioError.class, () -&gt; creator.addValueElement(13));</span>
+<span class="fc" id="L228">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

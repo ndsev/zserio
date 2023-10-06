@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FunctionInfo.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.typeinfo</a> &gt; <span class="el_source">FunctionInfo.java</span></div><h1>FunctionInfo.java</h1><pre class="source lang-java linenums">package zserio.runtime.typeinfo;
+
+import java.util.function.Function;
+
+/**
+ * Type information for compound type function.
+ */
+public class FunctionInfo
+{
+    /**
+     * Constructor.
+     *
+     * @param schemaName Function schema name.
+     * @param typeInfo Function type info.
+     * @param functionResult Function result.
+     */
+    public FunctionInfo(String schemaName, TypeInfo typeInfo, Function&lt;Object, Object&gt; functionResult)
+<span class="nc" id="L18">    {</span>
+<span class="nc" id="L19">        this.schemaName = schemaName;</span>
+<span class="nc" id="L20">        this.typeInfo = typeInfo;</span>
+<span class="nc" id="L21">        this.functionResult = functionResult;</span>
+<span class="nc" id="L22">    }</span>
+
+    /**
+     * Gets function schema name.
+     *
+     * @return Name of the function as is defined in zserio schema.
+     */
+    public String getSchemaName()
+    {
+<span class="nc" id="L31">        return schemaName;</span>
+    }
+
+    /**
+     * Gets type information for the function.
+     *
+     * @return Function type info.
+     */
+    public TypeInfo getTypeInfo()
+    {
+<span class="nc" id="L41">        return typeInfo;</span>
+    }
+
+    /**
+     * Gets result expression.
+     *
+     * @return Function result expression.
+     */
+    public Function&lt;Object, Object&gt; getFunctionResult()
+    {
+<span class="nc" id="L51">        return functionResult;</span>
+    }
+
+    private final String schemaName;
+    private final TypeInfo typeInfo;
+    private final Function&lt;Object, Object&gt; functionResult;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
