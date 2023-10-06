@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>zserio.walker &#8212; Zserio 2.11.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for zserio.walker</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The module implements generic walker through given zserio object tree.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+
+<span class="kn">from</span> <span class="nn">zserio.exception</span> <span class="kn">import</span> <span class="n">PythonRuntimeException</span>
+<span class="kn">from</span> <span class="nn">zserio.typeinfo</span> <span class="kn">import</span> <span class="n">TypeAttribute</span><span class="p">,</span> <span class="n">MemberInfo</span><span class="p">,</span> <span class="n">MemberAttribute</span>
+
+<div class="viewcode-block" id="WalkObserver"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.WalkObserver">[docs]</a><span class="k">class</span> <span class="nc">WalkObserver</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Interface for observers which are called by the walker.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="WalkObserver.begin_root"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.WalkObserver.begin_root">[docs]</a>    <span class="k">def</span> <span class="nf">begin_root</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compound</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called for the root compound zserio object which is to be walked-through.</span>
+
+<span class="sd">        :param compound: Root compound zserio object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="WalkObserver.end_root"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.WalkObserver.end_root">[docs]</a>    <span class="k">def</span> <span class="nf">end_root</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compound</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called at the end of just walked root compound zserio object.</span>
+
+<span class="sd">        :param compound: Root compound zserio object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="WalkObserver.begin_array"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.WalkObserver.begin_array">[docs]</a>    <span class="k">def</span> <span class="nf">begin_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called at the beginning of an array.</span>
+
+<span class="sd">        Note that for None arrays (i.e. non-present optionals) the visit_value with None is called instead!</span>
+
+<span class="sd">        :param array: Zserio array.</span>
+<span class="sd">        :param member_info: Array member info.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="WalkObserver.end_array"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.WalkObserver.end_array">[docs]</a>    <span class="k">def</span> <span class="nf">end_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called at the end of an array.</span>
+
+<span class="sd">        :param array: Zserio array.</span>
+<span class="sd">        :param member_info: Array member info.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="WalkObserver.begin_compound"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.WalkObserver.begin_compound">[docs]</a>    <span class="k">def</span> <span class="nf">begin_compound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compound</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                       <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called at the beginning of an compound field object.</span>
+
+<span class="sd">        Note that for None compounds (i.e. uninitialized or optionals) the visit_value method is called instead!</span>
+
+<span class="sd">        :param compound: Compound zserio object.</span>
+<span class="sd">        :param member_info: Compound member info.</span>
+<span class="sd">        :param element_index: Element index in array or None if the compound is not in array.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="WalkObserver.end_compound"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.WalkObserver.end_compound">[docs]</a>    <span class="k">def</span> <span class="nf">end_compound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compound</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                     <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called at the end of just walked compound object.</span>
+
+<span class="sd">        :param compound: Compound zserio object.</span>
+<span class="sd">        :param member_info: Compound member info.</span>
+<span class="sd">        :param element_index: Element index in array or None if the compound is not in array.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="WalkObserver.visit_value"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.WalkObserver.visit_value">[docs]</a>    <span class="k">def</span> <span class="nf">visit_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                    <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when a simple (or an unset compound or array - i.e. None) value is reached.</span>
+
+<span class="sd">        :param value: Simple value.</span>
+<span class="sd">        :param member_info: Member info.</span>
+<span class="sd">        :param element_index: Element index in array or None if the value is not in array.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div></div>
+
+<div class="viewcode-block" id="WalkFilter"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.WalkFilter">[docs]</a><span class="k">class</span> <span class="nc">WalkFilter</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Interface for filters which can influence the walking.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="WalkFilter.before_array"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.WalkFilter.before_array">[docs]</a>    <span class="k">def</span> <span class="nf">before_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called before an array.</span>
+
+<span class="sd">        Note that for None arrays (i.e. non-present optionals) the before_value with None is called instead!</span>
+
+<span class="sd">        :param array: Zserio array.</span>
+<span class="sd">        :param member_info: Array member info.</span>
+
+<span class="sd">        :returns: True when the walking should continue to the array.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="WalkFilter.after_array"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.WalkFilter.after_array">[docs]</a>    <span class="k">def</span> <span class="nf">after_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called after an array.</span>
+
+<span class="sd">        :param array: Zserio array.</span>
+<span class="sd">        :param member_info: Array member info.</span>
+
+<span class="sd">        :returns: True when the walking should continue to a next sibling, False to return to the parent.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="WalkFilter.before_compound"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.WalkFilter.before_compound">[docs]</a>    <span class="k">def</span> <span class="nf">before_compound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compound</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                        <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called before a compound object.</span>
+
+<span class="sd">        Note that for uninitialized compounds (i.e. None) the before_value method is called instead!</span>
+
+<span class="sd">        :param compound: Compound zserio object.</span>
+<span class="sd">        :param member_info: Compound member info.</span>
+<span class="sd">        :param element_index: Element index in array or None if the compound is not in array.</span>
+
+<span class="sd">        :returns: True when the walking should continue into the compound object, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="WalkFilter.after_compound"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.WalkFilter.after_compound">[docs]</a>    <span class="k">def</span> <span class="nf">after_compound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compound</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                       <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called after a compound object.</span>
+
+<span class="sd">        :param compound: Compound zserio object.</span>
+<span class="sd">        :param member_info: Compound member info.</span>
+<span class="sd">        :param element_index: Element index in array or None if the compound is not in array.</span>
+
+<span class="sd">        :returns: True when the walking should continue to a next sibling, False to return to the parent.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="WalkFilter.before_value"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.WalkFilter.before_value">[docs]</a>    <span class="k">def</span> <span class="nf">before_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                     <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called before a simple (or an unset compound or array - i.e. None) value.</span>
+
+<span class="sd">        :param value: Simple value.</span>
+<span class="sd">        :param member_info: Member info.</span>
+<span class="sd">        :param element_index: Element index in array or None if the value is not in array.</span>
+
+<span class="sd">        :returns: True when the walking should continue to the simple value, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="WalkFilter.after_value"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.WalkFilter.after_value">[docs]</a>    <span class="k">def</span> <span class="nf">after_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                    <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called after a simple (or an unset compound or array - i.e. None) value.</span>
+
+<span class="sd">        :param value: Simple value.</span>
+<span class="sd">        :param member_info: Member info.</span>
+<span class="sd">        :param element_index: Element index in array or None if the value is not in array.</span>
+
+<span class="sd">        :returns: True when the walking should continue to a next sibling, False to return to the parent.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div></div>
+
+<div class="viewcode-block" id="Walker"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.Walker">[docs]</a><span class="k">class</span> <span class="nc">Walker</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Walker through zserio objects, based on generated type info (see -withTypeInfoCode).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">walk_observer</span><span class="p">:</span> <span class="n">WalkObserver</span><span class="p">,</span> <span class="n">walk_filter</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">WalkFilter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor.</span>
+
+<span class="sd">        :param walk_observer: Observer to use during walking.</span>
+<span class="sd">        :param walk_filter: Walk filter to use.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_walk_observer</span> <span class="o">=</span> <span class="n">walk_observer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_walk_filter</span> <span class="o">=</span> <span class="n">walk_filter</span> <span class="k">if</span> <span class="n">walk_filter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">DefaultWalkFilter</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Walker.walk"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.Walker.walk">[docs]</a>    <span class="k">def</span> <span class="nf">walk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zserio_object</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Walks given zserio compound object which must be generated with type_info</span>
+<span class="sd">        (see -withTypeInfoCode options).</span>
+
+<span class="sd">        :param zserio_object: Zserio object to walk.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">zserio_object</span><span class="p">,</span> <span class="s2">&quot;type_info&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">PythonRuntimeException</span><span class="p">(</span><span class="s2">&quot;Walker: Type info must be enabled&quot;</span>
+                                         <span class="s2">&quot; (see zserio option -withTypeInfoCode)!&quot;</span><span class="p">)</span>
+
+        <span class="n">type_info</span> <span class="o">=</span> <span class="n">zserio_object</span><span class="o">.</span><span class="n">type_info</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">TypeAttribute</span><span class="o">.</span><span class="n">FIELDS</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">type_info</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PythonRuntimeException</span><span class="p">(</span><span class="s2">&quot;Walker: Root object &#39;&quot;</span> <span class="o">+</span> <span class="n">type_info</span><span class="o">.</span><span class="n">schema_name</span> <span class="o">+</span>
+                                         <span class="s2">&quot;&#39; is not a compound type!&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_walk_observer</span><span class="o">.</span><span class="n">begin_root</span><span class="p">(</span><span class="n">zserio_object</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_walk_fields</span><span class="p">(</span><span class="n">zserio_object</span><span class="p">,</span> <span class="n">type_info</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_walk_observer</span><span class="o">.</span><span class="n">end_root</span><span class="p">(</span><span class="n">zserio_object</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_walk_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zserio_object</span><span class="p">,</span> <span class="n">type_info</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="n">type_info</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">TypeAttribute</span><span class="o">.</span><span class="n">FIELDS</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">TypeAttribute</span><span class="o">.</span><span class="n">SELECTOR</span> <span class="ow">in</span> <span class="n">type_info</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
+            <span class="c1"># union or choice</span>
+            <span class="n">choice_tag</span> <span class="o">=</span> <span class="n">zserio_object</span><span class="o">.</span><span class="n">choice_tag</span>
+            <span class="k">if</span> <span class="n">choice_tag</span> <span class="o">!=</span> <span class="n">zserio_object</span><span class="o">.</span><span class="n">UNDEFINED_CHOICE</span><span class="p">:</span>
+                <span class="n">field</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="n">choice_tag</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_walk_field</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">zserio_object</span><span class="p">,</span> <span class="n">field</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">MemberAttribute</span><span class="o">.</span><span class="n">PROPERTY_NAME</span><span class="p">]),</span>
+                                    <span class="n">field</span><span class="p">)</span>
+            <span class="c1"># else: uninitialized or empty branch</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># structure</span>
+            <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_walk_field</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">zserio_object</span><span class="p">,</span>
+                                                <span class="n">field</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">MemberAttribute</span><span class="o">.</span><span class="n">PROPERTY_NAME</span><span class="p">]),</span>
+                                        <span class="n">field</span><span class="p">):</span>
+                    <span class="k">break</span>
+
+    <span class="k">def</span> <span class="nf">_walk_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zserio_object</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">zserio_object</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">MemberAttribute</span><span class="o">.</span><span class="n">ARRAY_LENGTH</span> <span class="ow">in</span> <span class="n">member_info</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_walk_filter</span><span class="o">.</span><span class="n">before_array</span><span class="p">(</span><span class="n">zserio_object</span><span class="p">,</span> <span class="n">member_info</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_walk_observer</span><span class="o">.</span><span class="n">begin_array</span><span class="p">(</span><span class="n">zserio_object</span><span class="p">,</span> <span class="n">member_info</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">zserio_object</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_walk_field_value</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">member_info</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+                        <span class="k">break</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_walk_observer</span><span class="o">.</span><span class="n">end_array</span><span class="p">(</span><span class="n">zserio_object</span><span class="p">,</span> <span class="n">member_info</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_walk_filter</span><span class="o">.</span><span class="n">after_array</span><span class="p">(</span><span class="n">zserio_object</span><span class="p">,</span> <span class="n">member_info</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_walk_field_value</span><span class="p">(</span><span class="n">zserio_object</span><span class="p">,</span> <span class="n">member_info</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_walk_field_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zserio_object</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                          <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">type_info</span> <span class="o">=</span> <span class="n">member_info</span><span class="o">.</span><span class="n">type_info</span>
+        <span class="k">if</span> <span class="n">zserio_object</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">TypeAttribute</span><span class="o">.</span><span class="n">FIELDS</span> <span class="ow">in</span> <span class="n">type_info</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_walk_filter</span><span class="o">.</span><span class="n">before_compound</span><span class="p">(</span><span class="n">zserio_object</span><span class="p">,</span> <span class="n">member_info</span><span class="p">,</span> <span class="n">element_index</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_walk_observer</span><span class="o">.</span><span class="n">begin_compound</span><span class="p">(</span><span class="n">zserio_object</span><span class="p">,</span> <span class="n">member_info</span><span class="p">,</span> <span class="n">element_index</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_walk_fields</span><span class="p">(</span><span class="n">zserio_object</span><span class="p">,</span> <span class="n">type_info</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_walk_observer</span><span class="o">.</span><span class="n">end_compound</span><span class="p">(</span><span class="n">zserio_object</span><span class="p">,</span> <span class="n">member_info</span><span class="p">,</span> <span class="n">element_index</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_walk_filter</span><span class="o">.</span><span class="n">after_compound</span><span class="p">(</span><span class="n">zserio_object</span><span class="p">,</span> <span class="n">member_info</span><span class="p">,</span> <span class="n">element_index</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_walk_filter</span><span class="o">.</span><span class="n">before_value</span><span class="p">(</span><span class="n">zserio_object</span><span class="p">,</span> <span class="n">member_info</span><span class="p">,</span> <span class="n">element_index</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_walk_observer</span><span class="o">.</span><span class="n">visit_value</span><span class="p">(</span><span class="n">zserio_object</span><span class="p">,</span> <span class="n">member_info</span><span class="p">,</span> <span class="n">element_index</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_walk_filter</span><span class="o">.</span><span class="n">after_value</span><span class="p">(</span><span class="n">zserio_object</span><span class="p">,</span> <span class="n">member_info</span><span class="p">,</span> <span class="n">element_index</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DefaultWalkObserver"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.DefaultWalkObserver">[docs]</a><span class="k">class</span> <span class="nc">DefaultWalkObserver</span><span class="p">(</span><span class="n">WalkObserver</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Default walk observer which just does nothing.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DefaultWalkObserver.begin_root"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.DefaultWalkObserver.begin_root">[docs]</a>    <span class="k">def</span> <span class="nf">begin_root</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_root</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="DefaultWalkObserver.end_root"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.DefaultWalkObserver.end_root">[docs]</a>    <span class="k">def</span> <span class="nf">end_root</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_root</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="DefaultWalkObserver.begin_array"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.DefaultWalkObserver.begin_array">[docs]</a>    <span class="k">def</span> <span class="nf">begin_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_array</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="DefaultWalkObserver.end_array"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.DefaultWalkObserver.end_array">[docs]</a>    <span class="k">def</span> <span class="nf">end_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_array</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span> <span class="n">_member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="DefaultWalkObserver.begin_compound"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.DefaultWalkObserver.begin_compound">[docs]</a>    <span class="k">def</span> <span class="nf">begin_compound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_compound</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                       <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="DefaultWalkObserver.end_compound"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.DefaultWalkObserver.end_compound">[docs]</a>    <span class="k">def</span> <span class="nf">end_compound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_compound</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">_member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                     <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="DefaultWalkObserver.visit_value"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.DefaultWalkObserver.visit_value">[docs]</a>    <span class="k">def</span> <span class="nf">visit_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_value</span> <span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                    <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span></div></div>
+
+<div class="viewcode-block" id="DefaultWalkFilter"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.DefaultWalkFilter">[docs]</a><span class="k">class</span> <span class="nc">DefaultWalkFilter</span><span class="p">(</span><span class="n">WalkFilter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Default walk filter which filters nothing.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DefaultWalkFilter.before_array"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.DefaultWalkFilter.before_array">[docs]</a>    <span class="k">def</span> <span class="nf">before_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_array</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span> <span class="n">_member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="DefaultWalkFilter.after_array"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.DefaultWalkFilter.after_array">[docs]</a>    <span class="k">def</span> <span class="nf">after_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_array</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span> <span class="n">_member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="DefaultWalkFilter.before_compound"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.DefaultWalkFilter.before_compound">[docs]</a>    <span class="k">def</span> <span class="nf">before_compound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_compound</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">_member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                        <span class="n">_element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="DefaultWalkFilter.after_compound"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.DefaultWalkFilter.after_compound">[docs]</a>    <span class="k">def</span> <span class="nf">after_compound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_compound</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">_member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                       <span class="n">_element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="DefaultWalkFilter.before_value"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.DefaultWalkFilter.before_value">[docs]</a>    <span class="k">def</span> <span class="nf">before_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_value</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">_member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                     <span class="n">_element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="DefaultWalkFilter.after_value"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.DefaultWalkFilter.after_value">[docs]</a>    <span class="k">def</span> <span class="nf">after_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_value</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">_member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                    <span class="n">_element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span></div></div>
+
+<div class="viewcode-block" id="DepthWalkFilter"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.DepthWalkFilter">[docs]</a><span class="k">class</span> <span class="nc">DepthWalkFilter</span><span class="p">(</span><span class="n">WalkFilter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Walk filter which allows to walk only to the given maximum depth.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_depth</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor.</span>
+
+<span class="sd">        :param max_depth: Maximum depth to walk to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_depth</span> <span class="o">=</span> <span class="n">max_depth</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_depth</span> <span class="o">=</span> <span class="mi">1</span>
+
+<div class="viewcode-block" id="DepthWalkFilter.before_array"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.DepthWalkFilter.before_array">[docs]</a>    <span class="k">def</span> <span class="nf">before_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_array</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span> <span class="n">_member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enter_depth_level</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DepthWalkFilter.after_array"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.DepthWalkFilter.after_array">[docs]</a>    <span class="k">def</span> <span class="nf">after_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_array</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span> <span class="n">_member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_leave_depth_level</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DepthWalkFilter.before_compound"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.DepthWalkFilter.before_compound">[docs]</a>    <span class="k">def</span> <span class="nf">before_compound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_compound</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">_member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                        <span class="n">_element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enter_depth_level</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DepthWalkFilter.after_compound"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.DepthWalkFilter.after_compound">[docs]</a>    <span class="k">def</span> <span class="nf">after_compound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_compound</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">_member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                       <span class="n">_element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_leave_depth_level</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DepthWalkFilter.before_value"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.DepthWalkFilter.before_value">[docs]</a>    <span class="k">def</span> <span class="nf">before_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_value</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">_member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                     <span class="n">_element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_depth</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_depth</span></div>
+
+<div class="viewcode-block" id="DepthWalkFilter.after_value"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.DepthWalkFilter.after_value">[docs]</a>    <span class="k">def</span> <span class="nf">after_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_value</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">_member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                    <span class="n">_element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+    <span class="k">def</span> <span class="nf">_enter_depth_level</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">enter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_depth</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_depth</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_depth</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">enter</span>
+
+    <span class="k">def</span> <span class="nf">_leave_depth_level</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_depth</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="RegexWalkFilter"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.RegexWalkFilter">[docs]</a><span class="k">class</span> <span class="nc">RegexWalkFilter</span><span class="p">(</span><span class="n">WalkFilter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Walk filter which allows to walk only paths matching the given regex.</span>
+
+<span class="sd">    The path is constructed from field names within the root object, thus the root object</span>
+<span class="sd">    itself is not part of the path.</span>
+
+<span class="sd">    Array elements have the index appended to the path so that e.g. &quot;compound.arrayField[0]&quot; will match</span>
+<span class="sd">    only the first element in the array &quot;arrayField&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_regex</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor.</span>
+
+<span class="sd">        :param path_regex: Path regex to use for filtering.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_path</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_path_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">path_regex</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RegexWalkFilter.before_array"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.RegexWalkFilter.before_array">[docs]</a>    <span class="k">def</span> <span class="nf">before_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">member_info</span><span class="o">.</span><span class="n">schema_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path_regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_current_path</span><span class="p">()):</span>
+            <span class="k">return</span> <span class="kc">True</span> <span class="c1"># the array itself matches</span>
+
+        <span class="c1"># try to find match in each element and continue into the array only if some match is found</span>
+        <span class="c1"># (note that array is never None)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">array</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_current_path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">member_info</span><span class="o">.</span><span class="n">schema_name</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">]&quot;</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match_subtree</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">member_info</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">member_info</span><span class="o">.</span><span class="n">schema_name</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="RegexWalkFilter.after_array"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.RegexWalkFilter.after_array">[docs]</a>    <span class="k">def</span> <span class="nf">after_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_array</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span> <span class="n">_member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_path</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="RegexWalkFilter.before_compound"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.RegexWalkFilter.before_compound">[docs]</a>    <span class="k">def</span> <span class="nf">before_compound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compound</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                        <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_append_path</span><span class="p">(</span><span class="n">member_info</span><span class="p">,</span> <span class="n">element_index</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path_regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_current_path</span><span class="p">()):</span>
+            <span class="k">return</span> <span class="kc">True</span> <span class="c1"># the compound itself matches</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match_subtree</span><span class="p">(</span><span class="n">compound</span><span class="p">,</span> <span class="n">member_info</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RegexWalkFilter.after_compound"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.RegexWalkFilter.after_compound">[docs]</a>    <span class="k">def</span> <span class="nf">after_compound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_compound</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                       <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pop_path</span><span class="p">(</span><span class="n">member_info</span><span class="p">,</span> <span class="n">element_index</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="RegexWalkFilter.before_value"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.RegexWalkFilter.before_value">[docs]</a>    <span class="k">def</span> <span class="nf">before_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                     <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_append_path</span><span class="p">(</span><span class="n">member_info</span><span class="p">,</span> <span class="n">element_index</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match_subtree</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">member_info</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RegexWalkFilter.after_value"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.RegexWalkFilter.after_value">[docs]</a>    <span class="k">def</span> <span class="nf">after_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_value</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                    <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pop_path</span><span class="p">(</span><span class="n">member_info</span><span class="p">,</span> <span class="n">element_index</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+    <span class="k">def</span> <span class="nf">_match_subtree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">member</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">member</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">TypeAttribute</span><span class="o">.</span><span class="n">FIELDS</span> <span class="ow">in</span> <span class="n">member_info</span><span class="o">.</span><span class="n">type_info</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
+            <span class="c1"># is a not None compound, try to find match within its subtree</span>
+            <span class="n">subtree_regex_filter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_SubtreeRegexFilter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_path</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path_regex</span><span class="p">)</span>
+            <span class="n">walker</span> <span class="o">=</span> <span class="n">Walker</span><span class="p">(</span><span class="n">DefaultWalkObserver</span><span class="p">(),</span> <span class="n">subtree_regex_filter</span><span class="p">)</span>
+            <span class="n">walker</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">member</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">subtree_regex_filter</span><span class="o">.</span><span class="n">matches</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># try to match a simple value or None compound</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path_regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_current_path</span><span class="p">())</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_get_current_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_current_path_impl</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_path</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_append_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span> <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_append_path_impl</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_path</span><span class="p">,</span> <span class="n">member_info</span><span class="p">,</span> <span class="n">element_index</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_pop_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span> <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pop_path_impl</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_path</span><span class="p">,</span> <span class="n">member_info</span><span class="p">,</span> <span class="n">element_index</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_current_path_impl</span><span class="p">(</span><span class="n">current_path</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">current_path</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_append_path_impl</span><span class="p">(</span><span class="n">current_path</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+            <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">element_index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">current_path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">member_info</span><span class="o">.</span><span class="n">schema_name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">current_path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">member_info</span><span class="o">.</span><span class="n">schema_name</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">element_index</span><span class="si">}</span><span class="s2">]&quot;</span> <span class="c1"># add index</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_pop_path_impl</span><span class="p">(</span><span class="n">current_path</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+            <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">element_index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">current_path</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">current_path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">member_info</span><span class="o">.</span><span class="n">schema_name</span> <span class="c1"># just remove the index</span>
+
+    <span class="k">class</span> <span class="nc">_SubtreeRegexFilter</span><span class="p">(</span><span class="n">WalkFilter</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Walks whole subtree and in case of match stops walking. Used to check whether any path</span>
+<span class="sd">        within the subtree matches given regex.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_path</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">path_regex</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Pattern</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_current_path</span> <span class="o">=</span> <span class="n">current_path</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_path_regex</span> <span class="o">=</span> <span class="n">path_regex</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_matches</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">def</span> <span class="nf">matches</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Returns whether the subtree contains any matching value.</span>
+
+<span class="sd">            :returns: True when the subtree contains a matching value, False otherwise.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matches</span>
+
+        <span class="k">def</span> <span class="nf">before_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_array</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_current_path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">member_info</span><span class="o">.</span><span class="n">schema_name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_matches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path_regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_current_path</span><span class="p">())</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+            <span class="c1"># terminate when the match is already found (note that array is never None here)</span>
+            <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matches</span>
+
+        <span class="k">def</span> <span class="nf">after_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_array</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span> <span class="n">_member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_current_path</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matches</span> <span class="c1"># terminate when the match is already found</span>
+
+        <span class="k">def</span> <span class="nf">before_compound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_compound</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                            <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_append_path</span><span class="p">(</span><span class="n">member_info</span><span class="p">,</span> <span class="n">element_index</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_matches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path_regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_current_path</span><span class="p">())</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+            <span class="c1">#  terminate when the match is already found (note that compound is never None here)</span>
+            <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matches</span>
+
+        <span class="k">def</span> <span class="nf">after_compound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_compound</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                           <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pop_path</span><span class="p">(</span><span class="n">member_info</span><span class="p">,</span> <span class="n">element_index</span><span class="p">)</span>
+            <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matches</span> <span class="c1"># terminate when the match is already found</span>
+
+        <span class="k">def</span> <span class="nf">before_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_value</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                         <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_append_path</span><span class="p">(</span><span class="n">member_info</span><span class="p">,</span> <span class="n">element_index</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_matches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path_regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_current_path</span><span class="p">())</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+            <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matches</span> <span class="c1"># terminate when the match is already found</span>
+
+        <span class="k">def</span> <span class="nf">after_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_value</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                        <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pop_path</span><span class="p">(</span><span class="n">member_info</span><span class="p">,</span> <span class="n">element_index</span><span class="p">)</span>
+            <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matches</span> <span class="c1"># terminate when the match is already found</span>
+
+        <span class="k">def</span> <span class="nf">_get_current_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">RegexWalkFilter</span><span class="o">.</span><span class="n">_get_current_path_impl</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_path</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">_append_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span> <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">RegexWalkFilter</span><span class="o">.</span><span class="n">_append_path_impl</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_path</span><span class="p">,</span> <span class="n">member_info</span><span class="p">,</span> <span class="n">element_index</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">_pop_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span> <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">RegexWalkFilter</span><span class="o">.</span><span class="n">_pop_path_impl</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_path</span><span class="p">,</span> <span class="n">member_info</span><span class="p">,</span> <span class="n">element_index</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ArrayLengthWalkFilter"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.ArrayLengthWalkFilter">[docs]</a><span class="k">class</span> <span class="nc">ArrayLengthWalkFilter</span><span class="p">(</span><span class="n">WalkFilter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Walk filter which allows to walk only to the given maximum array length.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_array_length</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor.</span>
+
+<span class="sd">        :param max_array_length: Maximum array length to walk to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_array_length</span> <span class="o">=</span> <span class="n">max_array_length</span>
+
+<div class="viewcode-block" id="ArrayLengthWalkFilter.before_array"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.ArrayLengthWalkFilter.before_array">[docs]</a>    <span class="k">def</span> <span class="nf">before_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_array</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span> <span class="n">_member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="ArrayLengthWalkFilter.after_array"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.ArrayLengthWalkFilter.after_array">[docs]</a>    <span class="k">def</span> <span class="nf">after_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_array</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span> <span class="n">_member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="ArrayLengthWalkFilter.before_compound"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.ArrayLengthWalkFilter.before_compound">[docs]</a>    <span class="k">def</span> <span class="nf">before_compound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_compound</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">_member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                        <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_array_element</span><span class="p">(</span><span class="n">element_index</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ArrayLengthWalkFilter.after_compound"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.ArrayLengthWalkFilter.after_compound">[docs]</a>    <span class="k">def</span> <span class="nf">after_compound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_compound</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">_member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                       <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_array_element</span><span class="p">(</span><span class="n">element_index</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ArrayLengthWalkFilter.before_value"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.ArrayLengthWalkFilter.before_value">[docs]</a>    <span class="k">def</span> <span class="nf">before_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_value</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">_member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                     <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_array_element</span><span class="p">(</span><span class="n">element_index</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ArrayLengthWalkFilter.after_value"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.ArrayLengthWalkFilter.after_value">[docs]</a>    <span class="k">def</span> <span class="nf">after_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_value</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">_member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                    <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_array_element</span><span class="p">(</span><span class="n">element_index</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_filter_array_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">element_index</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">element_index</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_array_length</span></div>
+
+<div class="viewcode-block" id="AndWalkFilter"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.AndWalkFilter">[docs]</a><span class="k">class</span> <span class="nc">AndWalkFilter</span><span class="p">(</span><span class="n">WalkFilter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Walk filter which implements composition of particular filters.</span>
+
+<span class="sd">    The filters are called sequentially and logical and is applied on theirs results.</span>
+<span class="sd">    Note that all filters are always called.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">walk_filters</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">WalkFilter</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor.</span>
+
+<span class="sd">        :param walk_filters: List of filters to use in composition.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_walk_filters</span> <span class="o">=</span> <span class="n">walk_filters</span>
+
+<div class="viewcode-block" id="AndWalkFilter.before_array"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.AndWalkFilter.before_array">[docs]</a>    <span class="k">def</span> <span class="nf">before_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_filters</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">before_array</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">member_info</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="AndWalkFilter.after_array"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.AndWalkFilter.after_array">[docs]</a>    <span class="k">def</span> <span class="nf">after_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_filters</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">after_array</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">member_info</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="AndWalkFilter.before_compound"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.AndWalkFilter.before_compound">[docs]</a>    <span class="k">def</span> <span class="nf">before_compound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compound</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                        <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_filters</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">before_compound</span><span class="p">(</span><span class="n">compound</span><span class="p">,</span> <span class="n">member_info</span><span class="p">,</span> <span class="n">element_index</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="AndWalkFilter.after_compound"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.AndWalkFilter.after_compound">[docs]</a>    <span class="k">def</span> <span class="nf">after_compound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compound</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                       <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_filters</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">after_compound</span><span class="p">(</span><span class="n">compound</span><span class="p">,</span> <span class="n">member_info</span><span class="p">,</span> <span class="n">element_index</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="AndWalkFilter.before_value"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.AndWalkFilter.before_value">[docs]</a>    <span class="k">def</span> <span class="nf">before_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                     <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_filters</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">before_value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">member_info</span><span class="p">,</span> <span class="n">element_index</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="AndWalkFilter.after_value"><a class="viewcode-back" href="../../zserio.walker.html#zserio.walker.AndWalkFilter.after_value">[docs]</a>    <span class="k">def</span> <span class="nf">after_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">member_info</span><span class="p">:</span> <span class="n">MemberInfo</span><span class="p">,</span>
+                    <span class="n">element_index</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_filters</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">after_value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">member_info</span><span class="p">,</span> <span class="n">element_index</span><span class="p">))</span></div>
+
+    <span class="k">def</span> <span class="nf">_apply_filters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">x</span> <span class="ow">and</span> <span class="n">y</span><span class="p">,</span> <span class="nb">map</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_walk_filters</span><span class="p">),</span> <span class="kc">True</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/Zserio.png" alt="Logo"/>
+            </a></p><h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../zserio.html">zserio package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../zserio.html#zserio.VERSION_STRING"><code class="docutils literal notranslate"><span class="pre">VERSION_STRING</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../zserio.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.array.html">zserio.array module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.bitbuffer.html">zserio.bitbuffer module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.bitfield.html">zserio.bitfield module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.bitposition.html">zserio.bitposition module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.bitreader.html">zserio.bitreader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.bitsizeof.html">zserio.bitsizeof module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.bitwriter.html">zserio.bitwriter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.builtin.html">zserio.builtin module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.cppbind.html">zserio.cppbind module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.creator.html">zserio.creator module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.debugstring.html">zserio.debugstring module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.exception.html">zserio.exception module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.float.html">zserio.float module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.hashcode.html">zserio.hashcode module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.json.html">zserio.json module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.limits.html">zserio.limits module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.pubsub.html">zserio.pubsub module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.serialization.html">zserio.serialization module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.service.html">zserio.service module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.typeinfo.html">zserio.typeinfo module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.walker.html">zserio.walker module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;Copyright (c) 2018-2022, Navigation Data Standard e.v..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.0.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

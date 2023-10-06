@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PackedArrayTraits.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.array</a> &gt; <span class="el_source">PackedArrayTraits.java</span></div><h1>PackedArrayTraits.java</h1><pre class="source lang-java linenums">package zserio.runtime.array;
+
+import java.io.IOException;
+
+import zserio.runtime.SizeOf;
+import zserio.runtime.array.ArrayElement.IntegralArrayElement;
+import zserio.runtime.array.ArrayTraits.IntegralArrayTraits;
+import zserio.runtime.io.BitStreamReader;
+import zserio.runtime.io.BitStreamWriter;
+import zserio.runtime.io.Writer;
+
+/**
+ * Interface for packed array traits.
+ */
+public interface PackedArrayTraits
+{
+    /**
+     * Creates packing context.
+     *
+     * @return Packing context node with the created context.
+     */
+    public PackingContextNode createContext();
+
+    /**
+     * Calls context initialization step for the current element.
+     *
+     * @param contextNode Packing context node which keeps the context.
+     * @param element Current element.
+     */
+    public void initContext(PackingContextNode contextNode, ArrayElement element);
+
+    /**
+     * Returns length of the array element stored in the bit stream in bits.
+     *
+     * @param contextNode Packing context node.
+     * @param bitPosition Current bit stream position.
+     * @param element Current element.
+     *
+     * @return Length of the array element stored in the bit stream in bits.
+     */
+    public int bitSizeOf(PackingContextNode contextNode, long bitPosition, ArrayElement element);
+
+    /**
+     * Calls indexed offsets initialization for the current element.
+     *
+     * @param contextNode Packing context node.
+     * @param bitPosition Current bit stream position.
+     * @param element Current element.
+     *
+     * @return Updated bit stream position which points to the first bit after this element.
+     */
+    public long initializeOffsets(PackingContextNode contextNode, long bitPosition, ArrayElement element);
+
+    /**
+     * Reads an element from the bit stream.
+     *
+     * @param contextNode Packing context node.
+     * @param reader Bit stream reader.
+     * @param index Index of the current element.
+     *
+     * @return Read element.
+     *
+     * @throws IOException Failure during bit stream manipulation.
+     */
+    public ArrayElement read(PackingContextNode contextNode, BitStreamReader reader, int index)
+            throws IOException;
+
+    /**
+     * Writes the element to the bit stream.
+     *
+     * @param contextNode Packing context node.
+     * @param writer Bit stream writer.
+     * @param element Element to write.
+     *
+     * @throws IOException Failure during bit stream manipulation.
+     */
+    public void write(PackingContextNode contextNode, BitStreamWriter writer, ArrayElement element)
+            throws IOException;
+
+    /**
+     * Packed array traits for arrays of integral types.
+     *
+     * Works with single DeltaContext.
+     */
+    public static class IntegralPackedArrayTraits implements PackedArrayTraits
+    {
+        /**
+         * Constructor.
+         *
+         * @param arrayTraits Standard integral array traits.
+         */
+        public IntegralPackedArrayTraits(IntegralArrayTraits arrayTraits)
+<span class="fc" id="L93">        {</span>
+<span class="fc" id="L94">            this.arrayTraits = arrayTraits;</span>
+<span class="fc" id="L95">        }</span>
+
+        @Override
+        public PackingContextNode createContext()
+        {
+<span class="fc" id="L100">            final PackingContextNode contextNode = new PackingContextNode();</span>
+<span class="fc" id="L101">            contextNode.createContext();</span>
+<span class="fc" id="L102">            return contextNode;</span>
+        }
+
+        @Override
+        public void initContext(PackingContextNode contextNode, ArrayElement element)
+        {
+<span class="fc" id="L108">            contextNode.getContext().init(arrayTraits, (IntegralArrayElement)element);</span>
+<span class="fc" id="L109">        }</span>
+
+        @Override
+        public int bitSizeOf(PackingContextNode contextNode, long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L114">            return contextNode.getContext().bitSizeOf(arrayTraits, (IntegralArrayElement)element);</span>
+        }
+
+        @Override
+        public long initializeOffsets(PackingContextNode contextNode, long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L120">            return bitPosition + bitSizeOf(contextNode, bitPosition, element);</span>
+        }
+
+        @Override
+        public IntegralArrayElement read(PackingContextNode contextNode, BitStreamReader reader, int index)
+                throws IOException
+        {
+<span class="fc" id="L127">            return contextNode.getContext().read(arrayTraits, reader);</span>
+        }
+
+        @Override
+        public void write(PackingContextNode contextNode, BitStreamWriter writer, ArrayElement element)
+                throws IOException
+        {
+<span class="fc" id="L134">            contextNode.getContext().write(arrayTraits, writer, (IntegralArrayElement)element);</span>
+<span class="fc" id="L135">        }</span>
+
+        private final IntegralArrayTraits arrayTraits;
+    }
+
+    /**
+     * Packed array traits for zserio object arrays (without writer part).
+     */
+    public static class ObjectPackedArrayTraits&lt;E extends SizeOf&gt; implements PackedArrayTraits
+    {
+        /**
+         * Constructor.
+         *
+         * @param elementFactory Element factory to construct from.
+         */
+        public ObjectPackedArrayTraits(ElementFactory&lt;E&gt; elementFactory)
+<span class="fc" id="L151">        {</span>
+<span class="fc" id="L152">            this.elementFactory = elementFactory;</span>
+<span class="fc" id="L153">        }</span>
+
+        @Override
+        public PackingContextNode createContext()
+        {
+<span class="fc" id="L158">            final PackingContextNode contextNode = new PackingContextNode();</span>
+<span class="fc" id="L159">            elementFactory.createPackingContext(contextNode);</span>
+<span class="fc" id="L160">            return contextNode;</span>
+        }
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public void initContext(PackingContextNode contextNode, ArrayElement element)
+        {
+<span class="fc" id="L167">            ((ArrayElement.ObjectArrayElement&lt;E&gt;)element).get().initPackingContext(contextNode);</span>
+<span class="fc" id="L168">        }</span>
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public int bitSizeOf(PackingContextNode contextNode, long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L174">            return ((ArrayElement.ObjectArrayElement&lt;E&gt;)element).get().bitSizeOf(contextNode, bitPosition);</span>
+        }
+
+        @Override
+        public long initializeOffsets(PackingContextNode contextNode, long bitPosition, ArrayElement element)
+        {
+<span class="nc" id="L180">            throw new UnsupportedOperationException(&quot;PackedArrayTraits: &quot; +</span>
+                    &quot;initializeOffsets is not implemented for read only PackedObjectArrayTraits!&quot;);
+        }
+
+        @Override
+        public ArrayElement read(PackingContextNode contextNode, BitStreamReader reader, int index)
+                throws IOException
+        {
+<span class="fc" id="L188">            return new ArrayElement.ObjectArrayElement&lt;&gt;(elementFactory.create(contextNode, reader, index));</span>
+        }
+
+        @Override
+        public void write(PackingContextNode contextNode, BitStreamWriter writer, ArrayElement element)
+                throws IOException
+        {
+<span class="nc" id="L195">            throw new UnsupportedOperationException(</span>
+                    &quot;PackedArrayTraits: write is not implemented for read only PackedObjectArrayTraits!&quot;);
+        }
+
+        private final ElementFactory&lt;E&gt; elementFactory;
+    }
+
+    /**
+     * Packed array traits for zserio object arrays (with writer part).
+     */
+    public static class WriteObjectPackedArrayTraits&lt;E extends Writer &amp; SizeOf&gt;
+            extends ObjectPackedArrayTraits&lt;E&gt;
+    {
+        /**
+         * Constructor.
+         *
+         * @param elementFactory Element factory to construct from.
+         */
+        public WriteObjectPackedArrayTraits(ElementFactory&lt;E&gt; elementFactory)
+        {
+<span class="fc" id="L215">            super(elementFactory);</span>
+<span class="fc" id="L216">        }</span>
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public long initializeOffsets(PackingContextNode contextNode, long bitPosition, ArrayElement element)
+        {
+<span class="fc" id="L222">            return ((ArrayElement.ObjectArrayElement&lt;E&gt;)element).get().initializeOffsets(</span>
+                    contextNode, bitPosition);
+        }
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public void write(PackingContextNode contextNode, BitStreamWriter writer, ArrayElement element)
+                throws IOException
+        {
+<span class="fc" id="L231">            ((ArrayElement.ObjectArrayElement&lt;E&gt;)element).get().write(contextNode, writer);</span>
+<span class="fc" id="L232">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>zserio.debugstring module &#8212; Zserio 2.11.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="zserio.exception module" href="zserio.exception.html" />
+    <link rel="prev" title="zserio.creator module" href="zserio.creator.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-zserio.debugstring">
+<span id="zserio-debugstring-module"></span><h1>zserio.debugstring module<a class="headerlink" href="#module-zserio.debugstring" title="Permalink to this heading">¶</a></h1>
+<p>The module provides utilities for JSON debug string which can be obtained from zserio objects.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Zserio objects must be generated with <code class="code docutils literal notranslate"><span class="pre">-withTypeInfoCode</span></code> zserio option to enable JSON debug string!</p>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="zserio.debugstring.from_json_file">
+<span class="sig-prename descclassname"><span class="pre">zserio.debugstring.</span></span><span class="sig-name descname"><span class="pre">from_json_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">arguments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="_modules/zserio/debugstring.html#from_json_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.debugstring.from_json_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses JSON debug string from given file and creates instance of the requested zserio object
+according to the data contained in the debug string.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The created object can be only partially initialized depending on the data stored in the
+JSON debug string.</p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">zserio</span>
+
+<span class="n">obj</span> <span class="o">=</span> <span class="n">zserio</span><span class="o">.</span><span class="n">from_json_file</span><span class="p">(</span><span class="n">SomeZserioObject</span><span class="p">,</span> <span class="s2">&quot;file_name.json&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj_class</strong> – Class instance of the generated object to create.</p></li>
+<li><p><strong>filename</strong> – File name to read.</p></li>
+<li><p><strong>arguments</strong> – Arguments of the generated zserio object.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Instance of the requested zserio object.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="zserio.exception.html#zserio.exception.PythonRuntimeException" title="zserio.exception.PythonRuntimeException"><strong>PythonRuntimeException</strong></a> – In case of any error.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zserio.debugstring.from_json_stream">
+<span class="sig-prename descclassname"><span class="pre">zserio.debugstring.</span></span><span class="sig-name descname"><span class="pre">from_json_stream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_io</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TextIO</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">arguments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="_modules/zserio/debugstring.html#from_json_stream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.debugstring.from_json_stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses JSON debug string from given text stream and creates instance of the requested zserio object
+according to the data contained in the debug string.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The created object can be only partially initialized depending on the data stored in the
+JSON debug string.</p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">zserio</span>
+
+<span class="n">text_io</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">field1</span><span class="se">\&quot;</span><span class="s2">: 13}&quot;</span><span class="p">)</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="n">zserio</span><span class="o">.</span><span class="n">from_json_stream</span><span class="p">(</span><span class="n">SomeZserioObject</span><span class="p">,</span> <span class="n">text_io</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj_class</strong> – Class instance of the generated object to create.</p></li>
+<li><p><strong>text_io</strong> – Text stream to use.</p></li>
+<li><p><strong>arguments</strong> – Arguments of the generated zserio object.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Instance of the requested zserio object.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="zserio.exception.html#zserio.exception.PythonRuntimeException" title="zserio.exception.PythonRuntimeException"><strong>PythonRuntimeException</strong></a> – In case of any error.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zserio.debugstring.from_json_string">
+<span class="sig-prename descclassname"><span class="pre">zserio.debugstring.</span></span><span class="sig-name descname"><span class="pre">from_json_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json_string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">arguments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="_modules/zserio/debugstring.html#from_json_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.debugstring.from_json_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses JSON debug string and creates instance of the requested zserio object
+according to the data contained in the debug string.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The created object can be only partially initialized depending on the data stored in the
+JSON debug string.</p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">zserio</span>
+
+<span class="n">json_string</span> <span class="o">=</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">field1</span><span class="se">\&quot;</span><span class="s2">: 13}&quot;</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="n">zserio</span><span class="o">.</span><span class="n">from_json_string</span><span class="p">(</span><span class="n">SomeZserioObject</span><span class="p">,</span> <span class="n">json_string</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj_class</strong> – Class instance of the generated object to create.</p></li>
+<li><p><strong>json_string</strong> – JSON debug string to parse.</p></li>
+<li><p><strong>arguments</strong> – Arguments of the generated zserio object.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Instance of the requested zserio object.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="zserio.exception.html#zserio.exception.PythonRuntimeException" title="zserio.exception.PythonRuntimeException"><strong>PythonRuntimeException</strong></a> – In case of any error.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zserio.debugstring.to_json_file">
+<span class="sig-prename descclassname"><span class="pre">zserio.debugstring.</span></span><span class="sig-name descname"><span class="pre">to_json_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">walk_filter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="zserio.walker.html#zserio.walker.WalkFilter" title="zserio.walker.WalkFilter"><span class="pre">WalkFilter</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/zserio/debugstring.html#to_json_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.debugstring.to_json_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes contents of given zserio object to debug file in JSON format using Walker with JsonWriter.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">zserio</span>
+
+<span class="n">obj</span> <span class="o">=</span> <span class="n">SomeZserioObject</span><span class="p">()</span>
+<span class="n">zserio</span><span class="o">.</span><span class="n">to_json_file</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;file_name.json&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The function allows usage of walk filters as well. The following example shows filtering of arrays
+up to 5 elements:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">zserio</span>
+
+<span class="n">obj</span> <span class="o">=</span> <span class="n">SomeZserioObject</span><span class="p">()</span>
+<span class="n">walk_filter</span> <span class="o">=</span> <span class="n">zserio</span><span class="o">.</span><span class="n">ArrayLengthWalkFilter</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">zserio</span><span class="o">.</span><span class="n">to_json_file</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;file_name.json&quot;</span><span class="p">,</span> <span class="n">walk_filter</span><span class="o">=</span><span class="n">walk_filter</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> – Zserio object to use.</p></li>
+<li><p><strong>filename</strong> – Name of file to write.</p></li>
+<li><p><strong>indent</strong> – Indent argument for JsonWriter.</p></li>
+<li><p><strong>walk_filter</strong> – Walk filter to use by Walker.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zserio.debugstring.to_json_stream">
+<span class="sig-prename descclassname"><span class="pre">zserio.debugstring.</span></span><span class="sig-name descname"><span class="pre">to_json_stream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_io</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TextIO</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">walk_filter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="zserio.walker.html#zserio.walker.WalkFilter" title="zserio.walker.WalkFilter"><span class="pre">WalkFilter</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/zserio/debugstring.html#to_json_stream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.debugstring.to_json_stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes contents of given zserio object to debug stream in JSON format using Walker with JsonWriter.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">zserio</span>
+
+<span class="n">obj</span> <span class="o">=</span> <span class="n">SomeZserioObject</span><span class="p">()</span>
+<span class="n">text_io</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
+<span class="n">zserio</span><span class="o">.</span><span class="n">to_json_stream</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">text_io</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The function allows usage of walk filters as well. The following example shows filtering of arrays
+up to 5 elements:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">zserio</span>
+
+<span class="n">obj</span> <span class="o">=</span> <span class="n">SomeZserioObject</span><span class="p">()</span>
+<span class="n">text_io</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
+<span class="n">walk_filter</span> <span class="o">=</span> <span class="n">zserio</span><span class="o">.</span><span class="n">ArrayLengthWalkFilter</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">zserio</span><span class="o">.</span><span class="n">to_json_stream</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">text_io</span><span class="p">,</span> <span class="n">walk_filter</span><span class="o">=</span><span class="n">walk_filter</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> – Zserio object to use.</p></li>
+<li><p><strong>text_io</strong> – Text stream to use.</p></li>
+<li><p><strong>indent</strong> – Indent argument for JsonWriter.</p></li>
+<li><p><strong>walk_filter</strong> – Walk filter to use by Walker.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zserio.debugstring.to_json_string">
+<span class="sig-prename descclassname"><span class="pre">zserio.debugstring.</span></span><span class="sig-name descname"><span class="pre">to_json_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">walk_filter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="zserio.walker.html#zserio.walker.WalkFilter" title="zserio.walker.WalkFilter"><span class="pre">WalkFilter</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/zserio/debugstring.html#to_json_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.debugstring.to_json_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets debug string in JSON format using Walker with JsonWriter for given zserio object.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">zserio</span>
+
+<span class="n">obj</span> <span class="o">=</span> <span class="n">SomeZserioObject</span><span class="p">()</span>
+<span class="n">zserio</span><span class="o">.</span><span class="n">to_json_string</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The function allows usage of walk filters as well. The following example shows filtering of arrays
+up to 5 elements:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">zserio</span>
+
+<span class="n">obj</span> <span class="o">=</span> <span class="n">SomeZserioObject</span><span class="p">()</span>
+<span class="n">walk_filter</span> <span class="o">=</span> <span class="n">zserio</span><span class="o">.</span><span class="n">ArrayLengthWalkFilter</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">zserio</span><span class="o">.</span><span class="n">to_json_string</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">walk_filter</span><span class="o">=</span><span class="n">walk_filter</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> – Zserio object to use.</p></li>
+<li><p><strong>indent</strong> – Indent argument for JsonWriter.</p></li>
+<li><p><strong>walk_filter</strong> – Walk filter to use by Walker.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>JSON debug string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/Zserio.png" alt="Logo"/>
+            </a></p><h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="zserio.html">zserio package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="zserio.html#zserio.VERSION_STRING"><code class="docutils literal notranslate"><span class="pre">VERSION_STRING</span></code></a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="zserio.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="zserio.array.html">zserio.array module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.bitbuffer.html">zserio.bitbuffer module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.bitfield.html">zserio.bitfield module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.bitposition.html">zserio.bitposition module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.bitreader.html">zserio.bitreader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.bitsizeof.html">zserio.bitsizeof module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.bitwriter.html">zserio.bitwriter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.builtin.html">zserio.builtin module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.cppbind.html">zserio.cppbind module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.creator.html">zserio.creator module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">zserio.debugstring module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.exception.html">zserio.exception module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.float.html">zserio.float module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.hashcode.html">zserio.hashcode module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.json.html">zserio.json module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.limits.html">zserio.limits module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.pubsub.html">zserio.pubsub module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.serialization.html">zserio.serialization module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.service.html">zserio.service module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.typeinfo.html">zserio.typeinfo module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.walker.html">zserio.walker module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">zserio.debugstring module</a><ul>
+<li><a class="reference internal" href="#zserio.debugstring.from_json_file"><code class="docutils literal notranslate"><span class="pre">from_json_file()</span></code></a></li>
+<li><a class="reference internal" href="#zserio.debugstring.from_json_stream"><code class="docutils literal notranslate"><span class="pre">from_json_stream()</span></code></a></li>
+<li><a class="reference internal" href="#zserio.debugstring.from_json_string"><code class="docutils literal notranslate"><span class="pre">from_json_string()</span></code></a></li>
+<li><a class="reference internal" href="#zserio.debugstring.to_json_file"><code class="docutils literal notranslate"><span class="pre">to_json_file()</span></code></a></li>
+<li><a class="reference internal" href="#zserio.debugstring.to_json_stream"><code class="docutils literal notranslate"><span class="pre">to_json_stream()</span></code></a></li>
+<li><a class="reference internal" href="#zserio.debugstring.to_json_string"><code class="docutils literal notranslate"><span class="pre">to_json_string()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;Copyright (c) 2018-2022, Navigation Data Standard e.v..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.0.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

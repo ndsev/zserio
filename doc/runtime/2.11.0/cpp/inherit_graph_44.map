@@ -1,0 +1,81 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classzserio_1_1AllocatorHolder.html" title="zserio::AllocatorHolder\l\&lt; ALLOC \&gt;" alt="" coords="240,136,407,177"/>
+<area shape="rect" id="node2" href="$classzserio_1_1AnyHolder.html" title="zserio::AnyHolder\&lt;\l ALLOC \&gt;" alt="" coords="523,5,668,47"/>
+<area shape="rect" id="node3" href="$classzserio_1_1BasicJsonDecoder.html" title="zserio::BasicJsonDecoder\l\&lt; ALLOC \&gt;" alt="" coords="504,71,687,112"/>
+<area shape="rect" id="node4" href="$classzserio_1_1BasicJsonWriter.html" title="zserio::BasicJsonWriter\l\&lt; ALLOC \&gt;" alt="" coords="513,201,677,243"/>
+<area shape="rect" id="node5" href="$classzserio_1_1BasicZserioTreeCreator.html" title="zserio::BasicZserioTreeCreator\l\&lt; ALLOC \&gt;" alt="" coords="487,136,704,177"/>
+<area shape="rect" id="node6" href="$classzserio_1_1ReflectableAllocatorHolderBase.html" title="zserio::ReflectableAllocator\lHolderBase\&lt; ALLOC \&gt;" alt="" coords="499,267,692,308"/>
+<area shape="rect" id="node7" href="$classzserio_1_1ReflectableArrayBase.html" title="zserio::ReflectableArray\lBase\&lt; ALLOC \&gt;" alt="" coords="799,235,969,276"/>
+<area shape="rect" id="node19" href="$classzserio_1_1ReflectableConstAllocatorHolderBase.html" title="zserio::ReflectableConst\lAllocatorHolderBase\&lt; ALLOC \&gt;" alt="" coords="772,300,996,341"/>
+<area shape="rect" id="node8" href="$classzserio_1_1BitmaskReflectableArray.html" title="zserio::BitmaskReflectable\lArray\&lt; ALLOC, RAW_ARRAY \&gt;" alt="" coords="1044,268,1252,309"/>
+<area shape="rect" id="node9" href="$classzserio_1_1BuiltinReflectableArray.html" title="zserio::BuiltinReflectable\lArray\&lt; ALLOC, RAW_ARRAY \&gt;" alt="" coords="1044,333,1252,375"/>
+<area shape="rect" id="node10" href="$classzserio_1_1CompoundReflectableArray.html" title="zserio::CompoundReflectable\lArray\&lt; ALLOC, RAW_ARRAY \&gt;" alt="" coords="1044,399,1252,440"/>
+<area shape="rect" id="node11" href="$classzserio_1_1EnumReflectableArray.html" title="zserio::EnumReflectableArray\l\&lt; ALLOC, RAW_ARRAY \&gt;" alt="" coords="1044,72,1252,113"/>
+<area shape="rect" id="node12" href="$classzserio_1_1IntegralReflectableArray.html" title="zserio::IntegralReflectable\lArray\&lt; ALLOC, RAW_ARRAY \&gt;" alt="" coords="1044,137,1252,179"/>
+<area shape="rect" id="node13" href="$classzserio_1_1ReflectableConstArrayBase.html" title="zserio::ReflectableConst\lArrayBase\&lt; ALLOC \&gt;" alt="" coords="1061,203,1235,244"/>
+<area shape="rect" id="node14" href="$classzserio_1_1BitmaskReflectableConstArray.html" title="zserio::BitmaskReflectable\lConstArray\&lt; ALLOC, RAW\l_ARRAY \&gt;" alt="" coords="1328,195,1517,251"/>
+<area shape="rect" id="node15" href="$classzserio_1_1BuiltinReflectableConstArray.html" title="zserio::BuiltinReflectable\lConstArray\&lt; ALLOC, RAW\l_ARRAY \&gt;" alt="" coords="1331,275,1515,331"/>
+<area shape="rect" id="node16" href="$classzserio_1_1CompoundReflectableConstArray.html" title="zserio::CompoundReflectable\lConstArray\&lt; ALLOC, RAW_ARRAY \&gt;" alt="" coords="1300,355,1545,396"/>
+<area shape="rect" id="node17" href="$classzserio_1_1EnumReflectableConstArray.html" title="zserio::EnumReflectableConst\lArray\&lt; ALLOC, RAW_ARRAY \&gt;" alt="" coords="1317,65,1528,107"/>
+<area shape="rect" id="node18" href="$classzserio_1_1IntegralReflectableConstArray.html" title="zserio::IntegralReflectable\lConstArray\&lt; ALLOC, RAW_ARRAY \&gt;" alt="" coords="1300,131,1545,172"/>
+<area shape="rect" id="node20" href="$classzserio_1_1IBasicReflectable.html" title="zserio::IBasicReflectable\l\&lt; ALLOC \&gt;" alt="" coords="5,993,180,1035"/>
+<area shape="rect" id="node21" href="$classzserio_1_1ReflectableBase.html" title="zserio::ReflectableBase\l\&lt; ALLOC \&gt;" alt="" coords="239,960,408,1001"/>
+<area shape="rect" id="node77" href="$classzserio_1_1ReflectableOwner.html" title="zserio::ReflectableOwner\l\&lt; T, ALLOC \&gt;" alt="" coords="235,1025,412,1067"/>
+<area shape="rect" id="node22" href="$classzserio_1_1BuiltinReflectableBase.html" title="zserio::BuiltinReflectable\lBase\&lt; ALLOC, BasicBitBuffer\l\&lt; ALLOC \&gt; \&gt;" alt="" coords="491,521,699,577"/>
+<area shape="rect" id="node24" href="$classzserio_1_1BuiltinReflectableBase.html" title="zserio::BuiltinReflectable\lBase\&lt; ALLOC, bool \&gt;" alt="" coords="507,600,683,641"/>
+<area shape="rect" id="node28" href="$classzserio_1_1BuiltinReflectableBase.html" title="zserio::BuiltinReflectable\lBase\&lt; ALLOC, double \&gt;" alt="" coords="507,665,684,707"/>
+<area shape="rect" id="node31" href="$classzserio_1_1BuiltinReflectableBase.html" title="zserio::BuiltinReflectable\lBase\&lt; ALLOC, float \&gt;" alt="" coords="507,731,683,772"/>
+<area shape="rect" id="node34" href="$classzserio_1_1BuiltinReflectableBase.html" title="zserio::BuiltinReflectable\lBase\&lt; ALLOC, int16_t \&gt;" alt="" coords="506,796,685,837"/>
+<area shape="rect" id="node38" href="$classzserio_1_1BuiltinReflectableBase.html" title="zserio::BuiltinReflectable\lBase\&lt; ALLOC, int32_t \&gt;" alt="" coords="506,861,685,903"/>
+<area shape="rect" id="node42" href="$classzserio_1_1BuiltinReflectableBase.html" title="zserio::BuiltinReflectable\lBase\&lt; ALLOC, int64_t \&gt;" alt="" coords="506,927,685,968"/>
+<area shape="rect" id="node46" href="$classzserio_1_1BuiltinReflectableBase.html" title="zserio::BuiltinReflectable\lBase\&lt; ALLOC, int8_t \&gt;" alt="" coords="507,992,683,1033"/>
+<area shape="rect" id="node50" href="$classzserio_1_1BuiltinReflectableBase.html" title="zserio::BuiltinReflectable\lBase\&lt; ALLOC, Span\&lt; const\l uint8_t \&gt; \&gt;" alt="" coords="494,1057,697,1113"/>
+<area shape="rect" id="node52" href="$classzserio_1_1BuiltinReflectableBase.html" title="zserio::BuiltinReflectable\lBase\&lt; ALLOC, StringView \&gt;" alt="" coords="495,1136,696,1177"/>
+<area shape="rect" id="node54" href="$classzserio_1_1BuiltinReflectableBase.html" title="zserio::BuiltinReflectable\lBase\&lt; ALLOC, T \&gt;" alt="" coords="507,1201,683,1243"/>
+<area shape="rect" id="node59" href="$classzserio_1_1BuiltinReflectableBase.html" title="zserio::BuiltinReflectable\lBase\&lt; ALLOC, uint16_t \&gt;" alt="" coords="502,1267,689,1308"/>
+<area shape="rect" id="node63" href="$classzserio_1_1BuiltinReflectableBase.html" title="zserio::BuiltinReflectable\lBase\&lt; ALLOC, uint32_t \&gt;" alt="" coords="502,1332,689,1373"/>
+<area shape="rect" id="node67" href="$classzserio_1_1BuiltinReflectableBase.html" title="zserio::BuiltinReflectable\lBase\&lt; ALLOC, uint64_t \&gt;" alt="" coords="502,1397,689,1439"/>
+<area shape="rect" id="node71" href="$classzserio_1_1BuiltinReflectableBase.html" title="zserio::BuiltinReflectable\lBase\&lt; ALLOC, uint8_t \&gt;" alt="" coords="506,1463,685,1504"/>
+<area shape="rect" id="node75" href="$classzserio_1_1BuiltinReflectableBase.html" title="zserio::BuiltinReflectable\lBase\&lt; ALLOC, T, typename \&gt;" alt="" coords="488,1528,703,1569"/>
+<area shape="rect" id="node76" href="$classzserio_1_1BuiltinReflectableBase_3_01ALLOC_00_01T_00_01typename_01std_1_1enable__if_3_01std1246f490235cd6bbaa01380e3a5dba02.html" title="zserio::BuiltinReflectable\lBase\&lt; ALLOC, T, typename\l std::enable_if\&lt; std::is\l_arithmetic\&lt; T \&gt;::value\|\|std\l::is_same\&lt; T, StringView \&gt;::\lvalue\|\|is_span\&lt; T \&gt;::value \&gt;::type \&gt;" alt="" coords="467,397,724,497"/>
+<area shape="rect" id="node23" href="$classzserio_1_1BitBufferReflectable.html" title="zserio::BitBufferReflectable\l\&lt; ALLOC \&gt;" alt="" coords="788,528,980,569"/>
+<area shape="rect" id="node25" href="$classzserio_1_1IntegralReflectableBase.html" title="zserio::IntegralReflectable\lBase\&lt; ALLOC, bool \&gt;" alt="" coords="791,600,977,641"/>
+<area shape="rect" id="node26" href="$classzserio_1_1UnsignedReflectableBase.html" title="zserio::UnsignedReflectable\lBase\&lt; ALLOC, bool \&gt;" alt="" coords="1049,600,1247,641"/>
+<area shape="rect" id="node27" href="$classzserio_1_1BoolReflectable.html" title="zserio::BoolReflectable\l\&lt; ALLOC \&gt;" alt="" coords="1340,600,1505,641"/>
+<area shape="rect" id="node29" href="$classzserio_1_1FloatingPointReflectableBase.html" title="zserio::FloatingPointReflectable\lBase\&lt; ALLOC, double \&gt;" alt="" coords="775,665,993,707"/>
+<area shape="rect" id="node30" href="$classzserio_1_1DoubleReflectable.html" title="zserio::DoubleReflectable\l\&lt; ALLOC \&gt;" alt="" coords="1057,665,1239,707"/>
+<area shape="rect" id="node32" href="$classzserio_1_1FloatingPointReflectableBase.html" title="zserio::FloatingPointReflectable\lBase\&lt; ALLOC, float \&gt;" alt="" coords="775,731,993,772"/>
+<area shape="rect" id="node33" href="$classzserio_1_1FloatReflectable.html" title="zserio::FloatReflectable\l\&lt; ALLOC \&gt;" alt="" coords="1064,731,1232,772"/>
+<area shape="rect" id="node35" href="$classzserio_1_1IntegralReflectableBase.html" title="zserio::IntegralReflectable\lBase\&lt; ALLOC, int16_t \&gt;" alt="" coords="791,796,977,837"/>
+<area shape="rect" id="node36" href="$classzserio_1_1SignedReflectableBase.html" title="zserio::SignedReflectable\lBase\&lt; ALLOC, int16_t \&gt;" alt="" coords="1057,796,1239,837"/>
+<area shape="rect" id="node37" href="$classzserio_1_1Int16Reflectable.html" title="zserio::Int16Reflectable\l\&lt; ALLOC \&gt;" alt="" coords="1338,796,1507,837"/>
+<area shape="rect" id="node39" href="$classzserio_1_1IntegralReflectableBase.html" title="zserio::IntegralReflectable\lBase\&lt; ALLOC, int32_t \&gt;" alt="" coords="791,861,977,903"/>
+<area shape="rect" id="node40" href="$classzserio_1_1SignedReflectableBase.html" title="zserio::SignedReflectable\lBase\&lt; ALLOC, int32_t \&gt;" alt="" coords="1057,861,1239,903"/>
+<area shape="rect" id="node41" href="$classzserio_1_1Int32Reflectable.html" title="zserio::Int32Reflectable\l\&lt; ALLOC \&gt;" alt="" coords="1338,861,1507,903"/>
+<area shape="rect" id="node43" href="$classzserio_1_1IntegralReflectableBase.html" title="zserio::IntegralReflectable\lBase\&lt; ALLOC, int64_t \&gt;" alt="" coords="791,927,977,968"/>
+<area shape="rect" id="node44" href="$classzserio_1_1SignedReflectableBase.html" title="zserio::SignedReflectable\lBase\&lt; ALLOC, int64_t \&gt;" alt="" coords="1057,927,1239,968"/>
+<area shape="rect" id="node45" href="$classzserio_1_1Int64Reflectable.html" title="zserio::Int64Reflectable\l\&lt; ALLOC \&gt;" alt="" coords="1338,927,1507,968"/>
+<area shape="rect" id="node47" href="$classzserio_1_1IntegralReflectableBase.html" title="zserio::IntegralReflectable\lBase\&lt; ALLOC, int8_t \&gt;" alt="" coords="791,992,977,1033"/>
+<area shape="rect" id="node48" href="$classzserio_1_1SignedReflectableBase.html" title="zserio::SignedReflectable\lBase\&lt; ALLOC, int8_t \&gt;" alt="" coords="1057,992,1239,1033"/>
+<area shape="rect" id="node49" href="$classzserio_1_1Int8Reflectable.html" title="zserio::Int8Reflectable\l\&lt; ALLOC \&gt;" alt="" coords="1342,992,1503,1033"/>
+<area shape="rect" id="node51" href="$classzserio_1_1BytesReflectable.html" title="zserio::BytesReflectable\l\&lt; ALLOC \&gt;" alt="" coords="797,1057,971,1099"/>
+<area shape="rect" id="node53" href="$classzserio_1_1StringReflectable.html" title="zserio::StringReflectable\l\&lt; ALLOC \&gt;" alt="" coords="797,1123,971,1164"/>
+<area shape="rect" id="node55" href="$classzserio_1_1FloatingPointReflectableBase.html" title="zserio::FloatingPointReflectable\lBase\&lt; ALLOC, T \&gt;" alt="" coords="775,1253,993,1295"/>
+<area shape="rect" id="node56" href="$classzserio_1_1IntegralReflectableBase.html" title="zserio::IntegralReflectable\lBase\&lt; ALLOC, T \&gt;" alt="" coords="791,1188,977,1229"/>
+<area shape="rect" id="node57" href="$classzserio_1_1SignedReflectableBase.html" title="zserio::SignedReflectable\lBase\&lt; ALLOC, T \&gt;" alt="" coords="1057,1221,1239,1263"/>
+<area shape="rect" id="node58" href="$classzserio_1_1UnsignedReflectableBase.html" title="zserio::UnsignedReflectable\lBase\&lt; ALLOC, T \&gt;" alt="" coords="1049,1156,1247,1197"/>
+<area shape="rect" id="node60" href="$classzserio_1_1IntegralReflectableBase.html" title="zserio::IntegralReflectable\lBase\&lt; ALLOC, uint16_t \&gt;" alt="" coords="791,1319,977,1360"/>
+<area shape="rect" id="node61" href="$classzserio_1_1UnsignedReflectableBase.html" title="zserio::UnsignedReflectable\lBase\&lt; ALLOC, uint16_t \&gt;" alt="" coords="1049,1319,1247,1360"/>
+<area shape="rect" id="node62" href="$classzserio_1_1UInt16Reflectable.html" title="zserio::UInt16Reflectable\l\&lt; ALLOC \&gt;" alt="" coords="1333,1319,1512,1360"/>
+<area shape="rect" id="node64" href="$classzserio_1_1IntegralReflectableBase.html" title="zserio::IntegralReflectable\lBase\&lt; ALLOC, uint32_t \&gt;" alt="" coords="791,1384,977,1425"/>
+<area shape="rect" id="node65" href="$classzserio_1_1UnsignedReflectableBase.html" title="zserio::UnsignedReflectable\lBase\&lt; ALLOC, uint32_t \&gt;" alt="" coords="1049,1384,1247,1425"/>
+<area shape="rect" id="node66" href="$classzserio_1_1UInt32Reflectable.html" title="zserio::UInt32Reflectable\l\&lt; ALLOC \&gt;" alt="" coords="1333,1384,1512,1425"/>
+<area shape="rect" id="node68" href="$classzserio_1_1IntegralReflectableBase.html" title="zserio::IntegralReflectable\lBase\&lt; ALLOC, uint64_t \&gt;" alt="" coords="791,1449,977,1491"/>
+<area shape="rect" id="node69" href="$classzserio_1_1UnsignedReflectableBase.html" title="zserio::UnsignedReflectable\lBase\&lt; ALLOC, uint64_t \&gt;" alt="" coords="1049,1449,1247,1491"/>
+<area shape="rect" id="node70" href="$classzserio_1_1UInt64Reflectable.html" title="zserio::UInt64Reflectable\l\&lt; ALLOC \&gt;" alt="" coords="1333,1449,1512,1491"/>
+<area shape="rect" id="node72" href="$classzserio_1_1IntegralReflectableBase.html" title="zserio::IntegralReflectable\lBase\&lt; ALLOC, uint8_t \&gt;" alt="" coords="791,1515,977,1556"/>
+<area shape="rect" id="node73" href="$classzserio_1_1UnsignedReflectableBase.html" title="zserio::UnsignedReflectable\lBase\&lt; ALLOC, uint8_t \&gt;" alt="" coords="1049,1515,1247,1556"/>
+<area shape="rect" id="node74" href="$classzserio_1_1UInt8Reflectable.html" title="zserio::UInt8Reflectable\l\&lt; ALLOC \&gt;" alt="" coords="1337,1515,1508,1556"/>
+<area shape="rect" id="node78" href="$classzserio_1_1IBasicWalkObserver.html" title="zserio::IBasicWalkObserver\l\&lt; ALLOC \&gt;" alt="" coords="228,267,419,308"/>
+<area shape="rect" id="node79" href="$classzserio_1_1BasicDefaultWalkObserver.html" title="zserio::BasicDefaultWalk\lObserver\&lt; ALLOC \&gt;" alt="" coords="507,332,683,373"/>
+</map>

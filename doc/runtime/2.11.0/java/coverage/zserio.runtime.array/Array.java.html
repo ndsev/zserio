@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Array.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.array</a> &gt; <span class="el_source">Array.java</span></div><h1>Array.java</h1><pre class="source lang-java linenums">package zserio.runtime.array;
+
+import java.io.IOException;
+
+import zserio.runtime.BitPositionUtil;
+import zserio.runtime.BitSizeOfCalculator;
+import zserio.runtime.io.BitStreamReader;
+import zserio.runtime.io.BitStreamWriter;
+
+/**
+ * Array wrapper which is used for mapping of all zserio arrays.
+ *
+ * Array wrapper is defined by:
+ * - raw array
+ * - array traits which define zserio methods for array elements of corresponding Java native types
+ * - array type (normal, auto, implicit)
+ * - offset initializer to set offsets for indexed offsets arrays
+ * - offset checker to check offsets for indexed offsets arrays
+ */
+public class Array
+{
+    /**
+     * Constructor.
+     *
+     * @param rawArray    Raw array to construct from.
+     * @param arrayTraits Array traits to construct from.
+     * @param arrayType   Array type to construct from.
+     */
+    public Array(RawArray rawArray, ArrayTraits arrayTraits, ArrayType arrayType)
+    {
+<span class="fc" id="L31">        this(rawArray, arrayTraits, arrayType, null, null);</span>
+<span class="fc" id="L32">    }</span>
+
+    /**
+     * Constructor.
+     *
+     * @param rawArray      Raw array to construct from.
+     * @param arrayTraits   Array traits to construct from.
+     * @param arrayType     Array type to construct from.
+     * @param offsetChecker Offset checker to construct from.
+     */
+    public Array(RawArray rawArray, ArrayTraits arrayTraits, ArrayType arrayType, OffsetChecker offsetChecker)
+    {
+<span class="nc" id="L44">        this(rawArray, arrayTraits, arrayType, offsetChecker, null);</span>
+<span class="nc" id="L45">    }</span>
+
+    /**
+     * Constructor.
+     *
+     * @param rawArray          Raw array to construct from.
+     * @param arrayTraits       Array traits to construct from.
+     * @param arrayType         Array type to construct from.
+     * @param offsetChecker     Offset checker to construct from.
+     * @param offsetInitializer Offset initializer to construct from.
+     */
+    public Array(RawArray rawArray, ArrayTraits arrayTraits, ArrayType arrayType, OffsetChecker offsetChecker,
+            OffsetInitializer offsetInitializer)
+<span class="fc" id="L58">    {</span>
+<span class="fc" id="L59">        this.rawArray = rawArray;</span>
+<span class="fc" id="L60">        this.arrayTraits = arrayTraits;</span>
+<span class="fc" id="L61">        this.packedArrayTraits = arrayTraits.getPackedArrayTraits();</span>
+<span class="fc" id="L62">        this.arrayType = arrayType;</span>
+<span class="fc" id="L63">        this.offsetChecker = offsetChecker;</span>
+<span class="fc" id="L64">        this.offsetInitializer = offsetInitializer;</span>
+<span class="fc" id="L65">    }</span>
+
+    @Override
+    public boolean equals(java.lang.Object obj)
+    {
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">        return (obj instanceof Array) ? rawArray.equals(((Array)obj).rawArray) : false;</span>
+    }
+
+    @Override
+    public int hashCode()
+    {
+<span class="fc" id="L76">        return rawArray.hashCode();</span>
+    }
+
+    /**
+     * Gets the underlying raw array.
+     *
+     * @param &lt;T&gt; Java array type to be returned.
+     *
+     * @return Underlying raw array.
+     */
+    public &lt;T&gt; T getRawArray()
+    {
+<span class="fc" id="L88">        return rawArray.getRawArray();</span>
+    }
+
+    /**
+     * Gets the underlying raw array size.
+     *
+     * @return The number of elements stored in the underlying raw array.
+     */
+    public int size()
+    {
+<span class="fc" id="L98">        return rawArray.size();</span>
+    }
+
+    /**
+     * Gets the bit size of the array if it is stored in the bit stream.
+     *
+     * @param bitPosition Current bit position in the bit stream.
+     *
+     * @return Bit size of the array if it is stored in the bit stream.
+     */
+    public int bitSizeOf(long bitPosition)
+    {
+<span class="fc" id="L110">        long endBitPosition = bitPosition;</span>
+<span class="fc" id="L111">        final int size = rawArray.size();</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">        if (arrayType == ArrayType.AUTO)</span>
+<span class="fc" id="L113">            endBitPosition += BitSizeOfCalculator.getBitSizeOfVarSize(size);</span>
+
+<span class="pc bpc" id="L115" title="1 of 4 branches missed.">        if (arrayTraits.isBitSizeOfConstant() &amp;&amp; size &gt; 0)</span>
+        {
+<span class="fc" id="L117">            final int elementSize = arrayTraits.bitSizeOf(endBitPosition, ArrayElement.Dummy);</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">            if (offsetInitializer == null)</span>
+            {
+<span class="fc" id="L120">                endBitPosition += size * elementSize;</span>
+            }
+            else
+            {
+<span class="fc" id="L124">                endBitPosition = BitPositionUtil.alignTo(Byte.SIZE, endBitPosition);</span>
+<span class="fc" id="L125">                endBitPosition += elementSize + (size - 1) * BitPositionUtil.alignTo(Byte.SIZE, elementSize);</span>
+            }
+<span class="fc" id="L127">        }</span>
+        else
+        {
+<span class="fc bfc" id="L130" title="All 2 branches covered.">            for (int index = 0; index &lt; size; ++index)</span>
+            {
+<span class="fc bfc" id="L132" title="All 2 branches covered.">                if (offsetInitializer != null)</span>
+<span class="fc" id="L133">                    endBitPosition = BitPositionUtil.alignTo(Byte.SIZE, endBitPosition);</span>
+
+<span class="fc" id="L135">                endBitPosition += arrayTraits.bitSizeOf(endBitPosition, rawArray.getElement(index));</span>
+            }
+        }
+
+<span class="fc" id="L139">        return (int)(endBitPosition - bitPosition);</span>
+    }
+
+    /**
+     * Returns length of the packed array stored in the bit stream in bits.
+     *
+     * @param bitPosition Current bit stream position.
+     *
+     * @return Length of the array stored in the bit stream in bits.
+     */
+    public int bitSizeOfPacked(long bitPosition)
+    {
+<span class="fc" id="L151">        checkIfPackable();</span>
+
+<span class="fc" id="L153">        long endBitPosition = bitPosition;</span>
+<span class="fc" id="L154">        final int size = rawArray.size();</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">        if (arrayType == ArrayType.AUTO)</span>
+<span class="fc" id="L156">            endBitPosition += BitSizeOfCalculator.getBitSizeOfVarSize(size);</span>
+
+<span class="fc bfc" id="L158" title="All 2 branches covered.">        if (size &gt; 0)</span>
+        {
+<span class="fc" id="L160">            final PackingContextNode contextNode = packedArrayTraits.createContext();</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">            for (int index = 0; index &lt; size; ++index)</span>
+<span class="fc" id="L162">                packedArrayTraits.initContext(contextNode, rawArray.getElement(index));</span>
+
+<span class="fc bfc" id="L164" title="All 2 branches covered.">            for (int index = 0; index &lt; size; ++index)</span>
+            {
+<span class="fc bfc" id="L166" title="All 2 branches covered.">                if (offsetInitializer != null)</span>
+<span class="fc" id="L167">                    endBitPosition = BitPositionUtil.alignTo(Byte.SIZE, endBitPosition);</span>
+
+<span class="fc" id="L169">                endBitPosition += packedArrayTraits.bitSizeOf(</span>
+<span class="fc" id="L170">                        contextNode, endBitPosition, rawArray.getElement(index));</span>
+            }
+        }
+
+<span class="fc" id="L174">        return (int)(endBitPosition - bitPosition);</span>
+    }
+
+    /**
+     * Initializes indexed offsets for the array.
+     *
+     * @param bitPosition Current bit position in the bit stream.
+     *
+     * @return Updated bit stream position which points to the first bit after the array.
+     */
+    public long initializeOffsets(long bitPosition)
+    {
+<span class="fc" id="L186">        long endBitPosition = bitPosition;</span>
+<span class="fc" id="L187">        final int size = rawArray.size();</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">        if (arrayType == ArrayType.AUTO)</span>
+<span class="fc" id="L189">            endBitPosition += BitSizeOfCalculator.getBitSizeOfVarSize(size);</span>
+
+<span class="fc bfc" id="L191" title="All 2 branches covered.">        for (int index = 0; index &lt; size; ++index)</span>
+        {
+<span class="fc bfc" id="L193" title="All 2 branches covered.">            if (offsetInitializer != null)</span>
+            {
+<span class="fc" id="L195">                endBitPosition = BitPositionUtil.alignTo(Byte.SIZE, endBitPosition);</span>
+<span class="fc" id="L196">                offsetInitializer.setOffset(index, BitPositionUtil.bitsToBytes(endBitPosition));</span>
+            }
+
+<span class="fc" id="L199">            endBitPosition = arrayTraits.initializeOffsets(endBitPosition, rawArray.getElement(index));</span>
+        }
+
+<span class="fc" id="L202">        return endBitPosition;</span>
+    }
+
+    /**
+     * Initializes indexed offsets for the packed array.
+     *
+     * @param bitPosition Current bit stream position.
+     *
+     * @return Updated bit stream position which points to the first bit after the array.
+     */
+    public long initializeOffsetsPacked(long bitPosition)
+    {
+<span class="fc" id="L214">        checkIfPackable();</span>
+
+<span class="fc" id="L216">        long endBitPosition = bitPosition;</span>
+<span class="fc" id="L217">        final int size = rawArray.size();</span>
+<span class="fc bfc" id="L218" title="All 2 branches covered.">        if (arrayType == ArrayType.AUTO)</span>
+<span class="fc" id="L219">            endBitPosition += BitSizeOfCalculator.getBitSizeOfVarSize(size);</span>
+
+<span class="fc bfc" id="L221" title="All 2 branches covered.">        if (size &gt; 0)</span>
+        {
+<span class="fc" id="L223">            final PackingContextNode contextNode = packedArrayTraits.createContext();</span>
+<span class="fc bfc" id="L224" title="All 2 branches covered.">            for (int index = 0; index &lt; size; ++index)</span>
+<span class="fc" id="L225">                packedArrayTraits.initContext(contextNode, rawArray.getElement(index));</span>
+
+<span class="fc bfc" id="L227" title="All 2 branches covered.">            for (int index= 0; index &lt; size; ++index)</span>
+            {
+<span class="fc bfc" id="L229" title="All 2 branches covered.">                if (offsetInitializer != null)</span>
+                {
+<span class="fc" id="L231">                    endBitPosition = BitPositionUtil.alignTo(Byte.SIZE, endBitPosition);</span>
+<span class="fc" id="L232">                    offsetInitializer.setOffset(index, BitPositionUtil.bitsToBytes(endBitPosition));</span>
+                }
+
+<span class="fc" id="L235">                endBitPosition = packedArrayTraits.initializeOffsets(</span>
+<span class="fc" id="L236">                        contextNode, endBitPosition, rawArray.getElement(index));</span>
+            }
+        }
+
+<span class="fc" id="L240">        return endBitPosition;</span>
+    }
+
+    /**
+     * Reads the array from the bit stream.
+     *
+     * @param reader Bit stream reader to read from.
+     *
+     * @throws IOException Failure during bit stream manipulation.
+     */
+    public void read(BitStreamReader reader) throws IOException
+    {
+<span class="fc" id="L252">        read(reader, -1);</span>
+<span class="fc" id="L253">    }</span>
+
+    /**
+     * Reads the array from the bit stream.
+     *
+     * @param reader Bit stream reader to read from.
+     * @param size   Number of elements stored in the array which shall be read.
+     *
+     * @throws IOException Failure during bit stream manipulation.
+     */
+    public void read(BitStreamReader reader, int size) throws IOException
+    {
+<span class="fc" id="L265">        int readSize = size;</span>
+<span class="fc bfc" id="L266" title="All 2 branches covered.">        if (arrayType == ArrayType.IMPLICIT)</span>
+        {
+<span class="fc bfc" id="L268" title="All 2 branches covered.">            if (!arrayTraits.isBitSizeOfConstant())</span>
+            {
+<span class="fc" id="L270">                throw new UnsupportedOperationException(</span>
+                        &quot;Array: Implicit array elements must have constant bit size!&quot;);
+            }
+
+<span class="fc" id="L274">            final long readerBitPosition = reader.getBitPosition();</span>
+<span class="fc" id="L275">            final int elementSize = arrayTraits.bitSizeOf(readerBitPosition, ArrayElement.Dummy);</span>
+<span class="fc" id="L276">            final long remainingBits = reader.getBufferBitSize() - readerBitPosition;</span>
+<span class="fc" id="L277">            readSize = (int)(remainingBits / elementSize);</span>
+<span class="fc" id="L278">        }</span>
+<span class="fc bfc" id="L279" title="All 2 branches covered.">        else if (arrayType == ArrayType.AUTO)</span>
+        {
+<span class="fc" id="L281">            readSize = reader.readVarSize();</span>
+        }
+
+<span class="fc" id="L284">        rawArray.reset(readSize);</span>
+
+<span class="fc bfc" id="L286" title="All 2 branches covered.">        for (int index = 0; index &lt; readSize; ++index)</span>
+        {
+<span class="fc bfc" id="L288" title="All 2 branches covered.">            if (offsetChecker != null)</span>
+            {
+<span class="fc" id="L290">                reader.alignTo(Byte.SIZE);</span>
+<span class="fc" id="L291">                offsetChecker.checkOffset(index, reader.getBytePosition());</span>
+            }
+
+<span class="fc" id="L294">            final ArrayElement element = arrayTraits.read(reader, index);</span>
+<span class="fc" id="L295">            rawArray.setElement(element, index);</span>
+        }
+<span class="fc" id="L297">    }</span>
+
+    /**
+     * Reads packed array from the bit stream.
+     *
+     * This method has all possible arguments and from generated code is used for aligned object arrays.
+     *
+     * @param reader Bit stream from which to read.
+     *
+     * @throws IOException Failure during bit stream manipulation.
+     */
+    public void readPacked(BitStreamReader reader) throws IOException
+    {
+<span class="fc" id="L310">        readPacked(reader, -1);</span>
+<span class="fc" id="L311">    }</span>
+
+    /**
+     * Reads packed array from the bit stream.
+     *
+     * This method has all possible arguments and from generated code is used for aligned object arrays.
+     *
+     * @param reader Bit stream from which to read.
+     * @param size Number of elements to read.
+     *
+     * @throws IOException Failure during bit stream manipulation.
+     */
+    public void readPacked(BitStreamReader reader, int size) throws IOException
+    {
+<span class="fc" id="L325">        checkIfPackable();</span>
+
+<span class="fc bfc" id="L327" title="All 2 branches covered.">        final int readSize = (arrayType == ArrayType.AUTO) ? reader.readVarSize() : size;</span>
+
+<span class="fc" id="L329">        rawArray.reset(readSize);</span>
+
+<span class="fc bfc" id="L331" title="All 2 branches covered.">        if (readSize &gt; 0)</span>
+        {
+<span class="fc" id="L333">            final PackingContextNode contextNode = packedArrayTraits.createContext();</span>
+
+<span class="fc bfc" id="L335" title="All 2 branches covered.">            for (int index = 0; index &lt; readSize; ++index)</span>
+            {
+<span class="fc bfc" id="L337" title="All 2 branches covered.">                if (offsetChecker != null)</span>
+                {
+<span class="fc" id="L339">                    reader.alignTo(Byte.SIZE);</span>
+<span class="fc" id="L340">                    offsetChecker.checkOffset(index, reader.getBytePosition());</span>
+                }
+
+<span class="fc" id="L343">                final ArrayElement element = packedArrayTraits.read(contextNode, reader, index);</span>
+<span class="fc" id="L344">                rawArray.setElement(element, index);</span>
+            }
+        }
+<span class="fc" id="L347">    }</span>
+
+    /**
+     * Writes the array element to the bit stream.
+     *
+     * @param writer Bit stream write to write to.
+     *
+     * @throws IOException Failure during bit stream manipulation.
+     */
+    public void write(BitStreamWriter writer) throws IOException
+    {
+<span class="fc" id="L358">        final int size = rawArray.size();</span>
+<span class="fc bfc" id="L359" title="All 2 branches covered.">        if (arrayType == ArrayType.AUTO)</span>
+<span class="fc" id="L360">            writer.writeVarSize(size);</span>
+
+<span class="fc bfc" id="L362" title="All 2 branches covered.">        for (int index = 0; index &lt; size; ++index)</span>
+        {
+<span class="fc bfc" id="L364" title="All 2 branches covered.">            if (offsetChecker != null)</span>
+            {
+<span class="fc" id="L366">                writer.alignTo(Byte.SIZE);</span>
+<span class="fc" id="L367">                offsetChecker.checkOffset(index, writer.getBytePosition());</span>
+            }
+
+<span class="fc" id="L370">            arrayTraits.write(writer, rawArray.getElement(index));</span>
+        }
+<span class="fc" id="L372">    }</span>
+
+    /**
+     * Writes packed array to the bit stream.
+     *
+     * @param writer Bit stream where to write.
+     *
+     * @throws IOException Failure during bit stream manipulation.
+     */
+    public void writePacked(BitStreamWriter writer) throws IOException
+    {
+<span class="fc" id="L383">        checkIfPackable();</span>
+
+<span class="fc" id="L385">        final int size = rawArray.size();</span>
+<span class="fc bfc" id="L386" title="All 2 branches covered.">        if (arrayType == ArrayType.AUTO)</span>
+<span class="fc" id="L387">            writer.writeVarSize(size);</span>
+
+<span class="fc bfc" id="L389" title="All 2 branches covered.">        if (size &gt; 0)</span>
+        {
+<span class="fc" id="L391">            final PackingContextNode contextNode = packedArrayTraits.createContext();</span>
+<span class="fc bfc" id="L392" title="All 2 branches covered.">            for (int index = 0; index &lt; size; ++index)</span>
+<span class="fc" id="L393">                packedArrayTraits.initContext(contextNode, rawArray.getElement(index));</span>
+
+<span class="fc bfc" id="L395" title="All 2 branches covered.">            for (int index = 0; index &lt; size; ++index)</span>
+            {
+<span class="fc bfc" id="L397" title="All 2 branches covered.">                if (offsetChecker != null)</span>
+                {
+<span class="fc" id="L399">                    writer.alignTo(Byte.SIZE);</span>
+<span class="fc" id="L400">                    offsetChecker.checkOffset(index, writer.getBytePosition());</span>
+                }
+
+<span class="fc" id="L403">                packedArrayTraits.write(contextNode, writer, rawArray.getElement(index));</span>
+            }
+        }
+<span class="fc" id="L406">    }</span>
+
+    private void checkIfPackable()
+    {
+<span class="pc bpc" id="L410" title="1 of 2 branches missed.">        if (packedArrayTraits == null)</span>
+<span class="nc" id="L411">            throw new UnsupportedOperationException(&quot;Array: The array is not packable!&quot;);</span>
+
+<span class="fc bfc" id="L413" title="All 2 branches covered.">        if (arrayType == ArrayType.IMPLICIT)</span>
+<span class="fc" id="L414">            throw new UnsupportedOperationException(&quot;Array: Implicit array cannot be packed!&quot;);</span>
+<span class="fc" id="L415">    }</span>
+
+    private final RawArray rawArray;
+    private final ArrayTraits arrayTraits;
+    private final PackedArrayTraits packedArrayTraits;
+    private final ArrayType arrayType;
+    private final OffsetChecker offsetChecker;
+    private final OffsetInitializer offsetInitializer;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

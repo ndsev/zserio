@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JsonParserTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.json</a> &gt; <span class="el_source">JsonParserTest.java</span></div><h1>JsonParserTest.java</h1><pre class="source lang-java linenums">package zserio.runtime.json;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+
+<span class="fc" id="L16">public class JsonParserTest</span>
+{
+    @Test
+    public void empty() throws IOException
+    {
+<span class="fc" id="L21">        final Reader reader = new StringReader(&quot;&quot;);</span>
+<span class="fc" id="L22">        final DummyObserver observer = new DummyObserver();</span>
+<span class="fc" id="L23">        final JsonParser jsonParser = new JsonParser(reader, observer);</span>
+
+<span class="fc" id="L25">        assertTrue(jsonParser.parse());</span>
+<span class="fc" id="L26">        assertEquals(0, observer.getReport().size());</span>
+
+<span class="fc" id="L28">        reader.close();</span>
+<span class="fc" id="L29">    }</span>
+
+    @Test
+    public void oneString() throws IOException
+    {
+<span class="fc" id="L34">        final Reader reader = new StringReader(&quot;\&quot;text\&quot;&quot;);</span>
+<span class="fc" id="L35">        final DummyObserver observer = new DummyObserver();</span>
+<span class="fc" id="L36">        final JsonParser jsonParser = new JsonParser(reader, observer);</span>
+
+<span class="fc" id="L38">        assertTrue(jsonParser.parse());</span>
+<span class="fc" id="L39">        assertEquals(1, observer.getReport().size());</span>
+<span class="fc" id="L40">        assertEquals(&quot;visitValue: text&quot;, observer.getReport().get(0));</span>
+
+<span class="fc" id="L42">        reader.close();</span>
+<span class="fc" id="L43">    }</span>
+
+    @Test
+    public void twoStrings() throws IOException
+    {
+<span class="fc" id="L48">        final Reader reader = new StringReader(&quot;\&quot;text\&quot;\&quot;second\&quot;&quot;);</span>
+<span class="fc" id="L49">        final DummyObserver observer = new DummyObserver();</span>
+<span class="fc" id="L50">        final JsonParser jsonParser = new JsonParser(reader, observer);</span>
+
+<span class="fc" id="L52">        assertFalse(jsonParser.parse());</span>
+<span class="fc" id="L53">        assertEquals(1, observer.getReport().size());</span>
+<span class="fc" id="L54">        assertEquals(&quot;visitValue: text&quot;, observer.getReport().get(0));</span>
+<span class="fc" id="L55">        assertEquals(1, jsonParser.getLine());</span>
+<span class="fc" id="L56">        assertEquals(7, jsonParser.getColumn());</span>
+
+<span class="fc" id="L58">        assertTrue(jsonParser.parse());</span>
+<span class="fc" id="L59">        assertEquals(2, observer.getReport().size());</span>
+<span class="fc" id="L60">        assertEquals(&quot;visitValue: second&quot;, observer.getReport().get(1));</span>
+<span class="fc" id="L61">        assertEquals(1, jsonParser.getLine());</span>
+<span class="fc" id="L62">        assertEquals(15, jsonParser.getColumn());</span>
+
+<span class="fc" id="L64">        reader.close();</span>
+<span class="fc" id="L65">    }</span>
+
+    @Test
+    public void parse() throws IOException
+    {
+<span class="fc" id="L70">        final Reader reader = new StringReader(&quot;{\&quot;array\&quot;:\n[\n{\&quot;key1\&quot;:\n10, \&quot;key2\&quot;:\n\&quot;text\&quot;}, {}]}&quot;);</span>
+<span class="fc" id="L71">        final DummyObserver observer = new DummyObserver();</span>
+<span class="fc" id="L72">        final JsonParser jsonParser = new JsonParser(reader, observer);</span>
+
+<span class="fc" id="L74">        assertTrue(jsonParser.parse());</span>
+<span class="fc" id="L75">        assertEquals(13, observer.getReport().size());</span>
+<span class="fc" id="L76">        assertEquals(&quot;beginObject&quot;, observer.getReport().get(0));</span>
+<span class="fc" id="L77">        assertEquals(&quot;visitKey: array&quot;, observer.getReport().get(1));</span>
+<span class="fc" id="L78">        assertEquals(&quot;beginArray&quot;, observer.getReport().get(2));</span>
+<span class="fc" id="L79">        assertEquals(&quot;beginObject&quot;, observer.getReport().get(3));</span>
+<span class="fc" id="L80">        assertEquals(&quot;visitKey: key1&quot;, observer.getReport().get(4));</span>
+<span class="fc" id="L81">        assertEquals(&quot;visitValue: 10&quot;, observer.getReport().get(5));</span>
+<span class="fc" id="L82">        assertEquals(&quot;visitKey: key2&quot;, observer.getReport().get(6));</span>
+<span class="fc" id="L83">        assertEquals(&quot;visitValue: text&quot;, observer.getReport().get(7));</span>
+<span class="fc" id="L84">        assertEquals(&quot;endObject&quot;, observer.getReport().get(8));</span>
+<span class="fc" id="L85">        assertEquals(&quot;beginObject&quot;, observer.getReport().get(9));</span>
+<span class="fc" id="L86">        assertEquals(&quot;endObject&quot;, observer.getReport().get(10));</span>
+<span class="fc" id="L87">        assertEquals(&quot;endArray&quot;, observer.getReport().get(11));</span>
+<span class="fc" id="L88">        assertEquals(&quot;endObject&quot;, observer.getReport().get(12));</span>
+
+<span class="fc" id="L90">        reader.close();</span>
+<span class="fc" id="L91">    }</span>
+
+    @Test
+    public void unexpectedObject() throws IOException
+    {
+<span class="fc" id="L96">        final Reader reader = new StringReader(&quot;{\n\n{\n\n&quot;);</span>
+<span class="fc" id="L97">        final DummyObserver observer = new DummyObserver();</span>
+<span class="fc" id="L98">        final JsonParser jsonParser = new JsonParser(reader, observer);</span>
+
+<span class="pc" id="L100">        final JsonParserError exception = assertThrows(JsonParserError.class, () -&gt; jsonParser.parse());</span>
+<span class="fc" id="L101">        assertEquals(&quot;JsonParser:3:1: Unexpected token: BEGIN_OBJECT ('{'), expecting END_OBJECT!&quot;,</span>
+<span class="fc" id="L102">                exception.getMessage());</span>
+<span class="fc" id="L103">        assertEquals(1, observer.getReport().size());</span>
+<span class="fc" id="L104">        assertEquals(&quot;beginObject&quot;, observer.getReport().get(0));</span>
+
+<span class="fc" id="L106">        reader.close();</span>
+<span class="fc" id="L107">    }</span>
+
+    @Test
+    public void unexpectedObjectAfterItemSeparator() throws IOException
+    {
+<span class="fc" id="L112">        final Reader reader = new StringReader(&quot;{\n  \&quot;key\&quot;: 10,\n  {\n&quot;);</span>
+<span class="fc" id="L113">        final DummyObserver observer = new DummyObserver();</span>
+<span class="fc" id="L114">        final JsonParser jsonParser = new JsonParser(reader, observer);</span>
+
+<span class="pc" id="L116">        final JsonParserError exception = assertThrows(JsonParserError.class, () -&gt; jsonParser.parse());</span>
+<span class="fc" id="L117">        assertEquals(&quot;JsonParser:3:3: Unexpected token: BEGIN_OBJECT ('{'), expecting VALUE!&quot;,</span>
+<span class="fc" id="L118">                exception.getMessage());</span>
+<span class="fc" id="L119">        assertEquals(3, observer.getReport().size());</span>
+<span class="fc" id="L120">        assertEquals(&quot;beginObject&quot;, observer.getReport().get(0));</span>
+<span class="fc" id="L121">        assertEquals(&quot;visitKey: key&quot;, observer.getReport().get(1));</span>
+<span class="fc" id="L122">        assertEquals(&quot;visitValue: 10&quot;, observer.getReport().get(2));</span>
+
+<span class="fc" id="L124">        reader.close();</span>
+<span class="fc" id="L125">    }</span>
+
+    @Test
+    public void missingObjectItemSeparator() throws IOException
+    {
+<span class="fc" id="L130">        final Reader reader = new StringReader(&quot;{\n\&quot;item1\&quot;:\&quot;text\&quot;\n\&quot;item2\&quot;:\&quot;text\&quot;\n}&quot;);</span>
+<span class="fc" id="L131">        final DummyObserver observer = new DummyObserver();</span>
+<span class="fc" id="L132">        final JsonParser jsonParser = new JsonParser(reader, observer);</span>
+
+<span class="pc" id="L134">        final JsonParserError exception = assertThrows(JsonParserError.class, () -&gt; jsonParser.parse());</span>
+<span class="fc" id="L135">        assertEquals(&quot;JsonParser:3:1: Unexpected token: VALUE ('item2'), expecting END_OBJECT!&quot;,</span>
+<span class="fc" id="L136">                exception.getMessage());</span>
+<span class="fc" id="L137">        assertEquals(3, observer.getReport().size());</span>
+<span class="fc" id="L138">        assertEquals(&quot;beginObject&quot;, observer.getReport().get(0));</span>
+<span class="fc" id="L139">        assertEquals(&quot;visitKey: item1&quot;, observer.getReport().get(1));</span>
+<span class="fc" id="L140">        assertEquals(&quot;visitValue: text&quot;, observer.getReport().get(2));</span>
+
+<span class="fc" id="L142">        reader.close();</span>
+<span class="fc" id="L143">    }</span>
+
+    @Test
+    public void wrongKeyType() throws IOException
+    {
+<span class="fc" id="L148">        final Reader reader = new StringReader(&quot;{\n10:\&quot;text\&quot;\n}&quot;);</span>
+<span class="fc" id="L149">        final DummyObserver observer = new DummyObserver();</span>
+<span class="fc" id="L150">        final JsonParser jsonParser = new JsonParser(reader, observer);</span>
+
+<span class="pc" id="L152">        final JsonParserError exception = assertThrows(JsonParserError.class, () -&gt; jsonParser.parse());</span>
+<span class="fc" id="L153">        assertEquals(&quot;JsonParser:2:1: Key must be a string value!&quot;, exception.getMessage());</span>
+<span class="fc" id="L154">        assertEquals(1, observer.getReport().size());</span>
+<span class="fc" id="L155">        assertEquals(&quot;beginObject&quot;, observer.getReport().get(0));</span>
+
+<span class="fc" id="L157">        reader.close();</span>
+<span class="fc" id="L158">    }</span>
+
+    @Test
+    public void unexpectedElementToken() throws IOException
+    {
+<span class="fc" id="L163">        final Reader reader = new StringReader(&quot;{\n\&quot;item\&quot;:}&quot;);</span>
+<span class="fc" id="L164">        final DummyObserver observer = new DummyObserver();</span>
+<span class="fc" id="L165">        final JsonParser jsonParser = new JsonParser(reader, observer);</span>
+
+<span class="pc" id="L167">        final JsonParserError exception = assertThrows(JsonParserError.class, () -&gt; jsonParser.parse());</span>
+<span class="fc" id="L168">        assertEquals(&quot;JsonParser:2:8: Unexpected token: END_OBJECT ('}'), expecting one of &quot; +</span>
+<span class="fc" id="L169">                &quot;[BEGIN_OBJECT, BEGIN_ARRAY, VALUE]!&quot;, exception.getMessage());</span>
+<span class="fc" id="L170">        assertEquals(2, observer.getReport().size());</span>
+<span class="fc" id="L171">        assertEquals(&quot;beginObject&quot;, observer.getReport().get(0));</span>
+<span class="fc" id="L172">        assertEquals(&quot;visitKey: item&quot;, observer.getReport().get(1));</span>
+
+<span class="fc" id="L174">        reader.close();</span>
+<span class="fc" id="L175">    }</span>
+
+    @Test
+    public void missingArrayElementSeparator() throws IOException
+    {
+<span class="fc" id="L180">        final Reader reader = new StringReader(&quot;{\n\&quot;array\&quot;:\n[10\n20\n]}&quot;);</span>
+<span class="fc" id="L181">        final DummyObserver observer = new DummyObserver();</span>
+<span class="fc" id="L182">        final JsonParser jsonParser = new JsonParser(reader, observer);</span>
+
+<span class="pc" id="L184">        final JsonParserError exception = assertThrows(JsonParserError.class, () -&gt; jsonParser.parse());</span>
+<span class="fc" id="L185">        assertEquals(&quot;JsonParser:4:1: Unexpected token: VALUE ('20'), expecting END_ARRAY!&quot;,</span>
+<span class="fc" id="L186">                exception.getMessage());</span>
+<span class="fc" id="L187">        assertEquals(4, observer.getReport().size());</span>
+<span class="fc" id="L188">        assertEquals(&quot;beginObject&quot;, observer.getReport().get(0));</span>
+<span class="fc" id="L189">        assertEquals(&quot;visitKey: array&quot;, observer.getReport().get(1));</span>
+<span class="fc" id="L190">        assertEquals(&quot;beginArray&quot;, observer.getReport().get(2));</span>
+<span class="fc" id="L191">        assertEquals(&quot;visitValue: 10&quot;, observer.getReport().get(3));</span>
+
+<span class="fc" id="L193">        reader.close();</span>
+<span class="fc" id="L194">    }</span>
+
+<span class="fc" id="L196">    private static class DummyObserver implements JsonParser.Observer</span>
+    {
+        public List&lt;String&gt; getReport()
+        {
+<span class="fc" id="L200">            return report;</span>
+        }
+
+        @Override
+        public void beginObject()
+        {
+<span class="fc" id="L206">            report.add(&quot;beginObject&quot;);</span>
+<span class="fc" id="L207">        }</span>
+
+        @Override
+        public void endObject()
+        {
+<span class="fc" id="L212">            report.add(&quot;endObject&quot;);</span>
+<span class="fc" id="L213">        }</span>
+
+        @Override
+        public void beginArray()
+        {
+<span class="fc" id="L218">            report.add(&quot;beginArray&quot;);</span>
+<span class="fc" id="L219">        }</span>
+
+        @Override
+        public void endArray()
+        {
+<span class="fc" id="L224">            report.add(&quot;endArray&quot;);</span>
+<span class="fc" id="L225">        }</span>
+
+        @Override
+        public void visitKey(String key)
+        {
+<span class="fc" id="L230">            report.add(&quot;visitKey: &quot; + key);</span>
+<span class="fc" id="L231">        }</span>
+
+        @Override
+        public void visitValue(Object value)
+        {
+<span class="fc" id="L236">            report.add(&quot;visitValue: &quot; + value.toString());</span>
+<span class="fc" id="L237">        }</span>
+
+<span class="fc" id="L239">        private final List&lt;String&gt; report = new ArrayList&lt;String&gt;();</span>
+    };
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
