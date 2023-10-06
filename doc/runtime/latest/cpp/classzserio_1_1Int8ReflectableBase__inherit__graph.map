@@ -1,0 +1,10 @@
+<map id="zserio::Int8ReflectableBase&lt; ALLOC &gt;" name="zserio::Int8ReflectableBase&lt; ALLOC &gt;">
+<area shape="rect" id="node7" href="$classzserio_1_1DynamicSignedBitFieldReflectable_3_01ALLOC_00_01int8__t_01_4.html" title="zserio::DynamicSignedBit\lFieldReflectable\&lt; ALLOC,\l int8_t \&gt;" alt="" coords="1384,5,1569,61"/>
+<area shape="rect" id="node8" href="$classzserio_1_1FixedSignedBitFieldReflectable_3_01ALLOC_00_01int8__t_01_4.html" title="zserio::FixedSignedBitField\lReflectable\&lt; ALLOC, int8_t \&gt;" alt="" coords="1373,85,1580,126"/>
+<area shape="rect" id="node9" href="$classzserio_1_1Int8Reflectable.html" title="zserio::Int8Reflectable\l\&lt; ALLOC \&gt;" alt="" coords="1396,150,1557,191"/>
+<area shape="rect" id="node2" href="$classzserio_1_1SignedReflectableBase.html" title="zserio::SignedReflectable\lBase\&lt; ALLOC, int8_t \&gt;" alt="" coords="903,85,1084,126"/>
+<area shape="rect" id="node3" href="$classzserio_1_1IntegralReflectableBase.html" title="zserio::IntegralReflectable\lBase\&lt; ALLOC, int8_t \&gt;" alt="" coords="669,85,855,126"/>
+<area shape="rect" id="node4" href="$classzserio_1_1BuiltinReflectableBase.html" title="zserio::BuiltinReflectable\lBase\&lt; ALLOC, int8_t \&gt;" alt="" coords="445,85,621,126"/>
+<area shape="rect" id="node5" href="$classzserio_1_1ReflectableBase.html" title="zserio::ReflectableBase\l\&lt; ALLOC \&gt;" alt="" coords="228,85,397,126"/>
+<area shape="rect" id="node6" href="$classzserio_1_1IBasicReflectable.html" title="zserio::IBasicReflectable\l\&lt; ALLOC \&gt;" alt="" coords="5,85,180,126"/>
+</map>
