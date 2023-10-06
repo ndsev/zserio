@@ -1,0 +1,6 @@
+theme: jekyll-theme-slate
+exclude: 3rdparty
+include:
+  - _images
+  - _modules
+  - _static

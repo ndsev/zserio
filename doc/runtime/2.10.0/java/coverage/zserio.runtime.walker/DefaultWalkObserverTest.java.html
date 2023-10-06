@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DefaultWalkObserverTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.walker</a> &gt; <span class="el_source">DefaultWalkObserverTest.java</span></div><h1>DefaultWalkObserverTest.java</h1><pre class="source lang-java linenums">package zserio.runtime.walker;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
+import org.junit.jupiter.api.Test;
+
+import zserio.runtime.typeinfo.FieldInfo;
+
+import test_object.WalkerObject;
+
+<span class="fc" id="L11">public class DefaultWalkObserverTest</span>
+{
+    @Test
+    public void allMethods()
+    {
+<span class="fc" id="L16">        final DefaultWalkObserver walkObserver = new DefaultWalkObserver();</span>
+<span class="fc" id="L17">        final WalkerObject walkerObject = TestObjectCreator.createWalkerObject();</span>
+<span class="fc" id="L18">        final FieldInfo walkerArrayFieldInfo = WalkerObject.typeInfo().getFields().get(3);</span>
+<span class="fc" id="L19">        final FieldInfo walkerCompoundFieldInfo = WalkerObject.typeInfo().getFields().get(1);</span>
+<span class="fc" id="L20">        final FieldInfo walkerFieldInfo = WalkerObject.typeInfo().getFields().get(0);</span>
+
+<span class="fc" id="L22">        assertDoesNotThrow(() -&gt; walkObserver.beginRoot(walkerObject));</span>
+<span class="fc" id="L23">        assertDoesNotThrow(() -&gt; walkObserver.endRoot(walkerObject));</span>
+<span class="fc" id="L24">        assertDoesNotThrow(() -&gt; walkObserver.beginArray(walkerObject.getUnionArray(), walkerArrayFieldInfo));</span>
+<span class="fc" id="L25">        assertDoesNotThrow(() -&gt; walkObserver.endArray(walkerObject.getUnionArray(), walkerArrayFieldInfo));</span>
+<span class="fc" id="L26">        assertDoesNotThrow(() -&gt; walkObserver.beginCompound(walkerObject.getNested(), walkerCompoundFieldInfo,</span>
+                WalkerConst.NOT_ELEMENT));
+<span class="fc" id="L28">        assertDoesNotThrow(() -&gt; walkObserver.endCompound(walkerObject.getNested(), walkerCompoundFieldInfo,</span>
+                WalkerConst.NOT_ELEMENT));
+<span class="fc" id="L30">        assertDoesNotThrow(() -&gt; walkObserver.visitValue(walkerObject.getIdentifier(), walkerFieldInfo,</span>
+                WalkerConst.NOT_ELEMENT));
+<span class="fc" id="L32">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

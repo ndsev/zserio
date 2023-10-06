@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BitBuffer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.io</a> &gt; <span class="el_source">BitBuffer.java</span></div><h1>BitBuffer.java</h1><pre class="source lang-java linenums">package zserio.runtime.io;
+
+import zserio.runtime.HashCodeUtil;
+
+import java.nio.ByteBuffer;
+
+/**
+ * Class which holds any bit sequence.
+ *
+ * Because bit buffer size does not have to be byte aligned (divisible by 8), it's possible that not all bits
+ * of the last byte are used. In this case, only most significant bits of the corresponded size are used.
+ */
+public class BitBuffer
+{
+    /**
+     * Constructor from byte buffer.
+     *
+     * All bits of the last buffer byte will be used.
+     *
+     * @param buffer Byte buffer to construct from.
+     */
+    public BitBuffer(byte[] buffer)
+    {
+<span class="fc" id="L24">        this(buffer, (long)buffer.length * 8);</span>
+<span class="fc" id="L25">    }</span>
+
+    /**
+     * Constructor from byte buffer and bit size.
+     *
+     * @param buffer  Byte buffer to construct from.
+     * @param bitSize Number of bits stored in buffer to use.
+     *
+     * @throws IllegalArgumentException If the number of bits is bigger than buffer size.
+     */
+    public BitBuffer(byte[] buffer, long bitSize) throws IllegalArgumentException
+<span class="fc" id="L36">    {</span>
+<span class="fc" id="L37">        final int byteSize = (int)((bitSize + 7) / 8);</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">        if (buffer.length &lt; byteSize)</span>
+<span class="fc" id="L39">            throw new IllegalArgumentException(&quot;BitBuffer: Bit size &quot; + bitSize +</span>
+                    &quot; out of range for given buffer byte size &quot; + buffer.length + &quot;!&quot;);
+
+<span class="fc" id="L42">        this.buffer = new byte[byteSize];</span>
+<span class="fc" id="L43">        System.arraycopy(buffer, 0, this.buffer, 0, byteSize);</span>
+<span class="fc" id="L44">        this.bitSize = bitSize;</span>
+<span class="fc" id="L45">    }</span>
+
+    @Override
+    public boolean equals(Object obj)
+    {
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">        if (!(obj instanceof BitBuffer))</span>
+<span class="nc" id="L51">            return false;</span>
+
+<span class="fc" id="L53">        final BitBuffer other = (BitBuffer)obj;</span>
+
+<span class="fc bfc" id="L55" title="All 2 branches covered.">        if (bitSize != other.bitSize)</span>
+<span class="fc" id="L56">            return false;</span>
+
+<span class="fc" id="L58">        final int byteSize = getByteSize();</span>
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">        if (byteSize &gt; 0)</span>
+        {
+<span class="pc bpc" id="L61" title="1 of 2 branches missed.">            if (byteSize &gt; 1)</span>
+            {
+<span class="fc" id="L63">                final ByteBuffer byteBuffer = ByteBuffer.wrap(buffer, 0, byteSize - 1);</span>
+<span class="fc" id="L64">                final ByteBuffer otherByteBuffer = ByteBuffer.wrap(other.buffer, 0, byteSize - 1);</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">                if (!byteBuffer.equals(otherByteBuffer))</span>
+<span class="fc" id="L66">                    return false;</span>
+            }
+
+<span class="fc bfc" id="L69" title="All 2 branches covered.">            if (getMaskedLastByte() != other.getMaskedLastByte())</span>
+<span class="fc" id="L70">                return false;</span>
+        }
+
+<span class="fc" id="L73">        return true;</span>
+    }
+
+    @Override
+    public int hashCode()
+    {
+<span class="fc" id="L79">        int result = HashCodeUtil.HASH_SEED;</span>
+
+<span class="fc" id="L81">        final int byteSize = getByteSize();</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">        if (byteSize &gt; 0)</span>
+        {
+<span class="fc bfc" id="L84" title="All 2 branches covered.">            if (byteSize &gt; 1)</span>
+            {
+<span class="fc bfc" id="L86" title="All 2 branches covered.">                for (int i = 0; i &lt; byteSize - 1; ++i)</span>
+<span class="fc" id="L87">                    result = HashCodeUtil.calcHashCode(result, buffer[i]);</span>
+            }
+<span class="fc" id="L89">            result = HashCodeUtil.calcHashCode(result, getMaskedLastByte());</span>
+        }
+
+<span class="fc" id="L92">        return result;</span>
+    }
+
+    /**
+     * Gets the underlying byte buffer.
+     *
+     * Not all bits of the last byte must be used.
+     *
+     * @return The underlying byte buffer.
+     */
+    public byte[] getBuffer()
+    {
+<span class="fc" id="L104">        final byte[] bufferCopy = new byte[getByteSize()];</span>
+<span class="fc" id="L105">        System.arraycopy(buffer, 0, bufferCopy, 0, bufferCopy.length);</span>
+
+<span class="fc" id="L107">        return bufferCopy;</span>
+    }
+
+    /**
+     * Gets the number of bits stored in the bit buffer.
+     *
+     * @return Size of the bit buffer in bits.
+     */
+    public long getBitSize()
+    {
+<span class="fc" id="L117">        return bitSize;</span>
+    }
+
+    /**
+     * Gets the number of bytes stored in the bit buffer.
+     *
+     * @return Size of the bit buffer in bytes.
+     */
+    public int getByteSize()
+    {
+<span class="fc" id="L127">        return (int)((bitSize + 7) / 8);</span>
+    }
+
+    private byte getMaskedLastByte()
+    {
+<span class="fc" id="L132">        final int roundedByteSize = (int)(bitSize / 8);</span>
+<span class="fc" id="L133">        final byte lastByteBits = (byte)(bitSize - (long)8 * roundedByteSize);</span>
+
+<span class="fc bfc" id="L135" title="All 2 branches covered.">        return (lastByteBits == 0) ? buffer[roundedByteSize - 1] :</span>
+                (byte)(buffer[roundedByteSize] &amp; (0xFF &lt;&lt; (8 - lastByteBits)));
+    }
+
+    private final byte[] buffer;
+    private final long bitSize;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

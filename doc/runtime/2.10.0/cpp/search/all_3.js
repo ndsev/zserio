@@ -1,0 +1,27 @@
+var searchData=
+[
+  ['data_208',['data',['../classzserio_1_1Span.html#ab6bfa8a36101ac3f4a8d4c845a028e98',1,'zserio::Span::data()'],['../classzserio_1_1BasicStringView.html#ac3835c01a63540fd816959f51c8a2b7f',1,'zserio::BasicStringView::data()']]],
+  ['deallocate_209',['deallocate',['../classzserio_1_1pmr_1_1MemoryResource.html#a8f0599214e08cd6712ecc7acef313c88',1,'zserio::pmr::MemoryResource']]],
+  ['debugstringutil_2eh_210',['DebugStringUtil.h',['../DebugStringUtil_8h.html',1,'']]],
+  ['decoderresult_211',['DecoderResult',['../structzserio_1_1BasicJsonDecoder_1_1DecoderResult.html#a0fd1cd2b8fa4a3d8bbb6f855f28e7b39',1,'zserio::BasicJsonDecoder::DecoderResult::DecoderResult(size_t numRead, T &amp;&amp;decodedValue, bool overflow, const ALLOC &amp;allocator)'],['../structzserio_1_1BasicJsonDecoder_1_1DecoderResult.html#a97cae1c311bd3b3c64d620c568bdf9b7',1,'zserio::BasicJsonDecoder::DecoderResult::DecoderResult(size_t numRead, T &amp;&amp;decodedValue, const ALLOC &amp;allocator)'],['../structzserio_1_1BasicJsonDecoder_1_1DecoderResult.html#a25589bdbbe554292c23f5394dac059a7',1,'zserio::BasicJsonDecoder::DecoderResult::DecoderResult(size_t numRead, const ALLOC &amp;allocator)'],['../structzserio_1_1BasicJsonDecoder_1_1DecoderResult.html',1,'zserio::BasicJsonDecoder&lt; ALLOC &gt;::DecoderResult']]],
+  ['decodevalue_212',['decodeValue',['../classzserio_1_1BasicJsonDecoder.html#a1bfdd231f83daf05c3b608196d07c0af',1,'zserio::BasicJsonDecoder']]],
+  ['default_5fenumerable_5fformat_213',['DEFAULT_ENUMERABLE_FORMAT',['../classzserio_1_1BasicJsonWriter.html#ae9b6d92370c8d2a57805804ac13d0c9b',1,'zserio::BasicJsonWriter']]],
+  ['default_5fitem_5fseparator_214',['DEFAULT_ITEM_SEPARATOR',['../classzserio_1_1BasicJsonWriter.html#ad516dd7276405a78fef30f32e848602a',1,'zserio::BasicJsonWriter']]],
+  ['default_5fitem_5fseparator_5fwith_5findent_215',['DEFAULT_ITEM_SEPARATOR_WITH_INDENT',['../classzserio_1_1BasicJsonWriter.html#a203d15745db8d7f7429f4b5c08e830ee',1,'zserio::BasicJsonWriter']]],
+  ['default_5fkey_5fseparator_216',['DEFAULT_KEY_SEPARATOR',['../classzserio_1_1BasicJsonWriter.html#a633cb063288d2161f2e75ad5dfb713da',1,'zserio::BasicJsonWriter']]],
+  ['defaultwalkfilter_217',['DefaultWalkFilter',['../namespacezserio.html#a7de62d36c19f3bab0c356a66b79f1d3b',1,'zserio']]],
+  ['defaultwalkobserver_218',['DefaultWalkObserver',['../namespacezserio.html#aade958a04a19344ae4f799ad073cfde9',1,'zserio']]],
+  ['deleteschema_219',['deleteSchema',['../classzserio_1_1ISqliteDatabase.html#a4b64e2afb1a41afc4298ee16456ee803',1,'zserio::ISqliteDatabase']]],
+  ['deltacontext_220',['DeltaContext',['../classzserio_1_1DeltaContext.html#af94b3daaa16dd977d596a16d73459bed',1,'zserio::DeltaContext::DeltaContext()=default'],['../classzserio_1_1DeltaContext.html#af86498fc03ae7c06b1467d682647e91f',1,'zserio::DeltaContext::DeltaContext(DeltaContext &amp;&amp;other)=default'],['../classzserio_1_1DeltaContext.html#a6a5a6a5fb414fc4b8146193c70ce9f25',1,'zserio::DeltaContext::DeltaContext(const DeltaContext &amp;other)=delete'],['../classzserio_1_1DeltaContext.html',1,'zserio::DeltaContext']]],
+  ['depthwalkfilter_221',['DepthWalkFilter',['../namespacezserio.html#a978dfb253d8f106049da9448a6a2bf5f',1,'zserio']]],
+  ['deserialize_222',['deserialize',['../namespacezserio.html#a531e93a20b762671772e09c3b84cb4c5',1,'zserio::deserialize(const BasicBitBuffer&lt; ALLOC &gt; &amp;bitBuffer, ARGS &amp;&amp;... arguments)'],['../namespacezserio.html#ae191f28f267323fce42e98bc9b24d1dd',1,'zserio::deserialize(const BasicBitBuffer&lt; ALLOC &gt; &amp;bitBuffer)']]],
+  ['deserializefrombytes_223',['deserializeFromBytes',['../namespacezserio.html#a16c15f5125a6cb07a49ce1d42bcb2341',1,'zserio::deserializeFromBytes(Span&lt; const uint8_t &gt; buffer, ARGS &amp;&amp;... arguments)'],['../namespacezserio.html#a47f381fc3119ee1f0467c41eaa529854',1,'zserio::deserializeFromBytes(Span&lt; const uint8_t &gt; buffer)']]],
+  ['deserializefromfile_224',['deserializeFromFile',['../namespacezserio.html#acbd183f9b3c0c0a915337c904513f5cd',1,'zserio']]],
+  ['difference_5ftype_225',['difference_type',['../classzserio_1_1Span.html#a7cb6c6cc1b8d990bdfe8584931712d4e',1,'zserio::Span::difference_type()'],['../classzserio_1_1BasicStringView.html#a00584bc4df5d471245370eb45195cfa0',1,'zserio::BasicStringView::difference_type()']]],
+  ['double_226',['DOUBLE',['../namespacezserio.html#a3533b4966f6895549ed5cce32100adc2afd3e4ece78a7d422280d5ed379482229',1,'zserio']]],
+  ['doublereflectable_227',['DoubleReflectable',['../classzserio_1_1DoubleReflectable.html#a291a5cab3a115868c05c2aaf82d9b503',1,'zserio::DoubleReflectable::DoubleReflectable()'],['../classzserio_1_1DoubleReflectable.html',1,'zserio::DoubleReflectable&lt; ALLOC &gt;']]],
+  ['dynamic_5fextent_228',['dynamic_extent',['../namespacezserio.html#ad95672c11b9aa9116e1f3113585cd7ad',1,'zserio']]],
+  ['dynamic_5fsigned_5fbitfield_229',['DYNAMIC_SIGNED_BITFIELD',['../namespacezserio.html#a8234f31c7aa693caeda7416a00b3721dad870aeddfc3c1c404a3bf9b131d3aa81',1,'zserio']]],
+  ['dynamic_5funsigned_5fbitfield_230',['DYNAMIC_UNSIGNED_BITFIELD',['../namespacezserio.html#a8234f31c7aa693caeda7416a00b3721da73345568cf90582ce79309f2d108658a',1,'zserio']]],
+  ['dynamicbitfieldarraytraits_231',['DynamicBitFieldArrayTraits',['../classzserio_1_1DynamicBitFieldArrayTraits.html#a3923ce2a7cf0bd5d7fcce0a1c4cc1213',1,'zserio::DynamicBitFieldArrayTraits::DynamicBitFieldArrayTraits()'],['../classzserio_1_1DynamicBitFieldArrayTraits.html',1,'zserio::DynamicBitFieldArrayTraits&lt; T, ELEMENT_BIT_SIZE &gt;']]]
+];

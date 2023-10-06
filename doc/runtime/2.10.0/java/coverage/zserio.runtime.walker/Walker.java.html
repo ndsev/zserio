@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Walker.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.walker</a> &gt; <span class="el_source">Walker.java</span></div><h1>Walker.java</h1><pre class="source lang-java linenums">package zserio.runtime.walker;
+
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.List;
+
+import zserio.runtime.ZserioError;
+import zserio.runtime.typeinfo.FieldInfo;
+import zserio.runtime.typeinfo.TypeInfo;
+import zserio.runtime.typeinfo.TypeInfoUtil;
+
+/**
+ * Walker through zserio objects, based on generated type info (see -withTypeInfoCode).
+ */
+public class Walker
+{
+    /**
+     * Constructor from walk observer.
+     *
+     * @param walkObserver Observer to use during walking.
+     */
+    public Walker(WalkObserver walkObserver)
+    {
+<span class="nc" id="L26">        this(walkObserver, new DefaultWalkFilter());</span>
+<span class="nc" id="L27">    }</span>
+
+    /**
+     * Constructor from walk observer and walk filter.
+     *
+     * @param walkObserver Observer to use during walking.
+     * @param walkFilter Walk filter to use.
+     */
+    public Walker(WalkObserver walkObserver, WalkFilter walkFilter)
+<span class="fc" id="L36">    {</span>
+<span class="fc" id="L37">        this.walkObserver = walkObserver;</span>
+<span class="fc" id="L38">        this.walkFilter = walkFilter;</span>
+<span class="fc" id="L39">    }</span>
+
+    /**
+     * Walks given zserio object which must be generated with type_info (see -withTypeInfoCode options).
+     *
+     * @param zserioObject Zserio object to walk.
+     */
+    public void walk(Object zserioObject)
+    {
+<span class="fc" id="L48">        final TypeInfo typeInfo = callTypeInfoMethod(zserioObject);</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">        if (!TypeInfoUtil.isCompound(typeInfo.getSchemaType()))</span>
+        {
+<span class="fc" id="L51">            throw new ZserioError(&quot;Walker: Root object '&quot; + typeInfo.getSchemaName() +</span>
+                    &quot;' is not a compound type!&quot;);
+        }
+
+<span class="fc" id="L55">        walkObserver.beginRoot(zserioObject);</span>
+<span class="fc" id="L56">        walkFields(zserioObject, typeInfo);</span>
+<span class="fc" id="L57">        walkObserver.endRoot(zserioObject);</span>
+<span class="fc" id="L58">    }</span>
+
+    private TypeInfo callTypeInfoMethod(Object zserioObject)
+    {
+        try
+        {
+<span class="fc" id="L64">            final Method typeInfoMethod = zserioObject.getClass().getMethod(&quot;typeInfo&quot;);</span>
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">            if (!typeInfoMethod.getReturnType().equals(TypeInfo.class))</span>
+<span class="nc" id="L66">                throw new ZserioError(&quot;Walker: Zserio object has wrong typeInfo method!&quot;);</span>
+<span class="fc" id="L67">            final TypeInfo typeInfo = (TypeInfo)typeInfoMethod.invoke(zserioObject);</span>
+
+<span class="fc" id="L69">            return typeInfo;</span>
+        }
+<span class="nc" id="L71">        catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException |</span>
+                InvocationTargetException e)
+        {
+<span class="nc" id="L74">            throw new ZserioError(</span>
+                    &quot;Walker: Zserio object must have type info enabled (see zserio option -withTypeInfoCode)!&quot;);
+        }
+    }
+
+    private int callChoiceTagMethod(Object zserioObject)
+    {
+        try
+        {
+<span class="fc" id="L83">            final Method choiceTagMethod = zserioObject.getClass().getMethod(&quot;choiceTag&quot;);</span>
+<span class="pc bpc" id="L84" title="1 of 2 branches missed.">            if (!choiceTagMethod.getReturnType().equals(Integer.TYPE))</span>
+<span class="nc" id="L85">                throw new ZserioError(&quot;Walker: Zserio object has wrong choiceTag method!&quot;);</span>
+<span class="fc" id="L86">            final int choiceTag = (Integer)choiceTagMethod.invoke(zserioObject);</span>
+
+<span class="fc" id="L88">            return choiceTag;</span>
+        }
+<span class="nc" id="L90">        catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException |</span>
+                InvocationTargetException e)
+        {
+<span class="nc" id="L93">            throw new ZserioError(&quot;Walker: Zserio object does not have choiceTag() method!&quot;);</span>
+        }
+    }
+
+    private int getUndefinedChoiceField(Object zserioObject)
+    {
+        try
+        {
+<span class="fc" id="L101">            final Field undefinedChoiceField = zserioObject.getClass().getField(&quot;UNDEFINED_CHOICE&quot;);</span>
+<span class="fc" id="L102">            final int undefinedChoice = undefinedChoiceField.getInt(zserioObject);</span>
+
+<span class="fc" id="L104">            return undefinedChoice;</span>
+        }
+<span class="nc" id="L106">        catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e)</span>
+        {
+<span class="nc" id="L108">            throw new ZserioError(&quot;Walker: Zserio object does not have UNDEFINED_CHOICE field!&quot;);</span>
+        }
+    }
+
+    private Object callGetterMethod(Object zserioObject, FieldInfo fieldInfo)
+    {
+<span class="fc" id="L114">        final String getterName = fieldInfo.getGetterName();</span>
+        try
+        {
+<span class="fc" id="L117">            final Method getterMethod = zserioObject.getClass().getMethod(getterName);</span>
+<span class="fc" id="L118">            final Object result = getterMethod.invoke(zserioObject);</span>
+
+<span class="fc" id="L120">            return result;</span>
+        }
+<span class="nc" id="L122">        catch (NoSuchMethodException | SecurityException | IllegalArgumentException | IllegalAccessException |</span>
+                InvocationTargetException e)
+        {
+<span class="nc" id="L125">            throw new ZserioError(&quot;Walker: Zserio object does not have &quot; + getterName + &quot;() method!&quot;);</span>
+        }
+    }
+
+    private void walkFields(Object zserioObject, TypeInfo typeInfo)
+    {
+<span class="fc" id="L131">        final List&lt;FieldInfo&gt; fields = typeInfo.getFields();</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">        if (TypeInfoUtil.hasChoice(typeInfo.getSchemaType()))</span>
+        {
+            // union or choice
+<span class="fc" id="L135">            final int choiceTag = callChoiceTagMethod(zserioObject);</span>
+<span class="fc" id="L136">            final int undefinedChoice = getUndefinedChoiceField(zserioObject);</span>
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">            if (choiceTag != undefinedChoice)</span>
+            {
+<span class="fc" id="L139">                final FieldInfo field = fields.get(choiceTag);</span>
+<span class="fc" id="L140">                walkField(callGetterMethod(zserioObject, field), field);</span>
+            }
+            // else: uninitialized or empty branch
+<span class="fc" id="L143">        }</span>
+        else
+        {
+            // structure
+<span class="fc bfc" id="L147" title="All 2 branches covered.">            for (FieldInfo field : fields)</span>
+            {
+<span class="fc bfc" id="L149" title="All 2 branches covered.">                if (!walkField(callGetterMethod(zserioObject, field), field))</span>
+<span class="fc" id="L150">                    break;</span>
+<span class="fc" id="L151">            }</span>
+        }
+<span class="fc" id="L153">    }</span>
+
+    private boolean walkField(Object field, FieldInfo fieldInfo)
+    {
+<span class="fc bfc" id="L157" title="All 4 branches covered.">        if (field != null &amp;&amp; fieldInfo.isArray())</span>
+        {
+<span class="fc bfc" id="L159" title="All 2 branches covered.">            if (walkFilter.beforeArray(field, fieldInfo))</span>
+            {
+<span class="fc" id="L161">                walkObserver.beginArray(field, fieldInfo);</span>
+
+<span class="fc" id="L163">                final int length = Array.getLength(field);</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">                for (int i = 0; i &lt; length; i ++)</span>
+                {
+<span class="fc" id="L166">                    final Object element = Array.get(field, i);</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">                    if (!walkFieldValue(element, fieldInfo, i))</span>
+<span class="fc" id="L168">                        break;</span>
+                }
+
+<span class="fc" id="L171">                walkObserver.endArray(field, fieldInfo);</span>
+            }
+
+<span class="fc" id="L174">            return walkFilter.afterArray(field, fieldInfo);</span>
+        }
+        else
+        {
+<span class="fc" id="L178">            return walkFieldValue(field, fieldInfo, WalkerConst.NOT_ELEMENT);</span>
+        }
+    }
+
+    private boolean walkFieldValue(Object field, FieldInfo fieldInfo, int elementIndex)
+    {
+<span class="fc" id="L184">        final TypeInfo typeInfo = fieldInfo.getTypeInfo();</span>
+<span class="fc bfc" id="L185" title="All 4 branches covered.">        if (field != null &amp;&amp; TypeInfoUtil.isCompound(typeInfo.getSchemaType()))</span>
+        {
+<span class="fc bfc" id="L187" title="All 2 branches covered.">            if (walkFilter.beforeCompound(field, fieldInfo, elementIndex))</span>
+            {
+<span class="fc" id="L189">                walkObserver.beginCompound(field, fieldInfo, elementIndex);</span>
+<span class="fc" id="L190">                walkFields(field, typeInfo);</span>
+<span class="fc" id="L191">                walkObserver.endCompound(field, fieldInfo, elementIndex);</span>
+            }
+
+<span class="fc" id="L194">            return walkFilter.afterCompound(field, fieldInfo, elementIndex);</span>
+        }
+        else
+        {
+<span class="fc bfc" id="L198" title="All 2 branches covered.">            if (walkFilter.beforeValue(field, fieldInfo, elementIndex))</span>
+<span class="fc" id="L199">                walkObserver.visitValue(field, fieldInfo, elementIndex);</span>
+
+<span class="fc" id="L201">            return walkFilter.afterValue(field, fieldInfo, elementIndex);</span>
+        }
+    }
+
+    private final WalkObserver walkObserver;
+    private final WalkFilter walkFilter;
+};
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
