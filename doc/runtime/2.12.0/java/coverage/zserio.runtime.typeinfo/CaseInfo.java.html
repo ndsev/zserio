@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CaseInfo.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.typeinfo</a> &gt; <span class="el_source">CaseInfo.java</span></div><h1>CaseInfo.java</h1><pre class="source lang-java linenums">package zserio.runtime.typeinfo;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Supplier;
+
+/**
+ * Type information for choice type case.
+ */
+public class CaseInfo
+{
+    /**
+     * Constructor.
+     *
+     * @param caseExpressions List of case expressions.
+     * @param field Field defined for the given cases.
+     */
+    public CaseInfo(List&lt;Supplier&lt;Object&gt;&gt; caseExpressions, FieldInfo field)
+<span class="nc" id="L19">    {</span>
+<span class="nc" id="L20">        this.caseExpressions = caseExpressions;</span>
+<span class="nc" id="L21">        this.field = field;</span>
+<span class="nc" id="L22">    }</span>
+
+    /**
+     * Gets sequence of case expressions.
+     *
+     * @return Unmodifiable list of case expressions.
+     */
+    public List&lt;Supplier&lt;Object&gt;&gt; getCaseExpressions()
+    {
+<span class="nc" id="L31">        return Collections.unmodifiableList(caseExpressions);</span>
+    }
+
+    /**
+     * Gets type information for the field defined for current cases.
+     *
+     * @return Field type info or null in case of no field defined for the cases.
+     */
+    public FieldInfo getField()
+    {
+<span class="nc" id="L41">        return field;</span>
+    }
+
+    private final List&lt;Supplier&lt;Object&gt;&gt; caseExpressions;
+    private final FieldInfo field;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
