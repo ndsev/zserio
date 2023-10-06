@@ -1,0 +1,1873 @@
+
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <title>Head</title>
+  <style media="screen" type="text/css">
+
+    body
+    {
+      color: #000000;
+      background-color: #FFFFFF;
+    }
+
+    /* Link formats: use maroon w/underlines */
+    a:link
+    {
+      color: navy;
+      text-decoration: underline;
+    }
+    a:visited
+    {
+      color: maroon;
+      text-decoration: underline;
+    }
+    a:active
+    {
+      color: navy;
+      text-decoration: underline;
+    }
+
+    /*** TD formats ***/
+    td
+    {
+      font-family: sans-serif;
+    }
+    td.title
+    {
+      text-align: center;
+      padding-bottom: 10px;
+      font-size: 20pt;
+      font-weight: bold;
+    }
+
+    /* TD Header Information */
+    td.headerName
+    {
+      text-align: right;
+      color: black;
+      padding-right: 6px;
+      font-weight: bold;
+      vertical-align: top;
+      white-space: nowrap;
+    }
+    td.headerValue
+    {
+      text-align: left;
+      color: blue;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+    td.headerTableEntry
+    {
+      text-align: right;
+      color: black;
+      font-weight: bold;
+      white-space: nowrap;
+      padding-left: 12px;
+      padding-right: 4px;
+      background-color: LightBlue;
+    }
+    td.headerValueLeg
+    {
+      text-align: left;
+      color: black;
+      font-size: 80%;
+      white-space: nowrap;
+      padding-left: 10px;
+      padding-right: 10px;
+      padding-top: 2px;
+    }
+
+    /* Color of horizontal ruler */
+    td.hr
+    {
+      background-color: navy;
+      height:3px;
+    }
+    /* Footer format */
+    td.footer
+    {
+      text-align: center;
+      padding-top: 3px;
+      font-family: sans-serif;
+    }
+
+    /* Coverage Table */
+
+    td.coverTableHead
+    {
+      text-align: center;
+      color: white;
+      background-color: SteelBlue;
+      font-family: sans-serif;
+      font-size: 120%;
+      white-space: nowrap;
+      padding-left: 4px;
+      padding-right: 4px;
+    }
+    td.coverFile
+    {
+      text-align: left;
+      padding-left: 10px;
+      padding-right: 20px;
+      color: black;
+      background-color: LightBlue;
+      font-family: monospace;
+      font-weight: bold;
+      font-size: 110%;
+    }
+    td.coverBar
+    {
+      padding-left: 10px;
+      padding-right: 10px;
+      background-color: LightBlue;
+    }
+    td.coverBarOutline
+    {
+      background-color: white;
+    }
+    td.coverValue
+    {
+      padding-top: 2px;
+      text-align: right;
+      padding-left: 10px;
+      padding-right: 10px;
+      font-family: sans-serif;
+      white-space: nowrap;
+      font-weight: bold;
+    }
+
+    /* Link Details */
+    a.detail:link
+    {
+      color: #B8D0FF;
+      font-size:80%;
+    }
+    a.detail:visited
+    {
+      color: #B8D0FF;
+      font-size:80%;
+    }
+    a.detail:active
+    {
+      color: #FFFFFF;
+      font-size:80%;
+    }
+
+    .graphcont{
+        color:#000;
+        font-weight:700;
+        float:left
+    }
+
+    .graph{
+        float:left;
+        background-color: white;
+        position:relative;
+        width:280px;
+        padding:0
+    }
+
+    .graph .bar{
+        display:block;
+        position:relative;
+        border:black 1px solid;
+        text-align:center;
+        color:#fff;
+        height:10px;
+        font-family:Arial,Helvetica,sans-serif;
+        font-size:12px;
+        line-height:1.9em
+    }
+
+    .graph .bar span{
+        position:absolute;
+        left:1em
+    }
+
+    td.coveredLine,
+    span.coveredLine
+    {
+        background-color: LightGreen!important;
+    }
+
+    td.uncoveredLine,
+    span.uncoveredLine
+    {
+        background-color: LightPink!important;
+    }
+
+    .linebranch, .linecount
+    {
+        border-right: 1px gray solid;
+        background-color: lightgray;
+    }
+
+    span.takenBranch
+    {
+        color: Green!important;
+        cursor: help;
+    }
+
+    span.notTakenBranch
+    {
+        color: Red!important;
+        cursor: help;
+    }
+
+    .src
+    {
+        padding-left: 12px;
+    }
+
+    .srcHeader,
+    span.takenBranch,
+    span.notTakenBranch
+    {
+        font-family: monospace;
+        font-weight: bold;
+    }
+
+    pre
+    {
+        height : 15px;
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+
+    .lineno
+    {
+        background-color: #EFE383;
+        border-right: 1px solid #BBB15F;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">GCC Code Coverage Report</td></tr>
+    <tr><td class="hr"></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerName">Directory:</td>
+            <td width="35%" class="headerValue">./</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerValue" style="text-align:right;">Exec</td>
+            <td width="10%" class="headerValue" style="text-align:right;">Total</td>
+            <td width="15%" class="headerValue" style="text-align:right;">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerName">Date:</td>
+            <td class="headerValue">2023-05-11 12:53:48</td>
+            <td></td>
+            <td class="headerName">Lines:</td>
+            <td class="headerTableEntry">14537</td>
+            <td class="headerTableEntry">14643</td>
+            <td class="headerTableEntry" style="background-color:LightGreen">99.3 %</td>
+          </tr>
+          <tr>
+            <td class="headerName">Legend:</td>
+            <td class="headerValueLeg">
+              <span style="background-color:LightPink">low: &lt; 75.0 %</span>
+              <span style="background-color:#FFFF55">medium: &gt;= 75.0 %</span>
+              <span style="background-color:LightGreen">high: &gt;= 90.0 %</span>
+            </td>
+            <td></td>
+            <td class="headerName">Branches:</td>
+            <td class="headerTableEntry">48291</td>
+            <td class="headerTableEntry">176775</td>
+            <td class="headerTableEntry" style="background-color:LightPink">27.3 %</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="hr"></td></tr>
+  </table>
+
+  <center>
+  <table width="80%" cellpadding=1 cellspacing=1 border=0>
+    <tr>
+      <td width="44%"><br></td>
+      <td width="8%"></td>
+      <td width="8%"></td>
+      <td width="8%"></td>
+      <td width="8%"></td>
+      <td width="8%"></td>
+    </tr>
+    <tr>
+      <td class="coverTableHead">File</td>
+      <td class="coverTableHead" colspan=3>Lines</td>
+      <td class="coverTableHead" colspan=2>Branches</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_zserio_AllocatorHolder.h.html">src/zserio/AllocatorHolder.h</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:90.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">90.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">18 / 20</td>
+      <td class="CoverValue" style="background-color:LightGray;">-&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightGray;">0 / 0</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_zserio_AllocatorPropagatingCopy.h.html">src/zserio/AllocatorPropagatingCopy.h</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">40 / 40</td>
+      <td class="CoverValue" style="background-color:LightPink;">14.6&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">19 / 130</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_zserio_AnyHolder.h.html">src/zserio/AnyHolder.h</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:93.7%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">93.7&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">178 / 190</td>
+      <td class="CoverValue" style="background-color:LightPink;">29.2&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">482 / 1649</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_zserio_Array.h.html">src/zserio/Array.h</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:93.7%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">93.7&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">192 / 205</td>
+      <td class="CoverValue" style="background-color:LightPink;">56.2&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">3010 / 5360</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_zserio_ArrayTraits.h.html">src/zserio/ArrayTraits.h</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:98.3%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">98.3&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">343 / 349</td>
+      <td class="CoverValue" style="background-color:LightPink;">50.0&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">4 / 8</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_zserio_BitBuffer.h.html">src/zserio/BitBuffer.h</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:97.5%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">97.5&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">79 / 81</td>
+      <td class="CoverValue" style="background-color:LightPink;">58.3&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">35 / 60</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_zserio_BitFieldUtil.cpp.html">src/zserio/BitFieldUtil.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">14 / 14</td>
+      <td class="CoverValue" style="background-color:#FFFF55;">81.2&nbsp;%</td>
+      <td class="CoverValue" style="background-color:#FFFF55;">13 / 16</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_zserio_BitPositionUtil.h.html">src/zserio/BitPositionUtil.h</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">4 / 4</td>
+      <td class="CoverValue" style="background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightGreen;">4 / 4</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_zserio_BitSizeOfCalculator.cpp.html">src/zserio/BitSizeOfCalculator.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">38 / 38</td>
+      <td class="CoverValue" style="background-color:LightPink;">61.0&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">50 / 82</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_zserio_BitSizeOfCalculator.h.html">src/zserio/BitSizeOfCalculator.h</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">3 / 3</td>
+      <td class="CoverValue" style="background-color:LightGray;">-&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightGray;">0 / 0</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_zserio_BitStreamReader.cpp.html">src/zserio/BitStreamReader.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">367 / 367</td>
+      <td class="CoverValue" style="background-color:#FFFF55;">85.2&nbsp;%</td>
+      <td class="CoverValue" style="background-color:#FFFF55;">184 / 216</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_zserio_BitStreamReader.h.html">src/zserio/BitStreamReader.h</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">46 / 46</td>
+      <td class="CoverValue" style="background-color:LightPink;">50.0&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">29 / 58</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_zserio_BitStreamWriter.cpp.html">src/zserio/BitStreamWriter.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">185 / 185</td>
+      <td class="CoverValue" style="background-color:#FFFF55;">80.3&nbsp;%</td>
+      <td class="CoverValue" style="background-color:#FFFF55;">106 / 132</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_zserio_BitStreamWriter.h.html">src/zserio/BitStreamWriter.h</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">26 / 26</td>
+      <td class="CoverValue" style="background-color:LightPink;">66.7&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">16 / 24</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_zserio_BuiltInOperators.cpp.html">src/zserio/BuiltInOperators.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">9 / 9</td>
+      <td class="CoverValue" style="background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightGreen;">4 / 4</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_zserio_BuiltInOperators.h.html">src/zserio/BuiltInOperators.h</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">2 / 2</td>
+      <td class="CoverValue" style="background-color:LightGray;">-&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightGray;">0 / 0</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_zserio_ConstraintException.h.html">src/zserio/ConstraintException.h</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">1 / 1</td>
+      <td class="CoverValue" style="background-color:LightPink;">50.0&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">1 / 2</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_zserio_CppRuntimeException.cpp.html">src/zserio/CppRuntimeException.cpp</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">39 / 39</td>
+      <td class="CoverValue" style="background-color:LightPink;">59.1&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">13 / 22</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_zserio_CppRuntimeException.h.html">src/zserio/CppRuntimeException.h</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">18 / 18</td>
+      <td class="CoverValue" style="background-color:LightPink;">22.2&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">10 / 45</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_zserio_DebugStringUtil.h.html">src/zserio/DebugStringUtil.h</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:98.4%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">98.4&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">61 / 62</td>
+      <td class="CoverValue" style="background-color:LightPink;">41.8&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">137 / 328</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_zserio_Enums.h.html">src/zserio/Enums.h</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">15 / 15</td>
+      <td class="CoverValue" style="background-color:LightPink;">58.3&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">7 / 12</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_zserio_FileUtil.cpp.html">src/zserio/FileUtil.cpp</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:85.2%; background-color:yellow"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:#FFFF55;">85.2&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:#FFFF55;">23 / 27</td>
+      <td class="CoverValue" style="background-color:LightPink;">36.1&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">26 / 72</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_zserio_FileUtil.h.html">src/zserio/FileUtil.h</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">9 / 9</td>
+      <td class="CoverValue" style="background-color:LightPink;">40.0&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">4 / 10</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_zserio_FloatUtil.cpp.html">src/zserio/FloatUtil.cpp</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">70 / 70</td>
+      <td class="CoverValue" style="background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightGreen;">22 / 22</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_zserio_HashCodeUtil.h.html">src/zserio/HashCodeUtil.h</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">33 / 33</td>
+      <td class="CoverValue" style="background-color:LightPink;">55.8&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">24 / 43</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_zserio_IReflectable.h.html">src/zserio/IReflectable.h</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">2 / 2</td>
+      <td class="CoverValue" style="background-color:LightPink;">25.0&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">1 / 4</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_zserio_ITypeInfo.h.html">src/zserio/ITypeInfo.h</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">8 / 8</td>
+      <td class="CoverValue" style="background-color:LightPink;">25.0&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">1 / 4</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_zserio_IWalkFilter.h.html">src/zserio/IWalkFilter.h</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">2 / 2</td>
+      <td class="CoverValue" style="background-color:LightPink;">50.0&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">2 / 4</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_zserio_IWalkObserver.h.html">src/zserio/IWalkObserver.h</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">2 / 2</td>
+      <td class="CoverValue" style="background-color:LightPink;">50.0&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">2 / 4</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_zserio_JsonDecoder.h.html">src/zserio/JsonDecoder.h</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:96.4%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">96.4&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">159 / 165</td>
+      <td class="CoverValue" style="background-color:LightPink;">37.2&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">186 / 500</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_zserio_JsonEncoder.cpp.html">src/zserio/JsonEncoder.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">52 / 52</td>
+      <td class="CoverValue" style="background-color:#FFFF55;">78.4&nbsp;%</td>
+      <td class="CoverValue" style="background-color:#FFFF55;">29 / 37</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_zserio_JsonEncoder.h.html">src/zserio/JsonEncoder.h</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">4 / 4</td>
+      <td class="CoverValue" style="background-color:LightGray;">-&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightGray;">0 / 0</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_zserio_JsonParser.h.html">src/zserio/JsonParser.h</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">104 / 104</td>
+      <td class="CoverValue" style="background-color:LightPink;">45.1&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">83 / 184</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_zserio_JsonReader.h.html">src/zserio/JsonReader.h</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:96.3%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">96.3&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">232 / 241</td>
+      <td class="CoverValue" style="background-color:LightPink;">34.1&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">234 / 687</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_zserio_JsonTokenizer.cpp.html">src/zserio/JsonTokenizer.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">12 / 12</td>
+      <td class="CoverValue" style="background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightGreen;">10 / 10</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_zserio_JsonTokenizer.h.html">src/zserio/JsonTokenizer.h</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">98 / 98</td>
+      <td class="CoverValue" style="background-color:LightPink;">51.7&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">92 / 178</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_zserio_JsonWriter.h.html">src/zserio/JsonWriter.h</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:98.5%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">98.5&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">197 / 200</td>
+      <td class="CoverValue" style="background-color:LightPink;">34.2&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">137 / 400</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_zserio_OptionalHolder.h.html">src/zserio/OptionalHolder.h</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">193 / 193</td>
+      <td class="CoverValue" style="background-color:LightPink;">25.4&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">315 / 1240</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_zserio_PackingContext.h.html">src/zserio/PackingContext.h</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:99.2%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">99.2&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">119 / 120</td>
+      <td class="CoverValue" style="background-color:LightPink;">52.1&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">151 / 290</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_zserio_PubsubException.h.html">src/zserio/PubsubException.h</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">1 / 1</td>
+      <td class="CoverValue" style="background-color:LightPink;">50.0&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">1 / 2</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_zserio_Reflectable.h.html">src/zserio/Reflectable.h</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:98.4%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">98.4&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">1070 / 1087</td>
+      <td class="CoverValue" style="background-color:LightPink;">35.5&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">1266 / 3566</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_zserio_ReflectableUtil.h.html">src/zserio/ReflectableUtil.h</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:88.9%; background-color:yellow"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:#FFFF55;">88.9&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:#FFFF55;">64 / 72</td>
+      <td class="CoverValue" style="background-color:LightPink;">63.6&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">117 / 184</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_zserio_SerializeUtil.h.html">src/zserio/SerializeUtil.h</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">58 / 58</td>
+      <td class="CoverValue" style="background-color:LightPink;">52.1&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">101 / 194</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_zserio_ServiceException.h.html">src/zserio/ServiceException.h</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">1 / 1</td>
+      <td class="CoverValue" style="background-color:LightPink;">50.0&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">1 / 2</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_zserio_Span.h.html">src/zserio/Span.h</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">69 / 69</td>
+      <td class="CoverValue" style="background-color:LightPink;">50.0&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">2 / 4</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_zserio_SqliteConnection.h.html">src/zserio/SqliteConnection.h</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">39 / 39</td>
+      <td class="CoverValue" style="background-color:LightPink;">60.7&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">17 / 28</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_zserio_SqliteException.h.html">src/zserio/SqliteException.h</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">8 / 8</td>
+      <td class="CoverValue" style="background-color:LightPink;">50.0&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">1 / 2</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_zserio_SqliteFinalizer.h.html">src/zserio/SqliteFinalizer.h</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">3 / 3</td>
+      <td class="CoverValue" style="background-color:LightGray;">-&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightGray;">0 / 0</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_zserio_StringConvertUtil.h.html">src/zserio/StringConvertUtil.h</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">46 / 46</td>
+      <td class="CoverValue" style="background-color:LightPink;">31.9&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">51 / 160</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_zserio_StringView.h.html">src/zserio/StringView.h</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">192 / 192</td>
+      <td class="CoverValue" style="background-color:#FFFF55;">75.0&nbsp;%</td>
+      <td class="CoverValue" style="background-color:#FFFF55;">93 / 124</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_zserio_TypeInfo.h.html">src/zserio/TypeInfo.h</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:99.4%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">99.4&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">343 / 345</td>
+      <td class="CoverValue" style="background-color:LightPink;">40.6&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">404 / 994</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_zserio_TypeInfoUtil.cpp.html">src/zserio/TypeInfoUtil.cpp</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">48 / 48</td>
+      <td class="CoverValue" style="background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightGreen;">24 / 24</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_zserio_UniquePtr.h.html">src/zserio/UniquePtr.h</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">25 / 25</td>
+      <td class="CoverValue" style="background-color:LightPink;">34.8&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">78 / 224</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_zserio_ValidationSqliteUtil.h.html">src/zserio/ValidationSqliteUtil.h</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:92.9%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">92.9&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">52 / 56</td>
+      <td class="CoverValue" style="background-color:LightPink;">55.6&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">55 / 99</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_zserio_VarSizeUtil.cpp.html">src/zserio/VarSizeUtil.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">5 / 5</td>
+      <td class="CoverValue" style="background-color:LightPink;">62.5&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">5 / 8</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_zserio_Walker.h.html">src/zserio/Walker.h</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">241 / 241</td>
+      <td class="CoverValue" style="background-color:LightPink;">56.0&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">139 / 248</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_zserio_ZserioTreeCreator.cpp.html">src/zserio/ZserioTreeCreator.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">5 / 5</td>
+      <td class="CoverValue" style="background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightGreen;">3 / 3</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_zserio_ZserioTreeCreator.h.html">src/zserio/ZserioTreeCreator.h</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:99.6%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">99.6&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">271 / 272</td>
+      <td class="CoverValue" style="background-color:LightPink;">19.5&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">749 / 3843</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_zserio_pmr_MemoryResource.cpp.html">src/zserio/pmr/MemoryResource.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">9 / 9</td>
+      <td class="CoverValue" style="background-color:#FFFF55;">83.3&nbsp;%</td>
+      <td class="CoverValue" style="background-color:#FFFF55;">5 / 6</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_zserio_pmr_MemoryResource.h.html">src/zserio/pmr/MemoryResource.h</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">13 / 13</td>
+      <td class="CoverValue" style="background-color:#FFFF55;">83.3&nbsp;%</td>
+      <td class="CoverValue" style="background-color:#FFFF55;">5 / 6</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_zserio_pmr_NewDeleteResource.cpp.html">src/zserio/pmr/NewDeleteResource.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">3 / 3</td>
+      <td class="CoverValue" style="background-color:#FFFF55;">75.0&nbsp;%</td>
+      <td class="CoverValue" style="background-color:#FFFF55;">3 / 4</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.src_zserio_pmr_NewDeleteResource.h.html">src/zserio/pmr/NewDeleteResource.h</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">8 / 8</td>
+      <td class="CoverValue" style="background-color:LightPink;">50.0&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">1 / 2</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.src_zserio_pmr_PolymorphicAllocator.h.html">src/zserio/pmr/PolymorphicAllocator.h</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">33 / 33</td>
+      <td class="CoverValue" style="background-color:LightPink;">10.8&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">25 / 231</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.test_zserio_AllocatorPropagatingCopyTest.cpp.html">test/zserio/AllocatorPropagatingCopyTest.cpp</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">89 / 89</td>
+      <td class="CoverValue" style="background-color:LightPink;">36.4&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">166 / 456</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.test_zserio_AnyHolderTest.cpp.html">test/zserio/AnyHolderTest.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">192 / 192</td>
+      <td class="CoverValue" style="background-color:LightPink;">31.5&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">431 / 1370</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.test_zserio_ArrayTest.cpp.html">test/zserio/ArrayTest.cpp</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">660 / 660</td>
+      <td class="CoverValue" style="background-color:LightPink;">31.5&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">8225 / 26083</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.test_zserio_BitBufferTest.cpp.html">test/zserio/BitBufferTest.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">208 / 208</td>
+      <td class="CoverValue" style="background-color:LightPink;">35.1&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">453 / 1292</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.test_zserio_BitFieldUtilTest.cpp.html">test/zserio/BitFieldUtilTest.cpp</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">37 / 37</td>
+      <td class="CoverValue" style="background-color:LightPink;">22.3&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">138 / 620</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.test_zserio_BitPositionUtilTest.cpp.html">test/zserio/BitPositionUtilTest.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">13 / 13</td>
+      <td class="CoverValue" style="background-color:LightPink;">23.5&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">24 / 102</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.test_zserio_BitSizeOfCalculatorTest.cpp.html">test/zserio/BitSizeOfCalculatorTest.cpp</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:99.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">99.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">196 / 198</td>
+      <td class="CoverValue" style="background-color:LightPink;">25.6&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">608 / 2375</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.test_zserio_BitStreamReaderTest.cpp.html">test/zserio/BitStreamReaderTest.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">80 / 80</td>
+      <td class="CoverValue" style="background-color:LightPink;">25.6&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">295 / 1151</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.test_zserio_BitStreamTest.cpp.html">test/zserio/BitStreamTest.cpp</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">288 / 288</td>
+      <td class="CoverValue" style="background-color:LightPink;">41.2&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">884 / 2146</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.test_zserio_BitStreamWriterTest.cpp.html">test/zserio/BitStreamWriterTest.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">178 / 178</td>
+      <td class="CoverValue" style="background-color:LightPink;">25.8&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">494 / 1912</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.test_zserio_BuiltInOperatorsTest.cpp.html">test/zserio/BuiltInOperatorsTest.cpp</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">55 / 55</td>
+      <td class="CoverValue" style="background-color:LightPink;">24.5&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">108 / 440</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.test_zserio_ConstraintExceptionTest.cpp.html">test/zserio/ConstraintExceptionTest.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">3 / 3</td>
+      <td class="CoverValue" style="background-color:LightPink;">27.3&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">15 / 55</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.test_zserio_CppRuntimeExceptionTest.cpp.html">test/zserio/CppRuntimeExceptionTest.cpp</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">57 / 57</td>
+      <td class="CoverValue" style="background-color:LightPink;">38.6&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">139 / 360</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.test_zserio_DebugStringUtilTest.cpp.html">test/zserio/DebugStringUtilTest.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:99.4%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">99.4&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">542 / 545</td>
+      <td class="CoverValue" style="background-color:LightPink;">35.6&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">1334 / 3743</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.test_zserio_EnumsTest.cpp.html">test/zserio/EnumsTest.cpp</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">74 / 74</td>
+      <td class="CoverValue" style="background-color:LightPink;">28.4&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">156 / 549</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.test_zserio_FileUtilTest.cpp.html">test/zserio/FileUtilTest.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">40 / 40</td>
+      <td class="CoverValue" style="background-color:LightPink;">35.2&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">107 / 304</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.test_zserio_FloatUtilTest.cpp.html">test/zserio/FloatUtilTest.cpp</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">117 / 117</td>
+      <td class="CoverValue" style="background-color:LightPink;">38.5&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">67 / 174</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.test_zserio_HashCodeUtilTest.cpp.html">test/zserio/HashCodeUtilTest.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:94.4%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">94.4&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">152 / 161</td>
+      <td class="CoverValue" style="background-color:LightPink;">32.7&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">214 / 654</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.test_zserio_HeapOptionalHolderTest.cpp.html">test/zserio/HeapOptionalHolderTest.cpp</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">284 / 284</td>
+      <td class="CoverValue" style="background-color:LightPink;">31.1&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">740 / 2378</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.test_zserio_InplaceOptionalHolderTest.cpp.html">test/zserio/InplaceOptionalHolderTest.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">155 / 155</td>
+      <td class="CoverValue" style="background-color:LightPink;">31.5&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">372 / 1182</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.test_zserio_JsonDecoderTest.cpp.html">test/zserio/JsonDecoderTest.cpp</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">131 / 131</td>
+      <td class="CoverValue" style="background-color:LightPink;">29.6&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">239 / 808</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.test_zserio_JsonEncoderTest.cpp.html">test/zserio/JsonEncoderTest.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:99.3%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">99.3&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">135 / 136</td>
+      <td class="CoverValue" style="background-color:LightPink;">35.4&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">338 / 954</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.test_zserio_JsonParserTest.cpp.html">test/zserio/JsonParserTest.cpp</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">115 / 115</td>
+      <td class="CoverValue" style="background-color:LightPink;">34.3&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">337 / 982</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.test_zserio_JsonReaderTest.cpp.html">test/zserio/JsonReaderTest.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">237 / 237</td>
+      <td class="CoverValue" style="background-color:LightPink;">26.6&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">1075 / 4043</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.test_zserio_JsonTokenizerTest.cpp.html">test/zserio/JsonTokenizerTest.cpp</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">204 / 204</td>
+      <td class="CoverValue" style="background-color:LightPink;">25.3&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">684 / 2707</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.test_zserio_JsonWriterTest.cpp.html">test/zserio/JsonWriterTest.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">208 / 208</td>
+      <td class="CoverValue" style="background-color:LightPink;">39.4&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">377 / 956</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.test_zserio_MemoryResourceTest.cpp.html">test/zserio/MemoryResourceTest.cpp</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">54 / 54</td>
+      <td class="CoverValue" style="background-color:LightPink;">29.2&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">70 / 240</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.test_zserio_NewDeleteResourceTest.cpp.html">test/zserio/NewDeleteResourceTest.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">6 / 6</td>
+      <td class="CoverValue" style="background-color:LightPink;">30.0&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">12 / 40</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.test_zserio_PolymorphicAllocatorTest.cpp.html">test/zserio/PolymorphicAllocatorTest.cpp</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">121 / 121</td>
+      <td class="CoverValue" style="background-color:LightPink;">29.2&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">177 / 606</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.test_zserio_PubsubExceptionTest.cpp.html">test/zserio/PubsubExceptionTest.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">3 / 3</td>
+      <td class="CoverValue" style="background-color:LightPink;">27.3&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">15 / 55</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.test_zserio_ReflectableTest.cpp.html">test/zserio/ReflectableTest.cpp</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">970 / 970</td>
+      <td class="CoverValue" style="background-color:LightPink;">19.0&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">10523 / 55427</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.test_zserio_ReflectableUtilTest.cpp.html">test/zserio/ReflectableUtilTest.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">187 / 187</td>
+      <td class="CoverValue" style="background-color:LightPink;">31.5&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">736 / 2336</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.test_zserio_SerializeUtilTest.cpp.html">test/zserio/SerializeUtilTest.cpp</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">313 / 313</td>
+      <td class="CoverValue" style="background-color:LightPink;">30.9&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">807 / 2610</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.test_zserio_ServiceExceptionTest.cpp.html">test/zserio/ServiceExceptionTest.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">3 / 3</td>
+      <td class="CoverValue" style="background-color:LightPink;">27.3&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">15 / 55</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.test_zserio_SpanTest.cpp.html">test/zserio/SpanTest.cpp</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">198 / 198</td>
+      <td class="CoverValue" style="background-color:LightPink;">31.8&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">430 / 1352</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.test_zserio_SqliteConnectionTest.cpp.html">test/zserio/SqliteConnectionTest.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">212 / 212</td>
+      <td class="CoverValue" style="background-color:LightPink;">30.6&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">424 / 1384</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.test_zserio_StringConvertUtilTest.cpp.html">test/zserio/StringConvertUtilTest.cpp</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">96 / 96</td>
+      <td class="CoverValue" style="background-color:LightPink;">30.8&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">178 / 578</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.test_zserio_StringViewTest.cpp.html">test/zserio/StringViewTest.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">490 / 490</td>
+      <td class="CoverValue" style="background-color:LightPink;">27.6&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">1216 / 4399</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.test_zserio_TrackingAllocator.h.html">test/zserio/TrackingAllocator.h</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">45 / 45</td>
+      <td class="CoverValue" style="background-color:LightPink;">30.0&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">6 / 20</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.test_zserio_TraitsTest.cpp.html">test/zserio/TraitsTest.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">73 / 73</td>
+      <td class="CoverValue" style="background-color:LightPink;">21.4&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">100 / 468</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.test_zserio_TypeInfoTest.cpp.html">test/zserio/TypeInfoTest.cpp</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">379 / 379</td>
+      <td class="CoverValue" style="background-color:LightPink;">21.3&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">1952 / 9159</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.test_zserio_TypeInfoUtilTest.cpp.html">test/zserio/TypeInfoUtilTest.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">355 / 355</td>
+      <td class="CoverValue" style="background-color:LightPink;">28.8&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">1418 / 4924</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.test_zserio_UniquePtrTest.cpp.html">test/zserio/UniquePtrTest.cpp</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">10 / 10</td>
+      <td class="CoverValue" style="background-color:LightPink;">27.3&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">27 / 99</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.test_zserio_ValidationSqliteUtilTest.cpp.html">test/zserio/ValidationSqliteUtilTest.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">147 / 147</td>
+      <td class="CoverValue" style="background-color:LightPink;">28.1&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">351 / 1251</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.test_zserio_VarSizeUtilTest.cpp.html">test/zserio/VarSizeUtilTest.cpp</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">8 / 8</td>
+      <td class="CoverValue" style="background-color:LightPink;">17.7&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">28 / 158</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" ><a href="index.test_zserio_WalkerTest.cpp.html">test/zserio/WalkerTest.cpp</a></td>
+      <td class="coverBar" align="center" >
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">470 / 470</td>
+      <td class="CoverValue" style="background-color:LightPink;">30.5&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">1317 / 4314</td>
+    </tr>
+
+
+    <tr>
+      <td class="coverFile" style="background-color:LightSteelBlue"><a href="index.test_zserio_ZserioTreeCreatorTest.cpp.html">test/zserio/ZserioTreeCreatorTest.cpp</a></td>
+      <td class="coverBar" align="center" style="background-color:LightSteelBlue">
+        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                <div class="graph"><strong class="bar" style="width:100.0%; background-color:green"></strong></div>
+                </td></tr></table>
+      </td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">100.0&nbsp;%</td>
+      <td class="CoverValue" style="font-weight:bold; background-color:LightGreen;">343 / 343</td>
+      <td class="CoverValue" style="background-color:LightPink;">24.4&nbsp;%</td>
+      <td class="CoverValue" style="background-color:LightPink;">1880 / 7705</td>
+    </tr>
+
+
+    <tr>
+      <td width="44%"><br></td>
+      <td width="8%"></td>
+      <td width="8%"></td>
+      <td width="8%"></td>
+      <td width="8%"></td>
+      <td width="8%"></td>
+    </tr>
+  </table>
+  </center>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="hr"><td></tr>
+    <tr><td class="footer">Generated by: <a href="http://gcovr.com">GCOVR (Version 4.2)</a></td></tr>
+  </table>
+  <br>
+
+</body>
+
+</html>
+
