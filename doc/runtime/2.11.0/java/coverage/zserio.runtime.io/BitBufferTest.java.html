@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BitBufferTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.io</a> &gt; <span class="el_source">BitBufferTest.java</span></div><h1>BitBufferTest.java</h1><pre class="source lang-java linenums">package zserio.runtime.io;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+
+<span class="fc" id="L9">public class BitBufferTest</span>
+{
+    @Test
+    public void bufferConstructor()
+    {
+<span class="fc" id="L14">        final int byteSize = 2;</span>
+<span class="fc" id="L15">        final byte[] buffer = new byte[byteSize];</span>
+<span class="fc" id="L16">        final BitBuffer bitBuffer = new BitBuffer(buffer);</span>
+<span class="fc" id="L17">        assertEquals(8 * byteSize, bitBuffer.getBitSize());</span>
+
+<span class="fc" id="L19">        final long emptyBitSize = 0;</span>
+<span class="fc" id="L20">        final byte[] emptyBuffer = new byte[0];</span>
+<span class="fc" id="L21">        final BitBuffer emptyBitBuffer = new BitBuffer(emptyBuffer);</span>
+<span class="fc" id="L22">        assertEquals(emptyBitSize, emptyBitBuffer.getBitSize());</span>
+<span class="fc" id="L23">    }</span>
+
+    @Test
+    public void bufferBitSizeConstructor()
+    {
+<span class="fc" id="L28">        final long bitSize = 11;</span>
+<span class="fc" id="L29">        final byte[] buffer = new byte[(int)((bitSize + 7) / 8)];</span>
+<span class="fc" id="L30">        final BitBuffer bitBuffer = new BitBuffer(buffer, bitSize);</span>
+<span class="fc" id="L31">        assertEquals(bitSize, bitBuffer.getBitSize());</span>
+
+<span class="fc" id="L33">        final long emptyBitSize = 0;</span>
+<span class="fc" id="L34">        final byte[] emptyBuffer = new byte[0];</span>
+<span class="fc" id="L35">        final BitBuffer emptyBitBuffer = new BitBuffer(emptyBuffer, emptyBitSize);</span>
+<span class="fc" id="L36">        assertEquals(emptyBitSize, emptyBitBuffer.getBitSize());</span>
+
+<span class="fc" id="L38">        final long outOfRangeBitSize = 9;</span>
+<span class="fc" id="L39">        final byte[] outOfRangeBuffer = new byte[1];</span>
+<span class="pc" id="L40">        assertThrows(IllegalArgumentException.class, () -&gt; new BitBuffer(outOfRangeBuffer, outOfRangeBitSize));</span>
+<span class="fc" id="L41">    }</span>
+
+    @Test
+    public void equalsMethod()
+    {
+<span class="fc" id="L46">        final long bitSize = 11;</span>
+<span class="fc" id="L47">        final BitBuffer bitBuffer1 = new BitBuffer(new byte[]{(byte)0xAB, (byte)0xE0}, bitSize);</span>
+<span class="fc" id="L48">        final BitBuffer bitBuffer2 = new BitBuffer(new byte[]{(byte)0xAB, (byte)0xF0}, bitSize);</span>
+<span class="fc" id="L49">        assertTrue(bitBuffer1.equals(bitBuffer2));</span>
+
+<span class="fc" id="L51">        final BitBuffer bitBuffer3 = new BitBuffer(new byte[]{(byte)0xAB, (byte)0xFF}, bitSize);</span>
+<span class="fc" id="L52">        assertTrue(bitBuffer1.equals(bitBuffer3));</span>
+
+<span class="fc" id="L54">        final BitBuffer bitBuffer4 = new BitBuffer(new byte[]{(byte)0xAB, (byte)0xC0}, bitSize);</span>
+<span class="fc" id="L55">        assertFalse(bitBuffer1.equals(bitBuffer4));</span>
+
+<span class="fc" id="L57">        final BitBuffer bitBuffer5 = new BitBuffer(new byte[]{(byte)0xBA, (byte)0xE0}, bitSize);</span>
+<span class="fc" id="L58">        assertFalse(bitBuffer1.equals(bitBuffer5));</span>
+
+<span class="fc" id="L60">        final BitBuffer bitBuffer6 = new BitBuffer(new byte[]{(byte)0xAB});</span>
+<span class="fc" id="L61">        assertFalse(bitBuffer1.equals(bitBuffer6));</span>
+
+<span class="fc" id="L63">        final BitBuffer bitBuffer7 = new BitBuffer(new byte[]{});</span>
+<span class="fc" id="L64">        assertFalse(bitBuffer1.equals(bitBuffer7));</span>
+<span class="fc" id="L65">    }</span>
+
+    @Test
+    public void hashCodeMethod()
+    {
+<span class="fc" id="L70">        final long bitSize = 11;</span>
+<span class="fc" id="L71">        final BitBuffer bitBuffer1 = new BitBuffer(new byte[]{(byte)0xAB, (byte)0xE0}, bitSize);</span>
+<span class="fc" id="L72">        final BitBuffer bitBuffer2 = new BitBuffer(new byte[]{(byte)0xAB, (byte)0xF0}, bitSize);</span>
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">        assertTrue(bitBuffer1.hashCode() == bitBuffer2.hashCode());</span>
+
+<span class="fc" id="L75">        final BitBuffer bitBuffer3 = new BitBuffer(new byte[]{(byte)0xAB, (byte)0xFF}, bitSize);</span>
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">        assertTrue(bitBuffer1.hashCode() == bitBuffer3.hashCode());</span>
+
+<span class="fc" id="L78">        final BitBuffer bitBuffer4 = new BitBuffer(new byte[]{(byte)0xAB, (byte)0xC0}, bitSize);</span>
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">        assertFalse(bitBuffer1.hashCode() == bitBuffer4.hashCode());</span>
+
+<span class="fc" id="L81">        final BitBuffer bitBuffer5 = new BitBuffer(new byte[]{(byte)0xBA, (byte)0xE0}, bitSize);</span>
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">        assertFalse(bitBuffer1.hashCode() == bitBuffer5.hashCode());</span>
+
+<span class="fc" id="L84">        final BitBuffer bitBuffer6 = new BitBuffer(new byte[]{(byte)0xAB});</span>
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">        assertFalse(bitBuffer1.hashCode() == bitBuffer6.hashCode());</span>
+
+<span class="fc" id="L87">        final BitBuffer bitBuffer7 = new BitBuffer(new byte[]{});</span>
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">        assertFalse(bitBuffer1.hashCode() == bitBuffer7.hashCode());</span>
+<span class="fc" id="L89">    }</span>
+
+    @Test
+    public void getBuffer()
+    {
+<span class="fc" id="L94">        final long bitSize = 11;</span>
+<span class="fc" id="L95">        final byte[] buffer = new byte[]{(byte)0xAB, (byte)0xE0};</span>
+<span class="fc" id="L96">        final BitBuffer bitBuffer = new BitBuffer(buffer, bitSize);</span>
+<span class="fc" id="L97">        assertTrue(java.util.Arrays.equals(buffer, bitBuffer.getBuffer()));</span>
+<span class="fc" id="L98">    }</span>
+
+    @Test
+    public void getBitSize()
+    {
+<span class="fc" id="L103">        final long bitSize = 11;</span>
+<span class="fc" id="L104">        final byte[] buffer = new byte[]{(byte)0xAB, (byte)0xE0};</span>
+<span class="fc" id="L105">        final BitBuffer bitBuffer = new BitBuffer(buffer, bitSize);</span>
+<span class="fc" id="L106">        assertEquals(bitSize, bitBuffer.getBitSize());</span>
+<span class="fc" id="L107">    }</span>
+
+    @Test
+    public void getByteSize()
+    {
+<span class="fc" id="L112">        final long bitSize = 11;</span>
+<span class="fc" id="L113">        final byte[] buffer = new byte[]{(byte)0xAB, (byte)0xE0};</span>
+<span class="fc" id="L114">        final int byteSize = buffer.length;</span>
+<span class="fc" id="L115">        final BitBuffer bitBuffer = new BitBuffer(buffer, bitSize);</span>
+<span class="fc" id="L116">        assertEquals(byteSize, bitBuffer.getByteSize());</span>
+<span class="fc" id="L117">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

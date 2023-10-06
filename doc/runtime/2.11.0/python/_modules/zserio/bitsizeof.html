@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>zserio.bitsizeof &#8212; Zserio 2.11.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for zserio.bitsizeof</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The module provides help methods to calculate size of nontrivial types.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">typing</span>
+
+<span class="kn">from</span> <span class="nn">zserio.bitbuffer</span> <span class="kn">import</span> <span class="n">BitBuffer</span>
+<span class="kn">from</span> <span class="nn">zserio.exception</span> <span class="kn">import</span> <span class="n">PythonRuntimeException</span>
+<span class="kn">from</span> <span class="nn">zserio.limits</span> <span class="kn">import</span> <span class="n">INT64_MIN</span>
+
+<div class="viewcode-block" id="bitsizeof_varint16"><a class="viewcode-back" href="../../zserio.bitsizeof.html#zserio.bitsizeof.bitsizeof_varint16">[docs]</a><span class="k">def</span> <span class="nf">bitsizeof_varint16</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gets bit size of variable 16-bit signed integer value.</span>
+
+<span class="sd">    :param value: Value to use for bit size calculation.</span>
+<span class="sd">    :returns: Bit size of the value.</span>
+<span class="sd">    :raises PythonRuntimeException: Throws if given value is out of range for varint16 type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">_bitsizeof_varnum</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="n">VARINT16_MAX_VALUES</span><span class="p">,</span> <span class="s2">&quot;varint16&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="bitsizeof_varint32"><a class="viewcode-back" href="../../zserio.bitsizeof.html#zserio.bitsizeof.bitsizeof_varint32">[docs]</a><span class="k">def</span> <span class="nf">bitsizeof_varint32</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gets bit size of variable 32-bit signed integer value.</span>
+
+<span class="sd">    :param value: Value to use for bit size calculation.</span>
+<span class="sd">    :returns: Bit size of the value.</span>
+<span class="sd">    :raises PythonRuntimeException: Throws if given value is out of range for varint32 type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">_bitsizeof_varnum</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="n">VARINT32_MAX_VALUES</span><span class="p">,</span> <span class="s2">&quot;varint32&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="bitsizeof_varint64"><a class="viewcode-back" href="../../zserio.bitsizeof.html#zserio.bitsizeof.bitsizeof_varint64">[docs]</a><span class="k">def</span> <span class="nf">bitsizeof_varint64</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gets bit size of variable 64-bit signed integer value.</span>
+
+<span class="sd">    :param value: Value to use for bit size calculation.</span>
+<span class="sd">    :returns: Bit size of the value.</span>
+<span class="sd">    :raises PythonRuntimeException: Throws if given value is out of range for varint64 type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">_bitsizeof_varnum</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="n">VARINT64_MAX_VALUES</span><span class="p">,</span> <span class="s2">&quot;varint64&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="bitsizeof_varint"><a class="viewcode-back" href="../../zserio.bitsizeof.html#zserio.bitsizeof.bitsizeof_varint">[docs]</a><span class="k">def</span> <span class="nf">bitsizeof_varint</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gets bit size of variable signed integer value (up to 9 bytes).</span>
+
+<span class="sd">    :param value: Value to use for bit size calculation.</span>
+<span class="sd">    :returns: Bit size of the value.</span>
+<span class="sd">    :raises PythonRuntimeException: Throws if given value is out of range for varint type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="n">INT64_MIN</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">8</span> <span class="c1"># INT64_MIN is stored as -0</span>
+    <span class="k">return</span> <span class="n">_bitsizeof_varnum</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="n">VARINT_MAX_VALUES</span><span class="p">,</span> <span class="s2">&quot;varint&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="bitsizeof_varuint16"><a class="viewcode-back" href="../../zserio.bitsizeof.html#zserio.bitsizeof.bitsizeof_varuint16">[docs]</a><span class="k">def</span> <span class="nf">bitsizeof_varuint16</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gets bit size of variable 16-bit unsigned integer value.</span>
+
+<span class="sd">    :param value: Value to use for bit size calculation.</span>
+<span class="sd">    :returns: Bit size of the value.</span>
+<span class="sd">    :raises PythonRuntimeException: Throws if given value is out of range for varuint16 type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">_bitsizeof_varnum</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">VARUINT16_MAX_VALUES</span><span class="p">,</span> <span class="s2">&quot;varuint16&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="bitsizeof_varuint32"><a class="viewcode-back" href="../../zserio.bitsizeof.html#zserio.bitsizeof.bitsizeof_varuint32">[docs]</a><span class="k">def</span> <span class="nf">bitsizeof_varuint32</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gets bit size of variable 32-bit unsigned integer value.</span>
+
+<span class="sd">    :param value: Value to use for bit size calculation.</span>
+<span class="sd">    :returns: Bit size of the value.</span>
+<span class="sd">    :raises PythonRuntimeException: Throws if given value is out of range for varuint32 type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">_bitsizeof_varnum</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">VARUINT32_MAX_VALUES</span><span class="p">,</span> <span class="s2">&quot;varuint32&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="bitsizeof_varuint64"><a class="viewcode-back" href="../../zserio.bitsizeof.html#zserio.bitsizeof.bitsizeof_varuint64">[docs]</a><span class="k">def</span> <span class="nf">bitsizeof_varuint64</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gets bit size of variable 64-bit unsigned integer value.</span>
+
+<span class="sd">    :param value: Value to use for bit size calculation.</span>
+<span class="sd">    :returns: Bit size of the value.</span>
+<span class="sd">    :raises PythonRuntimeException: Throws if given value is out of range for varuint64 type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">_bitsizeof_varnum</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">VARUINT64_MAX_VALUES</span><span class="p">,</span> <span class="s2">&quot;varuint64&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="bitsizeof_varuint"><a class="viewcode-back" href="../../zserio.bitsizeof.html#zserio.bitsizeof.bitsizeof_varuint">[docs]</a><span class="k">def</span> <span class="nf">bitsizeof_varuint</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gets bit size of variable unsigned integer value (up to 9 bytes).</span>
+
+<span class="sd">    :param value: Value to use for bit size calculation.</span>
+<span class="sd">    :returns: Bit size of the value.</span>
+<span class="sd">    :raises PythonRuntimeException: Throws if given value is out of range for varuint type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">_bitsizeof_varnum</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">VARUINT_MAX_VALUES</span><span class="p">,</span> <span class="s2">&quot;varuint&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="bitsizeof_varsize"><a class="viewcode-back" href="../../zserio.bitsizeof.html#zserio.bitsizeof.bitsizeof_varsize">[docs]</a><span class="k">def</span> <span class="nf">bitsizeof_varsize</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gets bit size of variable size integer value.</span>
+
+<span class="sd">    :param value: Value to use for bit size calculation.</span>
+<span class="sd">    :returns: Bit size of the value.</span>
+<span class="sd">    :raises PythonRuntimeException: Throws if given value is out of range for varsize type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">_bitsizeof_varnum</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">VARSIZE_MAX_VALUES</span><span class="p">,</span> <span class="s2">&quot;varsize&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="bitsizeof_bytes"><a class="viewcode-back" href="../../zserio.bitsizeof.html#zserio.bitsizeof.bitsizeof_bytes">[docs]</a><span class="k">def</span> <span class="nf">bitsizeof_bytes</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">bytearray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gets bit size of bytes.</span>
+
+<span class="sd">    :param value: Bytes value to use for bit size calculation.</span>
+<span class="sd">    :raises PythonRuntimeException: Throws if given string is too long.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">bitsizeof_varsize</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">))</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">*</span> <span class="mi">8</span></div>
+
+<div class="viewcode-block" id="bitsizeof_string"><a class="viewcode-back" href="../../zserio.bitsizeof.html#zserio.bitsizeof.bitsizeof_string">[docs]</a><span class="k">def</span> <span class="nf">bitsizeof_string</span><span class="p">(</span><span class="n">string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gets bit size of string.</span>
+
+<span class="sd">    :param string: String value to use for bit size calculation.</span>
+<span class="sd">    :raises PythonRuntimeException: Throws if given string is too long.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">string_bytes</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">bitsizeof_varsize</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">string_bytes</span><span class="p">))</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">string_bytes</span><span class="p">)</span> <span class="o">*</span> <span class="mi">8</span></div>
+
+<div class="viewcode-block" id="bitsizeof_bitbuffer"><a class="viewcode-back" href="../../zserio.bitsizeof.html#zserio.bitsizeof.bitsizeof_bitbuffer">[docs]</a><span class="k">def</span> <span class="nf">bitsizeof_bitbuffer</span><span class="p">(</span><span class="n">bitbuffer</span><span class="p">:</span> <span class="n">BitBuffer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gets the bit size of bit buffer which is stored in bit stream.</span>
+
+<span class="sd">    :param bitbuffer: Bit buffer for calculation.</span>
+<span class="sd">    :returns: Length of bit buffer in bits.</span>
+<span class="sd">    :raises PythonRuntimeException: Throws if given bit buffer is too long.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">bitbuffer_size</span> <span class="o">=</span> <span class="n">bitbuffer</span><span class="o">.</span><span class="n">bitsize</span>
+
+    <span class="c1"># bit buffer consists of varsize for bit size followed by the bits</span>
+    <span class="k">return</span> <span class="n">bitsizeof_varsize</span><span class="p">(</span><span class="n">bitbuffer_size</span><span class="p">)</span> <span class="o">+</span> <span class="n">bitbuffer_size</span></div>
+
+<span class="k">def</span> <span class="nf">_bitsizeof_varnum</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">max_values</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">varint_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">abs_value</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">max_value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">max_values</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">abs_value</span> <span class="o">&lt;=</span> <span class="n">max_value</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">8</span>
+
+    <span class="k">raise</span> <span class="n">PythonRuntimeException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;bitsizeof: Value &#39;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39; is out of range for &#39;</span><span class="si">{</span><span class="n">varint_name</span><span class="si">}</span><span class="s2">&#39;!&quot;</span><span class="p">)</span>
+
+<span class="n">VARINT16_MAX_VALUES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">6</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">8</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
+<span class="p">]</span>
+
+<span class="n">VARINT32_MAX_VALUES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">6</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">8</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">VARINT64_MAX_VALUES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">6</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">8</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">VARINT_MAX_VALUES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">6</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">8</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
+<span class="p">]</span>
+
+<span class="n">VARUINT16_MAX_VALUES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">7</span> <span class="o">+</span> <span class="mi">8</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
+<span class="p">]</span>
+
+<span class="n">VARUINT32_MAX_VALUES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">8</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
+<span class="p">]</span>
+
+<span class="n">VARUINT64_MAX_VALUES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">8</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
+<span class="p">]</span>
+
+<span class="n">VARUINT_MAX_VALUES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">8</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">VARSIZE_MAX_VALUES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="mi">8</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/Zserio.png" alt="Logo"/>
+            </a></p><h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../zserio.html">zserio package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../zserio.html#zserio.VERSION_STRING"><code class="docutils literal notranslate"><span class="pre">VERSION_STRING</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../zserio.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.array.html">zserio.array module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.bitbuffer.html">zserio.bitbuffer module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.bitfield.html">zserio.bitfield module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.bitposition.html">zserio.bitposition module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.bitreader.html">zserio.bitreader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.bitsizeof.html">zserio.bitsizeof module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.bitwriter.html">zserio.bitwriter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.builtin.html">zserio.builtin module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.cppbind.html">zserio.cppbind module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.creator.html">zserio.creator module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.debugstring.html">zserio.debugstring module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.exception.html">zserio.exception module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.float.html">zserio.float module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.hashcode.html">zserio.hashcode module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.json.html">zserio.json module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.limits.html">zserio.limits module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.pubsub.html">zserio.pubsub module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.serialization.html">zserio.serialization module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.service.html">zserio.service module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.typeinfo.html">zserio.typeinfo module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.walker.html">zserio.walker module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;Copyright (c) 2018-2022, Navigation Data Standard e.v..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.0.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
