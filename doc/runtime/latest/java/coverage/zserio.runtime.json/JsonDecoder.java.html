@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JsonDecoder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.json</a> &gt; <span class="el_source">JsonDecoder.java</span></div><h1>JsonDecoder.java</h1><pre class="source lang-java linenums">package zserio.runtime.json;
+
+import java.math.BigInteger;
+
+/**
+ * JSON value decoder.
+ */
+<span class="nc" id="L8">class JsonDecoder</span>
+{
+    /**
+     * Decodes the JSON value from the string.
+     *
+     * @param content String which contains encoded JSON value.
+     * @param pos Position from zero in content where the endoded JSON value begins.
+     *
+     * @return Decoder result object.
+     */
+    public static Result decodeValue(String content, int pos)
+    {
+<span class="fc bfc" id="L20" title="All 2 branches covered.">        if (pos &gt;= content.length())</span>
+<span class="fc" id="L21">            return Result.failure();</span>
+
+<span class="fc" id="L23">        final char firstChar = content.charAt(pos);</span>
+<span class="fc bfc" id="L24" title="All 8 branches covered.">        switch (firstChar)</span>
+        {
+        case 'n':
+<span class="fc" id="L27">            return decodeLiteral(content, pos, &quot;null&quot;, null);</span>
+
+        case 't':
+<span class="fc" id="L30">            return decodeLiteral(content, pos, &quot;true&quot;, true);</span>
+
+        case 'f':
+<span class="fc" id="L33">            return decodeLiteral(content, pos, &quot;false&quot;, false);</span>
+
+        case 'N':
+<span class="fc" id="L36">            return decodeLiteral(content, pos, &quot;NaN&quot;, Double.NaN);</span>
+
+        case 'I':
+<span class="fc" id="L39">            return decodeLiteral(content, pos, &quot;Infinity&quot;, Double.POSITIVE_INFINITY);</span>
+
+        case '&quot;':
+<span class="fc" id="L42">            return decodeString(content, pos);</span>
+
+        case '-':
+<span class="fc bfc" id="L45" title="All 2 branches covered.">            if (pos + 1 &gt;= content.length())</span>
+<span class="fc" id="L46">                return Result.failure(1);</span>
+
+<span class="fc" id="L48">            final char secondChar = content.charAt(pos + 1);</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">            if (secondChar == 'I')</span>
+<span class="fc" id="L50">                return decodeLiteral(content, pos, &quot;-Infinity&quot;, Double.NEGATIVE_INFINITY);</span>
+
+<span class="fc" id="L52">            return decodeNumber(content, pos);</span>
+
+        default:
+<span class="fc" id="L55">            return decodeNumber(content, pos);</span>
+        }
+    }
+
+    /**
+     * Decoder result value.
+     */
+    static class Result
+    {
+        /**
+         * Gets the decoder result.
+         *
+         * @return true in case of success, otherwise false.
+         */
+        public boolean success()
+        {
+<span class="fc" id="L71">            return success;</span>
+        }
+
+        /**
+         * Gets the decoded JSON value.
+         *
+         * @return Decoded JSON value or null in case of failure.
+         */
+        public Object getValue()
+        {
+<span class="fc" id="L81">            return value;</span>
+        }
+
+        /**
+         * Gets the number of read characters from the string which contains encoded JSON value.
+         *
+         * In case of failure, it returns the number of processed (read) characters.
+         *
+         * @return Number of read characters.
+         */
+        public int getNumReadChars()
+        {
+<span class="fc" id="L93">            return numReadChars;</span>
+        }
+
+        public static Result failure()
+        {
+<span class="fc" id="L98">            return new Result(false, null, 0);</span>
+        }
+
+        public static Result failure(int numReadChars)
+        {
+<span class="fc" id="L103">            return new Result(false, null, numReadChars);</span>
+        }
+
+        public static Result success(Object value, int numReadChars)
+        {
+<span class="fc" id="L108">            return new Result(true, value, numReadChars);</span>
+        }
+
+        private Result(boolean success, Object value, int numReadChars)
+<span class="fc" id="L112">        {</span>
+<span class="fc" id="L113">            this.success = success;</span>
+<span class="fc" id="L114">            this.value = value;</span>
+<span class="fc" id="L115">            this.numReadChars = numReadChars;</span>
+<span class="fc" id="L116">        }</span>
+
+        private final boolean success;
+        private final Object value;
+        private final int numReadChars;
+    }
+
+    private static Result decodeLiteral(String content, int pos, String text, Object decodedValue)
+    {
+<span class="fc" id="L125">        final int textLength = text.length();</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">        if (pos + textLength &gt; content.length())</span>
+<span class="fc" id="L127">            return Result.failure(content.length() - pos);</span>
+
+<span class="fc" id="L129">        final String subContent = content.substring(pos, pos + textLength);</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">        if (subContent.equals(text))</span>
+<span class="fc" id="L131">            return Result.success(decodedValue, textLength);</span>
+
+<span class="fc" id="L133">        return Result.failure(textLength);</span>
+    }
+
+    private static Result decodeString(String content, int pos)
+    {
+<span class="fc" id="L138">        final StringBuilder decodedString = new StringBuilder();</span>
+<span class="fc" id="L139">        int endOfStringPos = pos + 1; // we know that at the beginning is '&quot;'</span>
+        while (true)
+        {
+<span class="fc bfc" id="L142" title="All 2 branches covered.">            if (endOfStringPos &gt;= content.length())</span>
+<span class="fc" id="L143">                return Result.failure(endOfStringPos - pos);</span>
+
+<span class="fc" id="L145">            final char nextChar = content.charAt(endOfStringPos);</span>
+<span class="fc" id="L146">            endOfStringPos++;</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">            if (nextChar == '\\')</span>
+            {
+<span class="fc bfc" id="L149" title="All 2 branches covered.">                if (endOfStringPos &gt;= content.length())</span>
+<span class="fc" id="L150">                    return Result.failure(endOfStringPos - pos);</span>
+
+<span class="fc" id="L152">                final char nextNextChar = content.charAt(endOfStringPos);</span>
+<span class="fc" id="L153">                endOfStringPos++;</span>
+<span class="fc bfc" id="L154" title="All 8 branches covered.">                switch (nextNextChar)</span>
+                {
+                case '\\':
+                case '&quot;':
+<span class="fc" id="L158">                    decodedString.append(nextNextChar);</span>
+<span class="fc" id="L159">                    break;</span>
+                case 'b':
+<span class="fc" id="L161">                    decodedString.append('\b');</span>
+<span class="fc" id="L162">                    break;</span>
+                case 'f':
+<span class="fc" id="L164">                    decodedString.append('\f');</span>
+<span class="fc" id="L165">                    break;</span>
+                case 'n':
+<span class="fc" id="L167">                    decodedString.append('\n');</span>
+<span class="fc" id="L168">                    break;</span>
+                case 'r':
+<span class="fc" id="L170">                    decodedString.append('\r');</span>
+<span class="fc" id="L171">                    break;</span>
+                case 't':
+<span class="fc" id="L173">                    decodedString.append('\t');</span>
+<span class="fc" id="L174">                    break;</span>
+                case 'u': // unicode escape
+<span class="fc" id="L176">                    final int unicodeEscapeLen = 4;</span>
+<span class="fc" id="L177">                    endOfStringPos += unicodeEscapeLen;</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">                    if (endOfStringPos &gt;= content.length())</span>
+<span class="fc" id="L179">                        return Result.failure(content.length() - pos);</span>
+<span class="fc" id="L180">                    final String subContent = content.substring(endOfStringPos - unicodeEscapeLen,</span>
+                            endOfStringPos);
+<span class="fc" id="L182">                    final String decodedUnicode = decodeUnicodeEscape(subContent);</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">                    if (decodedUnicode != null)</span>
+<span class="fc" id="L184">                        decodedString.append(decodedUnicode);</span>
+                    else
+<span class="fc" id="L186">                        return Result.failure(endOfStringPos - pos);</span>
+                    break;
+                default:
+                    // unknown escape character, not decoded...
+<span class="fc" id="L190">                    return Result.failure(endOfStringPos - pos);</span>
+                }
+<span class="fc" id="L192">            }</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">            else if (nextChar == '&quot;')</span>
+            {
+<span class="fc" id="L195">                break;</span>
+            }
+            else
+            {
+<span class="fc" id="L199">                decodedString.append(nextChar);</span>
+            }
+<span class="fc" id="L201">        }</span>
+
+<span class="fc" id="L203">        return Result.success(decodedString.toString(), endOfStringPos - pos);</span>
+    }
+
+    private static String decodeUnicodeEscape(String content)
+    {
+        try
+        {
+<span class="fc" id="L210">            return new String(Character.toChars(Integer.parseInt(content, 16)));</span>
+        }
+<span class="fc" id="L212">        catch (NumberFormatException excpt)</span>
+        {
+<span class="fc" id="L214">            return null;</span>
+        }
+    }
+
+    private static Result decodeNumber(String content, int pos)
+    {
+<span class="fc" id="L220">        final ExtractNumberResult result = extractNumber(content, pos);</span>
+<span class="fc" id="L221">        final String numberContent = result.getNumberContent();</span>
+<span class="fc" id="L222">        final int numberLength = numberContent.length();</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">        if (numberLength == 0)</span>
+<span class="fc" id="L224">            return Result.failure(1);</span>
+
+        try
+        {
+<span class="fc bfc" id="L228" title="All 2 branches covered.">            if (result.isDouble())</span>
+            {
+<span class="fc" id="L230">                final Double doubleNumber = Double.parseDouble(numberContent);</span>
+<span class="fc" id="L231">                return Result.success(doubleNumber, numberLength);</span>
+            }
+            else
+            {
+<span class="fc" id="L235">                final BigInteger integerNumber = new BigInteger(numberContent);</span>
+<span class="fc" id="L236">                return Result.success(integerNumber, numberLength);</span>
+            }
+        }
+<span class="fc" id="L239">        catch (NumberFormatException excpt)</span>
+        {
+<span class="fc" id="L241">            return Result.failure(numberLength);</span>
+        }
+    }
+
+    private static class ExtractNumberResult
+    {
+        public ExtractNumberResult(String numberContent, boolean isDouble)
+<span class="fc" id="L248">        {</span>
+<span class="fc" id="L249">            this.numberContent = numberContent;</span>
+<span class="fc" id="L250">            this.isDouble = isDouble;</span>
+<span class="fc" id="L251">        }</span>
+
+        public String getNumberContent()
+        {
+<span class="fc" id="L255">            return numberContent;</span>
+        }
+
+        public boolean isDouble()
+        {
+<span class="fc" id="L260">            return isDouble;</span>
+        }
+
+        private String numberContent;
+        private boolean isDouble;
+    }
+
+    private static ExtractNumberResult extractNumber(String content, int pos)
+    {
+<span class="fc" id="L269">        int endOfNumberPos = pos;</span>
+<span class="fc bfc" id="L270" title="All 2 branches covered.">        if (content.charAt(endOfNumberPos) == '-') // we already know that there is something after '-'</span>
+<span class="fc" id="L271">            endOfNumberPos++;</span>
+<span class="fc" id="L272">        boolean isDouble = false;</span>
+<span class="fc" id="L273">        boolean acceptSign = false;</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">        while (endOfNumberPos &lt; content.length())</span>
+        {
+<span class="fc" id="L276">            final char nextChar = content.charAt(endOfNumberPos);</span>
+<span class="fc bfc" id="L277" title="All 2 branches covered.">            if (acceptSign)</span>
+            {
+<span class="fc" id="L279">                acceptSign = false;</span>
+<span class="fc bfc" id="L280" title="All 4 branches covered.">                if (nextChar == '+' || nextChar == '-')</span>
+                {
+<span class="fc" id="L282">                    endOfNumberPos++;</span>
+<span class="fc" id="L283">                    continue;</span>
+                }
+            }
+<span class="fc bfc" id="L286" title="All 2 branches covered.">            if (Character.isDigit(nextChar))</span>
+            {
+<span class="fc" id="L288">                endOfNumberPos++;</span>
+<span class="fc" id="L289">                continue;</span>
+            }
+<span class="fc bfc" id="L291" title="All 8 branches covered.">            if (isDouble == false &amp;&amp; (nextChar == '.' || nextChar == 'e' || nextChar == 'E'))</span>
+            {
+<span class="fc" id="L293">                endOfNumberPos++;</span>
+<span class="fc" id="L294">                isDouble = true;</span>
+<span class="fc bfc" id="L295" title="All 4 branches covered.">                if (nextChar == 'e' || nextChar == 'E')</span>
+<span class="fc" id="L296">                    acceptSign = true;</span>
+                continue;
+            }
+            break;
+        }
+
+<span class="fc" id="L302">        return new ExtractNumberResult(content.substring(pos, endOfNumberPos), isDouble);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
