@@ -71,6 +71,7 @@ function(create_coverage_target)
             COMMAND ${CMAKE_COMMAND} -E make_directory ${cov_binary_dir}
             # run tests again because ctest runs tests separately (default.profraw contains only the last test)
             COMMAND bash -c "cd ${ZserioCppRuntimeTest_BINARY_DIR} && ${cov_test_exectable} > /dev/null"
+            COMMAND bash -c "rm -rf ${cov_html_clang_dir}"
             COMMAND ${LLVM_PROFDATA_BIN} merge
                 --sparse ${ZserioCppRuntimeTest_BINARY_DIR}/default.profraw
                 -o ${cov_binary_dir}/runtime.profdata
@@ -79,6 +80,18 @@ function(create_coverage_target)
                 -instr-profile=${cov_binary_dir}/runtime.profdata
                 -format=html -show-instantiations=false -output-dir=${cov_html_clang_dir}
                 ${cov_exclude}
+            # llvm-cov uses full sources paths within the html dir - make them relative
+            COMMAND bash -c "\
+                    mv ${cov_html_clang_dir}/coverage${PROJECT_SOURCE_DIR}/* \
+                            ${cov_html_clang_dir}/coverage && \
+                    rm -r ${cov_html_clang_dir}/coverage/$(echo ${PROJECT_SOURCE_DIR} | cut -d/ -f2) && \
+                    SRC_DIR=${PROJECT_SOURCE_DIR}; SRC_SLASHES=\${SRC_DIR//[!\\/]}; SRC_DEPTH=\${#SRC_SLASHES} && \
+                    CSS_PREFIX=\"\"; for ((i=0; i<\${SRC_DEPTH}; i++)); do CSS_PREFIX+=\"../\"; done && \
+                    sed -i 's|coverage${PROJECT_SOURCE_DIR}|coverage|g' ${cov_html_clang_dir}/index.html && \
+                    find ${cov_html_clang_dir}/coverage -type f -exec \
+                            sed -i \"s|href='\${CSS_PREFIX}|href='|\" {} + && \
+                    find ${cov_html_clang_dir}/coverage -type f -exec \
+                            sed -i 's|<pre>${PROJECT_SOURCE_DIR}/|<pre>|' {} +"
             COMMAND ${LLVM_COV_BIN} report ${cov_test_exectable}
                 -instr-profile=${cov_binary_dir}/runtime.profdata
                 ${cov_exclude}
