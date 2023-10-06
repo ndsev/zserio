@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>zserio.bitreader &#8212; Zserio 2.12.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=4a6762d5" />
+    <script src="../../_static/documentation_options.js?v=63f0a439"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for zserio.bitreader</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The module implements abstraction for reading data to the bit stream.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">typing</span>
+
+<span class="kn">from</span> <span class="nn">zserio.bitbuffer</span> <span class="kn">import</span> <span class="n">BitBuffer</span>
+<span class="kn">from</span> <span class="nn">zserio.limits</span> <span class="kn">import</span> <span class="n">INT64_MIN</span>
+<span class="kn">from</span> <span class="nn">zserio.exception</span> <span class="kn">import</span> <span class="n">PythonRuntimeException</span>
+<span class="kn">from</span> <span class="nn">zserio.float</span> <span class="kn">import</span> <span class="n">uint16_to_float</span><span class="p">,</span> <span class="n">uint32_to_float</span><span class="p">,</span> <span class="n">uint64_to_float</span>
+<span class="kn">from</span> <span class="nn">zserio.cppbind</span> <span class="kn">import</span> <span class="n">import_cpp_class</span>
+
+<div class="viewcode-block" id="BitStreamReader">
+<a class="viewcode-back" href="../../zserio.bitreader.html#zserio.bitreader.BitStreamReader">[docs]</a>
+<span class="k">class</span> <span class="nc">BitStreamReader</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Bit stream reader.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buffer</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">bitsize</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructs bit stream reader from bytes buffer.</span>
+
+<span class="sd">        Because bit buffer size does not have to be byte aligned (divisible by 8), it&#39;s possible that not all</span>
+<span class="sd">        bits of the last byte are used. In this case, only most significant bits of the corresponded size are</span>
+<span class="sd">        used.</span>
+
+<span class="sd">        :param buffer: Bytes-like buffer to read as a bit stream.</span>
+<span class="sd">        :param bitsize: Number of bits stored in buffer to use.</span>
+<span class="sd">        :raises PythonRuntimeException: If bitsize is out of range.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">bitsize</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">bitsize</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">buffer</span><span class="p">)</span> <span class="o">*</span> <span class="mi">8</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">buffer</span><span class="p">)</span> <span class="o">*</span> <span class="mi">8</span> <span class="o">&lt;</span> <span class="n">bitsize</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PythonRuntimeException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;BitStreamReader: Bit size &#39;</span><span class="si">{</span><span class="n">bitsize</span><span class="si">}</span><span class="s2">&#39; out of range &quot;</span>
+                                         <span class="sa">f</span><span class="s2">&quot;for the given buffer byte size &#39;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">buffer</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;!&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">=</span> <span class="n">buffer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bitsize</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">bitsize</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bitposition</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="BitStreamReader.from_bitbuffer">
+<a class="viewcode-back" href="../../zserio.bitreader.html#zserio.bitreader.BitStreamReader.from_bitbuffer">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_bitbuffer</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Type</span><span class="p">[</span><span class="s1">&#39;BitStreamReader&#39;</span><span class="p">],</span> <span class="n">bitbuffer</span><span class="p">:</span> <span class="n">BitBuffer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;BitStreamReader&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructs bit stream reader from bit buffer.</span>
+
+<span class="sd">        :param bitbuffer: Bit buffer to read as a bit stream.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">instance</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">bitbuffer</span><span class="o">.</span><span class="n">buffer</span><span class="p">,</span> <span class="n">bitbuffer</span><span class="o">.</span><span class="n">bitsize</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">instance</span></div>
+
+
+<div class="viewcode-block" id="BitStreamReader.from_file">
+<a class="viewcode-back" href="../../zserio.bitreader.html#zserio.bitreader.BitStreamReader.from_file">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Type</span><span class="p">[</span><span class="s1">&#39;BitStreamReader&#39;</span><span class="p">],</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;BitStreamReader&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructs bit stream reader from file.</span>
+
+<span class="sd">        :param filename: Filename to read as a bit stream.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="BitStreamReader.read_bits">
+<a class="viewcode-back" href="../../zserio.bitreader.html#zserio.bitreader.BitStreamReader.read_bits">[docs]</a>
+    <span class="k">def</span> <span class="nf">read_bits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numbits</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads given number of bits from the bit stream as an unsigned integer.</span>
+
+<span class="sd">        :param numbits: Number of bits to read.</span>
+<span class="sd">        :returns: Read bits as an unsigned integer.</span>
+<span class="sd">        :raises PythonRuntimeException: If the numbits is invalid number of the reading goes behind the stream.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">numbits</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PythonRuntimeException</span><span class="p">(</span><span class="s2">&quot;BitStreamReader: Reading negative number of bits!&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="n">numbits</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BitStreamReader.read_signed_bits">
+<a class="viewcode-back" href="../../zserio.bitreader.html#zserio.bitreader.BitStreamReader.read_signed_bits">[docs]</a>
+    <span class="k">def</span> <span class="nf">read_signed_bits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numbits</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads given number of bits from the bit stream as a signed integer.</span>
+
+<span class="sd">        :param numbits: Number of bits to read</span>
+<span class="sd">        :returns: Read bits as a signed integer.</span>
+<span class="sd">        :raises PythonRuntimeException: If the numbits is invalid number of the reading goes behind the stream.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">numbits</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PythonRuntimeException</span><span class="p">(</span><span class="s2">&quot;BitStreamReader: Reading negative number of bits!&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_signed_bits_unchecked</span><span class="p">(</span><span class="n">numbits</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BitStreamReader.read_bits_unchecked">
+<a class="viewcode-back" href="../../zserio.bitreader.html#zserio.bitreader.BitStreamReader.read_bits_unchecked">[docs]</a>
+    <span class="k">def</span> <span class="nf">read_bits_unchecked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numbits</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads given number of bits from the bit stream as an unsigned integer.</span>
+
+<span class="sd">        This method does not check that numbits &gt;= 0 and assumes that it&#39;s ensured by the caller.</span>
+
+<span class="sd">        :param numbits: Number of bits to read.</span>
+<span class="sd">        :returns: Read bits as an unsigned integer.</span>
+<span class="sd">        :raises PythonRuntimeException: If the numbits is invalid number of the reading goes behind the stream.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">end_bitposition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bitposition</span> <span class="o">+</span> <span class="n">numbits</span>
+
+        <span class="k">if</span> <span class="n">end_bitposition</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bitsize</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PythonRuntimeException</span><span class="p">(</span><span class="s2">&quot;BitStreamReader: Reading behind the stream!&quot;</span><span class="p">)</span>
+
+        <span class="n">start_byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bitposition</span> <span class="o">//</span> <span class="mi">8</span>
+        <span class="n">end_byte</span> <span class="o">=</span> <span class="p">(</span><span class="n">end_bitposition</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">8</span>
+
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="p">[</span><span class="n">start_byte</span> <span class="p">:</span> <span class="n">end_byte</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">byteorder</span><span class="o">=</span><span class="s1">&#39;big&#39;</span><span class="p">,</span> <span class="n">signed</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">last_bits</span> <span class="o">=</span> <span class="n">end_bitposition</span> <span class="o">%</span> <span class="mi">8</span>
+        <span class="k">if</span> <span class="n">last_bits</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">&gt;&gt;=</span> <span class="p">(</span><span class="mi">8</span> <span class="o">-</span> <span class="n">last_bits</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">&amp;=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">numbits</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bitposition</span> <span class="o">=</span> <span class="n">end_bitposition</span>
+
+        <span class="k">return</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="BitStreamReader.read_signed_bits_unchecked">
+<a class="viewcode-back" href="../../zserio.bitreader.html#zserio.bitreader.BitStreamReader.read_signed_bits_unchecked">[docs]</a>
+    <span class="k">def</span> <span class="nf">read_signed_bits_unchecked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numbits</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads given number of bits from the bit stream as a signed integer.</span>
+
+<span class="sd">        This method does not check that numbits &gt;= 0 and assumes that it&#39;s ensured by the caller.</span>
+
+<span class="sd">        :param numbits: Number of bits to read</span>
+<span class="sd">        :returns: Read bits as a signed integer.</span>
+<span class="sd">        :raises PythonRuntimeException: If the numbits is invalid number of the reading goes behind the stream.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="n">numbits</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">numbits</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">value</span> <span class="o">&gt;&gt;</span> <span class="p">(</span><span class="n">numbits</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># signed</span>
+            <span class="k">return</span> <span class="n">value</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">numbits</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># unsigned</span>
+            <span class="k">return</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="BitStreamReader.read_varint16">
+<a class="viewcode-back" href="../../zserio.bitreader.html#zserio.bitreader.BitStreamReader.read_varint16">[docs]</a>
+    <span class="k">def</span> <span class="nf">read_varint16</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads variable 16-bit signed integer value from the bit stream.</span>
+
+<span class="sd">        :returns: Variable 16-bit signed integer value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 1</span>
+        <span class="n">sign</span> <span class="o">=</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_SIGN_1</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_BYTE_1</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_HAS_NEXT_1</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="n">result</span> <span class="k">if</span> <span class="n">sign</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">result</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span><span class="p">)</span> <span class="o">|</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 2</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">result</span> <span class="k">if</span> <span class="n">sign</span> <span class="k">else</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="BitStreamReader.read_varint32">
+<a class="viewcode-back" href="../../zserio.bitreader.html#zserio.bitreader.BitStreamReader.read_varint32">[docs]</a>
+    <span class="k">def</span> <span class="nf">read_varint32</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads variable 32-bit signed integer value from the bit stream.</span>
+
+<span class="sd">        :returns: Variable 32-bit signed integer value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 1</span>
+        <span class="n">sign</span> <span class="o">=</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_SIGN_1</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_BYTE_1</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_HAS_NEXT_1</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="n">result</span> <span class="k">if</span> <span class="n">sign</span> <span class="k">else</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 2</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_BYTE_N</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_HAS_NEXT_N</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="n">result</span> <span class="k">if</span> <span class="n">sign</span> <span class="k">else</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 3</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_BYTE_N</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_HAS_NEXT_N</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="n">result</span> <span class="k">if</span> <span class="n">sign</span> <span class="k">else</span> <span class="n">result</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span> <span class="o">|</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 4</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">result</span> <span class="k">if</span> <span class="n">sign</span> <span class="k">else</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="BitStreamReader.read_varint64">
+<a class="viewcode-back" href="../../zserio.bitreader.html#zserio.bitreader.BitStreamReader.read_varint64">[docs]</a>
+    <span class="k">def</span> <span class="nf">read_varint64</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads variable 64-bit signed integer value from the bit stream.</span>
+
+<span class="sd">        :returns: Variable 64-bit signed integer value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 1</span>
+        <span class="n">sign</span> <span class="o">=</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_SIGN_1</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_BYTE_1</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_HAS_NEXT_1</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="n">result</span> <span class="k">if</span> <span class="n">sign</span> <span class="k">else</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 2</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_BYTE_N</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_HAS_NEXT_N</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="n">result</span> <span class="k">if</span> <span class="n">sign</span> <span class="k">else</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 3</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_BYTE_N</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_HAS_NEXT_N</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="n">result</span> <span class="k">if</span> <span class="n">sign</span> <span class="k">else</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 4</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_BYTE_N</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_HAS_NEXT_N</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="n">result</span> <span class="k">if</span> <span class="n">sign</span> <span class="k">else</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 5</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_BYTE_N</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_HAS_NEXT_N</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="n">result</span> <span class="k">if</span> <span class="n">sign</span> <span class="k">else</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 6</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_BYTE_N</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_HAS_NEXT_N</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="n">result</span> <span class="k">if</span> <span class="n">sign</span> <span class="k">else</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 7</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_BYTE_N</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_HAS_NEXT_N</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="n">result</span> <span class="k">if</span> <span class="n">sign</span> <span class="k">else</span> <span class="n">result</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span> <span class="o">|</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 8</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">result</span> <span class="k">if</span> <span class="n">sign</span> <span class="k">else</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="BitStreamReader.read_varint">
+<a class="viewcode-back" href="../../zserio.bitreader.html#zserio.bitreader.BitStreamReader.read_varint">[docs]</a>
+    <span class="k">def</span> <span class="nf">read_varint</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads variable signed integer value (up to 9 bytes) from the bit stream.</span>
+
+<span class="sd">        :returns: Variable signed integer value (up to 9 bytes).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 1</span>
+        <span class="n">sign</span> <span class="o">=</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_SIGN_1</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_BYTE_1</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_HAS_NEXT_1</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">INT64_MIN</span> <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="o">-</span><span class="n">result</span><span class="p">)</span> <span class="k">if</span> <span class="n">sign</span> <span class="k">else</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 2</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_BYTE_N</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_HAS_NEXT_N</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="n">result</span> <span class="k">if</span> <span class="n">sign</span> <span class="k">else</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 3</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_BYTE_N</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_HAS_NEXT_N</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="n">result</span> <span class="k">if</span> <span class="n">sign</span> <span class="k">else</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 4</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_BYTE_N</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_HAS_NEXT_N</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="n">result</span> <span class="k">if</span> <span class="n">sign</span> <span class="k">else</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 5</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_BYTE_N</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_HAS_NEXT_N</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="n">result</span> <span class="k">if</span> <span class="n">sign</span> <span class="k">else</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 6</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_BYTE_N</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_HAS_NEXT_N</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="n">result</span> <span class="k">if</span> <span class="n">sign</span> <span class="k">else</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 7</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_BYTE_N</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_HAS_NEXT_N</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="n">result</span> <span class="k">if</span> <span class="n">sign</span> <span class="k">else</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 8</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_BYTE_N</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARINT_HAS_NEXT_N</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="n">result</span> <span class="k">if</span> <span class="n">sign</span> <span class="k">else</span> <span class="n">result</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span> <span class="o">|</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 9</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">result</span> <span class="k">if</span> <span class="n">sign</span> <span class="k">else</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="BitStreamReader.read_varuint16">
+<a class="viewcode-back" href="../../zserio.bitreader.html#zserio.bitreader.BitStreamReader.read_varuint16">[docs]</a>
+    <span class="k">def</span> <span class="nf">read_varuint16</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads variable 16-bit unsigned integer value from the bit stream.</span>
+
+<span class="sd">        :returns: Variable 16-bit unsigned integer value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 1</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_BYTE</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_HAS_NEXT</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span> <span class="o">|</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 2</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="BitStreamReader.read_varuint32">
+<a class="viewcode-back" href="../../zserio.bitreader.html#zserio.bitreader.BitStreamReader.read_varuint32">[docs]</a>
+    <span class="k">def</span> <span class="nf">read_varuint32</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads variable 32-bit unsigned integer value from the bit stream.</span>
+
+<span class="sd">        :returns: Variable 32-bit unsigned integer value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 1</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_BYTE</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_HAS_NEXT</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 2</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_BYTE</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_HAS_NEXT</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 3</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_BYTE</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_HAS_NEXT</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span> <span class="o">|</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 4</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="BitStreamReader.read_varuint64">
+<a class="viewcode-back" href="../../zserio.bitreader.html#zserio.bitreader.BitStreamReader.read_varuint64">[docs]</a>
+    <span class="k">def</span> <span class="nf">read_varuint64</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads variable 64-bit unsigned integer value from the bit stream.</span>
+
+<span class="sd">        :returns: Variable 64-bit unsigned integer value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 1</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_BYTE</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_HAS_NEXT</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 2</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_BYTE</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_HAS_NEXT</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 3</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_BYTE</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_HAS_NEXT</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 4</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_BYTE</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_HAS_NEXT</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 5</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_BYTE</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_HAS_NEXT</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 6</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_BYTE</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_HAS_NEXT</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 7</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_BYTE</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_HAS_NEXT</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span> <span class="o">|</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 8</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="BitStreamReader.read_varuint">
+<a class="viewcode-back" href="../../zserio.bitreader.html#zserio.bitreader.BitStreamReader.read_varuint">[docs]</a>
+    <span class="k">def</span> <span class="nf">read_varuint</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads variable unsigned integer value (up to 9 bytes) from the bit stream.</span>
+
+<span class="sd">        :returns: Variable unsigned integer value (up to 9 bytes).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 1</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_BYTE</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_HAS_NEXT</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 2</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_BYTE</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_HAS_NEXT</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 3</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_BYTE</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_HAS_NEXT</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 4</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_BYTE</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_HAS_NEXT</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 5</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_BYTE</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_HAS_NEXT</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 6</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_BYTE</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_HAS_NEXT</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 7</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_BYTE</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_HAS_NEXT</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 8</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_BYTE</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_HAS_NEXT</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span> <span class="o">|</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 9</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="BitStreamReader.read_varsize">
+<a class="viewcode-back" href="../../zserio.bitreader.html#zserio.bitreader.BitStreamReader.read_varsize">[docs]</a>
+    <span class="k">def</span> <span class="nf">read_varsize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads variable size integer value from the bit stream.</span>
+
+<span class="sd">        :returns: Variable size integer value.</span>
+<span class="sd">        :raises PythonRuntimeException: If read variable size integer is out of range.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 1</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_BYTE</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_HAS_NEXT</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 2</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_BYTE</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_HAS_NEXT</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 3</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_BYTE</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_HAS_NEXT</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 4</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">|</span> <span class="p">(</span><span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_BYTE</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte</span> <span class="o">&amp;</span> <span class="n">VARUINT_HAS_NEXT</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span> <span class="o">|</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="c1"># byte 5</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="o">&gt;</span> <span class="n">VARSIZE_MAX_VALUE</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PythonRuntimeException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;BitStreamReader: Read value &#39;</span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&#39; is out of range &quot;</span>
+                                         <span class="s2">&quot;for varsize type!&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="BitStreamReader.read_float16">
+<a class="viewcode-back" href="../../zserio.bitreader.html#zserio.bitreader.BitStreamReader.read_float16">[docs]</a>
+    <span class="k">def</span> <span class="nf">read_float16</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read 16-bits from the stream as a float value encoded according to IEEE 754 binary16.</span>
+
+<span class="sd">        :returns: Read float value.</span>
+<span class="sd">        :raises PythonRuntimeException: If the reading goes behind the stream.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">uint16_to_float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">16</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="BitStreamReader.read_float32">
+<a class="viewcode-back" href="../../zserio.bitreader.html#zserio.bitreader.BitStreamReader.read_float32">[docs]</a>
+    <span class="k">def</span> <span class="nf">read_float32</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read 32-bits from the stream as a float value encoded according to IEEE 754 binary32.</span>
+
+<span class="sd">        :returns: Read float value.</span>
+<span class="sd">        :raises PythonRuntimeException: If the reading goes behind the stream.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">uint32_to_float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">32</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="BitStreamReader.read_float64">
+<a class="viewcode-back" href="../../zserio.bitreader.html#zserio.bitreader.BitStreamReader.read_float64">[docs]</a>
+    <span class="k">def</span> <span class="nf">read_float64</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read 64-bits from the stream as a float value encoded according to IEEE 754 binary64.</span>
+
+<span class="sd">        :returns: Read float value.</span>
+<span class="sd">        :raises PythonRuntimeException: If the reading goes behind the stream.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">uint64_to_float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">64</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="BitStreamReader.read_bytes">
+<a class="viewcode-back" href="../../zserio.bitreader.html#zserio.bitreader.BitStreamReader.read_bytes">[docs]</a>
+    <span class="k">def</span> <span class="nf">read_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytearray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads bytes from the stream.</span>
+
+<span class="sd">        :returns: Read bytes.</span>
+<span class="sd">        :raises PythonRuntimeException: If the reading goes behind the stream.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_varsize</span><span class="p">()</span>
+        <span class="n">begin_bitposition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bitposition</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">begin_bitposition</span> <span class="o">&amp;</span> <span class="mh">0x07</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># we are not aligned to byte</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">length</span><span class="p">):</span>
+                <span class="n">value</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># we are aligned to byte</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bitposition</span> <span class="o">=</span> <span class="n">begin_bitposition</span> <span class="o">+</span> <span class="n">length</span> <span class="o">*</span> <span class="mi">8</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="n">length</span><span class="p">)</span>
+            <span class="n">begin_byte_position</span> <span class="o">=</span> <span class="n">begin_bitposition</span> <span class="o">//</span> <span class="mi">8</span>
+            <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">length</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="p">[</span><span class="n">begin_byte_position</span><span class="p">:</span><span class="n">begin_byte_position</span><span class="o">+</span><span class="n">length</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="BitStreamReader.read_string">
+<a class="viewcode-back" href="../../zserio.bitreader.html#zserio.bitreader.BitStreamReader.read_string">[docs]</a>
+    <span class="k">def</span> <span class="nf">read_string</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads string from the stream.</span>
+
+<span class="sd">        :returns: Read string.</span>
+<span class="sd">        :raises PythonRuntimeException: If the reading goes behind the stream.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_varsize</span><span class="p">()</span>
+        <span class="n">begin_bitposition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bitposition</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">begin_bitposition</span> <span class="o">&amp;</span> <span class="mh">0x07</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># we are not aligned to byte</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">length</span><span class="p">):</span>
+                <span class="n">value</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># we are aligned to byte</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bitposition</span> <span class="o">=</span> <span class="n">begin_bitposition</span> <span class="o">+</span> <span class="n">length</span> <span class="o">*</span> <span class="mi">8</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="n">length</span><span class="p">)</span>
+            <span class="n">begin_byte_position</span> <span class="o">=</span> <span class="n">begin_bitposition</span> <span class="o">//</span> <span class="mi">8</span>
+            <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">length</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="p">[</span><span class="n">begin_byte_position</span><span class="p">:</span><span class="n">begin_byte_position</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BitStreamReader.read_bool">
+<a class="viewcode-back" href="../../zserio.bitreader.html#zserio.bitreader.BitStreamReader.read_bool">[docs]</a>
+    <span class="k">def</span> <span class="nf">read_bool</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads single bit as a bool value.</span>
+
+<span class="sd">        :returns: Read bool values.</span>
+<span class="sd">        :raises PythonRuntimeException: If the reading goes behind the stream.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="BitStreamReader.read_bitbuffer">
+<a class="viewcode-back" href="../../zserio.bitreader.html#zserio.bitreader.BitStreamReader.read_bitbuffer">[docs]</a>
+    <span class="k">def</span> <span class="nf">read_bitbuffer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BitBuffer</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads a bit buffer from the stream.</span>
+
+<span class="sd">        :returns: Read bit buffer.</span>
+<span class="sd">        :raises PythonRuntimeException: If the reading goes behind the stream.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">bitsize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_varsize</span><span class="p">()</span>
+        <span class="n">num_bytes_to_read</span> <span class="o">=</span> <span class="n">bitsize</span> <span class="o">//</span> <span class="mi">8</span>
+        <span class="n">num_rest_bits</span> <span class="o">=</span> <span class="n">bitsize</span> <span class="o">-</span> <span class="n">num_bytes_to_read</span> <span class="o">*</span> <span class="mi">8</span>
+        <span class="n">bytesize</span> <span class="o">=</span> <span class="p">(</span><span class="n">bitsize</span> <span class="o">+</span> <span class="mi">7</span><span class="p">)</span> <span class="o">//</span> <span class="mi">8</span>
+        <span class="n">read_buffer</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="n">bytesize</span><span class="p">)</span>
+        <span class="n">begin_bitposition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bitposition</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">begin_bitposition</span> <span class="o">&amp;</span> <span class="mh">0x07</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># we are not aligned to byte</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_bytes_to_read</span><span class="p">):</span>
+                <span class="n">read_buffer</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits_unchecked</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># we are aligned to byte</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bitposition</span> <span class="o">=</span> <span class="n">begin_bitposition</span> <span class="o">+</span> <span class="n">num_bytes_to_read</span> <span class="o">*</span> <span class="mi">8</span>
+            <span class="n">begin_byte_position</span> <span class="o">=</span> <span class="n">begin_bitposition</span> <span class="o">//</span> <span class="mi">8</span>
+            <span class="n">read_buffer</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">num_bytes_to_read</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="p">[</span><span class="n">begin_byte_position</span><span class="p">:</span>
+                                                            <span class="n">begin_byte_position</span> <span class="o">+</span> <span class="n">num_bytes_to_read</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">num_rest_bits</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">read_buffer</span><span class="p">[</span><span class="n">num_bytes_to_read</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_bits</span><span class="p">(</span><span class="n">num_rest_bits</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">8</span> <span class="o">-</span> <span class="n">num_rest_bits</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">BitBuffer</span><span class="p">(</span><span class="n">read_buffer</span><span class="p">,</span> <span class="n">bitsize</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">bitposition</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets current bit position.</span>
+
+<span class="sd">        :returns: Current bit position.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bitposition</span>
+
+    <span class="nd">@bitposition</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">bitposition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bitposition</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets bit position.</span>
+
+<span class="sd">        :param bitposition: New bit position.</span>
+<span class="sd">        :raises PythonRuntimeException: If the position is not within the stream.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">bitposition</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PythonRuntimeException</span><span class="p">(</span><span class="s2">&quot;BitStreamReader: Cannot set negative bit position!&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">bitposition</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bitsize</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PythonRuntimeException</span><span class="p">(</span><span class="s2">&quot;BitStreamReader: Setting bit position behind the stream!&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bitposition</span> <span class="o">=</span> <span class="n">bitposition</span>
+
+<div class="viewcode-block" id="BitStreamReader.alignto">
+<a class="viewcode-back" href="../../zserio.bitreader.html#zserio.bitreader.BitStreamReader.alignto">[docs]</a>
+    <span class="k">def</span> <span class="nf">alignto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alignment</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Aligns the bit position according to the aligning value.</span>
+
+<span class="sd">        :param alignment: An aligning value to use.</span>
+<span class="sd">        :raises PythonRuntimeException: If the aligning moves behind the stream.&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bitposition</span> <span class="o">%</span> <span class="n">alignment</span>
+        <span class="k">if</span> <span class="n">offset</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bitposition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bitposition</span> <span class="o">+</span> <span class="n">alignment</span> <span class="o">-</span> <span class="n">offset</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">buffer_bitsize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets size of the underlying buffer in bits.</span>
+
+<span class="sd">        :returns: Buffer bit size.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bitsize</span></div>
+
+
+<span class="n">VARINT_SIGN_1</span> <span class="o">=</span> <span class="mh">0x80</span>
+<span class="n">VARINT_BYTE_1</span> <span class="o">=</span> <span class="mh">0x3f</span>
+<span class="n">VARINT_BYTE_N</span> <span class="o">=</span> <span class="mh">0x7f</span>
+<span class="n">VARINT_HAS_NEXT_1</span> <span class="o">=</span> <span class="mh">0x40</span>
+<span class="n">VARINT_HAS_NEXT_N</span> <span class="o">=</span> <span class="mh">0x80</span>
+<span class="n">VARUINT_BYTE</span> <span class="o">=</span> <span class="mh">0x7f</span>
+<span class="n">VARUINT_HAS_NEXT</span> <span class="o">=</span> <span class="mh">0x80</span>
+<span class="n">VARSIZE_MAX_VALUE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">31</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+
+<span class="n">_BitStreamReaderCpp</span> <span class="o">=</span> <span class="n">import_cpp_class</span><span class="p">(</span><span class="s2">&quot;BitStreamReader&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">_BitStreamReaderCpp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">BitStreamReader</span> <span class="o">=</span> <span class="n">_BitStreamReaderCpp</span> <span class="c1"># type: ignore</span>
+
+    <span class="k">def</span> <span class="nf">_bitstreamreader_fromfile</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;BitStreamReader&#39;</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">BitStreamReader</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+    <span class="n">BitStreamReader</span><span class="o">.</span><span class="n">from_file</span> <span class="o">=</span> <span class="n">_bitstreamreader_fromfile</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/Zserio.png" alt="Logo"/>
+            </a></p><h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../zserio.html">zserio package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../zserio.html#zserio.VERSION_STRING"><code class="docutils literal notranslate"><span class="pre">VERSION_STRING</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../zserio.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.array.html">zserio.array module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.bitbuffer.html">zserio.bitbuffer module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.bitfield.html">zserio.bitfield module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.bitposition.html">zserio.bitposition module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.bitreader.html">zserio.bitreader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.bitsizeof.html">zserio.bitsizeof module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.bitwriter.html">zserio.bitwriter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.builtin.html">zserio.builtin module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.cppbind.html">zserio.cppbind module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.creator.html">zserio.creator module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.debugstring.html">zserio.debugstring module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.enum.html">zserio.enum module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.exception.html">zserio.exception module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.float.html">zserio.float module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.hashcode.html">zserio.hashcode module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.json.html">zserio.json module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.limits.html">zserio.limits module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.pubsub.html">zserio.pubsub module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.serialization.html">zserio.serialization module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.service.html">zserio.service module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.typeinfo.html">zserio.typeinfo module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zserio.walker.html">zserio.walker module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;Copyright (c) 2018-2022, Navigation Data Standard e.v..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
