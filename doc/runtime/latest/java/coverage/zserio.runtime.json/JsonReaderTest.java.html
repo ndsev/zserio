@@ -1,0 +1,649 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JsonReaderTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.json</a> &gt; <span class="el_source">JsonReaderTest.java</span></div><h1>JsonReaderTest.java</h1><pre class="source lang-java linenums">package zserio.runtime.json;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+
+import org.junit.jupiter.api.Test;
+
+import zserio.runtime.ZserioError;
+import zserio.runtime.io.BitBuffer;
+
+import test_object.CreatorBitmask;
+import test_object.CreatorEnum;
+import test_object.CreatorObject;
+
+<span class="fc" id="L21">public class JsonReaderTest</span>
+{
+    @Test
+    public void readObject() throws IOException
+    {
+<span class="fc" id="L26">        final Reader reader = new StringReader(</span>
+                &quot;{\n&quot; +
+                &quot;    \&quot;value\&quot;: 13,\n&quot; +
+                &quot;    \&quot;nested\&quot;: {\n&quot; +
+                &quot;        \&quot;value\&quot;: 10,\n&quot; +
+                &quot;        \&quot;text\&quot;: \&quot;nested\&quot;,\n&quot; +
+                &quot;        \&quot;externData\&quot;: {\n&quot; +
+                &quot;             \&quot;buffer\&quot;: [\n&quot; +
+                &quot;                 203,\n&quot; +
+                &quot;                 240\n&quot; +
+                &quot;             ],\n&quot; +
+                &quot;             \&quot;bitSize\&quot;: 12\n&quot; +
+                &quot;        },\n&quot; +
+                &quot;        \&quot;bytesData\&quot;: {\n&quot; +
+                &quot;           \&quot;buffer\&quot;: [\n&quot; +
+                &quot;               202,\n&quot; +
+                &quot;               254\n&quot; +
+                &quot;           ]\n&quot; +
+                &quot;        },\n&quot; +
+                &quot;        \&quot;creatorEnum\&quot;: 0,\n&quot; +
+                &quot;        \&quot;creatorBitmask\&quot;: 1\n&quot; +
+                &quot;    },\n&quot; +
+                &quot;    \&quot;text\&quot;: \&quot;test\&quot;,\n&quot; +
+                &quot;    \&quot;nestedArray\&quot;: [\n&quot; +
+                &quot;        {\n&quot; +
+                &quot;            \&quot;value\&quot;: 5,\n&quot; +
+                &quot;            \&quot;text\&quot;: \&quot;nestedArray\&quot;,\n&quot; +
+                &quot;            \&quot;externData\&quot;: {\n&quot; +
+                &quot;                 \&quot;buffer\&quot;: [\n&quot; +
+                &quot;                     202,\n&quot; +
+                &quot;                     254\n&quot; +
+                &quot;                 ],&quot; +
+                &quot;                 \&quot;bitSize\&quot;: 15\n&quot; +
+                &quot;            },\n&quot; +
+                &quot;            \&quot;bytesData\&quot;: {\n&quot; +
+                &quot;               \&quot;buffer\&quot;: [\n&quot; +
+                &quot;                   203,\n&quot; +
+                &quot;                   240\n&quot; +
+                &quot;               ]\n&quot; +
+                &quot;            },\n&quot; +
+                &quot;            \&quot;creatorEnum\&quot;: 1,\n&quot; +
+                &quot;            \&quot;creatorBitmask\&quot;: 2\n&quot; +
+                &quot;        }\n&quot; +
+                &quot;    ],\n&quot; +
+                &quot;    \&quot;textArray\&quot;: [\n&quot; +
+                &quot;        \&quot;this\&quot;,\n&quot; +
+                &quot;        \&quot;is\&quot;,\n&quot; +
+                &quot;        \&quot;text\&quot;,\n&quot; +
+                &quot;        \&quot;array\&quot;\n&quot; +
+                &quot;    ],\n&quot; +
+                &quot;    \&quot;externArray\&quot;: [\n&quot; +
+                &quot;        {\n&quot; +
+                &quot;            \&quot;buffer\&quot;: [\n&quot; +
+                &quot;                222,\n&quot; +
+                &quot;                209\n&quot; +
+                &quot;            ],&quot; +
+                &quot;            \&quot;bitSize\&quot;: 13\n&quot; +
+                &quot;        }\n&quot; +
+                &quot;    ],\n&quot; +
+                &quot;    \&quot;bytesArray\&quot;: [\n&quot;  +
+                &quot;        {\n&quot; +
+                &quot;           \&quot;buffer\&quot;: [\n&quot; +
+                &quot;               0\n&quot; +
+                &quot;           ]\n&quot; +
+                &quot;        }\n&quot; +
+                &quot;    ],\n&quot; +
+                &quot;    \&quot;optionalBool\&quot;: null\n&quot; +
+                &quot;}&quot;
+                );
+
+<span class="fc" id="L96">        final JsonReader jsonReader = new JsonReader(reader);</span>
+<span class="fc" id="L97">        final Object zserioObject = jsonReader.read(CreatorObject.typeInfo());</span>
+<span class="fc" id="L98">        jsonReader.close();</span>
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">        assertTrue(zserioObject != null);</span>
+<span class="fc" id="L100">        assertTrue(zserioObject instanceof CreatorObject);</span>
+<span class="fc" id="L101">        final CreatorObject creatorObject = (CreatorObject)zserioObject;</span>
+
+<span class="fc" id="L103">        assertEquals(13, creatorObject.getValue());</span>
+<span class="fc" id="L104">        assertEquals(13, creatorObject.getNested().getParam());</span>
+<span class="fc" id="L105">        assertEquals(10, creatorObject.getNested().getValue());</span>
+<span class="fc" id="L106">        assertEquals(&quot;nested&quot;, creatorObject.getNested().getText());</span>
+<span class="fc" id="L107">        assertEquals(new BitBuffer(new byte[] {(byte)0xCB, (byte)0xF0}, 12),</span>
+<span class="fc" id="L108">                creatorObject.getNested().getExternData());</span>
+<span class="fc" id="L109">        assertArrayEquals(new byte[] {(byte)0xCA, (byte)0xFE}, creatorObject.getNested().getBytesData());</span>
+<span class="fc" id="L110">        assertEquals(CreatorEnum.ONE, creatorObject.getNested().getCreatorEnum());</span>
+<span class="fc" id="L111">        assertEquals(CreatorBitmask.Values.READ, creatorObject.getNested().getCreatorBitmask());</span>
+<span class="fc" id="L112">        assertEquals(&quot;test&quot;, creatorObject.getText());</span>
+<span class="fc" id="L113">        assertEquals(1, creatorObject.getNestedArray().length);</span>
+<span class="fc" id="L114">        assertEquals(5, creatorObject.getNestedArray()[0].getValue());</span>
+<span class="fc" id="L115">        assertEquals(&quot;nestedArray&quot;, creatorObject.getNestedArray()[0].getText());</span>
+<span class="fc" id="L116">        assertEquals(new BitBuffer(new byte[] {(byte)0xCA, (byte)0xFE}, 15),</span>
+<span class="fc" id="L117">                creatorObject.getNestedArray()[0].getExternData());</span>
+<span class="fc" id="L118">        assertArrayEquals(new byte[] {(byte)0xCB, (byte)0xF0}, creatorObject.getNestedArray()[0].getBytesData());</span>
+<span class="fc" id="L119">        assertEquals(CreatorEnum.TWO, creatorObject.getNestedArray()[0].getCreatorEnum());</span>
+<span class="fc" id="L120">        assertEquals(CreatorBitmask.Values.WRITE, creatorObject.getNestedArray()[0].getCreatorBitmask());</span>
+<span class="fc" id="L121">        assertEquals(4, creatorObject.getTextArray().length);</span>
+<span class="fc" id="L122">        assertEquals(&quot;this&quot;, creatorObject.getTextArray()[0]);</span>
+<span class="fc" id="L123">        assertEquals(&quot;is&quot;, creatorObject.getTextArray()[1]);</span>
+<span class="fc" id="L124">        assertEquals(&quot;text&quot;, creatorObject.getTextArray()[2]);</span>
+<span class="fc" id="L125">        assertEquals(&quot;array&quot;, creatorObject.getTextArray()[3]);</span>
+<span class="fc" id="L126">        assertEquals(1, creatorObject.getExternArray().length);</span>
+<span class="fc" id="L127">        assertEquals(new BitBuffer(new byte[] {(byte)0xDE, (byte)0xD1}, 13), creatorObject.getExternArray()[0]);</span>
+<span class="fc" id="L128">        assertEquals(1, creatorObject.getBytesArray().length);</span>
+<span class="fc" id="L129">        assertArrayEquals(new byte[] {0}, creatorObject.getBytesArray()[0]);</span>
+<span class="fc" id="L130">        assertEquals(null, creatorObject.getOptionalBool());</span>
+<span class="fc" id="L131">        assertEquals(null, creatorObject.getOptionalNested()); // not present in json</span>
+<span class="fc" id="L132">    }</span>
+
+    @Test
+    public void readTwoObjects() throws IOException
+    {
+<span class="fc" id="L137">        final Reader reader = new StringReader(</span>
+                &quot;{\&quot;value\&quot;: 13}\n&quot; +
+                &quot;{\&quot;value\&quot;: 42, \&quot;text\&quot;: \&quot;test\&quot;}\n&quot;
+                );
+
+<span class="fc" id="L142">        final JsonReader jsonReader = new JsonReader(reader);</span>
+<span class="fc" id="L143">        final Object zserioObject1 = jsonReader.read(CreatorObject.typeInfo());</span>
+<span class="pc bpc" id="L144" title="1 of 2 branches missed.">        assertTrue(zserioObject1 != null);</span>
+<span class="fc" id="L145">        assertTrue(zserioObject1 instanceof CreatorObject);</span>
+<span class="fc" id="L146">        final CreatorObject creatorObject1 = (CreatorObject)zserioObject1;</span>
+
+<span class="fc" id="L148">        assertEquals(13, creatorObject1.getValue());</span>
+<span class="fc" id="L149">        assertEquals(null, creatorObject1.getText());</span>
+
+<span class="fc" id="L151">        final Object zserioObject2 = jsonReader.read(CreatorObject.typeInfo());</span>
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">        assertTrue(zserioObject2 != null);</span>
+<span class="fc" id="L153">        assertTrue(zserioObject2 instanceof CreatorObject);</span>
+<span class="fc" id="L154">        final CreatorObject creatorObject2 = (CreatorObject)zserioObject2;</span>
+
+<span class="fc" id="L156">        assertEquals(42, creatorObject2.getValue());</span>
+<span class="fc" id="L157">        assertEquals(&quot;test&quot;, creatorObject2.getText());</span>
+
+<span class="fc" id="L159">        jsonReader.close();</span>
+<span class="fc" id="L160">    }</span>
+
+    @Test
+    public void readUnonrderedBitBuffer() throws IOException
+    {
+<span class="fc" id="L165">        final Reader reader = new StringReader(</span>
+                &quot;{\n&quot; +
+                &quot;    \&quot;value\&quot;: 13,\n&quot; +
+                &quot;    \&quot;nested\&quot;: {\n&quot; +
+                &quot;        \&quot;value\&quot;: 10,\n&quot; +
+                &quot;        \&quot;text\&quot;: \&quot;nested\&quot;,\n&quot; +
+                &quot;        \&quot;externData\&quot;: {\n&quot; +
+                &quot;             \&quot;bitSize\&quot;: 12,\n&quot; +
+                &quot;             \&quot;buffer\&quot;: [\n&quot; +
+                &quot;                 203,\n&quot; +
+                &quot;                 240\n&quot; +
+                &quot;             ]\n&quot; +
+                &quot;        },\n&quot; +
+                &quot;        \&quot;bytesData\&quot;: {\n&quot; +
+                &quot;           \&quot;buffer\&quot;: [\n&quot; +
+                &quot;               202,\n&quot; +
+                &quot;               254\n&quot; +
+                &quot;           ]\n&quot; +
+                &quot;        },\n&quot; +
+                &quot;        \&quot;creatorEnum\&quot;: -1,\n&quot; +
+                &quot;        \&quot;creatorBitmask\&quot;: 1\n&quot; +
+                &quot;    }\n&quot; +
+                &quot;}&quot;
+                );
+
+<span class="fc" id="L190">        final JsonReader jsonReader = new JsonReader(reader);</span>
+<span class="fc" id="L191">        final Object zserioObject = jsonReader.read(CreatorObject.typeInfo());</span>
+<span class="pc bpc" id="L192" title="1 of 2 branches missed.">        assertTrue(zserioObject != null);</span>
+<span class="fc" id="L193">        assertTrue(zserioObject instanceof CreatorObject);</span>
+<span class="fc" id="L194">        final CreatorObject creatorObject = (CreatorObject)zserioObject;</span>
+
+<span class="fc" id="L196">        assertEquals(13, creatorObject.getValue());</span>
+<span class="fc" id="L197">        assertEquals(13, creatorObject.getNested().getParam());</span>
+<span class="fc" id="L198">        assertEquals(10, creatorObject.getNested().getValue());</span>
+<span class="fc" id="L199">        assertEquals(&quot;nested&quot;, creatorObject.getNested().getText());</span>
+<span class="fc" id="L200">        assertEquals(new BitBuffer(new byte[] {(byte)0xCB, (byte)0xF0}, 12),</span>
+<span class="fc" id="L201">                creatorObject.getNested().getExternData());</span>
+<span class="fc" id="L202">        assertArrayEquals(new byte[] {(byte)0xCA, (byte)0xFE}, creatorObject.getNested().getBytesData());</span>
+<span class="fc" id="L203">        assertEquals(CreatorEnum.MinusOne, creatorObject.getNested().getCreatorEnum());</span>
+<span class="fc" id="L204">        assertEquals(CreatorBitmask.Values.READ, creatorObject.getNested().getCreatorBitmask());</span>
+
+<span class="fc" id="L206">        jsonReader.close();</span>
+<span class="fc" id="L207">    }</span>
+
+    @Test
+    public void readStringifiedEnum() throws IOException
+    {
+<span class="fc" id="L212">        checkReadStringifiedEnum(&quot;ONE&quot;, CreatorEnum.ONE);</span>
+<span class="fc" id="L213">        checkReadStringifiedEnum(&quot;MinusOne&quot;, CreatorEnum.MinusOne);</span>
+<span class="fc" id="L214">        checkReadStringifiedEnumThrows(&quot;NONEXISTING&quot;,</span>
+                &quot;JsonReader: Cannot create enum 'test_object.CreatorEnum' &quot; +
+                &quot;from string value 'NONEXISTING'! (JsonParser:3:24)&quot;);
+<span class="fc" id="L217">        checkReadStringifiedEnumThrows(&quot;***&quot;,</span>
+                &quot;JsonReader: Cannot create enum 'test_object.CreatorEnum' &quot; +
+                &quot;from string value '***'! (JsonParser:3:24)&quot;);
+<span class="fc" id="L220">        checkReadStringifiedEnumThrows(&quot;10 /* no match */&quot;,</span>
+                &quot;JsonReader: Cannot create enum 'test_object.CreatorEnum' &quot; +
+                &quot;from string value '10 /* no match */'! (JsonParser:3:24)&quot;);
+<span class="fc" id="L223">        checkReadStringifiedEnumThrows(&quot;-10 /* no match */&quot;,</span>
+                &quot;JsonReader: Cannot create enum 'test_object.CreatorEnum' &quot; +
+                &quot;from string value '-10 /* no match */'! (JsonParser:3:24)&quot;);
+<span class="fc" id="L226">        checkReadStringifiedEnumThrows(&quot;&quot;,</span>
+                &quot;JsonReader: Cannot create enum 'test_object.CreatorEnum' &quot; +
+                &quot;from string value ''! (JsonParser:3:24)&quot;);
+<span class="fc" id="L229">    }</span>
+
+    @Test
+    public void readStringifiedBitmask() throws IOException
+    {
+<span class="fc" id="L234">        checkReadStringifiedBitmask(&quot;READ&quot;, CreatorBitmask.Values.READ);</span>
+<span class="fc" id="L235">        checkReadStringifiedBitmask(&quot;READ | WRITE&quot;, CreatorBitmask.Values.READ.or(CreatorBitmask.Values.WRITE));</span>
+<span class="fc" id="L236">        checkReadStringifiedBitmaskThrows(&quot;NONEXISTING&quot;,</span>
+                &quot;JsonReader: Cannot create bitmask 'test_object.CreatorBitmask' &quot; +
+                &quot;from string value 'NONEXISTING'! (JsonParser:3:27)&quot;);
+<span class="fc" id="L239">        checkReadStringifiedBitmaskThrows(&quot;READ | NONEXISTING&quot;,</span>
+                &quot;JsonReader: Cannot create bitmask 'test_object.CreatorBitmask' &quot; +
+                &quot;from string value 'READ | NONEXISTING'! (JsonParser:3:27)&quot;);
+<span class="fc" id="L242">        checkReadStringifiedBitmaskThrows(&quot;READ * NONEXISTING&quot;,</span>
+                &quot;JsonReader: Cannot create bitmask 'test_object.CreatorBitmask' &quot; +
+                &quot;from string value 'READ * NONEXISTING'! (JsonParser:3:27)&quot;);
+<span class="fc" id="L245">        checkReadStringifiedBitmask(&quot;7 /* READ | WRITE */&quot;, new CreatorBitmask((short)7));</span>
+<span class="fc" id="L246">        checkReadStringifiedBitmask(&quot;15 /* READ | WRITE */&quot;, new CreatorBitmask((short)15));</span>
+<span class="fc" id="L247">        checkReadStringifiedBitmask(&quot;4 /* no match */&quot;, new CreatorBitmask((short)4));</span>
+<span class="fc" id="L248">        checkReadStringifiedBitmaskThrows(&quot;&quot;,</span>
+                &quot;JsonReader: Cannot create bitmask 'test_object.CreatorBitmask' &quot; +
+                &quot;from string value ''! (JsonParser:3:27)&quot;);
+<span class="fc" id="L251">        checkReadStringifiedBitmaskThrows(&quot; &quot;,</span>
+                &quot;JsonReader: Cannot create bitmask 'test_object.CreatorBitmask' &quot; +
+                &quot;from string value ' '! (JsonParser:3:27)&quot;);
+<span class="fc" id="L254">        checkReadStringifiedBitmaskThrows(&quot; | &quot;,</span>
+                &quot;JsonReader: Cannot create bitmask 'test_object.CreatorBitmask' &quot; +
+                &quot;from string value ' | '! (JsonParser:3:27)&quot;);
+<span class="fc" id="L257">    }</span>
+
+    @Test
+    public void jsonParserException() throws IOException
+    {
+<span class="fc" id="L262">        final Reader reader = new StringReader(</span>
+                &quot;{\&quot;value\&quot;\n\&quot;value\&quot;&quot;
+                );
+
+<span class="fc" id="L266">        final JsonReader jsonReader = new JsonReader(reader);</span>
+<span class="fc" id="L267">        final JsonParserError exception = assertThrows(JsonParserError.class,</span>
+<span class="nc" id="L268">                () -&gt; jsonReader.read(CreatorObject.typeInfo()));</span>
+<span class="fc" id="L269">        assertEquals(&quot;JsonParser:2:1: Unexpected token: VALUE ('value'), expecting KEY_SEPARATOR!&quot;,</span>
+<span class="fc" id="L270">                exception.getMessage());</span>
+<span class="fc" id="L271">        jsonReader.close();</span>
+<span class="fc" id="L272">    }</span>
+
+    @Test
+    public void wrongKeyException() throws IOException
+    {
+<span class="fc" id="L277">        final Reader reader = new StringReader(</span>
+                &quot;{\&quot;value\&quot;: 13,\n\&quot;nonexisting\&quot;: 10}&quot;
+                );
+
+<span class="fc" id="L281">        final JsonReader jsonReader = new JsonReader(reader);</span>
+<span class="fc" id="L282">        final ZserioError exception = assertThrows(ZserioError.class,</span>
+<span class="nc" id="L283">                () -&gt; jsonReader.read(CreatorObject.typeInfo()));</span>
+<span class="fc" id="L284">        assertEquals(&quot;ZserioTreeCreator: Field 'nonexisting' not found in &quot; +</span>
+<span class="fc" id="L285">                &quot;'test_object.CreatorObject'! (JsonParser:2:16)&quot;, exception.getMessage());</span>
+<span class="fc" id="L286">        jsonReader.close();</span>
+<span class="fc" id="L287">    }</span>
+
+    @Test
+    public void wrongValueTypeException() throws IOException
+    {
+<span class="fc" id="L292">        final Reader reader = new StringReader(</span>
+                &quot;{\n  \&quot;value\&quot;: \&quot;13\&quot;\n}&quot;
+                );
+
+<span class="fc" id="L296">        final JsonReader jsonReader = new JsonReader(reader);</span>
+<span class="fc" id="L297">        final ZserioError exception = assertThrows(ZserioError.class,</span>
+<span class="nc" id="L298">                () -&gt; jsonReader.read(CreatorObject.typeInfo()));</span>
+<span class="fc" id="L299">        assertEquals(&quot;ZserioTreeCreator: Unexpected value type 'class java.lang.String', expecting 'long'! &quot; +</span>
+<span class="fc" id="L300">                &quot;(JsonParser:2:12)&quot;, exception.getMessage());</span>
+<span class="fc" id="L301">        jsonReader.close();</span>
+<span class="fc" id="L302">    }</span>
+
+    @Test
+    public void wrongBitBufferException() throws IOException
+    {
+<span class="fc" id="L307">        final Reader reader = new StringReader(</span>
+                &quot;{\n&quot; +
+                &quot;    \&quot;value\&quot;: 13,\n&quot; +
+                &quot;    \&quot;nested\&quot;: {\n&quot; +
+                &quot;        \&quot;value\&quot;: 10,\n&quot; +
+                &quot;        \&quot;text\&quot;: \&quot;nested\&quot;,\n&quot; +
+                &quot;        \&quot;externData\&quot;: {\n&quot; +
+                &quot;             \&quot;buffer\&quot;: [\n&quot; +
+                &quot;                 203,\n&quot; +
+                &quot;                 240\n&quot; +
+                &quot;             ],\n&quot; +
+                &quot;             \&quot;bitSize\&quot;: {\n&quot; +
+                &quot;             }\n&quot; +
+                &quot;        }\n&quot; +
+                &quot;    }\n&quot; +
+                &quot;}&quot;
+                );
+
+<span class="fc" id="L325">        final JsonReader jsonReader = new JsonReader(reader);</span>
+<span class="fc" id="L326">        final ZserioError exception = assertThrows(ZserioError.class,</span>
+<span class="nc" id="L327">                () -&gt; jsonReader.read(CreatorObject.typeInfo()));</span>
+<span class="fc" id="L328">        assertEquals(&quot;JsonReader: Unexpected begin object in Bit Buffer! (JsonParser:11:25)&quot;,</span>
+<span class="fc" id="L329">                exception.getMessage());</span>
+<span class="fc" id="L330">        jsonReader.close();</span>
+<span class="fc" id="L331">    }</span>
+
+    @Test
+    public void partialBitBufferException() throws IOException
+    {
+<span class="fc" id="L336">        final Reader reader = new StringReader(</span>
+                &quot;{\n&quot; +
+                &quot;    \&quot;value\&quot;: 13,\n&quot; +
+                &quot;    \&quot;nested\&quot;: {\n&quot; +
+                &quot;        \&quot;value\&quot;: 10,\n&quot; +
+                &quot;        \&quot;text\&quot;: \&quot;nested\&quot;,\n&quot; +
+                &quot;        \&quot;externData\&quot;: {\n&quot; +
+                &quot;             \&quot;buffer\&quot;: [\n&quot; +
+                &quot;                 203,\n&quot; +
+                &quot;                 240\n&quot; +
+                &quot;             ]\n&quot; +
+                &quot;        }\n&quot; +
+                &quot;    }\n&quot; +
+                &quot;}&quot;
+                );
+
+<span class="fc" id="L352">        final JsonReader jsonReader = new JsonReader(reader);</span>
+<span class="fc" id="L353">        final ZserioError exception = assertThrows(ZserioError.class,</span>
+<span class="nc" id="L354">                () -&gt; jsonReader.read(CreatorObject.typeInfo()));</span>
+<span class="fc" id="L355">        assertEquals(&quot;JsonReader: Unexpected end in Bit Buffer! (JsonParser:12:5)&quot;, exception.getMessage());</span>
+<span class="fc" id="L356">        jsonReader.close();</span>
+<span class="fc" id="L357">    }</span>
+
+    @Test
+    public void wrongBytesException() throws IOException
+    {
+<span class="fc" id="L362">        final Reader reader = new StringReader(</span>
+                &quot;{\n&quot; +
+                &quot;    \&quot;value\&quot;: 13,\n&quot; +
+                &quot;    \&quot;nested\&quot;: {\n&quot; +
+                &quot;        \&quot;value\&quot;: 10,\n&quot; +
+                &quot;        \&quot;text\&quot;: \&quot;nested\&quot;,\n&quot; +
+                &quot;        \&quot;externData\&quot;: {\n&quot; +
+                &quot;             \&quot;buffer\&quot;: [\n&quot; +
+                &quot;                 203,\n&quot; +
+                &quot;                 240\n&quot; +
+                &quot;             ],\n&quot; +
+                &quot;             \&quot;bitSize\&quot;: 12\n&quot; +
+                &quot;        },\n&quot; +
+                &quot;        \&quot;bytesData\&quot;: {\n&quot; +
+                &quot;            \&quot;buffer\&quot;: {}\n&quot; +
+                &quot;        }\n&quot; +
+                &quot;    }\n&quot; +
+                &quot;}&quot;
+                );
+
+<span class="fc" id="L382">        final JsonReader jsonReader = new JsonReader(reader);</span>
+<span class="fc" id="L383">        final ZserioError exception = assertThrows(ZserioError.class,</span>
+<span class="nc" id="L384">                () -&gt; jsonReader.read(CreatorObject.typeInfo()));</span>
+<span class="fc" id="L385">        assertEquals(&quot;JsonReader: Unexpected begin object in bytes! (JsonParser:14:23)&quot;,</span>
+<span class="fc" id="L386">                exception.getMessage());</span>
+<span class="fc" id="L387">        jsonReader.close();</span>
+<span class="fc" id="L388">    }</span>
+
+    @Test
+    public void jsonArrayException() throws IOException
+    {
+<span class="fc" id="L393">        final Reader reader = new StringReader(</span>
+                &quot;[1, 2]&quot;
+                );
+
+<span class="fc" id="L397">        final JsonReader jsonReader = new JsonReader(reader);</span>
+<span class="fc" id="L398">        final ZserioError exception = assertThrows(ZserioError.class,</span>
+<span class="nc" id="L399">                () -&gt; jsonReader.read(CreatorObject.typeInfo()));</span>
+<span class="fc" id="L400">        assertEquals(&quot;JsonReader: ZserioTreeCreator expects json object! (JsonParser:1:1)&quot;,</span>
+<span class="fc" id="L401">                exception.getMessage());</span>
+<span class="fc" id="L402">        jsonReader.close();</span>
+<span class="fc" id="L403">    }</span>
+
+    @Test
+    public void jsonValueException() throws IOException
+    {
+<span class="fc" id="L408">        final Reader reader = new StringReader(</span>
+                &quot;\&quot;text\&quot;&quot;
+                );
+
+<span class="fc" id="L412">        final JsonReader jsonReader = new JsonReader(reader);</span>
+<span class="fc" id="L413">        final ZserioError exception = assertThrows(ZserioError.class,</span>
+<span class="nc" id="L414">                () -&gt; jsonReader.read(CreatorObject.typeInfo()));</span>
+<span class="fc" id="L415">        assertEquals(&quot;JsonReader: ZserioTreeCreator expects json object! (JsonParser:1:1)&quot;,</span>
+<span class="fc" id="L416">                exception.getMessage());</span>
+<span class="fc" id="L417">        jsonReader.close();</span>
+<span class="fc" id="L418">    }</span>
+
+    @Test
+    public void bigLongValueException() throws IOException
+    {
+<span class="fc" id="L423">        final Reader reader = new StringReader(</span>
+                &quot;{\n&quot; +
+                &quot;    \&quot;value\&quot;: 9223372036854775808\n&quot; +
+                &quot;}&quot;
+                );
+
+<span class="fc" id="L429">        final JsonReader jsonReader = new JsonReader(reader);</span>
+<span class="fc" id="L430">        final ZserioError exception = assertThrows(ZserioError.class,</span>
+<span class="nc" id="L431">                () -&gt; jsonReader.read(CreatorObject.typeInfo()));</span>
+<span class="fc" id="L432">        assertEquals(&quot;JsonReader: Cannot create long 'uint32' from value '9223372036854775808'! &quot; +</span>
+<span class="fc" id="L433">                &quot;(JsonParser:2:14)&quot;, exception.getMessage());</span>
+<span class="fc" id="L434">        jsonReader.close();</span>
+<span class="fc" id="L435">    }</span>
+
+    @Test
+    public void floatLongValueException() throws IOException
+    {
+<span class="fc" id="L440">        final Reader reader = new StringReader(</span>
+                &quot;{\n&quot; +
+                &quot;    \&quot;value\&quot;: 1.234\n&quot; +
+                &quot;}&quot;
+                );
+
+<span class="fc" id="L446">        final JsonReader jsonReader = new JsonReader(reader);</span>
+<span class="fc" id="L447">        final ZserioError exception = assertThrows(ZserioError.class,</span>
+<span class="nc" id="L448">                () -&gt; jsonReader.read(CreatorObject.typeInfo()));</span>
+<span class="fc" id="L449">        assertEquals(&quot;ZserioTreeCreator: Unexpected value type 'class java.lang.Double', expecting 'long'! &quot; +</span>
+<span class="fc" id="L450">                &quot;(JsonParser:2:14)&quot;, exception.getMessage());</span>
+<span class="fc" id="L451">        jsonReader.close();</span>
+<span class="fc" id="L452">    }</span>
+
+    @Test
+    public void bigBitBufferByteValueException() throws IOException
+    {
+<span class="fc" id="L457">        final Reader reader = new StringReader(</span>
+                &quot;{\n&quot; +
+                &quot;    \&quot;nested\&quot;: {\n&quot; +
+                &quot;        \&quot;externData\&quot;: {\n&quot; +
+                &quot;             \&quot;buffer\&quot;: [\n&quot; +
+                &quot;                 256\n&quot; +
+                &quot;             ],\n&quot; +
+                &quot;             \&quot;bitSize\&quot;: 7\n&quot; +
+                &quot;        }\n&quot; +
+                &quot;    }\n&quot; +
+                &quot;}&quot;
+                );
+
+<span class="fc" id="L470">        final JsonReader jsonReader = new JsonReader(reader);</span>
+<span class="fc" id="L471">        final ZserioError exception = assertThrows(ZserioError.class,</span>
+<span class="nc" id="L472">                () -&gt; jsonReader.read(CreatorObject.typeInfo()));</span>
+<span class="fc" id="L473">        assertEquals(&quot;JsonReader: Cannot create byte for Bit Buffer from value '256'! (JsonParser:5:18)&quot;,</span>
+<span class="fc" id="L474">                exception.getMessage());</span>
+<span class="fc" id="L475">        jsonReader.close();</span>
+<span class="fc" id="L476">    }</span>
+
+    @Test
+    public void negativeBitBufferByteValueException() throws IOException
+    {
+<span class="fc" id="L481">        final Reader reader = new StringReader(</span>
+                &quot;{\n&quot; +
+                &quot;    \&quot;nested\&quot;: {\n&quot; +
+                &quot;        \&quot;externData\&quot;: {\n&quot; +
+                &quot;             \&quot;buffer\&quot;: [\n&quot; +
+                &quot;                 -1\n&quot; +
+                &quot;             ],\n&quot; +
+                &quot;             \&quot;bitSize\&quot;: 7\n&quot; +
+                &quot;        }\n&quot; +
+                &quot;    }\n&quot; +
+                &quot;}&quot;
+                );
+
+<span class="fc" id="L494">        final JsonReader jsonReader = new JsonReader(reader);</span>
+<span class="fc" id="L495">        final ZserioError exception = assertThrows(ZserioError.class,</span>
+<span class="nc" id="L496">                () -&gt; jsonReader.read(CreatorObject.typeInfo()));</span>
+<span class="fc" id="L497">        assertEquals(&quot;JsonReader: Cannot create byte for Bit Buffer from value '-1'! (JsonParser:5:18)&quot;,</span>
+<span class="fc" id="L498">                exception.getMessage());</span>
+<span class="fc" id="L499">        jsonReader.close();</span>
+<span class="fc" id="L500">    }</span>
+
+    @Test
+    public void wrongBitBufferSizeValueException() throws IOException
+    {
+<span class="fc" id="L505">        final Reader reader = new StringReader(</span>
+                &quot;{\n&quot; +
+                &quot;    \&quot;nested\&quot;: {\n&quot; +
+                &quot;        \&quot;externData\&quot;: {\n&quot; +
+                &quot;             \&quot;buffer\&quot;: [\n&quot; +
+                &quot;                 255\n&quot; +
+                &quot;             ],\n&quot; +
+                &quot;             \&quot;bitSize\&quot;: 9223372036854775808\n&quot; +
+                &quot;        }\n&quot; +
+                &quot;    }\n&quot; +
+                &quot;}&quot;
+                );
+
+<span class="fc" id="L518">        final JsonReader jsonReader = new JsonReader(reader);</span>
+<span class="fc" id="L519">        final ZserioError exception = assertThrows(ZserioError.class,</span>
+<span class="nc" id="L520">                () -&gt; jsonReader.read(CreatorObject.typeInfo()));</span>
+<span class="fc" id="L521">        assertEquals(&quot;JsonReader: Cannot create long for Bit Buffer size from value '9223372036854775808'! &quot; +</span>
+<span class="fc" id="L522">                &quot;(JsonParser:7:25)&quot;, exception.getMessage());</span>
+<span class="fc" id="L523">        jsonReader.close();</span>
+<span class="fc" id="L524">    }</span>
+
+    @Test
+    public void bigBytesByteValueException() throws IOException
+    {
+<span class="fc" id="L529">        final Reader reader = new StringReader(</span>
+                &quot;{\n&quot; +
+                &quot;    \&quot;nested\&quot;: {\n&quot; +
+                &quot;        \&quot;bytesData\&quot;: {\n&quot; +
+                &quot;             \&quot;buffer\&quot;: [\n&quot; +
+                &quot;                 256\n&quot; +
+                &quot;             ]\n&quot; +
+                &quot;        }\n&quot; +
+                &quot;    }\n&quot; +
+                &quot;}&quot;
+                );
+
+<span class="fc" id="L541">        final JsonReader jsonReader = new JsonReader(reader);</span>
+<span class="fc" id="L542">        final ZserioError exception = assertThrows(ZserioError.class,</span>
+<span class="nc" id="L543">                () -&gt; jsonReader.read(CreatorObject.typeInfo()));</span>
+<span class="fc" id="L544">        assertEquals(&quot;JsonReader: Cannot create byte for bytes from value '256'! (JsonParser:5:18)&quot;,</span>
+<span class="fc" id="L545">                exception.getMessage());</span>
+<span class="fc" id="L546">        jsonReader.close();</span>
+<span class="fc" id="L547">    }</span>
+
+    @Test
+    public void negativeBytesByteValueException() throws IOException
+    {
+<span class="fc" id="L552">        final Reader reader = new StringReader(</span>
+                &quot;{\n&quot; +
+                &quot;    \&quot;nested\&quot;: {\n&quot; +
+                &quot;        \&quot;bytesData\&quot;: {\n&quot; +
+                &quot;             \&quot;buffer\&quot;: [\n&quot; +
+                &quot;                 -1\n&quot; +
+                &quot;             ]\n&quot; +
+                &quot;        }\n&quot; +
+                &quot;    }\n&quot; +
+                &quot;}&quot;
+                );
+
+<span class="fc" id="L564">        final JsonReader jsonReader = new JsonReader(reader);</span>
+<span class="fc" id="L565">        final ZserioError exception = assertThrows(ZserioError.class,</span>
+<span class="nc" id="L566">                () -&gt; jsonReader.read(CreatorObject.typeInfo()));</span>
+<span class="fc" id="L567">        assertEquals(&quot;JsonReader: Cannot create byte for bytes from value '-1'! (JsonParser:5:18)&quot;,</span>
+<span class="fc" id="L568">                exception.getMessage());</span>
+<span class="fc" id="L569">        jsonReader.close();</span>
+<span class="fc" id="L570">    }</span>
+
+    private void checkReadStringifiedEnum(String stringValue, CreatorEnum expectedValue) throws IOException
+    {
+<span class="fc" id="L574">        final Reader reader = new StringReader(</span>
+                &quot;{\n&quot; +
+                &quot;    \&quot;nested\&quot;: {\n&quot; +
+                &quot;        \&quot;creatorEnum\&quot;: \&quot;&quot; + stringValue + &quot;\&quot;\n&quot; +
+                &quot;    }\n&quot; +
+                &quot;}&quot;
+                );
+
+<span class="fc" id="L582">        try (final JsonReader jsonReader = new JsonReader(reader))</span>
+        {
+<span class="fc" id="L584">            final Object zserioObject = jsonReader.read(CreatorObject.typeInfo());</span>
+<span class="pc bpc" id="L585" title="1 of 2 branches missed.">            assertTrue(zserioObject != null);</span>
+<span class="fc" id="L586">            assertTrue(zserioObject instanceof CreatorObject);</span>
+<span class="fc" id="L587">            final CreatorObject creatorObject = (CreatorObject)zserioObject;</span>
+
+<span class="fc" id="L589">            assertEquals(expectedValue, creatorObject.getNested().getCreatorEnum());</span>
+        }
+<span class="fc" id="L591">    }</span>
+
+    private void checkReadStringifiedEnumThrows(String stringValue, String expectedMessage) throws IOException
+    {
+<span class="fc" id="L595">        final Reader reader = new StringReader(</span>
+                &quot;{\n&quot; +
+                &quot;    \&quot;nested\&quot;: {\n&quot; +
+                &quot;        \&quot;creatorEnum\&quot;: \&quot;&quot; + stringValue + &quot;\&quot;\n&quot; +
+                &quot;    }\n&quot; +
+                &quot;}&quot;
+                );
+
+<span class="fc" id="L603">        final JsonReader jsonReader = new JsonReader(reader);</span>
+<span class="fc" id="L604">        final ZserioError exception = assertThrows(ZserioError.class,</span>
+<span class="nc" id="L605">                () -&gt; jsonReader.read(CreatorObject.typeInfo()));</span>
+<span class="fc" id="L606">        assertEquals(expectedMessage, exception.getMessage());</span>
+<span class="fc" id="L607">        jsonReader.close();</span>
+<span class="fc" id="L608">    }</span>
+
+    private void checkReadStringifiedBitmask(String stringValue, CreatorBitmask expectedValue) throws IOException
+    {
+<span class="fc" id="L612">        final Reader reader = new StringReader(</span>
+                &quot;{\n&quot; +
+                &quot;    \&quot;nested\&quot;: {\n&quot; +
+                &quot;        \&quot;creatorBitmask\&quot;: \&quot;&quot; + stringValue + &quot;\&quot;\n&quot; +
+                &quot;    }\n&quot; +
+                &quot;}&quot;
+                );
+
+<span class="fc" id="L620">        try (final JsonReader jsonReader = new JsonReader(reader))</span>
+        {
+<span class="fc" id="L622">            final Object zserioObject = jsonReader.read(CreatorObject.typeInfo());</span>
+<span class="pc bpc" id="L623" title="1 of 2 branches missed.">            assertTrue(zserioObject != null);</span>
+<span class="fc" id="L624">            assertTrue(zserioObject instanceof CreatorObject);</span>
+<span class="fc" id="L625">            final CreatorObject creatorObject = (CreatorObject)zserioObject;</span>
+
+<span class="fc" id="L627">            assertEquals(expectedValue, creatorObject.getNested().getCreatorBitmask());</span>
+        }
+<span class="fc" id="L629">    }</span>
+
+    private void checkReadStringifiedBitmaskThrows(String stringValue, String expectedMessage)
+            throws IOException
+    {
+<span class="fc" id="L634">        final Reader reader = new StringReader(</span>
+                &quot;{\n&quot; +
+                &quot;    \&quot;nested\&quot;: {\n&quot; +
+                &quot;        \&quot;creatorBitmask\&quot;: \&quot;&quot; + stringValue + &quot;\&quot;\n&quot; +
+                &quot;    }\n&quot; +
+                &quot;}&quot;
+                );
+
+<span class="fc" id="L642">        final JsonReader jsonReader = new JsonReader(reader);</span>
+<span class="fc" id="L643">        final ZserioError exception = assertThrows(ZserioError.class,</span>
+<span class="nc" id="L644">                () -&gt; jsonReader.read(CreatorObject.typeInfo()));</span>
+<span class="fc" id="L645">        assertEquals(expectedMessage, exception.getMessage());</span>
+<span class="fc" id="L646">        jsonReader.close();</span>
+<span class="fc" id="L647">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
