@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>zserio.typeinfo module &#8212; Zserio 2.12.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=4a6762d5" />
+    <script src="_static/documentation_options.js?v=63f0a439"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="zserio.walker module" href="zserio.walker.html" />
+    <link rel="prev" title="zserio.service module" href="zserio.service.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-zserio.typeinfo">
+<span id="zserio-typeinfo-module"></span><h1>zserio.typeinfo module<a class="headerlink" href="#module-zserio.typeinfo" title="Link to this heading">¶</a></h1>
+<p>The module contains classes for type info.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="zserio.typeinfo.CaseInfo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zserio.typeinfo.</span></span><span class="sig-name descname"><span class="pre">CaseInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case_expressions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zserio.typeinfo.MemberInfo" title="zserio.typeinfo.MemberInfo"><span class="pre">MemberInfo</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zserio/typeinfo.html#CaseInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.typeinfo.CaseInfo" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Case info class which provides information about choice cases in generated choices.</p>
+<p>Constructor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>case_expressions</strong> – List of case expression in the choice case. When empty, it’s a default case.</p></li>
+<li><p><strong>field</strong> – Field associated with the choice case, can be empty.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="zserio.typeinfo.CaseInfo.case_expressions">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">case_expressions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#zserio.typeinfo.CaseInfo.case_expressions" title="Link to this definition">¶</a></dt>
+<dd><p>Gets case expressions in the choice case. An empty list denotes the default case.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of case expressions as evaluated constant values.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="zserio.typeinfo.CaseInfo.field">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">field</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#zserio.typeinfo.MemberInfo" title="zserio.typeinfo.MemberInfo"><span class="pre">MemberInfo</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#zserio.typeinfo.CaseInfo.field" title="Link to this definition">¶</a></dt>
+<dd><p>Gets field associated with the choice case. Can be empty.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Field MemberInfo.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zserio.typeinfo.ItemInfo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zserio.typeinfo.</span></span><span class="sig-name descname"><span class="pre">ItemInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">py_item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_deprecated</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_removed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zserio/typeinfo.html#ItemInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.typeinfo.ItemInfo" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Item info class which provides information about items of generated enumerable types.</p>
+<p>Constructor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>schema_name</strong> – Name of the item as is defined in Zserio schema.</p></li>
+<li><p><strong>py_item</strong> – Reference to the generated item.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="zserio.typeinfo.ItemInfo.is_deprecated">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_deprecated</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#zserio.typeinfo.ItemInfo.is_deprecated" title="Link to this definition">¶</a></dt>
+<dd><p>Gets flag whether the item is deprecated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True when the item is deprecated, false otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="zserio.typeinfo.ItemInfo.is_removed">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_removed</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#zserio.typeinfo.ItemInfo.is_removed" title="Link to this definition">¶</a></dt>
+<dd><p>Gets flag whether the item is removed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True when the item is removed, false otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="zserio.typeinfo.ItemInfo.py_item">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">py_item</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span></em><a class="headerlink" href="#zserio.typeinfo.ItemInfo.py_item" title="Link to this definition">¶</a></dt>
+<dd><p>Gets reference to the item generated in Python.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Python item.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="zserio.typeinfo.ItemInfo.schema_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">schema_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#zserio.typeinfo.ItemInfo.schema_name" title="Link to this definition">¶</a></dt>
+<dd><p>Gets name of the item as is defined in Zserio schema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Item name in Zserio schema.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zserio.typeinfo.MemberAttribute">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zserio.typeinfo.</span></span><span class="sig-name descname"><span class="pre">MemberAttribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zserio/typeinfo.html#MemberAttribute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.typeinfo.MemberAttribute" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Member attribute type to be used in MemberInfo.</p>
+<p>Determines type of the second element in the attribute tuple returned in attributes list from MemberInfo.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.MemberAttribute.ALIGN">
+<span class="sig-name descname"><span class="pre">ALIGN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#zserio.typeinfo.MemberAttribute.ALIGN" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.MemberAttribute.ARRAY_LENGTH">
+<span class="sig-name descname"><span class="pre">ARRAY_LENGTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">13</span></em><a class="headerlink" href="#zserio.typeinfo.MemberAttribute.ARRAY_LENGTH" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.MemberAttribute.CLIENT_METHOD_NAME">
+<span class="sig-name descname"><span class="pre">CLIENT_METHOD_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">22</span></em><a class="headerlink" href="#zserio.typeinfo.MemberAttribute.CLIENT_METHOD_NAME" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.MemberAttribute.CONSTRAINT">
+<span class="sig-name descname"><span class="pre">CONSTRAINT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#zserio.typeinfo.MemberAttribute.CONSTRAINT" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.MemberAttribute.EXTENDED">
+<span class="sig-name descname"><span class="pre">EXTENDED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#zserio.typeinfo.MemberAttribute.EXTENDED" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.MemberAttribute.FUNCTION_NAME">
+<span class="sig-name descname"><span class="pre">FUNCTION_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">11</span></em><a class="headerlink" href="#zserio.typeinfo.MemberAttribute.FUNCTION_NAME" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.MemberAttribute.FUNCTION_RESULT">
+<span class="sig-name descname"><span class="pre">FUNCTION_RESULT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">12</span></em><a class="headerlink" href="#zserio.typeinfo.MemberAttribute.FUNCTION_RESULT" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.MemberAttribute.IMPLICIT">
+<span class="sig-name descname"><span class="pre">IMPLICIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">14</span></em><a class="headerlink" href="#zserio.typeinfo.MemberAttribute.IMPLICIT" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.MemberAttribute.INITIALIZER">
+<span class="sig-name descname"><span class="pre">INITIALIZER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#zserio.typeinfo.MemberAttribute.INITIALIZER" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.MemberAttribute.IS_SET_INDICATOR_NAME">
+<span class="sig-name descname"><span class="pre">IS_SET_INDICATOR_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">9</span></em><a class="headerlink" href="#zserio.typeinfo.MemberAttribute.IS_SET_INDICATOR_NAME" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.MemberAttribute.IS_USED_INDICATOR_NAME">
+<span class="sig-name descname"><span class="pre">IS_USED_INDICATOR_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></em><a class="headerlink" href="#zserio.typeinfo.MemberAttribute.IS_USED_INDICATOR_NAME" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.MemberAttribute.OFFSET">
+<span class="sig-name descname"><span class="pre">OFFSET</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#zserio.typeinfo.MemberAttribute.OFFSET" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.MemberAttribute.OPTIONAL">
+<span class="sig-name descname"><span class="pre">OPTIONAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">7</span></em><a class="headerlink" href="#zserio.typeinfo.MemberAttribute.OPTIONAL" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.MemberAttribute.PACKED">
+<span class="sig-name descname"><span class="pre">PACKED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">15</span></em><a class="headerlink" href="#zserio.typeinfo.MemberAttribute.PACKED" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.MemberAttribute.PROPERTY_NAME">
+<span class="sig-name descname"><span class="pre">PROPERTY_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#zserio.typeinfo.MemberAttribute.PROPERTY_NAME" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.MemberAttribute.PUBLISH">
+<span class="sig-name descname"><span class="pre">PUBLISH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">20</span></em><a class="headerlink" href="#zserio.typeinfo.MemberAttribute.PUBLISH" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.MemberAttribute.REQUEST_TYPE">
+<span class="sig-name descname"><span class="pre">REQUEST_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">23</span></em><a class="headerlink" href="#zserio.typeinfo.MemberAttribute.REQUEST_TYPE" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.MemberAttribute.SQL_CONSTRAINT">
+<span class="sig-name descname"><span class="pre">SQL_CONSTRAINT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">17</span></em><a class="headerlink" href="#zserio.typeinfo.MemberAttribute.SQL_CONSTRAINT" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.MemberAttribute.SQL_TYPE_NAME">
+<span class="sig-name descname"><span class="pre">SQL_TYPE_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">16</span></em><a class="headerlink" href="#zserio.typeinfo.MemberAttribute.SQL_TYPE_NAME" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.MemberAttribute.SUBSCRIBE">
+<span class="sig-name descname"><span class="pre">SUBSCRIBE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">21</span></em><a class="headerlink" href="#zserio.typeinfo.MemberAttribute.SUBSCRIBE" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.MemberAttribute.TOPIC">
+<span class="sig-name descname"><span class="pre">TOPIC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">19</span></em><a class="headerlink" href="#zserio.typeinfo.MemberAttribute.TOPIC" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.MemberAttribute.TYPE_ARGUMENTS">
+<span class="sig-name descname"><span class="pre">TYPE_ARGUMENTS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#zserio.typeinfo.MemberAttribute.TYPE_ARGUMENTS" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.MemberAttribute.VIRTUAL">
+<span class="sig-name descname"><span class="pre">VIRTUAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">18</span></em><a class="headerlink" href="#zserio.typeinfo.MemberAttribute.VIRTUAL" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zserio.typeinfo.MemberInfo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zserio.typeinfo.</span></span><span class="sig-name descname"><span class="pre">MemberInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">typeinfo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zserio.typeinfo.TypeInfo" title="zserio.typeinfo.TypeInfo"><span class="pre">TypeInfo</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#zserio.typeinfo.RecursiveTypeInfo" title="zserio.typeinfo.RecursiveTypeInfo"><span class="pre">RecursiveTypeInfo</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#zserio.typeinfo.MemberAttribute" title="zserio.typeinfo.MemberAttribute"><span class="pre">MemberAttribute</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zserio/typeinfo.html#MemberInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.typeinfo.MemberInfo" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Member info class which provides information about members of compound types.</p>
+<p>Member info constructor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>schema_name</strong> – Name of the member as is defined in Zserio schema.</p></li>
+<li><p><strong>type_info</strong> – Type info of the member.</p></li>
+<li><p><strong>attributes</strong> – List of member attributes.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="zserio.typeinfo.MemberInfo.attributes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">attributes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#zserio.typeinfo.MemberAttribute" title="zserio.typeinfo.MemberAttribute"><span class="pre">MemberAttribute</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#zserio.typeinfo.MemberInfo.attributes" title="Link to this definition">¶</a></dt>
+<dd><p>Gets dictionary with member attributes.</p>
+<p>Attribute is a an arbitrary value which type is given by the key, which is MemberAttribute enumeration.
+All expressions are stored as strings.</p>
+<p><strong>Possible attributes:</strong></p>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">(MemberAttribute.PROPERTY_NAME,</span> <span class="pre">'field1')</span></code></p>
+<ul>
+<li><p>contains name of the property generated in Python</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(MemberAttribute.TYPE_ARGUMENTS,</span> <span class="pre">[(lambda</span> <span class="pre">self,</span> <span class="pre">zserio_index:</span> <span class="pre">self.field1),</span> <span class="pre">...])</span></code></p>
+<ul>
+<li><p>for compound type members, keeps type arguments for parameterized types or dynamic bit fields,
+the value contains list of lambda functions evaluating particular arguments expression,
+where the lambdas take parent and an element index (which can be None if not used) as arguments</p></li>
+<li><p>for members of sql tables, keeps type arguments for columns, the value contains list of
+lambdas where the lambdas take either single explicit parameter argument for explicit parameters or
+single ‘self’ argument, which is an object providing property-like getters for column names
+used in expressions</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(MemberAttribute.EXTENDED,</span> <span class="pre">None)</span></code></p>
+<ul>
+<li><p>denotes that the member field is extended, the value is always None</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(MemberAttribute.ALIGN,</span> <span class="pre">lambda:</span> <span class="pre">8)</span></code></p>
+<ul>
+<li><p>denotes that the member field has an alignment, the value is a lambda function which returns the
+alignment constant value</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(MemberAttribute.OFFSET,</span> <span class="pre">lambda</span> <span class="pre">self:</span> <span class="pre">self.offset_field)</span></code></p>
+<ul>
+<li><p>denotes that the member field has an offset, the value contains the offset expression
+as a lambda function taking single parent argument</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(MemberAttribute.INITIALIZER,</span> <span class="pre">lambda:</span> <span class="pre">10)</span></code></p>
+<ul>
+<li><p>denotes that the member field has an initializer, the value is a lambda function which returns the
+the initializer constant value</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(MemberAttribute.OPTIONAL,</span> <span class="pre">None)</span></code>, <code class="code docutils literal notranslate"><span class="pre">(MemberAttribute.OPTIONAL,</span> <span class="pre">lambda</span> <span class="pre">self:</span> <span class="pre">self.field1</span> <span class="pre">!=</span> <span class="pre">0)</span></code></p>
+<ul>
+<li><p>denotes that the member is an optional, when the value is None, then it’s an auto optional,
+otherwise it contains the optional clause as a lambda function taking single parent argument</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(MemberAttribute.IS_USED_INDICATOR_NAME,</span> <span class="pre">'is_field_used)</span></code></p>
+<ul>
+<li><p>if the member is an optional, the value contains the “is_used” indicator name generated in Python</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(MemberAttribute.IS_SET_INDICATOR_NAME,</span> <span class="pre">'is_field_set)</span></code></p>
+<ul>
+<li><p>if the member is an optional, the value contains the “is_set” indicator name generated in Python</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(MemberAttribute.CONSTRAINT,</span> <span class="pre">lambda</span> <span class="pre">self:</span> <span class="pre">field</span> <span class="pre">&gt;</span> <span class="pre">10)</span></code></p>
+<ul>
+<li><p>denotes that the member has a constraint, the value contains the constraint expression
+as a lambda function taking single parent argument</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(MemberAttribute.FUNCTION_NAME,</span> <span class="pre">'function_name')</span></code></p>
+<ul>
+<li><p>keeps the generated function name</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">MemberAttribute.FUNCTION_RESULT,</span> <span class="pre">lambda</span> <span class="pre">self:</span> <span class="pre">self.field1</span> <span class="pre">+</span> <span class="pre">5)</span></code></p>
+<ul>
+<li><p>keeps the result expression of a function as a lambda function taking single parent argument</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(MemberAttribute.ARRAY_LENGTH,</span> <span class="pre">None)</span></code>, <code class="code docutils literal notranslate"><span class="pre">(MemberAttribute.ARRAY_LENGTH,</span> <span class="pre">lambda</span> <span class="pre">self:</span> <span class="pre">self.field1</span> <span class="pre">+</span> <span class="pre">1)</span></code></p>
+<ul>
+<li><p>denotes that the member is an array, when the value is None, then it’s an auto array,
+otherwise it contains the length expression as a lambda function taking single parent argument</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(MemberAttribute.IMPLICIT,</span> <span class="pre">None)</span></code></p>
+<ul>
+<li><p>denotes that the member is an implicit array, the value is always None</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(MemberAttribute.PACKED,</span> <span class="pre">None)</span></code></p>
+<ul>
+<li><p>denotes that the member is a packed array, the value is always None</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(MemberAttribute.SQL_TYPE_NAME,</span> <span class="pre">'INTEGER')</span></code></p>
+<ul>
+<li><p>keeps SQLite type name used for this column</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(MemberAttribute.SQL_CONSTRAINT,</span> <span class="pre">'PRIMARY</span> <span class="pre">KEY</span> <span class="pre">NOT</span> <span class="pre">NULL')</span></code></p>
+<ul>
+<li><p>denotes that the member has a SQL constraint</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(MemberAttribute.VIRTUAL,</span> <span class="pre">None)</span></code></p>
+<ul>
+<li><p>denotes that the column in a SQL table is virtual</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(MemberAttribute.TOPIC,</span> <span class="pre">'topic/definition')</span></code></p>
+<ul>
+<li><p>keeps the topic definition of a pub-sub message</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(MemberAttribute.PUBLISH,</span> <span class="pre">'publish_message_name')</span></code></p>
+<ul>
+<li><p>denotes that the pub-sub message is published, the value contains the publishing method name</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(MemberAttribute.SUBSCRIBE,</span> <span class="pre">'subscribe_message_name')</span></code></p>
+<ul>
+<li><p>denotes that the pub-sub message is subscribed, the value contains the subscribing method name</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(MemberAttribute.CLIENT_METHOD_NAME,</span> <span class="pre">'client_method_name')</span></code></p>
+<ul>
+<li><p>keeps the name of the method in the generated Client class</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(MemberAttribute.REQUEST_TYPE,</span> <span class="pre">request_type.type_info())</span></code></p>
+<ul>
+<li><p>keeps the request type TypeInfo, note that response type is in the method TypeInfo</p></li>
+</ul>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Member attributes.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="zserio.typeinfo.MemberInfo.schema_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">schema_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#zserio.typeinfo.MemberInfo.schema_name" title="Link to this definition">¶</a></dt>
+<dd><p>Gets name of the member as is defined in Zserio schema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Member name in Zserio schema.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="zserio.typeinfo.MemberInfo.type_info">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">type_info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#zserio.typeinfo.TypeInfo" title="zserio.typeinfo.TypeInfo"><span class="pre">TypeInfo</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#zserio.typeinfo.RecursiveTypeInfo" title="zserio.typeinfo.RecursiveTypeInfo"><span class="pre">RecursiveTypeInfo</span></a></em><a class="headerlink" href="#zserio.typeinfo.MemberInfo.type_info" title="Link to this definition">¶</a></dt>
+<dd><p>Gets type info of this member.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Type info.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zserio.typeinfo.RecursiveTypeInfo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zserio.typeinfo.</span></span><span class="sig-name descname"><span class="pre">RecursiveTypeInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_info_func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#zserio.typeinfo.TypeInfo" title="zserio.typeinfo.TypeInfo"><span class="pre">TypeInfo</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zserio/typeinfo.html#RecursiveTypeInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.typeinfo.RecursiveTypeInfo" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Type info for recursive types used as a wrapper around generated static type_info method to prevent
+infinite recursion in type info definition.</p>
+<p>Constructor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>type_info_func</strong> – Generated static type_info method to wrap.</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="zserio.typeinfo.RecursiveTypeInfo.attributes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">attributes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#zserio.typeinfo.TypeAttribute" title="zserio.typeinfo.TypeAttribute"><span class="pre">TypeAttribute</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#zserio.typeinfo.RecursiveTypeInfo.attributes" title="Link to this definition">¶</a></dt>
+<dd><p>See <a class="reference internal" href="#zserio.typeinfo.TypeInfo.attributes" title="zserio.typeinfo.TypeInfo.attributes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">TypeInfo.attributes</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="zserio.typeinfo.RecursiveTypeInfo.py_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">py_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Type</span></em><a class="headerlink" href="#zserio.typeinfo.RecursiveTypeInfo.py_type" title="Link to this definition">¶</a></dt>
+<dd><p>See <a class="reference internal" href="#zserio.typeinfo.TypeInfo.py_type" title="zserio.typeinfo.TypeInfo.py_type"><code class="xref py py-attr docutils literal notranslate"><span class="pre">TypeInfo.py_type</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="zserio.typeinfo.RecursiveTypeInfo.schema_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">schema_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#zserio.typeinfo.RecursiveTypeInfo.schema_name" title="Link to this definition">¶</a></dt>
+<dd><p>See <a class="reference internal" href="#zserio.typeinfo.TypeInfo.schema_name" title="zserio.typeinfo.TypeInfo.schema_name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">TypeInfo.schema_name</span></code></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zserio.typeinfo.TypeAttribute">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zserio.typeinfo.</span></span><span class="sig-name descname"><span class="pre">TypeAttribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zserio/typeinfo.html#TypeAttribute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.typeinfo.TypeAttribute" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Type attribute type to be used in TypeInfo.</p>
+<p>Determines type of the second element in the attribute tuple returned in attributes list from TypeInfo.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.TypeAttribute.BITMASK_VALUES">
+<span class="sig-name descname"><span class="pre">BITMASK_VALUES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#zserio.typeinfo.TypeAttribute.BITMASK_VALUES" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.TypeAttribute.CASES">
+<span class="sig-name descname"><span class="pre">CASES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">9</span></em><a class="headerlink" href="#zserio.typeinfo.TypeAttribute.CASES" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.TypeAttribute.COLUMNS">
+<span class="sig-name descname"><span class="pre">COLUMNS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">12</span></em><a class="headerlink" href="#zserio.typeinfo.TypeAttribute.COLUMNS" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.TypeAttribute.ENUM_ITEMS">
+<span class="sig-name descname"><span class="pre">ENUM_ITEMS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#zserio.typeinfo.TypeAttribute.ENUM_ITEMS" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.TypeAttribute.FIELDS">
+<span class="sig-name descname"><span class="pre">FIELDS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#zserio.typeinfo.TypeAttribute.FIELDS" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.TypeAttribute.FUNCTIONS">
+<span class="sig-name descname"><span class="pre">FUNCTIONS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">7</span></em><a class="headerlink" href="#zserio.typeinfo.TypeAttribute.FUNCTIONS" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.TypeAttribute.MESSAGES">
+<span class="sig-name descname"><span class="pre">MESSAGES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">17</span></em><a class="headerlink" href="#zserio.typeinfo.TypeAttribute.MESSAGES" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.TypeAttribute.METHODS">
+<span class="sig-name descname"><span class="pre">METHODS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">18</span></em><a class="headerlink" href="#zserio.typeinfo.TypeAttribute.METHODS" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.TypeAttribute.PARAMETERS">
+<span class="sig-name descname"><span class="pre">PARAMETERS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#zserio.typeinfo.TypeAttribute.PARAMETERS" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.TypeAttribute.SELECTOR">
+<span class="sig-name descname"><span class="pre">SELECTOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></em><a class="headerlink" href="#zserio.typeinfo.TypeAttribute.SELECTOR" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.TypeAttribute.SQL_CONSTRAINT">
+<span class="sig-name descname"><span class="pre">SQL_CONSTRAINT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">14</span></em><a class="headerlink" href="#zserio.typeinfo.TypeAttribute.SQL_CONSTRAINT" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.TypeAttribute.TABLES">
+<span class="sig-name descname"><span class="pre">TABLES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">13</span></em><a class="headerlink" href="#zserio.typeinfo.TypeAttribute.TABLES" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.TypeAttribute.TEMPLATE_ARGUMENTS">
+<span class="sig-name descname"><span class="pre">TEMPLATE_ARGUMENTS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">11</span></em><a class="headerlink" href="#zserio.typeinfo.TypeAttribute.TEMPLATE_ARGUMENTS" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.TypeAttribute.TEMPLATE_NAME">
+<span class="sig-name descname"><span class="pre">TEMPLATE_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#zserio.typeinfo.TypeAttribute.TEMPLATE_NAME" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.TypeAttribute.UNDERLYING_TYPE">
+<span class="sig-name descname"><span class="pre">UNDERLYING_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#zserio.typeinfo.TypeAttribute.UNDERLYING_TYPE" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.TypeAttribute.UNDERLYING_TYPE_ARGUMENTS">
+<span class="sig-name descname"><span class="pre">UNDERLYING_TYPE_ARGUMENTS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#zserio.typeinfo.TypeAttribute.UNDERLYING_TYPE_ARGUMENTS" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.TypeAttribute.VIRTUAL_TABLE_USING">
+<span class="sig-name descname"><span class="pre">VIRTUAL_TABLE_USING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">15</span></em><a class="headerlink" href="#zserio.typeinfo.TypeAttribute.VIRTUAL_TABLE_USING" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.typeinfo.TypeAttribute.WITHOUT_ROWID">
+<span class="sig-name descname"><span class="pre">WITHOUT_ROWID</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">16</span></em><a class="headerlink" href="#zserio.typeinfo.TypeAttribute.WITHOUT_ROWID" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zserio.typeinfo.TypeInfo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zserio.typeinfo.</span></span><span class="sig-name descname"><span class="pre">TypeInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">py_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#zserio.typeinfo.TypeAttribute" title="zserio.typeinfo.TypeAttribute"><span class="pre">TypeAttribute</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zserio/typeinfo.html#TypeInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.typeinfo.TypeInfo" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Type info class which provides information about generated types.</p>
+<p>Type info constructor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>schema_name</strong> – Zserio schema full type name.</p></li>
+<li><p><strong>py_type</strong> – Reference to the generated type.</p></li>
+<li><p><strong>attributes</strong> – List of type attributes.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="zserio.typeinfo.TypeInfo.attributes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">attributes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#zserio.typeinfo.TypeAttribute" title="zserio.typeinfo.TypeAttribute"><span class="pre">TypeAttribute</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#zserio.typeinfo.TypeInfo.attributes" title="Link to this definition">¶</a></dt>
+<dd><p>Gets dictionary with type attributes.</p>
+<p>Attribute is a an arbitrary value which type is given by the key, which is TypeAttribute enumeration.</p>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">(TypeAttribute.UNDERLYING_TYPE,</span> <span class="pre">TypeInfo(...))</span></code></p>
+<ul>
+<li><p>denotes that the type has an underlying type (e.g. enum or bitmask),
+the value is a TypeInfo of the underlying type</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(TypeAttribute.UNDERLYING_TYPE_ARGUMENTS,</span> <span class="pre">[lambda:</span> <span class="pre">5])</span></code></p>
+<ul>
+<li><p>keeps type arguments of the underlying type when it is a dynamic bit field,
+the value is a lambda function which returns the argument constant value</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(TypeAttribute.ENUM_ITEMS,</span> <span class="pre">[ItemInfo(...),</span> <span class="pre">ItemInfo(...),</span> <span class="pre">...])</span></code></p>
+<ul>
+<li><p>denotes that the type is an enumeration, the value contains list of enum items ItemInfo</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(TypeAttribute.BITMASK_VALUES,</span> <span class="pre">[ItemInfo(...),</span> <span class="pre">ItemInfo(...),</span> <span class="pre">...])</span></code></p>
+<ul>
+<li><p>denotes that the type is a bitmask, the value contains list of bitmask values ItemInfo</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(TypeAttribute.FIELDS,</span>&#160; <span class="pre">[MemberInfo(...),</span> <span class="pre">MemberInfo(...),</span> <span class="pre">...])</span></code></p>
+<ul>
+<li><p>denotes that the type is a compound type, the value contains list of fields MemberInfo,
+the attribute is present even for empty compounds and then it contains the empty list</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(TypeAttribute.PARAMETERS,</span> <span class="pre">[MemberInfo(...),</span> <span class="pre">MemberInfo(...),</span> <span class="pre">...])</span></code></p>
+<ul>
+<li><p>denotes that the compound type is parameterized type, the value contains non-empty list of
+parameters MemberInfo, for non-parameterized types the attribute is not present</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(TypeAttribute.FUNCTIONS,</span> <span class="pre">[MemberInfo(...),</span> <span class="pre">MemberInfo(...),</span> <span class="pre">...])</span></code></p>
+<ul>
+<li><p>denotes that the compound type has functions, the value contains non-empty list of functions
+MemberInfo, for compounds without functions the attribute is not present</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(TypeAttribute.SELECTOR,</span> <span class="pre">None</span></code>) <code class="code docutils literal notranslate"><span class="pre">(TypeAttribute.SELECTOR,</span> <span class="pre">lambda</span> <span class="pre">self:</span> <span class="pre">self.param1)</span></code></p>
+<ul>
+<li><p>denotes that the type is either a union (when the value is None) or choice when the
+value contains the selector expression as a lambda function taking single parent argument</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(TypeAttribute.CASES,</span> <span class="pre">[CaseInfo(...),</span> <span class="pre">CaseInfo(...),</span> <span class="pre">...])</span></code></p>
+<ul>
+<li><p>denotes that the type is a choice, the value contains list of CaseInfo for each choice case</p></li>
+<li><p>note that the TypeAttribute.FIELDS attribute is present also in choices</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(TypeAttribute.TEMPLATE_NAME,</span> <span class="pre">'TemplatedStructure')</span></code></p>
+<ul>
+<li><p>denotes that the type is a template instantiation, the value contains the template name</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(TypeAttribute.TEMPLATE_ARGUMENTS,</span> <span class="pre">[test.TemplateArg.type_info(),</span> <span class="pre">...])</span></code></p>
+<ul>
+<li><p>present when the type is a template instantiation, the value contains list of template arguments
+TypeInfo</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(TypeAttribute.COLUMNS,</span> <span class="pre">[MemberInfo(...),</span> <span class="pre">MemberInfo(...),</span> <span class="pre">...])</span></code></p>
+<ul>
+<li><p>denotes that the type is a SQL table, the value contains list of columns MemberInfo</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(TypeAttribute.TABLES,</span> <span class="pre">[MemberInfo(...),</span> <span class="pre">MemberInfo(...),</span> <span class="pre">...])</span></code></p>
+<ul>
+<li><p>denotes that the type is a SQL database, the value contain list of tables MemberInfo</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(TypeAttribute.SQL_CONSTRAINT,</span> <span class="pre">'PRIMARY</span> <span class="pre">KEY(columnA)')</span></code></p>
+<ul>
+<li><p>denotes that the SQL table contains a SQL constraint</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(TypeAttribute.VIRTUAL_TABLE_USING,</span> <span class="pre">'fts4')</span></code></p>
+<ul>
+<li><p>denotes that the SQL table is a virtual table, the value contains the used virtual table module</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(TypeAttribute.WITHOUT_ROWID,</span> <span class="pre">None)</span></code></p>
+<ul>
+<li><p>denotes that the SQL table is a WITHOUT ROWID table, the value is always None</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(TypeAttribute.MESSAGES,</span> <span class="pre">[MemberInfo(...),</span> <span class="pre">MemberInfo(...),</span> <span class="pre">...])</span></code></p>
+<ul>
+<li><p>denotes that the type is a pub-sub, the value contains list of messages MemberInfo</p></li>
+</ul>
+</li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">(TypeAttribute.METHODS,</span> <span class="pre">[MemberInfo(...),</span> <span class="pre">MemberInfo(...),</span> <span class="pre">...])</span></code></p>
+<ul>
+<li><p>denotes that the type is a service, the value contains list of methods MemberInfo</p></li>
+</ul>
+</li>
+</ul>
+<p>:returns Type attributes.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="zserio.typeinfo.TypeInfo.py_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">py_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Type</span></em><a class="headerlink" href="#zserio.typeinfo.TypeInfo.py_type" title="Link to this definition">¶</a></dt>
+<dd><p>Gets Python type generated for this Zserio type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Python type.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="zserio.typeinfo.TypeInfo.schema_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">schema_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#zserio.typeinfo.TypeInfo.schema_name" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the full type name as is defined in Zserio schema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Zserio schema full type name.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/Zserio.png" alt="Logo"/>
+            </a></p><h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="zserio.html">zserio package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="zserio.html#zserio.VERSION_STRING"><code class="docutils literal notranslate"><span class="pre">VERSION_STRING</span></code></a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="zserio.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="zserio.array.html">zserio.array module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.bitbuffer.html">zserio.bitbuffer module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.bitfield.html">zserio.bitfield module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.bitposition.html">zserio.bitposition module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.bitreader.html">zserio.bitreader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.bitsizeof.html">zserio.bitsizeof module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.bitwriter.html">zserio.bitwriter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.builtin.html">zserio.builtin module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.cppbind.html">zserio.cppbind module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.creator.html">zserio.creator module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.debugstring.html">zserio.debugstring module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.enum.html">zserio.enum module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.exception.html">zserio.exception module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.float.html">zserio.float module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.hashcode.html">zserio.hashcode module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.json.html">zserio.json module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.limits.html">zserio.limits module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.pubsub.html">zserio.pubsub module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.serialization.html">zserio.serialization module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.service.html">zserio.service module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">zserio.typeinfo module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.walker.html">zserio.walker module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">zserio.typeinfo module</a><ul>
+<li><a class="reference internal" href="#zserio.typeinfo.CaseInfo"><code class="docutils literal notranslate"><span class="pre">CaseInfo</span></code></a><ul>
+<li><a class="reference internal" href="#zserio.typeinfo.CaseInfo.case_expressions"><code class="docutils literal notranslate"><span class="pre">CaseInfo.case_expressions</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.CaseInfo.field"><code class="docutils literal notranslate"><span class="pre">CaseInfo.field</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#zserio.typeinfo.ItemInfo"><code class="docutils literal notranslate"><span class="pre">ItemInfo</span></code></a><ul>
+<li><a class="reference internal" href="#zserio.typeinfo.ItemInfo.is_deprecated"><code class="docutils literal notranslate"><span class="pre">ItemInfo.is_deprecated</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.ItemInfo.is_removed"><code class="docutils literal notranslate"><span class="pre">ItemInfo.is_removed</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.ItemInfo.py_item"><code class="docutils literal notranslate"><span class="pre">ItemInfo.py_item</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.ItemInfo.schema_name"><code class="docutils literal notranslate"><span class="pre">ItemInfo.schema_name</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#zserio.typeinfo.MemberAttribute"><code class="docutils literal notranslate"><span class="pre">MemberAttribute</span></code></a><ul>
+<li><a class="reference internal" href="#zserio.typeinfo.MemberAttribute.ALIGN"><code class="docutils literal notranslate"><span class="pre">MemberAttribute.ALIGN</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.MemberAttribute.ARRAY_LENGTH"><code class="docutils literal notranslate"><span class="pre">MemberAttribute.ARRAY_LENGTH</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.MemberAttribute.CLIENT_METHOD_NAME"><code class="docutils literal notranslate"><span class="pre">MemberAttribute.CLIENT_METHOD_NAME</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.MemberAttribute.CONSTRAINT"><code class="docutils literal notranslate"><span class="pre">MemberAttribute.CONSTRAINT</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.MemberAttribute.EXTENDED"><code class="docutils literal notranslate"><span class="pre">MemberAttribute.EXTENDED</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.MemberAttribute.FUNCTION_NAME"><code class="docutils literal notranslate"><span class="pre">MemberAttribute.FUNCTION_NAME</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.MemberAttribute.FUNCTION_RESULT"><code class="docutils literal notranslate"><span class="pre">MemberAttribute.FUNCTION_RESULT</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.MemberAttribute.IMPLICIT"><code class="docutils literal notranslate"><span class="pre">MemberAttribute.IMPLICIT</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.MemberAttribute.INITIALIZER"><code class="docutils literal notranslate"><span class="pre">MemberAttribute.INITIALIZER</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.MemberAttribute.IS_SET_INDICATOR_NAME"><code class="docutils literal notranslate"><span class="pre">MemberAttribute.IS_SET_INDICATOR_NAME</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.MemberAttribute.IS_USED_INDICATOR_NAME"><code class="docutils literal notranslate"><span class="pre">MemberAttribute.IS_USED_INDICATOR_NAME</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.MemberAttribute.OFFSET"><code class="docutils literal notranslate"><span class="pre">MemberAttribute.OFFSET</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.MemberAttribute.OPTIONAL"><code class="docutils literal notranslate"><span class="pre">MemberAttribute.OPTIONAL</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.MemberAttribute.PACKED"><code class="docutils literal notranslate"><span class="pre">MemberAttribute.PACKED</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.MemberAttribute.PROPERTY_NAME"><code class="docutils literal notranslate"><span class="pre">MemberAttribute.PROPERTY_NAME</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.MemberAttribute.PUBLISH"><code class="docutils literal notranslate"><span class="pre">MemberAttribute.PUBLISH</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.MemberAttribute.REQUEST_TYPE"><code class="docutils literal notranslate"><span class="pre">MemberAttribute.REQUEST_TYPE</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.MemberAttribute.SQL_CONSTRAINT"><code class="docutils literal notranslate"><span class="pre">MemberAttribute.SQL_CONSTRAINT</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.MemberAttribute.SQL_TYPE_NAME"><code class="docutils literal notranslate"><span class="pre">MemberAttribute.SQL_TYPE_NAME</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.MemberAttribute.SUBSCRIBE"><code class="docutils literal notranslate"><span class="pre">MemberAttribute.SUBSCRIBE</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.MemberAttribute.TOPIC"><code class="docutils literal notranslate"><span class="pre">MemberAttribute.TOPIC</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.MemberAttribute.TYPE_ARGUMENTS"><code class="docutils literal notranslate"><span class="pre">MemberAttribute.TYPE_ARGUMENTS</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.MemberAttribute.VIRTUAL"><code class="docutils literal notranslate"><span class="pre">MemberAttribute.VIRTUAL</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#zserio.typeinfo.MemberInfo"><code class="docutils literal notranslate"><span class="pre">MemberInfo</span></code></a><ul>
+<li><a class="reference internal" href="#zserio.typeinfo.MemberInfo.attributes"><code class="docutils literal notranslate"><span class="pre">MemberInfo.attributes</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.MemberInfo.schema_name"><code class="docutils literal notranslate"><span class="pre">MemberInfo.schema_name</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.MemberInfo.type_info"><code class="docutils literal notranslate"><span class="pre">MemberInfo.type_info</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#zserio.typeinfo.RecursiveTypeInfo"><code class="docutils literal notranslate"><span class="pre">RecursiveTypeInfo</span></code></a><ul>
+<li><a class="reference internal" href="#zserio.typeinfo.RecursiveTypeInfo.attributes"><code class="docutils literal notranslate"><span class="pre">RecursiveTypeInfo.attributes</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.RecursiveTypeInfo.py_type"><code class="docutils literal notranslate"><span class="pre">RecursiveTypeInfo.py_type</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.RecursiveTypeInfo.schema_name"><code class="docutils literal notranslate"><span class="pre">RecursiveTypeInfo.schema_name</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#zserio.typeinfo.TypeAttribute"><code class="docutils literal notranslate"><span class="pre">TypeAttribute</span></code></a><ul>
+<li><a class="reference internal" href="#zserio.typeinfo.TypeAttribute.BITMASK_VALUES"><code class="docutils literal notranslate"><span class="pre">TypeAttribute.BITMASK_VALUES</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.TypeAttribute.CASES"><code class="docutils literal notranslate"><span class="pre">TypeAttribute.CASES</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.TypeAttribute.COLUMNS"><code class="docutils literal notranslate"><span class="pre">TypeAttribute.COLUMNS</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.TypeAttribute.ENUM_ITEMS"><code class="docutils literal notranslate"><span class="pre">TypeAttribute.ENUM_ITEMS</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.TypeAttribute.FIELDS"><code class="docutils literal notranslate"><span class="pre">TypeAttribute.FIELDS</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.TypeAttribute.FUNCTIONS"><code class="docutils literal notranslate"><span class="pre">TypeAttribute.FUNCTIONS</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.TypeAttribute.MESSAGES"><code class="docutils literal notranslate"><span class="pre">TypeAttribute.MESSAGES</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.TypeAttribute.METHODS"><code class="docutils literal notranslate"><span class="pre">TypeAttribute.METHODS</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.TypeAttribute.PARAMETERS"><code class="docutils literal notranslate"><span class="pre">TypeAttribute.PARAMETERS</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.TypeAttribute.SELECTOR"><code class="docutils literal notranslate"><span class="pre">TypeAttribute.SELECTOR</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.TypeAttribute.SQL_CONSTRAINT"><code class="docutils literal notranslate"><span class="pre">TypeAttribute.SQL_CONSTRAINT</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.TypeAttribute.TABLES"><code class="docutils literal notranslate"><span class="pre">TypeAttribute.TABLES</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.TypeAttribute.TEMPLATE_ARGUMENTS"><code class="docutils literal notranslate"><span class="pre">TypeAttribute.TEMPLATE_ARGUMENTS</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.TypeAttribute.TEMPLATE_NAME"><code class="docutils literal notranslate"><span class="pre">TypeAttribute.TEMPLATE_NAME</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.TypeAttribute.UNDERLYING_TYPE"><code class="docutils literal notranslate"><span class="pre">TypeAttribute.UNDERLYING_TYPE</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.TypeAttribute.UNDERLYING_TYPE_ARGUMENTS"><code class="docutils literal notranslate"><span class="pre">TypeAttribute.UNDERLYING_TYPE_ARGUMENTS</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.TypeAttribute.VIRTUAL_TABLE_USING"><code class="docutils literal notranslate"><span class="pre">TypeAttribute.VIRTUAL_TABLE_USING</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.TypeAttribute.WITHOUT_ROWID"><code class="docutils literal notranslate"><span class="pre">TypeAttribute.WITHOUT_ROWID</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#zserio.typeinfo.TypeInfo"><code class="docutils literal notranslate"><span class="pre">TypeInfo</span></code></a><ul>
+<li><a class="reference internal" href="#zserio.typeinfo.TypeInfo.attributes"><code class="docutils literal notranslate"><span class="pre">TypeInfo.attributes</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.TypeInfo.py_type"><code class="docutils literal notranslate"><span class="pre">TypeInfo.py_type</span></code></a></li>
+<li><a class="reference internal" href="#zserio.typeinfo.TypeInfo.schema_name"><code class="docutils literal notranslate"><span class="pre">TypeInfo.schema_name</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;Copyright (c) 2018-2022, Navigation Data Standard e.v..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
