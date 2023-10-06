@@ -1,0 +1,11 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node2" href="$structzserio_1_1is__allocator.html" title="zserio::is_allocator\&lt; T \&gt;" alt="" coords="157,13,334,39"/>
+<area shape="rect" id="node4" href="$structzserio_1_1has__initialize.html" title="zserio::has_initialize\l\&lt; T, typename \&gt;" alt="" coords="171,64,320,105"/>
+<area shape="rect" id="node5" href="$structzserio_1_1has__initialize__children.html" title="zserio::has_initialize\l_children\&lt; T, typename \&gt;" alt="" coords="151,129,340,171"/>
+<area shape="rect" id="node6" href="$structzserio_1_1has__reflectable.html" title="zserio::has_reflectable\l\&lt; T, typename \&gt;" alt="" coords="163,195,328,236"/>
+<area shape="rect" id="node7" href="$structzserio_1_1is__allocator.html" title="zserio::is_allocator\l\&lt; T, typename \&gt;" alt="" coords="175,260,315,301"/>
+<area shape="rect" id="node8" href="$structzserio_1_1is__bitmask.html" title="zserio::is_bitmask\l\&lt; T, typename \&gt;" alt="" coords="177,325,313,367"/>
+<area shape="rect" id="node9" href="$structzserio_1_1is__first__allocator.html" title="zserio::is_first_allocator\l\&lt; ARGS \&gt;" alt="" coords="160,391,331,432"/>
+<area shape="rect" id="node10" href="$structzserio_1_1is__span.html" title="zserio::is_span\&lt; typename \&gt;" alt="" coords="140,457,351,483"/>
+<area shape="rect" id="node3" href="$structzserio_1_1is__first__allocator_3_01T_00_01ARGS_8_8_8_01_4.html" title="zserio::is_first_allocator\l\&lt; T, ARGS... \&gt;" alt="" coords="399,5,569,47"/>
+</map>

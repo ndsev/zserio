@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BitPositionUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime</a> &gt; <span class="el_source">BitPositionUtil.java</span></div><h1>BitPositionUtil.java</h1><pre class="source lang-java linenums">package zserio.runtime;
+
+/**
+ * The class provides help methods for manipulation with bit stream position.
+ */
+<span class="nc" id="L6">public class BitPositionUtil</span>
+{
+    /**
+     * Aligns the bit size to the given alignment value.
+     *
+     * @param alignmentValue Value to align.
+     * @param bitPosition    Current bit position where to apply alignment.
+     *
+     * @return Aligned bit size.
+     */
+    public static long alignTo(int alignmentValue, long bitPosition)
+    {
+<span class="fc bfc" id="L18" title="All 4 branches covered.">        return (bitPosition &gt; 0 &amp;&amp; alignmentValue != 0) ?</span>
+                (((bitPosition - 1) / alignmentValue) + 1) * alignmentValue : bitPosition;
+    }
+
+    /**
+     * Converts a given bits value into a byte value.
+     *
+     * If the bits value is not a multiple of 8 an exception is thrown.
+     *
+     * @param numBits The number of bits to convert.
+     *
+     * @return Number of bytes.
+     */
+    public static long bitsToBytes(long numBits)
+    {
+<span class="fc bfc" id="L33" title="All 2 branches covered.">        if (numBits % 8 != 0)</span>
+<span class="fc" id="L34">            throw new ZserioError(&quot;bitsToBytes: &quot; + numBits + &quot; is not a multiple of 8.&quot;);</span>
+
+<span class="fc" id="L36">        return numBits / 8;</span>
+    }
+
+    /**
+     * Converts a given bytes value into a bits value.
+     *
+     * @param numBytes The number of bytes to convert.
+     *
+     * @return Number of bits.
+     */
+    public static long bytesToBits(long numBytes)
+    {
+<span class="fc" id="L48">        return numBytes * 8;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
