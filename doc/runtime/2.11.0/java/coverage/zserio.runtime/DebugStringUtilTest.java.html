@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DebugStringUtilTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime</a> &gt; <span class="el_source">DebugStringUtilTest.java</span></div><h1>DebugStringUtilTest.java</h1><pre class="source lang-java linenums">package zserio.runtime;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+
+import zserio.runtime.typeinfo.FieldInfo;
+import zserio.runtime.typeinfo.FunctionInfo;
+import zserio.runtime.typeinfo.ParameterInfo;
+import zserio.runtime.typeinfo.TypeInfo;
+import zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo;
+import zserio.runtime.typeinfo.TypeInfo.StructTypeInfo;
+import zserio.runtime.walker.DefaultWalkFilter;
+import zserio.runtime.walker.DepthWalkFilter;
+
+<span class="fc" id="L29">public class DebugStringUtilTest</span>
+{
+    @Test
+    public void toJsonStreamDefault()
+    {
+<span class="fc" id="L34">        final StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L35">        final DummyObject dummyObject = new DummyObject(&quot;test&quot;);</span>
+<span class="fc" id="L36">        DebugStringUtil.toJsonStream(dummyObject, stringWriter);</span>
+<span class="fc" id="L37">        assertJsonEquals(&quot;{\n    \&quot;text\&quot;: \&quot;test\&quot;\n}&quot;, stringWriter.toString());</span>
+<span class="fc" id="L38">    }</span>
+
+    @Test
+    public void toJsonStreamIndent2()
+    {
+<span class="fc" id="L43">        final StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L44">        final DummyObject dummyObject = new DummyObject(&quot;test&quot;);</span>
+<span class="fc" id="L45">        DebugStringUtil.toJsonStream(dummyObject, stringWriter, 2);</span>
+<span class="fc" id="L46">        assertJsonEquals(&quot;{\n  \&quot;text\&quot;: \&quot;test\&quot;\n}&quot;, stringWriter.toString());</span>
+<span class="fc" id="L47">    }</span>
+
+    @Test
+    public void toJsonStreamFilter()
+    {
+<span class="fc" id="L52">        final StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L53">        final DummyObject dummyObject = new DummyObject(&quot;test&quot;);</span>
+<span class="fc" id="L54">        DebugStringUtil.toJsonStream(dummyObject, stringWriter, new DepthWalkFilter(0));</span>
+<span class="fc" id="L55">        assertJsonEquals(&quot;{\n}&quot;, stringWriter.toString());</span>
+<span class="fc" id="L56">    }</span>
+
+    @Test
+    public void toJsonStreamIndent2Filter()
+    {
+<span class="fc" id="L61">        final StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L62">        final DummyObject dummyObject = new DummyObject(&quot;test&quot;);</span>
+<span class="fc" id="L63">        DebugStringUtil.toJsonStream(dummyObject, stringWriter, 2, new DefaultWalkFilter());</span>
+<span class="fc" id="L64">        assertJsonEquals(&quot;{\n  \&quot;text\&quot;: \&quot;test\&quot;\n}&quot;, stringWriter.toString());</span>
+<span class="fc" id="L65">    }</span>
+
+    @Test
+    public void toJsonStringDefault()
+    {
+<span class="fc" id="L70">        final DummyObject dummyObject = new DummyObject(&quot;test&quot;);</span>
+<span class="fc" id="L71">        assertJsonEquals(&quot;{\n    \&quot;text\&quot;: \&quot;test\&quot;\n}&quot;, DebugStringUtil.toJsonString(dummyObject));</span>
+<span class="fc" id="L72">    }</span>
+
+    @Test
+    public void toJsonStringIndent2()
+    {
+<span class="fc" id="L77">        final DummyObject dummyObject = new DummyObject(&quot;test&quot;);</span>
+<span class="fc" id="L78">        assertJsonEquals(&quot;{\n  \&quot;text\&quot;: \&quot;test\&quot;\n}&quot;, DebugStringUtil.toJsonString(dummyObject, 2));</span>
+<span class="fc" id="L79">    }</span>
+
+    @Test
+    public void toJsonStringFilter()
+    {
+<span class="fc" id="L84">        final DummyObject dummyObject = new DummyObject(&quot;test&quot;);</span>
+<span class="fc" id="L85">        assertJsonEquals(&quot;{\n}&quot;, DebugStringUtil.toJsonString(dummyObject, new DepthWalkFilter(0)));</span>
+<span class="fc" id="L86">    }</span>
+
+    @Test
+    public void toJsonStringIndent2Filter()
+    {
+<span class="fc" id="L91">        final DummyObject dummyObject = new DummyObject(&quot;test&quot;);</span>
+<span class="fc" id="L92">        assertJsonEquals(&quot;{\n  \&quot;text\&quot;: \&quot;test\&quot;\n}&quot;,</span>
+<span class="fc" id="L93">                DebugStringUtil.toJsonString(dummyObject, 2, new DefaultWalkFilter()));</span>
+<span class="fc" id="L94">    }</span>
+
+    @Test
+    public void toJsonFileDefault() throws IOException
+    {
+<span class="fc" id="L99">        final DummyObject dummyObject = new DummyObject(&quot;test&quot;);</span>
+<span class="fc" id="L100">        DebugStringUtil.toJsonFile(dummyObject, TEST_FILE_NAME);</span>
+
+<span class="fc" id="L102">        final String json = new String(Files.readAllBytes(Paths.get(TEST_FILE_NAME)), StandardCharsets.UTF_8);</span>
+<span class="fc" id="L103">        assertJsonEquals(&quot;{\n    \&quot;text\&quot;: \&quot;test\&quot;\n}&quot;, json);</span>
+<span class="fc" id="L104">    }</span>
+
+    @Test
+    public void toJsonFileIndent2() throws IOException
+    {
+<span class="fc" id="L109">        final DummyObject dummyObject = new DummyObject(&quot;test&quot;);</span>
+<span class="fc" id="L110">        DebugStringUtil.toJsonFile(dummyObject, TEST_FILE_NAME, 2);</span>
+
+<span class="fc" id="L112">        final String json = new String(Files.readAllBytes(Paths.get(TEST_FILE_NAME)), StandardCharsets.UTF_8);</span>
+<span class="fc" id="L113">        assertJsonEquals(&quot;{\n  \&quot;text\&quot;: \&quot;test\&quot;\n}&quot;, json);</span>
+<span class="fc" id="L114">    }</span>
+
+    @Test
+    public void toJsonFileFilter() throws IOException
+    {
+<span class="fc" id="L119">        final DummyObject dummyObject = new DummyObject(&quot;test&quot;);</span>
+<span class="fc" id="L120">        DebugStringUtil.toJsonFile(dummyObject, TEST_FILE_NAME, new DepthWalkFilter(0));</span>
+
+<span class="fc" id="L122">        final String json = new String(Files.readAllBytes(Paths.get(TEST_FILE_NAME)), StandardCharsets.UTF_8);</span>
+<span class="fc" id="L123">        assertJsonEquals(&quot;{\n}&quot;, json);</span>
+<span class="fc" id="L124">    }</span>
+
+    @Test
+    public void toJsonFileIndent2Filter() throws IOException
+    {
+<span class="fc" id="L129">        final DummyObject dummyObject = new DummyObject(&quot;test&quot;);</span>
+<span class="fc" id="L130">        DebugStringUtil.toJsonFile(dummyObject, TEST_FILE_NAME, 2, new DefaultWalkFilter());</span>
+
+<span class="fc" id="L132">        final String json = new String(Files.readAllBytes(Paths.get(TEST_FILE_NAME)), StandardCharsets.UTF_8);</span>
+<span class="fc" id="L133">        assertJsonEquals(&quot;{\n  \&quot;text\&quot;: \&quot;test\&quot;\n}&quot;, json);</span>
+<span class="fc" id="L134">    }</span>
+
+    @Test
+    public void fromJsonStreamTypeInfo()
+    {
+<span class="fc" id="L139">        final Reader reader = new StringReader(&quot;{\&quot;text\&quot;: \&quot;something\&quot;}&quot;);</span>
+<span class="fc" id="L140">        final Object zserioObject = DebugStringUtil.fromJsonStream(DummyObject.typeInfo(), reader);</span>
+<span class="pc bpc" id="L141" title="1 of 2 branches missed.">        assertTrue(zserioObject != null);</span>
+<span class="fc" id="L142">        assertTrue(zserioObject instanceof DummyObject);</span>
+<span class="fc" id="L143">        assertEquals(&quot;something&quot;, ((DummyObject)zserioObject).getText());</span>
+<span class="fc" id="L144">    }</span>
+
+    @Test
+    public void fromJsonStreamTypeInfoArguments()
+    {
+<span class="fc" id="L149">        final Reader reader = new StringReader(&quot;{\&quot;text\&quot;: \&quot;something\&quot;}&quot;);</span>
+<span class="fc" id="L150">        final Object zserioObject = DebugStringUtil.fromJsonStream(ParameterizedDummyObject.typeInfo(),</span>
+<span class="fc" id="L151">                reader, 10);</span>
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">        assertTrue(zserioObject != null);</span>
+<span class="fc" id="L153">        assertTrue(zserioObject instanceof ParameterizedDummyObject);</span>
+<span class="fc" id="L154">        assertEquals(10, ((ParameterizedDummyObject)zserioObject).getParam());</span>
+<span class="fc" id="L155">        assertEquals(&quot;something&quot;, ((ParameterizedDummyObject)zserioObject).getText());</span>
+<span class="fc" id="L156">    }</span>
+
+    @Test
+    public void fromJsonStreamClass()
+    {
+<span class="fc" id="L161">        final Reader reader = new StringReader(&quot;{\&quot;text\&quot;: \&quot;something\&quot;}&quot;);</span>
+<span class="fc" id="L162">        final Object zserioObject = DebugStringUtil.fromJsonStream(DummyObject.class, reader);</span>
+<span class="pc bpc" id="L163" title="1 of 2 branches missed.">        assertTrue(zserioObject != null);</span>
+<span class="fc" id="L164">        assertTrue(zserioObject instanceof DummyObject);</span>
+<span class="fc" id="L165">        assertEquals(&quot;something&quot;, ((DummyObject)zserioObject).getText());</span>
+<span class="fc" id="L166">    }</span>
+
+    @Test
+    public void fromJsonStreamClassArguments()
+    {
+<span class="fc" id="L171">        final Reader reader = new StringReader(&quot;{\&quot;text\&quot;: \&quot;something\&quot;}&quot;);</span>
+<span class="fc" id="L172">        final Object zserioObject = DebugStringUtil.fromJsonStream(ParameterizedDummyObject.class, reader, 10);</span>
+<span class="pc bpc" id="L173" title="1 of 2 branches missed.">        assertTrue(zserioObject != null);</span>
+<span class="fc" id="L174">        assertTrue(zserioObject instanceof ParameterizedDummyObject);</span>
+<span class="fc" id="L175">        assertEquals(10, ((ParameterizedDummyObject)zserioObject).getParam());</span>
+<span class="fc" id="L176">        assertEquals(&quot;something&quot;, ((ParameterizedDummyObject)zserioObject).getText());</span>
+<span class="fc" id="L177">    }</span>
+
+    @Test
+    public void fromJsonStringTypeInfo()
+    {
+<span class="fc" id="L182">        final String jsonString = &quot;{\&quot;text\&quot;: \&quot;something\&quot;}&quot;;</span>
+<span class="fc" id="L183">        final Object zserioObject = DebugStringUtil.fromJsonString(DummyObject.typeInfo(), jsonString);</span>
+<span class="pc bpc" id="L184" title="1 of 2 branches missed.">        assertTrue(zserioObject != null);</span>
+<span class="fc" id="L185">        assertTrue(zserioObject instanceof DummyObject);</span>
+<span class="fc" id="L186">        assertEquals(&quot;something&quot;, ((DummyObject)zserioObject).getText());</span>
+<span class="fc" id="L187">    }</span>
+
+    @Test
+    public void fromJsonStringTypeInfoArguments()
+    {
+<span class="fc" id="L192">        final String jsonString = &quot;{\&quot;text\&quot;: \&quot;something\&quot;}&quot;;</span>
+<span class="fc" id="L193">        final Object zserioObject = DebugStringUtil.fromJsonString(ParameterizedDummyObject.typeInfo(),</span>
+<span class="fc" id="L194">                jsonString, 10);</span>
+<span class="pc bpc" id="L195" title="1 of 2 branches missed.">        assertTrue(zserioObject != null);</span>
+<span class="fc" id="L196">        assertTrue(zserioObject instanceof ParameterizedDummyObject);</span>
+<span class="fc" id="L197">        assertEquals(10, ((ParameterizedDummyObject)zserioObject).getParam());</span>
+<span class="fc" id="L198">        assertEquals(&quot;something&quot;, ((ParameterizedDummyObject)zserioObject).getText());</span>
+<span class="fc" id="L199">    }</span>
+
+    @Test
+    public void fromJsonStringClass()
+    {
+<span class="fc" id="L204">        final String jsonString = &quot;{\&quot;text\&quot;: \&quot;something\&quot;}&quot;;</span>
+<span class="fc" id="L205">        final Object zserioObject = DebugStringUtil.fromJsonString(DummyObject.class, jsonString);</span>
+<span class="pc bpc" id="L206" title="1 of 2 branches missed.">        assertTrue(zserioObject != null);</span>
+<span class="fc" id="L207">        assertTrue(zserioObject instanceof DummyObject);</span>
+<span class="fc" id="L208">        assertEquals(&quot;something&quot;, ((DummyObject)zserioObject).getText());</span>
+<span class="fc" id="L209">    }</span>
+
+    @Test
+    public void fromJsonStringClassArguments()
+    {
+<span class="fc" id="L214">        final String jsonString = &quot;{\&quot;text\&quot;: \&quot;something\&quot;}&quot;;</span>
+<span class="fc" id="L215">        final Object zserioObject = DebugStringUtil.fromJsonString(ParameterizedDummyObject.class,</span>
+<span class="fc" id="L216">                jsonString, 10);</span>
+<span class="pc bpc" id="L217" title="1 of 2 branches missed.">        assertTrue(zserioObject != null);</span>
+<span class="fc" id="L218">        assertTrue(zserioObject instanceof ParameterizedDummyObject);</span>
+<span class="fc" id="L219">        assertEquals(10, ((ParameterizedDummyObject)zserioObject).getParam());</span>
+<span class="fc" id="L220">        assertEquals(&quot;something&quot;, ((ParameterizedDummyObject)zserioObject).getText());</span>
+<span class="fc" id="L221">    }</span>
+
+    @Test
+    public void fromJsonFileTypeInfo() throws IOException
+    {
+<span class="fc" id="L226">        final List&lt;CharSequence&gt; content = new ArrayList&lt;CharSequence&gt;();</span>
+<span class="fc" id="L227">        content.add(&quot;{\&quot;text\&quot;: \&quot;something\&quot;}&quot;);</span>
+<span class="fc" id="L228">        Files.write(Paths.get(TEST_FILE_NAME), content, Charset.forName(&quot;UTF-8&quot;));</span>
+
+<span class="fc" id="L230">        final Object zserioObject = DebugStringUtil.fromJsonFile(DummyObject.typeInfo(), TEST_FILE_NAME);</span>
+<span class="pc bpc" id="L231" title="1 of 2 branches missed.">        assertTrue(zserioObject != null);</span>
+<span class="fc" id="L232">        assertTrue(zserioObject instanceof DummyObject);</span>
+<span class="fc" id="L233">        assertEquals(&quot;something&quot;, ((DummyObject)zserioObject).getText());</span>
+<span class="fc" id="L234">    }</span>
+
+    @Test
+    public void fromJsonFileTypeInfoArguments() throws IOException
+    {
+<span class="fc" id="L239">        final List&lt;CharSequence&gt; content = new ArrayList&lt;CharSequence&gt;();</span>
+<span class="fc" id="L240">        content.add(&quot;{\&quot;text\&quot;: \&quot;something\&quot;}&quot;);</span>
+<span class="fc" id="L241">        Files.write(Paths.get(TEST_FILE_NAME), content, Charset.forName(&quot;UTF-8&quot;));</span>
+
+<span class="fc" id="L243">        final Object zserioObject = DebugStringUtil.fromJsonFile(ParameterizedDummyObject.typeInfo(),</span>
+<span class="fc" id="L244">                TEST_FILE_NAME, 10);</span>
+<span class="pc bpc" id="L245" title="1 of 2 branches missed.">        assertTrue(zserioObject != null);</span>
+<span class="fc" id="L246">        assertTrue(zserioObject instanceof ParameterizedDummyObject);</span>
+<span class="fc" id="L247">        assertEquals(10, ((ParameterizedDummyObject)zserioObject).getParam());</span>
+<span class="fc" id="L248">        assertEquals(&quot;something&quot;, ((ParameterizedDummyObject)zserioObject).getText());</span>
+<span class="fc" id="L249">    }</span>
+
+    @Test
+    public void fromJsonFileClass() throws IOException
+    {
+<span class="fc" id="L254">        final List&lt;CharSequence&gt; content = new ArrayList&lt;CharSequence&gt;();</span>
+<span class="fc" id="L255">        content.add(&quot;{\&quot;text\&quot;: \&quot;something\&quot;}&quot;);</span>
+<span class="fc" id="L256">        Files.write(Paths.get(TEST_FILE_NAME), content, Charset.forName(&quot;UTF-8&quot;));</span>
+
+<span class="fc" id="L258">        final Object zserioObject = DebugStringUtil.fromJsonFile(DummyObject.class, TEST_FILE_NAME);</span>
+<span class="pc bpc" id="L259" title="1 of 2 branches missed.">        assertTrue(zserioObject != null);</span>
+<span class="fc" id="L260">        assertTrue(zserioObject instanceof DummyObject);</span>
+<span class="fc" id="L261">        assertEquals(&quot;something&quot;, ((DummyObject)zserioObject).getText());</span>
+<span class="fc" id="L262">    }</span>
+
+    @Test
+    public void fromJsonFileClassArguments() throws IOException
+    {
+<span class="fc" id="L267">        final List&lt;CharSequence&gt; content = new ArrayList&lt;CharSequence&gt;();</span>
+<span class="fc" id="L268">        content.add(&quot;{\&quot;text\&quot;: \&quot;something\&quot;}&quot;);</span>
+<span class="fc" id="L269">        Files.write(Paths.get(TEST_FILE_NAME), content, Charset.forName(&quot;UTF-8&quot;));</span>
+
+<span class="fc" id="L271">        final Object zserioObject = DebugStringUtil.fromJsonFile(ParameterizedDummyObject.class,</span>
+<span class="fc" id="L272">                TEST_FILE_NAME, 10);</span>
+<span class="pc bpc" id="L273" title="1 of 2 branches missed.">        assertTrue(zserioObject != null);</span>
+<span class="fc" id="L274">        assertTrue(zserioObject instanceof ParameterizedDummyObject);</span>
+<span class="fc" id="L275">        assertEquals(10, ((ParameterizedDummyObject)zserioObject).getParam());</span>
+<span class="fc" id="L276">        assertEquals(&quot;something&quot;, ((ParameterizedDummyObject)zserioObject).getText());</span>
+<span class="fc" id="L277">    }</span>
+
+    private void assertJsonEquals(String expectedJson, String providedJson)
+    {
+<span class="fc" id="L281">        assertEquals(expectedJson.replaceAll(&quot;\n&quot;, System.lineSeparator()), providedJson);</span>
+<span class="fc" id="L282">    }</span>
+
+    private static final String TEST_FILE_NAME = &quot;DebugStringTest.json&quot;;
+
+<span class="fc" id="L286">    private static final FieldInfo TEXT_FIELD_INFO = new FieldInfo(</span>
+            &quot;text&quot;, &quot;getText&quot;, &quot;setText&quot;,
+<span class="fc" id="L288">            BuiltinTypeInfo.getString(),</span>
+            new java.util.ArrayList&lt;java.util.function.BiFunction&lt;Object, Integer, Object&gt;&gt;(), // typeArguments
+            null, // alignment
+            null, // offset
+            null, // initializer
+            false, // isOptional
+            null, // optionalCondition
+            &quot;&quot;, // isUsedindicatorName
+            &quot;&quot;, // isSetindicatorName
+            null, // constraint
+            false, // isArray
+            null, // arrayLength
+            false, // isPacked
+            false // isImplicit
+    );
+
+<span class="fc" id="L304">    private static final TypeInfo DUMMY_OBJECT_TYPE_INFO = new StructTypeInfo(</span>
+            &quot;DummyObject&quot;, DummyObject.class, &quot;&quot;, new ArrayList&lt;TypeInfo&gt;(),
+<span class="fc" id="L306">            Arrays.asList(TEXT_FIELD_INFO), new ArrayList&lt;ParameterInfo&gt;(), new ArrayList&lt;FunctionInfo&gt;()</span>
+    );
+
+    public static class DummyObject
+    {
+        public DummyObject()
+<span class="fc" id="L312">        {</span>
+<span class="fc" id="L313">        }</span>
+
+        public DummyObject(String text)
+<span class="fc" id="L316">        {</span>
+<span class="fc" id="L317">            this.text = text;</span>
+<span class="fc" id="L318">        }</span>
+
+        public static TypeInfo typeInfo()
+        {
+<span class="fc" id="L322">            return DUMMY_OBJECT_TYPE_INFO;</span>
+        }
+
+        public String getText()
+        {
+<span class="fc" id="L327">            return text;</span>
+        }
+
+        public void setText(String text)
+        {
+<span class="fc" id="L332">            this.text = text;</span>
+<span class="fc" id="L333">        }</span>
+
+        private String text;
+    }
+
+<span class="fc" id="L338">    private static final ParameterInfo PARAM_INFO = new ParameterInfo(</span>
+                &quot;param&quot;, // schemaName
+<span class="fc" id="L340">                TypeInfo.BuiltinTypeInfo.getUInt16() // typeInfo</span>
+    );
+<span class="fc" id="L342">    private static final TypeInfo PARAMETERIZED_DUMMY_OBJECT_TYPE_INFO = new StructTypeInfo(</span>
+            &quot;ParameterizedDummyObject&quot;, ParameterizedDummyObject.class, &quot;&quot;, new ArrayList&lt;TypeInfo&gt;(),
+<span class="fc" id="L344">            Arrays.asList(TEXT_FIELD_INFO), Arrays.asList(PARAM_INFO), new ArrayList&lt;FunctionInfo&gt;()</span>
+    );
+
+    public static class ParameterizedDummyObject
+    {
+        public ParameterizedDummyObject(int param)
+<span class="fc" id="L350">        {</span>
+<span class="fc" id="L351">            this.param = param;</span>
+<span class="fc" id="L352">        }</span>
+
+        public ParameterizedDummyObject(int param, String text)
+<span class="nc" id="L355">        {</span>
+<span class="nc" id="L356">            this.param = param;</span>
+<span class="nc" id="L357">            this.text = text;</span>
+<span class="nc" id="L358">        }</span>
+
+        public static TypeInfo typeInfo()
+        {
+<span class="fc" id="L362">            return PARAMETERIZED_DUMMY_OBJECT_TYPE_INFO;</span>
+        }
+
+        public int getParam()
+        {
+<span class="fc" id="L367">            return param;</span>
+        }
+
+        public String getText()
+        {
+<span class="fc" id="L372">            return text;</span>
+        }
+
+        public void setText(String text)
+        {
+<span class="fc" id="L377">            this.text = text;</span>
+<span class="fc" id="L378">        }</span>
+
+        private final int param;
+        private String text;
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

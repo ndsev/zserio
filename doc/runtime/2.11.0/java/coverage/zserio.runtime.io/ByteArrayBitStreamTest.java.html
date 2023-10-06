@@ -1,0 +1,926 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ByteArrayBitStreamTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.io</a> &gt; <span class="el_source">ByteArrayBitStreamTest.java</span></div><h1>ByteArrayBitStreamTest.java</h1><pre class="source lang-java linenums">package zserio.runtime.io;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.lang.reflect.*;
+import java.math.BigInteger;
+
+<span class="fc" id="L12">public class ByteArrayBitStreamTest</span>
+{
+    @Test
+    public void unsignedBits() throws Exception
+    {
+<span class="fc" id="L17">        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod(&quot;writeBits&quot;, long.class, int.class);</span>
+<span class="fc" id="L18">        Method readMethod = ByteArrayBitStreamReader.class.getMethod(&quot;readBits&quot;, int.class);</span>
+
+        // all possible numBits (up to 63! bits - unsigned long doesn't exists in Java)
+<span class="fc bfc" id="L21" title="All 2 branches covered.">        for (int numBits = 1; numBits &lt;= 63; ++numBits)</span>
+        {
+            // max value and some smaller values
+<span class="fc" id="L24">            final long maxValue = (1L &lt;&lt; numBits) - 1;</span>
+<span class="fc" id="L25">            final Long data[] =</span>
+            {
+<span class="fc" id="L27">                maxValue,</span>
+<span class="fc" id="L28">                maxValue &gt;&gt; 1,</span>
+<span class="fc" id="L29">                maxValue &gt;&gt; 2,</span>
+<span class="fc" id="L30">                1L,</span>
+<span class="fc" id="L31">                0L,</span>
+<span class="fc" id="L32">                1L,</span>
+<span class="fc" id="L33">                maxValue &gt;&gt; 2,</span>
+<span class="fc" id="L34">                maxValue &gt;&gt; 1,</span>
+<span class="fc" id="L35">                maxValue</span>
+            };
+
+<span class="fc" id="L38">            testBitsImpl(writeMethod, readMethod, data, numBits);</span>
+        }
+<span class="fc" id="L40">    }</span>
+
+    @Test
+    public void signedBits() throws Exception
+    {
+<span class="fc" id="L45">        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod(&quot;writeSignedBits&quot;, long.class, int.class);</span>
+<span class="fc" id="L46">        Method readMethod = ByteArrayBitStreamReader.class.getMethod(&quot;readSignedBits&quot;, int.class);</span>
+
+        // all possible numBits (up to 64 bits)
+<span class="fc bfc" id="L49" title="All 2 branches covered.">        for (int numBits = 1; numBits &lt;= 64; ++numBits)</span>
+        {
+            // min and max values and some smaller values
+<span class="fc" id="L52">            final long minValue = -1L &lt;&lt; (numBits - 1);</span>
+<span class="fc" id="L53">            final long maxValue = (1L &lt;&lt; (numBits - 1)) - 1;</span>
+<span class="fc" id="L54">            final Long data[] =</span>
+            {
+<span class="fc" id="L56">                minValue,</span>
+<span class="fc" id="L57">                maxValue,</span>
+<span class="fc" id="L58">                minValue &gt;&gt; 1,</span>
+<span class="fc" id="L59">                maxValue &gt;&gt; 1,</span>
+<span class="fc" id="L60">                minValue &gt;&gt; 2,</span>
+<span class="fc" id="L61">                maxValue &gt;&gt; 2,</span>
+<span class="fc" id="L62">                0L,</span>
+<span class="fc" id="L63">                maxValue &gt;&gt; 2,</span>
+<span class="fc" id="L64">                minValue &gt;&gt; 2,</span>
+<span class="fc" id="L65">                maxValue &gt;&gt; 1,</span>
+<span class="fc" id="L66">                minValue &gt;&gt; 1,</span>
+<span class="fc" id="L67">                maxValue,</span>
+<span class="fc" id="L68">                minValue</span>
+            };
+
+<span class="fc" id="L71">            testBitsImpl(writeMethod, readMethod, data, numBits);</span>
+        }
+<span class="fc" id="L73">    }</span>
+
+    @Test
+    public void unsignedInt() throws Exception
+    {
+<span class="fc" id="L78">        long maxValue = (1L &lt;&lt; 32) - 1;</span>
+<span class="fc" id="L79">        Long values[] =</span>
+        {
+<span class="fc" id="L81">            maxValue,</span>
+<span class="fc" id="L82">            maxValue &gt;&gt; 8,</span>
+<span class="fc" id="L83">            maxValue &gt;&gt; 16,</span>
+<span class="fc" id="L84">            maxValue &gt;&gt; 24,</span>
+<span class="fc" id="L85">            1L,</span>
+<span class="fc" id="L86">            0L,</span>
+<span class="fc" id="L87">            1L,</span>
+<span class="fc" id="L88">            maxValue &gt;&gt; 24,</span>
+<span class="fc" id="L89">            maxValue &gt;&gt; 16,</span>
+<span class="fc" id="L90">            maxValue &gt;&gt; 8,</span>
+<span class="fc" id="L91">            maxValue</span>
+        };
+
+<span class="fc" id="L94">        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod(&quot;writeUnsignedInt&quot;, long.class);</span>
+<span class="fc" id="L95">        Method readMethod = ByteArrayBitStreamReader.class.getMethod(&quot;readUnsignedInt&quot;);</span>
+<span class="fc" id="L96">        testImpl(writeMethod, readMethod, values, 31);</span>
+<span class="fc" id="L97">    }</span>
+
+    @Test
+    public void signedInt() throws Exception
+    {
+<span class="fc" id="L102">        int minValue = Integer.MIN_VALUE;</span>
+<span class="fc" id="L103">        int maxValue = Integer.MAX_VALUE;</span>
+<span class="fc" id="L104">        Integer values[] =</span>
+        {
+<span class="fc" id="L106">            minValue,</span>
+<span class="fc" id="L107">            maxValue,</span>
+<span class="fc" id="L108">            minValue &gt;&gt; 8,</span>
+<span class="fc" id="L109">            maxValue &gt;&gt; 8,</span>
+<span class="fc" id="L110">            minValue &gt;&gt; 16,</span>
+<span class="fc" id="L111">            maxValue &gt;&gt; 16,</span>
+<span class="fc" id="L112">            minValue &gt;&gt; 24,</span>
+<span class="fc" id="L113">            maxValue &gt;&gt; 24,</span>
+<span class="fc" id="L114">            -1,</span>
+<span class="fc" id="L115">            1,</span>
+<span class="fc" id="L116">            0,</span>
+<span class="fc" id="L117">            1,</span>
+<span class="fc" id="L118">            -1,</span>
+<span class="fc" id="L119">            maxValue &gt;&gt; 24,</span>
+<span class="fc" id="L120">            minValue &gt;&gt; 24,</span>
+<span class="fc" id="L121">            maxValue &gt;&gt; 16,</span>
+<span class="fc" id="L122">            minValue &gt;&gt; 16,</span>
+<span class="fc" id="L123">            maxValue &gt;&gt; 8,</span>
+<span class="fc" id="L124">            minValue &gt;&gt; 8,</span>
+<span class="fc" id="L125">            maxValue,</span>
+<span class="fc" id="L126">            minValue</span>
+        };
+
+<span class="fc" id="L129">        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod(&quot;writeInt&quot;, int.class);</span>
+<span class="fc" id="L130">        Method readMethod = ByteArrayBitStreamReader.class.getMethod(&quot;readInt&quot;);</span>
+<span class="fc" id="L131">        testImpl(writeMethod, readMethod, values, 31);</span>
+<span class="fc" id="L132">    }</span>
+
+    @Test
+    public void unsignedShort() throws Exception
+    {
+<span class="fc" id="L137">        int maxValue = (1 &lt;&lt; 16) - 1;</span>
+<span class="fc" id="L138">        Integer values[] =</span>
+        {
+<span class="fc" id="L140">            maxValue,</span>
+<span class="fc" id="L141">            maxValue &gt;&gt; 8,</span>
+<span class="fc" id="L142">            1,</span>
+<span class="fc" id="L143">            0,</span>
+<span class="fc" id="L144">            1,</span>
+<span class="fc" id="L145">            maxValue &gt;&gt; 8,</span>
+<span class="fc" id="L146">            maxValue</span>
+        };
+
+<span class="fc" id="L149">        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod(&quot;writeUnsignedShort&quot;, int.class);</span>
+<span class="fc" id="L150">        Method readMethod = ByteArrayBitStreamReader.class.getMethod(&quot;readUnsignedShort&quot;);</span>
+<span class="fc" id="L151">        testImpl(writeMethod, readMethod, values, 15);</span>
+<span class="fc" id="L152">    }</span>
+
+    @Test
+    public void signedShort() throws Exception
+    {
+<span class="fc" id="L157">        short minValue = Short.MIN_VALUE;</span>
+<span class="fc" id="L158">        short maxValue = Short.MAX_VALUE;</span>
+<span class="fc" id="L159">        Short values[] =</span>
+        {
+<span class="fc" id="L161">            minValue,</span>
+<span class="fc" id="L162">            maxValue,</span>
+<span class="fc" id="L163">            (short)(minValue &gt;&gt; 8),</span>
+<span class="fc" id="L164">            (short)(maxValue &gt;&gt; 8),</span>
+<span class="fc" id="L165">            -1,</span>
+<span class="fc" id="L166">            1,</span>
+<span class="fc" id="L167">            0,</span>
+<span class="fc" id="L168">            1,</span>
+<span class="fc" id="L169">            -1,</span>
+<span class="fc" id="L170">            (short)(maxValue &gt;&gt; 8),</span>
+<span class="fc" id="L171">            (short)(minValue &gt;&gt; 8),</span>
+<span class="fc" id="L172">            maxValue,</span>
+<span class="fc" id="L173">            minValue</span>
+        };
+
+<span class="fc" id="L176">        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod(&quot;writeShort&quot;, short.class);</span>
+<span class="fc" id="L177">        Method readMethod = ByteArrayBitStreamReader.class.getMethod(&quot;readShort&quot;);</span>
+<span class="fc" id="L178">        testImpl(writeMethod, readMethod, values, 15);</span>
+<span class="fc" id="L179">    }</span>
+
+    @Test
+    public void unsignedByte() throws Exception
+    {
+<span class="fc" id="L184">        short maxValue = (1 &lt;&lt; 8) - 1;</span>
+<span class="fc" id="L185">        Short values[] =</span>
+        {
+<span class="fc" id="L187">            maxValue,</span>
+<span class="fc" id="L188">            (short)(maxValue &gt;&gt; 4),</span>
+<span class="fc" id="L189">            1,</span>
+<span class="fc" id="L190">            0,</span>
+<span class="fc" id="L191">            1,</span>
+<span class="fc" id="L192">            (short)(maxValue &gt;&gt; 4),</span>
+<span class="fc" id="L193">            maxValue</span>
+        };
+
+<span class="fc" id="L196">        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod(&quot;writeUnsignedByte&quot;, short.class);</span>
+<span class="fc" id="L197">        Method readMethod = ByteArrayBitStreamReader.class.getMethod(&quot;readUnsignedByte&quot;);</span>
+<span class="fc" id="L198">        testImpl(writeMethod, readMethod, values, 7);</span>
+<span class="fc" id="L199">    }</span>
+
+    @Test
+    public void signedByte() throws Exception
+    {
+<span class="fc" id="L204">        byte minValue = Byte.MIN_VALUE;</span>
+<span class="fc" id="L205">        byte maxValue = Byte.MAX_VALUE;</span>
+<span class="fc" id="L206">        Byte values[] =</span>
+        {
+<span class="fc" id="L208">            minValue,</span>
+<span class="fc" id="L209">            maxValue,</span>
+<span class="fc" id="L210">            (byte)(minValue &gt;&gt; 4),</span>
+<span class="fc" id="L211">            (byte)(maxValue &gt;&gt; 4),</span>
+<span class="fc" id="L212">            -1,</span>
+<span class="fc" id="L213">            1,</span>
+<span class="fc" id="L214">            0,</span>
+<span class="fc" id="L215">            1,</span>
+<span class="fc" id="L216">            -1,</span>
+<span class="fc" id="L217">            (byte)(maxValue &gt;&gt; 4),</span>
+<span class="fc" id="L218">            (byte)(minValue &gt;&gt; 4),</span>
+<span class="fc" id="L219">            maxValue,</span>
+<span class="fc" id="L220">            minValue</span>
+        };
+
+<span class="fc" id="L223">        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod(&quot;writeByte&quot;, byte.class);</span>
+<span class="fc" id="L224">        Method readMethod = ByteArrayBitStreamReader.class.getMethod(&quot;readByte&quot;);</span>
+<span class="fc" id="L225">        testImpl(writeMethod, readMethod, values, 7);</span>
+<span class="fc" id="L226">    }</span>
+
+    @Test
+    public void bigInteger() throws Exception
+    {
+        // single method for both signed and unsigned writing
+<span class="fc" id="L232">        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod(</span>
+                &quot;writeBigInteger&quot;, BigInteger.class, int.class);
+<span class="fc" id="L234">        Method readMethod = ByteArrayBitStreamReader.class.getMethod(&quot;readBigInteger&quot;, int.class);</span>
+
+        // all possible numBits
+<span class="fc bfc" id="L237" title="All 2 branches covered.">        for (int numBits = 1; numBits &lt; 65; ++numBits)</span>
+        {
+<span class="fc" id="L239">            BigInteger maxValue = BigInteger.ONE.shiftLeft(numBits).subtract(BigInteger.ONE);</span>
+<span class="fc" id="L240">            BigInteger values[] =</span>
+            {
+                maxValue,
+<span class="fc" id="L243">                maxValue.shiftRight(8),</span>
+<span class="fc" id="L244">                maxValue.shiftRight(16),</span>
+<span class="fc" id="L245">                maxValue.shiftRight(24),</span>
+<span class="fc" id="L246">                maxValue.shiftRight(32),</span>
+<span class="fc" id="L247">                maxValue.shiftRight(40),</span>
+<span class="fc" id="L248">                maxValue.shiftRight(48),</span>
+<span class="fc" id="L249">                maxValue.shiftRight(56),</span>
+                BigInteger.ONE,
+                BigInteger.ZERO,
+                BigInteger.ONE,
+<span class="fc" id="L253">                maxValue.shiftRight(56),</span>
+<span class="fc" id="L254">                maxValue.shiftRight(48),</span>
+<span class="fc" id="L255">                maxValue.shiftRight(40),</span>
+<span class="fc" id="L256">                maxValue.shiftRight(32),</span>
+<span class="fc" id="L257">                maxValue.shiftRight(24),</span>
+<span class="fc" id="L258">                maxValue.shiftRight(16),</span>
+<span class="fc" id="L259">                maxValue.shiftRight(8)</span>
+            };
+
+<span class="fc" id="L262">            testBitsImpl(writeMethod, readMethod, values, numBits);</span>
+        }
+<span class="fc" id="L264">    }</span>
+
+    @Test
+    public void signedBigInteger() throws Exception
+    {
+        // single method for both signed and unsigned writing
+<span class="fc" id="L270">        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod(</span>
+                &quot;writeBigInteger&quot;, BigInteger.class, int.class);
+<span class="fc" id="L272">        Method readMethod = ByteArrayBitStreamReader.class.getMethod(&quot;readSignedBigInteger&quot;, int.class);</span>
+
+        // all possible numBits
+<span class="fc bfc" id="L275" title="All 2 branches covered.">        for (int numBits = 1; numBits &lt; 65; ++numBits)</span>
+        {
+<span class="fc" id="L277">            BigInteger maxValue = BigInteger.ONE.shiftLeft(numBits - 1).subtract(BigInteger.ONE);</span>
+<span class="fc" id="L278">            BigInteger minValue = maxValue.negate();</span>
+<span class="fc" id="L279">            BigInteger values[] =</span>
+            {
+                minValue,
+                maxValue,
+<span class="fc" id="L283">                minValue.shiftRight(8),</span>
+<span class="fc" id="L284">                maxValue.shiftRight(8),</span>
+<span class="fc" id="L285">                minValue.shiftRight(16),</span>
+<span class="fc" id="L286">                maxValue.shiftRight(16),</span>
+<span class="fc" id="L287">                minValue.shiftRight(24),</span>
+<span class="fc" id="L288">                maxValue.shiftRight(24),</span>
+<span class="fc" id="L289">                minValue.shiftRight(32),</span>
+<span class="fc" id="L290">                maxValue.shiftRight(32),</span>
+<span class="fc" id="L291">                minValue.shiftRight(40),</span>
+<span class="fc" id="L292">                maxValue.shiftRight(40),</span>
+<span class="fc" id="L293">                minValue.shiftRight(48),</span>
+<span class="fc" id="L294">                maxValue.shiftRight(48),</span>
+<span class="fc" id="L295">                minValue.shiftRight(56),</span>
+<span class="fc" id="L296">                maxValue.shiftRight(56),</span>
+                BigInteger.ZERO,
+<span class="fc" id="L298">                maxValue.shiftRight(56),</span>
+<span class="fc" id="L299">                minValue.shiftRight(56),</span>
+<span class="fc" id="L300">                maxValue.shiftRight(48),</span>
+<span class="fc" id="L301">                minValue.shiftRight(48),</span>
+<span class="fc" id="L302">                maxValue.shiftRight(40),</span>
+<span class="fc" id="L303">                minValue.shiftRight(40),</span>
+<span class="fc" id="L304">                maxValue.shiftRight(32),</span>
+<span class="fc" id="L305">                minValue.shiftRight(32),</span>
+<span class="fc" id="L306">                maxValue.shiftRight(24),</span>
+<span class="fc" id="L307">                minValue.shiftRight(24),</span>
+<span class="fc" id="L308">                maxValue.shiftRight(16),</span>
+<span class="fc" id="L309">                minValue.shiftRight(16),</span>
+<span class="fc" id="L310">                maxValue.shiftRight(8),</span>
+<span class="fc" id="L311">                minValue.shiftRight(8)</span>
+            };
+
+<span class="fc" id="L314">            testBitsImpl(writeMethod, readMethod, values, numBits);</span>
+        }
+<span class="fc" id="L316">    }</span>
+
+    @Test
+    public void float16() throws Exception
+    {
+<span class="fc" id="L321">        Float values[] =</span>
+        {
+<span class="fc" id="L323">            -42.5f,</span>
+<span class="fc" id="L324">            -2.0f,</span>
+<span class="fc" id="L325">            0.0f,</span>
+<span class="fc" id="L326">            0.6171875f,</span>
+<span class="fc" id="L327">            0.875f,</span>
+<span class="fc" id="L328">            2.0f,</span>
+<span class="fc" id="L329">            9.875f,</span>
+<span class="fc" id="L330">            42.5f</span>
+        };
+
+<span class="fc" id="L333">        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod(&quot;writeFloat16&quot;, float.class);</span>
+<span class="fc" id="L334">        Method readMethod = ByteArrayBitStreamReader.class.getMethod(&quot;readFloat16&quot;);</span>
+<span class="fc" id="L335">        testImpl(writeMethod, readMethod, values, 15);</span>
+<span class="fc" id="L336">    }</span>
+
+    @Test
+    public void float32() throws Exception
+    {
+<span class="fc" id="L341">        Float values[] =</span>
+        {
+<span class="fc" id="L343">            -42.5f,</span>
+<span class="fc" id="L344">            -2.0f,</span>
+<span class="fc" id="L345">            0.0f,</span>
+<span class="fc" id="L346">            0.6171875f,</span>
+<span class="fc" id="L347">            0.875f,</span>
+<span class="fc" id="L348">            2.0f,</span>
+<span class="fc" id="L349">            9.875f,</span>
+<span class="fc" id="L350">            42.5f</span>
+        };
+
+<span class="fc" id="L353">        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod(&quot;writeFloat32&quot;, float.class);</span>
+<span class="fc" id="L354">        Method readMethod = ByteArrayBitStreamReader.class.getMethod(&quot;readFloat32&quot;);</span>
+<span class="fc" id="L355">        testImpl(writeMethod, readMethod, values, 31);</span>
+<span class="fc" id="L356">    }</span>
+
+    @Test
+    public void float64() throws Exception
+    {
+<span class="fc" id="L361">        Double values[] =</span>
+        {
+<span class="fc" id="L363">            -42.5,</span>
+<span class="fc" id="L364">            -2.0,</span>
+<span class="fc" id="L365">            0.0,</span>
+<span class="fc" id="L366">            0.6171875,</span>
+<span class="fc" id="L367">            0.875,</span>
+<span class="fc" id="L368">            2.0,</span>
+<span class="fc" id="L369">            9.875,</span>
+<span class="fc" id="L370">            42.5</span>
+        };
+
+<span class="fc" id="L373">        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod(&quot;writeFloat64&quot;, double.class);</span>
+<span class="fc" id="L374">        Method readMethod = ByteArrayBitStreamReader.class.getMethod(&quot;readFloat64&quot;);</span>
+<span class="fc" id="L375">        testImpl(writeMethod, readMethod, values, 63);</span>
+<span class="fc" id="L376">    }</span>
+
+    @Test
+    public void bitBuffer() throws Exception
+    {
+<span class="fc" id="L381">        BitBuffer values[] =</span>
+        {
+            new BitBuffer(new byte[]{(byte)0xAB, (byte)0x07}, 11),
+            new BitBuffer(new byte[]{(byte)0xAB, (byte)0xCD, (byte)0x7F}, 23)
+        };
+
+<span class="fc" id="L387">        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod(&quot;writeBitBuffer&quot;, BitBuffer.class);</span>
+<span class="fc" id="L388">        Method readMethod = ByteArrayBitStreamReader.class.getMethod(&quot;readBitBuffer&quot;);</span>
+<span class="fc" id="L389">        testImpl(writeMethod, readMethod, values, 7);</span>
+<span class="fc" id="L390">    }</span>
+
+    @Test
+    public void string() throws Exception
+    {
+<span class="fc" id="L395">        String values[] =</span>
+        {
+            &quot;Hello World&quot;,
+            &quot;\n\t%^@(*aAzZ01234569$%^!?&lt;&gt;[]](){}-=+~:;/|\\\&quot;\'Hello World2\0nonWrittenPart&quot;,
+            &quot;Price: &quot; +
+                    new String(new byte[] { (byte)0xE2, (byte)0x82, (byte)0x93 }, &quot;UTF-8&quot;) +
+                    &quot; 3 what's this? -&gt; &quot; +
+                    new String(new byte[] { (byte)0xC2, (byte)0xA2 }, &quot;UTF-8&quot;)
+        };
+
+<span class="fc" id="L405">        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod(&quot;writeString&quot;, String.class);</span>
+<span class="fc" id="L406">        Method readMethod = ByteArrayBitStreamReader.class.getMethod(&quot;readString&quot;);</span>
+<span class="fc" id="L407">        testImpl(writeMethod, readMethod, values, 7);</span>
+<span class="fc" id="L408">    }</span>
+
+    @Test
+    public void bytes() throws Exception
+    {
+<span class="fc" id="L413">        byte values[][] =</span>
+        {
+            {(byte)0, (byte)255},
+            {(byte)1, (byte)127, (byte)128, (byte)254}
+        };
+
+<span class="fc" id="L419">        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod(&quot;writeBytes&quot;, byte[].class);</span>
+<span class="fc" id="L420">        Method readMethod = ByteArrayBitStreamReader.class.getMethod(&quot;readBytes&quot;);</span>
+<span class="fc" id="L421">        testImpl(writeMethod, readMethod, values, 7);</span>
+<span class="fc" id="L422">    }</span>
+
+    @Test
+    public void bool() throws Exception
+    {
+<span class="fc" id="L427">        Boolean values[] =</span>
+        {
+<span class="fc" id="L429">            false,</span>
+<span class="fc" id="L430">            true,</span>
+<span class="fc" id="L431">            true,</span>
+<span class="fc" id="L432">            false,</span>
+<span class="fc" id="L433">            false,</span>
+<span class="fc" id="L434">            true,</span>
+<span class="fc" id="L435">            false,</span>
+<span class="fc" id="L436">            true,</span>
+<span class="fc" id="L437">            false,</span>
+<span class="fc" id="L438">            false,</span>
+<span class="fc" id="L439">            true,</span>
+<span class="fc" id="L440">            true,</span>
+<span class="fc" id="L441">            false</span>
+        };
+
+<span class="fc" id="L444">        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod(&quot;writeBool&quot;, boolean.class);</span>
+<span class="fc" id="L445">        Method readMethod = ByteArrayBitStreamReader.class.getMethod(&quot;readBool&quot;);</span>
+<span class="fc" id="L446">        testImpl(writeMethod, readMethod, values, 1);</span>
+<span class="fc" id="L447">    }</span>
+
+    @Test
+    public void varInt16() throws Exception
+    {
+<span class="fc" id="L452">        Short values[] =</span>
+        {
+            // 1 byte
+<span class="fc" id="L455">            (short)0,</span>
+<span class="fc" id="L456">            -(short)1,</span>
+<span class="fc" id="L457">            +(short)1,</span>
+<span class="fc" id="L458">            -(short)((1 &lt;&lt; (6)) - 1),</span>
+<span class="fc" id="L459">            +(short)((1 &lt;&lt; (6)) - 1),</span>
+            // 2 bytes
+<span class="fc" id="L461">            -(short)((1 &lt;&lt; (6))),</span>
+<span class="fc" id="L462">            +(short)((1 &lt;&lt; (6))),</span>
+<span class="fc" id="L463">            -(short)((1 &lt;&lt; (6 + 8)) - 1),</span>
+<span class="fc" id="L464">            +(short)((1 &lt;&lt; (6 + 8)) - 1),</span>
+        };
+
+<span class="fc" id="L467">        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod(&quot;writeVarInt16&quot;, short.class);</span>
+<span class="fc" id="L468">        Method readMethod = ByteArrayBitStreamReader.class.getMethod(&quot;readVarInt16&quot;);</span>
+<span class="fc" id="L469">        testImpl(writeMethod, readMethod, values, 15);</span>
+<span class="fc" id="L470">    }</span>
+
+    @Test
+    public void varInt32() throws Exception
+    {
+<span class="fc" id="L475">        Integer values[] =</span>
+        {
+            // 1 byte
+<span class="fc" id="L478">            0,</span>
+<span class="fc" id="L479">            -((1)),</span>
+<span class="fc" id="L480">            +((1)),</span>
+<span class="fc" id="L481">            -((1 &lt;&lt; (6)) - 1),</span>
+<span class="fc" id="L482">            +((1 &lt;&lt; (6)) - 1),</span>
+            // 2 bytes
+<span class="fc" id="L484">            -((1 &lt;&lt; (6))),</span>
+<span class="fc" id="L485">            +((1 &lt;&lt; (6))),</span>
+<span class="fc" id="L486">            -((1 &lt;&lt; (6 + 7)) - 1),</span>
+<span class="fc" id="L487">            +((1 &lt;&lt; (6 + 7)) - 1),</span>
+            // 3 bytes
+<span class="fc" id="L489">            -((1 &lt;&lt; (6 + 7))),</span>
+<span class="fc" id="L490">            +((1 &lt;&lt; (6 + 7))),</span>
+<span class="fc" id="L491">            -((1 &lt;&lt; (6 + 7 + 7)) - 1),</span>
+<span class="fc" id="L492">            +((1 &lt;&lt; (6 + 7 + 7)) - 1),</span>
+            // 4 bytes
+<span class="fc" id="L494">            -((1 &lt;&lt; (6 + 7 + 7))),</span>
+<span class="fc" id="L495">            +((1 &lt;&lt; (6 + 7 + 7))),</span>
+<span class="fc" id="L496">            -((1 &lt;&lt; (6 + 7 + 7 + 8)) - 1),</span>
+<span class="fc" id="L497">            +((1 &lt;&lt; (6 + 7 + 7 + 8)) - 1)</span>
+        };
+
+<span class="fc" id="L500">        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod(&quot;writeVarInt32&quot;, int.class);</span>
+<span class="fc" id="L501">        Method readMethod = ByteArrayBitStreamReader.class.getMethod(&quot;readVarInt32&quot;);</span>
+<span class="fc" id="L502">        testImpl(writeMethod, readMethod, values, 31);</span>
+<span class="fc" id="L503">    }</span>
+
+    @Test
+    public void varInt64() throws Exception
+    {
+<span class="fc" id="L508">        Long values[] =</span>
+        {
+            // 1 byte
+<span class="fc" id="L511">             0L,</span>
+<span class="fc" id="L512">            -((1L)),</span>
+<span class="fc" id="L513">            +((1L)),</span>
+<span class="fc" id="L514">            -((1L &lt;&lt; (6)) - 1),</span>
+<span class="fc" id="L515">            +((1L &lt;&lt; (6)) - 1),</span>
+            // 2 bytes
+<span class="fc" id="L517">            -((1L &lt;&lt; (6))),</span>
+<span class="fc" id="L518">            +((1L &lt;&lt; (6))),</span>
+<span class="fc" id="L519">            -((1L &lt;&lt; (6 + 7)) - 1),</span>
+<span class="fc" id="L520">            +((1L &lt;&lt; (6 + 7)) - 1),</span>
+            // 3 bytes
+<span class="fc" id="L522">            -((1L &lt;&lt; (6 + 7))),</span>
+<span class="fc" id="L523">            +((1L &lt;&lt; (6 + 7))),</span>
+<span class="fc" id="L524">            -((1L &lt;&lt; (6 + 7 + 7)) - 1),</span>
+<span class="fc" id="L525">            +((1L &lt;&lt; (6 + 7 + 7)) - 1),</span>
+            // 4 bytes
+<span class="fc" id="L527">            -((1L &lt;&lt; (6 + 7 + 7))),</span>
+<span class="fc" id="L528">            +((1L &lt;&lt; (6 + 7 + 7))),</span>
+<span class="fc" id="L529">            -((1L &lt;&lt; (6 + 7 + 7 + 8)) - 1),</span>
+<span class="fc" id="L530">            +((1L &lt;&lt; (6 + 7 + 7 + 8)) - 1)</span>
+            // 5 bytes
+            -((1L &lt;&lt; (6 + 7 + 7 + 7))),
+<span class="fc" id="L533">            +((1L &lt;&lt; (6 + 7 + 7 + 7))),</span>
+<span class="fc" id="L534">            -((1L &lt;&lt; (6 + 7 + 7 + 7 + 7)) - 1),</span>
+<span class="fc" id="L535">            +((1L &lt;&lt; (6 + 7 + 7 + 7 + 7)) - 1),</span>
+            // 6 bytes
+<span class="fc" id="L537">            -((1L &lt;&lt; (6 + 7 + 7 + 7 + 7))),</span>
+<span class="fc" id="L538">            +((1L &lt;&lt; (6 + 7 + 7 + 7 + 7))),</span>
+<span class="fc" id="L539">            -((1L &lt;&lt; (6 + 7 + 7 + 7 + 7 + 7)) - 1),</span>
+<span class="fc" id="L540">            +((1L &lt;&lt; (6 + 7 + 7 + 7 + 7 + 7)) - 1),</span>
+            // 7 bytes
+<span class="fc" id="L542">            -((1L &lt;&lt; (6 + 7 + 7 + 7 + 7 + 7))),</span>
+<span class="fc" id="L543">            +((1L &lt;&lt; (6 + 7 + 7 + 7 + 7 + 7))),</span>
+<span class="fc" id="L544">            -((1L &lt;&lt; (6 + 7 + 7 + 7 + 7 + 7 + 7)) - 1),</span>
+<span class="fc" id="L545">            +((1L &lt;&lt; (6 + 7 + 7 + 7 + 7 + 7 + 7)) - 1),</span>
+            // 8 bytes
+<span class="fc" id="L547">            -((1L &lt;&lt; (6 + 7 + 7 + 7 + 7 + 7 + 7))),</span>
+<span class="fc" id="L548">            +((1L &lt;&lt; (6 + 7 + 7 + 7 + 7 + 7 + 7))),</span>
+<span class="fc" id="L549">            -((1L &lt;&lt; (6 + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1),</span>
+<span class="fc" id="L550">            +((1L &lt;&lt; (6 + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1),</span>
+        };
+
+<span class="fc" id="L553">        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod(&quot;writeVarInt64&quot;, long.class);</span>
+<span class="fc" id="L554">        Method readMethod = ByteArrayBitStreamReader.class.getMethod(&quot;readVarInt64&quot;);</span>
+<span class="fc" id="L555">        testImpl(writeMethod, readMethod, values, 63);</span>
+<span class="fc" id="L556">    }</span>
+
+    @Test
+    public void varUInt16() throws Exception
+    {
+<span class="fc" id="L561">        Short values[] =</span>
+        {
+            // 1 byte
+<span class="fc" id="L564">            (short)0,</span>
+<span class="fc" id="L565">            (short)1,</span>
+<span class="fc" id="L566">            (short)((1 &lt;&lt; (7)) - 1),</span>
+            // 2 bytes
+<span class="fc" id="L568">            (short)((1 &lt;&lt; (7))),</span>
+<span class="fc" id="L569">            (short)((1 &lt;&lt; (7 + 8)) - 1),</span>
+        };
+
+<span class="fc" id="L572">        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod(&quot;writeVarUInt16&quot;, short.class);</span>
+<span class="fc" id="L573">        Method readMethod = ByteArrayBitStreamReader.class.getMethod(&quot;readVarUInt16&quot;);</span>
+<span class="fc" id="L574">        testImpl(writeMethod, readMethod, values, 15);</span>
+<span class="fc" id="L575">    }</span>
+
+    @Test
+    public void varUInt32() throws Exception
+    {
+<span class="fc" id="L580">        Integer values[] =</span>
+        {
+            // 1 byte
+<span class="fc" id="L583">            ((0)),</span>
+<span class="fc" id="L584">            ((1)),</span>
+<span class="fc" id="L585">            ((1 &lt;&lt; (7)) - 1),</span>
+            // 2 bytes
+<span class="fc" id="L587">            ((1 &lt;&lt; (7))),</span>
+<span class="fc" id="L588">            ((1 &lt;&lt; (7 + 7)) - 1),</span>
+            // 3 bytes
+<span class="fc" id="L590">            ((1 &lt;&lt; (7 + 7))),</span>
+<span class="fc" id="L591">            ((1 &lt;&lt; (7 + 7 + 7)) - 1),</span>
+            // 4 bytes
+<span class="fc" id="L593">            ((1 &lt;&lt; (7 + 7 + 7))),</span>
+<span class="fc" id="L594">            ((1 &lt;&lt; (7 + 7 + 7 + 8)) - 1)</span>
+        };
+
+<span class="fc" id="L597">        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod(&quot;writeVarUInt32&quot;, int.class);</span>
+<span class="fc" id="L598">        Method readMethod = ByteArrayBitStreamReader.class.getMethod(&quot;readVarUInt32&quot;);</span>
+<span class="fc" id="L599">        testImpl(writeMethod, readMethod, values, 31);</span>
+<span class="fc" id="L600">    }</span>
+
+    @Test
+    public void varUInt64() throws Exception
+    {
+<span class="fc" id="L605">        Long values[] =</span>
+        {
+            // 1 byte
+<span class="fc" id="L608">            ((0L)),</span>
+<span class="fc" id="L609">            ((1L)),</span>
+<span class="fc" id="L610">            ((1L &lt;&lt; (7)) - 1),</span>
+            // 2 bytes
+<span class="fc" id="L612">            ((1L &lt;&lt; (7))),</span>
+<span class="fc" id="L613">            ((1L &lt;&lt; (7 + 7)) - 1),</span>
+            // 3 bytes
+<span class="fc" id="L615">            ((1L &lt;&lt; (7 + 7))),</span>
+<span class="fc" id="L616">            ((1L &lt;&lt; (7 + 7 + 7)) - 1),</span>
+            // 4 bytes
+<span class="fc" id="L618">            ((1L &lt;&lt; (7 + 7 + 7))),</span>
+<span class="fc" id="L619">            ((1L &lt;&lt; (7 + 7 + 7 + 8)) - 1),</span>
+            // 5 bytes
+<span class="fc" id="L621">            ((1L &lt;&lt; (7 + 7 + 7 + 7))),</span>
+<span class="fc" id="L622">            ((1L &lt;&lt; (7 + 7 + 7 + 7 + 7)) - 1),</span>
+            // 6 bytes
+<span class="fc" id="L624">            ((1L &lt;&lt; (7 + 7 + 7 + 7 + 7))),</span>
+<span class="fc" id="L625">            ((1L &lt;&lt; (7 + 7 + 7 + 7 + 7 + 7)) - 1),</span>
+            // 7 bytes
+<span class="fc" id="L627">            ((1L &lt;&lt; (7 + 7 + 7 + 7 + 7 + 7))),</span>
+<span class="fc" id="L628">            ((1L &lt;&lt; (7 + 7 + 7 + 7 + 7 + 7 + 7)) - 1),</span>
+            // 8 bytes
+<span class="fc" id="L630">            ((1L &lt;&lt; (7 + 7 + 7 + 7 + 7 + 7 + 7))),</span>
+<span class="fc" id="L631">            ((1L &lt;&lt; (7 + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1),</span>
+        };
+
+<span class="fc" id="L634">        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod(&quot;writeVarUInt64&quot;, long.class);</span>
+<span class="fc" id="L635">        Method readMethod = ByteArrayBitStreamReader.class.getMethod(&quot;readVarUInt64&quot;);</span>
+<span class="fc" id="L636">        testImpl(writeMethod, readMethod, values, 63);</span>
+<span class="fc" id="L637">    }</span>
+
+    @Test
+    public void varInt() throws Exception
+    {
+<span class="fc" id="L642">        Long values[] =</span>
+        {
+            // 1 byte
+<span class="fc" id="L645">            0L,</span>
+<span class="fc" id="L646">            -((1L)),</span>
+<span class="fc" id="L647">            +((1L)),</span>
+<span class="fc" id="L648">            -((1L &lt;&lt; (6)) - 1),</span>
+<span class="fc" id="L649">            +((1L &lt;&lt; (6)) - 1),</span>
+            // 2 bytes
+<span class="fc" id="L651">            -((1L &lt;&lt; (6))),</span>
+<span class="fc" id="L652">            +((1L &lt;&lt; (6))),</span>
+<span class="fc" id="L653">            -((1L &lt;&lt; (6 + 7)) - 1),</span>
+<span class="fc" id="L654">            +((1L &lt;&lt; (6 + 7)) - 1),</span>
+            // 3 bytes
+<span class="fc" id="L656">            -((1L &lt;&lt; (6 + 7))),</span>
+<span class="fc" id="L657">            +((1L &lt;&lt; (6 + 7))),</span>
+<span class="fc" id="L658">            -((1L &lt;&lt; (6 + 7 + 7)) - 1),</span>
+<span class="fc" id="L659">            +((1L &lt;&lt; (6 + 7 + 7)) - 1),</span>
+            // 4 bytes
+<span class="fc" id="L661">            -((1L &lt;&lt; (6 + 7 + 7))),</span>
+<span class="fc" id="L662">            +((1L &lt;&lt; (6 + 7 + 7))),</span>
+<span class="fc" id="L663">            -((1L &lt;&lt; (6 + 7 + 7 + 8)) - 1),</span>
+<span class="fc" id="L664">            +((1L &lt;&lt; (6 + 7 + 7 + 8)) - 1)</span>
+            // 5 bytes
+            -((1L &lt;&lt; (6 + 7 + 7 + 7))),
+<span class="fc" id="L667">            +((1L &lt;&lt; (6 + 7 + 7 + 7))),</span>
+<span class="fc" id="L668">            -((1L &lt;&lt; (6 + 7 + 7 + 7 + 7)) - 1),</span>
+<span class="fc" id="L669">            +((1L &lt;&lt; (6 + 7 + 7 + 7 + 7)) - 1),</span>
+            // 6 bytes
+<span class="fc" id="L671">            -((1L &lt;&lt; (6 + 7 + 7 + 7 + 7))),</span>
+<span class="fc" id="L672">            +((1L &lt;&lt; (6 + 7 + 7 + 7 + 7))),</span>
+<span class="fc" id="L673">            -((1L &lt;&lt; (6 + 7 + 7 + 7 + 7 + 7)) - 1),</span>
+<span class="fc" id="L674">            +((1L &lt;&lt; (6 + 7 + 7 + 7 + 7 + 7)) - 1),</span>
+            // 7 bytes
+<span class="fc" id="L676">            -((1L &lt;&lt; (6 + 7 + 7 + 7 + 7 + 7))),</span>
+<span class="fc" id="L677">            +((1L &lt;&lt; (6 + 7 + 7 + 7 + 7 + 7))),</span>
+<span class="fc" id="L678">            -((1L &lt;&lt; (6 + 7 + 7 + 7 + 7 + 7 + 7)) - 1),</span>
+<span class="fc" id="L679">            +((1L &lt;&lt; (6 + 7 + 7 + 7 + 7 + 7 + 7)) - 1),</span>
+            // 8 bytes
+<span class="fc" id="L681">            -((1L &lt;&lt; (6 + 7 + 7 + 7 + 7 + 7 + 7))),</span>
+<span class="fc" id="L682">            +((1L &lt;&lt; (6 + 7 + 7 + 7 + 7 + 7 + 7))),</span>
+<span class="fc" id="L683">            -((1L &lt;&lt; (6 + 7 + 7 + 7 + 7 + 7 + 7 + 7)) - 1),</span>
+<span class="fc" id="L684">            +((1L &lt;&lt; (6 + 7 + 7 + 7 + 7 + 7 + 7 + 7)) - 1),</span>
+            // 9 bytes
+<span class="fc" id="L686">            -((1L &lt;&lt; (6 + 7 + 7 + 7 + 7 + 7 + 7 + 7))),</span>
+<span class="fc" id="L687">            +((1L &lt;&lt; (6 + 7 + 7 + 7 + 7 + 7 + 7 + 7))),</span>
+<span class="fc" id="L688">            -((1L &lt;&lt; (6 + 7 + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1),</span>
+<span class="fc" id="L689">            +((1L &lt;&lt; (6 + 7 + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1),</span>
+            // 1 byte
+<span class="fc" id="L691">            Long.MIN_VALUE // special case, encoded as -0</span>
+        };
+
+<span class="fc" id="L694">        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod(&quot;writeVarInt&quot;, long.class);</span>
+<span class="fc" id="L695">        Method readMethod = ByteArrayBitStreamReader.class.getMethod(&quot;readVarInt&quot;);</span>
+<span class="fc" id="L696">        testImpl(writeMethod, readMethod, values, 63);</span>
+<span class="fc" id="L697">    }</span>
+
+    @Test
+    public void varUInt() throws Exception
+    {
+<span class="fc" id="L702">        BigInteger values[] =</span>
+        {
+            // 1 byte
+            BigInteger.ZERO,
+            BigInteger.ONE,
+<span class="fc" id="L707">            BigInteger.ONE.shiftLeft(7).subtract(BigInteger.ONE),</span>
+            // 2 bytes
+<span class="fc" id="L709">            BigInteger.ONE.shiftLeft(7),</span>
+<span class="fc" id="L710">            BigInteger.ONE.shiftLeft(7 + 7).subtract(BigInteger.ONE),</span>
+            // 3 bytes
+<span class="fc" id="L712">            BigInteger.ONE.shiftLeft(7 + 7),</span>
+<span class="fc" id="L713">            BigInteger.ONE.shiftLeft(7 + 7 + 7).subtract(BigInteger.ONE),</span>
+            // 4 bytes
+<span class="fc" id="L715">            BigInteger.ONE.shiftLeft(7 + 7 + 7),</span>
+<span class="fc" id="L716">            BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7).subtract(BigInteger.ONE),</span>
+            // 5 bytes
+<span class="fc" id="L718">            BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7),</span>
+<span class="fc" id="L719">            BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7 + 7).subtract(BigInteger.ONE),</span>
+            // 6 bytes
+<span class="fc" id="L721">            BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7 + 7),</span>
+<span class="fc" id="L722">            BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7 + 7 + 7).subtract(BigInteger.ONE),</span>
+            // 7 bytes
+<span class="fc" id="L724">            BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7 + 7 + 7),</span>
+<span class="fc" id="L725">            BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7 + 7 + 7 + 7).subtract(BigInteger.ONE),</span>
+            // 8 bytes
+<span class="fc" id="L727">            BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7 + 7 + 7 + 7),</span>
+<span class="fc" id="L728">            BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7 + 7 + 7 + 7 + 7).subtract(BigInteger.ONE),</span>
+            // 9 bytes
+<span class="fc" id="L730">            BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7 + 7 + 7 + 7 + 7),</span>
+<span class="fc" id="L731">            BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7 + 7 + 7 + 7 + 7 + 8).subtract(BigInteger.ONE)</span>
+        };
+
+<span class="fc" id="L734">        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod(&quot;writeVarUInt&quot;, BigInteger.class);</span>
+<span class="fc" id="L735">        Method readMethod = ByteArrayBitStreamReader.class.getMethod(&quot;readVarUInt&quot;);</span>
+<span class="fc" id="L736">        testImpl(writeMethod, readMethod, values, 63);</span>
+<span class="fc" id="L737">    }</span>
+
+    @Test
+    public void varSize() throws Exception
+    {
+<span class="fc" id="L742">        Integer values[] =</span>
+        {
+            // 1 byte
+<span class="fc" id="L745">            ((0)),</span>
+<span class="fc" id="L746">            ((1)),</span>
+<span class="fc" id="L747">            ((1 &lt;&lt; (7)) - 1),</span>
+            // 2 bytes
+<span class="fc" id="L749">            ((1 &lt;&lt; (7))),</span>
+<span class="fc" id="L750">            ((1 &lt;&lt; (7 + 7)) - 1),</span>
+            // 3 bytes
+<span class="fc" id="L752">            ((1 &lt;&lt; (7 + 7))),</span>
+<span class="fc" id="L753">            ((1 &lt;&lt; (7 + 7 + 7)) - 1),</span>
+            // 4 bytes
+<span class="fc" id="L755">            ((1 &lt;&lt; (7 + 7 + 7))),</span>
+<span class="fc" id="L756">            ((1 &lt;&lt; (7 + 7 + 7 + 7)) - 1),</span>
+            // 5 bytes
+<span class="fc" id="L758">            ((1 &lt;&lt; (7 + 7 + 7 + 7))),</span>
+<span class="fc" id="L759">            ((1 &lt;&lt; (2 + 7 + 7 + 7 + 8)) - 1)</span>
+        };
+
+<span class="fc" id="L762">        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod(&quot;writeVarSize&quot;, int.class);</span>
+<span class="fc" id="L763">        Method readMethod = ByteArrayBitStreamReader.class.getMethod(&quot;readVarSize&quot;);</span>
+<span class="fc" id="L764">        testImpl(writeMethod, readMethod, values, 31);</span>
+<span class="fc" id="L765">    }</span>
+
+    @Test
+    public void bitPosition() throws IOException
+    {
+<span class="fc" id="L770">        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+        {
+<span class="fc" id="L772">            writer.writeBits(0xaaaa, 16);</span>
+<span class="fc" id="L773">            assertEquals(16, writer.getBitPosition());</span>
+<span class="fc" id="L774">            writer.setBitPosition(8);</span>
+<span class="fc" id="L775">            assertEquals(8, writer.getBitPosition());</span>
+<span class="fc" id="L776">            writer.writeBits(0xff, 8);</span>
+<span class="fc" id="L777">            assertEquals(16, writer.getBitPosition());</span>
+<span class="fc" id="L778">            writer.setBitPosition(13);</span>
+<span class="fc" id="L779">            assertEquals(13, writer.getBitPosition());</span>
+<span class="fc" id="L780">            writer.writeBits(0, 2);</span>
+<span class="fc" id="L781">            assertEquals(15, writer.getBitPosition());</span>
+<span class="fc" id="L782">            writer.setBitPosition(16);</span>
+<span class="fc" id="L783">            assertEquals(16, writer.getBitPosition());</span>
+
+<span class="fc" id="L785">            final byte[] buffer = writer.toByteArray();</span>
+
+<span class="fc" id="L787">            try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer))</span>
+            {
+<span class="fc" id="L789">                assertEquals(0xaaf9, reader.readBits(16));</span>
+<span class="fc" id="L790">                assertEquals(16, reader.getBitPosition());</span>
+<span class="fc" id="L791">                reader.setBitPosition(8);</span>
+<span class="fc" id="L792">                assertEquals(8, reader.getBitPosition());</span>
+<span class="fc" id="L793">                assertEquals(0xf9, reader.readBits(8));</span>
+<span class="fc" id="L794">                assertEquals(16, reader.getBitPosition());</span>
+<span class="fc" id="L795">                reader.setBitPosition(13);</span>
+<span class="fc" id="L796">                assertEquals(13, reader.getBitPosition());</span>
+<span class="fc" id="L797">                assertEquals(0, reader.readBits(2));</span>
+<span class="fc" id="L798">                assertEquals(15, reader.getBitPosition());</span>
+<span class="fc" id="L799">                assertEquals(1, reader.readBits(1));</span>
+<span class="fc" id="L800">                assertEquals(16, reader.getBitPosition());</span>
+            }
+        }
+<span class="fc" id="L803">    }</span>
+
+    @Test
+    public void alignTo() throws IOException
+    {
+<span class="fc" id="L808">        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+        {
+<span class="fc" id="L810">            writer.writeBits(5, 3);</span>
+<span class="fc" id="L811">            writer.alignTo(8);</span>
+<span class="fc" id="L812">            assertEquals(8, writer.getBitPosition());</span>
+<span class="fc" id="L813">            writer.writeBits(0, 1);</span>
+<span class="fc" id="L814">            writer.alignTo(16);</span>
+<span class="fc" id="L815">            assertEquals(16, writer.getBitPosition());</span>
+<span class="fc" id="L816">            writer.writeBits(0xAA, 9);</span>
+<span class="fc" id="L817">            writer.alignTo(32);</span>
+<span class="fc" id="L818">            assertEquals(32, writer.getBitPosition());</span>
+<span class="fc" id="L819">            writer.writeBits(0xACA, 13);</span>
+<span class="fc" id="L820">            writer.alignTo(64);</span>
+<span class="fc" id="L821">            assertEquals(64, writer.getBitPosition());</span>
+<span class="fc" id="L822">            writer.writeBits(0xCAFE, 16);</span>
+
+<span class="fc" id="L824">            final byte[] buffer = writer.toByteArray();</span>
+
+<span class="fc" id="L826">            try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer))</span>
+            {
+<span class="fc" id="L828">                assertEquals(5, reader.readBits(3));</span>
+<span class="fc" id="L829">                reader.alignTo(8);</span>
+<span class="fc" id="L830">                assertEquals(8, reader.getBitPosition());</span>
+<span class="fc" id="L831">                assertEquals(0, reader.readBits(1));</span>
+<span class="fc" id="L832">                reader.alignTo(16);</span>
+<span class="fc" id="L833">                assertEquals(16, reader.getBitPosition());</span>
+<span class="fc" id="L834">                assertEquals(0xAA, reader.readBits(9));</span>
+<span class="fc" id="L835">                reader.alignTo(32);</span>
+<span class="fc" id="L836">                assertEquals(32, reader.getBitPosition());</span>
+<span class="fc" id="L837">                assertEquals(0xACA, reader.readBits(13));</span>
+<span class="fc" id="L838">                reader.alignTo(64);</span>
+<span class="fc" id="L839">                assertEquals(64, reader.getBitPosition());</span>
+<span class="fc" id="L840">                assertEquals(0xCAFE, reader.readBits(16));</span>
+            }
+        }
+<span class="fc" id="L843">    }</span>
+
+    private void testImpl(Method writeMethod, Method readMethod, Object[] values,
+            int maxStartBitPos) throws Exception
+    {
+        try
+        {
+            // all possible start bit positions
+<span class="fc bfc" id="L851" title="All 2 branches covered.">            for (int bitPos = 0; bitPos &lt;= maxStartBitPos; ++bitPos)</span>
+            {
+<span class="fc" id="L853">                try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+                {
+<span class="fc bfc" id="L855" title="All 2 branches covered.">                    if (bitPos &gt; 0)</span>
+<span class="fc" id="L856">                        writer.writeBits(0, bitPos);</span>
+<span class="fc bfc" id="L857" title="All 2 branches covered.">                    for (int i = 0; i &lt; values.length; ++i)</span>
+                    {
+<span class="fc" id="L859">                        writeMethod.invoke(writer, values[i]);</span>
+                    }
+
+<span class="fc" id="L862">                    final byte[] buffer = writer.toByteArray();</span>
+<span class="fc" id="L863">                    try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer))</span>
+                    {
+<span class="fc bfc" id="L865" title="All 2 branches covered.">                        if (bitPos &gt; 0)</span>
+<span class="fc" id="L866">                            reader.readBits(bitPos);</span>
+<span class="fc bfc" id="L867" title="All 2 branches covered.">                        for (int i = 0; i &lt; values.length; ++i)</span>
+                        {
+<span class="fc bfc" id="L869" title="All 2 branches covered.">                            if (values instanceof byte[][])</span>
+<span class="fc" id="L870">                                assertArrayEquals((byte[])values[i], (byte[])readMethod.invoke(reader));</span>
+                            else
+<span class="fc" id="L872">                                assertEquals(values[i], readMethod.invoke(reader));</span>
+                        }
+                    }
+                }
+<span class="nc" id="L876">                catch (AssertionError e)</span>
+                {
+<span class="nc" id="L878">                    throw new AssertionError(</span>
+<span class="nc" id="L879">                            &quot;[bitPos=&quot; + bitPos + &quot;]: &quot; + e.getMessage());</span>
+<span class="fc" id="L880">                }</span>
+            }
+        }
+<span class="nc" id="L883">        catch (InvocationTargetException e)</span>
+        {
+<span class="nc" id="L885">            fail(e.getTargetException().toString());</span>
+<span class="fc" id="L886">        }</span>
+<span class="fc" id="L887">    }</span>
+
+    private void testBitsImpl(Method writeMethod, Method readMethod,
+            Object[] values, int numBits) throws Exception
+    {
+        try
+        {
+            // all possible start bit positions
+<span class="fc bfc" id="L895" title="All 2 branches covered.">            for (int bitPos = 0; bitPos &lt; numBits; ++bitPos)</span>
+            {
+<span class="fc" id="L897">                try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+                {
+<span class="fc bfc" id="L899" title="All 2 branches covered.">                    if (bitPos &gt; 0)</span>
+<span class="fc" id="L900">                        writer.writeBits(0, bitPos);</span>
+<span class="fc bfc" id="L901" title="All 2 branches covered.">                    for (int i = 0; i &lt; values.length; ++i)</span>
+<span class="fc" id="L902">                        writeMethod.invoke(writer, values[i], numBits);</span>
+
+<span class="fc" id="L904">                    final byte[] buffer = writer.toByteArray();</span>
+<span class="fc" id="L905">                    try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer))</span>
+                    {
+<span class="fc bfc" id="L907" title="All 2 branches covered.">                        if (bitPos &gt; 0)</span>
+<span class="fc" id="L908">                            reader.readBits(bitPos);</span>
+<span class="fc bfc" id="L909" title="All 2 branches covered.">                        for (int i = 0; i &lt; values.length; ++i)</span>
+<span class="fc" id="L910">                            assertEquals(values[i], readMethod.invoke(reader, numBits));</span>
+                    }
+                }
+<span class="nc" id="L913">                catch (AssertionError e)</span>
+                {
+<span class="nc" id="L915">                    throw new AssertionError(</span>
+<span class="nc" id="L916">                            &quot;[numBits=&quot; + numBits + &quot;, bitPos=&quot; + bitPos + &quot;]: &quot; + e.getMessage());</span>
+<span class="fc" id="L917">                }</span>
+            }
+        }
+<span class="nc" id="L920">        catch (InvocationTargetException e)</span>
+        {
+<span class="nc" id="L922">            fail(e.getTargetException().toString());</span>
+<span class="fc" id="L923">        }</span>
+<span class="fc" id="L924">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
