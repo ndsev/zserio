@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JsonEncoder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.json</a> &gt; <span class="el_source">JsonEncoder.java</span></div><h1>JsonEncoder.java</h1><pre class="source lang-java linenums">package zserio.runtime.json;
+
+import java.io.PrintWriter;
+
+/**
+ * Converts zserio values to Json string representation.
+ */
+<span class="nc" id="L8">class JsonEncoder</span>
+{
+    /**
+     * Encodes JSON null value to the output stream using the given writer.
+     *
+     * @param out Writer to use.
+     */
+    public static void encodeNull(PrintWriter out)
+    {
+<span class="fc" id="L17">        out.write(&quot;null&quot;);</span>
+<span class="fc" id="L18">    }</span>
+
+    /**
+     * Encodes JSON boolean value to the output stream using the given writer.
+     *
+     * @param out Writer to use.
+     * @param value Value to encode.
+     */
+    public static void encodeBool(PrintWriter out, boolean value)
+    {
+<span class="fc bfc" id="L28" title="All 2 branches covered.">        out.write(value ? &quot;true&quot; : &quot;false&quot;);</span>
+<span class="fc" id="L29">    }</span>
+
+    /**
+     * Encodes JSON integral value to the output stream using the given writer.
+     *
+     * @param out Writer to use.
+     * @param value Value to encode.
+     */
+    public static void encodeIntegral(PrintWriter out, Number value)
+    {
+<span class="fc" id="L39">        out.print(value);</span>
+<span class="fc" id="L40">    }</span>
+
+    /**
+     * Encodes JSON floating-point value to the output stream using the given writer.
+     *
+     * @param out Writer to use.
+     * @param value Value to encode.
+     */
+    public static void encodeFloatingPoint(PrintWriter out, double value)
+    {
+<span class="fc" id="L50">        out.print(value);</span>
+<span class="fc" id="L51">    }</span>
+
+    /**
+     * Encodes JSON string value to the output stream using the given writer.
+     *
+     * Note that this method performs escaping necessary to get a proper JSON string.
+     *
+     * @param out Writer to use.
+     * @param value Value to encode.
+     */
+    public static void encodeString(PrintWriter out, String value)
+    {
+<span class="fc" id="L63">        out.write('&quot;');</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        for (char ch : value.toCharArray())</span>
+        {
+<span class="fc bfc" id="L66" title="All 7 branches covered.">            switch (ch)</span>
+            {
+            case '\\':
+            case '&quot;':
+<span class="fc" id="L70">                out.write('\\');</span>
+<span class="fc" id="L71">                out.write(ch);</span>
+<span class="fc" id="L72">                break;</span>
+            case '\b':
+<span class="fc" id="L74">                out.write('\\');</span>
+<span class="fc" id="L75">                out.write('b');</span>
+<span class="fc" id="L76">                break;</span>
+            case '\f':
+<span class="fc" id="L78">                out.write('\\');</span>
+<span class="fc" id="L79">                out.write('f');</span>
+<span class="fc" id="L80">                break;</span>
+            case '\n':
+<span class="fc" id="L82">                out.write('\\');</span>
+<span class="fc" id="L83">                out.write('n');</span>
+<span class="fc" id="L84">                break;</span>
+            case '\r':
+<span class="fc" id="L86">                out.write('\\');</span>
+<span class="fc" id="L87">                out.write('r');</span>
+<span class="fc" id="L88">                break;</span>
+            case '\t':
+<span class="fc" id="L90">                out.write('\\');</span>
+<span class="fc" id="L91">                out.write('t');</span>
+<span class="fc" id="L92">                break;</span>
+            default:
+<span class="fc bfc" id="L94" title="All 2 branches covered.">                if (ch &lt;= 0x1F)</span>
+                {
+<span class="fc" id="L96">                    out.write('\\');</span>
+<span class="fc" id="L97">                    out.write('u');</span>
+<span class="fc" id="L98">                    out.write('0');</span>
+<span class="fc" id="L99">                    out.write('0');</span>
+<span class="fc" id="L100">                    out.write(Integer.toHexString((ch &gt;&gt; 4) &amp; 0xf));</span>
+<span class="fc" id="L101">                    out.write(Integer.toHexString(ch &amp; 0xf));</span>
+                }
+                else
+                {
+<span class="fc" id="L105">                    out.write(ch);</span>
+                }
+                break;
+            }
+        }
+<span class="fc" id="L110">        out.write('&quot;');</span>
+<span class="fc" id="L111">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

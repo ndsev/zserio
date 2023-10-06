@@ -1,0 +1,20 @@
+var NAVTREEINDEX10 =
+{
+"structzserio_1_1has__check__offset.html":[2,0,0,173],
+"structzserio_1_1has__initialize.html":[2,0,0,169],
+"structzserio_1_1has__initialize__children.html":[2,0,0,170],
+"structzserio_1_1has__initialize__element.html":[2,0,0,174],
+"structzserio_1_1has__initialize__offset.html":[2,0,0,172],
+"structzserio_1_1has__owner__type.html":[2,0,0,167],
+"structzserio_1_1has__reflectable.html":[2,0,0,171],
+"structzserio_1_1is__allocator.html":[2,0,0,164],
+"structzserio_1_1is__bitmask.html":[2,0,0,175],
+"structzserio_1_1is__first__allocator.html":[2,0,0,165],
+"structzserio_1_1is__first__allocator_3_01T_00_01ARGS_8_8_8_01_4.html":[2,0,0,166],
+"structzserio_1_1is__span.html":[2,0,0,176],
+"structzserio_1_1is__span_3_01Span_3_01T_00_01Extent_01_4_01_4.html":[2,0,0,177],
+"structzserio_1_1pmr_1_1PolymorphicAllocator_1_1rebind.html":[2,0,0,0,1,0],
+"structzserio_1_1pmr_1_1PolymorphicAllocator_1_1rebind.html#a6dcfcdd0429364bc73ce7771ed7e00a7":[2,0,0,0,1,0,0],
+"structzserio_1_1pmr_1_1PropagatingPolymorphicAllocator_1_1rebind.html":[2,0,0,0,2,0],
+"structzserio_1_1pmr_1_1PropagatingPolymorphicAllocator_1_1rebind.html#ab705b2dd9d36c137e057763d5f115cec":[2,0,0,0,2,0,0]
+};

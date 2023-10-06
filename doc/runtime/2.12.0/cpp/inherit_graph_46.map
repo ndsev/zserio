@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classzserio_1_1IBasicServiceData.html" title="zserio::IBasicServiceData\l\&lt; ALLOC \&gt;" alt="" coords="5,104,188,145"/>
+<area shape="rect" id="node2" href="$classzserio_1_1BasicObjectServiceData.html" title="zserio::BasicObjectService\lData\&lt; ALLOC \&gt;" alt="" coords="243,5,434,47"/>
+<area shape="rect" id="node3" href="$classzserio_1_1BasicRawServiceDataHolder.html" title="zserio::BasicRawServiceData\lHolder\&lt; ALLOC \&gt;" alt="" coords="236,71,441,112"/>
+<area shape="rect" id="node4" href="$classzserio_1_1BasicRawServiceDataView.html" title="zserio::BasicRawServiceData\lView\&lt; ALLOC \&gt;" alt="" coords="236,136,441,177"/>
+<area shape="rect" id="node5" href="$classzserio_1_1BasicReflectableServiceData.html" title="zserio::BasicReflectable\lServiceData\&lt; ALLOC \&gt;" alt="" coords="253,201,425,243"/>
+</map>

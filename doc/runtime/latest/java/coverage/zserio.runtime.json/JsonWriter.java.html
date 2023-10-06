@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JsonWriter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.json</a> &gt; <span class="el_source">JsonWriter.java</span></div><h1>JsonWriter.java</h1><pre class="source lang-java linenums">package zserio.runtime.json;
+
+import java.io.PrintWriter;
+import java.io.Writer;
+import java.math.BigInteger;
+
+import zserio.runtime.ZserioBitmask;
+import zserio.runtime.ZserioEnum;
+import zserio.runtime.ZserioError;
+import zserio.runtime.io.BitBuffer;
+import zserio.runtime.typeinfo.ItemInfo;
+import zserio.runtime.typeinfo.FieldInfo;
+import zserio.runtime.typeinfo.TypeInfo;
+import zserio.runtime.walker.WalkObserver;
+import zserio.runtime.walker.WalkerConst;
+
+/**
+ * Walker observer which dumps zserio objects to JSON format.
+ */
+public class JsonWriter implements WalkObserver, AutoCloseable
+{
+    /**
+     * Constructor.
+     *
+     * @param out Writer to use for writing.
+     */
+    public JsonWriter(Writer out)
+    {
+<span class="fc" id="L29">        this(out, null);</span>
+<span class="fc" id="L30">    }</span>
+
+    /**
+     * Constructor.
+     *
+     * @param out Writer to use for writing.
+     * @param indent Indent as a number of ' ' to be used for indentation.
+     */
+    public JsonWriter(Writer out, int indent)
+    {
+<span class="fc" id="L40">        this(out, new String(new char[indent]).replace('\0', ' '));</span>
+<span class="fc" id="L41">    }</span>
+
+    /**
+     * Constructor.
+     *
+     * @param out Writer to use for writing.
+     * @param indent Indent as a string to be used for indentation.
+     */
+    public JsonWriter(Writer out, String indent)
+<span class="fc" id="L50">    {</span>
+<span class="fc" id="L51">        this.out = new PrintWriter(out);</span>
+<span class="fc" id="L52">        this.indent = indent;</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">        this.itemSeparator = indent == null ? DEFAULT_ITEM_SEPARATOR : DEFAULT_ITEM_SEPARATOR_WITH_INDENT;</span>
+<span class="fc" id="L54">    }</span>
+
+    /**
+     * Sets custom item separator.
+     *
+     * Use with caution since setting of a wrong separator can lead to invalid JSON output.
+     *
+     * @param itemSeparator Item separator to set.
+     */
+    public void setItemSeparator(String itemSeparator)
+    {
+<span class="fc" id="L65">        this.itemSeparator = itemSeparator;</span>
+<span class="fc" id="L66">    }</span>
+
+    /**
+     * Sets custom key separator.
+     *
+     * Use with caution since setting of a wrong separator can lead to invalid JSON output.
+     *
+     * @param keySeparator Key separator to set.
+     */
+    public void setKeySeparator(String keySeparator)
+    {
+<span class="fc" id="L77">        this.keySeparator = keySeparator;</span>
+<span class="fc" id="L78">    }</span>
+
+    /**
+     * Configuration for writing of enumerable types.
+     */
+<span class="fc" id="L83">    public enum EnumerableFormat</span>
+    {
+        /** Print as JSON integral value. */
+<span class="fc" id="L86">        NUMBER,</span>
+        /**
+         * Print as JSON string according to the following rules:
+         *
+         * &lt;ol&gt;
+         * &lt;li&gt; Enums
+         *   &lt;ul&gt;
+         *   &lt;li&gt; when an exact match with an enumerable item is found, the item name is used - e.g.
+         *        &lt;code&gt;&quot;FIRST&quot;&lt;/code&gt;,
+         *   &lt;li&gt; when no exact match is found, it's an invalid value, the integral value is converted to string
+         *        and an appropriate comment is included - e.g.
+         *        &lt;code&gt;&quot;10 /&lt;span&gt;*&lt;/span&gt; no match &lt;span&gt;*&lt;/span&gt;/&quot;&lt;/code&gt;.
+         *   &lt;/ul&gt;
+         * &lt;li&gt; Bitmasks
+         *   &lt;ul&gt;
+         *   &lt;li&gt; when an exact mach with or-ed bitmask values is found, it's used - e.g.
+         *        &lt;code&gt;&quot;READ | WRITE&quot;&lt;/code&gt;,
+         *   &lt;li&gt; when no exact match is found, but some or-ed values match, the integral value is converted
+         *        to string and the or-ed values are included in a comment - e.g.
+         *        &lt;code&gt;&quot;127 /&lt;span&gt;*&lt;/span&gt; READ | CREATE &lt;span&gt;*&lt;/span&gt;/&quot;&lt;/code&gt;,
+         *   &lt;li&gt; when no match is found at all, the integral value is converted to string and an appropriate
+         *        comment is included - e.g. &lt;code&gt;&quot;13 /&lt;span&gt;*&lt;/span&gt; no match &lt;span&gt;*&lt;/span&gt;/&quot;&lt;/code&gt;.
+         *   &lt;/ul&gt;
+         * &lt;/ol&gt;
+         */
+<span class="fc" id="L111">        STRING</span>
+    };
+
+    /**
+     * Sets preferred formatting for enumerable types.
+     *
+     * @param enumerableFormat Enumerable format to use.
+     */
+    public void setEnumerableFormat(EnumerableFormat enumerableFormat)
+    {
+<span class="fc" id="L121">        this.enumerableFormat = enumerableFormat;</span>
+<span class="fc" id="L122">    }</span>
+
+    @Override
+    public void close()
+    {
+<span class="fc" id="L127">        out.close();</span>
+<span class="fc" id="L128">    }</span>
+
+    @Override
+    public void beginRoot(Object compound)
+    {
+<span class="fc" id="L133">        beginObject();</span>
+<span class="fc" id="L134">    }</span>
+
+    @Override
+    public void endRoot(Object compound)
+    {
+<span class="fc" id="L139">        endObject();</span>
+<span class="fc" id="L140">        flush();</span>
+<span class="fc" id="L141">    }</span>
+
+    @Override
+    public void beginArray(Object array, FieldInfo fieldInfo)
+    {
+<span class="fc" id="L146">        beginItem();</span>
+
+<span class="fc" id="L148">        writeKey(fieldInfo.getSchemaName());</span>
+
+<span class="fc" id="L150">        beginArray();</span>
+<span class="fc" id="L151">    }</span>
+
+    @Override
+    public void endArray(Object array, FieldInfo fieldInfo)
+    {
+<span class="fc" id="L156">        endArray();</span>
+
+<span class="fc" id="L158">        endItem();</span>
+<span class="fc" id="L159">    }</span>
+
+    @Override
+    public void beginCompound(Object compound, FieldInfo fieldInfo, int elementIndex)
+    {
+<span class="fc" id="L164">        beginItem();</span>
+
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">        if (elementIndex == WalkerConst.NOT_ELEMENT)</span>
+<span class="fc" id="L167">            writeKey(fieldInfo.getSchemaName());</span>
+
+<span class="fc" id="L169">        beginObject();</span>
+<span class="fc" id="L170">    }</span>
+
+    @Override
+    public void endCompound(Object compound, FieldInfo fieldInfo, int elementIndex)
+    {
+<span class="fc" id="L175">        endObject();</span>
+
+<span class="fc" id="L177">        endItem();</span>
+<span class="fc" id="L178">    }</span>
+
+    @Override
+    public void visitValue(Object value, FieldInfo fieldInfo, int elementIndex)
+    {
+<span class="fc" id="L183">        beginItem();</span>
+
+<span class="fc bfc" id="L185" title="All 2 branches covered.">        if (elementIndex == WalkerConst.NOT_ELEMENT)</span>
+<span class="fc" id="L186">            writeKey(fieldInfo.getSchemaName());</span>
+
+<span class="fc" id="L188">        writeValue(value, fieldInfo);</span>
+
+<span class="fc" id="L190">        endItem();</span>
+<span class="fc" id="L191">    }</span>
+
+    private void beginItem()
+    {
+<span class="fc bfc" id="L195" title="All 2 branches covered.">        if (!isFirst)</span>
+<span class="fc" id="L196">            out.write(itemSeparator);</span>
+
+<span class="fc bfc" id="L198" title="All 2 branches covered.">        if (indent != null)</span>
+<span class="fc" id="L199">            out.write(System.lineSeparator());</span>
+
+<span class="fc" id="L201">        writeIndent();</span>
+<span class="fc" id="L202">    }</span>
+
+    private void endItem()
+    {
+<span class="fc" id="L206">        isFirst = false;</span>
+<span class="fc" id="L207">    }</span>
+
+    private void beginObject()
+    {
+<span class="fc" id="L211">        out.write('{');</span>
+
+<span class="fc" id="L213">        isFirst = true;</span>
+<span class="fc" id="L214">        level += 1;</span>
+<span class="fc" id="L215">    }</span>
+
+    private void endObject()
+    {
+<span class="fc bfc" id="L219" title="All 2 branches covered.">        if (indent != null)</span>
+<span class="fc" id="L220">            out.write(System.lineSeparator());</span>
+
+<span class="fc" id="L222">        level -= 1;</span>
+
+<span class="fc" id="L224">        writeIndent();</span>
+
+<span class="fc" id="L226">        out.write('}');</span>
+<span class="fc" id="L227">    }</span>
+
+    private void beginArray()
+    {
+<span class="fc" id="L231">        out.write('[');</span>
+
+<span class="fc" id="L233">        isFirst = true;</span>
+<span class="fc" id="L234">        level += 1;</span>
+<span class="fc" id="L235">    }</span>
+
+    private void endArray()
+    {
+<span class="fc bfc" id="L239" title="All 2 branches covered.">        if (indent != null)</span>
+<span class="fc" id="L240">            out.write(System.lineSeparator());</span>
+
+<span class="fc" id="L242">        level -= 1;</span>
+
+<span class="fc" id="L244">        writeIndent();</span>
+
+<span class="fc" id="L246">        out.write(']');</span>
+<span class="fc" id="L247">    }</span>
+
+    private void writeIndent()
+    {
+<span class="fc bfc" id="L251" title="All 4 branches covered.">        if (indent != null &amp;&amp; !indent.isEmpty())</span>
+        {
+<span class="fc bfc" id="L253" title="All 2 branches covered.">            for (int i = 0; i &lt; level; ++i)</span>
+<span class="fc" id="L254">                out.write(indent);</span>
+        }
+<span class="fc" id="L256">    }</span>
+
+    private void writeKey(String key)
+    {
+<span class="fc" id="L260">        JsonEncoder.encodeString(out, key);</span>
+<span class="fc" id="L261">        out.write(keySeparator);</span>
+<span class="fc" id="L262">        flush();</span>
+<span class="fc" id="L263">    }</span>
+
+    private void writeValue(Object value, FieldInfo fieldInfo)
+    {
+<span class="fc bfc" id="L267" title="All 2 branches covered.">        if (value == null)</span>
+        {
+<span class="fc" id="L269">            JsonEncoder.encodeNull(out);</span>
+<span class="fc" id="L270">            return;</span>
+        }
+
+<span class="pc bpc" id="L273" title="1 of 10 branches missed.">        switch (fieldInfo.getTypeInfo().getJavaType())</span>
+        {
+        case BOOLEAN:
+<span class="fc" id="L276">            JsonEncoder.encodeBool(out, (boolean)value);</span>
+<span class="fc" id="L277">            break;</span>
+        case BYTE:
+        case SHORT:
+        case INT:
+        case LONG:
+<span class="fc" id="L282">            JsonEncoder.encodeIntegral(out, ((Number)value).longValue());</span>
+<span class="fc" id="L283">            break;</span>
+        case BIG_INTEGER:
+<span class="fc" id="L285">            JsonEncoder.encodeIntegral(out, (BigInteger)value);</span>
+<span class="fc" id="L286">            break;</span>
+        case FLOAT:
+        case DOUBLE:
+<span class="fc" id="L289">            JsonEncoder.encodeFloatingPoint(out, ((Number)value).doubleValue());</span>
+<span class="fc" id="L290">            break;</span>
+        case BYTES:
+<span class="fc" id="L292">            writeBytes((byte[])value);</span>
+<span class="fc" id="L293">            break;</span>
+        case STRING:
+<span class="fc" id="L295">            JsonEncoder.encodeString(out, (String)value);</span>
+<span class="fc" id="L296">            break;</span>
+        case BIT_BUFFER:
+<span class="fc" id="L298">            writeBitBuffer((BitBuffer)value);</span>
+<span class="fc" id="L299">            break;</span>
+        case ENUM:
+<span class="fc bfc" id="L301" title="All 2 branches covered.">            if (enumerableFormat == EnumerableFormat.STRING)</span>
+<span class="fc" id="L302">                writeStringifiedEnum((ZserioEnum)value, fieldInfo.getTypeInfo());</span>
+            else
+<span class="fc" id="L304">                JsonEncoder.encodeIntegral(out, ((ZserioEnum)value).getGenericValue());</span>
+<span class="fc" id="L305">            break;</span>
+        case BITMASK:
+<span class="fc bfc" id="L307" title="All 2 branches covered.">            if (enumerableFormat == EnumerableFormat.STRING)</span>
+<span class="fc" id="L308">                writeStringifiedBitmask((ZserioBitmask)value, fieldInfo.getTypeInfo());</span>
+            else
+<span class="fc" id="L310">                JsonEncoder.encodeIntegral(out, ((ZserioBitmask)value).getGenericValue());</span>
+<span class="fc" id="L311">            break;</span>
+        default:
+<span class="nc" id="L313">            throw new ZserioError(&quot;JsonWriter: Unexpected not-null value of type '&quot; +</span>
+<span class="nc" id="L314">                    fieldInfo.getTypeInfo().getSchemaName() + &quot;'!&quot;);</span>
+        }
+
+<span class="fc" id="L317">        flush();</span>
+<span class="fc" id="L318">    }</span>
+
+    private void writeBytes(byte[] bytes)
+    {
+<span class="fc" id="L322">        beginObject();</span>
+<span class="fc" id="L323">        beginItem();</span>
+<span class="fc" id="L324">        writeKey(&quot;buffer&quot;);</span>
+<span class="fc" id="L325">        beginArray();</span>
+<span class="fc bfc" id="L326" title="All 2 branches covered.">        for (byte byteValue : bytes)</span>
+        {
+<span class="fc" id="L328">            beginItem();</span>
+            // note that we don't want to have negative numbers in bytes
+<span class="fc" id="L330">            JsonEncoder.encodeIntegral(out, Byte.toUnsignedInt(byteValue));</span>
+<span class="fc" id="L331">            endItem();</span>
+        }
+<span class="fc" id="L333">        endArray();</span>
+<span class="fc" id="L334">        endItem();</span>
+<span class="fc" id="L335">        endObject();</span>
+<span class="fc" id="L336">    }</span>
+
+    private void writeBitBuffer(BitBuffer bitBuffer)
+    {
+<span class="fc" id="L340">        beginObject();</span>
+<span class="fc" id="L341">        beginItem();</span>
+<span class="fc" id="L342">        writeKey(&quot;buffer&quot;);</span>
+<span class="fc" id="L343">        beginArray();</span>
+<span class="fc bfc" id="L344" title="All 2 branches covered.">        for (byte byteValue : bitBuffer.getBuffer())</span>
+        {
+<span class="fc" id="L346">            beginItem();</span>
+            // note that we don't want to have negative numbers in bit buffer
+<span class="fc" id="L348">            JsonEncoder.encodeIntegral(out, Byte.toUnsignedInt(byteValue));</span>
+<span class="fc" id="L349">            endItem();</span>
+        }
+<span class="fc" id="L351">        endArray();</span>
+<span class="fc" id="L352">        endItem();</span>
+<span class="fc" id="L353">        beginItem();</span>
+<span class="fc" id="L354">        writeKey(&quot;bitSize&quot;);</span>
+<span class="fc" id="L355">        JsonEncoder.encodeIntegral(out, bitBuffer.getBitSize());</span>
+<span class="fc" id="L356">        endItem();</span>
+<span class="fc" id="L357">        endObject();</span>
+<span class="fc" id="L358">    }</span>
+
+    private void writeStringifiedEnum(ZserioEnum zserioEnum, TypeInfo typeInfo)
+    {
+<span class="fc" id="L362">        final BigInteger enumValue = numberToBigInteger(zserioEnum.getGenericValue());</span>
+<span class="fc bfc" id="L363" title="All 2 branches covered.">        for (ItemInfo itemInfo : typeInfo.getEnumItems())</span>
+        {
+            // exact match
+<span class="fc bfc" id="L366" title="All 2 branches covered.">            if (enumValue.equals(itemInfo.getValue()))</span>
+            {
+<span class="fc" id="L368">                JsonEncoder.encodeString(out, itemInfo.getSchemaName());</span>
+<span class="fc" id="L369">                return;</span>
+            }
+<span class="fc" id="L371">        }</span>
+
+        // no match
+<span class="fc" id="L374">        JsonEncoder.encodeString(out, enumValue.toString() + &quot; /* no match */&quot;);</span>
+<span class="fc" id="L375">    }</span>
+
+    private void writeStringifiedBitmask(ZserioBitmask zserioBitmask, TypeInfo typeInfo)
+    {
+<span class="fc" id="L379">        StringBuilder stringValue = new StringBuilder();</span>
+<span class="fc" id="L380">        final BigInteger bitmaskValue = numberToBigInteger(zserioBitmask.getGenericValue());</span>
+<span class="fc" id="L381">        BigInteger valueCheck = BigInteger.ZERO;</span>
+<span class="fc bfc" id="L382" title="All 2 branches covered.">        for (ItemInfo itemInfo : typeInfo.getBitmaskValues())</span>
+        {
+<span class="fc" id="L384">            final boolean isZero = itemInfo.getValue().equals(BigInteger.ZERO);</span>
+<span class="fc bfc" id="L385" title="All 6 branches covered.">            if ((!isZero &amp;&amp; bitmaskValue.and(itemInfo.getValue()).equals(itemInfo.getValue())) ||</span>
+<span class="fc bfc" id="L386" title="All 2 branches covered.">                    (isZero &amp;&amp; bitmaskValue.equals(BigInteger.ZERO)))</span>
+            {
+<span class="fc" id="L388">                valueCheck = valueCheck.or(itemInfo.getValue());</span>
+<span class="fc bfc" id="L389" title="All 2 branches covered.">                if (stringValue.length() &gt; 0)</span>
+<span class="fc" id="L390">                    stringValue.append(&quot; | &quot;);</span>
+<span class="fc" id="L391">                stringValue.append(itemInfo.getSchemaName());</span>
+            }
+<span class="fc" id="L393">        }</span>
+
+<span class="fc bfc" id="L395" title="All 2 branches covered.">        if (stringValue.length() == 0)</span>
+        {
+            // no match
+<span class="fc" id="L398">            stringValue.append(bitmaskValue.toString());</span>
+<span class="fc" id="L399">            stringValue.append(&quot; /* no match */&quot;);</span>
+        }
+<span class="fc bfc" id="L401" title="All 2 branches covered.">        else if (!bitmaskValue.equals(valueCheck))</span>
+        {
+            // partial match
+<span class="fc" id="L404">            stringValue = new StringBuilder(bitmaskValue.toString())</span>
+<span class="fc" id="L405">                    .append(&quot; /* partial match: &quot;)</span>
+<span class="fc" id="L406">                    .append(stringValue.toString())</span>
+<span class="fc" id="L407">                    .append(&quot; */&quot;);</span>
+        }
+        // else exact match
+
+<span class="fc" id="L411">        JsonEncoder.encodeString(out, stringValue.toString());</span>
+<span class="fc" id="L412">    }</span>
+
+    private static BigInteger numberToBigInteger(Number number)
+    {
+<span class="fc bfc" id="L416" title="All 2 branches covered.">        if (number instanceof BigInteger)</span>
+<span class="fc" id="L417">            return (BigInteger)number;</span>
+        else
+<span class="fc" id="L419">            return BigInteger.valueOf(number.longValue());</span>
+    }
+
+    private void flush()
+    {
+<span class="fc" id="L424">        out.flush();</span>
+<span class="pc bpc" id="L425" title="1 of 2 branches missed.">        if (out.checkError())</span>
+<span class="nc" id="L426">            throw new ZserioError(&quot;JsonWriter: Output stream error occurred!&quot;);</span>
+<span class="fc" id="L427">    }</span>
+
+    /**
+     * Default item separator used when indent is not set (i.e. is null).
+     */
+    public static final String DEFAULT_ITEM_SEPARATOR = &quot;, &quot;;
+
+    /**
+     * Default item separator used when indent is not null.
+     */
+    public static final String DEFAULT_ITEM_SEPARATOR_WITH_INDENT = &quot;,&quot;;
+
+    /**
+     * Default key separator.
+     */
+    public static final String DEFAULT_KEY_SEPARATOR = &quot;: &quot;;
+
+    /**
+     * Default configuration for enumerable types.
+     */
+<span class="fc" id="L447">    public static final EnumerableFormat DEFAULT_ENUMERABLE_FORMAT = EnumerableFormat.STRING;</span>
+
+    private final PrintWriter out;
+    private final String indent;
+    private String itemSeparator;
+<span class="fc" id="L452">    private String keySeparator = DEFAULT_KEY_SEPARATOR;</span>
+<span class="fc" id="L453">    private EnumerableFormat enumerableFormat = DEFAULT_ENUMERABLE_FORMAT;</span>
+
+<span class="fc" id="L455">    private boolean isFirst = true;</span>
+<span class="fc" id="L456">    private int level = 0;</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
