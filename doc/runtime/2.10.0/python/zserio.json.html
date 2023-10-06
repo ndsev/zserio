@@ -1,0 +1,748 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>zserio.json module &#8212; Zserio 2.10.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="zserio.limits module" href="zserio.limits.html" />
+    <link rel="prev" title="zserio.hashcode module" href="zserio.hashcode.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-zserio.json">
+<span id="zserio-json-module"></span><h1>zserio.json module<a class="headerlink" href="#module-zserio.json" title="Permalink to this heading">¶</a></h1>
+<p>The module implements WalkObserver for writing of zserio objects to JSON format.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="zserio.json.JsonDecoder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zserio.json.</span></span><span class="sig-name descname"><span class="pre">JsonDecoder</span></span><a class="reference internal" href="_modules/zserio/json.html#JsonDecoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonDecoder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>JSON value decoder.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="zserio.json.JsonDecoder.Result">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">success</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_read_chars</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zserio/json.html#JsonDecoder.Result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonDecoder.Result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Decoder result value.</p>
+<p>Constructor.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="zserio.json.JsonDecoder.Result.from_failure">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_failure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_read_chars</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zserio/json.html#JsonDecoder.Result.from_failure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonDecoder.Result.from_failure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates decoder result value in case of failure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>num_read_chars</strong> – Number of processed characters.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zserio.json.JsonDecoder.Result.from_success">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_success</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_read_chars</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zserio/json.html#JsonDecoder.Result.from_success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonDecoder.Result.from_success" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates decoder result value in case of success.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – Decoded value.</p></li>
+<li><p><strong>num_read_chars</strong> – Number of read characters.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="zserio.json.JsonDecoder.Result.num_read_chars">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">num_read_chars</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#zserio.json.JsonDecoder.Result.num_read_chars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the number of read characters from the string which contains encoded JSON value.</p>
+<p>In case of failure, it returns the number of processed (read) characters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Number of read characters.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="zserio.json.JsonDecoder.Result.success">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">success</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#zserio.json.JsonDecoder.Result.success" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the decoder result.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True in case of success, otherwise false.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="zserio.json.JsonDecoder.Result.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span></em><a class="headerlink" href="#zserio.json.JsonDecoder.Result.value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the decoded JSON value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Decoded JSON value or None in case of failure.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zserio.json.JsonDecoder.decode_value">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">decode_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zserio.json.JsonDecoder.Result" title="zserio.json.JsonDecoder.Result"><span class="pre">Result</span></a></span></span><a class="reference internal" href="_modules/zserio/json.html#JsonDecoder.decode_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonDecoder.decode_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decodes the JSON value from the string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>content</strong> – String which contains encoded JSON value.</p></li>
+<li><p><strong>pos</strong> – Position from zero in content where the encoded JSON value begins.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Decoder result object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zserio.json.JsonEncoder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zserio.json.</span></span><span class="sig-name descname"><span class="pre">JsonEncoder</span></span><a class="reference internal" href="_modules/zserio/json.html#JsonEncoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonEncoder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Converts zserio values to Json string representation.</p>
+<p>Constructor.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="zserio.json.JsonEncoder.encode_value">
+<span class="sig-name descname"><span class="pre">encode_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/zserio/json.html#JsonEncoder.encode_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonEncoder.encode_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encodes value to JSON string representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – Value to encode.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Value encoded to string as a valid JSON value.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zserio.json.JsonEnumerableFormat">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zserio.json.</span></span><span class="sig-name descname"><span class="pre">JsonEnumerableFormat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zserio/json.html#JsonEnumerableFormat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonEnumerableFormat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Configuration for writing of enumerable types.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.json.JsonEnumerableFormat.NUMBER">
+<span class="sig-name descname"><span class="pre">NUMBER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#zserio.json.JsonEnumerableFormat.NUMBER" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print as JSON integral value.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.json.JsonEnumerableFormat.STRING">
+<span class="sig-name descname"><span class="pre">STRING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#zserio.json.JsonEnumerableFormat.STRING" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print as JSON string according to the following rules:</p>
+<ol class="arabic simple">
+<li><p>Enums</p>
+<ul class="simple">
+<li><p>when an exact match with an enumerable item is found, the item name is used - e.g. “FIRST”,</p></li>
+<li><p>when no exact match is found, it’s an invalid value, the integral value is converted to string
+and an appropriate comment is included - e.g. “10 /* no match */”.</p></li>
+</ul>
+</li>
+<li><p>Bitmasks</p>
+<ul class="simple">
+<li><p>when an exact mach with or-ed bitmask values is found, it’s used - e.g. “READ | WRITE”,</p></li>
+<li><p>when no exact match is found, but some or-ed values match, the integral value is converted
+to string and the or-ed values are included in a comment - e.g. “127 /* READ | CREATE */”,</p></li>
+<li><p>when no match is found at all, the integral value is converted to string and an appropriate
+comment is included - e.g. “13 /* no match */”.</p></li>
+</ul>
+</li>
+</ol>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zserio.json.JsonParser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zserio.json.</span></span><span class="sig-name descname"><span class="pre">JsonParser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text_io</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TextIO</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">observer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zserio.json.JsonParser.Observer" title="zserio.json.JsonParser.Observer"><span class="pre">Observer</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zserio/json.html#JsonParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonParser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Json Parser.</p>
+<p>Parses the JSON on the fly and calls an observer.</p>
+<p>Constructor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text_io</strong> – Text stream to parse.</p></li>
+<li><p><strong>observer</strong> – Observer to use.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.json.JsonParser.ELEMENT_TOKENS">
+<span class="sig-name descname"><span class="pre">ELEMENT_TOKENS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[&lt;JsonToken.BEGIN_OBJECT:</span> <span class="pre">3&gt;,</span> <span class="pre">&lt;JsonToken.BEGIN_ARRAY:</span> <span class="pre">5&gt;,</span> <span class="pre">&lt;JsonToken.VALUE:</span> <span class="pre">9&gt;]</span></em><a class="headerlink" href="#zserio.json.JsonParser.ELEMENT_TOKENS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zserio.json.JsonParser.Observer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Observer</span></span><a class="reference internal" href="_modules/zserio/json.html#JsonParser.Observer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonParser.Observer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Json parser observer.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="zserio.json.JsonParser.Observer.begin_array">
+<span class="sig-name descname"><span class="pre">begin_array</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/zserio/json.html#JsonParser.Observer.begin_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonParser.Observer.begin_array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when a JSON array begins - i.e. on ‘[‘.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zserio.json.JsonParser.Observer.begin_object">
+<span class="sig-name descname"><span class="pre">begin_object</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/zserio/json.html#JsonParser.Observer.begin_object"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonParser.Observer.begin_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when a JSON object begins - i.e. on ‘{‘.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zserio.json.JsonParser.Observer.end_array">
+<span class="sig-name descname"><span class="pre">end_array</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/zserio/json.html#JsonParser.Observer.end_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonParser.Observer.end_array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when a JSON array ends - i.e. on ‘]’.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zserio.json.JsonParser.Observer.end_object">
+<span class="sig-name descname"><span class="pre">end_object</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/zserio/json.html#JsonParser.Observer.end_object"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonParser.Observer.end_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when a JSON object ends - i.e. on ‘}’.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zserio.json.JsonParser.Observer.visit_key">
+<span class="sig-name descname"><span class="pre">visit_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/zserio/json.html#JsonParser.Observer.visit_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonParser.Observer.visit_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called on a JSON key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> – Key value.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zserio.json.JsonParser.Observer.visit_value">
+<span class="sig-name descname"><span class="pre">visit_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/zserio/json.html#JsonParser.Observer.visit_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonParser.Observer.visit_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called on a JSON value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – JSON value.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zserio.json.JsonParser.get_column">
+<span class="sig-name descname"><span class="pre">get_column</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/zserio/json.html#JsonParser.get_column"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonParser.get_column" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets current column number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Column number.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zserio.json.JsonParser.get_line">
+<span class="sig-name descname"><span class="pre">get_line</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/zserio/json.html#JsonParser.get_line"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonParser.get_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets current line number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Line number.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zserio.json.JsonParser.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/zserio/json.html#JsonParser.parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonParser.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses single JSON element from the text stream.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True when end-of-file is reached, False otherwise (i.e. another JSON element is present).</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#zserio.json.JsonParserException" title="zserio.json.JsonParserException"><strong>JsonParserException</strong></a> – When parsing fails.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="zserio.json.JsonParserException">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zserio.json.</span></span><span class="sig-name descname"><span class="pre">JsonParserException</span></span><a class="reference internal" href="_modules/zserio/json.html#JsonParserException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonParserException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="zserio.exception.html#zserio.exception.PythonRuntimeException" title="zserio.exception.PythonRuntimeException"><code class="xref py py-class docutils literal notranslate"><span class="pre">PythonRuntimeException</span></code></a></p>
+<p>Exception used to distinguish exceptions from the JsonParser.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zserio.json.JsonReader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zserio.json.</span></span><span class="sig-name descname"><span class="pre">JsonReader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text_io</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TextIO</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zserio/json.html#JsonReader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonReader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Reads zserio object tree defined by a type info from a text stream.</p>
+<p>Constructor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>text_io</strong> – Text stream to read.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="zserio.json.JsonReader.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="zserio.typeinfo.html#zserio.typeinfo.TypeInfo" title="zserio.typeinfo.TypeInfo"><span class="pre">TypeInfo</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">arguments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="_modules/zserio/json.html#JsonReader.read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonReader.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads a zserio object tree defined by the given type info from the text steam.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>type_info</strong> – Type info defining the expected zserio object tree.</p></li>
+<li><p><strong>arguments</strong> – Arguments of type defining the expected zserio object tree.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Zserio object tree initialized using the JSON data.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="zserio.exception.html#zserio.exception.PythonRuntimeException" title="zserio.exception.PythonRuntimeException"><strong>PythonRuntimeException</strong></a> – When the JSON doesn’t contain expected zserio object tree.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zserio.json.JsonToken">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zserio.json.</span></span><span class="sig-name descname"><span class="pre">JsonToken</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zserio/json.html#JsonToken"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonToken" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Tokens used by Json Tokenizer.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.json.JsonToken.BEGIN_ARRAY">
+<span class="sig-name descname"><span class="pre">BEGIN_ARRAY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#zserio.json.JsonToken.BEGIN_ARRAY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.json.JsonToken.BEGIN_OBJECT">
+<span class="sig-name descname"><span class="pre">BEGIN_OBJECT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#zserio.json.JsonToken.BEGIN_OBJECT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.json.JsonToken.BEGIN_OF_FILE">
+<span class="sig-name descname"><span class="pre">BEGIN_OF_FILE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#zserio.json.JsonToken.BEGIN_OF_FILE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.json.JsonToken.END_ARRAY">
+<span class="sig-name descname"><span class="pre">END_ARRAY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#zserio.json.JsonToken.END_ARRAY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.json.JsonToken.END_OBJECT">
+<span class="sig-name descname"><span class="pre">END_OBJECT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#zserio.json.JsonToken.END_OBJECT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.json.JsonToken.END_OF_FILE">
+<span class="sig-name descname"><span class="pre">END_OF_FILE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#zserio.json.JsonToken.END_OF_FILE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.json.JsonToken.ITEM_SEPARATOR">
+<span class="sig-name descname"><span class="pre">ITEM_SEPARATOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></em><a class="headerlink" href="#zserio.json.JsonToken.ITEM_SEPARATOR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.json.JsonToken.KEY_SEPARATOR">
+<span class="sig-name descname"><span class="pre">KEY_SEPARATOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">7</span></em><a class="headerlink" href="#zserio.json.JsonToken.KEY_SEPARATOR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.json.JsonToken.VALUE">
+<span class="sig-name descname"><span class="pre">VALUE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">9</span></em><a class="headerlink" href="#zserio.json.JsonToken.VALUE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zserio.json.JsonTokenizer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zserio.json.</span></span><span class="sig-name descname"><span class="pre">JsonTokenizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text_io</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TextIO</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zserio/json.html#JsonTokenizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonTokenizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Tokenizer used by JsonParser.</p>
+<p>Constructor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>text_io</strong> – Text stream to tokenize.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zserio.json.JsonTokenizer.MAX_LINE_LEN">
+<span class="sig-name descname"><span class="pre">MAX_LINE_LEN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">65536</span></em><a class="headerlink" href="#zserio.json.JsonTokenizer.MAX_LINE_LEN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zserio.json.JsonTokenizer.get_column">
+<span class="sig-name descname"><span class="pre">get_column</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/zserio/json.html#JsonTokenizer.get_column"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonTokenizer.get_column" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets column number of the current token.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Column number.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zserio.json.JsonTokenizer.get_line">
+<span class="sig-name descname"><span class="pre">get_line</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/zserio/json.html#JsonTokenizer.get_line"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonTokenizer.get_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets line number of the current token.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Line number.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zserio.json.JsonTokenizer.get_token">
+<span class="sig-name descname"><span class="pre">get_token</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zserio.json.JsonToken" title="zserio.json.JsonToken"><span class="pre">JsonToken</span></a></span></span><a class="reference internal" href="_modules/zserio/json.html#JsonTokenizer.get_token"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonTokenizer.get_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets current token.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Current token.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zserio.json.JsonTokenizer.get_value">
+<span class="sig-name descname"><span class="pre">get_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="_modules/zserio/json.html#JsonTokenizer.get_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonTokenizer.get_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets current value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Current value.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zserio.json.JsonTokenizer.next">
+<span class="sig-name descname"><span class="pre">next</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zserio.json.JsonToken" title="zserio.json.JsonToken"><span class="pre">JsonToken</span></a></span></span><a class="reference internal" href="_modules/zserio/json.html#JsonTokenizer.next"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonTokenizer.next" title="Permalink to this definition">¶</a></dt>
+<dd><p>Moves to next token.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Token.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#zserio.json.JsonParserException" title="zserio.json.JsonParserException"><strong>JsonParserException</strong></a> – When unknown token is reached.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zserio.json.JsonWriter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zserio.json.</span></span><span class="sig-name descname"><span class="pre">JsonWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_io</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TextIO</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enumerable_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zserio.json.JsonEnumerableFormat" title="zserio.json.JsonEnumerableFormat"><span class="pre">JsonEnumerableFormat</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">JsonEnumerableFormat.STRING</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_separator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_separator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zserio/json.html#JsonWriter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonWriter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="zserio.walker.html#zserio.walker.WalkObserver" title="zserio.walker.WalkObserver"><code class="xref py py-class docutils literal notranslate"><span class="pre">WalkObserver</span></code></a></p>
+<p>Walker observer which dumps zserio objects to JSON format.</p>
+<p>Constructor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text_io</strong> – Optional text stream for JSON output, io.StringIO is used by default.</p></li>
+<li><p><strong>item_separator</strong> – Optional item separator, default is ‘, ‘ if indent is None, ‘,’ otherwise.</p></li>
+<li><p><strong>key_separator</strong> – Optional key separator, default is ‘: ‘.</p></li>
+<li><p><strong>enumerable_format</strong> – Optional enumerable format to use, default is JsonEnumerableFormat.STRING.</p></li>
+<li><p><strong>indent</strong> – String or (non-negative) integer defining the indent. If not None, newlines are inserted.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="zserio.json.JsonWriter.begin_array">
+<span class="sig-name descname"><span class="pre">begin_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">member_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="zserio.typeinfo.html#zserio.typeinfo.MemberInfo" title="zserio.typeinfo.MemberInfo"><span class="pre">MemberInfo</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/zserio/json.html#JsonWriter.begin_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonWriter.begin_array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called at the beginning of an array.</p>
+<p>Note that for None arrays (i.e. non-present optionals) the visit_value with None is called instead!</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> – Zserio array.</p></li>
+<li><p><strong>member_info</strong> – Array member info.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zserio.json.JsonWriter.begin_compound">
+<span class="sig-name descname"><span class="pre">begin_compound</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compound</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">member_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="zserio.typeinfo.html#zserio.typeinfo.MemberInfo" title="zserio.typeinfo.MemberInfo"><span class="pre">MemberInfo</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">element_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/zserio/json.html#JsonWriter.begin_compound"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonWriter.begin_compound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called at the beginning of an compound field object.</p>
+<p>Note that for None compounds (i.e. uninitialized or optionals) the visit_value method is called instead!</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>compound</strong> – Compound zserio object.</p></li>
+<li><p><strong>member_info</strong> – Compound member info.</p></li>
+<li><p><strong>element_index</strong> – Element index in array or None if the compound is not in array.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zserio.json.JsonWriter.begin_root">
+<span class="sig-name descname"><span class="pre">begin_root</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_compound</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/zserio/json.html#JsonWriter.begin_root"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonWriter.begin_root" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called for the root compound zserio object which is to be walked-through.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>compound</strong> – Root compound zserio object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zserio.json.JsonWriter.end_array">
+<span class="sig-name descname"><span class="pre">end_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">member_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="zserio.typeinfo.html#zserio.typeinfo.MemberInfo" title="zserio.typeinfo.MemberInfo"><span class="pre">MemberInfo</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/zserio/json.html#JsonWriter.end_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonWriter.end_array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called at the end of an array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> – Zserio array.</p></li>
+<li><p><strong>member_info</strong> – Array member info.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zserio.json.JsonWriter.end_compound">
+<span class="sig-name descname"><span class="pre">end_compound</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compound</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">member_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="zserio.typeinfo.html#zserio.typeinfo.MemberInfo" title="zserio.typeinfo.MemberInfo"><span class="pre">MemberInfo</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">_element_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/zserio/json.html#JsonWriter.end_compound"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonWriter.end_compound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called at the end of just walked compound object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>compound</strong> – Compound zserio object.</p></li>
+<li><p><strong>member_info</strong> – Compound member info.</p></li>
+<li><p><strong>element_index</strong> – Element index in array or None if the compound is not in array.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zserio.json.JsonWriter.end_root">
+<span class="sig-name descname"><span class="pre">end_root</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_compound</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/zserio/json.html#JsonWriter.end_root"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonWriter.end_root" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called at the end of just walked root compound zserio object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>compound</strong> – Root compound zserio object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zserio.json.JsonWriter.get_io">
+<span class="sig-name descname"><span class="pre">get_io</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TextIO</span></span></span><a class="reference internal" href="_modules/zserio/json.html#JsonWriter.get_io"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonWriter.get_io" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the underlying text stream.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Underlying text steam.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zserio.json.JsonWriter.visit_value">
+<span class="sig-name descname"><span class="pre">visit_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">member_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="zserio.typeinfo.html#zserio.typeinfo.MemberInfo" title="zserio.typeinfo.MemberInfo"><span class="pre">MemberInfo</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">element_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/zserio/json.html#JsonWriter.visit_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#zserio.json.JsonWriter.visit_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when a simple (or an unset compound or array - i.e. None) value is reached.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – Simple value.</p></li>
+<li><p><strong>member_info</strong> – Member info.</p></li>
+<li><p><strong>element_index</strong> – Element index in array or None if the value is not in array.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/Zserio.png" alt="Logo"/>
+            </a></p><h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="zserio.html">zserio package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="zserio.html#zserio.VERSION_STRING"><code class="docutils literal notranslate"><span class="pre">VERSION_STRING</span></code></a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="zserio.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="zserio.array.html">zserio.array module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.bitbuffer.html">zserio.bitbuffer module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.bitfield.html">zserio.bitfield module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.bitposition.html">zserio.bitposition module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.bitreader.html">zserio.bitreader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.bitsizeof.html">zserio.bitsizeof module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.bitwriter.html">zserio.bitwriter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.builtin.html">zserio.builtin module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.cppbind.html">zserio.cppbind module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.creator.html">zserio.creator module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.debugstring.html">zserio.debugstring module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.exception.html">zserio.exception module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.float.html">zserio.float module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.hashcode.html">zserio.hashcode module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">zserio.json module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.limits.html">zserio.limits module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.pubsub.html">zserio.pubsub module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.serialization.html">zserio.serialization module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.service.html">zserio.service module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.typeinfo.html">zserio.typeinfo module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zserio.walker.html">zserio.walker module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">zserio.json module</a><ul>
+<li><a class="reference internal" href="#zserio.json.JsonDecoder"><code class="docutils literal notranslate"><span class="pre">JsonDecoder</span></code></a><ul>
+<li><a class="reference internal" href="#zserio.json.JsonDecoder.Result"><code class="docutils literal notranslate"><span class="pre">JsonDecoder.Result</span></code></a><ul>
+<li><a class="reference internal" href="#zserio.json.JsonDecoder.Result.from_failure"><code class="docutils literal notranslate"><span class="pre">JsonDecoder.Result.from_failure()</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonDecoder.Result.from_success"><code class="docutils literal notranslate"><span class="pre">JsonDecoder.Result.from_success()</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonDecoder.Result.num_read_chars"><code class="docutils literal notranslate"><span class="pre">JsonDecoder.Result.num_read_chars</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonDecoder.Result.success"><code class="docutils literal notranslate"><span class="pre">JsonDecoder.Result.success</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonDecoder.Result.value"><code class="docutils literal notranslate"><span class="pre">JsonDecoder.Result.value</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#zserio.json.JsonDecoder.decode_value"><code class="docutils literal notranslate"><span class="pre">JsonDecoder.decode_value()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#zserio.json.JsonEncoder"><code class="docutils literal notranslate"><span class="pre">JsonEncoder</span></code></a><ul>
+<li><a class="reference internal" href="#zserio.json.JsonEncoder.encode_value"><code class="docutils literal notranslate"><span class="pre">JsonEncoder.encode_value()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#zserio.json.JsonEnumerableFormat"><code class="docutils literal notranslate"><span class="pre">JsonEnumerableFormat</span></code></a><ul>
+<li><a class="reference internal" href="#zserio.json.JsonEnumerableFormat.NUMBER"><code class="docutils literal notranslate"><span class="pre">JsonEnumerableFormat.NUMBER</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonEnumerableFormat.STRING"><code class="docutils literal notranslate"><span class="pre">JsonEnumerableFormat.STRING</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#zserio.json.JsonParser"><code class="docutils literal notranslate"><span class="pre">JsonParser</span></code></a><ul>
+<li><a class="reference internal" href="#zserio.json.JsonParser.ELEMENT_TOKENS"><code class="docutils literal notranslate"><span class="pre">JsonParser.ELEMENT_TOKENS</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonParser.Observer"><code class="docutils literal notranslate"><span class="pre">JsonParser.Observer</span></code></a><ul>
+<li><a class="reference internal" href="#zserio.json.JsonParser.Observer.begin_array"><code class="docutils literal notranslate"><span class="pre">JsonParser.Observer.begin_array()</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonParser.Observer.begin_object"><code class="docutils literal notranslate"><span class="pre">JsonParser.Observer.begin_object()</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonParser.Observer.end_array"><code class="docutils literal notranslate"><span class="pre">JsonParser.Observer.end_array()</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonParser.Observer.end_object"><code class="docutils literal notranslate"><span class="pre">JsonParser.Observer.end_object()</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonParser.Observer.visit_key"><code class="docutils literal notranslate"><span class="pre">JsonParser.Observer.visit_key()</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonParser.Observer.visit_value"><code class="docutils literal notranslate"><span class="pre">JsonParser.Observer.visit_value()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#zserio.json.JsonParser.get_column"><code class="docutils literal notranslate"><span class="pre">JsonParser.get_column()</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonParser.get_line"><code class="docutils literal notranslate"><span class="pre">JsonParser.get_line()</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonParser.parse"><code class="docutils literal notranslate"><span class="pre">JsonParser.parse()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#zserio.json.JsonParserException"><code class="docutils literal notranslate"><span class="pre">JsonParserException</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonReader"><code class="docutils literal notranslate"><span class="pre">JsonReader</span></code></a><ul>
+<li><a class="reference internal" href="#zserio.json.JsonReader.read"><code class="docutils literal notranslate"><span class="pre">JsonReader.read()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#zserio.json.JsonToken"><code class="docutils literal notranslate"><span class="pre">JsonToken</span></code></a><ul>
+<li><a class="reference internal" href="#zserio.json.JsonToken.BEGIN_ARRAY"><code class="docutils literal notranslate"><span class="pre">JsonToken.BEGIN_ARRAY</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonToken.BEGIN_OBJECT"><code class="docutils literal notranslate"><span class="pre">JsonToken.BEGIN_OBJECT</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonToken.BEGIN_OF_FILE"><code class="docutils literal notranslate"><span class="pre">JsonToken.BEGIN_OF_FILE</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonToken.END_ARRAY"><code class="docutils literal notranslate"><span class="pre">JsonToken.END_ARRAY</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonToken.END_OBJECT"><code class="docutils literal notranslate"><span class="pre">JsonToken.END_OBJECT</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonToken.END_OF_FILE"><code class="docutils literal notranslate"><span class="pre">JsonToken.END_OF_FILE</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonToken.ITEM_SEPARATOR"><code class="docutils literal notranslate"><span class="pre">JsonToken.ITEM_SEPARATOR</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonToken.KEY_SEPARATOR"><code class="docutils literal notranslate"><span class="pre">JsonToken.KEY_SEPARATOR</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonToken.VALUE"><code class="docutils literal notranslate"><span class="pre">JsonToken.VALUE</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#zserio.json.JsonTokenizer"><code class="docutils literal notranslate"><span class="pre">JsonTokenizer</span></code></a><ul>
+<li><a class="reference internal" href="#zserio.json.JsonTokenizer.MAX_LINE_LEN"><code class="docutils literal notranslate"><span class="pre">JsonTokenizer.MAX_LINE_LEN</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonTokenizer.get_column"><code class="docutils literal notranslate"><span class="pre">JsonTokenizer.get_column()</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonTokenizer.get_line"><code class="docutils literal notranslate"><span class="pre">JsonTokenizer.get_line()</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonTokenizer.get_token"><code class="docutils literal notranslate"><span class="pre">JsonTokenizer.get_token()</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonTokenizer.get_value"><code class="docutils literal notranslate"><span class="pre">JsonTokenizer.get_value()</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonTokenizer.next"><code class="docutils literal notranslate"><span class="pre">JsonTokenizer.next()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#zserio.json.JsonWriter"><code class="docutils literal notranslate"><span class="pre">JsonWriter</span></code></a><ul>
+<li><a class="reference internal" href="#zserio.json.JsonWriter.begin_array"><code class="docutils literal notranslate"><span class="pre">JsonWriter.begin_array()</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonWriter.begin_compound"><code class="docutils literal notranslate"><span class="pre">JsonWriter.begin_compound()</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonWriter.begin_root"><code class="docutils literal notranslate"><span class="pre">JsonWriter.begin_root()</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonWriter.end_array"><code class="docutils literal notranslate"><span class="pre">JsonWriter.end_array()</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonWriter.end_compound"><code class="docutils literal notranslate"><span class="pre">JsonWriter.end_compound()</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonWriter.end_root"><code class="docutils literal notranslate"><span class="pre">JsonWriter.end_root()</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonWriter.get_io"><code class="docutils literal notranslate"><span class="pre">JsonWriter.get_io()</span></code></a></li>
+<li><a class="reference internal" href="#zserio.json.JsonWriter.visit_value"><code class="docutils literal notranslate"><span class="pre">JsonWriter.visit_value()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;Copyright (c) 2018-2022, Navigation Data Standard e.v..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 6.1.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
