@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['ibasicreflectableconstptr_1713',['IBasicReflectableConstPtr',['../namespacezserio.html#afa832065a53b359ef36369ae60a8942d',1,'zserio']]],
+  ['ibasicreflectableptr_1714',['IBasicReflectablePtr',['../namespacezserio.html#af36feb20c4f713a829d2ebac7e5ddedc',1,'zserio']]],
+  ['ibasicservicedataptr_1715',['IBasicServiceDataPtr',['../namespacezserio.html#ae2ac5bc0f933c338bb8c8ca84588d39a',1,'zserio']]],
+  ['inplaceoptionalholder_1716',['InplaceOptionalHolder',['../namespacezserio.html#afac88696d3a6e89f68c2196b1cff0ec8',1,'zserio']]],
+  ['ireflectable_1717',['IReflectable',['../namespacezserio.html#adc448b5264e6a84e26fca5e65850005e',1,'zserio::IReflectable()'],['../namespacezserio_1_1pmr.html#aca4892c53933e3b0164bd38cb25ccd96',1,'zserio::pmr::IReflectable()']]],
+  ['ireflectableconstptr_1718',['IReflectableConstPtr',['../namespacezserio.html#abf47f9fe33afeab3d514daba0ea2dc14',1,'zserio::IReflectableConstPtr()'],['../namespacezserio_1_1pmr.html#a99cfc8bda42d5070068c5dd57d132f13',1,'zserio::pmr::IReflectableConstPtr()']]],
+  ['ireflectableptr_1719',['IReflectablePtr',['../namespacezserio.html#a4823ee4de4271af00620c1d1c40c3b78',1,'zserio::IReflectablePtr()'],['../namespacezserio_1_1pmr.html#ad867b140e2f9180bcf8c4f8bbdb6015f',1,'zserio::pmr::IReflectablePtr()']]],
+  ['is_5ffield_5fconstructor_5fenabled_1720',['is_field_constructor_enabled',['../namespacezserio.html#a280dffcad58b5101b553facb8cf65dd3',1,'zserio']]],
+  ['is_5ffield_5fconstructor_5fenabled_5ft_1721',['is_field_constructor_enabled_t',['../namespacezserio.html#a7ae86dff238a9f22729ca7a9537c81da',1,'zserio']]],
+  ['iservice_1722',['IService',['../namespacezserio_1_1pmr.html#a1d46a6baa7d8495c63d778773dfc9d18',1,'zserio::pmr::IService()'],['../namespacezserio.html#a4bb3e5c3a1a10883f5c658e203c85f23',1,'zserio::IService()']]],
+  ['iserviceclient_1723',['IServiceClient',['../namespacezserio.html#ade33a26f701b20f992ba6486690f832c',1,'zserio::IServiceClient()'],['../namespacezserio_1_1pmr.html#abad0c1e2fce45f503e2f842035308b8a',1,'zserio::pmr::IServiceClient()']]],
+  ['iservicedata_1724',['IServiceData',['../namespacezserio.html#a59f31db159724904f4787335d7d6b070',1,'zserio::IServiceData()'],['../namespacezserio_1_1pmr.html#a6af3ad41becc547f53df09a4e8b46c37',1,'zserio::pmr::IServiceData()']]],
+  ['iservicedataptr_1725',['IServiceDataPtr',['../namespacezserio.html#a80997d5c7c80270f065604c937213f85',1,'zserio::IServiceDataPtr()'],['../namespacezserio_1_1pmr.html#a7ec8f45ae4ed94cbc39d04e6a26ed3a3',1,'zserio::pmr::IServiceDataPtr()']]],
+  ['iterator_1726',['iterator',['../classzserio_1_1BasicStringView.html#a44facfed873c82a6ac23e20edd7872d8',1,'zserio::BasicStringView::iterator()'],['../classzserio_1_1Span.html#a21baa97d68cc46f2217403145316d991',1,'zserio::Span::iterator()']]],
+  ['itypeinfo_1727',['ITypeInfo',['../namespacezserio.html#a56a4d41526f4e06980f0d83f90e9eb90',1,'zserio::ITypeInfo()'],['../namespacezserio_1_1pmr.html#a6bafc8277ef5a6a9d8c4b1044d660641',1,'zserio::pmr::ITypeInfo()']]],
+  ['iwalkfilter_1728',['IWalkFilter',['../namespacezserio.html#abfccee65f2b3196c9af76ad8f805f5b4',1,'zserio']]],
+  ['iwalkobserver_1729',['IWalkObserver',['../namespacezserio.html#a282c384b5768835fd3af2adc4b288aac',1,'zserio']]]
+];
