@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JsonEncoderTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.json</a> &gt; <span class="el_source">JsonEncoderTest.java</span></div><h1>JsonEncoderTest.java</h1><pre class="source lang-java linenums">package zserio.runtime.json;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+
+import org.junit.jupiter.api.Test;
+
+<span class="fc" id="L12">public class JsonEncoderTest</span>
+{
+    @Test
+    public void encodeNull()
+    {
+<span class="fc" id="L17">        final StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L18">        try (final PrintWriter printWriter = new PrintWriter(stringWriter))</span>
+        {
+<span class="fc" id="L20">            JsonEncoder.encodeNull(printWriter);</span>
+<span class="fc" id="L21">            assertEquals(&quot;null&quot;, stringWriter.toString());</span>
+        }
+<span class="fc" id="L23">    }</span>
+
+    @Test
+    public void encodeBoolean()
+    {
+<span class="fc" id="L28">        final StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L29">        try (final PrintWriter printWriter = new PrintWriter(stringWriter))</span>
+        {
+<span class="fc" id="L31">            JsonEncoder.encodeBool(printWriter, true);</span>
+<span class="fc" id="L32">            assertEquals(&quot;true&quot;, stringWriter.toString());</span>
+
+<span class="fc" id="L34">            stringWriter.getBuffer().setLength(0);</span>
+
+<span class="fc" id="L36">            JsonEncoder.encodeBool(printWriter, false);</span>
+<span class="fc" id="L37">            assertEquals(&quot;false&quot;, stringWriter.toString());</span>
+        }
+<span class="fc" id="L39">    }</span>
+
+    @Test
+    public void encodeIntegral()
+    {
+<span class="fc" id="L44">        StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L45">        try (PrintWriter printWriter = new PrintWriter(stringWriter))</span>
+        {
+<span class="fc" id="L47">            JsonEncoder.encodeIntegral(printWriter, 0xff);</span>
+<span class="fc" id="L48">            assertEquals(Integer.toString(0xff), stringWriter.toString());</span>
+<span class="fc" id="L49">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L50">            JsonEncoder.encodeIntegral(printWriter, 0xffff);</span>
+<span class="fc" id="L51">            assertEquals(Integer.toString(0xffff), stringWriter.toString());</span>
+<span class="fc" id="L52">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L53">            JsonEncoder.encodeIntegral(printWriter, 0xffffffff);</span>
+<span class="fc" id="L54">            assertEquals(Long.toString(0xffffffff), stringWriter.toString());</span>
+<span class="fc" id="L55">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L56">            final BigInteger uint64Max = BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE);</span>
+<span class="fc" id="L57">            JsonEncoder.encodeIntegral(printWriter, uint64Max);</span>
+<span class="fc" id="L58">            assertEquals(uint64Max.toString(), stringWriter.toString());</span>
+
+<span class="fc" id="L60">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L61">            JsonEncoder.encodeIntegral(printWriter, Byte.MIN_VALUE);</span>
+<span class="fc" id="L62">            assertEquals(Byte.toString(Byte.MIN_VALUE), stringWriter.toString());</span>
+<span class="fc" id="L63">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L64">            JsonEncoder.encodeIntegral(printWriter, Byte.MAX_VALUE);</span>
+<span class="fc" id="L65">            assertEquals(Byte.toString(Byte.MAX_VALUE), stringWriter.toString());</span>
+<span class="fc" id="L66">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L67">            JsonEncoder.encodeIntegral(printWriter, Short.MIN_VALUE);</span>
+<span class="fc" id="L68">            assertEquals(Short.toString(Short.MIN_VALUE), stringWriter.toString());</span>
+<span class="fc" id="L69">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L70">            JsonEncoder.encodeIntegral(printWriter, Short.MAX_VALUE);</span>
+<span class="fc" id="L71">            assertEquals(Short.toString(Short.MAX_VALUE), stringWriter.toString());</span>
+<span class="fc" id="L72">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L73">            JsonEncoder.encodeIntegral(printWriter, Integer.MIN_VALUE);</span>
+<span class="fc" id="L74">            assertEquals(Integer.toString(Integer.MIN_VALUE), stringWriter.toString());</span>
+<span class="fc" id="L75">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L76">            JsonEncoder.encodeIntegral(printWriter, Integer.MAX_VALUE);</span>
+<span class="fc" id="L77">            assertEquals(Integer.toString(Integer.MAX_VALUE), stringWriter.toString());</span>
+<span class="fc" id="L78">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L79">            JsonEncoder.encodeIntegral(printWriter, Long.MIN_VALUE);</span>
+<span class="fc" id="L80">            assertEquals(Long.toString(Long.MIN_VALUE), stringWriter.toString());</span>
+<span class="fc" id="L81">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L82">            JsonEncoder.encodeIntegral(printWriter, Long.MAX_VALUE);</span>
+<span class="fc" id="L83">            assertEquals(Long.toString(Long.MAX_VALUE), stringWriter.toString());</span>
+
+<span class="fc" id="L85">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L86">            JsonEncoder.encodeIntegral(printWriter, Long.MIN_VALUE);</span>
+<span class="fc" id="L87">            assertEquals(&quot;-9223372036854775808&quot;, stringWriter.toString());</span>
+<span class="fc" id="L88">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L89">            JsonEncoder.encodeIntegral(printWriter, -1000);</span>
+<span class="fc" id="L90">            assertEquals(&quot;-1000&quot;, stringWriter.toString());</span>
+<span class="fc" id="L91">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L92">            JsonEncoder.encodeIntegral(printWriter, 0);</span>
+<span class="fc" id="L93">            assertEquals(&quot;0&quot;, stringWriter.toString());</span>
+<span class="fc" id="L94">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L95">            JsonEncoder.encodeIntegral(printWriter, 1000);</span>
+<span class="fc" id="L96">            assertEquals(&quot;1000&quot;, stringWriter.toString());</span>
+<span class="fc" id="L97">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L98">            JsonEncoder.encodeIntegral(printWriter, uint64Max);</span>
+<span class="fc" id="L99">            assertEquals(&quot;18446744073709551615&quot;, stringWriter.toString());</span>
+        }
+<span class="fc" id="L101">    }</span>
+
+    @Test
+    public void encodeFloatingPoint()
+    {
+<span class="fc" id="L106">        StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L107">        try (PrintWriter printWriter = new PrintWriter(stringWriter))</span>
+        {
+<span class="fc" id="L109">            JsonEncoder.encodeFloatingPoint(printWriter, -1.0);</span>
+<span class="fc" id="L110">            assertEquals(&quot;-1.0&quot;, stringWriter.toString());</span>
+<span class="fc" id="L111">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L112">            JsonEncoder.encodeFloatingPoint(printWriter, 0.0);</span>
+<span class="fc" id="L113">            assertEquals(&quot;0.0&quot;, stringWriter.toString());</span>
+<span class="fc" id="L114">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L115">            JsonEncoder.encodeFloatingPoint(printWriter, 1.0);</span>
+<span class="fc" id="L116">            assertEquals(&quot;1.0&quot;, stringWriter.toString());</span>
+
+<span class="fc" id="L118">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L119">            JsonEncoder.encodeFloatingPoint(printWriter, 3.5);</span>
+<span class="fc" id="L120">            assertEquals(&quot;3.5&quot;, stringWriter.toString());</span>
+<span class="fc" id="L121">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L122">            JsonEncoder.encodeFloatingPoint(printWriter, 9.875);</span>
+<span class="fc" id="L123">            assertEquals(&quot;9.875&quot;, stringWriter.toString());</span>
+<span class="fc" id="L124">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L125">            JsonEncoder.encodeFloatingPoint(printWriter, 0.6171875);</span>
+<span class="fc" id="L126">            assertEquals(&quot;0.6171875&quot;, stringWriter.toString());</span>
+
+            // TODO[Mi-L@]: Note that scientific format is different from C++ and Python.
+<span class="fc" id="L129">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L130">            JsonEncoder.encodeFloatingPoint(printWriter, 1e20);</span>
+<span class="fc" id="L131">            assertEquals(&quot;1.0E20&quot;, stringWriter.toString());</span>
+
+<span class="fc" id="L133">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L134">            JsonEncoder.encodeFloatingPoint(printWriter, Double.NaN);</span>
+<span class="fc" id="L135">            assertEquals(&quot;NaN&quot;, stringWriter.toString());</span>
+<span class="fc" id="L136">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L137">            JsonEncoder.encodeFloatingPoint(printWriter, Float.NaN);</span>
+<span class="fc" id="L138">            assertEquals(&quot;NaN&quot;, stringWriter.toString());</span>
+<span class="fc" id="L139">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L140">            JsonEncoder.encodeFloatingPoint(printWriter, Double.POSITIVE_INFINITY);</span>
+<span class="fc" id="L141">            assertEquals(&quot;Infinity&quot;, stringWriter.toString());</span>
+<span class="fc" id="L142">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L143">            JsonEncoder.encodeFloatingPoint(printWriter, Float.POSITIVE_INFINITY);</span>
+<span class="fc" id="L144">            assertEquals(&quot;Infinity&quot;, stringWriter.toString());</span>
+<span class="fc" id="L145">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L146">            JsonEncoder.encodeFloatingPoint(printWriter, Double.NEGATIVE_INFINITY);</span>
+<span class="fc" id="L147">            assertEquals(&quot;-Infinity&quot;, stringWriter.toString());</span>
+<span class="fc" id="L148">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L149">            JsonEncoder.encodeFloatingPoint(printWriter, Float.NEGATIVE_INFINITY);</span>
+<span class="fc" id="L150">            assertEquals(&quot;-Infinity&quot;, stringWriter.toString());</span>
+        }
+<span class="fc" id="L152">    }</span>
+
+    @Test
+    public void encodeString()
+    {
+<span class="fc" id="L157">        StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L158">        try (PrintWriter printWriter = new PrintWriter(stringWriter);)</span>
+        {
+<span class="fc" id="L160">            JsonEncoder.encodeString(printWriter, &quot;&quot;);</span>
+<span class="fc" id="L161">            assertEquals(&quot;\&quot;\&quot;&quot;, stringWriter.toString());</span>
+<span class="fc" id="L162">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L163">            JsonEncoder.encodeString(printWriter, &quot;test&quot;);</span>
+<span class="fc" id="L164">            assertEquals(&quot;\&quot;test\&quot;&quot;, stringWriter.toString());</span>
+<span class="fc" id="L165">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L166">            JsonEncoder.encodeString(printWriter, &quot;München&quot;);</span>
+<span class="fc" id="L167">            assertEquals(&quot;\&quot;München\&quot;&quot;, stringWriter.toString());</span>
+<span class="fc" id="L168">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L169">            JsonEncoder.encodeString(printWriter, &quot;€&quot;);</span>
+<span class="fc" id="L170">            assertEquals(&quot;\&quot;€\&quot;&quot;, stringWriter.toString());</span>
+
+<span class="fc" id="L172">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L173">            JsonEncoder.encodeString(printWriter, &quot;\\&quot;);</span>
+<span class="fc" id="L174">            assertEquals(&quot;\&quot;\\\\\&quot;&quot;, stringWriter.toString());</span>
+<span class="fc" id="L175">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L176">            JsonEncoder.encodeString(printWriter, &quot;\&quot;&quot;);</span>
+<span class="fc" id="L177">            assertEquals(&quot;\&quot;\\\&quot;\&quot;&quot;, stringWriter.toString());</span>
+<span class="fc" id="L178">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L179">            JsonEncoder.encodeString(printWriter, &quot;\b&quot;);</span>
+<span class="fc" id="L180">            assertEquals(&quot;\&quot;\\b\&quot;&quot;, stringWriter.toString());</span>
+<span class="fc" id="L181">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L182">            JsonEncoder.encodeString(printWriter, &quot;\f&quot;);</span>
+<span class="fc" id="L183">            assertEquals(&quot;\&quot;\\f\&quot;&quot;, stringWriter.toString());</span>
+<span class="fc" id="L184">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L185">            JsonEncoder.encodeString(printWriter, &quot;\n&quot;);</span>
+<span class="fc" id="L186">            assertEquals(&quot;\&quot;\\n\&quot;&quot;, stringWriter.toString());</span>
+<span class="fc" id="L187">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L188">            JsonEncoder.encodeString(printWriter, &quot;\r&quot;);</span>
+<span class="fc" id="L189">            assertEquals(&quot;\&quot;\\r\&quot;&quot;, stringWriter.toString());</span>
+<span class="fc" id="L190">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L191">            JsonEncoder.encodeString(printWriter, &quot;\t&quot;);</span>
+<span class="fc" id="L192">            assertEquals(&quot;\&quot;\\t\&quot;&quot;, stringWriter.toString());</span>
+
+<span class="fc" id="L194">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L195">            JsonEncoder.encodeString(printWriter,</span>
+                    &quot;\n\t%^@(*aAzZ01234569$%^!?&lt;&gt;[]](){}-=+~:;/|\\\&quot;\'Hello World2&quot;);
+<span class="fc" id="L197">            assertEquals(&quot;\&quot;\\n\\t%^@(*aAzZ01234569$%^!?&lt;&gt;[]](){}-=+~:;/|\\\\\\\&quot;'Hello World2\&quot;&quot;,</span>
+<span class="fc" id="L198">                    stringWriter.toString());</span>
+
+            // &lt;= 0x1F -&gt; unicode escape
+<span class="fc" id="L201">            stringWriter.getBuffer().setLength(0);</span>
+<span class="fc" id="L202">            JsonEncoder.encodeString(printWriter, new String(new byte[]{0x1F}, StandardCharsets.UTF_8));</span>
+<span class="fc" id="L203">            assertEquals(&quot;\&quot;\\u001f\&quot;&quot;, stringWriter.toString());</span>
+        }
+<span class="fc" id="L205">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

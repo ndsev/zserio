@@ -1,0 +1,1387 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ArrayTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.array</a> &gt; <span class="el_source">ArrayTest.java</span></div><h1>ArrayTest.java</h1><pre class="source lang-java linenums">package zserio.runtime.array;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.math.BigInteger;
+
+import zserio.runtime.BitPositionUtil;
+import zserio.runtime.BitSizeOfCalculator;
+import zserio.runtime.HashCodeUtil;
+import zserio.runtime.SizeOf;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.BitBuffer;
+import zserio.runtime.io.BitStreamReader;
+import zserio.runtime.io.BitStreamWriter;
+import zserio.runtime.io.Writer;
+
+<span class="fc" id="L24">public class ArrayTest</span>
+{
+    @Test
+    public void signedBitFieldByteArray() throws IOException
+    {
+<span class="fc" id="L29">        final RawArray rawArray1 = new RawArray.ByteRawArray(new byte[] {-1, -2});</span>
+<span class="fc" id="L30">        final int array1BitSizeOf = 2 * 5;</span>
+<span class="fc" id="L31">        final int array1AlignedBitSizeOf = 5 + 3 + 5;</span>
+<span class="fc" id="L32">        final RawArray rawArray2 = new RawArray.ByteRawArray(new byte[] {-3, -4});</span>
+<span class="fc" id="L33">        final RawArray emptyRawArray = new RawArray.ByteRawArray();</span>
+<span class="fc" id="L34">        final ArrayTraits arrayTraits = new ArrayTraits.SignedBitFieldByteArrayTraits(5);</span>
+<span class="fc" id="L35">        testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);</span>
+
+<span class="fc" id="L37">        final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc" id="L38">        final byte[] expectedRawArray = rawArray1.getRawArray();</span>
+<span class="fc" id="L39">        assertArrayEquals(expectedRawArray, normalArray1.getRawArray());</span>
+<span class="fc" id="L40">        assertEquals(expectedRawArray.length, normalArray1.size());</span>
+<span class="fc" id="L41">    }</span>
+
+    @Test
+    public void signedBitFieldShortArray() throws IOException
+    {
+<span class="fc" id="L46">        final RawArray rawArray1 = new RawArray.ShortRawArray(new short[] {-512, -513});</span>
+<span class="fc" id="L47">        final int array1BitSizeOf = 2 * 13;</span>
+<span class="fc" id="L48">        final int array1AlignedBitSizeOf = 13 + 3 + 13;</span>
+<span class="fc" id="L49">        final RawArray rawArray2 = new RawArray.ShortRawArray(new short[] {-514, -515});</span>
+<span class="fc" id="L50">        final RawArray emptyRawArray = new RawArray.ShortRawArray();</span>
+<span class="fc" id="L51">        final ArrayTraits arrayTraits = new ArrayTraits.SignedBitFieldShortArrayTraits(13);</span>
+<span class="fc" id="L52">        testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);</span>
+
+<span class="fc" id="L54">        final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc" id="L55">        final short[] expectedRawArray = rawArray1.getRawArray();</span>
+<span class="fc" id="L56">        assertArrayEquals(expectedRawArray, normalArray1.getRawArray());</span>
+<span class="fc" id="L57">        assertEquals(expectedRawArray.length, normalArray1.size());</span>
+<span class="fc" id="L58">    }</span>
+
+    @Test
+    public void signedBitFieldIntArray() throws IOException
+    {
+<span class="fc" id="L63">        final RawArray rawArray1 = new RawArray.IntRawArray(new int[] {-131072, -131073});</span>
+<span class="fc" id="L64">        final int array1BitSizeOf = 2 * 29;</span>
+<span class="fc" id="L65">        final int array1AlignedBitSizeOf = 29 + 3 + 29;</span>
+<span class="fc" id="L66">        final RawArray rawArray2 = new RawArray.IntRawArray(new int[] {-131074, -131075});</span>
+<span class="fc" id="L67">        final RawArray emptyRawArray = new RawArray.IntRawArray();</span>
+<span class="fc" id="L68">        final ArrayTraits arrayTraits = new ArrayTraits.SignedBitFieldIntArrayTraits(29);</span>
+<span class="fc" id="L69">        testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);</span>
+
+<span class="fc" id="L71">        final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc" id="L72">        final int[] expectedRawArray = rawArray1.getRawArray();</span>
+<span class="fc" id="L73">        assertArrayEquals(expectedRawArray, normalArray1.getRawArray());</span>
+<span class="fc" id="L74">        assertEquals(expectedRawArray.length, normalArray1.size());</span>
+<span class="fc" id="L75">    }</span>
+
+    @Test
+    public void signedBitFieldLongArray() throws IOException
+    {
+<span class="fc" id="L80">        final RawArray rawArray1 = new RawArray.LongRawArray(new long[] {-8589934592L, -8589934593L});</span>
+<span class="fc" id="L81">        final int array1BitSizeOf = 2 * 61;</span>
+<span class="fc" id="L82">        final int array1AlignedBitSizeOf = 61 + 3 + 61;</span>
+<span class="fc" id="L83">        final RawArray rawArray2 = new RawArray.LongRawArray(new long[] {-8589934594L, -8589934595L});</span>
+<span class="fc" id="L84">        final RawArray emptyRawArray = new RawArray.LongRawArray();</span>
+<span class="fc" id="L85">        final ArrayTraits arrayTraits = new ArrayTraits.SignedBitFieldLongArrayTraits(61);</span>
+<span class="fc" id="L86">        testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);</span>
+
+<span class="fc" id="L88">        final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc" id="L89">        final long[] expectedRawArray = rawArray1.getRawArray();</span>
+<span class="fc" id="L90">        assertArrayEquals(expectedRawArray, normalArray1.getRawArray());</span>
+<span class="fc" id="L91">        assertEquals(expectedRawArray.length, normalArray1.size());</span>
+<span class="fc" id="L92">    }</span>
+
+    @Test
+    public void bitFieldByteArray() throws IOException
+    {
+<span class="fc" id="L97">        final RawArray rawArray1 = new RawArray.ByteRawArray(new byte[] {1, 2});</span>
+<span class="fc" id="L98">        final int array1BitSizeOf = 2 * 5;</span>
+<span class="fc" id="L99">        final int array1AlignedBitSizeOf = 5 + 3 + 5;</span>
+<span class="fc" id="L100">        final RawArray rawArray2 = new RawArray.ByteRawArray(new byte[] {3, 4});</span>
+<span class="fc" id="L101">        final RawArray emptyRawArray = new RawArray.ByteRawArray();</span>
+<span class="fc" id="L102">        final ArrayTraits arrayTraits = new ArrayTraits.BitFieldByteArrayTraits(5);</span>
+<span class="fc" id="L103">        testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);</span>
+
+<span class="fc" id="L105">        final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc" id="L106">        final byte[] expectedRawArray = rawArray1.getRawArray();</span>
+<span class="fc" id="L107">        assertArrayEquals(expectedRawArray, normalArray1.getRawArray());</span>
+<span class="fc" id="L108">        assertEquals(expectedRawArray.length, normalArray1.size());</span>
+<span class="fc" id="L109">    }</span>
+
+    @Test
+    public void bitFieldShortArray() throws IOException
+    {
+<span class="fc" id="L114">        final RawArray rawArray1 = new RawArray.ShortRawArray(new short[] {512, 513});</span>
+<span class="fc" id="L115">        final int array1BitSizeOf = 2 * 13;</span>
+<span class="fc" id="L116">        final int array1AlignedBitSizeOf = 13 + 3 + 13;</span>
+<span class="fc" id="L117">        final RawArray rawArray2 = new RawArray.ShortRawArray(new short[] {514, 515});</span>
+<span class="fc" id="L118">        final RawArray emptyRawArray = new RawArray.ShortRawArray();</span>
+<span class="fc" id="L119">        final ArrayTraits arrayTraits = new ArrayTraits.BitFieldShortArrayTraits(13);</span>
+<span class="fc" id="L120">        testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);</span>
+
+<span class="fc" id="L122">        final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc" id="L123">        final short[] expectedRawArray = rawArray1.getRawArray();</span>
+<span class="fc" id="L124">        assertArrayEquals(expectedRawArray, normalArray1.getRawArray());</span>
+<span class="fc" id="L125">        assertEquals(expectedRawArray.length, normalArray1.size());</span>
+<span class="fc" id="L126">    }</span>
+
+    @Test
+    public void bitFieldIntArray() throws IOException
+    {
+<span class="fc" id="L131">        final RawArray rawArray1 = new RawArray.IntRawArray(new int[] {131072, 131073});</span>
+<span class="fc" id="L132">        final int array1BitSizeOf = 2 * 29;</span>
+<span class="fc" id="L133">        final int array1AlignedBitSizeOf = 29 + 3 + 29;</span>
+<span class="fc" id="L134">        final RawArray rawArray2 = new RawArray.IntRawArray(new int[] {131074, 131075});</span>
+<span class="fc" id="L135">        final RawArray emptyRawArray = new RawArray.IntRawArray();</span>
+<span class="fc" id="L136">        final ArrayTraits arrayTraits = new ArrayTraits.BitFieldIntArrayTraits(29);</span>
+<span class="fc" id="L137">        testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);</span>
+
+<span class="fc" id="L139">        final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc" id="L140">        final int[] expectedRawArray = rawArray1.getRawArray();</span>
+<span class="fc" id="L141">        assertArrayEquals(expectedRawArray, normalArray1.getRawArray());</span>
+<span class="fc" id="L142">        assertEquals(expectedRawArray.length, normalArray1.size());</span>
+<span class="fc" id="L143">    }</span>
+
+    @Test
+    public void bitFieldLongArray() throws IOException
+    {
+<span class="fc" id="L148">        final RawArray rawArray1 = new RawArray.LongRawArray(new long[] {8589934592L, 8589934593L});</span>
+<span class="fc" id="L149">        final int array1BitSizeOf = 2 * 61;</span>
+<span class="fc" id="L150">        final int array1AlignedBitSizeOf = 61 + 3 + 61;</span>
+<span class="fc" id="L151">        final RawArray rawArray2 = new RawArray.LongRawArray(new long[] {8589934594L, 8589934595L});</span>
+<span class="fc" id="L152">        final RawArray emptyRawArray = new RawArray.LongRawArray();</span>
+<span class="fc" id="L153">        final ArrayTraits arrayTraits = new ArrayTraits.BitFieldLongArrayTraits(61);</span>
+<span class="fc" id="L154">        testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);</span>
+
+<span class="fc" id="L156">        final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc" id="L157">        final long[] expectedRawArray = rawArray1.getRawArray();</span>
+<span class="fc" id="L158">        assertArrayEquals(expectedRawArray, normalArray1.getRawArray());</span>
+<span class="fc" id="L159">        assertEquals(expectedRawArray.length, normalArray1.size());</span>
+<span class="fc" id="L160">    }</span>
+
+    @Test
+    public void bitFieldBigIntegerArray() throws IOException
+    {
+<span class="fc" id="L165">        final RawArray rawArray1 = new RawArray.BigIntegerRawArray(new BigInteger[] {</span>
+<span class="fc" id="L166">                BigInteger.valueOf(8589934592L), BigInteger.valueOf(8589934593L)});</span>
+<span class="fc" id="L167">        final int array1BitSizeOf = 2 * 64;</span>
+<span class="fc" id="L168">        final int array1AlignedBitSizeOf = array1BitSizeOf;</span>
+<span class="fc" id="L169">        final RawArray rawArray2 = new RawArray.BigIntegerRawArray(new BigInteger[] {</span>
+<span class="fc" id="L170">                BigInteger.valueOf(8589934594L), BigInteger.valueOf(8589934595L)});</span>
+<span class="fc" id="L171">        final RawArray emptyRawArray = new RawArray.BigIntegerRawArray();</span>
+<span class="fc" id="L172">        final ArrayTraits arrayTraits = new ArrayTraits.BitFieldBigIntegerArrayTraits(64);</span>
+<span class="fc" id="L173">        testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);</span>
+
+<span class="fc" id="L175">        final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc" id="L176">        final BigInteger[] expectedRawArray = rawArray1.getRawArray();</span>
+<span class="fc" id="L177">        assertArrayEquals(expectedRawArray, normalArray1.getRawArray());</span>
+<span class="fc" id="L178">        assertEquals(expectedRawArray.length, normalArray1.size());</span>
+<span class="fc" id="L179">    }</span>
+
+    @Test
+    public void varInt16Array() throws IOException
+    {
+<span class="fc" id="L184">        final RawArray rawArray1 = new RawArray.ShortRawArray(new short[] {-1, 1024});</span>
+<span class="fc" id="L185">        final int array1BitSizeOf = 8 + 16;</span>
+<span class="fc" id="L186">        final int array1AlignedBitSizeOf = array1BitSizeOf;</span>
+<span class="fc" id="L187">        final RawArray rawArray2 = new RawArray.ShortRawArray(new short[] {-1, 8192});</span>
+<span class="fc" id="L188">        final RawArray emptyRawArray = new RawArray.ShortRawArray();</span>
+<span class="fc" id="L189">        final ArrayTraits arrayTraits = new ArrayTraits.VarInt16ArrayTraits();</span>
+<span class="fc" id="L190">        testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);</span>
+
+<span class="fc" id="L192">        final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc" id="L193">        final short[] expectedRawArray = rawArray1.getRawArray();</span>
+<span class="fc" id="L194">        assertArrayEquals(expectedRawArray, normalArray1.getRawArray());</span>
+<span class="fc" id="L195">        assertEquals(expectedRawArray.length, normalArray1.size());</span>
+<span class="fc" id="L196">    }</span>
+
+    @Test
+    public void varInt32Array() throws IOException
+    {
+<span class="fc" id="L201">        final RawArray rawArray1 = new RawArray.IntRawArray(new int[] {-1, 16384});</span>
+<span class="fc" id="L202">        final int array1BitSizeOf = 8 + 24;</span>
+<span class="fc" id="L203">        final int array1AlignedBitSizeOf = array1BitSizeOf;</span>
+<span class="fc" id="L204">        final RawArray rawArray2 = new RawArray.IntRawArray(new int[] {-1, 32768});</span>
+<span class="fc" id="L205">        final RawArray emptyRawArray = new RawArray.IntRawArray();</span>
+<span class="fc" id="L206">        final ArrayTraits arrayTraits = new ArrayTraits.VarInt32ArrayTraits();</span>
+<span class="fc" id="L207">        testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);</span>
+
+<span class="fc" id="L209">        final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc" id="L210">        final int[] expectedRawArray = rawArray1.getRawArray();</span>
+<span class="fc" id="L211">        assertArrayEquals(expectedRawArray, normalArray1.getRawArray());</span>
+<span class="fc" id="L212">        assertEquals(expectedRawArray.length, normalArray1.size());</span>
+<span class="fc" id="L213">    }</span>
+
+    @Test
+    public void varInt64Array() throws IOException
+    {
+<span class="fc" id="L218">        final RawArray rawArray1 = new RawArray.LongRawArray(new long[] {-1, 1073741824L});</span>
+<span class="fc" id="L219">        final int array1BitSizeOf = 8 + 40;</span>
+<span class="fc" id="L220">        final int array1AlignedBitSizeOf = array1BitSizeOf;</span>
+<span class="fc" id="L221">        final RawArray rawArray2 = new RawArray.LongRawArray(new long[] {-1, 2147483648L});</span>
+<span class="fc" id="L222">        final RawArray emptyRawArray = new RawArray.LongRawArray();</span>
+<span class="fc" id="L223">        final ArrayTraits arrayTraits = new ArrayTraits.VarInt64ArrayTraits();</span>
+<span class="fc" id="L224">        testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);</span>
+
+<span class="fc" id="L226">        final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc" id="L227">        final long[] expectedRawArray = rawArray1.getRawArray();</span>
+<span class="fc" id="L228">        assertArrayEquals(expectedRawArray, normalArray1.getRawArray());</span>
+<span class="fc" id="L229">        assertEquals(expectedRawArray.length, normalArray1.size());</span>
+<span class="fc" id="L230">    }</span>
+
+    @Test
+    public void varIntArray() throws IOException
+    {
+<span class="fc" id="L235">        final RawArray rawArray1 = new RawArray.LongRawArray(new long[] {-1, 1073741824L});</span>
+<span class="fc" id="L236">        final int array1BitSizeOf = 8 + 40;</span>
+<span class="fc" id="L237">        final int array1AlignedBitSizeOf = array1BitSizeOf;</span>
+<span class="fc" id="L238">        final RawArray rawArray2 = new RawArray.LongRawArray(new long[] {-1, 2147483648L});</span>
+<span class="fc" id="L239">        final RawArray emptyRawArray = new RawArray.LongRawArray();</span>
+<span class="fc" id="L240">        final ArrayTraits arrayTraits = new ArrayTraits.VarIntArrayTraits();</span>
+<span class="fc" id="L241">        testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);</span>
+
+<span class="fc" id="L243">        final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc" id="L244">        final long[] expectedRawArray = rawArray1.getRawArray();</span>
+<span class="fc" id="L245">        assertArrayEquals(expectedRawArray, normalArray1.getRawArray());</span>
+<span class="fc" id="L246">        assertEquals(expectedRawArray.length, normalArray1.size());</span>
+<span class="fc" id="L247">    }</span>
+
+    @Test
+    public void varUInt16Array() throws IOException
+    {
+<span class="fc" id="L252">        final RawArray rawArray1 = new RawArray.ShortRawArray(new short[] {1, 1024});</span>
+<span class="fc" id="L253">        final int array1BitSizeOf = 8 + 16;</span>
+<span class="fc" id="L254">        final int array1AlignedBitSizeOf = array1BitSizeOf;</span>
+<span class="fc" id="L255">        final RawArray rawArray2 = new RawArray.ShortRawArray(new short[] {1, 8192});</span>
+<span class="fc" id="L256">        final RawArray emptyRawArray = new RawArray.ShortRawArray();</span>
+<span class="fc" id="L257">        final ArrayTraits arrayTraits = new ArrayTraits.VarUInt16ArrayTraits();</span>
+<span class="fc" id="L258">        testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);</span>
+
+<span class="fc" id="L260">        final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc" id="L261">        final short[] expectedRawArray = rawArray1.getRawArray();</span>
+<span class="fc" id="L262">        assertArrayEquals(expectedRawArray, normalArray1.getRawArray());</span>
+<span class="fc" id="L263">        assertEquals(expectedRawArray.length, normalArray1.size());</span>
+<span class="fc" id="L264">    }</span>
+
+    @Test
+    public void varUInt32Array() throws IOException
+    {
+<span class="fc" id="L269">        final RawArray rawArray1 = new RawArray.IntRawArray(new int[] {1, 16384});</span>
+<span class="fc" id="L270">        final int array1BitSizeOf = 8 + 24;</span>
+<span class="fc" id="L271">        final int array1AlignedBitSizeOf = array1BitSizeOf;</span>
+<span class="fc" id="L272">        final RawArray rawArray2 = new RawArray.IntRawArray(new int[] {1, 32768});</span>
+<span class="fc" id="L273">        final RawArray emptyRawArray = new RawArray.IntRawArray();</span>
+<span class="fc" id="L274">        final ArrayTraits arrayTraits = new ArrayTraits.VarUInt32ArrayTraits();</span>
+<span class="fc" id="L275">        testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);</span>
+
+<span class="fc" id="L277">        final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc" id="L278">        final int[] expectedRawArray = rawArray1.getRawArray();</span>
+<span class="fc" id="L279">        assertArrayEquals(expectedRawArray, normalArray1.getRawArray());</span>
+<span class="fc" id="L280">        assertEquals(expectedRawArray.length, normalArray1.size());</span>
+<span class="fc" id="L281">    }</span>
+
+    @Test
+    public void varUInt64Array() throws IOException
+    {
+<span class="fc" id="L286">        final RawArray rawArray1 = new RawArray.LongRawArray(new long[] {1, 1073741824L});</span>
+<span class="fc" id="L287">        final int array1BitSizeOf = 8 + 40;</span>
+<span class="fc" id="L288">        final int array1AlignedBitSizeOf = array1BitSizeOf;</span>
+<span class="fc" id="L289">        final RawArray rawArray2 = new RawArray.LongRawArray(new long[] {1, 2147483648L});</span>
+<span class="fc" id="L290">        final RawArray emptyRawArray = new RawArray.LongRawArray();</span>
+<span class="fc" id="L291">        final ArrayTraits arrayTraits = new ArrayTraits.VarUInt64ArrayTraits();</span>
+<span class="fc" id="L292">        testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);</span>
+
+<span class="fc" id="L294">        final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc" id="L295">        final long[] expectedRawArray = rawArray1.getRawArray();</span>
+<span class="fc" id="L296">        assertArrayEquals(expectedRawArray, normalArray1.getRawArray());</span>
+<span class="fc" id="L297">        assertEquals(expectedRawArray.length, normalArray1.size());</span>
+<span class="fc" id="L298">    }</span>
+
+    @Test
+    public void varUIntArray() throws IOException
+    {
+<span class="fc" id="L303">        final RawArray rawArray1 = new RawArray.BigIntegerRawArray(new BigInteger[] {</span>
+<span class="fc" id="L304">                BigInteger.valueOf(1), BigInteger.valueOf(1073741824L)});</span>
+<span class="fc" id="L305">        final int array1BitSizeOf = 8 + 40;</span>
+<span class="fc" id="L306">        final int array1AlignedBitSizeOf = array1BitSizeOf;</span>
+<span class="fc" id="L307">        final RawArray rawArray2 = new RawArray.BigIntegerRawArray(new BigInteger[] {</span>
+<span class="fc" id="L308">                BigInteger.valueOf(1), BigInteger.valueOf(2147483648L)});</span>
+<span class="fc" id="L309">        final RawArray emptyRawArray = new RawArray.BigIntegerRawArray();</span>
+<span class="fc" id="L310">        final ArrayTraits arrayTraits = new ArrayTraits.VarUIntArrayTraits();</span>
+<span class="fc" id="L311">        testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);</span>
+
+<span class="fc" id="L313">        final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc" id="L314">        final BigInteger[] expectedRawArray = rawArray1.getRawArray();</span>
+<span class="fc" id="L315">        assertArrayEquals(expectedRawArray, normalArray1.getRawArray());</span>
+<span class="fc" id="L316">        assertEquals(expectedRawArray.length, normalArray1.size());</span>
+<span class="fc" id="L317">    }</span>
+
+    @Test
+    public void varSizeArray() throws IOException
+    {
+<span class="fc" id="L322">        final RawArray rawArray1 = new RawArray.IntRawArray(new int[] {1, 16384});</span>
+<span class="fc" id="L323">        final int array1BitSizeOf = 8 + 24;</span>
+<span class="fc" id="L324">        final int array1AlignedBitSizeOf = array1BitSizeOf;</span>
+<span class="fc" id="L325">        final RawArray rawArray2 = new RawArray.IntRawArray(new int[] {1, 32768});</span>
+<span class="fc" id="L326">        final RawArray emptyRawArray = new RawArray.IntRawArray();</span>
+<span class="fc" id="L327">        final ArrayTraits arrayTraits = new ArrayTraits.VarSizeArrayTraits();</span>
+<span class="fc" id="L328">        testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);</span>
+
+<span class="fc" id="L330">        final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc" id="L331">        final int[] expectedRawArray = rawArray1.getRawArray();</span>
+<span class="fc" id="L332">        assertArrayEquals(expectedRawArray, normalArray1.getRawArray());</span>
+<span class="fc" id="L333">        assertEquals(expectedRawArray.length, normalArray1.size());</span>
+<span class="fc" id="L334">    }</span>
+
+    @Test
+    public void float16Array() throws IOException
+    {
+<span class="fc" id="L339">        final RawArray rawArray1 = new RawArray.FloatRawArray(new float[] {-1.0f, 1.0f});</span>
+<span class="fc" id="L340">        final int array1BitSizeOf = 2 * 16;</span>
+<span class="fc" id="L341">        final int array1AlignedBitSizeOf = array1BitSizeOf;</span>
+<span class="fc" id="L342">        final RawArray rawArray2 = new RawArray.FloatRawArray(new float[] {-3.5f, 3.5f});</span>
+<span class="fc" id="L343">        final RawArray emptyRawArray = new RawArray.FloatRawArray();</span>
+<span class="fc" id="L344">        final ArrayTraits arrayTraits = new ArrayTraits.Float16ArrayTraits();</span>
+<span class="fc" id="L345">        testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);</span>
+
+<span class="fc" id="L347">        final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc" id="L348">        final float[] expectedRawArray = rawArray1.getRawArray();</span>
+<span class="fc" id="L349">        assertArrayEquals(expectedRawArray, normalArray1.getRawArray(), Float.MIN_VALUE);</span>
+<span class="fc" id="L350">        assertEquals(expectedRawArray.length, normalArray1.size());</span>
+<span class="fc" id="L351">    }</span>
+
+    @Test
+    public void float32Array() throws IOException
+    {
+<span class="fc" id="L356">        final RawArray rawArray1 = new RawArray.FloatRawArray(new float[] {-1.0f, 1.0f});</span>
+<span class="fc" id="L357">        final int array1BitSizeOf = 2 * 32;</span>
+<span class="fc" id="L358">        final int array1AlignedBitSizeOf = array1BitSizeOf;</span>
+<span class="fc" id="L359">        final RawArray rawArray2 = new RawArray.FloatRawArray(new float[] {-3.5f, 3.5f});</span>
+<span class="fc" id="L360">        final RawArray emptyRawArray = new RawArray.FloatRawArray();</span>
+<span class="fc" id="L361">        final ArrayTraits arrayTraits = new ArrayTraits.Float32ArrayTraits();</span>
+<span class="fc" id="L362">        testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);</span>
+
+<span class="fc" id="L364">        final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc" id="L365">        final float[] expectedRawArray = rawArray1.getRawArray();</span>
+<span class="fc" id="L366">        assertArrayEquals(expectedRawArray, normalArray1.getRawArray(), Float.MIN_VALUE);</span>
+<span class="fc" id="L367">        assertEquals(expectedRawArray.length, normalArray1.size());</span>
+<span class="fc" id="L368">    }</span>
+
+    @Test
+    public void float64Array() throws IOException
+    {
+<span class="fc" id="L373">        final RawArray rawArray1 = new RawArray.DoubleRawArray(new double[] {-1.0, 1.0});</span>
+<span class="fc" id="L374">        final int array1BitSizeOf = 2 * 64;</span>
+<span class="fc" id="L375">        final int array1AlignedBitSizeOf = array1BitSizeOf;</span>
+<span class="fc" id="L376">        final RawArray rawArray2 = new RawArray.DoubleRawArray(new double[] {-3.5, 3.5});</span>
+<span class="fc" id="L377">        final RawArray emptyRawArray = new RawArray.DoubleRawArray();</span>
+<span class="fc" id="L378">        final ArrayTraits arrayTraits = new ArrayTraits.Float64ArrayTraits();</span>
+<span class="fc" id="L379">        testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);</span>
+
+<span class="fc" id="L381">        final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc" id="L382">        final double[] expectedRawArray = rawArray1.getRawArray();</span>
+<span class="fc" id="L383">        assertArrayEquals(expectedRawArray, normalArray1.getRawArray(), Double.MIN_VALUE);</span>
+<span class="fc" id="L384">        assertEquals(expectedRawArray.length, normalArray1.size());</span>
+<span class="fc" id="L385">    }</span>
+
+    @Test
+    public void bytesArray() throws IOException
+    {
+<span class="fc" id="L390">        final RawArray rawArray1 = new RawArray.BytesRawArray(</span>
+                new byte[][] { new byte[] {(byte)1, (byte)255}, new byte[] {(byte)127, (byte)128} });
+<span class="fc" id="L392">        final int array1BitSizeOf = 2 * (1 + 2) * 8;</span>
+<span class="fc" id="L393">        final int array1AlignedBitSizeOf = array1BitSizeOf;</span>
+<span class="fc" id="L394">        final RawArray rawArray2 = new RawArray.BytesRawArray(</span>
+                new byte[][] { new byte[] {(byte)0, (byte)0}, new byte[] {(byte)255, (byte)255} });
+<span class="fc" id="L396">        final RawArray emptyRawArray = new RawArray.BytesRawArray();</span>
+<span class="fc" id="L397">        final ArrayTraits arrayTraits = new ArrayTraits.BytesArrayTraits();</span>
+<span class="fc" id="L398">        testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);</span>
+
+<span class="fc" id="L400">        final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc" id="L401">        final byte[][] expectedRawArray = rawArray1.getRawArray();</span>
+<span class="fc" id="L402">        assertArrayEquals(expectedRawArray, normalArray1.getRawArray());</span>
+<span class="fc" id="L403">        assertEquals(expectedRawArray.length, normalArray1.size());</span>
+<span class="fc" id="L404">    }</span>
+
+    @Test
+    public void stringArray() throws IOException
+    {
+<span class="fc" id="L409">        final RawArray rawArray1 = new RawArray.StringRawArray(new String[] { &quot;Text1&quot;, &quot;Text2&quot;});</span>
+<span class="fc" id="L410">        final int array1BitSizeOf = 2 * (1 + 5) * 8;</span>
+<span class="fc" id="L411">        final int array1AlignedBitSizeOf = array1BitSizeOf;</span>
+<span class="fc" id="L412">        final RawArray rawArray2 = new RawArray.StringRawArray(new String[] { &quot;Text1&quot;, &quot;Text3&quot;});</span>
+<span class="fc" id="L413">        final RawArray emptyRawArray = new RawArray.StringRawArray();</span>
+<span class="fc" id="L414">        final ArrayTraits arrayTraits = new ArrayTraits.StringArrayTraits();</span>
+<span class="fc" id="L415">        testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);</span>
+
+<span class="fc" id="L417">        final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc" id="L418">        final String[] expectedRawArray = rawArray1.getRawArray();</span>
+<span class="fc" id="L419">        assertArrayEquals(expectedRawArray, normalArray1.getRawArray());</span>
+<span class="fc" id="L420">        assertEquals(expectedRawArray.length, normalArray1.size());</span>
+<span class="fc" id="L421">    }</span>
+
+    @Test
+    public void boolArray() throws IOException
+    {
+<span class="fc" id="L426">        final RawArray rawArray1 = new RawArray.BooleanRawArray(new boolean[] {true, false});</span>
+<span class="fc" id="L427">        final int array1BitSizeOf = 2 * 1;</span>
+<span class="fc" id="L428">        final int array1AlignedBitSizeOf = 1 + 7 + 1;</span>
+<span class="fc" id="L429">        final RawArray rawArray2 = new RawArray.BooleanRawArray(new boolean[] {true, true});</span>
+<span class="fc" id="L430">        final RawArray emptyRawArray = new RawArray.BooleanRawArray();</span>
+<span class="fc" id="L431">        final ArrayTraits arrayTraits = new ArrayTraits.BoolArrayTraits();</span>
+<span class="fc" id="L432">        testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);</span>
+
+<span class="fc" id="L434">        final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc" id="L435">        final boolean[] expectedRawArray = rawArray1.getRawArray();</span>
+<span class="fc" id="L436">        assertEquals(expectedRawArray.length, normalArray1.size());</span>
+<span class="fc" id="L437">        final boolean[] normalRawArray = normalArray1.getRawArray();</span>
+<span class="fc" id="L438">        assertEquals(expectedRawArray.length, normalRawArray.length);</span>
+<span class="fc bfc" id="L439" title="All 2 branches covered.">        for (int i = 0; i &lt; expectedRawArray.length; ++i)</span>
+<span class="fc" id="L440">            assertEquals(expectedRawArray[i], normalRawArray[i]);</span>
+<span class="fc" id="L441">    }</span>
+
+    @Test
+    public void bitBufferArray() throws IOException
+    {
+<span class="fc" id="L446">        final RawArray rawArray1 = new RawArray.BitBufferRawArray(new BitBuffer[] {</span>
+                new BitBuffer(new byte[] {(byte)0xAB, (byte)0xE0}, 11),
+                new BitBuffer(new byte[] {(byte)0xAB, (byte)0xCD, (byte)0xFE}, 23)});
+<span class="fc" id="L449">        final int array1BitSizeOf = 8 + 11 + 8 + 23;</span>
+<span class="fc" id="L450">        final int array1AlignedBitSizeOf = 8 + 11 + 5 + 8 + 23;</span>
+<span class="fc" id="L451">        final RawArray rawArray2 = new RawArray.BitBufferRawArray(new BitBuffer[] {</span>
+                new BitBuffer(new byte[] {(byte)0xBA, (byte)0xE0}, 11),
+                new BitBuffer(new byte[] {(byte)0xBA, (byte)0xCD, (byte)0xFE}, 23)});
+<span class="fc" id="L454">        final RawArray emptyRawArray = new RawArray.BitBufferRawArray();</span>
+<span class="fc" id="L455">        final ArrayTraits arrayTraits = new ArrayTraits.BitBufferArrayTraits();</span>
+<span class="fc" id="L456">        testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);</span>
+
+<span class="fc" id="L458">        final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc" id="L459">        final BitBuffer[] expectedRawArray = rawArray1.getRawArray();</span>
+<span class="fc" id="L460">        assertArrayEquals(expectedRawArray, normalArray1.getRawArray());</span>
+<span class="fc" id="L461">        assertEquals(expectedRawArray.length, normalArray1.size());</span>
+<span class="fc" id="L462">    }</span>
+
+    @Test
+    public void writeObjectArray() throws IOException
+    {
+<span class="fc" id="L467">        final RawArray rawArray1 = new RawArray.ObjectRawArray&lt;ArrayTestObject&gt;(ArrayTestObject.class,</span>
+                new ArrayTestObject[] {new ArrayTestObject((byte)1), new ArrayTestObject((byte)2)});
+<span class="fc" id="L469">        final int array1BitSizeOf = 2 * 3;</span>
+<span class="fc" id="L470">        final int array1AlignedBitSizeOf = 3 + 5 + 3;</span>
+<span class="fc" id="L471">        final RawArray rawArray2 = new RawArray.ObjectRawArray&lt;ArrayTestObject&gt;(ArrayTestObject.class,</span>
+                new ArrayTestObject[] {new ArrayTestObject((byte)1), new ArrayTestObject((byte)3)});
+<span class="fc" id="L473">        final RawArray emptyRawArray = new RawArray.ObjectRawArray&lt;ArrayTestObject&gt;(ArrayTestObject.class);</span>
+<span class="fc" id="L474">        final ArrayTraits arrayTraits = new ArrayTraits.WriteObjectArrayTraits&lt;ArrayTestObject&gt;(</span>
+                new ArrayTestElementFactory());
+<span class="fc" id="L476">        testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);</span>
+
+<span class="fc" id="L478">        final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc" id="L479">        final ArrayTestObject[] expectedRawArray = rawArray1.getRawArray();</span>
+<span class="fc" id="L480">        assertArrayEquals(expectedRawArray, normalArray1.getRawArray());</span>
+<span class="fc" id="L481">        assertEquals(expectedRawArray.length, normalArray1.size());</span>
+<span class="fc" id="L482">    }</span>
+
+    @Test
+    public void signedBitFieldBytePackedArray() throws IOException
+    {
+<span class="fc" id="L487">        final int elementBitSize = 5;</span>
+<span class="fc" id="L488">        final RawArray emptyRawArray = new RawArray.ByteRawArray();</span>
+<span class="fc" id="L489">        final ArrayTraits arrayTraits = new ArrayTraits.SignedBitFieldByteArrayTraits(elementBitSize);</span>
+
+        // none-zero delta
+<span class="fc" id="L492">        final RawArray rawArray1 = new RawArray.ByteRawArray(new byte[] {</span>
+                -10, -8, -6, -7, -4, -1, 0, 2, 4, 6, 9});
+<span class="fc" id="L494">        final int array1MaxDeltaBitSize = 2;</span>
+<span class="fc" id="L495">        final int array1BitSizeOf = calcPackedBitSize(elementBitSize, rawArray1.size(), array1MaxDeltaBitSize);</span>
+<span class="fc" id="L496">        final int array1AlignedBitSizeOf = calcAlignedPackedBitSize(elementBitSize, rawArray1.size(),</span>
+                array1MaxDeltaBitSize);
+<span class="fc" id="L498">        testPackedArray(rawArray1, emptyRawArray, arrayTraits, array1BitSizeOf, array1AlignedBitSizeOf);</span>
+
+        // zero delta
+<span class="fc" id="L501">        final RawArray rawArray2 = new RawArray.ByteRawArray(new byte[] {-10, -10, -10, -10, -10, -10, -10});</span>
+<span class="fc" id="L502">        final int array2BitSizeOf = PACKING_DESCRIPTOR_BITSIZE + elementBitSize;</span>
+<span class="fc" id="L503">        final int array2AlignedBitSizeOf = PACKING_DESCRIPTOR_BITSIZE + elementBitSize + /* alignment */ 4;</span>
+<span class="fc" id="L504">        testPackedArray(rawArray2, emptyRawArray, arrayTraits, array2BitSizeOf, array2AlignedBitSizeOf);</span>
+
+        // one-element array
+<span class="fc" id="L507">        final RawArray rawArray3 = new RawArray.ByteRawArray(new byte[] {-10});</span>
+<span class="fc" id="L508">        final int array3BitSizeOf = 1 + elementBitSize;</span>
+<span class="fc" id="L509">        final int array3AlignedBitSizeOf = 1 + elementBitSize;</span>
+<span class="fc" id="L510">        testPackedArray(rawArray3, emptyRawArray, arrayTraits, array3BitSizeOf, array3AlignedBitSizeOf);</span>
+
+        // empty array
+<span class="fc" id="L513">        final RawArray rawArray4 = new RawArray.ByteRawArray(new byte[] {});</span>
+<span class="fc" id="L514">        final int array4BitSizeOf = 0;</span>
+<span class="fc" id="L515">        final int array4AlignedBitSizeOf = 0;</span>
+<span class="fc" id="L516">        testPackedArray(rawArray4, emptyRawArray, arrayTraits, array4BitSizeOf, array4AlignedBitSizeOf);</span>
+<span class="fc" id="L517">    }</span>
+
+    @Test
+    public void signedBitFieldShortPackedArray() throws IOException
+    {
+<span class="fc" id="L522">        final RawArray rawArray1 = new RawArray.ShortRawArray(new short[] {</span>
+                -512, -481, -422, -389, -350, -300, -267, -250});
+<span class="fc" id="L524">        final RawArray emptyRawArray = new RawArray.ShortRawArray();</span>
+<span class="fc" id="L525">        final ArrayTraits arrayTraits13 = new ArrayTraits.SignedBitFieldShortArrayTraits(13);</span>
+<span class="fc" id="L526">        testPackedArray(rawArray1, emptyRawArray, arrayTraits13);</span>
+
+        // will not be packed because unpacked 16bit values will be more efficient
+        // (6 bits more are needed to store max_bit_number in descriptor if packing was enabled)
+<span class="fc" id="L530">        final RawArray rawArray2 = new RawArray.ShortRawArray(new short[] {</span>
+                Short.MIN_VALUE, -1, 10, 20, 30, 40}); // max_bit_number 15, delta needs 16 bits
+<span class="fc" id="L532">        final ArrayTraits arrayTraits16 = new ArrayTraits.SignedBitFieldShortArrayTraits(16);</span>
+<span class="fc" id="L533">        final int unpackedBitSizeOf = 1 + 6 * 16;</span>
+<span class="fc" id="L534">        final int unpackedAlignedBitSizeOf = 1 + 16 + 7 + 5 * 16;</span>
+<span class="fc" id="L535">        testPackedArray(rawArray2, emptyRawArray, arrayTraits16, unpackedBitSizeOf, unpackedAlignedBitSizeOf);</span>
+<span class="fc" id="L536">    }</span>
+
+    @Test
+    public void signedBitFieldIntPackedArray() throws IOException
+    {
+<span class="fc" id="L541">        final RawArray rawArray = new RawArray.IntRawArray(new int[] {-131072, -131000, -130000, -121111,</span>
+                -112345, -109873});
+<span class="fc" id="L543">        final RawArray emptyRawArray = new RawArray.IntRawArray();</span>
+<span class="fc" id="L544">        final ArrayTraits arrayTraits = new ArrayTraits.SignedBitFieldIntArrayTraits(29);</span>
+<span class="fc" id="L545">        testPackedArray(rawArray, emptyRawArray, arrayTraits);</span>
+<span class="fc" id="L546">    }</span>
+
+    @Test
+    public void signedBitFieldLongPackedArray() throws IOException
+    {
+<span class="fc" id="L551">        final RawArray rawArray = new RawArray.LongRawArray(new long[] {-8589934592L, -8589934500L,</span>
+                -8589934000L, -8589933592L, -8589933000L, -8589931234L});
+<span class="fc" id="L553">        final RawArray emptyRawArray = new RawArray.LongRawArray();</span>
+<span class="fc" id="L554">        final ArrayTraits arrayTraits = new ArrayTraits.SignedBitFieldLongArrayTraits(61);</span>
+<span class="fc" id="L555">        testPackedArray(rawArray, emptyRawArray, arrayTraits);</span>
+<span class="fc" id="L556">    }</span>
+
+    @Test
+    public void bitFieldBytePackedArray() throws IOException
+    {
+<span class="fc" id="L561">        final int elementBitSize = 5;</span>
+<span class="fc" id="L562">        final RawArray emptyRawArray = new RawArray.ByteRawArray();</span>
+<span class="fc" id="L563">        final ArrayTraits arrayTraits = new ArrayTraits.BitFieldByteArrayTraits(5);</span>
+
+        // none-zero delta
+<span class="fc" id="L566">        final RawArray rawArray1 = new RawArray.ByteRawArray(new byte[] {</span>
+                1, 2, 5, 4, 7, 10, 12, 15, 18, 20, 22, 23});
+<span class="fc" id="L568">        final int array1MaxDeltaBitSize = 2;</span>
+<span class="fc" id="L569">        final int array1BitSizeOf = calcPackedBitSize(elementBitSize, rawArray1.size(), array1MaxDeltaBitSize);</span>
+<span class="fc" id="L570">        final int array1AlignedBitSizeOf = calcAlignedPackedBitSize(elementBitSize, rawArray1.size(),</span>
+                array1MaxDeltaBitSize);
+<span class="fc" id="L572">        testPackedArray(rawArray1, emptyRawArray, arrayTraits, array1BitSizeOf, array1AlignedBitSizeOf);</span>
+
+        // zero delta
+<span class="fc" id="L575">        final RawArray rawArray2 = new RawArray.ByteRawArray(new byte[] {1, 1, 1, 1, 1, 1, 1});</span>
+<span class="fc" id="L576">        final int array2BitSizeOf = PACKING_DESCRIPTOR_BITSIZE + elementBitSize;</span>
+<span class="fc" id="L577">        final int array2AlignedBitSizeOf = PACKING_DESCRIPTOR_BITSIZE + elementBitSize + /* alignment */ 4;</span>
+<span class="fc" id="L578">        testPackedArray(rawArray2, emptyRawArray, arrayTraits, array2BitSizeOf, array2AlignedBitSizeOf);</span>
+
+        // one-element array
+<span class="fc" id="L581">        final RawArray rawArray3 = new RawArray.ByteRawArray(new byte[] {1});</span>
+<span class="fc" id="L582">        final int array3BitSizeOf = 1 + elementBitSize;</span>
+<span class="fc" id="L583">        final int array3AlignedBitSizeOf = 1 + elementBitSize;</span>
+<span class="fc" id="L584">        testPackedArray(rawArray3, emptyRawArray, arrayTraits, array3BitSizeOf, array3AlignedBitSizeOf);</span>
+
+        // empty array
+<span class="fc" id="L587">        final RawArray rawArray4 = new RawArray.ByteRawArray(new byte[] {});</span>
+<span class="fc" id="L588">        final int array4BitSizeOf = 0;</span>
+<span class="fc" id="L589">        final int array4AlignedBitSizeOf = 0;</span>
+<span class="fc" id="L590">        testPackedArray(rawArray4, emptyRawArray, arrayTraits, array4BitSizeOf, array4AlignedBitSizeOf);</span>
+<span class="fc" id="L591">    }</span>
+
+    @Test
+    public void bitFieldShortPackedArray() throws IOException
+    {
+<span class="fc" id="L596">        final RawArray rawArray1 = new RawArray.ShortRawArray(new short[] {512, 500, 459, 400, 333, 300, 222,</span>
+                200, 201});
+<span class="fc" id="L598">        final RawArray emptyRawArray = new RawArray.ShortRawArray();</span>
+<span class="fc" id="L599">        final ArrayTraits arrayTraits13 = new ArrayTraits.BitFieldShortArrayTraits(13);</span>
+<span class="fc" id="L600">        testPackedArray(rawArray1, emptyRawArray, arrayTraits13);</span>
+
+<span class="fc" id="L602">        final ArrayTraits arrayTraits8 = new ArrayTraits.BitFieldShortArrayTraits(8);</span>
+
+        // will not be packed because unpacked 8bit values will be more efficient
+<span class="fc" id="L605">        final RawArray rawArray2 = new RawArray.ShortRawArray(new short[] {</span>
+                255, 0, 10, 20, 30, 40}); // max_bit_number 8, delta needs 9 bits
+<span class="fc" id="L607">        final int array2BitSizeOf = 1 + 6 * 8;</span>
+<span class="fc" id="L608">        final int array2AlignedBitSizeOf = 1 + 8 + 7 + 5 * 8;</span>
+<span class="fc" id="L609">        testPackedArray(rawArray2, emptyRawArray, arrayTraits8, array2BitSizeOf, array2AlignedBitSizeOf);</span>
+
+        // will not be packed because unpacked 8bit values will be more efficient
+        // (6 bits more are needed to store max_bit_number in descriptor if packing was enabled)
+<span class="fc" id="L613">        final RawArray rawArray3 = new RawArray.ShortRawArray(new short[] {</span>
+                255, 128, 10, 20, 30, 40}); // max_bit_number 7, delta needs 8 bits
+<span class="fc" id="L615">        final int array3BitSizeOf = 1 + 6 * 8;</span>
+<span class="fc" id="L616">        final int array3AlignedBitSizeOf = 1 + 8 + 7 + 5 * 8;</span>
+<span class="fc" id="L617">        testPackedArray(rawArray3, emptyRawArray, arrayTraits8, array3BitSizeOf, array3AlignedBitSizeOf);</span>
+<span class="fc" id="L618">    }</span>
+
+    @Test
+    public void bitFieldIntPackedArray() throws IOException
+    {
+<span class="fc" id="L623">        final RawArray rawArray = new RawArray.IntRawArray(new int[] {131072, 131000, 130123, 129123,</span>
+                128123, 120124});
+<span class="fc" id="L625">        final RawArray emptyRawArray = new RawArray.IntRawArray();</span>
+<span class="fc" id="L626">        final ArrayTraits arrayTraits = new ArrayTraits.BitFieldIntArrayTraits(29);</span>
+<span class="fc" id="L627">        testPackedArray(rawArray, emptyRawArray, arrayTraits);</span>
+<span class="fc" id="L628">    }</span>
+
+    @Test
+    public void bitFieldLongPackedArray() throws IOException
+    {
+<span class="fc" id="L633">        final RawArray rawArray = new RawArray.LongRawArray(new long[] {8589934592L, 8589934000L, 8589933592L,</span>
+                8589933000L, 8589932000L, 8589932001L});
+<span class="fc" id="L635">        final RawArray emptyRawArray = new RawArray.LongRawArray();</span>
+<span class="fc" id="L636">        final ArrayTraits arrayTraits = new ArrayTraits.BitFieldLongArrayTraits(61);</span>
+<span class="fc" id="L637">        testPackedArray(rawArray, emptyRawArray, arrayTraits);</span>
+<span class="fc" id="L638">    }</span>
+
+    @Test
+    public void bitFieldBigIntegerPackedArray() throws IOException
+    {
+<span class="fc" id="L643">        final RawArray rawArray = new RawArray.BigIntegerRawArray(new BigInteger[] {</span>
+<span class="fc" id="L644">                BigInteger.valueOf(8589934592L),</span>
+<span class="fc" id="L645">                BigInteger.valueOf(8589934000L),</span>
+<span class="fc" id="L646">                BigInteger.valueOf(8589933592L),</span>
+<span class="fc" id="L647">                BigInteger.valueOf(8589933000L),</span>
+<span class="fc" id="L648">                BigInteger.valueOf(8589932000L),</span>
+<span class="fc" id="L649">                BigInteger.valueOf(8589932001L)});</span>
+<span class="fc" id="L650">        final RawArray emptyRawArray = new RawArray.BigIntegerRawArray();</span>
+<span class="fc" id="L651">        final ArrayTraits arrayTraits = new ArrayTraits.BitFieldBigIntegerArrayTraits(64);</span>
+<span class="fc" id="L652">        testPackedArray(rawArray, emptyRawArray, arrayTraits);</span>
+<span class="fc" id="L653">    }</span>
+
+    @Test
+    public void varInt16PackedArray() throws IOException
+    {
+<span class="fc" id="L658">        final RawArray rawArray = new RawArray.ShortRawArray(new short[] {-1, 200, 399, 409, 600, 800, 1024});</span>
+<span class="fc" id="L659">        final RawArray emptyRawArray = new RawArray.ShortRawArray();</span>
+<span class="fc" id="L660">        final ArrayTraits arrayTraits = new ArrayTraits.VarInt16ArrayTraits();</span>
+<span class="fc" id="L661">        testPackedArray(rawArray, emptyRawArray, arrayTraits);</span>
+<span class="fc" id="L662">    }</span>
+
+    @Test
+    public void varInt32PackedArray() throws IOException
+    {
+<span class="fc" id="L667">        final RawArray rawArray = new RawArray.IntRawArray(new int[] {-1, 1000, 5000, 8000, 12354, 16384});</span>
+<span class="fc" id="L668">        final RawArray emptyRawArray = new RawArray.IntRawArray();</span>
+<span class="fc" id="L669">        final ArrayTraits arrayTraits = new ArrayTraits.VarInt32ArrayTraits();</span>
+<span class="fc" id="L670">        testPackedArray(rawArray, emptyRawArray, arrayTraits);</span>
+<span class="fc" id="L671">    }</span>
+
+    @Test
+    public void varInt64PackedArray() throws IOException
+    {
+<span class="fc" id="L676">        final RawArray rawArray = new RawArray.LongRawArray(new long[] {-1, 1073741L, 10737418L, 107374182L,</span>
+                5107374182L, 1073741824L});
+<span class="fc" id="L678">        final RawArray emptyRawArray = new RawArray.LongRawArray();</span>
+<span class="fc" id="L679">        final ArrayTraits arrayTraits = new ArrayTraits.VarInt64ArrayTraits();</span>
+<span class="fc" id="L680">        testPackedArray(rawArray, emptyRawArray, arrayTraits);</span>
+<span class="fc" id="L681">    }</span>
+
+    @Test
+    public void varIntPackedArray() throws IOException
+    {
+<span class="fc" id="L686">        final RawArray rawArray = new RawArray.LongRawArray(new long[] {-1, 1073741L, 10737418L, 107374182L,</span>
+                5107374182L, 1073741824L});
+<span class="fc" id="L688">        final RawArray emptyRawArray = new RawArray.LongRawArray();</span>
+<span class="fc" id="L689">        final ArrayTraits arrayTraits = new ArrayTraits.VarIntArrayTraits();</span>
+<span class="fc" id="L690">        testPackedArray(rawArray, emptyRawArray, arrayTraits);</span>
+<span class="fc" id="L691">    }</span>
+
+    @Test
+    public void varUInt16PackedArray() throws IOException
+    {
+<span class="fc" id="L696">        final RawArray rawArray = new RawArray.ShortRawArray(new short[] {1, 234, 453, 700, 894, 999,</span>
+                900, 1024});
+<span class="fc" id="L698">        final RawArray emptyRawArray = new RawArray.ShortRawArray();</span>
+<span class="fc" id="L699">        final ArrayTraits arrayTraits = new ArrayTraits.VarUInt16ArrayTraits();</span>
+<span class="fc" id="L700">        testPackedArray(rawArray, emptyRawArray, arrayTraits);</span>
+<span class="fc" id="L701">    }</span>
+
+    @Test
+    public void varUInt32PackedArray() throws IOException
+    {
+<span class="fc" id="L706">        final RawArray rawArray = new RawArray.IntRawArray(new int[] {1, 1000, 4444, 2222, 6666, 9999,</span>
+                11111, 12345, 16384});
+<span class="fc" id="L708">        final RawArray emptyRawArray = new RawArray.IntRawArray();</span>
+<span class="fc" id="L709">        final ArrayTraits arrayTraits = new ArrayTraits.VarUInt32ArrayTraits();</span>
+<span class="fc" id="L710">        testPackedArray(rawArray, emptyRawArray, arrayTraits);</span>
+<span class="fc" id="L711">    }</span>
+
+    @Test
+    public void varUInt64PackedArray() throws IOException
+    {
+<span class="fc" id="L716">        final RawArray rawArray = new RawArray.LongRawArray(new long[] {1L, 374182L, 107374182L, 10737418L,</span>
+                73741824L, 573741824L, 1073741824L});
+<span class="fc" id="L718">        final RawArray emptyRawArray = new RawArray.LongRawArray();</span>
+<span class="fc" id="L719">        final ArrayTraits arrayTraits = new ArrayTraits.VarUInt64ArrayTraits();</span>
+<span class="fc" id="L720">        testPackedArray(rawArray, emptyRawArray, arrayTraits);</span>
+
+<span class="fc" id="L722">        final RawArray unpackedRawArray = new RawArray.LongRawArray(new long[] {5000000L, 0, 0, 0, 0, 0, 0});</span>
+<span class="fc" id="L723">        final int unpackedBitSizeOf = 1 + 32 + 6 * 8;</span>
+<span class="fc" id="L724">        final int unpackedAlignedBitSizeOf = 1 + 32 + 7 + 6 * 8;</span>
+<span class="fc" id="L725">        testPackedArray(unpackedRawArray, emptyRawArray, arrayTraits,</span>
+                unpackedBitSizeOf, unpackedAlignedBitSizeOf);
+<span class="fc" id="L727">    }</span>
+
+    @Test
+    public void varUIntPackedArray() throws IOException
+    {
+<span class="fc" id="L732">        final RawArray rawArray = new RawArray.BigIntegerRawArray(new BigInteger[] {</span>
+<span class="fc" id="L733">                BigInteger.valueOf(1),</span>
+<span class="fc" id="L734">                BigInteger.valueOf(107374L),</span>
+<span class="fc" id="L735">                BigInteger.valueOf(1073741L),</span>
+<span class="fc" id="L736">                BigInteger.valueOf(10737418L),</span>
+<span class="fc" id="L737">                BigInteger.valueOf(107374182L),</span>
+<span class="fc" id="L738">                BigInteger.valueOf(1073741824L)});</span>
+<span class="fc" id="L739">        final RawArray emptyRawArray = new RawArray.BigIntegerRawArray();</span>
+<span class="fc" id="L740">        final ArrayTraits arrayTraits = new ArrayTraits.VarUIntArrayTraits();</span>
+<span class="fc" id="L741">        testPackedArray(rawArray, emptyRawArray, arrayTraits);</span>
+<span class="fc" id="L742">    }</span>
+
+    @Test
+    public void varSizePackedArray() throws IOException
+    {
+<span class="fc" id="L747">        final RawArray rawArray = new RawArray.IntRawArray(new int[] {1, 4000, 2000, 5600, 11111, 13333,</span>
+                15432, 16384});
+<span class="fc" id="L749">        final RawArray emptyRawArray = new RawArray.IntRawArray();</span>
+<span class="fc" id="L750">        final ArrayTraits arrayTraits = new ArrayTraits.VarSizeArrayTraits();</span>
+<span class="fc" id="L751">        testPackedArray(rawArray, emptyRawArray, arrayTraits);</span>
+<span class="fc" id="L752">    }</span>
+
+    @Test
+    public void writeObjectPackedArray() throws IOException
+    {
+<span class="fc" id="L757">        final RawArray rawArray = new RawArray.ObjectRawArray&lt;ArrayTestObject&gt;(ArrayTestObject.class,</span>
+                new ArrayTestObject[] {
+                        new ArrayTestObject((byte)0),
+                        new ArrayTestObject((byte)1),
+                        new ArrayTestObject((byte)2),
+                        new ArrayTestObject((byte)3),
+                        new ArrayTestObject((byte)4)});
+<span class="fc" id="L764">        final RawArray emptyRawArray = new RawArray.ObjectRawArray&lt;ArrayTestObject&gt;(ArrayTestObject.class);</span>
+<span class="fc" id="L765">        final ArrayTraits arrayTraits = new ArrayTraits.WriteObjectArrayTraits&lt;ArrayTestObject&gt;(</span>
+                new ArrayTestElementFactory());
+<span class="fc" id="L767">        testPackedArray(rawArray, emptyRawArray, arrayTraits);</span>
+<span class="fc" id="L768">    }</span>
+
+    private static class ArrayTestObject implements Writer, SizeOf
+    {
+        public ArrayTestObject(zserio.runtime.io.BitStreamReader reader) throws IOException
+<span class="fc" id="L773">        {</span>
+<span class="fc" id="L774">            read(reader);</span>
+<span class="fc" id="L775">        }</span>
+
+        public ArrayTestObject(PackingContextNode contextNode, zserio.runtime.io.BitStreamReader reader)
+                throws IOException
+<span class="fc" id="L779">        {</span>
+<span class="fc" id="L780">            read(contextNode, reader);</span>
+<span class="fc" id="L781">        }</span>
+
+        public ArrayTestObject(byte value)
+<span class="fc" id="L784">        {</span>
+<span class="fc" id="L785">            setValue(value);</span>
+<span class="fc" id="L786">        }</span>
+
+        public static void createPackingContext(PackingContextNode contextNode)
+        {
+<span class="fc" id="L790">            contextNode.createChild().createContext();</span>
+<span class="fc" id="L791">        }</span>
+
+        @Override
+        public void initPackingContext(PackingContextNode contextNode)
+        {
+<span class="fc" id="L796">            contextNode.getChildren().get(0).getContext().init(</span>
+                    new ArrayTraits.BitFieldByteArrayTraits(3), new ArrayElement.ByteArrayElement(value));
+<span class="fc" id="L798">        }</span>
+
+        @Override
+        public int bitSizeOf()
+        {
+<span class="nc" id="L803">            return bitSizeOf(0);</span>
+        }
+
+        @Override
+        public int bitSizeOf(long bitPosition)
+        {
+<span class="fc" id="L809">            long endBitPosition = bitPosition;</span>
+
+<span class="fc" id="L811">            endBitPosition += 3;</span>
+
+<span class="fc" id="L813">            return (int)(endBitPosition - bitPosition);</span>
+        }
+
+        @Override
+        public int bitSizeOf(PackingContextNode contextNode, long bitPosition)
+        {
+<span class="fc" id="L819">            long endBitPosition = bitPosition;</span>
+
+<span class="fc" id="L821">            endBitPosition += contextNode.getChildren().get(0).getContext().bitSizeOf(</span>
+                    new ArrayTraits.BitFieldByteArrayTraits(3), new ArrayElement.ByteArrayElement(value));
+
+<span class="fc" id="L824">            return (int)(endBitPosition - bitPosition);</span>
+        }
+
+        public void setValue(byte value)
+        {
+<span class="fc" id="L829">            this.value = value;</span>
+<span class="fc" id="L830">        }</span>
+
+        @Override
+        public boolean equals(java.lang.Object obj)
+        {
+<span class="pc bpc" id="L835" title="1 of 2 branches missed.">            if (obj instanceof ArrayTestObject)</span>
+            {
+<span class="fc" id="L837">                final ArrayTestObject that = (ArrayTestObject)obj;</span>
+<span class="fc bfc" id="L838" title="All 2 branches covered.">                return value == that.value;</span>
+            }
+
+<span class="nc" id="L841">            return false;</span>
+        }
+
+        @Override
+        public int hashCode()
+        {
+<span class="fc" id="L847">            int result = HashCodeUtil.HASH_SEED;</span>
+
+<span class="fc" id="L849">            result = HashCodeUtil.calcHashCode(result, value);</span>
+
+<span class="fc" id="L851">            return result;</span>
+        }
+
+        public void read(zserio.runtime.io.BitStreamReader reader) throws java.io.IOException
+        {
+<span class="fc" id="L856">            value = (byte)reader.readBits(3);</span>
+<span class="fc" id="L857">        }</span>
+
+        public void read(PackingContextNode contextNode, zserio.runtime.io.BitStreamReader reader)
+                throws IOException
+        {
+<span class="fc" id="L862">            value = ((ArrayElement.ByteArrayElement)</span>
+<span class="fc" id="L863">                    contextNode.getChildren().get(0).getContext().read(</span>
+<span class="fc" id="L864">                            new ArrayTraits.BitFieldByteArrayTraits(3), reader)).get();</span>
+
+<span class="fc" id="L866">        }</span>
+
+        @Override
+        public long initializeOffsets()
+        {
+<span class="nc" id="L871">            return initializeOffsets(0);</span>
+        }
+
+        @Override
+        public long initializeOffsets(long bitPosition)
+        {
+<span class="fc" id="L877">            long endBitPosition = bitPosition;</span>
+
+<span class="fc" id="L879">            endBitPosition += 3;</span>
+
+<span class="fc" id="L881">            return endBitPosition;</span>
+        }
+
+        @Override
+        public long initializeOffsets(PackingContextNode contextNode, long bitPosition)
+        {
+<span class="fc" id="L887">            long endBitPosition = bitPosition;</span>
+
+<span class="fc" id="L889">            endBitPosition += contextNode.getChildren().get(0).getContext().bitSizeOf(</span>
+                    new ArrayTraits.BitFieldByteArrayTraits(3), new ArrayElement.ByteArrayElement(value));
+
+<span class="fc" id="L892">            return endBitPosition;</span>
+        }
+
+        @Override
+        public void write(zserio.runtime.io.BitStreamWriter writer)
+                throws java.io.IOException, zserio.runtime.ZserioError
+        {
+<span class="fc" id="L899">            writer.writeBits(value, 3);</span>
+<span class="fc" id="L900">        }</span>
+
+        @Override
+        public void write(PackingContextNode contextNode, BitStreamWriter writer) throws IOException
+        {
+<span class="fc" id="L905">            contextNode.getChildren().get(0).getContext().write(</span>
+                    new ArrayTraits.BitFieldByteArrayTraits(3), writer,
+                    new ArrayElement.ByteArrayElement(value));
+<span class="fc" id="L908">        }</span>
+
+        private byte value;
+    }
+
+    private static class ArrayTestElementFactory implements ElementFactory&lt;ArrayTestObject&gt;
+    {
+        @Override
+        public ArrayTestObject create(BitStreamReader reader, int index) throws IOException
+        {
+<span class="fc" id="L918">            return new ArrayTestObject(reader);</span>
+        }
+
+        @Override
+        public ArrayTestObject create(PackingContextNode contextNode, BitStreamReader reader, int index)
+                throws IOException
+        {
+<span class="fc" id="L925">            return new ArrayTestObject(contextNode, reader);</span>
+        }
+
+        @Override
+        public void createPackingContext(PackingContextNode contextNode)
+        {
+<span class="fc" id="L931">            ArrayTestObject.createPackingContext(contextNode);</span>
+<span class="fc" id="L932">        }</span>
+    }
+
+    private static class ArrayTestOffsetChecker implements OffsetChecker
+    {
+        @Override
+        public void checkOffset(int index, long byteOffset)
+        {
+<span class="fc" id="L940">        }</span>
+    };
+
+    private static class ArrayTestOffsetInitializer implements OffsetInitializer
+    {
+        @Override
+        public void setOffset(int index, long byteOffset)
+        {
+<span class="fc" id="L948">        }</span>
+    };
+
+    private static void testArray(RawArray rawArray1, int array1BitSizeOf, int array1AlignedBitSizeOf,
+            RawArray rawArray2, RawArray emptyRawArray, ArrayTraits arrayTraits) throws IOException
+    {
+<span class="fc" id="L954">        testArrayEquals(rawArray1, rawArray2, arrayTraits);</span>
+<span class="fc" id="L955">        testArrayHashCode(rawArray1, rawArray2, arrayTraits);</span>
+<span class="fc" id="L956">        testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, emptyRawArray, arrayTraits);</span>
+<span class="fc" id="L957">    }</span>
+
+    private static void testArrayEquals(RawArray rawArray1, RawArray rawArray2, ArrayTraits arrayTraits)
+    {
+<span class="fc" id="L961">        final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc" id="L962">        final Array autoArray1 = new Array(rawArray1, arrayTraits, ArrayType.AUTO);</span>
+<span class="fc" id="L963">        final Array implicitArray1 = new Array(rawArray1, arrayTraits, ArrayType.IMPLICIT);</span>
+<span class="fc" id="L964">        final Array alignedNormalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL,</span>
+                new ArrayTestOffsetChecker(), new ArrayTestOffsetInitializer());
+<span class="fc" id="L966">        final Array normalArray2 = new Array(rawArray2, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc" id="L967">        final Array autoArray2 = new Array(rawArray2, arrayTraits, ArrayType.AUTO);</span>
+
+<span class="fc" id="L969">        assertTrue(normalArray1.equals(autoArray1));</span>
+<span class="fc" id="L970">        assertTrue(normalArray1.equals(implicitArray1));</span>
+<span class="fc" id="L971">        assertTrue(normalArray1.equals(alignedNormalArray1));</span>
+<span class="fc" id="L972">        assertFalse(normalArray1.equals(normalArray2));</span>
+<span class="fc" id="L973">        assertFalse(normalArray1.equals(autoArray2));</span>
+<span class="fc" id="L974">    }</span>
+
+    private static void testArrayHashCode(RawArray rawArray1, RawArray rawArray2, ArrayTraits arrayTraits)
+    {
+<span class="fc" id="L978">        final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc" id="L979">        final Array autoArray1 = new Array(rawArray1, arrayTraits, ArrayType.AUTO);</span>
+<span class="fc" id="L980">        final Array implicitArray1 = new Array(rawArray1, arrayTraits, ArrayType.IMPLICIT);</span>
+<span class="fc" id="L981">        final Array alignedNormalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL,</span>
+                new ArrayTestOffsetChecker(), new ArrayTestOffsetInitializer());
+<span class="fc" id="L983">        final Array normalArray2 = new Array(rawArray2, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc" id="L984">        final Array autoArray2 = new Array(rawArray2, arrayTraits, ArrayType.AUTO);</span>
+
+<span class="fc" id="L986">        assertEquals(normalArray1.hashCode(), autoArray1.hashCode());</span>
+<span class="fc" id="L987">        assertEquals(normalArray1.hashCode(), implicitArray1.hashCode());</span>
+<span class="fc" id="L988">        assertEquals(normalArray1.hashCode(), alignedNormalArray1.hashCode());</span>
+<span class="pc bpc" id="L989" title="1 of 2 branches missed.">        assertFalse(normalArray1.hashCode() == normalArray2.hashCode());</span>
+<span class="pc bpc" id="L990" title="1 of 2 branches missed.">        assertFalse(normalArray1.hashCode() == autoArray2.hashCode());</span>
+<span class="fc" id="L991">    }</span>
+
+    private static void testArray(RawArray rawArray1, int array1BitSizeOf,
+            int array1AlignedBitSizeOf, RawArray emptyRawArray, ArrayTraits arrayTraits) throws IOException
+    {
+<span class="fc" id="L996">        testArrayNormal(rawArray1, emptyRawArray, arrayTraits, array1BitSizeOf);</span>
+<span class="fc" id="L997">        final int autoArray1SizeBitSizeOf = BitSizeOfCalculator.getBitSizeOfVarSize(rawArray1.size());</span>
+<span class="fc" id="L998">        testArrayAuto(rawArray1, emptyRawArray, arrayTraits, autoArray1SizeBitSizeOf + array1BitSizeOf);</span>
+<span class="fc" id="L999">        testArrayImplicit(rawArray1, emptyRawArray, arrayTraits, array1BitSizeOf);</span>
+
+<span class="fc" id="L1001">        final OffsetChecker offsetChecker = new ArrayTestOffsetChecker();</span>
+<span class="fc" id="L1002">        final OffsetInitializer offsetInitializer = new ArrayTestOffsetInitializer();</span>
+<span class="fc" id="L1003">        testArrayAligned(rawArray1, emptyRawArray, arrayTraits, offsetChecker, offsetInitializer,</span>
+                array1AlignedBitSizeOf);
+<span class="fc" id="L1005">        testArrayAlignedAuto(rawArray1, emptyRawArray, arrayTraits, offsetChecker, offsetInitializer,</span>
+                autoArray1SizeBitSizeOf + array1AlignedBitSizeOf);
+<span class="fc" id="L1007">    }</span>
+
+    private static void testArrayNormal(RawArray rawArray, RawArray emptyRawArray, ArrayTraits arrayTraits,
+            int expectedBitSizeOf) throws IOException
+    {
+<span class="fc" id="L1012">        final Array array = new Array(rawArray, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc bfc" id="L1013" title="All 2 branches covered.">        for (int bitPosition = 0; bitPosition &lt; 8; ++bitPosition)</span>
+        {
+<span class="fc" id="L1015">            final int bitSizeOf = array.bitSizeOf(bitPosition);</span>
+<span class="fc" id="L1016">            assertEquals(expectedBitSizeOf, bitSizeOf);</span>
+<span class="fc" id="L1017">            assertEquals(bitPosition + bitSizeOf, array.initializeOffsets(bitPosition));</span>
+
+<span class="fc" id="L1019">            try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+            {
+<span class="fc bfc" id="L1021" title="All 2 branches covered.">                if (bitPosition &gt; 0)</span>
+<span class="fc" id="L1022">                    writer.writeBits(0, bitPosition);</span>
+<span class="fc" id="L1023">                array.write(writer);</span>
+<span class="fc" id="L1024">                final long writtenBitPosition = writer.getBitPosition();</span>
+<span class="fc" id="L1025">                assertEquals(bitPosition + bitSizeOf, writtenBitPosition);</span>
+<span class="fc" id="L1026">                final byte[] writtenByteArray = writer.toByteArray();</span>
+
+<span class="fc" id="L1028">                final BitBuffer readerBuffer = new BitBuffer(writtenByteArray, writtenBitPosition);</span>
+<span class="fc" id="L1029">                try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(readerBuffer))</span>
+                {
+<span class="fc bfc" id="L1031" title="All 2 branches covered.">                    if (bitPosition &gt; 0)</span>
+<span class="fc" id="L1032">                        assertEquals(0, reader.readBits(bitPosition));</span>
+<span class="fc" id="L1033">                    final Array readArray = new Array(emptyRawArray, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc" id="L1034">                    readArray.read(reader, rawArray.size());</span>
+<span class="fc" id="L1035">                    assertEquals(array, readArray);</span>
+                }
+            }
+        }
+<span class="fc" id="L1039">    }</span>
+
+    private static void testArrayAuto(RawArray rawArray, RawArray emptyRawArray, ArrayTraits arrayTraits,
+            int expectedBitSizeOf) throws IOException
+    {
+<span class="fc" id="L1044">        final Array array = new Array(rawArray, arrayTraits, ArrayType.AUTO);</span>
+<span class="fc bfc" id="L1045" title="All 2 branches covered.">        for (int bitPosition = 0; bitPosition &lt; 8; ++bitPosition)</span>
+        {
+<span class="fc" id="L1047">            final int bitSizeOf = array.bitSizeOf(bitPosition);</span>
+<span class="fc" id="L1048">            assertEquals(expectedBitSizeOf, bitSizeOf);</span>
+<span class="fc" id="L1049">            assertEquals(bitPosition + bitSizeOf, array.initializeOffsets(bitPosition));</span>
+
+<span class="fc" id="L1051">            try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+            {
+<span class="fc bfc" id="L1053" title="All 2 branches covered.">                if (bitPosition &gt; 0)</span>
+<span class="fc" id="L1054">                    writer.writeBits(0, bitPosition);</span>
+<span class="fc" id="L1055">                array.write(writer);</span>
+<span class="fc" id="L1056">                final long writtenBitPosition = writer.getBitPosition();</span>
+<span class="fc" id="L1057">                assertEquals(bitPosition + bitSizeOf, writtenBitPosition);</span>
+<span class="fc" id="L1058">                final byte[] writtenByteArray = writer.toByteArray();</span>
+
+<span class="fc" id="L1060">                final BitBuffer readerBuffer = new BitBuffer(writtenByteArray, writtenBitPosition);</span>
+<span class="fc" id="L1061">                try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(readerBuffer))</span>
+                {
+<span class="fc bfc" id="L1063" title="All 2 branches covered.">                    if (bitPosition &gt; 0)</span>
+<span class="fc" id="L1064">                        assertEquals(0, reader.readBits(bitPosition));</span>
+<span class="fc" id="L1065">                    final Array readArray = new Array(emptyRawArray, arrayTraits, ArrayType.AUTO);</span>
+<span class="fc" id="L1066">                    readArray.read(reader);</span>
+<span class="fc" id="L1067">                    assertEquals(array, readArray);</span>
+                }
+            }
+        }
+<span class="fc" id="L1071">    }</span>
+
+    private static void testArrayImplicit(RawArray rawArray, RawArray emptyRawArray, ArrayTraits arrayTraits,
+            int expectedBitSizeOf) throws IOException
+    {
+<span class="fc" id="L1076">        final Array array = new Array(rawArray, arrayTraits, ArrayType.IMPLICIT);</span>
+<span class="fc bfc" id="L1077" title="All 2 branches covered.">        for (int bitPosition = 0; bitPosition &lt; 8; ++bitPosition)</span>
+        {
+<span class="fc" id="L1079">            final int bitSizeOf = array.bitSizeOf(bitPosition);</span>
+<span class="fc" id="L1080">            assertEquals(expectedBitSizeOf, bitSizeOf);</span>
+<span class="fc" id="L1081">            assertEquals(bitPosition + bitSizeOf, array.initializeOffsets(bitPosition));</span>
+
+<span class="fc" id="L1083">            try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+            {
+<span class="fc bfc" id="L1085" title="All 2 branches covered.">                if (bitPosition &gt; 0)</span>
+<span class="fc" id="L1086">                    writer.writeBits(0, bitPosition);</span>
+<span class="fc" id="L1087">                array.write(writer);</span>
+<span class="fc" id="L1088">                final long writtenBitPosition = writer.getBitPosition();</span>
+<span class="fc" id="L1089">                assertEquals(bitPosition + bitSizeOf, writtenBitPosition);</span>
+<span class="fc" id="L1090">                final byte[] writtenByteArray = writer.toByteArray();</span>
+
+<span class="fc" id="L1092">                final BitBuffer readerBuffer = new BitBuffer(writtenByteArray, writtenBitPosition);</span>
+<span class="fc" id="L1093">                try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(readerBuffer))</span>
+                {
+<span class="fc bfc" id="L1095" title="All 2 branches covered.">                    if (bitPosition &gt; 0)</span>
+<span class="fc" id="L1096">                        assertEquals(0, reader.readBits(bitPosition));</span>
+<span class="fc bfc" id="L1097" title="All 2 branches covered.">                    if (arrayTraits.isBitSizeOfConstant())</span>
+                    {
+<span class="fc" id="L1099">                        final Array readArray = new Array(emptyRawArray, arrayTraits, ArrayType.IMPLICIT);</span>
+<span class="fc" id="L1100">                        readArray.read(reader);</span>
+<span class="fc" id="L1101">                        assertEquals(array, readArray);</span>
+<span class="fc" id="L1102">                    }</span>
+                    else
+                    {
+<span class="fc" id="L1105">                        final Array readArray = new Array(emptyRawArray, arrayTraits, ArrayType.IMPLICIT);</span>
+<span class="pc" id="L1106">                        assertThrows(UnsupportedOperationException.class, () -&gt; readArray.read(reader));</span>
+                    }
+                }
+            }
+        }
+<span class="fc" id="L1111">    }</span>
+
+    private static void testArrayAligned(RawArray rawArray, RawArray emptyRawArray, ArrayTraits arrayTraits,
+            OffsetChecker offsetChecker, OffsetInitializer offsetInitializer, int expectedBitSizeOf)
+                    throws IOException
+    {
+<span class="fc" id="L1117">        final Array array = new Array(rawArray, arrayTraits, ArrayType.NORMAL, offsetChecker,</span>
+                offsetInitializer);
+<span class="fc bfc" id="L1119" title="All 2 branches covered.">        for (int bitPosition = 0; bitPosition &lt; 8; ++bitPosition)</span>
+        {
+<span class="fc" id="L1121">            final int bitSizeOf = array.bitSizeOf(bitPosition);</span>
+<span class="fc" id="L1122">            final int alignedExpectedBitSizeOf = expectedBitSizeOf +</span>
+<span class="fc" id="L1123">                    (int)BitPositionUtil.alignTo(8, bitPosition) - bitPosition;</span>
+<span class="fc" id="L1124">            assertEquals(alignedExpectedBitSizeOf, bitSizeOf);</span>
+<span class="fc" id="L1125">            assertEquals(bitPosition + bitSizeOf, array.initializeOffsets(bitPosition));</span>
+
+<span class="fc" id="L1127">            try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+            {
+<span class="fc bfc" id="L1129" title="All 2 branches covered.">                if (bitPosition &gt; 0)</span>
+<span class="fc" id="L1130">                    writer.writeBits(0, bitPosition);</span>
+<span class="fc" id="L1131">                array.write(writer);</span>
+<span class="fc" id="L1132">                final long writtenBitPosition = writer.getBitPosition();</span>
+<span class="fc" id="L1133">                assertEquals(bitPosition + bitSizeOf, writtenBitPosition);</span>
+<span class="fc" id="L1134">                final byte[] writtenByteArray = writer.toByteArray();</span>
+
+<span class="fc" id="L1136">                final BitBuffer readerBuffer = new BitBuffer(writtenByteArray, writtenBitPosition);</span>
+<span class="fc" id="L1137">                try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(readerBuffer))</span>
+                {
+<span class="fc bfc" id="L1139" title="All 2 branches covered.">                    if (bitPosition &gt; 0)</span>
+<span class="fc" id="L1140">                        assertEquals(0, reader.readBits(bitPosition));</span>
+<span class="fc" id="L1141">                    final Array readArray = new Array(emptyRawArray, arrayTraits, ArrayType.NORMAL, offsetChecker,</span>
+                            offsetInitializer);
+<span class="fc" id="L1143">                    readArray.read(reader, rawArray.size());</span>
+<span class="fc" id="L1144">                    assertEquals(array, readArray);</span>
+                }
+            }
+        }
+<span class="fc" id="L1148">    }</span>
+
+    private static void testArrayAlignedAuto(RawArray rawArray, RawArray emptyRawArray, ArrayTraits arrayTraits,
+            OffsetChecker offsetChecker, OffsetInitializer offsetInitializer, int expectedBitSizeOf)
+                    throws IOException
+    {
+<span class="fc" id="L1154">        final Array array = new Array(rawArray, arrayTraits, ArrayType.AUTO, offsetChecker, offsetInitializer);</span>
+<span class="fc bfc" id="L1155" title="All 2 branches covered.">        for (int bitPosition = 0; bitPosition &lt; 8; ++bitPosition)</span>
+        {
+<span class="fc" id="L1157">            final int bitSizeOf = array.bitSizeOf(bitPosition);</span>
+<span class="fc" id="L1158">            final int alignedExpectedBitSizeOf = expectedBitSizeOf +</span>
+<span class="fc" id="L1159">                    (int)BitPositionUtil.alignTo(8, bitPosition) - bitPosition;</span>
+<span class="fc" id="L1160">            assertEquals(alignedExpectedBitSizeOf, bitSizeOf);</span>
+<span class="fc" id="L1161">            assertEquals(bitPosition + bitSizeOf, array.initializeOffsets(bitPosition));</span>
+
+<span class="fc" id="L1163">            try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+            {
+<span class="fc bfc" id="L1165" title="All 2 branches covered.">                if (bitPosition &gt; 0)</span>
+<span class="fc" id="L1166">                    writer.writeBits(0, bitPosition);</span>
+<span class="fc" id="L1167">                array.write(writer);</span>
+<span class="fc" id="L1168">                final long writtenBitPosition = writer.getBitPosition();</span>
+<span class="fc" id="L1169">                assertEquals(bitPosition + bitSizeOf, writtenBitPosition);</span>
+<span class="fc" id="L1170">                final byte[] writtenByteArray = writer.toByteArray();</span>
+
+<span class="fc" id="L1172">                final BitBuffer readerBuffer = new BitBuffer(writtenByteArray, writtenBitPosition);</span>
+<span class="fc" id="L1173">                try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(readerBuffer))</span>
+                {
+<span class="fc bfc" id="L1175" title="All 2 branches covered.">                    if (bitPosition &gt; 0)</span>
+<span class="fc" id="L1176">                        assertEquals(0, reader.readBits(bitPosition));</span>
+<span class="fc" id="L1177">                    final Array readArray = new Array(emptyRawArray, arrayTraits, ArrayType.AUTO, offsetChecker,</span>
+                                offsetInitializer);
+<span class="fc" id="L1179">                    readArray.read(reader);</span>
+<span class="fc" id="L1180">                    assertEquals(array, readArray);</span>
+                }
+            }
+        }
+<span class="fc" id="L1184">    }</span>
+
+    private static void testPackedArray(RawArray rawArray, RawArray emptyRawArray, ArrayTraits arrayTraits)
+            throws IOException
+    {
+<span class="fc" id="L1189">        testPackedArray(rawArray, emptyRawArray, arrayTraits, UNKNOWN_BITSIZE, UNKNOWN_BITSIZE);</span>
+<span class="fc" id="L1190">    }</span>
+
+    private static void testPackedArray(RawArray rawArray, RawArray emptyRawArray, ArrayTraits arrayTraits,
+            int bitSizeOf, int alignedBitSizeOf) throws IOException
+    {
+<span class="fc" id="L1195">        testPackedArrayNormal(rawArray, emptyRawArray, arrayTraits, bitSizeOf);</span>
+<span class="fc" id="L1196">        final int autoSizeBitSizeOf = BitSizeOfCalculator.getBitSizeOfVarSize(rawArray.size());</span>
+<span class="fc bfc" id="L1197" title="All 2 branches covered.">        final int autoBitSizeOf = (bitSizeOf != UNKNOWN_BITSIZE) ?</span>
+                autoSizeBitSizeOf + bitSizeOf : UNKNOWN_BITSIZE;
+<span class="fc" id="L1199">        testPackedArrayAuto(rawArray, emptyRawArray, arrayTraits, autoBitSizeOf);</span>
+<span class="fc" id="L1200">        testPackedArrayImplicit(rawArray, emptyRawArray, arrayTraits);</span>
+
+<span class="fc" id="L1202">        final OffsetChecker offsetChecker = new ArrayTestOffsetChecker();</span>
+<span class="fc" id="L1203">        final OffsetInitializer offsetInitializer = new ArrayTestOffsetInitializer();</span>
+<span class="fc" id="L1204">        testPackedArrayAligned(rawArray, emptyRawArray, arrayTraits, offsetChecker, offsetInitializer,</span>
+                alignedBitSizeOf);
+<span class="fc bfc" id="L1206" title="All 2 branches covered.">        final int autoAlignedBitSizeOf = (alignedBitSizeOf != UNKNOWN_BITSIZE) ?</span>
+                autoSizeBitSizeOf + alignedBitSizeOf : UNKNOWN_BITSIZE;
+<span class="fc" id="L1208">        testPackedArrayAlignedAuto(rawArray, emptyRawArray, arrayTraits, offsetChecker, offsetInitializer,</span>
+                autoAlignedBitSizeOf);
+<span class="fc" id="L1210">    }</span>
+
+    private static void testPackedArrayNormal(RawArray rawArray, RawArray emptyRawArray,
+            ArrayTraits arrayTraits, int expectedBitSizeOf) throws IOException
+    {
+<span class="fc" id="L1215">        final Array array = new Array(rawArray, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc bfc" id="L1216" title="All 2 branches covered.">        for (int bitPosition = 0; bitPosition &lt; 8; ++bitPosition)</span>
+        {
+<span class="fc" id="L1218">            final int bitSizeOf = array.bitSizeOfPacked(bitPosition);</span>
+<span class="fc bfc" id="L1219" title="All 2 branches covered.">            if (expectedBitSizeOf != UNKNOWN_BITSIZE)</span>
+<span class="fc" id="L1220">                assertEquals(expectedBitSizeOf, bitSizeOf);</span>
+<span class="fc" id="L1221">            assertEquals(bitPosition + bitSizeOf, array.initializeOffsetsPacked(bitPosition));</span>
+
+<span class="fc" id="L1223">            try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+            {
+<span class="fc bfc" id="L1225" title="All 2 branches covered.">                if (bitPosition &gt; 0)</span>
+<span class="fc" id="L1226">                    writer.writeBits(0, bitPosition);</span>
+<span class="fc" id="L1227">                array.writePacked(writer);</span>
+<span class="fc" id="L1228">                final long writtenBitPosition = writer.getBitPosition();</span>
+<span class="fc" id="L1229">                assertEquals(bitPosition + bitSizeOf, writtenBitPosition);</span>
+<span class="fc" id="L1230">                final byte[] writtenByteArray = writer.toByteArray();</span>
+
+<span class="fc" id="L1232">                final BitBuffer readerBuffer = new BitBuffer(writtenByteArray, writtenBitPosition);</span>
+<span class="fc" id="L1233">                try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(readerBuffer))</span>
+                {
+<span class="fc bfc" id="L1235" title="All 2 branches covered.">                    if (bitPosition &gt; 0)</span>
+<span class="fc" id="L1236">                        assertEquals(0, reader.readBits(bitPosition));</span>
+<span class="fc" id="L1237">                    final Array readArray = new Array(emptyRawArray, arrayTraits, ArrayType.NORMAL);</span>
+<span class="fc" id="L1238">                    readArray.readPacked(reader, rawArray.size());</span>
+<span class="fc" id="L1239">                    assertEquals(array, readArray);</span>
+                }
+            }
+        }
+<span class="fc" id="L1243">    }</span>
+
+    private static void testPackedArrayAuto(RawArray rawArray, RawArray emptyRawArray, ArrayTraits arrayTraits,
+            int expectedBitSizeOf) throws IOException
+    {
+<span class="fc" id="L1248">        final Array array = new Array(rawArray, arrayTraits, ArrayType.AUTO);</span>
+<span class="fc bfc" id="L1249" title="All 2 branches covered.">        for (int bitPosition = 0; bitPosition &lt; 8; ++bitPosition)</span>
+        {
+<span class="fc" id="L1251">            final int bitSizeOf = array.bitSizeOfPacked(bitPosition);</span>
+<span class="fc bfc" id="L1252" title="All 2 branches covered.">            if (expectedBitSizeOf != UNKNOWN_BITSIZE)</span>
+<span class="fc" id="L1253">                assertEquals(expectedBitSizeOf, bitSizeOf);</span>
+<span class="fc" id="L1254">            assertEquals(bitPosition + bitSizeOf, array.initializeOffsetsPacked(bitPosition));</span>
+
+<span class="fc" id="L1256">            try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+            {
+<span class="fc bfc" id="L1258" title="All 2 branches covered.">                if (bitPosition &gt; 0)</span>
+<span class="fc" id="L1259">                    writer.writeBits(0, bitPosition);</span>
+<span class="fc" id="L1260">                array.writePacked(writer);</span>
+<span class="fc" id="L1261">                final long writtenBitPosition = writer.getBitPosition();</span>
+<span class="fc" id="L1262">                assertEquals(bitPosition + bitSizeOf, writtenBitPosition);</span>
+<span class="fc" id="L1263">                final byte[] writtenByteArray = writer.toByteArray();</span>
+
+<span class="fc" id="L1265">                final BitBuffer readerBuffer = new BitBuffer(writtenByteArray, writtenBitPosition);</span>
+<span class="fc" id="L1266">                try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(readerBuffer))</span>
+                {
+<span class="fc bfc" id="L1268" title="All 2 branches covered.">                    if (bitPosition &gt; 0)</span>
+<span class="fc" id="L1269">                        assertEquals(0, reader.readBits(bitPosition));</span>
+<span class="fc" id="L1270">                    final Array readArray = new Array(emptyRawArray, arrayTraits, ArrayType.AUTO);</span>
+<span class="fc" id="L1271">                    readArray.readPacked(reader);</span>
+<span class="fc" id="L1272">                    assertEquals(array, readArray);</span>
+                }
+            }
+        }
+<span class="fc" id="L1276">    }</span>
+
+    private static void testPackedArrayImplicit(RawArray rawArray, RawArray emptyRawArray,
+            ArrayTraits arrayTraits) throws IOException
+    {
+<span class="fc" id="L1281">        final Array array = new Array(rawArray, arrayTraits, ArrayType.IMPLICIT);</span>
+
+<span class="pc" id="L1283">        assertThrows(UnsupportedOperationException.class, () -&gt; array.bitSizeOfPacked(0));</span>
+
+<span class="pc" id="L1285">        assertThrows(UnsupportedOperationException.class, () -&gt; array.initializeOffsetsPacked(0));</span>
+
+<span class="fc" id="L1287">        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+        {
+<span class="pc" id="L1289">            assertThrows(UnsupportedOperationException.class, () -&gt; array.writePacked(writer));</span>
+        }
+
+<span class="fc" id="L1292">        try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(new byte[]{}))</span>
+        {
+<span class="pc" id="L1294">            assertThrows(UnsupportedOperationException.class, () -&gt; array.readPacked(reader, rawArray.size()));</span>
+        }
+<span class="fc" id="L1296">    }</span>
+
+    private static void testPackedArrayAligned(RawArray rawArray, RawArray emptyRawArray,
+            ArrayTraits arrayTraits, OffsetChecker offsetChecker, OffsetInitializer offsetInitializer,
+            int expectedBitSizeOf) throws IOException
+    {
+<span class="fc" id="L1302">        final Array array = new Array(rawArray, arrayTraits, ArrayType.NORMAL, offsetChecker,</span>
+                offsetInitializer);
+<span class="fc bfc" id="L1304" title="All 2 branches covered.">        for (int bitPosition = 0; bitPosition &lt; 8; ++bitPosition)</span>
+        {
+<span class="fc" id="L1306">            final int bitSizeOf = array.bitSizeOfPacked(bitPosition);</span>
+<span class="fc bfc" id="L1307" title="All 4 branches covered.">            if (expectedBitSizeOf != UNKNOWN_BITSIZE &amp;&amp; bitPosition == 0)</span>
+<span class="fc" id="L1308">                assertEquals(expectedBitSizeOf, bitSizeOf);</span>
+<span class="fc" id="L1309">            assertEquals(bitPosition + bitSizeOf, array.initializeOffsetsPacked(bitPosition));</span>
+
+<span class="fc" id="L1311">            try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+            {
+<span class="fc bfc" id="L1313" title="All 2 branches covered.">                if (bitPosition &gt; 0)</span>
+<span class="fc" id="L1314">                    writer.writeBits(0, bitPosition);</span>
+<span class="fc" id="L1315">                array.writePacked(writer);</span>
+<span class="fc" id="L1316">                final long writtenBitPosition = writer.getBitPosition();</span>
+<span class="fc" id="L1317">                assertEquals(bitPosition + bitSizeOf, writtenBitPosition);</span>
+<span class="fc" id="L1318">                final byte[] writtenByteArray = writer.toByteArray();</span>
+
+<span class="fc" id="L1320">                final BitBuffer readerBuffer = new BitBuffer(writtenByteArray, writtenBitPosition);</span>
+<span class="fc" id="L1321">                try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(readerBuffer))</span>
+                {
+<span class="fc bfc" id="L1323" title="All 2 branches covered.">                    if (bitPosition &gt; 0)</span>
+<span class="fc" id="L1324">                        assertEquals(0, reader.readBits(bitPosition));</span>
+<span class="fc" id="L1325">                    final Array readArray = new Array(emptyRawArray, arrayTraits, ArrayType.NORMAL,</span>
+                            offsetChecker, offsetInitializer);
+<span class="fc" id="L1327">                    readArray.readPacked(reader, rawArray.size());</span>
+<span class="fc" id="L1328">                    assertEquals(array, readArray);</span>
+                }
+            }
+        }
+<span class="fc" id="L1332">    }</span>
+
+    private static void testPackedArrayAlignedAuto(RawArray rawArray, RawArray emptyRawArray,
+            ArrayTraits arrayTraits, OffsetChecker offsetChecker, OffsetInitializer offsetInitializer,
+            int expectedBitSizeOf) throws IOException
+    {
+<span class="fc" id="L1338">        final Array array = new Array(rawArray, arrayTraits, ArrayType.AUTO, offsetChecker, offsetInitializer);</span>
+<span class="fc bfc" id="L1339" title="All 2 branches covered.">        for (int bitPosition = 0; bitPosition &lt; 8; ++bitPosition)</span>
+        {
+<span class="fc" id="L1341">            final int bitSizeOf = array.bitSizeOfPacked(bitPosition);</span>
+<span class="fc bfc" id="L1342" title="All 4 branches covered.">            if (expectedBitSizeOf != UNKNOWN_BITSIZE &amp;&amp; bitPosition == 0)</span>
+<span class="fc" id="L1343">                assertEquals(expectedBitSizeOf, bitSizeOf);</span>
+<span class="fc" id="L1344">            assertEquals(bitPosition + bitSizeOf, array.initializeOffsetsPacked(bitPosition));</span>
+
+<span class="fc" id="L1346">            try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())</span>
+            {
+<span class="fc bfc" id="L1348" title="All 2 branches covered.">                if (bitPosition &gt; 0)</span>
+<span class="fc" id="L1349">                    writer.writeBits(0, bitPosition);</span>
+<span class="fc" id="L1350">                array.writePacked(writer);</span>
+<span class="fc" id="L1351">                final long writtenBitPosition = writer.getBitPosition();</span>
+<span class="fc" id="L1352">                assertEquals(bitPosition + bitSizeOf, writtenBitPosition);</span>
+<span class="fc" id="L1353">                final byte[] writtenByteArray = writer.toByteArray();</span>
+
+<span class="fc" id="L1355">                final BitBuffer readerBuffer = new BitBuffer(writtenByteArray, writtenBitPosition);</span>
+<span class="fc" id="L1356">                try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(readerBuffer))</span>
+                {
+<span class="fc bfc" id="L1358" title="All 2 branches covered.">                    if (bitPosition &gt; 0)</span>
+<span class="fc" id="L1359">                        assertEquals(0, reader.readBits(bitPosition));</span>
+<span class="fc" id="L1360">                    final Array readArray = new Array(emptyRawArray, arrayTraits, ArrayType.AUTO,</span>
+                            offsetChecker, offsetInitializer);
+<span class="fc" id="L1362">                    readArray.readPacked(reader);</span>
+<span class="fc" id="L1363">                    assertEquals(array, readArray);</span>
+                }
+            }
+        }
+<span class="fc" id="L1367">    }</span>
+
+    private static int calcPackedBitSize(int elementBitSize, int arraySize, int maxDeltaBitSize)
+    {
+<span class="fc" id="L1371">        return PACKING_DESCRIPTOR_BITSIZE + elementBitSize + (arraySize - 1) * (maxDeltaBitSize + 1);</span>
+    }
+
+    private static int calcAlignedPackedBitSize(int elementBitSize, int arraySize, int maxDeltaBitSize)
+    {
+<span class="fc" id="L1376">        final int firstElementWithDescriptorBitSize = PACKING_DESCRIPTOR_BITSIZE + elementBitSize;</span>
+<span class="fc" id="L1377">        final int firstAlignedElementWithDescriptorBitSize = (firstElementWithDescriptorBitSize + 7) / 8 * 8;</span>
+<span class="fc" id="L1378">        final int alignedMaxDeltaBitSize = (maxDeltaBitSize + 1 + 7) / 8 * 8;</span>
+
+<span class="fc" id="L1380">        return firstAlignedElementWithDescriptorBitSize +</span>
+                (arraySize - 2) * alignedMaxDeltaBitSize + (maxDeltaBitSize + 1);
+    }
+
+<span class="fc" id="L1384">    private static int PACKING_DESCRIPTOR_BITSIZE = 1 + 6;</span>
+<span class="fc" id="L1385">    private static int UNKNOWN_BITSIZE = -1;</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
