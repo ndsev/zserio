@@ -49,6 +49,15 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/parameterized_types/packed_array_element_param/Database.cpp
     ${ZSERIO_GEN_DIR}/parameterized_types/packed_array_element_param/Database.h
 
+    ${ZSERIO_GEN_DIR}/parameterized_types/param_with_optional/ExtraValue.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/param_with_optional/ExtraValue.h
+    ${ZSERIO_GEN_DIR}/parameterized_types/param_with_optional/Holder.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/param_with_optional/Holder.h
+    ${ZSERIO_GEN_DIR}/parameterized_types/param_with_optional/Param.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/param_with_optional/Param.h
+    ${ZSERIO_GEN_DIR}/parameterized_types/param_with_optional/Value.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/param_with_optional/Value.h
+
     ${ZSERIO_GEN_DIR}/parameterized_types/parameterized_inner_classes_clashing/Compound.cpp
     ${ZSERIO_GEN_DIR}/parameterized_types/parameterized_inner_classes_clashing/Compound.h
     ${ZSERIO_GEN_DIR}/parameterized_types/parameterized_inner_classes_clashing/ElementChildrenInitializer_array.cpp
@@ -98,6 +107,7 @@ add_custom_test(parameterized_types
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/FixedAndVariableParamTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/GrandChildParamTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedArrayElementParamTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ParamWithOptionalTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ParameterizedInnerClassesClashingTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ParameterizedParamTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/SimpleParamTest.cpp
