@@ -6,8 +6,7 @@ class PackagesWarningTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.warnings = {}
-        cls.api = getZserioApi(__file__, "packages_warning.zs",
-                               expectedWarnings=4, errorOutputDict=cls.warnings)
+        getZserioApi(__file__, "packages_warning.zs", expectedWarnings=4, errorOutputDict=cls.warnings)
 
     def testDuplicatedPackageImport(self):
         assertWarningsPresent(self,

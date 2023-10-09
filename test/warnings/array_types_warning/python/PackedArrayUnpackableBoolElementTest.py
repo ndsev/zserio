@@ -1,16 +1,11 @@
-import unittest
 import os
 import zserio
 
-from testutils import getZserioApi, getApiDir
-from ArrayTypesWarningTest import EXPECTED_WARNINGS
+import ArrayTypesWarning
 
-class PackedArrayUnpackableBoolElementTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "array_types_warning.zs",
-                               expectedWarnings=EXPECTED_WARNINGS).packed_array_unpackable_bool_element
+from testutils import getApiDir
 
+class PackedArrayUnpackableBoolElementTest(ArrayTypesWarning.TestCase):
     def testWriteRead(self):
         packedArrayUnpackableBoolElement = self.api.PackedArrayUnpackableBoolElement(
             [0, 1, 2],

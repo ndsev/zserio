@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import OptionalMembers
 
-class AutoOptionalTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "optional_members.zs").auto_optional
-
+class AutoOptionalTest(OptionalMembers.TestCase):
     def testConstructor(self):
         container = self.api.Container()
         self.assertEqual(0, container.non_optional_int)

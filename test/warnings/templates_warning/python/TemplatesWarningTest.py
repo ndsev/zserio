@@ -6,9 +6,9 @@ class TemplatesWarningTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.warnings = {}
-        cls.api = getZserioApi(__file__, "templates_warning.zs",
-                               extraArgs=["-withWarnings", "default-instantiation"],
-                               expectedWarnings=5, errorOutputDict=cls.warnings)
+        getZserioApi(__file__, "templates_warning.zs",
+                     extraArgs=["-withWarnings", "default-instantiation"],
+                     expectedWarnings=5, errorOutputDict=cls.warnings)
 
     def testDefaultInstantiation(self):
         assertWarningsPresent(self,

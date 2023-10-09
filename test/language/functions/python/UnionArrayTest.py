@@ -1,12 +1,11 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Functions
 
-class UnionArrayTest(unittest.TestCase):
+class UnionArrayTest(Functions.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "functions.zs").union_array
+        super(UnionArrayTest, cls).setUpClass()
 
         cls.ITEMS = [cls.api.Item(12, 13),
                      cls.api.Item(42, b_=18),

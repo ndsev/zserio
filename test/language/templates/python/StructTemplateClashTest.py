@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class StructTemplateClashTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").struct_template_clash
-
+class StructTemplateClashTest(Templates.TestCase):
     def testReadWrite(self):
         testStruct_uint32 = self.api.TestStruct_uint32(
             42,

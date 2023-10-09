@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class ExpressionEnumTemplateArgumentTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").expression_enum_template_argument
-
+class ExpressionEnumTemplateArgumentTest(Templates.TestCase):
     def testReadWrite(self):
         enumTemplateArgument_Color = self.api.EnumTemplateArgument_Color(False, 10)
         self.assertTrue(enumTemplateArgument_Color.is_expression_field_used())

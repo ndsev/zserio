@@ -6,8 +6,7 @@ class SqlTablesWarningTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.warnings = {}
-        cls.api = getZserioApi(__file__, "sql_tables_warning.zs",
-                               expectedWarnings=7, errorOutputDict=cls.warnings)
+        getZserioApi(__file__, "sql_tables_warning.zs", expectedWarnings=7, errorOutputDict=cls.warnings)
 
     def testBadOrderedPrimaryKey(self):
         assertWarningsPresent(self,

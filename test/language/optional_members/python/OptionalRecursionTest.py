@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import OptionalMembers
 
-class OptionalRecursionTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "optional_members.zs").optional_recursion
-
+class OptionalRecursionTest(OptionalMembers.TestCase):
     def testConstructor(self):
         emptyBlock = self.api.Block(0)
         self.assertEqual(0, emptyBlock.byte_count)

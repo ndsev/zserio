@@ -1,7 +1,6 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import ServiceTypes
 
 class FakeContext:
     def __init__(self):
@@ -16,10 +15,10 @@ class LocalServiceClient(zserio.ServiceClientInterface):
 
         return response.byte_array
 
-class SimpleServiceTest(unittest.TestCase):
+class SimpleServiceTest(ServiceTypes.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "service_types.zs").simple_service
+        super(SimpleServiceTest, cls).setUpClass()
 
         class Service(cls.api.SimpleService.Service):
             def __init__(self, api):

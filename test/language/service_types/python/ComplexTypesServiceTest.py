@@ -1,7 +1,6 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import ServiceTypes
 
 def _convertRgbToCmyk(rgb):
     # see https://www.rapidtables.com/convert/color/rgb-to-cmyk.html
@@ -40,10 +39,10 @@ class LocalServiceClient(zserio.ServiceClientInterface):
 
         return response.byte_array
 
-class ComplexTypesServiceTest(unittest.TestCase):
+class ComplexTypesServiceTest(ServiceTypes.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "service_types.zs").complex_types_service
+        super(ComplexTypesServiceTest, cls).setUpClass()
 
         class Service(cls.api.ComplexTypesService.Service):
             def _swap_models_impl(self, request, _context):

@@ -1,14 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import StructureTypes
 
-class SimpleStructureTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "structure_types.zs",
-                               extraArgs=["-withTypeInfoCode"]).simple_structure
-
+class SimpleStructureTest(StructureTypes.TestCase):
     def testConstructor(self):
         simpleStructure = self.api.SimpleStructure()
         self.assertEqual(0, simpleStructure.number_a)

@@ -1,14 +1,11 @@
-import unittest
 import os
 import zserio
 
-from testutils import getZserioApi, getApiDir
+import ArrayTypes
 
-class VariableArrayStructCastVarUIntTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "array_types.zs").variable_array_struct_cast_varuint
+from testutils import getApiDir
 
+class VariableArrayStructCastVarUIntTest(ArrayTypes.TestCase):
     def testBitSizeOf(self):
         numElements = 33
         compoundArray = [self.api.TestStructure(i, "Name" + str(i)) for i in range(numElements)]

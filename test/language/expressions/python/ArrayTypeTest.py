@@ -1,12 +1,6 @@
-import unittest
+import Expressions
 
-from testutils import getZserioApi
-
-class ArrayTypeTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "expressions.zs").array_type
-
+class ArrayTypeTest(Expressions.TestCase):
     def testBitSizeOfWithOptional(self):
         arrayTypeExpression = self.api.ArrayTypeExpression([0, 0], True)
         self.assertEqual(self.ARRAY_TYPE_EXPRESSION_BIT_SIZE_WITH_OPTIONAL, arrayTypeExpression.bitsizeof())

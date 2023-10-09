@@ -6,8 +6,8 @@ class CommentsWarningTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.warnings = {}
-        cls.api = getZserioApi(__file__, "comments_warning.zs", extraArgs=["-withWarnings", "unused"],
-                               expectedWarnings=24, errorOutputDict=cls.warnings)
+        getZserioApi(__file__, "comments_warning.zs", extraArgs=["-withWarnings", "unused"],
+                     expectedWarnings=24, errorOutputDict=cls.warnings)
 
     def testDocCommentFormat(self):
         assertWarningsPresent(self,

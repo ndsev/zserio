@@ -1,13 +1,6 @@
-import unittest
+import AllowImplicitArrays
 
-from testutils import getZserioApi
-
-class LengthOfWithImplicitArray(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "allow_implicit_arrays.zs",
-                               extraArgs=["-allowImplicitArrays"]).lengthof_with_implicit_array
-
+class LengthOfWithImplicitArray(AllowImplicitArrays.TestCase):
     def testGetLengthOfImplicitArray(self):
         lengthOfWithImplicitArray = self.api.LengthOfWithImplicitArray()
         implicitArrayLength = 12

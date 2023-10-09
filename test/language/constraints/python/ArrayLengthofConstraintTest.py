@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Constraints
 
-class ArrayLengthofConstraintTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "constraints.zs").array_lengthof_constraint
-
+class ArrayLengthofConstraintTest(Constraints.TestCase):
     def testReadCorrectLength(self):
         writer = zserio.BitStreamWriter()
         self.__class__._write(writer, self.CORRECT_LENGTH)

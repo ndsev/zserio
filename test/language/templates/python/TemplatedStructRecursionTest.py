@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class TemplatedStructRecursionTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").templated_struct_recursion
-
+class TemplatedStructRecursionTest(Templates.TestCase):
     def testWriteRead(self):
         templatedStructRecursion = self.api.TemplatedStructRecursion(
             self.api.RecursiveTemplate_uint32(

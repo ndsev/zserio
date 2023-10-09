@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import UnionTypes
 
-class EmptyUnionWithParameterTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "union_types.zs").empty_union_with_parameter
-
+class EmptyUnionWithParameterTest(UnionTypes.TestCase):
     def testParamConstructor(self):
         emptyUnionWithParameter = self.api.EmptyUnionWithParameter(self.PARAM_VALUE1)
         self.assertEqual(self.PARAM_VALUE1, emptyUnionWithParameter.param)

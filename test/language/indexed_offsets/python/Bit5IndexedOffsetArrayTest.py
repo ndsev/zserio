@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import IndexedOffsets
 
-class Bit5IndexedOffsetArrayTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "indexed_offsets.zs").bit5_indexed_offset_array
-
+class Bit5IndexedOffsetArrayTest(IndexedOffsets.TestCase):
     def testBitSizeOf(self):
         createWrongOffsets = False
         bit5IndexedOffsetArray = self._createBit5IndexedOffsetArray(createWrongOffsets)

@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import MemberAccess
 
-class AccessWithinTypeTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "member_access.zs").access_within_type
-
+class AccessWithinTypeTest(MemberAccess.TestCase):
     def testRead(self):
         numSentences = 10
         wrongArrayLength = False

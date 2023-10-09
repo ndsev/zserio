@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class InstantiateNestedTemplateTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").instantiate_nested_template
-
+class InstantiateNestedTemplateTest(Templates.TestCase):
     def testReadWrite(self):
         instantiateNestedTemplate = self.api.InstantiateNestedTemplate(self.api.TStr(self.api.NStr("test")))
 

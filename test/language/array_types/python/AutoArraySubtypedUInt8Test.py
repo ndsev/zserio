@@ -1,14 +1,11 @@
-import unittest
 import os
 import zserio
 
-from testutils import getZserioApi, getApiDir
+import ArrayTypes
 
-class AutoArraySubtypedUInt8Test(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "array_types.zs").auto_array_subtyped_uint8
+from testutils import getApiDir
 
+class AutoArraySubtypedUInt8Test(ArrayTypes.TestCase):
     def testBitSizeOfLength1(self):
         self._checkBitSizeOf(self.AUTO_ARRAY_LENGTH1)
 

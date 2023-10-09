@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class StructLongTemplateArgumentClashTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").struct_long_template_argument_clash
-
+class StructLongTemplateArgumentClashTest(Templates.TestCase):
     def testReadWrite(self):
         t1 = self.api.TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_Th_619A1B35(
             self.api.ThisIsVeryVeryVeryLongNamedStructure("StringT"),

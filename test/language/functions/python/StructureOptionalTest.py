@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Functions
 
-class StructureOptionalTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "functions.zs").structure_optional
-
+class StructureOptionalTest(Functions.TestCase):
     def testDefaultValueConsumerCreator(self):
         self._checkValueConsumerCreator(self.DEFAULT_VALUE, self.EXTERNAL_VALUE)
 

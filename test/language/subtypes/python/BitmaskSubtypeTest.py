@@ -1,11 +1,5 @@
-import unittest
+import Subtypes
 
-from testutils import getZserioApi
-
-class BitmaskSubtypeTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "subtypes.zs").bitmask_subtype
-
+class BitmaskSubtypeTest(Subtypes.TestCase):
     def testSubtype(self):
         self.assertEqual(self.api.Permission.Values.READ, self.api.CONST_READ)

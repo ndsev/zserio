@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Offsets
 
-class BitOffsetTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "offsets.zs").bit_offset
-
+class BitOffsetTest(Offsets.TestCase):
     def testBitSizeOf(self):
         createWrongOffsets = False
         bitOffset = self._createBitOffset(createWrongOffsets)

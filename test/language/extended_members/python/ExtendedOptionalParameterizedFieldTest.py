@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import ExtendedMembers
 
-class ExtendedOptionalParameterizedFieldTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "extended_members.zs").extended_optional_parameterized_field
-
+class ExtendedOptionalParameterizedFieldTest(ExtendedMembers.TestCase):
     def testConstructor(self):
         extended = self.api.Extended()
 

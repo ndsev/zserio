@@ -1,14 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import WithRangeCheckCode
 
-class VarInt16RangeCheckTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "with_range_check_code.zs",
-                               extraArgs=["-withRangeCheckCode"]).varint16_range_check
-
+class VarInt16RangeCheckTest(WithRangeCheckCode.TestCase):
     def testVarInt16LowerBound(self):
         self._checkVarInt16Value(VARINT16_LOWER_BOUND)
 

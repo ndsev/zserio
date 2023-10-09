@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class ChoiceTemplatedFieldTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").choice_templated_field
-
+class ChoiceTemplatedFieldTest(Templates.TestCase):
     def testReadWrite(self):
         selector = 0
         choice1 = self.api.TemplatedChoice_uint32_uint16(selector)

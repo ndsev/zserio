@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class InstantiateTypeAsTemplateArgumentTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").instantiate_type_as_template_argument
-
+class InstantiateTypeAsTemplateArgumentTest(Templates.TestCase):
     def testReadWrite(self):
         instantiateTypeAsTemplateArgument = self.api.InstantiateTypeAsTemplateArgument(
             self.api.Other_Str(self.api.Str("test"))

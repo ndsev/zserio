@@ -1,18 +1,12 @@
-import unittest
 import os
 
-from testutils import getZserioApi, getApiDir
+import SqlVirtualTables
 
-class Fts3VirtualTableTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "sql_virtual_tables.zs").fts3_virtual_table
-        cls._fileName = os.path.join(getApiDir(os.path.dirname(__file__)), "fts3_virtual_table_test.sqlite")
-
+class Fts3VirtualTableTest(SqlVirtualTables.TestCaseWithDb):
     def setUp(self):
-        if os.path.exists(self._fileName):
-            os.remove(self._fileName)
-        self._database = self.api.Fts3TestDb.from_file(self._fileName)
+        if os.path.exists(self.dbFileName):
+            os.remove(self.dbFileName)
+        self._database = self.api.Fts3TestDb.from_file(self.dbFileName)
         self._database.create_schema()
 
     def tearDown(self):

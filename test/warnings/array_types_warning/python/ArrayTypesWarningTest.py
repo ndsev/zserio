@@ -1,14 +1,8 @@
-import unittest
+import ArrayTypesWarning
 
-from testutils import getZserioApi, assertWarningsPresent
+from testutils import assertWarningsPresent
 
-class ArrayTypesWarningTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.warnings = {}
-        cls.api = getZserioApi(__file__, "array_types_warning.zs",
-                               expectedWarnings=EXPECTED_WARNINGS, errorOutputDict=cls.warnings)
-
+class ArrayTypesWarningTest(ArrayTypesWarning.WarningsTestCase):
     def testPackedArrayChoiceHasNoPackableField(self):
         assertWarningsPresent(self,
             "array_types_warning.zs",
@@ -103,5 +97,3 @@ class ArrayTypesWarningTest(unittest.TestCase):
                 "Keyword 'packed' doesn't have any effect. 'string' is not packable element type."
             ]
         )
-
-EXPECTED_WARNINGS=12

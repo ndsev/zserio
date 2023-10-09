@@ -1,14 +1,10 @@
-import unittest
 import os
 import zserio
 
-from testutils import getZserioApi, getApiDir
+import OptionalMembers
+from testutils import getApiDir
 
-class OptionalArrayRecursionTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "optional_members.zs").optional_array_recursion
-
+class OptionalArrayRecursionTest(OptionalMembers.TestCase):
     def testConstructor(self):
         emptyEmployee = self.api.Employee()
         self.assertEqual("", emptyEmployee.name)

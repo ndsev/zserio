@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class InstantiateNotImportedTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").instantiate_not_imported
-
+class InstantiateNotImportedTest(Templates.TestCase):
     def testReadWrite(self):
         instantiateNotImported = self.api.InstantiateNotImported(
             self.api.pkg.Test_uint32(13),

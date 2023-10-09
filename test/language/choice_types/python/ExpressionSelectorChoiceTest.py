@@ -1,12 +1,6 @@
-import unittest
+import ChoiceTypes
 
-from testutils import getZserioApi
-
-class ExpressionSelectorChoiceTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "choice_types.zs").expression_selector_choice
-
+class ExpressionSelectorChoiceTest(ChoiceTypes.TestCase):
     def testField8(self):
         expressionSelectorChoice = self.api.ExpressionSelectorChoice(0)
         value8 = 0x7F

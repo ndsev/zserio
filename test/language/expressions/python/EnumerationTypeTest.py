@@ -1,12 +1,6 @@
-import unittest
+import Expressions
 
-from testutils import getZserioApi
-
-class EnumerationTypeTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "expressions.zs").enumeration_type
-
+class EnumerationTypeTest(Expressions.TestCase):
     def testBitSizeOfWithOptional(self):
         enumerationTypeExpression = self.api.EnumerationTypeExpression(self.api.Color.RED, is_color_red_=True)
         self.assertEqual(self.ENUMERATION_TYPE_EXPRESSION_BIT_SIZE_WITH_OPTIONAL,

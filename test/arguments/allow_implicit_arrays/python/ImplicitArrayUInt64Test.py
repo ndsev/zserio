@@ -1,15 +1,11 @@
-import unittest
 import os
 import zserio
 
-from testutils import getZserioApi, getApiDir
+import AllowImplicitArrays
 
-class ImplicitArrayUInt64Test(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "allow_implicit_arrays.zs",
-                               extraArgs=["-allowImplicitArrays"]).implicit_array_uint64
+from testutils import getApiDir
 
+class ImplicitArrayUInt64Test(AllowImplicitArrays.TestCase):
     def testBitSizeOf(self):
         numElements = 44
         array = list(range(numElements))

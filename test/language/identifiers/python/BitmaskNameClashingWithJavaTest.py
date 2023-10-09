@@ -1,12 +1,6 @@
-import unittest
+import Identifiers
 
-from testutils import getZserioApi
-
-class BitmaskNameClashingWithJavaTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "identifiers.zs").bitmask_name_clashing_with_java
-
+class BitmaskNameClashingWithJavaTest(Identifiers.TestCase):
     def testEmptyConstructor(self):
         bitmaskNameClashingWithJava = self.api.BitmaskNameClashingWithJava()
         self.assertIsNone(bitmaskNameClashingWithJava.string_field)

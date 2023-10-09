@@ -1,22 +1,15 @@
-import unittest
 import os
 
-from testutils import getZserioApi, getApiDir
+import Templates
 
-class InstantiateTypeAsSqlDatabaseFieldTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").instantiate_type_as_sql_database_field
-        cls._fileName = os.path.join(getApiDir(os.path.dirname(__file__)),
-                                     "instantiate_type_as_sql_database_field.sqlite")
-
+class InstantiateTypeAsSqlDatabaseFieldTest(Templates.TestCaseWithDb):
     def setUp(self):
-        if os.path.exists(self._fileName):
-            os.remove(self._fileName)
+        if os.path.exists(self.dbFileName):
+            os.remove(self.dbFileName)
 
     def testReadWrite(self):
         instantiateTypeAsSqlDatabaseFieldDb = self.api.InstantiateTypeAsSqlDatabaseFieldDb.from_file(
-            self._fileName)
+            self.dbFileName)
         instantiateTypeAsSqlDatabaseFieldDb.create_schema()
 
         stringTable = instantiateTypeAsSqlDatabaseFieldDb.string_table
@@ -30,7 +23,7 @@ class InstantiateTypeAsSqlDatabaseFieldTest(unittest.TestCase):
         instantiateTypeAsSqlDatabaseFieldDb.close()
 
         readInstantiateTypeAsSqlDatabaseFieldDb = self.api.InstantiateTypeAsSqlDatabaseFieldDb.from_file(
-            self._fileName)
+            self.dbFileName)
         readStringTableIterator = readInstantiateTypeAsSqlDatabaseFieldDb.string_table.read()
         readStringTableRows = []
         for row in readStringTableIterator:

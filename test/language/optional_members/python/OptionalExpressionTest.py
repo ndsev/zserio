@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import OptionalMembers
 
-class OptionalExpressionTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "optional_members.zs").optional_expression
-
+class OptionalExpressionTest(OptionalMembers.TestCase):
     def testConstructor(self):
         container = self.api.Container()
         self.assertEqual(None, container.basic_color)

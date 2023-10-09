@@ -1,12 +1,6 @@
-import unittest
+import Subtypes
 
-from testutils import getZserioApi
-
-class ParamStructureSubtypeTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "subtypes.zs").param_structure_subtype
-
+class ParamStructureSubtypeTest(Subtypes.TestCase):
     def testSubtype(self):
         # just check that ParameterizedSubtype is defined and that it's same as the ParameterizedStruct
         parameterizedSubtypeStruct = self.api.ParameterizedSubtypeStruct()

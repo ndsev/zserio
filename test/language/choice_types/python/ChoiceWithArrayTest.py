@@ -1,14 +1,11 @@
-import unittest
 import os
 import zserio
 
-from testutils import getZserioApi, getApiDir
+import ChoiceTypes
 
-class ChoiceWithArrayTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "choice_types.zs").choice_with_array
+from testutils import getApiDir
 
+class ChoiceWithArrayTest(ChoiceTypes.TestCase):
     def testArray8(self):
         testChoice = self.api.TestChoice(8)
         testChoice.array8 = [self.api.Data8(), self.api.Data8(), self.api.Data8(), self.api.Data8()]

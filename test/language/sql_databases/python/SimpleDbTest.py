@@ -1,22 +1,16 @@
-import unittest
 import os
 import apsw
 
-from testutils import getZserioApi, getApiDir
+import SqlDatabases
 
-class SimpleDbTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "sql_databases.zs").simple_db
-        cls._fileName = os.path.join(getApiDir(os.path.dirname(__file__)), "simple_db_test.sqlite")
-
+class SimpleDbTest(SqlDatabases.TestCaseWithDb):
     def setUp(self):
-        if os.path.exists(self._fileName):
-            os.remove(self._fileName)
+        if os.path.exists(self.dbFileName):
+            os.remove(self.dbFileName)
         self._tableNames = (self.EUROPE_TABLE_NAME, self.AMERICA_TABLE_NAME)
 
     def testConnectionConstructor(self):
-        connection = apsw.Connection(self._fileName, apsw.SQLITE_OPEN_READWRITE | apsw.SQLITE_OPEN_CREATE)
+        connection = apsw.Connection(self.dbFileName, apsw.SQLITE_OPEN_READWRITE | apsw.SQLITE_OPEN_CREATE)
 
         database = self.api.WorldDb(connection)
         database.create_schema()
@@ -26,7 +20,7 @@ class SimpleDbTest(unittest.TestCase):
         connection.close()
 
     def testConnectionConstructorTableRelocationMap(self):
-        connection = apsw.Connection(self._fileName, apsw.SQLITE_OPEN_READWRITE | apsw.SQLITE_OPEN_CREATE)
+        connection = apsw.Connection(self.dbFileName, apsw.SQLITE_OPEN_READWRITE | apsw.SQLITE_OPEN_CREATE)
 
         database = self.api.WorldDb(connection, [])
         database.create_schema()
@@ -36,26 +30,26 @@ class SimpleDbTest(unittest.TestCase):
         connection.close()
 
     def testFromFile(self):
-        database = self.api.WorldDb.from_file(self._fileName)
+        database = self.api.WorldDb.from_file(self.dbFileName)
         database.create_schema()
         for tableName in self._tableNames:
             self.assertTrue(self._isTableInDb(database, tableName))
         database.close()
 
     def testFromFileTableRelocationMap(self):
-        database = self.api.WorldDb.from_file(self._fileName, [])
+        database = self.api.WorldDb.from_file(self.dbFileName, [])
         database.create_schema()
         for tableName in self._tableNames:
             self.assertTrue(self._isTableInDb(database, tableName))
         database.close()
 
     def testClose(self):
-        database = self.api.WorldDb.from_file(self._fileName)
+        database = self.api.WorldDb.from_file(self.dbFileName)
         database.close()
         self.assertEqual(None, database.connection)
 
     def testTableGetters(self):
-        database = self.api.WorldDb.from_file(self._fileName)
+        database = self.api.WorldDb.from_file(self.dbFileName)
         database.create_schema()
 
         self.assertTrue(self._isTableInDb(database, self.EUROPE_TABLE_NAME))
@@ -71,7 +65,7 @@ class SimpleDbTest(unittest.TestCase):
         database.close()
 
     def testConnection(self):
-        database = self.api.WorldDb.from_file(self._fileName)
+        database = self.api.WorldDb.from_file(self.dbFileName)
         database.create_schema()
 
         connection = database.connection
@@ -84,7 +78,7 @@ class SimpleDbTest(unittest.TestCase):
         database.close()
 
     def testExecuteQuery(self):
-        database = self.api.WorldDb.from_file(self._fileName)
+        database = self.api.WorldDb.from_file(self.dbFileName)
         database.create_schema()
 
         for tableName in self._tableNames:
@@ -95,7 +89,7 @@ class SimpleDbTest(unittest.TestCase):
         database.close()
 
     def testCreateSchema(self):
-        database = self.api.WorldDb.from_file(self._fileName)
+        database = self.api.WorldDb.from_file(self.dbFileName)
         for tableName in self._tableNames:
             self.assertFalse(self._isTableInDb(database, tableName))
 
@@ -106,7 +100,7 @@ class SimpleDbTest(unittest.TestCase):
         database.close()
 
     def testDeleteSchema(self):
-        database = self.api.WorldDb.from_file(self._fileName)
+        database = self.api.WorldDb.from_file(self.dbFileName)
         database.create_schema()
         for tableName in self._tableNames:
             self.assertTrue(self._isTableInDb(database, tableName))

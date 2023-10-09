@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Functions
 
-class StructureParentChildValueTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "functions.zs").structure_parent_child_value
-
+class StructureParentChildValueTest(Functions.TestCase):
     def testParentValue(self):
         parentValue = self._createParentValue()
         self.assertEqual(self.CHILD_VALUE, parentValue.get_value())

@@ -1,14 +1,9 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import ParameterizedTypes
 
-class ParameterizedInnerClassesTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "parameterized_types.zs").parameterized_inner_classes_clashing
-
-    def testWriteReadElementFactrory(self):
+class ParameterizedInnerClassesClashingTest(ParameterizedTypes.TestCase):
+    def testWriteReadElementFactory(self):
         param = 100
         testStructure = self.api.ElementFactory_array(param,
             [self.api.Compound(param, 13), self.api.Compound(param, 42)]

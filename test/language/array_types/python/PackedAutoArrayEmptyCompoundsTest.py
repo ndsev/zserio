@@ -1,14 +1,11 @@
-import unittest
 import os
 import zserio
 
-from testutils import getZserioApi, getApiDir
+import ArrayTypes
 
-class PackedAutoArrayEmptyCompoundTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "array_types.zs").packed_auto_array_empty_compounds
+from testutils import getApiDir
 
+class PackedAutoArrayEmptyCompoundsTest(ArrayTypes.TestCase):
     def testWriteReadFile(self):
         packedAutoArray = self.api.PackedAutoArray(
             [self.api.EmptyStruct(), self.api.EmptyStruct(), self.api.EmptyStruct()],

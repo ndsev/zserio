@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import ExtendedMembers
 
-class ExtendedEmptyStructureTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "extended_members.zs").extended_empty_structure
-
+class ExtendedEmptyStructureTest(ExtendedMembers.TestCase):
     def testConstructor(self):
         extended = self.api.Extended()
 

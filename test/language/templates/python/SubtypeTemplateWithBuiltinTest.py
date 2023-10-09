@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class SubtypeTemplateWithBuiltinTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").subtype_template_with_builtin
-
+class SubtypeTemplateWithBuiltinTest(Templates.TestCase):
     def testReadWrite(self):
         subtypeTemplateWithBuiltin = self.api.SubtypeTemplateWithBuiltin(
             self.api.TestStructure_uint32(13)

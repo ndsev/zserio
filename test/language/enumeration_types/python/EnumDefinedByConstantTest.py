@@ -1,13 +1,6 @@
-import unittest
+import EnumerationTypes
 
-from testutils import getZserioApi
-
-class EnumDefinedByConstantTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "enumeration_types.zs",
-                               extraArgs=["-withTypeInfoCode"]).enum_defined_by_constant
-
+class EnumDefinedByConstantTest(EnumerationTypes.TestCase):
     def testLightColor(self):
         self.assertEqual(1, self.api.WHITE_COLOR)
         self.assertEqual(1, self.api.Colors.WHITE.value)

@@ -1,12 +1,6 @@
-import unittest
+import Expressions
 
-from testutils import getZserioApi
-
-class CastUInt8ToUInt64Test(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "expressions.zs").cast_uint8_to_uint64
-
+class CastUInt8ToUInt64Test(Expressions.TestCase):
     def testUInt64ValueUsingUInt8Value(self):
         uint8Value = 0xBA
         castUInt8ToUInt64Expression = self.api.CastUInt8ToUInt64Expression(uint8Value, False)

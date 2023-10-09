@@ -1,14 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import StructureTypes
 
-class EmptyStructureTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "structure_types.zs",
-                               extraArgs=["-withTypeInfoCode"]).empty_structure_with_parameter
-
+class EmptyStructureWithParameterTest(StructureTypes.TestCase):
     def testParamConstructor(self):
         emptyStructureWithParameter = self.api.EmptyStructureWithParameter(1)
         self.assertEqual(1, emptyStructureWithParameter.param)

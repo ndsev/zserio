@@ -1,20 +1,12 @@
-import unittest
 import os
 
-from testutils import getZserioApi, getApiDir
+import AllowImplicitArrays
 
-class TableWithImplicitArrayTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "allow_implicit_arrays.zs",
-                               extraArgs=["-allowImplicitArrays"]).table_with_implicit_array
-        cls._fileName = os.path.join(getApiDir(os.path.dirname(__file__)),
-                                     "table_with_implicit_array_test.sqlite")
-
+class TableWithImplicitArrayTest(AllowImplicitArrays.TestCaseWithDb):
     def setUp(self):
-        if os.path.exists(self._fileName):
-            os.remove(self._fileName)
-        self._database = self.api.DbWithImplicitArray.from_file(self._fileName)
+        if os.path.exists(self.dbFileName):
+            os.remove(self.dbFileName)
+        self._database = self.api.DbWithImplicitArray.from_file(self.dbFileName)
         self._database.create_schema()
 
     def tearDown(self):

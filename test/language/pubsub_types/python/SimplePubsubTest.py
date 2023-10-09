@@ -1,15 +1,10 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import PubsubTypes
 
 from TestPubsub import TestPubsub, TestPubsubContext
 
-class SimplePubsubTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "pubsub_types.zs").simple_pubsub
-
+class SimplePubsubTest(PubsubTypes.TestCase):
     def setUp(self):
         pubsub = TestPubsub()
         self.simplePubsubProvider = self.api.SimplePubsubProvider(pubsub)

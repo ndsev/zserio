@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Alignment
 
-class OptionalMemberAlignmentTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "alignment.zs").optional_member_alignment
-
+class OptionalMemberAlignmentTest(Alignment.TestCase):
     def testBitSizeOfWithOptional(self):
         optionalMemberAlignment = self.api.OptionalMemberAlignment(True, 0x4433, 0x1122)
         self.assertEqual(self.WITH_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE, optionalMemberAlignment.bitsizeof())

@@ -1,15 +1,8 @@
-import unittest
-
 import zserio
 
-from testutils import getZserioApi
+import EnumerationTypes
 
-class BitfieldEnumTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "enumeration_types.zs",
-                               extraArgs=["-withTypeInfoCode"]).bitfield_const_enum
-
+class BitfieldConstEnumTest(EnumerationTypes.TestCase):
     def testValues(self):
         self.assertEqual(NONE_VALUE, self.api.Color.NONE.value)
         self.assertEqual(RED_VALUE, self.api.Color.RED.value)

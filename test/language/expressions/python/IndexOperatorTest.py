@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Expressions
 
-class IndexOperatorTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "expressions.zs").index_operator
-
+class IndexOperatorTest(Expressions.TestCase):
     def testZeroLength(self):
         elementList = self._createElementList(0)
         self.assertEqual(self.LENGTH_SIZE, elementList.bitsizeof())

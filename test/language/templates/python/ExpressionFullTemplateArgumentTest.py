@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class ExpressionFullTemplateArgumentTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").expression_full_template_argument
-
+class ExpressionFullTemplateArgumentTest(Templates.TestCase):
     def testReadWrite(self):
         colorInternal = self.api.FullTemplateArgument_Color_7C6F461F(False, 10)
         self.assertTrue(colorInternal.is_expression_field_used())

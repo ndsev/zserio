@@ -1,16 +1,11 @@
-import unittest
 import os
 import zserio
 
-from testutils import getZserioApi, getApiDir
-from ArrayTypesWarningTest import EXPECTED_WARNINGS
+import ArrayTypesWarning
 
-class PackedArrayTemplateHasNoPackableFieldTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "array_types_warning.zs",
-                               expectedWarnings=EXPECTED_WARNINGS).packed_array_template_has_no_packable_field
+from testutils import getApiDir
 
+class PackedArrayTemplateHasNoPackableFieldTest(ArrayTypesWarning.TestCase):
     def testWriteReadU32(self):
         u32 = self.api.T_u32([0, 1, 2, 3, 4, 5])
 

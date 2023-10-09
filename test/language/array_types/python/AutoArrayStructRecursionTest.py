@@ -1,14 +1,11 @@
-import unittest
 import os
 import zserio
 
-from testutils import getZserioApi, getApiDir
+import ArrayTypes
 
-class AutoArrayStructRecursionTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "array_types.zs").auto_array_struct_recursion
+from testutils import getApiDir
 
+class AutoArrayStructRecursionTest(ArrayTypes.TestCase):
     def testBitSizeOfLength1(self):
         self._checkBitSizeOf(self.AUTO_ARRAY_LENGTH1)
 

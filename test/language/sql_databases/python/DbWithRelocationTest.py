@@ -1,12 +1,12 @@
-import unittest
 import os
 
-from testutils import getZserioApi, getApiDir
+import SqlDatabases
+from testutils import getApiDir
 
-class DbWithRelocationTest(unittest.TestCase):
+class DbWithRelocationTest(SqlDatabases.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "sql_databases.zs").db_with_relocation
+        super(DbWithRelocationTest, cls).setUpClass()
         cls._europeDbFileName = os.path.join(getApiDir(os.path.dirname(__file__)),
                                              "db_with_relocation_test_europe.sqlite")
         cls._americaDbFileName = os.path.join(getApiDir(os.path.dirname(__file__)),

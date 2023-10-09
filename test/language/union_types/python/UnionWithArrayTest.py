@@ -1,14 +1,10 @@
-import unittest
 import os
 import zserio
 
-from testutils import getZserioApi, getApiDir
+import UnionTypes
+from testutils import getApiDir
 
-class UnionWithArrayTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "union_types.zs").union_with_array
-
+class UnionWithArrayTest(UnionTypes.TestCase):
     def testArray8(self):
         testUnion = self.api.TestUnion()
         testUnion.array8 = [self.api.Data8(), self.api.Data8(), self.api.Data8(), self.api.Data8()]

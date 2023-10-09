@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import IndexedOffsets
 
-class OptionalNestedIndexedOffsetArrayTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "indexed_offsets.zs").optional_nested_indexed_offset_array
-
+class OptionalNestedIndexedOffsetArrayTest(IndexedOffsets.TestCase):
     def testBitSizeOfWithOptional(self):
         length = NUM_ELEMENTS
         createWrongOffsets = False

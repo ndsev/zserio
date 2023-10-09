@@ -1,14 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import WithRangeCheckCode
 
-class UnionInt4RangeCheckTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "with_range_check_code.zs",
-                               extraArgs=["-withRangeCheckCode"]).union_int4_range_check
-
+class UnionInt4RangeCheckTest(WithRangeCheckCode.TestCase):
     def testUnionInt4LowerBound(self):
         self._checkUnionInt4Value(INT4_LOWER_BOUND)
 

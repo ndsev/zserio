@@ -1,12 +1,6 @@
-import unittest
+import Subtypes
 
-from testutils import getZserioApi
-
-class StructureSubtypeTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "subtypes.zs").structure_subtype
-
+class StructureSubtypeTest(Subtypes.TestCase):
     def testSubtype(self):
         identifier = 0xFFFF
         name = "Name"

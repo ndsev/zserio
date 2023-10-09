@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import ChoiceTypes
 
-class FullBitmaskParamChoiceTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "choice_types.zs").full_bitmask_param_choice
-
+class FullBitmaskParamChoiceTest(ChoiceTypes.TestCase):
     def testConstructor(self):
         selector = self.api.Selector.Values.BLACK
         fullBitmaskParamChoice = self.api.FullBitmaskParamChoice(selector)

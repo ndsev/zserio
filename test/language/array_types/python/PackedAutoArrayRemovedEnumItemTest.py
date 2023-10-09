@@ -1,14 +1,11 @@
-import unittest
 import os
 import zserio
 
-from testutils import getZserioApi, getApiDir
+import ArrayTypes
 
-class PackedAutoArrayRemovedEnumItemTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "array_types.zs").packed_auto_array_removed_enum_item
+from testutils import getApiDir
 
+class PackedAutoArrayRemovedEnumItemTest(ArrayTypes.TestCase):
     def testWriteReadFile(self):
         packedAutoArrayRemovedEnumItem = self.api.PackedAutoArrayRemovedEnumItem(
             [ self.api.Traffic.NONE, self.api.Traffic.LIGHT, self.api.Traffic.MID ]

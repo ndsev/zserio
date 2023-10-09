@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class InstantiateSimpleTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").instantiate_simple
-
+class InstantiateSimpleTest(Templates.TestCase):
     def testReadWrite(self):
         instantiateSimple = self.api.InstantiateSimple(self.api.U32(13))
 

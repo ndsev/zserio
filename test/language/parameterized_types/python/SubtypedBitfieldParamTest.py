@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import ParameterizedTypes
 
-class SubtypedBitfieldParamTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "parameterized_types.zs").subtyped_bitfield_param
-
+class SubtypedBitfieldParamTest(ParameterizedTypes.TestCase):
     def testWrite(self):
         subtypedBitfieldParamHolder = self._createSubtypedBitfieldParamHolder()
         writer = zserio.BitStreamWriter()

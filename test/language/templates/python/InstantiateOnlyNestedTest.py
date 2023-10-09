@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class InstantiateOnlyNestedTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").instantiate_only_nested
-
+class InstantiateOnlyNestedTest(Templates.TestCase):
     def testReadWrite(self):
         instantiateOnlyNested = self.api.InstantiateOnlyNested(self.api.pkg.Test_uint32(self.api.N32(13)))
 

@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import IndexedOffsets
 
-class VarInt32IndexedOffsetArrayTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "indexed_offsets.zs").varint32_indexed_offset_array
-
+class VarInt32IndexedOffsetArrayTest(IndexedOffsets.TestCase):
     def testBitSizeOf(self):
         createWrongOffsets = False
         varInt32IndexedOffsetArray = self._createVarInt32IndexedOffsetArray(createWrongOffsets)

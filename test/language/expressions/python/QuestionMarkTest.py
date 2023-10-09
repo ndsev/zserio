@@ -1,12 +1,6 @@
-import unittest
+import Expressions
 
-from testutils import getZserioApi
-
-class QuestionMarkTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "expressions.zs").question_mark
-
+class QuestionMarkTest(Expressions.TestCase):
     def testFirstValue(self):
         questionMarkExpression = self.api.QuestionMarkExpression(self.FIRST_VALUE, self.SECOND_VALUE, True)
         self.assertEqual(self.FIRST_VALUE, questionMarkExpression.valid_value())

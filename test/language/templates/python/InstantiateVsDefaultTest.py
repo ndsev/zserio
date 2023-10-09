@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class InstantiateVsDefaultTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").instantiate_vs_default
-
+class InstantiateVsDefaultTest(Templates.TestCase):
     def testReadWrite(self):
         instantiateVsDefault = self.api.InstantiateVsDefault(self.api.pkg.Test_uint32(13),
                                                              self.api.TStr("test"))

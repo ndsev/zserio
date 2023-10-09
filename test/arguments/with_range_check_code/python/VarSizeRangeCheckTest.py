@@ -1,14 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import WithRangeCheckCode
 
-class VarSizeRangeCheckTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "with_range_check_code.zs",
-                               extraArgs=["-withRangeCheckCode"]).varsize_range_check
-
+class VarSizeRangeCheckTest(WithRangeCheckCode.TestCase):
     def testVarSizeLowerBound(self):
         self._checkVarSizeValue(VARSIZE_LOWER_BOUND)
 

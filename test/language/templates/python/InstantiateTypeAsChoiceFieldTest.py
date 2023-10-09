@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class InstantiateTypeAsChoiceFieldTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").instantiate_type_as_choice_field
-
+class InstantiateTypeAsChoiceFieldTest(Templates.TestCase):
     def testReadWrite(self):
         instantiateTypeAsChoiceField = self.api.InstantiateTypeAsChoiceField(True)
         instantiateTypeAsChoiceField.test = self.api.Test32(13)

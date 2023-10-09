@@ -1,14 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import WithRangeCheckCode
 
-class DynamicBitRangeCheckTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "with_range_check_code.zs",
-                               extraArgs=["-withRangeCheckCode"]).dynamic_bit_range_check
-
+class DynamicBitRangeCheckTest(WithRangeCheckCode.TestCase):
     def testDynamicBitLowerBound(self):
         self._checkDynamicBitValue(NUM_BITS, DYNAMIC_BIT_LOWER_BOUND)
 

@@ -1,12 +1,6 @@
-import unittest
+import OptionalMembers
 
-from testutils import getZserioApi
-
-class OptionalArrayTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "optional_members.zs").optional_array
-
+class OptionalArrayTest(OptionalMembers.TestCase):
     def testData8(self):
         numElements = 4
         test = self.api.TestStruct()

@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import UnionTypes
 
-class SimpleUnionTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "union_types.zs").simple_union
-
+class SimpleUnionTest(UnionTypes.TestCase):
     def testConstructor(self):
         simpleUnion = self.api.SimpleUnion()
         self.assertEqual(self.api.SimpleUnion.UNDEFINED_CHOICE, simpleUnion.choice_tag)

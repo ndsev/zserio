@@ -1,12 +1,6 @@
-import unittest
+import Expressions
 
-from testutils import getZserioApi
-
-class ParameterTypeTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "expressions.zs").parameter_type
-
+class ParameterTypeTest(Expressions.TestCase):
     def testBitSizeOfWithOptional(self):
         parameterTypeExpression = self.api.ParameterTypeExpression(self.api.Color.RED,
                                                                    self.VALUE, True)

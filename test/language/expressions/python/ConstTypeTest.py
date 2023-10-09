@@ -1,12 +1,6 @@
-import unittest
+import Expressions
 
-from testutils import getZserioApi
-
-class ConstTypeTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "expressions.zs").const_type
-
+class ConstTypeTest(Expressions.TestCase):
     def testBitSizeOfWithOptional(self):
         constTypeExpression = self.api.ConstTypeExpression(self.VALID_VALUE, self.ADDITIONAL_VALUE)
         self.assertEqual(self.CONST_TYPE_EXPRESSION_BIT_SIZE_WITH_OPTIONAL, constTypeExpression.bitsizeof())

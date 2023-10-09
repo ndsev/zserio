@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import ChoiceTypes
 
-class EmptyChoiceWithDefaultTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "choice_types.zs").empty_choice_with_default
-
+class EmptyChoiceWithDefaultTest(ChoiceTypes.TestCase):
     def testSelectorConstructor(self):
         emptyChoiceWithDefault = self.api.EmptyChoiceWithDefault(1)
         self.assertEqual(1, emptyChoiceWithDefault.selector)

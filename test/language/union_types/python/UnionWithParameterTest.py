@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import UnionTypes
 
-class UnionWithParameterTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "union_types.zs").union_with_parameter
-
+class UnionWithParameterTest(UnionTypes.TestCase):
     def testParamConstructor(self):
         testUnion = self.api.TestUnion(True)
         self.assertTrue(testUnion.case1_allowed)

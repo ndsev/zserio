@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Offsets
 
-class ParameterOffsetTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "offsets.zs").parameter_offset
-
+class ParameterOffsetTest(Offsets.TestCase):
     def testBitSizeOf(self):
         createWrongOffset = False
         school = self._createSchool(createWrongOffset)

@@ -1,14 +1,10 @@
-import unittest
 import os
 import zserio
 
-from testutils import getZserioApi, getApiDir
+import ParameterizedTypes
+from testutils import getApiDir
 
-class GrandChildParamTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "parameterized_types.zs").grand_child_param
-
+class GrandChildParamTest(ParameterizedTypes.TestCase):
     def testWrite(self):
         grandChildParam = self._createGrandChildParam()
         writer = zserio.BitStreamWriter()

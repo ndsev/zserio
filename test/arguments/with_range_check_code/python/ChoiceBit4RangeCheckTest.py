@@ -1,14 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import WithRangeCheckCode
 
-class ChoiceBit4RangeCheckTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "with_range_check_code.zs",
-                               extraArgs=["-withRangeCheckCode"]).choice_bit4_range_check
-
+class ChoiceBit4RangeCheckTest(WithRangeCheckCode.TestCase):
     def testChoiceBit4LowerBound(self):
         self._checkChoiceBit4Value(BIT4_LOWER_BOUND)
 

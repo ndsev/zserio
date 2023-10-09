@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import ChoiceTypes
 
-class DefaultEmptyChoiceTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "choice_types.zs").default_empty_choice
-
+class DefaultEmptyChoiceTest(ChoiceTypes.TestCase):
     def testFromReader(self):
         tag = self.VARIANT_B_SELECTOR
         value = 234

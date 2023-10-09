@@ -1,12 +1,6 @@
-import unittest
+import DefaultValues
 
-from testutils import getZserioApi
-
-class StructureDefaultValuesTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "default_values.zs").structure_default_values
-
+class StructureDefaultValuesTest(DefaultValues.TestCase):
     def testDefaultBoolValue(self):
         structureDefaultValues = self.api.StructureDefaultValues()
         self.assertEqual(True, structureDefaultValues.bool_value)

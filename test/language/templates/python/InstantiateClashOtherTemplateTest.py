@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class InstantiateClashOtherTemplateTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").instantiate_clash_other_template
-
+class InstantiateClashOtherTemplateTest(Templates.TestCase):
     def testReadWrite(self):
         instantiateClashOtherTemplate = self.api.InstantiateClashOtherTemplate(
             self.api.Test_uint32_99604043(13))

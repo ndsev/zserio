@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class ExpressionBitmaskTemplateArgumentTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").expression_bitmask_template_argument
-
+class ExpressionBitmaskTemplateArgumentTest(Templates.TestCase):
     def testReadWrite(self):
         bitmaskTemplateArgument_Permission = self.api.BitmaskTemplateArgument_Permission(False, 10)
         self.assertTrue(bitmaskTemplateArgument_Permission.is_expression_field_used())

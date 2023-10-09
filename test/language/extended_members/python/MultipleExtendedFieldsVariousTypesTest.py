@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import ExtendedMembers
 
-class MultipleExtendedFieldsVariousTypesTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "extended_members.zs").multiple_extended_fields_various_types
-
+class MultipleExtendedFieldsVariousTypesTest(ExtendedMembers.TestCase):
     def testConstructor(self):
         extended2 = self.api.Extended2()
 

@@ -1,18 +1,19 @@
-import unittest
 import os
+import unittest
 
-from testutils import getZserioApi, getApiDir
+from testutils import getApiDir, getZserioApi, getTestCaseName
 
 class SqlTypesTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.api = getZserioApi(__file__, "sql_types.zs")
-        cls._fileName = os.path.join(getApiDir(os.path.dirname(__file__)), "sql_types_test.sqlite")
+        cls.dbFileName = os.path.join(getApiDir(os.path.dirname(__file__)),
+                                      getTestCaseName(cls.__name__) + "_test.sqlite")
 
     def setUp(self):
-        if os.path.exists(self._fileName):
-            os.remove(self._fileName)
-        self._database = self.api.SqlTypesDb.from_file(self._fileName)
+        if os.path.exists(self.dbFileName):
+            os.remove(self.dbFileName)
+        self._database = self.api.SqlTypesDb.from_file(self.dbFileName)
         self._database.create_schema()
         self._sqlColumnTypes = self._getSqlColumnTypes()
 

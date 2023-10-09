@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Functions
 
-class StructureParamTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "functions.zs").structure_param
-
+class StructureParamTest(Functions.TestCase):
     def testMetresConverterCaller(self):
         metresConverterCaller = self._createMetresConverterCaller()
         self.assertEqual(CONVERTED_CM_VALUE, metresConverterCaller.cm)

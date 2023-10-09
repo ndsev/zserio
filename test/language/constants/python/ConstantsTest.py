@@ -3,7 +3,7 @@ import unittest
 import zserio.limits
 from testutils import getZserioApi
 
-class BitfieldEnumTest(unittest.TestCase):
+class ConstantsTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.api = getZserioApi(__file__, "constants.zs")

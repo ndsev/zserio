@@ -1,17 +1,13 @@
 import sys
-import unittest
 import os
 import struct
-
 import zserio
 
-from testutils import getZserioApi, getApiDir
+import BuiltInTypes
 
-class AllBuiltInTypesTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "builtin_types.zs").all_builtin_types
+from testutils import getApiDir
 
+class AllBuiltInTypesTest(BuiltInTypes.TestCase):
     def testUint8Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
         allBuiltInTypes.uint8_type = zserio.limits.UINT8_MAX

@@ -1,13 +1,11 @@
-import unittest
 import os
 
-from testutils import getZserioApi, getApiDir
+import ExplicitParameters
 
-class ExplicitSimpleParamTest(unittest.TestCase):
+class ExplicitSimpleParamTest(ExplicitParameters.TestCaseWithDb):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "explicit_parameters.zs")
-        cls._fileName = os.path.join(getApiDir(os.path.dirname(__file__)), "explicit_simple_param_test.sqlite")
+        super(ExplicitSimpleParamTest, cls).setUpClass()
 
         test_api = cls.api.explicit_simple_param
         class SimpleParamTableParameterProvider(test_api.SimpleParamTable.IParameterProvider):
@@ -22,9 +20,9 @@ class ExplicitSimpleParamTest(unittest.TestCase):
         cls.SimpleParamTableParameterProvider = SimpleParamTableParameterProvider
 
     def setUp(self):
-        if os.path.exists(self._fileName):
-            os.remove(self._fileName)
-        self._database = self.api.ExplicitParametersDb.from_file(self._fileName)
+        if os.path.exists(self.dbFileName):
+            os.remove(self.dbFileName)
+        self._database = self.api.ExplicitParametersDb.from_file(self.dbFileName)
         self._database.create_schema()
 
     def tearDown(self):

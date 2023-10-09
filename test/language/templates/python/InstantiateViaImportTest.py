@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class InstantiateViaImportTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").instantiate_via_import
-
+class InstantiateViaImportTest(Templates.TestCase):
     def testReadWrite(self):
         instantiateViaImport = self.api.InstantiateViaImport(
             self.api.pkg.U32(13),

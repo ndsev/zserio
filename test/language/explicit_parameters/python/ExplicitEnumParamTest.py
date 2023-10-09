@@ -1,13 +1,11 @@
-import unittest
 import os
 
-from testutils import getZserioApi, getApiDir
+import ExplicitParameters
 
-class ExplicitEnumParamTest(unittest.TestCase):
+class ExplicitEnumParamTest(ExplicitParameters.TestCaseWithDb):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "explicit_parameters.zs")
-        cls._fileName = os.path.join(getApiDir(os.path.dirname(__file__)), "explicit_enum_param_test.sqlite")
+        super(ExplicitEnumParamTest, cls).setUpClass()
 
         test_api = cls.api.explicit_enum_param
         class EnumParamTableParameterProvider(test_api.EnumParamTable.IParameterProvider):
@@ -22,9 +20,9 @@ class ExplicitEnumParamTest(unittest.TestCase):
         cls.EnumParamTableParameterProvider = EnumParamTableParameterProvider
 
     def setUp(self):
-        if os.path.exists(self._fileName):
-            os.remove(self._fileName)
-        self._database = self.api.ExplicitParametersDb.from_file(self._fileName)
+        if os.path.exists(self.dbFileName):
+            os.remove(self.dbFileName)
+        self._database = self.api.ExplicitParametersDb.from_file(self.dbFileName)
         self._database.create_schema()
 
         self._enumParamTableCount1 = self.api.explicit_enum_param.TestEnum.TEN

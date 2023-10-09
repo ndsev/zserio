@@ -1,18 +1,14 @@
-import unittest
 import os
 import json
 import zserio
 
+import WithTypeInfoCode
+
 from WithTypeInfoCodeCreator import createWithTypeInfoCode
 
-from testutils import getZserioApi, getApiDir
+from testutils import getApiDir
 
-class DebugStringTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "with_type_info_code.zs",
-                               extraArgs=["-withTypeInfoCode", "-allowImplicitArrays"])
-
+class DebugStringTest(WithTypeInfoCode.TestCase):
     def testJsonWriterWithOptionals(self):
         withTypeInfoCode = createWithTypeInfoCode(self.api, createOptionals=True)
         withTypeInfoCode.initialize_offsets()

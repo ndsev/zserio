@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Functions
 
-class StructureExternTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "functions.zs").structure_extern
-
+class StructureExternTest(Functions.TestCase):
     def testGetField(self):
         testStructure = self.api.TestStructure(self.FIELD, self.api.Child(self.CHILD_FIELD))
         self.assertEqual(self.FIELD, testStructure.get_field())

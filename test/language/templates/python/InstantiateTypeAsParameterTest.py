@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class InstantiateTypeAsParameterTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").instantiate_type_as_parameter
-
+class InstantiateTypeAsParameterTest(Templates.TestCase):
     def testReadWrite(self):
         param = self.api.P32(2)
         instantiateTypeAsParameter = self.api.InstantiateTypeAsParameter(

@@ -1,12 +1,11 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Functions
 
-class StructureArrayTest(unittest.TestCase):
+class StructureArrayTest(Functions.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "functions.zs").structure_array
+        super(StructureArrayTest, cls).setUpClass()
 
         cls.ITEMS = [cls.api.Item(1, 2),
                      cls.api.Item(3, 4),

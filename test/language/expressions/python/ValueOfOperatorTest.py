@@ -1,12 +1,6 @@
-import unittest
+import Expressions
 
-from testutils import getZserioApi
-
-class ValueOfOperatorTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "expressions.zs").valueof_operator
-
+class ValueOfOperatorTest(Expressions.TestCase):
     def testGetValueOfWhiteColor(self):
         valueOfFunctions = self.api.ValueOfFunctions(self.api.Color.WHITE)
         whiteColorValue = 1

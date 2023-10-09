@@ -1,14 +1,10 @@
-import unittest
 import os
 import zserio
 
-from testutils import getZserioApi, getApiDir
+import IndexedOffsets
+from testutils import getApiDir
 
-class PackedIndexedOffsetArrayHolderTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "indexed_offsets.zs").packed_indexed_offset_array_holder
-
+class PackedIndexedOffsetArrayHolderTest(IndexedOffsets.TestCase):
     def testBitSizeOfLength1(self):
         self._checkBitSizeOf(self.NUM_ELEMENTS1)
 

@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class FunctionTemplatedReturnTypeTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").function_templated_return_type
-
+class FunctionTemplatedReturnTypeTest(Templates.TestCase):
     def testReadWrite(self):
         hasHolder = True
         functionTemplatedReturnType = self.api.FunctionTemplatedReturnType(

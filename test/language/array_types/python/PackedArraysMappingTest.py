@@ -1,12 +1,6 @@
-import unittest
+import ArrayTypes
 
-from testutils import getZserioApi
-
-class PackedArraysMappingTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "array_types.zs").packed_arrays_mapping
-
+class PackedArraysMappingTest(ArrayTypes.TestCase):
     def testUnsignedIntegerArrays(self):
         packedArraysMapping = self.api.PackedArraysMapping()
         intArray = list(range(self.FIXED_ARRAY_LENGTH))

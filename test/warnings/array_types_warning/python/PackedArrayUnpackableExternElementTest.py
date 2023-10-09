@@ -1,16 +1,11 @@
-import unittest
 import os
 import zserio
 
-from testutils import getZserioApi, getApiDir
-from ArrayTypesWarningTest import EXPECTED_WARNINGS
+import ArrayTypesWarning
 
-class PackedArrayUnpackableExternElementTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "array_types_warning.zs",
-                               expectedWarnings=EXPECTED_WARNINGS).packed_array_unpackable_extern_element
+from testutils import getApiDir
 
+class PackedArrayUnpackableExternElementTest(ArrayTypesWarning.TestCase):
     def testWriteRead(self):
         packedArrayUnpackableExternElement = self.api.PackedArrayUnpackableExternElement(
             [10, 11, 12],

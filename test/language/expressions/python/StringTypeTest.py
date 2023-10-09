@@ -1,12 +1,6 @@
-import unittest
+import Expressions
 
-from testutils import getZserioApi
-
-class StringTypeTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "expressions.zs").string_type
-
+class StringTypeTest(Expressions.TestCase):
     def testReturnValue(self):
         stringTypeExpression = self._createStringTypeExpression(True)
         self.assertEqual(self.VALUE, stringTypeExpression.return_value())

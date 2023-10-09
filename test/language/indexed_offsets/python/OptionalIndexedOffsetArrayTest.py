@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import IndexedOffsets
 
-class OptionalIndexedOffsetArrayTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "indexed_offsets.zs").optional_indexed_offset_array
-
+class OptionalIndexedOffsetArrayTest(IndexedOffsets.TestCase):
     def testBitSizeOfWithOptional(self):
         hasOptional = True
         createWrongOffsets = False

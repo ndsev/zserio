@@ -1,14 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import WithRangeCheckCode
 
-class Int8RangeCheckTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "with_range_check_code.zs",
-                               extraArgs=["-withRangeCheckCode"]).int8_range_check
-
+class Int8RangeCheckTest(WithRangeCheckCode.TestCase):
     def testInt8LowerBound(self):
         self._checkInt8Value(INT8_LOWER_BOUND)
 

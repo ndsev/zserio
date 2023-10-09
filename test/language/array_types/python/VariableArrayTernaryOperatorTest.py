@@ -1,14 +1,11 @@
-import unittest
 import os
 import zserio
 
-from testutils import getZserioApi, getApiDir
+import ArrayTypes
 
-class VariableArrayTernaryOperatorTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "array_types.zs").variable_array_ternary_operator
+from testutils import getApiDir
 
+class VariableArrayTernaryOperatorTest(ArrayTypes.TestCase):
     def testFirstWriteReadFile(self):
         isFirstOffsetUsed = True
         self._testWriteReadFile(isFirstOffsetUsed)

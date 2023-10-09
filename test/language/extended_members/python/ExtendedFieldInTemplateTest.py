@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import ExtendedMembers
 
-class ExtendedFieldInTemplateTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "extended_members.zs").extended_field_in_template
-
+class ExtendedFieldInTemplateTest(ExtendedMembers.TestCase):
     def testConstructorSimple(self):
         extended = self.api.ExtendedSimple()
 

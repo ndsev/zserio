@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import IndexedOffsets
 
-class CompoundIndexedOffsetArrayTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "indexed_offsets.zs").compound_indexed_offset_array
-
+class CompoundIndexedOffsetArrayTest(IndexedOffsets.TestCase):
     def testBitSizeOf(self):
         createWrongOffsets = False
         compoundIndexedOffsetArray = self._createCompoundIndexedOffsetArray(createWrongOffsets)

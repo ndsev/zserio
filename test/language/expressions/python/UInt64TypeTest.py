@@ -1,12 +1,6 @@
-import unittest
+import Expressions
 
-from testutils import getZserioApi
-
-class UInt64TypeTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "expressions.zs").uint64_type
-
+class UInt64TypeTest(Expressions.TestCase):
     def testBitSizeOfWithOptional(self):
         uint64TypeExpression = self.api.UInt64TypeExpression(self.UINT32_VALUE,
                                                              self.UINT64_VALUE_WITH_OPTIONAL,

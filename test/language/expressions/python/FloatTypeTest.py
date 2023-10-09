@@ -1,12 +1,6 @@
-import unittest
+import Expressions
 
-from testutils import getZserioApi
-
-class FloatTypeTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "expressions.zs").float_type
-
+class FloatTypeTest(Expressions.TestCase):
     def testResult(self):
         floatTypeExpression = self.api.FloatTypeExpression(self.FLOAT_VALUE)
         result = self.FLOAT_VALUE * 2.0 + 1.0 / 0.5 > 1.0

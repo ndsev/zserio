@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Offsets
 
-class NestedOffsetTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "offsets.zs").nested_offset
-
+class NestedOffsetTest(Offsets.TestCase):
     def testBitSizeOf(self):
         createWrongOffsets = False
         nestedOffset = self._createNestedOffset(createWrongOffsets)

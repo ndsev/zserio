@@ -1,16 +1,11 @@
-import unittest
 import os
 import zserio
 
-from testutils import getZserioApi, getApiDir
-from ArrayTypesWarningTest import EXPECTED_WARNINGS
+import ArrayTypesWarning
 
-class PackedArrayStructHasNoPackableFieldTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "array_types_warning.zs",
-                               expectedWarnings=EXPECTED_WARNINGS).packed_array_struct_has_no_packable_field
+from testutils import getApiDir
 
+class PackedArrayStructHasNoPackableFieldTest(ArrayTypesWarning.TestCase):
     def testWriteRead(self):
         packedArrayStructHasNoPackableField = self.api.PackedArrayStructHasNoPackableField(
             [

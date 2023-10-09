@@ -6,8 +6,7 @@ class FileEncodingWarningTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.warnings = {}
-        cls.api = getZserioApi(__file__, "file_encoding_warning.zs",
-                               expectedWarnings=3, errorOutputDict=cls.warnings)
+        getZserioApi(__file__, "file_encoding_warning.zs", expectedWarnings=3, errorOutputDict=cls.warnings)
 
     def testNonUtf8Characters(self):
         assertWarningsPresent(self,

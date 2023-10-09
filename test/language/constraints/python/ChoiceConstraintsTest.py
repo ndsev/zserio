@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Constraints
 
-class ChoiceConstraintsTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "constraints.zs").choice_constraints
-
+class ChoiceConstraintsTest(Constraints.TestCase):
     def testReadCorrectConstraints(self):
         selector = True
         value8 = self.VALUE8_CORRECT_CONSTRAINT

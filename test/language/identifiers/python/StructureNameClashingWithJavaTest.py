@@ -1,12 +1,6 @@
-import unittest
+import Identifiers
 
-from testutils import getZserioApi
-
-class StructureNameClashingWithJavaTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "identifiers.zs").structure_name_clashing_with_java
-
+class StructureNameClashingWithJavaTest(Identifiers.TestCase):
     def testEmptyConstructor(self):
         structureNameClashingWithJava = self.api.StructureNameClashingWithJava()
         self.assertEqual(None, structureNameClashingWithJava.byte_field)

@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import ChoiceTypes
 
-class BoolParamChoiceTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "choice_types.zs").bool_param_choice
-
+class BoolParamChoiceTest(ChoiceTypes.TestCase):
     def testConstructor(self):
         selector = True
         boolParamChoice = self.api.BoolParamChoice(selector)

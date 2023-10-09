@@ -1,15 +1,9 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import StructureTypes
 
 # this test is mainly for C++, so just check that it is ok
-class FieldConstructorClashingTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "structure_types.zs",
-                               extraArgs=["-withTypeInfoCode"]).field_constructor_clashing
-
+class FieldConstructorClashingTest(StructureTypes.TestCase):
     def testWriteRead(self):
         fieldConstructorClashing = self._createFieldConstructorClashing()
 

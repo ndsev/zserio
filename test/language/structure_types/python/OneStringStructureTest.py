@@ -1,15 +1,10 @@
-import unittest
 import os
 import zserio
 
-from testutils import getZserioApi, getApiDir
+import StructureTypes
+from testutils import getApiDir
 
-class OneStringStructureTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "structure_types.zs",
-                               extraArgs=["-withTypeInfoCode"]).one_string_structure
-
+class OneStringStructureTest(StructureTypes.TestCase):
     def testConstructor(self):
         oneStringStructure = self.api.OneStringStructure()
         self.assertEqual("", oneStringStructure.one_string)

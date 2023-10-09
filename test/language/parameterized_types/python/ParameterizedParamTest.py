@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import ParameterizedTypes
 
-class ParameterizedParamTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "parameterized_types.zs").parameterized_param
-
+class ParameterizedParamTest(ParameterizedTypes.TestCase):
     def testWrite(self):
         parameterizedParamHolder = self._createParameterizedParamHolder()
         writer = zserio.BitStreamWriter()

@@ -6,8 +6,7 @@ class OptionalMembersWarningTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.warnings = {}
-        cls.api = getZserioApi(__file__, "optional_members_warning.zs",
-                               expectedWarnings=24, errorOutputDict=cls.warnings)
+        getZserioApi(__file__, "optional_members_warning.zs", expectedWarnings=24, errorOutputDict=cls.warnings)
 
     def testOptionalReferencesInArrayLength(self):
         assertWarningsPresent(self,

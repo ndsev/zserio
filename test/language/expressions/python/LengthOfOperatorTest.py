@@ -1,12 +1,6 @@
-import unittest
+import Expressions
 
-from testutils import getZserioApi
-
-class LengthOfOperatorTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "expressions.zs").lengthof_operator
-
+class LengthOfOperatorTest(Expressions.TestCase):
     def testGetLengthOfFixedArray(self):
         lengthOfFunctions = self.api.LengthOfFunctions()
         fixedArrayLength = 10

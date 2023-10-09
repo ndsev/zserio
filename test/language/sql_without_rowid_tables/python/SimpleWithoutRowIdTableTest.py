@@ -1,20 +1,13 @@
-import unittest
 import os
 import apsw
 
-from testutils import getZserioApi, getApiDir
+import SqlWithoutRowIdTables
 
-class SimpleWithoutRowIdTableTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "sql_without_rowid_tables.zs").simple_without_rowid_table
-        cls._fileName = os.path.join(getApiDir(os.path.dirname(__file__)),
-                                     "simple_without_rowid_table_test.sqlite")
-
+class SimpleWithoutRowIdTableTest(SqlWithoutRowIdTables.TestCaseWithDb):
     def setUp(self):
-        if os.path.exists(self._fileName):
-            os.remove(self._fileName)
-        self._database = self.api.SimpleWithoutRowIdDb.from_file(self._fileName)
+        if os.path.exists(self.dbFileName):
+            os.remove(self.dbFileName)
+        self._database = self.api.SimpleWithoutRowIdDb.from_file(self.dbFileName)
 
     def tearDown(self):
         self._database.close()

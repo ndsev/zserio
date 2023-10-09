@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class UnionTemplatedFieldTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").union_templated_field
-
+class UnionTemplatedFieldTest(Templates.TestCase):
     def testReadWrite(self):
         uintUnion = self.api.TemplatedUnion_uint16_uint32(field1_=42)
         floatUnion = self.api.TemplatedUnion_float32_float64()

@@ -1,19 +1,15 @@
-import unittest
 import os
 import zserio
 
 from zserio.typeinfo import TypeAttribute, MemberAttribute, TypeInfo
 
+import WithTypeInfoCode
+
 from WithTypeInfoCodeCreator import createWithTypeInfoCode
 
-from testutils import getZserioApi, getApiDir
+from testutils import getApiDir
 
-class WithTypeInfoCodeTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "with_type_info_code.zs",
-                               extraArgs=["-withTypeInfoCode", "-allowImplicitArrays"])
-
+class WithTypeInfoCodeTest(WithTypeInfoCode.TestCase):
     def testSqlDatabase(self):
         self._checkSqlDatabase(self.api.SqlDatabase.type_info())
 

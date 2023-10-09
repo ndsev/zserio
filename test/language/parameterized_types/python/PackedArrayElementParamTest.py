@@ -1,14 +1,10 @@
-import unittest
 import os
 import zserio
 
-from testutils import getZserioApi, getApiDir
+import ParameterizedTypes
+from testutils import getApiDir
 
-class PackedArrayElementParamTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "parameterized_types.zs").packed_array_element_param
-
+class PackedArrayElementParamTest(ParameterizedTypes.TestCase):
     def testBitSizeOfLength1(self):
         self._checkBitSizeOf(self.NUM_BLOCKS1)
 

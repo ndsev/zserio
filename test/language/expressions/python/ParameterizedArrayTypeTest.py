@@ -1,12 +1,6 @@
-import unittest
+import Expressions
 
-from testutils import getZserioApi
-
-class ParameterizedArrayTypeTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "expressions.zs").parameterized_array_type
-
+class ParameterizedArrayTypeTest(Expressions.TestCase):
     def testBitSizeOfWithOptional(self):
         array = [self.api.ParameterizedArrayElement(needs_extra_=False, value1_=0),
                  self.api.ParameterizedArrayElement(False, 0, None)]

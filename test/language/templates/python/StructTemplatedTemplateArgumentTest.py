@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class StructTemplatedTemplateArgumentTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").struct_templated_template_argument
-
+class StructTemplatedTemplateArgumentTest(Templates.TestCase):
     def testReadWrite(self):
         structTemplatedTemplateArgument = self.api.StructTemplatedTemplateArgument(
             self.api.Field_Compound_uint32(self.api.Compound_uint32(42))

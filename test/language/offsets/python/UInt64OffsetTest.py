@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Offsets
 
-class UInt64OffsetTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "offsets.zs").uint64_offset
-
+class UInt64OffsetTest(Offsets.TestCase):
     def testBitSizeOf(self):
         uint64Offset = self.api.UInt64Offset.from_reader(self._createReader(False))
         self.assertEqual(self.BIT_SIZE, uint64Offset.bitsizeof())

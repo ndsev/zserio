@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class StructTemplateClashAcrossPackagesTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").struct_template_clash_across_packages
-
+class StructTemplateClashAcrossPackagesTest(Templates.TestCase):
     def testReadWriteInPkg1(self):
         instantiationInPkg1 = self.api.pkg1.InstantiationInPkg1(
             self.api.test_struct.TestStruct_Test_639610D0(self.api.pkg1.Test(42)))

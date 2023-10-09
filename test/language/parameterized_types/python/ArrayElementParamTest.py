@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import ParameterizedTypes
 
-class ArrayElementParamTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "parameterized_types.zs").array_element_param
-
+class ArrayElementParamTest(ParameterizedTypes.TestCase):
     def testWrite(self):
         database = self._createDatabase()
         writer = zserio.BitStreamWriter()

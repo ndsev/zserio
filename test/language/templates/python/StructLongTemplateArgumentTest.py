@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class StructLongTemplateArgumentTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").struct_long_template_argument
-
+class StructLongTemplateArgumentTest(Templates.TestCase):
     def testReadWrite(self):
         templ = self.api.TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVery_(
             self.api.ThisIsVeryVeryVeryLongNamedStructure("StringT"),

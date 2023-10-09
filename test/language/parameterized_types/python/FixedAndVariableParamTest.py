@@ -1,13 +1,14 @@
-import unittest
 import os
 import zserio
 
-from testutils import getZserioApi, getApiDir
+import ParameterizedTypes
+from testutils import getApiDir
 
-class FixedAndVariableParamTest(unittest.TestCase):
+class FixedAndVariableParamTest(ParameterizedTypes.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "parameterized_types.zs").fixed_and_variable_param
+        super(FixedAndVariableParamTest, cls).setUpClass()
+
         cls.COLOR = cls.api.Color.BLACK
         cls.WRONG_COLOR = cls.api.Color.WHITE
         cls.ACCESS = cls.api.Access.Values.READ

@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import ExtendedMembers
 
-class ExtendedIndexedOffsetsTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "extended_members.zs").extended_indexed_offsets
-
+class ExtendedIndexedOffsetsTest(ExtendedMembers.TestCase):
     def testDefaultConstructor(self):
         extended = self.api.Extended()
 

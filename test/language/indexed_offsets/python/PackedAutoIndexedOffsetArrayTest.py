@@ -1,14 +1,10 @@
-import unittest
 import os
 import zserio
 
-from testutils import getZserioApi, getApiDir
+import IndexedOffsets
+from testutils import getApiDir
 
-class PackedAutoIndexedOffsetArrayTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "indexed_offsets.zs").packed_auto_indexed_offset_array
-
+class PackedAutoIndexedOffsetArrayTest(IndexedOffsets.TestCase):
     def testBitSizeOf(self):
         createWrongOffsets = False
         autoIndexedOffsetArray = self._createAutoIndexedOffsetArray(createWrongOffsets)

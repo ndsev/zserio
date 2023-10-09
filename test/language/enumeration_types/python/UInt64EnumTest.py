@@ -1,14 +1,8 @@
-import unittest
-
 import zserio
 
-from testutils import getZserioApi
+import EnumerationTypes
 
-class UInt64EnumTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "enumeration_types.zs", extraArgs=["-withTypeInfoCode"]).uint64_enum
-
+class UInt64EnumTest(EnumerationTypes.TestCase):
     def testValues(self):
         self.assertEqual(NONE_COLOR_VALUE, self.api.DarkColor.NONE_COLOR.value)
         self.assertEqual(DARK_RED_VALUE, self.api.DarkColor.DARK_RED.value)

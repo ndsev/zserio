@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Constraints
 
-class StructureConstraintsTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "constraints.zs").structure_constraints
-
+class StructureConstraintsTest(Constraints.TestCase):
     def testReadCorrectColors(self):
         writer = zserio.BitStreamWriter()
         self.__class__._write(writer, self.api.BasicColor.BLACK, self.api.BasicColor.WHITE,

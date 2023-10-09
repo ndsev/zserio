@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Constraints
 
-class StructureBitmaskConstraintsTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "constraints.zs").structure_bitmask_constraints
-
+class StructureBitmaskConstraintsTest(Constraints.TestCase):
     def testReadCorrectConstraints(self):
         writer = zserio.BitStreamWriter()
         availability = (

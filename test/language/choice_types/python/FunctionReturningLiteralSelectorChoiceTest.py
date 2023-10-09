@@ -1,12 +1,6 @@
-import unittest
+import ChoiceTypes
 
-from testutils import getZserioApi
-
-class FunctionReturningLiteralSelectorChoiceTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "choice_types.zs").function_returning_literal_selector_choice
-
+class FunctionReturningLiteralSelectorChoiceTest(ChoiceTypes.TestCase):
     def testField8(self):
         selector = self.api.Selector(False)
         testChoice = self.api.TestChoice(selector)

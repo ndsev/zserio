@@ -1,12 +1,11 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Functions
 
-class ChoiceArrayTest(unittest.TestCase):
+class ChoiceArrayTest(Functions.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "functions.zs").choice_array
+        super(ChoiceArrayTest, cls).setUpClass()
 
         cls.ELEMENT_A_FOR_EXTRA_VALUE = 20
         cls.EXTRA_VALUE = 4711

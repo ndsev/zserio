@@ -1,14 +1,11 @@
-import unittest
 import os
 import zserio
 
-from testutils import getZserioApi, getApiDir
+import ChoiceTypes
 
-class UInt64ParamChoiceTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "choice_types.zs").uint64_param_choice
+from testutils import getApiDir
 
+class UInt64ParamChoiceTest(ChoiceTypes.TestCase):
     def testConstructor(self):
         uint64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_A_SELECTOR)
         self.assertEqual(self.VARIANT_A_SELECTOR, uint64ParamChoice.selector)

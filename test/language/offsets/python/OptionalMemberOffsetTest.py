@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Offsets
 
-class OptionalMemberOffsetTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "offsets.zs").optional_member_offset
-
+class OptionalMemberOffsetTest(Offsets.TestCase):
     def testBitSizeOfWithOptional(self):
         optionalMemberOffset = self.api.OptionalMemberOffset(True, self.OPTIONAL_FIELD_OFFSET, 0x1010, 0x2020)
         self.assertEqual(self.WITH_OPTIONAL_MEMBER_OFFSET_BIT_SIZE, optionalMemberOffset.bitsizeof())

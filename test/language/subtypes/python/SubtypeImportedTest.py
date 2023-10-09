@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Subtypes
 
-class SubtypeImportedTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "subtypes.zs").subtype_imported
-
+class SubtypeImportedTest(Subtypes.TestCase):
     def testReadWrite(self):
         subtypeImported = self.api.SubtypeImported(
             self.api.pkg.SubTest(13)

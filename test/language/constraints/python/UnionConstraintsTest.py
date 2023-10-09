@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Constraints
 
-class UnionConstraintsTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "constraints.zs").union_constraints
-
+class UnionConstraintsTest(Constraints.TestCase):
     def testReadCorrectConstraints(self):
         value8 = self.VALUE8_CORRECT_CONSTRAINT
         writer = zserio.BitStreamWriter()

@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import ChoiceTypes
 
-class FullEnumParamChoiceTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "choice_types.zs").full_enum_param_choice
-
+class FullEnumParamChoiceTest(ChoiceTypes.TestCase):
     def testConstructor(self):
         selector = self.api.Selector.BLACK
         fullEnumParamChoice = self.api.FullEnumParamChoice(selector)

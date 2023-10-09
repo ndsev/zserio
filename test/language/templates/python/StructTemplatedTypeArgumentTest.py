@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class StructTemplatedTypeArgumentTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").struct_templated_type_argument
-
+class StructTemplatedTypeArgumentTest(Templates.TestCase):
     def testReadWrite(self):
         paramHolder = self.api.ParamHolder_uint32(42)
         structTemplatedTypeArgument = self.api.StructTemplatedTypeArgument(

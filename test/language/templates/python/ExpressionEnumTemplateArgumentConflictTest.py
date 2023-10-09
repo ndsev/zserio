@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class ExpressionEnumTemplateArgumentConflictTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").expression_enum_template_argument_conflict
-
+class ExpressionEnumTemplateArgumentConflictTest(Templates.TestCase):
     def testReadWrite(self):
         enumTemplateArgumentConflict_Letters = self.api.EnumTemplateArgumentConflict_Letters(False, 10)
         self.assertTrue(enumTemplateArgumentConflict_Letters.is_expression_field_used())

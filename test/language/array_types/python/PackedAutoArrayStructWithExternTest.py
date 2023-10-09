@@ -1,14 +1,11 @@
-import unittest
 import os
 import zserio
 
-from testutils import getZserioApi, getApiDir
+import ArrayTypes
 
-class PackedAutoArrayStructWithExternTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "array_types.zs").packed_auto_array_struct_with_extern
+from testutils import getApiDir
 
+class PackedAutoArrayStructWithExternTest(ArrayTypes.TestCase):
     def testWriteRead(self):
         packedAutoArray = self._createPackedAutoArray()
         bitBuffer = zserio.serialize(packedAutoArray)

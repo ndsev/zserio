@@ -1,12 +1,6 @@
-import unittest
+import Expressions
 
-from testutils import getZserioApi
-
-class FullConstTypeTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "expressions.zs").full_const_type
-
+class FullConstTypeTest(Expressions.TestCase):
     def testBitSizeOfWithOptional(self):
         fullConstTypeExpression = self.api.FullConstTypeExpression(self.FULL_VALID_VALUE,
                                                                    self.FULL_ADDITIONAL_VALUE)

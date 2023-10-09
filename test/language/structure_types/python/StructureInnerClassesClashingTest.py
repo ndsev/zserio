@@ -1,14 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import StructureTypes
 
-class StructureInnerClassesClashingTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "structure_types.zs",
-                               extraArgs=["-withTypeInfoCode"]).structure_inner_classes_clashing
-
+class StructureInnerClassesClashingTest(StructureTypes.TestCase):
     def testWriteReadArrayType(self):
         testStructure = self.api.ArrayType_array([1, 2, 3, 4])
 

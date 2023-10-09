@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import ChoiceTypes
 
-class UInt16ParamChoiceTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "choice_types.zs").uint16_param_choice
-
+class UInt16ParamChoiceTest(ChoiceTypes.TestCase):
     def testConstructor(self):
         selector = self.VARIANT_A_SELECTOR
         uint16ParamChoice = self.api.UInt16ParamChoice(selector)

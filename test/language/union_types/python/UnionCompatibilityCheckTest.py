@@ -1,14 +1,10 @@
-import unittest
 import os
 import zserio
 
-from testutils import getZserioApi, getApiDir
+import UnionTypes
+from testutils import getApiDir
 
-class UnionCompatibilityCheckTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "union_types.zs").union_compatibility_check
-
+class UnionCompatibilityCheckTest(UnionTypes.TestCase):
     def testWriteVersion1ReadVersion1(self):
         unionCompatibilityCheckVersion1 = self._createVersion1(self._createArrayVersion1())
         readUnionCompatibilityCheckVersion1 = self._writeReadVersion1(unionCompatibilityCheckVersion1)

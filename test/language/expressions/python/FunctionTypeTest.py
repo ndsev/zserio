@@ -1,12 +1,6 @@
-import unittest
+import Expressions
 
-from testutils import getZserioApi
-
-class FunctionTypeTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "expressions.zs").function_type
-
+class FunctionTypeTest(Expressions.TestCase):
     def testBitSizeOfWithOptional(self):
         functionTypeExpression = self.api.FunctionTypeExpression(self.api.Color.RED, True)
         self.assertEqual(self.FUNCTION_TYPE_EXPRESSION_BIT_SIZE_WITH_OPTIONAL,

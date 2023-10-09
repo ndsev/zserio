@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class InstantiateTypeAsStructFieldTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").instantiate_type_as_struct_field
-
+class InstantiateTypeAsStructFieldTest(Templates.TestCase):
     def testReadWrite(self):
         instantiateTypeAsStructField = self.api.InstantiateTypeAsStructField(self.api.Test32(13))
 

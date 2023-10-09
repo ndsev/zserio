@@ -1,14 +1,8 @@
-import unittest
-
 import zserio
 
-from testutils import getZserioApi
+import BitmaskTypes
 
-class UInt8BitmaskTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "bitmask_types.zs").uint8_bitmask
-
+class UInt8BitmaskTest(BitmaskTypes.TestCase):
     def testEmptyConstructor(self):
         permission = self.api.Permission()
         self.assertEqual(0, permission.value)

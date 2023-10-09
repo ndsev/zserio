@@ -1,14 +1,11 @@
-import unittest
 import os
 import zserio
 
-from testutils import getZserioApi, getApiDir
+import ArrayTypes
 
-class PackedAutoArrayBitfieldParamTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "array_types.zs").packed_auto_array_bitfield_param
+from testutils import getApiDir
 
+class PackedAutoArrayBitfieldParamTest(ArrayTypes.TestCase):
     def testWriteRead(self):
         parameterizedBitfieldLength = self._createParameterizedBitfieldLength()
         writer = zserio.BitStreamWriter()

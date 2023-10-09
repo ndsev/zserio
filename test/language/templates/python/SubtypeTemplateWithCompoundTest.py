@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class SubtypeTemplateWithCompoundTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").subtype_template_with_compound
-
+class SubtypeTemplateWithCompoundTest(Templates.TestCase):
     def testReadWrite(self):
         subtypeTemplateWithCompound = self.api.SubtypeTemplateWithCompound(
             self.api.Compound(13),

@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class StructFullAndShortTemplateArgumentTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").struct_full_and_short_template_argument
-
+class StructFullAndShortTemplateArgumentTest(Templates.TestCase):
     def testReadWriteFull(self):
         storage = self.api.templated_struct.Storage("String")
         structFullNameTemplateArgument = self.api.StructFullNameTemplateArgument(

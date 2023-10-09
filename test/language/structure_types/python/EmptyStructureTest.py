@@ -1,14 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import StructureTypes
 
-class EmptyStructureTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "structure_types.zs",
-                               extraArgs=["-withTypeInfoCode"]).empty_structure
-
+class EmptyStructureTest(StructureTypes.TestCase):
     def testFromReader(self):
         reader = zserio.BitStreamReader(bytes())
         emptyStructure = self.api.EmptyStructure.from_reader(reader)

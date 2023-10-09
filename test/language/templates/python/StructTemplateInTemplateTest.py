@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class StructTemplateInTemplateTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").struct_template_in_template
-
+class StructTemplateInTemplateTest(Templates.TestCase):
     def testReadWrite(self):
         structTemplateInTemplate = self.api.StructTemplateInTemplate(
             self.api.Field_uint32(self.api.Compound_uint32(42)),

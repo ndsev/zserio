@@ -1,12 +1,6 @@
-import unittest
+import Expressions
 
-from testutils import getZserioApi
-
-class FieldTypeTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "expressions.zs").field_type
-
+class FieldTypeTest(Expressions.TestCase):
     def testBitSizeOfWithOptional(self):
         containedType = self.api.ContainedType(True)
         fieldTypeExpression = self.api.FieldTypeExpression(containedType, self.EXTRA_VALUE)

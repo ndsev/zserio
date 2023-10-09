@@ -1,14 +1,11 @@
-import unittest
 import os
 import zserio
 
-from testutils import getZserioApi, getApiDir
+import Offsets
 
-class PackedAutoArrayOffsetTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "offsets.zs").packed_auto_array_offset
+from testutils import getApiDir
 
+class PackedAutoArrayOffsetTest(Offsets.TestCase):
     def testBitSizeOf(self):
         createWrongOffset = False
         autoArrayHolder = self._createAutoArrayHolder(createWrongOffset)

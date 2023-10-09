@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import IndexedOffsets
 
-class EmptyIndexedOffsetArrayTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "indexed_offsets.zs").empty_indexed_offset_array
-
+class EmptyIndexedOffsetArrayTest(IndexedOffsets.TestCase):
     def testBitSizeOf(self):
         emptyIndexedOffsetArray = self._createEmptyIndexedOffsetArray()
         self.assertEqual(self.EMPTY_INDEXED_OFFSET_ARRAY_BIT_SIZE, emptyIndexedOffsetArray.bitsizeof())

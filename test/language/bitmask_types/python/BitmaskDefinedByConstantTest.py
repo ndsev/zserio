@@ -1,13 +1,12 @@
-import unittest
-
 import zserio
 
-from testutils import getZserioApi
+import BitmaskTypes
 
-class BitmaskDefinedByConstantTest(unittest.TestCase):
+class BitmaskDefinedByConstantTest(BitmaskTypes.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "bitmask_types.zs").bitmask_defined_by_constant
+        super(BitmaskDefinedByConstantTest, cls).setUpClass()
+
         cls.NONE_VALUE = 0
         cls.READ_VALUE = cls.api.READ_PERMISSION
         cls.WRITE_VALUE = 4

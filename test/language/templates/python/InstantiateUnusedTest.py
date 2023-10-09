@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class InstantiateUnusedTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").instantiate_unused
-
+class InstantiateUnusedTest(Templates.TestCase):
     def testReadWrite(self):
         # check that unused template is instantiated via the instantiate command
         u32 = self.api.U32(13)

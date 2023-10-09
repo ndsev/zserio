@@ -1,12 +1,6 @@
-import unittest
+import Templates
 
-from testutils import getZserioApi
-
-class SubtypeTemplateArgumentTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").subtype_template_argument
-
+class SubtypeTemplateArgumentTest(Templates.TestCase):
     def testBitSizeOf(self):
         field_uint32 = self.api.Field_uint32(10)
         field_compound = self.api.Field_Compound(self.api.Compound(10))

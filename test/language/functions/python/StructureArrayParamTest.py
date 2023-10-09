@@ -1,12 +1,11 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Functions
 
-class StructureArrayParamTest(unittest.TestCase):
+class StructureArrayParamTest(Functions.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "functions.zs").structure_array_param
+        super(StructureArrayParamTest, cls).setUpClass()
 
         cls.CHILD_BIT_SIZE = 19
         cls.ANOTHER_CHILD_BIT_SIZE = 17

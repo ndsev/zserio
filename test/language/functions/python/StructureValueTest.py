@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Functions
 
-class StructureValueTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "functions.zs").structure_value
-
+class StructureValueTest(Functions.TestCase):
     def testCustomVarIntValue42(self):
         self._checkCustomVarInt(42)
 

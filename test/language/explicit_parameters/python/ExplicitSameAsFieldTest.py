@@ -1,13 +1,11 @@
-import unittest
 import os
 
-from testutils import getZserioApi, getApiDir
+import ExplicitParameters
 
-class ExplicitSameAsFieldTest(unittest.TestCase):
+class ExplicitSameAsFieldTest(ExplicitParameters.TestCaseWithDb):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "explicit_parameters.zs")
-        cls._fileName = os.path.join(getApiDir(os.path.dirname(__file__)), "explicit_same_as_field_test.sqlite")
+        super(ExplicitSameAsFieldTest, cls).setUpClass()
 
         test_api = cls.api.explicit_same_as_field
         class SameAsFieldTableParameterProvider(test_api.SameAsFieldTable.IParameterProvider):
@@ -18,9 +16,9 @@ class ExplicitSameAsFieldTest(unittest.TestCase):
         cls.SameAsFieldTableParameterProvider = SameAsFieldTableParameterProvider
 
     def setUp(self):
-        if os.path.exists(self._fileName):
-            os.remove(self._fileName)
-        self._database = self.api.ExplicitParametersDb.from_file(self._fileName)
+        if os.path.exists(self.dbFileName):
+            os.remove(self.dbFileName)
+        self._database = self.api.ExplicitParametersDb.from_file(self.dbFileName)
         self._database.create_schema()
 
     def tearDown(self):

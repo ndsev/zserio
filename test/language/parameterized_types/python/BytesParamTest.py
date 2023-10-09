@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import ParameterizedTypes
 
-class BytesParamTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "parameterized_types.zs").bytes_param
-
+class BytesParamTest(ParameterizedTypes.TestCase):
     def testWriteRead(self):
         bytesData = bytearray([0xCA, 0xFE])
         bytesParam = self.api.BytesParam(bytesData, self.api.Parameterized(bytesData, 13))

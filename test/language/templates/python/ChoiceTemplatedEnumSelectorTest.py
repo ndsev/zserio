@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class ChoiceTemplatedEnumSelectorTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").choice_templated_enum_selector
-
+class ChoiceTemplatedEnumSelectorTest(Templates.TestCase):
     def testReadWrite(self):
         selectorFromZero = self.api.EnumFromZero.ONE
         selectorFromOne = self.api.EnumFromOne.THREE

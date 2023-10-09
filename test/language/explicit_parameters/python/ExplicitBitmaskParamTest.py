@@ -1,13 +1,11 @@
-import unittest
 import os
 
-from testutils import getZserioApi, getApiDir
+import ExplicitParameters
 
-class ExplicitBitmaskParamTest(unittest.TestCase):
+class ExplicitBitmaskParamTest(ExplicitParameters.TestCaseWithDb):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "explicit_parameters.zs")
-        cls._fileName = os.path.join(getApiDir(os.path.dirname(__file__)), "explicit_bitmask_param_test.sqlite")
+        super(ExplicitBitmaskParamTest, cls).setUpClass()
 
         test_api = cls.api.explicit_bitmask_param
         class BitmaskParamTableParameterProvider(test_api.BitmaskParamTable.IParameterProvider):
@@ -22,9 +20,9 @@ class ExplicitBitmaskParamTest(unittest.TestCase):
         cls.BitmaskParamTableParameterProvider = BitmaskParamTableParameterProvider
 
     def setUp(self):
-        if os.path.exists(self._fileName):
-            os.remove(self._fileName)
-        self._database = self.api.ExplicitParametersDb.from_file(self._fileName)
+        if os.path.exists(self.dbFileName):
+            os.remove(self.dbFileName)
+        self._database = self.api.ExplicitParametersDb.from_file(self.dbFileName)
         self._database.create_schema()
 
         self._bitmaskParamTableCount1 = self.api.explicit_bitmask_param.TestBitmask.Values.TEN

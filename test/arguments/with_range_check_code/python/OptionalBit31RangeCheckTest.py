@@ -1,14 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import WithRangeCheckCode
 
-class OptionalBit31RangeCheckTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "with_range_check_code.zs",
-                               extraArgs=["-withRangeCheckCode"]).optional_bit31_range_check
-
+class OptionalBit31RangeCheckTest(WithRangeCheckCode.TestCase):
     def testOptionalBit31LowerBound(self):
         self._checkOptionalBit31Value(OPTIONAL_BIT31_LOWER_BOUND)
 

@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Alignment
 
-class BitAlignmentTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "alignment.zs").bit_alignment
-
+class BitAlignmentTest(Alignment.TestCase):
     def testBitSizeOf(self):
         bitAlignment = self._createBitAlignment()
         self.assertEqual(self.BIT_ALIGNMENT_BIT_SIZE, bitAlignment.bitsizeof())

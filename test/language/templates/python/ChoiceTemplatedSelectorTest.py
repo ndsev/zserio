@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class ChoiceTemplatedSelectorTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").choice_templated_selector
-
+class ChoiceTemplatedSelectorTest(Templates.TestCase):
     def testReadWrite(self):
         selector16 = 0
         selector32 = 1

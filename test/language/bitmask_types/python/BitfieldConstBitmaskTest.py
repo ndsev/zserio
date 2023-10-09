@@ -1,13 +1,12 @@
-import unittest
-
 import zserio
 
-from testutils import getZserioApi
+import BitmaskTypes
 
-class BitfieldConstBitmaskTest(unittest.TestCase):
+class BitfieldConstBitmaskTest(BitmaskTypes.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "bitmask_types.zs").bitfield_const_bitmask
+        super(BitfieldConstBitmaskTest, cls).setUpClass()
+
         cls.PERMISSION_BITSIZEOF = cls.api.NUM_BITS
 
     def testEmptyConstructor(self):

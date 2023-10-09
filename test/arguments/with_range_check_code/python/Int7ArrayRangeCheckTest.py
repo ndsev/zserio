@@ -1,14 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import WithRangeCheckCode
 
-class Int7ArrayRangeCheckTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "with_range_check_code.zs",
-                               extraArgs=["-withRangeCheckCode"]).int7_array_range_check
-
+class Int7ArrayRangeCheckTest(WithRangeCheckCode.TestCase):
     def testInt7ArrayLowerBound(self):
         self._checkInt7ArrayValue(INT7_LOWER_BOUND)
 

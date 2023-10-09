@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import ChoiceTypes
 
-class EnumWithRemovedItemParamChoiceTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "choice_types.zs").enum_with_removed_item_param_choice
-
+class EnumWithRemovedItemParamChoiceTest(ChoiceTypes.TestCase):
     def testWriteRead(self):
         enumWithRemovedItemParamChoice = self.api.EnumWithRemovedItemParamChoice(
             self.api.Selector.ZSERIO_REMOVED_GREY

@@ -6,8 +6,7 @@ class ChoiceTypesWarningTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.warnings = {}
-        cls.api = getZserioApi(__file__, "choice_types_warning.zs",
-                               expectedWarnings=1, errorOutputDict=cls.warnings)
+        getZserioApi(__file__, "choice_types_warning.zs", expectedWarnings=1, errorOutputDict=cls.warnings)
 
     def testOptionalReferencesInSelector(self):
         assertWarningsPresent(self,

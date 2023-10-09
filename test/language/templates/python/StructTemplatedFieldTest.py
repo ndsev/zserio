@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Templates
 
-class StructTemplatedFieldTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").struct_templated_field
-
+class StructTemplatedFieldTest(Templates.TestCase):
     def testReadWrite(self):
         structTemplatedField = self.api.StructTemplatedField(
             self.api.Field_uint32(13),

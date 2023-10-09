@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import UnionTypes
 
-class EmptyUnionTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "union_types.zs").empty_union
-
+class EmptyUnionTest(UnionTypes.TestCase):
     def testEmptyConstructor(self):
         emptyUnion = self.api.EmptyUnion()
         self.assertEqual(0, emptyUnion.bitsizeof())

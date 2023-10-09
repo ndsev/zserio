@@ -3,6 +3,7 @@ Test utilities.
 """
 
 import os
+import re
 import sys
 import importlib
 import subprocess
@@ -108,6 +109,42 @@ def getTestSuiteName(testDir):
     testDir, secondDir = os.path.split(testDir)
     firstDir = os.path.split(testDir)[1]
     return os.path.join(firstDir, secondDir)
+
+def getTestCaseName(testName):
+    """
+    Extracts test case name from the given test name.
+
+    Example:
+    testName = "EmptyUnionTest"
+    testCaseName = getTestCaseName(testName)
+    print(testCaseName) # prints "empty_union"
+
+    :param testName: Test class name.
+    :returns: Test case name in camel case.
+    """
+
+    fixedReplacements = [
+        ("Test$", ""),
+        ("VarInt", "Varint"),
+        ("VarUInt", "Varuint"),
+        ("VarSize", "Varsize"),
+        ("UInt", "Uint"),
+        ("BitField", "Bitfield"),
+        ("BuiltIn", "Builtin"),
+        ("RowId", "Rowid"),
+        ("UInt(\\d+)", "Uint\\1"),
+        ("LengthOf", "Lengthof"),
+        ("^IsSetOperator", "IssetOperator"),
+        ("^NumBitsOperator", "NumbitsOperator"),
+        ("^ValueOfOperator", "ValueofOperator")
+    ]
+
+    testCaseName = testName
+
+    for pattern, replacement in fixedReplacements:
+        testCaseName = re.sub(pattern, replacement, testCaseName)
+
+    return _camelCaseToSnakeCase(testCaseName)
 
 def compileErroneousZserio(testFile, mainZsFile, errorOutputDict, extraArgs=None):
     """
@@ -275,3 +312,8 @@ def _assertMessagesPresent(test, mainZsFile, errorOutputDict, expectedMessages, 
                 test.fail(f"Expected {messageType} not found! ('{expectedMessage}')")
             else:
                 test.fail(f"Expected {messageType} found in wrong order! ('{expectedMessage}')")
+
+def _camelCaseToSnakeCase(camelCase):
+    camelCase = re.sub("([a-z])([A-Z])", "\\1_\\2", camelCase)
+    camelCase = re.sub("([0-9A-Z])([A-Z][a-z])", "\\1_\\2", camelCase).lower()
+    return camelCase

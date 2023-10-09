@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import ParameterizedTypes
 
-class SimpleParamTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "parameterized_types.zs").simple_param
-
+class SimpleParamTest(ParameterizedTypes.TestCase):
     def testParameterConstructor(self):
         item = self.api.Item(self.LOWER_VERSION)
         self.assertFalse(item.is_extra_param_used())

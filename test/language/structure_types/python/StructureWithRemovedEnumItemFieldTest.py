@@ -1,14 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import StructureTypes
 
-class StructureWithRemovedEnumItemFieldTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "structure_types.zs",
-                               extraArgs=["-withTypeInfoCode"]).structure_with_removed_enum_item_field
-
+class StructureWithRemovedEnumItemFieldTest(StructureTypes.TestCase):
     def testConstructor(self):
         structureWithRemovedEnumItemField = self.api.StructureWithRemovedEnumItemField(
             self.api.Enumeration.ZSERIO_REMOVED_REMOVED

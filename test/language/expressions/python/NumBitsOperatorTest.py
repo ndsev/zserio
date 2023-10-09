@@ -1,12 +1,6 @@
-import unittest
+import Expressions
 
-from testutils import getZserioApi
-
-class NumBitsOperatorTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "expressions.zs").numbits_operator
-
+class NumBitsOperatorTest(Expressions.TestCase):
     def testGetNumBits8(self):
         numBitsFunctions = self.api.NumBitsFunctions()
         for value8 in range(1, 256):

@@ -6,8 +6,8 @@ class SqlWithoutRowIdTablesWarningTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.warnings = {}
-        cls.api = getZserioApi(__file__, "sql_without_rowid_tables_warning.zs",
-                               expectedWarnings=1, errorOutputDict=cls.warnings)
+        getZserioApi(__file__, "sql_without_rowid_tables_warning.zs",
+                     expectedWarnings=1, errorOutputDict=cls.warnings)
 
     def testIntegerPrimaryKey(self):
         assertWarningsPresent(self,

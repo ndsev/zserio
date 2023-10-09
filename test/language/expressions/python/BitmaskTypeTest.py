@@ -1,12 +1,6 @@
-import unittest
+import Expressions
 
-from testutils import getZserioApi
-
-class BitmaskTypeTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "expressions.zs").bitmask_type
-
+class BitmaskTypeTest(Expressions.TestCase):
     def testBitSizeOfNoColor(self):
         bitmaskTypeExpression = self.api.BitmaskTypeExpression()
         bitmaskTypeExpression.colors = self.api.Colors()

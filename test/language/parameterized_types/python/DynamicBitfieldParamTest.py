@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import ParameterizedTypes
 
-class DynamicBitfieldParamTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "parameterized_types.zs").dynamic_bitfield_param
-
+class DynamicBitfieldParamTest(ParameterizedTypes.TestCase):
     def testWrite(self):
         dynamicBitfieldParamHolder = self._createDynamicBitfieldParamHolder()
         writer = zserio.BitStreamWriter()

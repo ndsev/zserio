@@ -1,14 +1,11 @@
-import unittest
 import os
 import zserio
 
-from testutils import getZserioApi, getApiDir
+import ChoiceTypes
 
-class ChoiceCompatibilityCheckTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "choice_types.zs").choice_compatibility_check
+from testutils import getApiDir
 
+class ChoiceCompatibilityCheckTest(ChoiceTypes.TestCase):
     def testWriteVersion1ReadVersion1(self):
         choiceCompatibilityCheckVersion1 = self._createVersion1(self._createArrayVersion1())
         readChoiceCompatibilityCheckVersion1 = self._writeReadVersion1(choiceCompatibilityCheckVersion1)

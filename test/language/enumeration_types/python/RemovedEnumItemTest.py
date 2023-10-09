@@ -1,17 +1,10 @@
-import unittest
-
 import zserio
 
 from zserio.typeinfo import TypeAttribute
 
-from testutils import getZserioApi
+import EnumerationTypes
 
-class RemovedEnumItemTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "enumeration_types.zs",
-                               extraArgs=["-withTypeInfoCode"]).removed_enum_item
-
+class RemovedEnumItemTest(EnumerationTypes.TestCase):
     def testValues(self):
         self.assertEqual(NONE_VALUE, self.api.Traffic.NONE.value)
         self.assertEqual(HEAVY_VALUE, self.api.Traffic.ZSERIO_REMOVED_HEAVY.value)

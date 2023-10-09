@@ -1,19 +1,13 @@
-import unittest
 import os
 import apsw
 
-from testutils import getZserioApi, getApiDir
+import SqlVirtualColumns
 
-class HiddenVirtualColumnsTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "sql_virtual_columns.zs").hidden_virtual_columns
-        cls._fileName = os.path.join(getApiDir(os.path.dirname(__file__)), "hidden_virtual_columns_test.sqlite")
-
+class HiddenVirtualColumnsTest(SqlVirtualColumns.TestCaseWithDb):
     def setUp(self):
-        if os.path.exists(self._fileName):
-            os.remove(self._fileName)
-        self._database = self.api.HiddenVirtualColumnsDb.from_file(self._fileName)
+        if os.path.exists(self.dbFileName):
+            os.remove(self.dbFileName)
+        self._database = self.api.HiddenVirtualColumnsDb.from_file(self.dbFileName)
         self._database.create_schema()
 
     def tearDown(self):

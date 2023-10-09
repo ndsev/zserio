@@ -1,12 +1,6 @@
-import unittest
+import Functions
 
-from testutils import getZserioApi
-
-class StructureBytesTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "functions.zs").structure_bytes
-
+class StructureBytesTest(Functions.TestCase):
     def testGetField(self):
         testStructure = self.api.TestStructure(self.FIELD, self.api.Child(self.CHILD_FIELD))
         self.assertEqual(self.FIELD, testStructure.get_field())

@@ -1,13 +1,8 @@
-import unittest
 import apsw
 
-from testutils import getZserioApi
+import Templates
 
-class InstantiateSqlTableTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").instantiate_sql_table
-
+class InstantiateSqlTableTest(Templates.TestCase):
     def testReadWrite(self):
         connection = apsw.Connection(
             self.SQLITE3_MEM_DB,

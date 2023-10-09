@@ -1,14 +1,11 @@
-import unittest
 import os
 import zserio
 
-from testutils import getZserioApi, getApiDir
+import BuiltInTypes
 
-class BitFieldUInt64LengthTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "builtin_types.zs").bitfield_uint64_length
+from testutils import getApiDir
 
+class BitFieldUInt64LengthTest(BuiltInTypes.TestCase):
     def testBitSizeOf(self):
         container = self.api.Container()
         bitFieldLength = 33

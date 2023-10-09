@@ -1,14 +1,11 @@
-import unittest
 import os
 import zserio
 
-from testutils import getZserioApi, getApiDir
+import ArrayTypes
 
-class VariableArraySubtypedStructTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "array_types.zs").variable_array_subtyped_struct
+from testutils import getApiDir
 
+class VariableArraySubtypedStructTest(ArrayTypes.TestCase):
     def testBitSizeOf(self):
         numElements = 33
         compoundArray = [self.api.ArrayElement(i, "Name" + str(i)) for i in range(numElements)]

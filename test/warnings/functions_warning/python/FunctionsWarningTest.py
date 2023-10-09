@@ -6,8 +6,7 @@ class FunctionsWarningTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.warnings = {}
-        cls.api = getZserioApi(__file__, "functions_warning.zs",
-                               expectedWarnings=2, errorOutputDict=cls.warnings)
+        getZserioApi(__file__, "functions_warning.zs", expectedWarnings=2, errorOutputDict=cls.warnings)
 
     def testOptionalReferencesInFunction(self):
         assertWarningsPresent(self,

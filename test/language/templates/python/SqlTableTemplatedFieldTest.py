@@ -1,20 +1,14 @@
-import unittest
 import os
 
-from testutils import getZserioApi, getApiDir
+import Templates
 
-class SqlTableTemplatedFieldTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "templates.zs").sql_table_templated_field
-        cls._fileName = os.path.join(getApiDir(os.path.dirname(__file__)), "sql_table_templated_field.sqlite")
-
+class SqlTableTemplatedFieldTest(Templates.TestCaseWithDb):
     def setUp(self):
-        if os.path.exists(self._fileName):
-            os.remove(self._fileName)
+        if os.path.exists(self.dbFileName):
+            os.remove(self.dbFileName)
 
     def testReadWrite(self):
-        sqlTableTemplatedFieldDb = self.api.SqlTableTemplatedFieldDb.from_file(self._fileName)
+        sqlTableTemplatedFieldDb = self.api.SqlTableTemplatedFieldDb.from_file(self.dbFileName)
         sqlTableTemplatedFieldDb.create_schema()
 
         uint32Table = sqlTableTemplatedFieldDb.uint32_table
@@ -28,7 +22,7 @@ class SqlTableTemplatedFieldTest(unittest.TestCase):
 
         sqlTableTemplatedFieldDb.close()
 
-        readSqlTableTemplatedFieldDb = self.api.SqlTableTemplatedFieldDb.from_file(self._fileName)
+        readSqlTableTemplatedFieldDb = self.api.SqlTableTemplatedFieldDb.from_file(self.dbFileName)
         readUint32TableIterator = readSqlTableTemplatedFieldDb.uint32_table.read()
         readUint32TableRows = []
         for row in readUint32TableIterator:

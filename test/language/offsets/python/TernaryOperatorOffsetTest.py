@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import Offsets
 
-class TernaryOperatorOffsetTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "offsets.zs").ternary_operator_offset
-
+class TernaryOperatorOffsetTest(Offsets.TestCase):
     def testFirstOffset(self):
         isFirstOffsetUsed = True
         self._testOffset(isFirstOffsetUsed)

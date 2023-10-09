@@ -1,12 +1,6 @@
-import unittest
+import Functions
 
-from testutils import getZserioApi
-
-class StructureStringTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "functions.zs").structure_string
-
+class StructureStringTest(Functions.TestCase):
     def testGetPoolConst(self):
         testStructure = self.api.TestStructure(self.api.StringPool())
         self.assertEqual("POOL_CONST", testStructure.get_pool_const())

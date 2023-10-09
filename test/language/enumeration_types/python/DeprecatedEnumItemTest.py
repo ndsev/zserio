@@ -1,17 +1,10 @@
-import unittest
-
 import zserio
 
 from zserio.typeinfo import TypeAttribute
 
-from testutils import getZserioApi
+import EnumerationTypes
 
-class DeprecatedEnumItemTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "enumeration_types.zs",
-                               extraArgs=["-withTypeInfoCode"]).deprecated_enum_item
-
+class DeprecatedEnumItemTest(EnumerationTypes.TestCase):
     def testValues(self):
         self.assertEqual(NONE_VALUE, self.api.Traffic.NONE.value)
         with self.assertWarns(DeprecationWarning):

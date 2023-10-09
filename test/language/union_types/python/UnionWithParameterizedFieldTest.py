@@ -1,13 +1,8 @@
-import unittest
 import zserio
 
-from testutils import getZserioApi
+import UnionTypes
 
-class UnionWithParameterizedFieldTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "union_types.zs").union_with_parameterized_field
-
+class UnionWithParameterizedFieldTest(UnionTypes.TestCase):
     def testConstructor(self):
         testUnion = self.api.TestUnion()
         testUnion.array_holder = self.api.ArrayHolder(10)

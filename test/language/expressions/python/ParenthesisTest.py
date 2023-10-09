@@ -1,12 +1,6 @@
-import unittest
+import Expressions
 
-from testutils import getZserioApi
-
-class ParenthesisTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "expressions.zs").parenthesis
-
+class ParenthesisTest(Expressions.TestCase):
     def testResult(self):
         parenthesisExpression = self.api.ParenthesisExpression(self.FIRST_VALUE, self.SECOND_VALUE)
 

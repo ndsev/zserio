@@ -1,14 +1,11 @@
-import unittest
 import os
 import zserio
 
-from testutils import getZserioApi, getApiDir
+import ArrayTypes
 
-class PackedAutoArrayStructWithUnpackedFieldTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "array_types.zs").packed_auto_array_struct_with_unpacked_field
+from testutils import getApiDir
 
+class PackedAutoArrayStructWithUnpackedFieldTest(ArrayTypes.TestCase):
     def testBitSizeOf(self):
         packedAutoArray = self._createPackedAutoArray()
         self.assertEqual(self.PACKED_AUTO_ARRAY_BIT_SIZE, packedAutoArray.bitsizeof())

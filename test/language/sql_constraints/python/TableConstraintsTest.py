@@ -1,19 +1,13 @@
-import unittest
 import os
 import apsw
 
-from testutils import getZserioApi, getApiDir
+import SqlConstraints
 
-class TableConstraintsTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "sql_constraints.zs")
-        cls._fileName = os.path.join(getApiDir(os.path.dirname(__file__)), "table_constraints_test.sqlite")
-
+class TableConstraintsTest(SqlConstraints.TestCaseWithDb):
     def setUp(self):
-        if os.path.exists(self._fileName):
-            os.remove(self._fileName)
-        self._database = self.api.TestDb.from_file(self._fileName)
+        if os.path.exists(self.dbFileName):
+            os.remove(self.dbFileName)
+        self._database = self.api.TestDb.from_file(self.dbFileName)
         self._database.create_schema()
         self._constraintsTable = self._database.table_constraints_table
 
