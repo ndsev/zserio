@@ -950,9 +950,8 @@ test_perf()
 
         if [[ ${PARAM_PYTHON_CPP} == 1 ]] ; then
             if [[ ${SWITCH_RUN_ONLY} == 0 ]] ; then
-                python "${PYTHON_RUNTIME_DIR}/zserio_cpp/setup.py" build \
-                       --build-base="${TEST_PYTHON_OUT_DIR}/zserio_cpp" \
-                       --cpp-runtime-dir=${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/cpp
+                build_cpp_binding_to_python "${PYTHON_RUNTIME_DIR}" \
+                        "${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/cpp" "${TEST_PYTHON_OUT_DIR}"
                 if [ $? -ne 0 ] ; then
                     stderr_echo "Failed to build C++ runtime binding to Python!"
                     return 1

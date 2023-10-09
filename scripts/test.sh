@@ -268,11 +268,9 @@ test_python()
             return 1
         fi
 
-        python "${UNPACKED_ZSERIO_RELEASE_DIR}"/runtime_libs/python/zserio_cpp/setup.py build \
-                --build-base="${TEST_PYTHON_OUT_DIR}/zserio_cpp" \
-                --cpp-runtime-dir="${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/cpp/"
+        build_cpp_binding_to_python "${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/python" \
+                "${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/cpp" "${TEST_PYTHON_OUT_DIR}"
         if [ $? -ne 0 ] ; then
-            stderr_echo "Failed to build C++ runtime binding to Python!"
             return 1
         fi
         local ZSERIO_CPP_DIR

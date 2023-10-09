@@ -1065,3 +1065,28 @@ get_executable()
 
     eval ${HOST_EXECUTABLE_OUT}="'${HOST_EXECUTABLE}'"
 }
+
+# Builds C++ runtime binding to Python.
+build_cpp_binding_to_python()
+{
+    exit_if_argc_ne $# 3
+    local PYTHON_RUNTIME_DIR="$1"; shift
+    local CPP_RUNTIME_DIR="$1"; shift
+    local BUILD_DIR="$1"; shift
+
+    local BUILD_ZSERIO_CPP_DIR="${BUILD_DIR}/zserio_cpp"
+    local BUILD_SOURCES_DIR="${BUILD_ZSERIO_CPP_DIR}/sources"
+
+    mkdir -p "${BUILD_SOURCES_DIR}"
+    cp -r "${PYTHON_RUNTIME_DIR}/zserio_cpp/"* "${BUILD_SOURCES_DIR}"
+    cp -r "${CPP_RUNTIME_DIR}/"* "${BUILD_SOURCES_DIR}/"
+
+    python "${BUILD_SOURCES_DIR}/setup.py" build --build-base="${BUILD_ZSERIO_CPP_DIR}"
+    if [ $? -ne 0 ] ; then
+        stderr_echo "Failed to build C++ runtime binding to Python!"
+        return 1
+    fi
+
+    return 0
+}
+

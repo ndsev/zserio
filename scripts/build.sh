@@ -637,11 +637,9 @@ main()
             local PYTHON_RUNTIME_ROOT="${ZSERIO_PROJECT_ROOT}/compiler/extensions/python/runtime"
 
             # compile C++ runtime binding to Python
-            python ${PYTHON_RUNTIME_ROOT}/src/zserio_cpp/setup.py build \
-                    --build-base="${PYTHON_RUNTIME_BUILD_DIR}/zserio_cpp" \
-                    --cpp-runtime-dir="${CPP_RUNTIME_DIR}"
+            build_cpp_binding_to_python "${PYTHON_RUNTIME_ROOT}/src" "${CPP_RUNTIME_DIR}" \
+                    "${PYTHON_RUNTIME_BUILD_DIR}"
             if [ $? -ne 0 ] ; then
-                stderr_echo "Failed to build C++ runtime binding to Python!"
                 return 1
             fi
 
