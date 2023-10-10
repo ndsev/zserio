@@ -3,174 +3,113 @@
 SCRIPT_DIR=`dirname $0`
 source "${SCRIPT_DIR}/common_tools.sh"
 
-# Get sources for the requested version.
-get_sources()
+# Get name of the branch with old Zerio version.
+get_old_version_branch()
 {
-    exit_if_argc_ne $# 3
-    local ZSERIO_PROJECT_ROOT="$1"; shift
-    local TEST_OUT_DIR="$1"; shift
-    local VERSION="$1"; shift
+    exit_if_argc_ne $# 2
+    local PARAM_OLD_VERSION_BRANCH="$1"; shift
+    local OLD_VERSION_BRANCH_OUT="$1"; shift
 
-    if [[ "${VERSION}" == "working-"* ]] ; then
-        rm -rf "${TEST_OUT_DIR}/${VERSION}" # always use fresh working copy
-        mkdir "${TEST_OUT_DIR}/${VERSION}"
-        cp -r `ls -A "${ZSERIO_PROJECT_ROOT}" | grep -v ".git*" | grep -v "build"` "${TEST_OUT_DIR}/${VERSION}/."
+    if [[ "${PARAM_OLD_VERSION_BRANCH}" != "" ]] ; then
+        local BRANCH_NAME="${PARAM_OLD_VERSION_BRANCH}"
     else
-        if [ -d "${TEST_OUT_DIR}/${VERSION}" ] ; then
-            echo "Version \"${TEST_OUT_DIR}/${VERSION}\" already present."
+        local DEFAULT_OLD_VERSION_BRANCH="compat-api"
+        git ls-remote --exit-code --heads origin refs/heads/${DEFAULT_OLD_VERSION_BRANCH} >/dev/null
+        if [ $? -eq 0 ] ; then
+           local BRANCH_NAME="${DEFAULT_OLD_VERSION_BRANCH}"
         else
-            if [[ "${VERSION}" == "latest-"* ]] ; then
-                local TAG_NAME="v${VERSION#*-}"
-            else
-                local TAG_NAME="v${VERSION}"
-            fi
-            git clone --depth=1 --branch="${TAG_NAME}" --recurse-submodules \
-                    https://github.com/ndsev/zserio "${TEST_OUT_DIR}/${VERSION}"
+           local LATEST_VERSION
+            get_latest_zserio_version LATEST_VERSION
             if [ $? -ne 0 ] ; then
-                stderr_echo "Failed to clone zserio tag \"${TAG_NAME}\"."
                 return 1
             fi
+            local BRANCH_NAME="v${LATEST_VERSION}"
         fi
     fi
+
+    eval ${OLD_VERSION_BRANCH_OUT}="'${BRANCH_NAME}'"
 
     return 0
 }
 
-# Get release for the requested version.
-get_release()
+# Get sources of the old version.
+get_old_sources()
 {
-    exit_if_argc_ne $# 3
+    exit_if_argc_ne $# 2
+    local OLD_VERSION_DIR="$1"; shift
+    local OLD_VERSION_BRANCH="$1"; shift
+
+    rm -rf "${OLD_VERSION_DIR}"
+    mkdir "${OLD_VERSION_DIR}"
+    git clone --depth=1 --branch="${OLD_VERSION_BRANCH}" --recurse-submodules \
+            https://github.com/ndsev/zserio "${OLD_VERSION_DIR}"
+    if [ $? -ne 0 ] ; then
+        stderr_echo "Failed to clone zserio tag \"${TAG_NAME}\"!"
+        return 1
+    fi
+    echo
+
+    return 0
+}
+
+# Copy new release into directory with old sources.
+copy_new_release()
+{
+    exit_if_argc_ne $# 2
     local ZSERIO_PROJECT_ROOT="$1"; shift
-    local TEST_OUT_DIR="$1"; shift
-    local VERSION="$1"; shift
+    local OLD_VERSION_DIR="$1"; shift
 
-    if [[ "${VERSION}" == "latest-"* || "${VERSION}" == "working-"* ]] ; then
-        local VERSION_NUMBER=${VERSION#*-}
-    else
-        local VERSION_NUMBER=${VERSION}
+    local OLD_VERSION_NUMBER
+    get_zserio_version "${OLD_VERSION_DIR}" OLD_VERSION_NUMBER
+    if [ $? -ne 0 ] ; then
+        return 1
     fi
 
-    if [[ "${VERSION}" == "working"-* ]] ; then
-        cp "${ZSERIO_PROJECT_ROOT}/release-${VERSION_NUMBER}/zserio-${VERSION_NUMBER}-bin.zip" \
-                "${TEST_OUT_DIR}/zserio-${VERSION}-bin.zip"
-        if [ $? -ne 0 ] ; then
-            return 1
-        fi
-        cp "${ZSERIO_PROJECT_ROOT}/release-${VERSION_NUMBER}/zserio-${VERSION_NUMBER}-runtime-libs.zip" \
-                "${TEST_OUT_DIR}/zserio-${VERSION}-runtime-libs.zip"
-        if [ $? -ne 0 ] ; then
-            return 1
-        fi
-    else
-        get_zserio_bin ${VERSION_NUMBER} "${TEST_OUT_DIR}" "zserio-${VERSION}-bin.zip"
-        if [ $? -ne 0 ] ; then
-            return 1
-        fi
-        get_zserio_runtime_libs ${VERSION_NUMBER} "${TEST_OUT_DIR}" "zserio-${VERSION}-runtime-libs.zip"
-        if [ $? -ne 0 ] ; then
-            return 1
-        fi
+    local NEW_VERSION_NUMBER
+    get_zserio_version "${ZSERIO_PROJECT_ROOT}" NEW_VERSION_NUMBER
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+
+    local NEW_VERSION_RELEASE_DIR="${ZSERIO_PROJECT_ROOT}/release-${NEW_VERSION_NUMBER}"
+    local OLD_VERSION_RELEASE_DIR="${OLD_VERSION_DIR}/release-${OLD_VERSION_NUMBER}"
+    mkdir "${OLD_VERSION_RELEASE_DIR}"
+    cp "${NEW_VERSION_RELEASE_DIR}/zserio-${NEW_VERSION_NUMBER}-bin.zip" \
+            "${OLD_VERSION_RELEASE_DIR}/zserio-${OLD_VERSION_NUMBER}-bin.zip"
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+    cp "${NEW_VERSION_RELEASE_DIR}/zserio-${NEW_VERSION_NUMBER}-runtime-libs.zip" \
+            "${OLD_VERSION_RELEASE_DIR}/zserio-${OLD_VERSION_NUMBER}-runtime-libs.zip"
+    if [ $? -ne 0 ] ; then
+        return 1
     fi
 
     return 0
 }
 
-# Copy release to tested version directory and rename it appropriately if needed.
-copy_release()
-{
-    exit_if_argc_ne $# 4
-    local TEST_OUT_DIR="$1"; shift
-    local VERSION_DIR="$1"; shift
-    local RELEASE="$1"; shift
-    local AS_RELEASE="$1"; shift
-
-    rm -rf "${TEST_OUT_DIR}/${VERSION_DIR}/release-${AS_RELEASE}"
-    mkdir "${TEST_OUT_DIR}/${VERSION_DIR}/release-${AS_RELEASE}"
-    if [ $? -ne 0 ] ; then
-        return 1
-    fi
-    cp "${TEST_OUT_DIR}/zserio-${RELEASE}-bin.zip" \
-            "${TEST_OUT_DIR}/${VERSION_DIR}/release-${AS_RELEASE}/zserio-${AS_RELEASE}-bin.zip"
-    if [ $? -ne 0 ] ; then
-        return 1
-    fi
-    cp "${TEST_OUT_DIR}/zserio-${RELEASE}-runtime-libs.zip" \
-            "${TEST_OUT_DIR}/${VERSION_DIR}/release-${AS_RELEASE}/zserio-${AS_RELEASE}-runtime-libs.zip"
-    if [ $? -ne 0 ] ; then
-        return 1
-    fi
-}
-
-# Runs test from older version with release from newer version to check generated API compatibility.
-#
-# Return codes:
-# -------------
-# 0 - Success.
-# 1 - Failure - unknown reason.
-# 2 - Failure - test.sh failed.
+# Run test from older version with release from newer version to check generated API compatibility.
 compatibility_check()
 {
-    exit_if_argc_ne $# 5
+    exit_if_argc_ne $# 4
     local ZSERIO_PROJECT_ROOT="$1"; shift
-    local TEST_OUT_DIR="$1"; shift
-    local OLD_VERSION="$1"; shift
-    local NEW_VERSION="$1"; shift
+    local OLD_VERSION_DIR="$1"; shift
+    local OLD_VERSION_BRANCH="$1"; shift
     local MSYS_WORKAROUND_TEMP=("${!1}"); shift
     local PACKAGES_ARRAY=("${MSYS_WORKAROUND_TEMP[@]}")
 
-    local MESSAGE="Run API compatibiliy check for ${OLD_VERSION} with ${NEW_VERSION} release"
+    local MESSAGE="Run API compatibility check using branch ${OLD_VERSION_BRANCH} with working release"
     echo "STARTING - ${MESSAGE}"
 
-    if [[ "${OLD_VERSION}" == "latest-"* || "${OLD_VERSION}" == "working-"* ]] ; then
-        local OLD_VERSION_NUMBER=${OLD_VERSION#*-}
-    else
-        local OLD_VERSION_NUMBER=${OLD_VERSION}
-    fi
-
-    rm -rf "${TEST_OUT_DIR}/${OLD_VERSION}/build"
-
-    # test OLD_VERSION with NEW_VERSION release
-    copy_release "${TEST_OUT_DIR}" "${OLD_VERSION}" "${NEW_VERSION}" "${OLD_VERSION_NUMBER}"
-    if [ $? -ne 0 ] ; then
-        return 1
-    fi
-    "${TEST_OUT_DIR}/${OLD_VERSION}/scripts/test.sh" "${PACKAGES_ARRAY[@]}" \
-                                                     -x errors/* \
-                                                     -x warnings/array_types_warning \
-                                                     -x arguments/without_writer_code
+    rm -rf "${OLD_VERSION_DIR}/build"
+    "${OLD_VERSION_DIR}/scripts/test.sh" "${PACKAGES_ARRAY[@]}"
     TEST_RESULT=$?
     if [ ${TEST_RESULT} -ne 0 ] ; then
         stderr_echo "FAILED - ${MESSAGE}"
-        return 2
+        return 1
     fi
 
     echo "FINISHED - ${MESSAGE}"
-}
-
-# Append version numbers to 'working' and 'latest'
-append_version_number()
-{
-    exit_if_argc_ne $# 2
-    local VERSION_IN="$1"; shift
-    local VERSION_OUT="$1"; shift
-
-    if [[ "${VERSION_IN}" == "working" ]] ; then
-        local WORKING_VERSION
-        get_zserio_version "${ZSERIO_PROJECT_ROOT}" WORKING_VERSION
-        if [ $? -ne 0 ] ; then
-            return 1
-        fi
-        eval ${VERSION_OUT}="working-${WORKING_VERSION}"
-    elif [[ "${VERSION_IN}" == "latest" ]] ; then
-        local LATEST_VERSION
-        get_latest_zserio_version LATEST_VERSION
-        if [ $? -ne 0 ] ; then
-            return 1
-        fi
-        eval ${VERSION_OUT}="latest-${LATEST_VERSION}"
-    else
-        eval ${VERSION_OUT}="${VERSION_IN}"
-    fi
 
     return 0
 }
@@ -180,10 +119,10 @@ print_help()
 {
     cat << EOF
 Description:
-    Runs Zserio tests on requested Zserio releases and compares produced BLOBs to check binary compatibility.
+    Runs Zserio tests from older version with release from newer version to check generated API compatibility.
 
 Usage:
-    $0 [-h] [-e] [-p] [-o <dir>] [-v <ver>] [-n <ver>] package...
+    $0 [-h] [-e] [-p] [-o <dir>] [-b <branch>] package...
 
 Arguments:
     -h, --help            Show this help.
@@ -191,22 +130,17 @@ Arguments:
     -p, --purge           Purge testing directory.
     -o <dir>, --output-directory <dir>
                           Output directory where tests will be run.
-    -v <ver>, --old-version <ver>
-                          Specify the old version to test. Defaults to 'latest'.
-    -n <ver>, --new-version <ver>
-                          Specify the new version to test. Defaults to 'working'.
-
-Versions:
-    Use 'latest' for latest release on GitHub.
-    Use 'working' for release in working directory.
-    Or use exact version number for specific release.
+    -b <branch>, --old-version-branch <branch>
+                          Specify git branch with the old version to test. If not specified, branch 'compat-api'
+                          is used. If not specified and branch 'compat-api' does not exist,
+                          the latest release from GitHub is used.
 
 Packages:
     All packages available in zserio tests.
 
 Examples:
     $0 all-linux64-clang
-    $0 --old-version latest --new-version working java
+    $0 java --old-version-branch test-compat-api
 
 Uses the following environment variable:
     GITHUB_TOKEN          GitHub token authentication to use during looking for the latest release on GitHub.
@@ -225,13 +159,10 @@ parse_arguments()
 {
     exit_if_argc_lt $# 2
     local PARAM_OUT_DIR_OUT="$1"; shift
-    local PARAM_OLD_VERSION_OUT="$1"; shift
-    local PARAM_NEW_VERSION_OUT="$1"; shift
+    local PARAM_OLD_VERSION_BRANCH_OUT="$1"; shift
     local PARAM_PACKAGES_ARRAY_OUT="$1"; shift
     local SWITCH_PURGE_OUT="$1"; shift
 
-    eval ${PARAM_OLD_VERSION_OUT}="latest"
-    eval ${PARAM_NEW_VERSION_OUT}="working"
     eval ${SWITCH_PURGE_OUT}=0
 
     local NUM_PACKAGES=0
@@ -256,13 +187,8 @@ parse_arguments()
                 shift 2
                 ;;
 
-            "-v" | "--old-version")
-                eval ${PARAM_OLD_VERSION}="$2"
-                shift 2
-                ;;
-
-            "-n" | "--new-version")
-                eval ${PARAM_NEW_VERSION}="$2"
+            "-b" | "--old-version-branch")
+                eval ${PARAM_OLD_VERSION_BRANCH_OUT}="$2"
                 shift 2
                 ;;
 
@@ -294,12 +220,12 @@ main()
     local ZSERIO_PROJECT_ROOT
     convert_to_absolute_path "${SCRIPT_DIR}/.." ZSERIO_PROJECT_ROOT
 
+    # parse command line arguments
     local PARAM_OUT_DIR="${ZSERIO_PROJECT_ROOT}"
-    local PARAM_OLD_VERSION
-    local PARAM_NEW_VERSION
+    local PARAM_OLD_VERSION_BRANCH=""
     local PARAM_PACKAGES_ARRAY=()
     local SWITCH_PURGE
-    parse_arguments PARAM_OUT_DIR PARAM_OLD_VERSION PARAM_NEW_VERSION PARAM_PACKAGES_ARRAY SWITCH_PURGE "$@"
+    parse_arguments PARAM_OUT_DIR PARAM_OLD_VERSION_BRANCH PARAM_PACKAGES_ARRAY SWITCH_PURGE "$@"
     local PARSE_RESULT=$?
     if [ ${PARSE_RESULT} -eq 2 ] ; then
         print_help
@@ -329,35 +255,30 @@ main()
         return 0
     fi
 
-    mkdir -p "${TEST_OUT_DIR}"
-
-    # append version numbers to 'working' and 'latest'
-    local OLD_VERSION
-    append_version_number "${PARAM_OLD_VERSION}" OLD_VERSION
-    if [ $? -ne 0 ] ; then
-        return 1
-    fi
-    local NEW_VERSION
-    append_version_number "${PARAM_NEW_VERSION}" NEW_VERSION
+    # detect old version branch
+    local OLD_VERSION_BRANCH
+    get_old_version_branch "${PARAM_OLD_VERSION_BRANCH}" OLD_VERSION_BRANCH
     if [ $? -ne 0 ] ; then
         return 1
     fi
 
     # get old version sources
-    get_sources "${ZSERIO_PROJECT_ROOT}" "${TEST_OUT_DIR}" "${OLD_VERSION}"
+    local OLD_VERSION_DIR="${TEST_OUT_DIR}/${OLD_VERSION_BRANCH}"
+    get_old_sources "${OLD_VERSION_DIR}" "${OLD_VERSION_BRANCH}"
     if [ $? -ne 0 ] ; then
         return 1
     fi
 
-    # get new version release
-    get_release "${ZSERIO_PROJECT_ROOT}" "${TEST_OUT_DIR}" "${NEW_VERSION}"
+    # copy new release
+    copy_new_release "${ZSERIO_PROJECT_ROOT}" "${OLD_VERSION_DIR}"
     if [ $? -ne 0 ] ; then
         return 1
     fi
 
-    local SUMMARY=()
-    compatibility_check "${ZSERIO_PROJECT_ROOT}" "${TEST_OUT_DIR}" \
-                        "${OLD_VERSION}" "${NEW_VERSION}" PARAM_PACKAGES_ARRAY[@]
+    # run tests
+    compatibility_check "${ZSERIO_PROJECT_ROOT}" "${OLD_VERSION_DIR}" "${OLD_VERSION_BRANCH}" \
+            PARAM_PACKAGES_ARRAY[@]
+
     return $?
 }
 
