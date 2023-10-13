@@ -1176,7 +1176,6 @@ parse_arguments()
                     echo
                     return 1
                 fi
-                shift
                 eval ${SWITCH_SOURCE_OUT}="$2"
                 shift 2
                 ;;
