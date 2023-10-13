@@ -1151,104 +1151,94 @@ parse_arguments()
                 ;;
 
             "-o" | "--output-directory")
+                if [ $# -eq 1 ] ; then
+                    stderr_echo "Missing output directory!"
+                    echo
+                    return 1
+                fi
                 eval ${SWITCH_OUT_DIR_OUT}="$2"
                 shift 2
                 ;;
 
             "-d" | "--source-dir")
-                shift
-                local ARG="$1"
-                if [ -z "${ARG}" ] ; then
-                    stderr_echo "Directory with zserio sources is not set!"
+                if [ $# -eq 1 ] ; then
+                    stderr_echo "Missing directory with zserio sources!"
                     echo
                     return 1
                 fi
-                eval ${SWITCH_DIRECTORY_OUT}="${ARG}"
-                shift
+                eval ${SWITCH_DIRECTORY_OUT}="$2"
+                shift 2
                 ;;
 
             "-s" | "--source")
-                shift
-                local ARG="$1"
-                if [ -z "${ARG}" ] ; then
-                    stderr_echo "Main zserio source is not set!"
+                if [ $# -eq 1 ] ; then
+                    stderr_echo "Missing main zserio source!"
                     echo
                     return 1
                 fi
-                eval ${SWITCH_SOURCE_OUT}="${ARG}"
                 shift
+                eval ${SWITCH_SOURCE_OUT}="$2"
+                shift 2
                 ;;
 
             "-t" | "--test-name")
-                shift
-                local ARG="$1"
-                if [ -z "${ARG}" ] ; then
-                    stderr_echo "Test name is not set!"
+                if [ $# -eq 1 ] ; then
+                    stderr_echo "Missing test name!"
                     echo
                     return 1
                 fi
-                eval ${SWITCH_TEST_NAME_OUT}="${ARG}"
-                shift
+                eval ${SWITCH_TEST_NAME_OUT}="$2"
+                shift 2
                 ;;
 
             "-b" | "--blob-name")
-                shift
-                local ARG="$1"
-                if [ -z "${ARG}" ] ; then
-                    stderr_echo "BLOB name is not set!"
+                if [ $# -eq 1 ] ; then
+                    stderr_echo "Missing blob name!"
                     echo
                     return 1
                 fi
-                eval ${SWITCH_BLOB_NAME_OUT}="${ARG}"
-                shift
+                eval ${SWITCH_BLOB_NAME_OUT}="$2"
+                shift 2
                 ;;
 
             "-j" | "--json-file")
-                shift
-                local ARG="$1"
-                if [ -z "${ARG}" ] ; then
-                    stderr_echo "JSON filename is not set!"
+                if [ $# -eq 1 ] ; then
+                    stderr_echo "Missing JSON file name!"
                     echo
                     return 1
                 fi
-                eval ${SWITCH_JSON_FILE_OUT}="${ARG}"
-                shift
+                eval ${SWITCH_JSON_FILE_OUT}="$2"
+                shift 2
                 ;;
 
             "-f" | "--blob-file")
-                shift
-                local ARG="$1"
-                if [ -z "${ARG}" ] ; then
-                    stderr_echo "BLOB filename is not set!"
+                if [ $# -eq 1 ] ; then
+                    stderr_echo "Missing BLOB file name!"
                     echo
                     return 1
                 fi
-                eval ${SWITCH_BLOB_FILE_OUT}="${ARG}"
-                shift
+                eval ${SWITCH_BLOB_FILE_OUT}="$2"
+                shift 2
                 ;;
 
             "-n" | "--num-iterations")
-                shift
-                local ARG="$1"
-                if [ -z "${ARG}" ] ; then
-                    stderr_echo "Number of iterations is not set!"
+                if [ $# -eq 1 ] ; then
+                    stderr_echo "Missing number of iterations!"
                     echo
                     return 1
                 fi
-                eval ${SWITCH_NUM_ITERATIONS_OUT}="${ARG}"
-                shift
+                eval ${SWITCH_NUM_ITERATIONS_OUT}="$2"
+                shift 2
                 ;;
 
             "-c" | "--test-config")
-                shift
-                local ARG="$1"
-                if [ -z "${ARG}" ] ; then
-                    stderr_echo "Test configuration is not set!"
+                if [ $# -eq 1 ] ; then
+                    stderr_echo "Missing test configuration!"
                     echo
                     return 1
                 fi
-                eval ${SWITCH_TEST_CONFIG_OUT}="${ARG}"
-                shift
+                eval ${SWITCH_TEST_CONFIG_OUT}="$2"
+                shift 2
                 ;;
 
             "-r" | "--run-only")

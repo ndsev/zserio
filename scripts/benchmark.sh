@@ -316,63 +316,65 @@ parse_arguments()
                 ;;
 
             "-o" | "--output-directory")
+                if [ $# -eq 1 ] ; then
+                    stderr_echo "Missing output directory!"
+                    echo
+                    return 1
+                fi
                 eval ${SWITCH_OUT_DIR_OUT}="$2"
                 shift 2
                 ;;
 
             "-c" | "--test-config")
-                shift
-                local ARG="$1"
-                if [ -z "${ARG}" ] ; then
-                    stderr_echo "Test configuration is not set!"
+                if [ $# -eq 1 ] ; then
+                    stderr_echo "Missing test configuration!"
                     echo
                     return 1
                 fi
-                eval ${SWITCH_TEST_CONFIG_OUT}="${ARG}"
-                shift
+                eval ${SWITCH_TEST_CONFIG_OUT}="$2"
+                shift 2
                 ;;
 
             "-d" | "--datasets-directory")
+                if [ $# -eq 1 ] ; then
+                    stderr_echo "Missing dataset directory!"
+                    echo
+                    return 1
+                fi
                 eval ${SWITCH_DATASETS_DIR_OUT}="$2"
                 shift 2
                 ;;
 
             "-n" | "--num-iterations")
-                shift
-                local ARG="$1"
-                if [ -z "${ARG}" ] ; then
-                    stderr_echo "Number of iterations is not set!"
+                if [ $# -eq 1 ] ; then
+                    stderr_echo "Missing number of iterations!"
                     echo
                     return 1
                 fi
-                eval ${SWITCH_NUM_ITERATIONS_OUT}="${ARG}"
-                shift
+                eval ${SWITCH_NUM_ITERATIONS_OUT}="$2"
+                shift 2
                 ;;
 
             "-i" | "--include")
-                shift
-                local ARG="$1"
-                if [ -z "${ARG}" ] ; then
-                    stderr_echo "Include pattern is not set!"
+                if [ $# -eq 1 ] ; then
+                    stderr_echo "Missing include pattern!"
                     echo
                     return 1
                 fi
-                eval ${SWITCH_BENCHMARKS_PATTERN_ARRAY_OUT}[${NUM_PATTERNS}]="i:${ARG}"
+                eval ${SWITCH_BENCHMARKS_PATTERN_ARRAY_OUT}[${NUM_PATTERNS}]="i:$2"
                 NUM_PATTERNS=$((NUM_PATTERNS + 1))
-                shift
+                shift 2
                 ;;
 
             "-x" | "--exclude")
-                shift
-                local ARG="$1"
-                if [ -z "${ARG}" ] ; then
-                    stderr_echo "Exclude pattern is not set!"
+                if [ $# -eq 1 ] ; then
+                    stderr_echo "Missing exclude pattern!"
                     echo
                     return 1
                 fi
-                eval ${SWITCH_BENCHMARKS_PATTERN_ARRAY_OUT}[${NUM_PATTERNS}]="x:${ARG}"
+                eval ${SWITCH_BENCHMARKS_PATTERN_ARRAY_OUT}[${NUM_PATTERNS}]="x:$2"
                 NUM_PATTERNS=$((NUM_PATTERNS + 1))
-                shift
+                shift 2
                 ;;
 
             "-"*)

@@ -462,6 +462,11 @@ parse_arguments()
                 ;;
 
             "-o" | "--output-directory")
+                if [ $# -eq 1 ] ; then
+                    stderr_echo "Missing output directory!"
+                    echo
+                    return 1
+                fi
                 eval ${PARAM_OUT_DIR_OUT}="$2"
                 shift 2
                 ;;

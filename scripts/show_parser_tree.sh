@@ -145,11 +145,21 @@ parse_arguments()
                 ;;
 
             "-o" | "--output-directory")
+                if [ $# -eq 1 ] ; then
+                    stderr_echo "Missing output directory!"
+                    echo
+                    return 1
+                fi
                 eval ${PARAM_OUT_DIR_OUT}="$2"
                 shift 2
                 ;;
 
             "-r" | "--parser-rule")
+                if [ $# -eq 1 ] ; then
+                    stderr_echo "Missing parser rule!"
+                    echo
+                    return 1
+                fi
                 eval ${PARAM_PARSER_RULE_OUT}="$2"
                 shift 2
                 ;;

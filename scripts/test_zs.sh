@@ -521,44 +521,43 @@ parse_arguments()
                 ;;
 
             "-o" | "--output-directory")
+                if [ $# -eq 1 ] ; then
+                    stderr_echo "Missing output directory!"
+                    echo
+                    return 1
+                fi
                 eval ${PARAM_OUT_DIR_OUT}="$2"
                 shift 2
                 ;;
 
             "-d" | "--directory")
-                shift
-                local ARG="$1"
-                if [ -z "${ARG}" ] ; then
-                    stderr_echo "Directory with zserio sources is not set!"
+                if [ $# -eq 1 ] ; then
+                    stderr_echo "Missing directory with zserio sources!"
                     echo
                     return 1
                 fi
-                eval ${SWITCH_DIRECTORY_OUT}="${ARG}"
-                shift
+                eval ${SWITCH_DIRECTORY_OUT}="$2"
+                shift 2
                 ;;
 
             "-s" | "--source")
-                shift
-                local ARG="$1"
-                if [ -z "${ARG}" ] ; then
-                    stderr_echo "Main zserio source is not set!"
+                if [ $# -eq 1 ] ; then
+                    stderr_echo "Missing main zserio source!"
                     echo
                     return 1
                 fi
-                eval ${SWITCH_SOURCE_OUT}="${ARG}"
-                shift
+                eval ${SWITCH_SOURCE_OUT}="$2"
+                shift 2
                 ;;
 
             "-t" | "--test-name")
-                shift
-                local ARG="$1"
-                if [ -z "${ARG}" ] ; then
-                    stderr_echo "Test name is not set!"
+                if [ $# -eq 1 ] ; then
+                    stderr_echo "Missing test name!"
                     echo
                     return 1
                 fi
-                eval ${SWITCH_TEST_NAME_OUT}="${ARG}"
-                shift
+                eval ${SWITCH_TEST_NAME_OUT}="$2"
+                shift 2
                 ;;
 
             "-w" | "--werror")
