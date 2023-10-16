@@ -14,7 +14,8 @@ get_old_version_branch()
         local BRANCH_NAME="${PARAM_OLD_VERSION_BRANCH}"
     else
         local DEFAULT_OLD_VERSION_BRANCH="compat-api"
-        git ls-remote --exit-code --heads origin refs/heads/${DEFAULT_OLD_VERSION_BRANCH} >/dev/null
+        git ls-remote https://github.com/ndsev/zserio.git | \
+                grep "refs/heads/${DEFAULT_OLD_VERSION_BRANCH}" > /dev/null
         if [ $? -eq 0 ] ; then
            local BRANCH_NAME="${DEFAULT_OLD_VERSION_BRANCH}"
         else
@@ -40,7 +41,7 @@ get_old_sources()
     local OLD_VERSION_BRANCH="$1"; shift
 
     rm -rf "${OLD_VERSION_DIR}"
-    mkdir "${OLD_VERSION_DIR}"
+    mkdir -p "${OLD_VERSION_DIR}"
     git clone --depth=1 --branch="${OLD_VERSION_BRANCH}" --recurse-submodules \
             https://github.com/ndsev/zserio "${OLD_VERSION_DIR}"
     if [ $? -ne 0 ] ; then
