@@ -30,13 +30,11 @@ jobs:
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v2
       with:
-        languages: cpp, java, python
+        languages: cpp
         config: |
           queries:
             - uses: security-extended
             - uses: security-and-quality
-          paths-ignore:
-            - '3rdparty/**/*'
 
     - name: Build and test Zserio
       run: |
