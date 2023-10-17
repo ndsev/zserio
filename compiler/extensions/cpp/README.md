@@ -23,7 +23,7 @@ Zserio C++ generator supports the following platforms:
 Zserio C++ generator supports the following C++ compilers:
 
 - g++ 5.4.0
-- clang 8.0.0
+- clang 14.0.6
 - MinGW 5.4.0
 - MSVC 2017
 
@@ -40,14 +40,14 @@ contribute to the framework's safety and trustworthiness.
 
 The following describes features which minimize the risk of Zserio C++ runtime library malfunctioning behavior:
 
-- Supported compilers (minimum versions): gcc 5.4.0, Clang 8, MinGW 5.4.0, MSVC 2017
+- Supported compilers (minimum versions): gcc 5.4.0, Clang 14.0.6, MinGW 5.4.0, MSVC 2017
 - Warnings are treated as errors for all supported compilers
 - All features are properly tested by [unit test](runtime/test/) for all supported compilers (>600 tests)
-- Implemented automatic test coverage threshold check using [llvm-cov](https://llvm.org/docs/CommandGuide/llvm-cov.html) and Clang 8 (see
+- Implemented automatic test coverage threshold check using [llvm-cov](https://llvm.org/docs/CommandGuide/llvm-cov.html) and Clang 14.0.6 (see
   [coverage report](https://zserio.org/doc/runtime/latest/cpp/coverage/clang/index.html) which fulfills a line coverage threshold of 99%)
 - AddressSanitizer is run with no findings
 - UndefinedBehaviourSanitizer is run with no findings
-- C++ runtime library sources are checked by static analysis tool clang-tidy version 14
+- C++ runtime library sources are checked by static analysis tool clang-tidy version 14.0.6
 - C++ runtime library sources are checked by CodeQL queries from [GitHub](https://github.com/ndsev/zserio/security/code-scanning)
 
 #### Clang-tidy Usage
@@ -72,12 +72,12 @@ during compilation using CMake (see [CMake runtime configuration](runtime/CMakeL
 
 The following describes features which minimize the risk of Zserio C++ generated code malfunctioning behavior:
 
-- Supported compilers (minimum versions): gcc 5.4.0, clang 8, MinGW 5.4.0, MSVC 2017
+- Supported compilers (minimum versions): gcc 5.4.0, clang 14.0.6, MinGW 5.4.0, MSVC 2017
 - Warnings are treated as errors for all supported compilers
 - All zserio language features are properly tested by [unit tests](../../../test) for all supported compilers
   (>1700 tests)
 - Unit tests check C++ code generated from small zserio schemas (>70 schemas)
-- Generated sources are checked by static analysis tool clang-tidy version 14 using
+- Generated sources are checked by static analysis tool clang-tidy version 14.0.6 using
   [this configuration](runtime/ClangTidyConfig.txt)
 - Generated sources are checked by CodeQL queries from [GitHub](https://github.com/ndsev/zserio/security/code-scanning)
 
