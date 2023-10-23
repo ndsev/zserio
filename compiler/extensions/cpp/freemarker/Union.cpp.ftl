@@ -32,6 +32,10 @@
 <#assign choiceTagArrayTraits="::zserio::VarSizeArrayTraits">
 <@namespace_begin package.path/>
 
+<#if compoundParametersData.list?has_content>
+<@compound_parameter_define_parameter_expressions_methods name, compoundParametersData/>
+
+</#if>
 <#macro empty_constructor_field_initialization>
         m_choiceTag(UNDEFINED_CHOICE)<#rt>
         <#if fieldList?has_content>
@@ -59,6 +63,9 @@
 
 <#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
 ${name}::${name}(const ${name}& other) :
+    <#if needs_compound_initialization(compoundConstructorsData)>
+        m_parameterExpressions(other.m_parameterExpressions),
+    </#if>
         m_choiceTag(other.m_choiceTag)<#rt>
     <#if fieldList?has_content>
         <#lt>,
@@ -72,11 +79,21 @@ ${name}::${name}(const ${name}& other) :
 
     </#if>
 {
-    <@compound_copy_initialization compoundConstructorsData/>
+    <#if has_field_with_initialization(compoundConstructorsData.fieldList)>
+        <#if needs_compound_initialization(compoundConstructorsData)>
+    if (isInitialized())
+        initializeChildren();
+        <#else>
+    initializeChildren();
+        </#if>
+    </#if>
 }
 
 ${name}& ${name}::operator=(const ${name}& other)
 {
+    <#if needs_compound_initialization(compoundConstructorsData)>
+    m_parameterExpressions = other.m_parameterExpressions;
+    </#if>
     m_choiceTag = other.m_choiceTag;
     <#list fieldList as field>
     <@compound_assignment_field field, 1/>
@@ -84,12 +101,22 @@ ${name}& ${name}::operator=(const ${name}& other)
             <#break>
         </#if>
     </#list>
-    <@compound_copy_initialization compoundConstructorsData/>
+    <#if has_field_with_initialization(compoundConstructorsData.fieldList)>
+        <#if needs_compound_initialization(compoundConstructorsData)>
+    if (isInitialized())
+        initializeChildren();
+        <#else>
+    initializeChildren();
+        </#if>
+    </#if>
 
     return *this;
 }
 
 ${name}::${name}(${name}&& other) :
+    <#if needs_compound_initialization(compoundConstructorsData)>
+        m_parameterExpressions(other.m_parameterExpressions),
+    </#if>
         m_choiceTag(other.m_choiceTag)<#rt>
     <#if fieldList?has_content>
         <#lt>,
@@ -103,11 +130,21 @@ ${name}::${name}(${name}&& other) :
 
     </#if>
 {
-    <@compound_copy_initialization compoundConstructorsData/>
+    <#if has_field_with_initialization(compoundConstructorsData.fieldList)>
+        <#if needs_compound_initialization(compoundConstructorsData)>
+    if (isInitialized())
+        initializeChildren();
+        <#else>
+    initializeChildren();
+        </#if>
+    </#if>
 }
 
 ${name}& ${name}::operator=(${name}&& other)
 {
+    <#if needs_compound_initialization(compoundConstructorsData)>
+    m_parameterExpressions = other.m_parameterExpressions;
+    </#if>
     m_choiceTag = other.m_choiceTag;
     <#list fieldList as field>
     <@compound_move_assignment_field field, 1/>
@@ -115,7 +152,14 @@ ${name}& ${name}::operator=(${name}&& other)
             <#break>
         </#if>
     </#list>
-    <@compound_copy_initialization compoundConstructorsData/>
+    <#if has_field_with_initialization(compoundConstructorsData.fieldList)>
+        <#if needs_compound_initialization(compoundConstructorsData)>
+    if (isInitialized())
+        initializeChildren();
+        <#else>
+    initializeChildren();
+        </#if>
+    </#if>
 
     return *this;
 }
@@ -124,6 +168,9 @@ ${name}& ${name}::operator=(${name}&& other)
 ${name}::${name}(::zserio::PropagateAllocatorT,
         const ${name}& other, const allocator_type&<#rt>
         <#lt><#if fieldList?has_content> allocator</#if>) :
+    <#if needs_compound_initialization(compoundConstructorsData)>
+        m_parameterExpressions(other.m_parameterExpressions),
+    </#if>
         m_choiceTag(other.m_choiceTag)<#rt>
     <#if fieldList?has_content>
         <#lt>,
@@ -137,7 +184,14 @@ ${name}::${name}(::zserio::PropagateAllocatorT,
 
     </#if>
 {
-    <@compound_copy_initialization compoundConstructorsData/>
+    <#if has_field_with_initialization(compoundConstructorsData.fieldList)>
+        <#if needs_compound_initialization(compoundConstructorsData)>
+    if (isInitialized())
+        initializeChildren();
+        <#else>
+    initializeChildren();
+        </#if>
+    </#if>
 }
 
 <#if withTypeInfoCode>
@@ -312,7 +366,6 @@ void ${name}::initializeChildren()
         throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
     </#if>
-    <@compound_initialize_children_epilog_definition compoundConstructorsData/>
 }
 
 </#if>

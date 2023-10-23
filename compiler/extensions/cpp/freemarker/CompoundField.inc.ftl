@@ -48,6 +48,26 @@
     </#if>
 </#macro>
 
+<#macro compound_field_parameter_expressions field>
+    { <#t>
+        this, 0, <#t>
+    <#list field.compound.instantiatedParameters as instantiatedParameter>
+        <@parameter_expressions_name field.name/>::<#t>
+                ${field.compound.parameters.list[instantiatedParameter?index].getterName}<#if instantiatedParameter?has_next>,</#if> <#t>
+    </#list>
+    }<#t>
+</#macro>
+
+<#macro compound_array_field_parameter_expressions compoundName field>
+    ${field.array.elementTypeInfo.typeFullName}::ParameterExpressions{ <#t>
+        &owner, index, <#t>
+    <#list field.array.elementCompound.instantiatedParameters as instantiatedParameter>
+        ${compoundName}::<@parameter_expressions_name field.name/>::<#t>
+                ${field.array.elementCompound.parameters.list[instantiatedParameter?index].getterName}<#if instantiatedParameter?has_next>,</#if> <#t>
+    </#list>
+    }<#t>
+</#macro>
+
 <#macro compound_read_field field compoundName indent packed=false>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
@@ -72,8 +92,8 @@ ${I}return <@field_member_type_name field/>(::zserio::NullOpt<#if field.holderNe
     <#if packed && uses_field_packing_context(field)>
         <#if field.compound?? || field.typeInfo.isBitmask>
             <#local compoundParamsArguments>
-                <#if field.compound??>
-                    <@compound_field_compound_ctor_params field.compound, false/>
+                <#if field.compound?? && needs_field_initialization(field.compound)>
+                    <@compound_field_parameter_expressions field/>
                 </#if>
             </#local>
             <#local constructorArguments>
@@ -95,7 +115,9 @@ ${I}return <@field_member_type_name field/>(::zserio::NullOpt<#if field.holderNe
         <#local readCommand>::zserio::read<<@field_cpp_type_name field/>>(in)</#local>
     <#elseif field.compound??>
         <#local compoundParamsArguments>
-            <@compound_field_compound_ctor_params field.compound, false/>
+            <#if needs_field_initialization(field.compound)>
+                <@compound_field_parameter_expressions field/>
+            </#if>
         </#local>
         <#local constructorArguments>
             in<#if compoundParamsArguments?has_content>, ${compoundParamsArguments}</#if>, allocator<#t>
@@ -137,19 +159,6 @@ ${I}return <@compound_read_field_retval field, readCommand, false/>;
     <#else>
         ${readCommand}<#t>
     </#if>
-</#macro>
-
-<#macro compound_field_compound_ctor_params compound useIndirectExpression>
-    <#list compound.instantiatedParameters as instantiatedParameter>
-        <#if instantiatedParameter.typeInfo.isSimple>static_cast<${instantiatedParameter.typeInfo.typeFullName}>(</#if><#t>
-            <#if useIndirectExpression>
-                ${instantiatedParameter.indirectExpression}<#t>
-             <#else>
-                ${instantiatedParameter.expression}<#t>
-             </#if>
-        <#if instantiatedParameter.typeInfo.isSimple>)</#if><#t>
-        <#if instantiatedParameter?has_next>, </#if><#t>
-    </#list>
 </#macro>
 
 <#macro compound_read_field_prolog field compoundName indent>
@@ -475,18 +484,66 @@ void ${compoundName}::<@array_expressions_name field.name/>::initializeOffset(${
                     field.array.elementCompound.needsChildrenInitialization)>
 void ${compoundName}::<@array_expressions_name field.name/>::initializeElement(<#rt>
         <#if !withWriterCode>const </#if>${compoundName}&<#t>
-        <#lt><#if needs_field_initialization_owner(field.array.elementCompound)> owner</#if>,
+        <#lt><#if needs_field_initialization(field.array.elementCompound)> owner</#if>,
         ${field.array.elementTypeInfo.typeFullName}& element, size_t<#rt>
-        <#lt><#if needs_field_initialization_index(field.array.elementCompound)> index</#if>)
+        <#lt><#if needs_field_initialization(field.array.elementCompound)> index</#if>)
 {
         <#if needs_field_initialization(field.array.elementCompound)>
-    element.initialize(<@compound_field_compound_ctor_params field.array.elementCompound, true/>);
+    element.initialize(<@compound_array_field_parameter_expressions compoundName, field/>);
         <#elseif field.array.elementCompound.needsChildrenInitialization>
     element.initializeChildren();
         </#if>
 }
 
     </#if>
+</#macro>
+
+<#function needs_field_parameter_expressions field>
+    <#return (field.compound?? && needs_field_initialization(field.compound)) ||
+            (field.array?? && field.array.elementCompound?? && needs_field_initialization(field.array.elementCompound))>
+</#function>
+
+<#macro parameter_expressions_name fieldName>
+    ParameterExpressions${fieldName?cap_first}<#t>
+</#macro>
+
+<#macro declare_parameter_expressions field>
+    <#if field.compound??>
+        <#local fieldCompound=field.compound>
+    <#else>
+        <#local fieldCompound=field.array.elementCompound>
+    </#if>
+    struct <@parameter_expressions_name field.name/>
+    {
+    <#list fieldCompound.instantiatedParameters as instantiatedParameter>
+        static ${instantiatedParameter.typeInfo.typeFullName}<#if !instantiatedParameter.typeInfo.isSimple>&</#if> <#rt>
+                <#lt>${fieldCompound.parameters.list[instantiatedParameter?index].getterName}(void* owner, size_t index);
+    </#list>
+    };
+
+</#macro>
+
+<#macro define_parameter_expressions_methods compoundName field>
+    <#if field.compound??>
+        <#local fieldCompound=field.compound>
+    <#else>
+        <#local fieldCompound=field.array.elementCompound>
+    </#if>
+    <#list fieldCompound.instantiatedParameters as instantiatedParameter>
+${instantiatedParameter.typeInfo.typeFullName}<#if !instantiatedParameter.typeInfo.isSimple>&</#if> <#rt>
+        ${compoundName}::<@parameter_expressions_name field.name/>::<#t>
+        <#lt>${fieldCompound.parameters.list[instantiatedParameter?index].getterName}(<#rt>
+        <#lt>void*<#if instantiatedParameter.needsOwner> untypedOwner</#if>, <#rt>
+        <#lt>size_t<#if instantiatedParameter.needsIndex> index</#if>)
+{
+    <#if instantiatedParameter.needsOwner>
+    ${compoundName}& owner = *static_cast<${compoundName}*>(untypedOwner);
+    </#if>
+    return <#if instantiatedParameter.typeInfo.isSimple>static_cast<${instantiatedParameter.typeInfo.typeFullName}>(</#if><#rt>
+            <#lt>${instantiatedParameter.indirectExpression}<#if instantiatedParameter.typeInfo.isSimple>)</#if>;
+}
+
+    </#list>
 </#macro>
 
 <#function needs_field_element_factory field>
@@ -519,16 +576,16 @@ void ${compoundName}::<@array_expressions_name field.name/>::initializeElement(<
 
 <#macro define_element_factory_methods compoundName field>
     <#local extraConstructorArguments>
-        <#if field.array.elementCompound??>
-            <@compound_field_compound_ctor_params field.array.elementCompound, true/><#t>
+        <#if needs_field_initialization(field.array.elementCompound)>
+            <@compound_array_field_parameter_expressions compoundName, field/>
         </#if>
     </#local>
 void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
         <#if !withWriterCode>const </#if>${compoundName}&<#t>
-        <#if needs_field_initialization_owner(field.array.elementCompound)> owner</#if>,
+        <#lt><#if needs_field_initialization(field.array.elementCompound)> owner</#if>,
         <@vector_type_name field.array.elementTypeInfo.typeFullName/>& array,
         ::zserio::BitStreamReader& in, size_t<#rt>
-        <#lt><#if needs_field_initialization_index(field.array.elementCompound)> index</#if>)
+        <#lt><#if needs_field_initialization(field.array.elementCompound)> index</#if>)
 {
     array.emplace_back(in<#rt>
     <#if extraConstructorArguments?has_content>
@@ -540,10 +597,10 @@ void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
     <#if field.isPackable>
 void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
         <#if !withWriterCode>const </#if>${compoundName}&<#t>
-        <#if needs_field_initialization_owner(field.array.elementCompound)> owner</#if>,
+        <#lt><#if needs_field_initialization(field.array.elementCompound)> owner</#if>,
         <@vector_type_name field.array.elementTypeInfo.typeFullName/>& array,
         ${field.array.elementTypeInfo.typeFullName}::ZserioPackingContext& context, ::zserio::BitStreamReader& in,
-        size_t<#if needs_field_initialization_index(field.array.elementCompound)> index</#if>)
+        size_t<#if needs_field_initialization(field.array.elementCompound)> index</#if>)
 {
     array.emplace_back(context, in<#rt>
         <#if extraConstructorArguments?has_content>
@@ -604,6 +661,9 @@ uint8_t ${compoundName}::<@element_bit_size_name field.name/>::get(<#rt>
         <#if needs_array_expressions(field)>
     <@declare_array_expressions compoundName, field/>
         </#if>
+        <#if needs_field_parameter_expressions(field)>
+    <@declare_parameter_expressions field/>
+        </#if>
         <#if needs_field_element_factory(field)>
     <@declare_element_factory compoundName, field/>
         </#if>
@@ -617,6 +677,9 @@ uint8_t ${compoundName}::<@element_bit_size_name field.name/>::get(<#rt>
     <#list fieldList as field>
         <#if needs_array_expressions(field)>
 <@define_array_expressions_methods compoundName, field/>
+        </#if>
+        <#if needs_field_parameter_expressions(field)>
+<@define_parameter_expressions_methods compoundName, field/>
         </#if>
         <#if needs_field_element_factory(field)>
 <@define_element_factory_methods compoundName, field/>
@@ -956,7 +1019,7 @@ ${I}<@field_member_name field/>(::zserio::allocatorPropagatingCopy(<#rt>
     <#if field.compound??>
         <#if needs_field_initialization(field.compound)>
             <#local initializeCommand><@compound_get_field field/>.initialize(<#rt>
-                    <#lt><@compound_field_compound_ctor_params field.compound, false/>);</#local>
+                    <#lt><@compound_field_parameter_expressions field/>);</#local>
         <#elseif field.compound.needsChildrenInitialization>
             <#local initializeCommand><@compound_get_field field/>.initializeChildren();</#local>
         </#if>
@@ -969,7 +1032,7 @@ ${I}<@field_member_name field/>(::zserio::allocatorPropagatingCopy(<#rt>
     </#if>
     <#if initializeCommand??>
         <#if field.optional??>
-${I}if (<@field_optional_condition field/>)
+${I}if (<@field_member_name field/>.hasValue())
 ${I}    ${initializeCommand}
         <#else>
 ${I}${initializeCommand}
@@ -1156,28 +1219,6 @@ ${I}context.${field.getterName}().init<<@array_traits_type_name field/>>(<#rt>
 <#function needs_field_initialization field>
     <#if field.instantiatedParameters?has_content>
         <#return true>
-    </#if>
-    <#return false>
-</#function>
-
-<#function needs_field_initialization_owner field>
-    <#if field.instantiatedParameters?has_content>
-        <#list field.instantiatedParameters as instantiatedParameter>
-            <#if instantiatedParameter.needsOwner>
-                <#return true>
-            </#if>
-        </#list>
-    </#if>
-    <#return false>
-</#function>
-
-<#function needs_field_initialization_index field>
-    <#if field.instantiatedParameters?has_content>
-        <#list field.instantiatedParameters as instantiatedParameter>
-            <#if instantiatedParameter.needsIndex>
-                <#return true>
-            </#if>
-        </#list>
     </#if>
     <#return false>
 </#function>

@@ -31,6 +31,8 @@
 <@user_includes cppUserIncludes, false/>
 <@namespace_begin package.path/>
 
+<@compound_parameter_define_parameter_expressions_methods name, compoundParametersData/>
+
 <#if withWriterCode>
 <#macro empty_constructor_field_initialization>
         m_objectChoice(allocator)
@@ -303,7 +305,6 @@ void ${name}::initializeChildren()
     <#if fieldList?has_content>
     <@choice_switch "choice_initialize_children_member", "choice_no_match", selectorExpression, 1/>
     </#if>
-    <@compound_initialize_children_epilog_definition compoundConstructorsData/>
 }
 
 </#if>

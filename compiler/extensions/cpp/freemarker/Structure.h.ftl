@@ -49,6 +49,10 @@ public:
     <@compound_declare_packing_context fieldList/>
 
 </#if>
+<#if compoundParametersData.list?has_content>
+    <@compound_parameter_declare_parameter_expressions compoundParametersData/>
+
+</#if>
 <#if withCodeComments>
     /** Definition for allocator type. */
 </#if>
@@ -367,8 +371,9 @@ private:
 
     </#if>
 </#list>
-    <@compound_parameter_members compoundParametersData/>
-    <@compound_constructor_members compoundConstructorsData/>
+<#if compoundParametersData.list?has_content>
+    ParameterExpressions m_parameterExpressions;
+</#if>
 <#if (numExtendedFields > 0)>
     uint32_t m_numExtendedFields;
 </#if>

@@ -12,8 +12,9 @@ ${I}}
 <#macro reflectable_initialize compoundName parameterList indent=2>
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}void initialize(
-${I}        const ::zserio::vector<::zserio::AnyHolder<allocator_type>, allocator_type>& typeArguments) override
+${I}        const ::zserio::vector<::zserio::AnyHolder<allocator_type>, allocator_type>&) override
 ${I}{
+<#-- TODO[Mi-L@]: Behavior changed by parameter expressions, needs to be updated!
 ${I}    if (typeArguments.size() != ${parameterList?size})
 ${I}    {
 ${I}        throw ::zserio::CppRuntimeException("Not enough arguments to ${name}::initialize, ") <<
@@ -35,6 +36,7 @@ ${I}        typeArguments[${parameter?index}].get<<#rt>
         </#if>
     </#list>
 ${I}    );
+-->
 ${I}}
 </#macro>
 

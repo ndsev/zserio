@@ -23,19 +23,12 @@
 </#macro>
 
 <#macro compound_constructor_definition compoundConstructorsData memberInitializationMacroName="">
-    <#local hasInitializers= needs_compound_initialization(compoundConstructorsData) ||
-            has_field_with_initialization(compoundConstructorsData.fieldList) ||
-            memberInitializationMacroName != ""/>
+    <#local hasInitializers=memberInitializationMacroName != ""/>
     <#local numExtendedFields=num_extended_fields(compoundConstructorsData.fieldList)/>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
         <#lt>const allocator_type&<#rt>
         <#lt><#if empty_constructor_needs_allocator(compoundConstructorsData.fieldList)> allocator</#if>) <#rt>
         <#lt>noexcept<#if hasInitializers> :</#if>
-    <#if needs_compound_initialization(compoundConstructorsData)>
-        m_isInitialized(false)<#if memberInitializationMacroName != "">,</#if>
-    <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
-        m_areChildrenInitialized(false)<#if memberInitializationMacroName != "">,</#if>
-    </#if>
     <#if memberInitializationMacroName != "">
         <#if (numExtendedFields > 0)>
         m_numExtendedFields(${numExtendedFields}),
@@ -63,34 +56,30 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
      * \param allocator Allocator to use.
      */
     </#if>
-    <#local constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData, 3/></#local>
     explicit ${compoundConstructorsData.compoundName}(<#rt>
     <#if packed>
             <#lt>ZserioPackingContext& context,
             <#nt><#rt><#-- trim only newline -->
     </#if>
             ::zserio::BitStreamReader& in<#t>
-    <#if constructorArgumentTypeList?has_content>
+    <#if needs_compound_initialization(compoundConstructorsData)>
             <#lt>,
-            ${constructorArgumentTypeList}<#t>
+            const ParameterExpressions& parameterExpressions<#rt>
     </#if>
             <#lt>, const allocator_type& allocator = allocator_type());
 </#macro>
 
 <#macro compound_read_constructor_definition compoundConstructorsData memberInitializationMacroName packed=false>
-    <#local constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData, 2/></#local>
-    <#local hasInitializers=constructorArgumentTypeList?has_content ||
-            needs_compound_initialization(compoundConstructorsData) ||
-            has_field_with_initialization(compoundConstructorsData.fieldList) ||
+    <#local hasInitializers=needs_compound_initialization(compoundConstructorsData) ||
             memberInitializationMacroName != ""/>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
     <#if packed>
         ${compoundConstructorsData.compoundName}::ZserioPackingContext& context, <#t>
     </#if>
         ::zserio::BitStreamReader&<#if compoundConstructorsData.fieldList?has_content> in</#if><#t>
-    <#if constructorArgumentTypeList?has_content>
+    <#if needs_compound_initialization(compoundConstructorsData)>
         <#lt>,
-        ${constructorArgumentTypeList}<#t>
+        const ParameterExpressions& parameterExpressions<#rt>
     </#if>
         , const allocator_type&<#if read_constructor_needs_allocator(compoundConstructorsData.fieldList)> allocator</#if><#t>
     <#if hasInitializers>
@@ -98,14 +87,8 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
     <#else>
         <#lt>)
     </#if>
-    <#if constructorArgumentTypeList?has_content>
-        <@compound_parameter_constructor_initializers compoundConstructorsData.compoundParametersData, 2,
-                needs_compound_initialization(compoundConstructorsData)/>
-    </#if>
     <#if needs_compound_initialization(compoundConstructorsData)>
-        m_isInitialized(true)<#if memberInitializationMacroName != "">,</#if>
-    <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
-        m_areChildrenInitialized(true)<#if memberInitializationMacroName != "">,</#if>
+        m_parameterExpressions(parameterExpressions)<#if memberInitializationMacroName != "">,</#if>
     </#if>
     <#if memberInitializationMacroName != "">
         <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
@@ -128,23 +111,14 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
     ${compoundConstructorsData.compoundName}(const ${compoundConstructorsData.compoundName}& other);
 </#macro>
 
-<#macro compound_copy_initialization compoundConstructorsData>
-    <#if needs_compound_initialization(compoundConstructorsData)>
-    if (other.m_isInitialized)
-        initialize(<@compound_initialize_copy_argument_list compoundConstructorsData/>);
-    else
-        m_isInitialized = false;
-    <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
-    if (other.m_areChildrenInitialized)
-        initializeChildren();
-    else
-        m_areChildrenInitialized = false;
-    </#if>
-</#macro>
-
 <#macro compound_copy_constructor_definition compoundConstructorsData>
+    <#local hasInitializers=needs_compound_initialization(compoundConstructorsData) ||
+            compoundConstructorsData.fieldList?has_content/>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
-        <#lt>const ${compoundConstructorsData.compoundName}& other)<#if compoundConstructorsData.fieldList?has_content> :</#if>
+        <#lt>const ${compoundConstructorsData.compoundName}& other)<#if hasInitializers> :</#if>
+    <#if needs_compound_initialization(compoundConstructorsData)>
+        m_parameterExpressions(other.m_parameterExpressions)<#if compoundConstructorsData.fieldList?has_content>,</#if>
+    </#if>
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
         m_numExtendedFields(other.m_numExtendedFields),
     </#if>
@@ -155,7 +129,14 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
         </#if>
     </#list>
 {
-    <@compound_copy_initialization compoundConstructorsData/>
+    <#if has_field_with_initialization(compoundConstructorsData.fieldList)>
+        <#if needs_compound_initialization(compoundConstructorsData)>
+    if (isInitialized())
+        initializeChildren();
+        <#else>
+    initializeChildren();
+        </#if>
+    </#if>
 }
 </#macro>
 
@@ -174,6 +155,9 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundName}::operator=(<#rt>
     <#lt>const ${compoundConstructorsData.compoundName}& other)
 {
+    <#if needs_compound_initialization(compoundConstructorsData)>
+    m_parameterExpressions = other.m_parameterExpressions;
+    </#if>
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
     m_numExtendedFields = other.m_numExtendedFields;
     </#if>
@@ -183,7 +167,14 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
             <#break>
         </#if>
     </#list>
-    <@compound_copy_initialization compoundConstructorsData/>
+    <#if has_field_with_initialization(compoundConstructorsData.fieldList)>
+        <#if needs_compound_initialization(compoundConstructorsData)>
+    if (isInitialized())
+        initializeChildren();
+        <#else>
+    initializeChildren();
+        </#if>
+    </#if>
 
     return *this;
 }
@@ -201,8 +192,13 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
 </#macro>
 
 <#macro compound_move_constructor_definition compoundConstructorsData>
+    <#local hasInitializers=needs_compound_initialization(compoundConstructorsData) ||
+            compoundConstructorsData.fieldList?has_content/>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
-        <#lt>${compoundConstructorsData.compoundName}&& other)<#if compoundConstructorsData.fieldList?has_content> :</#if>
+        <#lt>${compoundConstructorsData.compoundName}&& other)<#if hasInitializers> :</#if>
+    <#if needs_compound_initialization(compoundConstructorsData)>
+        m_parameterExpressions(other.m_parameterExpressions)<#if compoundConstructorsData.fieldList?has_content>,</#if>
+    </#if>
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
         m_numExtendedFields(other.m_numExtendedFields),
     </#if>
@@ -213,7 +209,14 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
         </#if>
     </#list>
 {
-    <@compound_copy_initialization compoundConstructorsData/>
+    <#if has_field_with_initialization(compoundConstructorsData.fieldList)>
+        <#if needs_compound_initialization(compoundConstructorsData)>
+    if (isInitialized())
+        initializeChildren();
+        <#else>
+    initializeChildren();
+        </#if>
+    </#if>
 }
 </#macro>
 
@@ -232,6 +235,9 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundName}::operator=(<#rt>
     <#lt>${compoundConstructorsData.compoundName}&& other)
 {
+    <#if needs_compound_initialization(compoundConstructorsData)>
+    m_parameterExpressions = other.m_parameterExpressions;
+    </#if>
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
     m_numExtendedFields = other.m_numExtendedFields;
     </#if>
@@ -241,7 +247,14 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
             <#break>
         </#if>
     </#list>
-    <@compound_copy_initialization compoundConstructorsData/>
+    <#if has_field_with_initialization(compoundConstructorsData.fieldList)>
+        <#if needs_compound_initialization(compoundConstructorsData)>
+    if (isInitialized())
+        initializeChildren();
+        <#else>
+    initializeChildren();
+        </#if>
+    </#if>
 
     return *this;
 }
@@ -261,13 +274,17 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
 </#macro>
 
 <#macro compound_allocator_propagating_copy_constructor_definition compoundConstructorsData>
-    <#local initialization><@compound_copy_initialization compoundConstructorsData/></#local>
+    <#local hasInitializers=needs_compound_initialization(compoundConstructorsData) ||
+            compoundConstructorsData.fieldList?has_content/>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
         <#lt>::zserio::PropagateAllocatorT,
         const ${compoundConstructorsData.compoundName}&<#rt>
-        <#lt><#if compoundConstructorsData.fieldList?has_content || initialization?has_content> other</#if>,<#rt>
+        <#lt><#if hasInitializers> other</#if>,<#rt>
         <#lt> const allocator_type&<#if compoundConstructorsData.fieldList?has_content> allocator</#if>)<#rt>
-        <#lt><#if compoundConstructorsData.fieldList?has_content> :</#if>
+        <#lt><#if hasInitializers> :</#if>
+    <#if needs_compound_initialization(compoundConstructorsData)>
+        m_parameterExpressions(other.m_parameterExpressions)<#if compoundConstructorsData.fieldList?has_content>,</#if>
+    </#if>
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
         m_numExtendedFields(other.m_numExtendedFields),
     </#if>
@@ -278,8 +295,13 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
         </#if>
     </#list>
 {
-    <#if initialization?has_content>
-    ${initialization}<#t>
+    <#if has_field_with_initialization(compoundConstructorsData.fieldList)>
+        <#if needs_compound_initialization(compoundConstructorsData)>
+    if (isInitialized())
+        initializeChildren();
+        <#else>
+    initializeChildren();
+        </#if>
     </#if>
 }
 </#macro>
@@ -299,12 +321,7 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
         </#if>
      */
     </#if>
-    <#local constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData, 3/></#local>
-    void initialize(<#rt>
-    <#if constructorArgumentTypeList?has_content>
-
-    </#if>
-            <#lt>${constructorArgumentTypeList});
+    void initialize(const ParameterExpressions& parameterExpressions);
     <#if withCodeComments>
 
     /**
@@ -317,46 +334,18 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 </#macro>
 
 <#macro compound_initialize_definition compoundConstructorsData needsChildrenInitialization>
-    <#local constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData, 2/></#local>
-void ${compoundConstructorsData.compoundName}::initialize(
-        <#lt>${constructorArgumentTypeList})
+void ${compoundConstructorsData.compoundName}::initialize(const ParameterExpressions& parameterExpressions)
 {
-    <@compound_parameter_initialize compoundConstructorsData.compoundParametersData, 1/>
-    m_isInitialized = true;
+    m_parameterExpressions = parameterExpressions;
     <#if needsChildrenInitialization>
-
     initializeChildren();
     </#if>
 }
 
 bool ${compoundConstructorsData.compoundName}::isInitialized() const
 {
-    return m_isInitialized;
+    return m_parameterExpressions.isInitialized();
 }
-</#macro>
-
-<#macro compound_initialize_children_epilog_definition compoundConstructorsData>
-    <#if !needs_compound_initialization(compoundConstructorsData) &&
-            has_field_with_initialization(compoundConstructorsData.fieldList)>
-
-    m_areChildrenInitialized = true;
-    </#if>
-</#macro>
-
-<#macro compound_constructor_argument_type_list compoundConstructorsData indent>
-    <@compound_parameter_constructor_type_list compoundConstructorsData.compoundParametersData, indent/>
-</#macro>
-
-<#macro compound_initialize_copy_argument_list compoundConstructorsData>
-    <@compound_parameter_copy_argument_list compoundConstructorsData.compoundParametersData/><#rt>
-</#macro>
-
-<#macro compound_constructor_members compoundConstructorsData>
-    <#if needs_compound_initialization(compoundConstructorsData)>
-    bool m_isInitialized;
-    <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
-    bool m_areChildrenInitialized;
-    </#if>
 </#macro>
 
 <#function empty_constructor_needs_allocator fieldList>

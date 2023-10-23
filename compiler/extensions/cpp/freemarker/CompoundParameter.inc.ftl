@@ -7,46 +7,78 @@
     ${paramName}_<#t>
 </#macro>
 
-<#macro compound_parameter_constructor_initializers compoundParametersData, indent, trailingComma>
-    <#local I>${""?left_pad(indent * 4)}</#local>
-    <#list compoundParametersData.list as compoundParameter>
-    <#local parameterNamePrefix><#if !compoundParameter.typeInfo.isSimple>&</#if></#local>
-${I}<@parameter_member_name compoundParameter.name/>(${parameterNamePrefix}<@parameter_argument_name compoundParameter.name/>)<#if compoundParameter?has_next || trailingComma>,</#if>
+<#macro compound_parameter_declare_parameter_expressions compoundParametersData>
+    class ParameterExpressions
+    {
+    public:
+    <#list compoundParametersData.list as parameter>
+        using ParameterExpression${parameter.name?cap_first} = <#rt>
+                <#lt>${parameter.typeInfo.typeFullName}<#if !parameter.typeInfo.isSimple>&</#if> (*)(void*, size_t);
     </#list>
-</#macro>
 
-<#macro compound_parameter_initialize compoundParametersData, indent>
-    <#local I>${""?left_pad(indent * 4)}</#local>
-    <#list compoundParametersData.list as compoundParameter>
-${I}<@parameter_member_name compoundParameter.name/> = <#if !compoundParameter.typeInfo.isSimple>&</#if><@parameter_argument_name compoundParameter.name/>;
-    </#list>
-</#macro>
+        ParameterExpressions();
 
-<#macro compound_parameter_copy_argument_list compoundParametersData>
-    <#list compoundParametersData.list as compoundParameter>
-        <#if !compoundParameter.typeInfo.isSimple>*(</#if>other.<@parameter_member_name compoundParameter.name/><#t>
-            <#if !compoundParameter.typeInfo.isSimple>)</#if><#if compoundParameter?has_next>, </#if><#t>
-    </#list>
-</#macro>
-
-<#macro compound_parameter_constructor_type_list compoundParametersData, indent>
-    <#local I>${""?left_pad(indent * 4)}</#local>
-    <#list compoundParametersData.list as compoundParameter>
-    <#local parameterType>
-        <#if !compoundParameter.typeInfo.isSimple>
-            <#if withWriterCode>
-                ${compoundParameter.typeInfo.typeFullName}&<#t>
-            <#else>
-                const ${compoundParameter.typeInfo.typeFullName}&<#t>
-            </#if>
+        ParameterExpressions(void* owner, size_t index,
+    <#list compoundParametersData.list as parameter>
+                ParameterExpression${parameter.name?cap_first} <@parameter_argument_name parameter.name/><#rt>
+        <#if parameter?has_next>
+                <#lt>,
         <#else>
-            ${compoundParameter.typeInfo.typeFullName}<#t>
+                <#lt>);
         </#if>
-    </#local>
-${I}${parameterType} <@parameter_argument_name compoundParameter.name/><#rt>
-        <#if compoundParameter?has_next>
+    </#list>
+
+    <#list compoundParametersData.list as parameter>
+        ${parameter.typeInfo.typeFullName}<#if !parameter.typeInfo.isSimple>&</#if> <#rt>
+                <#lt>${parameter.getterName}() const;
+    </#list>
+
+        bool isInitialized() const
+        {
+            <#-- m_owner could have been nullptr if it's not needed in expressions, thus use first paramter instead -->
+            return <@parameter_member_name compoundParametersData.list[0].name/> != nullptr;
+        }
+
+    private:
+        void* m_owner;
+        size_t m_index;
+    <#list compoundParametersData.list as parameter>
+        ParameterExpression${parameter.name?cap_first} <@parameter_member_name parameter.name/>;
+    </#list>
+    };
+</#macro>
+
+<#macro compound_parameter_define_parameter_expressions_methods compoundName compoundParametersData>
+${compoundName}::ParameterExpressions::ParameterExpressions():
+        m_owner(nullptr), m_index(0),
+    <#list compoundParametersData.list as parameter>
+        <@parameter_member_name parameter.name/>(nullptr)<#if parameter?has_next>,</#if>
+    </#list>
+{
+}
+
+${compoundName}::ParameterExpressions::ParameterExpressions(void* owner, size_t index,
+    <#list compoundParametersData.list as parameter>
+        ParameterExpression${parameter.name?cap_first} <@parameter_argument_name parameter.name/><#rt>
+        <#if parameter?has_next>
             <#lt>,
+        <#else>
+            <#lt>) :
         </#if>
+    </#list>
+        m_owner(owner), m_index(index),
+    <#list compoundParametersData.list as parameter>
+        <@parameter_member_name parameter.name/>(<@parameter_argument_name parameter.name/>)<#if parameter?has_next>,</#if>
+    </#list>
+{
+}
+    <#list compoundParametersData.list as parameter>
+
+${parameter.typeInfo.typeFullName}<#if !parameter.typeInfo.isSimple>&</#if> <#rt>
+        <#lt>${compoundName}::ParameterExpressions::${parameter.getterName}() const
+{
+    return <@parameter_member_name parameter.name/>(m_owner, m_index);
+}
     </#list>
 </#macro>
 
@@ -112,10 +144,10 @@ ${I}${parameterType} <@parameter_argument_name compoundParameter.name/><#rt>
         <#if !compoundParameter.typeInfo.isSimple && withWriterCode>
 ${compoundParameter.typeInfo.typeFullName}& ${compoundName}::${compoundParameter.getterName}()
 {
-    if (!m_isInitialized)
-        throw ::zserio::CppRuntimeException("Parameter '${compoundParameter.name}' of compound '${compoundName}' is not initialized!");
+    if (!isInitialized())
+        throw ::zserio::CppRuntimeException("Compound '${compoundName}' is not initialized!");
 
-    return *<@parameter_member_name compoundParameter.name/>;
+    return m_parameterExpressions.${compoundParameter.getterName}();
 }
 
         </#if>
@@ -125,26 +157,12 @@ const ${compoundParameter.typeInfo.typeFullName}& ${compoundName}::${compoundPar
 ${compoundParameter.typeInfo.typeFullName} ${compoundName}::${compoundParameter.getterName}() const
         </#if>
 {
-    if (!m_isInitialized)
-        throw ::zserio::CppRuntimeException("Parameter '${compoundParameter.name}' of compound '${compoundName}' is not initialized!");
+    if (!isInitialized())
+        throw ::zserio::CppRuntimeException("Compound '${compoundName}' is not initialized!");
 
-    return <#if !compoundParameter.typeInfo.isSimple>*</#if><@parameter_member_name compoundParameter.name/>;
+    return m_parameterExpressions.${compoundParameter.getterName}();
 }
 
-    </#list>
-</#macro>
-
-<#macro compound_parameter_members compoundParametersData>
-    <#-- parameters can't be const for operator=() to work and initialize() needs to update them too -->
-    <#list compoundParametersData.list as compoundParameter>
-    <#local parameterCppTypeName>
-        <#if compoundParameter.typeInfo.isSimple>
-            ${compoundParameter.typeInfo.typeFullName}<#t>
-        <#else>
-            <#if !withWriterCode>const </#if>${compoundParameter.typeInfo.typeFullName}*<#t>
-        </#if>
-    </#local>
-    ${parameterCppTypeName} <@parameter_member_name compoundParameter.name/>;
     </#list>
 </#macro>
 

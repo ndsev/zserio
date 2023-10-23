@@ -62,6 +62,8 @@ public:
 
     <@compound_declare_packing_context fieldList/>
 </#if>
+
+    <@compound_parameter_declare_parameter_expressions compoundParametersData/>
 <#if withWriterCode>
 
     <@compound_default_constructor compoundConstructorsData/>
@@ -306,8 +308,7 @@ private:
     ${types.anyHolder.name} copyObject(const allocator_type& allocator) const;
 
 </#if>
-    <@compound_parameter_members compoundParametersData/>
-    <@compound_constructor_members compoundConstructorsData/>
+    ParameterExpressions m_parameterExpressions;
 <#if fieldList?has_content>
     ${types.anyHolder.name} m_objectChoice;
 </#if>

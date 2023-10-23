@@ -32,6 +32,10 @@
 <@user_includes cppUserIncludes, false/>
 <@namespace_begin package.path/>
 
+<#if compoundParametersData.list?has_content>
+<@compound_parameter_define_parameter_expressions_methods name, compoundParametersData/>
+
+</#if>
 <#assign numExtendedFields=num_extended_fields(fieldList)>
 <#function extended_field_index numFields numExtendedFields fieldIndex>
     <#return fieldIndex - (numFields - numExtendedFields)>
@@ -67,7 +71,7 @@
 </#macro>
 <#if withWriterCode>
     <#assign emptyConstructorInitMacroName><#if fieldList?has_content>empty_constructor_field_initialization</#if></#assign>
-    <@compound_constructor_definition compoundConstructorsData, emptyConstructorInitMacroName/>
+<@compound_constructor_definition compoundConstructorsData, emptyConstructorInitMacroName/>
 
 </#if>
 <#macro read_constructor_field_initialization packed>
@@ -245,7 +249,6 @@ void ${name}::initializeChildren()
     <#list fieldList as field>
     <@compound_initialize_children_field field, 1/>
     </#list>
-    <@compound_initialize_children_epilog_definition compoundConstructorsData/>
 }
 
 </#if>
