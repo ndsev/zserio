@@ -11,13 +11,16 @@ namespace enum_with_removed_item_param_choice
 
 TEST(EnumWithRemovedItemParamChoiceTest, writeRead)
 {
+    EnumWithRemovedItemParamChoice::ParameterExpressions parameterExpressions = {
+            nullptr, 0, [](void*, size_t) { return Selector::ZSERIO_REMOVED_GREY; } };
+
     EnumWithRemovedItemParamChoice enumWithRemovedItemParamChoice;
     enumWithRemovedItemParamChoice.setGreyData(0xCAFE);
 
-    auto bitBuffer = zserio::serialize(enumWithRemovedItemParamChoice, Selector::ZSERIO_REMOVED_GREY);
+    auto bitBuffer = zserio::serialize(enumWithRemovedItemParamChoice, parameterExpressions);
 
     const auto readEnumWithRemovedItemParamChoice =
-            zserio::deserialize<EnumWithRemovedItemParamChoice>(bitBuffer, Selector::ZSERIO_REMOVED_GREY);
+            zserio::deserialize<EnumWithRemovedItemParamChoice>(bitBuffer, parameterExpressions);
     ASSERT_EQ(enumWithRemovedItemParamChoice, readEnumWithRemovedItemParamChoice);
 }
 

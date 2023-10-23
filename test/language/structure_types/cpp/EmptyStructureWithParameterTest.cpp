@@ -11,7 +11,20 @@ namespace structure_types
 namespace empty_structure_with_parameter
 {
 
-TEST(EmptyStructureWithParameterTest, emptyConstructor)
+class EmptyStructureWithParameterTest : public ::testing::Test
+{
+protected:
+    EmptyStructureWithParameter::ParameterExpressions parameterExpressions0 = {
+            nullptr, 0, [](void*, size_t) { return static_cast<int32_t>(0); } };
+    EmptyStructureWithParameter::ParameterExpressions parameterExpressions1 = {
+            nullptr, 0, [](void*, size_t) { return static_cast<int32_t>(1); } };
+    EmptyStructureWithParameter::ParameterExpressions parameterExpressions2 = {
+            nullptr, 0, [](void*, size_t) { return static_cast<int32_t>(2); } };
+    EmptyStructureWithParameter::ParameterExpressions parameterExpressions10 = {
+            nullptr, 0, [](void*, size_t) { return static_cast<int32_t>(10); } };
+};
+
+TEST_F(EmptyStructureWithParameterTest, emptyConstructor)
 {
     {
         EmptyStructureWithParameter emptyStructureWithParameter;
@@ -24,15 +37,14 @@ TEST(EmptyStructureWithParameterTest, emptyConstructor)
         ASSERT_THROW(emptyStructureWithParameter.getParam(), zserio::CppRuntimeException);
     }
     {
-        const int32_t param = 10;
         EmptyStructureWithParameter emptyStructureWithParameter;
-        emptyStructureWithParameter.initialize(param);
+        emptyStructureWithParameter.initialize(parameterExpressions10);
         ASSERT_EQ(0, emptyStructureWithParameter.bitSizeOf());
-        ASSERT_EQ(param, emptyStructureWithParameter.getParam());
+        ASSERT_EQ(10, emptyStructureWithParameter.getParam());
     }
 }
 
-TEST(EmptyStructureWithParameterTest, copyConstructor)
+TEST_F(EmptyStructureWithParameterTest, copyConstructor)
 {
     EmptyStructureWithParameter testStructureWithParameter;
     EmptyStructureWithParameter testStructureWithParameterCopy1(testStructureWithParameter);
@@ -40,12 +52,12 @@ TEST(EmptyStructureWithParameterTest, copyConstructor)
     ASSERT_THROW(testStructureWithParameter.getParam(), zserio::CppRuntimeException);
     ASSERT_THROW(testStructureWithParameterCopy1.getParam(), zserio::CppRuntimeException);
 
-    testStructureWithParameter.initialize(1);
+    testStructureWithParameter.initialize(parameterExpressions1);
     EmptyStructureWithParameter testStructureWithParameterCopy2(testStructureWithParameter);
     ASSERT_EQ(testStructureWithParameter.getParam(), testStructureWithParameterCopy2.getParam());
 }
 
-TEST(EmptyStructureWithParameterTest, assignmentOperator)
+TEST_F(EmptyStructureWithParameterTest, assignmentOperator)
 {
     EmptyStructureWithParameter testStructureWithParameter;
     EmptyStructureWithParameter testStructureWithParameterAssign;
@@ -54,12 +66,12 @@ TEST(EmptyStructureWithParameterTest, assignmentOperator)
     ASSERT_THROW(testStructureWithParameter.getParam(), zserio::CppRuntimeException);
     ASSERT_THROW(testStructureWithParameterAssign.getParam(), zserio::CppRuntimeException);
 
-    testStructureWithParameter.initialize(1);
+    testStructureWithParameter.initialize(parameterExpressions1);
     testStructureWithParameterAssign = testStructureWithParameter;
     ASSERT_EQ(testStructureWithParameter.getParam(), testStructureWithParameterAssign.getParam());
 }
 
-TEST(EmptyStructureWithParameterTest, moveConstructor)
+TEST_F(EmptyStructureWithParameterTest, moveConstructor)
 {
     {
         EmptyStructureWithParameter testStructureWithParameter;
@@ -70,17 +82,16 @@ TEST(EmptyStructureWithParameterTest, moveConstructor)
     }
 
     {
-        int32_t param = 1;
         EmptyStructureWithParameter testStructureWithParameter;
-        testStructureWithParameter.initialize(param);
-        ASSERT_EQ(param, testStructureWithParameter.getParam());
+        testStructureWithParameter.initialize(parameterExpressions1);
+        ASSERT_EQ(1, testStructureWithParameter.getParam());
 
         EmptyStructureWithParameter testStructureWithParameterMoved(std::move(testStructureWithParameter));
-        ASSERT_EQ(param, testStructureWithParameterMoved.getParam());
+        ASSERT_EQ(1, testStructureWithParameterMoved.getParam());
     }
 }
 
-TEST(EmptyStructureWithParameterTest, moveAssignmentOperator)
+TEST_F(EmptyStructureWithParameterTest, moveAssignmentOperator)
 {
     {
         EmptyStructureWithParameter testStructureWithParameter;
@@ -92,18 +103,17 @@ TEST(EmptyStructureWithParameterTest, moveAssignmentOperator)
     }
 
     {
-        int32_t param = 1;
         EmptyStructureWithParameter testStructureWithParameter;
-        testStructureWithParameter.initialize(param);
-        ASSERT_EQ(param, testStructureWithParameter.getParam());
+        testStructureWithParameter.initialize(parameterExpressions1);
+        ASSERT_EQ(1, testStructureWithParameter.getParam());
 
         EmptyStructureWithParameter testStructureWithParameterMoved;
         testStructureWithParameterMoved = std::move(testStructureWithParameter);
-        ASSERT_EQ(param, testStructureWithParameterMoved.getParam());
+        ASSERT_EQ(1, testStructureWithParameterMoved.getParam());
     }
 }
 
-TEST(EmptyStructureWithParameterTest, propagateAllocatorCopyConstructor)
+TEST_F(EmptyStructureWithParameterTest, propagateAllocatorCopyConstructor)
 {
     EmptyStructureWithParameter testStructureWithParameter;
     EmptyStructureWithParameter testStructureWithParameterCopy1(zserio::PropagateAllocator,
@@ -112,74 +122,74 @@ TEST(EmptyStructureWithParameterTest, propagateAllocatorCopyConstructor)
     ASSERT_THROW(testStructureWithParameter.getParam(), zserio::CppRuntimeException);
     ASSERT_THROW(testStructureWithParameterCopy1.getParam(), zserio::CppRuntimeException);
 
-    testStructureWithParameter.initialize(1);
+    testStructureWithParameter.initialize(parameterExpressions1);
     EmptyStructureWithParameter testStructureWithParameterCopy2(zserio::PropagateAllocator,
             testStructureWithParameter, EmptyStructureWithParameter::allocator_type());
     ASSERT_EQ(testStructureWithParameter.getParam(), testStructureWithParameterCopy2.getParam());
 }
 
-TEST(EmptyStructureWithParameterTest, initialize)
+TEST_F(EmptyStructureWithParameterTest, initialize)
 {
     EmptyStructureWithParameter emptyStructureWithParameter;
-    emptyStructureWithParameter.initialize(1);
+    emptyStructureWithParameter.initialize(parameterExpressions1);
     ASSERT_EQ(1, emptyStructureWithParameter.getParam());
 }
 
-TEST(EmptyStructureWithParameterTest, bitStreamReaderConstructor)
+TEST_F(EmptyStructureWithParameterTest, bitStreamReaderConstructor)
 {
     zserio::BitStreamReader reader(nullptr, 0);
 
-    EmptyStructureWithParameter emptyStructureWithParameter(reader, 1);
+    EmptyStructureWithParameter emptyStructureWithParameter(reader, parameterExpressions1);
     ASSERT_EQ(1, emptyStructureWithParameter.getParam());
     ASSERT_EQ(0, emptyStructureWithParameter.bitSizeOf());
 }
 
-TEST(EmptyStructureWithParameterTest, bitSizeOf)
+TEST_F(EmptyStructureWithParameterTest, bitSizeOf)
 {
     EmptyStructureWithParameter emptyStructureWithParameter;
     const size_t bitPosition = 1;
     ASSERT_EQ(0, emptyStructureWithParameter.bitSizeOf(bitPosition));
 }
 
-TEST(EmptyStructureWithParameterTest, initializeOffsets)
+TEST_F(EmptyStructureWithParameterTest, initializeOffsets)
 {
     EmptyStructureWithParameter emptyStructureWithParameter;
     const size_t bitPosition = 1;
     ASSERT_EQ(bitPosition, emptyStructureWithParameter.initializeOffsets(bitPosition));
 }
 
-TEST(EmptyStructureWithParameterTest, operatorEquality)
+TEST_F(EmptyStructureWithParameterTest, operatorEquality)
 {
     EmptyStructureWithParameter emptyStructureWithParameter1;
     EmptyStructureWithParameter emptyStructureWithParameter2;
     ASSERT_THROW(ASSERT_FALSE(emptyStructureWithParameter1 == emptyStructureWithParameter2),
             zserio::CppRuntimeException);
 
-    emptyStructureWithParameter1.initialize(1);
+    emptyStructureWithParameter1.initialize(parameterExpressions1);
     ASSERT_THROW(ASSERT_FALSE(emptyStructureWithParameter1 == emptyStructureWithParameter2),
             zserio::CppRuntimeException);
 
-    emptyStructureWithParameter2.initialize(1);
+    emptyStructureWithParameter2.initialize(parameterExpressions1);
     ASSERT_TRUE(emptyStructureWithParameter1 == emptyStructureWithParameter2);
 
-    emptyStructureWithParameter2.initialize(2);
+    emptyStructureWithParameter2.initialize(parameterExpressions2);
     ASSERT_FALSE(emptyStructureWithParameter1 == emptyStructureWithParameter2);
 }
 
-TEST(EmptyStructureWithParameterTest, hashCode)
+TEST_F(EmptyStructureWithParameterTest, hashCode)
 {
     EmptyStructureWithParameter emptyStructureWithParameter1;
     EmptyStructureWithParameter emptyStructureWithParameter2;
     ASSERT_THROW(emptyStructureWithParameter1.hashCode(), zserio::CppRuntimeException);
     ASSERT_THROW(emptyStructureWithParameter2.hashCode(), zserio::CppRuntimeException);
 
-    emptyStructureWithParameter1.initialize(1);
+    emptyStructureWithParameter1.initialize(parameterExpressions1);
     ASSERT_NO_THROW(emptyStructureWithParameter1.hashCode());
 
-    emptyStructureWithParameter2.initialize(1);
+    emptyStructureWithParameter2.initialize(parameterExpressions1);
     ASSERT_EQ(emptyStructureWithParameter1.hashCode(), emptyStructureWithParameter2.hashCode());
 
-    emptyStructureWithParameter2.initialize(0);
+    emptyStructureWithParameter2.initialize(parameterExpressions0);
     ASSERT_NE(emptyStructureWithParameter1.hashCode(), emptyStructureWithParameter2.hashCode());
 
     // use hardcoded values to check that the hash code is stable
@@ -187,10 +197,10 @@ TEST(EmptyStructureWithParameterTest, hashCode)
     ASSERT_EQ(851, emptyStructureWithParameter2.hashCode());
 }
 
-TEST(EmptyStructureWithParameterTest, write)
+TEST_F(EmptyStructureWithParameterTest, write)
 {
     EmptyStructureWithParameter emptyStructureWithParameter;
-    emptyStructureWithParameter.initialize(1);
+    emptyStructureWithParameter.initialize(parameterExpressions1);
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
     zserio::BitStreamWriter writer(bitBuffer);
@@ -198,7 +208,7 @@ TEST(EmptyStructureWithParameterTest, write)
 
     ASSERT_EQ(0, writer.getBitPosition());
     zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
-    EmptyStructureWithParameter readEmptyStructureWithParameter(reader, 1);
+    EmptyStructureWithParameter readEmptyStructureWithParameter(reader, parameterExpressions1);
     ASSERT_TRUE(emptyStructureWithParameter == readEmptyStructureWithParameter);
 }
 

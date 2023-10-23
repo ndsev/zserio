@@ -11,7 +11,15 @@ namespace choice_types
 namespace empty_choice_with_case
 {
 
-TEST(EmptyChoiceWithCaseTest, emptyConstructor)
+struct EmptyChoiceWithCaseTest : public ::testing::Test
+{
+    EmptyChoiceWithCase::ParameterExpressions parameterExpressions0 = {
+            nullptr, 0, [](void*, size_t) { return static_cast<uint8_t>(0); } };
+    EmptyChoiceWithCase::ParameterExpressions parameterExpressions1 = {
+            nullptr, 0, [](void*, size_t) { return static_cast<uint8_t>(1); } };
+};
+
+TEST_F(EmptyChoiceWithCaseTest, emptyConstructor)
 {
     {
         EmptyChoiceWithCase emptyChoiceWithCase;
@@ -23,140 +31,125 @@ TEST(EmptyChoiceWithCaseTest, emptyConstructor)
     }
 }
 
-TEST(EmptyChoiceWithCaseTest, bitStreamReaderConstructor)
+TEST_F(EmptyChoiceWithCaseTest, bitStreamReaderConstructor)
 {
-    const uint8_t selector = 1;
     zserio::BitStreamReader reader(nullptr, 0);
 
-    EmptyChoiceWithCase emptyChoiceWithCase(reader, selector);
-    ASSERT_EQ(selector, emptyChoiceWithCase.getSelector());
+    EmptyChoiceWithCase emptyChoiceWithCase(reader, parameterExpressions1);
+    ASSERT_EQ(1, emptyChoiceWithCase.getSelector());
     ASSERT_EQ(0, emptyChoiceWithCase.bitSizeOf());
 }
 
-TEST(EmptyChoiceWithCaseTest, copyConstructor)
+TEST_F(EmptyChoiceWithCaseTest, copyConstructor)
 {
-    const uint8_t selector = 1;
-
     EmptyChoiceWithCase emptyChoiceWithCase;
-    emptyChoiceWithCase.initialize(selector);
+    emptyChoiceWithCase.initialize(parameterExpressions1);
     const EmptyChoiceWithCase emptyChoiceWithCaseCopy(emptyChoiceWithCase);
-    ASSERT_EQ(selector, emptyChoiceWithCaseCopy.getSelector());
+    ASSERT_EQ(1, emptyChoiceWithCaseCopy.getSelector());
     ASSERT_EQ(0, emptyChoiceWithCaseCopy.bitSizeOf());
 }
 
-TEST(EmptyChoiceWithCaseTest, assignmentOperator)
+TEST_F(EmptyChoiceWithCaseTest, assignmentOperator)
 {
-    const uint8_t selector = 1;
-
     EmptyChoiceWithCase emptyChoiceWithCase;
-    emptyChoiceWithCase.initialize(selector);
+    emptyChoiceWithCase.initialize(parameterExpressions1);
     EmptyChoiceWithCase emptyChoiceWithCaseCopy;
     emptyChoiceWithCaseCopy = emptyChoiceWithCase;
-    ASSERT_EQ(selector, emptyChoiceWithCaseCopy.getSelector());
+    ASSERT_EQ(1, emptyChoiceWithCaseCopy.getSelector());
     ASSERT_EQ(0, emptyChoiceWithCaseCopy.bitSizeOf());
 }
 
-TEST(EmptyChoiceWithCaseTest, moveConstructor)
+TEST_F(EmptyChoiceWithCaseTest, moveConstructor)
 {
-    const uint8_t selector = 1;
-
     EmptyChoiceWithCase emptyChoiceWithCase;
-    emptyChoiceWithCase.initialize(selector);
+    emptyChoiceWithCase.initialize(parameterExpressions1);
     // note that it doesn't ensure that move ctor was called
     const EmptyChoiceWithCase emptyChoiceWithCaseMoved(std::move(emptyChoiceWithCase));
-    ASSERT_EQ(selector, emptyChoiceWithCaseMoved.getSelector());
+    ASSERT_EQ(1, emptyChoiceWithCaseMoved.getSelector());
     ASSERT_EQ(0, emptyChoiceWithCaseMoved.bitSizeOf());
 }
 
-TEST(EmptyChoiceWithCaseTest, moveAssignmentOperator)
+TEST_F(EmptyChoiceWithCaseTest, moveAssignmentOperator)
 {
-    const uint8_t selector = 1;
-
     EmptyChoiceWithCase emptyChoiceWithCase;
-    emptyChoiceWithCase.initialize(selector);
+    emptyChoiceWithCase.initialize(parameterExpressions1);
     // note that it doesn't ensure that move ctor was called
     EmptyChoiceWithCase emptyChoiceWithCaseMoved;
     emptyChoiceWithCaseMoved = std::move(emptyChoiceWithCase);
-    ASSERT_EQ(selector, emptyChoiceWithCaseMoved.getSelector());
+    ASSERT_EQ(1, emptyChoiceWithCaseMoved.getSelector());
     ASSERT_EQ(0, emptyChoiceWithCaseMoved.bitSizeOf());
 }
 
-TEST(EmptyChoiceWithCaseTest, propagateAllocatorCopyConstructor)
+TEST_F(EmptyChoiceWithCaseTest, propagateAllocatorCopyConstructor)
 {
-    const uint8_t selector = 1;
-
     EmptyChoiceWithCase emptyChoiceWithCase;
-    emptyChoiceWithCase.initialize(selector);
+    emptyChoiceWithCase.initialize(parameterExpressions1);
     const EmptyChoiceWithCase emptyChoiceWithCaseCopy(zserio::PropagateAllocator, emptyChoiceWithCase,
             EmptyChoiceWithCase::allocator_type());
-    ASSERT_EQ(selector, emptyChoiceWithCaseCopy.getSelector());
+    ASSERT_EQ(1, emptyChoiceWithCaseCopy.getSelector());
     ASSERT_EQ(0, emptyChoiceWithCaseCopy.bitSizeOf());
 }
 
-TEST(EmptyChoiceWithCaseTest, initialize)
+TEST_F(EmptyChoiceWithCaseTest, initialize)
 {
-    const uint8_t selector = 1;
-
     EmptyChoiceWithCase emptyChoiceWithCase;
-    emptyChoiceWithCase.initialize(selector);
-    ASSERT_EQ(selector, emptyChoiceWithCase.getSelector());
+    emptyChoiceWithCase.initialize(parameterExpressions1);
+    ASSERT_EQ(1, emptyChoiceWithCase.getSelector());
 }
 
-TEST(EmptyChoiceWithCaseTest, getSelector)
+TEST_F(EmptyChoiceWithCaseTest, getSelector)
 {
-    const uint8_t selector = 1;
-
     EmptyChoiceWithCase emptyChoiceWithCase;
-    emptyChoiceWithCase.initialize(selector);
-    ASSERT_EQ(selector, emptyChoiceWithCase.getSelector());
+    emptyChoiceWithCase.initialize(parameterExpressions1);
+    ASSERT_EQ(1, emptyChoiceWithCase.getSelector());
 }
 
-TEST(EmptyChoiceWithCaseTest, choiceTag)
+TEST_F(EmptyChoiceWithCaseTest, choiceTag)
 {
     EmptyChoiceWithCase emptyChoiceWithCase;
-    emptyChoiceWithCase.initialize(0);
+    emptyChoiceWithCase.initialize(parameterExpressions0);
     ASSERT_EQ(EmptyChoiceWithCase::UNDEFINED_CHOICE, emptyChoiceWithCase.choiceTag());
 
-    emptyChoiceWithCase.initialize(1);
+    emptyChoiceWithCase.initialize(parameterExpressions1);
     ASSERT_EQ(EmptyChoiceWithCase::UNDEFINED_CHOICE, emptyChoiceWithCase.choiceTag());
 }
 
-TEST(EmptyChoiceWithCaseTest, bitSizeOf)
+TEST_F(EmptyChoiceWithCaseTest, bitSizeOf)
 {
     EmptyChoiceWithCase emptyChoiceWithCase;
-    emptyChoiceWithCase.initialize(1);
+    emptyChoiceWithCase.initialize(parameterExpressions1);
     ASSERT_EQ(0, emptyChoiceWithCase.bitSizeOf(1));
 }
 
-TEST(EmptyChoiceWithCaseTest, initializeOffsets)
+TEST_F(EmptyChoiceWithCaseTest, initializeOffsets)
 {
     const size_t bitPosition = 1;
 
     EmptyChoiceWithCase emptyChoiceWithCase;
-    emptyChoiceWithCase.initialize(1);
+    emptyChoiceWithCase.initialize(parameterExpressions1);
     ASSERT_EQ(bitPosition, emptyChoiceWithCase.initializeOffsets(bitPosition));
 }
 
-TEST(EmptyChoiceWithCaseTest, operatorEquality)
+TEST_F(EmptyChoiceWithCaseTest, operatorEquality)
 {
     EmptyChoiceWithCase emptyChoiceWithCase1;
-    emptyChoiceWithCase1.initialize(1);
+    emptyChoiceWithCase1.initialize(parameterExpressions1);
     EmptyChoiceWithCase emptyChoiceWithCase2;
-    emptyChoiceWithCase2.initialize(1);
+    emptyChoiceWithCase2.initialize(parameterExpressions1);
     EmptyChoiceWithCase emptyChoiceWithCase3;
-    emptyChoiceWithCase3.initialize(0);
+    emptyChoiceWithCase3.initialize(parameterExpressions0);
     ASSERT_TRUE(emptyChoiceWithCase1 == emptyChoiceWithCase2);
     ASSERT_FALSE(emptyChoiceWithCase1 == emptyChoiceWithCase3);
 }
 
-TEST(EmptyChoiceWithCaseTest, hashCode)
+TEST_F(EmptyChoiceWithCaseTest, hashCode)
 {
     EmptyChoiceWithCase emptyChoiceWithCase1;
-    emptyChoiceWithCase1.initialize(1);
+    emptyChoiceWithCase1.initialize(parameterExpressions1);
     EmptyChoiceWithCase emptyChoiceWithCase2;
-    emptyChoiceWithCase2.initialize(1);
+    emptyChoiceWithCase2.initialize(parameterExpressions1);
     EmptyChoiceWithCase emptyChoiceWithCase3;
-    emptyChoiceWithCase3.initialize(0);
+    emptyChoiceWithCase3.initialize(parameterExpressions0);
     ASSERT_EQ(emptyChoiceWithCase1.hashCode(), emptyChoiceWithCase2.hashCode());
     ASSERT_NE(emptyChoiceWithCase1.hashCode(), emptyChoiceWithCase3.hashCode());
 
@@ -165,18 +158,17 @@ TEST(EmptyChoiceWithCaseTest, hashCode)
     ASSERT_EQ(851, emptyChoiceWithCase3.hashCode());
 }
 
-TEST(EmptyChoiceWithCaseTest, write)
+TEST_F(EmptyChoiceWithCaseTest, write)
 {
-    const uint8_t selector = 1;
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
     zserio::BitStreamWriter writer(bitBuffer);
     EmptyChoiceWithCase emptyChoiceWithCase;
-    emptyChoiceWithCase.initialize(selector);
+    emptyChoiceWithCase.initialize(parameterExpressions1);
     emptyChoiceWithCase.write(writer);
     ASSERT_EQ(0, writer.getBitPosition());
 
     zserio::BitStreamReader reader(writer.getWriteBuffer(), 0);
-    EmptyChoiceWithCase readEmptyChoiceWithCase(reader, selector);
+    EmptyChoiceWithCase readEmptyChoiceWithCase(reader, parameterExpressions1);
     ASSERT_EQ(emptyChoiceWithCase, readEmptyChoiceWithCase);
 }
 

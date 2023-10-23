@@ -8,23 +8,42 @@ namespace choice_types
 namespace function_returning_literal_selector_choice
 {
 
-TEST(FunctionReturningLiteralSelectorChoiceTest, field8)
+class FunctionReturningLiteralSelectorChoiceTest : public ::testing::Test
 {
-    Selector selector;
-    selector.initialize(false);
+protected:
+    struct SelectorHolder
+    {
+        SelectorHolder(Selector::ParameterExpressions selectorParameterExpressions)
+        {
+            selector.initialize(selectorParameterExpressions);
+            choiceParameterExpressions ={ this, 0, getSelector };
+        }
+
+        static Selector& getSelector(void* owner, size_t)
+        {
+            return static_cast<SelectorHolder*>(owner)->selector;
+        }
+
+        Selector selector;
+        TestChoice::ParameterExpressions choiceParameterExpressions;
+    };
+};
+
+TEST_F(FunctionReturningLiteralSelectorChoiceTest, field8)
+{
+    SelectorHolder selectorHolder({ nullptr, 0, [](void*, size_t) { return false; } });
     TestChoice testChoice;
-    testChoice.initialize(selector);
+    testChoice.initialize(selectorHolder.choiceParameterExpressions);
     testChoice.setField8(0x7F);
     ASSERT_EQ(0x7F, testChoice.getField8());
     ASSERT_EQ(8, testChoice.bitSizeOf());
 }
 
-TEST(FunctionReturningLiteralSelectorChoiceTest, field16)
+TEST_F(FunctionReturningLiteralSelectorChoiceTest, field16)
 {
-    Selector selector;
-    selector.initialize(true);
+    SelectorHolder selectorHolder({ nullptr, 0, [](void*, size_t) { return true; } });
     TestChoice testChoice;
-    testChoice.initialize(selector);
+    testChoice.initialize(selectorHolder.choiceParameterExpressions);
     testChoice.setField16(0x7F7F);
     ASSERT_EQ(0x7F7F, testChoice.getField16());
     ASSERT_EQ(16, testChoice.bitSizeOf());

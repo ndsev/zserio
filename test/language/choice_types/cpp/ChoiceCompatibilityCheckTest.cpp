@@ -72,11 +72,16 @@ protected:
         using Choice = typename VersionTraits<HOLDER>::Choice;
 
         Choice choice;
-        choice.initialize(selector);
         if (selector == ENUM::COORD_XY)
+        {
+            choice.initialize({ nullptr, 0, [](void*, size_t) { return ENUM::COORD_XY; } });
             choice.setCoordXY(CoordXY{10 * index, 20 * index});
-        else
+        }
+        else if (selector == ENUM::TEXT)
+        {
+            choice.initialize({ nullptr, 0, [](void*, size_t) { return ENUM::TEXT; } });
             choice.setText("text" + zserio::toString<allocator_type>(index));
+        }
 
         return HOLDER(selector, std::move(choice));
     }
@@ -97,7 +102,7 @@ protected:
     HolderVersion2 createHolderCoordXYZ(uint32_t index)
     {
         ChoiceVersion2 choice;
-        choice.initialize(EnumVersion2::COORD_XYZ);
+        choice.initialize({ nullptr, 0, [](void*, size_t) { return EnumVersion2::COORD_XYZ; } });
         choice.setCoordXYZ(CoordXYZ{10 * index, 20 * index, 1.1 * index});
 
         return HolderVersion2(EnumVersion2::COORD_XYZ, std::move(choice));
@@ -111,6 +116,8 @@ protected:
         array.push_back(createHolderCoordXYZ(6));
         return array;
     }
+
+
 
 private:
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);

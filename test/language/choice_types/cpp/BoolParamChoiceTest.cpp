@@ -21,6 +21,11 @@ protected:
             writer.writeSignedBits(value, 16);
     }
 
+    BoolParamChoice::ParameterExpressions parameterExpressionsTrue = {
+            nullptr, 0, [](void*, size_t) { return true; } };
+    BoolParamChoice::ParameterExpressions parameterExpressionsFalse = {
+            nullptr, 0, [](void*, size_t) { return false; } };
+
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
@@ -38,107 +43,99 @@ TEST_F(BoolParamChoiceTest, emptyConstructor)
 
 TEST_F(BoolParamChoiceTest, bitStreamReaderConstructor)
 {
-    const bool selector = true;
     const int8_t value = 99;
     zserio::BitStreamWriter writer(bitBuffer);
-    writeBoolParamChoiceToByteArray(writer, selector, value);
+    writeBoolParamChoiceToByteArray(writer, true, value);
 
     zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
-    BoolParamChoice boolParamChoice(reader, selector);
-    ASSERT_EQ(selector, boolParamChoice.getSelector());
+    BoolParamChoice boolParamChoice(reader, parameterExpressionsTrue);
+    ASSERT_EQ(true, boolParamChoice.getSelector());
     ASSERT_EQ(value, boolParamChoice.getBlack());
 }
 
 TEST_F(BoolParamChoiceTest, copyConstructor)
 {
-    const bool selector = true;
     BoolParamChoice boolParamChoice;
-    boolParamChoice.initialize(selector);
+    boolParamChoice.initialize(parameterExpressionsTrue);
     const int8_t value = 99;
     boolParamChoice.setBlack(value);
 
     BoolParamChoice boolParamChoiceCopy(boolParamChoice);
-    ASSERT_EQ(selector, boolParamChoiceCopy.getSelector());
+    ASSERT_EQ(true, boolParamChoiceCopy.getSelector());
     ASSERT_EQ(value, boolParamChoiceCopy.getBlack());
 }
 
 TEST_F(BoolParamChoiceTest, assignmentOperator)
 {
-    const bool selector = false;
     BoolParamChoice boolParamChoice;
-    boolParamChoice.initialize(selector);
+    boolParamChoice.initialize(parameterExpressionsFalse);
     const int16_t value = 234;
     boolParamChoice.setGrey(value);
 
     BoolParamChoice boolParamChoiceCopy;
     boolParamChoiceCopy = boolParamChoice;
-    ASSERT_EQ(selector, boolParamChoiceCopy.getSelector());
+    ASSERT_EQ(false, boolParamChoiceCopy.getSelector());
     ASSERT_EQ(value, boolParamChoiceCopy.getGrey());
 }
 
 TEST_F(BoolParamChoiceTest, moveConstructor)
 {
-    const bool selector = true;
     BoolParamChoice boolParamChoice;
-    boolParamChoice.initialize(selector);
+    boolParamChoice.initialize(parameterExpressionsTrue);
     const int8_t value = 99;
     boolParamChoice.setBlack(value);
 
     // note that it doesn't ensure that move ctor was called
     const BoolParamChoice boolParamChoiceMoved(std::move(boolParamChoice));
-    ASSERT_EQ(selector, boolParamChoiceMoved.getSelector());
+    ASSERT_EQ(true, boolParamChoiceMoved.getSelector());
     ASSERT_EQ(value, boolParamChoiceMoved.getBlack());
 }
 
 TEST_F(BoolParamChoiceTest, moveAssignmentOperator)
 {
-    const bool selector = false;
     BoolParamChoice boolParamChoice;
-    boolParamChoice.initialize(selector);
+    boolParamChoice.initialize(parameterExpressionsFalse);
     const int16_t value = 234;
     boolParamChoice.setGrey(value);
 
     // note that it doesn't ensure that move ctor was called
     BoolParamChoice boolParamChoiceMoved;
     boolParamChoiceMoved = std::move(boolParamChoice);
-    ASSERT_EQ(selector, boolParamChoiceMoved.getSelector());
+    ASSERT_EQ(false, boolParamChoiceMoved.getSelector());
     ASSERT_EQ(value, boolParamChoiceMoved.getGrey());
 }
 
 TEST_F(BoolParamChoiceTest, propagateAllocatorCopyConstructor)
 {
-    const bool selector = true;
     BoolParamChoice boolParamChoice;
-    boolParamChoice.initialize(selector);
+    boolParamChoice.initialize(parameterExpressionsTrue);
     const int8_t value = 99;
     boolParamChoice.setBlack(value);
 
     BoolParamChoice boolParamChoiceCopy(zserio::PropagateAllocator, boolParamChoice,
             BoolParamChoice::allocator_type());
-    ASSERT_EQ(selector, boolParamChoiceCopy.getSelector());
+    ASSERT_EQ(true, boolParamChoiceCopy.getSelector());
     ASSERT_EQ(value, boolParamChoiceCopy.getBlack());
 }
 
 TEST_F(BoolParamChoiceTest, initialize)
 {
-    const bool selector = false;
     BoolParamChoice boolParamChoice;
-    boolParamChoice.initialize(selector);
-    ASSERT_EQ(selector, boolParamChoice.getSelector());
+    boolParamChoice.initialize(parameterExpressionsFalse);
+    ASSERT_EQ(false, boolParamChoice.getSelector());
 }
 
 TEST_F(BoolParamChoiceTest, getSelector)
 {
-    const bool selector = true;
     BoolParamChoice boolParamChoice;
-    boolParamChoice.initialize(selector);
-    ASSERT_EQ(selector, boolParamChoice.getSelector());
+    boolParamChoice.initialize(parameterExpressionsTrue);
+    ASSERT_EQ(true, boolParamChoice.getSelector());
 }
 
 TEST_F(BoolParamChoiceTest, getSetBlack)
 {
     BoolParamChoice boolParamChoice;
-    boolParamChoice.initialize(true);
+    boolParamChoice.initialize(parameterExpressionsTrue);
     const int8_t value = 99;
     boolParamChoice.setBlack(value);
     ASSERT_EQ(value, boolParamChoice.getBlack());
@@ -147,7 +144,7 @@ TEST_F(BoolParamChoiceTest, getSetBlack)
 TEST_F(BoolParamChoiceTest, getSetGrey)
 {
     BoolParamChoice boolParamChoice;
-    boolParamChoice.initialize(false);
+    boolParamChoice.initialize(parameterExpressionsFalse);
     const int16_t value = 234;
     boolParamChoice.setGrey(value);
     ASSERT_EQ(value, boolParamChoice.getGrey());
@@ -156,43 +153,43 @@ TEST_F(BoolParamChoiceTest, getSetGrey)
 TEST_F(BoolParamChoiceTest, choiceTag)
 {
     BoolParamChoice boolParamChoiceBlack;
-    boolParamChoiceBlack.initialize(true);
+    boolParamChoiceBlack.initialize(parameterExpressionsTrue);
     ASSERT_EQ(BoolParamChoice::CHOICE_black, boolParamChoiceBlack.choiceTag());
 
     BoolParamChoice boolParamChoiceGrey;
-    boolParamChoiceGrey.initialize(false);
+    boolParamChoiceGrey.initialize(parameterExpressionsFalse);
     ASSERT_EQ(BoolParamChoice::CHOICE_grey, boolParamChoiceGrey.choiceTag());
 }
 
 TEST_F(BoolParamChoiceTest, bitSizeOf)
 {
     BoolParamChoice boolParamChoiceB;
-    boolParamChoiceB.initialize(true);
+    boolParamChoiceB.initialize(parameterExpressionsTrue);
     ASSERT_EQ(8, boolParamChoiceB.bitSizeOf());
 
     BoolParamChoice boolParamChoiceG;
-    boolParamChoiceG.initialize(false);
+    boolParamChoiceG.initialize(parameterExpressionsFalse);
     ASSERT_EQ(16, boolParamChoiceG.bitSizeOf());
 }
 
 TEST_F(BoolParamChoiceTest, initializeOffsets)
 {
     BoolParamChoice boolParamChoiceB;
-    boolParamChoiceB.initialize(true);
+    boolParamChoiceB.initialize(parameterExpressionsTrue);
     const size_t bitPosition = 1;
     ASSERT_EQ(9, boolParamChoiceB.initializeOffsets(bitPosition));
 
     BoolParamChoice boolParamChoiceG;
-    boolParamChoiceG.initialize(false);
+    boolParamChoiceG.initialize(parameterExpressionsFalse);
     ASSERT_EQ(17, boolParamChoiceG.initializeOffsets(bitPosition));
 }
 
 TEST_F(BoolParamChoiceTest, operatorEquality)
 {
     BoolParamChoice boolParamChoice1;
-    boolParamChoice1.initialize(true);
+    boolParamChoice1.initialize(parameterExpressionsTrue);
     BoolParamChoice boolParamChoice2;
-    boolParamChoice2.initialize(true);
+    boolParamChoice2.initialize(parameterExpressionsTrue);
     ASSERT_TRUE(boolParamChoice1 == boolParamChoice2);
 
     const int8_t value = 99;
@@ -210,9 +207,9 @@ TEST_F(BoolParamChoiceTest, operatorEquality)
 TEST_F(BoolParamChoiceTest, hashCode)
 {
     BoolParamChoice boolParamChoice1;
-    boolParamChoice1.initialize(true);
+    boolParamChoice1.initialize(parameterExpressionsTrue);
     BoolParamChoice boolParamChoice2;
-    boolParamChoice2.initialize(true);
+    boolParamChoice2.initialize(parameterExpressionsTrue);
     ASSERT_EQ(boolParamChoice1.hashCode(), boolParamChoice2.hashCode());
 
     const int8_t value = 99;
@@ -233,28 +230,26 @@ TEST_F(BoolParamChoiceTest, hashCode)
 
 TEST_F(BoolParamChoiceTest, write)
 {
-    bool selector = true;
     BoolParamChoice boolParamChoiceB;
-    boolParamChoiceB.initialize(selector);
+    boolParamChoiceB.initialize(parameterExpressionsTrue);
     const int8_t valueB = 99;
     boolParamChoiceB.setBlack(valueB);
     zserio::BitStreamWriter writerB(bitBuffer);
     boolParamChoiceB.write(writerB);
 
     zserio::BitStreamReader readerB(writerB.getWriteBuffer(), writerB.getBitPosition(), zserio::BitsTag());
-    BoolParamChoice readBoolParamChoiceB(readerB, selector);
+    BoolParamChoice readBoolParamChoiceB(readerB, parameterExpressionsTrue);
     ASSERT_EQ(valueB, readBoolParamChoiceB.getBlack());
 
-    selector = false;
     BoolParamChoice boolParamChoiceG;
-    boolParamChoiceG.initialize(selector);
+    boolParamChoiceG.initialize(parameterExpressionsFalse);
     const int16_t valueG = 234;
     boolParamChoiceG.setGrey(valueG);
     zserio::BitStreamWriter writerG(bitBuffer);
     boolParamChoiceG.write(writerG);
 
     zserio::BitStreamReader readerG(writerG.getWriteBuffer(), writerG.getBitPosition(), zserio::BitsTag());
-    BoolParamChoice readBoolParamChoiceG(readerG, selector);
+    BoolParamChoice readBoolParamChoiceG(readerG, parameterExpressionsFalse);
     ASSERT_EQ(valueG, readBoolParamChoiceG.getGrey());
 }
 

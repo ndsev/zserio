@@ -63,7 +63,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/parameterized_types/parameterized_inner_classes_clashing/ElementChildrenInitializer_array.cpp
     ${ZSERIO_GEN_DIR}/parameterized_types/parameterized_inner_classes_clashing/ElementChildrenInitializer_array.h
     ${ZSERIO_GEN_DIR}/parameterized_types/parameterized_inner_classes_clashing/ElementFactory_array.cpp
-    ${ZSERIO_GEN_DIR}/parameterized_types/parameterized_inner_classes_clashing/ElementFactory_array.h
+    ${ZSERIO_GEN_DIR}/parameterized_types/parameterized_inner_classes_clashing/Ele.h
     ${ZSERIO_GEN_DIR}/parameterized_types/parameterized_inner_classes_clashing/ElementInitializer_array.cpp
     ${ZSERIO_GEN_DIR}/parameterized_types/parameterized_inner_classes_clashing/ElementInitializer_array.h
     ${ZSERIO_GEN_DIR}/parameterized_types/parameterized_inner_classes_clashing/Parent.cpp

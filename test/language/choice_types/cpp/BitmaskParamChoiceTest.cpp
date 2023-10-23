@@ -32,6 +32,13 @@ protected:
         }
     }
 
+    BitmaskParamChoice::ParameterExpressions parameterExpressionsBlack = {
+            nullptr, 0, [](void*, size_t) { return Selector(Selector::Values::BLACK); } };
+    BitmaskParamChoice::ParameterExpressions parameterExpressionsWhite = {
+            nullptr, 0, [](void*, size_t) { return Selector(Selector::Values::WHITE); } };
+    BitmaskParamChoice::ParameterExpressions parameterExpressionsBlackAndWhite = {
+            nullptr, 0, [](void*, size_t) { return Selector(Selector::Values::BLACK_AND_WHITE); } };
+
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
@@ -49,108 +56,99 @@ TEST_F(BitmaskParamChoiceTest, emptyConstructor)
 
 TEST_F(BitmaskParamChoiceTest, bitStreamReaderConstructor)
 {
-    const Selector selector = Selector::Values::BLACK;
     const uint8_t value = 99;
     zserio::BitStreamWriter writer(bitBuffer);
-    writeBitmaskParamChoiceToByteArray(writer, selector, value);
+    writeBitmaskParamChoiceToByteArray(writer, Selector::Values::BLACK, value);
 
     zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
-    BitmaskParamChoice bitmaskParamChoice(reader, selector);
-    ASSERT_EQ(selector, bitmaskParamChoice.getSelector());
+    BitmaskParamChoice bitmaskParamChoice(reader, parameterExpressionsBlack);
+    ASSERT_EQ(Selector::Values::BLACK, bitmaskParamChoice.getSelector());
     ASSERT_EQ(value, bitmaskParamChoice.getBlack());
 }
 
 TEST_F(BitmaskParamChoiceTest, copyConstructor)
 {
-    const Selector selector = Selector::Values::BLACK;
     BitmaskParamChoice bitmaskParamChoice;
-    bitmaskParamChoice.initialize(selector);
+    bitmaskParamChoice.initialize(parameterExpressionsBlack);
     const uint8_t value = 99;
     bitmaskParamChoice.setBlack(value);
 
     const BitmaskParamChoice bitmaskParamChoiceCopy(bitmaskParamChoice);
-    ASSERT_EQ(selector, bitmaskParamChoiceCopy.getSelector());
+    ASSERT_EQ(Selector::Values::BLACK, bitmaskParamChoiceCopy.getSelector());
     ASSERT_EQ(value, bitmaskParamChoiceCopy.getBlack());
 }
 
 TEST_F(BitmaskParamChoiceTest, assignmentOperator)
 {
-    const Selector selector = Selector::Values::WHITE;
     BitmaskParamChoice bitmaskParamChoice;
-    bitmaskParamChoice.initialize(selector);
+    bitmaskParamChoice.initialize(parameterExpressionsWhite);
     const uint8_t value = 234;
     bitmaskParamChoice.setWhite(value);
 
     BitmaskParamChoice bitmaskParamChoiceCopy;
     bitmaskParamChoiceCopy = bitmaskParamChoice;
-    ASSERT_EQ(selector, bitmaskParamChoiceCopy.getSelector());
+    ASSERT_EQ(Selector::Values::WHITE, bitmaskParamChoiceCopy.getSelector());
     ASSERT_EQ(value, bitmaskParamChoiceCopy.getWhite());
 }
 
 TEST_F(BitmaskParamChoiceTest, moveCopyConstructor)
 {
-    const Selector selector = Selector::Values::BLACK;
     BitmaskParamChoice bitmaskParamChoice;
-    bitmaskParamChoice.initialize(selector);
+    bitmaskParamChoice.initialize(parameterExpressionsBlack);
     const uint8_t value = 99;
     bitmaskParamChoice.setBlack(value);
 
     // note that it doesn't ensure that move ctor was called
     const BitmaskParamChoice bitmaskParamChoiceMoved(std::move(bitmaskParamChoice));
-    ASSERT_EQ(selector, bitmaskParamChoiceMoved.getSelector());
+    ASSERT_EQ(Selector::Values::BLACK, bitmaskParamChoiceMoved.getSelector());
     ASSERT_EQ(value, bitmaskParamChoiceMoved.getBlack());
 }
 
 TEST_F(BitmaskParamChoiceTest, moveAssignmentOperator)
 {
-    const Selector selector = Selector::Values::WHITE;
     BitmaskParamChoice bitmaskParamChoice;
-    bitmaskParamChoice.initialize(selector);
+    bitmaskParamChoice.initialize(parameterExpressionsWhite);
     const uint8_t value = 234;
     bitmaskParamChoice.setWhite(value);
 
     // note that it doesn't ensure that move ctor was called
     BitmaskParamChoice bitmaskParamChoiceMoved;
     bitmaskParamChoiceMoved = std::move(bitmaskParamChoice);
-    ASSERT_EQ(selector, bitmaskParamChoiceMoved.getSelector());
+    ASSERT_EQ(Selector::Values::WHITE, bitmaskParamChoiceMoved.getSelector());
     ASSERT_EQ(value, bitmaskParamChoiceMoved.getWhite());
 }
 
 TEST_F(BitmaskParamChoiceTest, propagateAllocatorCopyConstructor)
 {
-    const Selector selector = Selector::Values::BLACK;
     BitmaskParamChoice bitmaskParamChoice;
-    bitmaskParamChoice.initialize(selector);
+    bitmaskParamChoice.initialize(parameterExpressionsBlack);
     const uint8_t value = 99;
     bitmaskParamChoice.setBlack(value);
 
     const BitmaskParamChoice bitmaskParamChoiceCopy(zserio::PropagateAllocator, bitmaskParamChoice,
             BitmaskParamChoice::allocator_type());
-    ASSERT_EQ(selector, bitmaskParamChoiceCopy.getSelector());
+    ASSERT_EQ(Selector::Values::BLACK, bitmaskParamChoiceCopy.getSelector());
     ASSERT_EQ(value, bitmaskParamChoiceCopy.getBlack());
 }
 
 TEST_F(BitmaskParamChoiceTest, initialize)
 {
-    const Selector selector = Selector::Values::WHITE;
     BitmaskParamChoice bitmaskParamChoice;
-    bitmaskParamChoice.initialize(selector);
-    ASSERT_EQ(selector, bitmaskParamChoice.getSelector());
+    bitmaskParamChoice.initialize(parameterExpressionsWhite);
+    ASSERT_EQ(Selector::Values::WHITE, bitmaskParamChoice.getSelector());
 }
 
 TEST_F(BitmaskParamChoiceTest, getSelector)
 {
-    const Selector selector = Selector::Values::BLACK;
     BitmaskParamChoice bitmaskParamChoice;
-    bitmaskParamChoice.initialize(selector);
-    ASSERT_EQ(selector, bitmaskParamChoice.getSelector());
+    bitmaskParamChoice.initialize(parameterExpressionsBlack);
+    ASSERT_EQ(Selector::Values::BLACK, bitmaskParamChoice.getSelector());
 }
 
 TEST_F(BitmaskParamChoiceTest, getSetBlack)
 {
-    const Selector selector = Selector::Values::BLACK;
     BitmaskParamChoice bitmaskParamChoice;
-    bitmaskParamChoice.initialize(selector);
+    bitmaskParamChoice.initialize(parameterExpressionsBlack);
     const uint8_t value = 99;
     bitmaskParamChoice.setBlack(value);
     ASSERT_EQ(value, bitmaskParamChoice.getBlack());
@@ -158,9 +156,8 @@ TEST_F(BitmaskParamChoiceTest, getSetBlack)
 
 TEST_F(BitmaskParamChoiceTest, getSetWhite)
 {
-    const Selector selector = Selector::Values::WHITE;
     BitmaskParamChoice bitmaskParamChoice;
-    bitmaskParamChoice.initialize(selector);
+    bitmaskParamChoice.initialize(parameterExpressionsWhite);
     const uint8_t value = 234;
     bitmaskParamChoice.setWhite(value);
     ASSERT_EQ(value, bitmaskParamChoice.getWhite());
@@ -168,9 +165,8 @@ TEST_F(BitmaskParamChoiceTest, getSetWhite)
 
 TEST_F(BitmaskParamChoiceTest, getSetBlackAndWhite)
 {
-    const Selector selector = Selector::Values::BLACK_AND_WHITE;
     BitmaskParamChoice bitmaskParamChoice;
-    bitmaskParamChoice.initialize(selector);
+    bitmaskParamChoice.initialize(parameterExpressionsBlackAndWhite);
     const uint16_t value = 65535;
     bitmaskParamChoice.setBlackAndWhite(value);
     ASSERT_EQ(value, bitmaskParamChoice.getBlackAndWhite());
@@ -179,60 +175,53 @@ TEST_F(BitmaskParamChoiceTest, getSetBlackAndWhite)
 TEST_F(BitmaskParamChoiceTest, choiceTag)
 {
     BitmaskParamChoice bitmaskParamChoice;
-    bitmaskParamChoice.initialize(Selector::Values::BLACK);
+    bitmaskParamChoice.initialize(parameterExpressionsBlack);
     ASSERT_EQ(BitmaskParamChoice::CHOICE_black, bitmaskParamChoice.choiceTag());
 
-    bitmaskParamChoice.initialize(Selector::Values::WHITE);
+    bitmaskParamChoice.initialize(parameterExpressionsWhite);
     ASSERT_EQ(BitmaskParamChoice::CHOICE_white, bitmaskParamChoice.choiceTag());
 
-    bitmaskParamChoice.initialize(Selector::Values::BLACK_AND_WHITE);
+    bitmaskParamChoice.initialize(parameterExpressionsBlackAndWhite);
     ASSERT_EQ(BitmaskParamChoice::CHOICE_blackAndWhite, bitmaskParamChoice.choiceTag());
 }
 
 TEST_F(BitmaskParamChoiceTest, bitSizeOf)
 {
-    Selector selectorB = Selector::Values::BLACK;
     BitmaskParamChoice bitmaskParamChoiceB;
-    bitmaskParamChoiceB.initialize(selectorB);
+    bitmaskParamChoiceB.initialize(parameterExpressionsBlack);
     ASSERT_EQ(8, bitmaskParamChoiceB.bitSizeOf());
 
-    Selector selectorW = Selector::Values::WHITE;
     BitmaskParamChoice bitmaskParamChoiceW;
-    bitmaskParamChoiceW.initialize(selectorW);
+    bitmaskParamChoiceW.initialize(parameterExpressionsWhite);
     ASSERT_EQ(8, bitmaskParamChoiceW.bitSizeOf());
 
-    Selector selectorBW = Selector::Values::BLACK | Selector::Values::WHITE;
     BitmaskParamChoice bitmaskParamChoiceBW;
-    bitmaskParamChoiceBW.initialize(selectorBW);
+    bitmaskParamChoiceBW.initialize(parameterExpressionsBlackAndWhite);
     ASSERT_EQ(16, bitmaskParamChoiceBW.bitSizeOf());
 }
 
 TEST_F(BitmaskParamChoiceTest, initializeOffsets)
 {
-    Selector selectorB = Selector::Values::BLACK;
     BitmaskParamChoice bitmaskParamChoiceB;
-    bitmaskParamChoiceB.initialize(selectorB);
+    bitmaskParamChoiceB.initialize(parameterExpressionsBlack);
     const size_t bitPosition = 1;
     ASSERT_EQ(9, bitmaskParamChoiceB.initializeOffsets(bitPosition));
 
-    Selector selectorW = Selector::Values::WHITE;
     BitmaskParamChoice bitmaskParamChoiceW;
-    bitmaskParamChoiceW.initialize(selectorW);
+    bitmaskParamChoiceW.initialize(parameterExpressionsWhite);
     ASSERT_EQ(9, bitmaskParamChoiceW.initializeOffsets(bitPosition));
 
-    Selector selectorBW = Selector::Values::BLACK_AND_WHITE;
     BitmaskParamChoice bitmaskParamChoiceBW;
-    bitmaskParamChoiceBW.initialize(selectorBW);
+    bitmaskParamChoiceBW.initialize(parameterExpressionsBlackAndWhite);
     ASSERT_EQ(17, bitmaskParamChoiceBW.initializeOffsets(bitPosition));
 }
 
 TEST_F(BitmaskParamChoiceTest, operatorEquality)
 {
-    const Selector selector = Selector::Values::BLACK;
     BitmaskParamChoice bitmaskParamChoice1;
-    bitmaskParamChoice1.initialize(selector);
+    bitmaskParamChoice1.initialize(parameterExpressionsBlack);
     BitmaskParamChoice bitmaskParamChoice2;
-    bitmaskParamChoice2.initialize(selector);
+    bitmaskParamChoice2.initialize(parameterExpressionsBlack);
     ASSERT_TRUE(bitmaskParamChoice1 == bitmaskParamChoice2);
 
     const uint8_t value = 99;
@@ -249,11 +238,10 @@ TEST_F(BitmaskParamChoiceTest, operatorEquality)
 
 TEST_F(BitmaskParamChoiceTest, hashCode)
 {
-    const Selector selector = Selector::Values::BLACK;
     BitmaskParamChoice bitmaskParamChoice1;
-    bitmaskParamChoice1.initialize(selector);
+    bitmaskParamChoice1.initialize(parameterExpressionsBlack);
     BitmaskParamChoice bitmaskParamChoice2;
-    bitmaskParamChoice2.initialize(selector);
+    bitmaskParamChoice2.initialize(parameterExpressionsBlack);
     ASSERT_EQ(bitmaskParamChoice1.hashCode(), bitmaskParamChoice2.hashCode());
 
     const uint8_t value = 99;
@@ -274,40 +262,37 @@ TEST_F(BitmaskParamChoiceTest, hashCode)
 
 TEST_F(BitmaskParamChoiceTest, write)
 {
-    const Selector selectorB = Selector::Values::BLACK;
     BitmaskParamChoice bitmaskParamChoiceB;
-    bitmaskParamChoiceB.initialize(selectorB);
+    bitmaskParamChoiceB.initialize(parameterExpressionsBlack);
     const uint8_t valueB = 99;
     bitmaskParamChoiceB.setBlack(valueB);
     zserio::BitStreamWriter writerB(bitBuffer);
     bitmaskParamChoiceB.write(writerB);
 
     zserio::BitStreamReader readerB(writerB.getWriteBuffer(), writerB.getBitPosition(), zserio::BitsTag());
-    BitmaskParamChoice readBitmaskParamChoiceB(readerB, selectorB);
+    BitmaskParamChoice readBitmaskParamChoiceB(readerB, parameterExpressionsBlack);
     ASSERT_EQ(valueB, readBitmaskParamChoiceB.getBlack());
 
-    const Selector selectorW = Selector::Values::WHITE;
     BitmaskParamChoice bitmaskParamChoiceW;
-    bitmaskParamChoiceW.initialize(selectorW);
+    bitmaskParamChoiceW.initialize(parameterExpressionsWhite);
     const uint8_t valueW = 234;
     bitmaskParamChoiceW.setWhite(valueW);
     zserio::BitStreamWriter writerW(bitBuffer);
     bitmaskParamChoiceW.write(writerW);
 
     zserio::BitStreamReader readerW(writerW.getWriteBuffer(), writerW.getBitPosition(), zserio::BitsTag());
-    BitmaskParamChoice readBitmaskParamChoiceW(readerW, selectorW);
+    BitmaskParamChoice readBitmaskParamChoiceW(readerW, parameterExpressionsWhite);
     ASSERT_EQ(valueW, readBitmaskParamChoiceW.getWhite());
 
-    const Selector selectorBW = Selector::Values::BLACK_AND_WHITE;
     BitmaskParamChoice bitmaskParamChoiceBW;
-    bitmaskParamChoiceBW.initialize(selectorBW);
+    bitmaskParamChoiceBW.initialize(parameterExpressionsBlackAndWhite);
     const uint16_t valueBW = 65535;
     bitmaskParamChoiceBW.setBlackAndWhite(valueBW);
     zserio::BitStreamWriter writerBW(bitBuffer);
     bitmaskParamChoiceBW.write(writerBW);
 
     zserio::BitStreamReader readerBW(writerBW.getWriteBuffer(), writerBW.getBitPosition(), zserio::BitsTag());
-    BitmaskParamChoice readBitmaskParamChoiceBW(readerBW, selectorBW);
+    BitmaskParamChoice readBitmaskParamChoiceBW(readerBW, parameterExpressionsBlackAndWhite);
     ASSERT_EQ(valueBW, readBitmaskParamChoiceBW.getBlackAndWhite());
 }
 

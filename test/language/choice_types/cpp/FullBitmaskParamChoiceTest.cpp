@@ -33,6 +33,13 @@ protected:
         }
     }
 
+    FullBitmaskParamChoice::ParameterExpressions parameterExpressionsBlack = {
+            nullptr, 0, [](void*, size_t) { return Selector(Selector::Values::BLACK); } };
+    FullBitmaskParamChoice::ParameterExpressions parameterExpressionsWhite = {
+            nullptr, 0, [](void*, size_t) { return Selector(Selector::Values::WHITE); } };
+    FullBitmaskParamChoice::ParameterExpressions parameterExpressionsBlackAndWhite = {
+            nullptr, 0, [](void*, size_t) { return Selector(Selector::Values::BLACK_AND_WHITE); } };
+
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
@@ -51,108 +58,99 @@ TEST_F(FullBitmaskParamChoiceTest, emptyConstructor)
 
 TEST_F(FullBitmaskParamChoiceTest, bitStreamReaderConstructor)
 {
-    const Selector selector = Selector::Values::BLACK;
     const uint8_t value = 99;
     zserio::BitStreamWriter writer(bitBuffer);
-    writeFullBitmaskParamChoiceToByteArray(writer, selector, value);
+    writeFullBitmaskParamChoiceToByteArray(writer, Selector::Values::BLACK, value);
 
     zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
-    FullBitmaskParamChoice fullBitmaskParamChoice(reader, selector);
-    ASSERT_EQ(selector, fullBitmaskParamChoice.getSelector());
+    FullBitmaskParamChoice fullBitmaskParamChoice(reader, parameterExpressionsBlack);
+    ASSERT_EQ(Selector::Values::BLACK, fullBitmaskParamChoice.getSelector());
     ASSERT_EQ(value, fullBitmaskParamChoice.getBlack());
 }
 
 TEST_F(FullBitmaskParamChoiceTest, copyConstructor)
 {
-    const Selector selector = Selector::Values::BLACK;
     FullBitmaskParamChoice fullBitmaskParamChoice;
-    fullBitmaskParamChoice.initialize(selector);
+    fullBitmaskParamChoice.initialize(parameterExpressionsBlack);
     const uint8_t value = 99;
     fullBitmaskParamChoice.setBlack(value);
 
     const FullBitmaskParamChoice fullBitmaskParamChoiceCopy(fullBitmaskParamChoice);
-    ASSERT_EQ(selector, fullBitmaskParamChoiceCopy.getSelector());
+    ASSERT_EQ(Selector::Values::BLACK, fullBitmaskParamChoiceCopy.getSelector());
     ASSERT_EQ(value, fullBitmaskParamChoiceCopy.getBlack());
 }
 
 TEST_F(FullBitmaskParamChoiceTest, assignmentOperator)
 {
-    const Selector selector = Selector::Values::WHITE;
     FullBitmaskParamChoice fullBitmaskParamChoice;
-    fullBitmaskParamChoice.initialize(selector);
+    fullBitmaskParamChoice.initialize(parameterExpressionsWhite);
     const uint8_t value = 234;
     fullBitmaskParamChoice.setWhite(value);
 
     FullBitmaskParamChoice fullBitmaskParamChoiceCopy;
     fullBitmaskParamChoiceCopy = fullBitmaskParamChoice;
-    ASSERT_EQ(selector, fullBitmaskParamChoiceCopy.getSelector());
+    ASSERT_EQ(Selector::Values::WHITE, fullBitmaskParamChoiceCopy.getSelector());
     ASSERT_EQ(value, fullBitmaskParamChoiceCopy.getWhite());
 }
 
 TEST_F(FullBitmaskParamChoiceTest, moveCopyConstructor)
 {
-    const Selector selector = Selector::Values::BLACK;
     FullBitmaskParamChoice fullBitmaskParamChoice;
-    fullBitmaskParamChoice.initialize(selector);
+    fullBitmaskParamChoice.initialize(parameterExpressionsBlack);
     const uint8_t value = 99;
     fullBitmaskParamChoice.setBlack(value);
 
     // note that it doesn't ensure that move ctor was called
     const FullBitmaskParamChoice fullBitmaskParamChoiceMoved(std::move(fullBitmaskParamChoice));
-    ASSERT_EQ(selector, fullBitmaskParamChoiceMoved.getSelector());
+    ASSERT_EQ(Selector::Values::BLACK, fullBitmaskParamChoiceMoved.getSelector());
     ASSERT_EQ(value, fullBitmaskParamChoiceMoved.getBlack());
 }
 
 TEST_F(FullBitmaskParamChoiceTest, moveAssignmentOperator)
 {
-    const Selector selector = Selector::Values::WHITE;
     FullBitmaskParamChoice fullBitmaskParamChoice;
-    fullBitmaskParamChoice.initialize(selector);
+    fullBitmaskParamChoice.initialize(parameterExpressionsWhite);
     const uint8_t value = 234;
     fullBitmaskParamChoice.setWhite(value);
 
     // note that it doesn't ensure that move ctor was called
     FullBitmaskParamChoice fullBitmaskParamChoiceMoved;
     fullBitmaskParamChoiceMoved = std::move(fullBitmaskParamChoice);
-    ASSERT_EQ(selector, fullBitmaskParamChoiceMoved.getSelector());
+    ASSERT_EQ(Selector::Values::WHITE, fullBitmaskParamChoiceMoved.getSelector());
     ASSERT_EQ(value, fullBitmaskParamChoiceMoved.getWhite());
 }
 
 TEST_F(FullBitmaskParamChoiceTest, propagateAllocatorCopyConstructor)
 {
-    const Selector selector = Selector::Values::BLACK;
     FullBitmaskParamChoice fullBitmaskParamChoice;
-    fullBitmaskParamChoice.initialize(selector);
+    fullBitmaskParamChoice.initialize(parameterExpressionsBlack);
     const uint8_t value = 99;
     fullBitmaskParamChoice.setBlack(value);
 
     const FullBitmaskParamChoice fullBitmaskParamChoiceCopy(zserio::PropagateAllocator, fullBitmaskParamChoice,
             FullBitmaskParamChoice::allocator_type());
-    ASSERT_EQ(selector, fullBitmaskParamChoiceCopy.getSelector());
+    ASSERT_EQ(Selector::Values::BLACK, fullBitmaskParamChoiceCopy.getSelector());
     ASSERT_EQ(value, fullBitmaskParamChoiceCopy.getBlack());
 }
 
 TEST_F(FullBitmaskParamChoiceTest, initialize)
 {
-    const Selector selector = Selector::Values::WHITE;
     FullBitmaskParamChoice fullBitmaskParamChoice;
-    fullBitmaskParamChoice.initialize(selector);
-    ASSERT_EQ(selector, fullBitmaskParamChoice.getSelector());
+    fullBitmaskParamChoice.initialize(parameterExpressionsWhite);
+    ASSERT_EQ(Selector::Values::WHITE, fullBitmaskParamChoice.getSelector());
 }
 
 TEST_F(FullBitmaskParamChoiceTest, getSelector)
 {
-    const Selector selector = Selector::Values::BLACK;
     FullBitmaskParamChoice fullBitmaskParamChoice;
-    fullBitmaskParamChoice.initialize(selector);
-    ASSERT_EQ(selector, fullBitmaskParamChoice.getSelector());
+    fullBitmaskParamChoice.initialize(parameterExpressionsBlack);
+    ASSERT_EQ(Selector::Values::BLACK, fullBitmaskParamChoice.getSelector());
 }
 
 TEST_F(FullBitmaskParamChoiceTest, getSetBlack)
 {
-    const Selector selector = Selector::Values::BLACK;
     FullBitmaskParamChoice fullBitmaskParamChoice;
-    fullBitmaskParamChoice.initialize(selector);
+    fullBitmaskParamChoice.initialize(parameterExpressionsBlack);
     const uint8_t value = 99;
     fullBitmaskParamChoice.setBlack(value);
     ASSERT_EQ(value, fullBitmaskParamChoice.getBlack());
@@ -160,9 +158,8 @@ TEST_F(FullBitmaskParamChoiceTest, getSetBlack)
 
 TEST_F(FullBitmaskParamChoiceTest, getSetWhite)
 {
-    const Selector selector = Selector::Values::WHITE;
     FullBitmaskParamChoice fullBitmaskParamChoice;
-    fullBitmaskParamChoice.initialize(selector);
+    fullBitmaskParamChoice.initialize(parameterExpressionsWhite);
     const uint8_t value = 234;
     fullBitmaskParamChoice.setWhite(value);
     ASSERT_EQ(value, fullBitmaskParamChoice.getWhite());
@@ -170,9 +167,8 @@ TEST_F(FullBitmaskParamChoiceTest, getSetWhite)
 
 TEST_F(FullBitmaskParamChoiceTest, getSetBlackAndWhite)
 {
-    const Selector selector = Selector::Values::BLACK_AND_WHITE;
     FullBitmaskParamChoice fullBitmaskParamChoice;
-    fullBitmaskParamChoice.initialize(selector);
+    fullBitmaskParamChoice.initialize(parameterExpressionsBlackAndWhite);
     const uint16_t value = 65535;
     fullBitmaskParamChoice.setBlackAndWhite(value);
     ASSERT_EQ(value, fullBitmaskParamChoice.getBlackAndWhite());
@@ -181,60 +177,53 @@ TEST_F(FullBitmaskParamChoiceTest, getSetBlackAndWhite)
 TEST_F(FullBitmaskParamChoiceTest, choiceTag)
 {
     FullBitmaskParamChoice fullBitmaskParamChoice;
-    fullBitmaskParamChoice.initialize(Selector::Values::BLACK);
+    fullBitmaskParamChoice.initialize(parameterExpressionsBlack);
     ASSERT_EQ(FullBitmaskParamChoice::CHOICE_black, fullBitmaskParamChoice.choiceTag());
 
-    fullBitmaskParamChoice.initialize(Selector::Values::WHITE);
+    fullBitmaskParamChoice.initialize(parameterExpressionsWhite);
     ASSERT_EQ(FullBitmaskParamChoice::CHOICE_white, fullBitmaskParamChoice.choiceTag());
 
-    fullBitmaskParamChoice.initialize(Selector::Values::BLACK_AND_WHITE);
+    fullBitmaskParamChoice.initialize(parameterExpressionsBlackAndWhite);
     ASSERT_EQ(FullBitmaskParamChoice::CHOICE_blackAndWhite, fullBitmaskParamChoice.choiceTag());
 }
 
 TEST_F(FullBitmaskParamChoiceTest, bitSizeOf)
 {
-    Selector selectorB = Selector::Values::BLACK;
     FullBitmaskParamChoice fullBitmaskParamChoiceB;
-    fullBitmaskParamChoiceB.initialize(selectorB);
+    fullBitmaskParamChoiceB.initialize(parameterExpressionsBlack);
     ASSERT_EQ(8, fullBitmaskParamChoiceB.bitSizeOf());
 
-    Selector selectorW = Selector::Values::WHITE;
     FullBitmaskParamChoice fullBitmaskParamChoiceW;
-    fullBitmaskParamChoiceW.initialize(selectorW);
+    fullBitmaskParamChoiceW.initialize(parameterExpressionsWhite);
     ASSERT_EQ(8, fullBitmaskParamChoiceW.bitSizeOf());
 
-    Selector selectorBW = Selector::Values::BLACK | Selector::Values::WHITE;
     FullBitmaskParamChoice fullBitmaskParamChoiceBW;
-    fullBitmaskParamChoiceBW.initialize(selectorBW);
+    fullBitmaskParamChoiceBW.initialize(parameterExpressionsBlackAndWhite);
     ASSERT_EQ(16, fullBitmaskParamChoiceBW.bitSizeOf());
 }
 
 TEST_F(FullBitmaskParamChoiceTest, initializeOffsets)
 {
-    Selector selectorB = Selector::Values::BLACK;
     FullBitmaskParamChoice fullBitmaskParamChoiceB;
-    fullBitmaskParamChoiceB.initialize(selectorB);
+    fullBitmaskParamChoiceB.initialize(parameterExpressionsBlack);
     const size_t bitPosition = 1;
     ASSERT_EQ(9, fullBitmaskParamChoiceB.initializeOffsets(bitPosition));
 
-    Selector selectorW = Selector::Values::WHITE;
     FullBitmaskParamChoice fullBitmaskParamChoiceW;
-    fullBitmaskParamChoiceW.initialize(selectorW);
+    fullBitmaskParamChoiceW.initialize(parameterExpressionsWhite);
     ASSERT_EQ(9, fullBitmaskParamChoiceW.initializeOffsets(bitPosition));
 
-    Selector selectorBW = Selector::Values::BLACK_AND_WHITE;
     FullBitmaskParamChoice fullBitmaskParamChoiceBW;
-    fullBitmaskParamChoiceBW.initialize(selectorBW);
+    fullBitmaskParamChoiceBW.initialize(parameterExpressionsBlackAndWhite);
     ASSERT_EQ(17, fullBitmaskParamChoiceBW.initializeOffsets(bitPosition));
 }
 
 TEST_F(FullBitmaskParamChoiceTest, operatorEquality)
 {
-    const Selector selector = Selector::Values::BLACK;
     FullBitmaskParamChoice fullBitmaskParamChoice1;
-    fullBitmaskParamChoice1.initialize(selector);
+    fullBitmaskParamChoice1.initialize(parameterExpressionsBlack);
     FullBitmaskParamChoice fullBitmaskParamChoice2;
-    fullBitmaskParamChoice2.initialize(selector);
+    fullBitmaskParamChoice2.initialize(parameterExpressionsBlack);
     ASSERT_TRUE(fullBitmaskParamChoice1 == fullBitmaskParamChoice2);
 
     const uint8_t value = 99;
@@ -251,11 +240,10 @@ TEST_F(FullBitmaskParamChoiceTest, operatorEquality)
 
 TEST_F(FullBitmaskParamChoiceTest, hashCode)
 {
-    const Selector selector = Selector::Values::BLACK;
     FullBitmaskParamChoice fullBitmaskParamChoice1;
-    fullBitmaskParamChoice1.initialize(selector);
+    fullBitmaskParamChoice1.initialize(parameterExpressionsBlack);
     FullBitmaskParamChoice fullBitmaskParamChoice2;
-    fullBitmaskParamChoice2.initialize(selector);
+    fullBitmaskParamChoice2.initialize(parameterExpressionsBlack);
     ASSERT_EQ(fullBitmaskParamChoice1.hashCode(), fullBitmaskParamChoice2.hashCode());
 
     const uint8_t value = 99;
@@ -276,40 +264,37 @@ TEST_F(FullBitmaskParamChoiceTest, hashCode)
 
 TEST_F(FullBitmaskParamChoiceTest, write)
 {
-    const Selector selectorB = Selector::Values::BLACK;
     FullBitmaskParamChoice fullBitmaskParamChoiceB;
-    fullBitmaskParamChoiceB.initialize(selectorB);
+    fullBitmaskParamChoiceB.initialize(parameterExpressionsBlack);
     const uint8_t valueB = 99;
     fullBitmaskParamChoiceB.setBlack(valueB);
     zserio::BitStreamWriter writerB(bitBuffer);
     fullBitmaskParamChoiceB.write(writerB);
 
     zserio::BitStreamReader readerB(writerB.getWriteBuffer(), writerB.getBitPosition(), zserio::BitsTag());
-    FullBitmaskParamChoice readFullBitmaskParamChoiceB(readerB, selectorB);
+    FullBitmaskParamChoice readFullBitmaskParamChoiceB(readerB, parameterExpressionsBlack);
     ASSERT_EQ(valueB, readFullBitmaskParamChoiceB.getBlack());
 
-    const Selector selectorW = Selector::Values::WHITE;
     FullBitmaskParamChoice fullBitmaskParamChoiceW;
-    fullBitmaskParamChoiceW.initialize(selectorW);
+    fullBitmaskParamChoiceW.initialize(parameterExpressionsWhite);
     const uint8_t valueW = 234;
     fullBitmaskParamChoiceW.setWhite(valueW);
     zserio::BitStreamWriter writerW(bitBuffer);
     fullBitmaskParamChoiceW.write(writerW);
 
     zserio::BitStreamReader readerW(writerW.getWriteBuffer(), writerW.getBitPosition(), zserio::BitsTag());
-    FullBitmaskParamChoice readFullBitmaskParamChoiceW(readerW, selectorW);
+    FullBitmaskParamChoice readFullBitmaskParamChoiceW(readerW, parameterExpressionsWhite);
     ASSERT_EQ(valueW, readFullBitmaskParamChoiceW.getWhite());
 
-    const Selector selectorBW = Selector::Values::BLACK_AND_WHITE;
     FullBitmaskParamChoice fullBitmaskParamChoiceBW;
-    fullBitmaskParamChoiceBW.initialize(selectorBW);
+    fullBitmaskParamChoiceBW.initialize(parameterExpressionsBlackAndWhite);
     const uint16_t valueBW = 65535;
     fullBitmaskParamChoiceBW.setBlackAndWhite(valueBW);
     zserio::BitStreamWriter writerBW(bitBuffer);
     fullBitmaskParamChoiceBW.write(writerBW);
 
     zserio::BitStreamReader readerBW(writerBW.getWriteBuffer(), writerBW.getBitPosition(), zserio::BitsTag());
-    FullBitmaskParamChoice readFullBitmaskParamChoiceBW(readerBW, selectorBW);
+    FullBitmaskParamChoice readFullBitmaskParamChoiceBW(readerBW, parameterExpressionsBlackAndWhite);
     ASSERT_EQ(valueBW, readFullBitmaskParamChoiceBW.getBlackAndWhite());
 }
 

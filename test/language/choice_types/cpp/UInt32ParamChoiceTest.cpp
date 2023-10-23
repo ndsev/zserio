@@ -45,6 +45,21 @@ protected:
     static const uint32_t EMPTY_SELECTOR2;
     static const uint32_t VARIANT_C_SELECTOR;
 
+    UInt32ParamChoice::ParameterExpressions parameterExpressionsA = {
+            nullptr, 0, [](void*, size_t) { return VARIANT_A_SELECTOR; } };
+    UInt32ParamChoice::ParameterExpressions parameterExpressionsB1 = {
+            nullptr, 0, [](void*, size_t) { return VARIANT_B_SELECTOR1; } };
+    UInt32ParamChoice::ParameterExpressions parameterExpressionsB2 = {
+            nullptr, 0, [](void*, size_t) { return VARIANT_B_SELECTOR2; } };
+    UInt32ParamChoice::ParameterExpressions parameterExpressionsB3 = {
+            nullptr, 0, [](void*, size_t) { return VARIANT_B_SELECTOR3; } };
+    UInt32ParamChoice::ParameterExpressions parameterExpressionsEmpty1 = {
+            nullptr, 0, [](void*, size_t) { return EMPTY_SELECTOR1; } };
+    UInt32ParamChoice::ParameterExpressions parameterExpressionsEmpty2 = {
+            nullptr, 0, [](void*, size_t) { return EMPTY_SELECTOR2; } };
+    UInt32ParamChoice::ParameterExpressions parameterExpressionsC = {
+            nullptr, 0, [](void*, size_t) { return VARIANT_C_SELECTOR; } };
+
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
@@ -70,110 +85,102 @@ TEST_F(UInt32ParamChoiceTest, emptyConstructor)
 
 TEST_F(UInt32ParamChoiceTest, bitStreamReaderConstructor)
 {
-    const uint32_t selector = VARIANT_A_SELECTOR;
     zserio::BitStreamWriter writer(bitBuffer);
     const int8_t value = 99;
-    writeUInt32ParamChoiceToByteArray(writer, selector, value);
+    writeUInt32ParamChoiceToByteArray(writer, VARIANT_A_SELECTOR, value);
 
     zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
-    const UInt32ParamChoice uint32ParamChoice(reader, selector);
-    ASSERT_EQ(selector, uint32ParamChoice.getSelector());
+    const UInt32ParamChoice uint32ParamChoice(reader, parameterExpressionsA);
+    ASSERT_EQ(VARIANT_A_SELECTOR, uint32ParamChoice.getSelector());
     ASSERT_EQ(value, uint32ParamChoice.getA());
 }
 
 TEST_F(UInt32ParamChoiceTest, copyConstructor)
 {
-    const uint32_t selector = VARIANT_A_SELECTOR;
     UInt32ParamChoice uint32ParamChoice;
-    uint32ParamChoice.initialize(selector);
+    uint32ParamChoice.initialize(parameterExpressionsA);
 
     const VariantA value = 99;
     uint32ParamChoice.setA(value);
 
     const UInt32ParamChoice uint32ParamChoiceCopy(uint32ParamChoice);
-    ASSERT_EQ(selector, uint32ParamChoiceCopy.getSelector());
+    ASSERT_EQ(VARIANT_A_SELECTOR, uint32ParamChoiceCopy.getSelector());
     ASSERT_EQ(value, uint32ParamChoiceCopy.getA());
 }
 
 TEST_F(UInt32ParamChoiceTest, assignmentOperator)
 {
-    const uint32_t selector = VARIANT_B_SELECTOR3;
     UInt32ParamChoice uint32ParamChoice;
-    uint32ParamChoice.initialize(selector);
+    uint32ParamChoice.initialize(parameterExpressionsB3);
 
     const VariantB value = 234;
     uint32ParamChoice.setB(value);
 
     UInt32ParamChoice uint32ParamChoiceCopy;
     uint32ParamChoiceCopy = uint32ParamChoice;
-    ASSERT_EQ(selector, uint32ParamChoiceCopy.getSelector());
+    ASSERT_EQ(VARIANT_B_SELECTOR3, uint32ParamChoiceCopy.getSelector());
     ASSERT_EQ(value, uint32ParamChoiceCopy.getB());
 }
 
 TEST_F(UInt32ParamChoiceTest, moveConstructor)
 {
-    const uint32_t selector = VARIANT_A_SELECTOR;
     UInt32ParamChoice uint32ParamChoice;
-    uint32ParamChoice.initialize(selector);
+    uint32ParamChoice.initialize(parameterExpressionsA);
 
     const VariantA value = 99;
     uint32ParamChoice.setA(value);
 
     const UInt32ParamChoice uint32ParamChoiceMoved(std::move(uint32ParamChoice));
-    ASSERT_EQ(selector, uint32ParamChoiceMoved.getSelector());
+    ASSERT_EQ(VARIANT_A_SELECTOR, uint32ParamChoiceMoved.getSelector());
     ASSERT_EQ(value, uint32ParamChoiceMoved.getA());
 }
 
 TEST_F(UInt32ParamChoiceTest, moveAssignmentOperator)
 {
-    const uint32_t selector = VARIANT_B_SELECTOR3;
     UInt32ParamChoice uint32ParamChoice;
-    uint32ParamChoice.initialize(selector);
+    uint32ParamChoice.initialize(parameterExpressionsB3);
 
     const VariantB value = 234;
     uint32ParamChoice.setB(value);
 
     UInt32ParamChoice uint32ParamChoiceMoved;
     uint32ParamChoiceMoved = std::move(uint32ParamChoice);
-    ASSERT_EQ(selector, uint32ParamChoiceMoved.getSelector());
+    ASSERT_EQ(VARIANT_B_SELECTOR3, uint32ParamChoiceMoved.getSelector());
     ASSERT_EQ(value, uint32ParamChoiceMoved.getB());
 }
 
 TEST_F(UInt32ParamChoiceTest, propagateAllocatorCopyConstructor)
 {
-    const uint32_t selector = VARIANT_A_SELECTOR;
     UInt32ParamChoice uint32ParamChoice;
-    uint32ParamChoice.initialize(selector);
+    uint32ParamChoice.initialize(parameterExpressionsA);
 
     const VariantA value = 99;
     uint32ParamChoice.setA(value);
 
     const UInt32ParamChoice uint32ParamChoiceCopy(zserio::PropagateAllocator, uint32ParamChoice,
             UInt32ParamChoice::allocator_type());
-    ASSERT_EQ(selector, uint32ParamChoiceCopy.getSelector());
+    ASSERT_EQ(VARIANT_A_SELECTOR, uint32ParamChoiceCopy.getSelector());
     ASSERT_EQ(value, uint32ParamChoiceCopy.getA());
 }
 
 TEST_F(UInt32ParamChoiceTest, initialize)
 {
-    const uint32_t selector = EMPTY_SELECTOR1;
     UInt32ParamChoice uint32ParamChoice;
-    uint32ParamChoice.initialize(selector);
-    ASSERT_EQ(selector, uint32ParamChoice.getSelector());
+    uint32ParamChoice.initialize(parameterExpressionsEmpty1);
+    ASSERT_EQ(EMPTY_SELECTOR1, uint32ParamChoice.getSelector());
 }
 
 TEST_F(UInt32ParamChoiceTest, getSelector)
 {
-    const uint32_t selector = EMPTY_SELECTOR2;
     UInt32ParamChoice uint32ParamChoice;
-    uint32ParamChoice.initialize(selector);
-    ASSERT_EQ(selector, uint32ParamChoice.getSelector());
+    uint32ParamChoice.initialize(parameterExpressionsEmpty2);
+    ASSERT_EQ(EMPTY_SELECTOR2, uint32ParamChoice.getSelector());
 }
 
 TEST_F(UInt32ParamChoiceTest, getSetA)
 {
     UInt32ParamChoice uint32ParamChoice;
-    uint32ParamChoice.initialize(VARIANT_A_SELECTOR);
+    uint32ParamChoice.initialize(parameterExpressionsA);
 
     const VariantA value = 99;
     uint32ParamChoice.setA(value);
@@ -183,7 +190,7 @@ TEST_F(UInt32ParamChoiceTest, getSetA)
 TEST_F(UInt32ParamChoiceTest, getSetB)
 {
     UInt32ParamChoice uint32ParamChoice;
-    uint32ParamChoice.initialize(VARIANT_B_SELECTOR2);
+    uint32ParamChoice.initialize(parameterExpressionsB2);
 
     const VariantB value = 234;
     uint32ParamChoice.setB(value);
@@ -193,7 +200,7 @@ TEST_F(UInt32ParamChoiceTest, getSetB)
 TEST_F(UInt32ParamChoiceTest, getSetC)
 {
     UInt32ParamChoice uint32ParamChoice;
-    uint32ParamChoice.initialize(VARIANT_C_SELECTOR);
+    uint32ParamChoice.initialize(parameterExpressionsC);
 
     const VariantC value = 65535;
     uint32ParamChoice.setC(value);
@@ -203,36 +210,36 @@ TEST_F(UInt32ParamChoiceTest, getSetC)
 TEST_F(UInt32ParamChoiceTest, choiceTag)
 {
     UInt32ParamChoice uint32ParamChoice;
-    uint32ParamChoice.initialize(VARIANT_A_SELECTOR);
+    uint32ParamChoice.initialize(parameterExpressionsA);
     ASSERT_EQ(UInt32ParamChoice::CHOICE_a, uint32ParamChoice.choiceTag());
 
-    uint32ParamChoice.initialize(VARIANT_B_SELECTOR1);
+    uint32ParamChoice.initialize(parameterExpressionsB1);
     ASSERT_EQ(UInt32ParamChoice::CHOICE_b, uint32ParamChoice.choiceTag());
 
-    uint32ParamChoice.initialize(VARIANT_C_SELECTOR);
+    uint32ParamChoice.initialize(parameterExpressionsC);
     ASSERT_EQ(UInt32ParamChoice::CHOICE_c, uint32ParamChoice.choiceTag());
 
-    uint32ParamChoice.initialize(EMPTY_SELECTOR1);
+    uint32ParamChoice.initialize(parameterExpressionsEmpty1);
     ASSERT_EQ(UInt32ParamChoice::UNDEFINED_CHOICE, uint32ParamChoice.choiceTag());
 }
 
 TEST_F(UInt32ParamChoiceTest, bitSizeOf)
 {
     UInt32ParamChoice uint32ParamChoice;
-    uint32ParamChoice.initialize(VARIANT_A_SELECTOR);
+    uint32ParamChoice.initialize(parameterExpressionsA);
     const VariantA valueA = 99;
     uint32ParamChoice.setA(valueA);
     ASSERT_EQ(8, uint32ParamChoice.bitSizeOf());
 
-    uint32ParamChoice.initialize(VARIANT_B_SELECTOR2);
+    uint32ParamChoice.initialize(parameterExpressionsB2);
     const VariantB valueB = 234;
     uint32ParamChoice.setB(valueB);
-    ASSERT_EQ(32, uint32ParamChoice.bitSizeOf());
+    ASSERT_EQ(16, uint32ParamChoice.bitSizeOf());
 
-    uint32ParamChoice.initialize(EMPTY_SELECTOR2);
+    uint32ParamChoice.initialize(parameterExpressionsEmpty2);
     ASSERT_EQ(0, uint32ParamChoice.bitSizeOf());
 
-    uint32ParamChoice.initialize(VARIANT_C_SELECTOR);
+    uint32ParamChoice.initialize(parameterExpressionsC);
     const VariantC valueC = 65535;
     uint32ParamChoice.setC(valueC);
     ASSERT_EQ(32, uint32ParamChoice.bitSizeOf());
@@ -241,27 +248,26 @@ TEST_F(UInt32ParamChoiceTest, bitSizeOf)
 TEST_F(UInt32ParamChoiceTest, initializeOffsets)
 {
     UInt32ParamChoice uint32ParamChoice;
-    uint32ParamChoice.initialize(VARIANT_A_SELECTOR);
+    uint32ParamChoice.initialize(parameterExpressionsA);
     const size_t bitPosition = 1;
     ASSERT_EQ(9, uint32ParamChoice.initializeOffsets(bitPosition));
 
-    uint32ParamChoice.initialize(VARIANT_B_SELECTOR1);
+    uint32ParamChoice.initialize(parameterExpressionsB1);
     ASSERT_EQ(17, uint32ParamChoice.initializeOffsets(bitPosition));
 
-    uint32ParamChoice.initialize(EMPTY_SELECTOR1);
+    uint32ParamChoice.initialize(parameterExpressionsEmpty1);
     ASSERT_EQ(1, uint32ParamChoice.initializeOffsets(bitPosition));
 
-    uint32ParamChoice.initialize(VARIANT_C_SELECTOR);
+    uint32ParamChoice.initialize(parameterExpressionsC);
     ASSERT_EQ(33, uint32ParamChoice.initializeOffsets(bitPosition));
 }
 
 TEST_F(UInt32ParamChoiceTest, operatorEquality)
 {
-    const uint32_t selector = VARIANT_A_SELECTOR;
     UInt32ParamChoice uint32ParamChoice1;
-    uint32ParamChoice1.initialize(selector);
+    uint32ParamChoice1.initialize(parameterExpressionsA);
     UInt32ParamChoice uint32ParamChoice2;
-    uint32ParamChoice2.initialize(selector);
+    uint32ParamChoice2.initialize(parameterExpressionsA);
     ASSERT_TRUE(uint32ParamChoice1 == uint32ParamChoice2);
 
     const VariantA valueA = 99;
@@ -278,11 +284,10 @@ TEST_F(UInt32ParamChoiceTest, operatorEquality)
 
 TEST_F(UInt32ParamChoiceTest, hashCode)
 {
-    const uint32_t selector = VARIANT_A_SELECTOR;
     UInt32ParamChoice uint32ParamChoice1;
-    uint32ParamChoice1.initialize(selector);
+    uint32ParamChoice1.initialize(parameterExpressionsA);
     UInt32ParamChoice uint32ParamChoice2;
-    uint32ParamChoice2.initialize(selector);
+    uint32ParamChoice2.initialize(parameterExpressionsA);
     ASSERT_EQ(uint32ParamChoice1.hashCode(), uint32ParamChoice2.hashCode());
 
     const VariantA valueA = 99;
@@ -301,27 +306,10 @@ TEST_F(UInt32ParamChoiceTest, hashCode)
     ASSERT_EQ(31624, uint32ParamChoice2.hashCode());
 }
 
-TEST_F(UInt32ParamChoiceTest, read)
-{
-    const uint32_t selector = VARIANT_A_SELECTOR;
-    zserio::BitStreamWriter writer(bitBuffer);
-    const int8_t value = 99;
-    writeUInt32ParamChoiceToByteArray(writer, selector, value);
-
-    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
-    UInt32ParamChoice uint32ParamChoice;
-    uint32ParamChoice.initialize(selector);
-    uint32ParamChoice.read(reader);
-
-    ASSERT_EQ(selector, uint32ParamChoice.getSelector());
-    ASSERT_EQ(value, uint32ParamChoice.getA());
-}
-
 TEST_F(UInt32ParamChoiceTest, write)
 {
-    const uint32_t selectorA = VARIANT_A_SELECTOR;
     UInt32ParamChoice uint32ParamChoice;
-    uint32ParamChoice.initialize(selectorA);
+    uint32ParamChoice.initialize(parameterExpressionsA);
 
     const VariantA valueA = 99;
     uint32ParamChoice.setA(valueA);
@@ -329,29 +317,27 @@ TEST_F(UInt32ParamChoiceTest, write)
     uint32ParamChoice.write(writerA);
 
     zserio::BitStreamReader readerA(writerA.getWriteBuffer(), writerA.getBitPosition(), zserio::BitsTag());
-    UInt32ParamChoice readUInt32ParamChoiceA(readerA, selectorA);
+    UInt32ParamChoice readUInt32ParamChoiceA(readerA, parameterExpressionsA);
     ASSERT_EQ(valueA, readUInt32ParamChoiceA.getA());
 
-    const uint32_t selectorB = VARIANT_B_SELECTOR2;
-    uint32ParamChoice.initialize(selectorB);
+    uint32ParamChoice.initialize(parameterExpressionsB2);
     const VariantB valueB = 234;
     uint32ParamChoice.setB(valueB);
     zserio::BitStreamWriter writerB(bitBuffer);
     uint32ParamChoice.write(writerB);
 
     zserio::BitStreamReader readerB(writerB.getWriteBuffer(), writerB.getBitPosition(), zserio::BitsTag());
-    UInt32ParamChoice readUInt32ParamChoiceB(readerB, selectorB);
+    UInt32ParamChoice readUInt32ParamChoiceB(readerB, parameterExpressionsB2);
     ASSERT_EQ(valueB, readUInt32ParamChoiceB.getB());
 
-    const uint32_t selectorC = VARIANT_C_SELECTOR;
-    uint32ParamChoice.initialize(selectorC);
+    uint32ParamChoice.initialize(parameterExpressionsC);
     const VariantC valueC = 65535;
     uint32ParamChoice.setC(valueC);
     zserio::BitStreamWriter writerC(bitBuffer);
     uint32ParamChoice.write(writerC);
 
     zserio::BitStreamReader readerC(writerC.getWriteBuffer(), writerC.getBitPosition(), zserio::BitsTag());
-    UInt32ParamChoice readUInt32ParamChoiceC(readerC, selectorC);
+    UInt32ParamChoice readUInt32ParamChoiceC(readerC, parameterExpressionsC);
     ASSERT_EQ(valueC, readUInt32ParamChoiceC.getC());
 }
 

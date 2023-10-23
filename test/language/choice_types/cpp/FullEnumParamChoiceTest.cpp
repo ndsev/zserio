@@ -35,6 +35,13 @@ protected:
         }
     }
 
+    FullEnumParamChoice::ParameterExpressions parameterExpressionsBlack = {
+            nullptr, 0, [](void*, size_t) { return Selector::BLACK; } };
+    FullEnumParamChoice::ParameterExpressions parameterExpressionsGrey = {
+            nullptr, 0, [](void*, size_t) { return Selector::GREY; } };
+    FullEnumParamChoice::ParameterExpressions parameterExpressionsWhite = {
+            nullptr, 0, [](void*, size_t) { return Selector::WHITE; } };
+
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
@@ -52,107 +59,99 @@ TEST_F(FullEnumParamChoiceTest, emptyConstructor)
 
 TEST_F(FullEnumParamChoiceTest, bitStreamReaderConstructor)
 {
-    const Selector selector = Selector::BLACK;
     const int8_t value = 99;
     zserio::BitStreamWriter writer(bitBuffer);
-    writeFullEnumParamChoiceToByteArray(writer, selector, value);
+    writeFullEnumParamChoiceToByteArray(writer, Selector::BLACK, value);
 
     zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
-    FullEnumParamChoice fullEnumParamChoice(reader, selector);
-    ASSERT_EQ(selector, fullEnumParamChoice.getSelector());
+    FullEnumParamChoice fullEnumParamChoice(reader, parameterExpressionsBlack);
+    ASSERT_EQ(Selector::BLACK, fullEnumParamChoice.getSelector());
     ASSERT_EQ(value, fullEnumParamChoice.getBlack());
 }
 
 TEST_F(FullEnumParamChoiceTest, copyConstructor)
 {
-    const Selector selector = Selector::BLACK;
     FullEnumParamChoice fullEnumParamChoice;
-    fullEnumParamChoice.initialize(selector);
+    fullEnumParamChoice.initialize(parameterExpressionsBlack);
     const int8_t value = 99;
     fullEnumParamChoice.setBlack(value);
 
     const FullEnumParamChoice fullEnumParamChoiceCopy(fullEnumParamChoice);
-    ASSERT_EQ(selector, fullEnumParamChoiceCopy.getSelector());
+    ASSERT_EQ(Selector::BLACK, fullEnumParamChoiceCopy.getSelector());
     ASSERT_EQ(value, fullEnumParamChoiceCopy.getBlack());
 }
 
 TEST_F(FullEnumParamChoiceTest, assignmentOperator)
 {
-    const Selector selector = Selector::GREY;
     FullEnumParamChoice fullEnumParamChoice;
-    fullEnumParamChoice.initialize(selector);
+    fullEnumParamChoice.initialize(parameterExpressionsGrey);
     const int16_t value = 234;
     fullEnumParamChoice.setGrey(value);
 
     FullEnumParamChoice fullEnumParamChoiceCopy;
     fullEnumParamChoiceCopy = fullEnumParamChoice;
-    ASSERT_EQ(selector, fullEnumParamChoiceCopy.getSelector());
+    ASSERT_EQ(Selector::GREY, fullEnumParamChoiceCopy.getSelector());
     ASSERT_EQ(value, fullEnumParamChoiceCopy.getGrey());
 }
 
 TEST_F(FullEnumParamChoiceTest, moveConstructor)
 {
-    const Selector selector = Selector::BLACK;
     FullEnumParamChoice fullEnumParamChoice;
-    fullEnumParamChoice.initialize(selector);
+    fullEnumParamChoice.initialize(parameterExpressionsBlack);
     const int8_t value = 99;
     fullEnumParamChoice.setBlack(value);
 
     // note that it doesn't ensure that move ctor was called
     const FullEnumParamChoice fullEnumParamChoiceMoved(std::move(fullEnumParamChoice));
-    ASSERT_EQ(selector, fullEnumParamChoiceMoved.getSelector());
+    ASSERT_EQ(Selector::BLACK, fullEnumParamChoiceMoved.getSelector());
     ASSERT_EQ(value, fullEnumParamChoiceMoved.getBlack());
 }
 
 TEST_F(FullEnumParamChoiceTest, moveAssignmentOperator)
 {
-    const Selector selector = Selector::GREY;
     FullEnumParamChoice fullEnumParamChoice;
-    fullEnumParamChoice.initialize(selector);
+    fullEnumParamChoice.initialize(parameterExpressionsGrey);
     const int16_t value = 234;
     fullEnumParamChoice.setGrey(value);
 
     // note that it doesn't ensure that move ctor was called
     FullEnumParamChoice fullEnumParamChoiceMoved;
     fullEnumParamChoiceMoved = std::move(fullEnumParamChoice);
-    ASSERT_EQ(selector, fullEnumParamChoiceMoved.getSelector());
+    ASSERT_EQ(Selector::GREY, fullEnumParamChoiceMoved.getSelector());
     ASSERT_EQ(value, fullEnumParamChoiceMoved.getGrey());
 }
 
 TEST_F(FullEnumParamChoiceTest, propagateAllocatorCopyConstructor)
 {
-    const Selector selector = Selector::BLACK;
     FullEnumParamChoice fullEnumParamChoice;
-    fullEnumParamChoice.initialize(selector);
+    fullEnumParamChoice.initialize(parameterExpressionsBlack);
     const int8_t value = 99;
     fullEnumParamChoice.setBlack(value);
 
     const FullEnumParamChoice fullEnumParamChoiceCopy(zserio::PropagateAllocator, fullEnumParamChoice,
             FullEnumParamChoice::allocator_type());
-    ASSERT_EQ(selector, fullEnumParamChoiceCopy.getSelector());
+    ASSERT_EQ(Selector::BLACK, fullEnumParamChoiceCopy.getSelector());
     ASSERT_EQ(value, fullEnumParamChoiceCopy.getBlack());
 }
 
 TEST_F(FullEnumParamChoiceTest, initialize)
 {
-    const Selector selector = Selector::GREY;
     FullEnumParamChoice fullEnumParamChoice;
-    fullEnumParamChoice.initialize(selector);
-    ASSERT_EQ(selector, fullEnumParamChoice.getSelector());
+    fullEnumParamChoice.initialize(parameterExpressionsGrey);
+    ASSERT_EQ(Selector::GREY, fullEnumParamChoice.getSelector());
 }
 
 TEST_F(FullEnumParamChoiceTest, getSelector)
 {
-    const Selector selector = Selector::BLACK;
     FullEnumParamChoice fullEnumParamChoice;
-    fullEnumParamChoice.initialize(selector);
-    ASSERT_EQ(selector, fullEnumParamChoice.getSelector());
+    fullEnumParamChoice.initialize(parameterExpressionsBlack);
+    ASSERT_EQ(Selector::BLACK, fullEnumParamChoice.getSelector());
 }
 
 TEST_F(FullEnumParamChoiceTest, getSetBlack)
 {
     FullEnumParamChoice fullEnumParamChoice;
-    fullEnumParamChoice.initialize(Selector::BLACK);
+    fullEnumParamChoice.initialize(parameterExpressionsBlack);
     const int8_t value = 99;
     fullEnumParamChoice.setBlack(value);
     ASSERT_EQ(value, fullEnumParamChoice.getBlack());
@@ -161,7 +160,7 @@ TEST_F(FullEnumParamChoiceTest, getSetBlack)
 TEST_F(FullEnumParamChoiceTest, getSetGrey)
 {
     FullEnumParamChoice fullEnumParamChoice;
-    fullEnumParamChoice.initialize(Selector::GREY);
+    fullEnumParamChoice.initialize(parameterExpressionsGrey);
     const int16_t value = 234;
     fullEnumParamChoice.setGrey(value);
     ASSERT_EQ(value, fullEnumParamChoice.getGrey());
@@ -170,7 +169,7 @@ TEST_F(FullEnumParamChoiceTest, getSetGrey)
 TEST_F(FullEnumParamChoiceTest, getSetWhite)
 {
     FullEnumParamChoice fullEnumParamChoice;
-    fullEnumParamChoice.initialize(Selector::WHITE);
+    fullEnumParamChoice.initialize(parameterExpressionsWhite);
     const int32_t value = 65535;
     fullEnumParamChoice.setWhite(value);
     ASSERT_EQ(value, fullEnumParamChoice.getWhite());
@@ -179,55 +178,55 @@ TEST_F(FullEnumParamChoiceTest, getSetWhite)
 TEST_F(FullEnumParamChoiceTest, choiceTag)
 {
     FullEnumParamChoice fullEnumParamChoiceB;
-    fullEnumParamChoiceB.initialize(Selector::BLACK);
+    fullEnumParamChoiceB.initialize(parameterExpressionsBlack);
     ASSERT_EQ(FullEnumParamChoice::CHOICE_black, fullEnumParamChoiceB.choiceTag());
 
     FullEnumParamChoice fullEnumParamChoiceG;
-    fullEnumParamChoiceG.initialize(Selector::GREY);
+    fullEnumParamChoiceG.initialize(parameterExpressionsGrey);
     ASSERT_EQ(FullEnumParamChoice::CHOICE_grey, fullEnumParamChoiceG.choiceTag());
 
     FullEnumParamChoice fullEnumParamChoiceW;
-    fullEnumParamChoiceW.initialize(Selector::WHITE);
+    fullEnumParamChoiceW.initialize(parameterExpressionsWhite);
     ASSERT_EQ(FullEnumParamChoice::CHOICE_white, fullEnumParamChoiceW.choiceTag());
 }
 
 TEST_F(FullEnumParamChoiceTest, bitSizeOf)
 {
     FullEnumParamChoice fullEnumParamChoiceB;
-    fullEnumParamChoiceB.initialize(Selector::BLACK);
+    fullEnumParamChoiceB.initialize(parameterExpressionsBlack);
     ASSERT_EQ(8, fullEnumParamChoiceB.bitSizeOf());
 
     FullEnumParamChoice fullEnumParamChoiceG;
-    fullEnumParamChoiceG.initialize(Selector::GREY);
+    fullEnumParamChoiceG.initialize(parameterExpressionsGrey);
     ASSERT_EQ(16, fullEnumParamChoiceG.bitSizeOf());
 
     FullEnumParamChoice fullEnumParamChoiceW;
-    fullEnumParamChoiceW.initialize(Selector::WHITE);
+    fullEnumParamChoiceW.initialize(parameterExpressionsWhite);
     ASSERT_EQ(32, fullEnumParamChoiceW.bitSizeOf());
 }
 
 TEST_F(FullEnumParamChoiceTest, initializeOffsets)
 {
     FullEnumParamChoice fullEnumParamChoiceB;
-    fullEnumParamChoiceB.initialize(Selector::BLACK);
+    fullEnumParamChoiceB.initialize(parameterExpressionsBlack);
     const size_t bitPosition = 1;
     ASSERT_EQ(9, fullEnumParamChoiceB.initializeOffsets(bitPosition));
 
     FullEnumParamChoice fullEnumParamChoiceG;
-    fullEnumParamChoiceG.initialize(Selector::GREY);
+    fullEnumParamChoiceG.initialize(parameterExpressionsGrey);
     ASSERT_EQ(17, fullEnumParamChoiceG.initializeOffsets(bitPosition));
 
     FullEnumParamChoice fullEnumParamChoiceW;
-    fullEnumParamChoiceW.initialize(Selector::WHITE);
+    fullEnumParamChoiceW.initialize(parameterExpressionsWhite);
     ASSERT_EQ(33, fullEnumParamChoiceW.initializeOffsets(bitPosition));
 }
 
 TEST_F(FullEnumParamChoiceTest, operatorEquality)
 {
     FullEnumParamChoice fullEnumParamChoice1;
-    fullEnumParamChoice1.initialize(Selector::BLACK);
+    fullEnumParamChoice1.initialize(parameterExpressionsBlack);
     FullEnumParamChoice fullEnumParamChoice2;
-    fullEnumParamChoice2.initialize(Selector::BLACK);
+    fullEnumParamChoice2.initialize(parameterExpressionsBlack);
     ASSERT_TRUE(fullEnumParamChoice1 == fullEnumParamChoice2);
 
     const int8_t value = 99;
@@ -245,9 +244,9 @@ TEST_F(FullEnumParamChoiceTest, operatorEquality)
 TEST_F(FullEnumParamChoiceTest, hashCode)
 {
     FullEnumParamChoice fullEnumParamChoice1;
-    fullEnumParamChoice1.initialize(Selector::BLACK);
+    fullEnumParamChoice1.initialize(parameterExpressionsBlack);
     FullEnumParamChoice fullEnumParamChoice2;
-    fullEnumParamChoice2.initialize(Selector::BLACK);
+    fullEnumParamChoice2.initialize(parameterExpressionsBlack);
     ASSERT_EQ(fullEnumParamChoice1.hashCode(), fullEnumParamChoice2.hashCode());
 
     const int8_t value = 99;
@@ -268,40 +267,37 @@ TEST_F(FullEnumParamChoiceTest, hashCode)
 
 TEST_F(FullEnumParamChoiceTest, write)
 {
-    Selector selector = Selector::BLACK;
     FullEnumParamChoice fullEnumParamChoiceB;
-    fullEnumParamChoiceB.initialize(selector);
+    fullEnumParamChoiceB.initialize(parameterExpressionsBlack);
     const int8_t valueB = 99;
     fullEnumParamChoiceB.setBlack(valueB);
     zserio::BitStreamWriter writerB(bitBuffer);
     fullEnumParamChoiceB.write(writerB);
 
     zserio::BitStreamReader readerB(writerB.getWriteBuffer(), writerB.getBitPosition(), zserio::BitsTag());
-    FullEnumParamChoice readEnumParamChoiceB(readerB, selector);
+    FullEnumParamChoice readEnumParamChoiceB(readerB, parameterExpressionsBlack);
     ASSERT_EQ(valueB, readEnumParamChoiceB.getBlack());
 
-    selector = Selector::GREY;
     FullEnumParamChoice fullEnumParamChoiceG;
-    fullEnumParamChoiceG.initialize(selector);
+    fullEnumParamChoiceG.initialize(parameterExpressionsGrey);
     const int16_t valueG = 234;
     fullEnumParamChoiceG.setGrey(valueG);
     zserio::BitStreamWriter writerG(bitBuffer);
     fullEnumParamChoiceG.write(writerG);
 
     zserio::BitStreamReader readerG(writerG.getWriteBuffer(), writerG.getBitPosition(), zserio::BitsTag());
-    FullEnumParamChoice readEnumParamChoiceG(readerG, selector);
+    FullEnumParamChoice readEnumParamChoiceG(readerG, parameterExpressionsGrey);
     ASSERT_EQ(valueG, readEnumParamChoiceG.getGrey());
 
-    selector = Selector::WHITE;
     FullEnumParamChoice fullEnumParamChoiceW;
-    fullEnumParamChoiceW.initialize(selector);
+    fullEnumParamChoiceW.initialize(parameterExpressionsWhite);
     const int32_t valueW = 65535;
     fullEnumParamChoiceW.setWhite(valueW);
     zserio::BitStreamWriter writerW(bitBuffer);
     fullEnumParamChoiceW.write(writerW);
 
     zserio::BitStreamReader readerW(writerW.getWriteBuffer(), writerW.getBitPosition(), zserio::BitsTag());
-    FullEnumParamChoice readEnumParamChoiceW(readerW, selector);
+    FullEnumParamChoice readEnumParamChoiceW(readerW, parameterExpressionsWhite);
     ASSERT_EQ(valueW, readEnumParamChoiceW.getWhite());
 }
 

@@ -11,7 +11,16 @@ namespace choice_types
 namespace empty_choice_with_default
 {
 
-TEST(EmptyChoiceWithDefaultTest, emptyConstructor)
+struct EmptyChoiceWithDefaultTest : public ::testing::Test
+{
+protected:
+    EmptyChoiceWithDefault::ParameterExpressions parameterExpressions0 = {
+            nullptr, 0, [](void*, size_t) { return static_cast<uint8_t>(0); } };
+    EmptyChoiceWithDefault::ParameterExpressions parameterExpressions1 = {
+            nullptr, 0, [](void*, size_t) { return static_cast<uint8_t>(1); } };
+};
+
+TEST_F(EmptyChoiceWithDefaultTest, emptyConstructor)
 {
     {
         EmptyChoiceWithDefault emptyChoiceWithDefault;
@@ -23,140 +32,125 @@ TEST(EmptyChoiceWithDefaultTest, emptyConstructor)
     }
 }
 
-TEST(EmptyChoiceWithDefaultTest, bitStreamReaderConstructor)
+TEST_F(EmptyChoiceWithDefaultTest, bitStreamReaderConstructor)
 {
-    const uint8_t selector = 1;
     zserio::BitStreamReader reader(nullptr, 0);
 
-    EmptyChoiceWithDefault emptyChoiceWithDefault(reader, selector);
-    ASSERT_EQ(selector, emptyChoiceWithDefault.getSelector());
+    EmptyChoiceWithDefault emptyChoiceWithDefault(reader, parameterExpressions1);
+    ASSERT_EQ(1, emptyChoiceWithDefault.getSelector());
     ASSERT_EQ(0, emptyChoiceWithDefault.bitSizeOf());
 }
 
-TEST(EmptyChoiceWithDefaultTest, copyConstructor)
+TEST_F(EmptyChoiceWithDefaultTest, copyConstructor)
 {
-    const uint8_t selector = 1;
-
     EmptyChoiceWithDefault emptyChoiceWithDefault;
-    emptyChoiceWithDefault.initialize(selector);
+    emptyChoiceWithDefault.initialize(parameterExpressions1);
     const EmptyChoiceWithDefault emptyChoiceWithDefaultCopy(emptyChoiceWithDefault);
-    ASSERT_EQ(selector, emptyChoiceWithDefaultCopy.getSelector());
+    ASSERT_EQ(1, emptyChoiceWithDefaultCopy.getSelector());
     ASSERT_EQ(0, emptyChoiceWithDefaultCopy.bitSizeOf());
 }
 
-TEST(EmptyChoiceWithDefaultTest, assignmentOperator)
+TEST_F(EmptyChoiceWithDefaultTest, assignmentOperator)
 {
-    const uint8_t selector = 1;
-
     EmptyChoiceWithDefault emptyChoiceWithDefault;
-    emptyChoiceWithDefault.initialize(selector);
+    emptyChoiceWithDefault.initialize(parameterExpressions1);
     EmptyChoiceWithDefault emptyChoiceWithDefaultCopy;
     emptyChoiceWithDefaultCopy = emptyChoiceWithDefault;
-    ASSERT_EQ(selector, emptyChoiceWithDefaultCopy.getSelector());
+    ASSERT_EQ(1, emptyChoiceWithDefaultCopy.getSelector());
     ASSERT_EQ(0, emptyChoiceWithDefaultCopy.bitSizeOf());
 }
 
-TEST(EmptyChoiceWithDefaultTest, moveConstructor)
+TEST_F(EmptyChoiceWithDefaultTest, moveConstructor)
 {
-    const uint8_t selector = 1;
-
     EmptyChoiceWithDefault emptyChoiceWithDefault;
-    emptyChoiceWithDefault.initialize(selector);
+    emptyChoiceWithDefault.initialize(parameterExpressions1);
     // note that it doesn't ensure that move ctor was called
     const EmptyChoiceWithDefault emptyChoiceWithDefaultMoved(std::move(emptyChoiceWithDefault));
-    ASSERT_EQ(selector, emptyChoiceWithDefaultMoved.getSelector());
+    ASSERT_EQ(1, emptyChoiceWithDefaultMoved.getSelector());
     ASSERT_EQ(0, emptyChoiceWithDefaultMoved.bitSizeOf());
 }
 
-TEST(EmptyChoiceWithDefaultTest, moveAssignmentOperator)
+TEST_F(EmptyChoiceWithDefaultTest, moveAssignmentOperator)
 {
-    const uint8_t selector = 1;
-
     EmptyChoiceWithDefault emptyChoiceWithDefault;
-    emptyChoiceWithDefault.initialize(selector);
+    emptyChoiceWithDefault.initialize(parameterExpressions1);
     // note that it doesn't ensure that move ctor was called
     EmptyChoiceWithDefault emptyChoiceWithDefaultMoved;
     emptyChoiceWithDefaultMoved = std::move(emptyChoiceWithDefault);
-    ASSERT_EQ(selector, emptyChoiceWithDefaultMoved.getSelector());
+    ASSERT_EQ(1, emptyChoiceWithDefaultMoved.getSelector());
     ASSERT_EQ(0, emptyChoiceWithDefaultMoved.bitSizeOf());
 }
 
-TEST(EmptyChoiceWithDefaultTest, propagateAllocatorCopyConstructor)
+TEST_F(EmptyChoiceWithDefaultTest, propagateAllocatorCopyConstructor)
 {
-    const uint8_t selector = 1;
-
     EmptyChoiceWithDefault emptyChoiceWithDefault;
-    emptyChoiceWithDefault.initialize(selector);
+    emptyChoiceWithDefault.initialize(parameterExpressions1);
     const EmptyChoiceWithDefault emptyChoiceWithDefaultCopy(zserio::PropagateAllocator, emptyChoiceWithDefault,
             EmptyChoiceWithDefault::allocator_type());
-    ASSERT_EQ(selector, emptyChoiceWithDefaultCopy.getSelector());
+    ASSERT_EQ(1, emptyChoiceWithDefaultCopy.getSelector());
     ASSERT_EQ(0, emptyChoiceWithDefaultCopy.bitSizeOf());
 }
 
-TEST(EmptyChoiceWithDefaultTest, initialize)
+TEST_F(EmptyChoiceWithDefaultTest, initialize)
 {
-    const uint8_t selector = 1;
-
     EmptyChoiceWithDefault emptyChoiceWithDefault;
-    emptyChoiceWithDefault.initialize(selector);
-    ASSERT_EQ(selector, emptyChoiceWithDefault.getSelector());
+    emptyChoiceWithDefault.initialize(parameterExpressions1);
+    ASSERT_EQ(1, emptyChoiceWithDefault.getSelector());
 }
 
-TEST(EmptyChoiceWithDefaultTest, getSelector)
+TEST_F(EmptyChoiceWithDefaultTest, getSelector)
 {
-    const uint8_t selector = 1;
-
     EmptyChoiceWithDefault emptyChoiceWithDefault;
-    emptyChoiceWithDefault.initialize(selector);
-    ASSERT_EQ(selector, emptyChoiceWithDefault.getSelector());
+    emptyChoiceWithDefault.initialize(parameterExpressions1);
+    ASSERT_EQ(1, emptyChoiceWithDefault.getSelector());
 }
 
-TEST(EmptyChoiceWithDefaultTest, choiceTag)
+TEST_F(EmptyChoiceWithDefaultTest, choiceTag)
 {
     EmptyChoiceWithDefault emptyChoiceWithDefault;
-    emptyChoiceWithDefault.initialize(0);
+    emptyChoiceWithDefault.initialize(parameterExpressions0);
     ASSERT_EQ(EmptyChoiceWithDefault::UNDEFINED_CHOICE, emptyChoiceWithDefault.choiceTag());
 
-    emptyChoiceWithDefault.initialize(1);
+    emptyChoiceWithDefault.initialize(parameterExpressions1);
     ASSERT_EQ(EmptyChoiceWithDefault::UNDEFINED_CHOICE, emptyChoiceWithDefault.choiceTag());
 }
 
-TEST(EmptyChoiceWithDefaultTest, bitSizeOf)
+TEST_F(EmptyChoiceWithDefaultTest, bitSizeOf)
 {
     EmptyChoiceWithDefault emptyChoiceWithDefault;
-    emptyChoiceWithDefault.initialize(1);
+    emptyChoiceWithDefault.initialize(parameterExpressions1);
     ASSERT_EQ(0, emptyChoiceWithDefault.bitSizeOf(1));
 }
 
-TEST(EmptyChoiceWithDefaultTest, initializeOffsets)
+TEST_F(EmptyChoiceWithDefaultTest, initializeOffsets)
 {
     const size_t bitPosition = 1;
 
     EmptyChoiceWithDefault emptyChoiceWithDefault;
-    emptyChoiceWithDefault.initialize(1);
+    emptyChoiceWithDefault.initialize(parameterExpressions1);
     ASSERT_EQ(bitPosition, emptyChoiceWithDefault.initializeOffsets(bitPosition));
 }
 
-TEST(EmptyChoiceWithDefaultTest, operatorEquality)
+TEST_F(EmptyChoiceWithDefaultTest, operatorEquality)
 {
     EmptyChoiceWithDefault emptyChoiceWithDefault1;
-    emptyChoiceWithDefault1.initialize(1);
+    emptyChoiceWithDefault1.initialize(parameterExpressions1);
     EmptyChoiceWithDefault emptyChoiceWithDefault2;
-    emptyChoiceWithDefault2.initialize(1);
+    emptyChoiceWithDefault2.initialize(parameterExpressions1);
     EmptyChoiceWithDefault emptyChoiceWithDefault3;
-    emptyChoiceWithDefault3.initialize(0);
+    emptyChoiceWithDefault3.initialize(parameterExpressions0);
     ASSERT_TRUE(emptyChoiceWithDefault1 == emptyChoiceWithDefault2);
     ASSERT_FALSE(emptyChoiceWithDefault1 == emptyChoiceWithDefault3);
 }
 
-TEST(EmptyChoiceWithDefaultTest, hashCode)
+TEST_F(EmptyChoiceWithDefaultTest, hashCode)
 {
     EmptyChoiceWithDefault emptyChoiceWithDefault1;
-    emptyChoiceWithDefault1.initialize(1);
+    emptyChoiceWithDefault1.initialize(parameterExpressions1);
     EmptyChoiceWithDefault emptyChoiceWithDefault2;
-    emptyChoiceWithDefault2.initialize(1);
+    emptyChoiceWithDefault2.initialize(parameterExpressions1);
     EmptyChoiceWithDefault emptyChoiceWithDefault3;
-    emptyChoiceWithDefault3.initialize(0);
+    emptyChoiceWithDefault3.initialize(parameterExpressions0);
     ASSERT_EQ(emptyChoiceWithDefault1.hashCode(), emptyChoiceWithDefault2.hashCode());
     ASSERT_NE(emptyChoiceWithDefault1.hashCode(), emptyChoiceWithDefault3.hashCode());
 
@@ -165,18 +159,17 @@ TEST(EmptyChoiceWithDefaultTest, hashCode)
     ASSERT_EQ(851, emptyChoiceWithDefault3.hashCode());
 }
 
-TEST(EmptyChoiceWithDefaultTest, write)
+TEST_F(EmptyChoiceWithDefaultTest, write)
 {
-    const uint8_t selector = 1;
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
     zserio::BitStreamWriter writer(bitBuffer);
     EmptyChoiceWithDefault emptyChoiceWithDefault;
-    emptyChoiceWithDefault.initialize(selector);
+    emptyChoiceWithDefault.initialize(parameterExpressions1);
     emptyChoiceWithDefault.write(writer);
     ASSERT_EQ(0, writer.getBitPosition());
 
     zserio::BitStreamReader reader(writer.getWriteBuffer(), 0);
-    EmptyChoiceWithDefault readEmptyChoiceWithDefault(reader, selector);
+    EmptyChoiceWithDefault readEmptyChoiceWithDefault(reader, parameterExpressions1);
     ASSERT_EQ(emptyChoiceWithDefault, readEmptyChoiceWithDefault);
 }
 

@@ -69,8 +69,8 @@ TEST_F(UnionWithParameterizedFieldTest, copyConstructor)
     TestUnion testUnion;
     testUnion.setArrayHolder(ArrayHolder{});
     {
-        TestUnion testUnionCopy(testUnion);
-        ASSERT_THROW(testUnionCopy.getArrayHolder().getSize(), zserio::CppRuntimeException);
+        TestUnion testUnionCopy(testUnion); // calls initializeChildren
+        ASSERT_EQ(10, testUnionCopy.getArrayHolder().getSize());
     }
 
     testUnion.initializeChildren();
@@ -86,8 +86,8 @@ TEST_F(UnionWithParameterizedFieldTest, assignmentOperator)
     testUnion.setArrayHolder(ArrayHolder{});
     {
         TestUnion testUnionCopy;
-        testUnionCopy = testUnion;
-        ASSERT_THROW(testUnionCopy.getArrayHolder().getSize(), zserio::CppRuntimeException);
+        testUnionCopy = testUnion; // calls initializeChildren
+        ASSERT_EQ(10, testUnionCopy.getArrayHolder().getSize());
     }
 
     testUnion.initializeChildren();
@@ -103,8 +103,8 @@ TEST_F(UnionWithParameterizedFieldTest, moveConstructor)
     {
         TestUnion testUnion;
         testUnion.setArrayHolder(ArrayHolder{});
-        TestUnion testUnionMoved(std::move(testUnion));
-        ASSERT_THROW(testUnionMoved.getArrayHolder().getSize(), zserio::CppRuntimeException);
+        TestUnion testUnionMoved(std::move(testUnion)); // calls initializeChildren
+        ASSERT_EQ(10, testUnionMoved.getArrayHolder().getSize());
     }
 
     {
@@ -122,8 +122,8 @@ TEST_F(UnionWithParameterizedFieldTest, moveAssignmentOperator)
         TestUnion testUnion;
         testUnion.setArrayHolder(ArrayHolder{});
         TestUnion testUnionMoved;
-        testUnionMoved = std::move(testUnion);
-        ASSERT_THROW(testUnionMoved.getArrayHolder().getSize(), zserio::CppRuntimeException);
+        testUnionMoved = std::move(testUnion); // calls initializeChildren
+        ASSERT_EQ(10, testUnionMoved.getArrayHolder().getSize());
     }
 
     {
@@ -141,8 +141,9 @@ TEST_F(UnionWithParameterizedFieldTest, propagateAllocatorCopyConstructor)
     TestUnion testUnion;
     testUnion.setArrayHolder(ArrayHolder{});
     {
+        // calls initializeChildren
         TestUnion testUnionCopy(zserio::PropagateAllocator, testUnion, TestUnion::allocator_type());
-        ASSERT_THROW(testUnionCopy.getArrayHolder().getSize(), zserio::CppRuntimeException);
+        ASSERT_EQ(10, testUnionCopy.getArrayHolder().getSize());
     }
 
     testUnion.initializeChildren();
@@ -175,13 +176,15 @@ TEST_F(UnionWithParameterizedFieldTest, arrayHolder)
 {
     TestUnion testUnion;
     ArrayHolder arrayHolder{vector_type<uint32_t>(10)};
-    arrayHolder.initialize(10);
+    arrayHolder.initialize({ nullptr, 0, [](void*, size_t) { return static_cast<uint8_t>(10); } });
     void* ptr = arrayHolder.getArray().data();
     testUnion.setArrayHolder(arrayHolder);
+    testUnion.initializeChildren();
     ASSERT_NE(ptr, testUnion.getArrayHolder().getArray().data());
     ASSERT_EQ(arrayHolder, testUnion.getArrayHolder());
 
     testUnion.setArrayHolder(std::move(arrayHolder));
+    testUnion.initializeChildren();
     ASSERT_EQ(ptr, testUnion.getArrayHolder().getArray().data());
 }
 

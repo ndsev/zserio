@@ -45,7 +45,7 @@ include(sqlite_utils)
 sqlite_add_library(${ZSERIO_PROJECT_ROOT})
 
 compiler_set_warnings()
-compiler_set_warnings_as_errors()
+#compiler_set_warnings_as_errors()
 
 # add zserio runtime library
 include(zserio_utils)

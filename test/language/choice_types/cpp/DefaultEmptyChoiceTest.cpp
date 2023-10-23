@@ -34,6 +34,13 @@ protected:
     static const uint8_t VARIANT_B_SELECTOR;
     static const uint8_t DEFAULT_SELECTOR;
 
+    DefaultEmptyChoice::ParameterExpressions parameterExpressionsVariantA = {
+            nullptr, 0, [](void*, size_t) { return VARIANT_A_SELECTOR; } };
+    DefaultEmptyChoice::ParameterExpressions parameterExpressionsVariantB = {
+            nullptr, 0, [](void*, size_t) { return VARIANT_B_SELECTOR; } };
+    DefaultEmptyChoice::ParameterExpressions parameterExpressionsDefault = {
+            nullptr, 0, [](void*, size_t) { return DEFAULT_SELECTOR; } };
+
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
@@ -49,7 +56,7 @@ TEST_F(DefaultEmptyChoiceTest, bitStreamReaderConstructor)
     writeDefaultEmptyChoiceToByteArray(writer, tag, value);
 
     zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
-    const DefaultEmptyChoice defaultEmptyChoice(reader, tag);
+    const DefaultEmptyChoice defaultEmptyChoice(reader, parameterExpressionsVariantA);
     ASSERT_EQ(tag, defaultEmptyChoice.getTag());
     ASSERT_EQ(value, defaultEmptyChoice.getA());
 }
@@ -57,21 +64,20 @@ TEST_F(DefaultEmptyChoiceTest, bitStreamReaderConstructor)
 TEST_F(DefaultEmptyChoiceTest, choiceTag)
 {
     DefaultEmptyChoice defaultEmptyChoice;
-    defaultEmptyChoice.initialize(VARIANT_A_SELECTOR);
+    defaultEmptyChoice.initialize(parameterExpressionsVariantA);
     ASSERT_EQ(DefaultEmptyChoice::CHOICE_a, defaultEmptyChoice.choiceTag());
 
-    defaultEmptyChoice.initialize(VARIANT_B_SELECTOR);
+    defaultEmptyChoice.initialize(parameterExpressionsVariantB);
     ASSERT_EQ(DefaultEmptyChoice::CHOICE_b, defaultEmptyChoice.choiceTag());
 
-    defaultEmptyChoice.initialize(DEFAULT_SELECTOR);
+    defaultEmptyChoice.initialize(parameterExpressionsDefault);
     ASSERT_EQ(DefaultEmptyChoice::UNDEFINED_CHOICE, defaultEmptyChoice.choiceTag());
 }
 
 TEST_F(DefaultEmptyChoiceTest, write)
 {
-    const uint8_t tagA = VARIANT_A_SELECTOR;
     DefaultEmptyChoice defaultEmptyChoice;
-    defaultEmptyChoice.initialize(tagA);
+    defaultEmptyChoice.initialize(parameterExpressionsVariantA);
 
     const VariantA valueA = 99;
     defaultEmptyChoice.setA(valueA);
@@ -79,29 +85,27 @@ TEST_F(DefaultEmptyChoiceTest, write)
     defaultEmptyChoice.write(writerA);
 
     zserio::BitStreamReader readerA(writerA.getWriteBuffer(), writerA.getBitPosition(), zserio::BitsTag());
-    DefaultEmptyChoice readDefaultEmptyChoiceA(readerA, tagA);
+    DefaultEmptyChoice readDefaultEmptyChoiceA(readerA, parameterExpressionsVariantA);
     ASSERT_EQ(valueA, readDefaultEmptyChoiceA.getA());
 
-    const uint8_t tagB = VARIANT_B_SELECTOR;
-    defaultEmptyChoice.initialize(tagB);
+    defaultEmptyChoice.initialize(parameterExpressionsVariantB);
     const VariantB valueB = 234;
     defaultEmptyChoice.setB(valueB);
     zserio::BitStreamWriter writerB(bitBuffer);
     defaultEmptyChoice.write(writerB);
 
     zserio::BitStreamReader readerB(writerB.getWriteBuffer(), writerB.getBitPosition(), zserio::BitsTag());
-    DefaultEmptyChoice readDefaultEmptyChoiceB(readerB, tagB);
+    DefaultEmptyChoice readDefaultEmptyChoiceB(readerB, parameterExpressionsVariantB);
     ASSERT_EQ(valueB, readDefaultEmptyChoiceB.getB());
 
-    const uint8_t tagDefault= DEFAULT_SELECTOR;
-    defaultEmptyChoice.initialize(tagDefault);
+    defaultEmptyChoice.initialize(parameterExpressionsDefault);
     zserio::BitStreamWriter writerDefault(bitBuffer);
     defaultEmptyChoice.write(writerDefault);
 
     zserio::BitStreamReader readerDefault(writerDefault.getWriteBuffer(),
             writerDefault.getBitPosition(), zserio::BitsTag());
-    DefaultEmptyChoice readDefaultEmptyChoiceDefault(readerDefault, tagDefault);
-    ASSERT_EQ(tagDefault, readDefaultEmptyChoiceDefault.getTag());
+    DefaultEmptyChoice readDefaultEmptyChoiceDefault(readerDefault, parameterExpressionsDefault);
+    ASSERT_EQ(DEFAULT_SELECTOR, readDefaultEmptyChoiceDefault.getTag());
 }
 
 } // namespace default_empty_choice
