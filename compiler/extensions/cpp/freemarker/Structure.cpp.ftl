@@ -33,6 +33,7 @@
 <@namespace_begin package.path/>
 
 <#assign numExtendedFields=num_extended_fields(fieldList)>
+<#assign parameterArgumentTypeList><@compound_parameter_arguments_type_list compoundConstructorsData.compoundParametersData, 2/></#assign>
 <#function extended_field_index numFields numExtendedFields fieldIndex>
     <#return fieldIndex - (numFields - numExtendedFields)>
 </#function>
@@ -86,16 +87,6 @@
 <@compound_read_constructor_definition compoundConstructorsData, readConstructorInitMacroName, true/>
 </#if>
 
-<#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
-<@compound_copy_constructor_definition compoundConstructorsData/>
-
-<@compound_assignment_operator_definition compoundConstructorsData/>
-
-<@compound_move_constructor_definition compoundConstructorsData/>
-
-<@compound_move_assignment_operator_definition compoundConstructorsData/>
-
-</#if>
 <@compound_allocator_propagating_copy_constructor_definition compoundConstructorsData/>
 
 <#if withTypeInfoCode>
@@ -235,21 +226,6 @@ const ${types.typeInfo.name}& ${name}::typeInfo()
         </#if>
     </#if>
 </#if>
-<#if needs_compound_initialization(compoundConstructorsData)>
-<@compound_initialize_definition compoundConstructorsData, needsChildrenInitialization/>
-
-</#if>
-<#if needsChildrenInitialization>
-void ${name}::initializeChildren()
-{
-    <#list fieldList as field>
-    <@compound_initialize_children_field field, 1/>
-    </#list>
-    <@compound_initialize_children_epilog_definition compoundConstructorsData/>
-}
-
-</#if>
-<@compound_parameter_accessors_definition name, compoundParametersData/>
 <#list fieldList as field>
     <#if needs_field_getter(field)>
 <@field_raw_cpp_type_name field/>& ${name}::${field.getterName}()
@@ -399,11 +375,10 @@ ${I}(<@field_member_name field/> == other.<@field_member_name field/>)<#rt>
 </#macro>
 bool ${name}::operator==(const ${name}&<#if compoundParametersData.list?has_content || fieldList?has_content> other</#if>) const
 {
-<#if compoundParametersData.list?has_content || fieldList?has_content>
+<#if fieldList?has_content>
     if (this != &other)
     {
         return
-                <@compound_parameter_comparison compoundParametersData, fieldList?has_content/>
     <#list fieldList as field>
         <#if field.isExtended>
                 (!${field.isPresentIndicatorName}() ?
@@ -432,7 +407,6 @@ uint32_t ${name}::hashCode() const
 {
     uint32_t result = ::zserio::HASH_SEED;
 
-    <@compound_parameter_hash_code compoundParametersData/>
 <#list fieldList as field>
     <#if field.isExtended>
     if (${field.isPresentIndicatorName}())
@@ -488,6 +462,10 @@ void ${name}::write(${name}::ZserioPackingContext&<#if uses_packing_context(fiel
 </#if>
 <#list fieldList as field>
 <@field_member_type_name field, name/> ${name}::${field.readerName}(::zserio::BitStreamReader& in<#rt>
+    <#if parameterArgumentTypeList?has_content>
+        <#lt>,
+        ${parameterArgumentTypeList}<#rt>
+    </#if>
     <#if field.needsAllocator || field.holderNeedsAllocator>
         <#lt>,
         const allocator_type& allocator<#rt>

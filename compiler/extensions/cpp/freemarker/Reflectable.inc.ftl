@@ -3,38 +3,16 @@
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}void initializeChildren() override
 ${I}{
-    <#if needsChildrenInitialization>
-${I}    m_object.initializeChildren();
-    </#if>
+    <#-- TODO[Mi-L@]: Remove from the interface! -->
 ${I}}
 </#macro>
 
 <#macro reflectable_initialize compoundName parameterList indent=2>
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}void initialize(
-${I}        const ::zserio::vector<::zserio::AnyHolder<allocator_type>, allocator_type>& typeArguments) override
+${I}        const ::zserio::vector<::zserio::AnyHolder<allocator_type>, allocator_type>&) override
 ${I}{
-${I}    if (typeArguments.size() != ${parameterList?size})
-${I}    {
-${I}        throw ::zserio::CppRuntimeException("Not enough arguments to ${name}::initialize, ") <<
-${I}                "expecting ${parameterList?size}, got " << typeArguments.size();
-${I}    }
-
-${I}    m_object.initialize(
-    <#list parameterList as parameter>
-${I}        typeArguments[${parameter?index}].get<<#rt>
-        <#if parameter.typeInfo.isSimple>
-            ${parameter.typeInfo.typeFullName}>()<#t>
-        <#else>
-            ::std::reference_wrapper<${parameter.typeInfo.typeFullName}>>().get()<#t>
-        </#if>
-        <#if parameter?has_next>
-                <#lt>,
-        <#else>
-
-        </#if>
-    </#list>
-${I}    );
+    <#-- TODO[Mi-L@]: Remove from the interface! -->
 ${I}}
 </#macro>
 

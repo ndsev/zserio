@@ -81,20 +81,6 @@ public:
     /** Default destructor. */
 </#if>
     ~${name}() = default;
-<#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
-
-    <@compound_copy_constructor_declaration compoundConstructorsData/>
-    <#if withCodeComments>
-
-    </#if>
-    <@compound_assignment_operator_declaration compoundConstructorsData/>
-
-    <@compound_move_constructor_declaration compoundConstructorsData/>
-    <#if withCodeComments>
-
-    </#if>
-    <@compound_move_assignment_operator_declaration compoundConstructorsData/>
-<#else>
 
     <#if withCodeComments>
     /** Default copy constructor. */
@@ -113,7 +99,6 @@ public:
     /** Default move assignment operator. */
     </#if>
     ${name}& operator=(${name}&&) = default;
-</#if>
 
     <@compound_allocator_propagating_copy_constructor_declaration compoundConstructorsData/>
 <#if withTypeInfoCode>
@@ -153,15 +138,6 @@ public:
         </#if>
     </#if>
 </#if>
-<#if needs_compound_initialization(compoundConstructorsData) || needsChildrenInitialization>
-
-    <#if needs_compound_initialization(compoundConstructorsData)>
-    <@compound_initialize_declaration compoundConstructorsData/>
-    </#if>
-    <#if needsChildrenInitialization>
-    <@compound_initialize_children_declaration/>
-    </#if>
-</#if>
 
 <#if withCodeComments>
     /**
@@ -171,7 +147,6 @@ public:
      */
 </#if>
     ChoiceTag choiceTag() const;
-    <@compound_parameter_accessors_declaration compoundParametersData/>
 <#list fieldList as field>
 
     <@compound_field_accessors_declaration field/>
@@ -306,8 +281,6 @@ private:
     ${types.anyHolder.name} copyObject(const allocator_type& allocator) const;
 
 </#if>
-    <@compound_parameter_members compoundParametersData/>
-    <@compound_constructor_members compoundConstructorsData/>
 <#if fieldList?has_content>
     ${types.anyHolder.name} m_objectChoice;
 </#if>

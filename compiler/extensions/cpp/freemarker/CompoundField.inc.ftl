@@ -417,9 +417,7 @@ ${I}}
 </#function>
 
 <#function needs_array_expressions field>
-    <#return needs_field_offset_checker(field) || (field.array?? && field.array.elementCompound?? &&
-                (needs_field_initialization(field.array.elementCompound) ||
-                        field.array.elementCompound.needsChildrenInitialization))>
+    <#return needs_field_offset_checker(field)>
 </#function>
 
 <#macro array_expressions_name fieldName>
@@ -437,12 +435,6 @@ ${I}}
         <#if withWriterCode>
         static void initializeOffset(${compoundName}& owner, size_t index, size_t byteOffset);
         </#if>
-    </#if>
-    <#if field.array.elementCompound?? &&
-            (needs_field_initialization(field.array.elementCompound) ||
-                    field.array.elementCompound.needsChildrenInitialization)>
-        static void initializeElement(<#if !withWriterCode>const </#if>${compoundName}& owner,
-                ${field.array.elementTypeInfo.typeFullName}& element, size_t index);
     </#if>
     };
 
@@ -470,23 +462,6 @@ void ${compoundName}::<@array_expressions_name field.name/>::initializeOffset(${
 
         </#if>
     </#if>
-    <#if field.array.elementCompound?? &&
-            (needs_field_initialization(field.array.elementCompound) ||
-                    field.array.elementCompound.needsChildrenInitialization)>
-void ${compoundName}::<@array_expressions_name field.name/>::initializeElement(<#rt>
-        <#if !withWriterCode>const </#if>${compoundName}&<#t>
-        <#lt><#if needs_field_initialization_owner(field.array.elementCompound)> owner</#if>,
-        ${field.array.elementTypeInfo.typeFullName}& element, size_t<#rt>
-        <#lt><#if needs_field_initialization_index(field.array.elementCompound)> index</#if>)
-{
-        <#if needs_field_initialization(field.array.elementCompound)>
-    element.initialize(<@compound_field_compound_ctor_params field.array.elementCompound, true/>);
-        <#elseif field.array.elementCompound.needsChildrenInitialization>
-    element.initializeChildren();
-        </#if>
-}
-
-    </#if>
 </#macro>
 
 <#function needs_field_element_factory field>
@@ -503,15 +478,13 @@ void ${compoundName}::<@array_expressions_name field.name/>::initializeElement(<
     public:
         using OwnerType = ${compoundName};
 
-        static void create(<#if !withWriterCode>const </#if>${compoundName}& owner,
-                <@vector_type_name field.array.elementTypeInfo.typeFullName/>& array,
-                ::zserio::BitStreamReader& in, size_t index);
+        static void create(<@vector_type_name field.array.elementTypeInfo.typeFullName/>& array,
+                ::zserio::BitStreamReader& in);
     <#if field.isPackable>
 
-        static void create(<#if !withWriterCode>const </#if>${compoundName}& owner,
-                <@vector_type_name field.array.elementTypeInfo.typeFullName/>& array,
+        static void create(<@vector_type_name field.array.elementTypeInfo.typeFullName/>& array,
                 ${field.array.elementTypeInfo.typeFullName}::ZserioPackingContext& context,
-                ::zserio::BitStreamReader& in, size_t index);
+                ::zserio::BitStreamReader& in);
     </#if>
     };
 
@@ -523,12 +496,9 @@ void ${compoundName}::<@array_expressions_name field.name/>::initializeElement(<
             <@compound_field_compound_ctor_params field.array.elementCompound, true/><#t>
         </#if>
     </#local>
-void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
-        <#if !withWriterCode>const </#if>${compoundName}&<#t>
-        <#if needs_field_initialization_owner(field.array.elementCompound)> owner</#if>,
+void ${compoundName}::<@element_factory_name field.name/>::create(
         <@vector_type_name field.array.elementTypeInfo.typeFullName/>& array,
-        ::zserio::BitStreamReader& in, size_t<#rt>
-        <#lt><#if needs_field_initialization_index(field.array.elementCompound)> index</#if>)
+        ::zserio::BitStreamReader& in)
 {
     array.emplace_back(in<#rt>
     <#if extraConstructorArguments?has_content>
@@ -538,12 +508,9 @@ void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
 }
 
     <#if field.isPackable>
-void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
-        <#if !withWriterCode>const </#if>${compoundName}&<#t>
-        <#if needs_field_initialization_owner(field.array.elementCompound)> owner</#if>,
+void ${compoundName}::<@element_factory_name field.name/>::create(
         <@vector_type_name field.array.elementTypeInfo.typeFullName/>& array,
-        ${field.array.elementTypeInfo.typeFullName}::ZserioPackingContext& context, ::zserio::BitStreamReader& in,
-        size_t<#if needs_field_initialization_index(field.array.elementCompound)> index</#if>)
+        ${field.array.elementTypeInfo.typeFullName}::ZserioPackingContext& context, ::zserio::BitStreamReader& in)
 {
     array.emplace_back(context, in<#rt>
         <#if extraConstructorArguments?has_content>
@@ -940,45 +907,6 @@ ${I}<@field_member_name field/>(::zserio::allocatorPropagatingCopy(<#rt>
     </#if>
 </#macro>
 
-<#macro compound_initialize_children_declaration>
-    <#if withCodeComments>
-    /**
-     * Initializes all fields of this Zserio object.
-     *
-     * This method sets all parameters for all fields recursively.
-     */
-    </#if>
-    void initializeChildren();
-</#macro>
-
-<#macro compound_initialize_children_field field indent mayNotBeEmptyCommand=false>
-    <#local I>${""?left_pad(indent * 4)}</#local>
-    <#if field.compound??>
-        <#if needs_field_initialization(field.compound)>
-            <#local initializeCommand><@compound_get_field field/>.initialize(<#rt>
-                    <#lt><@compound_field_compound_ctor_params field.compound, false/>);</#local>
-        <#elseif field.compound.needsChildrenInitialization>
-            <#local initializeCommand><@compound_get_field field/>.initializeChildren();</#local>
-        </#if>
-    <#elseif field.array?? && field.array.elementCompound??>
-        <#if needs_field_initialization(field.array.elementCompound)>
-            <#local initializeCommand><@compound_get_field field/>.initializeElements(*this);</#local>
-        <#elseif field.array.elementCompound.needsChildrenInitialization>
-            <#local initializeCommand><@compound_get_field field/>.initializeElements(*this);</#local>
-        </#if>
-    </#if>
-    <#if initializeCommand??>
-        <#if field.optional??>
-${I}if (<@field_optional_condition field/>)
-${I}    ${initializeCommand}
-        <#else>
-${I}${initializeCommand}
-        </#if>
-    <#elseif mayNotBeEmptyCommand>
-${I};
-    </#if>
-</#macro>
-
 <#macro choice_tag_name field>
     CHOICE_${field.name}<#t>
 </#macro>
@@ -1148,51 +1076,6 @@ ${I}context.${field.getterName}().init<<@array_traits_type_name field/>>(<#rt>
     <#list fieldList as field>
         <#if field.constraint??>
             <#return true>
-        </#if>
-    </#list>
-    <#return false>
-</#function>
-
-<#function needs_field_initialization field>
-    <#if field.instantiatedParameters?has_content>
-        <#return true>
-    </#if>
-    <#return false>
-</#function>
-
-<#function needs_field_initialization_owner field>
-    <#if field.instantiatedParameters?has_content>
-        <#list field.instantiatedParameters as instantiatedParameter>
-            <#if instantiatedParameter.needsOwner>
-                <#return true>
-            </#if>
-        </#list>
-    </#if>
-    <#return false>
-</#function>
-
-<#function needs_field_initialization_index field>
-    <#if field.instantiatedParameters?has_content>
-        <#list field.instantiatedParameters as instantiatedParameter>
-            <#if instantiatedParameter.needsIndex>
-                <#return true>
-            </#if>
-        </#list>
-    </#if>
-    <#return false>
-</#function>
-
-<#function has_field_with_initialization fieldList>
-    <#list fieldList as field>
-        <#if field.compound??>
-            <#if needs_field_initialization(field.compound)>
-                <#return true>
-            </#if>
-        <#elseif field.array??>
-            <#if field.array.elementCompound?? &&
-                    needs_field_initialization(field.array.elementCompound)>
-                <#return true>
-            </#if>
         </#if>
     </#list>
     <#return false>

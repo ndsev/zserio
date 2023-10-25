@@ -49,16 +49,6 @@
 <@compound_read_constructor_definition compoundConstructorsData, readConstructorInitMacroName, true/>
 </#if>
 
-<#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
-<@compound_copy_constructor_definition compoundConstructorsData/>
-
-<@compound_assignment_operator_definition compoundConstructorsData/>
-
-<@compound_move_constructor_definition compoundConstructorsData/>
-
-<@compound_move_assignment_operator_definition compoundConstructorsData/>
-
-</#if>
 <@compound_allocator_propagating_copy_constructor_definition compoundConstructorsData/>
 
 <#macro choice_selector_condition expressionList>
@@ -282,32 +272,6 @@ ${I}return {};
         </#if>
     </#if>
 </#if>
-<#if needs_compound_initialization(compoundConstructorsData)>
-<@compound_initialize_definition compoundConstructorsData, needsChildrenInitialization/>
-
-</#if>
-<#macro choice_initialize_children_member member packed indent>
-    <#local I>${""?left_pad(indent * 4)}</#local>
-    <#if member.compoundField??>
-    <@compound_initialize_children_field member.compoundField, indent/>
-    <#else>
-${I}// empty
-    </#if>
-    <#if canUseNativeSwitch>
-${I}break;
-    </#if>
-</#macro>
-<#if needsChildrenInitialization>
-void ${name}::initializeChildren()
-{
-    <#if fieldList?has_content>
-    <@choice_switch "choice_initialize_children_member", "choice_no_match", selectorExpression, 1/>
-    </#if>
-    <@compound_initialize_children_epilog_definition compoundConstructorsData/>
-}
-
-</#if>
-<@compound_parameter_accessors_definition name, compoundParametersData/>
 <#list fieldList as field>
     <#if needs_field_getter(field)>
 <@field_raw_cpp_type_name field/>& ${name}::${field.getterName}()
@@ -466,7 +430,6 @@ bool ${name}::operator==(const ${name}& other) const
     if (this == &other)
         return true;
 
-    <@compound_parameter_comparison_with_any_holder compoundParametersData/>
     <#if fieldList?has_content>
     <@choice_switch "choice_compare_member", "choice_no_match", selectorExpression, 1/>
     <#else>
@@ -495,7 +458,6 @@ uint32_t ${name}::hashCode() const
 {
     uint32_t result = ::zserio::HASH_SEED;
 
-    <@compound_parameter_hash_code compoundParametersData/>
 <#if fieldList?has_content>
     if (m_objectChoice.hasValue())
     {
