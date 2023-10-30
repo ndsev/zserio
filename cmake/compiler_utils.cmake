@@ -73,6 +73,10 @@ function(compiler_get_warnings_as_errors_setup VARNAME)
             set(WARNINGS_SETUP
                 "${WARNINGS_SETUP} -Wno-array-bounds") # array subscript 6 is outside array bounds
         endif ()
+        if (CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL "13.2.0")
+            set(WARNINGS_SETUP
+                "${WARNINGS_SETUP} -Wno-dangling-reference") # false positive in runtime tests
+        endif ()
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
         if (ZSERIO_ENABLE_WERROR)
             set(WARNINGS_SETUP "-Werror")

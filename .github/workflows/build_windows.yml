@@ -21,7 +21,7 @@ jobs:
       MYPY_ENABLED: 1
       NU_HTML_VALIDATOR: "${{github.workspace}}/vnu-20.6.30/vnu.jar"
       XMLLINT_ENABLED: 1
-      MINGW64_TOOLCHAIN_ROOT: "/c/ProgramData/chocolatey/lib/mingw/tools/install/mingw64"
+      MINGW64_TOOLCHAIN_ROOT: "/c/ProgramData/mingw64/mingw64"
       MSVC_CMAKE_TOOLSET: "v141"
     steps:
     - name: Checkout
@@ -58,18 +58,13 @@ jobs:
         python -m pip install virtualenv
         python -m pip install gcovr
 
-    - name: Set up MinGW
-      uses: egor-tensin/setup-mingw@v2
-      with:
-        platform: x64
-        version: 11.3.0
-
     - name: Install dependecies
       run: |
         choco install wget
         choco install doxygen.portable
         choco install graphviz
         choco install zip
+        choco install mingw --version 13.2.0
       shell: bash
 
     - name: Install specific version of C++ static code analysis tool (cppcheck)
