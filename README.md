@@ -4,7 +4,6 @@
 
 [![](https://github.com/ndsev/zserio/actions/workflows/build_linux.yml/badge.svg)](https://github.com/ndsev/zserio/actions/workflows/build_linux.yml)
 [![](https://github.com/ndsev/zserio/actions/workflows/build_windows.yml/badge.svg)](https://github.com/ndsev/zserio/actions/workflows/build_windows.yml)
-[![](https://github.com/ndsev/zserio/actions/workflows/codeql_default.yml/badge.svg)](https://github.com/ndsev/zserio/actions/workflows/codeql_default.yml)
 [![](https://github.com/ndsev/zserio/actions/workflows/codeql_autosar.yml/badge.svg)](https://github.com/ndsev/zserio/actions/workflows/codeql_autosar.yml)
 [![](https://img.shields.io/endpoint?url=https://zserio.org/doc/runtime/latest/cpp/coverage/clang/coverage_github_badge.json)](https://zserio.org/doc/runtime/latest/cpp/coverage/clang)
 [![](https://img.shields.io/endpoint?url=https://zserio.org/doc/runtime/latest/java/coverage/coverage_github_badge.json)](https://zserio.org/doc/runtime/latest/java/coverage)
