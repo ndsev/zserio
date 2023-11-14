@@ -6,8 +6,10 @@
 
 #include "zserio/AllocatorHolder.h"
 #include "zserio/CppRuntimeException.h"
+#include "zserio/NoInit.h"
 #include "zserio/OptionalHolder.h"
 #include "zserio/Types.h"
+#include "zserio/Traits.h"
 #include "zserio/RebindAlloc.h"
 
 namespace zserio
@@ -36,22 +38,79 @@ namespace detail
     public:
         virtual ~IHolder() = default;
         virtual IHolder* clone(const ALLOC& allocator) const = 0;
+        virtual IHolder* clone(NoInitT, const ALLOC& allocator) const = 0;
         virtual IHolder* clone(void* storage) const = 0;
+        virtual IHolder* clone(NoInitT, void* storage) const = 0;
         virtual IHolder* move(const ALLOC& allocator) = 0;
+        virtual IHolder* move(NoInitT, const ALLOC& allocator) = 0;
         virtual IHolder* move(void* storage) = 0;
+        virtual IHolder* move(NoInitT, void* storage) = 0;
         virtual void destroy(const ALLOC& allocator) = 0;
         virtual bool isType(detail::TypeIdHolder::type_id typeId) const = 0;
     };
 
-    // Base of object holders, holds a value in the InplaceOptionalHolder
+    // Base of object holders, holds a value in the inplace_optional_holder
     template <typename T, typename ALLOC>
     class HolderBase : public IHolder<ALLOC>
     {
     public:
-        template <typename U = T>
+        template <typename U>
         void set(U&& value)
         {
             m_typedHolder = std::forward<U>(value);
+        }
+
+        template <typename U,
+                typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
+        void set(NoInitT, U&& value)
+        {
+            // inplace_optional_holder constructor to prevent it's implicit constructor
+            m_typedHolder.assign(NoInit, inplace_optional_holder<T>(NoInit, std::forward<U>(value)));
+        }
+
+        template <typename U,
+                typename std::enable_if<!std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
+        void set(NoInitT, U&& value)
+        {
+            m_typedHolder = std::forward<U>(value);
+        }
+
+        void setHolder(const inplace_optional_holder<T>& value)
+        {
+            m_typedHolder = value;
+        }
+
+        void setHolder(inplace_optional_holder<T>&& value)
+        {
+            m_typedHolder = std::move(value);
+        }
+
+        template <typename U,
+                typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
+        void setHolder(NoInitT, const inplace_optional_holder<U>& value)
+        {
+            m_typedHolder.assign(NoInit, value);
+        }
+
+        template <typename U,
+                typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
+        void setHolder(NoInitT, inplace_optional_holder<U>&& value)
+        {
+            m_typedHolder.assign(NoInit, std::move(value));
+        }
+
+        template <typename U,
+                typename std::enable_if<!std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
+        void setHolder(NoInitT, const inplace_optional_holder<U>& value)
+        {
+            m_typedHolder = value;
+        }
+
+        template <typename U,
+                typename std::enable_if<!std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
+        void setHolder(NoInitT, inplace_optional_holder<U>&& value)
+        {
+            m_typedHolder = std::move(value);
         }
 
         T& get()
@@ -70,18 +129,18 @@ namespace detail
         }
 
     protected:
-        InplaceOptionalHolder<T>& getHolder()
+        inplace_optional_holder<T>& getHolder()
         {
             return m_typedHolder;
         }
 
-        const InplaceOptionalHolder<T>& getHolder() const
+        const inplace_optional_holder<T>& getHolder() const
         {
             return m_typedHolder;
         }
 
     private:
-        InplaceOptionalHolder<T> m_typedHolder;
+        inplace_optional_holder<T> m_typedHolder;
     };
 
     // Holder allocated on heap
@@ -111,7 +170,14 @@ namespace detail
         IHolder<ALLOC>* clone(const ALLOC& allocator) const override
         {
             this_type* holder = create(allocator);
-            holder->set(this->getHolder());
+            holder->setHolder(this->getHolder());
+            return holder;
+        }
+
+        IHolder<ALLOC>* clone(NoInitT, const ALLOC& allocator) const override
+        {
+            this_type* holder = create(allocator);
+            holder->setHolder(NoInit, this->getHolder());
             return holder;
         }
 
@@ -120,16 +186,33 @@ namespace detail
             throw CppRuntimeException("AnyHolder: Unexpected clone call.");
         }
 
+        IHolder<ALLOC>* clone(NoInitT, void*) const override
+        {
+            throw CppRuntimeException("AnyHolder: Unexpected clone call.");
+        }
+
         IHolder<ALLOC>* move(const ALLOC& allocator) override
         {
             this_type* holder = create(allocator);
-            holder->set(std::move(this->getHolder()));
+            holder->setHolder(std::move(this->getHolder()));
+            return holder;
+        }
+
+        IHolder<ALLOC>* move(NoInitT, const ALLOC& allocator) override
+        {
+            this_type* holder = create(allocator);
+            holder->setHolder(NoInit, std::move(this->getHolder()));
             return holder;
         }
 
         IHolder<ALLOC>* move(void*) override
         {
-            throw CppRuntimeException("AnyHolder: Unexpected clone call.");
+            throw CppRuntimeException("AnyHolder: Unexpected move call.");
+        }
+
+        IHolder<ALLOC>* move(NoInitT, void*) override
+        {
+            throw CppRuntimeException("AnyHolder: Unexpected move call.");
         }
 
         void destroy(const ALLOC& allocator) override
@@ -160,22 +243,46 @@ namespace detail
             throw CppRuntimeException("AnyHolder: Unexpected clone call.");
         }
 
+        IHolder<ALLOC>* clone(NoInitT, const ALLOC&) const override
+        {
+            throw CppRuntimeException("AnyHolder: Unexpected clone call.");
+        }
+
         IHolder<ALLOC>* clone(void* storage) const override
         {
             NonHeapHolder* holder = new (storage) NonHeapHolder();
-            holder->set(this->getHolder());
+            holder->setHolder(this->getHolder());
+            return holder;
+        }
+
+        IHolder<ALLOC>* clone(NoInitT, void* storage) const override
+        {
+            NonHeapHolder* holder = new (storage) NonHeapHolder();
+            holder->setHolder(NoInit, this->getHolder());
             return holder;
         }
 
         IHolder<ALLOC>* move(const ALLOC&) override
         {
-            throw CppRuntimeException("AnyHolder: Unexpected clone call.");
+            throw CppRuntimeException("AnyHolder: Unexpected move call.");
+        }
+
+        IHolder<ALLOC>* move(NoInitT, const ALLOC&) override
+        {
+            throw CppRuntimeException("AnyHolder: Unexpected move call.");
         }
 
         IHolder<ALLOC>* move(void* storage) override
         {
             NonHeapHolder* holder = new (storage) NonHeapHolder();
-            holder->set(std::move(this->getHolder()));
+            holder->setHolder(std::move(this->getHolder()));
+            return holder;
+        }
+
+        IHolder<ALLOC>* move(NoInitT, void* storage) override
+        {
+            NonHeapHolder* holder = new (storage) NonHeapHolder();
+            holder->setHolder(NoInit, std::move(this->getHolder()));
             return holder;
         }
 
@@ -229,7 +336,8 @@ public:
     /**
      * Constructor from given allocator
      */
-    explicit AnyHolder(const ALLOC& allocator) : AllocatorHolder<ALLOC>(allocator)
+    explicit AnyHolder(const ALLOC& allocator) :
+            AllocatorHolder<ALLOC>(allocator)
     {
         m_untypedHolder.heap = nullptr;
     }
@@ -242,10 +350,25 @@ public:
     template <typename T,
             typename std::enable_if<!std::is_same<typename std::decay<T>::type, AnyHolder>::value &&
                                     !std::is_same<typename std::decay<T>::type, ALLOC>::value, int>::type = 0>
-    explicit AnyHolder(T&& value, const ALLOC& allocator = ALLOC()) : AllocatorHolder<ALLOC>(allocator)
+    explicit AnyHolder(T&& value, const ALLOC& allocator = ALLOC()) :
+            AllocatorHolder<ALLOC>(allocator)
     {
         m_untypedHolder.heap = nullptr;
         set(std::forward<T>(value));
+    }
+
+    /**
+     * Constructor from any value which prevents initialization.
+     *
+     * \param value Value of any type to hold. Supports move semantic.
+     */
+    template <typename T, typename std::enable_if<
+            !std::is_same<typename std::decay<T>::type, AnyHolder>::value, int>::type = 0>
+    explicit AnyHolder(NoInitT, T&& value, const ALLOC& allocator = ALLOC()) :
+            AllocatorHolder<ALLOC>(allocator)
+    {
+        m_untypedHolder.heap = nullptr;
+        set(NoInit, std::forward<T>(value));
     }
 
     /**
@@ -262,9 +385,22 @@ public:
      * \param other Any holder to copy.
      */
     AnyHolder(const AnyHolder& other) :
-        AllocatorHolder<ALLOC>(AllocTraits::select_on_container_copy_construction(other.get_allocator_ref()))
+            AllocatorHolder<ALLOC>(
+                    AllocTraits::select_on_container_copy_construction(other.get_allocator_ref()))
     {
         copy(other);
+    }
+
+    /**
+     * Copy constructor which prevents initialization.
+     *
+     * \param other Any holder to copy.
+     */
+    AnyHolder(NoInitT, const AnyHolder& other) :
+            AllocatorHolder<ALLOC>(
+                    AllocTraits::select_on_container_copy_construction(other.get_allocator_ref()))
+    {
+        copy(NoInit, other);
     }
 
     /**
@@ -276,6 +412,18 @@ public:
     AnyHolder(const AnyHolder& other, const ALLOC& allocator) : AllocatorHolder<ALLOC>(allocator)
     {
         copy(other);
+    }
+
+    /**
+     * Allocator-extended copy constructor which prevents initialization.
+     *
+     * \param other Any holder to copy.
+     * \param allocator Allocator to be used for dynamic memory allocations.
+     */
+    AnyHolder(NoInitT, const AnyHolder& other, const ALLOC& allocator) :
+            AllocatorHolder<ALLOC>(allocator)
+    {
+        copy(NoInit, other);
     }
 
     /**
@@ -300,13 +448,46 @@ public:
     }
 
     /**
+     * Copy assignment operator which prevents initialization.
+     *
+     * \param other Any holder to copy.
+     *
+     * \return Reference to this.
+     */
+    AnyHolder& assign(NoInitT, const AnyHolder& other)
+    {
+        if (this != &other)
+        {
+            // TODO: do not dealloc unless necessary
+            clearHolder();
+            if (AllocTraits::propagate_on_container_copy_assignment::value)
+                set_allocator(other.get_allocator_ref());
+            copy(NoInit, other);
+        }
+
+        return *this;
+    }
+
+    /**
      * Move constructor.
      *
      * \param other Any holder to move from.
      */
-    AnyHolder(AnyHolder&& other) noexcept : AllocatorHolder<ALLOC>(std::move(other.get_allocator_ref()))
+    AnyHolder(AnyHolder&& other) noexcept :
+            AllocatorHolder<ALLOC>(std::move(other.get_allocator_ref()))
     {
         move(std::move(other));
+    }
+
+    /**
+     * Move constructor which prevents initialization.
+     *
+     * \param other Any holder to move from.
+     */
+    AnyHolder(NoInitT, AnyHolder&& other) noexcept :
+            AllocatorHolder<ALLOC>(std::move(other.get_allocator_ref()))
+    {
+        move(NoInit, std::move(other));
     }
 
     /**
@@ -315,9 +496,22 @@ public:
      * \param other Any holder to move from.
      * \param allocator Allocator to be used for dynamic memory allocations.
      */
-    AnyHolder(AnyHolder&& other, const ALLOC& allocator) : AllocatorHolder<ALLOC>(allocator)
+    AnyHolder(AnyHolder&& other, const ALLOC& allocator) :
+            AllocatorHolder<ALLOC>(allocator)
     {
         move(std::move(other));
+    }
+
+    /**
+     * Allocator-extended move constructor which prevents initialization.
+     *
+     * \param other Any holder to move from.
+     * \param allocator Allocator to be used for dynamic memory allocations.
+     */
+    AnyHolder(NoInitT, AnyHolder&& other, const ALLOC& allocator) :
+            AllocatorHolder<ALLOC>(allocator)
+    {
+        move(NoInit, std::move(other));
     }
 
     /**
@@ -335,6 +529,26 @@ public:
             if (AllocTraits::propagate_on_container_move_assignment::value)
                 set_allocator(std::move(other.get_allocator_ref()));
             move(std::move(other));
+        }
+
+        return *this;
+    }
+
+    /**
+     * Move assignment operator which prevents initialization.
+     *
+     * \param other Any holder to move from.
+     *
+     * \return Reference to this.
+     */
+    AnyHolder& assign(NoInitT, AnyHolder&& other)
+    {
+        if (this != &other)
+        {
+            clearHolder();
+            if (AllocTraits::propagate_on_container_move_assignment::value)
+                set_allocator(std::move(other.get_allocator_ref()));
+            move(NoInit, std::move(other));
         }
 
         return *this;
@@ -373,6 +587,17 @@ public:
     void set(T&& value)
     {
         createHolder<typename std::decay<T>::type>()->set(std::forward<T>(value));
+    }
+
+    /**
+     * Sets any value to the holder and prevent initialization.
+     *
+     * \param value Any value to set. Supports move semantic.
+     */
+    template <typename T>
+    void set(NoInitT, T&& value)
+    {
+        createHolder<typename std::decay<T>::type>()->set(NoInit, std::forward<T>(value));
     }
 
     /**
@@ -442,6 +667,24 @@ private:
         }
     }
 
+    void copy(NoInitT, const AnyHolder& other)
+    {
+        if (other.m_isInPlace)
+        {
+            other.getUntypedHolder()->clone(NoInit, &m_untypedHolder.inPlace);
+            m_isInPlace = true;
+        }
+        else if (other.m_untypedHolder.heap != nullptr)
+        {
+            m_untypedHolder.heap = other.getUntypedHolder()->clone(NoInit,
+                    get_allocator_ref());
+        }
+        else
+        {
+            m_untypedHolder.heap = nullptr;
+        }
+    }
+
     void move(AnyHolder&& other)
     {
         if (other.m_isInPlace)
@@ -462,6 +705,36 @@ private:
             {
                 // cannot steal the storage, allocate our own and move the holder
                 m_untypedHolder.heap = other.getUntypedHolder()->move(get_allocator_ref());
+                other.clearHolder();
+            }
+        }
+        else
+        {
+            m_untypedHolder.heap = nullptr;
+        }
+    }
+
+    void move(NoInitT, AnyHolder&& other)
+    {
+        if (other.m_isInPlace)
+        {
+            other.getUntypedHolder()->move(NoInit, &m_untypedHolder.inPlace);
+            m_isInPlace = true;
+            other.clearHolder();
+        }
+        else if (other.m_untypedHolder.heap != nullptr)
+        {
+            if (get_allocator_ref() == other.get_allocator_ref())
+            {
+                // take over the other's storage
+                m_untypedHolder.heap = other.m_untypedHolder.heap;
+                other.m_untypedHolder.heap = nullptr;
+            }
+            else
+            {
+                // cannot steal the storage, allocate our own and move the holder
+                m_untypedHolder.heap = other.getUntypedHolder()->move(NoInit,
+                        get_allocator_ref());
                 other.clearHolder();
             }
         }

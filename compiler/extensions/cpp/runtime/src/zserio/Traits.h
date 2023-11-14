@@ -2,6 +2,7 @@
 #define ZSERIO_TRAITS_H_INC
 
 #include <type_traits>
+#include "zserio/NoInit.h"
 #include "zserio/RebindAlloc.h"
 
 namespace zserio
@@ -17,6 +18,12 @@ class Span;
 
 namespace detail
 {
+
+template <typename>
+class inplace_optional_holder;
+
+template <typename, typename>
+class heap_optional_holder;
 
 // These decltype's wrappers are needed because of old MSVC compiler 2015.
 template <typename T, typename U = decltype(&T::initialize)>
@@ -75,7 +82,10 @@ struct decltype_initialize_element
 };
 
 template <typename ...T>
-using void_t = void;
+struct make_void { using type = void; };
+
+template <typename ...T>
+using void_t = typename make_void<T...>::type;
 
 } // namespace detail
 
@@ -273,7 +283,8 @@ struct is_field_constructor_enabled : std::enable_if<
         !std::is_same<typename std::decay<FIELD_TYPE>::type, ALLOCATOR_TYPE>::value &&
         !std::is_same<typename std::decay<FIELD_TYPE>::type, BitStreamReader>::value &&
         !std::is_same<typename std::decay<FIELD_TYPE>::type, COMPOUND_TYPE>::value &&
-        !std::is_same<typename std::decay<FIELD_TYPE>::type, PropagateAllocatorT>::value,
+        !std::is_same<typename std::decay<FIELD_TYPE>::type, PropagateAllocatorT>::value &&
+        !std::is_same<typename std::decay<FIELD_TYPE>::type, NoInitT>::value,
         int>
 {};
 
@@ -284,6 +295,7 @@ struct is_field_constructor_enabled<FIELD_TYPE, COMPOUND_TYPE, ALLOCATOR_TYPE,
         !std::is_same<typename std::decay<FIELD_TYPE>::type, BitStreamReader>::value &&
         !std::is_same<typename std::decay<FIELD_TYPE>::type, COMPOUND_TYPE>::value &&
         !std::is_same<typename std::decay<FIELD_TYPE>::type, PropagateAllocatorT>::value &&
+        !std::is_same<typename std::decay<FIELD_TYPE>::type, NoInitT>::value &&
         !std::is_same<typename std::decay<FIELD_TYPE>::type,
                 typename COMPOUND_TYPE::ZserioPackingContext>::value,
         int>

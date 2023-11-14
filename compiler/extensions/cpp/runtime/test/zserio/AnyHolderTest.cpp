@@ -29,6 +29,10 @@ private:
 
 struct BigObject
 {
+    BigObject() = default;
+
+    BigObject(NoInitT, const BigObject&) {}
+
     bool operator==(const BigObject& other) const
     {
         return std::tie(value1, value2, value3, value4) ==
@@ -52,13 +56,21 @@ protected:
         testEmptyConstructor<ALLOC>();
         testAllocatorConstructor(allocator);
         testLvalueConstructor(value, allocator);
+        testLvalueConstructorNoInit(value, allocator);
         testRvalueConstructor(value, allocator);
+        testRvalueConstructorNoInit(value, allocator);
         testCopyConstructor(value, allocator);
+        testCopyConstructorNoInit(value, allocator);
         testCopyConstructorWithAllocator(value, allocator);
+        testCopyConstructorWithAllocatorNoInit(value, allocator);
         testCopyAssignmentOperator(value, allocator);
+        testCopyAssignmentOperatorNoInit(value, allocator);
         testMoveConstructor(value, allocator);
+        testMoveConstructorNoInit(value, allocator);
         testMoveConstructorWithAllocator(value, allocator);
+        testMoveConstructorWithAllocatorNoInit(value, allocator);
         testMoveAssignmentOperator(value, allocator);
+        testMoveAssignmentOperatorNoInit(value, allocator);
         testMoveAssignmentValueOperator(value, allocator);
         testReset(value, allocator);
         testSetGet(value, allocator);
@@ -93,6 +105,17 @@ private:
         ASSERT_EQ(value, anyValue);
     }
 
+    template <typename T, typename ALLOC>
+    void testLvalueConstructorNoInit(const T& value, const ALLOC& allocator)
+    {
+        const void* origAddress = &value;
+        AnyHolder<ALLOC> any(NoInit, value, allocator);
+
+        const T& anyValue = any.template get<T>();
+        ASSERT_NE(origAddress, &anyValue);
+        ASSERT_EQ(value, anyValue);
+    }
+
     template <typename ALLOC>
     void testRvalueConstructor(const std::vector<int>& value, const ALLOC& allocator)
     {
@@ -115,6 +138,28 @@ private:
         ASSERT_EQ(value, anyValue);
     }
 
+    template <typename ALLOC>
+    void testRvalueConstructorNoInit(const std::vector<int>& value, const ALLOC& allocator)
+    {
+        std::vector<int> origValue(value);
+        const void* origAddress = origValue.data();
+        AnyHolder<ALLOC> any(NoInit, std::move(origValue), allocator);
+
+        const std::vector<int>& anyValue = any.template get<std::vector<int>>();
+        ASSERT_EQ(origAddress, anyValue.data());
+        ASSERT_EQ(value, anyValue);
+    }
+
+    template <typename T, typename ALLOC>
+    void testRvalueConstructorNoInit(const T& value, const ALLOC& allocator)
+    {
+        T origValue(value);
+        AnyHolder<ALLOC> any(NoInit, std::move(origValue), allocator);
+
+        const T& anyValue = any.template get<T>();
+        ASSERT_EQ(value, anyValue);
+    }
+
     template <typename T, typename ALLOC>
     void testCopyConstructor(const T& value, const ALLOC& allocator)
     {
@@ -127,6 +172,21 @@ private:
         // copy filled holder
         any.set(value);
         AnyHolder<ALLOC> anyCopy(any);
+        ASSERT_EQ(value, anyCopy.template get<T>());
+    }
+
+    template <typename T, typename ALLOC>
+    void testCopyConstructorNoInit(const T& value, const ALLOC& allocator)
+    {
+        AnyHolder<ALLOC> any(allocator);
+
+        // copy empty holder
+        AnyHolder<ALLOC> anyEmptyCopy(NoInit, any);
+        ASSERT_FALSE(anyEmptyCopy.hasValue());
+
+        // copy filled holder
+        any.set(value);
+        AnyHolder<ALLOC> anyCopy(NoInit, any);
         ASSERT_EQ(value, anyCopy.template get<T>());
     }
 
@@ -144,6 +204,24 @@ private:
         const size_t numAllocations = allocator.numAllocs();
         const ALLOC newAllocator;
         AnyHolder<ALLOC> anyCopy(any, newAllocator);
+        ASSERT_EQ(value, anyCopy.template get<T>());
+        ASSERT_EQ(numAllocations, allocator.numAllocs()); // no allocation and deallocations in old allocator
+    }
+
+    template <typename T, typename ALLOC>
+    void testCopyConstructorWithAllocatorNoInit(const T& value, const ALLOC& allocator)
+    {
+        AnyHolder<ALLOC> any(allocator);
+
+        // copy empty holder
+        AnyHolder<ALLOC> anyEmptyCopy(NoInit, any);
+        ASSERT_FALSE(anyEmptyCopy.hasValue());
+
+        // copy filled holder
+        any.set(value);
+        const size_t numAllocations = allocator.numAllocs();
+        const ALLOC newAllocator;
+        AnyHolder<ALLOC> anyCopy(NoInit, any, newAllocator);
         ASSERT_EQ(value, anyCopy.template get<T>());
         ASSERT_EQ(numAllocations, allocator.numAllocs()); // no allocation and deallocations in old allocator
     }
@@ -171,6 +249,28 @@ private:
     }
 
     template <typename T, typename ALLOC>
+    void testCopyAssignmentOperatorNoInit(const T& value, const ALLOC& allocator)
+    {
+        AnyHolder<ALLOC> any(allocator);
+
+        // assignment empty holder
+        AnyHolder<ALLOC> anyEmpty;
+        anyEmpty.assign(NoInit, any);
+        ASSERT_FALSE(anyEmpty.hasValue());
+
+        // assignment filled holder to itself
+        any.set(value);
+        AnyHolder<ALLOC>& anyRef(any);
+        anyRef.assign(NoInit, any);
+        ASSERT_EQ(value, anyRef.template get<T>());
+
+        // assignment filled holder
+        AnyHolder<ALLOC> anyCopy;
+        anyCopy.assign(NoInit, any);
+        ASSERT_EQ(value, anyCopy.template get<T>());
+    }
+
+    template <typename T, typename ALLOC>
     void testMoveConstructor(const T& value, const ALLOC& allocator)
     {
         {
@@ -186,6 +286,27 @@ private:
             any.set(value);
             const size_t numAllocations = allocator.numAllocs();
             AnyHolder<ALLOC> anyMove(std::move(any));
+            ASSERT_EQ(value, anyMove.template get<T>());
+            ASSERT_EQ(numAllocations, allocator.numAllocs()); // no allocations and deallocations
+        }
+    }
+
+    template <typename T, typename ALLOC>
+    void testMoveConstructorNoInit(const T& value, const ALLOC& allocator)
+    {
+        {
+            // move empty holder
+            AnyHolder<ALLOC> any(allocator);
+            AnyHolder<ALLOC> anyMove(NoInit, std::move(any));
+            ASSERT_FALSE(anyMove.hasValue());
+        }
+
+        {
+            // move filled holder
+            AnyHolder<ALLOC> any(allocator);
+            any.set(value);
+            const size_t numAllocations = allocator.numAllocs();
+            AnyHolder<ALLOC> anyMove(NoInit, std::move(any));
             ASSERT_EQ(value, anyMove.template get<T>());
             ASSERT_EQ(numAllocations, allocator.numAllocs()); // no allocations and deallocations
         }
@@ -232,6 +353,46 @@ private:
     }
 
     template <typename T, typename ALLOC>
+    void testMoveConstructorWithAllocatorNoInit(const T& value, const ALLOC& allocator)
+    {
+        {
+            // empty holder with the same allocator
+            AnyHolder<ALLOC> any(allocator);
+            AnyHolder<ALLOC> anyMove(NoInit, std::move(any));
+            ASSERT_FALSE(anyMove.hasValue());
+        }
+
+        {
+            // empty holder with the different allocator
+            AnyHolder<ALLOC> any(allocator);
+            const ALLOC newAllocator;
+            AnyHolder<ALLOC> anyMove(NoInit, std::move(any), newAllocator);
+            ASSERT_FALSE(anyMove.hasValue());
+        }
+
+        {
+            // filled holder with the same allocator
+            AnyHolder<ALLOC> any(allocator);
+            any.set(value);
+            const size_t numAllocations = allocator.numAllocs();
+            AnyHolder<ALLOC> anyMove(NoInit, std::move(any), allocator);
+            ASSERT_EQ(value, anyMove.template get<T>());
+            ASSERT_EQ(numAllocations, allocator.numAllocs()); // no allocations and deallocations
+        }
+
+        {
+            // filled holder with the different allocator
+            AnyHolder<ALLOC> any(allocator);
+            any.set(value);
+            const size_t numAllocations = allocator.numAllocs();
+            const ALLOC newAllocator;
+            AnyHolder<ALLOC> anyMove(NoInit, std::move(any), newAllocator);
+            ASSERT_EQ(value, anyMove.template get<T>());
+            ASSERT_TRUE(numAllocations >= allocator.numAllocs()); // no furher allocations
+        }
+    }
+
+    template <typename T, typename ALLOC>
     void testMoveAssignmentOperator(const T& value, const ALLOC& allocator)
     {
         {
@@ -260,6 +421,40 @@ private:
             const size_t numAllocations = allocator.numAllocs();
             AnyHolder<ALLOC> anyMove;
             anyMove = std::move(any);
+            ASSERT_EQ(value, anyMove.template get<T>());
+            ASSERT_TRUE(numAllocations >= allocator.numAllocs()); // no furher allocations
+        }
+    }
+
+    template <typename T, typename ALLOC>
+    void testMoveAssignmentOperatorNoInit(const T& value, const ALLOC& allocator)
+    {
+        {
+            // assignment empty holder
+            AnyHolder<ALLOC> any(allocator);
+            AnyHolder<ALLOC> anyMove;
+            anyMove.assign(NoInit, std::move(any));
+            ASSERT_FALSE(anyMove.hasValue());
+        }
+
+        {
+            // assignment filled holder to itself
+            AnyHolder<ALLOC> any(allocator);
+            any.set(value);
+            const size_t numAllocations = allocator.numAllocs();
+            AnyHolder<ALLOC>& anyRef = any;
+            anyRef.assign(NoInit, std::move(any));
+            ASSERT_EQ(value, anyRef.template get<T>());
+            ASSERT_EQ(numAllocations, allocator.numAllocs()); // no allocations and deallocations
+        }
+
+        {
+            // assignment filled holder
+            AnyHolder<ALLOC> any(allocator);
+            any.set(value);
+            const size_t numAllocations = allocator.numAllocs();
+            AnyHolder<ALLOC> anyMove;
+            anyMove.assign(NoInit, std::move(any));
             ASSERT_EQ(value, anyMove.template get<T>());
             ASSERT_TRUE(numAllocations >= allocator.numAllocs()); // no furher allocations
         }
@@ -430,7 +625,9 @@ TEST_F(AnyHolderTest, unexceptedCallsHeapHolder)
     detail::HeapHolder<BigObject, TrackingAllocator<uint8_t>>* holder =
             detail::HeapHolder<BigObject, TrackingAllocator<uint8_t>>::create(allocator);
     ASSERT_THROW(holder->clone(nullptr), CppRuntimeException);
+    ASSERT_THROW(holder->clone(NoInit, nullptr), CppRuntimeException);
     ASSERT_THROW(holder->move(nullptr), CppRuntimeException);
+    ASSERT_THROW(holder->move(NoInit, nullptr), CppRuntimeException);
     holder->destroy(allocator);
 }
 
@@ -442,7 +639,9 @@ TEST_F(AnyHolderTest, unexceptedCallsNonHeapHolder)
     detail::NonHeapHolder<uint8_t, TrackingAllocator<uint8_t>>* holder =
             detail::NonHeapHolder<uint8_t, TrackingAllocator<uint8_t>>::create(&inPlace);
     ASSERT_THROW(holder->clone(allocator), CppRuntimeException);
+    ASSERT_THROW(holder->clone(NoInit, allocator), CppRuntimeException);
     ASSERT_THROW(holder->move(allocator), CppRuntimeException);
+    ASSERT_THROW(holder->move(NoInit, allocator), CppRuntimeException);
     holder->destroy(allocator);
 }
 

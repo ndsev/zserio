@@ -81,6 +81,7 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/JsonTokenizer.cpp
     zserio/JsonTokenizer.h
     zserio/JsonWriter.h
+    zserio/NoInit.h
     zserio/OptionalHolder.h
     zserio/DeltaContext.h
     zserio/PubsubException.h

@@ -63,7 +63,7 @@ public:
      * \param in Input stream to tokenize.
      * \param allocator Allocator to use.
      */
-    BasicJsonTokenizer(std::istream& in, const ALLOC& allocator):
+    BasicJsonTokenizer(std::istream& in, const ALLOC& allocator) :
             m_buffer(), m_in(in), m_decoder(allocator), m_decoderResult(0, allocator),
             m_content(readContent(allocator)), m_value(allocator)
     {

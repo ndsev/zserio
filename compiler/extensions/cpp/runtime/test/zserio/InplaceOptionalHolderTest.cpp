@@ -13,15 +13,19 @@ namespace
 class DummyObject
 {
 public:
-    DummyObject() : m_value(0) {}
-    explicit DummyObject(int value) : m_value(value) {}
+    DummyObject() : m_value(0), m_isNoInit(false) {}
+    explicit DummyObject(int value) : m_value(value), m_isNoInit(false) {}
+    explicit DummyObject(NoInitT, const DummyObject& other) : m_value(other.m_value), m_isNoInit(true) {}
     int getValue() const { return m_value; }
     void setValue(int value) { m_value = value; }
+
+    bool isNoInit() const { return m_isNoInit; }
 
     bool operator==(const DummyObject& other) const { return m_value == other.m_value; }
 
 private:
     int m_value;
+    bool m_isNoInit;
 };
 
 } // namespace
@@ -96,6 +100,19 @@ TEST_F(InplaceOptionalHolderTest, copyConstructor)
     ASSERT_EQ(optionalObject, optionalObjectCopy);
 }
 
+TEST_F(InplaceOptionalHolderTest, copyConstructorNoInit)
+{
+    InplaceOptionalHolder<DummyObject> optionalEmptyObject;
+    InplaceOptionalHolder<DummyObject> optionalEmptyObjectCopy{NoInit, optionalEmptyObject};
+    ASSERT_EQ(optionalEmptyObject, optionalEmptyObjectCopy);
+
+    InplaceOptionalHolder<DummyObject> optionalObject(DummyObject{10});
+    InplaceOptionalHolder<DummyObject> optionalObjectCopy{NoInit, optionalObject};
+    ASSERT_EQ(optionalObject, optionalObjectCopy);
+    ASSERT_FALSE(optionalObject->isNoInit());
+    ASSERT_TRUE(optionalObjectCopy->isNoInit());
+}
+
 TEST_F(InplaceOptionalHolderTest, copyAssignmentOperator)
 {
     InplaceOptionalHolder<int> optional;
@@ -124,6 +141,23 @@ TEST_F(InplaceOptionalHolderTest, copyAssignmentOperator)
     ASSERT_EQ(false, emptyOptionalVectorCopy.hasValue());
 }
 
+TEST_F(InplaceOptionalHolderTest, copyAssignmentOperatorNoInit)
+{
+    InplaceOptionalHolder<DummyObject> optionalEmptyObject;
+    InplaceOptionalHolder<DummyObject> optionalEmptyObjectCopy;
+    optionalEmptyObjectCopy.assign(NoInit, optionalEmptyObject);
+    ASSERT_EQ(optionalEmptyObject, optionalEmptyObjectCopy);
+
+    InplaceOptionalHolder<DummyObject> optionalObject(DummyObject{10});
+    optionalObject.assign(NoInit, optionalObject);
+
+    InplaceOptionalHolder<DummyObject> optionalObjectCopy;
+    optionalObjectCopy.assign(NoInit, optionalObject);
+    ASSERT_EQ(optionalObject, optionalObjectCopy);
+    ASSERT_FALSE(optionalObject->isNoInit());
+    ASSERT_TRUE(optionalObjectCopy->isNoInit());
+}
+
 TEST_F(InplaceOptionalHolderTest, moveConstructor)
 {
     InplaceOptionalHolder<std::vector<int>> optionalVector{std::vector<int>{1, 2, 3}};
@@ -144,6 +178,28 @@ TEST_F(InplaceOptionalHolderTest, moveConstructor)
     InplaceOptionalHolder<int> emptyOptionalInt;
     InplaceOptionalHolder<int> emptyOptionalIntMoved{std::move(emptyOptionalInt)};
     ASSERT_EQ(false, emptyOptionalIntMoved.hasValue());
+}
+
+TEST_F(InplaceOptionalHolderTest, moveConstructorNoInit)
+{
+    InplaceOptionalHolder<DummyObject> optionalEmptyObject;
+    InplaceOptionalHolder<DummyObject> optionalEmptyObjectMoved{NoInit, std::move(optionalEmptyObject)};
+    ASSERT_FALSE(optionalEmptyObjectMoved.hasValue());
+
+    InplaceOptionalHolder<DummyObject> optionalObject(DummyObject{10});
+    ASSERT_EQ(10, optionalObject->getValue());
+    ASSERT_FALSE(optionalObject->isNoInit());
+
+    InplaceOptionalHolder<DummyObject> optionalObjectMoved{NoInit, std::move(optionalObject)};
+    ASSERT_EQ(10, optionalObjectMoved->getValue());
+    ASSERT_TRUE(optionalObjectMoved->isNoInit());
+}
+
+TEST_F(InplaceOptionalHolderTest, moveValueConstructorNoInit)
+{
+    InplaceOptionalHolder<DummyObject> optionalObjectMoved{NoInit, DummyObject{10}};
+    ASSERT_EQ(10, optionalObjectMoved->getValue());
+    ASSERT_TRUE(optionalObjectMoved->isNoInit());
 }
 
 TEST_F(InplaceOptionalHolderTest, forwardingConstructor)
@@ -183,6 +239,26 @@ TEST_F(InplaceOptionalHolderTest, moveAssignmentOperator)
     emptyOptionalVectorMoved = std::move(emptyOptionalVector);
     ASSERT_EQ(false, emptyOptionalVectorMoved.hasValue());
 }
+
+TEST_F(InplaceOptionalHolderTest, moveAssignmentOperatorNoInit)
+{
+    InplaceOptionalHolder<DummyObject> optionalEmptyObject;
+    InplaceOptionalHolder<DummyObject> optionalEmptyObjectMoved;
+    optionalEmptyObjectMoved.assign(NoInit, std::move(optionalEmptyObject));
+    ASSERT_FALSE(optionalEmptyObjectMoved.hasValue());
+
+    InplaceOptionalHolder<DummyObject> optionalObject(DummyObject{10});
+    ASSERT_EQ(10, optionalObject->getValue());
+    ASSERT_FALSE(optionalObject->isNoInit());
+    optionalObject.assign(NoInit, std::move(optionalObject));
+
+    InplaceOptionalHolder<DummyObject> optionalObjectMoved;
+    optionalObjectMoved.assign(NoInit, std::move(optionalObject));
+    ASSERT_EQ(10, optionalObjectMoved->getValue());
+    // memory with object has been moved in optional holder, object move constructor has not been called
+    ASSERT_TRUE(optionalObjectMoved->isNoInit());
+}
+
 
 TEST_F(InplaceOptionalHolderTest, lvalueAssignmentOperator)
 {

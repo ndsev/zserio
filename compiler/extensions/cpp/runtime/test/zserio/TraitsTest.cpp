@@ -95,6 +95,12 @@ public:
     void initializeElement(OwnerType&, DummyObjectInitializeChildren&, size_t) {}
 };
 
+enum class DummyEnum : uint8_t
+{
+    ONE,
+    TWO
+};
+
 class DummyBitmask
 {
 public:
@@ -159,6 +165,7 @@ TEST(TraitsTest, hasOwnerType)
     ASSERT_FALSE(has_owner_type<DummyObjectInitializeChildren>::value);
     ASSERT_FALSE(has_owner_type<DummyObjectWithPackingContext>::value);
     ASSERT_FALSE(has_owner_type<DummyObjectWithAllocator>::value);
+    ASSERT_FALSE(has_owner_type<DummyEnum>::value);
     ASSERT_FALSE(has_owner_type<DummyBitmask>::value);
     ASSERT_FALSE(has_owner_type<std::string>::value);
     ASSERT_FALSE(has_owner_type<std::vector<uint8_t>>::value);
@@ -172,6 +179,7 @@ TEST(TraitsTest, hasZserioPackingContext)
     ASSERT_FALSE(has_zserio_packing_context<DummyObjectInitializeChildren>::value);
     ASSERT_FALSE(has_zserio_packing_context<DummyObjectWithOwnerType>::value);
     ASSERT_FALSE(has_zserio_packing_context<DummyObjectWithAllocator>::value);
+    ASSERT_FALSE(has_zserio_packing_context<DummyEnum>::value);
     ASSERT_FALSE(has_zserio_packing_context<DummyBitmask>::value);
     ASSERT_FALSE(has_zserio_packing_context<std::string>::value);
     ASSERT_FALSE(has_zserio_packing_context<std::vector<uint8_t>>::value);
@@ -188,6 +196,7 @@ TEST(TraitsTest, hasAllocator)
     ASSERT_FALSE(has_allocator<DummyObjectInitializeChildren>::value);
     ASSERT_FALSE(has_allocator<DummyObjectWithOwnerType>::value);
     ASSERT_FALSE(has_allocator<DummyObjectWithPackingContext>::value);
+    ASSERT_FALSE(has_allocator<DummyEnum>::value);
     ASSERT_FALSE(has_allocator<DummyBitmask>::value);
 }
 
@@ -198,6 +207,7 @@ TEST(TraitsTest, hasInitialize)
     ASSERT_FALSE(has_initialize<DummyObjectInitializeChildren>::value);
     ASSERT_FALSE(has_initialize<DummyObjectWithOwnerType>::value);
     ASSERT_FALSE(has_initialize<DummyObjectWithPackingContext>::value);
+    ASSERT_FALSE(has_initialize<DummyEnum>::value);
     ASSERT_FALSE(has_initialize<DummyBitmask>::value);
     ASSERT_FALSE(has_initialize<std::string>::value);
     ASSERT_FALSE(has_initialize<std::vector<uint8_t>>::value);
@@ -210,6 +220,7 @@ TEST(TraitsTest, hasInitializeChildren)
     ASSERT_FALSE(has_initialize_children<DummyObjectInitialize>::value);
     ASSERT_FALSE(has_initialize_children<DummyObjectWithOwnerType>::value);
     ASSERT_FALSE(has_initialize_children<DummyObjectWithPackingContext>::value);
+    ASSERT_FALSE(has_initialize_children<DummyEnum>::value);
     ASSERT_FALSE(has_initialize_children<DummyBitmask>::value);
     ASSERT_FALSE(has_initialize_children<std::string>::value);
     ASSERT_FALSE(has_initialize_children<std::vector<uint8_t>>::value);
@@ -223,6 +234,7 @@ TEST(TraitsTest, hasReflectable)
     ASSERT_FALSE(has_reflectable<DummyObjectWithOwnerType>::value);
     ASSERT_FALSE(has_reflectable<DummyObjectWithPackingContext>::value);
     ASSERT_FALSE(has_reflectable<DummyObjectWithAllocator>::value);
+    ASSERT_FALSE(has_reflectable<DummyEnum>::value);
     ASSERT_FALSE(has_reflectable<DummyBitmask>::value);
     ASSERT_FALSE(has_reflectable<std::string>::value);
     ASSERT_FALSE(has_reflectable<std::vector<uint8_t>>::value);
@@ -282,6 +294,7 @@ TEST(TraitsTest, isBitmask)
     ASSERT_FALSE(is_bitmask<DummyObjectWithOwnerType>::value);
     ASSERT_FALSE(is_bitmask<DummyObjectWithPackingContext>::value);
     ASSERT_FALSE(is_bitmask<DummyObjectWithAllocator>::value);
+    ASSERT_FALSE(is_bitmask<DummyEnum>::value);
     ASSERT_FALSE(is_bitmask<std::string>::value);
     ASSERT_FALSE(is_bitmask<std::vector<uint8_t>>::value);
 }
@@ -315,6 +328,7 @@ TEST(TraitsTest, isFieldConstructorEnabled)
     assertFalse(has_field_ctor<std::allocator<uint8_t>, DummyObjectInitialize, std::allocator<uint8_t>>::value);
     assertFalse(has_field_ctor<BitStreamReader, DummyObjectInitialize, std::allocator<uint8_t>>::value);
     assertFalse(has_field_ctor<PropagateAllocatorT, DummyObjectInitialize, std::allocator<uint8_t>>::value);
+    assertFalse(has_field_ctor<NoInitT, DummyObjectInitialize, std::allocator<uint8_t>>::value);
     assertFalse(has_field_ctor<DummyObjectWithPackingContext::ZserioPackingContext,
             DummyObjectWithPackingContext, std::allocator<uint8_t>>::value);
 }

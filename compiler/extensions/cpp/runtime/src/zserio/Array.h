@@ -396,6 +396,73 @@ public:
      */
 
     /**
+     * Copy constructor which prevents initialization of parameterized elements.
+     *
+     * Note that elements will be initialized later by a parent compound.
+     *
+     * \param other Instance to construct from.
+     */
+    template <typename T = typename RAW_ARRAY::value_type,
+            typename std::enable_if<std::is_constructible<T, NoInitT, T>::value, int>::type = 0>
+    Array(NoInitT, const Array& other) :
+            Array(std::allocator_traits<allocator_type>::select_on_container_copy_construction(
+                    other.m_rawArray.get_allocator()))
+    {
+        m_rawArray.reserve(other.m_rawArray.size());
+        for (const auto& value : other.m_rawArray)
+            m_rawArray.emplace_back(NoInit, value);
+    }
+
+    /**
+     * Assignment which prevents initialization of parameterized elements.
+     *
+     * Note that elements will be initialized later by a parent compound.
+     *
+     * \param other Instance to move-assign from.
+     */
+    template <typename T = typename RAW_ARRAY::value_type,
+            typename std::enable_if<std::is_constructible<T, NoInitT, T>::value, int>::type = 0>
+    Array& assign(NoInitT, const Array& other)
+    {
+        const RawArray rawArray(other.m_rawArray.get_allocator());
+        m_rawArray = rawArray; // copy assign to get correct allocator propagation behaviour
+        m_rawArray.reserve(other.m_rawArray.size());
+        for (const auto& value : other.m_rawArray)
+            m_rawArray.emplace_back(NoInit, value);
+
+        return *this;
+    }
+
+    /**
+     * Move constructors which prevents initialization of parameterized elements.
+     *
+     * Provided for convenience since vector move constructor doesn't call move constructors of its elements.
+     *
+     * \param other Instance to move-construct from.
+     */
+    template <typename T = typename RAW_ARRAY::value_type,
+            typename std::enable_if<std::is_constructible<T, NoInitT, T>::value, int>::type = 0>
+    Array(NoInitT, Array&& other) :
+            Array(std::move(other))
+    {
+    }
+
+    /**
+     * Assignment which prevents initialization of parameterized elements.
+     *
+     * Provided for convenience since vector move assignment operator doesn't call move assignment operators
+     * of its elements.
+     *
+     * \param other Instance to move-assign from.
+     */
+    template <typename T = typename RAW_ARRAY::value_type,
+            typename std::enable_if<std::is_constructible<T, NoInitT, T>::value, int>::type = 0>
+    Array& assign(NoInitT, Array&& other)
+    {
+        return operator=(std::move(other));
+    }
+
+    /**
      * Copy constructor which forces allocator propagating while copying the raw array.
      *
      * \param other Source array to copy.
@@ -403,6 +470,19 @@ public:
      */
     Array(PropagateAllocatorT, const Array& other, const allocator_type& allocator) :
             m_rawArray(allocatorPropagatingCopy(other.m_rawArray, allocator))
+    {}
+
+    /**
+     * Copy constructor which prevents initialization and forces allocator propagating while copying
+     * the raw array.
+     *
+     * \param other Source array to copy.
+     * \param allocator Allocator to propagate during copying.
+     */
+    template <typename T = typename RAW_ARRAY::value_type,
+            typename std::enable_if<std::is_constructible<T, NoInitT, T>::value, int>::type = 0>
+    Array(PropagateAllocatorT, NoInitT, const Array& other, const allocator_type& allocator) :
+            m_rawArray(allocatorPropagatingCopy(NoInit, other.m_rawArray, allocator))
     {}
 
     /**
