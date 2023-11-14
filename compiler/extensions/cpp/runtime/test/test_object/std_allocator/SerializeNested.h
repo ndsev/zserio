@@ -7,6 +7,7 @@
 #define TEST_OBJECT_STD_ALLOCATOR_SERIALIZE_NESTED_H
 
 #include <zserio/Traits.h>
+#include <zserio/NoInit.h>
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/AllocatorPropagatingCopy.h>
@@ -71,7 +72,17 @@ public:
     SerializeNested(SerializeNested&& other);
     SerializeNested& operator=(SerializeNested&& other);
 
+    SerializeNested(::zserio::NoInitT,
+            const SerializeNested& other);
+    SerializeNested& assign(::zserio::NoInitT, const SerializeNested& other);
+
+    SerializeNested(::zserio::NoInitT, SerializeNested&& other);
+    SerializeNested& assign(::zserio::NoInitT,
+            SerializeNested&& other);
+
     SerializeNested(::zserio::PropagateAllocatorT,
+            const SerializeNested& other, const allocator_type& allocator);
+    SerializeNested(::zserio::PropagateAllocatorT, ::zserio::NoInitT,
             const SerializeNested& other, const allocator_type& allocator);
 
     static const ::zserio::ITypeInfo& typeInfo();

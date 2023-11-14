@@ -7,6 +7,7 @@
 #define TEST_OBJECT_POLYMORPHIC_ALLOCATOR_CREATOR_NESTED_H
 
 #include <zserio/Traits.h>
+#include <zserio/NoInit.h>
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/AllocatorPropagatingCopy.h>
@@ -99,7 +100,17 @@ public:
     CreatorNested(CreatorNested&& other);
     CreatorNested& operator=(CreatorNested&& other);
 
+    CreatorNested(::zserio::NoInitT,
+            const CreatorNested& other);
+    CreatorNested& assign(::zserio::NoInitT, const CreatorNested& other);
+
+    CreatorNested(::zserio::NoInitT, CreatorNested&& other);
+    CreatorNested& assign(::zserio::NoInitT,
+            CreatorNested&& other);
+
     CreatorNested(::zserio::PropagateAllocatorT,
+            const CreatorNested& other, const allocator_type& allocator);
+    CreatorNested(::zserio::PropagateAllocatorT, ::zserio::NoInitT,
             const CreatorNested& other, const allocator_type& allocator);
 
     static const ::zserio::pmr::ITypeInfo& typeInfo();

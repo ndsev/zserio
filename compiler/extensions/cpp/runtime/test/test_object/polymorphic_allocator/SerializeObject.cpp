@@ -43,7 +43,7 @@ SerializeObject::SerializeObject(SerializeObject::ZserioPackingContext& context,
 
 SerializeObject::SerializeObject(const SerializeObject& other) :
         m_param_(other.m_param_),
-        m_nested_(other.m_nested_)
+        m_nested_(::zserio::NoInit, other.m_nested_)
 {
     if (other.m_areChildrenInitialized)
         initializeChildren();
@@ -54,7 +54,7 @@ SerializeObject::SerializeObject(const SerializeObject& other) :
 SerializeObject& SerializeObject::operator=(const SerializeObject& other)
 {
     m_param_ = other.m_param_;
-    m_nested_ = other.m_nested_;
+    m_nested_.assign(::zserio::NoInit, other.m_nested_);
     if (other.m_areChildrenInitialized)
         initializeChildren();
     else
@@ -65,7 +65,7 @@ SerializeObject& SerializeObject::operator=(const SerializeObject& other)
 
 SerializeObject::SerializeObject(SerializeObject&& other) :
         m_param_(::std::move(other.m_param_)),
-        m_nested_(::std::move(other.m_nested_))
+        m_nested_(::zserio::NoInit, ::std::move(other.m_nested_))
 {
     if (other.m_areChildrenInitialized)
         initializeChildren();
@@ -76,7 +76,7 @@ SerializeObject::SerializeObject(SerializeObject&& other) :
 SerializeObject& SerializeObject::operator=(SerializeObject&& other)
 {
     m_param_ = ::std::move(other.m_param_);
-    m_nested_ = ::std::move(other.m_nested_);
+    m_nested_.assign(::zserio::NoInit, ::std::move(other.m_nested_));
     if (other.m_areChildrenInitialized)
         initializeChildren();
     else
@@ -88,7 +88,7 @@ SerializeObject& SerializeObject::operator=(SerializeObject&& other)
 SerializeObject::SerializeObject(::zserio::PropagateAllocatorT,
         const SerializeObject& other, const allocator_type& allocator) :
         m_param_(::zserio::allocatorPropagatingCopy(other.m_param_, allocator)),
-        m_nested_(::zserio::allocatorPropagatingCopy(other.m_nested_, allocator))
+        m_nested_(::zserio::NoInit, ::zserio::allocatorPropagatingCopy(::zserio::NoInit, other.m_nested_, allocator))
 {
     if (other.m_areChildrenInitialized)
         initializeChildren();

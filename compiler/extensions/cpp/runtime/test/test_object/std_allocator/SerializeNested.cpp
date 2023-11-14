@@ -89,6 +89,42 @@ SerializeNested& SerializeNested::operator=(SerializeNested&& other)
     return *this;
 }
 
+SerializeNested::SerializeNested(::zserio::NoInitT,
+        const SerializeNested& other) :
+        m_isInitialized(false),
+        m_offset_(other.m_offset_),
+        m_optionalValue_(other.m_optionalValue_)
+{
+}
+
+SerializeNested& SerializeNested::assign(::zserio::NoInitT,
+        const SerializeNested& other)
+{
+    m_isInitialized = false;
+    m_offset_ = other.m_offset_;
+    m_optionalValue_ = other.m_optionalValue_;
+
+    return *this;
+}
+
+SerializeNested::SerializeNested(::zserio::NoInitT,
+        SerializeNested&& other) :
+        m_isInitialized(false),
+        m_offset_(::std::move(other.m_offset_)),
+        m_optionalValue_(::std::move(other.m_optionalValue_))
+{
+}
+
+SerializeNested& SerializeNested::assign(::zserio::NoInitT,
+        SerializeNested&& other)
+{
+    m_isInitialized = false;
+    m_offset_ = ::std::move(other.m_offset_);
+    m_optionalValue_ = ::std::move(other.m_optionalValue_);
+
+    return *this;
+}
+
 SerializeNested::SerializeNested(::zserio::PropagateAllocatorT,
         const SerializeNested& other, const allocator_type& allocator) :
         m_offset_(::zserio::allocatorPropagatingCopy(other.m_offset_, allocator)),
@@ -98,6 +134,14 @@ SerializeNested::SerializeNested(::zserio::PropagateAllocatorT,
         initialize(other.m_param_);
     else
         m_isInitialized = false;
+}
+
+SerializeNested::SerializeNested(::zserio::PropagateAllocatorT, ::zserio::NoInitT,
+        const SerializeNested& other, const allocator_type& allocator) :
+        m_isInitialized(false),
+        m_offset_(::zserio::allocatorPropagatingCopy(other.m_offset_, allocator)),
+        m_optionalValue_(::zserio::allocatorPropagatingCopy(other.m_optionalValue_, allocator))
+{
 }
 
 const ::zserio::ITypeInfo& SerializeNested::typeInfo()

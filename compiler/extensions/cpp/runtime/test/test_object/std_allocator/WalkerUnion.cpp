@@ -40,7 +40,7 @@ WalkerUnion::WalkerUnion(WalkerUnion::ZserioPackingContext& context, ::zserio::B
 WalkerUnion::WalkerUnion(::zserio::PropagateAllocatorT,
         const WalkerUnion& other, const allocator_type& allocator) :
         m_choiceTag(other.m_choiceTag),
-        m_objectChoice(other.copyObject(allocator))
+        m_objectChoice(::zserio::NoInit, other.copyObject(allocator))
 {
 }
 

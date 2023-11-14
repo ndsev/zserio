@@ -40,7 +40,7 @@ ReflectableUtilUnion::ReflectableUtilUnion(ReflectableUtilUnion::ZserioPackingCo
 ReflectableUtilUnion::ReflectableUtilUnion(::zserio::PropagateAllocatorT,
         const ReflectableUtilUnion& other, const allocator_type& allocator) :
         m_choiceTag(other.m_choiceTag),
-        m_objectChoice(other.copyObject(allocator))
+        m_objectChoice(::zserio::NoInit, other.copyObject(allocator))
 {
 }
 

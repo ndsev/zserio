@@ -64,14 +64,14 @@ CreatorObject::CreatorObject(CreatorObject::ZserioPackingContext& context, ::zse
 
 CreatorObject::CreatorObject(const CreatorObject& other) :
         m_value_(other.m_value_),
-        m_nested_(other.m_nested_),
+        m_nested_(::zserio::NoInit, other.m_nested_),
         m_text_(other.m_text_),
-        m_nestedArray_(other.m_nestedArray_),
+        m_nestedArray_(::zserio::NoInit, other.m_nestedArray_),
         m_textArray_(other.m_textArray_),
         m_externArray_(other.m_externArray_),
         m_bytesArray_(other.m_bytesArray_),
         m_optionalBool_(other.m_optionalBool_),
-        m_optionalNested_(other.m_optionalNested_)
+        m_optionalNested_(::zserio::NoInit, other.m_optionalNested_)
 {
     if (other.m_areChildrenInitialized)
         initializeChildren();
@@ -82,14 +82,14 @@ CreatorObject::CreatorObject(const CreatorObject& other) :
 CreatorObject& CreatorObject::operator=(const CreatorObject& other)
 {
     m_value_ = other.m_value_;
-    m_nested_ = other.m_nested_;
+    m_nested_.assign(::zserio::NoInit, other.m_nested_);
     m_text_ = other.m_text_;
-    m_nestedArray_ = other.m_nestedArray_;
+    m_nestedArray_.assign(::zserio::NoInit, other.m_nestedArray_);
     m_textArray_ = other.m_textArray_;
     m_externArray_ = other.m_externArray_;
     m_bytesArray_ = other.m_bytesArray_;
     m_optionalBool_ = other.m_optionalBool_;
-    m_optionalNested_ = other.m_optionalNested_;
+    m_optionalNested_.assign(::zserio::NoInit, other.m_optionalNested_);
     if (other.m_areChildrenInitialized)
         initializeChildren();
     else
@@ -100,14 +100,14 @@ CreatorObject& CreatorObject::operator=(const CreatorObject& other)
 
 CreatorObject::CreatorObject(CreatorObject&& other) :
         m_value_(::std::move(other.m_value_)),
-        m_nested_(::std::move(other.m_nested_)),
+        m_nested_(::zserio::NoInit, ::std::move(other.m_nested_)),
         m_text_(::std::move(other.m_text_)),
-        m_nestedArray_(::std::move(other.m_nestedArray_)),
+        m_nestedArray_(::zserio::NoInit, ::std::move(other.m_nestedArray_)),
         m_textArray_(::std::move(other.m_textArray_)),
         m_externArray_(::std::move(other.m_externArray_)),
         m_bytesArray_(::std::move(other.m_bytesArray_)),
         m_optionalBool_(::std::move(other.m_optionalBool_)),
-        m_optionalNested_(::std::move(other.m_optionalNested_))
+        m_optionalNested_(::zserio::NoInit, ::std::move(other.m_optionalNested_))
 {
     if (other.m_areChildrenInitialized)
         initializeChildren();
@@ -118,14 +118,14 @@ CreatorObject::CreatorObject(CreatorObject&& other) :
 CreatorObject& CreatorObject::operator=(CreatorObject&& other)
 {
     m_value_ = ::std::move(other.m_value_);
-    m_nested_ = ::std::move(other.m_nested_);
+    m_nested_.assign(::zserio::NoInit, ::std::move(other.m_nested_));
     m_text_ = ::std::move(other.m_text_);
-    m_nestedArray_ = ::std::move(other.m_nestedArray_);
+    m_nestedArray_.assign(::zserio::NoInit, ::std::move(other.m_nestedArray_));
     m_textArray_ = ::std::move(other.m_textArray_);
     m_externArray_ = ::std::move(other.m_externArray_);
     m_bytesArray_ = ::std::move(other.m_bytesArray_);
     m_optionalBool_ = ::std::move(other.m_optionalBool_);
-    m_optionalNested_ = ::std::move(other.m_optionalNested_);
+    m_optionalNested_.assign(::zserio::NoInit, ::std::move(other.m_optionalNested_));
     if (other.m_areChildrenInitialized)
         initializeChildren();
     else
@@ -137,14 +137,14 @@ CreatorObject& CreatorObject::operator=(CreatorObject&& other)
 CreatorObject::CreatorObject(::zserio::PropagateAllocatorT,
         const CreatorObject& other, const allocator_type& allocator) :
         m_value_(::zserio::allocatorPropagatingCopy(other.m_value_, allocator)),
-        m_nested_(::zserio::allocatorPropagatingCopy(other.m_nested_, allocator)),
+        m_nested_(::zserio::NoInit, ::zserio::allocatorPropagatingCopy(::zserio::NoInit, other.m_nested_, allocator)),
         m_text_(::zserio::allocatorPropagatingCopy(other.m_text_, allocator)),
-        m_nestedArray_(::zserio::allocatorPropagatingCopy(other.m_nestedArray_, allocator)),
+        m_nestedArray_(::zserio::NoInit, ::zserio::allocatorPropagatingCopy(::zserio::NoInit, other.m_nestedArray_, allocator)),
         m_textArray_(::zserio::allocatorPropagatingCopy(other.m_textArray_, allocator)),
         m_externArray_(::zserio::allocatorPropagatingCopy(other.m_externArray_, allocator)),
         m_bytesArray_(::zserio::allocatorPropagatingCopy(other.m_bytesArray_, allocator)),
         m_optionalBool_(::zserio::allocatorPropagatingCopy(other.m_optionalBool_, allocator)),
-        m_optionalNested_(::zserio::allocatorPropagatingCopy(other.m_optionalNested_, allocator))
+        m_optionalNested_(::zserio::NoInit, ::zserio::allocatorPropagatingCopy(::zserio::NoInit, other.m_optionalNested_, allocator))
 {
     if (other.m_areChildrenInitialized)
         initializeChildren();

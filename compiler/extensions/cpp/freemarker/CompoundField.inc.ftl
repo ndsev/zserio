@@ -897,7 +897,9 @@ ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPositi
 <#macro compound_copy_constructor_initializer_field field hasNext indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.usesAnyHolder>
-${I}m_objectChoice(other.m_objectChoice)
+${I}m_objectChoice(::zserio::NoInit, other.m_objectChoice)
+    <#elseif has_field_no_init_tag(field)>
+${I}<@field_member_name field/>(::zserio::NoInit, other.<@field_member_name field/>)<#if hasNext>,</#if>
     <#else>
 ${I}<@field_member_name field/>(other.<@field_member_name field/>)<#if hasNext>,</#if>
     </#if>
@@ -906,7 +908,9 @@ ${I}<@field_member_name field/>(other.<@field_member_name field/>)<#if hasNext>,
 <#macro compound_move_constructor_initializer_field field hasNext indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.usesAnyHolder>
-${I}m_objectChoice(::std::move(other.m_objectChoice))
+${I}m_objectChoice(::zserio::NoInit, ::std::move(other.m_objectChoice))
+    <#elseif has_field_no_init_tag(field)>
+${I}<@field_member_name field/>(::zserio::NoInit, ::std::move(other.<@field_member_name field/>))<#if hasNext>,</#if>
     <#else>
 ${I}<@field_member_name field/>(::std::move(other.<@field_member_name field/>))<#if hasNext>,</#if>
     </#if>
@@ -915,7 +919,9 @@ ${I}<@field_member_name field/>(::std::move(other.<@field_member_name field/>))<
 <#macro compound_assignment_field field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.usesAnyHolder>
-${I}m_objectChoice = other.m_objectChoice;
+${I}m_objectChoice.assign(::zserio::NoInit, other.m_objectChoice);
+    <#elseif has_field_no_init_tag(field)>
+${I}<@field_member_name field/>.assign(::zserio::NoInit, other.<@field_member_name field/>);
     <#else>
 ${I}<@field_member_name field/> = other.<@field_member_name field/>;
     </#if>
@@ -924,7 +930,9 @@ ${I}<@field_member_name field/> = other.<@field_member_name field/>;
 <#macro compound_move_assignment_field field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.usesAnyHolder>
-${I}m_objectChoice = ::std::move(other.m_objectChoice);
+${I}m_objectChoice.assign(::zserio::NoInit, ::std::move(other.m_objectChoice));
+    <#elseif has_field_no_init_tag(field)>
+${I}<@field_member_name field/>.assign(::zserio::NoInit, ::std::move(other.<@field_member_name field/>));
     <#else>
 ${I}<@field_member_name field/> = ::std::move(other.<@field_member_name field/>);
     </#if>
@@ -933,7 +941,10 @@ ${I}<@field_member_name field/> = ::std::move(other.<@field_member_name field/>)
 <#macro compound_allocator_propagating_copy_constructor_initializer_field field hasNext indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.usesAnyHolder>
-${I}m_objectChoice(other.copyObject(allocator))
+${I}m_objectChoice(::zserio::NoInit, other.copyObject(allocator))
+    <#elseif has_field_no_init_tag(field)>
+${I}<@field_member_name field/>(::zserio::NoInit, ::zserio::allocatorPropagatingCopy(<#rt>
+        <#lt>::zserio::NoInit, other.<@field_member_name field/>, allocator))<#if hasNext>,</#if>
     <#else>
 ${I}<@field_member_name field/>(::zserio::allocatorPropagatingCopy(<#rt>
         <#lt>other.<@field_member_name field/>, allocator))<#if hasNext>,</#if>
@@ -1153,16 +1164,16 @@ ${I}context.${field.getterName}().init<<@array_traits_type_name field/>>(<#rt>
     <#return false>
 </#function>
 
-<#function needs_field_initialization field>
-    <#if field.instantiatedParameters?has_content>
+<#function needs_field_initialization compound>
+    <#if compound.instantiatedParameters?has_content>
         <#return true>
     </#if>
     <#return false>
 </#function>
 
-<#function needs_field_initialization_owner field>
-    <#if field.instantiatedParameters?has_content>
-        <#list field.instantiatedParameters as instantiatedParameter>
+<#function needs_field_initialization_owner compound>
+    <#if compound.instantiatedParameters?has_content>
+        <#list compound.instantiatedParameters as instantiatedParameter>
             <#if instantiatedParameter.needsOwner>
                 <#return true>
             </#if>
@@ -1171,9 +1182,9 @@ ${I}context.${field.getterName}().init<<@array_traits_type_name field/>>(<#rt>
     <#return false>
 </#function>
 
-<#function needs_field_initialization_index field>
-    <#if field.instantiatedParameters?has_content>
-        <#list field.instantiatedParameters as instantiatedParameter>
+<#function needs_field_initialization_index compound>
+    <#if compound.instantiatedParameters?has_content>
+        <#list compound.instantiatedParameters as instantiatedParameter>
             <#if instantiatedParameter.needsIndex>
                 <#return true>
             </#if>
@@ -1196,6 +1207,11 @@ ${I}context.${field.getterName}().init<<@array_traits_type_name field/>>(<#rt>
         </#if>
     </#list>
     <#return false>
+</#function>
+
+<#function has_field_no_init_tag field>
+    <#return (field.compound?? && needs_field_initialization(field.compound)) ||
+            (field.array?? && field.array.elementCompound?? && needs_field_initialization(field.array.elementCompound))>
 </#function>
 
 <#function needs_field_any_write_check_code field compoundName indent>

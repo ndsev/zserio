@@ -117,6 +117,58 @@ CreatorNested& CreatorNested::operator=(CreatorNested&& other)
     return *this;
 }
 
+CreatorNested::CreatorNested(::zserio::NoInitT,
+        const CreatorNested& other) :
+        m_isInitialized(false),
+        m_value_(other.m_value_),
+        m_text_(other.m_text_),
+        m_externData_(other.m_externData_),
+        m_bytesData_(other.m_bytesData_),
+        m_creatorEnum_(other.m_creatorEnum_),
+        m_creatorBitmask_(other.m_creatorBitmask_)
+{
+}
+
+CreatorNested& CreatorNested::assign(::zserio::NoInitT,
+        const CreatorNested& other)
+{
+    m_isInitialized = false;
+    m_value_ = other.m_value_;
+    m_text_ = other.m_text_;
+    m_externData_ = other.m_externData_;
+    m_bytesData_ = other.m_bytesData_;
+    m_creatorEnum_ = other.m_creatorEnum_;
+    m_creatorBitmask_ = other.m_creatorBitmask_;
+
+    return *this;
+}
+
+CreatorNested::CreatorNested(::zserio::NoInitT,
+        CreatorNested&& other) :
+        m_isInitialized(false),
+        m_value_(::std::move(other.m_value_)),
+        m_text_(::std::move(other.m_text_)),
+        m_externData_(::std::move(other.m_externData_)),
+        m_bytesData_(::std::move(other.m_bytesData_)),
+        m_creatorEnum_(::std::move(other.m_creatorEnum_)),
+        m_creatorBitmask_(::std::move(other.m_creatorBitmask_))
+{
+}
+
+CreatorNested& CreatorNested::assign(::zserio::NoInitT,
+        CreatorNested&& other)
+{
+    m_isInitialized = false;
+    m_value_ = ::std::move(other.m_value_);
+    m_text_ = ::std::move(other.m_text_);
+    m_externData_ = ::std::move(other.m_externData_);
+    m_bytesData_ = ::std::move(other.m_bytesData_);
+    m_creatorEnum_ = ::std::move(other.m_creatorEnum_);
+    m_creatorBitmask_ = ::std::move(other.m_creatorBitmask_);
+
+    return *this;
+}
+
 CreatorNested::CreatorNested(::zserio::PropagateAllocatorT,
         const CreatorNested& other, const allocator_type& allocator) :
         m_value_(::zserio::allocatorPropagatingCopy(other.m_value_, allocator)),
@@ -130,6 +182,18 @@ CreatorNested::CreatorNested(::zserio::PropagateAllocatorT,
         initialize(other.m_param_);
     else
         m_isInitialized = false;
+}
+
+CreatorNested::CreatorNested(::zserio::PropagateAllocatorT, ::zserio::NoInitT,
+        const CreatorNested& other, const allocator_type& allocator) :
+        m_isInitialized(false),
+        m_value_(::zserio::allocatorPropagatingCopy(other.m_value_, allocator)),
+        m_text_(::zserio::allocatorPropagatingCopy(other.m_text_, allocator)),
+        m_externData_(::zserio::allocatorPropagatingCopy(other.m_externData_, allocator)),
+        m_bytesData_(::zserio::allocatorPropagatingCopy(other.m_bytesData_, allocator)),
+        m_creatorEnum_(::zserio::allocatorPropagatingCopy(other.m_creatorEnum_, allocator)),
+        m_creatorBitmask_(::zserio::allocatorPropagatingCopy(other.m_creatorBitmask_, allocator))
+{
 }
 
 const ::zserio::pmr::ITypeInfo& CreatorNested::typeInfo()

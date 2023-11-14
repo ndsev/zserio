@@ -96,8 +96,22 @@
 <@compound_move_assignment_operator_definition compoundConstructorsData/>
 
 </#if>
+<#if needs_compound_initialization(compoundConstructorsData)>
+<@compound_copy_constructor_no_init_definition compoundConstructorsData/>
+
+<@compound_assignment_no_init_definition compoundConstructorsData/>
+
+<@compound_move_constructor_no_init_definition compoundConstructorsData/>
+
+<@compound_move_assignment_no_init_definition compoundConstructorsData/>
+
+</#if>
 <@compound_allocator_propagating_copy_constructor_definition compoundConstructorsData/>
 
+<#if needs_compound_initialization(compoundConstructorsData)>
+<@compound_allocator_propagating_copy_constructor_no_init_definition compoundConstructorsData/>
+
+</#if>
 <#if withTypeInfoCode>
 const ${types.typeInfo.name}& ${name}::typeInfo()
 {

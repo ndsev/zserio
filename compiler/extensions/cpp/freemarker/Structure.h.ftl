@@ -13,6 +13,9 @@
 <#if withWriterCode && fieldList?has_content>
 #include <zserio/Traits.h>
 </#if>
+<#if needs_compound_initialization(compoundConstructorsData)>
+#include <zserio/NoInit.h>
+</#if>
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/AllocatorPropagatingCopy.h>
@@ -134,8 +137,28 @@ public:
     </#if>
     ${name}& operator=(${name}&&) = default;
 </#if>
+<#if needs_compound_initialization(compoundConstructorsData)>
+
+    <@compound_copy_constructor_no_init_declaration compoundConstructorsData/>
+    <#if withCodeComments>
+
+    </#if>
+    <@compound_assignment_no_init_declaration compoundConstructorsData/>
+
+    <@compound_move_constructor_no_init_declaration compoundConstructorsData/>
+    <#if withCodeComments>
+
+    </#if>
+    <@compound_move_assignment_no_init_declaration compoundConstructorsData/>
+</#if>
 
     <@compound_allocator_propagating_copy_constructor_declaration compoundConstructorsData/>
+<#if needs_compound_initialization(compoundConstructorsData)>
+    <#if withCodeComments>
+
+    </#if>
+    <@compound_allocator_propagating_copy_constructor_no_init_declaration compoundConstructorsData/>
+</#if>
 <#if withTypeInfoCode>
 
     <#if withCodeComments>

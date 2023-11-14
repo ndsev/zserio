@@ -63,7 +63,7 @@ WalkerObject::WalkerObject(const WalkerObject& other) :
         m_unionArray_(other.m_unionArray_),
         m_optionalUnionArray_(other.m_optionalUnionArray_),
         m_choiceSelector_(other.m_choiceSelector_),
-        m_choiceField_(other.m_choiceField_)
+        m_choiceField_(::zserio::NoInit, other.m_choiceField_)
 {
     if (other.m_areChildrenInitialized)
         initializeChildren();
@@ -79,7 +79,7 @@ WalkerObject& WalkerObject::operator=(const WalkerObject& other)
     m_unionArray_ = other.m_unionArray_;
     m_optionalUnionArray_ = other.m_optionalUnionArray_;
     m_choiceSelector_ = other.m_choiceSelector_;
-    m_choiceField_ = other.m_choiceField_;
+    m_choiceField_.assign(::zserio::NoInit, other.m_choiceField_);
     if (other.m_areChildrenInitialized)
         initializeChildren();
     else
@@ -95,7 +95,7 @@ WalkerObject::WalkerObject(WalkerObject&& other) :
         m_unionArray_(::std::move(other.m_unionArray_)),
         m_optionalUnionArray_(::std::move(other.m_optionalUnionArray_)),
         m_choiceSelector_(::std::move(other.m_choiceSelector_)),
-        m_choiceField_(::std::move(other.m_choiceField_))
+        m_choiceField_(::zserio::NoInit, ::std::move(other.m_choiceField_))
 {
     if (other.m_areChildrenInitialized)
         initializeChildren();
@@ -111,7 +111,7 @@ WalkerObject& WalkerObject::operator=(WalkerObject&& other)
     m_unionArray_ = ::std::move(other.m_unionArray_);
     m_optionalUnionArray_ = ::std::move(other.m_optionalUnionArray_);
     m_choiceSelector_ = ::std::move(other.m_choiceSelector_);
-    m_choiceField_ = ::std::move(other.m_choiceField_);
+    m_choiceField_.assign(::zserio::NoInit, ::std::move(other.m_choiceField_));
     if (other.m_areChildrenInitialized)
         initializeChildren();
     else
@@ -128,7 +128,7 @@ WalkerObject::WalkerObject(::zserio::PropagateAllocatorT,
         m_unionArray_(::zserio::allocatorPropagatingCopy(other.m_unionArray_, allocator)),
         m_optionalUnionArray_(::zserio::allocatorPropagatingCopy(other.m_optionalUnionArray_, allocator)),
         m_choiceSelector_(::zserio::allocatorPropagatingCopy(other.m_choiceSelector_, allocator)),
-        m_choiceField_(::zserio::allocatorPropagatingCopy(other.m_choiceField_, allocator))
+        m_choiceField_(::zserio::NoInit, ::zserio::allocatorPropagatingCopy(::zserio::NoInit, other.m_choiceField_, allocator))
 {
     if (other.m_areChildrenInitialized)
         initializeChildren();

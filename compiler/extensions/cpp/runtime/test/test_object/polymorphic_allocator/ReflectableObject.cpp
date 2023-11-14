@@ -43,7 +43,7 @@ ReflectableObject::ReflectableObject(ReflectableObject::ZserioPackingContext& co
 
 ReflectableObject::ReflectableObject(const ReflectableObject& other) :
         m_stringField_(other.m_stringField_),
-        m_reflectableNested_(other.m_reflectableNested_)
+        m_reflectableNested_(::zserio::NoInit, other.m_reflectableNested_)
 {
     if (other.m_areChildrenInitialized)
         initializeChildren();
@@ -54,7 +54,7 @@ ReflectableObject::ReflectableObject(const ReflectableObject& other) :
 ReflectableObject& ReflectableObject::operator=(const ReflectableObject& other)
 {
     m_stringField_ = other.m_stringField_;
-    m_reflectableNested_ = other.m_reflectableNested_;
+    m_reflectableNested_.assign(::zserio::NoInit, other.m_reflectableNested_);
     if (other.m_areChildrenInitialized)
         initializeChildren();
     else
@@ -65,7 +65,7 @@ ReflectableObject& ReflectableObject::operator=(const ReflectableObject& other)
 
 ReflectableObject::ReflectableObject(ReflectableObject&& other) :
         m_stringField_(::std::move(other.m_stringField_)),
-        m_reflectableNested_(::std::move(other.m_reflectableNested_))
+        m_reflectableNested_(::zserio::NoInit, ::std::move(other.m_reflectableNested_))
 {
     if (other.m_areChildrenInitialized)
         initializeChildren();
@@ -76,7 +76,7 @@ ReflectableObject::ReflectableObject(ReflectableObject&& other) :
 ReflectableObject& ReflectableObject::operator=(ReflectableObject&& other)
 {
     m_stringField_ = ::std::move(other.m_stringField_);
-    m_reflectableNested_ = ::std::move(other.m_reflectableNested_);
+    m_reflectableNested_.assign(::zserio::NoInit, ::std::move(other.m_reflectableNested_));
     if (other.m_areChildrenInitialized)
         initializeChildren();
     else
@@ -88,7 +88,7 @@ ReflectableObject& ReflectableObject::operator=(ReflectableObject&& other)
 ReflectableObject::ReflectableObject(::zserio::PropagateAllocatorT,
         const ReflectableObject& other, const allocator_type& allocator) :
         m_stringField_(::zserio::allocatorPropagatingCopy(other.m_stringField_, allocator)),
-        m_reflectableNested_(::zserio::allocatorPropagatingCopy(other.m_reflectableNested_, allocator))
+        m_reflectableNested_(::zserio::NoInit, ::zserio::allocatorPropagatingCopy(::zserio::NoInit, other.m_reflectableNested_, allocator))
 {
     if (other.m_areChildrenInitialized)
         initializeChildren();

@@ -7,6 +7,7 @@
 #define TEST_OBJECT_POLYMORPHIC_ALLOCATOR_WALKER_CHOICE_H
 
 #include <zserio/Traits.h>
+#include <zserio/NoInit.h>
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/AllocatorPropagatingCopy.h>
@@ -87,7 +88,17 @@ public:
     WalkerChoice(WalkerChoice&& other);
     WalkerChoice& operator=(WalkerChoice&& other);
 
+    WalkerChoice(::zserio::NoInitT,
+            const WalkerChoice& other);
+    WalkerChoice& assign(::zserio::NoInitT, const WalkerChoice& other);
+
+    WalkerChoice(::zserio::NoInitT, WalkerChoice&& other);
+    WalkerChoice& assign(::zserio::NoInitT,
+            WalkerChoice&& other);
+
     WalkerChoice(::zserio::PropagateAllocatorT,
+            const WalkerChoice& other, const allocator_type& allocator);
+    WalkerChoice(::zserio::PropagateAllocatorT, ::zserio::NoInitT,
             const WalkerChoice& other, const allocator_type& allocator);
 
     static const ::zserio::pmr::ITypeInfo& typeInfo();

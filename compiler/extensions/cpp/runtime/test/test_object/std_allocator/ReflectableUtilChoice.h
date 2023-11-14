@@ -7,6 +7,7 @@
 #define TEST_OBJECT_STD_ALLOCATOR_REFLECTABLE_UTIL_CHOICE_H
 
 #include <zserio/Traits.h>
+#include <zserio/NoInit.h>
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/AllocatorPropagatingCopy.h>
@@ -60,7 +61,17 @@ public:
     ReflectableUtilChoice(ReflectableUtilChoice&& other);
     ReflectableUtilChoice& operator=(ReflectableUtilChoice&& other);
 
+    ReflectableUtilChoice(::zserio::NoInitT,
+            const ReflectableUtilChoice& other);
+    ReflectableUtilChoice& assign(::zserio::NoInitT, const ReflectableUtilChoice& other);
+
+    ReflectableUtilChoice(::zserio::NoInitT, ReflectableUtilChoice&& other);
+    ReflectableUtilChoice& assign(::zserio::NoInitT,
+            ReflectableUtilChoice&& other);
+
     ReflectableUtilChoice(::zserio::PropagateAllocatorT,
+            const ReflectableUtilChoice& other, const allocator_type& allocator);
+    ReflectableUtilChoice(::zserio::PropagateAllocatorT, ::zserio::NoInitT,
             const ReflectableUtilChoice& other, const allocator_type& allocator);
 
     static const ::zserio::ITypeInfo& typeInfo();

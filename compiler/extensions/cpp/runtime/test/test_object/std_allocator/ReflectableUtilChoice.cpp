@@ -42,7 +42,7 @@ ReflectableUtilChoice::ReflectableUtilChoice(ReflectableUtilChoice::ZserioPackin
 }
 
 ReflectableUtilChoice::ReflectableUtilChoice(const ReflectableUtilChoice& other) :
-        m_objectChoice(other.m_objectChoice)
+        m_objectChoice(::zserio::NoInit, other.m_objectChoice)
 {
     if (other.m_isInitialized)
         initialize(other.m_param_);
@@ -52,7 +52,7 @@ ReflectableUtilChoice::ReflectableUtilChoice(const ReflectableUtilChoice& other)
 
 ReflectableUtilChoice& ReflectableUtilChoice::operator=(const ReflectableUtilChoice& other)
 {
-    m_objectChoice = other.m_objectChoice;
+    m_objectChoice.assign(::zserio::NoInit, other.m_objectChoice);
     if (other.m_isInitialized)
         initialize(other.m_param_);
     else
@@ -62,7 +62,7 @@ ReflectableUtilChoice& ReflectableUtilChoice::operator=(const ReflectableUtilCho
 }
 
 ReflectableUtilChoice::ReflectableUtilChoice(ReflectableUtilChoice&& other) :
-        m_objectChoice(::std::move(other.m_objectChoice))
+        m_objectChoice(::zserio::NoInit, ::std::move(other.m_objectChoice))
 {
     if (other.m_isInitialized)
         initialize(other.m_param_);
@@ -72,7 +72,7 @@ ReflectableUtilChoice::ReflectableUtilChoice(ReflectableUtilChoice&& other) :
 
 ReflectableUtilChoice& ReflectableUtilChoice::operator=(ReflectableUtilChoice&& other)
 {
-    m_objectChoice = ::std::move(other.m_objectChoice);
+    m_objectChoice.assign(::zserio::NoInit, ::std::move(other.m_objectChoice));
     if (other.m_isInitialized)
         initialize(other.m_param_);
     else
@@ -81,14 +81,53 @@ ReflectableUtilChoice& ReflectableUtilChoice::operator=(ReflectableUtilChoice&& 
     return *this;
 }
 
+ReflectableUtilChoice::ReflectableUtilChoice(::zserio::NoInitT,
+        const ReflectableUtilChoice& other) :
+        m_isInitialized(false),
+        m_objectChoice(::zserio::NoInit, other.m_objectChoice)
+{
+}
+
+ReflectableUtilChoice& ReflectableUtilChoice::assign(::zserio::NoInitT,
+        const ReflectableUtilChoice& other)
+{
+    m_isInitialized = false;
+    m_objectChoice.assign(::zserio::NoInit, other.m_objectChoice);
+
+    return *this;
+}
+
+ReflectableUtilChoice::ReflectableUtilChoice(::zserio::NoInitT,
+        ReflectableUtilChoice&& other) :
+        m_isInitialized(false),
+        m_objectChoice(::zserio::NoInit, ::std::move(other.m_objectChoice))
+{
+}
+
+ReflectableUtilChoice& ReflectableUtilChoice::assign(::zserio::NoInitT,
+        ReflectableUtilChoice&& other)
+{
+    m_isInitialized = false;
+    m_objectChoice.assign(::zserio::NoInit, ::std::move(other.m_objectChoice));
+
+    return *this;
+}
+
 ReflectableUtilChoice::ReflectableUtilChoice(::zserio::PropagateAllocatorT,
         const ReflectableUtilChoice& other, const allocator_type& allocator) :
-        m_objectChoice(other.copyObject(allocator))
+        m_objectChoice(::zserio::NoInit, other.copyObject(allocator))
 {
     if (other.m_isInitialized)
         initialize(other.m_param_);
     else
         m_isInitialized = false;
+}
+
+ReflectableUtilChoice::ReflectableUtilChoice(::zserio::PropagateAllocatorT, ::zserio::NoInitT,
+        const ReflectableUtilChoice& other, const allocator_type& allocator) :
+        m_isInitialized(false),
+        m_objectChoice(::zserio::NoInit, other.copyObject(allocator))
+{
 }
 
 const ::zserio::ITypeInfo& ReflectableUtilChoice::typeInfo()

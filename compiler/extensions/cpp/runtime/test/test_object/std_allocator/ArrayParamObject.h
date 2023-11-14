@@ -3,8 +3,8 @@
  * Generator setup: writerCode, pubsubCode, serviceCode, sqlCode, typeInfoCode, reflectionCode, stdAllocator.
  */
 
-#ifndef TEST_OBJECT_STD_ALLOCATOR_REFLECTABLE_NESTED_H
-#define TEST_OBJECT_STD_ALLOCATOR_REFLECTABLE_NESTED_H
+#ifndef TEST_OBJECT_STD_ALLOCATOR_ARRAY_PARAM_OBJECT_H
+#define TEST_OBJECT_STD_ALLOCATOR_ARRAY_PARAM_OBJECT_H
 
 #include <zserio/Traits.h>
 #include <zserio/NoInit.h>
@@ -16,15 +16,16 @@
 #include <zserio/IReflectable.h>
 #include <memory>
 #include <zserio/ArrayTraits.h>
-#include <zserio/String.h>
 #include <zserio/Types.h>
+
+#include <test_object/std_allocator/ArrayObject.h>
 
 namespace test_object
 {
 namespace std_allocator
 {
 
-class ReflectableNested
+class ArrayParamObject
 {
 public:
     class ZserioPackingContext
@@ -41,67 +42,60 @@ public:
 
     using allocator_type = ::std::allocator<uint8_t>;
 
-    ReflectableNested() noexcept :
-            ReflectableNested(allocator_type())
+    ArrayParamObject() noexcept :
+            ArrayParamObject(allocator_type())
     {}
 
-    explicit ReflectableNested(const allocator_type& allocator) noexcept;
+    explicit ArrayParamObject(const allocator_type& allocator) noexcept;
 
-    explicit ReflectableNested(
+    explicit ArrayParamObject(
             uint32_t value_,
             const allocator_type& allocator = allocator_type()) :
-            ReflectableNested(allocator)
+            ArrayParamObject(allocator)
     {
         m_value_ = value_;
     }
 
-    explicit ReflectableNested(::zserio::BitStreamReader& in,
-            int32_t dummyParam_,
-            ::zserio::string<>& stringParam_, const allocator_type& allocator = allocator_type());
-    explicit ReflectableNested(ZserioPackingContext& context,
+    explicit ArrayParamObject(::zserio::BitStreamReader& in,
+            ::test_object::std_allocator::ArrayObject& param_, const allocator_type& allocator = allocator_type());
+    explicit ArrayParamObject(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in,
-            int32_t dummyParam_,
-            ::zserio::string<>& stringParam_, const allocator_type& allocator = allocator_type());
+            ::test_object::std_allocator::ArrayObject& param_, const allocator_type& allocator = allocator_type());
 
-    ~ReflectableNested() = default;
+    ~ArrayParamObject() = default;
 
-    ReflectableNested(const ReflectableNested& other);
-    ReflectableNested& operator=(const ReflectableNested& other);
+    ArrayParamObject(const ArrayParamObject& other);
+    ArrayParamObject& operator=(const ArrayParamObject& other);
 
-    ReflectableNested(ReflectableNested&& other);
-    ReflectableNested& operator=(ReflectableNested&& other);
+    ArrayParamObject(ArrayParamObject&& other);
+    ArrayParamObject& operator=(ArrayParamObject&& other);
 
-    ReflectableNested(::zserio::NoInitT,
-            const ReflectableNested& other);
-    ReflectableNested& assign(::zserio::NoInitT, const ReflectableNested& other);
+    ArrayParamObject(::zserio::NoInitT,
+            const ArrayParamObject& other);
+    ArrayParamObject& assign(::zserio::NoInitT, const ArrayParamObject& other);
 
-    ReflectableNested(::zserio::NoInitT, ReflectableNested&& other);
-    ReflectableNested& assign(::zserio::NoInitT,
-            ReflectableNested&& other);
+    ArrayParamObject(::zserio::NoInitT, ArrayParamObject&& other);
+    ArrayParamObject& assign(::zserio::NoInitT,
+            ArrayParamObject&& other);
 
-    ReflectableNested(::zserio::PropagateAllocatorT,
-            const ReflectableNested& other, const allocator_type& allocator);
-    ReflectableNested(::zserio::PropagateAllocatorT, ::zserio::NoInitT,
-            const ReflectableNested& other, const allocator_type& allocator);
+    ArrayParamObject(::zserio::PropagateAllocatorT,
+            const ArrayParamObject& other, const allocator_type& allocator);
+    ArrayParamObject(::zserio::PropagateAllocatorT, ::zserio::NoInitT,
+            const ArrayParamObject& other, const allocator_type& allocator);
 
     static const ::zserio::ITypeInfo& typeInfo();
     ::zserio::IReflectableConstPtr reflectable(const allocator_type& allocator = allocator_type()) const;
     ::zserio::IReflectablePtr reflectable(const allocator_type& allocator = allocator_type());
 
     void initialize(
-            int32_t dummyParam_,
-            ::zserio::string<>& stringParam_);
+            ::test_object::std_allocator::ArrayObject& param_);
     bool isInitialized() const;
 
-    int32_t getDummyParam() const;
-
-    ::zserio::string<>& getStringParam();
-    const ::zserio::string<>& getStringParam() const;
+    ::test_object::std_allocator::ArrayObject& getParam();
+    const ::test_object::std_allocator::ArrayObject& getParam() const;
 
     uint32_t getValue() const;
     void setValue(uint32_t value_);
-
-    uint32_t funcGetValue() const;
 
     void initPackingContext(ZserioPackingContext& context) const;
 
@@ -111,7 +105,7 @@ public:
     size_t initializeOffsets(size_t bitPosition = 0);
     size_t initializeOffsets(ZserioPackingContext& context, size_t bitPosition);
 
-    bool operator==(const ReflectableNested& other) const;
+    bool operator==(const ArrayParamObject& other) const;
     uint32_t hashCode() const;
 
     void write(::zserio::BitStreamWriter& out) const;
@@ -122,8 +116,7 @@ private:
     uint32_t readValue(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in);
 
-    int32_t m_dummyParam_;
-    ::zserio::string<>* m_stringParam_;
+    ::test_object::std_allocator::ArrayObject* m_param_;
     bool m_isInitialized;
     uint32_t m_value_;
 };
@@ -131,4 +124,4 @@ private:
 } // namespace std_allocator
 } // namespace test_object
 
-#endif // TEST_OBJECT_STD_ALLOCATOR_REFLECTABLE_NESTED_H
+#endif // TEST_OBJECT_STD_ALLOCATOR_ARRAY_PARAM_OBJECT_H

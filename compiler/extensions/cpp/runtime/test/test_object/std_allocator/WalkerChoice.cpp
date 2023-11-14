@@ -42,7 +42,7 @@ WalkerChoice::WalkerChoice(WalkerChoice::ZserioPackingContext& context, ::zserio
 }
 
 WalkerChoice::WalkerChoice(const WalkerChoice& other) :
-        m_objectChoice(other.m_objectChoice)
+        m_objectChoice(::zserio::NoInit, other.m_objectChoice)
 {
     if (other.m_isInitialized)
         initialize(other.m_selector_);
@@ -52,7 +52,7 @@ WalkerChoice::WalkerChoice(const WalkerChoice& other) :
 
 WalkerChoice& WalkerChoice::operator=(const WalkerChoice& other)
 {
-    m_objectChoice = other.m_objectChoice;
+    m_objectChoice.assign(::zserio::NoInit, other.m_objectChoice);
     if (other.m_isInitialized)
         initialize(other.m_selector_);
     else
@@ -62,7 +62,7 @@ WalkerChoice& WalkerChoice::operator=(const WalkerChoice& other)
 }
 
 WalkerChoice::WalkerChoice(WalkerChoice&& other) :
-        m_objectChoice(::std::move(other.m_objectChoice))
+        m_objectChoice(::zserio::NoInit, ::std::move(other.m_objectChoice))
 {
     if (other.m_isInitialized)
         initialize(other.m_selector_);
@@ -72,7 +72,7 @@ WalkerChoice::WalkerChoice(WalkerChoice&& other) :
 
 WalkerChoice& WalkerChoice::operator=(WalkerChoice&& other)
 {
-    m_objectChoice = ::std::move(other.m_objectChoice);
+    m_objectChoice.assign(::zserio::NoInit, ::std::move(other.m_objectChoice));
     if (other.m_isInitialized)
         initialize(other.m_selector_);
     else
@@ -81,14 +81,53 @@ WalkerChoice& WalkerChoice::operator=(WalkerChoice&& other)
     return *this;
 }
 
+WalkerChoice::WalkerChoice(::zserio::NoInitT,
+        const WalkerChoice& other) :
+        m_isInitialized(false),
+        m_objectChoice(::zserio::NoInit, other.m_objectChoice)
+{
+}
+
+WalkerChoice& WalkerChoice::assign(::zserio::NoInitT,
+        const WalkerChoice& other)
+{
+    m_isInitialized = false;
+    m_objectChoice.assign(::zserio::NoInit, other.m_objectChoice);
+
+    return *this;
+}
+
+WalkerChoice::WalkerChoice(::zserio::NoInitT,
+        WalkerChoice&& other) :
+        m_isInitialized(false),
+        m_objectChoice(::zserio::NoInit, ::std::move(other.m_objectChoice))
+{
+}
+
+WalkerChoice& WalkerChoice::assign(::zserio::NoInitT,
+        WalkerChoice&& other)
+{
+    m_isInitialized = false;
+    m_objectChoice.assign(::zserio::NoInit, ::std::move(other.m_objectChoice));
+
+    return *this;
+}
+
 WalkerChoice::WalkerChoice(::zserio::PropagateAllocatorT,
         const WalkerChoice& other, const allocator_type& allocator) :
-        m_objectChoice(other.copyObject(allocator))
+        m_objectChoice(::zserio::NoInit, other.copyObject(allocator))
 {
     if (other.m_isInitialized)
         initialize(other.m_selector_);
     else
         m_isInitialized = false;
+}
+
+WalkerChoice::WalkerChoice(::zserio::PropagateAllocatorT, ::zserio::NoInitT,
+        const WalkerChoice& other, const allocator_type& allocator) :
+        m_isInitialized(false),
+        m_objectChoice(::zserio::NoInit, other.copyObject(allocator))
+{
 }
 
 const ::zserio::ITypeInfo& WalkerChoice::typeInfo()

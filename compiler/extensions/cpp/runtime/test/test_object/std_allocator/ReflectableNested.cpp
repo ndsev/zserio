@@ -87,6 +87,38 @@ ReflectableNested& ReflectableNested::operator=(ReflectableNested&& other)
     return *this;
 }
 
+ReflectableNested::ReflectableNested(::zserio::NoInitT,
+        const ReflectableNested& other) :
+        m_isInitialized(false),
+        m_value_(other.m_value_)
+{
+}
+
+ReflectableNested& ReflectableNested::assign(::zserio::NoInitT,
+        const ReflectableNested& other)
+{
+    m_isInitialized = false;
+    m_value_ = other.m_value_;
+
+    return *this;
+}
+
+ReflectableNested::ReflectableNested(::zserio::NoInitT,
+        ReflectableNested&& other) :
+        m_isInitialized(false),
+        m_value_(::std::move(other.m_value_))
+{
+}
+
+ReflectableNested& ReflectableNested::assign(::zserio::NoInitT,
+        ReflectableNested&& other)
+{
+    m_isInitialized = false;
+    m_value_ = ::std::move(other.m_value_);
+
+    return *this;
+}
+
 ReflectableNested::ReflectableNested(::zserio::PropagateAllocatorT,
         const ReflectableNested& other, const allocator_type& allocator) :
         m_value_(::zserio::allocatorPropagatingCopy(other.m_value_, allocator))
@@ -95,6 +127,13 @@ ReflectableNested::ReflectableNested(::zserio::PropagateAllocatorT,
         initialize(other.m_dummyParam_, *(other.m_stringParam_));
     else
         m_isInitialized = false;
+}
+
+ReflectableNested::ReflectableNested(::zserio::PropagateAllocatorT, ::zserio::NoInitT,
+        const ReflectableNested& other, const allocator_type& allocator) :
+        m_isInitialized(false),
+        m_value_(::zserio::allocatorPropagatingCopy(other.m_value_, allocator))
+{
 }
 
 const ::zserio::ITypeInfo& ReflectableNested::typeInfo()

@@ -23,7 +23,7 @@
 </#macro>
 
 <#macro compound_constructor_definition compoundConstructorsData memberInitializationMacroName="">
-    <#local hasInitializers= needs_compound_initialization(compoundConstructorsData) ||
+    <#local hasInitializers=needs_compound_initialization(compoundConstructorsData) ||
             has_field_with_initialization(compoundConstructorsData.fieldList) ||
             memberInitializationMacroName != ""/>
     <#local numExtendedFields=num_extended_fields(compoundConstructorsData.fieldList)/>
@@ -128,6 +128,21 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
     ${compoundConstructorsData.compoundName}(const ${compoundConstructorsData.compoundName}& other);
 </#macro>
 
+<#macro compound_copy_constructor_no_init_declaration compoundConstructorsData>
+    <#if withCodeComments>
+
+    /**
+     * Copy constructor which prevents initialization.
+     *
+     * Note that the object will be initialized later by a parent compound.
+     *
+     * \param other Instance to construct from.
+     */
+    </#if>
+    ${compoundConstructorsData.compoundName}(::zserio::NoInitT,
+            const ${compoundConstructorsData.compoundName}& other);
+</#macro>
+
 <#macro compound_copy_initialization compoundConstructorsData>
     <#if needs_compound_initialization(compoundConstructorsData)>
     if (other.m_isInitialized)
@@ -159,6 +174,23 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 }
 </#macro>
 
+<#macro compound_copy_constructor_no_init_definition compoundConstructorsData>
+${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(::zserio::NoInitT,
+        const ${compoundConstructorsData.compoundName}&<#if compoundConstructorsData.fieldList?has_content> other</#if>) :
+        m_isInitialized(false)<#if compoundConstructorsData.fieldList?has_content>,</#if>
+    <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
+        m_numExtendedFields(other.m_numExtendedFields),
+    </#if>
+    <#list compoundConstructorsData.fieldList as field>
+        <@compound_copy_constructor_initializer_field field, field?has_next, 2/>
+        <#if field.usesAnyHolder>
+            <#break>
+        </#if>
+    </#list>
+{
+}
+</#macro>
+
 <#macro compound_assignment_operator_declaration compoundConstructorsData>
     <#if withCodeComments>
     /**
@@ -168,6 +200,20 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
      */
     </#if>
     ${compoundConstructorsData.compoundName}& operator=(const ${compoundConstructorsData.compoundName}& other);
+</#macro>
+
+<#macro compound_assignment_no_init_declaration compoundConstructorsData>
+    <#if withCodeComments>
+
+    /**
+     * Assignment which prevents initialization.
+     *
+     * Note that the object will be initialized later by a parent compound.
+     *
+     * \param other Instance to assign from.
+     */
+    </#if>
+    ${compoundConstructorsData.compoundName}& assign(::zserio::NoInitT, const ${compoundConstructorsData.compoundName}& other);
 </#macro>
 
 <#macro compound_assignment_operator_definition compoundConstructorsData>
@@ -189,15 +235,48 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
 }
 </#macro>
 
+<#macro compound_assignment_no_init_definition compoundConstructorsData>
+${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundName}::assign(::zserio::NoInitT,
+        const ${compoundConstructorsData.compoundName}&<#if compoundConstructorsData.fieldList?has_content> other</#if>)
+{
+    m_isInitialized = false;
+    <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
+    m_numExtendedFields = other.m_numExtendedFields;
+    </#if>
+    <#list compoundConstructorsData.fieldList as field>
+        <@compound_assignment_field field, 1/>
+        <#if field.usesAnyHolder>
+            <#break>
+        </#if>
+    </#list>
+
+    return *this;
+}
+</#macro>
+
 <#macro compound_move_constructor_declaration compoundConstructorsData>
     <#if withCodeComments>
     /**
      * Move constructor.
      *
-     * \param other Instance to move from.
+     * \param other Instance to move-construct from.
      */
     </#if>
     ${compoundConstructorsData.compoundName}(${compoundConstructorsData.compoundName}&& other);
+</#macro>
+
+<#macro compound_move_constructor_no_init_declaration compoundConstructorsData>
+    <#if withCodeComments>
+
+    /**
+     * Move constructor which prevents initialization.
+     *
+     * Note that the object will be initialized later by a parent compound.
+     *
+     * \param other Instance to move-construct from.
+     */
+    </#if>
+    ${compoundConstructorsData.compoundName}(::zserio::NoInitT, ${compoundConstructorsData.compoundName}&& other);
 </#macro>
 
 <#macro compound_move_constructor_definition compoundConstructorsData>
@@ -217,20 +296,52 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 }
 </#macro>
 
+<#macro compound_move_constructor_no_init_definition compoundConstructorsData>
+${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(::zserio::NoInitT,
+        ${compoundConstructorsData.compoundName}&&<#if compoundConstructorsData.fieldList?has_content> other</#if>) :
+        m_isInitialized(false)<#if compoundConstructorsData.fieldList?has_content>,</#if>
+    <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
+        m_numExtendedFields(other.m_numExtendedFields),
+    </#if>
+    <#list compoundConstructorsData.fieldList as field>
+        <@compound_move_constructor_initializer_field field, field?has_next, 2/>
+        <#if field.usesAnyHolder>
+            <#break>
+        </#if>
+    </#list>
+{
+}
+</#macro>
+
 <#macro compound_move_assignment_operator_declaration compoundConstructorsData>
     <#if withCodeComments>
     /**
      * Move assignment operator.
      *
-     * \param other Instance to assign from.
+     * \param other Instance to move-assign from.
      */
     </#if>
     ${compoundConstructorsData.compoundName}& operator=(${compoundConstructorsData.compoundName}&& other);
 </#macro>
 
+<#macro compound_move_assignment_no_init_declaration compoundConstructorsData>
+    <#if withCodeComments>
+
+    /**
+     * Move assignment which prevents initialization.
+     *
+     * Note that the object will be initialized later by a parent compound.
+     *
+     * \param other Instance to move-assign from.
+     */
+    </#if>
+    ${compoundConstructorsData.compoundName}& assign(::zserio::NoInitT,
+            ${compoundConstructorsData.compoundName}&& other);
+</#macro>
+
 <#macro compound_move_assignment_operator_definition compoundConstructorsData>
 ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundName}::operator=(<#rt>
-    <#lt>${compoundConstructorsData.compoundName}&& other)
+        <#lt>${compoundConstructorsData.compoundName}&& other)
 {
     <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
     m_numExtendedFields = other.m_numExtendedFields;
@@ -247,6 +358,25 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
 }
 </#macro>
 
+<#macro compound_move_assignment_no_init_definition compoundConstructorsData>
+${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundName}::assign(::zserio::NoInitT,
+        ${compoundConstructorsData.compoundName}&&<#if compoundConstructorsData.fieldList?has_content> other</#if>)
+{
+    m_isInitialized = false;
+    <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
+    m_numExtendedFields = other.m_numExtendedFields;
+    </#if>
+    <#list compoundConstructorsData.fieldList as field>
+        <@compound_move_assignment_field field, 1/>
+        <#if field.usesAnyHolder>
+            <#break>
+        </#if>
+    </#list>
+
+    return *this;
+}
+</#macro>
+
 <#macro compound_allocator_propagating_copy_constructor_declaration compoundConstructorsData>
     <#if withCodeComments>
     /**
@@ -257,6 +387,19 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
      */
     </#if>
     ${compoundConstructorsData.compoundName}(::zserio::PropagateAllocatorT,
+            const ${compoundConstructorsData.compoundName}& other, const allocator_type& allocator);
+</#macro>
+
+<#macro compound_allocator_propagating_copy_constructor_no_init_declaration compoundConstructorsData>
+    <#if withCodeComments>
+    /**
+     * Copy constructor with propagating allocator which prevents initialization.
+     *
+     * \param other Instance to construct from.
+     * \param allocator Allocator to construct from.
+     */
+    </#if>
+    ${compoundConstructorsData.compoundName}(::zserio::PropagateAllocatorT, ::zserio::NoInitT,
             const ${compoundConstructorsData.compoundName}& other, const allocator_type& allocator);
 </#macro>
 
@@ -281,6 +424,26 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
     <#if initialization?has_content>
     ${initialization}<#t>
     </#if>
+}
+</#macro>
+
+<#macro compound_allocator_propagating_copy_constructor_no_init_definition compoundConstructorsData>
+${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
+        <#lt>::zserio::PropagateAllocatorT, ::zserio::NoInitT,
+        const ${compoundConstructorsData.compoundName}&<#rt>
+        <#lt><#if compoundConstructorsData.fieldList?has_content || initialization?has_content> other</#if>,<#rt>
+        <#lt> const allocator_type&<#if compoundConstructorsData.fieldList?has_content> allocator</#if>) :
+        m_isInitialized(false)<#if compoundConstructorsData.fieldList?has_content>,</#if>
+    <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
+        m_numExtendedFields(other.m_numExtendedFields),
+    </#if>
+    <#list compoundConstructorsData.fieldList as field>
+        <@compound_allocator_propagating_copy_constructor_initializer_field field, field?has_next, 2/>
+        <#if field.usesAnyHolder>
+            <#break>
+        </#if>
+    </#list>
+{
 }
 </#macro>
 

@@ -7,6 +7,7 @@
 #define TEST_OBJECT_STD_ALLOCATOR_DEBUG_STRING_PARAM_OBJECT_H
 
 #include <zserio/Traits.h>
+#include <zserio/NoInit.h>
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/AllocatorPropagatingCopy.h>
@@ -54,7 +55,17 @@ public:
     DebugStringParamObject(DebugStringParamObject&& other);
     DebugStringParamObject& operator=(DebugStringParamObject&& other);
 
+    DebugStringParamObject(::zserio::NoInitT,
+            const DebugStringParamObject& other);
+    DebugStringParamObject& assign(::zserio::NoInitT, const DebugStringParamObject& other);
+
+    DebugStringParamObject(::zserio::NoInitT, DebugStringParamObject&& other);
+    DebugStringParamObject& assign(::zserio::NoInitT,
+            DebugStringParamObject&& other);
+
     DebugStringParamObject(::zserio::PropagateAllocatorT,
+            const DebugStringParamObject& other, const allocator_type& allocator);
+    DebugStringParamObject(::zserio::PropagateAllocatorT, ::zserio::NoInitT,
             const DebugStringParamObject& other, const allocator_type& allocator);
 
     static const ::zserio::ITypeInfo& typeInfo();

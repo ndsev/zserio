@@ -207,3 +207,8 @@ struct ArrayObject
 {
     bit:31 value;
 };
+
+struct ArrayParamObject(ArrayObject param)
+{
+    uint32 value : value < param.value;
+};

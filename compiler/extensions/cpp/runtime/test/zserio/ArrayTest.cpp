@@ -14,6 +14,7 @@
 #include "test_object/std_allocator/ArrayBitmask.h"
 #include "test_object/std_allocator/ArrayEnum.h"
 #include "test_object/std_allocator/ArrayObject.h"
+#include "test_object/std_allocator/ArrayParamObject.h"
 
 namespace zserio
 {
@@ -21,6 +22,7 @@ namespace zserio
 using ArrayEnum = test_object::std_allocator::ArrayEnum;
 using ArrayBitmask = test_object::std_allocator::ArrayBitmask;
 using ArrayObject = test_object::std_allocator::ArrayObject;
+using ArrayParamObject = test_object::std_allocator::ArrayParamObject;
 
 namespace
 {
@@ -171,14 +173,6 @@ public:
 
     static void checkOffset(const ArrayTestOwner&, size_t, size_t)
     {}
-
-    static void initializeElement(ArrayTestOwner&, ArrayObject& element, size_t)
-    {
-        // set value instead of call initialize, just for test
-        element.setValue(ELEMENT_VALUE);
-    }
-
-    static const uint32_t ELEMENT_VALUE = 0x12;
 };
 
 class ArrayObjectElementFactory
@@ -196,6 +190,52 @@ public:
             ArrayObject::ZserioPackingContext& contextNode, BitStreamReader& in, size_t)
     {
         array.emplace_back(contextNode, in, array.get_allocator());
+    }
+};
+
+struct ArrayParamObjectOwner
+{
+    ArrayObject arrayObject;
+};
+
+class ArrayParamObjectArrayExpressions
+{
+public:
+    using OwnerType = ArrayParamObjectOwner;
+
+    static void initializeOffset(ArrayParamObjectOwner&, size_t, size_t)
+    {}
+
+    static void checkOffset(const ArrayParamObjectOwner&, size_t, size_t)
+    {}
+
+    static void initializeElement(ArrayParamObjectOwner& owner, ArrayParamObject& element, size_t)
+    {
+        element.initialize(owner.arrayObject);
+    }
+
+    static bool checkInitialization(const ArrayParamObjectOwner& owner, const ArrayParamObject& element)
+    {
+        return owner.arrayObject == element.getParam();
+    }
+};
+
+class ArrayParamObjectElementFactory
+{
+public:
+    using OwnerType = ArrayParamObjectOwner;
+
+    static void create(ArrayParamObjectOwner& owner,
+            ::zserio::vector<ArrayParamObject>& array, ::zserio::BitStreamReader& in, size_t)
+    {
+        array.emplace_back(in, owner.arrayObject, array.get_allocator());
+    }
+
+    static void create(ArrayParamObjectOwner& owner,
+            ::zserio::vector<ArrayParamObject>& array, ArrayParamObject::ZserioPackingContext& context,
+            ::zserio::BitStreamReader& in, size_t)
+    {
+        array.emplace_back(context, in, owner.arrayObject, array.get_allocator());
     }
 };
 
@@ -220,7 +260,8 @@ protected:
         const size_t alignedBitSize = (arraySize > 0)
                 ? alignTo(8, elementBitSize) * (arraySize - 1) + elementBitSize
                 : 0;
-        testArray<ARRAY_TRAITS>(rawArray, unalignedBitSize, alignedBitSize, owner);
+        testArray<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(
+                rawArray, unalignedBitSize, alignedBitSize, owner);
     }
 
     template <typename ARRAY_TRAITS, typename RAW_ARRAY,
@@ -236,17 +277,6 @@ protected:
         testArrayAlignedAuto<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(
                 rawArray, AUTO_LENGTH_BIT_SIZE + alignedBitSize, owner);
         testArrayImplicit<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(rawArray, unalignedBitSize, owner);
-    }
-
-    template <typename ARRAY_TRAITS, typename RAW_ARRAY>
-    void testArrayInitializeElements(const RAW_ARRAY& rawArray)
-    {
-        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL, ArrayObjectArrayExpressions> array(rawArray);
-        ArrayTestOwner owner;
-        array.initializeElements(owner);
-        const uint32_t expectedValue = ArrayObjectArrayExpressions::ELEMENT_VALUE;
-        for (const auto& element : array.getRawArray())
-            ASSERT_EQ(expectedValue, element.getValue());
     }
 
     template <typename ARRAY_TRAITS, typename RAW_ARRAY,
@@ -294,6 +324,23 @@ protected:
     static const size_t PACKING_DESCRIPTOR_BITSIZE = 1 + 6;
 
 private:
+    template <typename ARRAY, typename ARRAY_EXPRESSIONS = typename ARRAY::ArrayExpressions,
+            typename std::enable_if<has_initialize_element<ARRAY_EXPRESSIONS>::value, int>::type = 0>
+    void initializeElements(ARRAY& array, typename ARRAY::OwnerType& owner)
+    {
+        array.initializeElements(owner);
+        for (const auto& element : array.getRawArray())
+        {
+            ASSERT_TRUE(element.isInitialized());
+            ASSERT_TRUE(ARRAY_EXPRESSIONS::checkInitialization(owner, element));
+        }
+    }
+
+    template <typename ARRAY, typename ARRAY_EXPRESSIONS = typename ARRAY::ArrayExpressions,
+            typename std::enable_if<!has_initialize_element<ARRAY_EXPRESSIONS>::value, int>::type = 0>
+    void initializeElements(ARRAY&, typename ARRAY::OwnerType&)
+    {}
+
     template <typename ARRAY_TRAITS, typename RAW_ARRAY, typename ARRAY_EXPRESSIONS, typename OWNER_TYPE>
     void testArrayNormal(const RAW_ARRAY& rawArray, size_t expectedBitSize, OWNER_TYPE& owner)
     {
@@ -302,6 +349,8 @@ private:
         for (uint8_t i = 0; i < 8; ++i)
         {
             ArrayT array(rawArray);
+
+            initializeElements(array, owner);
 
             const size_t bitSize = arrayBitSizeOf(array, owner, i);
             ASSERT_EQ(expectedBitSize, bitSize);
@@ -331,6 +380,8 @@ private:
         {
             ArrayT array(rawArray);
 
+            initializeElements(array, owner);
+
             const size_t bitSize = arrayBitSizeOf(array, owner, i);
             ASSERT_EQ(expectedBitSize, bitSize);
             ASSERT_EQ(i + bitSize, arrayInitializeOffsets(array, owner, i));
@@ -358,6 +409,8 @@ private:
         for (uint8_t i = 0; i < 8; ++i)
         {
             ArrayT array(rawArray);
+
+            initializeElements(array, owner);
 
             const size_t bitSize = arrayBitSizeOf(array, owner, i);
             if (expectedBitSize == 0)
@@ -393,6 +446,8 @@ private:
         for (uint8_t i = 0; i < 8; ++i)
         {
             ArrayT array(rawArray);
+
+            initializeElements(array, owner);
 
             const size_t bitSize = arrayBitSizeOf(array, owner, i);
 
@@ -434,6 +489,8 @@ private:
         {
             ArrayT array(rawArray);
 
+            initializeElements(array, owner);
+
             const size_t bitSize = arrayBitSizeOf(array, owner, i);
             ASSERT_EQ(expectedBitSize, bitSize);
             ASSERT_EQ(i + bitSize, arrayInitializeOffsets(array, owner, i));
@@ -469,6 +526,8 @@ private:
         {
             ArrayT array(rawArray);
 
+            initializeElements(array, owner);
+
             const size_t bitSize = arrayBitSizeOfPacked(array, owner, i);
             if (expectedBitSize != UNKNOWN_BIT_SIZE)
             {
@@ -499,6 +558,8 @@ private:
         for (uint8_t i = 0; i < 8; ++i)
         {
             ArrayT array(rawArray);
+
+            initializeElements(array, owner);
 
             const size_t bitSize = arrayBitSizeOfPacked(array, owner, i);
             if (expectedBitSize != UNKNOWN_BIT_SIZE)
@@ -531,6 +592,8 @@ private:
         {
             ArrayT array(rawArray);
 
+            initializeElements(array, owner);
+
             const size_t bitSize = arrayBitSizeOfPacked(array, owner, i);
             if (expectedBitSize != UNKNOWN_BIT_SIZE && i == 0)
             {
@@ -561,6 +624,8 @@ private:
         for (uint8_t i = 0; i < 8; ++i)
         {
             ArrayT array(rawArray);
+
+            initializeElements(array, owner);
 
             const size_t bitSize = arrayBitSizeOfPacked(array, owner, i);
             if (expectedBitSize != UNKNOWN_BIT_SIZE && i == 0)
@@ -608,7 +673,50 @@ private:
         ARRAY arrayCopyWithPropagateAllocator(PropagateAllocator, array, std::allocator<uint8_t>());
         ASSERT_EQ(array, arrayCopyWithPropagateAllocator);
         ASSERT_EQ(array.getRawArray(), arrayCopyWithPropagateAllocator.getRawArray());
+
+        testArrayNoInitCopiesAndMoves(array);
     }
+
+    template <typename RAW_ARRAY>
+    void checkUninitialized(const RAW_ARRAY& rawArray)
+    {
+        for (const auto& element : rawArray)
+        {
+            ASSERT_FALSE(element.isInitialized());
+        }
+    }
+
+    template <typename ARRAY, typename T = typename ARRAY::RawArray::value_type,
+            typename std::enable_if<std::is_constructible<T, NoInitT, T>::value, int>::type = 0>
+    void testArrayNoInitCopiesAndMoves(const ARRAY& array)
+    {
+        ARRAY arrayCopy(NoInit, array);
+        ASSERT_EQ(array.getRawArray().size(), arrayCopy.getRawArray().size());
+        checkUninitialized(arrayCopy.getRawArray());
+
+        ARRAY arrayCopyAssigned;
+        arrayCopyAssigned.assign(NoInit, array);
+        ASSERT_EQ(array.getRawArray().size(), arrayCopyAssigned.getRawArray().size());
+        checkUninitialized(arrayCopyAssigned.getRawArray());
+
+        const ARRAY arrayMoved(NoInit, std::move(arrayCopy));
+        ASSERT_EQ(array.getRawArray().size(), arrayMoved.getRawArray().size());
+        checkUninitialized(arrayMoved.getRawArray());
+
+        ARRAY arrayMoveAssigned;
+        arrayMoveAssigned.assign(NoInit, std::move(arrayCopyAssigned));
+        ASSERT_EQ(array.getRawArray().size(), arrayMoveAssigned.getRawArray().size());
+        checkUninitialized(arrayMoveAssigned.getRawArray());
+
+        ARRAY arrayCopyWithPropagateAllocator(PropagateAllocator, NoInit, array, std::allocator<uint8_t>());
+        ASSERT_EQ(array.getRawArray().size(), arrayCopyWithPropagateAllocator.getRawArray().size());
+        checkUninitialized(arrayCopyWithPropagateAllocator.getRawArray());
+    }
+
+    template <typename ARRAY, typename T = typename ARRAY::RawArray::value_type,
+            typename std::enable_if<!std::is_constructible<T, NoInitT, T>::value, int>::type = 0>
+    void testArrayNoInitCopiesAndMoves(const ARRAY&)
+    {}
 
     static const size_t AUTO_LENGTH_BIT_SIZE = 8;
     static const size_t UNKNOWN_BIT_SIZE = std::numeric_limits<size_t>::max();
@@ -1111,13 +1219,22 @@ TEST_F(ArrayTest, bitmaskArray)
 TEST_F(ArrayTest, objectArray)
 {
     std::vector<ArrayObject> rawArray = {ArrayObject(0xAB), ArrayObject(0xCD), ArrayObject(0xEF)};
-    testArrayInitializeElements<ObjectArrayTraits<ArrayObject, ArrayObjectElementFactory>>(rawArray);
     testArray<ObjectArrayTraits<ArrayObject, ArrayObjectElementFactory>, std::vector<ArrayObject>,
             ArrayObjectArrayExpressions>(rawArray, 31);
 
     // empty
     testArray<ObjectArrayTraits<ArrayObject, ArrayObjectElementFactory>, std::vector<ArrayObject>,
             ArrayObjectArrayExpressions>(std::vector<ArrayObject>(), 31);
+}
+
+TEST_F(ArrayTest, paramObjectArray)
+{
+    ArrayParamObjectOwner owner{ArrayObject(0xEF)};
+    std::vector<ArrayParamObject> rawArray = {
+        ArrayParamObject(0xAB), ArrayParamObject(0xBC), ArrayParamObject(0xCD)
+    };
+    testArray<ObjectArrayTraits<ArrayParamObject, ArrayParamObjectElementFactory>,
+            std::vector<ArrayParamObject>, ArrayParamObjectArrayExpressions>(rawArray, 32, owner);
 }
 
 TEST_F(ArrayTest, stdInt8PackedArray)
@@ -1293,6 +1410,16 @@ TEST_F(ArrayTest, objectPackedArray)
     std::vector<ArrayObject> rawArray = {ArrayObject(0xAB), ArrayObject(0xCD), ArrayObject(0xEF)};
     testPackedArray<ObjectArrayTraits<ArrayObject, ArrayObjectElementFactory>, std::vector<ArrayObject>,
             ArrayObjectArrayExpressions>(rawArray);
+}
+
+TEST_F(ArrayTest, paramObjectPackedArray)
+{
+    ArrayParamObjectOwner owner{ArrayObject(0xEF)};
+    std::vector<ArrayParamObject> rawArray = {
+        ArrayParamObject(0xAB), ArrayParamObject(0xBC), ArrayParamObject(0xCD)
+    };
+    testPackedArray<ObjectArrayTraits<ArrayParamObject, ArrayParamObjectElementFactory>,
+            std::vector<ArrayParamObject>, ArrayParamObjectArrayExpressions>(rawArray, owner);
 }
 
 TEST_F(ArrayTest, createOptionalArray)

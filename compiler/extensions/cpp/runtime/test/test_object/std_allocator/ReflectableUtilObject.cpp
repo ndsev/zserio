@@ -43,7 +43,7 @@ ReflectableUtilObject::ReflectableUtilObject(ReflectableUtilObject::ZserioPackin
 
 ReflectableUtilObject::ReflectableUtilObject(const ReflectableUtilObject& other) :
         m_choiceParam_(other.m_choiceParam_),
-        m_reflectableUtilChoice_(other.m_reflectableUtilChoice_)
+        m_reflectableUtilChoice_(::zserio::NoInit, other.m_reflectableUtilChoice_)
 {
     if (other.m_areChildrenInitialized)
         initializeChildren();
@@ -54,7 +54,7 @@ ReflectableUtilObject::ReflectableUtilObject(const ReflectableUtilObject& other)
 ReflectableUtilObject& ReflectableUtilObject::operator=(const ReflectableUtilObject& other)
 {
     m_choiceParam_ = other.m_choiceParam_;
-    m_reflectableUtilChoice_ = other.m_reflectableUtilChoice_;
+    m_reflectableUtilChoice_.assign(::zserio::NoInit, other.m_reflectableUtilChoice_);
     if (other.m_areChildrenInitialized)
         initializeChildren();
     else
@@ -65,7 +65,7 @@ ReflectableUtilObject& ReflectableUtilObject::operator=(const ReflectableUtilObj
 
 ReflectableUtilObject::ReflectableUtilObject(ReflectableUtilObject&& other) :
         m_choiceParam_(::std::move(other.m_choiceParam_)),
-        m_reflectableUtilChoice_(::std::move(other.m_reflectableUtilChoice_))
+        m_reflectableUtilChoice_(::zserio::NoInit, ::std::move(other.m_reflectableUtilChoice_))
 {
     if (other.m_areChildrenInitialized)
         initializeChildren();
@@ -76,7 +76,7 @@ ReflectableUtilObject::ReflectableUtilObject(ReflectableUtilObject&& other) :
 ReflectableUtilObject& ReflectableUtilObject::operator=(ReflectableUtilObject&& other)
 {
     m_choiceParam_ = ::std::move(other.m_choiceParam_);
-    m_reflectableUtilChoice_ = ::std::move(other.m_reflectableUtilChoice_);
+    m_reflectableUtilChoice_.assign(::zserio::NoInit, ::std::move(other.m_reflectableUtilChoice_));
     if (other.m_areChildrenInitialized)
         initializeChildren();
     else
@@ -88,7 +88,7 @@ ReflectableUtilObject& ReflectableUtilObject::operator=(ReflectableUtilObject&& 
 ReflectableUtilObject::ReflectableUtilObject(::zserio::PropagateAllocatorT,
         const ReflectableUtilObject& other, const allocator_type& allocator) :
         m_choiceParam_(::zserio::allocatorPropagatingCopy(other.m_choiceParam_, allocator)),
-        m_reflectableUtilChoice_(::zserio::allocatorPropagatingCopy(other.m_reflectableUtilChoice_, allocator))
+        m_reflectableUtilChoice_(::zserio::NoInit, ::zserio::allocatorPropagatingCopy(::zserio::NoInit, other.m_reflectableUtilChoice_, allocator))
 {
     if (other.m_areChildrenInitialized)
         initializeChildren();

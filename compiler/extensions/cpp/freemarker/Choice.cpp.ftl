@@ -59,8 +59,22 @@
 <@compound_move_assignment_operator_definition compoundConstructorsData/>
 
 </#if>
+<#if needs_compound_initialization(compoundConstructorsData)>
+<@compound_copy_constructor_no_init_definition compoundConstructorsData/>
+
+<@compound_assignment_no_init_definition compoundConstructorsData/>
+
+<@compound_move_constructor_no_init_definition compoundConstructorsData/>
+
+<@compound_move_assignment_no_init_definition compoundConstructorsData/>
+
+</#if>
 <@compound_allocator_propagating_copy_constructor_definition compoundConstructorsData/>
 
+<#if needs_compound_initialization(compoundConstructorsData)>
+<@compound_allocator_propagating_copy_constructor_no_init_definition compoundConstructorsData/>
+
+</#if>
 <#macro choice_selector_condition expressionList>
     <#if expressionList?size == 1>
         selector == (${expressionList?first})<#t>
@@ -566,7 +580,11 @@ ${types.anyHolder.name} ${name}::readObject(${name}::ZserioPackingContext&<#if u
 <#macro choice_copy_object member packed indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
-${I}return ::zserio::allocatorPropagatingCopy<<@field_cpp_type_name member.compoundField/>>(m_objectChoice, allocator);
+${I}return ::zserio::allocatorPropagatingCopy<<@field_cpp_type_name member.compoundField/>>(<#rt>
+        <#if has_field_no_init_tag(member.compoundField)>
+        ::zserio::NoInit, <#t>
+        </#if>
+        <#lt>m_objectChoice, allocator);
     <#else>
 ${I}return ${types.anyHolder.name}(allocator);
     </#if>

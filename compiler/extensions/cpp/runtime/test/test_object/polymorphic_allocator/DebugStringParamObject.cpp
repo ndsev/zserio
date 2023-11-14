@@ -75,6 +75,38 @@ DebugStringParamObject& DebugStringParamObject::operator=(DebugStringParamObject
     return *this;
 }
 
+DebugStringParamObject::DebugStringParamObject(::zserio::NoInitT,
+        const DebugStringParamObject& other) :
+        m_isInitialized(false),
+        m_text_(other.m_text_)
+{
+}
+
+DebugStringParamObject& DebugStringParamObject::assign(::zserio::NoInitT,
+        const DebugStringParamObject& other)
+{
+    m_isInitialized = false;
+    m_text_ = other.m_text_;
+
+    return *this;
+}
+
+DebugStringParamObject::DebugStringParamObject(::zserio::NoInitT,
+        DebugStringParamObject&& other) :
+        m_isInitialized(false),
+        m_text_(::std::move(other.m_text_))
+{
+}
+
+DebugStringParamObject& DebugStringParamObject::assign(::zserio::NoInitT,
+        DebugStringParamObject&& other)
+{
+    m_isInitialized = false;
+    m_text_ = ::std::move(other.m_text_);
+
+    return *this;
+}
+
 DebugStringParamObject::DebugStringParamObject(::zserio::PropagateAllocatorT,
         const DebugStringParamObject& other, const allocator_type& allocator) :
         m_text_(::zserio::allocatorPropagatingCopy(other.m_text_, allocator))
@@ -83,6 +115,13 @@ DebugStringParamObject::DebugStringParamObject(::zserio::PropagateAllocatorT,
         initialize(other.m_param_);
     else
         m_isInitialized = false;
+}
+
+DebugStringParamObject::DebugStringParamObject(::zserio::PropagateAllocatorT, ::zserio::NoInitT,
+        const DebugStringParamObject& other, const allocator_type& allocator) :
+        m_isInitialized(false),
+        m_text_(::zserio::allocatorPropagatingCopy(other.m_text_, allocator))
+{
 }
 
 const ::zserio::pmr::ITypeInfo& DebugStringParamObject::typeInfo()
