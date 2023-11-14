@@ -172,19 +172,21 @@ test_cpp()
         return 1
     fi
 
-    for TARGET in "${CPP_TARGETS[@]}"; do
-        local BUILD_TYPE="release"
-        if [[ "${CMAKE_EXTRA_ARGS}" == *-DCMAKE_BUILD_TYPE=?ebug* ]] ; then
-            BUILD_TYPE="debug"
-        fi
+    if [[ ${SWITCH_CLEAN} != 1 ]] ; then
+        for TARGET in "${CPP_TARGETS[@]}"; do
+            local BUILD_TYPE="release"
+            if [[ "${CMAKE_EXTRA_ARGS}" == *-DCMAKE_BUILD_TYPE=?ebug* ]] ; then
+                BUILD_TYPE="debug"
+            fi
 
-        compare_test_data "${TEST_SRC_DIR}" "${TEST_OUT_DIR}/cpp/${TARGET}/${BUILD_TYPE}" TEST_SUITES[@] \
-                "C++ ${TARGET}"
-        if [ $? -ne 0 ] ; then
-            stderr_echo "${MESSAGE} failed!"
-            return 1
-        fi
-    done
+            compare_test_data "${TEST_SRC_DIR}" "${TEST_OUT_DIR}/cpp/${TARGET}/${BUILD_TYPE}" TEST_SUITES[@] \
+                    "C++ ${TARGET}"
+            if [ $? -ne 0 ] ; then
+                stderr_echo "${MESSAGE} failed!"
+                return 1
+            fi
+        done
+    fi
 
     echo -e "FINISHED - ${MESSAGE}\n"
 
@@ -229,10 +231,12 @@ test_java()
         return 1
     fi
 
-    compare_test_data "${TEST_SRC_DIR}" "${TEST_OUT_DIR}/java/" TEST_SUITES[@] "Java"
-    if [ $? -ne 0 ] ; then
-        stderr_echo "${MESSAGE} failed!"
-        return 1
+    if [[ ${SWITCH_CLEAN} != 1 ]] ; then
+        compare_test_data "${TEST_SRC_DIR}" "${TEST_OUT_DIR}/java/" TEST_SUITES[@] "Java"
+        if [ $? -ne 0 ] ; then
+            stderr_echo "${MESSAGE} failed!"
+            return 1
+        fi
     fi
 
     echo -e "FINISHED - ${MESSAGE}\n"
@@ -319,10 +323,12 @@ test_python()
         fi
     fi
 
-    compare_test_data "${TEST_SRC_DIR}" "${TEST_PYTHON_OUT_DIR}" TEST_SUITES[@] "Python"
-    if [ $? -ne 0 ] ; then
-        stderr_echo "${MESSAGE} failed!"
-        return 1
+    if [[ ${SWITCH_CLEAN} != 1 ]] ; then
+        compare_test_data "${TEST_SRC_DIR}" "${TEST_PYTHON_OUT_DIR}" TEST_SUITES[@] "Python"
+        if [ $? -ne 0 ] ; then
+            stderr_echo "${MESSAGE} failed!"
+            return 1
+        fi
     fi
 
     echo -e "FINISHED - ${MESSAGE}\n"
