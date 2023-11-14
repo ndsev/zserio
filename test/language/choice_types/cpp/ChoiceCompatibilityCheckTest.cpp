@@ -78,7 +78,9 @@ protected:
         else
             choice.setText("text" + zserio::toString<allocator_type>(index));
 
-        return HOLDER(selector, std::move(choice));
+        HOLDER holder(selector, std::move(choice));
+        holder.initializeChildren();
+        return holder;
     }
 
     template <typename HOLDER>
@@ -100,7 +102,9 @@ protected:
         choice.initialize(EnumVersion2::COORD_XYZ);
         choice.setCoordXYZ(CoordXYZ{10 * index, 20 * index, 1.1 * index});
 
-        return HolderVersion2(EnumVersion2::COORD_XYZ, std::move(choice));
+        HolderVersion2 holderVersion2(EnumVersion2::COORD_XYZ, std::move(choice));
+        holderVersion2.initializeChildren();
+        return holderVersion2;
     }
 
     vector_type<HolderVersion2> createArrayVersion2()

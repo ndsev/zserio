@@ -7,6 +7,15 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/parameterized_types/array_element_param/Database.cpp
     ${ZSERIO_GEN_DIR}/parameterized_types/array_element_param/Database.h
 
+    ${ZSERIO_GEN_DIR}/parameterized_types/array_element_param_with_optional/ExtraValue.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/array_element_param_with_optional/ExtraValue.h
+    ${ZSERIO_GEN_DIR}/parameterized_types/array_element_param_with_optional/Holder.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/array_element_param_with_optional/Holder.h
+    ${ZSERIO_GEN_DIR}/parameterized_types/array_element_param_with_optional/Param.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/array_element_param_with_optional/Param.h
+    ${ZSERIO_GEN_DIR}/parameterized_types/array_element_param_with_optional/Value.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/array_element_param_with_optional/Value.h
+
     ${ZSERIO_GEN_DIR}/parameterized_types/bytes_param/BytesParam.cpp
     ${ZSERIO_GEN_DIR}/parameterized_types/bytes_param/BytesParam.h
     ${ZSERIO_GEN_DIR}/parameterized_types/bytes_param/Parameterized.cpp
@@ -42,12 +51,28 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/parameterized_types/grand_child_param/ItemChoiceHolder.cpp
     ${ZSERIO_GEN_DIR}/parameterized_types/grand_child_param/ItemChoiceHolder.h
 
+    ${ZSERIO_GEN_DIR}/parameterized_types/nested_parameterized_field/TopLevel.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/nested_parameterized_field/TopLevel.h
+    ${ZSERIO_GEN_DIR}/parameterized_types/nested_parameterized_field/ParamHolder.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/nested_parameterized_field/ParamHolder.h
+    ${ZSERIO_GEN_DIR}/parameterized_types/nested_parameterized_field/Param.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/nested_parameterized_field/Param.h
+
     ${ZSERIO_GEN_DIR}/parameterized_types/packed_array_element_param/Block.cpp
     ${ZSERIO_GEN_DIR}/parameterized_types/packed_array_element_param/Block.h
     ${ZSERIO_GEN_DIR}/parameterized_types/packed_array_element_param/BlockHeader.cpp
     ${ZSERIO_GEN_DIR}/parameterized_types/packed_array_element_param/BlockHeader.h
     ${ZSERIO_GEN_DIR}/parameterized_types/packed_array_element_param/Database.cpp
     ${ZSERIO_GEN_DIR}/parameterized_types/packed_array_element_param/Database.h
+
+    ${ZSERIO_GEN_DIR}/parameterized_types/param_with_optional/ExtraValue.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/param_with_optional/ExtraValue.h
+    ${ZSERIO_GEN_DIR}/parameterized_types/param_with_optional/Holder.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/param_with_optional/Holder.h
+    ${ZSERIO_GEN_DIR}/parameterized_types/param_with_optional/Param.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/param_with_optional/Param.h
+    ${ZSERIO_GEN_DIR}/parameterized_types/param_with_optional/Value.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/param_with_optional/Value.h
 
     ${ZSERIO_GEN_DIR}/parameterized_types/parameterized_inner_classes_clashing/Compound.cpp
     ${ZSERIO_GEN_DIR}/parameterized_types/parameterized_inner_classes_clashing/Compound.h
@@ -92,12 +117,15 @@ add_custom_test(parameterized_types
         parameterized_types_zs
     SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ArrayElementParamTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ArrayElementParamWithOptionalTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/BytesParamTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/DynamicBitfieldParamTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ExternParamTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/FixedAndVariableParamTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/GrandChildParamTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/NestedParameterizedFieldTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedArrayElementParamTest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ParamWithOptionalTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ParameterizedInnerClassesClashingTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ParameterizedParamTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/SimpleParamTest.cpp
