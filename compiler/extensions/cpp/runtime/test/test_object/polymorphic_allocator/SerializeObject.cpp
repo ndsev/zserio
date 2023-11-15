@@ -405,6 +405,21 @@ bool SerializeObject::operator==(const SerializeObject& other) const
     return true;
 }
 
+bool SerializeObject::operator<(const SerializeObject& other) const
+{
+    if (m_param_ < other.m_param_)
+        return true;
+    if (other.m_param_ < m_param_)
+        return false;
+
+    if (m_nested_ < other.m_nested_)
+        return true;
+    if (other.m_nested_ < m_nested_)
+        return false;
+
+    return false;
+}
+
 uint32_t SerializeObject::hashCode() const
 {
     uint32_t result = ::zserio::HASH_SEED;

@@ -412,6 +412,21 @@ bool DebugStringParamObject::operator==(const DebugStringParamObject& other) con
     return true;
 }
 
+bool DebugStringParamObject::operator<(const DebugStringParamObject& other) const
+{
+    if (getParam() < other.getParam())
+        return true;
+    if (other.getParam() < getParam())
+        return false;
+
+    if (m_text_ < other.m_text_)
+        return true;
+    if (other.m_text_ < m_text_)
+        return false;
+
+    return false;
+}
+
 uint32_t DebugStringParamObject::hashCode() const
 {
     uint32_t result = ::zserio::HASH_SEED;

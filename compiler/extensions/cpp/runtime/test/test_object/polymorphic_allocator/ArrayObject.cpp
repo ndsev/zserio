@@ -275,6 +275,16 @@ bool ArrayObject::operator==(const ArrayObject& other) const
     return true;
 }
 
+bool ArrayObject::operator<(const ArrayObject& other) const
+{
+    if (m_value_ < other.m_value_)
+        return true;
+    if (other.m_value_ < m_value_)
+        return false;
+
+    return false;
+}
+
 uint32_t ArrayObject::hashCode() const
 {
     uint32_t result = ::zserio::HASH_SEED;

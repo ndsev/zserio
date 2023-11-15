@@ -415,6 +415,21 @@ bool ReflectableObject::operator==(const ReflectableObject& other) const
     return true;
 }
 
+bool ReflectableObject::operator<(const ReflectableObject& other) const
+{
+    if (m_stringField_ < other.m_stringField_)
+        return true;
+    if (other.m_stringField_ < m_stringField_)
+        return false;
+
+    if (m_reflectableNested_ < other.m_reflectableNested_)
+        return true;
+    if (other.m_reflectableNested_ < m_reflectableNested_)
+        return false;
+
+    return false;
+}
+
 uint32_t ReflectableObject::hashCode() const
 {
     uint32_t result = ::zserio::HASH_SEED;

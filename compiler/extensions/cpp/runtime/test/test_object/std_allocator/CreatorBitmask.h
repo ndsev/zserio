@@ -100,6 +100,11 @@ inline bool operator!=(const CreatorBitmask& lhs, const CreatorBitmask& rhs)
     return lhs.getValue() != rhs.getValue();
 }
 
+inline bool operator<(const CreatorBitmask& lhs, const CreatorBitmask& rhs)
+{
+    return lhs.getValue() < rhs.getValue();
+}
+
 inline CreatorBitmask operator|(CreatorBitmask::Values lhs, CreatorBitmask::Values rhs)
 {
     return CreatorBitmask(static_cast<CreatorBitmask::underlying_type>(lhs) | static_cast<CreatorBitmask::underlying_type>(rhs));

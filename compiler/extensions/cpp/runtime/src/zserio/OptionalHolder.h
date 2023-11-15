@@ -75,6 +75,21 @@ public:
     }
 
     /**
+     * Operator less than.
+     *
+     * \param other Other holder to compare.
+     *
+     * \return True when the other holder has less value than this. False otherwise.
+     */
+    bool operator<(const optional_holder_base& other) const
+    {
+        if (getDerived()->hasValue() && other.getDerived()->hasValue())
+            return get() < other.get();
+
+        return !getDerived()->hasValue() && other.getDerived()->hasValue();
+    }
+
+    /**
      * Bool operator.
      *
      * Evaluates to true when this holder has assigned any value.

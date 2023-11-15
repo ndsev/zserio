@@ -523,6 +523,35 @@ bool WalkerUnion::operator==(const WalkerUnion& other) const
     }
 }
 
+bool WalkerUnion::operator<(const WalkerUnion& other) const
+{
+    if (m_choiceTag < other.m_choiceTag)
+        return true;
+    if (other.m_choiceTag < m_choiceTag)
+        return false;
+
+    switch (m_choiceTag)
+    {
+    case CHOICE_value:
+        if (m_objectChoice.hasValue() && other.m_objectChoice.hasValue())
+            return m_objectChoice.get<uint32_t>() < other.m_objectChoice.get<uint32_t>();
+        else
+            return !m_objectChoice.hasValue() && other.m_objectChoice.hasValue();
+    case CHOICE_text:
+        if (m_objectChoice.hasValue() && other.m_objectChoice.hasValue())
+            return m_objectChoice.get<::zserio::pmr::string>() < other.m_objectChoice.get<::zserio::pmr::string>();
+        else
+            return !m_objectChoice.hasValue() && other.m_objectChoice.hasValue();
+    case CHOICE_nestedArray:
+        if (m_objectChoice.hasValue() && other.m_objectChoice.hasValue())
+            return m_objectChoice.get<ZserioArrayType_nestedArray>() < other.m_objectChoice.get<ZserioArrayType_nestedArray>();
+        else
+            return !m_objectChoice.hasValue() && other.m_objectChoice.hasValue();
+    default:
+        return false; // UNDEFINED_CHOICE
+    }
+}
+
 uint32_t WalkerUnion::hashCode() const
 {
     uint32_t result = ::zserio::HASH_SEED;

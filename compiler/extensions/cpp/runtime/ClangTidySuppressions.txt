@@ -65,12 +65,12 @@ cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/TypeInfo.h:1554
 
 # This is necessary for implementation of deprecated constructor which accepts raw pointer. Constructor
 # with raw pointer cannot be removed because of backward compatibility.
-cppcoreguidelines-pro-bounds-pointer-arithmetic:src/zserio/BitBuffer.h:262
+cppcoreguidelines-pro-bounds-pointer-arithmetic:src/zserio/BitBuffer.h:273
 
 # This is false positive, the member is initialized.
 cppcoreguidelines-pro-type-member-init:src/zserio/BitStreamWriter.h:71
 # This is aligned storage which we want to leave uninitialized.
-cppcoreguidelines-pro-type-member-init:src/zserio/OptionalHolder.h:650
+cppcoreguidelines-pro-type-member-init:src/zserio/OptionalHolder.h:665
 
 # This is necessary for implementation of low level implementation of AnyHolder and OptionalHolder to mimic
 # standard C++17 'any' and 'optional' abstractions.
@@ -145,8 +145,8 @@ cppcoreguidelines-avoid-c-arrays:test/zserio/SpanTest.cpp:46
 cppcoreguidelines-avoid-c-arrays:test/zserio/StringViewTest.cpp:770
 
 # Intentional tests.
-cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/BitBufferTest.cpp:328
-cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/BitBufferTest.cpp:342
+cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/BitBufferTest.cpp:367
+cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/BitBufferTest.cpp:381
 cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/SpanTest.cpp:35
 cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/SpanTest.cpp:39
 cppcoreguidelines-pro-bounds-pointer-arithmetic:test/zserio/StringViewTest.cpp:157
@@ -163,12 +163,12 @@ google-build-using-namespace:test/zserio/ReflectableTest.cpp:24
 # Intentional tests (the first two are generated zserio types).
 google-explicit-constructor:test/zserio/BuiltInOperatorsTest.cpp:26
 google-explicit-constructor:test/zserio/HashCodeUtilTest.cpp:34
-google-explicit-constructor:src/zserio/OptionalHolder.h:206
-google-explicit-constructor:src/zserio/OptionalHolder.h:216
-google-explicit-constructor:src/zserio/OptionalHolder.h:226
-google-explicit-constructor:src/zserio/OptionalHolder.h:655
-google-explicit-constructor:src/zserio/OptionalHolder.h:663
-google-explicit-constructor:src/zserio/OptionalHolder.h:674
+google-explicit-constructor:src/zserio/OptionalHolder.h:221
+google-explicit-constructor:src/zserio/OptionalHolder.h:231
+google-explicit-constructor:src/zserio/OptionalHolder.h:241
+google-explicit-constructor:src/zserio/OptionalHolder.h:670
+google-explicit-constructor:src/zserio/OptionalHolder.h:678
+google-explicit-constructor:src/zserio/OptionalHolder.h:689
 google-explicit-constructor:test/zserio/TrackingAllocator.h:78
 
 # Intentional tests.

@@ -811,6 +811,46 @@ bool CreatorNested::operator==(const CreatorNested& other) const
     return true;
 }
 
+bool CreatorNested::operator<(const CreatorNested& other) const
+{
+    if (getParam() < other.getParam())
+        return true;
+    if (other.getParam() < getParam())
+        return false;
+
+    if (m_value_ < other.m_value_)
+        return true;
+    if (other.m_value_ < m_value_)
+        return false;
+
+    if (m_text_ < other.m_text_)
+        return true;
+    if (other.m_text_ < m_text_)
+        return false;
+
+    if (m_externData_ < other.m_externData_)
+        return true;
+    if (other.m_externData_ < m_externData_)
+        return false;
+
+    if (m_bytesData_ < other.m_bytesData_)
+        return true;
+    if (other.m_bytesData_ < m_bytesData_)
+        return false;
+
+    if (m_creatorEnum_ < other.m_creatorEnum_)
+        return true;
+    if (other.m_creatorEnum_ < m_creatorEnum_)
+        return false;
+
+    if (m_creatorBitmask_ < other.m_creatorBitmask_)
+        return true;
+    if (other.m_creatorBitmask_ < m_creatorBitmask_)
+        return false;
+
+    return false;
+}
+
 uint32_t CreatorNested::hashCode() const
 {
     uint32_t result = ::zserio::HASH_SEED;

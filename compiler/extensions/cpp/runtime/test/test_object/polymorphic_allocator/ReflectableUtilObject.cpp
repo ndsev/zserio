@@ -405,6 +405,21 @@ bool ReflectableUtilObject::operator==(const ReflectableUtilObject& other) const
     return true;
 }
 
+bool ReflectableUtilObject::operator<(const ReflectableUtilObject& other) const
+{
+    if (m_choiceParam_ < other.m_choiceParam_)
+        return true;
+    if (other.m_choiceParam_ < m_choiceParam_)
+        return false;
+
+    if (m_reflectableUtilChoice_ < other.m_reflectableUtilChoice_)
+        return true;
+    if (other.m_reflectableUtilChoice_ < m_reflectableUtilChoice_)
+        return false;
+
+    return false;
+}
+
 uint32_t ReflectableUtilObject::hashCode() const
 {
     uint32_t result = ::zserio::HASH_SEED;

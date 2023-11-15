@@ -506,7 +506,7 @@ TEST_F(HeapOptionalHolderTest, setGet)
     ASSERT_THROW(*optionalAlloc, CppRuntimeException);
 }
 
-TEST_F(HeapOptionalHolderTest, equalOperator)
+TEST_F(HeapOptionalHolderTest, operatorEquality)
 {
     HeapOptionalHolder<int> optional1;
     optional1 = 0xDEAD;
@@ -537,6 +537,20 @@ TEST_F(HeapOptionalHolderTest, equalOperator)
     ASSERT_TRUE(optional9 == optional9);
     ASSERT_TRUE(optional9== optional10);
     ASSERT_FALSE(optional7 == optional10);
+}
+
+TEST_F(HeapOptionalHolderTest, operatorLessThan)
+{
+    HeapOptionalHolder<int> optionalEmpty1;
+    HeapOptionalHolder<int> optionalEmpty2;
+    HeapOptionalHolder<int> optional1(1);
+    HeapOptionalHolder<int> optional2(2);
+
+    ASSERT_FALSE(optionalEmpty1 < optionalEmpty2);
+    ASSERT_TRUE(optionalEmpty1 < optional1);
+    ASSERT_FALSE(optional1 < optionalEmpty1);
+    ASSERT_TRUE(optional1 < optional2);
+    ASSERT_FALSE(optional2 < optional1);
 }
 
 TEST_F(HeapOptionalHolderTest, constGet)

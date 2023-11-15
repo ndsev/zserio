@@ -557,6 +557,33 @@ bool SerializeNested::operator==(const SerializeNested& other) const
     return true;
 }
 
+bool SerializeNested::operator<(const SerializeNested& other) const
+{
+    if (getParam() < other.getParam())
+        return true;
+    if (other.getParam() < getParam())
+        return false;
+
+    if (m_offset_ < other.m_offset_)
+        return true;
+    if (other.m_offset_ < m_offset_)
+        return false;
+
+    if (isOptionalValueUsed() && other.isOptionalValueUsed())
+    {
+        if (m_optionalValue_ < other.m_optionalValue_)
+            return true;
+        if (other.m_optionalValue_ < m_optionalValue_)
+            return false;
+    }
+    else if (isOptionalValueUsed() != other.isOptionalValueUsed())
+    {
+        return !isOptionalValueUsed();
+    }
+
+    return false;
+}
+
 uint32_t SerializeNested::hashCode() const
 {
     uint32_t result = ::zserio::HASH_SEED;

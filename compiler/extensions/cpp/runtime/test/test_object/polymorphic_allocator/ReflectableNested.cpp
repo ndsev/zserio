@@ -511,6 +511,26 @@ bool ReflectableNested::operator==(const ReflectableNested& other) const
     return true;
 }
 
+bool ReflectableNested::operator<(const ReflectableNested& other) const
+{
+    if (getDummyParam() < other.getDummyParam())
+        return true;
+    if (other.getDummyParam() < getDummyParam())
+        return false;
+
+    if (getStringParam() < other.getStringParam())
+        return true;
+    if (other.getStringParam() < getStringParam())
+        return false;
+
+    if (m_value_ < other.m_value_)
+        return true;
+    if (other.m_value_ < m_value_)
+        return false;
+
+    return false;
+}
+
 uint32_t ReflectableNested::hashCode() const
 {
     uint32_t result = ::zserio::HASH_SEED;

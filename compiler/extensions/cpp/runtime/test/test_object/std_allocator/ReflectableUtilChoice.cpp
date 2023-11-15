@@ -543,6 +543,26 @@ bool ReflectableUtilChoice::operator==(const ReflectableUtilChoice& other) const
     }
 }
 
+bool ReflectableUtilChoice::operator<(const ReflectableUtilChoice& other) const
+{
+    if (getParam() < other.getParam())
+        return true;
+    if (other.getParam() < getParam())
+        return false;
+
+    switch (getParam())
+    {
+    case 1:
+    case 2:
+        if (m_objectChoice.hasValue() && other.m_objectChoice.hasValue())
+            return m_objectChoice.get<ZserioArrayType_array>() < other.m_objectChoice.get<ZserioArrayType_array>();
+        else
+            return !m_objectChoice.hasValue() && other.m_objectChoice.hasValue();
+    default:
+        return false;
+    }
+}
+
 uint32_t ReflectableUtilChoice::hashCode() const
 {
     uint32_t result = ::zserio::HASH_SEED;

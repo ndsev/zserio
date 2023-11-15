@@ -1089,6 +1089,84 @@ bool CreatorObject::operator==(const CreatorObject& other) const
     return true;
 }
 
+bool CreatorObject::operator<(const CreatorObject& other) const
+{
+    if (m_value_ < other.m_value_)
+        return true;
+    if (other.m_value_ < m_value_)
+        return false;
+
+    if (m_nested_ < other.m_nested_)
+        return true;
+    if (other.m_nested_ < m_nested_)
+        return false;
+
+    if (m_text_ < other.m_text_)
+        return true;
+    if (other.m_text_ < m_text_)
+        return false;
+
+    if (m_nestedArray_ < other.m_nestedArray_)
+        return true;
+    if (other.m_nestedArray_ < m_nestedArray_)
+        return false;
+
+    if (m_textArray_ < other.m_textArray_)
+        return true;
+    if (other.m_textArray_ < m_textArray_)
+        return false;
+
+    if (isExternArrayUsed() && other.isExternArrayUsed())
+    {
+        if (m_externArray_ < other.m_externArray_)
+            return true;
+        if (other.m_externArray_ < m_externArray_)
+            return false;
+    }
+    else if (isExternArrayUsed() != other.isExternArrayUsed())
+    {
+        return !isExternArrayUsed();
+    }
+
+    if (isBytesArrayUsed() && other.isBytesArrayUsed())
+    {
+        if (m_bytesArray_ < other.m_bytesArray_)
+            return true;
+        if (other.m_bytesArray_ < m_bytesArray_)
+            return false;
+    }
+    else if (isBytesArrayUsed() != other.isBytesArrayUsed())
+    {
+        return !isBytesArrayUsed();
+    }
+
+    if (isOptionalBoolUsed() && other.isOptionalBoolUsed())
+    {
+        if (m_optionalBool_ < other.m_optionalBool_)
+            return true;
+        if (other.m_optionalBool_ < m_optionalBool_)
+            return false;
+    }
+    else if (isOptionalBoolUsed() != other.isOptionalBoolUsed())
+    {
+        return !isOptionalBoolUsed();
+    }
+
+    if (isOptionalNestedUsed() && other.isOptionalNestedUsed())
+    {
+        if (m_optionalNested_ < other.m_optionalNested_)
+            return true;
+        if (other.m_optionalNested_ < m_optionalNested_)
+            return false;
+    }
+    else if (isOptionalNestedUsed() != other.isOptionalNestedUsed())
+    {
+        return !isOptionalNestedUsed();
+    }
+
+    return false;
+}
+
 uint32_t CreatorObject::hashCode() const
 {
     uint32_t result = ::zserio::HASH_SEED;

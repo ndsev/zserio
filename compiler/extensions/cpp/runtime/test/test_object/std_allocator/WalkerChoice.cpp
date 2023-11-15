@@ -764,6 +764,40 @@ bool WalkerChoice::operator==(const WalkerChoice& other) const
     }
 }
 
+bool WalkerChoice::operator<(const WalkerChoice& other) const
+{
+    if (getSelector() < other.getSelector())
+        return true;
+    if (other.getSelector() < getSelector())
+        return false;
+
+    switch (getSelector())
+    {
+    case 8:
+        if (m_objectChoice.hasValue() && other.m_objectChoice.hasValue())
+            return m_objectChoice.get<uint8_t>() < other.m_objectChoice.get<uint8_t>();
+        else
+            return !m_objectChoice.hasValue() && other.m_objectChoice.hasValue();
+    case 16:
+        if (m_objectChoice.hasValue() && other.m_objectChoice.hasValue())
+            return m_objectChoice.get<uint16_t>() < other.m_objectChoice.get<uint16_t>();
+        else
+            return !m_objectChoice.hasValue() && other.m_objectChoice.hasValue();
+    case 32:
+        if (m_objectChoice.hasValue() && other.m_objectChoice.hasValue())
+            return m_objectChoice.get<uint32_t>() < other.m_objectChoice.get<uint32_t>();
+        else
+            return !m_objectChoice.hasValue() && other.m_objectChoice.hasValue();
+    case 64:
+        if (m_objectChoice.hasValue() && other.m_objectChoice.hasValue())
+            return m_objectChoice.get<uint64_t>() < other.m_objectChoice.get<uint64_t>();
+        else
+            return !m_objectChoice.hasValue() && other.m_objectChoice.hasValue();
+    default:
+        return false;
+    }
+}
+
 uint32_t WalkerChoice::hashCode() const
 {
     uint32_t result = ::zserio::HASH_SEED;

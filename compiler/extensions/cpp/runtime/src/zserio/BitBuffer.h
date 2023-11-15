@@ -135,8 +135,19 @@ public:
      * Equal operator.
      *
      * \param other The another instance of bit buffer to which compare this bit buffer.
+     *
+     * \return True when the bit buffers have same contents, false otherwise.
      */
     bool operator==(const BasicBitBuffer<ALLOC>& other) const;
+
+    /**
+     * Operator less than.
+     *
+     * \param other The another instance of bit buffer to which compare this bit buffer.
+     *
+     * \return True when this bit buffer is less than the other (using lexicographical compare).
+     */
+    bool operator<(const BasicBitBuffer<ALLOC>& other) const;
 
     /**
      * Calculates hash code of the bit buffer.
@@ -298,6 +309,41 @@ bool BasicBitBuffer<ALLOC>::operator==(const BasicBitBuffer<ALLOC>& other) const
     }
 
     return true;
+}
+
+template <typename ALLOC>
+bool BasicBitBuffer<ALLOC>::operator<(const BasicBitBuffer<ALLOC>& other) const
+{
+    const size_t byteSize1 = getByteSize();
+    const size_t byteSize2 = other.getByteSize();
+
+    if (byteSize1 == 0)
+        return byteSize2 != 0;
+    if (byteSize2 == 0)
+        return false;
+
+    using difference_type = typename vector<uint8_t, ALLOC>::iterator::difference_type;
+
+    auto first1 = m_buffer.begin();
+    const auto last1 = first1 + static_cast<difference_type>(byteSize1 - 1);
+    auto first2 = other.m_buffer.begin();
+    const auto last2 = first2 + static_cast<difference_type>(byteSize2 - 1);
+    for (; (first1 != last1) && (first2 != last2); ++first1, ++first2)
+    {
+        if (*first1 < *first2)
+            return true;
+        if (*first2 < *first1)
+            return false;
+    }
+
+    const auto lastValue1 = first1 != last1 ? *first1 : getMaskedLastByte();
+    const auto lastValue2 = first2 != last2 ? *first2 : other.getMaskedLastByte();
+    if (lastValue1 < lastValue2)
+        return true;
+    if (lastValue2 < lastValue1)
+        return false;
+
+    return (first1 == last1) && (first2 != last2);
 }
 
 template <typename ALLOC>

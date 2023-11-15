@@ -99,6 +99,11 @@ inline bool operator!=(const WalkerBitmask& lhs, const WalkerBitmask& rhs)
     return lhs.getValue() != rhs.getValue();
 }
 
+inline bool operator<(const WalkerBitmask& lhs, const WalkerBitmask& rhs)
+{
+    return lhs.getValue() < rhs.getValue();
+}
+
 inline WalkerBitmask operator|(WalkerBitmask::Values lhs, WalkerBitmask::Values rhs)
 {
     return WalkerBitmask(static_cast<WalkerBitmask::underlying_type>(lhs) | static_cast<WalkerBitmask::underlying_type>(rhs));

@@ -550,6 +550,35 @@ bool ReflectableUtilUnion::operator==(const ReflectableUtilUnion& other) const
     }
 }
 
+bool ReflectableUtilUnion::operator<(const ReflectableUtilUnion& other) const
+{
+    if (m_choiceTag < other.m_choiceTag)
+        return true;
+    if (other.m_choiceTag < m_choiceTag)
+        return false;
+
+    switch (m_choiceTag)
+    {
+    case CHOICE_reflectableUtilEnum:
+        if (m_objectChoice.hasValue() && other.m_objectChoice.hasValue())
+            return m_objectChoice.get<::test_object::std_allocator::ReflectableUtilEnum>() < other.m_objectChoice.get<::test_object::std_allocator::ReflectableUtilEnum>();
+        else
+            return !m_objectChoice.hasValue() && other.m_objectChoice.hasValue();
+    case CHOICE_reflectableUtilBitmask:
+        if (m_objectChoice.hasValue() && other.m_objectChoice.hasValue())
+            return m_objectChoice.get<::test_object::std_allocator::ReflectableUtilBitmask>() < other.m_objectChoice.get<::test_object::std_allocator::ReflectableUtilBitmask>();
+        else
+            return !m_objectChoice.hasValue() && other.m_objectChoice.hasValue();
+    case CHOICE_reflectableUtilObject:
+        if (m_objectChoice.hasValue() && other.m_objectChoice.hasValue())
+            return m_objectChoice.get<::test_object::std_allocator::ReflectableUtilObject>() < other.m_objectChoice.get<::test_object::std_allocator::ReflectableUtilObject>();
+        else
+            return !m_objectChoice.hasValue() && other.m_objectChoice.hasValue();
+    default:
+        return false; // UNDEFINED_CHOICE
+    }
+}
+
 uint32_t ReflectableUtilUnion::hashCode() const
 {
     uint32_t result = ::zserio::HASH_SEED;

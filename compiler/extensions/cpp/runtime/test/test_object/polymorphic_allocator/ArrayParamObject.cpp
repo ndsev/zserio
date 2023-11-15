@@ -442,6 +442,21 @@ bool ArrayParamObject::operator==(const ArrayParamObject& other) const
     return true;
 }
 
+bool ArrayParamObject::operator<(const ArrayParamObject& other) const
+{
+    if (getParam() < other.getParam())
+        return true;
+    if (other.getParam() < getParam())
+        return false;
+
+    if (m_value_ < other.m_value_)
+        return true;
+    if (other.m_value_ < m_value_)
+        return false;
+
+    return false;
+}
+
 uint32_t ArrayParamObject::hashCode() const
 {
     uint32_t result = ::zserio::HASH_SEED;

@@ -257,6 +257,16 @@ bool WalkerNested::operator==(const WalkerNested& other) const
     return true;
 }
 
+bool WalkerNested::operator<(const WalkerNested& other) const
+{
+    if (m_text_ < other.m_text_)
+        return true;
+    if (other.m_text_ < m_text_)
+        return false;
+
+    return false;
+}
+
 uint32_t WalkerNested::hashCode() const
 {
     uint32_t result = ::zserio::HASH_SEED;

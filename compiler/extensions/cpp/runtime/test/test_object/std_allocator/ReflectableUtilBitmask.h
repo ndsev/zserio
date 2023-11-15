@@ -100,6 +100,11 @@ inline bool operator!=(const ReflectableUtilBitmask& lhs, const ReflectableUtilB
     return lhs.getValue() != rhs.getValue();
 }
 
+inline bool operator<(const ReflectableUtilBitmask& lhs, const ReflectableUtilBitmask& rhs)
+{
+    return lhs.getValue() < rhs.getValue();
+}
+
 inline ReflectableUtilBitmask operator|(ReflectableUtilBitmask::Values lhs, ReflectableUtilBitmask::Values rhs)
 {
     return ReflectableUtilBitmask(static_cast<ReflectableUtilBitmask::underlying_type>(lhs) | static_cast<ReflectableUtilBitmask::underlying_type>(rhs));

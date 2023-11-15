@@ -69,6 +69,9 @@ public:
     size_t initializeOffsets(size_t bitPosition = 0);
 
     bool operator==(const DebugStringObject& other) const;
+
+    bool operator<(const DebugStringObject& other) const;
+
     uint32_t hashCode() const;
 
     void write(::zserio::BitStreamWriter& out) const;

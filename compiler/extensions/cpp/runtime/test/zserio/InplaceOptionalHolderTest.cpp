@@ -259,7 +259,6 @@ TEST_F(InplaceOptionalHolderTest, moveAssignmentOperatorNoInit)
     ASSERT_TRUE(optionalObjectMoved->isNoInit());
 }
 
-
 TEST_F(InplaceOptionalHolderTest, lvalueAssignmentOperator)
 {
     std::vector<int> values{1, 2, 3};
@@ -298,7 +297,7 @@ TEST_F(InplaceOptionalHolderTest, reset)
     ASSERT_FALSE(optional.hasValue());
 }
 
-TEST_F(InplaceOptionalHolderTest, equalOperator)
+TEST_F(InplaceOptionalHolderTest, operatorEquality)
 {
     InplaceOptionalHolder<int> optional1;
     optional1 = 0xDEAD;
@@ -316,6 +315,20 @@ TEST_F(InplaceOptionalHolderTest, equalOperator)
     ASSERT_FALSE(optional1 == optional4);
     ASSERT_TRUE(optional5 == optional6);
     ASSERT_FALSE(optional5 == optional1);
+}
+
+TEST_F(InplaceOptionalHolderTest, operatorLessThan)
+{
+    InplaceOptionalHolder<int> optionalEmpty1;
+    InplaceOptionalHolder<int> optionalEmpty2;
+    InplaceOptionalHolder<int> optional1(1);
+    InplaceOptionalHolder<int> optional2(2);
+
+    ASSERT_FALSE(optionalEmpty1 < optionalEmpty2);
+    ASSERT_TRUE(optionalEmpty1 < optional1);
+    ASSERT_FALSE(optional1 < optionalEmpty1);
+    ASSERT_TRUE(optional1 < optional2);
+    ASSERT_FALSE(optional2 < optional1);
 }
 
 TEST_F(InplaceOptionalHolderTest, setGet)

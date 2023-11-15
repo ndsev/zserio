@@ -269,7 +269,7 @@ TEST(BitBufferTest, moveAssignmentOperator)
     ASSERT_EQ(bufferStart, movedBitBuffer.getBuffer());
 }
 
-TEST(BitBufferTest, equalOperator)
+TEST(BitBufferTest, operatorEquality)
 {
     const size_t bitSize = 11;
     const BitBuffer bitBuffer1(std::vector<uint8_t>({0xAB, 0xE0}), bitSize);
@@ -290,6 +290,45 @@ TEST(BitBufferTest, equalOperator)
 
     const BitBuffer bitBuffer7;
     ASSERT_FALSE(bitBuffer1 == bitBuffer7);
+}
+
+TEST(BitBufferTest, operatorLessThan)
+{
+    const BitBuffer bitBufferEmpty1;
+    const BitBuffer bitBufferEmpty2;
+    ASSERT_FALSE(bitBufferEmpty1 < bitBufferEmpty2);
+    ASSERT_FALSE(bitBufferEmpty2 < bitBufferEmpty1);
+
+    const BitBuffer bitBufferByte1(std::vector<uint8_t>({0xAB}), 8);
+    const BitBuffer bitBufferByte2(std::vector<uint8_t>({0xAC}), 8);
+    ASSERT_TRUE(bitBufferByte1 < bitBufferByte2);
+    ASSERT_FALSE(bitBufferByte2 < bitBufferByte1);
+
+    const BitBuffer bitBuffer1(std::vector<uint8_t>({0xAB, 0xE0}), 11);
+    ASSERT_TRUE(bitBufferEmpty1 < bitBuffer1);
+    ASSERT_TRUE(bitBufferByte1 < bitBuffer1);
+    ASSERT_FALSE(bitBuffer1 < bitBufferEmpty1);
+    ASSERT_FALSE(bitBuffer1 < bitBufferByte1);
+
+    const BitBuffer bitBuffer1Copy(bitBuffer1);
+    ASSERT_FALSE(bitBuffer1 < bitBuffer1Copy);
+    ASSERT_FALSE(bitBuffer1Copy < bitBuffer1);
+
+    const BitBuffer bitBuffer2(std::vector<uint8_t>({0xAB, 0xF0}), 11);
+    ASSERT_FALSE(bitBuffer1 < bitBuffer2);
+    ASSERT_FALSE(bitBuffer2 < bitBuffer1);
+
+    const BitBuffer bitBuffer3(std::vector<uint8_t>({0xAB, 0x00}), 11);
+    ASSERT_TRUE(bitBuffer3 < bitBuffer1);
+    ASSERT_FALSE(bitBuffer1 < bitBuffer3);
+
+    const BitBuffer bitBuffer4(std::vector<uint8_t>({0x00, 0x00}), 11);
+    ASSERT_TRUE(bitBuffer4 < bitBuffer1);
+    ASSERT_FALSE(bitBuffer1 < bitBuffer4);
+
+    const BitBuffer bitBuffer5(std::vector<uint8_t>({0xAB, 0xE0, 0x00}), 20);
+    ASSERT_TRUE(bitBuffer1 < bitBuffer5);
+    ASSERT_FALSE(bitBuffer5 < bitBuffer1);
 }
 
 TEST(BitBufferTest, hashCode)

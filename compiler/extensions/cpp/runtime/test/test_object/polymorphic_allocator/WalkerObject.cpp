@@ -839,6 +839,60 @@ bool WalkerObject::operator==(const WalkerObject& other) const
     return true;
 }
 
+bool WalkerObject::operator<(const WalkerObject& other) const
+{
+    if (m_identifier_ < other.m_identifier_)
+        return true;
+    if (other.m_identifier_ < m_identifier_)
+        return false;
+
+    if (isNestedUsed() && other.isNestedUsed())
+    {
+        if (m_nested_ < other.m_nested_)
+            return true;
+        if (other.m_nested_ < m_nested_)
+            return false;
+    }
+    else if (isNestedUsed() != other.isNestedUsed())
+    {
+        return !isNestedUsed();
+    }
+
+    if (m_text_ < other.m_text_)
+        return true;
+    if (other.m_text_ < m_text_)
+        return false;
+
+    if (m_unionArray_ < other.m_unionArray_)
+        return true;
+    if (other.m_unionArray_ < m_unionArray_)
+        return false;
+
+    if (isOptionalUnionArrayUsed() && other.isOptionalUnionArrayUsed())
+    {
+        if (m_optionalUnionArray_ < other.m_optionalUnionArray_)
+            return true;
+        if (other.m_optionalUnionArray_ < m_optionalUnionArray_)
+            return false;
+    }
+    else if (isOptionalUnionArrayUsed() != other.isOptionalUnionArrayUsed())
+    {
+        return !isOptionalUnionArrayUsed();
+    }
+
+    if (m_choiceSelector_ < other.m_choiceSelector_)
+        return true;
+    if (other.m_choiceSelector_ < m_choiceSelector_)
+        return false;
+
+    if (m_choiceField_ < other.m_choiceField_)
+        return true;
+    if (other.m_choiceField_ < m_choiceField_)
+        return false;
+
+    return false;
+}
+
 uint32_t WalkerObject::hashCode() const
 {
     uint32_t result = ::zserio::HASH_SEED;

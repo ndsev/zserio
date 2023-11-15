@@ -498,6 +498,18 @@ public:
     }
 
     /**
+     * Operator less than.
+     *
+     * \param other Array to compare.
+     *
+     * \return True when the underlying raw array is less than the other underlying raw array.
+     */
+    bool operator<(const Array& other) const
+    {
+        return m_rawArray < other.m_rawArray;
+    }
+
+    /**
      * Hash code.
      *
      * \return Hash code calculated on the underlying raw array.

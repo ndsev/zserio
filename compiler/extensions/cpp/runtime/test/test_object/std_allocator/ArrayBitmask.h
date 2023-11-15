@@ -101,6 +101,11 @@ inline bool operator!=(const ArrayBitmask& lhs, const ArrayBitmask& rhs)
     return lhs.getValue() != rhs.getValue();
 }
 
+inline bool operator<(const ArrayBitmask& lhs, const ArrayBitmask& rhs)
+{
+    return lhs.getValue() < rhs.getValue();
+}
+
 inline ArrayBitmask operator|(ArrayBitmask::Values lhs, ArrayBitmask::Values rhs)
 {
     return ArrayBitmask(static_cast<ArrayBitmask::underlying_type>(lhs) | static_cast<ArrayBitmask::underlying_type>(rhs));

@@ -117,6 +117,9 @@ public:
     size_t initializeOffsets(ZserioPackingContext& context, size_t bitPosition);
 
     bool operator==(const ReflectableUtilUnion& other) const;
+
+    bool operator<(const ReflectableUtilUnion& other) const;
+
     uint32_t hashCode() const;
 
     void write(::zserio::BitStreamWriter& out) const;

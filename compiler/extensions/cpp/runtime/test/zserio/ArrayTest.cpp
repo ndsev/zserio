@@ -655,6 +655,8 @@ private:
         ARRAY arrayCopy(array);
         ASSERT_EQ(array, arrayCopy);
         ASSERT_EQ(array.getRawArray(), arrayCopy.getRawArray());
+        ASSERT_FALSE(array < arrayCopy);
+        ASSERT_FALSE(arrayCopy < array);
 
         ARRAY arrayCopyAssigned;
         arrayCopyAssigned = array;
