@@ -277,7 +277,7 @@ private:
     using Base = UnsignedReflectableBase<ALLOC, bool>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getBool;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo() { return BuiltinTypeInfo<ALLOC>::getBool(); }
 
     explicit BoolReflectable(bool value) :
             Base(typeInfo(), value)
@@ -469,7 +469,7 @@ private:
     using Base = Int8ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getInt8;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo() { return BuiltinTypeInfo<ALLOC>::getInt8(); }
 
     explicit Int8Reflectable(int8_t value) :
             Base(typeInfo(), value)
@@ -496,7 +496,7 @@ private:
     using Base = Int16ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getInt16;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo() { return BuiltinTypeInfo<ALLOC>::getInt16(); }
 
     explicit Int16Reflectable(int16_t value) :
             Base(typeInfo(), value)
@@ -523,7 +523,7 @@ private:
     using Base = Int32ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getInt32;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo() { return BuiltinTypeInfo<ALLOC>::getInt32(); }
 
     explicit Int32Reflectable(int32_t value) :
             Base(typeInfo(), value)
@@ -550,7 +550,7 @@ private:
     using Base = Int64ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getInt64;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo() { return BuiltinTypeInfo<ALLOC>::getInt64(); }
 
     explicit Int64Reflectable(int64_t value) :
             Base(typeInfo(), value)
@@ -577,7 +577,7 @@ private:
     using Base = UInt8ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getUInt8;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo() { return BuiltinTypeInfo<ALLOC>::getUInt8(); }
 
     explicit UInt8Reflectable(uint8_t value) :
             Base(typeInfo(), value)
@@ -604,7 +604,7 @@ private:
     using Base = UInt16ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getUInt16;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo() { return BuiltinTypeInfo<ALLOC>::getUInt16(); }
 
     explicit UInt16Reflectable(uint16_t value) :
             Base(typeInfo(), value)
@@ -631,7 +631,7 @@ private:
     using Base = UInt32ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getUInt32;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo() { return BuiltinTypeInfo<ALLOC>::getUInt32(); }
 
     explicit UInt32Reflectable(uint32_t value) :
             Base(typeInfo(), value)
@@ -658,7 +658,7 @@ private:
     using Base = UInt64ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getUInt64;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo() { return BuiltinTypeInfo<ALLOC>::getUInt64(); }
 
     explicit UInt64Reflectable(uint64_t value) :
             Base(typeInfo(), value)
@@ -685,7 +685,7 @@ private:
     using Base = Int8ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getFixedSignedBitField;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo(uint8_t bs) { return BuiltinTypeInfo<ALLOC>::getFixedSignedBitField(bs); }
 
     FixedSignedBitFieldReflectable(int8_t value, uint8_t bitSize) :
             Base(typeInfo(bitSize), value)
@@ -715,7 +715,7 @@ private:
     using Base = Int16ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getFixedSignedBitField;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo(uint8_t bs) { return BuiltinTypeInfo<ALLOC>::getFixedSignedBitField(bs); }
 
     FixedSignedBitFieldReflectable(int16_t value, uint8_t bitSize) :
             Base(typeInfo(bitSize), value)
@@ -745,7 +745,7 @@ private:
     using Base = Int32ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getFixedSignedBitField;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo(uint8_t bs) { return BuiltinTypeInfo<ALLOC>::getFixedSignedBitField(bs); }
 
     FixedSignedBitFieldReflectable(int32_t value, uint8_t bitSize) :
             Base(typeInfo(bitSize), value)
@@ -775,7 +775,7 @@ private:
     using Base = Int64ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getFixedSignedBitField;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo(uint8_t bs) { return BuiltinTypeInfo<ALLOC>::getFixedSignedBitField(bs); }
 
     FixedSignedBitFieldReflectable(int64_t value, uint8_t bitSize) :
             Base(typeInfo(bitSize), value)
@@ -808,7 +808,7 @@ private:
     using Base = UInt8ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getFixedUnsignedBitField;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo(uint8_t bs) { return BuiltinTypeInfo<ALLOC>::getFixedUnsignedBitField(bs); }
 
     FixedUnsignedBitFieldReflectable(uint8_t value, uint8_t bitSize) :
             Base(typeInfo(bitSize), value)
@@ -838,7 +838,7 @@ private:
     using Base = UInt16ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getFixedUnsignedBitField;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo(uint8_t bs) { return BuiltinTypeInfo<ALLOC>::getFixedUnsignedBitField(bs); }
 
     FixedUnsignedBitFieldReflectable(uint16_t value, uint8_t bitSize) :
             Base(typeInfo(bitSize), value)
@@ -868,7 +868,7 @@ private:
     using Base = UInt32ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getFixedUnsignedBitField;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo(uint8_t bs) { return BuiltinTypeInfo<ALLOC>::getFixedUnsignedBitField(bs); }
 
     FixedUnsignedBitFieldReflectable(uint32_t value, uint8_t bitSize) :
             Base(typeInfo(bitSize), value)
@@ -898,7 +898,7 @@ private:
     using Base = UInt64ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getFixedUnsignedBitField;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo(uint8_t bs) { return BuiltinTypeInfo<ALLOC>::getFixedUnsignedBitField(bs); }
 
     FixedUnsignedBitFieldReflectable(uint64_t value, uint8_t bitSize) :
             Base(typeInfo(bitSize), value)
@@ -931,7 +931,7 @@ private:
     using Base = Int8ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getDynamicSignedBitField;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo(uint8_t bs) { return BuiltinTypeInfo<ALLOC>::getDynamicSignedBitField(bs); }
 
     DynamicSignedBitFieldReflectable(int8_t value, uint8_t maxBitSize, uint8_t dynamicBitSize) :
             Base(typeInfo(maxBitSize), value), m_dynamicBitSize(dynamicBitSize)
@@ -970,7 +970,7 @@ private:
     using Base = Int16ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getDynamicSignedBitField;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo(uint8_t bs) { return BuiltinTypeInfo<ALLOC>::getDynamicSignedBitField(bs); }
 
     DynamicSignedBitFieldReflectable(int16_t value, uint8_t maxBitSize, uint8_t dynamicBitSize) :
             Base(typeInfo(maxBitSize), value), m_dynamicBitSize(dynamicBitSize)
@@ -1009,7 +1009,7 @@ private:
     using Base = Int32ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getDynamicSignedBitField;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo(uint8_t bs) { return BuiltinTypeInfo<ALLOC>::getDynamicSignedBitField(bs); }
 
     DynamicSignedBitFieldReflectable(int32_t value, uint8_t maxBitSize, uint8_t dynamicBitSize) :
             Base(typeInfo(maxBitSize), value), m_dynamicBitSize(dynamicBitSize)
@@ -1048,7 +1048,7 @@ private:
     using Base = Int64ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getDynamicSignedBitField;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo(uint8_t bs) { return BuiltinTypeInfo<ALLOC>::getDynamicSignedBitField(bs); }
 
     DynamicSignedBitFieldReflectable(int64_t value, uint8_t maxBitSize, uint8_t dynamicBitSize) :
             Base(typeInfo(maxBitSize), value), m_dynamicBitSize(dynamicBitSize)
@@ -1090,7 +1090,7 @@ private:
     using Base = UInt8ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getDynamicUnsignedBitField;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo(uint8_t bs) { return BuiltinTypeInfo<ALLOC>::getDynamicUnsignedBitField(bs); }
 
     DynamicUnsignedBitFieldReflectable(uint8_t value, uint8_t maxBitSize, uint8_t dynamicBitSize) :
             Base(typeInfo(maxBitSize), value), m_dynamicBitSize(dynamicBitSize)
@@ -1129,7 +1129,7 @@ private:
     using Base = UInt16ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getDynamicUnsignedBitField;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo(uint8_t bs) { return BuiltinTypeInfo<ALLOC>::getDynamicUnsignedBitField(bs); }
 
     DynamicUnsignedBitFieldReflectable(uint16_t value, uint8_t maxBitSize, uint8_t dynamicBitSize) :
             Base(typeInfo(maxBitSize), value), m_dynamicBitSize(dynamicBitSize)
@@ -1168,7 +1168,7 @@ private:
     using Base = UInt32ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getDynamicUnsignedBitField;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo(uint8_t bs) { return BuiltinTypeInfo<ALLOC>::getDynamicUnsignedBitField(bs); }
 
     DynamicUnsignedBitFieldReflectable(uint32_t value, uint8_t maxBitSize, uint8_t dynamicBitSize) :
             Base(typeInfo(maxBitSize), value), m_dynamicBitSize(dynamicBitSize)
@@ -1207,7 +1207,7 @@ private:
     using Base = UInt64ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getDynamicUnsignedBitField;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo(uint8_t bs) { return BuiltinTypeInfo<ALLOC>::getDynamicUnsignedBitField(bs); }
 
     DynamicUnsignedBitFieldReflectable(uint64_t value, uint8_t maxBitSize, uint8_t dynamicBitSize) :
             Base(typeInfo(maxBitSize), value), m_dynamicBitSize(dynamicBitSize)
@@ -1249,7 +1249,7 @@ private:
     using Base = Int16ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getVarInt16;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo() { return BuiltinTypeInfo<ALLOC>::getVarInt16(); }
 
     explicit VarInt16Reflectable(int16_t value) :
             Base(typeInfo(), value)
@@ -1276,7 +1276,7 @@ private:
     using Base = Int32ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getVarInt32;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo() { return BuiltinTypeInfo<ALLOC>::getVarInt32(); }
 
     explicit VarInt32Reflectable(int32_t value) :
             Base(typeInfo(), value)
@@ -1303,7 +1303,7 @@ private:
     using Base = Int64ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getVarInt64;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo() { return BuiltinTypeInfo<ALLOC>::getVarInt64(); }
 
     explicit VarInt64Reflectable(int64_t value) :
             Base(typeInfo(), value)
@@ -1330,7 +1330,7 @@ private:
     using Base = Int64ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getVarInt;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo() { return BuiltinTypeInfo<ALLOC>::getVarInt(); }
 
     explicit VarIntReflectable(int64_t value) :
             Base(typeInfo(), value)
@@ -1357,7 +1357,7 @@ private:
     using Base = UInt16ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getVarUInt16;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo() { return BuiltinTypeInfo<ALLOC>::getVarUInt16(); }
 
     explicit VarUInt16Reflectable(uint16_t value) :
             Base(typeInfo(), value)
@@ -1384,7 +1384,7 @@ private:
     using Base = UInt32ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getVarUInt32;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo() { return BuiltinTypeInfo<ALLOC>::getVarUInt32(); }
 
     explicit VarUInt32Reflectable(uint32_t value) :
             Base(typeInfo(), value)
@@ -1411,7 +1411,7 @@ private:
     using Base = UInt64ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getVarUInt64;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo() { return BuiltinTypeInfo<ALLOC>::getVarUInt64(); }
 
     explicit VarUInt64Reflectable(uint64_t value) :
             Base(typeInfo(), value)
@@ -1438,7 +1438,7 @@ private:
     using Base = UInt64ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getVarUInt;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo() { return BuiltinTypeInfo<ALLOC>::getVarUInt(); }
 
     explicit VarUIntReflectable(uint64_t value) :
             Base(typeInfo(), value)
@@ -1465,7 +1465,7 @@ private:
     using Base = UInt32ReflectableBase<ALLOC>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getVarSize;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo() { return BuiltinTypeInfo<ALLOC>::getVarSize(); }
 
     explicit VarSizeReflectable(uint32_t value) :
             Base(typeInfo(), value)
@@ -1511,7 +1511,7 @@ private:
     using Base = FloatingPointReflectableBase<ALLOC, float>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getFloat16;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo() { return BuiltinTypeInfo<ALLOC>::getFloat16(); }
 
     explicit Float16Reflectable(float value) :
             Base(typeInfo(), value)
@@ -1543,7 +1543,7 @@ private:
     using Base = FloatingPointReflectableBase<ALLOC, float>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getFloat32;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo() { return BuiltinTypeInfo<ALLOC>::getFloat32(); }
 
     explicit Float32Reflectable(float value) :
             Base(typeInfo(), value)
@@ -1575,7 +1575,7 @@ private:
     using Base = FloatingPointReflectableBase<ALLOC, double>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getFloat64;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo() { return BuiltinTypeInfo<ALLOC>::getFloat64(); }
 
     explicit Float64Reflectable(double value) :
             Base(typeInfo(), value)
@@ -1607,7 +1607,7 @@ private:
     using Base = BuiltinReflectableBase<ALLOC, Span<const uint8_t>>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getBytes;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo() { return BuiltinTypeInfo<ALLOC>::getBytes(); }
 
     explicit BytesReflectable(Span<const uint8_t> value) :
             Base(typeInfo(), value)
@@ -1639,7 +1639,7 @@ private:
     using Base = BuiltinReflectableBase<ALLOC, StringView>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getString;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo() { return BuiltinTypeInfo<ALLOC>::getString(); }
 
     explicit StringReflectable(StringView value) :
             Base(typeInfo(), value)
@@ -1676,7 +1676,7 @@ private:
     using Base = BuiltinReflectableBase<ALLOC, BasicBitBuffer<ALLOC>>;
 
 public:
-    static constexpr auto typeInfo = BuiltinTypeInfo<ALLOC>::getBitBuffer;
+    static inline IBasicTypeInfo<ALLOC> const& typeInfo() { return BuiltinTypeInfo<ALLOC>::getBitBuffer(); }
 
     explicit BitBufferReflectable(const BasicBitBuffer<ALLOC>& value) :
             Base(typeInfo(), value)
