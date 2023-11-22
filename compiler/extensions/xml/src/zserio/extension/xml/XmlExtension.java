@@ -21,9 +21,15 @@ public class XmlExtension implements Extension
     }
 
     @Override
-    public String getVersion()
+    public String getExtensionVersion()
     {
-        return XmlExtensionVersion.VERSION_STRING;
+        return XmlExtensionVersion.XML_EXTENSION_VERSION_STRING;
+    }
+
+    @Override
+    public String getZserioVersion()
+    {
+        return XmlExtensionVersion.EXPECTED_ZSERIO_VERSION_STRING;
     }
 
     @Override

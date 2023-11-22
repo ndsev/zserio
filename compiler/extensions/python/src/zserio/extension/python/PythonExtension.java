@@ -27,9 +27,15 @@ public class PythonExtension implements Extension
     }
 
     @Override
-    public String getVersion()
+    public String getExtensionVersion()
     {
-        return PythonExtensionVersion.VERSION_STRING;
+        return PythonExtensionVersion.PYTHON_EXTENSION_VERSION_STRING;
+    }
+
+    @Override
+    public String getZserioVersion()
+    {
+        return PythonExtensionVersion.EXPECTED_ZSERIO_VERSION_STRING;
     }
 
     @Override

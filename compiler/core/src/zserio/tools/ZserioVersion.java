@@ -154,7 +154,7 @@ public class ZserioVersion implements Comparable<ZserioVersion>
             return otherPreRelease == null ? -1 : preRelease.compareTo(otherPreRelease);
     }
 
-    /** ZserioTool version string. */
+    /** Zserio core version string. */
     public static final String VERSION_STRING = "2.12.0";
 
     private final int major;

@@ -23,9 +23,15 @@ public class JavaExtension implements Extension
     }
 
     @Override
-    public String getVersion()
+    public String getExtensionVersion()
     {
-        return JavaExtensionVersion.VERSION_STRING;
+        return JavaExtensionVersion.JAVA_EXTENSION_VERSION_STRING;
+    }
+
+    @Override
+    public String getZserioVersion()
+    {
+        return JavaExtensionVersion.EXPECTED_ZSERIO_VERSION_STRING;
     }
 
     @Override

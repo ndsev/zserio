@@ -189,6 +189,12 @@ public class CppExtensionParametersTest
             return 0;
         }
 
+        @Override
+        public String getZserioVersion()
+        {
+            return null;
+        }
+
         private final String setCppAllocator;
         private final boolean withReflectionCode;
         private final boolean withTypeInfoCode;

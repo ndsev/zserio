@@ -18,13 +18,21 @@ public interface Extension
     public String getName();
 
     /**
-     * Returns the version of ZserioTool which is expected by the extension.
-     * ZserioTool then checks if the current version can satisfy the extension
+     * Returns the version of Zserio core which is expected by the extension.
+     *
+     * Zserio core checks if the current version can satisfy the extension
      * (i.e. if the AST and common interfaces are compatible).
      *
-     * @return Version string of ZserioTool which is expected by the extension.
+     * @return Version string of Zserio core which is expected by the extension.
      */
-    public String getVersion();
+    public String getZserioVersion();
+
+    /**
+     * Returns the version of Zserio extension.
+     *
+     * @return Version string of Zserio extension.
+     */
+    public String getExtensionVersion();
 
     /**
      * Registers all command line options that extension accepts.

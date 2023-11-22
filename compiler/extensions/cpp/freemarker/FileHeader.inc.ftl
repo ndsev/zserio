@@ -53,7 +53,7 @@ ${generatorDescription}
 <#macro runtime_version_check generatorVersion>
 #include <zserio/CppRuntimeVersion.h>
 #if CPP_EXTENSION_RUNTIME_VERSION_NUMBER != ${generatorVersion.versionNumber}
-    #error Version mismatch between Zserio runtime library and Zserio compiler!
+    #error Version mismatch between Zserio runtime library and Zserio C++ generator!
     #error Please update your Zserio runtime library to the version ${generatorVersion.versionString}.
 #endif
 </#macro>

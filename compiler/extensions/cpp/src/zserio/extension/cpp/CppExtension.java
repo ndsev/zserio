@@ -25,9 +25,15 @@ public class CppExtension implements Extension
     }
 
     @Override
-    public String getVersion()
+    public String getExtensionVersion()
     {
-        return CppExtensionVersion.VERSION_STRING;
+        return CppExtensionVersion.CPP_EXTENSION_VERSION_STRING;
+    }
+
+    @Override
+    public String getZserioVersion()
+    {
+        return CppExtensionVersion.EXPECTED_ZSERIO_VERSION_STRING;
     }
 
     @Override

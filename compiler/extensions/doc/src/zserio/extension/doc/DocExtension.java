@@ -20,9 +20,15 @@ public class DocExtension implements Extension
     }
 
     @Override
-    public String getVersion()
+    public String getExtensionVersion()
     {
-        return DocExtensionVersion.VERSION_STRING;
+        return DocExtensionVersion.DOC_EXTENSION_VERSION_STRING;
+    }
+
+    @Override
+    public String getZserioVersion()
+    {
+        return DocExtensionVersion.EXPECTED_ZSERIO_VERSION_STRING;
     }
 
     @Override

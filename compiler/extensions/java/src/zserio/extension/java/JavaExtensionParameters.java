@@ -45,6 +45,8 @@ public class JavaExtensionParameters
         if (withCodeComments)
             description.add("codeComments");
         parametersDescription = description.toString();
+
+        zserioVersion = parameters.getZserioVersion();
     }
 
     public String getOutputDir()
@@ -97,6 +99,11 @@ public class JavaExtensionParameters
         return parametersDescription;
     }
 
+    public String getZserioVersion()
+    {
+        return zserioVersion;
+    }
+
     static void registerOptions(Options options)
     {
         Option option = new Option(OptionJava, true, "generate Java sources");
@@ -122,4 +129,5 @@ public class JavaExtensionParameters
     private final boolean withTypeInfoCode;
     private final boolean withCodeComments;
     private final String parametersDescription;
+    private final String zserioVersion;
 }

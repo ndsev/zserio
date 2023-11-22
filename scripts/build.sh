@@ -146,10 +146,18 @@ install_python_runtime()
         return 1
     fi
 
+    local ZSERIO_VERSION
+    get_zserio_version "${ZSERIO_PROJECT_ROOT}" ZSERIO_VERSION
+    if [ $? -ne 0 ] ; then
+        popd > /dev/null
+        return 1
+    fi
+
     sphinx-apidoc --module-first --force --separate -o . "${PYTHON_RUNTIME_SOURCES}/zserio/"
     rm modules.rst
     PYTHONPATH="${PYTHON_RUNTIME_SOURCES}" \
-    sphinx-build -Wa -b html -d . -Dhtml_logo="${ZSERIO_LOGO}" . "${PYTHON_RUNTIME_DISTR_DIR}/zserio_doc"
+    sphinx-build -Wa -b html -d . -Dhtml_logo="${ZSERIO_LOGO}" -Drelease="${ZSERIO_VERSION}" . \
+            "${PYTHON_RUNTIME_DISTR_DIR}/zserio_doc"
     if [ $? -ne 0 ] ; then
         popd > /dev/null
         return 1

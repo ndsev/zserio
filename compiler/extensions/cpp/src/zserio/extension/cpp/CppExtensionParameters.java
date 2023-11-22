@@ -60,6 +60,8 @@ public class CppExtensionParameters
             description.add("codeComments");
         addAllocatorDescription(description);
         parametersDescription = description.toString();
+
+        zserioVersion = parameters.getZserioVersion();
     }
 
     public String getOutputDir()
@@ -125,6 +127,11 @@ public class CppExtensionParameters
     public String getParametersDescription()
     {
         return parametersDescription;
+    }
+
+    public String getZserioVersion()
+    {
+        return zserioVersion;
     }
 
     static void registerOptions(Options options)
@@ -225,4 +232,5 @@ public class CppExtensionParameters
     private final boolean withCodeComments;
     private final TypesContext.AllocatorDefinition allocatorDefinition;
     private final String parametersDescription;
+    private final String zserioVersion;
 }

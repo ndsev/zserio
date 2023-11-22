@@ -115,4 +115,11 @@ public interface ExtensionParameters
      * @return Last modified timestamp (in milliseconds since epoch).
      */
     public long getLastModifiedTime();
+
+    /**
+     * Gets Zserio core version.
+     *
+     * @return Zserio core version in string.
+     */
+    public String getZserioVersion();
 }

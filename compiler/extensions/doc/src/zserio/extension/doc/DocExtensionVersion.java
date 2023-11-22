@@ -3,10 +3,15 @@ package zserio.extension.doc;
 /**
  * Documentation extensions version information.
  *
- * The version will be stored in MANIFEST.MF and is used by ZserioTool to check
- * if the extension can be safely loaded - e.g. the version must match to the ZserioTool version.
+ * Documentation extension version will be reported to Zserio core and will be stored in MANIFEST.MF.
+ *
+ * Expected Zserio core version will be used to check if the extension can be safely loaded.
  */
 class DocExtensionVersion
 {
-    public static final String VERSION_STRING = "2.12.0";
+    /** Documentation extension version string. */
+    public static final String DOC_EXTENSION_VERSION_STRING = "1.0.0";
+
+    /** Expected Zserio core version string. */
+    public static final String EXPECTED_ZSERIO_VERSION_STRING = "2.12.0";
 }

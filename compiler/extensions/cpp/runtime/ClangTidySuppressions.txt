@@ -22,7 +22,7 @@ cppcoreguidelines-avoid-c-arrays:src/zserio/StringView.h:894
 cppcoreguidelines-avoid-non-const-global-variables:src/zserio/pmr/MemoryResource.cpp:18
 
 # This must be preprocessor define because version is checked during compilation time.
-cppcoreguidelines-macro-usage:src/zserio/CppRuntimeVersion.h:12
+cppcoreguidelines-macro-usage:src/zserio/CppRuntimeVersion.h:8
 
 # This is necessary for implementation of low level implementation of AnyHolder to mimic standard C++17 'any'
 # abstraction.

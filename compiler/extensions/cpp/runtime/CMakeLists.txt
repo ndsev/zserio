@@ -6,7 +6,7 @@
 # This CMake file is designed to be included directly without any further dependencies.
 #
 
-cmake_minimum_required(VERSION 3.6.0)
+cmake_minimum_required(VERSION 3.9.0)
 
 project(ZserioCppRuntimeTests)
 
@@ -106,12 +106,24 @@ cppcheck_add_custom_command(TARGET ZserioCppRuntime
 
 # build and install doxygen documentation
 find_package(Doxygen REQUIRED)
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/src/zserio/CppRuntimeVersion.h" ZSERIO_CPP_RUNTIME_VERSION_FILE)
+string(REGEX MATCH "CPP_EXTENSION_RUNTIME_VERSION_STRING = \"([0-9]+.[0-9]+.[0-9]+(-[A-Za-z0-9]+)?)\""
+        ZSERIO_CPP_RUNTIME_VERSION_LINE "${ZSERIO_CPP_RUNTIME_VERSION_FILE}")
+set(ZSERIO_CPP_RUNTIME_VERSION "${CMAKE_MATCH_1}")
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/../src/zserio/extension/cpp/CppExtensionVersion.java"
+        ZSERIO_CPP_EXTENSION_VERSION_FILE)
+string(REGEX MATCH "EXPECTED_ZSERIO_VERSION_STRING = \"([0-9]+.[0-9]+.[0-9]+(-[A-Za-z0-9]+)?)\""
+        ZSERIO_CPP_EXTENSION_VERSION_LINE "${ZSERIO_CPP_EXTENSION_VERSION_FILE}")
+set(ZSERIO_VERSION "${CMAKE_MATCH_1}")
 add_custom_target(ZserioCppRuntime-doxygen ALL
     ${CMAKE_COMMAND} -E env ZSERIO_CPP_RUNTIME_OUTPUT_DIR="${CMAKE_CURRENT_BINARY_DIR}"
+    ${CMAKE_COMMAND} -E env ZSERIO_CPP_RUNTIME_VERSION="${ZSERIO_CPP_RUNTIME_VERSION}"
+    ${CMAKE_COMMAND} -E env ZSERIO_VERSION="${ZSERIO_VERSION}"
     ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/doc/doxyfile
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src
     COMMENT "Generating C++ runtime HTML documentation"
 )
+
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/zserio_doc DESTINATION cpp)
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/coverage/clang DESTINATION cpp/zserio_doc/coverage OPTIONAL)
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/coverage/gcc DESTINATION cpp/zserio_doc/coverage OPTIONAL)

@@ -81,12 +81,27 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
     <loadfile
         encoding="UTF-8"
         property="zserio_java_runtime.version"
+        srcFile="${basedir}/src/zserio/runtime/JavaRuntimeVersion.java">
+        <filterchain>
+            <striplinebreaks/>
+            <tokenfilter>
+                <replaceregex
+                    pattern='.*JAVA_EXTENSION_RUNTIME_VERSION_STRING\s*=\s*"([0-9]+.[0-9]+.[0-9]+(-[A-Za-z0-9]+)?)".*'
+                    replace="\1"/>
+            </tokenfilter>
+        </filterchain>
+    </loadfile>
+
+    <!-- Zserio version. -->
+    <loadfile
+        encoding="UTF-8"
+        property="zserio_core.version"
         srcFile="${basedir}/../src/zserio/extension/java/JavaExtensionVersion.java">
         <filterchain>
             <striplinebreaks/>
             <tokenfilter>
                 <replaceregex
-                    pattern='.*VERSION_STRING\s*=\s*"([0-9]+.[0-9]+.[0-9]+(-[A-Za-z0-9]+)?)".*'
+                    pattern='.*EXPECTED_ZSERIO_VERSION_STRING\s*=\s*"([0-9]+.[0-9]+.[0-9]+(-[A-Za-z0-9]+)?)".*'
                     replace="\1"/>
             </tokenfilter>
         </filterchain>
@@ -146,7 +161,8 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
                 Overview="${zserio_java_runtime.src_dir}/zserio/runtime/overview.html">
             <fileset refid="zserio_java_runtime.sources"/>
             <doctitle>
-                <![CDATA[<h1>Zserio Java Runtime Library Documentation</h1><h2>Version ${zserio_java_runtime.version}</h2]]>
+                <![CDATA[<h1>Zserio Java Runtime Library Documentation ${zserio_java_runtime.version}</h1>
+                    <h2>Built for Zserio ${zserio_core.version}</h2]]>
             </doctitle>
             <bottom>
                 <![CDATA[<i>Last updated ${timestamp}</i>]]>

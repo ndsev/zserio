@@ -3,14 +3,18 @@ package zserio.extension.cpp;
 /**
  * C++ extension version information.
  *
- * The version will be stored in MANIFEST.MF and is used by ZserioTool to check
- * if the extension can be safely loaded - e.g. the version must match to the ZserioTool version.
+ * C++ extension version will be reported to Zserio core and will be stored in MANIFEST.MF.
+ *
+ * Expected Zserio core version will be used to check if the extension can be safely loaded.
  */
 public class CppExtensionVersion
 {
     /** C++ extension version string. */
-    public static final String VERSION_STRING = "2.12.0";
+    public static final String CPP_EXTENSION_VERSION_STRING = "1.0.0";
+
+    /** Expected Zserio core version string. */
+    public static final String EXPECTED_ZSERIO_VERSION_STRING = "2.12.0";
 
     /** C++ extension version in integer value to allow version checking in generated code. */
-    public static final long VERSION_NUMBER = 2012000;
+    public static final long CPP_EXTENSION_VERSION_NUMBER = 1000000;
 }

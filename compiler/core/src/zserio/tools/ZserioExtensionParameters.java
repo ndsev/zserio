@@ -113,6 +113,12 @@ class ZserioExtensionParameters implements ExtensionParameters
         return lastModifiedTime;
     }
 
+    @Override
+    public String getZserioVersion()
+    {
+        return ZserioVersion.VERSION_STRING;
+    }
+
     private final CommandLineArguments commandLineArguments;
     private final long lastModifiedTime;
 }

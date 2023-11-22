@@ -75,7 +75,7 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
             <striplinebreaks/>
             <tokenfilter>
                 <replaceregex
-                    pattern='.*VERSION_STRING\s*=\s*"([0-9]+.[0-9]+.[0-9]+(-[A-Za-z0-9]+)?)".*'
+                    pattern='.*DOC_EXTENSION_VERSION_STRING\s*=\s*"([0-9]+.[0-9]+.[0-9]+(-[A-Za-z0-9]+)?)".*'
                     replace="\1"/>
             </tokenfilter>
         </filterchain>

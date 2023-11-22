@@ -43,6 +43,8 @@ class PythonExtensionParameters
         if (withCodeComments)
             description.add("codeComments");
         parametersDescription = description.toString();
+
+        zserioVersion = parameters.getZserioVersion();
     }
 
     public String getOutputDir()
@@ -90,6 +92,11 @@ class PythonExtensionParameters
         return parametersDescription;
     }
 
+    public String getZserioVersion()
+    {
+        return zserioVersion;
+    }
+
     static void registerOptions(Options options)
     {
         Option optionPython = new Option(OptionNamePython, true, "generate Python sources");
@@ -114,4 +121,5 @@ class PythonExtensionParameters
     private final boolean withTypeInfoCode;
     private final boolean withCodeComments;
     private final String parametersDescription;
+    private final String zserioVersion;
 }

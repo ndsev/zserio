@@ -143,7 +143,7 @@ public class ZserioTool
         }
         else if (commandLineArguments.hasVersionOption())
         {
-            ZserioToolPrinter.printMessage("version " + ZserioVersion.VERSION_STRING);
+            commandLineArguments.printVersion(extensionManager.getExtensions());
         }
         else if (commandLineArguments.getInputFileName() == null)
         {

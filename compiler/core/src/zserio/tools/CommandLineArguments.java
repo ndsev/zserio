@@ -296,13 +296,23 @@ class CommandLineArguments
         final String command = (executor == ZserioTool.Executor.PYTHON_MAIN) ? "zserio" :
             "java -jar zserio.jar";
 
-        final HelpFormatter hf = new HelpFormatter();
-        hf.setSyntaxPrefix("Usage: ");
-        hf.setLeftPadding(2);
-        hf.setOptionComparator(null);
-        hf.printHelp(command + " <options> zserioInputFile\n", "Options:", options, null, false);
+        final HelpFormatter formatter = new HelpFormatter();
+        formatter.setSyntaxPrefix("Usage: ");
+        formatter.setLeftPadding(2);
+        formatter.setOptionComparator(null);
+        formatter.printHelp(command + " <options> zserioInputFile\n", "Options:", options, null, false);
         ZserioToolPrinter.printMessage("");
 
+        printExtensions(extensions);
+    }
+
+    /**
+     * Prints version.
+     */
+    public void printVersion(List<Extension> extensions)
+    {
+        ZserioToolPrinter.printMessage("version " + ZserioVersion.VERSION_STRING);
+        ZserioToolPrinter.printMessage("");
         printExtensions(extensions);
     }
 
@@ -620,7 +630,8 @@ class CommandLineArguments
             ZserioToolPrinter.printMessage("Available extensions:");
             for (Extension extension : extensions)
             {
-                ZserioToolPrinter.printMessage("  " + extension.getName());
+                ZserioToolPrinter.printMessage("  " + extension.getName() +
+                        " version " + extension.getExtensionVersion());
             }
         }
     }

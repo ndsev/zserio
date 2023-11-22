@@ -14,11 +14,11 @@ import zserio
 
 project = 'Zserio'
 author = 'Eccam s.r.o.'
-copyright = 'Copyright (c) 2018-2022, Navigation Data Standard e.v.'
+copyright = 'Copyright (c) 2018-2023, Navigation Data Standard e.v.'
 
-# The full version, including alpha/beta/rc tags
-release = zserio.VERSION_STRING
-version = zserio.VERSION_STRING
+# The release comes from the command line via -Drelease="version".
+release = 'unknown'
+version = zserio.PYTHON_EXTENSION_RUNTIME_VERSION_STRING
 
 # -- General configuration ---------------------------------------------------
 
