@@ -1,4 +1,4 @@
-# Zserio JSON Guide
+# Zserio JSON Guide 1.0
 
 Zserio supports encoding in JSON to have readable format allowing users convenient way of data inspection, e.g.
 for debugging purposes. This JSON encoding is described by this document.

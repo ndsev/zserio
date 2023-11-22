@@ -1,4 +1,4 @@
-# Zserio Encoding Guide
+# Zserio Encoding Guide 1.0
 
 This document describes the Zserio wire format which defines the details how Zserio encodes data to the binary
 stream.
