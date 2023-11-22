@@ -311,9 +311,12 @@ class CommandLineArguments
      */
     public void printVersion(List<Extension> extensions)
     {
-        ZserioToolPrinter.printMessage("version " + ZserioVersion.VERSION_STRING);
+        ZserioToolPrinter.printMessage("Core version " + ZserioVersion.VERSION_STRING);
         ZserioToolPrinter.printMessage("");
         printExtensions(extensions);
+        ZserioToolPrinter.printMessage("");
+        ZserioToolPrinter.printMessage("See https://zserio.org/doc/ZserioCompatibilityGuide.html " +
+                    "for more info.");
     }
 
     private void addOptions()

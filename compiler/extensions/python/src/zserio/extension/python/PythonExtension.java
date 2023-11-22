@@ -29,7 +29,9 @@ public class PythonExtension implements Extension
     @Override
     public String getExtensionVersion()
     {
-        return PythonExtensionVersion.PYTHON_EXTENSION_VERSION_STRING;
+        return PythonExtensionVersion.PYTHON_EXTENSION_VERSION_STRING +
+                " (BIN " + PythonExtensionVersion.BIN_VERSION_STRING +
+                ", JSON " + PythonExtensionVersion.JSON_VERSION_STRING + ")";
     }
 
     @Override

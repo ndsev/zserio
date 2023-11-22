@@ -27,7 +27,9 @@ public class CppExtension implements Extension
     @Override
     public String getExtensionVersion()
     {
-        return CppExtensionVersion.CPP_EXTENSION_VERSION_STRING;
+        return CppExtensionVersion.CPP_EXTENSION_VERSION_STRING +
+                " (BIN " + CppExtensionVersion.BIN_VERSION_STRING +
+                ", JSON " + CppExtensionVersion.JSON_VERSION_STRING + ")";
     }
 
     @Override

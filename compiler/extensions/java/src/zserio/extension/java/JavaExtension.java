@@ -25,7 +25,9 @@ public class JavaExtension implements Extension
     @Override
     public String getExtensionVersion()
     {
-        return JavaExtensionVersion.JAVA_EXTENSION_VERSION_STRING;
+        return JavaExtensionVersion.JAVA_EXTENSION_VERSION_STRING +
+                " (BIN " + JavaExtensionVersion.BIN_VERSION_STRING +
+                ", JSON " + JavaExtensionVersion.JSON_VERSION_STRING + ")";
     }
 
     @Override
