@@ -689,7 +689,7 @@ compile_java()
 # Compile and test C++ code by running cmake and make for all targets.
 compile_cpp()
 {
-    exit_if_argc_ne $# 7;
+    exit_if_argc_ne $# 7
     local ZSERIO_PROJECT_ROOT="$1"; shift
     local BUILD_DIR="$1"; shift
     local CMAKELISTS_DIR="$1"; shift
