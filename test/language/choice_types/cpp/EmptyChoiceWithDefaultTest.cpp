@@ -149,6 +149,21 @@ TEST(EmptyChoiceWithDefaultTest, operatorEquality)
     ASSERT_FALSE(emptyChoiceWithDefault1 == emptyChoiceWithDefault3);
 }
 
+TEST(EmptyChoiceWithDefaultTest, operatorLessThan)
+{
+    EmptyChoiceWithDefault emptyChoiceWithDefault1;
+    emptyChoiceWithDefault1.initialize(1);
+    EmptyChoiceWithDefault emptyChoiceWithDefault2;
+    emptyChoiceWithDefault2.initialize(1);
+    ASSERT_FALSE(emptyChoiceWithDefault1 < emptyChoiceWithDefault2);
+    ASSERT_FALSE(emptyChoiceWithDefault2 < emptyChoiceWithDefault1);
+
+    EmptyChoiceWithDefault emptyChoiceWithDefault3;
+    emptyChoiceWithDefault3.initialize(0);
+    ASSERT_FALSE(emptyChoiceWithDefault1 < emptyChoiceWithDefault3);
+    ASSERT_TRUE(emptyChoiceWithDefault3 < emptyChoiceWithDefault1);
+}
+
 TEST(EmptyChoiceWithDefaultTest, hashCode)
 {
     EmptyChoiceWithDefault emptyChoiceWithDefault1;

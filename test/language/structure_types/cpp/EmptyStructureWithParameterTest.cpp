@@ -166,6 +166,26 @@ TEST(EmptyStructureWithParameterTest, operatorEquality)
     ASSERT_FALSE(emptyStructureWithParameter1 == emptyStructureWithParameter2);
 }
 
+TEST(EmptyStructureWithParameterTest, operatorLessThan)
+{
+    EmptyStructureWithParameter emptyStructureWithParameter1;
+    EmptyStructureWithParameter emptyStructureWithParameter2;
+    ASSERT_THROW(ASSERT_FALSE(emptyStructureWithParameter1 < emptyStructureWithParameter2),
+            zserio::CppRuntimeException);
+
+    emptyStructureWithParameter1.initialize(1);
+    ASSERT_THROW(ASSERT_FALSE(emptyStructureWithParameter1 < emptyStructureWithParameter2),
+            zserio::CppRuntimeException);
+
+    emptyStructureWithParameter2.initialize(1);
+    ASSERT_FALSE(emptyStructureWithParameter1 < emptyStructureWithParameter2);
+    ASSERT_FALSE(emptyStructureWithParameter2 < emptyStructureWithParameter1);
+
+    emptyStructureWithParameter2.initialize(2);
+    ASSERT_TRUE(emptyStructureWithParameter1 < emptyStructureWithParameter2);
+    ASSERT_FALSE(emptyStructureWithParameter2 < emptyStructureWithParameter1);
+}
+
 TEST(EmptyStructureWithParameterTest, hashCode)
 {
     EmptyStructureWithParameter emptyStructureWithParameter1;

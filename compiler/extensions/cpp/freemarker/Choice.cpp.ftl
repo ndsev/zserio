@@ -488,6 +488,29 @@ bool ${name}::operator==(const ${name}& other) const
     </#if>
 }
 
+<#macro choice_less_than_member member packed indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if member.compoundField??>
+        <#local lhs>m_objectChoice.get<<@field_cpp_type_name member.compoundField/>>()</#local>
+        <#local rhs>other.m_objectChoice.get<<@field_cpp_type_name member.compoundField/>>()</#local>
+${I}if (m_objectChoice.hasValue() && other.m_objectChoice.hasValue())
+${I}    return <@compound_field_less_than_compare member.compoundField, lhs, rhs/>;
+${I}else
+${I}    return !m_objectChoice.hasValue() && other.m_objectChoice.hasValue();
+    <#else>
+${I}return false;
+    </#if>
+</#macro>
+bool ${name}::operator<(const ${name}&<#if compoundParametersData.list?has_content || fieldList?has_content> other</#if>) const
+{
+    <@compound_parameter_less_than compoundParametersData, 1/>
+    <#if fieldList?has_content>
+    <@choice_switch "choice_less_than_member", "choice_no_match", selectorExpression, 1/>
+    <#else>
+    return false;
+    </#if>
+}
+
 <#macro choice_hash_code_no_match name indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if canUseNativeSwitch>

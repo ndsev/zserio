@@ -249,6 +249,31 @@ TEST_F(FullBitmaskParamChoiceTest, operatorEquality)
     ASSERT_FALSE(fullBitmaskParamChoice1 == fullBitmaskParamChoice2);
 }
 
+TEST_F(FullBitmaskParamChoiceTest, operatorLessThan)
+{
+    const Selector selector = Selector::Values::BLACK;
+    FullBitmaskParamChoice fullBitmaskParamChoice1;
+    fullBitmaskParamChoice1.initialize(selector);
+    FullBitmaskParamChoice fullBitmaskParamChoice2;
+    fullBitmaskParamChoice2.initialize(selector);
+    ASSERT_FALSE(fullBitmaskParamChoice1 < fullBitmaskParamChoice2);
+    ASSERT_FALSE(fullBitmaskParamChoice2 < fullBitmaskParamChoice1);
+
+    const uint8_t value = 99;
+    fullBitmaskParamChoice1.setBlack(value);
+    ASSERT_FALSE(fullBitmaskParamChoice1 < fullBitmaskParamChoice2);
+    ASSERT_TRUE(fullBitmaskParamChoice2 < fullBitmaskParamChoice1);
+
+    fullBitmaskParamChoice2.setBlack(value);
+    ASSERT_FALSE(fullBitmaskParamChoice1 < fullBitmaskParamChoice2);
+    ASSERT_FALSE(fullBitmaskParamChoice2 < fullBitmaskParamChoice1);
+
+    const int8_t diffValue = value + 1;
+    fullBitmaskParamChoice2.setBlack(diffValue);
+    ASSERT_TRUE(fullBitmaskParamChoice1 < fullBitmaskParamChoice2);
+    ASSERT_FALSE(fullBitmaskParamChoice2 < fullBitmaskParamChoice1);
+}
+
 TEST_F(FullBitmaskParamChoiceTest, hashCode)
 {
     const Selector selector = Selector::Values::BLACK;

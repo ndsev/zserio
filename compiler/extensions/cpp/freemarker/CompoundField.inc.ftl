@@ -48,6 +48,14 @@
     </#if>
 </#macro>
 
+<#macro compound_field_less_than_compare compoundField lhs rhs>
+    <#if !compoundField.optional?? && compoundField.typeInfo.isBoolean>
+        static_cast<int>(${lhs}) < static_cast<int>(${rhs})<#t>
+    <#else>
+        ${lhs} < ${rhs}<#t>
+    </#if>
+</#macro>
+
 <#macro compound_read_field field compoundName indent packed=false>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>

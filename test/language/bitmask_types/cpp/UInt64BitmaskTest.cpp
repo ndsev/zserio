@@ -189,7 +189,7 @@ TEST_F(Uint64BitmaskTest, operatorEquality)
     ASSERT_FALSE(read == write);
 }
 
-TEST_F(Uint64BitmaskTest, operatorNonequality)
+TEST_F(Uint64BitmaskTest, operatorInequality)
 {
     ASSERT_FALSE(Permission::Values::READ_PERMISSION != Permission::Values::READ_PERMISSION);
     ASSERT_TRUE(Permission::Values::READ_PERMISSION != Permission::Values::write_permission);
@@ -213,6 +213,29 @@ TEST_F(Uint64BitmaskTest, operatorNonequality)
     ASSERT_FALSE(write != Permission(write)); // copy
 
     ASSERT_TRUE(read != write);
+}
+
+TEST_F(Uint64BitmaskTest, operatorLessThan)
+{
+    ASSERT_TRUE(Permission::Values::nonePermission < Permission::Values::READ_PERMISSION);
+    ASSERT_FALSE(Permission::Values::READ_PERMISSION < Permission::Values::nonePermission);
+
+    ASSERT_TRUE(Permission::Values::READ_PERMISSION < Permission::Values::write_permission);
+    ASSERT_FALSE(Permission::Values::write_permission < Permission::Values::READ_PERMISSION);
+
+    ASSERT_FALSE(Permission::Values::nonePermission < Permission::Values::nonePermission);
+    ASSERT_FALSE(Permission::Values::READ_PERMISSION < Permission::Values::READ_PERMISSION);
+    ASSERT_FALSE(Permission::Values::write_permission < Permission::Values::write_permission);
+
+    ASSERT_TRUE(Permission::Values::READ_PERMISSION <
+            (Permission::Values::READ_PERMISSION | Permission::Values::write_permission));
+    ASSERT_FALSE((Permission::Values::READ_PERMISSION | Permission::Values::write_permission) <
+            Permission::Values::READ_PERMISSION);
+
+    const Permission read(Permission::Values::READ_PERMISSION);
+    const Permission write(Permission::Values::write_permission);
+    ASSERT_TRUE(read < write);
+    ASSERT_FALSE(write < read);
 }
 
 TEST_F(Uint64BitmaskTest, operatorBitwiseOr)

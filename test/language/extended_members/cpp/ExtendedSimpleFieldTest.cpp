@@ -85,6 +85,30 @@ TEST_F(ExtendedSimpleFieldTest, operatorEquality)
     ASSERT_EQ(extended1, extended2);
 }
 
+TEST_F(ExtendedSimpleFieldTest, operatorLessThan)
+{
+    Extended extended1;
+    Extended extended2;
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+
+    extended1.setValue(13);
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_TRUE(extended2 < extended1);
+
+    extended2.setValue(13);
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+
+    extended2.setExtendedValue(UINT64_MAX);
+    ASSERT_TRUE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+
+    extended1.setExtendedValue(UINT64_MAX);
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+}
+
 TEST_F(ExtendedSimpleFieldTest, hashCode)
 {
     Extended extended1;

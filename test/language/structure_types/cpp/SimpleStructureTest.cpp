@@ -194,7 +194,6 @@ TEST_F(SimpleStructureTest, operatorEquality)
 {
     SimpleStructure simpleStructure1;
     SimpleStructure simpleStructure2;
-    // empty ctors leave the structures in "undefined" states
 
     const uint8_t numberA = 0x03;
     const uint8_t numberB = 0xDE;
@@ -211,11 +210,32 @@ TEST_F(SimpleStructureTest, operatorEquality)
     ASSERT_TRUE(simpleStructure1 == simpleStructure2);
 }
 
+TEST_F(SimpleStructureTest, operatorLessThan)
+{
+    SimpleStructure simpleStructure1;
+    SimpleStructure simpleStructure2;
+
+    ASSERT_FALSE(simpleStructure1 < simpleStructure2);
+    ASSERT_FALSE(simpleStructure2 < simpleStructure1);
+
+    simpleStructure1.setNumberA(1);
+    simpleStructure2.setNumberA(1);
+    simpleStructure1.setNumberB(1);
+    simpleStructure2.setNumberB(1);
+    simpleStructure1.setNumberC(1);
+    simpleStructure2.setNumberC(2);
+    ASSERT_TRUE(simpleStructure1 < simpleStructure2);
+    ASSERT_FALSE(simpleStructure2 < simpleStructure1);
+
+    simpleStructure1.setNumberB(2);
+    ASSERT_FALSE(simpleStructure1 < simpleStructure2);
+    ASSERT_TRUE(simpleStructure2 < simpleStructure1);
+}
+
 TEST_F(SimpleStructureTest, hashCode)
 {
     SimpleStructure simpleStructure1;
     SimpleStructure simpleStructure2;
-    // empty ctors leave the structures in "undefined" states
 
     const uint8_t numberA = 0x04;
     const uint8_t numberB = 0xCD;

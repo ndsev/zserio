@@ -302,6 +302,38 @@ TEST_F(UnionWithArrayTest, operatorEquality)
     ASSERT_TRUE(testUnion1 == testUnion2);
 }
 
+TEST_F(UnionWithArrayTest, operatorLessThan)
+{
+    TestUnion testUnion1;
+    TestUnion testUnion2;
+    ASSERT_FALSE(testUnion1 < testUnion2);
+    ASSERT_FALSE(testUnion2 < testUnion1);
+
+    testUnion1.setArray8(createArray8());
+    ASSERT_FALSE(testUnion1 < testUnion2);
+    ASSERT_TRUE(testUnion2 < testUnion1);
+
+    testUnion2.setArray8(createArray8());
+    ASSERT_FALSE(testUnion1 < testUnion2);
+    ASSERT_FALSE(testUnion2 < testUnion1);
+
+    testUnion2.getArray8()[0].setData(0);
+    ASSERT_TRUE(testUnion1 < testUnion2);
+    ASSERT_FALSE(testUnion2 < testUnion1);
+
+    testUnion2.setArray16(createArray16());
+    ASSERT_TRUE(testUnion1 < testUnion2);
+    ASSERT_FALSE(testUnion2 < testUnion1);
+
+    testUnion1.setArray16(createArray16());
+    ASSERT_FALSE(testUnion1 < testUnion2);
+    ASSERT_FALSE(testUnion2 < testUnion1);
+
+    testUnion2.getArray16().back() -= 1;
+    ASSERT_FALSE(testUnion1 < testUnion2);
+    ASSERT_TRUE(testUnion2 < testUnion1);
+}
+
 TEST_F(UnionWithArrayTest, hashCode)
 {
     TestUnion testUnion1;

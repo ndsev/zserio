@@ -200,7 +200,7 @@ TEST_F(VarUIntBitmaskTest, operatorEquality)
     ASSERT_FALSE(read == write);
 }
 
-TEST_F(VarUIntBitmaskTest, operatorNonequality)
+TEST_F(VarUIntBitmaskTest, operatorInequality)
 {
     ASSERT_FALSE(Permission::Values::READ != Permission::Values::READ);
     ASSERT_TRUE(Permission::Values::READ != Permission::Values::WRITE);
@@ -224,6 +224,27 @@ TEST_F(VarUIntBitmaskTest, operatorNonequality)
     ASSERT_FALSE(write != Permission(write)); // copy
 
     ASSERT_TRUE(read != write);
+}
+
+TEST_F(VarUIntBitmaskTest, operatorLessThan)
+{
+    ASSERT_TRUE(Permission::Values::NONE < Permission::Values::READ);
+    ASSERT_FALSE(Permission::Values::READ < Permission::Values::NONE);
+
+    ASSERT_TRUE(Permission::Values::READ < Permission::Values::WRITE);
+    ASSERT_FALSE(Permission::Values::WRITE < Permission::Values::READ);
+
+    ASSERT_FALSE(Permission::Values::NONE < Permission::Values::NONE);
+    ASSERT_FALSE(Permission::Values::READ < Permission::Values::READ);
+    ASSERT_FALSE(Permission::Values::WRITE < Permission::Values::WRITE);
+
+    ASSERT_TRUE(Permission::Values::READ < (Permission::Values::READ | Permission::Values::WRITE));
+    ASSERT_FALSE((Permission::Values::READ | Permission::Values::WRITE) < Permission::Values::READ);
+
+    const Permission read(Permission::Values::READ);
+    const Permission write(Permission::Values::WRITE);
+    ASSERT_TRUE(read < write);
+    ASSERT_FALSE(write < read);
 }
 
 TEST_F(VarUIntBitmaskTest, operatorBitwiseOr)

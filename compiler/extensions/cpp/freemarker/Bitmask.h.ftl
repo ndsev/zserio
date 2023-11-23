@@ -331,6 +331,21 @@ inline bool operator!=(const ${name}& lhs, const ${name}& rhs)
 
 <#if withCodeComments>
 /**
+ * Defines operator '<' for the bitmask '${name}'.
+ *
+ * \param lhs Left operand.
+ * \param rhs Right operand.
+ *
+ * \return True if lhs is less than the rhs, otherwise false.
+ */
+</#if>
+inline bool operator<(const ${name}& lhs, const ${name}& rhs)
+{
+    return lhs.getValue() < rhs.getValue();
+}
+
+<#if withCodeComments>
+/**
  * Defines operator '|' for the bitmask '${name}'.
  *
  * \param lhs Left operand.

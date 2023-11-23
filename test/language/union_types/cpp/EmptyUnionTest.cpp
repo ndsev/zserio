@@ -102,6 +102,14 @@ TEST(EmptyUnionTest, operatorEquality)
     ASSERT_TRUE(emptyUnion1 == emptyUnion2);
 }
 
+TEST(EmptyUnionTest, operatorLessThan)
+{
+    EmptyUnion emptyUnion1;
+    EmptyUnion emptyUnion2;
+    ASSERT_FALSE(emptyUnion1 < emptyUnion2);
+    ASSERT_FALSE(emptyUnion2 < emptyUnion1);
+}
+
 TEST(EmptyUnionTest, hashCode)
 {
     EmptyUnion emptyUnion1;

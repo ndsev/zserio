@@ -228,6 +228,28 @@ TEST_F(MultipleExtendedFieldsVariousTypesTest, operatorEquality)
     ASSERT_FALSE(extended3 == extended4);
 }
 
+TEST_F(MultipleExtendedFieldsVariousTypesTest, operatorLessThan)
+{
+    Extended2 extended1;
+    extended1.initializeChildren();
+    Extended2 extended2;
+    extended2.initializeChildren();
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+
+    Extended2 extended3 = createExtended2();
+    ASSERT_FALSE(extended1 < extended3);
+    ASSERT_TRUE(extended3 < extended1); // first field is VALUE (-13)
+
+    Extended2 extended4 = createExtended2();
+    ASSERT_FALSE(extended3 < extended4);
+    ASSERT_FALSE(extended4 < extended3);
+
+    extended3.setExtendedValue9(0);
+    ASSERT_TRUE(extended3 < extended4);
+    ASSERT_FALSE(extended4 < extended3);
+}
+
 TEST_F(MultipleExtendedFieldsVariousTypesTest, hashCode)
 {
     Extended2 extended1;

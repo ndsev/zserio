@@ -207,6 +207,34 @@ TEST_F(BoolParamChoiceTest, operatorEquality)
     ASSERT_FALSE(boolParamChoice1 == boolParamChoice2);
 }
 
+TEST_F(BoolParamChoiceTest, operatorLessThan)
+{
+    BoolParamChoice boolParamChoice1;
+    boolParamChoice1.initialize(true);
+    BoolParamChoice boolParamChoice2;
+    boolParamChoice2.initialize(false);
+    ASSERT_FALSE(boolParamChoice1 < boolParamChoice2);
+    ASSERT_TRUE(boolParamChoice2 < boolParamChoice1);
+
+    boolParamChoice2.initialize(true);
+    ASSERT_FALSE(boolParamChoice1 < boolParamChoice2);
+    ASSERT_FALSE(boolParamChoice2 < boolParamChoice1);
+
+    const int8_t value = 99;
+    boolParamChoice1.setBlack(value);
+    ASSERT_FALSE(boolParamChoice1 < boolParamChoice2);
+    ASSERT_TRUE(boolParamChoice2 < boolParamChoice1);
+
+    boolParamChoice2.setBlack(value);
+    ASSERT_FALSE(boolParamChoice1 < boolParamChoice2);
+    ASSERT_FALSE(boolParamChoice2 < boolParamChoice1);
+
+    const int8_t diffValue = value + 1;
+    boolParamChoice2.setBlack(diffValue);
+    ASSERT_TRUE(boolParamChoice1 < boolParamChoice2);
+    ASSERT_FALSE(boolParamChoice2 < boolParamChoice1);
+}
+
 TEST_F(BoolParamChoiceTest, hashCode)
 {
     BoolParamChoice boolParamChoice1;

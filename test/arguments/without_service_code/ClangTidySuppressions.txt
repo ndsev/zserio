@@ -1,2 +1,5 @@
+readability-braces-around-statements:gen/without_service_code/Request.cpp
+readability-braces-around-statements:gen/without_service_code/Response.cpp
+
 readability-make-member-function-const:gen/without_service_code/Request.cpp
 readability-make-member-function-const:gen/without_service_code/Response.cpp

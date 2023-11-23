@@ -86,6 +86,30 @@ TEST_F(ExtendedUnalignedFieldTest, operatorEquality)
     ASSERT_EQ(extended1, extended2);
 }
 
+TEST_F(ExtendedUnalignedFieldTest, operatorLessThan)
+{
+    Extended extended1;
+    Extended extended2;
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+
+    extended1.setValue(2);
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_TRUE(extended2 < extended1);
+
+    extended2.setValue(2);
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+
+    extended2.setExtendedValue(42);
+    ASSERT_TRUE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+
+    extended1.setExtendedValue(42);
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+}
+
 TEST_F(ExtendedUnalignedFieldTest, hashCode)
 {
     Extended extended1;

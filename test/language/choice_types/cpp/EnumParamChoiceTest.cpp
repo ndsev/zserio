@@ -242,6 +242,30 @@ TEST_F(EnumParamChoiceTest, operatorEquality)
     ASSERT_FALSE(enumParamChoice1 == enumParamChoice2);
 }
 
+TEST_F(EnumParamChoiceTest, operatorLessThan)
+{
+    EnumParamChoice enumParamChoice1;
+    enumParamChoice1.initialize(Selector::BLACK);
+    EnumParamChoice enumParamChoice2;
+    enumParamChoice2.initialize(Selector::BLACK);
+    ASSERT_FALSE(enumParamChoice1 < enumParamChoice2);
+    ASSERT_FALSE(enumParamChoice2 < enumParamChoice1);
+
+    const int8_t value = 99;
+    enumParamChoice1.setBlack(value);
+    ASSERT_FALSE(enumParamChoice1 < enumParamChoice2);
+    ASSERT_TRUE(enumParamChoice2 < enumParamChoice1);
+
+    enumParamChoice2.setBlack(value);
+    ASSERT_FALSE(enumParamChoice1 < enumParamChoice2);
+    ASSERT_FALSE(enumParamChoice2 < enumParamChoice1);
+
+    const int8_t diffValue = value + 1;
+    enumParamChoice2.setBlack(diffValue);
+    ASSERT_TRUE(enumParamChoice1 < enumParamChoice2);
+    ASSERT_FALSE(enumParamChoice2 < enumParamChoice1);
+}
+
 TEST_F(EnumParamChoiceTest, hashCode)
 {
     EnumParamChoice enumParamChoice1;

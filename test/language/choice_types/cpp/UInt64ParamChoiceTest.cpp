@@ -243,6 +243,34 @@ TEST_F(UInt64ParamChoiceTest, operatorEquality)
     ASSERT_FALSE(uint64ParamChoice1 == uint64ParamChoice2);
 }
 
+TEST_F(UInt64ParamChoiceTest, operatorLessThan)
+{
+    UInt64ParamChoice uint64ParamChoice1;
+    uint64ParamChoice1.initialize(VARIANT_A_SELECTOR);
+    UInt64ParamChoice uint64ParamChoice2;
+    uint64ParamChoice2.initialize(VARIANT_B_SELECTOR);
+    ASSERT_TRUE(uint64ParamChoice1 < uint64ParamChoice2);
+    ASSERT_FALSE(uint64ParamChoice2 < uint64ParamChoice1);
+
+    uint64ParamChoice2.initialize(VARIANT_A_SELECTOR);
+    ASSERT_FALSE(uint64ParamChoice1 < uint64ParamChoice2);
+    ASSERT_FALSE(uint64ParamChoice2 < uint64ParamChoice1);
+
+    const int8_t value = 99;
+    uint64ParamChoice1.setA(value);
+    ASSERT_FALSE(uint64ParamChoice1 < uint64ParamChoice2);
+    ASSERT_TRUE(uint64ParamChoice2 < uint64ParamChoice1);
+
+    uint64ParamChoice2.setA(value);
+    ASSERT_FALSE(uint64ParamChoice1 < uint64ParamChoice2);
+    ASSERT_FALSE(uint64ParamChoice2 < uint64ParamChoice1);
+
+    const int8_t diffValue = value + 1;
+    uint64ParamChoice2.setA(diffValue);
+    ASSERT_TRUE(uint64ParamChoice1 < uint64ParamChoice2);
+    ASSERT_FALSE(uint64ParamChoice2 < uint64ParamChoice1);
+}
+
 TEST_F(UInt64ParamChoiceTest, hashCode)
 {
     UInt64ParamChoice uint64ParamChoice1;

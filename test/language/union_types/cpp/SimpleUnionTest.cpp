@@ -300,6 +300,34 @@ TEST_F(SimpleUnionTest, operatorEquality)
     ASSERT_FALSE(simpleUnion11 == simpleUnion4);
 }
 
+TEST_F(SimpleUnionTest, operatorLessThan)
+{
+    SimpleUnion simpleUnion1;
+    SimpleUnion simpleUnion2;
+    ASSERT_FALSE(simpleUnion1 < simpleUnion2);
+    ASSERT_FALSE(simpleUnion2 < simpleUnion1);
+
+    simpleUnion1.setCase1Field(CASE1_FIELD);
+    ASSERT_FALSE(simpleUnion1 < simpleUnion2);
+    ASSERT_TRUE(simpleUnion2 < simpleUnion1);
+
+    simpleUnion2.setCase1Field(CASE1_FIELD);
+    ASSERT_FALSE(simpleUnion1 < simpleUnion2);
+    ASSERT_FALSE(simpleUnion2 < simpleUnion1);
+
+    simpleUnion2.setCase1Field(CASE1_FIELD + 1);
+    ASSERT_TRUE(simpleUnion1 < simpleUnion2);
+    ASSERT_FALSE(simpleUnion2 < simpleUnion1);
+
+    simpleUnion2.setCase2Field(CASE2_FIELD);
+    ASSERT_TRUE(simpleUnion1 < simpleUnion2);
+    ASSERT_FALSE(simpleUnion2 < simpleUnion1);
+
+    simpleUnion2.setCase4Field(CASE1_FIELD); // same value as simpleUnion11, but different choice
+    ASSERT_TRUE(simpleUnion1 < simpleUnion2);
+    ASSERT_FALSE(simpleUnion2 < simpleUnion1);
+}
+
 TEST_F(SimpleUnionTest, hashCode)
 {
     SimpleUnion simpleUnion1;

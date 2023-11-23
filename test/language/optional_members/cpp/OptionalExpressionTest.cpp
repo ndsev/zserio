@@ -222,6 +222,28 @@ TEST_F(OptionalExpressionTest, operatorEquality)
     ASSERT_TRUE(container1 == container2);
 }
 
+TEST_F(OptionalExpressionTest, operatorLesThan)
+{
+    Container container1;
+    Container container2;
+    ASSERT_FALSE(container1 < container2);
+    ASSERT_FALSE(container2 < container1);
+
+    container1.setBasicColor(BasicColor::WHITE);
+    container2.setBasicColor(BasicColor::BLACK);
+    container2.setNumBlackTones(NUM_BLACK_TONES);
+    BlackColor blackColor;
+    fillBlackColor(blackColor, NUM_BLACK_TONES);
+    container2.setBlackColor(blackColor);
+    container2.initializeChildren();
+    ASSERT_FALSE(container1 < container2);
+    ASSERT_TRUE(container2 < container1);
+
+    container2.setBasicColor(BasicColor::WHITE); // set but not used
+    ASSERT_FALSE(container1 < container2);
+    ASSERT_FALSE(container2 < container1);
+}
+
 TEST_F(OptionalExpressionTest, hashCode)
 {
     Container container1;

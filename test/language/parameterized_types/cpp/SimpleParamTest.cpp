@@ -225,6 +225,21 @@ TEST_F(SimpleParamTest, operatorEquality)
     ASSERT_FALSE(item2 == item3);
 }
 
+TEST_F(SimpleParamTest, operatorLessThan)
+{
+    Item item1(ITEM_PARAM, ITEM_EXTRA_PARAM);
+    item1.initialize(LOWER_VERSION);
+    Item item2(ITEM_PARAM, ITEM_EXTRA_PARAM);
+    item2.initialize(LOWER_VERSION);
+    ASSERT_FALSE(item1 < item2);
+    ASSERT_FALSE(item2 < item1);
+
+    Item item3(ITEM_PARAM, ITEM_EXTRA_PARAM);
+    item3.initialize(HIGHER_VERSION);
+    ASSERT_TRUE(item2 < item3);
+    ASSERT_FALSE(item3 < item2);
+}
+
 TEST_F(SimpleParamTest, hashCode)
 {
     Item item1(ITEM_PARAM, ITEM_EXTRA_PARAM);

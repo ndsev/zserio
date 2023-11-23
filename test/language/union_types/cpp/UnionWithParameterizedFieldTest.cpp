@@ -234,6 +234,26 @@ TEST_F(UnionWithParameterizedFieldTest, operatorEquality)
     ASSERT_TRUE(testUnion1 == testUnion2);
 }
 
+TEST_F(UnionWithParameterizedFieldTest, operatorLessThan)
+{
+    TestUnion testUnion1;
+    TestUnion testUnion2;
+    ASSERT_TRUE(testUnion1 == testUnion2);
+    testUnion1.setField(33);
+    ASSERT_FALSE(testUnion1 == testUnion2);
+    testUnion2.setField(33);
+    ASSERT_TRUE(testUnion1 == testUnion2);
+    testUnion2.setField(32);
+    ASSERT_FALSE(testUnion1 == testUnion2);
+    testUnion2.setArrayHolder(ArrayHolder{vector_type<uint32_t>(10)});
+    testUnion2.initializeChildren();
+    ASSERT_FALSE(testUnion1 == testUnion2);
+    testUnion1.setArrayHolder(ArrayHolder{vector_type<uint32_t>(10)});
+    ASSERT_THROW(ASSERT_FALSE(testUnion1 == testUnion2), zserio::CppRuntimeException);
+    testUnion1.initializeChildren();
+    ASSERT_TRUE(testUnion1 == testUnion2);
+}
+
 TEST_F(UnionWithParameterizedFieldTest, hashCode)
 {
     TestUnion testUnion1;

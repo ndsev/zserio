@@ -276,6 +276,35 @@ TEST_F(UInt16ParamChoiceTest, operatorEquality)
     ASSERT_FALSE(uint16ParamChoice1 == uint16ParamChoice2);
 }
 
+TEST_F(UInt16ParamChoiceTest, operatorLessThan)
+{
+    const uint16_t selector = VARIANT_A_SELECTOR;
+    UInt16ParamChoice uint16ParamChoice1;
+    uint16ParamChoice1.initialize(selector);
+    UInt16ParamChoice uint16ParamChoice2;
+    uint16ParamChoice2.initialize(VARIANT_B_SELECTOR1);
+    ASSERT_TRUE(uint16ParamChoice1 < uint16ParamChoice2);
+    ASSERT_FALSE(uint16ParamChoice2 < uint16ParamChoice1);
+
+    uint16ParamChoice2.initialize(selector);
+    ASSERT_FALSE(uint16ParamChoice1 < uint16ParamChoice2);
+    ASSERT_FALSE(uint16ParamChoice2 < uint16ParamChoice1);
+
+    const VariantA valueA = 99;
+    uint16ParamChoice1.setA(valueA);
+    ASSERT_FALSE(uint16ParamChoice1 < uint16ParamChoice2);
+    ASSERT_TRUE(uint16ParamChoice2 < uint16ParamChoice1);
+
+    uint16ParamChoice2.setA(valueA);
+    ASSERT_FALSE(uint16ParamChoice1 < uint16ParamChoice2);
+    ASSERT_FALSE(uint16ParamChoice2 < uint16ParamChoice1);
+
+    const VariantA diffValueA = valueA + 1;
+    uint16ParamChoice2.setA(diffValueA);
+    ASSERT_TRUE(uint16ParamChoice1 < uint16ParamChoice2);
+    ASSERT_FALSE(uint16ParamChoice2 < uint16ParamChoice1);
+}
+
 TEST_F(UInt16ParamChoiceTest, hashCode)
 {
     const uint16_t selector = VARIANT_A_SELECTOR;

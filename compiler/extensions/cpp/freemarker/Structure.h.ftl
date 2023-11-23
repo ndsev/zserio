@@ -334,8 +334,19 @@ public:
      */
 </#if>
     bool operator==(const ${name}& other) const;
-<#if withCodeComments>
 
+<#if withCodeComments>
+    /**
+     * Less than operator.
+     *
+     * \param other Instance to compare.
+     *
+     * \return True if this instance is less than other instance, otherwise false.
+     */
+</#if>
+    bool operator<(const ${name}& other) const;
+
+<#if withCodeComments>
     /**
      * Calculates hash code of this Zserio object.
      *

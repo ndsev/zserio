@@ -181,6 +181,25 @@ TEST_F(OneStringStructureTest, operatorEquality)
     ASSERT_TRUE(oneStringStructure1 == oneStringStructure2);
 }
 
+TEST_F(OneStringStructureTest, operatorLessThan)
+{
+    OneStringStructure oneStringStructure1;
+    OneStringStructure oneStringStructure2;
+    ASSERT_FALSE(oneStringStructure1 < oneStringStructure2);
+
+    oneStringStructure1.setOneString(ONE_STRING);
+    ASSERT_FALSE(oneStringStructure1 < oneStringStructure2);
+    ASSERT_TRUE(oneStringStructure2 < oneStringStructure1);
+
+    oneStringStructure2.setOneString(ONE_STRING);
+    ASSERT_FALSE(oneStringStructure1 < oneStringStructure2);
+    ASSERT_FALSE(oneStringStructure2 < oneStringStructure1);
+
+    oneStringStructure1.setOneString("A string");
+    ASSERT_TRUE(oneStringStructure1 < oneStringStructure2);
+    ASSERT_FALSE(oneStringStructure2 < oneStringStructure1);
+}
+
 TEST_F(OneStringStructureTest, hashCode)
 {
     OneStringStructure oneStringStructure1;

@@ -94,6 +94,14 @@ TEST(EmptyStructureTest, operatorEquality)
     ASSERT_TRUE(emptyStructure1 == emptyStructure2);
 }
 
+TEST(EmptyStructureTest, operatorLessThan)
+{
+    EmptyStructure emptyStructure1;
+    EmptyStructure emptyStructure2;
+    ASSERT_FALSE(emptyStructure1 < emptyStructure2);
+    ASSERT_FALSE(emptyStructure2 < emptyStructure1);
+}
+
 TEST(EmptyStructureTest, hashCode)
 {
     EmptyStructure emptyStructure1;

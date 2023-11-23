@@ -242,6 +242,30 @@ TEST_F(FullEnumParamChoiceTest, operatorEquality)
     ASSERT_FALSE(fullEnumParamChoice1 == fullEnumParamChoice2);
 }
 
+TEST_F(FullEnumParamChoiceTest, operatorLessThan)
+{
+    FullEnumParamChoice fullEnumParamChoice1;
+    fullEnumParamChoice1.initialize(Selector::BLACK);
+    FullEnumParamChoice fullEnumParamChoice2;
+    fullEnumParamChoice2.initialize(Selector::BLACK);
+    ASSERT_FALSE(fullEnumParamChoice1 < fullEnumParamChoice2);
+    ASSERT_FALSE(fullEnumParamChoice2 < fullEnumParamChoice1);
+
+    const int8_t value = 99;
+    fullEnumParamChoice1.setBlack(value);
+    ASSERT_FALSE(fullEnumParamChoice1 < fullEnumParamChoice2);
+    ASSERT_TRUE(fullEnumParamChoice2 < fullEnumParamChoice1);
+
+    fullEnumParamChoice2.setBlack(value);
+    ASSERT_FALSE(fullEnumParamChoice1 < fullEnumParamChoice2);
+    ASSERT_FALSE(fullEnumParamChoice2 < fullEnumParamChoice1);
+
+    const int8_t diffValue = value + 1;
+    fullEnumParamChoice2.setBlack(diffValue);
+    ASSERT_TRUE(fullEnumParamChoice1 < fullEnumParamChoice2);
+    ASSERT_FALSE(fullEnumParamChoice2 < fullEnumParamChoice1);
+}
+
 TEST_F(FullEnumParamChoiceTest, hashCode)
 {
     FullEnumParamChoice fullEnumParamChoice1;

@@ -107,6 +107,34 @@ TEST_F(ExtendedOptionalParameterizedFieldTest, operatorEquality)
     ASSERT_EQ(extended1, extended2);
 }
 
+TEST_F(ExtendedOptionalParameterizedFieldTest, operatorLessThan)
+{
+    Extended extended1;
+    Extended extended2;
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+
+    extended1.setValue(static_cast<uint16_t>(ARRAY.size()));
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_TRUE(extended2 < extended1);
+
+    extended2.setValue(static_cast<uint16_t>(ARRAY.size()));
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+
+    Parameterized extendedValue;
+    extendedValue.setArray(ARRAY);
+    extended2.setExtendedValue(extendedValue);
+    extended2.initializeChildren();
+    ASSERT_TRUE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+
+    extended1.setExtendedValue(extendedValue);
+    extended1.initializeChildren();
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+}
+
 TEST_F(ExtendedOptionalParameterizedFieldTest, hashCode)
 {
     Extended extended1;

@@ -247,6 +247,31 @@ TEST_F(BitmaskParamChoiceTest, operatorEquality)
     ASSERT_FALSE(bitmaskParamChoice1 == bitmaskParamChoice2);
 }
 
+TEST_F(BitmaskParamChoiceTest, operatorLessThan)
+{
+    const Selector selector = Selector::Values::BLACK;
+    BitmaskParamChoice bitmaskParamChoice1;
+    bitmaskParamChoice1.initialize(selector);
+    BitmaskParamChoice bitmaskParamChoice2;
+    bitmaskParamChoice2.initialize(selector);
+    ASSERT_FALSE(bitmaskParamChoice1 < bitmaskParamChoice2);
+    ASSERT_FALSE(bitmaskParamChoice2 < bitmaskParamChoice1);
+
+    const uint8_t value = 99;
+    bitmaskParamChoice1.setBlack(value);
+    ASSERT_FALSE(bitmaskParamChoice1 < bitmaskParamChoice2);
+    ASSERT_TRUE(bitmaskParamChoice2 < bitmaskParamChoice1);
+
+    bitmaskParamChoice2.setBlack(value);
+    ASSERT_FALSE(bitmaskParamChoice1 < bitmaskParamChoice2);
+    ASSERT_FALSE(bitmaskParamChoice2 < bitmaskParamChoice1);
+
+    const int8_t diffValue = value + 1;
+    bitmaskParamChoice2.setBlack(diffValue);
+    ASSERT_TRUE(bitmaskParamChoice1 < bitmaskParamChoice2);
+    ASSERT_FALSE(bitmaskParamChoice2 < bitmaskParamChoice1);
+}
+
 TEST_F(BitmaskParamChoiceTest, hashCode)
 {
     const Selector selector = Selector::Values::BLACK;

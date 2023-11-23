@@ -98,6 +98,28 @@ TEST_F(ExtendedCompoundFieldTest, operatorEquality)
     ASSERT_EQ(extended1, extended2);
 }
 
+TEST_F(ExtendedCompoundFieldTest, operatorLessThan)
+{
+    Extended extended1;
+    Extended extended2;
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+
+    extended1.setValue(13);
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_TRUE(extended2 < extended1);
+    extended2.setValue(13);
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+
+    extended2.setExtendedValue(Compound(COMPOUND_ARRAY));
+    ASSERT_TRUE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+    extended1.setExtendedValue(Compound(COMPOUND_ARRAY));
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+}
+
 TEST_F(ExtendedCompoundFieldTest, hashCode)
 {
     Extended extended1;

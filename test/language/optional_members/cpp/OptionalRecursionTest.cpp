@@ -178,6 +178,34 @@ TEST_F(OptionalRecursionTest, operatorEquality)
     ASSERT_TRUE(block12_1 == block12_2);
 }
 
+TEST_F(OptionalRecursionTest, operatorLessThan)
+{
+    Block block1;
+    fillBlock(block1, BLOCK1_DATA);
+    Block block2;
+    fillBlock(block2, BLOCK1_DATA);
+    ASSERT_FALSE(block1 < block2);
+    ASSERT_FALSE(block2 < block1);
+
+    Block block12_1;
+    fillBlock(block12_1, BLOCK1_DATA, BLOCK2_DATA);
+    ASSERT_TRUE(block1 < block12_1);
+    ASSERT_FALSE(block12_1 < block1);
+
+    Block block12_2;
+    fillBlock(block12_2, BLOCK1_DATA, BLOCK2_DATA);
+    ASSERT_FALSE(block12_1 < block12_2);
+    ASSERT_FALSE(block12_2 < block12_1);
+
+    block12_1.setBlockTerminator(0); // set but not used
+    ASSERT_TRUE(block12_1 < block12_2);
+    ASSERT_FALSE(block12_2 < block12_1);
+
+    block12_2.setBlockTerminator(0); // set but not used
+    ASSERT_FALSE(block12_1 < block12_2);
+    ASSERT_FALSE(block12_2 < block12_1);
+}
+
 TEST_F(OptionalRecursionTest, hashCode)
 {
     Block block1;

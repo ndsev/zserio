@@ -175,6 +175,28 @@ TEST(EmptyUnionWithParameterTest, operatorEquality)
     ASSERT_FALSE(emptyUnionWithParameter1 == emptyUnionWithParameter2);
 }
 
+TEST(EmptyUnionWithParameterTest, operatorLessThan)
+{
+    EmptyUnionWithParameter emptyUnionWithParameter1;
+    EmptyUnionWithParameter emptyUnionWithParameter2;
+    ASSERT_THROW(ASSERT_FALSE(emptyUnionWithParameter1 < emptyUnionWithParameter2),
+            zserio::CppRuntimeException);
+    ASSERT_THROW(ASSERT_FALSE(emptyUnionWithParameter2 < emptyUnionWithParameter1),
+            zserio::CppRuntimeException);
+
+    emptyUnionWithParameter1.initialize(1);
+    ASSERT_THROW(ASSERT_FALSE(emptyUnionWithParameter1 < emptyUnionWithParameter2),
+            zserio::CppRuntimeException);
+
+    emptyUnionWithParameter2.initialize(1);
+    ASSERT_FALSE(emptyUnionWithParameter1 < emptyUnionWithParameter2);
+    ASSERT_FALSE(emptyUnionWithParameter2 < emptyUnionWithParameter1);
+
+    emptyUnionWithParameter2.initialize(2);
+    ASSERT_TRUE(emptyUnionWithParameter1 < emptyUnionWithParameter2);
+    ASSERT_FALSE(emptyUnionWithParameter2 < emptyUnionWithParameter1);
+}
+
 TEST(EmptyUnionWithParameterTest, hashCode)
 {
     EmptyUnionWithParameter emptyUnionWithParameter1;

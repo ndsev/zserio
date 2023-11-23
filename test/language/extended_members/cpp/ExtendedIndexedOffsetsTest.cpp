@@ -103,6 +103,30 @@ TEST_F(ExtendedIndexedOffsetsTest, operatorEquality)
     ASSERT_EQ(extended1, extended2);
 }
 
+TEST_F(ExtendedIndexedOffsetsTest, operatorLessThan)
+{
+    Extended extended1;
+    Extended extended2;
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+
+    extended1.setOffsets(OFFSETS);
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_TRUE(extended2 < extended1);
+
+    extended2.setOffsets(OFFSETS);
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+
+    extended2.setArray(ARRAY);
+    ASSERT_TRUE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+
+    extended1.setArray(ARRAY);
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+}
+
 TEST_F(ExtendedIndexedOffsetsTest, hashCode)
 {
     Extended extended1;

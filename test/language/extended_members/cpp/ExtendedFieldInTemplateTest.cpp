@@ -108,6 +108,30 @@ TEST_F(ExtendedFieldInTemplateTest, operatorEqualitySimple)
     ASSERT_EQ(extended1, extended2);
 }
 
+TEST_F(ExtendedFieldInTemplateTest, operatorLessThanSimple)
+{
+    ExtendedSimple extended1;
+    ExtendedSimple extended2;
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+
+    extended1.setValue(13);
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_TRUE(extended2 < extended1);
+
+    extended2.setValue(13);
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+
+    extended2.setExtendedValue(UINT32_MAX);
+    ASSERT_TRUE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+
+    extended1.setExtendedValue(UINT32_MAX);
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+}
+
 TEST_F(ExtendedFieldInTemplateTest, operatorEqualityCompound)
 {
     ExtendedCompound extended1;
@@ -123,6 +147,30 @@ TEST_F(ExtendedFieldInTemplateTest, operatorEqualityCompound)
     ASSERT_FALSE(extended1 == extended2);
     extended1.setExtendedValue(Compound(UINT32_MAX));
     ASSERT_EQ(extended1, extended2);
+}
+
+TEST_F(ExtendedFieldInTemplateTest, operatorLessThanCompound)
+{
+    ExtendedCompound extended1;
+    ExtendedCompound extended2;
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+
+    extended1.setValue(13);
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_TRUE(extended2 < extended1);
+
+    extended2.setValue(13);
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+
+    extended2.setExtendedValue(Compound(UINT32_MAX));
+    ASSERT_TRUE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+
+    extended1.setExtendedValue(Compound(UINT32_MAX));
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
 }
 
 TEST_F(ExtendedFieldInTemplateTest, hashCodeSimple)

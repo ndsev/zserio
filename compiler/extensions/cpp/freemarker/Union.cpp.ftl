@@ -595,6 +595,38 @@ bool ${name}::operator==(const ${name}& other) const
 </#if>
 }
 
+<#macro union_less_than_field field indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#local lhs>m_objectChoice.get<<@field_cpp_type_name field/>>()</#local>
+    <#local rhs>other.m_objectChoice.get<<@field_cpp_type_name field/>>()</#local>
+${I}if (m_objectChoice.hasValue() && other.m_objectChoice.hasValue())
+${I}    return <@compound_field_less_than_compare field, lhs, rhs/>;
+${I}else
+${I}    return !m_objectChoice.hasValue() && other.m_objectChoice.hasValue();
+</#macro>
+bool ${name}::operator<(const ${name}& other) const
+{
+    <@compound_parameter_less_than compoundParametersData, 1/>
+    if (m_choiceTag < other.m_choiceTag)
+        return true;
+    if (other.m_choiceTag < m_choiceTag)
+        return false;
+<#if fieldList?has_content>
+
+    switch (m_choiceTag)
+    {
+    <#list fieldList as field>
+    case <@choice_tag_name field/>:
+        <@union_less_than_field field, 2/>
+    </#list>
+    default:
+        return false; // UNDEFINED_CHOICE
+    }
+<#else>
+    return false;
+</#if>
+}
+
 uint32_t ${name}::hashCode() const
 {
     uint32_t result = ::zserio::HASH_SEED;

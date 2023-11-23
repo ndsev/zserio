@@ -139,6 +139,28 @@ TEST_F(AutoOptionalTest, operatorEquality)
     ASSERT_FALSE(container1 == container2);
 }
 
+TEST_F(AutoOptionalTest, operatorLessThan)
+{
+    Container container1;
+    Container container2;
+    ASSERT_FALSE(container1 < container2);
+    ASSERT_FALSE(container2 < container1);
+
+    container1.setNonOptionalInt(NON_OPTIONAL_INT_VALUE);
+    container1.setAutoOptionalInt(AUTO_OPTIONAL_INT_VALUE);
+    container2.setNonOptionalInt(NON_OPTIONAL_INT_VALUE);
+    ASSERT_FALSE(container1 < container2);
+    ASSERT_TRUE(container2 < container1);
+
+    container2.setAutoOptionalInt(AUTO_OPTIONAL_INT_VALUE);
+    ASSERT_FALSE(container1 < container2);
+    ASSERT_FALSE(container2 < container1);
+
+    container1.resetAutoOptionalInt();
+    ASSERT_TRUE(container1 < container2);
+    ASSERT_FALSE(container2 < container1);
+}
+
 TEST_F(AutoOptionalTest, hashCode)
 {
     Container container1;

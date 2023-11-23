@@ -109,6 +109,38 @@ TEST_F(MultipleExtendedFieldsTest, operatorEquality)
     ASSERT_EQ(extended1, extended2);
 }
 
+TEST_F(MultipleExtendedFieldsTest, operatorLessThan)
+{
+    Extended2 extended1;
+    Extended2 extended2;
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+
+    extended1.setValue(13);
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_TRUE(extended2 < extended1);
+
+    extended2.setValue(13);
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+
+    extended2.setExtendedValue1(2);
+    ASSERT_TRUE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+
+    extended1.setExtendedValue1(2);
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+
+    extended1.setExtendedValue2(string_type("value"));
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_TRUE(extended2 < extended1);
+
+    extended2.setExtendedValue2(string_type("value"));
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+}
+
 TEST_F(MultipleExtendedFieldsTest, hashCode)
 {
     Extended2 extended1;

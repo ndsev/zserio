@@ -186,6 +186,28 @@ TEST_F(OptionalArrayRecursionTest, operatorEquality)
     ASSERT_TRUE(teamLead1 == teamLead2);
 }
 
+TEST_F(OptionalArrayRecursionTest, operatorLessThan)
+{
+    Employee employee(EMPTY_EMPLOYEE_NAME, EMPTY_EMPLOYEE_SALARY, Title::DEVELOPER, zserio::NullOpt);
+    Employee teamLead1;
+    fillTeamLead(teamLead1);
+    ASSERT_TRUE(employee < teamLead1);
+    ASSERT_FALSE(teamLead1 < employee);
+
+    Employee teamLead2;
+    fillTeamLead(teamLead2);
+    ASSERT_FALSE(teamLead1 < teamLead2);
+    ASSERT_FALSE(teamLead2 < teamLead1);
+
+    teamLead1.setTitle(Title::DEVELOPER); // set but not used
+    ASSERT_TRUE(teamLead1 < teamLead2);
+    ASSERT_FALSE(teamLead2 < teamLead1);
+
+    teamLead2.setTitle(Title::DEVELOPER); // set but not used
+    ASSERT_FALSE(teamLead1 < teamLead2);
+    ASSERT_FALSE(teamLead2 < teamLead1);
+}
+
 TEST_F(OptionalArrayRecursionTest, hashCode)
 {
     Employee teamLead1;

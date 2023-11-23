@@ -117,6 +117,39 @@ TEST_F(ExtendedChoiceFieldTest, operatorEquality)
     ASSERT_EQ(extended1, extended2);
 }
 
+TEST_F(ExtendedChoiceFieldTest, operatorLessThan)
+{
+    Extended extended1;
+    Extended extended2;
+    extended1.initializeChildren();
+    extended2.initializeChildren();
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+
+    extended1.setNumElements(1);
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_TRUE(extended2 < extended1);
+
+    extended2.setNumElements(1);
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+
+    Choice extendedValue;
+    extendedValue.setValue(42);
+    extended2.setExtendedValue(extendedValue);
+    extended2.initializeChildren();
+    ASSERT_TRUE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+    extended1.setExtendedValue(extendedValue);
+    extended1.initializeChildren();
+    ASSERT_FALSE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+
+    extended1.getExtendedValue().setValue(41);
+    ASSERT_TRUE(extended1 < extended2);
+    ASSERT_FALSE(extended2 < extended1);
+}
+
 TEST_F(ExtendedChoiceFieldTest, hashCode)
 {
     Extended extended1;

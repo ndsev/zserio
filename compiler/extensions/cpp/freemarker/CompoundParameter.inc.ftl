@@ -169,6 +169,27 @@ ${compoundParameter.typeInfo.typeFullName} ${compoundName}::${compoundParameter.
     </#if>
 </#macro>
 
+<#macro compound_parameter_less_than_compare compoundParamter lhs rhs>
+    <#if compoundParamter.typeInfo.isBoolean>
+        static_cast<int>(${lhs}) < static_cast<int>(${rhs})<#t>
+    <#else>
+        ${lhs} < ${rhs}<#t>
+    </#if>
+</#macro>
+
+<#macro compound_parameter_less_than compoundParametersData indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#list compoundParametersData.list as compoundParameter>
+        <#local lhs>${compoundParameter.getterName}()</#local>
+        <#local rhs>other.${compoundParameter.getterName}()</#local>
+${I}if (<@compound_parameter_less_than_compare compoundParameter, lhs, rhs/>)
+${I}    return true;
+${I}if (<@compound_parameter_less_than_compare compoundParameter, rhs, lhs/>)
+${I}    return false;
+
+    </#list>
+</#macro>
+
 <#macro compound_parameter_hash_code compoundParametersData>
     <#list compoundParametersData.list as compoundParameter>
     result = ::zserio::calcHashCode(result, ${compoundParameter.getterName}());

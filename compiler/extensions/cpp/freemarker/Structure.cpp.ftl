@@ -433,6 +433,52 @@ bool ${name}::operator==(const ${name}&<#if compoundParametersData.list?has_cont
     return true;
 }
 
+<#macro structure_less_than_field field indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#local lhs><@field_member_name field/></#local>
+    <#local rhs>other.<@field_member_name field/></#local>
+    <#if field.optional??>
+${I}if (${field.optional.isUsedIndicatorName}() && other.${field.optional.isUsedIndicatorName}())
+${I}{
+${I}    if (<@compound_field_less_than_compare field, lhs, rhs/>)
+${I}        return true;
+${I}    if (<@compound_field_less_than_compare field, rhs, lhs/>)
+${I}        return false;
+${I}}
+${I}else if (${field.optional.isUsedIndicatorName}() != other.${field.optional.isUsedIndicatorName}())
+${I}{
+${I}    return !${field.optional.isUsedIndicatorName}();
+${I}}
+    <#else>
+${I}if (<@compound_field_less_than_compare field, lhs, rhs/>)
+${I}    return true;
+${I}if (<@compound_field_less_than_compare field, rhs, lhs/>)
+${I}    return false;
+    </#if>
+</#macro>
+bool ${name}::operator<(const ${name}&<#if compoundParametersData.list?has_content || fieldList?has_content> other</#if>) const
+{
+    <@compound_parameter_less_than compoundParametersData, 1/>
+<#if fieldList?has_content>
+    <#list fieldList as field>
+        <#if field.isExtended>
+    if (${field.isPresentIndicatorName}() && other.${field.isPresentIndicatorName}())
+    {
+        <@structure_less_than_field field, 2/>
+    }
+    else if (${field.isPresentIndicatorName}() != other.${field.isPresentIndicatorName}())
+    {
+        return !${field.isPresentIndicatorName}();
+    }
+        <#else>
+    <@structure_less_than_field field, 1/>
+        </#if>
+
+    </#list>
+</#if>
+    return false;
+}
+
 <#macro structure_hash_code_field field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
