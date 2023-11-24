@@ -118,3 +118,42 @@ compatibility version and fires an error when it detects any problem.
 
 > Note: Binary encoding of packed arrays has been changed in version `2.5.0` and thus versions `2.4.x` are
 binary incompatible with later versions.
+
+## Ordering rules
+
+Both C++ runtime and generator provide `operator<` (in addition to `operator==`) on all objects which can
+occur in generated API. Thus it's possible to easily use generated objects in `std::set` or `std::map`.
+
+In general, all compound objects are compared lexicographically (inspired by
+[lexicographical_compare](https://en.cppreference.com/w/cpp/algorithm/lexicographical_compare)):
+
+* Parameters are compared first in order of definition.
+* Fields are compared:
+   * In case of [structures](../../../doc/ZserioLanguageOverview.md#structure-type),
+     all fields are compared in order of definition.
+   * In case of [unions](../../../doc/ZserioLanguageOverview.md#union-type),
+     the `choiceTag` is compared first and then the selected field is compared.
+   * In case of [choices](../../../doc/ZserioLanguageOverview.md#choice-type),
+     only the selected field is compared (if any).
+
+Comparison of [optional fields](../../../doc/ZserioLanguageOverview.md#optional-members)
+(kept in `InplaceOptionalHolder` or `HeapOptionalHolder`):
+
+* When both fields are present, they are compared.
+* Otherwise the missing field is less than the other field if and only if the other field is present.
+* If both fields are missing, they are equal.
+
+> Note that same rules applies for
+  [extended fields](../../../doc/ZserioLanguageOverview.md#extended-members) and for fields in unions
+  and choices, which are internally kept in `AnyHolder`.
+
+Comparison of [arrays](../../../doc/ZserioLanguageOverview.md#array-types)
+(`Array`) uses native comparison of the underlying `std::vector`.
+
+Comparison of [`extern` fields](../../../doc/ZserioLanguageOverview.md#extern-type) (kept in `BitBuffer`):
+
+* Compares byte by byte and follows the rules of
+  [lexicographical compare](https://en.cppreference.com/w/cpp/algorithm/lexicographical_compare).
+* The last byte is properly masked to used only the proper number of bits.
+
+Comparison of [`bytes` fields](../../../doc/ZserioLanguageOverview.md#bytes-type) uses native comparison on the underlying `std::vector`.
