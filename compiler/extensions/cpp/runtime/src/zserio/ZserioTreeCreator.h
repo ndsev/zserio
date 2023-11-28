@@ -243,7 +243,7 @@ AnyHolder<ALLOC> parseBitmaskStringValue(StringView stringValue, const IBasicTyp
                     if (newPos == stringValue.size())
                         return makeAnyValue(typeInfo.getUnderlyingType(), value, allocator); // end of string
                     match = true;
-                    pos = itemInfo.schemaName.size();
+                    pos += itemInfo.schemaName.size();
                     break;
                 }
             }

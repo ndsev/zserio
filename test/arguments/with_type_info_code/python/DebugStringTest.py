@@ -270,7 +270,7 @@ class DebugStringTest(WithTypeInfoCode.TestCase):
 
         if createdOptionals:
             self.assertEqual("ItemThree", complexStruct["optionalEnum"])
-            self.assertEqual("RED | _Green", complexStruct["optionalBitmask"])
+            self.assertEqual("RED | _Green | ColorBlue", complexStruct["optionalBitmask"])
             self._checkOptionalExternDataJson(complexStruct["optionalExtern"])
             self._checkOptionalBytesDataJson(complexStruct["optionalBytes"])
         else:

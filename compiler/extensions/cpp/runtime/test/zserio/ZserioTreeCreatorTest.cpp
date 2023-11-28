@@ -281,6 +281,8 @@ TEST(ZserioTreeCreatorTest, parseBitmaskStringValue)
             typeInfo, allocator).get<uint8_t>());
     ASSERT_EQ(4, detail::parseBitmaskStringValue("READ_EXT_EXT | READ_EXT_EXT",
                 typeInfo, allocator).get<uint8_t>());
+    ASSERT_EQ(7, detail::parseBitmaskStringValue("READ | READ_EXT | READ_EXT_EXT",
+                typeInfo, allocator).get<uint8_t>());
     ASSERT_FALSE(detail::parseBitmaskStringValue("READ|", typeInfo, allocator).hasValue());
     ASSERT_FALSE(detail::parseBitmaskStringValue("READ | ", typeInfo, allocator).hasValue());
     ASSERT_FALSE(detail::parseBitmaskStringValue("READ|", typeInfo, allocator).hasValue());

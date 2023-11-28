@@ -64,7 +64,9 @@ public class WithTypeInfoCodeCreator
             BigInteger.valueOf(8),
             dynamicBitFieldArray,
             (createOptionals) ? TestEnum.ItemThree : null,
-            (createOptionals) ? TestBitmask.Values.RED.or(TestBitmask.Values._Green) : null,
+            (createOptionals) ?
+                    TestBitmask.Values.RED.or(TestBitmask.Values._Green).or(TestBitmask.Values.ColorBlue) :
+                        null,
             (createOptionals) ? new BitBuffer(new byte[]{(byte)0xCB, (byte)0xF0}, 12) : null,
             (createOptionals) ? createBytesData() : null,
             new TestEnum[] { TestEnum._TWO, TestEnum.ItemThree},
