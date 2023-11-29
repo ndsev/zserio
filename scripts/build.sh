@@ -523,7 +523,7 @@ main()
     if [[ ${PARAM_ANT_TASK} == 1 ]] ; then
         echo "${ACTION_DESCRIPTION} Zserio Ant task."
         echo
-        compile_java "${ZSERIO_PROJECT_ROOT}/build.xml" ANT_PROPS[@] zserio_ant_task.${JAVA_TARGET}
+        compile_java "${ZSERIO_PROJECT_ROOT}/ant_task/build.xml" ANT_PROPS[@] ${JAVA_TARGET}
         if [ $? -ne 0 ] ; then
             return 1
         fi
@@ -535,7 +535,7 @@ main()
             ${PARAM_XML} == 1 ||  ${PARAM_DOC} == 1 || ${PARAM_ZSERIO} == 1 ]] ; then
         echo "${ACTION_DESCRIPTION} Zserio compiler core."
         echo
-        compile_java "${ZSERIO_PROJECT_ROOT}/build.xml" ANT_PROPS[@] zserio_core.${JAVA_TARGET}
+        compile_java "${ZSERIO_PROJECT_ROOT}/compiler/core/build.xml" ANT_PROPS[@] ${JAVA_TARGET}
         if [ $? -ne 0 ] ; then
             return 1
         fi
@@ -543,7 +543,7 @@ main()
     fi
 
     # build Zserio C++ extension
-    if [[ ${PARAM_CPP} == 1 || ${PARAM_ZSERIO} == 1 ]] ; then
+    if [[ ${PARAM_CPP} == 1 ]] ; then
         echo "${ACTION_DESCRIPTION} Zserio C++ extension."
         echo
         compile_java "${ZSERIO_PROJECT_ROOT}/compiler/extensions/cpp/build.xml" ANT_PROPS[@] ${JAVA_TARGET}
@@ -590,7 +590,7 @@ main()
     fi
 
     # build Zserio Java extension
-    if [[ ${PARAM_JAVA} == 1 || ${PARAM_ZSERIO} == 1 ]] ; then
+    if [[ ${PARAM_JAVA} == 1 ]] ; then
         echo "${ACTION_DESCRIPTION} Zserio Java extension."
         echo
         compile_java "${ZSERIO_PROJECT_ROOT}/compiler/extensions/java/build.xml" ANT_PROPS[@] ${JAVA_TARGET}
@@ -613,7 +613,7 @@ main()
     fi
 
     # build Zserio Python extension
-    if [[ ${PARAM_PYTHON} == 1 || ${PARAM_ZSERIO} == 1 ]] ; then
+    if [[ ${PARAM_PYTHON} == 1 ]] ; then
         echo "${ACTION_DESCRIPTION} Zserio Python extension."
         compile_java "${ZSERIO_PROJECT_ROOT}/compiler/extensions/python/build.xml" ANT_PROPS[@] ${JAVA_TARGET}
         if [ $? -ne 0 ] ; then
@@ -663,7 +663,7 @@ main()
     fi
 
     # build Zserio XML extension
-    if [[ ${PARAM_XML} == 1 || ${PARAM_ZSERIO} == 1 ]] ; then
+    if [[ ${PARAM_XML} == 1 ]] ; then
         echo "${ACTION_DESCRIPTION} Zserio XML extension."
         echo
         compile_java "${ZSERIO_PROJECT_ROOT}/compiler/extensions/xml/build.xml" ANT_PROPS[@] ${JAVA_TARGET}
@@ -674,7 +674,7 @@ main()
     fi
 
     # build Zserio Documentation extension
-    if [[ ${PARAM_DOC} == 1 || ${PARAM_ZSERIO} == 1 ]] ; then
+    if [[ ${PARAM_DOC} == 1 ]] ; then
         echo "${ACTION_DESCRIPTION} Zserio Documentation extension."
         echo
         compile_java "${ZSERIO_PROJECT_ROOT}/compiler/extensions/doc/build.xml" ANT_PROPS[@] ${JAVA_TARGET}

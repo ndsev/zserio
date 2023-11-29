@@ -33,6 +33,7 @@ spotbugs.home_dir       - Location of the spotbugs tool. If not set, spotbugs is
     <property name="zserio_core.src_dir" value="${zserio_core.base_dir}/src"/>
 
     <property name="zserio_core.classes_dir" value="${zserio_core.build_dir}/classes"/>
+    <property name="zserio_core.javadocs_dir" value="${zserio_core.build_dir}/javadocs"/>
     <property name="zserio_core.spotbugs.out_dir" value="${zserio_core.build_dir}/spotbugs"/>
     <property name="zserio_core.antlr.gen_dir" value="${zserio_core.build_dir}/gen"/>
     <property name="zserio_core.antlr.out_dir" value="${zserio_core.antlr.gen_dir}/zserio/antlr"/>
@@ -46,6 +47,8 @@ spotbugs.home_dir       - Location of the spotbugs tool. If not set, spotbugs is
     <property name="zserio_core.jar_dir" value="${zserio_core.build_dir}/jar"/>
     <!-- use location to set absolute path, property zserio_core.jar_file is used by extensions -->
     <property name="zserio_core.jar_file" location="${zserio_core.jar_dir}/zserio_core.jar"/>
+    <property name="zserio_core.javadocs_jar_file" value="${zserio_core.jar_dir}/zserio_core_javadocs.jar"/>
+    <property name="zserio_core.sources_jar_file" value="${zserio_core.jar_dir}/zserio_core_sources.jar"/>
 
     <property name="3rdparty.root_dir" value="${zserio_core.zserio_root}/3rdparty"/>
     <property name="3rdparty.jar_dir" value="${3rdparty.root_dir}/java"/>
@@ -60,6 +63,12 @@ spotbugs.home_dir       - Location of the spotbugs tool. If not set, spotbugs is
         <include name="${3rdparty.freemarker.jar_file_name}"/>
         <include name="${3rdparty.commons-cli.jar_file_name}"/>
     </fileset>
+
+    <uptodate property="zserio_core.javadocs_up_to_date">
+        <srcfiles dir= "${zserio_core.src_dir}" includes="**/*"/>
+        <srcfiles file="build.xml"/>
+        <mapper type="merge" to="${zserio_core.javadocs_dir}/index.html"/>
+    </uptodate>
 
     <target name="clean">
         <delete dir="${zserio_core.build_dir}"/>
@@ -125,7 +134,26 @@ spotbugs.home_dir       - Location of the spotbugs tool. If not set, spotbugs is
         </javac>
     </target>
 
-    <target name="jar" depends="compile">
+    <target name="javadocs" unless="zserio_core.javadocs_up_to_date">
+        <tstamp>
+            <format property="timestamp" pattern="yyyy-MM-dd HH:mm:ss"/>
+        </tstamp>
+        <javadoc destdir="${zserio_core.javadocs_dir}" failonerror="true" failonwarning="true">
+            <fileset dir="${zserio_core.src_dir}"/>
+            <fileset dir="${zserio_core.antlr.gen_dir}"/>
+            <doctitle>
+                <![CDATA[<h1>Zserio Core Documentation</h1><h2>Version ${zserio_core.version}</h2]]>
+            </doctitle>
+            <bottom>
+                <![CDATA[<i>Last updated ${timestamp}</i>]]>
+            </bottom>
+            <classpath>
+                <fileset refid="3rdparty.jar_files_ref"/>
+            </classpath>
+        </javadoc>
+    </target>
+
+    <target name="jar" depends="compile, javadocs">
         <mkdir dir="${zserio_core.jar_dir}"/>
 
         <pathconvert pathsep=" " property="3rdparty.jar_files" refid="3rdparty.jar_files_ref">
@@ -139,6 +167,23 @@ spotbugs.home_dir       - Location of the spotbugs tool. If not set, spotbugs is
             <manifest>
                 <attribute name="Main-Class" value="zserio.tools.ZserioTool"/>
                 <attribute name="Class-Path" value="${3rdparty.jar_files}"/>
+                <attribute name="Implementation-Version" value="${zserio_core.version}"/>
+            </manifest>
+        </jar>
+
+        <jar destfile="${zserio_core.javadocs_jar_file}">
+            <fileset dir="${zserio_core.javadocs_dir}">
+                <include name="**"/>
+            </fileset>
+            <manifest>
+                <attribute name="Implementation-Version" value="${zserio_core.version}"/>
+            </manifest>
+        </jar>
+
+        <jar destfile="${zserio_core.sources_jar_file}">
+            <fileset dir="${zserio_core.src_dir}"/>
+            <fileset dir="${zserio_core.antlr.gen_dir}"/>
+            <manifest>
                 <attribute name="Implementation-Version" value="${zserio_core.version}"/>
             </manifest>
         </jar>

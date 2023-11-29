@@ -48,22 +48,13 @@ gpg.executable              - GnuPG executable to use for artifact signing. Defa
     <property name="zserio_bundle.sources_jar_file"
             value="${zserio_bundle.build_dir}/${zserio_bundle.sources_jar_file_name}"/>
 
-    <property name="zserio_bundle.src_dir" location="${basedir}/compiler"/>
     <property name="zserio_bundle.javadocs_dir" value="${zserio_bundle.build_dir}/javadocs"/>
+    <property name="zserio_bundle.javadocs_src_dir" value="${zserio_bundle.build_dir}/javadocs_src"/>
     <uptodate property="zserio_bundle.javadocs_up_to_date">
-        <srcfiles dir= "${zserio_bundle.src_dir}" includes="**/*.java" excludes="**/runtime/**/*.java"/>
+        <srcfiles dir= "${zserio.jars_dir}" includes="*_sources.jar" erroronmissingdir="false"/>
+        <srcfiles file="build.xml"/>
         <mapper type="merge" to="${zserio_bundle.javadocs_dir}/index.html"/>
     </uptodate>
-
-    <patternset id="zserio_bundle.sources_patterns">
-        <include name="**/*.java"/>
-        <exclude name="**/runtime/**/*.java"/>
-        <exclude name="**/test/**/*.java"/>
-    </patternset>
-
-    <fileset id="zserio_bundle.sources" dir="${zserio_bundle.src_dir}">
-        <patternset refid="zserio_bundle.sources_patterns"/>
-    </fileset>
 
     <property name="zserio.deploy.snapshot_flag" value="yes"/>
 
@@ -86,19 +77,18 @@ gpg.executable              - GnuPG executable to use for artifact signing. Defa
     </loadfile>
 
     <include file="${basedir}/compiler/core/build.xml"/>
-    <include file="${basedir}/ant_task/build.xml"/>
 
-    <target name="clean" depends="zserio_core.clean, zserio_ant_task.clean"/>
+    <target name="clean" depends="zserio_core.clean"/>
 
-    <target name="compile" depends="zserio_core.compile, zserio_ant_task.compile"/>
+    <target name="compile" depends="zserio_core.compile"/>
 
-    <target name="jar" depends="zserio_core.jar, zserio_ant_task.jar"/>
+    <target name="jar" depends="zserio_core.jar"/>
 
-    <target name="install" depends="zserio_core.install, zserio_ant_task.install"/>
+    <target name="install" depends="zserio_core.install"/>
 
-    <target name="spotbugs" depends="zserio_core.spotbugs, zserio_ant_task.spotbugs"/>
+    <target name="spotbugs" depends="zserio_core.spotbugs"/>
 
-    <target name="test" depends="zserio_core.test, zserio_ant_task.test"/>
+    <target name="test" depends="zserio_core.test"/>
 
     <!-- Bundled Zserio -->
     <target name="zserio_bundle.clean" depends="clean">
@@ -109,11 +99,15 @@ gpg.executable              - GnuPG executable to use for artifact signing. Defa
         <tstamp>
             <format property="timestamp" pattern="yyyy-MM-dd HH:mm:ss"/>
         </tstamp>
+        <unzip dest="${zserio_bundle.javadocs_src_dir}">
+            <fileset dir="${zserio.jars_dir}" includes="*_sources.jar"/>
+        </unzip>
+        <fileset id="zserio_bundle.sources" dir="${zserio_bundle.javadocs_src_dir}"/>
         <javadoc packagenames="zserio.*" destdir="${zserio_bundle.javadocs_dir}"
             failonerror="true" failonwarning="true" useexternalfile="true">
             <fileset refid="zserio_bundle.sources"/>
             <doctitle>
-                <![CDATA[<h1>Zserio Compiler</h1><h2>Version ${zserio.version}</h2]]>
+                <![CDATA[<h1>Zserio Bundle</h1><h2>Version ${zserio.version}</h2]]>
             </doctitle>
             <bottom>
                 <![CDATA[<i>Last updated ${timestamp}</i>]]>
@@ -139,7 +133,7 @@ gpg.executable              - GnuPG executable to use for artifact signing. Defa
                 <archives>
                     <zips>
                         <fileset dir="${zserio.jars_dir}" includes="*.jar"
-                            excludes="${commons_cli_jar_name} ${freemarker_jar_name} ${antlr_jar_name}"/>
+                            excludes="${commons_cli_jar_name} ${freemarker_jar_name} ${antlr_jar_name} *_sources.jar *_javadocs.jar"/>
                     </zips>
                 </archives>
             </restrict>
@@ -167,7 +161,11 @@ gpg.executable              - GnuPG executable to use for artifact signing. Defa
         </jar>
 
         <jar destfile="${zserio_bundle.sources_jar_file}">
-            <fileset refid="zserio_bundle.sources"/>
+            <archives>
+                <zips>
+                    <zipfileset dir="${zserio.jars_dir}" includes="*_sources.jar"/>
+                </zips>
+            </archives>
             <manifest>
                 <attribute name="Implementation-Version" value="${zserio.version}"/>
             </manifest>

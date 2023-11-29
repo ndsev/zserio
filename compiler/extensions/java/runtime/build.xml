@@ -105,6 +105,7 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
 
     <uptodate property="zserio_java_runtime.javadocs_up_to_date">
         <srcfiles dir= "${zserio_java_runtime.src_dir}" includes="**/*"/>
+        <srcfiles file="build.xml"/>
         <mapper type="merge" to="${zserio_java_runtime.javadocs_dir}/index.html"/>
     </uptodate>
 

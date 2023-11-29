@@ -25,7 +25,8 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
 
     <property name="zserio_python.zserio_root" value="${zserio_python.base_dir}/../../.."/>
 
-    <property name="zserio_extensions.build_dir" value="${zserio_python.zserio_root}/build/compiler/extensions"/>
+    <property name="zserio_extensions.build_dir"
+            value="${zserio_python.zserio_root}/build/compiler/extensions"/>
     <property name="zserio_extensions.install_dir" value="${zserio_python.zserio_root}/distr/zserio_libs"/>
     <property name="zserio_python.build_dir" value="${zserio_extensions.build_dir}/python"/>
     <property name="zserio_python.install_dir" value="${zserio_extensions.install_dir}"/>
@@ -33,6 +34,7 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
 
     <property name="zserio_python.src_dir" value="${zserio_python.base_dir}/src"/>
     <property name="zserio_python.classes_dir" value="${zserio_python.build_dir}/classes"/>
+    <property name="zserio_python.javadocs_dir" value="${zserio_python.build_dir}/javadocs"/>
     <property name="zserio_python.spotbugs.out_dir" value="${zserio_python.build_dir}/spotbugs"/>
 
     <property name="zserio_python.test.src_dir" location="${zserio_python.base_dir}/test"/>
@@ -43,6 +45,9 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
 
     <property name="zserio_python.jar_dir" value="${zserio_python.build_dir}/jar"/>
     <property name="zserio_python.jar_file" value="${zserio_python.jar_dir}/zserio_python.jar"/>
+    <property name="zserio_python.javadocs_jar_file"
+            value="${zserio_python.jar_dir}/zserio_python_javadocs.jar"/>
+    <property name="zserio_python.sources_jar_file" value="${zserio_python.jar_dir}/zserio_python_sources.jar"/>
 
     <property name="3rdparty.root_dir" value="${zserio_python.zserio_root}/3rdparty"/>
     <property name="3rdparty.jar_dir" value="${3rdparty.root_dir}/java"/>
@@ -63,6 +68,12 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
             </tokenfilter>
         </filterchain>
     </loadfile>
+
+    <uptodate property="zserio_python.javadocs_up_to_date">
+        <srcfiles dir= "${zserio_python.src_dir}" includes="**/*"/>
+        <srcfiles file="build.xml"/>
+        <mapper type="merge" to="${zserio_python.javadocs_dir}/index.html"/>
+    </uptodate>
 
     <target name="clean">
         <delete dir="${zserio_python.build_dir}"/>
@@ -87,11 +98,31 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
         </javac>
     </target>
 
-    <target name="jar" depends="compile">
+    <target name="javadocs" unless="zserio_python.javadocs_up_to_date">
+        <tstamp>
+            <format property="timestamp" pattern="yyyy-MM-dd HH:mm:ss"/>
+        </tstamp>
+        <javadoc destdir="${zserio_python.javadocs_dir}" failonerror="true" failonwarning="true">
+            <fileset dir="${zserio_python.src_dir}"/>
+            <doctitle>
+                <![CDATA[<h1>Zserio Python Extension Documentation</h1>
+                <h2>Version ${zserio_python.version}</h2]]>
+            </doctitle>
+            <bottom>
+                <![CDATA[<i>Last updated ${timestamp}</i>]]>
+            </bottom>
+            <classpath>
+                <path refid="zserio_python.classpath_zserio_core"/>
+            </classpath>
+        </javadoc>
+    </target>
+
+    <target name="jar" depends="compile, javadocs">
         <mkdir dir="${zserio_python.jar_dir}"/>
         <copy todir="${zserio_python.build_dir}/metainf" overwrite="true">
             <fileset dir="${zserio_python.base_dir}/metainf"/>
         </copy>
+
         <jar destfile="${zserio_python.jar_file}">
             <fileset dir="${zserio_python.classes_dir}">
                 <include name="zserio/**"/>
@@ -103,11 +134,31 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
             </manifest>
             <metainf dir="${zserio_python.build_dir}/metainf" includes="**/*"/>
         </jar>
+
+        <jar destfile="${zserio_python.javadocs_jar_file}">
+            <fileset dir="${zserio_python.javadocs_dir}">
+                <include name="**"/>
+            </fileset>
+            <manifest>
+                <attribute name="Implementation-Version" value="${zserio_python.version}"/>
+            </manifest>
+        </jar>
+
+        <jar destfile="${zserio_python.sources_jar_file}">
+            <fileset dir="${zserio_python.src_dir}"/>
+            <manifest>
+                <attribute name="Implementation-Version" value="${zserio_python.version}"/>
+            </manifest>
+        </jar>
     </target>
 
     <target name="install" depends="jar">
         <mkdir dir="${zserio_python.install_dir}"/>
-        <copy file="${zserio_python.jar_file}" todir="${zserio_python.install_dir}" overwrite="true"/>
+        <copy todir="${zserio_python.install_dir}" overwrite="true">
+            <fileset dir="${zserio_python.jar_dir}">
+                <include name="*.jar"/>
+            </fileset>
+        </copy>
     </target>
 
     <target name="spotbugs" depends="install" if="spotbugs.home_dir">

@@ -35,10 +35,13 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
     <property name="zserio_doc.src_dir" value="${zserio_doc.base_dir}/src"/>
     <property name="zserio_doc.runtime_dir" value="${zserio_doc.base_dir}/runtime"/>
     <property name="zserio_doc.classes_dir" value="${zserio_doc.build_dir}/classes"/>
+    <property name="zserio_doc.javadocs_dir" value="${zserio_doc.build_dir}/javadocs"/>
     <property name="zserio_doc.spotbugs.out_dir" value="${zserio_doc.build_dir}/spotbugs"/>
 
     <property name="zserio_doc.jar_dir" value="${zserio_doc.build_dir}/jar"/>
     <property name="zserio_doc.jar_file" value="${zserio_doc.jar_dir}/zserio_doc.jar"/>
+    <property name="zserio_doc.javadocs_jar_file" value="${zserio_doc.jar_dir}/zserio_doc_javadocs.jar"/>
+    <property name="zserio_doc.sources_jar_file" value="${zserio_doc.jar_dir}/zserio_doc_sources.jar"/>
 
     <property name="3rdparty.root_dir" value="${zserio_doc.zserio_root}/3rdparty"/>
     <property name="3rdparty.jar_dir" value="${3rdparty.root_dir}/java"/>
@@ -78,6 +81,12 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
         </filterchain>
     </loadfile>
 
+    <uptodate property="zserio_doc.javadocs_up_to_date">
+        <srcfiles dir= "${zserio_doc.src_dir}" includes="**/*"/>
+        <srcfiles file="build.xml"/>
+        <mapper type="merge" to="${zserio_doc.javadocs_dir}/index.html"/>
+    </uptodate>
+
     <target name="clean">
         <delete dir="${zserio_doc.build_dir}"/>
     </target>
@@ -98,7 +107,26 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
         </javac>
     </target>
 
-    <target name="jar" depends="compile">
+    <target name="javadocs" unless="zserio_doc.javadocs_up_to_date">
+        <tstamp>
+            <format property="timestamp" pattern="yyyy-MM-dd HH:mm:ss"/>
+        </tstamp>
+        <javadoc destdir="${zserio_doc.javadocs_dir}" failonerror="true" failonwarning="true">
+            <fileset dir="${zserio_doc.src_dir}"/>
+            <doctitle>
+                <![CDATA[<h1>Zserio Doc Extension Documentation</h1><h2>Version ${zserio_doc.version}</h2]]>
+            </doctitle>
+            <bottom>
+                <![CDATA[<i>Last updated ${timestamp}</i>]]>
+            </bottom>
+            <classpath>
+                <path refid="zserio_doc.classpath_zserio_core"/>
+                <fileset refid="3rdparty.jar_files_ref"/>
+            </classpath>
+        </javadoc>
+    </target>
+
+    <target name="jar" depends="compile, javadocs">
         <mkdir dir="${zserio_doc.jar_dir}"/>
         <copy todir="${zserio_doc.build_dir}/metainf" overwrite="true">
             <fileset dir="${zserio_doc.base_dir}/metainf"/>
@@ -119,6 +147,22 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
                 <attribute name="Implementation-Version" value="${zserio_doc.version}"/>
             </manifest>
             <metainf dir="${zserio_doc.build_dir}/metainf" includes="**/*"/>
+        </jar>
+
+        <jar destfile="${zserio_doc.javadocs_jar_file}">
+            <fileset dir="${zserio_doc.javadocs_dir}">
+                <include name="**"/>
+            </fileset>
+            <manifest>
+                <attribute name="Implementation-Version" value="${zserio_doc.version}"/>
+            </manifest>
+        </jar>
+
+        <jar destfile="${zserio_doc.sources_jar_file}">
+            <fileset dir="${zserio_doc.src_dir}"/>
+            <manifest>
+                <attribute name="Implementation-Version" value="${zserio_doc.version}"/>
+            </manifest>
         </jar>
 
         <!-- Copying of 3rd party jar files are necessary because of extensions. Extension projects use
