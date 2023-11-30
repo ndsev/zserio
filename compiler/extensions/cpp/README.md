@@ -154,6 +154,6 @@ Comparison of [`extern` fields](../../../doc/ZserioLanguageOverview.md#extern-ty
 
 * Compares byte by byte and follows the rules of
   [lexicographical compare](https://en.cppreference.com/w/cpp/algorithm/lexicographical_compare).
-* The last byte is properly masked to used only the proper number of bits.
+* The last byte is properly masked to use only the proper number of bits.
 
 Comparison of [`bytes` fields](../../../doc/ZserioLanguageOverview.md#bytes-type) uses native comparison on the underlying `std::vector`.

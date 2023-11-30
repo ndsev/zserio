@@ -2,6 +2,7 @@ package zserio.extension.cpp;
 
 import zserio.ast.UnionType;
 import zserio.extension.common.OutputFileManager;
+import zserio.extension.common.PackedTypesCollector;
 import zserio.extension.common.ZserioExtensionException;
 
 /**
@@ -9,9 +10,10 @@ import zserio.extension.common.ZserioExtensionException;
  */
 public final class UnionEmitter extends CppDefaultEmitter
 {
-    public UnionEmitter(OutputFileManager outputFileManager, CppExtensionParameters cppParameters)
+    public UnionEmitter(OutputFileManager outputFileManager, CppExtensionParameters cppParameters,
+            PackedTypesCollector packedTypesCollector)
     {
-        super(outputFileManager, cppParameters);
+        super(outputFileManager, cppParameters, packedTypesCollector);
     }
 
     @Override

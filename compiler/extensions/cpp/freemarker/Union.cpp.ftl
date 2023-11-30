@@ -52,7 +52,7 @@
     </#if>
 </#macro>
 <@compound_read_constructor_definition compoundConstructorsData, "read_constructor_field_initialization"/>
-<#if isPackable>
+<#if isPackable && usedInPackedArray>
 
 <@compound_read_constructor_definition compoundConstructorsData, "read_constructor_field_initialization", true/>
 </#if>
@@ -452,7 +452,7 @@ ${name}::ChoiceTag ${name}::choiceTag() const
 {
     return m_choiceTag;
 }
-<#if isPackable>
+<#if isPackable && usedInPackedArray>
 
 void ${name}::initPackingContext(${name}::ZserioPackingContext& context) const
 {
@@ -494,7 +494,7 @@ size_t ${name}::bitSizeOf(size_t<#if fieldList?has_content> bitPosition</#if>) c
     return 0;
 </#if>
 }
-<#if isPackable>
+<#if isPackable && usedInPackedArray>
 
 size_t ${name}::bitSizeOf(${name}::ZserioPackingContext& context, size_t bitPosition) const
 {
@@ -541,7 +541,7 @@ size_t ${name}::initializeOffsets(size_t bitPosition)
     return bitPosition;
     </#if>
 }
-    <#if isPackable>
+    <#if isPackable && usedInPackedArray>
 
 size_t ${name}::initializeOffsets(${name}::ZserioPackingContext& context, size_t bitPosition)
 {
@@ -671,7 +671,7 @@ void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#
     }
     </#if>
 }
-    <#if isPackable>
+    <#if isPackable && usedInPackedArray>
 
 void ${name}::write(${name}::ZserioPackingContext& context, ::zserio::BitStreamWriter& out) const
 {
@@ -697,11 +697,13 @@ ${name}::ChoiceTag ${name}::readChoiceTag(::zserio::BitStreamReader& in)
 {
     return static_cast<${name}::ChoiceTag>(static_cast<int32_t>(in.readVarSize()));
 }
+<#if isPackable && usedInPackedArray>
 
 ${name}::ChoiceTag ${name}::readChoiceTag(${name}::ZserioPackingContext& context, ::zserio::BitStreamReader& in)
 {
     return static_cast<${name}::ChoiceTag>(static_cast<int32_t>(context.getChoiceTag().read<${choiceTagArrayTraits}>(in)));
 }
+</#if>
 
 ${types.anyHolder.name} ${name}::readObject(::zserio::BitStreamReader& in, const allocator_type& allocator)
 {
@@ -721,7 +723,7 @@ ${types.anyHolder.name} ${name}::readObject(::zserio::BitStreamReader& in, const
         throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
 }
-<#if isPackable>
+<#if isPackable && usedInPackedArray>
 
 ${types.anyHolder.name} ${name}::readObject(${name}::ZserioPackingContext&<#if uses_packing_context(fieldList)> context</#if>,
         ::zserio::BitStreamReader& in, const allocator_type& allocator)

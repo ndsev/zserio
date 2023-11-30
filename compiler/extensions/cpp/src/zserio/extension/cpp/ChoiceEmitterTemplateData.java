@@ -17,8 +17,7 @@ import zserio.extension.common.ZserioExtensionException;
  */
 public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
 {
-    public ChoiceEmitterTemplateData(TemplateDataContext context, ChoiceType choiceType)
-            throws ZserioExtensionException
+    public ChoiceEmitterTemplateData(TemplateDataContext context, ChoiceType choiceType) throws ZserioExtensionException
     {
         super(context, choiceType);
 

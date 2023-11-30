@@ -469,6 +469,8 @@ public final class CompoundFieldTemplateData
             elementIntegerRange = createIntegerRange(context, elementTypeInstantiation, includeCollector);
             elementIsRecursive = elementTypeInstantiation.getBaseType() == parentType;
             elementTypeInfo = new NativeTypeInfoTemplateData(elementNativeType, elementTypeInstantiation);
+            elementUsedInPackedArray = context.getPackedTypesCollector().isUsedInPackedArray(
+                    elementTypeInstantiation.getBaseType());
         }
 
         public ArrayTraitsTemplateData getTraits()
@@ -516,6 +518,11 @@ public final class CompoundFieldTemplateData
             return elementTypeInfo;
         }
 
+        public boolean getElementUsedInPackedArray()
+        {
+            return elementUsedInPackedArray;
+        }
+
         private static String createLength(ArrayInstantiation arrayInstantiation,
                 ExpressionFormatter cppExpressionFormatter) throws ZserioExtensionException
         {
@@ -535,6 +542,7 @@ public final class CompoundFieldTemplateData
         private final IntegerRange elementIntegerRange;
         private final boolean elementIsRecursive;
         private final NativeTypeInfoTemplateData elementTypeInfo;
+        private final boolean elementUsedInPackedArray;
     }
 
     private static Optional createOptional(TemplateDataContext context, Field field, ZserioType baseFieldType,

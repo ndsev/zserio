@@ -19,7 +19,7 @@
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/AllocatorPropagatingCopy.h>
-<#if isPackable>
+<#if isPackable && usedInPackedArray>
 #include <zserio/DeltaContext.h>
 </#if>
 <#if !fieldList?has_content>
@@ -58,7 +58,7 @@ public:
 </#list>
         UNDEFINED_CHOICE = -1
     };
-<#if isPackable>
+<#if isPackable && usedInPackedArray>
 
     <@compound_declare_packing_context fieldList, true/>
 </#if>
@@ -70,7 +70,7 @@ public:
 </#if>
 
     <@compound_read_constructor_declaration compoundConstructorsData/>
-<#if isPackable>
+<#if isPackable && usedInPackedArray>
     <#if withCodeComments>
 
     </#if>
@@ -197,7 +197,7 @@ public:
     <@compound_field_accessors_declaration field/>
 </#list>
     <@compound_functions_declaration compoundFunctionsData/>
-<#if isPackable>
+<#if isPackable && usedInPackedArray>
     <#if withCodeComments>
 
     /**
@@ -221,7 +221,7 @@ public:
      */
 </#if>
     size_t bitSizeOf(size_t bitPosition = 0) const;
-<#if isPackable>
+<#if isPackable && usedInPackedArray>
     <#if withCodeComments>
 
     /**
@@ -251,7 +251,7 @@ public:
      */
     </#if>
     size_t initializeOffsets(size_t bitPosition = 0);
-    <#if isPackable>
+    <#if isPackable && usedInPackedArray>
         <#if withCodeComments>
 
     /**
@@ -310,7 +310,7 @@ public:
      */
     </#if>
     void write(::zserio::BitStreamWriter& out) const;
-    <#if isPackable>
+    <#if isPackable && usedInPackedArray>
         <#if withCodeComments>
 
     /**
@@ -330,9 +330,11 @@ private:
     <@private_section_declarations name, fieldList/>
 <#if fieldList?has_content>
     ChoiceTag readChoiceTag(::zserio::BitStreamReader& in);
+    <#if isPackable && usedInPackedArray>
     ChoiceTag readChoiceTag(ZserioPackingContext& context, ::zserio::BitStreamReader& in);
+    </#if>
     ${types.anyHolder.name} readObject(::zserio::BitStreamReader& in, const allocator_type& allocator);
-    <#if isPackable>
+    <#if isPackable && usedInPackedArray>
     ${types.anyHolder.name} readObject(ZserioPackingContext& context, ::zserio::BitStreamReader& in,
             const allocator_type& allocator);
     </#if>

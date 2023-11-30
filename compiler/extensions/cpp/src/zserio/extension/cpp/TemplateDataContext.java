@@ -2,6 +2,7 @@ package zserio.extension.cpp;
 
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ExpressionFormattingPolicy;
+import zserio.extension.common.PackedTypesCollector;
 
 /**
  * FreeMarker template data context for all emitters.
@@ -10,8 +11,10 @@ import zserio.extension.common.ExpressionFormattingPolicy;
  */
 final class TemplateDataContext
 {
-    public TemplateDataContext(CppExtensionParameters cppParameters)
+    public TemplateDataContext(CppExtensionParameters cppParameters, PackedTypesCollector packedTypesCollector)
     {
+        this.packedTypesCollector = packedTypesCollector;
+
         typesContext = new TypesContext(cppParameters.getAllocatorDefinition());
         cppNativeMapper = new CppNativeMapper(typesContext);
 
@@ -31,6 +34,11 @@ final class TemplateDataContext
                 " */";
         generatorVersionString = CppExtensionVersion.CPP_EXTENSION_VERSION_STRING;
         generatorVersionNumber = CppExtensionVersion.CPP_EXTENSION_VERSION_NUMBER;
+    }
+
+    public PackedTypesCollector getPackedTypesCollector()
+    {
+        return packedTypesCollector;
     }
 
     public CppNativeMapper getCppNativeMapper()
@@ -104,6 +112,8 @@ final class TemplateDataContext
     {
         return generatorVersionNumber;
     }
+
+    private final PackedTypesCollector packedTypesCollector;
 
     private final TypesContext typesContext;
 

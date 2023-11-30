@@ -8,7 +8,9 @@
 
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
+<#if usedInPackedArray>
 #include <zserio/DeltaContext.h>
+</#if>
 <#if !bitSize??>
 #include <zserio/BitSizeOfCalculator.h>
 </#if>
@@ -62,7 +64,8 @@ public:
      */
 </#if>
     explicit ${name}(::zserio::BitStreamReader& in);
-<#if withCodeComments>
+<#if usedInPackedArray>
+    <#if withCodeComments>
 
     /**
      * Read constructor.
@@ -72,8 +75,9 @@ public:
      * \param context Context for packed arrays.
      * \param in Bit stream reader to use.
      */
-</#if>
+    </#if>
     ${name}(::zserio::DeltaContext& context, ::zserio::BitStreamReader& in);
+</#if>
 <#if withCodeComments>
 
     /**
@@ -172,9 +176,9 @@ public:
     {
         return m_value;
     }
+<#if usedInPackedArray>
 
-<#if withCodeComments>
-
+    <#if withCodeComments>
     /**
      * Initializes context for packed arrays.
      *
@@ -182,8 +186,9 @@ public:
      *
      * \param context Context for packed arrays.
      */
-</#if>
+    </#if>
     void initPackingContext(::zserio::DeltaContext& context) const;
+</#if>
 
 <#if withCodeComments>
     /**
@@ -195,7 +200,8 @@ public:
      */
 </#if>
     size_t bitSizeOf(size_t bitPosition = 0) const;
-<#if withCodeComments>
+<#if usedInPackedArray>
+    <#if withCodeComments>
 
     /**
      * Calculates size of the serialized object in bits for packed arrays.
@@ -207,8 +213,9 @@ public:
      *
      * \return Number of bits which are needed to store serialized object.
      */
-</#if>
+    </#if>
     size_t bitSizeOf(::zserio::DeltaContext& context, size_t bitPosition) const;
+</#if>
 <#if withWriterCode>
 
     <#if withCodeComments>
@@ -223,7 +230,8 @@ public:
      */
     </#if>
     size_t initializeOffsets(size_t bitPosition = 0) const;
-    <#if withCodeComments>
+    <#if usedInPackedArray>
+        <#if withCodeComments>
 
     /**
      * Initializes offsets in this Zserio type and in all its fields for packed arrays.
@@ -236,8 +244,9 @@ public:
      *
      * \return Bit stream position calculated from zero updated to the first byte after serialized object.
      */
-    </#if>
+        </#if>
     size_t initializeOffsets(::zserio::DeltaContext& context, size_t bitPosition) const;
+    </#if>
 </#if>
 
 <#if withCodeComments>
@@ -258,7 +267,8 @@ public:
      */
     </#if>
     void write(::zserio::BitStreamWriter& out) const;
-    <#if withCodeComments>
+    <#if usedInPackedArray>
+        <#if withCodeComments>
 
     /**
      * Serializes this Zserio object to the bit stream for packed arrays.
@@ -268,8 +278,9 @@ public:
      * \param context Context for packed arrays.
      * \param out Bit stream writer where to serialize this Zserio object.
      */
-    </#if>
+        </#if>
     void write(::zserio::DeltaContext& context, ::zserio::BitStreamWriter& out) const;
+    </#if>
 </#if>
 
 <#if withCodeComments>
@@ -294,7 +305,9 @@ private:
 
 </#if>
     static underlying_type readValue(::zserio::BitStreamReader& in);
+<#if usedInPackedArray>
     static underlying_type readValue(::zserio::DeltaContext& context, ::zserio::BitStreamReader& in);
+</#if>
 
     underlying_type m_value;
 };

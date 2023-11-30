@@ -38,10 +38,12 @@ uint8_t ${name}::ZserioElementBitSize::get()
 ${name}::${name}(::zserio::BitStreamReader& in) :
         m_value(readValue(in))
 {}
+<#if usedInPackedArray>
 
 ${name}::${name}(::zserio::DeltaContext& context, ::zserio::BitStreamReader& in) :
         m_value(readValue(context, in))
 {}
+</#if>
 <#if upperBound??>
 
 ${name}::${name}(underlying_type value) :
@@ -134,11 +136,13 @@ ${types.reflectablePtr.name} ${name}::reflectable(const ${types.allocator.defaul
 }
     </#if>
 </#if>
+<#if usedInPackedArray>
 
 void ${name}::initPackingContext(::zserio::DeltaContext& context) const
 {
     context.init<<@bitmask_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(m_value);
 }
+</#if>
 
 size_t ${name}::bitSizeOf(size_t) const
 {
@@ -148,22 +152,26 @@ size_t ${name}::bitSizeOf(size_t) const
     return ::zserio::bitSizeOf${runtimeFunction.suffix}(m_value);
 </#if>
 }
+<#if usedInPackedArray>
 
 size_t ${name}::bitSizeOf(::zserio::DeltaContext& context, size_t) const
 {
     return context.bitSizeOf<<@bitmask_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(m_value);
 }
+</#if>
 <#if withWriterCode>
 
 size_t ${name}::initializeOffsets(size_t bitPosition) const
 {
     return bitPosition + bitSizeOf(bitPosition);
 }
+    <#if usedInPackedArray>
 
 size_t ${name}::initializeOffsets(::zserio::DeltaContext& context, size_t bitPosition) const
 {
     return bitPosition + bitSizeOf(context, bitPosition);
 }
+    </#if>
 </#if>
 
 uint32_t ${name}::hashCode() const
@@ -178,11 +186,13 @@ void ${name}::write(::zserio::BitStreamWriter& out) const
 {
     out.write${runtimeFunction.suffix}(m_value<#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>);
 }
+    <#if usedInPackedArray>
 
 void ${name}::write(::zserio::DeltaContext& context, ::zserio::BitStreamWriter& out) const
 {
     context.write<<@bitmask_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(out, m_value);
 }
+    </#if>
 </#if>
 
 ${types.string.name} ${name}::toString(const ${types.string.name}::allocator_type& allocator) const
@@ -208,10 +218,12 @@ ${name}::underlying_type ${name}::readValue(::zserio::BitStreamReader& in)
 {
     return static_cast<underlying_type>(in.read${runtimeFunction.suffix}(${runtimeFunction.arg!}));
 }
+<#if usedInPackedArray>
 
 ${name}::underlying_type ${name}::readValue(::zserio::DeltaContext& context, ::zserio::BitStreamReader& in)
 {
     return context.read<<@bitmask_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(
             in);
 }
+</#if>
 <@namespace_end package.path/>

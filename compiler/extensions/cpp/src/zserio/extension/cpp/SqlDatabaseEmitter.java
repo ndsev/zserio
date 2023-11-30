@@ -2,6 +2,7 @@ package zserio.extension.cpp;
 
 import zserio.ast.SqlDatabaseType;
 import zserio.extension.common.OutputFileManager;
+import zserio.extension.common.PackedTypesCollector;
 import zserio.extension.common.ZserioExtensionException;
 
 /**
@@ -9,9 +10,10 @@ import zserio.extension.common.ZserioExtensionException;
  */
 public final class SqlDatabaseEmitter extends CppDefaultEmitter
 {
-    public SqlDatabaseEmitter(OutputFileManager outputFileManager, CppExtensionParameters cppParameters)
+    public SqlDatabaseEmitter(OutputFileManager outputFileManager, CppExtensionParameters cppParameters,
+            PackedTypesCollector packedTypesCollector)
     {
-        super(outputFileManager, cppParameters);
+        super(outputFileManager, cppParameters, packedTypesCollector);
     }
 
     @Override
@@ -19,8 +21,7 @@ public final class SqlDatabaseEmitter extends CppDefaultEmitter
     {
         if (getWithSqlCode())
         {
-            final Object templateData = new SqlDatabaseEmitterTemplateData(getTemplateDataContext(),
-                    sqlDatabaseType);
+            final Object templateData = new SqlDatabaseEmitterTemplateData(getTemplateDataContext(), sqlDatabaseType);
 
             processHeaderTemplate(TEMPLATE_HEADER_NAME, templateData, sqlDatabaseType);
             processSourceTemplate(TEMPLATE_SOURCE_NAME, templateData, sqlDatabaseType);

@@ -8,6 +8,7 @@ import org.apache.commons.cli.Options;
 import zserio.ast.Root;
 import zserio.extension.common.CompatibilityChecker;
 import zserio.extension.common.OutputFileManager;
+import zserio.extension.common.PackedTypesCollector;
 import zserio.extension.common.ReservedKeywordsClashChecker;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.tools.Extension;
@@ -72,18 +73,22 @@ public final class CppExtension implements Extension
         final OutputFileManager outputFileManager = new OutputFileManager(parameters);
         final CppExtensionParameters cppParameters = new CppExtensionParameters(parameters);
 
+        // collect which types are used within a packed array
+        final PackedTypesCollector packedTypesCollector = new PackedTypesCollector();
+        rootNode.accept(packedTypesCollector);
+
         final List<CppDefaultEmitter> emitters = new ArrayList<CppDefaultEmitter>();
-        emitters.add(new ConstEmitter(outputFileManager, cppParameters));
-        emitters.add(new SubtypeEmitter(outputFileManager, cppParameters));
-        emitters.add(new EnumerationEmitter(outputFileManager, cppParameters));
-        emitters.add(new BitmaskEmitter(outputFileManager, cppParameters));
-        emitters.add(new StructureEmitter(outputFileManager, cppParameters));
-        emitters.add(new ChoiceEmitter(outputFileManager, cppParameters));
-        emitters.add(new UnionEmitter(outputFileManager, cppParameters));
-        emitters.add(new SqlDatabaseEmitter(outputFileManager, cppParameters));
-        emitters.add(new SqlTableEmitter(outputFileManager, cppParameters));
-        emitters.add(new ServiceEmitter(outputFileManager, cppParameters));
-        emitters.add(new PubsubEmitter(outputFileManager, cppParameters));
+        emitters.add(new ConstEmitter(outputFileManager, cppParameters, packedTypesCollector));
+        emitters.add(new SubtypeEmitter(outputFileManager, cppParameters, packedTypesCollector));
+        emitters.add(new EnumerationEmitter(outputFileManager, cppParameters, packedTypesCollector));
+        emitters.add(new BitmaskEmitter(outputFileManager, cppParameters, packedTypesCollector));
+        emitters.add(new StructureEmitter(outputFileManager, cppParameters, packedTypesCollector));
+        emitters.add(new ChoiceEmitter(outputFileManager, cppParameters, packedTypesCollector));
+        emitters.add(new UnionEmitter(outputFileManager, cppParameters, packedTypesCollector));
+        emitters.add(new SqlDatabaseEmitter(outputFileManager, cppParameters, packedTypesCollector));
+        emitters.add(new SqlTableEmitter(outputFileManager, cppParameters, packedTypesCollector));
+        emitters.add(new ServiceEmitter(outputFileManager, cppParameters, packedTypesCollector));
+        emitters.add(new PubsubEmitter(outputFileManager, cppParameters, packedTypesCollector));
 
         // emit C++ code
         for (CppDefaultEmitter emitter: emitters)

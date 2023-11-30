@@ -514,7 +514,7 @@ void ${compoundName}::<@array_expressions_name field.name/>::initializeElement(<
         static void create(<#if !withWriterCode>const </#if>${compoundName}& owner,
                 <@vector_type_name field.array.elementTypeInfo.typeFullName/>& array,
                 ::zserio::BitStreamReader& in, size_t index);
-    <#if field.isPackable>
+    <#if field.isPackable && field.array.elementUsedInPackedArray>
 
         static void create(<#if !withWriterCode>const </#if>${compoundName}& owner,
                 <@vector_type_name field.array.elementTypeInfo.typeFullName/>& array,
@@ -533,7 +533,7 @@ void ${compoundName}::<@array_expressions_name field.name/>::initializeElement(<
     </#local>
 void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
         <#if !withWriterCode>const </#if>${compoundName}&<#t>
-        <#if needs_field_initialization_owner(field.array.elementCompound)> owner</#if>,
+        <#lt><#if needs_field_initialization_owner(field.array.elementCompound)> owner</#if>,
         <@vector_type_name field.array.elementTypeInfo.typeFullName/>& array,
         ::zserio::BitStreamReader& in, size_t<#rt>
         <#lt><#if needs_field_initialization_index(field.array.elementCompound)> index</#if>)
@@ -545,10 +545,10 @@ void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
             <#lt>, array.get_allocator());
 }
 
-    <#if field.isPackable>
+    <#if field.isPackable && field.array.elementUsedInPackedArray>
 void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
         <#if !withWriterCode>const </#if>${compoundName}&<#t>
-        <#if needs_field_initialization_owner(field.array.elementCompound)> owner</#if>,
+        <#lt><#if needs_field_initialization_owner(field.array.elementCompound)> owner</#if>,
         <@vector_type_name field.array.elementTypeInfo.typeFullName/>& array,
         ${field.array.elementTypeInfo.typeFullName}::ZserioPackingContext& context, ::zserio::BitStreamReader& in,
         size_t<#if needs_field_initialization_index(field.array.elementCompound)> index</#if>)

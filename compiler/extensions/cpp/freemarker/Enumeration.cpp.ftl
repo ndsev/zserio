@@ -160,6 +160,7 @@ uint32_t enumHashCode<${fullName}>(${fullName} value)
     result = ::zserio::calcHashCode(result, enumToValue(value));
     return result;
 }
+<#if usedInPackedArray>
 
 template <>
 void initPackingContext(::zserio::DeltaContext& context, ${fullName} value)
@@ -167,6 +168,7 @@ void initPackingContext(::zserio::DeltaContext& context, ${fullName} value)
     context.init<<@enum_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(
             ::zserio::enumToValue(value));
 }
+</#if>
 
 template <>
 size_t bitSizeOf(${fullName}<#if !runtimeFunction.arg??> value</#if>)
@@ -177,6 +179,7 @@ size_t bitSizeOf(${fullName}<#if !runtimeFunction.arg??> value</#if>)
     return ::zserio::bitSizeOf${runtimeFunction.suffix}(::zserio::enumToValue(value));
 </#if>
 }
+<#if usedInPackedArray>
 
 template <>
 size_t bitSizeOf(::zserio::DeltaContext& context, ${fullName} value)
@@ -184,6 +187,7 @@ size_t bitSizeOf(::zserio::DeltaContext& context, ${fullName} value)
     return context.bitSizeOf<<@enum_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(
             ::zserio::enumToValue(value));
 }
+</#if>
 <#if withWriterCode>
 
 template <>
@@ -191,12 +195,14 @@ size_t initializeOffsets(size_t bitPosition, ${fullName} value)
 {
     return bitPosition + bitSizeOf(value);
 }
+    <#if usedInPackedArray>
 
 template <>
 size_t initializeOffsets(::zserio::DeltaContext& context, size_t bitPosition, ${fullName} value)
 {
     return bitPosition + bitSizeOf(context, value);
 }
+    </#if>
 </#if>
 
 template <>
@@ -206,6 +212,7 @@ ${fullName} read(::zserio::BitStreamReader& in)
             static_cast<typename ::std::underlying_type<${fullName}>::type>(
                     in.read${runtimeFunction.suffix}(${runtimeFunction.arg!})));
 }
+<#if usedInPackedArray>
 
 template <>
 ${fullName} read(::zserio::DeltaContext& context, ::zserio::BitStreamReader& in)
@@ -213,6 +220,7 @@ ${fullName} read(::zserio::DeltaContext& context, ::zserio::BitStreamReader& in)
     return valueToEnum<${fullName}>(context.read<<@enum_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(
             in));
 }
+</#if>
 <#if withWriterCode>
 
 <#function has_removed_items items>
@@ -252,6 +260,7 @@ void write(::zserio::BitStreamWriter& out, ${fullName} value)
     out.write${runtimeFunction.suffix}(::zserio::enumToValue(value)<#rt>
             <#lt><#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>);
 }
+    <#if usedInPackedArray>
 
 template <>
 void write(::zserio::DeltaContext& context, ::zserio::BitStreamWriter& out, ${fullName} value)
@@ -262,5 +271,6 @@ void write(::zserio::DeltaContext& context, ::zserio::BitStreamWriter& out, ${fu
     context.write<<@enum_array_traits_type_name underlyingTypeInfo.arrayTraits, fullName, bitSize!/>>(
             out, ::zserio::enumToValue(value));
 }
+    </#if>
 </#if>
 <@namespace_end ["zserio"]/>

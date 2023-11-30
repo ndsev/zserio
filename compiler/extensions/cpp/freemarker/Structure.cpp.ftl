@@ -81,7 +81,7 @@
 </#macro>
 <#assign readConstructorInitMacroName><#if fieldList?has_content>read_constructor_field_initialization</#if></#assign>
 <@compound_read_constructor_definition compoundConstructorsData, readConstructorInitMacroName/>
-<#if isPackable>
+<#if isPackable && usedInPackedArray>
 
 <@compound_read_constructor_definition compoundConstructorsData, readConstructorInitMacroName, true/>
 </#if>
@@ -331,7 +331,7 @@ void ${name}::${field.optional.resetterName}()
     </#if>
 </#list>
 <@compound_functions_definition name, compoundFunctionsData/>
-<#if isPackable>
+<#if isPackable && usedInPackedArray>
 void ${name}::initPackingContext(${name}::ZserioPackingContext&<#if uses_packing_context(fieldList)> context</#if>) const
 {
     <#list fieldList as field>
@@ -354,7 +354,7 @@ size_t ${name}::bitSizeOf(size_t<#if fieldList?has_content> bitPosition</#if>) c
     return 0;
 </#if>
 }
-<#if isPackable>
+<#if isPackable && usedInPackedArray>
 
 size_t ${name}::bitSizeOf(${name}::ZserioPackingContext&<#if uses_packing_context(fieldList)> context</#if>, <#rt>
         <#lt>size_t bitPosition) const
@@ -384,7 +384,7 @@ size_t ${name}::initializeOffsets(size_t bitPosition)
     return bitPosition;
     </#if>
 }
-    <#if isPackable>
+    <#if isPackable && usedInPackedArray>
 
 size_t ${name}::initializeOffsets(${name}::ZserioPackingContext&<#if uses_packing_context(fieldList)> context</#if>, <#rt>
         <#lt>size_t bitPosition)
@@ -528,7 +528,7 @@ void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#
         </#list>
     </#if>
 }
-    <#if isPackable>
+    <#if isPackable && usedInPackedArray>
 
 void ${name}::write(${name}::ZserioPackingContext&<#if uses_packing_context(fieldList)> context</#if>, <#rt>
         <#lt>::zserio::BitStreamWriter& out) const
@@ -566,7 +566,7 @@ void ${name}::write(${name}::ZserioPackingContext&<#if uses_packing_context(fiel
     </#if>
     <@compound_read_field field, name, 1/>
 }
-    <#if field.isPackable>
+    <#if field.isPackable && usedInPackedArray>
 
 <@field_member_type_name field, name/> ${name}::${field.readerName}(<#rt>
         <#lt>${name}::ZserioPackingContext&<#if uses_field_packing_context(field)> context</#if>, <#rt>
@@ -576,7 +576,7 @@ void ${name}::write(${name}::ZserioPackingContext&<#if uses_packing_context(fiel
         </#if>
         <#lt>)
 {
-    <#if field.isExtended>
+        <#if field.isExtended>
     if (::zserio::alignTo(UINT8_C(8), in.getBitPosition()) >= in.getBufferBitSize())
     {
         return <#if !field.typeInfo.isSimple><@field_member_type_name field/>(</#if><#rt>
@@ -585,7 +585,7 @@ void ${name}::write(${name}::ZserioPackingContext&<#if uses_packing_context(fiel
     ++m_numExtendedFields;
     in.alignTo(UINT32_C(8));
 
-    </#if>
+        </#if>
     <@compound_read_field field, name, 1, true/>
 }
     </#if>

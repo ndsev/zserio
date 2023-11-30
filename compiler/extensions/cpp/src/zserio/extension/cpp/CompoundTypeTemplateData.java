@@ -17,6 +17,8 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
     {
         super(context, compoundType, compoundType);
 
+        usedInPackedArray = context.getPackedTypesCollector().isUsedInPackedArray(compoundType);
+
         final List<Field> fieldTypeList = compoundType.getFields();
         fieldList = new ArrayList<CompoundFieldTemplateData>(fieldTypeList.size());
         for (Field fieldType : fieldTypeList)
@@ -39,6 +41,11 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         needsChildrenInitialization = compoundType.needsChildrenInitialization();
 
         templateInstantiation = TemplateInstantiationTemplateData.create(context, compoundType, this);
+    }
+
+    public boolean getUsedInPackedArray()
+    {
+        return usedInPackedArray;
     }
 
     public Iterable<CompoundFieldTemplateData> getFieldList()
@@ -75,6 +82,8 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
     {
         return templateInstantiation;
     }
+
+    private final boolean usedInPackedArray;
 
     private final List<CompoundFieldTemplateData> fieldList;
     private final CompoundParameterTemplateData compoundParametersData;

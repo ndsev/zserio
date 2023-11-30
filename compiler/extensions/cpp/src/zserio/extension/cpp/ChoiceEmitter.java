@@ -2,6 +2,7 @@ package zserio.extension.cpp;
 
 import zserio.ast.ChoiceType;
 import zserio.extension.common.OutputFileManager;
+import zserio.extension.common.PackedTypesCollector;
 import zserio.extension.common.ZserioExtensionException;
 
 /**
@@ -9,15 +10,17 @@ import zserio.extension.common.ZserioExtensionException;
  */
 public final class ChoiceEmitter extends CppDefaultEmitter
 {
-    public ChoiceEmitter(OutputFileManager outputFileManager, CppExtensionParameters cppParameters)
+    public ChoiceEmitter(OutputFileManager outputFileManager, CppExtensionParameters cppParameters,
+            PackedTypesCollector packedTypesCollector)
     {
-        super(outputFileManager, cppParameters);
+        super(outputFileManager, cppParameters, packedTypesCollector);
     }
 
     @Override
     public void beginChoice(ChoiceType choiceType) throws ZserioExtensionException
     {
         final Object templateData = new ChoiceEmitterTemplateData(getTemplateDataContext(), choiceType);
+
         processHeaderTemplate(TEMPLATE_HEADER_NAME, templateData, choiceType);
         processSourceTemplate(TEMPLATE_SOURCE_NAME, templateData, choiceType);
     }

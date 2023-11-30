@@ -20,6 +20,8 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
     {
         super(context, enumType, enumType);
 
+        usedInPackedArray = context.getPackedTypesCollector().isUsedInPackedArray(enumType);
+
         final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
         final CppNativeType nativeEnumType = cppNativeMapper.getCppType(enumType);
 
@@ -36,6 +38,11 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
         items = new ArrayList<EnumItemData>(enumItems.size());
         for (EnumItem enumItem : enumItems)
             items.add(new EnumItemData(context, nativeBaseType, nativeEnumType, enumItem));
+    }
+
+    public boolean getUsedInPackedArray()
+    {
+        return usedInPackedArray;
     }
 
     public NativeIntegralTypeInfoTemplateData getUnderlyingTypeInfo()
@@ -117,6 +124,7 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
         private final DocCommentsTemplateData docComments;
     };
 
+    private final boolean usedInPackedArray;
     private final NativeIntegralTypeInfoTemplateData underlyingTypeInfo;
     private final BitSizeTemplateData bitSize;
     private final RuntimeFunctionTemplateData runtimeFunction;

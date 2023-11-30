@@ -2,6 +2,7 @@ package zserio.extension.cpp;
 
 import zserio.ast.Subtype;
 import zserio.extension.common.OutputFileManager;
+import zserio.extension.common.PackedTypesCollector;
 import zserio.extension.common.ZserioExtensionException;
 
 /**
@@ -9,9 +10,10 @@ import zserio.extension.common.ZserioExtensionException;
  */
 public final class SubtypeEmitter extends CppDefaultEmitter
 {
-    public SubtypeEmitter(OutputFileManager outputFileManager, CppExtensionParameters cppParameters)
+    public SubtypeEmitter(OutputFileManager outputFileManager, CppExtensionParameters cppParameters,
+            PackedTypesCollector packedTypesCollector)
     {
-        super(outputFileManager, cppParameters);
+        super(outputFileManager, cppParameters, packedTypesCollector);
     }
 
     @Override

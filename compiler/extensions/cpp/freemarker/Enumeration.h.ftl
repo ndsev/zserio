@@ -22,7 +22,9 @@
 #include <zserio/Enums.h>
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
+<#if usedInPackedArray>
 #include <zserio/DeltaContext.h>
+</#if>
 <#if !bitSize??>
 #include <zserio/BitSizeOfCalculator.h>
 </#if>
@@ -99,38 +101,48 @@ ${fullName} valueToEnum<${fullName}>(
 
 template <>
 uint32_t enumHashCode<${fullName}>(${fullName} value);
+<#if usedInPackedArray>
 
 template <>
 void initPackingContext<::zserio::DeltaContext, ${fullName}>(::zserio::DeltaContext& context, ${fullName} value);
+</#if>
 
 template <>
 size_t bitSizeOf<${fullName}>(${fullName} value);
+<#if usedInPackedArray>
 
 template <>
 size_t bitSizeOf<::zserio::DeltaContext, ${fullName}>(::zserio::DeltaContext& context, ${fullName} value);
+</#if>
 <#if withWriterCode>
 
 template <>
 size_t initializeOffsets<${fullName}>(size_t bitPosition, ${fullName} value);
+    <#if usedInPackedArray>
 
 template <>
 size_t initializeOffsets<::zserio::DeltaContext, ${fullName}>(::zserio::DeltaContext& context, size_t bitPosition,
         ${fullName} value);
+    </#if>
 </#if>
 
 template <>
 ${fullName} read<${fullName}>(::zserio::BitStreamReader& in);
+<#if usedInPackedArray>
 
 template <>
 ${fullName} read<${fullName}, ::zserio::DeltaContext>(::zserio::DeltaContext& context, ::zserio::BitStreamReader& in);
+</#if>
 <#if withWriterCode>
 
 template <>
 void write<${fullName}>(::zserio::BitStreamWriter& out, ${fullName} value);
+    <#if usedInPackedArray>
 
 template <>
 void write<::zserio::DeltaContext, ${fullName}>(::zserio::DeltaContext& context, ::zserio::BitStreamWriter& out,
         ${fullName} value);
+    </#if>
 </#if>
 <@namespace_end ["zserio"]/>
 
