@@ -14,9 +14,9 @@ import org.apache.tools.ant.types.Path;
 /**
  *
  * An ant task that handles code generation step in ant.
- *
+ * <p>
  * With the contained classpath element the task solves a severe issue:
- *
+ * <p>
  * Zserio is loaded during execution time of this target rather
  * than ant's bootstrapping. This has a simple reason: Ant
  * loads all its classes during bootstrapping. If we would just
@@ -24,40 +24,40 @@ import org.apache.tools.ant.types.Path;
  * created by the task just before test-classes are called.
  * We avoid this situation by allowing the task to have
  * its own classpath.
- *
+ * <p>
  * Supported syntax:
- *
+ * <pre>{@code
  * <zserio srcPath="src/path" srcFile="zs/all.zs" ignoreError="true" extraArgs="-option1 -option2">
  *     <arg name="cmdlineOption" value="value"/>
  *     <arg name="anotherOption"/>
  *     <classpath>
  *         path-like-structure
  *     </classpath>
- * </zserio>
+ * </zserio>}</pre>
  *
  * Supported attributes of the zserio task:
- *
- * srcPath="path"
- * Path to source files.
- *
- * srcFile="file"
- * Path to the input file, relative to srcPath.
- *
- * ignoreError="true"
- * Do not report Zserio compilation error to Ant. Default is false.
- *
- * extraArgs="-option1 -option2"
- * Extra zserio options in the same format as given by command line.
- *
+ * <p>
+ * {@code srcPath="path"}<br>
+ *     Path to source files.
+ * <p>
+ * {@code srcFile="file"}<br>
+ *     Path to the input file, relative to srcPath.
+ * <p>
+ * {@code ignoreError="true"}<br>
+ *     Do not report Zserio compilation error to Ant. Default is false.
+ * <p>
+ * {@code extraArgs="-option1 -option2"}<br>
+ *     Extra zserio options in the same format as given by command line.
+ * <p>
  * The options "srcPath" and "srcFile" are required. All the others are optional and can occur in any
  * combination.
- *
+ * <p>
  * Supported children nodes:
- *
- * <arg name="name" value="value"/>
+ * <p>
+ * {@code <arg name="name" value="value"/>}<br>
  *     Optional. Adds a custom option of the form "-name=value" or "-name" if value is not specified.
- *
- * <classpath>path-like-structure</classpath>
+ * <p>
+ * {@code <classpath>path-like-structure</classpath>}<br>
  *     Optional. Classpath used to locate and run Zserio Tool. It must include both the zserio_core.jar and
  *     all the required libraries (e.g. antlr.jar) and plugins (e.g. zserio_java.jar).
  *

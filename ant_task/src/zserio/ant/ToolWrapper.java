@@ -13,7 +13,7 @@ import org.apache.tools.ant.types.Path;
 /**
  * The ToolWrapper decouples the execution of a main class in terms
  * of class dependencies from the ant task itself.
- *
+ * <p>
  * Hence it is possible to compile the main class in the same ant file
  * in which the task is executed.
  */

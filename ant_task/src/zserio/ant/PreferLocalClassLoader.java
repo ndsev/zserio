@@ -13,7 +13,7 @@ import java.util.Enumeration;
  * and a parent classloader. In contrast to default class loader policy
  * - searching the parent class loader before searching the local class
  * loader - this class inverses the search order.
- *
+ * <p>
  * First the local class loader is queried for a certain class, then
  * the parent class loader is asked.
  */

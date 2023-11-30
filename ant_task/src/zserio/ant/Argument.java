@@ -2,19 +2,17 @@ package zserio.ant;
 
 /**
  * POJO Argument used like
- *
- * <code>
+ * <pre>{@code
  * <zserio>
  *    <arg name="foo" value="1"/>
  *    <arg name="bar"/>
- * </zserio>
- * </code>
+ * </zserio>}</pre>
  *
  * Where foo is an argument with a value (here 1), and bar is a value-less
  * argument.
- *
+ * <p>
  * Arguments will be given to Zserio as -name value, i.e.
- * args = { "-foo", "1", "-bar" }
+ * {@code args = { "-foo", "1", "-bar" }}
  */
 public class Argument
 {
