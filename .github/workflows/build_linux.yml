@@ -12,13 +12,21 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: ["ubuntu-20.04", "ubuntu-22.04"]
+        os: ["ubuntu-20.04"]
         python-version: ["3.8", "3.9", "3.10", "3.11"]
+        java-version: ["8"]
         include:
           - os: "ubuntu-20.04"
             clang-version-suffix: "-11"
+          - os: "ubuntu-20.04"
+            python-version: "3.8"
+            java-version: "11"
+            clang-version-suffix: "-11"
           - os: "ubuntu-22.04"
+            python-version: "3.8"
+            java-version: "8"
             clang-version-suffix: "-14"
+    name: OS ${{matrix.os}}, Python ${{matrix.python-version}}, Java ${{matrix.java-version}}
     env:
       CPPCHECK_HOME: "${{github.workspace}}/cppcheck-2.6"
       SPOTBUGS_HOME: "${{github.workspace}}/spotbugs-4.8.2"
@@ -34,11 +42,11 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Set up JDK 1.8
+    - name: Set up Java ${{matrix.java-version}}
       uses: actions/setup-java@v3
       with:
         distribution: temurin
-        java-version: 8
+        java-version: ${{matrix.java-version}}
 
     - name: Set up Python ${{matrix.python-version}}
       uses: actions/setup-python@v4
