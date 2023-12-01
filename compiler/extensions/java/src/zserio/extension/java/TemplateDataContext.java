@@ -2,6 +2,7 @@ package zserio.extension.java;
 
 import zserio.ast.PackageName;
 import zserio.extension.common.ExpressionFormatter;
+import zserio.extension.common.PackedTypesCollector;
 
 /**
  * FreeMarker template data context for all emitters.
@@ -10,9 +11,12 @@ import zserio.extension.common.ExpressionFormatter;
  */
 final class TemplateDataContext
 {
-    public TemplateDataContext(JavaExtensionParameters javaParameters, PackageName rootPackageName)
+    public TemplateDataContext(JavaExtensionParameters javaParameters, PackageName rootPackageName,
+            PackedTypesCollector packedTypesCollector)
     {
-        javaNativeMapper = new JavaNativeMapper(javaParameters.getWithWriterCode());
+        this.packedTypesCollector = packedTypesCollector;
+
+        javaNativeMapper = new JavaNativeMapper(javaParameters.getWithWriterCode(), packedTypesCollector);
         javaRootPackageName = JavaFullNameFormatter.getFullName(rootPackageName);
 
         final JavaExpressionFormattingPolicy policy = new JavaExpressionFormattingPolicy(javaNativeMapper);
@@ -47,6 +51,11 @@ final class TemplateDataContext
                         javaParameters.getZserioVersion() + ".\n" +
                 " * Generator setup: " + javaParameters.getParametersDescription() + ".\n" +
                 " */";
+    }
+
+    public PackedTypesCollector getPackedTypesCollector()
+    {
+        return packedTypesCollector;
     }
 
     public JavaNativeMapper getJavaNativeMapper()
@@ -113,6 +122,8 @@ final class TemplateDataContext
     {
         return generatorDescription;
     }
+
+    private final PackedTypesCollector packedTypesCollector;
 
     private final JavaNativeMapper javaNativeMapper;
     private final String javaRootPackageName;

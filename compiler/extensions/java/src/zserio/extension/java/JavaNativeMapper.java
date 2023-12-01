@@ -28,6 +28,7 @@ import zserio.ast.StringType;
 import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
 import zserio.ast.VarIntegerType;
+import zserio.extension.common.PackedTypesCollector;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.java.symbols.JavaNativeSymbol;
 import zserio.extension.java.types.JavaNativeType;
@@ -62,9 +63,10 @@ import zserio.extension.java.types.NativeStringType;
  */
 final class JavaNativeMapper
 {
-    public JavaNativeMapper(boolean withWriterCode)
+    public JavaNativeMapper(boolean withWriterCode, PackedTypesCollector packedTypesCollector)
     {
         this.withWriterCode = withWriterCode;
+        this.packedTypesCollector = packedTypesCollector;
     }
 
     public JavaNativeSymbol getJavaSymbol(PackageSymbol packageSymbol) throws ZserioExtensionException
@@ -335,8 +337,9 @@ final class JavaNativeMapper
                 final NativeIntegralType nativeBaseType = getJavaIntegralType(type.getTypeInstantiation());
                 final PackageName packageName = type.getPackage().getPackageName();
                 final String name = type.getName();
-                final JavaNativeType javaType =
-                        new NativeEnumType(packageName, name, nativeBaseType, withWriterCode);
+                final boolean usedInPackedArray = packedTypesCollector.isUsedInPackedArray(type);
+                final JavaNativeType javaType = new NativeEnumType(
+                        packageName, name, nativeBaseType, withWriterCode, usedInPackedArray);
                 javaTypes = new JavaNativeTypes(javaType);
             }
             catch (ZserioExtensionException exception)
@@ -353,8 +356,9 @@ final class JavaNativeMapper
                 final NativeIntegralType nativeBaseType = getJavaIntegralType(type.getTypeInstantiation());
                 final PackageName packageName = type.getPackage().getPackageName();
                 final String name = type.getName();
-                final JavaNativeType javaType =
-                        new NativeBitmaskType(packageName, name, nativeBaseType, withWriterCode);
+                final boolean usedInPackedArray = packedTypesCollector.isUsedInPackedArray(type);
+                final JavaNativeType javaType = new NativeBitmaskType(
+                        packageName, name, nativeBaseType, withWriterCode, usedInPackedArray);
                 javaTypes = new JavaNativeTypes(javaType);
             }
             catch (ZserioExtensionException exception)
@@ -544,7 +548,7 @@ final class JavaNativeMapper
             final PackageName packageName = compoundType.getPackage().getPackageName();
             final String name = compoundType.getName();
             final JavaNativeType javaType = new NativeCompoundType(packageName, name, withWriterCode,
-                    compoundType.isPackable());
+                    compoundType.isPackable() && packedTypesCollector.isUsedInPackedArray(compoundType));
 
             return new JavaNativeTypes(javaType);
         }
@@ -679,5 +683,6 @@ final class JavaNativeMapper
     private final static NativeIntType varSizeType = new NativeIntType(false, varSizeArrayTraits);
     private final static NativeIntType varSizeNullableType = new NativeIntType(true, varSizeArrayTraits);
 
+    private final PackedTypesCollector packedTypesCollector;
     private final boolean withWriterCode;
 }

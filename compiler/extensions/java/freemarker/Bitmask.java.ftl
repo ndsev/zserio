@@ -14,7 +14,8 @@ new ${arrayableInfo.arrayTraits.name}(<#rt>
 <#if withCodeComments && docComments??>
 <@doc_comments docComments/>
 </#if>
-public class ${name} implements <#if withWriterCode>zserio.runtime.io.PackableWriter, </#if>zserio.runtime.PackableSizeOf,
+public class ${name} implements <#if withWriterCode>zserio.runtime.io.<#if usedInPackedArray>Packable</#if>Writer, </#if><#rt>
+        <#lt>zserio.runtime.<#if usedInPackedArray>Packable</#if>SizeOf,
         zserio.runtime.ZserioBitmask
 {
 <#if withCodeComments>
@@ -64,8 +65,9 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.PackableWr
         value = <#if runtimeFunction.javaReadTypeName??>(${runtimeFunction.javaReadTypeName})</#if><#rt>
                 <#lt>in.read${runtimeFunction.suffix}(${runtimeFunction.arg!});
     }
+<#if usedInPackedArray>
 
-<#if withCodeComments>
+    <#if withCodeComments>
     /**
      * Read constructor.
      * <p>
@@ -76,7 +78,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.PackableWr
      *
      * @throws IOException If the reading from the bit stream failed.
      */
-</#if>
+    </#if>
     public ${name}(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamReader in)
             throws java.io.IOException
     {
@@ -85,6 +87,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.PackableWr
                 deltaContext.read(
                         <@bitmask_array_traits underlyingTypeInfo.arrayableInfo, bitSize!/>, in)).get();
     }
+</#if>
 <#if withTypeInfoCode>
 
     <#if withCodeComments>
@@ -109,6 +112,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.PackableWr
         );
     }
 </#if>
+<#if usedInPackedArray>
 
     @Override
     public void initPackingContext(zserio.runtime.array.PackingContext context)
@@ -118,6 +122,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.PackableWr
                 <@bitmask_array_traits underlyingTypeInfo.arrayableInfo, bitSize!/>,
                 new ${underlyingTypeInfo.arrayableInfo.arrayElement}(value));
     }
+</#if>
 
     @Override
     public int bitSizeOf()
@@ -134,6 +139,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.PackableWr
         return zserio.runtime.BitSizeOfCalculator.getBitSizeOf${runtimeFunction.suffix}(value);
 </#if>
     }
+<#if usedInPackedArray>
 
     @Override
     public int bitSizeOf(zserio.runtime.array.PackingContext context, long bitPosition)
@@ -143,6 +149,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.PackableWr
                 <@bitmask_array_traits underlyingTypeInfo.arrayableInfo, bitSize!/>,
                 new ${underlyingTypeInfo.arrayableInfo.arrayElement}(value));
     }
+</#if>
 <#if withWriterCode>
 
     @Override
@@ -156,12 +163,14 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.PackableWr
     {
         return bitPosition + bitSizeOf(bitPosition);
     }
+    <#if usedInPackedArray>
 
     @Override
     public long initializeOffsets(zserio.runtime.array.PackingContext context, long bitPosition)
     {
         return bitPosition + bitSizeOf(context, bitPosition);
     }
+    </#if>
 </#if>
 
     @Override
@@ -209,6 +218,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.PackableWr
     {
         out.write${runtimeFunction.suffix}(value<#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>);
     }
+    <#if usedInPackedArray>
 
     @Override
     public void write(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamWriter out)
@@ -219,6 +229,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.PackableWr
                 <@bitmask_array_traits underlyingTypeInfo.arrayableInfo, bitSize!/>, out,
                 new ${underlyingTypeInfo.arrayableInfo.arrayElement}(value));
     }
+    </#if>
 </#if>
 
 <#if withCodeComments>

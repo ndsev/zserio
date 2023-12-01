@@ -17,6 +17,8 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
     {
         super(context, compoundType, compoundType);
 
+        usedInPackedArray = context.getPackedTypesCollector().isUsedInPackedArray(compoundType);
+
         compoundParametersData = new CompoundParameterTemplateData(context, compoundType);
         compoundConstructorsData = new CompoundConstructorTemplateData(compoundType, compoundParametersData);
         compoundFunctionsData = new CompoundFunctionTemplateData(context, compoundType);
@@ -29,6 +31,11 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         isPackable = compoundType.isPackable();
 
         templateInstantiation = TemplateInstantiationTemplateData.create(context, compoundType);
+    }
+
+    public boolean getUsedInPackedArray()
+    {
+        return usedInPackedArray;
     }
 
     public CompoundParameterTemplateData getCompoundParametersData()
@@ -61,10 +68,11 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         return templateInstantiation;
     }
 
-    private final CompoundParameterTemplateData     compoundParametersData;
-    private final CompoundConstructorTemplateData   compoundConstructorsData;
-    private final CompoundFunctionTemplateData      compoundFunctionsData;
-    private final List<CompoundFieldTemplateData>   fieldList;
-    private final boolean                           isPackable;
+    private final boolean usedInPackedArray;
+    private final CompoundParameterTemplateData compoundParametersData;
+    private final CompoundConstructorTemplateData compoundConstructorsData;
+    private final CompoundFunctionTemplateData compoundFunctionsData;
+    private final List<CompoundFieldTemplateData> fieldList;
+    private final boolean isPackable;
     private final TemplateInstantiationTemplateData templateInstantiation;
 }

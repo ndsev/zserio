@@ -534,7 +534,7 @@ ${I}<@compound_get_field field/>.initPackingContext(zserioContext.${field.getter
         </#if>
     </#local>
     private <#if !field.array.requiresOwnerContext>static </#if>final class <@element_factory_name field.name/> <#rt>
-        <#lt>implements zserio.runtime.array.<#if field.isPackable>Packable</#if>ElementFactory<${field.array.elementTypeInfo.typeFullName}>
+        <#lt>implements zserio.runtime.array.<#if field.isPackable && field.array.elementUsedInPackedArray>Packable</#if>ElementFactory<${field.array.elementTypeInfo.typeFullName}>
     {
         @Override
         public ${field.array.elementTypeInfo.typeFullName} create(zserio.runtime.io.BitStreamReader in, int index)
@@ -546,7 +546,7 @@ ${I}<@compound_get_field field/>.initPackingContext(zserioContext.${field.getter
             return new ${field.array.elementTypeInfo.typeFullName}(in<#if extraConstructorArguments?has_content>, ${extraConstructorArguments}</#if>);
     </#if>
         }
-    <#if field.isPackable>
+    <#if field.isPackable && field.array.elementUsedInPackedArray>
 
         @Override
         public zserio.runtime.array.PackingContext createPackingContext()

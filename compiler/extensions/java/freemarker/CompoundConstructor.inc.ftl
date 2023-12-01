@@ -45,7 +45,7 @@
         </#if>
         read(in);
     }
-    <#if isPackable>
+    <#if isPackable && usedInPackedArray>
 
         <#if withCodeComments>
     /**

@@ -8,11 +8,11 @@ import zserio.ast.PackageName;
 public final class NativeEnumType extends NativeArrayableType
 {
     public NativeEnumType(PackageName packageName, String name, NativeIntegralType nativeBaseType,
-            boolean withWriterCode)
+            boolean withWriterCode, boolean usedInPackedArray)
     {
         super(packageName, name,
                 new NativeEnumRawArray(),
-                new NativeObjectArrayTraits(packageName, name, withWriterCode, true),
+                new NativeObjectArrayTraits(packageName, name, withWriterCode, usedInPackedArray),
                 new NativeObjectArrayElement(packageName, name));
 
         this.nativeBaseType = nativeBaseType;

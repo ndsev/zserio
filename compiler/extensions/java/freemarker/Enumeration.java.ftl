@@ -14,7 +14,8 @@ new ${arrayableInfo.arrayTraits.name}(<#rt>
 <#if withCodeComments && docComments??>
 <@doc_comments docComments/>
 </#if>
-public enum ${name} implements <#if withWriterCode>zserio.runtime.io.PackableWriter, </#if>zserio.runtime.PackableSizeOf,
+public enum ${name} implements <#if withWriterCode>zserio.runtime.io.<#if usedInPackedArray>Packable</#if>Writer, </#if><#rt>
+        <#lt>zserio.runtime.<#if usedInPackedArray>Packable</#if>SizeOf,
         zserio.runtime.ZserioEnum
 {
 <#list items as item>
@@ -73,6 +74,7 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.PackableWri
             );
     }
 </#if>
+<#if usedInPackedArray>
 
     @Override
     public void initPackingContext(zserio.runtime.array.PackingContext context)
@@ -82,6 +84,7 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.PackableWri
                 <@enum_array_traits underlyingTypeInfo.arrayableInfo, bitSize!/>,
                 new ${underlyingTypeInfo.arrayableInfo.arrayElement}(value));
     }
+</#if>
 
     @Override
     public int bitSizeOf()
@@ -98,6 +101,7 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.PackableWri
         return zserio.runtime.BitSizeOfCalculator.getBitSizeOf${runtimeFunction.suffix}(value);
 </#if>
     }
+<#if usedInPackedArray>
 
     @Override
     public int bitSizeOf(zserio.runtime.array.PackingContext context, long bitPosition)
@@ -107,6 +111,7 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.PackableWri
                 <@enum_array_traits underlyingTypeInfo.arrayableInfo, bitSize!/>,
                 new ${underlyingTypeInfo.arrayableInfo.arrayElement}(value));
     }
+</#if>
 <#if withWriterCode>
 
     @Override
@@ -120,12 +125,14 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.PackableWri
     {
         return bitPosition + bitSizeOf(bitPosition);
     }
+    <#if usedInPackedArray>
 
     @Override
     public long initializeOffsets(zserio.runtime.array.PackingContext context, long bitPosition)
     {
         return bitPosition + bitSizeOf(context, bitPosition);
     }
+    </#if>
 
 <#function has_removed_items items>
     <#list items as item>
@@ -162,6 +169,7 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.PackableWri
     </#if>
         out.write${runtimeFunction.suffix}(getValue()<#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>);
     }
+    <#if usedInPackedArray>
 
     @Override
     public void write(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamWriter out)
@@ -175,6 +183,7 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.PackableWri
                 <@enum_array_traits underlyingTypeInfo.arrayableInfo, bitSize!/>, out,
                 new ${underlyingTypeInfo.arrayableInfo.arrayElement}(value));
     }
+    </#if>
 
 </#if>
 <#if withCodeComments>
@@ -191,8 +200,9 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.PackableWri
         return toEnum(<#if runtimeFunction.javaReadTypeName??>(${runtimeFunction.javaReadTypeName})</#if><#rt>
                 <#lt>in.read${runtimeFunction.suffix}(${runtimeFunction.arg!}));
     }
+<#if usedInPackedArray>
 
-<#if withCodeComments>
+    <#if withCodeComments>
     /**
      * Reads enumeration from the bit stream.
      * <p>
@@ -203,7 +213,7 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.PackableWri
      *
      * @throws IOException If the reading from the bit stream failed.
      */
-</#if>
+    </#if>
     public static ${name} readEnum(zserio.runtime.array.PackingContext context,
             zserio.runtime.io.BitStreamReader in) throws java.io.IOException
     {
@@ -212,6 +222,7 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.PackableWri
                 deltaContext.read(
                         <@enum_array_traits underlyingTypeInfo.arrayableInfo, bitSize!/>, in)).get());
     }
+</#if>
 
 <#if withCodeComments>
     /**

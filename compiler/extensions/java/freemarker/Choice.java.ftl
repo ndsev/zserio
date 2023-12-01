@@ -89,10 +89,11 @@ ${I}}
 <#if withCodeComments && docComments??>
 <@doc_comments docComments/>
 </#if>
-public class ${name} implements <#if withWriterCode>zserio.runtime.io.<#if isPackable>Packable</#if>Writer, <#rt>
-        <#lt></#if>zserio.runtime.<#if isPackable>Packable</#if>SizeOf
+public class ${name} implements <#rt>
+        <#if withWriterCode>zserio.runtime.io.<#if isPackable && usedInPackedArray>Packable</#if>Writer, <#t>
+        <#lt></#if>zserio.runtime.<#if isPackable && usedInPackedArray>Packable</#if>SizeOf
 {
-<#if isPackable>
+<#if isPackable && usedInPackedArray>
     <@compound_declare_packing_context fieldList/>
 
 </#if>
@@ -157,7 +158,7 @@ ${I}return UNDEFINED_CHOICE;
         return UNDEFINED_CHOICE;
 </#if>
     }
-<#if isPackable>
+<#if isPackable && usedInPackedArray>
 
 <#macro choice_init_packing_context_member member indent packed>
     <#local I>${""?left_pad(indent * 4)}</#local>
@@ -210,7 +211,7 @@ ${I}break;
         return 0;
 </#if>
     }
-<#if isPackable>
+<#if isPackable && usedInPackedArray>
 
     @Override
     public int bitSizeOf(zserio.runtime.array.PackingContext context, long bitPosition)
@@ -367,7 +368,7 @@ ${I}break;
         <@choice_switch "choice_read_member", "choice_no_match", 2/>
 </#if>
     }
-<#if isPackable>
+<#if isPackable && usedInPackedArray>
 
     <#if withCodeComments>
     /**
@@ -428,7 +429,7 @@ ${I}break;
         return bitPosition;
     </#if>
     }
-<#if isPackable>
+<#if isPackable && usedInPackedArray>
 
     @Override
     public long initializeOffsets(zserio.runtime.array.PackingContext context, long bitPosition)
@@ -463,7 +464,7 @@ ${I}break;
         <@choice_switch "choice_write_member", "choice_no_match", 2/>
     </#if>
     }
-    <#if isPackable>
+    <#if isPackable && usedInPackedArray>
 
     @Override
     public void write(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamWriter out)

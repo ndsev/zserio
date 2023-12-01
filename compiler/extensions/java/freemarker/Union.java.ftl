@@ -13,10 +13,11 @@
 <#if withCodeComments && docComments??>
 <@doc_comments docComments/>
 </#if>
-public class ${name} implements <#if withWriterCode>zserio.runtime.io.<#if isPackable>Packable</#if>Writer, <#rt>
-        <#lt></#if>zserio.runtime.<#if isPackable>Packable</#if>SizeOf
+public class ${name} implements <#rt>
+        <#if withWriterCode>zserio.runtime.io.<#if isPackable && usedInPackedArray>Packable</#if>Writer, <#t>
+        <#lt></#if>zserio.runtime.<#if isPackable && usedInPackedArray>Packable</#if>SizeOf
 {
-<#if isPackable>
+<#if isPackable && usedInPackedArray>
     <@compound_declare_packing_context fieldList, true/>
 
 </#if>
@@ -63,7 +64,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.<#if isPac
     {
         return choiceTag;
     }
-<#if isPackable>
+<#if isPackable && usedInPackedArray>
 
     @Override
     public void initPackingContext(zserio.runtime.array.PackingContext context)
@@ -116,7 +117,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.<#if isPac
         return 0;
 </#if>
     }
-<#if isPackable>
+<#if isPackable && usedInPackedArray>
 
     @Override
     public int bitSizeOf(zserio.runtime.array.PackingContext context, long bitPosition)
@@ -279,7 +280,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.<#if isPac
         }
 </#if>
     }
-<#if isPackable>
+<#if isPackable && usedInPackedArray>
 
     <#if withCodeComments>
     /**
@@ -346,7 +347,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.<#if isPac
         return bitPosition;
     </#if>
     }
-    <#if isPackable>
+    <#if isPackable && usedInPackedArray>
 
     @Override
     public long initializeOffsets(zserio.runtime.array.PackingContext context, long bitPosition)
@@ -392,7 +393,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.<#if isPac
         };
     </#if>
     }
-    <#if isPackable>
+    <#if isPackable && usedInPackedArray>
 
     @Override
     public void write(zserio.runtime.array.PackingContext context, zserio.runtime.io.BitStreamWriter out)

@@ -20,6 +20,8 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
     {
         super(context, enumType, enumType);
 
+        usedInPackedArray = context.getPackedTypesCollector().isUsedInPackedArray(enumType);
+
         final TypeInstantiation enumTypeInstantiation = enumType.getTypeInstantiation();
         final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
         final ExpressionFormatter javaExpressionFormatter = context.getJavaExpressionFormatter();
@@ -35,6 +37,11 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
         items = new ArrayList<EnumItemData>();
         for (EnumItem item: enumType.getItems())
             items.add(new EnumItemData(context, nativeIntegralType, item));
+    }
+
+    public boolean getUsedInPackedArray()
+    {
+        return usedInPackedArray;
     }
 
     public NativeTypeInfoTemplateData getUnderlyingTypeInfo()
@@ -108,6 +115,7 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
         private final DocCommentsTemplateData docComments;
     }
 
+    private final boolean usedInPackedArray;
     private final NativeTypeInfoTemplateData underlyingTypeInfo;
     private final BitSizeTemplateData bitSize;
     private final RuntimeFunctionTemplateData runtimeFunction;

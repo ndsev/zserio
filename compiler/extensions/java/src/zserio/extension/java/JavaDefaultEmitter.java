@@ -12,6 +12,7 @@ import zserio.ast.ZserioType;
 import zserio.extension.common.DefaultTreeWalker;
 import zserio.extension.common.FreeMarkerUtil;
 import zserio.extension.common.OutputFileManager;
+import zserio.extension.common.PackedTypesCollector;
 import zserio.extension.common.ZserioExtensionException;
 
 /**
@@ -19,10 +20,12 @@ import zserio.extension.common.ZserioExtensionException;
  */
 abstract class JavaDefaultEmitter extends DefaultTreeWalker
 {
-    public JavaDefaultEmitter(OutputFileManager outputFileManager, JavaExtensionParameters javaParameters)
+    public JavaDefaultEmitter(OutputFileManager outputFileManager, JavaExtensionParameters javaParameters,
+            PackedTypesCollector packedTypesCollector)
     {
         this.outputFileManager = outputFileManager;
         this.javaParameters = javaParameters;
+        this.packedTypesCollector = packedTypesCollector;
     }
 
     @Override
@@ -38,7 +41,7 @@ abstract class JavaDefaultEmitter extends DefaultTreeWalker
 
         if (context == null)
         {
-            context = new TemplateDataContext(javaParameters, pkg.getPackageName());
+            context = new TemplateDataContext(javaParameters, pkg.getPackageName(), packedTypesCollector);
         }
     }
 
@@ -117,6 +120,7 @@ abstract class JavaDefaultEmitter extends DefaultTreeWalker
 
     private final OutputFileManager outputFileManager;
     private final JavaExtensionParameters javaParameters;
+    private final PackedTypesCollector packedTypesCollector;
 
     private TemplateDataContext context = null;
 }

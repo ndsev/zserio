@@ -6,6 +6,7 @@ import java.util.List;
 import zserio.ast.Root;
 import zserio.extension.common.CompatibilityChecker;
 import zserio.extension.common.OutputFileManager;
+import zserio.extension.common.PackedTypesCollector;
 import zserio.extension.common.ReservedKeywordsClashChecker;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.tools.Extension;
@@ -68,17 +69,20 @@ public final class JavaExtension implements Extension
         final OutputFileManager outputFileManager = new OutputFileManager(parameters);
         final JavaExtensionParameters javaParameters = new JavaExtensionParameters(parameters);
 
+        final PackedTypesCollector packedTypesCollector = new PackedTypesCollector();
+        rootNode.accept(packedTypesCollector);
+
         final List<JavaDefaultEmitter> emitters = new ArrayList<JavaDefaultEmitter>();
-        emitters.add(new BitmaskEmitter(outputFileManager, javaParameters));
-        emitters.add(new EnumerationEmitter(outputFileManager, javaParameters));
-        emitters.add(new StructureEmitter(outputFileManager, javaParameters));
-        emitters.add(new ChoiceEmitter(outputFileManager, javaParameters));
-        emitters.add(new UnionEmitter(outputFileManager, javaParameters));
-        emitters.add(new SqlDatabaseEmitter(outputFileManager, javaParameters));
-        emitters.add(new SqlTableEmitter(outputFileManager, javaParameters));
-        emitters.add(new ConstEmitter(outputFileManager, javaParameters));
-        emitters.add(new ServiceEmitter(outputFileManager, javaParameters));
-        emitters.add(new PubsubEmitter(outputFileManager, javaParameters));
+        emitters.add(new BitmaskEmitter(outputFileManager, javaParameters, packedTypesCollector));
+        emitters.add(new EnumerationEmitter(outputFileManager, javaParameters, packedTypesCollector));
+        emitters.add(new StructureEmitter(outputFileManager, javaParameters, packedTypesCollector));
+        emitters.add(new ChoiceEmitter(outputFileManager, javaParameters, packedTypesCollector));
+        emitters.add(new UnionEmitter(outputFileManager, javaParameters, packedTypesCollector));
+        emitters.add(new SqlDatabaseEmitter(outputFileManager, javaParameters, packedTypesCollector));
+        emitters.add(new SqlTableEmitter(outputFileManager, javaParameters, packedTypesCollector));
+        emitters.add(new ConstEmitter(outputFileManager, javaParameters, packedTypesCollector));
+        emitters.add(new ServiceEmitter(outputFileManager, javaParameters, packedTypesCollector));
+        emitters.add(new PubsubEmitter(outputFileManager, javaParameters, packedTypesCollector));
 
         // emit Java code
         for (JavaDefaultEmitter emitter: emitters)

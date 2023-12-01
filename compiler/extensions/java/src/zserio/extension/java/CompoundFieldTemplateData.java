@@ -316,6 +316,8 @@ public final class CompoundFieldTemplateData
                     javaLambdaExpressionFormatter);
             elementCompound = createCompound(context, elementTypeInstantiation);
             elementIsRecursive = elementTypeInstantiation.getBaseType() == parentType;
+            elementUsedInPackedArray = context.getPackedTypesCollector().isUsedInPackedArray(
+                    elementTypeInstantiation.getBaseType());
         }
 
         public boolean getIsImplicit()
@@ -383,6 +385,11 @@ public final class CompoundFieldTemplateData
             return elementIsRecursive;
         }
 
+        public boolean getElementUsedInPackedArray()
+        {
+            return elementUsedInPackedArray;
+        }
+
         private static String createLength(ArrayInstantiation arrayInstantiation,
                 ExpressionFormatter javaExpressionFormatter) throws ZserioExtensionException
         {
@@ -428,6 +435,7 @@ public final class CompoundFieldTemplateData
         private final BitSizeTemplateData elementBitSize;
         private final Compound elementCompound;
         private final boolean elementIsRecursive;
+        private final boolean elementUsedInPackedArray;
     }
 
     public static final class Compound
