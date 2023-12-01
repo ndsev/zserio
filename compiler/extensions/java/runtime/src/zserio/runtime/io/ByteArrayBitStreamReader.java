@@ -664,6 +664,11 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
         // nothing to do
     }
 
+    /**
+     * Gets the underlying buffer.
+     *
+     * @return Underlying buffer.
+     */
     protected byte[] getBuffer()
     {
         return buffer;

@@ -1457,6 +1457,11 @@ public interface ArrayTraits
                     "ArrayTraits: write is not implemented for read only ObjectArrayTraits!");
         }
 
+        /**
+         * Gets the element factory.
+         *
+         * @return Element factory.
+         */
         protected PackableElementFactory<E> getElementFactory()
         {
             return elementFactory;

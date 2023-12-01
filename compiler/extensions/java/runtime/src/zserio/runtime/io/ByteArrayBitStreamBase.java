@@ -7,22 +7,44 @@ import java.io.IOException;
  */
 abstract class ByteArrayBitStreamBase
 {
+    /**
+     * Gets the current bit position.
+     *
+     * @return Bit position counted from zero.
+     */
     public long getBitPosition()
     {
         return 8 * bytePosition + bitOffset;
     }
 
+    /**
+     * Gets the current byte position.
+     *
+     * @return Byte position counted from zero.
+     */
     public int getBytePosition()
     {
         return bytePosition;
     }
 
+    /**
+     * Sets the bit position to the given value.
+     *
+     * @param bitPosition Bit position to set.
+     *
+     * @throws IOException Throws in case of any error.
+     */
     public void setBitPosition(final long bitPosition) throws IOException
     {
         bitOffset = (int)(bitPosition % 8);
         bytePosition = (int)(bitPosition / 8);
     }
 
+    /**
+     * Gets the current bit offset.
+     *
+     * @return Bit offset counted from zero.
+     */
     public int getBitOffset()
     {
         return bitOffset;
