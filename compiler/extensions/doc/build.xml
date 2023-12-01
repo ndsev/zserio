@@ -114,6 +114,7 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
             <format property="timestamp" pattern="yyyy-MM-dd HH:mm:ss"/>
         </tstamp>
         <javadoc destdir="${zserio_doc.javadocs_dir}" failonerror="true" failonwarning="true">
+            <arg value="-Xdoclint:-missing"/>
             <fileset dir="${zserio_doc.src_dir}"/>
             <doctitle>
                 <![CDATA[<h1>Zserio Doc Extension Documentation</h1><h2>Version ${zserio_doc.version}</h2]]>

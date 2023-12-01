@@ -74,6 +74,7 @@ spotbugs.home_dir           - Location of the spotbugs tool. If not set, spotbug
             <format property="timestamp" pattern="yyyy-MM-dd HH:mm:ss"/>
         </tstamp>
         <javadoc destdir="${zserio_ant_task.javadocs_dir}" failonerror="true" failonwarning="true">
+            <arg value="-Xdoclint:-missing"/>
             <fileset dir="${zserio_ant_task.src_dir}"/>
             <doctitle>
                 <![CDATA[<h1>Zserio Ant Task Documentation</h1><h2>Version ${zserio_ant_task.version}</h2]]>
