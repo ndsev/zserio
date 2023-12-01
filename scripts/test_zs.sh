@@ -65,11 +65,11 @@ generate_ant_file()
     <property name="runtime.jar_dir" location="\${zserio.release_dir}/runtime_libs/java"/>
     <property name="runtime.jar_file" location="\${runtime.jar_dir}/zserio_runtime.jar"/>
 
-    <property name="test_zs.build_dir" location="${HOST_BUILD_DIR}"/>
+    <property name="test_zs.build_dir" location="${HOST_BUILD_DIR}/\${ant.java.version}"/>
     <property name="test_zs.classes_dir" location="\${test_zs.build_dir}/classes"/>
     <property name="test_zs.jar_dir" location="\${test_zs.build_dir}/jar"/>
-    <property name="test_zs.jar_file" location="\${test_zs.jar_dir}/${TEST_NAME}.jar"/>
-    <property name="test_zs.src_dir" location="\${test_zs.build_dir}/gen"/>
+    <property name="test_zs.jar_file" location="${HOST_BUILD_DIR}/${TEST_NAME}.jar"/>
+    <property name="test_zs.src_dir" location="${HOST_BUILD_DIR}/gen"/>
 
     <condition property="spotbugs.classpath" value="\${spotbugs.home_dir}/lib/spotbugs-ant.jar">
         <isset property="spotbugs.home_dir"/>
@@ -107,7 +107,7 @@ generate_ant_file()
             output="html"
             outputFile="\${test_zs.build_dir}/spotbugs.html"
             reportLevel="low"
-            excludeFilter="\${test_zs.build_dir}/spotbugs_filter.xml"
+            excludeFilter="\${test_zs.build_dir}/../spotbugs_filter.xml"
             errorProperty="test_zs.spotbugs.is_failed"
             warningsProperty="test_zs.spotbugs.is_failed">
             <sourcePath path="\${test_zs.src_dir}"/>
@@ -145,11 +145,6 @@ EOF
         </Or>
     </Match>
     <Match>
-        <!-- This field is never written. -->
-        <Bug code="UwF"/>
-        <Field name="objectChoice"/>
-    </Match>
-    <Match>
         <!-- Method names should start with a lower case letter. -->
         <Bug code="Nm"/>
     </Match>
@@ -157,6 +152,22 @@ EOF
         <!-- Integral division result cast to double or float. -->
         <Bug code="ICAST"/>
         <Method name="funcPercentageValue"/>
+    </Match>
+    <Match>
+        <!-- May expose internal representation by returning reference to mutable object. -->
+        <Bug code="EI"/>
+    </Match>
+    <Match>
+        <!-- May expose internal representation by incorporating reference to mutable object. -->
+        <Bug code="EI2"/>
+    </Match>
+    <Match>
+        <!-- Be wary of letting constructors throw exceptions - Should be fixed in generated code. -->
+        <Bug code="CT"/>
+    </Match>
+    <Match>
+        <!-- Unwritten field - Should be fixed in generated code. -->
+        <Bug code="UwF"/>
     </Match>${SPOTBUGS_FILTER_SQLITE}
 </FindBugsFilter>
 EOF

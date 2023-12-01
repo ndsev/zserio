@@ -218,8 +218,8 @@ test_java()
     local MESSAGE="Zserio Java tests"
     echo "STARTING - ${MESSAGE}"
     local ANT_ARGS=("-Dzserio.release_dir=${UNPACKED_ZSERIO_RELEASE_DIR}"
-                    "-Dzserio_java_test.build_dir=${TEST_OUT_DIR}/java")
-    ANT_ARGS+=("-Dzserio_java_test.test_suites=${TEST_FILTER}")
+                    "-Dzserio_java_test.build_root_dir=${TEST_OUT_DIR}/java"
+                    "-Dzserio_java_test.test_suites=${TEST_FILTER}")
     if [[ ${SWITCH_CLEAN} == 1 ]] ; then
         local JAVA_TARGET="clean"
     else

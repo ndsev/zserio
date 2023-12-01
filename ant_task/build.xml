@@ -10,7 +10,8 @@ The following external properties can be set:
 
 zserio.build_dir            - Zserio build directory. Default is "../build".
 zserio.install_dir          - Zserio install directory. Default is "../distr".
-zserio_ant_task.build_dir   - Directory where to put generated files. Default is "${zserio.build_dir}/ant_task".
+zserio_ant_task.build_dir   - Directory where to put generated files.
+                              Default is "${zserio.build_dir}/ant_task/${ant.java.version}".
 zserio_ant_task.install_dir - Directory where to install library. Default is "${zserio.install_dir}/jar".
 zserio.version              - Zserio version used for Zserio Ant task version. Default is "unknown".
 spotbugs.home_dir           - Location of the spotbugs tool. If not set, spotbugs is not run.
@@ -23,7 +24,7 @@ spotbugs.home_dir           - Location of the spotbugs tool. If not set, spotbug
 
     <property name="zserio.build_dir" value="${zserio_ant_task.zserio_root}/build"/>
     <property name="zserio.install_dir" value="${zserio_ant_task.zserio_root}/distr"/>
-    <property name="zserio_ant_task.build_dir" value="${zserio.build_dir}/ant_task"/>
+    <property name="zserio_ant_task.build_dir" value="${zserio.build_dir}/ant_task/${ant.java.version}"/>
     <property name="zserio_ant_task.install_dir" value="${zserio.install_dir}/ant_task"/>
     <condition property="zserio_ant_task.version" value="${zserio.version}" else="unknown">
         <isset property="zserio.version"/>

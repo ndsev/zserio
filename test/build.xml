@@ -4,10 +4,11 @@ Ant build.xml for Zserio Java extension tests.
 
 The following properties can be set:
 
-zserio.release_dir           - Directory where to find Zserio release to test. Default is "../distr".
-zserio_java_test.build_dir   - Directory where to put generated files. Default is "../build/test/java".
-zserio_java_test.test_suites - Test suites. Default is "**".
-spotbugs.home_dir            - Location of the spotbugs tool. If not set, spotbugs is not run.
+zserio.release_dir              - Directory where to find Zserio release to test. Default is "../distr".
+zserio_java_test.build_root_dir - Build directory where to put generated files.
+                                  Default is "../build/test/java".
+zserio_java_test.test_suites    - Test suites. Default is "**".
+spotbugs.home_dir               - Location of the spotbugs tool. If not set, spotbugs is not run.
 
 -->
 <project name="zserio_java_test" basedir="." default="run" xmlns:if="ant:if" xmlns:unless="ant:unless">
@@ -25,7 +26,9 @@ spotbugs.home_dir            - Location of the spotbugs tool. If not set, spotbu
         location="${3rdparty.jar_dir}/junit-platform-console-standalone-1.8.2.jar"/>
     <property name="3rdparty.sqlitejdbc.jar_file" location="${3rdparty.jar_dir}/sqlitejdbc-3.39.4.jar"/>
 
-    <property name="zserio_java_test.build_dir" location="${zserio.root_dir}/build/test/java"/>
+    <property name="zserio_java_test.build_root_dir" location="${zserio.root_dir}/build/test/java"/>
+    <property name="zserio_java_test.build_dir"
+            location="${zserio_java_test.build_root_dir}/${ant.java.version}"/>
     <property name="zserio_java_test.log_file" location="${zserio_java_test.build_dir}/test_log.txt"/>
     <property name="zserio_java_test.test_suites" value="**"/>
 

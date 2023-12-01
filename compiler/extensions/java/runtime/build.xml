@@ -9,7 +9,7 @@ zserio_runtimes.build_dir       - Zserio extensions build directory.
 zserio_runtimes.install_dir     - Zserio extensions runtime install directory.
                                   Default is "../../../../distr/runtime_libs"
 zserio_java_runtime.build_dir   - Directory where to put generated files.
-                                  Default is "${zserio_runtimes.build_dir}/java".
+                                  Default is "${zserio_runtimes.build_dir}/java/${ant.java.version}".
 zserio_java_runtime.install_dir - Directory where to install library.
                                   Default is "${zserio_runtimes.install_dir}/java".
 relational.enable               - Flag whether the relational extension is included. Default is "yes".
@@ -28,7 +28,8 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
 
     <property name="zserio_runtimes.build_dir" value="${zserio_java_runtime.zserio_root}/build/runtime_libs"/>
     <property name="zserio_runtimes.install_dir" value="${zserio_java_runtime.zserio_root}/distr/runtime_libs"/>
-    <property name="zserio_java_runtime.build_dir" value="${zserio_runtimes.build_dir}/java"/>
+    <property name="zserio_java_runtime.build_dir"
+            value="${zserio_runtimes.build_dir}/java/${ant.java.version}"/>
     <property name="zserio_java_runtime.install_dir" value="${zserio_runtimes.install_dir}/java"/>
     <property name="relational.enable" value="yes"/>
     <property name="relational.sqlite.jar_file"

@@ -7,7 +7,7 @@ The following external properties can be set:
 zserio.build_dir            - Zserio build directory.
 zserio.install_dir          - Zserio install directory.
 zserio_bundle.build_dir     - Directory where to put generated bundled tool.
-                              Default is "${zserio.build_dir}/zserio".
+                              Default is "${zserio.build_dir}/zserio/${ant.java.version}".
 zserio_bundle.install_dir   - Directory where to install bundled Zserio tool.
                               Default is "${zserio_install_dir}".
 zserio_extensions.build_dir - Zserio extensions build directory.
@@ -21,7 +21,7 @@ gpg.executable              - GnuPG executable to use for artifact signing. Defa
     <property name="zserio.install_dir" value="${basedir}/distr" />
     <property name="zserio.deploy_dir" value="${zserio.build_dir}/deploy"/>
     <property name="zserio.download_dir" value="${zserio.deploy_dir}/download"/>
-    <property name="zserio_bundle.build_dir" value="${zserio.build_dir}/zserio" />
+    <property name="zserio_bundle.build_dir" value="${zserio.build_dir}/zserio/${ant.java.version}" />
     <property name="zserio_bundle.install_dir" value="${zserio.install_dir}" />
 
     <property name="zserio.deploy.pom_template_file" value="${basedir}/mvn/deploy_pom_template.xml"/>

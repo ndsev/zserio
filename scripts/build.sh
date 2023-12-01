@@ -520,12 +520,7 @@ main()
     fi
 
     local ANT_PROPS=(-Dzserio.build_dir="${ZSERIO_BUILD_DIR}"
-                     -Dzserio.install_dir="${ZSERIO_DISTR_DIR}"
-                     -Dzserio_extensions.build_dir="${ZSERIO_BUILD_DIR}/compiler/extensions"
-                     -Dzserio_extensions.install_dir="${ZSERIO_DISTR_DIR}/zserio_libs"
-                     -Dzserio_runtimes.build_dir="${ZSERIO_BUILD_DIR}/runtime_libs"
-                     -Dzserio_runtimes.install_dir="${ZSERIO_DISTR_DIR}/runtime_libs"
-                     -Dzserio_core.jar_file="${ZSERIO_BUILD_DIR}/compiler/core/jar/zserio_core.jar")
+                     -Dzserio.install_dir="${ZSERIO_DISTR_DIR}")
 
     # build Zserio Ant task
     if [[ ${PARAM_ANT_TASK} == 1 ]] ; then

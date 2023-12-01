@@ -39,12 +39,12 @@ generate_java_files()
     <property name="runtime.jar_file_name" value="zserio_runtime.jar"/>
     <property name="runtime.jar_file" location="\${runtime.jar_dir}/\${runtime.jar_file_name}"/>
 
-    <property name="test_perf.build_dir" location="${HOST_BUILD_DIR}"/>
+    <property name="test_perf.build_dir" location="${HOST_BUILD_DIR}/\${ant.java.version}"/>
     <property name="test_perf.classes_dir" location="\${test_perf.build_dir}/classes"/>
     <property name="test_perf.jar_dir" location="\${test_perf.build_dir}/jar"/>
     <property name="test_perf.jar_file" location="\${test_perf.jar_dir}/performance_test.jar"/>
-    <property name="test_perf.src_dir" location="\${test_perf.build_dir}/src"/>
-    <property name="test_perf.gen_dir" location="\${test_perf.build_dir}/gen"/>
+    <property name="test_perf.src_dir" location="${HOST_BUILD_DIR}/src"/>
+    <property name="test_perf.gen_dir" location="${HOST_BUILD_DIR}/gen"/>
 
     <target name="prepare">
         <mkdir dir="\${test_perf.classes_dir}"/>

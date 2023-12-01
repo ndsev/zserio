@@ -9,7 +9,7 @@ The following external properties can be set:
 zserio.build_dir        - Zserio build directory. Default is "../../build".
 zserio.install_dir      - Zserio install directory. Default is "../../distr".
 zserio_core.build_dir   - Directory where to put generated files.
-                          Default is "${zserio.build_dir}/compiler/core".
+                          Default is "${zserio.build_dir}/compiler/core/${ant.java.version}".
 zserio_core.install_dir - Directory where to install Zserio core jar file.
                           Default is "${zserio.install_dir}/zserio_libs".
 zserio.version          - Zserio version to be used for Zserio core. Default is "unknown".
@@ -23,7 +23,7 @@ spotbugs.home_dir       - Location of the spotbugs tool. If not set, spotbugs is
 
     <property name="zserio.build_dir" value="${zserio_core.zserio_root}/build"/>
     <property name="zserio.install_dir" value="${zserio_core.zserio_root}/distr"/>
-    <property name="zserio_core.build_dir" value="${zserio.build_dir}/compiler/core"/>
+    <property name="zserio_core.build_dir" value="${zserio.build_dir}/compiler/core/${ant.java.version}"/>
     <property name="zserio_core.install_dir" value="${zserio.install_dir}/zserio_libs"/>
     <condition property="zserio_core.version" value="${zserio.version}" else="unknown">
         <isset property="zserio.version"/>

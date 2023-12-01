@@ -12,11 +12,12 @@ zserio_extensions.build_dir   - Zserio extensions build directory.
 zserio_extensions.install_dir - Zserio extensions install directory.
                                 Default is "../../../distr/zserio_libs".
 zserio_java.build_dir         - Directory where to put generated files.
-                                Default is "${zserio_extensions.build_dir}/java".
+                                Default is "${zserio_extensions.build_dir}/java/${ant.java.version}".
 zserio_java.install_dir       - Directory where to install Zserio Doc Extension jar file.
                                 Default is "${zserio_extensions.install_dir}".
 zserio_core.jar_file          - Zserio core jar file used for classpath.
-                                Default is "${zserio_extensions.build_dir}/../core/jar/zserio_core.jar".
+                                Default is "${zserio_extensions.build_dir}/../core/${ant.java.version}/jar/
+                                zserio_core.jar".
 spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotbugs is not run.
 
 -->
@@ -27,9 +28,10 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
 
     <property name="zserio_extensions.build_dir" value="${zserio_java.zserio_root}/build/compiler/extensions"/>
     <property name="zserio_extensions.install_dir" value="${zserio_java.zserio_root}/distr/zserio_libs"/>
-    <property name="zserio_java.build_dir" value="${zserio_extensions.build_dir}/java"/>
+    <property name="zserio_java.build_dir" value="${zserio_extensions.build_dir}/java/${ant.java.version}"/>
     <property name="zserio_java.install_dir" value="${zserio_extensions.install_dir}"/>
-    <property name="zserio_core.jar_file" value="${zserio_extensions.build_dir}/../core/jar/zserio_core.jar"/>
+    <property name="zserio_core.jar_file"
+            value="${zserio_extensions.build_dir}/../core/${ant.java.version}/jar/zserio_core.jar"/>
 
     <property name="zserio_java.src_dir" value="${zserio_java.base_dir}/src"/>
     <property name="zserio_java.classes_dir" value="${zserio_java.build_dir}/classes"/>

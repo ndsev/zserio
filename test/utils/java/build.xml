@@ -5,7 +5,7 @@ Ant build.xml for Zserio Java utils library which is used by Java test examples.
 The following properties can be set:
 
 test_utils.build_dir    - Directory where to put generated files.
-                          Default is "../../../build/test/java/utils".
+                          Default is "../../../build/test/java/${ant.java.version}/utils".
 spotbugs.home_dir       - Location of the spotbugs tool. If not set, spotbugs is not run.
 
 -->
@@ -14,7 +14,8 @@ spotbugs.home_dir       - Location of the spotbugs tool. If not set, spotbugs is
 
     <property name="zserio.root_dir" location="${test_utils.base_dir}/../../.."/>
 
-    <property name="test_utils.build_dir" location="${zserio.root_dir}/build/test/java/utils"/>
+    <property name="test_utils.build_dir"
+            location="${zserio.root_dir}/build/test/java/${ant.java.version}/utils"/>
     <property name="test_utils.src_dir" location="${test_utils.base_dir}/src"/>
     <property name="test_utils.classes_dir" location="${test_utils.build_dir}/classes"/>
 
