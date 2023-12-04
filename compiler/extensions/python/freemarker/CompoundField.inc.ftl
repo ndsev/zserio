@@ -475,7 +475,7 @@ ${I}                                        f"<{lowerbound}, {upperbound}>!")
         </#local>
 
     class <@element_factory_name field/>:
-        IS_OBJECT_PACKABLE = <#if field.isPackable>True<#else>False</#if>
+        IS_OBJECT_PACKABLE = <#if field.isPackable && field.array.elementUsedInPackedArray>True<#else>False</#if>
         <#if field.array.requiresOwnerContext>
 
         def __init__(self, owner):
@@ -496,7 +496,7 @@ ${I}                                        f"<{lowerbound}, {upperbound}>!")
             del zserio_index
         </#if>
             return ${field.array.elementTypeInfo.typeFullName}.from_reader(zserio_reader<#if extraConstructorArguments?has_content>, ${extraConstructorArguments}</#if>)
-        <#if field.isPackable>
+        <#if field.isPackable && field.array.elementUsedInPackedArray>
 
         @staticmethod
         def create_packing_context() -> <@field_packing_context_type_name field/>:
@@ -571,55 +571,52 @@ ${I}self.<@field_member_name field/>.init_packing_context(zserio_context.${field
     </#if>
 </#macro>
 
-<#macro define_packing_context isPackable fieldList hasChoiceTag=false>
-    <#if isPackable>
-
+<#macro define_packing_context fieldList hasChoiceTag=false>
     class ZserioPackingContext:
-        <#if withCodeComments>
+    <#if withCodeComments>
         """
         Defines context structure which keeps additional data needed for packed arrays during compression.
         """
-        </#if>
-        <#if hasChoiceTag || uses_packing_context(fieldList)>
-            <#if withCodeComments>
+    </#if>
+    <#if hasChoiceTag || uses_packing_context(fieldList)>
+        <#if withCodeComments>
 
-            </#if>
+        </#if>
         def __init__(self):
             <#local has_packing_context_member=false/>
-            <#if hasChoiceTag>
-                <#local has_packing_context_member=true/>
+        <#if hasChoiceTag>
+            <#local has_packing_context_member=true/>
             self._choice_tag = zserio.array.DeltaContext()
-            </#if>
-            <#list fieldList as field>
-                <#if uses_field_packing_context(field) && !(field.optional?? && field.optional.isRecursive)>
-                    <#local has_packing_context_member=true/>
+        </#if>
+        <#list fieldList as field>
+            <#if uses_field_packing_context(field) && !(field.optional?? && field.optional.isRecursive)>
+                <#local has_packing_context_member=true/>
             self._${field.snakeCaseName}_ = <@field_packing_context_type_name field/>()
-                </#if>
-            </#list>
-            <#if !has_packing_context_member>
-            pass
             </#if>
-            <#if hasChoiceTag>
+        </#list>
+        <#if !has_packing_context_member>
+            pass
+        </#if>
+        <#if hasChoiceTag>
 
         @property
         def choice_tag(self):
             return self._choice_tag
-            </#if>
-            <#list fieldList as field>
-                <#if uses_field_packing_context(field)>
+        </#if>
+        <#list fieldList as field>
+            <#if uses_field_packing_context(field)>
 
         @property
         def ${field.propertyName}(self):
-                    <#if field.optional?? && field.optional.isRecursive>
+                <#if field.optional?? && field.optional.isRecursive>
             return self
-                    <#else>
+                <#else>
             return self._${field.snakeCaseName}_
-                    </#if>
                 </#if>
-            </#list>
-        <#elseif !withCodeComments>
+            </#if>
+        </#list>
+    <#elseif !withCodeComments>
         pass
-        </#if>
     </#if>
 </#macro>
 

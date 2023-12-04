@@ -19,6 +19,7 @@ import zserio.ast.Subtype;
 import zserio.ast.UnionType;
 import zserio.ast.ZserioType;
 import zserio.extension.common.OutputFileManager;
+import zserio.extension.common.PackedTypesCollector;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.python.symbols.PythonNativeSymbol;
 import zserio.extension.python.types.PythonNativeType;
@@ -31,9 +32,10 @@ import zserio.extension.python.types.PythonNativeType;
  */
 final class ApiEmitter extends PythonDefaultEmitter
 {
-    public ApiEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
+    public ApiEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters,
+            PackedTypesCollector packedTypesCollector)
     {
-        super(outputFileManager, pythonParameters);
+        super(outputFileManager, pythonParameters, packedTypesCollector);
     }
 
     @Override

@@ -51,12 +51,13 @@ class ${name}(zserio.Enum):
 
 </#if>
         return cls(reader.read_${runtimeFunction.suffix}(${runtimeFunction.arg!}))
+<#if usedInPackedArray>
 
     @classmethod
     def from_reader_packed(cls: typing.Type['${name}'],
                            delta_context: zserio.array.DeltaContext,
                            reader: zserio.BitStreamReader) -> '${name}':
-<#if withCodeComments>
+    <#if withCodeComments>
         """
         Returns new object instance constructed from bit stream reader.
 
@@ -66,9 +67,10 @@ class ${name}(zserio.Enum):
         :param reader: Bit stream reader to use.
         """
 
-</#if>
+    </#if>
         return cls(delta_context.read(<@array_traits_create underlyingTypeInfo.arrayTraits, bitSize!/>,
                                       reader))
+</#if>
 <#if withTypeInfoCode>
 
     @staticmethod
@@ -102,10 +104,11 @@ class ${name}(zserio.Enum):
         result = zserio.hashcode.HASH_SEED
         result = zserio.hashcode.calc_hashcode_${underlyingTypeInfo.hashCodeFunc.suffix}(result, self.value)
         return result
+<#if usedInPackedArray>
 
     @staticmethod
     def create_packing_context() -> zserio.array.DeltaContext:
-<#if withCodeComments>
+    <#if withCodeComments>
         """
         Creates context for packed arrays.
 
@@ -114,11 +117,11 @@ class ${name}(zserio.Enum):
         :returns: Context for packed arrays.
         """
 
-</#if>
+    </#if>
         return zserio.array.DeltaContext()
 
     def init_packing_context(self, delta_context: zserio.array.DeltaContext) -> None:
-<#if withCodeComments>
+    <#if withCodeComments>
         """
         Initializes context for packed arrays.
 
@@ -127,9 +130,10 @@ class ${name}(zserio.Enum):
         :param delta_context: Context for packed arrays.
         """
 
-</#if>
+    </#if>
         delta_context.init(<@array_traits_create underlyingTypeInfo.arrayTraits, bitSize!/>,
                            self.value)
+</#if>
 
     def bitsizeof(self, _bitposition: int = 0) -> int:
 <#if withCodeComments>
@@ -147,9 +151,10 @@ class ${name}(zserio.Enum):
 <#else>
         return zserio.bitsizeof.bitsizeof_${runtimeFunction.suffix}(self.value)
 </#if>
+<#if usedInPackedArray>
 
     def bitsizeof_packed(self, delta_context: zserio.array.DeltaContext, _bitposition: int) -> int:
-<#if withCodeComments>
+    <#if withCodeComments>
         """
         Calculates size of the serialized object in bits for packed arrays.
 
@@ -161,9 +166,10 @@ class ${name}(zserio.Enum):
         :returns: Number of bits which are needed to store serialized object.
         """
 
-</#if>
+    </#if>
         return delta_context.bitsizeof(<@array_traits_create underlyingTypeInfo.arrayTraits, bitSize!/>,
                                        self.value)
+</#if>
 <#if withWriterCode>
 
     def initialize_offsets(self, bitposition: int = 0) -> int:
@@ -180,9 +186,10 @@ class ${name}(zserio.Enum):
 
     </#if>
         return bitposition + self.bitsizeof(bitposition)
+    <#if usedInPackedArray>
 
     def initialize_offsets_packed(self, delta_context: zserio.array.DeltaContext, bitposition: int) -> int:
-    <#if withCodeComments>
+        <#if withCodeComments>
         """
         Initializes offsets in this enumeration object.
 
@@ -195,8 +202,9 @@ class ${name}(zserio.Enum):
         :returns: Bit stream position calculated from zero updated to the first byte after serialized object.
         """
 
-    </#if>
+        </#if>
         return bitposition + self.bitsizeof_packed(delta_context, bitposition)
+    </#if>
 
 <#function get_removed_items items>
     <#local removedItems=[]>
@@ -238,9 +246,10 @@ class ${name}(zserio.Enum):
         <@removed_items_check items/>
         writer.write_${runtimeFunction.suffix}(self.value<#rt>
                                                <#lt><#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>)
+    <#if usedInPackedArray>
 
     def write_packed(self, delta_context: zserio.array.DeltaContext, writer: zserio.BitStreamWriter) -> None:
-    <#if withCodeComments>
+        <#if withCodeComments>
         """
         Serializes this enumeratin object to the bit stream.
 
@@ -250,7 +259,8 @@ class ${name}(zserio.Enum):
         :param writer: Bit stream writer where to serialize this enumeration object.
         """
 
-    </#if>
+        </#if>
         <@removed_items_check items/>
         delta_context.write(<@array_traits_create underlyingTypeInfo.arrayTraits, bitSize!/>, writer, self.value)
+    </#if>
 </#if>

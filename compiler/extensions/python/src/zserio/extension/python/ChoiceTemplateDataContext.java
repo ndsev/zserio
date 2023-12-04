@@ -2,15 +2,17 @@ package zserio.extension.python;
 
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ExpressionFormattingPolicy;
+import zserio.extension.common.PackedTypesCollector;
 
 /**
  * Template data context for choices and unions which creates proper formatting policy.
  */
 public final class ChoiceTemplateDataContext extends TemplateDataContext
 {
-    public ChoiceTemplateDataContext(PythonExtensionParameters pythonParameters)
+    public ChoiceTemplateDataContext(PythonExtensionParameters pythonParameters,
+            PackedTypesCollector packedTypesCollector)
     {
-        super(pythonParameters);
+        super(pythonParameters, packedTypesCollector);
     }
 
     @Override

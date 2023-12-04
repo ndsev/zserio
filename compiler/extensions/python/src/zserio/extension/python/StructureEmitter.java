@@ -2,6 +2,7 @@ package zserio.extension.python;
 
 import zserio.ast.StructureType;
 import zserio.extension.common.OutputFileManager;
+import zserio.extension.common.PackedTypesCollector;
 import zserio.extension.common.ZserioExtensionException;
 
 /**
@@ -9,9 +10,11 @@ import zserio.extension.common.ZserioExtensionException;
  */
 final class StructureEmitter extends PythonDefaultEmitter
 {
-    public StructureEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
+    public StructureEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters,
+            PackedTypesCollector packedTypesCollector)
     {
-        super(outputFileManager, pythonParameters, new StructTemplateDataContext(pythonParameters));
+        super(outputFileManager, pythonParameters,
+                new StructTemplateDataContext(pythonParameters, packedTypesCollector));
     }
 
     @Override

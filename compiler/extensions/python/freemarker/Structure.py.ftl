@@ -86,7 +86,7 @@ class ${name}:
         self.read(zserio_reader)
 
         return self
-<#if isPackable>
+<#if isPackable && usedInPackedArray>
 
     @classmethod
     def from_reader_packed(
@@ -349,7 +349,7 @@ ${I}<#rt>
     </#if>
         return ${function.resultExpression}
 </#list>
-<#if isPackable>
+<#if isPackable && usedInPackedArray>
 
     def init_packing_context(self, zserio_context: ${name}.ZserioPackingContext) -> None:
     <#if withCodeComments>
@@ -394,7 +394,7 @@ ${I}<#rt>
 
         return 0
 </#if>
-<#if isPackable>
+<#if isPackable && usedInPackedArray>
 
     def bitsizeof_packed(self, zserio_context: ${name}.ZserioPackingContext, bitposition: int = 0) -> int:
     <#if withCodeComments>
@@ -453,7 +453,7 @@ ${I}<#rt>
     <#else>
         return bitposition
     </#if>
-    <#if isPackable>
+    <#if isPackable && usedInPackedArray>
 
     def initialize_offsets_packed(self, zserio_context: ${name}.ZserioPackingContext, bitposition: int) -> int:
         <#if withCodeComments>
@@ -528,7 +528,7 @@ ${I}<#rt>
 <#else>
         del zserio_reader
 </#if>
-<#if isPackable>
+<#if isPackable && usedInPackedArray>
 
     def read_packed(self, zserio_context: ${name}.ZserioPackingContext, zserio_reader: zserio.BitStreamReader) -> None:
     <#if withCodeComments>
@@ -597,7 +597,7 @@ ${I}<#rt>
     <#else>
         del zserio_writer
     </#if>
-    <#if isPackable>
+    <#if isPackable && usedInPackedArray>
 
     def write_packed(self, zserio_context: ${name}.ZserioPackingContext,
                      zserio_writer: zserio.BitStreamWriter) -> None:
@@ -629,7 +629,10 @@ ${I}<#rt>
         </#if>
     </#if>
 </#if>
-    <@define_packing_context isPackable, fieldList/>
+<#if isPackable && usedInPackedArray>
+
+    <@define_packing_context fieldList/>
+</#if>
 <#list fieldList as field>
     <@define_offset_checker field, name/>
     <#if withWriterCode>

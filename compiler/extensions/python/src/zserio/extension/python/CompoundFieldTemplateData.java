@@ -359,6 +359,7 @@ public final class CompoundFieldTemplateData
             elementIsRecursive = (elementBaseType == parentType);
             elementBitSize = new BitSize(elementTypeInstantiation, pythonExpressionFormatter);
             elementCompound = createCompound(context, elementTypeInstantiation, importCollector);
+            elementUsedInPackedArray = context.getPackedTypesCollector().isUsedInPackedArray(elementBaseType);
         }
 
         public boolean getIsImplicit()
@@ -401,6 +402,11 @@ public final class CompoundFieldTemplateData
             return elementCompound;
         }
 
+        public boolean getElementUsedInPackedArray()
+        {
+            return elementUsedInPackedArray;
+        }
+
         private static String createLength(ArrayInstantiation arrayInstantiation,
                 ExpressionFormatter pythonExpressionFormatter) throws ZserioExtensionException
         {
@@ -441,6 +447,7 @@ public final class CompoundFieldTemplateData
         private final boolean elementIsRecursive;
         private final BitSize elementBitSize;
         private final Compound elementCompound;
+        private final boolean elementUsedInPackedArray;
     }
 
     public static final class Compound

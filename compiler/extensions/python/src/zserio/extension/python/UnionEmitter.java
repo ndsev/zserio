@@ -2,6 +2,7 @@ package zserio.extension.python;
 
 import zserio.ast.UnionType;
 import zserio.extension.common.OutputFileManager;
+import zserio.extension.common.PackedTypesCollector;
 import zserio.extension.common.ZserioExtensionException;
 
 /**
@@ -9,9 +10,11 @@ import zserio.extension.common.ZserioExtensionException;
  */
 final class UnionEmitter extends PythonDefaultEmitter
 {
-    public UnionEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
+    public UnionEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters,
+            PackedTypesCollector packedTypesCollector)
     {
-        super(outputFileManager, pythonParameters, new ChoiceTemplateDataContext(pythonParameters));
+        super(outputFileManager, pythonParameters,
+                new ChoiceTemplateDataContext(pythonParameters, packedTypesCollector));
     }
 
     @Override

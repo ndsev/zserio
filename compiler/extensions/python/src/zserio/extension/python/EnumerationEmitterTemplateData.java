@@ -31,6 +31,8 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
         if (getWithTypeInfoCode())
             importType(nativeType);
 
+        usedInPackedArray = context.getPackedTypesCollector().isUsedInPackedArray(enumType);
+
         underlyingTypeInfo = new NativeTypeInfoTemplateData(nativeType, enumTypeInstantiation);
         bitSize = createBitSize(enumTypeInstantiation);
 
@@ -42,6 +44,11 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
         items = new ArrayList<EnumItemData>(enumItems.size());
         for (EnumItem enumItem : enumItems)
             items.add(new EnumItemData(context, enumItem));
+    }
+
+    public boolean getUsedInPackedArray()
+    {
+        return usedInPackedArray;
     }
 
     public NativeTypeInfoTemplateData getUnderlyingTypeInfo()
@@ -132,6 +139,7 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
         }
     }
 
+    private final boolean usedInPackedArray;
     private final NativeTypeInfoTemplateData underlyingTypeInfo;
     private final String bitSize;
     private final RuntimeFunctionTemplateData runtimeFunction;

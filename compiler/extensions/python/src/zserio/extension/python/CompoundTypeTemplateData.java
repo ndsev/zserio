@@ -20,6 +20,8 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         importPackage("typing");
         importPackage("zserio");
 
+        usedInPackedArray = context.getPackedTypesCollector().isUsedInPackedArray(compoundType);
+
         withRangeCheckCode = context.getWithRangeCheckCode();
         compoundParametersData = new CompoundParameterTemplateData(context, compoundType, this);
         compoundFunctionsData = new CompoundFunctionTemplateData(context, compoundType, this);
@@ -34,6 +36,11 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         isPackable = compoundType.isPackable();
 
         templateInstantiation = TemplateInstantiationTemplateData.create(context, compoundType, this);
+    }
+
+    public boolean getUsedInPackedArray()
+    {
+        return usedInPackedArray;
     }
 
     public boolean getWithRangeCheckCode()
@@ -66,6 +73,7 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         return templateInstantiation;
     }
 
+    private final boolean usedInPackedArray;
     private final boolean withRangeCheckCode;
     private final CompoundParameterTemplateData compoundParametersData;
     private final CompoundFunctionTemplateData compoundFunctionsData;

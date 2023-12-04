@@ -139,10 +139,11 @@ class ${name}:
 
     def __invert__(self) -> '${name}':
         return ${name}.from_value(~self._value & ${upperBound})
+<#if usedInPackedArray>
 
     @staticmethod
     def create_packing_context() -> zserio.array.DeltaContext:
-<#if withCodeComments>
+    <#if withCodeComments>
         """
         Creates delta context for packed arrays.
 
@@ -151,11 +152,11 @@ class ${name}:
         :returns: Delta context.
         """
 
-</#if>
+    </#if>
         return zserio.array.DeltaContext()
 
     def init_packing_context(self, delta_context: zserio.array.DeltaContext) -> None:
-<#if withCodeComments>
+    <#if withCodeComments>
         """
         Initializes context for packed arrays.
 
@@ -164,8 +165,9 @@ class ${name}:
         :param delta_context: Context for packed arrays.
         """
 
-</#if>
+    </#if>
         delta_context.init(<@array_traits_create underlyingTypeInfo.arrayTraits, bitSize!/>, self._value)
+</#if>
 
     def bitsizeof(self, _bitposition: int = 0) -> int:
 <#if withCodeComments>
@@ -183,9 +185,10 @@ class ${name}:
 <#else>
         return zserio.bitsizeof.bitsizeof_${runtimeFunction.suffix}(self._value)
 </#if>
+<#if usedInPackedArray>
 
     def bitsizeof_packed(self, delta_context: zserio.array.DeltaContext, _bitposition: int) -> int:
-<#if withCodeComments>
+    <#if withCodeComments>
         """
         Calculates size of the serialized object in bits for packed arrays.
 
@@ -197,9 +200,10 @@ class ${name}:
         :returns: Number of bits which are needed to store serialized object.
         """
 
-</#if>
+    </#if>
         return delta_context.bitsizeof(<@array_traits_create underlyingTypeInfo.arrayTraits, bitSize!/>,
                                        self._value)
+</#if>
 <#if withWriterCode>
 
     def initialize_offsets(self, bitposition: int = 0) -> int:
@@ -216,9 +220,10 @@ class ${name}:
 
     </#if>
         return bitposition + self.bitsizeof(bitposition)
+    <#if usedInPackedArray>
 
     def initialize_offsets_packed(self, delta_context: zserio.array.DeltaContext, bitposition: int) -> int:
-    <#if withCodeComments>
+        <#if withCodeComments>
         """
         Initializes offsets in this bitmask object.
 
@@ -231,8 +236,9 @@ class ${name}:
         :returns: Bit stream position calculated from zero updated to the first byte after serialized object.
         """
 
-    </#if>
+        </#if>
         return bitposition + self.bitsizeof_packed(delta_context, bitposition)
+    </#if>
 
     def write(self, writer: zserio.BitStreamWriter) -> None:
     <#if withCodeComments>
@@ -245,9 +251,10 @@ class ${name}:
     </#if>
         writer.write_${runtimeFunction.suffix}(self._value<#rt>
                                                <#lt><#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>)
+    <#if usedInPackedArray>
 
     def write_packed(self, delta_context: zserio.array.DeltaContext, writer: zserio.BitStreamWriter) -> None:
-    <#if withCodeComments>
+        <#if withCodeComments>
         """
         Serializes this bitmask object to the bit stream.
 
@@ -257,9 +264,10 @@ class ${name}:
         :param writer: Bit stream writer where to serialize this bitmask object.
         """
 
-    </#if>
+        </#if>
         delta_context.write(<@array_traits_create underlyingTypeInfo.arrayTraits, bitSize!/>,
                             writer, self._value)
+    </#if>
 </#if>
 
     @property

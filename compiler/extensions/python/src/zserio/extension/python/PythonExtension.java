@@ -8,6 +8,7 @@ import org.apache.commons.cli.Options;
 import zserio.ast.Root;
 import zserio.extension.common.CompatibilityChecker;
 import zserio.extension.common.OutputFileManager;
+import zserio.extension.common.PackedTypesCollector;
 import zserio.extension.common.ReservedKeywordsClashChecker;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.tools.Extension;
@@ -93,20 +94,23 @@ public final class PythonExtension implements Extension
         final OutputFileManager outputFileManager = new OutputFileManager(parameters);
         final PythonExtensionParameters pythonParameters = new PythonExtensionParameters(parameters);
 
+        final PackedTypesCollector packedTypesCollector = new PackedTypesCollector();
+        rootNode.accept(packedTypesCollector);
+
         final List<PythonDefaultEmitter> emitters = new ArrayList<PythonDefaultEmitter>();
-        emitters.add(new ConstEmitter(outputFileManager, pythonParameters));
-        emitters.add(new EnumerationEmitter(outputFileManager, pythonParameters));
-        emitters.add(new BitmaskEmitter(outputFileManager, pythonParameters));
-        emitters.add(new SubtypeEmitter(outputFileManager, pythonParameters));
-        emitters.add(new InitPyEmitter(outputFileManager, pythonParameters));
-        emitters.add(new ApiEmitter(outputFileManager, pythonParameters));
-        emitters.add(new StructureEmitter(outputFileManager, pythonParameters));
-        emitters.add(new ChoiceEmitter(outputFileManager, pythonParameters));
-        emitters.add(new UnionEmitter(outputFileManager, pythonParameters));
-        emitters.add(new SqlTableEmitter(outputFileManager, pythonParameters));
-        emitters.add(new SqlDatabaseEmitter(outputFileManager, pythonParameters));
-        emitters.add(new ServiceEmitter(outputFileManager, pythonParameters));
-        emitters.add(new PubsubEmitter(outputFileManager, pythonParameters));
+        emitters.add(new ConstEmitter(outputFileManager, pythonParameters, packedTypesCollector));
+        emitters.add(new EnumerationEmitter(outputFileManager, pythonParameters, packedTypesCollector));
+        emitters.add(new BitmaskEmitter(outputFileManager, pythonParameters, packedTypesCollector));
+        emitters.add(new SubtypeEmitter(outputFileManager, pythonParameters, packedTypesCollector));
+        emitters.add(new InitPyEmitter(outputFileManager, pythonParameters, packedTypesCollector));
+        emitters.add(new ApiEmitter(outputFileManager, pythonParameters, packedTypesCollector));
+        emitters.add(new StructureEmitter(outputFileManager, pythonParameters, packedTypesCollector));
+        emitters.add(new ChoiceEmitter(outputFileManager, pythonParameters, packedTypesCollector));
+        emitters.add(new UnionEmitter(outputFileManager, pythonParameters, packedTypesCollector));
+        emitters.add(new SqlTableEmitter(outputFileManager, pythonParameters, packedTypesCollector));
+        emitters.add(new SqlDatabaseEmitter(outputFileManager, pythonParameters, packedTypesCollector));
+        emitters.add(new ServiceEmitter(outputFileManager, pythonParameters, packedTypesCollector));
+        emitters.add(new PubsubEmitter(outputFileManager, pythonParameters, packedTypesCollector));
 
         // emit Python code
         for (PythonDefaultEmitter pythonEmitter: emitters)

@@ -2,6 +2,7 @@ package zserio.extension.python;
 
 import zserio.ast.SqlTableType;
 import zserio.extension.common.OutputFileManager;
+import zserio.extension.common.PackedTypesCollector;
 import zserio.extension.common.ZserioExtensionException;
 
 /**
@@ -9,9 +10,10 @@ import zserio.extension.common.ZserioExtensionException;
  */
 final class SqlTableEmitter extends PythonDefaultEmitter
 {
-    public SqlTableEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
+    public SqlTableEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters,
+            PackedTypesCollector packedTypesCollector)
     {
-        super(outputFileManager, pythonParameters);
+        super(outputFileManager, pythonParameters, packedTypesCollector);
     }
 
     @Override

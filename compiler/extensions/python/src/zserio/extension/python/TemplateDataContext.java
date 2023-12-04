@@ -2,6 +2,7 @@ package zserio.extension.python;
 
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ExpressionFormattingPolicy;
+import zserio.extension.common.PackedTypesCollector;
 
 /**
  * FreeMarker template data context for all emitters.
@@ -10,8 +11,10 @@ import zserio.extension.common.ExpressionFormattingPolicy;
  */
 class TemplateDataContext
 {
-    public TemplateDataContext(PythonExtensionParameters pythonParameters)
+    public TemplateDataContext(PythonExtensionParameters pythonParameters,
+            PackedTypesCollector packedTypesCollector)
     {
+        this.packedTypesCollector = packedTypesCollector;
         pythonNativeMapper = new PythonNativeMapper();
         withWriterCode = pythonParameters.getWithWriterCode();
         withRangeCheckCode = pythonParameters.getWithRangeCheckCode();
@@ -22,6 +25,11 @@ class TemplateDataContext
                         PythonExtensionVersion.PYTHON_EXTENSION_VERSION_STRING + " using Zserio core " +
                         pythonParameters.getZserioVersion() + ".\n" +
                 "# Generator setup: " + pythonParameters.getParametersDescription();
+    }
+
+    public PackedTypesCollector getPackedTypesCollector()
+    {
+        return packedTypesCollector;
     }
 
     public PythonNativeMapper getPythonNativeMapper()
@@ -79,6 +87,8 @@ class TemplateDataContext
     }
 
     protected static final String PYTHON_OWNER_PREFIX = "self._owner.";
+
+    private final PackedTypesCollector packedTypesCollector;
 
     private final PythonNativeMapper pythonNativeMapper;
 

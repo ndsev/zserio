@@ -7,6 +7,7 @@ import java.util.Set;
 import zserio.ast.Package;
 import zserio.ast.PackageName;
 import zserio.extension.common.OutputFileManager;
+import zserio.extension.common.PackedTypesCollector;
 import zserio.extension.common.ZserioExtensionException;
 
 /**
@@ -16,9 +17,10 @@ import zserio.extension.common.ZserioExtensionException;
  */
 final class InitPyEmitter extends PythonDefaultEmitter
 {
-    public InitPyEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
+    public InitPyEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters,
+            PackedTypesCollector packedTypesCollector)
     {
-        super(outputFileManager, pythonParameters);
+        super(outputFileManager, pythonParameters, packedTypesCollector);
     }
 
     @Override

@@ -2,6 +2,7 @@ package zserio.extension.python;
 
 import zserio.ast.BitmaskType;
 import zserio.extension.common.OutputFileManager;
+import zserio.extension.common.PackedTypesCollector;
 import zserio.extension.common.ZserioExtensionException;
 
 /**
@@ -9,9 +10,10 @@ import zserio.extension.common.ZserioExtensionException;
  */
 final class BitmaskEmitter extends PythonDefaultEmitter
 {
-    public BitmaskEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
+    public BitmaskEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters,
+            PackedTypesCollector packedTypesCollector)
     {
-        super(outputFileManager, pythonParameters);
+        super(outputFileManager, pythonParameters, packedTypesCollector);
     }
 
     @Override

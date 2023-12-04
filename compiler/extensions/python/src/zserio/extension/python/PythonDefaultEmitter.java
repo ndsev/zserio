@@ -12,6 +12,7 @@ import zserio.ast.PackageSymbol;
 import zserio.extension.common.DefaultTreeWalker;
 import zserio.extension.common.FreeMarkerUtil;
 import zserio.extension.common.OutputFileManager;
+import zserio.extension.common.PackedTypesCollector;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.python.symbols.PythonNativeSymbol;
 
@@ -20,9 +21,11 @@ import zserio.extension.python.symbols.PythonNativeSymbol;
  */
 abstract class PythonDefaultEmitter extends DefaultTreeWalker
 {
-    public PythonDefaultEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
+    public PythonDefaultEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters,
+            PackedTypesCollector packedTypesCollector)
     {
-        this(outputFileManager, pythonParameters, new TemplateDataContext(pythonParameters));
+        this(outputFileManager, pythonParameters,
+                new TemplateDataContext(pythonParameters, packedTypesCollector));
     }
 
     public PythonDefaultEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters,

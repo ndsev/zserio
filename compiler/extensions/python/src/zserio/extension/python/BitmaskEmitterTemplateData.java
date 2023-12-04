@@ -34,6 +34,8 @@ public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
         if (getWithTypeInfoCode())
             importType(nativeType);
 
+        usedInPackedArray = context.getPackedTypesCollector().isUsedInPackedArray(bitmaskType);
+
         underlyingTypeInfo = new NativeTypeInfoTemplateData(nativeType, bitmaskTypeInstantiation);
 
         bitSize = createBitSize(bitmaskTypeInstantiation);
@@ -49,6 +51,11 @@ public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
         values = new ArrayList<BitmaskValueData>(bitmaskValues.size());
         for (BitmaskValue bitmaskValue : bitmaskValues)
             values.add(new BitmaskValueData(context, bitmaskValue));
+    }
+
+    public boolean getUsedInPackedArray()
+    {
+        return usedInPackedArray;
     }
 
     public NativeTypeInfoTemplateData getUnderlyingTypeInfo()
@@ -165,6 +172,7 @@ public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
         }
     }
 
+    private final boolean usedInPackedArray;
     private final NativeTypeInfoTemplateData underlyingTypeInfo;
     private final String bitSize;
     private final RuntimeFunctionTemplateData runtimeFunction;

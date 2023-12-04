@@ -113,7 +113,7 @@ class ${name}:
 
         return cls(${constructorParamList})
 </#if>
-<#if isPackable>
+<#if isPackable && usedInPackedArray>
 
     @classmethod
     def from_reader_packed(
@@ -335,7 +335,7 @@ ${I}return self.UNDEFINED_CHOICE
 <#else>
         return self.UNDEFINED_CHOICE
 </#if>
-<#if isPackable>
+<#if isPackable && usedInPackedArray>
 
 <#macro choice_init_packing_context_member member indent packed>
     <#local I>${""?left_pad(indent * 4)}</#local>
@@ -398,7 +398,7 @@ ${I}pass
 
         return 0
 </#if>
-<#if isPackable>
+<#if isPackable && usedInPackedArray>
 
     def bitsizeof_packed(self, zserio_context: ${name}.ZserioPackingContext,
                          bitposition: int = 0) -> int:
@@ -464,7 +464,7 @@ ${I}pass
     <#else>
         return bitposition
     </#if>
-    <#if isPackable>
+    <#if isPackable && usedInPackedArray>
 
     def initialize_offsets_packed(self, zserio_context: ${name}.ZserioPackingContext,
                                   bitposition: int) -> int:
@@ -521,7 +521,7 @@ ${I}pass
 <#else>
         del zserio_reader
 </#if>
-<#if isPackable>
+<#if isPackable && usedInPackedArray>
 
     def read_packed(self, zserio_context: ${name}.ZserioPackingContext,
                     zserio_reader: zserio.BitStreamReader) -> None:
@@ -571,7 +571,7 @@ ${I}pass
     <#else>
         del zserio_writer
     </#if>
-    <#if isPackable>
+    <#if isPackable && usedInPackedArray>
 
     def write_packed(self, zserio_context: ${name}.ZserioPackingContext,
                      zserio_writer: zserio.BitStreamWriter) -> None:
@@ -598,7 +598,10 @@ ${I}pass
         </#if>
     </#if>
 </#if>
-    <@define_packing_context isPackable, fieldList/>
+<#if isPackable && usedInPackedArray>
+
+    <@define_packing_context fieldList/>
+</#if>
 <#list fieldList as field>
     <@define_element_factory field, name/>
 </#list>
