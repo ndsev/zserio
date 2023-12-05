@@ -25,7 +25,7 @@ import zserio.extension.cpp.types.NativeIntegralType;
 /**
  * FreeMarker template data for compound fields.
  */
-public class CompoundFieldTemplateData
+public final class CompoundFieldTemplateData
 {
     public CompoundFieldTemplateData(TemplateDataContext context, CompoundType parentType,
             Field field, IncludeCollector includeCollector) throws ZserioExtensionException
@@ -182,7 +182,7 @@ public class CompoundFieldTemplateData
         return docComments;
     }
 
-    public static class Optional
+    public static final class Optional
     {
         public Optional(TemplateDataContext context, Field field, boolean isRecursive,
                 IncludeCollector includeCollector) throws ZserioExtensionException
@@ -229,7 +229,7 @@ public class CompoundFieldTemplateData
         private final boolean isRecursive;
     }
 
-    public static class Compound
+    public static final class Compound
     {
         public Compound(TemplateDataContext context,
                 ParameterizedTypeInstantiation parameterizedTypeInstantiation,
@@ -266,7 +266,7 @@ public class CompoundFieldTemplateData
             return needsChildrenInitialization;
         }
 
-        public static class InstantiatedParameterData
+        public static final class InstantiatedParameterData
         {
             public InstantiatedParameterData(TemplateDataContext context, InstantiatedParameter instantiatedParameter,
                     IncludeCollector includeCollector) throws ZserioExtensionException
@@ -323,7 +323,7 @@ public class CompoundFieldTemplateData
         private final boolean needsChildrenInitialization;
     }
 
-    public static class Constraint
+    public static final class Constraint
     {
         public Constraint(Expression constraintExpression, ExpressionFormatter cppExpressionFormatter,
                 ExpressionFormatter cppConstraintExpressionFormatter) throws ZserioExtensionException
@@ -346,7 +346,7 @@ public class CompoundFieldTemplateData
         private final String readConstraint;
     }
 
-    public static class Offset
+    public static final class Offset
     {
         public Offset(TemplateDataContext context, Expression offsetExpression,
                 IncludeCollector includeCollector) throws ZserioExtensionException
@@ -403,7 +403,7 @@ public class CompoundFieldTemplateData
         private final boolean containsIndex;
     }
 
-    public static class IntegerRange
+    public static final class IntegerRange
     {
         public IntegerRange(boolean checkLowerBound, String lowerBound, String upperBound,
                 NativeIntegralTypeInfoTemplateData typeInfo, String bitFieldLength)
@@ -448,7 +448,7 @@ public class CompoundFieldTemplateData
         private final String bitFieldLength;
     }
 
-    public static class Array
+    public static final class Array
     {
         public Array(TemplateDataContext context, NativeArrayType nativeType,
                 ArrayInstantiation arrayInstantiation, CompoundType parentType,

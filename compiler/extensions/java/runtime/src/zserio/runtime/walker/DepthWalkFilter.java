@@ -5,7 +5,7 @@ import zserio.runtime.typeinfo.FieldInfo;
 /**
  * Walk filter which allows to walk only to the given maximum depth.
  */
-public class DepthWalkFilter implements WalkFilter
+public final class DepthWalkFilter implements WalkFilter
 {
     /**
      * Constructor.

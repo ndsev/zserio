@@ -7,7 +7,7 @@ import java.io.PrintWriter;
 /**
  * File utilities for Zserio extensions.
  */
-public class FileUtil
+public final class FileUtil
 {
     /**
      * Creates output directory using given file.

@@ -6,7 +6,7 @@ import zserio.ast.Parameter;
 /**
  * A special formatting policy to be used in choices and unions which have single member for all fields.
  */
-class PythonChoiceExpressionFormattingPolicy extends PythonExpressionFormattingPolicy
+final class PythonChoiceExpressionFormattingPolicy extends PythonExpressionFormattingPolicy
 {
     public PythonChoiceExpressionFormattingPolicy(TemplateDataContext context,
             ImportCollector importCollector)

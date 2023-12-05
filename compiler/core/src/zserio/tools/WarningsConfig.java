@@ -12,7 +12,7 @@ import org.apache.commons.cli.ParseException;
 /**
  * Class which keeps configuration of warnings subsystem.
  */
-public class WarningsConfig
+public final class WarningsConfig
 {
     /**
      * Default constructor which construct default configuration for warnings subsystem.
@@ -162,7 +162,7 @@ public class WarningsConfig
     /**
      * Definition of a single warning or a warning group.
      */
-    public static class WarningDefinition
+    public static final class WarningDefinition
     {
         /**
          * Constructor.
@@ -204,7 +204,7 @@ public class WarningsConfig
         private final int priority;
     }
 
-    private static class WarningConfig
+    private static final class WarningConfig
     {
         public WarningConfig(boolean enabled, int priority)
         {

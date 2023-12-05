@@ -3,7 +3,7 @@ package zserio.runtime.service;
 import zserio.runtime.io.Writer;
 
 /** ServiceData implementation based on raw data. */
-public class RawServiceData implements ServiceData<Writer>
+public final class RawServiceData implements ServiceData<Writer>
 {
     /**
      * Constructor from raw data.

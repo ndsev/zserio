@@ -191,6 +191,7 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
         <spotbugs home="${spotbugs.home_dir}"
             output="html"
             outputFile="${zserio_doc.spotbugs.out_dir}/spotbugs.html"
+            excludeFilter="${zserio_doc.base_dir}/spotbugs_filter.xml"
             reportLevel="low"
             errorProperty="zserio_doc.is_failed"
             warningsProperty="zserio_doc.is_failed">

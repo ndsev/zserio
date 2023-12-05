@@ -9,7 +9,7 @@ import java.util.Map;
  *
  * Rule ID must be unique using case insensitive comparison.
  */
-class RuleIdUniqueChecker extends ZserioAstWalker
+final class RuleIdUniqueChecker extends ZserioAstWalker
 {
     /**
      * Constructor to check uniqueness within a single package.

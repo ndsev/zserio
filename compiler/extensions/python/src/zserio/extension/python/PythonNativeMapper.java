@@ -44,7 +44,7 @@ import zserio.extension.python.types.PythonNativeType;
  *
  * Provides mapping of types and symbols from Zserio package symbols to Python native types and symbols.
  */
-class PythonNativeMapper
+final class PythonNativeMapper
 {
     public PythonNativeSymbol getPythonSymbol(PackageSymbol packageSymbol) throws ZserioExtensionException
     {

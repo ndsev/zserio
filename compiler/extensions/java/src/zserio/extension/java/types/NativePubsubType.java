@@ -5,7 +5,7 @@ import zserio.ast.PackageName;
 /**
  * Native Java pubsub type mapping.
  */
-public class NativePubsubType extends JavaNativeType
+public final class NativePubsubType extends JavaNativeType
 {
     public NativePubsubType(PackageName packageName, String name)
     {

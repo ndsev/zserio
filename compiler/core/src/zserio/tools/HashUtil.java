@@ -19,7 +19,7 @@ package zserio.tools;
  * }
  * </pre>
  */
-public class HashUtil
+public final class HashUtil
 {
     /**
      * Creates a hash value of the given seed value and the given boolean value.

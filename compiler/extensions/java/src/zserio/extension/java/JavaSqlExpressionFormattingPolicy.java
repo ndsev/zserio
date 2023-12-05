@@ -5,7 +5,7 @@ import zserio.ast.ZserioType;
 /**
  * A special formatting policy to be used in generated SQL tables which need indirect references.
  */
-public class JavaSqlExpressionFormattingPolicy extends JavaExpressionFormattingPolicy
+public final class JavaSqlExpressionFormattingPolicy extends JavaExpressionFormattingPolicy
 {
     public JavaSqlExpressionFormattingPolicy(JavaNativeMapper javaNativeMapper)
     {

@@ -12,7 +12,7 @@ import java.math.BigInteger;
  * - lower and upper bounds if result of integer expression value is unknown
  * - flag which is set if expression contains value which needs BigInteger type
  */
-class ExpressionIntegerValue
+final class ExpressionIntegerValue
 {
     /**
      * Empty constructor.
@@ -497,7 +497,7 @@ class ExpressionIntegerValue
         return BigInteger.valueOf(calcValue.bitLength());
     }
 
-    private static class MinMaxValue
+    private static final class MinMaxValue
     {
         public void add(BigInteger value)
         {

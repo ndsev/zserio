@@ -3,7 +3,7 @@ package zserio.extension.java.types;
 /**
  * Native Java string type mapping.
  */
-public class NativeStringType extends NativeArrayableType
+public final class NativeStringType extends NativeArrayableType
 {
     public NativeStringType()
     {

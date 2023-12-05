@@ -73,7 +73,7 @@ public final class RangeCheckTemplateData
         return sqlRangeData;
     }
 
-    public static class SqlRangeData
+    public static final class SqlRangeData
     {
         public SqlRangeData(NativeTypeInfoTemplateData typeInfo, String lowerBound, String upperBound)
         {
@@ -102,7 +102,7 @@ public final class RangeCheckTemplateData
         private final String upperBound;
     }
 
-    public static class SetterRangeData
+    public static final class SetterRangeData
     {
         public SetterRangeData(CompoundFieldTemplateData field, NativeTypeInfoTemplateData typeInfo,
                 boolean isTypeNullable, BitFieldWithExpression bitFieldWithExpression, String lowerBound,
@@ -161,7 +161,7 @@ public final class RangeCheckTemplateData
         private final String                     upperBound;
     }
 
-    public static class BitFieldWithExpression
+    public static final class BitFieldWithExpression
     {
         public BitFieldWithExpression(DynamicBitFieldInstantiation dynamicBitFieldInstantiation,
                 ExpressionFormatter javaExpressionFormatter) throws ZserioExtensionException

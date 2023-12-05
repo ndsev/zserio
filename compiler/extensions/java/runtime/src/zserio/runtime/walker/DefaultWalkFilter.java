@@ -5,7 +5,7 @@ import zserio.runtime.typeinfo.FieldInfo;
 /**
  * Default walk filter which filters nothing.
  */
-public class DefaultWalkFilter implements WalkFilter
+public final class DefaultWalkFilter implements WalkFilter
 {
     @Override
     public boolean beforeArray(Object array, FieldInfo fieldInfo)

@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * AST node for items defined by enumeration types.
  */
-public class EnumItem extends DocumentableAstNode implements ScopeSymbol
+public final class EnumItem extends DocumentableAstNode implements ScopeSymbol
 {
     /**
      * Constructor.

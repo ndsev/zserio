@@ -14,7 +14,7 @@ import zserio.runtime.typeinfo.TypeInfoUtil;
 /**
  * Walker through zserio objects, based on generated type info (see -withTypeInfoCode).
  */
-public class Walker
+public final class Walker
 {
     /**
      * Constructor from walk observer.

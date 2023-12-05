@@ -14,7 +14,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * FreeMarker template data for bitmasks in the package used by Package emitter.
  */
-public class BitmaskTemplateData extends PackageTemplateDataBase
+public final class BitmaskTemplateData extends PackageTemplateDataBase
 {
     public BitmaskTemplateData(PackageTemplateDataContext context, BitmaskType bitmaskType)
             throws ZserioExtensionException
@@ -40,7 +40,7 @@ public class BitmaskTemplateData extends PackageTemplateDataBase
         return values;
     }
 
-    public static class BitmaskValueTemplateData
+    public static final class BitmaskValueTemplateData
     {
         public BitmaskValueTemplateData(PackageTemplateDataContext context, BitmaskType bitmaskType,
                 BitmaskValue bitmaskValue) throws ZserioExtensionException

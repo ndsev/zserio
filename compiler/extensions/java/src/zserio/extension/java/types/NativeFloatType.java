@@ -5,7 +5,7 @@ import zserio.ast.PackageName;
 /**
  * Native Java float type mapping.
  */
-public class NativeFloatType extends NativeArrayableType
+public final class NativeFloatType extends NativeArrayableType
 {
     public NativeFloatType(boolean nullable, NativeArrayTraits arrayTraits)
     {

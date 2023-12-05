@@ -7,7 +7,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * Emitter for constants.
  */
-class ConstEmitter extends PythonDefaultEmitter
+final class ConstEmitter extends PythonDefaultEmitter
 {
     public ConstEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {

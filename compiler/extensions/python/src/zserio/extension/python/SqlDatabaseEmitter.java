@@ -7,7 +7,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * SQL database emitter.
  */
-class SqlDatabaseEmitter extends PythonDefaultEmitter
+final class SqlDatabaseEmitter extends PythonDefaultEmitter
 {
     public SqlDatabaseEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {

@@ -22,4 +22,16 @@
             <Class name="templates.function_templated_return_type.TestStructure_uint32"/>
         </Or>
     </Match>
+    <Match>
+        <!-- May expose internal representation by returning reference to mutable object. -->
+        <Bug code="EI"/>
+    </Match>
+    <Match>
+        <!-- May expose internal representation by incorporating reference to mutable object. -->
+        <Bug code="EI2"/>
+    </Match>
+    <Match>
+        <!-- Be wary of letting constructors throw exceptions - Should be fixed in generated code. -->
+        <Bug code="CT"/>
+    </Match>
 </FindBugsFilter>

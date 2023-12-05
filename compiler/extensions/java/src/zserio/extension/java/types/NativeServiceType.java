@@ -5,7 +5,7 @@ import zserio.ast.PackageName;
 /**
  * Native Java service type mapping.
  */
-public class NativeServiceType extends JavaNativeType
+public final class NativeServiceType extends JavaNativeType
 {
     public NativeServiceType(PackageName packageName, String name)
     {

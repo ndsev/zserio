@@ -22,7 +22,7 @@ import freemarker.template.TemplateException;
 /**
  * The functions which handles FreeMarker Java Template Engine.
  */
-public class FreeMarkerUtil
+public final class FreeMarkerUtil
 {
     /**
      * Processes FreeMarker template with the provided data model and generates output.

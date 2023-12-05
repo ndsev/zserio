@@ -8,7 +8,7 @@ import zserio.extension.cpp.types.CppNativeType;
 /**
  * FreeMarker template data for SubtypeEmitter.
  */
-public class SubtypeEmitterTemplateData extends UserTypeTemplateData
+public final class SubtypeEmitterTemplateData extends UserTypeTemplateData
 {
     public SubtypeEmitterTemplateData(TemplateDataContext context, Subtype subtype)
             throws ZserioExtensionException

@@ -15,7 +15,7 @@ import zserio.tools.ExtensionParameters;
  * The class holds all command line parameters passed by core to the C++ extension, which are really
  * used by C++ emitters.
  */
-public class CppExtensionParameters
+public final class CppExtensionParameters
 {
     public CppExtensionParameters(ExtensionParameters parameters)
     {

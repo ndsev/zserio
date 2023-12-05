@@ -7,7 +7,7 @@ import java.util.List;
  *
  * Template parameters are just wrapped strings.
  */
-public class TemplateParameter extends AstNodeBase implements ScopeSymbol
+public final class TemplateParameter extends AstNodeBase implements ScopeSymbol
 {
     /**
      * Constructor.

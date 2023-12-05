@@ -13,7 +13,7 @@ import zserio.tools.ZserioToolPrinter;
 /**
  * Implementation of ZserioAstVisitor which handles templates instantiation.
  */
-public class ZserioAstTemplator extends ZserioAstWalker
+public final class ZserioAstTemplator extends ZserioAstWalker
 {
     /**
      * Constructor.
@@ -384,7 +384,7 @@ public class ZserioAstTemplator extends ZserioAstWalker
         }
     }
 
-    private static class ShortNameKey
+    private static final class ShortNameKey
     {
         public ShortNameKey(PackageName packageName, String shortName)
         {
@@ -429,7 +429,7 @@ public class ZserioAstTemplator extends ZserioAstWalker
         private final String shortName;
     }
 
-    private static class InstantiationMapKey
+    private static final class InstantiationMapKey
     {
         public InstantiationMapKey(ShortNameKey shortNameKey, String hashCode)
         {
@@ -479,7 +479,7 @@ public class ZserioAstTemplator extends ZserioAstWalker
         private final String hashCode;
     }
 
-    private static class InstantiationMapValue
+    private static final class InstantiationMapValue
     {
         public InstantiationMapValue(TemplatableType templatableType, List<TemplateArgument> templateArguments)
         {

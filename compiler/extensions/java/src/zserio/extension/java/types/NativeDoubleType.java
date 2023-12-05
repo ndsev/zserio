@@ -5,7 +5,7 @@ import zserio.ast.PackageName;
 /**
  * Native Java double type mapping.
  */
-public class NativeDoubleType extends NativeArrayableType
+public final class NativeDoubleType extends NativeArrayableType
 {
     public NativeDoubleType(boolean nullable)
     {

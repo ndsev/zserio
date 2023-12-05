@@ -6,7 +6,7 @@ import zserio.extension.cpp.TypesContext.NativeTypeDefinition;
 /**
  * Native C++ runtime arrayable type mapping for types which depend on allocators.
  */
-public class NativeRuntimeAllocArrayableType extends NativeRuntimeAllocType implements CppNativeArrayableType
+public final class NativeRuntimeAllocArrayableType extends NativeRuntimeAllocType implements CppNativeArrayableType
 {
     public NativeRuntimeAllocArrayableType(TypesContext.NativeTypeDefinition nativeTypeDefinition,
             TypesContext.AllocatorDefinition allocatorDefinition, NativeIntegralType allocatorTemplateArg,

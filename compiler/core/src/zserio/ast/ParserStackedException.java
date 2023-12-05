@@ -53,7 +53,7 @@ public class ParserStackedException extends ParserException
     /**
      * Helper class to store message with location.
      */
-    public static class Message
+    public static final class Message
     {
         /**
          * Constructor.

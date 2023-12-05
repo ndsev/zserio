@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * AST node for import defined in the package.
  */
-public class Import extends DocumentableAstNode
+public final class Import extends DocumentableAstNode
 {
     /**
      * Constructor.

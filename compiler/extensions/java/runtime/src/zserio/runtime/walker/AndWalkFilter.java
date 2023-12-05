@@ -10,7 +10,7 @@ import zserio.runtime.typeinfo.FieldInfo;
  * The filters are called sequentially and logical and is applied on theirs results.
  * Note that all filters are always called.
  */
-public class AndWalkFilter implements WalkFilter
+public final class AndWalkFilter implements WalkFilter
 {
     /**
      * Constructor.

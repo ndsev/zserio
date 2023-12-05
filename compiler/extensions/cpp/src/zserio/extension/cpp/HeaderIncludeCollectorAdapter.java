@@ -7,7 +7,7 @@ import zserio.extension.cpp.types.CppNativeType;
 /**
  * Adapter which adds all includes as header includes.
  */
-public class HeaderIncludeCollectorAdapter implements IncludeCollector
+public final class HeaderIncludeCollectorAdapter implements IncludeCollector
 {
     public HeaderIncludeCollectorAdapter(IncludeCollector includeCollector)
     {

@@ -70,6 +70,9 @@ spotbugs.home_dir       - Location of the spotbugs tool. If not set, spotbugs is
                 <dirset dir="${test_utils.src_dir}"/>
             </sourcePath>
             <fileset dir="${test_utils.classes_dir}"/>
+            <auxClasspath>
+                <pathelement location="${3rdparty.junit.jar_file}"/>
+            </auxClasspath>
         </spotbugs>
         <fail message="SpotBugs found some issues!" if="test_utils.is_failed"/>
     </target>

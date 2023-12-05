@@ -7,7 +7,7 @@ package zserio.extension.xml;
  *
  * Expected Zserio core version will be used to check if the extension can be safely loaded.
  */
-public class XmlExtensionVersion
+public final class XmlExtensionVersion
 {
     /** XML extension version string. */
     public static final String XML_EXTENSION_VERSION_STRING = "1.0.0";

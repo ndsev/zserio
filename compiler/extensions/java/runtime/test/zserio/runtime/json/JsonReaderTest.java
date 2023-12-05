@@ -97,7 +97,6 @@ public class JsonReaderTest
         final Object zserioObject = jsonReader.read(CreatorObject.typeInfo());
         jsonReader.close();
         assertTrue(zserioObject != null);
-        assertTrue(zserioObject instanceof CreatorObject);
         final CreatorObject creatorObject = (CreatorObject)zserioObject;
 
         assertEquals(13, creatorObject.getValue());
@@ -142,7 +141,6 @@ public class JsonReaderTest
         final JsonReader jsonReader = new JsonReader(reader);
         final Object zserioObject1 = jsonReader.read(CreatorObject.typeInfo());
         assertTrue(zserioObject1 != null);
-        assertTrue(zserioObject1 instanceof CreatorObject);
         final CreatorObject creatorObject1 = (CreatorObject)zserioObject1;
 
         assertEquals(13, creatorObject1.getValue());
@@ -150,7 +148,6 @@ public class JsonReaderTest
 
         final Object zserioObject2 = jsonReader.read(CreatorObject.typeInfo());
         assertTrue(zserioObject2 != null);
-        assertTrue(zserioObject2 instanceof CreatorObject);
         final CreatorObject creatorObject2 = (CreatorObject)zserioObject2;
 
         assertEquals(42, creatorObject2.getValue());
@@ -190,7 +187,6 @@ public class JsonReaderTest
         final JsonReader jsonReader = new JsonReader(reader);
         final Object zserioObject = jsonReader.read(CreatorObject.typeInfo());
         assertTrue(zserioObject != null);
-        assertTrue(zserioObject instanceof CreatorObject);
         final CreatorObject creatorObject = (CreatorObject)zserioObject;
 
         assertEquals(13, creatorObject.getValue());
@@ -583,7 +579,6 @@ public class JsonReaderTest
         {
             final Object zserioObject = jsonReader.read(CreatorObject.typeInfo());
             assertTrue(zserioObject != null);
-            assertTrue(zserioObject instanceof CreatorObject);
             final CreatorObject creatorObject = (CreatorObject)zserioObject;
 
             assertEquals(expectedValue, creatorObject.getNested().getCreatorEnum());
@@ -621,7 +616,6 @@ public class JsonReaderTest
         {
             final Object zserioObject = jsonReader.read(CreatorObject.typeInfo());
             assertTrue(zserioObject != null);
-            assertTrue(zserioObject instanceof CreatorObject);
             final CreatorObject creatorObject = (CreatorObject)zserioObject;
 
             assertEquals(expectedValue, creatorObject.getNested().getCreatorBitmask());

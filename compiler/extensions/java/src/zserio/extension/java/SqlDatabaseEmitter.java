@@ -7,7 +7,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * SQL database emitter.
  */
-class SqlDatabaseEmitter extends JavaDefaultEmitter
+final class SqlDatabaseEmitter extends JavaDefaultEmitter
 {
     public SqlDatabaseEmitter(OutputFileManager outputFileManager, JavaExtensionParameters javaParameters)
     {

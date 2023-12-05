@@ -3,7 +3,7 @@ package zserio.ast;
 /**
  * Documentation node which wraps documentation line element which can be either DocText or DocTagSee.
  */
-public class DocLineElement extends AstNodeBase
+public final class DocLineElement extends AstNodeBase
 {
     /**
      * Constructor from text element.

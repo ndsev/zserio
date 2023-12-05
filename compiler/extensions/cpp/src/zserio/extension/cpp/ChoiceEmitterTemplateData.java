@@ -15,7 +15,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * FreeMarker template data for ChoiceEmitter.
  */
-public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
+public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
 {
     public ChoiceEmitterTemplateData(TemplateDataContext context, ChoiceType choiceType)
             throws ZserioExtensionException
@@ -85,7 +85,7 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
         return isDefaultUnreachable;
     }
 
-    public static class CaseMember
+    public static final class CaseMember
     {
         public CaseMember(TemplateDataContext context, ChoiceType choiceType,
                 ChoiceCase choiceCaseType, IncludeCollector includeCollector) throws ZserioExtensionException
@@ -116,7 +116,7 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
         private final CompoundFieldTemplateData compoundField;
     }
 
-    public static class DefaultMember
+    public static final class DefaultMember
     {
         public DefaultMember(TemplateDataContext context,
                 ChoiceType choiceType, ChoiceDefault choiceDefaultType,

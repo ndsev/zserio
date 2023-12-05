@@ -796,7 +796,7 @@ public interface TypeInfo
     /**
      * Type information abstract base class for fixed size builtin types.
      */
-    public static class FixedSizeBuiltinTypeInfo extends BuiltinTypeInfo
+    public static final class FixedSizeBuiltinTypeInfo extends BuiltinTypeInfo
     {
         /**
          * Constructor.
@@ -1148,7 +1148,7 @@ public interface TypeInfo
     /**
      * Type information class for structure types.
      */
-    public static class StructTypeInfo extends CompoundTypeInfoBase
+    public static final class StructTypeInfo extends CompoundTypeInfoBase
     {
         /**
          * Constructor.
@@ -1173,7 +1173,7 @@ public interface TypeInfo
     /**
      * Type information class for union types.
      */
-    public static class UnionTypeInfo extends CompoundTypeInfoBase
+    public static final class UnionTypeInfo extends CompoundTypeInfoBase
     {
         /**
          * Constructor.
@@ -1198,7 +1198,7 @@ public interface TypeInfo
     /**
      * Type information class for choice types.
      */
-    public static class ChoiceTypeInfo extends CompoundTypeInfoBase
+    public static final class ChoiceTypeInfo extends CompoundTypeInfoBase
     {
         /**
          * Constructor.
@@ -1285,7 +1285,7 @@ public interface TypeInfo
     /**
      * Type information class for enumeration types.
      */
-    public static class EnumTypeInfo extends TypeInfoWithUnderlyingTypeBase
+    public static final class EnumTypeInfo extends TypeInfoWithUnderlyingTypeBase
     {
         /**
          * Constructor.
@@ -1317,7 +1317,7 @@ public interface TypeInfo
     /**
      * Type information class for bitmask types.
      */
-    public static class BitmaskTypeInfo extends TypeInfoWithUnderlyingTypeBase
+    public static final class BitmaskTypeInfo extends TypeInfoWithUnderlyingTypeBase
     {
         /**
          * Constructor.
@@ -1349,7 +1349,7 @@ public interface TypeInfo
     /**
      * Type information class for SQL table types.
      */
-    public static class SqlTableTypeInfo extends TemplatableTypeInfoBase
+    public static final class SqlTableTypeInfo extends TemplatableTypeInfoBase
     {
         /**
          * Constructor.
@@ -1410,7 +1410,7 @@ public interface TypeInfo
     /**
      * Type information class for SQL database types.
      */
-    public static class SqlDatabaseTypeInfo extends TypeInfoBase
+    public static final class SqlDatabaseTypeInfo extends TypeInfoBase
     {
         /**
          * Constructor.
@@ -1438,7 +1438,7 @@ public interface TypeInfo
     /**
      * Type information class for pubsub types.
      */
-    public static class PubsubTypeInfo extends TypeInfoBase
+    public static final class PubsubTypeInfo extends TypeInfoBase
     {
         /**
          * Constructor.
@@ -1466,7 +1466,7 @@ public interface TypeInfo
     /**
      * Type information class for service types.
      */
-    public static class ServiceTypeInfo extends TypeInfoBase
+    public static final class ServiceTypeInfo extends TypeInfoBase
     {
         /**
          * Constructor.
@@ -1495,7 +1495,7 @@ public interface TypeInfo
      * Type info for recursive types used as a wrapper around generated static typeInfo method to prevent
      * infinite recursion in type info definition.
      */
-    public static class RecursiveTypeInfo implements TypeInfo
+    public static final class RecursiveTypeInfo implements TypeInfo
     {
         /**
          * Type info getter.

@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * AST node for Pub/Sub messages.
  */
-public class PubsubMessage extends DocumentableAstNode implements ScopeSymbol
+public final class PubsubMessage extends DocumentableAstNode implements ScopeSymbol
 {
     /**
      * Constructor.

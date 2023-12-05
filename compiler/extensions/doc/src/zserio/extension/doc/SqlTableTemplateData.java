@@ -8,7 +8,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * FreeMarker template data for SQL tables in the package used by Package emitter.
  */
-public class SqlTableTemplateData extends CompoundTypeTemplateData
+public final class SqlTableTemplateData extends CompoundTypeTemplateData
 {
     public SqlTableTemplateData(PackageTemplateDataContext context, SqlTableType sqlTableType)
             throws ZserioExtensionException

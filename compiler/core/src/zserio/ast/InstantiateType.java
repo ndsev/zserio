@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * AST node for explicit template instantiation.
  */
-public class InstantiateType extends DocumentableAstNode implements ZserioType
+public final class InstantiateType extends DocumentableAstNode implements ZserioType
 {
     /**
      * Constructor.

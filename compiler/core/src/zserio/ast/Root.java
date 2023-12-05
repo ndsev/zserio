@@ -12,7 +12,7 @@ import zserio.extension.common.ZserioExtensionException;
  *
  * This class represents an AST node which has all translation units compiled by Zserio.
  */
-public class Root extends AstNodeBase
+public final class Root extends AstNodeBase
 {
     /**
      * Constructor.

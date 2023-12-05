@@ -5,7 +5,7 @@ import java.util.function.Function;
 /**
  * Type information for compound type function.
  */
-public class FunctionInfo
+public final class FunctionInfo
 {
     /**
      * Constructor.

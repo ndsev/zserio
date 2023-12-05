@@ -3,7 +3,7 @@ package zserio.runtime;
 /**
  * The class provides help methods for manipulation with bit stream position.
  */
-public class BitPositionUtil
+public final class BitPositionUtil
 {
     /**
      * Aligns the bit size to the given alignment value.

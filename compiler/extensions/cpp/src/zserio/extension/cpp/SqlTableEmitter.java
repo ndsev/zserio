@@ -7,7 +7,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * SQL table emitter.
  */
-public class SqlTableEmitter extends CppDefaultEmitter
+public final class SqlTableEmitter extends CppDefaultEmitter
 {
     public SqlTableEmitter(OutputFileManager outputFileManager, CppExtensionParameters cppParameters)
     {

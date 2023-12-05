@@ -13,7 +13,7 @@ import zserio.ast.PackageName;
  * uint64, the class claims the upper bound to be 2^64-1 as is true
  * for uint64_t.
  */
-public class NativeBigIntegerType extends NativeIntegralType
+public final class NativeBigIntegerType extends NativeIntegralType
 {
     public NativeBigIntegerType(NativeArrayTraits arrayTraits)
     {

@@ -30,7 +30,7 @@ import zserio.tools.ZserioToolPrinter;
  *
  * The manager also detects unused documentation comments.
  */
-class DocCommentManager
+final class DocCommentManager
 {
     /**
      * Constructor.

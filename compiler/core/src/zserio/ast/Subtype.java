@@ -7,7 +7,7 @@ import java.util.List;
  *
  * Subtypes are Zserio types as well.
  */
-public class Subtype extends DocumentableAstNode implements ZserioType
+public final class Subtype extends DocumentableAstNode implements ZserioType
 {
     /**
      * @param location            AST node location.

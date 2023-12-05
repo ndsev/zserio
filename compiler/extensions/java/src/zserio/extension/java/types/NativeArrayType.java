@@ -3,7 +3,7 @@ package zserio.extension.java.types;
 /**
  * Native Java array type mapping.
  */
-public class NativeArrayType extends JavaNativeType
+public final class NativeArrayType extends JavaNativeType
 {
     public NativeArrayType(NativeArrayableType elementType)
     {

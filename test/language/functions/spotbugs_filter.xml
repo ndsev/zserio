@@ -1,30 +1,14 @@
 <FindBugsFilter>
     <Match>
-        <!-- May expose internal representation by returning reference to mutable object - this is ok -->
+        <!-- May expose internal representation by returning reference to mutable object. -->
         <Bug code="EI"/>
-        <Or>
-            <And>
-                <Class name="~.*\.structure_bytes\.TestStructure"/>
-                <Method name="getField"/>
-            </And>
-            <And>
-                <Class name="~.*\.structure_bytes\.Child"/>
-                <Method name="getField"/>
-            </And>
-        </Or>
     </Match>
     <Match>
-        <!-- May expose internal representation by storing reference to mutable object - this is ok -->
+        <!-- May expose internal representation by incorporating reference to mutable object. -->
         <Bug code="EI2"/>
-        <Or>
-            <And>
-                <Class name="~.*\.structure_bytes\.TestStructure"/>
-                <Method name="setField"/>
-            </And>
-            <And>
-                <Class name="~.*\.structure_bytes\.Child"/>
-                <Method name="setField"/>
-            </And>
-        </Or>
+    </Match>
+    <Match>
+        <!-- Be wary of letting constructors throw exceptions - Should be fixed in generated code. -->
+        <Bug code="CT"/>
     </Match>
 </FindBugsFilter>

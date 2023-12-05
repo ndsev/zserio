@@ -12,7 +12,7 @@ import zserio.tools.ExtensionParameters;
  * The class holds all command line parameters passed by core to the documentation extension, which are really
  * used by documentation emitters.
  */
-class DocExtensionParameters
+final class DocExtensionParameters
 {
     public DocExtensionParameters(ExtensionParameters parameters) throws ZserioExtensionException
     {

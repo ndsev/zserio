@@ -7,7 +7,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * Pubsub emitter.
  */
-class PubsubEmitter extends PythonDefaultEmitter
+final class PubsubEmitter extends PythonDefaultEmitter
 {
     public PubsubEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {

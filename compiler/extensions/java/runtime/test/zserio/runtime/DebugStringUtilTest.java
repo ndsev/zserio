@@ -139,7 +139,6 @@ public class DebugStringUtilTest
         final Reader reader = new StringReader("{\"text\": \"something\"}");
         final Object zserioObject = DebugStringUtil.fromJsonStream(DummyObject.typeInfo(), reader);
         assertTrue(zserioObject != null);
-        assertTrue(zserioObject instanceof DummyObject);
         assertEquals("something", ((DummyObject)zserioObject).getText());
     }
 
@@ -150,7 +149,6 @@ public class DebugStringUtilTest
         final Object zserioObject = DebugStringUtil.fromJsonStream(ParameterizedDummyObject.typeInfo(),
                 reader, 10);
         assertTrue(zserioObject != null);
-        assertTrue(zserioObject instanceof ParameterizedDummyObject);
         assertEquals(10, ((ParameterizedDummyObject)zserioObject).getParam());
         assertEquals("something", ((ParameterizedDummyObject)zserioObject).getText());
     }
@@ -161,7 +159,6 @@ public class DebugStringUtilTest
         final Reader reader = new StringReader("{\"text\": \"something\"}");
         final Object zserioObject = DebugStringUtil.fromJsonStream(DummyObject.class, reader);
         assertTrue(zserioObject != null);
-        assertTrue(zserioObject instanceof DummyObject);
         assertEquals("something", ((DummyObject)zserioObject).getText());
     }
 
@@ -171,7 +168,6 @@ public class DebugStringUtilTest
         final Reader reader = new StringReader("{\"text\": \"something\"}");
         final Object zserioObject = DebugStringUtil.fromJsonStream(ParameterizedDummyObject.class, reader, 10);
         assertTrue(zserioObject != null);
-        assertTrue(zserioObject instanceof ParameterizedDummyObject);
         assertEquals(10, ((ParameterizedDummyObject)zserioObject).getParam());
         assertEquals("something", ((ParameterizedDummyObject)zserioObject).getText());
     }
@@ -182,7 +178,6 @@ public class DebugStringUtilTest
         final String jsonString = "{\"text\": \"something\"}";
         final Object zserioObject = DebugStringUtil.fromJsonString(DummyObject.typeInfo(), jsonString);
         assertTrue(zserioObject != null);
-        assertTrue(zserioObject instanceof DummyObject);
         assertEquals("something", ((DummyObject)zserioObject).getText());
     }
 
@@ -193,7 +188,6 @@ public class DebugStringUtilTest
         final Object zserioObject = DebugStringUtil.fromJsonString(ParameterizedDummyObject.typeInfo(),
                 jsonString, 10);
         assertTrue(zserioObject != null);
-        assertTrue(zserioObject instanceof ParameterizedDummyObject);
         assertEquals(10, ((ParameterizedDummyObject)zserioObject).getParam());
         assertEquals("something", ((ParameterizedDummyObject)zserioObject).getText());
     }
@@ -204,7 +198,6 @@ public class DebugStringUtilTest
         final String jsonString = "{\"text\": \"something\"}";
         final Object zserioObject = DebugStringUtil.fromJsonString(DummyObject.class, jsonString);
         assertTrue(zserioObject != null);
-        assertTrue(zserioObject instanceof DummyObject);
         assertEquals("something", ((DummyObject)zserioObject).getText());
     }
 
@@ -215,7 +208,6 @@ public class DebugStringUtilTest
         final Object zserioObject = DebugStringUtil.fromJsonString(ParameterizedDummyObject.class,
                 jsonString, 10);
         assertTrue(zserioObject != null);
-        assertTrue(zserioObject instanceof ParameterizedDummyObject);
         assertEquals(10, ((ParameterizedDummyObject)zserioObject).getParam());
         assertEquals("something", ((ParameterizedDummyObject)zserioObject).getText());
     }
@@ -229,7 +221,6 @@ public class DebugStringUtilTest
 
         final Object zserioObject = DebugStringUtil.fromJsonFile(DummyObject.typeInfo(), TEST_FILE_NAME);
         assertTrue(zserioObject != null);
-        assertTrue(zserioObject instanceof DummyObject);
         assertEquals("something", ((DummyObject)zserioObject).getText());
     }
 
@@ -243,7 +234,6 @@ public class DebugStringUtilTest
         final Object zserioObject = DebugStringUtil.fromJsonFile(ParameterizedDummyObject.typeInfo(),
                 TEST_FILE_NAME, 10);
         assertTrue(zserioObject != null);
-        assertTrue(zserioObject instanceof ParameterizedDummyObject);
         assertEquals(10, ((ParameterizedDummyObject)zserioObject).getParam());
         assertEquals("something", ((ParameterizedDummyObject)zserioObject).getText());
     }
@@ -257,7 +247,6 @@ public class DebugStringUtilTest
 
         final Object zserioObject = DebugStringUtil.fromJsonFile(DummyObject.class, TEST_FILE_NAME);
         assertTrue(zserioObject != null);
-        assertTrue(zserioObject instanceof DummyObject);
         assertEquals("something", ((DummyObject)zserioObject).getText());
     }
 
@@ -271,7 +260,6 @@ public class DebugStringUtilTest
         final Object zserioObject = DebugStringUtil.fromJsonFile(ParameterizedDummyObject.class,
                 TEST_FILE_NAME, 10);
         assertTrue(zserioObject != null);
-        assertTrue(zserioObject instanceof ParameterizedDummyObject);
         assertEquals(10, ((ParameterizedDummyObject)zserioObject).getParam());
         assertEquals("something", ((ParameterizedDummyObject)zserioObject).getText());
     }

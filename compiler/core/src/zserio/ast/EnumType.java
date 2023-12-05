@@ -11,7 +11,7 @@ import java.util.Map;
  *
  * Enumeration types are Zserio types as well.
  */
-public class EnumType extends DocumentableAstNode implements ZserioScopedType
+public final class EnumType extends DocumentableAstNode implements ZserioScopedType
 {
     /**
      * Constructor.

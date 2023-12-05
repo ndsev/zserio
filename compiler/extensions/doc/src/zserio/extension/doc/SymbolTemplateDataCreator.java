@@ -26,7 +26,7 @@ import zserio.extension.common.ZserioExtensionException;
  *
  * This creator creates FreeMarker template data for symbol from AST node. It covers all necessary alternatives.
  */
-class SymbolTemplateDataCreator
+final class SymbolTemplateDataCreator
 {
     public static SymbolTemplateData createData(TemplateDataContext context, AstNode node)
     {

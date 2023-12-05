@@ -5,7 +5,7 @@ package zserio.ast;
  *
  * String types (Zserio keyword 'string') are Zserio types as well.
  */
-public class StringType extends BuiltInType
+public final class StringType extends BuiltInType
 {
     /**
      * Constructor from AST node location and the name.

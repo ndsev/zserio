@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * AST node for values defined by bitmask types.
  */
-public class BitmaskValue extends DocumentableAstNode implements ScopeSymbol
+public final class BitmaskValue extends DocumentableAstNode implements ScopeSymbol
 {
     /**
      * Constructor.

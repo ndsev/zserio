@@ -15,7 +15,7 @@ import zserio.ast.ParserStackedException;
 /**
  * ANTLR4 error listener implementation which terminates parsing in case of an parsing error.
  */
-public class ParseErrorListener extends BaseErrorListener
+public final class ParseErrorListener extends BaseErrorListener
 {
     @Override
     public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol,

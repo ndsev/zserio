@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 /**
  * AST node for SQL constraints.
  */
-public class SqlConstraint extends AstNodeBase
+public final class SqlConstraint extends AstNodeBase
 {
     /**
      * Constructor.

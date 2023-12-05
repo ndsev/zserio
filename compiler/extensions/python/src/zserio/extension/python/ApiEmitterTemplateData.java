@@ -12,7 +12,7 @@ import zserio.tools.HashUtil;
 /**
  * FreeMarker template data for ApiEmitter.
  */
-public class ApiEmitterTemplateData extends PythonTemplateData
+public final class ApiEmitterTemplateData extends PythonTemplateData
 {
     public ApiEmitterTemplateData(TemplateDataContext context)
     {
@@ -29,7 +29,7 @@ public class ApiEmitterTemplateData extends PythonTemplateData
         return packageSymbols;
     }
 
-    public static class ApiImport implements Comparable<ApiImport>
+    public static final class ApiImport implements Comparable<ApiImport>
     {
         public ApiImport(String modulePath, String symbolName)
         {

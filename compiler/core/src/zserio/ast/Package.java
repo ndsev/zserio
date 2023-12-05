@@ -19,7 +19,7 @@ import zserio.tools.ZserioToolPrinter;
  *
  * Package is represented by one translation unit (one source file).
  */
-public class Package extends DocumentableAstNode
+public final class Package extends DocumentableAstNode
 {
     /**
      * Constructor.
@@ -372,7 +372,7 @@ public class Package extends DocumentableAstNode
         return localSymbols.get(symbolName);
     }
 
-    private static class InstantiateTypeMapKey
+    private static final class InstantiateTypeMapKey
     {
         public InstantiateTypeMapKey(TemplatableType template, List<TemplateArgument> templateArguments)
         {

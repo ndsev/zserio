@@ -5,7 +5,7 @@ import zserio.extension.java.types.NativeArrayableType;
 /**
  * FreeMarker template data which keeps information about types which can be used in arrays.
  */
-public class ArrayableInfoTemplateData
+public final class ArrayableInfoTemplateData
 {
     public ArrayableInfoTemplateData(NativeArrayableType arrayableType)
     {

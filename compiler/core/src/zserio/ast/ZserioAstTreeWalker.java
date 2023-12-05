@@ -6,7 +6,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * Implementation of ZserioAstVisitor which calls appropriate TreeWalker interface for extensions.
  */
-public class ZserioAstTreeWalker extends ZserioAstWalker
+public final class ZserioAstTreeWalker extends ZserioAstWalker
 {
     /**
      * Constructor.
@@ -265,7 +265,7 @@ public class ZserioAstTreeWalker extends ZserioAstWalker
         }
     }
 
-    static class UncheckedZserioExtensionException extends RuntimeException
+    static final class UncheckedZserioExtensionException extends RuntimeException
     {
         public UncheckedZserioExtensionException(ZserioExtensionException originalException)
         {

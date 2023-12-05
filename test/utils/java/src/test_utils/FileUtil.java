@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * The class provides help methods for manipulation with files.
  */
-public class FileUtil
+public final class FileUtil
 {
     /**
      * Reads all lines from the given text file.

@@ -12,7 +12,7 @@ import zserio.runtime.VarSizeUtil;
 /**
  * A bit stream writer using byte array.
  */
-public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements BitStreamWriter
+public final class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements BitStreamWriter
 {
     /**
      * Constructs a new byte array bit stream writer with default capacity and the default endian byte order.
@@ -790,7 +790,7 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
     /**
      * The underlying byte array.
      */
-    protected byte[] buffer;
+    private byte[] buffer;
 
     /**
      * The default initial buffer capacity.

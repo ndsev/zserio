@@ -16,7 +16,7 @@ import zserio.tools.ExtensionParameters;
 /**
  * The extension which generates C++ API sources.
  */
-public class CppExtension implements Extension
+public final class CppExtension implements Extension
 {
     @Override
     public String getName()

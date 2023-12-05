@@ -13,11 +13,22 @@
             <Method name="validate"/>
         </Or>
     </Match>
-
     <Match>
         <!-- Condition has no effect due to the variable type. -->
         <Bug code="UC"/>
         <Class name="sql_types.SqlTypesTable"/>
         <Method name="validateFieldVarintType"/>
+    </Match>
+    <Match>
+        <!-- May expose internal representation by returning reference to mutable object. -->
+        <Bug code="EI"/>
+    </Match>
+    <Match>
+        <!-- May expose internal representation by incorporating reference to mutable object. -->
+        <Bug code="EI2"/>
+    </Match>
+    <Match>
+        <!-- Be wary of letting constructors throw exceptions - Should be fixed in generated code. -->
+        <Bug code="CT"/>
     </Match>
 </FindBugsFilter>

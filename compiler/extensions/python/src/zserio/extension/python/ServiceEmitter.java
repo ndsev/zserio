@@ -7,7 +7,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * Service emitter.
  */
-class ServiceEmitter extends PythonDefaultEmitter
+final class ServiceEmitter extends PythonDefaultEmitter
 {
     public ServiceEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {

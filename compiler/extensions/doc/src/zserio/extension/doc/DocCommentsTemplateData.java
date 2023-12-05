@@ -21,7 +21,7 @@ import zserio.tools.ZserioToolPrinter;
 /**
  * FreeMarker template data for documentation comments in the package used by Package emitter.
  */
-public class DocCommentsTemplateData
+public final class DocCommentsTemplateData
 {
     public DocCommentsTemplateData(ContentTemplateDataContext context, List<DocComment> docComments)
     {
@@ -63,7 +63,7 @@ public class DocCommentsTemplateData
         return isDeprecated;
     }
 
-    public static class DocCommentTemplateData
+    public static final class DocCommentTemplateData
     {
         public DocCommentTemplateData(ContentTemplateDataContext context, DocCommentClassic docCommentClassic)
         {
@@ -121,7 +121,7 @@ public class DocCommentsTemplateData
             return isOneLiner;
         }
 
-        public static class DocParagraphData
+        public static final class DocParagraphData
         {
             public DocParagraphData(ContentTemplateDataContext context, DocParagraph docParagraph)
             {
@@ -134,7 +134,7 @@ public class DocCommentsTemplateData
                 return docElements;
             }
 
-            public static class DocElementData
+            public static final class DocElementData
             {
                 public DocElementData(ContentTemplateDataContext context, DocElement docElement)
                 {
@@ -182,7 +182,7 @@ public class DocCommentsTemplateData
             private final List<DocElementData> docElements = new ArrayList<DocElementData>();
         }
 
-        public static class DocMultilineData
+        public static final class DocMultilineData
         {
             public DocMultilineData(ContentTemplateDataContext context, DocMultiline docMultiline)
             {
@@ -200,7 +200,7 @@ public class DocCommentsTemplateData
                 return docLineElements;
             }
 
-            public static class DocLineElementData
+            public static final class DocLineElementData
             {
                 public DocLineElementData(ContentTemplateDataContext context, DocLineElement docLineElement)
                 {
@@ -229,7 +229,7 @@ public class DocCommentsTemplateData
             private final List<DocLineElementData> docLineElements = new ArrayList<DocLineElementData>();
         }
 
-        public static class DocTagSeeData
+        public static final class DocTagSeeData
         {
             public DocTagSeeData(ContentTemplateDataContext context, DocTagSee docTagSee)
             {
@@ -244,7 +244,7 @@ public class DocCommentsTemplateData
             private final SymbolTemplateData seeSymbol;
         }
 
-        public static class DocTagParamData
+        public static final class DocTagParamData
         {
             public DocTagParamData(ContentTemplateDataContext context, DocTagParam docTagParam)
             {

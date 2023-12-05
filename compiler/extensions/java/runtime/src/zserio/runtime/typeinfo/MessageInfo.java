@@ -3,7 +3,7 @@ package zserio.runtime.typeinfo;
 /**
  * Type information for pubsub message.
  */
-public class MessageInfo
+public final class MessageInfo
 {
     /**
      * Constructor.

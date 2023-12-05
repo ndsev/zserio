@@ -11,7 +11,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * The class compares expressions using resolved fields.
  */
-class ExpressionComparator
+final class ExpressionComparator
 {
     /**
      * Compares two expressions using resolved fields.
@@ -70,7 +70,7 @@ class ExpressionComparator
         return currentExpr;
     }
 
-    private static class ComparisonExpressionFormattingPolicy extends DefaultExpressionFormattingPolicy
+    private static final class ComparisonExpressionFormattingPolicy extends DefaultExpressionFormattingPolicy
     {
         public ComparisonExpressionFormattingPolicy(List<AstNode> dotPrefix)
         {

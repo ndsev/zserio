@@ -5,7 +5,7 @@ import zserio.extension.java.types.NativeArrayTraits;
 /**
  * FreeMarker template data for array traits.
  */
-public class ArrayTraitsTemplateData
+public final class ArrayTraitsTemplateData
 {
     public ArrayTraitsTemplateData(NativeArrayTraits nativeTraits)
     {

@@ -8,7 +8,7 @@ import zserio.extension.python.symbols.PythonNativeSymbol;
 /**
  * FreeMarker template data for ConstEmitter.
  */
-public class ConstEmitterTemplateData extends PythonTemplateData
+public final class ConstEmitterTemplateData extends PythonTemplateData
 {
     public ConstEmitterTemplateData(TemplateDataContext context, Constant constant)
             throws ZserioExtensionException

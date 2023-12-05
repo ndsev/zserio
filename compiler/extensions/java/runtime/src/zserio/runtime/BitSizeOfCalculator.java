@@ -8,7 +8,7 @@ import zserio.runtime.io.BitBuffer;
 /**
  * The class provides common methods to calculate bit size of an variable stored in the bit stream.
  */
-public class BitSizeOfCalculator
+public final class BitSizeOfCalculator
 {
     /**
      * Gets the bit size of varint16 value which is stored in bit stream.

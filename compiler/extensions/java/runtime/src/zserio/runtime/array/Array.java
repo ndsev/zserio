@@ -17,7 +17,7 @@ import zserio.runtime.io.BitStreamWriter;
  * - offset initializer to set offsets for indexed offsets arrays
  * - offset checker to check offsets for indexed offsets arrays
  */
-public class Array
+public final class Array
 {
     /**
      * Constructor.

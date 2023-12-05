@@ -5,7 +5,7 @@ import zserio.tools.StringJoinUtil;
 /**
  * This class implements various utilities on ZserioType.
  */
-public class ZserioTypeUtil
+public final class ZserioTypeUtil
 {
     /**
      * Returns the full zserio name with the package name as defined by Zserio source file.

@@ -60,7 +60,7 @@ public class CompoundTypeTemplateData extends PackageTemplateDataBase
         return functions;
     }
 
-    public static class TemplateParameterTemplateData
+    public static final class TemplateParameterTemplateData
     {
         public TemplateParameterTemplateData(PackageTemplateDataContext context, TemplateParameter templateParameter)
         {
@@ -75,7 +75,7 @@ public class CompoundTypeTemplateData extends PackageTemplateDataBase
         private final String name;
     }
 
-    public static class ParameterTemplateData
+    public static final class ParameterTemplateData
     {
         public ParameterTemplateData(PackageTemplateDataContext context, Parameter parameter)
         {
@@ -97,7 +97,7 @@ public class CompoundTypeTemplateData extends PackageTemplateDataBase
         private final String name;
     }
 
-    public static class FieldTemplateData
+    public static final class FieldTemplateData
     {
         public FieldTemplateData(PackageTemplateDataContext context, CompoundType compoundType, Field field)
                 throws ZserioExtensionException
@@ -269,7 +269,7 @@ public class CompoundTypeTemplateData extends PackageTemplateDataBase
         private final String sqlConstraintExpression;
     }
 
-    public static class FunctionTemplateData
+    public static final class FunctionTemplateData
     {
         public FunctionTemplateData(PackageTemplateDataContext context, CompoundType compoundType, Function function)
                 throws ZserioExtensionException

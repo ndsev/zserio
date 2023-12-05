@@ -7,7 +7,7 @@ import java.math.BigInteger;
  *
  * Fixed bit field types (int:8, bit:8, ...) are Zserio built-in bit field types with fixed length.
  */
-public class FixedBitFieldType extends IntegerType implements FixedSizeType
+public final class FixedBitFieldType extends IntegerType implements FixedSizeType
 {
     /**
      * Constructor from AST node location, the name and the bit size.

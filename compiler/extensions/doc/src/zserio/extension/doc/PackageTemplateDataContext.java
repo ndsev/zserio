@@ -6,7 +6,7 @@ package zserio.extension.doc;
  * Freemarker template data context holds all parameters used by Freemarker template data. This specialization
  * is designed for all Freemarker template data used by Package emitter.
  */
-class PackageTemplateDataContext extends ContentTemplateDataContext
+final class PackageTemplateDataContext extends ContentTemplateDataContext
 {
     public PackageTemplateDataContext(DocExtensionParameters docParameters, String htmlRootDirectory,
             UsedByCollector usedByCollector, UsedByChoiceCollector usedByChoiceCollector,

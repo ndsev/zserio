@@ -7,7 +7,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * Enumeration emitter.
  */
-public class EnumerationEmitter extends CppDefaultEmitter
+public final class EnumerationEmitter extends CppDefaultEmitter
 {
     public EnumerationEmitter(OutputFileManager outputFileManager, CppExtensionParameters cppParameters)
     {

@@ -11,46 +11,10 @@
     <Match>
         <!-- May expose internal representation by returning reference to mutable object - this is ok -->
         <Bug code="EI"/>
-        <Or>
-            <And>
-                <Class name="~zserio.runtime.array.RawArray\$.*RawArray"/>
-                <Method name="getRawArray"/>
-            </And>
-            <And>
-                <Class name="~zserio.runtime.service.ServiceData"/>
-                <Method name="getByteArray"/>
-            </And>
-            <And>
-                <Class name="~zserio.runtime.service.ObjectServiceData"/>
-                <Method name="getByteArray"/>
-            </And>
-            <And>
-                <Class name="~zserio.runtime.service.RawServiceData"/>
-                <Method name="getByteArray"/>
-            </And>
-            <And>
-                <Class name="test_object.CreatorNested"/>
-                <Method name="getBytesData"/>
-            </And>
-        </Or>
     </Match>
     <Match>
         <!-- May expose internal representation by incorporating reference to mutable object - this is ok -->
         <Bug code="EI2"/>
-        <Or>
-            <And>
-                <Class name="~zserio.runtime.array.RawArray\$.*RawArray"/>
-                <Field name="~.*rawArray"/>
-            </And>
-            <And>
-                <Class name="~zserio.runtime.service.RawServiceData"/>
-                <Field name="~.*rawData"/>
-            </And>
-            <And>
-                <Class name="test_object.CreatorNested"/>
-                <Method name="setBytesData"/>
-            </And>
-        </Or>
     </Match>
     <Match>
         <!-- Unchecked/unconfirmed cast - this is ok, our responsibility -->
@@ -114,5 +78,9 @@
                 <Field name="$SWITCH_TABLE$zserio$runtime$typeinfo$JavaType"/>
             </And>
         </Or>
+    </Match>
+    <Match>
+        <!-- Be wary of letting constructors throw exceptions - Should be fixed in generated code. -->
+        <Bug code="CT"/>
     </Match>
 </FindBugsFilter>

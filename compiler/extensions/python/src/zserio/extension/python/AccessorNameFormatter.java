@@ -10,7 +10,7 @@ import zserio.ast.ServiceMethod;
  *
  * Provides names of accessors (e.g. property names) as they will be generated in Python.
  */
-class AccessorNameFormatter
+final class AccessorNameFormatter
 {
     public static String getIsUsedIndicatorName(Field field)
     {

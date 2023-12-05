@@ -32,7 +32,7 @@ import zserio.tools.ZserioToolPrinter;
  * Checks that Python modules generated for each package symbol do not clash on the file system.
  * Note that module names are created from package symbol names by converting to snake case to conform PEP-8.
  */
-class PythonModuleClashChecker extends DefaultTreeWalker
+final class PythonModuleClashChecker extends DefaultTreeWalker
 {
     @Override
     public boolean traverseTemplateInstantiations()

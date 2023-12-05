@@ -5,7 +5,7 @@ import zserio.ast.PackageName;
 /**
  * Native Java compound type mapping.
  */
-public class NativeCompoundType extends NativeArrayableType
+public final class NativeCompoundType extends NativeArrayableType
 {
     public NativeCompoundType(PackageName packageName, String name, boolean withWriterCode, boolean isPackable)
     {

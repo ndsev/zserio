@@ -5,7 +5,7 @@ import zserio.ast.PackageName;
 /**
  * Native Java bitmask type mapping.
  */
-public class NativeBitmaskType extends NativeArrayableType
+public final class NativeBitmaskType extends NativeArrayableType
 {
     public NativeBitmaskType(PackageName packageName, String name, NativeIntegralType nativeBaseType,
             boolean withWriterCode)

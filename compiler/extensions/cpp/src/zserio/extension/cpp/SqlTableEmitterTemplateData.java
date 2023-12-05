@@ -36,7 +36,7 @@ import zserio.tools.HashUtil;
 /**
  * FreeMarker template data for SqlTableEmitter.
  */
-public class SqlTableEmitterTemplateData extends UserTypeTemplateData
+public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
 {
     public SqlTableEmitterTemplateData(TemplateDataContext context, SqlTableType tableType)
             throws ZserioExtensionException
@@ -134,7 +134,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         return templateInstantiation;
     }
 
-    public static class ExplicitParameterTemplateData implements Comparable<ExplicitParameterTemplateData>
+    public static final class ExplicitParameterTemplateData implements Comparable<ExplicitParameterTemplateData>
     {
         public ExplicitParameterTemplateData(String expression, NativeTypeInfoTemplateData typeInfo)
         {
@@ -189,7 +189,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         private final NativeTypeInfoTemplateData typeInfo;
     }
 
-    public static class FieldTemplateData
+    public static final class FieldTemplateData
     {
         public FieldTemplateData(TemplateDataContext context, SqlTableType table, Field field,
                 IncludeCollector includeCollector) throws ZserioExtensionException
@@ -347,7 +347,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             return docComments;
         }
 
-        public static class ParameterTemplateData
+        public static final class ParameterTemplateData
         {
             public ParameterTemplateData(CppNativeMapper cppNativeMapper,
                     ExpressionFormatter cppRowIndirectExpressionFormatter, SqlTableType tableType, Field field,
@@ -406,7 +406,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             private final String getterName;
         }
 
-        public static class SqlTypeTemplateData
+        public static final class SqlTypeTemplateData
         {
             public SqlTypeTemplateData(SqlNativeTypeMapper sqlNativeTypeMapper, Field field)
                     throws ZserioExtensionException
@@ -445,7 +445,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             private final boolean isReal;
         }
 
-        public static class SqlRangeCheckData
+        public static final class SqlRangeCheckData
         {
             public SqlRangeCheckData(boolean checkLowerBound, String lowerBound, String upperBound,
                     NativeIntegralTypeInfoTemplateData typeInfo, String bitFieldLength)

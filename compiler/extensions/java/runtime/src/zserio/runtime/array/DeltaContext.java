@@ -16,7 +16,7 @@ import zserio.runtime.io.BitStreamWriter;
  * element present in the array. After the full initialization, only a single method (bitSizeOf, read, write)
  * can be repeatedly called for exactly the same sequence of packable elements.
  */
-public class DeltaContext extends PackingContext
+public final class DeltaContext extends PackingContext
 {
     /**
      * Calls the initialization step for a single element.

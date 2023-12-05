@@ -6,7 +6,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * FreeMarker template data for subtypes in the package used by Package emitter.
  */
-public class SubtypeTemplateData extends PackageTemplateDataBase
+public final class SubtypeTemplateData extends PackageTemplateDataBase
 {
     public SubtypeTemplateData(PackageTemplateDataContext context, Subtype subtype) throws ZserioExtensionException
     {

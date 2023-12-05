@@ -14,7 +14,7 @@ import zserio.tools.ExtensionParameters;
 /**
  * The extension which generates Java API sources.
  */
-public class JavaExtension implements Extension
+public final class JavaExtension implements Extension
 {
     @Override
     public String getName()

@@ -16,7 +16,7 @@ import zserio.runtime.typeinfo.TypeInfoUtil;
  *  Array elements have the index appended to the path so that e.g. "compound.arrayField[0]" will match
  *  only the first element in the array "arrayField".
  */
-public class RegexWalkFilter implements WalkFilter
+public final class RegexWalkFilter implements WalkFilter
 {
     /**
      * Constructor.

@@ -21,7 +21,7 @@ jobs:
             clang-version-suffix: "-14"
     env:
       CPPCHECK_HOME: "${{github.workspace}}/cppcheck-2.6"
-      SPOTBUGS_HOME: "${{github.workspace}}/spotbugs-3.1.12"
+      SPOTBUGS_HOME: "${{github.workspace}}/spotbugs-4.8.2"
       PYLINT_ENABLED: 1
       MYPY_ENABLED: 1
       NU_HTML_VALIDATOR: "${{github.workspace}}/vnu-20.6.30/vnu.jar"
@@ -73,8 +73,8 @@ jobs:
 
     - name: Install specific version of Java static code analysis tool (spotbugs)
       run: |
-        wget https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/3.1.12/spotbugs-3.1.12.zip -P "${GITHUB_WORKSPACE}"
-        unzip "${GITHUB_WORKSPACE}"/spotbugs-3.1.12.zip
+        wget https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/4.8.2/spotbugs-4.8.2.zip -P "${GITHUB_WORKSPACE}"
+        unzip "${GITHUB_WORKSPACE}"/spotbugs-4.8.2.zip
 
     - name: Install specific version of HTML validator (v.Nu)
       run: |

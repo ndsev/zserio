@@ -34,7 +34,7 @@ import zserio.tools.ZserioToolPrinter;
 /**
  * Clash checker which checks clashing of identifiers with the given list of reserved keywords.
  */
-public class ReservedKeywordsClashChecker implements TreeWalker
+public final class ReservedKeywordsClashChecker implements TreeWalker
 {
     /**
      * Constructor.

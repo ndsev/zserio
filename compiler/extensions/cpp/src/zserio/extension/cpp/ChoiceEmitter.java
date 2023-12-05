@@ -7,7 +7,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * Choice emitter.
  */
-public class ChoiceEmitter extends CppDefaultEmitter
+public final class ChoiceEmitter extends CppDefaultEmitter
 {
     public ChoiceEmitter(OutputFileManager outputFileManager, CppExtensionParameters cppParameters)
     {

@@ -7,7 +7,7 @@ package zserio.extension.cpp;
  *
  * Expected Zserio core version will be used to check if the extension can be safely loaded.
  */
-public class CppExtensionVersion
+public final class CppExtensionVersion
 {
     /** C++ extension version string. */
     public static final String CPP_EXTENSION_VERSION_STRING = "1.0.0";

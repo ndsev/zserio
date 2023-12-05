@@ -11,7 +11,7 @@ import zserio.extension.common.ZserioExtensionException;
  *
  * The class provides location of FreeMarker templates for all documentation emitters.
  */
-class DocFreeMarkerUtil
+final class DocFreeMarkerUtil
 {
     public static void processTemplate(String templateName, Object templateData, File outputFile)
             throws ZserioExtensionException

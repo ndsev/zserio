@@ -21,7 +21,7 @@ import zserio.extension.common.ZserioExtensionException;
  * It creates all external files stored in Jar file and used by generated HTML during runtime. For example,
  * bootstrap prerequisites stored in Jar file.
  */
-class HtmlRuntimeEmitter
+final class HtmlRuntimeEmitter
 {
     static void emit(OutputFileManager outputFileManager,
             DocExtensionParameters docParameters) throws ZserioExtensionException

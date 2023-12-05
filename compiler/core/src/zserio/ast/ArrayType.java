@@ -5,7 +5,7 @@ package zserio.ast;
  *
  * Array types are Zserio types as well.
  */
-public class ArrayType extends BuiltInType
+public final class ArrayType extends BuiltInType
 {
     /**
      * Array type

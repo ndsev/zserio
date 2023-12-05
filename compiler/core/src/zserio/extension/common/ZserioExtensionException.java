@@ -3,7 +3,7 @@ package zserio.extension.common;
 /**
  * Exception that can be thrown from all extensions while walking Zserio tree.
  */
-public class ZserioExtensionException extends Exception
+public final class ZserioExtensionException extends Exception
 {
     /**
      * Constructs a new ZserioExtensionException with the specified detailed message.

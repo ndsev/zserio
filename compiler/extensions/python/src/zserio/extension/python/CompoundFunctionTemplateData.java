@@ -31,7 +31,7 @@ public final class CompoundFunctionTemplateData
         return compoundFunctionList;
     }
 
-    public static class CompoundFunction
+    public static final class CompoundFunction
     {
         public CompoundFunction(TemplateDataContext context, Function function, ImportCollector importCollector)
                 throws ZserioExtensionException

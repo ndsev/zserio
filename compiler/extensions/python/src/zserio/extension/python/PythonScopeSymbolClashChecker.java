@@ -33,7 +33,7 @@ import zserio.tools.ZserioToolPrinter;
  * scope symbols to snake case. Scope symbol clashing is resolved in core, but since we rename the symbols
  * to snake case, we have to verify that it doesn't cause any new clashes.
  */
-class PythonScopeSymbolClashChecker extends DefaultTreeWalker
+final class PythonScopeSymbolClashChecker extends DefaultTreeWalker
 {
     @Override
     public boolean traverseTemplateInstantiations()

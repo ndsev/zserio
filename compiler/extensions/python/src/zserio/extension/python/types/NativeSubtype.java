@@ -5,7 +5,7 @@ import zserio.ast.PackageName;
 /**
  * Native Python subtype mapping.
  */
-public class NativeSubtype extends NativeUserType
+public final class NativeSubtype extends NativeUserType
 {
     public NativeSubtype(PackageName packageName, String name, PythonNativeType nativeTargetBaseType)
     {

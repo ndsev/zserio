@@ -8,7 +8,7 @@ import zserio.extension.common.DefaultExpressionFormattingPolicy;
  *
  * The class formats expressions for documentation extension.
  */
-class DocExpressionFormattingPolicy extends DefaultExpressionFormattingPolicy
+final class DocExpressionFormattingPolicy extends DefaultExpressionFormattingPolicy
 {
     @Override
     public String getDecimalLiteral(Expression expr, boolean isNegative)

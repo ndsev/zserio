@@ -7,7 +7,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * Pubsub emitter.
  */
-class PubsubEmitter extends JavaDefaultEmitter
+final class PubsubEmitter extends JavaDefaultEmitter
 {
     public PubsubEmitter(OutputFileManager outputFileManager, JavaExtensionParameters javaParameters)
     {

@@ -5,7 +5,7 @@ package zserio.ast;
  *
  * Boolean types are Zserio types as well.
  */
-public class BooleanType extends BuiltInType implements FixedSizeType
+public final class BooleanType extends BuiltInType implements FixedSizeType
 {
     /**
      * Constructor from AST node location and the name.

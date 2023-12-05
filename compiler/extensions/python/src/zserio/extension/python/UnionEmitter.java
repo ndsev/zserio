@@ -7,7 +7,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * Union emitter.
  */
-class UnionEmitter extends PythonDefaultEmitter
+final class UnionEmitter extends PythonDefaultEmitter
 {
     public UnionEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {

@@ -7,7 +7,7 @@ import zserio.tools.HashUtil;
 /**
  * AST node for template argument.
  */
-public class TemplateArgument extends AstNodeBase
+public final class TemplateArgument extends AstNodeBase
 {
     /**
      * Constructor.

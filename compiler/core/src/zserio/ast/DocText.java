@@ -3,7 +3,7 @@ package zserio.ast;
 /**
  * Documentation text node.
  */
-public class DocText extends AstNodeBase
+public final class DocText extends AstNodeBase
 {
     /**
      * Constructor.

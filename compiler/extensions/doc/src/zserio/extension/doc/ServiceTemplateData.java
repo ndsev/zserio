@@ -10,7 +10,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * FreeMarker template data for services in the package used by Package emitter.
  */
-public class ServiceTemplateData extends PackageTemplateDataBase
+public final class ServiceTemplateData extends PackageTemplateDataBase
 {
     public ServiceTemplateData(PackageTemplateDataContext context, ServiceType serviceType) throws ZserioExtensionException
     {
@@ -25,7 +25,7 @@ public class ServiceTemplateData extends PackageTemplateDataBase
         return methodList;
     }
 
-    public static class MethodTemplateData
+    public static final class MethodTemplateData
     {
         public MethodTemplateData(PackageTemplateDataContext context, ServiceType serviceType,
                 ServiceMethod serviceMethod) throws ZserioExtensionException

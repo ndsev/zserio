@@ -17,7 +17,7 @@ import zserio.ast.ZserioAstWalker;
  * This map is used by Documentation resource manager to find out referenced package in Markdown documentation
  * comment (e.g. [my schema](zserio_source.zs)).
  */
-class PackageCollector extends ZserioAstWalker
+final class PackageCollector extends ZserioAstWalker
 {
     public Map<Path, Package> getPathToPackageMap()
     {

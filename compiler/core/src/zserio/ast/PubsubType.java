@@ -8,7 +8,7 @@ import java.util.List;
  *
  * Pub/Sub types are Zserio types as well.
  */
-public class PubsubType extends DocumentableAstNode implements ZserioScopedType
+public final class PubsubType extends DocumentableAstNode implements ZserioScopedType
 {
     /**
      * Constructor.

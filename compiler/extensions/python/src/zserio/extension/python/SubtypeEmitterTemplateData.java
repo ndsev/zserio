@@ -7,7 +7,7 @@ import zserio.extension.python.types.PythonNativeType;
 /**
  * FreeMarker template data for SubtypeEmitter.
  */
-public class SubtypeEmitterTemplateData extends UserTypeTemplateData
+public final class SubtypeEmitterTemplateData extends UserTypeTemplateData
 {
     public SubtypeEmitterTemplateData(TemplateDataContext context, Subtype subtype)
             throws ZserioExtensionException

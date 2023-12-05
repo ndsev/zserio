@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * AST node for Constants.
  */
-public class Constant extends DocumentableAstNode implements PackageSymbol
+public final class Constant extends DocumentableAstNode implements PackageSymbol
 {
     /**
      * Constructor.

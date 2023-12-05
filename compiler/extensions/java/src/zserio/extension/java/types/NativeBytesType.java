@@ -5,7 +5,7 @@ import zserio.ast.PackageName;
 /**
  * Native Java bytes type mapping.
  */
-public class NativeBytesType extends NativeArrayableType
+public final class NativeBytesType extends NativeArrayableType
 {
     public NativeBytesType()
     {

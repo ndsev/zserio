@@ -7,7 +7,7 @@ import zserio.tools.StringJoinUtil;
 /**
  * Location in AST.
  */
-public class AstLocation
+public final class AstLocation
 {
     /**
      * Constructor from grammar token.

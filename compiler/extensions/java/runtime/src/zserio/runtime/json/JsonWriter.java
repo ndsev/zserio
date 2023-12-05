@@ -17,7 +17,7 @@ import zserio.runtime.walker.WalkerConst;
 /**
  * Walker observer which dumps zserio objects to JSON format.
  */
-public class JsonWriter implements WalkObserver, AutoCloseable
+public final class JsonWriter implements WalkObserver, AutoCloseable
 {
     /**
      * Constructor.

@@ -13,7 +13,7 @@ import zserio.extension.cpp.types.NativeIntegralType;
 /**
  * FreeMarker template data for EnumerationEmitter.
  */
-public class EnumerationEmitterTemplateData extends UserTypeTemplateData
+public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
 {
     public EnumerationEmitterTemplateData(TemplateDataContext context, EnumType enumType)
             throws ZserioExtensionException
@@ -58,7 +58,7 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         return items;
     }
 
-    public static class EnumItemData
+    public static final class EnumItemData
     {
         public EnumItemData(TemplateDataContext context, NativeIntegralType nativeBaseType,
                 CppNativeType nativeEnumType, EnumItem enumItem) throws ZserioExtensionException

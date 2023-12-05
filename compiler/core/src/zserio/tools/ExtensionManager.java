@@ -15,7 +15,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * The manager to handle all Zserio extensions.
  */
-class ExtensionManager
+final class ExtensionManager
 {
     /**
      * Constructor from command line arguments.

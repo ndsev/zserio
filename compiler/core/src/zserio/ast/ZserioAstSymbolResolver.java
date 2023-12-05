@@ -7,7 +7,7 @@ import zserio.tools.WarningsConfig;
 /**
  * Implementation of ZserioAstVisitor which resolves symbols for see documentation tags.
  */
-public class ZserioAstSymbolResolver extends ZserioAstWalker
+public final class ZserioAstSymbolResolver extends ZserioAstWalker
 {
     /**
      * Constructor.

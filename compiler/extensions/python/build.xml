@@ -171,6 +171,7 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
         <spotbugs home="${spotbugs.home_dir}"
             output="html"
             outputFile="${zserio_python.spotbugs.out_dir}/spotbugs.html"
+            excludeFilter="${zserio_python.base_dir}/spotbugs_filter.xml"
             reportLevel="low"
             errorProperty="zserio_python.is_failed"
             warningsProperty="zserio_python.is_failed">
@@ -211,6 +212,7 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
         <spotbugs home="${spotbugs.home_dir}"
             output="html"
             outputFile="${zserio_python.test.spotbugs.out_dir}/spotbugs.html"
+            excludeFilter="${zserio_python.base_dir}/spotbugs_filter.xml"
             reportLevel="low"
             errorProperty="zserio_python.spotbugs.is_failed"
             warningsProperty="zserio_python.spotbugs.is_failed">

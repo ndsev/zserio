@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Class representing a single documentation comment in classic style.
  */
-public class DocCommentClassic extends DocComment
+public final class DocCommentClassic extends DocComment
 {
     /**
      * Constructor.

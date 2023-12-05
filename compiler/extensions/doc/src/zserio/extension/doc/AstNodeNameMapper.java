@@ -49,7 +49,7 @@ import zserio.tools.ZserioToolPrinter;
  *
  * It returns valid string even if the name for the given AST node is unknown.
  */
-class AstNodeNameMapper
+final class AstNodeNameMapper
 {
     public static String getName(AstNode node)
     {
@@ -68,7 +68,7 @@ class AstNodeNameMapper
         return name;
     }
 
-    private static class NameVisitor extends ZserioAstDefaultVisitor
+    private static final class NameVisitor extends ZserioAstDefaultVisitor
     {
         public String getName()
         {

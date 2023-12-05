@@ -16,7 +16,7 @@ import zserio.tools.ZserioToolPrinter;
  * or other symbols. Note that Python has no problem with an inner class having the same name its outer class
  * but it confuses some external tools, e.g. mypy.
  */
-class PythonInnerClassesClashChecker extends DefaultTreeWalker
+final class PythonInnerClassesClashChecker extends DefaultTreeWalker
 {
     @Override
     public boolean traverseTemplateInstantiations()
@@ -25,6 +25,7 @@ class PythonInnerClassesClashChecker extends DefaultTreeWalker
         return true;
     }
 
+    @Override
     public void beginBitmask(BitmaskType bitmaskType) throws ZserioExtensionException
     {
         final String className = bitmaskType.getName();
@@ -37,6 +38,7 @@ class PythonInnerClassesClashChecker extends DefaultTreeWalker
         }
     }
 
+    @Override
     public void beginSqlTable(SqlTableType sqlTableType) throws ZserioExtensionException
     {
         final String className = sqlTableType.getName();

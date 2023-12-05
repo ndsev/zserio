@@ -20,7 +20,7 @@ import zserio.tools.StringJoinUtil;
  *
  * The rules overview emitter creates an HTML overview of all rules defined in schema.
  */
-class RulesOverviewEmitter extends DefaultTreeWalker
+final class RulesOverviewEmitter extends DefaultTreeWalker
 {
     public RulesOverviewEmitter(OutputFileManager outputFileManager, DocExtensionParameters docParameters,
             DocResourceManager docResourceManager) throws ZserioExtensionException

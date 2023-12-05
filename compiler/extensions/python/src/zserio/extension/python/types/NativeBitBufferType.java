@@ -5,7 +5,7 @@ import zserio.ast.PackageName;
 /**
  * Native Python BitBuffer mapping.
  */
-public class NativeBitBufferType extends PythonNativeType
+public final class NativeBitBufferType extends PythonNativeType
 {
     public NativeBitBufferType()
     {

@@ -21,7 +21,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * FreeMarker template data for choices in the package used by Package emitter.
  */
-public class ChoiceTemplateData extends CompoundTypeTemplateData
+public final class ChoiceTemplateData extends CompoundTypeTemplateData
 {
     public ChoiceTemplateData(PackageTemplateDataContext context, ChoiceType choiceType) throws ZserioExtensionException
     {
@@ -53,7 +53,7 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
         return defaultMember;
     }
 
-    public static class CaseMemberTemplateData
+    public static final class CaseMemberTemplateData
     {
         public CaseMemberTemplateData(PackageTemplateDataContext context, ChoiceType choiceType, ChoiceCase choiceCase)
                 throws ZserioExtensionException
@@ -82,7 +82,7 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
         private final FieldTemplateData field;
     }
 
-    public static class CaseTemplateData
+    public static final class CaseTemplateData
     {
         public CaseTemplateData(PackageTemplateDataContext context, ChoiceType choiceType,
                 ChoiceCase choiceCase, Expression caseExpression, List<DocComment> docComments)
@@ -139,7 +139,7 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
         private final SeeSymbolTemplateData seeSymbol;
     }
 
-    public static class DefaultMemberTemplateData
+    public static final class DefaultMemberTemplateData
     {
         public DefaultMemberTemplateData(PackageTemplateDataContext context, ChoiceType choiceType)
                 throws ZserioExtensionException

@@ -6,7 +6,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * FreeMarker template data for constants in the package used by Package emitter.
  */
-public class ConstantTemplateData extends PackageTemplateDataBase
+public final class ConstantTemplateData extends PackageTemplateDataBase
 {
     public ConstantTemplateData(PackageTemplateDataContext context, Constant constant) throws ZserioExtensionException
     {

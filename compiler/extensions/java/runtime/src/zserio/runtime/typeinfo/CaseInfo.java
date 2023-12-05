@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 /**
  * Type information for choice type case.
  */
-public class CaseInfo
+public final class CaseInfo
 {
     /**
      * Constructor.

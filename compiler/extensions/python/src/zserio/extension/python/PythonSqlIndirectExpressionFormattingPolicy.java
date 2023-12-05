@@ -5,7 +5,7 @@ import zserio.ast.Field;
 /**
  * A special formatting policy to be used in generated SQL tables which need indirect references.
  */
-class PythonSqlIndirectExpressionFormattingPolicy extends PythonExpressionFormattingPolicy
+final class PythonSqlIndirectExpressionFormattingPolicy extends PythonExpressionFormattingPolicy
 {
     public PythonSqlIndirectExpressionFormattingPolicy(TemplateDataContext context,
             ImportCollector importCollector)

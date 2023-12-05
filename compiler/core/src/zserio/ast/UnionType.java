@@ -8,7 +8,7 @@ import java.util.List;
  *
  * Union types are Zserio types as well.
  */
-public class UnionType extends CompoundType
+public final class UnionType extends CompoundType
 {
     /**
      * Constructor.

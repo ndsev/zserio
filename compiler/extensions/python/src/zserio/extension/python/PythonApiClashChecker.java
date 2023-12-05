@@ -29,7 +29,7 @@ import zserio.tools.ZserioToolPrinter;
  *
  * Checks that Python code generator will not produce any clashes with auto-generated API helpers.
  */
-class PythonApiClashChecker extends DefaultTreeWalker
+final class PythonApiClashChecker extends DefaultTreeWalker
 {
     @Override
     public boolean traverseTemplateInstantiations()

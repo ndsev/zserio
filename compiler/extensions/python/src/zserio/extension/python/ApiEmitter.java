@@ -29,7 +29,7 @@ import zserio.extension.python.types.PythonNativeType;
  * Emits api.py files which provide easy access to whole generated code, via including just a single top level
  * api.py.
  */
-class ApiEmitter extends PythonDefaultEmitter
+final class ApiEmitter extends PythonDefaultEmitter
 {
     public ApiEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {

@@ -148,7 +148,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio int8 and int:1...int:8 arrays which are mapped to Java byte[] array.
      */
-    public static class SignedBitFieldByteArrayTraits extends IntegralArrayTraitsBase
+    public static final class SignedBitFieldByteArrayTraits extends IntegralArrayTraitsBase
     {
         /**
          * Constructor from number of bits of zserio type.
@@ -202,7 +202,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio int16 and int:9...int:16 arrays which are mapped to Java short[] array.
      */
-    public static class SignedBitFieldShortArrayTraits extends IntegralArrayTraitsBase
+    public static final class SignedBitFieldShortArrayTraits extends IntegralArrayTraitsBase
     {
         /**
          * Constructor from number of bits of zserio type.
@@ -256,7 +256,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio int32 and int:17...int:32 arrays which are mapped to Java int[] array.
      */
-    public static class SignedBitFieldIntArrayTraits extends IntegralArrayTraitsBase
+    public static final class SignedBitFieldIntArrayTraits extends IntegralArrayTraitsBase
     {
         /**
          * Constructor from number of bits of zserio type.
@@ -310,7 +310,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio int64 and int:33...int:64 arrays which are mapped to Java long[] array.
      */
-    public static class SignedBitFieldLongArrayTraits extends IntegralArrayTraitsBase
+    public static final class SignedBitFieldLongArrayTraits extends IntegralArrayTraitsBase
     {
         /**
          * Constructor from number of bits of zserio type.
@@ -364,7 +364,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio bit:1...bit:7 arrays which are mapped to Java byte[] array.
      */
-    public static class BitFieldByteArrayTraits extends IntegralArrayTraitsBase
+    public static final class BitFieldByteArrayTraits extends IntegralArrayTraitsBase
     {
         /**
          * Constructor from number of bits of zserio type.
@@ -418,7 +418,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio uint8 and bit:8...bit:15 arrays which are mapped to Java short[] array.
      */
-    public static class BitFieldShortArrayTraits extends IntegralArrayTraitsBase
+    public static final class BitFieldShortArrayTraits extends IntegralArrayTraitsBase
     {
         /**
          * Constructor from number of bits of zserio type.
@@ -472,7 +472,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio uint16 and bit:16...bit:31 arrays which are mapped to Java int[] array.
      */
-    public static class BitFieldIntArrayTraits extends IntegralArrayTraitsBase
+    public static final class BitFieldIntArrayTraits extends IntegralArrayTraitsBase
     {
         /**
          * Constructor from number of bits of zserio type.
@@ -526,7 +526,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio uint32 and bit:32...bit:63 arrays which are mapped to Java long[] array.
      */
-    public static class BitFieldLongArrayTraits extends IntegralArrayTraitsBase
+    public static final class BitFieldLongArrayTraits extends IntegralArrayTraitsBase
     {
         /**
          * Constructor from number of bits of zserio type.
@@ -581,7 +581,7 @@ public interface ArrayTraits
      * Array traits for zserio uint64, bit:64 and dynamic bit field arrays which are mapped to
      * Java BigInteger[] array.
      */
-    public static class BitFieldBigIntegerArrayTraits extends IntegralArrayTraitsBase
+    public static final class BitFieldBigIntegerArrayTraits extends IntegralArrayTraitsBase
     {
         /**
          * Constructor from number of bits of zserio type.
@@ -635,7 +635,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio varint16 arrays which are mapped to Java short[] array.
      */
-    public static class VarInt16ArrayTraits extends IntegralArrayTraitsBase
+    public static final class VarInt16ArrayTraits extends IntegralArrayTraitsBase
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -677,7 +677,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio varint32 arrays which are mapped to Java int[] array.
      */
-    public static class VarInt32ArrayTraits extends IntegralArrayTraitsBase
+    public static final class VarInt32ArrayTraits extends IntegralArrayTraitsBase
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -719,7 +719,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio varint64 arrays which are mapped to Java long[] array.
      */
-    public static class VarInt64ArrayTraits extends IntegralArrayTraitsBase
+    public static final class VarInt64ArrayTraits extends IntegralArrayTraitsBase
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -761,7 +761,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio varint arrays which are mapped to Java long[] array.
      */
-    public static class VarIntArrayTraits extends IntegralArrayTraitsBase
+    public static final class VarIntArrayTraits extends IntegralArrayTraitsBase
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -803,7 +803,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio varuint16 arrays which are mapped to Java short[] array.
      */
-    public static class VarUInt16ArrayTraits extends IntegralArrayTraitsBase
+    public static final class VarUInt16ArrayTraits extends IntegralArrayTraitsBase
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -845,7 +845,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio varuint32 arrays which are mapped to Java int[] array.
      */
-    public static class VarUInt32ArrayTraits extends IntegralArrayTraitsBase
+    public static final class VarUInt32ArrayTraits extends IntegralArrayTraitsBase
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -887,7 +887,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio varuint64 arrays which are mapped to Java long[] array.
      */
-    public static class VarUInt64ArrayTraits extends IntegralArrayTraitsBase
+    public static final class VarUInt64ArrayTraits extends IntegralArrayTraitsBase
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -929,7 +929,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio varuint arrays which are mapped to Java BigInteger[] array.
      */
-    public static class VarUIntArrayTraits extends IntegralArrayTraitsBase
+    public static final class VarUIntArrayTraits extends IntegralArrayTraitsBase
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -972,7 +972,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio varsize arrays which are mapped to Java int[] array.
      */
-    public static class VarSizeArrayTraits extends IntegralArrayTraitsBase
+    public static final class VarSizeArrayTraits extends IntegralArrayTraitsBase
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -1014,7 +1014,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio float16 arrays which are mapped to Java float[] array.
      */
-    public static class Float16ArrayTraits implements ArrayTraits
+    public static final class Float16ArrayTraits implements ArrayTraits
     {
         @Override
         public PackedArrayTraits getPackedArrayTraits()
@@ -1056,7 +1056,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio float32 arrays which are mapped to Java float[] array.
      */
-    public static class Float32ArrayTraits implements ArrayTraits
+    public static final class Float32ArrayTraits implements ArrayTraits
     {
         @Override
         public PackedArrayTraits getPackedArrayTraits()
@@ -1098,7 +1098,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio float64 arrays which are mapped to Java double[] array.
      */
-    public static class Float64ArrayTraits implements ArrayTraits
+    public static final class Float64ArrayTraits implements ArrayTraits
     {
         @Override
         public PackedArrayTraits getPackedArrayTraits()
@@ -1140,7 +1140,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio bytes arrays which are mapped to Java byte[][] array.
      */
-    public static class BytesArrayTraits implements ArrayTraits
+    public static final class BytesArrayTraits implements ArrayTraits
     {
         @Override
         public PackedArrayTraits getPackedArrayTraits()
@@ -1185,7 +1185,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio string arrays which are mapped to Java String[] array.
      */
-    public static class StringArrayTraits implements ArrayTraits
+    public static final class StringArrayTraits implements ArrayTraits
     {
         @Override
         public PackedArrayTraits getPackedArrayTraits()
@@ -1230,7 +1230,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio bool arrays which are mapped to Java boolean[] array.
      */
-    public static class BoolArrayTraits implements ArrayTraits
+    public static final class BoolArrayTraits implements ArrayTraits
     {
         @Override
         public PackedArrayTraits getPackedArrayTraits()
@@ -1272,7 +1272,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio extern bit buffer arrays which are mapped to Java BitBuffer[] array.
      */
-    public static class BitBufferArrayTraits implements ArrayTraits
+    public static final class BitBufferArrayTraits implements ArrayTraits
     {
         @Override
         public PackedArrayTraits getPackedArrayTraits()
@@ -1374,7 +1374,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio object arrays (with writer part) which are mapped to Java zserio object array.
      */
-    public static class WriteObjectArrayTraits<E extends Writer & SizeOf>
+    public static final class WriteObjectArrayTraits<E extends Writer & SizeOf>
             extends ObjectArrayTraits<E>
     {
         /**
@@ -1474,7 +1474,7 @@ public interface ArrayTraits
      * Array traits for zserio packable object arrays (with writer part) which are mapped to Java zserio
      * object array.
      */
-    public static class WritePackableObjectArrayTraits<E extends PackableWriter & PackableSizeOf>
+    public static final class WritePackableObjectArrayTraits<E extends PackableWriter & PackableSizeOf>
             extends PackableObjectArrayTraits<E>
     {
         /**

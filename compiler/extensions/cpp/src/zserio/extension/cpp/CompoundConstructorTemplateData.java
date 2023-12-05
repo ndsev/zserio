@@ -7,7 +7,7 @@ import zserio.ast.CompoundType;
 /**
  * FreeMarker template data for compound constructors.
  */
-public class CompoundConstructorTemplateData
+public final class CompoundConstructorTemplateData
 {
     public CompoundConstructorTemplateData(CompoundType compoundType,
             CompoundParameterTemplateData compoundParametersData, List<CompoundFieldTemplateData> fieldList)

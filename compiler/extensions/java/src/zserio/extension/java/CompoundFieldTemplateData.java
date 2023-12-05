@@ -180,7 +180,7 @@ public final class CompoundFieldTemplateData
         return docComments;
     }
 
-    public static class Optional
+    public static final class Optional
     {
         public Optional(Field field, ExpressionFormatter javaExpressionFormatter,
                 ExpressionFormatter javaLambdaExpressionFormatter, boolean isRecursive)
@@ -235,7 +235,7 @@ public final class CompoundFieldTemplateData
         private final boolean isRecursive;
     }
 
-    public static class Offset
+    public static final class Offset
     {
         public Offset(Expression offsetExpression, JavaNativeMapper javaNativeMapper,
                      ExpressionFormatter javaExpressionFormatter,
@@ -282,7 +282,7 @@ public final class CompoundFieldTemplateData
         private final boolean containsIndex;
     }
 
-    public static class Array
+    public static final class Array
     {
         public Array(TemplateDataContext context, NativeArrayType nativeType,
                 ArrayInstantiation arrayInstantiation, CompoundType parentType) throws ZserioExtensionException
@@ -430,7 +430,7 @@ public final class CompoundFieldTemplateData
         private final boolean elementIsRecursive;
     }
 
-    public static class Compound
+    public static final class Compound
     {
         public Compound(TemplateDataContext context,
                 ParameterizedTypeInstantiation parameterizedTypeInstantiation) throws ZserioExtensionException
@@ -459,7 +459,7 @@ public final class CompoundFieldTemplateData
             return parameters;
         }
 
-        public static class InstantiatedParameterData
+        public static final class InstantiatedParameterData
         {
             public InstantiatedParameterData(TemplateDataContext context,
                     InstantiatedParameter instantiatedParameter) throws ZserioExtensionException

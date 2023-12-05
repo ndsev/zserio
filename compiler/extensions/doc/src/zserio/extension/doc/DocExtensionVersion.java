@@ -7,7 +7,7 @@ package zserio.extension.doc;
  *
  * Expected Zserio core version will be used to check if the extension can be safely loaded.
  */
-class DocExtensionVersion
+final class DocExtensionVersion
 {
     /** Documentation extension version string. */
     public static final String DOC_EXTENSION_VERSION_STRING = "1.0.0";

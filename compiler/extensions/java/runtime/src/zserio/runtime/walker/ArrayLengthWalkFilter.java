@@ -5,7 +5,7 @@ import zserio.runtime.typeinfo.FieldInfo;
 /**
  * Walk filter which allows to walk only to the given maximum array length.
  */
-public class ArrayLengthWalkFilter implements WalkFilter
+public final class ArrayLengthWalkFilter implements WalkFilter
 {
     /**
      * Constructor.

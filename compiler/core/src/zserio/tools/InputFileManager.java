@@ -9,7 +9,7 @@ import zserio.ast.PackageName;
 /**
  * The manager which holds all Zserio input file names.
  */
-public class InputFileManager
+public final class InputFileManager
 {
     /**
      * Constructor from command line arguments.

@@ -5,7 +5,7 @@ import zserio.runtime.ZserioError;
 /**
  * Provides type of exceptions thrown from JSON parser.
  */
-public class JsonParserError extends ZserioError
+public final class JsonParserError extends ZserioError
 {
     /**
      * Constructs an empty JSON parser error object.

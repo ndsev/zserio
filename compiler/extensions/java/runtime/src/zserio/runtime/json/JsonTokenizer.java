@@ -98,7 +98,7 @@ class JsonTokenizer
         return tokenColumnNumber;
     }
 
-    String readContent()
+    private String readContent()
     {
         try
         {

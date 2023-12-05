@@ -18,7 +18,7 @@ import zserio.extension.python.types.PythonNativeType;
 /**
  * FreeMarker template data with info about types.
  */
-public class NativeTypeInfoTemplateData
+public final class NativeTypeInfoTemplateData
 {
     public NativeTypeInfoTemplateData(PythonNativeType pythonNativeType, TypeInstantiation typeInstantiation)
             throws ZserioExtensionException

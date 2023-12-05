@@ -18,7 +18,7 @@ import zserio.extension.python.types.PythonNativeType;
 /**
  * FreeMarker template data for BitmaskEmitter.
  */
-public class BitmaskEmitterTemplateData extends UserTypeTemplateData
+public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
 {
     public BitmaskEmitterTemplateData(TemplateDataContext context, BitmaskType bitmaskType)
             throws ZserioExtensionException
@@ -103,7 +103,7 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
         throw new ZserioExtensionException("Unexpected bitmask type instantiation!");
     }
 
-    public static class BitmaskValueData
+    public static final class BitmaskValueData
     {
         public BitmaskValueData(TemplateDataContext context, BitmaskValue bitmaskValue)
                 throws ZserioExtensionException

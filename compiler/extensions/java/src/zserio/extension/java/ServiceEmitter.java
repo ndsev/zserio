@@ -7,7 +7,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * Service emitter.
  */
-class ServiceEmitter extends JavaDefaultEmitter
+final class ServiceEmitter extends JavaDefaultEmitter
 {
     public ServiceEmitter(OutputFileManager outputFileManager, JavaExtensionParameters javaParameters)
     {

@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Implementation of ZserioAstVisitor which manages type resolving phase.
  */
-public class ZserioAstTypeResolver extends ZserioAstWalker
+public final class ZserioAstTypeResolver extends ZserioAstWalker
 {
     @Override
     public void visitSubtype(Subtype subtype)

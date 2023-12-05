@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Single documentation line AST node.
  */
-public class DocLine extends AstNodeBase
+public final class DocLine extends AstNodeBase
 {
     /**
      * Constructor.

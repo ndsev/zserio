@@ -17,7 +17,7 @@ import java.util.Enumeration;
  * First the local class loader is queried for a certain class, then
  * the parent class loader is asked.
  */
-public class PreferLocalClassLoader extends ClassLoader
+public final class PreferLocalClassLoader extends ClassLoader
 {
     public PreferLocalClassLoader(ClassLoader local, ClassLoader parent)
     {

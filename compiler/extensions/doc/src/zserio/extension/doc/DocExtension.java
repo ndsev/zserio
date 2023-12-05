@@ -11,7 +11,7 @@ import zserio.tools.ExtensionParameters;
  *
  * It generates HTML documentation together with SVG collaboration diagrams converted from generated dot files.
  */
-public class DocExtension implements Extension
+public final class DocExtension implements Extension
 {
     @Override
     public String getName()

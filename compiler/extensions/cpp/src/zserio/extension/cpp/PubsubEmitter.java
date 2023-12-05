@@ -7,7 +7,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * Pubsub emitter.
  */
-public class PubsubEmitter extends CppDefaultEmitter
+public final class PubsubEmitter extends CppDefaultEmitter
 {
     public PubsubEmitter(OutputFileManager outputFileManager, CppExtensionParameters cppParameters)
     {

@@ -3,7 +3,7 @@ package zserio.extension.common.sql.types;
 /**
  * SQLite native type for Blobs.
  */
-public class NativeBlobType implements SqlNativeType
+public final class NativeBlobType implements SqlNativeType
 {
     @Override
     public String getFullName()

@@ -20,7 +20,7 @@ import java.util.List;
  *    the bit stream and written again. Then read bit stream is binary compared with the written stream.
  *    Integer values are checked according to their boundaries specified in Zserio.</p>
  */
-public class ValidationReport
+public final class ValidationReport
 {
     /**
      * Constructs a default validation report.

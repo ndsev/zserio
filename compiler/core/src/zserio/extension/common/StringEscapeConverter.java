@@ -6,7 +6,7 @@ package zserio.extension.common;
  * This is currently used for C++ extension (converts problematic unicode escape sequences to hexadecimal) and
  * for Java extension (converts not supported hexadecimal sequences to unicode).
  */
-public class StringEscapeConverter
+public final class StringEscapeConverter
 {
     /**
      * Converts unicode escape sequences to hexadecimal in given string.

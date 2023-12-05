@@ -14,7 +14,7 @@ import zserio.tools.ExtensionParameters;
  * The class holds all command line parameters passed by core to the Python extension, which are really
  * used by Python emitters.
  */
-class PythonExtensionParameters
+final class PythonExtensionParameters
 {
     public PythonExtensionParameters(ExtensionParameters parameters) throws ZserioExtensionException
     {

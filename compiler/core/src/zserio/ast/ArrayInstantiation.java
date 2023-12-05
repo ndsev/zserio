@@ -8,7 +8,7 @@ import zserio.tools.ZserioToolPrinter;
 /**
  * AST node for array type instantiation.
  */
-public class ArrayInstantiation extends TypeInstantiation
+public final class ArrayInstantiation extends TypeInstantiation
 {
     /**
      * Constructor.

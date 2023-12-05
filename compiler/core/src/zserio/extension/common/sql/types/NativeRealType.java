@@ -3,7 +3,7 @@ package zserio.extension.common.sql.types;
 /**
  * SQLite native type for Floats.
  */
-public class NativeRealType implements SqlNativeType
+public final class NativeRealType implements SqlNativeType
 {
     @Override
     public String getFullName()

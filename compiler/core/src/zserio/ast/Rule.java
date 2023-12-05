@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * AST node for rule.
  */
-public class Rule extends DocumentableAstNode
+public final class Rule extends DocumentableAstNode
 {
     /**
      * Constructor.

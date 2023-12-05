@@ -22,7 +22,7 @@ import zserio.runtime.typeinfo.ParameterInfo;
  *
  * It allows to build zserio object tree defined by the given type info (see -withTypeInfoCode).
  */
-public class ZserioTreeCreator
+public final class ZserioTreeCreator
 {
     /**
      * Constructor.

@@ -14,7 +14,7 @@ import zserio.tools.StringJoinUtil;
  * Package name has in Zserio the format 'ID.ID.ID'. This class holds list of all 'ID's. This is used for
  * example by Package, Import, TypeReference or SymbolReference.
  */
-public class PackageName implements Comparable<PackageName>
+public final class PackageName implements Comparable<PackageName>
 {
     /**
      * Package name builder. Used to build an immutable package name.

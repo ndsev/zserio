@@ -7,7 +7,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * Enumeration emitter.
  */
-class EnumerationEmitter extends PythonDefaultEmitter
+final class EnumerationEmitter extends PythonDefaultEmitter
 {
     public EnumerationEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {

@@ -20,7 +20,7 @@ public interface ExpressionFormattingPolicy
      * Example:
      * !'UnaryOperand'
      */
-    public static class UnaryExpressionFormatting
+    public static final class UnaryExpressionFormatting
     {
         public UnaryExpressionFormatting(String beforeOperand)
         {
@@ -57,7 +57,7 @@ public interface ExpressionFormattingPolicy
      * Example:
      * 'BinaryOperand1' + 'BinaryOperand2'
      */
-    public static class BinaryExpressionFormatting
+    public static final class BinaryExpressionFormatting
     {
         public BinaryExpressionFormatting(String afterOperand1)
         {

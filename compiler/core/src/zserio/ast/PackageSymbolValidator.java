@@ -5,7 +5,7 @@ import java.util.Locale;
 import java.util.Map;
 
 /** The class implements validation of symbols within a single package. */
-class PackageSymbolValidator
+final class PackageSymbolValidator
 {
     /**
      * Validates that the symbol name satisfies requirements for safe generation.

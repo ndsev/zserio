@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * AST node for type reference.
  */
-public class TypeReference extends AstNodeBase
+public final class TypeReference extends AstNodeBase
 {
     /**
      * Constructor from built-in type.

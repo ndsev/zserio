@@ -15,7 +15,7 @@ import zserio.tools.ZserioToolPrinter;
  * Checks that C++ code generator will not produce any clashes between generated classes and inner classes.
  * Note that C++ doesn't allow an inner class to have same name as its outer class.
  */
-class CppInnerClassesClashChecker extends DefaultTreeWalker
+final class CppInnerClassesClashChecker extends DefaultTreeWalker
 {
     @Override
     public boolean traverseTemplateInstantiations()
@@ -24,6 +24,7 @@ class CppInnerClassesClashChecker extends DefaultTreeWalker
         return true;
     }
 
+    @Override
     public void beginBitmask(BitmaskType bitmaskType) throws ZserioExtensionException
     {
         final String className = bitmaskType.getName();
@@ -36,6 +37,7 @@ class CppInnerClassesClashChecker extends DefaultTreeWalker
         }
     }
 
+    @Override
     public void beginSqlTable(SqlTableType sqlTableType) throws ZserioExtensionException
     {
         final String className = sqlTableType.getName();

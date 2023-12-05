@@ -33,7 +33,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * The main class for Zserio tool.
  */
-public class ZserioTool
+public final class ZserioTool
 {
     /**
      * Zserio tool executor.

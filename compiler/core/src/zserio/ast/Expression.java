@@ -14,7 +14,7 @@ import zserio.ast.Scope.FoundSymbol;
 /**
  * AST node for expressions defined in the language.
  */
-public class Expression extends AstNodeBase
+public final class Expression extends AstNodeBase
 {
     /**
      * Defines expression flag for constructors.

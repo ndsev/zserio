@@ -29,7 +29,7 @@ import zserio.runtime.walker.Walker;
  * Note that zserio objects must be generated with <code>-withTypeInfoCode</code> zserio option to enable
  * JSON debug string!
  */
-public class DebugStringUtil
+public final class DebugStringUtil
 {
     /**
      * Writes contents of given zserio object to debug stream in JSON format using Walker with JsonWriter.

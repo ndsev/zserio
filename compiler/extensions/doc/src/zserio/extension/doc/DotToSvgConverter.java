@@ -11,7 +11,7 @@ import zserio.extension.common.ZserioExtensionException;
  * This class runs external dot executable which converts dot files into svg format. It offers as well simple
  * test if the given dot executable works correctly.
  */
-class DotToSvgConverter
+final class DotToSvgConverter
 {
     public static boolean isDotExecAvailable(String dotExecutable)
     {

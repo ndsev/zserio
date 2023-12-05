@@ -28,7 +28,7 @@ import zserio.extension.common.sql.types.SqlNativeType;
  *
  * For the types supported by SQLite, see https://www.sqlite.org/datatype3.html
  */
-public class SqlNativeTypeMapper
+public final class SqlNativeTypeMapper
 {
     /**
      * Gets SQLite3 native type from Zserio type.
@@ -58,7 +58,7 @@ public class SqlNativeTypeMapper
         return nativeType;
     }
 
-    private static class TypeMapperVisitor extends ZserioAstDefaultVisitor
+    private static final class TypeMapperVisitor extends ZserioAstDefaultVisitor
     {
         /**
          * Gets the SQL type mapped from Zserio type.

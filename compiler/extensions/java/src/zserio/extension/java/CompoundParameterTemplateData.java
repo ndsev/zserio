@@ -42,7 +42,7 @@ public final class CompoundParameterTemplateData
         return compoundName;
     }
 
-    public static class CompoundParameter
+    public static final class CompoundParameter
     {
         public CompoundParameter(TemplateDataContext context, JavaNativeMapper javaNativeMapper,
                 Parameter parameter, List<DocComment> compoundDocComments) throws ZserioExtensionException

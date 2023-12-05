@@ -17,7 +17,7 @@ import org.apache.tools.ant.types.Path;
  * Hence it is possible to compile the main class in the same ant file
  * in which the task is executed.
  */
-public class ToolWrapper
+public final class ToolWrapper
 {
     public ToolWrapper(String className, Iterable<Path> classPath, boolean ignoreError)
     {

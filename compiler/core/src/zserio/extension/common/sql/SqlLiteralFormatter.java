@@ -11,7 +11,7 @@ import zserio.extension.common.sql.types.NativeTextType;
 /**
  * Utility for expression formatting in SQLite format.
  */
-public class SqlLiteralFormatter
+public final class SqlLiteralFormatter
 {
     /**
      * Formats expression value in SQLite format.

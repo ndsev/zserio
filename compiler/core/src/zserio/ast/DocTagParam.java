@@ -1,7 +1,7 @@
 package zserio.ast;
 
 /** Param tag documentation node used to document parameters. */
-public class DocTagParam extends DocMultiline
+public final class DocTagParam extends DocMultiline
 {
     /**
      * Constructor.

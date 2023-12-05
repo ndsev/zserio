@@ -475,7 +475,7 @@ class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
         importCollector.importSymbol(nativeSymbol);
     }
 
-    private static class TernaryExpressionFormattingPython extends TernaryExpressionFormatting
+    private static final class TernaryExpressionFormattingPython extends TernaryExpressionFormatting
     {
         public TernaryExpressionFormattingPython(Expression expression,
                 String beforeOperand1, String afterOperand1, String afterOperand2, String afterOperand3)

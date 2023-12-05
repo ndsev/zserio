@@ -9,7 +9,7 @@ import zserio.tools.WarningsConfig;
 /**
  * AST node for parameterized type instantiation.
  */
-public class ParameterizedTypeInstantiation extends TypeInstantiation
+public final class ParameterizedTypeInstantiation extends TypeInstantiation
 {
     /**
      * Constructor.
@@ -68,7 +68,7 @@ public class ParameterizedTypeInstantiation extends TypeInstantiation
     /**
      * Class describing one parameter in a type instantiation.
      */
-    public static class InstantiatedParameter
+    public static final class InstantiatedParameter
     {
         /**
          * Constructor from argument expression and parameter.

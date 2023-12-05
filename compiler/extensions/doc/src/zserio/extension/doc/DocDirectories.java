@@ -5,7 +5,7 @@ import java.io.File;
 /**
  * Directory names created by this documentation extension.
  */
-class DocDirectories
+final class DocDirectories
 {
     public static final String CONTENT_DIRECTORY = "content";
     public static final String CSS_DIRECTORY = "css";

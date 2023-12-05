@@ -6,7 +6,7 @@ import zserio.tools.StringJoinUtil;
 /**
  * The class handles the Java full name construction.
  */
-final public class JavaFullNameFormatter
+public final class JavaFullNameFormatter
 {
     public static String getFullName(PackageName packageName)
     {

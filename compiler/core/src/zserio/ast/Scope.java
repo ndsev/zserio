@@ -14,7 +14,7 @@ import java.util.Map;
  *
  * Scopes are filled by ZserioAstScopeSetter.
  */
-class Scope
+final class Scope
 {
     /**
      * Constructs scope within given package and sets owner to the given Zserio type.
@@ -117,7 +117,7 @@ class Scope
     /**
      * Result of findSymbol() method.
      */
-    public static class FoundSymbol
+    public static final class FoundSymbol
     {
         /**
          * Constructor.

@@ -3,7 +3,7 @@ package zserio.ast;
 /**
  * Todo tag documentation node.
  */
-public class DocTagTodo extends DocMultiline
+public final class DocTagTodo extends DocMultiline
 {
     /**
      * Constructor.

@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * AST node for group of rules.
  */
-public class RuleGroup extends DocumentableAstNode implements PackageSymbol
+public final class RuleGroup extends DocumentableAstNode implements PackageSymbol
 {
     /**
      * Constructor

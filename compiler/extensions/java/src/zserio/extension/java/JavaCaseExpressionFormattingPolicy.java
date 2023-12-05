@@ -11,7 +11,7 @@ import zserio.ast.ZserioType;
  * use only the enum item name, not the full name (e.g. "case RED:" instead of "case Color.RED:").
  * This is different from other expressions where the full name ("Color.RED") must be used.
  */
-public class JavaCaseExpressionFormattingPolicy extends JavaDefaultExpressionFormattingPolicy
+public final class JavaCaseExpressionFormattingPolicy extends JavaDefaultExpressionFormattingPolicy
 {
     public JavaCaseExpressionFormattingPolicy(JavaNativeMapper javaNativeMapper)
     {

@@ -11,7 +11,7 @@ import zserio.extension.cpp.types.CppNativeType;
 /**
  * FreeMarker template data for ServiceEmitter.
  */
-public class ServiceEmitterTemplateData extends UserTypeTemplateData
+public final class ServiceEmitterTemplateData extends UserTypeTemplateData
 {
     public ServiceEmitterTemplateData(TemplateDataContext context, ServiceType serviceType)
             throws ZserioExtensionException
@@ -43,7 +43,7 @@ public class ServiceEmitterTemplateData extends UserTypeTemplateData
         return methodList;
     }
 
-    public static class MethodTemplateData
+    public static final class MethodTemplateData
     {
         public MethodTemplateData(TemplateDataContext context, ServiceMethod method)
                 throws ZserioExtensionException

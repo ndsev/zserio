@@ -14,7 +14,7 @@ import zserio.tools.ZserioToolPrinter;
  *
  * This field is used by all Compound types (structure types, choice types, ...).
  */
-public class Field extends DocumentableAstNode implements ScopeSymbol
+public final class Field extends DocumentableAstNode implements ScopeSymbol
 {
     /**
      * Constructor from Structure types.

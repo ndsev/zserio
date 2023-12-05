@@ -5,7 +5,7 @@ import zserio.ast.Package;
 /**
  * FreeMarker template data for HTML resource emitter.
  */
-public class HtmlResourceTemplateData
+public final class HtmlResourceTemplateData
 {
     public HtmlResourceTemplateData(TemplateDataContext context, Package rootPackage, boolean hasSchemaRules,
             String title, String bodyContent)

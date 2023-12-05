@@ -7,7 +7,7 @@ import zserio.antlr.ZserioParser;
  *
  * Float types are Zserio types as well.
  */
-public class FloatType extends BuiltInType implements FixedSizeType
+public final class FloatType extends BuiltInType implements FixedSizeType
 {
     /**
      * Constructor from AST node location, the name and the token type.

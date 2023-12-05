@@ -12,7 +12,7 @@ import zserio.extension.cpp.types.NativeStringViewType;
 /**
  * FreeMarker template data for ConstEmitter.
  */
-public class ConstEmitterTemplateData extends CppTemplateData
+public final class ConstEmitterTemplateData extends CppTemplateData
 {
     public ConstEmitterTemplateData(TemplateDataContext context, Constant constant)
             throws ZserioExtensionException

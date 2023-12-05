@@ -3,7 +3,7 @@ package zserio.extension.java.types;
 /**
  * Native Java object raw array mapping.
  */
-public class NativeEnumRawArray extends NativeRawArray
+public final class NativeEnumRawArray extends NativeRawArray
 {
     public NativeEnumRawArray()
     {

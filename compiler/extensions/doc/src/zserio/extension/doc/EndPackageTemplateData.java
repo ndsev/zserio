@@ -6,7 +6,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * FreeMarker template data for end of the package used by Package emitter.
  */
-public class EndPackageTemplateData
+public final class EndPackageTemplateData
 {
     public EndPackageTemplateData(PackageTemplateDataContext context, Package pkg)
             throws ZserioExtensionException

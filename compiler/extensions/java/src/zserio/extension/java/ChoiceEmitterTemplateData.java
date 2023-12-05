@@ -95,7 +95,7 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
         return isDefaultUnreachable;
     }
 
-    public static class CaseMember
+    public static final class CaseMember
     {
         public CaseMember(TemplateDataContext context, ChoiceType choiceType, ChoiceCase choiceCaseType)
                 throws ZserioExtensionException
@@ -120,7 +120,7 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
             return compoundField;
         }
 
-        public static class Case
+        public static final class Case
         {
             public Case(TemplateDataContext context, Expression choiceExpression) throws ZserioExtensionException
             {
@@ -149,7 +149,7 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
         private final CompoundFieldTemplateData compoundField;
     }
 
-    public static class DefaultMember
+    public static final class DefaultMember
     {
         public DefaultMember(TemplateDataContext context, ChoiceType choiceType,
                 ChoiceDefault choiceDefaultType) throws ZserioExtensionException

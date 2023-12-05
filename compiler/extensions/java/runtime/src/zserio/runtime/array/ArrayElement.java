@@ -28,13 +28,13 @@ public interface ArrayElement
     /**
      * Dummy array element.
      */
-    public static class DummyElement implements ArrayElement
+    public static final class DummyElement implements ArrayElement
     {}
 
     /**
      * Array element for bytes.
      */
-    public static class ByteArrayElement implements IntegralArrayElement
+    public static final class ByteArrayElement implements IntegralArrayElement
     {
         /**
          * Constructor.
@@ -68,7 +68,7 @@ public interface ArrayElement
     /**
      * Array element for shorts.
      */
-    public static class ShortArrayElement implements IntegralArrayElement
+    public static final class ShortArrayElement implements IntegralArrayElement
     {
         /**
          * Constructor.
@@ -102,7 +102,7 @@ public interface ArrayElement
     /**
      * Array element for ints.
      */
-    public static class IntArrayElement implements IntegralArrayElement
+    public static final class IntArrayElement implements IntegralArrayElement
     {
         /**
          * Constructor.
@@ -136,7 +136,7 @@ public interface ArrayElement
     /**
      * Array element for longs.
      */
-    public static class LongArrayElement implements IntegralArrayElement
+    public static final class LongArrayElement implements IntegralArrayElement
     {
         /**
          * Constructor.
@@ -170,7 +170,7 @@ public interface ArrayElement
     /**
      * Array element for big integers.
      */
-    public static class BigIntegerArrayElement implements IntegralArrayElement
+    public static final class BigIntegerArrayElement implements IntegralArrayElement
     {
         /**
          * Constructor.
@@ -204,7 +204,7 @@ public interface ArrayElement
     /**
      * Array element for floats.
      */
-    public static class FloatArrayElement implements ArrayElement
+    public static final class FloatArrayElement implements ArrayElement
     {
         /**
          * Constructor.
@@ -232,7 +232,7 @@ public interface ArrayElement
     /**
      * Array element for doubles.
      */
-    public static class DoubleArrayElement implements ArrayElement
+    public static final class DoubleArrayElement implements ArrayElement
     {
         /**
          * Constructor.
@@ -260,7 +260,7 @@ public interface ArrayElement
     /**
      * Array element for booleans.
      */
-    public static class BooleanArrayElement implements ArrayElement
+    public static final class BooleanArrayElement implements ArrayElement
     {
         /**
          * Constructor.
@@ -288,7 +288,7 @@ public interface ArrayElement
     /**
      * Array element for objects.
      */
-    public static class ObjectArrayElement<E> implements ArrayElement
+    public static final class ObjectArrayElement<E> implements ArrayElement
     {
         /**
          * Constructor.

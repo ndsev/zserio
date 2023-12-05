@@ -3,7 +3,7 @@ package zserio.extension.common.sql.types;
 /**
  * SQLite native type for Texts.
  */
-public class NativeTextType implements SqlNativeType
+public final class NativeTextType implements SqlNativeType
 {
     @Override
     public String getFullName()

@@ -16,7 +16,7 @@ import zserio.runtime.io.ByteArrayBitStreamReader;
  * 2. If NaN occurs. NaNs do not have unique binary representation and they must be normalized to NaNs used by
  *    writer.</p>
  */
-public class ValidationBitStreamReader extends ByteArrayBitStreamReader
+public final class ValidationBitStreamReader extends ByteArrayBitStreamReader
 {
     /**
      * Constructs a new ValidationBitStreamReader.

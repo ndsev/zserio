@@ -11,7 +11,7 @@ import zserio.tools.ZserioToolPrinter;
  *
  * Function types are Zserio types as well.
  */
-public class Function extends DocumentableAstNode implements ScopeSymbol
+public final class Function extends DocumentableAstNode implements ScopeSymbol
 {
     /**
      * Constructor.

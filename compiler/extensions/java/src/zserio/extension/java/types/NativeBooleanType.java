@@ -8,7 +8,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * Native Java boolean type mapping.
  */
-public class NativeBooleanType extends NativeIntegralType
+public final class NativeBooleanType extends NativeIntegralType
 {
     public NativeBooleanType(boolean nullable)
     {

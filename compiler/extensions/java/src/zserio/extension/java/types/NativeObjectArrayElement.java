@@ -6,7 +6,7 @@ import zserio.extension.java.JavaFullNameFormatter;
 /**
  * Native Java mapping of an object array element.
  */
-public class NativeObjectArrayElement extends NativeArrayElement
+public final class NativeObjectArrayElement extends NativeArrayElement
 {
     public NativeObjectArrayElement(PackageName packageName, String name)
     {

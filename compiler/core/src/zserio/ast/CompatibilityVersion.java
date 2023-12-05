@@ -7,7 +7,7 @@ import zserio.tools.ZserioVersion;
 /**
  * AST node for compatibility version.
  */
-public class CompatibilityVersion extends DocumentableAstNode
+public final class CompatibilityVersion extends DocumentableAstNode
 {
     /**
      * Constructor.

@@ -7,7 +7,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * Union emitter.
  */
-public class UnionEmitter extends CppDefaultEmitter
+public final class UnionEmitter extends CppDefaultEmitter
 {
     public UnionEmitter(OutputFileManager outputFileManager, CppExtensionParameters cppParameters)
     {

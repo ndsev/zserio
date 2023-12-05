@@ -11,7 +11,7 @@ import zserio.antlr.ZserioLexer;
 /**
  * The class implements validation of zserio language identifiers.
  */
-public class IdentifierValidator
+public final class IdentifierValidator
 {
     /**
      * Checks that the language identifier satisfies the requirements for safe generation.

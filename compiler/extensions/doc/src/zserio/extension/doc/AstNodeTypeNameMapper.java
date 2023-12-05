@@ -54,7 +54,7 @@ import zserio.tools.ZserioToolPrinter;
  *
  * It returns valid string even if the type for the given AST node is unknown.
  */
-class AstNodeTypeNameMapper
+final class AstNodeTypeNameMapper
 {
     public static String getTypeName(AstNode node)
     {
@@ -73,7 +73,7 @@ class AstNodeTypeNameMapper
         return typeName;
     }
 
-    private static class TypeNameVisitor extends ZserioAstDefaultVisitor
+    private static final class TypeNameVisitor extends ZserioAstDefaultVisitor
     {
         public String getTypeName()
         {

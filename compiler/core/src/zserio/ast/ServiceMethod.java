@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * AST node for service methods.
  */
-public class ServiceMethod extends DocumentableAstNode implements ScopeSymbol
+public final class ServiceMethod extends DocumentableAstNode implements ScopeSymbol
 {
     /**
      * Constructor.

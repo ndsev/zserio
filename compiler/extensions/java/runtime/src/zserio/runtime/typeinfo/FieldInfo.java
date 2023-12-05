@@ -11,7 +11,7 @@ import java.util.function.ToIntFunction;
 /**
  * Type information for compound type field.
  */
-public class FieldInfo
+public final class FieldInfo
 {
     /**
      * Constructor.

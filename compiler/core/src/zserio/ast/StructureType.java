@@ -8,7 +8,7 @@ import java.util.List;
  *
  * Structure types are Zserio types as well.
  */
-public class StructureType extends CompoundType
+public final class StructureType extends CompoundType
 {
     /**
      * Constructor.

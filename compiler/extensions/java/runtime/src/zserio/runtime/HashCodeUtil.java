@@ -8,7 +8,7 @@ import zserio.runtime.io.BitBuffer;
 /**
  * Utilities for hash code calculation.
  */
-public class HashCodeUtil
+public final class HashCodeUtil
 {
     /**
      * Calculates hash code for a boolean value.

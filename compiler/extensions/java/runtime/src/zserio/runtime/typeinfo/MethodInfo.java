@@ -3,7 +3,7 @@ package zserio.runtime.typeinfo;
 /**
  * Type information for service method.
  */
-public class MethodInfo
+public final class MethodInfo
 {
     /**
      * Constructor.

@@ -7,7 +7,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * Enumeration emitter.
  */
-class EnumerationEmitter extends JavaDefaultEmitter
+final class EnumerationEmitter extends JavaDefaultEmitter
 {
     public EnumerationEmitter(OutputFileManager outputFileManager, JavaExtensionParameters javaParameters)
     {

@@ -13,7 +13,7 @@ import zserio.tools.ZserioToolPrinter;
  *
  * Note: Regarding 'typing', consider if importing 'typing' in zserio runtime __int__.py could help.
  */
-class PythonTopLevelPackageClashChecker extends DefaultTreeWalker
+final class PythonTopLevelPackageClashChecker extends DefaultTreeWalker
 {
     @Override
     public boolean traverseTemplateInstantiations()

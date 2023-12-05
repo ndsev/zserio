@@ -14,7 +14,7 @@ package zserio.ant;
  * Arguments will be given to Zserio as -name value, i.e.
  * {@code args = { "-foo", "1", "-bar" }}
  */
-public class Argument
+public final class Argument
 {
     /**
      *

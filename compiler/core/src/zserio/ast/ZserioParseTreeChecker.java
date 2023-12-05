@@ -17,7 +17,7 @@ import zserio.tools.ZserioToolPrinter;
 /**
  * Visitor which checks grammar parse tree semantics.
  */
-public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
+public final class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
 {
     public ZserioParseTreeChecker(WarningsConfig warningsConfig, boolean allowImplicitArrays)
     {

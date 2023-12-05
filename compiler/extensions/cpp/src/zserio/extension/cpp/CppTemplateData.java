@@ -138,7 +138,7 @@ public abstract class CppTemplateData implements IncludeCollector
         return types;
     }
 
-    public static class PackageTemplateData
+    public static final class PackageTemplateData
     {
         public PackageTemplateData(CppNativeType type)
         {
@@ -163,7 +163,7 @@ public abstract class CppTemplateData implements IncludeCollector
         private final PackageName packageName;
     }
 
-    public static class GeneratorVersionTemplateData
+    public static final class GeneratorVersionTemplateData
     {
         public GeneratorVersionTemplateData(String versionString, long versionNumber)
         {
@@ -185,7 +185,7 @@ public abstract class CppTemplateData implements IncludeCollector
         private final String versionNumber;
     }
 
-    public static class TypesTemplateData
+    public static final class TypesTemplateData
     {
         public TypesTemplateData(TypesContext typesContext, CppNativeMapper nativeMapper)
         {
@@ -323,7 +323,7 @@ public abstract class CppTemplateData implements IncludeCollector
             return rawServiceDataView;
         }
 
-        public static class AllocatorTemplateData
+        public static final class AllocatorTemplateData
         {
             public AllocatorTemplateData(TypesContext typesContext)
             {
@@ -392,7 +392,7 @@ public abstract class CppTemplateData implements IncludeCollector
             private final Iterable<String> userIncludes;
         }
 
-        public static class TemplatedTypeTemplateData extends TypeTemplateData
+        public static final class TemplatedTypeTemplateData extends TypeTemplateData
         {
             public TemplatedTypeTemplateData(CppNativeType type, boolean needsAllocatorArgument)
             {

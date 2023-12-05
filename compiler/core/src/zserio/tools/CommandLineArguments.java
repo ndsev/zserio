@@ -25,7 +25,7 @@ import org.apache.commons.cli.DefaultParser;
 /**
  * The class to handle all command line arguments of Zserio Tool.
  */
-class CommandLineArguments
+final class CommandLineArguments
 {
     /**
      * Constructor.

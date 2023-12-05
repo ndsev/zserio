@@ -7,7 +7,7 @@ import zserio.antlr.ZserioLexer;
 /**
  * Implementation of ZserioAstVisitor which manages evaluating phase.
  */
-public class ZserioAstEvaluator extends ZserioAstWalker
+public final class ZserioAstEvaluator extends ZserioAstWalker
 {
     /**
      * Constructor.

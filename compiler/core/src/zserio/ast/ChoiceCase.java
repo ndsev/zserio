@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * AST node for cases defined by choice types.
  */
-public class ChoiceCase extends AstNodeBase
+public final class ChoiceCase extends AstNodeBase
 {
     /**
      * Constructor.

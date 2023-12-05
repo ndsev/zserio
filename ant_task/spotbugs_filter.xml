@@ -5,4 +5,13 @@
         <Class name="zserio.ant.ToolWrapper"/>
         <Bug pattern="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED"/>
     </Match>
+    <Match>
+        <!-- May expose internal representation by incorporating reference to mutable object. -->
+        <Bug code="EI2"/>
+        <Class name="zserio.ant.PreferLocalClassLoader"/>
+        <Or>
+            <Field name="local"/>
+            <Field name="parent"/>
+        </Or>
+    </Match>
 </FindBugsFilter>

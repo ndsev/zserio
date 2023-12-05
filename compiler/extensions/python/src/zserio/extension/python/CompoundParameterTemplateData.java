@@ -33,7 +33,7 @@ public final class CompoundParameterTemplateData
         return compoundParameterList;
     }
 
-    public static class CompoundParameter
+    public static final class CompoundParameter
     {
         public CompoundParameter(TemplateDataContext context, Parameter parameter,
                 ImportCollector importCollector, List<DocComment> compoundDocComments)

@@ -1,11 +1,5 @@
 <FindBugsFilter>
     <Match>
-        <!-- This field is never written. -->
-        <Bug code="UwF"/>
-        <Class name="~.*\.EmptyChoice.*"/>
-        <Field name="objectChoice"/>
-    </Match>
-    <Match>
         <!-- Method uses the same code for two switch clauses. -->
         <Bug code="DB"/>
         <Class name="choice_types.choice_with_array.TestChoice"/>
@@ -15,5 +9,21 @@
             <Method name="initializeOffsets"/>
             <Method name="write"/>
         </Or>
+    </Match>
+    <Match>
+        <!-- May expose internal representation by returning reference to mutable object. -->
+        <Bug code="EI"/>
+    </Match>
+    <Match>
+        <!-- May expose internal representation by incorporating reference to mutable object. -->
+        <Bug code="EI2"/>
+    </Match>
+    <Match>
+        <!-- Be wary of letting constructors throw exceptions - Should be fixed in generated code. -->
+        <Bug code="CT"/>
+    </Match>
+    <Match>
+        <!-- Unwritten field - Should be fixed in generated code. -->
+        <Bug code="UwF"/>
     </Match>
 </FindBugsFilter>

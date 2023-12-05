@@ -7,7 +7,7 @@ import zserio.ast.PackageName;
  *
  * Currently only types which depends on allocators are configurable.
  */
-public class TypesContext
+public final class TypesContext
 {
     public TypesContext(AllocatorDefinition allocator)
     {
@@ -163,7 +163,7 @@ public class TypesContext
         }
     }
 
-    public static class AllocatorDefinition
+    public static final class AllocatorDefinition
     {
         public AllocatorDefinition(String allocatorType, String allocatorSystemInclude)
         {
@@ -318,7 +318,7 @@ public class TypesContext
         return rawServiceDataView;
     }
 
-    public static class NativeTypeDefinition
+    public static final class NativeTypeDefinition
     {
         public NativeTypeDefinition(PackageName pkg, String name, boolean isTemplate,
                 boolean needsAllocatorArgument, String systemInclude)

@@ -14,7 +14,7 @@ import zserio.extension.common.ZserioExtensionException;
  * HTML resource emitter creates valid stand-alone HTML file from the converted markdown documentation comment
  * to HTML (which does not contain valid header or body).
  */
-class HtmlResourceEmitter
+final class HtmlResourceEmitter
 {
     public HtmlResourceEmitter(OutputFileManager outputFileManager, DocExtensionParameters docParameters,
             Package rootPackage, boolean hasSchemaRules)

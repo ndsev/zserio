@@ -18,7 +18,7 @@ import zserio.tools.ExtensionParameters;
  *
  * Generates Python API sources.
  */
-public class PythonExtension implements Extension
+public final class PythonExtension implements Extension
 {
     @Override
     public String getName()

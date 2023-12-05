@@ -31,7 +31,7 @@ import zserio.ast.ZserioType;
  *
  * It can return null if the package for given AST node is unknown.
  */
-class AstNodePackageMapper
+final class AstNodePackageMapper
 {
     public static Package getPackage(AstNode node)
     {
@@ -41,7 +41,7 @@ class AstNodePackageMapper
         return visitor.getPackage();
     }
 
-    private static class PackageVisitor extends ZserioAstDefaultVisitor
+    private static final class PackageVisitor extends ZserioAstDefaultVisitor
     {
         public Package getPackage()
         {

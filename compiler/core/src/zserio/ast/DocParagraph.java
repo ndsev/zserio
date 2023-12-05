@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Documentation paragraph.
  */
-public class DocParagraph extends AstNodeBase
+public final class DocParagraph extends AstNodeBase
 {
     /**
      * Constructor.

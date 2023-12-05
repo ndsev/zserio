@@ -16,7 +16,7 @@ import zserio.extension.cpp.types.CppNativeType;
 /**
  * FreeMarker template data for SqlDatabaseEmitter.
  */
-public class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
+public final class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
 {
     public SqlDatabaseEmitterTemplateData(TemplateDataContext context, SqlDatabaseType databaseType)
             throws ZserioExtensionException
@@ -34,7 +34,7 @@ public class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
         return fields;
     }
 
-    public static class DatabaseField
+    public static final class DatabaseField
     {
         public DatabaseField(TemplateDataContext context, Field field,
                 IncludeCollector includeCollector) throws ZserioExtensionException

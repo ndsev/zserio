@@ -5,7 +5,7 @@ import java.math.BigInteger;
 /**
  * SQLite native type for Integers.
  */
-public class NativeIntegerType implements SqlNativeType
+public final class NativeIntegerType implements SqlNativeType
 {
     @Override
     public String getFullName()

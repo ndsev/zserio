@@ -57,7 +57,7 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
         return items;
     }
 
-    public static class EnumItemData
+    public static final class EnumItemData
     {
         public EnumItemData(TemplateDataContext context, NativeIntegralType nativeIntegralType,
                 EnumItem enumItem) throws ZserioExtensionException

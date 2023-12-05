@@ -16,7 +16,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * FreeMarker template data for beginning of the package used by Package emitter.
  */
-public class BeginPackageTemplateData
+public final class BeginPackageTemplateData
 {
     public BeginPackageTemplateData(PackageTemplateDataContext context, Package pkg,
             Map<Package, List<AstNode>> nodesMap, HeaderNavigationTemplateData headerNavigation)
@@ -92,7 +92,7 @@ public class BeginPackageTemplateData
         return tocSymbols;
     }
 
-    public static class PackageSymbolOverviewTemplateData implements
+    public static final class PackageSymbolOverviewTemplateData implements
             Comparable<PackageSymbolOverviewTemplateData>
     {
         public PackageSymbolOverviewTemplateData(PackageTemplateDataContext context, Package pkg,
@@ -139,7 +139,7 @@ public class BeginPackageTemplateData
         private final Set<SymbolTemplateData> packageSymbols = new TreeSet<SymbolTemplateData>();
     }
 
-    public static class CompatibilityVersionTemplateData
+    public static final class CompatibilityVersionTemplateData
     {
         public CompatibilityVersionTemplateData(PackageTemplateDataContext context,
                 CompatibilityVersion compatibilityVersion)
@@ -162,7 +162,7 @@ public class BeginPackageTemplateData
         private final DocCommentsTemplateData docComments;
     }
 
-    public static class ImportTemplateData
+    public static final class ImportTemplateData
     {
         public ImportTemplateData(PackageTemplateDataContext context, Import importNode)
                 throws ZserioExtensionException

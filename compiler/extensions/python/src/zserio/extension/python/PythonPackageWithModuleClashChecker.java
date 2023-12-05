@@ -37,7 +37,7 @@ import zserio.tools.ZserioToolPrinter;
  * Note that this clashing doesn't cause problems on the file system, but it makes it almost impossible
  * to import the clashing modules since packages are always preferred by the Python import system.
  */
-class PythonPackageWithModuleClashChecker extends DefaultTreeWalker
+final class PythonPackageWithModuleClashChecker extends DefaultTreeWalker
 {
     @Override
     public boolean traverseTemplateInstantiations()

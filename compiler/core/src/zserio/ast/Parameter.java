@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * AST node for a parameter defined in the parameterized compound types.
  */
-public class Parameter extends AstNodeBase implements ScopeSymbol
+public final class Parameter extends AstNodeBase implements ScopeSymbol
 {
     /**
      * Constructor.

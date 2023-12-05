@@ -13,7 +13,7 @@ import zserio.tools.ExtensionParameters;
  * The class holds all command line parameters passed by core to the Java extension, which are really
  * used by Java emitters.
  */
-public class JavaExtensionParameters
+public final class JavaExtensionParameters
 {
     public JavaExtensionParameters(ExtensionParameters parameters)
     {

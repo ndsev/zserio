@@ -12,7 +12,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * FreeMarker template data for rules overview emitter.
  */
-public class RulesOverviewTemplateData
+public final class RulesOverviewTemplateData
 {
     public RulesOverviewTemplateData(ContentTemplateDataContext context, Package rootPackage,
             Set<PackageRulesTemplateData> packagesRuleGroups) throws ZserioExtensionException
@@ -52,7 +52,7 @@ public class RulesOverviewTemplateData
         return packagesRuleGroups;
     }
 
-    public static class PackageRulesTemplateData implements Comparable<PackageRulesTemplateData>
+    public static final class PackageRulesTemplateData implements Comparable<PackageRulesTemplateData>
     {
         public PackageRulesTemplateData(ContentTemplateDataContext context, Package pkg,
                 List<RuleGroupTemplateData> ruleGroups) throws ZserioExtensionException

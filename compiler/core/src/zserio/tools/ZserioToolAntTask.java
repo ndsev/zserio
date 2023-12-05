@@ -3,7 +3,7 @@ package zserio.tools;
 /**
  * The main class for Zserio tool to be run from Ant task.
  */
-public class ZserioToolAntTask
+public final class ZserioToolAntTask
 {
     /**
      * The entry point of Zserio tool for Ant task.

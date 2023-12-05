@@ -55,7 +55,7 @@ import zserio.extension.common.DefaultTreeWalker;
  * These maps are used by Symbol collaboration dot emitter to get information for collaboration diagrams.
  * These maps are used by Package emitter as well to get information for UsedBy section.
  */
-class UsedByCollector extends DefaultTreeWalker
+final class UsedByCollector extends DefaultTreeWalker
 {
     @Override
     public boolean traverseTemplateInstantiations()

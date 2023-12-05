@@ -11,7 +11,7 @@ import zserio.extension.common.ZserioExtensionException;
  *
  * This emitter creates main HTML index file.
  */
-class IndexEmitter
+final class IndexEmitter
 {
     public static void emit(OutputFileManager outputFileManager, DocExtensionParameters docParameters,
             Package rootPackage) throws ZserioExtensionException

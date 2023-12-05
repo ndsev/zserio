@@ -7,7 +7,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * Bitmask emitter.
  */
-class BitmaskEmitter extends PythonDefaultEmitter
+final class BitmaskEmitter extends PythonDefaultEmitter
 {
     public BitmaskEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {

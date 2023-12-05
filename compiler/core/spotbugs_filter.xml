@@ -14,4 +14,12 @@
         <Class name="zserio.extension.common.sql.SqlLiteralFormatter"/>
         <Field name="$SWITCH_TABLE$zserio$ast$Expression$ExpressionType"/>
     </Match>
+    <Match>
+        <!-- May expose internal representation by returning reference to mutable object. -->
+        <Bug code="EI"/>
+    </Match>
+    <Match>
+        <!-- May expose internal representation by incorporating reference to mutable object. -->
+        <Bug code="EI2"/>
+    </Match>
 </FindBugsFilter>

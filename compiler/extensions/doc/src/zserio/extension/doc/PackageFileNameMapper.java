@@ -9,7 +9,7 @@ import zserio.ast.PackageName;
  * This mapper returns file name which can be used to store data for the corresponding package. It properly
  * handles default package which does not have any name.
  */
-class PackageFileNameMapper
+final class PackageFileNameMapper
 {
     public static String getFileName(Package pkg)
     {

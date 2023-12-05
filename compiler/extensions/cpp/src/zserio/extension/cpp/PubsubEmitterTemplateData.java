@@ -13,7 +13,7 @@ import zserio.extension.cpp.types.CppNativeType;
 /**
  * FreeMarker template data for PubsubEmitter.
  */
-public class PubsubEmitterTemplateData extends UserTypeTemplateData
+public final class PubsubEmitterTemplateData extends UserTypeTemplateData
 {
     public PubsubEmitterTemplateData(TemplateDataContext context, PubsubType pubsubType)
             throws ZserioExtensionException
@@ -49,7 +49,7 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
         return hasSubscribing;
     }
 
-    public static class MessageTemplateData
+    public static final class MessageTemplateData
     {
         public MessageTemplateData(TemplateDataContext context, PubsubMessage message,
                 IncludeCollector includeCollector) throws ZserioExtensionException

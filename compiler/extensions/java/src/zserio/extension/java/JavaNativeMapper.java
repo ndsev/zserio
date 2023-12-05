@@ -189,7 +189,7 @@ final class JavaNativeMapper
         return visitor.getJavaTypes();
     }
 
-    private static class JavaNativeTypes
+    private static final class JavaNativeTypes
     {
         public JavaNativeTypes(JavaNativeType type, JavaNativeType nullableType)
         {
@@ -297,7 +297,7 @@ final class JavaNativeMapper
         return new JavaNativeTypes(javaType, javaNullableType);
     }
 
-    private class TypeMapperVisitor extends ZserioAstDefaultVisitor
+    private final class TypeMapperVisitor extends ZserioAstDefaultVisitor
     {
         public JavaNativeTypes getJavaTypes()
         {

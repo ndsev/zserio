@@ -6,7 +6,7 @@ package zserio.extension.doc;
  * See symbol is used as an reference for example in description of the enumeration item which is used by some
  * choice case.
  */
-public class SeeSymbolTemplateData
+public final class SeeSymbolTemplateData
 {
     public SeeSymbolTemplateData(SymbolTemplateData memberSymbol, SymbolTemplateData typeSymbol)
     {

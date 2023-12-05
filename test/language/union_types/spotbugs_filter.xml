@@ -15,12 +15,15 @@
         </Or>
     </Match>
     <Match>
-        <!-- This field is never written. -->
+        <!-- May expose internal representation by returning reference to mutable object. -->
+        <Bug code="EI"/>
+    </Match>
+    <Match>
+        <!-- Be wary of letting constructors throw exceptions - Should be fixed in generated code. -->
+        <Bug code="CT"/>
+    </Match>
+    <Match>
+        <!-- Unwritten field - Should be fixed in generated code. -->
         <Bug code="UwF"/>
-        <Or>
-            <Class name="union_types.empty_union_with_parameter.EmptyUnionWithParameter"/>
-            <Class name="union_types.empty_union.EmptyUnion"/>
-        </Or>
-        <Field name="objectChoice"/>
     </Match>
 </FindBugsFilter>

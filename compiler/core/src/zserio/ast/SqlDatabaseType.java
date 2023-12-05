@@ -8,7 +8,7 @@ import java.util.List;
  *
  * SQL Database types are Zserio types as well.
  */
-public class SqlDatabaseType extends CompoundType
+public final class SqlDatabaseType extends CompoundType
 {
     /**
      * Constructor.

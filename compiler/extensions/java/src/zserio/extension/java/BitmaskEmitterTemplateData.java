@@ -106,7 +106,7 @@ public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
         throw new ZserioExtensionException("Unexpected bitmask type instantiation!");
     }
 
-    public static class BitmaskValueData
+    public static final class BitmaskValueData
     {
         public BitmaskValueData(TemplateDataContext context, NativeIntegralType nativeBaseType,
                 BitmaskValue bitmaskValue) throws ZserioExtensionException

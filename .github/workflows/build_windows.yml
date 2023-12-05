@@ -16,7 +16,7 @@ jobs:
         python-version: ["3.8", "3.9", "3.10", "3.11"]
     env:
       CPPCHECK_HOME: "/c/Program Files/Cppcheck"
-      SPOTBUGS_HOME: "${{github.workspace}}/spotbugs-3.1.12"
+      SPOTBUGS_HOME: "${{github.workspace}}/spotbugs-4.8.2"
       PYLINT_ENABLED: 1
       MYPY_ENABLED: 1
       NU_HTML_VALIDATOR: "${{github.workspace}}/vnu-20.6.30/vnu.jar"
@@ -72,8 +72,8 @@ jobs:
 
     - name: Install specific version of Java static code analysis tool (spotbugs)
       run: |
-        wget -P "${{github.workspace}}" https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/3.1.12/spotbugs-3.1.12.zip
-        unzip "${{github.workspace}}\spotbugs-3.1.12.zip"
+        wget -P "${{github.workspace}}" https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/4.8.2/spotbugs-4.8.2.zip
+        unzip "${{github.workspace}}\spotbugs-4.8.2.zip"
 
     - name: Install specific version of HTML validator (v.Nu)
       run: |

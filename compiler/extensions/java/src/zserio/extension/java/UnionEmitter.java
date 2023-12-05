@@ -7,7 +7,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * Union emitter.
  */
-class UnionEmitter extends JavaDefaultEmitter
+final class UnionEmitter extends JavaDefaultEmitter
 {
     public UnionEmitter(OutputFileManager outputFileManager, JavaExtensionParameters javaParameters)
     {

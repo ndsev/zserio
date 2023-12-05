@@ -31,7 +31,7 @@ import zserio.tools.StringJoinUtil;
  *
  * Package emitter creates main HTML for each package containing description of all package symbols.
  */
-class PackageEmitter extends DefaultTreeWalker
+final class PackageEmitter extends DefaultTreeWalker
 {
     public PackageEmitter(OutputFileManager outputFileManager, DocExtensionParameters docParameters,
             DocResourceManager docResourceManager,SymbolCollector symbolCollector,

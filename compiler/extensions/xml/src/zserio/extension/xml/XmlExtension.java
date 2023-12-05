@@ -12,7 +12,7 @@ import zserio.extension.common.ZserioExtensionException;
 import zserio.tools.Extension;
 import zserio.tools.ExtensionParameters;
 
-public class XmlExtension implements Extension
+public final class XmlExtension implements Extension
 {
     @Override
     public String getName()

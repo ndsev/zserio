@@ -3,7 +3,7 @@ package zserio.tools;
 /**
  * Defines which extensions versions are usable by current zserio core.
  */
-class ExtensionVersionMatcher
+final class ExtensionVersionMatcher
 {
     /**
      * Check if the given extension can be used.

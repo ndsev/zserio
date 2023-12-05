@@ -10,7 +10,7 @@ import java.util.Map;
  * Since SQLite itself is case insensitive, we must ensure that all columns in SQL table and all tables
  * in SQL database are unique using case insensitive comparison.
  */
-class SqlIdentifierValidator
+final class SqlIdentifierValidator
 {
     /**
      * Validates that the symbol name satisfies requirements for safe generation.

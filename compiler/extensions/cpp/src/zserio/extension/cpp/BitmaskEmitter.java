@@ -7,7 +7,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * Bitmask emitter.
  */
-public class BitmaskEmitter extends CppDefaultEmitter
+public final class BitmaskEmitter extends CppDefaultEmitter
 {
     public BitmaskEmitter(OutputFileManager outputFileManager, CppExtensionParameters cppParameters)
     {

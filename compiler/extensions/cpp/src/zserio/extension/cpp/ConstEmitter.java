@@ -7,7 +7,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * Emitter for constants.
  */
-public class ConstEmitter extends CppDefaultEmitter
+public final class ConstEmitter extends CppDefaultEmitter
 {
     public ConstEmitter(OutputFileManager outputFileManager, CppExtensionParameters cppParameters)
     {

@@ -3,7 +3,7 @@ package zserio.tools;
 /**
  * The main class for Zserio tool to be run from Python command line.
  */
-public class ZserioToolPython
+public final class ZserioToolPython
 {
     /**
      * The entry point of Zserio tool for Python command line.

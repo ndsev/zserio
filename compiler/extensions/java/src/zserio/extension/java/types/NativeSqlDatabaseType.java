@@ -5,7 +5,7 @@ import zserio.ast.PackageName;
 /**
  * Native Java SQL database type mapping.
  */
-public class NativeSqlDatabaseType extends JavaNativeType
+public final class NativeSqlDatabaseType extends JavaNativeType
 {
     public NativeSqlDatabaseType(PackageName packageName, String name)
     {

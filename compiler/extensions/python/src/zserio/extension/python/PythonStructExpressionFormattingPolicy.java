@@ -6,7 +6,7 @@ import zserio.ast.Parameter;
 /**
  * A special formatting policy to be used in structures to access self members directly.
  */
-class PythonStructExpressionFormattingPolicy extends PythonExpressionFormattingPolicy
+final class PythonStructExpressionFormattingPolicy extends PythonExpressionFormattingPolicy
 {
     public PythonStructExpressionFormattingPolicy(TemplateDataContext context,
             ImportCollector importCollector)

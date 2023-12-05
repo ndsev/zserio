@@ -14,7 +14,7 @@ import zserio.extension.java.types.JavaNativeType;
 /**
  * FreeMarker template data for template instantiations.
  */
-public class TemplateInstantiationTemplateData
+public final class TemplateInstantiationTemplateData
 {
     public TemplateInstantiationTemplateData(TemplateDataContext context, ZserioTemplatableType template,
             List<TemplateArgument> templateArguments) throws ZserioExtensionException

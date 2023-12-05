@@ -12,7 +12,7 @@ import zserio.ast.ParserException;
 /**
  * ANTLR4 error listener implementation which terminates parsing in case of an parsing error.
  */
-public class TokenParseErrorListener extends BaseErrorListener
+public final class TokenParseErrorListener extends BaseErrorListener
 {
     /**
      * Constructor from ANTLR4 token, expects that the input is parsed from a token

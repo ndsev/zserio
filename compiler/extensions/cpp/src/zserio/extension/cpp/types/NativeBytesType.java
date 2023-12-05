@@ -2,7 +2,7 @@ package zserio.extension.cpp.types;
 
 import zserio.extension.cpp.TypesContext;
 
-public class NativeBytesType extends NativeRuntimeType implements CppNativeArrayableType
+public final class NativeBytesType extends NativeRuntimeType implements CppNativeArrayableType
 {
     public NativeBytesType(TypesContext typesContext, NativeIntegralType uint8Type)
     {

@@ -5,7 +5,7 @@ package zserio.ast;
  *
  * The exception reports whole trace of instantiation process.
  */
-public class InstantiationException extends ParserStackedException
+public final class InstantiationException extends ParserStackedException
 {
     /**
      * Constructor from parser exception and instantiation reference stack.

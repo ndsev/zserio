@@ -45,7 +45,7 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
         return methodList;
     }
 
-    public static class MethodTemplateData
+    public static final class MethodTemplateData
     {
         public MethodTemplateData(TemplateDataContext context, ServiceMethod method,
                 ImportCollector importCollector) throws ZserioExtensionException

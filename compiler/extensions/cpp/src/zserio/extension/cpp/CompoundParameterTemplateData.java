@@ -13,7 +13,7 @@ import zserio.extension.cpp.types.CppNativeType;
 /**
  * FreeMarker template data for compound parameters.
  */
-public class CompoundParameterTemplateData
+public final class CompoundParameterTemplateData
 {
     public CompoundParameterTemplateData(TemplateDataContext context, CompoundType compoundType,
             IncludeCollector includeCollector) throws ZserioExtensionException
@@ -34,7 +34,7 @@ public class CompoundParameterTemplateData
         return compoundParameterList;
     }
 
-    public static class CompoundParameter
+    public static final class CompoundParameter
     {
         public CompoundParameter(TemplateDataContext context, Parameter parameter,
                 IncludeCollector includeCollector, List<DocComment> compoundDocComments)

@@ -11,7 +11,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * FreeMarker template data for pubsubs in the package used by Package emitter.
  */
-public class PubsubTemplateData extends PackageTemplateDataBase
+public final class PubsubTemplateData extends PackageTemplateDataBase
 {
     public PubsubTemplateData(PackageTemplateDataContext context, PubsubType pubsubType) throws ZserioExtensionException
     {
@@ -26,7 +26,7 @@ public class PubsubTemplateData extends PackageTemplateDataBase
         return messageList;
     }
 
-    public static class MessageTemplateData
+    public static final class MessageTemplateData
     {
         public MessageTemplateData(PackageTemplateDataContext context, PubsubType pubsubType,
                 PubsubMessage pubsubMessage) throws ZserioExtensionException

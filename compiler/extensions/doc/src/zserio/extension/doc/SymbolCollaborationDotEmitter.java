@@ -15,7 +15,7 @@ import zserio.tools.StringJoinUtil;
  *
  * Symbol collaboration dot emitter creates symbol collaboration diagrams in DOT format for each Zserio symbol.
  */
-class SymbolCollaborationDotEmitter
+final class SymbolCollaborationDotEmitter
 {
     public static void emit(OutputFileManager outputFileManager, DocExtensionParameters docParameters,
             UsedByCollector usedByCollector) throws ZserioExtensionException

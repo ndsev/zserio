@@ -7,7 +7,7 @@ import zserio.extension.cpp.types.NativeIntegralType;
 /**
  * FreeMarker template data with info about integral types.
  */
-public class NativeIntegralTypeInfoTemplateData extends NativeTypeInfoTemplateData
+public final class NativeIntegralTypeInfoTemplateData extends NativeTypeInfoTemplateData
 {
     public NativeIntegralTypeInfoTemplateData(NativeIntegralType nativeBaseType,
             TypeInstantiation typeInstantiation) throws ZserioExtensionException

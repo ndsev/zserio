@@ -6,7 +6,7 @@ import zserio.extension.cpp.CppFullNameFormatter;
 /**
  * C++ native symbol - e.g. constant.
  */
-public class CppNativeSymbol
+public final class CppNativeSymbol
 {
     public CppNativeSymbol(PackageName packageName, String name, String includeFileName)
     {

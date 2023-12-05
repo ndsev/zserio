@@ -5,7 +5,7 @@ import zserio.ast.PackageName;
 /**
  * Native Python built-in type mapping.
  */
-public class NativeBuiltinType extends PythonNativeType
+public final class NativeBuiltinType extends PythonNativeType
 {
     public NativeBuiltinType(String builtinTypeName, NativeArrayTraits arrayTraits)
     {

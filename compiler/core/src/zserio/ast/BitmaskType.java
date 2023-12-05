@@ -11,7 +11,7 @@ import java.util.Map;
  *
  * Bitmask types are Zserio types as well.
  */
-public class BitmaskType extends DocumentableAstNode implements ZserioScopedType
+public final class BitmaskType extends DocumentableAstNode implements ZserioScopedType
 {
     /**
      * Constructor.

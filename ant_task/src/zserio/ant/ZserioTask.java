@@ -62,7 +62,7 @@ import org.apache.tools.ant.types.Path;
  *     all the required libraries (e.g. antlr.jar) and plugins (e.g. zserio_java.jar).
  *
  */
-public class ZserioTask extends Task
+public final class ZserioTask extends Task
 {
     @SuppressWarnings("unchecked")
     @Override

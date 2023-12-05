@@ -3,7 +3,7 @@ package zserio.runtime;
 /**
  * Provides type of exceptions thrown from generated code by Zserio whenever checking of constraint fails.
  */
-public class ConstraintError extends ZserioError
+public final class ConstraintError extends ZserioError
 {
     /**
      * Constructs an empty constraint error object.

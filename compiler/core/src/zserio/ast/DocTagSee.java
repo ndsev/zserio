@@ -7,7 +7,7 @@ import zserio.tools.ZserioToolPrinter;
 /**
  * See tag documentation node.
  */
-public class DocTagSee extends AstNodeBase
+public final class DocTagSee extends AstNodeBase
 {
     /**
      * Constructor.

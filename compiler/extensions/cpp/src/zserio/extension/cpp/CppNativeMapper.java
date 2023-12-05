@@ -55,7 +55,7 @@ import zserio.extension.cpp.types.NativeUserType;
  *
  * Provides mapping of types and symbols from Zserio package symbols to C++ native types and symbols.
  */
-public class CppNativeMapper
+public final class CppNativeMapper
 {
     public CppNativeMapper(TypesContext typesContext)
     {

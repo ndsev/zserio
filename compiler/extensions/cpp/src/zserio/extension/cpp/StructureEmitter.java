@@ -7,7 +7,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * Structure emitter.
  */
-public class StructureEmitter extends CppDefaultEmitter
+public final class StructureEmitter extends CppDefaultEmitter
 {
     public StructureEmitter(OutputFileManager outputFileManager, CppExtensionParameters cppParameters)
     {

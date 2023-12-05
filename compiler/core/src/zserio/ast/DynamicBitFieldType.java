@@ -8,7 +8,7 @@ import java.math.BigInteger;
  * Dynamic bit field types (int&lt;expr&gt;, bit&lt;expr&gt;, ...) are Zserio built-in bit field types with
  * length defined by expression.
  */
-public class DynamicBitFieldType extends IntegerType
+public final class DynamicBitFieldType extends IntegerType
 {
     /**
      * Constructor from AST node location, the name and the expression length.

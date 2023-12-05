@@ -13,7 +13,7 @@ import zserio.tools.ZserioToolPrinter;
  * Output file manager provides logic which decides whether it's needed to regenerate each
  * particular file based on its timestamp.
  */
-public class OutputFileManager
+public final class OutputFileManager
 {
     /**
      * Constructor.

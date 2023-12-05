@@ -7,7 +7,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * Service emitter.
  */
-public class ServiceEmitter extends CppDefaultEmitter
+public final class ServiceEmitter extends CppDefaultEmitter
 {
     public ServiceEmitter(OutputFileManager outputFileManager, CppExtensionParameters cppParameters)
     {

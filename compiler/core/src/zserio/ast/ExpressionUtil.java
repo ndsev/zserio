@@ -6,7 +6,7 @@ import java.util.Locale;
 /**
  * This class implements various utilities on Expression type.
  */
-class ExpressionUtil
+final class ExpressionUtil
 {
     /**
      * Checks expression type according given type instantiation.

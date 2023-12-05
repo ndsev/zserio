@@ -7,7 +7,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * Choice emitter.
  */
-class ChoiceEmitter extends PythonDefaultEmitter
+final class ChoiceEmitter extends PythonDefaultEmitter
 {
     public ChoiceEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {

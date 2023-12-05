@@ -6,7 +6,7 @@ import zserio.extension.common.ExpressionFormattingPolicy;
 /**
  * Template data context for structures which creates proper formatting policy.
  */
-public class StructTemplateDataContext extends TemplateDataContext
+public final class StructTemplateDataContext extends TemplateDataContext
 {
     public StructTemplateDataContext(PythonExtensionParameters pythonParameters)
     {

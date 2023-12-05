@@ -5,7 +5,7 @@ import zserio.ast.PackageName;
 /**
  * Native Java enumeration type mapping.
  */
-public class NativeEnumType extends NativeArrayableType
+public final class NativeEnumType extends NativeArrayableType
 {
     public NativeEnumType(PackageName packageName, String name, NativeIntegralType nativeBaseType,
             boolean withWriterCode)

@@ -9,7 +9,7 @@ import zserio.antlr.ZserioParser;
  *
  * Variable Integer types (varint16, varuint16, ...) are Zserio types as well.
  */
-public class VarIntegerType extends IntegerType
+public final class VarIntegerType extends IntegerType
 {
     /**
      * Constructor from AST node location, the name and the token type.

@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 /**
  * Class which represents the zserio version number and provides parsing and comparison.
  */
-public class ZserioVersion implements Comparable<ZserioVersion>
+public final class ZserioVersion implements Comparable<ZserioVersion>
 {
     /**
      * Constructor overload for convenience.

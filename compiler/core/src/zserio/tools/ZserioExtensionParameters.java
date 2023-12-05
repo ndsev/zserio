@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * The class for all parameters for Zserio extensions implementing ExtensionParameters interface.
  */
-class ZserioExtensionParameters implements ExtensionParameters
+final class ZserioExtensionParameters implements ExtensionParameters
 {
     /**
      * Constructor from command line arguments and Zserio parser.

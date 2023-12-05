@@ -5,7 +5,7 @@ import zserio.runtime.typeinfo.FieldInfo;
 /**
  * Default walk observer which just does nothing.
  */
-public class DefaultWalkObserver implements WalkObserver
+public final class DefaultWalkObserver implements WalkObserver
 {
     @Override
     public void beginRoot(Object compound)

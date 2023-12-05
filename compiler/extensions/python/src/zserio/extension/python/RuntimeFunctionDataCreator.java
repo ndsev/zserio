@@ -92,7 +92,7 @@ class RuntimeFunctionDataCreator
         return signed ? "signed_bits" : "bits";
     }
 
-    private static class Visitor extends ZserioAstDefaultVisitor
+    private static final class Visitor extends ZserioAstDefaultVisitor
     {
         public RuntimeFunctionTemplateData getTemplateData()
         {
@@ -174,7 +174,7 @@ class RuntimeFunctionDataCreator
         private RuntimeFunctionTemplateData templateData = null;
     }
 
-    private static class HashCodeSuffixVisitor extends ZserioAstDefaultVisitor
+    private static final class HashCodeSuffixVisitor extends ZserioAstDefaultVisitor
     {
         public RuntimeFunctionTemplateData getTemplateData()
         {

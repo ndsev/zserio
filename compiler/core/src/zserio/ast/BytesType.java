@@ -5,7 +5,7 @@ package zserio.ast;
  *
  * Bytes types are Zserio types as well.
  */
-public class BytesType extends BuiltInType
+public final class BytesType extends BuiltInType
 {
     /**
      * Constructor from AST node location and the name.

@@ -161,7 +161,7 @@ public final class CompoundFieldTemplateData
         return docComments;
     }
 
-    public static class RangeCheck
+    public static final class RangeCheck
     {
         public RangeCheck(BitFieldWithExpression bitFieldWithExpression, String lowerBound, String upperBound)
         {
@@ -190,7 +190,7 @@ public final class CompoundFieldTemplateData
         private final String upperBound;
     }
 
-    public static class BitFieldWithExpression
+    public static final class BitFieldWithExpression
     {
         public BitFieldWithExpression(DynamicBitFieldInstantiation dynamicBitFieldInstantiation,
                 ExpressionFormatter pythonExpressionFormatter) throws ZserioExtensionException
@@ -214,7 +214,7 @@ public final class CompoundFieldTemplateData
         private final boolean isSigned;
     }
 
-    public static class Optional
+    public static final class Optional
     {
         public Optional(Field field, ExpressionFormatter pythonExpressionFormatter, boolean isRecursive)
                 throws ZserioExtensionException
@@ -261,7 +261,7 @@ public final class CompoundFieldTemplateData
         private final boolean isRecursive;
     }
 
-    public static class BitSize
+    public static final class BitSize
     {
         public BitSize(TypeInstantiation typeInstantiation, ExpressionFormatter pythonExpressionFormatter)
                 throws ZserioExtensionException
@@ -305,7 +305,7 @@ public final class CompoundFieldTemplateData
         private final RuntimeFunctionTemplateData runtimeFunction;
     }
 
-    public static class Offset
+    public static final class Offset
     {
         public Offset(Expression offsetExpression, ExpressionFormatter pythonExpressionFormatter)
                 throws ZserioExtensionException
@@ -335,7 +335,7 @@ public final class CompoundFieldTemplateData
         private final boolean containsIndex;
     }
 
-    public static class Array
+    public static final class Array
     {
         public Array(TemplateDataContext context, ArrayInstantiation arrayInstantiation, ZserioType parentType,
                 ImportCollector importCollector) throws ZserioExtensionException
@@ -443,7 +443,7 @@ public final class CompoundFieldTemplateData
         private final Compound elementCompound;
     }
 
-    public static class Compound
+    public static final class Compound
     {
         public Compound(TemplateDataContext context,
                 ParameterizedTypeInstantiation parameterizedTypeInstantiation, ImportCollector importCollector)
@@ -474,7 +474,7 @@ public final class CompoundFieldTemplateData
             return parameters;
         }
 
-        public static class InstantiatedParameterData
+        public static final class InstantiatedParameterData
         {
             public InstantiatedParameterData(TemplateDataContext context, InstantiatedParameter instantiatedParameter,
                     ImportCollector importCollector) throws ZserioExtensionException

@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * The class handles Zserio error messages stored in the text file during compilation.
  */
-public class ZserioErrorOutput
+public final class ZserioErrorOutput
 {
     /**
      * Constructor.

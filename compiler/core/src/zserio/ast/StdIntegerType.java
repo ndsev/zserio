@@ -9,7 +9,7 @@ import zserio.antlr.ZserioParser;
  *
  * Standard Integer types (int8, uint8, ...) are Zserio types as well.
  */
-public class StdIntegerType extends IntegerType implements FixedSizeType
+public final class StdIntegerType extends IntegerType implements FixedSizeType
 {
     /**
      * Constructor from AST node location, the name and the token type.

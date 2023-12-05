@@ -13,7 +13,7 @@ import zserio.tools.ZserioToolPrinter;
  *
  * Choice types are Zserio types as well.
  */
-public class ChoiceType extends CompoundType
+public final class ChoiceType extends CompoundType
 {
     /**
      * Constructor.

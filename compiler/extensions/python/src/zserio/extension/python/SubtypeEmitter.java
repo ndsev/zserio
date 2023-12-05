@@ -7,7 +7,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * Subtype emitter.
  */
-class SubtypeEmitter extends PythonDefaultEmitter
+final class SubtypeEmitter extends PythonDefaultEmitter
 {
     public SubtypeEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {

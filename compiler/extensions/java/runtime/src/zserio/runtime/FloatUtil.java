@@ -9,7 +9,7 @@ package zserio.runtime;
  * - single precision float point format (https://en.wikipedia.org/wiki/Single-precision_floating-point_format)
  * - double precision float point format (https://en.wikipedia.org/wiki/Double-precision_floating-point_format)
  */
-public class FloatUtil
+public final class FloatUtil
 {
     /**
      * Converts 16-bit float stored in short value to 32-bit float.

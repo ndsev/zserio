@@ -6,7 +6,7 @@ import zserio.extension.java.JavaFullNameFormatter;
 /**
  * Native Java object array traits mapping.
  */
-public class NativeObjectArrayTraits extends NativeArrayTraits
+public final class NativeObjectArrayTraits extends NativeArrayTraits
 {
     public NativeObjectArrayTraits(PackageName packageName, String name, boolean withWriterCode,
             boolean isPackable)

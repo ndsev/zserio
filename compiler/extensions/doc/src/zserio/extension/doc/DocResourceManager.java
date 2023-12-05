@@ -33,7 +33,7 @@ import zserio.tools.StringJoinUtil;
  * This manager is handles properly each such link and it is responsible for copying of all corresponding
  * resources to the output directory.
  */
-class DocResourceManager
+final class DocResourceManager
 {
     public DocResourceManager(OutputFileManager outputFileManager, DocExtensionParameters docParameters,
             PackageCollector packageCollector, Package rootPackage, boolean hasSchemaRules)

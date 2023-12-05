@@ -14,7 +14,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * FreeMarker template data for enumerations in the package used by Package emitter.
  */
-public class EnumerationTemplateData extends PackageTemplateDataBase
+public final class EnumerationTemplateData extends PackageTemplateDataBase
 {
     public EnumerationTemplateData(PackageTemplateDataContext context, EnumType enumType)
             throws ZserioExtensionException
@@ -38,7 +38,7 @@ public class EnumerationTemplateData extends PackageTemplateDataBase
         return items;
     }
 
-    public static class EnumItemTemplateData
+    public static final class EnumItemTemplateData
     {
         public EnumItemTemplateData(PackageTemplateDataContext context, EnumType enumType, EnumItem enumItem)
                 throws ZserioExtensionException

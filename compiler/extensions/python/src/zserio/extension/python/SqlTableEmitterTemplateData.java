@@ -28,7 +28,7 @@ import zserio.tools.HashUtil;
 /**
  * FreeMarker template data for SqlTableEmitter.
  */
-public class SqlTableEmitterTemplateData extends UserTypeTemplateData
+public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
 {
     public SqlTableEmitterTemplateData(TemplateDataContext context, SqlTableType tableType)
             throws ZserioExtensionException
@@ -97,7 +97,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         return templateInstantiation;
     }
 
-    public static class ExplicitParameterTemplateData implements Comparable<ExplicitParameterTemplateData>
+    public static final class ExplicitParameterTemplateData implements Comparable<ExplicitParameterTemplateData>
     {
         public ExplicitParameterTemplateData(ParameterTemplateData parameterTemplateData)
         {
@@ -153,7 +153,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         private final NativeTypeInfoTemplateData typeInfo;
     }
 
-    public static class FieldTemplateData
+    public static final class FieldTemplateData
     {
         public FieldTemplateData(TemplateDataContext context, SqlTableType parentType, Field field,
                 ImportCollector importCollector) throws ZserioExtensionException
@@ -240,7 +240,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             return docComments;
         }
 
-        public static class SqlTypeTemplateData
+        public static final class SqlTypeTemplateData
         {
             public SqlTypeTemplateData(SqlNativeTypeMapper sqlNativeTypeMapper, Field field)
                     throws ZserioExtensionException
@@ -265,7 +265,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             private final boolean isBlob;
         }
 
-        public static class ParameterTemplateData
+        public static final class ParameterTemplateData
         {
             public ParameterTemplateData(TemplateDataContext context, SqlTableType tableType,
                     InstantiatedParameter instantiatedParameter, ImportCollector importCollector)

@@ -8,7 +8,7 @@ import java.util.List;
  *
  * Service types are Zserio types as well.
  */
-public class ServiceType extends DocumentableAstNode implements ZserioScopedType
+public final class ServiceType extends DocumentableAstNode implements ZserioScopedType
 {
     /**
      * Constructor.

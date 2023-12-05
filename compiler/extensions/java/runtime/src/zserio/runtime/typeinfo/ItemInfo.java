@@ -5,7 +5,7 @@ import java.math.BigInteger;
 /**
  * Type information for enumeration type item or for bitmask type value.
  */
-public class ItemInfo
+public final class ItemInfo
 {
     /**
      * Constructor.

@@ -5,7 +5,7 @@ import zserio.runtime.ZserioError;
 /**
  * Exception thrown when a call of a service method fails.
  */
-public class ServiceException extends ZserioError
+public final class ServiceException extends ZserioError
 {
     /**
      * Constructor.

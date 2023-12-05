@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * AST node for dynamic bit field type instantiation.
  */
-public class DynamicBitFieldInstantiation extends TypeInstantiation
+public final class DynamicBitFieldInstantiation extends TypeInstantiation
 {
     /**
      * Constructor.

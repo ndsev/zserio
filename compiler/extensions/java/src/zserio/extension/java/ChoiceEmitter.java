@@ -7,7 +7,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * Choice emitter.
  */
-class ChoiceEmitter extends JavaDefaultEmitter
+final class ChoiceEmitter extends JavaDefaultEmitter
 {
     public ChoiceEmitter(OutputFileManager outputFileManager, JavaExtensionParameters javaParameters)
     {

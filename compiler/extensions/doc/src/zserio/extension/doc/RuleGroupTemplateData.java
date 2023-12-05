@@ -10,7 +10,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * FreeMarker template data for rule groups in the package used by Package emitter.
  */
-public class RuleGroupTemplateData extends ContentTemplateDataBase
+public final class RuleGroupTemplateData extends ContentTemplateDataBase
 {
     public RuleGroupTemplateData(ContentTemplateDataContext context, RuleGroup ruleGroup)
             throws ZserioExtensionException
@@ -26,7 +26,7 @@ public class RuleGroupTemplateData extends ContentTemplateDataBase
         return rules;
     }
 
-    public static class RuleTemplateData
+    public static final class RuleTemplateData
     {
         RuleTemplateData(ContentTemplateDataContext context, RuleGroup ruleGroup, Rule rule)
         {

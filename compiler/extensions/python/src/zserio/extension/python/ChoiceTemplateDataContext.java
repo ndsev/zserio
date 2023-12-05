@@ -6,7 +6,7 @@ import zserio.extension.common.ExpressionFormattingPolicy;
 /**
  * Template data context for choices and unions which creates proper formatting policy.
  */
-public class ChoiceTemplateDataContext extends TemplateDataContext
+public final class ChoiceTemplateDataContext extends TemplateDataContext
 {
     public ChoiceTemplateDataContext(PythonExtensionParameters pythonParameters)
     {

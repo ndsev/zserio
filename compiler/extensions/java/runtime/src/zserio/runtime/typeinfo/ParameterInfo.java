@@ -3,7 +3,7 @@ package zserio.runtime.typeinfo;
 /**
  * Type information for compound type parameter.
  */
-public class ParameterInfo
+public final class ParameterInfo
 {
     /**
      * Constructor.

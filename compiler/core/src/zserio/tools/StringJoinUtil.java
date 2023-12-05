@@ -3,7 +3,7 @@ package zserio.tools;
 /**
  * The common string manipulation functions which join the strings.
  */
-public class StringJoinUtil
+public final class StringJoinUtil
 {
     /**
      * Joins two strings using given separator.
@@ -122,7 +122,7 @@ public class StringJoinUtil
     /**
      * Helper class for joining strings with given separator.
      */
-    public static class Joiner
+    public static final class Joiner
     {
         /**
          * Constructor from separator string.

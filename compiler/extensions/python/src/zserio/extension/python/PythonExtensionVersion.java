@@ -7,7 +7,7 @@ package zserio.extension.python;
  *
  * Expected Zserio core version will be used to check if the extension can be safely loaded.
  */
-class PythonExtensionVersion
+final class PythonExtensionVersion
 {
     /** Python extension version string. */
     public static final String PYTHON_EXTENSION_VERSION_STRING = "1.0.0";

@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 /**
  * The manager which allows to get info from resources on class path.
  */
-class ResourceManager
+final class ResourceManager
 {
     /**
      * Constructor.

@@ -32,7 +32,7 @@ import zserio.extension.common.ZserioExtensionException;
  * This map is used by Package emitter to get all symbols in package at the beginning of package traversal to
  * build symbol navigation pane.
  */
-class SymbolCollector extends DefaultTreeWalker
+final class SymbolCollector extends DefaultTreeWalker
 {
     public Map<Package, List<AstNode>> getNodesMap()
     {

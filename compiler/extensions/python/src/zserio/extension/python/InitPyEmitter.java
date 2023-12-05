@@ -14,7 +14,7 @@ import zserio.extension.common.ZserioExtensionException;
  *
  * Emits empty __init__ files for all generated packages.
  */
-class InitPyEmitter extends PythonDefaultEmitter
+final class InitPyEmitter extends PythonDefaultEmitter
 {
     public InitPyEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {

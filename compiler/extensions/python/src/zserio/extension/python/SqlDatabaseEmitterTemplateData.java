@@ -34,7 +34,7 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
         return fields;
     }
 
-    public static class DatabaseFieldData
+    public static final class DatabaseFieldData
     {
         public DatabaseFieldData(TemplateDataContext context, Field field,
                 ImportCollector importCollector) throws ZserioExtensionException

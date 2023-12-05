@@ -1,7 +1,7 @@
 package zserio.ast;
 
 /** Deprecated tag documentation node. */
-public class DocTagDeprecated extends AstNodeBase
+public final class DocTagDeprecated extends AstNodeBase
 {
     /**
      * Constructor.

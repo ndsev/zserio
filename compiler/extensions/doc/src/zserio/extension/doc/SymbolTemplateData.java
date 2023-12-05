@@ -8,7 +8,7 @@ import java.util.List;
  *
  * Symbol holds all information needed to show correct hyperlink to the symbol.
  */
-public class SymbolTemplateData implements Comparable<SymbolTemplateData>
+public final class SymbolTemplateData implements Comparable<SymbolTemplateData>
 {
     public SymbolTemplateData(String name, String typeName, String htmlTitle, String htmlLinkPage,
             String htmlLinkAnchor)
@@ -102,7 +102,7 @@ public class SymbolTemplateData implements Comparable<SymbolTemplateData>
         return templateArguments;
     }
 
-    public static class HtmlLink
+    public static final class HtmlLink
     {
         public HtmlLink(String htmlPage, String htmlAnchor)
         {

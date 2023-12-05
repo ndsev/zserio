@@ -18,7 +18,7 @@ import zserio.ast.Scope.FoundSymbol;
  *
  * - documentation comment tag see token (@see)
  */
-public class SymbolReference
+public final class SymbolReference
 {
     /**
      * Constructor from owner token and text.

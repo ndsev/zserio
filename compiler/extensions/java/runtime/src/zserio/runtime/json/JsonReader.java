@@ -20,7 +20,7 @@ import zserio.runtime.typeinfo.TypeInfo;
 /**
  * Reads zserio object tree defined by a type info from a text stream.
  */
-public class JsonReader implements AutoCloseable
+public final class JsonReader implements AutoCloseable
 {
     /**
      * Constructor.

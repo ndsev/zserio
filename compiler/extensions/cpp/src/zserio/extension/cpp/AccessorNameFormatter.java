@@ -12,7 +12,7 @@ import zserio.ast.Parameter;
  *
  * Provides names of accessors (e.g. property names) as they will be generated in C++.
  */
-public class AccessorNameFormatter
+public final class AccessorNameFormatter
 {
     public static String getGetterName(Field field)
     {

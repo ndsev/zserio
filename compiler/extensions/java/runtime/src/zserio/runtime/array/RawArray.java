@@ -60,7 +60,7 @@ public interface RawArray
     /**
      * Raw array for Java native array of bytes.
      */
-    public static class ByteRawArray implements RawArray
+    public static final class ByteRawArray implements RawArray
     {
         /**
          * Empty constructor.
@@ -129,7 +129,7 @@ public interface RawArray
     /**
      * Raw array for Java native array of shorts.
      */
-    public static class ShortRawArray implements RawArray
+    public static final class ShortRawArray implements RawArray
     {
         /**
          * Empty constructor.
@@ -198,7 +198,7 @@ public interface RawArray
     /**
      * Raw array for Java native array of ints.
      */
-    public static class IntRawArray implements RawArray
+    public static final class IntRawArray implements RawArray
     {
         /**
          * Empty constructor.
@@ -266,7 +266,7 @@ public interface RawArray
     /**
      * Raw array for Java native array of longs.
      */
-    public static class LongRawArray implements RawArray
+    public static final class LongRawArray implements RawArray
     {
         /**
          * Empty constructor.
@@ -335,7 +335,7 @@ public interface RawArray
     /**
      * Raw array for Java native array of BigIntegers.
      */
-    public static class BigIntegerRawArray implements RawArray
+    public static final class BigIntegerRawArray implements RawArray
     {
         /**
          * Empty constructor.
@@ -404,7 +404,7 @@ public interface RawArray
     /**
      * Raw array for Java native array of floats.
      */
-    public static class FloatRawArray implements RawArray
+    public static final class FloatRawArray implements RawArray
     {
         /**
          * Empty constructor.
@@ -473,7 +473,7 @@ public interface RawArray
     /**
      * Raw array for Java native array of doubles.
      */
-    public static class DoubleRawArray implements RawArray
+    public static final class DoubleRawArray implements RawArray
     {
         /**
          * Empty constructor.
@@ -542,7 +542,7 @@ public interface RawArray
     /**
      * Raw array for Java native array of booleans.
      */
-    public static class BooleanRawArray implements RawArray
+    public static final class BooleanRawArray implements RawArray
     {
         /**
          * Empty constructor.
@@ -611,7 +611,7 @@ public interface RawArray
     /**
      * Raw array for Java native array of bytes.
      */
-    public static class BytesRawArray implements RawArray
+    public static final class BytesRawArray implements RawArray
     {
         /**
          * Empty constructor.
@@ -681,7 +681,7 @@ public interface RawArray
     /**
      * Raw array for Java native array of Strings.
      */
-    public static class StringRawArray implements RawArray
+    public static final class StringRawArray implements RawArray
     {
         /**
          * Empty constructor.
@@ -751,7 +751,7 @@ public interface RawArray
     /**
      * Raw array for Java native array of BitBuffer.
      */
-    public static class BitBufferRawArray implements RawArray
+    public static final class BitBufferRawArray implements RawArray
     {
         /**
          * Empty constructor.
@@ -822,7 +822,7 @@ public interface RawArray
     /**
      * Raw array for Java native array of enums.
      */
-    public static class EnumRawArray<E extends ZserioEnum & SizeOf> implements RawArray
+    public static final class EnumRawArray<E extends ZserioEnum & SizeOf> implements RawArray
     {
         /**
          * Constructor from element class object.
@@ -900,7 +900,7 @@ public interface RawArray
     /**
      * Raw array for Java native array of objects.
      */
-    public static class ObjectRawArray<E extends SizeOf> implements RawArray
+    public static final class ObjectRawArray<E extends SizeOf> implements RawArray
     {
         /**
          * Constructor from element class object.

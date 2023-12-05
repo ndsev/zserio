@@ -64,7 +64,7 @@ class UsedByChoiceCollector extends DefaultTreeWalker
         return (usedByChoices != null) ? Collections.unmodifiableSet(usedByChoices) : EMPTY_CHOICE_TYPE_SET;
     }
 
-    public static class ChoiceCaseReference implements Comparable<ChoiceCaseReference>
+    public static final class ChoiceCaseReference implements Comparable<ChoiceCaseReference>
     {
         public ChoiceCaseReference(ChoiceType choiceType, ChoiceCase choiceCase,
                 ChoiceCaseExpression choiceCaseExpression)

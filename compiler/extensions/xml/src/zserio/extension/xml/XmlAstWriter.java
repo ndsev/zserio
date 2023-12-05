@@ -89,7 +89,7 @@ import zserio.extension.common.ZserioExtensionException;
  *
  * This visitor converts whole AST into XML format and offers possibility to save created XML to the given file.
  */
-public class XmlAstWriter implements ZserioAstVisitor
+public final class XmlAstWriter implements ZserioAstVisitor
 {
     /**
      * Constructor.

@@ -10,7 +10,7 @@ import java.util.Set;
  * The classic documentation comment text can contain HTML tags. These tags must be identified and passed
  * through without escaping.
  */
-class DocClassicToHtmlConverter
+final class DocClassicToHtmlConverter
 {
     public static String convert(String text)
     {

@@ -80,7 +80,7 @@ public interface PackedArrayTraits
      *
      * Works with single DeltaContext.
      */
-    public static class IntegralPackedArrayTraits implements PackedArrayTraits
+    public static final class IntegralPackedArrayTraits implements PackedArrayTraits
     {
         /**
          * Constructor.
@@ -200,7 +200,7 @@ public interface PackedArrayTraits
     /**
      * Packed array traits for zserio object arrays (with writer part).
      */
-    public static class WriteObjectPackedArrayTraits<E extends PackableWriter & PackableSizeOf>
+    public static final class WriteObjectPackedArrayTraits<E extends PackableWriter & PackableSizeOf>
             extends ObjectPackedArrayTraits<E>
     {
         /**

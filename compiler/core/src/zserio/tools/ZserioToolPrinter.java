@@ -6,7 +6,7 @@ import zserio.ast.AstNode;
 /**
  * Class with static methods to handle all printing possibilities from Zserio Tool.
  */
-public class ZserioToolPrinter
+public final class ZserioToolPrinter
 {
     /**
      * Prints information.

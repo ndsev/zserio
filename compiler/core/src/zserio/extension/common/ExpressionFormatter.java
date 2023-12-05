@@ -6,7 +6,7 @@ import zserio.ast.Expression;
 /**
  * Expression formatter used by all extensions.
  */
-public class ExpressionFormatter
+public final class ExpressionFormatter
 {
     /**
      * Constructor from expression formatting policy.

@@ -7,7 +7,7 @@ import zserio.ast.PackageName;
 /**
  * Native Java long type mapping.
  */
-public class NativeLongType extends NativeIntegralType
+public final class NativeLongType extends NativeIntegralType
 {
     public NativeLongType(boolean nullable, NativeArrayTraits arrayTraits)
     {

@@ -11,7 +11,7 @@ import zserio.ast.Package;
 /**
  * FreeMarker template data for Symbol collaboration dot emitter.
  */
-public class SymbolCollaborationDotTemplateData
+public final class SymbolCollaborationDotTemplateData
 {
     public SymbolCollaborationDotTemplateData(TemplateDataContext context, AstNode symbol,
             Iterable<AstNode> usedSymbols, Iterable<AstNode> usedBySymbols)
@@ -60,7 +60,7 @@ public class SymbolCollaborationDotTemplateData
         return relations;
     }
 
-    public static class PackageTemplateData
+    public static final class PackageTemplateData
     {
         public PackageTemplateData(TemplateDataContext context, Package pkg)
         {
@@ -87,7 +87,7 @@ public class SymbolCollaborationDotTemplateData
         private final List<SymbolTemplateData> symbols;
     }
 
-    public static class RelationTemplateData
+    public static final class RelationTemplateData
     {
         public RelationTemplateData(SymbolTemplateData symbolFrom, SymbolTemplateData symbolTo)
         {

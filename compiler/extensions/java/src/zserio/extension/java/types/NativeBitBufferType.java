@@ -5,7 +5,7 @@ import zserio.ast.PackageName;
 /**
  * Native Java BitBuffer type mapping.
  */
-public class NativeBitBufferType extends NativeArrayableType
+public final class NativeBitBufferType extends NativeArrayableType
 {
     public NativeBitBufferType()
     {

@@ -6,7 +6,7 @@ import zserio.extension.cpp.CppLiteralFormatter;
 /**
  * Native C++ StringView type mapping.
  */
-public class NativeStringViewType extends NativeRuntimeType
+public final class NativeStringViewType extends NativeRuntimeType
 {
     public NativeStringViewType()
     {

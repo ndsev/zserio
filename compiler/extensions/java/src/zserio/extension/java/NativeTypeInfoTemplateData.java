@@ -21,7 +21,7 @@ import zserio.extension.java.types.NativeSqlTableType;
 /**
  * FreeMarker template data with info about types.
  */
-public class NativeTypeInfoTemplateData
+public final class NativeTypeInfoTemplateData
 {
     public NativeTypeInfoTemplateData(JavaNativeType javaNativeType, TypeInstantiation typeInstantiation)
             throws ZserioExtensionException

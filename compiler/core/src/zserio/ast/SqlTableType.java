@@ -16,7 +16,7 @@ import zserio.tools.ZserioToolPrinter;
  *
  * SQL Ttypes are Zserio types as well.
  */
-public class SqlTableType extends CompoundType
+public final class SqlTableType extends CompoundType
 {
     /**
      * Constructor.

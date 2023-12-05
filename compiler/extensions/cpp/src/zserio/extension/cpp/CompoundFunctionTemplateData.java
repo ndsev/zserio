@@ -16,7 +16,7 @@ import zserio.extension.cpp.types.NativeStringViewType;
 /**
  * FreeMarker template data for compound functions.
  */
-public class CompoundFunctionTemplateData
+public final class CompoundFunctionTemplateData
 {
     public CompoundFunctionTemplateData(TemplateDataContext context, CompoundType compoundType,
             IncludeCollector includeCollector) throws ZserioExtensionException
@@ -34,7 +34,7 @@ public class CompoundFunctionTemplateData
         return compoundFunctionList;
     }
 
-    public static class CompoundFunction
+    public static final class CompoundFunction
     {
         public CompoundFunction(TemplateDataContext context, Function function,
                 IncludeCollector includeCollector) throws ZserioExtensionException

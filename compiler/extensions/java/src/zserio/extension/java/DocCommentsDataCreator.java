@@ -10,7 +10,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * Create DocCommentsTemplateData needed for documentation comments.
  */
-class DocCommentsDataCreator
+final class DocCommentsDataCreator
 {
     public static DocCommentsTemplateData createData(TemplateDataContext context,
             DocumentableAstNode documentableNode) throws ZserioExtensionException

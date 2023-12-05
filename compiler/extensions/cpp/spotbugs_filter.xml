@@ -7,4 +7,21 @@
             <Field name="$SWITCH_TABLE$zserio$extension$cpp$types$NativeArrayTraits$TYPE"/>
         </And>
     </Match>
+    <Match>
+        <!-- Be wary of letting constructors throw exceptions. -->
+        <Bug code="CT"/>
+        <Or>
+            <Class name="zserio.extension.cpp.UserTypeTemplateData"/>
+            <Class name="zserio.extension.cpp.CompoundTypeTemplateData"/>
+            <Class name="zserio.extension.cpp.NativeTypeInfoTemplateData"/>
+        </Or>
+    </Match>
+    <Match>
+        <!-- May expose internal representation by returning reference to mutable object. -->
+        <Bug code="EI"/>
+    </Match>
+    <Match>
+        <!-- May expose internal representation by incorporating reference to mutable object. -->
+        <Bug code="EI2"/>
+    </Match>
 </FindBugsFilter>

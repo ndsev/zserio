@@ -8,7 +8,7 @@ import zserio.ast.Field;
  *
  * Constraint expressions can access just read field which has not been initialized yet.
  */
-public class CppConstraintExpressionFormattingPolicy extends CppExpressionFormattingPolicy
+public final class CppConstraintExpressionFormattingPolicy extends CppExpressionFormattingPolicy
 {
     public CppConstraintExpressionFormattingPolicy(CppNativeMapper cppNativeMapper,
             IncludeCollector includeCollector, Field constraintField)

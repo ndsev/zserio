@@ -8,7 +8,7 @@ import zserio.ast.Package;
 /**
  * FreeMarker template data for header navigation menu.
  */
-public class HeaderNavigationTemplateData
+public final class HeaderNavigationTemplateData
 {
     public HeaderNavigationTemplateData(TemplateDataContext context, Package rootPackage,
             boolean hasSchemaRules, ActiveItem activeItem)
@@ -35,7 +35,7 @@ public class HeaderNavigationTemplateData
         return activeItem.getValue();
     }
 
-    public static class NavigationItem
+    public static final class NavigationItem
     {
         public NavigationItem(String name, String htmlLink)
         {

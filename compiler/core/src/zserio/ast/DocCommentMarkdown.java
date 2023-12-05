@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 /**
  * Class representing a single documentation comment in markdown style.
  */
-public class DocCommentMarkdown extends DocComment
+public final class DocCommentMarkdown extends DocComment
 {
     /**
      * Constructor.
@@ -118,7 +118,7 @@ public class DocCommentMarkdown extends DocComment
         classic.accept(currentResolver);
     }
 
-    private static class MarkdownLine
+    private static final class MarkdownLine
     {
         public MarkdownLine(AstLocation location, String text)
         {

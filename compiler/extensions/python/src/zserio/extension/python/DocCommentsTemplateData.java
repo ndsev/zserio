@@ -33,7 +33,7 @@ import zserio.ast.SqlTableType;
 /**
  * FreeMarker template data for documentation comments.
  */
-public class DocCommentsTemplateData
+public final class DocCommentsTemplateData
 {
     public DocCommentsTemplateData(TemplateDataContext context, List<DocComment> docComments)
             throws ZserioExtensionException
@@ -52,7 +52,7 @@ public class DocCommentsTemplateData
         return docParagraphs;
     }
 
-    public static class DocParagraphData
+    public static final class DocParagraphData
     {
         public DocParagraphData(TemplateDataContext context, DocParagraph docParagraph)
                 throws ZserioExtensionException
@@ -66,7 +66,7 @@ public class DocCommentsTemplateData
             return docElements;
         }
 
-        public static class DocElementData
+        public static final class DocElementData
         {
             public DocElementData(TemplateDataContext context, DocElement docElement)
                     throws ZserioExtensionException
@@ -122,7 +122,7 @@ public class DocCommentsTemplateData
         private final List<DocElementData> docElements = new ArrayList<DocElementData>();
     }
 
-    public static class DocMultilineData
+    public static final class DocMultilineData
     {
         public DocMultilineData(TemplateDataContext context, DocMultiline docMultiline)
                 throws ZserioExtensionException
@@ -136,7 +136,7 @@ public class DocCommentsTemplateData
             return lines;
         }
 
-        public static class DocLineData
+        public static final class DocLineData
         {
             public DocLineData(TemplateDataContext context, DocLine docLine) throws ZserioExtensionException
             {
@@ -154,7 +154,7 @@ public class DocCommentsTemplateData
             private final List<DocLineElementData> lineElements = new ArrayList<DocLineElementData>();
         }
 
-        public static class DocLineElementData
+        public static final class DocLineElementData
         {
             public DocLineElementData(TemplateDataContext context, DocLineElement docLineElement)
                     throws ZserioExtensionException
@@ -183,7 +183,7 @@ public class DocCommentsTemplateData
         private final List<DocLineData> lines = new ArrayList<DocLineData>();
     }
 
-    public static class DocTagSeeData
+    public static final class DocTagSeeData
     {
         public DocTagSeeData(TemplateDataContext context, DocTagSee docTagSee)
                 throws ZserioExtensionException
@@ -291,7 +291,7 @@ public class DocCommentsTemplateData
         private final boolean isCrossReference;
     }
 
-    public static class DocTagParamData
+    public static final class DocTagParamData
     {
         public DocTagParamData(TemplateDataContext context, DocTagParam docTagParam)
                 throws ZserioExtensionException

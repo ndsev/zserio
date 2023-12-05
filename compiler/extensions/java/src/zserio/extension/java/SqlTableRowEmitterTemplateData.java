@@ -47,7 +47,7 @@ public final class SqlTableRowEmitterTemplateData extends JavaTemplateData
         return fields;
     }
 
-    public static class FieldTemplateData
+    public static final class FieldTemplateData
     {
         public FieldTemplateData(TemplateDataContext context, JavaNativeMapper javaNativeMapper, Field field)
                 throws ZserioExtensionException

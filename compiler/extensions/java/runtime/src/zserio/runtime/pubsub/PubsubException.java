@@ -5,7 +5,7 @@ import zserio.runtime.ZserioError;
 /**
  * Exception thrown when an error in Pub/Sub occurs.
  */
-public class PubsubException extends ZserioError
+public final class PubsubException extends ZserioError
 {
     /**
      * Constructor.

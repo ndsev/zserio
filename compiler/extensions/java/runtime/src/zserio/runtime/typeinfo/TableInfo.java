@@ -3,7 +3,7 @@ package zserio.runtime.typeinfo;
 /**
  * Type information for SQL database table.
  */
-public class TableInfo
+public final class TableInfo
 {
     /**
      * Constructor.

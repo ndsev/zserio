@@ -5,7 +5,7 @@ import zserio.extension.python.types.NativeArrayTraits;
 /**
  * FreeMarker template data for array traits.
  */
-public class ArrayTraitsTemplateData
+public final class ArrayTraitsTemplateData
 {
     public ArrayTraitsTemplateData(NativeArrayTraits nativeTraits)
     {

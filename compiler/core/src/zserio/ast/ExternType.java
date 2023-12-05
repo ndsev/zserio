@@ -5,7 +5,7 @@ package zserio.ast;
  *
  * Extern types (Zserio keyword 'extern') are Zserio types as well.
  */
-public class ExternType extends BuiltInType
+public final class ExternType extends BuiltInType
 {
     /**
      * Constructor from AST node location and the name.

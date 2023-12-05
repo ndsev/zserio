@@ -10,7 +10,7 @@ import zserio.ast.ZserioAstDefaultVisitor;
  *
  * Checks whether the schema contains any rules.
  */
-class RuleGroupVisitor extends ZserioAstDefaultVisitor
+final class RuleGroupVisitor extends ZserioAstDefaultVisitor
 {
     public boolean hasSchemaRules()
     {

@@ -10,7 +10,7 @@ import zserio.extension.common.ZserioExtensionException;
  *
  * The style sheet emitter creates CSS styles file.
  */
-class StylesheetEmitter
+final class StylesheetEmitter
 {
     static void emit(OutputFileManager outputFileManager,
             DocExtensionParameters docParameters) throws ZserioExtensionException

@@ -10,7 +10,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * FreeMarker template data for bit size.
  */
-public class BitSizeTemplateData
+public final class BitSizeTemplateData
 {
     public BitSizeTemplateData(String value)
     {

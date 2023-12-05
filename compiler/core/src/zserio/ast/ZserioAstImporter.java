@@ -7,7 +7,7 @@ import zserio.tools.WarningsConfig;
 /**
  * Implementation of ZserioAstVisitor which manages type importing phase.
  */
-public class ZserioAstImporter extends ZserioAstWalker
+public final class ZserioAstImporter extends ZserioAstWalker
 {
     /**
      * Constructor.

@@ -7,7 +7,7 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * Emitter for constants.
  */
-class ConstEmitter extends JavaDefaultEmitter
+final class ConstEmitter extends JavaDefaultEmitter
 {
     public ConstEmitter(OutputFileManager outputFileManager, JavaExtensionParameters javaParameters)
     {

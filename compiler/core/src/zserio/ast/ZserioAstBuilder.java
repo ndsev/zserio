@@ -18,7 +18,7 @@ import zserio.tools.WarningsConfig;
 /**
  * Implementation of ZserioParserBaseVisitor which builds Zserio AST.
  */
-public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
+public final class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
 {
     /**
      * Constructor.
@@ -1211,7 +1211,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         return new FieldTypeId(location, typeInstantiation, name);
     }
 
-    private static class FieldTypeId
+    private static final class FieldTypeId
     {
         public FieldTypeId(AstLocation location, TypeInstantiation typeInstantiation, String name)
         {
@@ -1240,7 +1240,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         private final String name;
     }
 
-    private static class QualifiedName
+    private static final class QualifiedName
     {
         public QualifiedName(PackageName referencedPackageName, String referencedTypeName)
         {

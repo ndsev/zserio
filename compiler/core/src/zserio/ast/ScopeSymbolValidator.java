@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * The class implements validation of local symbol names in a ZserioType.
  */
-class ScopeSymbolValidator
+final class ScopeSymbolValidator
 {
     /**
      * Checks that the symbol name satisfies the requirements for safe generation.

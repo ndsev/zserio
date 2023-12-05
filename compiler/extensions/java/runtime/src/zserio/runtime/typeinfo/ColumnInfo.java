@@ -7,7 +7,7 @@ import java.util.function.Function;
 /**
  * Type information for SQL table column.
  */
-public class ColumnInfo
+public final class ColumnInfo
 {
     /**
      * Constructor.

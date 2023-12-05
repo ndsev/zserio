@@ -11,7 +11,7 @@ import zserio.antlr.DocCommentParser;
 /**
  * Implementation of DocCommentBaseVisitor which build the documentation comment AST.
  */
-class DocCommentAstBuilder extends DocCommentBaseVisitor<Object>
+final class DocCommentAstBuilder extends DocCommentBaseVisitor<Object>
 {
     /**
      * Constructor.

@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 /**
  * Checks that rule identifier is valid.
  */
-class RuleIdValidator
+final class RuleIdValidator
 {
     public static void validate(String ruleId, AstLocation ruleIdLocation)
     {

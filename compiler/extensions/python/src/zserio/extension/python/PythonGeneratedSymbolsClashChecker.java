@@ -30,7 +30,7 @@ import zserio.tools.ZserioToolPrinter;
  *
  * Checks that Python code generator will not produce any clashes with generated properties.
  */
-class PythonGeneratedSymbolsClashChecker extends DefaultTreeWalker
+final class PythonGeneratedSymbolsClashChecker extends DefaultTreeWalker
 {
     @Override
     public boolean traverseTemplateInstantiations()
@@ -122,7 +122,7 @@ class PythonGeneratedSymbolsClashChecker extends DefaultTreeWalker
         }
     }
 
-    private static class CompoundSymbolNameChecker extends SymbolNameChecker
+    private static final class CompoundSymbolNameChecker extends SymbolNameChecker
     {
         public CompoundSymbolNameChecker(CompoundType compoundType, String templateSourceName)
                 throws ZserioExtensionException

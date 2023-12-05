@@ -5,7 +5,7 @@ package zserio.runtime.validation;
  *
  * Validation timer calculates elapsed time in milliseconds.
  */
-public class ValidationTimer
+public final class ValidationTimer
 {
     /**
      * Default constructor.
