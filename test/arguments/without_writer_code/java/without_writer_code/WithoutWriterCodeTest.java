@@ -3,6 +3,9 @@ package without_writer_code;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
+import static test_utils.AssertionUtils.assertMethodPresent;
+import static test_utils.AssertionUtils.assertMethodNotPresent;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -30,217 +33,197 @@ public class WithoutWriterCodeTest
     @Test
     public void checkItemTypeMethods()
     {
-        final Set<String> methods = getMethods(ItemType.class);
+        assertMethodNotPresent(ItemType.class, "initializeOffsets(");
+        assertMethodNotPresent(ItemType.class, "write(");
 
-        assertMethodNotPresent(methods, "initializeOffsets(");
-        assertMethodNotPresent(methods, "write(");
-
-        assertMethodPresent(methods, "ItemType(");
-        assertMethodPresent(methods, "getValue()");
-        assertMethodPresent(methods, "getGenericValue()");
-        assertMethodPresent(methods, "readEnum(zserio.runtime.io.BitStreamReader)");
-        assertMethodPresent(methods, "toEnum(byte)");
-        assertMethodPresent(methods, "bitSizeOf()");
-        assertMethodPresent(methods, "bitSizeOf(long)");
+        assertMethodPresent(ItemType.class, "ItemType(");
+        assertMethodPresent(ItemType.class, "getValue()");
+        assertMethodPresent(ItemType.class, "getGenericValue()");
+        assertMethodPresent(ItemType.class, "readEnum(zserio.runtime.io.BitStreamReader)");
+        assertMethodPresent(ItemType.class, "toEnum(byte)");
+        assertMethodPresent(ItemType.class, "bitSizeOf()");
+        assertMethodPresent(ItemType.class, "bitSizeOf(long)");
     }
 
     @Test
     public void checkVersionAvailabilityMethods()
     {
-        final Set<String> methods = getMethods(VersionAvailability.class);
+        assertMethodNotPresent(VersionAvailability.class, "initializeOffsets(");
+        assertMethodNotPresent(VersionAvailability.class, "write(");
 
-        assertMethodNotPresent(methods, "initializeOffsets(");
-        assertMethodNotPresent(methods, "write(");
-
-        assertMethodPresent(methods, "VersionAvailability()");
-        assertMethodPresent(methods, "VersionAvailability(byte)");
-        assertMethodPresent(methods, "VersionAvailability(zserio.runtime.io.BitStreamReader");
-        assertMethodPresent(methods, "bitSizeOf()");
-        assertMethodPresent(methods, "bitSizeOf(long)");
-        assertMethodPresent(methods, "equals(java.lang.Object)");
-        assertMethodPresent(methods, "hashCode()");
-        assertMethodPresent(methods, "toString()");
-        assertMethodPresent(methods, "getValue()");
-        assertMethodPresent(methods, "getGenericValue()");
-        assertMethodPresent(methods, "or(without_writer_code.VersionAvailability)");
-        assertMethodPresent(methods, "and(without_writer_code.VersionAvailability)");
-        assertMethodPresent(methods, "xor(without_writer_code.VersionAvailability)");
-        assertMethodPresent(methods, "not()");
+        assertMethodPresent(VersionAvailability.class, "VersionAvailability()");
+        assertMethodPresent(VersionAvailability.class, "VersionAvailability(byte)");
+        assertMethodPresent(VersionAvailability.class, "VersionAvailability(zserio.runtime.io.BitStreamReader");
+        assertMethodPresent(VersionAvailability.class, "bitSizeOf()");
+        assertMethodPresent(VersionAvailability.class, "bitSizeOf(long)");
+        assertMethodPresent(VersionAvailability.class, "equals(java.lang.Object)");
+        assertMethodPresent(VersionAvailability.class, "hashCode()");
+        assertMethodPresent(VersionAvailability.class, "toString()");
+        assertMethodPresent(VersionAvailability.class, "getValue()");
+        assertMethodPresent(VersionAvailability.class, "getGenericValue()");
+        assertMethodPresent(VersionAvailability.class, "or(without_writer_code.VersionAvailability)");
+        assertMethodPresent(VersionAvailability.class, "and(without_writer_code.VersionAvailability)");
+        assertMethodPresent(VersionAvailability.class, "xor(without_writer_code.VersionAvailability)");
+        assertMethodPresent(VersionAvailability.class, "not()");
     }
 
     @Test
     public void checkExtraParamUnionMethods()
     {
-        final Set<String> methods = getMethods(ExtraParamUnion.class);
+        assertMethodNotPresent(ExtraParamUnion.class, "ExtraParamUnion()");
+        assertMethodNotPresent(ExtraParamUnion.class, "initializeOffsets(");
+        assertMethodNotPresent(ExtraParamUnion.class, "write(");
 
-        assertMethodNotPresent(methods, "ExtraParamUnion()");
-        assertMethodNotPresent(methods, "initializeOffsets(");
-        assertMethodNotPresent(methods, "write(");
-
-        assertMethodPresent(methods, "ExtraParamUnion(zserio.runtime.io.BitStreamReader");
-        assertMethodPresent(methods, "bitSizeOf()");
-        assertMethodPresent(methods, "bitSizeOf(long)");
-        assertMethodPresent(methods, "choiceTag()");
-        assertMethodPresent(methods, "equals(java.lang.Object)");
-        assertMethodPresent(methods, "hashCode()");
-        assertMethodPresent(methods, "getValue16()");
-        assertMethodPresent(methods, "getValue32()");
-        assertMethodPresent(methods, "read(zserio.runtime.io.BitStreamReader)");
+        assertMethodPresent(ExtraParamUnion.class, "ExtraParamUnion(zserio.runtime.io.BitStreamReader");
+        assertMethodPresent(ExtraParamUnion.class, "bitSizeOf()");
+        assertMethodPresent(ExtraParamUnion.class, "bitSizeOf(long)");
+        assertMethodPresent(ExtraParamUnion.class, "choiceTag()");
+        assertMethodPresent(ExtraParamUnion.class, "equals(java.lang.Object)");
+        assertMethodPresent(ExtraParamUnion.class, "hashCode()");
+        assertMethodPresent(ExtraParamUnion.class, "getValue16()");
+        assertMethodPresent(ExtraParamUnion.class, "getValue32()");
+        assertMethodPresent(ExtraParamUnion.class, "read(zserio.runtime.io.BitStreamReader)");
     }
 
     @Test
     public void checkItemMethods()
     {
-        final Set<String> methods = getMethods(Item.class);
+        assertMethodNotPresent(Item.class, "Item(without_writer_code.ItemType");
+        assertMethodNotPresent(Item.class, "initializeOffsets(");
+        assertMethodNotPresent(Item.class, "write(");
+        assertMethodNotPresent(Item.class, "setExtraParam(");
+        assertMethodNotPresent(Item.class, "isExtraParamSet(");
+        assertMethodNotPresent(Item.class, "setParam(");
 
-        assertMethodNotPresent(methods, "Item(without_writer_code.ItemType");
-        assertMethodNotPresent(methods, "initializeOffsets(");
-        assertMethodNotPresent(methods, "write(");
-        assertMethodNotPresent(methods, "setExtraParam(");
-        assertMethodNotPresent(methods, "isExtraParamSet(");
-        assertMethodNotPresent(methods, "setParam(");
-
-        assertMethodPresent(methods, "Item(zserio.runtime.io.BitStreamReader");
-        assertMethodPresent(methods, "bitSizeOf()");
-        assertMethodPresent(methods, "bitSizeOf(long)");
-        assertMethodPresent(methods, "equals(java.lang.Object)");
-        assertMethodPresent(methods, "hashCode()");
-        assertMethodPresent(methods, "getExtraParam()");
-        assertMethodPresent(methods, "getItemType()");
-        assertMethodPresent(methods, "getParam()");
-        assertMethodPresent(methods, "isExtraParamUsed()");
-        assertMethodPresent(methods, "read(zserio.runtime.io.BitStreamReader");
+        assertMethodPresent(Item.class, "Item(zserio.runtime.io.BitStreamReader");
+        assertMethodPresent(Item.class, "bitSizeOf()");
+        assertMethodPresent(Item.class, "bitSizeOf(long)");
+        assertMethodPresent(Item.class, "equals(java.lang.Object)");
+        assertMethodPresent(Item.class, "hashCode()");
+        assertMethodPresent(Item.class, "getExtraParam()");
+        assertMethodPresent(Item.class, "getItemType()");
+        assertMethodPresent(Item.class, "getParam()");
+        assertMethodPresent(Item.class, "isExtraParamUsed()");
+        assertMethodPresent(Item.class, "read(zserio.runtime.io.BitStreamReader");
     }
 
     @Test
     public void checkItemChoiceMethods()
     {
-        final Set<String> methods = getMethods(ItemChoice.class);
+        assertMethodNotPresent(ItemChoice.class, "ItemChoice(boolean)");
+        assertMethodNotPresent(ItemChoice.class, "initializeOffsets(");
+        assertMethodNotPresent(ItemChoice.class, "write(");
+        assertMethodNotPresent(ItemChoice.class, "setItem(");
+        assertMethodNotPresent(ItemChoice.class, "setParam(");
 
-        assertMethodNotPresent(methods, "ItemChoice(boolean)");
-        assertMethodNotPresent(methods, "initializeOffsets(");
-        assertMethodNotPresent(methods, "write(");
-        assertMethodNotPresent(methods, "setItem(");
-        assertMethodNotPresent(methods, "setParam(");
-
-        assertMethodPresent(methods, "ItemChoice(zserio.runtime.io.BitStreamReader");
-        assertMethodPresent(methods, "bitSizeOf()");
-        assertMethodPresent(methods, "bitSizeOf(long)");
-        assertMethodPresent(methods, "equals(java.lang.Object)");
-        assertMethodPresent(methods, "hashCode()");
-        assertMethodPresent(methods, "getHasItem()");
-        assertMethodPresent(methods, "getItem()");
-        assertMethodPresent(methods, "getParam()");
-        assertMethodPresent(methods, "read(zserio.runtime.io.BitStreamReader)");
+        assertMethodPresent(ItemChoice.class, "ItemChoice(zserio.runtime.io.BitStreamReader");
+        assertMethodPresent(ItemChoice.class, "bitSizeOf()");
+        assertMethodPresent(ItemChoice.class, "bitSizeOf(long)");
+        assertMethodPresent(ItemChoice.class, "equals(java.lang.Object)");
+        assertMethodPresent(ItemChoice.class, "hashCode()");
+        assertMethodPresent(ItemChoice.class, "getHasItem()");
+        assertMethodPresent(ItemChoice.class, "getItem()");
+        assertMethodPresent(ItemChoice.class, "getParam()");
+        assertMethodPresent(ItemChoice.class, "read(zserio.runtime.io.BitStreamReader)");
     }
 
     @Test
     public void checkItemChoiceHolderMethods()
     {
-        final Set<String> methods = getMethods(ItemChoiceHolder.class);
+        assertMethodNotPresent(ItemChoiceHolder.class, "ItemChoiceHolder()");
+        assertMethodNotPresent(ItemChoiceHolder.class, "ItemChoiceHolder(boolean");
+        assertMethodNotPresent(ItemChoiceHolder.class, "initializeOffsets(");
+        assertMethodNotPresent(ItemChoiceHolder.class, "write(");
+        assertMethodNotPresent(ItemChoiceHolder.class, "setHasItem(");
+        assertMethodNotPresent(ItemChoiceHolder.class, "setItemChoice(");
 
-        assertMethodNotPresent(methods, "ItemChoiceHolder()");
-        assertMethodNotPresent(methods, "ItemChoiceHolder(boolean");
-        assertMethodNotPresent(methods, "initializeOffsets(");
-        assertMethodNotPresent(methods, "write(");
-        assertMethodNotPresent(methods, "setHasItem(");
-        assertMethodNotPresent(methods, "setItemChoice(");
-
-        assertMethodPresent(methods, "ItemChoiceHolder(zserio.runtime.io.BitStreamReader)");
-        assertMethodPresent(methods, "bitSizeOf()");
-        assertMethodPresent(methods, "bitSizeOf(long)");
-        assertMethodPresent(methods, "equals(java.lang.Object)");
-        assertMethodPresent(methods, "hashCode()");
-        assertMethodPresent(methods, "getHasItem()");
-        assertMethodPresent(methods, "getItemChoice()");
-        assertMethodPresent(methods, "read(zserio.runtime.io.BitStreamReader)");
+        assertMethodPresent(ItemChoiceHolder.class, "ItemChoiceHolder(zserio.runtime.io.BitStreamReader)");
+        assertMethodPresent(ItemChoiceHolder.class, "bitSizeOf()");
+        assertMethodPresent(ItemChoiceHolder.class, "bitSizeOf(long)");
+        assertMethodPresent(ItemChoiceHolder.class, "equals(java.lang.Object)");
+        assertMethodPresent(ItemChoiceHolder.class, "hashCode()");
+        assertMethodPresent(ItemChoiceHolder.class, "getHasItem()");
+        assertMethodPresent(ItemChoiceHolder.class, "getItemChoice()");
+        assertMethodPresent(ItemChoiceHolder.class, "read(zserio.runtime.io.BitStreamReader)");
     }
 
     @Test
     public void checkTile()
     {
-        final Set<String> methods = getMethods(Tile.class);
+        assertMethodNotPresent(Tile.class, "Tile()");
+        assertMethodNotPresent(Tile.class, "Tile(short");
+        assertMethodNotPresent(Tile.class, "initializeOffsets(");
+        assertMethodNotPresent(Tile.class, "write(");
+        assertMethodNotPresent(Tile.class, "setVersion(");
+        assertMethodNotPresent(Tile.class, "isVersionSet(");
+        assertMethodNotPresent(Tile.class, "setNumElementsOffset(");
+        assertMethodNotPresent(Tile.class, "setVersionString(");
+        assertMethodNotPresent(Tile.class, "isVersionStringSet(");
+        assertMethodNotPresent(Tile.class, "setNumElements(");
+        assertMethodNotPresent(Tile.class, "setData(");
 
-        assertMethodNotPresent(methods, "Tile()");
-        assertMethodNotPresent(methods, "Tile(short");
-        assertMethodNotPresent(methods, "initializeOffsets(");
-        assertMethodNotPresent(methods, "write(");
-        assertMethodNotPresent(methods, "setVersion(");
-        assertMethodNotPresent(methods, "isVersionSet(");
-        assertMethodNotPresent(methods, "setNumElementsOffset(");
-        assertMethodNotPresent(methods, "setVersionString(");
-        assertMethodNotPresent(methods, "isVersionStringSet(");
-        assertMethodNotPresent(methods, "setNumElements(");
-        assertMethodNotPresent(methods, "setData(");
-
-        assertMethodPresent(methods, "Tile(zserio.runtime.io.BitStreamReader)");
-        assertMethodPresent(methods, "bitSizeOf()");
-        assertMethodPresent(methods, "bitSizeOf(long)");
-        assertMethodPresent(methods, "equals(java.lang.Object)");
-        assertMethodPresent(methods, "hashCode()");
-        assertMethodPresent(methods, "getData()");
-        assertMethodPresent(methods, "getNumElementsOffset()");
-        assertMethodPresent(methods, "getNumElements()");
-        assertMethodPresent(methods, "getVersion()");
-        assertMethodPresent(methods, "read(zserio.runtime.io.BitStreamReader)");
+        assertMethodPresent(Tile.class, "Tile(zserio.runtime.io.BitStreamReader)");
+        assertMethodPresent(Tile.class, "bitSizeOf()");
+        assertMethodPresent(Tile.class, "bitSizeOf(long)");
+        assertMethodPresent(Tile.class, "equals(java.lang.Object)");
+        assertMethodPresent(Tile.class, "hashCode()");
+        assertMethodPresent(Tile.class, "getData()");
+        assertMethodPresent(Tile.class, "getNumElementsOffset()");
+        assertMethodPresent(Tile.class, "getNumElements()");
+        assertMethodPresent(Tile.class, "getVersion()");
+        assertMethodPresent(Tile.class, "read(zserio.runtime.io.BitStreamReader)");
     }
 
     @Test
     public void checkGeoMapTableMethods()
     {
-        final Set<String> methods = getMethods(GeoMapTable.class);
+        assertMethodNotPresent(GeoMapTable.class, "createTable()");
+        assertMethodNotPresent(GeoMapTable.class, "createOrdinaryRowIdTable");
+        assertMethodNotPresent(GeoMapTable.class, "deleteTable()");
+        assertMethodNotPresent(GeoMapTable.class, "write(");
+        assertMethodNotPresent(GeoMapTable.class, "update(");
+        assertMethodNotPresent(GeoMapTable.class, "getCreateTableQuery(");
+        assertMethodNotPresent(GeoMapTable.class, "writeRow(");
+        assertMethodNotPresent(GeoMapTable.class, "startTransaction(");
+        assertMethodNotPresent(GeoMapTable.class, "endTransaction(");
 
-        assertMethodNotPresent(methods, "createTable()");
-        assertMethodNotPresent(methods, "createOrdinaryRowIdTable");
-        assertMethodNotPresent(methods, "deleteTable()");
-        assertMethodNotPresent(methods, "write(");
-        assertMethodNotPresent(methods, "update(");
-        assertMethodNotPresent(methods, "getCreateTableQuery(");
-        assertMethodNotPresent(methods, "writeRow(");
-        assertMethodNotPresent(methods, "startTransaction(");
-        assertMethodNotPresent(methods, "endTransaction(");
-
-        assertMethodPresent(methods, "GeoMapTable(java.sql.Connection");
-        assertMethodPresent(methods, "readRow(");
-        assertMethodPresent(methods, "read()");
-        assertMethodPresent(methods, "read(java.lang.String)");
+        assertMethodPresent(GeoMapTable.class, "GeoMapTable(java.sql.Connection");
+        assertMethodPresent(GeoMapTable.class, "readRow(");
+        assertMethodPresent(GeoMapTable.class, "read()");
+        assertMethodPresent(GeoMapTable.class, "read(java.lang.String)");
     }
 
     @Test
     public void checkGeoMapTableRowMethods()
     {
-        final Set<String> methods = getMethods(GeoMapTableRow.class);
-
-        assertMethodPresent(methods, "GeoMapTableRow()");
-        assertMethodPresent(methods, "getTile()");
-        assertMethodPresent(methods, "getTileId()");
-        assertMethodPresent(methods, "isNullTile()");
-        assertMethodPresent(methods, "isNullTileId()");
-        assertMethodPresent(methods, "setNullTile()");
-        assertMethodPresent(methods, "setNullTileId()");
-        assertMethodPresent(methods, "setTile(");
-        assertMethodPresent(methods, "setTileId(");
+        assertMethodPresent(GeoMapTableRow.class, "GeoMapTableRow()");
+        assertMethodPresent(GeoMapTableRow.class, "getTile()");
+        assertMethodPresent(GeoMapTableRow.class, "getTileId()");
+        assertMethodPresent(GeoMapTableRow.class, "isNullTile()");
+        assertMethodPresent(GeoMapTableRow.class, "isNullTileId()");
+        assertMethodPresent(GeoMapTableRow.class, "setNullTile()");
+        assertMethodPresent(GeoMapTableRow.class, "setNullTileId()");
+        assertMethodPresent(GeoMapTableRow.class, "setTile(");
+        assertMethodPresent(GeoMapTableRow.class, "setTileId(");
     }
 
     @Test
     public void checkWorldDbMethods()
     {
-        final Set<String> methods = getMethods(WorldDb.class);
+        assertMethodNotPresent(WorldDb.class, "createSchema(");
+        assertMethodNotPresent(WorldDb.class, "deleteSchema(");
+        assertMethodNotPresent(WorldDb.class, "startTransaction(");
+        assertMethodNotPresent(WorldDb.class, "endTransaction(");
 
-        assertMethodNotPresent(methods, "createSchema(");
-        assertMethodNotPresent(methods, "deleteSchema(");
-        assertMethodNotPresent(methods, "startTransaction(");
-        assertMethodNotPresent(methods, "endTransaction(");
-
-        assertMethodPresent(methods, "WorldDb(java.sql.Connection)");
-        assertMethodPresent(methods, "WorldDb(java.sql.Connection,");
-        assertMethodPresent(methods, "WorldDb(java.lang.String)");
-        assertMethodPresent(methods, "WorldDb(java.lang.String,");
-        assertMethodPresent(methods, "tableNames()");
-        assertMethodPresent(methods, "databaseName()");
-        assertMethodPresent(methods, "getAmerica()");
-        assertMethodPresent(methods, "getEurope()");
-        assertMethodPresent(methods, "initTables(");
+        assertMethodPresent(WorldDb.class, "WorldDb(java.sql.Connection)");
+        assertMethodPresent(WorldDb.class, "WorldDb(java.sql.Connection,");
+        assertMethodPresent(WorldDb.class, "WorldDb(java.lang.String)");
+        assertMethodPresent(WorldDb.class, "WorldDb(java.lang.String,");
+        assertMethodPresent(WorldDb.class, "tableNames()");
+        assertMethodPresent(WorldDb.class, "databaseName()");
+        assertMethodPresent(WorldDb.class, "getAmerica()");
+        assertMethodPresent(WorldDb.class, "getEurope()");
+        assertMethodPresent(WorldDb.class, "initTables(");
     }
 
     @Test
@@ -294,46 +277,6 @@ public class WithoutWriterCodeTest
             assertEquals(TILE_ID_AMERICA, americaRows.get(0).getTileId());
             checkTile(americaRows.get(0).getTile());
         }
-    }
-
-    private Set<String> getMethods(Class<?> userType)
-    {
-        final HashSet<String> methods = new HashSet<String>();
-
-        for (Constructor<?> constructor : userType.getDeclaredConstructors())
-            methods.add(constructor.toString());
-        for (Method method : userType.getDeclaredMethods())
-            methods.add(method.toString());
-
-        return methods;
-    }
-
-    private void assertMethodNotPresent(Set<String> methods, String methodPattern)
-    {
-        boolean present = false;
-        for (String method : methods)
-        {
-            if (method.indexOf(methodPattern) != -1)
-            {
-                present = true;
-                break;
-            }
-        }
-        assertFalse(present, "Method '" + methodPattern + "' is present!");
-    }
-
-    private void assertMethodPresent(Set<String> methods, String methodPattern)
-    {
-        boolean present = false;
-        for (String method : methods)
-        {
-            if (method.indexOf(methodPattern) != -1)
-            {
-                present = true;
-                break;
-            }
-        }
-        assertTrue(present, "Method '" + methodPattern + "' is not present!");
     }
 
     private Connection createWorldDb() throws SQLException, IOException

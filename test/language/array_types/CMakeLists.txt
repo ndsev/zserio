@@ -108,6 +108,43 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_uint8/PackedVariableArray.h
     ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_uint8/PackedVariableArray.cpp
 
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/PackingInterfaceOptimization.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/PackingInterfaceOptimization.h
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/UnpackedColorBitmask.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/UnpackedColorBitmask.h
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/UnpackedColorEnum.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/UnpackedColorEnum.h
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/UnpackedColorChoice.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/UnpackedColorChoice.h
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/UnpackedColorsHolder.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/UnpackedColorsHolder.h
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/UnpackedColorStruct.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/UnpackedColorStruct.h
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/UnpackedColorUnion.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/UnpackedColorUnion.h
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/MixedColorBitmask.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/MixedColorBitmask.h
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/MixedColorEnum.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/MixedColorEnum.h
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/MixedColorChoice.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/MixedColorChoice.h
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/MixedColorStruct.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/MixedColorStruct.h
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/MixedColorUnion.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/MixedColorUnion.h
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/PackedColorBitmask.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/PackedColorBitmask.h
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/PackedColorEnum.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/PackedColorEnum.h
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/PackedColorChoice.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/PackedColorChoice.h
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/PackedColorsHolder.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/PackedColorsHolder.h
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/PackedColorStruct.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/PackedColorStruct.h
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/PackedColorUnion.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packing_interface_optimization/PackedColorUnion.h
+
     ${ZSERIO_GEN_DIR}/array_types/variable_array_struct_cast_int8/VariableArray.cpp
     ${ZSERIO_GEN_DIR}/array_types/variable_array_struct_cast_int8/VariableArray.h
     ${ZSERIO_GEN_DIR}/array_types/variable_array_struct_cast_int8/TestStructure.cpp
@@ -163,6 +200,7 @@ add_custom_test(array_types
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedVariableArrayStructRecursionTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedVariableArrayStructTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackedVariableArrayUInt8Test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackingInterfaceOptimizationTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/VariableArrayStructCastInt8Test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/VariableArrayStructCastVarUIntTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/VariableArraySubtypedStructTest.cpp

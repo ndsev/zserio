@@ -1,20 +1,15 @@
-package parameterized_types.param_with_optional;
+package parameterized_types.nested_parameterized_field;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.File;
-import java.math.BigInteger;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
-
-import parameterized_types.nested_parameterized_field.TopLevel;
-import parameterized_types.nested_parameterized_field.ParamHolder;
-import parameterized_types.nested_parameterized_field.Param;
 
 public class NestedParameterizedFieldTest
 {

@@ -52,12 +52,13 @@ class ${name}:
         instance = cls()
         instance._value = reader.read_${runtimeFunction.suffix}(${runtimeFunction.arg!})
         return instance
+<#if usedInPackedArray>
 
     @classmethod
     def from_reader_packed(cls: typing.Type['${name}'],
                            delta_context: zserio.array.DeltaContext,
                            reader: zserio.BitStreamReader) -> '${name}':
-<#if withCodeComments>
+    <#if withCodeComments>
         """
         Returns new object instance constructed from bit stream reader.
 
@@ -67,11 +68,12 @@ class ${name}:
         :param reader: Bit stream reader to use.
         """
 
-</#if>
+    </#if>
         instance = cls()
         instance._value = delta_context.read(<@array_traits_create underlyingTypeInfo.arrayTraits, bitSize!/>,
                                              reader)
         return instance
+</#if>
 <#if withTypeInfoCode>
 
     @staticmethod

@@ -32,6 +32,7 @@ cert-err58-cpp:cpp/PackedFixedArrayUInt8Test.cpp
 cert-err58-cpp:cpp/PackedVariableArrayStructRecursionTest.cpp
 cert-err58-cpp:cpp/PackedVariableArrayStructTest.cpp
 cert-err58-cpp:cpp/PackedVariableArrayUInt8Test.cpp
+cert-err58-cpp:cpp/PackingInterfaceOptimizationTest.cpp
 cert-err58-cpp:cpp/VariableArrayStructCastInt8Test.cpp
 cert-err58-cpp:cpp/VariableArrayStructCastVarUIntTest.cpp
 cert-err58-cpp:cpp/VariableArraySubtypedStructTest.cpp
@@ -48,11 +49,21 @@ cppcoreguidelines-pro-type-member-init:gen/array_types/packed_variable_array_str
 cppcoreguidelines-pro-type-member-init:gen/array_types/packed_variable_array_struct/TestChoice.cpp
 cppcoreguidelines-pro-type-member-init:gen/array_types/packed_variable_array_struct/TestPackedArray.cpp
 cppcoreguidelines-pro-type-member-init:gen/array_types/packed_variable_array_struct/TestUnpackedArray.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/packing_interface_optimization/MixedColorChoice.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/packing_interface_optimization/PackedColorChoice.cpp
+cppcoreguidelines-pro-type-member-init:gen/array_types/packing_interface_optimization/UnpackedColorChoice.cpp
 cppcoreguidelines-pro-type-member-init:gen/array_types/variable_array_ternary_operator/VariableArrayElement.cpp
 
 google-explicit-constructor:gen/array_types/arrays_mapping/TestBitmask.h
 google-explicit-constructor:gen/array_types/packed_arrays_mapping/TestBitmask.h
 google-explicit-constructor:gen/array_types/packed_variable_array_struct/TestBitmask.h
+google-explicit-constructor:gen/array_types/packing_interface_optimization/MixedColorBitmask.h
+google-explicit-constructor:gen/array_types/packing_interface_optimization/PackedColorBitmask.h
+google-explicit-constructor:gen/array_types/packing_interface_optimization/UnpackedColorBitmask.h
+
+hicpp-signed-bitwise:gen/array_types/packing_interface_optimization/MixedColorBitmask.h
+hicpp-signed-bitwise:gen/array_types/packing_interface_optimization/PackedColorBitmask.h
+hicpp-signed-bitwise:gen/array_types/packing_interface_optimization/UnpackedColorBitmask.h
 
 hicpp-multiway-paths-covered:gen/array_types/packed_auto_array_removed_enum_item/Traffic.cpp
 
@@ -67,6 +78,9 @@ performance-move-const-arg:gen/array_types/packed_variable_array_struct/PackedVa
 performance-move-const-arg:gen/array_types/packed_variable_array_struct/TestChoice.cpp
 performance-move-const-arg:gen/array_types/packed_variable_array_struct/TestStructure.cpp
 performance-move-const-arg:gen/array_types/packed_variable_array_struct/TestUnion.cpp
+performance-move-const-arg:gen/array_types/packing_interface_optimization/MixedColorStruct.cpp
+performance-move-const-arg:gen/array_types/packing_interface_optimization/PackedColorStruct.cpp
+performance-move-const-arg:gen/array_types/packing_interface_optimization/UnpackedColorStruct.cpp
 performance-move-const-arg:gen/array_types/variable_array_ternary_operator/VariableArray.cpp
 performance-move-const-arg:gen/array_types/variable_array_ternary_operator/VariableArrayElement.cpp
 
@@ -80,7 +94,16 @@ readability-make-member-function-const:gen/array_types/packed_variable_array_str
 readability-make-member-function-const:gen/array_types/packed_variable_array_struct/TestStructure.cpp
 readability-make-member-function-const:gen/array_types/packed_variable_array_struct/Value32.cpp
 readability-make-member-function-const:gen/array_types/packed_variable_array_uint8/PackedVariableArray.cpp
+readability-make-member-function-const:gen/array_types/packing_interface_optimization/MixedColorChoice.cpp
+readability-make-member-function-const:gen/array_types/packing_interface_optimization/MixedColorStruct.cpp
+readability-make-member-function-const:gen/array_types/packing_interface_optimization/PackedColorChoice.cpp
+readability-make-member-function-const:gen/array_types/packing_interface_optimization/PackedColorStruct.cpp
+readability-make-member-function-const:gen/array_types/packing_interface_optimization/UnpackedColorChoice.cpp
+readability-make-member-function-const:gen/array_types/packing_interface_optimization/UnpackedColorStruct.cpp
 readability-make-member-function-const:gen/array_types/variable_array_ternary_operator/VariableArrayElement.cpp
 
 readability-simplify-boolean-expr:gen/array_types/packed_auto_array_empty_compounds/EmptyChoice.cpp
 readability-simplify-boolean-expr:gen/array_types/packed_auto_array_empty_compounds/EmptyUnion.cpp
+readability-simplify-boolean-expr:gen/array_types/packing_interface_optimization/MixedColorChoice.cpp
+readability-simplify-boolean-expr:gen/array_types/packing_interface_optimization/PackedColorChoice.cpp
+readability-simplify-boolean-expr:gen/array_types/packing_interface_optimization/UnpackedColorChoice.cpp

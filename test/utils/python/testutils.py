@@ -7,6 +7,7 @@ import re
 import sys
 import importlib
 import subprocess
+import inspect
 
 class TestConfig:
     """
@@ -187,6 +188,64 @@ def assertWarningsPresent(test, mainZsFile, expectedWarnings):
 
     _assertMessagesPresent(test, mainZsFile, test.warnings, expectedWarnings, "warning")
 
+def assertMethodPresent(test, userType, method):
+    """
+    Checks that the method name is present in the given user defined type.
+
+    :param test: Current test.
+    :param userType: User defined type.
+    :param method: The method to check.
+    """
+
+    test.assertTrue(hasattr(userType, method),
+                    msg=f"Method '{method}' is not present in '{userType.__name__}'! {_assertLocation()}")
+
+def assertMethodNotPresent(test, userType, method):
+    """
+    Checks that the method name is not present in the given user defined type.
+
+    :param test: Current test.
+    :param userType: User defined type.
+    :param method: The method to check.
+    """
+
+    test.assertFalse(hasattr(userType, method),
+                     msg=f"Method '{method}' is present in '{userType.__name__}'! {_assertLocation()}")
+
+def assertPropertyPresent(test, userType, prop, *, readOnly):
+    """
+    Checks that the property name is present in the given user defined type.
+
+    :param test: Current test.
+    :param userType: User defined type.
+    :param prop: The property to check.
+    :param readOnly: Whether the property shall be read only.
+    """
+
+    test.assertTrue(
+        hasattr(userType, prop),
+        msg=f"Property '{prop}' is not present in '{userType.__name__}'! {_assertLocation()}"
+    )
+    propAttr = getattr(userType, prop)
+    test.assertTrue(
+        isinstance(propAttr, property),
+        msg=f"Attribute '{prop}' is not a property in '{userType.__name__}'! {_assertLocation()}"
+    )
+    test.assertIsNotNone(
+        propAttr.fget,
+        msg=f"Property '{prop}' getter is not set in '{userType.__name__}'! {_assertLocation()}"
+    )
+    if readOnly:
+        test.assertIsNone(
+            propAttr.fset,
+            msg=f"Read-only property '{prop}' setter is set in '{userType.__name__}'! {_assertLocation()}"
+        )
+    else:
+        test.assertIsNotNone(
+            propAttr.fset,
+            msg=f"Property '{prop}' setter is not set in '{userType.__name__}'! {_assertLocation()}"
+        )
+
 class ZserioCompilerError(Exception):
     """
     Zserio compiler error.
@@ -289,6 +348,12 @@ def _importModule(path, modulePath):
     api = importlib.import_module(modulePath)
     sys.path.remove(path)
     return api
+
+def _assertLocation(depth=2):
+    frame = inspect.currentframe()
+    for _ in range(depth):
+        frame = frame.f_back
+    return f"{frame.f_code.co_filename}:{frame.f_lineno}"
 
 def _assertMessagesPresent(test, mainZsFile, errorOutputDict, expectedMessages, messageType):
     """

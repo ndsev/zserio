@@ -3,7 +3,8 @@ import os
 import apsw
 import zserio
 
-from testutils import getZserioApi, getApiDir
+from testutils import (getZserioApi, getApiDir,
+                       assertMethodPresent, assertMethodNotPresent, assertPropertyPresent)
 
 class WithoutWriterCodeTest(unittest.TestCase):
     @classmethod
@@ -13,136 +14,136 @@ class WithoutWriterCodeTest(unittest.TestCase):
     def testItemTypeMethods(self):
         userType = self.api.ItemType
 
-        self._assertMethodNotPresent(userType, "initialize_offsets")
-        self._assertMethodNotPresent(userType, "write")
+        assertMethodNotPresent(self, userType, "initialize_offsets")
+        assertMethodNotPresent(self, userType, "write")
 
-        self._assertMethodPresent(userType, "from_reader")
-        self._assertMethodPresent(userType, "bitsizeof")
+        assertMethodPresent(self, userType, "from_reader")
+        assertMethodPresent(self, userType, "bitsizeof")
 
     def testVersionAvailabilityMethods(self):
         userType = self.api.VersionAvailability
 
-        self._assertMethodNotPresent(userType, "initialize_offsets")
-        self._assertMethodNotPresent(userType, "write")
+        assertMethodNotPresent(self, userType, "initialize_offsets")
+        assertMethodNotPresent(self, userType, "write")
 
-        self._assertMethodPresent(userType, "__init__")
-        self._assertMethodPresent(userType, "from_value")
-        self._assertMethodPresent(userType, "from_reader")
-        self._assertMethodPresent(userType, "__eq__")
-        self._assertMethodPresent(userType, "__hash__")
-        self._assertMethodPresent(userType, "__str__")
-        self._assertMethodPresent(userType, "__or__")
-        self._assertMethodPresent(userType, "__and__")
-        self._assertMethodPresent(userType, "__xor__")
-        self._assertMethodPresent(userType, "__invert__")
+        assertMethodPresent(self, userType, "__init__")
+        assertMethodPresent(self, userType, "from_value")
+        assertMethodPresent(self, userType, "from_reader")
+        assertMethodPresent(self, userType, "__eq__")
+        assertMethodPresent(self, userType, "__hash__")
+        assertMethodPresent(self, userType, "__str__")
+        assertMethodPresent(self, userType, "__or__")
+        assertMethodPresent(self, userType, "__and__")
+        assertMethodPresent(self, userType, "__xor__")
+        assertMethodPresent(self, userType, "__invert__")
 
-        self._assertPropertyPresent(userType, "value", readOnly=True)
+        assertPropertyPresent(self, userType, "value", readOnly=True)
 
     def testExtraParamUnionMethods(self):
         userType = self.api.ExtraParamUnion
 
-        self._assertMethodNotPresent(userType, "initialize_offsets")
-        self._assertMethodNotPresent(userType, "write")
+        assertMethodNotPresent(self, userType, "initialize_offsets")
+        assertMethodNotPresent(self, userType, "write")
 
-        self._assertMethodPresent(userType, "__init__")
-        self._assertMethodPresent(userType, "read")
-        self._assertMethodPresent(userType, "from_reader")
-        self._assertMethodPresent(userType, "bitsizeof")
+        assertMethodPresent(self, userType, "__init__")
+        assertMethodPresent(self, userType, "read")
+        assertMethodPresent(self, userType, "from_reader")
+        assertMethodPresent(self, userType, "bitsizeof")
 
-        self._assertPropertyPresent(userType, "choice_tag", readOnly=True)
-        self._assertPropertyPresent(userType, "value16", readOnly=True)
-        self._assertPropertyPresent(userType, "value32", readOnly=True)
+        assertPropertyPresent(self, userType, "choice_tag", readOnly=True)
+        assertPropertyPresent(self, userType, "value16", readOnly=True)
+        assertPropertyPresent(self, userType, "value32", readOnly=True)
 
     def testItemMethods(self):
         userType = self.api.Item
 
-        self._assertMethodNotPresent(userType, "is_extra_param_set")
-        self._assertMethodNotPresent(userType, "initialize_offsets")
-        self._assertMethodNotPresent(userType, "write")
-        self._assertMethodNotPresent(userType, "from_fields")
+        assertMethodNotPresent(self, userType, "is_extra_param_set")
+        assertMethodNotPresent(self, userType, "initialize_offsets")
+        assertMethodNotPresent(self, userType, "write")
+        assertMethodNotPresent(self, userType, "from_fields")
 
-        self._assertMethodPresent(userType, "__init__")
-        self._assertMethodPresent(userType, "read")
-        self._assertMethodPresent(userType, "from_reader")
-        self._assertMethodPresent(userType, "bitsizeof")
+        assertMethodPresent(self, userType, "__init__")
+        assertMethodPresent(self, userType, "read")
+        assertMethodPresent(self, userType, "from_reader")
+        assertMethodPresent(self, userType, "bitsizeof")
 
-        self._assertPropertyPresent(userType, "item_type", readOnly=True)
-        self._assertPropertyPresent(userType, "param", readOnly=True)
-        self._assertPropertyPresent(userType, "extra_param", readOnly=True)
+        assertPropertyPresent(self, userType, "item_type", readOnly=True)
+        assertPropertyPresent(self, userType, "param", readOnly=True)
+        assertPropertyPresent(self, userType, "extra_param", readOnly=True)
 
     def testItemChoiceMethods(self):
         userType = self.api.ItemChoice
 
-        self._assertMethodNotPresent(userType, "initialize_offsets")
-        self._assertMethodNotPresent(userType, "write")
+        assertMethodNotPresent(self, userType, "initialize_offsets")
+        assertMethodNotPresent(self, userType, "write")
 
-        self._assertMethodPresent(userType, "__init__")
-        self._assertMethodPresent(userType, "read")
-        self._assertMethodPresent(userType, "from_reader")
-        self._assertMethodPresent(userType, "bitsizeof")
+        assertMethodPresent(self, userType, "__init__")
+        assertMethodPresent(self, userType, "read")
+        assertMethodPresent(self, userType, "from_reader")
+        assertMethodPresent(self, userType, "bitsizeof")
 
-        self._assertPropertyPresent(userType, "has_item", readOnly=True)
-        self._assertPropertyPresent(userType, "item", readOnly=True)
-        self._assertPropertyPresent(userType, "param", readOnly=True)
+        assertPropertyPresent(self, userType, "has_item", readOnly=True)
+        assertPropertyPresent(self, userType, "item", readOnly=True)
+        assertPropertyPresent(self, userType, "param", readOnly=True)
 
     def testItemChoiceHolderMethods(self):
         userType = self.api.ItemChoiceHolder
 
-        self._assertMethodNotPresent(userType, "initialize_offsets")
-        self._assertMethodNotPresent(userType, "write")
-        self._assertMethodNotPresent(userType, "from_fields")
+        assertMethodNotPresent(self, userType, "initialize_offsets")
+        assertMethodNotPresent(self, userType, "write")
+        assertMethodNotPresent(self, userType, "from_fields")
 
-        self._assertMethodPresent(userType, "__init__")
-        self._assertMethodPresent(userType, "read")
-        self._assertMethodPresent(userType, "from_reader")
-        self._assertMethodPresent(userType, "bitsizeof")
+        assertMethodPresent(self, userType, "__init__")
+        assertMethodPresent(self, userType, "read")
+        assertMethodPresent(self, userType, "from_reader")
+        assertMethodPresent(self, userType, "bitsizeof")
 
-        self._assertPropertyPresent(userType, "has_item", readOnly=True)
-        self._assertPropertyPresent(userType, "item_choice", readOnly=True)
+        assertPropertyPresent(self, userType, "has_item", readOnly=True)
+        assertPropertyPresent(self, userType, "item_choice", readOnly=True)
 
     def testTileMethods(self):
         userType = self.api.Tile
 
-        self._assertMethodNotPresent(userType, "is_version_set")
-        self._assertMethodNotPresent(userType, "is_version_string_set")
-        self._assertMethodNotPresent(userType, "initialize_offsets")
-        self._assertMethodNotPresent(userType, "write")
-        self._assertMethodNotPresent(userType, "from_fields")
+        assertMethodNotPresent(self, userType, "is_version_set")
+        assertMethodNotPresent(self, userType, "is_version_string_set")
+        assertMethodNotPresent(self, userType, "initialize_offsets")
+        assertMethodNotPresent(self, userType, "write")
+        assertMethodNotPresent(self, userType, "from_fields")
 
-        self._assertMethodPresent(userType, "__init__")
-        self._assertMethodPresent(userType, "read")
-        self._assertMethodPresent(userType, "from_reader")
-        self._assertMethodPresent(userType, "bitsizeof")
+        assertMethodPresent(self, userType, "__init__")
+        assertMethodPresent(self, userType, "read")
+        assertMethodPresent(self, userType, "from_reader")
+        assertMethodPresent(self, userType, "bitsizeof")
 
-        self._assertPropertyPresent(userType, "version", readOnly=True)
-        self._assertPropertyPresent(userType, "num_elements_offset", readOnly=True)
-        self._assertPropertyPresent(userType, "num_elements", readOnly=True)
-        self._assertPropertyPresent(userType, "data", readOnly=True)
+        assertPropertyPresent(self, userType, "version", readOnly=True)
+        assertPropertyPresent(self, userType, "num_elements_offset", readOnly=True)
+        assertPropertyPresent(self, userType, "num_elements", readOnly=True)
+        assertPropertyPresent(self, userType, "data", readOnly=True)
 
     def testGeoMapTableMethods(self):
         userType = self.api.GeoMapTable
 
-        self._assertMethodNotPresent(userType, "create_table")
-        self._assertMethodNotPresent(userType, "delete_table")
-        self._assertMethodNotPresent(userType, "write")
-        self._assertMethodNotPresent(userType, "update")
+        assertMethodNotPresent(self, userType, "create_table")
+        assertMethodNotPresent(self, userType, "delete_table")
+        assertMethodNotPresent(self, userType, "write")
+        assertMethodNotPresent(self, userType, "update")
 
-        self._assertMethodPresent(userType, "__init__")
-        self._assertMethodPresent(userType, "read")
+        assertMethodPresent(self, userType, "__init__")
+        assertMethodPresent(self, userType, "read")
 
     def testWorldDbMethods(self):
         userType = self.api.WorldDb
 
-        self._assertMethodNotPresent(userType, "create_schema")
-        self._assertMethodNotPresent(userType, "delete_schema")
+        assertMethodNotPresent(self, userType, "create_schema")
+        assertMethodNotPresent(self, userType, "delete_schema")
 
-        self._assertMethodPresent(userType, "__init__")
-        self._assertMethodPresent(userType, "from_file")
-        self._assertMethodPresent(userType, "close")
+        assertMethodPresent(self, userType, "__init__")
+        assertMethodPresent(self, userType, "from_file")
+        assertMethodPresent(self, userType, "close")
 
-        self._assertPropertyPresent(userType, "europe", readOnly=True)
-        self._assertPropertyPresent(userType, "america", readOnly=True)
-        self._assertPropertyPresent(userType, "connection", readOnly=True)
+        assertPropertyPresent(self, userType, "europe", readOnly=True)
+        assertPropertyPresent(self, userType, "america", readOnly=True)
+        assertPropertyPresent(self, userType, "connection", readOnly=True)
 
         # static constants
         self.assertTrue(hasattr(userType, "DATABASE_NAME"))
@@ -270,39 +271,6 @@ class WithoutWriterCodeTest(unittest.TestCase):
         itemChoice1 = data[1].item_choice
         self.assertFalse(itemChoice1.has_item)
         self.assertEqual(PARAMS[1], itemChoice1.param)
-
-    def _assertMethodNotPresent(self, userType, method):
-        self.assertFalse(hasattr(userType, method),
-                         msg=f"Method '{method}' is present in '{userType.__name__}'!")
-
-    def _assertMethodPresent(self, userType, method):
-        self.assertTrue(hasattr(userType, method),
-                        msg=f"Method '{method}' is not present in '{userType.__name__}'!")
-
-    def _assertPropertyPresent(self, userType, prop, *, readOnly):
-        self.assertTrue(
-            hasattr(userType, prop),
-            msg=f"Property '{prop}' is not present in '{userType.__name__}'!"
-        )
-        propAttr = getattr(userType, prop)
-        self.assertTrue(
-            isinstance(propAttr, property),
-            msg=f"Attribute '{prop}' is not a property in '{userType.__name__}'!"
-        )
-        self.assertIsNotNone(
-            propAttr.fget,
-            msg=f"Property '{prop}' getter is not set in '{userType.__name__}'!"
-        )
-        if readOnly:
-            self.assertIsNone(
-                propAttr.fset,
-                msg=f"Read-only property '{prop}' setter is set in '{userType.__name__}'!"
-            )
-        else:
-            self.assertIsNotNone(
-                propAttr.fset,
-                msg=f"Property '{prop}' setter is not set in '{userType.__name__}'!"
-            )
 
 BLOB_NAME = os.path.join(getApiDir(os.path.dirname(__file__)), "without_writer_code.blob")
 

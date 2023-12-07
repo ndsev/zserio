@@ -1,5 +1,3 @@
-#include <fstream>
-#include <string>
 #include <type_traits>
 
 #include "gtest/gtest.h"
@@ -11,6 +9,8 @@
 #include "zserio/StringView.h"
 #include "zserio/RebindAlloc.h"
 #include "zserio/pmr/PolymorphicAllocator.h"
+
+#include "test_utils/Assertions.h"
 
 namespace without_writer_code
 {
@@ -276,54 +276,6 @@ using MethodNames = BasicMethodNames<allocator_type>;
 class WithoutWriterCode : public ::testing::Test
 {
 protected:
-    bool isStringInFilePresent(const std::string& fileName, const char* str)
-    {
-        std::ifstream file(fileName.c_str());
-        bool isPresent = false;
-        std::string line;
-        while (std::getline(file, line))
-        {
-            if (line.find(str) != std::string::npos)
-            {
-                isPresent = true;
-                break;
-            }
-        }
-        file.close();
-
-        return isPresent;
-    }
-
-    void assertMethodNotPresent(const char* typeName, const char* declaration, const char* definition)
-    {
-        const std::string filePath = std::string(PATH) + typeName;
-        if (declaration != nullptr)
-        {
-            ASSERT_FALSE(isStringInFilePresent(filePath + ".h", declaration))
-                    << "Method declaration '" << declaration << "' is present in '" << typeName << "'!";
-        }
-        if (definition != nullptr)
-        {
-            ASSERT_FALSE(isStringInFilePresent(filePath + ".cpp", definition))
-                    << "Method definition '" << definition << "' is present'" << typeName << "'!";
-        }
-    }
-
-    void assertMethodPresent(const char* typeName, const char* declaration, const char* definition)
-    {
-        const std::string filePath = std::string(PATH) + typeName;
-        if (declaration != nullptr)
-        {
-            ASSERT_TRUE(isStringInFilePresent(filePath + ".h", declaration))
-                    << "Method declaration '" << declaration << "' is not present in '" << typeName << "'!";
-        }
-        if (definition != nullptr)
-        {
-            ASSERT_TRUE(isStringInFilePresent(filePath + ".cpp", definition))
-                    << "Method definition '" << definition << "' is not present in '" << typeName << "'!";
-        }
-    }
-
     void createWorldDb(zserio::SqliteConnection& db)
     {
         sqlite3* connection = nullptr;
@@ -470,17 +422,17 @@ TEST_F(WithoutWriterCode, checkItemTypeMethods)
 {
     const char* type = "ItemType";
 
-    assertMethodNotPresent(type, "size_t initializeOffsets<", "size_t initializeOffsets(");
-    assertMethodNotPresent(type, "void write<", "void write<");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "size_t initializeOffsets<", "size_t initializeOffsets(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "void write<", "void write<");
 
-    assertMethodPresent(type, MethodNames::ITEM_TYPE_TYPE_INFO, MethodNames::ITEM_TYPE_TYPE_INFO);
-    assertMethodPresent(type, MethodNames::ITEM_TYPE_REFLECTABLE, MethodNames::ITEM_TYPE_REFLECTABLE);
+    ASSERT_METHOD_PRESENT(PATH, type, MethodNames::ITEM_TYPE_TYPE_INFO, MethodNames::ITEM_TYPE_TYPE_INFO);
+    ASSERT_METHOD_PRESENT(PATH, type, MethodNames::ITEM_TYPE_REFLECTABLE, MethodNames::ITEM_TYPE_REFLECTABLE);
 
-    assertMethodPresent(type, "size_t enumToOrdinal<", "size_t enumToOrdinal(");
-    assertMethodPresent(type, "ItemType valueToEnum<", "ItemType valueToEnum(");
-    assertMethodPresent(type, "size_t bitSizeOf<::without_writer_code::ItemType>" ,
+    ASSERT_METHOD_PRESENT(PATH, type, "size_t enumToOrdinal<", "size_t enumToOrdinal(");
+    ASSERT_METHOD_PRESENT(PATH, type, "ItemType valueToEnum<", "ItemType valueToEnum(");
+    ASSERT_METHOD_PRESENT(PATH, type, "size_t bitSizeOf<::without_writer_code::ItemType>" ,
             "size_t bitSizeOf(::without_writer_code::ItemType");
-    assertMethodPresent(type, "ItemType read<::without_writer_code::ItemType",
+    ASSERT_METHOD_PRESENT(PATH, type, "ItemType read<::without_writer_code::ItemType",
             "ItemType read(::zserio::BitStreamReader&");
 }
 
@@ -488,32 +440,36 @@ TEST_F(WithoutWriterCode, checkVersionAvailabilityMethods)
 {
     const char* type = "VersionAvailability";
 
-    assertMethodNotPresent(type, "size_t initializeOffsets(", "size_t VersionAvailability::initializeOffsets(");
-    assertMethodNotPresent(type, "void write(", "void VersionAvailability::write(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type,
+            "size_t initializeOffsets(", "size_t VersionAvailability::initializeOffsets(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "void write(", "void VersionAvailability::write(");
 
-    assertMethodPresent(type, "constexpr VersionAvailability() noexcept", nullptr);
-    assertMethodPresent(type, "VersionAvailability(::zserio::BitStreamReader&",
+    ASSERT_METHOD_PRESENT(PATH, type, "constexpr VersionAvailability() noexcept", nullptr);
+    ASSERT_METHOD_PRESENT(PATH, type, "VersionAvailability(::zserio::BitStreamReader&",
             "VersionAvailability::VersionAvailability(::zserio::BitStreamReader&");
-    assertMethodPresent(type, "constexpr VersionAvailability(Values value) noexcept :", nullptr);
-    assertMethodPresent(type, "VersionAvailability(underlying_type value)",
+    ASSERT_METHOD_PRESENT(PATH, type, "constexpr VersionAvailability(Values value) noexcept :", nullptr);
+    ASSERT_METHOD_PRESENT(PATH, type, "VersionAvailability(underlying_type value)",
             "VersionAvailability::VersionAvailability(underlying_type value)");
-    assertMethodPresent(type, "~VersionAvailability() = default;", nullptr);
-    assertMethodPresent(type, "VersionAvailability(const VersionAvailability&) = default;", nullptr);
-    assertMethodPresent(type, "VersionAvailability& operator=(const VersionAvailability&) = default;", nullptr);
-    assertMethodPresent(type, "VersionAvailability(VersionAvailability&&) = default;", nullptr);
-    assertMethodPresent(type, "VersionAvailability& operator=(VersionAvailability&&) = default;", nullptr);
+    ASSERT_METHOD_PRESENT(PATH, type, "~VersionAvailability() = default;", nullptr);
+    ASSERT_METHOD_PRESENT(PATH, type, "VersionAvailability(const VersionAvailability&) = default;", nullptr);
+    ASSERT_METHOD_PRESENT(PATH, type, "VersionAvailability& operator=(const VersionAvailability&) = default;",
+            nullptr);
+    ASSERT_METHOD_PRESENT(PATH, type, "VersionAvailability(VersionAvailability&&) = default;", nullptr);
+    ASSERT_METHOD_PRESENT(PATH, type, "VersionAvailability& operator=(VersionAvailability&&) = default;",
+            nullptr);
 
-    assertMethodPresent(type, MethodNames::TYPE_INFO_DECLARATION,
+    ASSERT_METHOD_PRESENT(PATH, type, MethodNames::TYPE_INFO_DECLARATION,
             MethodNames::VERSION_AVAILABILITY_TYPE_INFO_DEFINITION);
-    assertMethodPresent(type, MethodNames::VERSION_AVAILABILITY_REFLECTABLE_DECLARATION,
+    ASSERT_METHOD_PRESENT(PATH, type, MethodNames::VERSION_AVAILABILITY_REFLECTABLE_DECLARATION,
             MethodNames::VERSION_AVAILABILITY_REFLECTABLE_DEFINITION);
 
-    assertMethodPresent(type, "constexpr explicit operator underlying_type() const", nullptr);
-    assertMethodPresent(type, "constexpr underlying_type getValue() const", nullptr);
-    assertMethodPresent(type, "size_t bitSizeOf(size_t bitPosition = 0) const",
+    ASSERT_METHOD_PRESENT(PATH, type, "constexpr explicit operator underlying_type() const", nullptr);
+    ASSERT_METHOD_PRESENT(PATH, type, "constexpr underlying_type getValue() const", nullptr);
+    ASSERT_METHOD_PRESENT(PATH, type, "size_t bitSizeOf(size_t bitPosition = 0) const",
             "size_t VersionAvailability::bitSizeOf(size_t) const");
-    assertMethodPresent(type, "uint32_t hashCode() const", "uint32_t VersionAvailability::hashCode() const");
-    assertMethodPresent(type, MethodNames::TO_STRING_DECLARATION,
+    ASSERT_METHOD_PRESENT(PATH, type,
+            "uint32_t hashCode() const", "uint32_t VersionAvailability::hashCode() const");
+    ASSERT_METHOD_PRESENT(PATH, type, MethodNames::TO_STRING_DECLARATION,
             MethodNames::TO_STRING_DEFINITION);
 }
 
@@ -521,197 +477,203 @@ TEST_F(WithoutWriterCode, checkExtraParamUnionMethods)
 {
     const char* type = "ExtraParamUnion";
 
-    assertMethodNotPresent(type, " ExtraParamUnion()", "ExtraParamUnion::ExtraParamUnion()");
-    assertMethodNotPresent(type, "size_t initializeOffsets(", "size_t ExtraParamUnion::initializeOffsets(");
-    assertMethodNotPresent(type, "void write(", "void ExtraParamUnion::write(");
-    assertMethodNotPresent(type, MethodNames::REFLECTABLE_DECLARATION,
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, " ExtraParamUnion()", "ExtraParamUnion::ExtraParamUnion()");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type,
+            "size_t initializeOffsets(", "size_t ExtraParamUnion::initializeOffsets(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "void write(", "void ExtraParamUnion::write(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, MethodNames::REFLECTABLE_DECLARATION,
             MethodNames::EXTRA_PARAM_UNION_REFLECTABLE_DEFINITION);
 
-    assertMethodPresent(type, "ExtraParamUnion(::zserio::BitStreamReader&",
+    ASSERT_METHOD_PRESENT(PATH, type, "ExtraParamUnion(::zserio::BitStreamReader&",
             "ExtraParamUnion::ExtraParamUnion(::zserio::BitStreamReader&");
-    assertMethodPresent(type, "~ExtraParamUnion() = default;", nullptr);
-    assertMethodPresent(type, "ExtraParamUnion(const ExtraParamUnion&) = default;", nullptr);
-    assertMethodPresent(type, "ExtraParamUnion& operator=(const ExtraParamUnion&) = default;", nullptr);
-    assertMethodPresent(type, "ExtraParamUnion(ExtraParamUnion&&) = default;", nullptr);
-    assertMethodPresent(type, "ExtraParamUnion& operator=(ExtraParamUnion&&) = default;", nullptr);
-    assertMethodPresent(type, "ExtraParamUnion(::zserio::PropagateAllocatorT,",
+    ASSERT_METHOD_PRESENT(PATH, type, "~ExtraParamUnion() = default;", nullptr);
+    ASSERT_METHOD_PRESENT(PATH, type, "ExtraParamUnion(const ExtraParamUnion&) = default;", nullptr);
+    ASSERT_METHOD_PRESENT(PATH, type, "ExtraParamUnion& operator=(const ExtraParamUnion&) = default;", nullptr);
+    ASSERT_METHOD_PRESENT(PATH, type, "ExtraParamUnion(ExtraParamUnion&&) = default;", nullptr);
+    ASSERT_METHOD_PRESENT(PATH, type, "ExtraParamUnion& operator=(ExtraParamUnion&&) = default;", nullptr);
+    ASSERT_METHOD_PRESENT(PATH, type, "ExtraParamUnion(::zserio::PropagateAllocatorT,",
             "ExtraParamUnion::ExtraParamUnion(::zserio::PropagateAllocatorT,");
 
-    assertMethodPresent(type, MethodNames::TYPE_INFO_DECLARATION,
+    ASSERT_METHOD_PRESENT(PATH, type, MethodNames::TYPE_INFO_DECLARATION,
             MethodNames::EXTRA_PARAM_UNION_TYPE_INFO_DEFINITION);
-    assertMethodPresent(type, MethodNames::REFLECTABLE_CONST_DECLARATION,
+    ASSERT_METHOD_PRESENT(PATH, type, MethodNames::REFLECTABLE_CONST_DECLARATION,
             MethodNames::EXTRA_PARAM_UNION_REFLECTABLE_CONST_DEFINITION);
 
-    assertMethodPresent(type, "ChoiceTag choiceTag(", "ChoiceTag ExtraParamUnion::choiceTag(");
-    assertMethodPresent(type, "uint16_t getValue16(", "uint16_t ExtraParamUnion::getValue16(");
-    assertMethodPresent(type, "uint32_t getValue32(", "uint32_t ExtraParamUnion::getValue32(");
-    assertMethodPresent(type, "size_t bitSizeOf(", "size_t ExtraParamUnion::bitSizeOf(");
-    assertMethodPresent(type, "bool operator==(", "bool ExtraParamUnion::operator==(");
-    assertMethodPresent(type, "uint32_t hashCode(", "uint32_t ExtraParamUnion::hashCode(");
+    ASSERT_METHOD_PRESENT(PATH, type, "ChoiceTag choiceTag(", "ChoiceTag ExtraParamUnion::choiceTag(");
+    ASSERT_METHOD_PRESENT(PATH, type, "uint16_t getValue16(", "uint16_t ExtraParamUnion::getValue16(");
+    ASSERT_METHOD_PRESENT(PATH, type, "uint32_t getValue32(", "uint32_t ExtraParamUnion::getValue32(");
+    ASSERT_METHOD_PRESENT(PATH, type, "size_t bitSizeOf(", "size_t ExtraParamUnion::bitSizeOf(");
+    ASSERT_METHOD_PRESENT(PATH, type, "bool operator==(", "bool ExtraParamUnion::operator==(");
+    ASSERT_METHOD_PRESENT(PATH, type, "uint32_t hashCode(", "uint32_t ExtraParamUnion::hashCode(");
 }
 
 TEST_F(WithoutWriterCode, checkItemMethods)
 {
     const char* type = "Item";
 
-    assertMethodNotPresent(type, " Item()", "Item::Item()");
-    assertMethodNotPresent(type, "void setExtraParam(", "void Item::setExtraParam(");
-    assertMethodNotPresent(type, "bool isExtraParamSet(", "bool Item::isExtraParamSet(");
-    assertMethodNotPresent(type, "void resetExtraParam(", "void Item::resetExtraParam(");
-    assertMethodNotPresent(type, "void setParam(", "void Item::setParam(");
-    assertMethodNotPresent(type, "size_t initializeOffsets(", "size_t Item::initializeOffsets(");
-    assertMethodNotPresent(type, "void write(", "void Item::write(");
-    assertMethodNotPresent(type, MethodNames::REFLECTABLE_DECLARATION,
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, " Item()", "Item::Item()");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "void setExtraParam(", "void Item::setExtraParam(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "bool isExtraParamSet(", "bool Item::isExtraParamSet(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "void resetExtraParam(", "void Item::resetExtraParam(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "void setParam(", "void Item::setParam(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "size_t initializeOffsets(", "size_t Item::initializeOffsets(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "void write(", "void Item::write(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, MethodNames::REFLECTABLE_DECLARATION,
             MethodNames::ITEM_REFLECTABLE_DEFINITION);
 
-    assertMethodPresent(type, "Item(::zserio::BitStreamReader&", "Item::Item(::zserio::BitStreamReader&");
-    assertMethodPresent(type, "~Item() = default;", nullptr);
-    assertMethodPresent(type, "Item(const Item&", "Item::Item(const Item&");
-    assertMethodPresent(type, "Item& operator=(const Item&", "Item& Item::operator=(const Item&");
-    assertMethodPresent(type, "Item(Item&&", "Item::Item(Item&&");
-    assertMethodPresent(type, "Item& operator=(Item&&", "Item& Item::operator=(Item&&");
-    assertMethodPresent(type, "Item(::zserio::PropagateAllocatorT,",
+    ASSERT_METHOD_PRESENT(PATH, type,
+            "Item(::zserio::BitStreamReader&", "Item::Item(::zserio::BitStreamReader&");
+    ASSERT_METHOD_PRESENT(PATH, type, "~Item() = default;", nullptr);
+    ASSERT_METHOD_PRESENT(PATH, type, "Item(const Item&", "Item::Item(const Item&");
+    ASSERT_METHOD_PRESENT(PATH, type, "Item& operator=(const Item&", "Item& Item::operator=(const Item&");
+    ASSERT_METHOD_PRESENT(PATH, type, "Item(Item&&", "Item::Item(Item&&");
+    ASSERT_METHOD_PRESENT(PATH, type, "Item& operator=(Item&&", "Item& Item::operator=(Item&&");
+    ASSERT_METHOD_PRESENT(PATH, type, "Item(::zserio::PropagateAllocatorT,",
             "Item::Item(::zserio::PropagateAllocatorT,");
 
-    assertMethodPresent(type, MethodNames::TYPE_INFO_DECLARATION,
+    ASSERT_METHOD_PRESENT(PATH, type, MethodNames::TYPE_INFO_DECLARATION,
             MethodNames::ITEM_TYPE_INFO_DEFINITION);
-    assertMethodPresent(type, MethodNames::REFLECTABLE_CONST_DECLARATION,
+    ASSERT_METHOD_PRESENT(PATH, type, MethodNames::REFLECTABLE_CONST_DECLARATION,
             MethodNames::ITEM_REFLECTABLE_CONST_DEFINITION);
 
-    assertMethodPresent(type, "void initialize(", "void Item::initialize(");
-    assertMethodPresent(type, "bool isInitialized(", "bool Item::isInitialized(");
-    assertMethodPresent(type, "ItemType getItemType() const", "ItemType Item::getItemType() const");
-    assertMethodPresent(type, "uint16_t getParam(", "uint16_t Item::getParam(");
-    assertMethodPresent(type, "& getExtraParam(", "& Item::getExtraParam(");
-    assertMethodPresent(type, "bool isExtraParamUsed(", "bool Item::isExtraParamUsed(");
-    assertMethodPresent(type, "size_t bitSizeOf(", "size_t Item::bitSizeOf(");
-    assertMethodPresent(type, "bool operator==(", "bool Item::operator==(");
-    assertMethodPresent(type, "uint32_t hashCode(", "uint32_t Item::hashCode(");
+    ASSERT_METHOD_PRESENT(PATH, type, "void initialize(", "void Item::initialize(");
+    ASSERT_METHOD_PRESENT(PATH, type, "bool isInitialized(", "bool Item::isInitialized(");
+    ASSERT_METHOD_PRESENT(PATH, type, "ItemType getItemType() const", "ItemType Item::getItemType() const");
+    ASSERT_METHOD_PRESENT(PATH, type, "uint16_t getParam(", "uint16_t Item::getParam(");
+    ASSERT_METHOD_PRESENT(PATH, type, "& getExtraParam(", "& Item::getExtraParam(");
+    ASSERT_METHOD_PRESENT(PATH, type, "bool isExtraParamUsed(", "bool Item::isExtraParamUsed(");
+    ASSERT_METHOD_PRESENT(PATH, type, "size_t bitSizeOf(", "size_t Item::bitSizeOf(");
+    ASSERT_METHOD_PRESENT(PATH, type, "bool operator==(", "bool Item::operator==(");
+    ASSERT_METHOD_PRESENT(PATH, type, "uint32_t hashCode(", "uint32_t Item::hashCode(");
 }
 
 TEST_F(WithoutWriterCode, checkItemChoiceMethods)
 {
     const char* type = "ItemChoice";
 
-    assertMethodNotPresent(type, " ItemChoice()", "ItemChoice::ItemChoice()");
-    assertMethodNotPresent(type, "size_t initializeOffsets(", "size_t ItemChoice::initializeOffsets(");
-    assertMethodNotPresent(type, "void write(", "void ItemChoice::write(");
-    assertMethodNotPresent(type, MethodNames::REFLECTABLE_DECLARATION,
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, " ItemChoice()", "ItemChoice::ItemChoice()");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "size_t initializeOffsets(", "size_t ItemChoice::initializeOffsets(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "void write(", "void ItemChoice::write(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, MethodNames::REFLECTABLE_DECLARATION,
             MethodNames::ITEM_CHOICE_REFLECTABLE_DEFINITION);
 
-    assertMethodPresent(type, "ItemChoice(::zserio::BitStreamReader&",
+    ASSERT_METHOD_PRESENT(PATH, type, "ItemChoice(::zserio::BitStreamReader&",
             "ItemChoice::ItemChoice(::zserio::BitStreamReader&");
-    assertMethodPresent(type, "~ItemChoice() = default;", nullptr);
-    assertMethodPresent(type, "ItemChoice(const ItemChoice&", "ItemChoice::ItemChoice(const ItemChoice&");
-    assertMethodPresent(type, "ItemChoice& operator=(const ItemChoice&",
+    ASSERT_METHOD_PRESENT(PATH, type, "~ItemChoice() = default;", nullptr);
+    ASSERT_METHOD_PRESENT(PATH, type,
+            "ItemChoice(const ItemChoice&", "ItemChoice::ItemChoice(const ItemChoice&");
+    ASSERT_METHOD_PRESENT(PATH, type, "ItemChoice& operator=(const ItemChoice&",
             "ItemChoice& ItemChoice::operator=(const ItemChoice&");
-    assertMethodPresent(type, "ItemChoice(ItemChoice&&", "ItemChoice::ItemChoice(ItemChoice&&");
-    assertMethodPresent(type, "ItemChoice& operator=(ItemChoice&&",
+    ASSERT_METHOD_PRESENT(PATH, type, "ItemChoice(ItemChoice&&", "ItemChoice::ItemChoice(ItemChoice&&");
+    ASSERT_METHOD_PRESENT(PATH, type, "ItemChoice& operator=(ItemChoice&&",
             "ItemChoice& ItemChoice::operator=(ItemChoice&&");
-    assertMethodPresent(type, "ItemChoice(::zserio::PropagateAllocatorT,",
+    ASSERT_METHOD_PRESENT(PATH, type, "ItemChoice(::zserio::PropagateAllocatorT,",
             "ItemChoice::ItemChoice(::zserio::PropagateAllocatorT,");
 
-    assertMethodPresent(type, MethodNames::TYPE_INFO_DECLARATION,
+    ASSERT_METHOD_PRESENT(PATH, type, MethodNames::TYPE_INFO_DECLARATION,
             MethodNames::ITEM_CHOICE_TYPE_INFO_DEFINITION);
-    assertMethodPresent(type, MethodNames::REFLECTABLE_CONST_DECLARATION,
+    ASSERT_METHOD_PRESENT(PATH, type, MethodNames::REFLECTABLE_CONST_DECLARATION,
             MethodNames::ITEM_CHOICE_REFLECTABLE_CONST_DEFINITION);
 
-    assertMethodPresent(type, "void initialize(", "void ItemChoice::initialize(");
-    assertMethodPresent(type, "bool isInitialized(", "bool ItemChoice::isInitialized(");
-    assertMethodPresent(type, "void initializeChildren(", "void ItemChoice::initializeChildren(");
-    assertMethodPresent(type, "bool getHasItem(", "bool ItemChoice::getHasItem(");
-    assertMethodPresent(type, "Item& getItem(", "Item& ItemChoice::getItem(");
-    assertMethodPresent(type, "uint16_t getParam(", "uint16_t ItemChoice::getParam(");
-    assertMethodPresent(type, "size_t bitSizeOf(", "size_t ItemChoice::bitSizeOf(");
-    assertMethodPresent(type, "bool operator==(", "bool ItemChoice::operator==(");
-    assertMethodPresent(type, "uint32_t hashCode(", "uint32_t ItemChoice::hashCode(");
+    ASSERT_METHOD_PRESENT(PATH, type, "void initialize(", "void ItemChoice::initialize(");
+    ASSERT_METHOD_PRESENT(PATH, type, "bool isInitialized(", "bool ItemChoice::isInitialized(");
+    ASSERT_METHOD_PRESENT(PATH, type, "void initializeChildren(", "void ItemChoice::initializeChildren(");
+    ASSERT_METHOD_PRESENT(PATH, type, "bool getHasItem(", "bool ItemChoice::getHasItem(");
+    ASSERT_METHOD_PRESENT(PATH, type, "Item& getItem(", "Item& ItemChoice::getItem(");
+    ASSERT_METHOD_PRESENT(PATH, type, "uint16_t getParam(", "uint16_t ItemChoice::getParam(");
+    ASSERT_METHOD_PRESENT(PATH, type, "size_t bitSizeOf(", "size_t ItemChoice::bitSizeOf(");
+    ASSERT_METHOD_PRESENT(PATH, type, "bool operator==(", "bool ItemChoice::operator==(");
+    ASSERT_METHOD_PRESENT(PATH, type, "uint32_t hashCode(", "uint32_t ItemChoice::hashCode(");
 }
 
 TEST_F(WithoutWriterCode, checkItemChoiceHolderMethods)
 {
     const char* type = "ItemChoiceHolder";
 
-    assertMethodNotPresent(type, " ItemChoiceHolder()", "ItemChoiceHolder::ItemChoiceHolder()");
-    assertMethodNotPresent(type, "size_t initializeOffsets(", "size_t ItemChoiceHolder::initializeOffsets(");
-    assertMethodNotPresent(type, "void write(", "void ItemChoiceHolder::write(");
-    assertMethodNotPresent(type, MethodNames::REFLECTABLE_DECLARATION,
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, " ItemChoiceHolder()", "ItemChoiceHolder::ItemChoiceHolder()");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type,
+            "size_t initializeOffsets(", "size_t ItemChoiceHolder::initializeOffsets(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "void write(", "void ItemChoiceHolder::write(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, MethodNames::REFLECTABLE_DECLARATION,
             MethodNames::ITEM_CHOICE_HOLDER_REFLECTABLE_DEFINITION);
 
-    assertMethodPresent(type, "ItemChoiceHolder(::zserio::BitStreamReader&",
+    ASSERT_METHOD_PRESENT(PATH, type, "ItemChoiceHolder(::zserio::BitStreamReader&",
             "ItemChoiceHolder::ItemChoiceHolder(::zserio::BitStreamReader&");
-    assertMethodPresent(type, "~ItemChoiceHolder() = default;", nullptr);
-    assertMethodPresent(type, "ItemChoiceHolder(const ItemChoiceHolder&",
+    ASSERT_METHOD_PRESENT(PATH, type, "~ItemChoiceHolder() = default;", nullptr);
+    ASSERT_METHOD_PRESENT(PATH, type, "ItemChoiceHolder(const ItemChoiceHolder&",
             "ItemChoiceHolder::ItemChoiceHolder(const ItemChoiceHolder&");
-    assertMethodPresent(type, "ItemChoiceHolder& operator=(const ItemChoiceHolder&",
+    ASSERT_METHOD_PRESENT(PATH, type, "ItemChoiceHolder& operator=(const ItemChoiceHolder&",
             "ItemChoiceHolder& ItemChoiceHolder::operator=(const ItemChoiceHolder&");
-    assertMethodPresent(type, "ItemChoiceHolder(ItemChoiceHolder&&",
+    ASSERT_METHOD_PRESENT(PATH, type, "ItemChoiceHolder(ItemChoiceHolder&&",
             "ItemChoiceHolder::ItemChoiceHolder(ItemChoiceHolder&&");
-    assertMethodPresent(type, "ItemChoiceHolder& operator=(ItemChoiceHolder&&",
+    ASSERT_METHOD_PRESENT(PATH, type, "ItemChoiceHolder& operator=(ItemChoiceHolder&&",
             "ItemChoiceHolder& ItemChoiceHolder::operator=(ItemChoiceHolder&&");
-    assertMethodPresent(type, "ItemChoiceHolder(::zserio::PropagateAllocatorT,",
+    ASSERT_METHOD_PRESENT(PATH, type, "ItemChoiceHolder(::zserio::PropagateAllocatorT,",
             "ItemChoiceHolder::ItemChoiceHolder(::zserio::PropagateAllocatorT,");
 
-    assertMethodPresent(type, MethodNames::TYPE_INFO_DECLARATION,
+    ASSERT_METHOD_PRESENT(PATH, type, MethodNames::TYPE_INFO_DECLARATION,
             MethodNames::ITEM_CHOICE_HOLDER_TYPE_INFO_DEFINITION);
-    assertMethodPresent(type, MethodNames::REFLECTABLE_CONST_DECLARATION,
+    ASSERT_METHOD_PRESENT(PATH, type, MethodNames::REFLECTABLE_CONST_DECLARATION,
             MethodNames::ITEM_CHOICE_HOLDER_REFLECTABLE_CONST_DEFINITION);
 
-    assertMethodPresent(type, "void initializeChildren(", "void ItemChoiceHolder::initializeChildren(");
-    assertMethodPresent(type, "bool getHasItem(", "bool ItemChoiceHolder::getHasItem(");
-    assertMethodPresent(type, "ItemChoice& getItemChoice(", "ItemChoice& ItemChoiceHolder::getItemChoice(");
-    assertMethodPresent(type, "size_t bitSizeOf(", "size_t ItemChoiceHolder::bitSizeOf(");
-    assertMethodPresent(type, "bool operator==(", "bool ItemChoiceHolder::operator==(");
-    assertMethodPresent(type, "uint32_t hashCode(", "uint32_t ItemChoiceHolder::hashCode(");
+    ASSERT_METHOD_PRESENT(PATH, type, "void initializeChildren(", "void ItemChoiceHolder::initializeChildren(");
+    ASSERT_METHOD_PRESENT(PATH, type, "bool getHasItem(", "bool ItemChoiceHolder::getHasItem(");
+    ASSERT_METHOD_PRESENT(PATH, type,
+            "ItemChoice& getItemChoice(", "ItemChoice& ItemChoiceHolder::getItemChoice(");
+    ASSERT_METHOD_PRESENT(PATH, type, "size_t bitSizeOf(", "size_t ItemChoiceHolder::bitSizeOf(");
+    ASSERT_METHOD_PRESENT(PATH, type, "bool operator==(", "bool ItemChoiceHolder::operator==(");
+    ASSERT_METHOD_PRESENT(PATH, type, "uint32_t hashCode(", "uint32_t ItemChoiceHolder::hashCode(");
 }
 
 TEST_F(WithoutWriterCode, checkTileMethods)
 {
     const char* type = "Tile";
 
-    assertMethodNotPresent(type, " Tile()", "Tile::Tile()");
-    assertMethodNotPresent(type, "void setVersion(", "void Tile::setVersion(");
-    assertMethodNotPresent(type, "bool isVersionSet(", "bool Tile::isVersionSet(");
-    assertMethodNotPresent(type, "void resetVersion(", "void Tile::resetVersion(");
-    assertMethodNotPresent(type, "void setNumElementOffset(", "void Tile::setNumElementOffset(");
-    assertMethodNotPresent(type, "void setVersionString(", "void Tile::setVersionString(");
-    assertMethodNotPresent(type, "bool isVersionStringSet(", "bool Tile::isVersionStringSet(");
-    assertMethodNotPresent(type, "void resetVersionString(", "void Tile::resetVersionString(");
-    assertMethodNotPresent(type, "void setNumElements(", "void Tile::setNumElements(");
-    assertMethodNotPresent(type, "void setData(", "void Tile::setData(");
-    assertMethodNotPresent(type, "size_t initializeOffsets(", "size_t Tile::initializeOffsets(");
-    assertMethodNotPresent(type, "void write(", "void Tile::write(");
-    assertMethodNotPresent(type, MethodNames::REFLECTABLE_DECLARATION,
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, " Tile()", "Tile::Tile()");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "void setVersion(", "void Tile::setVersion(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "bool isVersionSet(", "bool Tile::isVersionSet(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "void resetVersion(", "void Tile::resetVersion(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "void setNumElementOffset(", "void Tile::setNumElementOffset(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "void setVersionString(", "void Tile::setVersionString(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "bool isVersionStringSet(", "bool Tile::isVersionStringSet(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "void resetVersionString(", "void Tile::resetVersionString(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "void setNumElements(", "void Tile::setNumElements(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "void setData(", "void Tile::setData(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "size_t initializeOffsets(", "size_t Tile::initializeOffsets(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "void write(", "void Tile::write(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, MethodNames::REFLECTABLE_DECLARATION,
             MethodNames::TILE_REFLECTABLE_DEFINITION);
 
-    assertMethodPresent(type, "Tile(::zserio::BitStreamReader&", "Tile::Tile(::zserio::BitStreamReader&");
-    assertMethodPresent(type, "~Tile() = default;", nullptr);
-    assertMethodPresent(type, "Tile(const Tile&) = default;", nullptr);
-    assertMethodPresent(type, "Tile& operator=(const Tile&) = default;", nullptr);
-    assertMethodPresent(type, "Tile(Tile&&) = default;", nullptr);
-    assertMethodPresent(type, "Tile& operator=(Tile&&) = default;", nullptr);
-    assertMethodPresent(type, "Tile(::zserio::PropagateAllocatorT,",
+    ASSERT_METHOD_PRESENT(PATH, type,
+            "Tile(::zserio::BitStreamReader&", "Tile::Tile(::zserio::BitStreamReader&");
+    ASSERT_METHOD_PRESENT(PATH, type, "~Tile() = default;", nullptr);
+    ASSERT_METHOD_PRESENT(PATH, type, "Tile(const Tile&) = default;", nullptr);
+    ASSERT_METHOD_PRESENT(PATH, type, "Tile& operator=(const Tile&) = default;", nullptr);
+    ASSERT_METHOD_PRESENT(PATH, type, "Tile(Tile&&) = default;", nullptr);
+    ASSERT_METHOD_PRESENT(PATH, type, "Tile& operator=(Tile&&) = default;", nullptr);
+    ASSERT_METHOD_PRESENT(PATH, type, "Tile(::zserio::PropagateAllocatorT,",
             "Tile::Tile(::zserio::PropagateAllocatorT,");
 
-    assertMethodPresent(type, MethodNames::TYPE_INFO_DECLARATION,
+    ASSERT_METHOD_PRESENT(PATH, type, MethodNames::TYPE_INFO_DECLARATION,
             MethodNames::TILE_TYPE_INFO_DEFINITION);
-    assertMethodPresent(type, MethodNames::REFLECTABLE_CONST_DECLARATION,
+    ASSERT_METHOD_PRESENT(PATH, type, MethodNames::REFLECTABLE_CONST_DECLARATION,
             MethodNames::TILE_REFLECTABLE_CONST_DEFINITION);
 
-    assertMethodPresent(type, "void initializeChildren(", "void Tile::initializeChildren(");
-    assertMethodPresent(type, "VersionAvailability getVersionAvailability() const",
+    ASSERT_METHOD_PRESENT(PATH, type, "void initializeChildren(", "void Tile::initializeChildren(");
+    ASSERT_METHOD_PRESENT(PATH, type, "VersionAvailability getVersionAvailability() const",
             "VersionAvailability Tile::getVersionAvailability() const");
-    assertMethodPresent(type, "uint8_t getVersion(", "uint8_t Tile::getVersion(");
-    assertMethodPresent(type, "bool isVersionUsed(", "bool Tile::isVersionUsed(");
-    assertMethodPresent(type, MethodNames::GET_VERSION_STRING_DECLARATION,
+    ASSERT_METHOD_PRESENT(PATH, type, "uint8_t getVersion(", "uint8_t Tile::getVersion(");
+    ASSERT_METHOD_PRESENT(PATH, type, "bool isVersionUsed(", "bool Tile::isVersionUsed(");
+    ASSERT_METHOD_PRESENT(PATH, type, MethodNames::GET_VERSION_STRING_DECLARATION,
             MethodNames::GET_VERSION_STRING_DEFINITION);
-    assertMethodPresent(type, "bool isVersionStringUsed(", "bool Tile::isVersionStringUsed(");
-    assertMethodPresent(type, "uint32_t getNumElementsOffset(", "uint32_t Tile::getNumElementsOffset(");
-    assertMethodPresent(type, "uint32_t getNumElements(", "uint32_t Tile::getNumElements(");
-    assertMethodPresent(type, "& getOffsets() const", "& Tile::getOffsets() const");
-    assertMethodPresent(type, "& getData() const", "& Tile::getData() const");
-    assertMethodPresent(type, "size_t bitSizeOf(", "size_t Tile::bitSizeOf(");
-    assertMethodPresent(type, "bool operator==(", "bool Tile::operator==");
-    assertMethodPresent(type, "uint32_t hashCode(", "uint32_t Tile::hashCode(");
+    ASSERT_METHOD_PRESENT(PATH, type, "bool isVersionStringUsed(", "bool Tile::isVersionStringUsed(");
+    ASSERT_METHOD_PRESENT(PATH, type, "uint32_t getNumElementsOffset(", "uint32_t Tile::getNumElementsOffset(");
+    ASSERT_METHOD_PRESENT(PATH, type, "uint32_t getNumElements(", "uint32_t Tile::getNumElements(");
+    ASSERT_METHOD_PRESENT(PATH, type, "& getOffsets() const", "& Tile::getOffsets() const");
+    ASSERT_METHOD_PRESENT(PATH, type, "& getData() const", "& Tile::getData() const");
+    ASSERT_METHOD_PRESENT(PATH, type, "size_t bitSizeOf(", "size_t Tile::bitSizeOf(");
+    ASSERT_METHOD_PRESENT(PATH, type, "bool operator==(", "bool Tile::operator==");
+    ASSERT_METHOD_PRESENT(PATH, type, "uint32_t hashCode(", "uint32_t Tile::hashCode(");
 
     const auto& typeInfo = Tile::typeInfo();
     ASSERT_EQ("without_writer_code.Tile", zserio::toString(typeInfo.getSchemaName()));
@@ -724,56 +686,57 @@ TEST_F(WithoutWriterCode, checkGeoMapTableMethods)
 {
     const char* type = "GeoMapTable";
 
-    assertMethodNotPresent(type, "void createTable(", "void GeoMapTable::createTable(");
-    assertMethodNotPresent(type, "void createOrdinaryRowIdTable(",
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "void createTable(", "void GeoMapTable::createTable(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "void createOrdinaryRowIdTable(",
             "void GeoMapTable::createOrdinaryRowIdTable(");
-    assertMethodNotPresent(type, "void deleteTable(", "void GeoMapTable::deleteTable(");
-    assertMethodNotPresent(type, "void write(", "void GeoMapTable::write(");
-    assertMethodNotPresent(type, "void update(", "void GeoMapTable::update(");
-    assertMethodNotPresent(type, "void writeRow(", "void GeoMapTable::writeRow(");
-    assertMethodNotPresent(type, "void appendCreateTableToQuery(",
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "void deleteTable(", "void GeoMapTable::deleteTable(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "void write(", "void GeoMapTable::write(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "void update(", "void GeoMapTable::update(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "void writeRow(", "void GeoMapTable::writeRow(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "void appendCreateTableToQuery(",
             "void GeoMapTable::appendCreateTableToQuery(");
 
-    assertMethodPresent(type, "GeoMapTable(::zserio::SqliteConnection&",
+    ASSERT_METHOD_PRESENT(PATH, type, "GeoMapTable(::zserio::SqliteConnection&",
             "GeoMapTable::GeoMapTable(::zserio::SqliteConnection&");
-    assertMethodPresent(type, "~GeoMapTable() = default", nullptr);
-    assertMethodPresent(type, "GeoMapTable(const GeoMapTable&) = delete;", nullptr);
-    assertMethodPresent(type, "GeoMapTable& operator=(const GeoMapTable&) = delete;", nullptr);
-    assertMethodPresent(type, "GeoMapTable(GeoMapTable&&) = delete;", nullptr);
-    assertMethodPresent(type, "GeoMapTable& operator=(GeoMapTable&&) = delete;", nullptr);
+    ASSERT_METHOD_PRESENT(PATH, type, "~GeoMapTable() = default", nullptr);
+    ASSERT_METHOD_PRESENT(PATH, type, "GeoMapTable(const GeoMapTable&) = delete;", nullptr);
+    ASSERT_METHOD_PRESENT(PATH, type, "GeoMapTable& operator=(const GeoMapTable&) = delete;", nullptr);
+    ASSERT_METHOD_PRESENT(PATH, type, "GeoMapTable(GeoMapTable&&) = delete;", nullptr);
+    ASSERT_METHOD_PRESENT(PATH, type, "GeoMapTable& operator=(GeoMapTable&&) = delete;", nullptr);
 
-    assertMethodPresent(type, MethodNames::TYPE_INFO_DECLARATION,
+    ASSERT_METHOD_PRESENT(PATH, type, MethodNames::TYPE_INFO_DECLARATION,
             MethodNames::GEO_MAP_TABLE_TYPE_INFO_DEFINITION);
 
-    assertMethodPresent(type, "Reader createReader(", "Reader GeoMapTable::createReader(");
+    ASSERT_METHOD_PRESENT(PATH, type, "Reader createReader(", "Reader GeoMapTable::createReader(");
 }
 
 TEST_F(WithoutWriterCode, checkWorldDbMethods)
 {
     const char* type = "WorldDb";
 
-    assertMethodNotPresent(type,"void createSchema(", "void WorldDb::createSchema(");
-    assertMethodNotPresent(type, "void deleteSchema(", "void WorldDb::deleteSchema(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type,"void createSchema(", "void WorldDb::createSchema(");
+    ASSERT_METHOD_NOT_PRESENT(PATH, type, "void deleteSchema(", "void WorldDb::deleteSchema(");
 
-    assertMethodPresent(type, MethodNames::WORLD_DB_CTOR_DECLARATION,
+    ASSERT_METHOD_PRESENT(PATH, type, MethodNames::WORLD_DB_CTOR_DECLARATION,
             MethodNames::WORLD_DB_CTOR_DEFINITION);
-    assertMethodPresent(type, "WorldDb(sqlite3*", "WorldDb::WorldDb(sqlite3*");
-    assertMethodPresent(type, "~WorldDb()", "WorldDb::~WorldDb(");
-    assertMethodPresent(type, "WorldDb(const WorldDb&) = delete;", nullptr);
-    assertMethodPresent(type, "WorldDb& operator=(const WorldDb&) = delete;", nullptr);
-    assertMethodPresent(type, "WorldDb(WorldDb&&) = delete;", nullptr);
-    assertMethodPresent(type, "WorldDb& operator=(WorldDb&&) = delete;", nullptr);
+    ASSERT_METHOD_PRESENT(PATH, type, "WorldDb(sqlite3*", "WorldDb::WorldDb(sqlite3*");
+    ASSERT_METHOD_PRESENT(PATH, type, "~WorldDb()", "WorldDb::~WorldDb(");
+    ASSERT_METHOD_PRESENT(PATH, type, "WorldDb(const WorldDb&) = delete;", nullptr);
+    ASSERT_METHOD_PRESENT(PATH, type, "WorldDb& operator=(const WorldDb&) = delete;", nullptr);
+    ASSERT_METHOD_PRESENT(PATH, type, "WorldDb(WorldDb&&) = delete;", nullptr);
+    ASSERT_METHOD_PRESENT(PATH, type, "WorldDb& operator=(WorldDb&&) = delete;", nullptr);
 
-    assertMethodPresent(type, MethodNames::TYPE_INFO_DECLARATION,
+    ASSERT_METHOD_PRESENT(PATH, type, MethodNames::TYPE_INFO_DECLARATION,
             MethodNames::WORLD_DB_TYPE_INFO_DEFINITION);
 
-    assertMethodPresent(type, "::zserio::SqliteConnection& connection(",
+    ASSERT_METHOD_PRESENT(PATH, type, "::zserio::SqliteConnection& connection(",
             "::zserio::SqliteConnection& WorldDb::connection(");
-    assertMethodPresent(type, "GeoMapTable& getEurope(", "GeoMapTable& WorldDb::getEurope(");
-    assertMethodPresent(type, "GeoMapTable& getAmerica(", "GeoMapTable& WorldDb::getAmerica(");
-    assertMethodPresent(type, "static ::zserio::StringView databaseName() noexcept",
+    ASSERT_METHOD_PRESENT(PATH, type, "GeoMapTable& getEurope(", "GeoMapTable& WorldDb::getEurope(");
+    ASSERT_METHOD_PRESENT(PATH, type, "GeoMapTable& getAmerica(", "GeoMapTable& WorldDb::getAmerica(");
+    ASSERT_METHOD_PRESENT(PATH, type, "static ::zserio::StringView databaseName() noexcept",
             "::zserio::StringView WorldDb::databaseName() noexcept");
-    assertMethodPresent(type, "static const ::std::array<::zserio::StringView, 2>& tableNames() noexcept",
+    ASSERT_METHOD_PRESENT(PATH, type,
+            "static const ::std::array<::zserio::StringView, 2>& tableNames() noexcept",
             "const ::std::array<::zserio::StringView, 2>& WorldDb::tableNames() noexcept");
 }
 

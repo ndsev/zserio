@@ -2,12 +2,14 @@
 
 #include <fstream>
 
+#include "enumeration_types/deprecated_enum_item/Traffic.h"
+#include "enumeration_types/deprecated_enum_item/AllocatorType.h"
+
 #include "zserio/BitStreamReader.h"
 #include "zserio/BitStreamWriter.h"
 #include "zserio/CppRuntimeException.h"
 
-#include "enumeration_types/deprecated_enum_item/Traffic.h"
-#include "enumeration_types/deprecated_enum_item/AllocatorType.h"
+#include "test_utils/Assertions.h"
 
 using namespace zserio::literals;
 
@@ -21,24 +23,6 @@ using allocator_type = AllocatorType::allocator_type;
 class DeprecatedEnumItemTest : public ::testing::Test
 {
 protected:
-    bool isStringInFilePresent(const std::string& fileName, const char* str)
-    {
-        std::ifstream file(fileName.c_str());
-        bool isPresent = false;
-        std::string line;
-        while (std::getline(file, line))
-        {
-            if (line.find(str) != std::string::npos)
-            {
-                isPresent = true;
-                break;
-            }
-        }
-        file.close();
-
-        return isPresent;
-    }
-
     static constexpr uint8_t NONE_VALUE = 1;
     static constexpr uint8_t HEAVY_VALUE = 2;
     static constexpr uint8_t LIGHT_VALUE = 3;
@@ -61,7 +45,7 @@ const char* const DeprecatedEnumItemTest::TRAFFIC_HEADER_PATH =
 
 TEST_F(DeprecatedEnumItemTest, deprecatedMacroPresent)
 {
-    ASSERT_TRUE(isStringInFilePresent(TRAFFIC_HEADER_PATH, "HEAVY ZSERIO_DEPRECATED ="));
+    ASSERT_STRING_IN_FILE_PRESENT(TRAFFIC_HEADER_PATH, "HEAVY ZSERIO_DEPRECATED =");
 }
 
 TEST_F(DeprecatedEnumItemTest, EnumTraits)

@@ -12,8 +12,6 @@ import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
 
-import parameterized_types.param_with_optional.Holder;
-
 public class ParamWithOptionalTest
 {
     @Test
