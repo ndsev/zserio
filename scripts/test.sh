@@ -231,6 +231,20 @@ test_java()
         return 1
     fi
 
+    # calculate number of all run tests from ant output log file
+    local JAVA_VERSION=`${ANT} -diagnostics | grep ant.java.version | cut -d' ' -f2`
+    local ANT_LOG_FILE="${TEST_OUT_DIR}/java/${JAVA_VERSION}/test_log.txt"
+    if [ ! -f "${ANT_LOG_FILE}" ] ; then
+        stderr_echo "Ant output file '${ANT_LOG_FILE}' does not exist!"
+        return 1
+    fi
+    local TEST_COUNTS=(`grep '.*tests found.*' "${ANT_LOG_FILE}" | tr -s ' ' | cut -d' ' -f4`)
+    local INDEX
+    for INDEX in ${!TEST_COUNTS[@]} ; do
+        TOTAL_TEST_COUNT=$((${TOTAL_TEST_COUNT} + ${TEST_COUNTS[INDEX]}))
+    done
+    echo "Total number of testcases: ${TOTAL_TEST_COUNT}"
+
     if [[ ${SWITCH_CLEAN} != 1 ]] ; then
         compare_test_data "${TEST_SRC_DIR}" "${TEST_OUT_DIR}/java/" TEST_SUITES[@] "Java"
         if [ $? -ne 0 ] ; then

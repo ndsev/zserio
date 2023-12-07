@@ -105,6 +105,7 @@ gpg.executable              - GnuPG executable to use for artifact signing. Defa
         <fileset id="zserio_bundle.sources" dir="${zserio_bundle.javadocs_src_dir}"/>
         <javadoc packagenames="zserio.*" destdir="${zserio_bundle.javadocs_dir}"
             failonerror="true" failonwarning="true" useexternalfile="true">
+            <arg value="-Xdoclint:-missing"/>
             <fileset refid="zserio_bundle.sources"/>
             <doctitle>
                 <![CDATA[<h1>Zserio Bundle</h1><h2>Version ${zserio.version}</h2]]>

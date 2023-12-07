@@ -281,20 +281,5 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
         </subant>
 
         <record name="${zserio_java_test.log_file}" action="stop"/>
-
-        <loadresource property="num_tests">
-            <fileset file="${zserio_java_test.log_file}"/>
-            <filterchain>
-                <containsregex pattern=".*\s+(\d+) tests found.*" replace="\1 "/>
-                <striplinebreaks/>
-                <scriptfilter language="javascript">
-                    numList = self.getToken().trim().split(" ").map(Number);
-                    sum = numList.reduce(function(a, b) { return a+ b; }, 0);
-                    self.setToken(sum)
-                </scriptfilter>
-            </filterchain>
-        </loadresource>
-
-        <echo if:set="num_tests" message="Total number of testcases: ${num_tests}"/>
     </target>
 </project>

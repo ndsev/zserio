@@ -19,6 +19,9 @@ jobs:
           - os: "windows-2022"
             python-version: "3.8"
             java-version: "11"
+          - os: "windows-2022"
+            python-version: "3.8"
+            java-version: "17"
     name: OS ${{matrix.os}}, Python ${{matrix.python-version}}, Java ${{matrix.java-version}}
     env:
       CPPCHECK_HOME: "/c/Program Files/Cppcheck"

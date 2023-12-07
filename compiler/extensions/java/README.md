@@ -8,7 +8,7 @@ For an **API documentation** see the [Java Runtime Library](https://zserio.org/d
 
 ## Supported Java Versions
 
-Zserio Java generator supports the Java SE 8 (LTS) and the Java SE 11 (LTS).
+Zserio Java generator supports the Java SE 8 (LTS), the Java SE 11 (LTS) and the Java SE 17 (LTS).
 
 Although newer Java versions are not tested, they should work as well as long as they are backward compatible.
 
