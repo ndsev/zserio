@@ -104,11 +104,11 @@ jobs:
 
     - name: Build Zserio C++ runtime (Debug Build)
       run: |
-         if [ -f "`which clang-tidy-14`" ] ; then
-            export CLANG_TIDY_BIN=clang-tidy-14
-         fi
-         # sanitizers do not work on cpp_rt-linux32-clang when cross-compiling
-         scripts/build.sh cpp_rt-linux64-gcc cpp_rt-linux32-gcc cpp_rt-linux64-clang
+        if [ -f "`which clang-tidy-14`" ] ; then
+           export CLANG_TIDY_BIN=clang-tidy-14
+        fi
+        # sanitizers do not work on cpp_rt-linux32-clang when cross-compiling
+        scripts/build.sh cpp_rt-linux64-gcc cpp_rt-linux32-gcc cpp_rt-linux64-clang
       env:
         CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1 -DCMAKE_BUILD_TYPE=Debug"
         GCOVR_BIN: "gcovr"
@@ -120,30 +120,29 @@ jobs:
       run: scripts/release.sh
 
     - name: Run Zserio tests
-      # clang-tidy cannot be run because of time limit
       # -DZSERIO_ENABLE_WERROR=1 fails for gcc because of false positive warning
       run: |
-        unset JAVA_TOOL_OPTIONS # workaround https://github.com/actions/virtual-environments/issues/1437
         scripts/test.sh all-linux64-gcc cpp-linux32-gcc cpp-linux64-clang cpp-linux32-clang
       env:
         CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Release"
 
     - name: Run Zserio C++ tests (Debug Build)
-      # clang-tidy cannot be run because of time limit
       # sanitizers do not work on cpp-linux32-clang when cross-compiling
-      run: scripts/test.sh cpp-linux32-gcc cpp-linux64-gcc cpp-linux64-clang
+      run: |
+        if [ -f "`which clang-tidy-14`" ] ; then
+           export CLANG_TIDY_BIN=clang-tidy-14
+        fi
+        scripts/test.sh cpp-linux32-gcc cpp-linux64-gcc cpp-linux64-clang
       env:
         CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1  -DCMAKE_BUILD_TYPE=Debug"
         SANITIZERS_ENABLED: 1
 
     - name: Run Zserio integration tests for repeated generation
       run: |
-        unset JAVA_TOOL_OPTIONS # workaround https://github.com/actions/virtual-environments/issues/1437
         scripts/test_gen.sh all-linux64-gcc cpp-linux32-gcc cpp-linux64-clang cpp-linux32-clang
 
     - name: Run Zserio API compatibility checks
       run: |
-        unset JAVA_TOOL_OPTIONS # workaround https://github.com/actions/virtual-environments/issues/1437
         scripts/test_compat_api.sh java python cpp-linux64-clang
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
@@ -154,7 +153,6 @@ jobs:
 
     - name: Run Zserio performance tests
       run: |
-        unset JAVA_TOOL_OPTIONS # workaround https://github.com/actions/virtual-environments/issues/1437
         scripts/test_perf.sh cpp-linux64-gcc cpp-linux64-clang cpp-linux32-gcc cpp-linux32-clang \
               python python-cpp java \
               --source-dir test/others/gif/zs --source gif.zs \
@@ -163,7 +161,6 @@ jobs:
 
     - name: Run Zserio benchmarks
       run: |
-        unset JAVA_TOOL_OPTIONS # workaround https://github.com/actions/virtual-environments/issues/1437
         scripts/benchmark.sh cpp-linux64-gcc cpp-linux64-clang cpp-linux32-gcc cpp-linux32-clang \
               python python-cpp java --num-iterations 1
 

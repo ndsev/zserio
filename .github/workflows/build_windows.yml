@@ -117,7 +117,14 @@ jobs:
       env:
         CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Release"
 
-    # Zserio C++ tests (Debug Build) has been skipped because of 6-hours run limit
+    - name: Run Zserio tests (Debug Build)
+      # -DZSERIO_ENABLE_WERROR=1 fails for mingw because of false positive warning
+      # allocation tests do not work for MSVC Debug
+      run: |
+        scripts/test.sh cpp-windows64-mingw
+      shell: bash
+      env:
+        CMAKE_EXTRA_ARGS: "-DCMAKE_BUILD_TYPE=Debug"
 
     - name: Run Zserio integration tests for repeated generation
       run: scripts/test_gen.sh all-windows64-mingw cpp-windows64-msvc
