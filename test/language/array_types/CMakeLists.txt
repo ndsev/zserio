@@ -177,6 +177,15 @@ zserio_add_library(array_types_zs
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
+if (MSVC)
+    set_property(
+        SOURCE
+            ${ZSERIO_GEN_DIR}/array_types/arrays_mapping/ArraysMapping.cpp
+        APPEND
+            PROPERTY COMPILE_OPTIONS /bigobj
+    )
+endif ()
+
 add_custom_test(array_types
     DEPENDS
         array_types_zs
