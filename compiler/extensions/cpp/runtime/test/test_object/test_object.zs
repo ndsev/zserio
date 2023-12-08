@@ -212,3 +212,12 @@ struct ArrayParamObject(ArrayObject param)
 {
     uint32 value : value < param.value;
 };
+
+// we need to generate packing interface for array elements
+struct ArrayHolder
+{
+    packed ArrayEnum enumArray[];
+    packed ArrayBitmask bitmaskArray[];
+    packed ArrayObject packedArray[];
+    packed ArrayParamObject(packedArray[@index]) packedParamArray[];
+};
