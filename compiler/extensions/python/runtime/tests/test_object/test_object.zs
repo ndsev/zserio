@@ -106,3 +106,11 @@ struct ArrayObject
 {
     bit:31 value;
 };
+
+// we need to generate packing interface for array elements
+struct ArrayHolder
+{
+    packed ArrayEnum enumArray[];
+    packed ArrayBitmask bitmaskArray[];
+    packed ArrayObject packedArray[];
+};
