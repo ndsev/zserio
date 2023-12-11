@@ -7,7 +7,6 @@ import array_types.packed_auto_array_removed_enum_item.PackedAutoArrayRemovedEnu
 import array_types.packed_auto_array_removed_enum_item.Traffic;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.SerializeUtil;
 
 public class PackedAutoArrayRemovedEnumItemTest

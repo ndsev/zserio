@@ -1,6 +1,5 @@
 package zserio.extension.java;
 
-import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.ZserioType;
 

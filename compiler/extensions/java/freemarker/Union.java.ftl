@@ -204,22 +204,28 @@ public class ${name} implements <#rt>
     @Override
     public boolean equals(java.lang.Object obj)
     {
+<#if compoundParametersData.list?has_content || fieldList?has_content>
         if (obj instanceof ${name})
         {
             final ${name} that = (${name})obj;
 
             return
-<#list compoundParametersData.list as parameter>
-                    <@compound_compare_parameter parameter/> &&
-</#list>
+    <#list compoundParametersData.list as parameter>
+                    <@compound_compare_parameter parameter/><#if parameter_has_next || fieldList?has_content> &&<#else>;</#if>
+    </#list>
+    <#if fieldList?has_content>
                     choiceTag == that.choiceTag &&
                     (
                         (objectChoice == null && that.objectChoice == null) ||
                         (objectChoice != null && objectChoice.equals(that.objectChoice))
                     );
+    </#if>
         }
 
         return false;
+<#else>
+        return obj instanceof ${name};
+</#if>
     }
 
     @Override
@@ -434,6 +440,8 @@ public class ${name} implements <#rt>
 </#list>
 
     <@compound_parameter_members compoundParametersData/>
-    private java.lang.Object objectChoice;
     private int choiceTag = UNDEFINED_CHOICE;
+<#if fieldList?has_content>
+    private java.lang.Object objectChoice;
+</#if>
 }

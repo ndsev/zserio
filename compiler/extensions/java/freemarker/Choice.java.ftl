@@ -286,21 +286,27 @@ ${I}break;
     @Override
     public boolean equals(java.lang.Object obj)
     {
+<#if compoundParametersData.list?has_content || fieldList?has_content>
         if (obj instanceof ${name})
         {
             final ${name} that = (${name})obj;
 
             return
-<#list compoundParametersData.list as parameter>
-                    <@compound_compare_parameter parameter/> &&
-</#list>
+    <#list compoundParametersData.list as parameter>
+                    <@compound_compare_parameter parameter/><#if parameter_has_next || fieldList?has_content> &&<#else>;</#if>
+    </#list>
+    <#if fieldList?has_content>
                     (
                         (objectChoice == null && that.objectChoice == null) ||
                         (objectChoice != null && objectChoice.equals(that.objectChoice))
                     );
+    </#if>
         }
 
         return false;
+<#else>
+        return obj instanceof ${name};
+</#if>
     }
 
 <#macro choice_hash_code_no_match name indent>
@@ -493,5 +499,7 @@ ${I}break;
 </#list>
 
     <@compound_parameter_members compoundParametersData/>
+<#if fieldList?has_content>
     private java.lang.Object objectChoice;
+</#if>
 }

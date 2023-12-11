@@ -164,10 +164,6 @@ EOF
     <Match>
         <!-- Be wary of letting constructors throw exceptions - Should be fixed in generated code. -->
         <Bug code="CT"/>
-    </Match>
-    <Match>
-        <!-- Unwritten field - Should be fixed in generated code. -->
-        <Bug code="UwF"/>
     </Match>${SPOTBUGS_FILTER_SQLITE}
 </FindBugsFilter>
 EOF
