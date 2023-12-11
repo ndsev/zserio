@@ -20,7 +20,7 @@ spotbugs.home_dir           - Location of the spotbugs tool. If not set, spotbug
 <project name="zserio_ant_task" basedir="." default="jar">
     <dirname property="zserio_ant_task.base_dir" file="${ant.file.zserio_ant_task}"/>
 
-    <property name="zserio_ant_task.zserio_root" value="${zserio_ant_task.base_dir}/../.."/>
+    <property name="zserio_ant_task.zserio_root" value="${zserio_ant_task.base_dir}/.."/>
 
     <property name="zserio.build_dir" value="${zserio_ant_task.zserio_root}/build"/>
     <property name="zserio.install_dir" value="${zserio_ant_task.zserio_root}/distr"/>
