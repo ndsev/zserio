@@ -6,7 +6,7 @@
 <#if withCodeComments>
 /** Class which describes one row in the table ${name?remove_ending("Row")}. */
 </#if>
-public class ${name}
+public final class ${name}
 {
 <#list fields as field>
     <#if withCodeComments>

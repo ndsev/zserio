@@ -5,7 +5,7 @@
 
 package test_object;
 
-public class ArrayBitmask implements zserio.runtime.io.PackableWriter, zserio.runtime.PackableSizeOf,
+public final class ArrayBitmask implements zserio.runtime.io.PackableWriter, zserio.runtime.PackableSizeOf,
         zserio.runtime.ZserioBitmask
 {
     public ArrayBitmask()

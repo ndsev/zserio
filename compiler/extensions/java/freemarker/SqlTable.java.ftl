@@ -16,7 +16,7 @@
 <#if withCodeComments && docComments??>
 <@doc_comments docComments/>
 </#if>
-public class ${name}
+public final class ${name}
 {
 <#if needsParameterProvider>
     <#if withCodeComments>

@@ -5,7 +5,7 @@
 
 package test_object;
 
-public class SerializeObject implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
+public final class SerializeObject implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
 {
     public SerializeObject()
     {

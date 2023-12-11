@@ -5,7 +5,7 @@
 
 package test_object;
 
-public class CreatorNested implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
+public final class CreatorNested implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
 {
     public CreatorNested(
             long param_)

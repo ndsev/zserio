@@ -5,7 +5,7 @@
 
 package test_object;
 
-public class ArrayHolder implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
+public final class ArrayHolder implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
 {
     public ArrayHolder()
     {

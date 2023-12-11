@@ -5,7 +5,7 @@
 
 package test_object;
 
-public class WalkerUnion implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
+public final class WalkerUnion implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
 {
     public WalkerUnion()
     {
@@ -307,6 +307,6 @@ public class WalkerUnion implements zserio.runtime.io.Writer, zserio.runtime.Siz
         }
     }
 
-    private java.lang.Object objectChoice;
     private int choiceTag = UNDEFINED_CHOICE;
+    private java.lang.Object objectChoice;
 }

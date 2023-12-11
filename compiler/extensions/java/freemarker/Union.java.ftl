@@ -13,7 +13,7 @@
 <#if withCodeComments && docComments??>
 <@doc_comments docComments/>
 </#if>
-public class ${name} implements <#rt>
+public final class ${name} implements <#rt>
         <#if withWriterCode>zserio.runtime.io.<#if isPackable && usedInPackedArray>Packable</#if>Writer, <#t>
         <#lt></#if>zserio.runtime.<#if isPackable && usedInPackedArray>Packable</#if>SizeOf
 {

@@ -5,7 +5,7 @@
 
 package test_object;
 
-public class CreatorBitmask implements zserio.runtime.io.Writer, zserio.runtime.SizeOf,
+public final class CreatorBitmask implements zserio.runtime.io.Writer, zserio.runtime.SizeOf,
         zserio.runtime.ZserioBitmask
 {
     public CreatorBitmask()

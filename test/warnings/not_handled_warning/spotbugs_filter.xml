@@ -3,8 +3,4 @@
         <!-- May expose internal representation by returning reference to mutable object. -->
         <Bug code="EI"/>
     </Match>
-    <Match>
-        <!-- Be wary of letting constructors throw exceptions - Should be fixed in generated code. -->
-        <Bug code="CT"/>
-    </Match>
 </FindBugsFilter>

@@ -22,7 +22,7 @@
 <#function extended_field_index numFields numExtendedFields fieldIndex>
     <#return fieldIndex - (numFields - numExtendedFields)>
 </#function>
-public class ${name} implements <#rt>
+public final class ${name} implements <#rt>
         <#if withWriterCode>zserio.runtime.io.<#if isPackable && usedInPackedArray>Packable</#if>Writer, <#t>
         <#lt></#if>zserio.runtime.<#if isPackable && usedInPackedArray>Packable</#if>SizeOf
 {

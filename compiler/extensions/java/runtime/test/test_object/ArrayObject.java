@@ -5,7 +5,7 @@
 
 package test_object;
 
-public class ArrayObject implements zserio.runtime.io.PackableWriter, zserio.runtime.PackableSizeOf
+public final class ArrayObject implements zserio.runtime.io.PackableWriter, zserio.runtime.PackableSizeOf
 {
     public static final class ZserioPackingContext extends zserio.runtime.array.PackingContext
     {

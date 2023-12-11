@@ -147,7 +147,7 @@ public class ValidationSqliteUtilTest
         }
     }
 
-    private static class TestSqlDatabase implements SqlDatabaseReader
+    private static final class TestSqlDatabase implements SqlDatabaseReader
     {
         public TestSqlDatabase() throws SQLException
         {

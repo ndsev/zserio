@@ -5,7 +5,7 @@
 
 package test_object;
 
-public class SerializeNested implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
+public final class SerializeNested implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
 {
     public SerializeNested(
             byte param_)

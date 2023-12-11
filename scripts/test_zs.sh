@@ -160,10 +160,6 @@ EOF
     <Match>
         <!-- May expose internal representation by incorporating reference to mutable object. -->
         <Bug code="EI2"/>
-    </Match>
-    <Match>
-        <!-- Be wary of letting constructors throw exceptions - Should be fixed in generated code. -->
-        <Bug code="CT"/>
     </Match>${SPOTBUGS_FILTER_SQLITE}
 </FindBugsFilter>
 EOF

@@ -5,7 +5,7 @@
 
 package test_object;
 
-public class WalkerNested implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
+public final class WalkerNested implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
 {
     public WalkerNested()
     {

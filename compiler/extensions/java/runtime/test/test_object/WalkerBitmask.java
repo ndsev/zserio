@@ -5,7 +5,7 @@
 
 package test_object;
 
-public class WalkerBitmask implements zserio.runtime.io.Writer, zserio.runtime.SizeOf,
+public final class WalkerBitmask implements zserio.runtime.io.Writer, zserio.runtime.SizeOf,
         zserio.runtime.ZserioBitmask
 {
     public WalkerBitmask()

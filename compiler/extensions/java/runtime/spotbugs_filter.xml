@@ -79,8 +79,4 @@
             </And>
         </Or>
     </Match>
-    <Match>
-        <!-- Be wary of letting constructors throw exceptions - Should be fixed in generated code. -->
-        <Bug code="CT"/>
-    </Match>
 </FindBugsFilter>

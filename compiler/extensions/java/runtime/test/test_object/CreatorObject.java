@@ -5,7 +5,7 @@
 
 package test_object;
 
-public class CreatorObject implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
+public final class CreatorObject implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
 {
     public CreatorObject()
     {

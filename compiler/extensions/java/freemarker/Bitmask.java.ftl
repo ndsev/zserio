@@ -14,7 +14,7 @@ new ${arrayableInfo.arrayTraits.name}(<#rt>
 <#if withCodeComments && docComments??>
 <@doc_comments docComments/>
 </#if>
-public class ${name} implements <#if withWriterCode>zserio.runtime.io.<#if usedInPackedArray>Packable</#if>Writer, </#if><#rt>
+public final class ${name} implements <#if withWriterCode>zserio.runtime.io.<#if usedInPackedArray>Packable</#if>Writer, </#if><#rt>
         <#lt>zserio.runtime.<#if usedInPackedArray>Packable</#if>SizeOf,
         zserio.runtime.ZserioBitmask
 {

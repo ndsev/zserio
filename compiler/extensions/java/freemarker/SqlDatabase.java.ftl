@@ -10,7 +10,7 @@
 <#if withCodeComments && docComments??>
 <@doc_comments docComments/>
 </#if>
-public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>Reader</#if>
+public final class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>Reader</#if>
 {
 <#if withValidationCode && needsParameterProvider>
     <#if withCodeComments>

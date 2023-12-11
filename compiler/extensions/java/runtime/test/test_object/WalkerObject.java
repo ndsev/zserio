@@ -5,7 +5,7 @@
 
 package test_object;
 
-public class WalkerObject implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
+public final class WalkerObject implements zserio.runtime.io.Writer, zserio.runtime.SizeOf
 {
     public WalkerObject()
     {
