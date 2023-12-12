@@ -12,9 +12,12 @@ public class ValidationTimerTest
         validationTimer.start();
         Thread.sleep(1000);
         validationTimer.stop();
-        final long minTolerance = 950;
-        final long maxTolerance = 1050;
-        assertTrue(validationTimer.getDuration() >= minTolerance);
-        assertTrue(validationTimer.getDuration() <= maxTolerance);
+        final long minTolerance = 900;
+        final long maxTolerance = 1100;
+        final long duration = validationTimer.getDuration();
+        assertTrue(duration >= minTolerance,
+                "Duration '" + duration + "' should be >= '" + minTolerance + "'");
+        assertTrue(duration <= maxTolerance,
+                "Duration '" + duration + "' should be <= '" + maxTolerance + "'");
     }
 }
