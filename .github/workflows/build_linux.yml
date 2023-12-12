@@ -15,22 +15,23 @@ jobs:
         os: ["ubuntu-20.04"]
         python-version: ["3.8", "3.9", "3.10", "3.11"]
         java-version: ["8"]
+        clang-version: ["11"]
         include:
-          - os: "ubuntu-20.04"
-            clang-version-suffix: "-11"
           - os: "ubuntu-20.04"
             python-version: "3.8"
             java-version: "11"
-            clang-version-suffix: "-11"
+            clang-version: "11"
           - os: "ubuntu-20.04"
             python-version: "3.8"
             java-version: "17"
-            clang-version-suffix: "-11"
+            clang-version: "11"
           - os: "ubuntu-22.04"
             python-version: "3.8"
             java-version: "8"
-            clang-version-suffix: "-14"
-    name: OS ${{matrix.os}}, Python ${{matrix.python-version}}, Java ${{matrix.java-version}}
+            clang-version: "14"
+    name: |
+      OS ${{matrix.os}}, Python ${{matrix.python-version}},
+      Java ${{matrix.java-version}}, Clang ${{matrix.clang-version}}
     env:
       CPPCHECK_HOME: "${{github.workspace}}/cppcheck-2.6"
       SPOTBUGS_HOME: "${{github.workspace}}/spotbugs-4.8.2"
@@ -38,7 +39,7 @@ jobs:
       MYPY_ENABLED: 1
       NU_HTML_VALIDATOR: "${{github.workspace}}/vnu-20.6.30/vnu.jar"
       XMLLINT_ENABLED: 1
-      CLANG_VERSION_SUFFIX: "${{matrix.clang-version-suffix}}"
+      CLANG_VERSION_SUFFIX: "-${{matrix.clang-version}}"
       CMAKE_BUILD_OPTIONS: "-j2"
     steps:
     - name: Checkout
@@ -112,8 +113,8 @@ jobs:
       env:
         CMAKE_EXTRA_ARGS: "-DZSERIO_ENABLE_WERROR=1 -DCMAKE_BUILD_TYPE=Debug"
         GCOVR_BIN: "gcovr"
-        LLVM_PROFDATA_BIN: "llvm-profdata${{matrix.clang-version-suffix}}"
-        LLVM_COV_BIN: "llvm-cov${{matrix.clang-version-suffix}}"
+        LLVM_PROFDATA_BIN: "llvm-profdata-${{matrix.clang-version}}"
+        LLVM_COV_BIN: "llvm-cov-${{matrix.clang-version}}"
         SANITIZERS_ENABLED: 1
 
     - name: Pack Zserio release
@@ -167,13 +168,13 @@ jobs:
     - name: Archive Zserio release artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: zserio-release-${{matrix.os}}-${{matrix.python-version}}
+        name: zserio-release-${{matrix.os}}-java${{matrix.java-version}}
         path: release-*
 
     - name: Archive Zserio build artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: zserio-build-${{matrix.os}}-${{matrix.python-version}}
+        name: zserio-build-${{matrix.os}}-python${{matrix.python-version}}-clang${{matrix.clang-version}}
         path: |
-          build/runtime_libs/python/zserio_cpp/**/*.so
+          build/runtime_libs/python/**/zserio_cpp/**/*.so
           build/runtime_libs/cpp/**/runtime/*.a

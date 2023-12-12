@@ -15,14 +15,28 @@ jobs:
         os: ["windows-2022"]
         python-version: ["3.8", "3.9", "3.10", "3.11"]
         java-version: ["8"]
+        msvc-toolset-version: ["v141"]
+        mingw-version: ["13.2.0"]
         include:
           - os: "windows-2022"
             python-version: "3.8"
             java-version: "11"
+            msvc-toolset-version: "v141"
+            mingw-version: "13.2.0"
           - os: "windows-2022"
             python-version: "3.8"
             java-version: "17"
-    name: OS ${{matrix.os}}, Python ${{matrix.python-version}}, Java ${{matrix.java-version}}
+            msvc-toolset-version: "v141"
+            mingw-version: "13.2.0"
+          - os: "windows-2022"
+            python-version: "3.8"
+            java-version: "8"
+            msvc-toolset-version: "v142"
+            mingw-version: "13.2.0"
+    name: |
+      OS ${{matrix.os}}, Python ${{matrix.python-version}},
+      Java ${{matrix.java-version}}, MSVC ${{matrix.msvc-toolset-version}},
+      MinGW ${{matrix.mingw-version}}
     env:
       CPPCHECK_HOME: "/c/Program Files/Cppcheck"
       SPOTBUGS_HOME: "${{github.workspace}}/spotbugs-4.8.2"
@@ -31,7 +45,7 @@ jobs:
       NU_HTML_VALIDATOR: "${{github.workspace}}/vnu-20.6.30/vnu.jar"
       XMLLINT_ENABLED: 1
       MINGW64_TOOLCHAIN_ROOT: "/c/ProgramData/mingw64/mingw64"
-      MSVC_CMAKE_TOOLSET: "v141"
+      MSVC_CMAKE_TOOLSET: ${{matrix.msvc-toolset-version}}
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -73,7 +87,7 @@ jobs:
         choco install doxygen.portable
         choco install graphviz
         choco install zip
-        choco install mingw --version 13.2.0
+        choco install mingw --version ${{matrix.mingw-version}}
       shell: bash
 
     - name: Install specific version of C++ static code analysis tool (cppcheck)
@@ -157,14 +171,14 @@ jobs:
     - name: Archive Zserio release artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: zserio-release-${{matrix.os}}-${{matrix.python-version}}
+        name: zserio-release-${{matrix.os}}-java${{matrix.java-version}}
         path: release-*
 
     - name: Archive Zserio build artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: zserio-build-${{matrix.os}}-${{matrix.python-version}}
+        name: zserio-build-${{matrix.os}}-python${{matrix.python-version}}-msvc${{matrix.msvc-toolset-version}}-mingw${{matrix.mingw-version}}
         path: |
-          build/runtime_libs/python/zserio_cpp/**/*.pyd
+          build/runtime_libs/python/**/zserio_cpp/**/*.pyd
           build/runtime_libs/cpp/**/runtime/*.a
           build/runtime_libs/cpp/**/runtime/**/*.lib
