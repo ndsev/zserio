@@ -201,7 +201,8 @@ if (MSVC)
             zserio/ReflectableTest.cpp
             zserio/ArrayTest.cpp
         APPEND
-            PROPERTY COMPILE_OPTIONS /bigobj)
+            PROPERTY COMPILE_OPTIONS /bigobj
+    )
 endif ()
 
 add_executable(${PROJECT_NAME}
