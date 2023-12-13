@@ -13,7 +13,7 @@ public final class JavaExtensionVersion
     public static final String JAVA_EXTENSION_VERSION_STRING = "1.0.0";
 
     /** Expected Zserio core version string. */
-    public static final String EXPECTED_ZSERIO_VERSION_STRING = "2.12.0";
+    public static final String EXPECTED_ZSERIO_VERSION_STRING = "2.13.0";
 
     /** Zserio BIN version string. */
     public static final String BIN_VERSION_STRING = "1.0";
