@@ -419,7 +419,9 @@ Uses the following environment variables for building:
     MSVC_CMAKE_TOOLSET     MSVC toolset specification for CMake generator.
                            Default is "v141". Note that "v141" is for VS 2017,
                            "v142" is for VS 2019.
-    CLANG_VERSION_SUFFIX   Clang compilers version suffix. Default is empty.
+    GCC_VERSION_SUFFIX     Gcc compiler version suffix. Default is empty.
+                           Set e.g. "-11" to use "gcc-11" instead of "gcc".
+    CLANG_VERSION_SUFFIX   Clang compiler version suffix. Default is empty.
                            Set e.g. "-8" to use "clang-8" instead of "clang".
     CMAKE_EXTRA_ARGS       Extra arguments to CMake. Default is empty string.
     CMAKE_BUILD_OPTIONS    Arguments to be passed by CMake to a native build tool.

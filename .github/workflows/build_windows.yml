@@ -18,16 +18,19 @@ jobs:
         msvc-toolset-version: ["v141"]
         mingw-version: ["7.5.0"]
         include:
+          # Java 11
           - os: "windows-2022"
             python-version: "3.8"
             java-version: "11"
             msvc-toolset-version: "v141"
             mingw-version: "7.5.0"
+          # Java 17
           - os: "windows-2022"
             python-version: "3.8"
             java-version: "17"
             msvc-toolset-version: "v141"
             mingw-version: "7.5.0"
+          # MSVC toolset v142 (MSVC 2019), MinGW 9.4.0
           - os: "windows-2022"
             python-version: "3.8"
             java-version: "8"
