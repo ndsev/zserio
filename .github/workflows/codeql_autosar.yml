@@ -20,8 +20,8 @@ jobs:
 
     - name: Install specific version of Coding Standards CodeQL queries
       run: |
-        wget https://github.com/github/codeql-coding-standards/releases/download/v2.22.0/code-scanning-cpp-query-pack-2.22.0.zip -P "${GITHUB_WORKSPACE}/build"
-        unzip "${GITHUB_WORKSPACE}/build/code-scanning-cpp-query-pack-2.22.0.zip" -d "${GITHUB_WORKSPACE}/build"
+        wget https://github.com/github/codeql-coding-standards/releases/download/v2.23.0/code-scanning-cpp-query-pack-2.23.0.zip -P "${GITHUB_WORKSPACE}/build"
+        unzip "${GITHUB_WORKSPACE}/build/code-scanning-cpp-query-pack-2.23.0.zip" -d "${GITHUB_WORKSPACE}/build"
     - name: Install dependencies
       run: sudo apt-get install cmake doxygen graphviz
 
