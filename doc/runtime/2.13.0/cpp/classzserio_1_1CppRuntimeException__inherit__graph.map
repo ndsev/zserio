@@ -1,0 +1,8 @@
+<map id="zserio::CppRuntimeException" name="zserio::CppRuntimeException">
+<area shape="rect" id="node3" href="$classzserio_1_1BitStreamWriter_1_1InsufficientCapacityException.html" title="zserio::BitStreamWriter\l::InsufficientCapacityException" alt="" coords="420,5,635,47"/>
+<area shape="rect" id="node4" href="$classzserio_1_1ConstraintException.html" title="zserio::ConstraintException" alt="" coords="429,71,625,98"/>
+<area shape="rect" id="node5" href="$classzserio_1_1JsonParserException.html" title="zserio::JsonParserException" alt="" coords="429,122,625,149"/>
+<area shape="rect" id="node6" href="$classzserio_1_1PubsubException.html" title="zserio::PubsubException" alt="" coords="439,173,616,199"/>
+<area shape="rect" id="node7" href="$classzserio_1_1ServiceException.html" title="zserio::ServiceException" alt="" coords="439,223,616,250"/>
+<area shape="rect" id="node8" href="$classzserio_1_1SqliteException.html" title="zserio::SqliteException" alt="" coords="444,274,611,301"/>
+</map>
