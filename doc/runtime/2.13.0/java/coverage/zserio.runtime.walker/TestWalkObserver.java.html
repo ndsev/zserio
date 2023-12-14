@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TestWalkObserver.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Zserio Java Runtime Library</a> &gt; <a href="index.source.html" class="el_package">zserio.runtime.walker</a> &gt; <span class="el_source">TestWalkObserver.java</span></div><h1>TestWalkObserver.java</h1><pre class="source lang-java linenums">package zserio.runtime.walker;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import zserio.runtime.typeinfo.FieldInfo;
+
+public class TestWalkObserver implements WalkObserver
+{
+    public TestWalkObserver()
+<span class="fc" id="L12">    {</span>
+        // initialize empty captures
+<span class="fc" id="L14">        captures = new HashMap&lt;String, ArrayList&lt;Object&gt;&gt;();</span>
+<span class="fc" id="L15">        captures.put(&quot;beginRoot&quot;, new ArrayList&lt;Object&gt;());</span>
+<span class="fc" id="L16">        captures.put(&quot;endRoot&quot;, new ArrayList&lt;Object&gt;());</span>
+<span class="fc" id="L17">        captures.put(&quot;beginArray&quot;, new ArrayList&lt;Object&gt;());</span>
+<span class="fc" id="L18">        captures.put(&quot;endArray&quot;, new ArrayList&lt;Object&gt;());</span>
+<span class="fc" id="L19">        captures.put(&quot;beginCompound&quot;, new ArrayList&lt;Object&gt;());</span>
+<span class="fc" id="L20">        captures.put(&quot;endCompound&quot;, new ArrayList&lt;Object&gt;());</span>
+<span class="fc" id="L21">        captures.put(&quot;visitValue&quot;, new ArrayList&lt;Object&gt;());</span>
+<span class="fc" id="L22">    }</span>
+
+    @Override
+    public void beginRoot(Object compound)
+    {
+<span class="fc" id="L27">        captures.get(&quot;beginRoot&quot;).add(compound);</span>
+<span class="fc" id="L28">    }</span>
+
+    @Override
+    public void endRoot(Object compound)
+    {
+<span class="fc" id="L33">        captures.get(&quot;endRoot&quot;).add(compound);</span>
+
+<span class="fc" id="L35">    }</span>
+
+    @Override
+    public void beginArray(Object array, FieldInfo fieldInfo)
+    {
+<span class="fc" id="L40">        captures.get(&quot;beginArray&quot;).add(array);</span>
+<span class="fc" id="L41">    }</span>
+
+    @Override
+    public void endArray(Object array, FieldInfo fieldInfo)
+    {
+<span class="fc" id="L46">        captures.get(&quot;endArray&quot;).add(array);</span>
+<span class="fc" id="L47">    }</span>
+
+    @Override
+    public void beginCompound(Object compound, FieldInfo fieldInfo, int elementIndex)
+    {
+<span class="fc" id="L52">        captures.get(&quot;beginCompound&quot;).add(compound);</span>
+<span class="fc" id="L53">    }</span>
+
+    @Override
+    public void endCompound(Object compound, FieldInfo fieldInfo, int elementIndex)
+    {
+<span class="fc" id="L58">        captures.get(&quot;endCompound&quot;).add(compound);</span>
+<span class="fc" id="L59">    }</span>
+
+    @Override
+    public void visitValue(Object value, FieldInfo fieldInfo, int elementIndex)
+    {
+<span class="fc" id="L64">        captures.get(&quot;visitValue&quot;).add(value);</span>
+<span class="fc" id="L65">    }</span>
+
+    public List&lt;Object&gt; getCaptures(String captureName)
+    {
+<span class="fc" id="L69">        return captures.get(captureName);</span>
+    }
+
+    private final HashMap&lt;String, ArrayList&lt;Object&gt;&gt; captures;
+};
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
