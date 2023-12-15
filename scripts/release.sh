@@ -494,6 +494,7 @@ update_web_pages()
     local ZSERIO_VERSION="$1"; shift
 
     echo "Merging master into Zserio Web Pages branch."
+
     "${GIT}" checkout web-pages
     if [ $? -ne 0 ] ; then
         "${GIT}" checkout -b web-pages
@@ -501,7 +502,13 @@ update_web_pages()
         stderr_echo "Git failed with return code ${GIT_RESULT}!"
         return 1
     fi
-    "${GIT}" merge v${ZSERIO_VERSION} -m "Merge version v${ZSERIO_VERSION} into 'web-pages' branch"
+    "${GIT}" fetch --tags
+    local GIT_RESULT=$?
+    if [ ${GIT_RESULT} -ne 0 ] ; then
+        stderr_echo "Git failed with return code ${GIT_RESULT}!"
+        return 1
+    fi
+    "${GIT}" rebase v${ZSERIO_VERSION}
     local GIT_RESULT=$?
     if [ ${GIT_RESULT} -ne 0 ] ; then
         stderr_echo "Git failed with return code ${GIT_RESULT}!"
@@ -678,7 +685,7 @@ Description:
     Releases Zserio to release-ver directory.
 
 Usage:
-    $0 [-h] [-e] [-u] [-o <dir>]
+    $0 [-h] [-e] [-u] [-j] [-w] [-o <dir>]
 
 Arguments:
     -h, --help     Show this help.
@@ -686,7 +693,9 @@ Arguments:
     -u, --update-dependent-repositories
                    Update all Zserio dependent repositories after Zserio release.
     -j, --update-tutorial-java
-                   Update only Java tutorial sources after Zserio release.
+                   Update Java tutorial sources after Zserio release.
+    -w, --update-web-pages
+                   Update Zserio Web Pages branch after Zserio release.
     -o <dir>, --output-directory <dir>
                    Output directory where build and distr are located.
 
@@ -711,9 +720,11 @@ parse_arguments()
     local PARAM_OUT_DIR_OUT="$1"; shift
     local SWITCH_ALL_UPDATE_OUT="$1"; shift
     local SWITCH_JAVA_TUTORIAL_UPDATE_OUT="$1"; shift
+    local SWITCH_WEB_PAGES_UPDATE_OUT="$1"; shift
 
     eval ${SWITCH_ALL_UPDATE_OUT}=0
     eval ${SWITCH_JAVA_TUTORIAL_UPDATE_OUT}=0
+    eval ${SWITCH_WEB_PAGES_UPDATE_OUT}=0
 
     local NUM_PARAMS=0
     local ARG="$1"
@@ -729,11 +740,18 @@ parse_arguments()
 
             "-u" | "--update-dependent-repositories")
                 eval ${SWITCH_ALL_UPDATE_OUT}=1
+                eval ${SWITCH_JAVA_TUTORIAL_UPDATE_OUT}=1
+                eval ${SWITCH_WEB_PAGES_UPDATE_OUT}=1
                 shift
                 ;;
 
             "-j" | "--update-tutorial-java")
                 eval ${SWITCH_JAVA_TUTORIAL_UPDATE_OUT}=1
+                shift
+                ;;
+
+            "-w" | "--update-web-pages")
+                eval ${SWITCH_WEB_PAGES_UPDATE_OUT}=1
                 shift
                 ;;
 
@@ -775,7 +793,8 @@ main()
     local PARAM_OUT_DIR="${ZSERIO_PROJECT_ROOT}"
     local SWITCH_ALL_UPDATE
     local SWITCH_JAVA_TUTORIAL_UPDATE
-    parse_arguments PARAM_OUT_DIR SWITCH_ALL_UPDATE SWITCH_JAVA_TUTORIAL_UPDATE "$@"
+    local SWITCH_WEB_PAGES_UPDATE
+    parse_arguments PARAM_OUT_DIR SWITCH_ALL_UPDATE SWITCH_JAVA_TUTORIAL_UPDATE SWITCH_WEB_PAGES_UPDATE "$@"
     local PARSE_RESULT=$?
     if [ ${PARSE_RESULT} -eq 2 ] ; then
         print_help
@@ -791,7 +810,8 @@ main()
     convert_to_absolute_path "${PARAM_OUT_DIR}" PARAM_OUT_DIR
 
     # set global variables
-    if [[ ${SWITCH_ALL_UPDATE} == 1 || ${SWITCH_JAVA_TUTORIAL_UPDATE} == 1 ]] ; then
+    if [[ ${SWITCH_ALL_UPDATE} == 1 || ${SWITCH_JAVA_TUTORIAL_UPDATE} == 1 ||
+            ${SWITCH_WEB_PAGES_UPDATE} == 1 ]] ; then
         local SWITCH_UPDATE=1
     else
         local SWITCH_UPDATE=0
@@ -833,7 +853,7 @@ main()
         echo
 
         local ZSERIO_BUILD_DIR="${PARAM_OUT_DIR}/build"
-        if [[ ${SWITCH_JAVA_TUTORIAL_UPDATE} == 0 ]] ; then
+        if [[ ${SWITCH_ALL_UPDATE} == 1 ]] ; then
             upload_jars "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}"
             if [ $? -ne 0 ] ; then
                 return 1
@@ -855,12 +875,14 @@ main()
             fi
         fi
 
-        update_tutorial_java "${ZSERIO_TUTORIAL_JAVA_DIR}" "${ZSERIO_VERSION}"
-        if [ $? -ne 0 ] ; then
-            return 1
+        if [[ ${SWITCH_JAVA_TUTORIAL_UPDATE} == 1 ]] ; then
+            update_tutorial_java "${ZSERIO_TUTORIAL_JAVA_DIR}" "${ZSERIO_VERSION}"
+            if [ $? -ne 0 ] ; then
+                return 1
+            fi
         fi
 
-        if [[ ${SWITCH_JAVA_TUTORIAL_UPDATE} == 0 ]] ; then
+        if [[ ${SWITCH_ALL_UPDATE} == 1 ]] ; then
             update_tutorial_python "${ZSERIO_TUTORIAL_PYTHON_DIR}" "${ZSERIO_VERSION}"
             if [ $? -ne 0 ] ; then
                 return 1
@@ -870,7 +892,9 @@ main()
             if [ $? -ne 0 ] ; then
                 return 1
             fi
+        fi
 
+        if [[ ${SWITCH_WEB_PAGES_UPDATE} == 1 ]] ; then
             update_web_pages "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" "${ZSERIO_VERSION}"
             if [ $? -ne 0 ] ; then
                 return 1
