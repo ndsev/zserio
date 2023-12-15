@@ -190,13 +190,13 @@ jobs:
     - name: Archive Zserio release artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: zserio-release-${{matrix.os}}-java${{matrix.java-version}}
+        name: zserio-release-${{matrix.os}}-python${{matrix.python-version}}-java${{matrix.java-version}}-gcc${{matrix.gcc-version}}-clang${{matrix.clang-version}}
         path: release-*
 
     - name: Archive Zserio build artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: zserio-build-${{matrix.os}}-python${{matrix.python-version}}-gcc${{matrix.gcc-version}}-clang${{matrix.clang-version}}
+        name: zserio-build-${{matrix.os}}-python${{matrix.python-version}}-java${{matrix.java-version}}-gcc${{matrix.gcc-version}}-clang${{matrix.clang-version}}
         path: |
           build/runtime_libs/python/**/zserio_cpp/**/*.so
           build/runtime_libs/cpp/**/runtime/*.a
