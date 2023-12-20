@@ -966,7 +966,7 @@ TEST_F(ArrayTest, varInt32Array)
             static_cast<int32_t>(1U << 5U),
             static_cast<int32_t>(1U << (5U + 7)),
             static_cast<int32_t>(1U << (5U + 7 + 7)),
-            static_cast<int32_t>(1U << (5U + 7 + 7 + 8))};
+            static_cast<int32_t>(1U << (5U + 7 + 7 + 8)),};
     const size_t bitSize = 8 * (1 + 2 + 3 + 4);
     testArray<VarIntNNArrayTraits<int32_t>>(rawArray, bitSize, bitSize);
 
@@ -984,7 +984,7 @@ TEST_F(ArrayTest, varInt64Array)
             static_cast<int64_t>(UINT64_C(1) << (5U + 7 + 7 + 7 + 7)),
             static_cast<int64_t>(UINT64_C(1) << (5U + 7 + 7 + 7 + 7 + 7)),
             static_cast<int64_t>(UINT64_C(1) << (5U + 7 + 7 + 7 + 7 + 7 + 7)),
-            static_cast<int64_t>(UINT64_C(1) << (5U + 7 + 7 + 7 + 7 + 7 + 7 + 8))};
+            static_cast<int64_t>(UINT64_C(1) << (5U + 7 + 7 + 7 + 7 + 7 + 7 + 8)),};
     const size_t bitSize = 8 * (1 + 2 + 3 + 4 + 5 + 6 + 7 + 8);
     testArray<VarIntNNArrayTraits<int64_t>>(rawArray, bitSize, bitSize);
 
@@ -1022,7 +1022,7 @@ TEST_F(ArrayTest, varUInt64Array)
             UINT64_C(1) << (6U + 7 + 7 + 7 + 7),
             UINT64_C(1) << (6U + 7 + 7 + 7 + 7 + 7),
             UINT64_C(1) << (6U + 7 + 7 + 7 + 7 + 7 + 7),
-            UINT64_C(1) << (6U + 7 + 7 + 7 + 7 + 7 + 7 + 8)};
+            UINT64_C(1) << (6U + 7 + 7 + 7 + 7 + 7 + 7 + 8),};
     const size_t bitSize = 8 * (1 + 2 + 3 + 4 + 5 + 6 + 7 + 8);
     testArray<VarIntNNArrayTraits<uint64_t>>(rawArray, bitSize, bitSize);
 
@@ -1109,7 +1109,7 @@ TEST_F(ArrayTest, varSizeArray)
             UINT32_C(1) << (6U + 7),
             UINT32_C(1) << (6U + 7 + 7),
             UINT32_C(1) << (6U + 7 + 7 + 7),
-            UINT32_C(1) << (1U + 7 + 7 + 7 + 8)};
+            UINT32_C(1) << (1U + 7 + 7 + 7 + 8),};
     const size_t bitSize = 8 * (1 + 2 + 3 + 4 + 5);
     testArray<VarSizeArrayTraits>(rawArray, bitSize, bitSize);
 
@@ -1373,7 +1373,7 @@ TEST_F(ArrayTest, varUInt64PackedArray)
             UINT64_C(1) << (6U + 7 + 7 + 7 + 7),
             UINT64_C(1) << (6U + 7 + 7 + 7 + 7 + 7),
             UINT64_C(1) << (6U + 7 + 7 + 7 + 7 + 7 + 7),
-            UINT64_C(1) << (6U + 7 + 7 + 7 + 7 + 7 + 7 + 8)};
+            UINT64_C(1) << (6U + 7 + 7 + 7 + 7 + 7 + 7 + 8),};
     testPackedArray<VarIntNNArrayTraits<uint64_t>>(rawArray);
 
     std::vector<uint64_t> unpackedRawArray = {UINT64_C(5000000), 0, 0, 0, 0, 0, 0};
@@ -1390,7 +1390,7 @@ TEST_F(ArrayTest, varSizePackedArray)
             UINT32_C(1) << (6U + 7),
             UINT32_C(1) << (6U + 7 + 7),
             UINT32_C(1) << (6U + 7 + 7 + 7),
-            UINT32_C(1) << (1U + 7 + 7 + 7 + 8)};
+            UINT32_C(1) << (1U + 7 + 7 + 7 + 8),};
     testPackedArray<VarSizeArrayTraits>(rawArray);
 }
 

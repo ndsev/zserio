@@ -34,7 +34,7 @@ static const std::array<int32_t, 33> MIN_I32_VALUES =
    -0x00010000, -0x00020000, -0x00040000, -0x00080000,
    -0x00100000, -0x00200000, -0x00400000, -0x00800000,
    -0x01000000, -0x02000000, -0x04000000, -0x08000000,
-   -0x10000000, -0x20000000, -0x40000000, INT32_MIN
+   -0x10000000, -0x20000000, -0x40000000, INT32_MIN,
 };
 
 static const std::array<int32_t, 33> MAX_I32_VALUES =
@@ -47,7 +47,7 @@ static const std::array<int32_t, 33> MAX_I32_VALUES =
     0x0000ffff,  0x0001ffff,  0x0003ffff,  0x0007ffff,
     0x000fffff,  0x001fffff,  0x003fffff,  0x007fffff,
     0x00ffffff,  0x01ffffff,  0x03ffffff,  0x07ffffff,
-    0x0fffffff,  0x1fffffff,  0x3fffffff,  0x7fffffff
+    0x0fffffff,  0x1fffffff,  0x3fffffff,  0x7fffffff,
 };
 
 static const std::array<uint64_t, 65> MAX_U64_VALUES =
@@ -68,7 +68,7 @@ static const std::array<uint64_t, 65> MAX_U64_VALUES =
     0x0001ffffffffffffULL, 0x0003ffffffffffffULL, 0x0007ffffffffffffULL, 0x000fffffffffffffULL,
     0x001fffffffffffffULL, 0x003fffffffffffffULL, 0x007fffffffffffffULL, 0x00ffffffffffffffULL,
     0x01ffffffffffffffULL, 0x03ffffffffffffffULL, 0x07ffffffffffffffULL, 0x0fffffffffffffffULL,
-    0x1fffffffffffffffULL, 0x3fffffffffffffffULL, 0x7fffffffffffffffULL, 0xffffffffffffffffULL
+    0x1fffffffffffffffULL, 0x3fffffffffffffffULL, 0x7fffffffffffffffULL, 0xffffffffffffffffULL,
 };
 
 static const std::array<int64_t, 65> MIN_I64_VALUES =
@@ -89,7 +89,7 @@ static const std::array<int64_t, 65> MIN_I64_VALUES =
    -0x0001000000000000LL, -0x0002000000000000LL, -0x0004000000000000LL, -0x0008000000000000LL,
    -0x0010000000000000LL, -0x0020000000000000LL, -0x0040000000000000LL, -0x0080000000000000LL,
    -0x0100000000000000LL, -0x0200000000000000LL, -0x0400000000000000LL, -0x0800000000000000LL,
-   -0x1000000000000000LL, -0x2000000000000000LL, -0x4000000000000000LL, INT64_MIN
+   -0x1000000000000000LL, -0x2000000000000000LL, -0x4000000000000000LL, INT64_MIN,
 };
 
 static const std::array<int64_t, 65> MAX_I64_VALUES =
@@ -110,7 +110,7 @@ static const std::array<int64_t, 65> MAX_I64_VALUES =
     0x0000ffffffffffffLL,  0x0001ffffffffffffLL,  0x0003ffffffffffffLL, 0x0007ffffffffffffLL,
     0x000fffffffffffffLL,  0x001fffffffffffffLL,  0x003fffffffffffffLL, 0x007fffffffffffffLL,
     0x00ffffffffffffffLL,  0x01ffffffffffffffLL,  0x03ffffffffffffffLL, 0x07ffffffffffffffLL,
-    0x0fffffffffffffffLL,  0x1fffffffffffffffLL,  0x3fffffffffffffffLL, 0x7fffffffffffffffLL
+    0x0fffffffffffffffLL,  0x1fffffffffffffffLL,  0x3fffffffffffffffLL, 0x7fffffffffffffffLL,
 };
 
 BitStreamWriter::BitStreamWriter(uint8_t* buffer, size_t bufferBitSize, BitsTag) :

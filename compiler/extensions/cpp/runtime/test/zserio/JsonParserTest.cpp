@@ -129,7 +129,7 @@ TEST(JsonParserTest, parse)
         {"beginObject"},
         {"endObject"},
         {"endArray"},
-        {"endObject"}
+        {"endObject"},
     }};
     ASSERT_EQ(expectedReport, observer.getReport());
 }
@@ -148,7 +148,7 @@ TEST(JsonParserTest, valueTypes)
         {"visitValue: 10"},
         {"visitValue: -10"},
         {"visitValue: 1.100000"},
-        {"visitValue: str"}
+        {"visitValue: str"},
     }};
     ASSERT_EQ(expectedReport, observer.getReport());
 }
@@ -196,7 +196,7 @@ TEST(JsonParserTest, unexpectedObjectAfterItemSeparator)
     std::vector<std::string> expectedReport = {{
         {"beginObject"},
         {"visitKey: key"},
-        {"visitValue: 10"}
+        {"visitValue: 10"},
     }};
     ASSERT_EQ(expectedReport, observer.getReport());
 }
@@ -221,7 +221,7 @@ TEST(JsonParserTest, missingObjectItemSeparator)
     std::vector<std::string> expectedReport = {{
         {"beginObject"},
         {"visitKey: item1"},
-        {"visitValue: text"}
+        {"visitValue: text"},
     }};
     ASSERT_EQ(expectedReport, observer.getReport());
 }
@@ -269,7 +269,7 @@ TEST(JsonParserTest, unexpectedElementToken)
 
     std::vector<std::string> expectedReport = {{
         {"beginObject"},
-        {"visitKey: item"}
+        {"visitKey: item"},
     }};
     ASSERT_EQ(expectedReport, observer.getReport());
 }
@@ -295,7 +295,7 @@ TEST(JsonParserTest, missingArrayElementSeparator)
         {"beginObject"},
         {"visitKey: array"},
         {"beginArray"},
-        {"visitValue: 10"}
+        {"visitValue: 10"},
     }};
     ASSERT_EQ(expectedReport, observer.getReport());
 }

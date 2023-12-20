@@ -319,7 +319,7 @@ TEST_F(BitStreamTest, readVarInt64)
         ( INT64_C(1) << (6+7+7+7 +7+7+7 ) ) - 1,
 
         ( INT64_C(1) << (6+7+7+7 +7+7+7 ) ),
-        ( INT64_C(1) << (6+7+7+7 +7+7+7+8 ) ) - 1
+        ( INT64_C(1) << (6+7+7+7 +7+7+7+8 ) ) - 1,
     };
 
     std::function<void (BitStreamWriter&, int64_t)> writerFunc = &BitStreamWriter::writeVarInt64;
@@ -563,7 +563,7 @@ TEST_F(BitStreamTest, readVarUInt)
         (UINT64_C(1) << 56U) - 1,
         // 9 bytes
         (UINT64_C(1) << 56U),
-        UINT64_MAX
+        UINT64_MAX,
     };
 
     std::function<void (BitStreamWriter&, uint64_t)> writerFunc = &BitStreamWriter::writeVarUInt;
