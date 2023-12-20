@@ -17,299 +17,301 @@ namespace zserio
 
 namespace detail
 {
-    class TypeIdHolder
+
+class TypeIdHolder
+{
+public:
+    using type_id = const int*;
+
+    template <typename T>
+    static type_id get()
     {
-    public:
-        using type_id = const int*;
+        static int currentTypeId;
 
-        template <typename T>
-        static type_id get()
-        {
-            static int currentTypeId;
+        return &currentTypeId;
+    }
+};
 
-            return &currentTypeId;
-        }
-    };
+// Interface for object holders
+template <typename ALLOC>
+class IHolder
+{
+public:
+    virtual ~IHolder() = default;
+    virtual IHolder* clone(const ALLOC& allocator) const = 0;
+    virtual IHolder* clone(NoInitT, const ALLOC& allocator) const = 0;
+    virtual IHolder* clone(void* storage) const = 0;
+    virtual IHolder* clone(NoInitT, void* storage) const = 0;
+    virtual IHolder* move(const ALLOC& allocator) = 0;
+    virtual IHolder* move(NoInitT, const ALLOC& allocator) = 0;
+    virtual IHolder* move(void* storage) = 0;
+    virtual IHolder* move(NoInitT, void* storage) = 0;
+    virtual void destroy(const ALLOC& allocator) = 0;
+    virtual bool isType(detail::TypeIdHolder::type_id typeId) const = 0;
+};
 
-    // Interface for object holders
-    template <typename ALLOC>
-    class IHolder
+// Base of object holders, holds a value in the inplace_optional_holder
+template <typename T, typename ALLOC>
+class HolderBase : public IHolder<ALLOC>
+{
+public:
+    template <typename U>
+    void set(U&& value)
     {
-    public:
-        virtual ~IHolder() = default;
-        virtual IHolder* clone(const ALLOC& allocator) const = 0;
-        virtual IHolder* clone(NoInitT, const ALLOC& allocator) const = 0;
-        virtual IHolder* clone(void* storage) const = 0;
-        virtual IHolder* clone(NoInitT, void* storage) const = 0;
-        virtual IHolder* move(const ALLOC& allocator) = 0;
-        virtual IHolder* move(NoInitT, const ALLOC& allocator) = 0;
-        virtual IHolder* move(void* storage) = 0;
-        virtual IHolder* move(NoInitT, void* storage) = 0;
-        virtual void destroy(const ALLOC& allocator) = 0;
-        virtual bool isType(detail::TypeIdHolder::type_id typeId) const = 0;
-    };
+        m_typedHolder = std::forward<U>(value);
+    }
 
-    // Base of object holders, holds a value in the inplace_optional_holder
-    template <typename T, typename ALLOC>
-    class HolderBase : public IHolder<ALLOC>
+    template <typename U,
+            typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
+    void set(NoInitT, U&& value)
     {
-    public:
-        template <typename U>
-        void set(U&& value)
-        {
-            m_typedHolder = std::forward<U>(value);
-        }
+        // inplace_optional_holder constructor to prevent it's implicit constructor
+        m_typedHolder.assign(NoInit, inplace_optional_holder<T>(NoInit, std::forward<U>(value)));
+    }
 
-        template <typename U,
-                typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
-        void set(NoInitT, U&& value)
-        {
-            // inplace_optional_holder constructor to prevent it's implicit constructor
-            m_typedHolder.assign(NoInit, inplace_optional_holder<T>(NoInit, std::forward<U>(value)));
-        }
-
-        template <typename U,
-                typename std::enable_if<!std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
-        void set(NoInitT, U&& value)
-        {
-            m_typedHolder = std::forward<U>(value);
-        }
-
-        void setHolder(const inplace_optional_holder<T>& value)
-        {
-            m_typedHolder = value;
-        }
-
-        void setHolder(inplace_optional_holder<T>&& value)
-        {
-            m_typedHolder = std::move(value);
-        }
-
-        template <typename U,
-                typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
-        void setHolder(NoInitT, const inplace_optional_holder<U>& value)
-        {
-            m_typedHolder.assign(NoInit, value);
-        }
-
-        template <typename U,
-                typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
-        void setHolder(NoInitT, inplace_optional_holder<U>&& value)
-        {
-            m_typedHolder.assign(NoInit, std::move(value));
-        }
-
-        template <typename U,
-                typename std::enable_if<!std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
-        void setHolder(NoInitT, const inplace_optional_holder<U>& value)
-        {
-            m_typedHolder = value;
-        }
-
-        template <typename U,
-                typename std::enable_if<!std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
-        void setHolder(NoInitT, inplace_optional_holder<U>&& value)
-        {
-            m_typedHolder = std::move(value);
-        }
-
-        T& get()
-        {
-            return m_typedHolder.value();
-        }
-
-        const T& get() const
-        {
-            return m_typedHolder.value();
-        }
-
-        bool isType(detail::TypeIdHolder::type_id typeId) const override
-        {
-            return detail::TypeIdHolder::get<T>() == typeId;
-        }
-
-    protected:
-        inplace_optional_holder<T>& getHolder()
-        {
-            return m_typedHolder;
-        }
-
-        const inplace_optional_holder<T>& getHolder() const
-        {
-            return m_typedHolder;
-        }
-
-    private:
-        inplace_optional_holder<T> m_typedHolder;
-    };
-
-    // Holder allocated on heap
-    template <typename T, typename ALLOC>
-    class HeapHolder : public HolderBase<T, ALLOC>
+    template <typename U,
+            typename std::enable_if<!std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
+    void set(NoInitT, U&& value)
     {
-    private:
-        struct ConstructTag {};
+        m_typedHolder = std::forward<U>(value);
+    }
 
-    public:
-        using this_type = HeapHolder<T, ALLOC>;
-
-        explicit HeapHolder(ConstructTag) noexcept {}
-
-        static this_type* create(const ALLOC& allocator)
-        {
-            using AllocType = RebindAlloc<ALLOC, this_type>;
-            using AllocTraits = std::allocator_traits<AllocType>;
-
-            AllocType typedAlloc = allocator;
-            typename AllocTraits::pointer ptr = AllocTraits::allocate(typedAlloc, 1);
-            // this never throws because HeapHolder constructor never throws
-            AllocTraits::construct(typedAlloc, std::addressof(*ptr), ConstructTag{});
-            return ptr;
-        }
-
-        IHolder<ALLOC>* clone(const ALLOC& allocator) const override
-        {
-            this_type* holder = create(allocator);
-            holder->setHolder(this->getHolder());
-            return holder;
-        }
-
-        IHolder<ALLOC>* clone(NoInitT, const ALLOC& allocator) const override
-        {
-            this_type* holder = create(allocator);
-            holder->setHolder(NoInit, this->getHolder());
-            return holder;
-        }
-
-        IHolder<ALLOC>* clone(void*) const override
-        {
-            throw CppRuntimeException("AnyHolder: Unexpected clone call.");
-        }
-
-        IHolder<ALLOC>* clone(NoInitT, void*) const override
-        {
-            throw CppRuntimeException("AnyHolder: Unexpected clone call.");
-        }
-
-        IHolder<ALLOC>* move(const ALLOC& allocator) override
-        {
-            this_type* holder = create(allocator);
-            holder->setHolder(std::move(this->getHolder()));
-            return holder;
-        }
-
-        IHolder<ALLOC>* move(NoInitT, const ALLOC& allocator) override
-        {
-            this_type* holder = create(allocator);
-            holder->setHolder(NoInit, std::move(this->getHolder()));
-            return holder;
-        }
-
-        IHolder<ALLOC>* move(void*) override
-        {
-            throw CppRuntimeException("AnyHolder: Unexpected move call.");
-        }
-
-        IHolder<ALLOC>* move(NoInitT, void*) override
-        {
-            throw CppRuntimeException("AnyHolder: Unexpected move call.");
-        }
-
-        void destroy(const ALLOC& allocator) override
-        {
-            using AllocType = RebindAlloc<ALLOC, this_type>;
-            using AllocTraits = std::allocator_traits<AllocType>;
-
-            AllocType typedAlloc = allocator;
-            AllocTraits::destroy(typedAlloc, this);
-            AllocTraits::deallocate(typedAlloc, this, 1);
-        }
-    };
-
-    // Holder allocated in the in-place storage
-    template <typename T, typename ALLOC>
-    class NonHeapHolder : public HolderBase<T, ALLOC>
+    void setHolder(const inplace_optional_holder<T>& value)
     {
-    public:
-        using this_type = NonHeapHolder<T, ALLOC>;
+        m_typedHolder = value;
+    }
 
-        static this_type* create(void* storage)
-        {
-            return new (storage) this_type();
-        }
-
-        IHolder<ALLOC>* clone(const ALLOC&) const override
-        {
-            throw CppRuntimeException("AnyHolder: Unexpected clone call.");
-        }
-
-        IHolder<ALLOC>* clone(NoInitT, const ALLOC&) const override
-        {
-            throw CppRuntimeException("AnyHolder: Unexpected clone call.");
-        }
-
-        IHolder<ALLOC>* clone(void* storage) const override
-        {
-            NonHeapHolder* holder = new (storage) NonHeapHolder();
-            holder->setHolder(this->getHolder());
-            return holder;
-        }
-
-        IHolder<ALLOC>* clone(NoInitT, void* storage) const override
-        {
-            NonHeapHolder* holder = new (storage) NonHeapHolder();
-            holder->setHolder(NoInit, this->getHolder());
-            return holder;
-        }
-
-        IHolder<ALLOC>* move(const ALLOC&) override
-        {
-            throw CppRuntimeException("AnyHolder: Unexpected move call.");
-        }
-
-        IHolder<ALLOC>* move(NoInitT, const ALLOC&) override
-        {
-            throw CppRuntimeException("AnyHolder: Unexpected move call.");
-        }
-
-        IHolder<ALLOC>* move(void* storage) override
-        {
-            NonHeapHolder* holder = new (storage) NonHeapHolder();
-            holder->setHolder(std::move(this->getHolder()));
-            return holder;
-        }
-
-        IHolder<ALLOC>* move(NoInitT, void* storage) override
-        {
-            NonHeapHolder* holder = new (storage) NonHeapHolder();
-            holder->setHolder(NoInit, std::move(this->getHolder()));
-            return holder;
-        }
-
-        void destroy(const ALLOC&) override
-        {
-            this->~NonHeapHolder();
-        }
-
-    private:
-        NonHeapHolder() = default;
-    };
-
-    template <typename ALLOC>
-    union UntypedHolder
+    void setHolder(inplace_optional_holder<T>&& value)
     {
-        // 2 * sizeof(void*) for T + sizeof(void*) for Holder's vptr
-        using MaxInPlaceType = std::aligned_storage<3 * sizeof(void*), alignof(void*)>::type;
+        m_typedHolder = std::move(value);
+    }
 
-        detail::IHolder<ALLOC>* heap;
-        MaxInPlaceType inPlace;
-    };
+    template <typename U,
+            typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
+    void setHolder(NoInitT, const inplace_optional_holder<U>& value)
+    {
+        m_typedHolder.assign(NoInit, value);
+    }
 
-    template <typename T, typename ALLOC>
-    using has_non_heap_holder = std::integral_constant<bool,
-            sizeof(NonHeapHolder<T, ALLOC>) <= sizeof(typename UntypedHolder<ALLOC>::MaxInPlaceType) &&
-            std::is_nothrow_move_constructible<T>::value &&
-                alignof(T) <= alignof(typename UntypedHolder<ALLOC>::MaxInPlaceType)>;
+    template <typename U,
+            typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
+    void setHolder(NoInitT, inplace_optional_holder<U>&& value)
+    {
+        m_typedHolder.assign(NoInit, std::move(value));
+    }
+
+    template <typename U,
+            typename std::enable_if<!std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
+    void setHolder(NoInitT, const inplace_optional_holder<U>& value)
+    {
+        m_typedHolder = value;
+    }
+
+    template <typename U,
+            typename std::enable_if<!std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
+    void setHolder(NoInitT, inplace_optional_holder<U>&& value)
+    {
+        m_typedHolder = std::move(value);
+    }
+
+    T& get()
+    {
+        return m_typedHolder.value();
+    }
+
+    const T& get() const
+    {
+        return m_typedHolder.value();
+    }
+
+    bool isType(detail::TypeIdHolder::type_id typeId) const override
+    {
+        return detail::TypeIdHolder::get<T>() == typeId;
+    }
+
+protected:
+    inplace_optional_holder<T>& getHolder()
+    {
+        return m_typedHolder;
+    }
+
+    const inplace_optional_holder<T>& getHolder() const
+    {
+        return m_typedHolder;
+    }
+
+private:
+    inplace_optional_holder<T> m_typedHolder;
+};
+
+// Holder allocated on heap
+template <typename T, typename ALLOC>
+class HeapHolder : public HolderBase<T, ALLOC>
+{
+private:
+    struct ConstructTag {};
+
+public:
+    using this_type = HeapHolder<T, ALLOC>;
+
+    explicit HeapHolder(ConstructTag) noexcept {}
+
+    static this_type* create(const ALLOC& allocator)
+    {
+        using AllocType = RebindAlloc<ALLOC, this_type>;
+        using AllocTraits = std::allocator_traits<AllocType>;
+
+        AllocType typedAlloc = allocator;
+        typename AllocTraits::pointer ptr = AllocTraits::allocate(typedAlloc, 1);
+        // this never throws because HeapHolder constructor never throws
+        AllocTraits::construct(typedAlloc, std::addressof(*ptr), ConstructTag{});
+        return ptr;
+    }
+
+    IHolder<ALLOC>* clone(const ALLOC& allocator) const override
+    {
+        this_type* holder = create(allocator);
+        holder->setHolder(this->getHolder());
+        return holder;
+    }
+
+    IHolder<ALLOC>* clone(NoInitT, const ALLOC& allocator) const override
+    {
+        this_type* holder = create(allocator);
+        holder->setHolder(NoInit, this->getHolder());
+        return holder;
+    }
+
+    IHolder<ALLOC>* clone(void*) const override
+    {
+        throw CppRuntimeException("AnyHolder: Unexpected clone call.");
+    }
+
+    IHolder<ALLOC>* clone(NoInitT, void*) const override
+    {
+        throw CppRuntimeException("AnyHolder: Unexpected clone call.");
+    }
+
+    IHolder<ALLOC>* move(const ALLOC& allocator) override
+    {
+        this_type* holder = create(allocator);
+        holder->setHolder(std::move(this->getHolder()));
+        return holder;
+    }
+
+    IHolder<ALLOC>* move(NoInitT, const ALLOC& allocator) override
+    {
+        this_type* holder = create(allocator);
+        holder->setHolder(NoInit, std::move(this->getHolder()));
+        return holder;
+    }
+
+    IHolder<ALLOC>* move(void*) override
+    {
+        throw CppRuntimeException("AnyHolder: Unexpected move call.");
+    }
+
+    IHolder<ALLOC>* move(NoInitT, void*) override
+    {
+        throw CppRuntimeException("AnyHolder: Unexpected move call.");
+    }
+
+    void destroy(const ALLOC& allocator) override
+    {
+        using AllocType = RebindAlloc<ALLOC, this_type>;
+        using AllocTraits = std::allocator_traits<AllocType>;
+
+        AllocType typedAlloc = allocator;
+        AllocTraits::destroy(typedAlloc, this);
+        AllocTraits::deallocate(typedAlloc, this, 1);
+    }
+};
+
+// Holder allocated in the in-place storage
+template <typename T, typename ALLOC>
+class NonHeapHolder : public HolderBase<T, ALLOC>
+{
+public:
+    using this_type = NonHeapHolder<T, ALLOC>;
+
+    static this_type* create(void* storage)
+    {
+        return new (storage) this_type();
+    }
+
+    IHolder<ALLOC>* clone(const ALLOC&) const override
+    {
+        throw CppRuntimeException("AnyHolder: Unexpected clone call.");
+    }
+
+    IHolder<ALLOC>* clone(NoInitT, const ALLOC&) const override
+    {
+        throw CppRuntimeException("AnyHolder: Unexpected clone call.");
+    }
+
+    IHolder<ALLOC>* clone(void* storage) const override
+    {
+        NonHeapHolder* holder = new (storage) NonHeapHolder();
+        holder->setHolder(this->getHolder());
+        return holder;
+    }
+
+    IHolder<ALLOC>* clone(NoInitT, void* storage) const override
+    {
+        NonHeapHolder* holder = new (storage) NonHeapHolder();
+        holder->setHolder(NoInit, this->getHolder());
+        return holder;
+    }
+
+    IHolder<ALLOC>* move(const ALLOC&) override
+    {
+        throw CppRuntimeException("AnyHolder: Unexpected move call.");
+    }
+
+    IHolder<ALLOC>* move(NoInitT, const ALLOC&) override
+    {
+        throw CppRuntimeException("AnyHolder: Unexpected move call.");
+    }
+
+    IHolder<ALLOC>* move(void* storage) override
+    {
+        NonHeapHolder* holder = new (storage) NonHeapHolder();
+        holder->setHolder(std::move(this->getHolder()));
+        return holder;
+    }
+
+    IHolder<ALLOC>* move(NoInitT, void* storage) override
+    {
+        NonHeapHolder* holder = new (storage) NonHeapHolder();
+        holder->setHolder(NoInit, std::move(this->getHolder()));
+        return holder;
+    }
+
+    void destroy(const ALLOC&) override
+    {
+        this->~NonHeapHolder();
+    }
+
+private:
+    NonHeapHolder() = default;
+};
+
+template <typename ALLOC>
+union UntypedHolder
+{
+    // 2 * sizeof(void*) for T + sizeof(void*) for Holder's vptr
+    using MaxInPlaceType = std::aligned_storage<3 * sizeof(void*), alignof(void*)>::type;
+
+    detail::IHolder<ALLOC>* heap;
+    MaxInPlaceType inPlace;
+};
+
+template <typename T, typename ALLOC>
+using has_non_heap_holder = std::integral_constant<bool,
+        sizeof(NonHeapHolder<T, ALLOC>) <= sizeof(typename UntypedHolder<ALLOC>::MaxInPlaceType) &&
+        std::is_nothrow_move_constructible<T>::value &&
+            alignof(T) <= alignof(typename UntypedHolder<ALLOC>::MaxInPlaceType)>;
+
 } // namespace detail
 
 /**
