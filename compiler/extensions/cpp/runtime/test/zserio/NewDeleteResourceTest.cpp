@@ -1,5 +1,4 @@
 #include "gtest/gtest.h"
-
 #include "zserio/pmr/NewDeleteResource.h"
 
 namespace zserio

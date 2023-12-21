@@ -1,7 +1,7 @@
-#include "gtest/gtest.h"
-
 #include <fstream>
 #include <regex>
+
+#include "gtest/gtest.h"
 
 class DeprecatedAttributeTest : public ::testing::Test
 {
@@ -41,8 +41,8 @@ TEST_F(DeprecatedAttributeTest, checkWarnings)
 {
 #if defined(DEPRECATED_ATTRIBUTE_TEST_CHECK_WARNINGS) && DEPRECATED_ATTRIBUTE_TEST_CHECK_WARNINGS != 0
     ASSERT_FALSE(matchInFile(ERROR_LOG_PATH, std::regex("Unknown warning to check matchInFile method!")));
-    ASSERT_TRUE(matchInFile(ERROR_LOG_PATH,
-            std::regex("DeprecatedAttribute\\.cpp.*15.*81.*warning.*FIVE.*deprecated"))) <<
-            "Warning not found in '" << ERROR_LOG_PATH << "'!";
+    ASSERT_TRUE(matchInFile(
+            ERROR_LOG_PATH, std::regex("DeprecatedAttribute\\.cpp.*15.*81.*warning.*FIVE.*deprecated")))
+            << "Warning not found in '" << ERROR_LOG_PATH << "'!";
 #endif
 }

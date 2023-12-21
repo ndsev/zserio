@@ -2,8 +2,8 @@
 #define ZSERIO_ISERVICE_H_INC
 
 #include "zserio/IReflectable.h"
-#include "zserio/StringView.h"
 #include "zserio/Span.h"
+#include "zserio/StringView.h"
 #include "zserio/Types.h"
 #include "zserio/Vector.h"
 
@@ -57,9 +57,10 @@ public:
      * \param reflectable Constant reflectable created from zserio request object.
      * \param allocator Allocator to use for data allocation.
      */
-    explicit BasicReflectableServiceData(const IBasicReflectableConstPtr<ALLOC>& reflectable,
-                              const ALLOC& allocator = ALLOC()) :
-            m_reflectable(reflectable), m_data(allocator)
+    explicit BasicReflectableServiceData(
+            const IBasicReflectableConstPtr<ALLOC>& reflectable, const ALLOC& allocator = ALLOC()) :
+            m_reflectable(reflectable),
+            m_data(allocator)
     {}
 
     IBasicReflectableConstPtr<ALLOC> getReflectable() const override
@@ -136,8 +137,8 @@ public:
      *
      * \param rawData Raw data to be copied inside the service data.
      */
-    explicit BasicRawServiceDataHolder(const vector<uint8_t, ALLOC>& rawData)
-    :       m_data(rawData)
+    explicit BasicRawServiceDataHolder(const vector<uint8_t, ALLOC>& rawData) :
+            m_data(rawData)
     {}
 
     /**
@@ -145,8 +146,8 @@ public:
      *
      * \param rawData Raw data to be moved inside the service data.
      */
-    explicit BasicRawServiceDataHolder(vector<uint8_t, ALLOC>&& rawData)
-    :       m_data(std::move(rawData))
+    explicit BasicRawServiceDataHolder(vector<uint8_t, ALLOC>&& rawData) :
+            m_data(std::move(rawData))
     {}
 
     IBasicReflectableConstPtr<ALLOC> getReflectable() const override
@@ -177,8 +178,8 @@ public:
      *
      * \param rawData Span as a pointer to the raw data buffer.
      */
-    explicit BasicRawServiceDataView(zserio::Span<const uint8_t> rawData)
-    :       m_data(rawData)
+    explicit BasicRawServiceDataView(zserio::Span<const uint8_t> rawData) :
+            m_data(rawData)
     {}
 
     IBasicReflectableConstPtr<ALLOC> getReflectable() const override
@@ -216,9 +217,7 @@ public:
      * \throw ServiceException if the call fails.
      */
     virtual IBasicServiceDataPtr<ALLOC> callMethod(
-            StringView methodName,
-            Span<const uint8_t> requestData,
-            void* context) = 0;
+            StringView methodName, Span<const uint8_t> requestData, void* context) = 0;
 };
 
 /**
@@ -242,9 +241,7 @@ public:
      * \throw ServiceException if the call fails.
      */
     virtual vector<uint8_t, ALLOC> callMethod(
-            StringView methodName,
-            const IBasicServiceData<ALLOC>& requestData,
-            void* context) = 0;
+            StringView methodName, const IBasicServiceData<ALLOC>& requestData, void* context) = 0;
 };
 
 /** Typedef to service interface provided for convenience - using default std::allocator<uint8_t>. */

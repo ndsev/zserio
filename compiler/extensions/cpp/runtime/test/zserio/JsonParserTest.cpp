@@ -1,6 +1,6 @@
-#include "gtest/gtest.h"
-
 #include <sstream>
+
+#include "gtest/gtest.h"
 #include "zserio/JsonParser.h"
 
 namespace zserio
@@ -117,19 +117,19 @@ TEST(JsonParserTest, parse)
     ASSERT_TRUE(jsonParser.parse());
 
     std::vector<std::string> expectedReport = {{
-        {"beginObject"},
-        {"visitKey: array"},
-        {"beginArray"},
-        {"beginObject"},
-        {"visitKey: key1"},
-        {"visitValue: 10"},
-        {"visitKey: key2"},
-        {"visitValue: text"},
-        {"endObject"},
-        {"beginObject"},
-        {"endObject"},
-        {"endArray"},
-        {"endObject"},
+            {"beginObject"},
+            {"visitKey: array"},
+            {"beginArray"},
+            {"beginObject"},
+            {"visitKey: key1"},
+            {"visitValue: 10"},
+            {"visitKey: key2"},
+            {"visitValue: text"},
+            {"endObject"},
+            {"beginObject"},
+            {"endObject"},
+            {"endArray"},
+            {"endObject"},
     }};
     ASSERT_EQ(expectedReport, observer.getReport());
 }
@@ -143,12 +143,12 @@ TEST(JsonParserTest, valueTypes)
     {}
 
     std::vector<std::string> expectedReport = {{
-        {"visitValue: null"},
-        {"visitValue: true"},
-        {"visitValue: 10"},
-        {"visitValue: -10"},
-        {"visitValue: 1.100000"},
-        {"visitValue: str"},
+            {"visitValue: null"},
+            {"visitValue: true"},
+            {"visitValue: 10"},
+            {"visitValue: -10"},
+            {"visitValue: 1.100000"},
+            {"visitValue: str"},
     }};
     ASSERT_EQ(expectedReport, observer.getReport());
 }
@@ -158,21 +158,22 @@ TEST(JsonParserTest, unexpectedObject)
     std::stringstream str("{\n\n{\n\n");
     DummyObserver observer;
     JsonParser jsonParser(str, observer);
-    ASSERT_THROW({
-        try
-        {
-            jsonParser.parse();
-        }
-        catch (const JsonParserException& e)
-        {
-            ASSERT_STREQ("JsonParser:3:1: unexpected token: BEGIN_OBJECT, expecting END_OBJECT!", e.what());
-            throw;
-        }
-    }, JsonParserException);
+    ASSERT_THROW(
+            {
+                try
+                {
+                    jsonParser.parse();
+                }
+                catch (const JsonParserException& e)
+                {
+                    ASSERT_STREQ(
+                            "JsonParser:3:1: unexpected token: BEGIN_OBJECT, expecting END_OBJECT!", e.what());
+                    throw;
+                }
+            },
+            JsonParserException);
 
-    std::vector<std::string> expectedReport = {{
-        "beginObject"
-    }};
+    std::vector<std::string> expectedReport = {{"beginObject"}};
     ASSERT_EQ(expectedReport, observer.getReport());
 }
 
@@ -181,22 +182,24 @@ TEST(JsonParserTest, unexpectedObjectAfterItemSeparator)
     std::stringstream str("{\n  \"key\": 10,\n  {\n");
     DummyObserver observer;
     JsonParser jsonParser(str, observer);
-    ASSERT_THROW({
-        try
-        {
-            jsonParser.parse();
-        }
-        catch (const JsonParserException& e)
-        {
-            ASSERT_STREQ("JsonParser:3:3: unexpected token: BEGIN_OBJECT, expecting VALUE!", e.what());
-            throw;
-        }
-    }, JsonParserException);
+    ASSERT_THROW(
+            {
+                try
+                {
+                    jsonParser.parse();
+                }
+                catch (const JsonParserException& e)
+                {
+                    ASSERT_STREQ("JsonParser:3:3: unexpected token: BEGIN_OBJECT, expecting VALUE!", e.what());
+                    throw;
+                }
+            },
+            JsonParserException);
 
     std::vector<std::string> expectedReport = {{
-        {"beginObject"},
-        {"visitKey: key"},
-        {"visitValue: 10"},
+            {"beginObject"},
+            {"visitKey: key"},
+            {"visitValue: 10"},
     }};
     ASSERT_EQ(expectedReport, observer.getReport());
 }
@@ -206,22 +209,24 @@ TEST(JsonParserTest, missingObjectItemSeparator)
     std::stringstream str("{\n\"item1\":\"text\"\n\"item2\":\"text\"\n}");
     DummyObserver observer;
     JsonParser jsonParser(str, observer);
-    ASSERT_THROW({
-        try
-        {
-            jsonParser.parse();
-        }
-        catch (const JsonParserException& e)
-        {
-            ASSERT_STREQ("JsonParser:3:1: unexpected token: VALUE, expecting END_OBJECT!", e.what());
-            throw;
-        }
-    }, JsonParserException);
+    ASSERT_THROW(
+            {
+                try
+                {
+                    jsonParser.parse();
+                }
+                catch (const JsonParserException& e)
+                {
+                    ASSERT_STREQ("JsonParser:3:1: unexpected token: VALUE, expecting END_OBJECT!", e.what());
+                    throw;
+                }
+            },
+            JsonParserException);
 
     std::vector<std::string> expectedReport = {{
-        {"beginObject"},
-        {"visitKey: item1"},
-        {"visitValue: text"},
+            {"beginObject"},
+            {"visitKey: item1"},
+            {"visitValue: text"},
     }};
     ASSERT_EQ(expectedReport, observer.getReport());
 }
@@ -231,21 +236,21 @@ TEST(JsonParserTest, wrongKeyType)
     std::stringstream str("{\n10:\"text\"\n}");
     DummyObserver observer;
     JsonParser jsonParser(str, observer);
-    ASSERT_THROW({
-        try
-        {
-            jsonParser.parse();
-        }
-        catch (const JsonParserException& e)
-        {
-            ASSERT_STREQ("JsonParser:2:1: Key must be a string value!", e.what());
-            throw;
-        }
-    }, JsonParserException);
+    ASSERT_THROW(
+            {
+                try
+                {
+                    jsonParser.parse();
+                }
+                catch (const JsonParserException& e)
+                {
+                    ASSERT_STREQ("JsonParser:2:1: Key must be a string value!", e.what());
+                    throw;
+                }
+            },
+            JsonParserException);
 
-    std::vector<std::string> expectedReport = {{
-        "beginObject"
-    }};
+    std::vector<std::string> expectedReport = {{"beginObject"}};
     ASSERT_EQ(expectedReport, observer.getReport());
 }
 
@@ -254,22 +259,25 @@ TEST(JsonParserTest, unexpectedElementToken)
     std::stringstream str("{\n\"item\":}");
     DummyObserver observer;
     JsonParser jsonParser(str, observer);
-    ASSERT_THROW({
-        try
-        {
-            jsonParser.parse();
-        }
-        catch (const JsonParserException& e)
-        {
-            ASSERT_STREQ("JsonParser:2:8: unexpected token: END_OBJECT, "
-                    "expecting one of [BEGIN_OBJECT, BEGIN_ARRAY, VALUE]!", e.what());
-            throw;
-        }
-    }, JsonParserException);
+    ASSERT_THROW(
+            {
+                try
+                {
+                    jsonParser.parse();
+                }
+                catch (const JsonParserException& e)
+                {
+                    ASSERT_STREQ("JsonParser:2:8: unexpected token: END_OBJECT, "
+                                 "expecting one of [BEGIN_OBJECT, BEGIN_ARRAY, VALUE]!",
+                            e.what());
+                    throw;
+                }
+            },
+            JsonParserException);
 
     std::vector<std::string> expectedReport = {{
-        {"beginObject"},
-        {"visitKey: item"},
+            {"beginObject"},
+            {"visitKey: item"},
     }};
     ASSERT_EQ(expectedReport, observer.getReport());
 }
@@ -279,23 +287,25 @@ TEST(JsonParserTest, missingArrayElementSeparator)
     std::stringstream str("{\n\"array\":\n[10\n20\n]}");
     DummyObserver observer;
     JsonParser jsonParser(str, observer);
-    ASSERT_THROW({
-        try
-        {
-            jsonParser.parse();
-        }
-        catch (const JsonParserException& e)
-        {
-            ASSERT_STREQ("JsonParser:4:1: unexpected token: VALUE, expecting END_ARRAY!", e.what());
-            throw;
-        }
-    }, JsonParserException);
+    ASSERT_THROW(
+            {
+                try
+                {
+                    jsonParser.parse();
+                }
+                catch (const JsonParserException& e)
+                {
+                    ASSERT_STREQ("JsonParser:4:1: unexpected token: VALUE, expecting END_ARRAY!", e.what());
+                    throw;
+                }
+            },
+            JsonParserException);
 
     std::vector<std::string> expectedReport = {{
-        {"beginObject"},
-        {"visitKey: array"},
-        {"beginArray"},
-        {"visitValue: 10"},
+            {"beginObject"},
+            {"visitKey: array"},
+            {"beginArray"},
+            {"visitValue: 10"},
     }};
     ASSERT_EQ(expectedReport, observer.getReport());
 }

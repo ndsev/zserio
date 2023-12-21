@@ -1,6 +1,6 @@
-#include <iomanip>
-#include <cmath>
 #include <array>
+#include <cmath>
+#include <iomanip>
 
 #include "zserio/JsonEncoder.h"
 

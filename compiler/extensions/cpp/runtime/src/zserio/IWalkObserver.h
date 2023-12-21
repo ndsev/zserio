@@ -1,9 +1,9 @@
 #ifndef ZSERIO_I_WALK_OBSERVER_H_INC
 #define ZSERIO_I_WALK_OBSERVER_H_INC
 
-#include "zserio/WalkerConst.h"
 #include "zserio/IReflectable.h"
 #include "zserio/ITypeInfo.h"
+#include "zserio/WalkerConst.h"
 
 namespace zserio
 {
@@ -41,8 +41,8 @@ public:
      * \param array Reflectable zserio array.
      * \param fieldInfo Array field info.
      */
-    virtual void beginArray(const IBasicReflectableConstPtr<ALLOC>& array,
-            const BasicFieldInfo<ALLOC>& fieldInfo) = 0;
+    virtual void beginArray(
+            const IBasicReflectableConstPtr<ALLOC>& array, const BasicFieldInfo<ALLOC>& fieldInfo) = 0;
 
     /**
      * Called at the end of an array.
@@ -50,8 +50,8 @@ public:
      * \param array Reflectable zserio array.
      * \param fieldInfo Array field info.
      */
-    virtual void endArray(const IBasicReflectableConstPtr<ALLOC>& array,
-            const BasicFieldInfo<ALLOC>& fieldInfo) = 0;
+    virtual void endArray(
+            const IBasicReflectableConstPtr<ALLOC>& array, const BasicFieldInfo<ALLOC>& fieldInfo) = 0;
 
     /**
      * Called at the beginning of an compound field object.

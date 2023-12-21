@@ -1,5 +1,4 @@
 #include "gtest/gtest.h"
-
 #include "zserio/TypeInfoUtil.h"
 
 namespace zserio

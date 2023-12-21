@@ -1,13 +1,13 @@
 #ifndef ZSERIO_ENUMS_H_INC
 #define ZSERIO_ENUMS_H_INC
 
+#include <algorithm>
 #include <cstddef>
 #include <type_traits>
-#include <algorithm>
 
-#include "zserio/Types.h"
 #include "zserio/CppRuntimeException.h"
 #include "zserio/StringView.h"
+#include "zserio/Types.h"
 
 // This should be implemented in runtime library header.
 namespace zserio
@@ -22,8 +22,7 @@ class BitStreamWriter;
  */
 template <typename T>
 struct EnumTraits
-{
-};
+{};
 
 /**
  * Gets ordinal number of the given enum item.
@@ -83,11 +82,11 @@ template <typename T>
 T stringToEnum(StringView itemName)
 {
     const auto foundIt = std::find_if(EnumTraits<T>::names.begin(), EnumTraits<T>::names.end(),
-            [itemName](const char* enumItemName){ return itemName.compare(enumItemName) == 0; });
+            [itemName](const char* enumItemName) { return itemName.compare(enumItemName) == 0; });
     if (foundIt == EnumTraits<T>::names.end())
     {
-        throw CppRuntimeException("Enum item '") << itemName << "' doesn't exist in enum '" <<
-                EnumTraits<T>::enumName << "'!";
+        throw CppRuntimeException("Enum item '")
+                << itemName << "' doesn't exist in enum '" << EnumTraits<T>::enumName << "'!";
     }
 
     const size_t ordinal = static_cast<size_t>(std::distance(EnumTraits<T>::names.begin(), foundIt));

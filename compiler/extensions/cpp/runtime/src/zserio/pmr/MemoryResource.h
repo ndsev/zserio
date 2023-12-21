@@ -3,7 +3,7 @@
 
 #include <cstddef>
 #ifdef ZSERIO_MEMORY_RESOURCE_TRACING
-#   include <iostream>
+    #include <iostream>
 #endif
 
 namespace zserio
@@ -51,8 +51,8 @@ public:
     {
 #ifdef ZSERIO_MEMORY_RESOURCE_TRACING
         void* const ptr = doAllocate(bytes, alignment);
-        std::cout << "MemoryResource::allocate bytes=" << bytes << " alignment=" << alignment << " -> " <<
-                std::hex << ptr << std::dec << std::endl;
+        std::cout << "MemoryResource::allocate bytes=" << bytes << " alignment=" << alignment << " -> "
+                  << std::hex << ptr << std::dec << std::endl;
         return ptr;
 #else
         return doAllocate(bytes, alignment);
@@ -71,8 +71,8 @@ public:
     void deallocate(void* p, size_t bytes, size_t alignment = alignof(max_align_t))
     {
 #ifdef ZSERIO_MEMORY_RESOURCE_TRACING
-        std::cout << "MemoryResource::deallocate p=" << std::hex << p << std::dec << " bytes=" << bytes <<
-                " alignment=" << alignment << std::endl;
+        std::cout << "MemoryResource::deallocate p=" << std::hex << p << std::dec << " bytes=" << bytes
+                  << " alignment=" << alignment << std::endl;
 #endif
         doDeallocate(p, bytes, alignment);
     }

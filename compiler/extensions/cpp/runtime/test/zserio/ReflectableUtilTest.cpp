@@ -1,18 +1,16 @@
 #include <cmath>
 
 #include "gtest/gtest.h"
-
-#include "zserio/ReflectableUtil.h"
-#include "zserio/Reflectable.h"
-#include "zserio/TypeInfo.h"
-
 #include "test_object/std_allocator/ReflectableUtilBitmask.h"
 #include "test_object/std_allocator/ReflectableUtilEnum.h"
 #include "test_object/std_allocator/ReflectableUtilUnion.h"
+#include "zserio/Reflectable.h"
+#include "zserio/ReflectableUtil.h"
+#include "zserio/TypeInfo.h"
 
 using test_object::std_allocator::ReflectableUtilBitmask;
-using test_object::std_allocator::ReflectableUtilEnum;
 using test_object::std_allocator::ReflectableUtilChoice;
+using test_object::std_allocator::ReflectableUtilEnum;
 using test_object::std_allocator::ReflectableUtilObject;
 using test_object::std_allocator::ReflectableUtilUnion;
 
@@ -21,22 +19,16 @@ namespace zserio
 
 TEST(ReflectableUtilTest, unequalTypeInfo)
 {
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getBool(false),
-            ReflectableFactory::getUInt8(13)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getInt8(0),
-            ReflectableFactory::getInt16(0)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getInt8(0),
-            ReflectableFactory::getUInt8(0)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getUInt64(0),
-            ReflectableFactory::getVarSize(0)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getInt8(0),
-            ReflectableFactory::getFloat32(0.0)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getFloat16(0.0F),
-            ReflectableFactory::getFloat32(0.0F)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getString(""),
-            ReflectableFactory::getInt8(0)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getBitBuffer(BitBuffer()),
-            ReflectableFactory::getString("")));
+    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getBool(false), ReflectableFactory::getUInt8(13)));
+    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getInt8(0), ReflectableFactory::getInt16(0)));
+    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getInt8(0), ReflectableFactory::getUInt8(0)));
+    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getUInt64(0), ReflectableFactory::getVarSize(0)));
+    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getInt8(0), ReflectableFactory::getFloat32(0.0)));
+    ASSERT_FALSE(
+            ReflectableUtil::equal(ReflectableFactory::getFloat16(0.0F), ReflectableFactory::getFloat32(0.0F)));
+    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getString(""), ReflectableFactory::getInt8(0)));
+    ASSERT_FALSE(ReflectableUtil::equal(
+            ReflectableFactory::getBitBuffer(BitBuffer()), ReflectableFactory::getString("")));
 }
 
 TEST(ReflectableUtilTest, equalsNullValues)
@@ -49,106 +41,92 @@ TEST(ReflectableUtilTest, equalsNullValues)
 TEST(ReflectableUtilTest, equalBools)
 {
     ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getBool(true), ReflectableFactory::getBool(true)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getBool(false),
-            ReflectableFactory::getBool(true)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getBool(true),
-            ReflectableFactory::getBool(false)));
+    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getBool(false), ReflectableFactory::getBool(true)));
+    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getBool(true), ReflectableFactory::getBool(false)));
 }
 
 TEST(ReflectableUtilTest, equalSingedIntegrals)
 {
-    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getInt8(INT8_MIN),
-            ReflectableFactory::getInt8(INT8_MIN)));
-    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getInt8(INT8_MAX),
-            ReflectableFactory::getInt8(INT8_MAX)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getInt8(-1),
-            ReflectableFactory::getInt8(0)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getInt8(INT8_MIN),
-            ReflectableFactory::getInt8(INT8_MAX)));
+    ASSERT_TRUE(ReflectableUtil::equal(
+            ReflectableFactory::getInt8(INT8_MIN), ReflectableFactory::getInt8(INT8_MIN)));
+    ASSERT_TRUE(ReflectableUtil::equal(
+            ReflectableFactory::getInt8(INT8_MAX), ReflectableFactory::getInt8(INT8_MAX)));
+    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getInt8(-1), ReflectableFactory::getInt8(0)));
+    ASSERT_FALSE(ReflectableUtil::equal(
+            ReflectableFactory::getInt8(INT8_MIN), ReflectableFactory::getInt8(INT8_MAX)));
 
-    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getInt16(INT16_MIN),
-            ReflectableFactory::getInt16(INT16_MIN)));
-    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getInt16(INT16_MAX),
-            ReflectableFactory::getInt16(INT16_MAX)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getInt16(-1),
-            ReflectableFactory::getInt16(0)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getInt16(INT16_MIN),
-            ReflectableFactory::getInt16(INT16_MAX)));
+    ASSERT_TRUE(ReflectableUtil::equal(
+            ReflectableFactory::getInt16(INT16_MIN), ReflectableFactory::getInt16(INT16_MIN)));
+    ASSERT_TRUE(ReflectableUtil::equal(
+            ReflectableFactory::getInt16(INT16_MAX), ReflectableFactory::getInt16(INT16_MAX)));
+    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getInt16(-1), ReflectableFactory::getInt16(0)));
+    ASSERT_FALSE(ReflectableUtil::equal(
+            ReflectableFactory::getInt16(INT16_MIN), ReflectableFactory::getInt16(INT16_MAX)));
 
-    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getInt32(INT32_MIN),
-            ReflectableFactory::getInt32(INT32_MIN)));
-    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getInt32(INT32_MAX),
-            ReflectableFactory::getInt32(INT32_MAX)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getInt32(-1),
-            ReflectableFactory::getInt32(0)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getInt32(INT32_MIN),
-            ReflectableFactory::getInt32(INT32_MAX)));
+    ASSERT_TRUE(ReflectableUtil::equal(
+            ReflectableFactory::getInt32(INT32_MIN), ReflectableFactory::getInt32(INT32_MIN)));
+    ASSERT_TRUE(ReflectableUtil::equal(
+            ReflectableFactory::getInt32(INT32_MAX), ReflectableFactory::getInt32(INT32_MAX)));
+    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getInt32(-1), ReflectableFactory::getInt32(0)));
+    ASSERT_FALSE(ReflectableUtil::equal(
+            ReflectableFactory::getInt32(INT32_MIN), ReflectableFactory::getInt32(INT32_MAX)));
 
-    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getInt64(INT64_MIN),
-            ReflectableFactory::getInt64(INT64_MIN)));
-    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getInt64(INT64_MAX),
-            ReflectableFactory::getInt64(INT64_MAX)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getInt64(-1),
-            ReflectableFactory::getInt64(0)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getInt64(INT64_MIN),
-            ReflectableFactory::getInt64(INT64_MAX)));
+    ASSERT_TRUE(ReflectableUtil::equal(
+            ReflectableFactory::getInt64(INT64_MIN), ReflectableFactory::getInt64(INT64_MIN)));
+    ASSERT_TRUE(ReflectableUtil::equal(
+            ReflectableFactory::getInt64(INT64_MAX), ReflectableFactory::getInt64(INT64_MAX)));
+    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getInt64(-1), ReflectableFactory::getInt64(0)));
+    ASSERT_FALSE(ReflectableUtil::equal(
+            ReflectableFactory::getInt64(INT64_MIN), ReflectableFactory::getInt64(INT64_MAX)));
 }
 
 TEST(ReflectableUtilTest, equalUnsignedIntegrals)
 {
-    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getUInt8(0),
-            ReflectableFactory::getUInt8(0)));
-    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getUInt8(UINT8_MAX),
-            ReflectableFactory::getUInt8(UINT8_MAX)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getUInt8(0),
-            ReflectableFactory::getUInt8(1)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getUInt8(0),
-            ReflectableFactory::getUInt8(UINT8_MAX)));
+    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getUInt8(0), ReflectableFactory::getUInt8(0)));
+    ASSERT_TRUE(ReflectableUtil::equal(
+            ReflectableFactory::getUInt8(UINT8_MAX), ReflectableFactory::getUInt8(UINT8_MAX)));
+    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getUInt8(0), ReflectableFactory::getUInt8(1)));
+    ASSERT_FALSE(
+            ReflectableUtil::equal(ReflectableFactory::getUInt8(0), ReflectableFactory::getUInt8(UINT8_MAX)));
 
-    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getUInt16(0),
-            ReflectableFactory::getUInt16(0)));
-    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getUInt16(UINT16_MAX),
-            ReflectableFactory::getUInt16(UINT16_MAX)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getUInt16(0),
-            ReflectableFactory::getUInt16(1)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getUInt16(0),
-            ReflectableFactory::getUInt16(UINT16_MAX)));
+    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getUInt16(0), ReflectableFactory::getUInt16(0)));
+    ASSERT_TRUE(ReflectableUtil::equal(
+            ReflectableFactory::getUInt16(UINT16_MAX), ReflectableFactory::getUInt16(UINT16_MAX)));
+    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getUInt16(0), ReflectableFactory::getUInt16(1)));
+    ASSERT_FALSE(ReflectableUtil::equal(
+            ReflectableFactory::getUInt16(0), ReflectableFactory::getUInt16(UINT16_MAX)));
 
-    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getUInt32(0),
-            ReflectableFactory::getUInt32(0)));
-    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getUInt32(UINT32_MAX),
-            ReflectableFactory::getUInt32(UINT32_MAX)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getUInt32(0),
-            ReflectableFactory::getUInt32(1)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getUInt32(0),
-            ReflectableFactory::getUInt32(UINT32_MAX)));
+    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getUInt32(0), ReflectableFactory::getUInt32(0)));
+    ASSERT_TRUE(ReflectableUtil::equal(
+            ReflectableFactory::getUInt32(UINT32_MAX), ReflectableFactory::getUInt32(UINT32_MAX)));
+    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getUInt32(0), ReflectableFactory::getUInt32(1)));
+    ASSERT_FALSE(ReflectableUtil::equal(
+            ReflectableFactory::getUInt32(0), ReflectableFactory::getUInt32(UINT32_MAX)));
 
-    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getUInt64(0),
-            ReflectableFactory::getUInt64(0)));
-    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getUInt64(UINT64_MAX),
-            ReflectableFactory::getUInt64(UINT64_MAX)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getUInt64(0),
-            ReflectableFactory::getUInt64(1)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getUInt64(0),
-            ReflectableFactory::getUInt64(UINT64_MAX)));
+    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getUInt64(0), ReflectableFactory::getUInt64(0)));
+    ASSERT_TRUE(ReflectableUtil::equal(
+            ReflectableFactory::getUInt64(UINT64_MAX), ReflectableFactory::getUInt64(UINT64_MAX)));
+    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getUInt64(0), ReflectableFactory::getUInt64(1)));
+    ASSERT_FALSE(ReflectableUtil::equal(
+            ReflectableFactory::getUInt64(0), ReflectableFactory::getUInt64(UINT64_MAX)));
 }
 
 TEST(ReflectableUtilTest, equalFloatingPoints)
 {
-    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getFloat16(0.0F),
-            ReflectableFactory::getFloat16(0.0F)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getFloat16(-1.0F),
-            ReflectableFactory::getFloat16(1.0F)));
+    ASSERT_TRUE(
+            ReflectableUtil::equal(ReflectableFactory::getFloat16(0.0F), ReflectableFactory::getFloat16(0.0F)));
+    ASSERT_FALSE(ReflectableUtil::equal(
+            ReflectableFactory::getFloat16(-1.0F), ReflectableFactory::getFloat16(1.0F)));
 
-    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getFloat32(0.0F),
-            ReflectableFactory::getFloat32(0.0F)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getFloat32(-1.0F),
-            ReflectableFactory::getFloat32(1.0F)));
+    ASSERT_TRUE(
+            ReflectableUtil::equal(ReflectableFactory::getFloat32(0.0F), ReflectableFactory::getFloat32(0.0F)));
+    ASSERT_FALSE(ReflectableUtil::equal(
+            ReflectableFactory::getFloat32(-1.0F), ReflectableFactory::getFloat32(1.0F)));
 
-    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getFloat64(0.0),
-            ReflectableFactory::getFloat64(0.0)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getFloat64(-1.0),
-            ReflectableFactory::getFloat64(1.0)));
+    ASSERT_TRUE(
+            ReflectableUtil::equal(ReflectableFactory::getFloat64(0.0), ReflectableFactory::getFloat64(0.0)));
+    ASSERT_FALSE(
+            ReflectableUtil::equal(ReflectableFactory::getFloat64(-1.0), ReflectableFactory::getFloat64(1.0)));
 
     ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getFloat64(std::numeric_limits<double>::epsilon()),
             ReflectableFactory::getFloat64(std::numeric_limits<double>::epsilon())));
@@ -174,10 +152,10 @@ TEST(ReflectableUtilTest, equalFloatingPoints)
     ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getFloat64(static_cast<double>(INFINITY)),
             ReflectableFactory::getFloat64(0.0)));
 
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getFloat64(0.0),
-            ReflectableFactory::getFloat64(static_cast<double>(NAN))));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getFloat64(static_cast<double>(NAN)),
-            ReflectableFactory::getFloat64(0.0)));
+    ASSERT_FALSE(ReflectableUtil::equal(
+            ReflectableFactory::getFloat64(0.0), ReflectableFactory::getFloat64(static_cast<double>(NAN))));
+    ASSERT_FALSE(ReflectableUtil::equal(
+            ReflectableFactory::getFloat64(static_cast<double>(NAN)), ReflectableFactory::getFloat64(0.0)));
 
     ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getFloat64(static_cast<double>(NAN)),
             ReflectableFactory::getFloat64(static_cast<double>(INFINITY))));
@@ -192,22 +170,19 @@ TEST(ReflectableUtilTest, equalFloatingPoints)
 
 TEST(ReflectableUtilTest, equalStrings)
 {
-    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getString(""),
-            ReflectableFactory::getString("")));
-    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getString("test"),
-            ReflectableFactory::getString("test")));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getString(""),
-            ReflectableFactory::getString("a")));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getString("1"),
-            ReflectableFactory::getString("")));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getString("test"),
-            ReflectableFactory::getString("test2")));
+    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getString(""), ReflectableFactory::getString("")));
+    ASSERT_TRUE(ReflectableUtil::equal(
+            ReflectableFactory::getString("test"), ReflectableFactory::getString("test")));
+    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getString(""), ReflectableFactory::getString("a")));
+    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getString("1"), ReflectableFactory::getString("")));
+    ASSERT_FALSE(ReflectableUtil::equal(
+            ReflectableFactory::getString("test"), ReflectableFactory::getString("test2")));
 }
 
 TEST(ReflectableUtilTest, equalBitBuffers)
 {
-    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getBitBuffer(BitBuffer()),
-            ReflectableFactory::getBitBuffer(BitBuffer())));
+    ASSERT_TRUE(ReflectableUtil::equal(
+            ReflectableFactory::getBitBuffer(BitBuffer()), ReflectableFactory::getBitBuffer(BitBuffer())));
     ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getBitBuffer(BitBuffer({0xAB}, 8)),
             ReflectableFactory::getBitBuffer(BitBuffer({0xAB}, 8))));
     ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getBitBuffer(BitBuffer({0xAB}, 8)),
@@ -220,14 +195,14 @@ TEST(ReflectableUtilTest, equalBytes)
     vector<uint8_t> bytesData2{{0xCA, 0xDE}};
     vector<uint8_t> bytesEmpty;
 
-    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getBytes(bytesEmpty),
-            ReflectableFactory::getBytes(bytesEmpty)));
-    ASSERT_TRUE(ReflectableUtil::equal(ReflectableFactory::getBytes(bytesData1),
-            ReflectableFactory::getBytes(bytesData1)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getBytes(bytesData1),
-            ReflectableFactory::getBytes(bytesEmpty)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getBytes(bytesData1),
-            ReflectableFactory::getBytes(bytesData2)));
+    ASSERT_TRUE(ReflectableUtil::equal(
+            ReflectableFactory::getBytes(bytesEmpty), ReflectableFactory::getBytes(bytesEmpty)));
+    ASSERT_TRUE(ReflectableUtil::equal(
+            ReflectableFactory::getBytes(bytesData1), ReflectableFactory::getBytes(bytesData1)));
+    ASSERT_FALSE(ReflectableUtil::equal(
+            ReflectableFactory::getBytes(bytesData1), ReflectableFactory::getBytes(bytesEmpty)));
+    ASSERT_FALSE(ReflectableUtil::equal(
+            ReflectableFactory::getBytes(bytesData1), ReflectableFactory::getBytes(bytesData2)));
 }
 
 TEST(ReflectableUtilTest, equalEnums)
@@ -303,10 +278,10 @@ TEST(ReflectableUtilTest, equalCompounds)
 
     // array and not array
     std::vector<ReflectableUtilUnion> compoundArray(1);
-    ASSERT_FALSE(ReflectableUtil::equal(compound1.reflectable(),
-            ReflectableFactory::getCompoundArray(compoundArray)));
-    ASSERT_FALSE(ReflectableUtil::equal(ReflectableFactory::getCompoundArray(compoundArray),
-            compound1.reflectable()));
+    ASSERT_FALSE(ReflectableUtil::equal(
+            compound1.reflectable(), ReflectableFactory::getCompoundArray(compoundArray)));
+    ASSERT_FALSE(ReflectableUtil::equal(
+            ReflectableFactory::getCompoundArray(compoundArray), compound1.reflectable()));
 }
 
 TEST(ReflectableUtilTest, equalArrays)
@@ -338,8 +313,7 @@ TEST(ReflectableUtilTest, equalWrong)
         {}
     };
 
-    const WrongTypeInfo wrongTypeInfo = {
-            "int<>"_sv, SchemaType::DYNAMIC_SIGNED_BITFIELD, CppType::PUBSUB};
+    const WrongTypeInfo wrongTypeInfo = {"int<>"_sv, SchemaType::DYNAMIC_SIGNED_BITFIELD, CppType::PUBSUB};
     const WrongTypeInfo wrongTypeInfoDiffName = {
             "diff"_sv, SchemaType::DYNAMIC_SIGNED_BITFIELD, CppType::PUBSUB};
 
@@ -351,10 +325,10 @@ TEST(ReflectableUtilTest, equalWrong)
         {}
     };
 
-    auto wrongReflectable = std::allocate_shared<Reflectable>(allocator_type(), wrongTypeInfo,
-            allocator_type());
-    auto wrongReflectableDiffName = std::allocate_shared<Reflectable>(allocator_type(), wrongTypeInfoDiffName,
-            allocator_type());
+    auto wrongReflectable =
+            std::allocate_shared<Reflectable>(allocator_type(), wrongTypeInfo, allocator_type());
+    auto wrongReflectableDiffName =
+            std::allocate_shared<Reflectable>(allocator_type(), wrongTypeInfoDiffName, allocator_type());
 
     ASSERT_THROW(ReflectableUtil::equal(wrongReflectable, wrongReflectable), CppRuntimeException);
     ASSERT_FALSE(ReflectableUtil::equal(wrongReflectable, wrongReflectableDiffName));
@@ -444,8 +418,8 @@ TEST(ReflectableUtilTest, getValueBuiltinArray)
     std::vector<uint8_t>& uint8ArrayRef = ReflectableUtil::getValue<std::vector<uint8_t>>(reflectable);
     ASSERT_EQ(&uint8Array, &uint8ArrayRef);
 
-    auto constReflectable = ReflectableFactory::getUInt8Array(
-                static_cast<const std::vector<uint8_t>&>(uint8Array));
+    auto constReflectable =
+            ReflectableFactory::getUInt8Array(static_cast<const std::vector<uint8_t>&>(uint8Array));
     const std::vector<uint8_t>& uint8ArrayConstRef =
             ReflectableUtil::getValue<std::vector<uint8_t>>(constReflectable);
     ASSERT_EQ(&uint8Array, &uint8ArrayConstRef);

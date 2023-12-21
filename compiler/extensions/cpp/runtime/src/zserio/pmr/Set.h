@@ -2,6 +2,7 @@
 #define ZSERIO_PMR_SET_H_INC
 
 #include <set>
+
 #include "zserio/pmr/PolymorphicAllocator.h"
 
 namespace zserio

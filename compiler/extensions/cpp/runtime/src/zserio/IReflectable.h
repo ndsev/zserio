@@ -6,10 +6,10 @@
 #include "zserio/AnyHolder.h"
 #include "zserio/BitBuffer.h"
 #include "zserio/BitStreamWriter.h"
+#include "zserio/RebindAlloc.h"
 #include "zserio/Span.h"
 #include "zserio/String.h"
 #include "zserio/StringView.h"
-#include "zserio/RebindAlloc.h"
 #include "zserio/Vector.h"
 
 namespace zserio

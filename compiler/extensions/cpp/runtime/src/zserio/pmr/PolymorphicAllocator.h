@@ -3,11 +3,11 @@
 
 #include <cstddef>
 #include <limits>
-#include <utility>
 #include <type_traits>
+#include <utility>
 
-#include "zserio/pmr/MemoryResource.h"
 #include "zserio/Types.h"
+#include "zserio/pmr/MemoryResource.h"
 
 namespace zserio
 {
@@ -28,7 +28,7 @@ public:
     // Following typedefs are only present for compatibility with older std. libraries, that does not fully
     // conform to C++11. [old-compiler-support]
     using pointer = value_type*;
-    using const_pointer  = const value_type*;
+    using const_pointer = const value_type*;
     using size_type = std::size_t;
     using difference_type = std::ptrdiff_t;
     using reference = value_type&;
@@ -44,8 +44,8 @@ public:
      *                 implies undefined behaviour, we define a non-standard extension here. When the resource
      *                 is NULL, getDefaultResource() is used instead!
      */
-    PolymorphicAllocatorBase(MemoryResource* resource = getDefaultResource()) noexcept
-        : m_resource(resource != nullptr ? resource : getDefaultResource()) // non-standard extension
+    PolymorphicAllocatorBase(MemoryResource* resource = getDefaultResource()) noexcept :
+            m_resource(resource != nullptr ? resource : getDefaultResource()) // non-standard extension
     {}
 
     /**
@@ -63,14 +63,14 @@ public:
      * \}
      */
 
-     /**
-      * Copy constructor from PolymorphicAllocator with another value_type.
-      *
-      * \param other Other PolymorphicAllocator.
-      */
+    /**
+     * Copy constructor from PolymorphicAllocator with another value_type.
+     *
+     * \param other Other PolymorphicAllocator.
+     */
     template <class U>
-    PolymorphicAllocatorBase(const PolymorphicAllocatorBase<U>& other) noexcept
-        : m_resource(other.resource())
+    PolymorphicAllocatorBase(const PolymorphicAllocatorBase<U>& other) noexcept :
+            m_resource(other.resource())
     {}
 
     /**
@@ -124,10 +124,10 @@ public:
      * conform to C++11. [old-compiler-support]
      */
     template <typename U, typename... Args>
-    void construct(U* ptr, Args&&... args)
-            noexcept(noexcept(new(static_cast<void*>(ptr)) U(std::forward<Args>(args)...)))
+    void construct(U* ptr, Args&&... args) noexcept(
+            noexcept(new (static_cast<void*>(ptr)) U(std::forward<Args>(args)...)))
     {
-        new(static_cast<void*>(ptr)) U(std::forward<Args>(args)...);
+        new (static_cast<void*>(ptr)) U(std::forward<Args>(args)...);
     }
 
     /**
@@ -200,7 +200,7 @@ public:
      * \note This is only necessary for compatibility with older std. libraries, that does not fully
      * conform to C++11. [old-compiler-support]
      */
-    template<typename U>
+    template <typename U>
     struct rebind
     {
         using other = PolymorphicAllocator<U>;
@@ -233,7 +233,7 @@ public:
      * \note This is only necessary for compatibility with older std. libraries, that does not fully
      * conform to C++11. [old-compiler-support]
      */
-    template<typename U>
+    template <typename U>
     struct rebind
     {
         using other = PropagatingPolymorphicAllocator<U>;

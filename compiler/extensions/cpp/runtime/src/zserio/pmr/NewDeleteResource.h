@@ -2,6 +2,7 @@
 #define ZSERIO_PMR_NEW_DELETE_RESOURCE_H_INC
 
 #include <new>
+
 #include "zserio/pmr/MemoryResource.h"
 
 namespace zserio
@@ -17,7 +18,7 @@ namespace detail
 class NewDeleteResource : public MemoryResource
 {
 private:
-    void* doAllocate(size_t bytes, size_t ) override
+    void* doAllocate(size_t bytes, size_t) override
     {
         return ::operator new(bytes);
     }

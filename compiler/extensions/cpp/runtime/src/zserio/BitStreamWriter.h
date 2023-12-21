@@ -1,16 +1,16 @@
 #ifndef ZSERIO_BIT_STREAM_WRITER_H_INC
 #define ZSERIO_BIT_STREAM_WRITER_H_INC
 
+#include <algorithm>
 #include <cstddef>
 #include <cstring>
-#include <algorithm>
 
 #include "zserio/BitBuffer.h"
 #include "zserio/CppRuntimeException.h"
+#include "zserio/SizeConvertUtil.h"
 #include "zserio/Span.h"
 #include "zserio/StringView.h"
 #include "zserio/Types.h"
-#include "zserio/SizeConvertUtil.h"
 
 namespace zserio
 {
@@ -70,8 +70,7 @@ public:
     template <typename ALLOC>
     explicit BitStreamWriter(BasicBitBuffer<ALLOC>& bitBuffer) :
             BitStreamWriter(bitBuffer.getData(), bitBuffer.getBitSize())
-    {
-    }
+    {}
 
     /**
      * Destructor.
@@ -270,7 +269,10 @@ public:
      *
      * \return Current bit position.
      */
-    BitPosType getBitPosition() const { return m_bitIndex; }
+    BitPosType getBitPosition() const
+    {
+        return m_bitIndex;
+    }
 
     /**
      * Sets current bit position. Use with caution!
@@ -291,7 +293,10 @@ public:
      *
      * \return True when a buffer is assigned. False otherwise.
      */
-    bool hasWriteBuffer() const { return m_buffer.data() != nullptr; }
+    bool hasWriteBuffer() const
+    {
+        return m_buffer.data() != nullptr;
+    }
 
     /**
      * Gets the write buffer.
@@ -312,7 +317,10 @@ public:
      *
      * \return Buffer bit size.
      */
-    size_t getBufferBitSize() const { return m_bufferBitSize; }
+    size_t getBufferBitSize() const
+    {
+        return m_bufferBitSize;
+    }
 
 private:
     void writeUnsignedBits(uint32_t data, uint8_t numBits);

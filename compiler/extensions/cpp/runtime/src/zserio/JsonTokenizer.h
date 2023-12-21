@@ -1,9 +1,9 @@
 #ifndef ZSERIO_JSON_TOKENIZER_H_INC
 #define ZSERIO_JSON_TOKENIZER_H_INC
 
-#include <memory>
-#include <istream>
 #include <array>
+#include <istream>
+#include <memory>
 
 #include "zserio/AnyHolder.h"
 #include "zserio/CppRuntimeException.h"
@@ -29,7 +29,6 @@ enum class JsonToken : int8_t
     ITEM_SEPARATOR,
     VALUE
 };
-
 
 /**
  * Exception used to distinguish exceptions from the JsonParser.
@@ -64,8 +63,12 @@ public:
      * \param allocator Allocator to use.
      */
     BasicJsonTokenizer(std::istream& in, const ALLOC& allocator) :
-            m_buffer(), m_in(in), m_decoder(allocator), m_decoderResult(0, allocator),
-            m_content(readContent(allocator)), m_value(allocator)
+            m_buffer(),
+            m_in(in),
+            m_decoder(allocator),
+            m_decoderResult(0, allocator),
+            m_content(readContent(allocator)),
+            m_value(allocator)
     {
         m_token = m_content.empty() ? JsonToken::END_OF_FILE : JsonToken::BEGIN_OF_FILE;
     }
@@ -83,7 +86,10 @@ public:
      *
      * \return Current token.
      */
-    JsonToken getToken() const { return m_token; }
+    JsonToken getToken() const
+    {
+        return m_token;
+    }
 
     /**
      * Gets current value.
@@ -93,21 +99,30 @@ public:
      *
      * \return Current value as an AnyHolder.
      */
-    const AnyHolder<ALLOC>& getValue() const { return m_value; }
+    const AnyHolder<ALLOC>& getValue() const
+    {
+        return m_value;
+    }
 
     /**
      * Gets line number of the current token.
      *
      * \return Line number.
      */
-    size_t getLine() const { return m_lineNumber; }
+    size_t getLine() const
+    {
+        return m_lineNumber;
+    }
 
     /**
      * Gets column number of the current token.
      *
      * \return Column number.
      */
-    size_t getColumn() const { return m_tokenColumnNumber; }
+    size_t getColumn() const
+    {
+        return m_tokenColumnNumber;
+    }
 
 private:
     string<ALLOC> readContent(const ALLOC& allocator);
@@ -290,10 +305,10 @@ void BasicJsonTokenizer<ALLOC>::setTokenValue()
 {
     if (!m_decoderResult.value.hasValue())
     {
-        throw JsonParserException("JsonTokenizer:") << m_lineNumber << ":" << m_tokenColumnNumber << ": " <<
-                (m_decoderResult.integerOverflow
-                        ? "Value is outside of the 64-bit integer range!"
-                        : "Unknown token!");
+        throw JsonParserException("JsonTokenizer:")
+                << m_lineNumber << ":" << m_tokenColumnNumber << ": "
+                << (m_decoderResult.integerOverflow ? "Value is outside of the 64-bit integer range!"
+                                                    : "Unknown token!");
     }
 
     setToken(JsonToken::VALUE, std::move(m_decoderResult.value));

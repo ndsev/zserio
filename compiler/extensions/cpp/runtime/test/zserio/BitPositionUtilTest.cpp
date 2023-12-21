@@ -1,7 +1,6 @@
+#include "gtest/gtest.h"
 #include "zserio/BitPositionUtil.h"
 #include "zserio/CppRuntimeException.h"
-
-#include "gtest/gtest.h"
 
 namespace zserio
 {

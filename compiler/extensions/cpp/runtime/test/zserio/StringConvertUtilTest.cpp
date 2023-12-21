@@ -1,8 +1,7 @@
-#include <limits>
 #include <array>
+#include <limits>
 
 #include "gtest/gtest.h"
-
 #include "zserio/StringConvertUtil.h"
 #include "zserio/StringView.h"
 
@@ -147,7 +146,7 @@ TEST(StringConvertUtilTest, convertStringView)
 {
     EXPECT_EQ(std::string(), toString(StringView()));
     EXPECT_EQ("test", toString(StringView("test")));
-    const std::array<char, 4> buffer = { 't', 'e', 's', 't' };
+    const std::array<char, 4> buffer = {'t', 'e', 's', 't'};
     EXPECT_EQ("test", toString(StringView(buffer.data(), buffer.size())));
 }
 

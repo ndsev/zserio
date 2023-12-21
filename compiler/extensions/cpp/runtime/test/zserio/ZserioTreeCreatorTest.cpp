@@ -1,15 +1,13 @@
 #include "gtest/gtest.h"
-
-#include "zserio/StringConvertUtil.h"
-#include "zserio/StringView.h"
-#include "zserio/ZserioTreeCreator.h"
-#include "zserio/TypeInfo.h"
-
 #include "test_object/std_allocator/CreatorBitmask.h"
 #include "test_object/std_allocator/CreatorEnum.h"
 #include "test_object/std_allocator/CreatorNested.h"
 #include "test_object/std_allocator/CreatorObject.h"
 #include "test_object/std_allocator/CreatorUnsignedEnum.h"
+#include "zserio/StringConvertUtil.h"
+#include "zserio/StringView.h"
+#include "zserio/TypeInfo.h"
+#include "zserio/ZserioTreeCreator.h"
 
 using test_object::std_allocator::CreatorBitmask;
 using test_object::std_allocator::CreatorEnum;
@@ -30,8 +28,8 @@ TEST(ZserioTreeCreator, makeAnyValue)
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getBool(), 1, allocator), CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getBool(), 1.0F, allocator), CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getBool(), "1", allocator), CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getBool(), BitBuffer(), allocator),
-            CppRuntimeException);
+    ASSERT_THROW(
+            detail::makeAnyValue(BuiltinTypeInfo<>::getBool(), BitBuffer(), allocator), CppRuntimeException);
 
     // uint8
     any = detail::makeAnyValue(BuiltinTypeInfo<>::getUInt8(), 8, allocator);
@@ -41,8 +39,8 @@ TEST(ZserioTreeCreator, makeAnyValue)
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getUInt8(), 1.0F, allocator), CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getUInt8(), "1", allocator), CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getUInt8(), true, allocator), CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getUInt8(), BitBuffer(), allocator),
-            CppRuntimeException);
+    ASSERT_THROW(
+            detail::makeAnyValue(BuiltinTypeInfo<>::getUInt8(), BitBuffer(), allocator), CppRuntimeException);
 
     // uint16
     any = detail::makeAnyValue(BuiltinTypeInfo<>::getUInt16(), 16, allocator);
@@ -52,20 +50,20 @@ TEST(ZserioTreeCreator, makeAnyValue)
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getUInt16(), 1.0F, allocator), CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getUInt16(), "1", allocator), CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getUInt16(), true, allocator), CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getUInt16(), BitBuffer(), allocator),
-            CppRuntimeException);
+    ASSERT_THROW(
+            detail::makeAnyValue(BuiltinTypeInfo<>::getUInt16(), BitBuffer(), allocator), CppRuntimeException);
 
     // uint32
     any = detail::makeAnyValue(BuiltinTypeInfo<>::getUInt32(), 32, allocator);
     ASSERT_EQ(32, any.get<uint32_t>());
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getUInt32(), -1, allocator), CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getUInt32(), 4294967296, allocator),
-            CppRuntimeException);
+    ASSERT_THROW(
+            detail::makeAnyValue(BuiltinTypeInfo<>::getUInt32(), 4294967296, allocator), CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getUInt32(), 1.0F, allocator), CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getUInt32(), "1", allocator), CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getUInt32(), true, allocator), CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getUInt32(), BitBuffer(), allocator),
-            CppRuntimeException);
+    ASSERT_THROW(
+            detail::makeAnyValue(BuiltinTypeInfo<>::getUInt32(), BitBuffer(), allocator), CppRuntimeException);
 
     // uint64
     any = detail::makeAnyValue(BuiltinTypeInfo<>::getUInt64(), 64, allocator);
@@ -74,8 +72,8 @@ TEST(ZserioTreeCreator, makeAnyValue)
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getUInt64(), 1.0F, allocator), CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getUInt64(), "1", allocator), CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getUInt64(), true, allocator), CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getUInt64(), BitBuffer(), allocator),
-            CppRuntimeException);
+    ASSERT_THROW(
+            detail::makeAnyValue(BuiltinTypeInfo<>::getUInt64(), BitBuffer(), allocator), CppRuntimeException);
 
     // int8
     any = detail::makeAnyValue(BuiltinTypeInfo<>::getInt8(), 8, allocator);
@@ -85,8 +83,8 @@ TEST(ZserioTreeCreator, makeAnyValue)
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getInt8(), 1.0F, allocator), CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getInt8(), "1", allocator), CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getInt8(), true, allocator), CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getInt8(), BitBuffer(), allocator),
-            CppRuntimeException);
+    ASSERT_THROW(
+            detail::makeAnyValue(BuiltinTypeInfo<>::getInt8(), BitBuffer(), allocator), CppRuntimeException);
 
     // int16
     any = detail::makeAnyValue(BuiltinTypeInfo<>::getInt16(), 16, allocator);
@@ -96,21 +94,21 @@ TEST(ZserioTreeCreator, makeAnyValue)
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getInt16(), 1.0F, allocator), CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getInt16(), "1", allocator), CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getInt16(), true, allocator), CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getInt16(), BitBuffer(), allocator),
-            CppRuntimeException);
+    ASSERT_THROW(
+            detail::makeAnyValue(BuiltinTypeInfo<>::getInt16(), BitBuffer(), allocator), CppRuntimeException);
 
     // int32
     any = detail::makeAnyValue(BuiltinTypeInfo<>::getInt32(), 32, allocator);
     ASSERT_EQ(32, any.get<int32_t>());
-    ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getInt32(), -2147483649LL, allocator),
-            CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getInt32(), 2147483648LL, allocator),
-            CppRuntimeException);
+    ASSERT_THROW(
+            detail::makeAnyValue(BuiltinTypeInfo<>::getInt32(), -2147483649LL, allocator), CppRuntimeException);
+    ASSERT_THROW(
+            detail::makeAnyValue(BuiltinTypeInfo<>::getInt32(), 2147483648LL, allocator), CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getInt32(), 1.0F, allocator), CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getInt32(), "1", allocator), CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getInt32(), true, allocator), CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getInt32(), BitBuffer(), allocator),
-            CppRuntimeException);
+    ASSERT_THROW(
+            detail::makeAnyValue(BuiltinTypeInfo<>::getInt32(), BitBuffer(), allocator), CppRuntimeException);
 
     // int64
     any = detail::makeAnyValue(BuiltinTypeInfo<>::getInt64(), 64, allocator);
@@ -120,8 +118,8 @@ TEST(ZserioTreeCreator, makeAnyValue)
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getInt64(), 1.0F, allocator), CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getInt64(), "1", allocator), CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getInt64(), true, allocator), CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getInt64(), BitBuffer(), allocator),
-            CppRuntimeException);
+    ASSERT_THROW(
+            detail::makeAnyValue(BuiltinTypeInfo<>::getInt64(), BitBuffer(), allocator), CppRuntimeException);
 
     // float
     any = detail::makeAnyValue(BuiltinTypeInfo<>::getFloat32(), 3.5F, allocator);
@@ -132,8 +130,8 @@ TEST(ZserioTreeCreator, makeAnyValue)
     ASSERT_EQ(1.0F, any.get<float>());
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getFloat32(), "1", allocator), CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getFloat32(), true, allocator), CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getFloat32(), BitBuffer(), allocator),
-            CppRuntimeException);
+    ASSERT_THROW(
+            detail::makeAnyValue(BuiltinTypeInfo<>::getFloat32(), BitBuffer(), allocator), CppRuntimeException);
 
     // double
     any = detail::makeAnyValue(BuiltinTypeInfo<>::getFloat64(), 3.14, allocator);
@@ -144,8 +142,8 @@ TEST(ZserioTreeCreator, makeAnyValue)
     ASSERT_EQ(1.0, any.get<double>());
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getFloat64(), "1", allocator), CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getFloat64(), true, allocator), CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getFloat64(), BitBuffer(), allocator),
-            CppRuntimeException);
+    ASSERT_THROW(
+            detail::makeAnyValue(BuiltinTypeInfo<>::getFloat64(), BitBuffer(), allocator), CppRuntimeException);
 
     // string
     any = detail::makeAnyValue(BuiltinTypeInfo<>::getString(), "text", allocator);
@@ -160,8 +158,8 @@ TEST(ZserioTreeCreator, makeAnyValue)
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getString(), 1, allocator), CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getString(), 1.0F, allocator), CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getString(), true, allocator), CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getString(), BitBuffer(), allocator),
-            CppRuntimeException);
+    ASSERT_THROW(
+            detail::makeAnyValue(BuiltinTypeInfo<>::getString(), BitBuffer(), allocator), CppRuntimeException);
 
     // enum
     any = detail::makeAnyValue(enumTypeInfo<CreatorEnum>(), CreatorEnum::ONE, allocator);
@@ -180,15 +178,15 @@ TEST(ZserioTreeCreator, makeAnyValue)
             CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(enumTypeInfo<CreatorEnum>(), "_nonexisting"_sv, allocator),
             CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(enumTypeInfo<CreatorEnum>(), "***"_sv, allocator),
-            CppRuntimeException);
+    ASSERT_THROW(detail::makeAnyValue(enumTypeInfo<CreatorEnum>(), "***"_sv, allocator), CppRuntimeException);
     // check all string overloads!
     ASSERT_THROW(detail::makeAnyValue(enumTypeInfo<CreatorEnum>(), "10 /* no match */"_sv, allocator),
             CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(enumTypeInfo<CreatorEnum>(), "-10 /* no match */", allocator),
             CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(enumTypeInfo<CreatorEnum>(),
-            string<>("10 /* no match */", allocator), allocator), CppRuntimeException);
+    ASSERT_THROW(detail::makeAnyValue(
+                         enumTypeInfo<CreatorEnum>(), string<>("10 /* no match */", allocator), allocator),
+            CppRuntimeException);
     const string<> enumString("10 /* no match */", allocator);
     ASSERT_THROW(detail::makeAnyValue(enumTypeInfo<CreatorEnum>(), enumString, allocator), CppRuntimeException);
     // out-of-range int64_t
@@ -209,7 +207,8 @@ TEST(ZserioTreeCreator, makeAnyValue)
     ASSERT_EQ(enumToValue(CreatorUnsignedEnum::TWO), any.get<uint8_t>());
 
     // bitmask
-    any = detail::makeAnyValue(CreatorBitmask::typeInfo(), CreatorBitmask(CreatorBitmask::Values::READ), allocator);
+    any = detail::makeAnyValue(
+            CreatorBitmask::typeInfo(), CreatorBitmask(CreatorBitmask::Values::READ), allocator);
     ASSERT_EQ(CreatorBitmask::Values::READ, any.get<CreatorBitmask>());
     any = detail::makeAnyValue(CreatorBitmask::typeInfo(), 1, allocator);
     ASSERT_EQ(CreatorBitmask(CreatorBitmask::Values::READ).getValue(), any.get<uint8_t>());
@@ -221,18 +220,15 @@ TEST(ZserioTreeCreator, makeAnyValue)
     any = detail::makeAnyValue(CreatorBitmask::typeInfo(), "READ|WRITE"_sv, allocator);
     ASSERT_EQ(CreatorBitmask(CreatorBitmask::Values::READ | CreatorBitmask::Values::WRITE).getValue(),
             any.get<uint8_t>());
-    ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), "NONEXISTING"_sv, allocator),
-            CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), "READ "_sv, allocator),
-            CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), "READ |"_sv, allocator),
-            CppRuntimeException);
+    ASSERT_THROW(
+            detail::makeAnyValue(CreatorBitmask::typeInfo(), "NONEXISTING"_sv, allocator), CppRuntimeException);
+    ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), "READ "_sv, allocator), CppRuntimeException);
+    ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), "READ |"_sv, allocator), CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), "READ | NONEXISTING"_sv, allocator),
             CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), "READ * NONEXISTING"_sv, allocator),
             CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), "***"_sv, allocator),
-            CppRuntimeException);
+    ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), "***"_sv, allocator), CppRuntimeException);
     any = detail::makeAnyValue(CreatorBitmask::typeInfo(), "7 /* READ | WRITE */"_sv, allocator);
     ASSERT_EQ(7, any.get<uint8_t>());
     any = detail::makeAnyValue(CreatorBitmask::typeInfo(), "7"_sv, allocator);
@@ -250,39 +246,37 @@ TEST(ZserioTreeCreator, makeAnyValue)
     // out-of-range uint64_t
     ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), "99999999999999999999"_sv, allocator),
             CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), "@WRONG"_sv, allocator),
-            CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), "_UNKNOWN"_sv, allocator),
-            CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), "unknown"_sv, allocator),
-            CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), "{unknown}"_sv, allocator),
-            CppRuntimeException);
+    ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), "@WRONG"_sv, allocator), CppRuntimeException);
+    ASSERT_THROW(
+            detail::makeAnyValue(CreatorBitmask::typeInfo(), "_UNKNOWN"_sv, allocator), CppRuntimeException);
+    ASSERT_THROW(
+            detail::makeAnyValue(CreatorBitmask::typeInfo(), "unknown"_sv, allocator), CppRuntimeException);
+    ASSERT_THROW(
+            detail::makeAnyValue(CreatorBitmask::typeInfo(), "{unknown}"_sv, allocator), CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(CreatorBitmask::typeInfo(), ""_sv, allocator), CppRuntimeException);
 }
 
 TEST(ZserioTreeCreatorTest, parseBitmaskStringValue)
 {
     static const ::std::array<ItemInfo, 3> values = {
-        ItemInfo{ makeStringView("READ"), static_cast<uint64_t>(1), false, false },
-        ItemInfo{ makeStringView("READ_EXT"), static_cast<uint64_t>(2), false, false },
-        ItemInfo{ makeStringView("READ_EXT_EXT"), static_cast<uint64_t>(4), false, false }
-    };
+            ItemInfo{makeStringView("READ"), static_cast<uint64_t>(1), false, false},
+            ItemInfo{makeStringView("READ_EXT"), static_cast<uint64_t>(2), false, false},
+            ItemInfo{makeStringView("READ_EXT_EXT"), static_cast<uint64_t>(4), false, false}};
 
     static const BitmaskTypeInfo<std::allocator<uint8_t>> typeInfo = {
-        makeStringView("Bitmask"), BuiltinTypeInfo<>::getUInt8(), {}, values
-    };
+            makeStringView("Bitmask"), BuiltinTypeInfo<>::getUInt8(), {}, values};
 
     const std::allocator<uint8_t> allocator;
     ASSERT_EQ(1, detail::parseBitmaskStringValue("READ", typeInfo, allocator).get<uint8_t>());
     ASSERT_EQ(2, detail::parseBitmaskStringValue("READ_EXT", typeInfo, allocator).get<uint8_t>());
     ASSERT_EQ(3, detail::parseBitmaskStringValue("READ_EXT | READ", typeInfo, allocator).get<uint8_t>());
-    ASSERT_EQ(6, detail::parseBitmaskStringValue("READ_EXT_EXT | READ_EXT",
-            typeInfo, allocator).get<uint8_t>());
-    ASSERT_EQ(4, detail::parseBitmaskStringValue("READ_EXT_EXT | READ_EXT_EXT",
-                typeInfo, allocator).get<uint8_t>());
-    ASSERT_EQ(7, detail::parseBitmaskStringValue("READ | READ_EXT | READ_EXT_EXT",
-                typeInfo, allocator).get<uint8_t>());
+    ASSERT_EQ(
+            6, detail::parseBitmaskStringValue("READ_EXT_EXT | READ_EXT", typeInfo, allocator).get<uint8_t>());
+    ASSERT_EQ(4,
+            detail::parseBitmaskStringValue("READ_EXT_EXT | READ_EXT_EXT", typeInfo, allocator).get<uint8_t>());
+    ASSERT_EQ(7,
+            detail::parseBitmaskStringValue("READ | READ_EXT | READ_EXT_EXT", typeInfo, allocator)
+                    .get<uint8_t>());
     ASSERT_FALSE(detail::parseBitmaskStringValue("READ|", typeInfo, allocator).hasValue());
     ASSERT_FALSE(detail::parseBitmaskStringValue("READ | ", typeInfo, allocator).hasValue());
     ASSERT_FALSE(detail::parseBitmaskStringValue("READ|", typeInfo, allocator).hasValue());
@@ -388,7 +382,8 @@ TEST(ZserioTreeCreatorTest, createObjectFull)
     ASSERT_EQ(enumToValue(CreatorEnum::MinusOne),
             reflectable->getField("nestedArray")->at(0)->getField("creatorEnum")->getInt8());
     ASSERT_EQ(CreatorBitmask::Values::READ,
-            CreatorBitmask(reflectable->getField("nestedArray")->at(0)->getField("creatorBitmask")->getUInt8()));
+            CreatorBitmask(
+                    reflectable->getField("nestedArray")->at(0)->getField("creatorBitmask")->getUInt8()));
     ASSERT_EQ(4, reflectable->getField("textArray")->size());
     ASSERT_EQ("this"_sv, reflectable->getField("textArray")->at(0)->getStringView());
     ASSERT_EQ("is"_sv, reflectable->getField("textArray")->at(1)->getStringView());

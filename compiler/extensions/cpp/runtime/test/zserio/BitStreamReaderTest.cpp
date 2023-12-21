@@ -1,10 +1,9 @@
-#include <cstring>
 #include <array>
-
-#include "zserio/BitStreamReader.h"
-#include "zserio/CppRuntimeException.h"
+#include <cstring>
 
 #include "gtest/gtest.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/CppRuntimeException.h"
 
 namespace zserio
 {
@@ -12,7 +11,9 @@ namespace zserio
 class BitStreamReaderTest : public ::testing::Test
 {
 public:
-    BitStreamReaderTest() : m_byteBuffer(), m_reader(m_byteBuffer.data(), m_byteBuffer.size())
+    BitStreamReaderTest() :
+            m_byteBuffer(),
+            m_reader(m_byteBuffer.data(), m_byteBuffer.size())
     {
         m_byteBuffer.fill(0);
     }
@@ -64,8 +65,7 @@ TEST_F(BitStreamReaderTest, bitBufferConstructor)
 
     ASSERT_THROW(reader.readBits(1), CppRuntimeException);
 
-    ASSERT_THROW(BitStreamReader(nullptr, std::numeric_limits<size_t>::max() / 8),
-                 CppRuntimeException);
+    ASSERT_THROW(BitStreamReader(nullptr, std::numeric_limits<size_t>::max() / 8), CppRuntimeException);
 }
 
 TEST_F(BitStreamReaderTest, bitBufferConstructorOverflow)
@@ -149,14 +149,14 @@ TEST_F(BitStreamReaderTest, readVarSize)
 {
     {
         // overflow, 2^32 - 1 is too much ({ 0x83, 0xFF, 0xFF, 0xFF, 0xFF } is the maximum)
-        const std::array<uint8_t, 5> buffer = { 0x87, 0xFF, 0xFF, 0xFF, 0xFF };
+        const std::array<uint8_t, 5> buffer = {0x87, 0xFF, 0xFF, 0xFF, 0xFF};
         zserio::BitStreamReader reader(buffer.data(), buffer.size());
         ASSERT_THROW(reader.readVarSize(), CppRuntimeException);
     }
 
     {
         // overflow, 2^36 - 1 is too much ({ 0x83, 0xFF, 0xFF, 0xFF, 0xFF } is the maximum)
-        const std::array<uint8_t, 5> buffer = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
+        const std::array<uint8_t, 5> buffer = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
         zserio::BitStreamReader reader(buffer.data(), buffer.size());
         ASSERT_THROW(reader.readVarSize(), CppRuntimeException);
     }

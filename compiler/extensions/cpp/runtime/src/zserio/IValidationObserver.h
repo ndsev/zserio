@@ -1,9 +1,9 @@
 #ifndef ZSERIO_I_VALIDATION_OBSERVER_H_INC
 #define ZSERIO_I_VALIDATION_OBSERVER_H_INC
 
-#include "zserio/Types.h"
-#include "zserio/StringView.h"
 #include "zserio/Span.h"
+#include "zserio/StringView.h"
+#include "zserio/Types.h"
 
 namespace zserio
 {

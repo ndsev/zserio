@@ -100,8 +100,7 @@ public:
             if (m_maxBitNumber <= MAX_BIT_NUMBER_LIMIT)
             {
                 setFlag(IS_PACKED_FLAG);
-                const auto previousElement = static_cast<typename ARRAY_TRAITS::ElementType>(
-                        m_previousElement);
+                const auto previousElement = static_cast<typename ARRAY_TRAITS::ElementType>(m_previousElement);
                 const uint8_t maxBitNumber = detail::calcBitLength(element, previousElement);
                 if (maxBitNumber > m_maxBitNumber)
                 {
@@ -291,16 +290,15 @@ private:
 
     template <typename ARRAY_TRAITS,
             typename std::enable_if<has_owner_type<ARRAY_TRAITS>::value, int>::type = 0>
-    static size_t bitSizeOfUnpacked(const typename ARRAY_TRAITS::OwnerType& owner,
-            typename ARRAY_TRAITS::ElementType element)
+    static size_t bitSizeOfUnpacked(
+            const typename ARRAY_TRAITS::OwnerType& owner, typename ARRAY_TRAITS::ElementType element)
     {
         return ARRAY_TRAITS::bitSizeOf(owner, element);
     }
 
     template <typename ARRAY_TRAITS,
             typename std::enable_if<!has_owner_type<ARRAY_TRAITS>::value, int>::type = 0>
-    static size_t bitSizeOfUnpacked(const DummyOwner&,
-            typename ARRAY_TRAITS::ElementType element)
+    static size_t bitSizeOfUnpacked(const DummyOwner&, typename ARRAY_TRAITS::ElementType element)
     {
         return ARRAY_TRAITS::bitSizeOf(element);
     }
@@ -320,8 +318,8 @@ private:
 
     template <typename ARRAY_TRAITS,
             typename std::enable_if<has_owner_type<ARRAY_TRAITS>::value, int>::type = 0>
-    typename ARRAY_TRAITS::ElementType readUnpacked(const typename ARRAY_TRAITS::OwnerType& owner,
-            BitStreamReader& in)
+    typename ARRAY_TRAITS::ElementType readUnpacked(
+            const typename ARRAY_TRAITS::OwnerType& owner, BitStreamReader& in)
     {
         const auto element = ARRAY_TRAITS::read(owner, in);
         m_previousElement = static_cast<uint64_t>(element);
@@ -347,8 +345,8 @@ private:
 
     template <typename ARRAY_TRAITS,
             typename std::enable_if<has_owner_type<ARRAY_TRAITS>::value, int>::type = 0>
-    void writeUnpacked(const typename ARRAY_TRAITS::OwnerType& owner,
-            BitStreamWriter& out, typename ARRAY_TRAITS::ElementType element)
+    void writeUnpacked(const typename ARRAY_TRAITS::OwnerType& owner, BitStreamWriter& out,
+            typename ARRAY_TRAITS::ElementType element)
     {
         m_previousElement = static_cast<uint64_t>(element);
         ARRAY_TRAITS::write(owner, out, element);

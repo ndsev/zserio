@@ -1,8 +1,8 @@
 #ifndef ZSERIO_ISQL_DATABASE_READER_H_INC
 #define ZSERIO_ISQL_DATABASE_READER_H_INC
 
-#include <string>
 #include <set>
+#include <string>
 
 #include "zserio/SqliteConnection.h"
 

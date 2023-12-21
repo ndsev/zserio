@@ -20,7 +20,7 @@ public:
      * Empty constructor.
      */
     AllocatorHolder() :
-        m_allocator(allocator_type())
+            m_allocator(allocator_type())
     {}
 
     /**
@@ -28,8 +28,8 @@ public:
      *
      * \param allocator Allocator to be stored.
      */
-    explicit AllocatorHolder(const allocator_type &allocator) :
-        m_allocator(allocator)
+    explicit AllocatorHolder(const allocator_type& allocator) :
+            m_allocator(allocator)
     {}
 
     /**
@@ -38,7 +38,7 @@ public:
      * \param allocator Allocator to be stored.
      */
     explicit AllocatorHolder(allocator_type&& allocator) :
-        m_allocator(std::move(allocator))
+            m_allocator(std::move(allocator))
     {}
 
     /**

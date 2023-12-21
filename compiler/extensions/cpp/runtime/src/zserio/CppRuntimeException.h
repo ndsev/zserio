@@ -1,14 +1,14 @@
 #ifndef ZSERIO_CPP_RUNTIME_EXCEPTION_H_INC
 #define ZSERIO_CPP_RUNTIME_EXCEPTION_H_INC
 
-#include <type_traits>
+#include <array>
 #include <exception>
 #include <string>
+#include <type_traits>
 #include <vector>
-#include <array>
 
-#include "zserio/StringConvertUtil.h"
 #include "zserio/Span.h"
+#include "zserio/StringConvertUtil.h"
 #include "zserio/Traits.h"
 
 namespace zserio
@@ -146,8 +146,8 @@ CppRuntimeException& operator<<(CppRuntimeException& exception, T value)
  * \return Reference to the exception to allow operator chaining.
  */
 template <typename ALLOC>
-CppRuntimeException& operator<<(CppRuntimeException& exception,
-        const std::basic_string<char, std::char_traits<char>, ALLOC>& value)
+CppRuntimeException& operator<<(
+        CppRuntimeException& exception, const std::basic_string<char, std::char_traits<char>, ALLOC>& value)
 {
     exception.append(value.c_str(), value.size());
     return exception;
@@ -190,8 +190,8 @@ using CppRuntimeExceptionRValueInsertion = EXCEPTION&&;
  * \return R-value reference to the original exception to allow operator chaining.
  */
 template <typename CPP_RUNTIME_EXCEPTION, typename T>
-detail::CppRuntimeExceptionRValueInsertion<CPP_RUNTIME_EXCEPTION, T>
-operator<<(CPP_RUNTIME_EXCEPTION&& exception, const T& value)
+detail::CppRuntimeExceptionRValueInsertion<CPP_RUNTIME_EXCEPTION, T> operator<<(
+        CPP_RUNTIME_EXCEPTION&& exception, const T& value)
 {
     exception << value;
     return std::forward<CPP_RUNTIME_EXCEPTION>(exception);

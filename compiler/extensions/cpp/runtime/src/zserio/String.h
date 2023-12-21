@@ -2,6 +2,7 @@
 #define ZSERIO_STRING_H_INC
 
 #include <string>
+
 #include "zserio/RebindAlloc.h"
 
 namespace zserio

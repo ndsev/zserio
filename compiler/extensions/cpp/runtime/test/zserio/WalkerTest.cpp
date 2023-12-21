@@ -1,25 +1,23 @@
 #include "gtest/gtest.h"
-
-#include "zserio/Walker.h"
-#include "zserio/Traits.h"
-#include "zserio/TypeInfo.h"
-#include "zserio/Reflectable.h"
+#include "test_object/std_allocator/WalkerBitmask.h"
+#include "test_object/std_allocator/WalkerChoice.h"
+#include "test_object/std_allocator/WalkerNested.h"
+#include "test_object/std_allocator/WalkerObject.h"
+#include "test_object/std_allocator/WalkerUnion.h"
 #include "zserio/Array.h"
 #include "zserio/ArrayTraits.h"
 #include "zserio/BitStreamWriter.h"
 #include "zserio/OptionalHolder.h"
-
-#include "test_object/std_allocator/WalkerBitmask.h"
-#include "test_object/std_allocator/WalkerNested.h"
-#include "test_object/std_allocator/WalkerUnion.h"
-#include "test_object/std_allocator/WalkerChoice.h"
-#include "test_object/std_allocator/WalkerObject.h"
+#include "zserio/Reflectable.h"
+#include "zserio/Traits.h"
+#include "zserio/TypeInfo.h"
+#include "zserio/Walker.h"
 
 using test_object::std_allocator::WalkerBitmask;
-using test_object::std_allocator::WalkerNested;
-using test_object::std_allocator::WalkerUnion;
 using test_object::std_allocator::WalkerChoice;
+using test_object::std_allocator::WalkerNested;
 using test_object::std_allocator::WalkerObject;
+using test_object::std_allocator::WalkerUnion;
 
 namespace zserio
 {
@@ -44,8 +42,8 @@ WalkerObject createWalkerObject(uint32_t identifier = 13, bool createNested = tr
     }
     else
     {
-        return WalkerObject(identifier, NullOpt, "test", std::move(unionArray), NullOpt,
-                choiceSelector, choiceField);
+        return WalkerObject(
+                identifier, NullOpt, "test", std::move(unionArray), NullOpt, choiceSelector, choiceField);
     }
 }
 
@@ -113,16 +111,41 @@ private:
 class TestWalkFilter : public IWalkFilter
 {
 public:
-    TestWalkFilter& beforeArray(bool beforeArray) { m_beforeArray = beforeArray; return *this; }
-    TestWalkFilter& afterArray(bool afterArray) { m_afterArray = afterArray; return *this; }
+    TestWalkFilter& beforeArray(bool beforeArray)
+    {
+        m_beforeArray = beforeArray;
+        return *this;
+    }
+    TestWalkFilter& afterArray(bool afterArray)
+    {
+        m_afterArray = afterArray;
+        return *this;
+    }
     TestWalkFilter& onlyFirstElement(bool onlyFirstElement)
     {
-        m_onlyFirstElement = onlyFirstElement; return *this;
+        m_onlyFirstElement = onlyFirstElement;
+        return *this;
     }
-    TestWalkFilter& beforeCompound(bool beforeCompound) { m_beforeCompound = beforeCompound; return *this; }
-    TestWalkFilter& afterCompound(bool afterCompound) { m_afterCompound = afterCompound; return *this; }
-    TestWalkFilter& beforeValue(bool beforeValue) { m_beforeValue = beforeValue; return *this; }
-    TestWalkFilter& afterValue(bool afterValue) { m_afterValue = afterValue; return *this; }
+    TestWalkFilter& beforeCompound(bool beforeCompound)
+    {
+        m_beforeCompound = beforeCompound;
+        return *this;
+    }
+    TestWalkFilter& afterCompound(bool afterCompound)
+    {
+        m_afterCompound = afterCompound;
+        return *this;
+    }
+    TestWalkFilter& beforeValue(bool beforeValue)
+    {
+        m_beforeValue = beforeValue;
+        return *this;
+    }
+    TestWalkFilter& afterValue(bool afterValue)
+    {
+        m_afterValue = afterValue;
+        return *this;
+    }
 
     bool beforeArray(const IReflectableConstPtr&, const FieldInfo&) override
     {
@@ -642,8 +665,8 @@ TEST(RegexWalkFilterTest, regexArrayNoMatch)
     const uint8_t choiceSelector = 8;
     WalkerChoice choiceField;
     choiceField.setValue8(0xAB);
-    WalkerObject walkerObject (13, WalkerNested("nested"), "test", std::move(unionArray), NullOpt,
-            choiceSelector, choiceField);
+    WalkerObject walkerObject(
+            13, WalkerNested("nested"), "test", std::move(unionArray), NullOpt, choiceSelector, choiceField);
     IReflectableConstPtr walkerReflectable = walkerObject.reflectable();
 
     const FieldInfo& unionArrayFieldInfo = walkerObject.typeInfo().getFields()[3];
@@ -696,10 +719,10 @@ TEST(RegexWalkFilterTest, regexNullArrayMatch)
     IReflectableConstPtr optionalUnionArrayReflectable = walkerReflectable->getField("optionalUnionArray");
     ASSERT_EQ(nullptr, optionalUnionArrayReflectable);
     // note that the null arrays are processed as values!
-    ASSERT_TRUE(walkFilter.beforeValue(optionalUnionArrayReflectable, optionalUnionArrayFieldInfo,
-            WALKER_NOT_ELEMENT));
-    ASSERT_TRUE(walkFilter.afterValue(optionalUnionArrayReflectable, optionalUnionArrayFieldInfo,
-            WALKER_NOT_ELEMENT));
+    ASSERT_TRUE(walkFilter.beforeValue(
+            optionalUnionArrayReflectable, optionalUnionArrayFieldInfo, WALKER_NOT_ELEMENT));
+    ASSERT_TRUE(walkFilter.afterValue(
+            optionalUnionArrayReflectable, optionalUnionArrayFieldInfo, WALKER_NOT_ELEMENT));
 }
 
 TEST(RegexWalkFilterTest, regexNullArrayNoMatch)
@@ -714,10 +737,10 @@ TEST(RegexWalkFilterTest, regexNullArrayNoMatch)
     IReflectableConstPtr optionalUnionArrayReflectable = walkerReflectable->getField("optionalUnionArray");
     ASSERT_EQ(nullptr, optionalUnionArrayReflectable);
     // note that the null arrays are processed as values!
-    ASSERT_FALSE(walkFilter.beforeValue(optionalUnionArrayReflectable, optionalUnionArrayFieldInfo,
-            WALKER_NOT_ELEMENT));
-    ASSERT_TRUE(walkFilter.afterValue(optionalUnionArrayReflectable, optionalUnionArrayFieldInfo,
-            WALKER_NOT_ELEMENT));
+    ASSERT_FALSE(walkFilter.beforeValue(
+            optionalUnionArrayReflectable, optionalUnionArrayFieldInfo, WALKER_NOT_ELEMENT));
+    ASSERT_TRUE(walkFilter.afterValue(
+            optionalUnionArrayReflectable, optionalUnionArrayFieldInfo, WALKER_NOT_ELEMENT));
 }
 
 TEST(ArrayLengthWalkFilterTest, length0)

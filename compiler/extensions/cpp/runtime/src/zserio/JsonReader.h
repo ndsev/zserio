@@ -7,10 +7,10 @@
 #include "zserio/AllocatorHolder.h"
 #include "zserio/JsonParser.h"
 #include "zserio/OptionalHolder.h"
-#include "zserio/StringView.h"
-#include "zserio/ZserioTreeCreator.h"
-#include "zserio/UniquePtr.h"
 #include "zserio/SizeConvertUtil.h"
+#include "zserio/StringView.h"
+#include "zserio/UniquePtr.h"
+#include "zserio/ZserioTreeCreator.h"
 
 namespace zserio
 {
@@ -33,7 +33,8 @@ public:
     using AllocatorHolder<ALLOC>::get_allocator;
 
     explicit BitBufferAdapter(const ALLOC& allocator) :
-            AllocatorHolder<ALLOC>(allocator), m_state(VISIT_KEY)
+            AllocatorHolder<ALLOC>(allocator),
+            m_state(VISIT_KEY)
     {}
     ~BitBufferAdapter() override = default;
 
@@ -41,7 +42,9 @@ public:
     BitBufferAdapter& operator=(BitBufferAdapter& other) = delete;
 
     BitBufferAdapter(BitBufferAdapter&& other) :
-            m_state(other.m_state), m_buffer(std::move(other.m_buffer)), m_bitSize(other.m_bitSize)
+            m_state(other.m_state),
+            m_buffer(std::move(other.m_buffer)),
+            m_bitSize(other.m_bitSize)
     {}
 
     BitBufferAdapter& operator=(BitBufferAdapter&& other)
@@ -88,7 +91,8 @@ public:
     using AllocatorHolder<ALLOC>::get_allocator;
 
     explicit BytesAdapter(const ALLOC& allocator) :
-            AllocatorHolder<ALLOC>(allocator), m_state(VISIT_KEY)
+            AllocatorHolder<ALLOC>(allocator),
+            m_state(VISIT_KEY)
     {}
     ~BytesAdapter() override = default;
 
@@ -96,7 +100,8 @@ public:
     BytesAdapter& operator=(BytesAdapter& other) = delete;
 
     BytesAdapter(BytesAdapter&& other) :
-            m_state(other.m_state), m_buffer(std::move(other.m_buffer))
+            m_state(other.m_state),
+            m_buffer(std::move(other.m_buffer))
     {}
 
     BytesAdapter& operator=(BytesAdapter&& other)
@@ -187,7 +192,8 @@ public:
      * \param allocator Allocator to use.
      */
     explicit BasicJsonReader(std::istream& in, const ALLOC& allocator = ALLOC()) :
-            m_creatorAdapter(allocator), m_parser(in, m_creatorAdapter, allocator)
+            m_creatorAdapter(allocator),
+            m_parser(in, m_creatorAdapter, allocator)
     {}
 
     /**
@@ -212,8 +218,8 @@ public:
         }
         catch (const CppRuntimeException& e)
         {
-            throw CppRuntimeException(e.what()) <<
-                    " (JsonParser:" << m_parser.getLine() << ":" << m_parser.getColumn() << ")";
+            throw CppRuntimeException(e.what())
+                    << " (JsonParser:" << m_parser.getLine() << ":" << m_parser.getColumn() << ")";
         }
 
         return m_creatorAdapter.get();
@@ -312,8 +318,8 @@ void BitBufferAdapter<ALLOC>::visitValue(uint64_t uintValue)
     {
         if (uintValue > static_cast<uint64_t>(std::numeric_limits<uint8_t>::max()))
         {
-            throw CppRuntimeException("JsonReader: Cannot create byte for Bit Buffer from value '") <<
-                    uintValue << "'!";
+            throw CppRuntimeException("JsonReader: Cannot create byte for Bit Buffer from value '")
+                    << uintValue << "'!";
         }
 
         if (!m_buffer.hasValue())
@@ -424,8 +430,8 @@ void BytesAdapter<ALLOC>::visitValue(uint64_t uintValue)
     {
         if (uintValue > static_cast<uint64_t>(std::numeric_limits<uint8_t>::max()))
         {
-            throw CppRuntimeException("JsonReader: Cannot create byte for bytes from value '") <<
-                    uintValue << "'!";
+            throw CppRuntimeException("JsonReader: Cannot create byte for bytes from value '")
+                    << uintValue << "'!";
         }
 
         if (!m_buffer.hasValue())
@@ -489,13 +495,13 @@ void CreatorAdapter<ALLOC>::beginObject()
                 const CppType cppType = m_creator->getFieldType(m_keyStack.back()).getCppType();
                 if (cppType == CppType::BIT_BUFFER)
                 {
-                    m_objectValueAdapter = allocate_unique<BitBufferAdapter<ALLOC>>(get_allocator(),
-                            get_allocator());
+                    m_objectValueAdapter =
+                            allocate_unique<BitBufferAdapter<ALLOC>>(get_allocator(), get_allocator());
                 }
                 else if (cppType == CppType::BYTES)
                 {
-                    m_objectValueAdapter = allocate_unique<BytesAdapter<ALLOC>>(get_allocator(),
-                            get_allocator());
+                    m_objectValueAdapter =
+                            allocate_unique<BytesAdapter<ALLOC>>(get_allocator(), get_allocator());
                 }
                 else
                 {
@@ -507,13 +513,13 @@ void CreatorAdapter<ALLOC>::beginObject()
                 const CppType cppType = m_creator->getElementType().getCppType();
                 if (cppType == CppType::BIT_BUFFER)
                 {
-                    m_objectValueAdapter = allocate_unique<BitBufferAdapter<ALLOC>>(get_allocator(),
-                            get_allocator());
+                    m_objectValueAdapter =
+                            allocate_unique<BitBufferAdapter<ALLOC>>(get_allocator(), get_allocator());
                 }
                 else if (cppType == CppType::BYTES)
                 {
-                    m_objectValueAdapter = allocate_unique<BytesAdapter<ALLOC>>(get_allocator(),
-                            get_allocator());
+                    m_objectValueAdapter =
+                            allocate_unique<BytesAdapter<ALLOC>>(get_allocator(), get_allocator());
                 }
                 else
                 {

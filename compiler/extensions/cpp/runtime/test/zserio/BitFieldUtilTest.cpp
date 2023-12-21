@@ -1,8 +1,7 @@
-#include "zserio/BitFieldUtil.h"
-#include "zserio/Types.h"
-#include "zserio/CppRuntimeException.h"
-
 #include "gtest/gtest.h"
+#include "zserio/BitFieldUtil.h"
+#include "zserio/CppRuntimeException.h"
+#include "zserio/Types.h"
 
 namespace zserio
 {
@@ -22,7 +21,7 @@ TEST(BitFieldUtilTest, getBitFieldLowerBound)
     EXPECT_EQ(INT64_C(-2147483648), getBitFieldLowerBound(32, true));
 
     // -1 to avoid gcc warning about 9223372036854775808 being so high that's it's treated as unsigned
-    EXPECT_EQ(INT64_C(-9223372036854775807)-1, getBitFieldLowerBound(64, true));
+    EXPECT_EQ(INT64_C(-9223372036854775807) - 1, getBitFieldLowerBound(64, true));
 
     EXPECT_EQ(UINT64_C(0), getBitFieldLowerBound(1, false));
     EXPECT_EQ(UINT64_C(0), getBitFieldLowerBound(2, false));

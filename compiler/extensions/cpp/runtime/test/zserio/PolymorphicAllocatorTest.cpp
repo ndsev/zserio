@@ -1,7 +1,6 @@
 #include "gtest/gtest.h"
-
-#include "zserio/pmr/PolymorphicAllocator.h"
 #include "zserio/pmr/NewDeleteResource.h"
+#include "zserio/pmr/PolymorphicAllocator.h"
 
 namespace zserio
 {
@@ -158,7 +157,7 @@ TEST(PolymorphicAllocatorTest, select_on_container_copy_construction)
     pmr::PolymorphicAllocator<> allocator(&resource);
 
     std::vector<int, pmr::PolymorphicAllocator<int>> vector(allocator);
-    vector.assign({ 0, 13, 42 });
+    vector.assign({0, 13, 42});
     std::vector<int, pmr::PolymorphicAllocator<int>> vectorCopy(vector);
     ASSERT_NE(&resource, vectorCopy.get_allocator().resource());
 }
@@ -169,7 +168,7 @@ TEST(PropagatingPolymorphicAllocatorTest, select_on_container_copy_construction)
     pmr::PropagatingPolymorphicAllocator<> allocator(&resource);
 
     std::vector<int, pmr::PropagatingPolymorphicAllocator<int>> vector(allocator);
-    vector.assign({ 0, 13, 42 });
+    vector.assign({0, 13, 42});
     std::vector<int, pmr::PropagatingPolymorphicAllocator<int>> vectorCopy(vector);
     ASSERT_EQ(&resource, vectorCopy.get_allocator().resource());
 }

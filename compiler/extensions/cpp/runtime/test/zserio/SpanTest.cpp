@@ -1,9 +1,8 @@
-#include "gtest/gtest.h"
-
-#include "zserio/Span.h"
-
 #include <array>
 #include <vector>
+
+#include "gtest/gtest.h"
+#include "zserio/Span.h"
 
 namespace zserio
 {
@@ -19,7 +18,7 @@ TEST(SpanTest, EmptyConstructor)
 
 TEST(SpanTest, PtrCntConstructor)
 {
-    std::vector<int> vec = { 0, 13, 42, 666 };
+    std::vector<int> vec = {0, 13, 42, 666};
     Span<int> span(vec.data(), vec.size());
     ASSERT_EQ(vec.size(), span.size());
     ASSERT_EQ(vec.data(), span.data());
@@ -31,7 +30,7 @@ TEST(SpanTest, PtrCntConstructor)
 
 TEST(SpanTest, PtrPtrConstructor)
 {
-    std::vector<int> vec = { 0, 13, 42, 666 };
+    std::vector<int> vec = {0, 13, 42, 666};
     Span<int> span(vec.data(), vec.data() + vec.size());
     ASSERT_EQ(vec.size(), span.size());
     ASSERT_EQ(vec.data(), span.data());
@@ -43,7 +42,7 @@ TEST(SpanTest, PtrPtrConstructor)
 
 TEST(SpanTest, ArrayConstructor)
 {
-    int arr[] = { 0, 13, 42 };
+    int arr[] = {0, 13, 42};
     Span<int> span(arr);
     ASSERT_EQ(3, span.size());
     ASSERT_EQ(&arr[0], span.data());
@@ -55,7 +54,7 @@ TEST(SpanTest, ArrayConstructor)
 
 TEST(SpanTest, StdArrayConstructor)
 {
-    std::array<int, 3> arr = { 0, 13, 42 };
+    std::array<int, 3> arr = {0, 13, 42};
     Span<int> span(arr);
     ASSERT_EQ(arr.size(), span.size());
     ASSERT_EQ(arr.data(), span.data());
@@ -67,7 +66,7 @@ TEST(SpanTest, StdArrayConstructor)
 
 TEST(SpanTest, ConstStdArrayConstructor)
 {
-    const std::array<int, 3> arr = { 0, 13, 42 };
+    const std::array<int, 3> arr = {0, 13, 42};
     Span<const int> span(arr);
     ASSERT_EQ(arr.size(), span.size());
     ASSERT_EQ(arr.data(), span.data());
@@ -79,7 +78,7 @@ TEST(SpanTest, ConstStdArrayConstructor)
 
 TEST(SpanTest, VectorConstructor)
 {
-    std::vector<int> vec = { 0, 13, 42 };
+    std::vector<int> vec = {0, 13, 42};
     Span<int> span(vec);
     ASSERT_EQ(vec.size(), span.size());
     ASSERT_EQ(vec.data(), span.data());
@@ -87,7 +86,7 @@ TEST(SpanTest, VectorConstructor)
 
 TEST(SpanTest, ConstVectorConstructor)
 {
-    const std::vector<int> vec = { 0, 13, 42 };
+    const std::vector<int> vec = {0, 13, 42};
     Span<const int> span(vec);
     ASSERT_EQ(vec.size(), span.size());
     ASSERT_EQ(vec.data(), span.data());
@@ -95,7 +94,7 @@ TEST(SpanTest, ConstVectorConstructor)
 
 TEST(SpanTest, SpanConstructor)
 {
-    std::vector<int> vec = { 0, 13, 42 };
+    std::vector<int> vec = {0, 13, 42};
     Span<int> span(vec);
     ASSERT_EQ(vec.size(), span.size());
     ASSERT_EQ(vec.data(), span.data());
@@ -115,7 +114,7 @@ TEST(SpanTest, SpanConstructor)
 
 TEST(SpanTest, BeginEnd)
 {
-    std::vector<int> vec = { 0, 13, 42 };
+    std::vector<int> vec = {0, 13, 42};
     Span<int> span(vec);
 
     auto itVec = vec.begin();
@@ -134,7 +133,7 @@ TEST(SpanTest, BeginEnd)
 
 TEST(SpanTest, RbeginRend)
 {
-    std::vector<int> vec = { 0, 13, 42 };
+    std::vector<int> vec = {0, 13, 42};
     Span<int> span(vec);
 
     auto itVec = vec.rbegin();
@@ -153,7 +152,7 @@ TEST(SpanTest, RbeginRend)
 
 TEST(SpanTest, Front)
 {
-    std::vector<int> vec = { 13, 42 };
+    std::vector<int> vec = {13, 42};
     Span<int> span(vec);
     ASSERT_EQ(vec.front(), span.front());
 
@@ -163,7 +162,7 @@ TEST(SpanTest, Front)
 
 TEST(SpanTest, Back)
 {
-    std::vector<int> vec = { 13, 42 };
+    std::vector<int> vec = {13, 42};
     Span<int> span(vec);
     ASSERT_EQ(vec.back(), span.back());
 
@@ -173,7 +172,7 @@ TEST(SpanTest, Back)
 
 TEST(SpanTest, ArrayAccess)
 {
-    std::vector<int> vec = { 13, 42, 666 };
+    std::vector<int> vec = {13, 42, 666};
     Span<int> span(vec);
 
     for (size_t i = 0; i < span.size(); ++i)
@@ -191,7 +190,7 @@ TEST(SpanTest, ArrayAccess)
 
 TEST(SpanTest, Data)
 {
-    std::vector<int> vec = { 13, 42, 666 };
+    std::vector<int> vec = {13, 42, 666};
     Span<int> span(vec);
     ASSERT_EQ(vec.data(), span.data());
 
@@ -201,7 +200,7 @@ TEST(SpanTest, Data)
 
 TEST(SpanTest, Size)
 {
-    std::vector<int> vec = { 13, 42, 666 };
+    std::vector<int> vec = {13, 42, 666};
     Span<int> span(vec);
     ASSERT_EQ(vec.size(), span.size());
 
@@ -211,7 +210,7 @@ TEST(SpanTest, Size)
 
 TEST(SpanTest, SizeBytes)
 {
-    std::vector<int> vec = { 13, 42, 666 };
+    std::vector<int> vec = {13, 42, 666};
     Span<int> span(vec);
     ASSERT_EQ(vec.size() * sizeof(int), span.size_bytes());
 
@@ -221,7 +220,7 @@ TEST(SpanTest, SizeBytes)
 
 TEST(SpanTest, Empty)
 {
-    std::vector<int> vec = { 13, 42, 666 };
+    std::vector<int> vec = {13, 42, 666};
     Span<int> span(vec);
     Span<int> emptySpan;
     ASSERT_FALSE(span.empty());
@@ -235,7 +234,7 @@ TEST(SpanTest, Empty)
 
 TEST(SpanTest, staticFirst)
 {
-    std::vector<int> vec = { 13, 42, 666 };
+    std::vector<int> vec = {13, 42, 666};
     Span<int> span(vec);
     Span<int, 2> spanFirst = span.first<2>();
     ASSERT_EQ(2, spanFirst.size());
@@ -249,7 +248,7 @@ TEST(SpanTest, staticFirst)
 
 TEST(SpanTest, first)
 {
-    std::vector<int> vec = { 13, 42, 666 };
+    std::vector<int> vec = {13, 42, 666};
     Span<int> span(vec);
     Span<int> spanFirst = span.first(2);
     ASSERT_EQ(2, spanFirst.size());
@@ -263,7 +262,7 @@ TEST(SpanTest, first)
 
 TEST(SpanTest, staticLast)
 {
-    std::vector<int> vec = { 13, 42, 666 };
+    std::vector<int> vec = {13, 42, 666};
     Span<int> span(vec);
     Span<int, 2> spanLast = span.last<2>();
     ASSERT_EQ(2, spanLast.size());
@@ -277,7 +276,7 @@ TEST(SpanTest, staticLast)
 
 TEST(SpanTest, last)
 {
-    std::vector<int> vec = { 13, 42, 666 };
+    std::vector<int> vec = {13, 42, 666};
     Span<int> span(vec);
     Span<int> spanLast = span.last(2);
     ASSERT_EQ(2, spanLast.size());
@@ -291,7 +290,7 @@ TEST(SpanTest, last)
 
 TEST(SpanTest, staticSubspan)
 {
-    std::vector<int> vec = { 0, 13, 42, 666, 13 };
+    std::vector<int> vec = {0, 13, 42, 666, 13};
     Span<int> span(vec);
     Span<int> spanSub1 = span.subspan<1>();
     ASSERT_EQ(4, spanSub1.size());
@@ -313,7 +312,7 @@ TEST(SpanTest, staticSubspan)
 
 TEST(SpanTest, subspan)
 {
-    std::vector<int> vec = { 0, 13, 42, 666, 13 };
+    std::vector<int> vec = {0, 13, 42, 666, 13};
     Span<int> span(vec);
     Span<int> spanSubDyn1 = span.subspan(1);
     ASSERT_EQ(4, spanSubDyn1.size());
@@ -334,4 +333,3 @@ TEST(SpanTest, subspan)
 }
 
 } // namespace zserio
-

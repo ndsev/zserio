@@ -1,9 +1,9 @@
 #ifndef ZSERIO_BIT_STREAM_READER_H_INC
 #define ZSERIO_BIT_STREAM_READER_H_INC
 
+#include <algorithm>
 #include <cstddef>
 #include <cstring>
-#include <algorithm>
 
 #include "zserio/BitBuffer.h"
 #include "zserio/RebindAlloc.h"
@@ -324,7 +324,7 @@ public:
         {
             // we are aligned to byte
             setBitPosition(beginBitPosition + numBytesToRead * 8);
-            Span<const uint8_t>::const_iterator sourceIt =  m_context.buffer.begin() + beginBitPosition / 8;
+            Span<const uint8_t>::const_iterator sourceIt = m_context.buffer.begin() + beginBitPosition / 8;
             std::copy(sourceIt, sourceIt + numBytesToRead, buffer.begin());
         }
 
@@ -339,7 +339,10 @@ public:
      *
      * \return Current bit position.
      */
-    BitPosType getBitPosition() const { return m_context.bitIndex; }
+    BitPosType getBitPosition() const
+    {
+        return m_context.bitIndex;
+    }
 
     /**
      * Sets current bit position. Use with caution!
@@ -360,7 +363,10 @@ public:
      *
      * \return Buffer bit size.
      */
-    size_t getBufferBitSize() const { return m_context.bufferBitSize; }
+    size_t getBufferBitSize() const
+    {
+        return m_context.bufferBitSize;
+    }
 
 private:
     uint8_t readByte();

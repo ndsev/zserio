@@ -1,12 +1,10 @@
 #include "gtest/gtest.h"
-
-#include "zserio/JsonReader.h"
-#include "zserio/ReflectableUtil.h"
-
 #include "test_object/std_allocator/CreatorBitmask.h"
 #include "test_object/std_allocator/CreatorEnum.h"
 #include "test_object/std_allocator/CreatorNested.h"
 #include "test_object/std_allocator/CreatorObject.h"
+#include "zserio/JsonReader.h"
+#include "zserio/ReflectableUtil.h"
 
 using test_object::std_allocator::CreatorBitmask;
 using test_object::std_allocator::CreatorEnum;
@@ -22,12 +20,13 @@ namespace
 void checkReadStringifiedEnum(const char* stringValue, CreatorEnum expectedValue)
 {
     std::stringstream str;
-    str <<
-            "{\n"
-            "    \"nested\": {\n"
-            "        \"creatorEnum\": \"" << stringValue << "\"\n"
-            "    }\n"
-            "}";
+    str << "{\n"
+           "    \"nested\": {\n"
+           "        \"creatorEnum\": \""
+        << stringValue
+        << "\"\n"
+           "    }\n"
+           "}";
 
     JsonReader jsonReader(str);
     auto reflectable = jsonReader.read(CreatorObject::typeInfo());
@@ -39,66 +38,73 @@ void checkReadStringifiedEnum(const char* stringValue, CreatorEnum expectedValue
 void checkReadStringifiedEnumThrows(const char* stringValue, const char* expectedMessage)
 {
     std::stringstream str;
-    str <<
-            "{\n"
-            "    \"nested\": {\n"
-            "        \"creatorEnum\": \"" << stringValue << "\"\n"
-            "    }\n"
-            "}";
+    str << "{\n"
+           "    \"nested\": {\n"
+           "        \"creatorEnum\": \""
+        << stringValue
+        << "\"\n"
+           "    }\n"
+           "}";
 
     JsonReader jsonReader(str);
-    ASSERT_THROW({
-        try
-        {
-            jsonReader.read(CreatorObject::typeInfo());
-        }
-        catch (const CppRuntimeException& e)
-        {
-            ASSERT_STREQ(expectedMessage, e.what());
-            throw;
-        }
-    }, CppRuntimeException);
+    ASSERT_THROW(
+            {
+                try
+                {
+                    jsonReader.read(CreatorObject::typeInfo());
+                }
+                catch (const CppRuntimeException& e)
+                {
+                    ASSERT_STREQ(expectedMessage, e.what());
+                    throw;
+                }
+            },
+            CppRuntimeException);
 }
 
 void checkReadStringifiedBitmask(const char* stringValue, CreatorBitmask expectedValue)
 {
     std::stringstream str;
-    str <<
-            "{\n"
-            "    \"nested\": {\n"
-            "        \"creatorBitmask\": \"" << stringValue << "\"\n"
-            "    }\n"
-            "}";
+    str << "{\n"
+           "    \"nested\": {\n"
+           "        \"creatorBitmask\": \""
+        << stringValue
+        << "\"\n"
+           "    }\n"
+           "}";
 
     JsonReader jsonReader(str);
     auto reflectable = jsonReader.read(CreatorObject::typeInfo());
     ASSERT_TRUE(reflectable);
 
-    ASSERT_EQ(expectedValue, ReflectableUtil::getValue<CreatorBitmask>(reflectable->find("nested.creatorBitmask")));
+    ASSERT_EQ(expectedValue,
+            ReflectableUtil::getValue<CreatorBitmask>(reflectable->find("nested.creatorBitmask")));
 }
 
 void checkReadStringifiedBitmaskThrows(const char* stringValue, const char* expectedMessage)
 {
     std::stringstream str;
-    str <<
-            "{\n"
-            "    \"nested\": {\n"
-            "        \"creatorBitmask\": \"" << stringValue << "\"\n" <<
-            "    }\n"
-            "}";
+    str << "{\n"
+           "    \"nested\": {\n"
+           "        \"creatorBitmask\": \""
+        << stringValue << "\"\n"
+        << "    }\n"
+           "}";
 
     JsonReader jsonReader(str);
-    ASSERT_THROW({
-        try
-        {
-            jsonReader.read(CreatorObject::typeInfo());
-        }
-        catch (const CppRuntimeException& e)
-        {
-            ASSERT_STREQ(expectedMessage, e.what());
-            throw;
-        }
-    }, CppRuntimeException);
+    ASSERT_THROW(
+            {
+                try
+                {
+                    jsonReader.read(CreatorObject::typeInfo());
+                }
+                catch (const CppRuntimeException& e)
+                {
+                    ASSERT_STREQ(expectedMessage, e.what());
+                    throw;
+                }
+            },
+            CppRuntimeException);
 }
 
 } // namespace
@@ -106,74 +112,73 @@ void checkReadStringifiedBitmaskThrows(const char* stringValue, const char* expe
 TEST(JsonReaderTest, readObjectWithoutOptional)
 {
     std::stringstream str(
-        "{\n"
-        "    \"value\": 13,\n"
-        "    \"nested\": {\n"
-        "        \"value\": 10,\n"
-        "        \"text\": \"nested\",\n"
-        "        \"externData\": {\n"
-        "             \"buffer\": [\n"
-        "                 203,\n"
-        "                 240\n"
-        "             ],\n"
-        "             \"bitSize\": 12\n"
-        "        },\n"
-        "        \"bytesData\": {\n"
-        "           \"buffer\": [\n"
-        "               202,\n"
-        "               254\n"
-        "           ]\n"
-        "        },\n"
-        "        \"creatorEnum\": 0,\n"
-        "        \"creatorBitmask\": 1\n"
-        "    },\n"
-        "    \"text\": \"test\",\n"
-        "    \"nestedArray\": [\n"
-        "        {\n"
-        "            \"value\": 5,\n"
-        "            \"text\": \"nestedArray\",\n"
-        "            \"externData\": {\n"
-        "                 \"buffer\": [\n"
-        "                     202,\n"
-        "                     254\n"
-        "                 ],"
-        "                 \"bitSize\": 15\n"
-        "            },\n"
-        "            \"bytesData\": {\n"
-        "               \"buffer\": [\n"
-        "                   203,\n"
-        "                   240\n"
-        "               ]\n"
-        "            },\n"
-        "            \"creatorEnum\": 1,\n"
-        "            \"creatorBitmask\": 2\n"
-        "        }\n"
-        "    ],\n"
-        "    \"textArray\": [\n"
-        "        \"this\",\n"
-        "        \"is\",\n"
-        "        \"text\",\n"
-        "        \"array\"\n"
-        "    ],\n"
-        "    \"externArray\": [\n"
-        "        {\n"
-        "            \"buffer\": [\n"
-        "                222,\n"
-        "                209\n"
-        "            ],"
-        "            \"bitSize\": 13\n"
-        "        }\n"
-        "    ],\n"
-        "    \"bytesArray\": [\n"
-        "        {\n"
-        "           \"buffer\": [\n"
-        "               0\n"
-        "           ]\n"
-        "        }\n"
-        "    ],\n"
-        "    \"optionalBool\": null\n"
-        "}"
-    );
+            "{\n"
+            "    \"value\": 13,\n"
+            "    \"nested\": {\n"
+            "        \"value\": 10,\n"
+            "        \"text\": \"nested\",\n"
+            "        \"externData\": {\n"
+            "             \"buffer\": [\n"
+            "                 203,\n"
+            "                 240\n"
+            "             ],\n"
+            "             \"bitSize\": 12\n"
+            "        },\n"
+            "        \"bytesData\": {\n"
+            "           \"buffer\": [\n"
+            "               202,\n"
+            "               254\n"
+            "           ]\n"
+            "        },\n"
+            "        \"creatorEnum\": 0,\n"
+            "        \"creatorBitmask\": 1\n"
+            "    },\n"
+            "    \"text\": \"test\",\n"
+            "    \"nestedArray\": [\n"
+            "        {\n"
+            "            \"value\": 5,\n"
+            "            \"text\": \"nestedArray\",\n"
+            "            \"externData\": {\n"
+            "                 \"buffer\": [\n"
+            "                     202,\n"
+            "                     254\n"
+            "                 ],"
+            "                 \"bitSize\": 15\n"
+            "            },\n"
+            "            \"bytesData\": {\n"
+            "               \"buffer\": [\n"
+            "                   203,\n"
+            "                   240\n"
+            "               ]\n"
+            "            },\n"
+            "            \"creatorEnum\": 1,\n"
+            "            \"creatorBitmask\": 2\n"
+            "        }\n"
+            "    ],\n"
+            "    \"textArray\": [\n"
+            "        \"this\",\n"
+            "        \"is\",\n"
+            "        \"text\",\n"
+            "        \"array\"\n"
+            "    ],\n"
+            "    \"externArray\": [\n"
+            "        {\n"
+            "            \"buffer\": [\n"
+            "                222,\n"
+            "                209\n"
+            "            ],"
+            "            \"bitSize\": 13\n"
+            "        }\n"
+            "    ],\n"
+            "    \"bytesArray\": [\n"
+            "        {\n"
+            "           \"buffer\": [\n"
+            "               0\n"
+            "           ]\n"
+            "        }\n"
+            "    ],\n"
+            "    \"optionalBool\": null\n"
+            "}");
 
     JsonReader jsonReader(str);
     IReflectablePtr reflectable = jsonReader.read(CreatorObject::typeInfo());
@@ -226,74 +231,73 @@ TEST(JsonReaderTest, readObjectWithoutOptional)
 TEST(JsonReaderTest, readObjectWithOptional)
 {
     std::stringstream str(
-        "{\n"
-        "    \"value\": 13,\n"
-        "    \"nested\": {\n"
-        "        \"value\": 10,\n"
-        "        \"text\": \"nested\",\n"
-        "        \"externData\": {\n"
-        "             \"buffer\": [\n"
-        "                 203,\n"
-        "                 240\n"
-        "             ],\n"
-        "             \"bitSize\": 12\n"
-        "        },\n"
-        "        \"bytesData\": {\n"
-        "           \"buffer\": [\n"
-        "               202,\n"
-        "               254\n"
-        "           ]\n"
-        "        },\n"
-        "        \"creatorEnum\": 0,\n"
-        "        \"creatorBitmask\": 1\n"
-        "    },\n"
-        "    \"text\": \"test\",\n"
-        "    \"nestedArray\": [\n"
-        "        {\n"
-        "            \"value\": 5,\n"
-        "            \"text\": \"nestedArray\",\n"
-        "            \"externData\": {\n"
-        "                 \"buffer\": [\n"
-        "                     202,\n"
-        "                     254\n"
-        "                 ],"
-        "                 \"bitSize\": 15\n"
-        "            },\n"
-        "            \"bytesData\": {\n"
-        "               \"buffer\": [\n"
-        "                   203,\n"
-        "                   240\n"
-        "               ]\n"
-        "            },\n"
-        "            \"creatorEnum\": 1,\n"
-        "            \"creatorBitmask\": 2\n"
-        "        }\n"
-        "    ],\n"
-        "    \"textArray\": [\n"
-        "        \"this\",\n"
-        "        \"is\",\n"
-        "        \"text\",\n"
-        "        \"array\"\n"
-        "    ],\n"
-        "    \"externArray\": [\n"
-        "        {\n"
-        "            \"buffer\": [\n"
-        "                222,\n"
-        "                209\n"
-        "            ],"
-        "            \"bitSize\": 13\n"
-        "        }\n"
-        "    ],\n"
-        "    \"bytesArray\": [\n"
-        "        {\n"
-        "           \"buffer\": [\n"
-        "               0\n"
-        "           ]\n"
-        "        }\n"
-        "    ],\n"
-        "    \"optionalBool\": true\n"
-        "}"
-    );
+            "{\n"
+            "    \"value\": 13,\n"
+            "    \"nested\": {\n"
+            "        \"value\": 10,\n"
+            "        \"text\": \"nested\",\n"
+            "        \"externData\": {\n"
+            "             \"buffer\": [\n"
+            "                 203,\n"
+            "                 240\n"
+            "             ],\n"
+            "             \"bitSize\": 12\n"
+            "        },\n"
+            "        \"bytesData\": {\n"
+            "           \"buffer\": [\n"
+            "               202,\n"
+            "               254\n"
+            "           ]\n"
+            "        },\n"
+            "        \"creatorEnum\": 0,\n"
+            "        \"creatorBitmask\": 1\n"
+            "    },\n"
+            "    \"text\": \"test\",\n"
+            "    \"nestedArray\": [\n"
+            "        {\n"
+            "            \"value\": 5,\n"
+            "            \"text\": \"nestedArray\",\n"
+            "            \"externData\": {\n"
+            "                 \"buffer\": [\n"
+            "                     202,\n"
+            "                     254\n"
+            "                 ],"
+            "                 \"bitSize\": 15\n"
+            "            },\n"
+            "            \"bytesData\": {\n"
+            "               \"buffer\": [\n"
+            "                   203,\n"
+            "                   240\n"
+            "               ]\n"
+            "            },\n"
+            "            \"creatorEnum\": 1,\n"
+            "            \"creatorBitmask\": 2\n"
+            "        }\n"
+            "    ],\n"
+            "    \"textArray\": [\n"
+            "        \"this\",\n"
+            "        \"is\",\n"
+            "        \"text\",\n"
+            "        \"array\"\n"
+            "    ],\n"
+            "    \"externArray\": [\n"
+            "        {\n"
+            "            \"buffer\": [\n"
+            "                222,\n"
+            "                209\n"
+            "            ],"
+            "            \"bitSize\": 13\n"
+            "        }\n"
+            "    ],\n"
+            "    \"bytesArray\": [\n"
+            "        {\n"
+            "           \"buffer\": [\n"
+            "               0\n"
+            "           ]\n"
+            "        }\n"
+            "    ],\n"
+            "    \"optionalBool\": true\n"
+            "}");
 
     JsonReader jsonReader(str);
     IReflectablePtr reflectable = jsonReader.read(CreatorObject::typeInfo());
@@ -346,9 +350,8 @@ TEST(JsonReaderTest, readObjectWithOptional)
 TEST(JsonReaderTest, readTwoObjects)
 {
     std::stringstream str(
-        "{\"value\": 13}\n"
-        "{\"value\": 42, \"text\": \"test\"}\n"
-    );
+            "{\"value\": 13}\n"
+            "{\"value\": 42, \"text\": \"test\"}\n");
 
     JsonReader jsonReader(str);
 
@@ -366,26 +369,25 @@ TEST(JsonReaderTest, readTwoObjects)
 TEST(JsonReaderTest, readParameterizedObject)
 {
     std::stringstream str(
-        "{\n"
-        "    \"value\": 10,\n"
-        "    \"text\": \"nested\",\n"
-        "    \"externData\": {\n"
-        "         \"bitSize\": 12,\n"
-        "         \"buffer\": [\n"
-        "             203,\n"
-        "             240\n"
-        "         ]\n"
-        "    },\n"
-        "    \"bytesData\": {\n"
-        "       \"buffer\": [\n"
-        "           202,\n"
-        "           254\n"
-        "       ]\n"
-        "    },\n"
-        "    \"creatorEnum\": 0,\n"
-        "    \"creatorBitmask\": 1\n"
-        "}\n"
-    );
+            "{\n"
+            "    \"value\": 10,\n"
+            "    \"text\": \"nested\",\n"
+            "    \"externData\": {\n"
+            "         \"bitSize\": 12,\n"
+            "         \"buffer\": [\n"
+            "             203,\n"
+            "             240\n"
+            "         ]\n"
+            "    },\n"
+            "    \"bytesData\": {\n"
+            "       \"buffer\": [\n"
+            "           202,\n"
+            "           254\n"
+            "       ]\n"
+            "    },\n"
+            "    \"creatorEnum\": 0,\n"
+            "    \"creatorBitmask\": 1\n"
+            "}\n");
 
     JsonReader jsonReader(str);
     auto reflectable = jsonReader.read(CreatorNested::typeInfo());
@@ -399,29 +401,28 @@ TEST(JsonReaderTest, readParameterizedObject)
 TEST(JsonReaderTest, readUnorderedBitBuffer)
 {
     std::stringstream str(
-        "{\n"
-        "    \"value\": 13,\n"
-        "    \"nested\": {\n"
-        "        \"value\": 10,\n"
-        "        \"text\": \"nested\",\n"
-        "        \"externData\": {\n"
-        "             \"bitSize\": 12,\n"
-        "             \"buffer\": [\n"
-        "                 203,\n"
-        "                 240\n"
-        "             ]\n"
-        "        },\n"
-        "        \"bytesData\": {\n"
-        "           \"buffer\": [\n"
-        "               202,\n"
-        "               254\n"
-        "           ]\n"
-        "        },\n"
-        "        \"creatorEnum\": -1,\n"
-        "        \"creatorBitmask\": 1\n"
-        "    }\n"
-        "}"
-    );
+            "{\n"
+            "    \"value\": 13,\n"
+            "    \"nested\": {\n"
+            "        \"value\": 10,\n"
+            "        \"text\": \"nested\",\n"
+            "        \"externData\": {\n"
+            "             \"bitSize\": 12,\n"
+            "             \"buffer\": [\n"
+            "                 203,\n"
+            "                 240\n"
+            "             ]\n"
+            "        },\n"
+            "        \"bytesData\": {\n"
+            "           \"buffer\": [\n"
+            "               202,\n"
+            "               254\n"
+            "           ]\n"
+            "        },\n"
+            "        \"creatorEnum\": -1,\n"
+            "        \"creatorBitmask\": 1\n"
+            "    }\n"
+            "}");
 
     JsonReader jsonReader(str);
     auto reflectable = jsonReader.read(CreatorObject::typeInfo());
@@ -466,10 +467,8 @@ TEST(JsonReaderTest, readStringifiedEnum)
 
 TEST(JsonReaderTest, readStringifiedBitmask)
 {
-    checkReadStringifiedBitmask("READ",
-            CreatorBitmask::Values::READ);
-    checkReadStringifiedBitmask("READ | WRITE",
-            CreatorBitmask::Values::READ | CreatorBitmask::Values::WRITE);
+    checkReadStringifiedBitmask("READ", CreatorBitmask::Values::READ);
+    checkReadStringifiedBitmask("READ | WRITE", CreatorBitmask::Values::READ | CreatorBitmask::Values::WRITE);
     checkReadStringifiedBitmaskThrows("NONEXISTING",
             "ZserioTreeCreator: Cannot create bitmask 'test_object.std_allocator.CreatorBitmask' "
             "from string value 'NONEXISTING'! (JsonParser:3:27)");
@@ -495,400 +494,419 @@ TEST(JsonReaderTest, readStringifiedBitmask)
 
 TEST(JsonReaderTest, jsonParserException)
 {
-    std::stringstream str(
-        "{\"value\"\n\"value\""
-    );
+    std::stringstream str("{\"value\"\n\"value\"");
     JsonReader jsonReader(str);
 
-    ASSERT_THROW({
-        try
-        {
-            jsonReader.read(CreatorObject::typeInfo());
-        }
-        catch (const JsonParserException& e)
-        {
-            ASSERT_STREQ("JsonParser:2:1: unexpected token: VALUE, expecting KEY_SEPARATOR!", e.what());
-            throw;
-        }
-    }, JsonParserException);
+    ASSERT_THROW(
+            {
+                try
+                {
+                    jsonReader.read(CreatorObject::typeInfo());
+                }
+                catch (const JsonParserException& e)
+                {
+                    ASSERT_STREQ("JsonParser:2:1: unexpected token: VALUE, expecting KEY_SEPARATOR!", e.what());
+                    throw;
+                }
+            },
+            JsonParserException);
 }
 
 TEST(JsonReaderTest, wrongKeyException)
 {
-    std::stringstream str(
-        "{\"value\": 13,\n\"nonexisting\": 10}"
-    );
+    std::stringstream str("{\"value\": 13,\n\"nonexisting\": 10}");
     JsonReader jsonReader(str);
 
-    ASSERT_THROW({
-        try
-        {
-            jsonReader.read(CreatorObject::typeInfo());
-        }
-        catch (const CppRuntimeException& e)
-        {
-            ASSERT_STREQ("ZserioTreeCreator: Member 'nonexisting' not found in "
-                    "'test_object.std_allocator.CreatorObject'! (JsonParser:2:16)", e.what());
-            throw;
-        }
-    }, CppRuntimeException);
+    ASSERT_THROW(
+            {
+                try
+                {
+                    jsonReader.read(CreatorObject::typeInfo());
+                }
+                catch (const CppRuntimeException& e)
+                {
+                    ASSERT_STREQ("ZserioTreeCreator: Member 'nonexisting' not found in "
+                                 "'test_object.std_allocator.CreatorObject'! (JsonParser:2:16)",
+                            e.what());
+                    throw;
+                }
+            },
+            CppRuntimeException);
 }
 
 TEST(JsonReaderTest, wrongValueTypeException)
 {
-    std::stringstream str(
-        "{\n  \"value\": \"13\"\n}"
-    );
+    std::stringstream str("{\n  \"value\": \"13\"\n}");
     JsonReader jsonReader(str);
 
-    ASSERT_THROW({
-        try
-        {
-            jsonReader.read(CreatorObject::typeInfo());
-        }
-        catch (const CppRuntimeException& e)
-        {
-            ASSERT_STREQ("ZserioTreeCreator: Value '13' cannot be converted to integral value! "
-                    "(JsonParser:2:12)", e.what());
-            throw;
-        }
-    }, CppRuntimeException);
+    ASSERT_THROW(
+            {
+                try
+                {
+                    jsonReader.read(CreatorObject::typeInfo());
+                }
+                catch (const CppRuntimeException& e)
+                {
+                    ASSERT_STREQ("ZserioTreeCreator: Value '13' cannot be converted to integral value! "
+                                 "(JsonParser:2:12)",
+                            e.what());
+                    throw;
+                }
+            },
+            CppRuntimeException);
 }
 
 TEST(JsonReaderTest, wrongBitBufferException)
 {
     std::stringstream str(
-        "{\n"
-        "    \"value\": 13,\n"
-        "    \"nested\": {\n"
-        "        \"value\": 10,\n"
-        "        \"text\": \"nested\",\n"
-        "        \"externData\": {\n"
-        "             \"buffer\": [\n"
-        "                 203,\n"
-        "                 240\n"
-        "             ],\n"
-        "             \"bitSize\": {\n"
-        "             }\n"
-        "        }\n"
-        "    }\n"
-        "}"
-    );
+            "{\n"
+            "    \"value\": 13,\n"
+            "    \"nested\": {\n"
+            "        \"value\": 10,\n"
+            "        \"text\": \"nested\",\n"
+            "        \"externData\": {\n"
+            "             \"buffer\": [\n"
+            "                 203,\n"
+            "                 240\n"
+            "             ],\n"
+            "             \"bitSize\": {\n"
+            "             }\n"
+            "        }\n"
+            "    }\n"
+            "}");
     JsonReader jsonReader(str);
 
-    ASSERT_THROW({
-        try
-        {
-            jsonReader.read(CreatorObject::typeInfo());
-        }
-        catch (const CppRuntimeException& e)
-        {
-            ASSERT_STREQ("JsonReader: Unexpected beginObject in BitBuffer! (JsonParser:12:14)", e.what());
-            throw;
-        }
-    }, CppRuntimeException);
+    ASSERT_THROW(
+            {
+                try
+                {
+                    jsonReader.read(CreatorObject::typeInfo());
+                }
+                catch (const CppRuntimeException& e)
+                {
+                    ASSERT_STREQ(
+                            "JsonReader: Unexpected beginObject in BitBuffer! (JsonParser:12:14)", e.what());
+                    throw;
+                }
+            },
+            CppRuntimeException);
 }
 
 TEST(JsonReaderTest, partialBitBufferException)
 {
     std::stringstream str(
-        "{\n"
-        "    \"value\": 13,\n"
-        "    \"nested\": {\n"
-        "        \"value\": 10,\n"
-        "        \"text\": \"nested\",\n"
-        "        \"externData\": {\n"
-        "             \"buffer\": [\n"
-        "                 203,\n"
-        "                 240\n"
-        "             ]\n"
-        "        }\n"
-        "    }\n"
-        "}"
-    );
+            "{\n"
+            "    \"value\": 13,\n"
+            "    \"nested\": {\n"
+            "        \"value\": 10,\n"
+            "        \"text\": \"nested\",\n"
+            "        \"externData\": {\n"
+            "             \"buffer\": [\n"
+            "                 203,\n"
+            "                 240\n"
+            "             ]\n"
+            "        }\n"
+            "    }\n"
+            "}");
     JsonReader jsonReader(str);
 
-    ASSERT_THROW({
-        try
-        {
-            jsonReader.read(CreatorObject::typeInfo());
-        }
-        catch (const CppRuntimeException& e)
-        {
-            ASSERT_STREQ("JsonReader: Unexpected end in BitBuffer! (JsonParser:12:5)", e.what());
-            throw;
-        }
-    }, CppRuntimeException);
+    ASSERT_THROW(
+            {
+                try
+                {
+                    jsonReader.read(CreatorObject::typeInfo());
+                }
+                catch (const CppRuntimeException& e)
+                {
+                    ASSERT_STREQ("JsonReader: Unexpected end in BitBuffer! (JsonParser:12:5)", e.what());
+                    throw;
+                }
+            },
+            CppRuntimeException);
 }
 
 TEST(JsonReaderTest, bigBitBufferByteValueException)
 {
     std::stringstream str(
-        "{\n"
-        "    \"nested\": {\n"
-        "        \"externData\": {\n"
-        "             \"buffer\": [\n"
-        "                 256\n"
-        "             ],\n"
-        "             \"bitSize\": 7\n"
-        "        }\n"
-        "    }\n"
-        "}"
-    );
+            "{\n"
+            "    \"nested\": {\n"
+            "        \"externData\": {\n"
+            "             \"buffer\": [\n"
+            "                 256\n"
+            "             ],\n"
+            "             \"bitSize\": 7\n"
+            "        }\n"
+            "    }\n"
+            "}");
     JsonReader jsonReader(str);
 
-    ASSERT_THROW({
-        try
-        {
-            jsonReader.read(CreatorObject::typeInfo());
-        }
-        catch (const CppRuntimeException& e)
-        {
-            ASSERT_STREQ("JsonReader: Cannot create byte for Bit Buffer from value '256'! (JsonParser:5:18)",
-                    e.what());
-            throw;
-        }
-    }, CppRuntimeException);
+    ASSERT_THROW(
+            {
+                try
+                {
+                    jsonReader.read(CreatorObject::typeInfo());
+                }
+                catch (const CppRuntimeException& e)
+                {
+                    ASSERT_STREQ(
+                            "JsonReader: Cannot create byte for Bit Buffer from value '256'! (JsonParser:5:18)",
+                            e.what());
+                    throw;
+                }
+            },
+            CppRuntimeException);
 }
 
 TEST(JsonReaderTest, negativeBitBufferByteValueException)
 {
     std::stringstream str(
-        "{\n"
-        "    \"nested\": {\n"
-        "        \"externData\": {\n"
-        "             \"buffer\": [\n"
-        "                 -1\n"
-        "             ],\n"
-        "             \"bitSize\": 7\n"
-        "        }\n"
-        "    }\n"
-        "}"
-    );
+            "{\n"
+            "    \"nested\": {\n"
+            "        \"externData\": {\n"
+            "             \"buffer\": [\n"
+            "                 -1\n"
+            "             ],\n"
+            "             \"bitSize\": 7\n"
+            "        }\n"
+            "    }\n"
+            "}");
     JsonReader jsonReader(str);
 
-    ASSERT_THROW({
-        try
-        {
-            jsonReader.read(CreatorObject::typeInfo());
-        }
-        catch (const CppRuntimeException& e)
-        {
-            ASSERT_STREQ("JsonReader: Unexpected visitValue (int) in BitBuffer! (JsonParser:5:18)", e.what());
-            throw;
-        }
-    }, CppRuntimeException);
+    ASSERT_THROW(
+            {
+                try
+                {
+                    jsonReader.read(CreatorObject::typeInfo());
+                }
+                catch (const CppRuntimeException& e)
+                {
+                    ASSERT_STREQ("JsonReader: Unexpected visitValue (int) in BitBuffer! (JsonParser:5:18)",
+                            e.what());
+                    throw;
+                }
+            },
+            CppRuntimeException);
 }
 
 TEST(JsonReaderTest, wrongBitBufferSizeValueException)
 {
     std::stringstream str(
-        "{\n"
-        "    \"nested\": {\n"
-        "        \"externData\": {\n"
-        "             \"buffer\": [\n"
-        "                 255\n"
-        "             ],\n"
-        "             \"bitSize\": 18446744073709551616\n"
-        "        }\n"
-        "    }\n"
-        "}"
-    );
+            "{\n"
+            "    \"nested\": {\n"
+            "        \"externData\": {\n"
+            "             \"buffer\": [\n"
+            "                 255\n"
+            "             ],\n"
+            "             \"bitSize\": 18446744073709551616\n"
+            "        }\n"
+            "    }\n"
+            "}");
     JsonReader jsonReader(str);
 
-    ASSERT_THROW({
-        try
-        {
-            jsonReader.read(CreatorObject::typeInfo());
-        }
-        catch (const CppRuntimeException& e)
-        {
-            ASSERT_STREQ("JsonTokenizer:7:25: Value is outside of the 64-bit integer range!", e.what());
-            throw;
-        }
-    }, CppRuntimeException);
+    ASSERT_THROW(
+            {
+                try
+                {
+                    jsonReader.read(CreatorObject::typeInfo());
+                }
+                catch (const CppRuntimeException& e)
+                {
+                    ASSERT_STREQ("JsonTokenizer:7:25: Value is outside of the 64-bit integer range!", e.what());
+                    throw;
+                }
+            },
+            CppRuntimeException);
 }
 
 TEST(JsonReaderTest, wrongBitBufferNullPtrValueException)
 {
     std::stringstream str(
-        "{\n"
-        "    \"nested\": {\n"
-        "        \"externData\": {\n"
-        "             \"buffer\": [\n"
-        "                 255\n"
-        "             ],\n"
-        "             \"bitSize\": null\n"
-        "        }\n"
-        "    }\n"
-        "}"
-    );
+            "{\n"
+            "    \"nested\": {\n"
+            "        \"externData\": {\n"
+            "             \"buffer\": [\n"
+            "                 255\n"
+            "             ],\n"
+            "             \"bitSize\": null\n"
+            "        }\n"
+            "    }\n"
+            "}");
     JsonReader jsonReader(str);
 
-    ASSERT_THROW({
-        try
-        {
-            jsonReader.read(CreatorObject::typeInfo());
-        }
-        catch (const CppRuntimeException& e)
-        {
-            ASSERT_STREQ("JsonReader: Unexpected visitValue (null) in BitBuffer! (JsonParser:7:25)", e.what());
-            throw;
-        }
-    }, CppRuntimeException);
+    ASSERT_THROW(
+            {
+                try
+                {
+                    jsonReader.read(CreatorObject::typeInfo());
+                }
+                catch (const CppRuntimeException& e)
+                {
+                    ASSERT_STREQ("JsonReader: Unexpected visitValue (null) in BitBuffer! (JsonParser:7:25)",
+                            e.what());
+                    throw;
+                }
+            },
+            CppRuntimeException);
 }
 
 TEST(JsonReaderTest, wrongBitBufferBoolValueException)
 {
     std::stringstream str(
-        "{\n"
-        "    \"nested\": {\n"
-        "        \"externData\": {\n"
-        "             \"buffer\": [\n"
-        "                 255\n"
-        "             ],\n"
-        "             \"bitSize\": true\n"
-        "        }\n"
-        "    }\n"
-        "}"
-    );
+            "{\n"
+            "    \"nested\": {\n"
+            "        \"externData\": {\n"
+            "             \"buffer\": [\n"
+            "                 255\n"
+            "             ],\n"
+            "             \"bitSize\": true\n"
+            "        }\n"
+            "    }\n"
+            "}");
     JsonReader jsonReader(str);
 
-    ASSERT_THROW({
-        try
-        {
-            jsonReader.read(CreatorObject::typeInfo());
-        }
-        catch (const CppRuntimeException& e)
-        {
-            ASSERT_STREQ("JsonReader: Unexpected visitValue (bool) in BitBuffer! (JsonParser:7:25)", e.what());
-            throw;
-        }
-    }, CppRuntimeException);
+    ASSERT_THROW(
+            {
+                try
+                {
+                    jsonReader.read(CreatorObject::typeInfo());
+                }
+                catch (const CppRuntimeException& e)
+                {
+                    ASSERT_STREQ("JsonReader: Unexpected visitValue (bool) in BitBuffer! (JsonParser:7:25)",
+                            e.what());
+                    throw;
+                }
+            },
+            CppRuntimeException);
 }
 
 TEST(JsonReaderTest, wrongBitBufferDoubleValueException)
 {
     std::stringstream str(
-        "{\n"
-        "    \"nested\": {\n"
-        "        \"externData\": {\n"
-        "             \"buffer\": [\n"
-        "                 255\n"
-        "             ],\n"
-        "             \"bitSize\": 1.0\n"
-        "        }\n"
-        "    }\n"
-        "}"
-    );
+            "{\n"
+            "    \"nested\": {\n"
+            "        \"externData\": {\n"
+            "             \"buffer\": [\n"
+            "                 255\n"
+            "             ],\n"
+            "             \"bitSize\": 1.0\n"
+            "        }\n"
+            "    }\n"
+            "}");
     JsonReader jsonReader(str);
 
-    ASSERT_THROW({
-        try
-        {
-            jsonReader.read(CreatorObject::typeInfo());
-        }
-        catch (const CppRuntimeException& e)
-        {
-            ASSERT_STREQ("JsonReader: Unexpected visitValue (double) in BitBuffer! (JsonParser:7:25)",
-                    e.what());
-            throw;
-        }
-    }, CppRuntimeException);
+    ASSERT_THROW(
+            {
+                try
+                {
+                    jsonReader.read(CreatorObject::typeInfo());
+                }
+                catch (const CppRuntimeException& e)
+                {
+                    ASSERT_STREQ("JsonReader: Unexpected visitValue (double) in BitBuffer! (JsonParser:7:25)",
+                            e.what());
+                    throw;
+                }
+            },
+            CppRuntimeException);
 }
 
 TEST(JsonReaderTest, wrongBitBufferStringValueException)
 {
     std::stringstream str(
-        "{\n"
-        "    \"nested\": {\n"
-        "        \"externData\": {\n"
-        "             \"buffer\": [\n"
-        "                 255\n"
-        "             ],\n"
-        "             \"bitSize\": \"Text\"\n"
-        "        }\n"
-        "    }\n"
-        "}"
-    );
+            "{\n"
+            "    \"nested\": {\n"
+            "        \"externData\": {\n"
+            "             \"buffer\": [\n"
+            "                 255\n"
+            "             ],\n"
+            "             \"bitSize\": \"Text\"\n"
+            "        }\n"
+            "    }\n"
+            "}");
     JsonReader jsonReader(str);
 
-    ASSERT_THROW({
-        try
-        {
-            jsonReader.read(CreatorObject::typeInfo());
-        }
-        catch (const CppRuntimeException& e)
-        {
-            ASSERT_STREQ("JsonReader: Unexpected visitValue (string) in BitBuffer! (JsonParser:7:25)",
-                    e.what());
-            throw;
-        }
-    }, CppRuntimeException);
+    ASSERT_THROW(
+            {
+                try
+                {
+                    jsonReader.read(CreatorObject::typeInfo());
+                }
+                catch (const CppRuntimeException& e)
+                {
+                    ASSERT_STREQ("JsonReader: Unexpected visitValue (string) in BitBuffer! (JsonParser:7:25)",
+                            e.what());
+                    throw;
+                }
+            },
+            CppRuntimeException);
 }
 
 TEST(JsonReaderTest, wrongBytesException)
 {
     std::stringstream str(
-        "{\n"
-        "    \"value\": 13,\n"
-        "    \"nested\": {\n"
-        "        \"value\": 10,\n"
-        "        \"text\": \"nested\",\n"
-        "        \"externData\": {\n"
-        "             \"buffer\": [\n"
-        "                 203,\n"
-        "                 240\n"
-        "             ],\n"
-        "             \"bitSize\": 12\n"
-        "        },\n"
-        "        \"bytesData\" : {\n"
-        "            \"buffer\" : {}\n"
-        "        }\n"
-        "    }\n"
-        "}"
-    );
+            "{\n"
+            "    \"value\": 13,\n"
+            "    \"nested\": {\n"
+            "        \"value\": 10,\n"
+            "        \"text\": \"nested\",\n"
+            "        \"externData\": {\n"
+            "             \"buffer\": [\n"
+            "                 203,\n"
+            "                 240\n"
+            "             ],\n"
+            "             \"bitSize\": 12\n"
+            "        },\n"
+            "        \"bytesData\" : {\n"
+            "            \"buffer\" : {}\n"
+            "        }\n"
+            "    }\n"
+            "}");
     JsonReader jsonReader(str);
 
-    ASSERT_THROW({
-        try
-        {
-            jsonReader.read(CreatorObject::typeInfo());
-        }
-        catch (const CppRuntimeException& e)
-        {
-            ASSERT_STREQ("JsonReader: Unexpected beginObject in bytes! (JsonParser:14:25)", e.what());
-            throw;
-        }
-    }, CppRuntimeException);
+    ASSERT_THROW(
+            {
+                try
+                {
+                    jsonReader.read(CreatorObject::typeInfo());
+                }
+                catch (const CppRuntimeException& e)
+                {
+                    ASSERT_STREQ("JsonReader: Unexpected beginObject in bytes! (JsonParser:14:25)", e.what());
+                    throw;
+                }
+            },
+            CppRuntimeException);
 }
 
 TEST(JsonReaderTest, negativeBytesByteValueException)
 {
     std::stringstream str(
-        "{\n"
-        "    \"nested\": {\n"
-        "        \"bytesData\": {\n"
-        "             \"buffer\": [\n"
-        "                 -1\n"
-        "             ]\n"
-        "        }\n"
-        "    }\n"
-        "}"
-    );
+            "{\n"
+            "    \"nested\": {\n"
+            "        \"bytesData\": {\n"
+            "             \"buffer\": [\n"
+            "                 -1\n"
+            "             ]\n"
+            "        }\n"
+            "    }\n"
+            "}");
     JsonReader jsonReader(str);
 
-    ASSERT_THROW({
-        try
-        {
-            jsonReader.read(CreatorObject::typeInfo());
-        }
-        catch (const CppRuntimeException& e)
-        {
-            ASSERT_STREQ("JsonReader: Unexpected visitValue (int) in bytes! (JsonParser:5:18)", e.what());
-            throw;
-        }
-    }, CppRuntimeException);
+    ASSERT_THROW(
+            {
+                try
+                {
+                    jsonReader.read(CreatorObject::typeInfo());
+                }
+                catch (const CppRuntimeException& e)
+                {
+                    ASSERT_STREQ(
+                            "JsonReader: Unexpected visitValue (int) in bytes! (JsonParser:5:18)", e.what());
+                    throw;
+                }
+            },
+            CppRuntimeException);
 }
 
 TEST(JsonReaderTest, jsonArrayException)
@@ -910,76 +928,81 @@ TEST(JsonReaderTest, jsonValueException)
 TEST(JsonReaderTest, bigLongValueException)
 {
     std::stringstream str(
-        "{\n"
-        "    \"value\": 4294967296\n"
-        "}"
-    );
+            "{\n"
+            "    \"value\": 4294967296\n"
+            "}");
     JsonReader jsonReader(str);
 
-    ASSERT_THROW({
-        try
-        {
-            jsonReader.read(CreatorObject::typeInfo());
-        }
-        catch (const CppRuntimeException& e)
-        {
-            ASSERT_STREQ("ZserioTreeCreator: Integral value '4294967296' overflow (<0, 4294967295>)! "
-                    "(JsonParser:2:14)", e.what());
-            throw;
-        }
-    }, CppRuntimeException);
+    ASSERT_THROW(
+            {
+                try
+                {
+                    jsonReader.read(CreatorObject::typeInfo());
+                }
+                catch (const CppRuntimeException& e)
+                {
+                    ASSERT_STREQ("ZserioTreeCreator: Integral value '4294967296' overflow (<0, 4294967295>)! "
+                                 "(JsonParser:2:14)",
+                            e.what());
+                    throw;
+                }
+            },
+            CppRuntimeException);
 }
 
 TEST(JsonReaderTest, floatLongValueException)
 {
     std::stringstream str(
-        "{\n"
-        "    \"value\": 1.234\n"
-        "}"
-    );
+            "{\n"
+            "    \"value\": 1.234\n"
+            "}");
     JsonReader jsonReader(str);
 
-    ASSERT_THROW({
-        try
-        {
-            jsonReader.read(CreatorObject::typeInfo());
-        }
-        catch (const CppRuntimeException& e)
-        {
-            ASSERT_STREQ("ZserioTreeCreator: Value '1.233' cannot be converted to integral value! "
-                    "(JsonParser:2:14)", e.what());
-            throw;
-        }
-    }, CppRuntimeException);
+    ASSERT_THROW(
+            {
+                try
+                {
+                    jsonReader.read(CreatorObject::typeInfo());
+                }
+                catch (const CppRuntimeException& e)
+                {
+                    ASSERT_STREQ("ZserioTreeCreator: Value '1.233' cannot be converted to integral value! "
+                                 "(JsonParser:2:14)",
+                            e.what());
+                    throw;
+                }
+            },
+            CppRuntimeException);
 }
 
 TEST(JsonReaderTest, bigBytesByteValueException)
 {
     std::stringstream str(
-        "{\n"
-        "    \"nested\": {\n"
-        "        \"bytesData\": {\n"
-        "             \"buffer\": [\n"
-        "                 256\n"
-        "             ]\n"
-        "        }\n"
-        "    }\n"
-        "}"
-    );
+            "{\n"
+            "    \"nested\": {\n"
+            "        \"bytesData\": {\n"
+            "             \"buffer\": [\n"
+            "                 256\n"
+            "             ]\n"
+            "        }\n"
+            "    }\n"
+            "}");
     JsonReader jsonReader(str);
 
-    ASSERT_THROW({
-        try
-        {
-            jsonReader.read(CreatorObject::typeInfo());
-        }
-        catch (const CppRuntimeException& e)
-        {
-            ASSERT_STREQ("JsonReader: Cannot create byte for bytes from value '256'! (JsonParser:5:18)",
-                    e.what());
-            throw;
-        }
-    }, CppRuntimeException);
+    ASSERT_THROW(
+            {
+                try
+                {
+                    jsonReader.read(CreatorObject::typeInfo());
+                }
+                catch (const CppRuntimeException& e)
+                {
+                    ASSERT_STREQ("JsonReader: Cannot create byte for bytes from value '256'! (JsonParser:5:18)",
+                            e.what());
+                    throw;
+                }
+            },
+            CppRuntimeException);
 }
 
 TEST(JsonReaderTest, bytesAdapterUninitializedCalls)

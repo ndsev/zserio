@@ -1,8 +1,7 @@
-#include <string>
 #include <array>
+#include <string>
 
 #include "gtest/gtest.h"
-
 #include "zserio/StringView.h"
 
 namespace zserio

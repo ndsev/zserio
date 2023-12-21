@@ -1,14 +1,13 @@
-#include "gtest/gtest.h"
-
 #include <memory>
 #include <vector>
 
-#include "zserio/Traits.h"
+#include "gtest/gtest.h"
 #include "zserio/AllocatorPropagatingCopy.h"
 #include "zserio/AnyHolder.h"
 #include "zserio/BitStreamReader.h"
 #include "zserio/BitStreamWriter.h"
 #include "zserio/Reflectable.h"
+#include "zserio/Traits.h"
 #include "zserio/pmr/PolymorphicAllocator.h"
 
 namespace zserio
@@ -31,13 +30,15 @@ void assertFalse(bool value)
 class DummyObjectInitialize
 {
 public:
-    void initialize() {}
+    void initialize()
+    {}
 };
 
 class DummyObjectInitializeChildren
 {
 public:
-    void initializeChildren() {}
+    void initializeChildren()
+    {}
 };
 
 class DummyOwner
@@ -76,7 +77,8 @@ class DummyObjectInitializeOffset
 public:
     using OwnerType = DummyOwner;
 
-    void initializeOffset(OwnerType&, size_t, size_t) {}
+    void initializeOffset(OwnerType&, size_t, size_t)
+    {}
 };
 
 class DummyObjectCheckOffset
@@ -84,7 +86,8 @@ class DummyObjectCheckOffset
 public:
     using OwnerType = DummyOwner;
 
-    void checkOffset(const OwnerType&, size_t, size_t) {}
+    void checkOffset(const OwnerType&, size_t, size_t)
+    {}
 };
 
 class DummyObjectInitializeElement
@@ -92,7 +95,8 @@ class DummyObjectInitializeElement
 public:
     using OwnerType = DummyOwner;
 
-    void initializeElement(OwnerType&, DummyObjectInitializeChildren&, size_t) {}
+    void initializeElement(OwnerType&, DummyObjectInitializeChildren&, size_t)
+    {}
 };
 
 enum class DummyEnum : uint8_t
@@ -106,7 +110,10 @@ class DummyBitmask
 public:
     using underlying_type = int;
 
-    int getValue() { return 0; }
+    int getValue()
+    {
+        return 0;
+    }
 };
 
 template <typename FIELD_TYPE, typename COMPOUND_TYPE, typename ALLOCATOR_TYPE, typename = void>
@@ -115,8 +122,8 @@ struct has_field_ctor : std::false_type
 
 template <typename FIELD_TYPE, typename COMPOUND_TYPE, typename ALLOCATOR_TYPE>
 struct has_field_ctor<FIELD_TYPE, COMPOUND_TYPE, ALLOCATOR_TYPE,
-        detail::void_t<is_field_constructor_enabled_t<FIELD_TYPE, COMPOUND_TYPE, ALLOCATOR_TYPE>>> :
-                std::true_type
+        detail::void_t<is_field_constructor_enabled_t<FIELD_TYPE, COMPOUND_TYPE, ALLOCATOR_TYPE>>>
+        : std::true_type
 {};
 
 } // namespace
@@ -320,10 +327,10 @@ TEST(TraitsTest, isFieldConstructorEnabled)
 {
     assertTrue(has_field_ctor<int, DummyObjectInitialize, std::allocator<uint8_t>>::value);
     assertTrue(has_field_ctor<std::string, DummyObjectInitialize, std::allocator<uint8_t>>::value);
-    assertTrue(has_field_ctor<
-            DummyObjectInitializeChildren, DummyObjectInitialize, std::allocator<uint8_t>>::value);
-    assertTrue(has_field_ctor<DummyObjectWithPackingContext::ZserioPackingContext,
-            DummyObjectInitialize, std::allocator<uint8_t>>::value);
+    assertTrue(has_field_ctor<DummyObjectInitializeChildren, DummyObjectInitialize,
+            std::allocator<uint8_t>>::value);
+    assertTrue(has_field_ctor<DummyObjectWithPackingContext::ZserioPackingContext, DummyObjectInitialize,
+            std::allocator<uint8_t>>::value);
     assertFalse(has_field_ctor<DummyObjectInitialize, DummyObjectInitialize, std::allocator<uint8_t>>::value);
     assertFalse(has_field_ctor<std::allocator<uint8_t>, DummyObjectInitialize, std::allocator<uint8_t>>::value);
     assertFalse(has_field_ctor<BitStreamReader, DummyObjectInitialize, std::allocator<uint8_t>>::value);

@@ -1,12 +1,12 @@
-#include "gtest/gtest.h"
+#include <algorithm>
 
+#include "gtest/gtest.h"
 #include "zserio/AllocatorPropagatingCopy.h"
 #include "zserio/AnyHolder.h"
 #include "zserio/NoInit.h"
 #include "zserio/OptionalHolder.h"
-#include "TrackingAllocator.h"
 
-#include <algorithm>
+#include "TrackingAllocator.h"
 
 namespace zserio
 {
@@ -15,8 +15,7 @@ namespace
 {
 
 class RegularType
-{
-};
+{};
 
 class RegularTypeWithStdAllocator
 {
@@ -67,8 +66,8 @@ public:
 
     RegularWithAllocatorSupport& operator=(RegularWithAllocatorSupport&&) = delete;
 
-    RegularWithAllocatorSupport(PropagateAllocatorT, const RegularWithAllocatorSupport&,
-            const allocator_type& allocator) :
+    RegularWithAllocatorSupport(
+            PropagateAllocatorT, const RegularWithAllocatorSupport&, const allocator_type& allocator) :
             m_allocator(allocator)
     {}
 
@@ -117,8 +116,8 @@ public:
 
     RegularWithAllocatorSupportNoInit& operator=(RegularWithAllocatorSupportNoInit&&) = delete;
 
-    RegularWithAllocatorSupportNoInit(PropagateAllocatorT, NoInitT,
-            const RegularWithAllocatorSupportNoInit&, const allocator_type& allocator) :
+    RegularWithAllocatorSupportNoInit(PropagateAllocatorT, NoInitT, const RegularWithAllocatorSupportNoInit&,
+            const allocator_type& allocator) :
             m_allocator(allocator)
     {}
 
@@ -169,19 +168,16 @@ TEST(AllocatorPropagatingCopyTest, copyHeapOptional)
 {
     RegularWithAllocatorSupport::allocator_type allocator;
 
-    const HeapOptionalHolder<RegularWithAllocatorSupport,
-            RegularWithAllocatorSupport::allocator_type> emptyOptional(allocator);
-    HeapOptionalHolder<RegularWithAllocatorSupport,
-            RegularWithAllocatorSupport::allocator_type> emptyOptionalCopy(
-                    allocatorPropagatingCopy(emptyOptional, allocator));
+    const HeapOptionalHolder<RegularWithAllocatorSupport, RegularWithAllocatorSupport::allocator_type>
+            emptyOptional(allocator);
+    HeapOptionalHolder<RegularWithAllocatorSupport, RegularWithAllocatorSupport::allocator_type>
+            emptyOptionalCopy(allocatorPropagatingCopy(emptyOptional, allocator));
     ASSERT_EQ(emptyOptional.get_allocator(), emptyOptionalCopy.get_allocator());
 
-    const HeapOptionalHolder<RegularWithAllocatorSupport,
-            RegularWithAllocatorSupport::allocator_type> optional(
-                    RegularWithAllocatorSupport(allocator), allocator);
-    HeapOptionalHolder<RegularWithAllocatorSupport,
-            RegularWithAllocatorSupport::allocator_type> optionalCopy(
-                    allocatorPropagatingCopy(optional, allocator));
+    const HeapOptionalHolder<RegularWithAllocatorSupport, RegularWithAllocatorSupport::allocator_type> optional(
+            RegularWithAllocatorSupport(allocator), allocator);
+    HeapOptionalHolder<RegularWithAllocatorSupport, RegularWithAllocatorSupport::allocator_type> optionalCopy(
+            allocatorPropagatingCopy(optional, allocator));
     ASSERT_EQ(optional.get_allocator(), optionalCopy.get_allocator());
     ASSERT_TRUE(optionalCopy.hasValue());
     ASSERT_EQ(optional->get_allocator(), optionalCopy->get_allocator());
@@ -192,17 +188,17 @@ TEST(AllocatorPropagatingCopyTest, copyHeapOptionalNoInit)
     RegularWithAllocatorSupportNoInit::allocator_type allocator;
 
     const HeapOptionalHolder<RegularWithAllocatorSupportNoInit,
-            RegularWithAllocatorSupportNoInit::allocator_type> emptyOptional(allocator);
-    HeapOptionalHolder<RegularWithAllocatorSupportNoInit,
-            RegularWithAllocatorSupportNoInit::allocator_type> emptyOptionalCopy(
-                    NoInit, allocatorPropagatingCopy(NoInit, emptyOptional, allocator));
+            RegularWithAllocatorSupportNoInit::allocator_type>
+            emptyOptional(allocator);
+    HeapOptionalHolder<RegularWithAllocatorSupportNoInit, RegularWithAllocatorSupportNoInit::allocator_type>
+            emptyOptionalCopy(NoInit, allocatorPropagatingCopy(NoInit, emptyOptional, allocator));
     ASSERT_EQ(emptyOptional.get_allocator(), emptyOptionalCopy.get_allocator());
 
     const HeapOptionalHolder<RegularWithAllocatorSupportNoInit,
-            RegularWithAllocatorSupportNoInit::allocator_type> optional(allocator, allocator);
-    HeapOptionalHolder<RegularWithAllocatorSupportNoInit,
-            RegularWithAllocatorSupportNoInit::allocator_type> optionalCopy(
-                    NoInit, allocatorPropagatingCopy(NoInit, optional, allocator));
+            RegularWithAllocatorSupportNoInit::allocator_type>
+            optional(allocator, allocator);
+    HeapOptionalHolder<RegularWithAllocatorSupportNoInit, RegularWithAllocatorSupportNoInit::allocator_type>
+            optionalCopy(NoInit, allocatorPropagatingCopy(NoInit, optional, allocator));
     ASSERT_EQ(optional.get_allocator(), optionalCopy.get_allocator());
     ASSERT_TRUE(optionalCopy.hasValue());
     ASSERT_EQ(optional->get_allocator(), optionalCopy->get_allocator());
@@ -216,8 +212,7 @@ TEST(AllocatorPropagatingCopyTest, copyInplaceOptional)
     InplaceOptionalHolder<RegularWithAllocatorSupport> emptyOptionalCopy(
             allocatorPropagatingCopy(emptyOptional, allocator));
 
-    const InplaceOptionalHolder<RegularWithAllocatorSupport> optional{
-            RegularWithAllocatorSupport(allocator)};
+    const InplaceOptionalHolder<RegularWithAllocatorSupport> optional{RegularWithAllocatorSupport(allocator)};
     InplaceOptionalHolder<RegularWithAllocatorSupport> optionalCopy(
             allocatorPropagatingCopy(optional, allocator));
     ASSERT_TRUE(optionalCopy.hasValue());
@@ -247,8 +242,7 @@ TEST(AllocatorPropagatingCopyTest, copyAny)
     AnyHolder<TrackingAllocatorNonProp<uint8_t>> emptyAnyCopy(
             allocatorPropagatingCopy<RegularWithAllocatorSupport>(emptyAny, allocator));
 
-    const AnyHolder<TrackingAllocatorNonProp<uint8_t>> any(
-            RegularWithAllocatorSupport(allocator), allocator);
+    const AnyHolder<TrackingAllocatorNonProp<uint8_t>> any(RegularWithAllocatorSupport(allocator), allocator);
     AnyHolder<TrackingAllocatorNonProp<uint8_t>> anyCopy(
             allocatorPropagatingCopy<RegularWithAllocatorSupport>(any, allocator));
     ASSERT_EQ(any.get_allocator(), anyCopy.get_allocator());
@@ -282,8 +276,8 @@ TEST(AllocatorPropagatingCopyTest, copyVector)
 {
     RegularWithAllocatorSupport::allocator_type allocator;
 
-    const std::vector<RegularWithAllocatorSupport,
-            RegularWithAllocatorSupport::allocator_type> emptyVec(allocator);
+    const std::vector<RegularWithAllocatorSupport, RegularWithAllocatorSupport::allocator_type> emptyVec(
+            allocator);
     std::vector<RegularWithAllocatorSupport, RegularWithAllocatorSupport::allocator_type> emptyVecCopy(
             allocatorPropagatingCopy(emptyVec, allocator));
     ASSERT_EQ(emptyVec.get_allocator(), emptyVecCopy.get_allocator());
@@ -296,10 +290,9 @@ TEST(AllocatorPropagatingCopyTest, copyVector)
     ASSERT_EQ(vec.get_allocator(), vecCopy.get_allocator());
     ASSERT_EQ(vec.size(), vecCopy.size());
     ASSERT_TRUE(std::equal(vec.begin(), vec.end(), vecCopy.begin(),
-                           [](const RegularWithAllocatorSupport& a, const RegularWithAllocatorSupport& b)
-                           {
-                               return a.get_allocator() == b.get_allocator();
-                           }));
+            [](const RegularWithAllocatorSupport& a, const RegularWithAllocatorSupport& b) {
+                return a.get_allocator() == b.get_allocator();
+            }));
 }
 
 TEST(AllocatorPropagatingCopyTest, copyVectorRegular)
@@ -315,13 +308,11 @@ TEST(AllocatorPropagatingCopyTest, copyString)
 {
     RegularWithAllocatorSupport::allocator_type allocator;
 
-    const std::basic_string<char, std::char_traits<char>,
-            RegularWithAllocatorSupport::allocator_type> emptyString(allocator);
-    std::basic_string<char, std::char_traits<char>,
-            RegularWithAllocatorSupport::allocator_type> emptyStringCopy(
-                    allocatorPropagatingCopy(emptyString, allocator));
+    const std::basic_string<char, std::char_traits<char>, RegularWithAllocatorSupport::allocator_type>
+            emptyString(allocator);
+    std::basic_string<char, std::char_traits<char>, RegularWithAllocatorSupport::allocator_type>
+            emptyStringCopy(allocatorPropagatingCopy(emptyString, allocator));
     ASSERT_EQ(emptyString.get_allocator(), emptyStringCopy.get_allocator());
 }
 
 } // namespace zserio
-

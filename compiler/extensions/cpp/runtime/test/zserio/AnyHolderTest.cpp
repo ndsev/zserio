@@ -1,14 +1,13 @@
-#include <vector>
 #include <memory>
 #include <tuple>
+#include <vector>
 
+#include "gtest/gtest.h"
 #include "zserio/AnyHolder.h"
 #include "zserio/pmr/MemoryResource.h"
 #include "zserio/pmr/PolymorphicAllocator.h"
 
 #include "TrackingAllocator.h"
-
-#include "gtest/gtest.h"
 
 namespace zserio
 {
@@ -19,9 +18,14 @@ namespace
 class SmallObject
 {
 public:
-    SmallObject() : m_value(0) {}
+    SmallObject() :
+            m_value(0)
+    {}
 
-    bool operator==(const SmallObject& other) const { return m_value == other.m_value; }
+    bool operator==(const SmallObject& other) const
+    {
+        return m_value == other.m_value;
+    }
 
 private:
     int m_value;
@@ -31,7 +35,8 @@ struct BigObject
 {
     BigObject() = default;
 
-    BigObject(NoInitT, const BigObject&) {}
+    BigObject(NoInitT, const BigObject&)
+    {}
 
     bool operator==(const BigObject& other) const
     {

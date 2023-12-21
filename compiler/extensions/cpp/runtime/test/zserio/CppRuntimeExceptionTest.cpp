@@ -3,7 +3,6 @@
 #include <limits>
 
 #include "gtest/gtest.h"
-
 #include "zserio/CppRuntimeException.h"
 
 namespace zserio
@@ -100,7 +99,7 @@ public:
     };
 
     constexpr explicit Bitmask(Values value) noexcept :
-        m_value(static_cast<underlying_type>(value))
+            m_value(static_cast<underlying_type>(value))
     {}
 
     constexpr underlying_type getValue() const

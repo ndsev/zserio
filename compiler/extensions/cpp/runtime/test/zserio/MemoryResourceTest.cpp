@@ -1,5 +1,4 @@
 #include "gtest/gtest.h"
-
 #include "zserio/pmr/MemoryResource.h"
 
 namespace zserio
@@ -9,7 +8,7 @@ class TestResource : public zserio::pmr::MemoryResource
 {
 public:
     explicit TestResource(size_t instanceId) :
-        m_instanceId(instanceId)
+            m_instanceId(instanceId)
     {}
 
     size_t numAllocs() const

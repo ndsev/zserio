@@ -1,20 +1,18 @@
+#include <array>
+#include <limits>
 #include <string>
 #include <vector>
-#include <limits>
-#include <array>
 
 #include "gtest/gtest.h"
-
-#include "zserio/Array.h"
-#include "zserio/ArrayTraits.h"
-#include "zserio/Enums.h"
-#include "zserio/CppRuntimeException.h"
-#include "zserio/BitBuffer.h"
-
 #include "test_object/std_allocator/ArrayBitmask.h"
 #include "test_object/std_allocator/ArrayEnum.h"
 #include "test_object/std_allocator/ArrayObject.h"
 #include "test_object/std_allocator/ArrayParamObject.h"
+#include "zserio/Array.h"
+#include "zserio/ArrayTraits.h"
+#include "zserio/BitBuffer.h"
+#include "zserio/CppRuntimeException.h"
+#include "zserio/Enums.h"
 
 namespace zserio
 {
@@ -225,15 +223,14 @@ class ArrayParamObjectElementFactory
 public:
     using OwnerType = ArrayParamObjectOwner;
 
-    static void create(ArrayParamObjectOwner& owner,
-            ::zserio::vector<ArrayParamObject>& array, ::zserio::BitStreamReader& in, size_t)
+    static void create(ArrayParamObjectOwner& owner, ::zserio::vector<ArrayParamObject>& array,
+            ::zserio::BitStreamReader& in, size_t)
     {
         array.emplace_back(in, owner.arrayObject, array.get_allocator());
     }
 
-    static void create(ArrayParamObjectOwner& owner,
-            ::zserio::vector<ArrayParamObject>& array, ArrayParamObject::ZserioPackingContext& context,
-            ::zserio::BitStreamReader& in, size_t)
+    static void create(ArrayParamObjectOwner& owner, ::zserio::vector<ArrayParamObject>& array,
+            ArrayParamObject::ZserioPackingContext& context, ::zserio::BitStreamReader& in, size_t)
     {
         array.emplace_back(context, in, owner.arrayObject, array.get_allocator());
     }
@@ -257,9 +254,8 @@ protected:
     {
         const size_t arraySize = rawArray.size();
         const size_t unalignedBitSize = elementBitSize * arraySize;
-        const size_t alignedBitSize = (arraySize > 0)
-                ? alignTo(8, elementBitSize) * (arraySize - 1) + elementBitSize
-                : 0;
+        const size_t alignedBitSize =
+                (arraySize > 0) ? alignTo(8, elementBitSize) * (arraySize - 1) + elementBitSize : 0;
         testArray<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(
                 rawArray, unalignedBitSize, alignedBitSize, owner);
     }
@@ -294,16 +290,16 @@ protected:
     void testPackedArray(const RAW_ARRAY& rawArray, size_t unalignedBitSize, size_t alignedBitSize,
             OWNER_TYPE owner = OWNER_TYPE())
     {
-        testPackedArrayNormal<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(
-                rawArray, unalignedBitSize, owner);
-        testPackedArrayAuto<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(
-                rawArray, (unalignedBitSize != UNKNOWN_BIT_SIZE)
-                        ? AUTO_LENGTH_BIT_SIZE + unalignedBitSize : UNKNOWN_BIT_SIZE, owner);
-        testPackedArrayAligned<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(
-                rawArray, alignedBitSize, owner);
-        testPackedArrayAlignedAuto<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(
-                rawArray, (alignedBitSize != UNKNOWN_BIT_SIZE)
-                        ? AUTO_LENGTH_BIT_SIZE + alignedBitSize : UNKNOWN_BIT_SIZE, owner);
+        testPackedArrayNormal<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(rawArray, unalignedBitSize, owner);
+        testPackedArrayAuto<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(rawArray,
+                (unalignedBitSize != UNKNOWN_BIT_SIZE)
+                        ? AUTO_LENGTH_BIT_SIZE + unalignedBitSize
+                        : UNKNOWN_BIT_SIZE,
+                owner);
+        testPackedArrayAligned<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(rawArray, alignedBitSize, owner);
+        testPackedArrayAlignedAuto<ARRAY_TRAITS, RAW_ARRAY, ARRAY_EXPRESSIONS>(rawArray,
+                (alignedBitSize != UNKNOWN_BIT_SIZE) ? AUTO_LENGTH_BIT_SIZE + alignedBitSize : UNKNOWN_BIT_SIZE,
+                owner);
     }
 
     size_t calcPackedBitSize(size_t elementBitSize, size_t arraySize, size_t maxDeltaBitSize)
@@ -317,8 +313,8 @@ protected:
         const size_t alignedFirstElementWithDescriptorBitSize = (firstElementWithDescriptorBitSize + 7) / 8 * 8;
         const size_t alignedMaxDeltaBitSize = (maxDeltaBitSize + 1 + 7) / 8 * 8;
 
-        return alignedFirstElementWithDescriptorBitSize +
-                (arraySize - 2) * alignedMaxDeltaBitSize + (maxDeltaBitSize + 1);
+        return alignedFirstElementWithDescriptorBitSize + (arraySize - 2) * alignedMaxDeltaBitSize +
+                (maxDeltaBitSize + 1);
     }
 
     static const size_t PACKING_DESCRIPTOR_BITSIZE = 1 + 6;
@@ -730,9 +726,7 @@ TEST_F(ArrayTest, intField4Array)
 {
     const size_t NUM_BITS = 4;
     std::vector<int8_t> rawArray = {
-            -static_cast<int8_t>(1U << (NUM_BITS - 1)),
-            7,
-            static_cast<int8_t>(1U << (NUM_BITS - 1)) - 1};
+            -static_cast<int8_t>(1U << (NUM_BITS - 1)), 7, static_cast<int8_t>(1U << (NUM_BITS - 1)) - 1};
     testArray<BitFieldArrayTraits<int8_t, NUM_BITS>>(rawArray, NUM_BITS);
 
     // empty
@@ -743,9 +737,7 @@ TEST_F(ArrayTest, intField12Array)
 {
     constexpr size_t NUM_BITS = 12;
     std::vector<int16_t> rawArray = {
-            -static_cast<int16_t>(1U << (NUM_BITS - 1)),
-            7,
-            static_cast<int16_t>(1U << (NUM_BITS - 1)) - 1};
+            -static_cast<int16_t>(1U << (NUM_BITS - 1)), 7, static_cast<int16_t>(1U << (NUM_BITS - 1)) - 1};
     testArray<BitFieldArrayTraits<int16_t, NUM_BITS>>(rawArray, NUM_BITS);
 }
 
@@ -753,18 +745,14 @@ TEST_F(ArrayTest, intField20Array)
 {
     constexpr size_t NUM_BITS = 20;
     std::vector<int32_t> rawArray = {
-            -static_cast<int32_t>(1U << (NUM_BITS - 1)),
-            7,
-            static_cast<int32_t>(1U << (NUM_BITS - 1)) - 1};
+            -static_cast<int32_t>(1U << (NUM_BITS - 1)), 7, static_cast<int32_t>(1U << (NUM_BITS - 1)) - 1};
     testArray<BitFieldArrayTraits<int32_t, NUM_BITS>>(rawArray, NUM_BITS);
 }
 
 TEST_F(ArrayTest, intField36Array)
 {
     constexpr size_t NUM_BITS = 36;
-    std::vector<int64_t> rawArray = {
-            -static_cast<int64_t>(UINT64_C(1) << (NUM_BITS - 1)),
-            7,
+    std::vector<int64_t> rawArray = {-static_cast<int64_t>(UINT64_C(1) << (NUM_BITS - 1)), 7,
             static_cast<int64_t>(UINT64_C(1) << (NUM_BITS - 1)) - 1};
     testArray<BitFieldArrayTraits<int64_t, NUM_BITS>>(rawArray, NUM_BITS);
 }
@@ -804,11 +792,9 @@ TEST_F(ArrayTest, dynamicIntField4Array)
 {
     constexpr size_t NUM_BITS = 4;
     std::vector<int8_t> rawArray = {
-            -static_cast<int8_t>(1U << (NUM_BITS - 1)),
-            7,
-            static_cast<int8_t>(1U << (NUM_BITS - 1)) - 1};
-    testArray<DynamicBitFieldArrayTraits<int8_t, ElementBitSizeWithOwner>>(rawArray, NUM_BITS,
-            ArrayTestOwnerWithBitSize(NUM_BITS));
+            -static_cast<int8_t>(1U << (NUM_BITS - 1)), 7, static_cast<int8_t>(1U << (NUM_BITS - 1)) - 1};
+    testArray<DynamicBitFieldArrayTraits<int8_t, ElementBitSizeWithOwner>>(
+            rawArray, NUM_BITS, ArrayTestOwnerWithBitSize(NUM_BITS));
 
     // empty
     testArray<DynamicBitFieldArrayTraits<int8_t, ElementBitSizeWithoutOwner<NUM_BITS>>>(
@@ -819,17 +805,15 @@ TEST_F(ArrayTest, dynamicIntField8Array)
 {
     constexpr size_t NUM_BITS = 8; // aligned to allow implicit array
     std::vector<int8_t> rawArray = {INT8_MIN, 7, INT8_MAX};
-    testArray<DynamicBitFieldArrayTraits<int8_t, ElementBitSizeWithOwner>>(rawArray, NUM_BITS,
-            ArrayTestOwnerWithBitSize(NUM_BITS));
+    testArray<DynamicBitFieldArrayTraits<int8_t, ElementBitSizeWithOwner>>(
+            rawArray, NUM_BITS, ArrayTestOwnerWithBitSize(NUM_BITS));
 }
 
 TEST_F(ArrayTest, dynamicIntField12Array)
 {
     constexpr size_t NUM_BITS = 12;
     std::vector<int16_t> rawArray = {
-            -static_cast<int16_t>(1U << (NUM_BITS - 1)),
-            7,
-            static_cast<int16_t>(1U << (NUM_BITS - 1)) - 1};
+            -static_cast<int16_t>(1U << (NUM_BITS - 1)), 7, static_cast<int16_t>(1U << (NUM_BITS - 1)) - 1};
     testArray<DynamicBitFieldArrayTraits<int16_t, ElementBitSizeWithoutOwner<NUM_BITS>>>(rawArray, NUM_BITS);
 }
 
@@ -837,19 +821,15 @@ TEST_F(ArrayTest, dynamicIntField20Array)
 {
     constexpr size_t NUM_BITS = 20;
     std::vector<int32_t> rawArray = {
-            -static_cast<int32_t>(1U << (NUM_BITS - 1)),
-            7,
-            static_cast<int32_t>(1U << (NUM_BITS - 1)) - 1};
-    testArray<DynamicBitFieldArrayTraits<int32_t, ElementBitSizeWithOwner>>(rawArray, NUM_BITS,
-            ArrayTestOwnerWithBitSize(NUM_BITS));
+            -static_cast<int32_t>(1U << (NUM_BITS - 1)), 7, static_cast<int32_t>(1U << (NUM_BITS - 1)) - 1};
+    testArray<DynamicBitFieldArrayTraits<int32_t, ElementBitSizeWithOwner>>(
+            rawArray, NUM_BITS, ArrayTestOwnerWithBitSize(NUM_BITS));
 }
 
 TEST_F(ArrayTest, dynamicIntField36Array)
 {
     constexpr size_t NUM_BITS = 36;
-    std::vector<int64_t> rawArray = {
-            -static_cast<int64_t>(UINT64_C(1) << (NUM_BITS - 1)),
-            7,
+    std::vector<int64_t> rawArray = {-static_cast<int64_t>(UINT64_C(1) << (NUM_BITS - 1)), 7,
             static_cast<int64_t>(UINT64_C(1) << (NUM_BITS - 1)) - 1};
     testArray<DynamicBitFieldArrayTraits<int64_t, ElementBitSizeWithoutOwner<NUM_BITS>>>(rawArray, NUM_BITS);
 }
@@ -858,8 +838,8 @@ TEST_F(ArrayTest, dynamicBitField4Array)
 {
     constexpr size_t NUM_BITS = 4;
     std::vector<uint8_t> rawArray = {0, 7, (1U << NUM_BITS) - 1};
-    testArray<DynamicBitFieldArrayTraits<uint8_t, ElementBitSizeWithOwner>>(rawArray, NUM_BITS,
-            ArrayTestOwnerWithBitSize(NUM_BITS));
+    testArray<DynamicBitFieldArrayTraits<uint8_t, ElementBitSizeWithOwner>>(
+            rawArray, NUM_BITS, ArrayTestOwnerWithBitSize(NUM_BITS));
 
     // empty
     testArray<DynamicBitFieldArrayTraits<uint8_t, ElementBitSizeWithoutOwner<NUM_BITS>>>(
@@ -870,8 +850,8 @@ TEST_F(ArrayTest, dynamicBitField8Array)
 {
     constexpr size_t NUM_BITS = 8; // aligned to allow implicit array
     std::vector<uint8_t> rawArray = {0, 7, UINT8_MAX};
-    testArray<DynamicBitFieldArrayTraits<uint8_t, ElementBitSizeWithOwner>>(rawArray, NUM_BITS,
-            ArrayTestOwnerWithBitSize(NUM_BITS));
+    testArray<DynamicBitFieldArrayTraits<uint8_t, ElementBitSizeWithOwner>>(
+            rawArray, NUM_BITS, ArrayTestOwnerWithBitSize(NUM_BITS));
 }
 
 TEST_F(ArrayTest, dynamicBitField12Array)
@@ -885,8 +865,8 @@ TEST_F(ArrayTest, dynamicBitField20Array)
 {
     constexpr size_t NUM_BITS = 20;
     std::vector<uint32_t> rawArray = {0, 7, (1U << NUM_BITS) - 1};
-    testArray<DynamicBitFieldArrayTraits<uint32_t, ElementBitSizeWithOwner>>(rawArray, NUM_BITS,
-            ArrayTestOwnerWithBitSize(NUM_BITS));
+    testArray<DynamicBitFieldArrayTraits<uint32_t, ElementBitSizeWithOwner>>(
+            rawArray, NUM_BITS, ArrayTestOwnerWithBitSize(NUM_BITS));
 }
 
 TEST_F(ArrayTest, dynamicBitField36Array)
@@ -966,7 +946,8 @@ TEST_F(ArrayTest, varInt32Array)
             static_cast<int32_t>(1U << 5U),
             static_cast<int32_t>(1U << (5U + 7)),
             static_cast<int32_t>(1U << (5U + 7 + 7)),
-            static_cast<int32_t>(1U << (5U + 7 + 7 + 8)),};
+            static_cast<int32_t>(1U << (5U + 7 + 7 + 8)),
+    };
     const size_t bitSize = 8 * (1 + 2 + 3 + 4);
     testArray<VarIntNNArrayTraits<int32_t>>(rawArray, bitSize, bitSize);
 
@@ -984,7 +965,8 @@ TEST_F(ArrayTest, varInt64Array)
             static_cast<int64_t>(UINT64_C(1) << (5U + 7 + 7 + 7 + 7)),
             static_cast<int64_t>(UINT64_C(1) << (5U + 7 + 7 + 7 + 7 + 7)),
             static_cast<int64_t>(UINT64_C(1) << (5U + 7 + 7 + 7 + 7 + 7 + 7)),
-            static_cast<int64_t>(UINT64_C(1) << (5U + 7 + 7 + 7 + 7 + 7 + 7 + 8)),};
+            static_cast<int64_t>(UINT64_C(1) << (5U + 7 + 7 + 7 + 7 + 7 + 7 + 8)),
+    };
     const size_t bitSize = 8 * (1 + 2 + 3 + 4 + 5 + 6 + 7 + 8);
     testArray<VarIntNNArrayTraits<int64_t>>(rawArray, bitSize, bitSize);
 
@@ -1022,7 +1004,8 @@ TEST_F(ArrayTest, varUInt64Array)
             UINT64_C(1) << (6U + 7 + 7 + 7 + 7),
             UINT64_C(1) << (6U + 7 + 7 + 7 + 7 + 7),
             UINT64_C(1) << (6U + 7 + 7 + 7 + 7 + 7 + 7),
-            UINT64_C(1) << (6U + 7 + 7 + 7 + 7 + 7 + 7 + 8),};
+            UINT64_C(1) << (6U + 7 + 7 + 7 + 7 + 7 + 7 + 8),
+    };
     const size_t bitSize = 8 * (1 + 2 + 3 + 4 + 5 + 6 + 7 + 8);
     testArray<VarIntNNArrayTraits<uint64_t>>(rawArray, bitSize, bitSize);
 
@@ -1109,7 +1092,8 @@ TEST_F(ArrayTest, varSizeArray)
             UINT32_C(1) << (6U + 7),
             UINT32_C(1) << (6U + 7 + 7),
             UINT32_C(1) << (6U + 7 + 7 + 7),
-            UINT32_C(1) << (1U + 7 + 7 + 7 + 8),};
+            UINT32_C(1) << (1U + 7 + 7 + 7 + 8),
+    };
     const size_t bitSize = 8 * (1 + 2 + 3 + 4 + 5);
     testArray<VarSizeArrayTraits>(rawArray, bitSize, bitSize);
 
@@ -1120,7 +1104,7 @@ TEST_F(ArrayTest, varSizeArray)
 TEST_F(ArrayTest, float16Array)
 {
     const size_t elementBitSize = 16;
-    std::vector<float> rawArray = {-9.0, 0.0,  10.0};
+    std::vector<float> rawArray = {-9.0, 0.0, 10.0};
     testArray<Float16ArrayTraits>(rawArray, elementBitSize);
 
     // empty
@@ -1130,7 +1114,7 @@ TEST_F(ArrayTest, float16Array)
 TEST_F(ArrayTest, float32Array)
 {
     const size_t elementBitSize = 32;
-    std::vector<float> rawArray = {-9.0, 0.0,  10.0};
+    std::vector<float> rawArray = {-9.0, 0.0, 10.0};
     testArray<Float32ArrayTraits>(rawArray, elementBitSize);
 
     // empty
@@ -1162,7 +1146,7 @@ TEST_F(ArrayTest, bytesArray)
     const size_t bytesLengthBitSize = 8;
     const size_t bytesBitSize = 2 * 8;
     const size_t elementBitSize = bytesLengthBitSize + bytesBitSize;
-    std::vector<std::vector<uint8_t>> rawArray = {{ {{ 1, 255 }}, {{ 127, 128 }} }};
+    std::vector<std::vector<uint8_t>> rawArray = {{{{1, 255}}, {{127, 128}}}};
     testArray<BytesArrayTraits>(rawArray, elementBitSize);
 
     // empty
@@ -1186,8 +1170,8 @@ TEST_F(ArrayTest, bitBufferArray)
     const size_t bitBufferLengthBitSize = 8;
     const size_t bitBufferBitSize = 10;
     const size_t elementBitSize = bitBufferLengthBitSize + bitBufferBitSize;
-    std::vector<BitBuffer> rawArray = {BitBuffer(bitBufferBitSize), BitBuffer(bitBufferBitSize),
-            BitBuffer(bitBufferBitSize)};
+    std::vector<BitBuffer> rawArray = {
+            BitBuffer(bitBufferBitSize), BitBuffer(bitBufferBitSize), BitBuffer(bitBufferBitSize)};
     testArray<BitBufferArrayTraits>(rawArray, elementBitSize);
 
     // empty
@@ -1209,8 +1193,8 @@ TEST_F(ArrayTest, enumArray)
 
 TEST_F(ArrayTest, bitmaskArray)
 {
-    std::vector<ArrayBitmask> rawArray = {ArrayBitmask::Values::READ, ArrayBitmask::Values::WRITE,
-            ArrayBitmask::Values::CREATE};
+    std::vector<ArrayBitmask> rawArray = {
+            ArrayBitmask::Values::READ, ArrayBitmask::Values::WRITE, ArrayBitmask::Values::CREATE};
     const size_t elementBitSize = 8;
     testArray<BitmaskArrayTraits<ArrayBitmask>>(rawArray, elementBitSize);
 
@@ -1233,29 +1217,28 @@ TEST_F(ArrayTest, paramObjectArray)
 {
     ArrayParamObjectOwner owner{ArrayObject(0xEF)};
     std::vector<ArrayParamObject> rawArray = {
-        ArrayParamObject(0xAB), ArrayParamObject(0xBC), ArrayParamObject(0xCD)
-    };
+            ArrayParamObject(0xAB), ArrayParamObject(0xBC), ArrayParamObject(0xCD)};
     testArray<ObjectArrayTraits<ArrayParamObject, ArrayParamObjectElementFactory>,
             std::vector<ArrayParamObject>, ArrayParamObjectArrayExpressions>(rawArray, 32, owner);
 }
 
 TEST_F(ArrayTest, stdInt8PackedArray)
 {
-    std::vector<int8_t> rawArray = { -4, -3, -1, 0, 2, 4, 6, 8, 10, 10, 11 };
+    std::vector<int8_t> rawArray = {-4, -3, -1, 0, 2, 4, 6, 8, 10, 10, 11};
     testPackedArray<StdIntArrayTraits<int8_t>>(rawArray);
 }
 
 TEST_F(ArrayTest, stdInt64PackedArray)
 {
     // will not be packed
-    std::vector<int64_t> rawArray = { INT64_MIN, 1, -1, INT64_MAX };
+    std::vector<int64_t> rawArray = {INT64_MIN, 1, -1, INT64_MAX};
     testPackedArray<StdIntArrayTraits<int64_t>>(rawArray);
 }
 
 TEST_F(ArrayTest, stdUInt64PackedArray)
 {
     // will have maxBitNumber 62 bits
-    std::vector<uint64_t> rawArray = { 0, INT64_MAX / 2, 100, 200, 300, 400, 500, 600, 700 };
+    std::vector<uint64_t> rawArray = {0, INT64_MAX / 2, 100, 200, 300, 400, 500, 600, 700};
     testPackedArray<StdIntArrayTraits<uint64_t>>(rawArray);
 }
 
@@ -1310,8 +1293,8 @@ TEST_F(ArrayTest, bitField8PackedArray)
 
     // will not be packed because unpacked 8bit values will be more efficient
     // (6 bits more are needed to store max_bit_number in descriptor if packing was enabled)
-    std::vector<uint8_t> rawArray2 =
-            {UINT8_MAX, UINT8_MAX / 2 + 1, 10, 20, 30, 40}; // max_bit_number 7, delta needs 8 bits
+    std::vector<uint8_t> rawArray2 = {
+            UINT8_MAX, UINT8_MAX / 2 + 1, 10, 20, 30, 40}; // max_bit_number 7, delta needs 8 bits
     const size_t array2BitSizeOf = 1 + 6 * 8;
     const size_t array2AlignedBitSizeOf = 1 + 8 + /* alignment */ 7 + 5 * 8;
     testPackedArray<ArrayTraits>(rawArray2, array2BitSizeOf, array2AlignedBitSizeOf);
@@ -1355,8 +1338,8 @@ TEST_F(ArrayTest, dynamicBitField8PackedArray)
 
     // will not be packed because unpacked 8bit values will be more efficient
     // (6 bits more are needed to store max_bit_number in descriptor if packing was enabled)
-    std::vector<uint8_t> rawArray2 =
-            {UINT8_MAX, UINT8_MAX / 2 + 1, 10, 20, 30, 40}; // max_bit_number 7, delta needs 8 bits
+    std::vector<uint8_t> rawArray2 = {
+            UINT8_MAX, UINT8_MAX / 2 + 1, 10, 20, 30, 40}; // max_bit_number 7, delta needs 8 bits
     const size_t array2BitSizeOf = 1 + 6 * 8;
     const size_t array2AlignedBitSizeOf = 1 + 8 + /* alignment */ 7 + 5 * 8;
     testPackedArray<DynamicBitFieldArrayTraits<uint8_t, ElementBitSizeWithoutOwner<8>>>(
@@ -1373,14 +1356,15 @@ TEST_F(ArrayTest, varUInt64PackedArray)
             UINT64_C(1) << (6U + 7 + 7 + 7 + 7),
             UINT64_C(1) << (6U + 7 + 7 + 7 + 7 + 7),
             UINT64_C(1) << (6U + 7 + 7 + 7 + 7 + 7 + 7),
-            UINT64_C(1) << (6U + 7 + 7 + 7 + 7 + 7 + 7 + 8),};
+            UINT64_C(1) << (6U + 7 + 7 + 7 + 7 + 7 + 7 + 8),
+    };
     testPackedArray<VarIntNNArrayTraits<uint64_t>>(rawArray);
 
     std::vector<uint64_t> unpackedRawArray = {UINT64_C(5000000), 0, 0, 0, 0, 0, 0};
     const size_t unpackedBitSizeOf = 1 + 32 + 6 * 8;
     const size_t unpackedAlignedBitSizeOf = 1 + 32 + /* alignment */ 7 + 6 * 8;
-    testPackedArray<VarIntNNArrayTraits<uint64_t>>(unpackedRawArray,
-            unpackedBitSizeOf, unpackedAlignedBitSizeOf);
+    testPackedArray<VarIntNNArrayTraits<uint64_t>>(
+            unpackedRawArray, unpackedBitSizeOf, unpackedAlignedBitSizeOf);
 }
 
 TEST_F(ArrayTest, varSizePackedArray)
@@ -1390,7 +1374,8 @@ TEST_F(ArrayTest, varSizePackedArray)
             UINT32_C(1) << (6U + 7),
             UINT32_C(1) << (6U + 7 + 7),
             UINT32_C(1) << (6U + 7 + 7 + 7),
-            UINT32_C(1) << (1U + 7 + 7 + 7 + 8),};
+            UINT32_C(1) << (1U + 7 + 7 + 7 + 8),
+    };
     testPackedArray<VarSizeArrayTraits>(rawArray);
 }
 
@@ -1402,8 +1387,8 @@ TEST_F(ArrayTest, enumPackedArray)
 
 TEST_F(ArrayTest, bitmaskPackedArray)
 {
-    std::vector<ArrayBitmask> rawArray = {ArrayBitmask::Values::READ, ArrayBitmask::Values::WRITE,
-            ArrayBitmask::Values::CREATE};
+    std::vector<ArrayBitmask> rawArray = {
+            ArrayBitmask::Values::READ, ArrayBitmask::Values::WRITE, ArrayBitmask::Values::CREATE};
     testPackedArray<BitmaskArrayTraits<ArrayBitmask>>(rawArray);
 }
 
@@ -1418,8 +1403,7 @@ TEST_F(ArrayTest, paramObjectPackedArray)
 {
     ArrayParamObjectOwner owner{ArrayObject(0xEF)};
     std::vector<ArrayParamObject> rawArray = {
-        ArrayParamObject(0xAB), ArrayParamObject(0xBC), ArrayParamObject(0xCD)
-    };
+            ArrayParamObject(0xAB), ArrayParamObject(0xBC), ArrayParamObject(0xCD)};
     testPackedArray<ObjectArrayTraits<ArrayParamObject, ArrayParamObjectElementFactory>,
             std::vector<ArrayParamObject>, ArrayParamObjectArrayExpressions>(rawArray, owner);
 }

@@ -1,11 +1,11 @@
 #ifndef ZSERIO_JSON_DECODER_H_INC
 #define ZSERIO_JSON_DECODER_H_INC
 
-#include <utility>
 #include <cerrno>
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
+#include <utility>
 
 #include "zserio/AllocatorHolder.h"
 #include "zserio/AnyHolder.h"
@@ -37,7 +37,9 @@ public:
          * \param allocator Allocator to use.
          */
         DecoderResult(size_t numRead, const ALLOC& allocator) :
-                numReadChars(numRead), value(allocator), integerOverflow(false)
+                numReadChars(numRead),
+                value(allocator),
+                integerOverflow(false)
         {}
 
         /**
@@ -49,7 +51,9 @@ public:
          */
         template <typename T>
         DecoderResult(size_t numRead, T&& decodedValue, const ALLOC& allocator) :
-                numReadChars(numRead), value(std::forward<T>(decodedValue), allocator), integerOverflow(false)
+                numReadChars(numRead),
+                value(std::forward<T>(decodedValue), allocator),
+                integerOverflow(false)
         {}
 
         /**
@@ -62,8 +66,9 @@ public:
          */
         template <typename T>
         DecoderResult(size_t numRead, T&& decodedValue, bool overflow, const ALLOC& allocator) :
-                numReadChars(numRead), value(createValue(decodedValue, overflow, allocator)),
-                        integerOverflow(overflow)
+                numReadChars(numRead),
+                value(createValue(decodedValue, overflow, allocator)),
+                integerOverflow(overflow)
         {}
 
         size_t numReadChars; /**< Number of processed characters. */
@@ -75,8 +80,8 @@ public:
         template <typename T>
         AnyHolder<ALLOC> createValue(T&& decodedValue, bool overflow, const ALLOC& allocator)
         {
-            return overflow ? AnyHolder<ALLOC>(allocator) :
-                    AnyHolder<ALLOC>(std::forward<T>(decodedValue), allocator);
+            return overflow ? AnyHolder<ALLOC>(allocator)
+                            : AnyHolder<ALLOC>(std::forward<T>(decodedValue), allocator);
         }
     };
 
@@ -135,8 +140,8 @@ private:
     template <typename T>
     DecoderResult decodeLiteral(StringView input, StringView literal, T&& value);
     DecoderResult decodeString(StringView input);
-    static bool decodeUnicodeEscape(StringView input, StringView::const_iterator& inputIt,
-            string<ALLOC>& value);
+    static bool decodeUnicodeEscape(
+            StringView input, StringView::const_iterator& inputIt, string<ALLOC>& value);
     static char decodeHex(char ch);
     size_t checkNumber(StringView input, bool& isDouble, bool& isSigned);
     DecoderResult decodeNumber(StringView input);
@@ -236,8 +241,8 @@ typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeS
         {
             ++inputIt;
             // successfully decoded
-            return DecoderResult(static_cast<size_t>(inputIt - input.begin()), std::move(value),
-                    get_allocator());
+            return DecoderResult(
+                    static_cast<size_t>(inputIt - input.begin()), std::move(value), get_allocator());
         }
         else
         {
@@ -250,8 +255,8 @@ typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeS
 }
 
 template <typename ALLOC>
-bool BasicJsonDecoder<ALLOC>::decodeUnicodeEscape(StringView input, StringView::const_iterator& inputIt,
-        string<ALLOC>& value)
+bool BasicJsonDecoder<ALLOC>::decodeUnicodeEscape(
+        StringView input, StringView::const_iterator& inputIt, string<ALLOC>& value)
 {
     // TODO[Mi-L@]: Simplified just to decode what zserio encodes, for complex solution we could use
     //              std::wstring_convert but it's deprecated in C++17.

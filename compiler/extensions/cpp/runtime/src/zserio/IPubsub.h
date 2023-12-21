@@ -2,8 +2,9 @@
 #define ZSERIO_IPUBSUB_H_INC
 
 #include <memory>
-#include "zserio/StringView.h"
+
 #include "zserio/Span.h"
+#include "zserio/StringView.h"
 #include "zserio/Types.h"
 
 namespace zserio

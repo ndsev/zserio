@@ -1,7 +1,6 @@
 #include <memory>
 
 #include "gtest/gtest.h"
-
 #include "zserio/AllocatorHolder.h"
 
 namespace zserio
@@ -16,9 +15,9 @@ class AllocatorHolderTester : public AllocatorHolder<ALLOC>
 public:
     using allocator_type = typename AllocatorHolder<ALLOC>::allocator_type;
 
-    explicit AllocatorHolderTester(allocator_type allocator) : AllocatorHolder<allocator_type>(allocator)
-    {
-    }
+    explicit AllocatorHolderTester(allocator_type allocator) :
+            AllocatorHolder<allocator_type>(allocator)
+    {}
 
     void set_allocator(const allocator_type& allocator)
     {

@@ -1,11 +1,10 @@
+#include <array>
 #include <utility>
 #include <vector>
-#include <array>
 
 #include "gtest/gtest.h"
-
-#include "zserio/CppRuntimeException.h"
 #include "zserio/BitBuffer.h"
+#include "zserio/CppRuntimeException.h"
 
 #include "TrackingAllocator.h"
 

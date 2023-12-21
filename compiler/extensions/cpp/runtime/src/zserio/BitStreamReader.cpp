@@ -1,5 +1,5 @@
-#include <limits>
 #include <array>
+#include <limits>
 
 #include "zserio/BitStreamReader.h"
 #include "zserio/CppRuntimeException.h"
@@ -26,47 +26,109 @@ using BaseSignedType = int32_t;
 #endif
 
 #ifdef ZSERIO_RUNTIME_64BIT
-const std::array<BaseType, 65> MASK_TABLE =
-{
-    UINT64_C(0x00),
-    UINT64_C(0x0001),     UINT64_C(0x0003),     UINT64_C(0x0007),     UINT64_C(0x000f),
-    UINT64_C(0x001f),     UINT64_C(0x003f),     UINT64_C(0x007f),     UINT64_C(0x00ff),
-    UINT64_C(0x01ff),     UINT64_C(0x03ff),     UINT64_C(0x07ff),     UINT64_C(0x0fff),
-    UINT64_C(0x1fff),     UINT64_C(0x3fff),     UINT64_C(0x7fff),     UINT64_C(0xffff),
-    UINT64_C(0x0001ffff), UINT64_C(0x0003ffff), UINT64_C(0x0007ffff), UINT64_C(0x000fffff),
-    UINT64_C(0x001fffff), UINT64_C(0x003fffff), UINT64_C(0x007fffff), UINT64_C(0x00ffffff),
-    UINT64_C(0x01ffffff), UINT64_C(0x03ffffff), UINT64_C(0x07ffffff), UINT64_C(0x0fffffff),
-    UINT64_C(0x1fffffff), UINT64_C(0x3fffffff), UINT64_C(0x7fffffff), UINT64_C(0xffffffff),
+const std::array<BaseType, 65> MASK_TABLE = {
+        UINT64_C(0x00),
+        UINT64_C(0x0001),
+        UINT64_C(0x0003),
+        UINT64_C(0x0007),
+        UINT64_C(0x000f),
+        UINT64_C(0x001f),
+        UINT64_C(0x003f),
+        UINT64_C(0x007f),
+        UINT64_C(0x00ff),
+        UINT64_C(0x01ff),
+        UINT64_C(0x03ff),
+        UINT64_C(0x07ff),
+        UINT64_C(0x0fff),
+        UINT64_C(0x1fff),
+        UINT64_C(0x3fff),
+        UINT64_C(0x7fff),
+        UINT64_C(0xffff),
+        UINT64_C(0x0001ffff),
+        UINT64_C(0x0003ffff),
+        UINT64_C(0x0007ffff),
+        UINT64_C(0x000fffff),
+        UINT64_C(0x001fffff),
+        UINT64_C(0x003fffff),
+        UINT64_C(0x007fffff),
+        UINT64_C(0x00ffffff),
+        UINT64_C(0x01ffffff),
+        UINT64_C(0x03ffffff),
+        UINT64_C(0x07ffffff),
+        UINT64_C(0x0fffffff),
+        UINT64_C(0x1fffffff),
+        UINT64_C(0x3fffffff),
+        UINT64_C(0x7fffffff),
+        UINT64_C(0xffffffff),
 
-    UINT64_C(0x00000001ffffffff), UINT64_C(0x00000003ffffffff),
-    UINT64_C(0x00000007ffffffff), UINT64_C(0x0000000fffffffff),
-    UINT64_C(0x0000001fffffffff), UINT64_C(0x0000003fffffffff),
-    UINT64_C(0x0000007fffffffff), UINT64_C(0x000000ffffffffff),
-    UINT64_C(0x000001ffffffffff), UINT64_C(0x000003ffffffffff),
-    UINT64_C(0x000007ffffffffff), UINT64_C(0x00000fffffffffff),
-    UINT64_C(0x00001fffffffffff), UINT64_C(0x00003fffffffffff),
-    UINT64_C(0x00007fffffffffff), UINT64_C(0x0000ffffffffffff),
-    UINT64_C(0x0001ffffffffffff), UINT64_C(0x0003ffffffffffff),
-    UINT64_C(0x0007ffffffffffff), UINT64_C(0x000fffffffffffff),
-    UINT64_C(0x001fffffffffffff), UINT64_C(0x003fffffffffffff),
-    UINT64_C(0x007fffffffffffff), UINT64_C(0x00ffffffffffffff),
-    UINT64_C(0x01ffffffffffffff), UINT64_C(0x03ffffffffffffff),
-    UINT64_C(0x07ffffffffffffff), UINT64_C(0x0fffffffffffffff),
-    UINT64_C(0x1fffffffffffffff), UINT64_C(0x3fffffffffffffff),
-    UINT64_C(0x7fffffffffffffff), UINT64_C(0xffffffffffffffff),
+        UINT64_C(0x00000001ffffffff),
+        UINT64_C(0x00000003ffffffff),
+        UINT64_C(0x00000007ffffffff),
+        UINT64_C(0x0000000fffffffff),
+        UINT64_C(0x0000001fffffffff),
+        UINT64_C(0x0000003fffffffff),
+        UINT64_C(0x0000007fffffffff),
+        UINT64_C(0x000000ffffffffff),
+        UINT64_C(0x000001ffffffffff),
+        UINT64_C(0x000003ffffffffff),
+        UINT64_C(0x000007ffffffffff),
+        UINT64_C(0x00000fffffffffff),
+        UINT64_C(0x00001fffffffffff),
+        UINT64_C(0x00003fffffffffff),
+        UINT64_C(0x00007fffffffffff),
+        UINT64_C(0x0000ffffffffffff),
+        UINT64_C(0x0001ffffffffffff),
+        UINT64_C(0x0003ffffffffffff),
+        UINT64_C(0x0007ffffffffffff),
+        UINT64_C(0x000fffffffffffff),
+        UINT64_C(0x001fffffffffffff),
+        UINT64_C(0x003fffffffffffff),
+        UINT64_C(0x007fffffffffffff),
+        UINT64_C(0x00ffffffffffffff),
+        UINT64_C(0x01ffffffffffffff),
+        UINT64_C(0x03ffffffffffffff),
+        UINT64_C(0x07ffffffffffffff),
+        UINT64_C(0x0fffffffffffffff),
+        UINT64_C(0x1fffffffffffffff),
+        UINT64_C(0x3fffffffffffffff),
+        UINT64_C(0x7fffffffffffffff),
+        UINT64_C(0xffffffffffffffff),
 };
 #else
-const std::array<BaseType, 33> MASK_TABLE =
-{
-    UINT32_C(0x00),
-    UINT32_C(0x0001),     UINT32_C(0x0003),     UINT32_C(0x0007),     UINT32_C(0x000f),
-    UINT32_C(0x001f),     UINT32_C(0x003f),     UINT32_C(0x007f),     UINT32_C(0x00ff),
-    UINT32_C(0x01ff),     UINT32_C(0x03ff),     UINT32_C(0x07ff),     UINT32_C(0x0fff),
-    UINT32_C(0x1fff),     UINT32_C(0x3fff),     UINT32_C(0x7fff),     UINT32_C(0xffff),
-    UINT32_C(0x0001ffff), UINT32_C(0x0003ffff), UINT32_C(0x0007ffff), UINT32_C(0x000fffff),
-    UINT32_C(0x001fffff), UINT32_C(0x003fffff), UINT32_C(0x007fffff), UINT32_C(0x00ffffff),
-    UINT32_C(0x01ffffff), UINT32_C(0x03ffffff), UINT32_C(0x07ffffff), UINT32_C(0x0fffffff),
-    UINT32_C(0x1fffffff), UINT32_C(0x3fffffff), UINT32_C(0x7fffffff), UINT32_C(0xffffffff),
+const std::array<BaseType, 33> MASK_TABLE = {
+        UINT32_C(0x00),
+        UINT32_C(0x0001),
+        UINT32_C(0x0003),
+        UINT32_C(0x0007),
+        UINT32_C(0x000f),
+        UINT32_C(0x001f),
+        UINT32_C(0x003f),
+        UINT32_C(0x007f),
+        UINT32_C(0x00ff),
+        UINT32_C(0x01ff),
+        UINT32_C(0x03ff),
+        UINT32_C(0x07ff),
+        UINT32_C(0x0fff),
+        UINT32_C(0x1fff),
+        UINT32_C(0x3fff),
+        UINT32_C(0x7fff),
+        UINT32_C(0xffff),
+        UINT32_C(0x0001ffff),
+        UINT32_C(0x0003ffff),
+        UINT32_C(0x0007ffff),
+        UINT32_C(0x000fffff),
+        UINT32_C(0x001fffff),
+        UINT32_C(0x003fffff),
+        UINT32_C(0x007fffff),
+        UINT32_C(0x00ffffff),
+        UINT32_C(0x01ffffff),
+        UINT32_C(0x03ffffff),
+        UINT32_C(0x07ffffff),
+        UINT32_C(0x0fffffff),
+        UINT32_C(0x1fffffff),
+        UINT32_C(0x3fffffff),
+        UINT32_C(0x7fffffff),
+        UINT32_C(0xffffffff),
 };
 #endif
 
@@ -84,65 +146,49 @@ const uint32_t VARSIZE_MAX_VALUE = (UINT32_C(1) << 31U) - 1;
 #ifdef ZSERIO_RUNTIME_64BIT
 inline BaseType parse64(Span<const uint8_t>::const_iterator bufferIt)
 {
-    return static_cast<BaseType>(*bufferIt) << 56U |
-           static_cast<BaseType>(*(bufferIt + 1)) << 48U |
-           static_cast<BaseType>(*(bufferIt + 2)) << 40U |
-           static_cast<BaseType>(*(bufferIt + 3)) << 32U |
-           static_cast<BaseType>(*(bufferIt + 4)) << 24U |
-           static_cast<BaseType>(*(bufferIt + 5)) << 16U |
-           static_cast<BaseType>(*(bufferIt + 6)) << 8U |
-           static_cast<BaseType>(*(bufferIt + 7));
+    return static_cast<BaseType>(*bufferIt) << 56U | static_cast<BaseType>(*(bufferIt + 1)) << 48U |
+            static_cast<BaseType>(*(bufferIt + 2)) << 40U | static_cast<BaseType>(*(bufferIt + 3)) << 32U |
+            static_cast<BaseType>(*(bufferIt + 4)) << 24U | static_cast<BaseType>(*(bufferIt + 5)) << 16U |
+            static_cast<BaseType>(*(bufferIt + 6)) << 8U | static_cast<BaseType>(*(bufferIt + 7));
 }
 
 inline BaseType parse56(Span<const uint8_t>::const_iterator bufferIt)
 {
-    return static_cast<BaseType>(*bufferIt) << 48U |
-           static_cast<BaseType>(*(bufferIt + 1)) << 40U |
-           static_cast<BaseType>(*(bufferIt + 2)) << 32U |
-           static_cast<BaseType>(*(bufferIt + 3)) << 24U |
-           static_cast<BaseType>(*(bufferIt + 4)) << 16U |
-           static_cast<BaseType>(*(bufferIt + 5)) << 8U |
-           static_cast<BaseType>(*(bufferIt + 6));
+    return static_cast<BaseType>(*bufferIt) << 48U | static_cast<BaseType>(*(bufferIt + 1)) << 40U |
+            static_cast<BaseType>(*(bufferIt + 2)) << 32U | static_cast<BaseType>(*(bufferIt + 3)) << 24U |
+            static_cast<BaseType>(*(bufferIt + 4)) << 16U | static_cast<BaseType>(*(bufferIt + 5)) << 8U |
+            static_cast<BaseType>(*(bufferIt + 6));
 }
 
 inline BaseType parse48(Span<const uint8_t>::const_iterator bufferIt)
 {
-    return static_cast<BaseType>(*bufferIt) << 40U |
-           static_cast<BaseType>(*(bufferIt + 1)) << 32U |
-           static_cast<BaseType>(*(bufferIt + 2)) << 24U |
-           static_cast<BaseType>(*(bufferIt + 3)) << 16U |
-           static_cast<BaseType>(*(bufferIt + 4)) << 8U |
-           static_cast<BaseType>(*(bufferIt + 5));
+    return static_cast<BaseType>(*bufferIt) << 40U | static_cast<BaseType>(*(bufferIt + 1)) << 32U |
+            static_cast<BaseType>(*(bufferIt + 2)) << 24U | static_cast<BaseType>(*(bufferIt + 3)) << 16U |
+            static_cast<BaseType>(*(bufferIt + 4)) << 8U | static_cast<BaseType>(*(bufferIt + 5));
 }
 
 inline BaseType parse40(Span<const uint8_t>::const_iterator bufferIt)
 {
-    return static_cast<BaseType>(*bufferIt) << 32U |
-           static_cast<BaseType>(*(bufferIt + 1)) << 24U |
-           static_cast<BaseType>(*(bufferIt + 2)) << 16U |
-           static_cast<BaseType>(*(bufferIt + 3)) << 8U |
-           static_cast<BaseType>(*(bufferIt + 4));
+    return static_cast<BaseType>(*bufferIt) << 32U | static_cast<BaseType>(*(bufferIt + 1)) << 24U |
+            static_cast<BaseType>(*(bufferIt + 2)) << 16U | static_cast<BaseType>(*(bufferIt + 3)) << 8U |
+            static_cast<BaseType>(*(bufferIt + 4));
 }
 #endif
 inline BaseType parse32(Span<const uint8_t>::const_iterator bufferIt)
 {
-    return static_cast<BaseType>(*bufferIt) << 24U |
-           static_cast<BaseType>(*(bufferIt + 1)) << 16U |
-           static_cast<BaseType>(*(bufferIt + 2)) << 8U |
-           static_cast<BaseType>(*(bufferIt + 3));
+    return static_cast<BaseType>(*bufferIt) << 24U | static_cast<BaseType>(*(bufferIt + 1)) << 16U |
+            static_cast<BaseType>(*(bufferIt + 2)) << 8U | static_cast<BaseType>(*(bufferIt + 3));
 }
 
 inline BaseType parse24(Span<const uint8_t>::const_iterator bufferIt)
 {
-    return static_cast<BaseType>(*bufferIt) << 16U |
-           static_cast<BaseType>(*(bufferIt + 1)) << 8U |
-           static_cast<BaseType>(*(bufferIt + 2));
+    return static_cast<BaseType>(*bufferIt) << 16U | static_cast<BaseType>(*(bufferIt + 1)) << 8U |
+            static_cast<BaseType>(*(bufferIt + 2));
 }
 
 inline BaseType parse16(Span<const uint8_t>::const_iterator bufferIt)
 {
-    return static_cast<BaseType>(*bufferIt) << 8U |
-           static_cast<BaseType>(*(bufferIt + 1));
+    return static_cast<BaseType>(*bufferIt) << 8U | static_cast<BaseType>(*(bufferIt + 1));
 }
 
 inline BaseType parse8(Span<const uint8_t>::const_iterator bufferIt)
@@ -153,8 +199,8 @@ inline BaseType parse8(Span<const uint8_t>::const_iterator bufferIt)
 /** Optimization which increases chances to inline checkNumBits and checkNumBits64. */
 inline void throwNumBitsIsNotValid(uint8_t numBits)
 {
-    throw CppRuntimeException("BitStreamReader: ReadBits #") << numBits <<
-            " is not valid, reading from stream failed!";
+    throw CppRuntimeException("BitStreamReader: ReadBits #")
+            << numBits << " is not valid, reading from stream failed!";
 }
 
 /** Checks numBits validity for 32-bit reads. */
@@ -299,17 +345,17 @@ inline uint64_t readBits64Impl(ReaderContext& ctx, uint8_t numBits)
 #endif
 } // namespace
 
-BitStreamReader::ReaderContext::ReaderContext(Span<const uint8_t> readBuffer, size_t readBufferBitSize)
-:   buffer(readBuffer),
-    bufferBitSize(readBufferBitSize),
-    cache(0),
-    cacheNumBits(0),
-    bitIndex(0)
+BitStreamReader::ReaderContext::ReaderContext(Span<const uint8_t> readBuffer, size_t readBufferBitSize) :
+        buffer(readBuffer),
+        bufferBitSize(readBufferBitSize),
+        cache(0),
+        cacheNumBits(0),
+        bitIndex(0)
 {
     if (buffer.size() > MAX_BUFFER_SIZE)
     {
-        throw CppRuntimeException("BitStreamReader: Buffer size exceeded limit '") << MAX_BUFFER_SIZE <<
-                "' bytes!";
+        throw CppRuntimeException("BitStreamReader: Buffer size exceeded limit '")
+                << MAX_BUFFER_SIZE << "' bytes!";
     }
 }
 
@@ -326,8 +372,8 @@ BitStreamReader::BitStreamReader(Span<const uint8_t> buffer, size_t bufferBitSiz
 {
     if (buffer.size() < (bufferBitSize + 7) / 8)
     {
-        throw CppRuntimeException("BitStreamReader: Wrong buffer bit size ('") << buffer.size() <<
-                "' < '" << (bufferBitSize + 7) / 8 << "')!";
+        throw CppRuntimeException("BitStreamReader: Wrong buffer bit size ('")
+                << buffer.size() << "' < '" << (bufferBitSize + 7) / 8 << "')!";
     }
 }
 
@@ -653,8 +699,8 @@ uint32_t BitStreamReader::readVarSize()
 
     result = result << 8U | static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 5
     if (result > VARSIZE_MAX_VALUE)
-        throw CppRuntimeException("BitStreamReader: Read value '") << result <<
-                "' is out of range for varsize type!";
+        throw CppRuntimeException("BitStreamReader: Read value '")
+                << result << "' is out of range for varsize type!";
 
     return result;
 }

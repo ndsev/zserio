@@ -1,9 +1,9 @@
 #ifndef ZSERIO_I_WALK_FILTER_H_INC
 #define ZSERIO_I_WALK_FILTER_H_INC
 
-#include "zserio/WalkerConst.h"
 #include "zserio/IReflectable.h"
 #include "zserio/ITypeInfo.h"
+#include "zserio/WalkerConst.h"
 
 namespace zserio
 {
@@ -29,8 +29,8 @@ public:
      *
      * \return True when the walking should continue to the array.
      */
-    virtual bool beforeArray(const IBasicReflectableConstPtr<ALLOC>& array,
-            const BasicFieldInfo<ALLOC>& fieldInfo) = 0;
+    virtual bool beforeArray(
+            const IBasicReflectableConstPtr<ALLOC>& array, const BasicFieldInfo<ALLOC>& fieldInfo) = 0;
 
     /**
      * Called after an array.
@@ -41,8 +41,8 @@ public:
      *
      * \return True when the walking should continue to a next sibling, false to return to the parent.
      */
-    virtual bool afterArray(const IBasicReflectableConstPtr<ALLOC>& array,
-            const BasicFieldInfo<ALLOC>& fieldInfo) = 0;
+    virtual bool afterArray(
+            const IBasicReflectableConstPtr<ALLOC>& array, const BasicFieldInfo<ALLOC>& fieldInfo) = 0;
 
     /**
      * Called before a compound object.

@@ -1,7 +1,7 @@
 #include <fstream>
 
-#include "zserio/FileUtil.h"
 #include "zserio/CppRuntimeException.h"
+#include "zserio/FileUtil.h"
 #include "zserio/StringView.h"
 
 namespace zserio
@@ -47,4 +47,4 @@ BitBuffer readBufferFromFile(const std::string& fileName)
     return bitBuffer;
 }
 
-}
+} // namespace zserio

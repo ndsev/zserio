@@ -1,9 +1,8 @@
+#include "gtest/gtest.h"
 #include "zserio/OptionalHolder.h"
 #include "zserio/pmr/PolymorphicAllocator.h"
 
 #include "TrackingAllocator.h"
-
-#include "gtest/gtest.h"
 
 namespace zserio
 {
@@ -14,15 +13,36 @@ namespace
 class DummyObject
 {
 public:
-    DummyObject() : m_value(0), m_isNoInit(false) {}
-    explicit DummyObject(int value) : m_value(value), m_isNoInit(false) {}
-    explicit DummyObject(NoInitT, const DummyObject& other) : m_value(other.m_value), m_isNoInit(true) {}
-    int getValue() const { return m_value; }
-    void setValue(int value) { m_value = value; }
+    DummyObject() :
+            m_value(0),
+            m_isNoInit(false)
+    {}
+    explicit DummyObject(int value) :
+            m_value(value),
+            m_isNoInit(false)
+    {}
+    explicit DummyObject(NoInitT, const DummyObject& other) :
+            m_value(other.m_value),
+            m_isNoInit(true)
+    {}
+    int getValue() const
+    {
+        return m_value;
+    }
+    void setValue(int value)
+    {
+        m_value = value;
+    }
 
-    bool isNoInit() const { return m_isNoInit; }
+    bool isNoInit() const
+    {
+        return m_isNoInit;
+    }
 
-    bool operator==(const DummyObject& other) const { return m_value == other.m_value; }
+    bool operator==(const DummyObject& other) const
+    {
+        return m_value == other.m_value;
+    }
 
 private:
     int m_value;
@@ -82,7 +102,7 @@ TEST_F(HeapOptionalHolderTest, rvalueConstructor)
     TrackingAllocator<std::vector<int>> alloc;
 
     std::vector<int> values{1, 2, 3};
-    std::vector<int> origValues{ values };
+    std::vector<int> origValues{values};
     void* origAddress = values.data();
     HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optional{
             std::move(values), alloc};
@@ -143,8 +163,8 @@ TEST_F(HeapOptionalHolderTest, copyConstructor)
 TEST_F(HeapOptionalHolderTest, copyConstructorNoInit)
 {
     HeapOptionalHolder<DummyObject, TrackingAllocator<DummyObject>> optionalEmptyObject;
-    HeapOptionalHolder<DummyObject, TrackingAllocator<DummyObject>> optionalEmptyObjectCopy{NoInit,
-        optionalEmptyObject};
+    HeapOptionalHolder<DummyObject, TrackingAllocator<DummyObject>> optionalEmptyObjectCopy{
+            NoInit, optionalEmptyObject};
     ASSERT_EQ(optionalEmptyObject, optionalEmptyObjectCopy);
 
     HeapOptionalHolder<DummyObject, TrackingAllocator<DummyObject>> optionalObject(DummyObject{10});
@@ -201,8 +221,8 @@ TEST_F(HeapOptionalHolderTest, moveConstructorNoInit)
 {
     TrackingAllocator<DummyObject> allocEmpty;
     HeapOptionalHolder<DummyObject, TrackingAllocator<DummyObject>> optionalEmptyObject(allocEmpty);
-    HeapOptionalHolder<DummyObject, TrackingAllocator<DummyObject>> optionalEmptyObjectMoved{NoInit,
-        std::move(optionalEmptyObject)};
+    HeapOptionalHolder<DummyObject, TrackingAllocator<DummyObject>> optionalEmptyObjectMoved{
+            NoInit, std::move(optionalEmptyObject)};
     ASSERT_FALSE(optionalEmptyObjectMoved.hasValue());
 
     TrackingAllocator<DummyObject> alloc;
@@ -210,8 +230,8 @@ TEST_F(HeapOptionalHolderTest, moveConstructorNoInit)
     ASSERT_EQ(10, optionalObject->getValue());
     ASSERT_FALSE(optionalObject->isNoInit());
 
-    HeapOptionalHolder<DummyObject, TrackingAllocator<DummyObject>> optionalObjectMoved{NoInit,
-        std::move(optionalObject)};
+    HeapOptionalHolder<DummyObject, TrackingAllocator<DummyObject>> optionalObjectMoved{
+            NoInit, std::move(optionalObject)};
     ASSERT_EQ(10, optionalObjectMoved->getValue());
     // memory with object has been moved in optional holder, object move constructor has not been called
     ASSERT_FALSE(optionalObjectMoved->isNoInit());
@@ -246,8 +266,8 @@ TEST_F(HeapOptionalHolderTest, moveConstructorAllocator)
 TEST_F(HeapOptionalHolderTest, moveValueConstructorAllocatorNoInit)
 {
     TrackingAllocator<DummyObject> alloc;
-    HeapOptionalHolder<DummyObject, TrackingAllocator<DummyObject>> optionalObjectMoved{NoInit, DummyObject{10},
-                alloc};
+    HeapOptionalHolder<DummyObject, TrackingAllocator<DummyObject>> optionalObjectMoved{
+            NoInit, DummyObject{10}, alloc};
     ASSERT_EQ(10, optionalObjectMoved->getValue());
     ASSERT_TRUE(optionalObjectMoved->isNoInit());
     ASSERT_EQ(optionalObjectMoved.get_allocator(), alloc);
@@ -294,7 +314,7 @@ TEST_F(HeapOptionalHolderTest, copyAssignmentOperator)
 
     HeapOptionalHolder<int> optionalInt(123);
     const HeapOptionalHolder<int>& optionalIntRef = optionalInt;
-    const HeapOptionalHolder<int> &optionalIntRef2 = (optionalInt = optionalIntRef);
+    const HeapOptionalHolder<int>& optionalIntRef2 = (optionalInt = optionalIntRef);
     ASSERT_EQ(123, *optionalInt);
     ASSERT_EQ(optionalInt, optionalIntRef2);
 }
@@ -351,7 +371,7 @@ TEST_F(HeapOptionalHolderTest, moveAssignmentOperator)
 
     HeapOptionalHolder<int> optionalInt(123);
     HeapOptionalHolder<int>& optionalIntRef = optionalInt;
-    const HeapOptionalHolder<int> &optionalIntRef2 = (optionalInt = std::move(optionalIntRef));
+    const HeapOptionalHolder<int>& optionalIntRef2 = (optionalInt = std::move(optionalIntRef));
     ASSERT_EQ(123, *optionalInt);
     ASSERT_EQ(optionalInt, optionalIntRef2);
 }
@@ -381,8 +401,8 @@ TEST_F(HeapOptionalHolderTest, moveAssignmentOperatorNoInit)
 
     {
         TrackingAllocatorNonProp<DummyObject> alloc;
-        HeapOptionalHolder<DummyObject, TrackingAllocatorNonProp<DummyObject>> optionalObject(DummyObject{10},
-                alloc);
+        HeapOptionalHolder<DummyObject, TrackingAllocatorNonProp<DummyObject>> optionalObject(
+                DummyObject{10}, alloc);
         ASSERT_EQ(10, optionalObject->getValue());
         ASSERT_FALSE(optionalObject->isNoInit());
         optionalObject.assign(NoInit, std::move(optionalObject));
@@ -423,7 +443,7 @@ TEST_F(HeapOptionalHolderTest, rvalueAssignmentOperator)
     TrackingAllocator<std::vector<int>> allocVec;
 
     std::vector<int> values{1, 2, 3};
-    std::vector<int> origValues{ values };
+    std::vector<int> origValues{values};
     void* origAddress = values.data();
     HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optional(allocVec);
     optional = std::move(values);
@@ -535,7 +555,7 @@ TEST_F(HeapOptionalHolderTest, operatorEquality)
     ASSERT_EQ(alloc2.numAllocs(), 1);
     ASSERT_TRUE(optional7 == optional8);
     ASSERT_TRUE(optional9 == optional9);
-    ASSERT_TRUE(optional9== optional10);
+    ASSERT_TRUE(optional9 == optional10);
     ASSERT_FALSE(optional7 == optional10);
 }
 
@@ -564,7 +584,7 @@ TEST_F(HeapOptionalHolderTest, constGet)
 
     DummyObject objectValue;
     objectValue.setValue(intValue);
-    HeapOptionalHolder<DummyObject> optionalObject{ objectValue };
+    HeapOptionalHolder<DummyObject> optionalObject{objectValue};
     ASSERT_EQ(intValue, optionalObject->getValue());
 }
 

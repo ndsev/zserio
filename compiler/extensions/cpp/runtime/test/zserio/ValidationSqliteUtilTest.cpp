@@ -1,10 +1,9 @@
-#include "gtest/gtest.h"
-
 #include <memory>
 
-#include "zserio/ValidationSqliteUtil.h"
+#include "gtest/gtest.h"
 #include "zserio/SqliteConnection.h"
 #include "zserio/SqliteFinalizer.h"
+#include "zserio/ValidationSqliteUtil.h"
 
 namespace zserio
 {
@@ -22,8 +21,7 @@ protected:
 
     void insertRows(const std::string& tableName, uint32_t startId, uint32_t numRows)
     {
-        Util::Statement statement(
-                connection.prepareStatement("INSERT INTO " + tableName + " VALUES (?, ?)"));
+        Util::Statement statement(connection.prepareStatement("INSERT INTO " + tableName + " VALUES (?, ?)"));
 
         for (uint32_t i = 0; i < numRows; ++i)
         {
@@ -38,10 +36,7 @@ protected:
 
     TiedColumn tieColumn(const Util::ColumnDescription& columnDescription)
     {
-        return std::tie(
-                columnDescription.name,
-                columnDescription.type,
-                columnDescription.isNotNull,
+        return std::tie(columnDescription.name, columnDescription.type, columnDescription.isNotNull,
                 columnDescription.isPrimaryKey);
     }
 
@@ -63,25 +58,27 @@ const char* const ValidationSqliteUtilTest::IN_MEMORY_DATABASE = ":memory:";
 
 TEST_F(ValidationSqliteUtilTest, getNumberOfTableRows)
 {
-    ASSERT_THROW(Util::getNumberOfTableRows(connection, ""_sv, "test"_sv, allocator_type()),
-            SqliteException);
+    ASSERT_THROW(Util::getNumberOfTableRows(connection, ""_sv, "test"_sv, allocator_type()), SqliteException);
 
     ASSERT_THROW(Util::getNumberOfTableRows(connection, "NONEXISTING"_sv, "test"_sv, allocator_type()),
             SqliteException);
 
-    ASSERT_THROW({
-        try
-        {
-            Util::getNumberOfTableRows(connection, ""_sv, "(SELECT load_extension('unknown'))"_sv,
-                    allocator_type());
-        }
-        catch (const SqliteException& e)
-        {
-            ASSERT_STREQ("ValidationSqliteUtils.getNumberOfTableRows: sqlite3_step() failed: SQL logic error",
-                    e.what());
-            throw;
-        }
-    }, SqliteException);
+    ASSERT_THROW(
+            {
+                try
+                {
+                    Util::getNumberOfTableRows(
+                            connection, ""_sv, "(SELECT load_extension('unknown'))"_sv, allocator_type());
+                }
+                catch (const SqliteException& e)
+                {
+                    ASSERT_STREQ("ValidationSqliteUtils.getNumberOfTableRows: sqlite3_step() failed: SQL logic "
+                                 "error",
+                            e.what());
+                    throw;
+                }
+            },
+            SqliteException);
 
     connection.executeUpdate("CREATE TABLE test(id INTEGER PRIMARY KEY NOT NULL, value INTEGER NOT NULL)");
     ASSERT_EQ(0, Util::getNumberOfTableRows(connection, ""_sv, "test"_sv, allocator_type()));
@@ -118,7 +115,8 @@ TEST_F(ValidationSqliteUtilTest, getTableSchema)
     ASSERT_EQ(std::make_tuple("value", "INTEGER", true, false), tieColumn(search->second));
 
     schema.clear();
-    connection.executeUpdate("CREATE TABLE test2(id INTEGER PRIMARY KEY NOT NULL, text TEXT NOT NULL, "
+    connection.executeUpdate(
+            "CREATE TABLE test2(id INTEGER PRIMARY KEY NOT NULL, text TEXT NOT NULL, "
             "field BLOB)");
     Util::getTableSchema(connection, ""_sv, "test2"_sv, schema, allocator_type());
     ASSERT_EQ(3, schema.size());
@@ -137,7 +135,8 @@ TEST_F(ValidationSqliteUtilTest, getTableSchema)
 
     // multiple primary keys
     schema.clear();
-    connection.executeUpdate("CREATE TABLE test3(name TEXT, surname TEXT NOT NULL, field BLOB, "
+    connection.executeUpdate(
+            "CREATE TABLE test3(name TEXT, surname TEXT NOT NULL, field BLOB, "
             "PRIMARY KEY(name, surname))");
     Util::getTableSchema(connection, ""_sv, "test3"_sv, schema, allocator_type());
     ASSERT_EQ(3, schema.size());
@@ -177,7 +176,8 @@ TEST_F(ValidationSqliteUtilTest, sqliteColumnTypeName)
     // in validateType* in generated sources for zserio SqlTables
 
     const char* tableName = "sqliteColumnTypeTable";
-    connection.executeUpdate(std::string("CREATE TABLE ") + tableName + "(id INTEGER PRIMARY KEY, "
+    connection.executeUpdate(std::string("CREATE TABLE ") + tableName +
+            "(id INTEGER PRIMARY KEY, "
             "integerCol INTEGER, realCol REAL, textCol TEXT, blobCol BLOB)");
 
     connection.executeUpdate(std::string("INSERT INTO ") + tableName + " VALUES (0, NULL, NULL, NULL, NULL)");

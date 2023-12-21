@@ -1,8 +1,7 @@
 #include <vector>
 
-#include "zserio/OptionalHolder.h"
-
 #include "gtest/gtest.h"
+#include "zserio/OptionalHolder.h"
 
 namespace zserio
 {
@@ -13,15 +12,36 @@ namespace
 class DummyObject
 {
 public:
-    DummyObject() : m_value(0), m_isNoInit(false) {}
-    explicit DummyObject(int value) : m_value(value), m_isNoInit(false) {}
-    explicit DummyObject(NoInitT, const DummyObject& other) : m_value(other.m_value), m_isNoInit(true) {}
-    int getValue() const { return m_value; }
-    void setValue(int value) { m_value = value; }
+    DummyObject() :
+            m_value(0),
+            m_isNoInit(false)
+    {}
+    explicit DummyObject(int value) :
+            m_value(value),
+            m_isNoInit(false)
+    {}
+    explicit DummyObject(NoInitT, const DummyObject& other) :
+            m_value(other.m_value),
+            m_isNoInit(true)
+    {}
+    int getValue() const
+    {
+        return m_value;
+    }
+    void setValue(int value)
+    {
+        m_value = value;
+    }
 
-    bool isNoInit() const { return m_isNoInit; }
+    bool isNoInit() const
+    {
+        return m_isNoInit;
+    }
 
-    bool operator==(const DummyObject& other) const { return m_value == other.m_value; }
+    bool operator==(const DummyObject& other) const
+    {
+        return m_value == other.m_value;
+    }
 
 private:
     int m_value;

@@ -22,7 +22,8 @@ struct NullOptType
      *
      * \see https://en.cppreference.com/w/cpp/utility/optional/nullopt_t
      */
-    constexpr explicit NullOptType(int) {}
+    constexpr explicit NullOptType(int)
+    {}
 };
 
 /**
@@ -39,8 +40,8 @@ struct InPlaceT
 };
 
 /**
-  * Constant used as a marker for in-place construction.
-  */
+ * Constant used as a marker for in-place construction.
+ */
 constexpr InPlaceT InPlace{};
 
 namespace detail
@@ -218,8 +219,8 @@ public:
      *
      * \param allocator Allocator to be used to perform dynamic memory allocations.
      */
-    constexpr heap_optional_holder(NullOptType,
-            const allocator_type& allocator = allocator_type()) noexcept : m_storage(nullptr, allocator)
+    constexpr heap_optional_holder(NullOptType, const allocator_type& allocator = allocator_type()) noexcept :
+            m_storage(nullptr, allocator)
     {}
 
     /**
@@ -261,8 +262,8 @@ public:
      * \param allocator Allocator to be used for dynamic memory allocations.
      * \param u Parameters for object's constructor.
      */
-    template <typename ...U>
-    explicit heap_optional_holder(const allocator_type& allocator, U&& ...u) :
+    template <typename... U>
+    explicit heap_optional_holder(const allocator_type& allocator, U&&... u) :
             m_storage(zserio::allocate_unique<T, allocator_type>(allocator, std::forward<U>(u)...))
     {}
 
@@ -277,8 +278,8 @@ public:
      * \param other Other holder to copy.
      */
     heap_optional_holder(const heap_optional_holder& other) :
-            m_storage(copy_initialize(other, allocator_traits::select_on_container_copy_construction(
-                    other.get_allocator())))
+            m_storage(copy_initialize(
+                    other, allocator_traits::select_on_container_copy_construction(other.get_allocator())))
     {}
 
     /**
@@ -290,8 +291,7 @@ public:
             typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
     heap_optional_holder(NoInitT, const heap_optional_holder& other) :
             m_storage(copy_initialize(NoInit, other,
-                    allocator_traits::select_on_container_copy_construction(
-                            other.get_allocator())))
+                    allocator_traits::select_on_container_copy_construction(other.get_allocator())))
     {}
 
     /**
@@ -320,8 +320,7 @@ public:
             typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
     heap_optional_holder(NoInitT, heap_optional_holder&& other) :
             m_storage(move_initialize(NoInit, std::move(other), other.get_allocator()))
-    {
-    }
+    {}
 
     /**
      * Allocator-extended move constructor.
@@ -331,8 +330,7 @@ public:
      */
     heap_optional_holder(heap_optional_holder&& other, const allocator_type& allocator) :
             m_storage(move_initialize(std::move(other), allocator))
-    {
-    }
+    {}
 
     /**
      * Assignment operator.
@@ -346,8 +344,9 @@ public:
         if (this == &other)
             return *this;
 
-        m_storage = copy_initialize(other, select_allocator(other.get_allocator(),
-                typename allocator_traits::propagate_on_container_copy_assignment()));
+        m_storage = copy_initialize(other,
+                select_allocator(other.get_allocator(),
+                        typename allocator_traits::propagate_on_container_copy_assignment()));
 
         return *this;
     }
@@ -366,8 +365,9 @@ public:
         if (this == &other)
             return *this;
 
-        m_storage = copy_initialize(NoInit, other, select_allocator(other.get_allocator(),
-                typename allocator_traits::propagate_on_container_copy_assignment()));
+        m_storage = copy_initialize(NoInit, other,
+                select_allocator(other.get_allocator(),
+                        typename allocator_traits::propagate_on_container_copy_assignment()));
 
         return *this;
     }
@@ -384,8 +384,9 @@ public:
         if (this == &other)
             return *this;
 
-        m_storage = move_initialize(std::move(other), select_allocator(other.get_allocator(),
-                typename allocator_traits::propagate_on_container_move_assignment()));
+        m_storage = move_initialize(std::move(other),
+                select_allocator(other.get_allocator(),
+                        typename allocator_traits::propagate_on_container_move_assignment()));
 
         return *this;
     }
@@ -509,8 +510,8 @@ private:
             return storage_type(nullptr, allocator);
     }
 
-    static storage_type copy_initialize(NoInitT, const heap_optional_holder& other,
-            const allocator_type& allocator)
+    static storage_type copy_initialize(
+            NoInitT, const heap_optional_holder& other, const allocator_type& allocator)
     {
         if (other.hasValue())
             return zserio::allocate_unique<T, allocator_type>(allocator, NoInit, *other);
@@ -533,16 +534,14 @@ private:
         }
     }
 
-    static storage_type move_initialize(NoInitT, heap_optional_holder&& other,
-            const allocator_type& allocator)
+    static storage_type move_initialize(NoInitT, heap_optional_holder&& other, const allocator_type& allocator)
     {
         if (other.hasValue())
         {
             if (allocator == other.get_allocator())
                 return std::move(other.m_storage);
 
-            return zserio::allocate_unique<T, allocator_type>(allocator, NoInit,
-                    std::move(*other));
+            return zserio::allocate_unique<T, allocator_type>(allocator, NoInit, std::move(*other));
         }
         else
         {
@@ -741,8 +740,8 @@ public:
      *
      * \param other Other holder to move.
      */
-    inplace_optional_holder(inplace_optional_holder&& other)
-            noexcept(std::is_nothrow_move_constructible<in_place_storage<T>>::value)
+    inplace_optional_holder(inplace_optional_holder&& other) noexcept(
+            std::is_nothrow_move_constructible<in_place_storage<T>>::value)
     {
         if (other.hasValue())
         {
@@ -759,8 +758,8 @@ public:
      */
     template <typename U = T,
             typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
-    inplace_optional_holder(NoInitT, inplace_optional_holder&& other)
-            noexcept(std::is_nothrow_move_constructible<in_place_storage<T>>::value)
+    inplace_optional_holder(NoInitT, inplace_optional_holder&& other) noexcept(
+            std::is_nothrow_move_constructible<in_place_storage<T>>::value)
     {
         if (other.hasValue())
         {
@@ -775,8 +774,8 @@ public:
      *
      * \param u Parameters for object's constructor.
      */
-    template <typename ...U>
-    explicit inplace_optional_holder(InPlaceT, U&& ...u)
+    template <typename... U>
+    explicit inplace_optional_holder(InPlaceT, U&&... u)
     {
         new (m_storage.getStorage()) T(std::forward<U>(u)...);
         m_hasValue = true;

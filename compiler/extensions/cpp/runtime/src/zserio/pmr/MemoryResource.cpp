@@ -1,8 +1,7 @@
-#include "zserio/pmr/MemoryResource.h"
-
-#include "zserio/pmr/NewDeleteResource.h"
-
 #include <algorithm>
+
+#include "zserio/pmr/MemoryResource.h"
+#include "zserio/pmr/NewDeleteResource.h"
 
 namespace zserio
 {

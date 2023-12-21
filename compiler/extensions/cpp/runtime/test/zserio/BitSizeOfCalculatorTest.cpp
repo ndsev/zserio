@@ -1,7 +1,6 @@
+#include "gtest/gtest.h"
 #include "zserio/BitSizeOfCalculator.h"
 #include "zserio/CppRuntimeException.h"
-
-#include "gtest/gtest.h"
 
 namespace zserio
 {
@@ -93,10 +92,10 @@ TEST(BitSizeOfCalculatorTest, bitSizeOfVarInt64)
 
     EXPECT_EQ(64, bitSizeOfVarInt64(static_cast<int64_t>(UINT64_C(1) << (6U + 7 + 7 + 7 + 7 + 7 + 7))));
     EXPECT_EQ(64, bitSizeOfVarInt64(-static_cast<int64_t>(UINT64_C(1) << (6U + 7 + 7 + 7 + 7 + 7 + 7))));
-    EXPECT_EQ(64, bitSizeOfVarInt64(
-            static_cast<int64_t>((UINT64_C(1) << (6U + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1)));
-    EXPECT_EQ(64, bitSizeOfVarInt64(
-            -static_cast<int64_t>((UINT64_C(1) << (6U + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1)));
+    EXPECT_EQ(
+            64, bitSizeOfVarInt64(static_cast<int64_t>((UINT64_C(1) << (6U + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1)));
+    EXPECT_EQ(64,
+            bitSizeOfVarInt64(-static_cast<int64_t>((UINT64_C(1) << (6U + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1)));
 
     const int64_t outOfRangeValue = static_cast<int64_t>(UINT64_C(1) << (6U + 7 + 7 + 7 + 7 + 7 + 7 + 8));
     ASSERT_THROW(bitSizeOfVarInt64(outOfRangeValue), CppRuntimeException);
@@ -164,7 +163,7 @@ TEST(BitSizeOfCalculatorTest, bitSizeOfVarUInt64)
     EXPECT_EQ(64, bitSizeOfVarUInt64(UINT64_C(1) << (7U + 7 + 7 + 7 + 7 + 7 + 7)));
     EXPECT_EQ(64, bitSizeOfVarUInt64((UINT64_C(1) << (7U + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1));
 
-    const uint64_t outOfRangeValue = UINT64_C(1) << (7U + 7 + 7  + 7 + 7 + 7 + 7 + 8);
+    const uint64_t outOfRangeValue = UINT64_C(1) << (7U + 7 + 7 + 7 + 7 + 7 + 7 + 8);
     ASSERT_THROW(bitSizeOfVarUInt64(outOfRangeValue), CppRuntimeException);
 }
 

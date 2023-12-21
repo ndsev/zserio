@@ -1,8 +1,7 @@
-#include "gtest/gtest.h"
-
 #include <cmath>
 #include <sstream>
 
+#include "gtest/gtest.h"
 #include "zserio/JsonEncoder.h"
 
 namespace zserio
@@ -175,4 +174,3 @@ TEST(JsonEncoderTest, encodeString)
 }
 
 } // namespace zserio
-

@@ -1,7 +1,6 @@
-#include "gtest/gtest.h"
-
 #include <sstream>
 
+#include "gtest/gtest.h"
 #include "zserio/JsonTokenizer.h"
 
 namespace zserio
@@ -273,17 +272,19 @@ TEST(JsonTokenizerTest, unknownToken)
 {
     std::stringstream str("\\\n");
     JsonTokenizer tokenizer(str, std::allocator<uint8_t>());
-    ASSERT_THROW({
-        try
-        {
-            tokenizer.next();
-        }
-        catch (const JsonParserException& e)
-        {
-            ASSERT_STREQ("JsonTokenizer:1:1: Unknown token!", e.what());
-            throw;
-        }
-    }, JsonParserException);
+    ASSERT_THROW(
+            {
+                try
+                {
+                    tokenizer.next();
+                }
+                catch (const JsonParserException& e)
+                {
+                    ASSERT_STREQ("JsonTokenizer:1:1: Unknown token!", e.what());
+                    throw;
+                }
+            },
+            JsonParserException);
 }
 
 TEST(JsonTokenizerTest, cppRuntimeExceptionOperator)

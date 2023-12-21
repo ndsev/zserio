@@ -1,9 +1,8 @@
-#include "zserio/HashCodeUtil.h"
-#include "zserio/FloatUtil.h"
-#include "zserio/BitBuffer.h"
-#include "zserio/Array.h"
-
 #include "gtest/gtest.h"
+#include "zserio/Array.h"
+#include "zserio/BitBuffer.h"
+#include "zserio/FloatUtil.h"
+#include "zserio/HashCodeUtil.h"
 
 namespace zserio
 {
@@ -32,7 +31,7 @@ public:
     };
 
     constexpr Permissions(Values value) noexcept :
-        m_value(static_cast<underlying_type>(value))
+            m_value(static_cast<underlying_type>(value))
     {}
 
     constexpr underlying_type getValue() const
@@ -54,8 +53,13 @@ private:
 class DummyObject
 {
 public:
-    explicit DummyObject(uint32_t hashCode) : m_hashCode(hashCode) {}
-    uint32_t hashCode() const { return m_hashCode; }
+    explicit DummyObject(uint32_t hashCode) :
+            m_hashCode(hashCode)
+    {}
+    uint32_t hashCode() const
+    {
+        return m_hashCode;
+    }
 
 private:
     uint32_t m_hashCode;
@@ -112,8 +116,8 @@ TEST(HashCodeUtilTest, simpleTypes)
 
     const double doubleValue = 10.0;
     const uint64_t uint64DoubleValue = convertDoubleToUInt64(doubleValue);
-    const uint32_t expectedHashCode = HASH_PRIME_NUMBER +
-            static_cast<uint32_t>(uint64DoubleValue ^ (uint64DoubleValue >> 32U));
+    const uint32_t expectedHashCode =
+            HASH_PRIME_NUMBER + static_cast<uint32_t>(uint64DoubleValue ^ (uint64DoubleValue >> 32U));
     EXPECT_EQ(expectedHashCode, calcHashCode(hashSeed, doubleValue));
 }
 
@@ -148,13 +152,13 @@ TEST(HashCodeUtilTest, bitmaskType)
 {
     const uint32_t hashSeed = 1;
     EXPECT_EQ(HASH_PRIME_NUMBER +
-            (HASH_PRIME_NUMBER * HASH_SEED + Permissions(Permissions::Values::READ).getValue()),
+                    (HASH_PRIME_NUMBER * HASH_SEED + Permissions(Permissions::Values::READ).getValue()),
             calcHashCode(hashSeed, Permissions(Permissions::Values::READ)));
     EXPECT_EQ(HASH_PRIME_NUMBER +
-            (HASH_PRIME_NUMBER * HASH_SEED + Permissions(Permissions::Values::WRITE).getValue()),
+                    (HASH_PRIME_NUMBER * HASH_SEED + Permissions(Permissions::Values::WRITE).getValue()),
             calcHashCode(hashSeed, Permissions(Permissions::Values::WRITE)));
     EXPECT_EQ(HASH_PRIME_NUMBER +
-            (HASH_PRIME_NUMBER * HASH_SEED + Permissions(Permissions::Values::CREATE).getValue()),
+                    (HASH_PRIME_NUMBER * HASH_SEED + Permissions(Permissions::Values::CREATE).getValue()),
             calcHashCode(hashSeed, Permissions(Permissions::Values::CREATE)));
 }
 
@@ -226,21 +230,21 @@ TEST(HashCodeUtil, stringArrayType)
 TEST(HashCodeUtil, bitBufferArrayType)
 {
     const uint32_t hashSeed = 1;
-    const std::vector<BitBuffer> arrayValue = { BitBuffer() };
+    const std::vector<BitBuffer> arrayValue = {BitBuffer()};
     EXPECT_EQ(HASH_PRIME_NUMBER + HASH_SEED, calcHashCode(hashSeed, arrayValue));
 }
 
 TEST(HashCodeUtil, bytesArrayType)
 {
     const uint32_t hashSeed = 1;
-    const std::vector<std::vector<uint8_t>> arrayValue = {{ 1 }};
+    const std::vector<std::vector<uint8_t>> arrayValue = {{1}};
     EXPECT_EQ(HASH_PRIME_NUMBER + 1, calcHashCode(hashSeed, arrayValue));
 }
 
 TEST(HashCodeUtil, enumArrayType)
 {
     const uint32_t hashSeed = 1;
-    const std::vector<Color> arrayValue = { Color::NONE };
+    const std::vector<Color> arrayValue = {Color::NONE};
     EXPECT_EQ(HASH_PRIME_NUMBER + (HASH_PRIME_NUMBER * HASH_SEED + enumToValue(Color::NONE)),
             calcHashCode(hashSeed, arrayValue));
 }
@@ -248,7 +252,7 @@ TEST(HashCodeUtil, enumArrayType)
 TEST(HashCodeUtil, bitmaskArrayType)
 {
     const uint32_t hashSeed = 1;
-    const std::vector<Permissions> arrayValue = { Permissions::Values::READ };
+    const std::vector<Permissions> arrayValue = {Permissions::Values::READ};
     EXPECT_EQ(HASH_PRIME_NUMBER + (HASH_PRIME_NUMBER * HASH_SEED + enumToValue(Permissions::Values::READ)),
             calcHashCode(hashSeed, arrayValue));
 }
@@ -270,10 +274,8 @@ TEST(HashCodeUtilTest, optionalSimpleArrayType)
 TEST(HashCodeUtilTest, optionalObjectArrayType)
 {
     const uint32_t hashSeed = 1;
-    const InplaceOptionalHolder<std::vector<DummyObject>> optionalArrayValue = {{
-            DummyObject(3),
-            DummyObject(7)
-    }};
+    const InplaceOptionalHolder<std::vector<DummyObject>> optionalArrayValue = {
+            {DummyObject(3), DummyObject(7)}};
     EXPECT_EQ((HASH_PRIME_NUMBER + 3) * HASH_PRIME_NUMBER + 7, calcHashCode(hashSeed, optionalArrayValue));
 }
 

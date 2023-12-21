@@ -1,51 +1,50 @@
+#include <algorithm>
+#include <string>
+#include <vector>
+
+#include "gtest/gtest.h"
 #include "zserio/SqliteConnection.h"
 #include "zserio/SqliteException.h"
 
-#include <string>
-#include <vector>
-#include <algorithm>
-
 #include "sqlite3.h"
-
-#include "gtest/gtest.h"
 
 namespace zserio
 {
 
 namespace
 {
-    extern "C" int sqliteResultAccumulatorCallback(void *data, int nColumns, char** colValues, char** colNames);
+extern "C" int sqliteResultAccumulatorCallback(void* data, int nColumns, char** colValues, char** colNames);
 
-    class SqliteResultAccumulator
+class SqliteResultAccumulator
+{
+public:
+    using TRow = std::vector<std::string>;
+    using TResult = std::vector<TRow>;
+
+    TResult const& getResult() const
     {
-    public:
-        using TRow = std::vector<std::string>;
-        using TResult = std::vector<TRow>;
-
-        TResult const& getResult() const
-        {
-            return result;
-        }
-
-        int callback(size_t nColumns, char** colValues, char**)
-        {
-            auto colValuesSpan = Span<char*>(colValues, nColumns);
-            TRow row;
-            row.reserve(nColumns);
-            for (const char* colValue : colValuesSpan)
-                row.emplace_back(colValue);
-            result.push_back(row);
-            return 0; // continue
-        }
-
-        TResult result;
-    };
-
-    int sqliteResultAccumulatorCallback(void *data, int nColumns, char** colValues, char** colNames)
-    {
-        SqliteResultAccumulator *self = static_cast<SqliteResultAccumulator*>(data);
-        return self->callback(static_cast<size_t>(nColumns), colValues, colNames);
+        return result;
     }
+
+    int callback(size_t nColumns, char** colValues, char**)
+    {
+        auto colValuesSpan = Span<char*>(colValues, nColumns);
+        TRow row;
+        row.reserve(nColumns);
+        for (const char* colValue : colValuesSpan)
+            row.emplace_back(colValue);
+        result.push_back(row);
+        return 0; // continue
+    }
+
+    TResult result;
+};
+
+int sqliteResultAccumulatorCallback(void* data, int nColumns, char** colValues, char** colNames)
+{
+    SqliteResultAccumulator* self = static_cast<SqliteResultAccumulator*>(data);
+    return self->callback(static_cast<size_t>(nColumns), colValues, colNames);
+}
 } // namespace
 
 static const char* const SQLITE3_MEM_DB = ":memory:";
@@ -58,7 +57,7 @@ TEST(SqliteConnectionTest, emptyConstructor)
 
 TEST(SqliteConnectionTest, externalConstructor)
 {
-    sqlite3 *externalConnection = nullptr;
+    sqlite3* externalConnection = nullptr;
     int result = sqlite3_open(SQLITE3_MEM_DB, &externalConnection);
     ASSERT_EQ(SQLITE_OK, result);
 
@@ -108,7 +107,7 @@ TEST(SqliteConnectionTest, defaultInternalConstructor)
 
 TEST(SqliteConnectionTest, resetExternal)
 {
-    sqlite3 *externalConnection = nullptr;
+    sqlite3* externalConnection = nullptr;
     int result = sqlite3_open(SQLITE3_MEM_DB, &externalConnection);
     ASSERT_EQ(SQLITE_OK, result);
 
@@ -162,11 +161,11 @@ TEST(SqliteConnectionTest, resetDefaultInternal)
 
 TEST(SqliteConnectionTest, doubleResetExternal)
 {
-    sqlite3 *externalConnection1 = nullptr;
+    sqlite3* externalConnection1 = nullptr;
     int result = sqlite3_open(SQLITE3_MEM_DB, &externalConnection1);
     ASSERT_EQ(SQLITE_OK, result);
 
-    sqlite3 *externalConnection2 = nullptr;
+    sqlite3* externalConnection2 = nullptr;
     result = sqlite3_open(SQLITE3_MEM_DB, &externalConnection2);
     ASSERT_EQ(SQLITE_OK, result);
 
@@ -192,11 +191,11 @@ TEST(SqliteConnectionTest, doubleResetExternal)
 
 TEST(SqliteConnectionTest, doubleResetInternal)
 {
-    sqlite3 *internalConnection1 = nullptr;
+    sqlite3* internalConnection1 = nullptr;
     int result = sqlite3_open(SQLITE3_MEM_DB, &internalConnection1);
     ASSERT_EQ(SQLITE_OK, result);
 
-    sqlite3 *internalConnection2 = nullptr;
+    sqlite3* internalConnection2 = nullptr;
     result = sqlite3_open(SQLITE3_MEM_DB, &internalConnection2);
     ASSERT_EQ(SQLITE_OK, result);
 
@@ -216,7 +215,7 @@ TEST(SqliteConnectionTest, doubleResetInternal)
 
 TEST(SqliteConnectionTest, getConnection)
 {
-    sqlite3 *internalConnection = nullptr;
+    sqlite3* internalConnection = nullptr;
     int result = sqlite3_open(SQLITE3_MEM_DB, &internalConnection);
     ASSERT_EQ(SQLITE_OK, result);
 
@@ -231,14 +230,14 @@ TEST(SqliteConnectionTest, getConnection)
 
 TEST(SqliteConnectionTest, getConnectionType)
 {
-    sqlite3 *internalConnection = nullptr;
+    sqlite3* internalConnection = nullptr;
     int result = sqlite3_open(SQLITE3_MEM_DB, &internalConnection);
     ASSERT_EQ(SQLITE_OK, result);
 
     SqliteConnection db(internalConnection);
     ASSERT_EQ(SqliteConnection::INTERNAL_CONNECTION, db.getConnectionType());
 
-    sqlite3 *externalConnection = nullptr;
+    sqlite3* externalConnection = nullptr;
     result = sqlite3_open(SQLITE3_MEM_DB, &externalConnection);
     ASSERT_EQ(SQLITE_OK, result);
 
@@ -251,7 +250,7 @@ TEST(SqliteConnectionTest, getConnectionType)
 
 TEST(SqliteConnectionTest, reset)
 {
-    sqlite3 *internalConnection = nullptr;
+    sqlite3* internalConnection = nullptr;
     int result = sqlite3_open(SQLITE3_MEM_DB, &internalConnection);
     ASSERT_EQ(SQLITE_OK, result);
 
@@ -267,7 +266,7 @@ TEST(SqliteConnectionTest, reset)
 
 TEST(SqliteConnectionTest, executeUpdate)
 {
-    sqlite3 *internalConnection = nullptr;
+    sqlite3* internalConnection = nullptr;
     int result = sqlite3_open(SQLITE3_MEM_DB, &internalConnection);
     ASSERT_EQ(SQLITE_OK, result);
 
@@ -293,7 +292,7 @@ TEST(SqliteConnectionTest, executeUpdate)
 
 TEST(SqliteConnectionTest, executeUpdateOnReadOnlyDatabase)
 {
-    sqlite3 *internalConnection = nullptr;
+    sqlite3* internalConnection = nullptr;
     int result = sqlite3_open_v2(SQLITE3_MEM_DB, &internalConnection, SQLITE_OPEN_READONLY, nullptr);
     SqliteConnection db(internalConnection);
     ASSERT_EQ(SQLITE_OK, result);
@@ -302,7 +301,7 @@ TEST(SqliteConnectionTest, executeUpdateOnReadOnlyDatabase)
 
 TEST(SqliteConnectionTest, prepareStatement)
 {
-    sqlite3 *internalConnection = nullptr;
+    sqlite3* internalConnection = nullptr;
     int result = sqlite3_open(SQLITE3_MEM_DB, &internalConnection);
     ASSERT_EQ(SQLITE_OK, result);
 
@@ -334,7 +333,7 @@ TEST(SqliteConnectionTest, prepareStatement)
 
 TEST(SqliteConnectionTest, startEndTransaction)
 {
-    sqlite3 *internalConnection = nullptr;
+    sqlite3* internalConnection = nullptr;
     int result = sqlite3_open(SQLITE3_MEM_DB, &internalConnection);
     ASSERT_EQ(SQLITE_OK, result);
 

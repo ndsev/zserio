@@ -63,8 +63,8 @@ public:
     using value_type = typename std::allocator<T>::value_type;
     using pointer = typename std::allocator<T>::pointer;
 
-    TrackingAllocatorImpl()
-        : m_tracker(std::make_shared<detail::AllocationTracker>())
+    TrackingAllocatorImpl() :
+            m_tracker(std::make_shared<detail::AllocationTracker>())
     {}
     ~TrackingAllocatorImpl() = default;
 
@@ -76,8 +76,8 @@ public:
 
     template <typename Other>
     TrackingAllocatorImpl(const TrackingAllocatorImpl<Other>& other) :
-        m_allocator(other.m_allocator),
-        m_tracker(other.m_tracker)
+            m_allocator(other.m_allocator),
+            m_tracker(other.m_tracker)
     {}
 
     value_type* allocate(std::size_t n)

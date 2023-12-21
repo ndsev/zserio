@@ -8,9 +8,9 @@
 #include "zserio/CppRuntimeException.h"
 #include "zserio/NoInit.h"
 #include "zserio/OptionalHolder.h"
-#include "zserio/Types.h"
-#include "zserio/Traits.h"
 #include "zserio/RebindAlloc.h"
+#include "zserio/Traits.h"
+#include "zserio/Types.h"
 
 namespace zserio
 {
@@ -61,16 +61,14 @@ public:
         m_typedHolder = std::forward<U>(value);
     }
 
-    template <typename U,
-            typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
+    template <typename U, typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
     void set(NoInitT, U&& value)
     {
         // inplace_optional_holder constructor to prevent it's implicit constructor
         m_typedHolder.assign(NoInit, inplace_optional_holder<T>(NoInit, std::forward<U>(value)));
     }
 
-    template <typename U,
-            typename std::enable_if<!std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
+    template <typename U, typename std::enable_if<!std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
     void set(NoInitT, U&& value)
     {
         m_typedHolder = std::forward<U>(value);
@@ -86,29 +84,25 @@ public:
         m_typedHolder = std::move(value);
     }
 
-    template <typename U,
-            typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
+    template <typename U, typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
     void setHolder(NoInitT, const inplace_optional_holder<U>& value)
     {
         m_typedHolder.assign(NoInit, value);
     }
 
-    template <typename U,
-            typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
+    template <typename U, typename std::enable_if<std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
     void setHolder(NoInitT, inplace_optional_holder<U>&& value)
     {
         m_typedHolder.assign(NoInit, std::move(value));
     }
 
-    template <typename U,
-            typename std::enable_if<!std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
+    template <typename U, typename std::enable_if<!std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
     void setHolder(NoInitT, const inplace_optional_holder<U>& value)
     {
         m_typedHolder = value;
     }
 
-    template <typename U,
-            typename std::enable_if<!std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
+    template <typename U, typename std::enable_if<!std::is_constructible<U, NoInitT, U>::value, int>::type = 0>
     void setHolder(NoInitT, inplace_optional_holder<U>&& value)
     {
         m_typedHolder = std::move(value);
@@ -149,12 +143,14 @@ template <typename T, typename ALLOC>
 class HeapHolder : public HolderBase<T, ALLOC>
 {
 private:
-    struct ConstructTag {};
+    struct ConstructTag
+    {};
 
 public:
     using this_type = HeapHolder<T, ALLOC>;
 
-    explicit HeapHolder(ConstructTag) noexcept {}
+    explicit HeapHolder(ConstructTag) noexcept
+    {}
 
     static this_type* create(const ALLOC& allocator)
     {
@@ -309,8 +305,8 @@ union UntypedHolder
 template <typename T, typename ALLOC>
 using has_non_heap_holder = std::integral_constant<bool,
         sizeof(NonHeapHolder<T, ALLOC>) <= sizeof(typename UntypedHolder<ALLOC>::MaxInPlaceType) &&
-        std::is_nothrow_move_constructible<T>::value &&
-            alignof(T) <= alignof(typename UntypedHolder<ALLOC>::MaxInPlaceType)>;
+                std::is_nothrow_move_constructible<T>::value &&
+                alignof(T) <= alignof(typename UntypedHolder<ALLOC>::MaxInPlaceType)>;
 
 } // namespace detail
 
@@ -331,9 +327,9 @@ public:
     /**
      * Empty constructor.
      */
-    AnyHolder() : AnyHolder(ALLOC())
-    {
-    }
+    AnyHolder() :
+            AnyHolder(ALLOC())
+    {}
 
     /**
      * Constructor from given allocator
@@ -351,7 +347,8 @@ public:
      */
     template <typename T,
             typename std::enable_if<!std::is_same<typename std::decay<T>::type, AnyHolder>::value &&
-                                    !std::is_same<typename std::decay<T>::type, ALLOC>::value, int>::type = 0>
+                            !std::is_same<typename std::decay<T>::type, ALLOC>::value,
+                    int>::type = 0>
     explicit AnyHolder(T&& value, const ALLOC& allocator = ALLOC()) :
             AllocatorHolder<ALLOC>(allocator)
     {
@@ -364,8 +361,9 @@ public:
      *
      * \param value Value of any type to hold. Supports move semantic.
      */
-    template <typename T, typename std::enable_if<
-            !std::is_same<typename std::decay<T>::type, AnyHolder>::value, int>::type = 0>
+    template <typename T,
+            typename std::enable_if<!std::is_same<typename std::decay<T>::type, AnyHolder>::value, int>::type =
+                    0>
     explicit AnyHolder(NoInitT, T&& value, const ALLOC& allocator = ALLOC()) :
             AllocatorHolder<ALLOC>(allocator)
     {
@@ -411,7 +409,8 @@ public:
      * \param other Any holder to copy.
      * \param allocator Allocator to be used for dynamic memory allocations.
      */
-    AnyHolder(const AnyHolder& other, const ALLOC& allocator) : AllocatorHolder<ALLOC>(allocator)
+    AnyHolder(const AnyHolder& other, const ALLOC& allocator) :
+            AllocatorHolder<ALLOC>(allocator)
     {
         copy(other);
     }
@@ -563,8 +562,9 @@ public:
      *
      * \return Reference to this.
      */
-    template <typename T, typename
-            std::enable_if<!std::is_same<typename std::decay<T>::type, AnyHolder>::value, int>::type = 0>
+    template <typename T,
+            typename std::enable_if<!std::is_same<typename std::decay<T>::type, AnyHolder>::value, int>::type =
+                    0>
     AnyHolder& operator=(T&& value)
     {
         set(std::forward<T>(value));
@@ -678,8 +678,7 @@ private:
         }
         else if (other.m_untypedHolder.heap != nullptr)
         {
-            m_untypedHolder.heap = other.getUntypedHolder()->clone(NoInit,
-                    get_allocator_ref());
+            m_untypedHolder.heap = other.getUntypedHolder()->clone(NoInit, get_allocator_ref());
         }
         else
         {
@@ -735,8 +734,7 @@ private:
             else
             {
                 // cannot steal the storage, allocate our own and move the holder
-                m_untypedHolder.heap = other.getUntypedHolder()->move(NoInit,
-                        get_allocator_ref());
+                m_untypedHolder.heap = other.getUntypedHolder()->move(NoInit, get_allocator_ref());
                 other.clearHolder();
             }
         }
@@ -855,16 +853,16 @@ private:
 
     detail::IHolder<ALLOC>* getUntypedHolder()
     {
-        return (m_isInPlace) ?
-                reinterpret_cast<detail::IHolder<ALLOC>*>(&m_untypedHolder.inPlace) :
-                m_untypedHolder.heap;
+        return (m_isInPlace)
+                ? reinterpret_cast<detail::IHolder<ALLOC>*>(&m_untypedHolder.inPlace)
+                : m_untypedHolder.heap;
     }
 
     const detail::IHolder<ALLOC>* getUntypedHolder() const
     {
-        return (m_isInPlace) ?
-                reinterpret_cast<const detail::IHolder<ALLOC>*>(&m_untypedHolder.inPlace) :
-                m_untypedHolder.heap;
+        return (m_isInPlace)
+                ? reinterpret_cast<const detail::IHolder<ALLOC>*>(&m_untypedHolder.inPlace)
+                : m_untypedHolder.heap;
     }
 
     detail::UntypedHolder<ALLOC> m_untypedHolder;

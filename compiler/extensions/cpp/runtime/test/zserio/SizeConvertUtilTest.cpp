@@ -1,11 +1,10 @@
 #include <cstddef>
 #include <limits>
 
-#include "zserio/SizeConvertUtil.h"
+#include "gtest/gtest.h"
 #include "zserio/CppRuntimeException.h"
 #include "zserio/RuntimeArch.h"
-
-#include "gtest/gtest.h"
+#include "zserio/SizeConvertUtil.h"
 
 namespace zserio
 {

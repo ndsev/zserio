@@ -1,17 +1,15 @@
 #include <array>
 
 #include "gtest/gtest.h"
-
-#include "zserio/SerializeUtil.h"
-#include "zserio/Enums.h"
-#include "zserio/pmr/PolymorphicAllocator.h"
-
-#include "test_object/std_allocator/SerializeEnum.h"
-#include "test_object/std_allocator/SerializeNested.h"
-#include "test_object/std_allocator/SerializeObject.h"
 #include "test_object/polymorphic_allocator/SerializeEnum.h"
 #include "test_object/polymorphic_allocator/SerializeNested.h"
 #include "test_object/polymorphic_allocator/SerializeObject.h"
+#include "test_object/std_allocator/SerializeEnum.h"
+#include "test_object/std_allocator/SerializeNested.h"
+#include "test_object/std_allocator/SerializeObject.h"
+#include "zserio/Enums.h"
+#include "zserio/SerializeUtil.h"
+#include "zserio/pmr/PolymorphicAllocator.h"
 
 namespace zserio
 {
@@ -168,8 +166,8 @@ TEST(SerializeUtilTest, deserializeEnum)
     // with polymorphic allocator
     {
         const pmr::PropagatingPolymorphicAllocator<> allocator;
-        const BasicBitBuffer<pmr::PropagatingPolymorphicAllocator<>> bitBuffer(buffer.data(), buffer.size() * 8,
-                allocator);
+        const BasicBitBuffer<pmr::PropagatingPolymorphicAllocator<>> bitBuffer(
+                buffer.data(), buffer.size() * 8, allocator);
         const test_object::polymorphic_allocator::SerializeEnum serializeEnum =
                 deserialize<test_object::polymorphic_allocator::SerializeEnum>(bitBuffer);
         ASSERT_EQ(test_object::polymorphic_allocator::SerializeEnum::VALUE3, serializeEnum);
@@ -212,18 +210,19 @@ TEST(SerializeUtilTest, deserializeNestedObject)
     // with polymorphic allocator
     {
         const pmr::PropagatingPolymorphicAllocator<> allocator;
-        const BasicBitBuffer<pmr::PropagatingPolymorphicAllocator<>> bitBuffer(buffer.data(), buffer.size() * 8,
-                allocator);
+        const BasicBitBuffer<pmr::PropagatingPolymorphicAllocator<>> bitBuffer(
+                buffer.data(), buffer.size() * 8, allocator);
         const test_object::polymorphic_allocator::SerializeNested serializeNested =
                 deserialize<test_object::polymorphic_allocator::SerializeNested>(bitBuffer, param, allocator);
         ASSERT_EQ(param, serializeNested.getParam());
         ASSERT_EQ(0x01, serializeNested.getOffset());
         ASSERT_EQ(0xDEADCAFE, serializeNested.getOptionalValue());
 
-        const BasicBitBuffer<pmr::PropagatingPolymorphicAllocator<>> wrongBitBuffer(buffer.data(),
-                buffer.size() * 8 - 1, allocator);
-        ASSERT_THROW(deserialize<test_object::polymorphic_allocator::SerializeNested>(wrongBitBuffer,
-                param, allocator), CppRuntimeException);
+        const BasicBitBuffer<pmr::PropagatingPolymorphicAllocator<>> wrongBitBuffer(
+                buffer.data(), buffer.size() * 8 - 1, allocator);
+        ASSERT_THROW(deserialize<test_object::polymorphic_allocator::SerializeNested>(
+                             wrongBitBuffer, param, allocator),
+                CppRuntimeException);
     }
 }
 
@@ -258,8 +257,8 @@ TEST(SerializeUtilTest, deserializeObject)
     // with polymorphic allocator
     {
         const pmr::PropagatingPolymorphicAllocator<> allocator;
-        const BasicBitBuffer<pmr::PropagatingPolymorphicAllocator<>> bitBuffer(buffer.data(), buffer.size() * 8,
-                allocator);
+        const BasicBitBuffer<pmr::PropagatingPolymorphicAllocator<>> bitBuffer(
+                buffer.data(), buffer.size() * 8, allocator);
         const test_object::polymorphic_allocator::SerializeObject serializeObject =
                 deserialize<test_object::polymorphic_allocator::SerializeObject>(bitBuffer, allocator);
         ASSERT_EQ(0x12, serializeObject.getParam());
@@ -474,8 +473,9 @@ TEST(SerializeUtilTest, deserializeNestedObjectFromBytes)
         ASSERT_EQ(0xDEADCAFE, serializeNested.getOptionalValue());
 
         const vector<uint8_t> wrongBuffer = {0x00, 0xDE, 0xAD, 0xCA, 0xFE};
-        ASSERT_THROW(deserializeFromBytes<test_object::polymorphic_allocator::SerializeNested>(wrongBuffer,
-                param), CppRuntimeException);
+        ASSERT_THROW(
+                deserializeFromBytes<test_object::polymorphic_allocator::SerializeNested>(wrongBuffer, param),
+                CppRuntimeException);
     }
 }
 

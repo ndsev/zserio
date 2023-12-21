@@ -107,7 +107,8 @@ public:
      * \param allocator Allocator to use.
      */
     BasicJsonParser(std::istream& in, IObserver& observer, const ALLOC& allocator = ALLOC()) :
-            m_tokenizer(in, allocator), m_observer(observer)
+            m_tokenizer(in, allocator),
+            m_observer(observer)
     {}
 
     /**
@@ -172,10 +173,7 @@ private:
 
 template <typename ALLOC>
 const std::array<JsonToken, 3> BasicJsonParser<ALLOC>::ELEMENT_TOKENS = {
-        JsonToken::BEGIN_OBJECT,
-        JsonToken::BEGIN_ARRAY,
-        JsonToken::VALUE
-};
+        JsonToken::BEGIN_OBJECT, JsonToken::BEGIN_ARRAY, JsonToken::VALUE};
 
 template <typename ALLOC>
 void BasicJsonParser<ALLOC>::parseElement()
@@ -223,8 +221,8 @@ void BasicJsonParser<ALLOC>::parseMember()
     const AnyHolder<ALLOC>& key = m_tokenizer.getValue();
     if (!key.template isType<string<ALLOC>>())
     {
-        throw JsonParserException("JsonParser:") << getLine() << ":" << getColumn() <<
-                ": Key must be a string value!";
+        throw JsonParserException("JsonParser:")
+                << getLine() << ":" << getColumn() << ": Key must be a string value!";
     }
     m_observer.visitKey(key.template get<string<ALLOC>>());
     m_tokenizer.next();
@@ -337,6 +335,6 @@ JsonParserException BasicJsonParser<ALLOC>::createUnexpectedTokenException(
 /** Typedef to Json Parser provided for convenience - using default std::allocator<uint8_t>. */
 using JsonParser = BasicJsonParser<>;
 
-} // namespace
+} // namespace zserio
 
 #endif // ZSERIO_JSON_PARSER_H_INC

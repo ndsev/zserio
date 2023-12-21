@@ -138,18 +138,18 @@ public:
     void beginRoot(const IBasicReflectableConstPtr<ALLOC>& compound) override;
     void endRoot(const IBasicReflectableConstPtr<ALLOC>& compound) override;
 
-    void beginArray(const IBasicReflectableConstPtr<ALLOC>& array,
-            const BasicFieldInfo<ALLOC>& fieldInfo) override;
-    void endArray(const IBasicReflectableConstPtr<ALLOC>& array,
-            const BasicFieldInfo<ALLOC>& fieldInfo) override;
+    void beginArray(
+            const IBasicReflectableConstPtr<ALLOC>& array, const BasicFieldInfo<ALLOC>& fieldInfo) override;
+    void endArray(
+            const IBasicReflectableConstPtr<ALLOC>& array, const BasicFieldInfo<ALLOC>& fieldInfo) override;
 
-    void beginCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
-            const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
-    void endCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
-            const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
+    void beginCompound(const IBasicReflectableConstPtr<ALLOC>& compound, const BasicFieldInfo<ALLOC>& fieldInfo,
+            size_t elementIndex) override;
+    void endCompound(const IBasicReflectableConstPtr<ALLOC>& compound, const BasicFieldInfo<ALLOC>& fieldInfo,
+            size_t elementIndex) override;
 
-    void visitValue(const IBasicReflectableConstPtr<ALLOC>& value,
-            const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
+    void visitValue(const IBasicReflectableConstPtr<ALLOC>& value, const BasicFieldInfo<ALLOC>& fieldInfo,
+            size_t elementIndex) override;
 
 private:
     BasicJsonWriter(std::ostream& out, InplaceOptionalHolder<string<ALLOC>>&& optionalIndent,
@@ -196,18 +196,19 @@ BasicJsonWriter<ALLOC>::BasicJsonWriter(std::ostream& out, uint8_t indent, const
 {}
 
 template <typename ALLOC>
-BasicJsonWriter<ALLOC>::BasicJsonWriter(std::ostream& out, const string<ALLOC>& indent,
-        const ALLOC& allocator) :
+BasicJsonWriter<ALLOC>::BasicJsonWriter(
+        std::ostream& out, const string<ALLOC>& indent, const ALLOC& allocator) :
         BasicJsonWriter(out, InplaceOptionalHolder<string<ALLOC>>(indent), allocator)
 {}
 
 template <typename ALLOC>
-BasicJsonWriter<ALLOC>::BasicJsonWriter(std::ostream& out,
-        InplaceOptionalHolder<string<ALLOC>>&& optionalIndent, const ALLOC& allocator) :
+BasicJsonWriter<ALLOC>::BasicJsonWriter(
+        std::ostream& out, InplaceOptionalHolder<string<ALLOC>>&& optionalIndent, const ALLOC& allocator) :
         AllocatorHolder<ALLOC>(allocator),
-        m_out(out), m_indent(optionalIndent),
-        m_itemSeparator(m_indent.hasValue() ? DEFAULT_ITEM_SEPARATOR_WITH_INDENT : DEFAULT_ITEM_SEPARATOR,
-                allocator),
+        m_out(out),
+        m_indent(optionalIndent),
+        m_itemSeparator(
+                m_indent.hasValue() ? DEFAULT_ITEM_SEPARATOR_WITH_INDENT : DEFAULT_ITEM_SEPARATOR, allocator),
         m_keySeparator(DEFAULT_KEY_SEPARATOR, allocator)
 {}
 
@@ -243,8 +244,8 @@ void BasicJsonWriter<ALLOC>::endRoot(const IBasicReflectableConstPtr<ALLOC>&)
 }
 
 template <typename ALLOC>
-void BasicJsonWriter<ALLOC>::beginArray(const IBasicReflectableConstPtr<ALLOC>&,
-        const BasicFieldInfo<ALLOC>& fieldInfo)
+void BasicJsonWriter<ALLOC>::beginArray(
+        const IBasicReflectableConstPtr<ALLOC>&, const BasicFieldInfo<ALLOC>& fieldInfo)
 {
     beginItem();
 
@@ -262,8 +263,8 @@ void BasicJsonWriter<ALLOC>::endArray(const IBasicReflectableConstPtr<ALLOC>&, c
 }
 
 template <typename ALLOC>
-void BasicJsonWriter<ALLOC>::beginCompound(const IBasicReflectableConstPtr<ALLOC>&,
-        const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex)
+void BasicJsonWriter<ALLOC>::beginCompound(
+        const IBasicReflectableConstPtr<ALLOC>&, const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex)
 {
     beginItem();
 
@@ -274,8 +275,8 @@ void BasicJsonWriter<ALLOC>::beginCompound(const IBasicReflectableConstPtr<ALLOC
 }
 
 template <typename ALLOC>
-void BasicJsonWriter<ALLOC>::endCompound(const IBasicReflectableConstPtr<ALLOC>&,
-        const BasicFieldInfo<ALLOC>&, size_t)
+void BasicJsonWriter<ALLOC>::endCompound(
+        const IBasicReflectableConstPtr<ALLOC>&, const BasicFieldInfo<ALLOC>&, size_t)
 {
     endObject();
 
@@ -437,8 +438,8 @@ void BasicJsonWriter<ALLOC>::writeValue(const IBasicReflectableConstPtr<ALLOC>& 
             JsonEncoder::encodeIntegral(m_out, reflectable->toUInt());
         break;
     default:
-        throw CppRuntimeException("JsonWriter: Unexpected not-null value of type '") <<
-                typeInfo.getSchemaName() << "'!";
+        throw CppRuntimeException("JsonWriter: Unexpected not-null value of type '")
+                << typeInfo.getSchemaName() << "'!";
     }
 
     m_out.flush();
@@ -489,8 +490,9 @@ template <typename ALLOC>
 void BasicJsonWriter<ALLOC>::writeStringifiedEnum(const IBasicReflectableConstPtr<ALLOC>& reflectable)
 {
     const auto& typeInfo = reflectable->getTypeInfo();
-    const uint64_t enumValue = TypeInfoUtil::isSigned(typeInfo.getUnderlyingType().getCppType()) ?
-                static_cast<uint64_t>(reflectable->toInt()) : reflectable->toUInt();
+    const uint64_t enumValue = TypeInfoUtil::isSigned(typeInfo.getUnderlyingType().getCppType())
+            ? static_cast<uint64_t>(reflectable->toInt())
+            : reflectable->toUInt();
     for (const auto& itemInfo : typeInfo.getEnumItems())
     {
         if (itemInfo.value == enumValue)
@@ -537,10 +539,11 @@ void BasicJsonWriter<ALLOC>::writeStringifiedBitmask(const IBasicReflectableCons
     else if (bitmaskValue != valueCheck)
     {
         // partial match
-        stringValue = toString(bitmaskValue, get_allocator())
-                .append(" /* partial match: ")
-                .append(stringValue)
-                .append(" */");
+        stringValue =
+                toString(bitmaskValue, get_allocator())
+                        .append(" /* partial match: ")
+                        .append(stringValue)
+                        .append(" */");
     }
     // else exact match
 

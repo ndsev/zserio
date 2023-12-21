@@ -1,6 +1,5 @@
-#include "zserio/BuiltInOperators.h"
-
 #include "gtest/gtest.h"
+#include "zserio/BuiltInOperators.h"
 
 namespace zserio
 {
@@ -47,15 +46,14 @@ inline bool operator==(const DummyBitmask& lhs, const DummyBitmask& rhs)
 
 inline DummyBitmask operator|(DummyBitmask::Values lhs, DummyBitmask::Values rhs)
 {
-    return DummyBitmask(static_cast<DummyBitmask::underlying_type>(lhs) |
-            static_cast<DummyBitmask::underlying_type>(rhs));
+    return DummyBitmask(
+            static_cast<DummyBitmask::underlying_type>(lhs) | static_cast<DummyBitmask::underlying_type>(rhs));
 }
-
 
 inline DummyBitmask operator&(DummyBitmask::Values lhs, DummyBitmask::Values rhs)
 {
-    return DummyBitmask(static_cast<DummyBitmask::underlying_type>(lhs) &
-            static_cast<DummyBitmask::underlying_type>(rhs));
+    return DummyBitmask(
+            static_cast<DummyBitmask::underlying_type>(lhs) & static_cast<DummyBitmask::underlying_type>(rhs));
 }
 
 inline DummyBitmask operator&(const DummyBitmask& lhs, const DummyBitmask& rhs)

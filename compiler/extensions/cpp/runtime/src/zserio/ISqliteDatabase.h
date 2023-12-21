@@ -13,7 +13,8 @@ public:
     /**
      * Destructor.
      */
-    ~ISqliteDatabase() override {}
+    ~ISqliteDatabase() override
+    {}
 
     /**
      * Creates database schema.

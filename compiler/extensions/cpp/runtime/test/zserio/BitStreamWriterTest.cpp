@@ -1,10 +1,9 @@
-#include <cstring>
 #include <array>
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/CppRuntimeException.h"
+#include <cstring>
 
 #include "gtest/gtest.h"
+#include "zserio/BitStreamWriter.h"
+#include "zserio/CppRuntimeException.h"
 
 namespace zserio
 {
@@ -13,9 +12,9 @@ class BitStreamWriterTest : public ::testing::Test
 {
 public:
     BitStreamWriterTest() :
-        m_externalBuffer(),
-        m_externalBufferWriter(m_externalBuffer.data(), m_externalBuffer.size()),
-        m_dummyBufferWriter(nullptr, 0)
+            m_externalBuffer(),
+            m_externalBufferWriter(m_externalBuffer.data(), m_externalBuffer.size()),
+            m_dummyBufferWriter(nullptr, 0)
     {
         m_externalBuffer.fill(0);
     }
@@ -28,7 +27,7 @@ protected:
 
 TEST_F(BitStreamWriterTest, rawConstructor)
 {
-    std::array<uint8_t, 2> data = { 0x00, 0x00 };
+    std::array<uint8_t, 2> data = {0x00, 0x00};
     BitStreamWriter writer(data.data(), data.size());
 
     ASSERT_EQ(data.data(), writer.getBuffer().data());
@@ -45,7 +44,7 @@ TEST_F(BitStreamWriterTest, rawConstructor)
 
 TEST_F(BitStreamWriterTest, rawConstructorWithBitSize)
 {
-    std::array<uint8_t, 2> data = { 0x00, 0x00 };
+    std::array<uint8_t, 2> data = {0x00, 0x00};
     BitStreamWriter writer(data.data(), 15, BitsTag());
 
     ASSERT_EQ(data.data(), writer.getBuffer().data());
@@ -62,7 +61,7 @@ TEST_F(BitStreamWriterTest, rawConstructorWithBitSize)
 
 TEST_F(BitStreamWriterTest, spanConstructor)
 {
-    std::array<uint8_t, 2> data = { 0x00, 0x00 };
+    std::array<uint8_t, 2> data = {0x00, 0x00};
     const Span<uint8_t> span(data);
     BitStreamWriter writer(span);
 
@@ -80,7 +79,7 @@ TEST_F(BitStreamWriterTest, spanConstructor)
 
 TEST_F(BitStreamWriterTest, spanConstructorWithBitSize)
 {
-    std::array<uint8_t, 2> data = { 0x00, 0x00 };
+    std::array<uint8_t, 2> data = {0x00, 0x00};
     const Span<uint8_t> span(data);
     BitStreamWriter writer(span, 15);
     ASSERT_THROW(BitStreamWriter wrongWriter(span, 17), CppRuntimeException);
@@ -146,7 +145,7 @@ TEST_F(BitStreamWriterTest, writeUnalignedData)
 TEST_F(BitStreamWriterTest, writeBits)
 {
     // check invalid bitlength acceptance
-    const std::array<uint8_t, 3> numBitsArray = { 255, 0, 33 };
+    const std::array<uint8_t, 3> numBitsArray = {255, 0, 33};
     for (uint8_t numBits : numBitsArray)
     {
         ASSERT_THROW(m_externalBufferWriter.writeBits(1, numBits), CppRuntimeException);
@@ -167,7 +166,7 @@ TEST_F(BitStreamWriterTest, writeBits)
 TEST_F(BitStreamWriterTest, writeBits64)
 {
     // check invalid bitlength acceptance
-    const std::array<uint8_t, 3> numBitsArray = { 255, 0, 65 };
+    const std::array<uint8_t, 3> numBitsArray = {255, 0, 65};
     for (uint8_t numBits : numBitsArray)
     {
         ASSERT_THROW(m_externalBufferWriter.writeBits64(1, numBits), CppRuntimeException);
@@ -188,7 +187,7 @@ TEST_F(BitStreamWriterTest, writeBits64)
 TEST_F(BitStreamWriterTest, writeSignedBits)
 {
     // check invalid bitlength acceptance
-    const std::array<uint8_t, 3> numBitsArray = { 255, 0, 33 };
+    const std::array<uint8_t, 3> numBitsArray = {255, 0, 33};
     for (uint8_t numBits : numBitsArray)
     {
         ASSERT_THROW(m_externalBufferWriter.writeSignedBits(1, numBits), CppRuntimeException);
@@ -198,7 +197,7 @@ TEST_F(BitStreamWriterTest, writeSignedBits)
     for (uint32_t i = 1; i < 32; ++i)
     {
         const int32_t minSigned = -static_cast<int32_t>(1U << (i - 1U));
-        const int32_t maxSigned =  static_cast<int32_t>((1U << (i - 1U)) - 1U);
+        const int32_t maxSigned = static_cast<int32_t>((1U << (i - 1U)) - 1U);
         m_externalBufferWriter.writeSignedBits(minSigned, static_cast<uint8_t>(i));
         m_externalBufferWriter.writeSignedBits(maxSigned, static_cast<uint8_t>(i));
 
@@ -214,7 +213,7 @@ TEST_F(BitStreamWriterTest, writeSignedBits)
 TEST_F(BitStreamWriterTest, writeSignedBits64)
 {
     // check invalid bitlength acceptance
-    const std::array<uint8_t, 3> numBitsArray = { 255, 0, 65 };
+    const std::array<uint8_t, 3> numBitsArray = {255, 0, 65};
     for (uint8_t numBits : numBitsArray)
     {
         ASSERT_THROW(m_externalBufferWriter.writeSignedBits64(1, numBits), CppRuntimeException);
@@ -224,7 +223,7 @@ TEST_F(BitStreamWriterTest, writeSignedBits64)
     for (int i = 1; i < 64; ++i)
     {
         const int64_t minSigned = -(INT64_C(1) << (i - 1));
-        const int64_t maxSigned =  (INT64_C(1) << (i - 1)) - 1;
+        const int64_t maxSigned = (INT64_C(1) << (i - 1)) - 1;
         m_externalBufferWriter.writeSignedBits64(minSigned, static_cast<uint8_t>(i));
         m_externalBufferWriter.writeSignedBits64(maxSigned, static_cast<uint8_t>(i));
 

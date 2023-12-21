@@ -2,8 +2,8 @@
 #define ZSERIO_REFLECTABLE_UTIL_H_INC
 
 #include <algorithm>
-#include <functional>
 #include <cmath>
+#include <functional>
 #include <limits>
 
 #include "zserio/CppRuntimeException.h"
@@ -20,11 +20,10 @@ namespace detail
 {
 
 template <typename T>
-struct gets_value_by_value : std::integral_constant<bool,
-        std::is_arithmetic<T>::value ||
-        std::is_same<StringView, T>::value ||
-        std::is_enum<T>::value ||
-        is_bitmask<T>::value>
+struct gets_value_by_value
+        : std::integral_constant<bool,
+                  std::is_arithmetic<T>::value || std::is_same<StringView, T>::value ||
+                          std::is_enum<T>::value || is_bitmask<T>::value>
 {};
 
 } // namespace detail
@@ -46,8 +45,7 @@ public:
      * \return True when the reflectables are equal, false otherwise.
      */
     template <typename ALLOC = std::allocator<uint8_t>>
-    static bool equal(const IBasicReflectableConstPtr<ALLOC>& lhs,
-            const IBasicReflectableConstPtr<ALLOC>& rhs);
+    static bool equal(const IBasicReflectableConstPtr<ALLOC>& lhs, const IBasicReflectableConstPtr<ALLOC>& rhs);
 
     /**
      * Gets native value from the given reflectable.
@@ -82,8 +80,8 @@ public:
      */
     template <typename T, typename ALLOC = std::allocator<uint8_t>,
             typename std::enable_if<!detail::gets_value_by_value<T>::value, int>::type = 0>
-    static const T& getValue(const IBasicReflectableConstPtr<ALLOC>& reflectable,
-            const ALLOC& allocator = ALLOC())
+    static const T& getValue(
+            const IBasicReflectableConstPtr<ALLOC>& reflectable, const ALLOC& allocator = ALLOC())
     {
         return reflectable->getAnyValue(allocator).template get<std::reference_wrapper<const T>>().get();
     }
@@ -102,9 +100,9 @@ public:
      * \throw CppRuntimeException When wrong type is requested ("Bad type in AnyHolder").
      */
     template <typename T, typename ALLOC = std::allocator<uint8_t>,
-            typename std::enable_if<
-                    !detail::gets_value_by_value<T>::value &&
-                    !std::is_same<BasicBitBuffer<ALLOC>, T>::value, int>::type = 0>
+            typename std::enable_if<!detail::gets_value_by_value<T>::value &&
+                            !std::is_same<BasicBitBuffer<ALLOC>, T>::value,
+                    int>::type = 0>
     static T& getValue(const IBasicReflectablePtr<ALLOC>& reflectable, const ALLOC& allocator = ALLOC())
     {
         return reflectable->getAnyValue(allocator).template get<std::reference_wrapper<T>>().get();
@@ -130,23 +128,23 @@ public:
 
 private:
     template <typename ALLOC>
-    static bool arraysEqual(const IBasicReflectableConstPtr<ALLOC>& lhsArray,
-            const IBasicReflectableConstPtr<ALLOC>& rhsArray);
+    static bool arraysEqual(
+            const IBasicReflectableConstPtr<ALLOC>& lhsArray, const IBasicReflectableConstPtr<ALLOC>& rhsArray);
 
     template <typename ALLOC>
     static bool compoundsEqual(const IBasicReflectableConstPtr<ALLOC>& lhsCompound,
             const IBasicReflectableConstPtr<ALLOC>& rhsCompound);
 
     template <typename ALLOC>
-    static bool valuesEqual(const IBasicReflectableConstPtr<ALLOC>& lhsValue,
-            const IBasicReflectableConstPtr<ALLOC>& rhsValue);
+    static bool valuesEqual(
+            const IBasicReflectableConstPtr<ALLOC>& lhsValue, const IBasicReflectableConstPtr<ALLOC>& rhsValue);
 
     static bool doubleValuesAlmostEqual(double lhs, double rhs);
 };
 
 template <typename ALLOC>
-bool ReflectableUtil::equal(const IBasicReflectableConstPtr<ALLOC>& lhs,
-        const IBasicReflectableConstPtr<ALLOC>& rhs)
+bool ReflectableUtil::equal(
+        const IBasicReflectableConstPtr<ALLOC>& lhs, const IBasicReflectableConstPtr<ALLOC>& rhs)
 {
     if (lhs == nullptr || rhs == nullptr)
         return lhs == rhs;
@@ -175,8 +173,8 @@ bool ReflectableUtil::equal(const IBasicReflectableConstPtr<ALLOC>& lhs,
 }
 
 template <typename ALLOC>
-bool ReflectableUtil::arraysEqual(const IBasicReflectableConstPtr<ALLOC>& lhsArray,
-        const IBasicReflectableConstPtr<ALLOC>& rhsArray)
+bool ReflectableUtil::arraysEqual(
+        const IBasicReflectableConstPtr<ALLOC>& lhsArray, const IBasicReflectableConstPtr<ALLOC>& rhsArray)
 {
     if (lhsArray->size() != rhsArray->size())
         return false;
@@ -230,8 +228,8 @@ bool ReflectableUtil::compoundsEqual(const IBasicReflectableConstPtr<ALLOC>& lhs
 }
 
 template <typename ALLOC>
-bool ReflectableUtil::valuesEqual(const IBasicReflectableConstPtr<ALLOC>& lhsValue,
-        const IBasicReflectableConstPtr<ALLOC>& rhsValue)
+bool ReflectableUtil::valuesEqual(
+        const IBasicReflectableConstPtr<ALLOC>& lhsValue, const IBasicReflectableConstPtr<ALLOC>& rhsValue)
 {
     CppType cppType = lhsValue->getTypeInfo().getCppType();
     if (cppType == CppType::ENUM || cppType == CppType::BITMASK)
@@ -279,8 +277,8 @@ inline bool ReflectableUtil::doubleValuesAlmostEqual(double lhs, double rhs)
         return std::isnan(lhs) && std::isnan(rhs);
 
     // see: https://en.cppreference.com/w/cpp/types/numeric_limits/epsilon
-    return std::fabs(lhs - rhs) <= std::numeric_limits<double>::epsilon() * std::fabs(lhs + rhs)
-            || std::fabs(lhs - rhs) < std::numeric_limits<double>::min();
+    return std::fabs(lhs - rhs) <= std::numeric_limits<double>::epsilon() * std::fabs(lhs + rhs) ||
+            std::fabs(lhs - rhs) < std::numeric_limits<double>::min();
 }
 
 } // namespace zserio

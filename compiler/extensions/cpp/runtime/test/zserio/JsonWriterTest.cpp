@@ -1,11 +1,10 @@
-#include "gtest/gtest.h"
-
 #include <sstream>
 #include <vector>
 
+#include "gtest/gtest.h"
 #include "zserio/JsonWriter.h"
-#include "zserio/TypeInfo.h"
 #include "zserio/Reflectable.h"
+#include "zserio/TypeInfo.h"
 
 namespace zserio
 {
@@ -14,61 +13,58 @@ class JsonWriterTest : public ::testing::Test
 {
 public:
     JsonWriterTest() :
-            BOOL_FIELD_INFO{"boolField"_sv, BuiltinTypeInfo<>::getBool(),
-                    {}, false, {}, {}, {}, false, {}, {}, false, {}, false, false},
-            INT8_FIELD_INFO{"int8Field"_sv, BuiltinTypeInfo<>::getInt8(),
-                    {}, false, {}, {}, {}, false, {}, {}, false, {}, false, false},
-            INT16_FIELD_INFO{"int16Field"_sv, BuiltinTypeInfo<>::getInt16(),
-                    {}, false, {}, {}, {}, false, {}, {}, false, {}, false, false},
-            INT32_FIELD_INFO{"int32Field"_sv, BuiltinTypeInfo<>::getInt32(),
-                    {}, false, {}, {}, {}, false, {}, {}, false, {}, false, false},
-            INT64_FIELD_INFO{"int64Field"_sv, BuiltinTypeInfo<>::getInt64(),
-                    {}, false, {}, {}, {}, false, {}, {}, false, {}, false, false},
-            UINT8_FIELD_INFO{"uint8Field"_sv, BuiltinTypeInfo<>::getUInt8(),
-                    {}, false, {}, {}, {}, false, {}, {}, false, {}, false, false},
-            UINT16_FIELD_INFO{"uint16Field"_sv, BuiltinTypeInfo<>::getUInt16(),
-                    {}, false, {}, {}, {}, false, {}, {}, false, {}, false, false},
-            UINT32_FIELD_INFO{"uint32Field"_sv, BuiltinTypeInfo<>::getUInt32(),
-                    {}, false, {}, {}, {}, false, {}, {}, false, {}, false, false},
-            UINT64_FIELD_INFO{"uint64Field"_sv, BuiltinTypeInfo<>::getUInt64(),
-                    {}, false, {}, {}, {}, false, {}, {}, false, {}, false, false},
-            FLOAT_FIELD_INFO{"floatField"_sv, BuiltinTypeInfo<>::getFloat32(),
-                    {}, false, {}, {}, {}, false, {}, {}, false, {}, false, false},
-            DOUBLE_FIELD_INFO{"doubleField"_sv, BuiltinTypeInfo<>::getFloat64(),
-                    {}, false, {}, {}, {}, false, {}, {}, false, {}, false, false},
-            BYTES_DATA_FIELD_INFO{"bytesData"_sv, BuiltinTypeInfo<>::getBytes(),
-                    {}, false, {}, {}, {}, false, {}, {}, false, {}, false, false},
-            STRING_FIELD_INFO{"stringField"_sv, BuiltinTypeInfo<>::getString(),
-                    {}, false, {}, {}, {}, false, {}, {}, false, {}, false, false},
-            EXTERN_DATA_FIELD_INFO{"externData"_sv, BuiltinTypeInfo<>::getBitBuffer(),
-                    {}, false, {}, {}, {}, false, {}, {}, false, {}, false, false},
-            IDENTIFIER_FIELD_INFO{"identifier", BuiltinTypeInfo<>::getUInt32(),
-                    {}, false, {}, {}, {}, false, {}, {}, false, {}, false, false},
+            BOOL_FIELD_INFO{"boolField"_sv, BuiltinTypeInfo<>::getBool(), {}, false, {}, {}, {}, false, {}, {},
+                    false, {}, false, false},
+            INT8_FIELD_INFO{"int8Field"_sv, BuiltinTypeInfo<>::getInt8(), {}, false, {}, {}, {}, false, {}, {},
+                    false, {}, false, false},
+            INT16_FIELD_INFO{"int16Field"_sv, BuiltinTypeInfo<>::getInt16(), {}, false, {}, {}, {}, false, {},
+                    {}, false, {}, false, false},
+            INT32_FIELD_INFO{"int32Field"_sv, BuiltinTypeInfo<>::getInt32(), {}, false, {}, {}, {}, false, {},
+                    {}, false, {}, false, false},
+            INT64_FIELD_INFO{"int64Field"_sv, BuiltinTypeInfo<>::getInt64(), {}, false, {}, {}, {}, false, {},
+                    {}, false, {}, false, false},
+            UINT8_FIELD_INFO{"uint8Field"_sv, BuiltinTypeInfo<>::getUInt8(), {}, false, {}, {}, {}, false, {},
+                    {}, false, {}, false, false},
+            UINT16_FIELD_INFO{"uint16Field"_sv, BuiltinTypeInfo<>::getUInt16(), {}, false, {}, {}, {}, false,
+                    {}, {}, false, {}, false, false},
+            UINT32_FIELD_INFO{"uint32Field"_sv, BuiltinTypeInfo<>::getUInt32(), {}, false, {}, {}, {}, false,
+                    {}, {}, false, {}, false, false},
+            UINT64_FIELD_INFO{"uint64Field"_sv, BuiltinTypeInfo<>::getUInt64(), {}, false, {}, {}, {}, false,
+                    {}, {}, false, {}, false, false},
+            FLOAT_FIELD_INFO{"floatField"_sv, BuiltinTypeInfo<>::getFloat32(), {}, false, {}, {}, {}, false, {},
+                    {}, false, {}, false, false},
+            DOUBLE_FIELD_INFO{"doubleField"_sv, BuiltinTypeInfo<>::getFloat64(), {}, false, {}, {}, {}, false,
+                    {}, {}, false, {}, false, false},
+            BYTES_DATA_FIELD_INFO{"bytesData"_sv, BuiltinTypeInfo<>::getBytes(), {}, false, {}, {}, {}, false,
+                    {}, {}, false, {}, false, false},
+            STRING_FIELD_INFO{"stringField"_sv, BuiltinTypeInfo<>::getString(), {}, false, {}, {}, {}, false,
+                    {}, {}, false, {}, false, false},
+            EXTERN_DATA_FIELD_INFO{"externData"_sv, BuiltinTypeInfo<>::getBitBuffer(), {}, false, {}, {}, {},
+                    false, {}, {}, false, {}, false, false},
+            IDENTIFIER_FIELD_INFO{"identifier", BuiltinTypeInfo<>::getUInt32(), {}, false, {}, {}, {}, false,
+                    {}, {}, false, {}, false, false},
             DUMMY_TYPE_INFO{"Dummy"_sv, nullptr, {}, {}, {}, {}, {}},
-            NESTED_FIELD_INFO{"nested"_sv, DUMMY_TYPE_INFO,
-                    {}, false, {}, {}, {}, false, {}, {}, false, {}, false, false},
-            ARRAY_FIELD_INFO{"array", BuiltinTypeInfo<>::getUInt32(),
-                    {}, false, {}, {}, {}, false, {}, {}, true, {}, false, false},
-            INT8_ENUM_ITEMS{
-                    ItemInfo{"ZERO"_sv, static_cast<uint64_t>(0), false, false},
+            NESTED_FIELD_INFO{"nested"_sv, DUMMY_TYPE_INFO, {}, false, {}, {}, {}, false, {}, {}, false, {},
+                    false, false},
+            ARRAY_FIELD_INFO{"array", BuiltinTypeInfo<>::getUInt32(), {}, false, {}, {}, {}, false, {}, {},
+                    true, {}, false, false},
+            INT8_ENUM_ITEMS{ItemInfo{"ZERO"_sv, static_cast<uint64_t>(0), false, false},
                     ItemInfo{"One"_sv, static_cast<uint64_t>(1), false, false},
                     ItemInfo{"MINUS_ONE"_sv, static_cast<uint64_t>(-1), false, false}},
             INT8_ENUM_TYPE_INFO{"DummyEnum"_sv, BuiltinTypeInfo<>::getInt8(), {}, INT8_ENUM_ITEMS},
-            INT8_ENUM_FIELD_INFO{"enumField"_sv, INT8_ENUM_TYPE_INFO,
-                    {}, false, {}, {}, {}, false, {}, {}, false, {}, false, false},
-            UINT8_ENUM_ITEMS{
-                    ItemInfo{"ZERO"_sv, static_cast<uint64_t>(0), false, false},
+            INT8_ENUM_FIELD_INFO{"enumField"_sv, INT8_ENUM_TYPE_INFO, {}, false, {}, {}, {}, false, {}, {},
+                    false, {}, false, false},
+            UINT8_ENUM_ITEMS{ItemInfo{"ZERO"_sv, static_cast<uint64_t>(0), false, false},
                     ItemInfo{"One"_sv, static_cast<uint64_t>(1), false, false}},
             UINT8_ENUM_TYPE_INFO{"DummyEnum"_sv, BuiltinTypeInfo<>::getUInt8(), {}, UINT8_ENUM_ITEMS},
-            UINT8_ENUM_FIELD_INFO{"enumField"_sv, UINT8_ENUM_TYPE_INFO,
-                    {}, false, {}, {}, {}, false, {}, {}, false, {}, false, false},
-            BITMASK_ITEMS{
-                    ItemInfo{"ZERO"_sv, static_cast<uint64_t>(0), false, false},
+            UINT8_ENUM_FIELD_INFO{"enumField"_sv, UINT8_ENUM_TYPE_INFO, {}, false, {}, {}, {}, false, {}, {},
+                    false, {}, false, false},
+            BITMASK_ITEMS{ItemInfo{"ZERO"_sv, static_cast<uint64_t>(0), false, false},
                     ItemInfo{"One"_sv, static_cast<uint64_t>(1), false, false},
                     ItemInfo{"TWO"_sv, static_cast<uint64_t>(2), false, false}},
             BITMASK_TYPE_INFO{"DummyBitmask"_sv, BuiltinTypeInfo<>::getUInt32(), {}, BITMASK_ITEMS},
-            BITMASK_FIELD_INFO{"bitmaskField"_sv, BITMASK_TYPE_INFO,
-                    {}, false, {}, {}, {}, false, {}, {}, false, {}, false, false}
+            BITMASK_FIELD_INFO{"bitmaskField"_sv, BITMASK_TYPE_INFO, {}, false, {}, {}, {}, false, {}, {},
+                    false, {}, false, false}
     {}
 
 protected:
@@ -305,8 +301,8 @@ TEST_F(JsonWriterTest, externValue)
     IWalkObserver& observer = jsonWriter;
 
     BitBuffer bitBuffer({0xFF, 0x1F}, 13);
-    observer.visitValue(ReflectableFactory::getBitBuffer(bitBuffer), EXTERN_DATA_FIELD_INFO,
-            WALKER_NOT_ELEMENT);
+    observer.visitValue(
+            ReflectableFactory::getBitBuffer(bitBuffer), EXTERN_DATA_FIELD_INFO, WALKER_NOT_ELEMENT);
 
     // note that this is not valid json
     ASSERT_EQ("\"externData\": {\"buffer\": [255, 31], \"bitSize\": 13}", os.str());
@@ -346,11 +342,11 @@ TEST_F(JsonWriterTest, signedEnumValue)
         observer.visitValue(reflectableMinusOne, INT8_ENUM_FIELD_INFO, WALKER_NOT_ELEMENT);
 
         // note that this is not valid json
-        ASSERT_EQ(
-                "\"enumField\": \"ZERO\", "
-                "\"enumField\": \"One\", "
-                "\"enumField\": \"2 /* no match */\", "
-                "\"enumField\": \"MINUS_ONE\"", os.str());
+        ASSERT_EQ("\"enumField\": \"ZERO\", "
+                  "\"enumField\": \"One\", "
+                  "\"enumField\": \"2 /* no match */\", "
+                  "\"enumField\": \"MINUS_ONE\"",
+                os.str());
     }
 
     {
@@ -399,10 +395,10 @@ TEST_F(JsonWriterTest, unsignedEnumValue)
         observer.visitValue(reflectableTwo, UINT8_ENUM_FIELD_INFO, WALKER_NOT_ELEMENT);
 
         // note that this is not valid json
-        ASSERT_EQ(
-                "\"enumField\": \"ZERO\", "
-                "\"enumField\": \"One\", "
-                "\"enumField\": \"2 /* no match */\"", os.str());
+        ASSERT_EQ("\"enumField\": \"ZERO\", "
+                  "\"enumField\": \"One\", "
+                  "\"enumField\": \"2 /* no match */\"",
+                os.str());
     }
 
     {
@@ -423,8 +419,8 @@ TEST_F(JsonWriterTest, bitmaskValue)
     class DummyBitmaskReflectable : public ReflectableBase<std::allocator<uint8_t>>
     {
     public:
-        explicit DummyBitmaskReflectable(uint8_t value,
-                const BitmaskTypeInfo<std::allocator<uint8_t>>& typeInfo) :
+        explicit DummyBitmaskReflectable(
+                uint8_t value, const BitmaskTypeInfo<std::allocator<uint8_t>>& typeInfo) :
                 ReflectableBase<std::allocator<uint8_t>>(typeInfo),
                 m_value(value)
         {}
@@ -455,12 +451,12 @@ TEST_F(JsonWriterTest, bitmaskValue)
         observer.visitValue(reflectableSeven, BITMASK_FIELD_INFO, WALKER_NOT_ELEMENT);
 
         // note that this is not valid json
-        ASSERT_EQ(
-                "\"bitmaskField\": \"ZERO\", "
-                "\"bitmaskField\": \"TWO\", "
-                "\"bitmaskField\": \"One | TWO\", "
-                "\"bitmaskField\": \"4 /* no match */\", "
-                "\"bitmaskField\": \"7 /* partial match: One | TWO */\"", os.str());
+        ASSERT_EQ("\"bitmaskField\": \"ZERO\", "
+                  "\"bitmaskField\": \"TWO\", "
+                  "\"bitmaskField\": \"One | TWO\", "
+                  "\"bitmaskField\": \"4 /* no match */\", "
+                  "\"bitmaskField\": \"7 /* partial match: One | TWO */\"",
+                os.str());
     }
 
     {
@@ -484,27 +480,29 @@ TEST_F(JsonWriterTest, unexpectedValue)
     class Reflectable : public ::zserio::ReflectableAllocatorHolderBase<allocator_type>
     {
     public:
-        explicit Reflectable(const StructTypeInfo<allocator_type>& structTypeInfo,
-                const allocator_type& allocator) :
+        explicit Reflectable(
+                const StructTypeInfo<allocator_type>& structTypeInfo, const allocator_type& allocator) :
                 ::zserio::ReflectableAllocatorHolderBase<allocator_type>(structTypeInfo, allocator)
         {}
     };
     auto reflectable = std::allocate_shared<Reflectable>(allocator_type(), structTypeInfo, allocator_type());
 
-    ASSERT_THROW({
-        try
-        {
-            std::ostringstream os;
-            JsonWriter jsonWriter(os);
-            IWalkObserver& observer = jsonWriter;
-            observer.visitValue(reflectable, BOOL_FIELD_INFO, WALKER_NOT_ELEMENT);
-        }
-        catch (const CppRuntimeException& e)
-        {
-            ASSERT_STREQ("JsonWriter: Unexpected not-null value of type 'Struct'!", e.what());
-            throw;
-        }
-    }, CppRuntimeException);
+    ASSERT_THROW(
+            {
+                try
+                {
+                    std::ostringstream os;
+                    JsonWriter jsonWriter(os);
+                    IWalkObserver& observer = jsonWriter;
+                    observer.visitValue(reflectable, BOOL_FIELD_INFO, WALKER_NOT_ELEMENT);
+                }
+                catch (const CppRuntimeException& e)
+                {
+                    ASSERT_STREQ("JsonWriter: Unexpected not-null value of type 'Struct'!", e.what());
+                    throw;
+                }
+            },
+            CppRuntimeException);
 }
 
 TEST_F(JsonWriterTest, compound)
@@ -517,15 +515,16 @@ TEST_F(JsonWriterTest, compound)
     observer.visitValue(ReflectableFactory::getUInt32(13), IDENTIFIER_FIELD_INFO, WALKER_NOT_ELEMENT);
     observer.visitValue(ReflectableFactory::getString("test"_sv), STRING_FIELD_INFO, WALKER_NOT_ELEMENT);
     BitBuffer bitBuffer({0xFF, 0x1F}, 13);
-    observer.visitValue(ReflectableFactory::getBitBuffer(bitBuffer), EXTERN_DATA_FIELD_INFO,
-            WALKER_NOT_ELEMENT);
+    observer.visitValue(
+            ReflectableFactory::getBitBuffer(bitBuffer), EXTERN_DATA_FIELD_INFO, WALKER_NOT_ELEMENT);
     vector<uint8_t> bytesData{{0xCA, 0xFE}};
     observer.visitValue(ReflectableFactory::getBytes(bytesData), BYTES_DATA_FIELD_INFO, WALKER_NOT_ELEMENT);
     observer.endRoot(nullptr);
 
     ASSERT_EQ("{\"identifier\": 13, \"stringField\": \"test\", "
-            "\"externData\": {\"buffer\": [255, 31], \"bitSize\": 13}, "
-            "\"bytesData\": {\"buffer\": [202, 254]}}", os.str());
+              "\"externData\": {\"buffer\": [255, 31], \"bitSize\": 13}, "
+              "\"bytesData\": {\"buffer\": [202, 254]}}",
+            os.str());
 }
 
 TEST_F(JsonWriterTest, compoundArray)

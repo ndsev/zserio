@@ -1,18 +1,18 @@
 #ifndef ZSERIO_ARRAY_TRAITS_H_INC
 #define ZSERIO_ARRAY_TRAITS_H_INC
 
-#include <type_traits>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include "zserio/BitPositionUtil.h"
 #include "zserio/BitSizeOfCalculator.h"
-#include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
-#include "zserio/Enums.h"
-#include "zserio/Traits.h"
-#include "zserio/SizeConvertUtil.h"
+#include "zserio/BitStreamWriter.h"
 #include "zserio/DeltaContext.h"
+#include "zserio/Enums.h"
+#include "zserio/SizeConvertUtil.h"
+#include "zserio/Traits.h"
 
 namespace zserio
 {
@@ -1777,8 +1777,7 @@ public:
      * \param index Index need in case of parameterized type which depends on the current index.
      */
     template <typename RAW_ARRAY>
-    static void read(OwnerType& owner, RAW_ARRAY& rawArray,
-            BitStreamReader& in, size_t index)
+    static void read(OwnerType& owner, RAW_ARRAY& rawArray, BitStreamReader& in, size_t index)
     {
         ELEMENT_FACTORY::create(owner, rawArray, in, index);
     }
@@ -1943,8 +1942,7 @@ public:
      *
      * \return Length of the array element stored in the bit stream in bits.
      */
-    static size_t bitSizeOf(const OwnerType& owner,
-            DeltaContext& deltaContext, size_t, ElementType element)
+    static size_t bitSizeOf(const OwnerType& owner, DeltaContext& deltaContext, size_t, ElementType element)
     {
         return deltaContext.template bitSizeOf<ArrayTraits>(owner, element);
     }
@@ -1961,8 +1959,8 @@ public:
      *
      * \return Updated bit stream position which points to the first bit after this element.
      */
-    static size_t initializeOffsets(const OwnerType& owner,
-            DeltaContext& deltaContext, size_t bitPosition, ElementType element)
+    static size_t initializeOffsets(
+            const OwnerType& owner, DeltaContext& deltaContext, size_t bitPosition, ElementType element)
     {
         return bitPosition + bitSizeOf(owner, deltaContext, bitPosition, element);
     }
@@ -1993,8 +1991,8 @@ public:
      * \param out Bit stream writer.
      * \param element Element to write.
      */
-    static void write(const OwnerType& owner,
-            DeltaContext& deltaContext, BitStreamWriter& out, ElementType element)
+    static void write(
+            const OwnerType& owner, DeltaContext& deltaContext, BitStreamWriter& out, ElementType element)
     {
         deltaContext.template write<ArrayTraits>(owner, out, element);
     }
@@ -2046,8 +2044,7 @@ public:
      *
      * \return Updated bit stream position which points to the first bit after this element.
      */
-    static size_t initializeOffsets(DeltaContext& deltaContext,
-            size_t bitPosition, ElementType element)
+    static size_t initializeOffsets(DeltaContext& deltaContext, size_t bitPosition, ElementType element)
     {
         return zserio::initializeOffsets(deltaContext, bitPosition, element);
     }
@@ -2182,8 +2179,8 @@ public:
      * \param packingContext Packing context node which keeps the appropriate subtree of contexts.
      */
     template <typename PACKING_CONTEXT>
-    static void initContext(const typename ArrayTraits::OwnerType&,
-            PACKING_CONTEXT& packingContext, const ElementType& element)
+    static void initContext(
+            const typename ArrayTraits::OwnerType&, PACKING_CONTEXT& packingContext, const ElementType& element)
     {
         element.initPackingContext(packingContext);
     }
@@ -2198,8 +2195,8 @@ public:
      * \return Length of the array element stored in the bit stream in bits.
      */
     template <typename PACKING_CONTEXT>
-    static size_t bitSizeOf(const typename ArrayTraits::OwnerType&,
-            PACKING_CONTEXT& packingContext, size_t bitPosition, const ElementType& element)
+    static size_t bitSizeOf(const typename ArrayTraits::OwnerType&, PACKING_CONTEXT& packingContext,
+            size_t bitPosition, const ElementType& element)
     {
         return element.bitSizeOf(packingContext, bitPosition);
     }
@@ -2214,8 +2211,8 @@ public:
      * \return Updated bit stream position which points to the first bit after this element.
      */
     template <typename PACKING_CONTEXT>
-    static size_t initializeOffsets(const typename ArrayTraits::OwnerType&,
-            PACKING_CONTEXT& packingContext, size_t bitPosition, ElementType& element)
+    static size_t initializeOffsets(const typename ArrayTraits::OwnerType&, PACKING_CONTEXT& packingContext,
+            size_t bitPosition, ElementType& element)
     {
         return element.initializeOffsets(packingContext, bitPosition);
     }
@@ -2245,8 +2242,8 @@ public:
      * \param element Element to write.
      */
     template <typename PACKING_CONTEXT>
-    static void write(const typename ArrayTraits::OwnerType&,
-            PACKING_CONTEXT& packingContext, BitStreamWriter& out, const ElementType& element)
+    static void write(const typename ArrayTraits::OwnerType&, PACKING_CONTEXT& packingContext,
+            BitStreamWriter& out, const ElementType& element)
     {
         element.write(packingContext, out);
     }

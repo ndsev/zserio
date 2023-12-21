@@ -2,6 +2,7 @@
 #define ZSERIO_TRAITS_H_INC
 
 #include <type_traits>
+
 #include "zserio/NoInit.h"
 #include "zserio/RebindAlloc.h"
 
@@ -81,10 +82,13 @@ struct decltype_initialize_element
     using type = U;
 };
 
-template <typename ...T>
-struct make_void { using type = void; };
+template <typename... T>
+struct make_void
+{
+    using type = void;
+};
 
-template <typename ...T>
+template <typename... T>
 using void_t = typename make_void<T...>::type;
 
 } // namespace detail
@@ -98,8 +102,9 @@ struct is_allocator : std::false_type
 {};
 
 template <typename T>
-struct is_allocator<T, detail::void_t<typename detail::decltype_allocate<T>::type,
-        typename detail::decltype_deallocate<T>::type>> : std::true_type
+struct is_allocator<T,
+        detail::void_t<typename detail::decltype_allocate<T>::type,
+                typename detail::decltype_deallocate<T>::type>> : std::true_type
 {};
 /** \} */
 
@@ -107,11 +112,11 @@ struct is_allocator<T, detail::void_t<typename detail::decltype_allocate<T>::typ
  * Trait used to check whether the first type of ARGS is an allocator.
  * \{
  */
-template <typename ...ARGS>
+template <typename... ARGS>
 struct is_first_allocator : std::false_type
 {};
 
-template <typename T, typename ...ARGS>
+template <typename T, typename... ARGS>
 struct is_first_allocator<T, ARGS...> : is_allocator<T>
 {};
 /** \} */
@@ -177,8 +182,8 @@ struct has_initialize_children : std::false_type
 {};
 
 template <typename T>
-struct has_initialize_children<T,
-        detail::void_t<typename detail::decltype_initialize_children<T>::type>> : std::true_type
+struct has_initialize_children<T, detail::void_t<typename detail::decltype_initialize_children<T>::type>>
+        : std::true_type
 {};
 /** \} */
 
@@ -204,8 +209,8 @@ struct has_initialize_offset : std::false_type
 {};
 
 template <typename T>
-struct has_initialize_offset<T,
-        detail::void_t<typename detail::decltype_initialize_offset<T>::type>> : std::true_type
+struct has_initialize_offset<T, detail::void_t<typename detail::decltype_initialize_offset<T>::type>>
+        : std::true_type
 {};
 /**
  * \}
@@ -220,8 +225,7 @@ struct has_check_offset : std::false_type
 {};
 
 template <typename T>
-struct has_check_offset<T,
-        detail::void_t<typename detail::decltype_check_offset<T>::type>> : std::true_type
+struct has_check_offset<T, detail::void_t<typename detail::decltype_check_offset<T>::type>> : std::true_type
 {};
 /**
  * \}
@@ -236,8 +240,8 @@ struct has_initialize_element : std::false_type
 {};
 
 template <typename T>
-struct has_initialize_element<T,
-        detail::void_t<typename detail::decltype_initialize_element<T>::type>> : std::true_type
+struct has_initialize_element<T, detail::void_t<typename detail::decltype_initialize_element<T>::type>>
+        : std::true_type
 {};
 /**
  * \}
@@ -252,8 +256,8 @@ struct is_bitmask : std::false_type
 {};
 
 template <typename T>
-struct is_bitmask<T, detail::void_t<typename detail::decltype_get_value<T>::type,
-        typename T::underlying_type>> : std::true_type
+struct is_bitmask<T, detail::void_t<typename detail::decltype_get_value<T>::type, typename T::underlying_type>>
+        : std::true_type
 {};
 /**
  * \}
@@ -279,26 +283,26 @@ struct is_span<Span<T, Extent>> : std::true_type
  * \{
  */
 template <typename FIELD_TYPE, typename COMPOUND_TYPE, typename ALLOCATOR_TYPE, typename = void>
-struct is_field_constructor_enabled : std::enable_if<
-        !std::is_same<typename std::decay<FIELD_TYPE>::type, ALLOCATOR_TYPE>::value &&
-        !std::is_same<typename std::decay<FIELD_TYPE>::type, BitStreamReader>::value &&
-        !std::is_same<typename std::decay<FIELD_TYPE>::type, COMPOUND_TYPE>::value &&
-        !std::is_same<typename std::decay<FIELD_TYPE>::type, PropagateAllocatorT>::value &&
-        !std::is_same<typename std::decay<FIELD_TYPE>::type, NoInitT>::value,
-        int>
+struct is_field_constructor_enabled
+        : std::enable_if<!std::is_same<typename std::decay<FIELD_TYPE>::type, ALLOCATOR_TYPE>::value &&
+                          !std::is_same<typename std::decay<FIELD_TYPE>::type, BitStreamReader>::value &&
+                          !std::is_same<typename std::decay<FIELD_TYPE>::type, COMPOUND_TYPE>::value &&
+                          !std::is_same<typename std::decay<FIELD_TYPE>::type, PropagateAllocatorT>::value &&
+                          !std::is_same<typename std::decay<FIELD_TYPE>::type, NoInitT>::value,
+                  int>
 {};
 
 template <typename FIELD_TYPE, typename COMPOUND_TYPE, typename ALLOCATOR_TYPE>
 struct is_field_constructor_enabled<FIELD_TYPE, COMPOUND_TYPE, ALLOCATOR_TYPE,
-        detail::void_t<typename COMPOUND_TYPE::ZserioPackingContext>> : std::enable_if<
-        !std::is_same<typename std::decay<FIELD_TYPE>::type, ALLOCATOR_TYPE>::value &&
-        !std::is_same<typename std::decay<FIELD_TYPE>::type, BitStreamReader>::value &&
-        !std::is_same<typename std::decay<FIELD_TYPE>::type, COMPOUND_TYPE>::value &&
-        !std::is_same<typename std::decay<FIELD_TYPE>::type, PropagateAllocatorT>::value &&
-        !std::is_same<typename std::decay<FIELD_TYPE>::type, NoInitT>::value &&
-        !std::is_same<typename std::decay<FIELD_TYPE>::type,
-                typename COMPOUND_TYPE::ZserioPackingContext>::value,
-        int>
+        detail::void_t<typename COMPOUND_TYPE::ZserioPackingContext>>
+        : std::enable_if<!std::is_same<typename std::decay<FIELD_TYPE>::type, ALLOCATOR_TYPE>::value &&
+                          !std::is_same<typename std::decay<FIELD_TYPE>::type, BitStreamReader>::value &&
+                          !std::is_same<typename std::decay<FIELD_TYPE>::type, COMPOUND_TYPE>::value &&
+                          !std::is_same<typename std::decay<FIELD_TYPE>::type, PropagateAllocatorT>::value &&
+                          !std::is_same<typename std::decay<FIELD_TYPE>::type, NoInitT>::value &&
+                          !std::is_same<typename std::decay<FIELD_TYPE>::type,
+                                  typename COMPOUND_TYPE::ZserioPackingContext>::value,
+                  int>
 {};
 /** \} */
 

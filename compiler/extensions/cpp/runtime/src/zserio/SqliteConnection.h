@@ -1,13 +1,13 @@
 #ifndef ZSERIO_SQL_CONNECTION_H_INC
 #define ZSERIO_SQL_CONNECTION_H_INC
 
-#include "sqlite3.h"
-
 #include <memory>
 
-#include "zserio/StringView.h"
 #include "zserio/SqliteException.h"
 #include "zserio/SqliteFinalizer.h"
+#include "zserio/StringView.h"
+
+#include "sqlite3.h"
 
 namespace zserio
 {
@@ -35,8 +35,8 @@ public:
      * \param connection Pointer to the SQLite connection.
      * \param connectionType Type of the connection. Default is INTERNAL_CONNECTION.
      */
-    explicit SqliteConnection(sqlite3* connection = nullptr,
-            ConnectionType connectionType = INTERNAL_CONNECTION);
+    explicit SqliteConnection(
+            sqlite3* connection = nullptr, ConnectionType connectionType = INTERNAL_CONNECTION);
 
     /**
      * Destructor.
@@ -126,8 +126,9 @@ private:
     ConnectionType m_connectionType;
 };
 
-inline SqliteConnection::SqliteConnection(sqlite3* connection, ConnectionType connectionType)
-:   m_connection(connection), m_connectionType(connectionType)
+inline SqliteConnection::SqliteConnection(sqlite3* connection, ConnectionType connectionType) :
+        m_connection(connection),
+        m_connectionType(connectionType)
 {}
 
 inline SqliteConnection::~SqliteConnection()
@@ -161,20 +162,20 @@ inline void SqliteConnection::executeUpdate(StringView sqlQuery)
     int result = sqlite3_step(statement.get());
     if (result != SQLITE_DONE)
     {
-        throw SqliteException("SqliteConnection::executeUpdate(): sqlite3_step failed: ") <<
-                SqliteErrorCode(result);
+        throw SqliteException("SqliteConnection::executeUpdate(): sqlite3_step failed: ")
+                << SqliteErrorCode(result);
     }
 }
 
 inline sqlite3_stmt* SqliteConnection::prepareStatement(StringView sqlQuery)
 {
     sqlite3_stmt* statement = nullptr;
-    const int result = sqlite3_prepare_v2(m_connection, sqlQuery.data(), static_cast<int>(sqlQuery.size()),
-            &statement, nullptr);
+    const int result = sqlite3_prepare_v2(
+            m_connection, sqlQuery.data(), static_cast<int>(sqlQuery.size()), &statement, nullptr);
     if (result != SQLITE_OK)
     {
-        throw SqliteException("SqliteConnection::prepareStatement(): sqlite3_prepare_v2() failed: ") <<
-                SqliteErrorCode(result);
+        throw SqliteException("SqliteConnection::prepareStatement(): sqlite3_prepare_v2() failed: ")
+                << SqliteErrorCode(result);
     }
 
     return statement;

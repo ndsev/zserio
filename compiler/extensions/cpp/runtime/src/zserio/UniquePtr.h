@@ -3,8 +3,9 @@
 
 #include <memory>
 #include <type_traits>
-#include "zserio/RebindAlloc.h"
+
 #include "zserio/AllocatorHolder.h"
+#include "zserio/RebindAlloc.h"
 
 namespace zserio
 {
@@ -47,8 +48,7 @@ struct UniquePtrDeleter : public AllocatorHolder<ALLOC_T>
     template <typename ALLOC_U = ALLOC_T>
     UniquePtrDeleter() :
             UniquePtrDeleter(ALLOC_U())
-    {
-    }
+    {}
 
     /**
      * Constructor from given allocator.
@@ -97,9 +97,8 @@ using unique_ptr = std::unique_ptr<T, detail::UniquePtrDeleter<ALLOC>>;
  *
  * \return Object of type zserio::unique_ptr<T, ALLOC> that owns and stores a pointer to the constructed object.
  */
-template <typename T, typename ALLOC, class ...Args>
-zserio::unique_ptr<T, RebindAlloc<ALLOC, T>>
-allocate_unique(const ALLOC& allocator, Args&& ...args)
+template <typename T, typename ALLOC, class... Args>
+zserio::unique_ptr<T, RebindAlloc<ALLOC, T>> allocate_unique(const ALLOC& allocator, Args&&... args)
 {
     using Allocator = RebindAlloc<ALLOC, T>;
     using AllocTraits = std::allocator_traits<Allocator>;

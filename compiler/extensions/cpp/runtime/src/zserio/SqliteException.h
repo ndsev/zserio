@@ -1,9 +1,9 @@
 #ifndef ZSERIO_SQLITE_EXCEPTION_H_INC
 #define ZSERIO_SQLITE_EXCEPTION_H_INC
 
-#include "sqlite3.h"
-
 #include "zserio/CppRuntimeException.h"
+
+#include "sqlite3.h"
 
 namespace zserio
 {
@@ -17,7 +17,8 @@ public:
      *
      * \param sqliteCode SQLite error code.
      */
-    explicit SqliteErrorCode(int sqliteCode) : m_code(sqliteCode)
+    explicit SqliteErrorCode(int sqliteCode) :
+            m_code(sqliteCode)
     {}
 
     /**

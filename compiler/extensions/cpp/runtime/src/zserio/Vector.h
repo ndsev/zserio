@@ -2,6 +2,7 @@
 #define ZSERIO_VECTOR_H_INC
 
 #include <vector>
+
 #include "zserio/RebindAlloc.h"
 
 namespace zserio

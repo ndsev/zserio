@@ -10,9 +10,9 @@
 #include "zserio/BitStreamReader.h"
 #include "zserio/BitStreamWriter.h"
 #include "zserio/DeltaContext.h"
+#include "zserio/SizeConvertUtil.h"
 #include "zserio/Traits.h"
 #include "zserio/UniquePtr.h"
-#include "zserio/SizeConvertUtil.h"
 
 namespace zserio
 {
@@ -92,32 +92,32 @@ void checkOffset(const OWNER_TYPE&, size_t, size_t)
 // call the initContext method properly on packed array traits
 template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT,
         typename std::enable_if<has_owner_type<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
-void packedArrayTraitsInitContext(const OWNER_TYPE& owner, PACKING_CONTEXT& context,
-        typename PACKED_ARRAY_TRAITS::ElementType element)
+void packedArrayTraitsInitContext(
+        const OWNER_TYPE& owner, PACKING_CONTEXT& context, typename PACKED_ARRAY_TRAITS::ElementType element)
 {
     PACKED_ARRAY_TRAITS::initContext(owner, context, element);
 }
 
 template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT,
         typename std::enable_if<!has_owner_type<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
-void packedArrayTraitsInitContext(const OWNER_TYPE&, PACKING_CONTEXT& context,
-        typename PACKED_ARRAY_TRAITS::ElementType element)
+void packedArrayTraitsInitContext(
+        const OWNER_TYPE&, PACKING_CONTEXT& context, typename PACKED_ARRAY_TRAITS::ElementType element)
 {
     PACKED_ARRAY_TRAITS::initContext(context, element);
 }
 
 // calls the bitSizeOf method properly on array traits which have constant bit size
 template <typename ARRAY_TRAITS, typename OWNER_TYPE,
-        typename std::enable_if<
-                ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT && has_owner_type<ARRAY_TRAITS>::value, int>::type = 0>
+        typename std::enable_if<ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT && has_owner_type<ARRAY_TRAITS>::value,
+                int>::type = 0>
 size_t arrayTraitsConstBitSizeOf(const OWNER_TYPE& owner)
 {
     return ARRAY_TRAITS::bitSizeOf(owner);
 }
 
 template <typename ARRAY_TRAITS, typename OWNER_TYPE,
-        typename std::enable_if<
-                ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT && !has_owner_type<ARRAY_TRAITS>::value, int>::type = 0>
+        typename std::enable_if<ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT && !has_owner_type<ARRAY_TRAITS>::value,
+                int>::type = 0>
 size_t arrayTraitsConstBitSizeOf(const OWNER_TYPE&)
 {
     return ARRAY_TRAITS::bitSizeOf();
@@ -126,16 +126,16 @@ size_t arrayTraitsConstBitSizeOf(const OWNER_TYPE&)
 // calls the bitSizeOf method properly on array traits which haven't constant bit size
 template <typename ARRAY_TRAITS, typename OWNER_TYPE,
         typename std::enable_if<has_owner_type<ARRAY_TRAITS>::value, int>::type = 0>
-size_t arrayTraitsBitSizeOf(const OWNER_TYPE& owner, size_t bitPosition,
-        const typename ARRAY_TRAITS::ElementType& element)
+size_t arrayTraitsBitSizeOf(
+        const OWNER_TYPE& owner, size_t bitPosition, const typename ARRAY_TRAITS::ElementType& element)
 {
     return ARRAY_TRAITS::bitSizeOf(owner, bitPosition, element);
 }
 
 template <typename ARRAY_TRAITS, typename OWNER_TYPE,
         typename std::enable_if<!has_owner_type<ARRAY_TRAITS>::value, int>::type = 0>
-size_t arrayTraitsBitSizeOf(const OWNER_TYPE&, size_t bitPosition,
-        const typename ARRAY_TRAITS::ElementType& element)
+size_t arrayTraitsBitSizeOf(
+        const OWNER_TYPE&, size_t bitPosition, const typename ARRAY_TRAITS::ElementType& element)
 {
     return ARRAY_TRAITS::bitSizeOf(bitPosition, element);
 }
@@ -143,8 +143,8 @@ size_t arrayTraitsBitSizeOf(const OWNER_TYPE&, size_t bitPosition,
 // calls the bitSizeOf method properly on packed array traits which haven't constant bit size
 template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT,
         typename std::enable_if<has_owner_type<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
-size_t packedArrayTraitsBitSizeOf(const OWNER_TYPE& owner, PACKING_CONTEXT& context,
-        size_t bitPosition, const typename PACKED_ARRAY_TRAITS::ElementType& element)
+size_t packedArrayTraitsBitSizeOf(const OWNER_TYPE& owner, PACKING_CONTEXT& context, size_t bitPosition,
+        const typename PACKED_ARRAY_TRAITS::ElementType& element)
 {
     return PACKED_ARRAY_TRAITS::bitSizeOf(owner, context, bitPosition, element);
 }
@@ -160,24 +160,26 @@ size_t packedArrayTraitsBitSizeOf(const OWNER_TYPE&, PACKING_CONTEXT& context, s
 // calls the initializeOffsets method properly on array traits
 template <typename ARRAY_TRAITS, typename OWNER_TYPE,
         typename std::enable_if<has_owner_type<ARRAY_TRAITS>::value, int>::type = 0>
-size_t arrayTraitsInitializeOffsets(OWNER_TYPE& owner, size_t bitPosition,
-        typename ARRAY_TRAITS::ElementType& element)
+size_t arrayTraitsInitializeOffsets(
+        OWNER_TYPE& owner, size_t bitPosition, typename ARRAY_TRAITS::ElementType& element)
 {
     return ARRAY_TRAITS::initializeOffsets(owner, bitPosition, element);
 }
 
 template <typename ARRAY_TRAITS, typename OWNER_TYPE,
         typename std::enable_if<!has_owner_type<ARRAY_TRAITS>::value &&
-                !std::is_scalar<typename ARRAY_TRAITS::ElementType>::value, int>::type = 0>
-size_t arrayTraitsInitializeOffsets(OWNER_TYPE&, size_t bitPosition,
-        const typename ARRAY_TRAITS::ElementType& element)
+                        !std::is_scalar<typename ARRAY_TRAITS::ElementType>::value,
+                int>::type = 0>
+size_t arrayTraitsInitializeOffsets(
+        OWNER_TYPE&, size_t bitPosition, const typename ARRAY_TRAITS::ElementType& element)
 {
     return ARRAY_TRAITS::initializeOffsets(bitPosition, element);
 }
 
 template <typename ARRAY_TRAITS, typename OWNER_TYPE,
         typename std::enable_if<!has_owner_type<ARRAY_TRAITS>::value &&
-                std::is_scalar<typename ARRAY_TRAITS::ElementType>::value, int>::type = 0>
+                        std::is_scalar<typename ARRAY_TRAITS::ElementType>::value,
+                int>::type = 0>
 size_t arrayTraitsInitializeOffsets(OWNER_TYPE&, size_t bitPosition, typename ARRAY_TRAITS::ElementType element)
 {
     return ARRAY_TRAITS::initializeOffsets(bitPosition, element);
@@ -186,58 +188,60 @@ size_t arrayTraitsInitializeOffsets(OWNER_TYPE&, size_t bitPosition, typename AR
 // calls the initializeOffsets method properly on packed array traits
 template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT,
         typename std::enable_if<has_owner_type<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
-size_t packedArrayTraitsInitializeOffsets(OWNER_TYPE& owner, PACKING_CONTEXT& context,
-        size_t bitPosition, typename PACKED_ARRAY_TRAITS::ElementType& element)
+size_t packedArrayTraitsInitializeOffsets(OWNER_TYPE& owner, PACKING_CONTEXT& context, size_t bitPosition,
+        typename PACKED_ARRAY_TRAITS::ElementType& element)
 {
     return PACKED_ARRAY_TRAITS::initializeOffsets(owner, context, bitPosition, element);
 }
 
 template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT,
         typename std::enable_if<!has_owner_type<PACKED_ARRAY_TRAITS>::value &&
-                !std::is_scalar<typename PACKED_ARRAY_TRAITS::ElementType>::value, int>::type = 0>
-size_t packedArrayTraitsInitializeOffsets(OWNER_TYPE&, PACKING_CONTEXT& context,
-        size_t bitPosition, const typename PACKED_ARRAY_TRAITS::ElementType& element)
+                        !std::is_scalar<typename PACKED_ARRAY_TRAITS::ElementType>::value,
+                int>::type = 0>
+size_t packedArrayTraitsInitializeOffsets(OWNER_TYPE&, PACKING_CONTEXT& context, size_t bitPosition,
+        const typename PACKED_ARRAY_TRAITS::ElementType& element)
 {
     return PACKED_ARRAY_TRAITS::initializeOffsets(context, bitPosition, element);
 }
 
 template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT,
         typename std::enable_if<!has_owner_type<PACKED_ARRAY_TRAITS>::value &&
-                std::is_scalar<typename PACKED_ARRAY_TRAITS::ElementType>::value, int>::type = 0>
-size_t packedArrayTraitsInitializeOffsets(OWNER_TYPE&, PACKING_CONTEXT& context,
-        size_t bitPosition, typename PACKED_ARRAY_TRAITS::ElementType element)
+                        std::is_scalar<typename PACKED_ARRAY_TRAITS::ElementType>::value,
+                int>::type = 0>
+size_t packedArrayTraitsInitializeOffsets(OWNER_TYPE&, PACKING_CONTEXT& context, size_t bitPosition,
+        typename PACKED_ARRAY_TRAITS::ElementType element)
 {
     return PACKED_ARRAY_TRAITS::initializeOffsets(context, bitPosition, element);
 }
 
 // calls the read method properly on array traits
 template <typename ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY,
-        typename std::enable_if<has_owner_type<ARRAY_TRAITS>::value &&
-                !has_allocator<ARRAY_TRAITS>::value, int>::type = 0>
+        typename std::enable_if<has_owner_type<ARRAY_TRAITS>::value && !has_allocator<ARRAY_TRAITS>::value,
+                int>::type = 0>
 void arrayTraitsRead(const OWNER_TYPE& owner, RAW_ARRAY& rawArray, BitStreamReader& in, size_t index)
 {
     rawArray.push_back(ARRAY_TRAITS::read(owner, in, index));
 }
 
 template <typename ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY,
-        typename std::enable_if<has_owner_type<ARRAY_TRAITS>::value &&
-                has_allocator<ARRAY_TRAITS>::value, int>::type = 0>
+        typename std::enable_if<has_owner_type<ARRAY_TRAITS>::value && has_allocator<ARRAY_TRAITS>::value,
+                int>::type = 0>
 void arrayTraitsRead(OWNER_TYPE& owner, RAW_ARRAY& rawArray, BitStreamReader& in, size_t index)
 {
     ARRAY_TRAITS::read(owner, rawArray, in, index);
 }
 
 template <typename ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY,
-        typename std::enable_if<!has_owner_type<ARRAY_TRAITS>::value &&
-                !has_allocator<ARRAY_TRAITS>::value, int>::type = 0>
+        typename std::enable_if<!has_owner_type<ARRAY_TRAITS>::value && !has_allocator<ARRAY_TRAITS>::value,
+                int>::type = 0>
 void arrayTraitsRead(const OWNER_TYPE&, RAW_ARRAY& rawArray, BitStreamReader& in, size_t index)
 {
     rawArray.push_back(ARRAY_TRAITS::read(in, index));
 }
 
 template <typename ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY,
-        typename std::enable_if<!has_owner_type<ARRAY_TRAITS>::value &&
-                has_allocator<ARRAY_TRAITS>::value, int>::type = 0>
+        typename std::enable_if<!has_owner_type<ARRAY_TRAITS>::value && has_allocator<ARRAY_TRAITS>::value,
+                int>::type = 0>
 void arrayTraitsRead(const OWNER_TYPE&, RAW_ARRAY& rawArray, BitStreamReader& in, size_t index)
 {
     ARRAY_TRAITS::read(rawArray, in, index);
@@ -246,16 +250,18 @@ void arrayTraitsRead(const OWNER_TYPE&, RAW_ARRAY& rawArray, BitStreamReader& in
 // calls the read method properly on packed array traits
 template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY, typename PACKING_CONTEXT,
         typename std::enable_if<has_owner_type<PACKED_ARRAY_TRAITS>::value &&
-                has_allocator<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
-void packedArrayTraitsRead(OWNER_TYPE& owner, RAW_ARRAY& rawArray, PACKING_CONTEXT& context,
-        BitStreamReader& in, size_t index)
+                        has_allocator<PACKED_ARRAY_TRAITS>::value,
+                int>::type = 0>
+void packedArrayTraitsRead(
+        OWNER_TYPE& owner, RAW_ARRAY& rawArray, PACKING_CONTEXT& context, BitStreamReader& in, size_t index)
 {
     PACKED_ARRAY_TRAITS::read(owner, rawArray, context, in, index);
 }
 
 template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY, typename PACKING_CONTEXT,
         typename std::enable_if<has_owner_type<PACKED_ARRAY_TRAITS>::value &&
-                !has_allocator<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
+                        !has_allocator<PACKED_ARRAY_TRAITS>::value,
+                int>::type = 0>
 void packedArrayTraitsRead(const OWNER_TYPE& owner, RAW_ARRAY& rawArray, PACKING_CONTEXT& context,
         BitStreamReader& in, size_t index)
 {
@@ -267,9 +273,10 @@ void packedArrayTraitsRead(const OWNER_TYPE& owner, RAW_ARRAY& rawArray, PACKING
 
 template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename RAW_ARRAY, typename PACKING_CONTEXT,
         typename std::enable_if<!has_owner_type<PACKED_ARRAY_TRAITS>::value &&
-                !has_allocator<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
-void packedArrayTraitsRead(const OWNER_TYPE&, RAW_ARRAY& rawArray, PACKING_CONTEXT& context,
-        BitStreamReader& in, size_t index)
+                        !has_allocator<PACKED_ARRAY_TRAITS>::value,
+                int>::type = 0>
+void packedArrayTraitsRead(
+        const OWNER_TYPE&, RAW_ARRAY& rawArray, PACKING_CONTEXT& context, BitStreamReader& in, size_t index)
 {
     rawArray.push_back(PACKED_ARRAY_TRAITS::read(context, in, index));
 }
@@ -277,16 +284,16 @@ void packedArrayTraitsRead(const OWNER_TYPE&, RAW_ARRAY& rawArray, PACKING_CONTE
 // call the write method properly on array traits
 template <typename ARRAY_TRAITS, typename OWNER_TYPE,
         typename std::enable_if<has_owner_type<ARRAY_TRAITS>::value, int>::type = 0>
-void arrayTraitsWrite(const OWNER_TYPE& owner,
-        BitStreamWriter& out, const typename ARRAY_TRAITS::ElementType& element)
+void arrayTraitsWrite(
+        const OWNER_TYPE& owner, BitStreamWriter& out, const typename ARRAY_TRAITS::ElementType& element)
 {
     ARRAY_TRAITS::write(owner, out, element);
 }
 
 template <typename ARRAY_TRAITS, typename OWNER_TYPE,
         typename std::enable_if<!has_owner_type<ARRAY_TRAITS>::value, int>::type = 0>
-void arrayTraitsWrite(const OWNER_TYPE&,
-        BitStreamWriter& out, const typename ARRAY_TRAITS::ElementType& element)
+void arrayTraitsWrite(
+        const OWNER_TYPE&, BitStreamWriter& out, const typename ARRAY_TRAITS::ElementType& element)
 {
     ARRAY_TRAITS::write(out, element);
 }
@@ -294,16 +301,16 @@ void arrayTraitsWrite(const OWNER_TYPE&,
 // call the write method properly on packed array traits
 template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT,
         typename std::enable_if<has_owner_type<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
-void packedArrayTraitsWrite(const OWNER_TYPE& owner, PACKING_CONTEXT& context,
-        BitStreamWriter& out, const typename PACKED_ARRAY_TRAITS::ElementType& element)
+void packedArrayTraitsWrite(const OWNER_TYPE& owner, PACKING_CONTEXT& context, BitStreamWriter& out,
+        const typename PACKED_ARRAY_TRAITS::ElementType& element)
 {
     PACKED_ARRAY_TRAITS::write(owner, context, out, element);
 }
 
 template <typename PACKED_ARRAY_TRAITS, typename OWNER_TYPE, typename PACKING_CONTEXT,
         typename std::enable_if<!has_owner_type<PACKED_ARRAY_TRAITS>::value, int>::type = 0>
-void packedArrayTraitsWrite(const OWNER_TYPE&, PACKING_CONTEXT& context,
-        BitStreamWriter& out, const typename PACKED_ARRAY_TRAITS::ElementType& element)
+void packedArrayTraitsWrite(const OWNER_TYPE&, PACKING_CONTEXT& context, BitStreamWriter& out,
+        const typename PACKED_ARRAY_TRAITS::ElementType& element)
 {
     PACKED_ARRAY_TRAITS::write(context, out, element);
 }
@@ -444,8 +451,7 @@ public:
             typename std::enable_if<std::is_constructible<T, NoInitT, T>::value, int>::type = 0>
     Array(NoInitT, Array&& other) :
             Array(std::move(other))
-    {
-    }
+    {}
 
     /**
      * Assignment which prevents initialization of parameterized elements.
@@ -814,42 +820,42 @@ public:
 
 private:
     template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
-            typename std::enable_if<
-                    ARRAY_TYPE_ != ArrayType::AUTO && ARRAY_TYPE_ != ArrayType::ALIGNED_AUTO, int>::type = 0>
+            typename std::enable_if<ARRAY_TYPE_ != ArrayType::AUTO && ARRAY_TYPE_ != ArrayType::ALIGNED_AUTO,
+                    int>::type = 0>
     static void addBitSizeOfArrayLength(size_t&, size_t)
     {}
 
     template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
-            typename std::enable_if<
-                    ARRAY_TYPE_ == ArrayType::AUTO || ARRAY_TYPE_ == ArrayType::ALIGNED_AUTO, int>::type = 0>
+            typename std::enable_if<ARRAY_TYPE_ == ArrayType::AUTO || ARRAY_TYPE_ == ArrayType::ALIGNED_AUTO,
+                    int>::type = 0>
     static void addBitSizeOfArrayLength(size_t& bitPosition, size_t arrayLength)
     {
         bitPosition += bitSizeOfVarSize(convertSizeToUInt32(arrayLength));
     }
 
     template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
-            typename std::enable_if<
-                    ARRAY_TYPE_ != ArrayType::ALIGNED && ARRAY_TYPE_ != ArrayType::ALIGNED_AUTO, int>::type = 0>
+            typename std::enable_if<ARRAY_TYPE_ != ArrayType::ALIGNED && ARRAY_TYPE_ != ArrayType::ALIGNED_AUTO,
+                    int>::type = 0>
     static void alignBitPosition(size_t&)
     {}
 
     template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
-            typename std::enable_if<
-                    ARRAY_TYPE_ == ArrayType::ALIGNED || ARRAY_TYPE_ == ArrayType::ALIGNED_AUTO, int>::type = 0>
+            typename std::enable_if<ARRAY_TYPE_ == ArrayType::ALIGNED || ARRAY_TYPE_ == ArrayType::ALIGNED_AUTO,
+                    int>::type = 0>
     static void alignBitPosition(size_t& bitPosition)
     {
         bitPosition = alignTo(8, bitPosition);
     }
 
     template <typename IO, typename OWNER_TYPE, ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
-            typename std::enable_if<
-                    ARRAY_TYPE_ != ArrayType::ALIGNED && ARRAY_TYPE_ != ArrayType::ALIGNED_AUTO, int>::type = 0>
+            typename std::enable_if<ARRAY_TYPE_ != ArrayType::ALIGNED && ARRAY_TYPE_ != ArrayType::ALIGNED_AUTO,
+                    int>::type = 0>
     static void alignAndCheckOffset(IO&, OWNER_TYPE&, size_t)
     {}
 
     template <typename IO, typename OWNER_TYPE, ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
-            typename std::enable_if<
-                    ARRAY_TYPE_ == ArrayType::ALIGNED || ARRAY_TYPE_ == ArrayType::ALIGNED_AUTO, int>::type = 0>
+            typename std::enable_if<ARRAY_TYPE_ == ArrayType::ALIGNED || ARRAY_TYPE_ == ArrayType::ALIGNED_AUTO,
+                    int>::type = 0>
     static void alignAndCheckOffset(IO& io, OWNER_TYPE& owner, size_t index)
     {
         io.alignTo(8);
@@ -857,14 +863,14 @@ private:
     }
 
     template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
-            typename std::enable_if<
-                    ARRAY_TYPE_ != ArrayType::ALIGNED && ARRAY_TYPE_ != ArrayType::ALIGNED_AUTO, int>::type = 0>
+            typename std::enable_if<ARRAY_TYPE_ != ArrayType::ALIGNED && ARRAY_TYPE_ != ArrayType::ALIGNED_AUTO,
+                    int>::type = 0>
     static void initializeOffset(OwnerType&, size_t, size_t&)
     {}
 
     template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
-            typename std::enable_if<
-                    ARRAY_TYPE_ == ArrayType::ALIGNED || ARRAY_TYPE_ == ArrayType::ALIGNED_AUTO, int>::type = 0>
+            typename std::enable_if<ARRAY_TYPE_ == ArrayType::ALIGNED || ARRAY_TYPE_ == ArrayType::ALIGNED_AUTO,
+                    int>::type = 0>
     static void initializeOffset(OwnerType& owner, size_t index, size_t& bitPosition)
     {
         bitPosition = alignTo(8, bitPosition);
@@ -872,18 +878,17 @@ private:
     }
 
     template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
-            typename std::enable_if<
-                    ARRAY_TYPE_ != ArrayType::AUTO &&
-                    ARRAY_TYPE_ != ArrayType::ALIGNED_AUTO &&
-                    ARRAY_TYPE_ != ArrayType::IMPLICIT, int>::type = 0>
+            typename std::enable_if<ARRAY_TYPE_ != ArrayType::AUTO && ARRAY_TYPE_ != ArrayType::ALIGNED_AUTO &&
+                            ARRAY_TYPE_ != ArrayType::IMPLICIT,
+                    int>::type = 0>
     static size_t readArrayLength(OwnerType&, BitStreamReader&, size_t arrayLength)
     {
         return arrayLength;
     }
 
     template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
-            typename std::enable_if<
-                    ARRAY_TYPE_ == ArrayType::AUTO || ARRAY_TYPE_ == ArrayType::ALIGNED_AUTO, int>::type = 0>
+            typename std::enable_if<ARRAY_TYPE_ == ArrayType::AUTO || ARRAY_TYPE_ == ArrayType::ALIGNED_AUTO,
+                    int>::type = 0>
     static size_t readArrayLength(OwnerType&, BitStreamReader& in, size_t)
     {
         return in.readVarSize();
@@ -901,30 +906,30 @@ private:
     }
 
     template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
-            typename std::enable_if<
-                    ARRAY_TYPE_ != ArrayType::AUTO && ARRAY_TYPE_ != ArrayType::ALIGNED_AUTO, int>::type = 0>
+            typename std::enable_if<ARRAY_TYPE_ != ArrayType::AUTO && ARRAY_TYPE_ != ArrayType::ALIGNED_AUTO,
+                    int>::type = 0>
     static void writeArrayLength(BitStreamWriter&, size_t)
     {}
 
     template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
-            typename std::enable_if<
-                    ARRAY_TYPE_ == ArrayType::AUTO || ARRAY_TYPE_ == ArrayType::ALIGNED_AUTO, int>::type = 0>
+            typename std::enable_if<ARRAY_TYPE_ == ArrayType::AUTO || ARRAY_TYPE_ == ArrayType::ALIGNED_AUTO,
+                    int>::type = 0>
     static void writeArrayLength(BitStreamWriter& out, size_t arrayLength)
     {
         out.writeVarSize(convertSizeToUInt32(arrayLength));
     }
 
     template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
-            typename std::enable_if<
-                    ARRAY_TYPE_ != ArrayType::ALIGNED && ARRAY_TYPE_ != ArrayType::ALIGNED_AUTO, int>::type = 0>
+            typename std::enable_if<ARRAY_TYPE_ != ArrayType::ALIGNED && ARRAY_TYPE_ != ArrayType::ALIGNED_AUTO,
+                    int>::type = 0>
     static size_t constBitSizeOfElements(size_t, size_t arrayLength, size_t elementBitSize)
     {
         return arrayLength * elementBitSize;
     }
 
     template <ArrayType ARRAY_TYPE_ = ARRAY_TYPE,
-            typename std::enable_if<
-                    ARRAY_TYPE_ == ArrayType::ALIGNED || ARRAY_TYPE_ == ArrayType::ALIGNED_AUTO, int>::type = 0>
+            typename std::enable_if<ARRAY_TYPE_ == ArrayType::ALIGNED || ARRAY_TYPE_ == ArrayType::ALIGNED_AUTO,
+                    int>::type = 0>
     static size_t constBitSizeOfElements(size_t bitPosition, size_t arrayLength, size_t elementBitSize)
     {
         size_t endBitPosition = alignTo(8, bitPosition);
@@ -963,8 +968,8 @@ private:
         for (size_t index = 0; index < arrayLength; ++index)
         {
             alignBitPosition(endBitPosition);
-            endBitPosition += detail::arrayTraitsBitSizeOf<ArrayTraits>(
-                    owner, endBitPosition, m_rawArray[index]);
+            endBitPosition +=
+                    detail::arrayTraitsBitSizeOf<ArrayTraits>(owner, endBitPosition, m_rawArray[index]);
         }
 
         return endBitPosition - bitPosition;
@@ -980,8 +985,8 @@ private:
         for (size_t index = 0; index < arrayLength; ++index)
         {
             initializeOffset(owner, index, endBitPosition);
-            endBitPosition = detail::arrayTraitsInitializeOffsets<ArrayTraits>(
-                    owner, endBitPosition, m_rawArray[index]);
+            endBitPosition =
+                    detail::arrayTraitsInitializeOffsets<ArrayTraits>(owner, endBitPosition, m_rawArray[index]);
         }
 
         return endBitPosition;

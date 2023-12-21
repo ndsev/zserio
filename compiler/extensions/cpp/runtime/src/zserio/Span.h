@@ -3,8 +3,8 @@
 
 #include <array>
 #include <cstddef>
-#include <limits>
 #include <iterator>
+#include <limits>
 #include <type_traits>
 #include <vector>
 
@@ -25,7 +25,7 @@ struct SpanStorage
     SpanStorage() = default;
 
     SpanStorage(T* data, std::size_t) :
-        m_data(data)
+            m_data(data)
     {}
 
     T* m_data = nullptr;
@@ -38,7 +38,8 @@ struct SpanStorage<T, dynamic_extent>
     SpanStorage() = default;
 
     SpanStorage(T* data, std::size_t size) :
-        m_data(data), m_size(size)
+            m_data(data),
+            m_size(size)
     {}
 
     T* m_data = nullptr;
@@ -75,7 +76,7 @@ public:
      * Constructor. Initializes empty Span.
      */
     template <size_type ext = Extent,
-        typename std::enable_if<(ext == 0 || ext == dynamic_extent), int>::type = 0>
+            typename std::enable_if<(ext == 0 || ext == dynamic_extent), int>::type = 0>
     constexpr Span() noexcept
     {}
 
@@ -87,7 +88,7 @@ public:
      * \param count Number of elements.
      */
     constexpr Span(pointer first, size_type count) :
-        m_storage(first, count)
+            m_storage(first, count)
     {}
 
     /**
@@ -98,7 +99,7 @@ public:
      * \param last Pointer to one-after-last element in the sequence.
      */
     constexpr Span(pointer first, pointer last) :
-        m_storage(first, static_cast<size_t>(last - first))
+            m_storage(first, static_cast<size_t>(last - first))
     {}
 
     /**
@@ -107,9 +108,9 @@ public:
      * \param arr Array to which the Span will hold a reference.
      */
     template <size_type N, size_type ext = Extent,
-        typename std::enable_if<(ext == dynamic_extent || ext == N), int>::type = 0>
-    constexpr Span(element_type(&arr)[N]) noexcept :
-        m_storage(arr, N)
+            typename std::enable_if<(ext == dynamic_extent || ext == N), int>::type = 0>
+    constexpr Span(element_type (&arr)[N]) noexcept :
+            m_storage(arr, N)
     {}
 
     /**
@@ -118,10 +119,11 @@ public:
      * \param arr std::array to which the Span will hold a reference.
      */
     template <typename U, size_type N, size_type ext = Extent,
-        typename std::enable_if<(ext == dynamic_extent || ext == N) &&
-                std::is_convertible<U(*)[], T(*)[]>::value, int>::type = 0>
+            typename std::enable_if<(ext == dynamic_extent || ext == N) &&
+                            std::is_convertible<U (*)[], T (*)[]>::value,
+                    int>::type = 0>
     constexpr Span(std::array<U, N>& arr) noexcept :
-        m_storage(arr.data(), arr.size())
+            m_storage(arr.data(), arr.size())
     {}
 
     /**
@@ -130,10 +132,11 @@ public:
      * \param arr std::array to which the Span will hold a reference.
      */
     template <typename U, size_type N, size_type ext = Extent,
-        typename std::enable_if<(ext == dynamic_extent || ext == N) &&
-                std::is_convertible<const U(*)[], T(*)[]>::value, int>::type = 0>
+            typename std::enable_if<(ext == dynamic_extent || ext == N) &&
+                            std::is_convertible<const U (*)[], T (*)[]>::value,
+                    int>::type = 0>
     constexpr Span(const std::array<U, N>& arr) noexcept :
-        m_storage(arr.data(), arr.size())
+            m_storage(arr.data(), arr.size())
     {}
 
     /**
@@ -142,10 +145,10 @@ public:
      * \param vec std::vector to which the Span will hold a reference.
      */
     template <typename U, typename ALLOC, size_type ext = Extent,
-        typename std::enable_if<(ext == dynamic_extent) &&
-                std::is_convertible<U(*)[], T(*)[]>::value, int>::type = 0>
+            typename std::enable_if<(ext == dynamic_extent) && std::is_convertible<U (*)[], T (*)[]>::value,
+                    int>::type = 0>
     constexpr Span(std::vector<U, ALLOC>& vec) :
-        m_storage(vec.data(), vec.size())
+            m_storage(vec.data(), vec.size())
     {}
 
     /**
@@ -154,10 +157,11 @@ public:
      * \param vec std::vector to which the Span will hold a reference.
      */
     template <typename U, typename ALLOC, size_type ext = Extent,
-        typename std::enable_if<(ext == dynamic_extent) &&
-                std::is_convertible<const U(*)[], T(*)[]>::value, int>::type = 0>
+            typename std::enable_if<
+                    (ext == dynamic_extent) && std::is_convertible<const U (*)[], T (*)[]>::value, int>::type =
+                    0>
     constexpr Span(const std::vector<U, ALLOC>& vec) :
-        m_storage(vec.data(), vec.size())
+            m_storage(vec.data(), vec.size())
     {}
 
     /**
@@ -166,10 +170,11 @@ public:
      * \param s Input span.
      */
     template <typename U, size_type N,
-        typename std::enable_if<(Extent == N || Extent == dynamic_extent) &&
-                std::is_convertible<U(*)[], T(*)[]>::value, int>::type = 0>
+            typename std::enable_if<(Extent == N || Extent == dynamic_extent) &&
+                            std::is_convertible<U (*)[], T (*)[]>::value,
+                    int>::type = 0>
     constexpr Span(const Span<U, N>& s) noexcept :
-        m_storage(s.data(), s.size())
+            m_storage(s.data(), s.size())
     {}
 
     /**
@@ -345,9 +350,8 @@ public:
     }
 
     template <size_type Offset, size_type Count>
-    using SubspanReturnType =
-        Span<T, Count != dynamic_extent ? Count : (Extent != dynamic_extent ? Extent - Offset
-            : dynamic_extent)>;
+    using SubspanReturnType = Span<T,
+            Count != dynamic_extent ? Count : (Extent != dynamic_extent ? Extent - Offset : dynamic_extent)>;
 
     /**
      * Get subspan of given number of elements beginning at given index.
@@ -381,11 +385,11 @@ public:
      * \param Count Requested number of elements in the subspan.
      * \return Subspan of given number of elements beginning at given index.
      */
-    constexpr Span<element_type, dynamic_extent> subspan(size_type Offset,
-        size_type Count = dynamic_extent) const
+    constexpr Span<element_type, dynamic_extent> subspan(
+            size_type Offset, size_type Count = dynamic_extent) const
     {
-        return Span<element_type, dynamic_extent>(data() + Offset,
-            Count == dynamic_extent ? size() - Offset : Count );
+        return Span<element_type, dynamic_extent>(
+                data() + Offset, Count == dynamic_extent ? size() - Offset : Count);
     }
 
 private:

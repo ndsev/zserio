@@ -13,8 +13,8 @@
 #ifndef ZSERIO_DEBUG_STRING_UTIL_H_INC
 #define ZSERIO_DEBUG_STRING_UTIL_H_INC
 
-#include <sstream>
 #include <fstream>
+#include <sstream>
 #include <utility>
 
 #include "zserio/JsonReader.h"
@@ -32,10 +32,11 @@ namespace detail
 // Implementations needs to be in detail because old MSVC compiler 2015 has problems with calling overload.
 
 template <typename T, typename WALK_FILTER, typename ALLOC>
-void toJsonStream(const T& object, std::ostream& os, uint8_t indent, WALK_FILTER&& walkFilter,
-        const ALLOC& allocator)
+void toJsonStream(
+        const T& object, std::ostream& os, uint8_t indent, WALK_FILTER&& walkFilter, const ALLOC& allocator)
 {
-    static_assert(has_reflectable<T>::value, "DebugStringUtil.toJsonStream: "
+    static_assert(has_reflectable<T>::value,
+            "DebugStringUtil.toJsonStream: "
             "Zserio object must have reflections enabled (see zserio option -withReflectionCode)!");
 
     BasicJsonWriter<ALLOC> jsonWriter(os, indent);
@@ -69,8 +70,7 @@ void toJsonFile(const T& object, const string<ALLOC>& fileName, uint8_t indent, 
 // needed due to GCC compilation problems, GCC tries to instantiate return type even though the
 // particular fuction template has different number of arguments, this prevents the return type instantiation
 // in case that the ALLOC is not an allocator
-template <typename ALLOC,
-        typename std::enable_if<is_allocator<ALLOC>::value, int>::type = 0>
+template <typename ALLOC, typename std::enable_if<is_allocator<ALLOC>::value, int>::type = 0>
 struct DebugStringTraits
 {
     using ReflectablePtr = IBasicReflectablePtr<ALLOC>;
@@ -153,8 +153,9 @@ void toJsonStream(const T& object, std::ostream& os, uint8_t indent, const ALLOC
  * \param allocator Allocator to use.
  */
 template <typename T, typename WALK_FILTER, typename ALLOC = typename T::allocator_type,
-        typename std::enable_if<std::is_base_of<IBasicWalkFilter<ALLOC>,
-                typename std::decay<WALK_FILTER>::type>::value, int>::type = 0>
+        typename std::enable_if<
+                std::is_base_of<IBasicWalkFilter<ALLOC>, typename std::decay<WALK_FILTER>::type>::value,
+                int>::type = 0>
 void toJsonStream(const T& object, std::ostream& os, WALK_FILTER&& walkFilter, const ALLOC& allocator = ALLOC())
 {
     detail::toJsonStream(object, os, 4, walkFilter, allocator);
@@ -185,8 +186,9 @@ void toJsonStream(const T& object, std::ostream& os, WALK_FILTER&& walkFilter, c
  * \param allocator Allocator to use.
  */
 template <typename T, typename WALK_FILTER, typename ALLOC = typename T::allocator_type,
-        typename std::enable_if<std::is_base_of<IBasicWalkFilter<ALLOC>,
-                typename std::decay<WALK_FILTER>::type>::value, int>::type = 0>
+        typename std::enable_if<
+                std::is_base_of<IBasicWalkFilter<ALLOC>, typename std::decay<WALK_FILTER>::type>::value,
+                int>::type = 0>
 void toJsonStream(const T& object, std::ostream& os, uint8_t indent, WALK_FILTER&& walkFilter,
         const ALLOC& allocator = ALLOC())
 {
@@ -267,8 +269,9 @@ string<ALLOC> toJsonString(const T& object, uint8_t indent, const ALLOC& allocat
  * \return JSON debug string.
  */
 template <typename T, typename WALK_FILTER, typename ALLOC = typename T::allocator_type,
-        typename std::enable_if<std::is_base_of<IBasicWalkFilter<ALLOC>,
-                typename std::decay<WALK_FILTER>::type>::value, int>::type = 0>
+        typename std::enable_if<
+                std::is_base_of<IBasicWalkFilter<ALLOC>, typename std::decay<WALK_FILTER>::type>::value,
+                int>::type = 0>
 string<ALLOC> toJsonString(const T& object, WALK_FILTER&& walkFilter, const ALLOC& allocator = ALLOC())
 {
     return detail::toJsonString(object, 4, walkFilter, allocator);
@@ -298,10 +301,11 @@ string<ALLOC> toJsonString(const T& object, WALK_FILTER&& walkFilter, const ALLO
  * \return JSON debug string.
  */
 template <typename T, typename WALK_FILTER, typename ALLOC = typename T::allocator_type,
-        typename std::enable_if<std::is_base_of<IBasicWalkFilter<ALLOC>,
-                typename std::decay<WALK_FILTER>::type>::value, int>::type = 0>
-string<ALLOC> toJsonString(const T& object, uint8_t indent, WALK_FILTER&& walkFilter,
-        const ALLOC& allocator = ALLOC())
+        typename std::enable_if<
+                std::is_base_of<IBasicWalkFilter<ALLOC>, typename std::decay<WALK_FILTER>::type>::value,
+                int>::type = 0>
+string<ALLOC> toJsonString(
+        const T& object, uint8_t indent, WALK_FILTER&& walkFilter, const ALLOC& allocator = ALLOC())
 {
     return detail::toJsonString(object, indent, walkFilter, allocator);
 }
@@ -351,8 +355,8 @@ void toJsonFile(const T& object, const string<ALLOC>& fileName, const ALLOC& all
  */
 template <typename T, typename ALLOC = typename T::allocator_type,
         typename std::enable_if<is_allocator<ALLOC>::value, int>::type = 0>
-void toJsonFile(const T& object, const string<ALLOC>& fileName, uint8_t indent,
-        const ALLOC& allocator = ALLOC())
+void toJsonFile(
+        const T& object, const string<ALLOC>& fileName, uint8_t indent, const ALLOC& allocator = ALLOC())
 {
     return detail::toJsonFile(object, fileName, indent, BasicDefaultWalkFilter<ALLOC>(), allocator);
 }
@@ -379,8 +383,9 @@ void toJsonFile(const T& object, const string<ALLOC>& fileName, uint8_t indent,
  * \param allocator Allocator to use.
  */
 template <typename T, typename WALK_FILTER, typename ALLOC = typename T::allocator_type,
-        typename std::enable_if<std::is_base_of<IBasicWalkFilter<ALLOC>,
-                typename std::decay<WALK_FILTER>::type>::value, int>::type = 0>
+        typename std::enable_if<
+                std::is_base_of<IBasicWalkFilter<ALLOC>, typename std::decay<WALK_FILTER>::type>::value,
+                int>::type = 0>
 void toJsonFile(const T& object, const string<ALLOC>& fileName, WALK_FILTER&& walkFilter,
         const ALLOC& allocator = ALLOC())
 {
@@ -409,8 +414,9 @@ void toJsonFile(const T& object, const string<ALLOC>& fileName, WALK_FILTER&& wa
  * \param allocator Allocator to use.
  */
 template <typename T, typename WALK_FILTER, typename ALLOC = typename T::allocator_type,
-        typename std::enable_if<std::is_base_of<IBasicWalkFilter<ALLOC>,
-                typename std::decay<WALK_FILTER>::type>::value, int>::type = 0>
+        typename std::enable_if<
+                std::is_base_of<IBasicWalkFilter<ALLOC>, typename std::decay<WALK_FILTER>::type>::value,
+                int>::type = 0>
 void toJsonFile(const T& object, const string<ALLOC>& fileName, uint8_t indent, WALK_FILTER&& walkFilter,
         const ALLOC& allocator = ALLOC())
 {
@@ -442,8 +448,8 @@ void toJsonFile(const T& object, const string<ALLOC>& fileName, uint8_t indent, 
  * \throw CppRuntimeException In case of any error.
  */
 template <typename ALLOC = std::allocator<uint8_t>>
-typename detail::DebugStringTraits<ALLOC>::ReflectablePtr
-fromJsonStream(const IBasicTypeInfo<ALLOC>& typeInfo, std::istream& is, const ALLOC& allocator = ALLOC())
+typename detail::DebugStringTraits<ALLOC>::ReflectablePtr fromJsonStream(
+        const IBasicTypeInfo<ALLOC>& typeInfo, std::istream& is, const ALLOC& allocator = ALLOC())
 {
     BasicJsonReader<ALLOC> jsonReader(is, allocator);
     return jsonReader.read(typeInfo);
@@ -504,9 +510,8 @@ T fromJsonStream(std::istream& is, const ALLOC& allocator = ALLOC())
  * \throw CppRuntimeException In case of any error.
  */
 template <typename ALLOC = std::allocator<uint8_t>>
-typename detail::DebugStringTraits<ALLOC>::ReflectablePtr
-fromJsonString(const IBasicTypeInfo<ALLOC>& typeInfo, const string<ALLOC>& json,
-        const ALLOC& allocator = ALLOC())
+typename detail::DebugStringTraits<ALLOC>::ReflectablePtr fromJsonString(
+        const IBasicTypeInfo<ALLOC>& typeInfo, const string<ALLOC>& json, const ALLOC& allocator = ALLOC())
 {
     std::basic_istringstream<char, std::char_traits<char>, RebindAlloc<ALLOC, char>> is(json);
     return fromJsonStream(typeInfo, is, allocator);
@@ -566,9 +571,8 @@ T fromJsonString(const string<ALLOC>& json, const ALLOC& allocator = ALLOC())
  * \throw CppRuntimeException In case of any error.
  */
 template <typename ALLOC = std::allocator<uint8_t>>
-typename detail::DebugStringTraits<ALLOC>::ReflectablePtr
-fromJsonFile(const IBasicTypeInfo<ALLOC>& typeInfo, const string<ALLOC>& fileName,
-        const ALLOC& allocator = ALLOC())
+typename detail::DebugStringTraits<ALLOC>::ReflectablePtr fromJsonFile(
+        const IBasicTypeInfo<ALLOC>& typeInfo, const string<ALLOC>& fileName, const ALLOC& allocator = ALLOC())
 {
     std::ifstream is = std::ifstream(fileName.c_str());
     if (!is)

@@ -3,11 +3,11 @@
 
 #include <type_traits>
 
-#include "zserio/String.h"
-#include "zserio/Vector.h"
-#include "zserio/StringConvertUtil.h"
 #include "zserio/CppRuntimeException.h"
+#include "zserio/String.h"
+#include "zserio/StringConvertUtil.h"
 #include "zserio/StringView.h"
+#include "zserio/Vector.h"
 
 namespace zserio
 {

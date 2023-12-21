@@ -3,13 +3,13 @@
 
 #include <algorithm>
 #include <iterator>
-#include <type_traits>
 #include <memory>
+#include <type_traits>
 #include <vector>
 
-#include "zserio/OptionalHolder.h"
 #include "zserio/AnyHolder.h"
 #include "zserio/NoInit.h"
+#include "zserio/OptionalHolder.h"
 
 namespace zserio
 {
@@ -31,15 +31,13 @@ template <typename T, typename ALLOC>
 T allocatorPropagatingCopy(const T& source, const ALLOC& allocator);
 
 template <typename T, typename ALLOC, typename ALLOC2>
-AnyHolder<ALLOC> allocatorPropagatingCopy(
-        const AnyHolder<ALLOC>& source, const ALLOC2& allocator);
+AnyHolder<ALLOC> allocatorPropagatingCopy(const AnyHolder<ALLOC>& source, const ALLOC2& allocator);
 
 template <typename T, typename ALLOC>
 T allocatorPropagatingCopy(NoInitT, const T& source, const ALLOC& allocator);
 
 template <typename T, typename ALLOC, typename ALLOC2>
-AnyHolder<ALLOC> allocatorPropagatingCopy(
-        NoInitT, const AnyHolder<ALLOC>& source, const ALLOC2& allocator);
+AnyHolder<ALLOC> allocatorPropagatingCopy(NoInitT, const AnyHolder<ALLOC>& source, const ALLOC2& allocator);
 
 namespace detail
 {
@@ -47,8 +45,8 @@ namespace detail
 // implementation for std::basic_string from old std. libs, that does not fully conform
 // to C++11. [old-compiler-support]
 template <typename CharT, typename Traits, typename ALLOC1, typename ALLOC2>
-std::basic_string<CharT, Traits, ALLOC1> allocatorPropagatingCopyDefault(std::true_type,
-        const std::basic_string<CharT, Traits, ALLOC1>& source, const ALLOC2& allocator)
+std::basic_string<CharT, Traits, ALLOC1> allocatorPropagatingCopyDefault(
+        std::true_type, const std::basic_string<CharT, Traits, ALLOC1>& source, const ALLOC2& allocator)
 {
     return std::basic_string<CharT, Traits, ALLOC1>(source.c_str(), source.length(), allocator);
 }
@@ -59,10 +57,10 @@ template <typename ALLOC, typename ALLOC2>
 std::vector<bool, ALLOC> allocatorPropagatingCopyVec(
         std::false_type, const std::vector<bool, ALLOC>& source, const ALLOC2& allocator)
 {
-     std::vector<bool, ALLOC> ret(allocator);
-     ret.reserve(source.size());
-     ret.assign(source.begin(), source.end());
-     return ret;
+    std::vector<bool, ALLOC> ret(allocator);
+    ret.reserve(source.size());
+    ret.assign(source.begin(), source.end());
+    return ret;
 }
 
 // implementation of copy for "regular" classes that supports allocator
@@ -107,8 +105,9 @@ std::vector<T, ALLOC> allocatorPropagatingCopyVec(
 {
     std::vector<T, ALLOC> result(allocator);
     result.reserve(source.size());
-    std::transform(source.begin(), source.end(), std::back_inserter(result),
-                   [&](const T& value){ return allocatorPropagatingCopy(value, allocator); });
+    std::transform(source.begin(), source.end(), std::back_inserter(result), [&](const T& value) {
+        return allocatorPropagatingCopy(value, allocator);
+    });
     return result;
 }
 
@@ -119,8 +118,9 @@ std::vector<T, ALLOC> allocatorPropagatingCopyVec(
 {
     std::vector<T, ALLOC> result(allocator);
     result.reserve(source.size());
-    std::transform(source.begin(), source.end(), std::back_inserter(result),
-                   [&](const T& value) { return allocatorPropagatingCopy(NoInit, value, allocator); });
+    std::transform(source.begin(), source.end(), std::back_inserter(result), [&](const T& value) {
+        return allocatorPropagatingCopy(NoInit, value, allocator);
+    });
     return result;
 }
 
@@ -166,8 +166,8 @@ HeapOptionalHolder<T, ALLOC> allocatorPropagatingCopyImpl(
 
     if (source.hasValue())
     {
-        return HeapOptionalHolder<T, ALLOC>(NoInit, allocatorPropagatingCopy(NoInit, *source, allocator),
-                allocator);
+        return HeapOptionalHolder<T, ALLOC>(
+                NoInit, allocatorPropagatingCopy(NoInit, *source, allocator), allocator);
     }
     else
         return HeapOptionalHolder<T, ALLOC>(allocator);
@@ -196,13 +196,11 @@ InplaceOptionalHolder<T> allocatorPropagatingCopyImpl(
 }
 
 template <typename T, typename ALLOC, typename ALLOC2>
-AnyHolder<ALLOC> allocatorPropagatingCopyImpl(
-        const AnyHolder<ALLOC>& source, const ALLOC2& allocator)
+AnyHolder<ALLOC> allocatorPropagatingCopyImpl(const AnyHolder<ALLOC>& source, const ALLOC2& allocator)
 {
     if (source.hasValue())
     {
-        return AnyHolder<ALLOC>(allocatorPropagatingCopy(source.template get<T>(), allocator),
-                allocator);
+        return AnyHolder<ALLOC>(allocatorPropagatingCopy(source.template get<T>(), allocator), allocator);
     }
     else
     {
@@ -211,13 +209,12 @@ AnyHolder<ALLOC> allocatorPropagatingCopyImpl(
 }
 
 template <typename T, typename ALLOC, typename ALLOC2>
-AnyHolder<ALLOC> allocatorPropagatingCopyImpl(
-        NoInitT, const AnyHolder<ALLOC>& source, const ALLOC2& allocator)
+AnyHolder<ALLOC> allocatorPropagatingCopyImpl(NoInitT, const AnyHolder<ALLOC>& source, const ALLOC2& allocator)
 {
     if (source.hasValue())
     {
-        return AnyHolder<ALLOC>(NoInit, allocatorPropagatingCopy(NoInit, source.template get<T>(), allocator),
-                allocator);
+        return AnyHolder<ALLOC>(
+                NoInit, allocatorPropagatingCopy(NoInit, source.template get<T>(), allocator), allocator);
     }
     else
     {
@@ -226,8 +223,7 @@ AnyHolder<ALLOC> allocatorPropagatingCopyImpl(
 }
 
 template <typename T, typename ALLOC, typename ALLOC2>
-std::vector<T, ALLOC> allocatorPropagatingCopyImpl(
-        const std::vector<T, ALLOC>& source, const ALLOC2& allocator)
+std::vector<T, ALLOC> allocatorPropagatingCopyImpl(const std::vector<T, ALLOC>& source, const ALLOC2& allocator)
 {
     return allocatorPropagatingCopyVec(std::uses_allocator<T, ALLOC>(), source, allocator);
 }
@@ -284,8 +280,7 @@ T allocatorPropagatingCopy(NoInitT, const T& source, const ALLOC& allocator)
  * \return Copy of any holder.
  */
 template <typename T, typename ALLOC, typename ALLOC2>
-AnyHolder<ALLOC> allocatorPropagatingCopy(
-        const AnyHolder<ALLOC>& source, const ALLOC2& allocator)
+AnyHolder<ALLOC> allocatorPropagatingCopy(const AnyHolder<ALLOC>& source, const ALLOC2& allocator)
 {
     return detail::allocatorPropagatingCopyImpl<T>(source, allocator);
 }
@@ -299,8 +294,7 @@ AnyHolder<ALLOC> allocatorPropagatingCopy(
  * \return Copy of any holder.
  */
 template <typename T, typename ALLOC, typename ALLOC2>
-AnyHolder<ALLOC> allocatorPropagatingCopy(
-        NoInitT, const AnyHolder<ALLOC>& source, const ALLOC2& allocator)
+AnyHolder<ALLOC> allocatorPropagatingCopy(NoInitT, const AnyHolder<ALLOC>& source, const ALLOC2& allocator)
 {
     static_assert(std::is_constructible<T, NoInitT, T>::value, "Can be used only for parameterized compounds!");
 

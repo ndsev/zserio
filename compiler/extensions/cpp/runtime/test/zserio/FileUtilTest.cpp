@@ -1,8 +1,7 @@
-#include "gtest/gtest.h"
-
-#include "zserio/FileUtil.h"
-
 #include <vector>
+
+#include "gtest/gtest.h"
+#include "zserio/FileUtil.h"
 
 namespace zserio
 {

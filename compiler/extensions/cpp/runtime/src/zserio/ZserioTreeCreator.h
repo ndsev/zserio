@@ -1,20 +1,20 @@
 #ifndef ZSERIO_ZSERIO_TREE_CREATOR_H_INC
 #define ZSERIO_ZSERIO_TREE_CREATOR_H_INC
 
-#include <limits>
-#include <type_traits>
 #include <cerrno>
 #include <cstdlib>
+#include <limits>
+#include <type_traits>
 
 #include "zserio/BitBuffer.h"
 #include "zserio/CppRuntimeException.h"
 #include "zserio/IReflectable.h"
 #include "zserio/ITypeInfo.h"
 #include "zserio/StringView.h"
-#include "zserio/TypeInfoUtil.h"
 #include "zserio/Traits.h"
-#include "zserio/Vector.h"
+#include "zserio/TypeInfoUtil.h"
 #include "zserio/Types.h"
+#include "zserio/Vector.h"
 
 namespace zserio
 {
@@ -35,7 +35,8 @@ bool checkArithmeticValueRanges(U value)
 
 template <typename T, typename U,
         typename std::enable_if<std::is_signed<typename std::decay<U>::type>::value &&
-                std::is_signed<typename std::decay<T>::type>::value, int>::type = 0>
+                        std::is_signed<typename std::decay<T>::type>::value,
+                int>::type = 0>
 bool checkArithmeticValueRanges(U value)
 {
     // value is signed and it is converted to signed value
@@ -45,7 +46,8 @@ bool checkArithmeticValueRanges(U value)
 
 template <typename T, typename U,
         typename std::enable_if<std::is_signed<typename std::decay<U>::type>::value &&
-                std::is_unsigned<typename std::decay<T>::type>::value, int>::type = 0>
+                        std::is_unsigned<typename std::decay<T>::type>::value,
+                int>::type = 0>
 bool checkArithmeticValueRanges(U value)
 {
     // value is signed and it is converted to unsigned value
@@ -61,15 +63,14 @@ AnyHolder<ALLOC> makeAnyBoolValue(bool value, const ALLOC& allocator)
 template <typename T, typename U, typename ALLOC>
 AnyHolder<ALLOC> makeAnyBoolValue(const U& value, const ALLOC&)
 {
-    throw CppRuntimeException("ZserioTreeCreator: Value '") << value <<
-            "' cannot be converted to bool value!";
+    throw CppRuntimeException("ZserioTreeCreator: Value '") << value << "' cannot be converted to bool value!";
 }
 
 template <typename T, typename ALLOC>
 AnyHolder<ALLOC> makeAnyIntegralValue(bool value, const ALLOC&)
 {
-    throw CppRuntimeException("ZserioTreeCreator: Bool value '") << value <<
-            "' cannot be converted to integral type!";
+    throw CppRuntimeException("ZserioTreeCreator: Bool value '")
+            << value << "' cannot be converted to integral type!";
 }
 
 template <typename T, typename U, typename ALLOC,
@@ -79,8 +80,9 @@ AnyHolder<ALLOC> makeAnyIntegralValue(U value, const ALLOC& allocator)
     // check ranges of integers
     if (!checkArithmeticValueRanges<T>(value))
     {
-        throw CppRuntimeException("ZserioTreeCreator: Integral value '") << value << "' overflow (<" <<
-                std::numeric_limits<T>::min() << ", " << std::numeric_limits<T>::max() << ">)!";
+        throw CppRuntimeException("ZserioTreeCreator: Integral value '")
+                << value << "' overflow (<" << std::numeric_limits<T>::min() << ", "
+                << std::numeric_limits<T>::max() << ">)!";
     }
 
     return AnyHolder<ALLOC>(static_cast<T>(value), allocator);
@@ -90,15 +92,15 @@ template <typename T, typename U, typename ALLOC,
         typename std::enable_if<!std::is_integral<typename std::decay<U>::type>::value, int>::type = 0>
 AnyHolder<ALLOC> makeAnyIntegralValue(const U& value, const ALLOC&)
 {
-    throw CppRuntimeException("ZserioTreeCreator: Value '") << value <<
-            "' cannot be converted to integral value!";
+    throw CppRuntimeException("ZserioTreeCreator: Value '")
+            << value << "' cannot be converted to integral value!";
 }
 
 template <typename T, typename ALLOC>
 AnyHolder<ALLOC> makeAnyFloatingValue(bool value, const ALLOC&)
 {
-    throw CppRuntimeException("ZserioTreeCreator: Bool value '") << value <<
-            "' cannot be converted to floating type!";
+    throw CppRuntimeException("ZserioTreeCreator: Bool value '")
+            << value << "' cannot be converted to floating type!";
 }
 
 template <typename T, typename U, typename ALLOC,
@@ -113,8 +115,8 @@ template <typename T, typename U, typename ALLOC,
         typename std::enable_if<!std::is_arithmetic<typename std::decay<U>::type>::value, int>::type = 0>
 AnyHolder<ALLOC> makeAnyFloatingValue(const U& value, const ALLOC&)
 {
-    throw CppRuntimeException("ZserioTreeCreator: Value '") << value <<
-            "' cannot be converted to floating value!";
+    throw CppRuntimeException("ZserioTreeCreator: Value '")
+            << value << "' cannot be converted to floating value!";
 }
 
 template <typename ALLOC>
@@ -148,8 +150,8 @@ AnyHolder<ALLOC> makeAnyStringValue(const T&, const ALLOC&)
 }
 
 template <typename ALLOC>
-AnyHolder<ALLOC> parseEnumStringValue(StringView stringValue, const IBasicTypeInfo<ALLOC>& typeInfo,
-        const ALLOC& allocator)
+AnyHolder<ALLOC> parseEnumStringValue(
+        StringView stringValue, const IBasicTypeInfo<ALLOC>& typeInfo, const ALLOC& allocator)
 {
     for (const auto& itemInfo : typeInfo.getEnumItems())
     {
@@ -157,8 +159,8 @@ AnyHolder<ALLOC> parseEnumStringValue(StringView stringValue, const IBasicTypeIn
         {
             if (TypeInfoUtil::isSigned(typeInfo.getUnderlyingType().getCppType()))
             {
-                return makeAnyValue(typeInfo.getUnderlyingType(), static_cast<int64_t>(itemInfo.value),
-                        allocator);
+                return makeAnyValue(
+                        typeInfo.getUnderlyingType(), static_cast<int64_t>(itemInfo.value), allocator);
             }
             else
             {
@@ -171,8 +173,8 @@ AnyHolder<ALLOC> parseEnumStringValue(StringView stringValue, const IBasicTypeIn
 }
 
 template <typename ALLOC>
-AnyHolder<ALLOC> makeAnyEnumValue(StringView stringValue, const IBasicTypeInfo<ALLOC>& typeInfo,
-        const ALLOC& allocator)
+AnyHolder<ALLOC> makeAnyEnumValue(
+        StringView stringValue, const IBasicTypeInfo<ALLOC>& typeInfo, const ALLOC& allocator)
 {
     if (!stringValue.empty())
     {
@@ -187,42 +189,39 @@ AnyHolder<ALLOC> makeAnyEnumValue(StringView stringValue, const IBasicTypeInfo<A
         // else it's a no match
     }
 
-    throw CppRuntimeException("ZserioTreeCreator: Cannot create enum '") << typeInfo.getSchemaName() <<
-            "' from string value '" << stringValue << "'!";
+    throw CppRuntimeException("ZserioTreeCreator: Cannot create enum '")
+            << typeInfo.getSchemaName() << "' from string value '" << stringValue << "'!";
 }
 
 template <typename ALLOC>
-AnyHolder<ALLOC> makeAnyEnumValue(const string<ALLOC>& stringValue, const IBasicTypeInfo<ALLOC>& typeInfo,
-        const ALLOC& allocator)
+AnyHolder<ALLOC> makeAnyEnumValue(
+        const string<ALLOC>& stringValue, const IBasicTypeInfo<ALLOC>& typeInfo, const ALLOC& allocator)
 {
     return makeAnyEnumValue(StringView(stringValue), typeInfo, allocator);
 }
 
 template <typename ALLOC>
-AnyHolder<ALLOC> makeAnyEnumValue(const char* stringValue, const IBasicTypeInfo<ALLOC>& typeInfo,
-        const ALLOC& allocator)
+AnyHolder<ALLOC> makeAnyEnumValue(
+        const char* stringValue, const IBasicTypeInfo<ALLOC>& typeInfo, const ALLOC& allocator)
 {
     return makeAnyEnumValue(StringView(stringValue), typeInfo, allocator);
 }
 
-template <typename T, typename ALLOC,
-        typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
+template <typename T, typename ALLOC, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
 AnyHolder<ALLOC> makeAnyEnumValue(T enumValue, const IBasicTypeInfo<ALLOC>&, const ALLOC& allocator)
 {
     return AnyHolder<ALLOC>(enumValue, allocator);
 }
 
-template <typename T, typename ALLOC,
-        typename std::enable_if<!std::is_enum<T>::value, int>::type = 0>
-AnyHolder<ALLOC> makeAnyEnumValue(T enumRawValue, const IBasicTypeInfo<ALLOC>& typeInfo,
-        const ALLOC& allocator)
+template <typename T, typename ALLOC, typename std::enable_if<!std::is_enum<T>::value, int>::type = 0>
+AnyHolder<ALLOC> makeAnyEnumValue(T enumRawValue, const IBasicTypeInfo<ALLOC>& typeInfo, const ALLOC& allocator)
 {
     return makeAnyValue(typeInfo.getUnderlyingType(), enumRawValue, allocator);
 }
 
 template <typename ALLOC>
-AnyHolder<ALLOC> parseBitmaskStringValue(StringView stringValue, const IBasicTypeInfo<ALLOC>& typeInfo,
-        const ALLOC& allocator)
+AnyHolder<ALLOC> parseBitmaskStringValue(
+        StringView stringValue, const IBasicTypeInfo<ALLOC>& typeInfo, const ALLOC& allocator)
 {
     uint64_t value = 0;
     size_t pos = 0;
@@ -237,7 +236,7 @@ AnyHolder<ALLOC> parseBitmaskStringValue(StringView stringValue, const IBasicTyp
             {
                 const size_t newPos = pos + itemInfo.schemaName.size();
                 // check that the identifier really ends here
-                if (newPos == stringValue.size() || stringValue[newPos] == ' ' || stringValue[newPos] == '|' )
+                if (newPos == stringValue.size() || stringValue[newPos] == ' ' || stringValue[newPos] == '|')
                 {
                     value |= itemInfo.value;
                     if (newPos == stringValue.size())
@@ -267,10 +266,10 @@ AnyHolder<ALLOC> parseBitmaskStringValue(StringView stringValue, const IBasicTyp
 }
 
 template <typename ALLOC>
-AnyHolder<ALLOC> parseBitmaskNumericStringValue(const char* stringValue, const IBasicTypeInfo<ALLOC>& typeInfo,
-        const ALLOC& allocator)
+AnyHolder<ALLOC> parseBitmaskNumericStringValue(
+        const char* stringValue, const IBasicTypeInfo<ALLOC>& typeInfo, const ALLOC& allocator)
 {
-    char *pEnd = nullptr;
+    char* pEnd = nullptr;
     errno = 0;
     uint64_t value = std::strtoull(stringValue, &pEnd, 10);
     if (errno == ERANGE)
@@ -279,8 +278,8 @@ AnyHolder<ALLOC> parseBitmaskNumericStringValue(const char* stringValue, const I
 }
 
 template <typename ALLOC>
-AnyHolder<ALLOC> makeAnyBitmaskValue(StringView stringValue, const IBasicTypeInfo<ALLOC>& typeInfo,
-        const ALLOC& allocator)
+AnyHolder<ALLOC> makeAnyBitmaskValue(
+        StringView stringValue, const IBasicTypeInfo<ALLOC>& typeInfo, const ALLOC& allocator)
 {
     if (!stringValue.empty())
     {
@@ -296,42 +295,40 @@ AnyHolder<ALLOC> makeAnyBitmaskValue(StringView stringValue, const IBasicTypeInf
         {
             // ensure zero-terminated string
             const string<ALLOC> numericStringValue = toString(stringValue, allocator);
-            AnyHolder<ALLOC> anyValue = parseBitmaskNumericStringValue(numericStringValue.c_str(), typeInfo,
-                    allocator);
+            AnyHolder<ALLOC> anyValue =
+                    parseBitmaskNumericStringValue(numericStringValue.c_str(), typeInfo, allocator);
             if (anyValue.hasValue())
                 return anyValue;
         }
     }
 
-    throw CppRuntimeException("ZserioTreeCreator: Cannot create bitmask '") << typeInfo.getSchemaName() <<
-            "' from string value '" << stringValue << "'!";
+    throw CppRuntimeException("ZserioTreeCreator: Cannot create bitmask '")
+            << typeInfo.getSchemaName() << "' from string value '" << stringValue << "'!";
 }
 
 template <typename ALLOC>
-AnyHolder<ALLOC> makeAnyBitmaskValue(const string<ALLOC>& stringValue, const IBasicTypeInfo<ALLOC>& typeInfo,
-        const ALLOC& allocator)
+AnyHolder<ALLOC> makeAnyBitmaskValue(
+        const string<ALLOC>& stringValue, const IBasicTypeInfo<ALLOC>& typeInfo, const ALLOC& allocator)
 {
     return makeAnyBitmaskValue(StringView(stringValue), typeInfo, allocator);
 }
 
 template <typename ALLOC>
-AnyHolder<ALLOC> makeAnyBitmaskValue(const char* stringValue, const IBasicTypeInfo<ALLOC>& typeInfo,
-        const ALLOC& allocator)
+AnyHolder<ALLOC> makeAnyBitmaskValue(
+        const char* stringValue, const IBasicTypeInfo<ALLOC>& typeInfo, const ALLOC& allocator)
 {
     return makeAnyBitmaskValue(StringView(stringValue), typeInfo, allocator);
 }
 
-template <typename T, typename ALLOC,
-        typename std::enable_if<is_bitmask<T>::value, int>::type = 0>
+template <typename T, typename ALLOC, typename std::enable_if<is_bitmask<T>::value, int>::type = 0>
 AnyHolder<ALLOC> makeAnyBitmaskValue(T bitmaskValue, const IBasicTypeInfo<ALLOC>&, const ALLOC& allocator)
 {
     return AnyHolder<ALLOC>(bitmaskValue, allocator);
 }
 
-template <typename T, typename ALLOC,
-        typename std::enable_if<!is_bitmask<T>::value, int>::type = 0>
-AnyHolder<ALLOC> makeAnyBitmaskValue(T bitmaskRawValue, const IBasicTypeInfo<ALLOC>& typeInfo,
-        const ALLOC& allocator)
+template <typename T, typename ALLOC, typename std::enable_if<!is_bitmask<T>::value, int>::type = 0>
+AnyHolder<ALLOC> makeAnyBitmaskValue(
+        T bitmaskRawValue, const IBasicTypeInfo<ALLOC>& typeInfo, const ALLOC& allocator)
 {
     return makeAnyValue(typeInfo.getUnderlyingType(), bitmaskRawValue, allocator);
 }
@@ -546,10 +543,12 @@ private:
 using ZserioTreeCreator = BasicZserioTreeCreator<std::allocator<uint8_t>>;
 
 template <typename ALLOC>
-BasicZserioTreeCreator<ALLOC>::BasicZserioTreeCreator(const IBasicTypeInfo<ALLOC>& typeInfo,
-        const ALLOC& allocator) :
+BasicZserioTreeCreator<ALLOC>::BasicZserioTreeCreator(
+        const IBasicTypeInfo<ALLOC>& typeInfo, const ALLOC& allocator) :
         AllocatorHolder<ALLOC>(allocator),
-        m_typeInfo(typeInfo), m_fieldInfoStack(allocator), m_valueStack(allocator)
+        m_typeInfo(typeInfo),
+        m_fieldInfoStack(allocator),
+        m_valueStack(allocator)
 {}
 
 template <typename ALLOC>
@@ -584,8 +583,8 @@ void BasicZserioTreeCreator<ALLOC>::beginArray(const string<ALLOC>& name)
     const auto& fieldInfo = findFieldInfo(parentTypeInfo, name);
     if (!fieldInfo.isArray)
     {
-        throw CppRuntimeException("ZserioTreeCreator: Member '") << fieldInfo.schemaName <<
-                 "' is not an array!";
+        throw CppRuntimeException("ZserioTreeCreator: Member '")
+                << fieldInfo.schemaName << "' is not an array!";
     }
 
     m_fieldInfoStack.push_back(fieldInfo);
@@ -625,8 +624,8 @@ void BasicZserioTreeCreator<ALLOC>::beginCompound(const string<ALLOC>& name)
 
     if (!TypeInfoUtil::isCompound(fieldInfo.typeInfo.getCppType()))
     {
-        throw CppRuntimeException("ZserioTreeCreator: Member '") << fieldInfo.schemaName <<
-                "' is not a compound!";
+        throw CppRuntimeException("ZserioTreeCreator: Member '")
+                << fieldInfo.schemaName << "' is not a compound!";
     }
 
     m_fieldInfoStack.push_back(fieldInfo);
@@ -648,8 +647,8 @@ void BasicZserioTreeCreator<ALLOC>::endCompound()
 {
     if (m_state != detail::CreatorState::IN_COMPOUND || m_fieldInfoStack.empty())
     {
-        throw CppRuntimeException("ZserioTreeCreator: Cannot end compound in state '") << m_state <<
-                "'" << (m_fieldInfoStack.empty() ? ", expecting endRoot!" : "!'");
+        throw CppRuntimeException("ZserioTreeCreator: Cannot end compound in state '")
+                << m_state << "'" << (m_fieldInfoStack.empty() ? ", expecting endRoot!" : "!'");
     }
 
     const BasicFieldInfo<ALLOC>& fieldInfo = m_fieldInfoStack.back();
@@ -670,12 +669,12 @@ void BasicZserioTreeCreator<ALLOC>::setValue(const string<ALLOC>& name, T&& valu
     const BasicFieldInfo<ALLOC>& fieldInfo = findFieldInfo(getTypeInfo(), name);
     if (fieldInfo.isArray)
     {
-        throw CppRuntimeException("ZserioTreeCreator: Expecting array in member '") <<
-                fieldInfo.schemaName << "'!";
+        throw CppRuntimeException("ZserioTreeCreator: Expecting array in member '")
+                << fieldInfo.schemaName << "'!";
     }
 
-    m_valueStack.back()->setField(fieldInfo.schemaName,
-            makeAnyValue(fieldInfo.typeInfo, std::forward<T>(value)));
+    m_valueStack.back()->setField(
+            fieldInfo.schemaName, makeAnyValue(fieldInfo.typeInfo, std::forward<T>(value)));
 }
 
 template <typename ALLOC>
@@ -683,8 +682,7 @@ void BasicZserioTreeCreator<ALLOC>::setValue(const string<ALLOC>& name, std::nul
 {
     if (m_state != detail::CreatorState::IN_COMPOUND)
     {
-        throw CppRuntimeException("ZserioTreeCreator: Cannot set value (null) in state '") << m_state <<
-                "'!";
+        throw CppRuntimeException("ZserioTreeCreator: Cannot set value (null) in state '") << m_state << "'!";
     }
 
     const BasicFieldInfo<ALLOC>& fieldInfo = findFieldInfo(getTypeInfo(), name);
@@ -715,15 +713,15 @@ void BasicZserioTreeCreator<ALLOC>::beginCompoundElement()
 {
     if (m_state != detail::CreatorState::IN_ARRAY)
     {
-        throw CppRuntimeException("ZserioTreeCreator: Cannot begin compound element in state '") <<
-                m_state << "'!";
+        throw CppRuntimeException("ZserioTreeCreator: Cannot begin compound element in state '")
+                << m_state << "'!";
     }
 
     const BasicFieldInfo<ALLOC>& fieldInfo = m_fieldInfoStack.back();
     if (!TypeInfoUtil::isCompound(fieldInfo.typeInfo.getCppType()))
     {
-        throw CppRuntimeException("ZserioTreeCreator: Member '") << fieldInfo.schemaName <<
-                "' is not a compound!";
+        throw CppRuntimeException("ZserioTreeCreator: Member '")
+                << fieldInfo.schemaName << "' is not a compound!";
     }
 
     auto compoundArray = m_valueStack.back();
@@ -737,8 +735,8 @@ void BasicZserioTreeCreator<ALLOC>::endCompoundElement()
 {
     if (m_state != detail::CreatorState::IN_COMPOUND || m_fieldInfoStack.empty())
     {
-        throw CppRuntimeException("ZserioTreeCreator: Cannot end compound element in state '") <<
-                m_state << (m_fieldInfoStack.empty() ? ", expecting endRoot!" : "'!");
+        throw CppRuntimeException("ZserioTreeCreator: Cannot end compound element in state '")
+                << m_state << (m_fieldInfoStack.empty() ? ", expecting endRoot!" : "'!");
     }
 
     const BasicFieldInfo<ALLOC>& fieldInfo = m_fieldInfoStack.back();
@@ -755,8 +753,7 @@ void BasicZserioTreeCreator<ALLOC>::addValueElement(T&& value)
 {
     if (m_state != detail::CreatorState::IN_ARRAY)
     {
-        throw CppRuntimeException("ZserioTreeCreator: Cannot add value element in state '") <<
-                m_state << "'!";
+        throw CppRuntimeException("ZserioTreeCreator: Cannot add value element in state '") << m_state << "'!";
     }
 
     const BasicFieldInfo<ALLOC>& fieldInfo = m_fieldInfoStack.back();
@@ -768,8 +765,7 @@ const IBasicTypeInfo<ALLOC>& BasicZserioTreeCreator<ALLOC>::getElementType() con
 {
     if (m_state != detail::CreatorState::IN_ARRAY)
     {
-        throw CppRuntimeException("ZserioTreeCreator: Cannot get element type in state '") << m_state <<
-                "'!";
+        throw CppRuntimeException("ZserioTreeCreator: Cannot get element type in state '") << m_state << "'!";
     }
 
     return m_fieldInfoStack.back().get().typeInfo;
@@ -786,12 +782,13 @@ const BasicFieldInfo<ALLOC>& BasicZserioTreeCreator<ALLOC>::findFieldInfo(
         const IBasicTypeInfo<ALLOC>& typeInfo, StringView name) const
 {
     Span<const BasicFieldInfo<ALLOC>> fields = typeInfo.getFields();
-    auto found_it = std::find_if(fields.begin(), fields.end(),
-            [name](const BasicFieldInfo<ALLOC>& field){ return field.schemaName == name; });
+    auto found_it = std::find_if(fields.begin(), fields.end(), [name](const BasicFieldInfo<ALLOC>& field) {
+        return field.schemaName == name;
+    });
     if (found_it == fields.end())
     {
-        throw CppRuntimeException("ZserioTreeCreator: Member '") << name <<  "' not found in '" <<
-                typeInfo.getSchemaName() << "'!";
+        throw CppRuntimeException("ZserioTreeCreator: Member '")
+                << name << "' not found in '" << typeInfo.getSchemaName() << "'!";
     }
 
     return *found_it;

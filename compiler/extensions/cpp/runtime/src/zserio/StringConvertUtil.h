@@ -1,12 +1,12 @@
 #ifndef ZSERIO_STRING_CONVERT_UTIL_H_INC
 #define ZSERIO_STRING_CONVERT_UTIL_H_INC
 
-#include <sstream>
-#include <limits>
 #include <array>
+#include <limits>
+#include <sstream>
 
-#include "zserio/String.h"
 #include "zserio/RebindAlloc.h"
+#include "zserio/String.h"
 
 namespace zserio
 {
@@ -25,11 +25,12 @@ template <typename T,
         typename std::enable_if<std::is_unsigned<T>::value && !std::is_same<T, bool>::value, int>::type = 0>
 const char* convertIntToString(std::array<char, 24>& buffer, T value, bool isNegative)
 {
-    static const std::array<char, 201> DIGITS = {"0001020304050607080910111213141516171819"
-                                                 "2021222324252627282930313233343536373839"
-                                                 "4041424344454647484950515253545556575859"
-                                                 "6061626364656667686970717273747576777879"
-                                                 "8081828384858687888990919293949596979899"};
+    static const std::array<char, 201> DIGITS = {
+            "0001020304050607080910111213141516171819"
+            "2021222324252627282930313233343536373839"
+            "4041424344454647484950515253545556575859"
+            "6061626364656667686970717273747576777879"
+            "8081828384858687888990919293949596979899"};
 
     auto bufferEnd = buffer.end();
     *--bufferEnd = 0; // always terminate with '\0'
@@ -71,8 +72,7 @@ const char* convertIntToString(std::array<char, 24>& buffer, T value, bool isNeg
  *
  * \return Pointer to the beginning of the resulting string.
  */
-template <typename T,
-        typename std::enable_if<std::is_unsigned<T>::value, int>::type = 0>
+template <typename T, typename std::enable_if<std::is_unsigned<T>::value, int>::type = 0>
 const char* convertIntToString(std::array<char, 24>& buffer, T value)
 {
     return detail::convertIntToString(buffer, value, false);
@@ -128,8 +128,8 @@ inline void convertFloatToString(std::array<char, 24>& integerPartBuffer,
     else
     {
         const int64_t integerPart = static_cast<int64_t>(value);
-        const int64_t floatingPart = static_cast<int64_t>(
-                (value - static_cast<float>(integerPart)) * 1e3F); // 3 digits
+        const int64_t floatingPart =
+                static_cast<int64_t>((value - static_cast<float>(integerPart)) * 1e3F); // 3 digits
         const int64_t floatingPartAbs = (floatingPart < 0) ? 0 - floatingPart : floatingPart;
         integerPartString = convertIntToString(integerPartBuffer, integerPart);
         floatingPartString = convertIntToString(floatingPartBuffer, floatingPartAbs);

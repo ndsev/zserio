@@ -1,11 +1,10 @@
 #include <array>
 
-#include "zserio/Enums.h"
+#include "gtest/gtest.h"
 #include "zserio/BitStreamReader.h"
 #include "zserio/BitStreamWriter.h"
 #include "zserio/CppRuntimeException.h"
-
-#include "gtest/gtest.h"
+#include "zserio/Enums.h"
 
 namespace zserio
 {
@@ -44,8 +43,8 @@ inline size_t enumToOrdinal<Color>(Color value)
     case Color::BLACK:
         return 3;
     default:
-        throw CppRuntimeException("Unknown value for enumeration Color: ") <<
-                static_cast<uint8_t>(value) << "!";
+        throw CppRuntimeException("Unknown value for enumeration Color: ")
+                << static_cast<uint8_t>(value) << "!";
     }
 }
 

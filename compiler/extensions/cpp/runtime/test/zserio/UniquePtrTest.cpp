@@ -1,9 +1,8 @@
-#include "zserio/UniquePtr.h"
+#include "gtest/gtest.h"
 #include "zserio/CppRuntimeException.h"
+#include "zserio/UniquePtr.h"
 
 #include "TrackingAllocator.h"
-
-#include "gtest/gtest.h"
 
 namespace zserio
 {

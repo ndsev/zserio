@@ -1,7 +1,6 @@
 #include <string>
 
 #include "gtest/gtest.h"
-
 #include "zserio/TypeInfo.h"
 
 namespace zserio
@@ -16,28 +15,14 @@ public:
     static const ITypeInfo& typeInfo()
     {
         static const RecursiveTypeInfo<std::allocator<uint8_t>> recursiveTypeInfo(&RecursiveObject::typeInfo);
-        static const std::array<FieldInfo, 1> fields = {
-            FieldInfo{
-                "recursive"_sv,
-                recursiveTypeInfo,
-                {},
+        static const std::array<FieldInfo, 1> fields = {FieldInfo{"recursive"_sv, recursiveTypeInfo, {},
                 false, // isExtended
-                {},
-                {},
-                {},
+                {}, {}, {},
                 true, // isOptional
-                {},
-                {},
-                false,
-                {},
-                false,
-                false
-            }
-        };
+                {}, {}, false, {}, false, false}};
 
         static const StructTypeInfo<std::allocator<uint8_t>> structTypeInfo(
-            "RecursiveObject"_sv, nullptr, ""_sv, {}, fields, {}, {}
-        );
+                "RecursiveObject"_sv, nullptr, ""_sv, {}, fields, {}, {});
         return structTypeInfo;
     }
 };
@@ -129,25 +114,25 @@ TEST_F(TypeInfoTest, builtinTypeInfo)
     // fixed signed bit fields
     uint8_t bitSize = 0;
     ASSERT_THROW(Builtin::getFixedSignedBitField(bitSize), CppRuntimeException);
-    for (++bitSize ; bitSize <= 8; ++bitSize)
+    for (++bitSize; bitSize <= 8; ++bitSize)
     {
-        checkBuiltinTypeInfo(Builtin::getFixedSignedBitField(bitSize), "int:" +
-                std::to_string(bitSize), SchemaType::FIXED_SIGNED_BITFIELD, CppType::INT8, bitSize);
+        checkBuiltinTypeInfo(Builtin::getFixedSignedBitField(bitSize), "int:" + std::to_string(bitSize),
+                SchemaType::FIXED_SIGNED_BITFIELD, CppType::INT8, bitSize);
     }
     for (; bitSize <= 16; ++bitSize)
     {
-        checkBuiltinTypeInfo(Builtin::getFixedSignedBitField(bitSize), "int:" +
-                std::to_string(bitSize), SchemaType::FIXED_SIGNED_BITFIELD, CppType::INT16, bitSize);
+        checkBuiltinTypeInfo(Builtin::getFixedSignedBitField(bitSize), "int:" + std::to_string(bitSize),
+                SchemaType::FIXED_SIGNED_BITFIELD, CppType::INT16, bitSize);
     }
     for (; bitSize <= 32; ++bitSize)
     {
-        checkBuiltinTypeInfo(Builtin::getFixedSignedBitField(bitSize), "int:" +
-                std::to_string(bitSize), SchemaType::FIXED_SIGNED_BITFIELD, CppType::INT32, bitSize);
+        checkBuiltinTypeInfo(Builtin::getFixedSignedBitField(bitSize), "int:" + std::to_string(bitSize),
+                SchemaType::FIXED_SIGNED_BITFIELD, CppType::INT32, bitSize);
     }
     for (; bitSize <= 64; ++bitSize)
     {
-        checkBuiltinTypeInfo(Builtin::getFixedSignedBitField(bitSize), "int:" +
-                std::to_string(bitSize), SchemaType::FIXED_SIGNED_BITFIELD, CppType::INT64, bitSize);
+        checkBuiltinTypeInfo(Builtin::getFixedSignedBitField(bitSize), "int:" + std::to_string(bitSize),
+                SchemaType::FIXED_SIGNED_BITFIELD, CppType::INT64, bitSize);
     }
     for (; bitSize < 255; ++bitSize)
     {
@@ -158,25 +143,25 @@ TEST_F(TypeInfoTest, builtinTypeInfo)
     // fixed unsigned bit fields
     bitSize = 0;
     ASSERT_THROW(Builtin::getFixedUnsignedBitField(bitSize), CppRuntimeException);
-    for (++bitSize ; bitSize <= 8; ++bitSize)
+    for (++bitSize; bitSize <= 8; ++bitSize)
     {
-        checkBuiltinTypeInfo(Builtin::getFixedUnsignedBitField(bitSize), "bit:" +
-                std::to_string(bitSize), SchemaType::FIXED_UNSIGNED_BITFIELD, CppType::UINT8, bitSize);
+        checkBuiltinTypeInfo(Builtin::getFixedUnsignedBitField(bitSize), "bit:" + std::to_string(bitSize),
+                SchemaType::FIXED_UNSIGNED_BITFIELD, CppType::UINT8, bitSize);
     }
     for (; bitSize <= 16; ++bitSize)
     {
-        checkBuiltinTypeInfo(Builtin::getFixedUnsignedBitField(bitSize), "bit:" +
-                std::to_string(bitSize), SchemaType::FIXED_UNSIGNED_BITFIELD, CppType::UINT16, bitSize);
+        checkBuiltinTypeInfo(Builtin::getFixedUnsignedBitField(bitSize), "bit:" + std::to_string(bitSize),
+                SchemaType::FIXED_UNSIGNED_BITFIELD, CppType::UINT16, bitSize);
     }
     for (; bitSize <= 32; ++bitSize)
     {
-        checkBuiltinTypeInfo(Builtin::getFixedUnsignedBitField(bitSize), "bit:" +
-                std::to_string(bitSize), SchemaType::FIXED_UNSIGNED_BITFIELD, CppType::UINT32, bitSize);
+        checkBuiltinTypeInfo(Builtin::getFixedUnsignedBitField(bitSize), "bit:" + std::to_string(bitSize),
+                SchemaType::FIXED_UNSIGNED_BITFIELD, CppType::UINT32, bitSize);
     }
     for (; bitSize <= 64; ++bitSize)
     {
-        checkBuiltinTypeInfo(Builtin::getFixedUnsignedBitField(bitSize), "bit:" +
-                std::to_string(bitSize), SchemaType::FIXED_UNSIGNED_BITFIELD, CppType::UINT64, bitSize);
+        checkBuiltinTypeInfo(Builtin::getFixedUnsignedBitField(bitSize), "bit:" + std::to_string(bitSize),
+                SchemaType::FIXED_UNSIGNED_BITFIELD, CppType::UINT64, bitSize);
     }
     for (; bitSize < 255; ++bitSize)
     {
@@ -187,7 +172,7 @@ TEST_F(TypeInfoTest, builtinTypeInfo)
     // dynamic signed bit fields
     uint8_t maxBitSize = 0;
     ASSERT_THROW(Builtin::getDynamicSignedBitField(maxBitSize), CppRuntimeException);
-    for (++maxBitSize ; maxBitSize <= 8; ++maxBitSize)
+    for (++maxBitSize; maxBitSize <= 8; ++maxBitSize)
     {
         checkBuiltinTypeInfo(Builtin::getDynamicSignedBitField(maxBitSize), "int<>",
                 SchemaType::DYNAMIC_SIGNED_BITFIELD, CppType::INT8);
@@ -216,7 +201,7 @@ TEST_F(TypeInfoTest, builtinTypeInfo)
     // dynamic unsigned bit fields
     maxBitSize = 0;
     ASSERT_THROW(Builtin::getDynamicUnsignedBitField(maxBitSize), CppRuntimeException);
-    for (++maxBitSize ; maxBitSize <= 8; ++maxBitSize)
+    for (++maxBitSize; maxBitSize <= 8; ++maxBitSize)
     {
         checkBuiltinTypeInfo(Builtin::getDynamicUnsignedBitField(maxBitSize), "bit<>",
                 SchemaType::DYNAMIC_UNSIGNED_BITFIELD, CppType::UINT8);
@@ -432,7 +417,7 @@ TEST_F(TypeInfoTest, sqlDatabaseTypeInfo)
 TEST_F(TypeInfoTest, enumTypeInfo)
 {
     const ITypeInfo& underlyingTypeInfo = BuiltinTypeInfo<>::getInt8();
-    std::array<ItemInfo, 1> enumItems = { ItemInfo("ONE"_sv, 1, false, false) };
+    std::array<ItemInfo, 1> enumItems = {ItemInfo("ONE"_sv, 1, false, false)};
     const EnumTypeInfo<std::allocator<uint8_t>> enumTypeInfo(""_sv, underlyingTypeInfo, {}, enumItems);
     ASSERT_EQ(""_sv, enumTypeInfo.getSchemaName());
     ASSERT_EQ(SchemaType::ENUM, enumTypeInfo.getSchemaType());
@@ -475,9 +460,9 @@ TEST_F(TypeInfoTest, enumTypeInfo)
 TEST_F(TypeInfoTest, bitmaskTypeInfo)
 {
     const ITypeInfo& underlyingTypeInfo = BuiltinTypeInfo<>::getInt8();
-    std::array<ItemInfo, 1> bitmaskValues = { ItemInfo("FIRST_BIT"_sv, 1, false, false )};
-    const BitmaskTypeInfo<std::allocator<uint8_t>> bitmaskTypeInfo(""_sv, underlyingTypeInfo, {},
-            bitmaskValues);
+    std::array<ItemInfo, 1> bitmaskValues = {ItemInfo("FIRST_BIT"_sv, 1, false, false)};
+    const BitmaskTypeInfo<std::allocator<uint8_t>> bitmaskTypeInfo(
+            ""_sv, underlyingTypeInfo, {}, bitmaskValues);
     ASSERT_EQ(""_sv, bitmaskTypeInfo.getSchemaName());
     ASSERT_EQ(SchemaType::BITMASK, bitmaskTypeInfo.getSchemaType());
     ASSERT_EQ(CppType::BITMASK, bitmaskTypeInfo.getCppType());

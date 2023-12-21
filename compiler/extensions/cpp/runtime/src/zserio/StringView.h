@@ -1,16 +1,16 @@
 #ifndef ZSERIO_STRING_VIEW_H_INC
 #define ZSERIO_STRING_VIEW_H_INC
 
-#include <cstddef>
 #include <algorithm>
-#include <utility>
-#include <memory>
+#include <cstddef>
 #include <limits>
+#include <memory>
+#include <utility>
 
 #include "zserio/CppRuntimeException.h"
+#include "zserio/RebindAlloc.h"
 #include "zserio/String.h"
 #include "zserio/StringConvertUtil.h"
-#include "zserio/RebindAlloc.h"
 
 namespace zserio
 {
@@ -52,7 +52,8 @@ public:
      * \param str Input null-terminated string.
      */
     BasicStringView(const const_pointer str) noexcept :
-        m_data(str), m_size(Traits::length(str))
+            m_data(str),
+            m_size(Traits::length(str))
     {}
 
     /**
@@ -62,7 +63,8 @@ public:
      * \param count Length of the view. Shall not be longer than the input string.
      */
     constexpr BasicStringView(const const_pointer str, const size_type count) noexcept :
-        m_data(str), m_size(count)
+            m_data(str),
+            m_size(count)
     {}
 
     /**
@@ -70,9 +72,10 @@ public:
      *
      * \param str Input string.
      */
-    template<typename ALLOC>
+    template <typename ALLOC>
     constexpr BasicStringView(const std::basic_string<CharT, Traits, ALLOC>& str) noexcept :
-        m_data(str.data()), m_size(str.size())
+            m_data(str.data()),
+            m_size(str.size())
     {}
 
     /**
@@ -193,8 +196,8 @@ public:
     {
         if (pos >= size())
         {
-            throw CppRuntimeException("StringView: Position ") << pos << " out of range for view size "
-                    << size() << "!";
+            throw CppRuntimeException("StringView: Position ")
+                    << pos << " out of range for view size " << size() << "!";
         }
         return m_data[pos];
     }
@@ -315,8 +318,8 @@ public:
     {
         if (pos > size())
         {
-            throw CppRuntimeException("StringView: Position ") << pos << " out of range for view size " <<
-                    size() << "!";
+            throw CppRuntimeException("StringView: Position ")
+                    << pos << " out of range for view size " << size() << "!";
         }
         const size_t rcount = std::min(count, size() - pos);
         Traits::copy(dest, data() + pos, rcount);
@@ -336,8 +339,8 @@ public:
     {
         if (pos > size())
         {
-            throw CppRuntimeException("StringView: Position ") << pos << " out of range for view size " <<
-                    size() << "!";
+            throw CppRuntimeException("StringView: Position ")
+                    << pos << " out of range for view size " << size() << "!";
         }
         const size_t rcount = std::min(count, size() - pos);
         return BasicStringView(m_data + pos, rcount);
@@ -803,7 +806,7 @@ private:
     size_type m_size = 0;
 };
 
-template<typename CharT, class Traits>
+template <typename CharT, class Traits>
 constexpr std::size_t const BasicStringView<CharT, Traits>::npos;
 
 /**
@@ -813,7 +816,7 @@ constexpr std::size_t const BasicStringView<CharT, Traits>::npos;
  * \param rhs Right hand side operator.
  * \return True if lhs is equal to rhs.
  */
-template<typename CharT, class Traits>
+template <typename CharT, class Traits>
 constexpr bool operator==(BasicStringView<CharT, Traits> lhs, BasicStringView<CharT, Traits> rhs) noexcept
 {
     return lhs.compare(rhs) == 0;
@@ -826,7 +829,7 @@ constexpr bool operator==(BasicStringView<CharT, Traits> lhs, BasicStringView<Ch
  * \param rhs Right hand side operator.
  * \return True if lhs is not equal to rhs.
  */
-template<typename CharT, class Traits>
+template <typename CharT, class Traits>
 constexpr bool operator!=(BasicStringView<CharT, Traits> lhs, BasicStringView<CharT, Traits> rhs) noexcept
 {
     return lhs.compare(rhs) != 0;
@@ -839,7 +842,7 @@ constexpr bool operator!=(BasicStringView<CharT, Traits> lhs, BasicStringView<Ch
  * \param rhs Right hand side operator.
  * \return True if lhs is less than rhs.
  */
-template<typename CharT, class Traits>
+template <typename CharT, class Traits>
 constexpr bool operator<(BasicStringView<CharT, Traits> lhs, BasicStringView<CharT, Traits> rhs) noexcept
 {
     return lhs.compare(rhs) < 0;
@@ -852,7 +855,7 @@ constexpr bool operator<(BasicStringView<CharT, Traits> lhs, BasicStringView<Cha
  * \param rhs Right hand side operator.
  * \return True if lhs is less or equal to rhs.
  */
-template<typename CharT, class Traits>
+template <typename CharT, class Traits>
 constexpr bool operator<=(BasicStringView<CharT, Traits> lhs, BasicStringView<CharT, Traits> rhs) noexcept
 {
     return lhs.compare(rhs) <= 0;
@@ -865,7 +868,7 @@ constexpr bool operator<=(BasicStringView<CharT, Traits> lhs, BasicStringView<Ch
  * \param rhs Right hand side operator.
  * \return True if lhs is greater than rhs.
  */
-template<typename CharT, class Traits>
+template <typename CharT, class Traits>
 constexpr bool operator>(BasicStringView<CharT, Traits> lhs, BasicStringView<CharT, Traits> rhs) noexcept
 {
     return lhs.compare(rhs) > 0;
@@ -878,7 +881,7 @@ constexpr bool operator>(BasicStringView<CharT, Traits> lhs, BasicStringView<Cha
  * \param rhs Right hand side operator.
  * \return True if lhs is greater or equal to rhs.
  */
-template<typename CharT, class Traits>
+template <typename CharT, class Traits>
 constexpr bool operator>=(BasicStringView<CharT, Traits> lhs, BasicStringView<CharT, Traits> rhs) noexcept
 {
     return lhs.compare(rhs) >= 0;
@@ -890,8 +893,8 @@ constexpr bool operator>=(BasicStringView<CharT, Traits> lhs, BasicStringView<Ch
  * \param str Input string in form of array of characters.
  * \return String view to given input string.
  */
-template<typename CharT, size_t N>
-constexpr BasicStringView<CharT> makeStringView(const CharT(&str)[N])
+template <typename CharT, size_t N>
+constexpr BasicStringView<CharT> makeStringView(const CharT (&str)[N])
 {
     static_assert(N != 0, "Zero length arrays C++ extension is not supported!");
     return BasicStringView<CharT>(str, str[N - 1] == CharT() ? (N - 1) : N);
@@ -905,12 +908,12 @@ constexpr BasicStringView<CharT> makeStringView(const CharT(&str)[N])
  *
  * \return String constructed from the string view and allocator.
  */
-template<typename CharT, typename Traits, typename ALLOC = std::allocator<char>>
+template <typename CharT, typename Traits, typename ALLOC = std::allocator<char>>
 std::basic_string<CharT, Traits, RebindAlloc<ALLOC, CharT>> stringViewToString(
         BasicStringView<CharT, Traits> stringView, const ALLOC& allocator = ALLOC())
 {
-    return std::basic_string<CharT, Traits, RebindAlloc<ALLOC, CharT>>(stringView.data(), stringView.size(),
-            allocator);
+    return std::basic_string<CharT, Traits, RebindAlloc<ALLOC, CharT>>(
+            stringView.data(), stringView.size(), allocator);
 }
 
 /**
@@ -920,9 +923,9 @@ std::basic_string<CharT, Traits, RebindAlloc<ALLOC, CharT>> stringViewToString(
  * \param second String view to append to the first.
  * \return first.
  */
-template<typename CharT, typename Traits, typename ALLOC = std::allocator<char>>
+template <typename CharT, typename Traits, typename ALLOC = std::allocator<char>>
 std::basic_string<CharT, Traits, ALLOC>& operator+=(
-    std::basic_string<CharT, Traits, ALLOC>& first, BasicStringView<CharT, Traits> second)
+        std::basic_string<CharT, Traits, ALLOC>& first, BasicStringView<CharT, Traits> second)
 {
     return first.append(second.data(), second.size());
 }
@@ -964,13 +967,12 @@ inline namespace literals
 /**
  * User-defined literal for StringView.
  */
-constexpr ::zserio::StringView
-operator"" _sv(const char* str, std::size_t len) noexcept
+constexpr ::zserio::StringView operator"" _sv(const char* str, std::size_t len) noexcept
 {
     return ::zserio::StringView(str, len);
 }
 
-} // inline namespace literals
+} // namespace literals
 
 } // namespace zserio
 

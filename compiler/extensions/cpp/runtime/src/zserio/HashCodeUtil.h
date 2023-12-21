@@ -1,15 +1,15 @@
 #ifndef ZSERIO_HASH_CODE_UTIL_H_INC
 #define ZSERIO_HASH_CODE_UTIL_H_INC
 
-#include <type_traits>
-#include <string>
-#include <vector>
 #include <memory>
+#include <string>
+#include <type_traits>
+#include <vector>
 
-#include "zserio/Types.h"
-#include "zserio/FloatUtil.h"
 #include "zserio/Enums.h"
+#include "zserio/FloatUtil.h"
 #include "zserio/OptionalHolder.h"
+#include "zserio/Types.h"
 
 namespace zserio
 {
@@ -39,9 +39,9 @@ inline uint32_t calcHashCodeFirstTerm(uint32_t seedValue)
  *
  * \return Calculated hash code.
  */
-template<typename T>
-inline typename std::enable_if<std::is_integral<T>::value && (sizeof(T) <= 4), uint32_t>::type
-        calcHashCode(uint32_t seedValue, T value)
+template <typename T>
+inline typename std::enable_if<std::is_integral<T>::value && (sizeof(T) <= 4), uint32_t>::type calcHashCode(
+        uint32_t seedValue, T value)
 {
     return calcHashCodeFirstTerm(seedValue) + static_cast<uint32_t>(value);
 }
@@ -54,9 +54,9 @@ inline typename std::enable_if<std::is_integral<T>::value && (sizeof(T) <= 4), u
  *
  * \return Calculated hash code.
  */
-template<typename T>
-inline typename std::enable_if<std::is_integral<T>::value && (sizeof(T) > 4), uint32_t>::type
-        calcHashCode(uint32_t seedValue, T value)
+template <typename T>
+inline typename std::enable_if<std::is_integral<T>::value && (sizeof(T) > 4), uint32_t>::type calcHashCode(
+        uint32_t seedValue, T value)
 {
     const auto unsignedValue = static_cast<typename std::make_unsigned<T>::type>(value);
     return calcHashCodeFirstTerm(seedValue) + static_cast<uint32_t>(unsignedValue ^ (unsignedValue >> 32U));
@@ -97,8 +97,8 @@ inline uint32_t calcHashCode(uint32_t seedValue, double value)
  * \return Calculated hash code.
  */
 template <typename ALLOC>
-inline uint32_t calcHashCode(uint32_t seedValue,
-        const std::basic_string<char, std::char_traits<char>, ALLOC>& stringValue)
+inline uint32_t calcHashCode(
+        uint32_t seedValue, const std::basic_string<char, std::char_traits<char>, ALLOC>& stringValue)
 {
     uint32_t result = seedValue;
     for (auto element : stringValue)
@@ -131,8 +131,7 @@ inline typename std::enable_if<std::is_enum<ENUM_TYPE>::value, uint32_t>::type c
  * \return Calculated hash code.
  */
 template <typename OBJECT>
-inline
-typename std::enable_if<!std::is_enum<OBJECT>::value && !std::is_integral<OBJECT>::value, uint32_t>::type
+inline typename std::enable_if<!std::is_enum<OBJECT>::value && !std::is_integral<OBJECT>::value, uint32_t>::type
 calcHashCode(uint32_t seedValue, const OBJECT& object)
 {
     return calcHashCode(seedValue, object.hashCode());

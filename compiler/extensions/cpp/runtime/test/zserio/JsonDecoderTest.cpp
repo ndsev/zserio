@@ -1,5 +1,4 @@
 #include "gtest/gtest.h"
-
 #include "zserio/JsonDecoder.h"
 
 namespace zserio
@@ -194,7 +193,7 @@ TEST_F(JsonDecoderTest, decodeString)
     checkDecoderSuccess("\"\\t\"", 4, std::string("\t"));
 
     checkDecoderSuccess("\"\\n\\t%^@(*aAzZ01234569$%^!?<>[]](){}-=+~:;/|\\\\\\\"'Hello World2\"", 62,
-           std::string("\n\t%^@(*aAzZ01234569$%^!?<>[]](){}-=+~:;/|\\\"\'Hello World2"));
+            std::string("\n\t%^@(*aAzZ01234569$%^!?<>[]](){}-=+~:;/|\\\"\'Hello World2"));
 
     // <= 0x1F -> unicode escape
     checkDecoderSuccess("\"\\u001f\"", 8, std::string("\x1F"));

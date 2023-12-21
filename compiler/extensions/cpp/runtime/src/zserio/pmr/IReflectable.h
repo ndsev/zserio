@@ -6,8 +6,8 @@
 
 // needed to have proper typedefs
 #include "zserio/pmr/AnyHolder.h"
-#include "zserio/pmr/String.h"
 #include "zserio/pmr/BitBuffer.h"
+#include "zserio/pmr/String.h"
 
 namespace zserio
 {

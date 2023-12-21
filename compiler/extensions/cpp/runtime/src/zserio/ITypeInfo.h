@@ -1,9 +1,9 @@
 #ifndef ZSERIO_I_TYPE_INFO_INC_H
 #define ZSERIO_I_TYPE_INFO_INC_H
 
+#include "zserio/IReflectable.h"
 #include "zserio/Span.h"
 #include "zserio/StringView.h"
-#include "zserio/IReflectable.h"
 
 namespace zserio
 {
@@ -358,12 +358,22 @@ struct BasicFieldInfo
 {
     BasicFieldInfo(StringView schemaName_, const IBasicTypeInfo<ALLOC>& typeInfo_,
             Span<const StringView> typeArguments_, bool isExtended_, StringView alignment_, StringView offset_,
-            StringView initializer_, bool isOptional_, StringView optionalCondition_,
-            StringView constraint_, bool isArray_, StringView arrayLength_, bool isPacked_ ,bool isImplicit_) :
-            schemaName(schemaName_), typeInfo(typeInfo_), typeArguments(typeArguments_),
-            isExtended(isExtended_), alignment(alignment_), offset(offset_), initializer(initializer_),
-            isOptional(isOptional_), optionalCondition(optionalCondition_), constraint(constraint_),
-            isArray(isArray_), arrayLength(arrayLength_), isPacked(isPacked_), isImplicit(isImplicit_)
+            StringView initializer_, bool isOptional_, StringView optionalCondition_, StringView constraint_,
+            bool isArray_, StringView arrayLength_, bool isPacked_, bool isImplicit_) :
+            schemaName(schemaName_),
+            typeInfo(typeInfo_),
+            typeArguments(typeArguments_),
+            isExtended(isExtended_),
+            alignment(alignment_),
+            offset(offset_),
+            initializer(initializer_),
+            isOptional(isOptional_),
+            optionalCondition(optionalCondition_),
+            constraint(constraint_),
+            isArray(isArray_),
+            arrayLength(arrayLength_),
+            isPacked(isPacked_),
+            isImplicit(isImplicit_)
     {}
 
     StringView schemaName; /**< field schema name */
@@ -419,7 +429,10 @@ struct BasicCaseInfo
 struct ItemInfo
 {
     ItemInfo(StringView schemaName_, uint64_t value_, bool isDeprecated_, bool isRemoved_) :
-            schemaName(schemaName_), value(value_), isDeprecated(isDeprecated_), isRemoved(isRemoved_)
+            schemaName(schemaName_),
+            value(value_),
+            isDeprecated(isDeprecated_),
+            isRemoved(isRemoved_)
     {}
 
     StringView schemaName; /**< enumeration item or bitmask value schema name */
@@ -437,8 +450,12 @@ struct BasicColumnInfo
     BasicColumnInfo(StringView schemaName_, const IBasicTypeInfo<ALLOC>& typeInfo_,
             Span<const StringView> typeArguments_, StringView sqlTypeName_, StringView sqlConstraint_,
             bool isVirtual_) :
-            schemaName(schemaName_), typeInfo(typeInfo_), typeArguments(typeArguments_),
-            sqlTypeName(sqlTypeName_), sqlConstraint(sqlConstraint_), isVirtual(isVirtual_)
+            schemaName(schemaName_),
+            typeInfo(typeInfo_),
+            typeArguments(typeArguments_),
+            sqlTypeName(sqlTypeName_),
+            sqlConstraint(sqlConstraint_),
+            isVirtual(isVirtual_)
     {}
 
     StringView schemaName; /**< column schema name */
@@ -474,10 +491,13 @@ struct BasicTemplateArgumentInfo
 template <typename ALLOC = std::allocator<uint8_t>>
 struct BasicMessageInfo
 {
-    BasicMessageInfo(StringView schemaName_, const IBasicTypeInfo<ALLOC>& typeInfo_,
-            bool isPublished_, bool isSubscribed_, StringView topic_) :
-            schemaName(schemaName_), typeInfo(typeInfo_),
-            isPublished(isPublished_), isSubscribed(isSubscribed_), topic(topic_)
+    BasicMessageInfo(StringView schemaName_, const IBasicTypeInfo<ALLOC>& typeInfo_, bool isPublished_,
+            bool isSubscribed_, StringView topic_) :
+            schemaName(schemaName_),
+            typeInfo(typeInfo_),
+            isPublished(isPublished_),
+            isSubscribed(isSubscribed_),
+            topic(topic_)
     {}
 
     StringView schemaName; /**< message schema name */
