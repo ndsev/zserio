@@ -21,57 +21,57 @@
 #                     Fires an error in case of unused suppressions. Default is OFF.
 # Note that only implementation files ('*.cpp') are used as sources.
 function(clang_tidy_add_custom_target CLANG_TIDY_TARGET)
-    cmake_parse_arguments(CLANG_TIDY
-        ""
-        "BUILD_PATH;CONFIG_FILE;HEADER_FILTER;OUTPUT_FILE;SUPPRESSIONS_FILE;WERROR;WERROR_UNUSED_SUPPRESSIONS"
-        "DEPENDS;SOURCES;SOURCES_GLOBS"
-        ${ARGN}
-    )
-
-    # check required arguments
-    foreach (ARG TARGET BUILD_PATH CONFIG_FILE)
-        if (NOT DEFINED CLANG_TIDY_${ARG})
-            message(FATAL_ERROR "No value defined for required argument ${ARG}!")
-        endif ()
-    endforeach ()
-
-    if (NOT DEFINED CLANG_TIDY_SOURCES AND NOT DEFINED CLANG_TIDY_SOURCES_GLOBS)
-        message(FATAL_ERROR "No value defined neither for SOURCES nor SOURCES_GLOBS!")
-    endif ()
-
-    # process optional arguments
-    if (NOT DEFINED CLANG_TIDY_HEADER_FILTER)
-        set(CLANG_TIDY_HEADER_FILTER ".*")
-    endif ()
-
-    if (NOT DEFINED CLANG_TIDY_OUTPUT_FILE)
-        set(CLANG_TIDY_OUTPUT_FILE "clang-tidy-report.txt")
-    endif ()
-
-    if (NOT DEFINED CLANG_TIDY_SUPPRESSIONS_FILE)
-        if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/ClangTidySuppressions.txt")
-            set(CLANG_TIDY_SUPPRESSIONS_FILE "${CMAKE_CURRENT_SOURCE_DIR}/ClangTidySuppressions.txt")
-        endif ()
-    endif ()
-
-    if (NOT DEFINED CLANG_TIDY_WERROR)
-        set(CLANG_TIDY_WERROR ON)
-    endif ()
-
-    if (NOT DEFINED CLANG_TIDY_WERROR_UNUSED_SUPPRESSIONS)
-        set(CLANG_TIDY_WERROR_UNUSED_SUPPRESSIONS OFF)
-    endif ()
-
-    # process sources
-    list(APPEND CLANG_TIDY_SOURCES_LIST ${CLANG_TIDY_SOURCES})
-    foreach (SOURCE_EXPRESSION ${CLANG_TIDY_SOURCES_GLOBS})
-        file(GLOB_RECURSE MATCHING_SOURCES "${SOURCE_EXPRESSION}")
-        list(APPEND CLANG_TIDY_SOURCES_LIST ${MATCHING_SOURCES})
-    endforeach ()
-    list(REMOVE_DUPLICATES CLANG_TIDY_SOURCES_LIST)
-    list(FILTER CLANG_TIDY_SOURCES_LIST INCLUDE REGEX ".*\.c(pp)?$")
-
     if (CLANG_TIDY_BIN)
+        cmake_parse_arguments(CLANG_TIDY
+            ""
+            "BUILD_PATH;CONFIG_FILE;HEADER_FILTER;OUTPUT_FILE;SUPPRESSIONS_FILE;WERROR;WERROR_UNUSED_SUPPRESSIONS"
+            "DEPENDS;SOURCES;SOURCES_GLOBS"
+            ${ARGN}
+        )
+
+        # check required arguments
+        foreach (ARG TARGET BUILD_PATH CONFIG_FILE)
+            if (NOT DEFINED CLANG_TIDY_${ARG})
+                message(FATAL_ERROR "No value defined for required argument ${ARG}!")
+            endif ()
+        endforeach ()
+
+        if (NOT DEFINED CLANG_TIDY_SOURCES AND NOT DEFINED CLANG_TIDY_SOURCES_GLOBS)
+            message(FATAL_ERROR "No value defined neither for SOURCES nor SOURCES_GLOBS!")
+        endif ()
+
+        # process optional arguments
+        if (NOT DEFINED CLANG_TIDY_HEADER_FILTER)
+            set(CLANG_TIDY_HEADER_FILTER ".*")
+        endif ()
+
+        if (NOT DEFINED CLANG_TIDY_OUTPUT_FILE)
+            set(CLANG_TIDY_OUTPUT_FILE "clang-tidy-report.txt")
+        endif ()
+
+        if (NOT DEFINED CLANG_TIDY_SUPPRESSIONS_FILE)
+            if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/ClangTidySuppressions.txt")
+                set(CLANG_TIDY_SUPPRESSIONS_FILE "${CMAKE_CURRENT_SOURCE_DIR}/ClangTidySuppressions.txt")
+            endif ()
+        endif ()
+
+        if (NOT DEFINED CLANG_TIDY_WERROR)
+            set(CLANG_TIDY_WERROR ON)
+        endif ()
+
+        if (NOT DEFINED CLANG_TIDY_WERROR_UNUSED_SUPPRESSIONS)
+            set(CLANG_TIDY_WERROR_UNUSED_SUPPRESSIONS OFF)
+        endif ()
+
+        # process sources
+        list(APPEND CLANG_TIDY_SOURCES_LIST ${CLANG_TIDY_SOURCES})
+        foreach (SOURCE_EXPRESSION ${CLANG_TIDY_SOURCES_GLOBS})
+            file(GLOB_RECURSE MATCHING_SOURCES "${SOURCE_EXPRESSION}")
+            list(APPEND CLANG_TIDY_SOURCES_LIST ${MATCHING_SOURCES})
+        endforeach ()
+        list(REMOVE_DUPLICATES CLANG_TIDY_SOURCES_LIST)
+        list(FILTER CLANG_TIDY_SOURCES_LIST INCLUDE REGEX ".*\.c(pp)?$")
+
         set(CLANG_TIDY_TIMESTAMP_FILE "clang-tidy/${CLANG_TIDY_TARGET}-timestamp")
         add_custom_command(
             OUTPUT "${CLANG_TIDY_TIMESTAMP_FILE}" "${CLANG_TIDY_OUTPUT_FILE}"
@@ -85,7 +85,8 @@ function(clang_tidy_add_custom_target CLANG_TIDY_TARGET)
 
         set(INDEX 0)
         foreach (SOURCE_FILE ${CLANG_TIDY_SOURCES_LIST})
-            set(CLANG_TIDY_FILE_STAMP "clang-tidy/${CLANG_TIDY_TARGET}-${INDEX}")
+            get_filename_component(SOURCE_FILE_NAME ${SOURCE_FILE} NAME)
+            set(CLANG_TIDY_FILE_STAMP "clang-tidy/${INDEX}_${SOURCE_FILE_NAME}")
             add_custom_command(
                 OUTPUT "${CLANG_TIDY_FILE_STAMP}"
                 COMMAND "${CMAKE_COMMAND}"
@@ -97,8 +98,8 @@ function(clang_tidy_add_custom_target CLANG_TIDY_TARGET)
                     -DOUTPUT_FILE="${CLANG_TIDY_OUTPUT_FILE}"
                     -P ${CMAKE_MODULE_PATH}/clang_tidy_tool.cmake
                 COMMAND "${CMAKE_COMMAND}" -E touch "${CLANG_TIDY_FILE_STAMP}"
-                DEPENDS "${CLANG_TIDY_TIMESTAMP_FILE}"
-                COMMENT "Running clang-tidy on ${SOURCE_FILE}(${INDEX})"
+                DEPENDS "${SOURCE_FILE}" "${CLANG_TIDY_TIMESTAMP_FILE}"
+                COMMENT "Running clang-tidy on ${SOURCE_FILE}"
             )
             list(APPEND CLANG_TIDY_FILE_STAMPS "${CLANG_TIDY_FILE_STAMP}")
             math(EXPR INDEX "${INDEX} + 1")
@@ -115,7 +116,7 @@ function(clang_tidy_add_custom_target CLANG_TIDY_TARGET)
                 -P ${CMAKE_MODULE_PATH}/clang_tidy_check.cmake
             COMMAND "${CMAKE_COMMAND}" -E touch "${CLANG_TIDY_CHECK_FILE}"
             DEPENDS "${CLANG_TIDY_FILE_STAMPS}" "${CLANG_TIDY_SUPPRESSIONS_FILE}"
-            COMMENT "Checking clang-tidy warnigns in ${CLANG_TIDY_TARGET}"
+            COMMENT "Checking clang-tidy warnings in ${CLANG_TIDY_TARGET}"
         )
 
         add_custom_target(${CLANG_TIDY_TARGET} ALL DEPENDS ${CLANG_TIDY_CHECK_FILE})

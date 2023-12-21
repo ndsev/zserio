@@ -129,6 +129,13 @@ set_global_cpp_variables()
         return 1
     fi
 
+    # clang-format binary to use for formatting check, by default is empty
+    CLANG_FORMAT_BIN="${CLANG_FORMAT_BIN:-""}"
+    if [[ (! -z "${CLANG_FORMAT_BIN}" && ! -f "`which "${CLANG_FORMAT_BIN}"`") ]] ; then
+        stderr_echo "Provided CLANG_FORMAT_BIN=\"${CLANG_FORMAT_BIN}\" does not exist!"
+        return 1
+    fi
+
     return 0
 }
 
@@ -439,6 +446,8 @@ Uses the following environment variables for building:
     CPPCHECK_HOME          Home directory of cppcheck tool where cppcheck
                            binary is located. If set, cppcheck will be called.
                            Default is empty string.
+    CLANG_TIDY_BIN         Name of clang-tidy binary. If not set, clang-tidy tool is not called.
+    CLANG_FORMAT_BIN       Name of clang-format binary. If not set, clang-format tool is not called.
     GCOVR_BIN              Gcovr binary to use for coverage report generation (gcc).
                            Default is empty string.
     LLVM_PROFDATA_BIN      llvm-profdata  binary to use for coverage report generation (clang).
@@ -752,6 +761,12 @@ compile_cpp_for_target()
         CMAKE_ARGS=("${CMAKE_ARGS[@]}" "-DCLANG_TIDY_BIN=${CLANG_TIDY_BIN}")
     else
         CMAKE_ARGS=("${CMAKE_ARGS[@]}" "-UCLANG_TIDY_BIN")
+    fi
+
+    if [ ! -z "${CLANG_FORMAT_BIN}" ] ; then
+        CMAKE_ARGS=("${CMAKE_ARGS[@]}" "-DCLANG_FORMAT_BIN=${CLANG_FORMAT_BIN}")
+    else
+        CMAKE_ARGS=("${CMAKE_ARGS[@]}" "-UCLANG_FORMAT_BIN")
     fi
 
     # detect build type

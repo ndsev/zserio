@@ -46,8 +46,8 @@ cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/StringConvertUtil.h
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/StringConvertUtil.h:43
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/StringConvertUtil.h:53
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/StringConvertUtil.h:54
-cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamReader.cpp:294
-cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamReader.cpp:306
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamReader.cpp:295
+cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamReader.cpp:307
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:356
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:367
 cppcoreguidelines-pro-bounds-constant-array-index:src/zserio/BitStreamWriter.cpp:378
@@ -92,6 +92,12 @@ cppcoreguidelines-pro-type-reinterpret-cast:src/zserio/ValidationSqliteUtil.h:10
 fuchsia-multiple-inheritance:src/zserio/Reflectable.h:1999
 
 # This is necessary for implementation of low level implementation to mimic standard C++17 abstractions.
+google-explicit-constructor:src/zserio/OptionalHolder.h:222
+google-explicit-constructor:src/zserio/OptionalHolder.h:232
+google-explicit-constructor:src/zserio/OptionalHolder.h:242
+google-explicit-constructor:src/zserio/OptionalHolder.h:669
+google-explicit-constructor:src/zserio/OptionalHolder.h:677
+google-explicit-constructor:src/zserio/OptionalHolder.h:688
 google-explicit-constructor:src/zserio/pmr/PolymorphicAllocator.h:47
 google-explicit-constructor:src/zserio/pmr/PolymorphicAllocator.h:72
 google-explicit-constructor:src/zserio/Span.h:112
@@ -104,12 +110,6 @@ google-explicit-constructor:src/zserio/StringView.h:54
 google-explicit-constructor:src/zserio/StringView.h:76
 google-explicit-constructor:src/zserio/UniquePtr.h:57
 google-explicit-constructor:src/zserio/UniquePtr.h:68
-google-explicit-constructor:src/zserio/OptionalHolder.h:222
-google-explicit-constructor:src/zserio/OptionalHolder.h:232
-google-explicit-constructor:src/zserio/OptionalHolder.h:242
-google-explicit-constructor:src/zserio/OptionalHolder.h:669
-google-explicit-constructor:src/zserio/OptionalHolder.h:677
-google-explicit-constructor:src/zserio/OptionalHolder.h:688
 
 # This is necessary because of implementation. Zserio naturally supports recursion.
 misc-no-recursion:src/zserio/JsonParser.h:154

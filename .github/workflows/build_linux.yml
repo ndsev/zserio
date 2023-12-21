@@ -126,6 +126,7 @@ jobs:
       run: |
         if [ -f "`which clang-tidy-14`" ] ; then
            export CLANG_TIDY_BIN=clang-tidy-14
+           export CLANG_FORMAT_BIN=clang-format-14
         fi
         # gcovr works only for default gcc version
         if [[ `gcc --version` == *" ${{matrix.gcc-version}}."* ]] ; then
@@ -154,6 +155,7 @@ jobs:
       run: |
         if [ -f "`which clang-tidy-14`" ] ; then
            export CLANG_TIDY_BIN=clang-tidy-14
+           export CLANG_FORMAT_BIN=clang-format-14
         fi
         scripts/test.sh cpp-linux32-gcc cpp-linux64-gcc cpp-linux64-clang
       env:
