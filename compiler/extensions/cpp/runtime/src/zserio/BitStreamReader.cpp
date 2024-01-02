@@ -11,6 +11,7 @@ namespace zserio
 
 namespace
 {
+
 // max size calculated to prevent overflows in internal comparisons
 const size_t MAX_BUFFER_SIZE = std::numeric_limits<size_t>::max() / 8 - 4;
 
@@ -343,6 +344,7 @@ inline uint64_t readBits64Impl(ReaderContext& ctx, uint8_t numBits)
     return value;
 }
 #endif
+
 } // namespace
 
 BitStreamReader::ReaderContext::ReaderContext(Span<const uint8_t> readBuffer, size_t readBufferBitSize) :

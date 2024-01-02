@@ -78,26 +78,33 @@ private:
 };
 
 const std::array<FloatUtilTest::TestFloat32Element, 8> FloatUtilTest::TEST_FLOAT32_DATA = {
-        TestFloat32Element{0, 0, UINT32_C(0), 0.0F}, //
-        TestFloat32Element{1, 0, UINT32_C(0), -0.0F}, //
-        TestFloat32Element{0, 127, UINT32_C(0), +1.0F}, //
-        TestFloat32Element{1, 127, UINT32_C(0), -1.0F}, //
-        TestFloat32Element{0, 128, UINT32_C(0x600000), 3.5F}, // 2^1 (1 + 2^-1 + 2^-2)
-        TestFloat32Element{0, 126, UINT32_C(0x600000), 0.875F}, // 2^-1 (1 + 2^-1 + 2^-2)
-        TestFloat32Element{0, 130, UINT32_C(0x1E0000), 9.875F}, // 2^3 (1 + 2^-3 + 2^-4 + 2^-5 + 2^-6)
-        TestFloat32Element{0, 126, UINT32_C(0x1E0000), 0.6171875F} // 2^-3 (1 + 2^-3 + 2^-4 + 2^-5 + 2^-6)
+        TestFloat32Element{0, 0, UINT32_C(0), 0.0F},
+        TestFloat32Element{1, 0, UINT32_C(0), -0.0F},
+        TestFloat32Element{0, 127, UINT32_C(0), +1.0F},
+        TestFloat32Element{1, 127, UINT32_C(0), -1.0F},
+        // 2^1 (1 + 2^-1 + 2^-2)
+        TestFloat32Element{0, 128, UINT32_C(0x600000), 3.5F},
+        // 2^-1 (1 + 2^-1 + 2^-2)
+        TestFloat32Element{0, 126, UINT32_C(0x600000), 0.875F},
+        // 2^3 (1 + 2^-3 + 2^-4 + 2^-5 + 2^-6)
+        TestFloat32Element{0, 130, UINT32_C(0x1E0000), 9.875F},
+        // 2^-3 (1 + 2^-3 + 2^-4 + 2^-5 + 2^-6)
+        TestFloat32Element{0, 126, UINT32_C(0x1E0000), 0.6171875F},
 };
 
 const std::array<FloatUtilTest::TestFloat64Element, 8> FloatUtilTest::TEST_FLOAT64_DATA = {
-        TestFloat64Element{0, 0, UINT64_C(0), 0.0}, //
-        TestFloat64Element{1, 0, UINT64_C(0), -0.0}, //
-        TestFloat64Element{0, 1023, UINT64_C(0), +1.0}, //
-        TestFloat64Element{1, 1023, UINT64_C(0), -1.0}, //
-        TestFloat64Element{0, 1024, UINT64_C(0xC000000000000), 3.5}, // 2^1 (1 + 2^-1 + 2^-2)
-        TestFloat64Element{0, 1022, UINT64_C(0xC000000000000), 0.875}, // 2^-1 (1 + 2^-1 + 2^-2)
-        TestFloat64Element{0, 1026, UINT64_C(0x3C00000000000), 9.875}, // 2^3 (1 + 2^-3 + 2^-4 + 2^-5 + 2^-6)
-        TestFloat64Element{
-                0, 1022, UINT64_C(0x3C00000000000), 0.6171875} // 2^-3 (1 + 2^-3 + 2^-4 + 2^-5 + 2^-6)
+        TestFloat64Element{0, 0, UINT64_C(0), 0.0},
+        TestFloat64Element{1, 0, UINT64_C(0), -0.0},
+        TestFloat64Element{0, 1023, UINT64_C(0), +1.0},
+        TestFloat64Element{1, 1023, UINT64_C(0), -1.0},
+        // 2^1 (1 + 2^-1 + 2^-2)
+        TestFloat64Element{0, 1024, UINT64_C(0xC000000000000), 3.5},
+        // 2^-1 (1 + 2^-1 + 2^-2)
+        TestFloat64Element{0, 1022, UINT64_C(0xC000000000000), 0.875},
+        // 2^3 (1 + 2^-3 + 2^-4 + 2^-5 + 2^-6)
+        TestFloat64Element{0, 1026, UINT64_C(0x3C00000000000), 9.875},
+        // 2^-3 (1 + 2^-3 + 2^-4 + 2^-5 + 2^-6)
+        TestFloat64Element{0, 1022, UINT64_C(0x3C00000000000), 0.6171875},
 };
 
 const uint16_t FloatUtilTest::FLOAT16_SIGN_BIT_POSITION = UINT16_C(15);
