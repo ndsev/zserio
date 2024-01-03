@@ -122,8 +122,15 @@ public class JsonDecoderTest
         checkDecoderSuccess("-1e-20", 0, 6, -1e-20);
         checkDecoderSuccess("-1E-20", 0, 6, -1E-20);
 
+        checkDecoderSuccess("1.0E-20", 0, 7, 1.0E-20);
+        checkDecoderSuccess("-1.0E-20", 0, 8, -1.0E-20);
+        checkDecoderSuccess("9.875E+3", 0, 8, 9.875E+3);
+        checkDecoderSuccess("-9.875E-3", 0, 9, -9.875E-3);
+
         checkDecoderFailure("1EE20", 0, 2);
+        checkDecoderFailure("1E.E20", 0, 2);
         checkDecoderFailure("1E++20", 0, 3);
+        checkDecoderFailure("1E--20", 0, 3);
 
         checkDecoderFailure("1e", 0, 2);
         checkDecoderFailure("1e+", 0, 3);

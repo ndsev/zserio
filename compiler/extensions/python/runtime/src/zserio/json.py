@@ -698,13 +698,14 @@ class JsonDecoder:
         end_of_number_pos = pos
         if content[end_of_number_pos] == '-': # we already know that there is something after '-'
             end_of_number_pos += 1
+        accept_exp_sign = False
+        is_scientific_float = False
         is_float = False
-        accept_sign = False
         while end_of_number_pos < len(content):
             next_char = content[end_of_number_pos]
 
-            if accept_sign:
-                accept_sign = False
+            if accept_exp_sign:
+                accept_exp_sign = False
                 if next_char in ('+', '-'):
                     end_of_number_pos += 1
                     continue
@@ -713,11 +714,16 @@ class JsonDecoder:
                 end_of_number_pos += 1
                 continue
 
-            if not is_float and (next_char in ('.', 'e', 'E')):
+            if (next_char in ('e', 'E')) and not is_scientific_float:
                 end_of_number_pos += 1
                 is_float = True
-                if next_char in ('e', 'E'):
-                    accept_sign = True
+                is_scientific_float = True
+                accept_exp_sign = True
+                continue
+
+            if next_char == '.' and not is_float:
+                end_of_number_pos += 1
+                is_float = True
                 continue
 
             break # pragma: no cover (to satisfy test coverage)

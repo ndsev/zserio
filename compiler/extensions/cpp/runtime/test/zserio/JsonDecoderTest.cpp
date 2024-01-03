@@ -168,8 +168,15 @@ TEST_F(JsonDecoderTest, decodeDouble)
     checkDecoderSuccess("-1e-20", 6, -1e-20);
     checkDecoderSuccess("-1E-20", 6, -1E-20);
 
+    checkDecoderSuccess("1.0E-20", 7, 1.0E-20);
+    checkDecoderSuccess("-1.0E-20", 8, -1.0E-20);
+    checkDecoderSuccess("9.875E+3", 8, 9.875E+3);
+    checkDecoderSuccess("-9.875E-3", 9, -9.875E-3);
+
     checkDecoderFailure("1EE20", 2);
+    checkDecoderFailure("1E.E20", 2);
     checkDecoderFailure("1E++20", 3);
+    checkDecoderFailure("1E--20", 3);
 
     checkDecoderFailure("1e", 2);
     checkDecoderFailure("1e+", 3);

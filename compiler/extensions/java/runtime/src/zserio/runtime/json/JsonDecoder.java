@@ -269,33 +269,44 @@ class JsonDecoder
         int endOfNumberPos = pos;
         if (content.charAt(endOfNumberPos) == '-') // we already know that there is something after '-'
             endOfNumberPos++;
+        boolean acceptExpSign = false;
+        boolean isScientificDouble = false;
         boolean isDouble = false;
-        boolean acceptSign = false;
         while (endOfNumberPos < content.length())
         {
             final char nextChar = content.charAt(endOfNumberPos);
-            if (acceptSign)
+            if (acceptExpSign)
             {
-                acceptSign = false;
+                acceptExpSign = false;
                 if (nextChar == '+' || nextChar == '-')
                 {
                     endOfNumberPos++;
                     continue;
                 }
             }
+
             if (Character.isDigit(nextChar))
             {
                 endOfNumberPos++;
                 continue;
             }
-            if (isDouble == false && (nextChar == '.' || nextChar == 'e' || nextChar == 'E'))
+
+            if ((nextChar == 'e' || nextChar == 'E') && !isScientificDouble)
             {
                 endOfNumberPos++;
                 isDouble = true;
-                if (nextChar == 'e' || nextChar == 'E')
-                    acceptSign = true;
+                isScientificDouble = true;
+                acceptExpSign = true;
                 continue;
             }
+
+            if (nextChar == '.' && !isDouble)
+            {
+                endOfNumberPos++;
+                isDouble = true;
+                continue;
+            }
+
             break;
         }
 

@@ -547,8 +547,15 @@ class JsonDecoderTest(unittest.TestCase):
         self._check_decoder_success("-1e-20", 0, 6, -1e-20)
         self._check_decoder_success("-1E-20", 0, 6, -1E-20)
 
+        self._check_decoder_success("1.0E-20", 0, 7, 1.0E-20)
+        self._check_decoder_success("-1.0E-20", 0, 8, -1.0E-20)
+        self._check_decoder_success("9.875E+3", 0, 8, 9.875E+3)
+        self._check_decoder_success("-9.875E-3", 0, 9, -9.875E-3)
+
         self._check_decoder_failure("1EE20", 0, 2)
+        self._check_decoder_failure("1E.E20", 0, 2)
         self._check_decoder_failure("1E++20", 0, 3)
+        self._check_decoder_failure("1E--20", 0, 3)
 
         self._check_decoder_failure("1e", 0, 2)
         self._check_decoder_failure("1e+", 0, 3)

@@ -299,6 +299,7 @@ size_t BasicJsonDecoder<ALLOC>::checkNumber(StringView input, bool& isDouble, bo
 {
     StringView::const_iterator inputIt = input.begin();
     bool acceptExpSign = false;
+    bool isScientificDouble = false;
     isDouble = false;
 
     if (*inputIt == '-') // we know that at the beginning is at least one character
@@ -322,16 +323,25 @@ size_t BasicJsonDecoder<ALLOC>::checkNumber(StringView input, bool& isDouble, bo
                 continue;
             }
         }
+
         if (*inputIt >= '0' && *inputIt <= '9')
         {
             ++inputIt;
             continue;
         }
-        if (!isDouble && (*inputIt == '.' || *inputIt == 'e' || *inputIt == 'E'))
+
+        if ((*inputIt == 'e' || *inputIt == 'E') && !isScientificDouble)
         {
             isDouble = true;
-            if (*inputIt == 'e' || *inputIt == 'E')
-                acceptExpSign = true;
+            isScientificDouble = true;
+            acceptExpSign = true;
+            ++inputIt;
+            continue;
+        }
+
+        if (*inputIt == '.' && !isDouble)
+        {
+            isDouble = true;
             ++inputIt;
             continue;
         }
