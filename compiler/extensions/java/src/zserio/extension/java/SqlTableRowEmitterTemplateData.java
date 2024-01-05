@@ -25,7 +25,7 @@ public final class SqlTableRowEmitterTemplateData extends JavaTemplateData
 
         name = tableRowName;
 
-        for (Field field: tableType.getFields())
+        for (Field field : tableType.getFields())
         {
             final FieldTemplateData fieldData = new FieldTemplateData(context, javaNativeMapper, field);
             fields.add(fieldData);
@@ -91,5 +91,5 @@ public final class SqlTableRowEmitterTemplateData extends JavaTemplateData
 
     private final String packageName;
     private final String name;
-    private final List<FieldTemplateData>fields = new ArrayList<FieldTemplateData>();
+    private final List<FieldTemplateData> fields = new ArrayList<FieldTemplateData>();
 }

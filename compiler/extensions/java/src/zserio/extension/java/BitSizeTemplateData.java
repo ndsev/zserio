@@ -43,7 +43,7 @@ public final class BitSizeTemplateData
 
     public static BitSizeTemplateData create(TypeInstantiation typeInstantiation,
             ExpressionFormatter javaExpressionFormatter, ExpressionFormatter javaLambdaExpressionFormatter)
-                    throws ZserioExtensionException
+            throws ZserioExtensionException
     {
         if (typeInstantiation.getBaseType() instanceof FixedSizeType)
         {

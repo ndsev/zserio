@@ -25,6 +25,6 @@ public final class CompoundConstructorTemplateData
         return compoundParametersData;
     }
 
-    private final String                        compoundName;
+    private final String compoundName;
     private final CompoundParameterTemplateData compoundParametersData;
 }

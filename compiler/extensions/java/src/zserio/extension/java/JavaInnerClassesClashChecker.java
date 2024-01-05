@@ -28,8 +28,8 @@ final class JavaInnerClassesClashChecker extends DefaultTreeWalker
         if (BITMASK_INNER_CLASS_NAME.equals(className))
         {
             ZserioToolPrinter.printError(bitmaskType.getLocation(),
-                    "Class name '" + className + "' generated for bitmask clashes with " +
-                    "its inner class '" + className + "' generated in Java code.");
+                    "Class name '" + className + "' generated for bitmask clashes with "
+                            + "its inner class '" + className + "' generated in Java code.");
             throw new ZserioExtensionException("Class name clash detected!");
         }
     }
@@ -41,8 +41,8 @@ final class JavaInnerClassesClashChecker extends DefaultTreeWalker
         if (SQL_TABLE_INNER_CLASS_NAME.equals(className))
         {
             ZserioToolPrinter.printError(sqlTableType.getLocation(),
-                    "Class name '" + className + "' generated for SQL table clashes with " +
-                    "its inner class '" + className + "' generated in Java code.");
+                    "Class name '" + className + "' generated for SQL table clashes with "
+                            + "its inner class '" + className + "' generated in Java code.");
             throw new ZserioExtensionException("Class name clash detected!");
         }
     }

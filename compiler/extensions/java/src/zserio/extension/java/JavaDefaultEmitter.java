@@ -89,12 +89,12 @@ abstract class JavaDefaultEmitter extends DefaultTreeWalker
         final File outDir = new File(javaParameters.getOutputDir(), packageName.toFilesystemPath());
         final File outputFile = new File(outDir, outFileNameRoot + JAVA_SOURCE_EXTENSION);
 
-        final boolean generate = !outputFileManager.checkTimestamps(outputFile) ||
-                !checkGeneratorDescription(outputFile);
+        final boolean generate =
+                !outputFileManager.checkTimestamps(outputFile) || !checkGeneratorDescription(outputFile);
         if (generate)
         {
-            FreeMarkerUtil.processTemplate(JAVA_TEMPLATE_LOCATION + templateName, templateData, outputFile,
-                    false);
+            FreeMarkerUtil.processTemplate(
+                    JAVA_TEMPLATE_LOCATION + templateName, templateData, outputFile, false);
         }
 
         outputFileManager.registerOutputFile(outputFile, generate);
@@ -106,7 +106,7 @@ abstract class JavaDefaultEmitter extends DefaultTreeWalker
         {
             final String[] generatorDescription = context.getGeneratorDescription().split("\\n");
             final String[] generatorDescriptionCandidate =
-                    lines.limit(generatorDescription.length).toArray(String[]::new);
+                    lines.limit(generatorDescription.length).toArray(String[] ::new);
             return Arrays.equals(generatorDescription, generatorDescriptionCandidate);
         }
         catch (IOException e)

@@ -16,6 +16,7 @@ public final class JavaSqlLambdaExpressionFormattingPolicy extends JavaExpressio
     @Override
     protected String getAccessPrefixForCompoundType(ZserioType owner)
     {
-        return "((" + owner.getName() + "Row)" + "row)";
+        return "((" + owner.getName() + "Row)"
+                + "row)";
     }
 }

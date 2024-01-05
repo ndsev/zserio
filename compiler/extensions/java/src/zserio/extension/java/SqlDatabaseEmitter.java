@@ -21,8 +21,8 @@ final class SqlDatabaseEmitter extends JavaDefaultEmitter
     {
         if (getWithSqlCode())
         {
-            final Object templateData = new SqlDatabaseEmitterTemplateData(getTemplateDataContext(),
-                    sqlDatabaseType);
+            final Object templateData =
+                    new SqlDatabaseEmitterTemplateData(getTemplateDataContext(), sqlDatabaseType);
             processTemplate(TEMPLATE_NAME, templateData, sqlDatabaseType);
         }
     }

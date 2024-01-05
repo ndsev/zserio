@@ -8,11 +8,11 @@ import zserio.extension.java.JavaFullNameFormatter;
  */
 public final class NativeObjectArrayTraits extends NativeArrayTraits
 {
-    public NativeObjectArrayTraits(PackageName packageName, String name, boolean withWriterCode,
-            boolean isPackable)
+    public NativeObjectArrayTraits(
+            PackageName packageName, String name, boolean withWriterCode, boolean isPackable)
     {
-        super((withWriterCode ? (isPackable ? "WritePackableObjectArrayTraits<" : "WriteObjectArrayTraits<") :
-                (isPackable ? "PackableObjectArrayTraits<" : "ObjectArrayTraits<")) +
+        super((withWriterCode ? (isPackable ? "WritePackableObjectArrayTraits<" : "WriteObjectArrayTraits<")
+                              : (isPackable ? "PackableObjectArrayTraits<" : "ObjectArrayTraits<")) +
                 JavaFullNameFormatter.getFullName(packageName, name) + ">");
     }
 

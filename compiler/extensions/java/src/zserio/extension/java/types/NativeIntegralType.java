@@ -10,8 +10,8 @@ import zserio.extension.common.ZserioExtensionException;
  */
 public abstract class NativeIntegralType extends NativeArrayableType
 {
-    public NativeIntegralType(PackageName packageName, String name,
-            NativeRawArray rawArray, NativeArrayTraits arrayTraits, NativeArrayElement arrayElement)
+    public NativeIntegralType(PackageName packageName, String name, NativeRawArray rawArray,
+            NativeArrayTraits arrayTraits, NativeArrayElement arrayElement)
     {
         super(packageName, name, rawArray, arrayTraits, arrayElement);
     }
@@ -28,7 +28,6 @@ public abstract class NativeIntegralType extends NativeArrayableType
         return formatLiteral(value.toString());
     }
 
-
     /*
      * Format a literal for native type using already converted raw number.
      *
@@ -44,7 +43,7 @@ public abstract class NativeIntegralType extends NativeArrayableType
         final BigInteger lowerBound = getLowerBound();
         final BigInteger upperBound = getUpperBound();
         if ((value.compareTo(getLowerBound()) < 0) || (value.compareTo(getUpperBound()) > 0))
-            throw new ZserioExtensionException("Literal " + value + " out of range for native type: " +
-                    lowerBound + ".." + upperBound);
+            throw new ZserioExtensionException(
+                    "Literal " + value + " out of range for native type: " + lowerBound + ".." + upperBound);
     }
 }

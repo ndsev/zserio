@@ -7,14 +7,14 @@ import zserio.ast.PackageName;
  */
 public abstract class NativeArrayableType extends JavaNativeType
 {
-    public NativeArrayableType(PackageName packageName, String name,
-            NativeRawArray rawArray, NativeArrayTraits arrayTraits, NativeArrayElement arrayElement)
+    public NativeArrayableType(PackageName packageName, String name, NativeRawArray rawArray,
+            NativeArrayTraits arrayTraits, NativeArrayElement arrayElement)
     {
         super(packageName, name);
 
         this.rawArray = rawArray;
         this.arrayTraits = arrayTraits;
-        this.arrayElement= arrayElement;
+        this.arrayElement = arrayElement;
     }
 
     public NativeRawArray getRawArray()

@@ -9,8 +9,7 @@ public final class NativeBitBufferType extends NativeArrayableType
 {
     public NativeBitBufferType()
     {
-        super(RUNTIME_IO_PACKAGE, "BitBuffer",
-                new NativeRawArray("BitBufferRawArray"),
+        super(RUNTIME_IO_PACKAGE, "BitBuffer", new NativeRawArray("BitBufferRawArray"),
                 new NativeArrayTraits("BitBufferArrayTraits"),
                 new NativeObjectArrayElement(RUNTIME_IO_PACKAGE, "BitBuffer"));
     }

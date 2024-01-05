@@ -106,8 +106,8 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
                 caseList.add(new Case(context, caseExpression.getExpression()));
 
             final Field fieldType = choiceCaseType.getField();
-            compoundField = (fieldType != null)
-                    ? new CompoundFieldTemplateData(context,  choiceType, fieldType) : null;
+            compoundField =
+                    (fieldType != null) ? new CompoundFieldTemplateData(context, choiceType, fieldType) : null;
         }
 
         public Iterable<Case> getCaseList()
@@ -122,7 +122,8 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
 
         public static final class Case
         {
-            public Case(TemplateDataContext context, Expression choiceExpression) throws ZserioExtensionException
+            public Case(TemplateDataContext context, Expression choiceExpression)
+                    throws ZserioExtensionException
             {
                 final ExpressionFormatter javaExpressionFormatter = context.getJavaExpressionFormatter();
                 final ExpressionFormatter javaCaseExpressionFormatter =
@@ -145,7 +146,7 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
             public final String expressionForCase;
         }
 
-        private final List<Case>                caseList;
+        private final List<Case> caseList;
         private final CompoundFieldTemplateData compoundField;
     }
 
@@ -155,8 +156,8 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
                 ChoiceDefault choiceDefaultType) throws ZserioExtensionException
         {
             final Field fieldType = choiceDefaultType.getField();
-            compoundField = (fieldType != null) ?
-                    new CompoundFieldTemplateData(context, choiceType, fieldType) : null;
+            compoundField =
+                    (fieldType != null) ? new CompoundFieldTemplateData(context, choiceType, fieldType) : null;
         }
 
         public CompoundFieldTemplateData getCompoundField()

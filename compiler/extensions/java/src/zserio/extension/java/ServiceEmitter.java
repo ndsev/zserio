@@ -22,8 +22,8 @@ final class ServiceEmitter extends JavaDefaultEmitter
         if (!getWithServiceCode())
             return;
 
-        final ServiceEmitterTemplateData templateData = new ServiceEmitterTemplateData(
-                getTemplateDataContext(), serviceType);
+        final ServiceEmitterTemplateData templateData =
+                new ServiceEmitterTemplateData(getTemplateDataContext(), serviceType);
         processTemplate(TEMPLATE_NAME, templateData, serviceType);
     }
 

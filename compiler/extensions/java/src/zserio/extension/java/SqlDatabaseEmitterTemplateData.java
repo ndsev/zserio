@@ -3,20 +3,20 @@ package zserio.extension.java;
 import java.util.ArrayList;
 import java.util.List;
 
+import zserio.ast.Field;
 import zserio.ast.ParameterizedTypeInstantiation;
 import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
-import zserio.ast.TypeInstantiation;
-import zserio.ast.ZserioType;
-import zserio.ast.Field;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
+import zserio.ast.TypeInstantiation;
+import zserio.ast.ZserioType;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.java.types.JavaNativeType;
 
 /**
  * FreeMarker template data for SqlDatabaseEmitter.
  */
-public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
+public final class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
 {
     public SqlDatabaseEmitterTemplateData(TemplateDataContext context, SqlDatabaseType databaseType)
             throws ZserioExtensionException
@@ -27,7 +27,7 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
         this.withValidationCode = context.getWithValidationCode();
 
         fields = new ArrayList<DatabaseFieldData>();
-        for (Field field: databaseType.getFields())
+        for (Field field : databaseType.getFields())
             fields.add(new DatabaseFieldData(context, field));
     }
 
@@ -48,8 +48,7 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
 
     public static final class DatabaseFieldData
     {
-        public DatabaseFieldData(TemplateDataContext context, Field field)
-                throws ZserioExtensionException
+        public DatabaseFieldData(TemplateDataContext context, Field field) throws ZserioExtensionException
         {
             final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
             final ZserioType fieldBaseType = fieldTypeInstantiation.getBaseType();

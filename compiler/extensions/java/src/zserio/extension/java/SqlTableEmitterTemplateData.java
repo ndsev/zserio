@@ -5,18 +5,18 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import zserio.ast.Parameter;
-import zserio.ast.ParameterizedTypeInstantiation;
-import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
-import zserio.ast.ZserioType;
 import zserio.ast.BitmaskType;
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
+import zserio.ast.Parameter;
+import zserio.ast.ParameterizedTypeInstantiation;
+import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.ast.SqlConstraint;
 import zserio.ast.SqlTableType;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
+import zserio.ast.ZserioType;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.common.sql.SqlNativeTypeMapper;
@@ -42,13 +42,14 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
         rowName = tableRowName;
         final SqlConstraint tableSqlConstraint = tableType.getSqlConstraint();
         final ExpressionFormatter javaExpressionFormatter = context.getJavaExpressionFormatter();
-        sqlConstraint = (tableSqlConstraint == null) ? null :
-            javaExpressionFormatter.formatGetter(tableSqlConstraint.getConstraintExpr());
+        sqlConstraint = (tableSqlConstraint == null)
+                ? null
+                : javaExpressionFormatter.formatGetter(tableSqlConstraint.getConstraintExpr());
         virtualTableUsing = tableType.getVirtualTableUsingString();
         needsTypesInSchema = tableType.needsTypesInSchema();
         isWithoutRowId = tableType.isWithoutRowId();
 
-        for (Field field: tableType.getFields())
+        for (Field field : tableType.getFields())
         {
             final FieldTemplateData fieldData = new FieldTemplateData(context, tableType, field);
             fields.add(fieldData);
@@ -185,8 +186,9 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
             typeInfo = new NativeTypeInfoTemplateData(nativeType, fieldTypeInstantiation);
 
-            requiresBigInt = (nativeType instanceof NativeIntegralType) ?
-                    ((NativeIntegralType)nativeType).requiresBigInt() : false;
+            requiresBigInt = (nativeType instanceof NativeIntegralType)
+                    ? ((NativeIntegralType)nativeType).requiresBigInt()
+                    : false;
 
             typeParameters = new ArrayList<ParameterTemplateData>();
             if (fieldTypeInstantiation instanceof ParameterizedTypeInstantiation)
@@ -202,14 +204,15 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
             isVirtual = field.isVirtual();
             final SqlConstraint fieldSqlConstraint = field.getSqlConstraint();
             final ExpressionFormatter javaExpressionFormatter = context.getJavaExpressionFormatter();
-            sqlConstraint = (fieldSqlConstraint == null) ? null :
-                javaExpressionFormatter.formatGetter(fieldSqlConstraint.getConstraintExpr());
+            sqlConstraint = (fieldSqlConstraint == null)
+                    ? null
+                    : javaExpressionFormatter.formatGetter(fieldSqlConstraint.getConstraintExpr());
             isNotNull = !SqlConstraint.isNullAllowed(fieldSqlConstraint);
             isPrimaryKey = parentType.isFieldPrimaryKey(field);
 
             underlyingTypeInfo = createUnderlyingTypeInfo(javaNativeMapper, fieldBaseType);
-            rangeCheckData = createRangeCheckTemplateData(javaNativeMapper, fieldBaseType,
-                    javaExpressionFormatter, fieldTypeInstantiation);
+            rangeCheckData = createRangeCheckTemplateData(
+                    javaNativeMapper, fieldBaseType, javaExpressionFormatter, fieldTypeInstantiation);
             final SqlNativeTypeMapper sqlNativeTypeMapper = new SqlNativeTypeMapper();
             sqlTypeData = new SqlTypeTemplateData(sqlNativeTypeMapper, field);
 
@@ -333,8 +336,8 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
             public SqlTypeTemplateData(SqlNativeTypeMapper sqlNativeTypeMapper, Field field)
                     throws ZserioExtensionException
             {
-                final SqlNativeType sqlNativeType = sqlNativeTypeMapper.getSqlType(
-                        field.getTypeInstantiation());
+                final SqlNativeType sqlNativeType =
+                        sqlNativeTypeMapper.getSqlType(field.getTypeInstantiation());
                 name = sqlNativeType.getFullName();
                 traditionalName = sqlNativeType.getTraditionalName();
                 isBlob = sqlNativeType instanceof NativeBlobType;
@@ -360,8 +363,8 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
             private final boolean isBlob;
         }
 
-        private NativeTypeInfoTemplateData createUnderlyingTypeInfo(JavaNativeMapper javaNativeMapper,
-                ZserioType fieldBaseType) throws ZserioExtensionException
+        private NativeTypeInfoTemplateData createUnderlyingTypeInfo(
+                JavaNativeMapper javaNativeMapper, ZserioType fieldBaseType) throws ZserioExtensionException
         {
             TypeInstantiation baseTypeInstantiation;
             if (fieldBaseType instanceof EnumType)
@@ -392,8 +395,8 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
             else if (fieldBaseType instanceof BitmaskType)
                 rangeCheckInstantiation = ((BitmaskType)fieldBaseType).getTypeInstantiation();
 
-            return new RangeCheckTemplateData(javaNativeMapper, rangeCheckInstantiation,
-                    javaExpressionFormatter);
+            return new RangeCheckTemplateData(
+                    javaNativeMapper, rangeCheckInstantiation, javaExpressionFormatter);
         }
 
         private final List<ParameterTemplateData> typeParameters;

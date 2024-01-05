@@ -10,8 +10,7 @@ public final class NativeBitmaskType extends NativeArrayableType
     public NativeBitmaskType(PackageName packageName, String name, NativeIntegralType nativeBaseType,
             boolean withWriterCode, boolean usedInPackedArray)
     {
-        super(packageName, name,
-                new NativeObjectRawArray(),
+        super(packageName, name, new NativeObjectRawArray(),
                 new NativeObjectArrayTraits(packageName, name, withWriterCode, usedInPackedArray),
                 new NativeObjectArrayElement(packageName, name));
 

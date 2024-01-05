@@ -34,20 +34,21 @@ public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
                 javaNativeMapper.getJavaIntegralType(bitmaskTypeInstantiation);
 
         underlyingTypeInfo = new NativeTypeInfoTemplateData(nativeIntegralType, bitmaskTypeInstantiation);
-        bitSize = BitSizeTemplateData.create(bitmaskTypeInstantiation, javaExpressionFormatter,
-                javaLambdaExpressionFormatter);
+        bitSize = BitSizeTemplateData.create(
+                bitmaskTypeInstantiation, javaExpressionFormatter, javaLambdaExpressionFormatter);
         runtimeFunction = RuntimeFunctionDataCreator.createData(context, bitmaskTypeInstantiation);
 
         final BigInteger lowerBound = getLowerBound(bitmaskTypeInstantiation);
-        this.lowerBound = lowerBound.equals(nativeIntegralType.getLowerBound()) ? null :
-                nativeIntegralType.formatLiteral(lowerBound);
+        this.lowerBound = lowerBound.equals(nativeIntegralType.getLowerBound())
+                ? null
+                : nativeIntegralType.formatLiteral(lowerBound);
         // upper bound is needed for negation since java uses signed types!
         final BigInteger upperBound = getUpperBound(bitmaskTypeInstantiation);
         this.upperBound = nativeIntegralType.formatLiteral(upperBound);
         this.checkUpperBound = !upperBound.equals(nativeIntegralType.getUpperBound());
 
         values = new ArrayList<BitmaskValueData>();
-        for (BitmaskValue bitmaskValue: bitmaskType.getValues())
+        for (BitmaskValue bitmaskValue : bitmaskType.getValues())
             values.add(new BitmaskValueData(context, nativeIntegralType, bitmaskValue));
     }
 

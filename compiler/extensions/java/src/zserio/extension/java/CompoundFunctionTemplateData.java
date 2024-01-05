@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zserio.ast.CompoundType;
-import zserio.ast.TypeReference;
 import zserio.ast.Function;
+import zserio.ast.TypeReference;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.java.types.JavaNativeType;

@@ -6,14 +6,14 @@ import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.DynamicBitFieldType;
 import zserio.ast.ExternType;
 import zserio.ast.FixedBitFieldType;
-import zserio.ast.IntegerType;
-import zserio.ast.TypeInstantiation;
-import zserio.ast.TypeReference;
-import zserio.ast.ZserioAstDefaultVisitor;
 import zserio.ast.FloatType;
+import zserio.ast.IntegerType;
 import zserio.ast.StdIntegerType;
 import zserio.ast.StringType;
+import zserio.ast.TypeInstantiation;
+import zserio.ast.TypeReference;
 import zserio.ast.VarIntegerType;
+import zserio.ast.ZserioAstDefaultVisitor;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 
@@ -23,8 +23,8 @@ import zserio.extension.common.ZserioExtensionException;
  */
 public final class RuntimeFunctionDataCreator
 {
-    public static RuntimeFunctionTemplateData createData(TemplateDataContext context,
-            TypeInstantiation typeInstantiation) throws ZserioExtensionException
+    public static RuntimeFunctionTemplateData createData(
+            TemplateDataContext context, TypeInstantiation typeInstantiation) throws ZserioExtensionException
     {
         final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
         if (typeInstantiation instanceof DynamicBitFieldInstantiation)
@@ -74,8 +74,8 @@ public final class RuntimeFunctionDataCreator
         final RuntimeFunctionTemplateData templateData = visitor.getTemplateData();
         if (templateData == null)
         {
-            throw new ZserioExtensionException("Cannot map type '" + typeReference.getType().getName() +
-                    "' in createTypeInfoData!");
+            throw new ZserioExtensionException(
+                    "Cannot map type '" + typeReference.getType().getName() + "' in createTypeInfoData!");
         }
 
         return templateData;
@@ -224,8 +224,8 @@ public final class RuntimeFunctionDataCreator
                 case 64:
                     try
                     {
-                        templateData = new RuntimeFunctionTemplateData("BigInteger",
-                                JavaLiteralFormatter.formatIntLiteral(bitSize));
+                        templateData = new RuntimeFunctionTemplateData(
+                                "BigInteger", JavaLiteralFormatter.formatIntLiteral(bitSize));
                     }
                     catch (ZserioExtensionException exception)
                     {
@@ -252,13 +252,15 @@ public final class RuntimeFunctionDataCreator
 
         public static RuntimeFunctionTemplateData mapDynamicBitField(DynamicBitFieldInstantiation instantiation,
                 ExpressionFormatter javaExpressionFormatter, JavaNativeMapper javaNativeMapper)
-                        throws ZserioExtensionException
+                throws ZserioExtensionException
         {
-            final String suffix = (instantiation.getBaseType().isSigned()) ? "SignedBits" :
-                (instantiation.getMaxBitSize() > 63) ? "BigInteger" : "Bits";
+            final String suffix = (instantiation.getBaseType().isSigned()) ? "SignedBits"
+                    : (instantiation.getMaxBitSize() > 63)
+                    ? "BigInteger"
+                    : "Bits";
             // this int cast is necessary because length can be bigger than integer (uint64, uint32)
-            final String arg = "(int)" + "(" +
-                    javaExpressionFormatter.formatGetter(instantiation.getLengthExpression()) + ")";
+            final String arg = "(int)"
+                    + "(" + javaExpressionFormatter.formatGetter(instantiation.getLengthExpression()) + ")";
             return new RuntimeFunctionTemplateData(
                     suffix, arg, javaNativeMapper.getJavaType(instantiation).getFullName());
         }
@@ -309,8 +311,8 @@ public final class RuntimeFunctionDataCreator
         public static RuntimeFunctionTemplateData mapDynamicBitFieldType(
                 DynamicBitFieldInstantiation instantiation) throws ZserioExtensionException
         {
-            return mapDynamicBitFieldType(instantiation.getBaseType().isSigned(),
-                    instantiation.getMaxBitSize());
+            return mapDynamicBitFieldType(
+                    instantiation.getBaseType().isSigned(), instantiation.getMaxBitSize());
         }
 
         private static RuntimeFunctionTemplateData mapDynamicBitFieldType(boolean isSigned, int bitSize)
@@ -334,8 +336,8 @@ public final class RuntimeFunctionDataCreator
                 suffix.append("Unsigned");
             suffix.append("BitField");
 
-            return new RuntimeFunctionTemplateData(suffix.toString(),
-                    JavaLiteralFormatter.formatIntLiteral(bitSize));
+            return new RuntimeFunctionTemplateData(
+                    suffix.toString(), JavaLiteralFormatter.formatIntLiteral(bitSize));
         }
     }
 }

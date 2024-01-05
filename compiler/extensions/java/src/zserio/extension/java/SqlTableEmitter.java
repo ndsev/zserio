@@ -23,11 +23,12 @@ final class SqlTableEmitter extends JavaDefaultEmitter
         {
             final String tableRowName = sqlTableType.getName() + TABLE_ROW_SUFFIX_NAME;
             final TemplateDataContext context = getTemplateDataContext();
-            final Object tableTemplateData = new SqlTableEmitterTemplateData(context, sqlTableType, tableRowName);
+            final Object tableTemplateData =
+                    new SqlTableEmitterTemplateData(context, sqlTableType, tableRowName);
             processTemplate(TABLE_TEMPLATE_NAME, tableTemplateData, sqlTableType);
 
-            final Object tableRowTemplateData = new SqlTableRowEmitterTemplateData(context, sqlTableType,
-                    tableRowName);
+            final Object tableRowTemplateData =
+                    new SqlTableRowEmitterTemplateData(context, sqlTableType, tableRowName);
             processTemplate(TABLE_ROW_TEMPLATE_NAME, tableRowTemplateData, sqlTableType, tableRowName);
         }
     }

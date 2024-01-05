@@ -3,10 +3,10 @@ package zserio.extension.java;
 import java.math.BigInteger;
 
 import zserio.ast.DynamicBitFieldInstantiation;
-import zserio.ast.TypeInstantiation;
-import zserio.ast.ZserioType;
 import zserio.ast.IntegerType;
 import zserio.ast.StdIntegerType;
+import zserio.ast.TypeInstantiation;
+import zserio.ast.ZserioType;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.java.types.NativeIntegralType;
@@ -16,20 +16,19 @@ import zserio.extension.java.types.NativeIntegralType;
  */
 public final class RangeCheckTemplateData
 {
-    public RangeCheckTemplateData(CompoundFieldTemplateData field,
-            JavaNativeMapper javaNativeMapper, boolean withRangeCheckCode,
-            TypeInstantiation typeInstantiation, boolean isTypeNullable,
+    public RangeCheckTemplateData(CompoundFieldTemplateData field, JavaNativeMapper javaNativeMapper,
+            boolean withRangeCheckCode, TypeInstantiation typeInstantiation, boolean isTypeNullable,
             ExpressionFormatter javaExpressionFormatter) throws ZserioExtensionException
     {
         if (withRangeCheckCode)
         {
-            final CommonRangeData commonRangeData = createCommonRangeData(javaNativeMapper, typeInstantiation,
-                    javaExpressionFormatter);
+            final CommonRangeData commonRangeData =
+                    createCommonRangeData(javaNativeMapper, typeInstantiation, javaExpressionFormatter);
             // in setters, don't do range check if Zserio type has the same bounds as their native type
             if (commonRangeData != null && (commonRangeData.checkLowerBound || commonRangeData.checkUpperBound))
             {
-                setterRangeData = new SetterRangeData(field, commonRangeData.typeInfo,
-                        isTypeNullable, commonRangeData.bitFieldWithExpression, commonRangeData.lowerBound,
+                setterRangeData = new SetterRangeData(field, commonRangeData.typeInfo, isTypeNullable,
+                        commonRangeData.bitFieldWithExpression, commonRangeData.lowerBound,
                         commonRangeData.checkUpperBound, commonRangeData.upperBound);
             }
             else
@@ -48,14 +47,14 @@ public final class RangeCheckTemplateData
             ExpressionFormatter javaExpressionFormatter) throws ZserioExtensionException
     {
         setterRangeData = null;
-        final CommonRangeData commonRangeData = createCommonRangeData(javaNativeMapper, typeInstantiation,
-                javaExpressionFormatter);
+        final CommonRangeData commonRangeData =
+                createCommonRangeData(javaNativeMapper, typeInstantiation, javaExpressionFormatter);
         // in SQL, don't do range check (u)int64 and variable-length bit fields
         if (commonRangeData != null && !commonRangeData.is64BitType &&
                 commonRangeData.bitFieldWithExpression == null)
         {
-            sqlRangeData = new SqlRangeData(commonRangeData.typeInfo, commonRangeData.lowerBound,
-                    commonRangeData.upperBound);
+            sqlRangeData = new SqlRangeData(
+                    commonRangeData.typeInfo, commonRangeData.lowerBound, commonRangeData.upperBound);
         }
         else
         {
@@ -152,13 +151,13 @@ public final class RangeCheckTemplateData
             return upperBound;
         }
 
-        private final CompoundFieldTemplateData  field;
+        private final CompoundFieldTemplateData field;
         private final NativeTypeInfoTemplateData typeInfo;
-        private final boolean                    isTypeNullable;
-        private final BitFieldWithExpression     bitFieldWithExpression;
-        private final String                     lowerBound;
-        private final boolean                    checkUpperBound;
-        private final String                     upperBound;
+        private final boolean isTypeNullable;
+        private final BitFieldWithExpression bitFieldWithExpression;
+        private final String lowerBound;
+        private final boolean checkUpperBound;
+        private final String upperBound;
     }
 
     public static final class BitFieldWithExpression
@@ -168,8 +167,8 @@ public final class RangeCheckTemplateData
         {
             isSignedBitFieldStr = JavaLiteralFormatter.formatBooleanLiteral(
                     dynamicBitFieldInstantiation.getBaseType().isSigned());
-            lengthExpression = javaExpressionFormatter.formatGetter(
-                    dynamicBitFieldInstantiation.getLengthExpression());
+            lengthExpression =
+                    javaExpressionFormatter.formatGetter(dynamicBitFieldInstantiation.getLengthExpression());
         }
 
         public String getIsSignedBitFieldStr()
@@ -182,8 +181,8 @@ public final class RangeCheckTemplateData
             return lengthExpression;
         }
 
-        private final String    isSignedBitFieldStr;
-        private final String    lengthExpression;
+        private final String isSignedBitFieldStr;
+        private final String lengthExpression;
     }
 
     private static class CommonRangeData
@@ -202,16 +201,17 @@ public final class RangeCheckTemplateData
         }
 
         private final NativeTypeInfoTemplateData typeInfo;
-        private final boolean                    is64BitType;
-        private final BitFieldWithExpression     bitFieldWithExpression;
-        private final boolean                    checkLowerBound;
-        private final String                     lowerBound;
-        private final boolean                    checkUpperBound;
-        private final String                     upperBound;
+        private final boolean is64BitType;
+        private final BitFieldWithExpression bitFieldWithExpression;
+        private final boolean checkLowerBound;
+        private final String lowerBound;
+        private final boolean checkUpperBound;
+        private final String upperBound;
     }
 
     private static CommonRangeData createCommonRangeData(JavaNativeMapper javaNativeMapper,
-            TypeInstantiation typeInstantiation, ExpressionFormatter javaExpressionFormatter) throws ZserioExtensionException
+            TypeInstantiation typeInstantiation, ExpressionFormatter javaExpressionFormatter)
+            throws ZserioExtensionException
     {
         // don't do range check for non-integer type
         IntegerType integerType = null;
@@ -230,29 +230,29 @@ public final class RangeCheckTemplateData
         if (nativeType == null)
             return null;
 
-        final NativeTypeInfoTemplateData typeInfo = new NativeTypeInfoTemplateData(nativeType,
-                typeInstantiation);
-        final boolean is64bitType = (integerType instanceof StdIntegerType) &&
-                ((StdIntegerType)integerType).getBitSize() == 64;
-        final BitFieldWithExpression bitFieldWithExpression = createBitFieldWithExpression(typeInstantiation,
-                javaExpressionFormatter);
+        final NativeTypeInfoTemplateData typeInfo =
+                new NativeTypeInfoTemplateData(nativeType, typeInstantiation);
+        final boolean is64bitType =
+                (integerType instanceof StdIntegerType) && ((StdIntegerType)integerType).getBitSize() == 64;
+        final BitFieldWithExpression bitFieldWithExpression =
+                createBitFieldWithExpression(typeInstantiation, javaExpressionFormatter);
 
         // Zserio types that have the same bounds as their native type are not checked
         final BigInteger zserioLowerBound = integerType.getLowerBound(typeInstantiation);
         final BigInteger nativeLowerBound = nativeType.getLowerBound();
-        final boolean checkLowerBound = bitFieldWithExpression != null ||
-                nativeLowerBound.compareTo(zserioLowerBound) < 0;
+        final boolean checkLowerBound =
+                bitFieldWithExpression != null || nativeLowerBound.compareTo(zserioLowerBound) < 0;
 
         final BigInteger zserioUpperBound = integerType.getUpperBound(typeInstantiation);
         final BigInteger nativeUpperBound = nativeType.getUpperBound();
-        final boolean checkUpperBound = bitFieldWithExpression != null ||
-                nativeUpperBound.compareTo(zserioUpperBound) > 0;
+        final boolean checkUpperBound =
+                bitFieldWithExpression != null || nativeUpperBound.compareTo(zserioUpperBound) > 0;
 
         final String lowerBound = nativeType.formatLiteral(zserioLowerBound);
         final String upperBound = nativeType.formatLiteral(zserioUpperBound);
 
-        return new CommonRangeData(typeInfo, is64bitType, bitFieldWithExpression,
-                checkLowerBound, lowerBound, checkUpperBound, upperBound);
+        return new CommonRangeData(typeInfo, is64bitType, bitFieldWithExpression, checkLowerBound, lowerBound,
+                checkUpperBound, upperBound);
     }
 
     private static BitFieldWithExpression createBitFieldWithExpression(TypeInstantiation typeInstantiation,
@@ -261,10 +261,10 @@ public final class RangeCheckTemplateData
         if (!(typeInstantiation instanceof DynamicBitFieldInstantiation))
             return null;
 
-        return new BitFieldWithExpression((DynamicBitFieldInstantiation)typeInstantiation,
-                javaExpressionFormatter);
+        return new BitFieldWithExpression(
+                (DynamicBitFieldInstantiation)typeInstantiation, javaExpressionFormatter);
     }
 
-    private final SetterRangeData   setterRangeData;
-    private final SqlRangeData      sqlRangeData;
+    private final SetterRangeData setterRangeData;
+    private final SqlRangeData sqlRangeData;
 }

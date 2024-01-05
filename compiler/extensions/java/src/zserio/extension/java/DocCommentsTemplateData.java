@@ -225,7 +225,8 @@ public final class DocCommentsTemplateData
                 final JavaNativeSymbol nativePackageSymbol =
                         javaNativeMapper.getJavaSymbol(referencedPackageSymbol);
                 link = getPackageSymbolFullName(nativePackageSymbol, referencedPackageSymbol) +
-                        getScopeSymbolSuffix(nativePackageSymbol, referencedPackageSymbol, referencedScopeSymbol);
+                        getScopeSymbolSuffix(
+                                nativePackageSymbol, referencedPackageSymbol, referencedScopeSymbol);
             }
         }
 

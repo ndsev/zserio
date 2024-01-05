@@ -26,9 +26,9 @@ public final class JavaExtension implements Extension
     @Override
     public String getExtensionVersion()
     {
-        return JavaExtensionVersion.JAVA_EXTENSION_VERSION_STRING +
-                " (BIN " + JavaExtensionVersion.BIN_VERSION_STRING +
-                ", JSON " + JavaExtensionVersion.JSON_VERSION_STRING + ")";
+        return JavaExtensionVersion.JAVA_EXTENSION_VERSION_STRING + " (BIN " +
+                JavaExtensionVersion.BIN_VERSION_STRING + ", JSON " + JavaExtensionVersion.JSON_VERSION_STRING +
+                ")";
     }
 
     @Override
@@ -85,21 +85,60 @@ public final class JavaExtension implements Extension
         emitters.add(new PubsubEmitter(outputFileManager, javaParameters, packedTypesCollector));
 
         // emit Java code
-        for (JavaDefaultEmitter emitter: emitters)
+        for (JavaDefaultEmitter emitter : emitters)
             rootNode.walk(emitter);
 
         outputFileManager.printReport();
     }
 
-    private static final String[] JAVA_KEYWORDS =
-    {
-        "abstract",   "assert",       "boolean",    "break",    "byte",      "case",
-        "catch",      "char",         "class",      "const",    "continue",  "default",
-        "double",     "do",           "else",       "enum",     "extends",   "false",
-        "final",      "finally",      "float",      "for",      "goto",      "if",
-        "implements", "import",       "instanceof", "int",      "interface", "long",
-        "native",     "new",          "null",       "package",  "private",   "protected",
-        "public",     "return",       "short",      "static",   "strictfp",  "super",
-        "switch",     "synchronized", "this",       "throw",    "throws",    "transient",
+    private static final String[] JAVA_KEYWORDS = {
+            "abstract",
+            "assert",
+            "boolean",
+            "break",
+            "byte",
+            "case",
+            "catch",
+            "char",
+            "class",
+            "const",
+            "continue",
+            "default",
+            "double",
+            "do",
+            "else",
+            "enum",
+            "extends",
+            "false",
+            "final",
+            "finally",
+            "float",
+            "for",
+            "goto",
+            "if",
+            "implements",
+            "import",
+            "instanceof",
+            "int",
+            "interface",
+            "long",
+            "native",
+            "new",
+            "null",
+            "package",
+            "private",
+            "protected",
+            "public",
+            "return",
+            "short",
+            "static",
+            "strictfp",
+            "super",
+            "switch",
+            "synchronized",
+            "this",
+            "throw",
+            "throws",
+            "transient",
     };
 }

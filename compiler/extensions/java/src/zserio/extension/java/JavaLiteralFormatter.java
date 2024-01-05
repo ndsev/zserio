@@ -23,6 +23,6 @@ final class JavaLiteralFormatter
     }
 
     private final static NativeBooleanType booleanType = new NativeBooleanType(false);
-    private final static NativeIntType intType = new NativeIntType(
-            false, new NativeArrayTraits("BitFieldIntArray"));
+    private final static NativeIntType intType =
+            new NativeIntType(false, new NativeArrayTraits("BitFieldIntArray"));
 }

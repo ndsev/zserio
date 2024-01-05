@@ -62,8 +62,8 @@ final class AccessorNameFormatter
         return getAccessorName(accessorNamePrefix, memberName, "");
     }
 
-    private static String getAccessorName(String accessorNamePrefix, String memberName,
-            String accessorNameSuffix)
+    private static String getAccessorName(
+            String accessorNamePrefix, String memberName, String accessorNameSuffix)
     {
         StringBuilder accessorName = new StringBuilder(accessorNamePrefix);
         if (!memberName.isEmpty())
@@ -87,5 +87,5 @@ final class AccessorNameFormatter
     private static final String GETTER_NAME_PREFIX = "get";
     private static final String SETTER_NAME_PREFIX = "set";
     private static final String FUNCTION_NAME_PREFIX = "func";
-    private static final String REMOVED_ENUMERATOR_PREFIX ="ZSERIO_REMOVED_";
+    private static final String REMOVED_ENUMERATOR_PREFIX = "ZSERIO_REMOVED_";
 }

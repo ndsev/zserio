@@ -25,10 +25,9 @@ public final class TemplateInstantiationTemplateData
         for (TemplateArgument templateArgument : templateArguments)
         {
             final TypeReference argumentReferencedType = templateArgument.getTypeReference();
-            final JavaNativeType argumentNativeType = javaNativeMapper.getJavaType(
-                    argumentReferencedType);
-            this.templateArgumentTypeInfos.add(new NativeTypeInfoTemplateData(argumentNativeType,
-                    argumentReferencedType));
+            final JavaNativeType argumentNativeType = javaNativeMapper.getJavaType(argumentReferencedType);
+            this.templateArgumentTypeInfos.add(
+                    new NativeTypeInfoTemplateData(argumentNativeType, argumentReferencedType));
         }
     }
 
@@ -42,8 +41,8 @@ public final class TemplateInstantiationTemplateData
         return templateArgumentTypeInfos;
     }
 
-    static TemplateInstantiationTemplateData create(TemplateDataContext context,
-            ZserioTemplatableType templatable) throws ZserioExtensionException
+    static TemplateInstantiationTemplateData create(
+            TemplateDataContext context, ZserioTemplatableType templatable) throws ZserioExtensionException
     {
         if (templatable.getTemplate() == null)
             return null;

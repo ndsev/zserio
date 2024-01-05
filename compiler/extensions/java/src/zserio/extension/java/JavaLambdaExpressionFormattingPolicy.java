@@ -19,6 +19,7 @@ public final class JavaLambdaExpressionFormattingPolicy extends JavaExpressionFo
         if (owner == null)
             return "obj";
 
-        return "((" + owner.getName() + ")" + "obj)";
+        return "((" + owner.getName() + ")"
+                + "obj)";
     }
 }

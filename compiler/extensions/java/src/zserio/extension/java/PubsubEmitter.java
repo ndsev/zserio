@@ -22,8 +22,8 @@ final class PubsubEmitter extends JavaDefaultEmitter
         if (!getWithPubsubCode())
             return;
 
-        final PubsubEmitterTemplateData templateData = new PubsubEmitterTemplateData(
-                getTemplateDataContext(), pubsubType);
+        final PubsubEmitterTemplateData templateData =
+                new PubsubEmitterTemplateData(getTemplateDataContext(), pubsubType);
         processTemplate(TEMPLATE_NAME, templateData, pubsubType);
     }
 

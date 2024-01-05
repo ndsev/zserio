@@ -11,7 +11,7 @@ import zserio.extension.common.ZserioExtensionException;
 final class EnumerationEmitter extends JavaDefaultEmitter
 {
     public EnumerationEmitter(OutputFileManager outputFileManager, JavaExtensionParameters javaParameters,
-        PackedTypesCollector packedTypesCollector)
+            PackedTypesCollector packedTypesCollector)
     {
         super(outputFileManager, javaParameters, packedTypesCollector);
     }

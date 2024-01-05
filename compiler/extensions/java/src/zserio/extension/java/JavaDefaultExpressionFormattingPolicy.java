@@ -6,8 +6,6 @@ import zserio.ast.AstNode;
 import zserio.ast.BitmaskType;
 import zserio.ast.BitmaskValue;
 import zserio.ast.Constant;
-import zserio.ast.Subtype;
-import zserio.ast.ZserioType;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
@@ -15,6 +13,8 @@ import zserio.ast.Field;
 import zserio.ast.Function;
 import zserio.ast.Package;
 import zserio.ast.Parameter;
+import zserio.ast.Subtype;
+import zserio.ast.ZserioType;
 import zserio.extension.common.DefaultExpressionFormattingPolicy;
 import zserio.extension.common.StringEscapeConverter;
 import zserio.extension.common.ZserioExtensionException;
@@ -152,8 +152,8 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
         final boolean isMostLeftId = expr.isMostLeftId();
         final StringBuilder result = new StringBuilder();
         final BigInteger exprUpperBound = expr.getIntegerUpperBound();
-        final boolean isMappedToBigInteger = (exprUpperBound != null &&
-                exprUpperBound.compareTo(BigInteger.valueOf(Long.MAX_VALUE)) > 0);
+        final boolean isMappedToBigInteger =
+                (exprUpperBound != null && exprUpperBound.compareTo(BigInteger.valueOf(Long.MAX_VALUE)) > 0);
         final boolean needsCastingToBigInteger = (!isMappedToBigInteger && expr.needsBigInteger());
         if (isMostLeftId && needsCastingToBigInteger)
             result.append(BIG_INTEGER + ".valueOf(");
@@ -432,8 +432,8 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
 
     // getQuestionMark() is ok from the base class
 
-    protected abstract String getIdentifierForTypeEnum(EnumType resolvedType,
-            JavaNativeMapper javaNativeMapper) throws ZserioExtensionException;
+    protected abstract String getIdentifierForTypeEnum(EnumType resolvedType, JavaNativeMapper javaNativeMapper)
+            throws ZserioExtensionException;
 
     protected String getIdentifierForEnumItem(EnumItem enumItem)
     {
@@ -443,8 +443,8 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     protected abstract String getDotSeparatorForEnumItem();
     protected abstract String getAccessPrefixForCompoundType(ZserioType owner);
 
-    private void formatParameterAccessor(StringBuilder result, boolean isMostLeftId, Parameter param,
-            ZserioType exprOwner)
+    private void formatParameterAccessor(
+            StringBuilder result, boolean isMostLeftId, Parameter param, ZserioType exprOwner)
     {
         if (isMostLeftId)
             result.append(getAccessPrefix(exprOwner));
@@ -453,8 +453,8 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
         result.append(JAVA_GETTER_FUNCTION_CALL);
     }
 
-    private void formatFieldAccessor(StringBuilder result, boolean isMostLeftId, Field field, boolean isSetter,
-            ZserioType exprOwner)
+    private void formatFieldAccessor(
+            StringBuilder result, boolean isMostLeftId, Field field, boolean isSetter, ZserioType exprOwner)
     {
         if (isMostLeftId)
             result.append(getAccessPrefix(exprOwner));
@@ -471,8 +471,8 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
         }
     }
 
-    private void formatFunction(StringBuilder result, boolean isMostLeftId, Function function,
-            ZserioType exprOwner)
+    private void formatFunction(
+            StringBuilder result, boolean isMostLeftId, Function function, ZserioType exprOwner)
     {
         if (isMostLeftId)
             result.append(getAccessPrefix(exprOwner));
@@ -484,8 +484,9 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
             throws ZserioExtensionException
     {
         // we need to resolve subtypes because Java does not support them
-        final ZserioType baseType = (resolvedType instanceof Subtype) ?
-                ((Subtype)resolvedType).getBaseTypeReference().getType() : resolvedType;
+        final ZserioType baseType = (resolvedType instanceof Subtype)
+                ? ((Subtype)resolvedType).getBaseTypeReference().getType()
+                : resolvedType;
         if (baseType instanceof EnumType)
         {
             // [EnumType].ENUM_ITEM
@@ -507,7 +508,7 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
 
     private void formatSymbolIdentifier(StringBuilder result, String symbol, boolean isMostLeftId,
             AstNode resolvedSymbol, ZserioType exprType, ZserioType exprOwner, boolean isSetter)
-                    throws ZserioExtensionException
+            throws ZserioExtensionException
     {
         if (resolvedSymbol instanceof Parameter)
         {
