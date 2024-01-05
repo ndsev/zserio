@@ -3,18 +3,18 @@ package zserio.extension.python;
 import java.util.ArrayList;
 import java.util.List;
 
-import zserio.ast.TypeInstantiation;
-import zserio.ast.ZserioType;
 import zserio.ast.Field;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
+import zserio.ast.TypeInstantiation;
+import zserio.ast.ZserioType;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.python.types.PythonNativeType;
 
 /**
  * FreeMarker template data for SqlDatabaseEmitter.
  */
-public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
+public final class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
 {
     public SqlDatabaseEmitterTemplateData(TemplateDataContext context, SqlDatabaseType databaseType)
             throws ZserioExtensionException
@@ -25,7 +25,7 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
         importPackage("apsw");
 
         fields = new ArrayList<DatabaseFieldData>();
-        for (Field field: databaseType.getFields())
+        for (Field field : databaseType.getFields())
             fields.add(new DatabaseFieldData(context, field, this));
     }
 
@@ -36,8 +36,8 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
 
     public static final class DatabaseFieldData
     {
-        public DatabaseFieldData(TemplateDataContext context, Field field,
-                ImportCollector importCollector) throws ZserioExtensionException
+        public DatabaseFieldData(TemplateDataContext context, Field field, ImportCollector importCollector)
+                throws ZserioExtensionException
         {
             final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
             final ZserioType fieldBaseType = fieldTypeInstantiation.getBaseType();
@@ -49,8 +49,9 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
             snakeCaseName = PythonSymbolConverter.toLowerSnakeCase(name);
             typeInfo = new NativeTypeInfoTemplateData(nativeType, fieldTypeInstantiation);
             propertyName = AccessorNameFormatter.getPropertyName(field);
-            isWithoutRowIdTable = (fieldBaseType instanceof SqlTableType) ?
-                    ((SqlTableType)fieldBaseType).isWithoutRowId() : false;
+            isWithoutRowIdTable = (fieldBaseType instanceof SqlTableType)
+                    ? ((SqlTableType)fieldBaseType).isWithoutRowId()
+                    : false;
 
             docComments = DocCommentsDataCreator.createData(context, field);
         }

@@ -37,13 +37,13 @@ public final class CompoundParameterTemplateData
     {
         public CompoundParameter(TemplateDataContext context, Parameter parameter,
                 ImportCollector importCollector, List<DocComment> compoundDocComments)
-                        throws ZserioExtensionException
+                throws ZserioExtensionException
         {
             name = parameter.getName();
             snakeCaseName = PythonSymbolConverter.toLowerSnakeCase(name);
             final TypeReference parameterTypeReference = parameter.getTypeReference();
-            final PythonNativeType nativeType = context.getPythonNativeMapper().getPythonType(
-                    parameterTypeReference);
+            final PythonNativeType nativeType =
+                    context.getPythonNativeMapper().getPythonType(parameterTypeReference);
             importCollector.importType(nativeType);
             typeInfo = new NativeTypeInfoTemplateData(nativeType, parameterTypeReference);
             propertyName = AccessorNameFormatter.getPropertyName(parameter);

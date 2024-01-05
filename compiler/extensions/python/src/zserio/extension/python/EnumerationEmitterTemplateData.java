@@ -37,8 +37,8 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
         bitSize = createBitSize(enumTypeInstantiation);
 
         final ExpressionFormatter pythonExpressionFormatter = context.getPythonExpressionFormatter(this);
-        runtimeFunction = RuntimeFunctionDataCreator.createData(
-                enumTypeInstantiation, pythonExpressionFormatter);
+        runtimeFunction =
+                RuntimeFunctionDataCreator.createData(enumTypeInstantiation, pythonExpressionFormatter);
 
         final List<EnumItem> enumItems = enumType.getItems();
         items = new ArrayList<EnumItemData>(enumItems.size());

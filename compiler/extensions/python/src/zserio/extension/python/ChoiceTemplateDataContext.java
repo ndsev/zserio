@@ -9,8 +9,8 @@ import zserio.extension.common.PackedTypesCollector;
  */
 public final class ChoiceTemplateDataContext extends TemplateDataContext
 {
-    public ChoiceTemplateDataContext(PythonExtensionParameters pythonParameters,
-            PackedTypesCollector packedTypesCollector)
+    public ChoiceTemplateDataContext(
+            PythonExtensionParameters pythonParameters, PackedTypesCollector packedTypesCollector)
     {
         super(pythonParameters, packedTypesCollector);
     }
@@ -27,8 +27,9 @@ public final class ChoiceTemplateDataContext extends TemplateDataContext
     @Override
     public ExpressionFormatter getPythonOwnerIndirectExpressionFormatter(ImportCollector importCollector)
     {
-        final ExpressionFormattingPolicy expressionFormattingPolicy = new PythonChoiceExpressionFormattingPolicy(
-                this, importCollector, TemplateDataContext.PYTHON_OWNER_PREFIX);
+        final ExpressionFormattingPolicy expressionFormattingPolicy =
+                new PythonChoiceExpressionFormattingPolicy(
+                        this, importCollector, TemplateDataContext.PYTHON_OWNER_PREFIX);
 
         return new ExpressionFormatter(expressionFormattingPolicy);
     }

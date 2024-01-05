@@ -30,9 +30,9 @@ public final class PythonExtension implements Extension
     @Override
     public String getExtensionVersion()
     {
-        return PythonExtensionVersion.PYTHON_EXTENSION_VERSION_STRING +
-                " (BIN " + PythonExtensionVersion.BIN_VERSION_STRING +
-                ", JSON " + PythonExtensionVersion.JSON_VERSION_STRING + ")";
+        return PythonExtensionVersion.PYTHON_EXTENSION_VERSION_STRING + " (BIN " +
+                PythonExtensionVersion.BIN_VERSION_STRING + ", JSON " +
+                PythonExtensionVersion.JSON_VERSION_STRING + ")";
     }
 
     @Override
@@ -113,7 +113,7 @@ public final class PythonExtension implements Extension
         emitters.add(new PubsubEmitter(outputFileManager, pythonParameters, packedTypesCollector));
 
         // emit Python code
-        for (PythonDefaultEmitter pythonEmitter: emitters)
+        for (PythonDefaultEmitter pythonEmitter : emitters)
             rootNode.walk(pythonEmitter);
 
         outputFileManager.printReport();
@@ -122,11 +122,8 @@ public final class PythonExtension implements Extension
     // List of Python keywords, got from Python 3.9 keyword module:
     // >>> import keyword
     // >>> keyword.kwlist
-    private static final String[] PYTHON_KEYWORDS = new String[]
-    {
-        "False", "None", "True", "__peg_parser__", "and", "as", "assert", "async", "await", "break", "class",
-        "continue", "def", "del", "elif", "else", "except", "finally", "for", "from", "global", "if", "import",
-        "in", "is", "lambda", "nonlocal", "not", "or", "pass", "raise", "return", "try", "while", "with",
-        "yield"
-    };
+    private static final String[] PYTHON_KEYWORDS = new String[] {"False", "None", "True", "__peg_parser__",
+            "and", "as", "assert", "async", "await", "break", "class", "continue", "def", "del", "elif", "else",
+            "except", "finally", "for", "from", "global", "if", "import", "in", "is", "lambda", "nonlocal",
+            "not", "or", "pass", "raise", "return", "try", "while", "with", "yield"};
 }

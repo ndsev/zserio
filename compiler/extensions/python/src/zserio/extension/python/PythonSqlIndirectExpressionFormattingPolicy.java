@@ -7,15 +7,15 @@ import zserio.ast.Field;
  */
 final class PythonSqlIndirectExpressionFormattingPolicy extends PythonExpressionFormattingPolicy
 {
-    public PythonSqlIndirectExpressionFormattingPolicy(TemplateDataContext context,
-            ImportCollector importCollector)
+    public PythonSqlIndirectExpressionFormattingPolicy(
+            TemplateDataContext context, ImportCollector importCollector)
     {
         super(context, importCollector);
     }
 
     @Override
-    protected void formatFieldAccessor(StringBuilder result, boolean isFirstInDot, Field field,
-            boolean isSetter)
+    protected void formatFieldAccessor(
+            StringBuilder result, boolean isFirstInDot, Field field, boolean isSetter)
     {
         if (isFirstInDot)
             result.append(AccessorNameFormatter.getSqlColumnName(field));

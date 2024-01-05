@@ -1,9 +1,9 @@
 package zserio.extension.python;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.List;
-import java.util.ArrayList;
 
 import zserio.ast.PackageName;
 import zserio.extension.python.symbols.PythonNativeSymbol;
@@ -51,7 +51,7 @@ public final class ApiEmitterTemplateData extends PythonTemplateData
         public boolean equals(Object otherObject)
         {
             if (!(otherObject instanceof ApiImport))
-                    return false;
+                return false;
 
             final ApiImport other = (ApiImport)otherObject;
 

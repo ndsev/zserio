@@ -18,7 +18,7 @@ public final class TemplateInstantiationTemplateData
 {
     public TemplateInstantiationTemplateData(TemplateDataContext context, ZserioTemplatableType template,
             List<TemplateArgument> templateArguments, ImportCollector importCollector)
-                    throws ZserioExtensionException
+            throws ZserioExtensionException
     {
         templateName = ZserioTypeUtil.getFullName(template);
         final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
@@ -27,8 +27,8 @@ public final class TemplateInstantiationTemplateData
         {
             final TypeReference argumentTypeReference = templateArgument.getTypeReference();
             final PythonNativeType argumentNativeType = pythonNativeMapper.getPythonType(argumentTypeReference);
-            templateArgumentTypeInfos.add(new NativeTypeInfoTemplateData(argumentNativeType,
-                    argumentTypeReference));
+            templateArgumentTypeInfos.add(
+                    new NativeTypeInfoTemplateData(argumentNativeType, argumentTypeReference));
             if (context.getWithTypeInfoCode())
             {
                 // imports of template arguments types are needed only in type_info

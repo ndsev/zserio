@@ -41,8 +41,8 @@ public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
         bitSize = createBitSize(bitmaskTypeInstantiation);
 
         final ExpressionFormatter pythonExpressionFormatter = context.getPythonExpressionFormatter(this);
-        runtimeFunction = RuntimeFunctionDataCreator.createData(
-                bitmaskTypeInstantiation, pythonExpressionFormatter);
+        runtimeFunction =
+                RuntimeFunctionDataCreator.createData(bitmaskTypeInstantiation, pythonExpressionFormatter);
 
         lowerBound = PythonLiteralFormatter.formatDecimalLiteral(getLowerBound(bitmaskTypeInstantiation));
         upperBound = PythonLiteralFormatter.formatDecimalLiteral(getUpperBound(bitmaskTypeInstantiation));

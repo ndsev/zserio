@@ -8,8 +8,8 @@ import zserio.extension.python.symbols.PythonNativeSymbol;
  */
 public class PythonNativeType extends PythonNativeSymbol
 {
-    protected PythonNativeType(PackageName packageName, String moduleName, String name,
-            NativeArrayTraits arrayTraits)
+    protected PythonNativeType(
+            PackageName packageName, String moduleName, String name, NativeArrayTraits arrayTraits)
     {
         super(packageName, moduleName, name);
 

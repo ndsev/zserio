@@ -13,8 +13,8 @@ import zserio.ast.EnumType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
 import zserio.ast.ParameterizedTypeInstantiation;
-import zserio.ast.PubsubType;
 import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
+import zserio.ast.PubsubType;
 import zserio.ast.ScopeSymbol;
 import zserio.ast.ServiceType;
 import zserio.ast.SqlDatabaseType;
@@ -64,7 +64,7 @@ final class PythonScopeSymbolClashChecker extends DefaultTreeWalker
     public void beginEnumeration(EnumType enumType) throws ZserioExtensionException
     {
         final Map<String, String> symbolMap = new HashMap<String, String>();
-        for (EnumItem enumItem: enumType.getItems())
+        for (EnumItem enumItem : enumType.getItems())
         {
             addSymbol(symbolMap, enumItem,
                     PythonSymbolConverter.enumItemToSymbol(enumItem.getName(), enumItem.isRemoved()));
@@ -149,8 +149,8 @@ final class PythonScopeSymbolClashChecker extends DefaultTreeWalker
                             {
                                 ZserioToolPrinter.printError(paramExpression.getLocation(),
                                         "Explicit parameter '" + explicitParamName + "' clashes with '" +
-                                        prevExplicitParamName +
-                                        "' since both are generated as the same getter in Python code!");
+                                                prevExplicitParamName +
+                                                "' since both are generated as the same getter in Python code!");
                                 throw new ZserioExtensionException("Explicit parameter name clash detected!");
                             }
                         }
@@ -168,7 +168,7 @@ final class PythonScopeSymbolClashChecker extends DefaultTreeWalker
         {
             ZserioToolPrinter.printError(symbol.getLocation(),
                     "Symbol name '" + symbol.getName() + "' clashes with '" + prevSymbolName +
-                    "' since both are generated equally in Python code!");
+                            "' since both are generated equally in Python code!");
             throw new ZserioExtensionException("Symbol name clash detected!");
         }
     }

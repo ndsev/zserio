@@ -8,21 +8,20 @@ import zserio.ast.Parameter;
  */
 final class PythonChoiceExpressionFormattingPolicy extends PythonExpressionFormattingPolicy
 {
-    public PythonChoiceExpressionFormattingPolicy(TemplateDataContext context,
-            ImportCollector importCollector)
+    public PythonChoiceExpressionFormattingPolicy(TemplateDataContext context, ImportCollector importCollector)
     {
         super(context, importCollector);
     }
 
-    public PythonChoiceExpressionFormattingPolicy(TemplateDataContext context,
-            ImportCollector importCollector, String accessPrefix)
+    public PythonChoiceExpressionFormattingPolicy(
+            TemplateDataContext context, ImportCollector importCollector, String accessPrefix)
     {
         super(context, importCollector, accessPrefix);
     }
 
     @Override
-    protected void formatFieldAccessor(StringBuilder result, boolean isFirstInDot, Field field,
-            boolean isSetter)
+    protected void formatFieldAccessor(
+            StringBuilder result, boolean isFirstInDot, Field field, boolean isSetter)
     {
         if (isFirstInDot && !isSetter)
         {

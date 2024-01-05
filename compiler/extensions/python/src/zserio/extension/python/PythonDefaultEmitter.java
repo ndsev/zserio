@@ -67,8 +67,8 @@ abstract class PythonDefaultEmitter extends DefaultTreeWalker
             throws ZserioExtensionException
     {
         final PythonNativeSymbol nativeSymbol = context.getPythonNativeMapper().getPythonSymbol(packageSymbol);
-        processTemplate(templateName, templateData,
-                nativeSymbol.getPackageName(), nativeSymbol.getModuleName());
+        processTemplate(
+                templateName, templateData, nativeSymbol.getPackageName(), nativeSymbol.getModuleName());
     }
 
     protected void processTemplate(String templateName, Object templateData, PackageName packageName,
@@ -77,12 +77,12 @@ abstract class PythonDefaultEmitter extends DefaultTreeWalker
         final File outDir = new File(pythonParameters.getOutputDir(), packageName.toFilesystemPath());
         final File outputFile = new File(outDir, getOutputFileName(outFileNameRoot));
 
-        final boolean generate = !outputFileManager.checkTimestamps(outputFile) ||
-                !checkGeneratorDescription(outputFile);
+        final boolean generate =
+                !outputFileManager.checkTimestamps(outputFile) || !checkGeneratorDescription(outputFile);
         if (generate)
         {
-            FreeMarkerUtil.processTemplate(PYTHON_TEMPLATE_LOCATION + templateName, templateData, outputFile,
-                    false);
+            FreeMarkerUtil.processTemplate(
+                    PYTHON_TEMPLATE_LOCATION + templateName, templateData, outputFile, false);
         }
 
         outputFileManager.registerOutputFile(outputFile, generate);
@@ -103,7 +103,7 @@ abstract class PythonDefaultEmitter extends DefaultTreeWalker
         try (final Stream<String> lines = Files.lines(outputFile.toPath()))
         {
             final String[] generatorDescriptionCandidate =
-                    lines.limit(generatorDescription.length).toArray(String[]::new);
+                    lines.limit(generatorDescription.length).toArray(String[] ::new);
             return Arrays.equals(generatorDescription, generatorDescriptionCandidate);
         }
         catch (IOException e)

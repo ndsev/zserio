@@ -8,15 +8,15 @@ import zserio.ast.ArrayInstantiation;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
 import zserio.ast.DynamicBitFieldInstantiation;
-import zserio.ast.IntegerType;
-import zserio.ast.ParameterizedTypeInstantiation;
-import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
-import zserio.ast.UnionType;
-import zserio.ast.ZserioType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
 import zserio.ast.FixedSizeType;
+import zserio.ast.IntegerType;
+import zserio.ast.ParameterizedTypeInstantiation;
+import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.ast.TypeInstantiation;
+import zserio.ast.UnionType;
+import zserio.ast.ZserioType;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.python.types.PythonNativeType;
@@ -60,8 +60,8 @@ public final class CompoundFieldTemplateData
         bitSize = new BitSize(fieldTypeInstantiation, pythonExpressionFormatter);
         offset = createOffset(field, pythonExpressionFormatter);
         array = createArray(context, fieldTypeInstantiation, parentType, importCollector);
-        runtimeFunction = RuntimeFunctionDataCreator.createData(fieldTypeInstantiation,
-                pythonExpressionFormatter);
+        runtimeFunction =
+                RuntimeFunctionDataCreator.createData(fieldTypeInstantiation, pythonExpressionFormatter);
         compound = createCompound(context, fieldTypeInstantiation, importCollector);
         docComments = DocCommentsDataCreator.createData(context, field);
     }
@@ -195,8 +195,8 @@ public final class CompoundFieldTemplateData
         public BitFieldWithExpression(DynamicBitFieldInstantiation dynamicBitFieldInstantiation,
                 ExpressionFormatter pythonExpressionFormatter) throws ZserioExtensionException
         {
-            lengthExpression = pythonExpressionFormatter.formatGetter(
-                    dynamicBitFieldInstantiation.getLengthExpression());
+            lengthExpression =
+                    pythonExpressionFormatter.formatGetter(dynamicBitFieldInstantiation.getLengthExpression());
             isSigned = dynamicBitFieldInstantiation.getBaseType().isSigned();
         }
 
@@ -220,8 +220,9 @@ public final class CompoundFieldTemplateData
                 throws ZserioExtensionException
         {
             final Expression optionalClauseExpression = field.getOptionalClauseExpr();
-            clause = (optionalClauseExpression == null) ? null :
-                pythonExpressionFormatter.formatGetter(optionalClauseExpression);
+            clause = (optionalClauseExpression == null)
+                    ? null
+                    : pythonExpressionFormatter.formatGetter(optionalClauseExpression);
 
             isUsedIndicatorName = AccessorNameFormatter.getIsUsedIndicatorName(field);
             isSetIndicatorName = AccessorNameFormatter.getIsSetIndicatorName(field);
@@ -267,8 +268,9 @@ public final class CompoundFieldTemplateData
                 throws ZserioExtensionException
         {
             value = createValue(typeInstantiation, pythonExpressionFormatter);
-            runtimeFunction = (value != null) ? null :
-                RuntimeFunctionDataCreator.createData(typeInstantiation, pythonExpressionFormatter);
+            runtimeFunction = (value != null)
+                    ? null
+                    : RuntimeFunctionDataCreator.createData(typeInstantiation, pythonExpressionFormatter);
         }
 
         public String getValue()
@@ -454,7 +456,7 @@ public final class CompoundFieldTemplateData
     {
         public Compound(TemplateDataContext context,
                 ParameterizedTypeInstantiation parameterizedTypeInstantiation, ImportCollector importCollector)
-                        throws ZserioExtensionException
+                throws ZserioExtensionException
         {
             this(context, parameterizedTypeInstantiation.getBaseType(), importCollector);
 
@@ -483,8 +485,9 @@ public final class CompoundFieldTemplateData
 
         public static final class InstantiatedParameterData
         {
-            public InstantiatedParameterData(TemplateDataContext context, InstantiatedParameter instantiatedParameter,
-                    ImportCollector importCollector) throws ZserioExtensionException
+            public InstantiatedParameterData(TemplateDataContext context,
+                    InstantiatedParameter instantiatedParameter, ImportCollector importCollector)
+                    throws ZserioExtensionException
             {
                 final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
                 final ExpressionFormatter pythonExpressionFormatter =
@@ -530,16 +533,16 @@ public final class CompoundFieldTemplateData
             return null;
 
         final IntegerType integerType = (IntegerType)baseType;
-        final BitFieldWithExpression bitFieldWithExpression = createBitFieldWithExpression(typeInstantiation,
-                pythonExpressionFormatter);
+        final BitFieldWithExpression bitFieldWithExpression =
+                createBitFieldWithExpression(typeInstantiation, pythonExpressionFormatter);
 
         final BigInteger zserioLowerBound = integerType.getLowerBound(typeInstantiation);
-        final String lowerBound = zserioLowerBound != null ?
-                PythonLiteralFormatter.formatDecimalLiteral(zserioLowerBound) : null;
+        final String lowerBound =
+                zserioLowerBound != null ? PythonLiteralFormatter.formatDecimalLiteral(zserioLowerBound) : null;
 
         final BigInteger zserioUpperBound = integerType.getUpperBound(typeInstantiation);
-        final String upperBound = zserioUpperBound != null ?
-                PythonLiteralFormatter.formatDecimalLiteral(zserioUpperBound) : null;
+        final String upperBound =
+                zserioUpperBound != null ? PythonLiteralFormatter.formatDecimalLiteral(zserioUpperBound) : null;
 
         return new RangeCheck(bitFieldWithExpression, lowerBound, upperBound);
     }

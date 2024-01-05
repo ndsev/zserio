@@ -19,9 +19,6 @@ import zserio.ast.DocText;
 import zserio.ast.EnumItem;
 import zserio.ast.Field;
 import zserio.ast.Function;
-import zserio.ast.SymbolReference;
-import zserio.extension.common.ZserioExtensionException;
-import zserio.extension.python.symbols.PythonNativeSymbol;
 import zserio.ast.Package;
 import zserio.ast.PackageSymbol;
 import zserio.ast.Parameter;
@@ -29,6 +26,9 @@ import zserio.ast.PubsubMessage;
 import zserio.ast.ScopeSymbol;
 import zserio.ast.ServiceMethod;
 import zserio.ast.SqlTableType;
+import zserio.ast.SymbolReference;
+import zserio.extension.common.ZserioExtensionException;
+import zserio.extension.python.symbols.PythonNativeSymbol;
 
 /**
  * FreeMarker template data for documentation comments.
@@ -185,8 +185,7 @@ public final class DocCommentsTemplateData
 
     public static final class DocTagSeeData
     {
-        public DocTagSeeData(TemplateDataContext context, DocTagSee docTagSee)
-                throws ZserioExtensionException
+        public DocTagSeeData(TemplateDataContext context, DocTagSee docTagSee) throws ZserioExtensionException
         {
             alias = docTagSee.getLinkAlias();
 

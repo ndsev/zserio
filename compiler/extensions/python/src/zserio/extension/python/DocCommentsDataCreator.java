@@ -12,14 +12,14 @@ import zserio.extension.common.ZserioExtensionException;
  */
 final class DocCommentsDataCreator
 {
-    public static DocCommentsTemplateData createData(TemplateDataContext context,
-            DocumentableAstNode documentableNode) throws ZserioExtensionException
+    public static DocCommentsTemplateData createData(
+            TemplateDataContext context, DocumentableAstNode documentableNode) throws ZserioExtensionException
     {
         return createData(context, documentableNode.getDocComments());
     }
 
-    public static DocCommentsTemplateData createData(TemplateDataContext context,
-            List<DocComment> docComments) throws ZserioExtensionException
+    public static DocCommentsTemplateData createData(TemplateDataContext context, List<DocComment> docComments)
+            throws ZserioExtensionException
     {
         final int numComments = docComments.size();
         int firstStickyCommentIndex = numComments;

@@ -1,6 +1,7 @@
 package zserio.extension.python;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
 
 public class PythonSymbolConverterTest
@@ -28,8 +29,10 @@ public class PythonSymbolConverterTest
         assertEquals("MY_LONG_ENUM_ITEM", PythonSymbolConverter.enumItemToSymbol("MyLongEnumItem", false));
         assertEquals("MY_LONG_ENUM_ITEM", PythonSymbolConverter.enumItemToSymbol("my_long_enum_item", false));
         assertEquals("MY_LONG6_ENUM_ITEM", PythonSymbolConverter.enumItemToSymbol("MyLong6EnumItem", false));
-        assertEquals("MY_LONG6ACD_ENUM_ITEM", PythonSymbolConverter.enumItemToSymbol("MyLong6ACDEnumItem", false));
-        assertEquals("MY_LONG_6ACD_ENUM_ITEM", PythonSymbolConverter.enumItemToSymbol("MyLong_6ACD_EnumItem", false));
+        assertEquals(
+                "MY_LONG6ACD_ENUM_ITEM", PythonSymbolConverter.enumItemToSymbol("MyLong6ACDEnumItem", false));
+        assertEquals("MY_LONG_6ACD_ENUM_ITEM",
+                PythonSymbolConverter.enumItemToSymbol("MyLong_6ACD_EnumItem", false));
 
         assertEquals("ZSERIO_REMOVED_MY_LONG_ENUM_ITEM",
                 PythonSymbolConverter.enumItemToSymbol("MY_LONG_ENUM_ITEM", true));
@@ -48,14 +51,13 @@ public class PythonSymbolConverterTest
     @Test
     public void bitmaskValueToSymbol()
     {
-        assertEquals("MY_LONG_BITMASK_VALUE",
-                PythonSymbolConverter.bitmaskValueToSymbol("MY_LONG_BITMASK_VALUE"));
-        assertEquals("MY_LONG_BITMASK_VALUE",
-                PythonSymbolConverter.bitmaskValueToSymbol("MyLongBitmaskValue"));
-        assertEquals("MY_LONG_BITMASK_VALUE",
-                PythonSymbolConverter.bitmaskValueToSymbol("my_long_bitmask_value"));
-        assertEquals("MY_LONG6_BITMASK_VALUE",
-                PythonSymbolConverter.bitmaskValueToSymbol("MyLong6BitmaskValue"));
+        assertEquals(
+                "MY_LONG_BITMASK_VALUE", PythonSymbolConverter.bitmaskValueToSymbol("MY_LONG_BITMASK_VALUE"));
+        assertEquals("MY_LONG_BITMASK_VALUE", PythonSymbolConverter.bitmaskValueToSymbol("MyLongBitmaskValue"));
+        assertEquals(
+                "MY_LONG_BITMASK_VALUE", PythonSymbolConverter.bitmaskValueToSymbol("my_long_bitmask_value"));
+        assertEquals(
+                "MY_LONG6_BITMASK_VALUE", PythonSymbolConverter.bitmaskValueToSymbol("MyLong6BitmaskValue"));
         assertEquals("MY_LONG6ACD_BITMASK_VALUE",
                 PythonSymbolConverter.bitmaskValueToSymbol("MyLong6ACDBitmaskValue"));
         assertEquals("MY_LONG_6ACD_BITMASK_VALUE",

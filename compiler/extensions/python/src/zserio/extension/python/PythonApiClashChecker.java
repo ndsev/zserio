@@ -57,9 +57,10 @@ final class PythonApiClashChecker extends DefaultTreeWalker
                 if (id.equals(ApiEmitter.API_FILENAME_ROOT))
                 {
                     ZserioToolPrinter.printError(pkg.getLocation(),
-                            "Cannot generate python package '" + id +  "' for package '" +
-                            pkg.getPackageName() + "', since it would clash with auto-generated '" +
-                            API_OUTPUT_FILE_NAME_LOWER_CASE + "'! Please choose different package name.");
+                            "Cannot generate python package '" + id + "' for package '" + pkg.getPackageName() +
+                                    "', since it would clash with auto-generated '" +
+                                    API_OUTPUT_FILE_NAME_LOWER_CASE +
+                                    "'! Please choose different package name.");
                     throw new ZserioExtensionException("Clash in generated code detected!");
                 }
             }
@@ -157,9 +158,9 @@ final class PythonApiClashChecker extends DefaultTreeWalker
         if (outputFileName.toLowerCase(Locale.ENGLISH).equals(API_OUTPUT_FILE_NAME_LOWER_CASE))
         {
             ZserioToolPrinter.printError(packageSymbol.getLocation(),
-                    "Cannot generate python source '" + outputFileName +  "' for symbol '" +
-                    packageSymbol.getName() + "', since it would clash with auto-generated '" +
-                    API_OUTPUT_FILE_NAME_LOWER_CASE + "'! Please choose different name.");
+                    "Cannot generate python source '" + outputFileName + "' for symbol '" +
+                            packageSymbol.getName() + "', since it would clash with auto-generated '" +
+                            API_OUTPUT_FILE_NAME_LOWER_CASE + "'! Please choose different name.");
             throw new ZserioExtensionException("Clash in generated code detected!");
         }
     }

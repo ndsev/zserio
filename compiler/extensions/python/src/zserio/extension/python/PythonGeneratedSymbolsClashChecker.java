@@ -81,8 +81,8 @@ final class PythonGeneratedSymbolsClashChecker extends DefaultTreeWalker
         }
     }
 
-    private void checkCompoundType(CompoundType compoundType,
-            String templateSourceName) throws ZserioExtensionException
+    private void checkCompoundType(CompoundType compoundType, String templateSourceName)
+            throws ZserioExtensionException
     {
         final CompoundSymbolNameChecker symbolNameChecker =
                 new CompoundSymbolNameChecker(compoundType, templateSourceName);
@@ -115,8 +115,8 @@ final class PythonGeneratedSymbolsClashChecker extends DefaultTreeWalker
             {
                 ZserioToolPrinter.printError(scopeSymbol.getLocation(),
                         "Invalid " + symbolDescription.toLowerCase(Locale.ENGLISH) + " name '" + generatedName +
-                        "' generated for symbol '" + scopeSymbol.getName() + "'. " +
-                        symbolDescription + " names cannot start with '_'!");
+                                "' generated for symbol '" + scopeSymbol.getName() + "'. " + symbolDescription +
+                                " names cannot start with '_'!");
                 throw new ZserioExtensionException(symbolDescription + " name error detected!");
             }
         }
@@ -163,7 +163,7 @@ final class PythonGeneratedSymbolsClashChecker extends DefaultTreeWalker
             {
                 ZserioToolPrinter.printError(scopeSymbol.getLocation(),
                         symbolDescription + " name '" + generatedName + "' generated for symbol '" +
-                        scopeSymbol.getName() + "' clashes with generated API method!");
+                                scopeSymbol.getName() + "' clashes with generated API method!");
                 throw new ZserioExtensionException(symbolDescription + " name clash detected!");
             }
 
@@ -172,10 +172,11 @@ final class PythonGeneratedSymbolsClashChecker extends DefaultTreeWalker
             {
                 ZserioToolPrinter.printError(scopeSymbol.getLocation(),
                         symbolDescription + " name '" + generatedName + "' generated for symbol '" +
-                        scopeSymbol.getName() + "' clashes with generated indicator for optional field '" +
-                        clashingField.getName() + "' defined at " +
-                        clashingField.getLocation().getLine() + ":" +
-                        clashingField.getLocation().getColumn() + "!");
+                                scopeSymbol.getName() +
+                                "' clashes with generated indicator for optional field '" +
+                                clashingField.getName() + "' defined at " +
+                                clashingField.getLocation().getLine() + ":" +
+                                clashingField.getLocation().getColumn() + "!");
                 throw new ZserioExtensionException(symbolDescription + " name clash detected!");
             }
         }

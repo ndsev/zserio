@@ -40,13 +40,14 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
         final SqlConstraint tableSqlConstraint = tableType.getSqlConstraint();
         final ExpressionFormatter pythonExpressionFormatter = context.getPythonExpressionFormatter(this);
-        sqlConstraint = (tableSqlConstraint == null) ? null :
-            pythonExpressionFormatter.formatGetter(tableSqlConstraint.getConstraintExpr());
+        sqlConstraint = (tableSqlConstraint == null)
+                ? null
+                : pythonExpressionFormatter.formatGetter(tableSqlConstraint.getConstraintExpr());
         virtualTableUsing = tableType.getVirtualTableUsingString();
         needsTypesInSchema = tableType.needsTypesInSchema();
         isWithoutRowId = tableType.isWithoutRowId();
 
-        for (Field field: tableType.getFields())
+        for (Field field : tableType.getFields())
         {
             final FieldTemplateData fieldData = new FieldTemplateData(context, tableType, field, this);
             fields.add(fieldData);
@@ -177,16 +178,17 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 for (InstantiatedParameter instantiatedParameter :
                         parameterizedInstantiation.getInstantiatedParameters())
                 {
-                    parameters.add(new ParameterTemplateData(context, parentType, instantiatedParameter,
-                            importCollector));
+                    parameters.add(new ParameterTemplateData(
+                            context, parentType, instantiatedParameter, importCollector));
                 }
             }
 
             final SqlConstraint fieldSqlConstraint = field.getSqlConstraint();
             final ExpressionFormatter pythonExpressionFormatter =
                     context.getPythonExpressionFormatter(importCollector);
-            sqlConstraint = (fieldSqlConstraint == null) ? null :
-                    pythonExpressionFormatter.formatGetter(fieldSqlConstraint.getConstraintExpr());
+            sqlConstraint = (fieldSqlConstraint == null)
+                    ? null
+                    : pythonExpressionFormatter.formatGetter(fieldSqlConstraint.getConstraintExpr());
 
             lambdaBitSize = createBitSize(fieldTypeInstantiation, pythonExpressionFormatter);
             final SqlNativeTypeMapper sqlNativeTypeMapper = new SqlNativeTypeMapper();
@@ -245,8 +247,8 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
             public SqlTypeTemplateData(SqlNativeTypeMapper sqlNativeTypeMapper, Field field)
                     throws ZserioExtensionException
             {
-                final SqlNativeType sqlNativeType = sqlNativeTypeMapper.getSqlType(
-                        field.getTypeInstantiation());
+                final SqlNativeType sqlNativeType =
+                        sqlNativeTypeMapper.getSqlType(field.getTypeInstantiation());
                 name = sqlNativeType.getFullName();
                 isBlob = sqlNativeType instanceof NativeBlobType;
             }
@@ -269,13 +271,12 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
         {
             public ParameterTemplateData(TemplateDataContext context, SqlTableType tableType,
                     InstantiatedParameter instantiatedParameter, ImportCollector importCollector)
-                            throws ZserioExtensionException
+                    throws ZserioExtensionException
             {
                 final Parameter parameter = instantiatedParameter.getParameter();
                 final TypeReference referencedType = parameter.getTypeReference();
                 final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
-                final PythonNativeType parameterNativeType =
-                        pythonNativeMapper.getPythonType(referencedType);
+                final PythonNativeType parameterNativeType = pythonNativeMapper.getPythonType(referencedType);
                 importCollector.importType(parameterNativeType);
 
                 typeInfo = new NativeTypeInfoTemplateData(parameterNativeType, referencedType);

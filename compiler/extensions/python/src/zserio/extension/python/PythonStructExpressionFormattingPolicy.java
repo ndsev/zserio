@@ -8,21 +8,20 @@ import zserio.ast.Parameter;
  */
 final class PythonStructExpressionFormattingPolicy extends PythonExpressionFormattingPolicy
 {
-    public PythonStructExpressionFormattingPolicy(TemplateDataContext context,
-            ImportCollector importCollector)
+    public PythonStructExpressionFormattingPolicy(TemplateDataContext context, ImportCollector importCollector)
     {
         super(context, importCollector);
     }
 
-    public PythonStructExpressionFormattingPolicy(TemplateDataContext context,
-            ImportCollector importCollector, String accessPrefix)
+    public PythonStructExpressionFormattingPolicy(
+            TemplateDataContext context, ImportCollector importCollector, String accessPrefix)
     {
         super(context, importCollector, accessPrefix);
     }
 
     @Override
-    protected void formatFieldAccessor(StringBuilder result, boolean isFirstInDot, Field field,
-            boolean isSetter)
+    protected void formatFieldAccessor(
+            StringBuilder result, boolean isFirstInDot, Field field, boolean isSetter)
     {
         if (isFirstInDot && !isSetter)
         {

@@ -86,8 +86,9 @@ public final class NativeTypeInfoTemplateData
             TypeReference typeReference) throws ZserioExtensionException
     {
         typeFullName = PythonFullNameFormatter.getFullName(pythonNativeType);
-        final PythonNativeType pythonNativeBaseType = (pythonNativeType instanceof NativeSubtype) ?
-                ((NativeSubtype)pythonNativeType).getNativeTargetBaseType() : pythonNativeType;
+        final PythonNativeType pythonNativeBaseType = (pythonNativeType instanceof NativeSubtype)
+                ? ((NativeSubtype)pythonNativeType).getNativeTargetBaseType()
+                : pythonNativeType;
         isBuiltin = pythonNativeBaseType instanceof NativeBuiltinType;
         final ZserioType baseType = typeReference.getBaseTypeReference().getType();
         isBytes = baseType instanceof BytesType;
@@ -104,9 +105,9 @@ public final class NativeTypeInfoTemplateData
         }
         else
         {
-            hashCodeFunc = (typeInstantiation != null) ?
-                    RuntimeFunctionDataCreator.createHashCodeData(typeInstantiation) :
-                    RuntimeFunctionDataCreator.createHashCodeData(typeReference);
+            hashCodeFunc = (typeInstantiation != null)
+                    ? RuntimeFunctionDataCreator.createHashCodeData(typeInstantiation)
+                    : RuntimeFunctionDataCreator.createHashCodeData(typeReference);
         }
     }
 

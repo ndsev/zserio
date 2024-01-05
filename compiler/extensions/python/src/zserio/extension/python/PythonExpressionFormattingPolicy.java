@@ -11,11 +11,11 @@ import zserio.ast.Function;
 import zserio.ast.Package;
 import zserio.ast.Parameter;
 import zserio.ast.ZserioType;
+import zserio.extension.common.DefaultExpressionFormattingPolicy;
+import zserio.extension.common.ExpressionFormattingPolicy;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.python.symbols.PythonNativeSymbol;
 import zserio.extension.python.types.PythonNativeType;
-import zserio.extension.common.ExpressionFormattingPolicy;
-import zserio.extension.common.DefaultExpressionFormattingPolicy;
 
 /**
  * Expression formatting policy for Python generator.
@@ -29,8 +29,8 @@ class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
         this(context, importCollector, PYTHON_SELF_PREFIX);
     }
 
-    public PythonExpressionFormattingPolicy(TemplateDataContext context, ImportCollector importCollector,
-            String accessPrefix)
+    public PythonExpressionFormattingPolicy(
+            TemplateDataContext context, ImportCollector importCollector, String accessPrefix)
     {
         this.context = context;
         this.importCollector = importCollector;
@@ -121,8 +121,8 @@ class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
         }
         else if (!(resolvedSymbol instanceof Package))
         {
-            formatSymbolIdentifier(result, symbol, expr.isMostLeftId(), resolvedSymbol,
-                    expr.getExprZserioType(), isSetter);
+            formatSymbolIdentifier(
+                    result, symbol, expr.isMostLeftId(), resolvedSymbol, expr.getExprZserioType(), isSetter);
         }
 
         return result.toString();
@@ -355,8 +355,8 @@ class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
         return accessPrefix;
     }
 
-    protected void formatFieldAccessor(StringBuilder result, boolean isMostLeftId, Field field,
-            boolean isSetter)
+    protected void formatFieldAccessor(
+            StringBuilder result, boolean isMostLeftId, Field field, boolean isSetter)
     {
         if (isMostLeftId)
             result.append(getAccessPrefix());
@@ -378,7 +378,6 @@ class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
             result.append(getAccessPrefix());
 
         result.append(AccessorNameFormatter.getPropertyName(param));
-
     }
 
     private void formatEnumItem(StringBuilder result, boolean isMostLeftId, EnumItem enumItem,
@@ -477,8 +476,8 @@ class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
 
     private static final class TernaryExpressionFormattingPython extends TernaryExpressionFormatting
     {
-        public TernaryExpressionFormattingPython(Expression expression,
-                String beforeOperand1, String afterOperand1, String afterOperand2, String afterOperand3)
+        public TernaryExpressionFormattingPython(Expression expression, String beforeOperand1,
+                String afterOperand1, String afterOperand2, String afterOperand3)
         {
             super(expression, beforeOperand1, afterOperand1, afterOperand2, afterOperand3);
         }

@@ -32,7 +32,7 @@ final class PythonTopLevelPackageClashChecker extends DefaultTreeWalker
             {
                 ZserioToolPrinter.printError(pkg.getLocation(),
                         "Top level package '" + topLevelId + "' clashes with Python '" + TYPING_MODULE +
-                        "' module which is used by generated code.");
+                                "' module which is used by generated code.");
                 throw new ZserioExtensionException("Top level package clash detected!");
             }
         }

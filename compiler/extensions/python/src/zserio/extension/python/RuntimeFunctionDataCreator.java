@@ -72,8 +72,8 @@ class RuntimeFunctionDataCreator
         final RuntimeFunctionTemplateData templateData = visitor.getTemplateData();
         if (templateData == null)
         {
-            throw new ZserioExtensionException("Cannot map type '" + typeReference.getType().getName() +
-                    "' in createHashCodeData!");
+            throw new ZserioExtensionException(
+                    "Cannot map type '" + typeReference.getType().getName() + "' in createHashCodeData!");
         }
 
         return templateData;

@@ -30,13 +30,13 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
         final Iterable<ChoiceCase> choiceCases = choiceType.getChoiceCases();
         for (ChoiceCase choiceCase : choiceCases)
         {
-            caseMemberList.add(new CaseMember(
-                    context, choiceType, choiceCase, pythonExpressionFormatter, this));
+            caseMemberList.add(
+                    new CaseMember(context, choiceType, choiceCase, pythonExpressionFormatter, this));
         }
 
         final ChoiceDefault choiceDefault = choiceType.getChoiceDefault();
-        defaultMember = (choiceDefault == null) ? null:
-                new DefaultMember(context, choiceType, choiceDefault, this);
+        defaultMember =
+                (choiceDefault == null) ? null : new DefaultMember(context, choiceType, choiceDefault, this);
 
         isDefaultUnreachable = choiceType.isChoiceDefaultUnreachable();
     }
@@ -65,7 +65,7 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
     {
         public CaseMember(TemplateDataContext context, ChoiceType choiceType, ChoiceCase choiceCase,
                 ExpressionFormatter expressionFormatter, ImportCollector importCollector)
-                        throws ZserioExtensionException
+                throws ZserioExtensionException
         {
             expressionList = new ArrayList<String>();
             final Iterable<ChoiceCaseExpression> caseExpressions = choiceCase.getExpressions();
@@ -73,8 +73,9 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
                 expressionList.add(expressionFormatter.formatGetter(caseExpression.getExpression()));
 
             final Field fieldType = choiceCase.getField();
-            compoundField = (fieldType != null) ?
-                    new CompoundFieldTemplateData(context, choiceType, fieldType, importCollector) : null;
+            compoundField = (fieldType != null)
+                    ? new CompoundFieldTemplateData(context, choiceType, fieldType, importCollector)
+                    : null;
         }
 
         public Iterable<String> getExpressionList()
@@ -97,8 +98,9 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
                 ImportCollector importCollector) throws ZserioExtensionException
         {
             final Field fieldType = choiceDefault.getField();
-            compoundField = (fieldType != null) ?
-                    new CompoundFieldTemplateData(context, choiceType, fieldType, importCollector) : null;
+            compoundField = (fieldType != null)
+                    ? new CompoundFieldTemplateData(context, choiceType, fieldType, importCollector)
+                    : null;
         }
 
         public CompoundFieldTemplateData getCompoundField()

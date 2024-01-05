@@ -9,8 +9,8 @@ import zserio.extension.common.PackedTypesCollector;
  */
 public final class StructTemplateDataContext extends TemplateDataContext
 {
-    public StructTemplateDataContext(PythonExtensionParameters pythonParameters,
-            PackedTypesCollector packedTypesCollector)
+    public StructTemplateDataContext(
+            PythonExtensionParameters pythonParameters, PackedTypesCollector packedTypesCollector)
     {
         super(pythonParameters, packedTypesCollector);
     }
@@ -25,8 +25,9 @@ public final class StructTemplateDataContext extends TemplateDataContext
 
     public ExpressionFormatter getPythonOwnerIndirectExpressionFormatter(ImportCollector importCollector)
     {
-        final ExpressionFormattingPolicy expressionFormattingPolicy = new PythonStructExpressionFormattingPolicy(
-                this, importCollector, TemplateDataContext.PYTHON_OWNER_PREFIX);
+        final ExpressionFormattingPolicy expressionFormattingPolicy =
+                new PythonStructExpressionFormattingPolicy(
+                        this, importCollector, TemplateDataContext.PYTHON_OWNER_PREFIX);
 
         return new ExpressionFormatter(expressionFormattingPolicy);
     }

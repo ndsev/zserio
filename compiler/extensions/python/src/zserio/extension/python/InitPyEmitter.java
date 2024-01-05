@@ -56,5 +56,5 @@ final class InitPyEmitter extends PythonDefaultEmitter
 
     private static final String INIT_PY_TEMPLATE = "__init__.py.ftl";
     private static final String INIT_PY_FILENAME_ROOT = "__init__";
-    private final Set<PackageName> processedPackages= new HashSet<PackageName>();
+    private final Set<PackageName> processedPackages = new HashSet<PackageName>();
 }

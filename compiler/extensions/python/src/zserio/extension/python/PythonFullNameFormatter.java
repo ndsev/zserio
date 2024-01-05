@@ -11,8 +11,8 @@ public final class PythonFullNameFormatter
 {
     public static String getFullName(PythonNativeSymbol symbol)
     {
-        return StringJoinUtil.joinStrings(getFullName(symbol.getPackageName()),
-                symbol.getModuleName(), symbol.getName(), PYTHON_PACKAGE_SEPARATOR);
+        return StringJoinUtil.joinStrings(getFullName(symbol.getPackageName()), symbol.getModuleName(),
+                symbol.getName(), PYTHON_PACKAGE_SEPARATOR);
     }
 
     public static String getModuleFullName(PackageName packageName, String moduleName)

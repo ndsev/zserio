@@ -97,8 +97,8 @@ final class PythonNativeMapper
 
         final PythonNativeType nativeType = visitor.getPythonType();
         if (nativeType == null)
-            throw new ZserioExtensionException("Unhandled type '" + type.getClass().getName() +
-                    "' in PythonNativeMapper!");
+            throw new ZserioExtensionException(
+                    "Unhandled type '" + type.getClass().getName() + "' in PythonNativeMapper!");
 
         return nativeType;
     }

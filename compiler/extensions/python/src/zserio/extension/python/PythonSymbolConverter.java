@@ -17,7 +17,8 @@ public final class PythonSymbolConverter
 
     public static String enumItemToSymbol(String enumItemName, boolean isRemoved)
     {
-        return isRemoved ? REMOVED_ENUMERATOR_PREFIX + toUpperSnakeCase(enumItemName) : toUpperSnakeCase(enumItemName);
+        return isRemoved ? REMOVED_ENUMERATOR_PREFIX + toUpperSnakeCase(enumItemName)
+                         : toUpperSnakeCase(enumItemName);
     }
 
     public static String bitmaskValueToSymbol(String bitmaskValueName)

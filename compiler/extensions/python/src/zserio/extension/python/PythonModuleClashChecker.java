@@ -136,9 +136,10 @@ final class PythonModuleClashChecker extends DefaultTreeWalker
 
             ZserioToolPrinter.printError(packageSymbol.getLocation(),
                     "Module '" + moduleName + "' generated for package symbol '" + packageSymbol.getName() +
-                    "' clashes with module generated for package symbol '" + clashingPackageSymbol.getName() +
-                    "' defined at " + clashingPackageSymbol.getLocation().getLine() + ":" +
-                    clashingPackageSymbol.getLocation().getColumn() + "!");
+                            "' clashes with module generated for package symbol '" +
+                            clashingPackageSymbol.getName() + "' defined at " +
+                            clashingPackageSymbol.getLocation().getLine() + ":" +
+                            clashingPackageSymbol.getLocation().getColumn() + "!");
             throw new ZserioExtensionException("Module name clashing detected!");
         }
     }
@@ -157,7 +158,7 @@ final class PythonModuleClashChecker extends DefaultTreeWalker
                 {
                     ZserioToolPrinter.printError(instantiationReference.getLocation(),
                             "    In instantiation of '" + instantiationReference.getReferencedTypeName() +
-                            "' required from here");
+                                    "' required from here");
                 }
             }
         }
