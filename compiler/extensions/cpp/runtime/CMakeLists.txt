@@ -101,7 +101,7 @@ clang_format_add_custom_target(ZserioCppRuntime-clang-format
                                 "${CMAKE_CURRENT_SOURCE_DIR}/src/zserio/*.h"
                                 "${CMAKE_CURRENT_SOURCE_DIR}/test/zserio/*.cpp"
                                 "${CMAKE_CURRENT_SOURCE_DIR}/test/zserio/*.h"
-                             CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/.clang-format"
+                             CONFIG_FILE "${ZSERIO_PROJECT_ROOT}/.clang-format"
                              WERROR ON)
 
 # add cppcheck custom command

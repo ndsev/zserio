@@ -54,7 +54,7 @@ function(clang_format_add_custom_target CLANG_FORMAT_TARGET)
                     -DWERROR="${CLANG_FORMAT_WERROR}"
                     -P ${CMAKE_MODULE_PATH}/clang_format_tool.cmake
                 COMMAND "${CMAKE_COMMAND}" -E touch "${CLANG_FORMAT_FILE_STAMP}"
-                DEPENDS ${SOURCE_FILE}
+                DEPENDS ${SOURCE_FILE} ${CLANG_FORMAT_CONFIG_FILE}
                 COMMENT "Running clang-format on ${SOURCE_FILE}")
             list(APPEND CLANG_FORMAT_FILE_STAMPS "${CLANG_FORMAT_FILE_STAMP}")
             math(EXPR INDEX "${INDEX} + 1")

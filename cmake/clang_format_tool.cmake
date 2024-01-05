@@ -25,6 +25,6 @@ execute_process(
 if (NOT ${CLANG_FORMAT_RESULT} EQUAL 0)
     message(NOTICE "Command hints to reformat source using clang-format tool:")
     message(NOTICE "    git clang-format")
-    message(NOTICE "    clang-format --style=file -i ${SOURCE}")
+    message(NOTICE "    clang-format --style=file:${CONFIG_FILE} -i ${SOURCE}")
     message(FATAL_ERROR "Clang Format Tool failed!")
 endif ()

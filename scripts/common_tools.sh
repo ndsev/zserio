@@ -26,6 +26,13 @@ set_global_common_variables()
         stderr_echo "Cannot find java! Set JAVA_HOME or JAVA_BIN environment variable."
         return 1
     fi
+
+    # clang-format binary to use for formatting check, by default is empty
+    CLANG_FORMAT_BIN="${CLANG_FORMAT_BIN:-""}"
+    if [[ (! -z "${CLANG_FORMAT_BIN}" && ! -f "`which "${CLANG_FORMAT_BIN}"`") ]] ; then
+        stderr_echo "Provided CLANG_FORMAT_BIN=\"${CLANG_FORMAT_BIN}\" does not exist!"
+        return 1
+    fi
 }
 
 # Set and check global variables for Java projects.
@@ -126,13 +133,6 @@ set_global_cpp_variables()
     CLANG_TIDY_BIN="${CLANG_TIDY_BIN:-""}"
     if [[ (! -z "${CLANG_TIDY_BIN}" && ! -f "`which "${CLANG_TIDY_BIN}"`") ]] ; then
         stderr_echo "Provided CLANG_TIDY_BIN=\"${CLANG_TIDY_BIN}\" does not exist!"
-        return 1
-    fi
-
-    # clang-format binary to use for formatting check, by default is empty
-    CLANG_FORMAT_BIN="${CLANG_FORMAT_BIN:-""}"
-    if [[ (! -z "${CLANG_FORMAT_BIN}" && ! -f "`which "${CLANG_FORMAT_BIN}"`") ]] ; then
-        stderr_echo "Provided CLANG_FORMAT_BIN=\"${CLANG_FORMAT_BIN}\" does not exist!"
         return 1
     fi
 
@@ -748,6 +748,10 @@ compile_java()
     local MSYS_WORKAROUND_TEMP=("${!1}"); shift
     local ANT_PROPS=("${MSYS_WORKAROUND_TEMP[@]}")
     local ANT_TARGET="$1"; shift
+
+    if [ -n "${CLANG_FORMAT_BIN}" ] ; then
+        ANT_PROPS+=("-Dclang_format.exe_file=${CLANG_FORMAT_BIN}")
+    fi
 
     if [ -n "${SPOTBUGS_HOME}" ] ; then
         ANT_PROPS+=("-Dspotbugs.home_dir=${SPOTBUGS_HOME}")

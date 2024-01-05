@@ -30,7 +30,7 @@ jobs:
             java-version: "17"
             gcc-version: "7"
             clang-version: "11"
-          # Ubuntu 22.04, gcc 11 with gcovr, Clang 14
+          # Ubuntu 22.04, gcc 11 with gcovr, Clang 14 (needed for clang-format and clang-tidy)
           - os: "ubuntu-22.04"
             python-version: "3.8"
             java-version: "8"
@@ -85,6 +85,9 @@ jobs:
       run: |
         sudo apt-get install clang-${{matrix.clang-version}}
         sudo apt-get install llvm-${{matrix.clang-version}}
+        if [ -f "`which clang-format-14`" ] ; then
+           echo "CLANG_FORMAT_BIN=clang-format-14" >> ${GITHUB_ENV}
+        fi
 
     - name: Install dependencies
       run: sudo apt-get install cmake doxygen graphviz g++-multilib
@@ -126,7 +129,6 @@ jobs:
       run: |
         if [ -f "`which clang-tidy-14`" ] ; then
            export CLANG_TIDY_BIN=clang-tidy-14
-           export CLANG_FORMAT_BIN=clang-format-14
         fi
         # gcovr works only for default gcc version
         if [[ `gcc --version` == *" ${{matrix.gcc-version}}."* ]] ; then
@@ -155,7 +157,6 @@ jobs:
       run: |
         if [ -f "`which clang-tidy-14`" ] ; then
            export CLANG_TIDY_BIN=clang-tidy-14
-           export CLANG_FORMAT_BIN=clang-format-14
         fi
         scripts/test.sh cpp-linux32-gcc cpp-linux64-gcc cpp-linux64-clang
       env:
