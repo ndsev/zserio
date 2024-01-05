@@ -1,10 +1,11 @@
 package zserio.extension.cpp;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+
+import zserio.ast.ServiceMethod;
 import zserio.ast.ServiceType;
 import zserio.ast.TypeReference;
-import zserio.ast.ServiceMethod;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.types.CppNativeType;
 

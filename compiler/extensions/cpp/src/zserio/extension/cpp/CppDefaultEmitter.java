@@ -52,15 +52,15 @@ abstract class CppDefaultEmitter extends DefaultTreeWalker
     protected void processHeaderTemplate(String templateName, Object templateData, ZserioType zserioType)
             throws ZserioExtensionException
     {
-        processHeaderTemplate(templateName, templateData, zserioType.getPackage().getPackageName(),
-                zserioType.getName());
+        processHeaderTemplate(
+                templateName, templateData, zserioType.getPackage().getPackageName(), zserioType.getName());
     }
 
     protected void processHeaderTemplate(String templateName, Object templateData,
             PackageName zserioPackageName, String outFileName) throws ZserioExtensionException
     {
-        processTemplate(templateName, templateData, zserioPackageName, outFileName, CPP_HEADER_EXTENSION,
-                false);
+        processTemplate(
+                templateName, templateData, zserioPackageName, outFileName, CPP_HEADER_EXTENSION, false);
     }
 
     protected TemplateDataContext getTemplateDataContext()
@@ -90,7 +90,7 @@ abstract class CppDefaultEmitter extends DefaultTreeWalker
 
     private void processTemplate(String templateName, Object templateData, PackageName packageName,
             String outFileNameRoot, String outputExtension, boolean requestAmalgamate)
-                    throws ZserioExtensionException
+            throws ZserioExtensionException
     {
         final File outDir = new File(cppParameters.getOutputDir(), packageName.toFilesystemPath());
         final boolean amalgamate = (getWithSourcesAmalgamation() && requestAmalgamate);
@@ -112,8 +112,8 @@ abstract class CppDefaultEmitter extends DefaultTreeWalker
             // else seen for the first time, normally generate
         }
 
-        final boolean generate = !outputFileManager.checkTimestamps(outputFile) ||
-                !checkGeneratorDescription(outputFile);
+        final boolean generate =
+                !outputFileManager.checkTimestamps(outputFile) || !checkGeneratorDescription(outputFile);
         if (generate)
         {
             FreeMarkerUtil.processTemplate(
@@ -128,7 +128,7 @@ abstract class CppDefaultEmitter extends DefaultTreeWalker
         try (final Stream<String> lines = Files.lines(outputFile.toPath()))
         {
             final String[] generatorDescriptionCandidate =
-                    lines.limit(generatorDescription.length).toArray(String[]::new);
+                    lines.limit(generatorDescription.length).toArray(String[] ::new);
             return Arrays.equals(generatorDescription, generatorDescriptionCandidate);
         }
         catch (IOException e)
@@ -141,13 +141,14 @@ abstract class CppDefaultEmitter extends DefaultTreeWalker
     {
         // strip possible directory
         final int lastSlashIndex = packageSourceFileName.lastIndexOf(File.separatorChar);
-        final String sourceFileName = (lastSlashIndex == -1) ? packageSourceFileName :
-                packageSourceFileName.substring(lastSlashIndex + 1);
+        final String sourceFileName = (lastSlashIndex == -1)
+                ? packageSourceFileName
+                : packageSourceFileName.substring(lastSlashIndex + 1);
 
         // strip extensions from source file name
         final int firstDotIndex = sourceFileName.indexOf('.');
-        final String sourceFileNameRoot = (firstDotIndex == -1) ? sourceFileName :
-                sourceFileName.substring(0, firstDotIndex);
+        final String sourceFileNameRoot =
+                (firstDotIndex == -1) ? sourceFileName : sourceFileName.substring(0, firstDotIndex);
 
         // convert main part of source file name to camel case
         final String[] words = sourceFileNameRoot.split("_");
@@ -156,8 +157,8 @@ abstract class CppDefaultEmitter extends DefaultTreeWalker
         {
             if (!word.isEmpty())
             {
-                builder.append(Character.toString(word.charAt(0)).toUpperCase(Locale.ENGLISH) +
-                        word.substring(1));
+                builder.append(
+                        Character.toString(word.charAt(0)).toUpperCase(Locale.ENGLISH) + word.substring(1));
             }
         }
 

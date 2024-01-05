@@ -9,7 +9,6 @@ import zserio.ast.AstNode;
 import zserio.ast.BitmaskType;
 import zserio.ast.BitmaskValue;
 import zserio.ast.Constant;
-import zserio.ast.ZserioType;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
@@ -17,6 +16,7 @@ import zserio.ast.Field;
 import zserio.ast.Function;
 import zserio.ast.Package;
 import zserio.ast.Parameter;
+import zserio.ast.ZserioType;
 import zserio.extension.common.DefaultExpressionFormattingPolicy;
 import zserio.extension.common.StringEscapeConverter;
 import zserio.extension.common.ZserioExtensionException;
@@ -314,8 +314,8 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
         if (literalValue.compareTo(BigInteger.valueOf(maxAbsIntValue)) > 0)
         {
             // long long value
-            literalSuffix = (isNegative) ? CPP_SIGNED_LONG_LONG_LITERAL_SUFFIX :
-                CPP_UNSIGNED_LONG_LONG_LITERAL_SUFFIX;
+            literalSuffix =
+                    (isNegative) ? CPP_SIGNED_LONG_LONG_LITERAL_SUFFIX : CPP_UNSIGNED_LONG_LONG_LITERAL_SUFFIX;
         }
 
         return literalSuffix;

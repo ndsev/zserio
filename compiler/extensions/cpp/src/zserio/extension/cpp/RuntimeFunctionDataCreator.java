@@ -2,17 +2,17 @@ package zserio.extension.cpp;
 
 import zserio.ast.BooleanType;
 import zserio.ast.BytesType;
-import zserio.ast.DynamicBitFieldType;
 import zserio.ast.DynamicBitFieldInstantiation;
+import zserio.ast.DynamicBitFieldType;
 import zserio.ast.ExternType;
 import zserio.ast.FixedBitFieldType;
-import zserio.ast.TypeInstantiation;
-import zserio.ast.TypeReference;
-import zserio.ast.ZserioAstDefaultVisitor;
 import zserio.ast.FloatType;
 import zserio.ast.StdIntegerType;
 import zserio.ast.StringType;
+import zserio.ast.TypeInstantiation;
+import zserio.ast.TypeReference;
 import zserio.ast.VarIntegerType;
+import zserio.ast.ZserioAstDefaultVisitor;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 
@@ -22,9 +22,9 @@ import zserio.extension.common.ZserioExtensionException;
  */
 public final class RuntimeFunctionDataCreator
 {
-    public static RuntimeFunctionTemplateData createData(TemplateDataContext context,
-            TypeInstantiation typeInstantiation, IncludeCollector includeCollector)
-                    throws ZserioExtensionException
+    public static RuntimeFunctionTemplateData createData(
+            TemplateDataContext context, TypeInstantiation typeInstantiation, IncludeCollector includeCollector)
+            throws ZserioExtensionException
     {
         if (typeInstantiation instanceof DynamicBitFieldInstantiation)
         {
@@ -72,8 +72,8 @@ public final class RuntimeFunctionDataCreator
         final RuntimeFunctionTemplateData templateData = visitor.getTemplateData();
         if (templateData == null)
         {
-            throw new ZserioExtensionException("Cannot map type '" + typeReference.getType().getName() +
-                    "' in createTypeInfoData!");
+            throw new ZserioExtensionException(
+                    "Cannot map type '" + typeReference.getType().getName() + "' in createTypeInfoData!");
         }
 
         return templateData;
@@ -85,7 +85,7 @@ public final class RuntimeFunctionDataCreator
         final DynamicBitFieldType type = instantiation.getBaseType();
         final String suffix = getSuffixForIntegralType(instantiation.getMaxBitSize(), type.isSigned());
         final String arg = "static_cast<uint8_t>(" +
-                    cppExpressionFormatter.formatGetter(instantiation.getLengthExpression()) + ")";
+                cppExpressionFormatter.formatGetter(instantiation.getLengthExpression()) + ")";
         return new RuntimeFunctionTemplateData(suffix, arg);
     }
 
@@ -238,8 +238,8 @@ public final class RuntimeFunctionDataCreator
         public static RuntimeFunctionTemplateData mapDynamicBitFieldType(
                 DynamicBitFieldInstantiation instantiation) throws ZserioExtensionException
         {
-            return mapDynamicBitFieldType(instantiation.getBaseType().isSigned(),
-                    instantiation.getMaxBitSize());
+            return mapDynamicBitFieldType(
+                    instantiation.getBaseType().isSigned(), instantiation.getMaxBitSize());
         }
 
         private static RuntimeFunctionTemplateData mapDynamicBitFieldType(boolean isSigned, int numBits)
@@ -264,8 +264,8 @@ public final class RuntimeFunctionDataCreator
                 suffix.append("Unsigned");
             suffix.append("BitField");
 
-            return new RuntimeFunctionTemplateData(suffix.toString(),
-                    CppLiteralFormatter.formatUInt8Literal(numBits));
+            return new RuntimeFunctionTemplateData(
+                    suffix.toString(), CppLiteralFormatter.formatUInt8Literal(numBits));
         }
     }
 }

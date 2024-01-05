@@ -18,17 +18,17 @@ public final class TemplateInstantiationTemplateData
 {
     public TemplateInstantiationTemplateData(TemplateDataContext context, ZserioTemplatableType template,
             List<TemplateArgument> templateArguments, IncludeCollector includeCollector)
-                    throws ZserioExtensionException
+            throws ZserioExtensionException
     {
         templateName = ZserioTypeUtil.getFullName(template);
         templateArgumentTypeInfos = new ArrayList<NativeTypeInfoTemplateData>();
         final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
         for (TemplateArgument templateArgument : templateArguments)
         {
-            final CppNativeType argumentNativeType = cppNativeMapper.getCppType(
-                    templateArgument.getTypeReference());
-            templateArgumentTypeInfos.add(new NativeTypeInfoTemplateData(
-                    argumentNativeType, templateArgument.getTypeReference()));
+            final CppNativeType argumentNativeType =
+                    cppNativeMapper.getCppType(templateArgument.getTypeReference());
+            templateArgumentTypeInfos.add(
+                    new NativeTypeInfoTemplateData(argumentNativeType, templateArgument.getTypeReference()));
             if (context.getWithTypeInfoCode())
             {
                 // includes of template arguments types are needed only in typeInfo
@@ -47,9 +47,9 @@ public final class TemplateInstantiationTemplateData
         return templateArgumentTypeInfos;
     }
 
-    static TemplateInstantiationTemplateData create(TemplateDataContext context,
-            ZserioTemplatableType templatable, IncludeCollector includeCollector)
-                    throws ZserioExtensionException
+    static TemplateInstantiationTemplateData create(
+            TemplateDataContext context, ZserioTemplatableType templatable, IncludeCollector includeCollector)
+            throws ZserioExtensionException
     {
         if (templatable.getTemplate() == null)
             return null;

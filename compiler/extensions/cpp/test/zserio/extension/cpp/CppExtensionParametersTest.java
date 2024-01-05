@@ -21,8 +21,8 @@ public class CppExtensionParametersTest
         final boolean withReflectionCode = false;
         final boolean withWriterCode = false;
         final boolean withTypeInfoCode = false;
-        final TestExtensionParameters extensionParameters = new TestExtensionParameters(setCppAllocator,
-                withReflectionCode, withWriterCode, withTypeInfoCode);
+        final TestExtensionParameters extensionParameters = new TestExtensionParameters(
+                setCppAllocator, withReflectionCode, withWriterCode, withTypeInfoCode);
         assertThrows(ZserioExtensionException.class, () -> CppExtensionParameters.check(extensionParameters));
     }
 
@@ -33,8 +33,8 @@ public class CppExtensionParametersTest
         final boolean withReflectionCode = false;
         final boolean withWriterCode = false;
         final boolean withTypeInfoCode = false;
-        final TestExtensionParameters extensionParameters = new TestExtensionParameters(setCppAllocator,
-                withReflectionCode, withWriterCode, withTypeInfoCode);
+        final TestExtensionParameters extensionParameters = new TestExtensionParameters(
+                setCppAllocator, withReflectionCode, withWriterCode, withTypeInfoCode);
         assertDoesNotThrow(() -> CppExtensionParameters.check(extensionParameters));
     }
 
@@ -45,8 +45,8 @@ public class CppExtensionParametersTest
         final boolean withReflectionCode = false;
         final boolean withWriterCode = false;
         final boolean withTypeInfoCode = false;
-        final TestExtensionParameters extensionParameters = new TestExtensionParameters(setCppAllocator,
-                withReflectionCode, withWriterCode, withTypeInfoCode);
+        final TestExtensionParameters extensionParameters = new TestExtensionParameters(
+                setCppAllocator, withReflectionCode, withWriterCode, withTypeInfoCode);
         assertDoesNotThrow(() -> CppExtensionParameters.check(extensionParameters));
     }
 
@@ -57,8 +57,8 @@ public class CppExtensionParametersTest
         final boolean withReflectionCode = true;
         final boolean withWriterCode = true;
         final boolean withTypeInfoCode = true;
-        final TestExtensionParameters extensionParameters = new TestExtensionParameters(setCppAllocator,
-                withReflectionCode, withWriterCode, withTypeInfoCode);
+        final TestExtensionParameters extensionParameters = new TestExtensionParameters(
+                setCppAllocator, withReflectionCode, withWriterCode, withTypeInfoCode);
         assertDoesNotThrow(() -> CppExtensionParameters.check(extensionParameters));
     }
 
@@ -69,8 +69,8 @@ public class CppExtensionParametersTest
         final boolean withReflectionCode = true;
         final boolean withWriterCode = true;
         final boolean withTypeInfoCode = false;
-        final TestExtensionParameters extensionParameters = new TestExtensionParameters(setCppAllocator,
-                withReflectionCode, withWriterCode, withTypeInfoCode);
+        final TestExtensionParameters extensionParameters = new TestExtensionParameters(
+                setCppAllocator, withReflectionCode, withWriterCode, withTypeInfoCode);
         assertThrows(ZserioExtensionException.class, () -> CppExtensionParameters.check(extensionParameters));
     }
 

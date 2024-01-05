@@ -16,7 +16,7 @@ public final class NativeStringViewType extends NativeRuntimeType
 
     public String formatLiteral(String value)
     {
-        return CppFullNameFormatter.getFullName(getPackageName(), "makeStringView") +
-                "(" + CppLiteralFormatter.formatStringLiteral(value) + ")";
+        return CppFullNameFormatter.getFullName(getPackageName(), "makeStringView") + "(" +
+                CppLiteralFormatter.formatStringLiteral(value) + ")";
     }
 }

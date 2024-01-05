@@ -28,9 +28,9 @@ public final class CppExtension implements Extension
     @Override
     public String getExtensionVersion()
     {
-        return CppExtensionVersion.CPP_EXTENSION_VERSION_STRING +
-                " (BIN " + CppExtensionVersion.BIN_VERSION_STRING +
-                ", JSON " + CppExtensionVersion.JSON_VERSION_STRING + ")";
+        return CppExtensionVersion.CPP_EXTENSION_VERSION_STRING + " (BIN " +
+                CppExtensionVersion.BIN_VERSION_STRING + ", JSON " + CppExtensionVersion.JSON_VERSION_STRING +
+                ")";
     }
 
     @Override
@@ -91,27 +91,96 @@ public final class CppExtension implements Extension
         emitters.add(new PubsubEmitter(outputFileManager, cppParameters, packedTypesCollector));
 
         // emit C++ code
-        for (CppDefaultEmitter emitter: emitters)
+        for (CppDefaultEmitter emitter : emitters)
             rootNode.walk(emitter);
 
         outputFileManager.printReport();
     }
 
-    private static final String[] CPP_KEYWORDS = new String[]
-    {
-        "alignas",   "alignof",          "and",          "and_eq",   "asm",       "auto",
-        "bitand",    "bitor",            "bool",         "break",    "case",      "catch",
-        "char",      "char16_t",         "char32_t",     "class",    "compl",     "const",
-        "constexpr", "const_cast",       "continue",     "decltype", "default",   "delete",
-        "do",        "double",           "dynamic_cast", "else",     "enum",      "explicit",
-        "export",    "extern",           "false",        "float",    "for",       "friend",
-        "goto",      "if",               "inline",       "int",      "long",      "mutable",
-        "namespace", "new",              "noexcept",     "not",      "not_eq",    "nullptr",
-        "operator",  "or",               "or_eq",        "private",  "protected", "public",
-        "register",  "reinterpret_cast", "return",       "short",    "signed",    "sizeof",
-        "static",    "static_assert",    "static_cast",  "struct",   "switch",    "template",
-        "this",      "thread_local",     "throw",        "true",     "try",       "typedef",
-        "typeid",    "typename",         "union",        "unsigned", "using",     "virtual",
-        "void",      "volatile",         "wchar_t",      "while",    "xor",       "xor_eq",
+    private static final String[] CPP_KEYWORDS = new String[] {
+            "alignas",
+            "alignof",
+            "and",
+            "and_eq",
+            "asm",
+            "auto",
+            "bitand",
+            "bitor",
+            "bool",
+            "break",
+            "case",
+            "catch",
+            "char",
+            "char16_t",
+            "char32_t",
+            "class",
+            "compl",
+            "const",
+            "constexpr",
+            "const_cast",
+            "continue",
+            "decltype",
+            "default",
+            "delete",
+            "do",
+            "double",
+            "dynamic_cast",
+            "else",
+            "enum",
+            "explicit",
+            "export",
+            "extern",
+            "false",
+            "float",
+            "for",
+            "friend",
+            "goto",
+            "if",
+            "inline",
+            "int",
+            "long",
+            "mutable",
+            "namespace",
+            "new",
+            "noexcept",
+            "not",
+            "not_eq",
+            "nullptr",
+            "operator",
+            "or",
+            "or_eq",
+            "private",
+            "protected",
+            "public",
+            "register",
+            "reinterpret_cast",
+            "return",
+            "short",
+            "signed",
+            "sizeof",
+            "static",
+            "static_assert",
+            "static_cast",
+            "struct",
+            "switch",
+            "template",
+            "this",
+            "thread_local",
+            "throw",
+            "true",
+            "try",
+            "typedef",
+            "typeid",
+            "typename",
+            "union",
+            "unsigned",
+            "using",
+            "virtual",
+            "void",
+            "volatile",
+            "wchar_t",
+            "while",
+            "xor",
+            "xor_eq",
     };
 }

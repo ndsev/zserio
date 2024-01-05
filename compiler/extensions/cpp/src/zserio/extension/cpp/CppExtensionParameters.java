@@ -156,11 +156,11 @@ public final class CppExtensionParameters
         options.addOptionGroup(reflectionGroup);
 
         final OptionGroup sourcesAmalgamationGroup = new OptionGroup();
-        option = new Option(OptionWithSourcesAmalgamation, false,
-                            "enable amalgamation of generated C++ sources (default)");
+        option = new Option(
+                OptionWithSourcesAmalgamation, false, "enable amalgamation of generated C++ sources (default)");
         sourcesAmalgamationGroup.addOption(option);
-        option = new Option(OptionWithoutSourcesAmalgamation, false,
-                            "disable amalgamation of generated C++ sources");
+        option = new Option(
+                OptionWithoutSourcesAmalgamation, false, "disable amalgamation of generated C++ sources");
         sourcesAmalgamationGroup.addOption(option);
         sourcesAmalgamationGroup.setRequired(false);
         options.addOptionGroup(sourcesAmalgamationGroup);

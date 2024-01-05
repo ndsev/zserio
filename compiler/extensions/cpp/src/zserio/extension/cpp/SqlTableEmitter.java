@@ -21,7 +21,8 @@ public final class SqlTableEmitter extends CppDefaultEmitter
     {
         if (getWithSqlCode())
         {
-            final Object tableTemplateData = new SqlTableEmitterTemplateData(getTemplateDataContext(), sqlTableType);
+            final Object tableTemplateData =
+                    new SqlTableEmitterTemplateData(getTemplateDataContext(), sqlTableType);
             processHeaderTemplate(TABLE_TEMPLATE_HEADER_NAME, tableTemplateData, sqlTableType);
             processSourceTemplate(TABLE_TEMPLATE_SOURCE_NAME, tableTemplateData, sqlTableType);
         }

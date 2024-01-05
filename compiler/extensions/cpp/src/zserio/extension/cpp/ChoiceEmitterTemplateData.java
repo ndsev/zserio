@@ -17,7 +17,8 @@ import zserio.extension.common.ZserioExtensionException;
  */
 public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
 {
-    public ChoiceEmitterTemplateData(TemplateDataContext context, ChoiceType choiceType) throws ZserioExtensionException
+    public ChoiceEmitterTemplateData(TemplateDataContext context, ChoiceType choiceType)
+            throws ZserioExtensionException
     {
         super(context, choiceType);
 
@@ -86,8 +87,8 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
 
     public static final class CaseMember
     {
-        public CaseMember(TemplateDataContext context, ChoiceType choiceType,
-                ChoiceCase choiceCaseType, IncludeCollector includeCollector) throws ZserioExtensionException
+        public CaseMember(TemplateDataContext context, ChoiceType choiceType, ChoiceCase choiceCaseType,
+                IncludeCollector includeCollector) throws ZserioExtensionException
         {
             final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(includeCollector);
 
@@ -97,8 +98,9 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
                 expressionList.add(cppExpressionFormatter.formatGetter(caseExpression.getExpression()));
 
             final Field fieldType = choiceCaseType.getField();
-            compoundField = (fieldType != null) ?
-                    new CompoundFieldTemplateData(context, choiceType, fieldType, includeCollector) : null;
+            compoundField = (fieldType != null)
+                    ? new CompoundFieldTemplateData(context, choiceType, fieldType, includeCollector)
+                    : null;
         }
 
         public List<String> getExpressionList()
@@ -117,9 +119,9 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
 
     public static final class DefaultMember
     {
-        public DefaultMember(TemplateDataContext context,
-                ChoiceType choiceType, ChoiceDefault choiceDefaultType,
-                IncludeCollector includeCollector) throws ZserioExtensionException
+        public DefaultMember(TemplateDataContext context, ChoiceType choiceType,
+                ChoiceDefault choiceDefaultType, IncludeCollector includeCollector)
+                throws ZserioExtensionException
         {
             final Field fieldType = choiceDefaultType.getField();
             compoundField = (fieldType != null)

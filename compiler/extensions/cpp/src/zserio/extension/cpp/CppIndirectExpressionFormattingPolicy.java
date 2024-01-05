@@ -6,8 +6,8 @@ package zserio.extension.cpp;
  */
 public final class CppIndirectExpressionFormattingPolicy extends CppExpressionFormattingPolicy
 {
-    public CppIndirectExpressionFormattingPolicy(CppNativeMapper cppNativeMapper,
-            IncludeCollector includeCollector, String compoundTypeAccessPrefix)
+    public CppIndirectExpressionFormattingPolicy(
+            CppNativeMapper cppNativeMapper, IncludeCollector includeCollector, String compoundTypeAccessPrefix)
     {
         super(cppNativeMapper, includeCollector);
         this.compoundTypeAccessPrefix = compoundTypeAccessPrefix;

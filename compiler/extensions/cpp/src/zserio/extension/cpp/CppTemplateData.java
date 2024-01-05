@@ -17,8 +17,8 @@ public abstract class CppTemplateData implements IncludeCollector
     public CppTemplateData(TemplateDataContext context)
     {
         generatorDescription = context.getGeneratorDescription();
-        generatorVersion = new GeneratorVersionTemplateData(context.getGeneratorVersionString(),
-                context.getGeneratorVersionNumber());
+        generatorVersion = new GeneratorVersionTemplateData(
+                context.getGeneratorVersionString(), context.getGeneratorVersionNumber());
 
         withWriterCode = context.getWithWriterCode();
         withValidationCode = context.getWithValidationCode();
@@ -194,8 +194,8 @@ public abstract class CppTemplateData implements IncludeCollector
             final NativeRuntimeAllocType uniquePtrType = nativeMapper.getUniquePtrType();
             uniquePtr = new TemplatedTypeTemplateData(uniquePtrType, uniquePtrType.needsAllocatorArgument());
             final NativeRuntimeAllocType heapOptionalHolderType = nativeMapper.getHeapOptionalHolderType();
-            heapOptionalHolder = new TemplatedTypeTemplateData(heapOptionalHolderType,
-                    heapOptionalHolderType.needsAllocatorArgument());
+            heapOptionalHolder = new TemplatedTypeTemplateData(
+                    heapOptionalHolderType, heapOptionalHolderType.needsAllocatorArgument());
             inplaceOptionalHolder = new TypeTemplateData(nativeMapper.getInplaceOptionalHolderType());
             string = new TypeTemplateData(nativeMapper.getStringType());
             final NativeRuntimeAllocType vectorType = nativeMapper.getVectorType();

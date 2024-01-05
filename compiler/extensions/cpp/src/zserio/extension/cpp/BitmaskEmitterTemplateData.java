@@ -37,8 +37,9 @@ public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
         runtimeFunction = RuntimeFunctionDataCreator.createData(context, bitmaskTypeInstantiation, this);
 
         final BigInteger upperBound = getUpperBound(bitmaskTypeInstantiation);
-        this.upperBound = upperBound.equals(nativeBaseType.getUpperBound()) ? null :
-                nativeBaseType.formatLiteral(upperBound);
+        this.upperBound = upperBound.equals(nativeBaseType.getUpperBound())
+                ? null
+                : nativeBaseType.formatLiteral(upperBound);
 
         final List<BitmaskValue> bitmaskValues = bitmaskType.getValues();
         values = new ArrayList<BitmaskValueData>(bitmaskValues.size());

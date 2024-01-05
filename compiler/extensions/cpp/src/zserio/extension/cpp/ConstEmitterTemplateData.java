@@ -20,8 +20,8 @@ public final class ConstEmitterTemplateData extends CppTemplateData
         super(context);
 
         final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
-        final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(
-                new HeaderIncludeCollectorAdapter(this));
+        final ExpressionFormatter cppExpressionFormatter =
+                context.getExpressionFormatter(new HeaderIncludeCollectorAdapter(this));
 
         final CppNativeSymbol constantNativeSymbol = cppNativeMapper.getCppSymbol(constant);
         packageData = new PackageTemplateData(constantNativeSymbol.getPackageName());

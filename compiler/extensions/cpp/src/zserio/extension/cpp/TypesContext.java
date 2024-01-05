@@ -15,151 +15,138 @@ public final class TypesContext
 
         if (allocator.equals(STD_ALLOCATOR))
         {
-            vector = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "vector",
-                    true, false, "zserio/Vector.h");
-            array = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "Array",
-                    true, false, "zserio/Array.h");
-            string = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "string",
-                    true, false, "zserio/String.h");
-            map = new NativeTypeDefinition(STD_PACKAGE_NAME, "map",
-                    true, false, "map");
-            set = new NativeTypeDefinition(STD_PACKAGE_NAME, "set",
-                    true, false, "set");
-            anyHolder = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "AnyHolder",
-                    true, false, "zserio/AnyHolder.h");
-            uniquePtr = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "unique_ptr",
-                    true, false, "zserio/UniquePtr.h");
-            heapOptionalHolder = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "HeapOptionalHolder",
-                    true, false, "zserio/OptionalHolder.h");
-            bitBuffer = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BitBuffer",
-                    false, false, "zserio/BitBuffer.h");
-            bytesArrayTraits = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BytesArrayTraits",
-                    false, false, "zserio/ArrayTraits.h");
-            stringArrayTraits = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "StringArrayTraits",
-                    false, false, "zserio/ArrayTraits.h");
-            bitBufferArrayTraits = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BitBufferArrayTraits",
-                    false, false, "zserio/ArrayTraits.h");
-            typeInfo = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "ITypeInfo",
-                    false, false, "zserio/ITypeInfo.h");
-            reflectableFactory = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "ReflectableFactory",
-                    false, false, "zserio/Reflectable.h");
-            reflectablePtr = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "IReflectablePtr",
-                    false, false, "zserio/IReflectable.h");
-            reflectableConstPtr = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "IReflectableConstPtr",
-                    false, false, "zserio/IReflectable.h");
-            service = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "IService",
-                    false, false, "zserio/IService.h");
-            serviceClient = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "IServiceClient",
-                    false, false, "zserio/IService.h");
-            serviceDataPtr = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "IServiceDataPtr",
-                    false, false, "zserio/IService.h");
-            reflectableServiceData = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "ReflectableServiceData",
-                    false, false, "zserio/IService.h");
-            objectServiceData = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "ObjectServiceData",
-                    false, false, "zserio/IService.h");
-            rawServiceDataHolder = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "RawServiceDataHolder",
-                    false, false, "zserio/IService.h");
-            rawServiceDataView = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "RawServiceDataView",
-                    false, false, "zserio/IService.h");
+            vector = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "vector", true, false, "zserio/Vector.h");
+            array = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "Array", true, false, "zserio/Array.h");
+            string = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "string", true, false, "zserio/String.h");
+            map = new NativeTypeDefinition(STD_PACKAGE_NAME, "map", true, false, "map");
+            set = new NativeTypeDefinition(STD_PACKAGE_NAME, "set", true, false, "set");
+            anyHolder = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "AnyHolder", true, false, "zserio/AnyHolder.h");
+            uniquePtr = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "unique_ptr", true, false, "zserio/UniquePtr.h");
+            heapOptionalHolder = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "HeapOptionalHolder", true, false, "zserio/OptionalHolder.h");
+            bitBuffer = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "BitBuffer", false, false, "zserio/BitBuffer.h");
+            bytesArrayTraits = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "BytesArrayTraits", false, false, "zserio/ArrayTraits.h");
+            stringArrayTraits = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "StringArrayTraits", false, false, "zserio/ArrayTraits.h");
+            bitBufferArrayTraits = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "BitBufferArrayTraits", false, false, "zserio/ArrayTraits.h");
+            typeInfo = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "ITypeInfo", false, false, "zserio/ITypeInfo.h");
+            reflectableFactory = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "ReflectableFactory", false, false, "zserio/Reflectable.h");
+            reflectablePtr = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "IReflectablePtr", false, false, "zserio/IReflectable.h");
+            reflectableConstPtr = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "IReflectableConstPtr", false, false, "zserio/IReflectable.h");
+            service = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "IService", false, false, "zserio/IService.h");
+            serviceClient = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "IServiceClient", false, false, "zserio/IService.h");
+            serviceDataPtr = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "IServiceDataPtr", false, false, "zserio/IService.h");
+            reflectableServiceData = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "ReflectableServiceData", false, false, "zserio/IService.h");
+            objectServiceData = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "ObjectServiceData", false, false, "zserio/IService.h");
+            rawServiceDataHolder = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "RawServiceDataHolder", false, false, "zserio/IService.h");
+            rawServiceDataView = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "RawServiceDataView", false, false, "zserio/IService.h");
         }
         else if (allocator.equals(PROPAGATING_POLYMORPHIC_ALLOCATOR))
         {
-            vector = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "vector",
-                    true, false, "zserio/pmr/Vector.h");
-            array = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "Array",
-                    true, false, "zserio/pmr/Array.h");
-            string = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "string",
-                    false, false, "zserio/pmr/String.h");
-            map = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "map",
-                    true, false, "zserio/pmr/Map.h");
-            set = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "set",
-                    true, false, "zserio/pmr/Set.h");
-            anyHolder = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "AnyHolder",
-                    false, false, "zserio/pmr/AnyHolder.h");
-            uniquePtr = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "unique_ptr",
-                    true, false, "zserio/pmr/UniquePtr.h");
-            heapOptionalHolder = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "HeapOptionalHolder",
-                    true, false, "zserio/pmr/HeapOptionalHolder.h");
-            bitBuffer = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "BitBuffer",
-                    false, false, "zserio/pmr/BitBuffer.h");
-            bytesArrayTraits = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "BytesArrayTraits",
-                    false, false, "zserio/pmr/ArrayTraits.h");
-            stringArrayTraits = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "StringArrayTraits",
-                    false, false, "zserio/pmr/ArrayTraits.h");
-            bitBufferArrayTraits = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "BitBufferArrayTraits",
-                    false, false, "zserio/pmr/ArrayTraits.h");
-            typeInfo = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "ITypeInfo",
-                    false, false, "zserio/pmr/ITypeInfo.h");
-            reflectableFactory = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "ReflectableFactory",
-                    false, false, "zserio/pmr/Reflectable.h");
-            reflectablePtr = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "IReflectablePtr",
-                    false, false, "zserio/pmr/IReflectable.h");
-            reflectableConstPtr = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "IReflectableConstPtr",
-                    false, false, "zserio/pmr/IReflectable.h");
-            service = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "IService",
-                    false, false, "zserio/pmr/IService.h");
-            serviceClient = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "IServiceClient",
-                    false, false, "zserio/pmr/IService.h");
-            serviceDataPtr = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "IServiceDataPtr",
-                    false, false, "zserio/pmr/IService.h");
-            reflectableServiceData = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "ReflectableServiceData",
-                    false, false, "zserio/pmr/IService.h");
-            objectServiceData = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "ObjectServiceData",
-                    false, false, "zserio/pmr/IService.h");
-            rawServiceDataHolder = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "RawServiceDataHolder",
-                    false, false, "zserio/pmr/IService.h");
-            rawServiceDataView = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "RawServiceDataView",
-                    false, false, "zserio/pmr/IService.h");
+            vector = new NativeTypeDefinition(
+                    ZSERIO_PMR_PACKAGE_NAME, "vector", true, false, "zserio/pmr/Vector.h");
+            array = new NativeTypeDefinition(
+                    ZSERIO_PMR_PACKAGE_NAME, "Array", true, false, "zserio/pmr/Array.h");
+            string = new NativeTypeDefinition(
+                    ZSERIO_PMR_PACKAGE_NAME, "string", false, false, "zserio/pmr/String.h");
+            map = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "map", true, false, "zserio/pmr/Map.h");
+            set = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "set", true, false, "zserio/pmr/Set.h");
+            anyHolder = new NativeTypeDefinition(
+                    ZSERIO_PMR_PACKAGE_NAME, "AnyHolder", false, false, "zserio/pmr/AnyHolder.h");
+            uniquePtr = new NativeTypeDefinition(
+                    ZSERIO_PMR_PACKAGE_NAME, "unique_ptr", true, false, "zserio/pmr/UniquePtr.h");
+            heapOptionalHolder = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "HeapOptionalHolder", true,
+                    false, "zserio/pmr/HeapOptionalHolder.h");
+            bitBuffer = new NativeTypeDefinition(
+                    ZSERIO_PMR_PACKAGE_NAME, "BitBuffer", false, false, "zserio/pmr/BitBuffer.h");
+            bytesArrayTraits = new NativeTypeDefinition(
+                    ZSERIO_PMR_PACKAGE_NAME, "BytesArrayTraits", false, false, "zserio/pmr/ArrayTraits.h");
+            stringArrayTraits = new NativeTypeDefinition(
+                    ZSERIO_PMR_PACKAGE_NAME, "StringArrayTraits", false, false, "zserio/pmr/ArrayTraits.h");
+            bitBufferArrayTraits = new NativeTypeDefinition(
+                    ZSERIO_PMR_PACKAGE_NAME, "BitBufferArrayTraits", false, false, "zserio/pmr/ArrayTraits.h");
+            typeInfo = new NativeTypeDefinition(
+                    ZSERIO_PMR_PACKAGE_NAME, "ITypeInfo", false, false, "zserio/pmr/ITypeInfo.h");
+            reflectableFactory = new NativeTypeDefinition(
+                    ZSERIO_PMR_PACKAGE_NAME, "ReflectableFactory", false, false, "zserio/pmr/Reflectable.h");
+            reflectablePtr = new NativeTypeDefinition(
+                    ZSERIO_PMR_PACKAGE_NAME, "IReflectablePtr", false, false, "zserio/pmr/IReflectable.h");
+            reflectableConstPtr = new NativeTypeDefinition(
+                    ZSERIO_PMR_PACKAGE_NAME, "IReflectableConstPtr", false, false, "zserio/pmr/IReflectable.h");
+            service = new NativeTypeDefinition(
+                    ZSERIO_PMR_PACKAGE_NAME, "IService", false, false, "zserio/pmr/IService.h");
+            serviceClient = new NativeTypeDefinition(
+                    ZSERIO_PMR_PACKAGE_NAME, "IServiceClient", false, false, "zserio/pmr/IService.h");
+            serviceDataPtr = new NativeTypeDefinition(
+                    ZSERIO_PMR_PACKAGE_NAME, "IServiceDataPtr", false, false, "zserio/pmr/IService.h");
+            reflectableServiceData = new NativeTypeDefinition(
+                    ZSERIO_PMR_PACKAGE_NAME, "ReflectableServiceData", false, false, "zserio/pmr/IService.h");
+            objectServiceData = new NativeTypeDefinition(
+                    ZSERIO_PMR_PACKAGE_NAME, "ObjectServiceData", false, false, "zserio/pmr/IService.h");
+            rawServiceDataHolder = new NativeTypeDefinition(
+                    ZSERIO_PMR_PACKAGE_NAME, "RawServiceDataHolder", false, false, "zserio/pmr/IService.h");
+            rawServiceDataView = new NativeTypeDefinition(
+                    ZSERIO_PMR_PACKAGE_NAME, "RawServiceDataView", false, false, "zserio/pmr/IService.h");
         }
         else
         {
-            vector = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "vector",
-                    true, true, "vector");
-            array = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicArray",
-                    true, true, "zserio/Array.h");
-            string = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "string",
-                    true, true, "zserio/String.h");
-            map = new NativeTypeDefinition(STD_PACKAGE_NAME, "map",
-                    true, true, "map");
-            set = new NativeTypeDefinition(STD_PACKAGE_NAME, "set",
-                    true, true, "set");
-            anyHolder = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "AnyHolder",
-                    true, true, "zserio/AnyHolder.h");
-            uniquePtr = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "unique_ptr",
-                    true, true, "zserio/UniquePtr.h");
-            heapOptionalHolder = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "HeapOptionalHolder",
-                    true, true, "zserio/OptionalHolder.h");
-            bitBuffer = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicBitBuffer",
-                    true, true, "zserio/BitBuffer.h");
-            bytesArrayTraits = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicBytesArrayTraits",
-                    true, true, "zserio/ArrayTraits.h");
-            stringArrayTraits = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicStringArrayTraits",
-                    true, true, "zserio/ArrayTraits.h");
-            bitBufferArrayTraits = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicBitBufferArrayTraits",
-                    true, true, "zserio/ArrayTraits.h");
-            typeInfo = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "ITypeInfo",
-                    true, true, "zserio/IBasicTypeInfo.h");
-            reflectableFactory = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicReflectableFactory",
-                    true, true, "zserio/Reflectable.h");
-            reflectablePtr = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "IBasicReflectablePtr",
-                    true, true, "zserio/IReflectable.h");
-            reflectableConstPtr = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "IBasicReflectableConstPtr",
-                    true, true, "zserio/IReflectable.h");
-            service = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "IBasicService",
-                    true, true, "zserio/IService.h");
-            serviceClient = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "IBasicServiceClient",
-                    true, true, "zserio/IService.h");
-            serviceDataPtr = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "IBasicServiceDataPtr",
-                    true, true, "zserio/IService.h");
+            vector = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "vector", true, true, "vector");
+            array = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicArray", true, true, "zserio/Array.h");
+            string = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "string", true, true, "zserio/String.h");
+            map = new NativeTypeDefinition(STD_PACKAGE_NAME, "map", true, true, "map");
+            set = new NativeTypeDefinition(STD_PACKAGE_NAME, "set", true, true, "set");
+            anyHolder = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "AnyHolder", true, true, "zserio/AnyHolder.h");
+            uniquePtr = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "unique_ptr", true, true, "zserio/UniquePtr.h");
+            heapOptionalHolder = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "HeapOptionalHolder", true, true, "zserio/OptionalHolder.h");
+            bitBuffer = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "BasicBitBuffer", true, true, "zserio/BitBuffer.h");
+            bytesArrayTraits = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "BasicBytesArrayTraits", true, true, "zserio/ArrayTraits.h");
+            stringArrayTraits = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "BasicStringArrayTraits", true, true, "zserio/ArrayTraits.h");
+            bitBufferArrayTraits = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "BasicBitBufferArrayTraits", true, true, "zserio/ArrayTraits.h");
+            typeInfo = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "ITypeInfo", true, true, "zserio/IBasicTypeInfo.h");
+            reflectableFactory = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "BasicReflectableFactory", true, true, "zserio/Reflectable.h");
+            reflectablePtr = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "IBasicReflectablePtr", true, true, "zserio/IReflectable.h");
+            reflectableConstPtr = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "IBasicReflectableConstPtr", true, true, "zserio/IReflectable.h");
+            service = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "IBasicService", true, true, "zserio/IService.h");
+            serviceClient = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "IBasicServiceClient", true, true, "zserio/IService.h");
+            serviceDataPtr = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "IBasicServiceDataPtr", true, true, "zserio/IService.h");
             reflectableServiceData = new NativeTypeDefinition(
-                    ZSERIO_PACKAGE_NAME, "BasicReflectableServiceData",
-                    true, true, "zserio/IService.h");
-            objectServiceData = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicObjectServiceData",
-                    true, true, "zserio/IService.h");
-            rawServiceDataHolder = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicRawServiceDataHolder",
-                    true, true, "zserio/IService.h");
-            rawServiceDataView = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicRawServiceDataView",
-                    true, true, "zserio/IService.h");
+                    ZSERIO_PACKAGE_NAME, "BasicReflectableServiceData", true, true, "zserio/IService.h");
+            objectServiceData = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "BasicObjectServiceData", true, true, "zserio/IService.h");
+            rawServiceDataHolder = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "BasicRawServiceDataHolder", true, true, "zserio/IService.h");
+            rawServiceDataView = new NativeTypeDefinition(
+                    ZSERIO_PACKAGE_NAME, "BasicRawServiceDataView", true, true, "zserio/IService.h");
         }
     }
 
@@ -170,8 +157,8 @@ public final class TypesContext
             this(allocatorType, allocatorSystemInclude, "uint8_t");
         }
 
-        public AllocatorDefinition(String allocatorType, String allocatorSystemInclude,
-                String allocatorDefaultType)
+        public AllocatorDefinition(
+                String allocatorType, String allocatorSystemInclude, String allocatorDefaultType)
         {
             this.allocatorType = allocatorType;
             this.allocatorSystemInclude = allocatorSystemInclude;
@@ -389,8 +376,8 @@ public final class TypesContext
 
     public static final AllocatorDefinition PROPAGATING_POLYMORPHIC_ALLOCATOR = new AllocatorDefinition(
             "::zserio::pmr::PropagatingPolymorphicAllocator", "zserio/pmr/PolymorphicAllocator.h", "");
-    public static final AllocatorDefinition STD_ALLOCATOR = new AllocatorDefinition(
-            "::std::allocator", "memory");
+    public static final AllocatorDefinition STD_ALLOCATOR =
+            new AllocatorDefinition("::std::allocator", "memory");
 
     private static final PackageName STD_PACKAGE_NAME = new PackageName.Builder().addId("std").get();
     private static final PackageName ZSERIO_PACKAGE_NAME = new PackageName.Builder().addId("zserio").get();

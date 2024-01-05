@@ -1,6 +1,7 @@
 package zserio.extension.cpp.types;
 
 import java.math.BigInteger;
+
 import zserio.extension.common.ZserioExtensionException;
 
 /**
@@ -94,8 +95,8 @@ public final class NativeIntegralType extends NativeBuiltinType
         final BigInteger lowerBound = getLowerBound();
         final BigInteger upperBound = getUpperBound();
         if ((value.compareTo(getLowerBound()) < 0) || (value.compareTo(getUpperBound()) > 0))
-            throw new ZserioExtensionException("Literal " + value + " out of range for native type: " +
-                    lowerBound + ".." + upperBound);
+            throw new ZserioExtensionException(
+                    "Literal " + value + " out of range for native type: " + lowerBound + ".." + upperBound);
     }
 
     private final int numBits;

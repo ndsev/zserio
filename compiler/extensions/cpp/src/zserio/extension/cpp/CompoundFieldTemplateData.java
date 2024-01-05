@@ -4,18 +4,18 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 
 import zserio.ast.ArrayInstantiation;
-import zserio.ast.DynamicBitFieldInstantiation;
-import zserio.ast.ParameterizedTypeInstantiation;
-import zserio.ast.UnionType;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
-import zserio.ast.ZserioType;
+import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.Expression;
 import zserio.ast.Field;
 import zserio.ast.IntegerType;
+import zserio.ast.ParameterizedTypeInstantiation;
+import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
-import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
+import zserio.ast.UnionType;
+import zserio.ast.ZserioType;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.types.CppNativeType;
@@ -27,8 +27,8 @@ import zserio.extension.cpp.types.NativeIntegralType;
  */
 public final class CompoundFieldTemplateData
 {
-    public CompoundFieldTemplateData(TemplateDataContext context, CompoundType parentType,
-            Field field, IncludeCollector includeCollector) throws ZserioExtensionException
+    public CompoundFieldTemplateData(TemplateDataContext context, CompoundType parentType, Field field,
+            IncludeCollector includeCollector) throws ZserioExtensionException
     {
         final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
         final ZserioType fieldBaseType = fieldTypeInstantiation.getBaseType();
@@ -37,8 +37,9 @@ public final class CompoundFieldTemplateData
         final CppNativeType fieldNativeType = cppNativeMapper.getCppType(fieldTypeInstantiation);
         includeCollector.addHeaderIncludesForType(fieldNativeType);
 
-        optional = (field.isOptional()) ?
-                createOptional(context, field, fieldBaseType, parentType, includeCollector) : null;
+        optional = (field.isOptional())
+                ? createOptional(context, field, fieldBaseType, parentType, includeCollector)
+                : null;
         compound = createCompound(context, fieldTypeInstantiation, includeCollector);
 
         name = field.getName();
@@ -66,8 +67,8 @@ public final class CompoundFieldTemplateData
         constraint = createConstraint(context, field, includeCollector);
         offset = createOffset(context, field, includeCollector);
         array = createArray(context, fieldNativeType, fieldTypeInstantiation, parentType, includeCollector);
-        runtimeFunction = RuntimeFunctionDataCreator.createData(context, fieldTypeInstantiation,
-                includeCollector);
+        runtimeFunction =
+                RuntimeFunctionDataCreator.createData(context, fieldTypeInstantiation, includeCollector);
         bitSize = BitSizeTemplateData.create(context, fieldTypeInstantiation, includeCollector);
         docComments = DocCommentsDataCreator.createData(context, field);
     }
@@ -189,8 +190,9 @@ public final class CompoundFieldTemplateData
         {
             final Expression optionalClauseExpression = field.getOptionalClauseExpr();
             final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(includeCollector);
-            clause = (optionalClauseExpression == null) ? null :
-                cppExpressionFormatter.formatGetter(optionalClauseExpression);
+            clause = (optionalClauseExpression == null)
+                    ? null
+                    : cppExpressionFormatter.formatGetter(optionalClauseExpression);
             isUsedIndicatorName = AccessorNameFormatter.getIsUsedIndicatorName(field);
             isSetIndicatorName = AccessorNameFormatter.getIsSetIndicatorName(field);
             resetterName = AccessorNameFormatter.getResetterName(field);
@@ -268,11 +270,13 @@ public final class CompoundFieldTemplateData
 
         public static final class InstantiatedParameterData
         {
-            public InstantiatedParameterData(TemplateDataContext context, InstantiatedParameter instantiatedParameter,
-                    IncludeCollector includeCollector) throws ZserioExtensionException
+            public InstantiatedParameterData(TemplateDataContext context,
+                    InstantiatedParameter instantiatedParameter, IncludeCollector includeCollector)
+                    throws ZserioExtensionException
             {
                 final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
-                final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(includeCollector);
+                final ExpressionFormatter cppExpressionFormatter =
+                        context.getExpressionFormatter(includeCollector);
                 expression = cppExpressionFormatter.formatGetter(argumentExpression);
                 final ExpressionFormatter cppOwnerIndirectExpressionFormatter =
                         context.getIndirectExpressionFormatter(includeCollector, "owner");
@@ -407,7 +411,7 @@ public final class CompoundFieldTemplateData
     {
         public IntegerRange(boolean checkLowerBound, String lowerBound, String upperBound,
                 NativeIntegralTypeInfoTemplateData typeInfo, String bitFieldLength)
-                        throws ZserioExtensionException
+                throws ZserioExtensionException
         {
             this.checkLowerBound = checkLowerBound;
             this.lowerBound = lowerBound;
@@ -553,9 +557,9 @@ public final class CompoundFieldTemplateData
         return new Optional(context, field, isRecursive, includeCollector);
     }
 
-    private static IntegerRange createIntegerRange(TemplateDataContext context,
-            TypeInstantiation typeInstantiation, IncludeCollector includeCollector)
-                    throws ZserioExtensionException
+    private static IntegerRange createIntegerRange(
+            TemplateDataContext context, TypeInstantiation typeInstantiation, IncludeCollector includeCollector)
+            throws ZserioExtensionException
     {
         if (!(typeInstantiation.getBaseType() instanceof IntegerType))
             return null;
@@ -653,7 +657,7 @@ public final class CompoundFieldTemplateData
 
     private static Array createArray(TemplateDataContext context, CppNativeType cppNativeType,
             TypeInstantiation typeInstantiation, CompoundType parentType, IncludeCollector includeCollector)
-                    throws ZserioExtensionException
+            throws ZserioExtensionException
     {
         if (!(typeInstantiation instanceof ArrayInstantiation))
             return null;

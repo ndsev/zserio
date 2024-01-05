@@ -74,8 +74,8 @@ public final class AccessorNameFormatter
         return getAccessorName(accessorNamePrefix, memberName, "");
     }
 
-    private static String getAccessorName(String accessorNamePrefix, String memberName,
-            String accessorNameSuffix)
+    private static String getAccessorName(
+            String accessorNamePrefix, String memberName, String accessorNameSuffix)
     {
         StringBuilder accessorName = new StringBuilder(accessorNamePrefix);
         if (!memberName.isEmpty())

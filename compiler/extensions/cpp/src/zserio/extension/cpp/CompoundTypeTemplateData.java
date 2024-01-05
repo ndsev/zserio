@@ -23,16 +23,16 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         fieldList = new ArrayList<CompoundFieldTemplateData>(fieldTypeList.size());
         for (Field fieldType : fieldTypeList)
         {
-            final CompoundFieldTemplateData data = new CompoundFieldTemplateData(context,
-                    compoundType, fieldType, this);
+            final CompoundFieldTemplateData data =
+                    new CompoundFieldTemplateData(context, compoundType, fieldType, this);
 
             fieldList.add(data);
         }
 
         compoundParametersData = new CompoundParameterTemplateData(context, compoundType, this);
         compoundFunctionsData = new CompoundFunctionTemplateData(context, compoundType, this);
-        compoundConstructorsData = new CompoundConstructorTemplateData(compoundType, compoundParametersData,
-                fieldList);
+        compoundConstructorsData =
+                new CompoundConstructorTemplateData(compoundType, compoundParametersData, fieldList);
 
         isPackable = compoundType.isPackable();
 

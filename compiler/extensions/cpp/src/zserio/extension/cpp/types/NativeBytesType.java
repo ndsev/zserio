@@ -22,8 +22,8 @@ public final class NativeBytesType extends NativeRuntimeType implements CppNativ
             bytesArrayTraitsName.append('>');
             addSystemIncludeFile(typesContext.getAllocatorDefinition().getAllocatorSystemInclude());
         }
-        arrayTraits = new NativeArrayTraits(bytesArrayTraits.getPackage(),
-                bytesArrayTraitsName.toString(),  bytesArrayTraits.getSystemInclude());
+        arrayTraits = new NativeArrayTraits(bytesArrayTraits.getPackage(), bytesArrayTraitsName.toString(),
+                bytesArrayTraits.getSystemInclude());
         addIncludeFiles(arrayTraits);
     }
 

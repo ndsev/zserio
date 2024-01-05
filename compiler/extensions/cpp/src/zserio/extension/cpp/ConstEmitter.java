@@ -19,10 +19,10 @@ public final class ConstEmitter extends CppDefaultEmitter
     @Override
     public void beginConst(Constant constant) throws ZserioExtensionException
     {
-        final ConstEmitterTemplateData templateData = new ConstEmitterTemplateData(
-                getTemplateDataContext(), constant);
-        processHeaderTemplate(TEMPLATE_HEADER_NAME, templateData, constant.getPackage().getPackageName(),
-                constant.getName());
+        final ConstEmitterTemplateData templateData =
+                new ConstEmitterTemplateData(getTemplateDataContext(), constant);
+        processHeaderTemplate(
+                TEMPLATE_HEADER_NAME, templateData, constant.getPackage().getPackageName(), constant.getName());
     }
 
     private static final String TEMPLATE_HEADER_NAME = "Constant.h.ftl";

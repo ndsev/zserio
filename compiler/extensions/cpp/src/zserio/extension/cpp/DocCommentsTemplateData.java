@@ -229,8 +229,8 @@ public final class DocCommentsTemplateData
             return link;
         }
 
-        private static String getPackageSymbolFullName(CppNativeMapper cppNativeMapper,
-                PackageSymbol packageSymbol) throws ZserioExtensionException
+        private static String getPackageSymbolFullName(
+                CppNativeMapper cppNativeMapper, PackageSymbol packageSymbol) throws ZserioExtensionException
         {
             if (packageSymbol instanceof ZserioType)
             {

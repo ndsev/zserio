@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zserio.ast.CompoundType;
-import zserio.ast.TypeReference;
-import zserio.ast.ZserioType;
 import zserio.ast.Function;
 import zserio.ast.StringType;
+import zserio.ast.TypeReference;
+import zserio.ast.ZserioType;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.types.CppNativeType;

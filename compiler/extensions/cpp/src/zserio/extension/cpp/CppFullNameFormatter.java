@@ -21,8 +21,8 @@ public final class CppFullNameFormatter
 
     public static String getFullName(PackageName packageName, String typeName, String memberName)
     {
-        return StringJoinUtil.joinStrings(getFullName(packageName, typeName), memberName,
-                CPP_NAMESPACE_SEPARATOR);
+        return StringJoinUtil.joinStrings(
+                getFullName(packageName, typeName), memberName, CPP_NAMESPACE_SEPARATOR);
     }
 
     private static final String CPP_NAMESPACE_SEPARATOR = "::";

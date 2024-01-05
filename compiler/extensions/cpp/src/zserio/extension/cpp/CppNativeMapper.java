@@ -3,39 +3,39 @@ package zserio.extension.cpp;
 import zserio.ast.ArrayInstantiation;
 import zserio.ast.AstNode;
 import zserio.ast.BitmaskType;
-import zserio.ast.Constant;
-import zserio.ast.DynamicBitFieldInstantiation;
-import zserio.ast.DynamicBitFieldType;
-import zserio.ast.FixedBitFieldType;
-import zserio.ast.InstantiateType;
-import zserio.ast.PackageName;
-import zserio.ast.PubsubType;
-import zserio.ast.TypeInstantiation;
-import zserio.ast.UnionType;
 import zserio.ast.BooleanType;
 import zserio.ast.BytesType;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
-import zserio.ast.ZserioAstDefaultVisitor;
-import zserio.ast.ZserioType;
+import zserio.ast.Constant;
+import zserio.ast.DynamicBitFieldInstantiation;
+import zserio.ast.DynamicBitFieldType;
 import zserio.ast.EnumType;
 import zserio.ast.ExternType;
+import zserio.ast.FixedBitFieldType;
 import zserio.ast.FloatType;
+import zserio.ast.InstantiateType;
+import zserio.ast.PackageName;
+import zserio.ast.PubsubType;
 import zserio.ast.ServiceType;
-import zserio.ast.StructureType;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
 import zserio.ast.StdIntegerType;
 import zserio.ast.StringType;
+import zserio.ast.StructureType;
 import zserio.ast.Subtype;
+import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
+import zserio.ast.UnionType;
 import zserio.ast.VarIntegerType;
+import zserio.ast.ZserioAstDefaultVisitor;
+import zserio.ast.ZserioType;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.symbols.CppNativeSymbol;
+import zserio.extension.cpp.types.CppNativeArrayableType;
 import zserio.extension.cpp.types.CppNativeType;
 import zserio.extension.cpp.types.NativeArrayTraits;
 import zserio.extension.cpp.types.NativeArrayType;
-import zserio.extension.cpp.types.CppNativeArrayableType;
 import zserio.extension.cpp.types.NativeBitFieldArrayTraits;
 import zserio.extension.cpp.types.NativeBuiltinType;
 import zserio.extension.cpp.types.NativeBytesType;
@@ -60,44 +60,43 @@ public final class CppNativeMapper
     public CppNativeMapper(TypesContext typesContext)
     {
         final TypesContext.AllocatorDefinition allocatorDefinition = typesContext.getAllocatorDefinition();
-        anyHolderType = new NativeRuntimeAllocType(typesContext.getAnyHolder(), allocatorDefinition,
-                stdUInt8Type);
+        anyHolderType =
+                new NativeRuntimeAllocType(typesContext.getAnyHolder(), allocatorDefinition, stdUInt8Type);
         uniquePtrType = new NativeRuntimeAllocType(typesContext.getUniquePtr(), allocatorDefinition);
-        heapOptionalHolderType = new NativeRuntimeAllocType(typesContext.getHeapOptionalHolder(),
-                allocatorDefinition);
+        heapOptionalHolderType =
+                new NativeRuntimeAllocType(typesContext.getHeapOptionalHolder(), allocatorDefinition);
         inplaceOptionalHolderType = new NativeRuntimeType("InplaceOptionalHolder", "zserio/OptionalHolder.h");
 
-        stringType = new NativeRuntimeAllocArrayableType(typesContext.getString(), allocatorDefinition,
-                "char", typesContext.getStringArrayTraits());
+        stringType = new NativeRuntimeAllocArrayableType(
+                typesContext.getString(), allocatorDefinition, "char", typesContext.getStringArrayTraits());
         stringViewType = new NativeStringViewType();
         vectorType = new NativeRuntimeAllocType(typesContext.getVector(), allocatorDefinition);
         mapType = new NativeRuntimeAllocType(typesContext.getMap(), allocatorDefinition);
         setType = new NativeRuntimeAllocType(typesContext.getSet(), allocatorDefinition);
         bytesType = new NativeBytesType(typesContext, stdUInt8Type);
-        bitBufferType = new NativeRuntimeAllocArrayableType(typesContext.getBitBuffer(),
-                allocatorDefinition, stdUInt8Type, typesContext.getBitBufferArrayTraits());
-        typeInfoType = new NativeRuntimeAllocType(typesContext.getTypeInfo(),
-                allocatorDefinition, stdUInt8Type);
-        reflectableFactoryType = new NativeRuntimeAllocType(typesContext.getRelectableFactory(),
-                allocatorDefinition, stdUInt8Type);
-        reflectablePtrType = new NativeRuntimeAllocType(typesContext.getReflectablePtr(),
-                allocatorDefinition, stdUInt8Type);
-        reflectableConstPtrType = new NativeRuntimeAllocType(typesContext.getReflectableConstPtr(),
-                allocatorDefinition, stdUInt8Type);
-        serviceType = new NativeRuntimeAllocType(typesContext.getService(),
-                allocatorDefinition, stdUInt8Type);
-        serviceClientType = new NativeRuntimeAllocType(typesContext.getServiceClient(),
-                allocatorDefinition, stdUInt8Type);
-        serviceDataPtrType = new NativeRuntimeAllocType(typesContext.getServiceDataPtr(),
-                allocatorDefinition, stdUInt8Type);
-        reflectableServiceDataType = new NativeRuntimeAllocType(typesContext.getReflectableServiceData(),
-                allocatorDefinition, stdUInt8Type);
-        objectServiceDataType = new NativeRuntimeAllocType(typesContext.getObjectServiceData(),
-                allocatorDefinition, stdUInt8Type);
-        rawServiceDataHolderType = new NativeRuntimeAllocType(typesContext.getRawServiceDataHolder(),
-                allocatorDefinition, stdUInt8Type);
-        rawServiceDataViewType = new NativeRuntimeAllocType(typesContext.getRawServiceDataView(),
-                allocatorDefinition, stdUInt8Type);
+        bitBufferType = new NativeRuntimeAllocArrayableType(typesContext.getBitBuffer(), allocatorDefinition,
+                stdUInt8Type, typesContext.getBitBufferArrayTraits());
+        typeInfoType =
+                new NativeRuntimeAllocType(typesContext.getTypeInfo(), allocatorDefinition, stdUInt8Type);
+        reflectableFactoryType = new NativeRuntimeAllocType(
+                typesContext.getRelectableFactory(), allocatorDefinition, stdUInt8Type);
+        reflectablePtrType =
+                new NativeRuntimeAllocType(typesContext.getReflectablePtr(), allocatorDefinition, stdUInt8Type);
+        reflectableConstPtrType = new NativeRuntimeAllocType(
+                typesContext.getReflectableConstPtr(), allocatorDefinition, stdUInt8Type);
+        serviceType = new NativeRuntimeAllocType(typesContext.getService(), allocatorDefinition, stdUInt8Type);
+        serviceClientType =
+                new NativeRuntimeAllocType(typesContext.getServiceClient(), allocatorDefinition, stdUInt8Type);
+        serviceDataPtrType =
+                new NativeRuntimeAllocType(typesContext.getServiceDataPtr(), allocatorDefinition, stdUInt8Type);
+        reflectableServiceDataType = new NativeRuntimeAllocType(
+                typesContext.getReflectableServiceData(), allocatorDefinition, stdUInt8Type);
+        objectServiceDataType = new NativeRuntimeAllocType(
+                typesContext.getObjectServiceData(), allocatorDefinition, stdUInt8Type);
+        rawServiceDataHolderType = new NativeRuntimeAllocType(
+                typesContext.getRawServiceDataHolder(), allocatorDefinition, stdUInt8Type);
+        rawServiceDataViewType = new NativeRuntimeAllocType(
+                typesContext.getRawServiceDataView(), allocatorDefinition, stdUInt8Type);
     }
 
     public CppNativeSymbol getCppSymbol(AstNode symbol) throws ZserioExtensionException
@@ -111,8 +110,8 @@ public final class CppNativeMapper
             return new CppNativeSymbol(packageName, name, includeFileName);
         }
         else
-            throw new ZserioExtensionException("Unhandled symbol '" + symbol.getClass().getName() +
-                    "' in CppNativeMapper!");
+            throw new ZserioExtensionException(
+                    "Unhandled symbol '" + symbol.getClass().getName() + "' in CppNativeMapper!");
     }
 
     public CppNativeType getCppType(TypeInstantiation typeInstantiation) throws ZserioExtensionException
@@ -143,8 +142,8 @@ public final class CppNativeMapper
 
         final CppNativeType nativeType = visitor.getCppType();
         if (nativeType == null)
-            throw new ZserioExtensionException("Unhandled type '" + type.getClass().getName() +
-                    "' in CppNativeMapper!");
+            throw new ZserioExtensionException(
+                    "Unhandled type '" + type.getClass().getName() + "' in CppNativeMapper!");
 
         return nativeType;
     }
@@ -574,8 +573,8 @@ public final class CppNativeMapper
                 }
                 else
                 {
-                    cppType = new NativeUserType(packageName, name, includeFileName,
-                            nativeReferencedType.isSimple());
+                    cppType = new NativeUserType(
+                            packageName, name, includeFileName, nativeReferencedType.isSimple());
                 }
             }
             catch (ZserioExtensionException exception)

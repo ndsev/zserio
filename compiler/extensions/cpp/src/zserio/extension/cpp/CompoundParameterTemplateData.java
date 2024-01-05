@@ -23,8 +23,8 @@ public final class CompoundParameterTemplateData
         final List<DocComment> compoundDocComments = compoundType.getDocComments();
         for (Parameter compoundParameterType : compoundParameterTypeList)
         {
-            final CompoundParameter parameter = new CompoundParameter(context, compoundParameterType,
-                    includeCollector, compoundDocComments);
+            final CompoundParameter parameter = new CompoundParameter(
+                    context, compoundParameterType, includeCollector, compoundDocComments);
             compoundParameterList.add(parameter);
         }
     }
@@ -38,7 +38,7 @@ public final class CompoundParameterTemplateData
     {
         public CompoundParameter(TemplateDataContext context, Parameter parameter,
                 IncludeCollector includeCollector, List<DocComment> compoundDocComments)
-                        throws ZserioExtensionException
+                throws ZserioExtensionException
         {
             final TypeReference parameterTypeReference = parameter.getTypeReference();
             final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();

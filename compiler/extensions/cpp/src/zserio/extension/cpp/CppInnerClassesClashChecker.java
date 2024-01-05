@@ -31,8 +31,8 @@ final class CppInnerClassesClashChecker extends DefaultTreeWalker
         if (BITMASK_INNER_CLASS_NAME.equals(className))
         {
             ZserioToolPrinter.printError(bitmaskType.getLocation(),
-                    "Class name '" + className + "' generated for bitmask clashes with " +
-                    "its inner class '" + className + "' generated in C++ code.");
+                    "Class name '" + className + "' generated for bitmask clashes with "
+                            + "its inner class '" + className + "' generated in C++ code.");
             throw new ZserioExtensionException("Class name clash detected!");
         }
     }
@@ -44,13 +44,13 @@ final class CppInnerClassesClashChecker extends DefaultTreeWalker
         if (SQL_TABLE_INNER_CLASSES_NAMES.contains(className))
         {
             ZserioToolPrinter.printError(sqlTableType.getLocation(),
-                    "Class name '" + className + "' generated for SQL table clashes with " +
-                    "its inner class '" + className + "' generated in C++ code.");
+                    "Class name '" + className + "' generated for SQL table clashes with "
+                            + "its inner class '" + className + "' generated in C++ code.");
             throw new ZserioExtensionException("Class name clash detected!");
         }
     }
 
     private static final String BITMASK_INNER_CLASS_NAME = "Values";
-    private static final List<String> SQL_TABLE_INNER_CLASSES_NAMES = Arrays.asList(
-            "IParameterProvider", "Reader", "Row");
+    private static final List<String> SQL_TABLE_INNER_CLASSES_NAMES =
+            Arrays.asList("IParameterProvider", "Reader", "Row");
 }

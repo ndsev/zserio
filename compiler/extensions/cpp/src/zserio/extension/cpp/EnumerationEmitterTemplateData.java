@@ -72,8 +72,8 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
         {
             schemaName = enumItem.getName();
             name = AccessorNameFormatter.getEnumeratorName(enumItem);
-            fullName = CppFullNameFormatter.getFullName(nativeEnumType.getPackageName(),
-                    nativeEnumType.getName(), name);
+            fullName = CppFullNameFormatter.getFullName(
+                    nativeEnumType.getPackageName(), nativeEnumType.getName(), name);
             value = nativeBaseType.formatLiteral(enumItem.getValue());
             isDeprecated = enumItem.isDeprecated();
             isRemoved = enumItem.isRemoved();

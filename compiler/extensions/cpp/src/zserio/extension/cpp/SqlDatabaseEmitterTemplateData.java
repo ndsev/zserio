@@ -3,13 +3,13 @@ package zserio.extension.cpp;
 import java.util.ArrayList;
 import java.util.List;
 
-import zserio.ast.TypeInstantiation;
-import zserio.ast.ZserioType;
-import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.ast.Field;
 import zserio.ast.ParameterizedTypeInstantiation;
+import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
+import zserio.ast.TypeInstantiation;
+import zserio.ast.ZserioType;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.types.CppNativeType;
 
@@ -36,8 +36,8 @@ public final class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
 
     public static final class DatabaseField
     {
-        public DatabaseField(TemplateDataContext context, Field field,
-                IncludeCollector includeCollector) throws ZserioExtensionException
+        public DatabaseField(TemplateDataContext context, Field field, IncludeCollector includeCollector)
+                throws ZserioExtensionException
         {
             final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
             final ZserioType fieldBaseType = fieldTypeInstantiation.getBaseType();

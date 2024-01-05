@@ -77,8 +77,8 @@ public final class BitSizeTemplateData
                     (DynamicBitFieldInstantiation)typeInstantiation;
 
             final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(includeCollector);
-            final String value = cppExpressionFormatter.formatGetter(
-                    dynamicBitFieldInstantiation.getLengthExpression());
+            final String value =
+                    cppExpressionFormatter.formatGetter(dynamicBitFieldInstantiation.getLengthExpression());
 
             final ExpressionFormatter cppOwnerIndirectExpressionFormatter =
                     context.getIndirectExpressionFormatter(includeCollector, "owner");
@@ -95,10 +95,11 @@ public final class BitSizeTemplateData
             final String rowIndirectValue = cppRowIndirectExpressionFormatter.formatGetter(
                     dynamicBitFieldInstantiation.getLengthExpression());
 
-            final boolean needsOwner = dynamicBitFieldInstantiation.getLengthExpression().requiresOwnerContext();
+            final boolean needsOwner =
+                    dynamicBitFieldInstantiation.getLengthExpression().requiresOwnerContext();
 
-            return new BitSizeTemplateData(value, ownerIndirectValue, objectIndirectValue, rowIndirectValue,
-                    needsOwner);
+            return new BitSizeTemplateData(
+                    value, ownerIndirectValue, objectIndirectValue, rowIndirectValue, needsOwner);
         }
         else
         {
