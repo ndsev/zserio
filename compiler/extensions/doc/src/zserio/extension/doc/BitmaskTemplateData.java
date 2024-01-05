@@ -50,23 +50,24 @@ public final class BitmaskTemplateData extends PackageTemplateDataBase
             final ExpressionFormatter docExpressionFormatter = context.getExpressionFormatter();
             final Expression valueExpression = bitmaskValue.getValueExpression();
             hasValueExpression = valueExpression != null;
-            value = hasValueExpression ? docExpressionFormatter.formatGetter(bitmaskValue.getValueExpression()) :
-                    bitmaskValue.getValue().toString();
+            value = hasValueExpression
+                    ? docExpressionFormatter.formatGetter(bitmaskValue.getValueExpression())
+                    : bitmaskValue.getValue().toString();
 
             docComments = new DocCommentsTemplateData(context, bitmaskValue.getDocComments());
 
             final UsedByChoiceCollector usedByChoiceCollector = context.getUsedByChoiceCollector();
             seeSymbols = new ArrayList<SeeSymbolTemplateData>();
             for (UsedByChoiceCollector.ChoiceCaseReference choiceCaseRef :
-                usedByChoiceCollector.getUsedByChoices(bitmaskValue))
+                    usedByChoiceCollector.getUsedByChoices(bitmaskValue))
             {
                 final ChoiceType choiceType = choiceCaseRef.getChoiceType();
                 final ChoiceCase choiceCase = choiceCaseRef.getChoiceCase();
                 final Expression caseExpression = choiceCaseRef.getChoiceCaseExpression().getExpression();
-                final SymbolTemplateData choiceCaseSymbol = SymbolTemplateDataCreator.createData(context,
-                        choiceType, choiceCase, docExpressionFormatter.formatGetter(caseExpression));
-                final SymbolTemplateData choiceTypeSymbol = SymbolTemplateDataCreator.createData(context,
-                        choiceType);
+                final SymbolTemplateData choiceCaseSymbol = SymbolTemplateDataCreator.createData(
+                        context, choiceType, choiceCase, docExpressionFormatter.formatGetter(caseExpression));
+                final SymbolTemplateData choiceTypeSymbol =
+                        SymbolTemplateDataCreator.createData(context, choiceType);
                 seeSymbols.add(new SeeSymbolTemplateData(choiceCaseSymbol, choiceTypeSymbol));
             }
         }

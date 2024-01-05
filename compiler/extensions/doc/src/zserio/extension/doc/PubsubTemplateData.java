@@ -13,7 +13,8 @@ import zserio.extension.common.ZserioExtensionException;
  */
 public final class PubsubTemplateData extends PackageTemplateDataBase
 {
-    public PubsubTemplateData(PackageTemplateDataContext context, PubsubType pubsubType) throws ZserioExtensionException
+    public PubsubTemplateData(PackageTemplateDataContext context, PubsubType pubsubType)
+            throws ZserioExtensionException
     {
         super(context, pubsubType);
 
@@ -31,8 +32,10 @@ public final class PubsubTemplateData extends PackageTemplateDataBase
         public MessageTemplateData(PackageTemplateDataContext context, PubsubType pubsubType,
                 PubsubMessage pubsubMessage) throws ZserioExtensionException
         {
-            keyword = pubsubMessage.isPublished() && pubsubMessage.isSubscribed() ?
-                    "pubsub" : pubsubMessage.isPublished() ? "publish" : "subscribe";
+            keyword = pubsubMessage.isPublished() && pubsubMessage.isSubscribed() ? "pubsub"
+                    : pubsubMessage.isPublished()
+                    ? "publish"
+                    : "subscribe";
             symbol = SymbolTemplateDataCreator.createData(context, pubsubType, pubsubMessage);
             final ExpressionFormatter docExpressionFormatter = context.getExpressionFormatter();
             topicDefinition = docExpressionFormatter.formatGetter(pubsubMessage.getTopicDefinitionExpr());

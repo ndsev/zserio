@@ -23,12 +23,12 @@ import zserio.extension.common.ZserioExtensionException;
  */
 final class HtmlRuntimeEmitter
 {
-    static void emit(OutputFileManager outputFileManager,
-            DocExtensionParameters docParameters) throws ZserioExtensionException
+    static void emit(OutputFileManager outputFileManager, DocExtensionParameters docParameters)
+            throws ZserioExtensionException
     {
         try
         {
-            final String[] jarRuntimeSubdirs = { DocDirectories.CSS_DIRECTORY, DocDirectories.JS_DIRECTORY };
+            final String[] jarRuntimeSubdirs = {DocDirectories.CSS_DIRECTORY, DocDirectories.JS_DIRECTORY};
             for (String jarRuntimeSubdir : jarRuntimeSubdirs)
             {
                 final List<String> jarResources = getJarRuntimeResources(jarRuntimeSubdir);

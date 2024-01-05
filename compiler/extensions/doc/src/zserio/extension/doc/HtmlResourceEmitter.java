@@ -29,10 +29,10 @@ final class HtmlResourceEmitter
     public void emit(Path outputDir, String fileName, String title, String bodyContent)
             throws ZserioExtensionException
     {
-        final TemplateDataContext context = new TemplateDataContext(docParameters,
-                outputDir.relativize(htmlRootDirectory).toString());
-        final HtmlResourceTemplateData templateData = new HtmlResourceTemplateData(
-                context, rootPackage, hasSchemaRules, title, bodyContent);
+        final TemplateDataContext context =
+                new TemplateDataContext(docParameters, outputDir.relativize(htmlRootDirectory).toString());
+        final HtmlResourceTemplateData templateData =
+                new HtmlResourceTemplateData(context, rootPackage, hasSchemaRules, title, bodyContent);
 
         final File outputFile = new File(outputDir.toString(), fileName);
         DocFreeMarkerUtil.processTemplate(TEMPLATE_SOURCE_NAME, templateData, outputFile);

@@ -41,11 +41,11 @@ class UsedByChoiceCollector extends DefaultTreeWalker
             {
                 final Object symbolObject = choiceCaseExpression.getExpression().getExprSymbolObject();
                 if (symbolObject instanceof EnumItem)
-                    addEnumItemToUsedByChoiceMap((EnumItem)symbolObject, choiceType, choiceCase,
-                            choiceCaseExpression);
+                    addEnumItemToUsedByChoiceMap(
+                            (EnumItem)symbolObject, choiceType, choiceCase, choiceCaseExpression);
                 else if (symbolObject instanceof BitmaskValue)
-                    addBitmaskValueToUsedByChoiceMap((BitmaskValue)symbolObject, choiceType, choiceCase,
-                            choiceCaseExpression);
+                    addBitmaskValueToUsedByChoiceMap(
+                            (BitmaskValue)symbolObject, choiceType, choiceCase, choiceCaseExpression);
             }
         }
     }
@@ -66,8 +66,8 @@ class UsedByChoiceCollector extends DefaultTreeWalker
 
     public static final class ChoiceCaseReference implements Comparable<ChoiceCaseReference>
     {
-        public ChoiceCaseReference(ChoiceType choiceType, ChoiceCase choiceCase,
-                ChoiceCaseExpression choiceCaseExpression)
+        public ChoiceCaseReference(
+                ChoiceType choiceType, ChoiceCase choiceCase, ChoiceCaseExpression choiceCaseExpression)
         {
             this.choiceType = choiceType;
             this.choiceCase = choiceCase;
@@ -83,7 +83,7 @@ class UsedByChoiceCollector extends DefaultTreeWalker
         @Override
         public boolean equals(Object other)
         {
-            if ( !(other instanceof ChoiceCaseReference) )
+            if (!(other instanceof ChoiceCaseReference))
                 return false;
 
             return (this == other) || compareTo((ChoiceCaseReference)other) == 0;

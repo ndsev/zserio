@@ -42,10 +42,10 @@ final class DocResourceManager
         this.packageCollector = packageCollector;
 
         final String outputDir = docParameters.getOutputDir();
-        final String htmlPackagesDirectory = StringJoinUtil.joinStrings(
-                outputDir, DocDirectories.PACKAGES_DIRECTORY, File.separator);
-        final String docResourceDirectory = StringJoinUtil.joinStrings(
-                outputDir, DocDirectories.DOC_RESOURCES_DIRECTORY, File.separator);
+        final String htmlPackagesDirectory =
+                StringJoinUtil.joinStrings(outputDir, DocDirectories.PACKAGES_DIRECTORY, File.separator);
+        final String docResourceDirectory =
+                StringJoinUtil.joinStrings(outputDir, DocDirectories.DOC_RESOURCES_DIRECTORY, File.separator);
         packagesDir = Paths.get(htmlPackagesDirectory).toAbsolutePath();
         resourcesDir = Paths.get(docResourceDirectory).toAbsolutePath();
 
@@ -101,8 +101,8 @@ final class DocResourceManager
             }
             else
             {
-                mappedResource = addMappedResource(resourcesDir, resource.getBaseName(),
-                        resource.getExtension());
+                mappedResource =
+                        addMappedResource(resourcesDir, resource.getBaseName(), resource.getExtension());
             }
 
             resources.put(resource, mappedResource);
@@ -126,12 +126,12 @@ final class DocResourceManager
                 try
                 {
                     currentOutputDir = dstResource.getPath();
-                    final String markdown = new String(Files.readAllBytes(srcResource.getFullPath()),
-                            StandardCharsets.UTF_8);
-                    final String bodyContent = DocMarkdownToHtmlConverter.convert(this,
-                            new AstLocation(srcResource.getFullPath().toString(), 0, 0), markdown);
-                    htmlResourceEmitter.emit(dstResource.getPath(),
-                            dstResource.getFileName(), srcResource.getFileName(), bodyContent);
+                    final String markdown =
+                            new String(Files.readAllBytes(srcResource.getFullPath()), StandardCharsets.UTF_8);
+                    final String bodyContent = DocMarkdownToHtmlConverter.convert(
+                            this, new AstLocation(srcResource.getFullPath().toString(), 0, 0), markdown);
+                    htmlResourceEmitter.emit(dstResource.getPath(), dstResource.getFileName(),
+                            srcResource.getFileName(), bodyContent);
                 }
                 catch (ZserioExtensionException e)
                 {
@@ -163,8 +163,8 @@ final class DocResourceManager
         int duplicityMarkerIndex = 0;
         while (!mappedResources.add(mappedResource))
         {
-            mappedResource = new LocalResource(
-                    path, baseName + "(" + (++duplicityMarkerIndex) + ")", extension);
+            mappedResource =
+                    new LocalResource(path, baseName + "(" + (++duplicityMarkerIndex) + ")", extension);
         }
         return mappedResource;
     }
@@ -227,7 +227,7 @@ final class DocResourceManager
 
             final int lastDotIndex = fileName.lastIndexOf('.');
             baseName = (lastDotIndex != -1) ? fileName.substring(0, lastDotIndex) : fileName;
-            extension  = (lastDotIndex != -1) ? fileName.substring(lastDotIndex) : "";
+            extension = (lastDotIndex != -1) ? fileName.substring(lastDotIndex) : "";
         }
 
         public LocalResource(Path path, String baseName, String extension)

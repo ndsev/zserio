@@ -16,10 +16,11 @@ public final class SqlTableTemplateData extends CompoundTypeTemplateData
         super(context, sqlTableType);
 
         final SqlConstraint sqlConstraintType = sqlTableType.getSqlConstraint();
-        final Expression sqlConstraintExpr = (sqlConstraintType == null) ? null :
-            sqlConstraintType.getConstraintExpr();
-        sqlConstraint = (sqlConstraintExpr == null) ? "" :
-            context.getExpressionFormatter().formatGetter(sqlConstraintExpr);
+        final Expression sqlConstraintExpr =
+                (sqlConstraintType == null) ? null : sqlConstraintType.getConstraintExpr();
+        sqlConstraint = (sqlConstraintExpr == null)
+                ? ""
+                : context.getExpressionFormatter().formatGetter(sqlConstraintExpr);
         virtualTableUsing = sqlTableType.getVirtualTableUsingString();
     }
 

@@ -51,25 +51,25 @@ final class SymbolTemplateDataCreator
             final String htmlLinkPage = createHtmlLinkPage(context, pkg);
             final String htmlLinkAnchor = createHtmlAnchor(typeName, name);
 
-            return new SymbolTemplateData(alias, typeName, htmlTitle, htmlLinkPage, htmlLinkAnchor,
-                    templateArguments);
+            return new SymbolTemplateData(
+                    alias, typeName, htmlTitle, htmlLinkPage, htmlLinkAnchor, templateArguments);
         }
     }
 
-    public static SymbolTemplateData createData(TemplateDataContext context, ZserioType zserioType,
-            AstNode member)
+    public static SymbolTemplateData createData(
+            TemplateDataContext context, ZserioType zserioType, AstNode member)
     {
         return createData(context, zserioType, member, AstNodeNameMapper.getName(member));
     }
 
-    public static SymbolTemplateData createData(TemplateDataContext context, ZserioType zserioType,
-            AstNode member, String memberName)
+    public static SymbolTemplateData createData(
+            TemplateDataContext context, ZserioType zserioType, AstNode member, String memberName)
     {
         return createData(context, zserioType, member, memberName, memberName);
     }
 
-    public static SymbolTemplateData createData(TemplateDataContext context, ZserioType zserioType,
-            AstNode member, String memberName, String alias)
+    public static SymbolTemplateData createData(
+            TemplateDataContext context, ZserioType zserioType, AstNode member, String memberName, String alias)
     {
         final String memberTypeName = AstNodeTypeNameMapper.getTypeName(member);
 
@@ -143,8 +143,9 @@ final class SymbolTemplateDataCreator
         }
 
         final String typeName = AstNodeTypeNameMapper.getTypeName(expression);
-        final String htmlTitle = (expressionZserioType == null) ? typeName :
-            typeName + " of type " + AstNodeNameMapper.getName(expressionZserioType);
+        final String htmlTitle = (expressionZserioType == null)
+                ? typeName
+                : typeName + " of type " + AstNodeNameMapper.getName(expressionZserioType);
 
         return new SymbolTemplateData(name, typeName, htmlTitle);
     }

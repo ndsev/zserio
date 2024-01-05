@@ -8,7 +8,8 @@ import zserio.extension.common.ZserioExtensionException;
  */
 public final class SubtypeTemplateData extends PackageTemplateDataBase
 {
-    public SubtypeTemplateData(PackageTemplateDataContext context, Subtype subtype) throws ZserioExtensionException
+    public SubtypeTemplateData(PackageTemplateDataContext context, Subtype subtype)
+            throws ZserioExtensionException
     {
         super(context, subtype);
 

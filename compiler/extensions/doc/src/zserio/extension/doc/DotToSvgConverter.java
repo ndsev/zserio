@@ -15,7 +15,7 @@ final class DotToSvgConverter
 {
     public static boolean isDotExecAvailable(String dotExecutable)
     {
-        final String commandWithArguments[] = { dotExecutable, "-V" };
+        final String commandWithArguments[] = {dotExecutable, "-V"};
 
         try
         {
@@ -30,8 +30,8 @@ final class DotToSvgConverter
     public static void convert(String dotExecutable, File inputDotFile, File outputSvgFile)
             throws ZserioExtensionException
     {
-        final String commandWithArguments[] = { dotExecutable, inputDotFile.toString(), "-T", "svg", "-o",
-                                                outputSvgFile.toString() };
+        final String commandWithArguments[] = {
+                dotExecutable, inputDotFile.toString(), "-T", "svg", "-o", outputSvgFile.toString()};
         if (!runDotExecutable(commandWithArguments))
             throw new ZserioExtensionException("Failure to convert '" + inputDotFile + "' to SVG format!");
     }

@@ -150,8 +150,10 @@ final class AstNodePackageMapper
         {
             if (typeInstantiation instanceof ArrayInstantiation)
             {
-                ((ArrayInstantiation)typeInstantiation).getElementTypeInstantiation()
-                        .getTypeReference().accept(this);
+                ((ArrayInstantiation)typeInstantiation)
+                        .getElementTypeInstantiation()
+                        .getTypeReference()
+                        .accept(this);
             }
             else
             {

@@ -34,25 +34,25 @@ import zserio.tools.StringJoinUtil;
 final class PackageEmitter extends DefaultTreeWalker
 {
     public PackageEmitter(OutputFileManager outputFileManager, DocExtensionParameters docParameters,
-            DocResourceManager docResourceManager,SymbolCollector symbolCollector,
+            DocResourceManager docResourceManager, SymbolCollector symbolCollector,
             PackageCollector packageCollector, UsedByCollector usedByCollector,
             UsedByChoiceCollector usedByChoiceCollector, Package rootPackage, boolean hasSchemaRules)
     {
         this.outputFileManager = outputFileManager;
 
         final String outputDir = docParameters.getOutputDir();
-        htmlPackagesDirectory = StringJoinUtil.joinStrings(outputDir, DocDirectories.PACKAGES_DIRECTORY,
-                File.separator);
+        htmlPackagesDirectory =
+                StringJoinUtil.joinStrings(outputDir, DocDirectories.PACKAGES_DIRECTORY, File.separator);
         docResourceManager.setCurrentOutputDir(htmlPackagesDirectory);
 
         nodesMap = symbolCollector.getNodesMap();
 
         final String htmlRootDirectory = StringJoinUtil.joinStrings("..", "..", File.separator);
-        context = new PackageTemplateDataContext(docParameters, htmlRootDirectory, usedByCollector,
-                usedByChoiceCollector, docResourceManager);
+        context = new PackageTemplateDataContext(
+                docParameters, htmlRootDirectory, usedByCollector, usedByChoiceCollector, docResourceManager);
 
-        headerNavigation = new HeaderNavigationTemplateData(context, rootPackage, hasSchemaRules,
-                HeaderNavigationTemplateData.ActiveItem.PACKAGES_ITEM);
+        headerNavigation = new HeaderNavigationTemplateData(
+                context, rootPackage, hasSchemaRules, HeaderNavigationTemplateData.ActiveItem.PACKAGES_ITEM);
     }
 
     @Override
@@ -69,8 +69,8 @@ final class PackageEmitter extends DefaultTreeWalker
         FileUtil.createOutputDirectory(outputFile);
         writer = FileUtil.createWriter(outputFile);
 
-        final BeginPackageTemplateData templateData = new BeginPackageTemplateData(
-                context, pkg, nodesMap, headerNavigation);
+        final BeginPackageTemplateData templateData =
+                new BeginPackageTemplateData(context, pkg, nodesMap, headerNavigation);
 
         DocFreeMarkerUtil.processTemplate("begin_package.html.ftl", templateData, writer);
 
@@ -96,7 +96,7 @@ final class PackageEmitter extends DefaultTreeWalker
     public void beginRuleGroup(RuleGroup ruleGroup) throws ZserioExtensionException
     {
         final RuleGroupTemplateData templateData = new RuleGroupTemplateData(context, ruleGroup);
-        DocFreeMarkerUtil.processTemplate("rule_group.html.ftl",  templateData, writer);
+        DocFreeMarkerUtil.processTemplate("rule_group.html.ftl", templateData, writer);
     }
 
     @Override
@@ -181,8 +181,8 @@ final class PackageEmitter extends DefaultTreeWalker
     {
         final String packageFileName = PackageFileNameMapper.getFileName(pkg);
 
-        return StringJoinUtil.joinStrings(htmlPackagesDirectory, packageFileName + HTML_FILE_EXTENSION,
-                File.separator);
+        return StringJoinUtil.joinStrings(
+                htmlPackagesDirectory, packageFileName + HTML_FILE_EXTENSION, File.separator);
     }
 
     private static final String HTML_FILE_EXTENSION = ".html";

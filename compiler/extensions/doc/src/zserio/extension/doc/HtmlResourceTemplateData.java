@@ -12,8 +12,8 @@ public final class HtmlResourceTemplateData
     {
         this.cssDirectory = context.getCssDirectory();
         this.stylesheetName = StylesheetEmitter.STYLESHEET_FILE_NAME;
-        this.headerNavigation = new HeaderNavigationTemplateData(context, rootPackage, hasSchemaRules,
-                HeaderNavigationTemplateData.ActiveItem.NO_ITEM);
+        this.headerNavigation = new HeaderNavigationTemplateData(
+                context, rootPackage, hasSchemaRules, HeaderNavigationTemplateData.ActiveItem.NO_ITEM);
 
         this.title = title;
         this.bodyContent = bodyContent;

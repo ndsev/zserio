@@ -146,7 +146,7 @@ final class UsedByCollector extends DefaultTreeWalker
     {
         final Set<AstNode> usedSymbols = new LinkedHashSet<AstNode>();
         addSymbol(bitmaskType.getTypeInstantiation().getTypeReference(), usedSymbols);
-        for (BitmaskValue value: bitmaskType.getValues())
+        for (BitmaskValue value : bitmaskType.getValues())
         {
             if (value.getValueExpression() != null)
                 addSymbolsUsedInExpression(value.getValueExpression(), usedSymbols);

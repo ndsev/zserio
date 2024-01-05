@@ -8,7 +8,8 @@ import zserio.extension.common.ZserioExtensionException;
  */
 public final class ConstantTemplateData extends PackageTemplateDataBase
 {
-    public ConstantTemplateData(PackageTemplateDataContext context, Constant constant) throws ZserioExtensionException
+    public ConstantTemplateData(PackageTemplateDataContext context, Constant constant)
+            throws ZserioExtensionException
     {
         super(context, constant);
 

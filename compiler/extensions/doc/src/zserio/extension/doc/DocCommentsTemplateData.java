@@ -95,8 +95,8 @@ public final class DocCommentsTemplateData
             isDeprecated = false;
 
             final DocResourceManager docResourceManager = context.getDocResourceManager();
-            markdownHtml = DocMarkdownToHtmlConverter.convert(docResourceManager,
-                    docCommentMarkdown.getLocation(), docCommentMarkdown.getMarkdown());
+            markdownHtml = DocMarkdownToHtmlConverter.convert(
+                    docResourceManager, docCommentMarkdown.getLocation(), docCommentMarkdown.getMarkdown());
 
             this.isOneLiner = docCommentMarkdown.isOneLiner();
         }
@@ -205,8 +205,7 @@ public final class DocCommentsTemplateData
                 public DocLineElementData(ContentTemplateDataContext context, DocLineElement docLineElement)
                 {
                     final DocText docText = docLineElement.getDocText();
-                    docString = docText != null ?
-                            DocClassicToHtmlConverter.convert(docText.getText()) : null;
+                    docString = docText != null ? DocClassicToHtmlConverter.convert(docText.getText()) : null;
 
                     final DocTagSee docTagSee = docLineElement.getSeeTag();
                     seeTag = docTagSee != null ? new DocTagSeeData(context, docTagSee) : null;
@@ -233,7 +232,7 @@ public final class DocCommentsTemplateData
         {
             public DocTagSeeData(ContentTemplateDataContext context, DocTagSee docTagSee)
             {
-                seeSymbol = SymbolTemplateDataCreator.createData(context,  docTagSee);
+                seeSymbol = SymbolTemplateDataCreator.createData(context, docTagSee);
             }
 
             public SymbolTemplateData getSeeSymbol()
@@ -273,8 +272,8 @@ public final class DocCommentsTemplateData
         private final boolean isOneLiner;
     }
 
-    private DocCommentTemplateData createDocCommentTemplateData(ContentTemplateDataContext context,
-            DocComment docComment)
+    private DocCommentTemplateData createDocCommentTemplateData(
+            ContentTemplateDataContext context, DocComment docComment)
     {
         if (docComment instanceof DocCommentMarkdown)
         {

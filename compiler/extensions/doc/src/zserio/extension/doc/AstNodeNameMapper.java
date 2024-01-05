@@ -59,8 +59,8 @@ final class AstNodeNameMapper
         final String name = visitor.getName();
         if (name == null)
         {
-            ZserioToolPrinter.printWarning(node, "Unhandled AST node '" + node.getClass().getName() +
-                    "' in AstNodeNameMapper!");
+            ZserioToolPrinter.printWarning(
+                    node, "Unhandled AST node '" + node.getClass().getName() + "' in AstNodeNameMapper!");
 
             return "UnknownName";
         }
@@ -213,8 +213,10 @@ final class AstNodeNameMapper
         {
             if (typeInstantiation instanceof ArrayInstantiation)
             {
-                ((ArrayInstantiation)typeInstantiation).getElementTypeInstantiation()
-                        .getTypeReference().accept(this);
+                ((ArrayInstantiation)typeInstantiation)
+                        .getElementTypeInstantiation()
+                        .getTypeReference()
+                        .accept(this);
             }
             else
             {

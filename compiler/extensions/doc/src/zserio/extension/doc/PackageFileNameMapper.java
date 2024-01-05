@@ -14,8 +14,8 @@ final class PackageFileNameMapper
     public static String getFileName(Package pkg)
     {
         final PackageName packageName = pkg.getPackageName();
-        final String packageFileName = (packageName.isEmpty()) ? DEFAULT_PACKAGE_FILE_NAME :
-            packageName.toString();
+        final String packageFileName =
+                (packageName.isEmpty()) ? DEFAULT_PACKAGE_FILE_NAME : packageName.toString();
 
         return packageFileName;
     }

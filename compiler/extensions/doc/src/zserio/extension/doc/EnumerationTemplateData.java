@@ -24,7 +24,7 @@ public final class EnumerationTemplateData extends PackageTemplateDataBase
         typeSymbol = SymbolTemplateDataCreator.createData(context, enumType.getTypeInstantiation());
 
         items = new ArrayList<EnumItemTemplateData>();
-        for (EnumItem item: enumType.getItems())
+        for (EnumItem item : enumType.getItems())
             items.add(new EnumItemTemplateData(context, enumType, item));
     }
 
@@ -48,8 +48,9 @@ public final class EnumerationTemplateData extends PackageTemplateDataBase
             final Expression valueExpression = enumItem.getValueExpression();
             final ExpressionFormatter docExpressionFormatter = context.getExpressionFormatter();
             hasValueExpression = (valueExpression != null);
-            value = hasValueExpression ? docExpressionFormatter.formatGetter(valueExpression) :
-                    enumItem.getValue().toString();
+            value = hasValueExpression
+                    ? docExpressionFormatter.formatGetter(valueExpression)
+                    : enumItem.getValue().toString();
 
             isDeprecated = enumItem.isDeprecated();
             isRemoved = enumItem.isRemoved();
@@ -59,15 +60,15 @@ public final class EnumerationTemplateData extends PackageTemplateDataBase
             seeSymbols = new ArrayList<SeeSymbolTemplateData>();
             final UsedByChoiceCollector usedByChoiceCollector = context.getUsedByChoiceCollector();
             for (UsedByChoiceCollector.ChoiceCaseReference choiceCaseRef :
-                usedByChoiceCollector.getUsedByChoices(enumItem))
+                    usedByChoiceCollector.getUsedByChoices(enumItem))
             {
                 final ChoiceType choiceType = choiceCaseRef.getChoiceType();
                 final ChoiceCase choiceCase = choiceCaseRef.getChoiceCase();
                 final Expression caseExpression = choiceCaseRef.getChoiceCaseExpression().getExpression();
-                final SymbolTemplateData choiceCaseSymbol = SymbolTemplateDataCreator.createData(context,
-                        choiceType, choiceCase, docExpressionFormatter.formatGetter(caseExpression));
-                final SymbolTemplateData choiceTypeSymbol = SymbolTemplateDataCreator.createData(context,
-                        choiceType);
+                final SymbolTemplateData choiceCaseSymbol = SymbolTemplateDataCreator.createData(
+                        context, choiceType, choiceCase, docExpressionFormatter.formatGetter(caseExpression));
+                final SymbolTemplateData choiceTypeSymbol =
+                        SymbolTemplateDataCreator.createData(context, choiceType);
                 seeSymbols.add(new SeeSymbolTemplateData(choiceCaseSymbol, choiceTypeSymbol));
             }
         }

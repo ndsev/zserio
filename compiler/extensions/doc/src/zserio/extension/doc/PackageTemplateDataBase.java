@@ -21,9 +21,10 @@ public class PackageTemplateDataBase extends ContentTemplateDataBase
         final boolean svgCollaborationExists =
                 SymbolCollaborationDotEmitter.svgSymbolCollaborationDiagramExists(
                         astNode, usedByCollector, context.getWithSvgDiagrams());
-        this.collaborationDiagramSvg = (svgCollaborationExists) ?
-                SymbolCollaborationDotEmitter.getSvgSymbolCollaborationHtmlLink(astNode,
-                        context.getSymbolCollaborationDirectory()) : null;
+        this.collaborationDiagramSvg = (svgCollaborationExists)
+                ? SymbolCollaborationDotEmitter.getSvgSymbolCollaborationHtmlLink(
+                          astNode, context.getSymbolCollaborationDirectory())
+                : null;
 
         usedBySymbols = new TreeSet<SymbolTemplateData>();
         for (AstNode usedByNode : usedByCollector.getUsedBySymbols(astNode))

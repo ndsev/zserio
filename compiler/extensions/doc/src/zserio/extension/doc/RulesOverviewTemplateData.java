@@ -21,8 +21,8 @@ public final class RulesOverviewTemplateData
         jsDirectory = context.getJsDirectory();
         stylesheetName = StylesheetEmitter.STYLESHEET_FILE_NAME;
         final boolean hasSchemaRules = true; // this is the rules view!
-        headerNavigation = new HeaderNavigationTemplateData(context, rootPackage, hasSchemaRules,
-                HeaderNavigationTemplateData.ActiveItem.RULES_ITEM);
+        headerNavigation = new HeaderNavigationTemplateData(
+                context, rootPackage, hasSchemaRules, HeaderNavigationTemplateData.ActiveItem.RULES_ITEM);
 
         this.packagesRuleGroups = packagesRuleGroups;
     }
@@ -92,8 +92,8 @@ public final class RulesOverviewTemplateData
             return ruleGroups;
         }
 
-        private static class RuleGroupTemplateDataComparator implements
-                Comparator<RuleGroupTemplateData>, Serializable
+        private static class RuleGroupTemplateDataComparator
+                implements Comparator<RuleGroupTemplateData>, Serializable
         {
             private static final long serialVersionUID = 1L;
 
@@ -106,8 +106,8 @@ public final class RulesOverviewTemplateData
 
         private final SymbolTemplateData packageSymbol;
         // we want to have sorted rule groups in the overview
-        private final Set<RuleGroupTemplateData> ruleGroups = new TreeSet<RuleGroupTemplateData>(
-                new RuleGroupTemplateDataComparator());
+        private final Set<RuleGroupTemplateData> ruleGroups =
+                new TreeSet<RuleGroupTemplateData>(new RuleGroupTemplateDataComparator());
     }
 
     private final String cssDirectory;

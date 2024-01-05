@@ -20,7 +20,7 @@ public final class BeginPackageTemplateData
 {
     public BeginPackageTemplateData(PackageTemplateDataContext context, Package pkg,
             Map<Package, List<AstNode>> nodesMap, HeaderNavigationTemplateData headerNavigation)
-                    throws ZserioExtensionException
+            throws ZserioExtensionException
     {
         cssDirectory = context.getCssDirectory();
         isDefaultPackage = pkg.getPackageName().isEmpty();
@@ -29,8 +29,9 @@ public final class BeginPackageTemplateData
 
         this.headerNavigation = headerNavigation;
 
-        compatibilityVersion = pkg.getCompatibilityVersion() != null ?
-                new CompatibilityVersionTemplateData(context, pkg.getCompatibilityVersion()) : null;
+        compatibilityVersion = pkg.getCompatibilityVersion() != null
+                ? new CompatibilityVersionTemplateData(context, pkg.getCompatibilityVersion())
+                : null;
 
         for (Import importNode : pkg.getImports())
             importNodes.add(new ImportTemplateData(context, importNode));
@@ -92,11 +93,11 @@ public final class BeginPackageTemplateData
         return tocSymbols;
     }
 
-    public static final class PackageSymbolOverviewTemplateData implements
-            Comparable<PackageSymbolOverviewTemplateData>
+    public static final class PackageSymbolOverviewTemplateData
+            implements Comparable<PackageSymbolOverviewTemplateData>
     {
-        public PackageSymbolOverviewTemplateData(PackageTemplateDataContext context, Package pkg,
-                List<AstNode> packageSymbols)
+        public PackageSymbolOverviewTemplateData(
+                PackageTemplateDataContext context, Package pkg, List<AstNode> packageSymbols)
         {
             symbol = SymbolTemplateDataCreator.createData(context, pkg);
             for (AstNode packageSymbol : packageSymbols)
@@ -141,8 +142,8 @@ public final class BeginPackageTemplateData
 
     public static final class CompatibilityVersionTemplateData
     {
-        public CompatibilityVersionTemplateData(PackageTemplateDataContext context,
-                CompatibilityVersion compatibilityVersion)
+        public CompatibilityVersionTemplateData(
+                PackageTemplateDataContext context, CompatibilityVersion compatibilityVersion)
         {
             version = compatibilityVersion.getVersion().toString();
             docComments = new DocCommentsTemplateData(context, compatibilityVersion.getDocComments());
@@ -168,11 +169,12 @@ public final class BeginPackageTemplateData
                 throws ZserioExtensionException
         {
             docComments = new DocCommentsTemplateData(context, importNode.getDocComments());
-            importedPackageSymbol = SymbolTemplateDataCreator.createData(context,
-                    importNode.getImportedPackage());
+            importedPackageSymbol =
+                    SymbolTemplateDataCreator.createData(context, importNode.getImportedPackage());
             final PackageSymbol importedPackageSymbol = importNode.getImportedSymbol();
-            importedSymbol = (importedPackageSymbol == null) ? null :
-                SymbolTemplateDataCreator.createData(context, importedPackageSymbol);
+            importedSymbol = (importedPackageSymbol == null)
+                    ? null
+                    : SymbolTemplateDataCreator.createData(context, importedPackageSymbol);
         }
 
         public DocCommentsTemplateData getDocComments()

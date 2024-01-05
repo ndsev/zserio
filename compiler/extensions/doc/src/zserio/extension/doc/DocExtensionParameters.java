@@ -19,8 +19,9 @@ final class DocExtensionParameters
         pathName = parameters.getPathName();
         outputDir = parameters.getCommandLineArg(OptionDoc);
         withSvgDiagrams = parameters.argumentExists(OptionWithSvgDiagrams);
-        dotExecutable = (parameters.argumentExists(OptionSetDotExecutable)) ?
-                parameters.getCommandLineArg(OptionSetDotExecutable) : DefaultDotExecutable;
+        dotExecutable = (parameters.argumentExists(OptionSetDotExecutable))
+                ? parameters.getCommandLineArg(OptionSetDotExecutable)
+                : DefaultDotExecutable;
 
         if (withSvgDiagrams && !DotToSvgConverter.isDotExecAvailable(dotExecutable))
             throw new ZserioExtensionException("The dot executable '" + dotExecutable + "' not found!");
@@ -56,14 +57,14 @@ final class DocExtensionParameters
         final OptionGroup svgDiagramsGroup = new OptionGroup();
         option = new Option(OptionWithSvgDiagrams, false, "enable generation of svg diagrams from dot files");
         svgDiagramsGroup.addOption(option);
-        option = new Option(OptionWithoutSvgDiagrams, false,
-                "disable generation of svg diagrams from dot files (default)");
+        option = new Option(
+                OptionWithoutSvgDiagrams, false, "disable generation of svg diagrams from dot files (default)");
         svgDiagramsGroup.addOption(option);
         svgDiagramsGroup.setRequired(false);
         options.addOptionGroup(svgDiagramsGroup);
 
-        option = new Option(OptionSetDotExecutable, true,
-                "set dot executable to use for conversions to svg format");
+        option = new Option(
+                OptionSetDotExecutable, true, "set dot executable to use for conversions to svg format");
         option.setArgName("dotExec");
         option.setRequired(false);
         options.addOption(option);

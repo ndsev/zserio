@@ -6,26 +6,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.commonmark.node.Node;
+import org.commonmark.Extension;
+import org.commonmark.ext.autolink.AutolinkExtension;
+import org.commonmark.ext.gfm.tables.TablesExtension;
+import org.commonmark.ext.heading.anchor.HeadingAnchorExtension;
 import org.commonmark.node.Image;
 import org.commonmark.node.Link;
-import org.commonmark.Extension;
+import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.NodeRenderer;
-import org.commonmark.renderer.html.HtmlRenderer;
-
-import zserio.ast.AstLocation;
-import zserio.tools.ZserioToolPrinter;
-
 import org.commonmark.renderer.html.AttributeProvider;
 import org.commonmark.renderer.html.AttributeProviderContext;
 import org.commonmark.renderer.html.AttributeProviderFactory;
 import org.commonmark.renderer.html.CoreHtmlNodeRenderer;
 import org.commonmark.renderer.html.HtmlNodeRendererContext;
 import org.commonmark.renderer.html.HtmlNodeRendererFactory;
-import org.commonmark.ext.autolink.AutolinkExtension;
-import org.commonmark.ext.heading.anchor.HeadingAnchorExtension;
-import org.commonmark.ext.gfm.tables.TablesExtension;
+import org.commonmark.renderer.html.HtmlRenderer;
+
+import zserio.ast.AstLocation;
+import zserio.tools.ZserioToolPrinter;
 
 /**
  * Converter for the Markdown documentation comment text into HTML format.
@@ -37,45 +36,37 @@ class DocMarkdownToHtmlConverter
 {
     static String convert(DocResourceManager docResourceManager, AstLocation location, String markdown)
     {
-        final List<Extension> extensions = Arrays.asList(AutolinkExtension.create(),
-                HeadingAnchorExtension.create(), TablesExtension.create());
+        final List<Extension> extensions = Arrays.asList(
+                AutolinkExtension.create(), HeadingAnchorExtension.create(), TablesExtension.create());
 
         final Parser parser = Parser.builder().extensions(extensions).build();
         final Node document = parser.parse(markdown);
 
-        final HtmlRenderer renderer = HtmlRenderer.builder()
-                .extensions(extensions)
-                .nodeRendererFactory(
-                        new HtmlNodeRendererFactory()
-                        {
+        final HtmlRenderer renderer =
+                HtmlRenderer.builder()
+                        .extensions(extensions)
+                        .nodeRendererFactory(new HtmlNodeRendererFactory() {
                             @Override
                             public NodeRenderer create(HtmlNodeRendererContext context)
                             {
                                 return new ResourcesRenderer(context, docResourceManager, location);
                             }
-                        }
-                )
-                .attributeProviderFactory(
-                        new AttributeProviderFactory()
-                        {
+                        })
+                        .attributeProviderFactory(new AttributeProviderFactory() {
                             @Override
                             public AttributeProvider create(AttributeProviderContext arg0)
                             {
                                 return new AnchorAttributeProvider();
                             }
-                        }
-                )
-                .attributeProviderFactory(
-                        new AttributeProviderFactory()
-                        {
+                        })
+                        .attributeProviderFactory(new AttributeProviderFactory() {
                             @Override
                             public AttributeProvider create(AttributeProviderContext arg0)
                             {
                                 return new ImageAttributeProvider();
                             }
-                        }
-                )
-                .build();
+                        })
+                        .build();
 
         final String html = renderer.render(document);
 
@@ -84,8 +75,8 @@ class DocMarkdownToHtmlConverter
 
     private static class ResourcesRenderer extends CoreHtmlNodeRenderer
     {
-        ResourcesRenderer(HtmlNodeRendererContext context,
-                DocResourceManager docResourceManager, AstLocation location)
+        ResourcesRenderer(
+                HtmlNodeRendererContext context, DocResourceManager docResourceManager, AstLocation location)
         {
             super(context);
             this.docResourceManager = docResourceManager;
@@ -121,7 +112,6 @@ class DocMarkdownToHtmlConverter
             {
                 final String mappedResource = docResourceManager.addResource(location, image.getDestination());
                 image.setDestination(convertToHtmlDestination(mappedResource));
-
             }
             catch (Exception e)
             {

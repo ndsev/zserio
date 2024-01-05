@@ -10,8 +10,8 @@ import java.util.List;
  */
 public final class SymbolTemplateData implements Comparable<SymbolTemplateData>
 {
-    public SymbolTemplateData(String name, String typeName, String htmlTitle, String htmlLinkPage,
-            String htmlLinkAnchor)
+    public SymbolTemplateData(
+            String name, String typeName, String htmlTitle, String htmlLinkPage, String htmlLinkAnchor)
     {
         this(name, typeName, htmlTitle, new HtmlLink(htmlLinkPage, htmlLinkAnchor),
                 new ArrayList<SymbolTemplateData>());
@@ -28,8 +28,8 @@ public final class SymbolTemplateData implements Comparable<SymbolTemplateData>
         this(name, typeName, htmlTitle, null, new ArrayList<SymbolTemplateData>());
     }
 
-    public SymbolTemplateData(String name, String typeName, String htmlTitle,
-            List<SymbolTemplateData> templateArguments)
+    public SymbolTemplateData(
+            String name, String typeName, String htmlTitle, List<SymbolTemplateData> templateArguments)
     {
         this(name, typeName, htmlTitle, null, templateArguments);
     }
@@ -61,7 +61,7 @@ public final class SymbolTemplateData implements Comparable<SymbolTemplateData>
     @Override
     public boolean equals(Object other)
     {
-        if ( !(other instanceof SymbolTemplateData) )
+        if (!(other instanceof SymbolTemplateData))
             return false;
 
         return (this == other) || compareTo((SymbolTemplateData)other) == 0;

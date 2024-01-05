@@ -12,8 +12,8 @@ import zserio.extension.common.ZserioExtensionException;
  */
 final class StylesheetEmitter
 {
-    static void emit(OutputFileManager outputFileManager,
-            DocExtensionParameters docParameters) throws ZserioExtensionException
+    static void emit(OutputFileManager outputFileManager, DocExtensionParameters docParameters)
+            throws ZserioExtensionException
     {
         final File outputDirectory = new File(docParameters.getOutputDir(), DocDirectories.CSS_DIRECTORY);
         final File outputFile = new File(outputDirectory, STYLESHEET_FILE_NAME);

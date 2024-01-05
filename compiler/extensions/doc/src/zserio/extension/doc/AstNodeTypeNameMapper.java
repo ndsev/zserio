@@ -64,8 +64,8 @@ final class AstNodeTypeNameMapper
         final String typeName = visitor.getTypeName();
         if (typeName == null)
         {
-            ZserioToolPrinter.printWarning(node, "Unhandled AST node '" + node.getClass().getName() +
-                    "' in AstNodeTypeNameMapper!");
+            ZserioToolPrinter.printWarning(
+                    node, "Unhandled AST node '" + node.getClass().getName() + "' in AstNodeTypeNameMapper!");
 
             return "UnknownTypeName";
         }
@@ -251,8 +251,10 @@ final class AstNodeTypeNameMapper
         {
             if (typeInstantiation instanceof ArrayInstantiation)
             {
-                ((ArrayInstantiation)typeInstantiation).getElementTypeInstantiation()
-                        .getTypeReference().accept(this);
+                ((ArrayInstantiation)typeInstantiation)
+                        .getElementTypeInstantiation()
+                        .getTypeReference()
+                        .accept(this);
             }
             else
             {

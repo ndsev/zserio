@@ -10,12 +10,11 @@ import zserio.ast.Package;
  */
 public final class HeaderNavigationTemplateData
 {
-    public HeaderNavigationTemplateData(TemplateDataContext context, Package rootPackage,
-            boolean hasSchemaRules, ActiveItem activeItem)
+    public HeaderNavigationTemplateData(
+            TemplateDataContext context, Package rootPackage, boolean hasSchemaRules, ActiveItem activeItem)
     {
         final SymbolTemplateData rootPackageSymbol = SymbolTemplateDataCreator.createData(context, rootPackage);
-        navigationItems.add(new NavigationItem(
-                "Packages", rootPackageSymbol.getHtmlLink().getHtmlPage()));
+        navigationItems.add(new NavigationItem("Packages", rootPackageSymbol.getHtmlLink().getHtmlPage()));
         if (hasSchemaRules)
         {
             navigationItems.add(new NavigationItem(
@@ -74,7 +73,7 @@ public final class HeaderNavigationTemplateData
         }
 
         private final int index;
-    };
+    }
 
     private final List<NavigationItem> navigationItems = new ArrayList<NavigationItem>();
     private final ActiveItem activeItem;

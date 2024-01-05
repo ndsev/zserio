@@ -22,8 +22,8 @@ class TemplateDataContext
         cssDirectory = getHtmlDirectory(htmlRootDirectory, DocDirectories.CSS_DIRECTORY);
         jsDirectory = getHtmlDirectory(htmlRootDirectory, DocDirectories.JS_DIRECTORY);
         resourcesDirectory = getHtmlDirectory(htmlRootDirectory, DocDirectories.RESOURCES_DIRECTORY);
-        symbolCollaborationDirectory = getHtmlDirectory(htmlRootDirectory,
-                DocDirectories.SYMBOL_COLLABORATION_DIRECTORY);
+        symbolCollaborationDirectory =
+                getHtmlDirectory(htmlRootDirectory, DocDirectories.SYMBOL_COLLABORATION_DIRECTORY);
     }
 
     public boolean getWithSvgDiagrams()

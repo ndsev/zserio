@@ -12,7 +12,8 @@ import zserio.extension.common.ZserioExtensionException;
  */
 public final class ServiceTemplateData extends PackageTemplateDataBase
 {
-    public ServiceTemplateData(PackageTemplateDataContext context, ServiceType serviceType) throws ZserioExtensionException
+    public ServiceTemplateData(PackageTemplateDataContext context, ServiceType serviceType)
+            throws ZserioExtensionException
     {
         super(context, serviceType);
 
@@ -31,10 +32,10 @@ public final class ServiceTemplateData extends PackageTemplateDataBase
                 ServiceMethod serviceMethod) throws ZserioExtensionException
         {
             symbol = SymbolTemplateDataCreator.createData(context, serviceType, serviceMethod);
-            requestSymbol = SymbolTemplateDataCreator.createData(context,
-                    serviceMethod.getRequestTypeReference());
-            responseSymbol = SymbolTemplateDataCreator.createData(context,
-                    serviceMethod.getResponseTypeReference());
+            requestSymbol =
+                    SymbolTemplateDataCreator.createData(context, serviceMethod.getRequestTypeReference());
+            responseSymbol =
+                    SymbolTemplateDataCreator.createData(context, serviceMethod.getResponseTypeReference());
             docComments = new DocCommentsTemplateData(context, serviceMethod.getDocComments());
         }
 

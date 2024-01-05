@@ -28,13 +28,12 @@ final class RulesOverviewEmitter extends DefaultTreeWalker
         this.outputFileManager = outputFileManager;
 
         final String outputDir = docParameters.getOutputDir();
-        htmlContentDirectory = StringJoinUtil.joinStrings(outputDir, DocDirectories.CONTENT_DIRECTORY,
-                File.separator);
+        htmlContentDirectory =
+                StringJoinUtil.joinStrings(outputDir, DocDirectories.CONTENT_DIRECTORY, File.separator);
         docResourceManager.setCurrentOutputDir(htmlContentDirectory);
 
         final String htmlRootDirectory = "..";
-        context = new ContentTemplateDataContext(
-                docParameters, htmlRootDirectory, docResourceManager);
+        context = new ContentTemplateDataContext(docParameters, htmlRootDirectory, docResourceManager);
     }
 
     @Override
@@ -47,8 +46,8 @@ final class RulesOverviewEmitter extends DefaultTreeWalker
     public void endRoot(Root root) throws ZserioExtensionException
     {
         final File outputFile = new File(getRulesOverviewHtmlLink(htmlContentDirectory));
-        final RulesOverviewTemplateData templateData = new RulesOverviewTemplateData(
-                context, root.getRootPackage(), packagesRuleGroups);
+        final RulesOverviewTemplateData templateData =
+                new RulesOverviewTemplateData(context, root.getRootPackage(), packagesRuleGroups);
         DocFreeMarkerUtil.processTemplate(RULES_OVERVIEW_TEMPLATE_SOURCE_NAME, templateData, outputFile);
         outputFileManager.registerOutputFile(outputFile);
     }
@@ -58,7 +57,7 @@ final class RulesOverviewEmitter extends DefaultTreeWalker
     {
         if (!currentPackageRuleGroups.isEmpty())
         {
-            packagesRuleGroups.add(new PackageRulesTemplateData(context,  pkg, currentPackageRuleGroups));
+            packagesRuleGroups.add(new PackageRulesTemplateData(context, pkg, currentPackageRuleGroups));
             currentPackageRuleGroups.clear();
         }
     }

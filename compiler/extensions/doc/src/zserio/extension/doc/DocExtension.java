@@ -91,8 +91,8 @@ public final class DocExtension implements Extension
         // emit HTML rules overview
         if (ruleGroupVisitor.hasSchemaRules())
         {
-            final RulesOverviewEmitter rulesOverviewEmitter = new RulesOverviewEmitter(outputFileManager,
-                    docParameters, docResourceManager);
+            final RulesOverviewEmitter rulesOverviewEmitter =
+                    new RulesOverviewEmitter(outputFileManager, docParameters, docResourceManager);
             rootNode.walk(rulesOverviewEmitter);
         }
 
