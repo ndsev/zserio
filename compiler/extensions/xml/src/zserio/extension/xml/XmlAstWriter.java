@@ -2,7 +2,6 @@ package zserio.extension.xml;
 
 import java.io.File;
 import java.util.List;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -31,11 +30,18 @@ import zserio.ast.ChoiceType;
 import zserio.ast.CompatibilityVersion;
 import zserio.ast.Constant;
 import zserio.ast.DocComment;
+import zserio.ast.DocCommentClassic;
+import zserio.ast.DocCommentMarkdown;
 import zserio.ast.DocElement;
 import zserio.ast.DocLine;
 import zserio.ast.DocLineElement;
 import zserio.ast.DocMultiline;
+import zserio.ast.DocParagraph;
 import zserio.ast.DocTagDeprecated;
+import zserio.ast.DocTagParam;
+import zserio.ast.DocTagSee;
+import zserio.ast.DocTagTodo;
+import zserio.ast.DocText;
 import zserio.ast.DynamicBitFieldType;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
@@ -47,6 +53,8 @@ import zserio.ast.FloatType;
 import zserio.ast.Function;
 import zserio.ast.Import;
 import zserio.ast.InstantiateType;
+import zserio.ast.Package;
+import zserio.ast.PackageSymbol;
 import zserio.ast.Parameter;
 import zserio.ast.PubsubMessage;
 import zserio.ast.PubsubType;
@@ -54,8 +62,6 @@ import zserio.ast.Root;
 import zserio.ast.Rule;
 import zserio.ast.RuleGroup;
 import zserio.ast.ScopeSymbol;
-import zserio.ast.Package;
-import zserio.ast.PackageSymbol;
 import zserio.ast.ServiceMethod;
 import zserio.ast.ServiceType;
 import zserio.ast.SqlConstraint;
@@ -73,13 +79,6 @@ import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
 import zserio.ast.VarIntegerType;
 import zserio.ast.ZserioAstVisitor;
-import zserio.ast.DocCommentClassic;
-import zserio.ast.DocCommentMarkdown;
-import zserio.ast.DocParagraph;
-import zserio.ast.DocTagParam;
-import zserio.ast.DocTagSee;
-import zserio.ast.DocTagTodo;
-import zserio.ast.DocText;
 import zserio.ast.ZserioTemplatableType;
 import zserio.ast.ZserioType;
 import zserio.extension.common.ZserioExtensionException;
@@ -168,8 +167,8 @@ public final class XmlAstWriter implements ZserioAstVisitor
     public void visitImport(Import unitImport)
     {
         final Element xmlElement = xmlDoc.createElement("IMPORT");
-        xmlElement.setAttribute("importedPackageName",
-                unitImport.getImportedPackage().getPackageName().toString());
+        xmlElement.setAttribute(
+                "importedPackageName", unitImport.getImportedPackage().getPackageName().toString());
 
         final PackageSymbol importedSymbol = unitImport.getImportedSymbol();
         if (importedSymbol != null)
@@ -439,8 +438,8 @@ public final class XmlAstWriter implements ZserioAstVisitor
         final Element xmlElement = xmlDoc.createElement("TYPE_REFERENCE");
         if (!typeReference.getReferencedPackageName().isEmpty())
         {
-            xmlElement.setAttribute("referencedPackageName",
-                    typeReference.getReferencedPackageName().toString());
+            xmlElement.setAttribute(
+                    "referencedPackageName", typeReference.getReferencedPackageName().toString());
         }
         xmlElement.setAttribute("referencedTypeName", typeReference.getReferencedTypeName());
         visitAstNode(typeReference, xmlElement);
