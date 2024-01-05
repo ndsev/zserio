@@ -12,4 +12,4 @@ public interface PubsubCallback<T>
      * @param message Message as a Zserio generated type - e.g. structure.
      */
     public void invoke(String topic, T message);
-};
+}

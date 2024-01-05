@@ -23,11 +23,17 @@ public class DefaultWalkObserverTest
         assertDoesNotThrow(() -> walkObserver.endRoot(walkerObject));
         assertDoesNotThrow(() -> walkObserver.beginArray(walkerObject.getUnionArray(), walkerArrayFieldInfo));
         assertDoesNotThrow(() -> walkObserver.endArray(walkerObject.getUnionArray(), walkerArrayFieldInfo));
-        assertDoesNotThrow(() -> walkObserver.beginCompound(walkerObject.getNested(), walkerCompoundFieldInfo,
-                WalkerConst.NOT_ELEMENT));
-        assertDoesNotThrow(() -> walkObserver.endCompound(walkerObject.getNested(), walkerCompoundFieldInfo,
-                WalkerConst.NOT_ELEMENT));
-        assertDoesNotThrow(() -> walkObserver.visitValue(walkerObject.getIdentifier(), walkerFieldInfo,
-                WalkerConst.NOT_ELEMENT));
+        assertDoesNotThrow(
+                ()
+                        -> walkObserver.beginCompound(
+                                walkerObject.getNested(), walkerCompoundFieldInfo, WalkerConst.NOT_ELEMENT));
+        assertDoesNotThrow(
+                ()
+                        -> walkObserver.endCompound(
+                                walkerObject.getNested(), walkerCompoundFieldInfo, WalkerConst.NOT_ELEMENT));
+        assertDoesNotThrow(
+                ()
+                        -> walkObserver.visitValue(
+                                walkerObject.getIdentifier(), walkerFieldInfo, WalkerConst.NOT_ELEMENT));
     }
 }

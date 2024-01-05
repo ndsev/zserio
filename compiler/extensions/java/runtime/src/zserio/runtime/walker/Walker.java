@@ -48,8 +48,8 @@ public final class Walker
         final TypeInfo typeInfo = callTypeInfoMethod(zserioObject);
         if (!TypeInfoUtil.isCompound(typeInfo.getSchemaType()))
         {
-            throw new ZserioError("Walker: Root object '" + typeInfo.getSchemaName() +
-                    "' is not a compound type!");
+            throw new ZserioError(
+                    "Walker: Root object '" + typeInfo.getSchemaName() + "' is not a compound type!");
         }
 
         walkObserver.beginRoot(zserioObject);
@@ -161,7 +161,7 @@ public final class Walker
                 walkObserver.beginArray(field, fieldInfo);
 
                 final int length = Array.getLength(field);
-                for (int i = 0; i < length; i ++)
+                for (int i = 0; i < length; i++)
                 {
                     final Object element = Array.get(field, i);
                     if (!walkFieldValue(element, fieldInfo, i))

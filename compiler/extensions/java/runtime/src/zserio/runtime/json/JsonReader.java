@@ -62,8 +62,8 @@ public final class JsonReader implements AutoCloseable
         }
         catch (ZserioError excpt)
         {
-            throw new ZserioError(excpt.getMessage() +
-                    " (JsonParser:" + parser.getLine() + ":" + parser.getColumn() + ")");
+            throw new ZserioError(
+                    excpt.getMessage() + " (JsonParser:" + parser.getLine() + ":" + parser.getColumn() + ")");
         }
 
         return creatorAdapter.get();
@@ -185,10 +185,11 @@ public final class JsonReader implements AutoCloseable
                 {
                     bitSize = ((BigInteger)value).longValueExact();
                 }
-                catch (ArithmeticException  excpt)
+                catch (ArithmeticException excpt)
                 {
                     throw new ZserioError("JsonReader: Cannot create long for Bit Buffer size from value '" +
-                            value.toString() + "'!", excpt);
+                                    value.toString() + "'!",
+                            excpt);
                 }
                 state = State.VISIT_KEY;
             }
@@ -301,8 +302,8 @@ public final class JsonReader implements AutoCloseable
                 final BigInteger intValue = (BigInteger)value;
                 if (intValue.compareTo(BigInteger.ZERO) < 0 || intValue.compareTo(BigInteger.valueOf(255)) > 0)
                 {
-                    throw new ZserioError("JsonReader: Cannot create byte for bytes from value '" +
-                            value.toString() + "'!");
+                    throw new ZserioError(
+                            "JsonReader: Cannot create byte for bytes from value '" + value.toString() + "'!");
                 }
                 buffer.add(((BigInteger)value).byteValue());
             }
@@ -600,7 +601,8 @@ public final class JsonReader implements AutoCloseable
                     InvocationTargetException | NoSuchMethodException excpt)
             {
                 throw new ZserioError("JsonReader: Cannot create enum '" + typeInfo.getSchemaName() +
-                        "' from value '" + value.toString() + "'!", excpt);
+                                "' from value '" + value.toString() + "'!",
+                        excpt);
             }
         }
 
@@ -635,7 +637,7 @@ public final class JsonReader implements AutoCloseable
                 final Class<?> bitmaskClass = typeInfo.getJavaClass();
                 final TypeInfo bitmaskUnderlyingTypeInfo = typeInfo.getUnderlyingType();
                 final Class<?> bitmaskUnderlyingClass = bitmaskUnderlyingTypeInfo.getJavaClass();
-                final Class<?>[] parameterType = new Class<?>[] { bitmaskUnderlyingClass };
+                final Class<?>[] parameterType = new Class<?>[] {bitmaskUnderlyingClass};
                 final Constructor<?> constructor = bitmaskClass.getConstructor(parameterType);
                 final JavaType bitmaskUnderlyingJavaType = bitmaskUnderlyingTypeInfo.getJavaType();
 
@@ -645,7 +647,8 @@ public final class JsonReader implements AutoCloseable
                     IllegalArgumentException | InvocationTargetException | NoSuchMethodException excpt)
             {
                 throw new ZserioError("JsonReader: Cannot create bitmask '" + typeInfo.getSchemaName() +
-                        "' from value '" + value.toString() + "'!", excpt);
+                                "' from value '" + value.toString() + "'!",
+                        excpt);
             }
         }
 
@@ -730,7 +733,8 @@ public final class JsonReader implements AutoCloseable
             catch (ArithmeticException excpt)
             {
                 throw new ZserioError("JsonReader: Cannot create byte '" + typeInfo.getSchemaName() +
-                        "' from value '" + value.toString() + "'!", excpt);
+                                "' from value '" + value.toString() + "'!",
+                        excpt);
             }
         }
 
@@ -743,7 +747,8 @@ public final class JsonReader implements AutoCloseable
             catch (ArithmeticException excpt)
             {
                 throw new ZserioError("JsonReader: Cannot create short '" + typeInfo.getSchemaName() +
-                        "' from value '" + value.toString() + "'!", excpt);
+                                "' from value '" + value.toString() + "'!",
+                        excpt);
             }
         }
 
@@ -756,7 +761,8 @@ public final class JsonReader implements AutoCloseable
             catch (ArithmeticException excpt)
             {
                 throw new ZserioError("JsonReader: Cannot create int '" + typeInfo.getSchemaName() +
-                        "' from value '" + value.toString() + "'!", excpt);
+                                "' from value '" + value.toString() + "'!",
+                        excpt);
             }
         }
 
@@ -769,7 +775,8 @@ public final class JsonReader implements AutoCloseable
             catch (ArithmeticException excpt)
             {
                 throw new ZserioError("JsonReader: Cannot create long '" + typeInfo.getSchemaName() +
-                        "' from value '" + value.toString() + "'!", excpt);
+                                "' from value '" + value.toString() + "'!",
+                        excpt);
             }
         }
 

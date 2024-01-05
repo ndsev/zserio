@@ -1,12 +1,11 @@
 package zserio.runtime.validation;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -17,6 +16,8 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.Map;
 import java.util.Properties;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.SqlDatabaseReader;
 
@@ -75,12 +76,12 @@ public class ValidationSqliteUtilTest
 
         try (final TestSqlDatabase testDatabase = new TestSqlDatabase())
         {
-            testDatabase.executeUpdate("CREATE VIRTUAL TABLE " + TABLE_NAME + " USING fts4 " +
-                    "(substitutionId TEXT NOT NULL);");
-            assertTrue(ValidationSqliteUtil.isHiddenColumnInTable(testDatabase.connection(), null, TABLE_NAME,
-                    "docId"));
-            assertFalse(ValidationSqliteUtil.isHiddenColumnInTable(testDatabase.connection(), null, TABLE_NAME,
-                    "languageCode"));
+            testDatabase.executeUpdate("CREATE VIRTUAL TABLE " + TABLE_NAME + " USING fts4 "
+                    + "(substitutionId TEXT NOT NULL);");
+            assertTrue(ValidationSqliteUtil.isHiddenColumnInTable(
+                    testDatabase.connection(), null, TABLE_NAME, "docId"));
+            assertFalse(ValidationSqliteUtil.isHiddenColumnInTable(
+                    testDatabase.connection(), null, TABLE_NAME, "languageCode"));
         }
     }
 
@@ -90,23 +91,21 @@ public class ValidationSqliteUtilTest
         final String tableName = "sqlTypeToSqliteTypeTable";
         try (final TestSqlDatabase testDatabase = new TestSqlDatabase())
         {
-            testDatabase.executeUpdate("CREATE TABLE " + tableName + "(id INTEGER PRIMARY KEY, " +
-                    "integerCol INTEGER, realCol REAL, textCol TEXT, blobCol BLOB)");
+            testDatabase.executeUpdate("CREATE TABLE " + tableName + "(id INTEGER PRIMARY KEY, "
+                    + "integerCol INTEGER, realCol REAL, textCol TEXT, blobCol BLOB)");
 
             testDatabase.executeUpdate("INSERT INTO " + tableName + " VALUES (0, NULL, NULL, NULL, NULL)");
             testDatabase.executeUpdate("INSERT INTO " + tableName + " VALUES (1, 13, 1.3, 'STRING', x'00')");
             testDatabase.executeUpdate("INSERT INTO " + tableName + " VALUES (2, 1.3, 'STRING', x'00', 13)");
-            try (
-                final Statement stmt = testDatabase.connection().createStatement();
-                final ResultSet resultSet = stmt.executeQuery("SELECT * FROM " + tableName);
-            )
+            try (final Statement stmt = testDatabase.connection().createStatement();
+                    final ResultSet resultSet = stmt.executeQuery("SELECT * FROM " + tableName);)
             {
                 // first row checks NULL values
                 // note that different versions of Xerial JDBC returns different types
                 assertTrue(resultSet.next());
                 ResultSetMetaData metaData = resultSet.getMetaData();
-                assertEquals(Types.INTEGER,
-                        ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(1)));
+                assertEquals(
+                        Types.INTEGER, ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(1)));
                 assertThat(ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(2)),
                         anyOf(is(Types.INTEGER), is(Types.NULL)));
                 assertThat(ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(3)),
@@ -119,30 +118,26 @@ public class ValidationSqliteUtilTest
                 // second row checks correct values
                 assertTrue(resultSet.next());
                 metaData = resultSet.getMetaData();
-                assertEquals(Types.INTEGER,
-                        ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(1)));
-                assertEquals(Types.INTEGER,
-                        ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(2)));
-                assertEquals(Types.REAL,
-                        ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(3)));
-                assertEquals(Types.VARCHAR,
-                        ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(4)));
-                assertEquals(Types.BLOB,
-                        ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(5)));
+                assertEquals(
+                        Types.INTEGER, ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(1)));
+                assertEquals(
+                        Types.INTEGER, ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(2)));
+                assertEquals(Types.REAL, ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(3)));
+                assertEquals(
+                        Types.VARCHAR, ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(4)));
+                assertEquals(Types.BLOB, ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(5)));
 
                 // third row checks types mismatch - i.e. checks dynamic typing in SQLite
                 assertTrue(resultSet.next());
                 metaData = resultSet.getMetaData();
-                assertEquals(Types.INTEGER,
-                        ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(1)));
-                assertEquals(Types.REAL,
-                        ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(2)));
-                assertEquals(Types.VARCHAR,
-                        ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(3)));
-                assertEquals(Types.BLOB,
-                        ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(4)));
-                assertEquals(Types.INTEGER,
-                        ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(5)));
+                assertEquals(
+                        Types.INTEGER, ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(1)));
+                assertEquals(Types.REAL, ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(2)));
+                assertEquals(
+                        Types.VARCHAR, ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(3)));
+                assertEquals(Types.BLOB, ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(4)));
+                assertEquals(
+                        Types.INTEGER, ValidationSqliteUtil.sqlTypeToSqliteType(metaData.getColumnType(5)));
             }
         }
     }

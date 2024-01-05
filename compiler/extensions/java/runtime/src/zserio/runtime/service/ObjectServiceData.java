@@ -2,9 +2,9 @@ package zserio.runtime.service;
 
 import java.io.IOException;
 
-import zserio.runtime.io.Writer;
-import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.ZserioError;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.Writer;
 
 /** ServiceData implementation based on generated Zserio objects. */
 public final class ObjectServiceData<T extends Writer> implements ServiceData<T>

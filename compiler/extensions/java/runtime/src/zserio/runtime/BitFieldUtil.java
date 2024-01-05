@@ -16,8 +16,8 @@ public final class BitFieldUtil
     public static long getBitFieldLowerBound(int length, boolean isSigned)
     {
         if (length <= 0 || length > getMaxBitFieldSize(isSigned))
-            throw new ZserioError("getBitFieldLowerBound: Asking for lower bound of bitfield with wrong " +
-                    "length " + length + ".");
+            throw new ZserioError("getBitFieldLowerBound: Asking for lower bound of bitfield with wrong "
+                    + "length " + length + ".");
 
         if (isSigned)
             return -(1L << (length - 1));
@@ -36,8 +36,8 @@ public final class BitFieldUtil
     public static long getBitFieldUpperBound(int length, boolean isSigned)
     {
         if (length <= 0 || length > getMaxBitFieldSize(isSigned))
-            throw new ZserioError("getBitFieldUpperBound: Asking for upper bound of bitfield with wrong " +
-                    "length " + length + ".");
+            throw new ZserioError("getBitFieldUpperBound: Asking for upper bound of bitfield with wrong "
+                    + "length " + length + ".");
 
         if (isSigned)
             return (1L << (length - 1)) - 1;

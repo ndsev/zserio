@@ -17,6 +17,6 @@ public final class VarSizeUtil
         if (value > Integer.MAX_VALUE)
             throw new ZserioError("VarSizeUtil: Value '" + value + "' is out of bounds for conversion!");
 
-        return (int) value;
+        return (int)value;
     }
 }

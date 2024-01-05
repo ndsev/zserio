@@ -15,4 +15,4 @@ public interface ServiceClientInterface
      * @return Response data.
      */
     public byte[] callMethod(String methodName, ServiceData<? extends Writer> request, Object context);
-};
+}

@@ -66,8 +66,7 @@ public interface RawArray
          * Empty constructor.
          */
         public ByteRawArray()
-        {
-        }
+        {}
 
         /**
          * Constructor from raw array.
@@ -82,8 +81,9 @@ public interface RawArray
         @Override
         public boolean equals(java.lang.Object obj)
         {
-            return (obj instanceof ByteRawArray) ? Arrays.equals(rawArray, ((ByteRawArray)obj).rawArray) :
-                false;
+            return (obj instanceof ByteRawArray)
+                    ? Arrays.equals(rawArray, ((ByteRawArray)obj).rawArray)
+                    : false;
         }
 
         @Override
@@ -135,8 +135,7 @@ public interface RawArray
          * Empty constructor.
          */
         public ShortRawArray()
-        {
-        }
+        {}
 
         /**
          * Constructor from raw array.
@@ -151,8 +150,9 @@ public interface RawArray
         @Override
         public boolean equals(java.lang.Object obj)
         {
-            return (obj instanceof ShortRawArray) ? Arrays.equals(rawArray, ((ShortRawArray)obj).rawArray) :
-                false;
+            return (obj instanceof ShortRawArray)
+                    ? Arrays.equals(rawArray, ((ShortRawArray)obj).rawArray)
+                    : false;
         }
 
         @Override
@@ -204,8 +204,7 @@ public interface RawArray
          * Empty constructor.
          */
         public IntRawArray()
-        {
-        }
+        {}
 
         /**
          * Constructor from raw array.
@@ -272,8 +271,7 @@ public interface RawArray
          * Empty constructor.
          */
         public LongRawArray()
-        {
-        }
+        {}
 
         /**
          * Constructor from raw array.
@@ -288,8 +286,9 @@ public interface RawArray
         @Override
         public boolean equals(java.lang.Object obj)
         {
-            return (obj instanceof LongRawArray) ? Arrays.equals(rawArray, ((LongRawArray)obj).rawArray) :
-                false;
+            return (obj instanceof LongRawArray)
+                    ? Arrays.equals(rawArray, ((LongRawArray)obj).rawArray)
+                    : false;
         }
 
         @Override
@@ -341,8 +340,7 @@ public interface RawArray
          * Empty constructor.
          */
         public BigIntegerRawArray()
-        {
-        }
+        {}
 
         /**
          * Constructor from raw array.
@@ -357,8 +355,9 @@ public interface RawArray
         @Override
         public boolean equals(java.lang.Object obj)
         {
-            return (obj instanceof BigIntegerRawArray) ?
-                    Arrays.equals(rawArray, ((BigIntegerRawArray)obj).rawArray) : false;
+            return (obj instanceof BigIntegerRawArray)
+                    ? Arrays.equals(rawArray, ((BigIntegerRawArray)obj).rawArray)
+                    : false;
         }
 
         @Override
@@ -410,8 +409,7 @@ public interface RawArray
          * Empty constructor.
          */
         public FloatRawArray()
-        {
-        }
+        {}
 
         /**
          * Constructor from raw array.
@@ -426,8 +424,9 @@ public interface RawArray
         @Override
         public boolean equals(java.lang.Object obj)
         {
-            return (obj instanceof FloatRawArray) ? Arrays.equals(rawArray, ((FloatRawArray)obj).rawArray) :
-                false;
+            return (obj instanceof FloatRawArray)
+                    ? Arrays.equals(rawArray, ((FloatRawArray)obj).rawArray)
+                    : false;
         }
 
         @Override
@@ -479,8 +478,7 @@ public interface RawArray
          * Empty constructor.
          */
         public DoubleRawArray()
-        {
-        }
+        {}
 
         /**
          * Constructor from raw array.
@@ -495,8 +493,9 @@ public interface RawArray
         @Override
         public boolean equals(java.lang.Object obj)
         {
-            return (obj instanceof DoubleRawArray) ? Arrays.equals(rawArray, ((DoubleRawArray)obj).rawArray) :
-                false;
+            return (obj instanceof DoubleRawArray)
+                    ? Arrays.equals(rawArray, ((DoubleRawArray)obj).rawArray)
+                    : false;
         }
 
         @Override
@@ -548,8 +547,7 @@ public interface RawArray
          * Empty constructor.
          */
         public BooleanRawArray()
-        {
-        }
+        {}
 
         /**
          * Constructor from raw array.
@@ -564,8 +562,9 @@ public interface RawArray
         @Override
         public boolean equals(java.lang.Object obj)
         {
-            return (obj instanceof BooleanRawArray) ? Arrays.equals(rawArray, ((BooleanRawArray)obj).rawArray) :
-                false;
+            return (obj instanceof BooleanRawArray)
+                    ? Arrays.equals(rawArray, ((BooleanRawArray)obj).rawArray)
+                    : false;
         }
 
         @Override
@@ -617,8 +616,7 @@ public interface RawArray
          * Empty constructor.
          */
         public BytesRawArray()
-        {
-        }
+        {}
 
         /**
          * Constructor from raw array.
@@ -633,8 +631,9 @@ public interface RawArray
         @Override
         public boolean equals(java.lang.Object obj)
         {
-            return (obj instanceof BytesRawArray) ? Arrays.deepEquals(rawArray, ((BytesRawArray)obj).rawArray) :
-                false;
+            return (obj instanceof BytesRawArray)
+                    ? Arrays.deepEquals(rawArray, ((BytesRawArray)obj).rawArray)
+                    : false;
         }
 
         @Override
@@ -687,8 +686,7 @@ public interface RawArray
          * Empty constructor.
          */
         public StringRawArray()
-        {
-        }
+        {}
 
         /**
          * Constructor from raw array.
@@ -703,8 +701,9 @@ public interface RawArray
         @Override
         public boolean equals(java.lang.Object obj)
         {
-            return (obj instanceof StringRawArray) ? Arrays.equals(rawArray, ((StringRawArray)obj).rawArray) :
-                false;
+            return (obj instanceof StringRawArray)
+                    ? Arrays.equals(rawArray, ((StringRawArray)obj).rawArray)
+                    : false;
         }
 
         @Override
@@ -757,8 +756,7 @@ public interface RawArray
          * Empty constructor.
          */
         public BitBufferRawArray()
-        {
-        }
+        {}
 
         /**
          * Constructor from raw array.
@@ -850,8 +848,9 @@ public interface RawArray
         @Override
         public boolean equals(java.lang.Object obj)
         {
-            return (obj instanceof EnumRawArray) ?
-                    Arrays.equals(rawArray, ((EnumRawArray<E>)obj).rawArray) : false;
+            return (obj instanceof EnumRawArray)
+                    ? Arrays.equals(rawArray, ((EnumRawArray<E>)obj).rawArray)
+                    : false;
         }
 
         @Override
@@ -928,8 +927,9 @@ public interface RawArray
         @Override
         public boolean equals(java.lang.Object obj)
         {
-            return (obj instanceof ObjectRawArray) ?
-                    Arrays.equals(rawArray, ((ObjectRawArray<E>)obj).rawArray) : false;
+            return (obj instanceof ObjectRawArray)
+                    ? Arrays.equals(rawArray, ((ObjectRawArray<E>)obj).rawArray)
+                    : false;
         }
 
         @Override

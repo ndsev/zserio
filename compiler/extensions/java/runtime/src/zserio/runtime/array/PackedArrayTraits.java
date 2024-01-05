@@ -175,13 +175,12 @@ public interface PackedArrayTraits
         @Override
         public long initializeOffsets(PackingContext context, long bitPosition, ArrayElement element)
         {
-            throw new UnsupportedOperationException("PackedArrayTraits: " +
-                    "initializeOffsets is not implemented for read only PackedObjectArrayTraits!");
+            throw new UnsupportedOperationException("PackedArrayTraits: "
+                    + "initializeOffsets is not implemented for read only PackedObjectArrayTraits!");
         }
 
         @Override
-        public ArrayElement read(PackingContext context, BitStreamReader reader, int index)
-                throws IOException
+        public ArrayElement read(PackingContext context, BitStreamReader reader, int index) throws IOException
         {
             return new ArrayElement.ObjectArrayElement<>(elementFactory.create(context, reader, index));
         }
@@ -217,8 +216,7 @@ public interface PackedArrayTraits
         @Override
         public long initializeOffsets(PackingContext context, long bitPosition, ArrayElement element)
         {
-            return ((ArrayElement.ObjectArrayElement<E>)element).get().initializeOffsets(
-                    context, bitPosition);
+            return ((ArrayElement.ObjectArrayElement<E>)element).get().initializeOffsets(context, bitPosition);
         }
 
         @SuppressWarnings("unchecked")

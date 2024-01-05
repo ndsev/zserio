@@ -192,14 +192,14 @@ public class JsonEncoderTest
             assertEquals("\"\\t\"", stringWriter.toString());
 
             stringWriter.getBuffer().setLength(0);
-            JsonEncoder.encodeString(printWriter,
-                    "\n\t%^@(*aAzZ01234569$%^!?<>[]](){}-=+~:;/|\\\"\'Hello World2");
+            JsonEncoder.encodeString(
+                    printWriter, "\n\t%^@(*aAzZ01234569$%^!?<>[]](){}-=+~:;/|\\\"\'Hello World2");
             assertEquals("\"\\n\\t%^@(*aAzZ01234569$%^!?<>[]](){}-=+~:;/|\\\\\\\"'Hello World2\"",
                     stringWriter.toString());
 
             // <= 0x1F -> unicode escape
             stringWriter.getBuffer().setLength(0);
-            JsonEncoder.encodeString(printWriter, new String(new byte[]{0x1F}, StandardCharsets.UTF_8));
+            JsonEncoder.encodeString(printWriter, new String(new byte[] {0x1F}, StandardCharsets.UTF_8));
             assertEquals("\"\\u001f\"", stringWriter.toString());
         }
     }

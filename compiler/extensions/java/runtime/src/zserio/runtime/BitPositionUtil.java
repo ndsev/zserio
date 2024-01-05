@@ -15,8 +15,9 @@ public final class BitPositionUtil
      */
     public static long alignTo(int alignmentValue, long bitPosition)
     {
-        return (bitPosition > 0 && alignmentValue != 0) ?
-                (((bitPosition - 1) / alignmentValue) + 1) * alignmentValue : bitPosition;
+        return (bitPosition > 0 && alignmentValue != 0)
+                ? (((bitPosition - 1) / alignmentValue) + 1) * alignmentValue
+                : bitPosition;
     }
 
     /**

@@ -65,4 +65,4 @@ public interface WalkObserver
      * @param elementIndex Element index in array or NOT_ELEMENT if the compound is not in array.
      */
     public void visitValue(Object value, FieldInfo fieldInfo, int elementIndex);
-};
+}

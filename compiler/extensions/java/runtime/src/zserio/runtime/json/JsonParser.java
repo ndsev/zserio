@@ -62,8 +62,7 @@ class JsonParser
     /**
      * Json parser observer.
      */
-    static interface Observer
-    {
+    static interface Observer {
         /**
          * Called when a JSON object begins - i.e. on '{'.
          */

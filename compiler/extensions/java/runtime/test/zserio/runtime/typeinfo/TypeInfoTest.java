@@ -3,7 +3,6 @@ package zserio.runtime.typeinfo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -11,6 +10,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.typeinfo.TypeInfo.BitmaskTypeInfo;
@@ -40,8 +41,8 @@ public class TypeInfoTest
         checkBuiltinTypeInfo(BuiltinTypeInfo.getUInt8(), "uint8", SchemaType.UINT8, JavaType.SHORT, 8);
         checkBuiltinTypeInfo(BuiltinTypeInfo.getUInt16(), "uint16", SchemaType.UINT16, JavaType.INT, 16);
         checkBuiltinTypeInfo(BuiltinTypeInfo.getUInt32(), "uint32", SchemaType.UINT32, JavaType.LONG, 32);
-        checkBuiltinTypeInfo(BuiltinTypeInfo.getUInt64(),
-                "uint64", SchemaType.UINT64, JavaType.BIG_INTEGER, 64);
+        checkBuiltinTypeInfo(
+                BuiltinTypeInfo.getUInt64(), "uint64", SchemaType.UINT64, JavaType.BIG_INTEGER, 64);
 
         checkBuiltinTypeInfo(BuiltinTypeInfo.getVarInt16(), "varint16", SchemaType.VARINT16, JavaType.SHORT);
         checkBuiltinTypeInfo(BuiltinTypeInfo.getVarInt32(), "varint32", SchemaType.VARINT32, JavaType.INT);
@@ -49,10 +50,8 @@ public class TypeInfoTest
         checkBuiltinTypeInfo(BuiltinTypeInfo.getVarInt(), "varint", SchemaType.VARINT, JavaType.LONG);
         checkBuiltinTypeInfo(BuiltinTypeInfo.getVarUInt16(), "varuint16", SchemaType.VARUINT16, JavaType.SHORT);
         checkBuiltinTypeInfo(BuiltinTypeInfo.getVarUInt32(), "varuint32", SchemaType.VARUINT32, JavaType.INT);
-        checkBuiltinTypeInfo(BuiltinTypeInfo.getVarUInt64(),
-                "varuint64", SchemaType.VARUINT64, JavaType.LONG);
-        checkBuiltinTypeInfo(BuiltinTypeInfo.getVarUInt(),
-                "varuint", SchemaType.VARUINT, JavaType.BIG_INTEGER);
+        checkBuiltinTypeInfo(BuiltinTypeInfo.getVarUInt64(), "varuint64", SchemaType.VARUINT64, JavaType.LONG);
+        checkBuiltinTypeInfo(BuiltinTypeInfo.getVarUInt(), "varuint", SchemaType.VARUINT, JavaType.BIG_INTEGER);
         checkBuiltinTypeInfo(BuiltinTypeInfo.getVarSize(), "varsize", SchemaType.VARSIZE, JavaType.INT);
 
         checkBuiltinTypeInfo(BuiltinTypeInfo.getFloat16(), "float16", SchemaType.FLOAT16, JavaType.FLOAT, 16);
@@ -96,7 +95,7 @@ public class TypeInfoTest
         // fixed unsigned bit fields
         assertThrows(ZserioError.class, () -> BuiltinTypeInfo.getFixedUnsignedBitField((byte)0));
         bitSize = 0;
-        for (++bitSize ; bitSize < 8; ++bitSize)
+        for (++bitSize; bitSize < 8; ++bitSize)
         {
             checkBuiltinTypeInfo(BuiltinTypeInfo.getFixedUnsignedBitField((byte)bitSize), "bit:" + bitSize,
                     SchemaType.FIXED_UNSIGNED_BITFIELD, JavaType.BYTE, bitSize);
@@ -274,8 +273,8 @@ public class TypeInfoTest
     public void choiceTypeInfo()
     {
         final ChoiceTypeInfo choiceTypeInfo = new ChoiceTypeInfo("", null, "", new ArrayList<TypeInfo>(),
-                new ArrayList<FieldInfo>(), new ArrayList<ParameterInfo>(), new ArrayList<FunctionInfo>(),
-                "", new ArrayList<CaseInfo>());
+                new ArrayList<FieldInfo>(), new ArrayList<ParameterInfo>(), new ArrayList<FunctionInfo>(), "",
+                new ArrayList<CaseInfo>());
         assertEquals("", choiceTypeInfo.getSchemaName());
         assertEquals(SchemaType.CHOICE, choiceTypeInfo.getSchemaType());
         assertEquals(JavaType.CHOICE, choiceTypeInfo.getJavaType());
@@ -312,8 +311,8 @@ public class TypeInfoTest
     @Test
     public void sqlTableTypeInfo()
     {
-        final SqlTableTypeInfo sqlTableTypeInfo = new SqlTableTypeInfo("", null, "", new ArrayList<TypeInfo>(),
-                new ArrayList<ColumnInfo>(), "", "", false);
+        final SqlTableTypeInfo sqlTableTypeInfo = new SqlTableTypeInfo(
+                "", null, "", new ArrayList<TypeInfo>(), new ArrayList<ColumnInfo>(), "", "", false);
         assertEquals("", sqlTableTypeInfo.getSchemaName());
         assertEquals(SchemaType.SQL_TABLE, sqlTableTypeInfo.getSchemaType());
         assertEquals(JavaType.SQL_TABLE, sqlTableTypeInfo.getJavaType());
@@ -350,8 +349,8 @@ public class TypeInfoTest
     @Test
     public void sqlDatabaseTypeInfo()
     {
-        final SqlDatabaseTypeInfo sqlDatabaseTypeInfo = new SqlDatabaseTypeInfo("", null,
-                new ArrayList<TableInfo>());
+        final SqlDatabaseTypeInfo sqlDatabaseTypeInfo =
+                new SqlDatabaseTypeInfo("", null, new ArrayList<TableInfo>());
         assertEquals("", sqlDatabaseTypeInfo.getSchemaName());
         assertEquals(SchemaType.SQL_DATABASE, sqlDatabaseTypeInfo.getSchemaType());
         assertEquals(JavaType.SQL_DATABASE, sqlDatabaseTypeInfo.getJavaType());
@@ -389,9 +388,9 @@ public class TypeInfoTest
     public void enumTypeInfo()
     {
         final TypeInfo underlyingTypeInfo = BuiltinTypeInfo.getInt8();
-        final EnumTypeInfo enumTypeInfo = new EnumTypeInfo("", null,
-                underlyingTypeInfo, new ArrayList<Supplier<Object>>(), Arrays.asList(
-                        new ItemInfo("ONE", BigInteger.ONE, false, false)));
+        final EnumTypeInfo enumTypeInfo = new EnumTypeInfo("", null, underlyingTypeInfo,
+                new ArrayList<Supplier<Object>>(),
+                Arrays.asList(new ItemInfo("ONE", BigInteger.ONE, false, false)));
         assertEquals("", enumTypeInfo.getSchemaName());
         assertEquals(SchemaType.ENUM, enumTypeInfo.getSchemaType());
         assertEquals(JavaType.ENUM, enumTypeInfo.getJavaType());
@@ -433,9 +432,9 @@ public class TypeInfoTest
     public void bitmaskTypeInfo()
     {
         final TypeInfo underlyingTypeInfo = BuiltinTypeInfo.getInt8();
-        final BitmaskTypeInfo bitmaskTypeInfo = new BitmaskTypeInfo("", null,
-                underlyingTypeInfo, new ArrayList<Supplier<Object>>(), Arrays.asList(
-                        new ItemInfo("FIRST_BIT", BigInteger.ONE, false, false)));
+        final BitmaskTypeInfo bitmaskTypeInfo = new BitmaskTypeInfo("", null, underlyingTypeInfo,
+                new ArrayList<Supplier<Object>>(),
+                Arrays.asList(new ItemInfo("FIRST_BIT", BigInteger.ONE, false, false)));
         assertEquals("", bitmaskTypeInfo.getSchemaName());
         assertEquals(SchemaType.BITMASK, bitmaskTypeInfo.getSchemaType());
         assertEquals(JavaType.BITMASK, bitmaskTypeInfo.getJavaType());
@@ -585,14 +584,14 @@ public class TypeInfoTest
         assertThrows(ZserioError.class, () -> recursiveTypeInfo.getMethods());
     }
 
-    private void checkBuiltinTypeInfo(TypeInfo typeInfo,
-            String schemaName, SchemaType schemaType, JavaType javaType)
+    private void checkBuiltinTypeInfo(
+            TypeInfo typeInfo, String schemaName, SchemaType schemaType, JavaType javaType)
     {
         checkBuiltinTypeInfo(typeInfo, schemaName, schemaType, javaType, 0);
     }
 
-    private void checkBuiltinTypeInfo(TypeInfo typeInfo,
-            String schemaName, SchemaType schemaType, JavaType javaType, int bitSize)
+    private void checkBuiltinTypeInfo(
+            TypeInfo typeInfo, String schemaName, SchemaType schemaType, JavaType javaType, int bitSize)
     {
         assertEquals(schemaName, typeInfo.getSchemaName());
         assertEquals(schemaType, typeInfo.getSchemaType());
@@ -633,40 +632,37 @@ public class TypeInfoTest
     {
         public static TypeInfo typeInfo()
         {
-             class RecursiveTypeInfoGetter implements RecursiveTypeInfo.TypeInfoGetter
-             {
-                 @Override
-                 public TypeInfo get()
-                 {
-                     return RecursiveObject.typeInfo();
-                 }
-             }
+            class RecursiveTypeInfoGetter implements RecursiveTypeInfo.TypeInfoGetter
+            {
+                @Override
+                public TypeInfo get()
+                {
+                    return RecursiveObject.typeInfo();
+                }
+            }
 
-            final List<FieldInfo> fields = Arrays.asList(
-                    new FieldInfo(
-                            "recursive", // schemaName
-                            "getRecursive", // getterName
-                            "setRecursive", // setterName
-                            new RecursiveTypeInfo(new RecursiveTypeInfoGetter()), // typeInfo
-                            new ArrayList<BiFunction<Object, Integer, Object>>(), // typeArguments
-                            false, // isExtended
-                            null, // alignment
-                            null, // offset
-                            null, // initializer
-                            true, // isOptional
-                            null, // optionalCondition
-                            "isRecursiveUsed", // isUsedindicatorName
-                            "isRecursiveSet", // isSetindicatorName
-                            null, // constraint
-                            false, // isArray
-                            null, // arrayLength
-                            false, // isPacked
-                            false // isImplicit
-                    )
-            );
+            final List<FieldInfo> fields = Arrays.asList(new FieldInfo("recursive", // schemaName
+                    "getRecursive", // getterName
+                    "setRecursive", // setterName
+                    new RecursiveTypeInfo(new RecursiveTypeInfoGetter()), // typeInfo
+                    new ArrayList<BiFunction<Object, Integer, Object>>(), // typeArguments
+                    false, // isExtended
+                    null, // alignment
+                    null, // offset
+                    null, // initializer
+                    true, // isOptional
+                    null, // optionalCondition
+                    "isRecursiveUsed", // isUsedindicatorName
+                    "isRecursiveSet", // isSetindicatorName
+                    null, // constraint
+                    false, // isArray
+                    null, // arrayLength
+                    false, // isPacked
+                    false // isImplicit
+                    ));
 
-            return new StructTypeInfo("RecursiveObject", null, "", new ArrayList<TypeInfo>(),
-                    fields, new ArrayList<ParameterInfo>(), new ArrayList<FunctionInfo>());
+            return new StructTypeInfo("RecursiveObject", null, "", new ArrayList<TypeInfo>(), fields,
+                    new ArrayList<ParameterInfo>(), new ArrayList<FunctionInfo>());
         }
     }
 }

@@ -200,7 +200,7 @@ public final class DeltaContext extends PackingContext
             IntegralArrayElement element) throws IOException
     {
         previousElement = element.toBigInteger();
-        arrayTraits.write(writer,  element);
+        arrayTraits.write(writer, element);
     }
 
     private static byte bitLength(BigInteger element)

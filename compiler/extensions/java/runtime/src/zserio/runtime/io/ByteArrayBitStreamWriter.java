@@ -3,11 +3,12 @@ package zserio.runtime.io;
 import java.io.EOFException;
 import java.io.IOException;
 import java.math.BigInteger;
+
+import zserio.runtime.BitFieldUtil;
 import zserio.runtime.BitSizeOfCalculator;
 import zserio.runtime.FloatUtil;
-import zserio.runtime.BitFieldUtil;
-import zserio.runtime.ZserioError;
 import zserio.runtime.VarSizeUtil;
+import zserio.runtime.ZserioError;
 
 /**
  * A bit stream writer using byte array.
@@ -47,8 +48,8 @@ public final class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase imple
             final long upperBound = BitFieldUtil.getBitFieldUpperBound(numBits, true);
 
             if (value < lowerBound || value > upperBound)
-                throw new IllegalArgumentException("ByteArrayBitStreamWriter: Value " + value + " does not " +
-                        "fit into " + numBits + " bits.");
+                throw new IllegalArgumentException("ByteArrayBitStreamWriter: Value " + value + " does not "
+                        + "fit into " + numBits + " bits.");
         }
         // else: all values are OK
 
@@ -90,8 +91,8 @@ public final class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase imple
     public void writeUnsignedByte(final short value) throws IOException
     {
         if (value < 0)
-            throw new IllegalArgumentException("ByteArrayBitStreamWriter: Can't write unsigned byte. Value " +
-                    value + " is negative.");
+            throw new IllegalArgumentException(
+                    "ByteArrayBitStreamWriter: Can't write unsigned byte. Value " + value + " is negative.");
 
         writeBits(value, 8);
     }
@@ -119,8 +120,8 @@ public final class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase imple
     public void writeUnsignedShort(final int value) throws IOException
     {
         if (value < 0)
-            throw new IllegalArgumentException("ByteArrayBitStreamWriter: Can't write unsigned short. Value " +
-                    value + " is negative.");
+            throw new IllegalArgumentException(
+                    "ByteArrayBitStreamWriter: Can't write unsigned short. Value " + value + " is negative.");
 
         writeBits(value, 16);
     }
@@ -152,8 +153,8 @@ public final class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase imple
     public void writeUnsignedInt(final long value) throws IOException
     {
         if (value < 0)
-            throw new IllegalArgumentException("ByteArrayBitStreamWriter: Can't write unsigned integer. " +
-                    "Value " + value + " is negative.");
+            throw new IllegalArgumentException("ByteArrayBitStreamWriter: Can't write unsigned integer. "
+                    + "Value " + value + " is negative.");
 
         writeBits(value, 32);
     }
@@ -733,8 +734,8 @@ public final class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase imple
     private byte nextByte() throws IOException
     {
         if (bytePosition >= buffer.length)
-            throw new EOFException("ByteArrayBitStreamWriter: Internal error, attemp to read beyond end of " +
-                    "the buffer. Byte position is " + bytePosition + ". Buffer length is " + buffer.length +
+            throw new EOFException("ByteArrayBitStreamWriter: Internal error, attemp to read beyond end of "
+                    + "the buffer. Byte position is " + bytePosition + ". Buffer length is " + buffer.length +
                     ".");
 
         return buffer[bytePosition++];
@@ -759,8 +760,8 @@ public final class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase imple
         if (newCapacity - MAX_BUFFER_SIZE > 0)
         {
             if (minCapacity < 0)
-                throw new OutOfMemoryError("ByteArrayBitStreamWriter: Reached maximum capacity of underlying " +
-                        "buffer (" + MAX_BUFFER_SIZE + " bytes).");
+                throw new OutOfMemoryError("ByteArrayBitStreamWriter: Reached maximum capacity of underlying "
+                        + "buffer (" + MAX_BUFFER_SIZE + " bytes).");
 
             newCapacity = MAX_BUFFER_SIZE;
         }

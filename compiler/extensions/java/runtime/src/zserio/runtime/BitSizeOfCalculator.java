@@ -19,11 +19,11 @@ public final class BitSizeOfCalculator
      */
     public static int getBitSizeOfVarInt16(short value)
     {
-        final short absoluteValue = (short) Math.abs(value);
+        final short absoluteValue = (short)Math.abs(value);
         if (absoluteValue >= (short)(1 << (6 + 8)))
             throw new ZserioError("BitSizeOfCalculator: Value '" + value + "' is out of range for varint16!");
 
-        return (absoluteValue < (short) 1 << 6) ? 8 : 16;
+        return (absoluteValue < (short)1 << 6) ? 8 : 16;
     }
 
     /**
@@ -405,8 +405,7 @@ public final class BitSizeOfCalculator
             size = str.getBytes("UTF-8").length;
         }
         catch (IOException e)
-        {
-        }
+        {}
 
         return size;
     }

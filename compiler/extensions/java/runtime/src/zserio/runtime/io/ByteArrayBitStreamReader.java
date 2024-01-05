@@ -153,7 +153,7 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
         }
         else
         {
-            result = (short) readBits(16);
+            result = (short)readBits(16);
         }
         return result;
     }
@@ -609,8 +609,8 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
         // byte 5
         result = result << 8 | (int)readBits(8);
         if (result > VARSIZE_MAX_VALUE)
-            throw new IOException("ByteArrayBitStreamReader: Read value '" + result +
-                    "' is out of range for varsize type!");
+            throw new IOException(
+                    "ByteArrayBitStreamReader: Read value '" + result + "' is out of range for varsize type!");
 
         return (int)result;
     }
@@ -780,7 +780,7 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
     /**
      * Bit masks to mask appropriate bits during unaligned reading.
      */
-    private static final int BIT_MASKS[] = { 0xff, 0x7f, 0x3f, 0x1f, 0x0f, 0x07, 0x03, 0x01 };
+    private static final int BIT_MASKS[] = {0xff, 0x7f, 0x3f, 0x1f, 0x0f, 0x07, 0x03, 0x01};
 
     /** Variable length integer sing bit mask for first byte. */
     private static final short VARINT_SIGN_1 = 0x80;

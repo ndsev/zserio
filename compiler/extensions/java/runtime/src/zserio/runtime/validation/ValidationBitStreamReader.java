@@ -1,6 +1,7 @@
 package zserio.runtime.validation;
 
 import java.io.IOException;
+
 import zserio.runtime.io.ByteArrayBitStreamReader;
 
 /**
@@ -56,8 +57,8 @@ public final class ValidationBitStreamReader extends ByteArrayBitStreamReader
             // mask         | 0x7F | 0x3F | 0x1F | 0x0F | 0x07 | 0x03 | 0x01 |
             final int mask = (1 << (8 - endBitOffset)) - 1;
             final int invalidMask = invalidMaskBuffer[endBytePosition] | mask;
-            maskedByteArray[endBytePosition] = (byte)(getBuffer()[endBytePosition] & ~invalidMask |
-                    nanMaskBuffer[endBytePosition]);
+            maskedByteArray[endBytePosition] =
+                    (byte)(getBuffer()[endBytePosition] & ~invalidMask | nanMaskBuffer[endBytePosition]);
         }
 
         return maskedByteArray;
@@ -91,8 +92,8 @@ public final class ValidationBitStreamReader extends ByteArrayBitStreamReader
             {
                 modifyMaskBuffer(endBytePosition, endBitOffset, startBytePosition, startBitOffset,
                         invalidMaskBufferEraser);
-                modifyMaskBuffer(endBytePosition, endBitOffset, startBytePosition, startBitOffset,
-                        nanMaskBufferEraser);
+                modifyMaskBuffer(
+                        endBytePosition, endBitOffset, startBytePosition, startBitOffset, nanMaskBufferEraser);
             }
         }
     }
@@ -162,15 +163,15 @@ public final class ValidationBitStreamReader extends ByteArrayBitStreamReader
             // mask    | 0x00 | 0x01 | 0x03 | 0x07 | 0x0F | 0x1F | 0x3F | 0x7F | 0xFF |
             final int mask = (1 << numBits) - 1;
             maskBuffer[bytePosition] |= mask << (8 - bitOffset - numBits);
-         }
+        }
 
-         @Override
+        @Override
         public void modifyByte(int bytePosition)
-         {
-             maskBuffer[bytePosition] = (byte)0xFF;
-         }
+        {
+            maskBuffer[bytePosition] = (byte)0xFF;
+        }
 
-         private final byte[] maskBuffer;
+        private final byte[] maskBuffer;
     }
 
     private static class MaskBufferEraser implements MaskBufferAction
@@ -199,10 +200,10 @@ public final class ValidationBitStreamReader extends ByteArrayBitStreamReader
         private final byte[] maskBuffer;
     }
 
-    private final byte[]            invalidMaskBuffer;
-    private final MaskBufferEraser  invalidMaskBufferEraser;
-    private final MaskBufferSetter  invalidMaskBufferSetter;
+    private final byte[] invalidMaskBuffer;
+    private final MaskBufferEraser invalidMaskBufferEraser;
+    private final MaskBufferSetter invalidMaskBufferSetter;
 
-    private final byte[]            nanMaskBuffer;
-    private final MaskBufferEraser  nanMaskBufferEraser;
+    private final byte[] nanMaskBuffer;
+    private final MaskBufferEraser nanMaskBufferEraser;
 }

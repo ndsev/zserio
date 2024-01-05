@@ -4,14 +4,14 @@ import java.io.IOException;
 import java.math.BigInteger;
 
 import zserio.runtime.BitSizeOfCalculator;
-import zserio.runtime.SizeOf;
 import zserio.runtime.PackableSizeOf;
+import zserio.runtime.SizeOf;
 import zserio.runtime.array.ArrayElement.IntegralArrayElement;
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
-import zserio.runtime.io.Writer;
 import zserio.runtime.io.PackableWriter;
+import zserio.runtime.io.Writer;
 
 /**
  * Interface for array traits.
@@ -79,8 +79,7 @@ public interface ArrayTraits
     /**
      * Interface for integral array traits.
      */
-    public static interface IntegralArrayTraits extends ArrayTraits
-    {
+    public static interface IntegralArrayTraits extends ArrayTraits {
         /**
          * Creates integral array element from given big integer value.
          *
@@ -1374,8 +1373,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio object arrays (with writer part) which are mapped to Java zserio object array.
      */
-    public static final class WriteObjectArrayTraits<E extends Writer & SizeOf>
-            extends ObjectArrayTraits<E>
+    public static final class WriteObjectArrayTraits<E extends Writer & SizeOf> extends ObjectArrayTraits<E>
     {
         /**
          * Constructor from element factory.

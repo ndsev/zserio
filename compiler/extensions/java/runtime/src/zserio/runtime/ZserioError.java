@@ -42,5 +42,5 @@ public class ZserioError extends RuntimeException
         super(throwable);
     }
 
-   private static final long serialVersionUID = 921445202560692775L;
+    private static final long serialVersionUID = 921445202560692775L;
 }

@@ -1,15 +1,16 @@
 package zserio.runtime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 
-import zserio.runtime.io.BitBuffer;
+import org.junit.jupiter.api.Test;
+
 import zserio.runtime.array.Array;
 import zserio.runtime.array.ArrayTraits;
 import zserio.runtime.array.ArrayType;
 import zserio.runtime.array.RawArray;
+import zserio.runtime.io.BitBuffer;
 
 public class HashCodeUtilTest
 {
@@ -66,8 +67,8 @@ public class HashCodeUtilTest
 
         final double doubleValue = 10.0;
         final long doubleValueAsLong = FloatUtil.convertDoubleToLong(doubleValue);
-        final int expectedDoubleHashCode = HashCodeUtil.HASH_PRIME_NUMBER +
-                (int)(doubleValueAsLong ^ (doubleValueAsLong >>> 32));
+        final int expectedDoubleHashCode =
+                HashCodeUtil.HASH_PRIME_NUMBER + (int)(doubleValueAsLong ^ (doubleValueAsLong >>> 32));
         assertEquals(expectedDoubleHashCode, HashCodeUtil.calcHashCode(hashSeed, doubleValue));
 
         final Double doubleValueBoxed = Double.valueOf(10.0);
@@ -80,8 +81,8 @@ public class HashCodeUtilTest
     {
         final int hashSeed = 1;
         final String stringValue = String.valueOf('0');
-        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER + (int)'0',
-                HashCodeUtil.calcHashCode(hashSeed, stringValue));
+        assertEquals(
+                HashCodeUtil.HASH_PRIME_NUMBER + (int)'0', HashCodeUtil.calcHashCode(hashSeed, stringValue));
 
         assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (String)null));
     }
@@ -102,16 +103,16 @@ public class HashCodeUtilTest
     {
         final int hashSeed = 1;
         assertEquals(HashCodeUtil.HASH_PRIME_NUMBER +
-                (HashCodeUtil.HASH_PRIME_NUMBER * HashCodeUtil.HASH_SEED + Color.NONE.getValue()),
+                        (HashCodeUtil.HASH_PRIME_NUMBER * HashCodeUtil.HASH_SEED + Color.NONE.getValue()),
                 HashCodeUtil.calcHashCode(hashSeed, Color.NONE));
         assertEquals(HashCodeUtil.HASH_PRIME_NUMBER +
-                (HashCodeUtil.HASH_PRIME_NUMBER * HashCodeUtil.HASH_SEED + Color.RED.getValue()),
+                        (HashCodeUtil.HASH_PRIME_NUMBER * HashCodeUtil.HASH_SEED + Color.RED.getValue()),
                 HashCodeUtil.calcHashCode(hashSeed, Color.RED));
         assertEquals(HashCodeUtil.HASH_PRIME_NUMBER +
-                (HashCodeUtil.HASH_PRIME_NUMBER * HashCodeUtil.HASH_SEED + Color.BLUE.getValue()),
+                        (HashCodeUtil.HASH_PRIME_NUMBER * HashCodeUtil.HASH_SEED + Color.BLUE.getValue()),
                 HashCodeUtil.calcHashCode(hashSeed, Color.BLUE));
         assertEquals(HashCodeUtil.HASH_PRIME_NUMBER +
-                (HashCodeUtil.HASH_PRIME_NUMBER * HashCodeUtil.HASH_SEED + Color.BLACK.getValue()),
+                        (HashCodeUtil.HASH_PRIME_NUMBER * HashCodeUtil.HASH_SEED + Color.BLACK.getValue()),
                 HashCodeUtil.calcHashCode(hashSeed, Color.BLACK));
 
         assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (Color)null));
@@ -122,14 +123,16 @@ public class HashCodeUtilTest
     {
         final int hashSeed = 1;
         assertEquals(HashCodeUtil.HASH_PRIME_NUMBER +
-                (HashCodeUtil.HASH_PRIME_NUMBER * HashCodeUtil.HASH_SEED + Permissions.Values.READ.getValue()),
+                        (HashCodeUtil.HASH_PRIME_NUMBER * HashCodeUtil.HASH_SEED +
+                                Permissions.Values.READ.getValue()),
                 HashCodeUtil.calcHashCode(hashSeed, Permissions.Values.READ));
         assertEquals(HashCodeUtil.HASH_PRIME_NUMBER +
-                (HashCodeUtil.HASH_PRIME_NUMBER * HashCodeUtil.HASH_SEED + Permissions.Values.WRITE.getValue()),
+                        (HashCodeUtil.HASH_PRIME_NUMBER * HashCodeUtil.HASH_SEED +
+                                Permissions.Values.WRITE.getValue()),
                 HashCodeUtil.calcHashCode(hashSeed, Permissions.Values.WRITE));
         assertEquals(HashCodeUtil.HASH_PRIME_NUMBER +
-                (HashCodeUtil.HASH_PRIME_NUMBER * HashCodeUtil.HASH_SEED +
-                        Permissions.Values.CREATE.getValue()),
+                        (HashCodeUtil.HASH_PRIME_NUMBER * HashCodeUtil.HASH_SEED +
+                                Permissions.Values.CREATE.getValue()),
                 HashCodeUtil.calcHashCode(hashSeed, Permissions.Values.CREATE));
 
         assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (Permissions)null));
@@ -149,12 +152,11 @@ public class HashCodeUtilTest
     public void arrayType()
     {
         final int hashSeed = 1;
-        final Array arrayValue = new Array(
-                new RawArray.IntRawArray(new int[] { 3, 7}),
-                new ArrayTraits.SignedBitFieldIntArrayTraits(32),
-                ArrayType.NORMAL);
-        final int rawArrayHashCode = (HashCodeUtil.HASH_PRIME_NUMBER * HashCodeUtil.HASH_SEED + 3) *
-                HashCodeUtil.HASH_PRIME_NUMBER + 7;
+        final Array arrayValue = new Array(new RawArray.IntRawArray(new int[] {3, 7}),
+                new ArrayTraits.SignedBitFieldIntArrayTraits(32), ArrayType.NORMAL);
+        final int rawArrayHashCode =
+                (HashCodeUtil.HASH_PRIME_NUMBER * HashCodeUtil.HASH_SEED + 3) * HashCodeUtil.HASH_PRIME_NUMBER +
+                7;
         assertEquals(HashCodeUtil.HASH_PRIME_NUMBER + rawArrayHashCode,
                 HashCodeUtil.calcHashCode(hashSeed, arrayValue));
 
@@ -166,40 +168,40 @@ public class HashCodeUtilTest
     {
         final int hashSeed = 1;
 
-        final int expectedBooleanHashCode = (HashCodeUtil.HASH_PRIME_NUMBER + 0) *
-                HashCodeUtil.HASH_PRIME_NUMBER + 1;
-        final boolean[] boolArrayValue = new boolean[] { false, true };
+        final int expectedBooleanHashCode =
+                (HashCodeUtil.HASH_PRIME_NUMBER + 0) * HashCodeUtil.HASH_PRIME_NUMBER + 1;
+        final boolean[] boolArrayValue = new boolean[] {false, true};
         assertEquals(expectedBooleanHashCode, HashCodeUtil.calcHashCode(hashSeed, boolArrayValue));
         assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (boolean[])null));
 
-        final int expectedIntegralHashCode = (HashCodeUtil.HASH_PRIME_NUMBER + 3) *
-                HashCodeUtil.HASH_PRIME_NUMBER + 7;
+        final int expectedIntegralHashCode =
+                (HashCodeUtil.HASH_PRIME_NUMBER + 3) * HashCodeUtil.HASH_PRIME_NUMBER + 7;
 
-        final byte[] byteArrayValue = new byte[] { 3, 7 };
+        final byte[] byteArrayValue = new byte[] {3, 7};
         assertEquals(expectedIntegralHashCode, HashCodeUtil.calcHashCode(hashSeed, byteArrayValue));
         assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (byte[])null));
 
-        final short[] shortArrayValue = new short[] { 3, 7 };
+        final short[] shortArrayValue = new short[] {3, 7};
         assertEquals(expectedIntegralHashCode, HashCodeUtil.calcHashCode(hashSeed, shortArrayValue));
         assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (short[])null));
 
-        final int[] intArrayValue = new int[] { 3, 7 };
+        final int[] intArrayValue = new int[] {3, 7};
         assertEquals(expectedIntegralHashCode, HashCodeUtil.calcHashCode(hashSeed, intArrayValue));
         assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (int[])null));
 
-        final long[] longArrayValue = new long[] { 3, 7 };
+        final long[] longArrayValue = new long[] {3, 7};
         assertEquals(expectedIntegralHashCode, HashCodeUtil.calcHashCode(hashSeed, longArrayValue));
         assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (long[])null));
 
-        final float[] floatArrayValue = new float[] { 10.0f };
+        final float[] floatArrayValue = new float[] {10.0f};
         assertEquals(HashCodeUtil.HASH_PRIME_NUMBER + FloatUtil.convertFloatToInt(floatArrayValue[0]),
                 HashCodeUtil.calcHashCode(hashSeed, floatArrayValue));
         assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (float[])null));
 
-        final double[] doubleArrayValue = new double[] { 10.0 };
+        final double[] doubleArrayValue = new double[] {10.0};
         final long doubleValueAsLong = FloatUtil.convertDoubleToLong(doubleArrayValue[0]);
-        final int expectedDoubleArrayHashCode = HashCodeUtil.HASH_PRIME_NUMBER +
-                (int)(doubleValueAsLong ^ (doubleValueAsLong >>> 32));
+        final int expectedDoubleArrayHashCode =
+                HashCodeUtil.HASH_PRIME_NUMBER + (int)(doubleValueAsLong ^ (doubleValueAsLong >>> 32));
         assertEquals(expectedDoubleArrayHashCode, HashCodeUtil.calcHashCode(hashSeed, doubleArrayValue));
         assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (double[])null));
     }
@@ -208,7 +210,7 @@ public class HashCodeUtilTest
     public void bigIntegerArrayType()
     {
         final int hashSeed = 1;
-        final BigInteger[] arrayValue = new BigInteger[] { BigInteger.valueOf(3), BigInteger.valueOf(7) };
+        final BigInteger[] arrayValue = new BigInteger[] {BigInteger.valueOf(3), BigInteger.valueOf(7)};
         final int expectedHashCode = (HashCodeUtil.HASH_PRIME_NUMBER + 3) * HashCodeUtil.HASH_PRIME_NUMBER + 7;
         assertEquals(expectedHashCode, HashCodeUtil.calcHashCode(hashSeed, arrayValue));
 
@@ -219,9 +221,9 @@ public class HashCodeUtilTest
     public void stringArrayType()
     {
         final int hashSeed = 1;
-        final String[] arrayValue = new String[] { String.valueOf('0') };
-        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER + (int)'0',
-                HashCodeUtil.calcHashCode(hashSeed, arrayValue));
+        final String[] arrayValue = new String[] {String.valueOf('0')};
+        assertEquals(
+                HashCodeUtil.HASH_PRIME_NUMBER + (int)'0', HashCodeUtil.calcHashCode(hashSeed, arrayValue));
 
         assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (String[])null));
     }
@@ -230,7 +232,7 @@ public class HashCodeUtilTest
     public void bitBufferArrayType()
     {
         final int hashSeed = 1;
-        final BitBuffer[] arrayValue = new BitBuffer[] { new BitBuffer(new byte[] {}) };
+        final BitBuffer[] arrayValue = new BitBuffer[] {new BitBuffer(new byte[] {})};
         assertEquals(HashCodeUtil.HASH_PRIME_NUMBER + HashCodeUtil.HASH_SEED,
                 HashCodeUtil.calcHashCode(hashSeed, arrayValue));
 
@@ -241,9 +243,9 @@ public class HashCodeUtilTest
     public void enumArrayType()
     {
         final int hashSeed = 1;
-        final Color[] arrayValue = new Color[] { Color.NONE };
+        final Color[] arrayValue = new Color[] {Color.NONE};
         assertEquals(HashCodeUtil.HASH_PRIME_NUMBER +
-                (HashCodeUtil.HASH_PRIME_NUMBER * HashCodeUtil.HASH_SEED + Color.NONE.getValue()),
+                        (HashCodeUtil.HASH_PRIME_NUMBER * HashCodeUtil.HASH_SEED + Color.NONE.getValue()),
                 HashCodeUtil.calcHashCode(hashSeed, arrayValue));
 
         assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (Color[])null));
@@ -253,9 +255,10 @@ public class HashCodeUtilTest
     public void bitmaskArrayType()
     {
         final int hashSeed = 1;
-        final Permissions[] arrayValue = new Permissions[] { Permissions.Values.READ };
+        final Permissions[] arrayValue = new Permissions[] {Permissions.Values.READ};
         assertEquals(HashCodeUtil.HASH_PRIME_NUMBER +
-                (HashCodeUtil.HASH_PRIME_NUMBER * HashCodeUtil.HASH_SEED + Permissions.Values.READ.getValue()),
+                        (HashCodeUtil.HASH_PRIME_NUMBER * HashCodeUtil.HASH_SEED +
+                                Permissions.Values.READ.getValue()),
                 HashCodeUtil.calcHashCode(hashSeed, arrayValue));
 
         assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (Permissions[])null));
@@ -265,7 +268,7 @@ public class HashCodeUtilTest
     public void objectArrayType()
     {
         final int hashSeed = 1;
-        final DummyObject[] arrayValue = new DummyObject[] { new DummyObject(3), new DummyObject(7) };
+        final DummyObject[] arrayValue = new DummyObject[] {new DummyObject(3), new DummyObject(7)};
         assertEquals((HashCodeUtil.HASH_PRIME_NUMBER + 3) * HashCodeUtil.HASH_PRIME_NUMBER + 7,
                 HashCodeUtil.calcHashCode(hashSeed, arrayValue));
 
@@ -273,8 +276,7 @@ public class HashCodeUtilTest
     }
 
     // enum
-    private static enum Color implements ZserioEnum, SizeOf
-    {
+    private static enum Color implements ZserioEnum, SizeOf {
         NONE(0),
         RED(2),
         BLUE(3),

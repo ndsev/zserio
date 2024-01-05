@@ -31,7 +31,8 @@ public interface BitStreamReader extends Closeable
      */
     long readBits(final int numBits) throws IOException;
 
-    /** Reads the next signed byte (8 bits).
+    /**
+     * Reads the next signed byte (8 bits).
      *
      * @return Read signed byte value.
      *
@@ -65,7 +66,6 @@ public interface BitStreamReader extends Closeable
      * @throws IOException If reading failed.
      */
     int readUnsignedShort() throws IOException;
-
 
     /**
      * Reads the next signed integer (32 bits).

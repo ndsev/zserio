@@ -60,8 +60,8 @@ abstract class ByteArrayBitStreamBase
     protected static void checkRange(final int numBits) throws IllegalArgumentException
     {
         if (numBits <= 0 || numBits > 64)
-            throw new IllegalArgumentException("ByteArrayBitStreamBase: Number of bits " + numBits +
-                    " is out of range [1, 64].");
+            throw new IllegalArgumentException(
+                    "ByteArrayBitStreamBase: Number of bits " + numBits + " is out of range [1, 64].");
     }
 
     /**

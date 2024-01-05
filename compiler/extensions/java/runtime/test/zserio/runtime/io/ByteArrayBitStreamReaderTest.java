@@ -1,9 +1,8 @@
 package zserio.runtime.io;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -11,12 +10,14 @@ import java.math.BigInteger;
 import javax.imageio.stream.ImageOutputStream;
 import javax.imageio.stream.MemoryCacheImageOutputStream;
 
+import org.junit.jupiter.api.Test;
+
 public class ByteArrayBitStreamReaderTest
 {
     @Test
     public void bitBufferConstructor() throws IOException
     {
-        final BitBuffer bitBuffer = new BitBuffer(new byte[]{(byte)0xAE, (byte)0xEA, (byte)0x80}, 17);
+        final BitBuffer bitBuffer = new BitBuffer(new byte[] {(byte)0xAE, (byte)0xEA, (byte)0x80}, 17);
 
         try (final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer))
         {
@@ -33,7 +34,7 @@ public class ByteArrayBitStreamReaderTest
     @Test
     public void bitBufferConstructorOverflow() throws IOException
     {
-        final BitBuffer bitBuffer = new BitBuffer(new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xF0}, 19);
+        final BitBuffer bitBuffer = new BitBuffer(new byte[] {(byte)0xFF, (byte)0xFF, (byte)0xF0}, 19);
         try (final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer))
         {
             assertEquals(bitBuffer.getBitSize(), reader.getBufferBitSize());
@@ -46,7 +47,7 @@ public class ByteArrayBitStreamReaderTest
     public void bitConstructor() throws IOException
     {
         final long bitSize = 17;
-        final byte[] buffer = new byte[]{(byte)0xAE, (byte)0xEA, (byte)0x80};
+        final byte[] buffer = new byte[] {(byte)0xAE, (byte)0xEA, (byte)0x80};
 
         try (final BitStreamReader reader = new ByteArrayBitStreamReader(buffer, bitSize))
         {
@@ -64,7 +65,7 @@ public class ByteArrayBitStreamReaderTest
     public void bitConstructorOverflow() throws IOException
     {
         final long bitSize = 19;
-        final byte[] buffer = new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xF0};
+        final byte[] buffer = new byte[] {(byte)0xFF, (byte)0xFF, (byte)0xF0};
         try (final BitStreamReader reader = new ByteArrayBitStreamReader(buffer, bitSize))
         {
             assertEquals(bitSize, reader.getBufferBitSize());
@@ -109,7 +110,7 @@ public class ByteArrayBitStreamReaderTest
     @Test
     public void rangeMinException() throws IOException
     {
-        writeReadTest(new SampleWriteReadTest(){
+        writeReadTest(new SampleWriteReadTest() {
             @Override
             public void read(ByteArrayBitStreamReader reader) throws IOException
             {
@@ -124,7 +125,7 @@ public class ByteArrayBitStreamReaderTest
     @Test
     public void rangeMaxException() throws IOException
     {
-        writeReadTest(new SampleWriteReadTest(){
+        writeReadTest(new SampleWriteReadTest() {
             @Override
             public void read(ByteArrayBitStreamReader reader) throws IOException
             {
@@ -139,7 +140,7 @@ public class ByteArrayBitStreamReaderTest
     @Test
     public void bitOffset() throws IOException
     {
-        writeReadTest(new SampleWriteReadTest(){
+        writeReadTest(new SampleWriteReadTest() {
             @Override
             public void read(ByteArrayBitStreamReader reader) throws IOException
             {
@@ -151,7 +152,7 @@ public class ByteArrayBitStreamReaderTest
     @Test
     public void readByte() throws IOException
     {
-        writeReadTest(new SampleWriteReadTest(){
+        writeReadTest(new SampleWriteReadTest() {
             @Override
             public void read(ByteArrayBitStreamReader reader) throws IOException
             {
@@ -185,7 +186,7 @@ public class ByteArrayBitStreamReaderTest
     @Test
     public void readUnsignedByte() throws IOException
     {
-        writeReadTest(new SampleWriteReadTest(){
+        writeReadTest(new SampleWriteReadTest() {
             @Override
             public void read(ByteArrayBitStreamReader reader) throws IOException
             {
@@ -215,7 +216,7 @@ public class ByteArrayBitStreamReaderTest
     @Test
     public void readUnsignedInt1() throws IOException
     {
-        writeReadTest(new SampleWriteReadTest(){
+        writeReadTest(new SampleWriteReadTest() {
             @Override
             public void read(ByteArrayBitStreamReader reader) throws IOException
             {
@@ -230,7 +231,7 @@ public class ByteArrayBitStreamReaderTest
     @Test
     public void readUnsignedShort() throws IOException
     {
-        writeReadTest(new SampleWriteReadTest(){
+        writeReadTest(new SampleWriteReadTest() {
             @Override
             public void read(ByteArrayBitStreamReader reader) throws IOException
             {
@@ -245,7 +246,7 @@ public class ByteArrayBitStreamReaderTest
     @Test
     public void bitStreamReader() throws IOException
     {
-        writeReadTest(new SampleWriteReadTest(){
+        writeReadTest(new SampleWriteReadTest() {
             @Override
             public void read(ByteArrayBitStreamReader reader) throws IOException
             {
@@ -288,7 +289,7 @@ public class ByteArrayBitStreamReaderTest
     @Test
     public void readByteNotAligned() throws IOException
     {
-        writeReadTest(new SampleWriteReadTest(){
+        writeReadTest(new SampleWriteReadTest() {
             @Override
             public void read(ByteArrayBitStreamReader reader) throws IOException
             {
@@ -311,7 +312,7 @@ public class ByteArrayBitStreamReaderTest
     @Test
     public void setBitPosition() throws IOException
     {
-        writeReadTest(new SampleWriteReadTest(){
+        writeReadTest(new SampleWriteReadTest() {
             @Override
             public void read(ByteArrayBitStreamReader reader) throws IOException
             {
@@ -357,7 +358,7 @@ public class ByteArrayBitStreamReaderTest
     @Test
     public void signedBitfield1() throws IOException
     {
-        writeReadTest(new WriteReadTestable(){
+        writeReadTest(new WriteReadTestable() {
             @Override
             public void write(ImageOutputStream writer) throws IOException
             {
@@ -400,16 +401,14 @@ public class ByteArrayBitStreamReaderTest
     @Test
     public void signedBitfield3() throws IOException
     {
-        writeReadTest(new WriteReadTestable(){
+        writeReadTest(new WriteReadTestable() {
             @Override
             public void write(ImageOutputStream writer) throws IOException
-            {
-            }
+            {}
 
             @Override
             public void read(ByteArrayBitStreamReader reader) throws IOException
-            {
-            }
+            {}
         });
 
         try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
@@ -445,7 +444,7 @@ public class ByteArrayBitStreamReaderTest
     @Test
     public void alignTo() throws IOException
     {
-        writeReadTest(new SampleWriteReadTest(){
+        writeReadTest(new SampleWriteReadTest() {
             @Override
             public void read(ByteArrayBitStreamReader reader) throws IOException
             {
@@ -461,7 +460,7 @@ public class ByteArrayBitStreamReaderTest
     @Test
     public void skipBits() throws IOException
     {
-        writeReadTest(new SampleWriteReadTest(){
+        writeReadTest(new SampleWriteReadTest() {
             @Override
             public void read(ByteArrayBitStreamReader reader) throws IOException
             {
@@ -475,7 +474,7 @@ public class ByteArrayBitStreamReaderTest
     @Test
     public void readLong() throws IOException
     {
-        writeReadTest(new WriteReadTestable(){
+        writeReadTest(new WriteReadTestable() {
             @Override
             public void write(ImageOutputStream writer) throws IOException
             {
@@ -495,7 +494,7 @@ public class ByteArrayBitStreamReaderTest
     @Test
     public void readInt() throws IOException
     {
-        writeReadTest(new WriteReadTestable(){
+        writeReadTest(new WriteReadTestable() {
             @Override
             public void write(ImageOutputStream writer) throws IOException
             {
@@ -515,7 +514,7 @@ public class ByteArrayBitStreamReaderTest
     @Test
     public void readString() throws IOException
     {
-        writeReadTest(new WriteReadTestable(){
+        writeReadTest(new WriteReadTestable() {
             @Override
             public void write(ImageOutputStream writer) throws IOException
             {
@@ -542,19 +541,14 @@ public class ByteArrayBitStreamReaderTest
                 writer.write(s.getBytes("UTF8"));
             }
 
-            private /*static*/ final String DATA[] =
-            {
-                "",
-                "tmp",
-                "test"
-            };
+            private /*static*/ final String DATA[] = {"", "tmp", "test"};
         });
     }
 
     @Test
     public void readBool() throws IOException
     {
-        writeReadTest(new WriteReadTestable(){
+        writeReadTest(new WriteReadTestable() {
             @Override
             public void write(ImageOutputStream writer) throws IOException
             {
@@ -579,19 +573,14 @@ public class ByteArrayBitStreamReaderTest
                 writer.writeBit(value ? 1 : 0);
             }
 
-            private /*static*/ final boolean DATA[] =
-            {
-                false,
-                false,
-                true
-            };
+            private /*static*/ final boolean DATA[] = {false, false, true};
         });
     }
 
     @Test
     public void readBigInteger() throws IOException
     {
-        writeReadTest(new WriteReadTestable(){
+        writeReadTest(new WriteReadTestable() {
             @Override
             public void write(ImageOutputStream writer) throws IOException
             {
@@ -611,7 +600,7 @@ public class ByteArrayBitStreamReaderTest
     @Test
     public void readSignedBigInteger() throws IOException
     {
-        writeReadTest(new SampleWriteReadTest(){
+        writeReadTest(new SampleWriteReadTest() {
             @Override
             public void read(ByteArrayBitStreamReader reader) throws IOException
             {
@@ -668,11 +657,8 @@ public class ByteArrayBitStreamReaderTest
     @Test
     public void readUnaligned63Bits() throws IOException
     {
-        final byte[] data =
-        {
-            (byte)0x0f, (byte)0xff, (byte)0xff, (byte)0xff, (byte)0xff, (byte)0xff, (byte)0xff, (byte)0xff,
-            (byte)0xe0
-        };
+        final byte[] data = {(byte)0x0f, (byte)0xff, (byte)0xff, (byte)0xff, (byte)0xff, (byte)0xff, (byte)0xff,
+                (byte)0xff, (byte)0xe0};
 
         try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(data))
         {

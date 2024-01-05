@@ -37,8 +37,8 @@ public class WalkerTest
 
         assertEquals(2, observer.getCaptures("beginArray").size());
         assertEquals(walkerObject.getUnionArray(), observer.getCaptures("beginArray").get(0));
-        assertEquals(walkerObject.getUnionArray()[2].getNestedArray(),
-                observer.getCaptures("beginArray").get(1));
+        assertEquals(
+                walkerObject.getUnionArray()[2].getNestedArray(), observer.getCaptures("beginArray").get(1));
 
         assertEquals(2, observer.getCaptures("endArray").size());
         assertEquals(walkerObject.getUnionArray()[2].getNestedArray(), observer.getCaptures("endArray").get(0));
@@ -85,8 +85,8 @@ public class WalkerTest
 
         assertEquals(2, observer.getCaptures("beginArray").size());
         assertEquals(walkerObject.getUnionArray(), observer.getCaptures("beginArray").get(0));
-        assertEquals(walkerObject.getUnionArray()[2].getNestedArray(),
-                observer.getCaptures("beginArray").get(1));
+        assertEquals(
+                walkerObject.getUnionArray()[2].getNestedArray(), observer.getCaptures("beginArray").get(1));
 
         assertEquals(2, observer.getCaptures("endArray").size());
         assertEquals(walkerObject.getUnionArray()[2].getNestedArray(), observer.getCaptures("endArray").get(0));

@@ -74,10 +74,10 @@ public final class ValidationSqliteUtil
             return isPrimaryKey;
         }
 
-        private final String    name;
-        private final String    type;
-        private final boolean   isNotNull;
-        private final boolean   isPrimaryKey;
+        private final String name;
+        private final String type;
+        private final boolean isNotNull;
+        private final boolean isPrimaryKey;
     };
 
     /**
@@ -91,8 +91,8 @@ public final class ValidationSqliteUtil
      *
      * @throws SQLException Throws in case of any SQLite error.
      */
-    public static Map<String, ColumnDescription> getTableSchema(Connection connection, String attachedDbName,
-            String tableName) throws SQLException
+    public static Map<String, ColumnDescription> getTableSchema(
+            Connection connection, String attachedDbName, String tableName) throws SQLException
     {
         Map<String, ColumnDescription> columnTypes = new HashMap<String, ColumnDescription>();
 
@@ -108,10 +108,8 @@ public final class ValidationSqliteUtil
         sqlQuery.append(")");
 
         // get table info
-        try (
-            final PreparedStatement statement = connection.prepareStatement(sqlQuery.toString());
-            final ResultSet resultSet = statement.executeQuery();
-        )
+        try (final PreparedStatement statement = connection.prepareStatement(sqlQuery.toString());
+                final ResultSet resultSet = statement.executeQuery();)
         {
             while (resultSet.next())
             {
@@ -137,8 +135,8 @@ public final class ValidationSqliteUtil
      *
      * @return true if hidden column exists in given SQLite table.
      */
-    public static boolean isHiddenColumnInTable(Connection connection, String attachedDbName, String tableName,
-            String hiddenColumnName)
+    public static boolean isHiddenColumnInTable(
+            Connection connection, String attachedDbName, String tableName, String hiddenColumnName)
     {
         // prepare SQL query
         final StringBuilder sqlQuery = new StringBuilder("SELECT ");

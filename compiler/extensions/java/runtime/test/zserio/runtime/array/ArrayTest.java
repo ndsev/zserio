@@ -1,22 +1,23 @@
 package zserio.runtime.array;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.math.BigInteger;
 
+import org.junit.jupiter.api.Test;
+
 import zserio.runtime.BitPositionUtil;
 import zserio.runtime.BitSizeOfCalculator;
-import zserio.runtime.io.ByteArrayBitStreamReader;
-import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
 
 import test_object.ArrayBitmask;
 import test_object.ArrayEnum;
@@ -167,12 +168,12 @@ public class ArrayTest
     @Test
     public void bitFieldBigIntegerArray() throws IOException
     {
-        final RawArray rawArray1 = new RawArray.BigIntegerRawArray(new BigInteger[] {
-                BigInteger.valueOf(8589934592L), BigInteger.valueOf(8589934593L)});
+        final RawArray rawArray1 = new RawArray.BigIntegerRawArray(
+                new BigInteger[] {BigInteger.valueOf(8589934592L), BigInteger.valueOf(8589934593L)});
         final int array1BitSizeOf = 2 * 64;
         final int array1AlignedBitSizeOf = array1BitSizeOf;
-        final RawArray rawArray2 = new RawArray.BigIntegerRawArray(new BigInteger[] {
-                BigInteger.valueOf(8589934594L), BigInteger.valueOf(8589934595L)});
+        final RawArray rawArray2 = new RawArray.BigIntegerRawArray(
+                new BigInteger[] {BigInteger.valueOf(8589934594L), BigInteger.valueOf(8589934595L)});
         final RawArray emptyRawArray = new RawArray.BigIntegerRawArray();
         final ArrayTraits arrayTraits = new ArrayTraits.BitFieldBigIntegerArrayTraits(64);
         testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);
@@ -305,12 +306,12 @@ public class ArrayTest
     @Test
     public void varUIntArray() throws IOException
     {
-        final RawArray rawArray1 = new RawArray.BigIntegerRawArray(new BigInteger[] {
-                BigInteger.valueOf(1), BigInteger.valueOf(1073741824L)});
+        final RawArray rawArray1 = new RawArray.BigIntegerRawArray(
+                new BigInteger[] {BigInteger.valueOf(1), BigInteger.valueOf(1073741824L)});
         final int array1BitSizeOf = 8 + 40;
         final int array1AlignedBitSizeOf = array1BitSizeOf;
-        final RawArray rawArray2 = new RawArray.BigIntegerRawArray(new BigInteger[] {
-                BigInteger.valueOf(1), BigInteger.valueOf(2147483648L)});
+        final RawArray rawArray2 = new RawArray.BigIntegerRawArray(
+                new BigInteger[] {BigInteger.valueOf(1), BigInteger.valueOf(2147483648L)});
         final RawArray emptyRawArray = new RawArray.BigIntegerRawArray();
         final ArrayTraits arrayTraits = new ArrayTraits.VarUIntArrayTraits();
         testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);
@@ -393,11 +394,11 @@ public class ArrayTest
     public void bytesArray() throws IOException
     {
         final RawArray rawArray1 = new RawArray.BytesRawArray(
-                new byte[][] { new byte[] {(byte)1, (byte)255}, new byte[] {(byte)127, (byte)128} });
+                new byte[][] {new byte[] {(byte)1, (byte)255}, new byte[] {(byte)127, (byte)128}});
         final int array1BitSizeOf = 2 * (1 + 2) * 8;
         final int array1AlignedBitSizeOf = array1BitSizeOf;
         final RawArray rawArray2 = new RawArray.BytesRawArray(
-                new byte[][] { new byte[] {(byte)0, (byte)0}, new byte[] {(byte)255, (byte)255} });
+                new byte[][] {new byte[] {(byte)0, (byte)0}, new byte[] {(byte)255, (byte)255}});
         final RawArray emptyRawArray = new RawArray.BytesRawArray();
         final ArrayTraits arrayTraits = new ArrayTraits.BytesArrayTraits();
         testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);
@@ -411,10 +412,10 @@ public class ArrayTest
     @Test
     public void stringArray() throws IOException
     {
-        final RawArray rawArray1 = new RawArray.StringRawArray(new String[] { "Text1", "Text2"});
+        final RawArray rawArray1 = new RawArray.StringRawArray(new String[] {"Text1", "Text2"});
         final int array1BitSizeOf = 2 * (1 + 5) * 8;
         final int array1AlignedBitSizeOf = array1BitSizeOf;
-        final RawArray rawArray2 = new RawArray.StringRawArray(new String[] { "Text1", "Text3"});
+        final RawArray rawArray2 = new RawArray.StringRawArray(new String[] {"Text1", "Text3"});
         final RawArray emptyRawArray = new RawArray.StringRawArray();
         final ArrayTraits arrayTraits = new ArrayTraits.StringArrayTraits();
         testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);
@@ -469,12 +470,12 @@ public class ArrayTest
     @Test
     public void bitmaskArray() throws IOException
     {
-        final RawArray rawArray1 = new RawArray.ObjectRawArray<ArrayBitmask>(ArrayBitmask.class,
-                new ArrayBitmask[] {ArrayBitmask.Values.CREATE, ArrayBitmask.Values.READ});
+        final RawArray rawArray1 = new RawArray.ObjectRawArray<ArrayBitmask>(
+                ArrayBitmask.class, new ArrayBitmask[] {ArrayBitmask.Values.CREATE, ArrayBitmask.Values.READ});
         final int array1BitSizeOf = 2 * 8;
         final int array1AlignedBitSizeOf = array1BitSizeOf;
-        final RawArray rawArray2 = new RawArray.ObjectRawArray<ArrayBitmask>(ArrayBitmask.class,
-                new ArrayBitmask[] {ArrayBitmask.Values.CREATE, ArrayBitmask.Values.WRITE});
+        final RawArray rawArray2 = new RawArray.ObjectRawArray<ArrayBitmask>(
+                ArrayBitmask.class, new ArrayBitmask[] {ArrayBitmask.Values.CREATE, ArrayBitmask.Values.WRITE});
         final RawArray emptyRawArray = new RawArray.ObjectRawArray<ArrayBitmask>(ArrayBitmask.class);
         final ArrayTraits arrayTraits = new ArrayTraits.WritePackableObjectArrayTraits<ArrayBitmask>(
                 new PackableArrayBitmaskElementFactory());
@@ -489,12 +490,12 @@ public class ArrayTest
     @Test
     public void enumArray() throws IOException
     {
-        final RawArray rawArray1 = new RawArray.EnumRawArray<ArrayEnum>(ArrayEnum.class,
-                new ArrayEnum[] {ArrayEnum.VALUE1, ArrayEnum.VALUE2});
+        final RawArray rawArray1 = new RawArray.EnumRawArray<ArrayEnum>(
+                ArrayEnum.class, new ArrayEnum[] {ArrayEnum.VALUE1, ArrayEnum.VALUE2});
         final int array1BitSizeOf = 2 * 8;
         final int array1AlignedBitSizeOf = array1BitSizeOf;
-        final RawArray rawArray2 = new RawArray.EnumRawArray<ArrayEnum>(ArrayEnum.class,
-                new ArrayEnum[] {ArrayEnum.VALUE1, ArrayEnum.VALUE3});
+        final RawArray rawArray2 = new RawArray.EnumRawArray<ArrayEnum>(
+                ArrayEnum.class, new ArrayEnum[] {ArrayEnum.VALUE1, ArrayEnum.VALUE3});
         final RawArray emptyRawArray = new RawArray.EnumRawArray<ArrayEnum>(ArrayEnum.class);
         final ArrayTraits arrayTraits = new ArrayTraits.WritePackableObjectArrayTraits<ArrayEnum>(
                 new PackableArrayEnumElementFactory());
@@ -509,15 +510,15 @@ public class ArrayTest
     @Test
     public void writeObjectArray() throws IOException
     {
-        final RawArray rawArray1 = new RawArray.ObjectRawArray<ArrayObject>(ArrayObject.class,
-                new ArrayObject[] {new ArrayObject((byte)1), new ArrayObject((byte)2)});
+        final RawArray rawArray1 = new RawArray.ObjectRawArray<ArrayObject>(
+                ArrayObject.class, new ArrayObject[] {new ArrayObject((byte)1), new ArrayObject((byte)2)});
         final int array1BitSizeOf = 2 * 31;
         final int array1AlignedBitSizeOf = 31 + 1 + 31;
-        final RawArray rawArray2 = new RawArray.ObjectRawArray<ArrayObject>(ArrayObject.class,
-                new ArrayObject[] {new ArrayObject((byte)1), new ArrayObject((byte)3)});
+        final RawArray rawArray2 = new RawArray.ObjectRawArray<ArrayObject>(
+                ArrayObject.class, new ArrayObject[] {new ArrayObject((byte)1), new ArrayObject((byte)3)});
         final RawArray emptyRawArray = new RawArray.ObjectRawArray<ArrayObject>(ArrayObject.class);
-        final ArrayTraits arrayTraits = new ArrayTraits.WriteObjectArrayTraits<ArrayObject>(
-                new PackableArrayObjectElementFactory());
+        final ArrayTraits arrayTraits =
+                new ArrayTraits.WriteObjectArrayTraits<ArrayObject>(new PackableArrayObjectElementFactory());
         testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);
 
         final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);
@@ -526,8 +527,10 @@ public class ArrayTest
         assertEquals(expectedRawArray.length, normalArray1.size());
 
         // check that the array is not packable
-        assertThrows(UnsupportedOperationException.class, () -> testPackedArray(rawArray1, emptyRawArray,
-                arrayTraits, array1BitSizeOf, array1AlignedBitSizeOf));
+        assertThrows(UnsupportedOperationException.class,
+                ()
+                        -> testPackedArray(rawArray1, emptyRawArray, arrayTraits, array1BitSizeOf,
+                                array1AlignedBitSizeOf));
     }
 
     @Test
@@ -538,12 +541,12 @@ public class ArrayTest
         final ArrayTraits arrayTraits = new ArrayTraits.SignedBitFieldByteArrayTraits(elementBitSize);
 
         // none-zero delta
-        final RawArray rawArray1 = new RawArray.ByteRawArray(new byte[] {
-                -10, -8, -6, -7, -4, -1, 0, 2, 4, 6, 9});
+        final RawArray rawArray1 =
+                new RawArray.ByteRawArray(new byte[] {-10, -8, -6, -7, -4, -1, 0, 2, 4, 6, 9});
         final int array1MaxDeltaBitSize = 2;
         final int array1BitSizeOf = calcPackedBitSize(elementBitSize, rawArray1.size(), array1MaxDeltaBitSize);
-        final int array1AlignedBitSizeOf = calcAlignedPackedBitSize(elementBitSize, rawArray1.size(),
-                array1MaxDeltaBitSize);
+        final int array1AlignedBitSizeOf =
+                calcAlignedPackedBitSize(elementBitSize, rawArray1.size(), array1MaxDeltaBitSize);
         testPackedArray(rawArray1, emptyRawArray, arrayTraits, array1BitSizeOf, array1AlignedBitSizeOf);
 
         // zero delta
@@ -568,16 +571,16 @@ public class ArrayTest
     @Test
     public void signedBitFieldShortPackedArray() throws IOException
     {
-        final RawArray rawArray1 = new RawArray.ShortRawArray(new short[] {
-                -512, -481, -422, -389, -350, -300, -267, -250});
+        final RawArray rawArray1 =
+                new RawArray.ShortRawArray(new short[] {-512, -481, -422, -389, -350, -300, -267, -250});
         final RawArray emptyRawArray = new RawArray.ShortRawArray();
         final ArrayTraits arrayTraits13 = new ArrayTraits.SignedBitFieldShortArrayTraits(13);
         testPackedArray(rawArray1, emptyRawArray, arrayTraits13);
 
         // will not be packed because unpacked 16bit values will be more efficient
         // (6 bits more are needed to store max_bit_number in descriptor if packing was enabled)
-        final RawArray rawArray2 = new RawArray.ShortRawArray(new short[] {
-                Short.MIN_VALUE, -1, 10, 20, 30, 40}); // max_bit_number 15, delta needs 16 bits
+        final RawArray rawArray2 = new RawArray.ShortRawArray(
+                new short[] {Short.MIN_VALUE, -1, 10, 20, 30, 40}); // max_bit_number 15, delta needs 16 bits
         final ArrayTraits arrayTraits16 = new ArrayTraits.SignedBitFieldShortArrayTraits(16);
         final int unpackedBitSizeOf = 1 + 6 * 16;
         final int unpackedAlignedBitSizeOf = 1 + 16 + 7 + 5 * 16;
@@ -587,8 +590,8 @@ public class ArrayTest
     @Test
     public void signedBitFieldIntPackedArray() throws IOException
     {
-        final RawArray rawArray = new RawArray.IntRawArray(new int[] {-131072, -131000, -130000, -121111,
-                -112345, -109873});
+        final RawArray rawArray =
+                new RawArray.IntRawArray(new int[] {-131072, -131000, -130000, -121111, -112345, -109873});
         final RawArray emptyRawArray = new RawArray.IntRawArray();
         final ArrayTraits arrayTraits = new ArrayTraits.SignedBitFieldIntArrayTraits(29);
         testPackedArray(rawArray, emptyRawArray, arrayTraits);
@@ -597,8 +600,8 @@ public class ArrayTest
     @Test
     public void signedBitFieldLongPackedArray() throws IOException
     {
-        final RawArray rawArray1 = new RawArray.LongRawArray(new long[] {-8589934592L, -8589934500L,
-                -8589934000L, -8589933592L, -8589933000L, -8589931234L});
+        final RawArray rawArray1 = new RawArray.LongRawArray(new long[] {
+                -8589934592L, -8589934500L, -8589934000L, -8589933592L, -8589933000L, -8589931234L});
         final RawArray emptyRawArray = new RawArray.LongRawArray();
         final ArrayTraits arrayTraits1 = new ArrayTraits.SignedBitFieldLongArrayTraits(61);
         testPackedArray(rawArray1, emptyRawArray, arrayTraits1);
@@ -622,12 +625,12 @@ public class ArrayTest
         final ArrayTraits arrayTraits = new ArrayTraits.BitFieldByteArrayTraits(5);
 
         // none-zero delta
-        final RawArray rawArray1 = new RawArray.ByteRawArray(new byte[] {
-                1, 2, 5, 4, 7, 10, 12, 15, 18, 20, 22, 23});
+        final RawArray rawArray1 =
+                new RawArray.ByteRawArray(new byte[] {1, 2, 5, 4, 7, 10, 12, 15, 18, 20, 22, 23});
         final int array1MaxDeltaBitSize = 2;
         final int array1BitSizeOf = calcPackedBitSize(elementBitSize, rawArray1.size(), array1MaxDeltaBitSize);
-        final int array1AlignedBitSizeOf = calcAlignedPackedBitSize(elementBitSize, rawArray1.size(),
-                array1MaxDeltaBitSize);
+        final int array1AlignedBitSizeOf =
+                calcAlignedPackedBitSize(elementBitSize, rawArray1.size(), array1MaxDeltaBitSize);
         testPackedArray(rawArray1, emptyRawArray, arrayTraits, array1BitSizeOf, array1AlignedBitSizeOf);
 
         // zero delta
@@ -652,8 +655,8 @@ public class ArrayTest
     @Test
     public void bitFieldShortPackedArray() throws IOException
     {
-        final RawArray rawArray1 = new RawArray.ShortRawArray(new short[] {512, 500, 459, 400, 333, 300, 222,
-                200, 201});
+        final RawArray rawArray1 =
+                new RawArray.ShortRawArray(new short[] {512, 500, 459, 400, 333, 300, 222, 200, 201});
         final RawArray emptyRawArray = new RawArray.ShortRawArray();
         final ArrayTraits arrayTraits13 = new ArrayTraits.BitFieldShortArrayTraits(13);
         testPackedArray(rawArray1, emptyRawArray, arrayTraits13);
@@ -661,16 +664,16 @@ public class ArrayTest
         final ArrayTraits arrayTraits8 = new ArrayTraits.BitFieldShortArrayTraits(8);
 
         // will not be packed because unpacked 8bit values will be more efficient
-        final RawArray rawArray2 = new RawArray.ShortRawArray(new short[] {
-                255, 0, 10, 20, 30, 40}); // max_bit_number 8, delta needs 9 bits
+        final RawArray rawArray2 = new RawArray.ShortRawArray(
+                new short[] {255, 0, 10, 20, 30, 40}); // max_bit_number 8, delta needs 9 bits
         final int array2BitSizeOf = 1 + 6 * 8;
         final int array2AlignedBitSizeOf = 1 + 8 + 7 + 5 * 8;
         testPackedArray(rawArray2, emptyRawArray, arrayTraits8, array2BitSizeOf, array2AlignedBitSizeOf);
 
         // will not be packed because unpacked 8bit values will be more efficient
         // (6 bits more are needed to store max_bit_number in descriptor if packing was enabled)
-        final RawArray rawArray3 = new RawArray.ShortRawArray(new short[] {
-                255, 128, 10, 20, 30, 40}); // max_bit_number 7, delta needs 8 bits
+        final RawArray rawArray3 = new RawArray.ShortRawArray(
+                new short[] {255, 128, 10, 20, 30, 40}); // max_bit_number 7, delta needs 8 bits
         final int array3BitSizeOf = 1 + 6 * 8;
         final int array3AlignedBitSizeOf = 1 + 8 + 7 + 5 * 8;
         testPackedArray(rawArray3, emptyRawArray, arrayTraits8, array3BitSizeOf, array3AlignedBitSizeOf);
@@ -679,8 +682,8 @@ public class ArrayTest
     @Test
     public void bitFieldIntPackedArray() throws IOException
     {
-        final RawArray rawArray = new RawArray.IntRawArray(new int[] {131072, 131000, 130123, 129123,
-                128123, 120124});
+        final RawArray rawArray =
+                new RawArray.IntRawArray(new int[] {131072, 131000, 130123, 129123, 128123, 120124});
         final RawArray emptyRawArray = new RawArray.IntRawArray();
         final ArrayTraits arrayTraits = new ArrayTraits.BitFieldIntArrayTraits(29);
         testPackedArray(rawArray, emptyRawArray, arrayTraits);
@@ -689,8 +692,8 @@ public class ArrayTest
     @Test
     public void bitFieldLongPackedArray() throws IOException
     {
-        final RawArray rawArray = new RawArray.LongRawArray(new long[] {8589934592L, 8589934000L, 8589933592L,
-                8589933000L, 8589932000L, 8589932001L});
+        final RawArray rawArray = new RawArray.LongRawArray(
+                new long[] {8589934592L, 8589934000L, 8589933592L, 8589933000L, 8589932000L, 8589932001L});
         final RawArray emptyRawArray = new RawArray.LongRawArray();
         final ArrayTraits arrayTraits = new ArrayTraits.BitFieldLongArrayTraits(61);
         testPackedArray(rawArray, emptyRawArray, arrayTraits);
@@ -700,12 +703,9 @@ public class ArrayTest
     public void bitFieldBigIntegerPackedArray() throws IOException
     {
         final RawArray rawArray = new RawArray.BigIntegerRawArray(new BigInteger[] {
-                BigInteger.valueOf(8589934592L),
-                BigInteger.valueOf(8589934000L),
-                BigInteger.valueOf(8589933592L),
-                BigInteger.valueOf(8589933000L),
-                BigInteger.valueOf(8589932000L),
-                BigInteger.valueOf(8589932001L)});
+                BigInteger.valueOf(8589934592L), BigInteger.valueOf(8589934000L),
+                BigInteger.valueOf(8589933592L), BigInteger.valueOf(8589933000L),
+                BigInteger.valueOf(8589932000L), BigInteger.valueOf(8589932001L)});
         final RawArray emptyRawArray = new RawArray.BigIntegerRawArray();
         final ArrayTraits arrayTraits = new ArrayTraits.BitFieldBigIntegerArrayTraits(64);
         testPackedArray(rawArray, emptyRawArray, arrayTraits);
@@ -732,8 +732,8 @@ public class ArrayTest
     @Test
     public void varInt64PackedArray() throws IOException
     {
-        final RawArray rawArray = new RawArray.LongRawArray(new long[] {-1, 10737412L, 10737414L, 10737416L,
-                10737418L, 107374182L});
+        final RawArray rawArray = new RawArray.LongRawArray(
+                new long[] {-1, 10737412L, 10737414L, 10737416L, 10737418L, 107374182L});
         final RawArray emptyRawArray = new RawArray.LongRawArray();
         final ArrayTraits arrayTraits = new ArrayTraits.VarInt64ArrayTraits();
         testPackedArray(rawArray, emptyRawArray, arrayTraits);
@@ -742,8 +742,8 @@ public class ArrayTest
     @Test
     public void varIntPackedArray() throws IOException
     {
-        final RawArray rawArray = new RawArray.LongRawArray(new long[] {-1, 10737412L, 10737414L, 10737416L,
-                10737418L, 107374182L});
+        final RawArray rawArray = new RawArray.LongRawArray(
+                new long[] {-1, 10737412L, 10737414L, 10737416L, 10737418L, 107374182L});
         final RawArray emptyRawArray = new RawArray.LongRawArray();
         final ArrayTraits arrayTraits = new ArrayTraits.VarIntArrayTraits();
         testPackedArray(rawArray, emptyRawArray, arrayTraits);
@@ -752,8 +752,8 @@ public class ArrayTest
     @Test
     public void varUInt16PackedArray() throws IOException
     {
-        final RawArray rawArray = new RawArray.ShortRawArray(new short[] {1, 234, 453, 700, 894, 999,
-                900, 1024});
+        final RawArray rawArray =
+                new RawArray.ShortRawArray(new short[] {1, 234, 453, 700, 894, 999, 900, 1024});
         final RawArray emptyRawArray = new RawArray.ShortRawArray();
         final ArrayTraits arrayTraits = new ArrayTraits.VarUInt16ArrayTraits();
         testPackedArray(rawArray, emptyRawArray, arrayTraits);
@@ -762,8 +762,8 @@ public class ArrayTest
     @Test
     public void varUInt32PackedArray() throws IOException
     {
-        final RawArray rawArray = new RawArray.IntRawArray(new int[] {1, 1000, 4444, 2222, 6666, 9999,
-                11111, 12345, 16384});
+        final RawArray rawArray =
+                new RawArray.IntRawArray(new int[] {1, 1000, 4444, 2222, 6666, 9999, 11111, 12345, 16384});
         final RawArray emptyRawArray = new RawArray.IntRawArray();
         final ArrayTraits arrayTraits = new ArrayTraits.VarUInt32ArrayTraits();
         testPackedArray(rawArray, emptyRawArray, arrayTraits);
@@ -772,8 +772,8 @@ public class ArrayTest
     @Test
     public void varUInt64PackedArray() throws IOException
     {
-        final RawArray rawArray = new RawArray.LongRawArray(new long[] {1L, 374182L, 107374182L, 10737418L,
-                73741824L, 573741824L, 1073741824L});
+        final RawArray rawArray = new RawArray.LongRawArray(
+                new long[] {1L, 374182L, 107374182L, 10737418L, 73741824L, 573741824L, 1073741824L});
         final RawArray emptyRawArray = new RawArray.LongRawArray();
         final ArrayTraits arrayTraits = new ArrayTraits.VarUInt64ArrayTraits();
         testPackedArray(rawArray, emptyRawArray, arrayTraits);
@@ -781,20 +781,16 @@ public class ArrayTest
         final RawArray unpackedRawArray = new RawArray.LongRawArray(new long[] {5000000L, 0, 0, 0, 0, 0, 0});
         final int unpackedBitSizeOf = 1 + 32 + 6 * 8;
         final int unpackedAlignedBitSizeOf = 1 + 32 + 7 + 6 * 8;
-        testPackedArray(unpackedRawArray, emptyRawArray, arrayTraits,
-                unpackedBitSizeOf, unpackedAlignedBitSizeOf);
+        testPackedArray(
+                unpackedRawArray, emptyRawArray, arrayTraits, unpackedBitSizeOf, unpackedAlignedBitSizeOf);
     }
 
     @Test
     public void varUIntPackedArray() throws IOException
     {
         final RawArray rawArray = new RawArray.BigIntegerRawArray(new BigInteger[] {
-                BigInteger.valueOf(10737412L),
-                BigInteger.valueOf(10737414L),
-                BigInteger.valueOf(10737416L),
-                BigInteger.valueOf(10737418L),
-                BigInteger.valueOf(107374182L),
-                BigInteger.valueOf(107374185L)});
+                BigInteger.valueOf(10737412L), BigInteger.valueOf(10737414L), BigInteger.valueOf(10737416L),
+                BigInteger.valueOf(10737418L), BigInteger.valueOf(107374182L), BigInteger.valueOf(107374185L)});
         final RawArray emptyRawArray = new RawArray.BigIntegerRawArray();
         final ArrayTraits arrayTraits = new ArrayTraits.VarUIntArrayTraits();
         testPackedArray(rawArray, emptyRawArray, arrayTraits);
@@ -803,8 +799,8 @@ public class ArrayTest
     @Test
     public void varSizePackedArray() throws IOException
     {
-        final RawArray rawArray = new RawArray.IntRawArray(new int[] {1, 4000, 2000, 5600, 11111, 13333,
-                15432, 16384});
+        final RawArray rawArray =
+                new RawArray.IntRawArray(new int[] {1, 4000, 2000, 5600, 11111, 13333, 15432, 16384});
         final RawArray emptyRawArray = new RawArray.IntRawArray();
         final ArrayTraits arrayTraits = new ArrayTraits.VarSizeArrayTraits();
         testPackedArray(rawArray, emptyRawArray, arrayTraits);
@@ -814,12 +810,8 @@ public class ArrayTest
     public void bitmaskPackedArray() throws IOException
     {
         final RawArray rawArray = new RawArray.ObjectRawArray<ArrayBitmask>(ArrayBitmask.class,
-                new ArrayBitmask[] {
-                        ArrayBitmask.Values.CREATE,
-                        ArrayBitmask.Values.READ,
-                        ArrayBitmask.Values.WRITE,
-                        ArrayBitmask.Values.READ,
-                        ArrayBitmask.Values.WRITE});
+                new ArrayBitmask[] {ArrayBitmask.Values.CREATE, ArrayBitmask.Values.READ,
+                        ArrayBitmask.Values.WRITE, ArrayBitmask.Values.READ, ArrayBitmask.Values.WRITE});
         final RawArray emptyRawArray = new RawArray.ObjectRawArray<ArrayBitmask>(ArrayBitmask.class);
         final ArrayTraits arrayTraits = new ArrayTraits.WritePackableObjectArrayTraits<ArrayBitmask>(
                 new PackableArrayBitmaskElementFactory());
@@ -830,11 +822,7 @@ public class ArrayTest
     public void enumPackedArray() throws IOException
     {
         final RawArray rawArray = new RawArray.EnumRawArray<ArrayEnum>(ArrayEnum.class,
-                new ArrayEnum[] {
-                        ArrayEnum.VALUE1,
-                        ArrayEnum.VALUE2,
-                        ArrayEnum.VALUE3,
-                        ArrayEnum.VALUE2,
+                new ArrayEnum[] {ArrayEnum.VALUE1, ArrayEnum.VALUE2, ArrayEnum.VALUE3, ArrayEnum.VALUE2,
                         ArrayEnum.VALUE1});
         final RawArray emptyRawArray = new RawArray.EnumRawArray<ArrayEnum>(ArrayEnum.class);
         final ArrayTraits arrayTraits = new ArrayTraits.WritePackableObjectArrayTraits<ArrayEnum>(
@@ -846,12 +834,8 @@ public class ArrayTest
     public void writeObjectPackedArray() throws IOException
     {
         final RawArray rawArray = new RawArray.ObjectRawArray<ArrayObject>(ArrayObject.class,
-                new ArrayObject[] {
-                        new ArrayObject((byte)0),
-                        new ArrayObject((byte)1),
-                        new ArrayObject((byte)2),
-                        new ArrayObject((byte)3),
-                        new ArrayObject((byte)4)});
+                new ArrayObject[] {new ArrayObject((byte)0), new ArrayObject((byte)1), new ArrayObject((byte)2),
+                        new ArrayObject((byte)3), new ArrayObject((byte)4)});
         final RawArray emptyRawArray = new RawArray.ObjectRawArray<ArrayObject>(ArrayObject.class);
         final ArrayTraits arrayTraits = new ArrayTraits.WritePackableObjectArrayTraits<ArrayObject>(
                 new PackableArrayObjectElementFactory());
@@ -925,16 +909,14 @@ public class ArrayTest
     {
         @Override
         public void checkOffset(int index, long byteOffset)
-        {
-        }
+        {}
     };
 
     private static class ArrayTestOffsetInitializer implements OffsetInitializer
     {
         @Override
         public void setOffset(int index, long byteOffset)
-        {
-        }
+        {}
     };
 
     private static void testArray(RawArray rawArray1, int array1BitSizeOf, int array1AlignedBitSizeOf,
@@ -946,14 +928,14 @@ public class ArrayTest
         testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, emptyRawArray, arrayTraits);
     }
 
-    private static void testArraySize(RawArray rawArray1, RawArray rawArray2, RawArray emptyRawArray,
-            ArrayTraits arrayTraits)
+    private static void testArraySize(
+            RawArray rawArray1, RawArray rawArray2, RawArray emptyRawArray, ArrayTraits arrayTraits)
     {
         final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);
         final Array autoArray1 = new Array(rawArray1, arrayTraits, ArrayType.AUTO);
         final Array implicitArray1 = new Array(rawArray1, arrayTraits, ArrayType.IMPLICIT);
-        final Array alignedNormalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL,
-                new ArrayTestOffsetChecker());
+        final Array alignedNormalArray1 =
+                new Array(rawArray1, arrayTraits, ArrayType.NORMAL, new ArrayTestOffsetChecker());
         final Array normalArray2 = new Array(rawArray2, arrayTraits, ArrayType.NORMAL);
         final Array autoArray2 = new Array(rawArray2, arrayTraits, ArrayType.AUTO);
         final Array autoEmptyArray = new Array(emptyRawArray, arrayTraits, ArrayType.AUTO);
@@ -967,8 +949,8 @@ public class ArrayTest
         assertEquals(emptyRawArray.size(), autoEmptyArray.size());
     }
 
-    private static void testArrayEquals(RawArray rawArray1, RawArray rawArray2, RawArray emptyRawArray,
-            ArrayTraits arrayTraits)
+    private static void testArrayEquals(
+            RawArray rawArray1, RawArray rawArray2, RawArray emptyRawArray, ArrayTraits arrayTraits)
     {
         final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);
         final Array autoArray1 = new Array(rawArray1, arrayTraits, ArrayType.AUTO);
@@ -990,8 +972,8 @@ public class ArrayTest
         assertFalse(normalArray1.equals(null));
     }
 
-    private static void testArrayHashCode(RawArray rawArray1, RawArray rawArray2, RawArray emptyRawArray,
-            ArrayTraits arrayTraits)
+    private static void testArrayHashCode(
+            RawArray rawArray1, RawArray rawArray2, RawArray emptyRawArray, ArrayTraits arrayTraits)
     {
         final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);
         final Array autoArray1 = new Array(rawArray1, arrayTraits, ArrayType.AUTO);
@@ -1010,8 +992,8 @@ public class ArrayTest
         assertNotEquals(normalArray1.hashCode(), autoEmptyArray.hashCode());
     }
 
-    private static void testArray(RawArray rawArray1, int array1BitSizeOf,
-            int array1AlignedBitSizeOf, RawArray readRawArray, ArrayTraits arrayTraits) throws IOException
+    private static void testArray(RawArray rawArray1, int array1BitSizeOf, int array1AlignedBitSizeOf,
+            RawArray readRawArray, ArrayTraits arrayTraits) throws IOException
     {
         testArrayNormal(rawArray1, readRawArray, arrayTraits, array1BitSizeOf);
         final int autoArray1SizeBitSizeOf = BitSizeOfCalculator.getBitSizeOfVarSize(rawArray1.size());
@@ -1020,8 +1002,8 @@ public class ArrayTest
 
         final OffsetChecker offsetChecker = new ArrayTestOffsetChecker();
         final OffsetInitializer offsetInitializer = new ArrayTestOffsetInitializer();
-        testArrayAligned(rawArray1, readRawArray, arrayTraits, offsetChecker, offsetInitializer,
-                array1AlignedBitSizeOf);
+        testArrayAligned(
+                rawArray1, readRawArray, arrayTraits, offsetChecker, offsetInitializer, array1AlignedBitSizeOf);
         testArrayAlignedAuto(rawArray1, readRawArray, arrayTraits, offsetChecker, offsetInitializer,
                 autoArray1SizeBitSizeOf + array1AlignedBitSizeOf);
     }
@@ -1132,17 +1114,17 @@ public class ArrayTest
 
     private static void testArrayAligned(RawArray rawArray, RawArray readRawArray, ArrayTraits arrayTraits,
             OffsetChecker offsetChecker, OffsetInitializer offsetInitializer, int expectedBitSizeOf)
-                    throws IOException
+            throws IOException
     {
-        final Array array = new Array(rawArray, arrayTraits, ArrayType.NORMAL, offsetChecker,
-                offsetInitializer);
+        final Array array =
+                new Array(rawArray, arrayTraits, ArrayType.NORMAL, offsetChecker, offsetInitializer);
         for (int bitPosition = 0; bitPosition < 8; ++bitPosition)
         {
             final int bitSizeOf = array.bitSizeOf(bitPosition);
             if (array.size() > 0)
             {
-                final int alignedExpectedBitSizeOf = expectedBitSizeOf +
-                        (int)BitPositionUtil.alignTo(8, bitPosition) - bitPosition;
+                final int alignedExpectedBitSizeOf =
+                        expectedBitSizeOf + (int)BitPositionUtil.alignTo(8, bitPosition) - bitPosition;
                 assertEquals(alignedExpectedBitSizeOf, bitSizeOf);
             }
             assertEquals(bitPosition + bitSizeOf, array.initializeOffsets(bitPosition));
@@ -1161,8 +1143,8 @@ public class ArrayTest
                 {
                     if (bitPosition > 0)
                         assertEquals(0, reader.readBits(bitPosition));
-                    final Array readArray = new Array(readRawArray, arrayTraits, ArrayType.NORMAL, offsetChecker,
-                            offsetInitializer);
+                    final Array readArray = new Array(
+                            readRawArray, arrayTraits, ArrayType.NORMAL, offsetChecker, offsetInitializer);
                     readArray.read(reader, rawArray.size());
                     assertEquals(array, readArray);
                 }
@@ -1172,7 +1154,7 @@ public class ArrayTest
 
     private static void testArrayAlignedAuto(RawArray rawArray, RawArray readRawArray, ArrayTraits arrayTraits,
             OffsetChecker offsetChecker, OffsetInitializer offsetInitializer, int expectedBitSizeOf)
-                    throws IOException
+            throws IOException
     {
         final Array array = new Array(rawArray, arrayTraits, ArrayType.AUTO, offsetChecker, offsetInitializer);
         for (int bitPosition = 0; bitPosition < 8; ++bitPosition)
@@ -1180,8 +1162,8 @@ public class ArrayTest
             final int bitSizeOf = array.bitSizeOf(bitPosition);
             if (array.size() > 0)
             {
-                final int alignedExpectedBitSizeOf = expectedBitSizeOf +
-                        (int)BitPositionUtil.alignTo(8, bitPosition) - bitPosition;
+                final int alignedExpectedBitSizeOf =
+                        expectedBitSizeOf + (int)BitPositionUtil.alignTo(8, bitPosition) - bitPosition;
                 assertEquals(alignedExpectedBitSizeOf, bitSizeOf);
             }
             assertEquals(bitPosition + bitSizeOf, array.initializeOffsets(bitPosition));
@@ -1200,8 +1182,8 @@ public class ArrayTest
                 {
                     if (bitPosition > 0)
                         assertEquals(0, reader.readBits(bitPosition));
-                    final Array readArray = new Array(readRawArray, arrayTraits, ArrayType.AUTO, offsetChecker,
-                                offsetInitializer);
+                    final Array readArray = new Array(
+                            readRawArray, arrayTraits, ArrayType.AUTO, offsetChecker, offsetInitializer);
                     readArray.read(reader);
                     assertEquals(array, readArray);
                 }
@@ -1220,23 +1202,23 @@ public class ArrayTest
     {
         testPackedArrayNormal(rawArray, readRawArray, arrayTraits, bitSizeOf);
         final int autoSizeBitSizeOf = BitSizeOfCalculator.getBitSizeOfVarSize(rawArray.size());
-        final int autoBitSizeOf = (bitSizeOf != UNKNOWN_BITSIZE) ?
-                autoSizeBitSizeOf + bitSizeOf : UNKNOWN_BITSIZE;
+        final int autoBitSizeOf =
+                (bitSizeOf != UNKNOWN_BITSIZE) ? autoSizeBitSizeOf + bitSizeOf : UNKNOWN_BITSIZE;
         testPackedArrayAuto(rawArray, readRawArray, arrayTraits, autoBitSizeOf);
         testPackedArrayImplicit(rawArray, readRawArray, arrayTraits);
 
         final OffsetChecker offsetChecker = new ArrayTestOffsetChecker();
         final OffsetInitializer offsetInitializer = new ArrayTestOffsetInitializer();
-        testPackedArrayAligned(rawArray, readRawArray, arrayTraits, offsetChecker, offsetInitializer,
-                alignedBitSizeOf);
-        final int autoAlignedBitSizeOf = (alignedBitSizeOf != UNKNOWN_BITSIZE) ?
-                autoSizeBitSizeOf + alignedBitSizeOf : UNKNOWN_BITSIZE;
-        testPackedArrayAlignedAuto(rawArray, readRawArray, arrayTraits, offsetChecker, offsetInitializer,
-                autoAlignedBitSizeOf);
+        testPackedArrayAligned(
+                rawArray, readRawArray, arrayTraits, offsetChecker, offsetInitializer, alignedBitSizeOf);
+        final int autoAlignedBitSizeOf =
+                (alignedBitSizeOf != UNKNOWN_BITSIZE) ? autoSizeBitSizeOf + alignedBitSizeOf : UNKNOWN_BITSIZE;
+        testPackedArrayAlignedAuto(
+                rawArray, readRawArray, arrayTraits, offsetChecker, offsetInitializer, autoAlignedBitSizeOf);
     }
 
-    private static void testPackedArrayNormal(RawArray rawArray, RawArray readRawArray,
-            ArrayTraits arrayTraits, int expectedBitSizeOf) throws IOException
+    private static void testPackedArrayNormal(RawArray rawArray, RawArray readRawArray, ArrayTraits arrayTraits,
+            int expectedBitSizeOf) throws IOException
     {
         final Array array = new Array(rawArray, arrayTraits, ArrayType.NORMAL);
         for (int bitPosition = 0; bitPosition < 8; ++bitPosition)
@@ -1301,8 +1283,8 @@ public class ArrayTest
         }
     }
 
-    private static void testPackedArrayImplicit(RawArray rawArray, RawArray readRawArray,
-            ArrayTraits arrayTraits) throws IOException
+    private static void testPackedArrayImplicit(
+            RawArray rawArray, RawArray readRawArray, ArrayTraits arrayTraits) throws IOException
     {
         final Array array = new Array(rawArray, arrayTraits, ArrayType.IMPLICIT);
 
@@ -1315,7 +1297,7 @@ public class ArrayTest
             assertThrows(UnsupportedOperationException.class, () -> array.writePacked(writer));
         }
 
-        try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(new byte[]{}))
+        try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(new byte[] {}))
         {
             assertThrows(UnsupportedOperationException.class, () -> array.readPacked(reader, rawArray.size()));
         }
@@ -1325,8 +1307,8 @@ public class ArrayTest
             ArrayTraits arrayTraits, OffsetChecker offsetChecker, OffsetInitializer offsetInitializer,
             int expectedBitSizeOf) throws IOException
     {
-        final Array array = new Array(rawArray, arrayTraits, ArrayType.NORMAL, offsetChecker,
-                offsetInitializer);
+        final Array array =
+                new Array(rawArray, arrayTraits, ArrayType.NORMAL, offsetChecker, offsetInitializer);
         for (int bitPosition = 0; bitPosition < 8; ++bitPosition)
         {
             final int bitSizeOf = array.bitSizeOfPacked(bitPosition);
@@ -1348,8 +1330,8 @@ public class ArrayTest
                 {
                     if (bitPosition > 0)
                         assertEquals(0, reader.readBits(bitPosition));
-                    final Array readArray = new Array(readRawArray, arrayTraits, ArrayType.NORMAL,
-                            offsetChecker, offsetInitializer);
+                    final Array readArray = new Array(
+                            readRawArray, arrayTraits, ArrayType.NORMAL, offsetChecker, offsetInitializer);
                     readArray.readPacked(reader, rawArray.size());
                     assertEquals(array, readArray);
                 }
@@ -1383,8 +1365,8 @@ public class ArrayTest
                 {
                     if (bitPosition > 0)
                         assertEquals(0, reader.readBits(bitPosition));
-                    final Array readArray = new Array(readRawArray, arrayTraits, ArrayType.AUTO,
-                            offsetChecker, offsetInitializer);
+                    final Array readArray = new Array(
+                            readRawArray, arrayTraits, ArrayType.AUTO, offsetChecker, offsetInitializer);
                     readArray.readPacked(reader);
                     assertEquals(array, readArray);
                 }
@@ -1403,8 +1385,8 @@ public class ArrayTest
         final int firstAlignedElementWithDescriptorBitSize = (firstElementWithDescriptorBitSize + 7) / 8 * 8;
         final int alignedMaxDeltaBitSize = (maxDeltaBitSize + 1 + 7) / 8 * 8;
 
-        return firstAlignedElementWithDescriptorBitSize +
-                (arraySize - 2) * alignedMaxDeltaBitSize + (maxDeltaBitSize + 1);
+        return firstAlignedElementWithDescriptorBitSize + (arraySize - 2) * alignedMaxDeltaBitSize +
+                (maxDeltaBitSize + 1);
     }
 
     private static int PACKING_DESCRIPTOR_BITSIZE = 1 + 6;

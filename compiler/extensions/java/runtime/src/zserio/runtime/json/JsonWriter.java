@@ -8,8 +8,8 @@ import zserio.runtime.ZserioBitmask;
 import zserio.runtime.ZserioEnum;
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
-import zserio.runtime.typeinfo.ItemInfo;
 import zserio.runtime.typeinfo.FieldInfo;
+import zserio.runtime.typeinfo.ItemInfo;
 import zserio.runtime.typeinfo.TypeInfo;
 import zserio.runtime.walker.WalkObserver;
 import zserio.runtime.walker.WalkerConst;
@@ -109,7 +109,8 @@ public final class JsonWriter implements WalkObserver, AutoCloseable
          * </ol>
          */
         STRING
-    };
+    }
+    ;
 
     /**
      * Sets preferred formatting for enumerable types.
@@ -401,10 +402,11 @@ public final class JsonWriter implements WalkObserver, AutoCloseable
         else if (!bitmaskValue.equals(valueCheck))
         {
             // partial match
-            stringValue = new StringBuilder(bitmaskValue.toString())
-                    .append(" /* partial match: ")
-                    .append(stringValue.toString())
-                    .append(" */");
+            stringValue =
+                    new StringBuilder(bitmaskValue.toString())
+                            .append(" /* partial match: ")
+                            .append(stringValue.toString())
+                            .append(" */");
         }
         // else exact match
 

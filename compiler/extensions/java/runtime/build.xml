@@ -17,6 +17,7 @@ relational.sqlite.jar_file      - SQLite JDBC jar file.
                                   Default is "../../../../3rdparty/java/sqlitejdbc-3.39.4.jar".
 relational.validation           - Flag whether the support for low level validation is included.
                                   Default is "yes".
+clang_format.exe_file           - Clang-format executable file. If not set, clang-format is not run.
 spotbugs.home_dir               - Location of the spotbugs tool. If not set, spotbugs is not run.
 
 -->
@@ -208,7 +209,22 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
                overwrite="true"/>
     </target>
 
-    <target name="spotbugs" depends="install" if="spotbugs.home_dir">
+    <target name="clang_format" depends="install" if="clang_format.exe_file">
+        <echo>
+Command hints to reformat source using clang-format tool:
+    git clang-format
+    clang-format --style=file -i [SOURCE]
+        </echo>
+        <apply executable="${clang_format.exe_file}" failonerror="true">
+            <arg value="--style=file"/>
+            <arg value="--dry-run"/>
+            <arg value="--Werror"/>
+            <srcfile/>
+            <fileset dir="${zserio_java_runtime.src_dir}" includes="**/*.java"/>
+        </apply>
+    </target>
+
+    <target name="spotbugs" depends="clang_format" if="spotbugs.home_dir">
         <mkdir dir="${zserio_java_runtime.spotbugs.out_dir}"/>
         <taskdef classpath="${spotbugs.home_dir}/lib/spotbugs-ant.jar"
             resource="edu/umd/cs/findbugs/anttask/tasks.properties"/>
@@ -263,7 +279,23 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
         </javac>
     </target>
 
-    <target name="test.spotbugs" depends="spotbugs, test.compile" if="spotbugs.home_dir">
+    <target name="test.clang_format" depends="spotbugs, test.compile" if="clang_format.exe_file">
+        <echo>
+Command hints to reformat source using clang-format tool:
+    git clang-format
+    clang-format --style=file -i [SOURCE]
+        </echo>
+        <apply executable="${clang_format.exe_file}" failonerror="true">
+            <arg value="--style=file"/>
+            <arg value="--dry-run"/>
+            <arg value="--Werror"/>
+            <srcfile/>
+            <fileset dir="${zserio_java_runtime.test.src_dir}" includes="**/*.java"
+                    excludes="test_object/*.java"/>
+        </apply>
+    </target>
+
+    <target name="test.spotbugs" depends="test.clang_format" if="spotbugs.home_dir">
         <mkdir dir="${zserio_java_runtime.test.spotbugs.out_dir}"/>
         <taskdef classpath="${spotbugs.home_dir}/lib/spotbugs-ant.jar"
             resource="edu/umd/cs/findbugs/anttask/tasks.properties"/>

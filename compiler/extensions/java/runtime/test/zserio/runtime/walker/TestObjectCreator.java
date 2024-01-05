@@ -1,8 +1,8 @@
 package zserio.runtime.walker;
 
 import test_object.WalkerNested;
-import test_object.WalkerUnion;
 import test_object.WalkerObject;
+import test_object.WalkerUnion;
 
 public class TestObjectCreator
 {
@@ -13,8 +13,8 @@ public class TestObjectCreator
 
     public static WalkerObject createWalkerObject(long identifier, boolean createNested)
     {
-        final WalkerUnion[] unionArray = new WalkerUnion[] {new WalkerUnion(), new WalkerUnion(),
-                new WalkerUnion()};
+        final WalkerUnion[] unionArray =
+                new WalkerUnion[] {new WalkerUnion(), new WalkerUnion(), new WalkerUnion()};
         unionArray[0].setText("1");
         unionArray[1].setValue(2);
         unionArray[2].setNestedArray(new WalkerNested[] {new WalkerNested("nestedArray")});

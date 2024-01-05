@@ -177,8 +177,8 @@ class JsonDecoder
                     endOfStringPos += unicodeEscapeLen;
                     if (endOfStringPos >= content.length())
                         return Result.failure(content.length() - pos);
-                    final String subContent = content.substring(endOfStringPos - unicodeEscapeLen,
-                            endOfStringPos);
+                    final String subContent =
+                            content.substring(endOfStringPos - unicodeEscapeLen, endOfStringPos);
                     final String decodedUnicode = decodeUnicodeEscape(subContent);
                     if (decodedUnicode != null)
                         decodedString.append(decodedUnicode);

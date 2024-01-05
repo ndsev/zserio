@@ -14,8 +14,8 @@ public final class MessageInfo
      * @param isSubscribed Flag whether the message is subscribed.
      * @param topic Message topic definition.
      */
-    public MessageInfo(String schemaName, TypeInfo typeInfo,
-            boolean isPublished, boolean isSubscribed, String topic)
+    public MessageInfo(
+            String schemaName, TypeInfo typeInfo, boolean isPublished, boolean isSubscribed, String topic)
     {
         this.schemaName = schemaName;
         this.typeInfo = typeInfo;

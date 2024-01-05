@@ -9,8 +9,7 @@ import java.io.IOException;
  * This interface has been moved to the {@link Writer} interface. This interface will be removed in the future.
  */
 @Deprecated
-public interface InitializeOffsetsWriter extends Writer
-{
+public interface InitializeOffsetsWriter extends Writer {
     /**
      * Writes this objects to the given bit stream and optionally calls initializeOffsets.
      *

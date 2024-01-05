@@ -1,7 +1,7 @@
 package zserio.runtime.json;
 
-import java.io.Reader;
 import java.io.IOException;
+import java.io.Reader;
 
 /**
  * Json Tokenizer used by Json Parser.
@@ -222,8 +222,8 @@ class JsonTokenizer
     {
         if (!decoderResult.success())
         {
-            throw new JsonParserError("JsonTokenizer:" + lineNumber + ":" + tokenColumnNumber +
-                    ": Unknown token!");
+            throw new JsonParserError(
+                    "JsonTokenizer:" + lineNumber + ":" + tokenColumnNumber + ": Unknown token!");
         }
 
         setToken(JsonToken.VALUE, decoderResult.getValue());

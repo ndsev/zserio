@@ -2,7 +2,6 @@ package zserio.runtime.io;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -10,12 +9,14 @@ import java.math.BigInteger;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
 
+import org.junit.jupiter.api.Test;
+
 public class ByteArrayBitStreamWriterTest
 {
     @Test
     public void test1() throws Exception
     {
-        writeReadTest(new WriteReadTestable(){
+        writeReadTest(new WriteReadTestable() {
             @Override
             public void write(ByteArrayBitStreamWriter writer) throws IOException
             {
@@ -35,18 +36,18 @@ public class ByteArrayBitStreamWriterTest
             }
 
             private final int[] DATA = {
-                0x6,
-                0x7,
-                0x8,
-                0x9,
-                0x1,
-                0x2,
-                0x3,
-                0x4,
-                0xc,
-                0xd,
-                0xe,
-                0xf
+                    0x6,
+                    0x7,
+                    0x8,
+                    0x9,
+                    0x1,
+                    0x2,
+                    0x3,
+                    0x4,
+                    0xc,
+                    0xd,
+                    0xe,
+                    0xf,
             };
         });
     }
@@ -54,7 +55,7 @@ public class ByteArrayBitStreamWriterTest
     @Test
     public void test2() throws Exception
     {
-        writeReadTest(new WriteReadTestable(){
+        writeReadTest(new WriteReadTestable() {
             @Override
             public void write(ByteArrayBitStreamWriter writer) throws IOException
             {
@@ -91,7 +92,7 @@ public class ByteArrayBitStreamWriterTest
     @Test
     public void test3() throws Exception
     {
-        writeReadTest(new WriteReadTestable(){
+        writeReadTest(new WriteReadTestable() {
             @Override
             public void write(ByteArrayBitStreamWriter writer) throws IOException
             {
@@ -171,7 +172,7 @@ public class ByteArrayBitStreamWriterTest
     @Test
     public void writeByte() throws IOException
     {
-        writeReadTest(new WriteReadTestable(){
+        writeReadTest(new WriteReadTestable() {
             @Override
             public void write(ByteArrayBitStreamWriter writer) throws IOException
             {
@@ -190,13 +191,12 @@ public class ByteArrayBitStreamWriterTest
                 }
             }
 
-            private final byte[] DATA =
-            {
-                0,
-                1,
-                -1,
-                Byte.MAX_VALUE,
-                Byte.MIN_VALUE
+            private final byte[] DATA = {
+                    0,
+                    1,
+                    -1,
+                    Byte.MAX_VALUE,
+                    Byte.MIN_VALUE,
             };
         });
     }
@@ -204,7 +204,7 @@ public class ByteArrayBitStreamWriterTest
     @Test
     public void writeShort() throws IOException
     {
-        writeReadTest(new WriteReadTestable(){
+        writeReadTest(new WriteReadTestable() {
             @Override
             public void write(ByteArrayBitStreamWriter writer) throws IOException
             {
@@ -223,13 +223,12 @@ public class ByteArrayBitStreamWriterTest
                 }
             }
 
-            private final short[] DATA =
-            {
-                0,
-                1,
-                -1,
-                Short.MAX_VALUE,
-                Short.MIN_VALUE
+            private final short[] DATA = {
+                    0,
+                    1,
+                    -1,
+                    Short.MAX_VALUE,
+                    Short.MIN_VALUE,
             };
         });
     }
@@ -237,7 +236,7 @@ public class ByteArrayBitStreamWriterTest
     @Test
     public void writeInt() throws IOException
     {
-        writeReadTest(new WriteReadTestable(){
+        writeReadTest(new WriteReadTestable() {
             @Override
             public void write(ByteArrayBitStreamWriter writer) throws IOException
             {
@@ -256,15 +255,14 @@ public class ByteArrayBitStreamWriterTest
                 }
             }
 
-            private final int[] DATA =
-            {
-                0,
-                1,
-                -1,
-                Integer.MIN_VALUE,
-                Integer.MAX_VALUE,
-                127,
-                137
+            private final int[] DATA = {
+                    0,
+                    1,
+                    -1,
+                    Integer.MIN_VALUE,
+                    Integer.MAX_VALUE,
+                    127,
+                    137,
             };
         });
     }
@@ -272,7 +270,7 @@ public class ByteArrayBitStreamWriterTest
     @Test
     public void writeLong() throws IOException
     {
-        writeReadTest(new WriteReadTestable(){
+        writeReadTest(new WriteReadTestable() {
             @Override
             public void write(ByteArrayBitStreamWriter writer) throws IOException
             {
@@ -291,15 +289,14 @@ public class ByteArrayBitStreamWriterTest
                 }
             }
 
-            private final long[] DATA =
-            {
-                0,
-                1,
-                -1,
-                Long.MAX_VALUE,
-                Long.MIN_VALUE,
-                1111111111L,
-                1212121212L
+            private final long[] DATA = {
+                    0,
+                    1,
+                    -1,
+                    Long.MAX_VALUE,
+                    Long.MIN_VALUE,
+                    1111111111L,
+                    1212121212L,
             };
         });
     }
@@ -307,7 +304,7 @@ public class ByteArrayBitStreamWriterTest
     @Test
     public void writeUnsignedInt() throws IOException
     {
-        writeReadTest(new WriteReadTestable(){
+        writeReadTest(new WriteReadTestable() {
             @Override
             public void write(ByteArrayBitStreamWriter writer) throws IOException
             {
@@ -326,11 +323,10 @@ public class ByteArrayBitStreamWriterTest
                 }
             }
 
-            private final long[] DATA =
-            {
-                0,
-                1,
-                Integer.MAX_VALUE
+            private final long[] DATA = {
+                    0,
+                    1,
+                    Integer.MAX_VALUE,
             };
         });
     }
@@ -338,7 +334,7 @@ public class ByteArrayBitStreamWriterTest
     @Test
     public void writeUnsignedByte() throws IOException
     {
-        writeReadTest(new WriteReadTestable(){
+        writeReadTest(new WriteReadTestable() {
             @Override
             public void write(ByteArrayBitStreamWriter writer) throws IOException
             {
@@ -357,10 +353,9 @@ public class ByteArrayBitStreamWriterTest
                 }
             }
 
-            private final short[] DATA =
-            {
-                5,
-                Byte.MAX_VALUE
+            private final short[] DATA = {
+                    5,
+                    Byte.MAX_VALUE,
             };
         });
     }
@@ -368,7 +363,7 @@ public class ByteArrayBitStreamWriterTest
     @Test
     public void writeBigInteger() throws IOException
     {
-        writeReadTest(new WriteReadTestable(){
+        writeReadTest(new WriteReadTestable() {
             @Override
             public void write(ByteArrayBitStreamWriter writer) throws IOException
             {
@@ -384,11 +379,22 @@ public class ByteArrayBitStreamWriterTest
             public void read(ImageInputStream reader) throws IOException
             {
                 final int[] expectedBytes = {
-                    0x17, // 0x1, 0x7 nibbles combined
-                    0x7f,
-                    0x7f, 0xff,
-                    0x7f, 0xff, 0xff, 0xff,
-                    0x7f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff
+                        0x17, // 0x1, 0x7 nibbles combined
+                        0x7f,
+                        0x7f,
+                        0xff,
+                        0x7f,
+                        0xff,
+                        0xff,
+                        0xff,
+                        0x7f,
+                        0xff,
+                        0xff,
+                        0xff,
+                        0xff,
+                        0xff,
+                        0xff,
+                        0xff,
                 };
                 for (int value : expectedBytes)
                 {
@@ -401,7 +407,7 @@ public class ByteArrayBitStreamWriterTest
     @Test
     public void writeFloat16() throws IOException
     {
-        writeReadTest(new WriteReadTestable(){
+        writeReadTest(new WriteReadTestable() {
             @Override
             public void write(ByteArrayBitStreamWriter writer) throws IOException
             {
@@ -466,7 +472,7 @@ public class ByteArrayBitStreamWriterTest
     @Test
     public void writeBool() throws IOException
     {
-        writeReadTest(new WriteReadTestable(){
+        writeReadTest(new WriteReadTestable() {
             @Override
             public void write(ByteArrayBitStreamWriter writer) throws IOException
             {
@@ -486,10 +492,9 @@ public class ByteArrayBitStreamWriterTest
                 assertEquals(DATA.length, getBitOffset(reader));
             }
 
-            private final boolean[] DATA =
-            {
-                true,
-                false
+            private final boolean[] DATA = {
+                    true,
+                    false,
             };
         });
     }
@@ -517,7 +522,7 @@ public class ByteArrayBitStreamWriterTest
     {
         try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
-            final int numBits[] = { -1, 0, 65 };
+            final int numBits[] = {-1, 0, 65};
             for (int i = 0; i < numBits.length; ++i)
             {
                 final int numBitsArg = numBits[i];
@@ -533,21 +538,24 @@ public class ByteArrayBitStreamWriterTest
         {
             for (int i = 1; i < 64; i++)
             {
-                final long minSigned   = -(1L << (i-1));
-                final long maxUnsigned =  (1L << (i  )) - 1;
+                final long minSigned = -(1L << (i - 1));
+                final long maxUnsigned = (1L << (i)) - 1;
 
-                final long minSignedViolation   = minSigned - 1;
+                final long minSignedViolation = minSigned - 1;
                 final long maxUnsignedViolation = maxUnsigned + 1;
-
 
                 writer.writeBits(maxUnsigned, i);
                 writer.writeSignedBits(minSigned, i);
 
                 final int iArg = i;
-                assertThrows(IllegalArgumentException.class, () -> writer.writeSignedBits(minSignedViolation, iArg),
+                assertThrows(IllegalArgumentException.class,
+                        ()
+                                -> writer.writeSignedBits(minSignedViolation, iArg),
                         "unexpected success writeBits: " + minSignedViolation + " # " + i);
 
-                assertThrows(IllegalArgumentException.class, () -> writer.writeBits(maxUnsignedViolation, iArg),
+                assertThrows(IllegalArgumentException.class,
+                        ()
+                                -> writer.writeBits(maxUnsignedViolation, iArg),
                         "unexpected success writeBits: " + maxUnsignedViolation + " # " + i);
             } // for numBits
         }
@@ -577,7 +585,7 @@ public class ByteArrayBitStreamWriterTest
     @Test
     public void writeVarInt16() throws IOException
     {
-        writeReadTest(new WriteReadTestable(){
+        writeReadTest(new WriteReadTestable() {
             @Override
             public void write(ByteArrayBitStreamWriter writer) throws IOException
             {
@@ -613,7 +621,7 @@ public class ByteArrayBitStreamWriterTest
     @Test
     public void writeVarInt32() throws IOException
     {
-        writeReadTest(new WriteReadTestable(){
+        writeReadTest(new WriteReadTestable() {
             @Override
             public void write(ByteArrayBitStreamWriter writer) throws IOException
             {
@@ -673,7 +681,7 @@ public class ByteArrayBitStreamWriterTest
     @Test
     public void writeVarUInt16() throws IOException
     {
-        writeReadTest(new WriteReadTestable(){
+        writeReadTest(new WriteReadTestable() {
             @Override
             public void write(ByteArrayBitStreamWriter writer) throws IOException
             {
@@ -690,8 +698,8 @@ public class ByteArrayBitStreamWriterTest
             public void read(ImageInputStream reader) throws IOException
             {
                 // 1 byte
-                assertEquals(0x00, reader.readBits(8));    // 0
-                assertEquals(0x7f, reader.readBits(8));    // 1111111b = 0x7f
+                assertEquals(0x00, reader.readBits(8)); // 0
+                assertEquals(0x7f, reader.readBits(8)); // 1111111b = 0x7f
 
                 // 2 bytes
                 assertEquals(0x80ff, reader.readBits(16)); // 0b11111111 = 0xff
@@ -703,7 +711,7 @@ public class ByteArrayBitStreamWriterTest
     @Test
     public void writeVarUInt32() throws IOException
     {
-        writeReadTest(new WriteReadTestable(){
+        writeReadTest(new WriteReadTestable() {
             @Override
             public void write(ByteArrayBitStreamWriter writer) throws IOException
             {
@@ -728,8 +736,8 @@ public class ByteArrayBitStreamWriterTest
             public void read(ImageInputStream reader) throws IOException
             {
                 // 1 byte
-                assertEquals(0x00, reader.readBits(8));    // 0
-                assertEquals(0x7f, reader.readBits(8));    // 1111111b = 0x7f
+                assertEquals(0x00, reader.readBits(8)); // 0
+                assertEquals(0x7f, reader.readBits(8)); // 1111111b = 0x7f
 
                 // 2 bytes
                 assertEquals(0x817f, reader.readBits(16));
@@ -749,7 +757,7 @@ public class ByteArrayBitStreamWriterTest
     @Test
     public void writeVarSize() throws IOException
     {
-        writeReadTest(new WriteReadTestable(){
+        writeReadTest(new WriteReadTestable() {
             @Override
             public void write(ByteArrayBitStreamWriter writer) throws IOException
             {
@@ -778,8 +786,8 @@ public class ByteArrayBitStreamWriterTest
             public void read(ImageInputStream reader) throws IOException
             {
                 // 1 byte
-                assertEquals(0x00, reader.readBits(8));    // 0
-                assertEquals(0x7f, reader.readBits(8));    // 1111111b = 0x7f
+                assertEquals(0x00, reader.readBits(8)); // 0
+                assertEquals(0x7f, reader.readBits(8)); // 1111111b = 0x7f
 
                 // 2 bytes
                 assertEquals(0x817f, reader.readBits(16));
@@ -840,10 +848,9 @@ public class ByteArrayBitStreamWriterTest
                 final byte[] data = writer.toByteArray();
                 if (method == TestMethod.UNALIGNED)
                     trimBitFromLeft(data);
-                try (
-                    final ByteArrayInputStream inputStream = new ByteArrayInputStream(data);
-                    final MemoryCacheImageInputStream reader = new MemoryCacheImageInputStream(inputStream);
-                )
+                try (final ByteArrayInputStream inputStream = new ByteArrayInputStream(data);
+                        final MemoryCacheImageInputStream reader =
+                                new MemoryCacheImageInputStream(inputStream);)
                 {
                     writeReadTest.read(reader);
                 }

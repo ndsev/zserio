@@ -165,8 +165,9 @@ public class JsonParserTest
         final JsonParser jsonParser = new JsonParser(reader, observer);
 
         final JsonParserError exception = assertThrows(JsonParserError.class, () -> jsonParser.parse());
-        assertEquals("JsonParser:2:8: Unexpected token: END_OBJECT ('}'), expecting one of " +
-                "[BEGIN_OBJECT, BEGIN_ARRAY, VALUE]!", exception.getMessage());
+        assertEquals("JsonParser:2:8: Unexpected token: END_OBJECT ('}'), expecting one of "
+                        + "[BEGIN_OBJECT, BEGIN_ARRAY, VALUE]!",
+                exception.getMessage());
         assertEquals(2, observer.getReport().size());
         assertEquals("beginObject", observer.getReport().get(0));
         assertEquals("visitKey: item", observer.getReport().get(1));
@@ -182,8 +183,8 @@ public class JsonParserTest
         final JsonParser jsonParser = new JsonParser(reader, observer);
 
         final JsonParserError exception = assertThrows(JsonParserError.class, () -> jsonParser.parse());
-        assertEquals("JsonParser:4:1: Unexpected token: VALUE ('20'), expecting END_ARRAY!",
-                exception.getMessage());
+        assertEquals(
+                "JsonParser:4:1: Unexpected token: VALUE ('20'), expecting END_ARRAY!", exception.getMessage());
         assertEquals(4, observer.getReport().size());
         assertEquals("beginObject", observer.getReport().get(0));
         assertEquals("visitKey: array", observer.getReport().get(1));

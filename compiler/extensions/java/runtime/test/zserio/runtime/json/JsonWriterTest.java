@@ -14,13 +14,13 @@ import zserio.runtime.ZserioEnum;
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.typeinfo.FieldInfo;
 import zserio.runtime.typeinfo.FunctionInfo;
-import zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo;
-import zserio.runtime.typeinfo.TypeInfo.EnumTypeInfo;
-import zserio.runtime.typeinfo.TypeInfo.BitmaskTypeInfo;
-import zserio.runtime.typeinfo.TypeInfo.StructTypeInfo;
 import zserio.runtime.typeinfo.ItemInfo;
 import zserio.runtime.typeinfo.ParameterInfo;
 import zserio.runtime.typeinfo.TypeInfo;
+import zserio.runtime.typeinfo.TypeInfo.BitmaskTypeInfo;
+import zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo;
+import zserio.runtime.typeinfo.TypeInfo.EnumTypeInfo;
+import zserio.runtime.typeinfo.TypeInfo.StructTypeInfo;
 import zserio.runtime.walker.WalkObserver;
 import zserio.runtime.walker.WalkerConst;
 
@@ -158,11 +158,11 @@ public class JsonWriterTest
                 jsonWriter.visitValue(new DummyEnum((byte)-1), ENUM_FIELD_INFO, WalkerConst.NOT_ELEMENT);
 
                 // note that this is not valid json
-                assertJsonEquals(
-                        "\"enumField\": \"ZERO\", " +
-                        "\"enumField\": \"One\", " +
-                        "\"enumField\": \"2 /* no match */\", " +
-                        "\"enumField\": \"MINUS_ONE\"", stringWriter.toString());
+                assertJsonEquals("\"enumField\": \"ZERO\", "
+                                + "\"enumField\": \"One\", "
+                                + "\"enumField\": \"2 /* no match */\", "
+                                + "\"enumField\": \"MINUS_ONE\"",
+                        stringWriter.toString());
             }
         }
 
@@ -176,8 +176,8 @@ public class JsonWriterTest
                 jsonWriter.visitValue(new DummyEnum((byte)-1), ENUM_FIELD_INFO, WalkerConst.NOT_ELEMENT);
 
                 // note that this is not valid json
-                assertJsonEquals("\"enumField\": 0, \"enumField\": 2, \"enumField\": -1",
-                        stringWriter.toString());
+                assertJsonEquals(
+                        "\"enumField\": 0, \"enumField\": 2, \"enumField\": -1", stringWriter.toString());
             }
         }
     }
@@ -251,12 +251,12 @@ public class JsonWriterTest
                 jsonWriter.visitValue(new DummyBitmask((short)7), BITMASK_FIELD_INFO, WalkerConst.NOT_ELEMENT);
 
                 // note that this is not valid json
-                assertJsonEquals(
-                        "\"bitmaskField\": \"ZERO\", " +
-                        "\"bitmaskField\": \"TWO\", " +
-                        "\"bitmaskField\": \"One | TWO\", " +
-                        "\"bitmaskField\": \"4 /* no match */\", " +
-                        "\"bitmaskField\": \"7 /* partial match: One | TWO */\"", stringWriter.toString());
+                assertJsonEquals("\"bitmaskField\": \"ZERO\", "
+                                + "\"bitmaskField\": \"TWO\", "
+                                + "\"bitmaskField\": \"One | TWO\", "
+                                + "\"bitmaskField\": \"4 /* no match */\", "
+                                + "\"bitmaskField\": \"7 /* partial match: One | TWO */\"",
+                        stringWriter.toString());
             }
         }
 
@@ -292,8 +292,8 @@ public class JsonWriterTest
             StringWriter stringWriter = new StringWriter();
             try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))
             {
-                jsonWriter.visitValue(new UInt64MaxDummyBitmask(), BITMASK64_FIELD_INFO,
-                        WalkerConst.NOT_ELEMENT);
+                jsonWriter.visitValue(
+                        new UInt64MaxDummyBitmask(), BITMASK64_FIELD_INFO, WalkerConst.NOT_ELEMENT);
 
                 // note that this is not valid json
                 assertJsonEquals("\"bitmask64Field\": \"UINT64_MAX\"", stringWriter.toString());
@@ -305,8 +305,8 @@ public class JsonWriterTest
             try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))
             {
                 jsonWriter.setEnumerableFormat(JsonWriter.EnumerableFormat.NUMBER);
-                jsonWriter.visitValue(new UInt64MaxDummyBitmask(), BITMASK64_FIELD_INFO,
-                        WalkerConst.NOT_ELEMENT);
+                jsonWriter.visitValue(
+                        new UInt64MaxDummyBitmask(), BITMASK64_FIELD_INFO, WalkerConst.NOT_ELEMENT);
 
                 // note that this is not valid json
                 assertJsonEquals("\"bitmask64Field\": " + uint64Max.toString(), stringWriter.toString());
@@ -325,13 +325,14 @@ public class JsonWriterTest
             jsonWriter.visitValue("test", TEXT_FIELD_INFO, WalkerConst.NOT_ELEMENT);
             jsonWriter.visitValue(new BitBuffer(new byte[] {(byte)0xFF, 0x1F}, (long)13), DATA_FIELD_INFO,
                     WalkerConst.NOT_ELEMENT);
-            jsonWriter.visitValue(new byte[] {(byte)0xCA, (byte)0xFE}, BYTES_DATA_FIELD_INFO,
-                    WalkerConst.NOT_ELEMENT);
+            jsonWriter.visitValue(
+                    new byte[] {(byte)0xCA, (byte)0xFE}, BYTES_DATA_FIELD_INFO, WalkerConst.NOT_ELEMENT);
             jsonWriter.endRoot(null);
 
-            assertJsonEquals("{\"identifier\": 13, \"text\": \"test\", " +
-                    "\"data\": {\"buffer\": [255, 31], \"bitSize\": 13}, " +
-                    "\"bytesData\": {\"buffer\": [202, 254]}}", stringWriter.toString());
+            assertJsonEquals("{\"identifier\": 13, \"text\": \"test\", "
+                            + "\"data\": {\"buffer\": [255, 31], \"bitSize\": 13}, "
+                            + "\"bytesData\": {\"buffer\": [202, 254]}}",
+                    stringWriter.toString());
         }
     }
 
@@ -379,8 +380,8 @@ public class JsonWriterTest
         {
             walkNested(jsonWriter);
 
-            assertJsonEquals("{\n\"identifier\": 13,\n\"nested\": {\n\"text\": \"test\"\n}\n}",
-                    stringWriter.toString());
+            assertJsonEquals(
+                    "{\n\"identifier\": 13,\n\"nested\": {\n\"text\": \"test\"\n}\n}", stringWriter.toString());
         }
     }
 
@@ -450,8 +451,7 @@ public class JsonWriterTest
         observer.endRoot(null);
     }
 
-    private static final FieldInfo TEXT_FIELD_INFO = new FieldInfo(
-            "text", // schemaName
+    private static final FieldInfo TEXT_FIELD_INFO = new FieldInfo("text", // schemaName
             "getText", // getterName
             "setText", // setterName
             BuiltinTypeInfo.getString(), // typeInfo
@@ -471,8 +471,7 @@ public class JsonWriterTest
             false // isImplicit
     );
 
-    private static final FieldInfo BOOL_FIELD_INFO = new FieldInfo(
-            "boolField", // schemaName
+    private static final FieldInfo BOOL_FIELD_INFO = new FieldInfo("boolField", // schemaName
             "getBoolField", // getterName
             "setBoolField", // setterName
             BuiltinTypeInfo.getBool(), // typeInfo
@@ -492,8 +491,7 @@ public class JsonWriterTest
             false // isImplicit
     );
 
-    private static final FieldInfo INT32_FIELD_INFO = new FieldInfo(
-            "int32Field", // schemaName
+    private static final FieldInfo INT32_FIELD_INFO = new FieldInfo("int32Field", // schemaName
             "getInt32Field", // getterName
             "setInt32Field", // setterName
             BuiltinTypeInfo.getInt32(), // typeInfo
@@ -513,8 +511,7 @@ public class JsonWriterTest
             false // isImplicit
     );
 
-    private static final FieldInfo UINT64_FIELD_INFO = new FieldInfo(
-            "uint64Field", // schemaName
+    private static final FieldInfo UINT64_FIELD_INFO = new FieldInfo("uint64Field", // schemaName
             "getUint64Field", // getterName
             "setUint64Field", // setterName
             BuiltinTypeInfo.getUInt64(), // typeInfo
@@ -534,8 +531,7 @@ public class JsonWriterTest
             false // isImplicit
     );
 
-    private static final FieldInfo FLOAT_FIELD_INFO = new FieldInfo(
-            "floatField", // schemaName
+    private static final FieldInfo FLOAT_FIELD_INFO = new FieldInfo("floatField", // schemaName
             "getFloatField", // getterName
             "setFloatField", // setterName
             BuiltinTypeInfo.getFloat32(), // typeInfo
@@ -555,8 +551,7 @@ public class JsonWriterTest
             false // isImplicit
     );
 
-    private static final FieldInfo DOUBLE_FIELD_INFO = new FieldInfo(
-            "doubleField", // schemaName
+    private static final FieldInfo DOUBLE_FIELD_INFO = new FieldInfo("doubleField", // schemaName
             "getDoubleField", // getterName
             "setDoubleField", // setterName
             BuiltinTypeInfo.getFloat64(), // typeInfo
@@ -585,21 +580,17 @@ public class JsonWriterTest
         }
     }
 
-    private static final FieldInfo ENUM_FIELD_INFO = new FieldInfo(
-            "enumField", // schemaName
+    private static final FieldInfo ENUM_FIELD_INFO = new FieldInfo("enumField", // schemaName
             "getEnumField", // getterName
             "setEnumField", // setterName
-            new EnumTypeInfo(
-                    "DummyEnum", // schemaName
+            new EnumTypeInfo("DummyEnum", // schemaName
                     DummyEnumForClass.class, // javaClass
                     BuiltinTypeInfo.getInt8(), // underlyingType
                     new ArrayList<java.util.function.Supplier<Object>>(), // underlyingTypeArguments
                     Arrays.asList( // enumItems
                             new ItemInfo("ZERO", BigInteger.valueOf(0), false, false),
                             new ItemInfo("One", BigInteger.valueOf(1), false, false),
-                            new ItemInfo("MINUS_ONE", BigInteger.valueOf(-1), false, false)
-                    )
-            ),
+                            new ItemInfo("MINUS_ONE", BigInteger.valueOf(-1), false, false))),
             new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
             false, // isExtended
             null, // alignment
@@ -616,18 +607,15 @@ public class JsonWriterTest
             false // isImplicit
     );
 
-    private static final FieldInfo ENUM64_FIELD_INFO = new FieldInfo(
-            "enum64Field", // schemaName
+    private static final FieldInfo ENUM64_FIELD_INFO = new FieldInfo("enum64Field", // schemaName
             "getEnum64Field", // getterName
             "setEnum64Field", // setterName
-            new EnumTypeInfo(
-                    "DummyEnum", // schemaName
+            new EnumTypeInfo("DummyEnum", // schemaName
                     DummyEnumForClass.class, // javaClass
                     BuiltinTypeInfo.getUInt64(), // underlyingType
                     new ArrayList<java.util.function.Supplier<Object>>(), // underlyingTypeArguments
                     Arrays.asList( // enumItems
-                            new ItemInfo("UINT64_MAX", new BigInteger("18446744073709551615"), false, false))
-            ),
+                            new ItemInfo("UINT64_MAX", new BigInteger("18446744073709551615"), false, false))),
             new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
             false, // isExtended
             null, // alignment
@@ -653,21 +641,17 @@ public class JsonWriterTest
         }
     }
 
-    private static final FieldInfo BITMASK_FIELD_INFO = new FieldInfo(
-            "bitmaskField", // schemaName
+    private static final FieldInfo BITMASK_FIELD_INFO = new FieldInfo("bitmaskField", // schemaName
             "getBitmaskField", // getterName
             "setBitmaskField", // setterName
-            new BitmaskTypeInfo(
-                    "DummyBitmask", // schemaName
+            new BitmaskTypeInfo("DummyBitmask", // schemaName
                     DummyBitmaskForClass.class, // javaClass
                     BuiltinTypeInfo.getInt8(), // underlyingType
                     new ArrayList<java.util.function.Supplier<Object>>(), // underlyingTypeArguments
                     Arrays.asList( // bitmaskValues
                             new ItemInfo("ZERO", BigInteger.valueOf(0), false, false),
                             new ItemInfo("One", BigInteger.valueOf(1), false, false),
-                            new ItemInfo("TWO", BigInteger.valueOf(2), false, false)
-                    )
-            ),
+                            new ItemInfo("TWO", BigInteger.valueOf(2), false, false))),
             new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
             false, // isExtended
             null, // alignment
@@ -684,18 +668,15 @@ public class JsonWriterTest
             false // isImplicit
     );
 
-    private static final FieldInfo BITMASK64_FIELD_INFO = new FieldInfo(
-            "bitmask64Field", // schemaName
+    private static final FieldInfo BITMASK64_FIELD_INFO = new FieldInfo("bitmask64Field", // schemaName
             "getBitmask64Field", // getterName
             "setBitmask64Field", // setterName
-            new BitmaskTypeInfo(
-                    "DummyBitmask", // schemaName
+            new BitmaskTypeInfo("DummyBitmask", // schemaName
                     DummyBitmaskForClass.class, // javaClass
                     BuiltinTypeInfo.getUInt64(), // underlyingType
                     new ArrayList<java.util.function.Supplier<Object>>(), // underlyingTypeArguments
                     Arrays.asList( // bitmaskValues
-                            new ItemInfo("UINT64_MAX", new BigInteger("18446744073709551615"), false, false))
-            ),
+                            new ItemInfo("UINT64_MAX", new BigInteger("18446744073709551615"), false, false))),
             new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
             false, // isExtended
             null, // alignment
@@ -712,8 +693,7 @@ public class JsonWriterTest
             false // isImplicit
     );
 
-    private static final FieldInfo IDENTIFIER_FIELD_INFO = new FieldInfo(
-            "identifier", // schemaName
+    private static final FieldInfo IDENTIFIER_FIELD_INFO = new FieldInfo("identifier", // schemaName
             "getIdentifier", // getterName
             "setIdentifier", // setterName
             BuiltinTypeInfo.getUInt32(), // typeInfo
@@ -733,8 +713,7 @@ public class JsonWriterTest
             false // isImplicit
     );
 
-    private static final FieldInfo DATA_FIELD_INFO = new FieldInfo(
-            "data", // schemaName
+    private static final FieldInfo DATA_FIELD_INFO = new FieldInfo("data", // schemaName
             "getData", // getterName
             "setData", // setterName
             BuiltinTypeInfo.getBitBuffer(), // typeInfo
@@ -754,8 +733,7 @@ public class JsonWriterTest
             false // isImplicit
     );
 
-    private static final FieldInfo BYTES_DATA_FIELD_INFO = new FieldInfo(
-            "bytesData", // schemaName
+    private static final FieldInfo BYTES_DATA_FIELD_INFO = new FieldInfo("bytesData", // schemaName
             "getBytesData", // getterName
             "setBytesData", // setterName
             BuiltinTypeInfo.getBytes(), // typeInfo
@@ -776,11 +754,9 @@ public class JsonWriterTest
     );
 
     private static class Dummy
-    {
-    }
+    {}
 
-    private static final TypeInfo DUMMY_TYPE_INFO = new StructTypeInfo(
-            "Dummy", // schemaName
+    private static final TypeInfo DUMMY_TYPE_INFO = new StructTypeInfo("Dummy", // schemaName
             Dummy.class, // javaClass
             "", // templateName
             new ArrayList<TypeInfo>(), // templateArguments
@@ -789,8 +765,7 @@ public class JsonWriterTest
             new ArrayList<FunctionInfo>() // functions
     );
 
-    private static final FieldInfo NESTED_FIELD_INFO = new FieldInfo(
-            "nested", // schemaName
+    private static final FieldInfo NESTED_FIELD_INFO = new FieldInfo("nested", // schemaName
             "getNested", // getterName
             "setNested", // setterName
             DUMMY_TYPE_INFO, // typeInfo
@@ -810,8 +785,7 @@ public class JsonWriterTest
             false // isImplicit
     );
 
-    private static final FieldInfo ARRAY_FIELD_INFO = new FieldInfo(
-            "array", // schemaName
+    private static final FieldInfo ARRAY_FIELD_INFO = new FieldInfo("array", // schemaName
             "getArray", // getterName
             "setArray", // setterName
             BuiltinTypeInfo.getUInt32(), // typeInfo

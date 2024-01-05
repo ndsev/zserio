@@ -2,15 +2,16 @@ package zserio.runtime.validation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.junit.jupiter.api.Test;
+
 import zserio.runtime.array.Array;
-import zserio.runtime.array.RawArray;
 import zserio.runtime.array.ArrayTraits;
 import zserio.runtime.array.ArrayType;
+import zserio.runtime.array.RawArray;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 
 public class ValidationBitStreamReaderTest

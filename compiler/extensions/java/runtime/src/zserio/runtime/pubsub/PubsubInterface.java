@@ -45,5 +45,5 @@ public interface PubsubInterface
          * @param data Message's data as a byte array.
          */
         void invoke(String topic, byte[] data);
-    };
-};
+    }
+}

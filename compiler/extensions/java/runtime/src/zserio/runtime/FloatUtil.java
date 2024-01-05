@@ -21,14 +21,14 @@ public final class FloatUtil
     public static float convertShortToFloat(short float16Value)
     {
         // decompose half precision float (float16)
-        final short sign16Shifted = (short) (float16Value & FLOAT16_SIGN_MASK);
-        final short exponent16 = (short) ((float16Value & FLOAT16_EXPONENT_MASK) >>
-                FLOAT16_EXPONENT_BIT_POSITION);
-        final short significand16 = (short) (float16Value & FLOAT16_SIGNIFICAND_MASK);
+        final short sign16Shifted = (short)(float16Value & FLOAT16_SIGN_MASK);
+        final short exponent16 =
+                (short)((float16Value & FLOAT16_EXPONENT_MASK) >> FLOAT16_EXPONENT_BIT_POSITION);
+        final short significand16 = (short)(float16Value & FLOAT16_SIGNIFICAND_MASK);
 
         // calculate significand for single precision float (float32)
-        int significand32 = ((int) significand16) <<
-                (FLOAT32_SIGNIFICAND_NUM_BITS - FLOAT16_SIGNIFICAND_NUM_BITS);
+        int significand32 = ((int)significand16)
+                << (FLOAT32_SIGNIFICAND_NUM_BITS - FLOAT16_SIGNIFICAND_NUM_BITS);
 
         // calculate exponent for single precision float (float32)
         int exponent32;
@@ -65,8 +65,8 @@ public final class FloatUtil
         }
 
         // compose single precision float (float32)
-        final int sign32Shifted = (int) (sign16Shifted) << (FLOAT32_SIGN_BIT_POSITION -
-                FLOAT16_SIGN_BIT_POSITION);
+        final int sign32Shifted = (int)(sign16Shifted)
+                << (FLOAT32_SIGN_BIT_POSITION - FLOAT16_SIGN_BIT_POSITION);
         final int exponent32Shifted = exponent32 << FLOAT32_EXPONENT_BIT_POSITION;
         final int float32Value = sign32Shifted | exponent32Shifted | significand32;
 
@@ -91,8 +91,8 @@ public final class FloatUtil
         final int significand32 = (float32Value & FLOAT32_SIGNIFICAND_MASK);
 
         // calculate significand for half precision float (float16)
-        short significand16 = (short) ((significand32 >>
-                (FLOAT32_SIGNIFICAND_NUM_BITS - FLOAT16_SIGNIFICAND_NUM_BITS)));
+        short significand16 =
+                (short)((significand32 >> (FLOAT32_SIGNIFICAND_NUM_BITS - FLOAT16_SIGNIFICAND_NUM_BITS)));
 
         // calculate exponent for half precision float (float16)
         boolean needsRounding = false;
@@ -114,7 +114,7 @@ public final class FloatUtil
         else
         {
             // normal number
-            final short signedExponent16 = (short) (exponent32 - FLOAT32_EXPONENT_BIAS + FLOAT16_EXPONENT_BIAS);
+            final short signedExponent16 = (short)(exponent32 - FLOAT32_EXPONENT_BIAS + FLOAT16_EXPONENT_BIAS);
             if (signedExponent16 > FLOAT16_EXPONENT_INFINITY_NAN)
             {
                 // exponent overflow, set infinity or NaN
@@ -123,7 +123,7 @@ public final class FloatUtil
             else if (signedExponent16 <= 0)
             {
                 // exponent underflow
-                if (signedExponent16 <= (short) (-FLOAT16_SIGNIFICAND_NUM_BITS))
+                if (signedExponent16 <= (short)(-FLOAT16_SIGNIFICAND_NUM_BITS))
                 {
                     // too big underflow, set to zero
                     exponent16 = 0;
@@ -135,31 +135,35 @@ public final class FloatUtil
                     exponent16 = 0;
                     final int fullSignificand32 = significand32 | (FLOAT32_SIGNIFICAND_MASK + 1);
                     final int significandShift = 1 - signedExponent16;
-                    significand16 = (short) (fullSignificand32 >>
+                    significand16 = (short)(fullSignificand32 >>
                             (FLOAT32_SIGNIFICAND_NUM_BITS - FLOAT16_SIGNIFICAND_NUM_BITS + significandShift));
 
-                    needsRounding = ((fullSignificand32 >> (FLOAT32_SIGNIFICAND_NUM_BITS -
-                            FLOAT16_SIGNIFICAND_NUM_BITS + significandShift - 1)) & 0x01) != 0;
+                    needsRounding =
+                            ((fullSignificand32 >>
+                                     (FLOAT32_SIGNIFICAND_NUM_BITS - FLOAT16_SIGNIFICAND_NUM_BITS +
+                                             significandShift - 1)) &
+                                    0x01) != 0;
                 }
             }
             else
             {
                 // exponent ok
                 exponent16 = signedExponent16;
-                needsRounding = ((significand32 >> (FLOAT32_SIGNIFICAND_NUM_BITS -
-                        FLOAT16_SIGNIFICAND_NUM_BITS - 1)) & 0x01) != 0;
+                needsRounding =
+                        ((significand32 >> (FLOAT32_SIGNIFICAND_NUM_BITS - FLOAT16_SIGNIFICAND_NUM_BITS - 1)) &
+                                0x01) != 0;
             }
         }
 
         // compose half precision float (float16)
-        final short sign16Shifted = (short) (sign32Shifted >>> (FLOAT32_SIGN_BIT_POSITION -
-                FLOAT16_SIGN_BIT_POSITION));
-        final short exponent16Shifted = (short) (exponent16 << FLOAT16_EXPONENT_BIT_POSITION);
-        short float16Value = (short) (sign16Shifted | exponent16Shifted | significand16);
+        final short sign16Shifted =
+                (short)(sign32Shifted >>> (FLOAT32_SIGN_BIT_POSITION - FLOAT16_SIGN_BIT_POSITION));
+        final short exponent16Shifted = (short)(exponent16 << FLOAT16_EXPONENT_BIT_POSITION);
+        short float16Value = (short)(sign16Shifted | exponent16Shifted | significand16);
 
         // check rounding
         if (needsRounding)
-            float16Value += (short) 1; // might overflow to infinity
+            float16Value += (short)1; // might overflow to infinity
 
         return float16Value;
     }
@@ -212,16 +216,16 @@ public final class FloatUtil
         return Double.doubleToLongBits(float64);
     }
 
-    private static final short FLOAT16_SIGN_MASK = (short) 0x8000;
-    private static final short FLOAT16_EXPONENT_MASK = (short) 0x7C00;
-    private static final short FLOAT16_SIGNIFICAND_MASK = (short) 0x03FF;
+    private static final short FLOAT16_SIGN_MASK = (short)0x8000;
+    private static final short FLOAT16_EXPONENT_MASK = (short)0x7C00;
+    private static final short FLOAT16_SIGNIFICAND_MASK = (short)0x03FF;
 
     private static final short FLOAT16_SIGN_BIT_POSITION = 15;
     private static final short FLOAT16_EXPONENT_BIT_POSITION = 10;
 
     private static final short FLOAT16_SIGNIFICAND_NUM_BITS = FLOAT16_EXPONENT_BIT_POSITION;
 
-    private static final short FLOAT16_EXPONENT_INFINITY_NAN = (short) 0x001F;
+    private static final short FLOAT16_EXPONENT_INFINITY_NAN = (short)0x001F;
     private static final short FLOAT16_EXPONENT_BIAS = 15;
 
     private static final int FLOAT32_SIGN_MASK = 0x80000000;

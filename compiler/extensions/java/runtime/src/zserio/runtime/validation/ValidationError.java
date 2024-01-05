@@ -52,7 +52,7 @@ public final class ValidationError
          * Comparing of read blob from SQL table to parsed blob written in bit stream failed.
          */
         BLOB_COMPARE_FAILED
-    };
+    }
 
     /**
      * Constructs a new validation error without primary key values.
@@ -76,8 +76,8 @@ public final class ValidationError
      * @param type         Validation error type.
      * @param message      Validation error message.
      */
-    public ValidationError(String tableName, String fieldName, List<String> rowKeyValues, Type type,
-            String message)
+    public ValidationError(
+            String tableName, String fieldName, List<String> rowKeyValues, Type type, String message)
     {
         this.tableName = tableName;
         this.fieldName = fieldName;
@@ -96,8 +96,8 @@ public final class ValidationError
      * @param type         Validation error type.
      * @param exception    Exception which occured during validation.
      */
-    public ValidationError(String tableName, String fieldName, List<String> rowKeyValues, Type type,
-            Throwable exception)
+    public ValidationError(
+            String tableName, String fieldName, List<String> rowKeyValues, Type type, Throwable exception)
     {
         this.tableName = tableName;
         this.fieldName = fieldName;
@@ -168,10 +168,10 @@ public final class ValidationError
         return Arrays.copyOf(stackTrace, stackTrace.length);
     }
 
-    private final String                tableName;
-    private final String                fieldName;
-    private final List<String>          rowKeyValues;
-    private final Type                  type;
-    private final String                message;
-    private final StackTraceElement[]   stackTrace;
+    private final String tableName;
+    private final String fieldName;
+    private final List<String> rowKeyValues;
+    private final Type type;
+    private final String message;
+    private final StackTraceElement[] stackTrace;
 }

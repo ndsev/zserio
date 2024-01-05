@@ -1,11 +1,11 @@
 package zserio.runtime;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
@@ -258,10 +258,8 @@ public final class DebugStringUtil
     public static void toJsonFile(Object zserioObject, String fileName, int indent, WalkFilter walkFilter)
             throws IOException
     {
-        try (
-            final OutputStream outputStream = new FileOutputStream(fileName);
-            final OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
-        )
+        try (final OutputStream outputStream = new FileOutputStream(fileName);
+                final OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8))
         {
             toJsonStream(zserioObject, writer, indent, walkFilter);
         }
@@ -523,8 +521,8 @@ public final class DebugStringUtil
         catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException |
                 InvocationTargetException e)
         {
-            throw new ZserioError("DebugStringUtil: Zserio object must have type info enabled " +
-                    "(see zserio option -withTypeInfoCode)!");
+            throw new ZserioError("DebugStringUtil: Zserio object must have type info enabled "
+                    + "(see zserio option -withTypeInfoCode)!");
         }
     }
 

@@ -41,6 +41,6 @@ public final class ValidationTimer
         return duration;
     }
 
-    private long  startMilliseconds;
-    private long  duration;
+    private long startMilliseconds;
+    private long duration;
 }

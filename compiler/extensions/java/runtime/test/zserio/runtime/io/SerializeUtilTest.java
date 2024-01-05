@@ -5,11 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-import test_object.SerializeEnum;
-import test_object.SerializeObject;
-import test_object.SerializeNested;
-
 import zserio.runtime.ZserioError;
+
+import test_object.SerializeEnum;
+import test_object.SerializeNested;
+import test_object.SerializeObject;
 
 public class SerializeUtilTest
 {
@@ -62,7 +62,7 @@ public class SerializeUtilTest
     @Test
     public void deserializeEnum()
     {
-        final BitBuffer bitBuffer = new BitBuffer(new byte[] { (byte)0x02 }, 8);
+        final BitBuffer bitBuffer = new BitBuffer(new byte[] {(byte)0x02}, 8);
         final SerializeEnum serializeEnum = SerializeUtil.deserialize(SerializeEnum.class, bitBuffer);
         assertEquals(SerializeEnum.VALUE3, serializeEnum);
     }
@@ -70,28 +70,26 @@ public class SerializeUtilTest
     @Test
     public void deserializeParameterizedObject()
     {
-        final BitBuffer bitBuffer = new BitBuffer(new byte[] {
-                (byte)0x01, (byte)0xDE, (byte)0xAD, (byte)0xCA, (byte)0xFE}, 40);
+        final BitBuffer bitBuffer =
+                new BitBuffer(new byte[] {(byte)0x01, (byte)0xDE, (byte)0xAD, (byte)0xCA, (byte)0xFE}, 40);
         final byte param = 0x12;
-        assertThrows(ZserioError.class,
-                () -> SerializeUtil.deserialize(SerializeNested.class, bitBuffer));
-        final SerializeNested serializeNested = SerializeUtil.deserialize(SerializeNested.class, bitBuffer,
-                param);
+        assertThrows(ZserioError.class, () -> SerializeUtil.deserialize(SerializeNested.class, bitBuffer));
+        final SerializeNested serializeNested =
+                SerializeUtil.deserialize(SerializeNested.class, bitBuffer, param);
         assertEquals(param, serializeNested.getParam());
         assertEquals(0x01, serializeNested.getOffset());
         assertEquals(0xDEADCAFEL, serializeNested.getOptionalValue());
 
-        final BitBuffer wrongBitBuffer = new BitBuffer(new byte[] {
-                (byte)0x01, (byte)0xDE, (byte)0xAD, (byte)0xCA, (byte)0xFE}, 39);
-        assertThrows(ZserioError.class,
-                () -> SerializeUtil.deserialize(SerializeNested.class, wrongBitBuffer));
+        final BitBuffer wrongBitBuffer =
+                new BitBuffer(new byte[] {(byte)0x01, (byte)0xDE, (byte)0xAD, (byte)0xCA, (byte)0xFE}, 39);
+        assertThrows(ZserioError.class, () -> SerializeUtil.deserialize(SerializeNested.class, wrongBitBuffer));
     }
 
     @Test
     public void deserializeObject()
     {
-        final BitBuffer bitBuffer = new BitBuffer(new byte[] {
-                (byte)0x12, (byte)0x02, (byte)0xDE, (byte)0xAD, (byte)0xCA, (byte)0xFE}, 48);
+        final BitBuffer bitBuffer = new BitBuffer(
+                new byte[] {(byte)0x12, (byte)0x02, (byte)0xDE, (byte)0xAD, (byte)0xCA, (byte)0xFE}, 48);
         final SerializeObject serializeObject = SerializeUtil.deserialize(SerializeObject.class, bitBuffer);
         assertEquals(0x12, serializeObject.getParam());
         final SerializeNested serializeNested = serializeObject.getNested();
@@ -146,7 +144,7 @@ public class SerializeUtilTest
     @Test
     public void deserializeEnumFromBytes()
     {
-        final byte[] buffer = new byte[] { (byte)0x02 };
+        final byte[] buffer = new byte[] {(byte)0x02};
         final SerializeEnum serializeEnum = SerializeUtil.deserializeFromBytes(SerializeEnum.class, buffer);
         assertEquals(SerializeEnum.VALUE3, serializeEnum);
     }
@@ -156,15 +154,15 @@ public class SerializeUtilTest
     {
         final byte[] buffer = new byte[] {(byte)0x01, (byte)0xDE, (byte)0xAD, (byte)0xCA, (byte)0xFE};
         final byte param = 0x12;
-        assertThrows(ZserioError.class,
-                () -> SerializeUtil.deserializeFromBytes(SerializeNested.class, buffer));
+        assertThrows(
+                ZserioError.class, () -> SerializeUtil.deserializeFromBytes(SerializeNested.class, buffer));
         final SerializeNested serializeNested =
                 SerializeUtil.deserializeFromBytes(SerializeNested.class, buffer, param);
         assertEquals(param, serializeNested.getParam());
         assertEquals(0x01, serializeNested.getOffset());
         assertEquals(0xDEADCAFEL, serializeNested.getOptionalValue());
 
-        final byte[] wrongBuffer = new byte[] { (byte)0x00, (byte)0xDE, (byte)0xAD, (byte)0xCA, (byte)0xFE };
+        final byte[] wrongBuffer = new byte[] {(byte)0x00, (byte)0xDE, (byte)0xAD, (byte)0xCA, (byte)0xFE};
         assertThrows(ZserioError.class,
                 () -> SerializeUtil.deserializeFromBytes(SerializeNested.class, wrongBuffer));
     }
@@ -172,8 +170,8 @@ public class SerializeUtilTest
     @Test
     public void deserializeObjectFromBytes()
     {
-        final byte[] buffer = new byte[] {(byte)0x12, (byte)0x02, (byte)0xDE, (byte)0xAD, (byte)0xCA,
-                (byte)0xFE};
+        final byte[] buffer =
+                new byte[] {(byte)0x12, (byte)0x02, (byte)0xDE, (byte)0xAD, (byte)0xCA, (byte)0xFE};
         final SerializeObject serializeObject =
                 SerializeUtil.deserializeFromBytes(SerializeObject.class, buffer);
         assertEquals(0x12, serializeObject.getParam());
@@ -193,8 +191,8 @@ public class SerializeUtilTest
         final SerializeObject serializeObject = new SerializeObject(param, serializeNested);
         final String fileName = "SerializationTest.bin";
         SerializeUtil.serializeToFile(serializeObject, fileName);
-        final SerializeObject readSerializeObject = SerializeUtil.deserializeFromFile(SerializeObject.class,
-                fileName);
+        final SerializeObject readSerializeObject =
+                SerializeUtil.deserializeFromFile(SerializeObject.class, fileName);
         assertEquals(serializeObject, readSerializeObject);
     }
 }

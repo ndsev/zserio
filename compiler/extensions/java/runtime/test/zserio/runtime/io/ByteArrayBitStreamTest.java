@@ -1,13 +1,14 @@
 package zserio.runtime.io;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.lang.reflect.*;
 import java.math.BigInteger;
+
+import org.junit.jupiter.api.Test;
 
 public class ByteArrayBitStreamTest
 {
@@ -22,17 +23,16 @@ public class ByteArrayBitStreamTest
         {
             // max value and some smaller values
             final long maxValue = (1L << numBits) - 1;
-            final Long data[] =
-            {
-                maxValue,
-                maxValue >> 1,
-                maxValue >> 2,
-                1L,
-                0L,
-                1L,
-                maxValue >> 2,
-                maxValue >> 1,
-                maxValue
+            final Long data[] = {
+                    maxValue,
+                    maxValue >> 1,
+                    maxValue >> 2,
+                    1L,
+                    0L,
+                    1L,
+                    maxValue >> 2,
+                    maxValue >> 1,
+                    maxValue,
             };
 
             testBitsImpl(writeMethod, readMethod, data, numBits);
@@ -51,21 +51,20 @@ public class ByteArrayBitStreamTest
             // min and max values and some smaller values
             final long minValue = -1L << (numBits - 1);
             final long maxValue = (1L << (numBits - 1)) - 1;
-            final Long data[] =
-            {
-                minValue,
-                maxValue,
-                minValue >> 1,
-                maxValue >> 1,
-                minValue >> 2,
-                maxValue >> 2,
-                0L,
-                maxValue >> 2,
-                minValue >> 2,
-                maxValue >> 1,
-                minValue >> 1,
-                maxValue,
-                minValue
+            final Long data[] = {
+                    minValue,
+                    maxValue,
+                    minValue >> 1,
+                    maxValue >> 1,
+                    minValue >> 2,
+                    maxValue >> 2,
+                    0L,
+                    maxValue >> 2,
+                    minValue >> 2,
+                    maxValue >> 1,
+                    minValue >> 1,
+                    maxValue,
+                    minValue,
             };
 
             testBitsImpl(writeMethod, readMethod, data, numBits);
@@ -76,19 +75,18 @@ public class ByteArrayBitStreamTest
     public void unsignedInt() throws Exception
     {
         long maxValue = (1L << 32) - 1;
-        Long values[] =
-        {
-            maxValue,
-            maxValue >> 8,
-            maxValue >> 16,
-            maxValue >> 24,
-            1L,
-            0L,
-            1L,
-            maxValue >> 24,
-            maxValue >> 16,
-            maxValue >> 8,
-            maxValue
+        Long values[] = {
+                maxValue,
+                maxValue >> 8,
+                maxValue >> 16,
+                maxValue >> 24,
+                1L,
+                0L,
+                1L,
+                maxValue >> 24,
+                maxValue >> 16,
+                maxValue >> 8,
+                maxValue,
         };
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeUnsignedInt", long.class);
@@ -101,29 +99,28 @@ public class ByteArrayBitStreamTest
     {
         int minValue = Integer.MIN_VALUE;
         int maxValue = Integer.MAX_VALUE;
-        Integer values[] =
-        {
-            minValue,
-            maxValue,
-            minValue >> 8,
-            maxValue >> 8,
-            minValue >> 16,
-            maxValue >> 16,
-            minValue >> 24,
-            maxValue >> 24,
-            -1,
-            1,
-            0,
-            1,
-            -1,
-            maxValue >> 24,
-            minValue >> 24,
-            maxValue >> 16,
-            minValue >> 16,
-            maxValue >> 8,
-            minValue >> 8,
-            maxValue,
-            minValue
+        Integer values[] = {
+                minValue,
+                maxValue,
+                minValue >> 8,
+                maxValue >> 8,
+                minValue >> 16,
+                maxValue >> 16,
+                minValue >> 24,
+                maxValue >> 24,
+                -1,
+                1,
+                0,
+                1,
+                -1,
+                maxValue >> 24,
+                minValue >> 24,
+                maxValue >> 16,
+                minValue >> 16,
+                maxValue >> 8,
+                minValue >> 8,
+                maxValue,
+                minValue,
         };
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeInt", int.class);
@@ -135,15 +132,14 @@ public class ByteArrayBitStreamTest
     public void unsignedShort() throws Exception
     {
         int maxValue = (1 << 16) - 1;
-        Integer values[] =
-        {
-            maxValue,
-            maxValue >> 8,
-            1,
-            0,
-            1,
-            maxValue >> 8,
-            maxValue
+        Integer values[] = {
+                maxValue,
+                maxValue >> 8,
+                1,
+                0,
+                1,
+                maxValue >> 8,
+                maxValue,
         };
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeUnsignedShort", int.class);
@@ -156,21 +152,20 @@ public class ByteArrayBitStreamTest
     {
         short minValue = Short.MIN_VALUE;
         short maxValue = Short.MAX_VALUE;
-        Short values[] =
-        {
-            minValue,
-            maxValue,
-            (short)(minValue >> 8),
-            (short)(maxValue >> 8),
-            -1,
-            1,
-            0,
-            1,
-            -1,
-            (short)(maxValue >> 8),
-            (short)(minValue >> 8),
-            maxValue,
-            minValue
+        Short values[] = {
+                minValue,
+                maxValue,
+                (short)(minValue >> 8),
+                (short)(maxValue >> 8),
+                -1,
+                1,
+                0,
+                1,
+                -1,
+                (short)(maxValue >> 8),
+                (short)(minValue >> 8),
+                maxValue,
+                minValue,
         };
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeShort", short.class);
@@ -182,15 +177,14 @@ public class ByteArrayBitStreamTest
     public void unsignedByte() throws Exception
     {
         short maxValue = (1 << 8) - 1;
-        Short values[] =
-        {
-            maxValue,
-            (short)(maxValue >> 4),
-            1,
-            0,
-            1,
-            (short)(maxValue >> 4),
-            maxValue
+        Short values[] = {
+                maxValue,
+                (short)(maxValue >> 4),
+                1,
+                0,
+                1,
+                (short)(maxValue >> 4),
+                maxValue,
         };
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeUnsignedByte", short.class);
@@ -203,21 +197,20 @@ public class ByteArrayBitStreamTest
     {
         byte minValue = Byte.MIN_VALUE;
         byte maxValue = Byte.MAX_VALUE;
-        Byte values[] =
-        {
-            minValue,
-            maxValue,
-            (byte)(minValue >> 4),
-            (byte)(maxValue >> 4),
-            -1,
-            1,
-            0,
-            1,
-            -1,
-            (byte)(maxValue >> 4),
-            (byte)(minValue >> 4),
-            maxValue,
-            minValue
+        Byte values[] = {
+                minValue,
+                maxValue,
+                (byte)(minValue >> 4),
+                (byte)(maxValue >> 4),
+                -1,
+                1,
+                0,
+                1,
+                -1,
+                (byte)(maxValue >> 4),
+                (byte)(minValue >> 4),
+                maxValue,
+                minValue,
         };
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeByte", byte.class);
@@ -229,34 +222,33 @@ public class ByteArrayBitStreamTest
     public void bigInteger() throws Exception
     {
         // single method for both signed and unsigned writing
-        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod(
-                "writeBigInteger", BigInteger.class, int.class);
+        Method writeMethod =
+                ByteArrayBitStreamWriter.class.getMethod("writeBigInteger", BigInteger.class, int.class);
         Method readMethod = ByteArrayBitStreamReader.class.getMethod("readBigInteger", int.class);
 
         // all possible numBits
         for (int numBits = 1; numBits < 65; ++numBits)
         {
             BigInteger maxValue = BigInteger.ONE.shiftLeft(numBits).subtract(BigInteger.ONE);
-            BigInteger values[] =
-            {
-                maxValue,
-                maxValue.shiftRight(8),
-                maxValue.shiftRight(16),
-                maxValue.shiftRight(24),
-                maxValue.shiftRight(32),
-                maxValue.shiftRight(40),
-                maxValue.shiftRight(48),
-                maxValue.shiftRight(56),
-                BigInteger.ONE,
-                BigInteger.ZERO,
-                BigInteger.ONE,
-                maxValue.shiftRight(56),
-                maxValue.shiftRight(48),
-                maxValue.shiftRight(40),
-                maxValue.shiftRight(32),
-                maxValue.shiftRight(24),
-                maxValue.shiftRight(16),
-                maxValue.shiftRight(8)
+            BigInteger values[] = {
+                    maxValue,
+                    maxValue.shiftRight(8),
+                    maxValue.shiftRight(16),
+                    maxValue.shiftRight(24),
+                    maxValue.shiftRight(32),
+                    maxValue.shiftRight(40),
+                    maxValue.shiftRight(48),
+                    maxValue.shiftRight(56),
+                    BigInteger.ONE,
+                    BigInteger.ZERO,
+                    BigInteger.ONE,
+                    maxValue.shiftRight(56),
+                    maxValue.shiftRight(48),
+                    maxValue.shiftRight(40),
+                    maxValue.shiftRight(32),
+                    maxValue.shiftRight(24),
+                    maxValue.shiftRight(16),
+                    maxValue.shiftRight(8),
             };
 
             testBitsImpl(writeMethod, readMethod, values, numBits);
@@ -267,8 +259,8 @@ public class ByteArrayBitStreamTest
     public void signedBigInteger() throws Exception
     {
         // single method for both signed and unsigned writing
-        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod(
-                "writeBigInteger", BigInteger.class, int.class);
+        Method writeMethod =
+                ByteArrayBitStreamWriter.class.getMethod("writeBigInteger", BigInteger.class, int.class);
         Method readMethod = ByteArrayBitStreamReader.class.getMethod("readSignedBigInteger", int.class);
 
         // all possible numBits
@@ -276,39 +268,38 @@ public class ByteArrayBitStreamTest
         {
             BigInteger maxValue = BigInteger.ONE.shiftLeft(numBits - 1).subtract(BigInteger.ONE);
             BigInteger minValue = maxValue.negate();
-            BigInteger values[] =
-            {
-                minValue,
-                maxValue,
-                minValue.shiftRight(8),
-                maxValue.shiftRight(8),
-                minValue.shiftRight(16),
-                maxValue.shiftRight(16),
-                minValue.shiftRight(24),
-                maxValue.shiftRight(24),
-                minValue.shiftRight(32),
-                maxValue.shiftRight(32),
-                minValue.shiftRight(40),
-                maxValue.shiftRight(40),
-                minValue.shiftRight(48),
-                maxValue.shiftRight(48),
-                minValue.shiftRight(56),
-                maxValue.shiftRight(56),
-                BigInteger.ZERO,
-                maxValue.shiftRight(56),
-                minValue.shiftRight(56),
-                maxValue.shiftRight(48),
-                minValue.shiftRight(48),
-                maxValue.shiftRight(40),
-                minValue.shiftRight(40),
-                maxValue.shiftRight(32),
-                minValue.shiftRight(32),
-                maxValue.shiftRight(24),
-                minValue.shiftRight(24),
-                maxValue.shiftRight(16),
-                minValue.shiftRight(16),
-                maxValue.shiftRight(8),
-                minValue.shiftRight(8)
+            BigInteger values[] = {
+                    minValue,
+                    maxValue,
+                    minValue.shiftRight(8),
+                    maxValue.shiftRight(8),
+                    minValue.shiftRight(16),
+                    maxValue.shiftRight(16),
+                    minValue.shiftRight(24),
+                    maxValue.shiftRight(24),
+                    minValue.shiftRight(32),
+                    maxValue.shiftRight(32),
+                    minValue.shiftRight(40),
+                    maxValue.shiftRight(40),
+                    minValue.shiftRight(48),
+                    maxValue.shiftRight(48),
+                    minValue.shiftRight(56),
+                    maxValue.shiftRight(56),
+                    BigInteger.ZERO,
+                    maxValue.shiftRight(56),
+                    minValue.shiftRight(56),
+                    maxValue.shiftRight(48),
+                    minValue.shiftRight(48),
+                    maxValue.shiftRight(40),
+                    minValue.shiftRight(40),
+                    maxValue.shiftRight(32),
+                    minValue.shiftRight(32),
+                    maxValue.shiftRight(24),
+                    minValue.shiftRight(24),
+                    maxValue.shiftRight(16),
+                    minValue.shiftRight(16),
+                    maxValue.shiftRight(8),
+                    minValue.shiftRight(8),
             };
 
             testBitsImpl(writeMethod, readMethod, values, numBits);
@@ -318,16 +309,15 @@ public class ByteArrayBitStreamTest
     @Test
     public void float16() throws Exception
     {
-        Float values[] =
-        {
-            -42.5f,
-            -2.0f,
-            0.0f,
-            0.6171875f,
-            0.875f,
-            2.0f,
-            9.875f,
-            42.5f
+        Float values[] = {
+                -42.5f,
+                -2.0f,
+                0.0f,
+                0.6171875f,
+                0.875f,
+                2.0f,
+                9.875f,
+                42.5f,
         };
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeFloat16", float.class);
@@ -338,16 +328,15 @@ public class ByteArrayBitStreamTest
     @Test
     public void float32() throws Exception
     {
-        Float values[] =
-        {
-            -42.5f,
-            -2.0f,
-            0.0f,
-            0.6171875f,
-            0.875f,
-            2.0f,
-            9.875f,
-            42.5f
+        Float values[] = {
+                -42.5f,
+                -2.0f,
+                0.0f,
+                0.6171875f,
+                0.875f,
+                2.0f,
+                9.875f,
+                42.5f,
         };
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeFloat32", float.class);
@@ -358,16 +347,15 @@ public class ByteArrayBitStreamTest
     @Test
     public void float64() throws Exception
     {
-        Double values[] =
-        {
-            -42.5,
-            -2.0,
-            0.0,
-            0.6171875,
-            0.875,
-            2.0,
-            9.875,
-            42.5
+        Double values[] = {
+                -42.5,
+                -2.0,
+                0.0,
+                0.6171875,
+                0.875,
+                2.0,
+                9.875,
+                42.5,
         };
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeFloat64", double.class);
@@ -378,10 +366,9 @@ public class ByteArrayBitStreamTest
     @Test
     public void bitBuffer() throws Exception
     {
-        BitBuffer values[] =
-        {
-            new BitBuffer(new byte[]{(byte)0xAB, (byte)0x07}, 11),
-            new BitBuffer(new byte[]{(byte)0xAB, (byte)0xCD, (byte)0x7F}, 23)
+        BitBuffer values[] = {
+                new BitBuffer(new byte[] {(byte)0xAB, (byte)0x07}, 11),
+                new BitBuffer(new byte[] {(byte)0xAB, (byte)0xCD, (byte)0x7F}, 23),
         };
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeBitBuffer", BitBuffer.class);
@@ -392,14 +379,11 @@ public class ByteArrayBitStreamTest
     @Test
     public void string() throws Exception
     {
-        String values[] =
-        {
-            "Hello World",
-            "\n\t%^@(*aAzZ01234569$%^!?<>[]](){}-=+~:;/|\\\"\'Hello World2\0nonWrittenPart",
-            "Price: " +
-                    new String(new byte[] { (byte)0xE2, (byte)0x82, (byte)0x93 }, "UTF-8") +
-                    " 3 what's this? -> " +
-                    new String(new byte[] { (byte)0xC2, (byte)0xA2 }, "UTF-8")
+        String values[] = {
+                "Hello World",
+                "\n\t%^@(*aAzZ01234569$%^!?<>[]](){}-=+~:;/|\\\"\'Hello World2\0nonWrittenPart",
+                "Price: " + new String(new byte[] {(byte)0xE2, (byte)0x82, (byte)0x93}, "UTF-8") +
+                        " 3 what's this? -> " + new String(new byte[] {(byte)0xC2, (byte)0xA2}, "UTF-8"),
         };
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeString", String.class);
@@ -410,10 +394,9 @@ public class ByteArrayBitStreamTest
     @Test
     public void bytes() throws Exception
     {
-        byte values[][] =
-        {
-            {(byte)0, (byte)255},
-            {(byte)1, (byte)127, (byte)128, (byte)254}
+        byte values[][] = {
+                {(byte)0, (byte)255},
+                {(byte)1, (byte)127, (byte)128, (byte)254},
         };
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeBytes", byte[].class);
@@ -424,21 +407,20 @@ public class ByteArrayBitStreamTest
     @Test
     public void bool() throws Exception
     {
-        Boolean values[] =
-        {
-            false,
-            true,
-            true,
-            false,
-            false,
-            true,
-            false,
-            true,
-            false,
-            false,
-            true,
-            true,
-            false
+        Boolean values[] = {
+                false,
+                true,
+                true,
+                false,
+                false,
+                true,
+                false,
+                true,
+                false,
+                false,
+                true,
+                true,
+                false,
         };
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeBool", boolean.class);
@@ -449,19 +431,18 @@ public class ByteArrayBitStreamTest
     @Test
     public void varInt16() throws Exception
     {
-        Short values[] =
-        {
-            // 1 byte
-            (short)0,
-            -(short)1,
-            +(short)1,
-            -(short)((1 << (6)) - 1),
-            +(short)((1 << (6)) - 1),
-            // 2 bytes
-            -(short)((1 << (6))),
-            +(short)((1 << (6))),
-            -(short)((1 << (6 + 8)) - 1),
-            +(short)((1 << (6 + 8)) - 1),
+        Short values[] = {
+                // 1 byte
+                (short)0,
+                -(short)1,
+                +(short)1,
+                -(short)((1 << (6)) - 1),
+                +(short)((1 << (6)) - 1),
+                // 2 bytes
+                -(short)((1 << (6))),
+                +(short)((1 << (6))),
+                -(short)((1 << (6 + 8)) - 1),
+                +(short)((1 << (6 + 8)) - 1),
         };
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeVarInt16", short.class);
@@ -472,29 +453,28 @@ public class ByteArrayBitStreamTest
     @Test
     public void varInt32() throws Exception
     {
-        Integer values[] =
-        {
-            // 1 byte
-            0,
-            -((1)),
-            +((1)),
-            -((1 << (6)) - 1),
-            +((1 << (6)) - 1),
-            // 2 bytes
-            -((1 << (6))),
-            +((1 << (6))),
-            -((1 << (6 + 7)) - 1),
-            +((1 << (6 + 7)) - 1),
-            // 3 bytes
-            -((1 << (6 + 7))),
-            +((1 << (6 + 7))),
-            -((1 << (6 + 7 + 7)) - 1),
-            +((1 << (6 + 7 + 7)) - 1),
-            // 4 bytes
-            -((1 << (6 + 7 + 7))),
-            +((1 << (6 + 7 + 7))),
-            -((1 << (6 + 7 + 7 + 8)) - 1),
-            +((1 << (6 + 7 + 7 + 8)) - 1)
+        Integer values[] = {
+                // 1 byte
+                0,
+                -((1)),
+                +((1)),
+                -((1 << (6)) - 1),
+                +((1 << (6)) - 1),
+                // 2 bytes
+                -((1 << (6))),
+                +((1 << (6))),
+                -((1 << (6 + 7)) - 1),
+                +((1 << (6 + 7)) - 1),
+                // 3 bytes
+                -((1 << (6 + 7))),
+                +((1 << (6 + 7))),
+                -((1 << (6 + 7 + 7)) - 1),
+                +((1 << (6 + 7 + 7)) - 1),
+                // 4 bytes
+                -((1 << (6 + 7 + 7))),
+                +((1 << (6 + 7 + 7))),
+                -((1 << (6 + 7 + 7 + 8)) - 1),
+                +((1 << (6 + 7 + 7 + 8)) - 1),
         };
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeVarInt32", int.class);
@@ -505,49 +485,48 @@ public class ByteArrayBitStreamTest
     @Test
     public void varInt64() throws Exception
     {
-        Long values[] =
-        {
-            // 1 byte
-             0L,
-            -((1L)),
-            +((1L)),
-            -((1L << (6)) - 1),
-            +((1L << (6)) - 1),
-            // 2 bytes
-            -((1L << (6))),
-            +((1L << (6))),
-            -((1L << (6 + 7)) - 1),
-            +((1L << (6 + 7)) - 1),
-            // 3 bytes
-            -((1L << (6 + 7))),
-            +((1L << (6 + 7))),
-            -((1L << (6 + 7 + 7)) - 1),
-            +((1L << (6 + 7 + 7)) - 1),
-            // 4 bytes
-            -((1L << (6 + 7 + 7))),
-            +((1L << (6 + 7 + 7))),
-            -((1L << (6 + 7 + 7 + 8)) - 1),
-            +((1L << (6 + 7 + 7 + 8)) - 1)
-            // 5 bytes
-            -((1L << (6 + 7 + 7 + 7))),
-            +((1L << (6 + 7 + 7 + 7))),
-            -((1L << (6 + 7 + 7 + 7 + 7)) - 1),
-            +((1L << (6 + 7 + 7 + 7 + 7)) - 1),
-            // 6 bytes
-            -((1L << (6 + 7 + 7 + 7 + 7))),
-            +((1L << (6 + 7 + 7 + 7 + 7))),
-            -((1L << (6 + 7 + 7 + 7 + 7 + 7)) - 1),
-            +((1L << (6 + 7 + 7 + 7 + 7 + 7)) - 1),
-            // 7 bytes
-            -((1L << (6 + 7 + 7 + 7 + 7 + 7))),
-            +((1L << (6 + 7 + 7 + 7 + 7 + 7))),
-            -((1L << (6 + 7 + 7 + 7 + 7 + 7 + 7)) - 1),
-            +((1L << (6 + 7 + 7 + 7 + 7 + 7 + 7)) - 1),
-            // 8 bytes
-            -((1L << (6 + 7 + 7 + 7 + 7 + 7 + 7))),
-            +((1L << (6 + 7 + 7 + 7 + 7 + 7 + 7))),
-            -((1L << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1),
-            +((1L << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1),
+        Long values[] = {
+                // 1 byte
+                0L,
+                -((1L)),
+                +((1L)),
+                -((1L << (6)) - 1),
+                +((1L << (6)) - 1),
+                // 2 bytes
+                -((1L << (6))),
+                +((1L << (6))),
+                -((1L << (6 + 7)) - 1),
+                +((1L << (6 + 7)) - 1),
+                // 3 bytes
+                -((1L << (6 + 7))),
+                +((1L << (6 + 7))),
+                -((1L << (6 + 7 + 7)) - 1),
+                +((1L << (6 + 7 + 7)) - 1),
+                // 4 bytes
+                -((1L << (6 + 7 + 7))),
+                +((1L << (6 + 7 + 7))),
+                -((1L << (6 + 7 + 7 + 8)) - 1),
+                +((1L << (6 + 7 + 7 + 8)) - 1)
+                        // 5 bytes
+                        - ((1L << (6 + 7 + 7 + 7))),
+                +((1L << (6 + 7 + 7 + 7))),
+                -((1L << (6 + 7 + 7 + 7 + 7)) - 1),
+                +((1L << (6 + 7 + 7 + 7 + 7)) - 1),
+                // 6 bytes
+                -((1L << (6 + 7 + 7 + 7 + 7))),
+                +((1L << (6 + 7 + 7 + 7 + 7))),
+                -((1L << (6 + 7 + 7 + 7 + 7 + 7)) - 1),
+                +((1L << (6 + 7 + 7 + 7 + 7 + 7)) - 1),
+                // 7 bytes
+                -((1L << (6 + 7 + 7 + 7 + 7 + 7))),
+                +((1L << (6 + 7 + 7 + 7 + 7 + 7))),
+                -((1L << (6 + 7 + 7 + 7 + 7 + 7 + 7)) - 1),
+                +((1L << (6 + 7 + 7 + 7 + 7 + 7 + 7)) - 1),
+                // 8 bytes
+                -((1L << (6 + 7 + 7 + 7 + 7 + 7 + 7))),
+                +((1L << (6 + 7 + 7 + 7 + 7 + 7 + 7))),
+                -((1L << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1),
+                +((1L << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1),
         };
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeVarInt64", long.class);
@@ -558,15 +537,14 @@ public class ByteArrayBitStreamTest
     @Test
     public void varUInt16() throws Exception
     {
-        Short values[] =
-        {
-            // 1 byte
-            (short)0,
-            (short)1,
-            (short)((1 << (7)) - 1),
-            // 2 bytes
-            (short)((1 << (7))),
-            (short)((1 << (7 + 8)) - 1),
+        Short values[] = {
+                // 1 byte
+                (short)0,
+                (short)1,
+                (short)((1 << (7)) - 1),
+                // 2 bytes
+                (short)((1 << (7))),
+                (short)((1 << (7 + 8)) - 1),
         };
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeVarUInt16", short.class);
@@ -577,21 +555,20 @@ public class ByteArrayBitStreamTest
     @Test
     public void varUInt32() throws Exception
     {
-        Integer values[] =
-        {
-            // 1 byte
-            ((0)),
-            ((1)),
-            ((1 << (7)) - 1),
-            // 2 bytes
-            ((1 << (7))),
-            ((1 << (7 + 7)) - 1),
-            // 3 bytes
-            ((1 << (7 + 7))),
-            ((1 << (7 + 7 + 7)) - 1),
-            // 4 bytes
-            ((1 << (7 + 7 + 7))),
-            ((1 << (7 + 7 + 7 + 8)) - 1)
+        Integer values[] = {
+                // 1 byte
+                ((0)),
+                ((1)),
+                ((1 << (7)) - 1),
+                // 2 bytes
+                ((1 << (7))),
+                ((1 << (7 + 7)) - 1),
+                // 3 bytes
+                ((1 << (7 + 7))),
+                ((1 << (7 + 7 + 7)) - 1),
+                // 4 bytes
+                ((1 << (7 + 7 + 7))),
+                ((1 << (7 + 7 + 7 + 8)) - 1),
         };
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeVarUInt32", int.class);
@@ -602,33 +579,32 @@ public class ByteArrayBitStreamTest
     @Test
     public void varUInt64() throws Exception
     {
-        Long values[] =
-        {
-            // 1 byte
-            ((0L)),
-            ((1L)),
-            ((1L << (7)) - 1),
-            // 2 bytes
-            ((1L << (7))),
-            ((1L << (7 + 7)) - 1),
-            // 3 bytes
-            ((1L << (7 + 7))),
-            ((1L << (7 + 7 + 7)) - 1),
-            // 4 bytes
-            ((1L << (7 + 7 + 7))),
-            ((1L << (7 + 7 + 7 + 8)) - 1),
-            // 5 bytes
-            ((1L << (7 + 7 + 7 + 7))),
-            ((1L << (7 + 7 + 7 + 7 + 7)) - 1),
-            // 6 bytes
-            ((1L << (7 + 7 + 7 + 7 + 7))),
-            ((1L << (7 + 7 + 7 + 7 + 7 + 7)) - 1),
-            // 7 bytes
-            ((1L << (7 + 7 + 7 + 7 + 7 + 7))),
-            ((1L << (7 + 7 + 7 + 7 + 7 + 7 + 7)) - 1),
-            // 8 bytes
-            ((1L << (7 + 7 + 7 + 7 + 7 + 7 + 7))),
-            ((1L << (7 + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1),
+        Long values[] = {
+                // 1 byte
+                ((0L)),
+                ((1L)),
+                ((1L << (7)) - 1),
+                // 2 bytes
+                ((1L << (7))),
+                ((1L << (7 + 7)) - 1),
+                // 3 bytes
+                ((1L << (7 + 7))),
+                ((1L << (7 + 7 + 7)) - 1),
+                // 4 bytes
+                ((1L << (7 + 7 + 7))),
+                ((1L << (7 + 7 + 7 + 8)) - 1),
+                // 5 bytes
+                ((1L << (7 + 7 + 7 + 7))),
+                ((1L << (7 + 7 + 7 + 7 + 7)) - 1),
+                // 6 bytes
+                ((1L << (7 + 7 + 7 + 7 + 7))),
+                ((1L << (7 + 7 + 7 + 7 + 7 + 7)) - 1),
+                // 7 bytes
+                ((1L << (7 + 7 + 7 + 7 + 7 + 7))),
+                ((1L << (7 + 7 + 7 + 7 + 7 + 7 + 7)) - 1),
+                // 8 bytes
+                ((1L << (7 + 7 + 7 + 7 + 7 + 7 + 7))),
+                ((1L << (7 + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1),
         };
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeVarUInt64", long.class);
@@ -639,56 +615,35 @@ public class ByteArrayBitStreamTest
     @Test
     public void varInt() throws Exception
     {
-        Long values[] =
-        {
-            // 1 byte
-            0L,
-            -((1L)),
-            +((1L)),
-            -((1L << (6)) - 1),
-            +((1L << (6)) - 1),
-            // 2 bytes
-            -((1L << (6))),
-            +((1L << (6))),
-            -((1L << (6 + 7)) - 1),
-            +((1L << (6 + 7)) - 1),
-            // 3 bytes
-            -((1L << (6 + 7))),
-            +((1L << (6 + 7))),
-            -((1L << (6 + 7 + 7)) - 1),
-            +((1L << (6 + 7 + 7)) - 1),
-            // 4 bytes
-            -((1L << (6 + 7 + 7))),
-            +((1L << (6 + 7 + 7))),
-            -((1L << (6 + 7 + 7 + 8)) - 1),
-            +((1L << (6 + 7 + 7 + 8)) - 1)
-            // 5 bytes
-            -((1L << (6 + 7 + 7 + 7))),
-            +((1L << (6 + 7 + 7 + 7))),
-            -((1L << (6 + 7 + 7 + 7 + 7)) - 1),
-            +((1L << (6 + 7 + 7 + 7 + 7)) - 1),
-            // 6 bytes
-            -((1L << (6 + 7 + 7 + 7 + 7))),
-            +((1L << (6 + 7 + 7 + 7 + 7))),
-            -((1L << (6 + 7 + 7 + 7 + 7 + 7)) - 1),
-            +((1L << (6 + 7 + 7 + 7 + 7 + 7)) - 1),
-            // 7 bytes
-            -((1L << (6 + 7 + 7 + 7 + 7 + 7))),
-            +((1L << (6 + 7 + 7 + 7 + 7 + 7))),
-            -((1L << (6 + 7 + 7 + 7 + 7 + 7 + 7)) - 1),
-            +((1L << (6 + 7 + 7 + 7 + 7 + 7 + 7)) - 1),
-            // 8 bytes
-            -((1L << (6 + 7 + 7 + 7 + 7 + 7 + 7))),
-            +((1L << (6 + 7 + 7 + 7 + 7 + 7 + 7))),
-            -((1L << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 7)) - 1),
-            +((1L << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 7)) - 1),
-            // 9 bytes
-            -((1L << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 7))),
-            +((1L << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 7))),
-            -((1L << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1),
-            +((1L << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1),
-            // 1 byte
-            Long.MIN_VALUE // special case, encoded as -0
+        Long values[] = {
+                // 1 byte
+                0L, -((1L)), +((1L)), -((1L << (6)) - 1), +((1L << (6)) - 1),
+                // 2 bytes
+                -((1L << (6))), +((1L << (6))), -((1L << (6 + 7)) - 1), +((1L << (6 + 7)) - 1),
+                // 3 bytes
+                -((1L << (6 + 7))), +((1L << (6 + 7))), -((1L << (6 + 7 + 7)) - 1), +((1L << (6 + 7 + 7)) - 1),
+                // 4 bytes
+                -((1L << (6 + 7 + 7))), +((1L << (6 + 7 + 7))), -((1L << (6 + 7 + 7 + 8)) - 1),
+                +((1L << (6 + 7 + 7 + 8)) - 1)
+                        // 5 bytes
+                        - ((1L << (6 + 7 + 7 + 7))),
+                +((1L << (6 + 7 + 7 + 7))), -((1L << (6 + 7 + 7 + 7 + 7)) - 1),
+                +((1L << (6 + 7 + 7 + 7 + 7)) - 1),
+                // 6 bytes
+                -((1L << (6 + 7 + 7 + 7 + 7))), +((1L << (6 + 7 + 7 + 7 + 7))),
+                -((1L << (6 + 7 + 7 + 7 + 7 + 7)) - 1), +((1L << (6 + 7 + 7 + 7 + 7 + 7)) - 1),
+                // 7 bytes
+                -((1L << (6 + 7 + 7 + 7 + 7 + 7))), +((1L << (6 + 7 + 7 + 7 + 7 + 7))),
+                -((1L << (6 + 7 + 7 + 7 + 7 + 7 + 7)) - 1), +((1L << (6 + 7 + 7 + 7 + 7 + 7 + 7)) - 1),
+                // 8 bytes
+                -((1L << (6 + 7 + 7 + 7 + 7 + 7 + 7))), +((1L << (6 + 7 + 7 + 7 + 7 + 7 + 7))),
+                -((1L << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 7)) - 1), +((1L << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 7)) - 1),
+                // 9 bytes
+                -((1L << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 7))), +((1L << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 7))),
+                -((1L << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1),
+                +((1L << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1),
+                // 1 byte
+                Long.MIN_VALUE, // special case, encoded as -0
         };
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeVarInt", long.class);
@@ -699,36 +654,35 @@ public class ByteArrayBitStreamTest
     @Test
     public void varUInt() throws Exception
     {
-        BigInteger values[] =
-        {
-            // 1 byte
-            BigInteger.ZERO,
-            BigInteger.ONE,
-            BigInteger.ONE.shiftLeft(7).subtract(BigInteger.ONE),
-            // 2 bytes
-            BigInteger.ONE.shiftLeft(7),
-            BigInteger.ONE.shiftLeft(7 + 7).subtract(BigInteger.ONE),
-            // 3 bytes
-            BigInteger.ONE.shiftLeft(7 + 7),
-            BigInteger.ONE.shiftLeft(7 + 7 + 7).subtract(BigInteger.ONE),
-            // 4 bytes
-            BigInteger.ONE.shiftLeft(7 + 7 + 7),
-            BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7).subtract(BigInteger.ONE),
-            // 5 bytes
-            BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7),
-            BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7 + 7).subtract(BigInteger.ONE),
-            // 6 bytes
-            BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7 + 7),
-            BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7 + 7 + 7).subtract(BigInteger.ONE),
-            // 7 bytes
-            BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7 + 7 + 7),
-            BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7 + 7 + 7 + 7).subtract(BigInteger.ONE),
-            // 8 bytes
-            BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7 + 7 + 7 + 7),
-            BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7 + 7 + 7 + 7 + 7).subtract(BigInteger.ONE),
-            // 9 bytes
-            BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7 + 7 + 7 + 7 + 7),
-            BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7 + 7 + 7 + 7 + 7 + 8).subtract(BigInteger.ONE)
+        BigInteger values[] = {
+                // 1 byte
+                BigInteger.ZERO,
+                BigInteger.ONE,
+                BigInteger.ONE.shiftLeft(7).subtract(BigInteger.ONE),
+                // 2 bytes
+                BigInteger.ONE.shiftLeft(7),
+                BigInteger.ONE.shiftLeft(7 + 7).subtract(BigInteger.ONE),
+                // 3 bytes
+                BigInteger.ONE.shiftLeft(7 + 7),
+                BigInteger.ONE.shiftLeft(7 + 7 + 7).subtract(BigInteger.ONE),
+                // 4 bytes
+                BigInteger.ONE.shiftLeft(7 + 7 + 7),
+                BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7).subtract(BigInteger.ONE),
+                // 5 bytes
+                BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7),
+                BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7 + 7).subtract(BigInteger.ONE),
+                // 6 bytes
+                BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7 + 7),
+                BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7 + 7 + 7).subtract(BigInteger.ONE),
+                // 7 bytes
+                BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7 + 7 + 7),
+                BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7 + 7 + 7 + 7).subtract(BigInteger.ONE),
+                // 8 bytes
+                BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7 + 7 + 7 + 7),
+                BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7 + 7 + 7 + 7 + 7).subtract(BigInteger.ONE),
+                // 9 bytes
+                BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7 + 7 + 7 + 7 + 7),
+                BigInteger.ONE.shiftLeft(7 + 7 + 7 + 7 + 7 + 7 + 7 + 7 + 8).subtract(BigInteger.ONE),
         };
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeVarUInt", BigInteger.class);
@@ -739,24 +693,23 @@ public class ByteArrayBitStreamTest
     @Test
     public void varSize() throws Exception
     {
-        Integer values[] =
-        {
-            // 1 byte
-            ((0)),
-            ((1)),
-            ((1 << (7)) - 1),
-            // 2 bytes
-            ((1 << (7))),
-            ((1 << (7 + 7)) - 1),
-            // 3 bytes
-            ((1 << (7 + 7))),
-            ((1 << (7 + 7 + 7)) - 1),
-            // 4 bytes
-            ((1 << (7 + 7 + 7))),
-            ((1 << (7 + 7 + 7 + 7)) - 1),
-            // 5 bytes
-            ((1 << (7 + 7 + 7 + 7))),
-            ((1 << (2 + 7 + 7 + 7 + 8)) - 1)
+        Integer values[] = {
+                // 1 byte
+                ((0)),
+                ((1)),
+                ((1 << (7)) - 1),
+                // 2 bytes
+                ((1 << (7))),
+                ((1 << (7 + 7)) - 1),
+                // 3 bytes
+                ((1 << (7 + 7))),
+                ((1 << (7 + 7 + 7)) - 1),
+                // 4 bytes
+                ((1 << (7 + 7 + 7))),
+                ((1 << (7 + 7 + 7 + 7)) - 1),
+                // 5 bytes
+                ((1 << (7 + 7 + 7 + 7))),
+                ((1 << (2 + 7 + 7 + 7 + 8)) - 1),
         };
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeVarSize", int.class);
@@ -842,8 +795,8 @@ public class ByteArrayBitStreamTest
         }
     }
 
-    private void testImpl(Method writeMethod, Method readMethod, Object[] values,
-            int maxStartBitPos) throws Exception
+    private void testImpl(Method writeMethod, Method readMethod, Object[] values, int maxStartBitPos)
+            throws Exception
     {
         try
         {
@@ -875,8 +828,7 @@ public class ByteArrayBitStreamTest
                 }
                 catch (AssertionError e)
                 {
-                    throw new AssertionError(
-                            "[bitPos=" + bitPos + "]: " + e.getMessage());
+                    throw new AssertionError("[bitPos=" + bitPos + "]: " + e.getMessage());
                 }
             }
         }
@@ -886,8 +838,8 @@ public class ByteArrayBitStreamTest
         }
     }
 
-    private void testBitsImpl(Method writeMethod, Method readMethod,
-            Object[] values, int numBits) throws Exception
+    private void testBitsImpl(Method writeMethod, Method readMethod, Object[] values, int numBits)
+            throws Exception
     {
         try
         {

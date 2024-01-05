@@ -22,14 +22,14 @@ public class DefaultWalkFilterTest
         assertTrue(walkFilter.beforeArray(walkerObject.getUnionArray(), walkerArrayFieldInfo));
         assertTrue(walkFilter.afterArray(walkerObject.getUnionArray(), walkerArrayFieldInfo));
 
-        assertTrue(walkFilter.beforeCompound(walkerObject.getNested(), walkerCompoundFieldInfo,
-                WalkerConst.NOT_ELEMENT));
-        assertTrue(walkFilter.afterCompound(walkerObject.getNested(), walkerCompoundFieldInfo,
-                WalkerConst.NOT_ELEMENT));
+        assertTrue(walkFilter.beforeCompound(
+                walkerObject.getNested(), walkerCompoundFieldInfo, WalkerConst.NOT_ELEMENT));
+        assertTrue(walkFilter.afterCompound(
+                walkerObject.getNested(), walkerCompoundFieldInfo, WalkerConst.NOT_ELEMENT));
 
-        assertTrue(walkFilter.beforeValue(walkerObject.getIdentifier(), walkerFieldInfo,
-                WalkerConst.NOT_ELEMENT));
-        assertTrue(walkFilter.afterValue(walkerObject.getIdentifier(), walkerFieldInfo,
-                WalkerConst.NOT_ELEMENT));
+        assertTrue(
+                walkFilter.beforeValue(walkerObject.getIdentifier(), walkerFieldInfo, WalkerConst.NOT_ELEMENT));
+        assertTrue(
+                walkFilter.afterValue(walkerObject.getIdentifier(), walkerFieldInfo, WalkerConst.NOT_ELEMENT));
     }
 }

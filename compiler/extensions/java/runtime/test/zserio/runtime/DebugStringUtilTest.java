@@ -146,8 +146,8 @@ public class DebugStringUtilTest
     public void fromJsonStreamTypeInfoArguments()
     {
         final Reader reader = new StringReader("{\"text\": \"something\"}");
-        final Object zserioObject = DebugStringUtil.fromJsonStream(ParameterizedDummyObject.typeInfo(),
-                reader, 10);
+        final Object zserioObject =
+                DebugStringUtil.fromJsonStream(ParameterizedDummyObject.typeInfo(), reader, 10);
         assertTrue(zserioObject != null);
         assertEquals(10, ((ParameterizedDummyObject)zserioObject).getParam());
         assertEquals("something", ((ParameterizedDummyObject)zserioObject).getText());
@@ -185,8 +185,8 @@ public class DebugStringUtilTest
     public void fromJsonStringTypeInfoArguments()
     {
         final String jsonString = "{\"text\": \"something\"}";
-        final Object zserioObject = DebugStringUtil.fromJsonString(ParameterizedDummyObject.typeInfo(),
-                jsonString, 10);
+        final Object zserioObject =
+                DebugStringUtil.fromJsonString(ParameterizedDummyObject.typeInfo(), jsonString, 10);
         assertTrue(zserioObject != null);
         assertEquals(10, ((ParameterizedDummyObject)zserioObject).getParam());
         assertEquals("something", ((ParameterizedDummyObject)zserioObject).getText());
@@ -205,8 +205,8 @@ public class DebugStringUtilTest
     public void fromJsonStringClassArguments()
     {
         final String jsonString = "{\"text\": \"something\"}";
-        final Object zserioObject = DebugStringUtil.fromJsonString(ParameterizedDummyObject.class,
-                jsonString, 10);
+        final Object zserioObject =
+                DebugStringUtil.fromJsonString(ParameterizedDummyObject.class, jsonString, 10);
         assertTrue(zserioObject != null);
         assertEquals(10, ((ParameterizedDummyObject)zserioObject).getParam());
         assertEquals("something", ((ParameterizedDummyObject)zserioObject).getText());
@@ -231,8 +231,8 @@ public class DebugStringUtilTest
         content.add("{\"text\": \"something\"}");
         Files.write(Paths.get(TEST_FILE_NAME), content, Charset.forName("UTF-8"));
 
-        final Object zserioObject = DebugStringUtil.fromJsonFile(ParameterizedDummyObject.typeInfo(),
-                TEST_FILE_NAME, 10);
+        final Object zserioObject =
+                DebugStringUtil.fromJsonFile(ParameterizedDummyObject.typeInfo(), TEST_FILE_NAME, 10);
         assertTrue(zserioObject != null);
         assertEquals(10, ((ParameterizedDummyObject)zserioObject).getParam());
         assertEquals("something", ((ParameterizedDummyObject)zserioObject).getText());
@@ -257,8 +257,8 @@ public class DebugStringUtilTest
         content.add("{\"text\": \"something\"}");
         Files.write(Paths.get(TEST_FILE_NAME), content, Charset.forName("UTF-8"));
 
-        final Object zserioObject = DebugStringUtil.fromJsonFile(ParameterizedDummyObject.class,
-                TEST_FILE_NAME, 10);
+        final Object zserioObject =
+                DebugStringUtil.fromJsonFile(ParameterizedDummyObject.class, TEST_FILE_NAME, 10);
         assertTrue(zserioObject != null);
         assertEquals(10, ((ParameterizedDummyObject)zserioObject).getParam());
         assertEquals("something", ((ParameterizedDummyObject)zserioObject).getText());
@@ -272,8 +272,7 @@ public class DebugStringUtilTest
     private static final String TEST_FILE_NAME = "DebugStringTest.json";
 
     private static final FieldInfo TEXT_FIELD_INFO = new FieldInfo(
-            "text", "getText", "setText",
-            BuiltinTypeInfo.getString(),
+            "text", "getText", "setText", BuiltinTypeInfo.getString(),
             new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
             false, // isExtended
             null, // alignment
@@ -290,16 +289,14 @@ public class DebugStringUtilTest
             false // isImplicit
     );
 
-    private static final TypeInfo DUMMY_OBJECT_TYPE_INFO = new StructTypeInfo(
-            "DummyObject", DummyObject.class, "", new ArrayList<TypeInfo>(),
-            Arrays.asList(TEXT_FIELD_INFO), new ArrayList<ParameterInfo>(), new ArrayList<FunctionInfo>()
-    );
+    private static final TypeInfo DUMMY_OBJECT_TYPE_INFO = new StructTypeInfo("DummyObject", DummyObject.class,
+            "", new ArrayList<TypeInfo>(), Arrays.asList(TEXT_FIELD_INFO), new ArrayList<ParameterInfo>(),
+            new ArrayList<FunctionInfo>());
 
     public static class DummyObject
     {
         public DummyObject()
-        {
-        }
+        {}
 
         public DummyObject(String text)
         {
@@ -324,14 +321,12 @@ public class DebugStringUtilTest
         private String text;
     }
 
-    private static final ParameterInfo PARAM_INFO = new ParameterInfo(
-                "param", // schemaName
-                TypeInfo.BuiltinTypeInfo.getUInt16() // typeInfo
+    private static final ParameterInfo PARAM_INFO = new ParameterInfo("param", // schemaName
+            TypeInfo.BuiltinTypeInfo.getUInt16() // typeInfo
     );
     private static final TypeInfo PARAMETERIZED_DUMMY_OBJECT_TYPE_INFO = new StructTypeInfo(
             "ParameterizedDummyObject", ParameterizedDummyObject.class, "", new ArrayList<TypeInfo>(),
-            Arrays.asList(TEXT_FIELD_INFO), Arrays.asList(PARAM_INFO), new ArrayList<FunctionInfo>()
-    );
+            Arrays.asList(TEXT_FIELD_INFO), Arrays.asList(PARAM_INFO), new ArrayList<FunctionInfo>());
 
     public static class ParameterizedDummyObject
     {

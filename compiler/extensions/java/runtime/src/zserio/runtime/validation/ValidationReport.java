@@ -119,9 +119,9 @@ public final class ValidationReport
         errors.addAll(other.errors);
     }
 
-    private int                     numberOfValidatedTables;
-    private int                     numberOfValidatedRows;
-    private long                    totalValidationTime;
-    private long                    totalParameterProviderTime;
-    private List<ValidationError>   errors;
+    private int numberOfValidatedTables;
+    private int numberOfValidatedRows;
+    private long totalValidationTime;
+    private long totalParameterProviderTime;
+    private List<ValidationError> errors;
 }

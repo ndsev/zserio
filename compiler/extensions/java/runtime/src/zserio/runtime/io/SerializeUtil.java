@@ -281,8 +281,8 @@ public final class SerializeUtil
         object.write(writer);
     }
 
-    private static <T> T deserializeFromReader(final Class<T> clazz, BitStreamReader reader,
-            Object... arguments)
+    private static <T> T deserializeFromReader(
+            final Class<T> clazz, BitStreamReader reader, Object... arguments)
     {
         try
         {
@@ -293,7 +293,7 @@ public final class SerializeUtil
             }
             else
             {
-                final Class<?>[] ctorArgumentTypes = new Class<?>[arguments.length + 1];
+                final Class<?>[] ctorArgumentTypes = new Class<?>[ arguments.length + 1 ];
                 ctorArgumentTypes[0] = BitStreamReader.class;
                 // please note that arguments are always boxed and object parameters are always unboxed
                 for (int i = 0; i < arguments.length; ++i)

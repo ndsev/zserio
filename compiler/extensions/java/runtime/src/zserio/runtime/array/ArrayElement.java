@@ -15,8 +15,7 @@ public interface ArrayElement
     /**
      * Interface for elements of integral arrays.
      */
-    public static interface IntegralArrayElement extends ArrayElement
-    {
+    public static interface IntegralArrayElement extends ArrayElement {
         /**
          * Converts the element value to big integer.
          *

@@ -39,8 +39,8 @@ public final class FieldInfo
             List<BiFunction<Object, Integer, Object>> typeArguments, boolean isExtended, IntSupplier alignment,
             BiFunction<Object, Integer, Object> offset, Supplier<Object> initializer, boolean isOptional,
             Predicate<Object> optionalCondition, String isUsedIndicatorName, String isSetIndicatorName,
-            Predicate<Object> constraint, boolean isArray, ToIntFunction<Object> arrayLength,
-            boolean isPacked, boolean isImplicit)
+            Predicate<Object> constraint, boolean isArray, ToIntFunction<Object> arrayLength, boolean isPacked,
+            boolean isImplicit)
     {
         this.schemaName = schemaName;
         this.getterName = getterName;

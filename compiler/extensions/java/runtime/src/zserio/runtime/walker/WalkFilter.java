@@ -72,4 +72,4 @@ public interface WalkFilter
      * @return True when the walking should continue to a next sibling, false to return to the parent.
      */
     public boolean afterValue(Object value, FieldInfo fieldInfo, int elementIndex);
-};
+}

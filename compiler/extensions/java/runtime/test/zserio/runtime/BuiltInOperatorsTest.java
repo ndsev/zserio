@@ -1,11 +1,12 @@
 package zserio.runtime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigInteger;
+
+import org.junit.jupiter.api.Test;
 
 public class BuiltInOperatorsTest
 {
@@ -44,8 +45,8 @@ public class BuiltInOperatorsTest
         assertTrue(BuiltInOperators.isSet(DummyBitmask.Values.CREATE, DummyBitmask.Values.READ));
         assertTrue(BuiltInOperators.isSet(DummyBitmask.Values.CREATE, DummyBitmask.Values.WRITE));
         assertTrue(BuiltInOperators.isSet(DummyBitmask.Values.CREATE, DummyBitmask.Values.CREATE));
-        assertTrue(BuiltInOperators.isSet(DummyBitmask.Values.CREATE,
-                DummyBitmask.Values.READ.or(DummyBitmask.Values.WRITE)));
+        assertTrue(BuiltInOperators.isSet(
+                DummyBitmask.Values.CREATE, DummyBitmask.Values.READ.or(DummyBitmask.Values.WRITE)));
         assertFalse(BuiltInOperators.isSet(DummyBitmask.Values.READ, DummyBitmask.Values.WRITE));
         assertFalse(BuiltInOperators.isSet(DummyBitmask.Values.READ, DummyBitmask.Values.CREATE));
     }

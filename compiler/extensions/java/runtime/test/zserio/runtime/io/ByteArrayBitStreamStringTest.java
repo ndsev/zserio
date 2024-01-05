@@ -1,7 +1,6 @@
 package zserio.runtime.io;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -9,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.Reader;
+
+import org.junit.jupiter.api.Test;
 
 public class ByteArrayBitStreamStringTest
 {
@@ -90,7 +91,7 @@ public class ByteArrayBitStreamStringTest
             writer.writeString(s3);
 
             try (final Reader fileReader = new InputStreamReader(
-                    new ByteArrayInputStream(writer.toByteArray()), "UTF-8"))
+                         new ByteArrayInputStream(writer.toByteArray()), "UTF-8"))
             {
                 numChars = fileReader.read(charBuffer);
             }
@@ -132,7 +133,8 @@ public class ByteArrayBitStreamStringTest
         }
     }
 
-    private void writeZserioAndReadZserioUnaligned(final String s1, final String s2, final String s3) throws IOException
+    private void writeZserioAndReadZserioUnaligned(final String s1, final String s2, final String s3)
+            throws IOException
     {
         try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {

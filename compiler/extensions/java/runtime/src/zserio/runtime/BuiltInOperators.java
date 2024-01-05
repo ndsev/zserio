@@ -24,10 +24,12 @@ public final class BuiltInOperators
     {
         final Number bitmaskValueGeneric = bitmaskValue.getGenericValue();
         final BigInteger bigBitmaskValue = bitmaskValueGeneric instanceof BigInteger
-                ? (BigInteger)bitmaskValueGeneric : BigInteger.valueOf(bitmaskValueGeneric.longValue());
+                ? (BigInteger)bitmaskValueGeneric
+                : BigInteger.valueOf(bitmaskValueGeneric.longValue());
         final Number requiredMaskGeneric = requiredMask.getGenericValue();
         final BigInteger bigRequiredMask = requiredMaskGeneric instanceof BigInteger
-                ? (BigInteger)requiredMaskGeneric : BigInteger.valueOf(requiredMaskGeneric.longValue());
+                ? (BigInteger)requiredMaskGeneric
+                : BigInteger.valueOf(requiredMaskGeneric.longValue());
 
         return bigBitmaskValue.and(bigRequiredMask).equals(bigRequiredMask);
     }

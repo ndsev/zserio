@@ -31,7 +31,6 @@ public class TestWalkObserver implements WalkObserver
     public void endRoot(Object compound)
     {
         captures.get("endRoot").add(compound);
-
     }
 
     @Override

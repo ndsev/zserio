@@ -44,5 +44,5 @@ public final class JsonParserError extends ZserioError
         super(throwable);
     }
 
-   private static final long serialVersionUID = 921445202560692333L;
+    private static final long serialVersionUID = 921445202560692333L;
 }

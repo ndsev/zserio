@@ -124,7 +124,8 @@ public final class Array
                 else
                 {
                     endBitPosition = BitPositionUtil.alignTo(Byte.SIZE, endBitPosition);
-                    endBitPosition += elementSize + (size - 1) * BitPositionUtil.alignTo(Byte.SIZE, elementSize);
+                    endBitPosition +=
+                            elementSize + (size - 1) * BitPositionUtil.alignTo(Byte.SIZE, elementSize);
                 }
             }
             else
@@ -169,8 +170,8 @@ public final class Array
                 if (offsetInitializer != null)
                     endBitPosition = BitPositionUtil.alignTo(Byte.SIZE, endBitPosition);
 
-                endBitPosition += packedArrayTraits.bitSizeOf(
-                        context, endBitPosition, rawArray.getElement(index));
+                endBitPosition +=
+                        packedArrayTraits.bitSizeOf(context, endBitPosition, rawArray.getElement(index));
             }
         }
 
@@ -227,7 +228,7 @@ public final class Array
             for (int index = 0; index < size; ++index)
                 packedArrayTraits.initContext(context, rawArray.getElement(index));
 
-            for (int index= 0; index < size; ++index)
+            for (int index = 0; index < size; ++index)
             {
                 if (offsetInitializer != null)
                 {

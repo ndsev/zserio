@@ -1,8 +1,8 @@
 package zserio.runtime.io;
 
-import zserio.runtime.HashCodeUtil;
-
 import java.nio.ByteBuffer;
+
+import zserio.runtime.HashCodeUtil;
 
 /**
  * Class which holds any bit sequence.
@@ -132,8 +132,9 @@ public final class BitBuffer
         final int roundedByteSize = (int)(bitSize / 8);
         final byte lastByteBits = (byte)(bitSize - (long)8 * roundedByteSize);
 
-        return (lastByteBits == 0) ? buffer[roundedByteSize - 1] :
-                (byte)(buffer[roundedByteSize] & (0xFF << (8 - lastByteBits)));
+        return (lastByteBits == 0)
+                ? buffer[roundedByteSize - 1]
+                : (byte)(buffer[roundedByteSize] & (0xFF << (8 - lastByteBits)));
     }
 
     private final byte[] buffer;

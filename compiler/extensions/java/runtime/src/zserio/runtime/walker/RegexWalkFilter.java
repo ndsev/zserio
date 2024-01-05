@@ -139,7 +139,7 @@ public final class RegexWalkFilter implements WalkFilter
         if (elementIndex == WalkerConst.NOT_ELEMENT)
             currentPath.pop();
         else
-            currentPath.set(currentPath.size() -1, fieldInfo.getSchemaName());
+            currentPath.set(currentPath.size() - 1, fieldInfo.getSchemaName());
     }
 
     /**

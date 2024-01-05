@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test;
 
 import zserio.runtime.typeinfo.FieldInfo;
 
-import test_object.WalkerUnion;
 import test_object.WalkerNested;
 import test_object.WalkerObject;
+import test_object.WalkerUnion;
 
 public class RegexWalkFilterTest
 {
@@ -25,14 +25,14 @@ public class RegexWalkFilterTest
 
         assertTrue(walkFilter.beforeArray(walkerObject.getUnionArray(), walkerArrayFieldInfo));
         assertTrue(walkFilter.afterArray(walkerObject.getUnionArray(), walkerArrayFieldInfo));
-        assertTrue(walkFilter.beforeCompound(walkerObject.getNested(), walkerCompoundFieldInfo,
-                WalkerConst.NOT_ELEMENT));
-        assertTrue(walkFilter.afterCompound(walkerObject.getNested(), walkerCompoundFieldInfo,
-                WalkerConst.NOT_ELEMENT));
-        assertTrue(walkFilter.beforeValue(walkerObject.getIdentifier(), walkerFieldInfo,
-                WalkerConst.NOT_ELEMENT));
-        assertTrue(walkFilter.afterValue(walkerObject.getIdentifier(), walkerFieldInfo,
-                WalkerConst.NOT_ELEMENT));
+        assertTrue(walkFilter.beforeCompound(
+                walkerObject.getNested(), walkerCompoundFieldInfo, WalkerConst.NOT_ELEMENT));
+        assertTrue(walkFilter.afterCompound(
+                walkerObject.getNested(), walkerCompoundFieldInfo, WalkerConst.NOT_ELEMENT));
+        assertTrue(
+                walkFilter.beforeValue(walkerObject.getIdentifier(), walkerFieldInfo, WalkerConst.NOT_ELEMENT));
+        assertTrue(
+                walkFilter.afterValue(walkerObject.getIdentifier(), walkerFieldInfo, WalkerConst.NOT_ELEMENT));
     }
 
     @Test
@@ -42,21 +42,21 @@ public class RegexWalkFilterTest
         final WalkerObject walkerObject = TestObjectCreator.createWalkerObject();
 
         final FieldInfo identifierFieldInfo = WalkerObject.typeInfo().getFields().get(0);
-        assertFalse(walkFilter.beforeValue(walkerObject.getIdentifier(), identifierFieldInfo,
-                WalkerConst.NOT_ELEMENT));
-        assertTrue(walkFilter.afterValue(walkerObject.getIdentifier(), identifierFieldInfo,
-                WalkerConst.NOT_ELEMENT));
+        assertFalse(walkFilter.beforeValue(
+                walkerObject.getIdentifier(), identifierFieldInfo, WalkerConst.NOT_ELEMENT));
+        assertTrue(walkFilter.afterValue(
+                walkerObject.getIdentifier(), identifierFieldInfo, WalkerConst.NOT_ELEMENT));
 
         final FieldInfo nestedFieldInfo = WalkerObject.typeInfo().getFields().get(1);
-        assertTrue(walkFilter.beforeCompound(walkerObject.getNested(), nestedFieldInfo,
-                WalkerConst.NOT_ELEMENT));
+        assertTrue(
+                walkFilter.beforeCompound(walkerObject.getNested(), nestedFieldInfo, WalkerConst.NOT_ELEMENT));
         final FieldInfo textFieldInfo = nestedFieldInfo.getTypeInfo().getFields().get(0);
-        assertTrue(walkFilter.beforeValue(walkerObject.getNested().getText(), textFieldInfo,
-                WalkerConst.NOT_ELEMENT));
-        assertTrue(walkFilter.afterValue(walkerObject.getNested().getText(), textFieldInfo,
-                WalkerConst.NOT_ELEMENT));
-        assertTrue(walkFilter.afterCompound(walkerObject.getNested(), nestedFieldInfo,
-                WalkerConst.NOT_ELEMENT));
+        assertTrue(walkFilter.beforeValue(
+                walkerObject.getNested().getText(), textFieldInfo, WalkerConst.NOT_ELEMENT));
+        assertTrue(walkFilter.afterValue(
+                walkerObject.getNested().getText(), textFieldInfo, WalkerConst.NOT_ELEMENT));
+        assertTrue(
+                walkFilter.afterCompound(walkerObject.getNested(), nestedFieldInfo, WalkerConst.NOT_ELEMENT));
 
         // ignore text
 
@@ -91,10 +91,10 @@ public class RegexWalkFilterTest
     {
         final RegexWalkFilter walkFilter = new RegexWalkFilter("^unionArray\\[\\d*\\]\\.te.*");
 
-        final WalkerUnion[] unionArray = new WalkerUnion[] { new WalkerUnion() };
-        unionArray[0].setNestedArray(new WalkerNested[] { new WalkerNested("nestedArray") });
-        final WalkerObject walkerObject = new WalkerObject(
-                13, new WalkerNested("nested"), "test", unionArray, null);
+        final WalkerUnion[] unionArray = new WalkerUnion[] {new WalkerUnion()};
+        unionArray[0].setNestedArray(new WalkerNested[] {new WalkerNested("nestedArray")});
+        final WalkerObject walkerObject =
+                new WalkerObject(13, new WalkerNested("nested"), "test", unionArray, null);
 
         final FieldInfo unionArrayFieldInfo = WalkerObject.typeInfo().getFields().get(3);
         assertFalse(walkFilter.beforeArray(walkerObject.getUnionArray(), unionArrayFieldInfo));
@@ -136,10 +136,10 @@ public class RegexWalkFilterTest
         final FieldInfo optionalUnionArrayFieldInfo = WalkerObject.typeInfo().getFields().get(4);
         assertEquals(null, walkerObject.getOptionalUnionArray());
         // note that the null arrays are processed as values!
-        assertTrue(walkFilter.beforeValue(walkerObject.getOptionalUnionArray(), optionalUnionArrayFieldInfo,
-                WalkerConst.NOT_ELEMENT));
-        assertTrue(walkFilter.afterValue(walkerObject.getOptionalUnionArray(), optionalUnionArrayFieldInfo,
-                WalkerConst.NOT_ELEMENT));
+        assertTrue(walkFilter.beforeValue(
+                walkerObject.getOptionalUnionArray(), optionalUnionArrayFieldInfo, WalkerConst.NOT_ELEMENT));
+        assertTrue(walkFilter.afterValue(
+                walkerObject.getOptionalUnionArray(), optionalUnionArrayFieldInfo, WalkerConst.NOT_ELEMENT));
     }
 
     @Test
@@ -152,9 +152,9 @@ public class RegexWalkFilterTest
         final FieldInfo optionalUnionArrayFieldInfo = WalkerObject.typeInfo().getFields().get(4);
         assertEquals(null, walkerObject.getOptionalUnionArray());
         // note that the null arrays are processed as values!
-        assertFalse(walkFilter.beforeValue(walkerObject.getOptionalUnionArray(), optionalUnionArrayFieldInfo,
-                WalkerConst.NOT_ELEMENT));
-        assertTrue(walkFilter.afterValue(walkerObject.getOptionalUnionArray(), optionalUnionArrayFieldInfo,
-                WalkerConst.NOT_ELEMENT));
+        assertFalse(walkFilter.beforeValue(
+                walkerObject.getOptionalUnionArray(), optionalUnionArrayFieldInfo, WalkerConst.NOT_ELEMENT));
+        assertTrue(walkFilter.afterValue(
+                walkerObject.getOptionalUnionArray(), optionalUnionArrayFieldInfo, WalkerConst.NOT_ELEMENT));
     }
 }

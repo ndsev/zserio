@@ -11,11 +11,11 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.function.BiFunction;
 
-import zserio.runtime.typeinfo.TypeInfo;
-import zserio.runtime.typeinfo.TypeInfoUtil;
 import zserio.runtime.ZserioError;
 import zserio.runtime.typeinfo.FieldInfo;
 import zserio.runtime.typeinfo.ParameterInfo;
+import zserio.runtime.typeinfo.TypeInfo;
+import zserio.runtime.typeinfo.TypeInfoUtil;
 
 /**
  * Creator for zserio objects.
@@ -80,8 +80,8 @@ public final class ZserioTreeCreator
         final FieldInfo fieldInfo = findFieldInfo(parentTypeInfo, name);
         if (!fieldInfo.isArray())
         {
-            throw new ZserioError("ZserioTreeCreator: Member '" + fieldInfo.getSchemaName() +
-                    "' is not an array!");
+            throw new ZserioError(
+                    "ZserioTreeCreator: Member '" + fieldInfo.getSchemaName() + "' is not an array!");
         }
 
         fieldInfoStack.push(fieldInfo);
@@ -124,8 +124,8 @@ public final class ZserioTreeCreator
 
         if (!TypeInfoUtil.isCompound(fieldInfo.getTypeInfo().getSchemaType()))
         {
-            throw new ZserioError("ZserioTreeCreator: Member '" + fieldInfo.getSchemaName() +
-                    "' is not a compound!");
+            throw new ZserioError(
+                    "ZserioTreeCreator: Member '" + fieldInfo.getSchemaName() + "' is not a compound!");
         }
 
         final Object compound = createObject(fieldInfo, valueStack.peek());
@@ -169,15 +169,15 @@ public final class ZserioTreeCreator
         {
             if (fieldInfo.isArray())
             {
-                throw new ZserioError("ZserioTreeCreator: Expecting array in field '" +
-                        fieldInfo.getSchemaName() + "!");
+                throw new ZserioError(
+                        "ZserioTreeCreator: Expecting array in field '" + fieldInfo.getSchemaName() + "!");
             }
 
             final TypeInfo typeInfo = fieldInfo.getTypeInfo();
             final Class<?> boxedFieldClass = toBoxedClass(typeInfo.getJavaClass());
             if (!boxedFieldClass.isInstance(value))
-                throw new ZserioError("ZserioTreeCreator: Unexpected value type '" + value.getClass() + "', " +
-                        "expecting '" + typeInfo.getJavaClass() + "'!");
+                throw new ZserioError("ZserioTreeCreator: Unexpected value type '" + value.getClass() + "', "
+                        + "expecting '" + typeInfo.getJavaClass() + "'!");
         }
 
         final TypeInfo parentTypeInfo = getTypeInfo();
@@ -212,8 +212,8 @@ public final class ZserioTreeCreator
         final FieldInfo fieldInfo = fieldInfoStack.peek();
         if (!TypeInfoUtil.isCompound(fieldInfo.getTypeInfo().getSchemaType()))
         {
-            throw new ZserioError("ZserioTreeCreator: Member '" + fieldInfo.getSchemaName() +
-                    "' is not a compound!");
+            throw new ZserioError(
+                    "ZserioTreeCreator: Member '" + fieldInfo.getSchemaName() + "' is not a compound!");
         }
 
         final List<?> list = (List<?>)valueStack.peek();
@@ -231,7 +231,7 @@ public final class ZserioTreeCreator
         if (state != State.IN_COMPOUND || fieldInfoStack.empty())
         {
             throw new ZserioError("ZserioTreeCreator: Cannot end compound element in state '" + state + "'" +
-                    (fieldInfoStack.empty() ?  "(expecting endRoot)!" : "!"));
+                    (fieldInfoStack.empty() ? "(expecting endRoot)!" : "!"));
         }
 
         final FieldInfo fieldInfo = fieldInfoStack.peek();
@@ -306,7 +306,7 @@ public final class ZserioTreeCreator
     private static Object createObject(TypeInfo typeInfo, Object[] arguments)
     {
         final List<ParameterInfo> parameters = typeInfo.getParameters();
-        final Class<?>[] parametersTypes = new Class<?>[parameters.size()];
+        final Class<?>[] parametersTypes = new Class<?>[ parameters.size() ];
         for (int i = 0; i < parameters.size(); ++i)
             parametersTypes[i] = parameters.get(i).getTypeInfo().getJavaClass();
 
@@ -319,7 +319,8 @@ public final class ZserioTreeCreator
                 InvocationTargetException excpt)
         {
             throw new ZserioError("ZserioTreeCreator: Cannot call constructor of Zserio object '" +
-                    typeInfo.getSchemaName() + "'!", excpt);
+                            typeInfo.getSchemaName() + "'!",
+                    excpt);
         }
     }
 
@@ -372,7 +373,8 @@ public final class ZserioTreeCreator
                 InvocationTargetException | NoSuchMethodException excpt)
         {
             throw new ZserioError("ZserioTreeCreator: Cannot set field '" + fieldInfo.getSchemaName() +
-                    "' in Zserio object '" + parentTypeInfo.getSchemaName() + "'!", excpt);
+                            "' in Zserio object '" + parentTypeInfo.getSchemaName() + "'!",
+                    excpt);
         }
     }
 
