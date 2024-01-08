@@ -1,8 +1,6 @@
-#include "gtest/gtest.h"
-
-#include "zserio/SerializeUtil.h"
-
 #include "choice_types/uint64_param_choice/UInt64ParamChoice.h"
+#include "gtest/gtest.h"
+#include "zserio/SerializeUtil.h"
 
 namespace choice_types
 {
@@ -12,8 +10,7 @@ namespace uint64_param_choice
 class UInt64ParamChoiceTest : public ::testing::Test
 {
 protected:
-    void writeUInt64ParamChoiceToByteArray(zserio::BitStreamWriter& writer, uint64_t selector,
-            int32_t value)
+    void writeUInt64ParamChoiceToByteArray(zserio::BitStreamWriter& writer, uint64_t selector, int32_t value)
     {
         switch (selector)
         {
@@ -135,8 +132,8 @@ TEST_F(UInt64ParamChoiceTest, propagateAllocatorCopyConstructor)
     const int8_t value = 99;
     uint64ParamChoice.setA(value);
 
-    const UInt64ParamChoice uint64ParamChoiceCopy(zserio::PropagateAllocator, uint64ParamChoice,
-            UInt64ParamChoice::allocator_type());
+    const UInt64ParamChoice uint64ParamChoiceCopy(
+            zserio::PropagateAllocator, uint64ParamChoice, UInt64ParamChoice::allocator_type());
     ASSERT_EQ(selector, uint64ParamChoiceCopy.getSelector());
     ASSERT_EQ(value, uint64ParamChoiceCopy.getA());
 }

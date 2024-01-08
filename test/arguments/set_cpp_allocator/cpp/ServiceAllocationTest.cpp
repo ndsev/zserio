@@ -1,9 +1,7 @@
 #include "gtest/gtest.h"
-
 #include "service_allocation/GreetingService.h"
-
-#include "test_utils/MemoryResources.h"
 #include "test_utils/LocalServiceClient.h"
+#include "test_utils/MemoryResources.h"
 
 using namespace zserio::literals;
 using namespace test_utils;
@@ -53,7 +51,8 @@ protected:
     class GreetingServiceImpl : public GreetingService::Service
     {
     public:
-        explicit GreetingServiceImpl(const allocator_type& allocator) : GreetingService::Service(allocator)
+        explicit GreetingServiceImpl(const allocator_type& allocator) :
+                GreetingService::Service(allocator)
         {}
 
         Greeting sendGreetingImpl(const Name& name, void* context) override

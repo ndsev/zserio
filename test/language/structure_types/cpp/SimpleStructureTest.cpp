@@ -1,9 +1,7 @@
 #include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-
 #include "structure_types/simple_structure/SimpleStructure.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace structure_types
 {
@@ -13,8 +11,8 @@ namespace simple_structure
 class SimpleStructureTest : public ::testing::Test
 {
 protected:
-    void writeSimpleStructureToByteArray(zserio::BitStreamWriter& writer, uint8_t numberA, uint8_t numberB,
-            uint8_t numberC)
+    void writeSimpleStructureToByteArray(
+            zserio::BitStreamWriter& writer, uint8_t numberA, uint8_t numberB, uint8_t numberC)
     {
         writer.writeBits(numberA, 3);
         writer.writeBits(numberB, 8);
@@ -132,8 +130,8 @@ TEST_F(SimpleStructureTest, propagateAllocatorCopyConstructor)
     const uint8_t numberB = 0xFF;
     const uint8_t numberC = 0x7F;
     SimpleStructure simpleStructure(numberA, numberB, numberC);
-    SimpleStructure simpleStructureCopy(zserio::PropagateAllocator, simpleStructure,
-            SimpleStructure::allocator_type());
+    SimpleStructure simpleStructureCopy(
+            zserio::PropagateAllocator, simpleStructure, SimpleStructure::allocator_type());
     ASSERT_EQ(numberA, simpleStructureCopy.getNumberA());
     ASSERT_EQ(numberB, simpleStructureCopy.getNumberB());
     ASSERT_EQ(numberC, simpleStructureCopy.getNumberC());

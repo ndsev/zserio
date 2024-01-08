@@ -1,6 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "expressions/enumeration_type/EnumerationTypeExpression.h"
+#include "gtest/gtest.h"
 
 namespace expressions
 {

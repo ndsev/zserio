@@ -1,9 +1,7 @@
 #include "gtest/gtest.h"
-
 #include "union_types/union_with_parameterized_field/TestUnion.h"
-
-#include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 #include "zserio/CppRuntimeException.h"
 
 namespace union_types
@@ -307,5 +305,5 @@ TEST_F(UnionWithParameterizedFieldTest, write)
     }
 }
 
-} //namespace union_with_parameterized_field
+} // namespace union_with_parameterized_field
 } // namespace union_types

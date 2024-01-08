@@ -1,9 +1,7 @@
 #include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-
 #include "offsets/optional_member_offset/OptionalMemberOffset.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace offsets
 {
@@ -117,8 +115,8 @@ TEST_F(OptionalMemberOffsetTest, initializeOffsetsWithOptional)
     const uint32_t optionalField = 0x1010;
     const int32_t field = 0x2020;
     OptionalMemberOffset optionalMemberOffset;
-    fillOptionalMemberOffset(optionalMemberOffset, hasOptional, WRONG_OPTIONAL_FIELD_OFFSET, optionalField,
-            field);
+    fillOptionalMemberOffset(
+            optionalMemberOffset, hasOptional, WRONG_OPTIONAL_FIELD_OFFSET, optionalField, field);
 
     const size_t bitPosition = 2;
     const size_t expectedBitSize = WITH_OPTIONAL_MEMBER_OFFSET_BIT_SIZE;
@@ -155,8 +153,8 @@ TEST_F(OptionalMemberOffsetTest, writeWithOptional)
 
     zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     OptionalMemberOffset readOptionalMemberOffset(reader);
-    checkOptionalMemberOffset(readOptionalMemberOffset, hasOptional, OPTIONAL_FIELD_OFFSET, optionalField,
-            field);
+    checkOptionalMemberOffset(
+            readOptionalMemberOffset, hasOptional, OPTIONAL_FIELD_OFFSET, optionalField, field);
     ASSERT_TRUE(optionalMemberOffset == readOptionalMemberOffset);
 }
 

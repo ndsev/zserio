@@ -1,6 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "expressions/isset_operator/IsSetOperator.h"
+#include "gtest/gtest.h"
 
 namespace expressions
 {

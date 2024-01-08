@@ -1,16 +1,14 @@
 #include <cstdio>
-#include <vector>
-#include <string>
 #include <limits>
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "gtest/gtest.h"
-
 #include "sql_tables/TestDb.h"
-
 #include "zserio/RebindAlloc.h"
-#include "zserio/StringConvertUtil.h"
 #include "zserio/SqliteFinalizer.h"
+#include "zserio/StringConvertUtil.h"
 
 namespace sql_tables
 {
@@ -75,8 +73,8 @@ protected:
         ASSERT_EQ(row1.getBlob(), row2.getBlob());
     }
 
-    static void checkConstParamTableRows(const vector_type<ConstParamTable::Row>& rows1,
-            const vector_type<ConstParamTable::Row>& rows2)
+    static void checkConstParamTableRows(
+            const vector_type<ConstParamTable::Row>& rows1, const vector_type<ConstParamTable::Row>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
@@ -86,8 +84,8 @@ protected:
     bool isTableInDb()
     {
         string_type checkTableName = "constParamTable";
-        string_type sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
-                "'";
+        string_type sqlQuery =
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName + "'";
         std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(
                 m_database->connection().prepareStatement(sqlQuery));
 

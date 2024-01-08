@@ -1,7 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "array_types_warning/packed_array_union_has_no_packable_field/PackedArrayUnionHasNoPackableField.h"
-
+#include "gtest/gtest.h"
 #include "zserio/SerializeUtil.h"
 
 namespace array_types_warning
@@ -22,17 +20,11 @@ TEST_F(PackedArrayUnionHasNoPackableFieldTest, writeRead)
 {
     PackedArrayUnionHasNoPackableField packedArrayUnionHasNoPackableField;
 
-    packedArrayUnionHasNoPackableField.setArray1({{
-        StructWithPackable("A", 65),
-        StructWithPackable("B", 66),
-        StructWithPackable("C", 67)
-    }});
+    packedArrayUnionHasNoPackableField.setArray1(
+            {{StructWithPackable("A", 65), StructWithPackable("B", 66), StructWithPackable("C", 67)}});
 
-    packedArrayUnionHasNoPackableField.setArray2({{
-        StructWithPackableArray("ABC", {{ 65, 66, 67 }}),
-        StructWithPackableArray("DEF", {{ 68, 69, 70 }}),
-        StructWithPackableArray("GHI", {{ 71, 72, 73 }})
-    }});
+    packedArrayUnionHasNoPackableField.setArray2({{StructWithPackableArray("ABC", {{65, 66, 67}}),
+            StructWithPackableArray("DEF", {{68, 69, 70}}), StructWithPackableArray("GHI", {{71, 72, 73}})}});
 
     auto& array3 = packedArrayUnionHasNoPackableField.getArray3();
     array3.resize(3);

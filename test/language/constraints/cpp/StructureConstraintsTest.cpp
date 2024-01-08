@@ -1,12 +1,10 @@
-#include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-#include "zserio/CppRuntimeException.h"
-
-#include "constraints/structure_constraints/StructureConstraints.h"
 #include "constraints/structure_constraints/BasicColor.h"
 #include "constraints/structure_constraints/ExtendedColor.h"
+#include "constraints/structure_constraints/StructureConstraints.h"
+#include "gtest/gtest.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
+#include "zserio/CppRuntimeException.h"
 
 namespace constraints
 {

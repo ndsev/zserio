@@ -1,7 +1,5 @@
 #include "gtest/gtest.h"
-
 #include "templates/function_templated_return_type/FunctionTemplatedReturnType.h"
-
 #include "zserio/RebindAlloc.h"
 
 using namespace zserio::literals;
@@ -19,8 +17,8 @@ TEST(FunctionTemplatedReturnTypeTest, readWrite)
     FunctionTemplatedReturnType functionTemplatedReturnType;
     functionTemplatedReturnType.setHasHolder(true);
     functionTemplatedReturnType.setUint32Test(TestStructure_uint32{zserio::NullOpt, Holder_uint32{42}});
-    functionTemplatedReturnType.setStringTest(TestStructure_string{zserio::NullOpt,
-            Holder_string{string_type{"string"}}});
+    functionTemplatedReturnType.setStringTest(
+            TestStructure_string{zserio::NullOpt, Holder_string{string_type{"string"}}});
     functionTemplatedReturnType.setFloatTest(TestStructure_float32{4.2F, zserio::NullOpt});
     functionTemplatedReturnType.initializeChildren();
 

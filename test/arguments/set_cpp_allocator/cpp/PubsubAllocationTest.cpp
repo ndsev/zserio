@@ -1,12 +1,9 @@
 #include <memory>
 
 #include "gtest/gtest.h"
-
 #include "pubsub_allocation/GreetingPubsub.h"
-
 #include "test_utils/MemoryResources.h"
 #include "test_utils/TestPubsub.h"
-
 #include "zserio/StringView.h"
 
 using namespace zserio::literals;
@@ -83,7 +80,8 @@ protected:
     {
     public:
         explicit NameCallback(GreetingPubsub& pubsub, const allocator_type& allocator) :
-                m_greetingPubsub(pubsub), m_allocator(allocator)
+                m_greetingPubsub(pubsub),
+                m_allocator(allocator)
         {}
 
         void operator()(zserio::StringView topic, const Name& name) override
@@ -109,7 +107,8 @@ protected:
 
     struct GreetingCallback : public GreetingPubsub::GreetingPubsubCallback<Greeting>
     {
-        explicit GreetingCallback(const allocator_type& allocator) : greeting(allocator)
+        explicit GreetingCallback(const allocator_type& allocator) :
+                greeting(allocator)
         {}
 
         void operator()(zserio::StringView topic, const Greeting& providedGreeting) override
@@ -124,7 +123,7 @@ protected:
 private:
     InvalidMemoryResource m_invalidMemoryResource;
     MemoryResourceScopedSetter m_invalidMemoryResourceSetter;
-    TestMemoryResource<4*1024> m_memoryResource;
+    TestMemoryResource<4 * 1024> m_memoryResource;
     allocator_type m_allocator;
     std::unique_ptr<TestPubsubImpl> m_testPubsub;
 
@@ -134,8 +133,8 @@ protected: // must be behind m_allocator
 
 TEST_F(PubsubAllocationTest, sendGreetingPubsub)
 {
-    auto idName = greetingPubsub.subscribeName(std::allocate_shared<NameCallback>(
-            getAllocator(), greetingPubsub, getAllocator()));
+    auto idName = greetingPubsub.subscribeName(
+            std::allocate_shared<NameCallback>(getAllocator(), greetingPubsub, getAllocator()));
 
     std::shared_ptr<GreetingCallback> greetingCallback =
             std::allocate_shared<GreetingCallback>(getAllocator(), getAllocator());
@@ -154,8 +153,9 @@ TEST_F(PubsubAllocationTest, sendGreetingPubsubWithContext)
 {
     CountingContext countingContext;
 
-    auto idName = greetingPubsub.subscribeName(std::allocate_shared<NameCallback>(
-            getAllocator(), greetingPubsub, getAllocator()), &countingContext);
+    auto idName = greetingPubsub.subscribeName(
+            std::allocate_shared<NameCallback>(getAllocator(), greetingPubsub, getAllocator()),
+            &countingContext);
     ASSERT_EQ(1, countingContext.subscribeCount);
 
     std::shared_ptr<GreetingCallback> greetingCallback =

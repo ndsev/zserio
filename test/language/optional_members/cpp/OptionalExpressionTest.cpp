@@ -1,10 +1,8 @@
 #include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-
-#include "optional_members/optional_expression/Container.h"
 #include "optional_members/optional_expression/BasicColor.h"
+#include "optional_members/optional_expression/Container.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace optional_members
 {
@@ -21,8 +19,8 @@ protected:
             tones.push_back(i + 1);
     }
 
-    void checkContainerInBitStream(zserio::BitStreamReader& reader, BasicColor basicColor,
-        uint8_t numBlackTones)
+    void checkContainerInBitStream(
+            zserio::BitStreamReader& reader, BasicColor basicColor, uint8_t numBlackTones)
     {
         ASSERT_EQ(zserio::enumToValue(basicColor), reader.readBits(8));
 
@@ -275,8 +273,8 @@ TEST_F(OptionalExpressionTest, write)
     zserio::BitStreamWriter writerWhite(bitBuffer);
     container.write(writerWhite);
 
-    zserio::BitStreamReader readerWhite(writerWhite.getWriteBuffer(), writerWhite.getBitPosition(),
-            zserio::BitsTag());
+    zserio::BitStreamReader readerWhite(
+            writerWhite.getWriteBuffer(), writerWhite.getBitPosition(), zserio::BitsTag());
     checkContainerInBitStream(readerWhite, BasicColor::WHITE, NUM_BLACK_TONES);
     Container readContainerWhite(readerWhite);
 
@@ -297,8 +295,8 @@ TEST_F(OptionalExpressionTest, write)
     zserio::BitStreamWriter writerBlack(bitBuffer);
     container.write(writerBlack);
 
-    zserio::BitStreamReader readerBlack(writerBlack.getWriteBuffer(), writerBlack.getBitPosition(),
-            zserio::BitsTag());
+    zserio::BitStreamReader readerBlack(
+            writerBlack.getWriteBuffer(), writerBlack.getBitPosition(), zserio::BitsTag());
     checkContainerInBitStream(readerBlack, BasicColor::BLACK, numBlackTones);
     Container readContainerBlack(readerBlack);
 
@@ -315,8 +313,8 @@ TEST_F(OptionalExpressionTest, write)
     zserio::BitStreamWriter writerBlackToWhite(bitBuffer);
     container.write(writerBlackToWhite);
 
-    zserio::BitStreamReader readerBlackToWhite(writerBlackToWhite.getWriteBuffer(),
-            writerBlackToWhite.getBitPosition(), zserio::BitsTag());
+    zserio::BitStreamReader readerBlackToWhite(
+            writerBlackToWhite.getWriteBuffer(), writerBlackToWhite.getBitPosition(), zserio::BitsTag());
     checkContainerInBitStream(readerBlackToWhite, BasicColor::WHITE, NUM_BLACK_TONES);
     Container readContainerBlackToWhite(readerBlackToWhite);
 

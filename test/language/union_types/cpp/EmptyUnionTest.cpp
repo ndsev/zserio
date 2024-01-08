@@ -1,9 +1,7 @@
 #include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-
 #include "union_types/empty_union/EmptyUnion.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace union_types
 {

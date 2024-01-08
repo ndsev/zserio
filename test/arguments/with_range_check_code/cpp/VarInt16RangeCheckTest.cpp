@@ -1,8 +1,6 @@
 #include "gtest/gtest.h"
-
-#include "zserio/CppRuntimeException.h"
-
 #include "with_range_check_code/varint16_range_check/VarInt16RangeCheckCompound.h"
+#include "zserio/CppRuntimeException.h"
 
 namespace with_range_check_code
 {

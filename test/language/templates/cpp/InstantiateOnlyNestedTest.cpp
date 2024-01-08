@@ -1,5 +1,4 @@
 #include "gtest/gtest.h"
-
 #include "templates/instantiate_only_nested/InstantiateOnlyNested.h"
 
 namespace templates

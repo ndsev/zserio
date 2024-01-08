@@ -1,9 +1,7 @@
 #include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-
 #include "parameterized_types/subtyped_bitfield_param/SubtypedBitfieldParamHolder.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace parameterized_types
 {
@@ -21,8 +19,8 @@ protected:
         subtypedBitfieldParamHolder.initializeChildren();
     }
 
-    void checkSubtypedBitfieldParamHolderInBitStream(zserio::BitStreamReader& reader,
-            const SubtypedBitfieldParamHolder& subtypedBitfieldParamHolder)
+    void checkSubtypedBitfieldParamHolderInBitStream(
+            zserio::BitStreamReader& reader, const SubtypedBitfieldParamHolder& subtypedBitfieldParamHolder)
     {
         const SubtypedBitfieldParam& subtypedBitfieldParam =
                 subtypedBitfieldParamHolder.getSubtypedBitfieldParam();

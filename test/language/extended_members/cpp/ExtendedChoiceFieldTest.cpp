@@ -1,10 +1,8 @@
-#include "gtest/gtest.h"
-
-#include "extended_members/extended_choice_field/Original.h"
 #include "extended_members/extended_choice_field/Extended.h"
-
-#include "zserio/SerializeUtil.h"
+#include "extended_members/extended_choice_field/Original.h"
+#include "gtest/gtest.h"
 #include "zserio/BitSizeOfCalculator.h"
+#include "zserio/SerializeUtil.h"
 #include "zserio/SizeConvertUtil.h"
 
 namespace extended_members
@@ -32,8 +30,8 @@ protected:
         // TODO[Mi-L@]: cannot do allocator propagating copy on uninitialized choice!
         if (extended.getExtendedValue().isInitialized())
         {
-            Extended copiedWithPropagateAllocatorExtended(zserio::PropagateAllocator, extended,
-                    allocator_type());
+            Extended copiedWithPropagateAllocatorExtended(
+                    zserio::PropagateAllocator, extended, allocator_type());
             ASSERT_EQ(expectedIsPresent, copiedWithPropagateAllocatorExtended.isExtendedValuePresent());
             ASSERT_EQ(extended, copiedWithPropagateAllocatorExtended);
         }
@@ -61,7 +59,7 @@ const size_t ExtendedChoiceFieldTest::ORIGINAL_BIT_SIZE = 4 * 8;
 const size_t ExtendedChoiceFieldTest::EXTENDED_BIT_SIZE_EMPTY = ORIGINAL_BIT_SIZE;
 const size_t ExtendedChoiceFieldTest::EXTENDED_BIT_SIZE_VALUE = ORIGINAL_BIT_SIZE + 4 * 8;
 
-const vector_type<uint32_t> ExtendedChoiceFieldTest::VALUES = { 0, 1, 2, 3, 4 };
+const vector_type<uint32_t> ExtendedChoiceFieldTest::VALUES = {0, 1, 2, 3, 4};
 const size_t ExtendedChoiceFieldTest::EXTENDED_BIT_SIZE_VALUES = ORIGINAL_BIT_SIZE + VALUES.size() * 4 * 8;
 
 TEST_F(ExtendedChoiceFieldTest, defaultConstructor)

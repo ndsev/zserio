@@ -1,12 +1,10 @@
 #include <cstdio>
 #include <map>
-#include <string>
 #include <memory>
+#include <string>
 
 #include "gtest/gtest.h"
-
 #include "sql_types/SqlTypesDb.h"
-
 #include "zserio/SqliteFinalizer.h"
 
 namespace sql_types
@@ -196,7 +194,6 @@ TEST_F(SqlTypesTest, variableUnsignedIntegerTypes)
     it = sqlColumnTypes.find("varsizeType");
     ASSERT_TRUE(it != sqlColumnTypes.end());
     ASSERT_EQ("INTEGER", it->second);
-
 }
 
 TEST_F(SqlTypesTest, variableSignedIntegerTypes)

@@ -1,5 +1,4 @@
 #include "gtest/gtest.h"
-
 #include "templates/instantiate_unused/U32.h"
 
 namespace templates

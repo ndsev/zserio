@@ -1,13 +1,11 @@
 #include <string>
 
-#include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-#include "zserio/CppRuntimeException.h"
-
 #include "bitmask_types/bitmask_used_by_bitmask/Permission.h"
 #include "bitmask_types/bitmask_used_by_bitmask/SimplePermission.h"
+#include "gtest/gtest.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
+#include "zserio/CppRuntimeException.h"
 
 namespace bitmask_types
 {

@@ -1,7 +1,6 @@
-#include "gtest/gtest.h"
-
-#include "functions/structure_string/TestStructure.h"
 #include "functions/structure_string/StringPool.h"
+#include "functions/structure_string/TestStructure.h"
+#include "gtest/gtest.h"
 
 using namespace zserio::literals;
 

@@ -1,10 +1,8 @@
 #include <cstring>
 
 #include "gtest/gtest.h"
-
 #include "optional_members/optional_array_recursion/Employee.h"
 #include "optional_members/optional_array_recursion/Title.h"
-
 #include "zserio/RebindAlloc.h"
 #include "zserio/SerializeUtil.h"
 
@@ -43,8 +41,8 @@ protected:
         teamLead.setTeamMembers(teamMembers);
     }
 
-    void checkEmployeeInBitStream(zserio::BitStreamReader& reader, const char* name, uint16_t salary,
-            Title title)
+    void checkEmployeeInBitStream(
+            zserio::BitStreamReader& reader, const char* name, uint16_t salary, Title title)
     {
         ASSERT_EQ(name, reader.readString<allocator_type>());
         ASSERT_EQ(salary, reader.readBits(16));
@@ -55,15 +53,15 @@ protected:
     {
         checkEmployeeInBitStream(reader, EMPLOYEE_TEAM_LEAD_NAME, EMPLOYEE_TEAM_LEAD_SALARY, Title::TEAM_LEAD);
         ASSERT_EQ(NUM_DEVELOPERS, reader.readVarUInt64());
-        checkEmployeeInBitStream(reader, EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY,
-                Title::DEVELOPER);
-        checkEmployeeInBitStream(reader, EMPLOYEE_DEVELOPER2_NAME, EMPLOYEE_DEVELOPER2_SALARY,
-                Title::DEVELOPER);
+        checkEmployeeInBitStream(
+                reader, EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY, Title::DEVELOPER);
+        checkEmployeeInBitStream(
+                reader, EMPLOYEE_DEVELOPER2_NAME, EMPLOYEE_DEVELOPER2_SALARY, Title::DEVELOPER);
     }
 
     static const std::string BLOB_NAME_BASE;
 
-    static const char*const EMPTY_EMPLOYEE_NAME;
+    static const char* const EMPTY_EMPLOYEE_NAME;
     static const uint16_t EMPTY_EMPLOYEE_SALARY;
 
     static const char* const EMPLOYEE_TEAM_LEAD_NAME;
@@ -106,8 +104,8 @@ const size_t OptionalArrayRecursionTest::TEAM_LEAD_BIT_SIZE = EMPTY_EMPLOYEE_BIT
         strlen(OptionalArrayRecursionTest::EMPLOYEE_DEVELOPER1_NAME) * 8 +
         strlen(OptionalArrayRecursionTest::EMPLOYEE_DEVELOPER2_NAME) * 8;
 
-const size_t OptionalArrayRecursionTest::TEAM_LEAD_BIT_SIZE_UNUSED_TEAM_MEMBERS = EMPTY_EMPLOYEE_BIT_SIZE +
-        strlen(OptionalArrayRecursionTest::EMPLOYEE_TEAM_LEAD_NAME) * 8;
+const size_t OptionalArrayRecursionTest::TEAM_LEAD_BIT_SIZE_UNUSED_TEAM_MEMBERS =
+        EMPTY_EMPLOYEE_BIT_SIZE + strlen(OptionalArrayRecursionTest::EMPLOYEE_TEAM_LEAD_NAME) * 8;
 
 TEST_F(OptionalArrayRecursionTest, isTeamMembersSetAndUsed)
 {

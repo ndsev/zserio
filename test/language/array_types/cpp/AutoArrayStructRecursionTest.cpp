@@ -1,7 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "array_types/auto_array_struct_recursion/AutoArrayRecursion.h"
-
+#include "gtest/gtest.h"
 #include "zserio/SerializeUtil.h"
 
 namespace array_types

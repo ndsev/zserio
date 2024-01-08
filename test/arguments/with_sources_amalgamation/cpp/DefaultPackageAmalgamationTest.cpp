@@ -27,11 +27,11 @@ TEST_F(DefaultPackageAmalgamationTest, checkDefaultPackage)
 {
     ASSERT_TRUE(isFilePresent(
             "arguments/with_sources_amalgamation/gen_default_package/DefaultPackageAmalgamation.cpp"));
-    ASSERT_TRUE(isFilePresent(
-            "arguments/with_sources_amalgamation/gen_default_package/AmalgamationStructure.h"));
+    ASSERT_TRUE(
+            isFilePresent("arguments/with_sources_amalgamation/gen_default_package/AmalgamationStructure.h"));
 
-    ASSERT_FALSE(isFilePresent(
-            "arguments/with_sources_amalgamation/gen_default_package/AmalgamationStructure.cpp"));
+    ASSERT_FALSE(
+            isFilePresent("arguments/with_sources_amalgamation/gen_default_package/AmalgamationStructure.cpp"));
 }
 
 TEST_F(DefaultPackageAmalgamationTest, readWrite)

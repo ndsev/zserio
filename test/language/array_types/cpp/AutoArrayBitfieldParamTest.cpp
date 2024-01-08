@@ -1,10 +1,8 @@
-#include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-#include "zserio/SerializeUtil.h"
-
 #include "array_types/auto_array_bitfield_param/ParameterizedBitfieldLength.h"
+#include "gtest/gtest.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
+#include "zserio/SerializeUtil.h"
 
 namespace array_types
 {
@@ -26,8 +24,8 @@ protected:
             dynamicBitfieldArray.push_back(i);
     }
 
-    void checkParameterizedBitfieldLengthInBitStream(zserio::BitStreamReader& reader,
-            const ParameterizedBitfieldLength& parameterizedBitfieldLength)
+    void checkParameterizedBitfieldLengthInBitStream(
+            zserio::BitStreamReader& reader, const ParameterizedBitfieldLength& parameterizedBitfieldLength)
     {
         ASSERT_EQ(NUM_BITS_PARAM, parameterizedBitfieldLength.getNumBits());
         ASSERT_EQ(DYNAMIC_BITFIELD_ARRAY_SIZE, reader.readVarSize());

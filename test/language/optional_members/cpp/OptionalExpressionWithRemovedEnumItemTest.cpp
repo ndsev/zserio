@@ -1,8 +1,6 @@
 #include "gtest/gtest.h"
-
-#include "zserio/SerializeUtil.h"
-
 #include "optional_members/optional_expression_with_removed_enum_item/Compound.h"
+#include "zserio/SerializeUtil.h"
 
 namespace optional_members
 {

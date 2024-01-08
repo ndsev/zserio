@@ -2,9 +2,9 @@
 #define TEST_UTILS_TEST_PUBSUB_H_INC
 
 #include "zserio/AllocatorHolder.h"
-#include "zserio/RebindAlloc.h"
 #include "zserio/IPubsub.h"
 #include "zserio/PubsubException.h"
+#include "zserio/RebindAlloc.h"
 
 namespace test_utils
 {
@@ -29,8 +29,8 @@ public:
         }
     }
 
-    SubscriptionId subscribe(zserio::StringView topic, const std::shared_ptr<OnTopicCallback>& callback,
-            void *context) override
+    SubscriptionId subscribe(
+            zserio::StringView topic, const std::shared_ptr<OnTopicCallback>& callback, void* context) override
     {
         processSubscribeContext(context);
 
@@ -47,8 +47,10 @@ public:
     }
 
 protected:
-    virtual void processPublishContext(void*) {}
-    virtual void processSubscribeContext(void*) {}
+    virtual void processPublishContext(void*)
+    {}
+    virtual void processSubscribeContext(void*)
+    {}
 
 private:
     SubscriptionId m_numIds = 0;
@@ -68,4 +70,3 @@ private:
 } // namespace test_utils
 
 #endif // TEST_UTILS_TEST_PUBSUB_H_INC
-

@@ -1,9 +1,7 @@
 #include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-
 #include "indexed_offsets/empty_indexed_offset_array/EmptyIndexedOffsetArray.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace indexed_offsets
 {
@@ -41,12 +39,12 @@ protected:
         emptyIndexedOffsetArray.setField(FIELD_VALUE);
     }
 
-    static const uint8_t    NUM_ELEMENTS = 0;
+    static const uint8_t NUM_ELEMENTS = 0;
 
-    static const uint8_t    SPACER_VALUE = 1;
-    static const uint8_t    FIELD_VALUE = 63;
+    static const uint8_t SPACER_VALUE = 1;
+    static const uint8_t FIELD_VALUE = 63;
 
-    static const size_t     EMPTY_INDEXED_OFFSET_ARRAY_BIT_SIZE = 1 + 6;
+    static const size_t EMPTY_INDEXED_OFFSET_ARRAY_BIT_SIZE = 1 + 6;
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };

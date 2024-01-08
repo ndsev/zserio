@@ -1,12 +1,10 @@
-#include <string>
 #include <limits>
-
-#include "gtest/gtest.h"
-
-#include "zserio/CppRuntimeException.h"
-#include "zserio/SerializeUtil.h"
+#include <string>
 
 #include "bitmask_types/varuint_bitmask/Permission.h"
+#include "gtest/gtest.h"
+#include "zserio/CppRuntimeException.h"
+#include "zserio/SerializeUtil.h"
 
 namespace bitmask_types
 {

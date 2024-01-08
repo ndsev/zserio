@@ -1,5 +1,4 @@
 #include "gtest/gtest.h"
-
 #include "templates/instantiate_type_as_struct_array_field/InstantiateTypeAsStructArrayField.h"
 
 namespace templates

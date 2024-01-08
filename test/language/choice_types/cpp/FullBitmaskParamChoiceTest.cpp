@@ -1,10 +1,8 @@
-#include "gtest/gtest.h"
-
-#include "choice_types/full_bitmask_param_choice/Selector.h"
 #include "choice_types/full_bitmask_param_choice/FullBitmaskParamChoice.h"
-
-#include "zserio/BitStreamWriter.h"
+#include "choice_types/full_bitmask_param_choice/Selector.h"
+#include "gtest/gtest.h"
 #include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace choice_types
 {
@@ -14,8 +12,8 @@ namespace full_bitmask_param_choice
 class FullBitmaskParamChoiceTest : public ::testing::Test
 {
 protected:
-    void writeFullBitmaskParamChoiceToByteArray(zserio::BitStreamWriter& writer,
-            Selector selector, uint16_t value)
+    void writeFullBitmaskParamChoiceToByteArray(
+            zserio::BitStreamWriter& writer, Selector selector, uint16_t value)
     {
         switch (selector.getValue())
         {
@@ -126,8 +124,8 @@ TEST_F(FullBitmaskParamChoiceTest, propagateAllocatorCopyConstructor)
     const uint8_t value = 99;
     fullBitmaskParamChoice.setBlack(value);
 
-    const FullBitmaskParamChoice fullBitmaskParamChoiceCopy(zserio::PropagateAllocator, fullBitmaskParamChoice,
-            FullBitmaskParamChoice::allocator_type());
+    const FullBitmaskParamChoice fullBitmaskParamChoiceCopy(
+            zserio::PropagateAllocator, fullBitmaskParamChoice, FullBitmaskParamChoice::allocator_type());
     ASSERT_EQ(selector, fullBitmaskParamChoiceCopy.getSelector());
     ASSERT_EQ(value, fullBitmaskParamChoiceCopy.getBlack());
 }

@@ -1,16 +1,14 @@
 #include <cstdio>
-#include <vector>
-#include <string>
 #include <limits>
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "gtest/gtest.h"
-
 #include "sql_tables/TestDb.h"
-
 #include "zserio/RebindAlloc.h"
-#include "zserio/StringConvertUtil.h"
 #include "zserio/SqliteFinalizer.h"
+#include "zserio/StringConvertUtil.h"
 
 namespace sql_tables
 {
@@ -45,8 +43,8 @@ public:
     BlobOffsetsParamTableTest& operator=(BlobOffsetsParamTableTest&&) = delete;
 
 protected:
-    static void fillBlobOffsetsParamTableRow(BlobOffsetsParamTable::Row& row, uint32_t blobId,
-            const string_type& name)
+    static void fillBlobOffsetsParamTableRow(
+            BlobOffsetsParamTable::Row& row, uint32_t blobId, const string_type& name)
     {
         row.setBlobId(blobId);
         row.setName(name);
@@ -74,8 +72,8 @@ protected:
         }
     }
 
-    static void checkBlobOffsetsParamTableRow(const BlobOffsetsParamTable::Row& row1,
-            const BlobOffsetsParamTable::Row& row2)
+    static void checkBlobOffsetsParamTableRow(
+            const BlobOffsetsParamTable::Row& row1, const BlobOffsetsParamTable::Row& row2)
     {
         ASSERT_EQ(row1.getBlobId(), row2.getBlobId());
         ASSERT_EQ(row1.getName(), row2.getName());
@@ -94,8 +92,8 @@ protected:
     bool isTableInDb()
     {
         string_type checkTableName = "blobOffsetsParamTable";
-        string_type sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
-                "'";
+        string_type sqlQuery =
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName + "'";
         std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(
                 m_database->connection().prepareStatement(sqlQuery));
 

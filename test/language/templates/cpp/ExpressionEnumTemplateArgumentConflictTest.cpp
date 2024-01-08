@@ -1,5 +1,4 @@
 #include "gtest/gtest.h"
-
 #include "templates/expression_enum_template_argument_conflict/EnumTemplateArgumentConflictHolder.h"
 
 namespace templates

@@ -1,9 +1,7 @@
 #include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-
 #include "indexed_offsets/varint32_indexed_offset_array/VarInt32IndexedOffsetArray.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace indexed_offsets
 {
@@ -63,8 +61,8 @@ protected:
             ASSERT_EQ(i, data[i]);
     }
 
-    void fillVarInt32IndexedOffsetArray(VarInt32IndexedOffsetArray& varint32IndexedOffsetArray,
-            bool createWrongOffsets)
+    void fillVarInt32IndexedOffsetArray(
+            VarInt32IndexedOffsetArray& varint32IndexedOffsetArray, bool createWrongOffsets)
     {
         auto& offsets = varint32IndexedOffsetArray.getOffsets();
         offsets.reserve(NUM_ELEMENTS);
@@ -95,12 +93,12 @@ protected:
         return bitSize;
     }
 
-    static const uint8_t    NUM_ELEMENTS = 5;
-    static const uint32_t   WRONG_OFFSET = 0;
+    static const uint8_t NUM_ELEMENTS = 5;
+    static const uint32_t WRONG_OFFSET = 0;
 
-    static const uint32_t   ELEMENT0_OFFSET = NUM_ELEMENTS * sizeof(uint32_t) + sizeof(uint8_t);
+    static const uint32_t ELEMENT0_OFFSET = NUM_ELEMENTS * sizeof(uint32_t) + sizeof(uint8_t);
 
-    static const uint8_t    SPACER_VALUE = 1;
+    static const uint8_t SPACER_VALUE = 1;
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
@@ -123,8 +121,7 @@ TEST_F(VarInt32IndexedOffsetArrayTest, readWrongOffsets)
     writeVarInt32IndexedOffsetArrayToByteArray(writer, writeWrongOffsets);
 
     zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
-    EXPECT_THROW(VarInt32IndexedOffsetArray varint32IndexedOffsetArray(reader),
-            zserio::CppRuntimeException);
+    EXPECT_THROW(VarInt32IndexedOffsetArray varint32IndexedOffsetArray(reader), zserio::CppRuntimeException);
 }
 
 TEST_F(VarInt32IndexedOffsetArrayTest, bitSizeOf)

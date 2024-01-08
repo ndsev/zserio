@@ -2,14 +2,13 @@
 #include <vector>
 
 #include "gtest/gtest.h"
-
 #include "test_utils/ZserioErrorOutput.h"
 
 class FileEncodingWarningTest : public ::testing::Test
 {
 protected:
-    FileEncodingWarningTest()
-    :   zserioWarnings("warnings/file_encoding_warning")
+    FileEncodingWarningTest() :
+            zserioWarnings("warnings/file_encoding_warning")
     {}
 
     const test_utils::ZserioErrorOutput zserioWarnings;

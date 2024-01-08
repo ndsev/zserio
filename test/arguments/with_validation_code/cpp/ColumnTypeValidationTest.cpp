@@ -1,12 +1,10 @@
 #include <memory>
 
 #include "gtest/gtest.h"
-
-#include "with_validation_code/column_type_validation/ColumnTypeDb.h"
 #include "test_utils/ValidationObservers.h"
-
-#include "zserio/SqliteFinalizer.h"
+#include "with_validation_code/column_type_validation/ColumnTypeDb.h"
 #include "zserio/SerializeUtil.h"
+#include "zserio/SqliteFinalizer.h"
 
 using namespace test_utils;
 
@@ -203,12 +201,12 @@ TEST_F(ColumnTypeValidationTest, validateBlobWhileIntegerExpected)
 {
     populateDb();
 
-    std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> stmt(
-        m_database->connection().prepareStatement("UPDATE columnTypeTable SET int64Value = ? WHERE id = 2"));
+    std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> stmt(m_database->connection().prepareStatement(
+            "UPDATE columnTypeTable SET int64Value = ? WHERE id = 2"));
     Blob blob(13);
     auto bitBuffer = zserio::serialize(blob);
-    sqlite3_bind_blob(stmt.get(), 1, bitBuffer.getBuffer(), static_cast<int>(bitBuffer.getByteSize()),
-            SQLITE_TRANSIENT);
+    sqlite3_bind_blob(
+            stmt.get(), 1, bitBuffer.getBuffer(), static_cast<int>(bitBuffer.getByteSize()), SQLITE_TRANSIENT);
     ASSERT_EQ(SQLITE_DONE, sqlite3_step(stmt.get()));
 
     ValidationObserver validationObserver;
@@ -318,12 +316,12 @@ TEST_F(ColumnTypeValidationTest, validateBlobWhileFloatExpected)
 {
     populateDb();
 
-    std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> stmt(
-        m_database->connection().prepareStatement("UPDATE columnTypeTable SET float16Value = ? WHERE id = 2"));
+    std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> stmt(m_database->connection().prepareStatement(
+            "UPDATE columnTypeTable SET float16Value = ? WHERE id = 2"));
     Blob blob(13);
     auto bitBuffer = zserio::serialize(blob);
-    sqlite3_bind_blob(stmt.get(), 1, bitBuffer.getBuffer(), static_cast<int>(bitBuffer.getByteSize()),
-            SQLITE_TRANSIENT);
+    sqlite3_bind_blob(
+            stmt.get(), 1, bitBuffer.getBuffer(), static_cast<int>(bitBuffer.getByteSize()), SQLITE_TRANSIENT);
     ASSERT_EQ(SQLITE_DONE, sqlite3_step(stmt.get()));
 
     ValidationObserver validationObserver;
@@ -387,12 +385,12 @@ TEST_F(ColumnTypeValidationTest, validateBlobWhileStringExpected)
 {
     populateDb();
 
-    std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> stmt(
-        m_database->connection().prepareStatement("UPDATE columnTypeTable SET stringValue = ? WHERE id = 2"));
+    std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> stmt(m_database->connection().prepareStatement(
+            "UPDATE columnTypeTable SET stringValue = ? WHERE id = 2"));
     Blob blob(13);
     auto bitBuffer = zserio::serialize(blob);
-    sqlite3_bind_blob(stmt.get(), 1, bitBuffer.getBuffer(), static_cast<int>(bitBuffer.getByteSize()),
-            SQLITE_TRANSIENT);
+    sqlite3_bind_blob(
+            stmt.get(), 1, bitBuffer.getBuffer(), static_cast<int>(bitBuffer.getByteSize()), SQLITE_TRANSIENT);
     ASSERT_EQ(SQLITE_DONE, sqlite3_step(stmt.get()));
 
     ValidationObserver validationObserver;
@@ -454,8 +452,8 @@ TEST_F(ColumnTypeValidationTest, validateFloatWhileBlobExpected)
     ASSERT_EQ(1, validationObserver.getErrors().size());
     const auto& error = validationObserver.getErrors()[0];
     ASSERT_EQ(std::vector<std::string>{"1"}, error.primaryKeyValues);
-    ASSERT_EQ("Column ColumnTypeTable.blobValue type check failed (REAL doesn't match to BLOB)!",
-            error.message);
+    ASSERT_EQ(
+            "Column ColumnTypeTable.blobValue type check failed (REAL doesn't match to BLOB)!", error.message);
 }
 
 TEST_F(ColumnTypeValidationTest, validateStringWhileBlobExpected)
@@ -477,8 +475,8 @@ TEST_F(ColumnTypeValidationTest, validateStringWhileBlobExpected)
     ASSERT_EQ(1, validationObserver.getErrors().size());
     const auto& error = validationObserver.getErrors()[0];
     ASSERT_EQ(std::vector<std::string>{"1"}, error.primaryKeyValues);
-    ASSERT_EQ("Column ColumnTypeTable.blobValue type check failed (TEXT doesn't match to BLOB)!",
-            error.message);
+    ASSERT_EQ(
+            "Column ColumnTypeTable.blobValue type check failed (TEXT doesn't match to BLOB)!", error.message);
 }
 
 TEST_F(ColumnTypeValidationTest, validateEmptyStringWhileBlobExpected)
@@ -500,8 +498,8 @@ TEST_F(ColumnTypeValidationTest, validateEmptyStringWhileBlobExpected)
     ASSERT_EQ(1, validationObserver.getErrors().size());
     const auto& error = validationObserver.getErrors()[0];
     ASSERT_EQ(std::vector<std::string>{"1"}, error.primaryKeyValues);
-    ASSERT_EQ("Column ColumnTypeTable.blobValue type check failed (TEXT doesn't match to BLOB)!",
-            error.message);
+    ASSERT_EQ(
+            "Column ColumnTypeTable.blobValue type check failed (TEXT doesn't match to BLOB)!", error.message);
 }
 
 } // namespace column_type_validation

@@ -1,12 +1,10 @@
 #include <cstdio>
-#include <string>
 #include <fstream>
+#include <string>
 
 #include "gtest/gtest.h"
-
-#include "subtypes/structure_subtype/SubtypeStructure.h"
 #include "subtypes/structure_subtype/Student.h"
-
+#include "subtypes/structure_subtype/SubtypeStructure.h"
 #include "zserio/RebindAlloc.h"
 
 namespace subtypes

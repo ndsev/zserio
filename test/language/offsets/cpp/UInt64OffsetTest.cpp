@@ -1,11 +1,9 @@
 #include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
+#include "offsets/uint64_offset/UInt64Offset.h"
 #include "zserio/BitPositionUtil.h"
 #include "zserio/BitSizeOfCalculator.h"
-
-#include "offsets/uint64_offset/UInt64Offset.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 using namespace zserio;
 
@@ -38,9 +36,7 @@ protected:
 };
 
 const size_t UInt64OffsetTest::ARRAY_SIZE = 13;
-const size_t UInt64OffsetTest::OFFSET = 8 +
-        bitSizeOfVarUInt64(ARRAY_SIZE) / 8 +
-        ARRAY_SIZE;
+const size_t UInt64OffsetTest::OFFSET = 8 + bitSizeOfVarUInt64(ARRAY_SIZE) / 8 + ARRAY_SIZE;
 const size_t UInt64OffsetTest::WRONG_OFFSET = OFFSET + 1;
 const size_t UInt64OffsetTest::BIT_SIZE = (OFFSET + 4) * 8;
 
@@ -135,6 +131,3 @@ TEST_F(UInt64OffsetTest, writeWrongOffsets)
 
 } // namespace uint64_offset
 } // namespace offsets
-
-
-

@@ -1,9 +1,7 @@
 #include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-
 #include "optional_members/auto_optional/Container.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace optional_members
 {
@@ -190,8 +188,8 @@ TEST_F(AutoOptionalTest, write)
     zserio::BitStreamWriter writeNonOptional(bitBuffer);
     container.write(writeNonOptional);
 
-    zserio::BitStreamReader readerNonOptional(writeNonOptional.getWriteBuffer(),
-            writeNonOptional.getBitPosition(), zserio::BitsTag());
+    zserio::BitStreamReader readerNonOptional(
+            writeNonOptional.getWriteBuffer(), writeNonOptional.getBitPosition(), zserio::BitsTag());
     checkContainerInBitStream(readerNonOptional, NON_OPTIONAL_INT_VALUE, false, 0);
     Container readContainerNonOptional(readerNonOptional);
     ASSERT_EQ(NON_OPTIONAL_INT_VALUE, readContainerNonOptional.getNonOptionalInt());
@@ -204,8 +202,8 @@ TEST_F(AutoOptionalTest, write)
     zserio::BitStreamWriter writeOptional(bitBuffer);
     container.write(writeOptional);
 
-    zserio::BitStreamReader readerOptional(writeOptional.getWriteBuffer(),
-            writeOptional.getBitPosition(), zserio::BitsTag());
+    zserio::BitStreamReader readerOptional(
+            writeOptional.getWriteBuffer(), writeOptional.getBitPosition(), zserio::BitsTag());
     checkContainerInBitStream(readerOptional, NON_OPTIONAL_INT_VALUE, true, autoOptionalIntValue);
     Container readContainerOptional(readerOptional);
     ASSERT_EQ(NON_OPTIONAL_INT_VALUE, readContainerOptional.getNonOptionalInt());

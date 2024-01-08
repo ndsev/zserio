@@ -1,10 +1,8 @@
 #include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-#include "zserio/CppRuntimeException.h"
-
 #include "union_types/empty_union_with_parameter/EmptyUnionWithParameter.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
+#include "zserio/CppRuntimeException.h"
 
 namespace union_types
 {
@@ -110,15 +108,15 @@ TEST(EmptyUnionWithParameterTest, moveAssignmentOperator)
 TEST(EmptyUnionWithParameterTest, propagateAllocatorCopyConstructor)
 {
     EmptyUnionWithParameter emptyUnionWithParameter;
-    EmptyUnionWithParameter emptyUnionCopy1WithParameter(zserio::PropagateAllocator,
-            emptyUnionWithParameter, EmptyUnionWithParameter::allocator_type());
+    EmptyUnionWithParameter emptyUnionCopy1WithParameter(
+            zserio::PropagateAllocator, emptyUnionWithParameter, EmptyUnionWithParameter::allocator_type());
 
     ASSERT_THROW(emptyUnionWithParameter.getParam(), zserio::CppRuntimeException);
     ASSERT_THROW(emptyUnionCopy1WithParameter.getParam(), zserio::CppRuntimeException);
 
     emptyUnionWithParameter.initialize(1);
-    EmptyUnionWithParameter emptyUnionCopy2WithParameter(zserio::PropagateAllocator,
-            emptyUnionWithParameter, EmptyUnionWithParameter::allocator_type());
+    EmptyUnionWithParameter emptyUnionCopy2WithParameter(
+            zserio::PropagateAllocator, emptyUnionWithParameter, EmptyUnionWithParameter::allocator_type());
     ASSERT_EQ(emptyUnionWithParameter.getParam(), emptyUnionCopy2WithParameter.getParam());
 }
 
@@ -161,12 +159,12 @@ TEST(EmptyUnionWithParameterTest, operatorEquality)
 {
     EmptyUnionWithParameter emptyUnionWithParameter1;
     EmptyUnionWithParameter emptyUnionWithParameter2;
-    ASSERT_THROW(ASSERT_FALSE(emptyUnionWithParameter1 == emptyUnionWithParameter2),
-            zserio::CppRuntimeException);
+    ASSERT_THROW(
+            ASSERT_FALSE(emptyUnionWithParameter1 == emptyUnionWithParameter2), zserio::CppRuntimeException);
 
     emptyUnionWithParameter1.initialize(1);
-    ASSERT_THROW(ASSERT_FALSE(emptyUnionWithParameter1 == emptyUnionWithParameter2),
-            zserio::CppRuntimeException);
+    ASSERT_THROW(
+            ASSERT_FALSE(emptyUnionWithParameter1 == emptyUnionWithParameter2), zserio::CppRuntimeException);
 
     emptyUnionWithParameter2.initialize(1);
     ASSERT_TRUE(emptyUnionWithParameter1 == emptyUnionWithParameter2);
@@ -179,14 +177,14 @@ TEST(EmptyUnionWithParameterTest, operatorLessThan)
 {
     EmptyUnionWithParameter emptyUnionWithParameter1;
     EmptyUnionWithParameter emptyUnionWithParameter2;
-    ASSERT_THROW(ASSERT_FALSE(emptyUnionWithParameter1 < emptyUnionWithParameter2),
-            zserio::CppRuntimeException);
-    ASSERT_THROW(ASSERT_FALSE(emptyUnionWithParameter2 < emptyUnionWithParameter1),
-            zserio::CppRuntimeException);
+    ASSERT_THROW(
+            ASSERT_FALSE(emptyUnionWithParameter1 < emptyUnionWithParameter2), zserio::CppRuntimeException);
+    ASSERT_THROW(
+            ASSERT_FALSE(emptyUnionWithParameter2 < emptyUnionWithParameter1), zserio::CppRuntimeException);
 
     emptyUnionWithParameter1.initialize(1);
-    ASSERT_THROW(ASSERT_FALSE(emptyUnionWithParameter1 < emptyUnionWithParameter2),
-            zserio::CppRuntimeException);
+    ASSERT_THROW(
+            ASSERT_FALSE(emptyUnionWithParameter1 < emptyUnionWithParameter2), zserio::CppRuntimeException);
 
     emptyUnionWithParameter2.initialize(1);
     ASSERT_FALSE(emptyUnionWithParameter1 < emptyUnionWithParameter2);

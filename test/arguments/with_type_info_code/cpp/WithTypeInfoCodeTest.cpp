@@ -1,13 +1,11 @@
 #include <fstream>
 
 #include "gtest/gtest.h"
-
-#include "zserio/RebindAlloc.h"
-#include "zserio/SerializeUtil.h"
-
-#include "with_type_info_code/SqlDatabase.h"
 #include "with_type_info_code/SimplePubsub.h"
 #include "with_type_info_code/SimpleService.h"
+#include "with_type_info_code/SqlDatabase.h"
+#include "zserio/RebindAlloc.h"
+#include "zserio/SerializeUtil.h"
 
 #include "WithTypeInfoCodeCreator.h"
 
@@ -825,8 +823,7 @@ protected:
         ASSERT_EQ(zserio::CppType::UINT64, dynamicBitFieldArrayField.typeInfo.getCppType());
 
         ASSERT_EQ(1, dynamicBitFieldArrayField.typeArguments.size());
-        ASSERT_EQ("getDynamicBitField() * 2"_sv,
-                dynamicBitFieldArrayField.typeArguments[0]);
+        ASSERT_EQ("getDynamicBitField() * 2"_sv, dynamicBitFieldArrayField.typeArguments[0]);
         ASSERT_EQ(false, dynamicBitFieldArrayField.isExtended);
         ASSERT_EQ(""_sv, dynamicBitFieldArrayField.alignment);
         ASSERT_EQ(""_sv, dynamicBitFieldArrayField.offset);
@@ -1249,7 +1246,6 @@ protected:
         ASSERT_EQ(6, ItemThreeItem.value);
         ASSERT_FALSE(ItemThreeItem.isDeprecated);
         ASSERT_FALSE(ItemThreeItem.isRemoved);
-
     }
 
     void checkSimpleChoice(const ITypeInfo& typeInfo)
@@ -1488,8 +1484,7 @@ protected:
 
     void checkTemplatedParameterizedStruct_TS32(const ITypeInfo& typeInfo)
     {
-        ASSERT_EQ("with_type_info_code.TemplatedParameterizedStruct_TS32"_sv,
-                typeInfo.getSchemaName());
+        ASSERT_EQ("with_type_info_code.TemplatedParameterizedStruct_TS32"_sv, typeInfo.getSchemaName());
         ASSERT_EQ(zserio::SchemaType::STRUCT, typeInfo.getSchemaType());
         ASSERT_EQ(zserio::CppType::STRUCT, typeInfo.getCppType());
 

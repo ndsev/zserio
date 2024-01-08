@@ -1,11 +1,8 @@
 #include "gtest/gtest.h"
-
-#include "test_utils/TestPubsub.h"
-
-#include "pubsub_types/simple_pubsub/SimplePubsubProvider.h"
-#include "pubsub_types/simple_pubsub/SimplePubsubClient.h"
 #include "pubsub_types/simple_pubsub/SimplePubsub.h"
-
+#include "pubsub_types/simple_pubsub/SimplePubsubClient.h"
+#include "pubsub_types/simple_pubsub/SimplePubsubProvider.h"
+#include "test_utils/TestPubsub.h"
 #include "zserio/PubsubException.h"
 #include "zserio/RebindAlloc.h"
 #include "zserio/SerializeUtil.h"
@@ -25,10 +22,10 @@ using BitBuffer = zserio::BasicBitBuffer<allocator_type>;
 class SimplePubsubTest : public ::testing::Test
 {
 public:
-    SimplePubsubTest()
-    :   simplePubsubProvider(pubsub),
-        simplePubsubClient(pubsub),
-        simplePubsub(createPubsub())
+    SimplePubsubTest() :
+            simplePubsubProvider(pubsub),
+            simplePubsubClient(pubsub),
+            simplePubsub(createPubsub())
     {}
 
 protected:
@@ -189,8 +186,8 @@ TEST_F(SimplePubsubTest, powerOfTwoSimplePubsub)
 
 TEST_F(SimplePubsubTest, powerOfTwoRawClientAndProvider)
 {
-    struct RequestRawCallback :
-            public SimplePubsubProvider::SimplePubsubProviderCallback<zserio::Span<const uint8_t>>
+    struct RequestRawCallback
+            : public SimplePubsubProvider::SimplePubsubProviderCallback<zserio::Span<const uint8_t>>
     {
         explicit RequestRawCallback(SimplePubsubProvider& provider) :
                 simplePubsubProvider(provider)
@@ -216,7 +213,8 @@ TEST_F(SimplePubsubTest, powerOfTwoRawClientAndProvider)
     simplePubsubProvider.subscribeRequestRaw(
             std::allocate_shared<RequestRawCallback>(allocator_type(), simplePubsubProvider));
 
-    struct PowerOfTwoRawCallback : public SimplePubsubClient::SimplePubsubClientCallback<zserio::Span<const uint8_t>>
+    struct PowerOfTwoRawCallback
+            : public SimplePubsubClient::SimplePubsubClientCallback<zserio::Span<const uint8_t>>
     {
         void operator()(zserio::StringView topic, const zserio::Span<const uint8_t>& valueData) override
         {

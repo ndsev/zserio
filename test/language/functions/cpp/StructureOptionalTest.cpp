@@ -1,11 +1,9 @@
 #include <vector>
 
-#include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-
 #include "functions/structure_optional/ValueConsumerCreator.h"
+#include "gtest/gtest.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace functions
 {
@@ -20,8 +18,8 @@ protected:
         return (defaultValue != INVALID_DEFAULT_VALUE) ? defaultValue : externalValue;
     }
 
-    void writeValueConsumerCreatorToByteArray(zserio::BitStreamWriter& writer, uint8_t defaultValue,
-            uint8_t externalValue)
+    void writeValueConsumerCreatorToByteArray(
+            zserio::BitStreamWriter& writer, uint8_t defaultValue, uint8_t externalValue)
     {
         writer.writeBits(defaultValue, 4);
         if (defaultValue == INVALID_DEFAULT_VALUE)
@@ -30,8 +28,8 @@ protected:
         writer.writeBool((calculateValue(defaultValue, externalValue) < SMALL_VALUE_THRESHOLD));
     }
 
-    void createValueConsumerCreator(ValueConsumerCreator& valueConsumerCreator, uint8_t defaultValue,
-            uint8_t externalValue)
+    void createValueConsumerCreator(
+            ValueConsumerCreator& valueConsumerCreator, uint8_t defaultValue, uint8_t externalValue)
     {
         ValueCalculator& valueCalculator = valueConsumerCreator.getValueCalculator();
         valueCalculator.setDefaultValue(defaultValue);
@@ -66,10 +64,10 @@ protected:
         ASSERT_EQ(valueConsumerCreator, readValueConsumerCreator);
     }
 
-    static const uint8_t    INVALID_DEFAULT_VALUE = 0;
-    static const uint8_t    DEFAULT_VALUE = 1;
-    static const uint8_t    EXTERNAL_VALUE = 2;
-    static const uint8_t    SMALL_VALUE_THRESHOLD = 8;
+    static const uint8_t INVALID_DEFAULT_VALUE = 0;
+    static const uint8_t DEFAULT_VALUE = 1;
+    static const uint8_t EXTERNAL_VALUE = 2;
+    static const uint8_t SMALL_VALUE_THRESHOLD = 8;
 };
 
 TEST_F(StructureOptionalTest, checkDefaultValueConsumerCreator)

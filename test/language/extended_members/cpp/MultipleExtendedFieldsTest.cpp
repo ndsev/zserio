@@ -1,11 +1,9 @@
-#include "gtest/gtest.h"
-
-#include "extended_members/multiple_extended_fields/Original.h"
 #include "extended_members/multiple_extended_fields/Extended1.h"
 #include "extended_members/multiple_extended_fields/Extended2.h"
-
-#include "zserio/SerializeUtil.h"
+#include "extended_members/multiple_extended_fields/Original.h"
+#include "gtest/gtest.h"
 #include "zserio/BitSizeOfCalculator.h"
+#include "zserio/SerializeUtil.h"
 
 namespace extended_members
 {
@@ -30,7 +28,8 @@ protected:
         ASSERT_EQ(expectedIsPresent2, movedExtended2.isExtendedValue2Present());
         ASSERT_EQ(extended2, movedExtended2);
 
-        Extended2 copiedWithPropagateAllocatorExtended2(zserio::PropagateAllocator, extended2, allocator_type());
+        Extended2 copiedWithPropagateAllocatorExtended2(
+                zserio::PropagateAllocator, extended2, allocator_type());
         ASSERT_EQ(expectedIsPresent1, copiedWithPropagateAllocatorExtended2.isExtendedValue1Present());
         ASSERT_EQ(expectedIsPresent2, copiedWithPropagateAllocatorExtended2.isExtendedValue2Present());
         ASSERT_EQ(extended2, copiedWithPropagateAllocatorExtended2);
@@ -59,8 +58,8 @@ const string_type MultipleExtendedFieldsTest::DEFAULT_EXTENDED_VALUE2 = "test";
 
 const size_t MultipleExtendedFieldsTest::ORIGINAL_BIT_SIZE = 4 * 8;
 const size_t MultipleExtendedFieldsTest::EXTENDED1_BIT_SIZE = ORIGINAL_BIT_SIZE + 4;
-const size_t MultipleExtendedFieldsTest::EXTENDED2_BIT_SIZE = zserio::alignTo(8, EXTENDED1_BIT_SIZE) +
-        zserio::bitSizeOfString(DEFAULT_EXTENDED_VALUE2);
+const size_t MultipleExtendedFieldsTest::EXTENDED2_BIT_SIZE =
+        zserio::alignTo(8, EXTENDED1_BIT_SIZE) + zserio::bitSizeOfString(DEFAULT_EXTENDED_VALUE2);
 
 TEST_F(MultipleExtendedFieldsTest, defaultConstructor)
 {

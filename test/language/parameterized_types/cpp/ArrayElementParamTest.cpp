@@ -1,9 +1,7 @@
 #include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-
 #include "parameterized_types/array_element_param/Database.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace parameterized_types
 {
@@ -74,8 +72,7 @@ private:
 };
 
 const uint16_t ArrayElementParamTest::NUM_BLOCKS = 3;
-const uint32_t ArrayElementParamTest::FIRST_BYTE_OFFSET =
-        2 + ArrayElementParamTest::NUM_BLOCKS * (2 + 4);
+const uint32_t ArrayElementParamTest::FIRST_BYTE_OFFSET = 2 + ArrayElementParamTest::NUM_BLOCKS * (2 + 4);
 
 TEST_F(ArrayElementParamTest, fieldConstructor)
 {

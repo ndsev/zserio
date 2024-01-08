@@ -1,6 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "expressions/float_type/FloatTypeExpression.h"
+#include "gtest/gtest.h"
 
 namespace expressions
 {

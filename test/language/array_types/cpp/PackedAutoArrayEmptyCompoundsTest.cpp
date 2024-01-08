@@ -1,10 +1,8 @@
-#include <vector>
 #include <array>
-
-#include "gtest/gtest.h"
+#include <vector>
 
 #include "array_types/packed_auto_array_empty_compounds/PackedAutoArray.h"
-
+#include "gtest/gtest.h"
 #include "zserio/RebindAlloc.h"
 #include "zserio/SerializeUtil.h"
 
@@ -28,12 +26,9 @@ const std::string PackedAutoArrayEmptyCompoundsTest::BLOB_NAME =
 
 TEST_F(PackedAutoArrayEmptyCompoundsTest, writeReadFile)
 {
-    auto packedAutoArray = PackedAutoArray(
-        {{EmptyStruct(), EmptyStruct(), EmptyStruct()}},
-        {{EmptyUnion(), EmptyUnion(), EmptyUnion()}},
-        {{EmptyChoice(), EmptyChoice(), EmptyChoice()}},
-        {{Main(), Main(), Main()}}
-    );
+    auto packedAutoArray = PackedAutoArray({{EmptyStruct(), EmptyStruct(), EmptyStruct()}},
+            {{EmptyUnion(), EmptyUnion(), EmptyUnion()}}, {{EmptyChoice(), EmptyChoice(), EmptyChoice()}},
+            {{Main(), Main(), Main()}});
     packedAutoArray.getMainArray()[0].setParam(0);
     packedAutoArray.getMainArray()[1].setParam(1);
     packedAutoArray.getMainArray()[2].setParam(2);

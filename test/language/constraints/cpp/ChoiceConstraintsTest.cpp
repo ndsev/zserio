@@ -1,10 +1,8 @@
-#include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-#include "zserio/CppRuntimeException.h"
-
 #include "constraints/choice_constraints/ChoiceConstraints.h"
+#include "gtest/gtest.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
+#include "zserio/CppRuntimeException.h"
 
 namespace constraints
 {
@@ -14,8 +12,8 @@ namespace choice_constraints
 class ChoiceConstraintsTest : public ::testing::Test
 {
 protected:
-    void writeChoiceConstraintsToByteArray(zserio::BitStreamWriter& writer, bool selector, uint8_t value8,
-            uint16_t value16)
+    void writeChoiceConstraintsToByteArray(
+            zserio::BitStreamWriter& writer, bool selector, uint8_t value8, uint16_t value16)
     {
         if (selector)
             writer.writeBits(value8, 8);

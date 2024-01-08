@@ -1,12 +1,10 @@
 #include "gtest/gtest.h"
-
+#include "structure_types/structure_with_removed_enum_item_field/StructureWithRemovedEnumItemField.h"
 #include "zserio/BitStreamReader.h"
 #include "zserio/BitStreamWriter.h"
 #include "zserio/CppRuntimeException.h"
 #include "zserio/DebugStringUtil.h"
 #include "zserio/SerializeUtil.h"
-
-#include "structure_types/structure_with_removed_enum_item_field/StructureWithRemovedEnumItemField.h"
 
 namespace structure_types
 {
@@ -73,10 +71,10 @@ TEST_F(StructureWithRemovedEnumItemFieldTest, toJsonString)
 
 TEST_F(StructureWithRemovedEnumItemFieldTest, fromJsonString)
 {
-    auto structureWithRemovedEnumItemField = zserio::fromJsonString<StructureWithRemovedEnumItemField>(
-            "{\n    \"enumeration\": \"REMOVED\"\n}");
+    auto structureWithRemovedEnumItemField =
+            zserio::fromJsonString<StructureWithRemovedEnumItemField>("{\n    \"enumeration\": \"REMOVED\"\n}");
     ASSERT_EQ(Enumeration::ZSERIO_REMOVED_REMOVED, structureWithRemovedEnumItemField.getEnumeration());
 }
 
-} // structure_with_removed_enum_item_field
+} // namespace structure_with_removed_enum_item_field
 } // namespace structure_types

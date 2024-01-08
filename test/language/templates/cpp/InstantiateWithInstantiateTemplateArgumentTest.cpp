@@ -1,5 +1,4 @@
 #include "gtest/gtest.h"
-
 #include "templates/instantiate_with_instantiate_template_argument/InstantiateWithInstantiateTemplateArgument.h"
 
 namespace templates

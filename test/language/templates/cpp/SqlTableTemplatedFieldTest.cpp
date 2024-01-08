@@ -1,9 +1,7 @@
 #include <cstdio>
 
 #include "gtest/gtest.h"
-
 #include "templates/sql_table_templated_field/SqlTableTemplatedFieldDb.h"
-
 #include "zserio/RebindAlloc.h"
 
 namespace templates

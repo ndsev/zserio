@@ -1,5 +1,4 @@
 #include "gtest/gtest.h"
-
 #include "subtypes/subtype_imported/SubtypeImported.h"
 
 namespace subtypes

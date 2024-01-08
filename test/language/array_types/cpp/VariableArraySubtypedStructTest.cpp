@@ -1,7 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "array_types/variable_array_subtyped_struct/VariableArray.h"
-
+#include "gtest/gtest.h"
 #include "zserio/RebindAlloc.h"
 #include "zserio/SerializeUtil.h"
 #include "zserio/StringConvertUtil.h"
@@ -43,8 +41,8 @@ TEST_F(VariableArraySubtypedStructTest, bitSizeOf)
     compoundArray.reserve(numElements);
     for (size_t i = 0; i < numElements; ++i)
     {
-        const ArrayElement arrayElement(static_cast<uint32_t>(i),
-                string_type("Name") + zserio::toString<allocator_type>(i));
+        const ArrayElement arrayElement(
+                static_cast<uint32_t>(i), string_type("Name") + zserio::toString<allocator_type>(i));
         compoundArray.push_back(arrayElement);
     }
     VariableArray variableArray;
@@ -64,8 +62,8 @@ TEST_F(VariableArraySubtypedStructTest, initializeOffsets)
     compoundArray.reserve(numElements);
     for (size_t i = 0; i < numElements; ++i)
     {
-        const ArrayElement arrayElement(static_cast<uint32_t>(i),
-                string_type("Name") + zserio::toString<allocator_type>(i));
+        const ArrayElement arrayElement(
+                static_cast<uint32_t>(i), string_type("Name") + zserio::toString<allocator_type>(i));
         compoundArray.push_back(arrayElement);
     }
     VariableArray variableArray;
@@ -103,8 +101,8 @@ TEST_F(VariableArraySubtypedStructTest, writeRead)
     compoundArray.reserve(numElements);
     for (size_t i = 0; i < numElements; ++i)
     {
-        const ArrayElement arrayElement(static_cast<uint32_t>(i),
-                string_type("Name") + zserio::toString<allocator_type>(i));
+        const ArrayElement arrayElement(
+                static_cast<uint32_t>(i), string_type("Name") + zserio::toString<allocator_type>(i));
         compoundArray.push_back(arrayElement);
     }
     VariableArray variableArray;
@@ -135,8 +133,8 @@ TEST_F(VariableArraySubtypedStructTest, writeReadFile)
     compoundArray.reserve(numElements);
     for (size_t i = 0; i < numElements; ++i)
     {
-        const ArrayElement arrayElement(static_cast<uint32_t>(i),
-                string_type("Name") + zserio::toString<allocator_type>(i));
+        const ArrayElement arrayElement(
+                static_cast<uint32_t>(i), string_type("Name") + zserio::toString<allocator_type>(i));
         compoundArray.push_back(arrayElement);
     }
     VariableArray variableArray;
@@ -162,8 +160,8 @@ TEST_F(VariableArraySubtypedStructTest, writeWrongArray)
     compoundArray.reserve(numElements);
     for (size_t i = 0; i < numElements; ++i)
     {
-        const ArrayElement arrayElement(static_cast<uint32_t>(i),
-                string_type("Name") + zserio::toString<allocator_type>(i));
+        const ArrayElement arrayElement(
+                static_cast<uint32_t>(i), string_type("Name") + zserio::toString<allocator_type>(i));
         compoundArray.push_back(arrayElement);
     }
     VariableArray variableArray;

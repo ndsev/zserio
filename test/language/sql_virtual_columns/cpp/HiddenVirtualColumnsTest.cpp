@@ -3,13 +3,11 @@
 #include <vector>
 
 #include "gtest/gtest.h"
-
 #include "sql_virtual_columns/hidden_virtual_columns/HiddenVirtualColumnsDb.h"
-
 #include "zserio/RebindAlloc.h"
+#include "zserio/SqliteFinalizer.h"
 #include "zserio/StringConvertUtil.h"
 #include "zserio/ValidationSqliteUtil.h"
-#include "zserio/SqliteFinalizer.h"
 
 using namespace zserio::literals;
 
@@ -26,7 +24,8 @@ using vector_type = zserio::vector<T, allocator_type>;
 class HiddenVirtualColumnsTest : public ::testing::Test
 {
 public:
-    HiddenVirtualColumnsTest() : m_tableName("hiddenVirtualColumnsTable")
+    HiddenVirtualColumnsTest() :
+            m_tableName("hiddenVirtualColumnsTable")
     {
         std::remove(DB_FILE_NAME);
 
@@ -46,8 +45,8 @@ public:
     HiddenVirtualColumnsTest& operator=(HiddenVirtualColumnsTest&&) = delete;
 
 protected:
-    static void fillHiddenVirtualColumnsTableRow(HiddenVirtualColumnsTable::Row& row, int64_t docId,
-            const string_type& searchTags)
+    static void fillHiddenVirtualColumnsTableRow(
+            HiddenVirtualColumnsTable::Row& row, int64_t docId, const string_type& searchTags)
     {
         row.setDocId(docId);
         const uint16_t languageCode = 1;
@@ -69,8 +68,8 @@ protected:
         }
     }
 
-    static void checkHiddenVirtualColumnsTableRow(const HiddenVirtualColumnsTable::Row& row1,
-            const HiddenVirtualColumnsTable::Row& row2)
+    static void checkHiddenVirtualColumnsTableRow(
+            const HiddenVirtualColumnsTable::Row& row1, const HiddenVirtualColumnsTable::Row& row2)
     {
         ASSERT_EQ(row1.getDocId(), row2.getDocId());
         ASSERT_EQ(row1.getLanguageCode(), row2.getLanguageCode());
@@ -88,8 +87,8 @@ protected:
 
     bool isTableInDb()
     {
-        string_type sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + m_tableName +
-                "'";
+        string_type sqlQuery =
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='" + m_tableName + "'";
         std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(
                 m_database->connection().prepareStatement(sqlQuery));
 
@@ -193,5 +192,5 @@ TEST_F(HiddenVirtualColumnsTest, checkVirtualColumn)
     ASSERT_TRUE(isHiddenVirtualColumnInTable("languageCode"));
 }
 
-} // hidden_virtual_columns
+} // namespace hidden_virtual_columns
 } // namespace sql_virtual_columns

@@ -1,7 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "allow_implicit_arrays/implicit_array_uint64/ImplicitArray.h"
-
+#include "gtest/gtest.h"
 #include "zserio/RebindAlloc.h"
 #include "zserio/SerializeUtil.h"
 

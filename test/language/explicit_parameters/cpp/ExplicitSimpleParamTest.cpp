@@ -1,11 +1,9 @@
 #include <cstdio>
-#include <vector>
 #include <string>
-
-#include "gtest/gtest.h"
+#include <vector>
 
 #include "explicit_parameters/ExplicitParametersDb.h"
-
+#include "gtest/gtest.h"
 #include "zserio/RebindAlloc.h"
 #include "zserio/StringConvertUtil.h"
 
@@ -90,8 +88,8 @@ protected:
         ASSERT_EQ(row2.getBlob1().getCount(), row2.getBlob3().getCount());
     }
 
-    static void checkSimpleParamTableRows(const vector_type<SimpleParamTable::Row>& rows1,
-            const vector_type<SimpleParamTable::Row>& rows2)
+    static void checkSimpleParamTableRows(
+            const vector_type<SimpleParamTable::Row>& rows1, const vector_type<SimpleParamTable::Row>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)

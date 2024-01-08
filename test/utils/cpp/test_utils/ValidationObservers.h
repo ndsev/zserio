@@ -35,19 +35,33 @@ public:
         return true;
     }
 
-    bool reportError(zserio::StringView, zserio::StringView,
-            zserio::Span<const zserio::StringView>, ErrorType,
+    bool reportError(zserio::StringView, zserio::StringView, zserio::Span<const zserio::StringView>, ErrorType,
             zserio::StringView) override
     {
         m_numberOfErrors++;
         return true;
     }
 
-    size_t getNumberOfTables() const { return m_numberOfTables; }
-    size_t getNumberOfValidatedTables() const { return m_numberOfValidatedTables; }
-    size_t getNumberOfRows() const { return m_numberOfRows; }
-    size_t getNumberOfValidatedRows() const { return m_numberOfValidatedRows; }
-    size_t getNumberOfErrors() const { return m_numberOfErrors; }
+    size_t getNumberOfTables() const
+    {
+        return m_numberOfTables;
+    }
+    size_t getNumberOfValidatedTables() const
+    {
+        return m_numberOfValidatedTables;
+    }
+    size_t getNumberOfRows() const
+    {
+        return m_numberOfRows;
+    }
+    size_t getNumberOfValidatedRows() const
+    {
+        return m_numberOfValidatedRows;
+    }
+    size_t getNumberOfErrors() const
+    {
+        return m_numberOfErrors;
+    }
 
 private:
     size_t m_numberOfTables = 0;
@@ -74,9 +88,7 @@ public:
         {
             std::transform(primaryKeyValuesSpan.begin(), primaryKeyValuesSpan.end(),
                     std::back_inserter(this->primaryKeyValues),
-                    [](zserio::StringView msg) -> std::string {
-                        return ::zserio::toString(msg);
-                    });
+                    [](zserio::StringView msg) -> std::string { return ::zserio::toString(msg); });
         }
 
         std::string tableName;
@@ -98,8 +110,7 @@ public:
 
     bool beginTable(zserio::StringView tableName, size_t numberOfRows) override
     {
-        m_rowCountsMap[zserio::toString(tableName)] =
-                std::make_tuple(numberOfRows, static_cast<size_t>(0));
+        m_rowCountsMap[zserio::toString(tableName)] = std::make_tuple(numberOfRows, static_cast<size_t>(0));
         return true;
     }
 

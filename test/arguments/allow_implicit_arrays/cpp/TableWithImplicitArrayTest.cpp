@@ -1,11 +1,9 @@
 #include <cstdio>
-#include <string>
 #include <fstream>
-
-#include "gtest/gtest.h"
+#include <string>
 
 #include "allow_implicit_arrays/table_with_implicit_array/DbWithImplicitArray.h"
-
+#include "gtest/gtest.h"
 #include "zserio/RebindAlloc.h"
 #include "zserio/StringConvertUtil.h"
 

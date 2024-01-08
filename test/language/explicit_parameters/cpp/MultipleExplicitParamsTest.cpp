@@ -1,11 +1,9 @@
 #include <cstdio>
-#include <vector>
 #include <string>
-
-#include "gtest/gtest.h"
+#include <vector>
 
 #include "explicit_parameters/ExplicitParametersDb.h"
-
+#include "gtest/gtest.h"
 #include "zserio/RebindAlloc.h"
 #include "zserio/StringConvertUtil.h"
 
@@ -95,8 +93,8 @@ protected:
         }
     }
 
-    static void checkMultipleParamsTableRow(const MultipleParamsTable::Row& row1,
-            const MultipleParamsTable::Row& row2)
+    static void checkMultipleParamsTableRow(
+            const MultipleParamsTable::Row& row1, const MultipleParamsTable::Row& row2)
     {
         ASSERT_EQ(row1.getId(), row2.getId());
         ASSERT_EQ(row1.getName(), row2.getName());

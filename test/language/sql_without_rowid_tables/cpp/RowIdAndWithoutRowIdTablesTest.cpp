@@ -1,11 +1,9 @@
 #include <cstdio>
-#include <string>
 #include <set>
+#include <string>
 
 #include "gtest/gtest.h"
-
 #include "sql_without_rowid_tables/rowid_and_without_rowid_tables/RowIdAndWithoutRowIdDb.h"
-
 #include "zserio/ValidationSqliteUtil.h"
 
 using namespace zserio::literals;
@@ -33,8 +31,8 @@ public:
     }
 
 protected:
-    bool isColumnInTable(zserio::ISqliteDatabase& database,
-            const string_type& columnName, const string_type& tableName)
+    bool isColumnInTable(
+            zserio::ISqliteDatabase& database, const string_type& columnName, const string_type& tableName)
     {
         return zserio::ValidationSqliteUtil<allocator_type>::isColumnInTable(
                 database.connection(), ""_sv, tableName, columnName, allocator_type());

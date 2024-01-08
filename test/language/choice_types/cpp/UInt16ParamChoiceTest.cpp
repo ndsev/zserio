@@ -1,9 +1,7 @@
-#include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-
 #include "choice_types/uint16_param_choice/UInt16ParamChoice.h"
+#include "gtest/gtest.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace choice_types
 {
@@ -148,8 +146,8 @@ TEST_F(UInt16ParamChoiceTest, propagateAllocatorCopyConstructor)
     const VariantA value = 99;
     uint16ParamChoice.setA(value);
 
-    const UInt16ParamChoice uint16ParamChoiceCopy(zserio::PropagateAllocator, uint16ParamChoice,
-            UInt16ParamChoice::allocator_type());
+    const UInt16ParamChoice uint16ParamChoiceCopy(
+            zserio::PropagateAllocator, uint16ParamChoice, UInt16ParamChoice::allocator_type());
     ASSERT_EQ(selector, uint16ParamChoiceCopy.getSelector());
     ASSERT_EQ(value, uint16ParamChoiceCopy.getA());
 }
@@ -356,7 +354,7 @@ TEST_F(UInt16ParamChoiceTest, write)
     UInt16ParamChoice readUInt16ParamChoiceB(readerB, selectorB);
     ASSERT_EQ(valueB, readUInt16ParamChoiceB.getB());
 
-    const uint16_t selectorC= VARIANT_C_SELECTOR;
+    const uint16_t selectorC = VARIANT_C_SELECTOR;
     uint16ParamChoice.initialize(selectorC);
     const VariantC valueC = 65535;
     uint16ParamChoice.setC(valueC);

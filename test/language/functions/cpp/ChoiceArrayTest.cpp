@@ -1,15 +1,13 @@
-#include <vector>
 #include <array>
-
-#include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
+#include <vector>
 
 #include "functions/choice_array/Inner.h"
 #include "functions/choice_array/Item.h"
 #include "functions/choice_array/ItemRef.h"
 #include "functions/choice_array/OuterArray.h"
+#include "gtest/gtest.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace functions
 {

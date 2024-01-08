@@ -1,11 +1,9 @@
-#include "gtest/gtest.h"
-
-#include "zserio/BitStreamReader.h"
-#include "zserio/CppRuntimeException.h"
-
-#include "default_values/structure_default_values/StructureDefaultValues.h"
 #include "default_values/structure_default_values/BasicColor.h"
 #include "default_values/structure_default_values/Permission.h"
+#include "default_values/structure_default_values/StructureDefaultValues.h"
+#include "gtest/gtest.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/CppRuntimeException.h"
 
 namespace default_values
 {

@@ -1,6 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "expressions/field_type_with_clash/FieldTypeExpression.h"
+#include "gtest/gtest.h"
 
 namespace expressions
 {

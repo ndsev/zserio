@@ -3,9 +3,9 @@
 
 #include <array>
 
+#include "zserio/CppRuntimeException.h"
 #include "zserio/Types.h"
 #include "zserio/pmr/MemoryResource.h"
-#include "zserio/CppRuntimeException.h"
 
 namespace test_utils
 {
@@ -15,14 +15,14 @@ class InvalidMemoryResource : public zserio::pmr::MemoryResource
 private:
     void* doAllocate(size_t bytes, size_t align) override
     {
-        throw zserio::CppRuntimeException("Trying to allocate using default memory resource (") << bytes <<
-                ", " << align << ")!";
+        throw zserio::CppRuntimeException("Trying to allocate using default memory resource (")
+                << bytes << ", " << align << ")!";
     }
 
     void doDeallocate(void*, size_t bytes, size_t align) override
     {
-        throw zserio::CppRuntimeException("Trying to deallocate using default memory resource (") << bytes <<
-                ", " << align << ")!";
+        throw zserio::CppRuntimeException("Trying to deallocate using default memory resource (")
+                << bytes << ", " << align << ")!";
     }
 
     bool doIsEqual(const MemoryResource& other) const noexcept override
@@ -80,7 +80,8 @@ template <size_t BUFFER_SIZE = 1024 * 2>
 class TestMemoryResource : public zserio::pmr::MemoryResource
 {
 public:
-    explicit TestMemoryResource(const char* name) : m_name(name)
+    explicit TestMemoryResource(const char* name) :
+            m_name(name)
     {
         m_buffer.fill(0);
         m_nextPtr = m_buffer.begin();
@@ -144,8 +145,8 @@ private:
 class MemoryResourceScopedSetter
 {
 public:
-    explicit MemoryResourceScopedSetter(zserio::pmr::MemoryResource& memoryResource)
-    :   m_origMemoryResource(zserio::pmr::setDefaultResource(&memoryResource))
+    explicit MemoryResourceScopedSetter(zserio::pmr::MemoryResource& memoryResource) :
+            m_origMemoryResource(zserio::pmr::setDefaultResource(&memoryResource))
     {}
 
     ~MemoryResourceScopedSetter()

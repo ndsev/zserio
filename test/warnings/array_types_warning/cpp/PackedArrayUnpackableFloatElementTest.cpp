@@ -1,7 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "array_types_warning/packed_array_unpackable_float_element/PackedArrayUnpackableFloatElement.h"
-
+#include "gtest/gtest.h"
 #include "zserio/SerializeUtil.h"
 
 namespace array_types_warning
@@ -20,10 +18,7 @@ const std::string PackedArrayUnpackableFloatElementTest::BLOB_NAME =
 
 TEST_F(PackedArrayUnpackableFloatElementTest, writeRead)
 {
-    PackedArrayUnpackableFloatElement packedArrayUnpackableFloatElement(
-        {{10, 11, 12}},
-        {{4.0, 1.0, 0.0}}
-    );
+    PackedArrayUnpackableFloatElement packedArrayUnpackableFloatElement({{10, 11, 12}}, {{4.0, 1.0, 0.0}});
 
     zserio::serializeToFile(packedArrayUnpackableFloatElement, BLOB_NAME);
     auto readPackedArrayUnpackableFloatElement =

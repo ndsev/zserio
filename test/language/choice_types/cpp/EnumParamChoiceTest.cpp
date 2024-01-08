@@ -1,10 +1,8 @@
-#include "gtest/gtest.h"
-
-#include "choice_types/enum_param_choice/Selector.h"
 #include "choice_types/enum_param_choice/EnumParamChoice.h"
-
-#include "zserio/BitStreamWriter.h"
+#include "choice_types/enum_param_choice/Selector.h"
+#include "gtest/gtest.h"
 #include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace choice_types
 {
@@ -127,8 +125,8 @@ TEST_F(EnumParamChoiceTest, propagateAllocatorCopyConstructor)
     const int8_t value = 99;
     enumParamChoice.setBlack(value);
 
-    const EnumParamChoice enumParamChoiceCopy(zserio::PropagateAllocator, enumParamChoice,
-            EnumParamChoice::allocator_type());
+    const EnumParamChoice enumParamChoiceCopy(
+            zserio::PropagateAllocator, enumParamChoice, EnumParamChoice::allocator_type());
     ASSERT_EQ(selector, enumParamChoiceCopy.getSelector());
     ASSERT_EQ(value, enumParamChoiceCopy.getBlack());
 }

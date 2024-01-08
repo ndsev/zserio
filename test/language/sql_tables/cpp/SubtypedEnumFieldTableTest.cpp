@@ -1,11 +1,9 @@
 #include <cstdio>
-#include <string>
 #include <fstream>
+#include <string>
 
 #include "gtest/gtest.h"
-
 #include "sql_tables/TestDb.h"
-
 #include "zserio/RebindAlloc.h"
 
 namespace sql_tables
@@ -43,11 +41,7 @@ protected:
     static void fillRow(SubtypedEnumFieldTable::Row& row, size_t i)
     {
         row.setId(static_cast<int32_t>(i));
-        row.setEnumField(i % 3 == 0
-                ? TestEnum::ONE
-                : i % 3 == 1
-                        ? TestEnum::TWO
-                        : TestEnum::THREE);
+        row.setEnumField(i % 3 == 0 ? TestEnum::ONE : i % 3 == 1 ? TestEnum::TWO : TestEnum::THREE);
     }
 
     static void fillRows(vector_type<SubtypedEnumFieldTable::Row>& rows)

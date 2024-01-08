@@ -1,7 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "array_types/auto_array_subtyped_uint8/AutoArray.h"
-
+#include "gtest/gtest.h"
 #include "zserio/RebindAlloc.h"
 #include "zserio/SerializeUtil.h"
 
@@ -35,8 +33,7 @@ protected:
 
         const size_t bitPosition = 2;
         const size_t subtypedBuiltinAutoArrayBitSize = 8 + numElements * 8;
-        ASSERT_EQ(subtypedBuiltinAutoArrayBitSize,
-                autoArray.bitSizeOf(bitPosition));
+        ASSERT_EQ(subtypedBuiltinAutoArrayBitSize, autoArray.bitSizeOf(bitPosition));
     }
 
     void checkInitializeOffsets(size_t numElements)
@@ -113,7 +110,6 @@ protected:
     static const size_t AUTO_ARRAY_LENGTH1;
     static const size_t AUTO_ARRAY_LENGTH2;
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
-
 };
 
 const std::string AutoArraySubtypedUInt8Test::BLOB_NAME_BASE =

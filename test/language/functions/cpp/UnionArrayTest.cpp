@@ -1,15 +1,13 @@
-#include <vector>
 #include <array>
-
-#include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
+#include <vector>
 
 #include "functions/union_array/Inner.h"
 #include "functions/union_array/Item.h"
 #include "functions/union_array/ItemRef.h"
 #include "functions/union_array/OuterArray.h"
+#include "gtest/gtest.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace functions
 {
@@ -101,10 +99,7 @@ private:
     static const Item EXPLICIT_ITEM;
 };
 
-const std::array<Item, 3> UnionArrayTest::ITEMS =
-{
-    Item{12, 13}, Item{42, 18}, Item{17, 14}
-};
+const std::array<Item, 3> UnionArrayTest::ITEMS = {Item{12, 13}, Item{42, 18}, Item{17, 14}};
 
 const Item UnionArrayTest::EXPLICIT_ITEM = {27, 29};
 

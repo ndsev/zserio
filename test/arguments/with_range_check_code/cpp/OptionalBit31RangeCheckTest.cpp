@@ -1,8 +1,6 @@
 #include "gtest/gtest.h"
-
-#include "zserio/CppRuntimeException.h"
-
 #include "with_range_check_code/optional_bit31_range_check/OptionalBit31RangeCheckCompound.h"
+#include "zserio/CppRuntimeException.h"
 
 namespace with_range_check_code
 {
@@ -54,7 +52,8 @@ TEST_F(OptionalBit31RangeCheckTest, optionalBit31AboveUpperBound)
     catch (const zserio::CppRuntimeException& excpt)
     {
         ASSERT_STREQ("Value 2147483648 of OptionalBit31RangeCheckCompound.value exceeds the range of "
-                "<0..2147483647>!", excpt.what());
+                     "<0..2147483647>!",
+                excpt.what());
     }
 }
 

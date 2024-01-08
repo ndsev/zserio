@@ -1,5 +1,4 @@
 #include "gtest/gtest.h"
-
 #include "templates/instantiate_type_as_choice_field/InstantiateTypeAsChoiceField.h"
 
 namespace templates

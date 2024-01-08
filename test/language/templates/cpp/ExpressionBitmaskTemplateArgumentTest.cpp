@@ -1,5 +1,4 @@
 #include "gtest/gtest.h"
-
 #include "templates/expression_bitmask_template_argument/BitmaskTemplateArgumentHolder.h"
 
 namespace templates

@@ -1,7 +1,5 @@
 #include "gtest/gtest.h"
-
 #include "parameterized_types/array_element_param_with_optional/Holder.h"
-
 #include "zserio/SerializeUtil.h"
 
 namespace parameterized_types
@@ -51,7 +49,8 @@ protected:
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
-const std::string ArrayElementParamWithOptionalTest::BLOB_NAME = "language/parameterized_types/array_element_param_with_optional.blob";
+const std::string ArrayElementParamWithOptionalTest::BLOB_NAME =
+        "language/parameterized_types/array_element_param_with_optional.blob";
 
 const bool ArrayElementParamWithOptionalTest::HAS_EXTRA = true;
 const uint8_t ArrayElementParamWithOptionalTest::EXTRA_PARAM = 0x00;

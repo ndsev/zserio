@@ -1,7 +1,5 @@
 #include "gtest/gtest.h"
-
 #include "templates/choice_templated_enum_selector/ChoiceTemplatedEnumSelector.h"
-
 #include "zserio/RebindAlloc.h"
 
 namespace templates

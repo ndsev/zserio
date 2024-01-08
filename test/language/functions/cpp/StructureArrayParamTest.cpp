@@ -1,13 +1,11 @@
-#include <vector>
 #include <array>
-
-#include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
+#include <vector>
 
 #include "functions/structure_array_param/ChildStructure.h"
 #include "functions/structure_array_param/ParentStructure.h"
+#include "gtest/gtest.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace functions
 {
@@ -63,15 +61,9 @@ private:
     static const std::array<uint64_t, 2> ANOTHER_VALUES;
 };
 
-const std::array<uint64_t, 2> StructureArrayParamTest::VALUES =
-{
-    0xAABB, 0xCCDD
-};
+const std::array<uint64_t, 2> StructureArrayParamTest::VALUES = {0xAABB, 0xCCDD};
 
-const std::array<uint64_t, 2> StructureArrayParamTest::ANOTHER_VALUES =
-{
-    0xAABB, 0xCCDD
-};
+const std::array<uint64_t, 2> StructureArrayParamTest::ANOTHER_VALUES = {0xAABB, 0xCCDD};
 
 TEST_F(StructureArrayParamTest, checkParentStructure)
 {

@@ -1,7 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "array_types_warning/packed_array_choice_has_no_packable_field/PackedArrayChoiceHasNoPackableField.h"
-
+#include "gtest/gtest.h"
 #include "zserio/SerializeUtil.h"
 
 namespace array_types_warning
@@ -22,11 +20,8 @@ TEST_F(PackedArrayChoiceHasNoPackableFieldTest, writeRead)
 {
     PackedArrayChoiceHasNoPackableField packedArrayChoiceHasNoPackableField;
 
-    packedArrayChoiceHasNoPackableField.setArray1({{
-        StructWithPackable("A", 65),
-        StructWithPackable("B", 66),
-        StructWithPackable("C", 67)
-    }});
+    packedArrayChoiceHasNoPackableField.setArray1(
+            {{StructWithPackable("A", 65), StructWithPackable("B", 66), StructWithPackable("C", 67)}});
 
     auto& array2 = packedArrayChoiceHasNoPackableField.getArray2();
     array2.resize(3);
@@ -34,11 +29,8 @@ TEST_F(PackedArrayChoiceHasNoPackableFieldTest, writeRead)
     array2[1].setField2(TestEnum::TWO);
     array2[2].setField2(TestEnum::ONE);
 
-    packedArrayChoiceHasNoPackableField.setArray3({{
-        StructWithPackableArray("ABC", {{ 65, 66, 67 }}),
-        StructWithPackableArray("DEF", {{ 68, 69, 70 }}),
-        StructWithPackableArray("GHI", {{ 71, 72, 73 }})
-    }});
+    packedArrayChoiceHasNoPackableField.setArray3({{StructWithPackableArray("ABC", {{65, 66, 67}}),
+            StructWithPackableArray("DEF", {{68, 69, 70}}), StructWithPackableArray("GHI", {{71, 72, 73}})}});
 
     auto& array4 = packedArrayChoiceHasNoPackableField.getArray4();
     array4.resize(3);

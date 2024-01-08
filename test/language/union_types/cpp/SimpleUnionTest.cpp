@@ -1,10 +1,8 @@
 #include "gtest/gtest.h"
-
 #include "union_types/simple_union/SimpleUnion.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
 #include "zserio/BitSizeOfCalculator.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 #include "zserio/CppRuntimeException.h"
 #include "zserio/RebindAlloc.h"
 
@@ -289,7 +287,7 @@ TEST_F(SimpleUnionTest, operatorEquality)
     SimpleUnion simpleUnion22;
     simpleUnion22.setCase2Field(CASE2_FIELD);
     SimpleUnion simpleUnion23;
-    simpleUnion23.setCase2Field(CASE2_FIELD-1);
+    simpleUnion23.setCase2Field(CASE2_FIELD - 1);
     ASSERT_TRUE(simpleUnion21 == simpleUnion21);
     ASSERT_TRUE(simpleUnion21 == simpleUnion22);
     ASSERT_FALSE(simpleUnion21 == simpleUnion23);

@@ -1,9 +1,7 @@
 #include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-
 #include "parameterized_types/dynamic_bitfield_param/DynamicBitfieldParamHolder.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace parameterized_types
 {
@@ -22,8 +20,8 @@ protected:
         dynamicBitfieldParamHolder.initializeChildren();
     }
 
-    void checkDynamicBitfieldParamHolderInBitStream(zserio::BitStreamReader& reader,
-            const DynamicBitfieldParamHolder& dynamicBitfieldParamHolder)
+    void checkDynamicBitfieldParamHolderInBitStream(
+            zserio::BitStreamReader& reader, const DynamicBitfieldParamHolder& dynamicBitfieldParamHolder)
     {
         ASSERT_EQ(dynamicBitfieldParamHolder.getLength(), reader.readBits(4));
         ASSERT_EQ(dynamicBitfieldParamHolder.getBitfield(), reader.readSignedBits(LENGTH));

@@ -1,5 +1,4 @@
 #include "gtest/gtest.h"
-
 #include "templates/struct_template_clash_other_template/InstantiationNameClashOtherTemplate.h"
 
 namespace templates

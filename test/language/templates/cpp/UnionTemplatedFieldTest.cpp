@@ -1,5 +1,4 @@
 #include "gtest/gtest.h"
-
 #include "templates/union_templated_field/UnionTemplatedField.h"
 
 namespace templates

@@ -1,11 +1,9 @@
 #include <cstdio>
-#include <vector>
 #include <string>
-
-#include "gtest/gtest.h"
+#include <vector>
 
 #include "explicit_parameters/ExplicitParametersDb.h"
-
+#include "gtest/gtest.h"
 #include "zserio/RebindAlloc.h"
 #include "zserio/StringConvertUtil.h"
 
@@ -83,8 +81,8 @@ protected:
         ASSERT_EQ(row1.getBlobExplicit(), row2.getBlobExplicit());
     }
 
-    static void checkSameAsFieldTableRows(const vector_type<SameAsFieldTable::Row>& rows1,
-            const vector_type<SameAsFieldTable::Row>& rows2)
+    static void checkSameAsFieldTableRows(
+            const vector_type<SameAsFieldTable::Row>& rows1, const vector_type<SameAsFieldTable::Row>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)

@@ -1,7 +1,5 @@
 #include "gtest/gtest.h"
-
 #include "optional_members/optional_array/TestStruct.h"
-
 #include "zserio/RebindAlloc.h"
 
 // just test setters and getters

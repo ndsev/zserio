@@ -1,12 +1,10 @@
 #include <memory>
 
 #include "gtest/gtest.h"
-
+#include "test_utils/ValidationObservers.h"
+#include "with_validation_code/blob_table_validation/BlobTableValidationDb.h"
 #include "zserio/FloatUtil.h"
 #include "zserio/SqliteFinalizer.h"
-
-#include "with_validation_code/blob_table_validation/BlobTableValidationDb.h"
-#include "test_utils/ValidationObservers.h"
 
 using namespace test_utils;
 
@@ -32,8 +30,8 @@ protected:
     {
         const bool wasTransactionStarted = connection.startTransaction();
 
-        std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(connection.prepareStatement(
-                "INSERT INTO blobTable(id, blob, nullableBlob) VALUES (?, ?, ?)"));
+        std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(
+                connection.prepareStatement("INSERT INTO blobTable(id, blob, nullableBlob) VALUES (?, ?, ?)"));
 
         int argIdx = 1;
         sqlite3_bind_int(statement.get(), argIdx++, ROW_ID);
@@ -71,9 +69,9 @@ const char* const BlobTableValidationTest::DB_FILE_NAME =
 
 constexpr uint32_t BlobTableValidationTest::ROW_ID;
 constexpr bool BlobTableValidationTest::HAS_NAN;
-constexpr uint32_t  BlobTableValidationTest::NONE_STANDARD_NAN_VALUE;
-constexpr uint8_t  BlobTableValidationTest::ALIGNED_7_BITS;
-constexpr int8_t  BlobTableValidationTest::END_VALUE;
+constexpr uint32_t BlobTableValidationTest::NONE_STANDARD_NAN_VALUE;
+constexpr uint8_t BlobTableValidationTest::ALIGNED_7_BITS;
+constexpr int8_t BlobTableValidationTest::END_VALUE;
 
 TEST_F(BlobTableValidationTest, validate)
 {

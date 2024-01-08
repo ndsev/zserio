@@ -1,5 +1,4 @@
 #include "gtest/gtest.h"
-
 #include "templates/instantiate_vs_default/InstantiateVsDefault.h"
 
 namespace templates

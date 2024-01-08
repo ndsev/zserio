@@ -1,12 +1,10 @@
 #include <array>
 
 #include "gtest/gtest.h"
-
 #include "optional_members/optional_recursion/Block.h"
-
-#include "zserio/RebindAlloc.h"
-#include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
+#include "zserio/RebindAlloc.h"
 
 namespace optional_members
 {

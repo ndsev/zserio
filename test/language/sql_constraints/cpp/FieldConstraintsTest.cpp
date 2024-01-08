@@ -2,12 +2,10 @@
 #include <vector>
 
 #include "gtest/gtest.h"
-
 #include "sql_constraints/TestDb.h"
 #include "sql_constraints/field_constraints/FieldConstraintsTable.h"
-
-#include "zserio/SqliteException.h"
 #include "zserio/RebindAlloc.h"
+#include "zserio/SqliteException.h"
 
 namespace sql_constraints
 {
@@ -69,8 +67,7 @@ protected:
     sql_constraints::TestDb* m_database;
 };
 
-const char* const FieldConstraintsTest::DB_FILE_NAME =
-        "language/sql_constraints/field_constraints_test.sqlite";
+const char* const FieldConstraintsTest::DB_FILE_NAME = "language/sql_constraints/field_constraints_test.sqlite";
 
 const uint8_t FieldConstraintsTest::UNICODE_ESCAPE_CONST = 1;
 const uint8_t FieldConstraintsTest::HEX_ESCAPE_CONST = 2;

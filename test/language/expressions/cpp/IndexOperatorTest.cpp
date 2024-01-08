@@ -1,13 +1,11 @@
 #include <array>
 
-#include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-#include "zserio/CppRuntimeException.h"
-
-#include "expressions/index_operator/ElementList.h"
 #include "expressions/index_operator/Element.h"
+#include "expressions/index_operator/ElementList.h"
+#include "gtest/gtest.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
+#include "zserio/CppRuntimeException.h"
 
 namespace expressions
 {
@@ -63,8 +61,7 @@ protected:
             const bool wrong = lastWrong && i + 1 == length;
             Element element = list.getElements().at(i);
             if (wrong)
-                ASSERT_THROW(isEven ? element.getField16() : element.getField8(),
-                        zserio::CppRuntimeException);
+                ASSERT_THROW(isEven ? element.getField16() : element.getField8(), zserio::CppRuntimeException);
             else
                 ASSERT_EQ(ELEMENTS[i], isEven ? element.getField8() : element.getField16());
         }
@@ -78,7 +75,7 @@ protected:
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
-const std::array<uint16_t, 4> IndexOperatorTest::ELEMENTS =  { 11, 33, 55, 77 };
+const std::array<uint16_t, 4> IndexOperatorTest::ELEMENTS = {11, 33, 55, 77};
 const size_t IndexOperatorTest::LENGTH_SIZE = 16;
 const size_t IndexOperatorTest::FIELD8_SIZE = 8;
 const size_t IndexOperatorTest::FIELD16_SIZE = 16;

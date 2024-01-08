@@ -1,16 +1,14 @@
 #include <cstdio>
-#include <vector>
-#include <string>
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "gtest/gtest.h"
-
-#include "sql_databases/db_with_relocation/EuropeDb.h"
 #include "sql_databases/db_with_relocation/AmericaDb.h"
-
+#include "sql_databases/db_with_relocation/EuropeDb.h"
 #include "zserio/RebindAlloc.h"
-#include "zserio/StringConvertUtil.h"
 #include "zserio/SqliteFinalizer.h"
+#include "zserio/StringConvertUtil.h"
 
 namespace sql_databases
 {
@@ -51,8 +49,8 @@ public:
 protected:
     bool isTableInDb(zserio::ISqliteDatabase& database, const string_type& checkTableName)
     {
-        string_type sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
-                "'";
+        string_type sqlQuery =
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName + "'";
         std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(
                 database.connection().prepareStatement(sqlQuery));
 
@@ -168,7 +166,7 @@ TEST_F(DbWithRelocationTest, relocatedCzechiaTable)
 TEST_F(DbWithRelocationTest, attachedDatabases)
 {
     std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(
-                m_americaDb->connection().prepareStatement("PRAGMA database_list"));
+            m_americaDb->connection().prepareStatement("PRAGMA database_list"));
 
     while (sqlite3_step(statement.get()) == SQLITE_ROW)
     {

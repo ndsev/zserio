@@ -1,10 +1,8 @@
-#include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-#include "zserio/CppRuntimeException.h"
-
 #include "enumeration_types/varuint_enum/DarkColor.h"
+#include "gtest/gtest.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
+#include "zserio/CppRuntimeException.h"
 
 namespace enumeration_types
 {
@@ -102,8 +100,8 @@ TEST_F(VarUIntEnumTest, bitSizeOf)
 TEST_F(VarUIntEnumTest, initializeOffsets)
 {
     const size_t bitPosition = 1;
-    ASSERT_TRUE(zserio::initializeOffsets(bitPosition, DarkColor::NONE) ==
-            bitPosition + DARK_COLOR_NONE_BITSIZEOF);
+    ASSERT_TRUE(
+            zserio::initializeOffsets(bitPosition, DarkColor::NONE) == bitPosition + DARK_COLOR_NONE_BITSIZEOF);
     ASSERT_TRUE(zserio::initializeOffsets(bitPosition, DarkColor::DARK_RED) ==
             bitPosition + DARK_COLOR_DARK_RED_BITSIZEOF);
     ASSERT_TRUE(zserio::initializeOffsets(bitPosition, DarkColor::DARK_BLUE) ==

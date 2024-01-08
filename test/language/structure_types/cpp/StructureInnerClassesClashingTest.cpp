@@ -1,11 +1,9 @@
 #include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-
 #include "structure_types/structure_inner_classes_clashing/ArrayType_array.h"
 #include "structure_types/structure_inner_classes_clashing/OffsetChecker_array.h"
 #include "structure_types/structure_inner_classes_clashing/OffsetInitializer_array.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace structure_types
 {

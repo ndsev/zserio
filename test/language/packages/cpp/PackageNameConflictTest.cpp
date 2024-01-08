@@ -1,7 +1,6 @@
 #include "gtest/gtest.h"
-
-#include "package_name_conflict/PackageNameConflictLocal.h"
 #include "package_name_conflict/PackageNameConflictImported.h"
+#include "package_name_conflict/PackageNameConflictLocal.h"
 
 namespace package_name_conflict
 {

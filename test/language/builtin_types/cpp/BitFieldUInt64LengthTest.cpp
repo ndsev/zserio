@@ -1,9 +1,7 @@
 #include <limits>
 
-#include "gtest/gtest.h"
-
 #include "builtin_types/bitfield_uint64_length/Container.h"
-
+#include "gtest/gtest.h"
 #include "zserio/SerializeUtil.h"
 
 namespace builtin_types

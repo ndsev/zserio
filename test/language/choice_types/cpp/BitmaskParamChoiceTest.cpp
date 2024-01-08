@@ -1,10 +1,8 @@
-#include "gtest/gtest.h"
-
-#include "choice_types/bitmask_param_choice/Selector.h"
 #include "choice_types/bitmask_param_choice/BitmaskParamChoice.h"
-
-#include "zserio/BitStreamWriter.h"
+#include "choice_types/bitmask_param_choice/Selector.h"
+#include "gtest/gtest.h"
 #include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace choice_types
 {
@@ -124,8 +122,8 @@ TEST_F(BitmaskParamChoiceTest, propagateAllocatorCopyConstructor)
     const uint8_t value = 99;
     bitmaskParamChoice.setBlack(value);
 
-    const BitmaskParamChoice bitmaskParamChoiceCopy(zserio::PropagateAllocator, bitmaskParamChoice,
-            BitmaskParamChoice::allocator_type());
+    const BitmaskParamChoice bitmaskParamChoiceCopy(
+            zserio::PropagateAllocator, bitmaskParamChoice, BitmaskParamChoice::allocator_type());
     ASSERT_EQ(selector, bitmaskParamChoiceCopy.getSelector());
     ASSERT_EQ(value, bitmaskParamChoiceCopy.getBlack());
 }

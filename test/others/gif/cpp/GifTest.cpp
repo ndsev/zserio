@@ -1,11 +1,9 @@
 #include <fstream>
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "gif/GifFile.h"
-
 #include "gtest/gtest.h"
-
 #include "zserio/RebindAlloc.h"
 
 namespace gif

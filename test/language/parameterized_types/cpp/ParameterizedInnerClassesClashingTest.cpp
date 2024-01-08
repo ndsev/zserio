@@ -1,11 +1,9 @@
 #include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-
 #include "parameterized_types/parameterized_inner_classes_clashing/ElementChildrenInitializer_array.h"
 #include "parameterized_types/parameterized_inner_classes_clashing/ElementFactory_array.h"
 #include "parameterized_types/parameterized_inner_classes_clashing/ElementInitializer_array.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace parameterized_types
 {
@@ -52,11 +50,7 @@ TEST_F(ParameterizedInnerClassesClashingTest, writeReadElementChildrenInitialize
 {
     const uint32_t param = 100;
     ElementChildrenInitializer_array testStructure{
-        vector_type<Parent>{{
-            Parent{param, Compound{13}},
-            Parent{param, Compound{42}}
-        }}
-    };
+            vector_type<Parent>{{Parent{param, Compound{13}}, Parent{param, Compound{42}}}}};
     testStructure.initializeChildren();
 
     zserio::BitStreamWriter writer(bitBuffer);

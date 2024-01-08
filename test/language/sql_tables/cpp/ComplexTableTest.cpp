@@ -1,13 +1,11 @@
 #include <cstdio>
-#include <vector>
-#include <string>
 #include <limits>
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "gtest/gtest.h"
-
 #include "sql_tables/TestDb.h"
-
 #include "zserio/RebindAlloc.h"
 #include "zserio/SqliteFinalizer.h"
 
@@ -114,8 +112,8 @@ protected:
         ASSERT_EQ(row1.getBlob(), row2.getBlob());
     }
 
-    static void checkComplexTableRows(const vector_type<ComplexTable::Row>& rows1,
-            const vector_type<ComplexTable::Row>& rows2)
+    static void checkComplexTableRows(
+            const vector_type<ComplexTable::Row>& rows1, const vector_type<ComplexTable::Row>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
@@ -167,8 +165,8 @@ protected:
             ASSERT_EQ(row1.isBlobSet(), row2.isBlobSet());
     }
 
-    static void checkComplexTableRowsWithNullValues(const vector_type<ComplexTable::Row>& rows1,
-            const vector_type<ComplexTable::Row>& rows2)
+    static void checkComplexTableRowsWithNullValues(
+            const vector_type<ComplexTable::Row>& rows1, const vector_type<ComplexTable::Row>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
@@ -178,8 +176,8 @@ protected:
     bool isTableInDb()
     {
         string_type checkTableName = "complexTable";
-        string_type sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
-                "'";
+        string_type sqlQuery =
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName + "'";
         std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(
                 m_database->connection().prepareStatement(sqlQuery));
 

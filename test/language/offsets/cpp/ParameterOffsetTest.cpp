@@ -1,10 +1,8 @@
 #include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-#include "zserio/CppRuntimeException.h"
-
 #include "offsets/parameter_offset/School.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
+#include "zserio/CppRuntimeException.h"
 
 namespace offsets
 {
@@ -29,8 +27,8 @@ protected:
         const uint16_t expectedSchoolId = SCHOOL_ID;
         ASSERT_EQ(expectedSchoolId, school.getSchoolId());
 
-        const uint32_t expectedRoomOffset = static_cast<uint32_t>(
-                (bitPosition == 0) ? ROOM_OFFSET : ROOM_OFFSET + (bitPosition / 8) + 1);
+        const uint32_t expectedRoomOffset =
+                static_cast<uint32_t>((bitPosition == 0) ? ROOM_OFFSET : ROOM_OFFSET + (bitPosition / 8) + 1);
         ASSERT_EQ(expectedRoomOffset, school.getOffsetHolder().getRoomOffset());
 
         const uint16_t expectedRoomId = ROOM_ID;
@@ -48,13 +46,13 @@ protected:
         school.initializeChildren();
     }
 
-    static const uint16_t   SCHOOL_ID = 0x01;
-    static const uint16_t   ROOM_ID = 0x11;
+    static const uint16_t SCHOOL_ID = 0x01;
+    static const uint16_t ROOM_ID = 0x11;
 
-    static const uint32_t   WRONG_ROOM_OFFSET = 0;
-    static const uint32_t   ROOM_OFFSET = 6;
+    static const uint32_t WRONG_ROOM_OFFSET = 0;
+    static const uint32_t ROOM_OFFSET = 6;
 
-    static const size_t     SCHOOL_BIT_SIZE = (ROOM_OFFSET + 2) * 8;
+    static const size_t SCHOOL_BIT_SIZE = (ROOM_OFFSET + 2) * 8;
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };

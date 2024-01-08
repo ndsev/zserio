@@ -1,9 +1,7 @@
-#include "gtest/gtest.h"
-
 #include "choice_types/bool_param_choice/BoolParamChoice.h"
-
-#include "zserio/BitStreamWriter.h"
+#include "gtest/gtest.h"
 #include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace choice_types
 {
@@ -113,8 +111,8 @@ TEST_F(BoolParamChoiceTest, propagateAllocatorCopyConstructor)
     const int8_t value = 99;
     boolParamChoice.setBlack(value);
 
-    BoolParamChoice boolParamChoiceCopy(zserio::PropagateAllocator, boolParamChoice,
-            BoolParamChoice::allocator_type());
+    BoolParamChoice boolParamChoiceCopy(
+            zserio::PropagateAllocator, boolParamChoice, BoolParamChoice::allocator_type());
     ASSERT_EQ(selector, boolParamChoiceCopy.getSelector());
     ASSERT_EQ(value, boolParamChoiceCopy.getBlack());
 }

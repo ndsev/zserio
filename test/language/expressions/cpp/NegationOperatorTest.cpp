@@ -1,6 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "expressions/negation_operator/NegationOperatorExpression.h"
+#include "gtest/gtest.h"
 
 namespace expressions
 {

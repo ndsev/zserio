@@ -1,7 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "builtin_types/bitfield_function_length/Container.h"
-
+#include "gtest/gtest.h"
 #include "zserio/SerializeUtil.h"
 #include "zserio/Vector.h"
 
@@ -19,14 +17,13 @@ class BitFieldFunctionLengthTest : public ::testing::Test
 protected:
     Container createContainer()
     {
-        return Container(
-                0xDEAD, // id
-                vector_type<uint64_t>({0xDEAD1, 0xDEAD2, 0xDEAD3, 0xDEAD4,
-                        0xDEAD5, 0xDEAD6, 0xDEAD7}), // array[7]
+        return Container(0xDEAD, // id
+                vector_type<uint64_t>(
+                        {0xDEAD1, 0xDEAD2, 0xDEAD3, 0xDEAD4, 0xDEAD5, 0xDEAD6, 0xDEAD7}), // array[7]
                 0x3F, // bitField3 (7 bits)
                 0x1FFF, // bitField4 (0xDEAD & 0x0F = 0xD = 13 bits)
                 0x1FFF // bitField5 (0xDEAD % 32 = 13 bits)
-                );
+        );
     }
 
     static const std::string BLOB_NAME;

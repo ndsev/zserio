@@ -1,9 +1,7 @@
-#include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-
 #include "choice_types/default_empty_choice/DefaultEmptyChoice.h"
+#include "gtest/gtest.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace choice_types
 {
@@ -93,13 +91,13 @@ TEST_F(DefaultEmptyChoiceTest, write)
     DefaultEmptyChoice readDefaultEmptyChoiceB(readerB, tagB);
     ASSERT_EQ(valueB, readDefaultEmptyChoiceB.getB());
 
-    const uint8_t tagDefault= DEFAULT_SELECTOR;
+    const uint8_t tagDefault = DEFAULT_SELECTOR;
     defaultEmptyChoice.initialize(tagDefault);
     zserio::BitStreamWriter writerDefault(bitBuffer);
     defaultEmptyChoice.write(writerDefault);
 
-    zserio::BitStreamReader readerDefault(writerDefault.getWriteBuffer(),
-            writerDefault.getBitPosition(), zserio::BitsTag());
+    zserio::BitStreamReader readerDefault(
+            writerDefault.getWriteBuffer(), writerDefault.getBitPosition(), zserio::BitsTag());
     DefaultEmptyChoice readDefaultEmptyChoiceDefault(readerDefault, tagDefault);
     ASSERT_EQ(tagDefault, readDefaultEmptyChoiceDefault.getTag());
 }

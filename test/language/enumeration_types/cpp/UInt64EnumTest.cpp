@@ -1,10 +1,8 @@
-#include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-#include "zserio/CppRuntimeException.h"
-
 #include "enumeration_types/uint64_enum/DarkColor.h"
+#include "gtest/gtest.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
+#include "zserio/CppRuntimeException.h"
 
 namespace enumeration_types
 {
@@ -93,8 +91,8 @@ TEST_F(UInt64EnumTest, bitSizeOf)
 TEST_F(UInt64EnumTest, initializeOffsets)
 {
     const size_t bitPosition = 1;
-    ASSERT_TRUE(zserio::initializeOffsets(bitPosition, DarkColor::noneColor) ==
-            bitPosition + DARK_COLOR_BITSIZEOF);
+    ASSERT_TRUE(
+            zserio::initializeOffsets(bitPosition, DarkColor::noneColor) == bitPosition + DARK_COLOR_BITSIZEOF);
 }
 
 TEST_F(UInt64EnumTest, read)

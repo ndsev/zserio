@@ -1,11 +1,8 @@
-#include "gtest/gtest.h"
-
 #include "array_types/packing_interface_optimization/PackingInterfaceOptimization.h"
-
+#include "gtest/gtest.h"
+#include "test_utils/Assertions.h"
 #include "zserio/RebindAlloc.h"
 #include "zserio/SerializeUtil.h"
-
-#include "test_utils/Assertions.h"
 
 namespace array_types
 {
@@ -79,16 +76,16 @@ protected:
     void assertPackingInterfaceMethodsPresent(const std::string& typeName)
     {
         const std::string ctorDeclaration = typeName + "(ZserioPackingContext";
-        const std::string ctorDefinition = typeName + "::" + typeName + "(" +
-                typeName + "::ZserioPackingContext";
+        const std::string ctorDefinition =
+                typeName + "::" + typeName + "(" + typeName + "::ZserioPackingContext";
         ASSERT_METHOD_PRESENT(PATH, typeName, ctorDeclaration.c_str(), ctorDefinition.c_str());
 
         ASSERT_METHOD_PRESENT(PATH, typeName, "initPackingContext(", "::initPackingContext(");
 
         const std::string bitSizeOfMethodDeclaration = "bitSizeOf(ZserioPackingContext";
         const std::string bitSizeOfMethodDefinition = "bitSizeOf(" + typeName + "::ZserioPackingContext";
-        ASSERT_METHOD_PRESENT(PATH, typeName, bitSizeOfMethodDeclaration.c_str(),
-                bitSizeOfMethodDefinition.c_str());
+        ASSERT_METHOD_PRESENT(
+                PATH, typeName, bitSizeOfMethodDeclaration.c_str(), bitSizeOfMethodDefinition.c_str());
 
         const std::string initializeOffsetsMethodDeclaration = "initializeOffsets(ZserioPackingContext";
         const std::string initializeOffsetsMethodDefinition =
@@ -104,16 +101,16 @@ protected:
     void assertPackingInterfaceMethodsNotPresent(const std::string& typeName)
     {
         const std::string ctorDeclaration = typeName + "(ZserioPackingContext";
-        const std::string ctorDefinition = typeName + "::" + typeName + "(" +
-                typeName + "::ZserioPackingContext";
+        const std::string ctorDefinition =
+                typeName + "::" + typeName + "(" + typeName + "::ZserioPackingContext";
         ASSERT_METHOD_NOT_PRESENT(PATH, typeName, ctorDeclaration.c_str(), ctorDefinition.c_str());
 
         ASSERT_METHOD_NOT_PRESENT(PATH, typeName, "initPackingContext(", "::initPackingContext(");
 
         const std::string bitSizeOfMethodDeclaration = "bitSizeOf(ZserioPackingContext";
         const std::string bitSizeOfMethodDefinition = "bitSizeOf(" + typeName + "::ZserioPackingContext";
-        ASSERT_METHOD_NOT_PRESENT(PATH, typeName, bitSizeOfMethodDeclaration.c_str(),
-                bitSizeOfMethodDefinition.c_str());
+        ASSERT_METHOD_NOT_PRESENT(
+                PATH, typeName, bitSizeOfMethodDeclaration.c_str(), bitSizeOfMethodDefinition.c_str());
 
         const std::string initializeOffsetsMethodDeclaration = "initializeOffsets(ZserioPackingContext";
         const std::string initializeOffsetsMethodDefinition =
@@ -123,7 +120,8 @@ protected:
 
         const std::string writeMethodDeclaration = "write(ZserioPackingContext";
         const std::string writeMethodDefinition = "write(" + typeName + "::ZserioPackingContext";
-        ASSERT_METHOD_NOT_PRESENT(PATH, typeName, writeMethodDeclaration.c_str(), writeMethodDefinition.c_str());
+        ASSERT_METHOD_NOT_PRESENT(
+                PATH, typeName, writeMethodDeclaration.c_str(), writeMethodDefinition.c_str());
     }
 
     static const std::string BLOB_NAME;
@@ -142,16 +140,15 @@ TEST_F(PackingInterfaceOptimizationTest, writeReadFile)
     fillPackedColorsHolder(packingInterfaceOptimization.getPackedColorsHolder());
 
     zserio::serializeToFile(packingInterfaceOptimization, BLOB_NAME);
-    const auto readPackingInterfaceOptimization = zserio::deserializeFromFile<PackingInterfaceOptimization>(
-            BLOB_NAME);
+    const auto readPackingInterfaceOptimization =
+            zserio::deserializeFromFile<PackingInterfaceOptimization>(BLOB_NAME);
     ASSERT_EQ(packingInterfaceOptimization, readPackingInterfaceOptimization);
 }
 
 TEST_F(PackingInterfaceOptimizationTest, packingInterfaceOptimizationMethods)
 {
     assertPackingInterfaceMethodsNotPresent("PackingInterfaceOptimization");
-    ASSERT_STRING_IN_FILE_NOT_PRESENT(PATH + "PackingInterfaceOptimization.h",
-            "class ZserioPackingContext");
+    ASSERT_STRING_IN_FILE_NOT_PRESENT(PATH + "PackingInterfaceOptimization.h", "class ZserioPackingContext");
 }
 
 TEST_F(PackingInterfaceOptimizationTest, unpackedColorsHolderMethods)
@@ -160,7 +157,8 @@ TEST_F(PackingInterfaceOptimizationTest, unpackedColorsHolderMethods)
     ASSERT_STRING_IN_FILE_NOT_PRESENT(PATH + "UnpackedColorsHolder.h", "class ZserioPackingContext");
 
     ASSERT_STRING_IN_FILE_NOT_PRESENT(PATH + "UnpackedColorsHolder.h",
-            "::array_types::packing_interface_optimization::UnpackedColorStruct::ZserioPackingContext& context");
+            "::array_types::packing_interface_optimization::UnpackedColorStruct::ZserioPackingContext& "
+            "context");
 
     ASSERT_STRING_IN_FILE_PRESENT(PATH + "UnpackedColorsHolder.h",
             "::array_types::packing_interface_optimization::MixedColorStruct::ZserioPackingContext& context");
@@ -169,8 +167,7 @@ TEST_F(PackingInterfaceOptimizationTest, unpackedColorsHolderMethods)
 TEST_F(PackingInterfaceOptimizationTest, packedColorsHolderMethods)
 {
     assertPackingInterfaceMethodsNotPresent("PackedColorsHolder");
-    ASSERT_STRING_IN_FILE_NOT_PRESENT(PATH + "PackedColorsHolder.h",
-            "class ZserioPackingContext");
+    ASSERT_STRING_IN_FILE_NOT_PRESENT(PATH + "PackedColorsHolder.h", "class ZserioPackingContext");
 
     ASSERT_STRING_IN_FILE_PRESENT(PATH + "PackedColorsHolder.h",
             "::array_types::packing_interface_optimization::MixedColorStruct::ZserioPackingContext& context");
@@ -208,8 +205,8 @@ TEST_F(PackingInterfaceOptimizationTest, unpackedColorEnumMethods)
     ASSERT_METHOD_NOT_PRESENT(PATH, "UnpackedColorEnum",
             "read<::array_types::packing_interface_optimization::UnpackedColorEnum, ::zserio::DeltaContext",
             "read(::zserio::DeltaContext&");
-    ASSERT_METHOD_NOT_PRESENT(PATH, "UnpackedColorEnum", "write<::zserio::DeltaContext,",
-            "write(::zserio::DeltaContext&");
+    ASSERT_METHOD_NOT_PRESENT(
+            PATH, "UnpackedColorEnum", "write<::zserio::DeltaContext,", "write(::zserio::DeltaContext&");
 }
 
 TEST_F(PackingInterfaceOptimizationTest, unpackedColorBitmaskMethods)
@@ -222,8 +219,8 @@ TEST_F(PackingInterfaceOptimizationTest, unpackedColorBitmaskMethods)
             "::bitSizeOf(::zserio::DeltaContext");
     ASSERT_METHOD_NOT_PRESENT(PATH, "UnpackedColorBitmask", "initializeOffsets(::zserio::DeltaContext",
             "::initializeOffsets(::zserio::DeltaContext");
-    ASSERT_METHOD_NOT_PRESENT(PATH, "UnpackedColorBitmask", "write(::zserio::DeltaContext",
-            "::write(::zserio::DeltaContext");
+    ASSERT_METHOD_NOT_PRESENT(
+            PATH, "UnpackedColorBitmask", "write(::zserio::DeltaContext", "::write(::zserio::DeltaContext");
 }
 
 TEST_F(PackingInterfaceOptimizationTest, mixedColorStructMethods)
@@ -248,15 +245,15 @@ TEST_F(PackingInterfaceOptimizationTest, mixedColorEnumMethods)
 {
     ASSERT_METHOD_PRESENT(PATH, "MixedColorEnum", "initPackingContext<::zserio::DeltaContext,",
             "initPackingContext(::zserio::DeltaContext&");
-    ASSERT_METHOD_PRESENT(PATH, "MixedColorEnum", "bitSizeOf<::zserio::DeltaContext,",
-            "bitSizeOf(::zserio::DeltaContext&");
+    ASSERT_METHOD_PRESENT(
+            PATH, "MixedColorEnum", "bitSizeOf<::zserio::DeltaContext,", "bitSizeOf(::zserio::DeltaContext&");
     ASSERT_METHOD_PRESENT(PATH, "MixedColorEnum", "initializeOffsets<::zserio::DeltaContext,",
             "initializeOffsets(::zserio::DeltaContext&");
     ASSERT_METHOD_PRESENT(PATH, "MixedColorEnum",
             "read<::array_types::packing_interface_optimization::MixedColorEnum, ::zserio::DeltaContext",
             "read(::zserio::DeltaContext&");
-    ASSERT_METHOD_PRESENT(PATH, "MixedColorEnum", "write<::zserio::DeltaContext,",
-            "write(::zserio::DeltaContext&");
+    ASSERT_METHOD_PRESENT(
+            PATH, "MixedColorEnum", "write<::zserio::DeltaContext,", "write(::zserio::DeltaContext&");
 }
 
 TEST_F(PackingInterfaceOptimizationTest, mixedColorBitmaskMethods)
@@ -269,8 +266,8 @@ TEST_F(PackingInterfaceOptimizationTest, mixedColorBitmaskMethods)
             "::bitSizeOf(::zserio::DeltaContext");
     ASSERT_METHOD_PRESENT(PATH, "MixedColorBitmask", "initializeOffsets(::zserio::DeltaContext",
             "::initializeOffsets(::zserio::DeltaContext");
-    ASSERT_METHOD_PRESENT(PATH, "MixedColorBitmask", "write(::zserio::DeltaContext",
-            "::write(::zserio::DeltaContext");
+    ASSERT_METHOD_PRESENT(
+            PATH, "MixedColorBitmask", "write(::zserio::DeltaContext", "::write(::zserio::DeltaContext");
 }
 
 TEST_F(PackingInterfaceOptimizationTest, packedColorStructMethods)
@@ -295,15 +292,15 @@ TEST_F(PackingInterfaceOptimizationTest, packedColorEnumMethods)
 {
     ASSERT_METHOD_PRESENT(PATH, "PackedColorEnum", "initPackingContext<::zserio::DeltaContext,",
             "initPackingContext(::zserio::DeltaContext&");
-    ASSERT_METHOD_PRESENT(PATH, "PackedColorEnum", "bitSizeOf<::zserio::DeltaContext,",
-            "bitSizeOf(::zserio::DeltaContext&");
+    ASSERT_METHOD_PRESENT(
+            PATH, "PackedColorEnum", "bitSizeOf<::zserio::DeltaContext,", "bitSizeOf(::zserio::DeltaContext&");
     ASSERT_METHOD_PRESENT(PATH, "PackedColorEnum", "initializeOffsets<::zserio::DeltaContext,",
             "initializeOffsets(::zserio::DeltaContext&");
     ASSERT_METHOD_PRESENT(PATH, "PackedColorEnum",
             "read<::array_types::packing_interface_optimization::PackedColorEnum, ::zserio::DeltaContext",
             "read(::zserio::DeltaContext&");
-    ASSERT_METHOD_PRESENT(PATH, "PackedColorEnum", "write<::zserio::DeltaContext,",
-            "write(::zserio::DeltaContext&");
+    ASSERT_METHOD_PRESENT(
+            PATH, "PackedColorEnum", "write<::zserio::DeltaContext,", "write(::zserio::DeltaContext&");
 }
 
 TEST_F(PackingInterfaceOptimizationTest, packedColorBitmaskMethods)
@@ -316,8 +313,8 @@ TEST_F(PackingInterfaceOptimizationTest, packedColorBitmaskMethods)
             "::bitSizeOf(::zserio::DeltaContext");
     ASSERT_METHOD_PRESENT(PATH, "PackedColorBitmask", "initializeOffsets(::zserio::DeltaContext",
             "::initializeOffsets(::zserio::DeltaContext");
-    ASSERT_METHOD_PRESENT(PATH, "PackedColorBitmask", "write(::zserio::DeltaContext",
-            "::write(::zserio::DeltaContext");
+    ASSERT_METHOD_PRESENT(
+            PATH, "PackedColorBitmask", "write(::zserio::DeltaContext", "::write(::zserio::DeltaContext");
 }
 
 } // namespace packing_interface_optimization

@@ -1,10 +1,8 @@
-#include "gtest/gtest.h"
-
-#include "array_types_warning/packed_array_template_has_no_packable_field/T_u32.h"
-#include "array_types_warning/packed_array_template_has_no_packable_field/T_str.h"
 #include "array_types_warning/packed_array_template_has_no_packable_field/T_packable.h"
+#include "array_types_warning/packed_array_template_has_no_packable_field/T_str.h"
+#include "array_types_warning/packed_array_template_has_no_packable_field/T_u32.h"
 #include "array_types_warning/packed_array_template_has_no_packable_field/T_unpackable.h"
-
+#include "gtest/gtest.h"
 #include "zserio/SerializeUtil.h"
 
 namespace array_types_warning
@@ -48,9 +46,9 @@ TEST_F(PackedArrayTemplateHasNoPackableFieldTest, writeReadStr)
 TEST_F(PackedArrayTemplateHasNoPackableFieldTest, writeReadPackable)
 {
     T_packable packable(vector_type<Packable>{{
-        Packable(0, 4.0, "A"),
-        Packable(1, 1.0, "B"),
-        Packable(2, 0.0, "C"),
+            Packable(0, 4.0, "A"),
+            Packable(1, 1.0, "B"),
+            Packable(2, 0.0, "C"),
     }});
 
     const std::string blobName = BLOB_NAME_BASE + "_packable.blob";
@@ -62,9 +60,9 @@ TEST_F(PackedArrayTemplateHasNoPackableFieldTest, writeReadPackable)
 TEST_F(PackedArrayTemplateHasNoPackableFieldTest, writeReadUnpackable)
 {
     T_unpackable unpackable(vector_type<Unpackable>{{
-        Unpackable(4.0, "A"),
-        Unpackable(1.0, "B"),
-        Unpackable(0.0, "C"),
+            Unpackable(4.0, "A"),
+            Unpackable(1.0, "B"),
+            Unpackable(0.0, "C"),
     }});
 
     const std::string blobName = BLOB_NAME_BASE + "_unpackable.blob";

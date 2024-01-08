@@ -1,11 +1,9 @@
-#include <memory>
 #include <algorithm>
+#include <memory>
 
 #include "gtest/gtest.h"
-
-#include "with_validation_code/simple_table_validation/SimpleTableValidationDb.h"
 #include "test_utils/ValidationObservers.h"
-
+#include "with_validation_code/simple_table_validation/SimpleTableValidationDb.h"
 #include "zserio/SqliteFinalizer.h"
 
 using namespace test_utils;
@@ -124,7 +122,7 @@ private:
     {
         std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(connection.prepareStatement(
                 "INSERT INTO simpleTable (rowid, fieldBool, fieldBit5, fieldDynamicBit, fieldVarInt16, "
-                        "fieldString, fieldBlob, fieldEnum, fieldBitmask) "
+                "fieldString, fieldBlob, fieldEnum, fieldBitmask) "
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"));
 
         int argIdx = 1;
@@ -142,8 +140,8 @@ private:
         uint8_t* buffer = bitBuffer.getBuffer();
         if (wrongOffset)
             corruptOffsetInFieldBlob(buffer);
-        sqlite3_bind_blob(statement.get(), argIdx++, buffer, static_cast<int>(bitBuffer.getByteSize()),
-                SQLITE_TRANSIENT);
+        sqlite3_bind_blob(
+                statement.get(), argIdx++, buffer, static_cast<int>(bitBuffer.getByteSize()), SQLITE_TRANSIENT);
 
         if (id == FIELD_ENUM_NULL_ROW_ID)
             sqlite3_bind_null(statement.get(), argIdx++);
@@ -227,8 +225,8 @@ TEST_F(SimpleTableValidationTest, validateSingleTable)
     TestParameterProvider parameterProvider;
     ValidationObserver validationObserver;
     bool continueValidation = false;
-    const bool isValidated = simpleTable.validate(validationObserver,
-            parameterProvider.getSimpleTableParameterProvider(), continueValidation);
+    const bool isValidated = simpleTable.validate(
+            validationObserver, parameterProvider.getSimpleTableParameterProvider(), continueValidation);
 
     ASSERT_TRUE(isValidated);
     ASSERT_TRUE(continueValidation);
@@ -275,11 +273,13 @@ TEST_F(SimpleTableValidationTest, validateMissingColumn)
 
     const bool wasTransactionStarted = connection.startTransaction();
     populateDb(connection, false);
-    connection.executeUpdate("CREATE TABLE simpleTableTemp (rowid INTEGER PRIMARY KEY NOT NULL, "
+    connection.executeUpdate(
+            "CREATE TABLE simpleTableTemp (rowid INTEGER PRIMARY KEY NOT NULL, "
             "fieldBool INTEGER NOT NULL, fieldDynamicBit INTEGER NOT NULL, fieldVarInt16 INTEGER NOT NULL,"
             "fieldString TEXT NOT NULL, fieldBlob BLOB NOT NULL, fieldEnum INTEGER, "
             "fieldBitmask INTEGER NOT NULL)");
-    connection.executeUpdate("INSERT INTO simpleTableTemp SELECT rowid, fieldBool, fieldDynamicBit, "
+    connection.executeUpdate(
+            "INSERT INTO simpleTableTemp SELECT rowid, fieldBool, fieldDynamicBit, "
             "fieldVarInt16, fieldString, fieldBlob, fieldEnum, fieldBitmask FROM simpleTable");
     connection.executeUpdate("DROP TABLE simpleTable");
     connection.executeUpdate("ALTER TABLE simpleTableTemp RENAME TO simpleTable");
@@ -313,11 +313,13 @@ TEST_F(SimpleTableValidationTest, validateWrongColumnType)
 
     const bool wasTransactionStarted = connection.startTransaction();
     populateDb(connection, false);
-    connection.executeUpdate("CREATE TABLE simpleTableTemp (rowid INTEGER PRIMARY KEY NOT NULL, "
+    connection.executeUpdate(
+            "CREATE TABLE simpleTableTemp (rowid INTEGER PRIMARY KEY NOT NULL, "
             "fieldBool INTEGER NOT NULL, fieldBit5 TEXT, fieldDynamicBit INTEGER NOT NULL, "
             "fieldVarInt16 INTEGER NOT NULL, fieldString TEXT NOT NULL, fieldBlob BLOB NOT NULL, "
             "fieldEnum INTEGER, fieldBitmask INTEGER NOT NULL)");
-    connection.executeUpdate("INSERT INTO simpleTableTemp SELECT rowid, fieldBool, fieldBit5, fieldDynamicBit, "
+    connection.executeUpdate(
+            "INSERT INTO simpleTableTemp SELECT rowid, fieldBool, fieldBit5, fieldDynamicBit, "
             "fieldVarInt16, fieldString, fieldBlob, fieldEnum, fieldBitmask FROM simpleTable");
     connection.executeUpdate("DROP TABLE simpleTable");
     connection.executeUpdate("ALTER TABLE simpleTableTemp RENAME TO simpleTable");
@@ -351,11 +353,13 @@ TEST_F(SimpleTableValidationTest, validateWrongColumnNotNullConstraint)
 
     const bool wasTransactionStarted = connection.startTransaction();
     populateDb(connection, false);
-    connection.executeUpdate("CREATE TABLE simpleTableTemp (rowid INTEGER PRIMARY KEY NOT NULL, "
+    connection.executeUpdate(
+            "CREATE TABLE simpleTableTemp (rowid INTEGER PRIMARY KEY NOT NULL, "
             "fieldBool INTEGER NOT NULL, fieldBit5 INTEGER NOT NULL, fieldDynamicBit INTEGER NOT NULL, "
             "fieldVarInt16 INTEGER NOT NULL, fieldString TEXT NOT NULL, fieldBlob BLOB, "
             "fieldEnum INTEGER, fieldBitmask INTEGER NOT NULL)");
-    connection.executeUpdate("INSERT INTO simpleTableTemp SELECT rowid, fieldBool, fieldBit5, fieldDynamicBit, "
+    connection.executeUpdate(
+            "INSERT INTO simpleTableTemp SELECT rowid, fieldBool, fieldBit5, fieldDynamicBit, "
             "fieldVarInt16, fieldString, fieldBlob, fieldEnum, fieldBitmask FROM simpleTable");
     connection.executeUpdate("DROP TABLE simpleTable");
     connection.executeUpdate("ALTER TABLE simpleTableTemp RENAME TO simpleTable");
@@ -398,11 +402,13 @@ TEST_F(SimpleTableValidationTest, validateWrongColumnPrimaryKeyConstraint)
 
     const bool wasTransactionStarted = connection.startTransaction();
     populateDb(connection, false);
-    connection.executeUpdate("CREATE TABLE simpleTableTemp (rowid INTEGER NOT NULL, "
+    connection.executeUpdate(
+            "CREATE TABLE simpleTableTemp (rowid INTEGER NOT NULL, "
             "fieldBool INTEGER NOT NULL, fieldBit5 INTEGER, fieldDynamicBit INTEGER NOT NULL, "
             "fieldVarInt16 INTEGER NOT NULL, fieldString TEXT NOT NULL, fieldBlob BLOB NOT NULL, "
             "fieldEnum INTEGER, fieldBitmask INTEGER NOT NULL)");
-    connection.executeUpdate("INSERT INTO simpleTableTemp SELECT rowid, fieldBool, fieldBit5, fieldDynamicBit, "
+    connection.executeUpdate(
+            "INSERT INTO simpleTableTemp SELECT rowid, fieldBool, fieldBit5, fieldDynamicBit, "
             "fieldVarInt16, fieldString, fieldBlob, fieldEnum, fieldBitmask from simpleTable");
     connection.executeUpdate("DROP TABLE simpleTable");
     connection.executeUpdate("ALTER TABLE simpleTableTemp RENAME TO simpleTable");
@@ -464,8 +470,8 @@ TEST_F(SimpleTableValidationTest, validateOutOfRange)
     const auto& error1 = errors.at(0);
     ASSERT_EQ("simpleTable", error1.tableName);
     ASSERT_EQ("fieldBit5", error1.fieldName);
-    ASSERT_EQ(std::vector<std::string>{std::to_string(FIELD_BIT5_OUT_OF_RANGE_ROW_ID)},
-            error1.primaryKeyValues);
+    ASSERT_EQ(
+            std::vector<std::string>{std::to_string(FIELD_BIT5_OUT_OF_RANGE_ROW_ID)}, error1.primaryKeyValues);
     ASSERT_EQ(zserio::IValidationObserver::VALUE_OUT_OF_RANGE, error1.errorType);
     ASSERT_EQ("Value 32 of SimpleTable.fieldBit5 exceeds the range of 0..31", error1.message);
 
@@ -523,8 +529,7 @@ TEST_F(SimpleTableValidationTest, validateInvalidEnumValue)
     const auto& error = errors.at(0);
     ASSERT_EQ("simpleTable", error.tableName);
     ASSERT_EQ("fieldEnum", error.fieldName);
-    ASSERT_EQ(std::vector<std::string>{std::to_string(FIELD_ENUM_RED_ROW_ID)},
-            error.primaryKeyValues);
+    ASSERT_EQ(std::vector<std::string>{std::to_string(FIELD_ENUM_RED_ROW_ID)}, error.primaryKeyValues);
     ASSERT_EQ(zserio::IValidationObserver::INVALID_VALUE, error.errorType);
     ASSERT_EQ("Enumeration value 0 of SimpleTable.fieldEnum is not valid!", error.message);
 }

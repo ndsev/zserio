@@ -1,11 +1,9 @@
 #include <cstdio>
-#include <vector>
 #include <string>
-
-#include "gtest/gtest.h"
+#include <vector>
 
 #include "explicit_parameters/ExplicitParametersDb.h"
-
+#include "gtest/gtest.h"
 #include "zserio/RebindAlloc.h"
 #include "zserio/StringConvertUtil.h"
 
@@ -42,8 +40,8 @@ public:
     MultipleWithSameNameTest& operator=(MultipleWithSameNameTest&&) = delete;
 
 protected:
-    void fillMultipleWithSameNameTableRow(MultipleWithSameNameTable::Row& row, uint32_t id,
-            const string_type& name)
+    void fillMultipleWithSameNameTableRow(
+            MultipleWithSameNameTable::Row& row, uint32_t id, const string_type& name)
     {
         row.setId(id);
         row.setName(name);
@@ -64,8 +62,8 @@ protected:
         }
     }
 
-    static void checkMultipleWithSameNameTableRow(const MultipleWithSameNameTable::Row& row1,
-            const MultipleWithSameNameTable::Row& row2)
+    static void checkMultipleWithSameNameTableRow(
+            const MultipleWithSameNameTable::Row& row1, const MultipleWithSameNameTable::Row& row2)
     {
         ASSERT_EQ(row1.getId(), row2.getId());
         ASSERT_EQ(row1.getName(), row2.getName());
@@ -165,7 +163,7 @@ TEST_F(MultipleWithSameNameTest, update)
     multipleWithSameNameTable.update(parameterProvider, updateRow, updateCondition);
 
     MultipleWithSameNameTable::Reader reader =
-        multipleWithSameNameTable.createReader(parameterProvider, updateCondition);
+            multipleWithSameNameTable.createReader(parameterProvider, updateCondition);
     ASSERT_TRUE(reader.hasNext());
     MultipleWithSameNameTable::Row readRow = reader.next();
     ASSERT_FALSE(reader.hasNext());

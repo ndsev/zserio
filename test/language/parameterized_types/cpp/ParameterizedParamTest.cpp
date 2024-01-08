@@ -1,9 +1,7 @@
 #include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-
 #include "parameterized_types/parameterized_param/ParameterizedParamHolder.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace parameterized_types
 {
@@ -26,8 +24,8 @@ protected:
         parameterizedParamHolder.initializeChildren();
     }
 
-    void checkParameterizedParamHolderInBitStream(zserio::BitStreamReader& reader,
-            const ParameterizedParamHolder& parameterizedParamHolder)
+    void checkParameterizedParamHolderInBitStream(
+            zserio::BitStreamReader& reader, const ParameterizedParamHolder& parameterizedParamHolder)
     {
         ASSERT_EQ(parameterizedParamHolder.getParameter(), reader.readBits(16));
 

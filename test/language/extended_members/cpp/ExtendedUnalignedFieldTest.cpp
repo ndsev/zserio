@@ -1,8 +1,6 @@
-#include "gtest/gtest.h"
-
-#include "extended_members/extended_unaligned_field/Original.h"
 #include "extended_members/extended_unaligned_field/Extended.h"
-
+#include "extended_members/extended_unaligned_field/Original.h"
+#include "gtest/gtest.h"
 #include "zserio/SerializeUtil.h"
 
 namespace extended_members
@@ -39,7 +37,6 @@ protected:
         ASSERT_EQ(expectedIsPresent, moveAssignedExtended.isExtendedValuePresent());
         ASSERT_EQ(extended, moveAssignedExtended);
     }
-
 
     static const size_t ORIGINAL_BIT_SIZE;
     static const size_t EXTENDED_BIT_SIZE;

@@ -1,7 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "choice_types/enum_with_removed_item_param_choice/EnumWithRemovedItemParamChoice.h"
-
+#include "gtest/gtest.h"
 #include "zserio/SerializeUtil.h"
 
 namespace choice_types

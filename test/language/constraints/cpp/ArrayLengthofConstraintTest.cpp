@@ -1,11 +1,9 @@
+#include "constraints/array_lengthof_constraint/ArrayLengthofConstraint.h"
 #include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 #include "zserio/CppRuntimeException.h"
 #include "zserio/RebindAlloc.h"
-
-#include "constraints/array_lengthof_constraint/ArrayLengthofConstraint.h"
 
 namespace constraints
 {

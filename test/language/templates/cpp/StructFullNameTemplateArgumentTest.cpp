@@ -1,7 +1,5 @@
 #include "gtest/gtest.h"
-
 #include "templates/struct_full_name_template_argument/StructFullNameTemplateArgument.h"
-
 #include "zserio/RebindAlloc.h"
 
 namespace templates

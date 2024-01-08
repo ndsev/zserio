@@ -1,10 +1,8 @@
-#include "gtest/gtest.h"
-
 #include <numeric>
 
-#include "extended_members/extended_indexed_offsets/Original.h"
 #include "extended_members/extended_indexed_offsets/Extended.h"
-
+#include "extended_members/extended_indexed_offsets/Original.h"
+#include "gtest/gtest.h"
 #include "zserio/SerializeUtil.h"
 
 namespace extended_members
@@ -52,18 +50,16 @@ protected:
     static const size_t EXTENDED_BIT_SIZE;
 };
 
-const vector_type<uint32_t> ExtendedIndexedOffsetsTest::OFFSETS = { 0, 0, 0, 0, 0 };
+const vector_type<uint32_t> ExtendedIndexedOffsetsTest::OFFSETS = {0, 0, 0, 0, 0};
 const vector_type<string_type> ExtendedIndexedOffsetsTest::ARRAY = {
-        "extended", "indexed", "offsets", "test", "!" };
+        "extended", "indexed", "offsets", "test", "!"};
 
 const size_t ExtendedIndexedOffsetsTest::ORIGINAL_BIT_SIZE =
-        zserio::bitSizeOfVarSize(zserio::convertSizeToUInt32(OFFSETS.size())) +
-        OFFSETS.size() * 4 * 8;
+        zserio::bitSizeOfVarSize(zserio::convertSizeToUInt32(OFFSETS.size())) + OFFSETS.size() * 4 * 8;
 const size_t ExtendedIndexedOffsetsTest::EXTENDED_BIT_SIZE = ORIGINAL_BIT_SIZE +
         zserio::bitSizeOfVarSize(zserio::convertSizeToUInt32(ARRAY.size())) +
         std::accumulate(ARRAY.begin(), ARRAY.end(), static_cast<size_t>(0),
                 [](size_t size, const string_type& str) { return size + zserio::bitSizeOfString(str); });
-
 
 TEST_F(ExtendedIndexedOffsetsTest, defaultConstructor)
 {

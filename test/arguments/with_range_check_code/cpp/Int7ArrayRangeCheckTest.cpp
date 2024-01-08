@@ -1,7 +1,6 @@
 #include "gtest/gtest.h"
-
-#include "zserio/CppRuntimeException.h"
 #include "with_range_check_code/int7_array_range_check/Int7ArrayRangeCheckCompound.h"
+#include "zserio/CppRuntimeException.h"
 
 namespace with_range_check_code
 {
@@ -55,8 +54,8 @@ TEST_F(Int7ArrayRangeCheckTest, int7ArrayBelowLowerBound)
     }
     catch (const zserio::CppRuntimeException& excpt)
     {
-        ASSERT_STREQ("Value -65 of Int7ArrayRangeCheckCompound.array exceeds the range of <-64..63>!",
-                excpt.what());
+        ASSERT_STREQ(
+                "Value -65 of Int7ArrayRangeCheckCompound.array exceeds the range of <-64..63>!", excpt.what());
     }
 }
 
@@ -69,8 +68,8 @@ TEST_F(Int7ArrayRangeCheckTest, int7ArrayAboveUpperBound)
     }
     catch (const zserio::CppRuntimeException& excpt)
     {
-        ASSERT_STREQ("Value 64 of Int7ArrayRangeCheckCompound.array exceeds the range of <-64..63>!",
-                excpt.what());
+        ASSERT_STREQ(
+                "Value 64 of Int7ArrayRangeCheckCompound.array exceeds the range of <-64..63>!", excpt.what());
     }
 }
 

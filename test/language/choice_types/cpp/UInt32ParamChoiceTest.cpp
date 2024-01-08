@@ -1,9 +1,7 @@
-#include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-
 #include "choice_types/uint32_param_choice/UInt32ParamChoice.h"
+#include "gtest/gtest.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace choice_types
 {
@@ -148,8 +146,8 @@ TEST_F(UInt32ParamChoiceTest, propagateAllocatorCopyConstructor)
     const VariantA value = 99;
     uint32ParamChoice.setA(value);
 
-    const UInt32ParamChoice uint32ParamChoiceCopy(zserio::PropagateAllocator, uint32ParamChoice,
-            UInt32ParamChoice::allocator_type());
+    const UInt32ParamChoice uint32ParamChoiceCopy(
+            zserio::PropagateAllocator, uint32ParamChoice, UInt32ParamChoice::allocator_type());
     ASSERT_EQ(selector, uint32ParamChoiceCopy.getSelector());
     ASSERT_EQ(value, uint32ParamChoiceCopy.getA());
 }

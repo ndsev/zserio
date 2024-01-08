@@ -1,8 +1,6 @@
 #include "gtest/gtest.h"
-
-#include "zserio/SerializeUtil.h"
-
 #include "parameterized_types/packed_array_element_param/Database.h"
+#include "zserio/SerializeUtil.h"
 
 namespace parameterized_types
 {
@@ -61,8 +59,7 @@ protected:
         ASSERT_GT(unpackedBitSize * minCompressionRatio, packedBitSize)
                 << "Unpacked array has " << std::to_string(unpackedBitSize) << " bits, "
                 << "packed array has " << std::to_string(packedBitSize) << " bits, "
-                << "compression ratio is "
-                << std::to_string(packedBitSize /unpackedBitSize * 100) << "%!";
+                << "compression ratio is " << std::to_string(packedBitSize / unpackedBitSize * 100) << "%!";
     }
 
     void checkWriteRead(uint16_t numBlocks)

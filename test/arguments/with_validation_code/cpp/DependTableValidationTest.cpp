@@ -1,12 +1,10 @@
 #include <memory>
 
 #include "gtest/gtest.h"
-
+#include "test_utils/ValidationObservers.h"
+#include "with_validation_code/depend_table_validation/DependTableValidationDb.h"
 #include "zserio/FloatUtil.h"
 #include "zserio/SqliteFinalizer.h"
-
-#include "with_validation_code/depend_table_validation/DependTableValidationDb.h"
-#include "test_utils/ValidationObservers.h"
 
 using namespace test_utils;
 

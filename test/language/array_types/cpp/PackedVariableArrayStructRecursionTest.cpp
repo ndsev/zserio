@@ -1,7 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "array_types/packed_variable_array_struct_recursion/PackedVariableArray.h"
-
+#include "gtest/gtest.h"
 #include "zserio/SerializeUtil.h"
 
 namespace array_types
@@ -82,8 +80,7 @@ protected:
         ASSERT_GT(unpackedBitSize * minCompressionRatio, packedBitSize)
                 << "Unpacked array has " << std::to_string(unpackedBitSize) << " bits, "
                 << "packed array has " << std::to_string(packedBitSize) << " bits, "
-                << "compression ratio is "
-                << std::to_string(packedBitSize / unpackedBitSize * 100) << "%!";
+                << "compression ratio is " << std::to_string(packedBitSize / unpackedBitSize * 100) << "%!";
     }
 
     void checkWriteRead(size_t numElements)

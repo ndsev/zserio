@@ -1,6 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "expressions/modulo_operator/ModuloFunction.h"
+#include "gtest/gtest.h"
 
 namespace expressions
 {

@@ -1,6 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "choice_types/expression_selector_choice/ExpressionSelectorChoice.h"
+#include "gtest/gtest.h"
 
 namespace choice_types
 {

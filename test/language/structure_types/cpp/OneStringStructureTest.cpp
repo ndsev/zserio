@@ -1,11 +1,9 @@
 #include <cstring>
 
 #include "gtest/gtest.h"
-
 #include "structure_types/one_string_structure/OneStringStructure.h"
-
-#include "zserio/SerializeUtil.h"
 #include "zserio/RebindAlloc.h"
+#include "zserio/SerializeUtil.h"
 
 namespace structure_types
 {
@@ -61,7 +59,7 @@ TEST_F(OneStringStructureTest, fieldConstructor)
         string_type movedString(1000, 'a'); // long enough to prevent small string optimization
         const void* ptr = movedString.data();
         OneStringStructure oneStringStructure(std::move(movedString));
-        const void* movedPtr= oneStringStructure.getOneString().data();
+        const void* movedPtr = oneStringStructure.getOneString().data();
         ASSERT_EQ(ptr, movedPtr);
     }
     {
@@ -129,8 +127,8 @@ TEST_F(OneStringStructureTest, propagateAllocatorCopyConstructor)
 {
     const char* str = "test";
     OneStringStructure oneStringStructure(str);
-    OneStringStructure oneStringStructureCopy(zserio::PropagateAllocator, oneStringStructure,
-            OneStringStructure::allocator_type());
+    OneStringStructure oneStringStructureCopy(
+            zserio::PropagateAllocator, oneStringStructure, OneStringStructure::allocator_type());
     ASSERT_EQ(str, oneStringStructure.getOneString());
     ASSERT_EQ(str, oneStringStructureCopy.getOneString());
 }

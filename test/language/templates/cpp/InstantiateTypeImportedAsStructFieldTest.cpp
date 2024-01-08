@@ -1,5 +1,4 @@
 #include "gtest/gtest.h"
-
 #include "templates/instantiate_type_imported_as_struct_field/InstantiateTypeImportedAsStructField.h"
 
 namespace templates

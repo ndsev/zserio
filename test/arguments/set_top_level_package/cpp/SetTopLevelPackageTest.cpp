@@ -1,6 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "company/appl/SimpleStructure.h"
+#include "gtest/gtest.h"
 
 namespace company
 {

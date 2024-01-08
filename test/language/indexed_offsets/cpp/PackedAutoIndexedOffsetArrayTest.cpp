@@ -1,8 +1,6 @@
 #include "gtest/gtest.h"
-
-#include "zserio/SerializeUtil.h"
-
 #include "indexed_offsets/packed_auto_indexed_offset_array/AutoIndexedOffsetArray.h"
+#include "zserio/SerializeUtil.h"
 
 namespace indexed_offsets
 {
@@ -95,26 +93,25 @@ protected:
 
     static const std::string BLOB_NAME;
 
-    static const uint8_t    NUM_ELEMENTS = 5;
+    static const uint8_t NUM_ELEMENTS = 5;
 
-    static const uint32_t   WRONG_OFFSET = 0;
+    static const uint32_t WRONG_OFFSET = 0;
 
-    static const size_t     AUTO_ARRAY_LENGTH_BYTE_SIZE = 1;
-    static const uint32_t   ELEMENT0_OFFSET = AUTO_ARRAY_LENGTH_BYTE_SIZE + NUM_ELEMENTS * 4 +
+    static const size_t AUTO_ARRAY_LENGTH_BYTE_SIZE = 1;
+    static const uint32_t ELEMENT0_OFFSET = AUTO_ARRAY_LENGTH_BYTE_SIZE + NUM_ELEMENTS * 4 +
             (3 + AUTO_ARRAY_LENGTH_BYTE_SIZE * 8 + 5 /* alignment */) / 8;
-    static const uint8_t    ELEMENT_SIZE = 5;
-    static const uint8_t    ALIGNED_FIRST_ELEMENT_SIZE = 1 + 6 + ELEMENT_SIZE + 4 /* alignment */;
-    static const uint8_t    ALIGNED_FIRST_ELEMENT_BYTE_SIZE = ALIGNED_FIRST_ELEMENT_SIZE / 8;
-    static const uint8_t    ALIGNED_ELEMENT_SIZE = 8;
-    static const uint8_t    ALIGNED_ELEMENT_BYTE_SIZE = ALIGNED_ELEMENT_SIZE / 8;
+    static const uint8_t ELEMENT_SIZE = 5;
+    static const uint8_t ALIGNED_FIRST_ELEMENT_SIZE = 1 + 6 + ELEMENT_SIZE + 4 /* alignment */;
+    static const uint8_t ALIGNED_FIRST_ELEMENT_BYTE_SIZE = ALIGNED_FIRST_ELEMENT_SIZE / 8;
+    static const uint8_t ALIGNED_ELEMENT_SIZE = 8;
+    static const uint8_t ALIGNED_ELEMENT_BYTE_SIZE = ALIGNED_ELEMENT_SIZE / 8;
 
-    static const uint8_t    SPACER_VALUE = 7;
+    static const uint8_t SPACER_VALUE = 7;
 
-    static const int8_t     PACKED_ARRAY_DELTA = 1;
-    static const uint8_t    PACKED_ARRAY_MAX_BIT_NUMBER = 1;
+    static const int8_t PACKED_ARRAY_DELTA = 1;
+    static const uint8_t PACKED_ARRAY_MAX_BIT_NUMBER = 1;
 
-    static const size_t     AUTO_INDEXED_OFFSET_ARRAY_BIT_SIZE = ELEMENT0_OFFSET * 8 +
-            ALIGNED_FIRST_ELEMENT_SIZE +
+    static const size_t AUTO_INDEXED_OFFSET_ARRAY_BIT_SIZE = ELEMENT0_OFFSET * 8 + ALIGNED_FIRST_ELEMENT_SIZE +
             (NUM_ELEMENTS - 2) * ALIGNED_ELEMENT_SIZE + PACKED_ARRAY_MAX_BIT_NUMBER + 1;
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);

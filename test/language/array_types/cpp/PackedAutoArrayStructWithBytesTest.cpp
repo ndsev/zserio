@@ -1,10 +1,8 @@
-#include <vector>
 #include <array>
-
-#include "gtest/gtest.h"
+#include <vector>
 
 #include "array_types/packed_auto_array_struct_with_bytes/PackedAutoArray.h"
-
+#include "gtest/gtest.h"
 #include "zserio/RebindAlloc.h"
 #include "zserio/SerializeUtil.h"
 

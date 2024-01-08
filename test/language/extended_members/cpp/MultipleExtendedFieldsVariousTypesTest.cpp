@@ -1,13 +1,11 @@
-#include "gtest/gtest.h"
-
 #include <numeric>
 
-#include "extended_members/multiple_extended_fields_various_types/Original.h"
 #include "extended_members/multiple_extended_fields_various_types/Extended1.h"
 #include "extended_members/multiple_extended_fields_various_types/Extended2.h"
-
-#include "zserio/SerializeUtil.h"
+#include "extended_members/multiple_extended_fields_various_types/Original.h"
+#include "gtest/gtest.h"
 #include "zserio/BitSizeOfCalculator.h"
+#include "zserio/SerializeUtil.h"
 
 namespace extended_members
 {
@@ -59,7 +57,8 @@ protected:
         checkExtended2FieldsPresent(movedExtended2, expectedExtended2FieldsPresent);
         ASSERT_EQ(extended2, movedExtended2);
 
-        Extended2 copiedWithPropagateAllocatorExtended2(zserio::PropagateAllocator, extended2, allocator_type());
+        Extended2 copiedWithPropagateAllocatorExtended2(
+                zserio::PropagateAllocator, extended2, allocator_type());
         checkExtended1FieldsPresent(copiedWithPropagateAllocatorExtended2, expectedExtended1FieldsPresent);
         checkExtended2FieldsPresent(copiedWithPropagateAllocatorExtended2, expectedExtended2FieldsPresent);
         ASSERT_EQ(extended2, copiedWithPropagateAllocatorExtended2);
@@ -125,10 +124,7 @@ protected:
         bitSize += zserio::bitSizeOfVarSize(EXTENDED_VALUE5);
         bitSize = zserio::alignTo(8, bitSize);
         bitSize += std::accumulate(EXTENDED_VALUE6.begin(), EXTENDED_VALUE6.end(), static_cast<size_t>(0),
-                [](size_t size, const string_type& str)
-                {
-                    return size + zserio::bitSizeOfString(str);
-                });
+                [](size_t size, const string_type& str) { return size + zserio::bitSizeOfString(str); });
         bitSize = zserio::alignTo(8, bitSize);
         bitSize += 8 + 4 * 8; // extendedValue7 (choiceTag + valueU32)
         bitSize = zserio::alignTo(8, bitSize);
@@ -153,12 +149,10 @@ protected:
 
 constexpr int8_t MultipleExtendedFieldsVariousTypesTest::VALUE;
 constexpr uint32_t MultipleExtendedFieldsVariousTypesTest::EXTENDED_VALUE1;
-const BitBuffer MultipleExtendedFieldsVariousTypesTest::EXTENDED_VALUE2 =
-        BitBuffer({ 0xCA, 0xFE }, 16);
-const vector_type<uint8_t> MultipleExtendedFieldsVariousTypesTest::EXTENDED_VALUE3 = { 0xDE, 0xAD };
+const BitBuffer MultipleExtendedFieldsVariousTypesTest::EXTENDED_VALUE2 = BitBuffer({0xCA, 0xFE}, 16);
+const vector_type<uint8_t> MultipleExtendedFieldsVariousTypesTest::EXTENDED_VALUE3 = {0xDE, 0xAD};
 constexpr uint32_t MultipleExtendedFieldsVariousTypesTest::EXTENDED_VALUE5;
-const vector_type<string_type> MultipleExtendedFieldsVariousTypesTest::EXTENDED_VALUE6 =
-        { "this", "is", "test" };
+const vector_type<string_type> MultipleExtendedFieldsVariousTypesTest::EXTENDED_VALUE6 = {"this", "is", "test"};
 constexpr uint64_t MultipleExtendedFieldsVariousTypesTest::EXTENDED_VALUE9;
 
 const size_t MultipleExtendedFieldsVariousTypesTest::ORIGINAL_BIT_SIZE = 7;

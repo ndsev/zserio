@@ -1,6 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "expressions/function_type/FunctionTypeExpression.h"
+#include "gtest/gtest.h"
 
 namespace expressions
 {

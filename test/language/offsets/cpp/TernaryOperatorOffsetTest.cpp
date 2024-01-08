@@ -1,10 +1,8 @@
 #include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-#include "zserio/CppRuntimeException.h"
-
 #include "offsets/ternary_operator_offset/TernaryOffset.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
+#include "zserio/CppRuntimeException.h"
 
 namespace offsets
 {
@@ -18,8 +16,8 @@ using vector_type = zserio::vector<T, allocator_type>;
 class TernaryOperatorOffsetTest : public ::testing::Test
 {
 protected:
-    void writeTernaryOffsetToByteArray(zserio::BitStreamWriter& writer, bool isFirstOffsetUsed,
-            bool writeWrongOffset)
+    void writeTernaryOffsetToByteArray(
+            zserio::BitStreamWriter& writer, bool isFirstOffsetUsed, bool writeWrongOffset)
     {
         writer.writeBool(isFirstOffsetUsed);
         if (isFirstOffsetUsed)
@@ -54,7 +52,7 @@ protected:
     void fillTernaryOffset(TernaryOffset& ternaryOffset, bool isFirstOffsetUsed, bool createWrongOffset)
     {
         ternaryOffset.setIsFirstOffsetUsed(isFirstOffsetUsed);
-        const vector_type<uint32_t> offsets = { WRONG_FIELD_OFFSET, WRONG_FIELD_OFFSET };
+        const vector_type<uint32_t> offsets = {WRONG_FIELD_OFFSET, WRONG_FIELD_OFFSET};
         ternaryOffset.setOffsets(offsets);
         ternaryOffset.setValue(FIELD_VALUE);
         if (!createWrongOffset)
@@ -103,7 +101,7 @@ protected:
 };
 
 const uint32_t TernaryOperatorOffsetTest::WRONG_FIELD_OFFSET = 0;
-const uint32_t TernaryOperatorOffsetTest::FIELD_OFFSET = (1 + 32 + 32 + /* align */ + 7) / 8;
+const uint32_t TernaryOperatorOffsetTest::FIELD_OFFSET = (1 + 32 + 32 + /* align */ +7) / 8;
 const int32_t TernaryOperatorOffsetTest::FIELD_VALUE = 0xABCD;
 
 TEST_F(TernaryOperatorOffsetTest, firstOffset)

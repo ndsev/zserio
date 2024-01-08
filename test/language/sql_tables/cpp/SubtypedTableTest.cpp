@@ -1,12 +1,10 @@
 #include <cstdio>
-#include <string>
 #include <fstream>
 #include <memory>
+#include <string>
 
 #include "gtest/gtest.h"
-
 #include "sql_tables/TestDb.h"
-
 #include "zserio/SqliteFinalizer.h"
 
 namespace sql_tables
@@ -43,8 +41,8 @@ protected:
     bool isTableInDb()
     {
         string_type checkTableName = "subtypedTable";
-        string_type sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
-                "'";
+        string_type sqlQuery =
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName + "'";
         std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(
                 m_database->connection().prepareStatement(sqlQuery));
 

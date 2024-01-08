@@ -1,7 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "array_types/auto_array_uint8/AutoArray.h"
-
+#include "gtest/gtest.h"
 #include "zserio/RebindAlloc.h"
 #include "zserio/SerializeUtil.h"
 

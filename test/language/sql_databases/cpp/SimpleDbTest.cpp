@@ -1,18 +1,16 @@
+#include <algorithm>
 #include <cstdio>
-#include <vector>
-#include <string>
 #include <memory>
 #include <set>
-#include <algorithm>
+#include <string>
+#include <vector>
 
 #include "gtest/gtest.h"
-
 #include "sql_databases/simple_db/WorldDb.h"
-
 #include "zserio/RebindAlloc.h"
 #include "zserio/SqliteFinalizer.h"
-#include "zserio/StringView.h"
 #include "zserio/StringConvertUtil.h"
+#include "zserio/StringView.h"
 
 namespace sql_databases
 {
@@ -31,7 +29,9 @@ class SimpleDbTest : public ::testing::Test
 public:
     SimpleDbTest() :
             m_dbFileName("language/sql_databases/simple_db_test.sqlite"),
-            m_worldDbName("WorldDb"), m_europeTableName("europe"), m_americaTableName("america")
+            m_worldDbName("WorldDb"),
+            m_europeTableName("europe"),
+            m_americaTableName("america")
     {
         std::remove(m_dbFileName.c_str());
     }
@@ -39,8 +39,8 @@ public:
 protected:
     bool isTableInDb(zserio::ISqliteDatabase& database, const string_type& checkTableName)
     {
-        string_type sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
-                "'";
+        string_type sqlQuery =
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName + "'";
         std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(
                 database.connection().prepareStatement(sqlQuery));
 
@@ -61,7 +61,7 @@ protected:
 
 TEST_F(SimpleDbTest, externalConstructor)
 {
-    sqlite3 *externalConnection = nullptr;
+    sqlite3* externalConnection = nullptr;
     const int result = sqlite3_open(m_dbFileName.c_str(), &externalConnection);
     ASSERT_EQ(SQLITE_OK, result);
 
@@ -142,11 +142,7 @@ TEST_F(SimpleDbTest, tableNames)
 {
     vector_type<string_type> tableNames;
     std::transform(WorldDb::tableNames().begin(), WorldDb::tableNames().end(), std::back_inserter(tableNames),
-            [](zserio::StringView name) -> string_type
-            {
-                return zserio::toString(name, allocator_type());
-            }
-    );
+            [](zserio::StringView name) -> string_type { return zserio::toString(name, allocator_type()); });
 
     vector_type<string_type> expectedTableNames;
     expectedTableNames.push_back(m_europeTableName);

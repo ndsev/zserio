@@ -1,6 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "expressions/question_mark/QuestionMarkExpression.h"
+#include "gtest/gtest.h"
 
 namespace expressions
 {

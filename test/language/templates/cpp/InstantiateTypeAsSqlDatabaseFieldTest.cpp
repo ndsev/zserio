@@ -1,9 +1,7 @@
 #include <cstdio>
 
 #include "gtest/gtest.h"
-
 #include "templates/instantiate_type_as_sql_database_field/InstantiateTypeAsSqlDatabaseFieldDb.h"
-
 #include "zserio/RebindAlloc.h"
 
 namespace templates

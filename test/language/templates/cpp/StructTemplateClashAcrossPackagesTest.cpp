@@ -1,5 +1,4 @@
 #include "gtest/gtest.h"
-
 #include "templates/struct_template_clash_across_packages/pkg1/InstantiationInPkg1.h"
 #include "templates/struct_template_clash_across_packages/pkg2/InstantiationInPkg2.h"
 
@@ -28,7 +27,7 @@ TEST(StructTemplateClashAcrossPackagesTest, readWriteInPkg1)
     ASSERT_TRUE(instantiationInPkg1 == readInstantiationInPkg1);
 }
 
-} // pkg1
+} // namespace pkg1
 
 namespace pkg2
 {
@@ -50,7 +49,7 @@ TEST(StructTemplateClashAcrossPackagesTest, readWriteInPkg2)
     ASSERT_TRUE(instantiationInPkg2 == readInstantiationInPkg2);
 }
 
-} // pkg2
+} // namespace pkg2
 
 } // namespace struct_template_clash_across_packages
 } // namespace templates

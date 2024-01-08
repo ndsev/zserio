@@ -2,14 +2,11 @@
 #include <memory>
 
 #include "gtest/gtest.h"
-
-#include "zserio/ServiceException.h"
+#include "service_types/simple_service/SimpleService.h"
+#include "test_utils/LocalServiceClient.h"
 #include "zserio/RebindAlloc.h"
 #include "zserio/SerializeUtil.h"
-
-#include "test_utils/LocalServiceClient.h"
-
-#include "service_types/simple_service/SimpleService.h"
+#include "zserio/ServiceException.h"
 
 using namespace zserio::literals;
 
@@ -26,11 +23,11 @@ using BitBuffer = zserio::BasicBitBuffer<allocator_type>;
 
 namespace
 {
-    struct FakeContext
-    {
-        bool seenByService = false;
-    };
-}
+struct FakeContext
+{
+    bool seenByService = false;
+};
+} // namespace
 
 class SimpleServiceImpl : public SimpleService::Service
 {
@@ -64,12 +61,12 @@ public:
 class SimpleServiceTest : public ::testing::Test
 {
 public:
-    SimpleServiceTest()
-    :   localServiceClient(service),
-        client(localServiceClient),
-        movedService(createService()),
-        movedLocalServiceClient(movedService),
-        movedClient(createClient())
+    SimpleServiceTest() :
+            localServiceClient(service),
+            client(localServiceClient),
+            movedService(createService()),
+            movedLocalServiceClient(movedService),
+            movedClient(createClient())
     {}
 
 private:
@@ -99,8 +96,7 @@ protected:
 
 TEST_F(SimpleServiceTest, serviceFullName)
 {
-    ASSERT_EQ("service_types.simple_service.SimpleService"_sv,
-            SimpleService::Service::serviceFullName());
+    ASSERT_EQ("service_types.simple_service.SimpleService"_sv, SimpleService::Service::serviceFullName());
 }
 
 TEST_F(SimpleServiceTest, methodNames)

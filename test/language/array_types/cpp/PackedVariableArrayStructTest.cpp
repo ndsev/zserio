@@ -1,7 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "array_types/packed_variable_array_struct/PackedVariableArray.h"
-
+#include "gtest/gtest.h"
 #include "zserio/SerializeUtil.h"
 
 namespace array_types
@@ -85,7 +83,7 @@ protected:
         else if (index == 5)
             testUnion.setArray32(vector_type<uint32_t>{index * 2, index * 2 + 1});
         else
-            testUnion.setValue32(Value32{index * 2 });
+            testUnion.setValue32(Value32{index * 2});
 
         return testUnion;
     }
@@ -95,15 +93,14 @@ protected:
         PackedVariableArray packedVariableArray;
         fillPackedVariableArray(packedVariableArray, numElements);
 
-        const double unpackedBitSize = static_cast<double>(
-                packedVariableArray.getTestUnpackedArray().bitSizeOf());
+        const double unpackedBitSize =
+                static_cast<double>(packedVariableArray.getTestUnpackedArray().bitSizeOf());
         const double packedBitSize = static_cast<double>(packedVariableArray.getTestPackedArray().bitSizeOf());
         const double minCompressionRatio = 0.622;
         ASSERT_GT(unpackedBitSize * minCompressionRatio, packedBitSize)
                 << "Unpacked array has " << std::to_string(unpackedBitSize) << " bits, "
                 << "packed array has " << std::to_string(packedBitSize) << " bits, "
-                << "compression ratio is "
-                << std::to_string(packedBitSize /unpackedBitSize * 100) << "%!";
+                << "compression ratio is " << std::to_string(packedBitSize / unpackedBitSize * 100) << "%!";
     }
 
     void checkWriteRead(uint32_t numElements)
@@ -212,5 +209,5 @@ TEST_F(PackedVariableArrayStructTest, writeReadFileLength4)
     checkWriteReadFile(VARIABLE_ARRAY_LENGTH4);
 }
 
-} // namespace packed_variable_array_struct_recursion
+} // namespace packed_variable_array_struct
 } // namespace array_types

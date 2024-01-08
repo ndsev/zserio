@@ -1,7 +1,6 @@
 #include <fstream>
 
 #include "gtest/gtest.h"
-
 #include "zserio/DebugStringUtil.h"
 #include "zserio/JsonWriter.h"
 #include "zserio/RebindAlloc.h"
@@ -165,8 +164,8 @@ TEST_F(DebugStringTest, jsonWriterWithOptionals)
     {
         zserio::toJsonFile(withTypeInfoCode, JSON_NAME_WITH_OPTIONALS);
 
-        auto reflectable = zserio::fromJsonFile(WithTypeInfoCode::typeInfo(), JSON_NAME_WITH_OPTIONALS,
-                allocator_type());
+        auto reflectable =
+                zserio::fromJsonFile(WithTypeInfoCode::typeInfo(), JSON_NAME_WITH_OPTIONALS, allocator_type());
         ASSERT_TRUE(reflectable);
         reflectable->initializeChildren();
         checkReflectable(withTypeInfoCode, reflectable);
@@ -205,8 +204,8 @@ TEST_F(DebugStringTest, jsonWriterWithoutOptionals)
         const WithTypeInfoCode& withTypeInfoCodeConst = withTypeInfoCode;
         zserio::toJsonFile(withTypeInfoCodeConst, JSON_NAME_WITHOUT_OPTIONALS);
 
-        auto reflectable = zserio::fromJsonFile(WithTypeInfoCode::typeInfo(), JSON_NAME_WITHOUT_OPTIONALS,
-                allocator_type());
+        auto reflectable = zserio::fromJsonFile(
+                WithTypeInfoCode::typeInfo(), JSON_NAME_WITHOUT_OPTIONALS, allocator_type());
         ASSERT_TRUE(reflectable);
         reflectable->initializeChildren();
         checkReflectable(withTypeInfoCode, reflectable);
@@ -223,41 +222,39 @@ TEST_F(DebugStringTest, jsonWriterWithArrayLengthFilter)
     {
         const string_type jsonFileName = getJsonNameWithArrayLengthFilter(i);
 
-        {
-            {
-                std::ofstream jsonFile(jsonFileName.c_str(), std::ios::out | std::ios::trunc);
-                JsonWriter jsonWriter(jsonFile, JSON_INDENT);
-                ArrayLengthWalkFilter walkFilter(i);
-                Walker walker(jsonWriter, walkFilter);
-                walker.walk(withTypeInfoCode.reflectable());
-            }
-            {
-                std::ifstream jsonFile(jsonFileName.c_str());
-                JsonReader jsonReader(jsonFile);
-                auto reflectable = jsonReader.read(WithTypeInfoCode::typeInfo());
-                ASSERT_TRUE(reflectable);
-                checkWithTypeInfoCodeArrayLength(reflectable, i);
-            }
-        }
-        {
-            {
-                // constant reflectable
-                const WithTypeInfoCode& withTypeInfoCodeConst = withTypeInfoCode;
-                std::ofstream jsonFile(jsonFileName.c_str(), std::ios::out | std::ios::trunc);
-                JsonWriter jsonWriter(jsonFile, JSON_INDENT);
-                ArrayLengthWalkFilter walkFilter(i);
-                Walker walker(jsonWriter, walkFilter);
-                walker.walk(withTypeInfoCodeConst.reflectable());
-            }
-            {
-                std::ifstream jsonFile(jsonFileName.c_str());
-                JsonReader jsonReader(jsonFile);
-                auto reflectable = jsonReader.read(WithTypeInfoCode::typeInfo());
-                ASSERT_TRUE(reflectable);
-                checkWithTypeInfoCodeArrayLength(reflectable, i);
-            }
-        }
+        {{std::ofstream jsonFile(jsonFileName.c_str(), std::ios::out | std::ios::trunc);
+        JsonWriter jsonWriter(jsonFile, JSON_INDENT);
+        ArrayLengthWalkFilter walkFilter(i);
+        Walker walker(jsonWriter, walkFilter);
+        walker.walk(withTypeInfoCode.reflectable());
     }
+    {
+        std::ifstream jsonFile(jsonFileName.c_str());
+        JsonReader jsonReader(jsonFile);
+        auto reflectable = jsonReader.read(WithTypeInfoCode::typeInfo());
+        ASSERT_TRUE(reflectable);
+        checkWithTypeInfoCodeArrayLength(reflectable, i);
+    }
+}
+{
+    {
+        // constant reflectable
+        const WithTypeInfoCode& withTypeInfoCodeConst = withTypeInfoCode;
+        std::ofstream jsonFile(jsonFileName.c_str(), std::ios::out | std::ios::trunc);
+        JsonWriter jsonWriter(jsonFile, JSON_INDENT);
+        ArrayLengthWalkFilter walkFilter(i);
+        Walker walker(jsonWriter, walkFilter);
+        walker.walk(withTypeInfoCodeConst.reflectable());
+    }
+    {
+        std::ifstream jsonFile(jsonFileName.c_str());
+        JsonReader jsonReader(jsonFile);
+        auto reflectable = jsonReader.read(WithTypeInfoCode::typeInfo());
+        ASSERT_TRUE(reflectable);
+        checkWithTypeInfoCodeArrayLength(reflectable, i);
+    }
+}
+} // namespace with_type_info_code
 }
 
 TEST_F(DebugStringTest, jsonWriterWithDepth0Filter)
@@ -266,40 +263,38 @@ TEST_F(DebugStringTest, jsonWriterWithDepth0Filter)
     fillWithTypeInfoCode(withTypeInfoCode);
     withTypeInfoCode.initializeOffsets(0);
 
+    {{std::ofstream jsonFile(JSON_NAME_WITH_DEPTH0_FILTER.c_str(), std::ios::out | std::ios::trunc);
+    JsonWriter jsonWriter(jsonFile, JSON_INDENT);
+    DepthWalkFilter walkFilter(0);
+    Walker walker(jsonWriter, walkFilter);
+    walker.walk(withTypeInfoCode.reflectable());
+}
+{
+    std::ifstream jsonFile(JSON_NAME_WITH_DEPTH0_FILTER.c_str());
+    JsonReader jsonReader(jsonFile);
+    auto reflectable = jsonReader.read(WithTypeInfoCode::typeInfo());
+    ASSERT_TRUE(reflectable);
+    checkWithTypeInfoCodeDepth0(reflectable);
+}
+}
+{
+    // constant reflectable
     {
-        {
-            std::ofstream jsonFile(JSON_NAME_WITH_DEPTH0_FILTER.c_str(), std::ios::out | std::ios::trunc);
-            JsonWriter jsonWriter(jsonFile, JSON_INDENT);
-            DepthWalkFilter walkFilter(0);
-            Walker walker(jsonWriter, walkFilter);
-            walker.walk(withTypeInfoCode.reflectable());
-        }
-        {
-            std::ifstream jsonFile(JSON_NAME_WITH_DEPTH0_FILTER.c_str());
-            JsonReader jsonReader(jsonFile);
-            auto reflectable = jsonReader.read(WithTypeInfoCode::typeInfo());
-            ASSERT_TRUE(reflectable);
-            checkWithTypeInfoCodeDepth0(reflectable);
-        }
+        const WithTypeInfoCode& withTypeInfoCodeConst = withTypeInfoCode;
+        std::ofstream jsonFile(JSON_NAME_WITH_DEPTH0_FILTER.c_str(), std::ios::out | std::ios::trunc);
+        JsonWriter jsonWriter(jsonFile, JSON_INDENT);
+        DepthWalkFilter walkFilter(0);
+        Walker walker(jsonWriter, walkFilter);
+        walker.walk(withTypeInfoCodeConst.reflectable());
     }
     {
-        // constant reflectable
-        {
-            const WithTypeInfoCode& withTypeInfoCodeConst = withTypeInfoCode;
-            std::ofstream jsonFile(JSON_NAME_WITH_DEPTH0_FILTER.c_str(), std::ios::out | std::ios::trunc);
-            JsonWriter jsonWriter(jsonFile, JSON_INDENT);
-            DepthWalkFilter walkFilter(0);
-            Walker walker(jsonWriter, walkFilter);
-            walker.walk(withTypeInfoCodeConst.reflectable());
-        }
-        {
-            std::ifstream jsonFile(JSON_NAME_WITH_DEPTH0_FILTER.c_str());
-            JsonReader jsonReader(jsonFile);
-            auto reflectable = jsonReader.read(WithTypeInfoCode::typeInfo());
-            ASSERT_TRUE(reflectable);
-            checkWithTypeInfoCodeDepth0(reflectable);
-        }
+        std::ifstream jsonFile(JSON_NAME_WITH_DEPTH0_FILTER.c_str());
+        JsonReader jsonReader(jsonFile);
+        auto reflectable = jsonReader.read(WithTypeInfoCode::typeInfo());
+        ASSERT_TRUE(reflectable);
+        checkWithTypeInfoCodeDepth0(reflectable);
     }
+}
 }
 
 TEST_F(DebugStringTest, jsonWriterWithDepth1ArrayLength0Filter)
@@ -308,52 +303,45 @@ TEST_F(DebugStringTest, jsonWriterWithDepth1ArrayLength0Filter)
     fillWithTypeInfoCode(withTypeInfoCode);
     withTypeInfoCode.initializeOffsets(0);
 
+    {{std::ofstream jsonFile(
+            JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER.c_str(), std::ios::out | std::ios::trunc);
+    JsonWriter jsonWriter(jsonFile, JSON_INDENT);
+    DepthWalkFilter depthFilter(1);
+    ArrayLengthWalkFilter arrayLengthFilter(0);
+    AndWalkFilter walkFilter({std::ref<IWalkFilter>(depthFilter), std::ref<IWalkFilter>(arrayLengthFilter)});
+    Walker walker(jsonWriter, walkFilter);
+    walker.walk(withTypeInfoCode.reflectable());
+}
+{
+    std::ifstream jsonFile(JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER.c_str());
+    JsonReader jsonReader(jsonFile);
+    auto reflectable = jsonReader.read(WithTypeInfoCode::typeInfo());
+    ASSERT_TRUE(reflectable);
+    checkWithTypeInfoCodeDepth1ArrayLength0(reflectable);
+}
+}
+{
     {
-        {
-            std::ofstream jsonFile(JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER.c_str(),
-                    std::ios::out | std::ios::trunc);
-            JsonWriter jsonWriter(jsonFile, JSON_INDENT);
-            DepthWalkFilter depthFilter(1);
-            ArrayLengthWalkFilter arrayLengthFilter(0);
-            AndWalkFilter walkFilter({
-                    std::ref<IWalkFilter>(depthFilter),
-                    std::ref<IWalkFilter>(arrayLengthFilter)
-            });
-            Walker walker(jsonWriter, walkFilter);
-            walker.walk(withTypeInfoCode.reflectable());
-        }
-        {
-            std::ifstream jsonFile(JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER.c_str());
-            JsonReader jsonReader(jsonFile);
-            auto reflectable = jsonReader.read(WithTypeInfoCode::typeInfo());
-            ASSERT_TRUE(reflectable);
-            checkWithTypeInfoCodeDepth1ArrayLength0(reflectable);
-        }
+        // constant reflectable
+        const WithTypeInfoCode& withTypeInfoCodeConst = withTypeInfoCode;
+        std::ofstream jsonFile(
+                JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER.c_str(), std::ios::out | std::ios::trunc);
+        JsonWriter jsonWriter(jsonFile, JSON_INDENT);
+        DepthWalkFilter depthFilter(1);
+        ArrayLengthWalkFilter arrayLengthFilter(0);
+        AndWalkFilter walkFilter(
+                {std::ref<IWalkFilter>(depthFilter), std::ref<IWalkFilter>(arrayLengthFilter)});
+        Walker walker(jsonWriter, walkFilter);
+        walker.walk(withTypeInfoCodeConst.reflectable());
     }
     {
-        {
-            // constant reflectable
-            const WithTypeInfoCode& withTypeInfoCodeConst = withTypeInfoCode;
-            std::ofstream jsonFile(JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER.c_str(),
-                    std::ios::out | std::ios::trunc);
-            JsonWriter jsonWriter(jsonFile, JSON_INDENT);
-            DepthWalkFilter depthFilter(1);
-            ArrayLengthWalkFilter arrayLengthFilter(0);
-            AndWalkFilter walkFilter({
-                    std::ref<IWalkFilter>(depthFilter),
-                    std::ref<IWalkFilter>(arrayLengthFilter)
-            });
-            Walker walker(jsonWriter, walkFilter);
-            walker.walk(withTypeInfoCodeConst.reflectable());
-        }
-        {
-            std::ifstream jsonFile(JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER.c_str());
-            JsonReader jsonReader(jsonFile);
-            auto reflectable = jsonReader.read(WithTypeInfoCode::typeInfo());
-            ASSERT_TRUE(reflectable);
-            checkWithTypeInfoCodeDepth1ArrayLength0(reflectable);
-        }
+        std::ifstream jsonFile(JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER.c_str());
+        JsonReader jsonReader(jsonFile);
+        auto reflectable = jsonReader.read(WithTypeInfoCode::typeInfo());
+        ASSERT_TRUE(reflectable);
+        checkWithTypeInfoCodeDepth1ArrayLength0(reflectable);
     }
+}
 }
 
 TEST_F(DebugStringTest, jsonWriterWithDepth5Filter)
@@ -362,42 +350,40 @@ TEST_F(DebugStringTest, jsonWriterWithDepth5Filter)
     fillWithTypeInfoCode(withTypeInfoCode);
     withTypeInfoCode.initializeOffsets(0);
 
+    {{std::ofstream jsonFile(JSON_NAME_WITH_DEPTH5_FILTER.c_str(), std::ios::out | std::ios::trunc);
+    JsonWriter jsonWriter(jsonFile, JSON_INDENT);
+    DepthWalkFilter walkFilter(5);
+    Walker walker(jsonWriter, walkFilter);
+    walker.walk(withTypeInfoCode.reflectable());
+}
+{
+    std::ifstream jsonFile(JSON_NAME_WITH_DEPTH5_FILTER.c_str());
+    JsonReader jsonReader(jsonFile);
+    auto reflectable = jsonReader.read(WithTypeInfoCode::typeInfo());
+    ASSERT_TRUE(reflectable);
+    reflectable->initializeChildren();
+    checkReflectable(withTypeInfoCode, reflectable);
+}
+}
+{
     {
-        {
-            std::ofstream jsonFile(JSON_NAME_WITH_DEPTH5_FILTER.c_str(), std::ios::out | std::ios::trunc);
-            JsonWriter jsonWriter(jsonFile, JSON_INDENT);
-            DepthWalkFilter walkFilter(5);
-            Walker walker(jsonWriter, walkFilter);
-            walker.walk(withTypeInfoCode.reflectable());
-        }
-        {
-            std::ifstream jsonFile(JSON_NAME_WITH_DEPTH5_FILTER.c_str());
-            JsonReader jsonReader(jsonFile);
-            auto reflectable = jsonReader.read(WithTypeInfoCode::typeInfo());
-            ASSERT_TRUE(reflectable);
-            reflectable->initializeChildren();
-            checkReflectable(withTypeInfoCode, reflectable);
-        }
+        // constant reflectable
+        const WithTypeInfoCode& withTypeInfoCodeConst = withTypeInfoCode;
+        std::ofstream jsonFile(JSON_NAME_WITH_DEPTH5_FILTER.c_str(), std::ios::out | std::ios::trunc);
+        JsonWriter jsonWriter(jsonFile, JSON_INDENT);
+        DepthWalkFilter walkFilter(5);
+        Walker walker(jsonWriter, walkFilter);
+        walker.walk(withTypeInfoCodeConst.reflectable());
     }
     {
-        {
-            // constant reflectable
-            const WithTypeInfoCode& withTypeInfoCodeConst = withTypeInfoCode;
-            std::ofstream jsonFile(JSON_NAME_WITH_DEPTH5_FILTER.c_str(), std::ios::out | std::ios::trunc);
-            JsonWriter jsonWriter(jsonFile, JSON_INDENT);
-            DepthWalkFilter walkFilter(5);
-            Walker walker(jsonWriter, walkFilter);
-            walker.walk(withTypeInfoCodeConst.reflectable());
-        }
-        {
-            std::ifstream jsonFile(JSON_NAME_WITH_DEPTH5_FILTER.c_str());
-            JsonReader jsonReader(jsonFile);
-            auto reflectable = jsonReader.read(WithTypeInfoCode::typeInfo());
-            ASSERT_TRUE(reflectable);
-            reflectable->initializeChildren();
-            checkReflectable(withTypeInfoCode, reflectable);
-        }
+        std::ifstream jsonFile(JSON_NAME_WITH_DEPTH5_FILTER.c_str());
+        JsonReader jsonReader(jsonFile);
+        auto reflectable = jsonReader.read(WithTypeInfoCode::typeInfo());
+        ASSERT_TRUE(reflectable);
+        reflectable->initializeChildren();
+        checkReflectable(withTypeInfoCode, reflectable);
     }
+}
 }
 
 TEST_F(DebugStringTest, jsonWriterWithRegexFilter)
@@ -407,40 +393,38 @@ TEST_F(DebugStringTest, jsonWriterWithRegexFilter)
     fillWithTypeInfoCode(withTypeInfoCode, createOptionals);
     withTypeInfoCode.initializeOffsets(0);
 
+    {{std::ofstream jsonFile(JSON_NAME_WITH_REGEX_FILTER.c_str(), std::ios::out | std::ios::trunc);
+    JsonWriter jsonWriter(jsonFile, JSON_INDENT);
+    RegexWalkFilter walkFilter(".*fieldOffset");
+    Walker walker(jsonWriter, walkFilter);
+    walker.walk(withTypeInfoCode.reflectable());
+}
+{
+    std::ifstream jsonFile(JSON_NAME_WITH_REGEX_FILTER.c_str());
+    JsonReader jsonReader(jsonFile);
+    auto reflectable = jsonReader.read(WithTypeInfoCode::typeInfo());
+    ASSERT_TRUE(reflectable);
+    checkWithTypeInfoCodeRegex(reflectable);
+}
+}
+{
     {
-        {
-            std::ofstream jsonFile(JSON_NAME_WITH_REGEX_FILTER.c_str(), std::ios::out | std::ios::trunc);
-            JsonWriter jsonWriter(jsonFile, JSON_INDENT);
-            RegexWalkFilter walkFilter(".*fieldOffset");
-            Walker walker(jsonWriter, walkFilter);
-            walker.walk(withTypeInfoCode.reflectable());
-        }
-        {
-            std::ifstream jsonFile(JSON_NAME_WITH_REGEX_FILTER.c_str());
-            JsonReader jsonReader(jsonFile);
-            auto reflectable = jsonReader.read(WithTypeInfoCode::typeInfo());
-            ASSERT_TRUE(reflectable);
-            checkWithTypeInfoCodeRegex(reflectable);
-        }
+        // constant reflectable
+        const WithTypeInfoCode& withTypeInfoCodeConst = withTypeInfoCode;
+        std::ofstream jsonFile(JSON_NAME_WITH_REGEX_FILTER.c_str(), std::ios::out | std::ios::trunc);
+        JsonWriter jsonWriter(jsonFile, JSON_INDENT);
+        RegexWalkFilter walkFilter(".*fieldOffset");
+        Walker walker(jsonWriter, walkFilter);
+        walker.walk(withTypeInfoCodeConst.reflectable());
     }
     {
-        {
-            // constant reflectable
-            const WithTypeInfoCode& withTypeInfoCodeConst = withTypeInfoCode;
-            std::ofstream jsonFile(JSON_NAME_WITH_REGEX_FILTER.c_str(), std::ios::out | std::ios::trunc);
-            JsonWriter jsonWriter(jsonFile, JSON_INDENT);
-            RegexWalkFilter walkFilter(".*fieldOffset");
-            Walker walker(jsonWriter, walkFilter);
-            walker.walk(withTypeInfoCodeConst.reflectable());
-        }
-        {
-            std::ifstream jsonFile(JSON_NAME_WITH_REGEX_FILTER.c_str());
-            JsonReader jsonReader(jsonFile);
-            auto reflectable = jsonReader.read(WithTypeInfoCode::typeInfo());
-            ASSERT_TRUE(reflectable);
-            checkWithTypeInfoCodeRegex(reflectable);
-        }
+        std::ifstream jsonFile(JSON_NAME_WITH_REGEX_FILTER.c_str());
+        JsonReader jsonReader(jsonFile);
+        auto reflectable = jsonReader.read(WithTypeInfoCode::typeInfo());
+        ASSERT_TRUE(reflectable);
+        checkWithTypeInfoCodeRegex(reflectable);
     }
+}
 }
 
 } // namespace with_type_info_code

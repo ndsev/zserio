@@ -1,9 +1,7 @@
-#include "index_workaround/index/Test.h"
-
 #include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
+#include "index_workaround/index/Test.h"
 #include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace index_workaround
 {
@@ -41,4 +39,4 @@ TEST_F(IndexTest, readWrite)
     ASSERT_EQ(test, readTest);
 }
 
-} // namespace index
+} // namespace index_workaround

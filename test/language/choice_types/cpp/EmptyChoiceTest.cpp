@@ -1,9 +1,7 @@
-#include "gtest/gtest.h"
-
-#include "zserio/SerializeUtil.h"
-#include "zserio/CppRuntimeException.h"
-
 #include "choice_types/empty_choice/EmptyChoice.h"
+#include "gtest/gtest.h"
+#include "zserio/CppRuntimeException.h"
+#include "zserio/SerializeUtil.h"
 
 namespace choice_types
 {

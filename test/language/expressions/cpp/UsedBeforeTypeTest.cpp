@@ -1,6 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "expressions/used_before_type/UsedBeforeTypeExpression.h"
+#include "gtest/gtest.h"
 
 namespace expressions
 {

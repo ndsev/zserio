@@ -1,12 +1,10 @@
 #include <vector>
 
-#include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-
 #include "functions/structure_param/MetresConverter.h"
 #include "functions/structure_param/MetresConverterCaller.h"
+#include "gtest/gtest.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace functions
 {
@@ -29,7 +27,7 @@ protected:
         metresConverterCaller.setCm(CONVERTED_CM_VALUE);
 
         metresConverterCaller.initializeChildren();
-   }
+    }
 
     static const uint16_t VALUE_A = 0xABCD;
     static const uint16_t M_VALUE_TO_CONVERT = 2;

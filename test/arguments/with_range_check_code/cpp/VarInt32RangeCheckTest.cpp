@@ -1,8 +1,6 @@
 #include "gtest/gtest.h"
-
-#include "zserio/CppRuntimeException.h"
-
 #include "with_range_check_code/varint32_range_check/VarInt32RangeCheckCompound.h"
+#include "zserio/CppRuntimeException.h"
 
 namespace with_range_check_code
 {
@@ -53,7 +51,8 @@ TEST_F(VarInt32RangeCheckTest, varInt32BelowLowerBound)
     catch (const zserio::CppRuntimeException& excpt)
     {
         ASSERT_STREQ("Value -268435456 of VarInt32RangeCheckCompound.value exceeds the range of "
-                "<-268435455..268435455>!", excpt.what());
+                     "<-268435455..268435455>!",
+                excpt.what());
     }
 }
 
@@ -67,7 +66,8 @@ TEST_F(VarInt32RangeCheckTest, varInt32AboveUpperBound)
     catch (const zserio::CppRuntimeException& excpt)
     {
         ASSERT_STREQ("Value 268435456 of VarInt32RangeCheckCompound.value exceeds the range of "
-                "<-268435455..268435455>!", excpt.what());
+                     "<-268435455..268435455>!",
+                excpt.what());
     }
 }
 

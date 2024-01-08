@@ -1,12 +1,10 @@
 #include <string>
 
-#include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-#include "zserio/CppRuntimeException.h"
-
 #include "bitmask_types/uint64_bitmask/Permission.h"
+#include "gtest/gtest.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
+#include "zserio/CppRuntimeException.h"
 
 namespace bitmask_types
 {
@@ -52,8 +50,7 @@ TEST_F(Uint64BitmaskTest, valuesConstroctor)
 TEST_F(Uint64BitmaskTest, underlyingTypeConstructor)
 {
     const Permission permission(READ_PERMISSION_VALUE);
-    ASSERT_TRUE((permission & Permission::Values::READ_PERMISSION) ==
-            Permission::Values::READ_PERMISSION);
+    ASSERT_TRUE((permission & Permission::Values::READ_PERMISSION) == Permission::Values::READ_PERMISSION);
 }
 
 TEST_F(Uint64BitmaskTest, readConstructor)
@@ -292,8 +289,8 @@ TEST_F(Uint64BitmaskTest, operatorBitwiseNot)
     ASSERT_EQ(Permission::Values::READ_PERMISSION,
             ~Permission::Values::nonePermission & Permission::Values::READ_PERMISSION);
     ASSERT_EQ(Permission::Values::READ_PERMISSION | Permission::Values::write_permission,
-            ~Permission::Values::nonePermission & (Permission::Values::READ_PERMISSION |
-                    Permission::Values::write_permission));
+            ~Permission::Values::nonePermission &
+                    (Permission::Values::READ_PERMISSION | Permission::Values::write_permission));
 }
 
 TEST_F(Uint64BitmaskTest, operatorBitwiseOrAssignment)

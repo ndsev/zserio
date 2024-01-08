@@ -1,7 +1,5 @@
 #include "gtest/gtest.h"
-
 #include "templates/choice_templated_selector/ChoiceTemplatedSelector.h"
-
 #include "zserio/RebindAlloc.h"
 
 namespace templates

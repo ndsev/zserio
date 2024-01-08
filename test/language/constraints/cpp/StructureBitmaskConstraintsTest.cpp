@@ -1,11 +1,9 @@
-#include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-#include "zserio/CppRuntimeException.h"
-
-#include "constraints/structure_bitmask_constraints/StructureBitmaskConstraints.h"
 #include "constraints/structure_bitmask_constraints/Availability.h"
+#include "constraints/structure_bitmask_constraints/StructureBitmaskConstraints.h"
+#include "gtest/gtest.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
+#include "zserio/CppRuntimeException.h"
 
 namespace constraints
 {
@@ -15,8 +13,8 @@ namespace structure_bitmask_constraints
 class StructureBitmaskConstraintsTest : public ::testing::Test
 {
 protected:
-    void writeStructureBitmaskConstraintsToByteArray(zserio::BitStreamWriter& writer, Availability mask,
-            uint8_t x, uint8_t y, uint8_t z)
+    void writeStructureBitmaskConstraintsToByteArray(
+            zserio::BitStreamWriter& writer, Availability mask, uint8_t x, uint8_t y, uint8_t z)
     {
         writer.writeBits(mask.getValue(), 3);
         writer.writeBits(x, 8);

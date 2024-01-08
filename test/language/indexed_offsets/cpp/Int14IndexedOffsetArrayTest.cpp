@@ -1,9 +1,7 @@
 #include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-
 #include "indexed_offsets/int14_indexed_offset_array/Int14IndexedOffsetArray.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace indexed_offsets
 {
@@ -87,19 +85,19 @@ protected:
             data.push_back(i);
     }
 
-    static const uint8_t    NUM_ELEMENTS = 5;
+    static const uint8_t NUM_ELEMENTS = 5;
 
-    static const uint32_t   WRONG_OFFSET = 0;
+    static const uint32_t WRONG_OFFSET = 0;
 
-    static const uint32_t   ELEMENT0_OFFSET = NUM_ELEMENTS * sizeof(uint32_t) + sizeof(uint8_t);
-    static const uint8_t    ELEMENT_SIZE = 14;
-    static const uint8_t    ALIGNED_ELEMENT_SIZE = 2 * 8;
-    static const uint8_t    ALIGNED_ELEMENT_BYTE_SIZE = ALIGNED_ELEMENT_SIZE / 8;
+    static const uint32_t ELEMENT0_OFFSET = NUM_ELEMENTS * sizeof(uint32_t) + sizeof(uint8_t);
+    static const uint8_t ELEMENT_SIZE = 14;
+    static const uint8_t ALIGNED_ELEMENT_SIZE = 2 * 8;
+    static const uint8_t ALIGNED_ELEMENT_BYTE_SIZE = ALIGNED_ELEMENT_SIZE / 8;
 
-    static const uint8_t    SPACER_VALUE = 1;
+    static const uint8_t SPACER_VALUE = 1;
 
-    static const size_t     INT14_INDEXED_OFFSET_ARRAY_BIT_SIZE = ELEMENT0_OFFSET * 8 +
-            (NUM_ELEMENTS - 1) * ALIGNED_ELEMENT_SIZE + ELEMENT_SIZE;
+    static const size_t INT14_INDEXED_OFFSET_ARRAY_BIT_SIZE =
+            ELEMENT0_OFFSET * 8 + (NUM_ELEMENTS - 1) * ALIGNED_ELEMENT_SIZE + ELEMENT_SIZE;
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };

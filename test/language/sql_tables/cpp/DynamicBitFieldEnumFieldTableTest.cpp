@@ -1,11 +1,9 @@
 #include <cstdio>
-#include <string>
 #include <fstream>
+#include <string>
 
 #include "gtest/gtest.h"
-
 #include "sql_tables/TestDb.h"
-
 #include "zserio/RebindAlloc.h"
 
 namespace sql_tables
@@ -43,11 +41,7 @@ protected:
     static void fillRow(DynamicBitFieldEnumFieldTable::Row& row, size_t i)
     {
         row.setId(static_cast<uint32_t>(i));
-        row.setEnumField(i % 3 == 0
-                ? TestEnum::ONE
-                : i % 3 == 1
-                        ? TestEnum::TWO
-                        : TestEnum::THREE);
+        row.setEnumField(i % 3 == 0 ? TestEnum::ONE : i % 3 == 1 ? TestEnum::TWO : TestEnum::THREE);
     }
 
     static void fillRows(vector_type<DynamicBitFieldEnumFieldTable::Row>& rows)
@@ -61,8 +55,8 @@ protected:
         }
     }
 
-    static void checkRow(const DynamicBitFieldEnumFieldTable::Row& row1,
-            const DynamicBitFieldEnumFieldTable::Row& row2)
+    static void checkRow(
+            const DynamicBitFieldEnumFieldTable::Row& row1, const DynamicBitFieldEnumFieldTable::Row& row2)
     {
         ASSERT_EQ(row1.getId(), row2.getId());
         ASSERT_EQ(row1.getEnumField(), row2.getEnumField());

@@ -1,6 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "choice_types/function_selector_choice/TestChoice.h"
+#include "gtest/gtest.h"
 
 // just testChoice setters and getters
 namespace choice_types

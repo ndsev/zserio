@@ -1,7 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "array_types/packed_auto_array_struct_recursion/PackedAutoArrayRecursion.h"
-
+#include "gtest/gtest.h"
 #include "zserio/SerializeUtil.h"
 
 namespace array_types
@@ -54,8 +52,8 @@ protected:
         }
     }
 
-    void checkPackedAutoArrayRecursion(const PackedAutoArrayRecursion& packedAutoArrayRecursion,
-            size_t numElements)
+    void checkPackedAutoArrayRecursion(
+            const PackedAutoArrayRecursion& packedAutoArrayRecursion, size_t numElements)
     {
         ASSERT_EQ(0, packedAutoArrayRecursion.getId());
         const auto& autoArray = packedAutoArrayRecursion.getPackedAutoArrayRecursion();

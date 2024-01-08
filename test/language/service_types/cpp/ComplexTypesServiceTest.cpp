@@ -1,14 +1,11 @@
 #include <algorithm>
-#include <memory>
 #include <cmath>
+#include <memory>
 
 #include "gtest/gtest.h"
-
-#include "zserio/RebindAlloc.h"
-
-#include "test_utils/LocalServiceClient.h"
-
 #include "service_types/complex_types_service/ComplexTypesService.h"
+#include "test_utils/LocalServiceClient.h"
+#include "zserio/RebindAlloc.h"
 
 using namespace zserio::literals;
 
@@ -24,31 +21,29 @@ using LocalServiceClient = test_utils::LocalServiceClient<allocator_type>;
 
 namespace
 {
-    void convertRgbToCmyk(uint8_t r, uint8_t g, uint8_t b,
-            uint8_t& c, uint8_t &m, uint8_t &y, uint8_t& k)
-    {
-        // see https://www.rapidtables.com/convert/color/rgb-to-cmyk.html
-        const double rr = r / 255. * 100;
-        const double gg = g / 255. * 100;
-        const double bb = b / 255. * 100;
+void convertRgbToCmyk(uint8_t r, uint8_t g, uint8_t b, uint8_t& c, uint8_t& m, uint8_t& y, uint8_t& k)
+{
+    // see https://www.rapidtables.com/convert/color/rgb-to-cmyk.html
+    const double rr = r / 255. * 100;
+    const double gg = g / 255. * 100;
+    const double bb = b / 255. * 100;
 
-        double kk = 100. - std::max(std::max(rr, gg), bb);
+    double kk = 100. - std::max(std::max(rr, gg), bb);
 
-        c = static_cast<uint8_t>(std::round((100. - rr - kk) / (100. - kk) * 100));
-        m = static_cast<uint8_t>(std::round((100. - gg - kk) / (100. - kk) * 100));
-        y = static_cast<uint8_t>(std::round((100. - bb - kk) / (100. - kk) * 100));
-        k = static_cast<uint8_t>(std::round(kk));
-    }
-
-    void convertCmykToRgb(uint8_t c, uint8_t m, uint8_t y, uint8_t k,
-            uint8_t& r, uint8_t& g, uint8_t& b)
-    {
-        // see https://www.rapidtables.com/convert/color/cmyk-to-rgb.html
-        r = static_cast<uint8_t>(std::round(255 * (1 - c / 100.) * (1 - k / 100.)));
-        g = static_cast<uint8_t>(std::round(255 * (1 - m / 100.) * (1 - k / 100.)));
-        b = static_cast<uint8_t>(std::round(255 * (1 - y / 100.) * (1 - k / 100.)));
-    }
+    c = static_cast<uint8_t>(std::round((100. - rr - kk) / (100. - kk) * 100));
+    m = static_cast<uint8_t>(std::round((100. - gg - kk) / (100. - kk) * 100));
+    y = static_cast<uint8_t>(std::round((100. - bb - kk) / (100. - kk) * 100));
+    k = static_cast<uint8_t>(std::round(kk));
 }
+
+void convertCmykToRgb(uint8_t c, uint8_t m, uint8_t y, uint8_t k, uint8_t& r, uint8_t& g, uint8_t& b)
+{
+    // see https://www.rapidtables.com/convert/color/cmyk-to-rgb.html
+    r = static_cast<uint8_t>(std::round(255 * (1 - c / 100.) * (1 - k / 100.)));
+    g = static_cast<uint8_t>(std::round(255 * (1 - m / 100.) * (1 - k / 100.)));
+    b = static_cast<uint8_t>(std::round(255 * (1 - y / 100.) * (1 - k / 100.)));
+}
+} // namespace
 
 class ComplexTypesServiceImpl : public ComplexTypesService::Service
 {
@@ -119,8 +114,10 @@ private:
 class ComplexTypesServiceTest : public ::testing::Test
 {
 public:
-    ComplexTypesServiceTest()
-    :   localServiceClient(service), client(localServiceClient), cmykValues()
+    ComplexTypesServiceTest() :
+            localServiceClient(service),
+            client(localServiceClient),
+            cmykValues()
     {
         for (size_t i = 0; i < 3; ++i)
         {
@@ -143,8 +140,8 @@ protected:
 
     // note that conversion is slightly inaccurate and therefore this values are carefully chosen
     // to provide consistent results for the test needs
-    static constexpr std::array<std::array<uint8_t, 3>, 3> rgbValues = {{
-            { 0 ,128, 255 }, { 222, 222, 0 }, { 65, 196, 31 } }};
+    static constexpr std::array<std::array<uint8_t, 3>, 3> rgbValues = {
+            {{0, 128, 255}, {222, 222, 0}, {65, 196, 31}}};
     std::array<std::array<uint8_t, 4>, 3> cmykValues;
 };
 

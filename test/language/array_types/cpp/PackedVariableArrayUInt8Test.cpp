@@ -1,7 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "array_types/packed_variable_array_uint8/PackedVariableArray.h"
-
+#include "gtest/gtest.h"
 #include "zserio/RebindAlloc.h"
 #include "zserio/SerializeUtil.h"
 

@@ -1,6 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "expressions/const_type/ConstTypeExpression.h"
+#include "gtest/gtest.h"
 
 namespace expressions
 {

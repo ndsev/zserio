@@ -1,7 +1,5 @@
 #include <limits>
 
-#include "gtest/gtest.h"
-
 #include "constants/BITFIELD8_MAX_CONSTANT.h"
 #include "constants/BITFIELD8_MIN_CONSTANT.h"
 #include "constants/BOOL_FALSE_CONSTANT.h"
@@ -27,11 +25,12 @@
 #include "constants/READ_PERMISSION.h"
 #include "constants/READ_PERMISSION_VALUE.h"
 #include "constants/STRING_CONSTANT.h"
-#include "constants/StringPascalCaseConstant.h"
 #include "constants/SUBTYPE_BLUE_COLOR_CONSTANT.h"
 #include "constants/SUBTYPE_INT25_CONSTANT.h"
 #include "constants/SUBTYPE_READ_PERMISSION.h"
 #include "constants/SUBTYPE_STRING_CONSTANT.h"
+#include "constants/StringPascalCaseConstant.h"
+#include "constants/StringSubtype.h"
 #include "constants/UINT16_MAX_CONSTANT.h"
 #include "constants/UINT16_MIN_CONSTANT.h"
 #include "constants/UINT32_FULL_MASK.h"
@@ -52,6 +51,8 @@
 #include "constants/VARINT64_MIN_CONSTANT.h"
 #include "constants/VARINT_MAX_CONSTANT.h"
 #include "constants/VARINT_MIN_CONSTANT.h"
+#include "constants/VARSIZE_MAX_CONSTANT.h"
+#include "constants/VARSIZE_MIN_CONSTANT.h"
 #include "constants/VARUINT16_MAX_CONSTANT.h"
 #include "constants/VARUINT16_MIN_CONSTANT.h"
 #include "constants/VARUINT32_MAX_CONSTANT.h"
@@ -60,9 +61,7 @@
 #include "constants/VARUINT64_MIN_CONSTANT.h"
 #include "constants/VARUINT_MAX_CONSTANT.h"
 #include "constants/VARUINT_MIN_CONSTANT.h"
-#include "constants/VARSIZE_MAX_CONSTANT.h"
-#include "constants/VARSIZE_MIN_CONSTANT.h"
-#include "constants/StringSubtype.h"
+#include "gtest/gtest.h"
 
 using namespace zserio::literals;
 

@@ -2,9 +2,7 @@
 #include <fstream>
 
 #include "gtest/gtest.h"
-
 #include "sql_tables/TestDb.h"
-
 #include "zserio/RebindAlloc.h"
 
 namespace sql_tables

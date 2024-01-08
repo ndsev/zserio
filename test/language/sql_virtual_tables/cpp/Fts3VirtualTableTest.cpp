@@ -1,15 +1,13 @@
 #include <cstdio>
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
 
 #include "gtest/gtest.h"
-
 #include "sql_virtual_tables/fts3_virtual_table/Fts3TestDb.h"
-
 #include "zserio/RebindAlloc.h"
-#include "zserio/StringConvertUtil.h"
 #include "zserio/SqliteFinalizer.h"
+#include "zserio/StringConvertUtil.h"
 
 namespace sql_virtual_tables
 {
@@ -44,8 +42,8 @@ public:
     Fts3VirtualTableTest& operator=(Fts3VirtualTableTest&&) = delete;
 
 protected:
-    static void fillFts3VirtualTableRow(Fts3VirtualTable::Row& row, const string_type& title,
-            const string_type& body)
+    static void fillFts3VirtualTableRow(
+            Fts3VirtualTable::Row& row, const string_type& title, const string_type& body)
     {
         row.setTitle(title);
         row.setBody(body);
@@ -70,8 +68,8 @@ protected:
         ASSERT_EQ(row1.getBody(), row2.getBody());
     }
 
-    static void checkFts3VirtualTableRows(const vector_type<Fts3VirtualTable::Row>& rows1,
-            const vector_type<Fts3VirtualTable::Row>& rows2)
+    static void checkFts3VirtualTableRows(
+            const vector_type<Fts3VirtualTable::Row>& rows1, const vector_type<Fts3VirtualTable::Row>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
@@ -81,8 +79,8 @@ protected:
     bool isTableInDb()
     {
         string_type checkTableName = "fts3VirtualTable";
-        string_type sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
-                "'";
+        string_type sqlQuery =
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName + "'";
         std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(
                 m_database->connection().prepareStatement(sqlQuery));
 
@@ -100,7 +98,8 @@ protected:
     sql_virtual_tables::fts3_virtual_table::Fts3TestDb* m_database;
 };
 
-const char* const Fts3VirtualTableTest::DB_FILE_NAME = "language/sql_virtual_tables/fts3_virtual_table_test.sqlite";
+const char* const Fts3VirtualTableTest::DB_FILE_NAME =
+        "language/sql_virtual_tables/fts3_virtual_table_test.sqlite";
 const int32_t Fts3VirtualTableTest::NUM_VIRTUAL_TABLE_ROWS = 5;
 
 TEST_F(Fts3VirtualTableTest, deleteTable)

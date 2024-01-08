@@ -1,10 +1,8 @@
 #include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-#include "zserio/CppRuntimeException.h"
-
 #include "offsets/bit_offset/BitOffset.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
+#include "zserio/CppRuntimeException.h"
 
 namespace offsets
 {
@@ -142,32 +140,32 @@ protected:
 
     static const size_t BIT_OFFSET_BIT_SIZE = 192;
 
-    static const uint8_t  WRONG_FIELD1_OFFSET = 0;
+    static const uint8_t WRONG_FIELD1_OFFSET = 0;
     static const uint16_t WRONG_FIELD2_OFFSET = 0;
     static const uint32_t WRONG_FIELD3_OFFSET = 0;
-    static const uint8_t  WRONG_FIELD4_OFFSET = 0;
+    static const uint8_t WRONG_FIELD4_OFFSET = 0;
     static const uint16_t WRONG_FIELD5_OFFSET = 0;
     static const uint32_t WRONG_FIELD6_OFFSET = 0;
     static const uint32_t WRONG_FIELD7_OFFSET = 0;
-    static const uint8_t  WRONG_FIELD8_OFFSET = 0;
+    static const uint8_t WRONG_FIELD8_OFFSET = 0;
 
-    static const uint8_t  FIELD1_OFFSET = 16;
+    static const uint8_t FIELD1_OFFSET = 16;
     static const uint16_t FIELD2_OFFSET = 17;
     static const uint32_t FIELD3_OFFSET = 18;
-    static const uint8_t  FIELD4_OFFSET = 19;
+    static const uint8_t FIELD4_OFFSET = 19;
     static const uint16_t FIELD5_OFFSET = 20;
     static const uint32_t FIELD6_OFFSET = 21;
     static const uint32_t FIELD7_OFFSET = 22;
-    static const uint8_t  FIELD8_OFFSET = 23;
+    static const uint8_t FIELD8_OFFSET = 23;
 
-    static const uint8_t  FIELD1_VALUE = 1;
-    static const uint8_t  FIELD2_VALUE = 2;
-    static const uint8_t  FIELD3_VALUE = 5;
-    static const uint8_t  FIELD4_VALUE = 13;
-    static const uint8_t  FIELD5_VALUE = 26;
-    static const uint8_t  FIELD6_VALUE = 56;
-    static const uint8_t  FIELD7_VALUE = 88;
-    static const uint8_t  FIELD8_VALUE = 222;
+    static const uint8_t FIELD1_VALUE = 1;
+    static const uint8_t FIELD2_VALUE = 2;
+    static const uint8_t FIELD3_VALUE = 5;
+    static const uint8_t FIELD4_VALUE = 13;
+    static const uint8_t FIELD5_VALUE = 26;
+    static const uint8_t FIELD6_VALUE = 56;
+    static const uint8_t FIELD7_VALUE = 88;
+    static const uint8_t FIELD8_VALUE = 222;
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };

@@ -1,7 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "array_types/packed_arrays_mapping/PackedArraysMapping.h"
-
+#include "gtest/gtest.h"
 #include "zserio/RebindAlloc.h"
 
 namespace array_types

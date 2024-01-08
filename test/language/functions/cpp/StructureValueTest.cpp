@@ -1,12 +1,10 @@
 #include <vector>
 
-#include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-
 #include "functions/structure_value/CustomVarInt.h"
 #include "functions/structure_value/CustomVarList.h"
+#include "gtest/gtest.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace functions
 {
@@ -74,9 +72,9 @@ protected:
         ASSERT_EQ(customVarInt, readcustomVarInt);
     }
 
-    static const uint32_t   MAX_ONE_BYTE_VALUE = 253;
-    static const uint8_t    TWO_BYTES_INDICATOR = 255;
-    static const uint8_t    FOUR_BYTES_INDICATOR = 254;
+    static const uint32_t MAX_ONE_BYTE_VALUE = 253;
+    static const uint8_t TWO_BYTES_INDICATOR = 255;
+    static const uint8_t FOUR_BYTES_INDICATOR = 254;
 };
 
 TEST_F(StructureValueTest, checkCustomVarIntValue42)

@@ -1,13 +1,11 @@
 #include <cstdio>
-#include <string>
 #include <fstream>
+#include <string>
 
 #include "gtest/gtest.h"
-
 #include "subtypes/param_structure_subtype/ParameterizedSubtypeStruct.h"
-
-#include "zserio/pmr/PolymorphicAllocator.h"
 #include "zserio/RebindAlloc.h"
+#include "zserio/pmr/PolymorphicAllocator.h"
 
 namespace subtypes
 {
@@ -20,12 +18,10 @@ template <typename ALLOC>
 struct MethodNames
 {
     // TODO[Mi-L@]: Since we don't know allocator name provided by user, we use just the fixed substring here
-    static constexpr const char* GET_PARAMETERIZED_SUBTYPE_ARRAY =
-            ">& getParameterizedSubtypeArray()";
+    static constexpr const char* GET_PARAMETERIZED_SUBTYPE_ARRAY = ">& getParameterizedSubtypeArray()";
     static constexpr const char* GET_PARAMETERIZED_SUBTYPE_ARRAY_CONST =
             ">& getParameterizedSubtypeArray() const";
-    static constexpr const char* SET_PARAMETERIZED_SYBTYPE_ARRAY =
-            "void setParameterizedSubtypeArray(const ::";
+    static constexpr const char* SET_PARAMETERIZED_SYBTYPE_ARRAY = "void setParameterizedSubtypeArray(const ::";
     static constexpr const char* SET_PARAMETERIZED_SYBTYPE_ARRAY_RVALUE =
             "void setParameterizedSubtypeArray(::";
 };
@@ -35,17 +31,17 @@ struct MethodNames<zserio::pmr::PropagatingPolymorphicAllocator<uint8_t>>
 {
     static constexpr const char* GET_PARAMETERIZED_SUBTYPE_ARRAY =
             "::zserio::pmr::vector<::subtypes::param_structure_subtype::ParameterizedSubtype>& "
-                            "getParameterizedSubtypeArray()";
+            "getParameterizedSubtypeArray()";
     static constexpr const char* GET_PARAMETERIZED_SUBTYPE_ARRAY_CONST =
-                "const ::zserio::pmr::vector<::subtypes::param_structure_subtype::ParameterizedSubtype>& "
-                        "getParameterizedSubtypeArray() const";
+            "const ::zserio::pmr::vector<::subtypes::param_structure_subtype::ParameterizedSubtype>& "
+            "getParameterizedSubtypeArray() const";
     static constexpr const char* SET_PARAMETERIZED_SYBTYPE_ARRAY =
             "void setParameterizedSubtypeArray("
-                    "const ::zserio::pmr::vector<::subtypes::param_structure_subtype::ParameterizedSubtype>& "
-                    "parameterizedSubtypeArray_)";
+            "const ::zserio::pmr::vector<::subtypes::param_structure_subtype::ParameterizedSubtype>& "
+            "parameterizedSubtypeArray_)";
     static constexpr const char* SET_PARAMETERIZED_SYBTYPE_ARRAY_RVALUE =
             "void setParameterizedSubtypeArray(::zserio::pmr::vector<::subtypes::param_structure_subtype::"
-                    "ParameterizedSubtype>&& parameterizedSubtypeArray_)";
+            "ParameterizedSubtype>&& parameterizedSubtypeArray_)";
 };
 
 template <>
@@ -53,38 +49,38 @@ struct MethodNames<::std::allocator<uint8_t>>
 {
     static constexpr const char* GET_PARAMETERIZED_SUBTYPE_ARRAY =
             "::zserio::vector<::subtypes::param_structure_subtype::ParameterizedSubtype>& "
-                    "getParameterizedSubtypeArray()";
+            "getParameterizedSubtypeArray()";
     static constexpr const char* GET_PARAMETERIZED_SUBTYPE_ARRAY_CONST =
             "const ::zserio::vector<::subtypes::param_structure_subtype::ParameterizedSubtype>& "
-                    "getParameterizedSubtypeArray() const";
+            "getParameterizedSubtypeArray() const";
     static constexpr const char* SET_PARAMETERIZED_SYBTYPE_ARRAY =
             "void setParameterizedSubtypeArray(const ::zserio::vector<::subtypes::param_structure_subtype::"
-                    "ParameterizedSubtype>& parameterizedSubtypeArray_)";
+            "ParameterizedSubtype>& parameterizedSubtypeArray_)";
     static constexpr const char* SET_PARAMETERIZED_SYBTYPE_ARRAY_RVALUE =
             "void setParameterizedSubtypeArray(::zserio::vector<::subtypes::param_structure_subtype::"
-                    "ParameterizedSubtype>&& parameterizedSubtypeArray_)";
+            "ParameterizedSubtype>&& parameterizedSubtypeArray_)";
 };
 
 namespace
 {
-    bool isCodeInFilePresent(const char* fileName, const char* code)
+bool isCodeInFilePresent(const char* fileName, const char* code)
+{
+    std::ifstream file(fileName);
+    bool isPresent = false;
+    std::string line;
+    while (std::getline(file, line))
     {
-        std::ifstream file(fileName);
-        bool isPresent = false;
-        std::string line;
-        while (std::getline(file, line))
+        if (line.find(code) != std::string::npos)
         {
-            if (line.find(code) != std::string::npos)
-            {
-                isPresent = true;
-                break;
-            }
+            isPresent = true;
+            break;
         }
-        file.close();
-
-        return isPresent;
     }
+    file.close();
+
+    return isPresent;
 }
+} // namespace
 
 TEST(ParamStructureSubtypeTest, testSubtype)
 {
@@ -109,11 +105,11 @@ TEST(ParamStructureSubtypeTest, testSubtype)
     ASSERT_TRUE(isCodeInFilePresent(
             "language/subtypes/gen/subtypes/param_structure_subtype/ParameterizedSubtypeStruct.h",
             "const ::subtypes::param_structure_subtype::ParameterizedSubtype& "
-                    "getParameterizedSubtype() const"));
+            "getParameterizedSubtype() const"));
     ASSERT_TRUE(isCodeInFilePresent(
             "language/subtypes/gen/subtypes/param_structure_subtype/ParameterizedSubtypeStruct.h",
             "void setParameterizedSubtype"
-                "(const ::subtypes::param_structure_subtype::ParameterizedSubtype& parameterizedSubtype_)"));
+            "(const ::subtypes::param_structure_subtype::ParameterizedSubtype& parameterizedSubtype_)"));
 
     ASSERT_TRUE(isCodeInFilePresent(
             "language/subtypes/gen/subtypes/param_structure_subtype/ParameterizedSubtypeStruct.h",

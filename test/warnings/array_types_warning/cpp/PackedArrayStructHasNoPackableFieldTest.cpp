@@ -1,7 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "array_types_warning/packed_array_struct_has_no_packable_field/PackedArrayStructHasNoPackableField.h"
-
+#include "gtest/gtest.h"
 #include "zserio/SerializeUtil.h"
 
 namespace array_types_warning
@@ -27,11 +25,8 @@ TEST_F(PackedArrayStructHasNoPackableFieldTest, writeRead)
 {
     PackedArrayStructHasNoPackableField packedArrayStructHasNoPackableField;
 
-    packedArrayStructHasNoPackableField.setArray1({{
-        StructWithPackable("A", 65),
-        StructWithPackable("B", 66),
-        StructWithPackable("C", 67)
-    }});
+    packedArrayStructHasNoPackableField.setArray1(
+            {{StructWithPackable("A", 65), StructWithPackable("B", 66), StructWithPackable("C", 67)}});
 
     auto& array2 = packedArrayStructHasNoPackableField.getArray2();
     array2.resize(3);
@@ -39,20 +34,16 @@ TEST_F(PackedArrayStructHasNoPackableFieldTest, writeRead)
     array2[1].setField2(TestEnum::TWO);
     array2[2].setField2(TestEnum::ONE);
 
-    packedArrayStructHasNoPackableField.setArray3({{
-        StructWithPackableArray("ABC", {{ 65, 66, 67 }}),
-        StructWithPackableArray("DEF", {{ 68, 69, 70 }}),
-        StructWithPackableArray("GHI", {{ 71, 72, 73 }})
-    }});
+    packedArrayStructHasNoPackableField.setArray3({{StructWithPackableArray("ABC", {{65, 66, 67}}),
+            StructWithPackableArray("DEF", {{68, 69, 70}}), StructWithPackableArray("GHI", {{71, 72, 73}})}});
 
-    packedArrayStructHasNoPackableField.setArray4({{
-        StructWithoutPackable(4.0F, BitBuffer(vector_type<uint8_t>({0xF0}), 5), 0, "A",
-                {{0, 0, 0}}, {{true, false, true}}),
-        StructWithoutPackable(1.0F, BitBuffer(vector_type<uint8_t>({0xE0}), 5), 0, "B",
-                {{0, 0, 0}}, {{true, false, true}}),
-        StructWithoutPackable(0.0F, BitBuffer(vector_type<uint8_t>({0xD0}), 5), 0, "C",
-                {{0, 0, 0}}, {{true, false, true}})
-    }});
+    packedArrayStructHasNoPackableField.setArray4(
+            {{StructWithoutPackable(4.0F, BitBuffer(vector_type<uint8_t>({0xF0}), 5), 0, "A", {{0, 0, 0}},
+                      {{true, false, true}}),
+                    StructWithoutPackable(1.0F, BitBuffer(vector_type<uint8_t>({0xE0}), 5), 0, "B", {{0, 0, 0}},
+                            {{true, false, true}}),
+                    StructWithoutPackable(0.0F, BitBuffer(vector_type<uint8_t>({0xD0}), 5), 0, "C", {{0, 0, 0}},
+                            {{true, false, true}})}});
 
     packedArrayStructHasNoPackableField.getArray5().resize(3);
 

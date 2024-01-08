@@ -1,8 +1,6 @@
 #include "gtest/gtest.h"
-
-#include "zserio/SerializeUtil.h"
-
 #include "parameterized_types/fixed_and_variable_param/FixedAndVariableParam.h"
+#include "zserio/SerializeUtil.h"
 
 namespace parameterized_types
 {
@@ -78,8 +76,8 @@ protected:
         ASSERT_EQ(floatValue, reader.readFloat16());
         const ArrayHolder& arrayHolder = fixedAndVariableParam.getArrayHolder();
         const LimitHolder& limitHolder = fixedAndVariableParam.getLimitHolder();
-        checkArrayHolderInBitStream(reader, arrayHolder, size, extraLimit, limitHolder, color, access,
-                floatValue);
+        checkArrayHolderInBitStream(
+                reader, arrayHolder, size, extraLimit, limitHolder, color, access, floatValue);
     }
 
     static const std::string BLOB_NAME;
@@ -119,15 +117,15 @@ const float FixedAndVariableParamTest::WRONG_FLOAT_VALUE = 1.0;
 TEST_F(FixedAndVariableParamTest, writeRead)
 {
     FixedAndVariableParam fixedAndVariableParam;
-    fillFixedAndVariableParam(fixedAndVariableParam, ARRAY_SIZE, EXTRA_LIMIT, LIMIT, COLOR, ACCESS,
-            FLOAT_VALUE);
+    fillFixedAndVariableParam(
+            fixedAndVariableParam, ARRAY_SIZE, EXTRA_LIMIT, LIMIT, COLOR, ACCESS, FLOAT_VALUE);
 
     zserio::BitStreamWriter writer(bitBuffer);
     fixedAndVariableParam.write(writer);
 
     zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
-    checkFixedAndVariableParamInBitStream(reader, fixedAndVariableParam, ARRAY_SIZE, EXTRA_LIMIT,
-            LIMIT, COLOR, ACCESS, FLOAT_VALUE);
+    checkFixedAndVariableParamInBitStream(
+            reader, fixedAndVariableParam, ARRAY_SIZE, EXTRA_LIMIT, LIMIT, COLOR, ACCESS, FLOAT_VALUE);
     reader.setBitPosition(0);
 
     FixedAndVariableParam readFixedAndVariableParam(reader);
@@ -137,8 +135,8 @@ TEST_F(FixedAndVariableParamTest, writeRead)
 TEST_F(FixedAndVariableParamTest, writeReadFile)
 {
     FixedAndVariableParam fixedAndVariableParam;
-    fillFixedAndVariableParam(fixedAndVariableParam, ARRAY_SIZE, EXTRA_LIMIT, LIMIT, COLOR, ACCESS,
-            FLOAT_VALUE);
+    fillFixedAndVariableParam(
+            fixedAndVariableParam, ARRAY_SIZE, EXTRA_LIMIT, LIMIT, COLOR, ACCESS, FLOAT_VALUE);
 
     zserio::serializeToFile(fixedAndVariableParam, BLOB_NAME);
 
@@ -149,8 +147,8 @@ TEST_F(FixedAndVariableParamTest, writeReadFile)
 TEST_F(FixedAndVariableParamTest, writeFailureWrongArraySize)
 {
     FixedAndVariableParam fixedAndVariableParam;
-    fillFixedAndVariableParam(fixedAndVariableParam, WRONG_ARRAY_SIZE, EXTRA_LIMIT, LIMIT, COLOR, ACCESS,
-            FLOAT_VALUE);
+    fillFixedAndVariableParam(
+            fixedAndVariableParam, WRONG_ARRAY_SIZE, EXTRA_LIMIT, LIMIT, COLOR, ACCESS, FLOAT_VALUE);
 
     zserio::BitStreamWriter writer1(bitBuffer);
     ASSERT_THROW(fixedAndVariableParam.write(writer1), zserio::CppRuntimeException);
@@ -164,8 +162,8 @@ TEST_F(FixedAndVariableParamTest, writeFailureWrongArraySize)
 TEST_F(FixedAndVariableParamTest, writeFailureWrongExtraLimit)
 {
     FixedAndVariableParam fixedAndVariableParam;
-    fillFixedAndVariableParam(fixedAndVariableParam, ARRAY_SIZE, EXTRA_LIMIT, LIMIT, COLOR, ACCESS,
-            FLOAT_VALUE);
+    fillFixedAndVariableParam(
+            fixedAndVariableParam, ARRAY_SIZE, EXTRA_LIMIT, LIMIT, COLOR, ACCESS, FLOAT_VALUE);
     fixedAndVariableParam.setExtraLimit(WRONG_EXTRA_LIMIT);
 
     zserio::BitStreamWriter writer(bitBuffer);
@@ -175,8 +173,8 @@ TEST_F(FixedAndVariableParamTest, writeFailureWrongExtraLimit)
 TEST_F(FixedAndVariableParamTest, writeFailureWrongLimitHolder)
 {
     FixedAndVariableParam fixedAndVariableParam;
-    fillFixedAndVariableParam(fixedAndVariableParam, ARRAY_SIZE, EXTRA_LIMIT, LIMIT, COLOR, ACCESS,
-            FLOAT_VALUE);
+    fillFixedAndVariableParam(
+            fixedAndVariableParam, ARRAY_SIZE, EXTRA_LIMIT, LIMIT, COLOR, ACCESS, FLOAT_VALUE);
     LimitHolder limitHolder(LIMIT);
     ArrayHolder& arrayHolder = fixedAndVariableParam.getArrayHolder();
     arrayHolder.initialize(arrayHolder.getSize(), arrayHolder.getExtraLimit(), limitHolder,
@@ -189,8 +187,8 @@ TEST_F(FixedAndVariableParamTest, writeFailureWrongLimitHolder)
 TEST_F(FixedAndVariableParamTest, writeFailureWrongColor)
 {
     FixedAndVariableParam fixedAndVariableParam;
-    fillFixedAndVariableParam(fixedAndVariableParam, ARRAY_SIZE, EXTRA_LIMIT, LIMIT, COLOR, ACCESS,
-            FLOAT_VALUE);
+    fillFixedAndVariableParam(
+            fixedAndVariableParam, ARRAY_SIZE, EXTRA_LIMIT, LIMIT, COLOR, ACCESS, FLOAT_VALUE);
     fixedAndVariableParam.setColor(WRONG_COLOR);
 
     zserio::BitStreamWriter writer(bitBuffer);
@@ -200,8 +198,8 @@ TEST_F(FixedAndVariableParamTest, writeFailureWrongColor)
 TEST_F(FixedAndVariableParamTest, writeFailureWrongAccess)
 {
     FixedAndVariableParam fixedAndVariableParam;
-    fillFixedAndVariableParam(fixedAndVariableParam, ARRAY_SIZE, EXTRA_LIMIT, LIMIT, COLOR, ACCESS,
-            FLOAT_VALUE);
+    fillFixedAndVariableParam(
+            fixedAndVariableParam, ARRAY_SIZE, EXTRA_LIMIT, LIMIT, COLOR, ACCESS, FLOAT_VALUE);
     fixedAndVariableParam.setAccess(WRONG_ACCESS);
 
     zserio::BitStreamWriter writer(bitBuffer);
@@ -211,8 +209,8 @@ TEST_F(FixedAndVariableParamTest, writeFailureWrongAccess)
 TEST_F(FixedAndVariableParamTest, writeFailureWrongFloatValue)
 {
     FixedAndVariableParam fixedAndVariableParam;
-    fillFixedAndVariableParam(fixedAndVariableParam, ARRAY_SIZE, EXTRA_LIMIT, LIMIT, COLOR, ACCESS,
-            FLOAT_VALUE);
+    fillFixedAndVariableParam(
+            fixedAndVariableParam, ARRAY_SIZE, EXTRA_LIMIT, LIMIT, COLOR, ACCESS, FLOAT_VALUE);
     fixedAndVariableParam.setFloatValue(WRONG_FLOAT_VALUE);
 
     zserio::BitStreamWriter writer(bitBuffer);

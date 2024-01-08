@@ -1,10 +1,7 @@
-#include "gtest/gtest.h"
-
-#include "expressions/string_type/StringTypeExpression.h"
-#include "expressions/string_type/STRING_CONSTANT.h"
 #include "expressions/string_type/CHOOSER.h"
-
-
+#include "expressions/string_type/STRING_CONSTANT.h"
+#include "expressions/string_type/StringTypeExpression.h"
+#include "gtest/gtest.h"
 #include "zserio/RebindAlloc.h"
 
 using namespace zserio::literals;
@@ -59,16 +56,17 @@ TEST_F(StringTypeTest, returnValue)
 TEST_F(StringTypeTest, returnDefaultValue)
 {
     const StringTypeExpression stringTypeExpression = createStringTypeExpression(true);
-    ASSERT_EQ(CHOOSER ? zserio::toString(STRING_CONSTANT) :
-            zserio::toString(FALSE) + zserio::toString(SPACE) + zserio::toString(STRING_CONSTANT),
+    ASSERT_EQ(CHOOSER ? zserio::toString(STRING_CONSTANT)
+                      : zserio::toString(FALSE) + zserio::toString(SPACE) + zserio::toString(STRING_CONSTANT),
             zserio::toString(stringTypeExpression.funcReturnDefaultValue()));
 }
 
 TEST_F(StringTypeTest, returnDefaultChosen)
 {
     const StringTypeExpression stringTypeExpression = createStringTypeExpression(true);
-    ASSERT_EQ(CHOOSER ? zserio::toString(CHOSEN) + zserio::toString(SPACE) + zserio::toString(STRING_CONSTANT) :
-            std::string(), zserio::toString(stringTypeExpression.funcReturnDefaultChosen()));
+    ASSERT_EQ(CHOOSER ? zserio::toString(CHOSEN) + zserio::toString(SPACE) + zserio::toString(STRING_CONSTANT)
+                      : std::string(),
+            zserio::toString(stringTypeExpression.funcReturnDefaultChosen()));
 }
 
 TEST_F(StringTypeTest, appendix)
@@ -81,8 +79,8 @@ TEST_F(StringTypeTest, appendix)
 TEST_F(StringTypeTest, appendToConst)
 {
     const StringTypeExpression stringTypeExpression = createStringTypeExpression(false);
-    ASSERT_EQ(zserio::toString(STRING_CONSTANT) + zserio::toString(UNDERSCORE) +
-            zserio::toString(APPEND) + zserio::toString(IX),
+    ASSERT_EQ(zserio::toString(STRING_CONSTANT) + zserio::toString(UNDERSCORE) + zserio::toString(APPEND) +
+                    zserio::toString(IX),
             zserio::toString(stringTypeExpression.funcAppendToConst()));
 }
 

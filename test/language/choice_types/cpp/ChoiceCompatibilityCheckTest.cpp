@@ -1,8 +1,6 @@
-#include "gtest/gtest.h"
-
 #include "choice_types/choice_compatibility_check/ChoiceCompatibilityCheckVersion1.h"
 #include "choice_types/choice_compatibility_check/ChoiceCompatibilityCheckVersion2.h"
-
+#include "gtest/gtest.h"
 #include "zserio/SerializeUtil.h"
 
 namespace choice_types
@@ -16,25 +14,25 @@ using vector_type = zserio::vector<T, allocator_type>;
 
 namespace
 {
-    template <typename HOLDER>
-    struct VersionTraits
-    {};
+template <typename HOLDER>
+struct VersionTraits
+{};
 
-    template <>
-    struct VersionTraits<HolderVersion1>
-    {
-        using Holder = HolderVersion1;
-        using Choice = ChoiceVersion1;
-        using Enum = EnumVersion1;
-    };
+template <>
+struct VersionTraits<HolderVersion1>
+{
+    using Holder = HolderVersion1;
+    using Choice = ChoiceVersion1;
+    using Enum = EnumVersion1;
+};
 
-    template <>
-    struct VersionTraits<HolderVersion2>
-    {
-        using Holder = HolderVersion2;
-        using Choice = ChoiceVersion2;
-        using Enum = EnumVersion2;
-    };
+template <>
+struct VersionTraits<HolderVersion2>
+{
+    using Holder = HolderVersion2;
+    using Choice = ChoiceVersion2;
+    using Enum = EnumVersion2;
+};
 } // namespace
 
 class ChoiceCompatibilityCheckTest : public ::testing::Test
@@ -88,12 +86,8 @@ protected:
     {
         using Enum = typename VersionTraits<HOLDER>::Enum;
 
-        return vector_type<HOLDER>{
-            createHolder<HOLDER>(Enum::COORD_XY, 0),
-            createHolder<HOLDER>(Enum::TEXT, 1),
-            createHolder<HOLDER>(Enum::COORD_XY, 2),
-            createHolder<HOLDER>(Enum::TEXT, 3)
-        };
+        return vector_type<HOLDER>{createHolder<HOLDER>(Enum::COORD_XY, 0), createHolder<HOLDER>(Enum::TEXT, 1),
+                createHolder<HOLDER>(Enum::COORD_XY, 2), createHolder<HOLDER>(Enum::TEXT, 3)};
     }
 
     HolderVersion2 createHolderCoordXYZ(uint32_t index)
@@ -130,8 +124,8 @@ TEST_F(ChoiceCompatibilityCheckTest, writeVersion1ReadVersion1)
     ChoiceCompatibilityCheckVersion1 choiceCompatibilityCheckVersion1;
     fill(choiceCompatibilityCheckVersion1, createArrayVersion1<HolderVersion1>());
 
-    auto readChoiceCompatibilityCheckVersion1 = writeRead<ChoiceCompatibilityCheckVersion1>(
-            choiceCompatibilityCheckVersion1);
+    auto readChoiceCompatibilityCheckVersion1 =
+            writeRead<ChoiceCompatibilityCheckVersion1>(choiceCompatibilityCheckVersion1);
     ASSERT_EQ(choiceCompatibilityCheckVersion1, readChoiceCompatibilityCheckVersion1);
 }
 
@@ -140,8 +134,8 @@ TEST_F(ChoiceCompatibilityCheckTest, writeVersion1ReadVersion2)
     ChoiceCompatibilityCheckVersion1 choiceCompatibilityCheckVersion1;
     fill(choiceCompatibilityCheckVersion1, createArrayVersion1<HolderVersion1>());
 
-    auto readChoiceCompatibilityCheckVersion2 = writeRead<ChoiceCompatibilityCheckVersion2>(
-            choiceCompatibilityCheckVersion1);
+    auto readChoiceCompatibilityCheckVersion2 =
+            writeRead<ChoiceCompatibilityCheckVersion2>(choiceCompatibilityCheckVersion1);
     const auto expectedArrayVersion2 = createArrayVersion1<HolderVersion2>();
     ASSERT_EQ(expectedArrayVersion2, readChoiceCompatibilityCheckVersion2.getArray());
     ASSERT_EQ(expectedArrayVersion2, readChoiceCompatibilityCheckVersion2.getPackedArray());
@@ -152,8 +146,8 @@ TEST_F(ChoiceCompatibilityCheckTest, writeVersion2ReadVersion1)
     ChoiceCompatibilityCheckVersion2 choiceCompatibilityCheckVersion2;
     fill(choiceCompatibilityCheckVersion2, createArrayVersion1<HolderVersion2>());
 
-    auto readChoiceCompatibilityCheckVersion1 = writeRead<ChoiceCompatibilityCheckVersion1>(
-            choiceCompatibilityCheckVersion2);
+    auto readChoiceCompatibilityCheckVersion1 =
+            writeRead<ChoiceCompatibilityCheckVersion1>(choiceCompatibilityCheckVersion2);
     const auto expectedArrayVersion1 = createArrayVersion1<HolderVersion1>();
     ASSERT_EQ(expectedArrayVersion1, readChoiceCompatibilityCheckVersion1.getArray());
     ASSERT_EQ(expectedArrayVersion1, readChoiceCompatibilityCheckVersion1.getPackedArray());
@@ -164,8 +158,8 @@ TEST_F(ChoiceCompatibilityCheckTest, writeVersion2ReadVersion2)
     ChoiceCompatibilityCheckVersion2 choiceCompatibilityCheckVersion2;
     fill(choiceCompatibilityCheckVersion2, createArrayVersion2());
 
-    auto readChoiceCompatibilityCheckVersion2 = writeRead<ChoiceCompatibilityCheckVersion2>(
-            choiceCompatibilityCheckVersion2);
+    auto readChoiceCompatibilityCheckVersion2 =
+            writeRead<ChoiceCompatibilityCheckVersion2>(choiceCompatibilityCheckVersion2);
     ASSERT_EQ(choiceCompatibilityCheckVersion2, readChoiceCompatibilityCheckVersion2);
 }
 

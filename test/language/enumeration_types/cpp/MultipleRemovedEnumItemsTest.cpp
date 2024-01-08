@@ -1,11 +1,9 @@
+#include "enumeration_types/multiple_removed_enum_items/AllocatorType.h"
+#include "enumeration_types/multiple_removed_enum_items/Traffic.h"
 #include "gtest/gtest.h"
-
 #include "zserio/BitStreamReader.h"
 #include "zserio/BitStreamWriter.h"
 #include "zserio/CppRuntimeException.h"
-
-#include "enumeration_types/multiple_removed_enum_items/AllocatorType.h"
-#include "enumeration_types/multiple_removed_enum_items/Traffic.h"
 
 using namespace zserio::literals;
 
@@ -19,7 +17,6 @@ using allocator_type = AllocatorType::allocator_type;
 class MultipleRemovedEnumItemsTest : public ::testing::Test
 {
 protected:
-
     static constexpr uint8_t NONE_VALUE = 1;
     static constexpr uint8_t HEAVY_VALUE = 2;
     static constexpr uint8_t LIGHT_VALUE = 3;

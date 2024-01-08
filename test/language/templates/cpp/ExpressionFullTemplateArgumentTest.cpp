@@ -1,5 +1,4 @@
 #include "gtest/gtest.h"
-
 #include "templates/expression_full_template_argument/FullTemplateArgumentHolder.h"
 
 namespace templates

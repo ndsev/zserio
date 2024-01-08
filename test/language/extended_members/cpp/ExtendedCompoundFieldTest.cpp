@@ -1,10 +1,8 @@
-#include "gtest/gtest.h"
-
-#include "extended_members/extended_compound_field/Original.h"
 #include "extended_members/extended_compound_field/Extended.h"
-
-#include "zserio/SerializeUtil.h"
+#include "extended_members/extended_compound_field/Original.h"
+#include "gtest/gtest.h"
 #include "zserio/BitSizeOfCalculator.h"
+#include "zserio/SerializeUtil.h"
 #include "zserio/SizeConvertUtil.h"
 
 namespace extended_members
@@ -51,11 +49,11 @@ protected:
     static const size_t EXTENDED_BIT_SIZE_WITH_ARRAY;
 };
 
-const vector_type<uint32_t> ExtendedCompoundFieldTest::COMPOUND_ARRAY = { 0, 1, 2, 3, 4 };
+const vector_type<uint32_t> ExtendedCompoundFieldTest::COMPOUND_ARRAY = {0, 1, 2, 3, 4};
 
 const size_t ExtendedCompoundFieldTest::ORIGINAL_BIT_SIZE = 4 * 8;
-const size_t ExtendedCompoundFieldTest::EXTENDED_BIT_SIZE_DEFAULT = ORIGINAL_BIT_SIZE +
-        zserio::bitSizeOfVarSize(0);
+const size_t ExtendedCompoundFieldTest::EXTENDED_BIT_SIZE_DEFAULT =
+        ORIGINAL_BIT_SIZE + zserio::bitSizeOfVarSize(0);
 const size_t ExtendedCompoundFieldTest::EXTENDED_BIT_SIZE_WITH_ARRAY = ORIGINAL_BIT_SIZE +
         zserio::bitSizeOfVarSize(zserio::convertSizeToUInt32(COMPOUND_ARRAY.size())) +
         COMPOUND_ARRAY.size() * 4 * 8;

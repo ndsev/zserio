@@ -1,9 +1,8 @@
 #include <memory>
 
 #include "gtest/gtest.h"
-
-#include "with_validation_code/virtual_table_validation/VirtualTableValidationDb.h"
 #include "test_utils/ValidationObservers.h"
+#include "with_validation_code/virtual_table_validation/VirtualTableValidationDb.h"
 
 using namespace test_utils;
 
@@ -42,14 +41,14 @@ protected:
 private:
     void insertTestTableRow(zserio::SqliteConnection& connection, int16_t id)
     {
-        std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(connection.prepareStatement(
-                "INSERT INTO TestTable (docId, text, anotherId) VALUES (?, ?, ?)"));
+        std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(
+                connection.prepareStatement("INSERT INTO TestTable (docId, text, anotherId) VALUES (?, ?, ?)"));
 
         int argIdx = 1;
         sqlite3_bind_int(statement.get(), argIdx++, static_cast<int>(id));
         const std::string text("Test " + std::to_string(id));
-        sqlite3_bind_text(statement.get(), argIdx++, text.c_str(), static_cast<int>(text.size()),
-                SQLITE_TRANSIENT);
+        sqlite3_bind_text(
+                statement.get(), argIdx++, text.c_str(), static_cast<int>(text.size()), SQLITE_TRANSIENT);
         if (id % 2 == 0)
             sqlite3_bind_int(statement.get(), argIdx++, id / 2);
         else

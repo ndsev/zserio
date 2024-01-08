@@ -1,12 +1,10 @@
 #include <memory>
 
 #include "gtest/gtest.h"
-
+#include "test_utils/ValidationObservers.h"
+#include "with_validation_code/constraint_table_validation/ConstraintTableValidationDb.h"
 #include "zserio/FloatUtil.h"
 #include "zserio/SqliteFinalizer.h"
-
-#include "with_validation_code/constraint_table_validation/ConstraintTableValidationDb.h"
-#include "test_utils/ValidationObservers.h"
 
 using namespace test_utils;
 
@@ -32,8 +30,8 @@ protected:
     {
         const bool wasTransactionStarted = connection.startTransaction();
 
-        std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(connection.prepareStatement(
-                "INSERT INTO constraintTable(id, blob) VALUES (?, ?)"));
+        std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(
+                connection.prepareStatement("INSERT INTO constraintTable(id, blob) VALUES (?, ?)"));
 
         int argIdx = 1;
         sqlite3_bind_int(statement.get(), argIdx++, ROW_ID);
@@ -62,7 +60,7 @@ const char* const ConstraintTableValidationTest::DB_FILE_NAME =
         "arguments/with_validation_code/constraint_table_validation_test.sqlite";
 
 constexpr uint32_t ConstraintTableValidationTest::ROW_ID;
-constexpr uint8_t  ConstraintTableValidationTest::VALUE;
+constexpr uint8_t ConstraintTableValidationTest::VALUE;
 
 TEST_F(ConstraintTableValidationTest, validate)
 {

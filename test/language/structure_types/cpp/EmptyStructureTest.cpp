@@ -1,9 +1,7 @@
 #include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-
 #include "structure_types/empty_structure/EmptyStructure.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace structure_types
 {
@@ -67,8 +65,8 @@ TEST(EmptyStructureTest, moveAssignmentOperator)
 TEST(EmptyStructureTest, propagateAllocatorCopyConstructor)
 {
     EmptyStructure emptyStructure;
-    EmptyStructure emptyStructureCopy(zserio::PropagateAllocator, emptyStructure,
-            EmptyStructure::allocator_type());
+    EmptyStructure emptyStructureCopy(
+            zserio::PropagateAllocator, emptyStructure, EmptyStructure::allocator_type());
     ASSERT_EQ(0, emptyStructure.bitSizeOf());
     ASSERT_EQ(0, emptyStructureCopy.bitSizeOf());
 }

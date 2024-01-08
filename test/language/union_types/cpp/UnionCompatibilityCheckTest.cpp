@@ -1,8 +1,6 @@
 #include "gtest/gtest.h"
-
 #include "union_types/union_compatibility_check/UnionCompatibilityCheckVersion1.h"
 #include "union_types/union_compatibility_check/UnionCompatibilityCheckVersion2.h"
-
 #include "zserio/SerializeUtil.h"
 
 namespace union_types
@@ -13,7 +11,6 @@ namespace union_compatibility_check
 using allocator_type = UnionCompatibilityCheckVersion1::allocator_type;
 template <typename T>
 using vector_type = zserio::vector<T, allocator_type>;
-
 
 class UnionCompatibilityCheckTest : public ::testing::Test
 {
@@ -60,11 +57,7 @@ protected:
     vector_type<UNION> createArrayVersion1()
     {
         return vector_type<UNION>{
-            createUnion<UNION>(0),
-            createUnion<UNION>(1),
-            createUnion<UNION>(2),
-            createUnion<UNION>(3)
-        };
+                createUnion<UNION>(0), createUnion<UNION>(1), createUnion<UNION>(2), createUnion<UNION>(3)};
     }
 
     UnionVersion2 createUnionXYZ(uint32_t index)
@@ -97,8 +90,8 @@ TEST_F(UnionCompatibilityCheckTest, writeVersion1ReadVersion1)
     UnionCompatibilityCheckVersion1 unionCompatibilityCheckVersion1;
     fill(unionCompatibilityCheckVersion1, createArrayVersion1<UnionVersion1>());
 
-    auto readUnionCompatibilityCheckVersion1 = writeRead<UnionCompatibilityCheckVersion1>(
-            unionCompatibilityCheckVersion1);
+    auto readUnionCompatibilityCheckVersion1 =
+            writeRead<UnionCompatibilityCheckVersion1>(unionCompatibilityCheckVersion1);
     ASSERT_EQ(unionCompatibilityCheckVersion1, readUnionCompatibilityCheckVersion1);
 }
 
@@ -117,8 +110,8 @@ TEST_F(UnionCompatibilityCheckTest, writeVersion1ReadVersion2)
     UnionCompatibilityCheckVersion1 unionCompatibilityCheckVersion1;
     fill(unionCompatibilityCheckVersion1, createArrayVersion1<UnionVersion1>());
 
-    auto readUnionCompatibilityCheckVersion2 = writeRead<UnionCompatibilityCheckVersion2>(
-            unionCompatibilityCheckVersion1);
+    auto readUnionCompatibilityCheckVersion2 =
+            writeRead<UnionCompatibilityCheckVersion2>(unionCompatibilityCheckVersion1);
     const auto expectedArrayVersion2 = createArrayVersion1<UnionVersion2>();
     ASSERT_EQ(expectedArrayVersion2, readUnionCompatibilityCheckVersion2.getArray());
     ASSERT_EQ(expectedArrayVersion2, readUnionCompatibilityCheckVersion2.getPackedArray());
@@ -141,8 +134,8 @@ TEST_F(UnionCompatibilityCheckTest, writeVersion2ReadVersion1)
     UnionCompatibilityCheckVersion2 unionCompatibilityCheckVersion2;
     fill(unionCompatibilityCheckVersion2, createArrayVersion1<UnionVersion2>());
 
-    auto readUnionCompatibilityCheckVersion1 = writeRead<UnionCompatibilityCheckVersion1>(
-            unionCompatibilityCheckVersion2);
+    auto readUnionCompatibilityCheckVersion1 =
+            writeRead<UnionCompatibilityCheckVersion1>(unionCompatibilityCheckVersion2);
     const auto expectedArrayVersion1 = createArrayVersion1<UnionVersion1>();
     ASSERT_EQ(expectedArrayVersion1, readUnionCompatibilityCheckVersion1.getArray());
     ASSERT_EQ(expectedArrayVersion1, readUnionCompatibilityCheckVersion1.getPackedArray());
@@ -165,8 +158,8 @@ TEST_F(UnionCompatibilityCheckTest, writeVersion2ReadVersion2)
     UnionCompatibilityCheckVersion2 unionCompatibilityCheckVersion2;
     fill(unionCompatibilityCheckVersion2, createArrayVersion2());
 
-    auto readUnionCompatibilityCheckVersion2 = writeRead<UnionCompatibilityCheckVersion2>(
-            unionCompatibilityCheckVersion2);
+    auto readUnionCompatibilityCheckVersion2 =
+            writeRead<UnionCompatibilityCheckVersion2>(unionCompatibilityCheckVersion2);
     ASSERT_EQ(unionCompatibilityCheckVersion2, readUnionCompatibilityCheckVersion2);
 }
 

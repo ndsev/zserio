@@ -1,7 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "expressions/array_type/ArrayTypeExpression.h"
-
+#include "gtest/gtest.h"
 #include "zserio/RebindAlloc.h"
 
 namespace expressions

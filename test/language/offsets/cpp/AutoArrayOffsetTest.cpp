@@ -1,10 +1,8 @@
 #include "gtest/gtest.h"
-
 #include "offsets/auto_array_offset/AutoArrayHolder.h"
-
-#include "zserio/RebindAlloc.h"
-#include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
+#include "zserio/RebindAlloc.h"
 
 namespace offsets
 {
@@ -62,24 +60,24 @@ protected:
         autoArrayHolder.setAutoArray(autoArray);
     }
 
-    static const size_t     AUTO_ARRAY_LENGTH;
-    static const uint8_t    FORCED_ALIGNMENT_VALUE;
+    static const size_t AUTO_ARRAY_LENGTH;
+    static const uint8_t FORCED_ALIGNMENT_VALUE;
 
-    static const uint32_t   WRONG_AUTO_ARRAY_OFFSET;
-    static const uint32_t   AUTO_ARRAY_OFFSET;
+    static const uint32_t WRONG_AUTO_ARRAY_OFFSET;
+    static const uint32_t AUTO_ARRAY_OFFSET;
 
-    static const size_t     AUTO_ARRAY_HOLDER_BIT_SIZE;
+    static const size_t AUTO_ARRAY_HOLDER_BIT_SIZE;
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
-const size_t    AutoArrayOffsetTest::AUTO_ARRAY_LENGTH = 5;
-const uint8_t   AutoArrayOffsetTest::FORCED_ALIGNMENT_VALUE = 0;
+const size_t AutoArrayOffsetTest::AUTO_ARRAY_LENGTH = 5;
+const uint8_t AutoArrayOffsetTest::FORCED_ALIGNMENT_VALUE = 0;
 
-const uint32_t  AutoArrayOffsetTest::WRONG_AUTO_ARRAY_OFFSET = 0;
-const uint32_t  AutoArrayOffsetTest::AUTO_ARRAY_OFFSET = 5;
+const uint32_t AutoArrayOffsetTest::WRONG_AUTO_ARRAY_OFFSET = 0;
+const uint32_t AutoArrayOffsetTest::AUTO_ARRAY_OFFSET = 5;
 
-const size_t    AutoArrayOffsetTest::AUTO_ARRAY_HOLDER_BIT_SIZE = 32 + 1 + 7 + 8 + AUTO_ARRAY_LENGTH * 7;
+const size_t AutoArrayOffsetTest::AUTO_ARRAY_HOLDER_BIT_SIZE = 32 + 1 + 7 + 8 + AUTO_ARRAY_LENGTH * 7;
 
 TEST_F(AutoArrayOffsetTest, readConstructor)
 {

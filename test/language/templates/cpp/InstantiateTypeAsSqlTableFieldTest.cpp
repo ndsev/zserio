@@ -1,10 +1,7 @@
 #include "gtest/gtest.h"
-
-#include "zserio/SqliteConnection.h"
-
 #include "templates/instantiate_type_as_sql_table_field/Test32Table.h"
-
 #include "zserio/RebindAlloc.h"
+#include "zserio/SqliteConnection.h"
 
 namespace templates
 {
@@ -19,7 +16,7 @@ static const char* const SQLITE3_MEM_DB = ":memory:";
 
 TEST(InstantiateSqlTableTest, instantiationOfTest32Table)
 {
-    sqlite3 *internalConnection = nullptr;
+    sqlite3* internalConnection = nullptr;
     int result = sqlite3_open(SQLITE3_MEM_DB, &internalConnection);
     ASSERT_EQ(SQLITE_OK, result);
     zserio::SqliteConnection connection(internalConnection, ::zserio::SqliteConnection::INTERNAL_CONNECTION);

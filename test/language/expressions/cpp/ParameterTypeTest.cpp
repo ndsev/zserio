@@ -1,6 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "expressions/parameter_type/ParameterTypeExpression.h"
+#include "gtest/gtest.h"
 
 namespace expressions
 {

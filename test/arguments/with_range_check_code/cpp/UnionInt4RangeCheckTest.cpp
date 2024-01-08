@@ -1,8 +1,6 @@
 #include "gtest/gtest.h"
-
-#include "zserio/CppRuntimeException.h"
-
 #include "with_range_check_code/union_int4_range_check/UnionInt4RangeCheckCompound.h"
+#include "zserio/CppRuntimeException.h"
 
 namespace with_range_check_code
 {
@@ -52,8 +50,8 @@ TEST_F(UnionInt4RangeCheckTest, unionInt4BelowLowerBound)
     }
     catch (const zserio::CppRuntimeException& excpt)
     {
-        ASSERT_STREQ("Value -9 of UnionInt4RangeCheckCompound.value exceeds the range of <-8..7>!",
-                excpt.what());
+        ASSERT_STREQ(
+                "Value -9 of UnionInt4RangeCheckCompound.value exceeds the range of <-8..7>!", excpt.what());
     }
 }
 
@@ -66,8 +64,8 @@ TEST_F(UnionInt4RangeCheckTest, unionInt4AboveUpperBound)
     }
     catch (const zserio::CppRuntimeException& excpt)
     {
-        ASSERT_STREQ("Value 8 of UnionInt4RangeCheckCompound.value exceeds the range of <-8..7>!",
-                excpt.what());
+        ASSERT_STREQ(
+                "Value 8 of UnionInt4RangeCheckCompound.value exceeds the range of <-8..7>!", excpt.what());
     }
 }
 

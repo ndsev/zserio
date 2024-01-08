@@ -1,7 +1,6 @@
-#include "gtest/gtest.h"
-
 #include "enumeration_types/enum_defined_by_constant/Colors.h"
 #include "enumeration_types/enum_defined_by_constant/WHITE_COLOR.h"
+#include "gtest/gtest.h"
 
 namespace enumeration_types
 {
@@ -9,8 +8,7 @@ namespace enum_defined_by_constant
 {
 
 class EnumDefinedByConstant : public ::testing::Test
-{
-};
+{};
 
 TEST_F(EnumDefinedByConstant, lightColor)
 {

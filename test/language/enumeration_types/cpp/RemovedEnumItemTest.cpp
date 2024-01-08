@@ -1,11 +1,9 @@
+#include "enumeration_types/removed_enum_item/AllocatorType.h"
+#include "enumeration_types/removed_enum_item/Traffic.h"
 #include "gtest/gtest.h"
-
 #include "zserio/BitStreamReader.h"
 #include "zserio/BitStreamWriter.h"
 #include "zserio/CppRuntimeException.h"
-
-#include "enumeration_types/removed_enum_item/AllocatorType.h"
-#include "enumeration_types/removed_enum_item/Traffic.h"
 
 using namespace zserio::literals;
 
@@ -19,7 +17,6 @@ using allocator_type = AllocatorType::allocator_type;
 class RemovedEnumItemTest : public ::testing::Test
 {
 protected:
-
     static constexpr uint8_t NONE_VALUE = 1;
     static constexpr uint8_t HEAVY_VALUE = 2;
     static constexpr uint8_t LIGHT_VALUE = 3;
@@ -126,17 +123,19 @@ TEST_F(RemovedEnumItemTest, write)
     ASSERT_EQ(Traffic::LIGHT, zserio::read<Traffic>(reader));
     ASSERT_EQ(Traffic::MID, zserio::read<Traffic>(reader));
 
-    ASSERT_THROW({
-        try
-        {
-            zserio::write(writer, Traffic::ZSERIO_REMOVED_HEAVY);
-        }
-        catch (const zserio::CppRuntimeException& e)
-        {
-            ASSERT_STREQ("Trying to write removed enumeration item 'ZSERIO_REMOVED_HEAVY'!", e.what());
-            throw;
-        }
-    }, zserio::CppRuntimeException);
+    ASSERT_THROW(
+            {
+                try
+                {
+                    zserio::write(writer, Traffic::ZSERIO_REMOVED_HEAVY);
+                }
+                catch (const zserio::CppRuntimeException& e)
+                {
+                    ASSERT_STREQ("Trying to write removed enumeration item 'ZSERIO_REMOVED_HEAVY'!", e.what());
+                    throw;
+                }
+            },
+            zserio::CppRuntimeException);
 }
 
 TEST_F(RemovedEnumItemTest, enumTypeInfo)

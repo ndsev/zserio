@@ -1,5 +1,4 @@
 #include "gtest/gtest.h"
-
 #include "templates/struct_long_template_argument/StructLongTemplateArgument.h"
 
 namespace templates
@@ -10,8 +9,7 @@ namespace struct_long_template_argument
 TEST(StructLongTemplateArgumentTest, readWrite)
 {
     const TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVery_ templ(
-            ThisIsVeryVeryVeryLongNamedStructure("StringT"),
-            ThisIsVeryVeryVeryLongNamedStructure("StringU"),
+            ThisIsVeryVeryVeryLongNamedStructure("StringT"), ThisIsVeryVeryVeryLongNamedStructure("StringU"),
             ThisIsVeryVeryVeryLongNamedStructure("StringV"));
     StructLongTemplateArgument structLongTemplateArgument(templ);
 

@@ -1,8 +1,6 @@
 #include "gtest/gtest.h"
-
-#include "zserio/SerializeUtil.h"
-
 #include "parameterized_types/bytes_param/BytesParam.h"
+#include "zserio/SerializeUtil.h"
 
 namespace parameterized_types
 {

@@ -1,9 +1,7 @@
 #include "gtest/gtest.h"
-
 #include "union_types/union_with_parameter/TestUnion.h"
-
-#include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 #include "zserio/CppRuntimeException.h"
 
 namespace union_types
@@ -184,6 +182,5 @@ TEST(UnionWithParameterTestTest, isInitialized)
     ASSERT_TRUE(testUnion.isInitialized());
 }
 
-
-} //namespace union_with_parameter
+} // namespace union_with_parameter
 } // namespace union_types

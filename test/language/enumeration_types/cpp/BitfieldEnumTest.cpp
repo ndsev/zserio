@@ -1,11 +1,9 @@
 #include <string>
 
-#include "gtest/gtest.h"
-
-#include "zserio/SerializeUtil.h"
-#include "zserio/CppRuntimeException.h"
-
 #include "enumeration_types/bitfield_enum/Color.h"
+#include "gtest/gtest.h"
+#include "zserio/CppRuntimeException.h"
+#include "zserio/SerializeUtil.h"
 
 namespace enumeration_types
 {

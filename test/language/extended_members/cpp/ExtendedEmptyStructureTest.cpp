@@ -1,8 +1,6 @@
-#include "gtest/gtest.h"
-
-#include "extended_members/extended_empty_structure/Original.h"
 #include "extended_members/extended_empty_structure/Extended.h"
-
+#include "extended_members/extended_empty_structure/Original.h"
+#include "gtest/gtest.h"
 #include "zserio/SerializeUtil.h"
 
 namespace extended_members
@@ -25,8 +23,7 @@ protected:
         ASSERT_EQ(expectedIsPresent, movedExtended.isExtendedValuePresent());
         ASSERT_EQ(extended, movedExtended);
 
-        Extended copiedWithPropagateAllocatorExtended(
-                zserio::PropagateAllocator, extended, allocator_type());
+        Extended copiedWithPropagateAllocatorExtended(zserio::PropagateAllocator, extended, allocator_type());
         ASSERT_EQ(expectedIsPresent, copiedWithPropagateAllocatorExtended.isExtendedValuePresent());
         ASSERT_EQ(extended, copiedWithPropagateAllocatorExtended);
 

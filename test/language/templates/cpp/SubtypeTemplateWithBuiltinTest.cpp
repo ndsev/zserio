@@ -1,5 +1,4 @@
 #include "gtest/gtest.h"
-
 #include "templates/subtype_template_with_builtin/SubtypeTemplateWithBuiltin.h"
 
 namespace templates

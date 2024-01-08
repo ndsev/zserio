@@ -1,11 +1,10 @@
 #include <cstdio>
-#include <string>
 #include <fstream>
+#include <string>
 
 #include "gtest/gtest.h"
-
-#include "subtypes/bitmask_subtype/Permission.h"
 #include "subtypes/bitmask_subtype/CONST_READ.h"
+#include "subtypes/bitmask_subtype/Permission.h"
 
 namespace subtypes
 {

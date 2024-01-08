@@ -1,15 +1,13 @@
 #include <cstdio>
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
 
 #include "gtest/gtest.h"
-
 #include "sql_virtual_columns/simple_virtual_columns/SimpleVirtualColumnsDb.h"
-
 #include "zserio/RebindAlloc.h"
-#include "zserio/StringConvertUtil.h"
 #include "zserio/SqliteFinalizer.h"
+#include "zserio/StringConvertUtil.h"
 
 namespace sql_virtual_columns
 {
@@ -24,7 +22,9 @@ using vector_type = zserio::vector<T, allocator_type>;
 class SimpleVirtualColumnsTest : public ::testing::Test
 {
 public:
-    SimpleVirtualColumnsTest() : m_tableName("simpleVirtualColumnsTable"), m_virtualColumnName("content")
+    SimpleVirtualColumnsTest() :
+            m_tableName("simpleVirtualColumnsTable"),
+            m_virtualColumnName("content")
     {
         std::remove(DB_FILE_NAME);
 
@@ -44,8 +44,8 @@ public:
     SimpleVirtualColumnsTest& operator=(SimpleVirtualColumnsTest&&) = delete;
 
 protected:
-    static void fillSimpleVirtualColumnsTableRow(SimpleVirtualColumnsTable::Row& row,
-            const string_type& content)
+    static void fillSimpleVirtualColumnsTableRow(
+            SimpleVirtualColumnsTable::Row& row, const string_type& content)
     {
         row.setContent(content);
     }
@@ -62,8 +62,8 @@ protected:
         }
     }
 
-    static void checkSimpleVirtualColumnsTableRow(const SimpleVirtualColumnsTable::Row& row1,
-            const SimpleVirtualColumnsTable::Row& row2)
+    static void checkSimpleVirtualColumnsTableRow(
+            const SimpleVirtualColumnsTable::Row& row1, const SimpleVirtualColumnsTable::Row& row2)
     {
         ASSERT_EQ(row1.getContent(), row2.getContent());
     }
@@ -78,8 +78,8 @@ protected:
 
     bool isTableInDb()
     {
-        string_type sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + m_tableName +
-                "'";
+        string_type sqlQuery =
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='" + m_tableName + "'";
         std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(
                 m_database->connection().prepareStatement(sqlQuery));
 
@@ -202,5 +202,5 @@ TEST_F(SimpleVirtualColumnsTest, checkVirtualColumn)
     ASSERT_TRUE(isVirtualColumnInTable());
 }
 
-} // simple_virtual_columns
+} // namespace simple_virtual_columns
 } // namespace sql_virtual_columns

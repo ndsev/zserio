@@ -1,8 +1,6 @@
 #include "gtest/gtest.h"
-
-#include "zserio/CppRuntimeException.h"
-
 #include "with_range_check_code/choice_bit4_range_check/ChoiceBit4RangeCheckCompound.h"
+#include "zserio/CppRuntimeException.h"
 
 namespace with_range_check_code
 {
@@ -54,8 +52,8 @@ TEST_F(ChoiceBit4RangeCheckTest, choiceBit4AboveUpperBound)
     }
     catch (const zserio::CppRuntimeException& excpt)
     {
-        ASSERT_STREQ("Value 16 of ChoiceBit4RangeCheckCompound.value exceeds the range of <0..15>!",
-                excpt.what());
+        ASSERT_STREQ(
+                "Value 16 of ChoiceBit4RangeCheckCompound.value exceeds the range of <0..15>!", excpt.what());
     }
 }
 

@@ -1,7 +1,5 @@
 #include "gtest/gtest.h"
-
 #include "sql_allocation/SqlAllocationDb.h"
-
 #include "test_utils/MemoryResources.h"
 #include "test_utils/ValidationObservers.h"
 
@@ -86,8 +84,8 @@ protected:
             const allocator_type& allocator, uint32_t id, uint32_t len = 0)
     {
         row.setIdWithVeryLongNameAndYetLongerName(id);
-        row.setTextWithVeryLongNameAndYetLongerName(string_type(
-                "This is constant string longer than 32 bytes (", allocator) +
+        row.setTextWithVeryLongNameAndYetLongerName(
+                string_type("This is constant string longer than 32 bytes (", allocator) +
                 zserio::toString(id, allocator) + ")");
         row.setDataBlobWithVeryLongNameAndYetLongerName(DataBlob{len == 0 ? id + 1 : len, MAGIC});
         row.setParameterizedBlobWithVeryLongNameAndYetLongerName(
@@ -109,10 +107,9 @@ protected:
 
     static void checkTableRow(const SqlAllocationTable::Row& row1, const SqlAllocationTable::Row& row2)
     {
-        ASSERT_EQ(row1.getIdWithVeryLongNameAndYetLongerName(),
-                row2.getIdWithVeryLongNameAndYetLongerName());
-        ASSERT_EQ(row1.getTextWithVeryLongNameAndYetLongerName(),
-                row2.getTextWithVeryLongNameAndYetLongerName());
+        ASSERT_EQ(row1.getIdWithVeryLongNameAndYetLongerName(), row2.getIdWithVeryLongNameAndYetLongerName());
+        ASSERT_EQ(
+                row1.getTextWithVeryLongNameAndYetLongerName(), row2.getTextWithVeryLongNameAndYetLongerName());
         ASSERT_EQ(row1.getDataBlobWithVeryLongNameAndYetLongerName(),
                 row2.getDataBlobWithVeryLongNameAndYetLongerName());
         ASSERT_EQ(row1.getParameterizedBlobWithVeryLongNameAndYetLongerName(),
@@ -121,8 +118,8 @@ protected:
                 row2.getParameterizedBlobExplicitWithVeryLongNameAndYetLongerName());
         ASSERT_EQ(row1.getColorWithVeryLongNameAndYetLongerName(),
                 row2.getColorWithVeryLongNameAndYetLongerName());
-        ASSERT_EQ(row1.getRoleWithVeryLongNameAndYetLongerName(),
-                row2.getRoleWithVeryLongNameAndYetLongerName());
+        ASSERT_EQ(
+                row1.getRoleWithVeryLongNameAndYetLongerName(), row2.getRoleWithVeryLongNameAndYetLongerName());
     }
 
     static void checkTableRows(const vector_type<SqlAllocationTable::Row>& rows1,
@@ -136,7 +133,7 @@ protected:
 private:
     InvalidMemoryResource m_invalidMemoryResource;
     MemoryResourceScopedSetter m_invalidMemoryResourceSetter;
-    TestMemoryResource<10*1024> m_memoryResource;
+    TestMemoryResource<10 * 1024> m_memoryResource;
     allocator_type m_allocator;
 
 protected:
@@ -154,8 +151,7 @@ constexpr uint32_t SqlAllocationTest::NUM_ROWS;
 constexpr uint32_t SqlAllocationTest::RED_ROW_ID;
 constexpr uint32_t SqlAllocationTest::MAGIC;
 constexpr uint32_t SqlAllocationTest::WRONG_MAGIC;
-const string_type SqlAllocationTest::DB_FILE_NAME =
-        "arguments/set_cpp_allocator/sql_allocation_test.sqlite";
+const string_type SqlAllocationTest::DB_FILE_NAME = "arguments/set_cpp_allocator/sql_allocation_test.sqlite";
 
 TEST_F(SqlAllocationTest, readWithoutCondition)
 {
@@ -206,8 +202,7 @@ TEST_F(SqlAllocationTest, update)
     const uint32_t updateRowId = 2;
     SqlAllocationTable::Row updateRow;
     fillTableRow(updateRow, parameterProvider, getAllocator(), updateRowId, 4);
-    const string_type updateCondition =
-            string_type("idWithVeryLongNameAndYetLongerName=", getAllocator()) +
+    const string_type updateCondition = string_type("idWithVeryLongNameAndYetLongerName=", getAllocator()) +
             zserio::toString(updateRowId, getAllocator());
     sqlAllocationTable.update(parameterProvider, updateRow, updateCondition);
 
@@ -242,7 +237,8 @@ TEST_F(SqlAllocationTest, validateInvalidSchema)
 
     const bool wasTransactionStarted = connection.startTransaction();
     connection.executeUpdate("DROP TABLE allocationTable");
-    connection.executeUpdate("CREATE TABLE allocationTable("
+    connection.executeUpdate(
+            "CREATE TABLE allocationTable("
             "idWithVeryLongNameAndYetLongerName INTEGER NOT NULL, " // shall be PK
             "textWithVeryLongNameAndYetLongerName TEXT, " // shall be NOT NULL
             "dataBlobWithVeryLongNameAndYetLongerName TEXT NOT NULL, " // wrong type, shall be BLOB
@@ -273,9 +269,11 @@ TEST_F(SqlAllocationTest, validateInvalidField)
 
     zserio::SqliteConnection& connection = m_database->connection();
     const bool wasTransactionStarted = connection.startTransaction();
-    connection.executeUpdate("UPDATE allocationTable SET colorWithVeryLongNameAndYetLongerName = 13 "
+    connection.executeUpdate(
+            "UPDATE allocationTable SET colorWithVeryLongNameAndYetLongerName = 13 "
             "WHERE idWithVeryLongNameAndYetLongerName = 0");
-    connection.executeUpdate("UPDATE allocationTable SET roleWithVeryLongNameAndYetLongerName = 100000 "
+    connection.executeUpdate(
+            "UPDATE allocationTable SET roleWithVeryLongNameAndYetLongerName = 100000 "
             "WHERE idWithVeryLongNameAndYetLongerName = 1");
     {
         std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(connection.prepareStatement(
@@ -283,7 +281,7 @@ TEST_F(SqlAllocationTest, validateInvalidField)
                 "WHERE idWithVeryLongNameAndYetLongerName = 2"));
         BitBuffer bitBuffer{64, getAllocator()}; // for data blob 2 * uint32
         zserio::BitStreamWriter writer(bitBuffer);
-        writer.writeBits(2+1, 32); // len = id + 1
+        writer.writeBits(2 + 1, 32); // len = id + 1
         writer.writeBits(WRONG_MAGIC, 32); // magic
         sqlite3_bind_blob(statement.get(), 1, bitBuffer.getBuffer(), static_cast<int>(bitBuffer.getByteSize()),
                 SQLITE_TRANSIENT);

@@ -1,10 +1,8 @@
 #include <memory>
 
 #include "gtest/gtest.h"
-
-#include "with_validation_code/hidden_column_table_validation/HiddenColumnTableValidationDb.h"
 #include "test_utils/ValidationObservers.h"
-
+#include "with_validation_code/hidden_column_table_validation/HiddenColumnTableValidationDb.h"
 #include "zserio/SqliteFinalizer.h"
 
 using namespace test_utils;

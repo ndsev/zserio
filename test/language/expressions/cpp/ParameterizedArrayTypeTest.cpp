@@ -1,7 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "expressions/parameterized_array_type/ParameterizedArrayTypeExpression.h"
-
+#include "gtest/gtest.h"
 #include "zserio/RebindAlloc.h"
 
 namespace expressions
@@ -33,8 +31,8 @@ TEST(ParameterizedArrayTypeTest, bitSizeOfWithOptional)
     parameterizedArrayTypeExpression.initializeChildren();
 
     const size_t parameterizedArrayTypeExpressionBitSizeWithOptional = 33;
-    ASSERT_EQ(parameterizedArrayTypeExpressionBitSizeWithOptional,
-            parameterizedArrayTypeExpression.bitSizeOf());
+    ASSERT_EQ(
+            parameterizedArrayTypeExpressionBitSizeWithOptional, parameterizedArrayTypeExpression.bitSizeOf());
 }
 
 TEST(ParameterizedArrayTypeTest, bitSizeOfWithoutOptional)
@@ -57,8 +55,8 @@ TEST(ParameterizedArrayTypeTest, bitSizeOfWithoutOptional)
     parameterizedArrayTypeExpression.initializeChildren();
 
     const size_t parameterizedArrayTypeExpressionBitSizeWithOptional = 32;
-    ASSERT_EQ(parameterizedArrayTypeExpressionBitSizeWithOptional,
-            parameterizedArrayTypeExpression.bitSizeOf());
+    ASSERT_EQ(
+            parameterizedArrayTypeExpressionBitSizeWithOptional, parameterizedArrayTypeExpression.bitSizeOf());
 }
 
 } // namespace parameterized_array_type

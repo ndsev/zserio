@@ -1,15 +1,12 @@
-#include <string>
-#include <memory>
 #include <array>
-
-#include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
+#include <memory>
+#include <string>
 
 #include "complex_allocation/MainStructure.h"
-
+#include "gtest/gtest.h"
 #include "test_utils/MemoryResources.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 using namespace zserio::literals;
 using namespace test_utils;
@@ -98,23 +95,23 @@ protected:
         writer.writeBits(STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER, 6);
         writer.writeBits(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z, 32);
         // x1
-        writer.writeSignedBits(STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
-                STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER + 1);
+        writer.writeSignedBits(
+                STRUCT_PACKED_ELEMENT_ARRAY_DELTA, STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER + 1);
         // y1
-        writer.writeSignedBits(STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
-                STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER + 1);
+        writer.writeSignedBits(
+                STRUCT_PACKED_ELEMENT_ARRAY_DELTA, STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER + 1);
         // z1
-        writer.writeSignedBits(STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
-                STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER + 1);
+        writer.writeSignedBits(
+                STRUCT_PACKED_ELEMENT_ARRAY_DELTA, STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER + 1);
         // x2
-        writer.writeSignedBits(STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
-                STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER + 1);
+        writer.writeSignedBits(
+                STRUCT_PACKED_ELEMENT_ARRAY_DELTA, STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER + 1);
         // y2
-        writer.writeSignedBits(STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
-                STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER + 1);
+        writer.writeSignedBits(
+                STRUCT_PACKED_ELEMENT_ARRAY_DELTA, STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER + 1);
         // z2
-        writer.writeSignedBits(STRUCT_PACKED_ELEMENT_ARRAY_DELTA,
-                STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER + 1);
+        writer.writeSignedBits(
+                STRUCT_PACKED_ELEMENT_ARRAY_DELTA, STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER + 1);
 
         // structOptionalField
         writer.writeBool(true);
@@ -161,8 +158,8 @@ protected:
         stringArray.emplace_back(STRING_ARRAY_ELEMENT2, allocator);
     }
 
-    void fillChoiceField(allocation_choice::AllocationChoice& choiceField, const allocator_type& allocator,
-            bool hasArray)
+    void fillChoiceField(
+            allocation_choice::AllocationChoice& choiceField, const allocator_type& allocator, bool hasArray)
     {
         choiceField.initialize(hasArray);
         if (hasArray)
@@ -175,13 +172,13 @@ protected:
         }
         else
         {
-            choiceField.setCompound(allocation_choice::ChoiceCompound(CHOICE_COMPOUND_ELEMENT0_VALUE16,
-                    CHOICE_COMPOUND_ELEMENT0_IS_VALID, allocator));
+            choiceField.setCompound(allocation_choice::ChoiceCompound(
+                    CHOICE_COMPOUND_ELEMENT0_VALUE16, CHOICE_COMPOUND_ELEMENT0_IS_VALID, allocator));
         }
     }
 
-    void fillUnionField(allocation_union::AllocationUnion& unionField, const allocator_type& allocator,
-            bool hasArray)
+    void fillUnionField(
+            allocation_union::AllocationUnion& unionField, const allocator_type& allocator, bool hasArray)
     {
         if (hasArray)
         {
@@ -192,8 +189,8 @@ protected:
         }
         else
         {
-            unionField.setCompound(allocation_union::UnionCompound(UNION_COMPOUND_ELEMENT0_VALUE16,
-                    UNION_COMPOUND_ELEMENT0_IS_VALID, allocator));
+            unionField.setCompound(allocation_union::UnionCompound(
+                    UNION_COMPOUND_ELEMENT0_VALUE16, UNION_COMPOUND_ELEMENT0_IS_VALID, allocator));
         }
     }
 
@@ -213,19 +210,15 @@ protected:
         packedUInt16Array.push_back(STRUCT_PACKED_UINT16_ARRAY_ELEMENT2);
         auto& packedElementArray = structField.getPackedElementArray();
         packedElementArray.reserve(STRUCT_PACKED_ELEMENT_ARRAY_SIZE);
-        packedElementArray.emplace_back(
-                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X,
-                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y,
-                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z);
-        packedElementArray.emplace_back(
-                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X +
+        packedElementArray.emplace_back(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X,
+                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y, STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z);
+        packedElementArray.emplace_back(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X +
                         static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA),
                 STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y +
                         static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA),
                 STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z +
                         static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA));
-        packedElementArray.emplace_back(
-                STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X +
+        packedElementArray.emplace_back(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X +
                         static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA) * 2,
                 STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y +
                         static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA) * 2,
@@ -254,8 +247,8 @@ protected:
 
     BitBuffer createExternalField(const allocator_type& allocator)
     {
-        const std::array<uint8_t, 2> externalFieldData = {static_cast<uint8_t>(EXTERNAL_FIELD_DATA >> 8U),
-                static_cast<uint8_t>(EXTERNAL_FIELD_DATA)};
+        const std::array<uint8_t, 2> externalFieldData = {
+                static_cast<uint8_t>(EXTERNAL_FIELD_DATA >> 8U), static_cast<uint8_t>(EXTERNAL_FIELD_DATA)};
 
         return BitBuffer(externalFieldData.data(), EXTERNAL_FIELD_VAR_SIZE, allocator);
     }
@@ -272,8 +265,9 @@ protected:
 
     vector_type<uint8_t> createBytesField(const allocator_type& allocator)
     {
-        return vector_type<uint8_t>({static_cast<uint8_t>(BYTES_FIELD_DATA >> 8U),
-                static_cast<uint8_t>(BYTES_FIELD_DATA)}, allocator);
+        return vector_type<uint8_t>(
+                {static_cast<uint8_t>(BYTES_FIELD_DATA >> 8U), static_cast<uint8_t>(BYTES_FIELD_DATA)},
+                allocator);
     }
 
     void fillBytesArray(vector_type<vector_type<uint8_t>>& bytesArray, const allocator_type& allocator)
@@ -392,19 +386,25 @@ protected:
         ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_SIZE, packedElementArray.size());
         ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X, packedElementArray[0].getX());
         ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X +
-                static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA), packedElementArray[1].getX());
+                        static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA),
+                packedElementArray[1].getX());
         ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X +
-                static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA) * 2, packedElementArray[2].getX());
+                        static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA) * 2,
+                packedElementArray[2].getX());
         ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y, packedElementArray[0].getY());
         ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y +
-                static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA), packedElementArray[1].getY());
+                        static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA),
+                packedElementArray[1].getY());
         ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y +
-                static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA) * 2, packedElementArray[2].getY());
+                        static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA) * 2,
+                packedElementArray[2].getY());
         ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z, packedElementArray[0].getZ());
         ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z +
-                static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA), packedElementArray[1].getZ());
+                        static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA),
+                packedElementArray[1].getZ());
         ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z +
-                static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA) * 2, packedElementArray[2].getZ());
+                        static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA) * 2,
+                packedElementArray[2].getZ());
 
         // structOptionalField
         const auto& optionalField0 = mainStructure.getStructOptionalField();
@@ -423,8 +423,8 @@ protected:
         const auto& externalField = mainStructure.getExternalField();
         ASSERT_EQ(EXTERNAL_FIELD_VAR_SIZE, externalField.getBitSize());
         const uint8_t* externalFieldBuffer = externalField.getBuffer();
-        const uint16_t externalFieldData = (static_cast<uint16_t>(externalFieldBuffer[0] << 8U)) |
-                (externalFieldBuffer[1]);
+        const uint16_t externalFieldData =
+                (static_cast<uint16_t>(externalFieldBuffer[0] << 8U)) | (externalFieldBuffer[1]);
         ASSERT_EQ(EXTERNAL_FIELD_DATA, externalFieldData);
 
         // externalArray
@@ -437,8 +437,8 @@ protected:
         const auto& externalArrayElement1 = externalArray[1];
         ASSERT_EQ(EXTERNAL_ARRAY_ELEMENT1_VAR_SIZE, externalArrayElement1.getBitSize());
         const uint8_t* externalBufferElement1 = externalArrayElement1.getBuffer();
-        const uint16_t externalDataElement1 = (static_cast<uint16_t>(externalBufferElement1[0] << 8U)) |
-                (externalBufferElement1[1]);
+        const uint16_t externalDataElement1 =
+                (static_cast<uint16_t>(externalBufferElement1[0] << 8U)) | (externalBufferElement1[1]);
         ASSERT_EQ(EXTERNAL_ARRAY_ELEMENT1_DATA, externalDataElement1);
 
         // bytesField
@@ -452,8 +452,8 @@ protected:
         ASSERT_EQ(BYTES_ARRAY_SIZE, bytesArray.size());
         const auto& bytesArrayElement0 = bytesArray[0];
         ASSERT_EQ(BYTES_ARRAY_ELEMENT0_VAR_SIZE, bytesArrayElement0.size());
-        const uint16_t bytesDataElement0 = (static_cast<uint16_t>(bytesArrayElement0[0] << 8U)) |
-                (bytesArrayElement0[1]);
+        const uint16_t bytesDataElement0 =
+                (static_cast<uint16_t>(bytesArrayElement0[0] << 8U)) | (bytesArrayElement0[1]);
         ASSERT_EQ(BYTES_ARRAY_ELEMENT0_DATA, bytesDataElement0);
         const auto& bytesArrayElement1 = bytesArray[1];
         ASSERT_EQ(BYTES_ARRAY_ELEMENT1_VAR_SIZE, bytesArrayElement1.size());
@@ -490,9 +490,9 @@ protected:
         const bool hasPropagatingAllocator = hasCopyPropagatingAllocator();
         HeapMemoryResource heapMemoryResource;
         InvalidMemoryResource invalidMemoryResource;
-        MemoryResourceScopedSetter memoryResourceScopedSetter(hasPropagatingAllocator ?
-                static_cast<zserio::pmr::MemoryResource&>(invalidMemoryResource) :
-                static_cast<zserio::pmr::MemoryResource&>(heapMemoryResource));
+        MemoryResourceScopedSetter memoryResourceScopedSetter(hasPropagatingAllocator
+                        ? static_cast<zserio::pmr::MemoryResource&>(invalidMemoryResource)
+                        : static_cast<zserio::pmr::MemoryResource&>(heapMemoryResource));
 
         zserio::BitStreamWriter writer(bitBuffer);
         writeMainStructure(writer, hasArray);
@@ -576,9 +576,9 @@ protected:
 
         InvalidMemoryResource invalidMemoryResource;
         HeapMemoryResource heapMemoryResource;
-        MemoryResourceScopedSetter memoryResourceScopedSetter(hasPropagatingAllocator ?
-                static_cast<zserio::pmr::MemoryResource&>(invalidMemoryResource) :
-                static_cast<zserio::pmr::MemoryResource&>(heapMemoryResource));
+        MemoryResourceScopedSetter memoryResourceScopedSetter(hasPropagatingAllocator
+                        ? static_cast<zserio::pmr::MemoryResource&>(invalidMemoryResource)
+                        : static_cast<zserio::pmr::MemoryResource&>(heapMemoryResource));
 
         zserio::BitStreamWriter writer(bitBuffer);
         writeMainStructure(writer, hasArray);
@@ -694,8 +694,8 @@ protected:
             ASSERT_EQ(allocatedSize1, memoryResource1.getAllocatedSize());
             ASSERT_EQ(numAllocations2, memoryResource2.getNumAllocations());
             ASSERT_EQ(allocatedSize2, memoryResource2.getAllocatedSize());
-            ASSERT_EQ(numAllocations1 - numDeallocations1 + numAllocations2,
-                    memoryResource3.getNumAllocations());
+            ASSERT_EQ(
+                    numAllocations1 - numDeallocations1 + numAllocations2, memoryResource3.getNumAllocations());
             ASSERT_EQ(allocatedSize1 + allocatedSize2, memoryResource3.getAllocatedSize());
 
             // check memory fragmentation in used memory resources
@@ -784,14 +784,13 @@ protected:
                 MainStructure mainStructure(STRING_FIELD, std::move(stringArray), hasArray,
                         std::move(choiceField), std::move(unionField), std::move(structField),
                         std::move(structOptionalField), createExternalField(allocator),
-                        std::move(externalArray), createBytesField(allocator),
-                        std::move(bytesArray), allocator);
+                        std::move(externalArray), createBytesField(allocator), std::move(bytesArray),
+                        allocator);
                 checkMainStructure(mainStructure, hasArray);
 
                 // check memory fragmentation in used memory resource
                 ASSERT_EQ(0, memoryResource.getNumDeallocations());
             }
-
         }
 
         // check memory leaks in used memory resource
@@ -894,8 +893,8 @@ protected:
             // check that no further memory allocation will take place
             const size_t numAllocations = memoryResource.getNumAllocations();
             const size_t allocatedSize = memoryResource.getAllocatedSize();
-            const size_t expectedBitSize = (hasArray) ? MAIN_STRUCTURE_WITH_ARRAYS_BIT_SIZE :
-                    MAIN_STRUCTURE_WITHOUT_ARRAYS_BIT_SIZE;
+            const size_t expectedBitSize =
+                    (hasArray) ? MAIN_STRUCTURE_WITH_ARRAYS_BIT_SIZE : MAIN_STRUCTURE_WITHOUT_ARRAYS_BIT_SIZE;
             ASSERT_EQ(expectedBitSize, mainStructure.bitSizeOf(0));
             ASSERT_EQ(numAllocations, memoryResource.getNumAllocations());
             ASSERT_EQ(allocatedSize, memoryResource.getAllocatedSize());
@@ -927,8 +926,8 @@ protected:
             const size_t numAllocations = memoryResource.getNumAllocations();
             const size_t allocatedSize = memoryResource.getAllocatedSize();
             const size_t bitPosition = 1;
-            const size_t expectedBitSize = (hasArray) ? MAIN_STRUCTURE_WITH_ARRAYS_BIT_SIZE :
-                    MAIN_STRUCTURE_WITHOUT_ARRAYS_BIT_SIZE;
+            const size_t expectedBitSize =
+                    (hasArray) ? MAIN_STRUCTURE_WITH_ARRAYS_BIT_SIZE : MAIN_STRUCTURE_WITHOUT_ARRAYS_BIT_SIZE;
             ASSERT_EQ(bitPosition + expectedBitSize, mainStructure.initializeOffsets(bitPosition));
             ASSERT_EQ(numAllocations, memoryResource.getNumAllocations());
             ASSERT_EQ(allocatedSize, memoryResource.getAllocatedSize());
@@ -1030,8 +1029,8 @@ protected:
             fillMainStructure(mainStructure, allocator, hasArray);
 
             // call bitSizeOf to allocate possible packing context for packed arrays
-            const size_t expectedBitSize = (hasArray) ? MAIN_STRUCTURE_WITH_ARRAYS_BIT_SIZE :
-                    MAIN_STRUCTURE_WITHOUT_ARRAYS_BIT_SIZE;
+            const size_t expectedBitSize =
+                    (hasArray) ? MAIN_STRUCTURE_WITH_ARRAYS_BIT_SIZE : MAIN_STRUCTURE_WITHOUT_ARRAYS_BIT_SIZE;
             ASSERT_EQ(expectedBitSize, mainStructure.bitSizeOf(0));
 
             // check that no further memory allocation will take place
@@ -1152,7 +1151,7 @@ private:
     static const uint8_t STRUCT_PACKED_UINT16_ARRAY_MAX_BIT_NUMBER;
     static const uint32_t STRUCT_PACKED_ELEMENT_ARRAY_SIZE;
     static const uint32_t STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X;
-    static const uint32_t STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y ;
+    static const uint32_t STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y;
     static const uint32_t STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z;
     static const int8_t STRUCT_PACKED_ELEMENT_ARRAY_DELTA;
     static const uint8_t STRUCT_PACKED_ELEMENT_ARRAY_MAX_BIT_NUMBER;

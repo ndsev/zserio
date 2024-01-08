@@ -14,6 +14,7 @@ enable_testing()
 set(CPPCHECK_HOME "" CACHE PATH "Home directory of cppcheck tool. If empty, cppcheck tool is not called.")
 set(SANITIZERS_ENABLED OFF CACHE BOOL "Whether the compiler sanitizers are enabled.")
 set(CLANG_TIDY_BIN "" CACHE STRING "Name of clang-tidy binary. If empty, clang-tidy tool is not called.")
+set(CLANG_FORMAT_BIN "" CACHE STRING "Name of clang-format binary. If empty, clang-format tool is not called.")
 
 set(ZSERIO_PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/..")
 set(ZSERIO_RELEASE_ROOT "${ZSERIO_PROJECT_ROOT}/distr" CACHE PATH "Root directory of Zserio release binaries.")
@@ -25,6 +26,7 @@ set(CMAKE_MODULE_PATH ${ZSERIO_PROJECT_ROOT}/cmake)
 # cmake helpers
 include(cmake_utils)
 include(clang_tidy_utils)
+include(clang_format_utils)
 include(cppcheck_utils)
 
 # setup compiler
@@ -36,6 +38,10 @@ compiler_set_static_clibs()
 if (SANITIZERS_ENABLED)
     compiler_set_address_sanitizer()
 endif ()
+
+# add test utility library
+add_subdirectory(utils/cpp/test_utils test_utils)
+
 # add gtest library
 include(gtest_utils)
 gtest_add_library(${ZSERIO_PROJECT_ROOT}/3rdparty/cpp/googletest)
@@ -93,6 +99,18 @@ function(add_custom_test TEST_NAME)
                                  HEADER_FILTER
                                     "${CMAKE_CURRENT_SOURCE_DIR}/.*|${CMAKE_CURRENT_BINARY_DIR}/.*")
 
+    if (DEFINED TEST_ARG_SOURCES)
+        clang_format_add_custom_target(${TEST_NAME}-clang-format
+                                     DEPENDS
+                                        ${TEST_NAME}
+                                     SOURCES
+                                        "${TEST_ARG_SOURCES}"
+                                     CONFIG_FILE
+                                        "${ZSERIO_PROJECT_ROOT}/.clang-format"
+                                     WERROR
+                                        ON)
+    endif ()
+
     get_generated_dirs("${TEST_ARG_GENERATED_SOURCES}" GENERATED_DIRS)
     cppcheck_add_custom_command(TARGET ${TEST_NAME}
                                 SOURCE_DIR
@@ -137,8 +155,8 @@ endif ()
 
 # add_executable requieres at least a single source file
 add_executable(${PROJECT_NAME} ${TEST_SOURCES_LIST})
-target_link_libraries(${PROJECT_NAME} ${TEST_DEPENDENCIES_LIST} gtest_main ZserioCppRuntime ${SQLITE_LIBRARY})
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/utils/cpp)
+target_link_libraries(${PROJECT_NAME} ${TEST_DEPENDENCIES_LIST} gtest_main ZserioCppTestUtils ZserioCppRuntime
+        ${SQLITE_LIBRARY})
 target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${SQLITE_INCDIR})
 
 # add tests - test are labeled by file names (i.e. grouped)

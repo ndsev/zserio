@@ -1,7 +1,5 @@
 #include "gtest/gtest.h"
-
 #include "templates/struct_recursive_template/StructRecursiveTemplate.h"
-
 #include "zserio/RebindAlloc.h"
 
 namespace templates

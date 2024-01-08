@@ -1,7 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "functions/structure_extern/TestStructure.h"
-
+#include "gtest/gtest.h"
 #include "zserio/Vector.h"
 
 namespace functions
@@ -22,8 +20,7 @@ protected:
 };
 
 const BitBuffer StructureExternTest::FIELD = BitBuffer{vector_type<uint8_t>{{0xAB, 0xE0}}, 11};
-const BitBuffer StructureExternTest::CHILD_FIELD =
-        BitBuffer{vector_type<uint8_t>{{0xCA, 0xFE}}, 15};
+const BitBuffer StructureExternTest::CHILD_FIELD = BitBuffer{vector_type<uint8_t>{{0xCA, 0xFE}}, 15};
 
 TEST_F(StructureExternTest, getField)
 {

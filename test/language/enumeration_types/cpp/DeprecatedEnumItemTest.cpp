@@ -1,15 +1,12 @@
-#include "gtest/gtest.h"
-
 #include <fstream>
 
-#include "enumeration_types/deprecated_enum_item/Traffic.h"
 #include "enumeration_types/deprecated_enum_item/AllocatorType.h"
-
+#include "enumeration_types/deprecated_enum_item/Traffic.h"
+#include "gtest/gtest.h"
+#include "test_utils/Assertions.h"
 #include "zserio/BitStreamReader.h"
 #include "zserio/BitStreamWriter.h"
 #include "zserio/CppRuntimeException.h"
-
-#include "test_utils/Assertions.h"
 
 using namespace zserio::literals;
 
@@ -112,8 +109,7 @@ TEST_F(DeprecatedEnumItemTest, bitSizeOf)
 TEST_F(DeprecatedEnumItemTest, initializeOffsets)
 {
     const size_t bitPosition = 1;
-    ASSERT_EQ(bitPosition + TRAFFIC_BIT_SIZE,
-            zserio::initializeOffsets(bitPosition, Traffic::HEAVY));
+    ASSERT_EQ(bitPosition + TRAFFIC_BIT_SIZE, zserio::initializeOffsets(bitPosition, Traffic::HEAVY));
 }
 
 TEST_F(DeprecatedEnumItemTest, read)

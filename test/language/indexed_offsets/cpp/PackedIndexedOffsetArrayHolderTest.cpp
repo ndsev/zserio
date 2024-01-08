@@ -1,8 +1,6 @@
 #include "gtest/gtest.h"
-
-#include "zserio/SerializeUtil.h"
-
 #include "indexed_offsets/packed_indexed_offset_array_holder/AutoIndexedOffsetArray.h"
+#include "zserio/SerializeUtil.h"
 
 namespace indexed_offsets
 {
@@ -67,8 +65,7 @@ protected:
         ASSERT_GT(unpackedBitSize * minCompressionRation, packedBitSize)
                 << "Unpacked array has " << std::to_string(unpackedBitSize) << " bits, "
                 << "packed array has " << std::to_string(packedBitSize) << " bits, "
-                << "compression ratio is "
-                << std::to_string(packedBitSize / unpackedBitSize * 100) << "%!";
+                << "compression ratio is " << std::to_string(packedBitSize / unpackedBitSize * 100) << "%!";
     }
 
     void checkWriteRead(size_t numElements)

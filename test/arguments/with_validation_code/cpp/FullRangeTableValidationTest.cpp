@@ -1,10 +1,8 @@
 #include <memory>
 
 #include "gtest/gtest.h"
-
-#include "with_validation_code/full_range_table_validation/FullRangeTableValidationDb.h"
 #include "test_utils/ValidationObservers.h"
-
+#include "with_validation_code/full_range_table_validation/FullRangeTableValidationDb.h"
 #include "zserio/SqliteFinalizer.h"
 
 using namespace test_utils;
@@ -57,8 +55,8 @@ private:
         sqlite3_bind_int64(statement.get(), argIdx++, static_cast<int64_t>(fullUnsigned));
         sqlite3_bind_int64(statement.get(), argIdx++, fullVarSigned);
         sqlite3_bind_int64(statement.get(), argIdx++, static_cast<int64_t>(fullVarUnsigned));
-        sqlite3_bind_text(statement.get(), argIdx++, message.c_str(), static_cast<int>(message.size()),
-                SQLITE_TRANSIENT);
+        sqlite3_bind_text(
+                statement.get(), argIdx++, message.c_str(), static_cast<int>(message.size()), SQLITE_TRANSIENT);
 
         ASSERT_EQ(SQLITE_DONE, sqlite3_step(statement.get()));
     }

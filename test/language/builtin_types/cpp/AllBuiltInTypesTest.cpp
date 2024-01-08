@@ -1,10 +1,8 @@
 #include <limits>
 
-#include "gtest/gtest.h"
-
 #include "builtin_types/all_builtin_types/AllBuiltInTypes.h"
 #include "builtin_types/all_builtin_types/ExternalStructure.h"
-
+#include "gtest/gtest.h"
 #include "zserio/RebindAlloc.h"
 #include "zserio/SerializeUtil.h"
 
@@ -33,7 +31,7 @@ protected:
         return bitBuffer;
     }
 
-    AllBuiltInTypes  m_allBuiltInTypes;
+    AllBuiltInTypes m_allBuiltInTypes;
 
     static const std::string BLOB_NAME;
 };

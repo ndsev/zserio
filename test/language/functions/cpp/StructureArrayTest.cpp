@@ -1,13 +1,11 @@
-#include <vector>
 #include <array>
-
-#include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
+#include <vector>
 
 #include "functions/structure_array/Item.h"
 #include "functions/structure_array/StructureArray.h"
+#include "gtest/gtest.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace functions
 {
@@ -66,10 +64,7 @@ private:
     static const std::array<Item, 3> ITEMS;
 };
 
-const std::array<Item, 3> StructureArrayTest::ITEMS =
-{
-    Item{1, 2}, Item{3, 4}, Item{5, 6}
-};
+const std::array<Item, 3> StructureArrayTest::ITEMS = {Item{1, 2}, Item{3, 4}, Item{5, 6}};
 
 TEST_F(StructureArrayTest, checkStructureArrayElement0)
 {

@@ -1,12 +1,10 @@
 #include <array>
 
 #include "gtest/gtest.h"
-
 #include "union_types/union_with_array/TestUnion.h"
-
+#include "zserio/CppRuntimeException.h"
 #include "zserio/RebindAlloc.h"
 #include "zserio/SerializeUtil.h"
-#include "zserio/CppRuntimeException.h"
 
 namespace union_types
 {
@@ -39,7 +37,7 @@ protected:
     template <size_t SIZE>
     void checkArray(const std::array<int16_t, SIZE>& array, const vector_type<int16_t>& vector)
     {
-        for (size_t i = 0 ; i < array.size(); ++i)
+        for (size_t i = 0; i < array.size(); ++i)
         {
             ASSERT_EQ(array[i], vector.at(i));
         }
@@ -48,7 +46,7 @@ protected:
     template <size_t SIZE>
     void checkArray(const std::array<int8_t, SIZE>& array, const vector_type<Data8>& vector)
     {
-        for (size_t i = 0 ; i < array.size(); ++i)
+        for (size_t i = 0; i < array.size(); ++i)
         {
             ASSERT_EQ(array[i], vector.at(i).getData());
         }
@@ -83,11 +81,11 @@ const std::string UnionWithArrayTest::BLOB_NAME_BASE = "language/union_types/uni
 
 constexpr size_t UnionWithArrayTest::ARRAY8_SIZE;
 constexpr size_t UnionWithArrayTest::ARRAY8_BITSIZE;
-const std::array<int8_t, UnionWithArrayTest::ARRAY8_SIZE> UnionWithArrayTest::ARRAY8 = { -1, -2, -3, -4 };
+const std::array<int8_t, UnionWithArrayTest::ARRAY8_SIZE> UnionWithArrayTest::ARRAY8 = {-1, -2, -3, -4};
 constexpr size_t UnionWithArrayTest::ARRAY16_SIZE;
 constexpr size_t UnionWithArrayTest::ARRAY16_BITSIZE;
 const std::array<int16_t, UnionWithArrayTest::ARRAY16_SIZE> UnionWithArrayTest::ARRAY16 = {
-        -10, -20, -30, -40, -50 };
+        -10, -20, -30, -40, -50};
 
 TEST_F(UnionWithArrayTest, emptyConstructor)
 {

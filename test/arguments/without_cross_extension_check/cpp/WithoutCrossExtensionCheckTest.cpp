@@ -1,5 +1,4 @@
 #include "gtest/gtest.h"
-
 #include "invalid_in_java/Test.h"
 #include "invalid_in_python/Test.h"
 

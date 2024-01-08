@@ -1,9 +1,7 @@
 #include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-
 #include "indexed_offsets/compound_indexed_offset_array/CompoundIndexedOffsetArray.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace indexed_offsets
 {
@@ -70,8 +68,8 @@ protected:
         }
     }
 
-    void fillCompoundIndexedOffsetArray(CompoundIndexedOffsetArray& compoundIndexedOffsetArray,
-            bool createWrongOffsets)
+    void fillCompoundIndexedOffsetArray(
+            CompoundIndexedOffsetArray& compoundIndexedOffsetArray, bool createWrongOffsets)
     {
         auto& offsets = compoundIndexedOffsetArray.getOffsets();
         offsets.reserve(NUM_ELEMENTS);
@@ -98,19 +96,19 @@ protected:
         }
     }
 
-    static const uint8_t    NUM_ELEMENTS = 5;
+    static const uint8_t NUM_ELEMENTS = 5;
 
-    static const uint32_t   WRONG_OFFSET = 0;
+    static const uint32_t WRONG_OFFSET = 0;
 
-    static const uint32_t   ELEMENT0_OFFSET = NUM_ELEMENTS * sizeof(uint32_t) + sizeof(uint8_t);
-    static const uint8_t    ELEMENT_SIZE = 35;
-    static const uint8_t    ALIGNED_ELEMENT_SIZE = 5 * 8;
-    static const uint8_t    ALIGNED_ELEMENT_BYTE_SIZE = ALIGNED_ELEMENT_SIZE / 8;
+    static const uint32_t ELEMENT0_OFFSET = NUM_ELEMENTS * sizeof(uint32_t) + sizeof(uint8_t);
+    static const uint8_t ELEMENT_SIZE = 35;
+    static const uint8_t ALIGNED_ELEMENT_SIZE = 5 * 8;
+    static const uint8_t ALIGNED_ELEMENT_BYTE_SIZE = ALIGNED_ELEMENT_SIZE / 8;
 
-    static const uint8_t    SPACER_VALUE = 1;
+    static const uint8_t SPACER_VALUE = 1;
 
-    static const size_t     COMPOUND_INDEXED_OFFSET_ARRAY_BIT_SIZE = ELEMENT0_OFFSET * 8 +
-            (NUM_ELEMENTS - 1) * ALIGNED_ELEMENT_SIZE + ELEMENT_SIZE;
+    static const size_t COMPOUND_INDEXED_OFFSET_ARRAY_BIT_SIZE =
+            ELEMENT0_OFFSET * 8 + (NUM_ELEMENTS - 1) * ALIGNED_ELEMENT_SIZE + ELEMENT_SIZE;
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
@@ -133,8 +131,7 @@ TEST_F(CompoundIndexedOffsetArrayTest, readWrongOffsets)
     writeCompoundIndexedOffsetArrayToByteArray(writer, writeWrongOffsets);
 
     zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
-    EXPECT_THROW(CompoundIndexedOffsetArray compoundIndexedOffsetArray(reader),
-            zserio::CppRuntimeException);
+    EXPECT_THROW(CompoundIndexedOffsetArray compoundIndexedOffsetArray(reader), zserio::CppRuntimeException);
 }
 
 TEST_F(CompoundIndexedOffsetArrayTest, bitSizeOf)

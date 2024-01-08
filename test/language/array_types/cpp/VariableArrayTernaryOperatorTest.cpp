@@ -1,9 +1,7 @@
+#include "array_types/variable_array_ternary_operator/VariableArray.h"
 #include "gtest/gtest.h"
-
 #include "zserio/RebindAlloc.h"
 #include "zserio/SerializeUtil.h"
-
-#include "array_types/variable_array_ternary_operator/VariableArray.h"
 
 namespace array_types
 {
@@ -20,8 +18,8 @@ protected:
     void fillVariableArray(VariableArray& variableArray, bool isFirstSizeUsed)
     {
         variableArray.setIsFirstSizeUsed(isFirstSizeUsed);
-        const uint8_t currentSize = (isFirstSizeUsed) ? variableArray.getFirstSize() :
-                variableArray.getSecondSize();
+        const uint8_t currentSize =
+                (isFirstSizeUsed) ? variableArray.getFirstSize() : variableArray.getSecondSize();
         vector_type<VariableArrayElement>& array = variableArray.getArray();
         array.clear();
         const size_t arraySize = static_cast<size_t>(currentSize) * static_cast<size_t>(currentSize);

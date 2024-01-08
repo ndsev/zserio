@@ -1,11 +1,9 @@
 #include <vector>
 
-#include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-
 #include "functions/structure_parent_child_value/ParentValue.h"
+#include "gtest/gtest.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace functions
 {
@@ -25,7 +23,7 @@ protected:
         ChildValue& childValue = parentValue.getChildValue();
         childValue.setVal(CHILD_VALUE);
         parentValue.setChildValue(childValue);
-   }
+    }
 
     static const uint32_t CHILD_VALUE;
 };

@@ -1,7 +1,5 @@
 #include "gtest/gtest.h"
-
 #include "offsets/packed_auto_array_offset/AutoArrayHolder.h"
-
 #include "zserio/RebindAlloc.h"
 #include "zserio/SerializeUtil.h"
 
@@ -44,7 +42,7 @@ protected:
         writer.writeBool(true);
         writer.writeBits(PACKED_ARRAY_MAX_BIT_NUMBER, 6);
         writer.writeBits(0, 7);
-        for (size_t i = 0; i < AUTO_ARRAY_LENGTH-1; ++i)
+        for (size_t i = 0; i < AUTO_ARRAY_LENGTH - 1; ++i)
             writer.writeSignedBits(PACKED_ARRAY_DELTA, PACKED_ARRAY_MAX_BIT_NUMBER + 1);
     }
 
@@ -162,7 +160,7 @@ TEST_F(PackedAutoArrayOffsetTest, initializeOffsetsWithPosition)
 
     const size_t bitPosition = 2;
     const size_t expectedEndBitPosition = getAutoArrayHolderBitSize();
-    ASSERT_EQ(expectedEndBitPosition , autoArrayHolder.initializeOffsets(bitPosition));
+    ASSERT_EQ(expectedEndBitPosition, autoArrayHolder.initializeOffsets(bitPosition));
     checkAutoArrayHolder(autoArrayHolder, bitPosition);
 }
 

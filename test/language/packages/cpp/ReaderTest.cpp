@@ -1,9 +1,7 @@
 #include "gtest/gtest.h"
-
 #include "reader/Test.h"
-
-#include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace reader
 {

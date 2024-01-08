@@ -1,9 +1,7 @@
 #include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-
 #include "offsets/nested_offset/NestedOffset.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace offsets
 {
@@ -46,8 +44,7 @@ protected:
                 nestedOffsetUnion.getNestedOffsetArrayStructure();
         ASSERT_EQ(NUM_ELEMENTS, nestedOffsetArrayStructure.getNumElements());
 
-        const auto& nestedOffsetStructureList =
-                nestedOffsetArrayStructure.getNestedOffsetStructureList();
+        const auto& nestedOffsetStructureList = nestedOffsetArrayStructure.getNestedOffsetStructureList();
         ASSERT_EQ(NUM_ELEMENTS, nestedOffsetStructureList.size());
         for (uint32_t i = 0; i < NUM_ELEMENTS; ++i)
         {
@@ -75,8 +72,7 @@ protected:
         NestedOffsetUnion nestedOffsetUnion;
         NestedOffsetArrayStructure nestedOffsetArrayStructure;
         nestedOffsetArrayStructure.setNumElements(NUM_ELEMENTS);
-        auto& nestedOffsetStructureList =
-                nestedOffsetArrayStructure.getNestedOffsetStructureList();
+        auto& nestedOffsetStructureList = nestedOffsetArrayStructure.getNestedOffsetStructureList();
         nestedOffsetStructureList.reserve(NUM_ELEMENTS);
         for (uint32_t i = 0; i < NUM_ELEMENTS; ++i)
         {
@@ -90,8 +86,8 @@ protected:
         nestedOffsetChoice.setNestedOffsetUnion(nestedOffsetUnion);
     }
 
-    static const bool     BOOL_VALUE;
-    static const uint8_t  NUM_ELEMENTS;
+    static const bool BOOL_VALUE;
+    static const uint8_t NUM_ELEMENTS;
 
     static const uint32_t WRONG_TERMINATOR_OFFSET;
     static const uint32_t TERMINATOR_OFFSET;
@@ -99,15 +95,15 @@ protected:
     static const uint32_t WRONG_DATA_OFFSET;
     static const uint32_t FIRST_DATA_OFFSET;
 
-    static const uint8_t  TERMINATOR_VALUE;
+    static const uint8_t TERMINATOR_VALUE;
 
-    static const size_t   NESTED_OFFSET_BIT_SIZE;
+    static const size_t NESTED_OFFSET_BIT_SIZE;
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
-const bool     NestedOffsetTest::BOOL_VALUE = true;
-const uint8_t  NestedOffsetTest::NUM_ELEMENTS = 2;
+const bool NestedOffsetTest::BOOL_VALUE = true;
+const uint8_t NestedOffsetTest::NUM_ELEMENTS = 2;
 
 const uint32_t NestedOffsetTest::WRONG_TERMINATOR_OFFSET = 0;
 const uint32_t NestedOffsetTest::TERMINATOR_OFFSET = 7 + NUM_ELEMENTS * 8;

@@ -1,9 +1,7 @@
 #include <array>
 
-#include "gtest/gtest.h"
-
 #include "array_types/packed_auto_array_struct_with_unpacked_field/PackedAutoArray.h"
-
+#include "gtest/gtest.h"
 #include "zserio/SerializeUtil.h"
 
 namespace array_types

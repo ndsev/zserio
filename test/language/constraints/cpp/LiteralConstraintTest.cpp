@@ -1,11 +1,9 @@
+#include "constraints/literal_constraint/LiteralConstraint.h"
 #include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 #include "zserio/CppRuntimeException.h"
 #include "zserio/RebindAlloc.h"
-
-#include "constraints/literal_constraint/LiteralConstraint.h"
 
 namespace constraints
 {

@@ -1,7 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "allow_implicit_arrays/lengthof_with_implicit_array/LengthOfWithImplicitArray.h"
-
+#include "gtest/gtest.h"
 #include "zserio/RebindAlloc.h"
 
 namespace allow_implicit_arrays

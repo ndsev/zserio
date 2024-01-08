@@ -1,9 +1,7 @@
 #include <memory>
 
 #include "gtest/gtest.h"
-
 #include "parameterized_types/nested_parameterized_field/TopLevel.h"
-
 #include "zserio/SerializeUtil.h"
 
 namespace parameterized_types

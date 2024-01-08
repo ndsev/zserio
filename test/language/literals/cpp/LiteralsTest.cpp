@@ -1,5 +1,4 @@
 #include "gtest/gtest.h"
-
 #include "literals/BINARY_NEGATIVE.h"
 #include "literals/BINARY_POSITIVE.h"
 #include "literals/BINARY_POSITIVE_WITH_CAPITAL_B.h"

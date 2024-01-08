@@ -1,10 +1,8 @@
-#include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-#include "zserio/CppRuntimeException.h"
-
 #include "constraints/union_constraints/UnionConstraints.h"
+#include "gtest/gtest.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
+#include "zserio/CppRuntimeException.h"
 
 namespace constraints
 {
@@ -82,7 +80,6 @@ TEST_F(UnionConstraintsTest, writeCorrectConstraints)
 
     zserio::BitStreamWriter writer(bitBuffer);
     unionConstraints.write(writer);
-
 
     zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     const UnionConstraints readUnionConstraints(reader);

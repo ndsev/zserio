@@ -1,7 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "choice_types/choice_with_array/TestChoice.h"
-
+#include "gtest/gtest.h"
 #include "zserio/RebindAlloc.h"
 #include "zserio/SerializeUtil.h"
 
@@ -19,10 +17,10 @@ using vector_type = zserio::vector<T, allocator_type>;
 TEST(ChoiceWithArrayTest, setters)
 {
     TestChoice choice8;
-    choice8.setArray8(vector_type<Data8>{ Data8{1}, Data8{2} , Data8{3} });
+    choice8.setArray8(vector_type<Data8>{Data8{1}, Data8{2}, Data8{3}});
     choice8.initialize(8);
     TestChoice choice16;
-    choice16.setArray16(vector_type<int16_t>{ -1, 1 });
+    choice16.setArray16(vector_type<int16_t>{-1, 1});
     choice16.initialize(16);
 
     ASSERT_EQ(3, choice8.getArray8().size());
@@ -30,7 +28,7 @@ TEST(ChoiceWithArrayTest, setters)
     ASSERT_THROW(choice8.getArray16(), zserio::CppRuntimeException);
     ASSERT_THROW(choice16.getArray8(), zserio::CppRuntimeException);
 
-    vector_type<Data8> data8 = { Data8{1}, Data8{2}, Data8{3} };
+    vector_type<Data8> data8 = {Data8{1}, Data8{2}, Data8{3}};
     const void* dataPtr = data8.data();
     TestChoice choiceData8Copied;
     choiceData8Copied.setArray8(data8);
@@ -45,7 +43,7 @@ TEST(ChoiceWithArrayTest, setters)
 TEST(ChoiceWithArrayTest, moveConstructor)
 {
     TestChoice choice8;
-    choice8.setArray8(vector_type<Data8>{ Data8{1}, Data8{2} , Data8{3} });
+    choice8.setArray8(vector_type<Data8>{Data8{1}, Data8{2}, Data8{3}});
     choice8.initialize(8);
     const void* dataPtr = choice8.getArray8().data();
     TestChoice choice8Moved(std::move(choice8));
@@ -55,7 +53,7 @@ TEST(ChoiceWithArrayTest, moveConstructor)
 TEST(ChoiceWithArrayTest, moveAssignmentOperator)
 {
     TestChoice choice8;
-    choice8.setArray8(vector_type<Data8>{ Data8{1}, Data8{2} , Data8{3} });
+    choice8.setArray8(vector_type<Data8>{Data8{1}, Data8{2}, Data8{3}});
     choice8.initialize(8);
     const void* dataPtr = choice8.getArray8().data();
     TestChoice choice8Moved;

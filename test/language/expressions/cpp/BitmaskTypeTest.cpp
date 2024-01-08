@@ -1,6 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "expressions/bitmask_type/BitmaskTypeExpression.h"
+#include "gtest/gtest.h"
 
 namespace expressions
 {

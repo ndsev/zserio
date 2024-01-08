@@ -1,13 +1,11 @@
 #include <string>
 
+#include "enumeration_types/bitfield_const_enum/Color.h"
 #include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 #include "zserio/CppRuntimeException.h"
 #include "zserio/HashCodeUtil.h"
-
-#include "enumeration_types/bitfield_const_enum/Color.h"
 
 namespace enumeration_types
 {

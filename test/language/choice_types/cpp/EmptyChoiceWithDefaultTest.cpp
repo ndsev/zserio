@@ -1,10 +1,8 @@
-#include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-#include "zserio/CppRuntimeException.h"
-
 #include "choice_types/empty_choice_with_default/EmptyChoiceWithDefault.h"
+#include "gtest/gtest.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
+#include "zserio/CppRuntimeException.h"
 
 namespace choice_types
 {
@@ -87,8 +85,8 @@ TEST(EmptyChoiceWithDefaultTest, propagateAllocatorCopyConstructor)
 
     EmptyChoiceWithDefault emptyChoiceWithDefault;
     emptyChoiceWithDefault.initialize(selector);
-    const EmptyChoiceWithDefault emptyChoiceWithDefaultCopy(zserio::PropagateAllocator, emptyChoiceWithDefault,
-            EmptyChoiceWithDefault::allocator_type());
+    const EmptyChoiceWithDefault emptyChoiceWithDefaultCopy(
+            zserio::PropagateAllocator, emptyChoiceWithDefault, EmptyChoiceWithDefault::allocator_type());
     ASSERT_EQ(selector, emptyChoiceWithDefaultCopy.getSelector());
     ASSERT_EQ(0, emptyChoiceWithDefaultCopy.bitSizeOf());
 }

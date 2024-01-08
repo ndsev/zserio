@@ -1,9 +1,7 @@
-#include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-
 #include "alignment/auto_optional_member_alignment/AutoOptionalMemberAlignment.h"
+#include "gtest/gtest.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace alignment
 {
@@ -13,8 +11,8 @@ namespace auto_optional_member_alignment
 class AutoOptionalMemberAlignmentTest : public ::testing::Test
 {
 protected:
-    void writeAutoOptionalMemberAlignmentToByteArray(zserio::BitStreamWriter& writer, bool hasAutoOptional,
-            int32_t autoOptionalField, int32_t field)
+    void writeAutoOptionalMemberAlignmentToByteArray(
+            zserio::BitStreamWriter& writer, bool hasAutoOptional, int32_t autoOptionalField, int32_t field)
     {
         writer.writeBool(hasAutoOptional);
 
@@ -138,8 +136,8 @@ TEST_F(AutoOptionalMemberAlignmentTest, writeWithOptional)
 
     zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     AutoOptionalMemberAlignment readAutoOptionalMemberAlignment(reader);
-    checkAutoOptionalMemberAlignment(readAutoOptionalMemberAlignment, hasAutoOptional, autoOptionalField,
-            field);
+    checkAutoOptionalMemberAlignment(
+            readAutoOptionalMemberAlignment, hasAutoOptional, autoOptionalField, field);
     ASSERT_TRUE(autoOptionalMemberAlignment == readAutoOptionalMemberAlignment);
 }
 
@@ -156,8 +154,8 @@ TEST_F(AutoOptionalMemberAlignmentTest, writeWithoutOptional)
 
     zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     AutoOptionalMemberAlignment readAutoOptionalMemberAlignment(reader);
-    checkAutoOptionalMemberAlignment(readAutoOptionalMemberAlignment, hasAutoOptional, autoOptionalField,
-            field);
+    checkAutoOptionalMemberAlignment(
+            readAutoOptionalMemberAlignment, hasAutoOptional, autoOptionalField, field);
     ASSERT_TRUE(autoOptionalMemberAlignment == readAutoOptionalMemberAlignment);
 }
 

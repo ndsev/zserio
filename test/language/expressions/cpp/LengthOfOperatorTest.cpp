@@ -1,7 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "expressions/lengthof_operator/LengthOfFunctions.h"
-
+#include "gtest/gtest.h"
 #include "zserio/RebindAlloc.h"
 
 namespace expressions

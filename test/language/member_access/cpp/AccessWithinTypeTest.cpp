@@ -1,12 +1,10 @@
 #include <string>
 
 #include "gtest/gtest.h"
-
 #include "member_access/access_within_type/Message.h"
-
-#include "zserio/RebindAlloc.h"
-#include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
+#include "zserio/RebindAlloc.h"
 #include "zserio/StringConvertUtil.h"
 
 namespace member_access
@@ -22,8 +20,7 @@ using vector_type = zserio::vector<T, allocator_type>;
 class AccessWithinTypeTest : public ::testing::Test
 {
 protected:
-    void writeMessageToByteArray(zserio::BitStreamWriter& writer, uint16_t numSentences,
-            bool wrongArrayLength)
+    void writeMessageToByteArray(zserio::BitStreamWriter& writer, uint16_t numSentences, bool wrongArrayLength)
     {
         writer.writeBits(VERSION_VALUE, 16);
         writer.writeBits(numSentences, 16);
@@ -66,7 +63,7 @@ protected:
         return string_type("This is sentence #") + zserio::toString<allocator_type>(index);
     }
 
-    static const uint16_t   VERSION_VALUE = 0xAB;
+    static const uint16_t VERSION_VALUE = 0xAB;
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };

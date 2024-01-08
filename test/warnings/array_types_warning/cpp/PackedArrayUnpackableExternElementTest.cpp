@@ -1,7 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "array_types_warning/packed_array_unpackable_extern_element/PackedArrayUnpackableExternElement.h"
-
+#include "gtest/gtest.h"
 #include "zserio/SerializeUtil.h"
 
 namespace array_types_warning
@@ -25,14 +23,10 @@ const std::string PackedArrayUnpackableExternElementTest::BLOB_NAME =
 
 TEST_F(PackedArrayUnpackableExternElementTest, writeRead)
 {
-    PackedArrayUnpackableExternElement packedArrayUnpackableExternElement(
-        {{10, 11, 12}},
-        {{
-            BitBuffer(vector_type<uint8_t>{{0xFF, 0xC0}}, 10),
-            BitBuffer(vector_type<uint8_t>{{0xFF, 0x80}}, 10),
-            BitBuffer(vector_type<uint8_t>{{0xFF, 0x40}}, 10)
-        }}
-    );
+    PackedArrayUnpackableExternElement packedArrayUnpackableExternElement({{10, 11, 12}},
+            {{BitBuffer(vector_type<uint8_t>{{0xFF, 0xC0}}, 10),
+                    BitBuffer(vector_type<uint8_t>{{0xFF, 0x80}}, 10),
+                    BitBuffer(vector_type<uint8_t>{{0xFF, 0x40}}, 10)}});
 
     zserio::serializeToFile(packedArrayUnpackableExternElement, BLOB_NAME);
     auto readPackedArrayUnpackableExternElement =

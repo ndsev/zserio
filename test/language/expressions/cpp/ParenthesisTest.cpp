@@ -1,6 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "expressions/parenthesis/ParenthesisExpression.h"
+#include "gtest/gtest.h"
 
 namespace expressions
 {

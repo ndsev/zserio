@@ -1,9 +1,7 @@
 #include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-
 #include "identifiers/structure_name_clashing_with_java/StructureNameClashingWithJava.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace identifiers
 {
@@ -16,8 +14,7 @@ protected:
     static const size_t BIT_SIZE;
 };
 
-const size_t StructureNameClashingWithJavaTest::BIT_SIZE =
-        8 * 1 + // all auto optionals
+const size_t StructureNameClashingWithJavaTest::BIT_SIZE = 8 * 1 + // all auto optionals
         8 + // Byte
         16 + // Short
         32 + // Integer
@@ -56,16 +53,9 @@ TEST_F(StructureNameClashingWithJavaTest, emptyConstructor)
 
 TEST_F(StructureNameClashingWithJavaTest, bitSizeOf)
 {
-    StructureNameClashingWithJava structureNameClashingWithJava{
-        Byte{static_cast<int8_t>(0)},
-        Short{static_cast<int16_t>(0)},
-        Integer{static_cast<int32_t>(0)},
-        Long{static_cast<int64_t>(0)},
-        BigInteger{static_cast<uint64_t>(0)},
-        Float{0.0F},
-        Double{0.0},
-        String{""}
-    };
+    StructureNameClashingWithJava structureNameClashingWithJava{Byte{static_cast<int8_t>(0)},
+            Short{static_cast<int16_t>(0)}, Integer{static_cast<int32_t>(0)}, Long{static_cast<int64_t>(0)},
+            BigInteger{static_cast<uint64_t>(0)}, Float{0.0F}, Double{0.0}, String{""}};
 
     ASSERT_EQ(BIT_SIZE, structureNameClashingWithJava.bitSizeOf());
 }

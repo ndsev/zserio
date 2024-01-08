@@ -1,5 +1,4 @@
 #include "gtest/gtest.h"
-
 #include "templates/instantiate_not_imported/InstantiateNotImported.h"
 #include "templates/instantiate_not_imported/pkg/U32.h"
 

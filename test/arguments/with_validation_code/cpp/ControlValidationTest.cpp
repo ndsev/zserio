@@ -1,14 +1,12 @@
-#include <memory>
 #include <map>
+#include <memory>
 
 #include "gtest/gtest.h"
-
+#include "test_utils/ValidationObservers.h"
+#include "with_validation_code/control_validation/ControlValidationDb.h"
 #include "zserio/FloatUtil.h"
 #include "zserio/SqliteFinalizer.h"
 #include "zserio/StringConvertUtil.h"
-
-#include "with_validation_code/control_validation/ControlValidationDb.h"
-#include "test_utils/ValidationObservers.h"
 
 using namespace test_utils;
 
@@ -35,20 +33,20 @@ protected:
         const bool wasTransactionStarted = connection.startTransaction();
 
         {
-            std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(connection.prepareStatement(
-                    "INSERT INTO table1(id, field) VALUES (?, ?)"));
+            std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(
+                    connection.prepareStatement("INSERT INTO table1(id, field) VALUES (?, ?)"));
             insertRows(statement.get(), TABLE1_NUM_ROWS);
         }
 
         {
-            std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(connection.prepareStatement(
-                    "INSERT INTO table2(id, blob) VALUES (?, ?)"));
+            std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(
+                    connection.prepareStatement("INSERT INTO table2(id, blob) VALUES (?, ?)"));
             insertRowsWithBlob(statement.get(), TABLE2_NUM_ROWS);
         }
 
         {
-            std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(connection.prepareStatement(
-                    "INSERT INTO table3(id, field) VALUES (?, ?)"));
+            std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(
+                    connection.prepareStatement("INSERT INTO table3(id, field) VALUES (?, ?)"));
             insertRows(statement.get(), TABLE3_NUM_ROWS);
         }
 
@@ -91,8 +89,8 @@ protected:
 
     void writeInvalidBlobToTable2(zserio::SqliteConnection& connection, uint32_t id)
     {
-        std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(connection.prepareStatement(
-                "UPDATE table2 SET blob = ? where id = ?"));
+        std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(
+                connection.prepareStatement("UPDATE table2 SET blob = ? where id = ?"));
 
         zserio::BitBuffer bitBuffer(8);
         zserio::BitStreamWriter writer(bitBuffer);
@@ -116,7 +114,8 @@ protected:
         explicit SkipTableObserver(const std::set<std::string>& tablesToSkip,
                 const std::string& tableToStopAfter = std::string(),
                 size_t numberOfErrorsInRowsToSkipRestOfTheTable = SIZE_MAX) :
-                m_tablesToSkip(tablesToSkip), m_tableToStopAfter(tableToStopAfter),
+                m_tablesToSkip(tablesToSkip),
+                m_tableToStopAfter(tableToStopAfter),
                 m_numberOfErrorsInRowsToSkipRestOfTheTable(numberOfErrorsInRowsToSkipRestOfTheTable)
         {}
 
@@ -133,8 +132,8 @@ protected:
         }
 
         bool reportError(zserio::StringView tableName, zserio::StringView fieldName,
-            zserio::Span<const zserio::StringView> primaryKeyValues, ErrorType errorType,
-            zserio::StringView message) override
+                zserio::Span<const zserio::StringView> primaryKeyValues, ErrorType errorType,
+                zserio::StringView message) override
         {
             ValidationObserver::reportError(tableName, fieldName, primaryKeyValues, errorType, message);
             if (errorType >= zserio::IValidationObserver::VALUE_OUT_OF_RANGE)
@@ -379,16 +378,17 @@ TEST_F(ControlValidationTest, validateSkipTableAfter2ErrorsInRows)
     ASSERT_EQ(std::vector<std::string>{"0"}, errors.at(3).primaryKeyValues);
     ASSERT_EQ(zserio::IValidationObserver::VALUE_OUT_OF_RANGE, errors.at(3).errorType);
     ASSERT_EQ("Value -72057594037927936 of Table3.field exceeds the range of "
-            "-72057594037927935..72057594037927935", errors.at(3).message);
+              "-72057594037927935..72057594037927935",
+            errors.at(3).message);
 
     ASSERT_EQ("table3", errors.at(4).tableName);
     ASSERT_EQ("field", errors.at(4).fieldName);
     ASSERT_EQ(std::vector<std::string>{"1"}, errors.at(4).primaryKeyValues);
     ASSERT_EQ(zserio::IValidationObserver::VALUE_OUT_OF_RANGE, errors.at(4).errorType);
     ASSERT_EQ("Value -72057594037927936 of Table3.field exceeds the range of "
-            "-72057594037927935..72057594037927935", errors.at(4).message);
+              "-72057594037927935..72057594037927935",
+            errors.at(4).message);
 }
-
 
 TEST_F(ControlValidationTest, validateSkipTableAndTerminateValidationAfterFirstSchemaError)
 {
@@ -402,7 +402,8 @@ TEST_F(ControlValidationTest, validateSkipTableAndTerminateValidationAfterFirstS
     connection.executeUpdate("UPDATE table1 SET field = (16383 + 1) where id = 0");
     connection.executeUpdate("UPDATE table1 SET field = (-16383 - 1) where id = 3");
 
-    connection.executeUpdate("CREATE TABLE table2Temp (id INTEGER PRIMARY KEY NOT NULL, "
+    connection.executeUpdate(
+            "CREATE TABLE table2Temp (id INTEGER PRIMARY KEY NOT NULL, "
             "blob BLOB, superfluousField INTEGER NOT NULL)"); // field shall be NOT NULL
     connection.executeUpdate("INSERT INTO table2Temp SELECT id, blob, 0 FROM table2");
     connection.executeUpdate("DROP TABLE table2");
@@ -420,8 +421,8 @@ TEST_F(ControlValidationTest, validateSkipTableAndTerminateValidationAfterFirstS
         }
 
         bool reportError(zserio::StringView tableName, zserio::StringView fieldName,
-            zserio::Span<const zserio::StringView> primaryKeyValues, ErrorType errorType,
-            zserio::StringView message) override
+                zserio::Span<const zserio::StringView> primaryKeyValues, ErrorType errorType,
+                zserio::StringView message) override
         {
             ValidationObserver::reportError(tableName, fieldName, primaryKeyValues, errorType, message);
             if (errorType < zserio::IValidationObserver::VALUE_OUT_OF_RANGE)
@@ -477,5 +478,5 @@ TEST_F(ControlValidationTest, validateSkipTableAndTerminateValidationAfterFirstS
             errors.at(2).message);
 }
 
-} // namespace control_table
+} // namespace control_validation
 } // namespace with_validation_code

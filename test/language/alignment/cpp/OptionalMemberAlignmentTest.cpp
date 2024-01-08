@@ -1,9 +1,7 @@
-#include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-
 #include "alignment/optional_member_alignment/OptionalMemberAlignment.h"
+#include "gtest/gtest.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace alignment
 {
@@ -13,8 +11,8 @@ namespace optional_member_alignment
 class OptionalMemberAlignmentTest : public ::testing::Test
 {
 protected:
-    void writeOptionalMemberAlignmentToByteArray(zserio::BitStreamWriter& writer, bool hasOptional,
-            int32_t optionalField, int32_t field)
+    void writeOptionalMemberAlignmentToByteArray(
+            zserio::BitStreamWriter& writer, bool hasOptional, int32_t optionalField, int32_t field)
     {
         writer.writeBool(hasOptional);
 

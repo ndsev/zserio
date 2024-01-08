@@ -1,5 +1,4 @@
 #include "gtest/gtest.h"
-
 #include "zserio/RebindAlloc.h"
 
 #include "WithTypeInfoCodeCreator.h"
@@ -68,8 +67,8 @@ static void fillComplexStruct(ComplexStruct& complexStruct, bool createOptionals
     if (createOptionals)
     {
         complexStruct.setOptionalEnum(TestEnum::ItemThree);
-        complexStruct.setOptionalBitmask(TestBitmask::Values::RED | TestBitmask::Values::_Green |
-                TestBitmask::Values::ColorBlue);
+        complexStruct.setOptionalBitmask(
+                TestBitmask::Values::RED | TestBitmask::Values::_Green | TestBitmask::Values::ColorBlue);
         const vector_type<uint8_t> buffer = {0xCB, 0xF0};
         complexStruct.setOptionalExtern(BitBuffer(buffer, 12));
         complexStruct.setOptionalBytes(vector_type<uint8_t>{{0xAB, 0xCD}});
@@ -89,8 +88,8 @@ static void fillComplexStruct(ComplexStruct& complexStruct, bool createOptionals
 static void fillRecursiveStruct(RecursiveStruct& recursiveStruct)
 {
     recursiveStruct.setFieldU32(0xDEAD1);
-    recursiveStruct.setFieldRecursion(RecursiveStruct(0xDEAD2, zserio::NullOpt,
-            vector_type<RecursiveStruct>()));
+    recursiveStruct.setFieldRecursion(
+            RecursiveStruct(0xDEAD2, zserio::NullOpt, vector_type<RecursiveStruct>()));
     const vector_type<RecursiveStruct> arrayRecursion = {
             RecursiveStruct(0xDEAD3, zserio::NullOpt, vector_type<RecursiveStruct>()),
             RecursiveStruct(0xDEAD4, zserio::NullOpt, vector_type<RecursiveStruct>())};
@@ -164,16 +163,16 @@ void fillWithTypeInfoCode(WithTypeInfoCode& withTypeInfoCode, bool createOptiona
     withTypeInfoCode.setSelector(TestEnum::_TWO);
     fillSimpleChoice(withTypeInfoCode.getSimpleChoice(), withTypeInfoCode.getSelector());
     fillTS32(withTypeInfoCode.getTemplatedStruct());
-    fillTemplatedParameterizedStruct_TS32(withTypeInfoCode.getTemplatedParameterizedStruct(),
-            withTypeInfoCode.getTemplatedStruct());
+    fillTemplatedParameterizedStruct_TS32(
+            withTypeInfoCode.getTemplatedParameterizedStruct(), withTypeInfoCode.getTemplatedStruct());
     const BitBuffer externData({0xCA, 0xFE}, 15);
     withTypeInfoCode.setExternData(externData);
     const vector_type<BitBuffer> externArray = {externData, externData};
     withTypeInfoCode.setExternArray(externArray);
     withTypeInfoCode.setBytesData(vector_type<uint8_t>{{0xAB, 0xCD}});
     withTypeInfoCode.setBytesArray(vector_type<vector_type<uint8_t>>{{
-        vector_type<uint8_t>{{0xAB, 0xCD}},
-        vector_type<uint8_t>{{0xAB, 0xCD}},
+            vector_type<uint8_t>{{0xAB, 0xCD}},
+            vector_type<uint8_t>{{0xAB, 0xCD}},
     }});
     const vector_type<uint32_t> implicitArray = {1, 4, 6, 4, 6, 1};
     withTypeInfoCode.setImplicitArray(implicitArray);

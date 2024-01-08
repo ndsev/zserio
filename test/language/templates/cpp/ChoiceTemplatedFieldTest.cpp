@@ -1,5 +1,4 @@
 #include "gtest/gtest.h"
-
 #include "templates/choice_templated_field/ChoiceTemplatedField.h"
 
 namespace templates

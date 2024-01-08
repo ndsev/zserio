@@ -1,10 +1,8 @@
-#include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-#include "zserio/SerializeUtil.h"
-
 #include "array_types/packed_auto_array_bitfield_param/ParameterizedBitfieldLength.h"
+#include "gtest/gtest.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
+#include "zserio/SerializeUtil.h"
 
 namespace array_types
 {

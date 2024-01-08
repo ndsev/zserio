@@ -1,7 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "functions/structure_bytes/TestStructure.h"
-
+#include "gtest/gtest.h"
 #include "zserio/Vector.h"
 
 namespace functions

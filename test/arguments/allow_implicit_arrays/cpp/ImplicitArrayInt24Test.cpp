@@ -1,7 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "allow_implicit_arrays/implicit_array_int24/ImplicitArray.h"
-
+#include "gtest/gtest.h"
 #include "zserio/RebindAlloc.h"
 #include "zserio/SerializeUtil.h"
 
@@ -113,5 +111,5 @@ TEST_F(ImplicitArrayInt24Test, writeReadFile)
         ASSERT_EQ(static_cast<int32_t>(i), readArray[i]);
 }
 
-} // namespace implicit_array_bit8
+} // namespace implicit_array_int24
 } // namespace allow_implicit_arrays

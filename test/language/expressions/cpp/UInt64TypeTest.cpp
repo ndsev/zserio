@@ -1,6 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "expressions/uint64_type/UInt64TypeExpression.h"
+#include "gtest/gtest.h"
 
 namespace expressions
 {

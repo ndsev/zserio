@@ -1,9 +1,7 @@
-#include "gtest/gtest.h"
-
-#include "extended_members/extended_field_in_template/Original.h"
-#include "extended_members/extended_field_in_template/ExtendedSimple.h"
 #include "extended_members/extended_field_in_template/ExtendedCompound.h"
-
+#include "extended_members/extended_field_in_template/ExtendedSimple.h"
+#include "extended_members/extended_field_in_template/Original.h"
+#include "gtest/gtest.h"
 #include "zserio/SerializeUtil.h"
 
 namespace extended_members

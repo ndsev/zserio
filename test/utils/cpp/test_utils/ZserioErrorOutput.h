@@ -1,8 +1,8 @@
 #ifndef TEST_UTILS_ZSERIO_ERRORS_H_INC
 #define TEST_UTILS_ZSERIO_ERRORS_H_INC
 
-#include <fstream>
 #include <algorithm>
+#include <fstream>
 #include <stdexcept>
 
 namespace test_utils
@@ -11,8 +11,8 @@ namespace test_utils
 class ZserioErrorOutput
 {
 public:
-    explicit ZserioErrorOutput(const std::string& prefix,
-            const std::string& fileName = ZSERIO_ERROR_OUTPUT_FILE_NAME)
+    explicit ZserioErrorOutput(
+            const std::string& prefix, const std::string& fileName = ZSERIO_ERROR_OUTPUT_FILE_NAME)
     {
         const std::string errorsFileName = prefix + "/" + fileName;
         std::ifstream errorsFile(errorsFileName);

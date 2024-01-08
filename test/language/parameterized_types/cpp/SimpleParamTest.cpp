@@ -1,10 +1,8 @@
 #include "gtest/gtest.h"
-
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-#include "zserio/CppRuntimeException.h"
-
 #include "parameterized_types/simple_param/Item.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
+#include "zserio/CppRuntimeException.h"
 
 namespace parameterized_types
 {
@@ -14,8 +12,8 @@ namespace simple_param
 class SimpleParamTest : public ::testing::Test
 {
 protected:
-    void writeItemToByteArray(zserio::BitStreamWriter& writer, uint32_t version, uint16_t param,
-            uint32_t extraParam)
+    void writeItemToByteArray(
+            zserio::BitStreamWriter& writer, uint32_t version, uint16_t param, uint32_t extraParam)
     {
         writer.writeBits(param, 16);
         if (version >= HIGHER_VERSION)

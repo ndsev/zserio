@@ -1,8 +1,6 @@
 #include "gtest/gtest.h"
-
-#include "zserio/SerializeUtil.h"
-
 #include "parameterized_types/grand_child_param/GrandChildParam.h"
+#include "zserio/SerializeUtil.h"
 
 namespace parameterized_types
 {
@@ -40,8 +38,8 @@ protected:
         grandChildParam.initializeChildren();
     }
 
-    void checkItemChoiceHolderInBitStream(zserio::BitStreamReader& reader,
-            const ItemChoiceHolder& itemChoiceHolder)
+    void checkItemChoiceHolderInBitStream(
+            zserio::BitStreamReader& reader, const ItemChoiceHolder& itemChoiceHolder)
     {
         ASSERT_EQ(itemChoiceHolder.getHasItem(), reader.readBool());
 
@@ -50,8 +48,8 @@ protected:
         ASSERT_EQ(item.getExtraParam(), reader.readBits(32));
     }
 
-    void checkGrandChildParamInBitStream(zserio::BitStreamReader& reader,
-            const GrandChildParam& grandChildParam)
+    void checkGrandChildParamInBitStream(
+            zserio::BitStreamReader& reader, const GrandChildParam& grandChildParam)
     {
         const ItemChoiceHolder& itemChoiceHolder = grandChildParam.getItemChoiceHolder();
         checkItemChoiceHolderInBitStream(reader, itemChoiceHolder);
@@ -75,15 +73,14 @@ protected:
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 
 private:
-    static const bool     ITEM_CHOICE_HOLDER_HAS_ITEM;
+    static const bool ITEM_CHOICE_HOLDER_HAS_ITEM;
     static const uint16_t ITEM_PARAM;
     static const uint32_t ITEM_EXTRA_PARAM;
 };
 
-const std::string GrandChildParamTest::BLOB_NAME =
-        "language/parameterized_types/grand_child_param.blob";
+const std::string GrandChildParamTest::BLOB_NAME = "language/parameterized_types/grand_child_param.blob";
 
-const bool     GrandChildParamTest::ITEM_CHOICE_HOLDER_HAS_ITEM = true;
+const bool GrandChildParamTest::ITEM_CHOICE_HOLDER_HAS_ITEM = true;
 const uint16_t GrandChildParamTest::ITEM_PARAM = 0xAABB;
 const uint32_t GrandChildParamTest::ITEM_EXTRA_PARAM = 0x11223344;
 

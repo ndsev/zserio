@@ -1,5 +1,4 @@
 #include "gtest/gtest.h"
-
 #include "templates/instantiate_nested_template/InstantiateNestedTemplate.h"
 
 namespace templates

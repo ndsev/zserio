@@ -1,7 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "array_types_warning/packed_array_unpackable_bytes_element/PackedArrayUnpackableBytesElement.h"
-
+#include "gtest/gtest.h"
 #include "zserio/SerializeUtil.h"
 
 namespace array_types_warning
@@ -21,9 +19,7 @@ const std::string PackedArrayUnpackableBytesElementTest::BLOB_NAME =
 TEST_F(PackedArrayUnpackableBytesElementTest, writeRead)
 {
     PackedArrayUnpackableBytesElement packedArrayUnpackableBytesElement(
-        {{10, 11, 12}},
-        {{ {{0, 1, 2}}, {{11, 12, 13}}, {{100, 101, 102}} }}
-    );
+            {{10, 11, 12}}, {{{{0, 1, 2}}, {{11, 12, 13}}, {{100, 101, 102}}}});
 
     zserio::serializeToFile(packedArrayUnpackableBytesElement, BLOB_NAME);
     auto readPackedArrayUnpackableBytesElement =

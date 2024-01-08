@@ -1,10 +1,8 @@
-#include "gtest/gtest.h"
-
 #include <numeric>
 
-#include "extended_members/extended_optional_parameterized_field/Original.h"
 #include "extended_members/extended_optional_parameterized_field/Extended.h"
-
+#include "extended_members/extended_optional_parameterized_field/Original.h"
+#include "gtest/gtest.h"
 #include "zserio/SerializeUtil.h"
 
 namespace extended_members
@@ -52,7 +50,7 @@ protected:
     static const size_t EXTENDED_BIT_SIZE_WITH_OPTIONAL;
 };
 
-const vector_type<string_type> ExtendedOptionalParameterizedFieldTest::ARRAY = { "this", "is", "test" };
+const vector_type<string_type> ExtendedOptionalParameterizedFieldTest::ARRAY = {"this", "is", "test"};
 
 const size_t ExtendedOptionalParameterizedFieldTest::ORIGINAL_BIT_SIZE = 11;
 const size_t ExtendedOptionalParameterizedFieldTest::EXTENDED_BIT_SIZE_WITHOUT_OPTIONAL =

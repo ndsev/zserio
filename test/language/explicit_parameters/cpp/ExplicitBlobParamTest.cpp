@@ -1,11 +1,9 @@
 #include <cstdio>
-#include <vector>
 #include <string>
-
-#include "gtest/gtest.h"
+#include <vector>
 
 #include "explicit_parameters/ExplicitParametersDb.h"
-
+#include "gtest/gtest.h"
 #include "zserio/RebindAlloc.h"
 #include "zserio/StringConvertUtil.h"
 
@@ -115,8 +113,8 @@ protected:
         ASSERT_EQ(row2.getBlob1().getBlob(), row2.getBlob3().getBlob());
     }
 
-    static void checkBlobParamTableRows(const vector_type<BlobParamTable::Row>& rows1,
-            const vector_type<BlobParamTable::Row>& rows2)
+    static void checkBlobParamTableRows(
+            const vector_type<BlobParamTable::Row>& rows1, const vector_type<BlobParamTable::Row>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)

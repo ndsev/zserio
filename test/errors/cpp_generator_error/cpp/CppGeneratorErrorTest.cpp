@@ -1,13 +1,11 @@
 #include "gtest/gtest.h"
-
 #include "test_utils/ZserioErrorOutput.h"
 
 class CppGeneratorErrorTest : public ::testing::Test
 {
 protected:
-
-    CppGeneratorErrorTest()
-    :   zserioErrors("errors/cpp_generator_error")
+    CppGeneratorErrorTest() :
+            zserioErrors("errors/cpp_generator_error")
     {}
 
     const test_utils::ZserioErrorOutput zserioErrors;
@@ -16,7 +14,7 @@ protected:
 TEST_F(CppGeneratorErrorTest, wrongSetCppAllocator)
 {
     ASSERT_TRUE(zserioErrors.isPresent(
-        "[ERROR] C++11 Generator: The specified option 'setCppAllocator' has unknown allocator 'wrong'!"));
+            "[ERROR] C++11 Generator: The specified option 'setCppAllocator' has unknown allocator 'wrong'!"));
 }
 
 TEST_F(CppGeneratorErrorTest, bitmaskValuesClassClash)

@@ -1,7 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "array_types/variable_array_struct_cast_int8/VariableArray.h"
-
+#include "gtest/gtest.h"
 #include "zserio/RebindAlloc.h"
 #include "zserio/SerializeUtil.h"
 #include "zserio/StringConvertUtil.h"

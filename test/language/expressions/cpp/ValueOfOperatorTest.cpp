@@ -1,6 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "expressions/valueof_operator/ValueOfFunctions.h"
+#include "gtest/gtest.h"
 
 namespace expressions
 {

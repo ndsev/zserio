@@ -1,7 +1,5 @@
-#include "gtest/gtest.h"
-
 #include "array_types_warning/packed_array_unpackable_bool_element/PackedArrayUnpackableBoolElement.h"
-
+#include "gtest/gtest.h"
 #include "zserio/SerializeUtil.h"
 
 namespace array_types_warning
@@ -20,15 +18,10 @@ const std::string PackedArrayUnpackableBoolElementTest::BLOB_NAME =
 
 TEST_F(PackedArrayUnpackableBoolElementTest, writeRead)
 {
-    PackedArrayUnpackableBoolElement packedArrayUnpackableBoolElement(
-        {{0, 1, 2}},
-        {{TestEnum::ONE, TestEnum::TWO, TestEnum::ONE}},
-        {{TestBitmask::Values::BLACK, TestBitmask::Values::BLACK, TestBitmask::Values::BLACK}},
-        {{0, 1, 2}},
-        5,
-        {{0, -1, -2}},
-        {{true, false, true}}
-    );
+    PackedArrayUnpackableBoolElement packedArrayUnpackableBoolElement({{0, 1, 2}},
+            {{TestEnum::ONE, TestEnum::TWO, TestEnum::ONE}},
+            {{TestBitmask::Values::BLACK, TestBitmask::Values::BLACK, TestBitmask::Values::BLACK}}, {{0, 1, 2}},
+            5, {{0, -1, -2}}, {{true, false, true}});
 
     zserio::serializeToFile(packedArrayUnpackableBoolElement, BLOB_NAME);
     auto readPackedArrayUnpackableBoolElement =

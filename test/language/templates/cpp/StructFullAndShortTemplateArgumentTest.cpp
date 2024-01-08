@@ -1,5 +1,4 @@
 #include "gtest/gtest.h"
-
 #include "templates/struct_full_and_short_template_argument/StructFullNameTemplateArgument.h"
 #include "templates/struct_full_and_short_template_argument/templated_struct/StructShortNameTemplateArgument.h"
 

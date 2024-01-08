@@ -1,8 +1,6 @@
 #include "gtest/gtest.h"
-
-#include "zserio/CppRuntimeException.h"
-
 #include "with_range_check_code/varsize_range_check/VarSizeRangeCheckCompound.h"
+#include "zserio/CppRuntimeException.h"
 
 namespace with_range_check_code
 {
@@ -53,7 +51,8 @@ TEST_F(VarSizeRangeCheckTest, varSizeAboveUpperBound)
     catch (const zserio::CppRuntimeException& excpt)
     {
         ASSERT_STREQ("Value 2147483648 of VarSizeRangeCheckCompound.value exceeds the range of "
-                "<0..2147483647>!", excpt.what());
+                     "<0..2147483647>!",
+                excpt.what());
     }
 }
 

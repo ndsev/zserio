@@ -1,13 +1,11 @@
 #include <array>
 
 #include "gtest/gtest.h"
-
-#include "indexed_offsets/optional_nested_indexed_offset_array/OptionalNestedIndexedOffsetArray.h"
 #include "indexed_offsets/optional_nested_indexed_offset_array/Header.h"
-
-#include "zserio/RebindAlloc.h"
-#include "zserio/BitStreamWriter.h"
+#include "indexed_offsets/optional_nested_indexed_offset_array/OptionalNestedIndexedOffsetArray.h"
 #include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
+#include "zserio/RebindAlloc.h"
 
 namespace indexed_offsets
 {
@@ -29,8 +27,8 @@ public:
     }
 
 protected:
-    void writeOptionalNestedIndexedOffsetArrayToByteArray(zserio::BitStreamWriter& writer, uint16_t length,
-            bool writeWrongOffsets)
+    void writeOptionalNestedIndexedOffsetArrayToByteArray(
+            zserio::BitStreamWriter& writer, uint16_t length, bool writeWrongOffsets)
     {
         writer.writeBits(length, 16);
 
@@ -55,8 +53,8 @@ protected:
         writer.writeBits(FIELD_VALUE, 6);
     }
 
-    void checkOffsets(const OptionalNestedIndexedOffsetArray& optionalNestedIndexedOffsetArray,
-            uint16_t offsetShift)
+    void checkOffsets(
+            const OptionalNestedIndexedOffsetArray& optionalNestedIndexedOffsetArray, uint16_t offsetShift)
     {
         const uint16_t length = optionalNestedIndexedOffsetArray.getHeader().getLength();
         const vector_type<uint32_t>& offsets = optionalNestedIndexedOffsetArray.getHeader().getOffsets();
@@ -116,7 +114,7 @@ protected:
 
     size_t getOptionalNestedIndexedOffsetArrayBitSize(uint16_t length)
     {
-        size_t bitSize = sizeof(int16_t) * 8  + length * sizeof(uint32_t) * 8;
+        size_t bitSize = sizeof(int16_t) * 8 + length * sizeof(uint32_t) * 8;
         if (length > 0)
         {
             // already aligned
@@ -128,12 +126,12 @@ protected:
         return bitSize;
     }
 
-    static const uint8_t    NUM_ELEMENTS = 5;
+    static const uint8_t NUM_ELEMENTS = 5;
 
-    static const uint32_t   WRONG_OFFSET = 0;
-    static const uint32_t   ELEMENT0_OFFSET = sizeof(int16_t) + NUM_ELEMENTS * sizeof(uint32_t);
+    static const uint32_t WRONG_OFFSET = 0;
+    static const uint32_t ELEMENT0_OFFSET = sizeof(int16_t) + NUM_ELEMENTS * sizeof(uint32_t);
 
-    static const uint8_t    FIELD_VALUE = 63;
+    static const uint8_t FIELD_VALUE = 63;
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 
