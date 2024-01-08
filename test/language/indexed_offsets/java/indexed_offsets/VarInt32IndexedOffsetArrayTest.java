@@ -1,11 +1,10 @@
 package indexed_offsets;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import indexed_offsets.varint32_indexed_offset_array.VarInt32IndexedOffsetArray;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.BitSizeOfCalculator;
 import zserio.runtime.ZserioError;
@@ -15,6 +14,8 @@ import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
+
+import indexed_offsets.varint32_indexed_offset_array.VarInt32IndexedOffsetArray;
 
 public class VarInt32IndexedOffsetArrayTest
 {
@@ -92,8 +93,8 @@ public class VarInt32IndexedOffsetArrayTest
         final BitBuffer bitBuffer = SerializeUtil.serialize(varint32IndexedOffsetArray);
         checkVarInt32IndexedOffsetArray(varint32IndexedOffsetArray);
 
-        final VarInt32IndexedOffsetArray readVarint32IndexedOffsetArray = SerializeUtil.deserialize(
-                VarInt32IndexedOffsetArray.class, bitBuffer);
+        final VarInt32IndexedOffsetArray readVarint32IndexedOffsetArray =
+                SerializeUtil.deserialize(VarInt32IndexedOffsetArray.class, bitBuffer);
         checkVarInt32IndexedOffsetArray(readVarint32IndexedOffsetArray);
         assertTrue(varint32IndexedOffsetArray.equals(readVarint32IndexedOffsetArray));
     }
@@ -112,8 +113,8 @@ public class VarInt32IndexedOffsetArrayTest
         final short offsetShift = 1;
         checkOffsets(varint32IndexedOffsetArray, offsetShift);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         assertEquals(0, reader.readBits(bitPosition));
         final VarInt32IndexedOffsetArray readVarint32IndexedOffsetArray =
                 new VarInt32IndexedOffsetArray(reader);
@@ -216,9 +217,9 @@ public class VarInt32IndexedOffsetArrayTest
     }
 
     private static final short NUM_ELEMENTS = (short)5;
-    private static final long  WRONG_OFFSET = (long)0;
+    private static final long WRONG_OFFSET = (long)0;
 
-    private static final long  ELEMENT0_OFFSET = (long)(NUM_ELEMENTS * Integer.SIZE + Byte.SIZE) / Byte.SIZE;
+    private static final long ELEMENT0_OFFSET = (long)(NUM_ELEMENTS * Integer.SIZE + Byte.SIZE) / Byte.SIZE;
 
-    private static final byte  SPACER_VALUE = 1;
+    private static final byte SPACER_VALUE = 1;
 }

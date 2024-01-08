@@ -1,9 +1,10 @@
 package bitmask_types.bitfield_const_bitmask;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
@@ -119,8 +120,8 @@ public class BitfieldConstBitmaskTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         permission.write(writer);
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
-                writer.getBitPosition());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final Permission readPermission = new Permission(reader);
         assertEquals(permission, readPermission);
     }

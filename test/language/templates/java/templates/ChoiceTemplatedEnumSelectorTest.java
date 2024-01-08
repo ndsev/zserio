@@ -1,19 +1,20 @@
 package templates;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 
 import templates.choice_templated_enum_selector.ChoiceTemplatedEnumSelector;
-import templates.choice_templated_enum_selector.TemplatedChoice_EnumFromZero;
-import templates.choice_templated_enum_selector.TemplatedChoice_EnumFromOne;
-import templates.choice_templated_enum_selector.EnumFromZero;
 import templates.choice_templated_enum_selector.EnumFromOne;
+import templates.choice_templated_enum_selector.EnumFromZero;
+import templates.choice_templated_enum_selector.TemplatedChoice_EnumFromOne;
+import templates.choice_templated_enum_selector.TemplatedChoice_EnumFromZero;
 
 public class ChoiceTemplatedEnumSelectorTest
 {
@@ -37,8 +38,8 @@ public class ChoiceTemplatedEnumSelectorTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         choiceTemplatedEnumSelector.write(writer);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         ChoiceTemplatedEnumSelector readChoiceTemplatedEnumSelector = new ChoiceTemplatedEnumSelector(reader);
         assertTrue(choiceTemplatedEnumSelector.equals(readChoiceTemplatedEnumSelector));
     }

@@ -1,17 +1,18 @@
 package allow_implicit_arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.math.BigInteger;
 
-import allow_implicit_arrays.implicit_array_uint64.ImplicitArray;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
+import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
-import zserio.runtime.io.BitBuffer;
+
+import allow_implicit_arrays.implicit_array_uint64.ImplicitArray;
 
 public class ImplicitArrayUInt64Test
 {
@@ -67,8 +68,8 @@ public class ImplicitArrayUInt64Test
         ImplicitArray implicitArray = new ImplicitArray(array);
         SerializeUtil.serializeToFile(implicitArray, BLOB_NAME);
 
-        final ImplicitArray readImplicitArray = SerializeUtil.deserializeFromFile(ImplicitArray.class,
-                BLOB_NAME);
+        final ImplicitArray readImplicitArray =
+                SerializeUtil.deserializeFromFile(ImplicitArray.class, BLOB_NAME);
         final BigInteger[] readArray = readImplicitArray.getArray();
         assertEquals(numElements, readArray.length);
         for (int i = 0; i < numElements; ++i)

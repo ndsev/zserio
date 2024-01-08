@@ -6,6 +6,7 @@ The following properties can be set:
 
 test_utils.build_dir    - Directory where to put generated files.
                           Default is "../../../build/test/java/${ant.java.version}/utils".
+clang_format.exe_file   - Clang-format executable file. If not set, clang-format is not run.
 spotbugs.home_dir       - Location of the spotbugs tool. If not set, spotbugs is not run.
 
 -->
@@ -57,7 +58,22 @@ spotbugs.home_dir       - Location of the spotbugs tool. If not set, spotbugs is
         <delete dir="${test_utils.build_dir}"/>
     </target>
 
-    <target name="spotbugs" depends="jar" if="spotbugs.home_dir">
+    <target name="clang_format" depends="jar" if="clang_format.exe_file">
+        <echo>
+Command hints to reformat source using clang-format tool:
+    git clang-format
+    clang-format --style=file -i [SOURCE]
+        </echo>
+        <apply executable="${clang_format.exe_file}" failonerror="true">
+            <arg value="--style=file"/>
+            <arg value="--dry-run"/>
+            <arg value="--Werror"/>
+            <srcfile/>
+            <fileset dir="${test_utils.src_dir}" includes="**/*.java"/>
+        </apply>
+    </target>
+
+    <target name="spotbugs" depends="clang_format" if="spotbugs.home_dir">
         <taskdef classpath="${spotbugs.home_dir}/lib/spotbugs-ant.jar"
             resource="edu/umd/cs/findbugs/anttask/tasks.properties"/>
         <spotbugs home="${spotbugs.home_dir}"

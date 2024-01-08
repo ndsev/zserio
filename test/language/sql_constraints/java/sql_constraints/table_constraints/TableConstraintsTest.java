@@ -1,23 +1,23 @@
 package sql_constraints.table_constraints;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
 
-import test_utils.FileUtil;
-import test_utils.JdbcUtil;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import sql_constraints.TestDb;
+import test_utils.FileUtil;
+import test_utils.JdbcUtil;
 
 public class TableConstraintsTest
 {
@@ -76,9 +76,9 @@ public class TableConstraintsTest
         rows.add(row2);
         final SQLException thrown = assertThrows(SQLException.class, () -> tableConstraintsTable.write(rows));
 
-        assertThat(thrown.getMessage(), containsString(
-                "UNIQUE constraint failed: tableConstraintsTable.primaryKey1, " +
-                "tableConstraintsTable.primaryKey2"));
+        assertThat(thrown.getMessage(),
+                containsString("UNIQUE constraint failed: tableConstraintsTable.primaryKey1, "
+                        + "tableConstraintsTable.primaryKey2"));
     }
 
     @Test
@@ -112,9 +112,9 @@ public class TableConstraintsTest
         rows.add(row2);
         final SQLException thrown = assertThrows(SQLException.class, () -> tableConstraintsTable.write(rows));
 
-        assertThat(thrown.getMessage(), containsString(
-                "UNIQUE constraint failed: tableConstraintsTable.uniqueValue1, " +
-                "tableConstraintsTable.uniqueValue2"));
+        assertThat(thrown.getMessage(),
+                containsString("UNIQUE constraint failed: tableConstraintsTable.uniqueValue1, "
+                        + "tableConstraintsTable.uniqueValue2"));
     }
 
     private static final String FILE_NAME = "table_constraints_test.sqlite";

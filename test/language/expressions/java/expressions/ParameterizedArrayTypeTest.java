@@ -1,6 +1,7 @@
 package expressions;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
 import expressions.parameterized_array_type.ParameterizedArrayElement;
@@ -13,9 +14,7 @@ public class ParameterizedArrayTypeTest
     public void bitSizeOfWithOptional()
     {
         final ParameterizedArrayElement[] array = new ParameterizedArrayElement[] {
-                new ParameterizedArrayElement(false, 0, null),
-                new ParameterizedArrayElement(false, 0, null)
-        };
+                new ParameterizedArrayElement(false, 0, null), new ParameterizedArrayElement(false, 0, null)};
         final ParameterizedArrayHolder parameterizedArrayHolder = new ParameterizedArrayHolder(false, array);
         final ParameterizedArrayTypeExpression parameterizedArrayTypeExpression =
                 new ParameterizedArrayTypeExpression(parameterizedArrayHolder, true);
@@ -28,9 +27,7 @@ public class ParameterizedArrayTypeTest
     public void bitSizeOfWithoutOptional()
     {
         final ParameterizedArrayElement[] array = new ParameterizedArrayElement[] {
-                new ParameterizedArrayElement(false, 1, null),
-                new ParameterizedArrayElement(false, 1, null)
-        };
+                new ParameterizedArrayElement(false, 1, null), new ParameterizedArrayElement(false, 1, null)};
         final ParameterizedArrayHolder parameterizedArrayHolder = new ParameterizedArrayHolder(false, array);
         final ParameterizedArrayTypeExpression parameterizedArrayTypeExpression =
                 new ParameterizedArrayTypeExpression(parameterizedArrayHolder, false);

@@ -1,12 +1,13 @@
 package service_types.complex_types_service;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import zserio.runtime.io.Writer;
 import zserio.runtime.service.ServiceData;
 import zserio.runtime.service.ServiceException;
-import zserio.runtime.io.Writer;
 
 public class ComplexTypesServiceTest
 {
@@ -88,8 +89,8 @@ public class ComplexTypesServiceTest
         for (int i = 0; i < length; ++i)
         {
             final ColorModelChoice choice = new ColorModelChoice(ColorModel.CMYK);
-            choice.setCmyk(new CMYKModel(cmykValues[i % 3][0], cmykValues[i % 3][1], cmykValues[i % 3][2],
-                    cmykValues[i % 3][3]));
+            choice.setCmyk(new CMYKModel(
+                    cmykValues[i % 3][0], cmykValues[i % 3][1], cmykValues[i % 3][2], cmykValues[i % 3][3]));
             data[i] = choice;
         }
 
@@ -236,6 +237,6 @@ public class ComplexTypesServiceTest
 
     // note that conversion is slightly inaccurate and therefore this values are carefully chosen
     // to provide consistent results for the test needs
-    private static final short rgbValues[][] = { { 0 ,128, 255 }, { 222, 222, 0 }, { 65, 196, 31 } };
+    private static final short rgbValues[][] = {{0, 128, 255}, {222, 222, 0}, {65, 196, 31}};
     private static short cmykValues[][];
 }

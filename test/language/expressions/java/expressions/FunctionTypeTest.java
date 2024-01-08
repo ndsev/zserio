@@ -1,6 +1,7 @@
 package expressions;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
 import expressions.function_type.Color;
@@ -22,8 +23,7 @@ public class FunctionTypeTest
         final FunctionTypeExpression functionTypeExpression = new FunctionTypeExpression();
         functionTypeExpression.setColor(Color.BLUE);
 
-        assertEquals(FUNCTION_TYPE_EXPRESSION_BIT_SIZE_WITHOUT_OPTIONAL,
-                functionTypeExpression.bitSizeOf());
+        assertEquals(FUNCTION_TYPE_EXPRESSION_BIT_SIZE_WITHOUT_OPTIONAL, functionTypeExpression.bitSizeOf());
     }
 
     private static final int FUNCTION_TYPE_EXPRESSION_BIT_SIZE_WITH_OPTIONAL = 9;

@@ -1,17 +1,18 @@
 package alignment;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import alignment.bit_alignment.BitAlignment;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
+
+import alignment.bit_alignment.BitAlignment;
 
 public class BitAlignmentTest
 {
@@ -64,8 +65,8 @@ public class BitAlignmentTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         bitAlignment.write(writer);
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
-                writer.getBitPosition());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final BitAlignment readBitAlignment = new BitAlignment(reader);
         checkBitAlignment(readBitAlignment);
         assertTrue(bitAlignment.equals(readBitAlignment));
@@ -129,10 +130,10 @@ public class BitAlignmentTest
 
     private static BitAlignment createBitAlignment()
     {
-        return new BitAlignment(ALIGNED1_FIELD_VALUE, ALIGNED2_FIELD_VALUE,
-                ALIGNED3_FIELD_VALUE, ALIGNED4_FIELD_VALUE, ALIGNED5_FIELD_VALUE, ALIGNED6_FIELD_VALUE,
-                ALIGNED7_FIELD_VALUE, ALIGNED8_FIELD_VALUE, (byte) 0, ALIGNED16_FIELD_VALUE,
-                (byte) 0, ALIGNED32_FIELD_VALUE, 0, ALIGNED64_FIELD_VALUE);
+        return new BitAlignment(ALIGNED1_FIELD_VALUE, ALIGNED2_FIELD_VALUE, ALIGNED3_FIELD_VALUE,
+                ALIGNED4_FIELD_VALUE, ALIGNED5_FIELD_VALUE, ALIGNED6_FIELD_VALUE, ALIGNED7_FIELD_VALUE,
+                ALIGNED8_FIELD_VALUE, (byte)0, ALIGNED16_FIELD_VALUE, (byte)0, ALIGNED32_FIELD_VALUE, 0,
+                ALIGNED64_FIELD_VALUE);
     }
 
     private static final int BIT_ALIGNMENT_BIT_SIZE = 320;

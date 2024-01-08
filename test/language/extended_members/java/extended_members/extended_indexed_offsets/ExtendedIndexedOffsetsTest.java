@@ -1,11 +1,12 @@
 package extended_members.extended_indexed_offsets;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.math.BigInteger;
+import java.util.Arrays;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.BitSizeOfCalculator;
 import zserio.runtime.io.BitBuffer;
@@ -152,14 +153,13 @@ public class ExtendedIndexedOffsetsTest
         assertEquals(ORIGINAL_BIT_SIZE, reader.getBitPosition());
     }
 
-    private static final long[] OFFSETS = new long[] { 0, 0, 0, 0, 0 };
-    private static final String[] ARRAY = new String[] { "extended", "indexed", "offsets", "test", "!" };
+    private static final long[] OFFSETS = new long[] {0, 0, 0, 0, 0};
+    private static final String[] ARRAY = new String[] {"extended", "indexed", "offsets", "test", "!"};
     private static final long ARRAY_BIT_SIZE =
             Arrays.stream(ARRAY).mapToLong(str -> BitSizeOfCalculator.getBitSizeOfString(str)).sum();
 
     private static final long ORIGINAL_BIT_SIZE =
             BitSizeOfCalculator.getBitSizeOfVarSize(OFFSETS.length) + OFFSETS.length * 4 * 8;
-    private static final long EXTENDED_BIT_SIZE = ORIGINAL_BIT_SIZE +
-            BitSizeOfCalculator.getBitSizeOfVarSize(ARRAY.length) + ARRAY_BIT_SIZE;
-
+    private static final long EXTENDED_BIT_SIZE =
+            ORIGINAL_BIT_SIZE + BitSizeOfCalculator.getBitSizeOfVarSize(ARRAY.length) + ARRAY_BIT_SIZE;
 }

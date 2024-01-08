@@ -1,10 +1,6 @@
 package sql_virtual_columns;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,14 +10,18 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import test_utils.FileUtil;
-import test_utils.JdbcUtil;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import zserio.runtime.ZserioError;
 
 import sql_virtual_columns.hidden_virtual_columns.HiddenVirtualColumnsDb;
 import sql_virtual_columns.hidden_virtual_columns.HiddenVirtualColumnsTable;
 import sql_virtual_columns.hidden_virtual_columns.HiddenVirtualColumnsTableRow;
-
-import zserio.runtime.ZserioError;
+import test_utils.FileUtil;
+import test_utils.JdbcUtil;
 
 public class HiddenVirtualColumnsTest
 {
@@ -104,8 +104,8 @@ public class HiddenVirtualColumnsTest
         testTable.write(writtenRows);
 
         final int updateDocId = 1;
-        final HiddenVirtualColumnsTableRow updateRow = createHiddenVirtualColumnsTableRow(updateDocId,
-                "Updated Search Tags");
+        final HiddenVirtualColumnsTableRow updateRow =
+                createHiddenVirtualColumnsTableRow(updateDocId, "Updated Search Tags");
         final String updateCondition = "docId='" + updateDocId + "'";
         testTable.update(updateRow, updateCondition);
 
@@ -142,16 +142,16 @@ public class HiddenVirtualColumnsTest
         return row;
     }
 
-    private static void checkHiddenVirtualColumnsTableRows(List<HiddenVirtualColumnsTableRow> rows1,
-            List<HiddenVirtualColumnsTableRow> rows2)
+    private static void checkHiddenVirtualColumnsTableRows(
+            List<HiddenVirtualColumnsTableRow> rows1, List<HiddenVirtualColumnsTableRow> rows2)
     {
         assertEquals(rows1.size(), rows2.size());
         for (int i = 0; i < rows1.size(); ++i)
             checkHiddenVirtualColumnsTableRow(rows1.get(i), rows2.get(i));
     }
 
-    private static void checkHiddenVirtualColumnsTableRow(HiddenVirtualColumnsTableRow row1,
-            HiddenVirtualColumnsTableRow row2)
+    private static void checkHiddenVirtualColumnsTableRow(
+            HiddenVirtualColumnsTableRow row1, HiddenVirtualColumnsTableRow row2)
     {
         assertEquals(row1.getDocId(), row2.getDocId());
         assertEquals(row1.getLanguageCode(), row2.getLanguageCode());
@@ -162,13 +162,11 @@ public class HiddenVirtualColumnsTest
     private boolean isTableInDb() throws SQLException
     {
         // check if database does contain table
-        final String sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + TABLE_NAME +
-                "'";
+        final String sqlQuery =
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='" + TABLE_NAME + "'";
 
-        try (
-            final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);
-            final ResultSet resultSet = statement.executeQuery();
-        )
+        try (final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);
+                final ResultSet resultSet = statement.executeQuery();)
         {
             if (!resultSet.next())
                 return false;
@@ -199,10 +197,10 @@ public class HiddenVirtualColumnsTest
 
     private static final String TABLE_NAME = "hiddenVirtualColumnsTable";
 
-    private static final int    NUM_TABLE_ROWS = 5;
+    private static final int NUM_TABLE_ROWS = 5;
 
-    private static final short  LANGUAGE_CODE_VALUE = 1;
-    private static final long   FREQUENCY_VALUE = 0xDEAD;
+    private static final short LANGUAGE_CODE_VALUE = 1;
+    private static final long FREQUENCY_VALUE = 0xDEAD;
 
     private static final String FILE_NAME = "hidden_virtual_columns_test.sqlite";
 

@@ -1,6 +1,7 @@
 package expressions;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
 import expressions.enumeration_type.Color;
@@ -23,8 +24,8 @@ public class EnumerationTypeTest
         final EnumerationTypeExpression enumerationTypeExpression = new EnumerationTypeExpression();
         enumerationTypeExpression.setColor(Color.BLUE);
 
-        assertEquals(ENUMERATION_TYPE_EXPRESSION_BIT_SIZE_WITHOUT_OPTIONAL,
-                enumerationTypeExpression.bitSizeOf());
+        assertEquals(
+                ENUMERATION_TYPE_EXPRESSION_BIT_SIZE_WITHOUT_OPTIONAL, enumerationTypeExpression.bitSizeOf());
     }
 
     private static final int ENUMERATION_TYPE_EXPRESSION_BIT_SIZE_WITH_OPTIONAL = 9;

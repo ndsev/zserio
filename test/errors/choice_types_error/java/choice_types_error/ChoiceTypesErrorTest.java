@@ -1,10 +1,11 @@
 package choice_types_error;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import test_utils.ZserioErrorOutput;
 
@@ -19,8 +20,8 @@ public class ChoiceTypesErrorTest
     @Test
     public void bitmaskCaseError()
     {
-        final String error = "bitmask_case_error.zs:27:10: " +
-                "Choice 'BitmaskParamChoice' has case with different bitmask type than selector!";
+        final String error = "bitmask_case_error.zs:27:10: "
+                + "Choice 'BitmaskParamChoice' has case with different bitmask type than selector!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -34,16 +35,16 @@ public class ChoiceTypesErrorTest
     @Test
     public void compoundSelectorError()
     {
-        final String error = "compound_selector_error.zs:8:8: " +
-                "Choice 'CompoundSelectorChoice' uses forbidden COMPOUND selector!";
+        final String error = "compound_selector_error.zs:8:8: "
+                + "Choice 'CompoundSelectorChoice' uses forbidden COMPOUND selector!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void enumCaseError()
     {
-        final String error = "enum_case_error.zs:27:10: " +
-                "Choice 'EnumParamChoice' has case with different enumeration type than selector!";
+        final String error = "enum_case_error.zs:27:10: "
+                + "Choice 'EnumParamChoice' has case with different enumeration type than selector!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -57,8 +58,8 @@ public class ChoiceTypesErrorTest
     @Test
     public void floatSelectorError()
     {
-        final String error = "float_selector_error.zs:3:8: " +
-                "Choice 'FloatSelectorChoice' uses forbidden FLOAT selector!";
+        final String error = "float_selector_error.zs:3:8: "
+                + "Choice 'FloatSelectorChoice' uses forbidden FLOAT selector!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -72,27 +73,25 @@ public class ChoiceTypesErrorTest
     @Test
     public void multipleCasesWithExpression()
     {
-        final String error = "multiple_cases_with_expression_error.zs:11:10: " +
-                "Choice 'MultipleCasesChoice' has duplicated case!";
+        final String error = "multiple_cases_with_expression_error.zs:11:10: "
+                + "Choice 'MultipleCasesChoice' has duplicated case!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void multipleCasesOnEnum()
     {
-        final String error = "multiple_cases_on_enum_error.zs:18:10: " +
-                "Choice 'MultipleCasesChoice' has duplicated case!";
+        final String error = "multiple_cases_on_enum_error.zs:18:10: "
+                + "Choice 'MultipleCasesChoice' has duplicated case!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void multipleDefaults()
     {
-        final String errors[] =
-        {
-            "multiple_defaults_error.zs:14:5: mismatched input 'default' expecting {", // ...
-            "multiple_defaults_error.zs:14:5: 'default' is a reserved keyword!"
-        };
+        final String errors[] = {
+                "multiple_defaults_error.zs:14:5: mismatched input 'default' expecting {", // ...
+                "multiple_defaults_error.zs:14:5: 'default' is a reserved keyword!"};
         assertTrue(zserioErrors.isPresent(errors));
     }
 
@@ -107,59 +106,56 @@ public class ChoiceTypesErrorTest
     @Test
     public void optionalMember()
     {
-        final String errors[] =
-        {
-            "optional_member_error.zs:6:29: mismatched input 'if' expecting {", // ...
-            "optional_member_error.zs:6:29: 'if' is a reserved keyword!"
-        };
+        final String errors[] = {"optional_member_error.zs:6:29: mismatched input 'if' expecting {", // ...
+                "optional_member_error.zs:6:29: 'if' is a reserved keyword!"};
         assertTrue(zserioErrors.isPresent(errors));
     }
 
     @Test
     public void recursive()
     {
-        final String error = "recursive_error.zs:12:28: " +
-                "Field 'recursiveValue' is recursive and neither optional nor array which can be empty!";
+        final String error = "recursive_error.zs:12:28: "
+                + "Field 'recursiveValue' is recursive and neither optional nor array which can be empty!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void stringSelectorError()
     {
-        final String error = "string_selector_error.zs:3:8: " +
-                "Choice 'StringSelectorChoice' uses forbidden STRING selector!";
+        final String error = "string_selector_error.zs:3:8: "
+                + "Choice 'StringSelectorChoice' uses forbidden STRING selector!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void unreachableDefault()
     {
-        final String error = "unreachable_default_error.zs:11:5: Choice 'UnreachableDefaultChoice' has " +
-                "unreachable default case!";
+        final String error = "unreachable_default_error.zs:11:5: Choice 'UnreachableDefaultChoice' has "
+                + "unreachable default case!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void unreachableDefaultMulticaseError()
     {
-        final String error = "unreachable_default_multicase_error.zs:9:5: " +
-                "Choice 'UnreachableDefaultMulticaseChoice' has unreachable default case!";
+        final String error = "unreachable_default_multicase_error.zs:9:5: "
+                + "Choice 'UnreachableDefaultMulticaseChoice' has unreachable default case!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void unresolvedEnumItem()
     {
-        final String error = "unresolved_enum_item_error.zs:19:31: " +
-                "Unresolved symbol 'RED' within expression scope!";
+        final String error = "unresolved_enum_item_error.zs:19:31: "
+                + "Unresolved symbol 'RED' within expression scope!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void unresolvedFieldInConstraint()
     {
-        final String error = "unresolved_field_in_constraint_error.zs:9:47: " +
-                "Unresolved symbol 'uint16Value' within expression scope!";
+        final String error = "unresolved_field_in_constraint_error.zs:9:47: "
+                + "Unresolved symbol 'uint16Value' within expression scope!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

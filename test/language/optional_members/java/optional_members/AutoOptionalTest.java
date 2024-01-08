@@ -1,14 +1,16 @@
 package optional_members;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import optional_members.auto_optional.Container;
+import org.junit.jupiter.api.Test;
+
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.SerializeUtil;
+
+import optional_members.auto_optional.Container;
 
 public class AutoOptionalTest
 {
@@ -97,8 +99,8 @@ public class AutoOptionalTest
         final Container container = new Container();
         container.setNonOptionalInt(NON_OPTIONAL_INT_VALUE);
         final int bitPosition = 1;
-        assertEquals(bitPosition + CONTAINER_BIT_SIZE_WITHOUT_OPTIONAL,
-                container.initializeOffsets(bitPosition));
+        assertEquals(
+                bitPosition + CONTAINER_BIT_SIZE_WITHOUT_OPTIONAL, container.initializeOffsets(bitPosition));
 
         container.setAutoOptionalInt(AUTO_OPTIONAL_INT_VALUE);
         assertEquals(bitPosition + CONTAINER_BIT_SIZE_WITH_OPTIONAL, container.initializeOffsets(bitPosition));
@@ -111,8 +113,8 @@ public class AutoOptionalTest
         container.setNonOptionalInt(NON_OPTIONAL_INT_VALUE);
         final BitBuffer nonOptionalBitBuffer = SerializeUtil.serialize(container);
         checkContainerInBitBuffer(nonOptionalBitBuffer, NON_OPTIONAL_INT_VALUE, null);
-        final Container readNonOptionalContainer = SerializeUtil.deserialize(
-                Container.class, nonOptionalBitBuffer);
+        final Container readNonOptionalContainer =
+                SerializeUtil.deserialize(Container.class, nonOptionalBitBuffer);
         assertEquals(NON_OPTIONAL_INT_VALUE, readNonOptionalContainer.getNonOptionalInt());
         assertFalse(readNonOptionalContainer.isAutoOptionalIntSet());
         assertFalse(readNonOptionalContainer.isAutoOptionalIntUsed());
@@ -120,31 +122,31 @@ public class AutoOptionalTest
         container.setAutoOptionalInt(AUTO_OPTIONAL_INT_VALUE);
         final BitBuffer autoOptionalBitBuffer = SerializeUtil.serialize(container);
         checkContainerInBitBuffer(autoOptionalBitBuffer, NON_OPTIONAL_INT_VALUE, AUTO_OPTIONAL_INT_VALUE);
-        final Container readAutoOptionalContainer = SerializeUtil.deserialize(
-                Container.class, autoOptionalBitBuffer);
+        final Container readAutoOptionalContainer =
+                SerializeUtil.deserialize(Container.class, autoOptionalBitBuffer);
         assertEquals(NON_OPTIONAL_INT_VALUE, readAutoOptionalContainer.getNonOptionalInt());
         assertTrue(readAutoOptionalContainer.isAutoOptionalIntSet());
         assertTrue(readAutoOptionalContainer.isAutoOptionalIntUsed());
-        assertEquals(AUTO_OPTIONAL_INT_VALUE, (int) readAutoOptionalContainer.getAutoOptionalInt());
+        assertEquals(AUTO_OPTIONAL_INT_VALUE, (int)readAutoOptionalContainer.getAutoOptionalInt());
     }
 
-    private static void checkContainerInBitBuffer(BitBuffer bitBuffer, int nonOptionalIntValue,
-            Integer autoOptionalIntValue) throws IOException
+    private static void checkContainerInBitBuffer(
+            BitBuffer bitBuffer, int nonOptionalIntValue, Integer autoOptionalIntValue) throws IOException
     {
         try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer))
         {
             if (autoOptionalIntValue == null)
             {
                 assertEquals(CONTAINER_BIT_SIZE_WITHOUT_OPTIONAL, reader.getBufferBitSize());
-                assertEquals(nonOptionalIntValue, (int) reader.readBits(32));
+                assertEquals(nonOptionalIntValue, (int)reader.readBits(32));
                 assertEquals(0, reader.readBits(1));
             }
             else
             {
                 assertEquals(CONTAINER_BIT_SIZE_WITH_OPTIONAL, reader.getBufferBitSize());
-                assertEquals(nonOptionalIntValue, (int) reader.readBits(32));
+                assertEquals(nonOptionalIntValue, (int)reader.readBits(32));
                 assertEquals(1, reader.readBits(1));
-                assertEquals((int) autoOptionalIntValue, (int) reader.readBits(32));
+                assertEquals((int)autoOptionalIntValue, (int)reader.readBits(32));
             }
         }
     }

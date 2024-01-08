@@ -1,11 +1,10 @@
 package indexed_offsets;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import indexed_offsets.optional_indexed_offset_array.OptionalIndexedOffsetArray;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.BitSizeOfCalculator;
 import zserio.runtime.ZserioError;
@@ -14,6 +13,8 @@ import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
+
+import indexed_offsets.optional_indexed_offset_array.OptionalIndexedOffsetArray;
 
 public class OptionalIndexedOffsetArrayTest
 {
@@ -94,8 +95,8 @@ public class OptionalIndexedOffsetArrayTest
         final BitBuffer bitBuffer = SerializeUtil.serialize(optionalIndexedOffsetArray);
         checkOptionalIndexedOffsetArray(optionalIndexedOffsetArray, hasOptional);
 
-        final OptionalIndexedOffsetArray readOptionalIndexedOffsetArray = SerializeUtil.deserialize(
-                OptionalIndexedOffsetArray.class, bitBuffer);
+        final OptionalIndexedOffsetArray readOptionalIndexedOffsetArray =
+                SerializeUtil.deserialize(OptionalIndexedOffsetArray.class, bitBuffer);
         checkOptionalIndexedOffsetArray(readOptionalIndexedOffsetArray, hasOptional);
         assertTrue(optionalIndexedOffsetArray.equals(readOptionalIndexedOffsetArray));
     }
@@ -109,14 +110,14 @@ public class OptionalIndexedOffsetArrayTest
                 createOptionalIndexedOffsetArray(hasOptional, createWrongOffsets);
         final BitBuffer bitBuffer = SerializeUtil.serialize(optionalIndexedOffsetArray);
 
-        final OptionalIndexedOffsetArray readOptionalIndexedOffsetArray = SerializeUtil.deserialize(
-                OptionalIndexedOffsetArray.class, bitBuffer);
+        final OptionalIndexedOffsetArray readOptionalIndexedOffsetArray =
+                SerializeUtil.deserialize(OptionalIndexedOffsetArray.class, bitBuffer);
         checkOptionalIndexedOffsetArray(readOptionalIndexedOffsetArray, hasOptional);
         assertTrue(optionalIndexedOffsetArray.equals(readOptionalIndexedOffsetArray));
     }
 
-    private BitBuffer writeOptionalIndexedOffsetArrayToBitBuffer(boolean hasOptional,
-            boolean writeWrongOffsets) throws IOException
+    private BitBuffer writeOptionalIndexedOffsetArrayToBitBuffer(boolean hasOptional, boolean writeWrongOffsets)
+            throws IOException
     {
         try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
@@ -157,8 +158,8 @@ public class OptionalIndexedOffsetArrayTest
         }
     }
 
-    private void checkOptionalIndexedOffsetArray(OptionalIndexedOffsetArray optionalIndexedOffsetArray,
-            boolean hasOptional)
+    private void checkOptionalIndexedOffsetArray(
+            OptionalIndexedOffsetArray optionalIndexedOffsetArray, boolean hasOptional)
     {
         final short offsetShift = 0;
         checkOffsets(optionalIndexedOffsetArray, offsetShift);
@@ -176,8 +177,8 @@ public class OptionalIndexedOffsetArrayTest
         assertEquals(FIELD_VALUE, optionalIndexedOffsetArray.getField());
     }
 
-    private OptionalIndexedOffsetArray createOptionalIndexedOffsetArray(boolean hasOptional,
-            boolean createWrongOffsets)
+    private OptionalIndexedOffsetArray createOptionalIndexedOffsetArray(
+            boolean hasOptional, boolean createWrongOffsets)
     {
         final OptionalIndexedOffsetArray optionalIndexedOffsetArray = new OptionalIndexedOffsetArray();
 
@@ -223,10 +224,10 @@ public class OptionalIndexedOffsetArrayTest
 
     private static final short NUM_ELEMENTS = (short)5;
 
-    private static final long  WRONG_OFFSET = (long)0;
-    private static final long  ELEMENT0_OFFSET = (long)(NUM_ELEMENTS * Integer.SIZE + Byte.SIZE) / Byte.SIZE;
+    private static final long WRONG_OFFSET = (long)0;
+    private static final long ELEMENT0_OFFSET = (long)(NUM_ELEMENTS * Integer.SIZE + Byte.SIZE) / Byte.SIZE;
 
-    private static final byte  FIELD_VALUE = 63;
+    private static final byte FIELD_VALUE = 63;
 
     private static final String DATA[] = {"Green", "Red", "Pink", "Blue", "Black"};
 }

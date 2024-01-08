@@ -1,10 +1,6 @@
 package sql_virtual_columns;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,14 +10,18 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import test_utils.FileUtil;
-import test_utils.JdbcUtil;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import zserio.runtime.ZserioError;
 
 import sql_virtual_columns.simple_virtual_columns.SimpleVirtualColumnsDb;
 import sql_virtual_columns.simple_virtual_columns.SimpleVirtualColumnsTable;
 import sql_virtual_columns.simple_virtual_columns.SimpleVirtualColumnsTableRow;
-
-import zserio.runtime.ZserioError;
+import test_utils.FileUtil;
+import test_utils.JdbcUtil;
 
 public class SimpleVirtualColumnsTest
 {
@@ -138,16 +138,16 @@ public class SimpleVirtualColumnsTest
         return row;
     }
 
-    private static void checkSimpleVirtualColumnsTableRows(List<SimpleVirtualColumnsTableRow> rows1,
-            List<SimpleVirtualColumnsTableRow> rows2)
+    private static void checkSimpleVirtualColumnsTableRows(
+            List<SimpleVirtualColumnsTableRow> rows1, List<SimpleVirtualColumnsTableRow> rows2)
     {
         assertEquals(rows1.size(), rows2.size());
         for (int i = 0; i < rows1.size(); ++i)
             checkSimpleVirtualColumnsTableRow(rows1.get(i), rows2.get(i));
     }
 
-    private static void checkSimpleVirtualColumnsTableRow(SimpleVirtualColumnsTableRow row1,
-            SimpleVirtualColumnsTableRow row2)
+    private static void checkSimpleVirtualColumnsTableRow(
+            SimpleVirtualColumnsTableRow row1, SimpleVirtualColumnsTableRow row2)
     {
         assertEquals(row1.getContent(), row2.getContent());
     }
@@ -155,13 +155,11 @@ public class SimpleVirtualColumnsTest
     private boolean isTableInDb() throws SQLException
     {
         // check if database does contain table
-        final String sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + TABLE_NAME +
-                "'";
+        final String sqlQuery =
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='" + TABLE_NAME + "'";
 
-        try (
-            final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);
-            final ResultSet resultSet = statement.executeQuery();
-        )
+        try (final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);
+                final ResultSet resultSet = statement.executeQuery();)
         {
             if (!resultSet.next())
                 return false;
@@ -178,10 +176,8 @@ public class SimpleVirtualColumnsTest
     private boolean isVirtualColumnInTable() throws SQLException
     {
         final String sqlQuery = "PRAGMA table_info(" + TABLE_NAME + ")";
-        try (
-            final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);
-            final ResultSet resultSet = statement.executeQuery();
-        )
+        try (final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);
+                final ResultSet resultSet = statement.executeQuery();)
         {
             while (resultSet.next())
             {
@@ -200,7 +196,7 @@ public class SimpleVirtualColumnsTest
     private static final String TABLE_NAME = "simpleVirtualColumnsTable";
     private static final String VIRTUAL_COLUMN_NAME = "content";
 
-    private static final int    NUM_TABLE_ROWS = 5;
+    private static final int NUM_TABLE_ROWS = 5;
 
     private static final String FILE_NAME = "simple_virtual_columns_test.sqlite";
 

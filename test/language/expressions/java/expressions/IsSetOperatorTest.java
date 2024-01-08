@@ -1,11 +1,12 @@
 package expressions;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
-import expressions.isset_operator.TestBitmask;
-import expressions.isset_operator.Parameterized;
 import expressions.isset_operator.IsSetOperator;
+import expressions.isset_operator.Parameterized;
+import expressions.isset_operator.TestBitmask;
 
 public class IsSetOperatorTest
 {

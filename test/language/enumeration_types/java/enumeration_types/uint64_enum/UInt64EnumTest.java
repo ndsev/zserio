@@ -1,10 +1,11 @@
 package enumeration_types.uint64_enum;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.math.BigInteger;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.HashCodeUtil;
 import zserio.runtime.io.BitStreamReader;
@@ -58,8 +59,8 @@ public class UInt64EnumTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         darkColor.write(writer);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final BigInteger readColor = reader.readBigInteger(UINT64_ENUM_BITSIZEOF);
         assertEquals(readColor, darkColor.getValue());
     }

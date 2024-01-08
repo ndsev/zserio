@@ -1,15 +1,16 @@
 package with_range_check_code;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
-
-import with_range_check_code.choice_bit4_range_check.ChoiceBit4RangeCheckCompound;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
+
+import with_range_check_code.choice_bit4_range_check.ChoiceBit4RangeCheckCompound;
 
 public class ChoiceBit4RangeCheckTest
 {
@@ -45,8 +46,8 @@ public class ChoiceBit4RangeCheckTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         choiceBit4RangeCheckCompound.write(writer);
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
-                writer.getBitPosition());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final ChoiceBit4RangeCheckCompound readChoiceBit4RangeCheckCompound =
                 new ChoiceBit4RangeCheckCompound(reader, selector);
         assertEquals(choiceBit4RangeCheckCompound, readChoiceBit4RangeCheckCompound);

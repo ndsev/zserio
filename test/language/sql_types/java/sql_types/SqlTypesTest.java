@@ -1,10 +1,6 @@
 package sql_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +9,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import test_utils.FileUtil;
 import test_utils.JdbcUtil;
@@ -273,10 +274,8 @@ public class SqlTypesTest
         sqlQuery.append(")");
 
         // get table info
-        try (
-            final PreparedStatement statement = database.connection().prepareStatement(sqlQuery.toString());
-            final ResultSet resultSet = statement.executeQuery();
-        )
+        try (final PreparedStatement statement = database.connection().prepareStatement(sqlQuery.toString());
+                final ResultSet resultSet = statement.executeQuery();)
         {
             while (resultSet.next())
             {

@@ -1,16 +1,18 @@
 package optional_members;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
+
+import zserio.runtime.io.BitBuffer;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.SerializeUtil;
 
 import optional_members.optional_expression.BasicColor;
 import optional_members.optional_expression.BlackColor;
 import optional_members.optional_expression.Container;
-import zserio.runtime.io.BitBuffer;
-import zserio.runtime.io.ByteArrayBitStreamReader;
-import zserio.runtime.io.SerializeUtil;
 
 public class OptionalExpressionTest
 {
@@ -149,8 +151,8 @@ public class OptionalExpressionTest
         final Container container = new Container();
         container.setBasicColor(BasicColor.WHITE);
         final int bitPosition = 1;
-        assertEquals(bitPosition + CONTAINER_BIT_SIZE_WITHOUT_OPTIONAL,
-                container.initializeOffsets(bitPosition));
+        assertEquals(
+                bitPosition + CONTAINER_BIT_SIZE_WITHOUT_OPTIONAL, container.initializeOffsets(bitPosition));
 
         container.setBasicColor(BasicColor.BLACK);
         container.setNumBlackTones(NUM_BLACK_TONES);
@@ -200,8 +202,8 @@ public class OptionalExpressionTest
         return blackColor;
     }
 
-    private static void checkContainerInBitBuffer(BitBuffer bitBuffer, BasicColor basicColor,
-            short numBlackTones) throws IOException
+    private static void checkContainerInBitBuffer(
+            BitBuffer bitBuffer, BasicColor basicColor, short numBlackTones) throws IOException
     {
         try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer))
         {

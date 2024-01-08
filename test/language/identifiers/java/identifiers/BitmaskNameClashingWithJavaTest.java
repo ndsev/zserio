@@ -1,6 +1,7 @@
 package identifiers;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
 import identifiers.bitmask_name_clashing_with_java.BitmaskNameClashingWithJava;

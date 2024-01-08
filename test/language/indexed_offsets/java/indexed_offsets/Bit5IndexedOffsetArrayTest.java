@@ -1,11 +1,10 @@
 package indexed_offsets;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import indexed_offsets.bit5_indexed_offset_array.Bit5IndexedOffsetArray;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
@@ -14,6 +13,8 @@ import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
+
+import indexed_offsets.bit5_indexed_offset_array.Bit5IndexedOffsetArray;
 
 public class Bit5IndexedOffsetArrayTest
 {
@@ -104,8 +105,8 @@ public class Bit5IndexedOffsetArrayTest
         final short offsetShift = 1;
         checkOffsets(bit5IndexedOffsetArray, offsetShift);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         assertEquals(0, reader.readBits(bitPosition));
         final Bit5IndexedOffsetArray readBit5IndexedOffsetArray = new Bit5IndexedOffsetArray(reader);
         checkOffsets(readBit5IndexedOffsetArray, offsetShift);
@@ -202,15 +203,15 @@ public class Bit5IndexedOffsetArrayTest
 
     private static final short NUM_ELEMENTS = (short)5;
 
-    private static final long  WRONG_OFFSET = (long)0;
+    private static final long WRONG_OFFSET = (long)0;
 
-    private static final long  ELEMENT0_OFFSET = (long)(NUM_ELEMENTS * Integer.SIZE + Byte.SIZE) / Byte.SIZE;
-    private static final int   ELEMENT_SIZE = 5;
-    private static final int   ALIGNED_ELEMENT_SIZE = Byte.SIZE;
-    private static final int   ALIGNED_ELEMENT_BYTE_SIZE = ALIGNED_ELEMENT_SIZE / Byte.SIZE;
+    private static final long ELEMENT0_OFFSET = (long)(NUM_ELEMENTS * Integer.SIZE + Byte.SIZE) / Byte.SIZE;
+    private static final int ELEMENT_SIZE = 5;
+    private static final int ALIGNED_ELEMENT_SIZE = Byte.SIZE;
+    private static final int ALIGNED_ELEMENT_BYTE_SIZE = ALIGNED_ELEMENT_SIZE / Byte.SIZE;
 
-    private static final byte  SPACER_VALUE = 1;
+    private static final byte SPACER_VALUE = 1;
 
-    private static final int   BIT5_INDEXED_OFFSET_ARRAY_BIT_SIZE = NUM_ELEMENTS * Integer.SIZE + Byte.SIZE +
-            (NUM_ELEMENTS - 1) * ALIGNED_ELEMENT_SIZE + ELEMENT_SIZE;
+    private static final int BIT5_INDEXED_OFFSET_ARRAY_BIT_SIZE =
+            NUM_ELEMENTS * Integer.SIZE + Byte.SIZE + (NUM_ELEMENTS - 1) * ALIGNED_ELEMENT_SIZE + ELEMENT_SIZE;
 }

@@ -1,10 +1,11 @@
 package functions.structure_value;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
@@ -90,7 +91,6 @@ public class StructureValueTest
         return customVarInt;
     }
 
-
     private void checkCustomVarInt(int value) throws IOException
     {
         final CustomVarInt customVarInt = createCustomVarInt(value);
@@ -104,13 +104,13 @@ public class StructureValueTest
         final byte[] expecteByteArray = writeCustomVarIntToByteArray(value);
         assertTrue(Arrays.equals(expecteByteArray, writtenByteArray));
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
-                writtenByteArray, writer.getBitPosition());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writtenByteArray, writer.getBitPosition());
         final CustomVarInt readcustomVarInt = new CustomVarInt(reader);
         assertEquals(customVarInt, readcustomVarInt);
     }
 
-    private static final int    MAX_ONE_BYTE_VALUE = 253;
-    private static final short  TWO_BYTES_INDICATOR = 255;
-    private static final short  FOUR_BYTES_INDICATOR = 254;
+    private static final int MAX_ONE_BYTE_VALUE = 253;
+    private static final short TWO_BYTES_INDICATOR = 255;
+    private static final short FOUR_BYTES_INDICATOR = 254;
 }

@@ -1,10 +1,11 @@
 package functions.structure_parent_child_value;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
@@ -24,8 +25,8 @@ public class StructureParentChildValueTest
         final byte[] expectedByteArray = writeParentValueToByteArray();
         assertTrue(Arrays.equals(expectedByteArray, writtenByteArray));
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
-                writtenByteArray, writer.getBitPosition());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writtenByteArray, writer.getBitPosition());
         final ParentValue readParentValue = new ParentValue(reader);
         assertEquals(parentValue, readParentValue);
     }

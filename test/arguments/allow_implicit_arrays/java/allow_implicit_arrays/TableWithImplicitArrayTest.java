@@ -1,10 +1,6 @@
 package allow_implicit_arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,15 +8,19 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import test_utils.FileUtil;
-import test_utils.JdbcUtil;
-
-import allow_implicit_arrays.table_with_implicit_array.DbWithImplicitArray;
-import allow_implicit_arrays.table_with_implicit_array.TableWithImplicitArray;
-import allow_implicit_arrays.table_with_implicit_array.TableWithImplicitArrayRow;
-import allow_implicit_arrays.table_with_implicit_array.StructWithImplicit;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
+
+import allow_implicit_arrays.table_with_implicit_array.DbWithImplicitArray;
+import allow_implicit_arrays.table_with_implicit_array.StructWithImplicit;
+import allow_implicit_arrays.table_with_implicit_array.TableWithImplicitArray;
+import allow_implicit_arrays.table_with_implicit_array.TableWithImplicitArrayRow;
+import test_utils.FileUtil;
+import test_utils.JdbcUtil;
 
 public class TableWithImplicitArrayTest
 {

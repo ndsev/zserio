@@ -1,17 +1,18 @@
 package templates;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 
-import templates.struct_templated_type_argument.StructTemplatedTypeArgument;
 import templates.struct_templated_type_argument.ParamHolder_uint32;
 import templates.struct_templated_type_argument.Parameterized_uint32;
+import templates.struct_templated_type_argument.StructTemplatedTypeArgument;
 
 public class StructTemplatedTypeArgumentTest
 {
@@ -30,9 +31,10 @@ public class StructTemplatedTypeArgumentTest
         structTemplatedTypeArgument.initializeOffsets(writer.getBitPosition());
         structTemplatedTypeArgument.write(writer);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
-        final StructTemplatedTypeArgument readStructTemplatedTypeArgument = new StructTemplatedTypeArgument(reader);
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
+        final StructTemplatedTypeArgument readStructTemplatedTypeArgument =
+                new StructTemplatedTypeArgument(reader);
         assertTrue(structTemplatedTypeArgument.equals(readStructTemplatedTypeArgument));
     }
 }

@@ -1,17 +1,18 @@
 package choice_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import choice_types.full_enum_param_choice.FullEnumParamChoice;
-import choice_types.full_enum_param_choice.Selector;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
+
+import choice_types.full_enum_param_choice.FullEnumParamChoice;
+import choice_types.full_enum_param_choice.Selector;
 
 public class FullEnumParamChoiceTest
 {
@@ -29,8 +30,8 @@ public class FullEnumParamChoiceTest
         final Selector selector = Selector.GREY;
         final int value = 234;
         final BitBuffer buffer = writeFullEnumParamChoiceToBitBuffer(selector, value);
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer.getBuffer(),
-                buffer.getBitSize());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(buffer.getBuffer(), buffer.getBitSize());
         final FullEnumParamChoice fullEnumParamChoice = new FullEnumParamChoice(reader, selector);
         assertEquals(selector, fullEnumParamChoice.getSelector());
         assertEquals((short)value, fullEnumParamChoice.getGrey());
@@ -162,8 +163,8 @@ public class FullEnumParamChoiceTest
         fullEnumParamChoice.setBlack(byteValue);
         ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         fullEnumParamChoice.write(writer);
-        ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
-                writer.getBitPosition());
+        ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         FullEnumParamChoice readFullEnumParamChoice = new FullEnumParamChoice(reader, selector);
         assertEquals(byteValue, readFullEnumParamChoice.getBlack());
 

@@ -1,10 +1,11 @@
 package functions.structure_array;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
@@ -71,16 +72,13 @@ public class StructureArrayTest
         final byte[] expectedByteArray = writeStructureArrayToByteArray(pos);
         assertTrue(Arrays.equals(expectedByteArray, writtenByteArray));
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
-                writtenByteArray, writer.getBitPosition());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writtenByteArray, writer.getBitPosition());
         final StructureArray readStructureArray = new StructureArray(reader);
         assertEquals(structureArray, readStructureArray);
     }
 
     private static final Item[] ITEMS = new Item[] {
-            new Item((short)1, (short)2),
-            new Item((short)3, (short)4),
-            new Item((short)5, (short)6)
-    };
+            new Item((short)1, (short)2), new Item((short)3, (short)4), new Item((short)5, (short)6)};
     private static final int NUM_ITEM_ELEMENTS = ITEMS.length;
 }

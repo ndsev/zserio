@@ -1,15 +1,17 @@
 package array_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
+
 import array_types.packed_auto_array_struct_recursion.PackedAutoArrayRecursion;
 
 public class PackedAutoArrayStructRecursionTest
@@ -125,16 +127,16 @@ public class PackedAutoArrayStructRecursionTest
         final PackedAutoArrayRecursion[] autoArray = new PackedAutoArrayRecursion[numElements];
         for (short i = 1; i <= numElements; ++i)
         {
-            final PackedAutoArrayRecursion element = new PackedAutoArrayRecursion(i,
-                    new PackedAutoArrayRecursion[0]);
+            final PackedAutoArrayRecursion element =
+                    new PackedAutoArrayRecursion(i, new PackedAutoArrayRecursion[0]);
             autoArray[i - 1] = element;
         }
 
-        return new PackedAutoArrayRecursion((short) 0, autoArray);
+        return new PackedAutoArrayRecursion((short)0, autoArray);
     }
 
-    private void checkPackedAutoArrayRecursion(PackedAutoArrayRecursion packedAutoArrayRecursion,
-            short numElements)
+    private void checkPackedAutoArrayRecursion(
+            PackedAutoArrayRecursion packedAutoArrayRecursion, short numElements)
     {
         assertEquals(0, packedAutoArrayRecursion.getId());
         final PackedAutoArrayRecursion[] autoArray = packedAutoArrayRecursion.getPackedAutoArrayRecursion();

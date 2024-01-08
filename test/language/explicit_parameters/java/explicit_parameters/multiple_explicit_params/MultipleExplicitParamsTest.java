@@ -1,10 +1,6 @@
 package explicit_parameters.multiple_explicit_params;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,12 +9,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import test_utils.FileUtil;
-import test_utils.JdbcUtil;
-
-import explicit_parameters.ExplicitParametersDb;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
+
+import explicit_parameters.ExplicitParametersDb;
+import test_utils.FileUtil;
+import test_utils.JdbcUtil;
 
 public class MultipleExplicitParamsTest
 {
@@ -179,8 +179,8 @@ public class MultipleExplicitParamsTest
         return row;
     }
 
-    private static void checkMultipleParamsTableRows(List<MultipleParamsTableRow> rows1,
-            List<MultipleParamsTableRow> rows2)
+    private static void checkMultipleParamsTableRows(
+            List<MultipleParamsTableRow> rows1, List<MultipleParamsTableRow> rows2)
     {
         assertEquals(rows1.size(), rows2.size());
         for (int i = 0; i < rows1.size(); ++i)

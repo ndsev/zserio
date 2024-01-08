@@ -1,6 +1,7 @@
 package expressions;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
 import expressions.used_before_type.Color;
@@ -22,8 +23,8 @@ public class UsedBeforeTypeTest
         final UsedBeforeTypeExpression usedBeforeTypeExpression = new UsedBeforeTypeExpression();
         usedBeforeTypeExpression.setColor(Color.BLUE);
 
-        assertEquals(USED_BEFORE_TYPE_EXPRESSION_BIT_SIZE_WITHOUT_OPTIONAL,
-                usedBeforeTypeExpression.bitSizeOf());
+        assertEquals(
+                USED_BEFORE_TYPE_EXPRESSION_BIT_SIZE_WITHOUT_OPTIONAL, usedBeforeTypeExpression.bitSizeOf());
     }
 
     private static final int USED_BEFORE_TYPE_EXPRESSION_BIT_SIZE_WITH_OPTIONAL = 8;

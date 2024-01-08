@@ -1,19 +1,20 @@
 package enumeration_types.multiple_removed_enum_items;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
 
+import org.junit.jupiter.api.Test;
+
 import zserio.runtime.HashCodeUtil;
+import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.typeinfo.ItemInfo;
 import zserio.runtime.typeinfo.TypeInfo;
-import zserio.runtime.ZserioError;
 
 public class MultipleRemovedEnumItemsTest
 {
@@ -79,8 +80,8 @@ public class MultipleRemovedEnumItemsTest
         writer.writeBits(LIGHT_VALUE, 8);
         writer.writeBits(MID_VALUE, 8);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         assertEquals(Traffic.NONE, Traffic.readEnum(reader));
         assertEquals(Traffic.ZSERIO_REMOVED_HEAVY, Traffic.readEnum(reader));
         assertEquals(Traffic.ZSERIO_REMOVED_LIGHT, Traffic.readEnum(reader));
@@ -93,8 +94,8 @@ public class MultipleRemovedEnumItemsTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         assertDoesNotThrow(() -> Traffic.NONE.write(writer));
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         assertEquals(Traffic.NONE, Traffic.readEnum(reader));
 
         assertThrows(ZserioError.class, () -> Traffic.ZSERIO_REMOVED_HEAVY.write(writer));

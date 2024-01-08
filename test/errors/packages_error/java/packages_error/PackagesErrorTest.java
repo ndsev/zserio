@@ -1,10 +1,11 @@
 package packages_error;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import test_utils.ZserioErrorOutput;
 
@@ -19,32 +20,26 @@ public class PackagesErrorTest
     @Test
     public void ambiguousSingleSymbolImport()
     {
-        final String errors[] =
-        {
-            "imported.zs:3:14:     Found here",
-            "ambiguous_single_symbol_import_error.zs:5:14:     Found here",
-            "ambiguous_single_symbol_import_error.zs:9:20: Ambiguous symbol 'CONST'"
-        };
+        final String errors[] = {"imported.zs:3:14:     Found here",
+                "ambiguous_single_symbol_import_error.zs:5:14:     Found here",
+                "ambiguous_single_symbol_import_error.zs:9:20: Ambiguous symbol 'CONST'"};
         assertTrue(zserioErrors.isPresent(errors));
     }
 
     @Test
     public void ambiguousSingleTypeImport()
     {
-        final String errors[] =
-        {
-            "imported.zs:3:8:     Found here",
-            "ambiguous_single_type_import_error.zs:5:8:     Found here",
-            "ambiguous_single_type_import_error.zs:12:5: Ambiguous symbol 'Structure'"
-        };
+        final String errors[] = {"imported.zs:3:8:     Found here",
+                "ambiguous_single_type_import_error.zs:5:8:     Found here",
+                "ambiguous_single_type_import_error.zs:12:5: Ambiguous symbol 'Structure'"};
         assertTrue(zserioErrors.isPresent(errors));
     }
 
     @Test
     public void defaultPackageWithDir()
     {
-        final String error = "default_package.zs:1:1: Default package cannot be compiled with path! " +
-                "Consider to specify package name or set source path to 'default_package_with_path_error'.";
+        final String error = "default_package.zs:1:1: Default package cannot be compiled with path! "
+                + "Consider to specify package name or set source path to 'default_package_with_path_error'.";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -58,8 +53,8 @@ public class PackagesErrorTest
     @Test
     public void importedUnknownSingleType()
     {
-        final String error = "imported_unknown_single_type_error.zs:4:8: " +
-                "Unresolved import of 'simple_database.UnknownTable'!";
+        final String error = "imported_unknown_single_type_error.zs:4:8: "
+                + "Unresolved import of 'simple_database.UnknownTable'!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -80,8 +75,8 @@ public class PackagesErrorTest
     @Test
     public void upperCaseLetterInPackageName()
     {
-        final String error = "upper_case_letter_in_Package_name_error.zs:1:9: " +
-                "Package name cannot contain upper case letters!";
+        final String error = "upper_case_letter_in_Package_name_error.zs:1:9: "
+                + "Package name cannot contain upper case letters!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -95,8 +90,8 @@ public class PackagesErrorTest
     @Test
     public void wrongPackageName()
     {
-        final String error = "bad_package_name.zs:2:9: Package 'bad_really_bad' does not match to the source " +
-                "file name!";
+        final String error = "bad_package_name.zs:2:9: Package 'bad_really_bad' does not match to the source "
+                + "file name!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

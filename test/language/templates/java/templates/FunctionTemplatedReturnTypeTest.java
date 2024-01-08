@@ -1,21 +1,21 @@
 package templates;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 
 import templates.function_templated_return_type.FunctionTemplatedReturnType;
-import templates.function_templated_return_type.TestStructure_uint32;
-import templates.function_templated_return_type.TestStructure_string;
-import templates.function_templated_return_type.TestStructure_float32;
-import templates.function_templated_return_type.Holder_uint32;
 import templates.function_templated_return_type.Holder_string;
-
+import templates.function_templated_return_type.Holder_uint32;
+import templates.function_templated_return_type.TestStructure_float32;
+import templates.function_templated_return_type.TestStructure_string;
+import templates.function_templated_return_type.TestStructure_uint32;
 
 public class FunctionTemplatedReturnTypeTest
 {
@@ -42,8 +42,8 @@ public class FunctionTemplatedReturnTypeTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         functionTemplatedReturnType.write(writer);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final FunctionTemplatedReturnType readFunctionTemplatedReturnType =
                 new FunctionTemplatedReturnType(reader);
 

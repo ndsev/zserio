@@ -1,25 +1,24 @@
 package with_validation_code;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
-
-import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
-import test_utils.FileUtil;
-import test_utils.JdbcUtil;
-
-import with_validation_code.virtual_table_validation.VirtualTableValidationDb;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.validation.ValidationReport;
+
+import test_utils.FileUtil;
+import test_utils.JdbcUtil;
+import with_validation_code.virtual_table_validation.VirtualTableValidationDb;
 
 public class VirtualTableValidationTest
 {

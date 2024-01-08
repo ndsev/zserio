@@ -1,12 +1,10 @@
 package member_access;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import member_access.access_within_type.Header;
-import member_access.access_within_type.Message;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
@@ -15,6 +13,9 @@ import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
+
+import member_access.access_within_type.Header;
+import member_access.access_within_type.Message;
 
 public class AccessWithinTypeTest
 {
@@ -103,6 +104,6 @@ public class AccessWithinTypeTest
         return new Message(header, sentences);
     }
 
-    private static final int    VERSION_VALUE = 0xAB;
+    private static final int VERSION_VALUE = 0xAB;
     private static final String SENTENCE_PREFIX = "This is sentence #";
 }

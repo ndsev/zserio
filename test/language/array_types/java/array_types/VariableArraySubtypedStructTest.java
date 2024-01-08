@@ -1,18 +1,19 @@
 package array_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
 
-import array_types.variable_array_subtyped_struct.TestStructure;
-import array_types.variable_array_subtyped_struct.VariableArray;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
+
+import array_types.variable_array_subtyped_struct.TestStructure;
+import array_types.variable_array_subtyped_struct.VariableArray;
 
 public class VariableArraySubtypedStructTest
 {

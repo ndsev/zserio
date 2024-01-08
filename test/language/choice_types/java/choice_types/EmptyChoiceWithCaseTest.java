@@ -1,14 +1,15 @@
 package choice_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import choice_types.empty_choice_with_case.EmptyChoiceWithCase;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
+
+import choice_types.empty_choice_with_case.EmptyChoiceWithCase;
 
 public class EmptyChoiceWithCaseTest
 {

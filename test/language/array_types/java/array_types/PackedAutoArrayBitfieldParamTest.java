@@ -1,11 +1,13 @@
 package array_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
+import org.junit.jupiter.api.Test;
+
 import zserio.runtime.io.SerializeUtil;
+
 import array_types.packed_auto_array_bitfield_param.ParameterizedBitfieldLength;
 
 public class PackedAutoArrayBitfieldParamTest

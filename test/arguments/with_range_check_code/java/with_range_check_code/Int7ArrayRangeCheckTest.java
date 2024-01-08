@@ -1,15 +1,16 @@
 package with_range_check_code;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
-
-import with_range_check_code.int7_array_range_check.Int7ArrayRangeCheckCompound;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
+
+import with_range_check_code.int7_array_range_check.Int7ArrayRangeCheckCompound;
 
 public class Int7ArrayRangeCheckTest
 {
@@ -47,8 +48,8 @@ public class Int7ArrayRangeCheckTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         int7ArrayRangeCheckCompound.write(writer);
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
-                writer.getBitPosition());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final Int7ArrayRangeCheckCompound readInt7ArrayRangeCheckCompound =
                 new Int7ArrayRangeCheckCompound(reader);
         assertEquals(int7ArrayRangeCheckCompound, readInt7ArrayRangeCheckCompound);

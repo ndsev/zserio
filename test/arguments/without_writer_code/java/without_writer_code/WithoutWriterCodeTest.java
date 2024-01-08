@@ -1,10 +1,9 @@
 package without_writer_code;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
-import static test_utils.AssertionUtils.assertMethodPresent;
 import static test_utils.AssertionUtils.assertMethodNotPresent;
+import static test_utils.AssertionUtils.assertMethodPresent;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -14,12 +13,14 @@ import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.BitPositionUtil;
 import zserio.runtime.io.BitStreamReader;
@@ -232,8 +233,8 @@ public class WithoutWriterCodeTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         writeTile(writer);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
-                writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final Tile tile = new Tile(reader);
         checkTile(tile);
     }
@@ -258,10 +259,7 @@ public class WithoutWriterCodeTest
     @Test
     public void readWorldDb() throws SQLException, IOException
     {
-        try (
-            final Connection connection = createWorldDb();
-            final WorldDb worldDb = new WorldDb(connection);
-        )
+        try (final Connection connection = createWorldDb(); final WorldDb worldDb = new WorldDb(connection);)
         {
             final GeoMapTable europe = worldDb.getEurope();
             final List<GeoMapTableRow> europeRows = europe.read();
@@ -290,27 +288,23 @@ public class WithoutWriterCodeTest
         try (final Statement statement = connection.createStatement())
         {
             statement.executeUpdate("CREATE TABLE europe(tileId INTEGER PRIMARY KEY, tile BLOB)");
-            statement.executeUpdate( "CREATE TABLE america(tileId INTEGER PRIMARY KEY, tile BLOB)");
+            statement.executeUpdate("CREATE TABLE america(tileId INTEGER PRIMARY KEY, tile BLOB)");
         }
 
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         writeTile(writer);
         final byte[] tileBytes = writer.toByteArray();
 
-        try (
-            final PreparedStatement stmtEurope = connection.prepareStatement(
-                    "INSERT INTO europe VALUES (?, ?)");
-        )
+        try (final PreparedStatement stmtEurope = connection.prepareStatement(
+                     "INSERT INTO europe VALUES (?, ?)");)
         {
             stmtEurope.setInt(1, TILE_ID_EUROPE);
             stmtEurope.setBytes(2, tileBytes);
             stmtEurope.executeUpdate();
         }
 
-        try (
-            final PreparedStatement stmtAmerica = connection.prepareStatement(
-                    "INSERT INTO america VALUES (?, ?)");
-        )
+        try (final PreparedStatement stmtAmerica = connection.prepareStatement(
+                     "INSERT INTO america VALUES (?, ?)");)
         {
             stmtAmerica.setInt(1, TILE_ID_AMERICA);
             stmtAmerica.setBytes(2, tileBytes);
@@ -345,13 +339,13 @@ public class WithoutWriterCodeTest
         {
             writer.alignTo(8); // aligned because of indexed offsets
             // ItemChoiceHolder
-            final boolean hasItem = i %2 == 0; // hasItem == true for even elements
+            final boolean hasItem = i % 2 == 0; // hasItem == true for even elements
             writer.writeBool(hasItem);
             if (hasItem)
             {
                 // Item
                 writer.writeBits((long)PARAMS[i], 16);
-                //ExtraParamUnion - choiceTag CHOICE_value32
+                // ExtraParamUnion - choiceTag CHOICE_value32
                 writer.writeVarSize(ExtraParamUnion.CHOICE_value32);
                 writer.writeBits(EXTRA_PARAM, 32);
             }
@@ -394,6 +388,6 @@ public class WithoutWriterCodeTest
     private static final short VERSION = 8;
     private static final byte VERSION_AVAILABILITY = 1;
     private static final long NUM_ELEMENTS = 2;
-    private static final int PARAMS[] = { 13, 21 };
+    private static final int PARAMS[] = {13, 21};
     private static final long EXTRA_PARAM = 42;
 }

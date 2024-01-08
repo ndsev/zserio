@@ -24,8 +24,7 @@ public final class FileUtil
      */
     public static List<String> readLines(File file) throws IOException
     {
-        final InputStreamReader inputStreamReader =
-                new InputStreamReader(new FileInputStream(file), "UTF-8");
+        final InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), "UTF-8");
         final BufferedReader bufferReader = new BufferedReader(inputStreamReader);
         final List<String> lines = new ArrayList<String>();
         try

@@ -1,30 +1,30 @@
 package with_validation_code;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.math.BigInteger;
-import java.util.List;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import zserio.runtime.io.SerializeUtil;
+import zserio.runtime.validation.ValidationError;
+import zserio.runtime.validation.ValidationReport;
 
 import test_utils.FileUtil;
 import test_utils.JdbcUtil;
-
+import with_validation_code.column_type_validation.Blob;
 import with_validation_code.column_type_validation.ColumnTypeDb;
 import with_validation_code.column_type_validation.ColumnTypeTableRow;
-import with_validation_code.column_type_validation.Blob;
-
-import zserio.runtime.validation.ValidationError;
-import zserio.runtime.validation.ValidationReport;
-import zserio.runtime.io.SerializeUtil;
 
 public class ColumnTypeValidationTest
 {
@@ -144,10 +144,8 @@ public class ColumnTypeValidationTest
     {
         populateDb(database);
 
-        try (
-            final PreparedStatement statement = database.connection().prepareStatement(
-                    "UPDATE columnTypeTable SET int64Value = ? WHERE id = 2");
-        )
+        try (final PreparedStatement statement = database.connection().prepareStatement(
+                     "UPDATE columnTypeTable SET int64Value = ? WHERE id = 2");)
         {
             final byte[] blobBytes = SerializeUtil.serializeToBytes(new Blob(13));
             statement.setBytes(1, blobBytes);
@@ -231,10 +229,8 @@ public class ColumnTypeValidationTest
     {
         populateDb(database);
 
-        try (
-            final PreparedStatement statement = database.connection().prepareStatement(
-                    "UPDATE columnTypeTable SET float16Value = ? WHERE id = 2");
-        )
+        try (final PreparedStatement statement = database.connection().prepareStatement(
+                     "UPDATE columnTypeTable SET float16Value = ? WHERE id = 2");)
         {
             final byte[] blobBytes = SerializeUtil.serializeToBytes(new Blob(13));
             statement.setBytes(1, blobBytes);
@@ -284,10 +280,8 @@ public class ColumnTypeValidationTest
     {
         populateDb(database);
 
-        try (
-            final PreparedStatement statement = database.connection().prepareStatement(
-                    "UPDATE columnTypeTable SET stringValue = ? WHERE id = 2");
-        )
+        try (final PreparedStatement statement = database.connection().prepareStatement(
+                     "UPDATE columnTypeTable SET stringValue = ? WHERE id = 2");)
         {
             final byte[] blobBytes = SerializeUtil.serializeToBytes(new Blob(13));
             statement.setBytes(1, blobBytes);

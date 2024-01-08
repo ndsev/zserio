@@ -1,27 +1,28 @@
 package with_type_info_code;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.nio.charset.StandardCharsets;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
+import org.junit.jupiter.api.Test;
+
+import zserio.runtime.DebugStringUtil;
+import zserio.runtime.json.JsonReader;
+import zserio.runtime.json.JsonWriter;
 import zserio.runtime.walker.AndWalkFilter;
 import zserio.runtime.walker.ArrayLengthWalkFilter;
 import zserio.runtime.walker.DepthWalkFilter;
 import zserio.runtime.walker.RegexWalkFilter;
-import zserio.runtime.walker.Walker;
 import zserio.runtime.walker.WalkFilter;
-import zserio.runtime.DebugStringUtil;
-import zserio.runtime.json.JsonReader;
-import zserio.runtime.json.JsonWriter;
+import zserio.runtime.walker.Walker;
 
 public class DebugStringTest
 {
@@ -35,8 +36,8 @@ public class DebugStringTest
 
         DebugStringUtil.toJsonFile(withTypeInfoCode, JSON_NAME_WITH_OPTIONALS);
 
-        final Object readObject = DebugStringUtil.fromJsonFile(WithTypeInfoCode.class,
-                JSON_NAME_WITH_OPTIONALS);
+        final Object readObject =
+                DebugStringUtil.fromJsonFile(WithTypeInfoCode.class, JSON_NAME_WITH_OPTIONALS);
         assertTrue(readObject instanceof WithTypeInfoCode);
         assertEquals(withTypeInfoCode, (WithTypeInfoCode)readObject);
     }
@@ -51,8 +52,8 @@ public class DebugStringTest
 
         DebugStringUtil.toJsonFile(withTypeInfoCode, JSON_NAME_WITHOUT_OPTIONALS);
 
-        final Object readObject = DebugStringUtil.fromJsonFile(WithTypeInfoCode.class,
-                JSON_NAME_WITHOUT_OPTIONALS);
+        final Object readObject =
+                DebugStringUtil.fromJsonFile(WithTypeInfoCode.class, JSON_NAME_WITHOUT_OPTIONALS);
         assertTrue(readObject instanceof WithTypeInfoCode);
         assertEquals(withTypeInfoCode, (WithTypeInfoCode)readObject);
     }

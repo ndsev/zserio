@@ -1,6 +1,7 @@
 package expressions;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
 import expressions.full_const_type.FullConstTypeExpression;
@@ -10,8 +11,8 @@ public class FullConstTypeTest
     @Test
     public void bitSizeOfWithOptional()
     {
-        final FullConstTypeExpression fullConstTypeExpression = new FullConstTypeExpression(FULL_VALID_VALUE,
-                FULL_ADDITIONAL_VALUE);
+        final FullConstTypeExpression fullConstTypeExpression =
+                new FullConstTypeExpression(FULL_VALID_VALUE, FULL_ADDITIONAL_VALUE);
 
         assertEquals(FULL_CONST_TYPE_EXPRESSION_BIT_SIZE_WITH_OPTIONAL, fullConstTypeExpression.bitSizeOf());
     }

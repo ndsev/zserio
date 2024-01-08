@@ -1,10 +1,6 @@
 package sql_tables.blob_field_with_children_initialization_table;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,12 +8,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import test_utils.FileUtil;
-import test_utils.JdbcUtil;
-
-import sql_tables.TestDb;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
+
+import sql_tables.TestDb;
+import test_utils.FileUtil;
+import test_utils.JdbcUtil;
 
 public class BlobFieldWithChildrenInitializationTableTest
 {
@@ -86,20 +86,22 @@ public class BlobFieldWithChildrenInitializationTableTest
         return row;
     }
 
-    private static void checkRows(List<BlobFieldWithChildrenInitializationTableRow> rows1, List<BlobFieldWithChildrenInitializationTableRow> rows2)
+    private static void checkRows(List<BlobFieldWithChildrenInitializationTableRow> rows1,
+            List<BlobFieldWithChildrenInitializationTableRow> rows2)
     {
         assertEquals(rows1.size(), rows2.size());
         for (int i = 0; i < rows1.size(); ++i)
             checkRow(rows1.get(i), rows2.get(i));
     }
 
-    private static void checkRow(BlobFieldWithChildrenInitializationTableRow row1, BlobFieldWithChildrenInitializationTableRow row2)
+    private static void checkRow(
+            BlobFieldWithChildrenInitializationTableRow row1, BlobFieldWithChildrenInitializationTableRow row2)
     {
         assertEquals(row1.getId(), row2.getId());
         assertEquals(row1.getBlob(), row2.getBlob());
     }
 
-    private static final int    NUM_ROWS = 5;
+    private static final int NUM_ROWS = 5;
     private static final String FILE_NAME = "blob_field_with_children_initialization_table_test.sqlite";
 
     private final File file = new File(FILE_NAME);

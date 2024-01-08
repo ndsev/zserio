@@ -1,10 +1,11 @@
 package service_types.simple_service;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
-import java.math.BigInteger;
 import java.io.IOException;
+import java.math.BigInteger;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
@@ -97,7 +98,7 @@ public class SimpleServiceTest
             }
             catch (IOException e)
             {
-                return new byte[]{};
+                return new byte[] {};
             }
         }
     }

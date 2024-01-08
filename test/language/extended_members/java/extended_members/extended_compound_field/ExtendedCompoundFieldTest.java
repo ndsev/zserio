@@ -1,11 +1,12 @@
 package extended_members.extended_compound_field;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.math.BigInteger;
+import java.util.Arrays;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.BitSizeOfCalculator;
 import zserio.runtime.io.BitBuffer;
@@ -152,12 +153,11 @@ public class ExtendedCompoundFieldTest
         assertEquals(ORIGINAL_BIT_SIZE, reader.getBitPosition());
     }
 
-    private static final long COMPOUND_ARRAY[] = new long[]{ 0, 1, 2, 3, 4 };
+    private static final long COMPOUND_ARRAY[] = new long[] {0, 1, 2, 3, 4};
 
     private static final long ORIGINAL_BIT_SIZE = 4 * 8;
-    private static final long EXTENDED_BIT_SIZE_DEFAULT = ORIGINAL_BIT_SIZE +
-            BitSizeOfCalculator.getBitSizeOfVarSize(0);
+    private static final long EXTENDED_BIT_SIZE_DEFAULT =
+            ORIGINAL_BIT_SIZE + BitSizeOfCalculator.getBitSizeOfVarSize(0);
     private static final long EXTENDED_BIT_SIZE_WITH_ARRAY = ORIGINAL_BIT_SIZE +
-            BitSizeOfCalculator.getBitSizeOfVarSize(COMPOUND_ARRAY.length) +
-            COMPOUND_ARRAY.length * 4L * 8L;
+            BitSizeOfCalculator.getBitSizeOfVarSize(COMPOUND_ARRAY.length) + COMPOUND_ARRAY.length * 4L * 8L;
 }

@@ -1,10 +1,6 @@
 package sql_virtual_tables.fts3_virtual_table;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,10 +10,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import test_utils.FileUtil;
-import test_utils.JdbcUtil;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
+
+import test_utils.FileUtil;
+import test_utils.JdbcUtil;
 
 public class Fts3VirtualTableTest
 {
@@ -128,8 +129,8 @@ public class Fts3VirtualTableTest
         return row;
     }
 
-    private static void checkFts3VirtualTableRows(List<Fts3VirtualTableRow> rows1,
-            List<Fts3VirtualTableRow> rows2)
+    private static void checkFts3VirtualTableRows(
+            List<Fts3VirtualTableRow> rows1, List<Fts3VirtualTableRow> rows2)
     {
         assertEquals(rows1.size(), rows2.size());
         for (int i = 0; i < rows1.size(); ++i)
@@ -145,13 +146,11 @@ public class Fts3VirtualTableTest
     private boolean isTableInDb() throws SQLException
     {
         // check if database does contain table
-        final String sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + TABLE_NAME +
-                "'";
+        final String sqlQuery =
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='" + TABLE_NAME + "'";
 
-        try (
-            final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);
-            final ResultSet resultSet = statement.executeQuery();
-        )
+        try (final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);
+                final ResultSet resultSet = statement.executeQuery();)
         {
             if (!resultSet.next())
                 return false;
@@ -167,7 +166,7 @@ public class Fts3VirtualTableTest
 
     private static final String TABLE_NAME = "fts3VirtualTable";
 
-    private static final int    NUM_VIRTUAL_TABLE_ROWS = 5;
+    private static final int NUM_VIRTUAL_TABLE_ROWS = 5;
 
     private static final String FILE_NAME = "fts3_virtual_table_test.sqlite";
 

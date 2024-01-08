@@ -1,6 +1,7 @@
 package choice_types;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
 import choice_types.expression_selector_choice.ExpressionSelectorChoice;

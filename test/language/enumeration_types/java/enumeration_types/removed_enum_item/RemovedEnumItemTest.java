@@ -1,19 +1,20 @@
 package enumeration_types.removed_enum_item;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
 
+import org.junit.jupiter.api.Test;
+
 import zserio.runtime.HashCodeUtil;
+import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.typeinfo.ItemInfo;
 import zserio.runtime.typeinfo.TypeInfo;
-import zserio.runtime.ZserioError;
 
 public class RemovedEnumItemTest
 {
@@ -61,8 +62,8 @@ public class RemovedEnumItemTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         writer.writeBits(HEAVY_VALUE, 8);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final Traffic traffic = Traffic.readEnum(reader);
         assertEquals(Traffic.ZSERIO_REMOVED_HEAVY, traffic);
     }
@@ -75,16 +76,15 @@ public class RemovedEnumItemTest
         assertDoesNotThrow(() -> Traffic.LIGHT.write(writer));
         assertDoesNotThrow(() -> Traffic.MID.write(writer));
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         assertEquals(Traffic.NONE, Traffic.readEnum(reader));
         assertEquals(Traffic.LIGHT, Traffic.readEnum(reader));
         assertEquals(Traffic.MID, Traffic.readEnum(reader));
 
-        final ZserioError thrown = assertThrows(ZserioError.class,
-                () -> Traffic.ZSERIO_REMOVED_HEAVY.write(writer));
-        assertEquals("Trying to write removed enumeration item 'ZSERIO_REMOVED_HEAVY'!",
-                thrown.getMessage());
+        final ZserioError thrown =
+                assertThrows(ZserioError.class, () -> Traffic.ZSERIO_REMOVED_HEAVY.write(writer));
+        assertEquals("Trying to write removed enumeration item 'ZSERIO_REMOVED_HEAVY'!", thrown.getMessage());
     }
 
     @Test

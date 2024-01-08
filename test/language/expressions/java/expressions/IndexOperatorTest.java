@@ -1,13 +1,14 @@
 package expressions;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import zserio.runtime.io.ByteArrayBitStreamWriter;
+import org.junit.jupiter.api.Test;
+
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
 
 import expressions.index_operator.*;
 
@@ -86,8 +87,8 @@ public class IndexOperatorTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         list.write(writer);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final ElementList newList = new ElementList(reader);
 
         return newList;
@@ -104,7 +105,7 @@ public class IndexOperatorTest
         }
     }
 
-    private static final int ELEMENTS[] = { 11, 33, 55, 77 };
+    private static final int ELEMENTS[] = {11, 33, 55, 77};
     private static final int LENGTH_SIZE = 16;
     private static final int FIELD8_SIZE = 8;
     private static final int FIELD16_SIZE = 16;

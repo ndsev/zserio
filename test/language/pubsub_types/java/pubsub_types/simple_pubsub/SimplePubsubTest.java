@@ -1,16 +1,17 @@
 package pubsub_types.simple_pubsub;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
 
 import java.math.BigInteger;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
-import zserio.runtime.pubsub.PubsubException;
-import zserio.runtime.pubsub.PubsubCallback;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import zserio.runtime.io.SerializeUtil;
+import zserio.runtime.pubsub.PubsubCallback;
+import zserio.runtime.pubsub.PubsubException;
 
 import pubsub_types.TestPubsub;
 

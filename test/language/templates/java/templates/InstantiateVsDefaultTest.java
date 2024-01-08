@@ -1,17 +1,18 @@
 package templates;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 
 import templates.instantiate_vs_default.InstantiateVsDefault;
-import templates.instantiate_vs_default.pkg.Test_uint32;
 import templates.instantiate_vs_default.TStr;
+import templates.instantiate_vs_default.pkg.Test_uint32;
 
 public class InstantiateVsDefaultTest
 {
@@ -25,8 +26,8 @@ public class InstantiateVsDefaultTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         instantiateVsDefault.write(writer);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final InstantiateVsDefault readInstantiateVsDefault = new InstantiateVsDefault(reader);
         assertTrue(instantiateVsDefault.equals(readInstantiateVsDefault));
     }

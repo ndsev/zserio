@@ -1,6 +1,7 @@
 package expressions;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
 import expressions.parameter_type.Color;
@@ -11,8 +12,8 @@ public class ParameterTypeTest
     @Test
     public void bitSizeOfWithOptional()
     {
-        final ParameterTypeExpression parameterTypeExpression = new ParameterTypeExpression(Color.RED,
-                PARAMETER_TYPE_EXPRESSION_VALUE, true);
+        final ParameterTypeExpression parameterTypeExpression =
+                new ParameterTypeExpression(Color.RED, PARAMETER_TYPE_EXPRESSION_VALUE, true);
 
         assertEquals(PARAMETER_TYPE_EXPRESSION_BIT_SIZE_WITH_OPTIONAL, parameterTypeExpression.bitSizeOf());
     }
@@ -23,8 +24,7 @@ public class ParameterTypeTest
         final ParameterTypeExpression parameterTypeExpression = new ParameterTypeExpression(Color.BLUE);
         parameterTypeExpression.setValue(PARAMETER_TYPE_EXPRESSION_VALUE);
 
-        assertEquals(PARAMETER_TYPE_EXPRESSION_BIT_SIZE_WITHOUT_OPTIONAL,
-                parameterTypeExpression.bitSizeOf());
+        assertEquals(PARAMETER_TYPE_EXPRESSION_BIT_SIZE_WITHOUT_OPTIONAL, parameterTypeExpression.bitSizeOf());
     }
 
     private static final byte PARAMETER_TYPE_EXPRESSION_VALUE = (byte)0x3F;

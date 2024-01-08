@@ -1,17 +1,18 @@
 package alignment;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import alignment.auto_optional_member_alignment.AutoOptionalMemberAlignment;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
+import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
-import zserio.runtime.io.BitBuffer;
+
+import alignment.auto_optional_member_alignment.AutoOptionalMemberAlignment;
 
 public class AutoOptionalMemberAlignmentTest
 {
@@ -39,24 +40,24 @@ public class AutoOptionalMemberAlignmentTest
     @Test
     public void bitSizeOfWithOptional()
     {
-        final AutoOptionalMemberAlignment autoOptionalMemberAlignment = new AutoOptionalMemberAlignment(0x4433,
-                0x1122);
+        final AutoOptionalMemberAlignment autoOptionalMemberAlignment =
+                new AutoOptionalMemberAlignment(0x4433, 0x1122);
         assertEquals(WITH_AUTO_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE, autoOptionalMemberAlignment.bitSizeOf());
     }
 
     @Test
     public void bitSizeOfWithoutOptional()
     {
-        final AutoOptionalMemberAlignment autoOptionalMemberAlignment = new AutoOptionalMemberAlignment(null,
-                0x7624);
+        final AutoOptionalMemberAlignment autoOptionalMemberAlignment =
+                new AutoOptionalMemberAlignment(null, 0x7624);
         assertEquals(WITHOUT_AUTO_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE, autoOptionalMemberAlignment.bitSizeOf());
     }
 
     @Test
     public void initializeOffsetsWithOptional()
     {
-        final AutoOptionalMemberAlignment autoOptionalMemberAlignment = new AutoOptionalMemberAlignment(0x1111,
-                0x3333);
+        final AutoOptionalMemberAlignment autoOptionalMemberAlignment =
+                new AutoOptionalMemberAlignment(0x1111, 0x3333);
         int bitPosition = 0;
         for (; bitPosition < 32; ++bitPosition)
             assertEquals(WITH_AUTO_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE,
@@ -69,8 +70,8 @@ public class AutoOptionalMemberAlignmentTest
     @Test
     public void initializeOffsetsWithoutOptional()
     {
-        final AutoOptionalMemberAlignment autoOptionalMemberAlignment = new AutoOptionalMemberAlignment(null,
-                0x3334);
+        final AutoOptionalMemberAlignment autoOptionalMemberAlignment =
+                new AutoOptionalMemberAlignment(null, 0x3334);
         final int bitPosition = 1;
         assertEquals(WITHOUT_AUTO_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE + bitPosition,
                 autoOptionalMemberAlignment.initializeOffsets(bitPosition));
@@ -81,13 +82,13 @@ public class AutoOptionalMemberAlignmentTest
     {
         final int autoOptionalField = 0x9ADB;
         final int field = 0x8ACD;
-        final AutoOptionalMemberAlignment autoOptionalMemberAlignment = new AutoOptionalMemberAlignment(
-                autoOptionalField, field);
+        final AutoOptionalMemberAlignment autoOptionalMemberAlignment =
+                new AutoOptionalMemberAlignment(autoOptionalField, field);
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         autoOptionalMemberAlignment.write(writer);
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
-                writer.getBitPosition());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final AutoOptionalMemberAlignment readAutoOptionalMemberAlignment =
                 new AutoOptionalMemberAlignment(reader);
         checkAutoOptionalMemberAlignment(readAutoOptionalMemberAlignment, autoOptionalField, field);
@@ -98,13 +99,13 @@ public class AutoOptionalMemberAlignmentTest
     public void writeWithoutOptional() throws IOException, ZserioError
     {
         final int field = 0x7ACF;
-        final AutoOptionalMemberAlignment autoOptionalMemberAlignment = new AutoOptionalMemberAlignment(
-                null, field);
+        final AutoOptionalMemberAlignment autoOptionalMemberAlignment =
+                new AutoOptionalMemberAlignment(null, field);
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         autoOptionalMemberAlignment.write(writer);
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
-                writer.getBitPosition());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final AutoOptionalMemberAlignment readAutoOptionalMemberAlignment =
                 new AutoOptionalMemberAlignment(reader);
         checkAutoOptionalMemberAlignment(readAutoOptionalMemberAlignment, null, field);
@@ -132,8 +133,8 @@ public class AutoOptionalMemberAlignmentTest
         }
     }
 
-    private void checkAutoOptionalMemberAlignment(AutoOptionalMemberAlignment autoOptionalMemberAlignment,
-            Integer autoOptionalField, int field)
+    private void checkAutoOptionalMemberAlignment(
+            AutoOptionalMemberAlignment autoOptionalMemberAlignment, Integer autoOptionalField, int field)
     {
         if (autoOptionalField != null)
         {

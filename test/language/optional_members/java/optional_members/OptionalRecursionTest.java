@@ -1,15 +1,17 @@
 package optional_members;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import optional_members.optional_recursion.Block;
+import org.junit.jupiter.api.Test;
+
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.SerializeUtil;
+
+import optional_members.optional_recursion.Block;
 
 public class OptionalRecursionTest
 {
@@ -120,8 +122,8 @@ public class OptionalRecursionTest
         final BitStreamReader reader = new ByteArrayBitStreamReader(block1BitBuffer);
         checkBlockInStream(reader, BLOCK1_DATA);
 
-        final Block readBlock1 = SerializeUtil.deserialize(
-                Block.class, block1BitBuffer, (short)BLOCK1_DATA.length);
+        final Block readBlock1 =
+                SerializeUtil.deserialize(Block.class, block1BitBuffer, (short)BLOCK1_DATA.length);
         assertEquals(block1, readBlock1);
     }
 
@@ -133,8 +135,8 @@ public class OptionalRecursionTest
         final BitStreamReader reader = new ByteArrayBitStreamReader(block12BitBuffer);
         checkBlockInStream(reader, BLOCK1_DATA, BLOCK2_DATA);
 
-        final Block readBlock12 = SerializeUtil.deserialize(
-                Block.class, block12BitBuffer, (short)BLOCK1_DATA.length);
+        final Block readBlock12 =
+                SerializeUtil.deserialize(Block.class, block12BitBuffer, (short)BLOCK1_DATA.length);
         assertEquals(block12, readBlock12);
     }
 

@@ -1,11 +1,10 @@
 package constraints;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import constraints.choice_constraints.ChoiceConstraints;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
@@ -14,6 +13,8 @@ import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
+
+import constraints.choice_constraints.ChoiceConstraints;
 
 public class ChoiceConstraintsTest
 {
@@ -58,8 +59,8 @@ public class ChoiceConstraintsTest
         choiceConstraints.setValue16(value16);
         final BitBuffer bitBuffer = SerializeUtil.serialize(choiceConstraints);
 
-        final ChoiceConstraints readChoiceConstraints = SerializeUtil.deserialize(
-                ChoiceConstraints.class, bitBuffer, selector);
+        final ChoiceConstraints readChoiceConstraints =
+                SerializeUtil.deserialize(ChoiceConstraints.class, bitBuffer, selector);
         assertEquals(selector, readChoiceConstraints.getSelector());
         assertEquals(value16, readChoiceConstraints.getValue16());
         assertTrue(choiceConstraints.equals(readChoiceConstraints));

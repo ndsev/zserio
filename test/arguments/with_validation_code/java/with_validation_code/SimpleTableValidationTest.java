@@ -1,33 +1,33 @@
 package with_validation_code;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
-import test_utils.FileUtil;
-import test_utils.JdbcUtil;
-
-import with_validation_code.simple_table_validation.RootStruct;
-import with_validation_code.simple_table_validation.SimpleTable;
-import with_validation_code.simple_table_validation.SimpleTableValidationDb;
-import with_validation_code.simple_table_validation.TestEnum;
-import with_validation_code.simple_table_validation.TestBitmask;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.SerializeUtil;
 import zserio.runtime.validation.ValidationError;
 import zserio.runtime.validation.ValidationReport;
+
+import test_utils.FileUtil;
+import test_utils.JdbcUtil;
+import with_validation_code.simple_table_validation.RootStruct;
+import with_validation_code.simple_table_validation.SimpleTable;
+import with_validation_code.simple_table_validation.SimpleTableValidationDb;
+import with_validation_code.simple_table_validation.TestBitmask;
+import with_validation_code.simple_table_validation.TestEnum;
 
 public class SimpleTableValidationTest
 {
@@ -88,8 +88,7 @@ public class SimpleTableValidationTest
         assertEquals("simpleTable", error.getTableName());
         assertEquals("fieldBlob", error.getFieldName());
         assertEquals(ValidationError.Type.BLOB_PARSE_FAILED, error.getType());
-        assertEquals("Read: Wrong offset for field RootStruct.end: 14 != 4278190094!",
-                error.getMessage());
+        assertEquals("Read: Wrong offset for field RootStruct.end: 14 != 4278190094!", error.getMessage());
 
         final StackTraceElement[] stackTrace = error.getStackTrace();
         assertNotNull(stackTrace);
@@ -134,8 +133,7 @@ public class SimpleTableValidationTest
         assertEquals("extraColumn", error.getFieldName());
         assertEquals(null, error.getRowKeyValues());
         assertEquals(ValidationError.Type.COLUMN_SUPERFLUOUS, error.getType());
-        assertEquals("superfluous column simpleTable.extraColumn of type TEXT encountered",
-                error.getMessage());
+        assertEquals("superfluous column simpleTable.extraColumn of type TEXT encountered", error.getMessage());
 
         final StackTraceElement[] stackTrace = error.getStackTrace();
         assertNotNull(stackTrace);
@@ -150,12 +148,12 @@ public class SimpleTableValidationTest
     {
         populateDb(database.connection(), new TestParameterProvider(), false);
 
-        executeUpdate("CREATE TABLE simpleTableTemp (rowid INTEGER PRIMARY KEY NOT NULL, " +
-                "fieldBool INTEGER NOT NULL, fieldDynamicBit INTEGER NOT NULL, " +
-                "fieldVarInt16 INTEGER NOT NULL, fieldString TEXT NOT NULL, fieldBlob BLOB NOT NULL, " +
-                "fieldEnum INTEGER, fieldBitmask INTEGER NOT NULL)");
-        executeUpdate("INSERT INTO simpleTableTemp SELECT rowid, fieldBool, fieldDynamicBit, fieldVarInt16, " +
-                "fieldString, fieldBlob, fieldEnum, fieldBitmask FROM simpleTable");
+        executeUpdate("CREATE TABLE simpleTableTemp (rowid INTEGER PRIMARY KEY NOT NULL, "
+                + "fieldBool INTEGER NOT NULL, fieldDynamicBit INTEGER NOT NULL, "
+                + "fieldVarInt16 INTEGER NOT NULL, fieldString TEXT NOT NULL, fieldBlob BLOB NOT NULL, "
+                + "fieldEnum INTEGER, fieldBitmask INTEGER NOT NULL)");
+        executeUpdate("INSERT INTO simpleTableTemp SELECT rowid, fieldBool, fieldDynamicBit, fieldVarInt16, "
+                + "fieldString, fieldBlob, fieldEnum, fieldBitmask FROM simpleTable");
         executeUpdate("DROP TABLE simpleTable");
         executeUpdate("ALTER TABLE simpleTableTemp RENAME TO simpleTable");
 
@@ -188,12 +186,12 @@ public class SimpleTableValidationTest
     {
         populateDb(database.connection(), new TestParameterProvider(), false);
 
-        executeUpdate("CREATE TABLE simpleTableTemp (rowid INTEGER PRIMARY KEY NOT NULL, " +
-                "fieldBool INTEGER NOT NULL, fieldBit5 TEXT, fieldDynamicBit INTEGER NOT NULL, " +
-                "fieldVarInt16 INTEGER NOT NULL, fieldString TEXT NOT NULL, fieldBlob BLOB NOT NULL, " +
-                "fieldEnum INTEGER, fieldBitmask INTEGER NOT NULL)");
-        executeUpdate("INSERT INTO simpleTableTemp SELECT rowid, fieldBool, fieldBit5, fieldDynamicBit, " +
-                "fieldVarInt16, fieldString, fieldBlob, fieldEnum, fieldBitmask FROM simpleTable");
+        executeUpdate("CREATE TABLE simpleTableTemp (rowid INTEGER PRIMARY KEY NOT NULL, "
+                + "fieldBool INTEGER NOT NULL, fieldBit5 TEXT, fieldDynamicBit INTEGER NOT NULL, "
+                + "fieldVarInt16 INTEGER NOT NULL, fieldString TEXT NOT NULL, fieldBlob BLOB NOT NULL, "
+                + "fieldEnum INTEGER, fieldBitmask INTEGER NOT NULL)");
+        executeUpdate("INSERT INTO simpleTableTemp SELECT rowid, fieldBool, fieldBit5, fieldDynamicBit, "
+                + "fieldVarInt16, fieldString, fieldBlob, fieldEnum, fieldBitmask FROM simpleTable");
         executeUpdate("DROP TABLE simpleTable");
         executeUpdate("ALTER TABLE simpleTableTemp RENAME TO simpleTable");
 
@@ -211,8 +209,8 @@ public class SimpleTableValidationTest
         assertEquals("fieldBit5", error.getFieldName());
         assertEquals(null, error.getRowKeyValues());
         assertEquals(ValidationError.Type.INVALID_COLUMN_TYPE, error.getType());
-        assertEquals("column SimpleTable.fieldBit5 has type 'TEXT' but 'INTEGER' is expected",
-                error.getMessage());
+        assertEquals(
+                "column SimpleTable.fieldBit5 has type 'TEXT' but 'INTEGER' is expected", error.getMessage());
 
         final StackTraceElement[] stackTrace = error.getStackTrace();
         assertNotNull(stackTrace);
@@ -227,12 +225,12 @@ public class SimpleTableValidationTest
     {
         populateDb(database.connection(), new TestParameterProvider(), false);
 
-        executeUpdate("CREATE TABLE simpleTableTemp (rowid INTEGER PRIMARY KEY NOT NULL, " +
-                "fieldBool INTEGER NOT NULL, fieldBit5 INTEGER NOT NULL, fieldDynamicBit INTEGER NOT NULL, " +
-                "fieldVarInt16 INTEGER NOT NULL, fieldString TEXT NOT NULL, fieldBlob BLOB, " +
-                "fieldEnum INTEGER, fieldBitmask INTEGER NOT NULL)");
-        executeUpdate("INSERT INTO simpleTableTemp SELECT rowid, fieldBool, fieldBit5, fieldDynamicBit, " +
-                "fieldVarInt16, fieldString, fieldBlob, fieldEnum, fieldBitmask FROM simpleTable");
+        executeUpdate("CREATE TABLE simpleTableTemp (rowid INTEGER PRIMARY KEY NOT NULL, "
+                + "fieldBool INTEGER NOT NULL, fieldBit5 INTEGER NOT NULL, fieldDynamicBit INTEGER NOT NULL, "
+                + "fieldVarInt16 INTEGER NOT NULL, fieldString TEXT NOT NULL, fieldBlob BLOB, "
+                + "fieldEnum INTEGER, fieldBitmask INTEGER NOT NULL)");
+        executeUpdate("INSERT INTO simpleTableTemp SELECT rowid, fieldBool, fieldBit5, fieldDynamicBit, "
+                + "fieldVarInt16, fieldString, fieldBlob, fieldEnum, fieldBitmask FROM simpleTable");
         executeUpdate("DROP TABLE simpleTable");
         executeUpdate("ALTER TABLE simpleTableTemp RENAME TO simpleTable");
 
@@ -250,16 +248,18 @@ public class SimpleTableValidationTest
         assertEquals("fieldBit5", error.getFieldName());
         assertEquals(null, error.getRowKeyValues());
         assertEquals(ValidationError.Type.INVALID_COLUMN_CONSTRAINT, error.getType());
-        assertEquals("column SimpleTable.fieldBit5 is NOT NULL-able, but the column is expected to be " +
-                "NULL-able", error.getMessage());
+        assertEquals("column SimpleTable.fieldBit5 is NOT NULL-able, but the column is expected to be "
+                        + "NULL-able",
+                error.getMessage());
 
         error = errors.get(1);
         assertEquals("simpleTable", error.getTableName());
         assertEquals("fieldBlob", error.getFieldName());
         assertEquals(null, error.getRowKeyValues());
         assertEquals(ValidationError.Type.INVALID_COLUMN_CONSTRAINT, error.getType());
-        assertEquals("column SimpleTable.fieldBlob is NULL-able, but the column is expected to be " +
-                "NOT NULL-able", error.getMessage());
+        assertEquals("column SimpleTable.fieldBlob is NULL-able, but the column is expected to be "
+                        + "NOT NULL-able",
+                error.getMessage());
 
         final StackTraceElement[] stackTrace = error.getStackTrace();
         assertNotNull(stackTrace);
@@ -274,12 +274,12 @@ public class SimpleTableValidationTest
     {
         populateDb(database.connection(), new TestParameterProvider(), false);
 
-        executeUpdate("CREATE TABLE simpleTableTemp (rowid INTEGER NOT NULL, " +
-                "fieldBool INTEGER NOT NULL, fieldBit5 INTEGER, fieldDynamicBit INTEGER NOT NULL, " +
-                "fieldVarInt16 INTEGER NOT NULL, fieldString TEXT NOT NULL, fieldBlob BLOB NOT NULL, " +
-                "fieldEnum INTEGER, fieldBitmask INTEGER NOT NULL)");
-        executeUpdate("INSERT INTO simpleTableTemp SELECT rowid, fieldBool, fieldBit5, fieldDynamicBit, " +
-                "fieldVarInt16, fieldString, fieldBlob, fieldEnum, fieldBitmask FROM simpleTable");
+        executeUpdate("CREATE TABLE simpleTableTemp (rowid INTEGER NOT NULL, "
+                + "fieldBool INTEGER NOT NULL, fieldBit5 INTEGER, fieldDynamicBit INTEGER NOT NULL, "
+                + "fieldVarInt16 INTEGER NOT NULL, fieldString TEXT NOT NULL, fieldBlob BLOB NOT NULL, "
+                + "fieldEnum INTEGER, fieldBitmask INTEGER NOT NULL)");
+        executeUpdate("INSERT INTO simpleTableTemp SELECT rowid, fieldBool, fieldBit5, fieldDynamicBit, "
+                + "fieldVarInt16, fieldString, fieldBlob, fieldEnum, fieldBitmask FROM simpleTable");
         executeUpdate("DROP TABLE simpleTable");
         executeUpdate("ALTER TABLE simpleTableTemp RENAME TO simpleTable");
 
@@ -297,8 +297,9 @@ public class SimpleTableValidationTest
         assertEquals("rowid", error.getFieldName());
         assertEquals(null, error.getRowKeyValues());
         assertEquals(ValidationError.Type.INVALID_COLUMN_CONSTRAINT, error.getType());
-        assertEquals("column SimpleTable.rowid is not primary key, but the column is expected to be " +
-                "primary key", error.getMessage());
+        assertEquals("column SimpleTable.rowid is not primary key, but the column is expected to be "
+                        + "primary key",
+                error.getMessage());
 
         final StackTraceElement[] stackTrace = error.getStackTrace();
         assertNotNull(stackTrace);
@@ -313,12 +314,11 @@ public class SimpleTableValidationTest
     {
         populateDb(database.connection(), new TestParameterProvider(), false);
 
-        executeUpdate("UPDATE simpleTable SET fieldBit5 = 32 WHERE rowid = " +
-                FIELD_BIT5_OUT_OF_RANGE_ROW_ID);
+        executeUpdate("UPDATE simpleTable SET fieldBit5 = 32 WHERE rowid = " + FIELD_BIT5_OUT_OF_RANGE_ROW_ID);
         executeUpdate("UPDATE simpleTable SET fieldVarInt16 = 16384 WHERE rowid = " +
                 FIELD_VARINT16_OUT_OF_RANGE_ROW_ID);
-        executeUpdate("UPDATE simpleTable SET fieldBitmask = -1 WHERE rowid = " +
-                FIELD_BITMASK_OUT_OF_RANGE_ROW_ID);
+        executeUpdate(
+                "UPDATE simpleTable SET fieldBitmask = -1 WHERE rowid = " + FIELD_BITMASK_OUT_OF_RANGE_ROW_ID);
 
         final TestParameterProvider parameterProvider = new TestParameterProvider();
         final ValidationReport report = database.validate(parameterProvider);
@@ -359,7 +359,6 @@ public class SimpleTableValidationTest
         assertEquals(Byte.toString(FIELD_BITMASK_OUT_OF_RANGE_ROW_ID), errorRowKeyValues.get(0));
         assertEquals(ValidationError.Type.VALUE_OUT_OF_RANGE, error.getType());
         assertEquals("Value -1 of SimpleTable.fieldBitmask exceeds the range of 0..255", error.getMessage());
-
 
         final StackTraceElement[] stackTrace = error.getStackTrace();
         assertNotNull(stackTrace);
@@ -409,8 +408,8 @@ public class SimpleTableValidationTest
         assertEquals("<init>", stackTrace[1].getMethodName());
     }
 
-    private void populateDb(Connection connection, TestParameterProvider parameterProvider,
-            boolean wrongOffset) throws SQLException
+    private void populateDb(Connection connection, TestParameterProvider parameterProvider, boolean wrongOffset)
+            throws SQLException
     {
         for (byte id = 0; id < ENTRY_COUNT; id++)
         {
@@ -420,12 +419,12 @@ public class SimpleTableValidationTest
         }
     }
 
-    private void insertTestRow(Connection connection, TestParameterProvider parameterProvider,
-            byte id, boolean wrongOffset) throws SQLException
+    private void insertTestRow(Connection connection, TestParameterProvider parameterProvider, byte id,
+            boolean wrongOffset) throws SQLException
     {
         final byte fieldBit5 = (byte)(id + 1);
         final long fieldDynamicBit = id;
-        final short fieldVarInt16  = id;
+        final short fieldVarInt16 = id;
         final String fieldString = "Test" + id;
         final RootStruct fieldBlob = createTestRootStruct((int)SIMPLE_TABLE_LOCAL_COUNT, id);
         final TestEnum fieldEnum = (id == FIELD_ENUM_RED_ROW_ID) ? TestEnum.RED : TestEnum.BLUE;
@@ -456,9 +455,9 @@ public class SimpleTableValidationTest
          * Populate the test DB.
          */
         final String sql =
-                "INSERT INTO simpleTable (rowid, fieldBool, fieldBit5, fieldDynamicBit, fieldVarInt16, " +
-                        "fieldString, fieldBlob, fieldEnum, fieldBitmask) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "INSERT INTO simpleTable (rowid, fieldBool, fieldBit5, fieldDynamicBit, fieldVarInt16, "
+                + "fieldString, fieldBlob, fieldEnum, fieldBitmask) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (final PreparedStatement statement = connection.prepareStatement(sql))
         {

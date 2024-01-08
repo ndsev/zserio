@@ -1,12 +1,14 @@
 package array_types;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.io.File;
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.io.File;
-
 import zserio.runtime.io.SerializeUtil;
+
 import array_types.packed_auto_array_struct_with_bytes.PackedAutoArray;
 import array_types.packed_auto_array_struct_with_bytes.TestStructure;
 
@@ -34,10 +36,10 @@ public class PackedAutoArrayStructWithBytesTest
 
     private static final long[] UINT32_FIELD = {
             100000, 110000, 120000, 130000, 140000, 150000, 160000, 170000, 180000, 190000};
-    private static final byte[][] BYTES_FIELD = new byte[][]{
-            new byte[]{(byte)0xAB, (byte)0xCD, (byte)0xEF}, new byte[]{(byte)0x00},
-            new byte[]{(byte)0x01}, new byte[]{(byte)0x00}, new byte[]{(byte)0x01}, new byte[]{(byte)0x00},
-            new byte[]{(byte)0x01}, new byte[]{(byte)0x00}, new byte[]{(byte)0x01}, new byte[]{(byte)0x00}};
+    private static final byte[][] BYTES_FIELD = new byte[][] {new byte[] {(byte)0xAB, (byte)0xCD, (byte)0xEF},
+            new byte[] {(byte)0x00}, new byte[] {(byte)0x01}, new byte[] {(byte)0x00}, new byte[] {(byte)0x01},
+            new byte[] {(byte)0x00}, new byte[] {(byte)0x01}, new byte[] {(byte)0x00}, new byte[] {(byte)0x01},
+            new byte[] {(byte)0x00}};
     private static final short[] UINT8_FIELD = {0, 2, 4, 6, 8, 10, 12, 14, 16, 18};
 
     private static final String BLOB_NAME = "packed_auto_array_struct_with_bytes.blob";

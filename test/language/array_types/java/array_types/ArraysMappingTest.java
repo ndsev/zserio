@@ -1,17 +1,18 @@
 package array_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 import java.util.Arrays;
 
+import org.junit.jupiter.api.Test;
+
 import zserio.runtime.io.BitBuffer;
 
 import array_types.arrays_mapping.ArraysMapping;
-import array_types.arrays_mapping.TestStructure;
-import array_types.arrays_mapping.TestEnum;
 import array_types.arrays_mapping.TestBitmask;
+import array_types.arrays_mapping.TestEnum;
+import array_types.arrays_mapping.TestStructure;
 
 public class ArraysMappingTest
 {

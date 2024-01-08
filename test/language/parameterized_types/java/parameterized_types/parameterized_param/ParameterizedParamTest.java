@@ -1,9 +1,10 @@
 package parameterized_types.parameterized_param;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
@@ -27,14 +28,14 @@ public class ParameterizedParamTest
     private ParameterizedParamHolder createParameterizedParamHolder()
     {
         final Param param = new Param(PARAMETER, PARAM_VALUE, PARAM_EXTRA_VALUE);
-        final ParameterizedParam parameterizedParam = new ParameterizedParam(param, PARAMETERIZED_PARAM_VALUE,
-                PARAMETERIZED_PARAM_EXTRA_VALUE);
+        final ParameterizedParam parameterizedParam =
+                new ParameterizedParam(param, PARAMETERIZED_PARAM_VALUE, PARAMETERIZED_PARAM_EXTRA_VALUE);
 
         return new ParameterizedParamHolder(PARAMETER, param, parameterizedParam);
     }
 
-    private void checkParameterizedParamHolderInBitBuffer(BitBuffer bitBuffer, ParameterizedParamHolder
-            parameterizedParamHolder) throws IOException
+    private void checkParameterizedParamHolderInBitBuffer(
+            BitBuffer bitBuffer, ParameterizedParamHolder parameterizedParamHolder) throws IOException
     {
         try (final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer))
         {

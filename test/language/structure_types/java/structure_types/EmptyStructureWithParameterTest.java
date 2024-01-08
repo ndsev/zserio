@@ -1,15 +1,16 @@
 package structure_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import structure_types.empty_structure_with_parameter.EmptyStructureWithParameter;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
+
+import structure_types.empty_structure_with_parameter.EmptyStructureWithParameter;
 
 public class EmptyStructureWithParameterTest
 {
@@ -95,8 +96,7 @@ public class EmptyStructureWithParameterTest
         final short param = 1;
         final BitStreamReader reader = new ByteArrayBitStreamReader(new byte[0], 0);
 
-        final EmptyStructureWithParameter emptyStructureWithParameter =
-                new EmptyStructureWithParameter(param);
+        final EmptyStructureWithParameter emptyStructureWithParameter = new EmptyStructureWithParameter(param);
         emptyStructureWithParameter.read(reader);
         assertEquals(param, emptyStructureWithParameter.getParam());
         assertEquals(0, emptyStructureWithParameter.bitSizeOf());
@@ -107,8 +107,7 @@ public class EmptyStructureWithParameterTest
     {
         final short param = 1;
         ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        final EmptyStructureWithParameter emptyStructureWithParameter =
-                new EmptyStructureWithParameter(param);
+        final EmptyStructureWithParameter emptyStructureWithParameter = new EmptyStructureWithParameter(param);
         emptyStructureWithParameter.write(writer);
         byte bytes[] = writer.toByteArray();
         assertEquals(0, bytes.length);

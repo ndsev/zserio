@@ -1,16 +1,17 @@
 package choice_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import choice_types.uint16_param_choice.UInt16ParamChoice;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
+
+import choice_types.uint16_param_choice.UInt16ParamChoice;
 
 public class UInt16ParamChoiceTest
 {
@@ -28,8 +29,8 @@ public class UInt16ParamChoiceTest
         final int selector = VARIANT_B_SELECTOR1;
         final int value = 234;
         final BitBuffer buffer = writeUInt16ParamChoiceToBitBuffer(selector, value);
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer.getBuffer(),
-                buffer.getBitSize());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(buffer.getBuffer(), buffer.getBitSize());
         final UInt16ParamChoice uint16ParamChoice = new UInt16ParamChoice(reader, selector);
         assertEquals(selector, uint16ParamChoice.getSelector());
         assertEquals((short)value, uint16ParamChoice.getB());
@@ -175,8 +176,8 @@ public class UInt16ParamChoiceTest
         uint16ParamChoiceA.setA(byteValueA);
         ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         uint16ParamChoiceA.write(writer);
-        ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
-                writer.getBitPosition());
+        ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final UInt16ParamChoice readUInt16ParamChoiceA = new UInt16ParamChoice(reader, VARIANT_A_SELECTOR);
         assertEquals(byteValueA, readUInt16ParamChoiceA.getA());
 

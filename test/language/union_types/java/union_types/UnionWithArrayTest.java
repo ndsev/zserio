@@ -1,15 +1,16 @@
 package union_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 
+import org.junit.jupiter.api.Test;
+
 import zserio.runtime.io.SerializeUtil;
 
-import union_types.union_with_array.TestUnion;
 import union_types.union_with_array.Data8;
+import union_types.union_with_array.TestUnion;
 
 public class UnionWithArrayTest
 {
@@ -78,12 +79,12 @@ public class UnionWithArrayTest
 
     private static Data8[] createArray8()
     {
-        return new Data8[]{new Data8((byte)-1), new Data8((byte)-2), new Data8((byte)-3), new Data8((byte)-4)};
+        return new Data8[] {new Data8((byte)-1), new Data8((byte)-2), new Data8((byte)-3), new Data8((byte)-4)};
     }
 
     private static short[] createArray16()
     {
-        return new short[]{-10, -20, -30, -40, -50};
+        return new short[] {-10, -20, -30, -40, -50};
     }
 
     private static final String BLOB_NAME_BASE = "union_with_array_";

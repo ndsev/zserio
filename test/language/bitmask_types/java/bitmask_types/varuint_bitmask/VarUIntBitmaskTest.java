@@ -1,16 +1,17 @@
 package bitmask_types.varuint_bitmask;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
 import java.math.BigInteger;
 
+import org.junit.jupiter.api.Test;
+
+import zserio.runtime.BitSizeOfCalculator;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
-import zserio.runtime.BitSizeOfCalculator;
 
 public class VarUIntBitmaskTest
 {
@@ -46,8 +47,8 @@ public class VarUIntBitmaskTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         writer.writeBigInteger(Permission.Values.WRITE.getValue(),
                 BitSizeOfCalculator.getBitSizeOfVarUInt(Permission.Values.WRITE.getValue()));
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
-                writer.getBitPosition());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final Permission readPermission = new Permission(reader);
         assertEquals(Permission.Values.WRITE, readPermission);
     }

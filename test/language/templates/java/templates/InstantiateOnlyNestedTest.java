@@ -1,9 +1,10 @@
 package templates;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
@@ -24,10 +25,9 @@ public class InstantiateOnlyNestedTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         instantiateOnlyNested.write(writer);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final InstantiateOnlyNested readInstantiateOnlyNested = new InstantiateOnlyNested(reader);
         assertTrue(instantiateOnlyNested.equals(readInstantiateOnlyNested));
     }
-
 }

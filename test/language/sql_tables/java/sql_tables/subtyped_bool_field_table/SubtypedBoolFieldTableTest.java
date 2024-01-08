@@ -1,10 +1,6 @@
 package sql_tables.subtyped_bool_field_table;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,12 +8,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import test_utils.FileUtil;
-import test_utils.JdbcUtil;
-
-import sql_tables.TestDb;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
+
+import sql_tables.TestDb;
+import test_utils.FileUtil;
+import test_utils.JdbcUtil;
 
 public class SubtypedBoolFieldTableTest
 {
@@ -88,7 +88,7 @@ public class SubtypedBoolFieldTableTest
         assertEquals(row1.getBoolField(), row2.getBoolField());
     }
 
-    private static final int    NUM_ROWS = 5;
+    private static final int NUM_ROWS = 5;
     private static final String FILE_NAME = "subtyped_bool_field_table_test.sqlite";
 
     private final File file = new File(FILE_NAME);

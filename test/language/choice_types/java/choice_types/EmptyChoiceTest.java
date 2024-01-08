@@ -1,15 +1,16 @@
 package choice_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import choice_types.empty_choice.EmptyChoice;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
+
+import choice_types.empty_choice.EmptyChoice;
 
 public class EmptyChoiceTest
 {
@@ -121,7 +122,6 @@ public class EmptyChoiceTest
         EmptyChoice readEmptyChoice = SerializeUtil.deserializeFromFile(EmptyChoice.class, BLOB_NAME, selector);
         assertEquals(emptyChoice, readEmptyChoice);
     }
-
 
     private static final String BLOB_NAME = "empty_choice.blob";
 };

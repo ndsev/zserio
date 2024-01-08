@@ -1,10 +1,11 @@
 package default_values_error;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import test_utils.ZserioErrorOutput;
 
@@ -19,8 +20,8 @@ public class DefaultValuesErrorTest
     @Test
     public void arrayInitializerError()
     {
-        final String error = "array_initializer_error.zs:5:24: Wrong type of value expression " +
-                "(integer cannot be assigned to array type)!";
+        final String error = "array_initializer_error.zs:5:24: Wrong type of value expression "
+                + "(integer cannot be assigned to array type)!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -34,40 +35,40 @@ public class DefaultValuesErrorTest
     @Test
     public void rangeDecimalInitializerError()
     {
-        final String error = "range_decimal_initializer_error.zs:5:39: Initializer value '57005' of " +
-                "'wrongDecimalInitializer' exceeds the bounds of its type 'int8'!";
+        final String error = "range_decimal_initializer_error.zs:5:39: Initializer value '57005' of "
+                + "'wrongDecimalInitializer' exceeds the bounds of its type 'int8'!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void wrongBoolInitializer()
     {
-        final String error = "wrong_bool_initializer_error.zs:5:36: Wrong type of value expression " +
-                "(integer cannot be assigned to bool)!";
+        final String error = "wrong_bool_initializer_error.zs:5:36: Wrong type of value expression "
+                + "(integer cannot be assigned to bool)!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void wrongDecimalInitializer()
     {
-        final String error = "wrong_decimal_initializer_error.zs:5:39: Wrong type of value expression " +
-                "(boolean cannot be assigned to int32)!";
+        final String error = "wrong_decimal_initializer_error.zs:5:39: Wrong type of value expression "
+                + "(boolean cannot be assigned to int32)!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void wrongFloatInitializer()
     {
-        final String error = "wrong_float_initializer_error.zs:5:37: Wrong type of value expression " +
-                "(string cannot be assigned to float64)!";
+        final String error = "wrong_float_initializer_error.zs:5:37: Wrong type of value expression "
+                + "(string cannot be assigned to float64)!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void wrongStringInitializer()
     {
-        final String error = "wrong_string_initializer_error.zs:5:38: Wrong type of value expression " +
-                "(boolean cannot be assigned to string)!";
+        final String error = "wrong_string_initializer_error.zs:5:38: Wrong type of value expression "
+                + "(boolean cannot be assigned to string)!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

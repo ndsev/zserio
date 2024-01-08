@@ -1,26 +1,27 @@
 package choice_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
 
-import choice_types.choice_compatibility_check.ChoiceCompatibilityCheckVersion1;
-import choice_types.choice_compatibility_check.ChoiceCompatibilityCheckVersion2;
-import choice_types.choice_compatibility_check.HolderVersion1;
-import choice_types.choice_compatibility_check.HolderVersion2;
-import choice_types.choice_compatibility_check.ChoiceVersion1;
-import choice_types.choice_compatibility_check.ChoiceVersion2;
-import choice_types.choice_compatibility_check.EnumVersion1;
-import choice_types.choice_compatibility_check.EnumVersion2;
-import choice_types.choice_compatibility_check.CoordXY;
-import choice_types.choice_compatibility_check.CoordXYZ;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
 import zserio.runtime.io.Writer;
+
+import choice_types.choice_compatibility_check.ChoiceCompatibilityCheckVersion1;
+import choice_types.choice_compatibility_check.ChoiceCompatibilityCheckVersion2;
+import choice_types.choice_compatibility_check.ChoiceVersion1;
+import choice_types.choice_compatibility_check.ChoiceVersion2;
+import choice_types.choice_compatibility_check.CoordXY;
+import choice_types.choice_compatibility_check.CoordXYZ;
+import choice_types.choice_compatibility_check.EnumVersion1;
+import choice_types.choice_compatibility_check.EnumVersion2;
+import choice_types.choice_compatibility_check.HolderVersion1;
+import choice_types.choice_compatibility_check.HolderVersion2;
 
 public class ChoiceCompatibilityCheckTest
 {
@@ -28,8 +29,8 @@ public class ChoiceCompatibilityCheckTest
     public void writeVersion1ReadVersion1() throws IOException
     {
         final ChoiceCompatibilityCheckVersion1 choiceCompatibilityCheckVersion1 = create(createArrayVersion1());
-        final ChoiceCompatibilityCheckVersion1 readChoiceCompatibilityCheckVersion1 = writeReadVersion1(
-                choiceCompatibilityCheckVersion1);
+        final ChoiceCompatibilityCheckVersion1 readChoiceCompatibilityCheckVersion1 =
+                writeReadVersion1(choiceCompatibilityCheckVersion1);
         assertEquals(choiceCompatibilityCheckVersion1, readChoiceCompatibilityCheckVersion1);
     }
 
@@ -37,8 +38,8 @@ public class ChoiceCompatibilityCheckTest
     public void writeVersion1ReadVersion2() throws IOException
     {
         final ChoiceCompatibilityCheckVersion1 choiceCompatibilityCheckVersion1 = create(createArrayVersion1());
-        final ChoiceCompatibilityCheckVersion2 readChoiceCompatibilityCheckVersion2 = writeReadVersion2(
-                choiceCompatibilityCheckVersion1);
+        final ChoiceCompatibilityCheckVersion2 readChoiceCompatibilityCheckVersion2 =
+                writeReadVersion2(choiceCompatibilityCheckVersion1);
 
         final HolderVersion2[] expectedArrayVersion2 = createArrayVersion2WithVersion1Fields();
         assertArrayEquals(expectedArrayVersion2, readChoiceCompatibilityCheckVersion2.getArray());
@@ -50,8 +51,8 @@ public class ChoiceCompatibilityCheckTest
     {
         final ChoiceCompatibilityCheckVersion2 choiceCompatibilityCheckVersion2 =
                 create(createArrayVersion2WithVersion1Fields());
-        final ChoiceCompatibilityCheckVersion1 readChoiceCompatibilityCheckVersion1 = writeReadVersion1(
-                choiceCompatibilityCheckVersion2);
+        final ChoiceCompatibilityCheckVersion1 readChoiceCompatibilityCheckVersion1 =
+                writeReadVersion1(choiceCompatibilityCheckVersion2);
 
         final HolderVersion1[] expectedArrayVersion1 = createArrayVersion1();
         assertArrayEquals(expectedArrayVersion1, readChoiceCompatibilityCheckVersion1.getArray());
@@ -62,8 +63,8 @@ public class ChoiceCompatibilityCheckTest
     public void writeVersion2ReadVersion2() throws IOException
     {
         final ChoiceCompatibilityCheckVersion2 choiceCompatibilityCheckVersion2 = create(createArrayVersion2());
-        final ChoiceCompatibilityCheckVersion2 readChoiceCompatibilityCheckVersion2 = writeReadVersion2(
-                choiceCompatibilityCheckVersion2);
+        final ChoiceCompatibilityCheckVersion2 readChoiceCompatibilityCheckVersion2 =
+                writeReadVersion2(choiceCompatibilityCheckVersion2);
         assertEquals(choiceCompatibilityCheckVersion2, readChoiceCompatibilityCheckVersion2);
     }
 
@@ -71,8 +72,8 @@ public class ChoiceCompatibilityCheckTest
     public void writeVersion1ReadVersion1File() throws IOException
     {
         final ChoiceCompatibilityCheckVersion1 choiceCompatibilityCheckVersion1 = create(createArrayVersion1());
-        final ChoiceCompatibilityCheckVersion1 readChoiceCompatibilityCheckVersion1 = writeReadVersion1File(
-                choiceCompatibilityCheckVersion1, "version1_version1");
+        final ChoiceCompatibilityCheckVersion1 readChoiceCompatibilityCheckVersion1 =
+                writeReadVersion1File(choiceCompatibilityCheckVersion1, "version1_version1");
         assertEquals(choiceCompatibilityCheckVersion1, readChoiceCompatibilityCheckVersion1);
     }
 
@@ -80,8 +81,8 @@ public class ChoiceCompatibilityCheckTest
     public void writeVersion1ReadVersion2File() throws IOException
     {
         final ChoiceCompatibilityCheckVersion1 choiceCompatibilityCheckVersion1 = create(createArrayVersion1());
-        final ChoiceCompatibilityCheckVersion2 readChoiceCompatibilityCheckVersion2 = writeReadVersion2File(
-                choiceCompatibilityCheckVersion1, "version1_version2");
+        final ChoiceCompatibilityCheckVersion2 readChoiceCompatibilityCheckVersion2 =
+                writeReadVersion2File(choiceCompatibilityCheckVersion1, "version1_version2");
 
         final HolderVersion2[] expectedArrayVersion2 = createArrayVersion2WithVersion1Fields();
         assertArrayEquals(expectedArrayVersion2, readChoiceCompatibilityCheckVersion2.getArray());
@@ -93,8 +94,8 @@ public class ChoiceCompatibilityCheckTest
     {
         final ChoiceCompatibilityCheckVersion2 choiceCompatibilityCheckVersion2 =
                 create(createArrayVersion2WithVersion1Fields());
-        final ChoiceCompatibilityCheckVersion1 readChoiceCompatibilityCheckVersion1 = writeReadVersion1File(
-                choiceCompatibilityCheckVersion2, "version2_version1");
+        final ChoiceCompatibilityCheckVersion1 readChoiceCompatibilityCheckVersion1 =
+                writeReadVersion1File(choiceCompatibilityCheckVersion2, "version2_version1");
 
         final HolderVersion1[] expectedArrayVersion1 = createArrayVersion1();
         assertArrayEquals(expectedArrayVersion1, readChoiceCompatibilityCheckVersion1.getArray());
@@ -105,8 +106,8 @@ public class ChoiceCompatibilityCheckTest
     public void writeVersion2ReadVersion2File() throws IOException
     {
         final ChoiceCompatibilityCheckVersion2 choiceCompatibilityCheckVersion2 = create(createArrayVersion2());
-        final ChoiceCompatibilityCheckVersion2 readChoiceCompatibilityCheckVersion2 = writeReadVersion2File(
-                choiceCompatibilityCheckVersion2, "version2_version2");
+        final ChoiceCompatibilityCheckVersion2 readChoiceCompatibilityCheckVersion2 =
+                writeReadVersion2File(choiceCompatibilityCheckVersion2, "version2_version2");
         assertEquals(choiceCompatibilityCheckVersion2, readChoiceCompatibilityCheckVersion2);
     }
 
@@ -122,36 +123,26 @@ public class ChoiceCompatibilityCheckTest
 
     private HolderVersion1[] createArrayVersion1()
     {
-        return new HolderVersion1[] {
-            createHolderVersion1(EnumVersion1.COORD_XY, 0),
-            createHolderVersion1(EnumVersion1.TEXT, 1),
-            createHolderVersion1(EnumVersion1.COORD_XY, 2),
-            createHolderVersion1(EnumVersion1.TEXT, 3)
-        };
+        return new HolderVersion1[] {createHolderVersion1(EnumVersion1.COORD_XY, 0),
+                createHolderVersion1(EnumVersion1.TEXT, 1), createHolderVersion1(EnumVersion1.COORD_XY, 2),
+                createHolderVersion1(EnumVersion1.TEXT, 3)};
     }
 
     private HolderVersion2[] createArrayVersion2WithVersion1Fields()
     {
-        return new HolderVersion2[] {
-            createHolderVersion2(EnumVersion2.COORD_XY, 0),
-            createHolderVersion2(EnumVersion2.TEXT, 1),
-            createHolderVersion2(EnumVersion2.COORD_XY, 2),
-            createHolderVersion2(EnumVersion2.TEXT, 3)
-        };
+        return new HolderVersion2[] {createHolderVersion2(EnumVersion2.COORD_XY, 0),
+                createHolderVersion2(EnumVersion2.TEXT, 1), createHolderVersion2(EnumVersion2.COORD_XY, 2),
+                createHolderVersion2(EnumVersion2.TEXT, 3)};
     }
 
     private HolderVersion2[] createArrayVersion2()
     {
         final HolderVersion2[] arrayVersion2WithVersion1Fields = createArrayVersion2WithVersion1Fields();
-        return new HolderVersion2[] {
-            arrayVersion2WithVersion1Fields[0],
-            arrayVersion2WithVersion1Fields[1],
-            arrayVersion2WithVersion1Fields[2],
-            arrayVersion2WithVersion1Fields[3],
-            createHolderVersion2(EnumVersion2.COORD_XYZ, 4),
-            createHolderVersion2(EnumVersion2.COORD_XYZ, 5),
-            createHolderVersion2(EnumVersion2.COORD_XYZ, 6)
-        };
+        return new HolderVersion2[] {arrayVersion2WithVersion1Fields[0], arrayVersion2WithVersion1Fields[1],
+                arrayVersion2WithVersion1Fields[2], arrayVersion2WithVersion1Fields[3],
+                createHolderVersion2(EnumVersion2.COORD_XYZ, 4),
+                createHolderVersion2(EnumVersion2.COORD_XYZ, 5),
+                createHolderVersion2(EnumVersion2.COORD_XYZ, 6)};
     }
 
     private HolderVersion1 createHolderVersion1(EnumVersion1 selector, int index)
@@ -178,8 +169,8 @@ public class ChoiceCompatibilityCheckTest
         return new HolderVersion2(selector, choice);
     }
 
-    private ChoiceCompatibilityCheckVersion1 writeReadVersion1(
-            Writer choiceCompatibilityCheck) throws IOException
+    private ChoiceCompatibilityCheckVersion1 writeReadVersion1(Writer choiceCompatibilityCheck)
+            throws IOException
     {
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         choiceCompatibilityCheck.write(writer);
@@ -192,8 +183,8 @@ public class ChoiceCompatibilityCheckTest
         return readChoice;
     }
 
-    private ChoiceCompatibilityCheckVersion2 writeReadVersion2(
-            Writer choiceCompatibilityCheck) throws IOException
+    private ChoiceCompatibilityCheckVersion2 writeReadVersion2(Writer choiceCompatibilityCheck)
+            throws IOException
     {
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         choiceCompatibilityCheck.write(writer);

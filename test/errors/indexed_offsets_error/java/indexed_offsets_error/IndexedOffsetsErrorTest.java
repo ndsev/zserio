@@ -1,10 +1,11 @@
 package indexed_offsets_error;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import test_utils.ZserioErrorOutput;
 
@@ -74,40 +75,40 @@ public class IndexedOffsetsErrorTest
     @Test
     public void packedComplexOffsetArray()
     {
-        final String error = "packed_complex_offset_array_error.zs:19:1: " +
-                "Packed array cannot be used as offset array!";
+        final String error = "packed_complex_offset_array_error.zs:19:1: "
+                + "Packed array cannot be used as offset array!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void packedParamOffsetArray()
     {
-        final String error = "packed_param_offset_array_error.zs:18:1: " +
-                "Packed array cannot be used as offset array!";
+        final String error = "packed_param_offset_array_error.zs:18:1: "
+                + "Packed array cannot be used as offset array!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void packedSimpleOffsetArray()
     {
-        final String error = "packed_simple_offset_array_error.zs:7:1: " +
-                "Packed array cannot be used as offset array!";
+        final String error = "packed_simple_offset_array_error.zs:7:1: "
+                + "Packed array cannot be used as offset array!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void parameterNoArray()
     {
-        final String error = "parameter_no_array_error.zs:10:19: " +
-                "Index operator is not allowed in this context!";
+        final String error = "parameter_no_array_error.zs:10:19: "
+                + "Index operator is not allowed in this context!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void varuintOffsetArray()
     {
-        final String error = "varuint_offset_array_error.zs:6:1: " +
-                "Offset expression for field 'fields' is not an unsigned fixed sized integer type!";
+        final String error = "varuint_offset_array_error.zs:6:1: "
+                + "Offset expression for field 'fields' is not an unsigned fixed sized integer type!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

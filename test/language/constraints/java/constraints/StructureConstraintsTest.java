@@ -1,13 +1,10 @@
 package constraints;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import constraints.structure_constraints.BasicColor;
-import constraints.structure_constraints.StructureConstraints;
-import constraints.structure_constraints.ExtendedColor;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
@@ -17,13 +14,17 @@ import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
 
+import constraints.structure_constraints.BasicColor;
+import constraints.structure_constraints.ExtendedColor;
+import constraints.structure_constraints.StructureConstraints;
+
 public class StructureConstraintsTest
 {
     @Test
     public void readConstructorCorrectConstraints() throws IOException, ZserioError
     {
-        final BitBuffer bitBuffer = writeStructureConstraintsToBitBuffer(
-                BasicColor.BLACK, BasicColor.WHITE, ExtendedColor.PURPLE);
+        final BitBuffer bitBuffer =
+                writeStructureConstraintsToBitBuffer(BasicColor.BLACK, BasicColor.WHITE, ExtendedColor.PURPLE);
         final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
         final StructureConstraints structureConstraints = new StructureConstraints(reader);
         assertEquals(BasicColor.BLACK, structureConstraints.getBlackColor());
@@ -34,8 +35,8 @@ public class StructureConstraintsTest
     @Test
     public void readConstructorWrongBlackConstraint() throws IOException, ZserioError
     {
-        final BitBuffer bitBuffer = writeStructureConstraintsToBitBuffer(
-                BasicColor.RED, BasicColor.WHITE, ExtendedColor.PURPLE);
+        final BitBuffer bitBuffer =
+                writeStructureConstraintsToBitBuffer(BasicColor.RED, BasicColor.WHITE, ExtendedColor.PURPLE);
         final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
         assertThrows(ZserioError.class, () -> new StructureConstraints(reader));
     }
@@ -43,8 +44,8 @@ public class StructureConstraintsTest
     @Test
     public void readConstructorWrongWhiteConstraint() throws IOException, ZserioError
     {
-        final BitBuffer bitBuffer = writeStructureConstraintsToBitBuffer(
-                BasicColor.BLACK, BasicColor.RED, ExtendedColor.PURPLE);
+        final BitBuffer bitBuffer =
+                writeStructureConstraintsToBitBuffer(BasicColor.BLACK, BasicColor.RED, ExtendedColor.PURPLE);
         final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
         assertThrows(ZserioError.class, () -> new StructureConstraints(reader));
     }
@@ -52,8 +53,8 @@ public class StructureConstraintsTest
     @Test
     public void readConstructorWrongPurpleConstraint() throws IOException, ZserioError
     {
-        final BitBuffer bitBuffer = writeStructureConstraintsToBitBuffer(
-                BasicColor.BLACK, BasicColor.WHITE, ExtendedColor.LIME);
+        final BitBuffer bitBuffer =
+                writeStructureConstraintsToBitBuffer(BasicColor.BLACK, BasicColor.WHITE, ExtendedColor.LIME);
         final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
         assertThrows(ZserioError.class, () -> new StructureConstraints(reader));
     }
@@ -64,8 +65,8 @@ public class StructureConstraintsTest
         final StructureConstraints structureConstraints =
                 new StructureConstraints(BasicColor.BLACK, BasicColor.WHITE, true, ExtendedColor.PURPLE);
         final BitBuffer bitBuffer = SerializeUtil.serialize(structureConstraints);
-        final StructureConstraints readStructureConstraints = SerializeUtil.deserialize(
-                StructureConstraints.class, bitBuffer);
+        final StructureConstraints readStructureConstraints =
+                SerializeUtil.deserialize(StructureConstraints.class, bitBuffer);
         assertEquals(BasicColor.BLACK, readStructureConstraints.getBlackColor());
         assertEquals(BasicColor.WHITE, readStructureConstraints.getWhiteColor());
         assertEquals(ExtendedColor.PURPLE, readStructureConstraints.getPurpleColor());
@@ -99,8 +100,8 @@ public class StructureConstraintsTest
         assertThrows(ZserioError.class, () -> structureConstraints.write(writer));
     }
 
-    private BitBuffer writeStructureConstraintsToBitBuffer(BasicColor blackColor, BasicColor whiteColor,
-            ExtendedColor purpleColor) throws IOException
+    private BitBuffer writeStructureConstraintsToBitBuffer(
+            BasicColor blackColor, BasicColor whiteColor, ExtendedColor purpleColor) throws IOException
     {
         try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {

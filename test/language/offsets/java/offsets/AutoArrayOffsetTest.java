@@ -1,11 +1,10 @@
 package offsets;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import offsets.auto_array_offset.AutoArrayHolder;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
@@ -14,6 +13,8 @@ import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
+
+import offsets.auto_array_offset.AutoArrayHolder;
 
 public class AutoArrayOffsetTest
 {
@@ -97,8 +98,8 @@ public class AutoArrayOffsetTest
         autoArrayHolder.write(writer);
         checkAutoArrayHolder(autoArrayHolder, bitPosition);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         assertEquals(0, reader.readBits(bitPosition));
         final AutoArrayHolder readAutoArrayHolder = new AutoArrayHolder(reader);
         checkAutoArrayHolder(readAutoArrayHolder, bitPosition);
@@ -136,8 +137,8 @@ public class AutoArrayOffsetTest
 
     private void checkAutoArrayHolder(AutoArrayHolder autoArrayHolder, int bitPosition)
     {
-        final long expectedAutoArrayOffset = (bitPosition == 0) ? AUTO_ARRAY_OFFSET :
-            AUTO_ARRAY_OFFSET + (bitPosition / 8);
+        final long expectedAutoArrayOffset =
+                (bitPosition == 0) ? AUTO_ARRAY_OFFSET : AUTO_ARRAY_OFFSET + (bitPosition / 8);
         assertEquals(expectedAutoArrayOffset, autoArrayHolder.getAutoArrayOffset());
 
         assertEquals(FORCED_ALIGNMENT_VALUE, autoArrayHolder.getForceAlignment());
@@ -158,11 +159,11 @@ public class AutoArrayOffsetTest
         return new AutoArrayHolder(autoArrayOffset, FORCED_ALIGNMENT_VALUE, autoArray);
     }
 
-    private static final int    AUTO_ARRAY_LENGTH = 5;
-    private static final byte   FORCED_ALIGNMENT_VALUE = 0;
+    private static final int AUTO_ARRAY_LENGTH = 5;
+    private static final byte FORCED_ALIGNMENT_VALUE = 0;
 
-    private static final long   WRONG_AUTO_ARRAY_OFFSET = 0;
-    private static final long   AUTO_ARRAY_OFFSET = 5;
+    private static final long WRONG_AUTO_ARRAY_OFFSET = 0;
+    private static final long AUTO_ARRAY_OFFSET = 5;
 
-    private static final int    AUTO_ARRAY_HOLDER_BIT_SIZE = 32 + 1 + 7 + 8 + AUTO_ARRAY_LENGTH * 7;
+    private static final int AUTO_ARRAY_HOLDER_BIT_SIZE = 32 + 1 + 7 + 8 + AUTO_ARRAY_LENGTH * 7;
 }

@@ -1,6 +1,7 @@
 package enumeration_types.enum_used_by_enum;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
 public class EnumUsedByEnumTest
@@ -37,13 +38,13 @@ public class EnumUsedByEnumTest
         assertEquals(VALUE_DARK_PINK, Color.DARK_PINK.getValue());
     }
 
-    private static byte VALUE_NONE          = 0x00;
-    private static byte VALUE_LIGHT_RED     = 0x01;
-    private static byte VALUE_LIGHT_GREEN   = 0x02;
-    private static byte VALUE_LIGHT_BLUE    = 0x03;
-    private static byte VALUE_LIGHT_PINK    = 0x04;
-    private static byte VALUE_DARK_RED      = 0x11;
-    private static byte VALUE_DARK_GREEN    = 0x12;
-    private static byte VALUE_DARK_BLUE     = 0x13;
-    private static byte VALUE_DARK_PINK     = 0x14;
+    private static byte VALUE_NONE = 0x00;
+    private static byte VALUE_LIGHT_RED = 0x01;
+    private static byte VALUE_LIGHT_GREEN = 0x02;
+    private static byte VALUE_LIGHT_BLUE = 0x03;
+    private static byte VALUE_LIGHT_PINK = 0x04;
+    private static byte VALUE_DARK_RED = 0x11;
+    private static byte VALUE_DARK_GREEN = 0x12;
+    private static byte VALUE_DARK_BLUE = 0x13;
+    private static byte VALUE_DARK_PINK = 0x14;
 }

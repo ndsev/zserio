@@ -1,10 +1,11 @@
 package parameterized_types.fixed_and_variable_param;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.math.BigInteger;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
@@ -19,34 +20,34 @@ public class FixedAndVariableParamTest
     @Test
     public void writeReadFile() throws IOException
     {
-        final FixedAndVariableParam fixedAndVariableParam = createFixedAndVariableParam(ARRAY_SIZE, EXTRA_LIMIT,
-                LIMIT, COLOR, ACCESS, FLOAT_VALUE);
+        final FixedAndVariableParam fixedAndVariableParam =
+                createFixedAndVariableParam(ARRAY_SIZE, EXTRA_LIMIT, LIMIT, COLOR, ACCESS, FLOAT_VALUE);
         SerializeUtil.serializeToFile(fixedAndVariableParam, BLOB_NAME);
 
-        final FixedAndVariableParam readFixedAndVariableParam = SerializeUtil.deserializeFromFile(
-                FixedAndVariableParam.class, BLOB_NAME);
+        final FixedAndVariableParam readFixedAndVariableParam =
+                SerializeUtil.deserializeFromFile(FixedAndVariableParam.class, BLOB_NAME);
         assertEquals(fixedAndVariableParam, readFixedAndVariableParam);
     }
 
     @Test
     public void writeRead() throws IOException
     {
-        final FixedAndVariableParam fixedAndVariableParam = createFixedAndVariableParam(ARRAY_SIZE, EXTRA_LIMIT,
-                LIMIT, COLOR, ACCESS, FLOAT_VALUE);
+        final FixedAndVariableParam fixedAndVariableParam =
+                createFixedAndVariableParam(ARRAY_SIZE, EXTRA_LIMIT, LIMIT, COLOR, ACCESS, FLOAT_VALUE);
         final BitBuffer bitBuffer = SerializeUtil.serialize(fixedAndVariableParam);
-        checkFixedAndVariableParamInBitBuffer(bitBuffer, fixedAndVariableParam,
-                ARRAY_SIZE, EXTRA_LIMIT, LIMIT, COLOR, ACCESS, FLOAT_VALUE);
+        checkFixedAndVariableParamInBitBuffer(
+                bitBuffer, fixedAndVariableParam, ARRAY_SIZE, EXTRA_LIMIT, LIMIT, COLOR, ACCESS, FLOAT_VALUE);
 
-        final FixedAndVariableParam readFixedAndVariableParam = SerializeUtil.deserialize(
-                FixedAndVariableParam.class, bitBuffer);
+        final FixedAndVariableParam readFixedAndVariableParam =
+                SerializeUtil.deserialize(FixedAndVariableParam.class, bitBuffer);
         assertEquals(fixedAndVariableParam, readFixedAndVariableParam);
     }
 
     @Test
     public void writeFailureWrongArraySize() throws IOException
     {
-        final FixedAndVariableParam fixedAndVariableParam = createFixedAndVariableParam(WRONG_ARRAY_SIZE,
-                EXTRA_LIMIT, LIMIT, COLOR, ACCESS, FLOAT_VALUE);
+        final FixedAndVariableParam fixedAndVariableParam =
+                createFixedAndVariableParam(WRONG_ARRAY_SIZE, EXTRA_LIMIT, LIMIT, COLOR, ACCESS, FLOAT_VALUE);
 
         try (final BitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
@@ -57,8 +58,8 @@ public class FixedAndVariableParamTest
     @Test
     public void writeFailureWrongExtraLimit() throws IOException
     {
-        final FixedAndVariableParam fixedAndVariableParam = createFixedAndVariableParam(ARRAY_SIZE,
-                EXTRA_LIMIT, LIMIT, COLOR, ACCESS, FLOAT_VALUE);
+        final FixedAndVariableParam fixedAndVariableParam =
+                createFixedAndVariableParam(ARRAY_SIZE, EXTRA_LIMIT, LIMIT, COLOR, ACCESS, FLOAT_VALUE);
         fixedAndVariableParam.setExtraLimit(WRONG_EXTRA_LIMIT);
 
         try (final BitStreamWriter writer = new ByteArrayBitStreamWriter())
@@ -70,8 +71,8 @@ public class FixedAndVariableParamTest
     @Test
     public void writeFailureWrongLimitHolder() throws IOException
     {
-        final FixedAndVariableParam fixedAndVariableParam = createFixedAndVariableParam(ARRAY_SIZE,
-                EXTRA_LIMIT, LIMIT, COLOR, ACCESS, FLOAT_VALUE);
+        final FixedAndVariableParam fixedAndVariableParam =
+                createFixedAndVariableParam(ARRAY_SIZE, EXTRA_LIMIT, LIMIT, COLOR, ACCESS, FLOAT_VALUE);
         final LimitHolder limitHolder = new LimitHolder(LIMIT);
         fixedAndVariableParam.setLimitHolder(limitHolder);
 
@@ -84,8 +85,8 @@ public class FixedAndVariableParamTest
     @Test
     public void writeFailureWrongColor() throws IOException
     {
-        final FixedAndVariableParam fixedAndVariableParam = createFixedAndVariableParam(ARRAY_SIZE,
-                EXTRA_LIMIT, LIMIT, COLOR, ACCESS, FLOAT_VALUE);
+        final FixedAndVariableParam fixedAndVariableParam =
+                createFixedAndVariableParam(ARRAY_SIZE, EXTRA_LIMIT, LIMIT, COLOR, ACCESS, FLOAT_VALUE);
         fixedAndVariableParam.setColor(WRONG_COLOR);
 
         try (final BitStreamWriter writer = new ByteArrayBitStreamWriter())
@@ -97,8 +98,8 @@ public class FixedAndVariableParamTest
     @Test
     public void writeFailureWrongAccess() throws IOException
     {
-        final FixedAndVariableParam fixedAndVariableParam = createFixedAndVariableParam(ARRAY_SIZE,
-                EXTRA_LIMIT, LIMIT, COLOR, ACCESS, FLOAT_VALUE);
+        final FixedAndVariableParam fixedAndVariableParam =
+                createFixedAndVariableParam(ARRAY_SIZE, EXTRA_LIMIT, LIMIT, COLOR, ACCESS, FLOAT_VALUE);
         fixedAndVariableParam.setAccess(WRONG_ACCESS);
 
         try (final BitStreamWriter writer = new ByteArrayBitStreamWriter())
@@ -110,8 +111,8 @@ public class FixedAndVariableParamTest
     @Test
     public void writeFailureWrongFloatValue() throws IOException
     {
-        final FixedAndVariableParam fixedAndVariableParam = createFixedAndVariableParam(ARRAY_SIZE,
-                EXTRA_LIMIT, LIMIT, COLOR, ACCESS, FLOAT_VALUE);
+        final FixedAndVariableParam fixedAndVariableParam =
+                createFixedAndVariableParam(ARRAY_SIZE, EXTRA_LIMIT, LIMIT, COLOR, ACCESS, FLOAT_VALUE);
         fixedAndVariableParam.setFloatValue(WRONG_FLOAT_VALUE);
 
         try (final BitStreamWriter writer = new ByteArrayBitStreamWriter())
@@ -120,8 +121,8 @@ public class FixedAndVariableParamTest
         }
     }
 
-    private ArrayHolder createArrayHolder(int size, short extraLimit, LimitHolder limitHolder, Color color,
-            Access access, float floatValue)
+    private ArrayHolder createArrayHolder(
+            int size, short extraLimit, LimitHolder limitHolder, Color color, Access access, float floatValue)
     {
         final BigInteger[] array = new BigInteger[size];
         for (int i = 0; i < size; ++i)
@@ -133,19 +134,19 @@ public class FixedAndVariableParamTest
                 hasBlack, hasRead, hasFloatBiggerThanOne);
     }
 
-    private FixedAndVariableParam createFixedAndVariableParam(int size, short extraLimit, short limit,
-            Color color, Access access, float floatValue)
+    private FixedAndVariableParam createFixedAndVariableParam(
+            int size, short extraLimit, short limit, Color color, Access access, float floatValue)
     {
         final LimitHolder limitHolder = new LimitHolder(limit);
-        final ArrayHolder arrayHolder = createArrayHolder(size, extraLimit, limitHolder, color, access,
-                floatValue);
+        final ArrayHolder arrayHolder =
+                createArrayHolder(size, extraLimit, limitHolder, color, access, floatValue);
 
         return new FixedAndVariableParam(extraLimit, limitHolder, color, access, floatValue, arrayHolder);
     }
 
     private void checkArrayHolderInStream(BitStreamReader reader, ArrayHolder arrayHolder, int size,
             short extraLimit, LimitHolder limitHolder, Color color, Access access, float floatValue)
-                    throws IOException
+            throws IOException
     {
         assertEquals(arrayHolder.getSize(), size);
         assertEquals(arrayHolder.getExtraLimit(), extraLimit);
@@ -172,8 +173,8 @@ public class FixedAndVariableParamTest
             assertEquals(floatValue, reader.readFloat16());
             final ArrayHolder arrayHolder = fixedAndVariableParam.getArrayHolder();
             final LimitHolder limitHolder = fixedAndVariableParam.getLimitHolder();
-            checkArrayHolderInStream(reader, arrayHolder, size, extraLimit, limitHolder, color, access,
-                    floatValue);
+            checkArrayHolderInStream(
+                    reader, arrayHolder, size, extraLimit, limitHolder, color, access, floatValue);
         }
     }
 

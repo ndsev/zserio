@@ -1,6 +1,7 @@
 package choice_types;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
 import choice_types.function_returning_literal_selector_choice.Selector;

@@ -1,11 +1,12 @@
 package expressions;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
-import expressions.string_type.StringTypeExpression;
-import expressions.string_type.STRING_CONSTANT;
 import expressions.string_type.CHOOSER;
+import expressions.string_type.STRING_CONSTANT;
+import expressions.string_type.StringTypeExpression;
 
 public class StringTypeTest
 {
@@ -20,8 +21,9 @@ public class StringTypeTest
     public void returnDefaultValue()
     {
         final StringTypeExpression stringTypeExpression = createStringTypeExpression(true);
-        assertEquals(CHOOSER.CHOOSER ? STRING_CONSTANT.STRING_CONSTANT :
-                FALSE + SPACE + STRING_CONSTANT.STRING_CONSTANT, stringTypeExpression.funcReturnDefaultValue());
+        assertEquals(CHOOSER.CHOOSER ? STRING_CONSTANT.STRING_CONSTANT
+                                     : FALSE + SPACE + STRING_CONSTANT.STRING_CONSTANT,
+                stringTypeExpression.funcReturnDefaultValue());
     }
 
     @Test

@@ -1,9 +1,10 @@
 package enumeration_types.bitfield_enum;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.HashCodeUtil;
 import zserio.runtime.io.BitStreamReader;
@@ -58,8 +59,8 @@ public class BitfieldEnumTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         color.write(writer);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final byte readColor = (byte)reader.readBits(BITFIELD_ENUM_BITSIZEOF);
         assertEquals(readColor, color.getValue());
     }

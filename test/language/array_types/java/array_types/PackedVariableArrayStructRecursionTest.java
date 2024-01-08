@@ -1,13 +1,15 @@
 package array_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.SerializeUtil;
+
 import array_types.packed_variable_array_struct_recursion.Block;
 import array_types.packed_variable_array_struct_recursion.PackedVariableArray;
 
@@ -57,9 +59,11 @@ public class PackedVariableArrayStructRecursionTest
         final int packedBitsizeOf = packedVariableArray.bitSizeOf();
 
         final double minCompressionRatio = 0.9;
-        assertTrue(unpackedBitsizeOf * minCompressionRatio > packedBitsizeOf, () ->
-                "Unpacked array has " + unpackedBitsizeOf + " bits, packed array has " + packedBitsizeOf +
-                " bits, " + "compression ratio is " + packedBitsizeOf * 100.0 / unpackedBitsizeOf + "%!");
+        assertTrue(unpackedBitsizeOf * minCompressionRatio > packedBitsizeOf,
+                ()
+                        -> "Unpacked array has " + unpackedBitsizeOf + " bits, packed array has " +
+                        packedBitsizeOf + " bits, "
+                        + "compression ratio is " + packedBitsizeOf * 100.0 / unpackedBitsizeOf + "%!");
     }
 
     private void checkWriteRead(int numElements) throws IOException, ZserioError

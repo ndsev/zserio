@@ -1,6 +1,7 @@
 package functions.structure_string;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
 public class StructureStringTest

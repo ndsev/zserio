@@ -1,27 +1,28 @@
 package with_type_info_code;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.List;
 
-import zserio.runtime.typeinfo.TypeInfo;
-import zserio.runtime.typeinfo.SchemaType;
-import zserio.runtime.typeinfo.JavaType;
-import zserio.runtime.typeinfo.TableInfo;
-import zserio.runtime.typeinfo.ColumnInfo;
-import zserio.runtime.typeinfo.FieldInfo;
-import zserio.runtime.typeinfo.ParameterInfo;
-import zserio.runtime.typeinfo.FunctionInfo;
-import zserio.runtime.typeinfo.CaseInfo;
-import zserio.runtime.typeinfo.ItemInfo;
-import zserio.runtime.typeinfo.MessageInfo;
-import zserio.runtime.typeinfo.MethodInfo;
+import org.junit.jupiter.api.Test;
+
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.SerializeUtil;
+import zserio.runtime.typeinfo.CaseInfo;
+import zserio.runtime.typeinfo.ColumnInfo;
+import zserio.runtime.typeinfo.FieldInfo;
+import zserio.runtime.typeinfo.FunctionInfo;
+import zserio.runtime.typeinfo.ItemInfo;
+import zserio.runtime.typeinfo.JavaType;
+import zserio.runtime.typeinfo.MessageInfo;
+import zserio.runtime.typeinfo.MethodInfo;
+import zserio.runtime.typeinfo.ParameterInfo;
+import zserio.runtime.typeinfo.SchemaType;
+import zserio.runtime.typeinfo.TableInfo;
+import zserio.runtime.typeinfo.TypeInfo;
 
 public class WithTypeInfoCodeTest
 {
@@ -67,8 +68,8 @@ public class WithTypeInfoCodeTest
         final WithTypeInfoCode withTypeInfoCode = WithTypeInfoCodeCreator.createWithTypeInfoCode();
         SerializeUtil.serializeToFile(withTypeInfoCode, BLOB_NAME_WITH_OPTIONALS);
 
-        final WithTypeInfoCode readWithTypeInfoCode = SerializeUtil.deserializeFromFile(WithTypeInfoCode.class,
-                BLOB_NAME_WITH_OPTIONALS);
+        final WithTypeInfoCode readWithTypeInfoCode =
+                SerializeUtil.deserializeFromFile(WithTypeInfoCode.class, BLOB_NAME_WITH_OPTIONALS);
         assertEquals(withTypeInfoCode, readWithTypeInfoCode);
     }
 
@@ -80,8 +81,8 @@ public class WithTypeInfoCodeTest
                 WithTypeInfoCodeCreator.createWithTypeInfoCode(createdOptionals);
         SerializeUtil.serializeToFile(withTypeInfoCode, BLOB_NAME_WITHOUT_OPTIONALS);
 
-        final WithTypeInfoCode readWithTypeInfoCode = SerializeUtil.deserializeFromFile(WithTypeInfoCode.class,
-                BLOB_NAME_WITHOUT_OPTIONALS);
+        final WithTypeInfoCode readWithTypeInfoCode =
+                SerializeUtil.deserializeFromFile(WithTypeInfoCode.class, BLOB_NAME_WITHOUT_OPTIONALS);
         assertEquals(withTypeInfoCode, readWithTypeInfoCode);
     }
 
@@ -975,9 +976,9 @@ public class WithTypeInfoCodeTest
         final SimpleStruct simpleStruct = new SimpleStruct((long)0, (long)10, "Text", true, 1.0f, 2.0f, 4.0);
         final ComplexStruct complexStruct = new ComplexStruct();
         complexStruct.setSimpleStruct(simpleStruct);
-        complexStruct.setArray(new long[] {(long)1 });
+        complexStruct.setArray(new long[] {(long)1});
         complexStruct.setDynamicBitField(BigInteger.TEN);
-        final ParameterizedStruct parameterizedStruct =  new ParameterizedStruct(simpleStruct);
+        final ParameterizedStruct parameterizedStruct = new ParameterizedStruct(simpleStruct);
         complexStruct.setParamStructArray(new ParameterizedStruct[] {parameterizedStruct});
 
         assertEquals("with_type_info_code.ComplexStruct", typeInfo.getSchemaName());
@@ -1186,8 +1187,8 @@ public class WithTypeInfoCodeTest
         assertEquals("setDynamicBitFieldArray", dynamicBitFieldArrayField.getSetterName());
 
         assertEquals("bit<>", dynamicBitFieldArrayField.getTypeInfo().getSchemaName());
-        assertEquals(SchemaType.DYNAMIC_UNSIGNED_BITFIELD,
-                dynamicBitFieldArrayField.getTypeInfo().getSchemaType());
+        assertEquals(
+                SchemaType.DYNAMIC_UNSIGNED_BITFIELD, dynamicBitFieldArrayField.getTypeInfo().getSchemaType());
         assertEquals(JavaType.BIG_INTEGER, dynamicBitFieldArrayField.getTypeInfo().getJavaType());
         assertEquals(BigInteger.class, dynamicBitFieldArrayField.getTypeInfo().getJavaClass());
 
@@ -1355,7 +1356,7 @@ public class WithTypeInfoCodeTest
     private void checkParameterizedStruct(TypeInfo typeInfo)
     {
         final SimpleStruct simpleStruct = new SimpleStruct((long)0, (long)10, "Text", true, 1.0f, 2.0f, 4.0);
-        final ParameterizedStruct parameterizedStruct =  new ParameterizedStruct(simpleStruct);
+        final ParameterizedStruct parameterizedStruct = new ParameterizedStruct(simpleStruct);
 
         assertEquals("with_type_info_code.ParameterizedStruct", typeInfo.getSchemaName());
         assertEquals(SchemaType.STRUCT, typeInfo.getSchemaType());
@@ -1977,8 +1978,7 @@ public class WithTypeInfoCodeTest
         final TemplatedParameterizedStruct_TS32 templatedParameterizedStruct_TS32 =
                 new TemplatedParameterizedStruct_TS32(ts32);
 
-        assertEquals("with_type_info_code.TemplatedParameterizedStruct_TS32",
-                typeInfo.getSchemaName());
+        assertEquals("with_type_info_code.TemplatedParameterizedStruct_TS32", typeInfo.getSchemaName());
         assertEquals(SchemaType.STRUCT, typeInfo.getSchemaType());
         assertEquals(JavaType.STRUCT, typeInfo.getJavaType());
         assertEquals(TemplatedParameterizedStruct_TS32.class, typeInfo.getJavaClass());

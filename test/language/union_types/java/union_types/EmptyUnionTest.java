@@ -1,15 +1,16 @@
 package union_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import union_types.empty_union.EmptyUnion;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
+
+import union_types.empty_union.EmptyUnion;
 
 public class EmptyUnionTest
 {

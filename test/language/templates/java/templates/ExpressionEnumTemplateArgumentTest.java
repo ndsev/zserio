@@ -1,9 +1,10 @@
 package templates;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
@@ -25,8 +26,8 @@ public class ExpressionEnumTemplateArgumentTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         enumTemplateArgumentHolder.write(writer);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final EnumTemplateArgumentHolder readEnumTemplateArgumentHolder =
                 new EnumTemplateArgumentHolder(reader);
         assertTrue(enumTemplateArgumentHolder.equals(readEnumTemplateArgumentHolder));

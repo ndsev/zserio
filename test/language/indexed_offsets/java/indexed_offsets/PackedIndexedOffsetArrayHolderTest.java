@@ -1,20 +1,21 @@
 package indexed_offsets;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
-
-import indexed_offsets.packed_indexed_offset_array_holder.AutoIndexedOffsetArray;
-import indexed_offsets.packed_indexed_offset_array_holder.OffsetArray;
-import indexed_offsets.packed_indexed_offset_array_holder.OffsetHolder;
 
 import java.io.File;
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
+
+import indexed_offsets.packed_indexed_offset_array_holder.AutoIndexedOffsetArray;
+import indexed_offsets.packed_indexed_offset_array_holder.OffsetArray;
+import indexed_offsets.packed_indexed_offset_array_holder.OffsetHolder;
 
 public class PackedIndexedOffsetArrayHolderTest
 {
@@ -79,9 +80,11 @@ public class PackedIndexedOffsetArrayHolderTest
         final int packedBitsizeOf = autoIndexedOffsetArray.bitSizeOf();
         final double minCompressionRatio = 0.82;
 
-        assertTrue(unpackedBitsizeOf * minCompressionRatio > packedBitsizeOf, () ->
-                "Unpacked array has " + unpackedBitsizeOf + " bits, packed array has " + packedBitsizeOf +
-                " bits, " + "compression ratio is " + packedBitsizeOf * 100.0 / unpackedBitsizeOf + "%!");
+        assertTrue(unpackedBitsizeOf * minCompressionRatio > packedBitsizeOf,
+                ()
+                        -> "Unpacked array has " + unpackedBitsizeOf + " bits, packed array has " +
+                        packedBitsizeOf + " bits, "
+                        + "compression ratio is " + packedBitsizeOf * 100.0 / unpackedBitsizeOf + "%!");
     }
 
     private void checkWriteRead(int numElements) throws IOException, ZserioError
@@ -94,8 +97,8 @@ public class PackedIndexedOffsetArrayHolderTest
         assertEquals(autoIndexedOffsetArray.bitSizeOf(), writtenBitPosition);
         assertEquals(autoIndexedOffsetArray.initializeOffsets(), writtenBitPosition);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final AutoIndexedOffsetArray readAutoIndexedOffsetArray = new AutoIndexedOffsetArray(reader);
         assertEquals(autoIndexedOffsetArray, readAutoIndexedOffsetArray);
     }
@@ -106,8 +109,8 @@ public class PackedIndexedOffsetArrayHolderTest
         final File file = new File(BLOB_NAME_BASE + numElements + ".blob");
         SerializeUtil.serializeToFile(autoIndexedOffsetArray, file);
 
-        final AutoIndexedOffsetArray readAutoIndexedOffsetArray = SerializeUtil.deserializeFromFile(
-                AutoIndexedOffsetArray.class, file);
+        final AutoIndexedOffsetArray readAutoIndexedOffsetArray =
+                SerializeUtil.deserializeFromFile(AutoIndexedOffsetArray.class, file);
         assertEquals(autoIndexedOffsetArray, readAutoIndexedOffsetArray);
     }
 

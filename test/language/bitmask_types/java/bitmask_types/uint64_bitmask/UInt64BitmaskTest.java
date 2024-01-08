@@ -1,10 +1,11 @@
 package bitmask_types.uint64_bitmask;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.math.BigInteger;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
@@ -22,8 +23,8 @@ public class UInt64BitmaskTest
     public void valueConstructor()
     {
         final Permission permission = new Permission(WRITE_PERMISSION_VALUE);
-        assertTrue(permission.and(Permission.Values.write_permission).equals(
-                Permission.Values.write_permission));
+        assertTrue(
+                permission.and(Permission.Values.write_permission).equals(Permission.Values.write_permission));
     }
 
     @Test
@@ -44,8 +45,8 @@ public class UInt64BitmaskTest
     {
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         writer.writeBigInteger(Permission.Values.write_permission.getValue(), PERMISSION_BITSIZEOF);
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
-                writer.getBitPosition());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final Permission readPermission = new Permission(reader);
         assertEquals(Permission.Values.write_permission, readPermission);
     }
@@ -183,8 +184,8 @@ public class UInt64BitmaskTest
         final Permission read = Permission.Values.READ_PERMISSION;
         final Permission write = Permission.Values.write_permission;
 
-        assertEquals(read.xor(write),
-                Permission.Values.READ_PERMISSION.xor(Permission.Values.write_permission));
+        assertEquals(
+                read.xor(write), Permission.Values.READ_PERMISSION.xor(Permission.Values.write_permission));
         assertEquals(READ_PERMISSION_VALUE.xor(WRITE_PERMISSION_VALUE), read.xor(write).getValue());
         assertEquals(read, (read.xor(write)).and(read));
         assertEquals(write, (read.xor(write)).and(write));

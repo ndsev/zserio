@@ -1,9 +1,10 @@
 package subtypes;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
@@ -21,8 +22,8 @@ public class SubtypeImportedTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         subtypeImported.write(writer);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         SubtypeImported readSubtypeImported = new SubtypeImported(reader);
         assertTrue(subtypeImported.equals(readSubtypeImported));
     }

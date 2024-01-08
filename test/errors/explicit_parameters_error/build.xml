@@ -23,8 +23,14 @@
         <testCompile testName="explicit_parameters_error" srcPath="${explicit_parameters_error.base_dir}/java"/>
     </target>
 
-    <target name="spotbugs" depends="compile" if="spotbugs.home_dir">
-        <testSpotBugs testName="explicit_parameters_error" srcPath="${explicit_parameters_error.base_dir}/java"/>
+    <target name="clang_format" depends="compile" if="clang_format.exe_file">
+        <testClangFormat testName="explicit_parameters_error"
+                srcPath="${explicit_parameters_error.base_dir}/java"/>
+    </target>
+
+    <target name="spotbugs" depends="clang_format" if="spotbugs.home_dir">
+        <testSpotBugs testName="explicit_parameters_error"
+                srcPath="${explicit_parameters_error.base_dir}/java"/>
     </target>
 
     <target name="run" depends="spotbugs">

@@ -1,10 +1,11 @@
 package subtypes;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
-import subtypes.structure_subtype.TestStructure;
 import subtypes.structure_subtype.SubtypeStructure;
+import subtypes.structure_subtype.TestStructure;
 
 public class StructureSubtypeTest
 {

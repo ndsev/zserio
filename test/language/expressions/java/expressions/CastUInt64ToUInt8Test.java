@@ -1,9 +1,10 @@
 package expressions;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
+
+import org.junit.jupiter.api.Test;
 
 import expressions.cast_uint64_to_uint8.CastUInt64ToUInt8Expression;
 

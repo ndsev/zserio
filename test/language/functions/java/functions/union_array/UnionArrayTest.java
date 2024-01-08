@@ -1,10 +1,11 @@
 package functions.union_array;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
@@ -103,18 +104,15 @@ public class UnionArrayTest
         final byte[] expectedByteArray = writeInnerToByteArray(pos);
         assertTrue(Arrays.equals(expectedByteArray, writtenByteArray));
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
-                writtenByteArray, writer.getBitPosition());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writtenByteArray, writer.getBitPosition());
         final Inner readInner = new Inner(reader);
 
         assertEquals(inner, readInner);
     }
 
     private static final Item[] ITEMS = new Item[] {
-            new Item((short)12, (short)13),
-            new Item((short)42, (short)18),
-            new Item((short)17, (short)14)
-    };
+            new Item((short)12, (short)13), new Item((short)42, (short)18), new Item((short)17, (short)14)};
     private static final int NUM_ITEM_ELEMENTS = ITEMS.length;
 
     private static final Item EXPLICIT_ITEM = new Item((short)27, (short)29);

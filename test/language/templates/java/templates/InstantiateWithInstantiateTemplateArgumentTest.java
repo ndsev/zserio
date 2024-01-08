@@ -1,19 +1,20 @@
 package templates;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 
+import templates.instantiate_with_instantiate_template_argument.Data32;
+import templates.instantiate_with_instantiate_template_argument.Data8;
 import templates.instantiate_with_instantiate_template_argument.InstantiateWithInstantiateTemplateArgument;
 import templates.instantiate_with_instantiate_template_argument.Other32;
 import templates.instantiate_with_instantiate_template_argument.Other8;
-import templates.instantiate_with_instantiate_template_argument.Data32;
-import templates.instantiate_with_instantiate_template_argument.Data8;
 
 public class InstantiateWithInstantiateTemplateArgumentTest
 {
@@ -28,8 +29,8 @@ public class InstantiateWithInstantiateTemplateArgumentTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         instantiateWithInstantiateTemplateArgument.write(writer);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final InstantiateWithInstantiateTemplateArgument readInstantiateWithInstantiateTemplateArgument =
                 new InstantiateWithInstantiateTemplateArgument(reader);
         assertTrue(instantiateWithInstantiateTemplateArgument.equals(

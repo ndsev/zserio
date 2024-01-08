@@ -1,9 +1,10 @@
 package parameterized_types.subtyped_bitfield_param;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
@@ -25,14 +26,14 @@ public class SubtypedBitfieldParamTest
 
     private SubtypedBitfieldParamHolder createSubtypedBitfieldParamHolder()
     {
-        final SubtypedBitfieldParam subtypedBitfieldParam = new SubtypedBitfieldParam(SUBTYPED_BITFIELD_PARAM,
-                SUBTYPED_BITFIELD_PARAM_VALUE, SUBTYPED_BITFIELD_PARAM_EXTRA_VALUE);
+        final SubtypedBitfieldParam subtypedBitfieldParam = new SubtypedBitfieldParam(
+                SUBTYPED_BITFIELD_PARAM, SUBTYPED_BITFIELD_PARAM_VALUE, SUBTYPED_BITFIELD_PARAM_EXTRA_VALUE);
 
         return new SubtypedBitfieldParamHolder(subtypedBitfieldParam);
     }
 
-    private void checkSubtypedBitfieldParamHolderInBitBuffer(BitBuffer bitBuffer, SubtypedBitfieldParamHolder
-            subtypedBitfieldParamHolder) throws IOException
+    private void checkSubtypedBitfieldParamHolderInBitBuffer(
+            BitBuffer bitBuffer, SubtypedBitfieldParamHolder subtypedBitfieldParamHolder) throws IOException
     {
         try (final BitStreamReader stream = new ByteArrayBitStreamReader(bitBuffer))
         {

@@ -1,15 +1,17 @@
- package array_types;
+package array_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
 import java.math.BigInteger;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.SerializeUtil;
+
 import array_types.packed_variable_array_struct.Empty;
 import array_types.packed_variable_array_struct.PackedVariableArray;
 import array_types.packed_variable_array_struct.TestBitmask;
@@ -77,9 +79,11 @@ public class PackedVariableArrayStructTest
         final int unpackedBitSizeOf = packedVariableArray.getTestUnpackedArray().bitSizeOf();
         final int packedBitSizeOf = packedVariableArray.getTestPackedArray().bitSizeOf();
         final double minCompressionRatio = 0.622;
-        assertTrue(unpackedBitSizeOf * minCompressionRatio > packedBitSizeOf, () ->
-                "Unpacked array has " + unpackedBitSizeOf + " bits, packed array has " + packedBitSizeOf +
-                " bits, " + "compression ratio is " + packedBitSizeOf * 100.0 / unpackedBitSizeOf + "%!");
+        assertTrue(unpackedBitSizeOf * minCompressionRatio > packedBitSizeOf,
+                ()
+                        -> "Unpacked array has " + unpackedBitSizeOf + " bits, packed array has " +
+                        packedBitSizeOf + " bits, "
+                        + "compression ratio is " + packedBitSizeOf * 100.0 / unpackedBitSizeOf + "%!");
     }
 
     private void checkWriteRead(int numElements) throws IOException, ZserioError
@@ -88,7 +92,7 @@ public class PackedVariableArrayStructTest
         final File file = new File(BLOB_NAME_BASE + numElements + ".blob");
         SerializeUtil.serializeToFile(packedVariableArray, file);
         final PackedVariableArray readPackedVariableArray =
-        SerializeUtil.deserializeFromFile(PackedVariableArray.class, file);
+                SerializeUtil.deserializeFromFile(PackedVariableArray.class, file);
         assertEquals(packedVariableArray, readPackedVariableArray);
     }
 
@@ -133,26 +137,16 @@ public class PackedVariableArrayStructTest
             testUnion.setValue32(new Value32((long)index * 2));
 
         final TestEnum testEnum = ((index % 2) == 0) ? TestEnum.DARK_RED : TestEnum.DARK_GREEN;
-        final TestBitmask testBitmask = ((index % 2) == 0) ? TestBitmask.Values.READ :
-                TestBitmask.Values.CREATE;
+        final TestBitmask testBitmask =
+                ((index % 2) == 0) ? TestBitmask.Values.READ : TestBitmask.Values.CREATE;
 
         final Short testOptional = ((index % 2) == 0) ? (short)index : null;
         final BigInteger testDynamicBitfield = BigInteger.valueOf(index % 3);
 
-        final BigInteger values[] = new BigInteger[] {
-                BigInteger.valueOf(1),
-                BigInteger.valueOf(4),
-                BigInteger.valueOf(7),
-                BigInteger.valueOf(10),
-                BigInteger.valueOf(13),
-                BigInteger.valueOf(16)};
-        final Empty empties[] = new Empty[] {
-                new Empty(),
-                new Empty(),
-                new Empty(),
-                new Empty(),
-                new Empty(),
-                new Empty()};
+        final BigInteger values[] = new BigInteger[] {BigInteger.valueOf(1), BigInteger.valueOf(4),
+                BigInteger.valueOf(7), BigInteger.valueOf(10), BigInteger.valueOf(13), BigInteger.valueOf(16)};
+        final Empty empties[] =
+                new Empty[] {new Empty(), new Empty(), new Empty(), new Empty(), new Empty(), new Empty()};
 
         return new TestStructure(index, name, data, bytesData, testChoice, testUnion, testEnum, testBitmask,
                 testOptional, testDynamicBitfield, values.length, values, values, empties);

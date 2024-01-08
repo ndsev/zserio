@@ -1,11 +1,12 @@
 package extended_members.extended_field_in_template;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.math.BigInteger;
+import java.util.Arrays;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.ByteArrayBitStreamReader;

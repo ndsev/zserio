@@ -1,22 +1,21 @@
 package sql_tables.subtyped_table;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import test_utils.FileUtil;
-import test_utils.JdbcUtil;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import sql_tables.TestDb;
+import test_utils.FileUtil;
+import test_utils.JdbcUtil;
 
 public class SubtypedTableTest
 {
@@ -56,13 +55,11 @@ public class SubtypedTableTest
     private boolean isTableInDb() throws SQLException
     {
         // check if database does contain table
-        final String sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + TABLE_NAME +
-                "'";
+        final String sqlQuery =
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='" + TABLE_NAME + "'";
 
-        try (
-            final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);
-            final ResultSet resultSet = statement.executeQuery();
-        )
+        try (final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);
+                final ResultSet resultSet = statement.executeQuery();)
         {
             if (!resultSet.next())
                 return false;

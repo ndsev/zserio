@@ -1,23 +1,23 @@
 package union_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import union_types.empty_union_with_parameter.EmptyUnionWithParameter;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
+
+import union_types.empty_union_with_parameter.EmptyUnionWithParameter;
 
 public class EmptyUnionWithParameterTest
 {
     @Test
     public void emptyConstructor()
     {
-        final EmptyUnionWithParameter emptyUnionWithParameter =
-                new EmptyUnionWithParameter((short)1);
+        final EmptyUnionWithParameter emptyUnionWithParameter = new EmptyUnionWithParameter((short)1);
         assertEquals(1, emptyUnionWithParameter.getParam());
     }
 
@@ -27,8 +27,7 @@ public class EmptyUnionWithParameterTest
         final short param = 1;
         final BitStreamReader reader = new ByteArrayBitStreamReader(new byte[0]);
 
-        final EmptyUnionWithParameter emptyUnionWithParameter =
-                new EmptyUnionWithParameter(reader, param);
+        final EmptyUnionWithParameter emptyUnionWithParameter = new EmptyUnionWithParameter(reader, param);
         assertEquals(param, emptyUnionWithParameter.getParam());
         assertEquals(0, emptyUnionWithParameter.bitSizeOf());
     }
@@ -44,8 +43,7 @@ public class EmptyUnionWithParameterTest
     @Test
     public void bitSizeOf()
     {
-        final EmptyUnionWithParameter emptyUnionWithParameter =
-                new EmptyUnionWithParameter((short)1);
+        final EmptyUnionWithParameter emptyUnionWithParameter = new EmptyUnionWithParameter((short)1);
         assertEquals(0, emptyUnionWithParameter.bitSizeOf(1));
     }
 
@@ -54,20 +52,16 @@ public class EmptyUnionWithParameterTest
     {
         final int bitPosition = 1;
 
-        final EmptyUnionWithParameter emptyUnionWithParameter =
-                new EmptyUnionWithParameter((short)1);
+        final EmptyUnionWithParameter emptyUnionWithParameter = new EmptyUnionWithParameter((short)1);
         assertEquals(bitPosition, emptyUnionWithParameter.initializeOffsets(bitPosition));
     }
 
     @Test
     public void equals()
     {
-        final EmptyUnionWithParameter emptyUnionWithParameter1 =
-                new EmptyUnionWithParameter((short)1);
-        final EmptyUnionWithParameter emptyUnionWithParameter2 =
-                new EmptyUnionWithParameter((short)1);
-        final EmptyUnionWithParameter emptyUnionWithParameter3 =
-                new EmptyUnionWithParameter((short)0);
+        final EmptyUnionWithParameter emptyUnionWithParameter1 = new EmptyUnionWithParameter((short)1);
+        final EmptyUnionWithParameter emptyUnionWithParameter2 = new EmptyUnionWithParameter((short)1);
+        final EmptyUnionWithParameter emptyUnionWithParameter3 = new EmptyUnionWithParameter((short)0);
         assertTrue(emptyUnionWithParameter1.equals(emptyUnionWithParameter2));
         assertFalse(emptyUnionWithParameter1.equals(emptyUnionWithParameter3));
     }
@@ -75,12 +69,9 @@ public class EmptyUnionWithParameterTest
     @Test
     public void hashCodeMethod()
     {
-        final EmptyUnionWithParameter emptyUnionWithParameter1 =
-                new EmptyUnionWithParameter((short)1);
-        final EmptyUnionWithParameter emptyUnionWithParameter2 =
-                new EmptyUnionWithParameter((short)1);
-        final EmptyUnionWithParameter emptyUnionWithParameter3 =
-                new EmptyUnionWithParameter((short)0);
+        final EmptyUnionWithParameter emptyUnionWithParameter1 = new EmptyUnionWithParameter((short)1);
+        final EmptyUnionWithParameter emptyUnionWithParameter2 = new EmptyUnionWithParameter((short)1);
+        final EmptyUnionWithParameter emptyUnionWithParameter3 = new EmptyUnionWithParameter((short)0);
         assertEquals(emptyUnionWithParameter1.hashCode(), emptyUnionWithParameter2.hashCode());
         assertTrue(emptyUnionWithParameter1.hashCode() != emptyUnionWithParameter3.hashCode());
 
@@ -95,8 +86,7 @@ public class EmptyUnionWithParameterTest
         final short param = 1;
         final BitStreamReader reader = new ByteArrayBitStreamReader(new byte[0], 0);
 
-        final EmptyUnionWithParameter emptyUnionWithParameter =
-                new EmptyUnionWithParameter(param);
+        final EmptyUnionWithParameter emptyUnionWithParameter = new EmptyUnionWithParameter(param);
         emptyUnionWithParameter.read(reader);
         assertEquals(param, emptyUnionWithParameter.getParam());
         assertEquals(0, emptyUnionWithParameter.bitSizeOf());
@@ -107,14 +97,12 @@ public class EmptyUnionWithParameterTest
     {
         final short param = 1;
         ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        final EmptyUnionWithParameter emptyUnionWithParameter =
-                new EmptyUnionWithParameter(param);
+        final EmptyUnionWithParameter emptyUnionWithParameter = new EmptyUnionWithParameter(param);
         emptyUnionWithParameter.write(writer);
         byte bytes[] = writer.toByteArray();
         assertEquals(0, bytes.length);
         BitStreamReader reader = new ByteArrayBitStreamReader(bytes);
-        EmptyUnionWithParameter readEmptyUnionWithParameter =
-                new EmptyUnionWithParameter(reader, param);
+        EmptyUnionWithParameter readEmptyUnionWithParameter = new EmptyUnionWithParameter(reader, param);
         assertEquals(emptyUnionWithParameter, readEmptyUnionWithParameter);
     }
 };

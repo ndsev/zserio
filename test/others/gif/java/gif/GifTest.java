@@ -1,13 +1,15 @@
 package gif;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 
+import org.junit.jupiter.api.Test;
+
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.SerializeUtil;
+
 import gif.gif_data.*;
 import gif.rgb_color.RgbColor;
 import gif.screen_descriptor.ScreenDescriptor;
@@ -21,13 +23,13 @@ public class GifTest
         final GifFile gifFile = SerializeUtil.deserializeFromFile(GifFile.class, file);
 
         final short[] signatureFormat = gifFile.getSignature().getFormat();
-        final String fileFormat = String.format("%1$c%2$c%3$c", signatureFormat[0], signatureFormat[1],
-                signatureFormat[2]);
+        final String fileFormat =
+                String.format("%1$c%2$c%3$c", signatureFormat[0], signatureFormat[1], signatureFormat[2]);
         assertEquals(GIF_FILE_FORMAT, fileFormat);
 
         final short[] signatureVersion = gifFile.getSignature().getVersion();
-        final String fileVersion = String.format("%1$c%2$c%3$c", signatureVersion[0], signatureVersion[1],
-                signatureVersion[2]);
+        final String fileVersion =
+                String.format("%1$c%2$c%3$c", signatureVersion[0], signatureVersion[1], signatureVersion[2]);
         assertEquals(GIF_FILE_VERSION, fileVersion);
 
         final ScreenDescriptor screenDescriptor = gifFile.getScreen();
@@ -70,23 +72,23 @@ public class GifTest
         do
         {
             gifTag = gifData.getTag();
-            switch(gifTag)
+            switch (gifTag)
             {
-                case EXTENSION_BLOCK:
-                    printExtensionBlock(gifData.getBlock().getExtension());
-                    break;
+            case EXTENSION_BLOCK:
+                printExtensionBlock(gifData.getBlock().getExtension());
+                break;
 
-                case IMAGE_BLOCK:
-                    printImageBlock(gifData.getBlock().getImages());
-                    break;
+            case IMAGE_BLOCK:
+                printImageBlock(gifData.getBlock().getImages());
+                break;
 
-                case TERMINATOR_BLOCK:
-                    System.out.println(alignment + "End of file reached.");
-                    break;
+            case TERMINATOR_BLOCK:
+                System.out.println(alignment + "End of file reached.");
+                break;
 
-                default:
-                    System.out.println(alignment + "unknown block.");
-                    break;
+            default:
+                System.out.println(alignment + "unknown block.");
+                break;
             }
             if (gifTag != BlockType.TERMINATOR_BLOCK)
                 gifData = gifData.getNextBlock();
@@ -106,10 +108,10 @@ public class GifTest
             System.out.print(alignment);
             for (int i = 0; i < 16; i++, entry++)
             {
-                final String sep = (i == 16-1) ? "%n" : ", ";
+                final String sep = (i == 16 - 1) ? "%n" : ", ";
                 final RgbColor rgbColor = globalColorMap[entry];
-                System.out.format("#%1$02X%2$02X%3$02X" + sep,
-                        rgbColor.getRed(), rgbColor.getGreen(), rgbColor.getBlue());
+                System.out.format("#%1$02X%2$02X%3$02X" + sep, rgbColor.getRed(), rgbColor.getGreen(),
+                        rgbColor.getBlue());
             }
         }
         System.out.print(alignment);
@@ -117,8 +119,8 @@ public class GifTest
         {
             final String sep = (i == 1) ? "%n" : ", ";
             final RgbColor rgbColor = globalColorMap[entry];
-            System.out.format("#%1$02X%2$02X%3$02X" + sep,
-                    rgbColor.getRed(), rgbColor.getGreen(), rgbColor.getBlue());
+            System.out.format(
+                    "#%1$02X%2$02X%3$02X" + sep, rgbColor.getRed(), rgbColor.getGreen(), rgbColor.getBlue());
         }
         decreaseAlignment();
         System.out.println();
@@ -153,9 +155,9 @@ public class GifTest
 
     private void printExtensionBlock(ExtensionBlock extensionBlock) throws IOException
     {
-        switch(extensionBlock.getExtensionFunctionCode())
+        switch (extensionBlock.getExtensionFunctionCode())
         {
-            case PLAINTEXT_EXTENSION:
+        case PLAINTEXT_EXTENSION:
             {
                 System.out.println(alignment + "Plain text:");
                 increaseAlignment();
@@ -167,13 +169,13 @@ public class GifTest
                 break;
             }
 
-            case GRAPHICCONTROL_EXTENSION:
+        case GRAPHICCONTROL_EXTENSION:
             {
                 System.out.println(alignment + "Graphic control extension:");
                 break;
             }
 
-            case COMMENT_EXTENSION:
+        case COMMENT_EXTENSION:
             {
                 System.out.print(alignment + "Comment: ");
                 final CommentExtension comment = extensionBlock.getExtension().getCommentData();
@@ -184,7 +186,7 @@ public class GifTest
                 break;
             }
 
-            case APPLICATIONEXTENSION:
+        case APPLICATIONEXTENSION:
             {
                 System.out.println(alignment + "Application extension:");
                 increaseAlignment();
@@ -197,8 +199,8 @@ public class GifTest
                 System.out.println();
 
                 final short[] applCode = appData.getAuthenticationCode();
-                System.out.format(alignment + "Appl-Code: %1$c%2$c%3$c%n", applCode[0], applCode[1],
-                        applCode[2]);
+                System.out.format(
+                        alignment + "Appl-Code: %1$c%2$c%3$c%n", applCode[0], applCode[1], applCode[2]);
 
                 int applDataSize = 0;
                 if (appData.getApplDataSize() > 0)
@@ -208,7 +210,7 @@ public class GifTest
                 break;
             }
 
-            default:
+        default:
             {
                 System.out.println(alignment + "unknown extension.");
                 break;
@@ -223,8 +225,8 @@ public class GifTest
         increaseAlignment();
         System.out.format(alignment + "Layer size: %1$d x %2$d%n", imgDesc.getWidth(), imgDesc.getHeight());
         System.out.format(alignment + "Layer pos: %1$d, %2$d%n", imgDesc.getTop(), imgDesc.getLeft());
-        System.out.format(alignment + "Layer interlaced: %1$s%n",
-                (imgDesc.getInterlacedFormatted() == 1) ? "yes" : "no");
+        System.out.format(
+                alignment + "Layer interlaced: %1$s%n", (imgDesc.getInterlacedFormatted() == 1) ? "yes" : "no");
         System.out.format(alignment + "Layer bits per pixel: %1$d%n", imgDesc.getBitsPerPixel());
         if (imgDesc.getLocalColorMapFollows() == 1)
         {
@@ -245,7 +247,7 @@ public class GifTest
         {
             if (rasterData.getData().getByteCount() > 0)
                 rasterDataSize += rasterData.getData().getByteCount() +
-                calcBlockSize(rasterData.getData().getDataBytes());
+                        calcBlockSize(rasterData.getData().getDataBytes());
         }
         System.out.format(alignment + "Raster Data size: %1$d Bytes%n", rasterDataSize);
     }
@@ -277,9 +279,9 @@ public class GifTest
 
     private static final String GIF_FILE_FORMAT = "GIF";
     private static final String GIF_FILE_VERSION = "89a";
-    private static final int    GIF_SCREEN_WIDTH = 256;
-    private static final int    GIF_SCREEN_HEIGHT = 256;
-    private static final short  GIF_SCREEN_BG_COLOR = 255;
-    private static final byte   GIF_SCREEN_BITS_OF_COLOR_RESOLUTION = 7;
-    private static final byte   GIF_SCREEN_BITS_PER_PIXEL = 7;
+    private static final int GIF_SCREEN_WIDTH = 256;
+    private static final int GIF_SCREEN_HEIGHT = 256;
+    private static final short GIF_SCREEN_BG_COLOR = 255;
+    private static final byte GIF_SCREEN_BITS_OF_COLOR_RESOLUTION = 7;
+    private static final byte GIF_SCREEN_BITS_PER_PIXEL = 7;
 }

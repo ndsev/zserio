@@ -1,11 +1,10 @@
 package offsets;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import offsets.packed_auto_array_offset.AutoArrayHolder;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
@@ -15,6 +14,8 @@ import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
 
+import offsets.packed_auto_array_offset.AutoArrayHolder;
+
 public class PackedAutoArrayOffsetTest
 {
     @Test
@@ -22,7 +23,7 @@ public class PackedAutoArrayOffsetTest
     {
         final boolean writeWrongOffset = false;
         final BitBuffer bitBuffer = writeAutoArrayHolderToBitBuffer(writeWrongOffset);
-        final BitStreamReader reader= new ByteArrayBitStreamReader(bitBuffer);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
         final AutoArrayHolder autoArrayHolder = new AutoArrayHolder();
         autoArrayHolder.read(reader);
         checkAutoArrayHolder(autoArrayHolder);
@@ -85,8 +86,8 @@ public class PackedAutoArrayOffsetTest
         final AutoArrayHolder autoArrayHolder = createAutoArrayHolder(createWrongOffset);
         SerializeUtil.serializeToFile(autoArrayHolder, BLOB_NAME);
         checkAutoArrayHolder(autoArrayHolder);
-        final AutoArrayHolder readAutoArrayHolder = SerializeUtil.deserializeFromFile(AutoArrayHolder.class,
-                BLOB_NAME);
+        final AutoArrayHolder readAutoArrayHolder =
+                SerializeUtil.deserializeFromFile(AutoArrayHolder.class, BLOB_NAME);
         checkAutoArrayHolder(readAutoArrayHolder);
         assertEquals(autoArrayHolder, readAutoArrayHolder);
     }
@@ -103,8 +104,8 @@ public class PackedAutoArrayOffsetTest
         autoArrayHolder.write(writer);
         checkAutoArrayHolder(autoArrayHolder, bitPosition);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         assertEquals(0, reader.readBits(bitPosition));
         final AutoArrayHolder readAutoArrayHolder = new AutoArrayHolder(reader);
         checkAutoArrayHolder(readAutoArrayHolder, bitPosition);
@@ -147,8 +148,8 @@ public class PackedAutoArrayOffsetTest
 
     private void checkAutoArrayHolder(AutoArrayHolder autoArrayHolder, int bitPosition)
     {
-        final long expectedAutoArrayOffset = (bitPosition == 0) ? AUTO_ARRAY_OFFSET :
-            AUTO_ARRAY_OFFSET + (bitPosition / 8);
+        final long expectedAutoArrayOffset =
+                (bitPosition == 0) ? AUTO_ARRAY_OFFSET : AUTO_ARRAY_OFFSET + (bitPosition / 8);
         assertEquals(expectedAutoArrayOffset, autoArrayHolder.getAutoArrayOffset());
 
         assertEquals(FORCED_ALIGNMENT_VALUE, autoArrayHolder.getForceAlignment());
@@ -185,12 +186,12 @@ public class PackedAutoArrayOffsetTest
 
     private static final String BLOB_NAME = "packed_auto_array_offset.blob";
 
-    private static final int    AUTO_ARRAY_LENGTH = 5;
-    private static final byte   FORCED_ALIGNMENT_VALUE = 0;
+    private static final int AUTO_ARRAY_LENGTH = 5;
+    private static final byte FORCED_ALIGNMENT_VALUE = 0;
 
-    private static final long   WRONG_AUTO_ARRAY_OFFSET = 0;
-    private static final long   AUTO_ARRAY_OFFSET = 5;
+    private static final long WRONG_AUTO_ARRAY_OFFSET = 0;
+    private static final long AUTO_ARRAY_OFFSET = 5;
 
-    private static final short  PACKED_ARRAY_DELTA = 1;
-    private static final short  PACKED_ARRAY_MAX_BIT_NUMBER = 1;
+    private static final short PACKED_ARRAY_DELTA = 1;
+    private static final short PACKED_ARRAY_MAX_BIT_NUMBER = 1;
 }

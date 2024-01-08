@@ -1,15 +1,16 @@
 package with_range_check_code;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
-
-import with_range_check_code.varint32_range_check.VarInt32RangeCheckCompound;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
+
+import with_range_check_code.varint32_range_check.VarInt32RangeCheckCompound;
 
 public class VarInt32RangeCheckTest
 {
@@ -44,8 +45,8 @@ public class VarInt32RangeCheckTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         varInt32RangeCheckCompound.write(writer);
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
-                writer.getBitPosition());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final VarInt32RangeCheckCompound readVarInt32RangeCheckCompound =
                 new VarInt32RangeCheckCompound(reader);
         assertEquals(varInt32RangeCheckCompound, readVarInt32RangeCheckCompound);

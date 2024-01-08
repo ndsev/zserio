@@ -1,10 +1,11 @@
 package functions.structure_optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
@@ -60,8 +61,8 @@ public class StructureOptionalTest
 
     private void checkValueConsumerCreator(byte defaultValue, byte externalValue) throws IOException
     {
-        final ValueConsumerCreator valueConsumerCreator = createValueConsumerCreator(defaultValue,
-                externalValue);
+        final ValueConsumerCreator valueConsumerCreator =
+                createValueConsumerCreator(defaultValue, externalValue);
         assertEquals(calculateValue(defaultValue, externalValue),
                 valueConsumerCreator.getValueCalculator().funcValue());
 
@@ -72,8 +73,8 @@ public class StructureOptionalTest
         final byte[] expectedByteArray = writeValueConsumerCreatorToByteArray(defaultValue, externalValue);
         assertTrue(Arrays.equals(expectedByteArray, writtenByteArray));
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
-                writtenByteArray, writer.getBitPosition());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writtenByteArray, writer.getBitPosition());
         final ValueConsumerCreator readValueConsumerCreator = new ValueConsumerCreator(reader);
         assertEquals(valueConsumerCreator, readValueConsumerCreator);
     }

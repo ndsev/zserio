@@ -1,10 +1,6 @@
 package explicit_parameters.explicit_same_as_field;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,12 +9,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import test_utils.FileUtil;
-import test_utils.JdbcUtil;
-
-import explicit_parameters.ExplicitParametersDb;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
+
+import explicit_parameters.ExplicitParametersDb;
+import test_utils.FileUtil;
+import test_utils.JdbcUtil;
 
 public class ExplicitSameAsFieldTest
 {
@@ -55,8 +55,7 @@ public class ExplicitSameAsFieldTest
         fillSameAsFieldTableRows(writtenRows);
         sameAsFieldTable.write(writtenRows);
 
-        final SameAsFieldTableParameterProvider parameterProvider =
-                new SameAsFieldTableParameterProvider();
+        final SameAsFieldTableParameterProvider parameterProvider = new SameAsFieldTableParameterProvider();
         final List<SameAsFieldTableRow> readRows = sameAsFieldTable.read(parameterProvider);
         checkSameAsFieldTableRows(writtenRows, readRows);
     }
@@ -70,11 +69,9 @@ public class ExplicitSameAsFieldTest
         fillSameAsFieldTableRows(writtenRows);
         sameAsFieldTable.write(writtenRows);
 
-        final SameAsFieldTableParameterProvider parameterProvider =
-                new SameAsFieldTableParameterProvider();
+        final SameAsFieldTableParameterProvider parameterProvider = new SameAsFieldTableParameterProvider();
         final String condition = "name='Name1'";
-        final List<SameAsFieldTableRow> readRows =
-                sameAsFieldTable.read(parameterProvider, condition);
+        final List<SameAsFieldTableRow> readRows = sameAsFieldTable.read(parameterProvider, condition);
         assertEquals(1, readRows.size());
 
         final int expectedRowNum = 1;
@@ -92,23 +89,19 @@ public class ExplicitSameAsFieldTest
         sameAsFieldTable.write(writtenRows);
 
         final int updateRowId = 3;
-        final SameAsFieldTableRow updateRow =
-                createSameAsFieldTableRow(updateRowId, "UpdatedName");
+        final SameAsFieldTableRow updateRow = createSameAsFieldTableRow(updateRowId, "UpdatedName");
         final String updateCondition = "id=" + updateRowId;
         sameAsFieldTable.update(updateRow, updateCondition);
 
-        final SameAsFieldTableParameterProvider parameterProvider =
-                new SameAsFieldTableParameterProvider();
-        final List<SameAsFieldTableRow> readRows =
-                sameAsFieldTable.read(parameterProvider, updateCondition);
+        final SameAsFieldTableParameterProvider parameterProvider = new SameAsFieldTableParameterProvider();
+        final List<SameAsFieldTableRow> readRows = sameAsFieldTable.read(parameterProvider, updateCondition);
         assertEquals(1, readRows.size());
 
         final SameAsFieldTableRow readRow = readRows.get(0);
         checkSameAsFieldTableRow(updateRow, readRow);
     }
 
-    private static class SameAsFieldTableParameterProvider
-            implements SameAsFieldTable.ParameterProvider
+    private static class SameAsFieldTableParameterProvider implements SameAsFieldTable.ParameterProvider
     {
         @Override
         public long getCount(ResultSet resultSet)
@@ -148,16 +141,15 @@ public class ExplicitSameAsFieldTest
         return row;
     }
 
-    private static void checkSameAsFieldTableRows(List<SameAsFieldTableRow> rows1,
-            List<SameAsFieldTableRow> rows2)
+    private static void checkSameAsFieldTableRows(
+            List<SameAsFieldTableRow> rows1, List<SameAsFieldTableRow> rows2)
     {
         assertEquals(rows1.size(), rows2.size());
         for (int i = 0; i < rows1.size(); ++i)
             checkSameAsFieldTableRow(rows1.get(i), rows2.get(i));
     }
 
-    private static void checkSameAsFieldTableRow(SameAsFieldTableRow row1,
-            SameAsFieldTableRow row2)
+    private static void checkSameAsFieldTableRow(SameAsFieldTableRow row1, SameAsFieldTableRow row2)
     {
         assertEquals(row1.getId(), row2.getId());
         assertEquals(row1.getName(), row2.getName());

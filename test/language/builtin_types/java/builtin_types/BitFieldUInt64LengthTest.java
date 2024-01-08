@@ -1,15 +1,16 @@
 package builtin_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
-
 import java.math.BigInteger;
 
-import builtin_types.bitfield_uint64_length.Container;
+import org.junit.jupiter.api.Test;
+
 import zserio.runtime.io.SerializeUtil;
+
+import builtin_types.bitfield_uint64_length.Container;
 
 public class BitFieldUInt64LengthTest
 {

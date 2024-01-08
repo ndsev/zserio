@@ -1,9 +1,10 @@
 package parameterized_types.dynamic_bitfield_param;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
@@ -25,21 +26,22 @@ public class DynamicBitfieldParamTest
 
     private DynamicBitfieldParamHolder createDynamicBitfieldParamHolder()
     {
-        final DynamicBitfieldParam dynamicBitfieldParam = new DynamicBitfieldParam(BITFIELD,
-                DYNAMIC_BITFIELD_PARAM_VALUE, DYNAMIC_BITFIELD_EXTRA_VALUE);
+        final DynamicBitfieldParam dynamicBitfieldParam =
+                new DynamicBitfieldParam(BITFIELD, DYNAMIC_BITFIELD_PARAM_VALUE, DYNAMIC_BITFIELD_EXTRA_VALUE);
 
         return new DynamicBitfieldParamHolder(LENGTH, BITFIELD, dynamicBitfieldParam);
     }
 
-    private void checkDynamicBitfieldParamHolderInBitBuffer(BitBuffer bitBuffer,
-            DynamicBitfieldParamHolder dynamicBitfieldParamHolder) throws IOException
+    private void checkDynamicBitfieldParamHolderInBitBuffer(
+            BitBuffer bitBuffer, DynamicBitfieldParamHolder dynamicBitfieldParamHolder) throws IOException
     {
         try (final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer))
         {
             assertEquals(dynamicBitfieldParamHolder.getLength(), reader.readBits(4));
             assertEquals(dynamicBitfieldParamHolder.getBitfield(), reader.readSignedBits(LENGTH));
 
-            final DynamicBitfieldParam dynamicBitfieldParam = dynamicBitfieldParamHolder.getDynamicBitfieldParam();
+            final DynamicBitfieldParam dynamicBitfieldParam =
+                    dynamicBitfieldParamHolder.getDynamicBitfieldParam();
             assertEquals(dynamicBitfieldParam.getParam(), BITFIELD);
             assertEquals(dynamicBitfieldParam.getValue(), reader.readBits(16));
             assertEquals(dynamicBitfieldParam.getExtraValue(), reader.readBits(32));

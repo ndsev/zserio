@@ -1,9 +1,10 @@
 package templates;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
@@ -11,8 +12,8 @@ import zserio.runtime.io.ByteArrayBitStreamWriter;
 
 import templates.struct_template_clash_across_packages.pkg1.InstantiationInPkg1;
 import templates.struct_template_clash_across_packages.pkg2.InstantiationInPkg2;
-import templates.struct_template_clash_across_packages.test_struct.TestStruct_Test_67B82BA5;
 import templates.struct_template_clash_across_packages.test_struct.TestStruct_Test_639610D0;
+import templates.struct_template_clash_across_packages.test_struct.TestStruct_Test_67B82BA5;
 
 public class StructTemplateClashAcrossPackagesTest
 {
@@ -26,8 +27,8 @@ public class StructTemplateClashAcrossPackagesTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         instantiationInPkg1.write(writer);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final InstantiationInPkg1 readInstantiationInPkg1 = new InstantiationInPkg1(reader);
         assertTrue(instantiationInPkg1.equals(readInstantiationInPkg1));
     }
@@ -42,8 +43,8 @@ public class StructTemplateClashAcrossPackagesTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         instantiationInPkg2.write(writer);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final InstantiationInPkg2 readInstantiationInPkg2 = new InstantiationInPkg2(reader);
         assertTrue(instantiationInPkg2.equals(readInstantiationInPkg2));
     }

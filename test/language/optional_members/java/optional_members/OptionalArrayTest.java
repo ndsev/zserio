@@ -1,10 +1,11 @@
 package optional_members;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
-import optional_members.optional_array.TestStruct;
 import optional_members.optional_array.Data8;
+import optional_members.optional_array.TestStruct;
 
 public class OptionalArrayTest
 {

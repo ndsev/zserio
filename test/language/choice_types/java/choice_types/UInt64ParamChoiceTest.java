@@ -1,19 +1,20 @@
 package choice_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 
-import choice_types.uint64_param_choice.UInt64ParamChoice;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
+
+import choice_types.uint64_param_choice.UInt64ParamChoice;
 
 public class UInt64ParamChoiceTest
 {
@@ -29,8 +30,8 @@ public class UInt64ParamChoiceTest
     {
         final short value = 234;
         final BitBuffer buffer = writeUInt64ParamChoiceToBitBuffer(VARIANT_B_SELECTOR, value);
-        final ByteArrayBitStreamReader stream = new ByteArrayBitStreamReader(buffer.getBuffer(),
-                buffer.getBitSize());
+        final ByteArrayBitStreamReader stream =
+                new ByteArrayBitStreamReader(buffer.getBuffer(), buffer.getBitSize());
         final UInt64ParamChoice uint64ParamChoice = new UInt64ParamChoice(stream, VARIANT_B_SELECTOR);
         stream.close();
         assertEquals(VARIANT_B_SELECTOR, uint64ParamChoice.getSelector());
@@ -158,8 +159,8 @@ public class UInt64ParamChoiceTest
         uint64ParamChoice.setA(byteValue);
         ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         uint64ParamChoice.write(writer);
-        ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
-                writer.getBitPosition());
+        ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         UInt64ParamChoice readUInt64ParamChoice = new UInt64ParamChoice(reader, VARIANT_A_SELECTOR);
         assertEquals(byteValue, readUInt64ParamChoice.getA());
 

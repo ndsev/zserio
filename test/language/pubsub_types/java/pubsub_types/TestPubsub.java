@@ -1,9 +1,10 @@
 package pubsub_types;
 
-import java.util.Map;
 import java.util.HashMap;
-import zserio.runtime.pubsub.PubsubInterface;
+import java.util.Map;
+
 import zserio.runtime.pubsub.PubsubException;
+import zserio.runtime.pubsub.PubsubInterface;
 
 public class TestPubsub implements PubsubInterface
 {

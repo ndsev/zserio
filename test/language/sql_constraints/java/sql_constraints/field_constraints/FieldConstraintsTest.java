@@ -1,22 +1,22 @@
 package sql_constraints.field_constraints;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
 
-import test_utils.FileUtil;
-import test_utils.JdbcUtil;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import sql_constraints.TestDb;
+import test_utils.FileUtil;
+import test_utils.JdbcUtil;
 
 public class FieldConstraintsTest
 {
@@ -102,8 +102,8 @@ public class FieldConstraintsTest
         final SQLException thrown =
                 assertThrows(SQLException.class, () -> fieldConstraintsTable.write(Arrays.asList(row)));
 
-        assertThat(thrown.getMessage(),
-                containsString("CHECK constraint failed: sqlCheckImportedConstant < 321"));
+        assertThat(
+                thrown.getMessage(), containsString("CHECK constraint failed: sqlCheckImportedConstant < 321"));
     }
 
     @Test

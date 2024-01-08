@@ -1,9 +1,10 @@
 package parameterized_types.grand_child_param;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
@@ -18,8 +19,8 @@ public class GrandChildParamTest
         final GrandChildParam grandChildParam = createGrandChildParam();
         SerializeUtil.serializeToFile(grandChildParam, BLOB_NAME);
 
-        final GrandChildParam readGrandChildParam = SerializeUtil.deserializeFromFile(
-                GrandChildParam.class, BLOB_NAME);
+        final GrandChildParam readGrandChildParam =
+                SerializeUtil.deserializeFromFile(GrandChildParam.class, BLOB_NAME);
         assertEquals(grandChildParam, readGrandChildParam);
     }
 

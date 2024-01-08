@@ -1,15 +1,17 @@
 package array_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
+
 import array_types.auto_array_struct_recursion.AutoArrayRecursion;
 
 public class AutoArrayStructRecursionTest
@@ -106,7 +108,7 @@ public class AutoArrayStructRecursionTest
             autoArray[i - 1] = element;
         }
 
-        return new AutoArrayRecursion((short) 0, autoArray);
+        return new AutoArrayRecursion((short)0, autoArray);
     }
 
     private void checkAutoArrayRecursion(AutoArrayRecursion autoArrayRecursion, short numElements)
@@ -126,7 +128,7 @@ public class AutoArrayStructRecursionTest
     {
         try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
-            writer.writeUnsignedByte((short) 0);
+            writer.writeUnsignedByte((short)0);
             writer.writeVarSize(numElements);
             for (short i = 1; i <= numElements; ++i)
             {

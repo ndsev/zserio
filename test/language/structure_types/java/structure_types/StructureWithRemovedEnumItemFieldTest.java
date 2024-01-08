@@ -1,19 +1,21 @@
 package structure_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
+
 import static test_utils.AssertionUtils.assertJsonEquals;
 
 import java.io.IOException;
 
-import structure_types.structure_with_removed_enum_item_field.StructureWithRemovedEnumItemField;
-import structure_types.structure_with_removed_enum_item_field.Enumeration;
+import org.junit.jupiter.api.Test;
 
+import zserio.runtime.DebugStringUtil;
+import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.SerializeUtil;
-import zserio.runtime.DebugStringUtil;
-import zserio.runtime.ZserioError;
+
+import structure_types.structure_with_removed_enum_item_field.Enumeration;
+import structure_types.structure_with_removed_enum_item_field.StructureWithRemovedEnumItemField;
 
 public class StructureWithRemovedEnumItemFieldTest
 {
@@ -74,8 +76,8 @@ public class StructureWithRemovedEnumItemFieldTest
     @Test
     public void fromJsonString()
     {
-        final Object zserioObject = DebugStringUtil.fromJsonString(StructureWithRemovedEnumItemField.class,
-                        "{\n    \"enumeration\": \"REMOVED\"\n}");
+        final Object zserioObject = DebugStringUtil.fromJsonString(
+                StructureWithRemovedEnumItemField.class, "{\n    \"enumeration\": \"REMOVED\"\n}");
         assertNotNull(zserioObject);
         assertInstanceOf(StructureWithRemovedEnumItemField.class, zserioObject);
         final StructureWithRemovedEnumItemField structureWithRemovedEnumItemField =

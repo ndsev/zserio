@@ -1,17 +1,18 @@
 package choice_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import choice_types.enum_param_choice.EnumParamChoice;
-import choice_types.enum_param_choice.Selector;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
+
+import choice_types.enum_param_choice.EnumParamChoice;
+import choice_types.enum_param_choice.Selector;
 
 public class EnumParamChoiceTest
 {
@@ -29,8 +30,8 @@ public class EnumParamChoiceTest
         final Selector selector = Selector.GREY;
         final int value = 234;
         final BitBuffer buffer = writeEnumParamChoiceToBitBuffer(selector, value);
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer.getBuffer(),
-                buffer.getBitSize());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(buffer.getBuffer(), buffer.getBitSize());
         final EnumParamChoice enumParamChoice = new EnumParamChoice(reader, selector);
         assertEquals(selector, enumParamChoice.getSelector());
         assertEquals((short)value, enumParamChoice.getGrey());
@@ -162,8 +163,8 @@ public class EnumParamChoiceTest
         enumParamChoice.setBlack(byteValue);
         ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         enumParamChoice.write(writer);
-        ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
-                writer.getBitPosition());
+        ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         EnumParamChoice readEnumParamChoice = new EnumParamChoice(reader, selector);
         assertEquals(byteValue, readEnumParamChoice.getBlack());
 

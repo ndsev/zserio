@@ -1,25 +1,27 @@
 package optional_members;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 
-import optional_members.optional_array_recursion.Employee;
-import optional_members.optional_array_recursion.Title;
+import org.junit.jupiter.api.Test;
+
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.SerializeUtil;
+
+import optional_members.optional_array_recursion.Employee;
+import optional_members.optional_array_recursion.Title;
 
 public class OptionalArrayRecursionTest
 {
     @Test
     public void bitSizeOf()
     {
-        final Employee employee = createEmployee(EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY,
-                Title.DEVELOPER);
+        final Employee employee =
+                createEmployee(EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY, Title.DEVELOPER);
         assertEquals(DEVELOPER1_BIT_SIZE, employee.bitSizeOf());
 
         final Employee teamLead = createTeamLead();
@@ -29,8 +31,8 @@ public class OptionalArrayRecursionTest
     @Test
     public void isTeamMembersSetAndUsed()
     {
-        final Employee employee = createEmployee(EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY,
-                Title.DEVELOPER);
+        final Employee employee =
+                createEmployee(EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY, Title.DEVELOPER);
         assertFalse(employee.isTeamMembersSet());
         assertFalse(employee.isTeamMembersUsed());
 
@@ -97,8 +99,8 @@ public class OptionalArrayRecursionTest
     @Test
     public void initializeOffsets()
     {
-        final Employee employee = createEmployee(EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY,
-                Title.DEVELOPER);
+        final Employee employee =
+                createEmployee(EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY, Title.DEVELOPER);
         final int bitPosition = 1;
         assertEquals(bitPosition + DEVELOPER1_BIT_SIZE, employee.initializeOffsets(bitPosition));
 
@@ -109,8 +111,8 @@ public class OptionalArrayRecursionTest
     @Test
     public void writeReadFileEmployee() throws IOException
     {
-        final Employee employee = createEmployee(EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY,
-                Title.DEVELOPER);
+        final Employee employee =
+                createEmployee(EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY, Title.DEVELOPER);
 
         final File employeeFile = new File(BLOB_NAME_BASE + "employee.blob");
         SerializeUtil.serializeToFile(employee, employeeFile);
@@ -124,12 +126,12 @@ public class OptionalArrayRecursionTest
     @Test
     public void writeReadEmployee() throws IOException
     {
-        final Employee employee = createEmployee(EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY,
-                Title.DEVELOPER);
+        final Employee employee =
+                createEmployee(EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY, Title.DEVELOPER);
 
         final BitBuffer bitBuffer = SerializeUtil.serialize(employee);
-        checkEmployeeInBitBuffer(bitBuffer,
-                EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY, Title.DEVELOPER);
+        checkEmployeeInBitBuffer(
+                bitBuffer, EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY, Title.DEVELOPER);
 
         Employee readEmployee = SerializeUtil.deserialize(Employee.class, bitBuffer);
         assertEquals(EMPLOYEE_DEVELOPER1_NAME, readEmployee.getName());
@@ -179,12 +181,11 @@ public class OptionalArrayRecursionTest
 
     private static Employee createTeamLead()
     {
-        final Employee teamLead = createEmployee(EMPLOYEE_TEAM_LEAD_NAME, EMPLOYEE_TEAM_LEAD_SALARY,
-                Title.TEAM_LEAD);
+        final Employee teamLead =
+                createEmployee(EMPLOYEE_TEAM_LEAD_NAME, EMPLOYEE_TEAM_LEAD_SALARY, Title.TEAM_LEAD);
         final Employee[] teamMembers = new Employee[] {
                 createEmployee(EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY, Title.DEVELOPER),
-                createEmployee(EMPLOYEE_DEVELOPER2_NAME, EMPLOYEE_DEVELOPER2_SALARY, Title.DEVELOPER)
-        };
+                createEmployee(EMPLOYEE_DEVELOPER2_NAME, EMPLOYEE_DEVELOPER2_SALARY, Title.DEVELOPER)};
         teamLead.setTeamMembers(teamMembers);
 
         return teamLead;
@@ -211,13 +212,12 @@ public class OptionalArrayRecursionTest
     {
         try (final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer))
         {
-            checkEmployeeInStream(reader,
-                    EMPLOYEE_TEAM_LEAD_NAME, EMPLOYEE_TEAM_LEAD_SALARY, Title.TEAM_LEAD);
+            checkEmployeeInStream(reader, EMPLOYEE_TEAM_LEAD_NAME, EMPLOYEE_TEAM_LEAD_SALARY, Title.TEAM_LEAD);
             assertEquals(NUM_DEVELOPERS, reader.readVarUInt64());
-            checkEmployeeInStream(reader,
-                    EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY, Title.DEVELOPER);
-            checkEmployeeInStream(reader,
-                    EMPLOYEE_DEVELOPER2_NAME, EMPLOYEE_DEVELOPER2_SALARY, Title.DEVELOPER);
+            checkEmployeeInStream(
+                    reader, EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY, Title.DEVELOPER);
+            checkEmployeeInStream(
+                    reader, EMPLOYEE_DEVELOPER2_NAME, EMPLOYEE_DEVELOPER2_SALARY, Title.DEVELOPER);
         }
     }
 

@@ -1,11 +1,12 @@
 package extended_members.extended_optional_parameterized_field;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.math.BigInteger;
+import java.util.Arrays;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.BitSizeOfCalculator;
 import zserio.runtime.io.BitBuffer;
@@ -211,13 +212,13 @@ public class ExtendedOptionalParameterizedFieldTest
         assertEquals(ORIGINAL_BIT_SIZE, reader.getBitPosition());
     }
 
-    private static final String ARRAY[] = new String[] { "this", "is", "test" };
+    private static final String ARRAY[] = new String[] {"this", "is", "test"};
     private static final long ARRAY_BIT_SIZE =
             Arrays.stream(ARRAY).mapToLong(str -> BitSizeOfCalculator.getBitSizeOfString(str)).sum();
 
     private static final long ORIGINAL_BIT_SIZE = 11;
     private static final long EXTENDED_BIT_SIZE_WITHOUT_OPTIONAL =
-        zserio.runtime.BitPositionUtil.alignTo(8, ORIGINAL_BIT_SIZE) + 1;
+            zserio.runtime.BitPositionUtil.alignTo(8, ORIGINAL_BIT_SIZE) + 1;
     private static final long EXTENDED_BIT_SIZE_WITH_OPTIONAL =
-        zserio.runtime.BitPositionUtil.alignTo(8, ORIGINAL_BIT_SIZE) + 1 + ARRAY_BIT_SIZE;
+            zserio.runtime.BitPositionUtil.alignTo(8, ORIGINAL_BIT_SIZE) + 1 + ARRAY_BIT_SIZE;
 }

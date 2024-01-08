@@ -1,11 +1,12 @@
 package extended_members.multiple_extended_fields;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.math.BigInteger;
+import java.util.Arrays;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.BitPositionUtil;
 import zserio.runtime.BitSizeOfCalculator;
@@ -143,12 +144,14 @@ public class MultipleExtendedFieldsTest
         assertEquals(original, readOriginal);
 
         // any setter makes all values present!
-        final Extended2 readExtended2Setter1 = SerializeUtil.deserialize(Extended2.class, bitBuffer);;
+        final Extended2 readExtended2Setter1 = SerializeUtil.deserialize(Extended2.class, bitBuffer);
+        ;
         readExtended2Setter1.setExtendedValue1((byte)2);
         assertTrue(readExtended2Setter1.isExtendedValue1Present());
         assertTrue(readExtended2Setter1.isExtendedValue2Present());
 
-        final Extended2 readExtended2Setter2 = SerializeUtil.deserialize(Extended2.class, bitBuffer);;
+        final Extended2 readExtended2Setter2 = SerializeUtil.deserialize(Extended2.class, bitBuffer);
+        ;
         readExtended2Setter2.setExtendedValue2(DEFAULT_EXTENDED_VALUE2);
         assertTrue(readExtended2Setter2.isExtendedValue1Present());
         assertTrue(readExtended2Setter2.isExtendedValue2Present());
@@ -257,7 +260,6 @@ public class MultipleExtendedFieldsTest
         assertEquals(extended2.getValue(), readExtended1.getValue());
         assertEquals(EXTENDED1_BIT_SIZE, reader.getBitPosition());
     }
-
 
     private static final String DEFAULT_EXTENDED_VALUE2 = "test";
 

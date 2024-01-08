@@ -1,10 +1,11 @@
 package package_name_conflict;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
-import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
 
 public class PackageNameConflictTest
 {
@@ -17,8 +18,8 @@ public class PackageNameConflictTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         packageNameConflictLocal.write(writer);
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final PackageNameConflictLocal readPackageNameConflictLocal = new PackageNameConflictLocal(reader);
 
         assertEquals(13, packageNameConflictLocal.getBlob().getValue());
@@ -30,14 +31,14 @@ public class PackageNameConflictTest
     public void packageNameConflictImported() throws Exception
     {
         // just test that PackageNameConflictImported uses correct Blob
-        final PackageNameConflictImported packageNameConflictImported = new PackageNameConflictImported(
-                new package_name_conflict.package_name_conflict.Blob("test"));
+        final PackageNameConflictImported packageNameConflictImported =
+                new PackageNameConflictImported(new package_name_conflict.package_name_conflict.Blob("test"));
 
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         packageNameConflictImported.write(writer);
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final PackageNameConflictImported readPackageNameConflictImported =
                 new PackageNameConflictImported(reader);
 

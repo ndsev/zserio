@@ -1,12 +1,13 @@
 package bitmask_types.bitfield_bitmask;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
-
-import java.io.IOException;
 
 public class BitfieldBitmaskTest
 {
@@ -41,8 +42,8 @@ public class BitfieldBitmaskTest
     {
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         writer.writeBits(Permission.Values.WRITE.getValue(), PERMISSION_BITSIZEOF);
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
-                writer.getBitPosition());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final Permission readPermission = new Permission(reader);
         assertEquals(Permission.Values.WRITE, readPermission);
     }

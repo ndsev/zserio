@@ -1,17 +1,18 @@
 package templates;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 
 import templates.instantiate_imported.InstantiateImported;
-import templates.instantiate_imported.pkg.U32;
 import templates.instantiate_imported.Test_string;
+import templates.instantiate_imported.pkg.U32;
 
 public class InstantiateImportedTest
 {
@@ -25,8 +26,8 @@ public class InstantiateImportedTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         instantiateImported.write(writer);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final InstantiateImported readInstantiateImported = new InstantiateImported(reader);
         assertTrue(instantiateImported.equals(readInstantiateImported));
     }

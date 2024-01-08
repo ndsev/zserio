@@ -1,17 +1,18 @@
 package choice_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import choice_types.bitmask_param_choice.BitmaskParamChoice;
-import choice_types.bitmask_param_choice.Selector;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
+
+import choice_types.bitmask_param_choice.BitmaskParamChoice;
+import choice_types.bitmask_param_choice.Selector;
 
 public class BitmaskParamChoiceTest
 {
@@ -162,8 +163,8 @@ public class BitmaskParamChoiceTest
         bitmaskParamChoice.setBlack(byteValue);
         ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         bitmaskParamChoice.write(writer);
-        ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
-                writer.getBitPosition());
+        ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         BitmaskParamChoice readBitmaskParamChoice = new BitmaskParamChoice(reader, selector);
         assertEquals(byteValue, readBitmaskParamChoice.getBlack());
 

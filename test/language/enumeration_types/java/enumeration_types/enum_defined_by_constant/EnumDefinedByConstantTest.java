@@ -1,6 +1,7 @@
 package enumeration_types.enum_defined_by_constant;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
 public class EnumDefinedByConstantTest

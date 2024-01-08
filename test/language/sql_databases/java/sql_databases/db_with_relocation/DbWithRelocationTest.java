@@ -1,10 +1,6 @@
 package sql_databases.db_with_relocation;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,11 +15,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import test_utils.FileUtil;
-import test_utils.JdbcUtil;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.SqlDatabase;
 import zserio.runtime.validation.ValidationReport;
+
+import test_utils.FileUtil;
+import test_utils.JdbcUtil;
 
 public class DbWithRelocationTest
 {
@@ -110,14 +111,14 @@ public class DbWithRelocationTest
 
         // write to relocated table
         final int updateTileId = 1;
-        final List<CountryMapTableRow> writtenRows = createCountryMapTableRows(updateTileId, (short)'a',
-                (short)'A');
+        final List<CountryMapTableRow> writtenRows =
+                createCountryMapTableRows(updateTileId, (short)'a', (short)'A');
         final CountryMapTable relocatedTable = americaDb.getSlovakia();
         relocatedTable.write(writtenRows);
 
         // update it
-        final List<CountryMapTableRow> updatedRows = createCountryMapTableRows(updateTileId, (short)'b',
-                (short)'B');
+        final List<CountryMapTableRow> updatedRows =
+                createCountryMapTableRows(updateTileId, (short)'b', (short)'B');
         final String updateCondition = "tileId=" + updateTileId;
         relocatedTable.update(updatedRows.get(0), updateCondition);
 
@@ -144,14 +145,14 @@ public class DbWithRelocationTest
 
         // write to relocated table
         final int updateTileId = 1;
-        final List<CountryMapTableRow> writtenRows = createCountryMapTableRows(updateTileId, (short)'c',
-                (short)'C');
+        final List<CountryMapTableRow> writtenRows =
+                createCountryMapTableRows(updateTileId, (short)'c', (short)'C');
         final CountryMapTable relocatedTable = americaDb.getCzechia();
         relocatedTable.write(writtenRows);
 
         // update it
-        final List<CountryMapTableRow> updatedRows = createCountryMapTableRows(updateTileId, (short)'d',
-                (short)'D');
+        final List<CountryMapTableRow> updatedRows =
+                createCountryMapTableRows(updateTileId, (short)'d', (short)'D');
         final String updateCondition = "tileId=" + updateTileId;
         relocatedTable.update(updatedRows.get(0), updateCondition);
 
@@ -171,10 +172,8 @@ public class DbWithRelocationTest
     public void checkAttachedDatabases() throws SQLException
     {
         final String sqlQuery = "PRAGMA database_list";
-        try (
-            final PreparedStatement statement = americaDb.connection().prepareStatement(sqlQuery);
-            final ResultSet resultSet = statement.executeQuery();
-        )
+        try (final PreparedStatement statement = americaDb.connection().prepareStatement(sqlQuery);
+                final ResultSet resultSet = statement.executeQuery();)
         {
             while (resultSet.next())
             {
@@ -192,13 +191,11 @@ public class DbWithRelocationTest
     private static boolean isRelocatedTableInDb(String relocatedTableName, SqlDatabase db) throws SQLException
     {
         // check if database does contain relocated table
-        final String sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" +
-                relocatedTableName + "'";
+        final String sqlQuery =
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='" + relocatedTableName + "'";
 
-        try (
-            final PreparedStatement statement = db.connection().prepareStatement(sqlQuery);
-            final ResultSet resultSet = statement.executeQuery();
-        )
+        try (final PreparedStatement statement = db.connection().prepareStatement(sqlQuery);
+                final ResultSet resultSet = statement.executeQuery();)
         {
             if (!resultSet.next())
                 return false;
@@ -223,8 +220,8 @@ public class DbWithRelocationTest
         return rows;
     }
 
-    private static void checkCountryMapTableRows(List<CountryMapTableRow> expectedRows,
-            List<CountryMapTableRow> currentRows)
+    private static void checkCountryMapTableRows(
+            List<CountryMapTableRow> expectedRows, List<CountryMapTableRow> currentRows)
     {
         assertEquals(expectedRows.size(), currentRows.size());
         for (int i = 0; i < expectedRows.size(); ++i)
@@ -244,14 +241,11 @@ public class DbWithRelocationTest
     private static final int NUM_ALL_AMERICA_DB_TABLES = 4;
 
     private static final Set<String> attachedDatabaseNames = new HashSet<String>(Arrays.asList(
-            "main",
-            "AmericaDb_" + RELOCATED_SLOVAKIA_TABLE_NAME,
-            "AmericaDb_" + RELOCATED_CZECHIA_TABLE_NAME
-    ));
+            "main", "AmericaDb_" + RELOCATED_SLOVAKIA_TABLE_NAME, "AmericaDb_" + RELOCATED_CZECHIA_TABLE_NAME));
 
-    private final File  europeDbFile = new File(EUROPE_DB_FILE_NAME);
-    private final File  americaDbFile = new File(AMERICA_DB_FILE_NAME);
+    private final File europeDbFile = new File(EUROPE_DB_FILE_NAME);
+    private final File americaDbFile = new File(AMERICA_DB_FILE_NAME);
 
-    private EuropeDb    europeDb = null;
-    private AmericaDb   americaDb = null;
+    private EuropeDb europeDb = null;
+    private AmericaDb americaDb = null;
 }

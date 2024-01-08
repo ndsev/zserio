@@ -1,10 +1,11 @@
 package sql_tables_error;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import test_utils.ZserioErrorOutput;
 
@@ -26,19 +27,16 @@ public class SqlTablesErrorTest
     @Test
     public void databaseField()
     {
-        final String error = "database_field_error.zs:20:5: " +
-                "Invalid usage of SQL database 'TestDatabase' as a type!";
+        final String error = "database_field_error.zs:20:5: "
+                + "Invalid usage of SQL database 'TestDatabase' as a type!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void duplicatedFieldName()
     {
-        final String errors[] =
-        {
-            "duplicated_field_name_error.zs:5:13:     First defined here",
-            "duplicated_field_name_error.zs:7:13: 'columnA' is already defined in this scope!"
-        };
+        final String errors[] = {"duplicated_field_name_error.zs:5:13:     First defined here",
+                "duplicated_field_name_error.zs:7:13: 'columnA' is already defined in this scope!"};
         assertTrue(zserioErrors.isPresent(errors));
     }
 
@@ -66,8 +64,8 @@ public class SqlTablesErrorTest
     @Test
     public void subtypedTableField()
     {
-        final String error = "subtyped_table_field_error.zs:17:19: " +
-                "Field 'subtypedTestTable' cannot be a sql table!";
+        final String error = "subtyped_table_field_error.zs:17:19: "
+                + "Field 'subtypedTestTable' cannot be a sql table!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -88,24 +86,24 @@ public class SqlTablesErrorTest
     @Test
     public void unknownPrimaryKeyColumn()
     {
-        final String error = "unknown_primary_key_column_error.zs:9:9: " +
-                "Primary key column 'unknownColumn' not found in sql table 'TestTable'!";
+        final String error = "unknown_primary_key_column_error.zs:9:9: "
+                + "Primary key column 'unknownColumn' not found in sql table 'TestTable'!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void unknownUniqueColumn()
     {
-        final String error = "unknown_unique_column_error.zs:9:9: " +
-                "Unique column 'unknownColumn' not found in sql table 'TestTable'!";
+        final String error = "unknown_unique_column_error.zs:9:9: "
+                + "Unique column 'unknownColumn' not found in sql table 'TestTable'!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void virtualColumn()
     {
-        final String error = "virtual_column_error.zs:6:25: " +
-                "Ordinary table 'TestTable' cannot contain virtual column 'columnB'!";
+        final String error = "virtual_column_error.zs:6:25: "
+                + "Ordinary table 'TestTable' cannot contain virtual column 'columnB'!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

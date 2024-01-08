@@ -1,10 +1,6 @@
 package sql_tables.const_param_table;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,12 +10,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import test_utils.FileUtil;
-import test_utils.JdbcUtil;
-
-import sql_tables.TestDb;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
+
+import sql_tables.TestDb;
+import test_utils.FileUtil;
+import test_utils.JdbcUtil;
 
 public class ConstParamTableTest
 {
@@ -126,15 +126,14 @@ public class ConstParamTableTest
         final ConstParamTableRow row = new ConstParamTableRow();
         row.setBlobId(blobId);
         row.setName(name);
-        final ParameterizedBlob parameterizedBlob = new ParameterizedBlob(PARAMETERIZED_BLOB_PARAM,
-                PARAMETERIZED_BLOB_VALUE);
+        final ParameterizedBlob parameterizedBlob =
+                new ParameterizedBlob(PARAMETERIZED_BLOB_PARAM, PARAMETERIZED_BLOB_VALUE);
         row.setBlob(parameterizedBlob);
 
         return row;
     }
 
-    private static void checkConstParamTableRows(List<ConstParamTableRow> rows1,
-            List<ConstParamTableRow> rows2)
+    private static void checkConstParamTableRows(List<ConstParamTableRow> rows1, List<ConstParamTableRow> rows2)
     {
         assertEquals(rows1.size(), rows2.size());
         for (int i = 0; i < rows1.size(); ++i)
@@ -151,13 +150,11 @@ public class ConstParamTableTest
     private boolean isTableInDb() throws SQLException
     {
         // check if database does contain table
-        final String sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + TABLE_NAME +
-                "'";
+        final String sqlQuery =
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='" + TABLE_NAME + "'";
 
-        try (
-            final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);
-            final ResultSet resultSet = statement.executeQuery();
-        )
+        try (final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);
+                final ResultSet resultSet = statement.executeQuery();)
         {
             if (!resultSet.next())
                 return false;
@@ -173,9 +170,9 @@ public class ConstParamTableTest
 
     private static final String TABLE_NAME = "constParamTable";
 
-    private static final int    PARAMETERIZED_BLOB_VALUE = 0xABCD;
-    private static final int    PARAMETERIZED_BLOB_PARAM = 2;
-    private static final int    NUM_CONST_PARAM_TABLE_ROWS = 5;
+    private static final int PARAMETERIZED_BLOB_VALUE = 0xABCD;
+    private static final int PARAMETERIZED_BLOB_PARAM = 2;
+    private static final int NUM_CONST_PARAM_TABLE_ROWS = 5;
     private static final String FILE_NAME = "const_param_table_test.sqlite";
 
     private final File file = new File(FILE_NAME);

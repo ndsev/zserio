@@ -1,11 +1,12 @@
 package extended_members.extended_choice_field;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.math.BigInteger;
+import java.util.Arrays;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.ByteArrayBitStreamReader;
@@ -234,7 +235,7 @@ public class ExtendedChoiceFieldTest
         assertEquals(ORIGINAL_BIT_SIZE, reader.getBitPosition());
     }
 
-    private static final long VALUES[] = new long[]{ 0, 1, 2, 3, 4 };
+    private static final long VALUES[] = new long[] {0, 1, 2, 3, 4};
 
     private static final long ORIGINAL_BIT_SIZE = 4 * 8;
     private static final long EXTENDED_BIT_SIZE_EMPTY = ORIGINAL_BIT_SIZE;

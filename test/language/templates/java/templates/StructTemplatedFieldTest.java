@@ -1,19 +1,20 @@
 package templates;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 
-import templates.struct_templated_field.StructTemplatedField;
-import templates.struct_templated_field.Field_uint32;
+import templates.struct_templated_field.Compound;
 import templates.struct_templated_field.Field_Compound;
 import templates.struct_templated_field.Field_string;
-import templates.struct_templated_field.Compound;
+import templates.struct_templated_field.Field_uint32;
+import templates.struct_templated_field.StructTemplatedField;
 
 public class StructTemplatedFieldTest
 {
@@ -28,8 +29,8 @@ public class StructTemplatedFieldTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         structTemplatedField.write(writer);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final StructTemplatedField readStructTemplatedField = new StructTemplatedField(reader);
         assertTrue(structTemplatedField.equals(readStructTemplatedField));
     }

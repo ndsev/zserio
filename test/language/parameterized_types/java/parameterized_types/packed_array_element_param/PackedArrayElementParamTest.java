@@ -1,11 +1,12 @@
 package parameterized_types.packed_array_element_param;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
 import java.math.BigInteger;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.ByteArrayBitStreamReader;
@@ -75,9 +76,11 @@ public class PackedArrayElementParamTest
         final int packedBitsizeOf = database.bitSizeOf();
         final double minCompressionRatio = 0.12;
 
-        assertTrue(unpackedBitsizeOf * minCompressionRatio > packedBitsizeOf, () ->
-                "Unpacked array has " + unpackedBitsizeOf + " bits, packed array has " + packedBitsizeOf +
-                " bits, " + "compression ratio is " + packedBitsizeOf * 100.0 / unpackedBitsizeOf + "%!");
+        assertTrue(unpackedBitsizeOf * minCompressionRatio > packedBitsizeOf,
+                ()
+                        -> "Unpacked array has " + unpackedBitsizeOf + " bits, packed array has " +
+                        packedBitsizeOf + " bits, "
+                        + "compression ratio is " + packedBitsizeOf * 100.0 / unpackedBitsizeOf + "%!");
     }
 
     private void checkWriteRead(int numBlocks) throws IOException, ZserioError
@@ -92,8 +95,8 @@ public class PackedArrayElementParamTest
         assertEquals(database.bitSizeOf(), writtenBitPosition);
         assertEquals(database.initializeOffsets(), writtenBitPosition);
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final Database readDatabase = new Database(reader);
         assertEquals(database, readDatabase);
     }

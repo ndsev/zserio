@@ -1,9 +1,10 @@
 package union_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.BitSizeOfCalculator;
 import zserio.runtime.ZserioError;
@@ -169,7 +170,7 @@ public class SimpleUnionTest
         SimpleUnion simpleUnion22 = new SimpleUnion();
         simpleUnion22.setCase2Field(CASE2_FIELD);
         SimpleUnion simpleUnion23 = new SimpleUnion();
-        simpleUnion23.setCase2Field(CASE2_FIELD-1);
+        simpleUnion23.setCase2Field(CASE2_FIELD - 1);
         assertTrue(simpleUnion21.equals(simpleUnion21));
         assertTrue(simpleUnion21.equals(simpleUnion22));
         assertFalse(simpleUnion21.equals(simpleUnion23));
@@ -265,8 +266,8 @@ public class SimpleUnionTest
     {
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         writeSimpleUnionToByteArray(writer, choiceTag);
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         SimpleUnion simpleUnion = new SimpleUnion(reader);
         return simpleUnion;
     }
@@ -275,8 +276,8 @@ public class SimpleUnionTest
     {
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         writeSimpleUnionToByteArray(writer, choiceTag);
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         SimpleUnion simpleUnion = new SimpleUnion();
         simpleUnion.read(reader);
         return simpleUnion;
@@ -286,8 +287,8 @@ public class SimpleUnionTest
     {
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         simpleUnion.write(writer);
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         SimpleUnion readSimpleUnion = new SimpleUnion(reader);
         assertTrue(simpleUnion.equals(readSimpleUnion));
     }

@@ -1,11 +1,10 @@
 package structure_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import structure_types.one_string_structure.OneStringStructure;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
@@ -13,6 +12,8 @@ import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
+
+import structure_types.one_string_structure.OneStringStructure;
 
 public class OneStringStructureTest
 {
@@ -92,8 +93,8 @@ public class OneStringStructureTest
     {
         final OneStringStructure oneStringStructure = new OneStringStructure(ONE_STRING);
         final int bitPosition = 1;
-        assertEquals(ONE_STRING_STRUCTURE_BIT_SIZE + bitPosition,
-                oneStringStructure.initializeOffsets(bitPosition));
+        assertEquals(
+                ONE_STRING_STRUCTURE_BIT_SIZE + bitPosition, oneStringStructure.initializeOffsets(bitPosition));
     }
 
     @Test
@@ -103,8 +104,8 @@ public class OneStringStructureTest
 
         SerializeUtil.serializeToFile(oneStringStructure, BLOB_NAME);
 
-        final OneStringStructure readOneStringStructure = SerializeUtil.deserializeFromFile(
-                OneStringStructure.class, BLOB_NAME);
+        final OneStringStructure readOneStringStructure =
+                SerializeUtil.deserializeFromFile(OneStringStructure.class, BLOB_NAME);
         assertEquals(ONE_STRING, readOneStringStructure.getOneString());
         assertTrue(oneStringStructure.equals(readOneStringStructure));
     }
@@ -116,8 +117,8 @@ public class OneStringStructureTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         oneStringStructure.write(writer);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final OneStringStructure readOneStringStructure = new OneStringStructure(reader);
         assertEquals(ONE_STRING, readOneStringStructure.getOneString());
         assertTrue(oneStringStructure.equals(readOneStringStructure));
@@ -134,5 +135,5 @@ public class OneStringStructureTest
 
     private static final String BLOB_NAME = "one_string_structure.blob";
     private static final String ONE_STRING = "This is a string!";
-    private static final int    ONE_STRING_STRUCTURE_BIT_SIZE = (1 + ONE_STRING.length()) * 8;
+    private static final int ONE_STRING_STRUCTURE_BIT_SIZE = (1 + ONE_STRING.length()) * 8;
 }

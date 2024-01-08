@@ -1,10 +1,11 @@
 package set_top_level_package;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
-import company.appl.SimpleStructure;
 import company.appl.SimpleChoice;
+import company.appl.SimpleStructure;
 import company.appl.SimpleTemplate_Enumeration;
 
 public class SetTopLevelPackageTest

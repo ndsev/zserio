@@ -1,12 +1,11 @@
 package offsets;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.math.BigInteger;
 
-import offsets.uint64_offset.UInt64Offset;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.BitPositionUtil;
 import zserio.runtime.BitSizeOfCalculator;
@@ -14,6 +13,8 @@ import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
+
+import offsets.uint64_offset.UInt64Offset;
 
 public class UInt64OffsetTest
 {

@@ -1,10 +1,11 @@
 package sql_databases_error;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import test_utils.ZserioErrorOutput;
 
@@ -19,8 +20,8 @@ public class SqlDatabasesErrorTest
     @Test
     public void databaseField()
     {
-        final String error = "database_field_error.zs:20:5: " +
-                "Invalid usage of SQL database 'TestDatabase' as a type!";
+        final String error = "database_field_error.zs:20:5: "
+                + "Invalid usage of SQL database 'TestDatabase' as a type!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -41,8 +42,8 @@ public class SqlDatabasesErrorTest
     @Test
     public void subtypedStructureField()
     {
-        final String error = "subtyped_structure_field_error.zs:15:23: " +
-                "Field 'subtypedTestStructure' is not a sql table!";
+        final String error = "subtyped_structure_field_error.zs:15:23: "
+                + "Field 'subtypedTestStructure' is not a sql table!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

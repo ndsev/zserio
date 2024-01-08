@@ -1,27 +1,27 @@
 package templates;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import templates.sql_table_templated_field.Data_Union;
+import templates.sql_table_templated_field.Data_uint32;
+import templates.sql_table_templated_field.SqlTableTemplatedFieldDb;
+import templates.sql_table_templated_field.TemplatedTable_Union;
+import templates.sql_table_templated_field.TemplatedTable_UnionRow;
+import templates.sql_table_templated_field.TemplatedTable_uint32;
+import templates.sql_table_templated_field.TemplatedTable_uint32Row;
+import templates.sql_table_templated_field.Union;
 import test_utils.FileUtil;
 import test_utils.JdbcUtil;
-
-import templates.sql_table_templated_field.SqlTableTemplatedFieldDb;
-import templates.sql_table_templated_field.TemplatedTable_uint32;
-import templates.sql_table_templated_field.TemplatedTable_Union;
-import templates.sql_table_templated_field.TemplatedTable_uint32Row;
-import templates.sql_table_templated_field.TemplatedTable_UnionRow;
-import templates.sql_table_templated_field.Data_uint32;
-import templates.sql_table_templated_field.Data_Union;
-import templates.sql_table_templated_field.Union;
 
 public class SqlTableTemplatedFieldTest
 {
@@ -77,7 +77,8 @@ public class SqlTableTemplatedFieldTest
         readSqlTableTemplatedFieldDb.close();
     }
 
-    static void assertEqualUint32Rows(List<TemplatedTable_uint32Row> rows1, List<TemplatedTable_uint32Row> rows2)
+    static void assertEqualUint32Rows(
+            List<TemplatedTable_uint32Row> rows1, List<TemplatedTable_uint32Row> rows2)
     {
         assertEquals(rows1.size(), rows2.size());
         for (int i = 0; i < rows1.size(); ++i)

@@ -24,7 +24,11 @@
         <testCompile testName="rules_error" srcPath="${rules_error.base_dir}/java"/>
     </target>
 
-    <target name="spotbugs" depends="compile" if="spotbugs.home_dir">
+    <target name="clang_format" depends="compile" if="clang_format.exe_file">
+        <testClangFormat testName="rules_error" srcPath="${rules_error.base_dir}/java"/>
+    </target>
+
+    <target name="spotbugs" depends="clang_format" if="spotbugs.home_dir">
         <testSpotBugs testName="rules_error" srcPath="${rules_error.base_dir}/java"/>
     </target>
 

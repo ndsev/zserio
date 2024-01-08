@@ -1,10 +1,11 @@
 package expressions;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.lang.Math;
 import java.math.BigInteger;
+
+import org.junit.jupiter.api.Test;
 
 import expressions.numbits_operator.NumBitsFunctions;
 

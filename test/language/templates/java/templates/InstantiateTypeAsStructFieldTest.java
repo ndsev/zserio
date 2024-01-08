@@ -1,9 +1,10 @@
 package templates;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
@@ -23,8 +24,8 @@ public class InstantiateTypeAsStructFieldTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         instantiateTypeAsStructField.write(writer);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         InstantiateTypeAsStructField readInstantiateTypeAsStructField =
                 new InstantiateTypeAsStructField(reader);
         assertTrue(instantiateTypeAsStructField.equals(readInstantiateTypeAsStructField));

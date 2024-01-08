@@ -1,9 +1,10 @@
 package templates;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
@@ -24,8 +25,8 @@ public class InstantiateClashOtherTemplateTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         instantiateClashOtherTemplate.write(writer);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final InstantiateClashOtherTemplate readInstantiateClashOtherTemplate =
                 new InstantiateClashOtherTemplate(reader);
         assertTrue(instantiateClashOtherTemplate.equals(readInstantiateClashOtherTemplate));

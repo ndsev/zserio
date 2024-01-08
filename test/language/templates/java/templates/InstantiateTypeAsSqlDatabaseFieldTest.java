@@ -1,22 +1,22 @@
 package templates;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
-import test_utils.FileUtil;
-import test_utils.JdbcUtil;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import templates.instantiate_type_as_sql_database_field.InstantiateTypeAsSqlDatabaseFieldDb;
 import templates.instantiate_type_as_sql_database_field.StringTable;
 import templates.instantiate_type_as_sql_database_field.StringTableRow;
+import test_utils.FileUtil;
+import test_utils.JdbcUtil;
 
 public class InstantiateTypeAsSqlDatabaseFieldTest
 {

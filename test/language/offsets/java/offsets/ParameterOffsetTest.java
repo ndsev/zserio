@@ -1,13 +1,10 @@
 package offsets;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import offsets.parameter_offset.OffsetHolder;
-import offsets.parameter_offset.Room;
-import offsets.parameter_offset.School;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
@@ -16,6 +13,10 @@ import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
+
+import offsets.parameter_offset.OffsetHolder;
+import offsets.parameter_offset.Room;
+import offsets.parameter_offset.School;
 
 public class ParameterOffsetTest
 {
@@ -100,8 +101,8 @@ public class ParameterOffsetTest
         school.write(writer);
         checkSchool(school, bitPosition);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         assertEquals(0, reader.readBits(bitPosition));
         final School readSchool = new School(reader);
         checkSchool(school, bitPosition);
@@ -139,8 +140,7 @@ public class ParameterOffsetTest
     {
         assertEquals(SCHOOL_ID, school.getSchoolId());
 
-        final long expectedRoomOffset = (bitPosition == 0) ? ROOM_OFFSET :
-                ROOM_OFFSET + (bitPosition / 8) + 1;
+        final long expectedRoomOffset = (bitPosition == 0) ? ROOM_OFFSET : ROOM_OFFSET + (bitPosition / 8) + 1;
         assertEquals(expectedRoomOffset, school.getOffsetHolder().getRoomOffset());
 
         assertEquals(ROOM_ID, school.getRoom().getRoomId());
@@ -155,11 +155,11 @@ public class ParameterOffsetTest
         return new School(SCHOOL_ID, offsetHolder, room);
     }
 
-    private static final int    SCHOOL_ID = 0x01;
-    private static final int    ROOM_ID = 0x11;
+    private static final int SCHOOL_ID = 0x01;
+    private static final int ROOM_ID = 0x11;
 
-    private static final long   WRONG_ROOM_OFFSET = 0;
-    private static final long   ROOM_OFFSET = 6;
+    private static final long WRONG_ROOM_OFFSET = 0;
+    private static final long ROOM_OFFSET = 6;
 
-    private static final int    SCHOOL_BIT_SIZE = (int)((ROOM_OFFSET + 2) * 8);
+    private static final int SCHOOL_BIT_SIZE = (int)((ROOM_OFFSET + 2) * 8);
 }

@@ -1,10 +1,11 @@
 package offsets_error;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import test_utils.ZserioErrorOutput;
 
@@ -19,16 +20,16 @@ public class OffsetsErrorTest
     @Test
     public void arrayNoIndex()
     {
-        final String error = "array_no_index_error.zs:6:1: " +
-                "Offset expression for field 'values' is not an unsigned fixed sized integer type!";
+        final String error = "array_no_index_error.zs:6:1: "
+                + "Offset expression for field 'values' is not an unsigned fixed sized integer type!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void builtinTypeParameter()
     {
-        final String error = "builtin_type_parameter_error.zs:6:1: " +
-                "Built-in type parameter 'param' cannot be used as an offset!";
+        final String error = "builtin_type_parameter_error.zs:6:1: "
+                + "Built-in type parameter 'param' cannot be used as an offset!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -42,8 +43,8 @@ public class OffsetsErrorTest
     @Test
     public void floatError()
     {
-        final String error = "float_error.zs:6:1: " +
-                "Offset expression for field 'values' is not an unsigned fixed sized integer type!";
+        final String error = "float_error.zs:6:1: "
+                + "Offset expression for field 'values' is not an unsigned fixed sized integer type!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -64,48 +65,48 @@ public class OffsetsErrorTest
     @Test
     public void signed_bitfield()
     {
-        final String error = "signed_bitfield_error.zs:6:1: " +
-                "Offset expression for field 'values' is not an unsigned fixed sized integer type!";
+        final String error = "signed_bitfield_error.zs:6:1: "
+                + "Offset expression for field 'values' is not an unsigned fixed sized integer type!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void signed_integer()
     {
-        final String error = "signed_integer_error.zs:6:1: " +
-                "Offset expression for field 'values' is not an unsigned fixed sized integer type!";
+        final String error = "signed_integer_error.zs:6:1: "
+                + "Offset expression for field 'values' is not an unsigned fixed sized integer type!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void string()
     {
-        final String error = "string_error.zs:6:1: " +
-                "Offset expression for field 'values' is not an unsigned fixed sized integer type!";
+        final String error = "string_error.zs:6:1: "
+                + "Offset expression for field 'values' is not an unsigned fixed sized integer type!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void ternaryOperatorError()
     {
-        final String error = "ternary_operator_error.zs:8:1: " +
-                "Ternary operator cannot be used for offset setting!";
+        final String error = "ternary_operator_error.zs:8:1: "
+                + "Ternary operator cannot be used for offset setting!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void varint()
     {
-        final String error = "varint_error.zs:6:1: " +
-                "Offset expression for field 'values' is not an unsigned fixed sized integer type!";
+        final String error = "varint_error.zs:6:1: "
+                + "Offset expression for field 'values' is not an unsigned fixed sized integer type!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void varuint()
     {
-        final String error = "varuint_error.zs:6:1: " +
-                "Offset expression for field 'values' is not an unsigned fixed sized integer type!";
+        final String error = "varuint_error.zs:6:1: "
+                + "Offset expression for field 'values' is not an unsigned fixed sized integer type!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

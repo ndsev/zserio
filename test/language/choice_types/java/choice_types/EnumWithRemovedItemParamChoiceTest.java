@@ -4,11 +4,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import choice_types.enum_with_removed_item_param_choice.EnumWithRemovedItemParamChoice;
-import choice_types.enum_with_removed_item_param_choice.Selector;
-
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.SerializeUtil;
+
+import choice_types.enum_with_removed_item_param_choice.EnumWithRemovedItemParamChoice;
+import choice_types.enum_with_removed_item_param_choice.Selector;
 
 public class EnumWithRemovedItemParamChoiceTest
 {

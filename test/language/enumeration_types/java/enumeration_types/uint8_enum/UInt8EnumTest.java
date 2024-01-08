@@ -1,9 +1,10 @@
 package enumeration_types.uint8_enum;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.HashCodeUtil;
 import zserio.runtime.io.BitStreamReader;
@@ -57,8 +58,8 @@ public class UInt8EnumTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         darkColor.write(writer);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final short readColor = (short)reader.readBits(UINT8_ENUM_BITSIZEOF);
         assertEquals(readColor, darkColor.getValue());
     }

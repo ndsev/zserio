@@ -1,10 +1,11 @@
 package index;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
-import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
 
 public class IndexTest
 {
@@ -26,8 +27,8 @@ public class IndexTest
         test.initializeOffsets(writer.getBitPosition());
         test.write(writer);
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final index.Test readTest = new index.Test(reader);
 
         assertEquals(ARRAY_SIZE, readTest.getArray().length);

@@ -1,11 +1,12 @@
 package extended_members.multiple_extended_fields_various_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.math.BigInteger;
+import java.util.Arrays;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.BitPositionUtil;
 import zserio.runtime.BitSizeOfCalculator;
@@ -266,8 +267,8 @@ public class MultipleExtendedFieldsVariousTypesTest
     {
         final Union extendedValue7 = new Union(EXTENDED_VALUE5);
         extendedValue7.setValueU32(UINT32_MAX);
-        return new Extended2(VALUE, EXTENDED_VALUE1, EXTENDED_VALUE2, EXTENDED_VALUE3,
-                null, EXTENDED_VALUE5, EXTENDED_VALUE6, extendedValue7, null, EXTENDED_VALUE9);
+        return new Extended2(VALUE, EXTENDED_VALUE1, EXTENDED_VALUE2, EXTENDED_VALUE3, null, EXTENDED_VALUE5,
+                EXTENDED_VALUE6, extendedValue7, null, EXTENDED_VALUE9);
     }
 
     private static long calcExtended1BitSize()
@@ -290,8 +291,9 @@ public class MultipleExtendedFieldsVariousTypesTest
         bitSize = BitPositionUtil.alignTo(8, bitSize);
         bitSize += BitSizeOfCalculator.getBitSizeOfVarSize(EXTENDED_VALUE5);
         bitSize = BitPositionUtil.alignTo(8, bitSize);
-        bitSize += Arrays.stream(EXTENDED_VALUE6).mapToLong(
-                str -> BitSizeOfCalculator.getBitSizeOfString(str)).sum();
+        bitSize += Arrays.stream(EXTENDED_VALUE6)
+                           .mapToLong(str -> BitSizeOfCalculator.getBitSizeOfString(str))
+                           .sum();
         bitSize = BitPositionUtil.alignTo(8, bitSize);
         bitSize += 8 + 4 * 8; // extendedValue7 (choiceTag + valueU32)
         bitSize = BitPositionUtil.alignTo(8, bitSize);
@@ -305,10 +307,10 @@ public class MultipleExtendedFieldsVariousTypesTest
 
     private static final byte VALUE = -13;
     private static final long EXTENDED_VALUE1 = 42;
-    private static final BitBuffer EXTENDED_VALUE2 = new BitBuffer(new byte[] { (byte)0xCA, (byte)0xFE }, 16);
-    private static final byte[] EXTENDED_VALUE3 = new byte[] { (byte)0xDE, (byte)0xAD };
+    private static final BitBuffer EXTENDED_VALUE2 = new BitBuffer(new byte[] {(byte)0xCA, (byte)0xFE}, 16);
+    private static final byte[] EXTENDED_VALUE3 = new byte[] {(byte)0xDE, (byte)0xAD};
     private static final int EXTENDED_VALUE5 = 3;
-    private static final String[] EXTENDED_VALUE6 = new String[] { "this", "is", "test" };
+    private static final String[] EXTENDED_VALUE6 = new String[] {"this", "is", "test"};
     private static final BigInteger EXTENDED_VALUE9 = BigInteger.valueOf(7); // bit<EXTENDED_VALUE5> == bit<3>
 
     private static final long ORIGINAL_BIT_SIZE = 7;

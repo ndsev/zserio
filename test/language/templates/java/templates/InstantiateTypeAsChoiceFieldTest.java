@@ -1,9 +1,10 @@
 package templates;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
@@ -17,14 +18,15 @@ public class InstantiateTypeAsChoiceFieldTest
     @Test
     public void readWrite() throws IOException
     {
-        final InstantiateTypeAsChoiceField instantiateTypeAsChoiceField = new InstantiateTypeAsChoiceField(true);
+        final InstantiateTypeAsChoiceField instantiateTypeAsChoiceField =
+                new InstantiateTypeAsChoiceField(true);
         instantiateTypeAsChoiceField.setTest(new Test32(13));
 
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         instantiateTypeAsChoiceField.write(writer);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         InstantiateTypeAsChoiceField readInstantiateTypeAsChoiceField =
                 new InstantiateTypeAsChoiceField(reader, true);
         assertTrue(instantiateTypeAsChoiceField.equals(readInstantiateTypeAsChoiceField));

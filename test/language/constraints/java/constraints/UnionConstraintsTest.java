@@ -1,11 +1,10 @@
 package constraints;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import constraints.union_constraints.UnionConstraints;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
@@ -14,6 +13,8 @@ import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
+
+import constraints.union_constraints.UnionConstraints;
 
 public class UnionConstraintsTest
 {
@@ -53,8 +54,8 @@ public class UnionConstraintsTest
         final UnionConstraints unionConstraints = new UnionConstraints();
         unionConstraints.setValue16(value16);
         final BitBuffer bitBuffer = SerializeUtil.serialize(unionConstraints);
-        final UnionConstraints readUnionConstraints = SerializeUtil.deserialize(
-                UnionConstraints.class, bitBuffer);
+        final UnionConstraints readUnionConstraints =
+                SerializeUtil.deserialize(UnionConstraints.class, bitBuffer);
         assertEquals(UnionConstraints.CHOICE_value16, readUnionConstraints.choiceTag());
         assertEquals(value16, readUnionConstraints.getValue16());
         assertTrue(unionConstraints.equals(readUnionConstraints));

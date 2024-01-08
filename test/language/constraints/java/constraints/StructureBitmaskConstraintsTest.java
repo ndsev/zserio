@@ -1,12 +1,10 @@
 package constraints;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import constraints.structure_bitmask_constraints.Availability;
-import constraints.structure_bitmask_constraints.StructureBitmaskConstraints;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
@@ -16,15 +14,18 @@ import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
 
+import constraints.structure_bitmask_constraints.Availability;
+import constraints.structure_bitmask_constraints.StructureBitmaskConstraints;
+
 public class StructureBitmaskConstraintsTest
 {
     @Test
     public void readCorrectConstraints() throws IOException, ZserioError
     {
-        final Availability availability = Availability.Values.COORD_X.or(Availability.Values.COORD_Y).or(
-                Availability.Values.COORD_Z);
-        final BitBuffer bitBuffer = writeStructureBitmaskConstraintsToBitBuffer(
-                availability, (short)1, (short)1, (short)1);
+        final Availability availability =
+                Availability.Values.COORD_X.or(Availability.Values.COORD_Y).or(Availability.Values.COORD_Z);
+        final BitBuffer bitBuffer =
+                writeStructureBitmaskConstraintsToBitBuffer(availability, (short)1, (short)1, (short)1);
         final BitStreamReader stream = new ByteArrayBitStreamReader(bitBuffer);
         final StructureBitmaskConstraints structureBitmaskConstraints = new StructureBitmaskConstraints(stream);
         stream.close();
@@ -37,8 +38,8 @@ public class StructureBitmaskConstraintsTest
     public void readWrongCoordZConstraint() throws IOException, ZserioError
     {
         final Availability availability = Availability.Values.COORD_X.or(Availability.Values.COORD_Y);
-        final BitBuffer bitBuffer = writeStructureBitmaskConstraintsToBitBuffer(
-                availability, (short)1, (short)1, (short)1);
+        final BitBuffer bitBuffer =
+                writeStructureBitmaskConstraintsToBitBuffer(availability, (short)1, (short)1, (short)1);
         final BitStreamReader stream = new ByteArrayBitStreamReader(bitBuffer);
         assertThrows(ZserioError.class, () -> new StructureBitmaskConstraints(stream));
         stream.close();
@@ -48,8 +49,8 @@ public class StructureBitmaskConstraintsTest
     public void readWrongCoordYConstraint() throws IOException, ZserioError
     {
         final Availability availability = Availability.Values.COORD_X.or(Availability.Values.COORD_Z);
-        final BitBuffer bitBuffer = writeStructureBitmaskConstraintsToBitBuffer(
-                availability, (short)1, (short)1, (short)1);
+        final BitBuffer bitBuffer =
+                writeStructureBitmaskConstraintsToBitBuffer(availability, (short)1, (short)1, (short)1);
         final BitStreamReader stream = new ByteArrayBitStreamReader(bitBuffer);
         assertThrows(ZserioError.class, () -> new StructureBitmaskConstraints(stream));
         stream.close();
@@ -59,7 +60,8 @@ public class StructureBitmaskConstraintsTest
     public void readWrongCoordXConstraint() throws IOException, ZserioError
     {
         final Availability availability = Availability.Values.COORD_Y.or(Availability.Values.COORD_Z);
-        final BitBuffer bitBuffer = writeStructureBitmaskConstraintsToBitBuffer(availability, (short)1, (short)1, (short)1);
+        final BitBuffer bitBuffer =
+                writeStructureBitmaskConstraintsToBitBuffer(availability, (short)1, (short)1, (short)1);
         final BitStreamReader stream = new ByteArrayBitStreamReader(bitBuffer);
         assertThrows(ZserioError.class, () -> new StructureBitmaskConstraints(stream));
         stream.close();
@@ -68,13 +70,12 @@ public class StructureBitmaskConstraintsTest
     @Test
     public void writeReadCorrectStructureBitmaskConstraints() throws IOException, ZserioError
     {
-        final StructureBitmaskConstraints structureBitmaskConstraints =
-                new StructureBitmaskConstraints(Availability.Values.COORD_X.or(Availability.Values.COORD_Y),
-                        (short)1, (short)1, (short)0);
+        final StructureBitmaskConstraints structureBitmaskConstraints = new StructureBitmaskConstraints(
+                Availability.Values.COORD_X.or(Availability.Values.COORD_Y), (short)1, (short)1, (short)0);
         final BitBuffer bitBuffer = SerializeUtil.serialize(structureBitmaskConstraints);
 
-        final StructureBitmaskConstraints readStructureBitmaskConstraints = SerializeUtil.deserialize(
-                StructureBitmaskConstraints.class, bitBuffer);
+        final StructureBitmaskConstraints readStructureBitmaskConstraints =
+                SerializeUtil.deserialize(StructureBitmaskConstraints.class, bitBuffer);
         assertEquals(1, readStructureBitmaskConstraints.getCoordX());
         assertEquals(1, readStructureBitmaskConstraints.getCoordY());
         assertEquals(0, readStructureBitmaskConstraints.getCoordZ());
@@ -84,9 +85,8 @@ public class StructureBitmaskConstraintsTest
     @Test
     public void writeWrongCoordZConstraint() throws IOException, ZserioError
     {
-        final StructureBitmaskConstraints structureBitmaskConstraints =
-                new StructureBitmaskConstraints(Availability.Values.COORD_X.or(Availability.Values.COORD_Y),
-                        (short)1, (short)1, (short)1);
+        final StructureBitmaskConstraints structureBitmaskConstraints = new StructureBitmaskConstraints(
+                Availability.Values.COORD_X.or(Availability.Values.COORD_Y), (short)1, (short)1, (short)1);
         final BitStreamWriter writer = new ByteArrayBitStreamWriter();
         assertThrows(ZserioError.class, () -> structureBitmaskConstraints.write(writer));
         writer.close();
@@ -95,9 +95,8 @@ public class StructureBitmaskConstraintsTest
     @Test
     public void writeWrongCoordYConstraint() throws IOException, ZserioError
     {
-        final StructureBitmaskConstraints structureBitmaskConstraints =
-                new StructureBitmaskConstraints(Availability.Values.COORD_X.or(Availability.Values.COORD_Z),
-                        (short)1, (short)1, (short)1);
+        final StructureBitmaskConstraints structureBitmaskConstraints = new StructureBitmaskConstraints(
+                Availability.Values.COORD_X.or(Availability.Values.COORD_Z), (short)1, (short)1, (short)1);
         final BitStreamWriter writer = new ByteArrayBitStreamWriter();
         assertThrows(ZserioError.class, () -> structureBitmaskConstraints.write(writer));
         writer.close();
@@ -106,16 +105,15 @@ public class StructureBitmaskConstraintsTest
     @Test
     public void writeWrongCoordXConstraint() throws IOException, ZserioError
     {
-        final StructureBitmaskConstraints structureBitmaskConstraints =
-                new StructureBitmaskConstraints(Availability.Values.COORD_Y.or(Availability.Values.COORD_Z),
-                        (short)1, (short)1, (short)1);
+        final StructureBitmaskConstraints structureBitmaskConstraints = new StructureBitmaskConstraints(
+                Availability.Values.COORD_Y.or(Availability.Values.COORD_Z), (short)1, (short)1, (short)1);
         final BitStreamWriter writer = new ByteArrayBitStreamWriter();
         assertThrows(ZserioError.class, () -> structureBitmaskConstraints.write(writer));
         writer.close();
     }
 
-    private BitBuffer writeStructureBitmaskConstraintsToBitBuffer(Availability mask,
-            short x, short y, short z) throws IOException
+    private BitBuffer writeStructureBitmaskConstraintsToBitBuffer(Availability mask, short x, short y, short z)
+            throws IOException
     {
         try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {

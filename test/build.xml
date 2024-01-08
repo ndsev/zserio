@@ -8,6 +8,7 @@ zserio.release_dir              - Directory where to find Zserio release to test
 zserio_java_test.build_root_dir - Build directory where to put generated files.
                                   Default is "../build/test/java".
 zserio_java_test.test_suites    - Test suites. Default is "**".
+clang_format.exe_file           - Clang-format executable file. If not set, clang-format is not run.
 spotbugs.home_dir               - Location of the spotbugs tool. If not set, spotbugs is not run.
 
 -->
@@ -190,6 +191,25 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
                 </classpath>
                 <src path="@{srcPath}"/>
             </javac>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="testClangFormat">
+        <attribute name="testName"/>
+        <attribute name="srcPath" default="${@{testName}.base_dir}/java"/>
+        <sequential>
+            <echo>
+    Command hints to reformat source using clang-format tool:
+        git clang-format
+        clang-format --style=file -i [SOURCE]
+            </echo>
+            <apply executable="${clang_format.exe_file}" failonerror="true">
+                <arg value="--style=file"/>
+                <arg value="--dry-run"/>
+                <arg value="--Werror"/>
+                <srcfile/>
+                <fileset dir="@{srcPath}" includes="**/*.java"/>
+            </apply>
         </sequential>
     </macrodef>
 

@@ -1,9 +1,10 @@
 package templates;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
@@ -20,13 +21,13 @@ public class InstantiateTypeAsStructArrayFieldTest
         final InstantiateTypeAsStructArrayField instantiateTypeAsStructArrayField =
                 new InstantiateTypeAsStructArrayField();
         instantiateTypeAsStructArrayField.setTest(
-                new Test32[] { new Test32(13), new Test32(17),new Test32(23) });
+                new Test32[] {new Test32(13), new Test32(17), new Test32(23)});
 
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         instantiateTypeAsStructArrayField.write(writer);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         InstantiateTypeAsStructArrayField readInstantiateTypeAsStructArrayField =
                 new InstantiateTypeAsStructArrayField(reader);
         assertTrue(instantiateTypeAsStructArrayField.equals(readInstantiateTypeAsStructArrayField));

@@ -1,11 +1,10 @@
 package offsets;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import offsets.bit_offset.BitOffset;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
@@ -15,6 +14,8 @@ import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
 
+import offsets.bit_offset.BitOffset;
+
 public class BitOffsetTest
 {
     @Test
@@ -22,7 +23,7 @@ public class BitOffsetTest
     {
         final boolean writeWrongOffsets = false;
         final BitBuffer bitBuffer = writeBitOffsetToBitBuffer(writeWrongOffsets);
-        final BitStreamReader reader= new ByteArrayBitStreamReader(bitBuffer);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
         final BitOffset bitOffset = new BitOffset();
         bitOffset.read(reader);
         checkBitOffset(bitOffset);
@@ -102,8 +103,8 @@ public class BitOffsetTest
         final short offsetShift = 1;
         checkOffsets(bitOffset, offsetShift);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         assertEquals(0, reader.readBits(bitPosition));
         final BitOffset readBitOffset = new BitOffset(reader);
         checkOffsets(readBitOffset, offsetShift);
@@ -243,29 +244,29 @@ public class BitOffsetTest
     private static final int BIT_OFFSET_BIT_SIZE = 192;
 
     private static final short WRONG_FIELD1_OFFSET = (short)0;
-    private static final int   WRONG_FIELD2_OFFSET = (int)0;
-    private static final long  WRONG_FIELD3_OFFSET = (long)0;
+    private static final int WRONG_FIELD2_OFFSET = (int)0;
+    private static final long WRONG_FIELD3_OFFSET = (long)0;
     private static final short WRONG_FIELD4_OFFSET = (short)0;
     private static final short WRONG_FIELD5_OFFSET = (short)0;
-    private static final int   WRONG_FIELD6_OFFSET = (int)0;
-    private static final int   WRONG_FIELD7_OFFSET = (int)0;
+    private static final int WRONG_FIELD6_OFFSET = (int)0;
+    private static final int WRONG_FIELD7_OFFSET = (int)0;
     private static final short WRONG_FIELD8_OFFSET = (short)0;
 
     private static final short FIELD1_OFFSET = (short)16;
-    private static final int   FIELD2_OFFSET = (int)17;
-    private static final long  FIELD3_OFFSET = (long)18;
+    private static final int FIELD2_OFFSET = (int)17;
+    private static final long FIELD3_OFFSET = (long)18;
     private static final short FIELD4_OFFSET = (short)19;
     private static final short FIELD5_OFFSET = (short)20;
-    private static final int   FIELD6_OFFSET = (int)21;
-    private static final int   FIELD7_OFFSET = (int)22;
+    private static final int FIELD6_OFFSET = (int)21;
+    private static final int FIELD7_OFFSET = (int)22;
     private static final short FIELD8_OFFSET = (short)23;
 
-    private static final byte  FIELD1_VALUE = (byte)1;
-    private static final byte  FIELD2_VALUE = (byte)2;
-    private static final byte  FIELD3_VALUE = (byte)5;
-    private static final byte  FIELD4_VALUE = (byte)13;
-    private static final byte  FIELD5_VALUE = (byte)26;
-    private static final byte  FIELD6_VALUE = (byte)56;
-    private static final byte  FIELD7_VALUE = (byte)88;
+    private static final byte FIELD1_VALUE = (byte)1;
+    private static final byte FIELD2_VALUE = (byte)2;
+    private static final byte FIELD3_VALUE = (byte)5;
+    private static final byte FIELD4_VALUE = (byte)13;
+    private static final byte FIELD5_VALUE = (byte)26;
+    private static final byte FIELD6_VALUE = (byte)56;
+    private static final byte FIELD7_VALUE = (byte)88;
     private static final short FIELD8_VALUE = (short)222;
 }

@@ -1,15 +1,17 @@
 package array_types;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.io.File;
+import java.io.IOException;
+import java.math.BigInteger;
+
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.io.File;
-import java.math.BigInteger;
+import zserio.runtime.io.SerializeUtil;
 
 import array_types.packed_auto_array_struct_with_unpacked_field.PackedAutoArray;
 import array_types.packed_auto_array_struct_with_unpacked_field.TestStructure;
-import zserio.runtime.io.SerializeUtil;
 
 public class PackedAutoArrayStructWithUnpackedFieldTest
 {
@@ -50,13 +52,12 @@ public class PackedAutoArrayStructWithUnpackedFieldTest
     }
 
     private static final short[] UINT8_FIELD = {0, 2, 4, 6, 8, 10, 12, 14, 16, 18};
-    private static final BigInteger[] UNPACKED_FIELD = {
-            BigInteger.valueOf(5000000), BigInteger.ZERO, BigInteger.ONE, BigInteger.ZERO,
-            BigInteger.ONE, BigInteger.ZERO, BigInteger.ONE, BigInteger.ZERO, BigInteger.ONE, BigInteger.ZERO};
+    private static final BigInteger[] UNPACKED_FIELD = {BigInteger.valueOf(5000000), BigInteger.ZERO,
+            BigInteger.ONE, BigInteger.ZERO, BigInteger.ONE, BigInteger.ZERO, BigInteger.ONE, BigInteger.ZERO,
+            BigInteger.ONE, BigInteger.ZERO};
 
     private static final int UINT8_MAX_BIT_NUMBER = 2;
-    private static final int PACKED_AUTO_ARRAY_BIT_SIZE =
-            8 + // auto array size: varsize
+    private static final int PACKED_AUTO_ARRAY_BIT_SIZE = 8 + // auto array size: varsize
             1 + // uint8Field packing descriptor: isPacked (true)
             6 + // uint8Field is packed: maxBitNumber
             1 + // unpackedField packing descriptor: isPacked (false)

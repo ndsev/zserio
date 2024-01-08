@@ -1,17 +1,18 @@
 package structure_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import structure_types.simple_structure.SimpleStructure;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
+
+import structure_types.simple_structure.SimpleStructure;
 
 public class SimpleStructureTest
 {
@@ -158,8 +159,8 @@ public class SimpleStructureTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         simpleStructure.write(writer);
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final SimpleStructure readsimpleStructure = new SimpleStructure(reader);
         assertEquals(numberA, readsimpleStructure.getNumberA());
         assertEquals(numberB, readsimpleStructure.getNumberB());

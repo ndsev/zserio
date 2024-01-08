@@ -1,16 +1,17 @@
 package choice_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import choice_types.bool_param_choice.BoolParamChoice;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
+
+import choice_types.bool_param_choice.BoolParamChoice;
 
 public class BoolParamChoiceTest
 {
@@ -28,8 +29,8 @@ public class BoolParamChoiceTest
         final boolean selector = false;
         final byte value = (byte)234;
         final BitBuffer buffer = writeBoolParamChoiceToBitBuffer(selector, value);
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer.getBuffer(),
-                buffer.getBitSize());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(buffer.getBuffer(), buffer.getBitSize());
         final BoolParamChoice boolParamChoice = new BoolParamChoice(reader, selector);
         assertEquals(selector, boolParamChoice.getSelector());
         assertEquals((short)value, boolParamChoice.getGrey());
@@ -143,8 +144,8 @@ public class BoolParamChoiceTest
         boolParamChoice.setBlack(byteValue);
         ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         boolParamChoice.write(writer);
-        ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
-                writer.getBitPosition());
+        ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         BoolParamChoice readBoolParamChoice = new BoolParamChoice(reader, selector);
         assertEquals(byteValue, readBoolParamChoice.getBlack());
 

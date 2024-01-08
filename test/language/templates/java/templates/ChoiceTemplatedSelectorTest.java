@@ -1,17 +1,18 @@
 package templates;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 
 import templates.choice_templated_selector.ChoiceTemplatedSelector;
-import templates.choice_templated_selector.TemplatedChoice_uint32_Shift32;
 import templates.choice_templated_selector.TemplatedChoice_uint16_Shift16;
+import templates.choice_templated_selector.TemplatedChoice_uint32_Shift32;
 
 public class ChoiceTemplatedSelectorTest
 {
@@ -35,8 +36,8 @@ public class ChoiceTemplatedSelectorTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         choiceTemplatedSelector.write(writer);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         ChoiceTemplatedSelector readChoiceTemplatedSelector = new ChoiceTemplatedSelector(reader);
         assertTrue(choiceTemplatedSelector.equals(readChoiceTemplatedSelector));
     }

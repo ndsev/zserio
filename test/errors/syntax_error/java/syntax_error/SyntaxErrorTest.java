@@ -1,10 +1,11 @@
 package syntax_error;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import test_utils.ZserioErrorOutput;
 
@@ -26,40 +27,40 @@ public class SyntaxErrorTest
     @Test
     public void unexpectedEofInArrayLength()
     {
-        final String error = "unexpected_eof_in_array_length_error.zs:6:1: " +
-                "mismatched input '<EOF>' expecting {"; // ...
+        final String error = "unexpected_eof_in_array_length_error.zs:6:1: "
+                + "mismatched input '<EOF>' expecting {"; // ...
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void unexpectedEofInConstDefinition()
     {
-        final String error = "unexpected_eof_in_const_definition_error.zs:4:1: " +
-                "mismatched input '<EOF>' expecting {"; // ...
+        final String error = "unexpected_eof_in_const_definition_error.zs:4:1: "
+                + "mismatched input '<EOF>' expecting {"; // ...
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void unexpectedEofInFieldDefinition()
     {
-        final String error = "unexpected_eof_in_field_definition_error.zs:6:1: " +
-                "mismatched input '<EOF>' expecting {"; // ...
+        final String error = "unexpected_eof_in_field_definition_error.zs:6:1: "
+                + "mismatched input '<EOF>' expecting {"; // ...
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void unexpectedEofInParameterizedFieldDefinition()
     {
-        final String error = "unexpected_eof_in_parameterized_field_definition_error.zs:11:1: " +
-                "mismatched input '<EOF>' expecting {"; // ...
+        final String error = "unexpected_eof_in_parameterized_field_definition_error.zs:11:1: "
+                + "mismatched input '<EOF>' expecting {"; // ...
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void unexpectedEofInStructDefinition()
     {
-        final String error = "unexpected_eof_in_struct_definition_error.zs:6:1: " +
-                "extraneous input '<EOF>' expecting {"; // ...
+        final String error = "unexpected_eof_in_struct_definition_error.zs:6:1: "
+                + "extraneous input '<EOF>' expecting {"; // ...
         assertTrue(zserioErrors.isPresent(error));
     }
 

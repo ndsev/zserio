@@ -1,16 +1,17 @@
 package union_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import union_types.union_with_parameterized_field.TestUnion;
-import union_types.union_with_parameterized_field.ArrayHolder;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
+
+import union_types.union_with_parameterized_field.ArrayHolder;
+import union_types.union_with_parameterized_field.TestUnion;
 
 public class UnionWithParameterizedFieldTest
 {
@@ -32,8 +33,8 @@ public class UnionWithParameterizedFieldTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         testUnion.write(writer);
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final TestUnion readTestUnion = new TestUnion(reader);
         assertEquals((short)10, readTestUnion.getArrayHolder().getSize());
     }

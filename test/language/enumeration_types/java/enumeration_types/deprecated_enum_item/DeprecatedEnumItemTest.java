@@ -1,11 +1,12 @@
 package enumeration_types.deprecated_enum_item;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.HashCodeUtil;
 import zserio.runtime.io.BitStreamReader;
@@ -68,8 +69,8 @@ public class DeprecatedEnumItemTest
         Traffic.NONE.write(writer);
         Traffic.HEAVY.write(writer);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         assertEquals(Traffic.NONE, Traffic.readEnum(reader));
         assertEquals(Traffic.HEAVY, Traffic.readEnum(reader));
     }

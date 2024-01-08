@@ -1,9 +1,10 @@
 package expressions;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
+
+import org.junit.jupiter.api.Test;
 
 import expressions.uint64_type.UInt64TypeExpression;
 
@@ -12,8 +13,8 @@ public class UInt64TypeTest
     @Test
     public void bitSizeOfWithOptional()
     {
-        final UInt64TypeExpression uint64TypeExpression = new UInt64TypeExpression(UINT32_VALUE,
-                UINT64_VALUE_WITH_OPTIONAL, BOOLEAN_VALUE, ADDITIONAL_VALUE);
+        final UInt64TypeExpression uint64TypeExpression = new UInt64TypeExpression(
+                UINT32_VALUE, UINT64_VALUE_WITH_OPTIONAL, BOOLEAN_VALUE, ADDITIONAL_VALUE);
 
         assertEquals(UINT64_TYPE_EXPRESSION_BIT_SIZE_WITH_OPTIONAL, uint64TypeExpression.bitSizeOf());
     }
@@ -21,8 +22,8 @@ public class UInt64TypeTest
     @Test
     public void bitSizeOfWithoutOptional()
     {
-        final UInt64TypeExpression uint64TypeExpression = new UInt64TypeExpression(UINT32_VALUE,
-                UINT64_VALUE_WITHOUT_OPTIONAL, BOOLEAN_VALUE, null);
+        final UInt64TypeExpression uint64TypeExpression =
+                new UInt64TypeExpression(UINT32_VALUE, UINT64_VALUE_WITHOUT_OPTIONAL, BOOLEAN_VALUE, null);
 
         assertEquals(UINT64_TYPE_EXPRESSION_BIT_SIZE_WITHOUT_OPTIONAL, uint64TypeExpression.bitSizeOf());
     }

@@ -1,16 +1,17 @@
 package with_range_check_code;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
-
-import with_range_check_code.dynamic_int_range_check.DynamicIntRangeCheckCompound;
 
 import java.io.IOException;
 
-import zserio.runtime.ZserioError;
+import org.junit.jupiter.api.Test;
+
 import zserio.runtime.BitFieldUtil;
+import zserio.runtime.ZserioError;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
+
+import with_range_check_code.dynamic_int_range_check.DynamicIntRangeCheckCompound;
 
 public class DynamicIntRangeCheckTest
 {
@@ -58,8 +59,8 @@ public class DynamicIntRangeCheckTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         dynamicIntRangeCheckCompound.write(writer);
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
-                writer.getBitPosition());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final DynamicIntRangeCheckCompound readDynamicIntRangeCheckCompound =
                 new DynamicIntRangeCheckCompound(reader);
         assertEquals(dynamicIntRangeCheckCompound, readDynamicIntRangeCheckCompound);

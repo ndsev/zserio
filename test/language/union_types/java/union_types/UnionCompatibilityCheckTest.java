@@ -1,22 +1,23 @@
 package union_types;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.io.File;
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.io.File;
+import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.SerializeUtil;
+import zserio.runtime.io.Writer;
 
+import union_types.union_compatibility_check.CoordXY;
+import union_types.union_compatibility_check.CoordXYZ;
 import union_types.union_compatibility_check.UnionCompatibilityCheckVersion1;
 import union_types.union_compatibility_check.UnionCompatibilityCheckVersion2;
 import union_types.union_compatibility_check.UnionVersion1;
 import union_types.union_compatibility_check.UnionVersion2;
-import union_types.union_compatibility_check.CoordXY;
-import union_types.union_compatibility_check.CoordXYZ;
-
-import zserio.runtime.io.ByteArrayBitStreamReader;
-import zserio.runtime.io.ByteArrayBitStreamWriter;
-import zserio.runtime.io.Writer;
-import zserio.runtime.io.SerializeUtil;
 
 public class UnionCompatibilityCheckTest
 {
@@ -24,8 +25,8 @@ public class UnionCompatibilityCheckTest
     public void writeVersion1ReadVersion1() throws IOException
     {
         final UnionCompatibilityCheckVersion1 unionCompatibilityCheckVersion1 = create(createArrayVersion1());
-        final UnionCompatibilityCheckVersion1 readUnionCompatibilityCheckVersion1 = writeReadVersion1(
-                unionCompatibilityCheckVersion1);
+        final UnionCompatibilityCheckVersion1 readUnionCompatibilityCheckVersion1 =
+                writeReadVersion1(unionCompatibilityCheckVersion1);
         assertEquals(unionCompatibilityCheckVersion1, readUnionCompatibilityCheckVersion1);
     }
 
@@ -33,8 +34,8 @@ public class UnionCompatibilityCheckTest
     public void writeVersion1ReadVersion2() throws IOException
     {
         final UnionCompatibilityCheckVersion1 unionCompatibilityCheckVersion1 = create(createArrayVersion1());
-        final UnionCompatibilityCheckVersion2 readUnionCompatibilityCheckVersion2 = writeReadVersion2(
-                unionCompatibilityCheckVersion1);
+        final UnionCompatibilityCheckVersion2 readUnionCompatibilityCheckVersion2 =
+                writeReadVersion2(unionCompatibilityCheckVersion1);
 
         final UnionVersion2[] expectedArrayVersion2 = createArrayVersion2WithVersion1Fields();
         assertArrayEquals(expectedArrayVersion2, readUnionCompatibilityCheckVersion2.getArray());
@@ -46,8 +47,8 @@ public class UnionCompatibilityCheckTest
     {
         final UnionCompatibilityCheckVersion2 unionCompatibilityCheckVersion2 =
                 create(createArrayVersion2WithVersion1Fields());
-        final UnionCompatibilityCheckVersion1 readUnionCompatibilityCheckVersion1 = writeReadVersion1(
-                unionCompatibilityCheckVersion2);
+        final UnionCompatibilityCheckVersion1 readUnionCompatibilityCheckVersion1 =
+                writeReadVersion1(unionCompatibilityCheckVersion2);
 
         final UnionVersion1[] expectedArrayVersion1 = createArrayVersion1();
         assertArrayEquals(expectedArrayVersion1, readUnionCompatibilityCheckVersion1.getArray());
@@ -58,8 +59,8 @@ public class UnionCompatibilityCheckTest
     public void writeVersion2ReadVersion2() throws IOException
     {
         final UnionCompatibilityCheckVersion2 unionCompatibilityCheckVersion2 = create(createArrayVersion2());
-        final UnionCompatibilityCheckVersion2 readUnionCompatibilityCheckVersion2 = writeReadVersion2(
-                unionCompatibilityCheckVersion2);
+        final UnionCompatibilityCheckVersion2 readUnionCompatibilityCheckVersion2 =
+                writeReadVersion2(unionCompatibilityCheckVersion2);
         assertEquals(unionCompatibilityCheckVersion2, readUnionCompatibilityCheckVersion2);
     }
 
@@ -67,8 +68,8 @@ public class UnionCompatibilityCheckTest
     public void writeVersion1ReadVersion1File() throws IOException
     {
         final UnionCompatibilityCheckVersion1 unionCompatibilityCheckVersion1 = create(createArrayVersion1());
-        final UnionCompatibilityCheckVersion1 readUnionCompatibilityCheckVersion1 = writeReadVersion1File(
-                unionCompatibilityCheckVersion1, "version1_version1");
+        final UnionCompatibilityCheckVersion1 readUnionCompatibilityCheckVersion1 =
+                writeReadVersion1File(unionCompatibilityCheckVersion1, "version1_version1");
         assertEquals(unionCompatibilityCheckVersion1, readUnionCompatibilityCheckVersion1);
     }
 
@@ -76,8 +77,8 @@ public class UnionCompatibilityCheckTest
     public void writeVersion1ReadVersion2File() throws IOException
     {
         final UnionCompatibilityCheckVersion1 unionCompatibilityCheckVersion1 = create(createArrayVersion1());
-        final UnionCompatibilityCheckVersion2 readUnionCompatibilityCheckVersion2 = writeReadVersion2File(
-                unionCompatibilityCheckVersion1, "version1_version2");
+        final UnionCompatibilityCheckVersion2 readUnionCompatibilityCheckVersion2 =
+                writeReadVersion2File(unionCompatibilityCheckVersion1, "version1_version2");
 
         final UnionVersion2[] expectedArrayVersion2 = createArrayVersion2WithVersion1Fields();
         assertArrayEquals(expectedArrayVersion2, readUnionCompatibilityCheckVersion2.getArray());
@@ -89,8 +90,8 @@ public class UnionCompatibilityCheckTest
     {
         final UnionCompatibilityCheckVersion2 unionCompatibilityCheckVersion2 =
                 create(createArrayVersion2WithVersion1Fields());
-        final UnionCompatibilityCheckVersion1 readUnionCompatibilityCheckVersion1 = writeReadVersion1File(
-                unionCompatibilityCheckVersion2, "version2_version1");
+        final UnionCompatibilityCheckVersion1 readUnionCompatibilityCheckVersion1 =
+                writeReadVersion1File(unionCompatibilityCheckVersion2, "version2_version1");
 
         final UnionVersion1[] expectedArrayVersion1 = createArrayVersion1();
         assertArrayEquals(expectedArrayVersion1, readUnionCompatibilityCheckVersion1.getArray());
@@ -101,8 +102,8 @@ public class UnionCompatibilityCheckTest
     public void writeVersion2ReadVersion2File() throws IOException
     {
         final UnionCompatibilityCheckVersion2 unionCompatibilityCheckVersion2 = create(createArrayVersion2());
-        final UnionCompatibilityCheckVersion2 readUnionCompatibilityCheckVersion2 = writeReadVersion2File(
-                unionCompatibilityCheckVersion2, "version2_version2");
+        final UnionCompatibilityCheckVersion2 readUnionCompatibilityCheckVersion2 =
+                writeReadVersion2File(unionCompatibilityCheckVersion2, "version2_version2");
         assertEquals(unionCompatibilityCheckVersion2, readUnionCompatibilityCheckVersion2);
     }
 
@@ -119,35 +120,21 @@ public class UnionCompatibilityCheckTest
     private UnionVersion1[] createArrayVersion1()
     {
         return new UnionVersion1[] {
-            createUnionVersion1(0),
-            createUnionVersion1(1),
-            createUnionVersion1(2),
-            createUnionVersion1(3)
-        };
+                createUnionVersion1(0), createUnionVersion1(1), createUnionVersion1(2), createUnionVersion1(3)};
     }
 
     private UnionVersion2[] createArrayVersion2WithVersion1Fields()
     {
         return new UnionVersion2[] {
-            createUnionVersion2(0),
-            createUnionVersion2(1),
-            createUnionVersion2(2),
-            createUnionVersion2(3)
-        };
+                createUnionVersion2(0), createUnionVersion2(1), createUnionVersion2(2), createUnionVersion2(3)};
     }
 
     private UnionVersion2[] createArrayVersion2()
     {
         final UnionVersion2[] arrayVersion2WithVersion1Fields = createArrayVersion2WithVersion1Fields();
-        return new UnionVersion2[] {
-            arrayVersion2WithVersion1Fields[0],
-            arrayVersion2WithVersion1Fields[1],
-            arrayVersion2WithVersion1Fields[2],
-            arrayVersion2WithVersion1Fields[3],
-            createUnionCoordXYZ(4),
-            createUnionCoordXYZ(5),
-            createUnionCoordXYZ(6)
-        };
+        return new UnionVersion2[] {arrayVersion2WithVersion1Fields[0], arrayVersion2WithVersion1Fields[1],
+                arrayVersion2WithVersion1Fields[2], arrayVersion2WithVersion1Fields[3], createUnionCoordXYZ(4),
+                createUnionCoordXYZ(5), createUnionCoordXYZ(6)};
     }
 
     private UnionVersion1 createUnionVersion1(int index)
@@ -179,27 +166,25 @@ public class UnionCompatibilityCheckTest
         return union;
     }
 
-    private UnionCompatibilityCheckVersion1 writeReadVersion1(
-            Writer unionCompatibilityCheck) throws IOException
+    private UnionCompatibilityCheckVersion1 writeReadVersion1(Writer unionCompatibilityCheck) throws IOException
     {
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         unionCompatibilityCheck.write(writer);
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final UnionCompatibilityCheckVersion1 readUnion = new UnionCompatibilityCheckVersion1(reader);
 
         return readUnion;
     }
 
-    private UnionCompatibilityCheckVersion2 writeReadVersion2(
-            Writer unionCompatibilityCheck) throws IOException
+    private UnionCompatibilityCheckVersion2 writeReadVersion2(Writer unionCompatibilityCheck) throws IOException
     {
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         unionCompatibilityCheck.write(writer);
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final UnionCompatibilityCheckVersion2 readUnion = new UnionCompatibilityCheckVersion2(reader);
 
         return readUnion;
@@ -212,8 +197,8 @@ public class UnionCompatibilityCheckTest
 
         SerializeUtil.serializeToFile(unionCompatibilityCheck, file);
 
-        final UnionCompatibilityCheckVersion1 readUnion = SerializeUtil.deserializeFromFile(
-                UnionCompatibilityCheckVersion1.class, file);
+        final UnionCompatibilityCheckVersion1 readUnion =
+                SerializeUtil.deserializeFromFile(UnionCompatibilityCheckVersion1.class, file);
         return readUnion;
     }
 
@@ -224,8 +209,8 @@ public class UnionCompatibilityCheckTest
 
         SerializeUtil.serializeToFile(unionCompatibilityCheck, file);
 
-        final UnionCompatibilityCheckVersion2 readUnion = SerializeUtil.deserializeFromFile(
-                UnionCompatibilityCheckVersion2.class, file);
+        final UnionCompatibilityCheckVersion2 readUnion =
+                SerializeUtil.deserializeFromFile(UnionCompatibilityCheckVersion2.class, file);
         return readUnion;
     }
 

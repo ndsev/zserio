@@ -1,14 +1,16 @@
 package array_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import array_types.auto_array_bitfield_param.ParameterizedBitfieldLength;
+import org.junit.jupiter.api.Test;
+
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
+
+import array_types.auto_array_bitfield_param.ParameterizedBitfieldLength;
 
 public class AutoArrayBitfieldParamTest
 {
@@ -30,8 +32,8 @@ public class AutoArrayBitfieldParamTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         parameterizedBitfieldLength.write(writer);
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
-                writer.getBitPosition());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         checkParameterizedBitfieldLengthInStream(reader, parameterizedBitfieldLength);
         reader.setBitPosition(0);
         final ParameterizedBitfieldLength readParameterizedBitfieldLength =

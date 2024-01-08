@@ -1,10 +1,11 @@
 package expressions;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
-import expressions.valueof_operator.ValueOfFunctions;
 import expressions.valueof_operator.Color;
+import expressions.valueof_operator.ValueOfFunctions;
 
 public class ValueOfOperatorTest
 {

@@ -1,10 +1,11 @@
 package expressions_error;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import test_utils.ZserioErrorOutput;
 
@@ -42,56 +43,56 @@ public class ExpressionsErrorTest
     @Test
     public void ternaryIncompatibleBitmaskTypesInArgument()
     {
-        final String error = "ternary_incompatible_bitmask_types_in_argument_error.zs:26:19: " +
-                "Incompatible expression types ('Bitmask1' != 'Bitmask2')!";
+        final String error = "ternary_incompatible_bitmask_types_in_argument_error.zs:26:19: "
+                + "Incompatible expression types ('Bitmask1' != 'Bitmask2')!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void ternaryIncompatibleBitmaskTypesInConstraint()
     {
-        final String error = "ternary_incompatible_bitmask_types_in_constraint_error.zs:20:50: " +
-                "Incompatible expression types ('Bitmask1' != 'Bitmask2')!";
+        final String error = "ternary_incompatible_bitmask_types_in_constraint_error.zs:20:50: "
+                + "Incompatible expression types ('Bitmask1' != 'Bitmask2')!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void ternaryIncompatibleCompoundTypesInArgument()
     {
-        final String error = "ternary_incompatible_compound_types_in_argument_error.zs:23:19: " +
-                "Incompatible expression types ('Param1' != 'Param2')!";
+        final String error = "ternary_incompatible_compound_types_in_argument_error.zs:23:19: "
+                + "Incompatible expression types ('Param1' != 'Param2')!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void ternaryIncompatibleCompoundTypesInConstraint()
     {
-        final String error = "ternary_incompatible_compound_types_in_constraint_error.zs:18:42: " +
-                "Incompatible expression types ('Compound1' != 'Compound2')!";
+        final String error = "ternary_incompatible_compound_types_in_constraint_error.zs:18:42: "
+                + "Incompatible expression types ('Compound1' != 'Compound2')!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void ternaryIncompatibleEnumTypesInArgument()
     {
-        final String error = "ternary_incompatible_enum_types_in_argument_error.zs:26:19: " +
-                "Incompatible expression types ('Enum1' != 'Enum2')!";
+        final String error = "ternary_incompatible_enum_types_in_argument_error.zs:26:19: "
+                + "Incompatible expression types ('Enum1' != 'Enum2')!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void ternaryIncompatibleEnumTypesInOptional()
     {
-        final String error = "ternary_incompatible_enum_types_in_optional_error.zs:20:24: " +
-                "Incompatible expression types ('Enum1' != 'Enum2')!";
+        final String error = "ternary_incompatible_enum_types_in_optional_error.zs:20:24: "
+                + "Incompatible expression types ('Enum1' != 'Enum2')!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void wrongFullType()
     {
-        final String error = "wrong_full_type_error.zs:7:33: " +
-                "Unresolved symbol 'wrong_full_type_error.someStructure' within expression scope!";
+        final String error = "wrong_full_type_error.zs:7:33: "
+                + "Unresolved symbol 'wrong_full_type_error.someStructure' within expression scope!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

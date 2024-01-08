@@ -1,21 +1,21 @@
 package templates;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Properties;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
-import test_utils.JdbcUtil;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import templates.instantiate_sql_table.U32Table;
 import templates.instantiate_sql_table.U32TableRow;
+import test_utils.JdbcUtil;
 
 public class InstantiateSqlTableTest
 {

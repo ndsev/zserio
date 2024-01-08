@@ -1,21 +1,20 @@
 package templates;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 
 import templates.struct_long_template_argument_clash.StructLongTemplateArgumentClash;
+import templates.struct_long_template_argument_clash.TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_Th_1B45EF08;
+import templates.struct_long_template_argument_clash.TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_Th_619A1B35;
 import templates.struct_long_template_argument_clash.ThisIsVeryVeryVeryLongNamedStructure;
 import templates.struct_long_template_argument_clash.ThisIsVeryVeryVeryLongNamedStructure_;
-import templates.struct_long_template_argument_clash.
-        TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_Th_619A1B35;
-import templates.struct_long_template_argument_clash.
-        TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_Th_1B45EF08;
 
 public class StructLongTemplateArgumentClashTest
 {
@@ -38,8 +37,8 @@ public class StructLongTemplateArgumentClashTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         structLongTemplateArgumentClash.write(writer);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final StructLongTemplateArgumentClash readStructLongTemplateArgumentClash =
                 new StructLongTemplateArgumentClash(reader);
         assertTrue(structLongTemplateArgumentClash.equals(readStructLongTemplateArgumentClash));

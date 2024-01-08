@@ -1,11 +1,10 @@
 package offsets;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import offsets.ternary_operator_offset.TernaryOffset;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
@@ -13,6 +12,8 @@ import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
+
+import offsets.ternary_operator_offset.TernaryOffset;
 
 public class TernaryOperatorOffsetTest
 {
@@ -98,8 +99,8 @@ public class TernaryOperatorOffsetTest
 
     private TernaryOffset createTernaryOffset(boolean isFirstOffsetUsed, boolean createWrongOffset)
     {
-        final TernaryOffset ternaryOffset = new TernaryOffset(isFirstOffsetUsed, new long[] {
-                WRONG_FIELD_OFFSET, WRONG_FIELD_OFFSET}, FIELD_VALUE);
+        final TernaryOffset ternaryOffset = new TernaryOffset(
+                isFirstOffsetUsed, new long[] {WRONG_FIELD_OFFSET, WRONG_FIELD_OFFSET}, FIELD_VALUE);
         if (!createWrongOffset)
             ternaryOffset.initializeOffsets();
 
@@ -114,8 +115,8 @@ public class TernaryOperatorOffsetTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         ternaryOffset.write(writer);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final TernaryOffset readTernaryOffset = new TernaryOffset(reader);
         checkTernaryOffset(readTernaryOffset, isFirstOffsetUsed);
     }
@@ -140,6 +141,6 @@ public class TernaryOperatorOffsetTest
     }
 
     private static final long WRONG_FIELD_OFFSET = 0;
-    private static final long FIELD_OFFSET = (1 + 32 + 32 + /* align */ + 7) / 8;
+    private static final long FIELD_OFFSET = (1 + 32 + 32 + /* align */ +7) / 8;
     private static final int FIELD_VALUE = 0xABCD;
 }

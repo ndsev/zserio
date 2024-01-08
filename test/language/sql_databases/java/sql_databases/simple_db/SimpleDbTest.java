@@ -1,9 +1,6 @@
 package sql_databases.simple_db;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.sql.Connection;
@@ -17,10 +14,14 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import test_utils.FileUtil;
-import test_utils.JdbcUtil;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.validation.ValidationReport;
+
+import test_utils.FileUtil;
+import test_utils.JdbcUtil;
 
 public class SimpleDbTest
 {
@@ -64,10 +65,8 @@ public class SimpleDbTest
         connectionProps.setProperty("flags", "CREATE");
         final String uriPath = "jdbc:sqlite:file:" + dbFile.toString();
 
-        try (
-            final Connection connection = DriverManager.getConnection(uriPath, connectionProps);
-            final WorldDb database = new WorldDb(connection);
-        )
+        try (final Connection connection = DriverManager.getConnection(uriPath, connectionProps);
+                final WorldDb database = new WorldDb(connection);)
         {
             database.createSchema();
             checkDb(database);
@@ -82,10 +81,8 @@ public class SimpleDbTest
         final String uriPath = "jdbc:sqlite:file:" + dbFile.toString();
         final Map<String, String> tableToDbFileNameRelocationMap = new HashMap<String, String>();
 
-        try (
-            final Connection connection = DriverManager.getConnection(uriPath, connectionProps);
-            final WorldDb database = new WorldDb(connection, tableToDbFileNameRelocationMap);
-        )
+        try (final Connection connection = DriverManager.getConnection(uriPath, connectionProps);
+                final WorldDb database = new WorldDb(connection, tableToDbFileNameRelocationMap);)
         {
             database.createSchema();
             checkDb(database);
@@ -185,14 +182,10 @@ public class SimpleDbTest
         // check if database does contain table
         final String sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name=?";
 
-        try (
-            final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);
-        )
+        try (final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);)
         {
             statement.setString(1, checkTableName);
-            try (
-                final ResultSet resultSet = statement.executeQuery();
-            )
+            try (final ResultSet resultSet = statement.executeQuery();)
             {
                 if (!resultSet.next())
                     return false;

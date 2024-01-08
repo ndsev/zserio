@@ -1,11 +1,13 @@
 package optional_members;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
-import optional_members.optional_expression_with_removed_enum_item.Compound;
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.SerializeUtil;
+
+import optional_members.optional_expression_with_removed_enum_item.Compound;
 
 public class OptionalExpressionWithRemovedEnumItemTest
 {

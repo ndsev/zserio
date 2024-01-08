@@ -1,22 +1,22 @@
 package templates;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Properties;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
-import test_utils.JdbcUtil;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
+import templates.instantiate_type_as_sql_table_field.Test32;
 import templates.instantiate_type_as_sql_table_field.Test32Table;
 import templates.instantiate_type_as_sql_table_field.Test32TableRow;
-import templates.instantiate_type_as_sql_table_field.Test32;
+import test_utils.JdbcUtil;
 
 public class InstantiateTypeAsSqlTableFieldTest
 {

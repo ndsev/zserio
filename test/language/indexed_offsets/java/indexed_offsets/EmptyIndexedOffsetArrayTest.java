@@ -1,11 +1,10 @@
 package indexed_offsets;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import indexed_offsets.empty_indexed_offset_array.EmptyIndexedOffsetArray;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
@@ -13,6 +12,8 @@ import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
+
+import indexed_offsets.empty_indexed_offset_array.EmptyIndexedOffsetArray;
 
 public class EmptyIndexedOffsetArrayTest
 {
@@ -45,8 +46,8 @@ public class EmptyIndexedOffsetArrayTest
     {
         final EmptyIndexedOffsetArray emptyIndexedOffsetArray = createEmptyIndexedOffsetArray();
         final int bitPosition = 0;
-        assertEquals(EMPTY_INDEXED_OFFSET_ARRAY_BIT_SIZE,
-                emptyIndexedOffsetArray.initializeOffsets(bitPosition));
+        assertEquals(
+                EMPTY_INDEXED_OFFSET_ARRAY_BIT_SIZE, emptyIndexedOffsetArray.initializeOffsets(bitPosition));
         checkEmptyIndexedOffsetArray(emptyIndexedOffsetArray);
     }
 
@@ -67,8 +68,8 @@ public class EmptyIndexedOffsetArrayTest
         final BitBuffer bitBuffer = SerializeUtil.serialize(emptyIndexedOffsetArray);
         checkEmptyIndexedOffsetArray(emptyIndexedOffsetArray);
 
-        final EmptyIndexedOffsetArray readEmptyIndexedOffsetArray = SerializeUtil.deserialize(
-                EmptyIndexedOffsetArray.class, bitBuffer);
+        final EmptyIndexedOffsetArray readEmptyIndexedOffsetArray =
+                SerializeUtil.deserialize(EmptyIndexedOffsetArray.class, bitBuffer);
         checkEmptyIndexedOffsetArray(readEmptyIndexedOffsetArray);
         assertTrue(emptyIndexedOffsetArray.equals(readEmptyIndexedOffsetArray));
     }
@@ -113,8 +114,8 @@ public class EmptyIndexedOffsetArrayTest
 
     private static final short NUM_ELEMENTS = (short)0;
 
-    private static final byte  SPACER_VALUE = 1;
-    private static final byte  FIELD_VALUE = 63;
+    private static final byte SPACER_VALUE = 1;
+    private static final byte FIELD_VALUE = 63;
 
-    private static final int   EMPTY_INDEXED_OFFSET_ARRAY_BIT_SIZE = 1 + 6;
+    private static final int EMPTY_INDEXED_OFFSET_ARRAY_BIT_SIZE = 1 + 6;
 }

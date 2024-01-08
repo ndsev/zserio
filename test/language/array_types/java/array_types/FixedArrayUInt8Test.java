@@ -1,14 +1,16 @@
 package array_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
+
 import array_types.fixed_array_uint8.FixedArray;
 
 public class FixedArrayUInt8Test
@@ -67,7 +69,6 @@ public class FixedArrayUInt8Test
 
         FixedArray fixedArray = new FixedArray(uint8Array);
         SerializeUtil.serializeToFile(fixedArray, BLOB_NAME);
-
 
         final FixedArray readFixedArray = SerializeUtil.deserializeFromFile(FixedArray.class, BLOB_NAME);
         final short[] readUint8Array = readFixedArray.getUint8Array();

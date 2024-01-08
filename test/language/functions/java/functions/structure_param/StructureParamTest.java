@@ -1,10 +1,11 @@
 package functions.structure_param;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
@@ -24,8 +25,8 @@ public class StructureParamTest
         final byte[] expectedByteArray = writeMetresConverterCallerToByteArray();
         assertTrue(Arrays.equals(expectedByteArray, writtenByteArray));
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(
-                writtenByteArray, writer.getBitPosition());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writtenByteArray, writer.getBitPosition());
         final MetresConverterCaller readMetresConverterCaller = new MetresConverterCaller(reader);
         assertEquals(metresConverterCaller, readMetresConverterCaller);
     }

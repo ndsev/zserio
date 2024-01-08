@@ -1,15 +1,16 @@
 package array_types;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.io.File;
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.io.File;
+import zserio.runtime.io.SerializeUtil;
 
 import array_types.variable_array_ternary_operator.VariableArray;
 import array_types.variable_array_ternary_operator.VariableArrayElement;
-
-import zserio.runtime.io.SerializeUtil;
 
 public class VariableArrayTernaryOperatorTest
 {
@@ -31,8 +32,8 @@ public class VariableArrayTernaryOperatorTest
     {
         final VariableArray variableArray = new VariableArray();
         variableArray.setIsFirstSizeUsed(isFirstSizeUsed);
-        final byte currentSize = (isFirstSizeUsed) ? variableArray.getFirstSize() :
-            variableArray.getSecondSize();
+        final byte currentSize =
+                (isFirstSizeUsed) ? variableArray.getFirstSize() : variableArray.getSecondSize();
         final int arraySize = (int)currentSize * (int)currentSize;
         final VariableArrayElement array[] = new VariableArrayElement[arraySize];
         for (int i = 0; i < arraySize; ++i)

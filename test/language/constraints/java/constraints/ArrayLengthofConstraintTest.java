@@ -1,11 +1,10 @@
 package constraints;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import constraints.array_lengthof_constraint.ArrayLengthofConstraint;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
@@ -14,6 +13,8 @@ import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
+
+import constraints.array_lengthof_constraint.ArrayLengthofConstraint;
 
 public class ArrayLengthofConstraintTest
 {
@@ -51,8 +52,8 @@ public class ArrayLengthofConstraintTest
             array[i] = i;
         arrayLengthofConstraint.setArray(array);
         final BitBuffer bitBuffer = SerializeUtil.serialize(arrayLengthofConstraint);
-        final ArrayLengthofConstraint readArrayLengthofConstraint = SerializeUtil.deserialize(
-                ArrayLengthofConstraint.class, bitBuffer);
+        final ArrayLengthofConstraint readArrayLengthofConstraint =
+                SerializeUtil.deserialize(ArrayLengthofConstraint.class, bitBuffer);
         assertEquals(CORRECT_LENGTH, readArrayLengthofConstraint.getArray().length);
         assertTrue(arrayLengthofConstraint.equals(readArrayLengthofConstraint));
     }
@@ -83,8 +84,7 @@ public class ArrayLengthofConstraintTest
         writer.close();
     }
 
-    private BitBuffer writeArrayLengthofConstraintToBitBuffer(int length)
-            throws IOException
+    private BitBuffer writeArrayLengthofConstraintToBitBuffer(int length) throws IOException
     {
         try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {

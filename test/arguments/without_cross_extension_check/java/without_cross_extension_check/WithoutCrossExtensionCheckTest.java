@@ -1,6 +1,7 @@
 package without_cross_extension_check;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
 public class WithoutCrossExtensionCheckTest

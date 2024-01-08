@@ -1,15 +1,10 @@
 package offsets;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import offsets.nested_offset.NestedOffset;
-import offsets.nested_offset.NestedOffsetArrayStructure;
-import offsets.nested_offset.NestedOffsetChoice;
-import offsets.nested_offset.NestedOffsetStructure;
-import offsets.nested_offset.NestedOffsetUnion;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
@@ -18,6 +13,12 @@ import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
+
+import offsets.nested_offset.NestedOffset;
+import offsets.nested_offset.NestedOffsetArrayStructure;
+import offsets.nested_offset.NestedOffsetChoice;
+import offsets.nested_offset.NestedOffsetStructure;
+import offsets.nested_offset.NestedOffsetUnion;
 
 public class NestedOffsetTest
 {
@@ -73,7 +74,7 @@ public class NestedOffsetTest
         final boolean createWrongOffsets = true;
         final NestedOffset nestedOffset = createNestedOffset(createWrongOffsets);
         final int bitPosition = 2;
-        assertEquals(NEST_OFFSET_BIT_SIZE , nestedOffset.initializeOffsets(bitPosition));
+        assertEquals(NEST_OFFSET_BIT_SIZE, nestedOffset.initializeOffsets(bitPosition));
         checkNestedOffset(nestedOffset);
     }
 
@@ -102,8 +103,8 @@ public class NestedOffsetTest
         nestedOffset.write(writer);
         checkNestedOffset(nestedOffset);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         assertEquals(0, reader.readBits(bitPosition));
         final NestedOffset readNestedOffset = new NestedOffset(reader);
         checkNestedOffset(readNestedOffset);
@@ -189,8 +190,8 @@ public class NestedOffsetTest
         nestedOffsetChoice.setNestedOffsetUnion(nestedOffsetUnion);
 
         final long terminatorOffset = (createWrongOffsets) ? WRONG_TERMINATOR_OFFSET : TERMINATOR_OFFSET;
-        final NestedOffset nestedOffset = new NestedOffset(terminatorOffset, BOOL_VALUE, nestedOffsetChoice,
-                TERMINATOR_VALUE);
+        final NestedOffset nestedOffset =
+                new NestedOffset(terminatorOffset, BOOL_VALUE, nestedOffsetChoice, TERMINATOR_VALUE);
 
         return nestedOffset;
     }

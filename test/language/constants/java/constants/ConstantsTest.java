@@ -1,9 +1,10 @@
 package constants;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
+
+import org.junit.jupiter.api.Test;
 
 public class ConstantsTest
 {
@@ -302,15 +303,14 @@ public class ConstantsTest
     @Test
     public void hexEscStringConstant()
     {
-        assertEquals("Test string with hexadecimal escape \u0019",
-                HEX_ESC_STRING_CONSTANT.HEX_ESC_STRING_CONSTANT);
+        assertEquals(
+                "Test string with hexadecimal escape \u0019", HEX_ESC_STRING_CONSTANT.HEX_ESC_STRING_CONSTANT);
     }
 
     @Test
     public void octalEscStringConstant()
     {
-        assertEquals("Test string with octal escape \031",
-                OCTAL_ESC_STRING_CONSTANT.OCTAL_ESC_STRING_CONSTANT);
+        assertEquals("Test string with octal escape \031", OCTAL_ESC_STRING_CONSTANT.OCTAL_ESC_STRING_CONSTANT);
     }
 
     @Test
@@ -373,4 +373,3 @@ public class ConstantsTest
         assertEquals(Permission.Values.READ, SUBTYPE_READ_PERMISSION.SUBTYPE_READ_PERMISSION);
     }
 }
-

@@ -1,11 +1,10 @@
 package indexed_offsets;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import indexed_offsets.int14_indexed_offset_array.Int14IndexedOffsetArray;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
@@ -14,6 +13,8 @@ import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
+
+import indexed_offsets.int14_indexed_offset_array.Int14IndexedOffsetArray;
 
 public class Int14IndexedOffsetArrayTest
 {
@@ -63,7 +64,8 @@ public class Int14IndexedOffsetArrayTest
         final Int14IndexedOffsetArray int14IndexedOffsetArray =
                 createInt14IndexedOffsetArray(createWrongOffsets);
         final int bitPosition = 0;
-        assertEquals(INT14_INDEXED_OFFSET_ARRAY_BIT_SIZE, int14IndexedOffsetArray.initializeOffsets(bitPosition));
+        assertEquals(
+                INT14_INDEXED_OFFSET_ARRAY_BIT_SIZE, int14IndexedOffsetArray.initializeOffsets(bitPosition));
         checkInt14IndexedOffsetArray(int14IndexedOffsetArray);
     }
 
@@ -90,8 +92,8 @@ public class Int14IndexedOffsetArrayTest
         final BitBuffer bitBuffer = SerializeUtil.serialize(int14IndexedOffsetArray);
         checkInt14IndexedOffsetArray(int14IndexedOffsetArray);
 
-        final Int14IndexedOffsetArray readInt14IndexedOffsetArray = SerializeUtil.deserialize(
-                Int14IndexedOffsetArray.class, bitBuffer);
+        final Int14IndexedOffsetArray readInt14IndexedOffsetArray =
+                SerializeUtil.deserialize(Int14IndexedOffsetArray.class, bitBuffer);
         checkInt14IndexedOffsetArray(readInt14IndexedOffsetArray);
         assertTrue(int14IndexedOffsetArray.equals(readInt14IndexedOffsetArray));
     }
@@ -110,8 +112,8 @@ public class Int14IndexedOffsetArrayTest
         final short offsetShift = 1;
         checkOffsets(int14IndexedOffsetArray, offsetShift);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         assertEquals(0, reader.readBits(bitPosition));
         final Int14IndexedOffsetArray readInt14IndexedOffsetArray = new Int14IndexedOffsetArray(reader);
         checkOffsets(int14IndexedOffsetArray, offsetShift);
@@ -209,15 +211,15 @@ public class Int14IndexedOffsetArrayTest
 
     private static final short NUM_ELEMENTS = (short)5;
 
-    private static final long  WRONG_OFFSET = (long)0;
+    private static final long WRONG_OFFSET = (long)0;
 
-    private static final long  ELEMENT0_OFFSET = (long)(NUM_ELEMENTS * Integer.SIZE + Byte.SIZE) / Byte.SIZE;
-    private static final int   ELEMENT_SIZE = 14;
-    private static final int   ALIGNED_ELEMENT_SIZE = 2 * Byte.SIZE;
-    private static final int   ALIGNED_ELEMENT_BYTE_SIZE = ALIGNED_ELEMENT_SIZE / Byte.SIZE;
+    private static final long ELEMENT0_OFFSET = (long)(NUM_ELEMENTS * Integer.SIZE + Byte.SIZE) / Byte.SIZE;
+    private static final int ELEMENT_SIZE = 14;
+    private static final int ALIGNED_ELEMENT_SIZE = 2 * Byte.SIZE;
+    private static final int ALIGNED_ELEMENT_BYTE_SIZE = ALIGNED_ELEMENT_SIZE / Byte.SIZE;
 
-    private static final byte  SPACER_VALUE = 1;
+    private static final byte SPACER_VALUE = 1;
 
-    private static final int   INT14_INDEXED_OFFSET_ARRAY_BIT_SIZE = NUM_ELEMENTS * Integer.SIZE + Byte.SIZE +
-            (NUM_ELEMENTS - 1) * ALIGNED_ELEMENT_SIZE + ELEMENT_SIZE;
+    private static final int INT14_INDEXED_OFFSET_ARRAY_BIT_SIZE =
+            NUM_ELEMENTS * Integer.SIZE + Byte.SIZE + (NUM_ELEMENTS - 1) * ALIGNED_ELEMENT_SIZE + ELEMENT_SIZE;
 }

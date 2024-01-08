@@ -1,17 +1,18 @@
 package parameterized_types.array_element_param_with_optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
 import java.math.BigInteger;
 
+import org.junit.jupiter.api.Test;
+
+import zserio.runtime.BitSizeOfCalculator;
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.SerializeUtil;
-import zserio.runtime.BitSizeOfCalculator;
 
 public class ArrayElementParamWithOptionalTest
 {
@@ -55,7 +56,7 @@ public class ArrayElementParamWithOptionalTest
         final Param param = new Param(HAS_EXTRA, EXTRA_PARAM);
         final Value value = new Value(param, null, new ExtraValue(param.getExtraParam(), EXTRA_VALUE));
 
-        return new Holder(param, new Value[] { value });
+        return new Holder(param, new Value[] {value});
     }
 
     private BitBuffer writeHolderToBitBuffer() throws IOException

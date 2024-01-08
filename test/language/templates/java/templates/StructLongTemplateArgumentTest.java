@@ -1,17 +1,18 @@
 package templates;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 
 import templates.struct_long_template_argument.StructLongTemplateArgument;
-import templates.struct_long_template_argument.ThisIsVeryVeryVeryLongNamedStructure;
 import templates.struct_long_template_argument.TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVery_;
+import templates.struct_long_template_argument.ThisIsVeryVeryVeryLongNamedStructure;
 
 public class StructLongTemplateArgumentTest
 {
@@ -28,8 +29,8 @@ public class StructLongTemplateArgumentTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         structLongTemplateArgument.write(writer);
 
-        final BitStreamReader reader = new ByteArrayBitStreamReader(
-                writer.toByteArray(), writer.getBitPosition());
+        final BitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final StructLongTemplateArgument readStructLongTemplateArgument =
                 new StructLongTemplateArgument(reader);
         assertTrue(structLongTemplateArgument.equals(readStructLongTemplateArgument));

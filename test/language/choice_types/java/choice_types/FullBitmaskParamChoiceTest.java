@@ -1,17 +1,18 @@
 package choice_types;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import choice_types.full_bitmask_param_choice.FullBitmaskParamChoice;
-import choice_types.full_bitmask_param_choice.Selector;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
+
+import choice_types.full_bitmask_param_choice.FullBitmaskParamChoice;
+import choice_types.full_bitmask_param_choice.Selector;
 
 public class FullBitmaskParamChoiceTest
 {
@@ -29,8 +30,8 @@ public class FullBitmaskParamChoiceTest
         final Selector selector = Selector.Values.WHITE;
         final int value = 234;
         final BitBuffer buffer = writeFullBitmaskParamChoiceToBitBuffer(selector, value);
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer.getBuffer(),
-                buffer.getBitSize());
+        final ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(buffer.getBuffer(), buffer.getBitSize());
         final FullBitmaskParamChoice fullBitmaskParamChoice = new FullBitmaskParamChoice(reader, selector);
         assertEquals(selector, fullBitmaskParamChoice.getSelector());
         assertEquals((short)value, fullBitmaskParamChoice.getWhite());
@@ -91,7 +92,8 @@ public class FullBitmaskParamChoiceTest
     @Test
     public void getSetBlackAndWhite()
     {
-        FullBitmaskParamChoice fullBitmaskParamChoice = new FullBitmaskParamChoice(Selector.Values.BLACK_AND_WHITE);
+        FullBitmaskParamChoice fullBitmaskParamChoice =
+                new FullBitmaskParamChoice(Selector.Values.BLACK_AND_WHITE);
         final int value = 65535;
         fullBitmaskParamChoice.setBlackAndWhite(value);
         assertEquals(value, fullBitmaskParamChoice.getBlackAndWhite());
@@ -162,8 +164,8 @@ public class FullBitmaskParamChoiceTest
         fullBitmaskParamChoice.setBlack(byteValue);
         ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         fullBitmaskParamChoice.write(writer);
-        ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
-                writer.getBitPosition());
+        ByteArrayBitStreamReader reader =
+                new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         FullBitmaskParamChoice readFullBitmaskParamChoice = new FullBitmaskParamChoice(reader, selector);
         assertEquals(byteValue, readFullBitmaskParamChoice.getBlack());
 
