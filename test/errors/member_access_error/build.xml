@@ -19,7 +19,7 @@
         <testCompile testName="member_access_error" srcPath="${member_access_error.base_dir}/java"/>
     </target>
 
-    <target name="clang_format" depends="compile" if="clang_format.exe_file">
+    <target name="clang_format" depends="compile" if="clang_format.exec_file">
         <testClangFormat testName="member_access_error" srcPath="${member_access_error.base_dir}/java"/>
     </target>
 

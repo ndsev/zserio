@@ -24,7 +24,7 @@
         <testCompile testName="with_range_check_code"/>
     </target>
 
-    <target name="clang_format" depends="compile" if="clang_format.exe_file">
+    <target name="clang_format" depends="compile" if="clang_format.exec_file">
         <testClangFormat testName="with_range_check_code"/>
     </target>
 

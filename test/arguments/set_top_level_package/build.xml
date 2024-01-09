@@ -24,7 +24,7 @@
         <testCompile testName="set_top_level_package"/>
     </target>
 
-    <target name="clang_format" depends="compile" if="clang_format.exe_file">
+    <target name="clang_format" depends="compile" if="clang_format.exec_file">
         <testClangFormat testName="set_top_level_package"/>
     </target>
 

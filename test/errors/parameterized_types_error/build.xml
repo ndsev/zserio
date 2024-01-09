@@ -43,7 +43,7 @@
         <testCompile testName="parameterized_types_error" srcPath="${parameterized_types_error.base_dir}/java"/>
     </target>
 
-    <target name="clang_format" depends="compile" if="clang_format.exe_file">
+    <target name="clang_format" depends="compile" if="clang_format.exec_file">
         <testClangFormat testName="parameterized_types_error"
             srcPath="${parameterized_types_error.base_dir}/java"/>
     </target>

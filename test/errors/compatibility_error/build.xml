@@ -35,7 +35,7 @@
         <testCompile testName="compatibility_error" srcPath="${compatibility_error.base_dir}/java"/>
     </target>
 
-    <target name="clang_format" depends="compile" if="clang_format.exe_file">
+    <target name="clang_format" depends="compile" if="clang_format.exec_file">
         <testClangFormat testName="compatibility_error" srcPath="${compatibility_error.base_dir}/java"/>
     </target>
 

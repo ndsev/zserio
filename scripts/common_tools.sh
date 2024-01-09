@@ -750,7 +750,7 @@ compile_java()
     local ANT_TARGET="$1"; shift
 
     if [ -n "${CLANG_FORMAT_BIN}" ] ; then
-        ANT_PROPS+=("-Dclang_format.exe_file=${CLANG_FORMAT_BIN}")
+        ANT_PROPS+=("-Dclang_format.exec_file=${CLANG_FORMAT_BIN}")
     fi
 
     if [ -n "${SPOTBUGS_HOME}" ] ; then

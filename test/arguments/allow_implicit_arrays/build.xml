@@ -24,7 +24,7 @@
         <testCompile testName="allow_implicit_arrays"/>
     </target>
 
-    <target name="clang_format" depends="compile" if="clang_format.exe_file">
+    <target name="clang_format" depends="compile" if="clang_format.exec_file">
         <testClangFormat testName="allow_implicit_arrays"/>
     </target>
 

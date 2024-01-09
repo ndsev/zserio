@@ -17,7 +17,7 @@ relational.sqlite.jar_file      - SQLite JDBC jar file.
                                   Default is "../../../../3rdparty/java/sqlitejdbc-3.39.4.jar".
 relational.validation           - Flag whether the support for low level validation is included.
                                   Default is "yes".
-clang_format.exe_file           - Clang-format executable file. If not set, clang-format is not run.
+clang_format.exec_file          - Clang-format executable file. If not set, clang-format is not run.
 spotbugs.home_dir               - Location of the spotbugs tool. If not set, spotbugs is not run.
 
 -->
@@ -209,13 +209,13 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
                overwrite="true"/>
     </target>
 
-    <target name="clang_format" depends="install" if="clang_format.exe_file">
+    <target name="clang_format" depends="install" if="clang_format.exec_file">
         <echo>
-Command hints to reformat source using clang-format tool:
+Command hints to reformat source manually using clang-format tool (in case of format errors):
     git clang-format
     clang-format --style=file -i [SOURCE]
         </echo>
-        <apply executable="${clang_format.exe_file}" failonerror="true">
+        <apply executable="${clang_format.exec_file}" failonerror="true">
             <arg value="--style=file"/>
             <arg value="--dry-run"/>
             <arg value="--Werror"/>
@@ -279,13 +279,13 @@ Command hints to reformat source using clang-format tool:
         </javac>
     </target>
 
-    <target name="test.clang_format" depends="spotbugs, test.compile" if="clang_format.exe_file">
+    <target name="test.clang_format" depends="spotbugs, test.compile" if="clang_format.exec_file">
         <echo>
-Command hints to reformat source using clang-format tool:
+Command hints to reformat source manually using clang-format tool (in case of format errors):
     git clang-format
     clang-format --style=file -i [SOURCE]
         </echo>
-        <apply executable="${clang_format.exe_file}" failonerror="true">
+        <apply executable="${clang_format.exec_file}" failonerror="true">
             <arg value="--style=file"/>
             <arg value="--dry-run"/>
             <arg value="--Werror"/>

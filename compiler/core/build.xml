@@ -13,7 +13,7 @@ zserio_core.build_dir   - Directory where to put generated files.
 zserio_core.install_dir - Directory where to install Zserio core jar file.
                           Default is "${zserio.install_dir}/zserio_libs".
 zserio.version          - Zserio version to be used for Zserio core. Default is "unknown".
-clang_format.exe_file   - Clang-format executable file. If not set, clang-format is not run.
+clang_format.exec_file  - Clang-format executable file. If not set, clang-format is not run.
 spotbugs.home_dir       - Location of the spotbugs tool. If not set, spotbugs is not run.
 
 -->
@@ -206,13 +206,13 @@ spotbugs.home_dir       - Location of the spotbugs tool. If not set, spotbugs is
         </copy>
     </target>
 
-    <target name="clang_format" depends="install" if="clang_format.exe_file">
+    <target name="clang_format" depends="install" if="clang_format.exec_file">
         <echo>
-Command hints to reformat source using clang-format tool:
+Command hints to reformat source manually using clang-format tool (in case of format errors):
     git clang-format
     clang-format --style=file -i [SOURCE]
         </echo>
-        <apply executable="${clang_format.exe_file}" failonerror="true">
+        <apply executable="${clang_format.exec_file}" failonerror="true">
             <arg value="--style=file"/>
             <arg value="--dry-run"/>
             <arg value="--Werror"/>
@@ -262,13 +262,13 @@ Command hints to reformat source using clang-format tool:
         </javac>
     </target>
 
-    <target name="test.clang_format" depends="spotbugs, test.compile" if="clang_format.exe_file">
+    <target name="test.clang_format" depends="spotbugs, test.compile" if="clang_format.exec_file">
         <echo>
-Command hints to reformat source using clang-format tool:
+Command hints to reformat source manually using clang-format tool (in case of format errors):
     git clang-format
     clang-format --style=file -i [SOURCE]
         </echo>
-        <apply executable="${clang_format.exe_file}" failonerror="true">
+        <apply executable="${clang_format.exec_file}" failonerror="true">
             <arg value="--style=file"/>
             <arg value="--dry-run"/>
             <arg value="--Werror"/>

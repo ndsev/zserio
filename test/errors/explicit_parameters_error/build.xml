@@ -23,7 +23,7 @@
         <testCompile testName="explicit_parameters_error" srcPath="${explicit_parameters_error.base_dir}/java"/>
     </target>
 
-    <target name="clang_format" depends="compile" if="clang_format.exe_file">
+    <target name="clang_format" depends="compile" if="clang_format.exec_file">
         <testClangFormat testName="explicit_parameters_error"
                 srcPath="${explicit_parameters_error.base_dir}/java"/>
     </target>

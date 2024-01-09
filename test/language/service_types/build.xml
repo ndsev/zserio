@@ -22,7 +22,7 @@
         <testCompile testName="service_types"/>
     </target>
 
-    <target name="clang_format" depends="compile" if="clang_format.exe_file">
+    <target name="clang_format" depends="compile" if="clang_format.exec_file">
         <testClangFormat testName="service_types"/>
     </target>
 

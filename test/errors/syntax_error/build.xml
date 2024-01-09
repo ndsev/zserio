@@ -29,7 +29,7 @@
         <testCompile testName="syntax_error" srcPath="${syntax_error.base_dir}/java"/>
     </target>
 
-    <target name="clang_format" depends="compile" if="clang_format.exe_file">
+    <target name="clang_format" depends="compile" if="clang_format.exec_file">
         <testClangFormat testName="syntax_error" srcPath="${syntax_error.base_dir}/java"/>
     </target>
 
