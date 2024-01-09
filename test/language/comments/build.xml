@@ -22,7 +22,11 @@
         <testCompile testName="comments" srcPath="${comments.zs.out_dir}"/>
     </target>
 
-    <target name="spotbugs" depends="compile" if="spotbugs.home_dir">
+    <target name="clang_format" depends="compile" if="clang_format.exec_file">
+        <testClangFormat testName="comments"/>
+    </target>
+
+    <target name="spotbugs" depends="clang_format" if="spotbugs.home_dir">
         <testSpotBugs testName="comments" srcPath="${comments.zs.out_dir}"/>
     </target>
 

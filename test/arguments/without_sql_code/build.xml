@@ -24,7 +24,11 @@
         <testCompile testName="without_sql_code" srcPath="${without_sql_code.zs.out_dir}"/>
     </target>
 
-    <target name="spotbugs" depends="compile" if="spotbugs.home_dir">
+    <target name="clang_format" depends="compile" if="clang_format.exec_file">
+        <testClangFormat testName="without_sql_code"/>
+    </target>
+
+    <target name="spotbugs" depends="clang_format" if="spotbugs.home_dir">
         <testSpotBugs testName="without_sql_code" srcPath="${without_sql_code.zs.out_dir}"/>
     </target>
 

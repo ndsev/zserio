@@ -198,12 +198,15 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
         <attribute name="testName"/>
         <attribute name="srcPath" default="${@{testName}.base_dir}/java"/>
         <sequential>
-            <echo>
+            <condition property="src_path.exists">
+                <available file="@{srcPath}" type="dir"/>
+            </condition>
+            <echo if:set="src_path.exists">
     Command hints to reformat source manually using clang-format tool (in case of format errors):
         git clang-format
         clang-format --style=file -i [SOURCE]
             </echo>
-            <apply executable="${clang_format.exec_file}" failonerror="true">
+            <apply if:set="src_path.exists" executable="${clang_format.exec_file}" failonerror="true">
                 <arg value="--style=file"/>
                 <arg value="--dry-run"/>
                 <arg value="--Werror"/>
