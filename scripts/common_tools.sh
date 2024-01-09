@@ -578,6 +578,37 @@ get_latest_zserio_version()
     return 0
 }
 
+# Get link to release of zserio binaries on the GitHub.
+get_zserio_bin_url()
+{
+    exit_if_argc_ne $# 2
+    local ZSERIO_VERSION="${1}"; shift
+    local ZSERIO_BIN_URL_OUT="${1}"; shift
+
+    local LINK_PREFIX="https://github.com/ndsev/zserio/releases/download"
+    eval ${ZSERIO_BIN_URL_OUT}="${LINK_PREFIX}/v${ZSERIO_VERSION}/zserio-${ZSERIO_VERSION}-bin.zip"
+}
+
+# Get link to release of zserio runtime libraries on the GitHub.
+get_zserio_runtime_libs_url()
+{
+    exit_if_argc_ne $# 2
+    local ZSERIO_VERSION="${1}"; shift
+    local ZSERIO_RUNTIME_LIBS_URL_OUT="${1}"; shift
+
+    local LINK_PREFIX="https://github.com/ndsev/zserio/releases/download"
+    eval ${ZSERIO_RUNTIME_LIBS_URL_OUT}="${LINK_PREFIX}/v${ZSERIO_VERSION}/zserio-${ZSERIO_VERSION}-runtime-libs.zip"
+}
+
+# Get link to LICENSE matching to the release on the GitHub.
+get_zserio_license_url()
+{
+    exit_if_argc_ne $# 2
+    local ZSERIO_VERSION="${1}"; shift
+    local ZSERIO_LICENSE_URL_OUT="${1}"; shift
+    eval ${ZSERIO_LICENSE_URL_OUT}="https://raw.githubusercontent.com/ndsev/zserio/v${ZSERIO_VERSION}/LICENSE"
+}
+
 # Get zserio binaries from the GitHub.
 get_zserio_bin()
 {
@@ -595,8 +626,10 @@ get_zserio_bin()
         local CURL_AUTHORIZATION=(-H "Authorization: Bearer ${GITHUB_TOKEN}") # we need to pass quotes
     fi
 
-    curl "${CURL_AUTHORIZATION[@]}" -L -s -f \
-            "https://github.com/ndsev/zserio/releases/download/v${ZSERIO_VERSION}/zserio-${ZSERIO_VERSION}-bin.zip" \
+    local URL
+    get_zserio_bin_url "${ZSERIO_VERSION}" URL
+
+    curl "${CURL_AUTHORIZATION[@]}" -L -s -f "${URL}" \
             -o "${ZSERIO_BIN_OUT_DIR}/${ZSERIO_BIN_ZIP_NAME}"
     if [ $? -ne 0 ] ; then
         stderr_echo "Failed to download Zserio binaries from GitHub!"
@@ -622,11 +655,44 @@ get_zserio_runtime_libs()
     if [[ ! -z "${GITHUB_TOKEN}" ]] ; then
         local CURL_AUTHORIZATION=(-H "Authorization: Bearer ${GITHUB_TOKEN}") # we need to pass quotes
     fi
-    curl "${CURL_AUTHORIZATION[@]}" -L -s -f \
-            "https://github.com/ndsev/zserio/releases/download/v${ZSERIO_VERSION}/zserio-${ZSERIO_VERSION}-runtime-libs.zip" \
+
+    local URL
+    get_zserio_runtime_libs_url "${ZSERIO_VERSION}" URL
+
+    curl "${CURL_AUTHORIZATION[@]}" -L -s -f "${URL}" \
             -o "${ZSERIO_RUNTIME_LIBS_OUT_DIR}/${ZSERIO_RUNTIME_LIBS_ZIP_NAME}"
     if [ $? -ne 0 ] ; then
         stderr_echo "Failed to download Zserio runtime libraries from GitHub!"
+        return 1
+    fi
+
+    return 0
+}
+
+# Get Zserio LICENSE mathching to the release
+get_zserio_license()
+{
+    exit_if_argc_lt $# 2
+    local ZSERIO_VERSION="$1"; shift
+    local ZSERIO_LICENSE_OUT_DIR="$1"; shift
+    if [ $# -ne 0 ] ; then
+        local ZSERIO_LICENSE_NAME="$1"; shift
+    else
+        local ZSERIO_LICENSE_NAME="LICENSE"
+    fi
+
+    local CURL_AUTHORIZATION=()
+    if [[ ! -z "${GITHUB_TOKEN}" ]] ; then
+        local CURL_AUTHORIZATION=(-H "Authorization: Bearer ${GITHUB_TOKEN}") # we need to pass quotes
+    fi
+
+    local URL
+    get_zserio_license_url "${ZSERIO_VERSION}" URL
+
+    curl "${CURL_AUTHORIZATION[@]}" -L -s -f "${URL}" \
+            -o "${ZSERIO_LICENSE_OUT_DIR}/${ZSERIO_LICENSE_NAME}"
+    if [ $? -ne 0 ] ; then
+        stderr_echo "Failed to download Zserio LICENSE from GitHub!"
         return 1
     fi
 

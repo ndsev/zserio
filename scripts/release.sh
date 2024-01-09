@@ -59,6 +59,13 @@ set_release_global_variables()
             return 1
         fi
 
+        # SHASUM to use, defaults to "shasum" if not set
+        SHASUM="${SHASUM:-shasum}"
+        if [ ! -f "`which "${SHASUM}"`" ] ; then
+            stderr_echo "Cannot find shasum! Set SHASUM environment variable."
+            return 1
+        fi
+
         # check java binary
         if [ -n "${JAVA_HOME}" ] ; then
             JAVA_BIN="${JAVA_HOME}/bin/java"
@@ -80,6 +87,14 @@ set_release_global_variables()
         ZSERIO_PYPI_DIR="${ZSERIO_PYPI_DIR:-${SCRIPT_DIR}/../../zserio-pypi}"
         if [ ! -d "${ZSERIO_PYPI_DIR}" ] ; then
             stderr_echo "Cannot find Zserio PyPi directory! Set ZSERIO_PYPI_DIR environment variable."
+            return 1
+        fi
+
+        # Directory wiht Zserio fork of conan-center-index to use,
+        # defaults to "${SCRIPT_DIR}/../../zserio-conan-center-index" if not set
+        ZSERIO_CONAN_DIR="${ZSERIO_CONAN_DIR:-${SCRIPT_DIR}/../../zserio-conan-center-index}"
+        if [ ! -d "${ZSERIO_CONAN_DIR}" ] ; then
+            stderr_echo "Cannot find Zserio Conan Center Index directory! Set ZSERIO_PYPI_DIR environment variable."
             return 1
         fi
 
@@ -147,11 +162,12 @@ Uses the following environment variables for releasing:
     GITHUB_TOKEN                GitHub token authentication to use during looking for the latest release on GitHub.
                                 Default is without authentication.
 
-    ZSERIO_PYPI_DIR             ZserioPyPi project directory. Default is "../../ZserioPyPi".
-    ZSERIO_EXTENSION_SAMPLE_DIR ZserioExtensionSample project directory. Default is "../../ZserioExtensionSample".
-    ZSERIO_TUTORIAL_CPP_DIR     ZserioTutorialCpp project directory. Default is "../../ZserioTutorialCpp".
-    ZSERIO_TUTORIAL_JAVA_DIR    ZserioTutorialJava project directory. Default is "../../ZserioTutorialJava".
-    ZSERIO_TUTORIAL_PYTHON_DIR  ZserioTutorialPython project directory. Default is "../../ZserioTutorialPython".
+    ZSERIO_PYPI_DIR             Zserio PyPi project directory. Default is "../../zserio-pypi".
+    ZSERIO_CONAN_DIR            Zserio Conan Center Index dirctory. Default is "../../zserio-conan-center-index".
+    ZSERIO_EXTENSION_SAMPLE_DIR Zserio Extension Sample project directory. Default is "../../zserio-extension-sample".
+    ZSERIO_TUTORIAL_CPP_DIR     Zserio C++ Tutorial project directory. Default is "../../zserio-tutorial-cpp".
+    ZSERIO_TUTORIAL_JAVA_DIR    Zserio Java Tutorial project directory. Default is "../../zserio-tutorial-java".
+    ZSERIO_TUTORIAL_PYTHON_DIR  Zserio Python Tutorial project directory. Default is "../../zserio-tutorial-python".
 
     Either set these directly, or create 'scripts/build-env.sh' that sets these.
     It's sourced automatically if it exists.
@@ -258,6 +274,107 @@ upload_pypi()
     return 0
 }
 
+# Update Zserio fork of conan-center-index after new Zserio release
+update_conan()
+{
+    exit_if_argc_ne $# 2
+    local CONAN_DIR="$1"; shift
+    local ZSERIO_VERSION="$1"; shift
+
+    echo "Adding version ${ZSERIO_VERSION} to Zserio Conan Center Index."
+
+    local DOWNLOAD_DIR="${CONAN_DIR}/download/"
+    mkdir -p "${DOWNLOAD_DIR}"
+
+    echo -ne "Downloading release assets and calculating sha256 checksums..."
+
+    local ZSERIO_RUNTIME_LIBS_ZIP_NAME="zserio-${ZSERIO_VERSION}-runtime-libs.zip"
+    get_zserio_runtime_libs "${ZSERIO_VERSION}" "${DOWNLOAD_DIR}" "${ZSERIO_RUNTIME_LIBS_ZIP_NAME}"
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+    local ZSERIO_RUNTIME_LIBS_SHA256=$(${SHASUM} -a 256 "${DOWNLOAD_DIR}/${ZSERIO_RUNTIME_LIBS_ZIP_NAME}" | cut -d' ' -f1)
+
+    local ZSERIO_BIN_ZIP_NAME=zserio-${ZSERIO_VERSION}-bin.zip
+    get_zserio_bin "${ZSERIO_VERSION}" "${DOWNLOAD_DIR}" "${ZSERIO_BIN_ZIP_NAME}"
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+    local ZSERIO_BIN_SHA256=$(${SHASUM} -a 256 "${DOWNLOAD_DIR}/${ZSERIO_BIN_ZIP_NAME}" | cut -d' ' -f1)
+
+    local ZSERIO_LICENSE_NAME="LICENSE-${ZSERIO_VERSION}"
+    get_zserio_license "${ZSERIO_VERSION}" "${DOWNLOAD_DIR}" "${ZSERIO_LICENSE_NAME}"
+    local ZSERIO_LICENSE_SHA256=$(${SHASUM} -a 256 "${DOWNLOAD_DIR}/${ZSERIO_LICENSE_NAME}" | cut -d' ' -f1)
+
+    echo "Done"
+
+    echo "Syncing master with upstream."
+    "${GIT}" -C "${CONAN_DIR}" fetch upstream
+    local GIT_RESULT=$?
+    if [ ${GIT_RESULT} -ne 0 ] ; then
+        stderr_echo "Git failed with return code ${GIT_RESULT}!"
+        return 1
+    fi
+
+    local RELEASE_BRANCH="zserio-${ZSERIO_VERSION}"
+    echo "Preparing release branch '${RELEASE_BRANCH}'."
+    "${GIT}" -C "${CONAN_DIR}" branch ${RELEASE_BRANCH} upstream/master
+    local GIT_RESULT=$?
+    if [ ${GIT_RESULT} -ne 0 ] ; then
+        stderr_echo "Git failed with return code ${GIT_RESULT}"
+        return 1
+    fi
+
+    echo "Switching to the release branch '${RELEASE_BRANCH}'."
+    "${GIT}" -C "${CONAN_DIR}" checkout ${RELEASE_BRANCH}
+    local GIT_RESULT=$?
+    if [ ${GIT_RESULT} -ne 0 ] ; then
+        stderr_echo "Git failed with return code ${GIT_RESULT}"
+        return 1
+    fi
+
+    local CONANDATA_YML=${ZSERIO_CONAN_DIR}/recipes/zserio/all/conandata.yml
+    local OLD_SOURCES=$(tail "${CONANDATA_YML}" -n +2)
+    local ZSERIO_RUNTIME_LIBS_URL
+    get_zserio_runtime_libs_url "${ZSERIO_VERSION}" ZSERIO_RUNTIME_LIBS_URL
+    local ZSERIO_BIN_URL
+    get_zserio_bin_url "${ZSERIO_VERSION}" ZSERIO_BIN_URL
+    local ZSERIO_LICENSE_URL
+    get_zserio_license_url "${ZSERIO_VERSION}" ZSERIO_LICENSE_URL
+    cat > ${CONANDATA_YML} << EOF
+sources:
+  "${ZSERIO_VERSION}":
+    runtime:
+      url: "${ZSERIO_RUNTIME_LIBS_URL}"
+      sha256: "${ZSERIO_RUNTIME_LIBS_SHA256}"
+    compiler:
+      url: "${ZSERIO_BIN_URL}"
+      sha256: "${ZSERIO_BIN_SHA256}"
+    license:
+      url: "${ZSERIO_LICENSE_URL}"
+      sha256: "${ZSERIO_LICENSE_SHA256}"
+${OLD_SOURCES}
+EOF
+
+    echo "Committing update of Zserio Conan Center Index."
+    "${GIT}" -C "${ZSERIO_CONAN_DIR}" commit -a \
+            -m "zserio: Add new Zserio release ${ZSERIO_VERSION}"
+    local GIT_RESULT=$?
+    if [ ${GIT_RESULT} -ne 0 ] ; then
+        stderr_echo "Git failed with return code ${GIT_RESULT}"
+        return 1
+    fi
+
+    echo $'\e[1;33m'"Don't forget to check the Zserio Conan Center Index repository!"$'\e[0m'
+    echo $'\e[1;33m'"Run: 'conan create zserio/recipes/all/conanfile.py --version ${ZSERIO_VERSION}'"$'\e[0m'
+    echo $'\e[1;33m'"If it is ok, push changes to origin and make a pull request to upstream!"$'\e[0m'
+    read -n 1 -s -r -p "Press any key to continue..."
+    echo
+    echo
+
+    return 0
+}
+
 # Update Zserio Extension Sample repository after new Zserio release.
 update_extension_sample()
 {
@@ -304,6 +421,19 @@ update_tutorial_cpp()
     exit_if_argc_ne $# 2
     local TUTORIAL_CPP_DIR="$1"; shift
     local ZSERIO_VERSION="$1"; shift
+
+    echo -ne "Updating version to ${ZSERIO_VERSION} in Zserio Tutorial Cpp..."
+    local CONANFILE="${TUTORIAL_CPP_DIR}/conan/conanfile.py"
+    sed -i -e 's/zserio\/[2-9]\+\.[0-9]\+\.[0-9]\+\(\-[A-Za-z0-9]\+\)\?/'"zserio\/${ZSERIO_VERSION}"'/' \
+            "${CONANFILE}"
+    local SED_RESULT=$?
+    if [ ${SED_RESULT} -ne 0 ] ; then
+        stderr_echo "Sed failed with return code ${SED_RESULT}!"
+        return 1
+    fi
+    echo "Done"
+    echo
+    return 0
 
     echo "Updating generated sources in Zserio Tutorial Cpp."
     echo
@@ -537,7 +667,7 @@ update_web_pages()
     fi
     mkdir -p "${WEB_PAGES_BUILD_DIR}"/runtime_libs/java/zserio_doc
     "${UNZIP}" -q "${WEB_PAGES_BUILD_DIR}"/runtime_libs/java/zserio_runtime_javadocs.jar \
-            -d "${WEB_PAGES_BUILD_DIR}"/runtime_libs/java/zserio_doc -x META-INF/* 
+            -d "${WEB_PAGES_BUILD_DIR}"/runtime_libs/java/zserio_doc -x META-INF/*
     if [ $? -ne 0 ] ; then
         stderr_echo "Cannot unzip zserio runtime javadocs jar!"
         return 1
@@ -854,17 +984,22 @@ main()
 
         local ZSERIO_BUILD_DIR="${PARAM_OUT_DIR}/build"
         if [[ ${SWITCH_ALL_UPDATE} == 1 ]] ; then
-            upload_jars "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}"
+            #upload_jars "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}"
             if [ $? -ne 0 ] ; then
                 return 1
             fi
 
-            upload_pypi "${ZSERIO_PYPI_DIR}"
+            #upload_pypi "${ZSERIO_PYPI_DIR}"
             if [ $? -ne 0 ] ; then
                 return 1
             fi
 
-            update_extension_sample "${ZSERIO_EXTENSION_SAMPLE_DIR}" "${ZSERIO_VERSION}"
+            #update_conan "${ZSERIO_CONAN_DIR}" "${ZSERIO_VERSION}"
+            if [ $? -ne 0 ] ; then
+                return 1
+            fi
+
+            #update_extension_sample "${ZSERIO_EXTENSION_SAMPLE_DIR}" "${ZSERIO_VERSION}"
             if [ $? -ne 0 ] ; then
                 return 1
             fi
@@ -876,26 +1011,26 @@ main()
         fi
 
         if [[ ${SWITCH_JAVA_TUTORIAL_UPDATE} == 1 ]] ; then
-            update_tutorial_java "${ZSERIO_TUTORIAL_JAVA_DIR}" "${ZSERIO_VERSION}"
+            #update_tutorial_java "${ZSERIO_TUTORIAL_JAVA_DIR}" "${ZSERIO_VERSION}"
             if [ $? -ne 0 ] ; then
                 return 1
             fi
         fi
 
         if [[ ${SWITCH_ALL_UPDATE} == 1 ]] ; then
-            update_tutorial_python "${ZSERIO_TUTORIAL_PYTHON_DIR}" "${ZSERIO_VERSION}"
+            #update_tutorial_python "${ZSERIO_TUTORIAL_PYTHON_DIR}" "${ZSERIO_VERSION}"
             if [ $? -ne 0 ] ; then
                 return 1
             fi
 
-            update_streamlit "${ZSERIO_STREAMLIT_DIR}" "${ZSERIO_VERSION}"
+            #update_streamlit "${ZSERIO_STREAMLIT_DIR}" "${ZSERIO_VERSION}"
             if [ $? -ne 0 ] ; then
                 return 1
             fi
         fi
 
         if [[ ${SWITCH_WEB_PAGES_UPDATE} == 1 ]] ; then
-            update_web_pages "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" "${ZSERIO_VERSION}"
+            #update_web_pages "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" "${ZSERIO_VERSION}"
             if [ $? -ne 0 ] ; then
                 return 1
             fi
