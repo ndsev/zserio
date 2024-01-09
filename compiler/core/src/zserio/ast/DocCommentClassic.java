@@ -17,8 +17,8 @@ public final class DocCommentClassic extends DocComment
      * @param isSticky True if the classic documentation comment is not followed by blank line.
      * @param isOneLiner True if the documentation comment is on one line in the source.
      */
-    public DocCommentClassic(AstLocation location, List<DocParagraph> paragraphs, boolean isSticky,
-            boolean isOneLiner)
+    public DocCommentClassic(
+            AstLocation location, List<DocParagraph> paragraphs, boolean isSticky, boolean isOneLiner)
     {
         super(location, isSticky, isOneLiner);
 
@@ -49,8 +49,8 @@ public final class DocCommentClassic extends DocComment
                 if (paramTag != null && paramTag.getParamName().equals(paramName))
                 {
                     final DocParagraph foundParagraph = new DocParagraph(docParagraph.getLocation());
-                    final DocElement foundElement = new DocElement(docElement.getLocation(),
-                            (DocMultiline)paramTag);
+                    final DocElement foundElement =
+                            new DocElement(docElement.getLocation(), (DocMultiline)paramTag);
                     foundParagraph.addDocElement(foundElement);
                     final List<DocParagraph> foundParagraphs = new ArrayList<DocParagraph>();
                     foundParagraphs.add(foundParagraph);

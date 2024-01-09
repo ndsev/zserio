@@ -84,8 +84,8 @@ public final class SymbolReference
             {
                 if (!resolvePackage(packageNameMap, ownerPackage, ids))
                 {
-                    throw new ParserException(ownerNode,
-                            "Unresolved referenced symbol '" + symbolReferenceText + "'!");
+                    throw new ParserException(
+                            ownerNode, "Unresolved referenced symbol '" + symbolReferenceText + "'!");
                 }
             }
         }
@@ -124,9 +124,9 @@ public final class SymbolReference
                 }
                 else
                 {
-                    throw new ParserException(ownerNode, "Unresolved referenced symbol '" +
-                            scopeSymbolName + "' for type '" +
-                            getPackageSymbolName(foundPackageSymbol) + "'!");
+                    throw new ParserException(ownerNode,
+                            "Unresolved referenced symbol '" + scopeSymbolName + "' for type '" +
+                                    getPackageSymbolName(foundPackageSymbol) + "'!");
                 }
             }
         }

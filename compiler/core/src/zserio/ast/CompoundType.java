@@ -415,7 +415,7 @@ public abstract class CompoundType extends TemplatableType
         if (fieldBaseType instanceof CompoundType)
         {
             final CompoundType childCompoundType = (CompoundType)fieldBaseType;
-            if (childCompoundType != this)  // prevent recursion (can occur in case of non-empty array)
+            if (childCompoundType != this) // prevent recursion (can occur in case of non-empty array)
                 return childCompoundType.hasEmptyBranch(implicitCanBeEmpty);
             // note: never ending recursion should have been caught by checkDirectRecursion
         }
@@ -452,8 +452,9 @@ public abstract class CompoundType extends TemplatableType
             if (fieldBaseType == this)
             {
                 // this field is not array or optional and it is recursive
-                throw new ParserException(field, "Field '" + field.getName() +
-                        "' is recursive and neither optional nor array which can be empty!");
+                throw new ParserException(field,
+                        "Field '" + field.getName() +
+                                "' is recursive and neither optional nor array which can be empty!");
             }
         }
     }
@@ -473,8 +474,9 @@ public abstract class CompoundType extends TemplatableType
             {
                 final CompoundType childCompoundType = (CompoundType)fieldBaseType;
                 if (outer != inner && outer == childCompoundType)
-                        throw new ParserException(field, "Indirect recursion between '" + outer.getName() +
-                                "' and '" + inner.getName() + "'!");
+                    throw new ParserException(field,
+                            "Indirect recursion between '" + outer.getName() + "' and '" + inner.getName() +
+                                    "'!");
 
                 if (inner != childCompoundType)
                     checkIndirectRecursion(outer, childCompoundType);

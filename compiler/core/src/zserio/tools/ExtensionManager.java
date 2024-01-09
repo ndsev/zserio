@@ -38,9 +38,9 @@ final class ExtensionManager
             }
             else
             {
-                ZserioToolPrinter.printMessage("Ignoring '" + extension.getName() + "' extension " +
-                        "because it expects Zserio core version '" + extension.getZserioVersion() + "' " +
-                        "which is not compatible with current Zserio core version '" +
+                ZserioToolPrinter.printMessage("Ignoring '" + extension.getName() + "' extension "
+                        + "because it expects Zserio core version '" + extension.getZserioVersion() + "' "
+                        + "which is not compatible with current Zserio core version '" +
                         ZserioVersion.VERSION_STRING + "'!");
             }
         }
@@ -108,8 +108,8 @@ final class ExtensionManager
         }
         catch (Throwable exception)
         {
-            throw new ZserioExtensionException(extension.getName() + ": " +
-                    getThrowableExceptionMessage(exception));
+            throw new ZserioExtensionException(
+                    extension.getName() + ": " + getThrowableExceptionMessage(exception));
         }
     }
 
@@ -127,8 +127,8 @@ final class ExtensionManager
         }
         catch (Throwable exception)
         {
-            throw new ZserioExtensionException(extension.getName() + ": " +
-                    getThrowableExceptionMessage(exception));
+            throw new ZserioExtensionException(
+                    extension.getName() + ": " + getThrowableExceptionMessage(exception));
         }
     }
 
@@ -136,10 +136,8 @@ final class ExtensionManager
     {
         String message = null;
 
-        try (
-            final StringWriter stringWriter = new StringWriter();
-            final PrintWriter printWriter = new PrintWriter(stringWriter);
-        )
+        try (final StringWriter stringWriter = new StringWriter();
+                final PrintWriter printWriter = new PrintWriter(stringWriter);)
         {
             throwableException.printStackTrace(printWriter);
             message = stringWriter.toString();

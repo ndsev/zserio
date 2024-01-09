@@ -40,8 +40,8 @@ public final class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
     {
         // this check avoids auto optional fields with optional clause
         if (ctx.OPTIONAL() != null && ctx.fieldOptionalClause() != null)
-            throw new ParserException(ctx.fieldOptionalClause().getStart(), "Auto optional field '" +
-                    ctx.fieldTypeId().id().getText() + "' cannot contain if clause!");
+            throw new ParserException(ctx.fieldOptionalClause().getStart(),
+                    "Auto optional field '" + ctx.fieldTypeId().id().getText() + "' cannot contain if clause!");
 
         // because of index expression check we must know if we are in array
         if (ctx.fieldTypeId().fieldArrayRange() != null)
@@ -78,18 +78,19 @@ public final class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
             if (!allowImplicitArrays)
             {
                 final AstLocation location = new AstLocation(ctx.IMPLICIT().getSymbol());
-                final ParserStackedException stackedException = new ParserStackedException(location,
-                        "Implicit arrays are deprecated and will be removed from the language!");
-                stackedException.pushMessage(location, "For strong compatibility reason, please " +
-                        "consider to use command line option '-allowImplicitArrays'.");
+                final ParserStackedException stackedException = new ParserStackedException(
+                        location, "Implicit arrays are deprecated and will be removed from the language!");
+                stackedException.pushMessage(location,
+                        "For strong compatibility reason, please "
+                                + "consider to use command line option '-allowImplicitArrays'.");
                 throw stackedException;
             }
 
             final ZserioParser.FieldArrayRangeContext fieldArrayRangeCtx = ctx.fieldArrayRange();
             if (fieldArrayRangeCtx == null)
             {
-                throw new ParserException(ctx.IMPLICIT().getSymbol(),
-                        "Implicit keyword can be used only for arrays!");
+                throw new ParserException(
+                        ctx.IMPLICIT().getSymbol(), "Implicit keyword can be used only for arrays!");
             }
 
             if (fieldArrayRangeCtx.expression() != null)
@@ -104,14 +105,13 @@ public final class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
             final ZserioParser.FieldArrayRangeContext fieldArrayRangeCtx = ctx.fieldArrayRange();
             if (fieldArrayRangeCtx == null)
             {
-                throw new ParserException(ctx.PACKED().getSymbol(),
-                        "Packed keyword can be used only for arrays!");
+                throw new ParserException(
+                        ctx.PACKED().getSymbol(), "Packed keyword can be used only for arrays!");
             }
 
             if (ctx.IMPLICIT() != null)
             {
-                throw new ParserException(ctx.IMPLICIT().getSymbol(),
-                        "Implicit arrays cannot be packed!");
+                throw new ParserException(ctx.IMPLICIT().getSymbol(), "Implicit arrays cannot be packed!");
             }
         }
 
@@ -126,8 +126,8 @@ public final class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
 
         if (isVirtual && isWithoutRowId)
         {
-            throw new ParserException(ctx.sqlWithoutRowId().getStart(),
-                    "Virtual table cannot be without rowid!");
+            throw new ParserException(
+                    ctx.sqlWithoutRowId().getStart(), "Virtual table cannot be without rowid!");
         }
 
         return visitChildren(ctx);
@@ -151,13 +151,13 @@ public final class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
         {
             if (isInImplicitArrayField)
             {
-                throw new ParserException(ctx.INDEX().getSymbol(),
-                        "Implicit arrays cannot have indexed offsets!");
+                throw new ParserException(
+                        ctx.INDEX().getSymbol(), "Implicit arrays cannot have indexed offsets!");
             }
             else
             {
-                throw new ParserException(ctx.INDEX().getSymbol(),
-                        "Index operator is not allowed in this context!");
+                throw new ParserException(
+                        ctx.INDEX().getSymbol(), "Index operator is not allowed in this context!");
             }
         }
 
@@ -184,8 +184,8 @@ public final class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
     {
         // explicit is allowed only for SQL table fields
         if (ctx.EXPLICIT() != null && !isInSqlTableField)
-            throw new ParserException(ctx.EXPLICIT().getSymbol(),
-                    "Explicit keyword is allowed only in SQL tables!");
+            throw new ParserException(
+                    ctx.EXPLICIT().getSymbol(), "Explicit keyword is allowed only in SQL tables!");
 
         // index expression in type instantiation is allowed if we are in array
         if (isInArrayField)
@@ -206,8 +206,8 @@ public final class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
         }
         catch (CharacterCodingException exception)
         {
-            ZserioToolPrinter.printWarning(location, "Found non-UTF8 encoded characters.",
-                    warningsConfig, WarningsConfig.ENCODING);
+            ZserioToolPrinter.printWarning(
+                    location, "Found non-UTF8 encoded characters.", warningsConfig, WarningsConfig.ENCODING);
         }
     }
 
@@ -218,8 +218,8 @@ public final class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
 
         if (content.indexOf('\t') >= 0)
         {
-            ZserioToolPrinter.printWarning(location, "Found tab characters.",
-                    warningsConfig, WarningsConfig.ENCODING);
+            ZserioToolPrinter.printWarning(
+                    location, "Found tab characters.", warningsConfig, WarningsConfig.ENCODING);
         }
 
         for (int i = 0; i < content.length(); ++i)

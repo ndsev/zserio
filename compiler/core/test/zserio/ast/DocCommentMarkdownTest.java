@@ -21,13 +21,12 @@ public class DocCommentMarkdownTest
     @Test
     public void markdownLink()
     {
-        final String text =
-                "See [Direction](../classic_doc/enum_comments.zs) !";
+        final String text = "See [Direction](../classic_doc/enum_comments.zs) !";
         final boolean isSticky = true;
         final boolean isOneLiner = true;
         final boolean isIndented = false;
-        final DocCommentMarkdown docCommentMarkdown = new DocCommentMarkdown(
-                TEST_LOCATION, text, isSticky, isOneLiner, isIndented);
+        final DocCommentMarkdown docCommentMarkdown =
+                new DocCommentMarkdown(TEST_LOCATION, text, isSticky, isOneLiner, isIndented);
 
         resolve(docCommentMarkdown);
 
@@ -40,13 +39,12 @@ public class DocCommentMarkdownTest
     @Test
     public void markdownLinkWithType()
     {
-        final String text =
-                "See [Direction](../classic_doc/enum_comments.zs#Direction) !";
+        final String text = "See [Direction](../classic_doc/enum_comments.zs#Direction) !";
         final boolean isSticky = true;
         final boolean isOneLiner = true;
         final boolean isIndented = false;
-        final DocCommentMarkdown docCommentMarkdown = new DocCommentMarkdown(
-                TEST_LOCATION, text, isSticky, isOneLiner, isIndented);
+        final DocCommentMarkdown docCommentMarkdown =
+                new DocCommentMarkdown(TEST_LOCATION, text, isSticky, isOneLiner, isIndented);
 
         resolve(docCommentMarkdown);
 
@@ -65,8 +63,8 @@ public class DocCommentMarkdownTest
         final boolean isSticky = true;
         final boolean isOneLiner = true;
         final boolean isIndented = false;
-        final DocCommentMarkdown docCommentMarkdown = new DocCommentMarkdown(
-                TEST_LOCATION, text, isSticky, isOneLiner, isIndented);
+        final DocCommentMarkdown docCommentMarkdown =
+                new DocCommentMarkdown(TEST_LOCATION, text, isSticky, isOneLiner, isIndented);
 
         resolve(docCommentMarkdown);
 
@@ -82,13 +80,12 @@ public class DocCommentMarkdownTest
     @Test
     public void markdownMultipleLinksFirstExternal()
     {
-        final String text =
-                "See [Logo](image.png) and [Color](enum_colors.zs) !";
+        final String text = "See [Logo](image.png) and [Color](enum_colors.zs) !";
         final boolean isSticky = true;
         final boolean isOneLiner = true;
         final boolean isIndented = false;
-        final DocCommentMarkdown docCommentMarkdown = new DocCommentMarkdown(
-                TEST_LOCATION, text, isSticky, isOneLiner, isIndented);
+        final DocCommentMarkdown docCommentMarkdown =
+                new DocCommentMarkdown(TEST_LOCATION, text, isSticky, isOneLiner, isIndented);
 
         resolve(docCommentMarkdown);
 
@@ -104,8 +101,8 @@ public class DocCommentMarkdownTest
     {
         final int beginCommentPosition = 0;
         final int indent = 0;
-        final DocCommentMarkdown docCommentMarkdown = createMultipleParagrahsMarkdown(
-                beginCommentPosition, indent);
+        final DocCommentMarkdown docCommentMarkdown =
+                createMultipleParagrahsMarkdown(beginCommentPosition, indent);
 
         resolve(docCommentMarkdown);
 
@@ -119,8 +116,8 @@ public class DocCommentMarkdownTest
     {
         final int beginCommentPosition = 4;
         final int indent = 0;
-        final DocCommentMarkdown docCommentMarkdown = createMultipleParagrahsMarkdown(
-                beginCommentPosition, indent);
+        final DocCommentMarkdown docCommentMarkdown =
+                createMultipleParagrahsMarkdown(beginCommentPosition, indent);
 
         resolve(docCommentMarkdown);
 
@@ -134,8 +131,8 @@ public class DocCommentMarkdownTest
     {
         final int beginCommentPosition = 0;
         final int indent = 4;
-        final DocCommentMarkdown docCommentMarkdown = createMultipleParagrahsMarkdown(
-                beginCommentPosition, indent);
+        final DocCommentMarkdown docCommentMarkdown =
+                createMultipleParagrahsMarkdown(beginCommentPosition, indent);
 
         resolve(docCommentMarkdown);
 
@@ -149,8 +146,8 @@ public class DocCommentMarkdownTest
     {
         final int beginCommentPosition = 4;
         final int indent = beginCommentPosition;
-        final DocCommentMarkdown docCommentMarkdown = createMultipleParagrahsMarkdown(
-                beginCommentPosition, indent);
+        final DocCommentMarkdown docCommentMarkdown =
+                createMultipleParagrahsMarkdown(beginCommentPosition, indent);
 
         resolve(docCommentMarkdown);
 
@@ -164,26 +161,20 @@ public class DocCommentMarkdownTest
         // note that properly indented markdown will be left-stripped in DocCommentManager
         final int prefixLen = indent >= beginCommentPosition ? indent - beginCommentPosition : indent;
         final String prefixSpaces = new String(new char[prefixLen]).replace('\0', ' ');
-        final String text =
-                "\n" +
-                prefixSpaces + "**TestUnion**\n" +
-                "\n" +
-                prefixSpaces + "This is an union which uses constraint in one case.\n" +
-                prefixSpaces + "This is an second line of the same paragraph.\n" +
-                "\n" +
-                "\n" +
-                prefixSpaces + "See [Direction](some_extern_file.html) page.\n" +
-                "\n" +
-                prefixSpaces + "**case1Allowed** True if case1Field is allowed.\n" +
-                prefixSpaces + "See [Direction](../classic_doc/enum_comments.zs) for more info.\n" +
-                "\n" +
-                prefixSpaces +
-                        "Some comment outside zserio tree: [Comment](../../../classic_doc/enum_comments.zs).\n";
+        final String text = "\n" + prefixSpaces + "**TestUnion**\n"
+                + "\n" + prefixSpaces + "This is an union which uses constraint in one case.\n" + prefixSpaces +
+                "This is an second line of the same paragraph.\n"
+                + "\n"
+                + "\n" + prefixSpaces + "See [Direction](some_extern_file.html) page.\n"
+                + "\n" + prefixSpaces + "**case1Allowed** True if case1Field is allowed.\n" + prefixSpaces +
+                "See [Direction](../classic_doc/enum_comments.zs) for more info.\n"
+                + "\n" + prefixSpaces +
+                "Some comment outside zserio tree: [Comment](../../../classic_doc/enum_comments.zs).\n";
         final boolean isSticky = true;
         final boolean isOneLiner = false;
         final boolean isIndented = beginCommentPosition != 0 && indent >= beginCommentPosition;
-        final AstLocation location = new AstLocation(TEST_LOCATION.getFileName(), TEST_LOCATION.getLine(),
-                beginCommentPosition);
+        final AstLocation location =
+                new AstLocation(TEST_LOCATION.getFileName(), TEST_LOCATION.getLine(), beginCommentPosition);
         return new DocCommentMarkdown(location, text, isSticky, isOneLiner, isIndented);
     }
 
@@ -207,8 +198,8 @@ public class DocCommentMarkdownTest
         expectedParagraph4.add(new ExpectedLineElement("for more info."));
 
         final ArrayList<ExpectedLineElement> expectedParagraph5 = new ArrayList<ExpectedLineElement>();
-        expectedParagraph5.add(new ExpectedLineElement("Some comment outside zserio tree: " +
-                    "[Comment](../../../classic_doc/enum_comments.zs)"));
+        expectedParagraph5.add(new ExpectedLineElement("Some comment outside zserio tree: "
+                + "[Comment](../../../classic_doc/enum_comments.zs)"));
         expectedParagraph5.add(new ExpectedLineElement("."));
 
         final List<ArrayList<ExpectedLineElement>> expectedParagraphs =
@@ -372,8 +363,8 @@ public class DocCommentMarkdownTest
         final Package enumCommentsPkg = new Package(
                 new AstLocation("comments/classic_doc/enum_comments.zs", 1, 0),
                 new PackageName.Builder().addId("comments").addId("classic_doc").addId("enum_comments").get(),
-                new PackageName.Builder().get(), null, new ArrayList<Import>(),
-                new ArrayList<DocComment>(), new ArrayList<DocComment>());
+                new PackageName.Builder().get(), null, new ArrayList<Import>(), new ArrayList<DocComment>(),
+                new ArrayList<DocComment>());
         packageNameMap.put(enumCommentsPkg.getPackageName(), enumCommentsPkg);
         final AstLocation subtypeLocation = new AstLocation("comments/classic_doc/enum_comments.zs", 2, 0);
         enumCommentsPkg.addSymbol(new Subtype(subtypeLocation, enumCommentsPkg,
@@ -381,11 +372,10 @@ public class DocCommentMarkdownTest
                         new StdIntegerType(subtypeLocation, "int8", ZserioParser.INT8)),
                 "Direction", new ArrayList<DocComment>()));
 
-        final Package enumColorsPkg = new Package(
-                new AstLocation("comments/markdown_doc/enum_colors.zs", 1, 0),
+        final Package enumColorsPkg = new Package(new AstLocation("comments/markdown_doc/enum_colors.zs", 1, 0),
                 new PackageName.Builder().addId("comments").addId("markdown_doc").addId("enum_colors").get(),
-                new PackageName.Builder().get(), null, new ArrayList<Import>(),
-                new ArrayList<DocComment>(), new ArrayList<DocComment>());
+                new PackageName.Builder().get(), null, new ArrayList<Import>(), new ArrayList<DocComment>(),
+                new ArrayList<DocComment>());
         packageNameMap.put(enumColorsPkg.getPackageName(), enumColorsPkg);
 
         final List<Import> imports = new ArrayList<Import>();
@@ -397,8 +387,8 @@ public class DocCommentMarkdownTest
                 null, new ArrayList<DocComment>()));
         final Package testPkg = new Package(TEST_LOCATION,
                 new PackageName.Builder().addId("comments").addId("markdown_doc").addId("test").get(),
-                new PackageName.Builder().get(), null, imports,
-                Arrays.asList(docComment), new ArrayList<DocComment>());
+                new PackageName.Builder().get(), null, imports, Arrays.asList(docComment),
+                new ArrayList<DocComment>());
         packageNameMap.put(testPkg.getPackageName(), testPkg);
 
         final WarningsConfig warningsConfig = new WarningsConfig();

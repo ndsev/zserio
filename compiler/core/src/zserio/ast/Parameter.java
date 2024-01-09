@@ -58,8 +58,7 @@ public final class Parameter extends AstNodeBase implements ScopeSymbol
      *
      * @return New type parameter instantiated from this using the given template arguments.
      */
-    Parameter instantiate(List<TemplateParameter> templateParameters,
-            List<TemplateArgument> templateArguments)
+    Parameter instantiate(List<TemplateParameter> templateParameters, List<TemplateArgument> templateArguments)
     {
         final TypeReference instantiatedTypeReference =
                 typeReference.instantiate(templateParameters, templateArguments);

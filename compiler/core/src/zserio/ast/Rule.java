@@ -63,8 +63,8 @@ public final class Rule extends DocumentableAstNode
         ruleId = ruleIdExpression.getStringValue();
         if (ruleId == null)
         {
-            throw new ParserException(ruleIdExpression,
-                    "Rule identifier must be a constant string expression!");
+            throw new ParserException(
+                    ruleIdExpression, "Rule identifier must be a constant string expression!");
         }
 
         RuleIdValidator.validate(ruleId, ruleIdExpression.getLocation());

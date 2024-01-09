@@ -17,8 +17,8 @@ public final class RuleGroup extends DocumentableAstNode implements PackageSymbo
      * @param rules         List of rules belonging to this rule group.
      * @param docComments   List of documentation comments belonging to this node.
      */
-    public RuleGroup(AstLocation location, Package pkg, String name, List<Rule> rules,
-            List<DocComment> docComments)
+    public RuleGroup(
+            AstLocation location, Package pkg, String name, List<Rule> rules, List<DocComment> docComments)
     {
         super(location, docComments);
 

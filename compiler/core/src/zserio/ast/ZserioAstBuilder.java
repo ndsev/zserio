@@ -75,8 +75,8 @@ public final class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final List<DocComment> docComments = docCommentManager.findDocComments(ctx.packageNameDefinition());
 
         // package compatibility version
-        final CompatibilityVersion compatibilityVersion = visitCompatibilityVersionDirective(
-                ctx.compatibilityVersionDirective());
+        final CompatibilityVersion compatibilityVersion =
+                visitCompatibilityVersionDirective(ctx.compatibilityVersionDirective());
 
         // imports
         final List<Import> imports = new ArrayList<Import>();
@@ -84,8 +84,8 @@ public final class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
             imports.add(visitImportDeclaration(importCtx));
 
         // package instance
-        final ParserRuleContext packageLocationCtx = ctx.packageNameDefinition() != null
-                ? ctx.packageNameDefinition().id(0) : ctx;
+        final ParserRuleContext packageLocationCtx =
+                ctx.packageNameDefinition() != null ? ctx.packageNameDefinition().id(0) : ctx;
         final AstLocation packageLocation = new AstLocation(packageLocationCtx.getStart());
         final List<DocComment> trailingDocComments = docCommentManager.findDocComments(ctx.EOF());
 
@@ -101,8 +101,10 @@ public final class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
             // check if input file directory has been specified for default package
             final String inputFileDirectory = new File(inputFileName).getParent();
             if (inputFileDirectory != null)
-                throw new ParserException(currentPackage, "Default package cannot be compiled with path! " +
-                        "Consider to specify package name or set source path to '" + inputFileDirectory + "'.");
+                throw new ParserException(currentPackage,
+                        "Default package cannot be compiled with path! "
+                                + "Consider to specify package name or set source path to '" +
+                                inputFileDirectory + "'.");
         }
 
         for (ZserioParser.LanguageDirectiveContext languageDirectiveCtx : ctx.languageDirective())
@@ -125,8 +127,8 @@ public final class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final String expectedFileFullName = inputFileManager.getFileFullName(packageName);
         final String fileFullName = ctx.getStart().getInputStream().getSourceName();
         if (!expectedFileFullName.equals(fileFullName))
-            throw new ParserException(ctx.id(0).getStart(), "Package '" + packageName.toString() +
-                    "' does not match to the source file name!");
+            throw new ParserException(ctx.id(0).getStart(),
+                    "Package '" + packageName.toString() + "' does not match to the source file name!");
 
         return packageName;
     }
@@ -192,8 +194,8 @@ public final class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
 
         final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
-        final Constant constant = new Constant(location, currentPackage, typeInstantiation, name,
-                valueExpression, docComments);
+        final Constant constant =
+                new Constant(location, currentPackage, typeInstantiation, name, valueExpression, docComments);
 
         return constant;
     }
@@ -352,9 +354,8 @@ public final class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
 
         final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
-        final ChoiceType choiceType = new ChoiceType(location, currentPackage, name,
-                templateParameters, typeParameters, selectorExpression, choiceCases, choiceDefault, functions,
-                docComments);
+        final ChoiceType choiceType = new ChoiceType(location, currentPackage, name, templateParameters,
+                typeParameters, selectorExpression, choiceCases, choiceDefault, functions, docComments);
 
         return choiceType;
     }
@@ -428,8 +429,8 @@ public final class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
 
         final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
-        final UnionType unionType = new UnionType(location, currentPackage, name,
-                templateParameters, typeParameters, fields, functions, docComments);
+        final UnionType unionType = new UnionType(location, currentPackage, name, templateParameters,
+                typeParameters, fields, functions, docComments);
 
         return unionType;
     }
@@ -446,8 +447,8 @@ public final class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
 
         final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
-        final EnumType enumType = new EnumType(location, currentPackage, enumTypeInstantiation, name, enumItems,
-                docComments);
+        final EnumType enumType =
+                new EnumType(location, currentPackage, enumTypeInstantiation, name, enumItems, docComments);
 
         return enumType;
     }
@@ -479,8 +480,8 @@ public final class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
 
         final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
-        final BitmaskType enumType = new BitmaskType(location, currentPackage, typeInstantiation, name,
-                bitmaskValues, docComments);
+        final BitmaskType enumType =
+                new BitmaskType(location, currentPackage, typeInstantiation, name, bitmaskValues, docComments);
 
         return enumType;
     }
@@ -516,8 +517,8 @@ public final class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
 
         final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
-        final SqlTableType sqlTableType = new SqlTableType(location, currentPackage, name,
-                templateParameters, sqlUsingId, fields, sqlConstraint, sqlWithoutRowId, docComments);
+        final SqlTableType sqlTableType = new SqlTableType(location, currentPackage, name, templateParameters,
+                sqlUsingId, fields, sqlConstraint, sqlWithoutRowId, docComments);
 
         return sqlTableType;
     }
@@ -568,8 +569,8 @@ public final class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
 
         final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
-        final SqlDatabaseType sqlDatabaseType = new SqlDatabaseType(location, currentPackage, name, fields,
-                docComments);
+        final SqlDatabaseType sqlDatabaseType =
+                new SqlDatabaseType(location, currentPackage, name, fields, docComments);
 
         return sqlDatabaseType;
     }
@@ -650,8 +651,8 @@ public final class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final String name = ctx.id().getText();
         final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
-        return new PubsubMessage(location, name, typeReference, topicDefinitionExpr, isPublished, isSubscribed,
-                docComments);
+        return new PubsubMessage(
+                location, name, typeReference, topicDefinitionExpr, isPublished, isSubscribed, docComments);
     }
 
     @Override
@@ -770,8 +771,9 @@ public final class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     @Override
     public Object visitDotExpression(ZserioParser.DotExpressionContext ctx)
     {
-        final Expression.ExpressionFlag expressionFlag = (isInDotExpression) ? Expression.ExpressionFlag.NONE :
-            Expression.ExpressionFlag.IS_TOP_LEVEL_DOT;
+        final Expression.ExpressionFlag expressionFlag = (isInDotExpression)
+                ? Expression.ExpressionFlag.NONE
+                : Expression.ExpressionFlag.IS_TOP_LEVEL_DOT;
         isInDotExpression = true;
         final Expression operand1 = (Expression)visit(ctx.expression());
         final Token operand2Token = ctx.id().ID().getSymbol();
@@ -977,8 +979,8 @@ public final class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final Token token = ctx.literal().getStart();
         final AstLocation location = new AstLocation(token);
 
-        return new Expression(location, currentPackage, token.getType(), token.getText(),
-                Expression.ExpressionFlag.NONE);
+        return new Expression(
+                location, currentPackage, token.getType(), token.getText(), Expression.ExpressionFlag.NONE);
     }
 
     @Override
@@ -987,8 +989,8 @@ public final class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final Token token = ctx.INDEX().getSymbol();
         final AstLocation location = new AstLocation(token);
 
-        return new Expression(location, currentPackage, token.getType(), token.getText(),
-                Expression.ExpressionFlag.NONE);
+        return new Expression(
+                location, currentPackage, token.getType(), token.getText(), Expression.ExpressionFlag.NONE);
     }
 
     @Override
@@ -996,8 +998,9 @@ public final class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     {
         final Token token = ctx.id().ID().getSymbol();
         final AstLocation location = new AstLocation(token);
-        final Expression.ExpressionFlag expressionFlag = (isInDotExpression) ?
-                Expression.ExpressionFlag.IS_DOT_LEFT_OPERAND_ID : Expression.ExpressionFlag.NONE;
+        final Expression.ExpressionFlag expressionFlag = (isInDotExpression)
+                ? Expression.ExpressionFlag.IS_DOT_LEFT_OPERAND_ID
+                : Expression.ExpressionFlag.NONE;
 
         return new Expression(location, currentPackage, token.getType(), token.getText(), expressionFlag);
     }
@@ -1019,8 +1022,8 @@ public final class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
 
         if (ctx.builtinType() != null)
         {
-            return new TypeReference(location, currentPackage,
-                    (BuiltInType)visitBuiltinType(ctx.builtinType()));
+            return new TypeReference(
+                    location, currentPackage, (BuiltInType)visitBuiltinType(ctx.builtinType()));
         }
 
         final List<TemplateArgument> templateArguments = visitTemplateArguments(ctx.templateArguments());
@@ -1037,8 +1040,8 @@ public final class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final TypeReference typeReference = visitTypeReference(ctx.typeReference());
         if (ctx.typeArguments() != null)
         {
-            return new ParameterizedTypeInstantiation(location, typeReference,
-                    visitTypeArguments(ctx.typeArguments()));
+            return new ParameterizedTypeInstantiation(
+                    location, typeReference, visitTypeArguments(ctx.typeArguments()));
         }
         if (ctx.dynamicLengthArgument() != null)
         {
@@ -1204,8 +1207,8 @@ public final class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
             final ArrayType arrayType = new ArrayType(arrayTypeLocation);
             final TypeReference arrayTypeReference =
                     new TypeReference(arrayTypeLocation, currentPackage, arrayType);
-            typeInstantiation = new ArrayInstantiation(arrayTypeLocation, arrayTypeReference,
-                    typeInstantiation, isPacked, isImplicit, lengthExpression);
+            typeInstantiation = new ArrayInstantiation(arrayTypeLocation, arrayTypeReference, typeInstantiation,
+                    isPacked, isImplicit, lengthExpression);
         }
 
         return new FieldTypeId(location, typeInstantiation, name);

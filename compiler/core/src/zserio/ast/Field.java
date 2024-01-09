@@ -48,8 +48,8 @@ public final class Field extends DocumentableAstNode implements ScopeSymbol
      * @param constraintExpr         Constraint expression or null if it's not defined.
      * @param docComments            List of documentation comments belonging to this node.
      */
-    public Field(AstLocation location, TypeInstantiation fieldTypeInstantiation,
-            String name, Expression constraintExpr, List<DocComment> docComments)
+    public Field(AstLocation location, TypeInstantiation fieldTypeInstantiation, String name,
+            Expression constraintExpr, List<DocComment> docComments)
     {
         this(location, false, fieldTypeInstantiation, name, false, null, null, null, null, constraintExpr,
                 false, null, docComments);
@@ -253,7 +253,7 @@ public final class Field extends DocumentableAstNode implements ScopeSymbol
             final Set<Field> referencedFieldObjects = offsetExpr.getReferencedSymbolObjects(Field.class);
             if (!referencedFieldObjects.isEmpty())
             {
-                final Field referencedField =  referencedFieldObjects.iterator().next();
+                final Field referencedField = referencedFieldObjects.iterator().next();
                 final TypeInstantiation referencedFieldInst = referencedField.getTypeInstantiation();
                 if (referencedFieldInst instanceof ArrayInstantiation &&
                         ((ArrayInstantiation)referencedFieldInst).isPacked())
@@ -279,11 +279,12 @@ public final class Field extends DocumentableAstNode implements ScopeSymbol
         {
             final BigInteger alignmentValue = alignmentExpr.getIntegerValue();
             if (alignmentValue == null || alignmentValue.compareTo(BigInteger.ZERO) < 0)
-                throw new ParserException(alignmentExpr, "Alignment expression for field '" + getName() +
-                        "' is not positive integer!");
+                throw new ParserException(alignmentExpr,
+                        "Alignment expression for field '" + getName() + "' is not positive integer!");
             if (alignmentValue.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0)
-                throw new ParserException(alignmentExpr, "Alignment expression for field '" + getName() +
-                        "' is bigger than integer max value (" + Integer.MAX_VALUE + ")!");
+                throw new ParserException(alignmentExpr,
+                        "Alignment expression for field '" + getName() +
+                                "' is bigger than integer max value (" + Integer.MAX_VALUE + ")!");
         }
 
         // check initializer expression type
@@ -304,16 +305,16 @@ public final class Field extends DocumentableAstNode implements ScopeSymbol
         if (optionalClauseExpr != null)
         {
             if (optionalClauseExpr.getExprType() != Expression.ExpressionType.BOOLEAN)
-                throw new ParserException(optionalClauseExpr, "Optional expression for field '" +
-                        getName() + "' is not boolean!");
+                throw new ParserException(optionalClauseExpr,
+                        "Optional expression for field '" + getName() + "' is not boolean!");
         }
 
         // check constraint expression type
         if (constraintExpr != null)
         {
             if (constraintExpr.getExprType() != Expression.ExpressionType.BOOLEAN)
-                throw new ParserException(constraintExpr, "Constraint expression for field '" +
-                        getName() + "' is not boolean!");
+                throw new ParserException(
+                        constraintExpr, "Constraint expression for field '" + getName() + "' is not boolean!");
         }
 
         // check optional references (should be at the end to check correct expression types at first)
@@ -333,24 +334,30 @@ public final class Field extends DocumentableAstNode implements ScopeSymbol
         final TypeInstantiation instantiatedTypeInstantiation =
                 typeInstantiation.instantiate(templateParameters, templateArguments);
 
-        final Expression instantiatedAlignmentExpr = getAlignmentExpr() == null ? null :
-                getAlignmentExpr().instantiate(templateParameters, templateArguments);
-        final Expression instantiatedOffsetExpr = getOffsetExpr() == null ? null :
-                getOffsetExpr().instantiate(templateParameters, templateArguments);
-        final Expression instantiatedInitializerExpr = getInitializerExpr() == null ? null :
-                getInitializerExpr().instantiate(templateParameters, templateArguments);
-        final Expression instantiatedOptionalClauseExpr = getOptionalClauseExpr() == null ? null :
-                getOptionalClauseExpr().instantiate(templateParameters, templateArguments);
-        final Expression instantiatedConstraintExpr = getConstraintExpr() == null ? null :
-                getConstraintExpr().instantiate(templateParameters, templateArguments);
+        final Expression instantiatedAlignmentExpr = getAlignmentExpr() == null
+                ? null
+                : getAlignmentExpr().instantiate(templateParameters, templateArguments);
+        final Expression instantiatedOffsetExpr = getOffsetExpr() == null
+                ? null
+                : getOffsetExpr().instantiate(templateParameters, templateArguments);
+        final Expression instantiatedInitializerExpr = getInitializerExpr() == null
+                ? null
+                : getInitializerExpr().instantiate(templateParameters, templateArguments);
+        final Expression instantiatedOptionalClauseExpr = getOptionalClauseExpr() == null
+                ? null
+                : getOptionalClauseExpr().instantiate(templateParameters, templateArguments);
+        final Expression instantiatedConstraintExpr = getConstraintExpr() == null
+                ? null
+                : getConstraintExpr().instantiate(templateParameters, templateArguments);
 
-        final SqlConstraint instantiatedSqlConstraint = getSqlConstraint() == null ? null :
-                getSqlConstraint().instantiate(templateParameters, templateArguments);
+        final SqlConstraint instantiatedSqlConstraint = getSqlConstraint() == null
+                ? null
+                : getSqlConstraint().instantiate(templateParameters, templateArguments);
 
-        return new Field(getLocation(), isExtended, instantiatedTypeInstantiation, name,
-                isAutoOptional, instantiatedAlignmentExpr, instantiatedOffsetExpr, instantiatedInitializerExpr,
-                instantiatedOptionalClauseExpr, instantiatedConstraintExpr,
-                isVirtual, instantiatedSqlConstraint, getDocComments());
+        return new Field(getLocation(), isExtended, instantiatedTypeInstantiation, name, isAutoOptional,
+                instantiatedAlignmentExpr, instantiatedOffsetExpr, instantiatedInitializerExpr,
+                instantiatedOptionalClauseExpr, instantiatedConstraintExpr, isVirtual,
+                instantiatedSqlConstraint, getDocComments());
     }
 
     private void checkOffsetExpression()
@@ -359,10 +366,11 @@ public final class Field extends DocumentableAstNode implements ScopeSymbol
         {
             final ZserioType exprZserioType = offsetExpr.getExprZserioType();
             if (!(exprZserioType instanceof IntegerType && !((IntegerType)exprZserioType).isSigned() &&
-                    exprZserioType instanceof FixedSizeType))
+                        exprZserioType instanceof FixedSizeType))
             {
-                throw new ParserException(offsetExpr, "Offset expression for field '" + getName() +
-                        "' is not an unsigned fixed sized integer type!");
+                throw new ParserException(offsetExpr,
+                        "Offset expression for field '" + getName() +
+                                "' is not an unsigned fixed sized integer type!");
             }
 
             if (offsetExpr.containsFunctionCallOutOfArray())
@@ -379,14 +387,16 @@ public final class Field extends DocumentableAstNode implements ScopeSymbol
                     final Parameter parameter = (Parameter)symbolObject;
                     if (parameter.getTypeReference().getBaseTypeReference().getType() instanceof BuiltInType)
                     {
-                        throw new ParserException(offsetExpr, "Built-in type parameter '" +
-                                parameter.getName() + "' cannot be used as an offset!");
+                        throw new ParserException(offsetExpr,
+                                "Built-in type parameter '" + parameter.getName() +
+                                        "' cannot be used as an offset!");
                     }
                 }
                 else if (symbolObject instanceof Constant)
                 {
-                    throw new ParserException(offsetExpr, "Constant '" + ((Constant)symbolObject).getName() +
-                            "' cannot be used as an offset!");
+                    throw new ParserException(offsetExpr,
+                            "Constant '" + ((Constant)symbolObject).getName() +
+                                    "' cannot be used as an offset!");
                 }
             }
         }
@@ -443,9 +453,10 @@ public final class Field extends DocumentableAstNode implements ScopeSymbol
                     final Expression referencedOptionalClauseExpr = referencedOptionalField.optionalClauseExpr;
                     if (referencedOptionalClauseExpr == null)
                     {
-                        ZserioToolPrinter.printWarning(this, "Field '" + name + "' contains reference to " +
-                                "auto optional field '" + referencedOptionalField.getName() +
-                                "' in optional clause.",
+                        ZserioToolPrinter.printWarning(this,
+                                "Field '" + name + "' contains reference to "
+                                        + "auto optional field '" + referencedOptionalField.getName() +
+                                        "' in optional clause.",
                                 warningsConfig, WarningsConfig.OPTIONAL_FIELD_REFERENCE);
                     }
                     else
@@ -464,9 +475,11 @@ public final class Field extends DocumentableAstNode implements ScopeSymbol
                         }
                         if (!found)
                         {
-                            ZserioToolPrinter.printWarning(this, "Field '" + name + "' does not have left " +
-                                    "'and' condition of optional field '"+ referencedOptionalField.getName() +
-                                    "' referenced in optional clause.",
+                            ZserioToolPrinter.printWarning(this,
+                                    "Field '" + name + "' does not have left "
+                                            + "'and' condition of optional field '" +
+                                            referencedOptionalField.getName() +
+                                            "' referenced in optional clause.",
                                     warningsConfig, WarningsConfig.OPTIONAL_FIELD_REFERENCE);
                         }
                     }
@@ -501,8 +514,8 @@ public final class Field extends DocumentableAstNode implements ScopeSymbol
         }
     }
 
-    private void checkOptionalReferencesInExpression(Expression expr, String exprName,
-            WarningsConfig warningsConfig)
+    private void checkOptionalReferencesInExpression(
+            Expression expr, String exprName, WarningsConfig warningsConfig)
     {
         // in case of ternary operator, we are not able to check correctness => such warning should be
         // enabled explicitly by command line
@@ -520,16 +533,18 @@ public final class Field extends DocumentableAstNode implements ScopeSymbol
                 {
                     if (optionalClauseExpr == null)
                     {
-                        ZserioToolPrinter.printWarning(this, "Field '" + name + "' is not optional " +
-                                "and contains reference to optional field '" +
-                                referencedOptionalField.getName() + "' in " + exprName + ".",
+                        ZserioToolPrinter.printWarning(this,
+                                "Field '" + name + "' is not optional "
+                                        + "and contains reference to optional field '" +
+                                        referencedOptionalField.getName() + "' in " + exprName + ".",
                                 warningsConfig, WarningsConfig.OPTIONAL_FIELD_REFERENCE);
                     }
                     else
                     {
-                        ZserioToolPrinter.printWarning(this, "Field '" + name + "' has different optional " +
-                                "condition than field '"+ referencedOptionalField.getName() +
-                                "' referenced in " + exprName + ".",
+                        ZserioToolPrinter.printWarning(this,
+                                "Field '" + name + "' has different optional "
+                                        + "condition than field '" + referencedOptionalField.getName() +
+                                        "' referenced in " + exprName + ".",
                                 warningsConfig, WarningsConfig.OPTIONAL_FIELD_REFERENCE);
                     }
                 }
@@ -537,8 +552,8 @@ public final class Field extends DocumentableAstNode implements ScopeSymbol
         }
     }
 
-    private boolean haveFieldsDifferentOptional(Field referencedOptionalField,
-            List<AstNode> referencedDotPrefix)
+    private boolean haveFieldsDifferentOptional(
+            Field referencedOptionalField, List<AstNode> referencedDotPrefix)
     {
         // check references to itself (could happen for constraints for example)
         if (equals(referencedOptionalField) && referencedDotPrefix.isEmpty())
@@ -546,8 +561,8 @@ public final class Field extends DocumentableAstNode implements ScopeSymbol
 
         // check expressions using comparison formatter
         if (optionalClauseExpr != null && referencedOptionalField.optionalClauseExpr != null &&
-                ExpressionComparator.equals(optionalClauseExpr, referencedOptionalField.optionalClauseExpr,
-                        referencedDotPrefix))
+                ExpressionComparator.equals(
+                        optionalClauseExpr, referencedOptionalField.optionalClauseExpr, referencedDotPrefix))
             return false;
 
         return true;

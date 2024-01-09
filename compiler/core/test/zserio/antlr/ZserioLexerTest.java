@@ -2,51 +2,49 @@ package zserio.antlr;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import org.junit.jupiter.api.Test;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.Token;
+import org.junit.jupiter.api.Test;
 
 public class ZserioLexerTest
 {
     @Test
     public void operators()
     {
-        final CharStream input = CharStreams.fromString(
-                "& " +
-                "= " +
-                "! " +
-                ": " +
-                ", " +
-                "/ " +
-                ". " +
-                "== " +
-                ">= " +
-                "> " +
-                "{ " +
-                "[ " +
-                "<= " +
-                "&& " +
-                "|| " +
-                "( " +
-                "<< " +
-                "< " +
-                "- " +
-                "% " +
-                "* " +
-                "!= " +
-                "| " +
-                "+ " +
-                "? " +
-                "} " +
-                "] " +
-                ") " +
-                "; " +
-                "~ " +
-                "^\n"
-        );
+        final CharStream input = CharStreams.fromString("& "
+                + "= "
+                + "! "
+                + ": "
+                + ", "
+                + "/ "
+                + ". "
+                + "== "
+                + ">= "
+                + "> "
+                + "{ "
+                + "[ "
+                + "<= "
+                + "&& "
+                + "|| "
+                + "( "
+                + "<< "
+                + "< "
+                + "- "
+                + "% "
+                + "* "
+                + "!= "
+                + "| "
+                + "+ "
+                + "? "
+                + "} "
+                + "] "
+                + ") "
+                + "; "
+                + "~ "
+                + "^\n");
 
         ZserioLexer lexer = new ZserioLexer(input);
 
@@ -88,77 +86,75 @@ public class ZserioLexerTest
     @Test
     public void keywords()
     {
-        final CharStream input = CharStreams.fromString(
-                "align " +
-                "bit " +
-                "bool " +
-                "bitmask " +
-                "bytes " +
-                "case " +
-                "choice " +
-                "const " +
-                "default " +
-                "@deprecated " +
-                "enum " +
-                "explicit " +
-                "extend " +
-                "extern " +
-                "float16 " +
-                "float32 " +
-                "float64 " +
-                "function " +
-                "if " +
-                "implicit " +
-                "import " +
-                "instantiate " +
-                "@index " +
-                "int " +
-                "int16 " +
-                "int32 " +
-                "int64 " +
-                "int8 " +
-                "isset " +
-                "lengthof " +
-                "numbits " +
-                "on " +
-                "optional " +
-                "package " +
-                "packed " +
-                "publish " +
-                "pubsub " +
-                "@removed " +
-                "return " +
-                "rule " +
-                "rule_group " +
-                "service " +
-                "sql " +
-                "sql_database " +
-                "sql_table " +
-                "sql_virtual " +
-                "sql_without_rowid " +
-                "string " +
-                "struct " +
-                "subscribe " +
-                "subtype " +
-                "topic " +
-                "uint16 " +
-                "uint32 " +
-                "uint64 " +
-                "uint8 " +
-                "union " +
-                "using " +
-                "valueof " +
-                "varint " +
-                "varint16 " +
-                "varint32 " +
-                "varint64 " +
-                "varsize " +
-                "varuint " +
-                "varuint16 " +
-                "varuint32 " +
-                "varuint64 " +
-                "zserio_compatibility_version\n"
-        );
+        final CharStream input = CharStreams.fromString("align "
+                + "bit "
+                + "bool "
+                + "bitmask "
+                + "bytes "
+                + "case "
+                + "choice "
+                + "const "
+                + "default "
+                + "@deprecated "
+                + "enum "
+                + "explicit "
+                + "extend "
+                + "extern "
+                + "float16 "
+                + "float32 "
+                + "float64 "
+                + "function "
+                + "if "
+                + "implicit "
+                + "import "
+                + "instantiate "
+                + "@index "
+                + "int "
+                + "int16 "
+                + "int32 "
+                + "int64 "
+                + "int8 "
+                + "isset "
+                + "lengthof "
+                + "numbits "
+                + "on "
+                + "optional "
+                + "package "
+                + "packed "
+                + "publish "
+                + "pubsub "
+                + "@removed "
+                + "return "
+                + "rule "
+                + "rule_group "
+                + "service "
+                + "sql "
+                + "sql_database "
+                + "sql_table "
+                + "sql_virtual "
+                + "sql_without_rowid "
+                + "string "
+                + "struct "
+                + "subscribe "
+                + "subtype "
+                + "topic "
+                + "uint16 "
+                + "uint32 "
+                + "uint64 "
+                + "uint8 "
+                + "union "
+                + "using "
+                + "valueof "
+                + "varint "
+                + "varint16 "
+                + "varint32 "
+                + "varint64 "
+                + "varsize "
+                + "varuint "
+                + "varuint16 "
+                + "varuint32 "
+                + "varuint64 "
+                + "zserio_compatibility_version\n");
 
         ZserioLexer lexer = new ZserioLexer(input);
 
@@ -238,13 +234,11 @@ public class ZserioLexerTest
     @Test
     public void docComment()
     {
-        final CharStream input = CharStreams.fromString(
-                "/** doc comment */\n" +
-                "/**\n" +
-                " * doc comment\n" +
-                " * multiline\n" +
-                " */"
-        );
+        final CharStream input = CharStreams.fromString("/** doc comment */\n"
+                + "/**\n"
+                + " * doc comment\n"
+                + " * multiline\n"
+                + " */");
 
         ZserioLexer lexer = new ZserioLexer(input);
 
@@ -257,11 +251,9 @@ public class ZserioLexerTest
     @Test
     public void blockComment()
     {
-        final CharStream input = CharStreams.fromString(
-                "/* block comment */\n" +
-                "/* block comment\n" +
-                "   multiline */"
-        );
+        final CharStream input = CharStreams.fromString("/* block comment */\n"
+                + "/* block comment\n"
+                + "   multiline */");
 
         ZserioLexer lexer = new ZserioLexer(input);
 
@@ -274,10 +266,8 @@ public class ZserioLexerTest
     @Test
     public void lineComment()
     {
-        final CharStream input = CharStreams.fromString(
-                "// line comment\n" +
-                "// line comment at the end"
-        );
+        final CharStream input = CharStreams.fromString("// line comment\n"
+                + "// line comment at the end");
 
         ZserioLexer lexer = new ZserioLexer(input);
 
@@ -290,9 +280,7 @@ public class ZserioLexerTest
     @Test
     public void boolLiteral()
     {
-        final CharStream input = CharStreams.fromString(
-                "true false false true"
-        );
+        final CharStream input = CharStreams.fromString("true false false true");
 
         ZserioLexer lexer = new ZserioLexer(input);
 
@@ -307,17 +295,15 @@ public class ZserioLexerTest
     @Test
     public void stringLiteral()
     {
-        final CharStream input = CharStreams.fromString(
-                " \"true\" " +
-                " \"0\" " +
-                " \"text\" " +
-                " \"with \\\"escaped\\\" string\" " +
-                " \"multiple escapes \\\\\" " +
-                " \"more \\\\\\\"escapes\\\"\" " +
-                " \"with escaped unicode value \\u0031\" " +
-                " \"with escaped hexadecimal value \\x32\" " +
-                " \"with escaped octal value \\063\" "
-        );
+        final CharStream input = CharStreams.fromString(" \"true\" "
+                + " \"0\" "
+                + " \"text\" "
+                + " \"with \\\"escaped\\\" string\" "
+                + " \"multiple escapes \\\\\" "
+                + " \"more \\\\\\\"escapes\\\"\" "
+                + " \"with escaped unicode value \\u0031\" "
+                + " \"with escaped hexadecimal value \\x32\" "
+                + " \"with escaped octal value \\063\" ");
 
         ZserioLexer lexer = new ZserioLexer(input);
 
@@ -337,11 +323,9 @@ public class ZserioLexerTest
     @Test
     public void invalidStringLiteral()
     {
-        final CharStream input = CharStreams.fromString(
-                " \"invalid unicode escape character \\uBAD\" " +
-                " \"invalid octal escape character \\09\" " +
-                " \"invalid hexadecimal escape character \\xA\" "
-        );
+        final CharStream input = CharStreams.fromString(" \"invalid unicode escape character \\uBAD\" "
+                + " \"invalid octal escape character \\09\" "
+                + " \"invalid hexadecimal escape character \\xA\" ");
 
         ZserioLexer lexer = new ZserioLexer(input);
 
@@ -355,9 +339,7 @@ public class ZserioLexerTest
     @Test
     public void notTerminatedStringLiteral()
     {
-        final CharStream input = CharStreams.fromString(
-                "\"Not terminated string"
-        );
+        final CharStream input = CharStreams.fromString("\"Not terminated string");
 
         ZserioLexer lexer = new ZserioLexer(input);
         checkToken(lexer, ZserioLexer.INVALID_STRING_LITERAL, "\"Not terminated string");
@@ -367,9 +349,7 @@ public class ZserioLexerTest
     @Test
     public void notTerminatedMultilineStringLiteral()
     {
-        final CharStream input = CharStreams.fromString(
-                "\"Not terminated\nmultiline string\""
-        );
+        final CharStream input = CharStreams.fromString("\"Not terminated\nmultiline string\"");
 
         ZserioLexer lexer = new ZserioLexer(input);
         checkToken(lexer, ZserioLexer.INVALID_STRING_LITERAL, "\"Not terminated\nmultiline string\"");
@@ -379,9 +359,7 @@ public class ZserioLexerTest
     @Test
     public void notTerminatedStringWithQuoteLiteral()
     {
-        final CharStream input = CharStreams.fromString(
-                "\"Not terminated string with quote\\\""
-        );
+        final CharStream input = CharStreams.fromString("\"Not terminated string with quote\\\"");
 
         ZserioLexer lexer = new ZserioLexer(input);
         checkToken(lexer, ZserioLexer.INVALID_STRING_LITERAL, "\"Not terminated string with quote\\\"");
@@ -391,9 +369,7 @@ public class ZserioLexerTest
     @Test
     public void binaryLiteral()
     {
-        final CharStream input = CharStreams.fromString(
-                "1001b 0101b 00b 0B 1B 101B"
-        );
+        final CharStream input = CharStreams.fromString("1001b 0101b 00b 0B 1B 101B");
 
         ZserioLexer lexer = new ZserioLexer(input);
 
@@ -410,9 +386,7 @@ public class ZserioLexerTest
     @Test
     public void octalLiteral()
     {
-        final CharStream input = CharStreams.fromString(
-                "0101 0770 012 00 01234567"
-        );
+        final CharStream input = CharStreams.fromString("0101 0770 012 00 01234567");
 
         ZserioLexer lexer = new ZserioLexer(input);
 
@@ -428,9 +402,7 @@ public class ZserioLexerTest
     @Test
     public void invalidOctalLiteral()
     {
-        final CharStream input = CharStreams.fromString(
-                "0109"
-        );
+        final CharStream input = CharStreams.fromString("0109");
 
         ZserioLexer lexer = new ZserioLexer(input);
         checkToken(lexer, ZserioLexer.INVALID_TOKEN, "0109");
@@ -440,9 +412,7 @@ public class ZserioLexerTest
     @Test
     public void hexadecimalLiteral()
     {
-        final CharStream input = CharStreams.fromString(
-                "0x12 0x0 0xFEDCBA98 0XFF 0x1 0xabcdef00 0x1f"
-        );
+        final CharStream input = CharStreams.fromString("0x12 0x0 0xFEDCBA98 0XFF 0x1 0xabcdef00 0x1f");
 
         ZserioLexer lexer = new ZserioLexer(input);
 
@@ -460,9 +430,7 @@ public class ZserioLexerTest
     @Test
     public void invalidHexadecimalLiteral()
     {
-        final CharStream input = CharStreams.fromString(
-                "0xFEEDWOLF"
-        );
+        final CharStream input = CharStreams.fromString("0xFEEDWOLF");
 
         ZserioLexer lexer = new ZserioLexer(input);
         checkToken(lexer, ZserioLexer.INVALID_TOKEN, "0xFEEDWOLF");
@@ -472,9 +440,8 @@ public class ZserioLexerTest
     @Test
     public void floatOrDoubleLiteral()
     {
-        final CharStream input = CharStreams.fromString(
-                "0e1 0e-1 1e2f 9. 9.12 9.f 9.1f 9.e2 9.e2f 9.e-2f .0 .0e-1 .0f .1e3f"
-        );
+        final CharStream input =
+                CharStreams.fromString("0e1 0e-1 1e2f 9. 9.12 9.f 9.1f 9.e2 9.e2f 9.e-2f .0 .0e-1 .0f .1e3f");
 
         ZserioLexer lexer = new ZserioLexer(input);
 
@@ -499,9 +466,7 @@ public class ZserioLexerTest
     @Test
     public void decimalLiteral()
     {
-        final CharStream input = CharStreams.fromString(
-                "0 19 99 987654321"
-        );
+        final CharStream input = CharStreams.fromString("0 19 99 987654321");
 
         ZserioLexer lexer = new ZserioLexer(input);
 
@@ -516,9 +481,7 @@ public class ZserioLexerTest
     @Test
     public void id()
     {
-        final CharStream input = CharStreams.fromString(
-                "id _id i1 _1 _ __ I _I s0mE_UgLy_id"
-        );
+        final CharStream input = CharStreams.fromString("id _id i1 _1 _ __ I _I s0mE_UgLy_id");
 
         ZserioLexer lexer = new ZserioLexer(input);
 
@@ -538,9 +501,7 @@ public class ZserioLexerTest
     @Test
     public void invalidToken()
     {
-        final CharStream input = CharStreams.fromString(
-                "01abc 0x13fx 01278"
-        );
+        final CharStream input = CharStreams.fromString("01abc 0x13fx 01278");
 
         ZserioLexer lexer = new ZserioLexer(input);
 

@@ -33,8 +33,8 @@ public final class Package extends DocumentableAstNode
      * @param trailingDocComments List of documentation comments which are trailing at the end of this package.
      */
     public Package(AstLocation location, PackageName packageName, PackageName topLevelPackageName,
-            CompatibilityVersion compatibilityVersion, List<Import> imports,
-            List<DocComment> docComments, List<DocComment> trailingDocComments)
+            CompatibilityVersion compatibilityVersion, List<Import> imports, List<DocComment> docComments,
+            List<DocComment> trailingDocComments)
     {
         super(location, docComments);
 
@@ -152,8 +152,8 @@ public final class Package extends DocumentableAstNode
         final int numFoundTypes = foundSymbols.size();
         if (numFoundTypes > 1)
         {
-            final ParserStackedException stackedException = new ParserStackedException(ownerNode.getLocation(),
-                    "Ambiguous symbol '" + symbolName + "'");
+            final ParserStackedException stackedException = new ParserStackedException(
+                    ownerNode.getLocation(), "Ambiguous symbol '" + symbolName + "'");
             for (AstNode foundSymbol : foundSymbols)
                 stackedException.pushMessage(foundSymbol.getLocation(), "    Found here");
             throw stackedException;
@@ -188,8 +188,8 @@ public final class Package extends DocumentableAstNode
             {
                 // this is a package import
                 if (importedPackages.contains(importedPackage))
-                    ZserioToolPrinter.printWarning(importedNode, "Duplicated import of package '" +
-                            importedPackageName.toString() + "'.",
+                    ZserioToolPrinter.printWarning(importedNode,
+                            "Duplicated import of package '" + importedPackageName.toString() + "'.",
                             warningsConfig, WarningsConfig.IMPORT);
 
                 // check redundant single imports
@@ -198,9 +198,11 @@ public final class Package extends DocumentableAstNode
                 {
                     if (symbol.getPackage().getPackageName().equals(importedPackageName))
                     {
-                        ZserioToolPrinter.printWarning(importedNode, "Import of package '" +
-                                importedPackageName.toString() + "' overwrites single import of '" +
-                                ZserioTypeUtil.getFullName(importedPackageName, symbol.getName()) + "'.",
+                        ZserioToolPrinter.printWarning(importedNode,
+                                "Import of package '" + importedPackageName.toString() +
+                                        "' overwrites single import of '" +
+                                        ZserioTypeUtil.getFullName(importedPackageName, symbol.getName()) +
+                                        "'.",
                                 warningsConfig, WarningsConfig.IMPORT);
                         redundantImportedSymbols.add(symbol);
                     }
@@ -218,9 +220,10 @@ public final class Package extends DocumentableAstNode
                 final String importedName = importedSymbol.getName();
                 if (importedPackages.contains(importedPackage))
                 {
-                    ZserioToolPrinter.printWarning(importedNode, "Single import of '" +
-                            ZserioTypeUtil.getFullName(importedPackageName, importedName) +
-                            "' already covered by package import.",
+                    ZserioToolPrinter.printWarning(importedNode,
+                            "Single import of '" +
+                                    ZserioTypeUtil.getFullName(importedPackageName, importedName) +
+                                    "' already covered by package import.",
                             warningsConfig, WarningsConfig.IMPORT);
                     // don't add it to imported single imports because this type would become ambiguous
                 }
@@ -228,8 +231,9 @@ public final class Package extends DocumentableAstNode
                 {
                     if (importedSymbols.contains(importedSymbol))
                     {
-                        ZserioToolPrinter.printWarning(importedNode, "Duplicated import of '" +
-                                ZserioTypeUtil.getFullName(importedPackageName, importedName) + "'.",
+                        ZserioToolPrinter.printWarning(importedNode,
+                                "Duplicated import of '" +
+                                        ZserioTypeUtil.getFullName(importedPackageName, importedName) + "'.",
                                 warningsConfig, WarningsConfig.IMPORT);
                     }
                     else
@@ -266,8 +270,8 @@ public final class Package extends DocumentableAstNode
      *
      * @return Matching instantiation type or null.
      */
-    InstantiateType getVisibleInstantiateType(TemplatableType template,
-            List<TemplateArgument> templateArguments)
+    InstantiateType getVisibleInstantiateType(
+            TemplatableType template, List<TemplateArgument> templateArguments)
     {
         if (visibleInstantiateTypeMap == null)
         {
@@ -306,10 +310,11 @@ public final class Package extends DocumentableAstNode
             if (previousInstantiateType != null)
             {
                 final ParserStackedException stackedException = new ParserStackedException(
-                        instantiateType.getLocation(), "Ambiguous request to instantiate template '" +
-                        ZserioTypeUtil.getReferencedFullName(instantiateType.getTypeReference()) + "'!");
-                stackedException.pushMessage(previousInstantiateType.getLocation(),
-                        "    First requested here");
+                        instantiateType.getLocation(),
+                        "Ambiguous request to instantiate template '" +
+                                ZserioTypeUtil.getReferencedFullName(instantiateType.getTypeReference()) +
+                                "'!");
+                stackedException.pushMessage(previousInstantiateType.getLocation(), "    First requested here");
                 throw stackedException;
             }
         }
@@ -339,7 +344,7 @@ public final class Package extends DocumentableAstNode
         {
             // don't exit the loop if something has been found, we need to check for ambiguities
             final PackageSymbol importedSymbol = importedPackage.getLocalSymbol(packageName, symbolName);
-            if (importedSymbol!= null)
+            if (importedSymbol != null)
                 foundSymbols.add(importedSymbol);
         }
 

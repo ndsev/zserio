@@ -15,8 +15,8 @@ public final class DynamicBitFieldInstantiation extends TypeInstantiation
      * @param typeReference        Reference to the instantiated type definition.
      * @param lengthExpression     Length expression associated with this dynamic bit field type.
      */
-    public DynamicBitFieldInstantiation(AstLocation location, TypeReference typeReference,
-            Expression lengthExpression)
+    public DynamicBitFieldInstantiation(
+            AstLocation location, TypeReference typeReference, Expression lengthExpression)
     {
         super(location, typeReference);
 
@@ -82,11 +82,11 @@ public final class DynamicBitFieldInstantiation extends TypeInstantiation
     DynamicBitFieldInstantiation instantiateImpl(List<TemplateParameter> templateParameters,
             List<TemplateArgument> templateArguments, TypeReference instantiatedTypeReference)
     {
-        final Expression instantiatedLengthExpression = getLengthExpression().instantiate(templateParameters,
-                templateArguments);
+        final Expression instantiatedLengthExpression =
+                getLengthExpression().instantiate(templateParameters, templateArguments);
 
-        return new DynamicBitFieldInstantiation(getLocation(), instantiatedTypeReference,
-                instantiatedLengthExpression);
+        return new DynamicBitFieldInstantiation(
+                getLocation(), instantiatedTypeReference, instantiatedLengthExpression);
     }
 
     @Override
@@ -94,9 +94,9 @@ public final class DynamicBitFieldInstantiation extends TypeInstantiation
     {
         if (!(super.getBaseType() instanceof DynamicBitFieldType))
         {
-            throw new ParserException(getTypeReference(), "Referenced type '" +
-                    ZserioTypeUtil.getReferencedFullName(getTypeReference()) +
-                    "' is not a dynamic bit field type!");
+            throw new ParserException(getTypeReference(),
+                    "Referenced type '" + ZserioTypeUtil.getReferencedFullName(getTypeReference()) +
+                            "' is not a dynamic bit field type!");
         }
     }
 
@@ -107,8 +107,9 @@ public final class DynamicBitFieldInstantiation extends TypeInstantiation
         {
             // check length expression
             if (lengthExpression.getExprType() != Expression.ExpressionType.INTEGER)
-                throw new ParserException(lengthExpression, "Invalid length expression for bit field. " +
-                        "Length must be integer!");
+                throw new ParserException(lengthExpression,
+                        "Invalid length expression for bit field. "
+                                + "Length must be integer!");
 
             final DynamicBitFieldType type = getBaseType();
 
@@ -123,18 +124,21 @@ public final class DynamicBitFieldInstantiation extends TypeInstantiation
                 maxBitSize = lengthValue.intValue();
                 if (maxBitSize < 1 || maxBitSize > DynamicBitFieldType.MAX_BIT_SIZE)
                 {
-                    throw new ParserException(lengthExpression, "Invalid length '" + maxBitSize +
-                            "' for the dynamic bit field. Length must be within range [1," +
-                            DynamicBitFieldType.MAX_BIT_SIZE + "]!");
+                    throw new ParserException(lengthExpression,
+                            "Invalid length '" + maxBitSize +
+                                    "' for the dynamic bit field. Length must be within range [1," +
+                                    DynamicBitFieldType.MAX_BIT_SIZE + "]!");
                 }
             }
             else
             {
                 // upper bound could be unknown (=null) (for example modulo operator for negative numbers)
                 final BigInteger upperBound = lengthExpression.getIntegerUpperBound();
-                maxBitSize = (upperBound == null || upperBound.compareTo(BigInteger.valueOf(
-                        DynamicBitFieldType.MAX_BIT_SIZE)) > 0) ?
-                                DynamicBitFieldType.MAX_BIT_SIZE : upperBound.intValue();
+                maxBitSize =
+                        (upperBound == null ||
+                                upperBound.compareTo(BigInteger.valueOf(DynamicBitFieldType.MAX_BIT_SIZE)) > 0)
+                        ? DynamicBitFieldType.MAX_BIT_SIZE
+                        : upperBound.intValue();
             }
 
             // evaluate upper and lower bounds

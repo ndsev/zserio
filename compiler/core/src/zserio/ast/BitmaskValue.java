@@ -15,8 +15,8 @@ public final class BitmaskValue extends DocumentableAstNode implements ScopeSymb
      * @param valueExpression Expression value of the bitmask.
      * @param docComments     List of documentation comments belonging to this node.
      */
-    public BitmaskValue(AstLocation location, String name, Expression valueExpression,
-            List<DocComment> docComments)
+    public BitmaskValue(
+            AstLocation location, String name, Expression valueExpression, List<DocComment> docComments)
     {
         super(location, docComments);
 
@@ -90,13 +90,13 @@ public final class BitmaskValue extends DocumentableAstNode implements ScopeSymb
             if (valueExpression != null)
             {
                 if (valueExpression.getExprType() != Expression.ExpressionType.INTEGER)
-                    throw new ParserException(valueExpression, "Bitmask value '" + getName() +
-                            "' is not an integral type!");
+                    throw new ParserException(
+                            valueExpression, "Bitmask value '" + getName() + "' is not an integral type!");
 
                 value = valueExpression.getIntegerValue();
                 if (value.compareTo(BigInteger.ZERO) == -1)
-                    throw new ParserException(valueExpression, "Bitmask value '" + getName() +
-                            "(" + value + ") cannot be negative!");
+                    throw new ParserException(valueExpression,
+                            "Bitmask value '" + getName() + "(" + value + ") cannot be negative!");
             }
 
             isEvaluated = true;

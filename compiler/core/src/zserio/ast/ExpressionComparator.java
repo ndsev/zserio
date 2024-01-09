@@ -44,10 +44,10 @@ final class ExpressionComparator
     {
         try
         {
-            final ExpressionFormatter expressionFormatter1 = new ExpressionFormatter(
-                    new ComparisonExpressionFormattingPolicy(new ArrayList<AstNode>()));
-            final ExpressionFormatter expressionFormatter2 = new ExpressionFormatter(
-                    new ComparisonExpressionFormattingPolicy(dotPrefix2));
+            final ExpressionFormatter expressionFormatter1 =
+                    new ExpressionFormatter(new ComparisonExpressionFormattingPolicy(new ArrayList<AstNode>()));
+            final ExpressionFormatter expressionFormatter2 =
+                    new ExpressionFormatter(new ComparisonExpressionFormattingPolicy(dotPrefix2));
             final String formattedExpr1 = expressionFormatter1.formatGetter(removeParentheses(expr1));
             final String formattedExpr2 = expressionFormatter2.formatGetter(removeParentheses(expr2));
             if (formattedExpr1.equals(formattedExpr2))
@@ -171,13 +171,13 @@ final class ExpressionComparator
         @Override
         public UnaryExpressionFormatting getLengthOf(Expression expr)
         {
-            return new UnaryExpressionFormatting("lengthof(" , ")");
+            return new UnaryExpressionFormatting("lengthof(", ")");
         }
 
         @Override
         public UnaryExpressionFormatting getValueOf(Expression expr)
         {
-            return new UnaryExpressionFormatting("valueof(" , ")");
+            return new UnaryExpressionFormatting("valueof(", ")");
         }
 
         @Override

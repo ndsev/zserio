@@ -127,7 +127,7 @@ public final class PackageName implements Comparable<PackageName>
     @Override
     public boolean equals(Object other)
     {
-        if ( !(other instanceof PackageName) )
+        if (!(other instanceof PackageName))
             return false;
 
         return (this == other) || compareTo((PackageName)other) == 0;

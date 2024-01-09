@@ -71,7 +71,7 @@ public final class HashUtil
      */
     public static int hash(int seedValue, long longValue)
     {
-        return firstTerm(seedValue) + (int) (longValue ^ (longValue >>> 32));
+        return firstTerm(seedValue) + (int)(longValue ^ (longValue >>> 32));
     }
 
     /**

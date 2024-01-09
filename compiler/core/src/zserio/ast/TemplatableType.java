@@ -17,8 +17,8 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
      * @param templateParameters List of template parameters.
      * @param docComments List of documentation comments belonging to this node.
      */
-    public TemplatableType(AstLocation location, List<TemplateParameter> templateParameters,
-            List<DocComment> docComments)
+    public TemplatableType(
+            AstLocation location, List<TemplateParameter> templateParameters, List<DocComment> docComments)
     {
         super(location, docComments);
 
@@ -82,8 +82,8 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
      *
      * @return Instantiated template.
      */
-    TemplatableType instantiate(ArrayDeque<TypeReference> instantiationReferenceStack,
-            Package instantiationPackage)
+    TemplatableType instantiate(
+            ArrayDeque<TypeReference> instantiationReferenceStack, Package instantiationPackage)
     {
         final TypeReference instantiationReference = instantiationReferenceStack.peek();
         final List<TemplateArgument> templateArguments = instantiationReference.getTemplateArguments();
@@ -92,9 +92,9 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
             final ParserStackedException stackedException = new ParserStackedException(
                     instantiationReference.getLocation(),
                     "Template instantiation of '" + getName() + "' has " +
-                    (templateParameters.size() > templateArguments.size() ? "too few" : "too many") +
-                    " arguments! Expecting " + templateParameters.size() +
-                    ", got " + templateArguments.size() + "!");
+                            (templateParameters.size() > templateArguments.size() ? "too few" : "too many") +
+                            " arguments! Expecting " + templateParameters.size() + ", got " +
+                            templateArguments.size() + "!");
             stackedException.pushMessage(getLocation(), "    See '" + getName() + "' definition here");
             throw stackedException;
         }
@@ -122,8 +122,8 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
      * @param templateArguments    Actual template parameters.
      * @param instantiationPackage Package where to instantiate the template.
      */
-    abstract TemplatableType instantiateImpl(List<TemplateArgument> templateArguments,
-            Package instantiationPackage);
+    abstract TemplatableType instantiateImpl(
+            List<TemplateArgument> templateArguments, Package instantiationPackage);
 
     private final List<TemplateParameter> templateParameters;
     private final List<ZserioTemplatableType> instantiations = new ArrayList<ZserioTemplatableType>();

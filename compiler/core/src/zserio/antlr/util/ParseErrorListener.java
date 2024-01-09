@@ -18,12 +18,11 @@ import zserio.ast.ParserStackedException;
 public final class ParseErrorListener extends BaseErrorListener
 {
     @Override
-    public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol,
-            int line, int charPositionInLine, String msg,
-            RecognitionException e) throws ParseCancellationException
+    public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line,
+            int charPositionInLine, String msg, RecognitionException e) throws ParseCancellationException
     {
-        final AstLocation location = new AstLocation(recognizer.getInputStream().getSourceName(), line,
-                charPositionInLine);
+        final AstLocation location =
+                new AstLocation(recognizer.getInputStream().getSourceName(), line, charPositionInLine);
         if (e instanceof InputMismatchException)
         {
             final Token offendingToken = e.getOffendingToken();
@@ -31,19 +30,19 @@ public final class ParseErrorListener extends BaseErrorListener
             {
                 if (isKeyword(offendingToken))
                 {
-                    final ParserStackedException stackedException = new ParserStackedException(location,
-                            "'" + offendingToken.getText() + "' is a reserved keyword!");
-                    stackedException.pushMessage(location,  msg);
+                    final ParserStackedException stackedException = new ParserStackedException(
+                            location, "'" + offendingToken.getText() + "' is a reserved keyword!");
+                    stackedException.pushMessage(location, msg);
                     throw stackedException;
                 }
 
                 if (isInvalidStringLiteral(offendingToken))
-                    throw new ParserException(location, "'" + offendingToken.getText() +
-                            "' is an invalid string literal!");
+                    throw new ParserException(
+                            location, "'" + offendingToken.getText() + "' is an invalid string literal!");
 
                 if (isInvalidToken(offendingToken))
-                    throw new ParserException(location, "'" + offendingToken.getText() +
-                            "' is an invalid token!");
+                    throw new ParserException(
+                            location, "'" + offendingToken.getText() + "' is an invalid token!");
             }
         }
 

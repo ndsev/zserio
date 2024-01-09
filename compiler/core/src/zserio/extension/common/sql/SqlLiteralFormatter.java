@@ -30,29 +30,28 @@ public final class SqlLiteralFormatter
         String sqlLiteral;
         switch (valueExpression.getExprType())
         {
-            case INTEGER:
-            case ENUM:
-                final BigInteger integerValue = valueExpression.getIntegerValue();
-                if (integerValue == null)
-                    throw new ZserioExtensionException("Unexpected unresolved integer expression!");
-                sqlLiteral = NativeIntegerType.formatLiteral(integerValue);
-                break;
+        case INTEGER:
+        case ENUM:
+            final BigInteger integerValue = valueExpression.getIntegerValue();
+            if (integerValue == null)
+                throw new ZserioExtensionException("Unexpected unresolved integer expression!");
+            sqlLiteral = NativeIntegerType.formatLiteral(integerValue);
+            break;
 
-            case FLOAT:
-                sqlLiteral = NativeRealType.formatLiteral(valueExpression.getText());
-                break;
+        case FLOAT:
+            sqlLiteral = NativeRealType.formatLiteral(valueExpression.getText());
+            break;
 
-            case STRING:
-                sqlLiteral = NativeTextType.formatLiteral(valueExpression.getText());
-                break;
+        case STRING:
+            sqlLiteral = NativeTextType.formatLiteral(valueExpression.getText());
+            break;
 
-            case BOOLEAN:
-                sqlLiteral = valueExpression.getText();
-                break;
+        case BOOLEAN:
+            sqlLiteral = valueExpression.getText();
+            break;
 
-            default:
-                throw new ZserioExtensionException("Unexpected expression type:" +
-                        valueExpression.getExprType());
+        default:
+            throw new ZserioExtensionException("Unexpected expression type:" + valueExpression.getExprType());
         }
 
         return sqlLiteral;

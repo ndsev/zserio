@@ -86,11 +86,11 @@ public final class TemplateArgument extends AstNodeBase
      *
      * @return New template argument instantiated from this using the given template arguments.
      */
-    TemplateArgument instantiate(List<TemplateParameter> templateParameters,
-            List<TemplateArgument> templateArguments)
+    TemplateArgument instantiate(
+            List<TemplateParameter> templateParameters, List<TemplateArgument> templateArguments)
     {
-        final TypeReference instantiatedTypeReference = typeReference.instantiate(
-                templateParameters, templateArguments);
+        final TypeReference instantiatedTypeReference =
+                typeReference.instantiate(templateParameters, templateArguments);
 
         return new TemplateArgument(getLocation(), instantiatedTypeReference);
     }

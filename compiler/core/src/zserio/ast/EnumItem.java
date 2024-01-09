@@ -18,8 +18,8 @@ public final class EnumItem extends DocumentableAstNode implements ScopeSymbol
      * @param isRemoved       Flag whether this enum item is marked as removed.
      * @param docComments     List of documentation comments belonging to this node.
      */
-    public EnumItem(AstLocation location, String name, Expression valueExpression,
-            boolean isDeprecated, boolean isRemoved, List<DocComment> docComments)
+    public EnumItem(AstLocation location, String name, Expression valueExpression, boolean isDeprecated,
+            boolean isRemoved, List<DocComment> docComments)
     {
         super(location, docComments);
 
@@ -115,8 +115,8 @@ public final class EnumItem extends DocumentableAstNode implements ScopeSymbol
             if (valueExpression != null)
             {
                 if (valueExpression.getExprType() != Expression.ExpressionType.INTEGER)
-                    throw new ParserException(valueExpression, "Enumeration item '" + getName() +
-                            "' has non-integer value!");
+                    throw new ParserException(
+                            valueExpression, "Enumeration item '" + getName() + "' has non-integer value!");
                 value = valueExpression.getIntegerValue();
             }
 

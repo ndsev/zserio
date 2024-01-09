@@ -134,31 +134,30 @@ public final class TypeReference extends AstNodeBase
                 TemplateParameter.indexOf(templateParameters, referencedTypeName) == -1)
         {
             // resolve referenced type
-            final PackageSymbol symbol = ownerPackage.getVisibleSymbol(this, referencedPackageName,
-                    referencedTypeName);
+            final PackageSymbol symbol =
+                    ownerPackage.getVisibleSymbol(this, referencedPackageName, referencedTypeName);
             if (symbol == null)
             {
-                throw new ParserException(this, "Unresolved referenced type '" +
-                        ZserioTypeUtil.getReferencedFullName(this) + "'!");
+                throw new ParserException(this,
+                        "Unresolved referenced type '" + ZserioTypeUtil.getReferencedFullName(this) + "'!");
             }
 
             // check referenced type
             if (!(symbol instanceof ZserioType))
             {
-                throw new ParserException(this, "Invalid usage of '" + symbol.getName() +
-                        "' as a type!");
+                throw new ParserException(this, "Invalid usage of '" + symbol.getName() + "' as a type!");
             }
             if (symbol instanceof SqlDatabaseType)
             {
-                throw new ParserException(this, "Invalid usage of SQL database '" + symbol.getName() +
-                        "' as a type!");
+                throw new ParserException(
+                        this, "Invalid usage of SQL database '" + symbol.getName() + "' as a type!");
             }
             if (symbol instanceof TemplatableType)
             {
                 final TemplatableType template = (TemplatableType)symbol;
                 if (!template.getTemplateParameters().isEmpty() && templateArguments.isEmpty())
-                    throw new ParserException(this,
-                            "Missing template arguments for template '" + getReferencedTypeName() + "'!");
+                    throw new ParserException(
+                            this, "Missing template arguments for template '" + getReferencedTypeName() + "'!");
             }
             type = (ZserioType)symbol;
         }
@@ -184,8 +183,8 @@ public final class TypeReference extends AstNodeBase
      *
      * @return New type reference instantiated from this using the given template arguments.
      */
-    TypeReference instantiate(List<TemplateParameter> templateParameters,
-            List<TemplateArgument> templateArguments)
+    TypeReference instantiate(
+            List<TemplateParameter> templateParameters, List<TemplateArgument> templateArguments)
     {
         if (getReferencedPackageName().isEmpty()) // may be a template parameter
         {
@@ -197,8 +196,8 @@ public final class TypeReference extends AstNodeBase
 
                 final TypeReference typeReference = templateArguments.get(index).getTypeReference();
 
-                return typeReference.instantiateImpl(getLocation(), typeReference.templateArguments,
-                        templateParameters, templateArguments);
+                return typeReference.instantiateImpl(
+                        getLocation(), typeReference.templateArguments, templateParameters, templateArguments);
             }
         }
 
@@ -210,13 +209,13 @@ public final class TypeReference extends AstNodeBase
                     templateArgument.instantiate(templateParameters, templateArguments));
         }
 
-        return instantiateImpl(getLocation(), instantiatedTemplateArguments,
-                templateParameters, templateArguments);
+        return instantiateImpl(
+                getLocation(), instantiatedTemplateArguments, templateParameters, templateArguments);
     }
 
     private TypeReference instantiateImpl(AstLocation location,
-            List<TemplateArgument> instantiatedTemplateArguments,
-            List<TemplateParameter> templateParameters, List<TemplateArgument> passedTemplateArguments)
+            List<TemplateArgument> instantiatedTemplateArguments, List<TemplateParameter> templateParameters,
+            List<TemplateArgument> passedTemplateArguments)
     {
         if (type instanceof BuiltInType) // TODO[Mi-L@][typeref] Hack for built-in types.
         {

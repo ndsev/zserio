@@ -28,13 +28,14 @@ public final class TokenParseErrorListener extends BaseErrorListener
     }
 
     @Override
-    public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol,
-            int line, int charPositionInLine, String msg,
-            RecognitionException e) throws ParseCancellationException
+    public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line,
+            int charPositionInLine, String msg, RecognitionException e) throws ParseCancellationException
     {
-        throw new ParserException(new AstLocation(this.sourceName,
-                this.line + line - 1, // lines are numbered from 1
-                (line == 1 ? this.charPositionInLine + charPositionInLine : charPositionInLine)), msg);
+        throw new ParserException(
+                new AstLocation(this.sourceName,
+                        this.line + line - 1, // lines are numbered from 1
+                        (line == 1 ? this.charPositionInLine + charPositionInLine : charPositionInLine)),
+                msg);
     }
 
     final private String sourceName;

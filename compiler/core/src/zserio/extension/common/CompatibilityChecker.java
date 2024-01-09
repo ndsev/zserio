@@ -10,8 +10,8 @@ import zserio.ast.Root;
 import zserio.ast.StructureType;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.UnionType;
-import zserio.tools.ZserioVersion;
 import zserio.tools.ZserioToolPrinter;
+import zserio.tools.ZserioVersion;
 
 /**
  * Checks whether specified zserio_compatibility_version is compatible with current zserio generator.
@@ -43,15 +43,16 @@ public final class CompatibilityChecker extends DefaultTreeWalker
             {
                 ZserioToolPrinter.printWarning(pkg.getCompatibilityVersion(),
                         "Package specifies compatibility version '" +
-                        pkg.getCompatibilityVersion().getVersion() + "' while root package specifies nothing!");
+                                pkg.getCompatibilityVersion().getVersion() +
+                                "' while root package specifies nothing!");
             }
-            else if (pkg.getCompatibilityVersion().getVersion().compareTo(
-                    compatibilityVersion.getVersion()) != 0)
+            else if (pkg.getCompatibilityVersion().getVersion().compareTo(compatibilityVersion.getVersion()) !=
+                    0)
             {
                 ZserioToolPrinter.printWarning(pkg.getCompatibilityVersion(),
-                        "Package compatibility version '" +
-                        pkg.getCompatibilityVersion().getVersion() + "' doesn't match to '" +
-                        compatibilityVersion.getVersion() + "' specified in root package!");
+                        "Package compatibility version '" + pkg.getCompatibilityVersion().getVersion() +
+                                "' doesn't match to '" + compatibilityVersion.getVersion() +
+                                "' specified in root package!");
             }
         }
     }
@@ -91,10 +92,10 @@ public final class CompatibilityChecker extends DefaultTreeWalker
                     {
                         ZserioToolPrinter.printError(compatibilityVersion.getLocation(),
                                 "Root package requires compatibility with version '" +
-                                compatibilityVersion.getVersion() + "'!");
+                                        compatibilityVersion.getVersion() + "'!");
                         ZserioToolPrinter.printError(field.getLocation(),
                                 "Packed arrays binary encoding has been changed in version '" +
-                                PACKED_ARRAY_CHANGE_VERSION + "'!");
+                                        PACKED_ARRAY_CHANGE_VERSION + "'!");
                         throw new ZserioExtensionException("Compatibility check failed!");
                     }
                 }

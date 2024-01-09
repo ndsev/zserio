@@ -63,8 +63,9 @@ final class ExpressionIntegerValue
      */
     public ExpressionIntegerValue(BigInteger value, BigInteger lowerBound, BigInteger upperBound)
     {
-        this(value, lowerBound, upperBound, upperBound.compareTo(BigInteger.valueOf(Long.MAX_VALUE)) > 0 ||
-                lowerBound.compareTo(BigInteger.valueOf(Long.MIN_VALUE)) < 0);
+        this(value, lowerBound, upperBound,
+                upperBound.compareTo(BigInteger.valueOf(Long.MAX_VALUE)) > 0 ||
+                        lowerBound.compareTo(BigInteger.valueOf(Long.MIN_VALUE)) < 0);
     }
 
     /**
@@ -75,8 +76,8 @@ final class ExpressionIntegerValue
      * @param upperBound      Upper bound to construct from.
      * @param needsBigInteger Whether big integer type is needed.
      */
-    public ExpressionIntegerValue(BigInteger value, BigInteger lowerBound, BigInteger upperBound,
-            boolean needsBigInteger)
+    public ExpressionIntegerValue(
+            BigInteger value, BigInteger lowerBound, BigInteger upperBound, boolean needsBigInteger)
     {
         this.value = value;
         this.lowerBound = lowerBound;
@@ -158,8 +159,8 @@ final class ExpressionIntegerValue
         if (lowerBound != null && upperBound != null && operand.lowerBound != null &&
                 operand.upperBound != null)
         {
-            return new ExpressionIntegerValue(lowerBound.add(operand.lowerBound),
-                    upperBound.add(operand.upperBound), newNeedsBigInteger);
+            return new ExpressionIntegerValue(
+                    lowerBound.add(operand.lowerBound), upperBound.add(operand.upperBound), newNeedsBigInteger);
         }
 
         return new ExpressionIntegerValue(newNeedsBigInteger);
@@ -233,13 +234,15 @@ final class ExpressionIntegerValue
                 operand.upperBound != null)
         {
             if (operand.lowerBound.compareTo(BigInteger.ZERO) != 0 ||
-                operand.upperBound.compareTo(BigInteger.ZERO) != 0)
+                    operand.upperBound.compareTo(BigInteger.ZERO) != 0)
             {
                 // this is not division by degenerated interval [0,0]
-                final BigInteger operandLowerBound = (operand.lowerBound.compareTo(BigInteger.ZERO) == 0) ?
-                        BigInteger.ONE : operand.lowerBound;
-                final BigInteger operandUpperBound = (operand.upperBound.compareTo(BigInteger.ZERO) == 0) ?
-                        BigInteger.ONE.negate() : operand.upperBound;
+                final BigInteger operandLowerBound = (operand.lowerBound.compareTo(BigInteger.ZERO) == 0)
+                        ? BigInteger.ONE
+                        : operand.lowerBound;
+                final BigInteger operandUpperBound = (operand.upperBound.compareTo(BigInteger.ZERO) == 0)
+                        ? BigInteger.ONE.negate()
+                        : operand.upperBound;
                 final MinMaxValue minMaxValue = new MinMaxValue();
 
                 minMaxValue.add(lowerBound.divide(operandLowerBound));
@@ -251,14 +254,14 @@ final class ExpressionIntegerValue
                         operandUpperBound.compareTo(BigInteger.ZERO) >= 0)
                 {
                     // include -1 and +1 in the minmax calculation
-                    minMaxValue.add(lowerBound);            // lowerBound.divide(+1)
-                    minMaxValue.add(upperBound);            // upperBound.divide(+1)
-                    minMaxValue.add(lowerBound.negate());   // lowerBound.divide(-1)
-                    minMaxValue.add(upperBound.negate());   // upperBound.divide(-1)
+                    minMaxValue.add(lowerBound); // lowerBound.divide(+1)
+                    minMaxValue.add(upperBound); // upperBound.divide(+1)
+                    minMaxValue.add(lowerBound.negate()); // lowerBound.divide(-1)
+                    minMaxValue.add(upperBound.negate()); // upperBound.divide(-1)
                 }
 
-                return new ExpressionIntegerValue(minMaxValue.getMin(), minMaxValue.getMax(),
-                        newNeedsBigInteger);
+                return new ExpressionIntegerValue(
+                        minMaxValue.getMin(), minMaxValue.getMax(), newNeedsBigInteger);
             }
         }
 
@@ -279,13 +282,13 @@ final class ExpressionIntegerValue
             return new ExpressionIntegerValue(value.remainder(operand.value), newNeedsBigInteger);
 
         final boolean isValueUnsigned = (lowerBound != null && lowerBound.compareTo(BigInteger.ZERO) >= 0);
-        final boolean isOperandUnsigned = (operand.lowerBound != null &&
-                operand.lowerBound.compareTo(BigInteger.ZERO) > 0);
+        final boolean isOperandUnsigned =
+                (operand.lowerBound != null && operand.lowerBound.compareTo(BigInteger.ZERO) > 0);
         if (isValueUnsigned && isOperandUnsigned)
         {
             final BigInteger newLowerBound = BigInteger.ZERO;
-            final BigInteger newUpperBound = (operand.upperBound == null) ? null :
-                    operand.upperBound.subtract(BigInteger.ONE);
+            final BigInteger newUpperBound =
+                    (operand.upperBound == null) ? null : operand.upperBound.subtract(BigInteger.ONE);
 
             return new ExpressionIntegerValue(newLowerBound, newUpperBound, newNeedsBigInteger);
         }
@@ -350,8 +353,8 @@ final class ExpressionIntegerValue
         if (value != null && operand.value != null)
             return new ExpressionIntegerValue(value.and(operand.value), newNeedsBigInteger);
 
-        final boolean isOperandUnsigned = (operand.lowerBound != null &&
-                operand.lowerBound.compareTo(BigInteger.ZERO) >= 0);
+        final boolean isOperandUnsigned =
+                (operand.lowerBound != null && operand.lowerBound.compareTo(BigInteger.ZERO) >= 0);
         if (isOperandUnsigned)
         {
             final BigInteger newLowerBound = BigInteger.ZERO;
@@ -439,8 +442,8 @@ final class ExpressionIntegerValue
         final boolean newNeedsBigInteger = needsBigInteger || operand.needsBigInteger;
         if (lowerBound != null && upperBound != null && operand.lowerBound != null &&
                 operand.upperBound != null)
-            return new ExpressionIntegerValue(lowerBound.min(operand.lowerBound),
-                    upperBound.max(operand.upperBound), newNeedsBigInteger);
+            return new ExpressionIntegerValue(
+                    lowerBound.min(operand.lowerBound), upperBound.max(operand.upperBound), newNeedsBigInteger);
 
         return new ExpressionIntegerValue(newNeedsBigInteger);
     }

@@ -12,15 +12,14 @@ import java.util.Map;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.ParseException;
 
 import zserio.ast.IdentifierValidator;
-
-import org.apache.commons.cli.DefaultParser;
 
 /**
  * The class to handle all command line arguments of Zserio Tool.
@@ -293,8 +292,8 @@ final class CommandLineArguments
             return;
         }
 
-        final String command = (executor == ZserioTool.Executor.PYTHON_MAIN) ? "zserio" :
-            "java -jar zserio.jar";
+        final String command =
+                (executor == ZserioTool.Executor.PYTHON_MAIN) ? "zserio" : "java -jar zserio.jar";
 
         final HelpFormatter formatter = new HelpFormatter();
         formatter.setSyntaxPrefix("Usage: ");
@@ -315,15 +314,15 @@ final class CommandLineArguments
         ZserioToolPrinter.printMessage("");
         printExtensions(extensions);
         ZserioToolPrinter.printMessage("");
-        ZserioToolPrinter.printMessage("See https://zserio.org/doc/ZserioCompatibilityGuide.html " +
-                    "for more info.");
+        ZserioToolPrinter.printMessage("See https://zserio.org/doc/ZserioCompatibilityGuide.html "
+                + "for more info.");
     }
 
     private void addOptions()
     {
         Option option = new Option(OptionNameHelpShort, "help", true,
-                "print this help text and exit, " +
-                "specify one of the following topics for detailed description: warnings");
+                "print this help text and exit, "
+                        + "specify one of the following topics for detailed description: warnings");
         option.setRequired(false);
         option.setOptionalArg(true);
         option.setArgName("[topic]");
@@ -365,8 +364,8 @@ final class CommandLineArguments
         options.addOptionGroup(serviceCodeGroup);
 
         final OptionGroup sqlCodeGroup = new OptionGroup();
-        option = new Option(OptionNameWithSqlCode, false,
-                "enable code for relational (SQLite) parts (default)");
+        option =
+                new Option(OptionNameWithSqlCode, false, "enable code for relational (SQLite) parts (default)");
         sqlCodeGroup.addOption(option);
         option = new Option(OptionNameWithoutSqlCode, false, "disable code for relational (SQLite) parts");
         sqlCodeGroup.addOption(option);
@@ -390,11 +389,9 @@ final class CommandLineArguments
         options.addOptionGroup(validationCodeGroup);
 
         final OptionGroup writerCodeGroup = new OptionGroup();
-        option = new Option(OptionNameWithWriterCode, false,
-                "enable writing interface code (default)");
+        option = new Option(OptionNameWithWriterCode, false, "enable writing interface code (default)");
         writerCodeGroup.addOption(option);
-        option = new Option(OptionNameWithoutWriterCode, false,
-                "disable writing interface code");
+        option = new Option(OptionNameWithoutWriterCode, false, "disable writing interface code");
         writerCodeGroup.addOption(option);
         writerCodeGroup.setRequired(false);
         options.addOptionGroup(writerCodeGroup);
@@ -435,24 +432,23 @@ final class CommandLineArguments
         final OptionGroup codeCommentsGroup = new OptionGroup();
         option = new Option(OptionNameWithCodeComments, false, "enable comments in generated code");
         codeCommentsGroup.addOption(option);
-        option = new Option(OptionNameWithoutCodeComments, false,
-                "disable comments in generated code (default)");
+        option = new Option(
+                OptionNameWithoutCodeComments, false, "disable comments in generated code (default)");
         codeCommentsGroup.addOption(option);
         codeCommentsGroup.setRequired(false);
         options.addOptionGroup(codeCommentsGroup);
 
-        option = new Option(OptionNameSetTopLevelPackage, true,
-                "force top level package prefix to all zserio packages");
+        option = new Option(
+                OptionNameSetTopLevelPackage, true, "force top level package prefix to all zserio packages");
         option.setArgName("packageName");
         option.setRequired(false);
         options.addOption(option);
 
-        option = new Option(OptionNameIgnoreTimestamps, false,
-                "ignore timestamps and always regenerate output");
+        option =
+                new Option(OptionNameIgnoreTimestamps, false, "ignore timestamps and always regenerate output");
         options.addOption(option);
 
-        option = new Option(OptionNameAllowImplicitArrays, false,
-                "allow implicit arrays in zserio language");
+        option = new Option(OptionNameAllowImplicitArrays, false, "allow implicit arrays in zserio language");
         options.addOption(option);
     }
 
@@ -470,8 +466,7 @@ final class CommandLineArguments
         withValidationCodeOption = hasOption(OptionNameWithValidationCode);
         withWriterCodeOption = !hasOption(OptionNameWithoutWriterCode);
         warningsConfig = new WarningsConfig(
-                getOptionValues(OptionNameWithWarnings),
-                getOptionValues(OptionNameWithoutWarnings));
+                getOptionValues(OptionNameWithWarnings), getOptionValues(OptionNameWithoutWarnings));
         withCrossExtensionCheckOption = !hasOption(OptionNameWithoutCrossExtensionCheck);
         withGlobalRuleIdCheckOption = hasOption(OptionNameWithGlobalRuleIdCheck);
         withCodeCommentsOption = hasOption(OptionNameWithCodeComments);
@@ -512,33 +507,31 @@ final class CommandLineArguments
             if (hasOption(OptionNameWithRangeCheckCode))
             {
                 throw new ParseException(
-                        "The specified option 'withRangeCheckCode' conflicts with another option: " +
-                        "'withoutWriterCode'");
+                        "The specified option 'withRangeCheckCode' conflicts with another option: "
+                        + "'withoutWriterCode'");
             }
             if (hasOption(OptionNameWithValidationCode))
             {
                 throw new ParseException(
-                        "The specified option 'withValidationCode' conflicts with another option: " +
-                        "'withoutWriterCode'");
+                        "The specified option 'withValidationCode' conflicts with another option: "
+                        + "'withoutWriterCode'");
             }
             if (hasOption(OptionNameWithPubsubCode))
             {
-                throw new ParseException(
-                        "The specified option 'withPubsubCode' conflicts with another option: " +
-                        "'withoutWriterCode'");
+                throw new ParseException("The specified option 'withPubsubCode' conflicts with another option: "
+                        + "'withoutWriterCode'");
             }
             if (hasOption(OptionNameWithServiceCode))
             {
                 throw new ParseException(
-                        "The specified option 'withServiceCode' conflicts with another option: " +
-                        "'withoutWriterCode'");
+                        "The specified option 'withServiceCode' conflicts with another option: "
+                        + "'withoutWriterCode'");
             }
         }
 
         if (helpTopic != null && !HelpTopicWarnings.equals(helpTopic))
         {
-            throw new ParseException(
-                    "The specified help topic '" + helpTopic + "' does not exist!");
+            throw new ParseException("The specified help topic '" + helpTopic + "' does not exist!");
         }
     }
 
@@ -553,8 +546,8 @@ final class CommandLineArguments
             }
             catch (RuntimeException exception)
             {
-                throw new ParseException("The specified option 'setTopLevelPackage' has bad format: " +
-                        exception.getMessage());
+                throw new ParseException(
+                        "The specified option 'setTopLevelPackage' has bad format: " + exception.getMessage());
             }
         }
     }
@@ -583,19 +576,22 @@ final class CommandLineArguments
     {
         final HelpFormatter hf = new HelpFormatter();
 
-        final PrintWriter printWriter = new PrintWriter(
-                new OutputStreamWriter(System.out, StandardCharsets.UTF_8));
+        final PrintWriter printWriter =
+                new PrintWriter(new OutputStreamWriter(System.out, StandardCharsets.UTF_8));
         hf.printWrapped(printWriter, HelpFormatter.DEFAULT_WIDTH, 2,
-                "Zserio Warnings Subsystem:\n" +
-                "  Zserio provides possibility to configure warnings on command line. Each warning has " +
-                "it's own specifier (i.e. tag) which can be used to either enable or disable the particular " +
-                "warning.\n" +
-                "\n" +
-                "  Options -" + OptionNameWithWarnings + " and -" + OptionNameWithoutWarnings +
-                " can be combined. When warnings options groups are used, more generic groups are applied " +
-                "first so that it is possible to enable all warnings in a group and then disable some " +
-                "smaller set of warnings or just a single warning.\n" +
-                "\n");
+                "Zserio Warnings Subsystem:\n"
+                        +
+                        "  Zserio provides possibility to configure warnings on command line. Each warning has "
+                        +
+                        "it's own specifier (i.e. tag) which can be used to either enable or disable the particular "
+                        + "warning.\n"
+                        + "\n"
+                        + "  Options -" + OptionNameWithWarnings + " and -" + OptionNameWithoutWarnings +
+                        " can be combined. When warnings options groups are used, more generic groups are applied "
+                        +
+                        "first so that it is possible to enable all warnings in a group and then disable some "
+                        + "smaller set of warnings or just a single warning.\n"
+                        + "\n");
 
         final WarningsConfig defaultWarningsConfig = new WarningsConfig();
         final StringBuilder warningsList = new StringBuilder("List of Warnings:\n");
@@ -633,8 +629,8 @@ final class CommandLineArguments
             ZserioToolPrinter.printMessage("Available extensions:");
             for (Extension extension : extensions)
             {
-                ZserioToolPrinter.printMessage("  " + extension.getName() +
-                        " version " + extension.getExtensionVersion());
+                ZserioToolPrinter.printMessage(
+                        "  " + extension.getName() + " version " + extension.getExtensionVersion());
             }
         }
     }

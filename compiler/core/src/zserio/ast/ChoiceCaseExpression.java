@@ -53,8 +53,8 @@ public final class ChoiceCaseExpression extends DocumentableAstNode
      *
      * @return New choice case expression instantiated from this using the given template arguments.
      */
-    ChoiceCaseExpression instantiate(List<TemplateParameter> templateParameters,
-            List<TemplateArgument> templateArguments)
+    ChoiceCaseExpression instantiate(
+            List<TemplateParameter> templateParameters, List<TemplateArgument> templateArguments)
     {
         final Expression instantiatedExpression =
                 getExpression().instantiate(templateParameters, templateArguments);

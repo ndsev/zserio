@@ -42,7 +42,7 @@ public final class OutputFileManager
                 skipped++;
         }
 
-        ZserioToolPrinter.printMessage("  Generated " + generated + " file" + (generated == 1 ? "" : "s")  +
+        ZserioToolPrinter.printMessage("  Generated " + generated + " file" + (generated == 1 ? "" : "s") +
                 (skipped > 0 ? ", skipped " + skipped + " file" + (skipped == 1 ? "" : "s") : ""));
     }
 

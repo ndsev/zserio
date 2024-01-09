@@ -1,7 +1,8 @@
 package zserio.tools;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.Test;
 
 public class ExtensionVersionMatcherTest
@@ -45,8 +46,8 @@ public class ExtensionVersionMatcherTest
         assertTrue(ExtensionVersionMatcher.match("2.0.0-pre10", "2.0.0-pre10"));
         assertTrue(ExtensionVersionMatcher.match("2.1.0", "2.1.0"));
         assertTrue(ExtensionVersionMatcher.match("2.1.0-pre1", "2.1.0-pre1"));
-        assertTrue(ExtensionVersionMatcher.match(ZserioVersion.VERSION_STRING,
-                String.valueOf(ZserioVersion.VERSION_STRING.toCharArray())));
+        assertTrue(ExtensionVersionMatcher.match(
+                ZserioVersion.VERSION_STRING, String.valueOf(ZserioVersion.VERSION_STRING.toCharArray())));
         assertTrue(ExtensionVersionMatcher.match("20.10.10", "20.10.10"));
         assertTrue(ExtensionVersionMatcher.match("200.100.100", "200.100.100"));
     }

@@ -24,36 +24,35 @@ public final class WarningsConfig
                 "Warn when a choice with enumeration selector does not handle some of the enumeration items.");
         addWarning(DEFAULT_INSTANTIATION, false,
                 "Warn about template instantiations which are not instantiated using instantiate keyword.");
-        addWarning(DOC_COMMENT_FORMAT, true,
-                "Warn when a documentation comment has invalid format.");
+        addWarning(DOC_COMMENT_FORMAT, true, "Warn when a documentation comment has invalid format.");
         addWarning(DOC_COMMENT_MISSING, false,
                 "Warn when a documentable schema element has no documentation comment assigned.");
         addWarning(DOC_COMMENT_LINK, true,
-                "Warn when a documentation link contains invalid symbol reference " +
-                "(e.g. see tag or markdown link).");
+                "Warn when a documentation link contains invalid symbol reference "
+                        + "(e.g. see tag or markdown link).");
         addWarning(DOC_COMMENT_UNUSED, true,
-                "Warn when a documentation comment is not used - i.e. cannot be assigned to any documentable " +
-                "element.");
+                "Warn when a documentation comment is not used - i.e. cannot be assigned to any documentable "
+                        + "element.");
         addWarning(ENCODING, true,
-                "Warn when a source file is not in UTF-8 encoding or " +
-                "when it contains non-printable characters.");
-        addWarning(IMPORT, true,
-                "Warn when some imports are duplicated or overrides other imports.");
+                "Warn when a source file is not in UTF-8 encoding or "
+                        + "when it contains non-printable characters.");
+        addWarning(IMPORT, true, "Warn when some imports are duplicated or overrides other imports.");
         addWarning(OPTIONAL_FIELD_REFERENCE, true,
-                "Warn when an expression contains a reference to an optional field, while the owner of the " +
-                "expression has no or inconsistent optional condition.");
+                "Warn when an expression contains a reference to an optional field, while the owner of the "
+                        + "expression has no or inconsistent optional condition.");
         addWarning(TIMESTAMP, true,
                 "Warn when timestamp of a source or a resource (on a class path) cannot be retrieved.");
         addWarning(SQL_PRIMARY_KEY, true,
-                "Warn when a problem with primary key is detected in a SQL table. " +
-                "This can happen in various cases - no primary key, duplicated primary key, etc.");
+                "Warn when a problem with primary key is detected in a SQL table. "
+                        + "This can happen in various cases - no primary key, duplicated primary key, etc.");
         addWarning(UNPACKABLE_ARRAY, true,
-                "Warn when a packed array is used on arrays of unpackable elements. Can be fired either for " +
-                "arrays of unpackable simple types (e.g. string) or for arrays of compounds which " +
-                "contain only unpackable types. The packed keyword has no effect when this warnings is fired.");
+                "Warn when a packed array is used on arrays of unpackable elements. Can be fired either for "
+                        + "arrays of unpackable simple types (e.g. string) or for arrays of compounds which "
+                        +
+                        "contain only unpackable types. The packed keyword has no effect when this warnings is fired.");
         addWarning(UNPACKABLE_UNION, true,
-                "Warn when a packed array of unions doesn't contain any packable fields and thus only selector " +
-                "is packed, which may unintentionally break alignment of the union fields.");
+                "Warn when a packed array of unions doesn't contain any packable fields and thus only selector "
+                        + "is packed, which may unintentionally break alignment of the union fields.");
         addWarning(UNUSED, false, "Warn about defined, but unused types.");
     }
 

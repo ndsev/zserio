@@ -101,11 +101,9 @@ public final class FreeMarkerUtil
                 amalgamatedDirectories.add(outputDirName);
         }
 
-        try (
-            final FileOutputStream fileOutputStream = new FileOutputStream(outputFile, append);
-            final OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream, "UTF-8");
-            final BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);
-        )
+        try (final FileOutputStream fileOutputStream = new FileOutputStream(outputFile, append);
+                final OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream, "UTF-8");
+                final BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);)
         {
 
             if (append)
@@ -130,8 +128,8 @@ public final class FreeMarkerUtil
     public static List<String> readFreemarkerTemplate(String templateName) throws ZserioExtensionException
     {
         final String fullTemplateName = FREEMARKER_LOCATION + templateName;
-        try (final BufferedReader reader = new BufferedReader(
-                new InputStreamReader(getFreemarkerTemplateStream(fullTemplateName), StandardCharsets.UTF_8)))
+        try (final BufferedReader reader = new BufferedReader(new InputStreamReader(
+                     getFreemarkerTemplateStream(fullTemplateName), StandardCharsets.UTF_8)))
         {
             final List<String> lines = new ArrayList<String>();
             while (reader.ready())
@@ -140,8 +138,8 @@ public final class FreeMarkerUtil
         }
         catch (IOException e)
         {
-            throw new ZserioExtensionException("Failed to read template '" +
-                    fullTemplateName + "': " + e.toString());
+            throw new ZserioExtensionException(
+                    "Failed to read template '" + fullTemplateName + "': " + e.toString());
         }
     }
 
@@ -155,14 +153,14 @@ public final class FreeMarkerUtil
         }
         catch (Exception e)
         {
-            throw new ZserioExtensionException("Failed to get resource file for template '" +
-                    templateName + "':" + e.getMessage());
+            throw new ZserioExtensionException(
+                    "Failed to get resource file for template '" + templateName + "':" + e.getMessage());
         }
 
         if (resourceStream == null)
         {
-            throw new ZserioExtensionException("Failed to get resource file for template '" +
-                    templateName + "'!");
+            throw new ZserioExtensionException(
+                    "Failed to get resource file for template '" + templateName + "'!");
         }
 
         return resourceStream;

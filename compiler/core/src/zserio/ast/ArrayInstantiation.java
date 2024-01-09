@@ -21,8 +21,8 @@ public final class ArrayInstantiation extends TypeInstantiation
      * @param lengthExpression         Array length expression.
      */
     public ArrayInstantiation(AstLocation location, TypeReference typeReference,
-            TypeInstantiation elementTypeInstantiation, boolean isPacked,
-            boolean isImplicit, Expression lengthExpression)
+            TypeInstantiation elementTypeInstantiation, boolean isPacked, boolean isImplicit,
+            Expression lengthExpression)
     {
         super(location, typeReference);
 
@@ -114,8 +114,9 @@ public final class ArrayInstantiation extends TypeInstantiation
     {
         final TypeInstantiation instantiatedElementTypeInstantiation =
                 elementTypeInstantiation.instantiate(templateParameters, templateArguments);
-        final Expression instantiatedLengthExpression = getLengthExpression() == null ? null :
-                getLengthExpression().instantiate(templateParameters, templateArguments);
+        final Expression instantiatedLengthExpression = getLengthExpression() == null
+                ? null
+                : getLengthExpression().instantiate(templateParameters, templateArguments);
 
         return new ArrayInstantiation(getLocation(), instantiatedTypeReference,
                 instantiatedElementTypeInstantiation, isPacked, isImplicit, instantiatedLengthExpression);
@@ -126,8 +127,9 @@ public final class ArrayInstantiation extends TypeInstantiation
     {
         if (!(super.getBaseType() instanceof ArrayType))
         {
-            throw new ParserException(getTypeReference(), "Referenced type '" +
-                    ZserioTypeUtil.getReferencedFullName(getTypeReference()) + "' is not an array type!");
+            throw new ParserException(getTypeReference(),
+                    "Referenced type '" + ZserioTypeUtil.getReferencedFullName(getTypeReference()) +
+                            "' is not an array type!");
         }
     }
 
@@ -160,8 +162,8 @@ public final class ArrayInstantiation extends TypeInstantiation
         {
             if (lengthExpression.getExprType() != Expression.ExpressionType.INTEGER)
             {
-                throw new ParserException(lengthExpression,
-                        "Invalid length expression for array. Length must be integer!");
+                throw new ParserException(
+                        lengthExpression, "Invalid length expression for array. Length must be integer!");
             }
         }
     }
@@ -184,12 +186,12 @@ public final class ArrayInstantiation extends TypeInstantiation
 
     private static boolean isSimpleTypePackable(ZserioType baseType)
     {
-        return baseType instanceof IntegerType ||
-                baseType instanceof EnumType || baseType instanceof BitmaskType;
+        return baseType instanceof IntegerType || baseType instanceof EnumType ||
+                baseType instanceof BitmaskType;
     }
 
-    private void checkPackedArrayElementType(WarningsConfig warningsConfig,
-            ZserioTemplatableType currentTemplateInstantiation)
+    private void checkPackedArrayElementType(
+            WarningsConfig warningsConfig, ZserioTemplatableType currentTemplateInstantiation)
     {
         if (isPacked)
         {
@@ -205,8 +207,9 @@ public final class ArrayInstantiation extends TypeInstantiation
                     if (!elementCompoundType.getFields().isEmpty())
                     {
                         printUnpackableWarning(warningsConfig, currentTemplateInstantiation,
-                                "Keyword 'packed' doesn't have any effect. " +
-                                "'" + elementCompoundType.getName() + "' doesn't contain any packable field.",
+                                "Keyword 'packed' doesn't have any effect. "
+                                        + "'" + elementCompoundType.getName() +
+                                        "' doesn't contain any packable field.",
                                 WarningsConfig.UNPACKABLE_ARRAY);
                     }
                 }
@@ -220,8 +223,8 @@ public final class ArrayInstantiation extends TypeInstantiation
             else if (!(isSimpleTypePackable(elementBaseType)))
             {
                 printUnpackableWarning(warningsConfig, currentTemplateInstantiation,
-                        "Keyword 'packed' doesn't have any effect. " +
-                        "'" + elementBaseType.getName() + "' is not packable element type.",
+                        "Keyword 'packed' doesn't have any effect. "
+                                + "'" + elementBaseType.getName() + "' is not packable element type.",
                         WarningsConfig.UNPACKABLE_ARRAY);
             }
         }
@@ -237,11 +240,11 @@ public final class ArrayInstantiation extends TypeInstantiation
             {
                 ZserioToolPrinter.printWarning(instantiationReference.getLocation(),
                         "    In instantiation of '" + instantiationReference.getReferencedTypeName() +
-                        "' required from here");
+                                "' required from here");
             }
         }
-        ZserioToolPrinter.printWarning(getElementTypeInstantiation(), message,
-                warningsConfig, warningSpecifier);
+        ZserioToolPrinter.printWarning(
+                getElementTypeInstantiation(), message, warningsConfig, warningSpecifier);
     }
 
     private boolean checkImplicitArrayElementType()

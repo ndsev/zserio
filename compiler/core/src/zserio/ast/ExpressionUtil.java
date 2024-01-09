@@ -44,8 +44,8 @@ final class ExpressionUtil
      *
      * @throws ParserException Throws if integer expression exceeds the bounds of its type.
      */
-    static void checkIntegerExpressionRange(Expression expression, TypeInstantiation instantiation,
-            String ownerName)
+    static void checkIntegerExpressionRange(
+            Expression expression, TypeInstantiation instantiation, String ownerName)
     {
         final ZserioType type = instantiation.getBaseType();
         if (type instanceof IntegerType)
@@ -55,17 +55,18 @@ final class ExpressionUtil
             if (value != null)
             {
                 if (value.compareTo(integerType.getLowerBound(instantiation)) < 0 ||
-                    value.compareTo(integerType.getUpperBound(instantiation)) > 0)
+                        value.compareTo(integerType.getUpperBound(instantiation)) > 0)
                 {
-                    throw new ParserException(expression, "Initializer value '" + value.toString() + "' of '" +
-                            ownerName + "' exceeds the bounds of its type '" + type.getName() + "'!");
+                    throw new ParserException(expression,
+                            "Initializer value '" + value.toString() + "' of '" + ownerName +
+                                    "' exceeds the bounds of its type '" + type.getName() + "'!");
                 }
             }
         }
     }
 
-    private static void checkExpressionType(Expression expression, ZserioType type,
-            TypeInstantiation instantiation)
+    private static void checkExpressionType(
+            Expression expression, ZserioType type, TypeInstantiation instantiation)
     {
         boolean isTypeMismatch = true;
         if (type instanceof IntegerType)
@@ -89,7 +90,7 @@ final class ExpressionUtil
         else if (type instanceof FloatType)
         {
             isTypeMismatch = (expression.getExprType() != Expression.ExpressionType.FLOAT &&
-                              expression.getExprType() != Expression.ExpressionType.INTEGER);
+                    expression.getExprType() != Expression.ExpressionType.INTEGER);
         }
         else if (type instanceof StringType)
         {
@@ -129,9 +130,10 @@ final class ExpressionUtil
         if (isTypeMismatch)
         {
             final String typeName = (type instanceof ArrayType) ? "array type" : type.getName();
-            throw new ParserException(expression, "Wrong type of value expression (" +
-                    expression.getExprType().toString().toLowerCase(Locale.ENGLISH) +
-                    " cannot be assigned to " + typeName + ")!");
+            throw new ParserException(expression,
+                    "Wrong type of value expression (" +
+                            expression.getExprType().toString().toLowerCase(Locale.ENGLISH) +
+                            " cannot be assigned to " + typeName + ")!");
         }
     }
 
@@ -140,8 +142,9 @@ final class ExpressionUtil
         final ZserioType zserioType = expression.getExprZserioType();
         if (zserioType != type)
         {
-            throw new ParserException(expression, "Wrong type of value expression ('" +
-                    zserioType.getName() + "' cannot be assigned to '" + type.getName() + "')!");
+            throw new ParserException(expression,
+                    "Wrong type of value expression ('" + zserioType.getName() + "' cannot be assigned to '" +
+                            type.getName() + "')!");
         }
     }
 }

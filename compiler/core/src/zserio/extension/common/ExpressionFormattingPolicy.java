@@ -43,8 +43,8 @@ public interface ExpressionFormattingPolicy
             return afterOperand;
         }
 
-        private final String    beforeOperand;
-        private final String    afterOperand;
+        private final String beforeOperand;
+        private final String afterOperand;
     }
 
     /**
@@ -64,8 +64,7 @@ public interface ExpressionFormattingPolicy
             this("", afterOperand1, "");
         }
 
-        public BinaryExpressionFormatting(String beforeOperand1, String afterOperand1,
-                String afterOperand2)
+        public BinaryExpressionFormatting(String beforeOperand1, String afterOperand1, String afterOperand2)
         {
             this.beforeOperand1 = beforeOperand1;
             this.afterOperand1 = afterOperand1;
@@ -87,9 +86,9 @@ public interface ExpressionFormattingPolicy
             return afterOperand2;
         }
 
-        private final String    beforeOperand1;
-        private final String    afterOperand1;
-        private final String    afterOperand2;
+        private final String beforeOperand1;
+        private final String afterOperand1;
+        private final String afterOperand2;
     }
 
     /**
@@ -164,8 +163,7 @@ public interface ExpressionFormattingPolicy
     /**
      * Interface to formatting configuration.
      */
-    public static interface FormattingConfig
-    {
+    public static interface FormattingConfig {
         /**
          * Gets whether constant string expressions should be evaluated.
          *

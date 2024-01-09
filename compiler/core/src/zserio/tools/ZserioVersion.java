@@ -132,8 +132,7 @@ public final class ZserioVersion implements Comparable<ZserioVersion>
         if (matcher.find())
         {
             final Integer preRelease = matcher.group(4) == null ? null : Integer.parseInt(matcher.group(4));
-            return new ZserioVersion(
-                    Integer.parseInt(matcher.group(1)), // major
+            return new ZserioVersion(Integer.parseInt(matcher.group(1)), // major
                     Integer.parseInt(matcher.group(2)), // minor
                     Integer.parseInt(matcher.group(3)), // revision
                     preRelease); // pre-release

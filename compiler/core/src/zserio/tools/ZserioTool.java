@@ -22,10 +22,10 @@ import zserio.ast.Root;
 import zserio.ast.ZserioAstBuilder;
 import zserio.ast.ZserioAstChecker;
 import zserio.ast.ZserioAstEvaluator;
-import zserio.ast.ZserioAstSymbolResolver;
-import zserio.ast.ZserioAstScopeSetter;
-import zserio.ast.ZserioAstTemplator;
 import zserio.ast.ZserioAstImporter;
+import zserio.ast.ZserioAstScopeSetter;
+import zserio.ast.ZserioAstSymbolResolver;
+import zserio.ast.ZserioAstTemplator;
 import zserio.ast.ZserioAstTypeResolver;
 import zserio.ast.ZserioParseTreeChecker;
 import zserio.extension.common.ZserioExtensionException;
@@ -196,8 +196,8 @@ public final class ZserioTool
         final ZserioAstEvaluator evaluator = new ZserioAstEvaluator();
         rootNode.accept(evaluator);
 
-        final ZserioAstChecker checker = new ZserioAstChecker(
-                warningsConfig, commandLineArguments.getWithGlobalRuleIdCheck());
+        final ZserioAstChecker checker =
+                new ZserioAstChecker(warningsConfig, commandLineArguments.getWithGlobalRuleIdCheck());
         rootNode.accept(checker);
 
         return rootNode;

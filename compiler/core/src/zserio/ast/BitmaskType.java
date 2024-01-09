@@ -104,8 +104,9 @@ public final class BitmaskType extends DocumentableAstNode implements ZserioScop
             final ZserioType baseType = typeInstantiation.getBaseType();
             if (!(baseType instanceof IntegerType) || ((IntegerType)baseType).isSigned())
             {
-                throw new ParserException(this, "Bitmask '" + this.getName() + "' cannot use " +
-                        baseType.getName() + " type! Only unsigned integer types are allowed!");
+                throw new ParserException(this,
+                        "Bitmask '" + this.getName() + "' cannot use " + baseType.getName() +
+                                " type! Only unsigned integer types are allowed!");
             }
 
             // evaluate bitmask values
@@ -154,8 +155,8 @@ public final class BitmaskType extends DocumentableAstNode implements ZserioScop
             {
                 // bitmask value is duplicated
                 final ParserStackedException stackedException = new ParserStackedException(
-                        getValueLocation(bitmaskValue), "Bitmask '" + bitmaskValue.getName() +
-                        "' has duplicated value (" + intValue + ")!");
+                        getValueLocation(bitmaskValue),
+                        "Bitmask '" + bitmaskValue.getName() + "' has duplicated value (" + intValue + ")!");
                 stackedException.pushMessage(getValueLocation(prevValue), "    First defined here");
                 throw stackedException;
             }
@@ -167,16 +168,18 @@ public final class BitmaskType extends DocumentableAstNode implements ZserioScop
             final BigInteger upperBound = integerBaseType.getUpperBound(typeInstantiation);
             if (intValue.compareTo(lowerBound) < 0 || intValue.compareTo(upperBound) > 0)
             {
-                throw new ParserException(getValueLocation(bitmaskValue), "Bitmask '" + bitmaskValue.getName() +
-                        "' has value (" + intValue + ") out of range <" + lowerBound + "," + upperBound + ">!");
+                throw new ParserException(getValueLocation(bitmaskValue),
+                        "Bitmask '" + bitmaskValue.getName() + "' has value (" + intValue + ") out of range <" +
+                                lowerBound + "," + upperBound + ">!");
             }
         }
     }
 
     private AstLocation getValueLocation(BitmaskValue bitmaskValue)
     {
-        return bitmaskValue.getValueExpression() != null ?
-                bitmaskValue.getValueExpression().getLocation() : bitmaskValue.getLocation();
+        return bitmaskValue.getValueExpression() != null
+                ? bitmaskValue.getValueExpression().getLocation()
+                : bitmaskValue.getLocation();
     }
 
     private final Scope scope = new Scope(this);

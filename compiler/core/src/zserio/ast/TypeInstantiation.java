@@ -72,8 +72,8 @@ public class TypeInstantiation extends AstNodeBase
      *
      * @return New type instantiation instantiated from this using the given template arguments.
      */
-    TypeInstantiation instantiate(List<TemplateParameter> templateParameters,
-            List<TemplateArgument> templateArguments)
+    TypeInstantiation instantiate(
+            List<TemplateParameter> templateParameters, List<TemplateArgument> templateArguments)
     {
         final TypeReference instantiatedTypeReference =
                 typeReference.instantiate(templateParameters, templateArguments);
@@ -108,10 +108,9 @@ public class TypeInstantiation extends AstNodeBase
                 baseType instanceof CompoundType && !((CompoundType)baseType).getTypeParameters().isEmpty();
         if (isParameterized)
         {
-            final ParserStackedException exception = new ParserStackedException(
-                    typeReference.getLocation(), "Referenced type '" +
-                    ZserioTypeUtil.getReferencedFullName(typeReference) +
-                    "' is defined as parameterized type!");
+            final ParserStackedException exception = new ParserStackedException(typeReference.getLocation(),
+                    "Referenced type '" + ZserioTypeUtil.getReferencedFullName(typeReference) +
+                            "' is defined as parameterized type!");
             fillInstantiationStack(exception);
             throw exception;
         }
@@ -145,22 +144,23 @@ public class TypeInstantiation extends AstNodeBase
             if (resolvingType instanceof Subtype)
             {
                 exception.pushMessage(resolvingType.getLocation(),
-                        "    See subtype '" +
-                        ZserioTypeUtil.getReferencedFullName(resolvingTypeReference) + "' definition here");
+                        "    See subtype '" + ZserioTypeUtil.getReferencedFullName(resolvingTypeReference) +
+                                "' definition here");
                 resolvingTypeReference = ((Subtype)resolvingType).getTypeReference();
             }
             else if (resolvingType instanceof InstantiateType)
             {
                 exception.pushMessage(resolvingType.getLocation(),
                         "    See template instantiation '" +
-                        ZserioTypeUtil.getReferencedFullName(resolvingTypeReference) + "' definition here");
+                                ZserioTypeUtil.getReferencedFullName(resolvingTypeReference) +
+                                "' definition here");
                 resolvingTypeReference = ((InstantiateType)resolvingType).getTypeReference();
             }
             resolvingType = resolvingTypeReference.getType();
         }
 
-        exception.pushMessage(resolvingType.getLocation(),
-                    "    See '" + resolvingType.getName() + "' definition here");
+        exception.pushMessage(
+                resolvingType.getLocation(), "    See '" + resolvingType.getName() + "' definition here");
     }
 
     private final TypeReference typeReference;

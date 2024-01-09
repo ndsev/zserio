@@ -13,8 +13,8 @@ public final class InstantiationException extends ParserStackedException
      * @param exception                   The main parser exception containing the main error message.
      * @param instantiationReferenceStack Stack of instantiation references.
      */
-    public InstantiationException(ParserException exception,
-            Iterable<TypeReference> instantiationReferenceStack)
+    public InstantiationException(
+            ParserException exception, Iterable<TypeReference> instantiationReferenceStack)
     {
         super(exception);
 
@@ -28,8 +28,8 @@ public final class InstantiationException extends ParserStackedException
      * @param message                     The main message for the error.
      * @param instantiationReferenceStack Stack of instantiation references.
      */
-    public InstantiationException(AstLocation location, String message,
-            Iterable<TypeReference> instantiationReferenceStack)
+    public InstantiationException(
+            AstLocation location, String message, Iterable<TypeReference> instantiationReferenceStack)
     {
         super(location, message);
 
@@ -40,8 +40,9 @@ public final class InstantiationException extends ParserStackedException
     {
         for (TypeReference instantiationReference : instantiationReferenceStack)
         {
-            pushMessage(instantiationReference.getLocation(), "    In instantiation of '" +
-                    instantiationReference.getReferencedTypeName() + "' required from here");
+            pushMessage(instantiationReference.getLocation(),
+                    "    In instantiation of '" + instantiationReference.getReferencedTypeName() +
+                            "' required from here");
         }
     }
 

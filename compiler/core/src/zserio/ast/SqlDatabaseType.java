@@ -19,8 +19,8 @@ public final class SqlDatabaseType extends CompoundType
      * @param fields      List of all fields of the SQL database type.
      * @param docComments List of documentation comments belonging to this node.
      */
-    public SqlDatabaseType(AstLocation location, Package pkg, String name, List<Field> fields,
-            List<DocComment> docComments)
+    public SqlDatabaseType(
+            AstLocation location, Package pkg, String name, List<Field> fields, List<DocComment> docComments)
     {
         super(location, pkg, name, new ArrayList<TemplateParameter>(), new ArrayList<Parameter>(), fields,
                 new ArrayList<Function>(), docComments);

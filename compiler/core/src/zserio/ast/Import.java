@@ -86,8 +86,9 @@ public final class Import extends DocumentableAstNode
             importedSymbol = importedPackage.getLocalSymbol(importedName);
             if (importedSymbol == null)
             {
-                throw new ParserException(this, "Unresolved import of '" +
-                        ZserioTypeUtil.getFullName(importedPackageName, importedName) + "'!");
+                throw new ParserException(this,
+                        "Unresolved import of '" +
+                                ZserioTypeUtil.getFullName(importedPackageName, importedName) + "'!");
             }
         }
     }

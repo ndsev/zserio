@@ -51,8 +51,8 @@ public final class SqlNativeTypeMapper
         if (nativeType == null)
         {
             throw new ZserioExtensionException("Unexpected element '" +
-                    ZserioTypeUtil.getFullName(typeInstantiation.getType()) +
-                    "' of type '" + baseType.getClass() + "' in SqlNativeTypeMapper!");
+                    ZserioTypeUtil.getFullName(typeInstantiation.getType()) + "' of type '" +
+                    baseType.getClass() + "' in SqlNativeTypeMapper!");
         }
 
         return nativeType;

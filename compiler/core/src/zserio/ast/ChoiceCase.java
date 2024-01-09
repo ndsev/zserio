@@ -69,8 +69,8 @@ public final class ChoiceCase extends AstNodeBase
      */
     ChoiceCase instantiate(List<TemplateParameter> templateParameters, List<TemplateArgument> templateArguments)
     {
-        final Field instantiatedCaseField = caseField == null ? null :
-                caseField.instantiate(templateParameters, templateArguments);
+        final Field instantiatedCaseField =
+                caseField == null ? null : caseField.instantiate(templateParameters, templateArguments);
 
         final List<ChoiceCaseExpression> instantiatedCaseExpressions = new ArrayList<ChoiceCaseExpression>();
         for (ChoiceCaseExpression choiceCaseExpression : caseExpressions)

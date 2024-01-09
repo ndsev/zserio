@@ -73,8 +73,9 @@ final class ResourceManager
                 }
                 else if (lastModifiedEntryTime == 0L)
                 {
-                    ZserioToolPrinter.printWarning("ResourceManager: Failed to get timestamp of resource: '"
-                            + entry + "'.", commandLineArguments.getWarningsConfig(), WarningsConfig.TIMESTAMP);
+                    ZserioToolPrinter.printWarning(
+                            "ResourceManager: Failed to get timestamp of resource: '" + entry + "'.",
+                            commandLineArguments.getWarningsConfig(), WarningsConfig.TIMESTAMP);
                     return 0L;
                 }
             }
@@ -83,8 +84,9 @@ final class ResourceManager
         }
         catch (IOException e)
         {
-            ZserioToolPrinter.printWarning("ResourceManager: Failed to get timestamp of resource: '" +
-                    resourcePath + "'.", commandLineArguments.getWarningsConfig(), WarningsConfig.TIMESTAMP);
+            ZserioToolPrinter.printWarning(
+                    "ResourceManager: Failed to get timestamp of resource: '" + resourcePath + "'.",
+                    commandLineArguments.getWarningsConfig(), WarningsConfig.TIMESTAMP);
             return 0L;
         }
     }

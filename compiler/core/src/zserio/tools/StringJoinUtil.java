@@ -54,8 +54,8 @@ public final class StringJoinUtil
      *
      * @return Returns joined string.
      */
-    public static String joinStrings(String string1, String string2, String string3, String string4,
-                                     String separator)
+    public static String joinStrings(
+            String string1, String string2, String string3, String string4, String separator)
     {
         Joiner joiner = new Joiner(separator);
         joiner.append(string1);
@@ -91,8 +91,8 @@ public final class StringJoinUtil
      *
      * @return Returns joined string.
      */
-    public static String joinStrings(Iterable<String> stringList1, Iterable<String> stringList2,
-            String separator)
+    public static String joinStrings(
+            Iterable<String> stringList1, Iterable<String> stringList2, String separator)
     {
         Joiner joiner = new Joiner(separator);
         joiner.append(stringList1);

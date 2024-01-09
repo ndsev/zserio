@@ -16,8 +16,8 @@ public final class Subtype extends DocumentableAstNode implements ZserioType
      * @param name                Name of the subtype.
      * @param docComments         List of documentation comments belonging to this node.
      */
-    public Subtype(AstLocation location, Package pkg, TypeReference targetTypeReference,
-            String name, List<DocComment> docComments)
+    public Subtype(AstLocation location, Package pkg, TypeReference targetTypeReference, String name,
+            List<DocComment> docComments)
     {
         super(location, docComments);
 

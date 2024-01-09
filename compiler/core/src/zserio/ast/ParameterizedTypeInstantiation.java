@@ -18,8 +18,8 @@ public final class ParameterizedTypeInstantiation extends TypeInstantiation
      * @param typeReference Reference to the instantiated type definition.
      * @param typeArguments Arguments for the type instantiation.
      */
-    public ParameterizedTypeInstantiation (AstLocation location, TypeReference typeReference,
-            List<Expression> typeArguments)
+    public ParameterizedTypeInstantiation(
+            AstLocation location, TypeReference typeReference, List<Expression> typeArguments)
     {
         super(location, typeReference);
 
@@ -102,7 +102,6 @@ public final class ParameterizedTypeInstantiation extends TypeInstantiation
             return parameter;
         }
 
-
         private final Expression argumentExpression;
         private final Parameter parameter;
     }
@@ -143,20 +142,20 @@ public final class ParameterizedTypeInstantiation extends TypeInstantiation
                 final ParserStackedException exception = new ParserStackedException(
                         getTypeReference().getLocation(),
                         "Parameterized type instantiation of '" +
-                        ZserioTypeUtil.getReferencedFullName(getTypeReference()) + "' has " +
-                        (typeParameters.size() > typeArguments.size() ? "too few" : "too many") +
-                        " arguments! " + "Expecting " + typeParameters.size() +
-                        ", got " + typeArguments.size() + "!");
+                                ZserioTypeUtil.getReferencedFullName(getTypeReference()) + "' has " +
+                                (typeParameters.size() > typeArguments.size() ? "too few" : "too many") +
+                                " arguments! "
+                                + "Expecting " + typeParameters.size() + ", got " + typeArguments.size() + "!");
                 fillInstantiationStack(exception);
                 throw exception;
-          }
+            }
         }
         else
         {
             final ParserStackedException exception = new ParserStackedException(
-                    getTypeReference().getLocation(), "Referenced type '" +
-                    ZserioTypeUtil.getReferencedFullName(getTypeReference()) +
-                    "' is not a parameterized type!");
+                    getTypeReference().getLocation(),
+                    "Referenced type '" + ZserioTypeUtil.getReferencedFullName(getTypeReference()) +
+                            "' is not a parameterized type!");
             fillInstantiationStack(exception);
             throw exception;
         }
@@ -173,8 +172,8 @@ public final class ParameterizedTypeInstantiation extends TypeInstantiation
             final List<Parameter> typeParameters = compoundType.getTypeParameters();
             for (int i = 0; i < typeParameters.size(); i++)
             {
-                instantiatedParameters.add(new InstantiatedParameter(
-                        typeArguments.get(i), typeParameters.get(i)));
+                instantiatedParameters.add(
+                        new InstantiatedParameter(typeArguments.get(i), typeParameters.get(i)));
             }
         }
         isEvaluated = true;

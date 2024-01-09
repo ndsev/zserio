@@ -178,8 +178,8 @@ public final class ReservedKeywordsClashChecker implements TreeWalker
         if (reservedKeywords.contains(id))
         {
             ZserioToolPrinter.printError(node.getLocation(),
-                    description + " '" + id + "' clashes with a " + languageName + " keyword and " +
-                    "may not be used as an identifier!");
+                    description + " '" + id + "' clashes with a " + languageName + " keyword and "
+                            + "may not be used as an identifier!");
             throw new ZserioExtensionException("Invalid identifier found!");
         }
     }

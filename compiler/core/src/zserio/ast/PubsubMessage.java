@@ -101,8 +101,8 @@ public final class PubsubMessage extends DocumentableAstNode implements ScopeSym
         if (!(referencedBaseType instanceof CompoundType) && !(referencedBaseType instanceof BytesType))
         {
             throw new ParserException(typeReference,
-                    "Only non-parameterized compound types or bytes can be used in pubsub messages, " +
-                    "'" + typeReference.getReferencedTypeName() + "' is not a compound type!");
+                    "Only non-parameterized compound types or bytes can be used in pubsub messages, "
+                            + "'" + typeReference.getReferencedTypeName() + "' is not a compound type!");
         }
 
         if (referencedBaseType instanceof CompoundType)
@@ -112,14 +112,15 @@ public final class PubsubMessage extends DocumentableAstNode implements ScopeSym
             {
                 throw new ParserException(typeReference,
                         "Only non-parameterized compound types or bytes can be used in pubsub messages, '" +
-                        ZserioTypeUtil.getReferencedFullName(typeReference) + "' is a parameterized type!");
+                                ZserioTypeUtil.getReferencedFullName(typeReference) +
+                                "' is a parameterized type!");
             }
 
             if (compoundType instanceof SqlTableType)
             {
-                throw new ParserException(typeReference, "SQL table '" +
-                        ZserioTypeUtil.getReferencedFullName(typeReference) +
-                        "' cannot be used in pubsub messages!");
+                throw new ParserException(typeReference,
+                        "SQL table '" + ZserioTypeUtil.getReferencedFullName(typeReference) +
+                                "' cannot be used in pubsub messages!");
             }
 
             if (topicDefinitionExpr.getStringValue() == null)

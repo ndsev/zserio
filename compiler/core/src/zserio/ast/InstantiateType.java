@@ -16,8 +16,8 @@ public final class InstantiateType extends DocumentableAstNode implements Zserio
      * @param name          Name to be assigned to the instantiated template.
      * @param docComments   List of documentation comments belonging to this node.
      */
-    public InstantiateType(AstLocation location, Package pkg, TypeReference typeReference,
-            String name, List<DocComment> docComments)
+    public InstantiateType(AstLocation location, Package pkg, TypeReference typeReference, String name,
+            List<DocComment> docComments)
     {
         super(location, docComments);
 
@@ -70,11 +70,10 @@ public final class InstantiateType extends DocumentableAstNode implements Zserio
 
         // don't use base type reference since instantiate type can be defined only for a template instantiation
         final ZserioType type = typeReference.getType();
-        if (!(type instanceof TemplatableType) ||
-                ((TemplatableType)type).getTemplateParameters().isEmpty())
+        if (!(type instanceof TemplatableType) || ((TemplatableType)type).getTemplateParameters().isEmpty())
         {
-            throw new ParserException(type,
-                    "'" + ZserioTypeUtil.getReferencedFullName(typeReference) + "' is not a template!");
+            throw new ParserException(
+                    type, "'" + ZserioTypeUtil.getReferencedFullName(typeReference) + "' is not a template!");
         }
 
         template = (TemplatableType)type;

@@ -77,8 +77,10 @@ public final class AstLocation
     @Override
     public String toString()
     {
-        return fileName == null ? "" : StringJoinUtil.joinStrings(fileName, Integer.toString(line),
-                Integer.toString(column), LOCATION_SEPARATOR);
+        return fileName == null
+                ? ""
+                : StringJoinUtil.joinStrings(
+                          fileName, Integer.toString(line), Integer.toString(column), LOCATION_SEPARATOR);
     }
 
     private final String fileName;

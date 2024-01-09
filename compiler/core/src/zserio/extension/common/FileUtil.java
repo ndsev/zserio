@@ -22,8 +22,8 @@ public final class FileUtil
         if (parentDir.exists())
         {
             if (!parentDir.isDirectory())
-                throw new ZserioExtensionException("Can't create ouput directory because file with the same " +
-                        "name already exists: " + parentDir.toString());
+                throw new ZserioExtensionException("Can't create ouput directory because file with the same "
+                        + "name already exists: " + parentDir.toString());
         }
         else
         {

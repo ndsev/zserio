@@ -21,8 +21,8 @@ final class ScopeSymbolValidator
         final AstNode prevSymbol = symbolsMap.put(normalizedName, symbol);
         if (prevSymbol != null)
         {
-            final ParserStackedException stackedException = new ParserStackedException(symbol.getLocation(),
-                    "Symbol '" + name + "' differs only in a case of its first letter!");
+            final ParserStackedException stackedException = new ParserStackedException(
+                    symbol.getLocation(), "Symbol '" + name + "' differs only in a case of its first letter!");
             stackedException.pushMessage(prevSymbol.getLocation(), "    Conflicting symbol defined here");
             throw stackedException;
         }

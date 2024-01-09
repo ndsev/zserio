@@ -13,6 +13,7 @@ zserio_core.build_dir   - Directory where to put generated files.
 zserio_core.install_dir - Directory where to install Zserio core jar file.
                           Default is "${zserio.install_dir}/zserio_libs".
 zserio.version          - Zserio version to be used for Zserio core. Default is "unknown".
+clang_format.exe_file   - Clang-format executable file. If not set, clang-format is not run.
 spotbugs.home_dir       - Location of the spotbugs tool. If not set, spotbugs is not run.
 
 -->
@@ -205,7 +206,22 @@ spotbugs.home_dir       - Location of the spotbugs tool. If not set, spotbugs is
         </copy>
     </target>
 
-    <target name="spotbugs" depends="install" if="spotbugs.home_dir">
+    <target name="clang_format" depends="install" if="clang_format.exe_file">
+        <echo>
+Command hints to reformat source using clang-format tool:
+    git clang-format
+    clang-format --style=file -i [SOURCE]
+        </echo>
+        <apply executable="${clang_format.exe_file}" failonerror="true">
+            <arg value="--style=file"/>
+            <arg value="--dry-run"/>
+            <arg value="--Werror"/>
+            <srcfile/>
+            <fileset dir="${zserio_core.src_dir}" includes="**/*.java"/>
+        </apply>
+    </target>
+
+    <target name="spotbugs" depends="clang_format" if="spotbugs.home_dir">
         <mkdir dir="${zserio_core.spotbugs.out_dir}"/>
         <taskdef classpath="${spotbugs.home_dir}/lib/spotbugs-ant.jar"
             resource="edu/umd/cs/findbugs/anttask/tasks.properties"/>
@@ -246,7 +262,22 @@ spotbugs.home_dir       - Location of the spotbugs tool. If not set, spotbugs is
         </javac>
     </target>
 
-    <target name="test.spotbugs" depends="spotbugs, test.compile" if="spotbugs.home_dir">
+    <target name="test.clang_format" depends="spotbugs, test.compile" if="clang_format.exe_file">
+        <echo>
+Command hints to reformat source using clang-format tool:
+    git clang-format
+    clang-format --style=file -i [SOURCE]
+        </echo>
+        <apply executable="${clang_format.exe_file}" failonerror="true">
+            <arg value="--style=file"/>
+            <arg value="--dry-run"/>
+            <arg value="--Werror"/>
+            <srcfile/>
+            <fileset dir="${zserio_core.test.src_dir}" includes="**/*.java"/>
+        </apply>
+    </target>
+
+    <target name="test.spotbugs" depends="test.clang_format" if="spotbugs.home_dir">
         <mkdir dir="${zserio_core.test.spotbugs.out_dir}"/>
         <taskdef classpath="${spotbugs.home_dir}/lib/spotbugs-ant.jar"
             resource="edu/umd/cs/findbugs/anttask/tasks.properties"/>

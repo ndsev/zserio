@@ -48,8 +48,8 @@ final class Scope
         final AstNode prevSymbol = symbols.put(symbol.getName(), symbol);
         if (prevSymbol != null)
         {
-            final ParserStackedException stackedException = new ParserStackedException(symbol.getLocation(),
-                    "'" + symbol.getName() + "' is already defined in this scope!");
+            final ParserStackedException stackedException = new ParserStackedException(
+                    symbol.getLocation(), "'" + symbol.getName() + "' is already defined in this scope!");
             stackedException.pushMessage(prevSymbol.getLocation(), "    First defined here");
 
             throw stackedException;

@@ -104,8 +104,8 @@ final class DocCommentAstBuilder extends DocCommentBaseVisitor<Object>
         final DocLine docLine = ctx.docLine() != null
                 ? visitDocLine(ctx.docLine())
                 : new DocLine(getLocation(ctx.getStop()), new ArrayList<DocLineElement>());
-        final DocTagParam paramTag = new DocTagParam(getLocation(ctx.getStart()), ctx.paramName().getText(),
-                docLine);
+        final DocTagParam paramTag =
+                new DocTagParam(getLocation(ctx.getStart()), ctx.paramName().getText(), docLine);
         currentMultilineNode = paramTag;
         return paramTag;
     }

@@ -1,6 +1,7 @@
 package zserio.ast;
 
 import java.util.Map;
+
 import zserio.tools.WarningsConfig;
 import zserio.tools.ZserioToolPrinter;
 
@@ -79,8 +80,8 @@ public final class DocTagSee extends AstNodeBase
         }
         catch (ParserException e)
         {
-            ZserioToolPrinter.printWarning(e.getLocation(), "Documentation: " + e.getMessage(),
-                    warningsConfig, WarningsConfig.DOC_COMMENT_LINK);
+            ZserioToolPrinter.printWarning(e.getLocation(), "Documentation: " + e.getMessage(), warningsConfig,
+                    WarningsConfig.DOC_COMMENT_LINK);
         }
     }
 

@@ -67,8 +67,7 @@ final class DocCommentManager
             {
                 if (!currentUsedComments.contains(token))
                 {
-                    ZserioToolPrinter.printWarning(new AstLocation(token),
-                            "Documentation comment is not used.",
+                    ZserioToolPrinter.printWarning(new AstLocation(token), "Documentation comment is not used.",
                             warningsConfig, WarningsConfig.DOC_COMMENT_UNUSED);
                 }
             }
@@ -93,8 +92,9 @@ final class DocCommentManager
      */
     public List<DocComment> findDocComments(TerminalNode terminalNode)
     {
-        return (terminalNode == null) ? new ArrayList<DocComment>() :
-            findDocCommentsBefore(terminalNode.getSymbol());
+        return (terminalNode == null)
+                ? new ArrayList<DocComment>()
+                : findDocCommentsBefore(terminalNode.getSymbol());
     }
 
     /**
@@ -140,8 +140,8 @@ final class DocCommentManager
             return docComments;
 
         final int tokenIndex = token.getTokenIndex();
-        final List<Token> docCommentTokens = currentTokenStream.getHiddenTokensToLeft(tokenIndex,
-                ZserioLexer.DOC);
+        final List<Token> docCommentTokens =
+                currentTokenStream.getHiddenTokensToLeft(tokenIndex, ZserioLexer.DOC);
         if (docCommentTokens == null)
             return docComments;
 
@@ -172,8 +172,8 @@ final class DocCommentManager
             return parseDocCommentClassic(docCommentToken, isSticky, isOneLiner);
     }
 
-    private DocCommentMarkdown parseDocCommentMarkdown(Token docCommentToken, String[] docCommentLines,
-            boolean isSticky, boolean isOneLiner)
+    private DocCommentMarkdown parseDocCommentMarkdown(
+            Token docCommentToken, String[] docCommentLines, boolean isSticky, boolean isOneLiner)
     {
         String markdown = docCommentToken.getText();
         boolean isIndented = false; // one-liner is considered as not indented
@@ -193,13 +193,12 @@ final class DocCommentManager
         if (!markdown.endsWith("!*/"))
         {
             ZserioToolPrinter.printWarning(new AstLocation(docCommentToken),
-                    "Markdown documentation comment should be terminated by '!*/'.",
-                    warningsConfig, WarningsConfig.DOC_COMMENT_FORMAT);
+                    "Markdown documentation comment should be terminated by '!*/'.", warningsConfig,
+                    WarningsConfig.DOC_COMMENT_FORMAT);
         }
 
-        markdown = markdown
-                .replaceFirst("^\\/\\*!", "") // strip comment marker from beginning
-                .replaceFirst("!?\\*\\/$", ""); // strip comment marker from the end
+        markdown = markdown.replaceFirst("^\\/\\*!", "") // strip comment marker from beginning
+                           .replaceFirst("!?\\*\\/$", ""); // strip comment marker from the end
 
         return new DocCommentMarkdown(
                 new AstLocation(docCommentToken), markdown, isSticky, isOneLiner, isIndented);
@@ -228,14 +227,14 @@ final class DocCommentManager
         for (int i = 1; i < lines.length; i++)
         {
             if (!lines[i].isEmpty() && !lines[i].startsWith(indent))
-                    return false;
+                return false;
         }
 
         return true;
     }
 
-    private DocCommentClassic parseDocCommentClassic(Token docCommentToken, boolean isSticky,
-            boolean isOneLiner)
+    private DocCommentClassic parseDocCommentClassic(
+            Token docCommentToken, boolean isSticky, boolean isOneLiner)
     {
         try
         {
@@ -271,8 +270,8 @@ final class DocCommentManager
         catch (ParserException e)
         {
             // if we cannot parse comment, just ignore it and report warning
-            ZserioToolPrinter.printWarning(e.getLocation(), "Documentation: " +
-                        e.getMessage() + ".", warningsConfig, WarningsConfig.DOC_COMMENT_FORMAT);
+            ZserioToolPrinter.printWarning(e.getLocation(), "Documentation: " + e.getMessage() + ".",
+                    warningsConfig, WarningsConfig.DOC_COMMENT_FORMAT);
             return null;
         }
     }

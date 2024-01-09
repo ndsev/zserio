@@ -39,8 +39,8 @@ public final class ZserioToolPrinter
      * @param warningsConfig Warnings subsystem configuration.
      * @param warningSpecifier Specifier for the current warning.
      */
-    public static void printWarning(AstNode astNode, String text,
-            WarningsConfig warningsConfig, String warningSpecifier)
+    public static void printWarning(
+            AstNode astNode, String text, WarningsConfig warningsConfig, String warningSpecifier)
     {
         if (warningsConfig.isEnabled(warningSpecifier))
             printWarning(astNode, text + " [" + warningSpecifier + "]");
@@ -68,8 +68,8 @@ public final class ZserioToolPrinter
      * @param warningsConfig Warnings subsystem configuration.
      * @param warningSpecifier Specifier for the current warning.
      */
-    public static void printWarning(AstLocation location, String text,
-            WarningsConfig warningsConfig, String warningSpecifier)
+    public static void printWarning(
+            AstLocation location, String text, WarningsConfig warningsConfig, String warningSpecifier)
     {
         if (warningsConfig.isEnabled(warningSpecifier))
             printWarning(location, text + " [" + warningSpecifier + "]");
@@ -195,8 +195,8 @@ public final class ZserioToolPrinter
         printWarningOrError(prefix, fileName, line, column, text, false);
     }
 
-    private static void printWarningOrError(String prefix, String fileName, int line, int column, String text,
-            boolean withoutNewLine)
+    private static void printWarningOrError(
+            String prefix, String fileName, int line, int column, String text, boolean withoutNewLine)
     {
         StringBuffer textBuffer = new StringBuffer();
         textBuffer.append(prefix);

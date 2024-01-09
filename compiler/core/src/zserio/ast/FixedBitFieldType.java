@@ -32,9 +32,10 @@ public final class FixedBitFieldType extends IntegerType implements FixedSizeTyp
         }
 
         if (bitSize < 1 || bitSize > MAX_FIXED_BIT_FIELD_BIT_SIZE)
-            throw new ParserException(location, "Invalid bit size '" + bitSizeText +
-                    "' for the fixed bit field. Length must be within range " +
-                    "[1, " + MAX_FIXED_BIT_FIELD_BIT_SIZE + "]!");
+            throw new ParserException(location,
+                    "Invalid bit size '" + bitSizeText +
+                            "' for the fixed bit field. Length must be within range "
+                            + "[1, " + MAX_FIXED_BIT_FIELD_BIT_SIZE + "]!");
 
         if (isSigned)
         {

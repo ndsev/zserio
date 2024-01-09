@@ -17,8 +17,8 @@ final class PackageSymbolValidator
     {
         if (!Character.isUpperCase(name.charAt(0)))
         {
-            throw new ParserException(symbol,
-                    "Symbols defined in a package must start with an upper case letter!");
+            throw new ParserException(
+                    symbol, "Symbols defined in a package must start with an upper case letter!");
         }
 
         final String lowerCaseName = name.toLowerCase(Locale.ENGLISH);

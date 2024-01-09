@@ -80,9 +80,9 @@ public final class InputFileManager
             {
                 lastModifiedTimeError = true;
                 this.lastModifiedTime = 0L;
-                ZserioToolPrinter.printWarning("InputFileManager: Failed to get timestamp of source file: '" +
-                        fileFullName + "'.", commandLineArguments.getWarningsConfig(),
-                        WarningsConfig.TIMESTAMP);
+                ZserioToolPrinter.printWarning(
+                        "InputFileManager: Failed to get timestamp of source file: '" + fileFullName + "'.",
+                        commandLineArguments.getWarningsConfig(), WarningsConfig.TIMESTAMP);
             }
         }
     }

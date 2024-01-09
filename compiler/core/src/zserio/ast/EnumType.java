@@ -103,8 +103,8 @@ public final class EnumType extends DocumentableAstNode implements ZserioScopedT
             // fill resolved enumeration type
             final ZserioType baseType = typeInstantiation.getBaseType();
             if (!(baseType instanceof IntegerType))
-                throw new ParserException(this, "Enumeration '" + this.getName() + "' has forbidden type " +
-                        baseType.getName() + "!");
+                throw new ParserException(this,
+                        "Enumeration '" + this.getName() + "' has forbidden type " + baseType.getName() + "!");
 
             // evaluate enumeration values
             BigInteger defaultEnumItemValue = BigInteger.ZERO;
@@ -144,8 +144,9 @@ public final class EnumType extends DocumentableAstNode implements ZserioScopedT
             {
                 // enumeration item value is duplicated
                 final ParserStackedException stackedException = new ParserStackedException(
-                        getValueLocation(enumItem), "Enumeration item '" + enumItem.getName() +
-                        "' has duplicated value (" + intValue + ")!");
+                        getValueLocation(enumItem),
+                        "Enumeration item '" + enumItem.getName() + "' has duplicated value (" + intValue +
+                                ")!");
                 stackedException.pushMessage(getValueLocation(prevItem), "    First defined here");
                 throw stackedException;
             }
@@ -158,15 +159,16 @@ public final class EnumType extends DocumentableAstNode implements ZserioScopedT
             {
                 throw new ParserException(getValueLocation(enumItem),
                         "Enumeration item '" + enumItem.getName() + "' has value (" + intValue +
-                        ") out of range <" + lowerBound + "," + upperBound + ">!");
+                                ") out of range <" + lowerBound + "," + upperBound + ">!");
             }
         }
     }
 
     private AstLocation getValueLocation(EnumItem enumItem)
     {
-        return enumItem.getValueExpression() != null ?
-                enumItem.getValueExpression().getLocation() : enumItem.getLocation();
+        return enumItem.getValueExpression() != null
+                ? enumItem.getValueExpression().getLocation()
+                : enumItem.getLocation();
     }
 
     private final Scope scope = new Scope(this);

@@ -19,8 +19,8 @@ public final class DocCommentMarkdown extends DocComment
      * @param isOneLiner True if the documentation comment is on one line in the source.
      * @param isIndented True if all lines are indented at least as the begin-comment delimiter.
      */
-    public DocCommentMarkdown(AstLocation location, String markdown, boolean isSticky, boolean isOneLiner,
-            boolean isIndented)
+    public DocCommentMarkdown(
+            AstLocation location, String markdown, boolean isSticky, boolean isOneLiner, boolean isIndented)
     {
         super(location, isSticky, isOneLiner);
 
@@ -37,8 +37,7 @@ public final class DocCommentMarkdown extends DocComment
 
     @Override
     public void visitChildren(ZserioAstVisitor visitor)
-    {
-    }
+    {}
 
     @Override
     public DocComment findParamDoc(String paramName)
@@ -96,11 +95,11 @@ public final class DocCommentMarkdown extends DocComment
             }
             else
             {
-                 if (!markdownParagraphLines.isEmpty())
-                 {
+                if (!markdownParagraphLines.isEmpty())
+                {
                     markdownParagraphs.add(markdownParagraphLines);
                     markdownParagraphLines = new ArrayList<MarkdownLine>();
-                 }
+                }
             }
 
             line += 1;
@@ -167,12 +166,11 @@ public final class DocCommentMarkdown extends DocComment
         return new DocLine(markdownLine.getLocation(), docLineElements);
     }
 
-    private static void addMarkdownToDocLineElements(Package pkg, List<DocLineElement> docLineElements,
-            MarkdownLine markdownLine)
+    private static void addMarkdownToDocLineElements(
+            Package pkg, List<DocLineElement> docLineElements, MarkdownLine markdownLine)
     {
         final AstLocation lineLocation = markdownLine.getLocation();
-        final Pattern linkRegex =
-                Pattern.compile("([^\\[]*)\\[([^\\[\\]]*)\\]\\(([^)]+)\\)(.*)");
+        final Pattern linkRegex = Pattern.compile("([^\\[]*)\\[([^\\[\\]]*)\\]\\(([^)]+)\\)(.*)");
         final Matcher linkMatcher = linkRegex.matcher(markdownLine.getText());
 
         if (!linkMatcher.matches())
@@ -182,8 +180,7 @@ public final class DocCommentMarkdown extends DocComment
         }
         else
         {
-            final Pattern zsFileRegex =
-                    Pattern.compile("^([a-zA-Z_0-9\\.\\/]+)\\.zs(?:#([a-zA-Z_0-9]+))?");
+            final Pattern zsFileRegex = Pattern.compile("^([a-zA-Z_0-9\\.\\/]+)\\.zs(?:#([a-zA-Z_0-9]+))?");
             final String linkName = linkMatcher.group(3);
             final Matcher zsFileMatcher = zsFileRegex.matcher(linkName);
 
@@ -207,8 +204,8 @@ public final class DocCommentMarkdown extends DocComment
                 }
 
                 final String seeTagAlias = linkMatcher.group(2);
-                final AstLocation seeTagLocation = new AstLocation(
-                        lineLocation.getFileName(), lineLocation.getLine(),
+                final AstLocation seeTagLocation = new AstLocation(lineLocation.getFileName(),
+                        lineLocation.getLine(),
                         lineLocation.getColumn() - 1 + linkMatcher.end(1)); // '[' is not in any group
                 final DocTagSee docTagSee = new DocTagSee(seeTagLocation, seeTagAlias, seeTagLink);
                 docLineElements.add(new DocLineElement(seeTagLocation, docTagSee));
@@ -217,11 +214,10 @@ public final class DocCommentMarkdown extends DocComment
             final String lineSuffix = linkMatcher.group(4).trim();
             if (!lineSuffix.isEmpty())
             {
-                final AstLocation suffixLocation = new AstLocation(
-                        lineLocation.getFileName(), lineLocation.getLine(),
-                        lineLocation.getColumn() - 1 + linkMatcher.start(4));
-                addMarkdownToDocLineElements(pkg, docLineElements,
-                        new MarkdownLine(suffixLocation, lineSuffix));
+                final AstLocation suffixLocation = new AstLocation(lineLocation.getFileName(),
+                        lineLocation.getLine(), lineLocation.getColumn() - 1 + linkMatcher.start(4));
+                addMarkdownToDocLineElements(
+                        pkg, docLineElements, new MarkdownLine(suffixLocation, lineSuffix));
             }
         }
     }
@@ -252,8 +248,9 @@ public final class DocCommentMarkdown extends DocComment
             }
         }
 
-        final String seeTagLink = (zsTypeName == null) ? packageNameBuilder.get().toString() :
-                ZserioTypeUtil.getFullName(packageNameBuilder.get(), zsTypeName);
+        final String seeTagLink = (zsTypeName == null)
+                ? packageNameBuilder.get().toString()
+                : ZserioTypeUtil.getFullName(packageNameBuilder.get(), zsTypeName);
 
         return seeTagLink;
     }

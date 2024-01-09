@@ -146,11 +146,12 @@ public final class ChoiceType extends CompoundType
                 getSelectorExpression().instantiate(getTemplateParameters(), templateArguments);
 
         final List<ChoiceCase> instantiatedChoiceCases = new ArrayList<ChoiceCase>();
-        for (ChoiceCase choiceCase: getChoiceCases())
+        for (ChoiceCase choiceCase : getChoiceCases())
             instantiatedChoiceCases.add(choiceCase.instantiate(getTemplateParameters(), templateArguments));
 
-        final ChoiceDefault instantiatedChoiceDefault = getChoiceDefault() == null ? null :
-            getChoiceDefault().instantiate(getTemplateParameters(), templateArguments);
+        final ChoiceDefault instantiatedChoiceDefault = getChoiceDefault() == null
+                ? null
+                : getChoiceDefault().instantiate(getTemplateParameters(), templateArguments);
 
         final List<Function> instantiatedFunctions = new ArrayList<Function>();
         for (Function function : getFunctions())
@@ -250,8 +251,8 @@ public final class ChoiceType extends CompoundType
         if (selectorExpression.getExprType() == Expression.ExpressionType.BOOLEAN && getNumCases() > 1)
         {
             if (choiceDefault != null)
-                throw new ParserException(choiceDefault, "Choice '" + getName() +
-                        "' has unreachable default case!");
+                throw new ParserException(
+                        choiceDefault, "Choice '" + getName() + "' has unreachable default case!");
 
             isDefaulUnreachable = true;
         }
@@ -272,11 +273,12 @@ public final class ChoiceType extends CompoundType
     {
         final Expression.ExpressionType selectorExpressionType = selectorExpression.getExprType();
         if (selectorExpressionType != Expression.ExpressionType.INTEGER &&
-            selectorExpressionType != Expression.ExpressionType.BOOLEAN &&
-            selectorExpressionType != Expression.ExpressionType.ENUM &&
-            selectorExpressionType != Expression.ExpressionType.BITMASK)
-            throw new ParserException(this, "Choice '" + getName() + "' uses forbidden " +
-                    selectorExpressionType.name() + " selector!");
+                selectorExpressionType != Expression.ExpressionType.BOOLEAN &&
+                selectorExpressionType != Expression.ExpressionType.ENUM &&
+                selectorExpressionType != Expression.ExpressionType.BITMASK)
+            throw new ParserException(this,
+                    "Choice '" + getName() + "' uses forbidden " + selectorExpressionType.name() +
+                            " selector!");
     }
 
     private void checkCaseTypes()
@@ -289,12 +291,12 @@ public final class ChoiceType extends CompoundType
             {
                 final Expression expression = caseExpression.getExpression();
                 if (expression.getExprType() != selectorExpressionType)
-                    throw new ParserException(expression, "Choice '" + getName() +
-                            "' has incompatible case type!");
+                    throw new ParserException(
+                            expression, "Choice '" + getName() + "' has incompatible case type!");
 
                 if (!expression.getReferencedSymbolObjects(Parameter.class).isEmpty())
-                    throw new ParserException(expression, "Choice '" + getName() +
-                            "' has non-constant case expression!");
+                    throw new ParserException(
+                            expression, "Choice '" + getName() + "' has non-constant case expression!");
             }
         }
     }
@@ -347,8 +349,9 @@ public final class ChoiceType extends CompoundType
                     for (EnumItem referencedEnumItem : referencedEnumItems)
                     {
                         if (!availableEnumItems.contains(referencedEnumItem))
-                            throw new ParserException(expression, "Choice '" + getName() +
-                                    "' has case with different enumeration type than selector!");
+                            throw new ParserException(expression,
+                                    "Choice '" + getName() +
+                                            "' has case with different enumeration type than selector!");
                         unhandledEnumItems.remove(referencedEnumItem);
                     }
                 }
@@ -358,8 +361,9 @@ public final class ChoiceType extends CompoundType
             {
                 for (EnumItem unhandledEnumItem : unhandledEnumItems)
                 {
-                    ZserioToolPrinter.printWarning(this, "Enumeration item '" +
-                            unhandledEnumItem.getName() + "' is not handled in choice '" + getName() + "'.",
+                    ZserioToolPrinter.printWarning(this,
+                            "Enumeration item '" + unhandledEnumItem.getName() +
+                                    "' is not handled in choice '" + getName() + "'.",
                             warningsConfig, WarningsConfig.CHOICE_UNHANDLED_ENUM_ITEM);
                 }
             }
@@ -386,8 +390,9 @@ public final class ChoiceType extends CompoundType
                     for (BitmaskValue referencedBitmaskValue : referencedBitmaskValues)
                     {
                         if (!availableBitmaskValues.contains(referencedBitmaskValue))
-                            throw new ParserException(expression, "Choice '" + getName() +
-                                    "' has case with different bitmask type than selector!");
+                            throw new ParserException(expression,
+                                    "Choice '" + getName() +
+                                            "' has case with different bitmask type than selector!");
                     }
                 }
             }
@@ -403,8 +408,9 @@ public final class ChoiceType extends CompoundType
             final Set<Field> referencedFields = selectorExpression.getReferencedOptionalFields().keySet();
             for (Field referencedField : referencedFields)
             {
-                ZserioToolPrinter.printWarning(selectorExpression, "Choice '" + getName() + "' selector " +
-                        "contains reference to optional field '" + referencedField.getName() + "'.",
+                ZserioToolPrinter.printWarning(selectorExpression,
+                        "Choice '" + getName() + "' selector "
+                                + "contains reference to optional field '" + referencedField.getName() + "'.",
                         warningsConfig, WarningsConfig.OPTIONAL_FIELD_REFERENCE);
             }
         }

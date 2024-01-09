@@ -122,9 +122,11 @@ public final class StructureType extends CompoundType
                 if (!field.isExtended())
                 {
                     final ParserStackedException stackedException = new ParserStackedException(
-                            field.getLocation(), "Field '" + field.getName() + "' follows an extended field " +
-                            "and is not marked as extended!");
-                    stackedException.pushMessage(firstExtendedField.getLocation(), "    extended field used here");
+                            field.getLocation(),
+                            "Field '" + field.getName() + "' follows an extended field "
+                                    + "and is not marked as extended!");
+                    stackedException.pushMessage(
+                            firstExtendedField.getLocation(), "    extended field used here");
                     throw stackedException;
                 }
             }

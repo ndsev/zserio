@@ -101,8 +101,8 @@ public final class SqlConstraint extends AstNodeBase
         if (sqlConstraintString == null)
             throw new ParserException(constraintExpr, "SQL constraint expression must be a constant string!");
 
-        primaryKeyColumnNames = extractColumnsFromConstraint(sqlConstraintString,
-                PRIMARY_KEY_TABLE_CONSTRAINT_REGEX);
+        primaryKeyColumnNames =
+                extractColumnsFromConstraint(sqlConstraintString, PRIMARY_KEY_TABLE_CONSTRAINT_REGEX);
         uniqueColumnNames = extractColumnsFromConstraint(sqlConstraintString, UNIQUE_TABLE_CONSTRAINT_REGEX);
         isPrimaryKey = hasConstraint(sqlConstraintString, PRIMARY_KEY_FIELD_CONSTRAINT_REGEX);
         isNullAllowed = !hasConstraint(sqlConstraintString, NOT_NULL_FIELD_CONSTRAINT_REGEX);
@@ -116,8 +116,8 @@ public final class SqlConstraint extends AstNodeBase
      *
      * @return New sql constraint instantiated from this using the given template arguments.
      */
-    SqlConstraint instantiate(List<TemplateParameter> templateParameters,
-            List<TemplateArgument> templateArguments)
+    SqlConstraint instantiate(
+            List<TemplateParameter> templateParameters, List<TemplateArgument> templateArguments)
     {
         final Expression instantiatedConstraintExpr =
                 getConstraintExpr().instantiate(templateParameters, templateArguments);

@@ -103,8 +103,8 @@ public final class Function extends DocumentableAstNode implements ScopeSymbol
         final Expression instantiatedResultExpression =
                 resultExpression.instantiate(templateParameters, templateArguments);
 
-        return new Function(getLocation(), instantiatedReturnTypeReference, name,
-                instantiatedResultExpression, getDocComments());
+        return new Function(getLocation(), instantiatedReturnTypeReference, name, instantiatedResultExpression,
+                getDocComments());
     }
 
     private void checkOptionalReferencesInFunction(WarningsConfig warningsConfig)
@@ -116,8 +116,9 @@ public final class Function extends DocumentableAstNode implements ScopeSymbol
             final Set<Field> referencedFields = resultExpression.getReferencedOptionalFields().keySet();
             for (Field referencedField : referencedFields)
             {
-                ZserioToolPrinter.printWarning(resultExpression, "Function '" + name + "' contains " +
-                        "reference to optional field '" + referencedField.getName() + "'.",
+                ZserioToolPrinter.printWarning(resultExpression,
+                        "Function '" + name + "' contains "
+                                + "reference to optional field '" + referencedField.getName() + "'.",
                         warningsConfig, WarningsConfig.OPTIONAL_FIELD_REFERENCE);
             }
         }

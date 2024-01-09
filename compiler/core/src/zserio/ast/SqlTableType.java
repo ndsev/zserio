@@ -162,8 +162,8 @@ public final class SqlTableType extends CompoundType
 
     private void checkExplicitParameters()
     {
-        final HashMap<String, AbstractMap.SimpleEntry<String, Expression> > paramTypeMap =
-                new HashMap<String, AbstractMap.SimpleEntry<String, Expression> >();
+        final HashMap<String, AbstractMap.SimpleEntry<String, Expression>> paramTypeMap =
+                new HashMap<String, AbstractMap.SimpleEntry<String, Expression>>();
 
         for (Field tableField : getFields())
         {
@@ -194,16 +194,17 @@ public final class SqlTableType extends CompoundType
                         if (!prevTypeName.equals(typeName))
                         {
                             final Expression prevExpression = prevEntry.getValue();
-                            throw new ParserException(argumentExpression, "Type of explicit parameter '" +
-                                    paramName + "' resolved to '" + typeName + "' but first used as '" +
-                                    prevTypeName + "' at " + prevExpression.getLocation().getLine() + ":" +
-                                    prevExpression.getLocation().getColumn() + "!");
+                            throw new ParserException(argumentExpression,
+                                    "Type of explicit parameter '" + paramName + "' resolved to '" + typeName +
+                                            "' but first used as '" + prevTypeName + "' at " +
+                                            prevExpression.getLocation().getLine() + ":" +
+                                            prevExpression.getLocation().getColumn() + "!");
                         }
                     }
                     else
                     {
-                        paramTypeMap.put(paramName, new AbstractMap.SimpleEntry<String, Expression>(
-                                typeName, argumentExpression));
+                        paramTypeMap.put(paramName,
+                                new AbstractMap.SimpleEntry<String, Expression>(typeName, argumentExpression));
                     }
                 }
             }
@@ -221,7 +222,7 @@ public final class SqlTableType extends CompoundType
             {
                 throw new ParserException(tableField,
                         "Ordinary table '" + this.getName() + "' cannot contain virtual column '" +
-                        tableField.getName() + "'!");
+                                tableField.getName() + "'!");
             }
         }
     }
@@ -243,17 +244,19 @@ public final class SqlTableType extends CompoundType
             {
                 if (found)
                 {
-                    ZserioToolPrinter.printWarning(fieldSqlConstraint, "Duplicated primary key " +
-                            "column '" + tableField.getName() + "' in sql table '" + getName() + "'.",
+                    ZserioToolPrinter.printWarning(fieldSqlConstraint,
+                            "Duplicated primary key "
+                                    + "column '" + tableField.getName() + "' in sql table '" + getName() + "'.",
                             warningsConfig, WarningsConfig.SQL_PRIMARY_KEY);
                 }
                 else
                 {
                     if (!first)
                     {
-                        ZserioToolPrinter.printWarning(fieldSqlConstraint, "Primary key column '" +
-                                tableField.getName() + "' is not the first one in sql table '" + getName() +
-                                "'.", warningsConfig, WarningsConfig.SQL_PRIMARY_KEY);
+                        ZserioToolPrinter.printWarning(fieldSqlConstraint,
+                                "Primary key column '" + tableField.getName() +
+                                        "' is not the first one in sql table '" + getName() + "'.",
+                                warningsConfig, WarningsConfig.SQL_PRIMARY_KEY);
                     }
                     found = true;
                 }
@@ -270,14 +273,15 @@ public final class SqlTableType extends CompoundType
 
     private void checkPrimaryKeyInSqlConstraint(WarningsConfig warningsConfig, boolean primaryKeyFound)
     {
-        final List<String> primaryKeyColumnNames = (sqlConstraint != null) ?
-                sqlConstraint.getPrimaryKeyColumnNames() : new ArrayList<String>();
+        final List<String> primaryKeyColumnNames =
+                (sqlConstraint != null) ? sqlConstraint.getPrimaryKeyColumnNames() : new ArrayList<String>();
         if (primaryKeyFound)
         {
             if (!primaryKeyColumnNames.isEmpty())
             {
-                ZserioToolPrinter.printWarning(sqlConstraint, "Multiple primary keys in sql table '" +
-                        getName() + "'.", warningsConfig, WarningsConfig.SQL_PRIMARY_KEY);
+                ZserioToolPrinter.printWarning(sqlConstraint,
+                        "Multiple primary keys in sql table '" + getName() + "'.", warningsConfig,
+                        WarningsConfig.SQL_PRIMARY_KEY);
             }
         }
         else
@@ -286,8 +290,8 @@ public final class SqlTableType extends CompoundType
             {
                 if (sqlWithoutRowId)
                 {
-                    throw new ParserException(this, "No primary key in without rowid table '" + getName() +
-                            "'!");
+                    throw new ParserException(
+                            this, "No primary key in without rowid table '" + getName() + "'!");
                 }
 
                 ZserioToolPrinter.printWarning(this, "No primary key in sql table '" + getName() + "'.",
@@ -313,8 +317,9 @@ public final class SqlTableType extends CompoundType
                 final ZserioType fieldBaseType = primaryKeyField.getTypeInstantiation().getBaseType();
                 if (fieldBaseType instanceof BooleanType || fieldBaseType instanceof IntegerType)
                 {
-                    ZserioToolPrinter.printWarning(this, "Single integer primary key in without rowid " +
-                            "table '" + getName() + "' brings performance drop.",
+                    ZserioToolPrinter.printWarning(this,
+                            "Single integer primary key in without rowid "
+                                    + "table '" + getName() + "' brings performance drop.",
                             warningsConfig, WarningsConfig.SQL_PRIMARY_KEY);
                 }
             }
@@ -339,8 +344,8 @@ public final class SqlTableType extends CompoundType
                 }
 
                 if (!found)
-                    throw new ParserException(sqlConstraint, "Unique column '" + columnName +
-                            "' not found in sql table '" + getName() + "'!");
+                    throw new ParserException(sqlConstraint,
+                            "Unique column '" + columnName + "' not found in sql table '" + getName() + "'!");
             }
         }
     }
@@ -350,8 +355,9 @@ public final class SqlTableType extends CompoundType
         sqlPrimaryKeyFields.add(tableField);
         if (SqlConstraint.isNullAllowed(tableField.getSqlConstraint()))
         {
-            ZserioToolPrinter.printWarning(tableField, "Primary key column '" + tableField.getName() +
-                    "' can contain NULL in sql table '" + getName() + "'.",
+            ZserioToolPrinter.printWarning(tableField,
+                    "Primary key column '" + tableField.getName() + "' can contain NULL in sql table '" +
+                            getName() + "'.",
                     warningsConfig, WarningsConfig.SQL_PRIMARY_KEY);
         }
     }
@@ -374,14 +380,14 @@ public final class SqlTableType extends CompoundType
 
         if (!found)
         {
-            throw new ParserException(sqlConstraint, "Primary key column '" + columnName +
-                    "' not found in sql table '" + getName() + "'!");
+            throw new ParserException(sqlConstraint,
+                    "Primary key column '" + columnName + "' not found in sql table '" + getName() + "'!");
         }
 
         if (fieldIndex != columnIndex)
         {
-            ZserioToolPrinter.printWarning(sqlConstraint, "Primary key column '" + columnName +
-                    "' is in bad order in sql table '" + getName() + "'.",
+            ZserioToolPrinter.printWarning(sqlConstraint,
+                    "Primary key column '" + columnName + "' is in bad order in sql table '" + getName() + "'.",
                     warningsConfig, WarningsConfig.SQL_PRIMARY_KEY);
         }
     }

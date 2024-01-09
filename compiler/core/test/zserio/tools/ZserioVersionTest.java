@@ -1,10 +1,11 @@
 package zserio.tools;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.Test;
 
 public class ZserioVersionTest
@@ -98,7 +99,8 @@ public class ZserioVersionTest
     public void versionsHashCode()
     {
         assertEquals(new ZserioVersion(2, 4, 0).hashCode(), ZserioVersion.parseVersion("2.4.0").hashCode());
-        assertEquals(new ZserioVersion(2, 4, 1, 1).hashCode(), ZserioVersion.parseVersion("2.4.1-pre1").hashCode());
+        assertEquals(
+                new ZserioVersion(2, 4, 1, 1).hashCode(), ZserioVersion.parseVersion("2.4.1-pre1").hashCode());
         assertNotEquals(new ZserioVersion(2, 4, 0).hashCode(), new ZserioVersion(2, 4, 1).hashCode());
         assertNotEquals(new ZserioVersion(2, 4, 1).hashCode(), new ZserioVersion(2, 4, 1, 1).hashCode());
     }
