@@ -433,7 +433,6 @@ update_tutorial_cpp()
     fi
     echo "Done"
     echo
-    return 0
 
     echo "Updating generated sources in Zserio Tutorial Cpp."
     echo
@@ -984,22 +983,22 @@ main()
 
         local ZSERIO_BUILD_DIR="${PARAM_OUT_DIR}/build"
         if [[ ${SWITCH_ALL_UPDATE} == 1 ]] ; then
-            #upload_jars "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}"
+            upload_jars "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}"
             if [ $? -ne 0 ] ; then
                 return 1
             fi
 
-            #upload_pypi "${ZSERIO_PYPI_DIR}"
+            upload_pypi "${ZSERIO_PYPI_DIR}"
             if [ $? -ne 0 ] ; then
                 return 1
             fi
 
-            #update_conan "${ZSERIO_CONAN_DIR}" "${ZSERIO_VERSION}"
+            update_conan "${ZSERIO_CONAN_DIR}" "${ZSERIO_VERSION}"
             if [ $? -ne 0 ] ; then
                 return 1
             fi
 
-            #update_extension_sample "${ZSERIO_EXTENSION_SAMPLE_DIR}" "${ZSERIO_VERSION}"
+            update_extension_sample "${ZSERIO_EXTENSION_SAMPLE_DIR}" "${ZSERIO_VERSION}"
             if [ $? -ne 0 ] ; then
                 return 1
             fi
@@ -1011,26 +1010,26 @@ main()
         fi
 
         if [[ ${SWITCH_JAVA_TUTORIAL_UPDATE} == 1 ]] ; then
-            #update_tutorial_java "${ZSERIO_TUTORIAL_JAVA_DIR}" "${ZSERIO_VERSION}"
+            update_tutorial_java "${ZSERIO_TUTORIAL_JAVA_DIR}" "${ZSERIO_VERSION}"
             if [ $? -ne 0 ] ; then
                 return 1
             fi
         fi
 
         if [[ ${SWITCH_ALL_UPDATE} == 1 ]] ; then
-            #update_tutorial_python "${ZSERIO_TUTORIAL_PYTHON_DIR}" "${ZSERIO_VERSION}"
+            update_tutorial_python "${ZSERIO_TUTORIAL_PYTHON_DIR}" "${ZSERIO_VERSION}"
             if [ $? -ne 0 ] ; then
                 return 1
             fi
 
-            #update_streamlit "${ZSERIO_STREAMLIT_DIR}" "${ZSERIO_VERSION}"
+            update_streamlit "${ZSERIO_STREAMLIT_DIR}" "${ZSERIO_VERSION}"
             if [ $? -ne 0 ] ; then
                 return 1
             fi
         fi
 
         if [[ ${SWITCH_WEB_PAGES_UPDATE} == 1 ]] ; then
-            #update_web_pages "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" "${ZSERIO_VERSION}"
+            update_web_pages "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" "${ZSERIO_VERSION}"
             if [ $? -ne 0 ] ; then
                 return 1
             fi
