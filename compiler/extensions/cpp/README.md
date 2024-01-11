@@ -55,11 +55,10 @@ The following describes features which minimize the risk of Zserio C++ runtime l
 Clang-tidy tool is run using [this configuration](https://github.com/ndsev/zserio/blob/master/compiler/extensions/cpp/runtime/ClangTidyConfig.txt).
 The clang-tidy report from the latest C++ runtime library is available [here](https://zserio.org/doc/runtime/latest/cpp/clang-tidy/clang-tidy-report.txt).
 
-Due to compatibility and functional safety considerations (as there are no available MISRA/AUTOSAR guidelines
-for C++ standards newer than C++14), zserio is constrained to utilize the C++11 standard. Consequently, certain
-clang-tidy findings remain unresolved at present. This is mainly attributed to zserio's C++ runtime library,
-which operates at a lower level and emulates standard abstractions like std::span or std::string_view introduced
-in C++17.
+Due to compatibility and functional safety considerations, zserio is constrained to utilize the C++11 standard.
+Consequently, certain clang-tidy findings remain unresolved at present. This is mainly attributed to 
+zserio's C++ runtime library, which operates at a lower level and emulates standard abstractions like
+std::span or std::string_view introduced in C++17.
 
 Therefore all clang-tidy findings have been carefully checked and filtered out using definitions in clang-tidy
 [suppression file](runtime/ClangTidySuppressions.txt).

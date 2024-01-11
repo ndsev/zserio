@@ -45,6 +45,7 @@ Before you start building, make sure you have the following components installed
 - JAVA JDK
 - Ant
 - CMake
+- Doxygen
 - Python
 
 ## Building by Bash Script
@@ -109,7 +110,7 @@ libraries for linux64 platform in `distr` directory:
 
 If you don't like Bash script, you can build Zserio by hand.
 
-All Java projects use Ant and can be built by the command:
+Java projects use Ant and can be built by the command:
 
 `ant install`
 
@@ -117,7 +118,7 @@ There is one exception for Zserio bundle jar which is built by the command:
 
 `ant zserio_bundle.install`
 
-All C++ projects use CMake and can be build by commands:
+C++ projects use CMake and can be build by commands:
 
 ```
 mkdir build
