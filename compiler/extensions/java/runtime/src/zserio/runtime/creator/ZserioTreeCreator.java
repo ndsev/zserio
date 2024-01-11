@@ -306,7 +306,7 @@ public final class ZserioTreeCreator
     private static Object createObject(TypeInfo typeInfo, Object[] arguments)
     {
         final List<ParameterInfo> parameters = typeInfo.getParameters();
-        final Class<?>[] parametersTypes = new Class<?>[ parameters.size() ];
+        final Class<?>[] parametersTypes = new Class<?>[parameters.size()];
         for (int i = 0; i < parameters.size(); ++i)
             parametersTypes[i] = parameters.get(i).getTypeInfo().getJavaClass();
 

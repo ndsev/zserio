@@ -60,6 +60,9 @@ BraceWrapping:
 # Indent case blocks.
 IndentCaseBlocks: true
 
+# Don't use spaces in container literals
+SpacesInContainerLiterals: false
+
 # All other defaults from Microsoft style.
 AlignArrayOfStructures: None
 AlignConsecutiveMacros: None
@@ -176,7 +179,6 @@ SpaceInEmptyParentheses: false
 SpacesBeforeTrailingComments: 1
 SpacesInAngles:  Never
 SpacesInConditionalStatement: false
-SpacesInContainerLiterals: true
 SpacesInCStyleCastParentheses: false
 SpacesInLineCommentPrefix:
   Minimum:         1
