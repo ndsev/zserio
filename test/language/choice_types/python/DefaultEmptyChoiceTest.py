@@ -11,38 +11,38 @@ class DefaultEmptyChoiceTest(ChoiceTypes.TestCase):
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         defaultEmptyChoice = self.api.DefaultEmptyChoice.from_reader(reader, tag)
         self.assertEqual(tag, defaultEmptyChoice.tag)
-        self.assertEqual(value, defaultEmptyChoice.b)
+        self.assertEqual(value, defaultEmptyChoice.value_b)
 
     def testChoiceTag(self):
         defaultEmptyChoice = self.api.DefaultEmptyChoice(self.DEFAULT_SELECTOR)
         self.assertEqual(defaultEmptyChoice.UNDEFINED_CHOICE, defaultEmptyChoice.choice_tag)
 
         defaultEmptyChoice = self.api.DefaultEmptyChoice(self.VARIANT_A_SELECTOR)
-        self.assertEqual(defaultEmptyChoice.CHOICE_A, defaultEmptyChoice.choice_tag)
+        self.assertEqual(defaultEmptyChoice.CHOICE_VALUE_A, defaultEmptyChoice.choice_tag)
 
         defaultEmptyChoice = self.api.DefaultEmptyChoice(self.VARIANT_B_SELECTOR)
-        self.assertEqual(defaultEmptyChoice.CHOICE_B, defaultEmptyChoice.choice_tag)
+        self.assertEqual(defaultEmptyChoice.CHOICE_VALUE_B, defaultEmptyChoice.choice_tag)
 
     def testReadWrite(self):
         defaultEmptyChoiceA = self.api.DefaultEmptyChoice(self.VARIANT_A_SELECTOR)
         byteValueA = 99
-        defaultEmptyChoiceA.a = byteValueA
+        defaultEmptyChoiceA.value_a = byteValueA
         writer = zserio.BitStreamWriter()
         defaultEmptyChoiceA.write(writer)
         readDefaultEmptyChoiceA = self.api.DefaultEmptyChoice(self.VARIANT_A_SELECTOR)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readDefaultEmptyChoiceA.read(reader)
-        self.assertEqual(byteValueA, readDefaultEmptyChoiceA.a)
+        self.assertEqual(byteValueA, readDefaultEmptyChoiceA.value_a)
         self.assertEqual(defaultEmptyChoiceA, readDefaultEmptyChoiceA)
 
         shortValueB = 234
-        defaultEmptyChoiceB = self.api.DefaultEmptyChoice(self.VARIANT_B_SELECTOR, b_=shortValueB)
+        defaultEmptyChoiceB = self.api.DefaultEmptyChoice(self.VARIANT_B_SELECTOR, value_b_=shortValueB)
         writer = zserio.BitStreamWriter()
         defaultEmptyChoiceB.write(writer)
         readDefaultEmptyChoiceB = self.api.DefaultEmptyChoice(self.VARIANT_B_SELECTOR)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readDefaultEmptyChoiceB.read(reader)
-        self.assertEqual(shortValueB, readDefaultEmptyChoiceB.b)
+        self.assertEqual(shortValueB, readDefaultEmptyChoiceB.value_b)
         self.assertEqual(defaultEmptyChoiceB, readDefaultEmptyChoiceB)
 
         defaultEmptyChoiceDefault = self.api.DefaultEmptyChoice(self.DEFAULT_SELECTOR)

@@ -76,7 +76,7 @@ TEST_F(UInt16ParamChoiceTest, bitStreamReaderConstructor)
     zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     const UInt16ParamChoice uint16ParamChoice(reader, selector);
     ASSERT_EQ(selector, uint16ParamChoice.getSelector());
-    ASSERT_EQ(value, uint16ParamChoice.getA());
+    ASSERT_EQ(value, uint16ParamChoice.getValueA());
 }
 
 TEST_F(UInt16ParamChoiceTest, copyConstructor)
@@ -86,11 +86,11 @@ TEST_F(UInt16ParamChoiceTest, copyConstructor)
     uint16ParamChoice.initialize(selector);
 
     const VariantA value = 99;
-    uint16ParamChoice.setA(value);
+    uint16ParamChoice.setValueA(value);
 
     const UInt16ParamChoice uint16ParamChoiceCopy(uint16ParamChoice);
     ASSERT_EQ(selector, uint16ParamChoiceCopy.getSelector());
-    ASSERT_EQ(value, uint16ParamChoiceCopy.getA());
+    ASSERT_EQ(value, uint16ParamChoiceCopy.getValueA());
 }
 
 TEST_F(UInt16ParamChoiceTest, assignmentOperator)
@@ -100,12 +100,12 @@ TEST_F(UInt16ParamChoiceTest, assignmentOperator)
     uint16ParamChoice.initialize(selector);
 
     const VariantB value = 234;
-    uint16ParamChoice.setB(value);
+    uint16ParamChoice.setValueB(value);
 
     UInt16ParamChoice uint16ParamChoiceCopy;
     uint16ParamChoiceCopy = uint16ParamChoice;
     ASSERT_EQ(selector, uint16ParamChoiceCopy.getSelector());
-    ASSERT_EQ(value, uint16ParamChoiceCopy.getB());
+    ASSERT_EQ(value, uint16ParamChoiceCopy.getValueB());
 }
 
 TEST_F(UInt16ParamChoiceTest, moveConstructor)
@@ -115,11 +115,11 @@ TEST_F(UInt16ParamChoiceTest, moveConstructor)
     uint16ParamChoice.initialize(selector);
 
     const VariantA value = 99;
-    uint16ParamChoice.setA(value);
+    uint16ParamChoice.setValueA(value);
 
     const UInt16ParamChoice uint16ParamChoiceMoved(std::move(uint16ParamChoice));
     ASSERT_EQ(selector, uint16ParamChoiceMoved.getSelector());
-    ASSERT_EQ(value, uint16ParamChoiceMoved.getA());
+    ASSERT_EQ(value, uint16ParamChoiceMoved.getValueA());
 }
 
 TEST_F(UInt16ParamChoiceTest, moveAssignmentOperator)
@@ -129,12 +129,12 @@ TEST_F(UInt16ParamChoiceTest, moveAssignmentOperator)
     uint16ParamChoice.initialize(selector);
 
     const VariantB value = 234;
-    uint16ParamChoice.setB(value);
+    uint16ParamChoice.setValueB(value);
 
     UInt16ParamChoice uint16ParamChoiceMoved;
     uint16ParamChoiceMoved = std::move(uint16ParamChoice);
     ASSERT_EQ(selector, uint16ParamChoiceMoved.getSelector());
-    ASSERT_EQ(value, uint16ParamChoiceMoved.getB());
+    ASSERT_EQ(value, uint16ParamChoiceMoved.getValueB());
 }
 
 TEST_F(UInt16ParamChoiceTest, propagateAllocatorCopyConstructor)
@@ -144,12 +144,12 @@ TEST_F(UInt16ParamChoiceTest, propagateAllocatorCopyConstructor)
     uint16ParamChoice.initialize(selector);
 
     const VariantA value = 99;
-    uint16ParamChoice.setA(value);
+    uint16ParamChoice.setValueA(value);
 
     const UInt16ParamChoice uint16ParamChoiceCopy(
             zserio::PropagateAllocator, uint16ParamChoice, UInt16ParamChoice::allocator_type());
     ASSERT_EQ(selector, uint16ParamChoiceCopy.getSelector());
-    ASSERT_EQ(value, uint16ParamChoiceCopy.getA());
+    ASSERT_EQ(value, uint16ParamChoiceCopy.getValueA());
 }
 
 TEST_F(UInt16ParamChoiceTest, initialize)
@@ -174,8 +174,8 @@ TEST_F(UInt16ParamChoiceTest, getSetA)
     uint16ParamChoice.initialize(VARIANT_A_SELECTOR);
 
     const VariantA value = 99;
-    uint16ParamChoice.setA(value);
-    ASSERT_EQ(value, uint16ParamChoice.getA());
+    uint16ParamChoice.setValueA(value);
+    ASSERT_EQ(value, uint16ParamChoice.getValueA());
 }
 
 TEST_F(UInt16ParamChoiceTest, getSetB)
@@ -184,8 +184,8 @@ TEST_F(UInt16ParamChoiceTest, getSetB)
     uint16ParamChoice.initialize(VARIANT_B_SELECTOR2);
 
     const VariantB value = 234;
-    uint16ParamChoice.setB(value);
-    ASSERT_EQ(value, uint16ParamChoice.getB());
+    uint16ParamChoice.setValueB(value);
+    ASSERT_EQ(value, uint16ParamChoice.getValueB());
 }
 
 TEST_F(UInt16ParamChoiceTest, getSetC)
@@ -194,21 +194,21 @@ TEST_F(UInt16ParamChoiceTest, getSetC)
     uint16ParamChoice.initialize(VARIANT_C_SELECTOR);
 
     const VariantC value = 65535;
-    uint16ParamChoice.setC(value);
-    ASSERT_EQ(value, uint16ParamChoice.getC());
+    uint16ParamChoice.setValueC(value);
+    ASSERT_EQ(value, uint16ParamChoice.getValueC());
 }
 
 TEST_F(UInt16ParamChoiceTest, choiceTag)
 {
     UInt16ParamChoice uint16ParamChoice;
     uint16ParamChoice.initialize(VARIANT_A_SELECTOR);
-    ASSERT_EQ(UInt16ParamChoice::CHOICE_a, uint16ParamChoice.choiceTag());
+    ASSERT_EQ(UInt16ParamChoice::CHOICE_valueA, uint16ParamChoice.choiceTag());
 
     uint16ParamChoice.initialize(VARIANT_B_SELECTOR1);
-    ASSERT_EQ(UInt16ParamChoice::CHOICE_b, uint16ParamChoice.choiceTag());
+    ASSERT_EQ(UInt16ParamChoice::CHOICE_valueB, uint16ParamChoice.choiceTag());
 
     uint16ParamChoice.initialize(VARIANT_C_SELECTOR);
-    ASSERT_EQ(UInt16ParamChoice::CHOICE_c, uint16ParamChoice.choiceTag());
+    ASSERT_EQ(UInt16ParamChoice::CHOICE_valueC, uint16ParamChoice.choiceTag());
 
     uint16ParamChoice.initialize(EMPTY_SELECTOR1);
     ASSERT_EQ(UInt16ParamChoice::UNDEFINED_CHOICE, uint16ParamChoice.choiceTag());
@@ -219,12 +219,12 @@ TEST_F(UInt16ParamChoiceTest, bitSizeOf)
     UInt16ParamChoice uint16ParamChoice;
     uint16ParamChoice.initialize(VARIANT_A_SELECTOR);
     const VariantA valueA = 99;
-    uint16ParamChoice.setA(valueA);
+    uint16ParamChoice.setValueA(valueA);
     ASSERT_EQ(8, uint16ParamChoice.bitSizeOf());
 
     uint16ParamChoice.initialize(VARIANT_B_SELECTOR2);
     const VariantB valueB = 234;
-    uint16ParamChoice.setB(valueB);
+    uint16ParamChoice.setValueB(valueB);
     ASSERT_EQ(16, uint16ParamChoice.bitSizeOf());
 
     uint16ParamChoice.initialize(EMPTY_SELECTOR2);
@@ -232,7 +232,7 @@ TEST_F(UInt16ParamChoiceTest, bitSizeOf)
 
     uint16ParamChoice.initialize(VARIANT_C_SELECTOR);
     const VariantC valueC = 65535;
-    uint16ParamChoice.setC(valueC);
+    uint16ParamChoice.setValueC(valueC);
     ASSERT_EQ(32, uint16ParamChoice.bitSizeOf());
 }
 
@@ -263,14 +263,14 @@ TEST_F(UInt16ParamChoiceTest, operatorEquality)
     ASSERT_TRUE(uint16ParamChoice1 == uint16ParamChoice2);
 
     const VariantA valueA = 99;
-    uint16ParamChoice1.setA(valueA);
+    uint16ParamChoice1.setValueA(valueA);
     ASSERT_FALSE(uint16ParamChoice1 == uint16ParamChoice2);
 
-    uint16ParamChoice2.setA(valueA);
+    uint16ParamChoice2.setValueA(valueA);
     ASSERT_TRUE(uint16ParamChoice1 == uint16ParamChoice2);
 
     const VariantA diffValueA = valueA + 1;
-    uint16ParamChoice2.setA(diffValueA);
+    uint16ParamChoice2.setValueA(diffValueA);
     ASSERT_FALSE(uint16ParamChoice1 == uint16ParamChoice2);
 }
 
@@ -289,16 +289,16 @@ TEST_F(UInt16ParamChoiceTest, operatorLessThan)
     ASSERT_FALSE(uint16ParamChoice2 < uint16ParamChoice1);
 
     const VariantA valueA = 99;
-    uint16ParamChoice1.setA(valueA);
+    uint16ParamChoice1.setValueA(valueA);
     ASSERT_FALSE(uint16ParamChoice1 < uint16ParamChoice2);
     ASSERT_TRUE(uint16ParamChoice2 < uint16ParamChoice1);
 
-    uint16ParamChoice2.setA(valueA);
+    uint16ParamChoice2.setValueA(valueA);
     ASSERT_FALSE(uint16ParamChoice1 < uint16ParamChoice2);
     ASSERT_FALSE(uint16ParamChoice2 < uint16ParamChoice1);
 
     const VariantA diffValueA = valueA + 1;
-    uint16ParamChoice2.setA(diffValueA);
+    uint16ParamChoice2.setValueA(diffValueA);
     ASSERT_TRUE(uint16ParamChoice1 < uint16ParamChoice2);
     ASSERT_FALSE(uint16ParamChoice2 < uint16ParamChoice1);
 }
@@ -313,14 +313,14 @@ TEST_F(UInt16ParamChoiceTest, hashCode)
     ASSERT_EQ(uint16ParamChoice1.hashCode(), uint16ParamChoice2.hashCode());
 
     const VariantA valueA = 99;
-    uint16ParamChoice1.setA(valueA);
+    uint16ParamChoice1.setValueA(valueA);
     ASSERT_NE(uint16ParamChoice1.hashCode(), uint16ParamChoice2.hashCode());
 
-    uint16ParamChoice2.setA(valueA);
+    uint16ParamChoice2.setValueA(valueA);
     ASSERT_EQ(uint16ParamChoice1.hashCode(), uint16ParamChoice2.hashCode());
 
     const VariantA diffValueA = valueA + 1;
-    uint16ParamChoice2.setA(diffValueA);
+    uint16ParamChoice2.setValueA(diffValueA);
     ASSERT_NE(uint16ParamChoice1.hashCode(), uint16ParamChoice2.hashCode());
 
     // use hardcoded values to check that the hash code is stable
@@ -335,35 +335,35 @@ TEST_F(UInt16ParamChoiceTest, write)
     uint16ParamChoice.initialize(selectorA);
 
     const VariantA valueA = 99;
-    uint16ParamChoice.setA(valueA);
+    uint16ParamChoice.setValueA(valueA);
     zserio::BitStreamWriter writerA(bitBuffer);
     uint16ParamChoice.write(writerA);
 
     zserio::BitStreamReader readerA(writerA.getWriteBuffer(), writerA.getBitPosition(), zserio::BitsTag());
     UInt16ParamChoice readUInt16ParamChoiceA(readerA, selectorA);
-    ASSERT_EQ(valueA, readUInt16ParamChoiceA.getA());
+    ASSERT_EQ(valueA, readUInt16ParamChoiceA.getValueA());
 
     const uint16_t selectorB = VARIANT_B_SELECTOR2;
     uint16ParamChoice.initialize(selectorB);
     const VariantB valueB = 234;
-    uint16ParamChoice.setB(valueB);
+    uint16ParamChoice.setValueB(valueB);
     zserio::BitStreamWriter writerB(bitBuffer);
     uint16ParamChoice.write(writerB);
 
     zserio::BitStreamReader readerB(writerB.getWriteBuffer(), writerB.getBitPosition(), zserio::BitsTag());
     UInt16ParamChoice readUInt16ParamChoiceB(readerB, selectorB);
-    ASSERT_EQ(valueB, readUInt16ParamChoiceB.getB());
+    ASSERT_EQ(valueB, readUInt16ParamChoiceB.getValueB());
 
     const uint16_t selectorC = VARIANT_C_SELECTOR;
     uint16ParamChoice.initialize(selectorC);
     const VariantC valueC = 65535;
-    uint16ParamChoice.setC(valueC);
+    uint16ParamChoice.setValueC(valueC);
     zserio::BitStreamWriter writerC(bitBuffer);
     uint16ParamChoice.write(writerC);
 
     zserio::BitStreamReader readerC(writerC.getWriteBuffer(), writerC.getBitPosition(), zserio::BitsTag());
     UInt16ParamChoice readUInt16ParamChoiceC(readerC, selectorC);
-    ASSERT_EQ(valueC, readUInt16ParamChoiceC.getC());
+    ASSERT_EQ(valueC, readUInt16ParamChoiceC.getValueC());
 }
 
 } // namespace uint16_param_choice

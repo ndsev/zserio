@@ -25,17 +25,17 @@ public class DefaultEmptyChoiceTest
                 new ByteArrayBitStreamReader(buffer.getBuffer(), buffer.getBitSize());
         final DefaultEmptyChoice defaultEmptyChoice = new DefaultEmptyChoice(reader, tag);
         assertEquals(tag, defaultEmptyChoice.getTag());
-        assertEquals((short)value, defaultEmptyChoice.getB());
+        assertEquals((short)value, defaultEmptyChoice.getValueB());
     }
 
     @Test
     public void choiceTag()
     {
         DefaultEmptyChoice defaultEmptyChoice = new DefaultEmptyChoice(VARIANT_A_SELECTOR);
-        assertEquals(DefaultEmptyChoice.CHOICE_a, defaultEmptyChoice.choiceTag());
+        assertEquals(DefaultEmptyChoice.CHOICE_valueA, defaultEmptyChoice.choiceTag());
 
         defaultEmptyChoice = new DefaultEmptyChoice(VARIANT_B_SELECTOR);
-        assertEquals(DefaultEmptyChoice.CHOICE_b, defaultEmptyChoice.choiceTag());
+        assertEquals(DefaultEmptyChoice.CHOICE_valueB, defaultEmptyChoice.choiceTag());
 
         defaultEmptyChoice = new DefaultEmptyChoice(DEFAULT_SELECTOR);
         assertEquals(DefaultEmptyChoice.UNDEFINED_CHOICE, defaultEmptyChoice.choiceTag());
@@ -46,22 +46,22 @@ public class DefaultEmptyChoiceTest
     {
         final DefaultEmptyChoice defaultEmptyChoiceA = new DefaultEmptyChoice(VARIANT_A_SELECTOR);
         final byte byteValueA = 99;
-        defaultEmptyChoiceA.setA(byteValueA);
+        defaultEmptyChoiceA.setValueA(byteValueA);
         ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         defaultEmptyChoiceA.write(writer);
         ByteArrayBitStreamReader reader =
                 new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final DefaultEmptyChoice readDefaultEmptyChoiceA = new DefaultEmptyChoice(reader, VARIANT_A_SELECTOR);
-        assertEquals(byteValueA, readDefaultEmptyChoiceA.getA());
+        assertEquals(byteValueA, readDefaultEmptyChoiceA.getValueA());
 
         final DefaultEmptyChoice defaultEmptyChoiceB = new DefaultEmptyChoice(VARIANT_B_SELECTOR);
         final short shortValueB = 234;
-        defaultEmptyChoiceB.setB(shortValueB);
+        defaultEmptyChoiceB.setValueB(shortValueB);
         writer = new ByteArrayBitStreamWriter();
         defaultEmptyChoiceB.write(writer);
         reader = new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final DefaultEmptyChoice readDefaultEmptyChoiceB = new DefaultEmptyChoice(reader, VARIANT_B_SELECTOR);
-        assertEquals(shortValueB, readDefaultEmptyChoiceB.getB());
+        assertEquals(shortValueB, readDefaultEmptyChoiceB.getValueB());
 
         final DefaultEmptyChoice defaultEmptyChoiceDefault = new DefaultEmptyChoice(DEFAULT_SELECTOR);
         writer = new ByteArrayBitStreamWriter();

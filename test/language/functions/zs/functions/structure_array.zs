@@ -2,8 +2,8 @@ package functions.structure_array;
 
 struct Item
 {
-    uint8       a;
-    uint8       b;
+    uint8  valueA;
+    uint8  valueB;
 };
 
 struct StructureArray

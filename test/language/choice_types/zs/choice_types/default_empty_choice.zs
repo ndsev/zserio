@@ -6,10 +6,10 @@ subtype int16 VariantB;
 choice DefaultEmptyChoice(bit:3 tag) on tag
 {
     case 1:
-        VariantA  a;
+        VariantA  valueA;
 
     case 2:
-        VariantB  b;
+        VariantB  valueB;
 
     default:
         //  empty

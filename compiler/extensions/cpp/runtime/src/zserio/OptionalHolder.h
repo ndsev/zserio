@@ -260,11 +260,11 @@ public:
      * Constructor that initializes the value inplace by forwarding the arguments to the object's constructor.
      *
      * \param allocator Allocator to be used for dynamic memory allocations.
-     * \param u Parameters for object's constructor.
+     * \param parameters Parameters for object's constructor.
      */
     template <typename... U>
-    explicit heap_optional_holder(const allocator_type& allocator, U&&... u) :
-            m_storage(zserio::allocate_unique<T, allocator_type>(allocator, std::forward<U>(u)...))
+    explicit heap_optional_holder(const allocator_type& allocator, U&&... parameters) :
+            m_storage(zserio::allocate_unique<T, allocator_type>(allocator, std::forward<U>(parameters)...))
     {}
 
     /**
@@ -772,12 +772,12 @@ public:
     /**
      * Constructor that initializes the value inplace by forwarding the arguments to the object's constructor.
      *
-     * \param u Parameters for object's constructor.
+     * \param parameters Parameters for object's constructor.
      */
     template <typename... U>
-    explicit inplace_optional_holder(InPlaceT, U&&... u)
+    explicit inplace_optional_holder(InPlaceT, U&&... parameters)
     {
-        new (m_storage.getStorage()) T(std::forward<U>(u)...);
+        new (m_storage.getStorage()) T(std::forward<U>(parameters)...);
         m_hasValue = true;
     }
 

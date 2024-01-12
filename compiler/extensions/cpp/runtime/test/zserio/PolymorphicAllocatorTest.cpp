@@ -17,10 +17,10 @@ public:
         return ::operator new(bytes);
     }
 
-    void doDeallocate(void* p, size_t, size_t) override
+    void doDeallocate(void* memory, size_t, size_t) override
     {
         --m_numAllocations;
-        ::operator delete(p);
+        ::operator delete(memory);
     }
 
     bool doIsEqual(const MemoryResource& other) const noexcept override

@@ -36,8 +36,8 @@ protected:
 
     void convertUInt8ArrayToString(const vector_type<uint8_t>& array, string_type& outputString)
     {
-        for (uint8_t u8 : array)
-            outputString.append(1, static_cast<char>(u8));
+        for (uint8_t element : array)
+            outputString.append(1, static_cast<char>(element));
     }
 };
 

@@ -43,8 +43,8 @@ public class ChoiceArrayTest
 
         for (Item item : ITEMS)
         {
-            writer.writeBits(item.getA(), 8);
-            writer.writeBits(item.getB(), 8);
+            writer.writeBits(item.getValueA(), 8);
+            writer.writeBits(item.getValueB(), 8);
         }
 
         final short isExplicit = (pos >= NUM_ITEM_ELEMENTS) ? (short)1 : (short)0;
@@ -52,14 +52,14 @@ public class ChoiceArrayTest
         short elementA;
         if (isExplicit != 0)
         {
-            writer.writeBits(EXPLICIT_ITEM.getA(), 8);
-            writer.writeBits(EXPLICIT_ITEM.getB(), 8);
-            elementA = EXPLICIT_ITEM.getA();
+            writer.writeBits(EXPLICIT_ITEM.getValueA(), 8);
+            writer.writeBits(EXPLICIT_ITEM.getValueB(), 8);
+            elementA = EXPLICIT_ITEM.getValueA();
         }
         else
         {
             writer.writeBits(pos, 16);
-            elementA = ITEMS[pos].getA();
+            elementA = ITEMS[pos].getValueA();
         }
 
         if (elementA == ELEMENT_A_FOR_EXTRA_VALUE)
@@ -88,12 +88,12 @@ public class ChoiceArrayTest
         if (isExplicit != 0)
         {
             itemRef.setItem(EXPLICIT_ITEM);
-            elementA = EXPLICIT_ITEM.getA();
+            elementA = EXPLICIT_ITEM.getValueA();
         }
         else
         {
             itemRef.setPos(pos);
-            elementA = ITEMS[pos].getA();
+            elementA = ITEMS[pos].getValueA();
         }
         inner.setRef(itemRef);
 

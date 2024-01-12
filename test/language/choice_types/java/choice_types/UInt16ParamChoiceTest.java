@@ -33,20 +33,20 @@ public class UInt16ParamChoiceTest
                 new ByteArrayBitStreamReader(buffer.getBuffer(), buffer.getBitSize());
         final UInt16ParamChoice uint16ParamChoice = new UInt16ParamChoice(reader, selector);
         assertEquals(selector, uint16ParamChoice.getSelector());
-        assertEquals((short)value, uint16ParamChoice.getB());
+        assertEquals((short)value, uint16ParamChoice.getValueB());
     }
 
     @Test
     public void choiceTag()
     {
         UInt16ParamChoice uint16ParamChoice = new UInt16ParamChoice(VARIANT_A_SELECTOR);
-        assertEquals(UInt16ParamChoice.CHOICE_a, uint16ParamChoice.choiceTag());
+        assertEquals(UInt16ParamChoice.CHOICE_valueA, uint16ParamChoice.choiceTag());
 
         uint16ParamChoice = new UInt16ParamChoice(VARIANT_B_SELECTOR1);
-        assertEquals(UInt16ParamChoice.CHOICE_b, uint16ParamChoice.choiceTag());
+        assertEquals(UInt16ParamChoice.CHOICE_valueB, uint16ParamChoice.choiceTag());
 
         uint16ParamChoice = new UInt16ParamChoice(VARIANT_C_SELECTOR);
-        assertEquals(UInt16ParamChoice.CHOICE_c, uint16ParamChoice.choiceTag());
+        assertEquals(UInt16ParamChoice.CHOICE_valueC, uint16ParamChoice.choiceTag());
 
         uint16ParamChoice = new UInt16ParamChoice(EMPTY_SELECTOR1);
         assertEquals(UInt16ParamChoice.UNDEFINED_CHOICE, uint16ParamChoice.choiceTag());
@@ -57,12 +57,12 @@ public class UInt16ParamChoiceTest
     {
         final UInt16ParamChoice uint16ParamChoiceA = new UInt16ParamChoice(VARIANT_A_SELECTOR);
         final byte byteValueA = 99;
-        uint16ParamChoiceA.setA(byteValueA);
+        uint16ParamChoiceA.setValueA(byteValueA);
         assertEquals(8, uint16ParamChoiceA.bitSizeOf());
 
         final UInt16ParamChoice uint16ParamChoiceB = new UInt16ParamChoice(VARIANT_B_SELECTOR2);
         final short shortValueB = 234;
-        uint16ParamChoiceB.setB(shortValueB);
+        uint16ParamChoiceB.setValueB(shortValueB);
         assertEquals(16, uint16ParamChoiceB.bitSizeOf());
 
         final UInt16ParamChoice uint16ParamChoiceEmpty = new UInt16ParamChoice(EMPTY_SELECTOR1);
@@ -70,7 +70,7 @@ public class UInt16ParamChoiceTest
 
         final UInt16ParamChoice uint16ParamChoiceC = new UInt16ParamChoice(VARIANT_C_SELECTOR);
         final int intValueC = 65535;
-        uint16ParamChoiceC.setC(intValueC);
+        uint16ParamChoiceC.setValueC(intValueC);
         assertEquals(32, uint16ParamChoiceC.bitSizeOf());
     }
 
@@ -87,8 +87,8 @@ public class UInt16ParamChoiceTest
     {
         final UInt16ParamChoice uint16ParamChoice = new UInt16ParamChoice(VARIANT_A_SELECTOR);
         final byte value = 99;
-        uint16ParamChoice.setA(value);
-        assertEquals(value, uint16ParamChoice.getA());
+        uint16ParamChoice.setValueA(value);
+        assertEquals(value, uint16ParamChoice.getValueA());
     }
 
     @Test
@@ -96,8 +96,8 @@ public class UInt16ParamChoiceTest
     {
         final UInt16ParamChoice uint16ParamChoice = new UInt16ParamChoice(VARIANT_B_SELECTOR3);
         final short value = 234;
-        uint16ParamChoice.setB(value);
-        assertEquals(value, uint16ParamChoice.getB());
+        uint16ParamChoice.setValueB(value);
+        assertEquals(value, uint16ParamChoice.getValueB());
     }
 
     @Test
@@ -105,8 +105,8 @@ public class UInt16ParamChoiceTest
     {
         final UInt16ParamChoice uint16ParamChoice = new UInt16ParamChoice(VARIANT_C_SELECTOR);
         final int value = 65535;
-        uint16ParamChoice.setC(value);
-        assertEquals(value, uint16ParamChoice.getC());
+        uint16ParamChoice.setValueC(value);
+        assertEquals(value, uint16ParamChoice.getValueC());
     }
 
     @Test
@@ -117,14 +117,14 @@ public class UInt16ParamChoiceTest
         assertTrue(uint16ParamChoice1.equals(uint16ParamChoice2));
 
         final byte value = 99;
-        uint16ParamChoice1.setA(value);
+        uint16ParamChoice1.setValueA(value);
         assertFalse(uint16ParamChoice1.equals(uint16ParamChoice2));
 
-        uint16ParamChoice2.setA(value);
+        uint16ParamChoice2.setValueA(value);
         assertTrue(uint16ParamChoice1.equals(uint16ParamChoice2));
 
         final byte diffValue = value + 1;
-        uint16ParamChoice2.setA(diffValue);
+        uint16ParamChoice2.setValueA(diffValue);
         assertFalse(uint16ParamChoice1.equals(uint16ParamChoice2));
     }
 
@@ -136,14 +136,14 @@ public class UInt16ParamChoiceTest
         assertEquals(uint16ParamChoice1.hashCode(), uint16ParamChoice2.hashCode());
 
         final byte value = 99;
-        uint16ParamChoice1.setA(value);
+        uint16ParamChoice1.setValueA(value);
         assertTrue(uint16ParamChoice1.hashCode() != uint16ParamChoice2.hashCode());
 
-        uint16ParamChoice2.setA(value);
+        uint16ParamChoice2.setValueA(value);
         assertEquals(uint16ParamChoice1.hashCode(), uint16ParamChoice2.hashCode());
 
         final byte diffValue = value + 1;
-        uint16ParamChoice2.setA(diffValue);
+        uint16ParamChoice2.setValueA(diffValue);
         assertTrue(uint16ParamChoice1.hashCode() != uint16ParamChoice2.hashCode());
 
         // use hardcoded values to check that the hash code is stable
@@ -173,31 +173,31 @@ public class UInt16ParamChoiceTest
     {
         final UInt16ParamChoice uint16ParamChoiceA = new UInt16ParamChoice(VARIANT_A_SELECTOR);
         final byte byteValueA = 99;
-        uint16ParamChoiceA.setA(byteValueA);
+        uint16ParamChoiceA.setValueA(byteValueA);
         ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         uint16ParamChoiceA.write(writer);
         ByteArrayBitStreamReader reader =
                 new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final UInt16ParamChoice readUInt16ParamChoiceA = new UInt16ParamChoice(reader, VARIANT_A_SELECTOR);
-        assertEquals(byteValueA, readUInt16ParamChoiceA.getA());
+        assertEquals(byteValueA, readUInt16ParamChoiceA.getValueA());
 
         final UInt16ParamChoice uint16ParamChoiceB = new UInt16ParamChoice(VARIANT_B_SELECTOR1);
         final short shortValueB = 234;
-        uint16ParamChoiceB.setB(shortValueB);
+        uint16ParamChoiceB.setValueB(shortValueB);
         writer = new ByteArrayBitStreamWriter();
         uint16ParamChoiceB.write(writer);
         reader = new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final UInt16ParamChoice readUInt16ParamChoiceB = new UInt16ParamChoice(reader, VARIANT_B_SELECTOR1);
-        assertEquals(shortValueB, readUInt16ParamChoiceB.getB());
+        assertEquals(shortValueB, readUInt16ParamChoiceB.getValueB());
 
         final UInt16ParamChoice uint16ParamChoiceC = new UInt16ParamChoice(VARIANT_C_SELECTOR);
         final int intValueC = 65535;
-        uint16ParamChoiceC.setC(intValueC);
+        uint16ParamChoiceC.setValueC(intValueC);
         writer = new ByteArrayBitStreamWriter();
         uint16ParamChoiceC.write(writer);
         reader = new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         final UInt16ParamChoice readUInt16ParamChoiceC = new UInt16ParamChoice(reader, VARIANT_C_SELECTOR);
-        assertEquals(intValueC, readUInt16ParamChoiceC.getC());
+        assertEquals(intValueC, readUInt16ParamChoiceC.getValueC());
     }
 
     private BitBuffer writeUInt16ParamChoiceToBitBuffer(int selector, int value) throws IOException

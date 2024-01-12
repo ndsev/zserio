@@ -478,13 +478,13 @@ public:
     /**
      * Find position of given char in this string view.
      *
-     * \param ch Char to search.
+     * \param character Char to search.
      * \param pos Position where the start the search.
      * \return Index of the found char or npos if the string was not found.
      */
-    size_type find(CharT ch, size_type pos = 0) const noexcept
+    size_type find(CharT character, size_type pos = 0) const noexcept
     {
-        return find(BasicStringView(std::addressof(ch), 1), pos);
+        return find(BasicStringView(std::addressof(character), 1), pos);
     }
 
     /**
@@ -536,13 +536,13 @@ public:
     /**
      * Find position of given char in this string view, starting from the view end.
      *
-     * \param ch Char to search.
+     * \param character Char to search.
      * \param pos Position where the start the search.
      * \return Index of the found char or npos if the string was not found.
      */
-    size_type rfind(CharT ch, size_type pos = npos) const noexcept
+    size_type rfind(CharT character, size_type pos = npos) const noexcept
     {
-        return rfind(BasicStringView(std::addressof(ch), 1), pos);
+        return rfind(BasicStringView(std::addressof(character), 1), pos);
     }
 
     /**
@@ -593,13 +593,13 @@ public:
     /**
      * Find the position of the first character equal to the given character.
      *
-     * \param ch Character to search.
+     * \param character Character to search.
      * \param pos Position where to start the search.
      * \return Found position or npos if no such character was found.
      */
-    size_type find_first_of(CharT ch, size_type pos = 0) const noexcept
+    size_type find_first_of(CharT character, size_type pos = 0) const noexcept
     {
-        return find_first_of(BasicStringView(std::addressof(ch), 1), pos);
+        return find_first_of(BasicStringView(std::addressof(character), 1), pos);
     }
 
     /**
@@ -651,13 +651,13 @@ public:
     /**
      * Find the last character not equal to the given character.
      *
-     * \param ch Character to search.
+     * \param character Character to search.
      * \param pos Position where to start the search.
      * \return Found position or npos if no such character was found.
      */
-    size_type find_last_of(CharT ch, size_type pos = npos) const noexcept
+    size_type find_last_of(CharT character, size_type pos = npos) const noexcept
     {
-        return find_last_of(BasicStringView(std::addressof(ch), 1), pos);
+        return find_last_of(BasicStringView(std::addressof(character), 1), pos);
     }
 
     /**
@@ -709,13 +709,13 @@ public:
     /**
      * Finds the first character not equal to the given character.
      *
-     * \param ch Character to search.
+     * \param character Character to search.
      * \param pos Position where to start the search.
      * \return Found position or npos if no such character was found.
      */
-    size_type find_first_not_of(CharT ch, size_type pos = 0) const noexcept
+    size_type find_first_not_of(CharT character, size_type pos = 0) const noexcept
     {
-        return find_first_not_of(BasicStringView(std::addressof(ch), 1), pos);
+        return find_first_not_of(BasicStringView(std::addressof(character), 1), pos);
     }
 
     /**
@@ -767,13 +767,13 @@ public:
     /**
      * Find the last character not equal to the given character.
      *
-     * \param ch Character to search.
+     * \param character Character to search.
      * \param pos Position where to start the search.
      * \return Found position or npos if no such character was found.
      */
-    size_type find_last_not_of(CharT ch, size_type pos = npos) const noexcept
+    size_type find_last_not_of(CharT character, size_type pos = npos) const noexcept
     {
-        return find_last_not_of(BasicStringView(std::addressof(ch), 1), pos);
+        return find_last_not_of(BasicStringView(std::addressof(character), 1), pos);
     }
 
     /**

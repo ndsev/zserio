@@ -14,12 +14,12 @@ class StructureBitmaskConstraintsTest : public ::testing::Test
 {
 protected:
     void writeStructureBitmaskConstraintsToByteArray(
-            zserio::BitStreamWriter& writer, Availability mask, uint8_t x, uint8_t y, uint8_t z)
+            zserio::BitStreamWriter& writer, Availability mask, uint8_t coordX, uint8_t coordY, uint8_t coordZ)
     {
         writer.writeBits(mask.getValue(), 3);
-        writer.writeBits(x, 8);
-        writer.writeBits(y, 8);
-        writer.writeBits(z, 8);
+        writer.writeBits(coordX, 8);
+        writer.writeBits(coordY, 8);
+        writer.writeBits(coordZ, 8);
     }
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);

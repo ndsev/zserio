@@ -9,9 +9,9 @@ class UInt32ParamChoiceTest(ChoiceTypes.TestCase):
         self.assertEqual(selector, uint32ParamChoice.selector)
 
         selector = self.VARIANT_B_SELECTOR1
-        uint32ParamChoice = self.api.UInt32ParamChoice(selector, b_=1234)
+        uint32ParamChoice = self.api.UInt32ParamChoice(selector, value_b_=1234)
         self.assertEqual(selector, uint32ParamChoice.selector)
-        self.assertEqual(1234, uint32ParamChoice.b)
+        self.assertEqual(1234, uint32ParamChoice.value_b)
 
     def testFromReader(self):
         selector = self.VARIANT_B_SELECTOR1
@@ -21,7 +21,7 @@ class UInt32ParamChoiceTest(ChoiceTypes.TestCase):
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         uint32ParamChoice = self.api.UInt32ParamChoice.from_reader(reader, selector)
         self.assertEqual(selector, uint32ParamChoice.selector)
-        self.assertEqual(value, uint32ParamChoice.b)
+        self.assertEqual(value, uint32ParamChoice.value_b)
 
     def testEq(self):
         uint32ParamChoice1 = self.api.UInt32ParamChoice(self.VARIANT_A_SELECTOR)
@@ -29,14 +29,14 @@ class UInt32ParamChoiceTest(ChoiceTypes.TestCase):
         self.assertTrue(uint32ParamChoice1 == uint32ParamChoice2)
 
         value = 99
-        uint32ParamChoice1.a = value
+        uint32ParamChoice1.value_a = value
         self.assertFalse(uint32ParamChoice1 == uint32ParamChoice2)
 
-        uint32ParamChoice2.a = value
+        uint32ParamChoice2.value_a = value
         self.assertTrue(uint32ParamChoice1 == uint32ParamChoice2)
 
         diffValue = value + 1
-        uint32ParamChoice2.a = diffValue
+        uint32ParamChoice2.value_a = diffValue
         self.assertFalse(uint32ParamChoice1 == uint32ParamChoice2)
 
     def testHash(self):
@@ -45,14 +45,14 @@ class UInt32ParamChoiceTest(ChoiceTypes.TestCase):
         self.assertEqual(hash(uint32ParamChoice1), hash(uint32ParamChoice2))
 
         value = 99
-        uint32ParamChoice1.a = value
+        uint32ParamChoice1.value_a = value
         self.assertTrue(hash(uint32ParamChoice1) != hash(uint32ParamChoice2))
 
-        uint32ParamChoice2.a = value
+        uint32ParamChoice2.value_a = value
         self.assertEqual(hash(uint32ParamChoice1), hash(uint32ParamChoice2))
 
         diffValue = value + 1
-        uint32ParamChoice2.a = diffValue
+        uint32ParamChoice2.value_a = diffValue
         self.assertTrue(hash(uint32ParamChoice1) != hash(uint32ParamChoice2))
 
         # use hardcoded values to check that the hash code is stable
@@ -68,30 +68,30 @@ class UInt32ParamChoiceTest(ChoiceTypes.TestCase):
     def testGetSetA(self):
         uint32ParamChoice = self.api.UInt32ParamChoice(self.VARIANT_A_SELECTOR)
         value = 99
-        uint32ParamChoice.a = value
-        self.assertEqual(value, uint32ParamChoice.a)
+        uint32ParamChoice.value_a = value
+        self.assertEqual(value, uint32ParamChoice.value_a)
 
     def testGetSetB(self):
         uint32ParamChoice = self.api.UInt32ParamChoice(self.VARIANT_B_SELECTOR3)
         value = 234
-        uint32ParamChoice.b = value
-        self.assertEqual(value, uint32ParamChoice.b)
+        uint32ParamChoice.value_b = value
+        self.assertEqual(value, uint32ParamChoice.value_b)
 
     def testGetSetC(self):
         uint32ParamChoice = self.api.UInt32ParamChoice(self.VARIANT_C_SELECTOR)
         value = 65535
-        uint32ParamChoice.c = value
-        self.assertEqual(value, uint32ParamChoice.c)
+        uint32ParamChoice.value_c = value
+        self.assertEqual(value, uint32ParamChoice.value_c)
 
     def testChoiceTag(self):
         uint32ParamChoice = self.api.UInt32ParamChoice(self.VARIANT_A_SELECTOR)
-        self.assertEqual(uint32ParamChoice.CHOICE_A, uint32ParamChoice.choice_tag)
+        self.assertEqual(uint32ParamChoice.CHOICE_VALUE_A, uint32ParamChoice.choice_tag)
 
         uint32ParamChoice = self.api.UInt32ParamChoice(self.VARIANT_B_SELECTOR1)
-        self.assertEqual(uint32ParamChoice.CHOICE_B, uint32ParamChoice.choice_tag)
+        self.assertEqual(uint32ParamChoice.CHOICE_VALUE_B, uint32ParamChoice.choice_tag)
 
         uint32ParamChoice = self.api.UInt32ParamChoice(self.VARIANT_C_SELECTOR)
-        self.assertEqual(uint32ParamChoice.CHOICE_C, uint32ParamChoice.choice_tag)
+        self.assertEqual(uint32ParamChoice.CHOICE_VALUE_C, uint32ParamChoice.choice_tag)
 
         uint32ParamChoice = self.api.UInt32ParamChoice(self.EMPTY_SELECTOR1)
         self.assertEqual(uint32ParamChoice.UNDEFINED_CHOICE, uint32ParamChoice.choice_tag)
@@ -99,12 +99,12 @@ class UInt32ParamChoiceTest(ChoiceTypes.TestCase):
     def testBitSizeOf(self):
         uint32ParamChoiceA = self.api.UInt32ParamChoice(self.VARIANT_A_SELECTOR)
         byteValueA = 99
-        uint32ParamChoiceA.a = byteValueA
+        uint32ParamChoiceA.value_a = byteValueA
         self.assertEqual(8, uint32ParamChoiceA.bitsizeof())
 
         uint32ParamChoiceB = self.api.UInt32ParamChoice(self.VARIANT_B_SELECTOR2)
         shortValueB = 234
-        uint32ParamChoiceB.b = shortValueB
+        uint32ParamChoiceB.value_b = shortValueB
         self.assertEqual(16, uint32ParamChoiceB.bitsizeof())
 
         uint32ParamChoiceEmpty = self.api.UInt32ParamChoice(self.EMPTY_SELECTOR1)
@@ -112,7 +112,7 @@ class UInt32ParamChoiceTest(ChoiceTypes.TestCase):
 
         uint32ParamChoiceC = self.api.UInt32ParamChoice(self.VARIANT_C_SELECTOR)
         intValueC = 65535
-        uint32ParamChoiceC.c = intValueC
+        uint32ParamChoiceC.value_c = intValueC
         self.assertEqual(32, uint32ParamChoiceC.bitsizeof())
 
     def testInitializeOffsets(self):
@@ -132,34 +132,34 @@ class UInt32ParamChoiceTest(ChoiceTypes.TestCase):
     def testReadWrite(self):
         uint32ParamChoiceA = self.api.UInt32ParamChoice(self.VARIANT_A_SELECTOR)
         byteValueA = 99
-        uint32ParamChoiceA.a = byteValueA
+        uint32ParamChoiceA.value_a = byteValueA
         writer = zserio.BitStreamWriter()
         uint32ParamChoiceA.write(writer)
         readUInt32ParamChoiceA = self.api.UInt32ParamChoice(self.VARIANT_A_SELECTOR)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readUInt32ParamChoiceA.read(reader)
-        self.assertEqual(byteValueA, readUInt32ParamChoiceA.a)
+        self.assertEqual(byteValueA, readUInt32ParamChoiceA.value_a)
         self.assertEqual(uint32ParamChoiceA, readUInt32ParamChoiceA)
 
         shortValueB = 234
-        uint32ParamChoiceB = self.api.UInt32ParamChoice(self.VARIANT_B_SELECTOR1, b_=shortValueB)
+        uint32ParamChoiceB = self.api.UInt32ParamChoice(self.VARIANT_B_SELECTOR1, value_b_=shortValueB)
         writer = zserio.BitStreamWriter()
         uint32ParamChoiceB.write(writer)
         readUInt32ParamChoiceB = self.api.UInt32ParamChoice(self.VARIANT_B_SELECTOR1)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readUInt32ParamChoiceB.read(reader)
-        self.assertEqual(shortValueB, readUInt32ParamChoiceB.b)
+        self.assertEqual(shortValueB, readUInt32ParamChoiceB.value_b)
         self.assertEqual(uint32ParamChoiceB, readUInt32ParamChoiceB)
 
         uint32ParamChoiceC = self.api.UInt32ParamChoice(self.VARIANT_C_SELECTOR)
         intValueC = 65535
-        uint32ParamChoiceC.c = intValueC
+        uint32ParamChoiceC.value_c = intValueC
         writer = zserio.BitStreamWriter()
         uint32ParamChoiceC.write(writer)
         readUInt32ParamChoiceC = self.api.UInt32ParamChoice(self.VARIANT_C_SELECTOR)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readUInt32ParamChoiceC.read(reader)
-        self.assertEqual(intValueC, readUInt32ParamChoiceC.c)
+        self.assertEqual(intValueC, readUInt32ParamChoiceC.value_c)
         self.assertEqual(uint32ParamChoiceC, readUInt32ParamChoiceC)
 
     @staticmethod

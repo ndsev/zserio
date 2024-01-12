@@ -21,8 +21,8 @@ protected:
 
         for (Item item : ITEMS)
         {
-            writer.writeBits(item.getA(), 8);
-            writer.writeBits(item.getB(), 8);
+            writer.writeBits(item.getValueA(), 8);
+            writer.writeBits(item.getValueB(), 8);
         }
 
         writer.writeBits(pos, 16);

@@ -290,8 +290,8 @@ TEST(AllocatorPropagatingCopyTest, copyVector)
     ASSERT_EQ(vec.get_allocator(), vecCopy.get_allocator());
     ASSERT_EQ(vec.size(), vecCopy.size());
     ASSERT_TRUE(std::equal(vec.begin(), vec.end(), vecCopy.begin(),
-            [](const RegularWithAllocatorSupport& a, const RegularWithAllocatorSupport& b) {
-                return a.get_allocator() == b.get_allocator();
+            [](const RegularWithAllocatorSupport& lhs, const RegularWithAllocatorSupport& rhs) {
+                return lhs.get_allocator() == rhs.get_allocator();
             }));
 }
 

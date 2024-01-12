@@ -16,7 +16,7 @@ public class StructureParamTest
     public void checkMetresConverterCaller() throws IOException
     {
         final MetresConverterCaller metresConverterCaller = createMetresConverterCaller();
-        assertEquals(CONVERTED_CM_VALUE, metresConverterCaller.getCm());
+        assertEquals(CONVERTED_CM_VALUE, metresConverterCaller.getCentimeters());
 
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         metresConverterCaller.write(writer);
@@ -46,10 +46,10 @@ public class StructureParamTest
         final MetresConverterCaller metresConverterCaller = new MetresConverterCaller();
 
         final MetresConverter metresConverter = new MetresConverter(M_VALUE_TO_CONVERT);
-        metresConverter.setA(VALUE_A);
+        metresConverter.setValueA(VALUE_A);
 
         metresConverterCaller.setMetresConverter(metresConverter);
-        metresConverterCaller.setCm(CONVERTED_CM_VALUE);
+        metresConverterCaller.setCentimeters(CONVERTED_CM_VALUE);
 
         return metresConverterCaller;
     }

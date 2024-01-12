@@ -43,16 +43,16 @@ public class UnionArrayTest
 
         for (Item item : ITEMS)
         {
-            writer.writeBits(item.getA(), 8);
-            writer.writeBits(item.getB(), 8);
+            writer.writeBits(item.getValueA(), 8);
+            writer.writeBits(item.getValueB(), 8);
         }
 
         final short isExplicit = (pos >= NUM_ITEM_ELEMENTS) ? (short)1 : (short)0;
         writer.writeVarSize(isExplicit != 0 ? 0 : 1);
         if (isExplicit != 0)
         {
-            writer.writeBits(EXPLICIT_ITEM.getA(), 8);
-            writer.writeBits(EXPLICIT_ITEM.getB(), 8);
+            writer.writeBits(EXPLICIT_ITEM.getValueA(), 8);
+            writer.writeBits(EXPLICIT_ITEM.getValueB(), 8);
         }
         else
         {

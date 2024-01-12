@@ -25,8 +25,8 @@ class StructureArrayTest(Functions.TestCase):
         writer.write_bits(self.NUM_ITEMS, 16)
 
         for item in self.ITEMS:
-            writer.write_bits(item.a, 8)
-            writer.write_bits(item.b, 8)
+            writer.write_bits(item.value_a, 8)
+            writer.write_bits(item.value_b, 8)
 
         writer.write_bits(pos, 16)
 

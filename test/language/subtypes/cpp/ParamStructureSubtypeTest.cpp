@@ -85,11 +85,11 @@ bool isCodeInFilePresent(const char* fileName, const char* code)
 TEST(ParamStructureSubtypeTest, testSubtype)
 {
     // just check that ParameterizedSubtype is defined and that it's same as the ParameterizedStruct
-    ParameterizedSubtypeStruct s;
-    ParameterizedSubtype& parameterizedSubtype = s.getParameterizedSubtype();
-    ParameterizedStruct& parameterizedStruct = s.getParameterizedSubtype();
-    auto& parameterizedSubtypeArray = s.getParameterizedSubtypeArray();
-    auto& parameterizedStructArray = s.getParameterizedSubtypeArray();
+    ParameterizedSubtypeStruct subtypeStruct;
+    ParameterizedSubtype& parameterizedSubtype = subtypeStruct.getParameterizedSubtype();
+    ParameterizedStruct& parameterizedStruct = subtypeStruct.getParameterizedSubtype();
+    auto& parameterizedSubtypeArray = subtypeStruct.getParameterizedSubtypeArray();
+    auto& parameterizedStructArray = subtypeStruct.getParameterizedSubtypeArray();
     ASSERT_EQ(&parameterizedSubtype, &parameterizedStruct);
     ASSERT_EQ(&parameterizedSubtypeArray, &parameterizedStructArray);
 

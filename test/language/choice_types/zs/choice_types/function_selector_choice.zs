@@ -10,7 +10,7 @@ struct Selector
     }
 };
 
-choice TestChoice(Selector s) on s.getNumBits()
+choice TestChoice(Selector selector) on selector.getNumBits()
 {
     case 8:
         int8    field8;

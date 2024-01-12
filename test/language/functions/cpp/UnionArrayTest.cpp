@@ -23,16 +23,16 @@ protected:
 
         for (Item item : ITEMS)
         {
-            writer.writeBits(item.getA(), 8);
-            writer.writeBits(item.getB(), 8);
+            writer.writeBits(item.getValueA(), 8);
+            writer.writeBits(item.getValueB(), 8);
         }
 
         const uint8_t isExplicit = (pos >= ITEMS.size()) ? 1 : 0;
         writer.writeVarSize(isExplicit != 0 ? 0 : 1); // choice tag
         if (isExplicit != 0)
         {
-            writer.writeBits(EXPLICIT_ITEM.getA(), 8);
-            writer.writeBits(EXPLICIT_ITEM.getB(), 8);
+            writer.writeBits(EXPLICIT_ITEM.getValueA(), 8);
+            writer.writeBits(EXPLICIT_ITEM.getValueB(), 8);
         }
         else
         {

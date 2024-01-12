@@ -10,41 +10,41 @@ namespace zserio
 TEST(StringViewTest, ptrConstructor)
 {
     const char* str = "everything";
-    StringView sv(str);
-    ASSERT_EQ(str, sv.data());
-    ASSERT_EQ(10, sv.size());
+    StringView view(str);
+    ASSERT_EQ(str, view.data());
+    ASSERT_EQ(10, view.size());
 }
 
 TEST(StringViewTest, ptrCountConstructor)
 {
     const char* str = "everything";
-    StringView sv(str, 9);
-    ASSERT_EQ(str, sv.data());
-    ASSERT_EQ(9, sv.size());
+    StringView view(str, 9);
+    ASSERT_EQ(str, view.data());
+    ASSERT_EQ(9, view.size());
 }
 
 TEST(StringViewTest, stringConstructor)
 {
     std::string str = "everything";
-    StringView sv(str);
-    ASSERT_EQ(str.data(), sv.data());
-    ASSERT_EQ(str.size(), sv.size());
+    StringView view(str);
+    ASSERT_EQ(str.data(), view.data());
+    ASSERT_EQ(str.size(), view.size());
 }
 
 TEST(StringViewTest, beginEnd)
 {
     std::string str = "everything";
-    StringView sv(str);
+    StringView view(str);
 
     auto itStr = str.begin();
-    for (auto it = sv.begin(); it != sv.end(); ++it, ++itStr)
+    for (auto it = view.begin(); it != view.end(); ++it, ++itStr)
     {
         ASSERT_NE(str.end(), itStr);
         ASSERT_EQ(*itStr, *it);
     }
 
     itStr = str.begin();
-    for (auto it = sv.cbegin(); it != sv.cend(); ++it, ++itStr)
+    for (auto it = view.cbegin(); it != view.cend(); ++it, ++itStr)
     {
         ASSERT_NE(str.end(), itStr);
         ASSERT_EQ(*itStr, *it);
@@ -54,17 +54,17 @@ TEST(StringViewTest, beginEnd)
 TEST(StringViewTest, rBeginRend)
 {
     std::string str = "everything";
-    StringView sv(str);
+    StringView view(str);
 
     auto itStr = str.rbegin();
-    for (auto it = sv.rbegin(); it != sv.rend(); ++it, ++itStr)
+    for (auto it = view.rbegin(); it != view.rend(); ++it, ++itStr)
     {
         ASSERT_NE(str.rend(), itStr);
         ASSERT_EQ(*itStr, *it);
     }
 
     itStr = str.rbegin();
-    for (auto it = sv.crbegin(); it != sv.crend(); ++it, ++itStr)
+    for (auto it = view.crbegin(); it != view.crend(); ++it, ++itStr)
     {
         ASSERT_NE(str.rend(), itStr);
         ASSERT_EQ(*itStr, *it);
@@ -74,102 +74,102 @@ TEST(StringViewTest, rBeginRend)
 TEST(StringViewTest, arrayAccess)
 {
     const char* str = "everything";
-    StringView sv(str);
+    StringView view(str);
 
-    for (size_t i = 0; i < sv.size(); ++i)
+    for (size_t i = 0; i < view.size(); ++i)
     {
-        ASSERT_EQ(str[i], sv[i]);
+        ASSERT_EQ(str[i], view[i]);
     }
 }
 
 TEST(StringViewTest, at)
 {
     const char* str = "everything";
-    StringView sv(str);
+    StringView view(str);
 
-    for (size_t i = 0; i < sv.size(); ++i)
+    for (size_t i = 0; i < view.size(); ++i)
     {
-        ASSERT_EQ(str[i], sv.at(i));
+        ASSERT_EQ(str[i], view.at(i));
     }
 
-    ASSERT_THROW(sv.at(11), CppRuntimeException);
+    ASSERT_THROW(view.at(11), CppRuntimeException);
 }
 
 TEST(StringViewTest, front)
 {
     const char* str = "nothing";
-    StringView sv(str);
-    ASSERT_EQ('n', sv.front());
+    StringView view(str);
+    ASSERT_EQ('n', view.front());
 }
 
 TEST(StringViewTest, back)
 {
     const char* str = "beam";
-    StringView sv(str);
-    ASSERT_EQ('m', sv.back());
+    StringView view(str);
+    ASSERT_EQ('m', view.back());
 }
 
 TEST(StringViewTest, data)
 {
     const char* str = "Everything";
-    StringView sv(str);
-    ASSERT_EQ(str, sv.data());
+    StringView view(str);
+    ASSERT_EQ(str, view.data());
 }
 
 TEST(StringViewTest, size)
 {
     const char* str = "Everything";
-    StringView sv(str);
-    ASSERT_EQ(10, sv.size());
+    StringView view(str);
+    ASSERT_EQ(10, view.size());
 }
 
 TEST(StringViewTest, length)
 {
     const char* str = "Everything";
-    StringView sv(str);
-    ASSERT_EQ(10, sv.length());
+    StringView view(str);
+    ASSERT_EQ(10, view.length());
 }
 
 TEST(StringViewTest, maxSize)
 {
     const char* str = "Everything";
-    StringView sv(str);
-    ASSERT_LE(1U << 16U, sv.max_size());
+    StringView view(str);
+    ASSERT_LE(1U << 16U, view.max_size());
 }
 
 TEST(StringViewTest, empty)
 {
     const char* str = "Everything";
-    StringView sv(str);
+    StringView view(str);
     StringView svEmpty;
-    ASSERT_FALSE(sv.empty());
+    ASSERT_FALSE(view.empty());
     ASSERT_TRUE(svEmpty.empty());
 }
 
 TEST(StringViewTest, removePrefix)
 {
     const char* str = "Everything";
-    StringView sv(str);
+    StringView view(str);
 
-    sv.remove_prefix(2);
-    ASSERT_EQ(8, sv.size());
-    ASSERT_EQ(str + 2, sv.data());
+    view.remove_prefix(2);
+    ASSERT_EQ(8, view.size());
+    ASSERT_EQ(str + 2, view.data());
 
-    sv.remove_prefix(8);
-    ASSERT_TRUE(sv.empty());
+    view.remove_prefix(8);
+    ASSERT_TRUE(view.empty());
 }
 
 TEST(StringViewTest, removeSuffix)
 {
     const char* str = "Everything";
-    StringView sv(str);
+    StringView view(str);
 
-    sv.remove_suffix(2);
-    ASSERT_EQ(8, sv.size());
-    ASSERT_EQ(str, sv.data());
+    view.remove_suffix(2);
+    ASSERT_EQ(8, view.size());
+    ASSERT_EQ(str, view.data());
 
-    sv.remove_suffix(8);
-    ASSERT_TRUE(sv.empty());
+    view.remove_suffix(8);
+    ASSERT_TRUE(view.empty());
 }
 
 TEST(StringViewTest, swap)
@@ -188,108 +188,108 @@ TEST(StringViewTest, swap)
 TEST(StringViewTest, copy)
 {
     const char* str = "everything";
-    StringView sv(str);
+    StringView view(str);
     std::array<char, 6> buffer = {0x55, 0x55, 0x55, 0x55, 0x55, 0x55};
-    sv.copy(buffer.data(), buffer.size() - 1, 1);
+    view.copy(buffer.data(), buffer.size() - 1, 1);
     ASSERT_EQ('v', buffer[0]);
     ASSERT_EQ('e', buffer[1]);
     ASSERT_EQ('r', buffer[2]);
     ASSERT_EQ('y', buffer[3]);
     ASSERT_EQ('t', buffer[4]);
     ASSERT_EQ(0x55, buffer[5]);
-    ASSERT_THROW(sv.copy(buffer.data(), buffer.size() - 1, 11), CppRuntimeException);
+    ASSERT_THROW(view.copy(buffer.data(), buffer.size() - 1, 11), CppRuntimeException);
 }
 
 TEST(StringViewTest, substr)
 {
     const char* str = "everything";
-    StringView sv(str);
-    StringView subView = sv.substr(2, 5);
+    StringView view(str);
+    StringView subView = view.substr(2, 5);
     ASSERT_EQ(5, subView.size());
     ASSERT_EQ(str + 2, subView.data());
 
-    ASSERT_THROW(sv.substr(11), CppRuntimeException);
+    ASSERT_THROW(view.substr(11), CppRuntimeException);
 }
 
 TEST(StringViewTest, compareStringView)
 {
-    StringView aaa("aaa");
-    StringView bbb("bbb");
-    StringView aaaa("aaaa");
-    StringView aa("aa");
+    StringView aaaView("aaa");
+    StringView bbbView("bbb");
+    StringView aaaaView("aaaa");
+    StringView aaView("aa");
 
-    ASSERT_LT(0, bbb.compare(aaa));
-    ASSERT_GT(0, aaa.compare(bbb));
-    ASSERT_EQ(0, aaa.compare(aaa));
-    ASSERT_LT(0, aaa.compare(aa));
-    ASSERT_GT(0, aaa.compare(aaaa));
+    ASSERT_LT(0, bbbView.compare(aaaView));
+    ASSERT_GT(0, aaaView.compare(bbbView));
+    ASSERT_EQ(0, aaaView.compare(aaaView));
+    ASSERT_LT(0, aaaView.compare(aaView));
+    ASSERT_GT(0, aaaView.compare(aaaaView));
 }
 
 TEST(StringViewTest, compareStringViewSub)
 {
-    StringView aaa("aaa");
-    StringView saaas("saaas");
-    StringView bbb("bbb");
-    StringView sbbbs("sbbbs");
-    StringView aaaa("aaaa");
-    StringView aa("aa");
+    StringView aaaView("aaa");
+    StringView saaasView("saaas");
+    StringView bbbView("bbb");
+    StringView sbbbsView("sbbbs");
+    StringView aaaaView("aaaa");
+    StringView aaView("aa");
 
-    ASSERT_LT(0, sbbbs.compare(1, 3, aaa));
-    ASSERT_GT(0, saaas.compare(1, 3, bbb));
-    ASSERT_EQ(0, saaas.compare(1, 3, aaa));
-    ASSERT_LT(0, saaas.compare(1, 3, aa));
-    ASSERT_GT(0, saaas.compare(1, 3, aaaa));
+    ASSERT_LT(0, sbbbsView.compare(1, 3, aaaView));
+    ASSERT_GT(0, saaasView.compare(1, 3, bbbView));
+    ASSERT_EQ(0, saaasView.compare(1, 3, aaaView));
+    ASSERT_LT(0, saaasView.compare(1, 3, aaView));
+    ASSERT_GT(0, saaasView.compare(1, 3, aaaaView));
 }
 
 TEST(StringViewTest, compareStringViewSubSub)
 {
-    StringView aaa("aaa");
-    StringView saaas("saaas");
-    StringView bbb("bbb");
-    StringView sbbbs("sbbbs");
-    StringView saaaas("saaaas");
+    StringView aaaView("aaa");
+    StringView saaasView("saaas");
+    StringView bbbView("bbb");
+    StringView sbbbsView("sbbbs");
+    StringView saaaasView("saaaas");
 
-    ASSERT_LT(0, sbbbs.compare(1, 3, saaas, 1, 3));
-    ASSERT_GT(0, saaas.compare(1, 3, sbbbs, 1, 3));
-    ASSERT_EQ(0, saaas.compare(1, 3, saaas, 1, 3));
-    ASSERT_LT(0, saaas.compare(1, 3, saaas, 1, 2));
-    ASSERT_GT(0, saaas.compare(1, 3, saaaas, 1, 4));
+    ASSERT_LT(0, sbbbsView.compare(1, 3, saaasView, 1, 3));
+    ASSERT_GT(0, saaasView.compare(1, 3, sbbbsView, 1, 3));
+    ASSERT_EQ(0, saaasView.compare(1, 3, saaasView, 1, 3));
+    ASSERT_LT(0, saaasView.compare(1, 3, saaasView, 1, 2));
+    ASSERT_GT(0, saaasView.compare(1, 3, saaaasView, 1, 4));
 }
 
 TEST(StringViewTest, compareChar)
 {
-    StringView aaa("aaa");
-    StringView bbb("bbb");
+    StringView aaaView("aaa");
+    StringView bbbView("bbb");
 
-    ASSERT_LT(0, bbb.compare("aaa"));
-    ASSERT_GT(0, aaa.compare("bbb"));
-    ASSERT_EQ(0, aaa.compare("aaa"));
-    ASSERT_LT(0, aaa.compare("aa"));
-    ASSERT_GT(0, aaa.compare("aaaa"));
+    ASSERT_LT(0, bbbView.compare("aaa"));
+    ASSERT_GT(0, aaaView.compare("bbb"));
+    ASSERT_EQ(0, aaaView.compare("aaa"));
+    ASSERT_LT(0, aaaView.compare("aa"));
+    ASSERT_GT(0, aaaView.compare("aaaa"));
 }
 
 TEST(StringViewTest, compareCharSub)
 {
-    StringView saaas("saaas");
-    StringView sbbbs("sbbbs");
+    StringView saaasView("saaas");
+    StringView sbbbsView("sbbbs");
 
-    ASSERT_LT(0, sbbbs.compare(1, 3, "aaa"));
-    ASSERT_GT(0, saaas.compare(1, 3, "bbb"));
-    ASSERT_EQ(0, saaas.compare(1, 3, "aaa"));
-    ASSERT_LT(0, saaas.compare(1, 3, "aa"));
-    ASSERT_GT(0, saaas.compare(1, 3, "aaaa"));
+    ASSERT_LT(0, sbbbsView.compare(1, 3, "aaa"));
+    ASSERT_GT(0, saaasView.compare(1, 3, "bbb"));
+    ASSERT_EQ(0, saaasView.compare(1, 3, "aaa"));
+    ASSERT_LT(0, saaasView.compare(1, 3, "aa"));
+    ASSERT_GT(0, saaasView.compare(1, 3, "aaaa"));
 }
 
 TEST(StringViewTest, compareCharSubSub)
 {
-    StringView saaas("saaas");
-    StringView sbbbs("sbbbs");
+    StringView saaasView("saaas");
+    StringView sbbbsView("sbbbs");
 
-    ASSERT_LT(0, sbbbs.compare(1, 3, "aaas", 3));
-    ASSERT_GT(0, saaas.compare(1, 3, "bbbs", 3));
-    ASSERT_EQ(0, saaas.compare(1, 3, "aaas", 3));
-    ASSERT_LT(0, saaas.compare(1, 3, "aaas", 2));
-    ASSERT_GT(0, saaas.compare(1, 3, "aaaas", 4));
+    ASSERT_LT(0, sbbbsView.compare(1, 3, "aaas", 3));
+    ASSERT_GT(0, saaasView.compare(1, 3, "bbbs", 3));
+    ASSERT_EQ(0, saaasView.compare(1, 3, "aaas", 3));
+    ASSERT_LT(0, saaasView.compare(1, 3, "aaas", 2));
+    ASSERT_GT(0, saaasView.compare(1, 3, "aaaas", 4));
 }
 
 TEST(StringViewTest, find)

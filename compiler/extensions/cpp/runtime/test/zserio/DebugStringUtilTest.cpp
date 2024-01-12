@@ -25,98 +25,98 @@ namespace zserio
 
 TEST(DebugStringUtilTest, toJsonStreamDefault)
 {
-    std::ostringstream os;
+    std::ostringstream stream;
     StdDebugStringObject debugStringObject;
-    toJsonStream(debugStringObject, os);
-    ASSERT_EQ("{\n    \"text\": \"test\"\n}", os.str());
+    toJsonStream(debugStringObject, stream);
+    ASSERT_EQ("{\n    \"text\": \"test\"\n}", stream.str());
 }
 
 TEST(DebugStringUtilTest, toJsonStreamDefaultWithAlloc)
 {
-    std::ostringstream os;
+    std::ostringstream stream;
     const StdDebugStringObject debugStringObject;
-    toJsonStream(debugStringObject, os, std_alloc());
-    ASSERT_EQ("{\n    \"text\": \"test\"\n}", os.str());
+    toJsonStream(debugStringObject, stream, std_alloc());
+    ASSERT_EQ("{\n    \"text\": \"test\"\n}", stream.str());
 }
 
 TEST(DebugStringUtilTest, toJsonStreamDefaultWithPolymorphicAlloc)
 {
-    std::ostringstream os;
+    std::ostringstream stream;
     const PmrDebugStringObject debugStringObject;
-    toJsonStream(debugStringObject, os, pmr_alloc());
-    ASSERT_EQ("{\n    \"text\": \"test\"\n}", os.str());
+    toJsonStream(debugStringObject, stream, pmr_alloc());
+    ASSERT_EQ("{\n    \"text\": \"test\"\n}", stream.str());
 }
 
 TEST(DebugStringUtilTest, toJsonStreamIndent2)
 {
-    std::ostringstream os;
+    std::ostringstream stream;
     const StdDebugStringObject debugStringObject;
-    toJsonStream(debugStringObject, os, 2);
-    ASSERT_EQ("{\n  \"text\": \"test\"\n}", os.str());
+    toJsonStream(debugStringObject, stream, 2);
+    ASSERT_EQ("{\n  \"text\": \"test\"\n}", stream.str());
 }
 
 TEST(DebugStringUtilTest, toJsonStreamIndent2WithAlloc)
 {
-    std::ostringstream os;
+    std::ostringstream stream;
     const StdDebugStringObject debugStringObject;
-    toJsonStream(debugStringObject, os, 2, std_alloc());
-    ASSERT_EQ("{\n  \"text\": \"test\"\n}", os.str());
+    toJsonStream(debugStringObject, stream, 2, std_alloc());
+    ASSERT_EQ("{\n  \"text\": \"test\"\n}", stream.str());
 }
 
 TEST(DebugStringUtilTest, toJsonStreamIndent2WithPolymorphicAlloc)
 {
-    std::ostringstream os;
+    std::ostringstream stream;
     const PmrDebugStringObject debugStringObject;
-    toJsonStream(debugStringObject, os, 2, pmr_alloc());
-    ASSERT_EQ("{\n  \"text\": \"test\"\n}", os.str());
+    toJsonStream(debugStringObject, stream, 2, pmr_alloc());
+    ASSERT_EQ("{\n  \"text\": \"test\"\n}", stream.str());
 }
 
 TEST(DebugStringUtilTest, toJsonStreamFilter)
 {
-    std::ostringstream os;
+    std::ostringstream stream;
     const StdDebugStringObject debugStringObject;
-    toJsonStream(debugStringObject, os, DepthWalkFilter(0));
-    ASSERT_EQ("{\n}", os.str());
+    toJsonStream(debugStringObject, stream, DepthWalkFilter(0));
+    ASSERT_EQ("{\n}", stream.str());
 }
 
 TEST(DebugStringUtilTest, toJsonStreamFilterWithAlloc)
 {
-    std::ostringstream os;
+    std::ostringstream stream;
     const StdDebugStringObject debugStringObject;
-    toJsonStream(debugStringObject, os, DefaultWalkFilter(), std_alloc());
-    ASSERT_EQ("{\n    \"text\": \"test\"\n}", os.str());
+    toJsonStream(debugStringObject, stream, DefaultWalkFilter(), std_alloc());
+    ASSERT_EQ("{\n    \"text\": \"test\"\n}", stream.str());
 }
 
 TEST(DebugStringUtilTest, toJsonStreamFilterWithPolymorphicAlloc)
 {
-    std::ostringstream os;
+    std::ostringstream stream;
     const PmrDebugStringObject debugStringObject;
-    toJsonStream(debugStringObject, os, BasicDefaultWalkFilter<pmr_alloc>(), pmr_alloc());
-    ASSERT_EQ("{\n    \"text\": \"test\"\n}", os.str());
+    toJsonStream(debugStringObject, stream, BasicDefaultWalkFilter<pmr_alloc>(), pmr_alloc());
+    ASSERT_EQ("{\n    \"text\": \"test\"\n}", stream.str());
 }
 
 TEST(DebugStringUtilTest, toJsonStreamIndent2Filter)
 {
-    std::ostringstream os;
+    std::ostringstream stream;
     const StdDebugStringObject debugStringObject;
-    toJsonStream(debugStringObject, os, 2, DefaultWalkFilter());
-    ASSERT_EQ("{\n  \"text\": \"test\"\n}", os.str());
+    toJsonStream(debugStringObject, stream, 2, DefaultWalkFilter());
+    ASSERT_EQ("{\n  \"text\": \"test\"\n}", stream.str());
 }
 
 TEST(DebugStringUtilTest, toJsonStreamIndent2FilterWithAlloc)
 {
-    std::ostringstream os;
+    std::ostringstream stream;
     const StdDebugStringObject debugStringObject;
-    toJsonStream(debugStringObject, os, 2, DepthWalkFilter(0), std_alloc());
-    ASSERT_EQ("{\n}", os.str());
+    toJsonStream(debugStringObject, stream, 2, DepthWalkFilter(0), std_alloc());
+    ASSERT_EQ("{\n}", stream.str());
 }
 
 TEST(DebugStringUtilTest, toJsonStreamIndent2FilterWithPolymorphicAlloc)
 {
-    std::ostringstream os;
+    std::ostringstream stream;
     const PmrDebugStringObject debugStringObject;
-    toJsonStream(debugStringObject, os, 2, BasicDepthWalkFilter<pmr_alloc>(0), pmr_alloc());
-    ASSERT_EQ("{\n}", os.str());
+    toJsonStream(debugStringObject, stream, 2, BasicDepthWalkFilter<pmr_alloc>(0), pmr_alloc());
+    ASSERT_EQ("{\n}", stream.str());
 }
 
 TEST(DebugStringUtilTest, toJsonStringDefault)
@@ -202,10 +202,10 @@ TEST(DebugStringUtilTest, toJsonFileDefault)
     toJsonFile(debugStringObject, fileName);
     ASSERT_THROW(toJsonFile(debugStringObject, ""), CppRuntimeException);
 
-    std::ifstream is(fileName.c_str());
-    std::stringstream ss;
-    ss << is.rdbuf();
-    ASSERT_EQ("{\n    \"text\": \"test\"\n}", ss.str());
+    std::ifstream stream(fileName.c_str());
+    std::stringstream stringStream;
+    stringStream << stream.rdbuf();
+    ASSERT_EQ("{\n    \"text\": \"test\"\n}", stringStream.str());
 }
 
 TEST(DebugStringUtilTest, toJsonFileDefaultWithAlloc)
@@ -214,10 +214,10 @@ TEST(DebugStringUtilTest, toJsonFileDefaultWithAlloc)
     const std::string fileName = "DebugStringUtilTest_toJsonFileDefaultWithAlloc.json";
     toJsonFile(debugStringObject, fileName, std_alloc());
 
-    std::ifstream is(fileName.c_str());
-    std::stringstream ss;
-    ss << is.rdbuf();
-    ASSERT_EQ("{\n    \"text\": \"test\"\n}", ss.str());
+    std::ifstream stream(fileName.c_str());
+    std::stringstream stringStream;
+    stringStream << stream.rdbuf();
+    ASSERT_EQ("{\n    \"text\": \"test\"\n}", stringStream.str());
 }
 
 TEST(DebugStringUtilTest, toJsonFileDefaultWithPolymorphicAlloc)
@@ -226,10 +226,10 @@ TEST(DebugStringUtilTest, toJsonFileDefaultWithPolymorphicAlloc)
     const string<pmr_alloc> fileName = "DebugStringUtilTest_toJsonFileDefaultWithPolymorphicAlloc.json";
     toJsonFile(debugStringObject, fileName, pmr_alloc());
 
-    std::ifstream is(fileName.c_str());
-    std::stringstream ss;
-    ss << is.rdbuf();
-    ASSERT_EQ("{\n    \"text\": \"test\"\n}", ss.str());
+    std::ifstream stream(fileName.c_str());
+    std::stringstream stringStream;
+    stringStream << stream.rdbuf();
+    ASSERT_EQ("{\n    \"text\": \"test\"\n}", stringStream.str());
 }
 
 TEST(DebugStringUtilTest, toJsonFileIndent2)
@@ -238,10 +238,10 @@ TEST(DebugStringUtilTest, toJsonFileIndent2)
     const std::string fileName = "DebugStringUtilTest_toJsonFileIndent2.json";
     toJsonFile(debugStringObject, fileName, 2);
 
-    std::ifstream is(fileName.c_str());
-    std::stringstream ss;
-    ss << is.rdbuf();
-    ASSERT_EQ("{\n  \"text\": \"test\"\n}", ss.str());
+    std::ifstream stream(fileName.c_str());
+    std::stringstream stringStream;
+    stringStream << stream.rdbuf();
+    ASSERT_EQ("{\n  \"text\": \"test\"\n}", stringStream.str());
 }
 
 TEST(DebugStringUtilTest, toJsonFileIndent2WithAlloc)
@@ -250,10 +250,10 @@ TEST(DebugStringUtilTest, toJsonFileIndent2WithAlloc)
     const std::string fileName = "DebugStringUtilTest_toJsonFileIndent2WithAlloc.json";
     toJsonFile(debugStringObject, fileName, 2, std_alloc());
 
-    std::ifstream is(fileName.c_str());
-    std::stringstream ss;
-    ss << is.rdbuf();
-    ASSERT_EQ("{\n  \"text\": \"test\"\n}", ss.str());
+    std::ifstream stream(fileName.c_str());
+    std::stringstream stringStream;
+    stringStream << stream.rdbuf();
+    ASSERT_EQ("{\n  \"text\": \"test\"\n}", stringStream.str());
 }
 
 TEST(DebugStringUtilTest, toJsonFileIndent2WithPolymorphicAlloc)
@@ -262,10 +262,10 @@ TEST(DebugStringUtilTest, toJsonFileIndent2WithPolymorphicAlloc)
     const string<pmr_alloc> fileName = "DebugStringUtilTest_toJsonFileIndent2WithPolymorphicAlloc.json";
     toJsonFile(debugStringObject, fileName, 2, pmr_alloc());
 
-    std::ifstream is(fileName.c_str());
-    std::stringstream ss;
-    ss << is.rdbuf();
-    ASSERT_EQ("{\n  \"text\": \"test\"\n}", ss.str());
+    std::ifstream stream(fileName.c_str());
+    std::stringstream stringStream;
+    stringStream << stream.rdbuf();
+    ASSERT_EQ("{\n  \"text\": \"test\"\n}", stringStream.str());
 }
 
 TEST(DebugStringUtilTest, toJsonFileFilter)
@@ -274,10 +274,10 @@ TEST(DebugStringUtilTest, toJsonFileFilter)
     const std::string fileName = "DebugStringUtilTest_toJsonFileFilter.json";
     toJsonFile(debugStringObject, fileName, DefaultWalkFilter());
 
-    std::ifstream is(fileName.c_str());
-    std::stringstream ss;
-    ss << is.rdbuf();
-    ASSERT_EQ("{\n    \"text\": \"test\"\n}", ss.str());
+    std::ifstream stream(fileName.c_str());
+    std::stringstream stringStream;
+    stringStream << stream.rdbuf();
+    ASSERT_EQ("{\n    \"text\": \"test\"\n}", stringStream.str());
 }
 
 TEST(DebugStringUtilTest, toJsonFileFilterWithAlloc)
@@ -287,10 +287,10 @@ TEST(DebugStringUtilTest, toJsonFileFilterWithAlloc)
     const std::string fileName = "DebugStringUtilTest_toJsonFileFilterWithAlloc.json";
     toJsonFile(debugStringObject, fileName, defaultWalkFilter, std_alloc());
 
-    std::ifstream is(fileName.c_str());
-    std::stringstream ss;
-    ss << is.rdbuf();
-    ASSERT_EQ("{\n    \"text\": \"test\"\n}", ss.str());
+    std::ifstream stream(fileName.c_str());
+    std::stringstream stringStream;
+    stringStream << stream.rdbuf();
+    ASSERT_EQ("{\n    \"text\": \"test\"\n}", stringStream.str());
 }
 
 TEST(DebugStringUtilTest, toJsonFileFilterWithPolymorphicAlloc)
@@ -300,10 +300,10 @@ TEST(DebugStringUtilTest, toJsonFileFilterWithPolymorphicAlloc)
     const string<pmr_alloc> fileName = "DebugStringUtilTest_toJsonFileFilterWithPolymorphicAlloc.json";
     toJsonFile(debugStringObject, fileName, defaultWalkFilter, pmr_alloc());
 
-    std::ifstream is(fileName.c_str());
-    std::stringstream ss;
-    ss << is.rdbuf();
-    ASSERT_EQ("{\n    \"text\": \"test\"\n}", ss.str());
+    std::ifstream stream(fileName.c_str());
+    std::stringstream stringStream;
+    stringStream << stream.rdbuf();
+    ASSERT_EQ("{\n    \"text\": \"test\"\n}", stringStream.str());
 }
 
 TEST(DebugStringUtilTest, toJsonFileIndent2Filter)
@@ -313,10 +313,10 @@ TEST(DebugStringUtilTest, toJsonFileIndent2Filter)
     const std::string fileName = "DebugStringUtilTest_toJsonFileIndent2Filter.json";
     toJsonFile(debugStringObject, fileName, 2, depthWalkFilter);
 
-    std::ifstream is(fileName.c_str());
-    std::stringstream ss;
-    ss << is.rdbuf();
-    ASSERT_EQ("{\n}", ss.str());
+    std::ifstream stream(fileName.c_str());
+    std::stringstream stringStream;
+    stringStream << stream.rdbuf();
+    ASSERT_EQ("{\n}", stringStream.str());
 }
 
 TEST(DebugStringUtilTest, toJsonFileIndent2FilterWithAlloc)
@@ -326,10 +326,10 @@ TEST(DebugStringUtilTest, toJsonFileIndent2FilterWithAlloc)
     const std::string fileName = "DebugStringUtilTest_toJsonFileIndent2FilterWithAlloc.json";
     toJsonFile(debugStringObject, fileName, 2, defaultWalkFilter, std_alloc());
 
-    std::ifstream is(fileName.c_str());
-    std::stringstream ss;
-    ss << is.rdbuf();
-    ASSERT_EQ("{\n  \"text\": \"test\"\n}", ss.str());
+    std::ifstream stream(fileName.c_str());
+    std::stringstream stringStream;
+    stringStream << stream.rdbuf();
+    ASSERT_EQ("{\n  \"text\": \"test\"\n}", stringStream.str());
 }
 
 TEST(DebugStringUtilTest, toJsonFileIndent2FilterWithPolymorphicAlloc)
@@ -339,16 +339,16 @@ TEST(DebugStringUtilTest, toJsonFileIndent2FilterWithPolymorphicAlloc)
     const string<pmr_alloc> fileName = "DebugStringUtilTest_toJsonFileIndent2FilterWithPolymorphicAlloc.json";
     toJsonFile(debugStringObject, fileName, 2, defaultWalkFilter, pmr_alloc());
 
-    std::ifstream is(fileName.c_str());
-    std::stringstream ss;
-    ss << is.rdbuf();
-    ASSERT_EQ("{\n  \"text\": \"test\"\n}", ss.str());
+    std::ifstream stream(fileName.c_str());
+    std::stringstream stringStream;
+    stringStream << stream.rdbuf();
+    ASSERT_EQ("{\n  \"text\": \"test\"\n}", stringStream.str());
 }
 
 TEST(DebugStringUtilTest, fromJsonStreamTypeInfo)
 {
-    std::istringstream ss("{\n  \"text\": \"something\"\n}");
-    IReflectablePtr reflectable = fromJsonStream(StdDebugStringObject::typeInfo(), ss);
+    std::istringstream stream("{\n  \"text\": \"something\"\n}");
+    IReflectablePtr reflectable = fromJsonStream(StdDebugStringObject::typeInfo(), stream);
     ASSERT_TRUE(reflectable);
 
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
@@ -356,8 +356,8 @@ TEST(DebugStringUtilTest, fromJsonStreamTypeInfo)
 
 TEST(DebugStringUtilTest, fromJsonStreamParameterizedTypeInfo)
 {
-    std::istringstream ss("{\n  \"text\": \"something\"\n}");
-    IReflectablePtr reflectable = fromJsonStream(StdDebugStringParamObject::typeInfo(), ss);
+    std::istringstream stream("{\n  \"text\": \"something\"\n}");
+    IReflectablePtr reflectable = fromJsonStream(StdDebugStringParamObject::typeInfo(), stream);
     ASSERT_TRUE(reflectable);
 
     ASSERT_THROW(reflectable->getParameter("param"), CppRuntimeException);
@@ -369,8 +369,8 @@ TEST(DebugStringUtilTest, fromJsonStreamParameterizedTypeInfo)
 
 TEST(DebugStringUtilTest, fromJsonStreamTypeInfoWithAlloc)
 {
-    std::istringstream ss("{\n  \"text\": \"something\"\n}");
-    IReflectablePtr reflectable = fromJsonStream(StdDebugStringObject::typeInfo(), ss, std_alloc());
+    std::istringstream stream("{\n  \"text\": \"something\"\n}");
+    IReflectablePtr reflectable = fromJsonStream(StdDebugStringObject::typeInfo(), stream, std_alloc());
     ASSERT_TRUE(reflectable);
 
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
@@ -378,8 +378,8 @@ TEST(DebugStringUtilTest, fromJsonStreamTypeInfoWithAlloc)
 
 TEST(DebugStringUtilTest, fromJsonStreamTypeInfoWithPolymorphicAllocDefault)
 {
-    std::istringstream ss("{\n  \"text\": \"something\"\n}");
-    IBasicReflectablePtr<pmr_alloc> reflectable = fromJsonStream(PmrDebugStringObject::typeInfo(), ss);
+    std::istringstream stream("{\n  \"text\": \"something\"\n}");
+    IBasicReflectablePtr<pmr_alloc> reflectable = fromJsonStream(PmrDebugStringObject::typeInfo(), stream);
     ASSERT_TRUE(reflectable);
 
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
@@ -387,9 +387,9 @@ TEST(DebugStringUtilTest, fromJsonStreamTypeInfoWithPolymorphicAllocDefault)
 
 TEST(DebugStringUtilTest, fromJsonStreamTypeInfoWithPolymorphicAlloc)
 {
-    std::istringstream ss("{\n  \"text\": \"something\"\n}");
+    std::istringstream stream("{\n  \"text\": \"something\"\n}");
     IBasicReflectablePtr<pmr_alloc> reflectable =
-            fromJsonStream(PmrDebugStringObject::typeInfo(), ss, pmr_alloc());
+            fromJsonStream(PmrDebugStringObject::typeInfo(), stream, pmr_alloc());
     ASSERT_TRUE(reflectable);
 
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
@@ -397,16 +397,16 @@ TEST(DebugStringUtilTest, fromJsonStreamTypeInfoWithPolymorphicAlloc)
 
 TEST(DebugStringUtilTest, fromJsonStreamType)
 {
-    std::istringstream ss("{\n  \"text\": \"something\"\n}");
-    StdDebugStringObject debugStringObject = fromJsonStream<StdDebugStringObject>(ss);
+    std::istringstream stream("{\n  \"text\": \"something\"\n}");
+    StdDebugStringObject debugStringObject = fromJsonStream<StdDebugStringObject>(stream);
 
     ASSERT_EQ("something", debugStringObject.getText());
 }
 
 TEST(DebugStringUtilTest, fromJsonStreamParameterizedType)
 {
-    std::istringstream ss("{\n  \"text\": \"something\"\n}");
-    StdDebugStringParamObject debugStringParamObject = fromJsonStream<StdDebugStringParamObject>(ss);
+    std::istringstream stream("{\n  \"text\": \"something\"\n}");
+    StdDebugStringParamObject debugStringParamObject = fromJsonStream<StdDebugStringParamObject>(stream);
 
     ASSERT_THROW(debugStringParamObject.getParam(), CppRuntimeException);
 
@@ -415,24 +415,24 @@ TEST(DebugStringUtilTest, fromJsonStreamParameterizedType)
 
 TEST(DebugStringUtilTest, fromJsonStreamTypeWithAlloc)
 {
-    std::istringstream ss("{\n  \"text\": \"something\"\n}");
-    StdDebugStringObject debugStringObject = fromJsonStream<StdDebugStringObject>(ss, std_alloc());
+    std::istringstream stream("{\n  \"text\": \"something\"\n}");
+    StdDebugStringObject debugStringObject = fromJsonStream<StdDebugStringObject>(stream, std_alloc());
 
     ASSERT_EQ("something", debugStringObject.getText());
 }
 
 TEST(DebugStringUtilTest, fromJsonStreamTypeWithPolymorphicAllocDefault)
 {
-    std::istringstream ss("{\n  \"text\": \"something\"\n}");
-    PmrDebugStringObject debugStringObject = fromJsonStream<PmrDebugStringObject>(ss);
+    std::istringstream stream("{\n  \"text\": \"something\"\n}");
+    PmrDebugStringObject debugStringObject = fromJsonStream<PmrDebugStringObject>(stream);
 
     ASSERT_EQ("something", debugStringObject.getText());
 }
 
 TEST(DebugStringUtilTest, fromJsonStreamTypeWithPolymorphicAlloc)
 {
-    std::istringstream ss("{\n  \"text\": \"something\"\n}");
-    PmrDebugStringObject debugStringObject = fromJsonStream<PmrDebugStringObject>(ss, pmr_alloc());
+    std::istringstream stream("{\n  \"text\": \"something\"\n}");
+    PmrDebugStringObject debugStringObject = fromJsonStream<PmrDebugStringObject>(stream, pmr_alloc());
 
     ASSERT_EQ("something", debugStringObject.getText());
 }
@@ -534,8 +534,8 @@ TEST(DebugStringUtilTest, fromJsonFileTypeInfo)
 {
     const char* fileName = "DebugStringUtilTest_fromJsonFileTypeInfo.json";
     {
-        std::ofstream os(fileName, std::ofstream::out | std::ofstream::trunc);
-        os << "{\n  \"text\": \"something\"\n}";
+        std::ofstream stream(fileName, std::ofstream::out | std::ofstream::trunc);
+        stream << "{\n  \"text\": \"something\"\n}";
     }
 
     IReflectablePtr reflectable = fromJsonFile(StdDebugStringObject::typeInfo(), fileName);
@@ -550,8 +550,8 @@ TEST(DebugStringUtilTest, fromJsonFileParameterizedTypeInfo)
 {
     const char* fileName = "DebugStringUtilTest_fromJsonFileParameterizedTypeInfo.json";
     {
-        std::ofstream os(fileName, std::ofstream::out | std::ofstream::trunc);
-        os << "{\n  \"text\": \"something\"\n}";
+        std::ofstream stream(fileName, std::ofstream::out | std::ofstream::trunc);
+        stream << "{\n  \"text\": \"something\"\n}";
     }
 
     IReflectablePtr reflectable = fromJsonFile(StdDebugStringParamObject::typeInfo(), fileName);
@@ -569,8 +569,8 @@ TEST(DebugStringUtilTest, fromJsonFileTypeInfoWithAlloc)
 {
     const char* fileName = "DebugStringUtilTest_fromJsonFileTypeInfoWithAlloc.json";
     {
-        std::ofstream os(fileName, std::ofstream::out | std::ofstream::trunc);
-        os << "{\n  \"text\": \"something\"\n}";
+        std::ofstream stream(fileName, std::ofstream::out | std::ofstream::trunc);
+        stream << "{\n  \"text\": \"something\"\n}";
     }
 
     IReflectablePtr reflectable = fromJsonFile(StdDebugStringObject::typeInfo(), fileName, std_alloc());
@@ -583,8 +583,8 @@ TEST(DebugStringUtilTest, fromJsonFileTypeInfoWithPolymorphicAllocDefault)
 {
     const char* fileName = "DebugStringUtilTest_fromJsonFileTypeInfoWithPolymorphicAllocDefault.json";
     {
-        std::ofstream os(fileName, std::ofstream::out | std::ofstream::trunc);
-        os << "{\n  \"text\": \"something\"\n}";
+        std::ofstream stream(fileName, std::ofstream::out | std::ofstream::trunc);
+        stream << "{\n  \"text\": \"something\"\n}";
     }
 
     IBasicReflectablePtr<pmr_alloc> reflectable = fromJsonFile(PmrDebugStringObject::typeInfo(), fileName);
@@ -597,8 +597,8 @@ TEST(DebugStringUtilTest, fromJsonFileTypeInfoWithPolymorphicAlloc)
 {
     const char* fileName = "DebugStringUtilTest_fromJsonFileTypeInfoWithPolymorphicAlloc.json";
     {
-        std::ofstream os(fileName, std::ofstream::out | std::ofstream::trunc);
-        os << "{\n  \"text\": \"something\"\n}";
+        std::ofstream stream(fileName, std::ofstream::out | std::ofstream::trunc);
+        stream << "{\n  \"text\": \"something\"\n}";
     }
 
     IBasicReflectablePtr<pmr_alloc> reflectable =
@@ -612,8 +612,8 @@ TEST(DebugStringUtilTest, fromJsonFileParameterizedTypeInfoWithPolymorphicAlloc)
 {
     const char* fileName = "DebugStringUtilTest_fromJsonFileParameterizedTypeInfoWithPolymorphicAlloc.json";
     {
-        std::ofstream os(fileName, std::ofstream::out | std::ofstream::trunc);
-        os << "{\n  \"text\": \"something\"\n}";
+        std::ofstream stream(fileName, std::ofstream::out | std::ofstream::trunc);
+        stream << "{\n  \"text\": \"something\"\n}";
     }
 
     IBasicReflectablePtr<pmr_alloc> reflectable =
@@ -632,8 +632,8 @@ TEST(DebugStringUtilTest, fromJsonFileType)
 {
     const char* fileName = "DebugStringUtilTest_fromJsonFileType.json";
     {
-        std::ofstream os(fileName, std::ofstream::out | std::ofstream::trunc);
-        os << "{\n  \"text\": \"something\"\n}";
+        std::ofstream stream(fileName, std::ofstream::out | std::ofstream::trunc);
+        stream << "{\n  \"text\": \"something\"\n}";
     }
 
     StdDebugStringObject debugStringObject = fromJsonFile<StdDebugStringObject>(fileName);
@@ -645,8 +645,8 @@ TEST(DebugStringUtilTest, fromJsonFileParameterizedType)
 {
     const char* fileName = "DebugStringUtilTest_fromJsonFileParameterizedType.json";
     {
-        std::ofstream os(fileName, std::ofstream::out | std::ofstream::trunc);
-        os << "{\n  \"text\": \"something\"\n}";
+        std::ofstream stream(fileName, std::ofstream::out | std::ofstream::trunc);
+        stream << "{\n  \"text\": \"something\"\n}";
     }
 
     StdDebugStringParamObject debugStringParamObject = fromJsonFile<StdDebugStringParamObject>(fileName);
@@ -660,8 +660,8 @@ TEST(DebugStringUtilTest, fromJsonFileTypeWithAlloc)
 {
     const char* fileName = "DebugStringUtilTest_fromJsonFileTypeWithAlloc.json";
     {
-        std::ofstream os(fileName, std::ofstream::out | std::ofstream::trunc);
-        os << "{\n  \"text\": \"something\"\n}";
+        std::ofstream stream(fileName, std::ofstream::out | std::ofstream::trunc);
+        stream << "{\n  \"text\": \"something\"\n}";
     }
 
     StdDebugStringObject debugStringObject = fromJsonFile<StdDebugStringObject>(fileName, std_alloc());
@@ -673,8 +673,8 @@ TEST(DebugStringUtilTest, fromJsonFileTypeWithPolymorphicAllocDefault)
 {
     const char* fileName = "DebugStringUtilTest_fromJsonFileTypeWithPolymorphicAllocDefault.json";
     {
-        std::ofstream os(fileName, std::ofstream::out | std::ofstream::trunc);
-        os << "{\n  \"text\": \"something\"\n}";
+        std::ofstream stream(fileName, std::ofstream::out | std::ofstream::trunc);
+        stream << "{\n  \"text\": \"something\"\n}";
     }
 
     PmrDebugStringObject debugStringObject = fromJsonFile<PmrDebugStringObject>(fileName);
@@ -686,8 +686,8 @@ TEST(DebugStringUtilTest, fromJsonFileTypeWithPolymorphicAlloc)
 {
     const char* fileName = "DebugStringUtilTest_fromJsonFileTypeWithPolymorphicAlloc.json";
     {
-        std::ofstream os(fileName, std::ofstream::out | std::ofstream::trunc);
-        os << "{\n  \"text\": \"something\"\n}";
+        std::ofstream stream(fileName, std::ofstream::out | std::ofstream::trunc);
+        stream << "{\n  \"text\": \"something\"\n}";
     }
 
     PmrDebugStringObject debugStringObject = fromJsonFile<PmrDebugStringObject>(fileName, pmr_alloc());
@@ -699,8 +699,8 @@ TEST(DebugStringUtilTest, fromJsonFileParameterizedTypeWithPolymorphicAlloc)
 {
     const char* fileName = "DebugStringUtilTest_fromJsonFileParameteriezedTypeWithPolymorphicAlloc.json";
     {
-        std::ofstream os(fileName, std::ofstream::out | std::ofstream::trunc);
-        os << "{\n  \"text\": \"something\"\n}";
+        std::ofstream stream(fileName, std::ofstream::out | std::ofstream::trunc);
+        stream << "{\n  \"text\": \"something\"\n}";
     }
 
     PmrDebugStringParamObject debugStringParamObject =

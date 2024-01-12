@@ -21,28 +21,32 @@ using LocalServiceClient = test_utils::LocalServiceClient<allocator_type>;
 
 namespace
 {
-void convertRgbToCmyk(uint8_t r, uint8_t g, uint8_t b, uint8_t& c, uint8_t& m, uint8_t& y, uint8_t& k)
+
+void convertRgbToCmyk(
+        uint8_t colR, uint8_t colG, uint8_t colB, uint8_t& colC, uint8_t& colM, uint8_t& colY, uint8_t& colK)
 {
     // see https://www.rapidtables.com/convert/color/rgb-to-cmyk.html
-    const double rr = r / 255. * 100;
-    const double gg = g / 255. * 100;
-    const double bb = b / 255. * 100;
+    const double colRR = colR / 255. * 100;
+    const double colGG = colG / 255. * 100;
+    const double colBB = colB / 255. * 100;
 
-    double kk = 100. - std::max(std::max(rr, gg), bb);
+    double colKK = 100. - std::max(std::max(colRR, colGG), colBB);
 
-    c = static_cast<uint8_t>(std::round((100. - rr - kk) / (100. - kk) * 100));
-    m = static_cast<uint8_t>(std::round((100. - gg - kk) / (100. - kk) * 100));
-    y = static_cast<uint8_t>(std::round((100. - bb - kk) / (100. - kk) * 100));
-    k = static_cast<uint8_t>(std::round(kk));
+    colC = static_cast<uint8_t>(std::round((100. - colRR - colKK) / (100. - colKK) * 100));
+    colM = static_cast<uint8_t>(std::round((100. - colGG - colKK) / (100. - colKK) * 100));
+    colY = static_cast<uint8_t>(std::round((100. - colBB - colKK) / (100. - colKK) * 100));
+    colK = static_cast<uint8_t>(std::round(colKK));
 }
 
-void convertCmykToRgb(uint8_t c, uint8_t m, uint8_t y, uint8_t k, uint8_t& r, uint8_t& g, uint8_t& b)
+void convertCmykToRgb(
+        uint8_t colC, uint8_t colM, uint8_t colY, uint8_t colK, uint8_t& colR, uint8_t& colG, uint8_t& colB)
 {
     // see https://www.rapidtables.com/convert/color/cmyk-to-rgb.html
-    r = static_cast<uint8_t>(std::round(255 * (1 - c / 100.) * (1 - k / 100.)));
-    g = static_cast<uint8_t>(std::round(255 * (1 - m / 100.) * (1 - k / 100.)));
-    b = static_cast<uint8_t>(std::round(255 * (1 - y / 100.) * (1 - k / 100.)));
+    colR = static_cast<uint8_t>(std::round(255 * (1 - colC / 100.) * (1 - colK / 100.)));
+    colG = static_cast<uint8_t>(std::round(255 * (1 - colM / 100.) * (1 - colK / 100.)));
+    colB = static_cast<uint8_t>(std::round(255 * (1 - colY / 100.) * (1 - colK / 100.)));
 }
+
 } // namespace
 
 class ComplexTypesServiceImpl : public ComplexTypesService::Service
@@ -80,15 +84,15 @@ private:
         for (uint32_t i = 0; i < response.getLength(); ++i)
         {
             const RGBModel& rgb = data.at(i).getRgb();
-            uint8_t c = 0;
-            uint8_t m = 0;
-            uint8_t y = 0;
-            uint8_t k = 0;
-            convertRgbToCmyk(rgb.getRed(), rgb.getGreen(), rgb.getBlue(), c, m, y, k);
-            cmykData[i].setCyan(c);
-            cmykData[i].setMagenta(m);
-            cmykData[i].setYellow(y);
-            cmykData[i].setKey(k);
+            uint8_t colC = 0;
+            uint8_t colM = 0;
+            uint8_t colY = 0;
+            uint8_t colK = 0;
+            convertRgbToCmyk(rgb.getRed(), rgb.getGreen(), rgb.getBlue(), colC, colM, colY, colK);
+            cmykData[i].setCyan(colC);
+            cmykData[i].setMagenta(colM);
+            cmykData[i].setYellow(colY);
+            cmykData[i].setKey(colK);
         }
     }
 
@@ -100,13 +104,14 @@ private:
         for (uint32_t i = 0; i < response.getLength(); ++i)
         {
             const CMYKModel& cmyk = data.at(i).getCmyk();
-            uint8_t r = 0;
-            uint8_t g = 0;
-            uint8_t b = 0;
-            convertCmykToRgb(cmyk.getCyan(), cmyk.getMagenta(), cmyk.getYellow(), cmyk.getKey(), r, g, b);
-            rgbData[i].setRed(r);
-            rgbData[i].setGreen(g);
-            rgbData[i].setBlue(b);
+            uint8_t colR = 0;
+            uint8_t colG = 0;
+            uint8_t colB = 0;
+            convertCmykToRgb(
+                    cmyk.getCyan(), cmyk.getMagenta(), cmyk.getYellow(), cmyk.getKey(), colR, colG, colB);
+            rgbData[i].setRed(colR);
+            rgbData[i].setGreen(colG);
+            rgbData[i].setBlue(colB);
         }
     }
 };
@@ -121,15 +126,15 @@ public:
     {
         for (size_t i = 0; i < 3; ++i)
         {
-            uint8_t c = 0;
-            uint8_t m = 0;
-            uint8_t y = 0;
-            uint8_t k = 0;
-            convertRgbToCmyk(rgbValues[i][0], rgbValues[i][1], rgbValues[i][2], c, m, y, k);
-            cmykValues[i][0] = c;
-            cmykValues[i][1] = m;
-            cmykValues[i][2] = y;
-            cmykValues[i][3] = k;
+            uint8_t colC = 0;
+            uint8_t colM = 0;
+            uint8_t colY = 0;
+            uint8_t colK = 0;
+            convertRgbToCmyk(rgbValues[i][0], rgbValues[i][1], rgbValues[i][2], colC, colM, colY, colK);
+            cmykValues[i][0] = colC;
+            cmykValues[i][1] = colM;
+            cmykValues[i][2] = colY;
+            cmykValues[i][3] = colK;
         }
     }
 

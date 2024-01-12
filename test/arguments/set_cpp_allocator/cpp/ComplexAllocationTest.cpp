@@ -384,27 +384,27 @@ protected:
         ASSERT_EQ(STRUCT_PACKED_UINT16_ARRAY_ELEMENT2, packedUInt16Array[2]);
         const auto& packedElementArray = structField.getPackedElementArray();
         ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_SIZE, packedElementArray.size());
-        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X, packedElementArray[0].getX());
+        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X, packedElementArray[0].getValueX());
         ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X +
                         static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA),
-                packedElementArray[1].getX());
+                packedElementArray[1].getValueX());
         ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_X +
                         static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA) * 2,
-                packedElementArray[2].getX());
-        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y, packedElementArray[0].getY());
+                packedElementArray[2].getValueX());
+        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y, packedElementArray[0].getValueY());
         ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y +
                         static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA),
-                packedElementArray[1].getY());
+                packedElementArray[1].getValueY());
         ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Y +
                         static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA) * 2,
-                packedElementArray[2].getY());
-        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z, packedElementArray[0].getZ());
+                packedElementArray[2].getValueY());
+        ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z, packedElementArray[0].getValueZ());
         ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z +
                         static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA),
-                packedElementArray[1].getZ());
+                packedElementArray[1].getValueZ());
         ASSERT_EQ(STRUCT_PACKED_ELEMENT_ARRAY_ELEMENT0_Z +
                         static_cast<uint32_t>(STRUCT_PACKED_ELEMENT_ARRAY_DELTA) * 2,
-                packedElementArray[2].getZ());
+                packedElementArray[2].getValueZ());
 
         // structOptionalField
         const auto& optionalField0 = mainStructure.getStructOptionalField();

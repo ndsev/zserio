@@ -5,8 +5,8 @@ import package_import.second.*;
 
 struct Coordinate(uint8 constraintX, uint8 constraintY)
 {
-    uint32  x : x == constraintX;
-    uint32  y : y == constraintY;
+    uint32  coordX : coordX == constraintX;
+    uint32  coordY : coordY == constraintY;
 };
 
 struct TopStructure

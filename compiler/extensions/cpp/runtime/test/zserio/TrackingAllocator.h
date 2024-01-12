@@ -80,17 +80,17 @@ public:
             m_tracker(other.m_tracker)
     {}
 
-    value_type* allocate(std::size_t n)
+    value_type* allocate(std::size_t size)
     {
-        const auto ptr = m_allocator.allocate(n);
+        const auto ptr = m_allocator.allocate(size);
         m_tracker->allocated(ptr);
         return ptr;
     }
 
-    void deallocate(value_type* p, std::size_t n) noexcept
+    void deallocate(value_type* memory, std::size_t size) noexcept
     {
-        m_tracker->deallocated(p);
-        m_allocator.deallocate(p, n);
+        m_tracker->deallocated(memory);
+        m_allocator.deallocate(memory, size);
     }
 
     bool operator==(const TrackingAllocatorImpl& other) const

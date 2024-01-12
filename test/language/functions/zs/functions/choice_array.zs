@@ -2,8 +2,8 @@ package functions.choice_array;
 
 struct Item
 {
-    uint8      a;
-    uint8      b;
+    uint8   valueA;
+    uint8   valueB;
 };
 
 struct OuterArray
@@ -18,7 +18,7 @@ struct Inner
     OuterArray                      outerArray;
     uint8                           isExplicit;
     ItemRef(isExplicit, outerArray) ref;
-    int32                           extra if ref.getElement().a == 20;
+    int32                           extra if ref.getElement().valueA == 20;
 };
 
 choice ItemRef(uint8 isExplicit, OuterArray outerArray) on isExplicit

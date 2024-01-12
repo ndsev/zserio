@@ -28,7 +28,7 @@ protected:
 
     static const zserio::StringView VALUE;
     static const zserio::StringView APPEND;
-    static const zserio::StringView IX;
+    static const zserio::StringView IEKS;
     static const zserio::StringView LITERAL;
     static const zserio::StringView EXPRESSION;
     static const zserio::StringView FALSE;
@@ -39,7 +39,7 @@ protected:
 
 const zserio::StringView StringTypeTest::VALUE = "value"_sv;
 const zserio::StringView StringTypeTest::APPEND = "append"_sv;
-const zserio::StringView StringTypeTest::IX = "ix"_sv;
+const zserio::StringView StringTypeTest::IEKS = "ix"_sv;
 const zserio::StringView StringTypeTest::LITERAL = "literal"_sv;
 const zserio::StringView StringTypeTest::EXPRESSION = "expression"_sv;
 const zserio::StringView StringTypeTest::FALSE = "false"_sv;
@@ -72,7 +72,7 @@ TEST_F(StringTypeTest, returnDefaultChosen)
 TEST_F(StringTypeTest, appendix)
 {
     const StringTypeExpression stringTypeExpression = createStringTypeExpression(false);
-    ASSERT_EQ(zserio::toString(APPEND) + zserio::toString(IX),
+    ASSERT_EQ(zserio::toString(APPEND) + zserio::toString(IEKS),
             zserio::toString(stringTypeExpression.funcAppendix()));
 }
 
@@ -80,7 +80,7 @@ TEST_F(StringTypeTest, appendToConst)
 {
     const StringTypeExpression stringTypeExpression = createStringTypeExpression(false);
     ASSERT_EQ(zserio::toString(STRING_CONSTANT) + zserio::toString(UNDERSCORE) + zserio::toString(APPEND) +
-                    zserio::toString(IX),
+                    zserio::toString(IEKS),
             zserio::toString(stringTypeExpression.funcAppendToConst()));
 }
 

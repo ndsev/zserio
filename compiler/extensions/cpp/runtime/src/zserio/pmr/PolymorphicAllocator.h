@@ -88,23 +88,23 @@ public:
     /**
      * Allocates memory for n values.
      *
-     * \param n Number of values to allocate memory for.
+     * \param size Number of values to allocate memory for.
      */
-    value_type* allocate(std::size_t n)
+    value_type* allocate(std::size_t size)
     {
-        return static_cast<value_type*>(m_resource->allocate(n * sizeof(value_type), alignof(value_type)));
+        return static_cast<value_type*>(m_resource->allocate(size * sizeof(value_type), alignof(value_type)));
     }
 
     /**
      * Deallocates memory for n values.
      *
-     * \param p Pointer to the memory to deallocate.
-     * \param n Number of values held by the memory pointed to by p.
-     *          Shall be the same n as was used for allocation of p.
+     * \param memory Pointer to the memory to deallocate.
+     * \param size Number of values held by the memory pointed to by memory.
+     *         Shall be the same size as was used for allocation of memory.
      */
-    void deallocate(value_type* p, std::size_t n) noexcept
+    void deallocate(value_type* memory, std::size_t size) noexcept
     {
-        m_resource->deallocate(p, n * sizeof(value_type), alignof(value_type));
+        m_resource->deallocate(memory, size * sizeof(value_type), alignof(value_type));
     }
 
     /**

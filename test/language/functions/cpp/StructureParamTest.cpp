@@ -23,8 +23,8 @@ protected:
     void createMetresConverterCaller(MetresConverterCaller& metresConverterCaller)
     {
         MetresConverter& metresConverter = metresConverterCaller.getMetresConverter();
-        metresConverter.setA(VALUE_A);
-        metresConverterCaller.setCm(CONVERTED_CM_VALUE);
+        metresConverter.setValueA(VALUE_A);
+        metresConverterCaller.setCentimeters(CONVERTED_CM_VALUE);
 
         metresConverterCaller.initializeChildren();
     }
@@ -39,7 +39,7 @@ TEST_F(StructureParamTest, checkMetresConverterCaller)
     MetresConverterCaller metresConverterCaller;
     createMetresConverterCaller(metresConverterCaller);
     const uint16_t expectedCm = CONVERTED_CM_VALUE;
-    ASSERT_EQ(expectedCm, metresConverterCaller.getCm());
+    ASSERT_EQ(expectedCm, metresConverterCaller.getCentimeters());
 
     zserio::BitBuffer writtenBitBuffer = zserio::BitBuffer(1024 * 8);
     zserio::BitStreamWriter writtenWriter(writtenBitBuffer);

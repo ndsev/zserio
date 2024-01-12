@@ -167,14 +167,14 @@ public:
     /**
      * Constructor. Convert between spans of different types.
      *
-     * \param s Input span.
+     * \param span Input span.
      */
     template <typename U, size_type N,
             typename std::enable_if<(Extent == N || Extent == dynamic_extent) &&
                             std::is_convertible<U (*)[], T (*)[]>::value,
                     int>::type = 0>
-    constexpr Span(const Span<U, N>& s) noexcept :
-            m_storage(s.data(), s.size())
+    constexpr Span(const Span<U, N>& span) noexcept :
+            m_storage(span.data(), span.size())
     {}
 
     /**

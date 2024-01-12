@@ -123,6 +123,7 @@ Checks: "-*,\
   readability-const-return-type,\
   readability-delete-null-pointer,\
   readability-deleted-default,\
+  readability-identifier-length,\
   readability-identifier-naming,\
   readability-implicit-bool-conversion,\
   readability-inconsistent-declaration-parameter-name,\
@@ -156,3 +157,12 @@ CheckOptions:
     value: true
   - key: readability-identifier-naming.UnionCase
     value: CamelCase
+  - key: readability-identifier-length.IgnoredVariableNames
+    value: "[in|db]"
+  - key: readability-identifier-length.IgnoredParameterNames
+    value: "[in|db]"
+  - key: readability-identifier-length.MinimumLoopCounterNameLength
+    value: 0
+  - key: readability-identifier-length.MinimumExceptionNameLength
+    value: 0
+ 

@@ -8,8 +8,8 @@ class UnionArrayTest(Functions.TestCase):
         super(UnionArrayTest, cls).setUpClass()
 
         cls.ITEMS = [cls.api.Item(12, 13),
-                     cls.api.Item(42, b_=18),
-                     cls.api.Item(a_=17, b_=14)]
+                     cls.api.Item(42, value_b_=18),
+                     cls.api.Item(value_a_=17, value_b_=14)]
         cls.NUM_ITEM_ELEMENTS = len(cls.ITEMS)
         cls.EXPLICIT_ITEM = cls.api.Item(27, 29)
 
@@ -29,14 +29,14 @@ class UnionArrayTest(Functions.TestCase):
         writer.write_bits(self.NUM_ITEM_ELEMENTS, 16)
 
         for item in self.ITEMS:
-            writer.write_bits(item.a, 8)
-            writer.write_bits(item.b, 8)
+            writer.write_bits(item.value_a, 8)
+            writer.write_bits(item.value_b, 8)
 
         isExplicit = 1 if pos >= self.NUM_ITEM_ELEMENTS else 0
         writer.write_varsize(0 if isExplicit != 0 else 1)
         if isExplicit != 0:
-            writer.write_bits(self.EXPLICIT_ITEM.a, 8)
-            writer.write_bits(self.EXPLICIT_ITEM.b, 8)
+            writer.write_bits(self.EXPLICIT_ITEM.value_a, 8)
+            writer.write_bits(self.EXPLICIT_ITEM.value_b, 8)
         else:
             writer.write_bits(pos, 16)
 

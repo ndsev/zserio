@@ -9,25 +9,25 @@ namespace zserio
 
 void writeBufferToFile(const uint8_t* buffer, size_t bitSize, BitsTag, const std::string& fileName)
 {
-    std::ofstream os(fileName.c_str(), std::ofstream::binary | std::ofstream::trunc);
-    if (!os)
+    std::ofstream stream(fileName.c_str(), std::ofstream::binary | std::ofstream::trunc);
+    if (!stream)
         throw CppRuntimeException("writeBufferToFile: Failed to open '") << fileName << "' for writing!";
 
     const size_t byteSize = (bitSize + 7) / 8;
-    os.write(reinterpret_cast<const char*>(buffer), static_cast<std::streamsize>(byteSize));
-    if (!os)
+    stream.write(reinterpret_cast<const char*>(buffer), static_cast<std::streamsize>(byteSize));
+    if (!stream)
         throw CppRuntimeException("writeBufferToFile: Failed to write '") << fileName << "'!";
 }
 
 BitBuffer readBufferFromFile(const std::string& fileName)
 {
-    std::ifstream is(fileName.c_str(), std::ifstream::binary);
-    if (!is)
+    std::ifstream stream(fileName.c_str(), std::ifstream::binary);
+    if (!stream)
         throw CppRuntimeException("readBufferFromFile: Cannot open '") << fileName << "' for reading!";
 
-    is.seekg(0, is.end);
-    const std::streampos fileSize = is.tellg();
-    is.seekg(0);
+    stream.seekg(0, stream.end);
+    const std::streampos fileSize = stream.tellg();
+    stream.seekg(0);
 
     if (static_cast<int>(fileSize) == -1)
         throw CppRuntimeException("readBufferFromFile: Failed to get file size of '") << fileName << "'!";
@@ -39,9 +39,9 @@ BitBuffer readBufferFromFile(const std::string& fileName)
     }
 
     zserio::BitBuffer bitBuffer(static_cast<size_t>(fileSize) * 8);
-    is.read(reinterpret_cast<char*>(bitBuffer.getBuffer()),
+    stream.read(reinterpret_cast<char*>(bitBuffer.getBuffer()),
             static_cast<std::streamsize>(bitBuffer.getByteSize()));
-    if (!is)
+    if (!stream)
         throw CppRuntimeException("readBufferFromFile: Failed to read '") << fileName << "'!";
 
     return bitBuffer;

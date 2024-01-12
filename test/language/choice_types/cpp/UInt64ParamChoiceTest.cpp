@@ -67,7 +67,7 @@ TEST_F(UInt64ParamChoiceTest, bitStreamReaderConstructor)
     zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     UInt64ParamChoice uint64ParamChoice(reader, selector);
     ASSERT_EQ(selector, uint64ParamChoice.getSelector());
-    ASSERT_EQ(value, uint64ParamChoice.getA());
+    ASSERT_EQ(value, uint64ParamChoice.getValueA());
 }
 
 TEST_F(UInt64ParamChoiceTest, copyConstructor)
@@ -76,11 +76,11 @@ TEST_F(UInt64ParamChoiceTest, copyConstructor)
     UInt64ParamChoice uint64ParamChoice;
     uint64ParamChoice.initialize(selector);
     const int8_t value = 99;
-    uint64ParamChoice.setA(value);
+    uint64ParamChoice.setValueA(value);
 
     const UInt64ParamChoice uint64ParamChoiceCopy(uint64ParamChoice);
     ASSERT_EQ(selector, uint64ParamChoiceCopy.getSelector());
-    ASSERT_EQ(value, uint64ParamChoiceCopy.getA());
+    ASSERT_EQ(value, uint64ParamChoiceCopy.getValueA());
 }
 
 TEST_F(UInt64ParamChoiceTest, assignmentOperator)
@@ -89,12 +89,12 @@ TEST_F(UInt64ParamChoiceTest, assignmentOperator)
     UInt64ParamChoice uint64ParamChoice;
     uint64ParamChoice.initialize(selector);
     const int16_t value = 234;
-    uint64ParamChoice.setB(value);
+    uint64ParamChoice.setValueB(value);
 
     UInt64ParamChoice uint64ParamChoiceCopy;
     uint64ParamChoiceCopy = uint64ParamChoice;
     ASSERT_EQ(selector, uint64ParamChoiceCopy.getSelector());
-    ASSERT_EQ(value, uint64ParamChoiceCopy.getB());
+    ASSERT_EQ(value, uint64ParamChoiceCopy.getValueB());
 }
 
 TEST_F(UInt64ParamChoiceTest, moveConstructor)
@@ -103,11 +103,11 @@ TEST_F(UInt64ParamChoiceTest, moveConstructor)
     UInt64ParamChoice uint64ParamChoice;
     uint64ParamChoice.initialize(selector);
     const int8_t value = 99;
-    uint64ParamChoice.setA(value);
+    uint64ParamChoice.setValueA(value);
 
     const UInt64ParamChoice uint64ParamChoiceMoved(std::move(uint64ParamChoice));
     ASSERT_EQ(selector, uint64ParamChoiceMoved.getSelector());
-    ASSERT_EQ(value, uint64ParamChoiceMoved.getA());
+    ASSERT_EQ(value, uint64ParamChoiceMoved.getValueA());
 }
 
 TEST_F(UInt64ParamChoiceTest, moveAssignmentOperator)
@@ -116,12 +116,12 @@ TEST_F(UInt64ParamChoiceTest, moveAssignmentOperator)
     UInt64ParamChoice uint64ParamChoice;
     uint64ParamChoice.initialize(selector);
     const int16_t value = 234;
-    uint64ParamChoice.setB(value);
+    uint64ParamChoice.setValueB(value);
 
     UInt64ParamChoice uint64ParamChoiceMoved;
     uint64ParamChoiceMoved = std::move(uint64ParamChoice);
     ASSERT_EQ(selector, uint64ParamChoiceMoved.getSelector());
-    ASSERT_EQ(value, uint64ParamChoiceMoved.getB());
+    ASSERT_EQ(value, uint64ParamChoiceMoved.getValueB());
 }
 
 TEST_F(UInt64ParamChoiceTest, propagateAllocatorCopyConstructor)
@@ -130,12 +130,12 @@ TEST_F(UInt64ParamChoiceTest, propagateAllocatorCopyConstructor)
     UInt64ParamChoice uint64ParamChoice;
     uint64ParamChoice.initialize(selector);
     const int8_t value = 99;
-    uint64ParamChoice.setA(value);
+    uint64ParamChoice.setValueA(value);
 
     const UInt64ParamChoice uint64ParamChoiceCopy(
             zserio::PropagateAllocator, uint64ParamChoice, UInt64ParamChoice::allocator_type());
     ASSERT_EQ(selector, uint64ParamChoiceCopy.getSelector());
-    ASSERT_EQ(value, uint64ParamChoiceCopy.getA());
+    ASSERT_EQ(value, uint64ParamChoiceCopy.getValueA());
 }
 
 TEST_F(UInt64ParamChoiceTest, initialize)
@@ -159,8 +159,8 @@ TEST_F(UInt64ParamChoiceTest, getSetA)
     UInt64ParamChoice uint64ParamChoice;
     uint64ParamChoice.initialize(VARIANT_A_SELECTOR);
     const int8_t value = 99;
-    uint64ParamChoice.setA(value);
-    ASSERT_EQ(value, uint64ParamChoice.getA());
+    uint64ParamChoice.setValueA(value);
+    ASSERT_EQ(value, uint64ParamChoice.getValueA());
 }
 
 TEST_F(UInt64ParamChoiceTest, getSetB)
@@ -168,8 +168,8 @@ TEST_F(UInt64ParamChoiceTest, getSetB)
     UInt64ParamChoice uint64ParamChoice;
     uint64ParamChoice.initialize(VARIANT_B_SELECTOR);
     const int16_t value = 234;
-    uint64ParamChoice.setB(value);
-    ASSERT_EQ(value, uint64ParamChoice.getB());
+    uint64ParamChoice.setValueB(value);
+    ASSERT_EQ(value, uint64ParamChoice.getValueB());
 }
 
 TEST_F(UInt64ParamChoiceTest, getSetC)
@@ -177,21 +177,21 @@ TEST_F(UInt64ParamChoiceTest, getSetC)
     UInt64ParamChoice uint64ParamChoice;
     uint64ParamChoice.initialize(VARIANT_C_SELECTOR);
     const int32_t value = 23456;
-    uint64ParamChoice.setC(value);
-    ASSERT_EQ(value, uint64ParamChoice.getC());
+    uint64ParamChoice.setValueC(value);
+    ASSERT_EQ(value, uint64ParamChoice.getValueC());
 }
 
 TEST_F(UInt64ParamChoiceTest, choiceTag)
 {
     UInt64ParamChoice uint64ParamChoice;
     uint64ParamChoice.initialize(VARIANT_A_SELECTOR);
-    ASSERT_EQ(UInt64ParamChoice::CHOICE_a, uint64ParamChoice.choiceTag());
+    ASSERT_EQ(UInt64ParamChoice::CHOICE_valueA, uint64ParamChoice.choiceTag());
 
     uint64ParamChoice.initialize(VARIANT_B_SELECTOR);
-    ASSERT_EQ(UInt64ParamChoice::CHOICE_b, uint64ParamChoice.choiceTag());
+    ASSERT_EQ(UInt64ParamChoice::CHOICE_valueB, uint64ParamChoice.choiceTag());
 
     uint64ParamChoice.initialize(VARIANT_C_SELECTOR);
-    ASSERT_EQ(UInt64ParamChoice::CHOICE_c, uint64ParamChoice.choiceTag());
+    ASSERT_EQ(UInt64ParamChoice::CHOICE_valueC, uint64ParamChoice.choiceTag());
 
     uint64ParamChoice.initialize(EMPTY_SELECTOR);
     ASSERT_EQ(UInt64ParamChoice::UNDEFINED_CHOICE, uint64ParamChoice.choiceTag());
@@ -229,14 +229,14 @@ TEST_F(UInt64ParamChoiceTest, operatorEquality)
     ASSERT_TRUE(uint64ParamChoice1 == uint64ParamChoice2);
 
     const int8_t value = 99;
-    uint64ParamChoice1.setA(value);
+    uint64ParamChoice1.setValueA(value);
     ASSERT_FALSE(uint64ParamChoice1 == uint64ParamChoice2);
 
-    uint64ParamChoice2.setA(value);
+    uint64ParamChoice2.setValueA(value);
     ASSERT_TRUE(uint64ParamChoice1 == uint64ParamChoice2);
 
     const int8_t diffValue = value + 1;
-    uint64ParamChoice2.setA(diffValue);
+    uint64ParamChoice2.setValueA(diffValue);
     ASSERT_FALSE(uint64ParamChoice1 == uint64ParamChoice2);
 }
 
@@ -254,16 +254,16 @@ TEST_F(UInt64ParamChoiceTest, operatorLessThan)
     ASSERT_FALSE(uint64ParamChoice2 < uint64ParamChoice1);
 
     const int8_t value = 99;
-    uint64ParamChoice1.setA(value);
+    uint64ParamChoice1.setValueA(value);
     ASSERT_FALSE(uint64ParamChoice1 < uint64ParamChoice2);
     ASSERT_TRUE(uint64ParamChoice2 < uint64ParamChoice1);
 
-    uint64ParamChoice2.setA(value);
+    uint64ParamChoice2.setValueA(value);
     ASSERT_FALSE(uint64ParamChoice1 < uint64ParamChoice2);
     ASSERT_FALSE(uint64ParamChoice2 < uint64ParamChoice1);
 
     const int8_t diffValue = value + 1;
-    uint64ParamChoice2.setA(diffValue);
+    uint64ParamChoice2.setValueA(diffValue);
     ASSERT_TRUE(uint64ParamChoice1 < uint64ParamChoice2);
     ASSERT_FALSE(uint64ParamChoice2 < uint64ParamChoice1);
 }
@@ -277,14 +277,14 @@ TEST_F(UInt64ParamChoiceTest, hashCode)
     ASSERT_EQ(uint64ParamChoice1.hashCode(), uint64ParamChoice2.hashCode());
 
     const int8_t value = 99;
-    uint64ParamChoice1.setA(value);
+    uint64ParamChoice1.setValueA(value);
     ASSERT_NE(uint64ParamChoice1.hashCode(), uint64ParamChoice2.hashCode());
 
-    uint64ParamChoice2.setA(value);
+    uint64ParamChoice2.setValueA(value);
     ASSERT_EQ(uint64ParamChoice1.hashCode(), uint64ParamChoice2.hashCode());
 
     const int8_t diffValue = value + 1;
-    uint64ParamChoice2.setA(diffValue);
+    uint64ParamChoice2.setValueA(diffValue);
     ASSERT_NE(uint64ParamChoice1.hashCode(), uint64ParamChoice2.hashCode());
 
     // use hardcoded values to check that the hash code is stable
@@ -298,25 +298,25 @@ TEST_F(UInt64ParamChoiceTest, writeRead)
     UInt64ParamChoice uint64ParamChoiceA;
     uint64ParamChoiceA.initialize(selector);
     const int8_t valueA = 99;
-    uint64ParamChoiceA.setA(valueA);
+    uint64ParamChoiceA.setValueA(valueA);
     zserio::BitStreamWriter writerA(bitBuffer);
     uint64ParamChoiceA.write(writerA);
 
     zserio::BitStreamReader readerA(writerA.getWriteBuffer(), writerA.getBitPosition(), zserio::BitsTag());
     UInt64ParamChoice readUInt64ParamChoiceA(readerA, selector);
-    ASSERT_EQ(valueA, readUInt64ParamChoiceA.getA());
+    ASSERT_EQ(valueA, readUInt64ParamChoiceA.getValueA());
 
     selector = VARIANT_B_SELECTOR;
     UInt64ParamChoice uint64ParamChoiceB;
     uint64ParamChoiceB.initialize(selector);
     const int16_t valueB = 234;
-    uint64ParamChoiceB.setB(valueB);
+    uint64ParamChoiceB.setValueB(valueB);
     zserio::BitStreamWriter writerB(bitBuffer);
     uint64ParamChoiceB.write(writerB);
 
     zserio::BitStreamReader readerB(writerB.getWriteBuffer(), writerB.getBitPosition(), zserio::BitsTag());
     UInt64ParamChoice readUInt64ParamChoiceB(readerB, selector);
-    ASSERT_EQ(valueB, readUInt64ParamChoiceB.getB());
+    ASSERT_EQ(valueB, readUInt64ParamChoiceB.getValueB());
 }
 
 TEST_F(UInt64ParamChoiceTest, writeReadFile)
@@ -324,24 +324,24 @@ TEST_F(UInt64ParamChoiceTest, writeReadFile)
     uint64_t selector = VARIANT_A_SELECTOR;
     UInt64ParamChoice uint64ParamChoiceA;
     const int8_t valueA = 99;
-    uint64ParamChoiceA.setA(valueA);
+    uint64ParamChoiceA.setValueA(valueA);
     const std::string fileNameA = BLOB_NAME_BASE + "a.blob";
     zserio::serializeToFile(uint64ParamChoiceA, fileNameA, selector);
 
     const UInt64ParamChoice readUInt64ParamChoiceA =
             zserio::deserializeFromFile<UInt64ParamChoice>(fileNameA, selector);
-    ASSERT_EQ(valueA, readUInt64ParamChoiceA.getA());
+    ASSERT_EQ(valueA, readUInt64ParamChoiceA.getValueA());
 
     selector = VARIANT_B_SELECTOR;
     UInt64ParamChoice uint64ParamChoiceB;
     const int16_t valueB = 234;
-    uint64ParamChoiceB.setB(valueB);
+    uint64ParamChoiceB.setValueB(valueB);
     const std::string fileNameB = BLOB_NAME_BASE + "b.blob";
     zserio::serializeToFile(uint64ParamChoiceB, fileNameB, selector);
 
     const UInt64ParamChoice readUInt64ParamChoiceB =
             zserio::deserializeFromFile<UInt64ParamChoice>(fileNameB, selector);
-    ASSERT_EQ(valueB, readUInt64ParamChoiceB.getB());
+    ASSERT_EQ(valueB, readUInt64ParamChoiceB.getValueB());
 }
 
 } // namespace uint64_param_choice

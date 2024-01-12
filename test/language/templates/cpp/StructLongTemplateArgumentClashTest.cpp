@@ -8,13 +8,13 @@ namespace struct_long_template_argument_clash
 
 TEST(StructLongTemplateArgumentClashTest, readWrite)
 {
-    const TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_Th_619A1B35 t1(
+    const TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_Th_619A1B35 struct1(
             ThisIsVeryVeryVeryLongNamedStructure("StringT"), ThisIsVeryVeryVeryLongNamedStructure("StringU"),
             ThisIsVeryVeryVeryLongNamedStructure("StringV"));
-    const TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_Th_1B45EF08 t2(
+    const TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_Th_1B45EF08 struct2(
             ThisIsVeryVeryVeryLongNamedStructure("StringT"), ThisIsVeryVeryVeryLongNamedStructure("StringU"),
             ThisIsVeryVeryVeryLongNamedStructure_(42));
-    StructLongTemplateArgumentClash structLongTemplateArgumentClash(t1, t2);
+    StructLongTemplateArgumentClash structLongTemplateArgumentClash(struct1, struct2);
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
     zserio::BitStreamWriter writer(bitBuffer);

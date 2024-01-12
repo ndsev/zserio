@@ -31,18 +31,18 @@ class ChoiceArrayTest(Functions.TestCase):
         writer.write_bits(self.NUM_ITEMS, 16)
 
         for item in self.ITEMS:
-            writer.write_bits(item.a, 8)
-            writer.write_bits(item.b, 8)
+            writer.write_bits(item.value_a, 8)
+            writer.write_bits(item.value_b, 8)
 
         isExplicit = 1 if pos >= self.NUM_ITEMS else 0
         writer.write_bits(isExplicit, 8)
         if isExplicit != 0:
-            writer.write_bits(self.EXPLICIT_ITEM.a, 8)
-            writer.write_bits(self.EXPLICIT_ITEM.b, 8)
-            elementA = self.EXPLICIT_ITEM.a
+            writer.write_bits(self.EXPLICIT_ITEM.value_a, 8)
+            writer.write_bits(self.EXPLICIT_ITEM.value_b, 8)
+            elementA = self.EXPLICIT_ITEM.value_a
         else:
             writer.write_bits(pos, 16)
-            elementA = self.ITEMS[pos].a
+            elementA = self.ITEMS[pos].value_a
 
         if elementA == self.ELEMENT_A_FOR_EXTRA_VALUE:
             writer.write_signed_bits(self.EXTRA_VALUE, 32)
@@ -62,10 +62,10 @@ class ChoiceArrayTest(Functions.TestCase):
         itemRef = self.api.ItemRef(inner.is_explicit, outerArray)
         if isExplicit != 0:
             itemRef.item = self.EXPLICIT_ITEM
-            elementA = self.EXPLICIT_ITEM.a
+            elementA = self.EXPLICIT_ITEM.value_a
         else:
             itemRef.pos = pos
-            elementA = self.ITEMS[pos].a
+            elementA = self.ITEMS[pos].value_a
         inner.ref = itemRef
 
         if elementA == self.ELEMENT_A_FOR_EXTRA_VALUE:

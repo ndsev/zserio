@@ -33,13 +33,13 @@ namespace detail
 
 template <typename T, typename WALK_FILTER, typename ALLOC>
 void toJsonStream(
-        const T& object, std::ostream& os, uint8_t indent, WALK_FILTER&& walkFilter, const ALLOC& allocator)
+        const T& object, std::ostream& stream, uint8_t indent, WALK_FILTER&& walkFilter, const ALLOC& allocator)
 {
     static_assert(has_reflectable<T>::value,
             "DebugStringUtil.toJsonStream: "
             "Zserio object must have reflections enabled (see zserio option -withReflectionCode)!");
 
-    BasicJsonWriter<ALLOC> jsonWriter(os, indent);
+    BasicJsonWriter<ALLOC> jsonWriter(stream, indent);
     BasicWalker<ALLOC> walker(jsonWriter, walkFilter);
     walker.walk(object.reflectable(allocator));
 }
@@ -47,23 +47,23 @@ void toJsonStream(
 template <typename T, typename WALK_FILTER, typename ALLOC>
 string<ALLOC> toJsonString(const T& object, uint8_t indent, WALK_FILTER&& walkFilter, const ALLOC& allocator)
 {
-    auto os = std::basic_ostringstream<char, std::char_traits<char>, RebindAlloc<ALLOC, char>>(
+    auto stream = std::basic_ostringstream<char, std::char_traits<char>, RebindAlloc<ALLOC, char>>(
             string<ALLOC>(allocator));
-    detail::toJsonStream(object, os, indent, walkFilter, allocator);
-    return os.str();
+    detail::toJsonStream(object, stream, indent, walkFilter, allocator);
+    return stream.str();
 }
 
 template <typename T, typename WALK_FILTER, typename ALLOC>
 void toJsonFile(const T& object, const string<ALLOC>& fileName, uint8_t indent, WALK_FILTER&& walkFilter,
         const ALLOC& allocator)
 {
-    std::ofstream os = std::ofstream(fileName.c_str(), std::ios::out | std::ios::trunc);
-    if (!os)
+    std::ofstream stream = std::ofstream(fileName.c_str(), std::ios::out | std::ios::trunc);
+    if (!stream)
         throw CppRuntimeException("DebugStringUtil.toJsonFile: Failed to open '") << fileName << "'!";
 
-    detail::toJsonStream(object, os, indent, walkFilter, allocator);
+    detail::toJsonStream(object, stream, indent, walkFilter, allocator);
 
-    if (!os)
+    if (!stream)
         throw CppRuntimeException("DebugStringUtil.toJsonFile: Failed to write '") << fileName << "'!";
 }
 
@@ -87,19 +87,19 @@ struct DebugStringTraits
  *     #include <zserio/DebugStringUtil.h>
  *
  *     SomeZserioObject object;
- *     std::ostringstream os;
- *     zserio::toJsonStream(object, os);
+ *     std::ostringstream stream;
+ *     zserio::toJsonStream(object, stream);
  * \endcode
  *
  * \param object Zserio object to use.
- * \param os Output stream to use.
+ * \param stream Output stream to use.
  * \param allocator Allocator to use.
  */
 template <typename T, typename ALLOC = typename T::allocator_type,
         typename std::enable_if<is_allocator<ALLOC>::value, int>::type = 0>
-void toJsonStream(const T& object, std::ostream& os, const ALLOC& allocator = ALLOC())
+void toJsonStream(const T& object, std::ostream& stream, const ALLOC& allocator = ALLOC())
 {
-    detail::toJsonStream(object, os, 4, BasicDefaultWalkFilter<ALLOC>(), allocator);
+    detail::toJsonStream(object, stream, 4, BasicDefaultWalkFilter<ALLOC>(), allocator);
 }
 
 /**
@@ -113,21 +113,21 @@ void toJsonStream(const T& object, std::ostream& os, const ALLOC& allocator = AL
  *     #include <zserio/DebugStringUtil.h>
  *
  *     SomeZserioObject object;
- *     std::ostringstream os;
+ *     std::ostringstream stream;
  *     const uint8_t indent = 4;
- *     zserio::toJsonStream(object, os, indent);
+ *     zserio::toJsonStream(object, stream, indent);
  * \endcode
  *
  * \param object Zserio object to use.
- * \param os Output stream to use.
+ * \param stream Output stream to use.
  * \param indent Indent argument for JsonWriter.
  * \param allocator Allocator to use.
  */
 template <typename T, typename ALLOC = typename T::allocator_type,
         typename std::enable_if<is_allocator<ALLOC>::value, int>::type = 0>
-void toJsonStream(const T& object, std::ostream& os, uint8_t indent, const ALLOC& allocator = ALLOC())
+void toJsonStream(const T& object, std::ostream& stream, uint8_t indent, const ALLOC& allocator = ALLOC())
 {
-    detail::toJsonStream(object, os, indent, BasicDefaultWalkFilter<ALLOC>(), allocator);
+    detail::toJsonStream(object, stream, indent, BasicDefaultWalkFilter<ALLOC>(), allocator);
 }
 
 /**
@@ -142,13 +142,13 @@ void toJsonStream(const T& object, std::ostream& os, uint8_t indent, const ALLOC
  *     #include <zserio/Walker.h>
  *
  *     SomeZserioObject object;
- *     std::ostringstream os;
+ *     std::ostringstream stream;
  *     zserio::ArrayLengthWalkFilter walkFilter(5);
- *     zserio::toJsonStream(object, os, walkFilter);
+ *     zserio::toJsonStream(object, stream, walkFilter);
  * \endcode
  *
  * \param object Zserio object to use.
- * \param os Output stream to use.
+ * \param stream Output stream to use.
  * \param walkFilter WalkFilter to use by Walker.
  * \param allocator Allocator to use.
  */
@@ -156,9 +156,10 @@ template <typename T, typename WALK_FILTER, typename ALLOC = typename T::allocat
         typename std::enable_if<
                 std::is_base_of<IBasicWalkFilter<ALLOC>, typename std::decay<WALK_FILTER>::type>::value,
                 int>::type = 0>
-void toJsonStream(const T& object, std::ostream& os, WALK_FILTER&& walkFilter, const ALLOC& allocator = ALLOC())
+void toJsonStream(
+        const T& object, std::ostream& stream, WALK_FILTER&& walkFilter, const ALLOC& allocator = ALLOC())
 {
-    detail::toJsonStream(object, os, 4, walkFilter, allocator);
+    detail::toJsonStream(object, stream, 4, walkFilter, allocator);
 }
 
 /**
@@ -173,14 +174,14 @@ void toJsonStream(const T& object, std::ostream& os, WALK_FILTER&& walkFilter, c
  *     #include <zserio/Walker.h>
  *
  *     SomeZserioObject object;
- *     std::ostringstream os;
+ *     std::ostringstream stream;
  *     const uint8_t indent = 4;
  *     zserio::ArrayLengthWalkFilter walkFilter(5);
- *     zserio::toJsonStream(object, os, indent, walkFilter);
+ *     zserio::toJsonStream(object, stream, indent, walkFilter);
  * \endcode
  *
  * \param object Zserio object to use.
- * \param os Output stream to use.
+ * \param stream Output stream to use.
  * \param indent Indent argument for JsonWriter.
  * \param walkFilter WalkFilter to use by Walker.
  * \param allocator Allocator to use.
@@ -189,10 +190,10 @@ template <typename T, typename WALK_FILTER, typename ALLOC = typename T::allocat
         typename std::enable_if<
                 std::is_base_of<IBasicWalkFilter<ALLOC>, typename std::decay<WALK_FILTER>::type>::value,
                 int>::type = 0>
-void toJsonStream(const T& object, std::ostream& os, uint8_t indent, WALK_FILTER&& walkFilter,
+void toJsonStream(const T& object, std::ostream& stream, uint8_t indent, WALK_FILTER&& walkFilter,
         const ALLOC& allocator = ALLOC())
 {
-    detail::toJsonStream(object, os, indent, walkFilter, allocator);
+    detail::toJsonStream(object, stream, indent, walkFilter, allocator);
 }
 
 /**
@@ -513,8 +514,8 @@ template <typename ALLOC = std::allocator<uint8_t>>
 typename detail::DebugStringTraits<ALLOC>::ReflectablePtr fromJsonString(
         const IBasicTypeInfo<ALLOC>& typeInfo, const string<ALLOC>& json, const ALLOC& allocator = ALLOC())
 {
-    std::basic_istringstream<char, std::char_traits<char>, RebindAlloc<ALLOC, char>> is(json);
-    return fromJsonStream(typeInfo, is, allocator);
+    std::basic_istringstream<char, std::char_traits<char>, RebindAlloc<ALLOC, char>> stream(json);
+    return fromJsonStream(typeInfo, stream, allocator);
 }
 
 /**

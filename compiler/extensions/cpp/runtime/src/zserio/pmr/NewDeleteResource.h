@@ -23,9 +23,9 @@ private:
         return ::operator new(bytes);
     }
 
-    void doDeallocate(void* p, size_t, size_t) override
+    void doDeallocate(void* resource, size_t, size_t) override
     {
-        ::operator delete(p);
+        ::operator delete(resource);
     }
 
     bool doIsEqual(const MemoryResource& other) const noexcept override

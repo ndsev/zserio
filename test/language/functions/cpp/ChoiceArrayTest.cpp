@@ -23,12 +23,12 @@ public:
         const std::array<uint8_t, 3> elementsB = {13, 18, 14};
         for (size_t i = 0; i < m_items.size(); ++i)
         {
-            m_items[i].setA(elementsA[i]);
-            m_items[i].setB(elementsB[i]);
+            m_items[i].setValueA(elementsA[i]);
+            m_items[i].setValueB(elementsB[i]);
         }
 
-        m_explicitItem.setA(27);
-        m_explicitItem.setB(29);
+        m_explicitItem.setValueA(27);
+        m_explicitItem.setValueB(29);
     }
 
 protected:
@@ -38,8 +38,8 @@ protected:
 
         for (Item item : m_items)
         {
-            writer.writeBits(item.getA(), 8);
-            writer.writeBits(item.getB(), 8);
+            writer.writeBits(item.getValueA(), 8);
+            writer.writeBits(item.getValueB(), 8);
         }
 
         const uint8_t isExplicit = (pos >= m_items.size()) ? 1 : 0;
@@ -47,14 +47,14 @@ protected:
         uint8_t elementA = 0;
         if (isExplicit != 0)
         {
-            writer.writeBits(m_explicitItem.getA(), 8);
-            writer.writeBits(m_explicitItem.getB(), 8);
-            elementA = m_explicitItem.getA();
+            writer.writeBits(m_explicitItem.getValueA(), 8);
+            writer.writeBits(m_explicitItem.getValueB(), 8);
+            elementA = m_explicitItem.getValueA();
         }
         else
         {
             writer.writeBits(pos, 16);
-            elementA = m_items[pos].getA();
+            elementA = m_items[pos].getValueA();
         }
 
         if (elementA == ELEMENT_A_FOR_EXTRA_VALUE)
@@ -76,12 +76,12 @@ protected:
         if (isExplicit != 0)
         {
             itemRef.setItem(m_explicitItem);
-            elementA = m_explicitItem.getA();
+            elementA = m_explicitItem.getValueA();
         }
         else
         {
             itemRef.setPos(pos);
-            elementA = m_items[pos].getA();
+            elementA = m_items[pos].getValueA();
         }
         if (elementA == ELEMENT_A_FOR_EXTRA_VALUE)
             inner.setExtra(EXTRA_VALUE);

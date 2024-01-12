@@ -64,9 +64,9 @@ TEST_F(SqlTableTemplatedFieldTest, readWrite)
     TemplatedTable_Union::Row unionRow1;
     unionRow1.setId(0);
     {
-        Union u;
-        u.setValueString("string");
-        unionRow1.setData(Data_Union{std::move(u)});
+        Union unionField;
+        unionField.setValueString("string");
+        unionRow1.setData(Data_Union{std::move(unionField)});
     }
     unionTableRows.push_back(unionRow1);
     unionTable.write(unionTableRows);

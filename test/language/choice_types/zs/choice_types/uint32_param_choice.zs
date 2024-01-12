@@ -8,12 +8,12 @@ subtype int32 VariantC;
 choice UInt32ParamChoice(uint32 selector) on selector
 {
     case 1:
-        VariantA  a;
+        VariantA  valueA;
 
     case 2:
     case 3:
     case 4:
-        VariantB  b;
+        VariantB  valueB;
 
     case 5:
     case 6:
@@ -21,5 +21,5 @@ choice UInt32ParamChoice(uint32 selector) on selector
         ;
 
     default:
-        VariantC  c;
+        VariantC  valueC;
 };

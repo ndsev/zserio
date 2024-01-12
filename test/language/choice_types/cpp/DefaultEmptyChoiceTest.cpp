@@ -49,17 +49,17 @@ TEST_F(DefaultEmptyChoiceTest, bitStreamReaderConstructor)
     zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     const DefaultEmptyChoice defaultEmptyChoice(reader, tag);
     ASSERT_EQ(tag, defaultEmptyChoice.getTag());
-    ASSERT_EQ(value, defaultEmptyChoice.getA());
+    ASSERT_EQ(value, defaultEmptyChoice.getValueA());
 }
 
 TEST_F(DefaultEmptyChoiceTest, choiceTag)
 {
     DefaultEmptyChoice defaultEmptyChoice;
     defaultEmptyChoice.initialize(VARIANT_A_SELECTOR);
-    ASSERT_EQ(DefaultEmptyChoice::CHOICE_a, defaultEmptyChoice.choiceTag());
+    ASSERT_EQ(DefaultEmptyChoice::CHOICE_valueA, defaultEmptyChoice.choiceTag());
 
     defaultEmptyChoice.initialize(VARIANT_B_SELECTOR);
-    ASSERT_EQ(DefaultEmptyChoice::CHOICE_b, defaultEmptyChoice.choiceTag());
+    ASSERT_EQ(DefaultEmptyChoice::CHOICE_valueB, defaultEmptyChoice.choiceTag());
 
     defaultEmptyChoice.initialize(DEFAULT_SELECTOR);
     ASSERT_EQ(DefaultEmptyChoice::UNDEFINED_CHOICE, defaultEmptyChoice.choiceTag());
@@ -72,24 +72,24 @@ TEST_F(DefaultEmptyChoiceTest, write)
     defaultEmptyChoice.initialize(tagA);
 
     const VariantA valueA = 99;
-    defaultEmptyChoice.setA(valueA);
+    defaultEmptyChoice.setValueA(valueA);
     zserio::BitStreamWriter writerA(bitBuffer);
     defaultEmptyChoice.write(writerA);
 
     zserio::BitStreamReader readerA(writerA.getWriteBuffer(), writerA.getBitPosition(), zserio::BitsTag());
     DefaultEmptyChoice readDefaultEmptyChoiceA(readerA, tagA);
-    ASSERT_EQ(valueA, readDefaultEmptyChoiceA.getA());
+    ASSERT_EQ(valueA, readDefaultEmptyChoiceA.getValueA());
 
     const uint8_t tagB = VARIANT_B_SELECTOR;
     defaultEmptyChoice.initialize(tagB);
     const VariantB valueB = 234;
-    defaultEmptyChoice.setB(valueB);
+    defaultEmptyChoice.setValueB(valueB);
     zserio::BitStreamWriter writerB(bitBuffer);
     defaultEmptyChoice.write(writerB);
 
     zserio::BitStreamReader readerB(writerB.getWriteBuffer(), writerB.getBitPosition(), zserio::BitsTag());
     DefaultEmptyChoice readDefaultEmptyChoiceB(readerB, tagB);
-    ASSERT_EQ(valueB, readDefaultEmptyChoiceB.getB());
+    ASSERT_EQ(valueB, readDefaultEmptyChoiceB.getValueB());
 
     const uint8_t tagDefault = DEFAULT_SELECTOR;
     defaultEmptyChoice.initialize(tagDefault);

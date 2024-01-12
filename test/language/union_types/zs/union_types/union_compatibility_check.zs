@@ -2,8 +2,8 @@ package union_types.union_compatibility_check;
 
 struct CoordXY
 {
-    uint32 x;
-    uint32 y;
+    uint32 coordX;
+    uint32 coordY;
 };
 
 union UnionVersion1
@@ -14,9 +14,9 @@ union UnionVersion1
 
 struct CoordXYZ
 {
-    uint32 x;
-    uint32 y;
-    float64 z;
+    uint32 coordX;
+    uint32 coordY;
+    float64 coordZ;
 };
 
 union UnionVersion2

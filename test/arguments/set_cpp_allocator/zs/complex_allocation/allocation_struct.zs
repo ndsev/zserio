@@ -13,8 +13,8 @@ struct AllocationStruct
 // PackingContextNode will allocate
 struct Element
 {
-    uint32 x;
-    uint32 y;
-    uint32 z;
+    uint32 valueX;
+    uint32 valueY;
+    uint32 valueZ;
 };
 

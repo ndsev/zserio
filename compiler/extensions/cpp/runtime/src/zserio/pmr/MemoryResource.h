@@ -64,17 +64,17 @@ public:
      *
      * Arguments shall match to prior call to allocate!
      *
-     * \param p Pointer to the storage to deallocate.
+     * \param storage Pointer to the storage to deallocate.
      * \param bytes Number of bytes to deallocate.
      * \param alignment Requested alignment.
      */
-    void deallocate(void* p, size_t bytes, size_t alignment = alignof(max_align_t))
+    void deallocate(void* storage, size_t bytes, size_t alignment = alignof(max_align_t))
     {
 #ifdef ZSERIO_MEMORY_RESOURCE_TRACING
-        std::cout << "MemoryResource::deallocate p=" << std::hex << p << std::dec << " bytes=" << bytes
+        std::cout << "MemoryResource::deallocate p=" << std::hex << storage << std::dec << " bytes=" << bytes
                   << " alignment=" << alignment << std::endl;
 #endif
-        doDeallocate(p, bytes, alignment);
+        doDeallocate(storage, bytes, alignment);
     }
 
     /**
@@ -107,15 +107,15 @@ private:
     virtual void* doAllocate(size_t bytes, size_t alignment) = 0;
 
     /**
-     * Deallocates the storage pointed to by p.
+     * Deallocates the storage pointed to by storage.
      *
      * Arguments shall match to prior call to doAllocate!
      *
-     * \param p Pointer to the storage to deallocate.
+     * \param storage Pointer to the storage to deallocate.
      * \param bytes Number of bytes to deallocate.
      * \param alignment Requested alignment.
      */
-    virtual void doDeallocate(void* p, size_t bytes, size_t alignment) = 0;
+    virtual void doDeallocate(void* storage, size_t bytes, size_t alignment) = 0;
 
     /**
      * Compares *this for equality with other.

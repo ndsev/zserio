@@ -94,47 +94,47 @@ TEST(JsonTokenizerTest, longInputSplitInNumber)
     ASSERT_EQ(1, tokenizer.getLine());
     ASSERT_EQ(1, tokenizer.getColumn());
 
-    size_t i = 0;
-    for (; i < 4000; ++i)
+    size_t number = 0;
+    for (; number < 4000; ++number)
     {
-        ASSERT_EQ(JsonToken::VALUE, tokenizer.next()) << "i=" << i;
-        ASSERT_EQ("key", tokenizer.getValue().get<string<>>()) << "i=" << i;
-        ASSERT_EQ(1 + i + 1, tokenizer.getLine()) << "i=" << i;
-        ASSERT_EQ(3, tokenizer.getColumn()) << "i=" << i;
+        ASSERT_EQ(JsonToken::VALUE, tokenizer.next()) << "i=" << number;
+        ASSERT_EQ("key", tokenizer.getValue().get<string<>>()) << "i=" << number;
+        ASSERT_EQ(1 + number + 1, tokenizer.getLine()) << "i=" << number;
+        ASSERT_EQ(3, tokenizer.getColumn()) << "i=" << number;
 
-        ASSERT_EQ(JsonToken::KEY_SEPARATOR, tokenizer.next()) << "i=" << i;
-        ASSERT_EQ(':', tokenizer.getValue().get<char>()) << "i=" << i;
-        ASSERT_EQ(1 + i + 1, tokenizer.getLine()) << "i=" << i;
-        ASSERT_EQ(8, tokenizer.getColumn()) << "i=" << i;
+        ASSERT_EQ(JsonToken::KEY_SEPARATOR, tokenizer.next()) << "i=" << number;
+        ASSERT_EQ(':', tokenizer.getValue().get<char>()) << "i=" << number;
+        ASSERT_EQ(1 + number + 1, tokenizer.getLine()) << "i=" << number;
+        ASSERT_EQ(8, tokenizer.getColumn()) << "i=" << number;
 
-        ASSERT_EQ(JsonToken::VALUE, tokenizer.next()) << "i=" << i;
-        ASSERT_EQ(100000000, tokenizer.getValue().get<uint64_t>()) << "i=" << i;
-        ASSERT_EQ(1 + i + 1, tokenizer.getLine()) << "i=" << i;
-        ASSERT_EQ(10, tokenizer.getColumn()) << "i=" << i;
+        ASSERT_EQ(JsonToken::VALUE, tokenizer.next()) << "i=" << number;
+        ASSERT_EQ(100000000, tokenizer.getValue().get<uint64_t>()) << "i=" << number;
+        ASSERT_EQ(1 + number + 1, tokenizer.getLine()) << "i=" << number;
+        ASSERT_EQ(10, tokenizer.getColumn()) << "i=" << number;
 
-        ASSERT_EQ(JsonToken::ITEM_SEPARATOR, tokenizer.next()) << "i=" << i;
-        ASSERT_EQ(',', tokenizer.getValue().get<char>()) << "i=" << i;
-        ASSERT_EQ(1 + i + 1, tokenizer.getLine()) << "i=" << i;
-        ASSERT_EQ(19, tokenizer.getColumn()) << "i=" << i;
+        ASSERT_EQ(JsonToken::ITEM_SEPARATOR, tokenizer.next()) << "i=" << number;
+        ASSERT_EQ(',', tokenizer.getValue().get<char>()) << "i=" << number;
+        ASSERT_EQ(1 + number + 1, tokenizer.getLine()) << "i=" << number;
+        ASSERT_EQ(19, tokenizer.getColumn()) << "i=" << number;
     }
 
-    ASSERT_EQ(JsonToken::VALUE, tokenizer.next()) << "i=" << i;
-    ASSERT_EQ("key", tokenizer.getValue().get<string<>>()) << "i=" << i;
-    ASSERT_EQ(1 + i + 1, tokenizer.getLine()) << "i=" << i;
-    ASSERT_EQ(3, tokenizer.getColumn()) << "i=" << i;
+    ASSERT_EQ(JsonToken::VALUE, tokenizer.next()) << "i=" << number;
+    ASSERT_EQ("key", tokenizer.getValue().get<string<>>()) << "i=" << number;
+    ASSERT_EQ(1 + number + 1, tokenizer.getLine()) << "i=" << number;
+    ASSERT_EQ(3, tokenizer.getColumn()) << "i=" << number;
 
-    ASSERT_EQ(JsonToken::KEY_SEPARATOR, tokenizer.next()) << "i=" << i;
-    ASSERT_EQ(':', tokenizer.getValue().get<char>()) << "i=" << i;
-    ASSERT_EQ(1 + i + 1, tokenizer.getLine()) << "i=" << i;
-    ASSERT_EQ(8, tokenizer.getColumn()) << "i=" << i;
+    ASSERT_EQ(JsonToken::KEY_SEPARATOR, tokenizer.next()) << "i=" << number;
+    ASSERT_EQ(':', tokenizer.getValue().get<char>()) << "i=" << number;
+    ASSERT_EQ(1 + number + 1, tokenizer.getLine()) << "i=" << number;
+    ASSERT_EQ(8, tokenizer.getColumn()) << "i=" << number;
 
-    ASSERT_EQ(JsonToken::VALUE, tokenizer.next()) << "i=" << i;
-    ASSERT_EQ(100000000, tokenizer.getValue().get<uint64_t>()) << "i=" << i;
-    ASSERT_EQ(1 + i + 1, tokenizer.getLine()) << "i=" << i;
-    ASSERT_EQ(10, tokenizer.getColumn()) << "i=" << i;
+    ASSERT_EQ(JsonToken::VALUE, tokenizer.next()) << "i=" << number;
+    ASSERT_EQ(100000000, tokenizer.getValue().get<uint64_t>()) << "i=" << number;
+    ASSERT_EQ(1 + number + 1, tokenizer.getLine()) << "i=" << number;
+    ASSERT_EQ(10, tokenizer.getColumn()) << "i=" << number;
 
     ASSERT_EQ(JsonToken::END_OBJECT, tokenizer.next());
-    ASSERT_EQ(1 + i + 2, tokenizer.getLine());
+    ASSERT_EQ(1 + number + 2, tokenizer.getLine());
     ASSERT_EQ(1, tokenizer.getColumn());
 }
 

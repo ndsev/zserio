@@ -28,10 +28,10 @@ private:
         return ::operator new(bytes);
     }
 
-    void doDeallocate(void* p, size_t, size_t) override
+    void doDeallocate(void* memory, size_t, size_t) override
     {
         ++m_numDeallocs;
-        ::operator delete(p);
+        ::operator delete(memory);
     }
 
     bool doIsEqual(const MemoryResource& other) const noexcept override
@@ -50,9 +50,9 @@ private:
 TEST(MemoryResourceTest, allocateDeallocate)
 {
     TestResource res(1);
-    auto p = res.allocate(10);
+    auto memory = res.allocate(10);
     EXPECT_EQ(1, res.numAllocs());
-    res.deallocate(p, 10);
+    res.deallocate(memory, 10);
     EXPECT_EQ(1, res.numDeallocs());
 }
 

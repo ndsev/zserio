@@ -21,51 +21,51 @@ public:
     /**
      * Encodes JSON null value to the given stream.
      *
-     * \param os Stream to use.
+     * \param stream Stream to use.
      */
-    static void encodeNull(std::ostream& os);
+    static void encodeNull(std::ostream& stream);
 
     /**
      * Encodes JSON boolean value to the given stream.
      *
-     * \param os Stream to use.
+     * \param stream Stream to use.
      * \param value Value to encode.
      */
-    static void encodeBool(std::ostream& os, bool value);
+    static void encodeBool(std::ostream& stream, bool value);
 
     /**
      * Encodes JSON integral value to the given stream.
      *
-     * \param os Stream to use.
+     * \param stream Stream to use.
      * \param value Value to encode.
      */
     template <typename T>
-    static void encodeIntegral(std::ostream& os, T value);
+    static void encodeIntegral(std::ostream& stream, T value);
 
     /**
      * Encodes JSON floating-point value to the given stream.
      *
-     * \param os Stream to use.
+     * \param stream Stream to use.
      * \param value Value to encode.
      */
-    static void encodeFloatingPoint(std::ostream& os, double value);
+    static void encodeFloatingPoint(std::ostream& stream, double value);
 
     /**
      * Encodes JSON string value to the given stream.
      *
      * Note that this method performs escaping necessary to get a proper JSON string.
      *
-     * \param os Stream to use.
+     * \param stream Stream to use.
      * \param value Value to encode.
      */
-    static void encodeString(std::ostream& os, StringView value);
+    static void encodeString(std::ostream& stream, StringView value);
 };
 
 template <typename T>
-void JsonEncoder::encodeIntegral(std::ostream& os, T value)
+void JsonEncoder::encodeIntegral(std::ostream& stream, T value)
 {
     using U = typename std::conditional<std::is_signed<T>::value, int64_t, uint64_t>::type;
-    os << static_cast<U>(value);
+    stream << static_cast<U>(value);
 }
 
 } // namespace zserio

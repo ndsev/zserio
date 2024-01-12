@@ -35,20 +35,20 @@ public class UInt64ParamChoiceTest
         final UInt64ParamChoice uint64ParamChoice = new UInt64ParamChoice(stream, VARIANT_B_SELECTOR);
         stream.close();
         assertEquals(VARIANT_B_SELECTOR, uint64ParamChoice.getSelector());
-        assertEquals(value, uint64ParamChoice.getB());
+        assertEquals(value, uint64ParamChoice.getValueB());
     }
 
     @Test
     public void choiceTag()
     {
         UInt64ParamChoice uint64ParamChoice = new UInt64ParamChoice(VARIANT_A_SELECTOR);
-        assertEquals(UInt64ParamChoice.CHOICE_a, uint64ParamChoice.choiceTag());
+        assertEquals(UInt64ParamChoice.CHOICE_valueA, uint64ParamChoice.choiceTag());
 
         uint64ParamChoice = new UInt64ParamChoice(VARIANT_B_SELECTOR);
-        assertEquals(UInt64ParamChoice.CHOICE_b, uint64ParamChoice.choiceTag());
+        assertEquals(UInt64ParamChoice.CHOICE_valueB, uint64ParamChoice.choiceTag());
 
         uint64ParamChoice = new UInt64ParamChoice(VARIANT_C_SELECTOR);
-        assertEquals(UInt64ParamChoice.CHOICE_c, uint64ParamChoice.choiceTag());
+        assertEquals(UInt64ParamChoice.CHOICE_valueC, uint64ParamChoice.choiceTag());
 
         uint64ParamChoice = new UInt64ParamChoice(EMPTY_SELECTOR);
         assertEquals(UInt64ParamChoice.UNDEFINED_CHOICE, uint64ParamChoice.choiceTag());
@@ -76,8 +76,8 @@ public class UInt64ParamChoiceTest
     {
         UInt64ParamChoice uint64ParamChoice = new UInt64ParamChoice(VARIANT_A_SELECTOR);
         final byte value = 99;
-        uint64ParamChoice.setA(value);
-        assertEquals(value, uint64ParamChoice.getA());
+        uint64ParamChoice.setValueA(value);
+        assertEquals(value, uint64ParamChoice.getValueA());
     }
 
     @Test
@@ -85,8 +85,8 @@ public class UInt64ParamChoiceTest
     {
         UInt64ParamChoice uint64ParamChoice = new UInt64ParamChoice(VARIANT_B_SELECTOR);
         final short value = 234;
-        uint64ParamChoice.setB(value);
-        assertEquals(value, uint64ParamChoice.getB());
+        uint64ParamChoice.setValueB(value);
+        assertEquals(value, uint64ParamChoice.getValueB());
     }
 
     @Test
@@ -94,8 +94,8 @@ public class UInt64ParamChoiceTest
     {
         UInt64ParamChoice uint64ParamChoice = new UInt64ParamChoice(VARIANT_C_SELECTOR);
         final int value = 23456;
-        uint64ParamChoice.setC(value);
-        assertEquals(value, uint64ParamChoice.getC());
+        uint64ParamChoice.setValueC(value);
+        assertEquals(value, uint64ParamChoice.getValueC());
     }
 
     @Test
@@ -106,14 +106,14 @@ public class UInt64ParamChoiceTest
         assertTrue(uint64ParamChoice1.equals(uint64ParamChoice2));
 
         final byte value = 99;
-        uint64ParamChoice1.setA(value);
+        uint64ParamChoice1.setValueA(value);
         assertFalse(uint64ParamChoice1.equals(uint64ParamChoice2));
 
-        uint64ParamChoice2.setA(value);
+        uint64ParamChoice2.setValueA(value);
         assertTrue(uint64ParamChoice1.equals(uint64ParamChoice2));
 
         final byte diffValue = value + 1;
-        uint64ParamChoice2.setA(diffValue);
+        uint64ParamChoice2.setValueA(diffValue);
         assertFalse(uint64ParamChoice1.equals(uint64ParamChoice2));
     }
 
@@ -125,14 +125,14 @@ public class UInt64ParamChoiceTest
         assertEquals(uint64ParamChoice1.hashCode(), uint64ParamChoice2.hashCode());
 
         final byte value = 99;
-        uint64ParamChoice1.setA(value);
+        uint64ParamChoice1.setValueA(value);
         assertTrue(uint64ParamChoice1.hashCode() != uint64ParamChoice2.hashCode());
 
-        uint64ParamChoice2.setA(value);
+        uint64ParamChoice2.setValueA(value);
         assertEquals(uint64ParamChoice1.hashCode(), uint64ParamChoice2.hashCode());
 
         final byte diffValue = value + 1;
-        uint64ParamChoice2.setA(diffValue);
+        uint64ParamChoice2.setValueA(diffValue);
         assertTrue(uint64ParamChoice1.hashCode() != uint64ParamChoice2.hashCode());
 
         // use hardcoded values to check that the hash code is stable
@@ -156,22 +156,22 @@ public class UInt64ParamChoiceTest
     {
         UInt64ParamChoice uint64ParamChoice = new UInt64ParamChoice(VARIANT_A_SELECTOR);
         final byte byteValue = 99;
-        uint64ParamChoice.setA(byteValue);
+        uint64ParamChoice.setValueA(byteValue);
         ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         uint64ParamChoice.write(writer);
         ByteArrayBitStreamReader reader =
                 new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         UInt64ParamChoice readUInt64ParamChoice = new UInt64ParamChoice(reader, VARIANT_A_SELECTOR);
-        assertEquals(byteValue, readUInt64ParamChoice.getA());
+        assertEquals(byteValue, readUInt64ParamChoice.getValueA());
 
         uint64ParamChoice = new UInt64ParamChoice(VARIANT_B_SELECTOR);
         final short shortValue = 234;
-        uint64ParamChoice.setB(shortValue);
+        uint64ParamChoice.setValueB(shortValue);
         writer = new ByteArrayBitStreamWriter();
         uint64ParamChoice.write(writer);
         reader = new ByteArrayBitStreamReader(writer.toByteArray(), writer.getBitPosition());
         readUInt64ParamChoice = new UInt64ParamChoice(reader, VARIANT_B_SELECTOR);
-        assertEquals(shortValue, readUInt64ParamChoice.getB());
+        assertEquals(shortValue, readUInt64ParamChoice.getValueB());
     }
 
     @Test
@@ -179,21 +179,21 @@ public class UInt64ParamChoiceTest
     {
         UInt64ParamChoice uint64ParamChoice = new UInt64ParamChoice(VARIANT_A_SELECTOR);
         final byte byteValue = 99;
-        uint64ParamChoice.setA(byteValue);
+        uint64ParamChoice.setValueA(byteValue);
         final File fileA = new File(BLOB_NAME_BASE + "a.blob");
         SerializeUtil.serializeToFile(uint64ParamChoice, fileA);
         UInt64ParamChoice readUInt64ParamChoice =
                 SerializeUtil.deserializeFromFile(UInt64ParamChoice.class, fileA, VARIANT_A_SELECTOR);
-        assertEquals(byteValue, readUInt64ParamChoice.getA());
+        assertEquals(byteValue, readUInt64ParamChoice.getValueA());
 
         uint64ParamChoice = new UInt64ParamChoice(VARIANT_B_SELECTOR);
         final short shortValue = 234;
-        uint64ParamChoice.setB(shortValue);
+        uint64ParamChoice.setValueB(shortValue);
         final File fileB = new File(BLOB_NAME_BASE + "b.blob");
         SerializeUtil.serializeToFile(uint64ParamChoice, fileB);
         readUInt64ParamChoice =
                 SerializeUtil.deserializeFromFile(UInt64ParamChoice.class, fileB, VARIANT_B_SELECTOR);
-        assertEquals(shortValue, readUInt64ParamChoice.getB());
+        assertEquals(shortValue, readUInt64ParamChoice.getValueB());
     }
 
     private BitBuffer writeUInt64ParamChoiceToBitBuffer(BigInteger selector, int value) throws IOException

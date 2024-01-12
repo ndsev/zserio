@@ -5,9 +5,9 @@ struct Parameter<T>
     T value;
 };
 
-struct Parameterized<P>(P p)
+struct Parameterized<P>(P param)
 {
-    uint32 arr[p.value];
+    uint32 arr[param.value];
 };
 
 struct InstantiateTypeAsParameter

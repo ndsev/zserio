@@ -2,7 +2,7 @@ package functions.structure_param;
 
 struct MetresConverter(uint16 metres)
 {
-    uint16  a;
+    uint16  valueA;
 
     function uint16 toCentimetres()
     {
@@ -13,5 +13,5 @@ struct MetresConverter(uint16 metres)
 struct MetresConverterCaller
 {
     MetresConverter(2)  metresConverter;
-    uint16              cm : cm == metresConverter.toCentimetres();
+    uint16              centimeters : centimeters == metresConverter.toCentimetres();
 };

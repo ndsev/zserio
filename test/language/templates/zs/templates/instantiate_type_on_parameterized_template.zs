@@ -1,13 +1,13 @@
 package templates.instantiate_type_on_parameterized_template;
 
-struct Test<T>(uint32 p)
+struct Test<T>(uint32 param)
 {
-    T(p) value;
+    T(param) value;
 };
 
-struct Parameterized(uint32 p)
+struct Parameterized(uint32 param)
 {
-    uint32 array[p];
+    uint32 array[param];
 };
 
 struct InstantiateTypeOnParameterizedTemplate

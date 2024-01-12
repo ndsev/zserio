@@ -8,7 +8,7 @@ struct Selector(bool extended)
     }
 };
 
-choice TestChoice(Selector s) on s.getSelector()
+choice TestChoice(Selector selector) on selector.getSelector()
 {
     case 8:
         int8    field8;

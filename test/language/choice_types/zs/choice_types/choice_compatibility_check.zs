@@ -2,8 +2,8 @@ package choice_types.choice_compatibility_check;
 
 struct CoordXY
 {
-    uint32 x;
-    uint32 y;
+    uint32 coordX;
+    uint32 coordY;
 };
 
 enum uint8 EnumVersion1
@@ -29,9 +29,9 @@ enum uint8 EnumVersion2
 
 struct CoordXYZ
 {
-    uint32 x;
-    uint32 y;
-    float64 z;
+    uint32 coordX;
+    uint32 coordY;
+    float64 coordZ;
 };
 
 choice ChoiceVersion2(EnumVersion2 selector) on selector
