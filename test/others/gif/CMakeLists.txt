@@ -1,67 +1,18 @@
-set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
-set(ZSERIO_GENERATED_SOURCES
-    ${ZSERIO_GEN_DIR}/gif/GifFile.cpp
-    ${ZSERIO_GEN_DIR}/gif/GifFile.h
-
-    ${ZSERIO_GEN_DIR}/gif/gif_data/ApplicationExtension.cpp
-    ${ZSERIO_GEN_DIR}/gif/gif_data/ApplicationExtension.h
-    ${ZSERIO_GEN_DIR}/gif/gif_data/BlockData.cpp
-    ${ZSERIO_GEN_DIR}/gif/gif_data/BlockData.h
-    ${ZSERIO_GEN_DIR}/gif/gif_data/BlockType.cpp
-    ${ZSERIO_GEN_DIR}/gif/gif_data/BlockType.h
-    ${ZSERIO_GEN_DIR}/gif/gif_data/BlockTypes.cpp
-    ${ZSERIO_GEN_DIR}/gif/gif_data/BlockTypes.h
-    ${ZSERIO_GEN_DIR}/gif/gif_data/CommentExtension.cpp
-    ${ZSERIO_GEN_DIR}/gif/gif_data/CommentExtension.h
-    ${ZSERIO_GEN_DIR}/gif/gif_data/DisposalMethod.cpp
-    ${ZSERIO_GEN_DIR}/gif/gif_data/DisposalMethod.h
-    ${ZSERIO_GEN_DIR}/gif/gif_data/ExtensionBlock.cpp
-    ${ZSERIO_GEN_DIR}/gif/gif_data/ExtensionBlock.h
-    ${ZSERIO_GEN_DIR}/gif/gif_data/ExtensionType.cpp
-    ${ZSERIO_GEN_DIR}/gif/gif_data/ExtensionType.h
-    ${ZSERIO_GEN_DIR}/gif/gif_data/ExtensionTypes.cpp
-    ${ZSERIO_GEN_DIR}/gif/gif_data/ExtensionTypes.h
-    ${ZSERIO_GEN_DIR}/gif/gif_data/GifData.cpp
-    ${ZSERIO_GEN_DIR}/gif/gif_data/GifData.h
-    ${ZSERIO_GEN_DIR}/gif/gif_data/GraphicControlExtension.cpp
-    ${ZSERIO_GEN_DIR}/gif/gif_data/GraphicControlExtension.h
-    ${ZSERIO_GEN_DIR}/gif/gif_data/ImageBlock.cpp
-    ${ZSERIO_GEN_DIR}/gif/gif_data/ImageBlock.h
-    ${ZSERIO_GEN_DIR}/gif/gif_data/ImageDescriptor.cpp
-    ${ZSERIO_GEN_DIR}/gif/gif_data/ImageDescriptor.h
-    ${ZSERIO_GEN_DIR}/gif/gif_data/PlainTextExtension.cpp
-    ${ZSERIO_GEN_DIR}/gif/gif_data/PlainTextExtension.h
-    ${ZSERIO_GEN_DIR}/gif/gif_data/RasterData.cpp
-    ${ZSERIO_GEN_DIR}/gif/gif_data/RasterData.h
-    ${ZSERIO_GEN_DIR}/gif/gif_data/SubBlock.cpp
-    ${ZSERIO_GEN_DIR}/gif/gif_data/SubBlock.h
-    ${ZSERIO_GEN_DIR}/gif/gif_data/ZippedBlockData.cpp
-    ${ZSERIO_GEN_DIR}/gif/gif_data/ZippedBlockData.h
-    ${ZSERIO_GEN_DIR}/gif/gif_data/ZippedSubBlock.cpp
-    ${ZSERIO_GEN_DIR}/gif/gif_data/ZippedSubBlock.h
-
-    ${ZSERIO_GEN_DIR}/gif/gif_version/GifVersion.cpp
-    ${ZSERIO_GEN_DIR}/gif/gif_version/GifVersion.h
-
-    ${ZSERIO_GEN_DIR}/gif/rgb_color/RgbColor.cpp
-    ${ZSERIO_GEN_DIR}/gif/rgb_color/RgbColor.h
-
-    ${ZSERIO_GEN_DIR}/gif/screen_descriptor/ScreenDescriptor.cpp
-    ${ZSERIO_GEN_DIR}/gif/screen_descriptor/ScreenDescriptor.h
-
-    ${ZSERIO_GEN_DIR}/gif/signature/Signature.cpp
-    ${ZSERIO_GEN_DIR}/gif/signature/Signature.h
+add_library(gif_zs STATIC zs/gif.zs)
+zserio_generate_cpp(
+    TARGET gif_zs
+    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen
+    EXTRA_ARGS -withoutSourcesAmalgamation
+    GENERATED_SOURCES_VAR GENERATED_SOURCES
+    OUTPUT_VAR ZSERIO_LOG
+    ERROR_VAR ZSERIO_LOG
 )
-
-zserio_add_library(gif_zs
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
-    MAIN_SOURCE gif.zs
-    OUT_DIR ${ZSERIO_GEN_DIR}
-    OUT_FILES ${ZSERIO_GENERATED_SOURCES}
-    ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation
-)
+target_link_libraries(gif_zs PUBLIC ZserioCppRuntime)
+if (ZSERIO_LOG)
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/zserio_log.txt "${ZSERIO_LOG}")
+    check_zserio_warnings("${ZSERIO_LOG}" 0)
+endif ()
 
 add_custom_command(OUTPUT gif_data_copy
                    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/data/others/gif
@@ -77,5 +28,5 @@ add_custom_test(gif
     SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/GifTest.cpp
     GENERATED_SOURCES
-        ${ZSERIO_GENERATED_SOURCES}
+        ${GENERATED_SOURCES}
 )

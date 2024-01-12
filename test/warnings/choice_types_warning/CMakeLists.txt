@@ -1,22 +1,18 @@
-set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
-set(ZSERIO_GENERATED_SOURCES
-    ${ZSERIO_GEN_DIR}/choice_types_warning/optional_references_in_selector/Selector.cpp
-    ${ZSERIO_GEN_DIR}/choice_types_warning/optional_references_in_selector/Selector.h
-    ${ZSERIO_GEN_DIR}/choice_types_warning/optional_references_in_selector/TestChoice.cpp
-    ${ZSERIO_GEN_DIR}/choice_types_warning/optional_references_in_selector/TestChoice.h
+add_library(choice_types_warning_zs STATIC zs/choice_types_warning.zs)
+zserio_generate_cpp(
+    TARGET choice_types_warning_zs
+    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen
+    EXTRA_ARGS -withoutSourcesAmalgamation
+    GENERATED_SOURCES_VAR GENERATED_SOURCES
+    OUTPUT_VAR ZSERIO_LOG
+    ERROR_VAR ZSERIO_LOG
 )
-
-zserio_add_library(choice_types_warning_zs
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
-    MAIN_SOURCE choice_types_warning.zs
-    OUT_DIR ${ZSERIO_GEN_DIR}
-    OUT_FILES ${ZSERIO_GENERATED_SOURCES}
-    ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation
-    EXPECTED_WARNINGS 1
-    ZSERIO_LOG_FILENAME zserio_log.txt
-)
+target_link_libraries(choice_types_warning_zs PUBLIC ZserioCppRuntime)
+if (ZSERIO_LOG)
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/zserio_log.txt "${ZSERIO_LOG}")
+    check_zserio_warnings("${ZSERIO_LOG}" 1)
+endif ()
 
 add_custom_test(choice_types_warning
     DEPENDS
@@ -24,5 +20,5 @@ add_custom_test(choice_types_warning
     SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ChoiceTypesWarningTest.cpp
     GENERATED_SOURCES
-        ${ZSERIO_GENERATED_SOURCES}
+        ${GENERATED_SOURCES}
 )

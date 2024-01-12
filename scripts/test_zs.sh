@@ -168,12 +168,11 @@ EOF
 # Generate CMakeList.txt
 generate_cmake_lists()
 {
-    exit_if_argc_ne $# 6
+    exit_if_argc_ne $# 5
     local ZSERIO_RELEASE="$1"; shift
     local ZSERIO_ROOT="$1"; shift
     local BUILD_DIR="$1"; shift
     local TEST_NAME="$1"; shift
-    local RUNTIME_LIBRARY_SUBDIR="$1"; shift
     local NEEDS_SQLITE="$1"; shift
 
     # use host paths in generated files
@@ -226,9 +225,7 @@ endif ()
 compiler_set_test_warnings()${WERROR_SETUP}${SQLITE_SETUP}
 
 # add zserio runtime library
-include(zserio_utils)
-set(ZSERIO_RUNTIME_LIBRARY_DIR "\${ZSERIO_RELEASE}/runtime_libs/${RUNTIME_LIBRARY_SUBDIR}")
-zserio_add_runtime_library(RUNTIME_LIBRARY_DIR "\${ZSERIO_RUNTIME_LIBRARY_DIR}")
+add_subdirectory("\${ZSERIO_RELEASE}/runtime_libs/cpp" ZserioCppRuntime)
 
 file(GLOB_RECURSE SOURCES "gen/*.cpp" "gen/*.h")
 add_library(\${PROJECT_NAME} \${SOURCES})
@@ -341,8 +338,7 @@ test_zs()
         ! grep "#include <sqlite3.h>" -qr ${TEST_OUT_DIR}/cpp/gen
         local CPP_NEEDS_SQLITE=$?
         generate_cmake_lists "${UNPACKED_ZSERIO_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" \
-            "${TEST_OUT_DIR}/cpp" "${SWITCH_TEST_NAME}" "cpp" \
-            ${CPP_NEEDS_SQLITE}
+            "${TEST_OUT_DIR}/cpp" "${SWITCH_TEST_NAME}" ${CPP_NEEDS_SQLITE}
         local CTEST_ARGS=()
         compile_cpp "${ZSERIO_PROJECT_ROOT}" "${TEST_OUT_DIR}/cpp" "${TEST_OUT_DIR}/cpp" CPP_TARGETS[@] \
                     CMAKE_ARGS[@] CTEST_ARGS[@] all

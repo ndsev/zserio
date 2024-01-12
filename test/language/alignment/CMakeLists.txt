@@ -1,24 +1,18 @@
-set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
-set(ZSERIO_GENERATED_SOURCES
-    ${ZSERIO_GEN_DIR}/alignment/auto_optional_member_alignment/AutoOptionalMemberAlignment.cpp
-    ${ZSERIO_GEN_DIR}/alignment/auto_optional_member_alignment/AutoOptionalMemberAlignment.h
-
-    ${ZSERIO_GEN_DIR}/alignment/bit_alignment/BitAlignment.cpp
-    ${ZSERIO_GEN_DIR}/alignment/bit_alignment/BitAlignment.h
-
-    ${ZSERIO_GEN_DIR}/alignment/optional_member_alignment/OptionalMemberAlignment.cpp
-    ${ZSERIO_GEN_DIR}/alignment/optional_member_alignment/OptionalMemberAlignment.h
+add_library(alignment_zs STATIC zs/alignment.zs)
+zserio_generate_cpp(
+    TARGET alignment_zs
+    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen
+    EXTRA_ARGS -withoutSourcesAmalgamation
+    GENERATED_SOURCES_VAR GENERATED_SOURCES
+    OUTPUT_VAR ZSERIO_LOG
+    ERROR_VAR ZSERIO_LOG
 )
-
-zserio_add_library(alignment_zs
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
-    MAIN_SOURCE alignment.zs
-    OUT_DIR ${ZSERIO_GEN_DIR}
-    OUT_FILES ${ZSERIO_GENERATED_SOURCES}
-    ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation
-)
+target_link_libraries(alignment_zs PUBLIC ZserioCppRuntime)
+if (ZSERIO_LOG)
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/zserio_log.txt "${ZSERIO_LOG}")
+    check_zserio_warnings("${ZSERIO_LOG}" 0)
+endif ()
 
 add_custom_test(alignment
     DEPENDS
@@ -28,5 +22,5 @@ add_custom_test(alignment
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/BitAlignmentTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/OptionalMemberAlignmentTest.cpp
     GENERATED_SOURCES
-        ${ZSERIO_GENERATED_SOURCES}
+        ${GENERATED_SOURCES}
 )

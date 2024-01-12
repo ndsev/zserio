@@ -1,38 +1,18 @@
-set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
-set(ZSERIO_GENERATED_SOURCES
-    ${ZSERIO_GEN_DIR}/literals/BINARY_NEGATIVE.h
-    ${ZSERIO_GEN_DIR}/literals/BINARY_POSITIVE.h
-    ${ZSERIO_GEN_DIR}/literals/BINARY_POSITIVE_WITH_CAPITAL_B.h
-    ${ZSERIO_GEN_DIR}/literals/BINARY_POSITIVE_WITH_SIGN.h
-    ${ZSERIO_GEN_DIR}/literals/BOOLEAN_FALSE.h
-    ${ZSERIO_GEN_DIR}/literals/BOOLEAN_TRUE.h
-    ${ZSERIO_GEN_DIR}/literals/DECIMAL_NEGATIVE.h
-    ${ZSERIO_GEN_DIR}/literals/DECIMAL_POSITIVE.h
-    ${ZSERIO_GEN_DIR}/literals/DECIMAL_POSITIVE_WITH_SIGN.h
-    ${ZSERIO_GEN_DIR}/literals/DECIMAL_ZERO.h
-    ${ZSERIO_GEN_DIR}/literals/FLOAT16.h
-    ${ZSERIO_GEN_DIR}/literals/FLOAT32.h
-    ${ZSERIO_GEN_DIR}/literals/FLOAT64.h
-    ${ZSERIO_GEN_DIR}/literals/HEXADECIMAL_NEGATIVE.h
-    ${ZSERIO_GEN_DIR}/literals/HEXADECIMAL_POSITIVE.h
-    ${ZSERIO_GEN_DIR}/literals/HEXADECIMAL_POSITIVE_WITH_CAPITAL_X.h
-    ${ZSERIO_GEN_DIR}/literals/HEXADECIMAL_POSITIVE_WITH_SIGN.h
-    ${ZSERIO_GEN_DIR}/literals/OCTAL_NEGATIVE.h
-    ${ZSERIO_GEN_DIR}/literals/OCTAL_POSITIVE.h
-    ${ZSERIO_GEN_DIR}/literals/OCTAL_POSITIVE_WITH_SIGN.h
-    ${ZSERIO_GEN_DIR}/literals/OCTAL_ZERO.h
-    ${ZSERIO_GEN_DIR}/literals/STRING.h
+add_library(literals_zs INTERFACE zs/literals.zs)
+zserio_generate_cpp(
+    TARGET literals_zs
+    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen
+    EXTRA_ARGS -withoutSourcesAmalgamation
+    GENERATED_SOURCES_VAR GENERATED_SOURCES
+    OUTPUT_VAR ZSERIO_LOG
+    ERROR_VAR ZSERIO_LOG
 )
-
-zserio_add_library(literals_zs
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
-    MAIN_SOURCE literals.zs
-    OUT_DIR ${ZSERIO_GEN_DIR}
-    OUT_FILES ${ZSERIO_GENERATED_SOURCES}
-    ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation
-)
+target_link_libraries(literals_zs INTERFACE ZserioCppRuntime)
+if (ZSERIO_LOG)
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/zserio_log.txt "${ZSERIO_LOG}")
+    check_zserio_warnings("${ZSERIO_LOG}" 0)
+endif ()
 
 add_custom_test(literals
     DEPENDS
@@ -40,5 +20,5 @@ add_custom_test(literals
     SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/LiteralsTest.cpp
     GENERATED_SOURCES
-        ${ZSERIO_GENERATED_SOURCES}
+        ${GENERATED_SOURCES}
 )

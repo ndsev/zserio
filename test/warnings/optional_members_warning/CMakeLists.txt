@@ -1,46 +1,18 @@
-set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
-set(ZSERIO_GENERATED_SOURCES
-    ${ZSERIO_GEN_DIR}/optional_members_warning/optional_references_in_array_length/Container.cpp
-    ${ZSERIO_GEN_DIR}/optional_members_warning/optional_references_in_array_length/Container.h
-
-    ${ZSERIO_GEN_DIR}/optional_members_warning/optional_references_in_bitfield_length/Container.cpp
-    ${ZSERIO_GEN_DIR}/optional_members_warning/optional_references_in_bitfield_length/Container.h
-
-    ${ZSERIO_GEN_DIR}/optional_members_warning/optional_references_in_constraint/Container.cpp
-    ${ZSERIO_GEN_DIR}/optional_members_warning/optional_references_in_constraint/Container.h
-
-    ${ZSERIO_GEN_DIR}/optional_members_warning/optional_references_in_offset/Container.cpp
-    ${ZSERIO_GEN_DIR}/optional_members_warning/optional_references_in_offset/Container.h
-    ${ZSERIO_GEN_DIR}/optional_members_warning/optional_references_in_offset/OffsetHolder.cpp
-    ${ZSERIO_GEN_DIR}/optional_members_warning/optional_references_in_offset/OffsetHolder.h
-    ${ZSERIO_GEN_DIR}/optional_members_warning/optional_references_in_offset/OptionalOffsetHolder.cpp
-    ${ZSERIO_GEN_DIR}/optional_members_warning/optional_references_in_offset/OptionalOffsetHolder.h
-
-    ${ZSERIO_GEN_DIR}/optional_members_warning/optional_references_in_optional_clause/Container.cpp
-    ${ZSERIO_GEN_DIR}/optional_members_warning/optional_references_in_optional_clause/Container.h
-
-    ${ZSERIO_GEN_DIR}/optional_members_warning/optional_references_in_type_arguments/Another.cpp
-    ${ZSERIO_GEN_DIR}/optional_members_warning/optional_references_in_type_arguments/Another.h
-    ${ZSERIO_GEN_DIR}/optional_members_warning/optional_references_in_type_arguments/BasicColor.cpp
-    ${ZSERIO_GEN_DIR}/optional_members_warning/optional_references_in_type_arguments/BasicColor.h
-    ${ZSERIO_GEN_DIR}/optional_members_warning/optional_references_in_type_arguments/ColorTones.cpp
-    ${ZSERIO_GEN_DIR}/optional_members_warning/optional_references_in_type_arguments/ColorTones.h
-    ${ZSERIO_GEN_DIR}/optional_members_warning/optional_references_in_type_arguments/Container.cpp
-    ${ZSERIO_GEN_DIR}/optional_members_warning/optional_references_in_type_arguments/Container.h
-    ${ZSERIO_GEN_DIR}/optional_members_warning/optional_references_in_type_arguments/SubtypedColorTones.h
+add_library(optional_members_warning_zs STATIC zs/optional_members_warning.zs)
+zserio_generate_cpp(
+    TARGET optional_members_warning_zs
+    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen
+    EXTRA_ARGS -withoutSourcesAmalgamation
+    GENERATED_SOURCES_VAR GENERATED_SOURCES
+    OUTPUT_VAR ZSERIO_LOG
+    ERROR_VAR ZSERIO_LOG
 )
-
-zserio_add_library(optional_members_warning_zs
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
-    MAIN_SOURCE optional_members_warning.zs
-    OUT_DIR ${ZSERIO_GEN_DIR}
-    OUT_FILES ${ZSERIO_GENERATED_SOURCES}
-    ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation
-    EXPECTED_WARNINGS 24
-    ZSERIO_LOG_FILENAME zserio_log.txt
-)
+target_link_libraries(optional_members_warning_zs PUBLIC ZserioCppRuntime)
+if (ZSERIO_LOG)
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/zserio_log.txt "${ZSERIO_LOG}")
+    check_zserio_warnings("${ZSERIO_LOG}" 24)
+endif ()
 
 add_custom_test(optional_members_warning
     DEPENDS
@@ -48,5 +20,5 @@ add_custom_test(optional_members_warning
     SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/OptionalMembersWarningTest.cpp
     GENERATED_SOURCES
-        ${ZSERIO_GENERATED_SOURCES}
+        ${GENERATED_SOURCES}
 )

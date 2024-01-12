@@ -1,47 +1,19 @@
-set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
-set(ZSERIO_GENERATED_SOURCES
-    ${ZSERIO_GEN_DIR}/unused_type_warning/Black.h
-    ${ZSERIO_GEN_DIR}/unused_type_warning/Blue.h
-    ${ZSERIO_GEN_DIR}/unused_type_warning/BoolChoice.cpp
-    ${ZSERIO_GEN_DIR}/unused_type_warning/BoolChoice.h
-    ${ZSERIO_GEN_DIR}/unused_type_warning/BoolStructure.cpp
-    ${ZSERIO_GEN_DIR}/unused_type_warning/BoolStructureDatabase.cpp
-    ${ZSERIO_GEN_DIR}/unused_type_warning/BoolStructureDatabase.h
-    ${ZSERIO_GEN_DIR}/unused_type_warning/BoolStructure.h
-    ${ZSERIO_GEN_DIR}/unused_type_warning/BoolStructureTable.cpp
-    ${ZSERIO_GEN_DIR}/unused_type_warning/BoolStructureTable.h
-    ${ZSERIO_GEN_DIR}/unused_type_warning/BoolUnion.cpp
-    ${ZSERIO_GEN_DIR}/unused_type_warning/BoolUnion.h
-    ${ZSERIO_GEN_DIR}/unused_type_warning/Color.cpp
-    ${ZSERIO_GEN_DIR}/unused_type_warning/Color.h
-    ${ZSERIO_GEN_DIR}/unused_type_warning/DARK_BLUE.h
-    ${ZSERIO_GEN_DIR}/unused_type_warning/Red.h
-    ${ZSERIO_GEN_DIR}/unused_type_warning/UnusedChoice.cpp
-    ${ZSERIO_GEN_DIR}/unused_type_warning/UnusedChoice.h
-    ${ZSERIO_GEN_DIR}/unused_type_warning/UnusedEnumeration.cpp
-    ${ZSERIO_GEN_DIR}/unused_type_warning/UnusedEnumeration.h
-    ${ZSERIO_GEN_DIR}/unused_type_warning/UnusedStructure.cpp
-    ${ZSERIO_GEN_DIR}/unused_type_warning/UnusedStructure.h
-    ${ZSERIO_GEN_DIR}/unused_type_warning/UnusedSubtype.h
-    ${ZSERIO_GEN_DIR}/unused_type_warning/UnusedTable.cpp
-    ${ZSERIO_GEN_DIR}/unused_type_warning/UnusedTable.h
-    ${ZSERIO_GEN_DIR}/unused_type_warning/UnusedUnion.cpp
-    ${ZSERIO_GEN_DIR}/unused_type_warning/UnusedUnion.h
+add_library(unused_type_warning_zs STATIC zs/unused_type_warning.zs)
+zserio_generate_cpp(
+    TARGET unused_type_warning_zs
+    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen
+    EXTRA_ARGS -withWarnings unused -withoutSourcesAmalgamation
+    GENERATED_SOURCES_VAR GENERATED_SOURCES
+    OUTPUT_VAR ZSERIO_LOG
+    ERROR_VAR ZSERIO_LOG
 )
-
-zserio_add_library(unused_type_warning_zs
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
-    MAIN_SOURCE unused_type_warning.zs
-    OUT_DIR ${ZSERIO_GEN_DIR}
-    OUT_FILES ${ZSERIO_GENERATED_SOURCES}
-    ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
-    ZSERIO_OPTIONS -withWarnings unused -withoutSourcesAmalgamation
-    EXPECTED_WARNINGS 6
-    ZSERIO_LOG_FILENAME zserio_log.txt
-)
-
+target_link_libraries(unused_type_warning_zs PUBLIC ZserioCppRuntime)
 target_include_directories(unused_type_warning_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
+if (ZSERIO_LOG)
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/zserio_log.txt "${ZSERIO_LOG}")
+    check_zserio_warnings("${ZSERIO_LOG}" 6)
+endif ()
 
 add_custom_test(unused_type_warning
     DEPENDS
@@ -49,5 +21,5 @@ add_custom_test(unused_type_warning
     SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/UnusedTypeWarningTest.cpp
     GENERATED_SOURCES
-        ${ZSERIO_GENERATED_SOURCES}
+        ${GENERATED_SOURCES}
 )

@@ -1,100 +1,67 @@
-set(ZSERIO_GEN_DIR_COMPLEX_ALLOCATION ${CMAKE_CURRENT_BINARY_DIR}/gen_complex_allocation)
-set(ZSERIO_GENERATED_SOURCES_COMPLEX_ALLOCATION
-    ${ZSERIO_GEN_DIR_COMPLEX_ALLOCATION}/complex_allocation/MainStructure.cpp
-    ${ZSERIO_GEN_DIR_COMPLEX_ALLOCATION}/complex_allocation/MainStructure.h
-    ${ZSERIO_GEN_DIR_COMPLEX_ALLOCATION}/complex_allocation/allocation_choice/AllocationChoice.cpp
-    ${ZSERIO_GEN_DIR_COMPLEX_ALLOCATION}/complex_allocation/allocation_choice/AllocationChoice.h
-    ${ZSERIO_GEN_DIR_COMPLEX_ALLOCATION}/complex_allocation/allocation_choice/ChoiceCompound.cpp
-    ${ZSERIO_GEN_DIR_COMPLEX_ALLOCATION}/complex_allocation/allocation_choice/ChoiceCompound.h
-    ${ZSERIO_GEN_DIR_COMPLEX_ALLOCATION}/complex_allocation/allocation_struct/AllocationStruct.cpp
-    ${ZSERIO_GEN_DIR_COMPLEX_ALLOCATION}/complex_allocation/allocation_struct/AllocationStruct.h
-    ${ZSERIO_GEN_DIR_COMPLEX_ALLOCATION}/complex_allocation/allocation_struct/Element.cpp
-    ${ZSERIO_GEN_DIR_COMPLEX_ALLOCATION}/complex_allocation/allocation_struct/Element.h
-    ${ZSERIO_GEN_DIR_COMPLEX_ALLOCATION}/complex_allocation/allocation_struct_optional/AllocationStructOptional.cpp
-    ${ZSERIO_GEN_DIR_COMPLEX_ALLOCATION}/complex_allocation/allocation_struct_optional/AllocationStructOptional.h
-    ${ZSERIO_GEN_DIR_COMPLEX_ALLOCATION}/complex_allocation/allocation_union/AllocationUnion.cpp
-    ${ZSERIO_GEN_DIR_COMPLEX_ALLOCATION}/complex_allocation/allocation_union/AllocationUnion.h
-    ${ZSERIO_GEN_DIR_COMPLEX_ALLOCATION}/complex_allocation/allocation_union/UnionCompound.cpp
-    ${ZSERIO_GEN_DIR_COMPLEX_ALLOCATION}/complex_allocation/allocation_union/UnionCompound.h
+add_library(complex_allocation_zs STATIC zs/complex_allocation.zs)
+zserio_generate_cpp(
+    TARGET complex_allocation_zs
+    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_complex_allocation
+    EXTRA_ARGS -withoutSourcesAmalgamation -setCppAllocator polymorphic
+    GENERATED_SOURCES_VAR GENERATED_SOURCES_COMPLEX_ALLOCATION
+    OUTPUT_VAR ZSERIO_LOG_COMPLEX_ALLOCATION
+    ERROR_VAR ZSERIO_LOG_COMPLEX_ALLOCATION
 )
+target_link_libraries(complex_allocation_zs PUBLIC ZserioCppRuntime)
+if (ZSERIO_LOG_COMPLEX_ALLOCATION)
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/zserio_log_complex_allocation.txt "${ZSERIO_LOG_COMPLEX_ALLOCATION}")
+    check_zserio_warnings("${ZSERIO_LOG_COMPLEX_ALLOCATION}" 0)
+endif ()
 
-set(ZSERIO_GEN_DIR_PUBSUB_ALLOCATION ${CMAKE_CURRENT_BINARY_DIR}/gen_pubsub_allocation)
-set(ZSERIO_GENERATED_SOURCES_PUBSUB_ALLOCATION
-    ${ZSERIO_GEN_DIR_PUBSUB_ALLOCATION}/pubsub_allocation/Greeting.cpp
-    ${ZSERIO_GEN_DIR_PUBSUB_ALLOCATION}/pubsub_allocation/Greeting.h
-    ${ZSERIO_GEN_DIR_PUBSUB_ALLOCATION}/pubsub_allocation/GreetingPubsub.cpp
-    ${ZSERIO_GEN_DIR_PUBSUB_ALLOCATION}/pubsub_allocation/GreetingPubsub.h
-    ${ZSERIO_GEN_DIR_PUBSUB_ALLOCATION}/pubsub_allocation/Name.cpp
-    ${ZSERIO_GEN_DIR_PUBSUB_ALLOCATION}/pubsub_allocation/Name.h
+add_library(pubsub_allocation_zs STATIC zs/pubsub_allocation.zs)
+zserio_generate_cpp(
+    TARGET pubsub_allocation_zs
+    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_pubsub_allocation
+    EXTRA_ARGS -withoutSourcesAmalgamation -setCppAllocator polymorphic
+    GENERATED_SOURCES_VAR GENERATED_SOURCES_PUBSUB_ALLOCATION
+    OUTPUT_VAR ZSERIO_LOG_PUBSUB_ALLOCATION
+    ERROR_VAR ZSERIO_LOG_PUBSUB_ALLOCATION
 )
+target_link_libraries(pubsub_allocation_zs PUBLIC ZserioCppRuntime)
+if (ZSERIO_LOG_PUBSUB_ALLOCATION)
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/zserio_log_pubsub_allocation.txt "${ZSERIO_LOG_PUBSUB_ALLOCATION}")
+    check_zserio_warnings("${ZSERIO_LOG_PUBSUB_ALLOCATION}" 0)
+endif ()
 
-set(ZSERIO_GEN_DIR_SERVICE_ALLOCATION ${CMAKE_CURRENT_BINARY_DIR}/gen_service_allocation)
-set(ZSERIO_GENERATED_SOURCES_SERVICE_ALLOCATION
-    ${ZSERIO_GEN_DIR_SERVICE_ALLOCATION}/service_allocation/Greeting.cpp
-    ${ZSERIO_GEN_DIR_SERVICE_ALLOCATION}/service_allocation/Greeting.h
-    ${ZSERIO_GEN_DIR_SERVICE_ALLOCATION}/service_allocation/GreetingService.cpp
-    ${ZSERIO_GEN_DIR_SERVICE_ALLOCATION}/service_allocation/GreetingService.h
-    ${ZSERIO_GEN_DIR_SERVICE_ALLOCATION}/service_allocation/Name.cpp
-    ${ZSERIO_GEN_DIR_SERVICE_ALLOCATION}/service_allocation/Name.h
+add_library(service_allocation_zs STATIC zs/service_allocation.zs)
+zserio_generate_cpp(
+    TARGET service_allocation_zs
+    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_service_allocation
+    EXTRA_ARGS -withoutSourcesAmalgamation -setCppAllocator polymorphic
+    GENERATED_SOURCES_VAR GENERATED_SOURCES_SERVICE_ALLOCATION
+    OUTPUT_VAR ZSERIO_LOG_SERVICE_ALLOCATION
+    ERROR_VAR ZSERIO_LOG_SERVICE_ALLOCATION
 )
+target_link_libraries(service_allocation_zs PUBLIC ZserioCppRuntime)
+if (ZSERIO_LOG_SERVICE_ALLOCATION)
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/zserio_log_service_allocation.txt "${ZSERIO_LOG_SERVICE_ALLOCATION}")
+    check_zserio_warnings("${ZSERIO_LOG_SERVICE_ALLOCATION}" 0)
+endif ()
 
-set(ZSERIO_GEN_DIR_SQL_ALLOCATION ${CMAKE_CURRENT_BINARY_DIR}/gen_sql_allocation)
-set(ZSERIO_GENERATED_SOURCES_SQL_ALLOCATION
-    ${ZSERIO_GEN_DIR_SQL_ALLOCATION}/sql_allocation/Color.cpp
-    ${ZSERIO_GEN_DIR_SQL_ALLOCATION}/sql_allocation/Color.h
-    ${ZSERIO_GEN_DIR_SQL_ALLOCATION}/sql_allocation/DataBlob.cpp
-    ${ZSERIO_GEN_DIR_SQL_ALLOCATION}/sql_allocation/DataBlob.h
-    ${ZSERIO_GEN_DIR_SQL_ALLOCATION}/sql_allocation/ParameterizedBlob.cpp
-    ${ZSERIO_GEN_DIR_SQL_ALLOCATION}/sql_allocation/ParameterizedBlob.h
-    ${ZSERIO_GEN_DIR_SQL_ALLOCATION}/sql_allocation/Role.cpp
-    ${ZSERIO_GEN_DIR_SQL_ALLOCATION}/sql_allocation/Role.h
-    ${ZSERIO_GEN_DIR_SQL_ALLOCATION}/sql_allocation/SqlAllocationDb.cpp
-    ${ZSERIO_GEN_DIR_SQL_ALLOCATION}/sql_allocation/SqlAllocationDb.h
-    ${ZSERIO_GEN_DIR_SQL_ALLOCATION}/sql_allocation/SqlAllocationTable.cpp
-    ${ZSERIO_GEN_DIR_SQL_ALLOCATION}/sql_allocation/SqlAllocationTable.h
+add_library(sql_allocation_zs STATIC zs/sql_allocation.zs)
+zserio_generate_cpp(
+    TARGET sql_allocation_zs
+    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_sql_allocation
+    EXTRA_ARGS -withoutSourcesAmalgamation -setCppAllocator polymorphic -withValidationCode
+    GENERATED_SOURCES_VAR GENERATED_SOURCES
+    OUTPUT_VAR ZSERIO_LOG_SQL_ALLOCATION
+    ERROR_VAR ZSERIO_LOG_SQL_ALLOCATION
 )
-
-zserio_add_library(complex_allocation_zs
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
-    MAIN_SOURCE complex_allocation.zs
-    OUT_DIR ${ZSERIO_GEN_DIR_COMPLEX_ALLOCATION}
-    OUT_FILES ${ZSERIO_GENERATED_SOURCES_COMPLEX_ALLOCATION}
-    ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
-    ZSERIO_OPTIONS -setCppAllocator polymorphic -withoutSourcesAmalgamation
-)
-
-zserio_add_library(pubsub_allocation_zs
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
-    MAIN_SOURCE pubsub_allocation.zs
-    OUT_DIR ${ZSERIO_GEN_DIR_PUBSUB_ALLOCATION}
-    OUT_FILES ${ZSERIO_GENERATED_SOURCES_PUBSUB_ALLOCATION}
-    ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
-    ZSERIO_OPTIONS -setCppAllocator polymorphic -withoutSourcesAmalgamation
-)
-
-zserio_add_library(service_allocation_zs
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
-    MAIN_SOURCE service_allocation.zs
-    OUT_DIR ${ZSERIO_GEN_DIR_SERVICE_ALLOCATION}
-    OUT_FILES ${ZSERIO_GENERATED_SOURCES_SERVICE_ALLOCATION}
-    ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
-    ZSERIO_OPTIONS -setCppAllocator polymorphic -withoutSourcesAmalgamation
-)
-
-zserio_add_library(sql_allocation_zs
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
-    MAIN_SOURCE sql_allocation.zs
-    OUT_DIR ${ZSERIO_GEN_DIR_SQL_ALLOCATION}
-    OUT_FILES ${ZSERIO_GENERATED_SOURCES_SQL_ALLOCATION}
-    ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
-    ZSERIO_OPTIONS -setCppAllocator polymorphic -withoutSourcesAmalgamation -withValidationCode
-)
-
+target_link_libraries(sql_allocation_zs PUBLIC ZserioCppRuntime)
 target_include_directories(sql_allocation_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
+if (ZSERIO_LOG_SQL_ALLOCATION)
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/zserio_log_sql_allocation.txt "${ZSERIO_LOG_SQL_ALLOCATION}")
+    check_zserio_warnings("${ZSERIO_LOG_SQL_ALLOCATION}" 0)
+endif ()
 
 add_custom_test(set_cpp_allocator
     DEPENDS
@@ -108,8 +75,8 @@ add_custom_test(set_cpp_allocator
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ServiceAllocationTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/SqlAllocationTest.cpp
     GENERATED_SOURCES
-        ${ZSERIO_GENERATED_SOURCES_COMPLEX_ALLOCATION}
-        ${ZSERIO_GENERATED_SOURCES_PUBSUB_ALLOCATION}
-        ${ZSERIO_GENERATED_SOURCES_SERVICE_ALLOCATION}
-        ${ZSERIO_GENERATED_SOURCES_SQL_ALLOCATION}
+        ${GENERATED_SOURCES_COMPLEX_ALLOCATION}
+        ${GENERATED_SOURCES_PUBSUB_ALLOCATION}
+        ${GENERATED_SOURCES_SERVICE_ALLOCATION}
+        ${GENERATED_SOURCES_SQL_ALLOCATION}
 )

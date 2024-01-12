@@ -1,45 +1,37 @@
-set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
-set(ZSERIO_GEN_DEFAULT_PACKAGE_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_default_package)
-
-set(ZSERIO_GENERATED_SOURCES
-    ${ZSERIO_GEN_DIR}/with_sources_amalgamation/WithSourcesAmalgamation.cpp
-    ${ZSERIO_GEN_DIR}/with_sources_amalgamation/GeoMapTable.h
-    ${ZSERIO_GEN_DIR}/with_sources_amalgamation/WorldDb.h
-
-    ${ZSERIO_GEN_DIR}/_imported_tile_/ImportedTile.cpp
-    ${ZSERIO_GEN_DIR}/_imported_tile_/Tile.h
-
-    ${ZSERIO_GEN_DIR}/___/Amalgamation.cpp
-    ${ZSERIO_GEN_DIR}/___/Empty.h
+add_library(with_sources_amalgamation_zs STATIC zs/with_sources_amalgamation.zs)
+zserio_generate_cpp(
+    TARGET with_sources_amalgamation_zs
+    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen
+    EXTRA_ARGS -withSourcesAmalgamation
+    GENERATED_SOURCES_VAR GENERATED_SOURCES
+    OUTPUT_VAR ZSERIO_LOG_WITH_SOURCES_AMALGAMATION
+    ERROR_VAR ZSERIO_LOG_WITH_SOURCES_AMALGAMATION
 )
-
-set(ZSERIO_GENERATED_SOURCES_DEFAULT_PACKAGE
-    ${ZSERIO_GEN_DEFAULT_PACKAGE_DIR}/DefaultPackageAmalgamation.cpp
-
-    ${ZSERIO_GEN_DEFAULT_PACKAGE_DIR}/AmalgamationStructure.h
-)
-
-zserio_add_library(with_sources_amalgamation_zs
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
-    MAIN_SOURCE with_sources_amalgamation.zs
-    OUT_DIR ${ZSERIO_GEN_DIR}
-    OUT_FILES ${ZSERIO_GENERATED_SOURCES}
-    ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
-    ZSERIO_OPTIONS -withSourcesAmalgamation
-)
-
-zserio_add_library(default_package_amalgamation_zs
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
-    MAIN_SOURCE default_package_amalgamation.zs
-    OUT_DIR ${ZSERIO_GEN_DEFAULT_PACKAGE_DIR}
-    OUT_FILES ${ZSERIO_GENERATED_SOURCES_DEFAULT_PACKAGE}
-    ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
-    ZSERIO_OPTIONS -withSourcesAmalgamation
-)
-
+target_link_libraries(with_sources_amalgamation_zs PUBLIC ZserioCppRuntime)
 target_include_directories(with_sources_amalgamation_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
+if (ZSERIO_LOG_WITH_SOURCES_AMALGAMATION)
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/zserio_log_with_sources_amalgamation.txt
+        "${ZSERIO_LOG_WITH_SOURCES_AMALGAMATION}")
+    check_zserio_warnings("${ZSERIO_LOG_WITH_SOURCES_AMALGAMATION}" 0)
+endif ()
+
+add_library(default_package_amalgamation_zs STATIC zs/default_package_amalgamation.zs)
+zserio_generate_cpp(
+    TARGET default_package_amalgamation_zs
+    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_default_package
+    EXTRA_ARGS -withSourcesAmalgamation
+    GENERATED_SOURCES_VAR GENERATED_SOURCES_DEFAULT_PACKAGE
+    OUTPUT_VAR ZSERIO_LOG_DEFAULT_PACKAGE_AMALGAMATION
+    ERROR_VAR ZSERIO_LOG_DEFAULT_PACKAGE_AMALGAMATION
+)
+target_link_libraries(default_package_amalgamation_zs PUBLIC ZserioCppRuntime)
+if (ZSERIO_LOG_DEFAULT_PACKAGE_AMALGAMATION)
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/zserio_log_default_package_amalgamation.txt
+        "${ZSERIO_LOG_DEFAULT_PACKAGE_AMALGAMATION}")
+    check_zserio_warnings("${ZSERIO_LOG_DEFAULT_PACKAGE_AMALGAMATION}" 0)
+endif ()
 
 add_custom_test(with_sources_amalgamation
     DEPENDS
@@ -49,6 +41,6 @@ add_custom_test(with_sources_amalgamation
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/DefaultPackageAmalgamationTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/WithSourcesAmalgamationTest.cpp
     GENERATED_SOURCES
-        ${ZSERIO_GENERATED_SOURCES}
-        ${ZSERIO_GENERATED_SOURCES_DEFAULT_PACKAGE}
+        ${GENERATED_SOURCES}
+        ${GENERATED_SOURCES_DEFAULT_PACKAGE}
 )

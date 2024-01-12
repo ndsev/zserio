@@ -193,6 +193,26 @@ install_python_runtime()
     return 0
 }
 
+# Install zserio_compiler.jar to distribution directory.
+install_zserio_cmake_helper()
+{
+    exit_if_argc_ne $# 2
+    local ZSERIO_PROJECT_ROOT="${1}"; shift
+    local ZSERIO_DISTR_DIR="${1}"; shift
+
+    echo "Installing Zserio CMake helper."
+    echo
+
+    mkdir -p "${ZSERIO_DISTR_DIR}/cmake"
+    cp "${ZSERIO_PROJECT_ROOT}/cmake/zserio_compiler.cmake" "${ZSERIO_DISTR_DIR}/cmake"
+    if [ $? -ne 0 ] ; then
+        stderr_echo "Failed to copy zseiro cmake helper!"
+        return 1
+    fi
+
+    return 0
+}
+
 # Print help message.
 print_help()
 {
@@ -554,6 +574,9 @@ main()
             return 1
         fi
         echo
+        if [[ ${SWITCH_CLEAN} == 0 ]] ; then
+            install_zserio_cmake_helper "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_DISTR_DIR}"
+        fi
     fi
 
     # build Zserio C++ runtime library
@@ -613,6 +636,8 @@ main()
             return 1
         fi
         echo
+
+        install_zserio_cmake_helper "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_DISTR_DIR}"
     fi
 
     # build Zserio Python extension

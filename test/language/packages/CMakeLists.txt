@@ -1,164 +1,99 @@
-set(ZSERIO_GEN_DIR_DEFAULT_PACKAGE ${CMAKE_CURRENT_BINARY_DIR}/gen_default_package)
-set(ZSERIO_GEN_DIR_EMPTY_FILE ${CMAKE_CURRENT_BINARY_DIR}/gen_empty_file)
-set(ZSERIO_GEN_DIR_INDEX ${CMAKE_CURRENT_BINARY_DIR}/gen_index)
-set(ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT ${CMAKE_CURRENT_BINARY_DIR}/gen_package_name_conflict)
-set(ZSERIO_GEN_DIR_PACKAGES ${CMAKE_CURRENT_BINARY_DIR}/gen_packages)
-set(ZSERIO_GEN_DIR_READER ${CMAKE_CURRENT_BINARY_DIR}/gen_reader)
-
-set(ZSERIO_GENERATED_SOURCES_DEFAULT_PACKAGE
-    ${ZSERIO_GEN_DIR_DEFAULT_PACKAGE}/DefaultPackageStructure.cpp
-    ${ZSERIO_GEN_DIR_DEFAULT_PACKAGE}/DefaultPackageStructure.h
-    ${ZSERIO_GEN_DIR_DEFAULT_PACKAGE}/Child.cpp
-    ${ZSERIO_GEN_DIR_DEFAULT_PACKAGE}/Child.h
-    ${ZSERIO_GEN_DIR_DEFAULT_PACKAGE}/default_package_import/top/TopStructure.cpp
-    ${ZSERIO_GEN_DIR_DEFAULT_PACKAGE}/default_package_import/top/TopStructure.h
+add_library(default_package_zs STATIC zs/default_package.zs)
+zserio_generate_cpp(
+    TARGET default_package_zs
+    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_default_package
+    EXTRA_ARGS -withoutSourcesAmalgamation
+    GENERATED_SOURCES_VAR GENERATED_SOURCES_DEFAULT_PACKAGE
+    OUTPUT_VAR ZSERIO_LOG_DEFAULT_PACKAGE
+    ERROR_VAR ZSERIO_LOG_DEFAULT_PACKAGE
 )
+target_link_libraries(default_package_zs PUBLIC ZserioCppRuntime)
+if (ZSERIO_LOG_DEFAULT_PACKAGE)
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/zserio_log_default_package.txt "${ZSERIO_LOG_DEFAULT_PACKAGE}")
+    check_zserio_warnings("${ZSERIO_LOG_DEFAULT_PACKAGE}" 0)
+endif ()
 
-set(ZSERIO_GENERATED_SOURCES_INDEX
-    ${ZSERIO_GEN_DIR_INDEX}/index_workaround/index/Element.cpp
-    ${ZSERIO_GEN_DIR_INDEX}/index_workaround/index/Element.h
-    ${ZSERIO_GEN_DIR_INDEX}/index_workaround/index/ParameterizedElement.cpp
-    ${ZSERIO_GEN_DIR_INDEX}/index_workaround/index/ParameterizedElement.h
-    ${ZSERIO_GEN_DIR_INDEX}/index_workaround/index/Test.cpp
-    ${ZSERIO_GEN_DIR_INDEX}/index_workaround/index/Test.h
+add_library(empty_file_zs INTERFACE)
+zserio_generate_cpp(
+    TARGET empty_file_zs
+    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    MAIN_ZS empty_file.zs
+    GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_empty_file
+    OUTPUT_VAR ZSERIO_LOG_EMPTY_FILE
+    ERROR_VAR ZSERIO_LOG_EMPTY_FILE
 )
+if (ZSERIO_LOG_EMPTY_FILE)
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/zserio_log_empty_file.txt "${ZSERIO_LOG_EMPTY_FILE}")
+    check_zserio_warnings("${ZSERIO_LOG_EMPTY_FILE}" 0)
+endif ()
 
-set(ZSERIO_GENERATED_SOURCES_PACKAGES
-    ${ZSERIO_GEN_DIR_PACKAGES}/ambiguous_imports/first_colour/Colour.cpp
-    ${ZSERIO_GEN_DIR_PACKAGES}/ambiguous_imports/first_colour/Colour.h
-    ${ZSERIO_GEN_DIR_PACKAGES}/ambiguous_imports/second_colour/Colour.cpp
-    ${ZSERIO_GEN_DIR_PACKAGES}/ambiguous_imports/second_colour/Colour.h
-    ${ZSERIO_GEN_DIR_PACKAGES}/ambiguous_imports/top/TopStructure.cpp
-    ${ZSERIO_GEN_DIR_PACKAGES}/ambiguous_imports/top/TopStructure.h
-
-    ${ZSERIO_GEN_DIR_PACKAGES}/cyclic_imports/bottom/BottomColour.cpp
-    ${ZSERIO_GEN_DIR_PACKAGES}/cyclic_imports/bottom/BottomColour.h
-    ${ZSERIO_GEN_DIR_PACKAGES}/cyclic_imports/bottom/BottomStructure.cpp
-    ${ZSERIO_GEN_DIR_PACKAGES}/cyclic_imports/bottom/BottomStructure.h
-    ${ZSERIO_GEN_DIR_PACKAGES}/cyclic_imports/middle/MiddleStructure.cpp
-    ${ZSERIO_GEN_DIR_PACKAGES}/cyclic_imports/middle/MiddleStructure.h
-    ${ZSERIO_GEN_DIR_PACKAGES}/cyclic_imports/top/GREEN.h
-    ${ZSERIO_GEN_DIR_PACKAGES}/cyclic_imports/top/TopStructure.cpp
-    ${ZSERIO_GEN_DIR_PACKAGES}/cyclic_imports/top/TopStructure.h
-
-    ${ZSERIO_GEN_DIR_PACKAGES}/import_name_conflict/colour/Colour.cpp
-    ${ZSERIO_GEN_DIR_PACKAGES}/import_name_conflict/colour/Colour.h
-    ${ZSERIO_GEN_DIR_PACKAGES}/import_name_conflict/top/TopStructure.cpp
-    ${ZSERIO_GEN_DIR_PACKAGES}/import_name_conflict/top/TopStructure.h
-
-    ${ZSERIO_GEN_DIR_PACKAGES}/package_import/first/Coordinate.cpp
-    ${ZSERIO_GEN_DIR_PACKAGES}/package_import/first/Coordinate.h
-    ${ZSERIO_GEN_DIR_PACKAGES}/package_import/second/Coordinate.cpp
-    ${ZSERIO_GEN_DIR_PACKAGES}/package_import/second/Coordinate.h
-    ${ZSERIO_GEN_DIR_PACKAGES}/package_import/top/Coordinate.cpp
-    ${ZSERIO_GEN_DIR_PACKAGES}/package_import/top/Coordinate.h
-    ${ZSERIO_GEN_DIR_PACKAGES}/package_import/top/TopStructure.cpp
-    ${ZSERIO_GEN_DIR_PACKAGES}/package_import/top/TopStructure.h
-
-    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_conflict/imported/CONST_A.h
-    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_conflict/imported/CONST_B.h
-    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_conflict/imported/SimpleParamStructure.cpp
-    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_conflict/imported/SimpleParamStructure.h
-    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_conflict/imported/SimpleStructure.cpp
-    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_conflict/imported/SimpleStructure.h
-    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_conflict/top/CONST_A.h
-    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_conflict/top/SimpleParamStructure.cpp
-    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_conflict/top/SimpleParamStructure.h
-    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_conflict/top/TopStructure.cpp
-    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_conflict/top/TopStructure.h
-
-    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_precedence/pkg/CONST_A.h
-    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_precedence/pkg/Structure.cpp
-    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_precedence/pkg/Structure.h
-    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_precedence/single/CONST_A.h
-    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_precedence/single/Structure.cpp
-    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_precedence/single/Structure.h
-    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_precedence/top/Parameterized.cpp
-    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_precedence/top/Parameterized.h
-    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_precedence/top/SingleImportPrecedence.cpp
-    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_precedence/top/SingleImportPrecedence.h
+add_library(index_zs STATIC zs/index.zs)
+zserio_generate_cpp(
+    TARGET index_zs
+    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_index
+    # we must use 'index_workaround' to prevent clash with global function 'index' which is included
+    # via gtest.h -> ... -> strings.h
+    EXTRA_ARGS -withoutSourcesAmalgamation -setTopLevelPackage index_workaround
+    GENERATED_SOURCES_VAR GENERATED_SOURCES_INDEX
+    OUTPUT_VAR ZSERIO_LOG_INDEX
+    ERROR_VAR ZSERIO_LOG_INDEX
 )
+target_link_libraries(index_zs PUBLIC ZserioCppRuntime)
+if (ZSERIO_LOG_INDEX)
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/zserio_log_index.txt "${ZSERIO_LOG_INDEX}")
+    check_zserio_warnings("${ZSERIO_LOG_INDEX}" 0)
+endif ()
 
-set(ZSERIO_GENERATED_SOURCES_PACKAGE_NAME_CONFLICT
-    ${ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT}/package_name_conflict/PackageNameConflictLocal.cpp
-    ${ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT}/package_name_conflict/PackageNameConflictLocal.h
-    ${ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT}/package_name_conflict/PackageNameConflictImported.cpp
-    ${ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT}/package_name_conflict/PackageNameConflictImported.h
-    ${ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT}/package_name_conflict/Blob.cpp
-    ${ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT}/package_name_conflict/Blob.h
-    ${ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT}/package_name_conflict/package_name_conflict/Blob.cpp
-    ${ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT}/package_name_conflict/package_name_conflict/Blob.h
+add_library(package_name_conflict_zs STATIC zs/package_name_conflict.zs)
+zserio_generate_cpp(
+    TARGET package_name_conflict_zs
+    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_package_name_conflict
+    EXTRA_ARGS -withoutSourcesAmalgamation
+    GENERATED_SOURCES_VAR GENERATED_SOURCES_PACKAGE_NAME_CONFLICT
+    OUTPUT_VAR ZSERIO_LOG_PACKAGE_NAME_CONFLICT
+    ERROR_VAR ZSERIO_LOG_PACKAGE_NAME_CONFLICT
 )
+target_link_libraries(package_name_conflict_zs PUBLIC ZserioCppRuntime)
+if (ZSERIO_LOG_PACKAGE_NAME_CONFLICT)
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/zserio_log_package_name_conflict.txt
+        "${ZSERIO_LOG_PACKAGE_NAME_CONFLICT}")
+    check_zserio_warnings("${ZSERIO_LOG_PACKAGE_NAME_CONFLICT}" 0)
+endif ()
 
-set(ZSERIO_GENERATED_SOURCES_READER
-    ${ZSERIO_GEN_DIR_READER}/reader/Element.cpp
-    ${ZSERIO_GEN_DIR_READER}/reader/Element.h
-    ${ZSERIO_GEN_DIR_READER}/reader/ParameterizedElement.cpp
-    ${ZSERIO_GEN_DIR_READER}/reader/ParameterizedElement.h
-    ${ZSERIO_GEN_DIR_READER}/reader/Test.cpp
-    ${ZSERIO_GEN_DIR_READER}/reader/Test.h
+add_library(packages_zs STATIC zs/packages.zs)
+zserio_generate_cpp(
+    TARGET packages_zs
+    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_packages
+    EXTRA_ARGS -withoutSourcesAmalgamation
+    GENERATED_SOURCES_VAR GENERATED_SOURCES
+    OUTPUT_VAR ZSERIO_LOG_PACKAGES
+    ERROR_VAR ZSERIO_LOG_PACKAGES
 )
+target_link_libraries(packages_zs PUBLIC ZserioCppRuntime)
+if (ZSERIO_LOG_PACKAGES)
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/zserio_log_packages.txt "${ZSERIO_LOG_PACKAGES}")
+    check_zserio_warnings("${ZSERIO_LOG_PACKAGES}" 0)
+endif ()
 
-zserio_add_library(default_package_zs
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
-    MAIN_SOURCE default_package.zs
-    OUT_DIR ${ZSERIO_GEN_DIR_DEFAULT_PACKAGE}
-    OUT_FILES ${ZSERIO_GENERATED_SOURCES_DEFAULT_PACKAGE}
-    ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation
+add_library(reader_zs STATIC zs/reader.zs)
+zserio_generate_cpp(
+    TARGET reader_zs
+    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen_reader
+    EXTRA_ARGS -withoutSourcesAmalgamation
+    GENERATED_SOURCES_VAR GENERATED_SOURCES
+    OUTPUT_VAR ZSERIO_LOG_READER
+    ERROR_VAR ZSERIO_LOG_READER
 )
-
-zserio_add_library(empty_file_zs
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
-    MAIN_SOURCE empty_file.zs
-    OUT_DIR ${ZSERIO_GEN_DIR_EMPTY_FILE}
-    OUT_FILES EMPTY
-    ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
-)
-
-# we must use 'index_workaround' to prevent clash with global function 'index' which is included
-# via gtest.h -> ... -> strings.h
-zserio_add_library(index_zs
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
-    MAIN_SOURCE index.zs
-    OUT_DIR ${ZSERIO_GEN_DIR_INDEX}
-    OUT_FILES ${ZSERIO_GENERATED_SOURCES_INDEX}
-    ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation -setTopLevelPackage index_workaround
-)
-
-zserio_add_library(package_name_conflict_zs
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
-    MAIN_SOURCE package_name_conflict.zs
-    OUT_DIR ${ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT}
-    OUT_FILES ${ZSERIO_GENERATED_SOURCES_PACKAGE_NAME_CONFLICT}
-    ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation
-)
-
-zserio_add_library(packages_zs
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
-    MAIN_SOURCE packages.zs
-    OUT_DIR ${ZSERIO_GEN_DIR_PACKAGES}
-    OUT_FILES ${ZSERIO_GENERATED_SOURCES_PACKAGES}
-    ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation
-)
-
-zserio_add_library(reader_zs
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
-    MAIN_SOURCE reader.zs
-    OUT_DIR ${ZSERIO_GEN_DIR_READER}
-    OUT_FILES ${ZSERIO_GENERATED_SOURCES_READER}
-    ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation
-)
+target_link_libraries(reader_zs PUBLIC ZserioCppRuntime)
+if (ZSERIO_LOG_READER)
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/zserio_log_reader.txt "${ZSERIO_LOG_READER}")
+    check_zserio_warnings("${ZSERIO_LOG_READER}" 0)
+endif ()
 
 add_custom_test(packages
     DEPENDS
@@ -174,9 +109,9 @@ add_custom_test(packages
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/PackageNameConflictTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ReaderTest.cpp
     GENERATED_SOURCES
-        ${ZSERIO_GENERATED_SOURCES_DEFAULT_PACKAGE}
-        ${ZSERIO_GENERATED_SOURCES_INDEX}
-        ${ZSERIO_GENERATED_SOURCES_PACKAGE_NAME_CONFLICT}
-        ${ZSERIO_GENERATED_SOURCES_PACKAGES}
-        ${ZSERIO_GENERATED_SOURCES_READER}
+        ${GENERATED_SOURCES_DEFAULT_PACKAGE}
+        ${GENERATED_SOURCES_INDEX}
+        ${GENERATED_SOURCES_PACKAGE_NAME_CONFLICT}
+        ${GENERATED_SOURCES_PACKAGES}
+        ${GENERATED_SOURCES_READER}
 )

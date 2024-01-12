@@ -1,24 +1,18 @@
-set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
-set(ZSERIO_GENERATED_SOURCES
-    ${ZSERIO_GEN_DIR}/not_handled_warning/Black.h
-    ${ZSERIO_GEN_DIR}/not_handled_warning/EnumParamChoice.cpp
-    ${ZSERIO_GEN_DIR}/not_handled_warning/EnumParamChoice.h
-    ${ZSERIO_GEN_DIR}/not_handled_warning/Grey.h
-    ${ZSERIO_GEN_DIR}/not_handled_warning/Selector.cpp
-    ${ZSERIO_GEN_DIR}/not_handled_warning/Selector.h
+add_library(not_handled_warning_zs STATIC zs/not_handled_warning.zs)
+zserio_generate_cpp(
+    TARGET not_handled_warning_zs
+    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen
+    EXTRA_ARGS -withoutSourcesAmalgamation
+    GENERATED_SOURCES_VAR GENERATED_SOURCES
+    OUTPUT_VAR ZSERIO_LOG
+    ERROR_VAR ZSERIO_LOG
 )
-
-zserio_add_library(not_handled_warning_zs
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
-    MAIN_SOURCE not_handled_warning.zs
-    OUT_DIR ${ZSERIO_GEN_DIR}
-    OUT_FILES ${ZSERIO_GENERATED_SOURCES}
-    ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation
-    EXPECTED_WARNINGS 2
-    ZSERIO_LOG_FILENAME zserio_log.txt
-)
+target_link_libraries(not_handled_warning_zs PUBLIC ZserioCppRuntime)
+if (ZSERIO_LOG)
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/zserio_log.txt "${ZSERIO_LOG}")
+    check_zserio_warnings("${ZSERIO_LOG}" 2)
+endif ()
 
 add_custom_test(not_handled_warning
     DEPENDS
@@ -26,5 +20,5 @@ add_custom_test(not_handled_warning
     SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/NotHandledWarningTest.cpp
     GENERATED_SOURCES
-        ${ZSERIO_GENERATED_SOURCES}
+        ${GENERATED_SOURCES}
 )

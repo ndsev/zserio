@@ -7,10 +7,12 @@ class CompatibilityWarningTest : public ::testing::Test
 {
 protected:
     CompatibilityWarningTest() :
-            zserioWarnings("warnings/compatibility_warning")
+            zserioWarningsRootWith("warnings/compatibility_warning", "zserio_log_root_with.txt"),
+            zserioWarningsRootWithout("warnings/compatibility_warning", "zserio_log_root_without.txt")
     {}
 
-    const test_utils::ZserioErrorOutput zserioWarnings;
+    const test_utils::ZserioErrorOutput zserioWarningsRootWith;
+    const test_utils::ZserioErrorOutput zserioWarningsRootWithout;
 };
 
 TEST_F(CompatibilityWarningTest, rootWithDiffCompatibility)
@@ -19,7 +21,7 @@ TEST_F(CompatibilityWarningTest, rootWithDiffCompatibility)
             "subpackage.zs:1:30: "
             "Package compatibility version '2.4.2' doesn't match to '2.5.0' specified in root package!";
 
-    ASSERT_TRUE(zserioWarnings.isPresent(error));
+    ASSERT_TRUE(zserioWarningsRootWith.isPresent(error));
 }
 
 TEST_F(CompatibilityWarningTest, rootWithoutCompatibility)
@@ -28,5 +30,5 @@ TEST_F(CompatibilityWarningTest, rootWithoutCompatibility)
             "subpackage.zs:1:30: "
             "Package specifies compatibility version '2.4.2' while root package specifies nothing!";
 
-    ASSERT_TRUE(zserioWarnings.isPresent(error));
+    ASSERT_TRUE(zserioWarningsRootWithout.isPresent(error));
 }

@@ -1,47 +1,18 @@
-set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
-set(ZSERIO_GENERATED_SOURCES
-    ${ZSERIO_GEN_DIR}/subtypes/bitmask_subtype/CONST_READ.h
-    ${ZSERIO_GEN_DIR}/subtypes/bitmask_subtype/Permission.cpp
-    ${ZSERIO_GEN_DIR}/subtypes/bitmask_subtype/Permission.h
-    ${ZSERIO_GEN_DIR}/subtypes/bitmask_subtype/PermissionSubtype.h
-
-    ${ZSERIO_GEN_DIR}/subtypes/enum_subtype/Color.cpp
-    ${ZSERIO_GEN_DIR}/subtypes/enum_subtype/Color.h
-    ${ZSERIO_GEN_DIR}/subtypes/enum_subtype/ColorSubtype.h
-    ${ZSERIO_GEN_DIR}/subtypes/enum_subtype/CONST_BLACK.h
-
-    ${ZSERIO_GEN_DIR}/subtypes/param_structure_subtype/ParameterizedStruct.cpp
-    ${ZSERIO_GEN_DIR}/subtypes/param_structure_subtype/ParameterizedStruct.h
-    ${ZSERIO_GEN_DIR}/subtypes/param_structure_subtype/ParameterizedSubtype.h
-    ${ZSERIO_GEN_DIR}/subtypes/param_structure_subtype/ParameterizedSubtypeStruct.cpp
-    ${ZSERIO_GEN_DIR}/subtypes/param_structure_subtype/ParameterizedSubtypeStruct.h
-
-    ${ZSERIO_GEN_DIR}/subtypes/structure_subtype/Student.h
-    ${ZSERIO_GEN_DIR}/subtypes/structure_subtype/SubtypeStructure.cpp
-    ${ZSERIO_GEN_DIR}/subtypes/structure_subtype/SubtypeStructure.h
-    ${ZSERIO_GEN_DIR}/subtypes/structure_subtype/TestStructure.cpp
-    ${ZSERIO_GEN_DIR}/subtypes/structure_subtype/TestStructure.h
-
-    ${ZSERIO_GEN_DIR}/subtypes/subtype_imported/SubtypeImported.cpp
-    ${ZSERIO_GEN_DIR}/subtypes/subtype_imported/SubtypeImported.h
-    ${ZSERIO_GEN_DIR}/subtypes/subtype_imported/Test.cpp
-    ${ZSERIO_GEN_DIR}/subtypes/subtype_imported/Test.h
-    ${ZSERIO_GEN_DIR}/subtypes/subtype_imported/pkg/SubTest.h
-
-    ${ZSERIO_GEN_DIR}/subtypes/uint16_subtype/Identifier.h
-    ${ZSERIO_GEN_DIR}/subtypes/uint16_subtype/TestStructure.cpp
-    ${ZSERIO_GEN_DIR}/subtypes/uint16_subtype/TestStructure.h
+add_library(subtypes_zs STATIC zs/subtypes.zs)
+zserio_generate_cpp(
+    TARGET subtypes_zs
+    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen
+    EXTRA_ARGS -withoutSourcesAmalgamation
+    GENERATED_SOURCES_VAR GENERATED_SOURCES
+    OUTPUT_VAR ZSERIO_LOG
+    ERROR_VAR ZSERIO_LOG
 )
-
-zserio_add_library(subtypes_zs
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
-    MAIN_SOURCE subtypes.zs
-    OUT_DIR ${ZSERIO_GEN_DIR}
-    OUT_FILES ${ZSERIO_GENERATED_SOURCES}
-    ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation
-)
+target_link_libraries(subtypes_zs PUBLIC ZserioCppRuntime)
+if (ZSERIO_LOG)
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/zserio_log.txt "${ZSERIO_LOG}")
+    check_zserio_warnings("${ZSERIO_LOG}" 0)
+endif ()
 
 add_custom_test(subtypes
     DEPENDS
@@ -54,5 +25,5 @@ add_custom_test(subtypes
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/SubtypeImportedTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/UInt16SubtypeTest.cpp
     GENERATED_SOURCES
-        ${ZSERIO_GENERATED_SOURCES}
+        ${GENERATED_SOURCES}
 )

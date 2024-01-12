@@ -1,55 +1,18 @@
-set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
-set(ZSERIO_GENERATED_SOURCES
-    ${ZSERIO_GEN_DIR}/enumeration_types/bitfield_const_enum/Color.cpp
-    ${ZSERIO_GEN_DIR}/enumeration_types/bitfield_const_enum/Color.h
-    ${ZSERIO_GEN_DIR}/enumeration_types/bitfield_const_enum/NUM_ENUM_BITS.h
-
-    ${ZSERIO_GEN_DIR}/enumeration_types/bitfield_enum/Color.cpp
-    ${ZSERIO_GEN_DIR}/enumeration_types/bitfield_enum/Color.h
-
-    ${ZSERIO_GEN_DIR}/enumeration_types/deprecated_enum_item/Traffic.cpp
-    ${ZSERIO_GEN_DIR}/enumeration_types/deprecated_enum_item/Traffic.h
-
-    ${ZSERIO_GEN_DIR}/enumeration_types/enum_defined_by_constant/Colors.cpp
-    ${ZSERIO_GEN_DIR}/enumeration_types/enum_defined_by_constant/Colors.h
-    ${ZSERIO_GEN_DIR}/enumeration_types/enum_defined_by_constant/WHITE_COLOR.h
-
-    ${ZSERIO_GEN_DIR}/enumeration_types/enum_used_by_enum/Color.cpp
-    ${ZSERIO_GEN_DIR}/enumeration_types/enum_used_by_enum/Color.h
-    ${ZSERIO_GEN_DIR}/enumeration_types/enum_used_by_enum/DarkColor.cpp
-    ${ZSERIO_GEN_DIR}/enumeration_types/enum_used_by_enum/DarkColor.h
-    ${ZSERIO_GEN_DIR}/enumeration_types/enum_used_by_enum/LightColor.cpp
-    ${ZSERIO_GEN_DIR}/enumeration_types/enum_used_by_enum/LightColor.h
-
-    ${ZSERIO_GEN_DIR}/enumeration_types/multiple_removed_enum_items/AllocatorType.cpp
-    ${ZSERIO_GEN_DIR}/enumeration_types/multiple_removed_enum_items/AllocatorType.h
-    ${ZSERIO_GEN_DIR}/enumeration_types/multiple_removed_enum_items/Traffic.cpp
-    ${ZSERIO_GEN_DIR}/enumeration_types/multiple_removed_enum_items/Traffic.h
-
-    ${ZSERIO_GEN_DIR}/enumeration_types/removed_enum_item/AllocatorType.cpp
-    ${ZSERIO_GEN_DIR}/enumeration_types/removed_enum_item/AllocatorType.h
-    ${ZSERIO_GEN_DIR}/enumeration_types/removed_enum_item/Traffic.cpp
-    ${ZSERIO_GEN_DIR}/enumeration_types/removed_enum_item/Traffic.h
-
-    ${ZSERIO_GEN_DIR}/enumeration_types/uint64_enum/DarkColor.cpp
-    ${ZSERIO_GEN_DIR}/enumeration_types/uint64_enum/DarkColor.h
-
-    ${ZSERIO_GEN_DIR}/enumeration_types/uint8_enum/DarkColor.cpp
-    ${ZSERIO_GEN_DIR}/enumeration_types/uint8_enum/DarkColor.h
-
-    ${ZSERIO_GEN_DIR}/enumeration_types/varuint_enum/DarkColor.cpp
-    ${ZSERIO_GEN_DIR}/enumeration_types/varuint_enum/DarkColor.h
+add_library(enumeration_types_zs STATIC zs/enumeration_types.zs)
+zserio_generate_cpp(
+    TARGET enumeration_types_zs
+    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen
+    EXTRA_ARGS -withoutSourcesAmalgamation -withTypeInfoCode
+    GENERATED_SOURCES_VAR GENERATED_SOURCES
+    OUTPUT_VAR ZSERIO_LOG
+    ERROR_VAR ZSERIO_LOG
 )
-
-zserio_add_library(enumeration_types_zs
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
-    MAIN_SOURCE enumeration_types.zs
-    OUT_DIR ${ZSERIO_GEN_DIR}
-    OUT_FILES ${ZSERIO_GENERATED_SOURCES}
-    ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation -withTypeInfoCode
-)
+target_link_libraries(enumeration_types_zs PUBLIC ZserioCppRuntime)
+if (ZSERIO_LOG)
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/zserio_log.txt "${ZSERIO_LOG}")
+    check_zserio_warnings("${ZSERIO_LOG}" 0)
+endif ()
 
 add_custom_test(enumeration_types
     DEPENDS
@@ -66,5 +29,5 @@ add_custom_test(enumeration_types
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/UInt8EnumTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/VarUIntEnumTest.cpp
     GENERATED_SOURCES
-        ${ZSERIO_GENERATED_SOURCES}
+        ${GENERATED_SOURCES}
 )

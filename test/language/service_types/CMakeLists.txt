@@ -1,44 +1,18 @@
-set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
-set(ZSERIO_GENERATED_SOURCES
-    ${ZSERIO_GEN_DIR}/service_types/simple_service/Response.h
-    ${ZSERIO_GEN_DIR}/service_types/simple_service/Response.cpp
-    ${ZSERIO_GEN_DIR}/service_types/simple_service/Request.h
-    ${ZSERIO_GEN_DIR}/service_types/simple_service/Request.cpp
-    ${ZSERIO_GEN_DIR}/service_types/simple_service/SimpleService.h
-    ${ZSERIO_GEN_DIR}/service_types/simple_service/SimpleService.cpp
-
-    ${ZSERIO_GEN_DIR}/service_types/complex_types_service/CMYKModel.cpp
-    ${ZSERIO_GEN_DIR}/service_types/complex_types_service/CMYKModel.h
-    ${ZSERIO_GEN_DIR}/service_types/complex_types_service/Color.h
-    ${ZSERIO_GEN_DIR}/service_types/complex_types_service/ColorModelChoice.cpp
-    ${ZSERIO_GEN_DIR}/service_types/complex_types_service/ColorModelChoice.h
-    ${ZSERIO_GEN_DIR}/service_types/complex_types_service/ColorModel.cpp
-    ${ZSERIO_GEN_DIR}/service_types/complex_types_service/ColorModel.h
-    ${ZSERIO_GEN_DIR}/service_types/complex_types_service/ComplexTypesService.cpp
-    ${ZSERIO_GEN_DIR}/service_types/complex_types_service/ComplexTypesService.h
-    ${ZSERIO_GEN_DIR}/service_types/complex_types_service/LengthResponse.cpp
-    ${ZSERIO_GEN_DIR}/service_types/complex_types_service/LengthResponse.h
-    ${ZSERIO_GEN_DIR}/service_types/complex_types_service/Request.cpp
-    ${ZSERIO_GEN_DIR}/service_types/complex_types_service/RequestData.cpp
-    ${ZSERIO_GEN_DIR}/service_types/complex_types_service/RequestData.h
-    ${ZSERIO_GEN_DIR}/service_types/complex_types_service/Request.h
-    ${ZSERIO_GEN_DIR}/service_types/complex_types_service/Response.cpp
-    ${ZSERIO_GEN_DIR}/service_types/complex_types_service/ResponseData.cpp
-    ${ZSERIO_GEN_DIR}/service_types/complex_types_service/ResponseData.h
-    ${ZSERIO_GEN_DIR}/service_types/complex_types_service/Response.h
-    ${ZSERIO_GEN_DIR}/service_types/complex_types_service/RGBModel.cpp
-    ${ZSERIO_GEN_DIR}/service_types/complex_types_service/RGBModel.h
+add_library(service_types_zs STATIC zs/service_types.zs)
+zserio_generate_cpp(
+    TARGET service_types_zs
+    SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen
+    EXTRA_ARGS -withoutSourcesAmalgamation
+    GENERATED_SOURCES_VAR GENERATED_SOURCES
+    OUTPUT_VAR ZSERIO_LOG
+    ERROR_VAR ZSERIO_LOG
 )
-
-zserio_add_library(service_types_zs
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
-    MAIN_SOURCE service_types.zs
-    OUT_DIR ${ZSERIO_GEN_DIR}
-    OUT_FILES ${ZSERIO_GENERATED_SOURCES}
-    ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation
-)
+target_link_libraries(service_types_zs PUBLIC ZserioCppRuntime)
+if (ZSERIO_LOG)
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/zserio_log.txt "${ZSERIO_LOG}")
+    check_zserio_warnings("${ZSERIO_LOG}" 0)
+endif ()
 
 add_custom_test(service_types
     DEPENDS
@@ -47,5 +21,5 @@ add_custom_test(service_types
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/SimpleServiceTest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/ComplexTypesServiceTest.cpp
     GENERATED_SOURCES
-        ${ZSERIO_GENERATED_SOURCES}
+        ${GENERATED_SOURCES}
 )

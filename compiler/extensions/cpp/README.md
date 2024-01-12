@@ -29,6 +29,116 @@ Zserio C++ generator supports the following C++ compilers:
 
 Although newer C++ compilers are not tested, they should work as well as long as they are backward compatible.
 
+## Using Zserio CMake Helper
+
+Zserio provides [`zserio_compiler.cmake`](../../../cmake/zserio_compiler.cmake) helper, which defines custom function `zserio_generate_cpp`.
+This function can be used for automatic generation of C++ sources from zserio schemas.
+
+#### Prerequisites
+
+* CMake 3.15+
+* Java must be available - the function calls `find_package(JAVA java)`
+* `ZSERIO_JAR_FILE` must be defined either as an environment or CMake variable
+
+#### Usage
+
+    zserio_generate_cpp(
+        TARGET <target>
+        [SRC_DIR <directory>]
+        [MAIN_ZS <file>]
+        [GEN_DIR <directory>]
+        [EXTRA_ARGS <argument>...]
+        [GENERATED_SOURCES_VAR <variable>]
+        [OUTPUT_VAR <variable>]
+        [ERROR_VAR <variable>]
+        [RESULT_VAR <variable>]
+        [FORCE_REGENERATION]
+        [CLEAN_GEN_DIR]
+
+#### Arguments
+
+`TARGET`
+
+Target to which the generated sources will be assigned.
+
+`SRC_DIR`
+
+Source directory for zserio schemas. Optional, defaults to `CMAKE_CURRENT_SOURCE_DIR`.
+
+`MAIN_ZS`
+
+Main zserio schema. Optional if the MAIN_ZS file is specified as a source for the given `TARGET`.
+
+`GEN_DIR`
+
+Directory where the C++ sources will be generated.
+
+`EXTRA_ARGS`
+
+Extra arguments to be passed to the Zserio tool.
+
+`GENERATED_SOURCES_VAR`
+
+The variable will be set with a list of generated source files (full paths). Optional.
+
+`OUTPUT_VAR`
+
+The variable will be set with the contents of the standard output pipe. Optional.
+If not set, the standard output pipe is printed.
+
+`ERROR_VAR`
+
+The variable will be set with the contents of the standard error pipe. Optional.
+If not set, the standard error pipe is printed.
+
+`RESULT_VAR`
+
+The variable will be set to contain the result of the zserio generator. Optional.
+If not set, a `FATAL_ERROR` is raised in case of the zserio generator error.
+
+`FORCE_RECONFIGURE`
+
+Forces regeneration every time the CMake configure is run.
+
+`CLEAN_GEN_DIR`
+
+Cleans `GEN_DIR` when generation in CMake configure-time is run.
+
+> Note that `OUTPUT_VAR` and `ERROR_VAR` can be set to the same value and then both pipes will be merged.
+
+> Note that `OUTPUT_VAR`, `ERROR_VAR` and `RESULT_VAR` are updated only when the generation is executed within
+> the configure-time - i.e. for the first time or when zserio schema sources are changed, etc.
+> See "[How if works](#how-it-works)" for more info.
+
+#### Example
+
+    set(CMAKE_MODULE_PATH "${ZSERIO_RELEASE}/cmake")
+    set(ZSERIO_JAR_FILE "${ZSERIO_RELEASE}/zserio.jar")
+    include(zserio_compiler)
+
+    add_library(sample_zs sample.zs)
+    zserio_generate_cpp(
+        TARGET sample_zs
+        GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
+
+#### How it works
+
+First time the CMake configure is run, the sources are generated using `execute_process` directly in
+configure-time and auxiliary information (timestamps, list of generated sources, etc.) is stored in the
+CMake cache. The auxiliary info is used to define a custom command which uses the same zserio command line
+as the original `execute_process` and thus allows to re-generate sources when it's needed - e.g. after the
+clean step.
+
+The custom command is sufficient as long as the generated sources remains unchanged. Otherwise the
+`execute_process` must be re-run in configure-time to ensure that all generated sources are collected correctly.
+This functionality is achieved using the auxiliary information mentioned above.
+
+List of generated sources can change in following situations:
+
+- ZSERIO_JAR_FILE is changed
+- Zserio schema sources are changed
+- EXTRA_ARGS are changed
+
 ## Functional Safety
 
 Zserio's C++ support is designed with a strong focus on functional safety, aiming to ensure the reliability,
@@ -52,11 +162,11 @@ The following describes features which minimize the risk of Zserio C++ runtime l
 
 #### Clang-tidy Usage
 
-Clang-tidy tool is run using [this configuration](https://github.com/ndsev/zserio/blob/master/compiler/extensions/cpp/runtime/ClangTidyConfig.txt).
+Clang-tidy tool is run using [this configuration](runtime/ClangTidyConfig.txt).
 The clang-tidy report from the latest C++ runtime library is available [here](https://zserio.org/doc/runtime/latest/cpp/clang-tidy/clang-tidy-report.txt).
 
 Due to compatibility and functional safety considerations, zserio is constrained to utilize the C++11 standard.
-Consequently, certain clang-tidy findings remain unresolved at present. This is mainly attributed to 
+Consequently, certain clang-tidy findings remain unresolved at present. This is mainly attributed to
 zserio's C++ runtime library, which operates at a lower level and emulates standard abstractions like
 std::span or std::string_view introduced in C++17.
 

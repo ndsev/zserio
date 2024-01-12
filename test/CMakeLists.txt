@@ -4,7 +4,7 @@
 #
 # This CMake file is designed to be included directly without any further dependencies.
 #
-cmake_minimum_required(VERSION 3.6.0)
+cmake_minimum_required(VERSION 3.15.0)
 
 project(ZserioCppTest)
 
@@ -54,17 +54,26 @@ compiler_set_warnings()
 compiler_set_warnings_as_errors()
 
 # add zserio runtime library
-include(zserio_utils)
-set(ZSERIO_JAR_DIR "${ZSERIO_RELEASE_ROOT}/zserio_libs")
-set(ZSERIO_CPP_DISTR_DIR "${ZSERIO_JAR_DIR}")
-set(ZSERIO_RUNTIME_LIBRARY_DIR "${ZSERIO_RELEASE_ROOT}/runtime_libs/cpp")
-zserio_add_runtime_library(RUNTIME_LIBRARY_DIR "${ZSERIO_RUNTIME_LIBRARY_DIR}")
+set(ZSERIO_JAR_FILE "${ZSERIO_RELEASE_ROOT}/zserio.jar")
+include(zserio_compiler)
+
+add_subdirectory("${ZSERIO_RELEASE_ROOT}/runtime_libs/cpp" ZserioCppRuntime)
 
 compiler_reset_warnings()
 compiler_set_test_warnings()
 if (SANITIZERS_ENABLED)
     compiler_set_undefined_sanitizer()
 endif ()
+
+# A function which checks whether the number of warnings produced by zserio compilers is as expected.
+function(check_zserio_warnings ZSERIO_LOG EXPECTED_WARNINGS)
+    string(REGEX MATCHALL "\\[WARNING\\]" WARNINGS "${ZSERIO_LOG}")
+    list(LENGTH WARNINGS NUM_WARNINGS)
+
+    if (NOT ${NUM_WARNINGS} EQUAL ${EXPECTED_WARNINGS})
+        message(FATAL_ERROR "Zserio tool produced ${NUM_WARNINGS} warning(s) (expected ${EXPECTED_WARNINGS})!")
+    endif ()
+endfunction()
 
 # cppcheck needs to know all include directories in generated code
 function(get_generated_dirs GENERATED_SOURCES GENERATED_INCLUDES_VAR)
