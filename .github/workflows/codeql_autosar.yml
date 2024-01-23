@@ -39,8 +39,9 @@ jobs:
         CMAKE_BUILD_OPTIONS: "-j2"
 
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
+      uses: github/codeql-action/init@v3
       with:
+        tools: https://github.com/github/codeql-action/releases/download/codeql-bundle-v2.15.5/codeql-bundle-linux64.tar.gz
         languages: cpp
         config: |
           disable-default-queries: true
@@ -54,6 +55,6 @@ jobs:
         CMAKE_BUILD_OPTIONS: "-j2"
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
+      uses: github/codeql-action/analyze@v3
       with:
         category: "autosar"
