@@ -65,12 +65,20 @@ ${I}if (${field.optional.clause})
 ${I}if (in.readBool())
         </#if>
 ${I}{
-        <@compound_read_field_inner field, compoundName, indent+1, packed/>
+${I}    <@compound_read_field_prolog field, compoundName, indent+1/> 
+${I}    ${field.readFieldInner(packed)}
+        <@compound_check_constraint_field field, name, "Read", indent+1/>
+        /*<@compound_read_field_inner field, compoundName, indent+1, packed/>*/
 ${I}}
-
-${I}return <@field_member_type_name field/>(::zserio::NullOpt<#if field.holderNeedsAllocator>, allocator</#if>);
+${I}else
+${I}{
+${I}    ${field.cppName}.reset();
+${I}}
     <#else>
-    <@compound_read_field_inner field, compoundName, indent, packed/>
+    <@compound_read_field_prolog field, compoundName, indent/>
+${I}${field.readFieldInner(packed)}
+    <@compound_check_constraint_field field, name, "Read", indent/>
+    /*<@compound_read_field_inner field, compoundName, indent, packed/>*/
     </#if>
 </#macro>
 

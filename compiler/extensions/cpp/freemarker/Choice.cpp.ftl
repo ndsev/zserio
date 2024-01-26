@@ -36,17 +36,18 @@
         m_objectChoice(allocator)
 </#macro>
 <#assign emptyConstructorInitMacroName><#if fieldList?has_content>empty_constructor_field_initialization</#if></#assign>
-    <@compound_constructor_definition compoundConstructorsData emptyConstructorInitMacroName/>
+<@compound_constructor_definition compoundConstructorsData emptyConstructorInitMacroName/>
 
 </#if>
-<#macro read_constructor_field_initialization packed>
-        m_objectChoice(readObject(<#if packed>context, </#if>in, allocator), allocator)
-</#macro>
-<#assign readConstructorInitMacroName><#if fieldList?has_content>read_constructor_field_initialization</#if></#assign>
-<@compound_read_constructor_definition compoundConstructorsData, readConstructorInitMacroName/>
+<#--  -->
+<#assign initializer=[]/>
+<#if fieldList?has_content><#assign initializer=["m_objectChoice(allocator)"]/></#if>
+<@compound_noinit_constructor_definition compoundConstructorsData initializer/>
+		
+<@compound_read_constructor_definition compoundConstructorsData/>
 <#if isPackable && usedInPackedArray>
 
-<@compound_read_constructor_definition compoundConstructorsData, readConstructorInitMacroName, true/>
+<@compound_read_constructor_definition compoundConstructorsData, true/>
 </#if>
 
 <#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
@@ -84,10 +85,12 @@
         </#list>
     </#if>
 </#macro>
+<#--  -->
 <#macro choice_no_match name indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}throw ::zserio::CppRuntimeException("No match in choice ${name}!");
 </#macro>
+<#--  -->
 <#macro choice_switch memberActionMacroName noMatchMacroName selectorExpression indent packed=false>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if canUseNativeSwitch>
@@ -133,6 +136,7 @@ ${I}}
         </#if>
     </#if>
 </#macro>
+<#--  -->
 <#if withTypeInfoCode>
 const ${types.typeInfo.name}& ${name}::typeInfo()
 {
@@ -542,6 +546,61 @@ uint32_t ${name}::hashCode() const
 
     return result;
 }
+
+<#macro choice_read_member member packed indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if fieldList?has_content>
+    	<#if member.compoundField??>
+            <@compound_read_field member.compoundField, name, indent, packed/>
+        <#else>
+${I}m_objectChoice.reset();
+        </#if>
+    </#if>
+    <#if canUseNativeSwitch><#rt>
+${I}break;</#if>
+</#macro>
+<#--  -->
+void ${name}::read(::zserio::BitStreamReader& in<#if parameterArgs(true)?has_content>, ${parameterArgs(true)}</#if>, const allocator_type& allocator)
+{
+    <#if needs_compound_initialization(compoundConstructorsData)>
+    m_isInitialized = true;
+    
+    <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
+    m_areChildrenInitialized = true;
+    
+    </#if>
+    <#list compoundParametersData.list as param>
+    ${param.cppName} = <#if !param.typeInfo.isSimple>&</#if>${param.cppArgName};
+    <#if !param?has_next>
+    
+    </#if>
+    </#list>    
+    <#if fieldList?has_content>
+      <@choice_switch "choice_read_member", "choice_no_match", selectorExpression, 1, false/>
+    </#if>    
+}
+<#if isPackable && usedInPackedArray>
+
+void ${name}::read(${name}::ZserioPackingContext& context, ::zserio::BitStreamReader& in<#if parameterArgs(true)?has_content>, ${parameterArgs(true)}</#if>, const allocator_type& allocator)
+{
+    <#if needs_compound_initialization(compoundConstructorsData)>
+    m_isInitialized = true;
+    
+    <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
+    m_areChildrenInitialized = true;
+    
+    </#if>
+    <#list compoundParametersData.list as param>
+    ${param.cppName} = <#if !param.typeInfo.isSimple>&</#if>${param.cppArgName};
+    <#if !param?has_next>
+    
+    </#if>
+    </#list>    
+    <#if fieldList?has_content>
+      <@choice_switch "choice_read_member", "choice_no_match", selectorExpression, 1, true/>
+    </#if>    
+}
+</#if>
 <#if withWriterCode>
 
 <#macro choice_write_member member packed indent>
@@ -573,7 +632,7 @@ void ${name}::write(${name}::ZserioPackingContext&<#if uses_packing_context(fiel
 <#if fieldList?has_content>
 
 <@inner_classes_definition name, fieldList/>
-<#macro choice_read_member member packed indent>
+<#-- macro choice_read_member member packed indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
         <#if needs_field_read_local_variable(member.compoundField)>
@@ -587,18 +646,18 @@ ${I}}
 ${I}return ${types.anyHolder.name}(allocator);
     </#if>
 </#macro>
-${types.anyHolder.name} ${name}::readObject(::zserio::BitStreamReader& in, const allocator_type& allocator)
+/*${types.anyHolder.name} ${name}::readObject(::zserio::BitStreamReader& in, const allocator_type& allocator)
 {
     <@choice_switch "choice_read_member", "choice_no_match", selectorExpression, 1/>
-}
+}*/
 <#if isPackable && usedInPackedArray>
 
-${types.anyHolder.name} ${name}::readObject(${name}::ZserioPackingContext&<#if uses_packing_context(fieldList)> context</#if>,
+/*${types.anyHolder.name} ${name}::readObject(${name}::ZserioPackingContext&<#if uses_packing_context(fieldList)> context</#if>,
         ::zserio::BitStreamReader& in, const allocator_type& allocator)
 {
     <@choice_switch "choice_read_member", "choice_no_match", selectorExpression, 1, true/>
-}
-</#if>
+}*/
+</#if-->
 
 <#macro choice_copy_object member packed indent>
     <#local I>${""?left_pad(indent * 4)}</#local>

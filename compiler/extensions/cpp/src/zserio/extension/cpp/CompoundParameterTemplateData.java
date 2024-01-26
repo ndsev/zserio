@@ -78,6 +78,16 @@ public final class CompoundParameterTemplateData
         {
             return docComments;
         }
+        
+        public String getCppName()
+        {
+        	return "m_" + name + "_";
+        }
+        
+        public String getCppArgName()
+        {
+        	return name + "_";
+        }
 
         private final String name;
         private final NativeTypeInfoTemplateData typeInfo;

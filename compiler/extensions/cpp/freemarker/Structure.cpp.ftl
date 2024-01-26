@@ -70,22 +70,16 @@
     <@compound_constructor_definition compoundConstructorsData, emptyConstructorInitMacroName/>
 
 </#if>
-<#macro read_constructor_field_initialization packed>
-    <#list fieldList as field>
-        <@field_member_name field/>(${field.readerName}(<#if packed && field.isPackable>context, </#if>in<#rt>
-        <#if field.needsAllocator || field.holderNeedsAllocator>
-                , allocator<#t>
-        </#if>
-                <#lt>))<#if field?has_next>,</#if>
-    </#list>
-</#macro>
-<#assign readConstructorInitMacroName><#if fieldList?has_content>read_constructor_field_initialization</#if></#assign>
-<@compound_read_constructor_definition compoundConstructorsData, readConstructorInitMacroName/>
+<#--  -->
+<@compound_noinit_constructor_definition compoundConstructorsData/>
+
+<@compound_read_constructor_definition compoundConstructorsData false/>
+<#--  -->
 <#if isPackable && usedInPackedArray>
 
-<@compound_read_constructor_definition compoundConstructorsData, readConstructorInitMacroName, true/>
+<@compound_read_constructor_definition compoundConstructorsData true/>
 </#if>
-
+   
 <#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
 <@compound_copy_constructor_definition compoundConstructorsData/>
 
@@ -546,8 +540,93 @@ void ${name}::write(${name}::ZserioPackingContext&<#if uses_packing_context(fiel
 
 <@inner_classes_definition name, fieldList/>
 </#if>
+<#--  -->
+void ${name}::read(::zserio::BitStreamReader& in<#if parameterArgs(true)?has_content>, ${parameterArgs(true)}</#if>, const allocator_type& allocator)
+{
+    <#if needs_compound_initialization(compoundConstructorsData)>
+    m_isInitialized = true;
+    
+    <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
+    m_areChildrenInitialized = true;
+    
+    </#if>
+    <#list compoundParametersData.list as param>
+    ${param.cppName} = <#if !param.typeInfo.isSimple>&</#if>${param.cppArgName};
+    <#if !param?has_next>
+    
+    </#if>
+    </#list>
+    <#if num_extended_fields(compoundConstructorsData.fieldList) != 0>
+    m_numExtendedFields = 0;
+    
+    </#if>
+    <#list fieldList as field>
+    <#if field.isExtended>
+    if (::zserio::alignTo(UINT8_C(8), in.getBitPosition()) < in.getBufferBitSize())
+    {
+        ++m_numExtendedFields;
+        in.alignTo(UINT32_C(8));
+        <@compound_read_field field, name, 2, false/>        
+    }
+    else
+    {
+        ${field.cppName} = <#if !field.typeInfo.isSimple><@field_member_type_name field/>(</#if><#rt>
+                <#lt><@field_default_constructor_arguments field/><#if !field.typeInfo.isSimple>)</#if>;
+    }
+    <#else>
+    <@compound_read_field field, name, 1, false/>
+    </#if>
+    <#if field?has_next>
+    
+    </#if>
+    </#list>
+}
+<#if isPackable && usedInPackedArray>
+
+void ${name}::read(${name}::ZserioPackingContext& context, ::zserio::BitStreamReader& in<#if parameterArgs(true)?has_content>, ${parameterArgs(true)}</#if>, const allocator_type& allocator)
+{
+    <#if needs_compound_initialization(compoundConstructorsData)>
+    m_isInitialized = true;
+    
+    <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
+    m_areChildrenInitialized = true;
+    
+    </#if>
+    <#list compoundParametersData.list as param>
+    ${param.cppName} = <#if !param.typeInfo.isSimple>&</#if>${param.cppArgName};
+    <#if !param?has_next>
+    
+    </#if>
+    </#list>    
+    <#if num_extended_fields(compoundConstructorsData.fieldList) != 0>
+    m_numExtendedFields = 0;
+    
+    </#if>
+    <#list fieldList as field>
+    <#if field.isExtended>
+    if (::zserio::alignTo(UINT8_C(8), in.getBitPosition()) < in.getBufferBitSize())
+    {
+        ++m_numExtendedFields;
+        in.alignTo(UINT32_C(8));
+        <@compound_read_field field, name, 2, true/>        
+    }
+    else
+    {
+        ${field.cppName} = <#if !field.typeInfo.isSimple><@field_member_type_name field/>(</#if><#rt>
+                <#lt><@field_default_constructor_arguments field/><#if !field.typeInfo.isSimple>)</#if>;
+    }
+    <#else>
+    <@compound_read_field field, name, 1, true/>
+    </#if>
+    <#if field?has_next>
+    
+    </#if>
+    </#list>
+}
+</#if>
+
 <#list fieldList as field>
-<@field_member_type_name field, name/> ${name}::${field.readerName}(::zserio::BitStreamReader& in<#rt>
+/*<@field_member_type_name field, name/> ${name}::${field.readerName}(::zserio::BitStreamReader& in<#rt>
     <#if field.needsAllocator || field.holderNeedsAllocator>
         <#lt>,
         const allocator_type& allocator<#rt>
@@ -564,11 +643,12 @@ void ${name}::write(${name}::ZserioPackingContext&<#if uses_packing_context(fiel
     in.alignTo(UINT32_C(8));
 
     </#if>
-    <@compound_read_field field, name, 1/>
-}
+    <#-- @compound_read_field field, name, 1/-->
+    <@compound_read_field_inner field, name, 1, false />
+}*/
     <#if field.isPackable && usedInPackedArray>
 
-<@field_member_type_name field, name/> ${name}::${field.readerName}(<#rt>
+/*<@field_member_type_name field, name/> ${name}::${field.readerName}(<#rt>
         <#lt>${name}::ZserioPackingContext&<#if uses_field_packing_context(field)> context</#if>, <#rt>
         ::zserio::BitStreamReader& in<#t>
         <#if field.needsAllocator || field.holderNeedsAllocator>
@@ -586,8 +666,9 @@ void ${name}::write(${name}::ZserioPackingContext&<#if uses_packing_context(fiel
     in.alignTo(UINT32_C(8));
 
         </#if>
-    <@compound_read_field field, name, 1, true/>
-}
+    <#--@compound_read_field field, name, 1, true/-->
+    <@compound_read_field_inner field, name, 1, true/>
+}*/
     </#if>
 </#list>
 <@namespace_end package.path/>

@@ -72,6 +72,8 @@ public:
     <@compound_constructor_declaration compoundConstructorsData/>
 </#if>
 
+    <@compound_noinit_constructor_declaration compoundConstructorsData/>
+
     <@compound_read_constructor_declaration compoundConstructorsData/>
 <#if isPackable && usedInPackedArray>
     <#if withCodeComments>
@@ -303,6 +305,28 @@ public:
      */
 </#if>
     uint32_t hashCode() const;
+    
+<#if withCodeComments>
+    /**
+     * Reads zserio object from the bit stream.
+     *
+     * \param in Bit stream reader from where to read this Zserio object.
+     */
+</#if>
+    void read(::zserio::BitStreamReader& in<#if parameterArgs(true)?has_content>, ${parameterArgs(true)}</#if>, const allocator_type& allocator);
+    <#if isPackable && usedInPackedArray>
+        <#if withCodeComments>    
+        
+    /**
+     * Reads zserio object from the bit stream.
+     *
+     * \param context Context for packed arrays.
+     * \param in Bit stream reader from where to read this Zserio object.
+     */
+        </#if>
+    void read(ZserioPackingContext& context, ::zserio::BitStreamReader& in<#if parameterArgs(true)?has_content>, ${parameterArgs(true)}</#if>, const allocator_type& allocator);
+    </#if>        
+	<#--  -->    
 <#if withWriterCode>
 
     <#if withCodeComments>
@@ -332,10 +356,10 @@ public:
 private:
     <@private_section_declarations name, fieldList/>
 <#if fieldList?has_content>
-    ${types.anyHolder.name} readObject(::zserio::BitStreamReader& in, const allocator_type& allocator);
+    //${types.anyHolder.name} readObject(::zserio::BitStreamReader& in, const allocator_type& allocator);
     <#if isPackable && usedInPackedArray>
-    ${types.anyHolder.name} readObject(ZserioPackingContext& context, ::zserio::BitStreamReader& in,
-            const allocator_type& allocator);
+    /*${types.anyHolder.name} readObject(ZserioPackingContext& context, ::zserio::BitStreamReader& in,
+            const allocator_type& allocator);*/
     </#if>
     ${types.anyHolder.name} copyObject(const allocator_type& allocator) const;
 

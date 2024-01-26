@@ -61,6 +61,7 @@ public:
     <@compound_default_constructor compoundConstructorsData/>
 
     <@compound_constructor_declaration compoundConstructorsData/>
+    
     <#if fieldList?has_content>
 
         <#if withCodeComments>
@@ -92,14 +93,15 @@ public:
     </#if>
 </#if>
 
-    <@compound_read_constructor_declaration compoundConstructorsData/>
+    <@compound_noinit_constructor_declaration compoundConstructorsData/>
+    
+	<@compound_read_constructor_declaration compoundConstructorsData false/>    
+<#rt>
 <#if isPackable && usedInPackedArray>
-    <#if withCodeComments>
-
-    </#if>
-    <@compound_read_constructor_declaration compoundConstructorsData, true/>
-</#if>
-
+    
+    <@compound_read_constructor_declaration compoundConstructorsData true/>
+</#if>    
+        
 <#if withCodeComments>
     /** Default destructor. */
 </#if>
@@ -354,6 +356,28 @@ public:
      */
 </#if>
     uint32_t hashCode() const;
+    
+<#if withCodeComments>
+    /**
+     * Reads zserio object from the bit stream.
+     *
+     * \param in Bit stream reader from where to read this Zserio object.
+     */
+</#if>
+    void read(::zserio::BitStreamReader& in<#if parameterArgs(true)?has_content>, ${parameterArgs(true)}</#if>, const allocator_type& allocator);
+    <#if isPackable && usedInPackedArray>
+        <#if withCodeComments>    
+        
+    /**
+     * Reads zserio object from the bit stream.
+     *
+     * \param context Context for packed arrays.
+     * \param in Bit stream reader from where to read this Zserio object.
+     */
+        </#if>
+    void read(ZserioPackingContext& context, ::zserio::BitStreamReader& in<#if parameterArgs(true)?has_content>, ${parameterArgs(true)}</#if>, const allocator_type& allocator);
+    </#if>        
+	<#--  -->
 <#if withWriterCode>
 
     <#if withCodeComments>
@@ -383,19 +407,19 @@ public:
 private:
     <@private_section_declarations name, fieldList/>
 <#list fieldList as field>
-    <@field_member_type_name field/> ${field.readerName}(::zserio::BitStreamReader& in<#rt>
+    /*<@field_member_type_name field/> ${field.readerName}(::zserio::BitStreamReader& in<#rt>
     <#if field.needsAllocator || field.holderNeedsAllocator>
             <#lt>,
             const allocator_type& allocator<#rt>
     </#if>
-    <#lt>);
+    <#lt>);*/
     <#if field.isPackable && usedInPackedArray>
-    <@field_member_type_name field/> ${field.readerName}(ZserioPackingContext& context,
+    /*<@field_member_type_name field/> ${field.readerName}(ZserioPackingContext& context,
             ::zserio::BitStreamReader& in<#rt>
         <#if field.needsAllocator || field.holderNeedsAllocator>
             , const allocator_type& allocator<#t>
         </#if>
-            <#lt>);
+            <#lt>);*/
     </#if>
     <#if !field?has_next>
 

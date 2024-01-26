@@ -43,18 +43,15 @@
     <@compound_constructor_definition compoundConstructorsData, "empty_constructor_field_initialization"/>
 
 </#if>
-<#macro read_constructor_field_initialization packed>
-    <#if fieldList?has_content>
-        m_choiceTag(readChoiceTag(<#if packed>context, </#if>in)),
-        m_objectChoice(readObject(<#if packed>context, </#if>in, allocator))
-    <#else>
-        m_choiceTag(UNDEFINED_CHOICE)
-    </#if>
-</#macro>
-<@compound_read_constructor_definition compoundConstructorsData, "read_constructor_field_initialization"/>
+<#--  -->
+<#assign initializer=[]/>
+<#if fieldList?has_content><#assign initializer=["m_objectChoice(allocator)"]/></#if>
+<@compound_noinit_constructor_definition compoundConstructorsData initializer/>
+		
+<@compound_read_constructor_definition compoundConstructorsData/>
 <#if isPackable && usedInPackedArray>
 
-<@compound_read_constructor_definition compoundConstructorsData, "read_constructor_field_initialization", true/>
+<@compound_read_constructor_definition compoundConstructorsData, true/>
 </#if>
 
 <#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
@@ -652,6 +649,88 @@ uint32_t ${name}::hashCode() const
 
     return result;
 }
+
+<#macro choice_read_member member packed indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if fieldList?has_content>
+    	<#if member.compoundField??>
+            <@compound_read_field member.compoundField, name, indent, packed/>
+        <#else>
+${I}m_objectChoice.reset();
+        </#if>
+    </#if>
+    <#if canUseNativeSwitch><#rt>
+${I}break;</#if>
+</#macro>
+<#--  -->
+void ${name}::read(::zserio::BitStreamReader& in<#if parameterArgs(true)?has_content>, ${parameterArgs(true)}</#if>, const allocator_type& allocator)
+{
+    <#if needs_compound_initialization(compoundConstructorsData)>
+    m_isInitialized = true;
+    
+    <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
+    m_areChildrenInitialized = true;
+    
+    </#if>
+    <#list compoundParametersData.list as param>
+    ${param.cppName} = <#if !param.typeInfo.isSimple>&</#if>${param.name}_;
+    <#if !param?has_next>
+    
+    </#if>
+    </#list>    
+    <#if fieldList?has_content>
+    m_choiceTag = static_cast<${name}::ChoiceTag>(/*static_cast<int32_t>*/(in.readVarSize()));
+	
+	switch (m_choiceTag)
+	{
+	<#list fieldList as field>
+    case <@choice_tag_name field/>:
+        <@compound_read_field field, name, 2/>
+        break;
+    </#list>
+    default:
+        throw ::zserio::CppRuntimeException("No match in union ${name}!");
+    }
+    <#else>
+    m_choiceTag = UNDEFINED_CHOICE;
+    </#if>
+}
+<#if isPackable && usedInPackedArray>
+
+void ${name}::read(${name}::ZserioPackingContext& context, ::zserio::BitStreamReader& in<#if parameterArgs(true)?has_content>, ${parameterArgs(true)}</#if>, const allocator_type& allocator)
+{
+    <#if needs_compound_initialization(compoundConstructorsData)>
+    m_isInitialized = true;
+    
+    <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
+    m_areChildrenInitialized = true;
+    
+    </#if>
+    <#list compoundParametersData.list as param>
+    ${param.cppName} = <#if !param.typeInfo.isSimple>&</#if>${param.name}_;
+    <#if !param?has_next>
+    
+    </#if>
+    </#list>
+    <#if fieldList?has_content>
+    m_choiceTag = static_cast<${name}::ChoiceTag>(/*static_cast<int32_t>*/(context.getChoiceTag().read<${choiceTagArrayTraits}>(in)));
+	
+	switch (m_choiceTag)
+	{
+	<#list fieldList as field>
+    case <@choice_tag_name field/>:
+        <@compound_read_field field, name, 2, true/>
+        break;
+    </#list>
+    default:
+        throw ::zserio::CppRuntimeException("No match in union ${name}!");
+    }
+    <#else>
+    m_choiceTag = UNDEFINED_CHOICE;
+    </#if>  
+}
+</#if>
+<#--  -->
 <#if withWriterCode>
 
 void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#if>) const
@@ -693,18 +772,19 @@ void ${name}::write(${name}::ZserioPackingContext& context, ::zserio::BitStreamW
 <#if fieldList?has_content>
 
 <@inner_classes_definition name, fieldList/>
-${name}::ChoiceTag ${name}::readChoiceTag(::zserio::BitStreamReader& in)
+/*${name}::ChoiceTag ${name}::readChoiceTag(::zserio::BitStreamReader& in)
 {
     return static_cast<${name}::ChoiceTag>(static_cast<int32_t>(in.readVarSize()));
-}
+}*/
 <#if isPackable && usedInPackedArray>
 
-${name}::ChoiceTag ${name}::readChoiceTag(${name}::ZserioPackingContext& context, ::zserio::BitStreamReader& in)
+/*${name}::ChoiceTag ${name}::readChoiceTag(${name}::ZserioPackingContext& context, ::zserio::BitStreamReader& in)
 {
     return static_cast<${name}::ChoiceTag>(static_cast<int32_t>(context.getChoiceTag().read<${choiceTagArrayTraits}>(in)));
-}
+}*/
 </#if>
 
+#if 0
 ${types.anyHolder.name} ${name}::readObject(::zserio::BitStreamReader& in, const allocator_type& allocator)
 {
     switch (m_choiceTag)
@@ -723,8 +803,10 @@ ${types.anyHolder.name} ${name}::readObject(::zserio::BitStreamReader& in, const
         throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
 }
+#endif
 <#if isPackable && usedInPackedArray>
 
+#if 0
 ${types.anyHolder.name} ${name}::readObject(${name}::ZserioPackingContext&<#if uses_packing_context(fieldList)> context</#if>,
         ::zserio::BitStreamReader& in, const allocator_type& allocator)
 {
@@ -744,6 +826,7 @@ ${types.anyHolder.name} ${name}::readObject(${name}::ZserioPackingContext&<#if u
         throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
 }
+#endif
 </#if>
 
 ${types.anyHolder.name} ${name}::copyObject(const allocator_type& allocator) const

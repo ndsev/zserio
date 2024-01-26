@@ -82,7 +82,54 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
     {
         return templateInstantiation;
     }
+    
+    // formats parameters as function arguments 
+    // withTypes: uint16_t a_, Param& b_
+    // !withTypes: a_, b_
+    public String parameterArgs(boolean withTypes)
+    {
+    	List<String> args = new ArrayList<String>();
+    	for (var param : compoundParametersData.getList())
+    	{
+    		String s = "";
+    		if (withTypes) {
+    			s += param.getTypeInfo().getTypeFullName();    		
+    			if (!param.getTypeInfo().getIsSimple())
+    				s += "&";
+    			s += " ";
+    		}
+    		s += param.getCppArgName();
+    		args.add(s);
+    	}
+    	return String.join(", ", args);
+    }
 
+    // formats NoInit constructor initializers - only struct and array fields
+    public ArrayList<String> noInitInitializers()
+    {
+    	var inits = new ArrayList<String>();
+    	for (var field : fieldList)
+    	{
+    		if (field.getTypeInfo().getIsSimple())
+        		continue;    		
+    		if ((field.getOptional() == null && !field.getNeedsAllocator()) ||
+    			(field.getOptional() != null && !field.getHolderNeedsAllocator()))
+    			continue;
+    		
+    		String s = field.getCppName() + "(";
+    		
+    		if (field.getCompound() != null &&
+    			field.getOptional() == null &&
+    			field.getArray() == null)
+    			s += "::zserio::NoInit, ";
+    		
+    		s += "allocator)";
+    		
+    		inits.add(s);
+    	}
+    	return inits;
+	}
+        
     private final boolean usedInPackedArray;
 
     private final List<CompoundFieldTemplateData> fieldList;

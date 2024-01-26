@@ -46,6 +46,27 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 }
 </#macro>
 
+<#macro compound_noinit_constructor_declaration compoundConstructorsData>
+<#if withCodeComments>
+    /**
+     * NoInit constructor to be called from read operation.
+     *
+     * \param allocator Allocator to construct from.
+     */
+    </#if>
+    ${compoundConstructorsData.compoundName}(::zserio::NoInitT, const allocator_type& allocator) noexcept;
+</#macro>
+
+<#macro compound_noinit_constructor_definition compoundConstructorsData initializers=noInitInitializers()>
+${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}<#rt>
+(::zserio::NoInitT, const allocator_type& allocator) noexcept<#if initializers?has_content> :</#if>
+<#list initializers as init>
+        ${init}<#if init?has_next>,</#if>
+</#list>
+{
+}
+</#macro>
+
 <#macro compound_read_constructor_declaration compoundConstructorsData packed=false>
     <#if withCodeComments>
     /**
@@ -70,50 +91,29 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
             <#nt><#rt><#-- trim only newline -->
     </#if>
             ::zserio::BitStreamReader& in<#t>
-    <#if constructorArgumentTypeList?has_content>
+    <#if parameterArgs(true)?has_content>
             <#lt>,
-            ${constructorArgumentTypeList}<#t>
+            ${parameterArgs(true)}<#rt>
     </#if>
             <#lt>, const allocator_type& allocator = allocator_type());
 </#macro>
 
-<#macro compound_read_constructor_definition compoundConstructorsData memberInitializationMacroName packed=false>
-    <#local constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData, 2/></#local>
-    <#local hasInitializers=constructorArgumentTypeList?has_content ||
-            needs_compound_initialization(compoundConstructorsData) ||
-            has_field_with_initialization(compoundConstructorsData.fieldList) ||
-            memberInitializationMacroName != ""/>
+<#macro compound_read_constructor_definition compoundConstructorsData packed=false>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
-    <#if packed>
-        ${compoundConstructorsData.compoundName}::ZserioPackingContext& context, <#t>
-    </#if>
-        ::zserio::BitStreamReader&<#if compoundConstructorsData.fieldList?has_content> in</#if><#t>
-    <#if constructorArgumentTypeList?has_content>
-        <#lt>,
-        ${constructorArgumentTypeList}<#t>
-    </#if>
-        , const allocator_type&<#if read_constructor_needs_allocator(compoundConstructorsData.fieldList)> allocator</#if><#t>
-    <#if hasInitializers>
-        <#lt>) :
-    <#else>
-        <#lt>)
-    </#if>
-    <#if constructorArgumentTypeList?has_content>
-        <@compound_parameter_constructor_initializers compoundConstructorsData.compoundParametersData, 2,
-                needs_compound_initialization(compoundConstructorsData)/>
-    </#if>
-    <#if needs_compound_initialization(compoundConstructorsData)>
-        m_isInitialized(true)<#if memberInitializationMacroName != "">,</#if>
-    <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
-        m_areChildrenInitialized(true)<#if memberInitializationMacroName != "">,</#if>
-    </#if>
-    <#if memberInitializationMacroName != "">
+<#if packed>${compoundConstructorsData.compoundName}::ZserioPackingContext& context, </#if><#rt>
+::zserio::BitStreamReader& in, <#rt>
+<#if parameterArgs(true)?has_content>${parameterArgs(true)}, </#if><#rt>
+const allocator_type& allocator<#rt>
+) :
+        ${compoundConstructorsData.compoundName}(::zserio::NoInit, allocator)
+    <#-- #if memberInitializationMacroName != "">
         <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
         m_numExtendedFields(0),
         </#if>
         <@.vars[memberInitializationMacroName] packed/>
-    </#if>
+    </#if-->
 {
+    read(<#if packed>context, </#if>in<#if parameterArgs(false)?has_content>, ${parameterArgs(false)}</#if>, allocator);
 }
 </#macro>
 

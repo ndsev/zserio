@@ -96,6 +96,10 @@ protected:
         const std::string writeMethodDeclaration = "write(ZserioPackingContext";
         const std::string writeMethodDefinition = "write(" + typeName + "::ZserioPackingContext";
         ASSERT_METHOD_PRESENT(PATH, typeName, writeMethodDeclaration.c_str(), writeMethodDefinition.c_str());
+
+        const std::string readMethodDeclaration = "read(ZserioPackingContext";
+        const std::string readMethodDefinition = "read(" + typeName + "::ZserioPackingContext";
+        ASSERT_METHOD_PRESENT(PATH, typeName, readMethodDeclaration.c_str(), readMethodDefinition.c_str());
     }
 
     void assertPackingInterfaceMethodsNotPresent(const std::string& typeName)
@@ -122,6 +126,10 @@ protected:
         const std::string writeMethodDefinition = "write(" + typeName + "::ZserioPackingContext";
         ASSERT_METHOD_NOT_PRESENT(
                 PATH, typeName, writeMethodDeclaration.c_str(), writeMethodDefinition.c_str());
+
+        const std::string readMethodDeclaration = "read(ZserioPackingContext";
+        const std::string readMethodDefinition = "read(" + typeName + "::ZserioPackingContext";
+        ASSERT_METHOD_NOT_PRESENT(PATH, typeName, readMethodDeclaration.c_str(), readMethodDefinition.c_str());
     }
 
     static const std::string BLOB_NAME;
