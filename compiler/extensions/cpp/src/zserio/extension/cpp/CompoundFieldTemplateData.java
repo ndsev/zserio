@@ -337,11 +337,11 @@ public final class CompoundFieldTemplateData
 
     public static final class Constraint
     {
-        public Constraint(Expression constraintExpression, ExpressionFormatter cppExpressionFormatter,
-                ExpressionFormatter cppConstraintExpressionFormatter) throws ZserioExtensionException
+        public Constraint(Expression constraintExpression, 
+        		ExpressionFormatter cppExpressionFormatter) throws ZserioExtensionException
         {
             writeConstraint = cppExpressionFormatter.formatGetter(constraintExpression);
-            readConstraint = cppConstraintExpressionFormatter.formatGetter(constraintExpression);
+            readConstraint = cppExpressionFormatter.formatGetter(constraintExpression);
         }
 
         public String getWriteConstraint()
@@ -643,14 +643,8 @@ public final class CompoundFieldTemplateData
         if (constraintExpression == null)
             return null;
 
-        final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
-        final CppConstraintExpressionFormattingPolicy expressionFormattingPolicy =
-                new CppConstraintExpressionFormattingPolicy(cppNativeMapper, includeCollector, field);
-        final ExpressionFormatter cppConstaintExpressionFormatter =
-                new ExpressionFormatter(expressionFormattingPolicy);
-
         final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(includeCollector);
-        return new Constraint(constraintExpression, cppExpressionFormatter, cppConstaintExpressionFormatter);
+        return new Constraint(constraintExpression, cppExpressionFormatter);
     }
 
     private static Offset createOffset(TemplateDataContext context, Field field,
