@@ -74,6 +74,12 @@ public:
         m_typedHolder = std::forward<U>(value);
     }
 
+    template <typename... U>
+    T& emplace(U&&... parameters)
+    {
+        return m_typedHolder.emplace(std::forward<U>(parameters)...);
+    }
+
     void setHolder(const inplace_optional_holder<T>& value)
     {
         m_typedHolder = value;
@@ -600,6 +606,12 @@ public:
     void set(NoInitT, T&& value)
     {
         createHolder<typename std::decay<T>::type>()->set(NoInit, std::forward<T>(value));
+    }
+
+    template <typename T, typename... U>
+    T& emplace(U&&... args)
+    {
+        return createHolder<typename std::decay<T>::type>()->emplace(std::forward<U>(args)...);
     }
 
     /**

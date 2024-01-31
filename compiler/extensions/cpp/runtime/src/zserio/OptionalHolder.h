@@ -413,6 +413,20 @@ public:
     }
 
     /**
+     * Assigns a new value by forwarding arguments for its constructor
+     * 
+     * \param parameters Constructor arguments to forward
+     * 
+     * \return reference to the created object
+     */
+    template <typename... U>
+    T& emplace(U&&... parameters)
+    {
+        m_storage = zserio::allocate_unique<T, allocator_type>(get_allocator(), std::forward<U>(parameters)...);
+        return *m_storage.get();
+    }
+
+    /**
      * Assignment operator from value.
      *
      * \param value Value to assign.
@@ -881,6 +895,22 @@ public:
         }
 
         return *this;
+    }
+
+    /**
+     * Assigns a new value by forwarding arguments for its constructor
+     * 
+     * \param parameters Constructor arguments to forward
+     * 
+     * \return reference to the created object
+     */
+    template <typename... U>
+    T& emplace(U&&... parameters)
+    {
+        reset();
+        new (m_storage.getStorage()) T(std::forward<U>(parameters)...);
+        m_hasValue = true;
+        return *m_storage.getObject();
     }
 
     /**

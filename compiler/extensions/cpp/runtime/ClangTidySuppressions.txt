@@ -70,7 +70,7 @@ cppcoreguidelines-pro-bounds-pointer-arithmetic:src/zserio/BitBuffer.h:275
 # This is false positive, the member is initialized.
 cppcoreguidelines-pro-type-member-init:src/zserio/BitStreamWriter.h:71
 # This is aligned storage which we want to leave uninitialized.
-cppcoreguidelines-pro-type-member-init:src/zserio/OptionalHolder.h:664
+cppcoreguidelines-pro-type-member-init:src/zserio/OptionalHolder.h:678
 
 # This is necessary for implementation of low level implementation of AnyHolder and OptionalHolder to mimic
 # standard C++17 'any' and 'optional' abstractions.
@@ -95,9 +95,9 @@ fuchsia-multiple-inheritance:src/zserio/Reflectable.h:1999
 google-explicit-constructor:src/zserio/OptionalHolder.h:222
 google-explicit-constructor:src/zserio/OptionalHolder.h:232
 google-explicit-constructor:src/zserio/OptionalHolder.h:242
-google-explicit-constructor:src/zserio/OptionalHolder.h:669
-google-explicit-constructor:src/zserio/OptionalHolder.h:677
-google-explicit-constructor:src/zserio/OptionalHolder.h:688
+google-explicit-constructor:src/zserio/OptionalHolder.h:683
+google-explicit-constructor:src/zserio/OptionalHolder.h:691
+google-explicit-constructor:src/zserio/OptionalHolder.h:702
 google-explicit-constructor:src/zserio/pmr/PolymorphicAllocator.h:47
 google-explicit-constructor:src/zserio/pmr/PolymorphicAllocator.h:72
 google-explicit-constructor:src/zserio/Span.h:112
