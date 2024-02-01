@@ -138,12 +138,14 @@ function(add_custom_test TEST_NAME)
     endif ()
 endfunction()
 
-# add all test suites
+# add all test suites (filter out utils and data subdirectories)
 foreach (TEST_SUITE ${ZSERIO_TEST_SUITES})
     file(GLOB_RECURSE SUBPROJECTS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${TEST_SUITE}/CMakeLists.txt")
     foreach (subproject ${SUBPROJECTS})
-        get_filename_component(subdirectory ${subproject} DIRECTORY)
-        add_subdirectory(${subdirectory})
+        if (NOT "${subproject}" MATCHES "utils/.*" AND NOT "${subproject}" MATCHES "data/.*")
+            get_filename_component(subdirectory ${subproject} DIRECTORY)
+            add_subdirectory(${subdirectory})
+        endif ()
     endforeach ()
 endforeach ()
 
