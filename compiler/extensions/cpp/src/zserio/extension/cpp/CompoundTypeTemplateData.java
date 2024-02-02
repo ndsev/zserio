@@ -6,6 +6,7 @@ import java.util.List;
 import zserio.ast.CompoundType;
 import zserio.ast.Field;
 import zserio.extension.common.ZserioExtensionException;
+import zserio.extension.cpp.CompoundParameterTemplateData.CompoundParameter;
 
 /**
  * FreeMarker template data for compound types.
@@ -88,8 +89,8 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
     // !withTypes: a_, b_
     public String parameterArgs(boolean withTypes)
     {
-    	List<String> args = new ArrayList<String>();
-    	for (var param : compoundParametersData.getList())
+    	ArrayList<String> args = new ArrayList<String>();
+    	for (CompoundParameter param : compoundParametersData.getList())
     	{
     		String s = "";
     		if (withTypes) {
@@ -107,8 +108,8 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
     // formats NoInit constructor initializers - only struct and array fields
     public ArrayList<String> noInitInitializers()
     {
-    	var inits = new ArrayList<String>();
-    	for (var field : fieldList)
+    	ArrayList<String> inits = new ArrayList<String>();
+    	for (CompoundFieldTemplateData field : fieldList)
     	{
     		if (field.getTypeInfo().getIsSimple())
         		continue;    		

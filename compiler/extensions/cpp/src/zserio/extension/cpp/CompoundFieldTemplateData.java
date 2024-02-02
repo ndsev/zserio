@@ -17,10 +17,8 @@ import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
 import zserio.ast.ZserioType;
 import zserio.extension.common.ExpressionFormatter;
-import zserio.extension.common.FreeMarkerUtil;
 import zserio.extension.common.ZserioExtensionException;
-import zserio.extension.common.Util;
-import zserio.extension.cpp.CppTemplateData.TypesTemplateData;
+import zserio.extension.cpp.CompoundFieldTemplateData.Compound.InstantiatedParameterData;
 import zserio.extension.cpp.types.CppNativeType;
 import zserio.extension.cpp.types.NativeArrayType;
 import zserio.extension.cpp.types.NativeIntegralType;
@@ -732,7 +730,8 @@ public final class CompoundFieldTemplateData
             
     public String arrayTraitsTypeName()
     {
-    	var arrayTraits = array != null ? array.traits : typeInfo.getArrayTraits();
+    	ArrayTraitsTemplateData arrayTraits = 
+    			array != null ? array.traits : typeInfo.getArrayTraits();
     	String s = arrayTraits.getName();
 		if (arrayTraits.getIsTemplated())
 		{
@@ -789,7 +788,7 @@ public final class CompoundFieldTemplateData
     			callExpr = "read(context." + getterName + "(), in";
     			if (compound != null)
     			{
-    				for (var param : compound.getInstantiatedParameters())
+    				for (InstantiatedParameterData param : compound.getInstantiatedParameters())
     					callExpr += ", " + param.getExpression();
     			} 
     			callExpr += ", allocator)";
@@ -816,7 +815,7 @@ public final class CompoundFieldTemplateData
     	}
     	else if (runtimeFunction != null) 
     	{
-    		var args = new ArrayList<String>();
+    		ArrayList<String> args = new ArrayList<String>();
     		if (runtimeFunction.getArg() != null)
     			args.add(runtimeFunction.getArg());
     		if (needsAllocator)
@@ -838,7 +837,7 @@ public final class CompoundFieldTemplateData
     	}
     	else if (array != null)
     	{
-    		var args = new ArrayList<String>();
+    		ArrayList<String> args = new ArrayList<String>();
     		if (arrayNeedsOwner())
         		args.add("*this");
     		args.add("in");
@@ -853,7 +852,7 @@ public final class CompoundFieldTemplateData
     	else if (compound != null)
     	{
     		callExpr = "read(in";
-    		for (var param : compound.getInstantiatedParameters())
+    		for (InstantiatedParameterData param : compound.getInstantiatedParameters())
     			callExpr += ", " + param.getExpression();
     		callExpr += ", allocator)";
     	}
