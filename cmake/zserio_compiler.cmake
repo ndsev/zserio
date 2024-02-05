@@ -77,9 +77,14 @@ function(zserio_generate_cpp)
     if (DEFINED ENV{ZSERIO_JAR_FILE})
         set(ZSERIO_JAR_FILE $ENV{ZSERIO_JAR_FILE})
     endif ()
-    if (NOT DEFINED ZSERIO_JAR_FILE OR NOT EXISTS ${ZSERIO_JAR_FILE})
-        message(FATAL_ERROR "Could not find zserio.jar!")
+    if (NOT DEFINED ZSERIO_JAR_FILE)
+        message(FATAL_ERROR "Could not find zserio.jar, ZSERIO_JAR_FILE not defined!")
     endif()
+    foreach (JAR_FILE IN LISTS ZSERIO_JAR_FILE)
+        if (NOT EXISTS "${JAR_FILE}")
+            message(FATAL_ERROR "Zserio jar file '${JAR_FILE}' doesn't exist!")
+        endif ()
+    endforeach ()
 
     cmake_parse_arguments(ZSERIO_GENERATE
         "FORCE_REGENERATE;CLEAN_GEN_DIR"
@@ -126,8 +131,16 @@ function(zserio_generate_cpp)
         "${ZSERIO_GENERATE_SRC_DIR}/*.zs")
     set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${ZSERIO_SOURCES} ${ZSERIO_JAR_FILE})
 
+    # don't use WIN32 because it can be set during cross-compilation on Linux
+    if ("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Windows")
+        set(JAVA_CLASSPATH_SEPARATOR ";")
+    else ()
+        set(JAVA_CLASSPATH_SEPARATOR ":")
+    endif ()
+    list(JOIN ZSERIO_JAR_FILE "${JAVA_CLASSPATH_SEPARATOR}" ZSERIO_CLASSPATH)
+
     set(ZSERIO_COMMAND
-        ${JAVA} -jar ${ZSERIO_JAR_FILE}
+        zserio.tools.ZserioTool
             -src ${ZSERIO_GENERATE_SRC_DIR} ${ZSERIO_GENERATE_MAIN_ZS}
             -cpp ${ZSERIO_GENERATE_GEN_DIR}
             ${ZSERIO_GENERATE_EXTRA_ARGS}
@@ -174,7 +187,7 @@ function(zserio_generate_cpp)
 
         # run the generator during configure phase for the first time
         execute_process(
-            COMMAND ${ZSERIO_COMMAND}
+            COMMAND ${JAVA} -cp "${ZSERIO_CLASSPATH}" ${ZSERIO_COMMAND}
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
             OUTPUT_VARIABLE ${ZSERIO_OUTPUT_VAR}
             ERROR_VARIABLE ${ZSERIO_ERROR_VAR}
@@ -239,7 +252,7 @@ function(zserio_generate_cpp)
         endif ()
 
         add_custom_command(OUTPUT ${GENERATED_SOURCES}
-            COMMAND ${ZSERIO_COMMAND}
+            COMMAND ${JAVA} -cp "${ZSERIO_CLASSPATH}" ${ZSERIO_COMMAND}
             DEPENDS ${ZSERIO_SOURCES}
             COMMENT ${TOOL_COMMENT})
 

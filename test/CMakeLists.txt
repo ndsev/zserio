@@ -18,6 +18,7 @@ set(CLANG_FORMAT_BIN "" CACHE STRING "Name of clang-format binary. If empty, cla
 
 set(ZSERIO_PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/..")
 set(ZSERIO_RELEASE_ROOT "${ZSERIO_PROJECT_ROOT}/distr" CACHE PATH "Root directory of Zserio release binaries.")
+set(ZSERIO_USE_BUNDLE ON CACHE BOOL "Generate code using zserio.jar instead of core+cpp.jar directly.")
 set(ZSERIO_TEST_SUITES "**" CACHE STRING "List of test suites to run. Default is '**'.")
 
 # cmake helpers
@@ -54,7 +55,12 @@ compiler_set_warnings()
 compiler_set_warnings_as_errors()
 
 # add zserio runtime library
-set(ZSERIO_JAR_FILE "${ZSERIO_RELEASE_ROOT}/zserio.jar")
+if (ZSERIO_USE_BUNDLE)
+    set(ZSERIO_JAR_FILE "${ZSERIO_RELEASE_ROOT}/zserio.jar")
+else()
+    set(ZSERIO_JAR_FILE
+        "${ZSERIO_RELEASE_ROOT}/zserio_libs/zserio_core.jar;${ZSERIO_RELEASE_ROOT}/zserio_libs/zserio_cpp.jar")
+endif()
 include(zserio_compiler)
 
 add_subdirectory("${ZSERIO_RELEASE_ROOT}/runtime_libs/cpp" ZserioCppRuntime)
