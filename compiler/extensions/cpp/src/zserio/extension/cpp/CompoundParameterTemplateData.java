@@ -78,15 +78,15 @@ public final class CompoundParameterTemplateData
         {
             return docComments;
         }
-        
+
         public String getCppName()
         {
-        	return "m_" + name + "_";
+            return "m_" + name + "_";
         }
-        
+
         public String getCppArgName()
         {
-        	return name + "_";
+            return name + "_";
         }
 
         private final String name;

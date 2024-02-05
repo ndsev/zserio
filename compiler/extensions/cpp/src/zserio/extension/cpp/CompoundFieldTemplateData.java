@@ -322,10 +322,10 @@ public final class CompoundFieldTemplateData
             private final boolean needsIndex;
             private final NativeTypeInfoTemplateData typeInfo;
         }
-        
+
         public boolean needsFieldInitialization()
         {
-        	return instantiatedParameters != null && instantiatedParameters.size() > 0;
+            return instantiatedParameters != null && instantiatedParameters.size() > 0;
         }
 
         private final ArrayList<InstantiatedParameterData> instantiatedParameters;
@@ -335,8 +335,8 @@ public final class CompoundFieldTemplateData
 
     public static final class Constraint
     {
-        public Constraint(Expression constraintExpression, 
-        		ExpressionFormatter cppExpressionFormatter) throws ZserioExtensionException
+        public Constraint(Expression constraintExpression, ExpressionFormatter cppExpressionFormatter)
+                throws ZserioExtensionException
         {
             writeConstraint = cppExpressionFormatter.formatGetter(constraintExpression);
             readConstraint = cppExpressionFormatter.formatGetter(constraintExpression);
@@ -688,230 +688,213 @@ public final class CompoundFieldTemplateData
         {
             return null;
         }
-    }    
-    
+    }
+
     //---------------------------------------------------------------------------------------------
-    
+
     public String getCppName()
     {
-    	return "m_" + name + "_";
+        return "m_" + name + "_";
     }
-    
+
     public String getArrayTypedefName()
     {
-    	return "ZserioArrayType_" + getName();
+        return "ZserioArrayType_" + getName();
     }
-    
+
     public String fieldCppTypeName()
     {
-    	if (array != null)
-    		return getArrayTypedefName();
-    	else
-    		return typeInfo.getTypeFullName();
-    }       
-    
+        if (array != null)
+            return getArrayTypedefName();
+        else
+            return typeInfo.getTypeFullName();
+    }
+
     public boolean arrayNeedsOwner()
     {
-    	if (array == null)
-    		return false;
-    	   	
-    	boolean needs_field_offset_checker =
-    			offset != null && offset.containsIndex;
-    	
-    	boolean needs_array_expressions = 
-    			needs_field_offset_checker || 
-    			(array.elementCompound != null &&
-    				(array.elementCompound.needsFieldInitialization() || array.elementCompound.needsChildrenInitialization));
-    	
-    	return (array.traits.getRequiresElementDynamicBitSize() && array.elementBitSize.getNeedsOwner()) ||
-                array.traits.getRequiresElementFactory() ||
-                needs_array_expressions;
+        if (array == null)
+            return false;
+
+        boolean needs_field_offset_checker = offset != null && offset.containsIndex;
+
+        boolean needs_array_expressions = needs_field_offset_checker ||
+                (array.elementCompound != null &&
+                        (array.elementCompound.needsFieldInitialization() ||
+                                array.elementCompound.needsChildrenInitialization));
+
+        return (array.traits.getRequiresElementDynamicBitSize() && array.elementBitSize.getNeedsOwner()) ||
+                array.traits.getRequiresElementFactory() || needs_array_expressions;
     }
-            
+
     public String arrayTraitsTypeName()
     {
-    	ArrayTraitsTemplateData arrayTraits = 
-    			array != null ? array.traits : typeInfo.getArrayTraits();
-    	String s = arrayTraits.getName();
-		if (arrayTraits.getIsTemplated())
-		{
-			s += "<";
-			if (array != null)
-				s += array.elementTypeInfo.getTypeFullName();
-			else
-				s += typeInfo.getTypeFullName();
-			
-			if (arrayTraits.getRequiresElementFixedBitSize()) 
-			{
-				s += ", ";
-				if (array != null)
-					s += array.elementBitSize.getValue();
-				else
-					s += bitSize.getValue();
-			}
-			if (arrayTraits.getRequiresElementDynamicBitSize())
-			{
-				s += ", ZserioElementBitSize_" + name; //@element_bit_size_name
-			}
-			if (arrayTraits.getRequiresElementFactory())
-			{
-				s += ", ZserioElementFactory_" + name; //@element_factory_name
-			}
-			
-			s += ">";			
-		}
-		return s;
+        ArrayTraitsTemplateData arrayTraits = array != null ? array.traits : typeInfo.getArrayTraits();
+        String s = arrayTraits.getName();
+        if (arrayTraits.getIsTemplated())
+        {
+            s += "<";
+            if (array != null)
+                s += array.elementTypeInfo.getTypeFullName();
+            else
+                s += typeInfo.getTypeFullName();
+
+            if (arrayTraits.getRequiresElementFixedBitSize())
+            {
+                s += ", ";
+                if (array != null)
+                    s += array.elementBitSize.getValue();
+                else
+                    s += bitSize.getValue();
+            }
+            if (arrayTraits.getRequiresElementDynamicBitSize())
+            {
+                s += ", ZserioElementBitSize_" + name; //@element_bit_size_name
+            }
+            if (arrayTraits.getRequiresElementFactory())
+            {
+                s += ", ZserioElementFactory_" + name; //@element_factory_name
+            }
+
+            s += ">";
+        }
+        return s;
     }
-    
+
     public boolean needsElementBitSizeOwner()
     {
-    	return array != null ?
-    			array.getElementBitSize().getNeedsOwner() :
-    			bitSize.getNeedsOwner();
+        return array != null ? array.getElementBitSize().getNeedsOwner() : bitSize.getNeedsOwner();
     }
-    
+
     public boolean arrayTraitsNeedsOwner()
     {
-    	return (typeInfo.getArrayTraits().getRequiresElementDynamicBitSize() && needsElementBitSizeOwner()) ||
-    			typeInfo.getArrayTraits().getRequiresElementFactory();
+        return (typeInfo.getArrayTraits().getRequiresElementDynamicBitSize() && needsElementBitSizeOwner()) ||
+                typeInfo.getArrayTraits().getRequiresElementFactory();
     }
-    
-	//@compound_read_field_inner
+
+    //@compound_read_field_inner
     public String readFieldInner(boolean packed)
     {
-    	String callExpr = null;
-    	String expr = null;
-    	if (packed && isPackable && array == null)
-    	{
-    		if (compound != null)
-    		{
-    			callExpr = "read(context." + getterName + "(), in";
-    			if (compound != null)
-    			{
-    				for (InstantiatedParameterData param : compound.getInstantiatedParameters())
-    					callExpr += ", " + param.getExpression();
-    			} 
-    			callExpr += ", allocator)";
-    		}
-    		else if (typeInfo.getIsEnum())
-    		{
-    			expr = String.format("zserio::read<%s>(context.%s(), in)",
-    					fieldCppTypeName(), getterName);
-    		}
-    		else if (typeInfo.getIsBitmask())
-    		{
-    			expr = String.format("%s(context.%s(), in)", 
-    					fieldCppTypeName(), getterName);
-    		}
-    		else
-    		{
-    			String args = "in";    			
-    			if (arrayTraitsNeedsOwner())
-    				args = "*this, " + args;    			
-    			expr = String.format("context.%s().read<%s>(%s)",
-    					getterName, arrayTraitsTypeName(), args
-    					);
-    		}
-    	}
-    	else if (runtimeFunction != null) 
-    	{
-    		ArrayList<String> args = new ArrayList<String>();
-    		if (runtimeFunction.getArg() != null)
-    			args.add(runtimeFunction.getArg());
-    		if (needsAllocator)
-    			args.add("allocator");
-    		expr = String.format(
-    				"static_cast<%s>(in.read%s(%s))",
-    				typeInfo.getTypeFullName(),	
-    				runtimeFunction.getSuffix(), 
-    				String.join(", ", args)
-    				);	    			
-    	}
-    	else if (typeInfo.getIsEnum())
-    	{
-    		expr = String.format("::zserio::read<%s>(in)", fieldCppTypeName());
-    	}    	
-    	else if (typeInfo.getIsBitmask())
-    	{
-    		expr = String.format("%s(in)", fieldCppTypeName());
-    	}
-    	else if (array != null)
-    	{
-    		ArrayList<String> args = new ArrayList<String>();
-    		if (arrayNeedsOwner())
-        		args.add("*this");
-    		args.add("in");
-    		if (array.getLength() != null)
-    			args.add("static_cast<size_t>(" + array.getLength() + ")");
-    		
-    		callExpr = "read";
-    		if (isPackable && (packed || array.getIsPacked()))
-    			callExpr += "Packed";
-    		callExpr += "(" + String.join(", ", args) + ")";    		
-    	}
-    	else if (compound != null)
-    	{
-    		callExpr = "read(in";
-    		for (InstantiatedParameterData param : compound.getInstantiatedParameters())
-    			callExpr += ", " + param.getExpression();
-    		callExpr += ", allocator)";
-    	}
-    	else
-    	{
-    		return "@error";
-    	}
-    	
-    	if (usesAnyHolder) //choice/union type
-    	{
-    		if (expr != null)
-    		{
-    			return "m_objectChoice = " + expr + ";";
-    		}
-    		else if (callExpr != null)
-    		{
-    			expr = "m_objectChoice.emplace<" + fieldCppTypeName() + ">(";
-    			if (array == null)
-    				expr += "::zserio::NoInit, ";
-    			expr += "allocator)";
-    			expr += "." + callExpr + ";";    			    			
-    			
-    			/*expr = "m_objectChoice.set(" + fieldCppTypeName() + "(";
-    			if (array == null)
-    				expr += "::zserio::NoInit, ";
-    			expr += "allocator));";    			
-    			expr += String.format(" m_objectChoice.get<%s>().%s;",
-    					fieldCppTypeName(), callExpr);*/
-    			return expr;
-    		}
-    	}
-    	else if (optional != null)
-    	{
-    		if (expr != null)
-    		{
-    			return getCppName() + " = " + expr + ";";
-    		}
-    		else if (callExpr != null)
-    		{
-    			expr = getCppName() + ".emplace(";
-    			if (array == null)
-    				expr += "::zserio::NoInit, ";
-    			expr += "allocator)." + callExpr + ";";
-    			return expr;
-    		}
-    	}
-    	else if (expr != null)
-    	{
-    		return getCppName() + " = " + expr + ";";
-    	}
-    	else if (callExpr != null)
-    	{
-    		return getCppName() + "." + callExpr + ";";
-    	}
-    	
-    	return "@error";
-    	
+        StringBuilder callExpr = null;
+        String expr = null;
+        if (packed && isPackable && array == null)
+        {
+            if (compound != null)
+            {
+                callExpr = new StringBuilder("read(context." + getterName + "(), in");
+                for (InstantiatedParameterData param : compound.getInstantiatedParameters())
+                    callExpr.append(", " + param.getExpression());
+                callExpr.append(", allocator)");
+            }
+            else if (typeInfo.getIsEnum())
+            {
+                expr = String.format("zserio::read<%s>(context.%s(), in)", fieldCppTypeName(), getterName);
+            }
+            else if (typeInfo.getIsBitmask())
+            {
+                expr = String.format("%s(context.%s(), in)", fieldCppTypeName(), getterName);
+            }
+            else
+            {
+                String args = "in";
+                if (arrayTraitsNeedsOwner())
+                    args = "*this, " + args;
+                expr = String.format("context.%s().read<%s>(%s)", getterName, arrayTraitsTypeName(), args);
+            }
+        }
+        else if (runtimeFunction != null)
+        {
+            ArrayList<String> args = new ArrayList<String>();
+            if (runtimeFunction.getArg() != null)
+                args.add(runtimeFunction.getArg());
+            if (needsAllocator)
+                args.add("allocator");
+            expr = String.format("static_cast<%s>(in.read%s(%s))", typeInfo.getTypeFullName(),
+                    runtimeFunction.getSuffix(), String.join(", ", args));
+        }
+        else if (typeInfo.getIsEnum())
+        {
+            expr = String.format("::zserio::read<%s>(in)", fieldCppTypeName());
+        }
+        else if (typeInfo.getIsBitmask())
+        {
+            expr = String.format("%s(in)", fieldCppTypeName());
+        }
+        else if (array != null)
+        {
+            ArrayList<String> args = new ArrayList<String>();
+            if (arrayNeedsOwner())
+                args.add("*this");
+            args.add("in");
+            if (array.getLength() != null)
+                args.add("static_cast<size_t>(" + array.getLength() + ")");
+
+            callExpr = new StringBuilder("read");
+            if (isPackable && (packed || array.getIsPacked()))
+                callExpr.append("Packed");
+            callExpr.append("(" + String.join(", ", args) + ")");
+        }
+        else if (compound != null)
+        {
+            callExpr = new StringBuilder("read(in");
+            for (InstantiatedParameterData param : compound.getInstantiatedParameters())
+                callExpr.append(", " + param.getExpression());
+            callExpr.append(", allocator)");
+        }
+        else
+        {
+            return "@error";
+        }
+
+        if (usesAnyHolder) // choice/union type
+        {
+            if (expr != null)
+            {
+                return "m_objectChoice = " + expr + ";";
+            }
+            else if (callExpr != null)
+            {
+                expr = "m_objectChoice.emplace<" + fieldCppTypeName() + ">(";
+                if (array == null)
+                    expr += "::zserio::NoInit, ";
+                expr += "allocator)";
+                expr += "." + callExpr + ";";
+
+                /*expr = "m_objectChoice.set(" + fieldCppTypeName() + "(";
+                if (array == null)
+                    expr += "::zserio::NoInit, ";
+                expr += "allocator));";
+                expr += String.format(" m_objectChoice.get<%s>().%s;",
+                        fieldCppTypeName(), callExpr);*/
+                return expr;
+            }
+        }
+        else if (optional != null)
+        {
+            if (expr != null)
+            {
+                return getCppName() + " = " + expr + ";";
+            }
+            else if (callExpr != null)
+            {
+                expr = getCppName() + ".emplace(";
+                if (array == null)
+                    expr += "::zserio::NoInit, ";
+                expr += "allocator)." + callExpr + ";";
+                return expr;
+            }
+        }
+        else if (expr != null)
+        {
+            return getCppName() + " = " + expr + ";";
+        }
+        else if (callExpr != null)
+        {
+            return getCppName() + "." + callExpr + ";";
+        }
+
+        return "@error";
     }
-    
+
     private final Optional optional;
     private final Compound compound;
     private final String name;

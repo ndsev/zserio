@@ -414,9 +414,9 @@ public:
 
     /**
      * Assigns a new value by forwarding arguments for its constructor
-     * 
+     *
      * \param parameters Constructor arguments to forward
-     * 
+     *
      * \return reference to the created object
      */
     template <typename... U>
@@ -899,9 +899,9 @@ public:
 
     /**
      * Assigns a new value by forwarding arguments for its constructor
-     * 
+     *
      * \param parameters Constructor arguments to forward
-     * 
+     *
      * \return reference to the created object
      */
     template <typename... U>
