@@ -171,9 +171,12 @@ namespace detail
 {
 
 // inspired by C++ ostreams - see https://cplusplus.github.io/LWG/issue1203
+// note that e.g. in gcc implementation of ostreams there are two constraints, but the second one:
+//      typename = decltype(std::declval<EXCEPTION&>() << std::declval<const VALUE&>())
+// is probably unnecessary and since it caused a compilation error in MSVC 2017 Conformance Mode,
+// we intentionally skipped it (even though it was probably a compiler bug)
 template <typename EXCEPTION, typename VALUE,
-        typename = typename std::enable_if<std::is_base_of<CppRuntimeException, EXCEPTION>::value, int>::type,
-        typename = decltype(std::declval<EXCEPTION&>() << std::declval<const VALUE&>())>
+        typename = typename std::enable_if<std::is_base_of<CppRuntimeException, EXCEPTION>::value, int>::type>
 using CppRuntimeExceptionRValueInsertion = EXCEPTION&&;
 
 } // namespace detail
