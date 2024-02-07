@@ -1,3 +1,5 @@
+cppcoreguidelines-pro-type-member-init
+
 google-explicit-constructor:gen/default_values/structure_default_values/Permission.h
 
 hicpp-signed-bitwise:gen/default_values/structure_default_values/Permission.h

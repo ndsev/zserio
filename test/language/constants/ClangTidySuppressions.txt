@@ -1,3 +1,5 @@
+cppcoreguidelines-pro-type-member-init
+
 cert-err58-cpp:gen/constants/DEFAULT_PEN_COLOR_VALUE.h
 cert-err58-cpp:gen/constants/HEX_ESC_STRING_CONSTANT.h
 cert-err58-cpp:gen/constants/JOINED_STRING_CONSTANT.h

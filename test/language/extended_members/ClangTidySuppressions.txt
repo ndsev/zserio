@@ -10,9 +10,7 @@ cert-err58-cpp:cpp/ExtendedUnalignedFieldTest.cpp
 cert-err58-cpp:cpp/MultipleExtendedFieldsTest.cpp
 cert-err58-cpp:cpp/MultipleExtendedFieldsVariousTypesTest.cpp
 
-cppcoreguidelines-pro-type-member-init:gen/extended_members/extended_choice_field/Choice.cpp
-cppcoreguidelines-pro-type-member-init:gen/extended_members/extended_optional_parameterized_field/Parameterized.cpp
-cppcoreguidelines-pro-type-member-init:gen/extended_members/multiple_extended_fields_various_types/Union.cpp
+cppcoreguidelines-pro-type-member-init
 
 performance-move-const-arg:gen/extended_members/extended_choice_field/Extended.cpp
 performance-move-const-arg:gen/extended_members/extended_field_in_template/ExtendedCompound.cpp

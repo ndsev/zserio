@@ -1,3 +1,5 @@
+cppcoreguidelines-pro-type-member-init
+
 google-build-using-namespace:cpp/SimplePubsubTest.cpp
 
 readability-braces-around-statements

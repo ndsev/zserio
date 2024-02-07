@@ -42,17 +42,7 @@ cppcoreguidelines-pro-bounds-constant-array-index:cpp/PackedAutoArrayStructWithB
 cppcoreguidelines-pro-bounds-constant-array-index:cpp/PackedAutoArrayStructWithExternTest.cpp
 cppcoreguidelines-pro-bounds-constant-array-index:cpp/PackedAutoArrayStructWithUnpackedFieldTest.cpp
 
-cppcoreguidelines-pro-type-member-init:gen/array_types/auto_array_bitfield_param/ParameterizedBitfieldLength.cpp
-cppcoreguidelines-pro-type-member-init:gen/array_types/packed_auto_array_bitfield_param/ParameterizedBitfieldLength.cpp
-cppcoreguidelines-pro-type-member-init:gen/array_types/packed_auto_array_empty_compounds/EmptyChoice.cpp
-cppcoreguidelines-pro-type-member-init:gen/array_types/packed_variable_array_struct_recursion/Block.cpp
-cppcoreguidelines-pro-type-member-init:gen/array_types/packed_variable_array_struct/TestChoice.cpp
-cppcoreguidelines-pro-type-member-init:gen/array_types/packed_variable_array_struct/TestPackedArray.cpp
-cppcoreguidelines-pro-type-member-init:gen/array_types/packed_variable_array_struct/TestUnpackedArray.cpp
-cppcoreguidelines-pro-type-member-init:gen/array_types/packing_interface_optimization/MixedColorChoice.cpp
-cppcoreguidelines-pro-type-member-init:gen/array_types/packing_interface_optimization/PackedColorChoice.cpp
-cppcoreguidelines-pro-type-member-init:gen/array_types/packing_interface_optimization/UnpackedColorChoice.cpp
-cppcoreguidelines-pro-type-member-init:gen/array_types/variable_array_ternary_operator/VariableArrayElement.cpp
+cppcoreguidelines-pro-type-member-init
 
 google-explicit-constructor:gen/array_types/arrays_mapping/TestBitmask.h
 google-explicit-constructor:gen/array_types/packed_arrays_mapping/TestBitmask.h

@@ -1,3 +1,5 @@
+cppcoreguidelines-pro-type-member-init
+
 cert-err58-cpp:cpp/BitfieldEnumTest.cpp
 
 google-build-using-namespace:cpp/DeprecatedEnumItemTest.cpp

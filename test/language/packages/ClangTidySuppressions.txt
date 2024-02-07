@@ -8,13 +8,7 @@ bugprone-unhandled-self-assignment:gen_packages/single_import_precedence/top/Par
 
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen_package_name_conflict/package_name_conflict/package_name_conflict/Blob.h
 
-cppcoreguidelines-pro-type-member-init:gen_default_package/DefaultPackageStructure.cpp
-cppcoreguidelines-pro-type-member-init:gen_index/index_workaround/index/ParameterizedElement.cpp
-cppcoreguidelines-pro-type-member-init:gen_packages/package_import/second/Coordinate.cpp
-cppcoreguidelines-pro-type-member-init:gen_packages/package_import/top/Coordinate.cpp
-cppcoreguidelines-pro-type-member-init:gen_packages/single_import_conflict/imported/SimpleParamStructure.cpp
-cppcoreguidelines-pro-type-member-init:gen_packages/single_import_precedence/top/Parameterized.cpp
-cppcoreguidelines-pro-type-member-init:gen_reader/reader/ParameterizedElement.cpp
+cppcoreguidelines-pro-type-member-init
 
 performance-move-const-arg:gen_default_package/DefaultPackageStructure.cpp
 performance-move-const-arg:gen_index/index_workaround/index/ParameterizedElement.cpp

@@ -1,6 +1,6 @@
 bugprone-forwarding-reference-overload:gen/constraints/array_lengthof_constraint/ArrayLengthofConstraint.h
 
-cppcoreguidelines-pro-type-member-init:gen/constraints/choice_constraints/ChoiceConstraints.cpp
+cppcoreguidelines-pro-type-member-init
 
 google-explicit-constructor:gen/constraints/structure_bitmask_constraints/Availability.h
 

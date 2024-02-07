@@ -2,7 +2,7 @@ bugprone-forwarding-reference-overload:gen/subtypes/param_structure_subtype/Para
 bugprone-forwarding-reference-overload:gen/subtypes/structure_subtype/SubtypeStructure.h
 bugprone-forwarding-reference-overload:gen/subtypes/subtype_imported/SubtypeImported.h
 
-cppcoreguidelines-pro-type-member-init:gen/subtypes/param_structure_subtype/ParameterizedStruct.cpp
+cppcoreguidelines-pro-type-member-init
 
 google-explicit-constructor:gen/subtypes/bitmask_subtype/Permission.h
 

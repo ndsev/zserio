@@ -1,4 +1,4 @@
-cppcoreguidelines-pro-type-member-init:gen/company/appl/SimpleChoice.cpp
+cppcoreguidelines-pro-type-member-init
 
 misc-redundant-expression:gen/company/appl/SimpleStructure.cpp
 

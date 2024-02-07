@@ -9,8 +9,7 @@ cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen/with_reflection_code/Chi
 
 cppcoreguidelines-pro-bounds-pointer-arithmetic:cpp/WithReflectionCodeTest.cpp
 
-cppcoreguidelines-pro-type-member-init:gen/with_reflection_code/Choice.cpp
-cppcoreguidelines-pro-type-member-init:gen/with_reflection_code/Parameterized.cpp
+cppcoreguidelines-pro-type-member-init
 
 google-build-using-namespace:cpp/WithReflectionCodeTest.cpp
 

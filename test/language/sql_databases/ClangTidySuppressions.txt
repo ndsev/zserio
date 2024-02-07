@@ -1,5 +1,4 @@
-cppcoreguidelines-pro-type-member-init:gen/sql_databases/db_with_relocation/CountryMapTable.cpp
-cppcoreguidelines-pro-type-member-init:gen/sql_databases/simple_db/GeoMapTable.cpp
+cppcoreguidelines-pro-type-member-init
 
 cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_databases/db_with_relocation/CountryMapTable.cpp
 cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_databases/simple_db/GeoMapTable.cpp

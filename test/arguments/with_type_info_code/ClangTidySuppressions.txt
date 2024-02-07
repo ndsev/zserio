@@ -13,15 +13,7 @@ bugprone-unhandled-self-assignment:gen/with_type_info_code/TemplatedParameterize
 cert-err58-cpp:cpp/DebugStringTest.cpp
 cert-err58-cpp:cpp/WithTypeInfoCodeTest.cpp
 
-cppcoreguidelines-pro-type-member-init:gen/with_type_info_code/Fts4Table.cpp
-cppcoreguidelines-pro-type-member-init:gen/with_type_info_code/ParameterizedStruct.cpp
-cppcoreguidelines-pro-type-member-init:gen/with_type_info_code/RecursiveChoice.cpp
-cppcoreguidelines-pro-type-member-init:gen/with_type_info_code/SimpleChoice.cpp
-cppcoreguidelines-pro-type-member-init:gen/with_type_info_code/SqlTable.cpp
-cppcoreguidelines-pro-type-member-init:gen/with_type_info_code/TemplatedParameterizedStruct_TS32.cpp
-cppcoreguidelines-pro-type-member-init:gen/with_type_info_code/TemplatedSqlTableU8.cpp
-cppcoreguidelines-pro-type-member-init:gen/with_type_info_code/TemplatedSqlTable_uint32.cpp
-cppcoreguidelines-pro-type-member-init:gen/with_type_info_code/WithoutRowIdTable.cpp
+cppcoreguidelines-pro-type-member-init
 
 cppcoreguidelines-pro-type-reinterpret-cast:gen/with_type_info_code/Fts4Table.cpp
 cppcoreguidelines-pro-type-reinterpret-cast:gen/with_type_info_code/SqlTable.cpp

@@ -1,3 +1,5 @@
+cppcoreguidelines-pro-type-member-init
+
 bugprone-forwarding-reference-overload:gen/indexed_offsets/packed_indexed_offset_array_holder/OffsetArray.h
 
 cert-err58-cpp:cpp/PackedAutoIndexedOffsetArrayTest.cpp

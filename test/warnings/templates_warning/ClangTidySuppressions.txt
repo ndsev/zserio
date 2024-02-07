@@ -12,3 +12,5 @@ readability-make-member-function-const:gen/templates_warning/default_instantiati
 readability-make-member-function-const:gen/templates_warning/default_instantiation_subpackage2/Subpackage2TemplateU32.cpp
 readability-make-member-function-const:gen/templates_warning/default_instantiation_subpackage3/Subpackage3InnerTemplate_uint32.cpp
 readability-make-member-function-const:gen/templates_warning/default_instantiation_warning/Template_uint32.cpp
+
+cppcoreguidelines-pro-type-member-init

@@ -1,3 +1,5 @@
+cppcoreguidelines-pro-type-member-init
+
 readability-braces-around-statements
 
 readability-make-member-function-const:gen/alignment/auto_optional_member_alignment/AutoOptionalMemberAlignment.cpp

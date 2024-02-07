@@ -1,5 +1,4 @@
-cppcoreguidelines-pro-type-member-init:gen/sql_virtual_columns/hidden_virtual_columns/HiddenVirtualColumnsTable.cpp
-cppcoreguidelines-pro-type-member-init:gen/sql_virtual_columns/simple_virtual_columns/SimpleVirtualColumnsTable.cpp
+cppcoreguidelines-pro-type-member-init
 
 cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_virtual_columns/hidden_virtual_columns/HiddenVirtualColumnsTable.cpp
 cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_virtual_columns/simple_virtual_columns/SimpleVirtualColumnsTable.cpp

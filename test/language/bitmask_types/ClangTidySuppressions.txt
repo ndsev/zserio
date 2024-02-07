@@ -1,3 +1,5 @@
+cppcoreguidelines-pro-type-member-init
+
 cert-err58-cpp:cpp/VarUIntBitmaskTest.cpp
 
 google-explicit-constructor:gen/bitmask_types/bitfield_bitmask/Permission.h

@@ -5,10 +5,7 @@ cert-err58-cpp:gen/expressions/string_type/STRING_CONSTANT.h
 
 cppcoreguidelines-pro-bounds-constant-array-index:cpp/IndexOperatorTest.cpp
 
-cppcoreguidelines-pro-type-member-init:gen/expressions/index_operator/Element.cpp
-cppcoreguidelines-pro-type-member-init:gen/expressions/parameterized_array_type/ParameterizedArrayElement.cpp
-cppcoreguidelines-pro-type-member-init:gen/expressions/parameterized_array_type/ParameterizedArrayHolder.cpp
-cppcoreguidelines-pro-type-member-init:gen/expressions/parameter_type/ParameterTypeExpression.cpp
+cppcoreguidelines-pro-type-member-init
 
 google-build-using-namespace:cpp/StringTypeTest.cpp
 

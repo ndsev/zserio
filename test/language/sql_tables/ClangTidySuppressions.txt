@@ -6,25 +6,7 @@ bugprone-forwarding-reference-overload:gen/sql_tables/blob_param_table/Parameter
 bugprone-unhandled-self-assignment:gen/sql_tables/blob_offsets_param_table/ParameterizedBlob.cpp
 bugprone-unhandled-self-assignment:gen/sql_tables/blob_param_table/ParameterizedBlob.cpp
 
-cppcoreguidelines-pro-type-member-init:gen/sql_tables/blob_field_with_children_initialization_table/BlobFieldWithChildrenInitializationTable.cpp
-cppcoreguidelines-pro-type-member-init:gen/sql_tables/blob_field_with_children_initialization_table/ParameterizedArray.cpp
-cppcoreguidelines-pro-type-member-init:gen/sql_tables/blob_offsets_param_table/BlobOffsetsParamTable.cpp
-cppcoreguidelines-pro-type-member-init:gen/sql_tables/blob_offsets_param_table/ParameterizedBlob.cpp
-cppcoreguidelines-pro-type-member-init:gen/sql_tables/blob_param_table/BlobParamTable.cpp
-cppcoreguidelines-pro-type-member-init:gen/sql_tables/blob_param_table/ParameterizedBlob.cpp
-cppcoreguidelines-pro-type-member-init:gen/sql_tables/column_param_table/ColumnParamTable.cpp
-cppcoreguidelines-pro-type-member-init:gen/sql_tables/column_param_table/ParameterizedBlob.cpp
-cppcoreguidelines-pro-type-member-init:gen/sql_tables/complex_table/ComplexTable.cpp
-cppcoreguidelines-pro-type-member-init:gen/sql_tables/complex_table/TestBlob.cpp
-cppcoreguidelines-pro-type-member-init:gen/sql_tables/const_param_table/ConstParamTable.cpp
-cppcoreguidelines-pro-type-member-init:gen/sql_tables/const_param_table/ParameterizedBlob.cpp
-cppcoreguidelines-pro-type-member-init:gen/sql_tables/dynamic_bit_field_enum_field_table/DynamicBitFieldEnumFieldTable.cpp
-cppcoreguidelines-pro-type-member-init:gen/sql_tables/multiple_pk_table/MultiplePkTable.cpp
-cppcoreguidelines-pro-type-member-init:gen/sql_tables/subtyped_bitmask_field_table/SubtypedBitmaskFieldTable.cpp
-cppcoreguidelines-pro-type-member-init:gen/sql_tables/subtyped_bool_field_table/SubtypedBoolFieldTable.cpp
-cppcoreguidelines-pro-type-member-init:gen/sql_tables/subtyped_enum_field_table/SubtypedEnumFieldTable.cpp
-cppcoreguidelines-pro-type-member-init:gen/sql_tables/subtyped_table/TestTable.cpp
-cppcoreguidelines-pro-type-member-init:gen/sql_tables/without_pk_table/WithoutPkTable.cpp
+cppcoreguidelines-pro-type-member-init
 
 cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_tables/blob_field_with_children_initialization_table/BlobFieldWithChildrenInitializationTable.cpp
 cppcoreguidelines-pro-type-reinterpret-cast:gen/sql_tables/blob_offsets_param_table/BlobOffsetsParamTable.cpp

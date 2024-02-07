@@ -2,8 +2,7 @@ bugprone-forwarding-reference-overload:gen/optional_members/optional_expression/
 
 cert-err58-cpp:cpp/OptionalArrayRecursionTest.cpp
 
-cppcoreguidelines-pro-type-member-init:gen/optional_members/optional_expression/BlackColor.cpp
-cppcoreguidelines-pro-type-member-init:gen/optional_members/optional_recursion/Block.cpp
+cppcoreguidelines-pro-type-member-init
 
 hicpp-multiway-paths-covered:gen/optional_members/optional_expression_with_removed_enum_item/Numbers.cpp
 

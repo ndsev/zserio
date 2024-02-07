@@ -1,8 +1,6 @@
 cppcoreguidelines-pro-bounds-constant-array-index:cpp/ComplexTypesServiceTest.cpp
 
-cppcoreguidelines-pro-type-member-init:gen/service_types/complex_types_service/ColorModelChoice.cpp
-cppcoreguidelines-pro-type-member-init:gen/service_types/complex_types_service/RequestData.cpp
-cppcoreguidelines-pro-type-member-init:gen/service_types/complex_types_service/ResponseData.cpp
+cppcoreguidelines-pro-type-member-init
 
 google-build-using-namespace:cpp/ComplexTypesServiceTest.cpp
 google-build-using-namespace:cpp/SimpleServiceTest.cpp

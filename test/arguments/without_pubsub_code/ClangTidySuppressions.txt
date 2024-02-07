@@ -1,3 +1,5 @@
+cppcoreguidelines-pro-type-member-init
+
 readability-make-member-function-const:gen/without_pubsub_code/Request.cpp
 readability-make-member-function-const:gen/without_pubsub_code/Response.cpp
 

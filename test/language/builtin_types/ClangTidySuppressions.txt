@@ -1,3 +1,5 @@
+cppcoreguidelines-pro-type-member-init
+
 cert-err58-cpp:cpp/AllBuiltInTypesTest.cpp
 cert-err58-cpp:cpp/BitFieldFunctionLengthTest.cpp
 

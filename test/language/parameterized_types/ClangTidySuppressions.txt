@@ -24,24 +24,7 @@ cert-err58-cpp:cpp/NestedParameterizedFieldTest.cpp
 cert-err58-cpp:cpp/PackedArrayElementParamTest.cpp
 cert-err58-cpp:cpp/ParamWithOptionalTest.cpp
 
-cppcoreguidelines-pro-type-member-init:gen/parameterized_types/array_element_param/Block.cpp
-cppcoreguidelines-pro-type-member-init:gen/parameterized_types/array_element_param_with_optional/ExtraValue.cpp
-cppcoreguidelines-pro-type-member-init:gen/parameterized_types/array_element_param_with_optional/Value.cpp
-cppcoreguidelines-pro-type-member-init:gen/parameterized_types/bytes_param/Parameterized.cpp
-cppcoreguidelines-pro-type-member-init:gen/parameterized_types/dynamic_bitfield_param/DynamicBitfieldParam.cpp
-cppcoreguidelines-pro-type-member-init:gen/parameterized_types/extern_param/Parameterized.cpp
-cppcoreguidelines-pro-type-member-init:gen/parameterized_types/fixed_and_variable_param/ArrayHolder.cpp
-cppcoreguidelines-pro-type-member-init:gen/parameterized_types/grand_child_param/ItemChoice.cpp
-cppcoreguidelines-pro-type-member-init:gen/parameterized_types/grand_child_param/Item.cpp
-cppcoreguidelines-pro-type-member-init:gen/parameterized_types/nested_parameterized_field/Param.cpp
-cppcoreguidelines-pro-type-member-init:gen/parameterized_types/packed_array_element_param/Block.cpp
-cppcoreguidelines-pro-type-member-init:gen/parameterized_types/param_with_optional/ExtraValue.cpp
-cppcoreguidelines-pro-type-member-init:gen/parameterized_types/param_with_optional/Value.cpp
-cppcoreguidelines-pro-type-member-init:gen/parameterized_types/parameterized_inner_classes_clashing/Compound.cpp
-cppcoreguidelines-pro-type-member-init:gen/parameterized_types/parameterized_param/ParameterizedParam.cpp
-cppcoreguidelines-pro-type-member-init:gen/parameterized_types/parameterized_param/Param.cpp
-cppcoreguidelines-pro-type-member-init:gen/parameterized_types/simple_param/Item.cpp
-cppcoreguidelines-pro-type-member-init:gen/parameterized_types/subtyped_bitfield_param/SubtypedBitfieldParam.cpp
+cppcoreguidelines-pro-type-member-init
 
 google-explicit-constructor:gen/parameterized_types/fixed_and_variable_param/Access.h
 

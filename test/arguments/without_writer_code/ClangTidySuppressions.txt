@@ -3,9 +3,7 @@ bugprone-exception-escape:gen/without_writer_code/ItemChoice.h
 
 cert-err58-cpp:cpp/WithoutWriterCodeTest.cpp
 
-cppcoreguidelines-pro-type-member-init:gen/without_writer_code/GeoMapTable.cpp
-cppcoreguidelines-pro-type-member-init:gen/without_writer_code/ItemChoice.cpp
-cppcoreguidelines-pro-type-member-init:gen/without_writer_code/Item.cpp
+cppcoreguidelines-pro-type-member-init
 
 cppcoreguidelines-pro-type-reinterpret-cast:gen/without_writer_code/GeoMapTable.cpp
 

@@ -7,6 +7,8 @@ bugprone-forwarding-reference-overload:gen/identifiers/structure_name_clashing_w
 bugprone-forwarding-reference-overload:gen/identifiers/structure_name_clashing_with_java/Short.h
 bugprone-forwarding-reference-overload:gen/identifiers/structure_name_clashing_with_java/String.h
 
+cppcoreguidelines-pro-type-member-init
+
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen/identifiers/structure_name_clashing_with_java/String.h
 
 google-explicit-constructor:gen/identifiers/bitmask_name_clashing_with_java/String.h

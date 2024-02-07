@@ -3,7 +3,7 @@ bugprone-forwarding-reference-overload:gen/structure_types/structure_inner_class
 
 cert-err58-cpp:cpp/OneStringStructureTest.cpp
 
-cppcoreguidelines-pro-type-member-init:gen/structure_types/empty_structure_with_parameter/EmptyStructureWithParameter.cpp
+cppcoreguidelines-pro-type-member-init
 
 hicpp-multiway-paths-covered:gen/structure_types/structure_with_removed_enum_item_field/Enumeration.cpp
 

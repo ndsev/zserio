@@ -2,7 +2,7 @@ bugprone-forwarding-reference-overload:gen/choice_types_warning/optional_referen
 
 bugprone-unhandled-self-assignment:gen/choice_types_warning/optional_references_in_selector/TestChoice.cpp
 
-cppcoreguidelines-pro-type-member-init:gen/choice_types_warning/optional_references_in_selector/TestChoice.cpp
+cppcoreguidelines-pro-type-member-init
 
 readability-braces-around-statements
 

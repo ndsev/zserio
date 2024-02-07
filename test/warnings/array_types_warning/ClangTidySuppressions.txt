@@ -23,7 +23,7 @@ cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen/array_types_warning/pack
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen/array_types_warning/packed_array_template_has_no_packable_field/Packable.h
 cppcoreguidelines-pro-bounds-array-to-pointer-decay:gen/array_types_warning/packed_array_template_has_no_packable_field/Unpackable.h
 
-cppcoreguidelines-pro-type-member-init:gen/array_types_warning/packed_array_choice_has_no_packable_field/ChoiceWithoutPackableField.cpp
+cppcoreguidelines-pro-type-member-init
 
 google-explicit-constructor:gen/array_types_warning/packed_array_unpackable_bool_element/TestBitmask.h
 

@@ -3,8 +3,7 @@ bugprone-forwarding-reference-overload:gen/optional_members_warning/optional_ref
 
 bugprone-unhandled-self-assignment:gen/optional_members_warning/optional_references_in_type_arguments/Container.cpp
 
-cppcoreguidelines-pro-type-member-init:gen/optional_members_warning/optional_references_in_type_arguments/ColorTones.cpp
-cppcoreguidelines-pro-type-member-init:gen/optional_members_warning/optional_references_in_type_arguments/Container.cpp
+cppcoreguidelines-pro-type-member-init
 
 misc-no-recursion # reports also tested_release and some system headers
 

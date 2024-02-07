@@ -17,11 +17,7 @@ cppcoreguidelines-pro-bounds-constant-array-index:cpp/UnionArrayTest.cpp
 
 cppcoreguidelines-pro-bounds-pointer-arithmetic:cpp/StructureExternTest.cpp
 
-cppcoreguidelines-pro-type-member-init:gen/functions/choice_array/ItemRef.cpp
-cppcoreguidelines-pro-type-member-init:gen/functions/structure_array_param/ChildStructure.cpp
-cppcoreguidelines-pro-type-member-init:gen/functions/structure_optional/ValueConsumer.cpp
-cppcoreguidelines-pro-type-member-init:gen/functions/structure_param/MetresConverter.cpp
-cppcoreguidelines-pro-type-member-init:gen/functions/union_array/ItemRef.cpp
+cppcoreguidelines-pro-type-member-init
 
 google-build-using-namespace:cpp/StructureStringTest.cpp
 

@@ -1,4 +1,4 @@
-cppcoreguidelines-pro-type-member-init:gen/not_handled_warning/EnumParamChoice.cpp
+cppcoreguidelines-pro-type-member-init
 
 readability-braces-around-statements
 

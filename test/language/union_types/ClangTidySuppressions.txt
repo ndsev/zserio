@@ -9,9 +9,7 @@ cert-err58-cpp:cpp/UnionWithArrayTest.cpp
 
 cppcoreguidelines-pro-bounds-constant-array-index:cpp/UnionWithArrayTest.cpp
 
-cppcoreguidelines-pro-type-member-init:gen/union_types/empty_union_with_parameter/EmptyUnionWithParameter.cpp
-cppcoreguidelines-pro-type-member-init:gen/union_types/union_with_parameterized_field/ArrayHolder.cpp
-cppcoreguidelines-pro-type-member-init:gen/union_types/union_with_parameter/TestUnion.cpp
+cppcoreguidelines-pro-type-member-init
 
 performance-move-const-arg:gen/union_types/union_compatibility_check/UnionVersion1.cpp
 performance-move-const-arg:gen/union_types/union_compatibility_check/UnionVersion2.cpp

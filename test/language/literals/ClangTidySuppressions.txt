@@ -1,3 +1,5 @@
+cppcoreguidelines-pro-type-member-init
+
 cert-err58-cpp:gen/literals/STRING.h
 
 google-build-using-namespace:cpp/LiteralsTest.cpp

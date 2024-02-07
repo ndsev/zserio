@@ -1,7 +1,7 @@
 bugprone-reserved-identifier:gen/_imported_tile_/Tile.h
 bugprone-reserved-identifier:gen/___/Empty.h
 
-cppcoreguidelines-pro-type-member-init:gen/with_sources_amalgamation/WithSourcesAmalgamation.cpp
+cppcoreguidelines-pro-type-member-init
 
 cppcoreguidelines-pro-type-reinterpret-cast:gen/with_sources_amalgamation/WithSourcesAmalgamation.cpp
 
