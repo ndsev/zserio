@@ -59,7 +59,9 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 
 <#macro compound_noinit_constructor_definition compoundConstructorsData initializers=noInitInitializers()>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}<#rt>
-(::zserio::NoInitT, const allocator_type& allocator) noexcept<#if initializers?has_content> :</#if>
+(::zserio::NoInitT, <#rt> 
+const allocator_type&<#if empty_constructor_needs_allocator(compoundConstructorsData.fieldList)> allocator</#if><#rt>
+) noexcept<#if initializers?has_content> :</#if>
 <#list initializers as init>
         ${init}<#if init?has_next>,</#if>
 </#list>
@@ -533,11 +535,12 @@ bool ${compoundConstructorsData.compoundName}::isInitialized() const
     <#return false>
 </#function>
 
-<#function read_constructor_needs_allocator fieldList>
+<#function read_needs_allocator fieldList>
     <#list fieldList as field>
-        <#if field.holderNeedsAllocator || field.needsAllocator>
-            <#return true>
-        </#if>
+        <#if field.compound??><#return true></#if>
+        <#if field.runtimeFunction?? && field.needsAllocator><#return true></#if> <#-- string -->
+        <#if (field.usesAnyHolder || field.optional??) && field.array??><#return true></#if>
+        <#if field.isExtended && field.needsAllocator><#return true></#if>
     </#list>
     <#return false>
 </#function>

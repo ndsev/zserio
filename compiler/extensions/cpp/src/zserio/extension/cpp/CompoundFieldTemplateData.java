@@ -837,7 +837,14 @@ public final class CompoundFieldTemplateData
         {
             callExpr = new StringBuilder("read(in");
             for (InstantiatedParameterData param : compound.getInstantiatedParameters())
-                callExpr.append(", " + param.getExpression());
+            {
+            	callExpr.append(", ");
+                if (param.typeInfo.getIsSimple()) //parametrized type can differ from instantiated
+                	callExpr.append("static_cast<" + param.typeInfo.getTypeFullName() + ">(");
+            	callExpr.append(param.getExpression());
+            	if (param.typeInfo.getIsSimple())
+            		callExpr.append(")");
+            }
             callExpr.append(", allocator)");
         }
         else

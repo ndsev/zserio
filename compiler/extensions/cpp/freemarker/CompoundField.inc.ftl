@@ -65,7 +65,7 @@ ${I}if (${field.optional.clause})
 ${I}if (in.readBool())
         </#if>
 ${I}{
-${I}    <@compound_read_field_prolog field, compoundName, indent+1/> 
+        <@compound_read_field_prolog field, compoundName, indent+1/> 
 ${I}    ${field.readFieldInner(packed)}
         <@compound_check_constraint_field field, name, "Read", indent+1/>
         /*<@compound_read_field_inner field, compoundName, indent+1, packed/>*/

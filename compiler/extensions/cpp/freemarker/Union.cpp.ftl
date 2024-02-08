@@ -663,7 +663,10 @@ ${I}m_objectChoice.reset();
 ${I}break;</#if>
 </#macro>
 <#--  -->
-void ${name}::read(::zserio::BitStreamReader& in<#if parameterArgs(true)?has_content>, ${parameterArgs(true)}</#if>, const allocator_type& allocator)
+void ${name}::read(<#rt>
+::zserio::BitStreamReader&<#if fieldList?has_content> in</#if><#rt>
+<#if parameterArgs(true)?has_content>, ${parameterArgs(true)}</#if><#rt>
+, const allocator_type&<#if read_needs_allocator(compoundConstructorsData.fieldList)> allocator</#if>)
 {
     <#if needs_compound_initialization(compoundConstructorsData)>
     m_isInitialized = true;
@@ -697,7 +700,11 @@ void ${name}::read(::zserio::BitStreamReader& in<#if parameterArgs(true)?has_con
 }
 <#if isPackable && usedInPackedArray>
 
-void ${name}::read(${name}::ZserioPackingContext& context, ::zserio::BitStreamReader& in<#if parameterArgs(true)?has_content>, ${parameterArgs(true)}</#if>, const allocator_type& allocator)
+void ${name}::read(<#rt>
+${name}::ZserioPackingContext&<#if fieldList?has_content> context</#if><#rt>
+, ::zserio::BitStreamReader&<#if fieldList?has_content> in</#if><#rt>
+<#if parameterArgs(true)?has_content>, ${parameterArgs(true)}</#if><#rt>
+, const allocator_type&<#if read_needs_allocator(compoundConstructorsData.fieldList)> allocator</#if>)
 {
     <#if needs_compound_initialization(compoundConstructorsData)>
     m_isInitialized = true;
