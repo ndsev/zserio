@@ -190,7 +190,7 @@ def _runPylint(sources, options, disableOption=None):
     if "PYLINT_EXTRA_ARGS" in os.environ:
         pylintOptions += os.environ["PYLINT_EXTRA_ARGS"].split()
 
-    pylintRunner = pylint.lint.Run(pylintOptions, do_exit=False)
+    pylintRunner = pylint.lint.Run(pylintOptions, exit=False)
     if pylintRunner.linter.msg_status:
         return pylintRunner.linter.msg_status
 

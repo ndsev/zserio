@@ -246,6 +246,8 @@ check_python_version()
 }
 
 # Check python requirements.
+#
+# Note: From Python 3.12, setuptools must be installed.
 check_python_requirements()
 {
     exit_if_argc_ne $# 2
@@ -341,10 +343,9 @@ activate_python_virtualenv()
     fi
 
     local STANDARD_REQUIREMENTS=(
-        # needed to build apsw on Windows using MSVC compiler - see https://github.com/rogerbinns/apsw/issues/303
-        "setuptools==59.8.0"
+        "setuptools==69.0.3"
         "coverage==6.5.0" "sphinx"
-        "astroid==2.15.0" "pylint==2.16.3" "mypy==0.931"
+        "astroid==3.0.3" "pylint==3.0.3" "mypy==0.931"
         "pybind11>=2.10.0"
     )
     local APSW_REQUIREMENTS=("apsw")
@@ -389,7 +390,7 @@ install_python_apsw()
 
     pushd "${PYTHON_VIRTUALENV_ROOT}" > /dev/null
     if [ ! -d "${PYTHON_VIRTUALENV_ROOT}/apsw" ] ; then
-        git clone --depth 1 https://github.com/rogerbinns/apsw.git -b 3.41.0.0
+        git clone --depth 1 https://github.com/rogerbinns/apsw.git -b 3.45.1.0
         if [ $? -ne 0 ] ; then
             stderr_echo "Failed to clone apsw repository!"
             popd > /dev/null
@@ -399,7 +400,7 @@ install_python_apsw()
 
     cd apsw
 
-    python setup.py fetch --sqlite --version=3.41.0 build --enable=fts4,fts5 install
+    python setup.py fetch --sqlite --version=3.45.1 build --enable=fts4,fts5 install
     if [ $? -ne 0 ] ; then
         stderr_echo "Failed to build python apsw module!"
         popd > /dev/null

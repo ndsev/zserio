@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         os: ["windows-2022"]
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
         java-version: ["8"]
         msvc-toolset-version: ["v141"]
         mingw-version: ["7.5.0"]
@@ -82,6 +82,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install virtualenv
+        python -m pip install setuptools # necessary for pkg_resources on Python 3.12
         python -m pip install gcovr
 
     - name: Install dependecies
@@ -104,7 +105,7 @@ jobs:
 
     - name: Install specific version of HTML validator (v.Nu)
       run: |
-        wget -P "${{github.workspace}}"  https://github.com/validator/validator/releases/download/20.6.30/vnu.jar_20.6.30.zip
+        wget -P "${{github.workspace}}" https://github.com/validator/validator/releases/download/20.6.30/vnu.jar_20.6.30.zip
         unzip "${{github.workspace}}\vnu.jar_20.6.30.zip" -d "${{github.workspace}}"
         mv "${{github.workspace}}\dist" "${{github.workspace}}\vnu-20.6.30"
 
