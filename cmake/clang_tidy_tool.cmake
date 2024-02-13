@@ -30,5 +30,5 @@ file(APPEND "${OUTPUT_FILE}" "${CLANG_TIDY_OUTPUT}")
 
 if (NOT ${CLANG_TIDY_RESULT} EQUAL 0)
     message(STATUS "Clang Tidy output:\n${CLANG_TIDY_OUTPUT}\n${CLANG_TIDY_ERROR_OUTPUT}")
-    message(FATAL_ERROR "Clang Tidy Tool failed!")
+    message(FATAL_ERROR "Clang Tidy Tool failed (${CLANG_TIDY_RESULT})!")
 endif ()

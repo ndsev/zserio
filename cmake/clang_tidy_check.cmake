@@ -26,6 +26,7 @@ function(get_matchers SUPPRESSION RULE_VAR PATH_MATCHER_VAR)
 
     if (${NUM_PARTS} GREATER 1)
         list(GET SUPPRESSION_PARTS 1 PATH_MATCHER)
+        string(REPLACE "/" "[/\\\\]" PATH_MATCHER  "${PATH_MATCHER}")
     endif ()
     if (${NUM_PARTS} GREATER 2)
         list(GET SUPPRESSION_PARTS 2 LINE)
