@@ -2,16 +2,8 @@
 #
 # This CMake file defines utility library which is used for all C++ integration tests.
 #
-cmake_minimum_required(VERSION 3.6.0)
 
 project(ZserioCppTestUtils)
-
-# input parameters
-set(CLANG_FORMAT_BIN "" CACHE STRING "Name of clang-format binary. If empty, clang-format tool is not called.")
-set(ZSERIO_PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../../..")
-
-# cmake helpers
-include(clang_format_utils)
 
 set(ZSERIO_CPP_TEST_UTILS_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/Assertions.h

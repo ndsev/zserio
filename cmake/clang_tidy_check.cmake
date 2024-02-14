@@ -1,5 +1,8 @@
 # Script called from clang_tidy_utils.cmake to run checks for unexpected warnings.
 #
+# Prerequisites:
+#   CMake 3.15+
+#
 # Expected definitions:
 #   LOG_FILE          File containing clang-tidy log.
 #   SUPPRESSIONS_FILE Suppressions file for clang-tidy warnings. If any warnings are fired but not suppressed,
@@ -12,7 +15,7 @@
 #   WERROR            Ends with an error in case of any unsuppressed clang-tidy warnings.
 #   WERROR_UNUSED_SUPPRESSIONS
 #                     Fires an error in case of unused suppressions.
-cmake_minimum_required(VERSION 3.6.0)
+cmake_minimum_required(VERSION 3.15.0)
 
 # splits suppression to RULE and PATH_MATCHER parts
 function(get_matchers SUPPRESSION RULE_VAR PATH_MATCHER_VAR)

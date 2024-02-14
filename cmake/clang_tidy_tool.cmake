@@ -1,5 +1,8 @@
 # Script called from clang_tidy_utils.cmake to run clang-tidy and preserve it's output.
 #
+# Prerequisites:
+#   CMake 3.15+
+#
 # Expected definitions:
 #   CLANG_TIDY_BIN Clang Tidy binary.
 #   SOURCES        Sources to check by clang-tidy.
@@ -7,7 +10,7 @@
 #   CONFIG_FILE    Path to the clang-tidy config file.
 #   HEADER_FILTER  Header filter to use.
 #   OUTPUT_FILE    Output file to use.
-cmake_minimum_required(VERSION 3.6.0)
+cmake_minimum_required(VERSION 3.15.0)
 
 separate_arguments(SOURCES)
 

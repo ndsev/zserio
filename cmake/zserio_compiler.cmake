@@ -69,6 +69,11 @@
 # - ZSERIO_JAR_FILE is changed
 # - zserio schema sources are changed
 # - EXTRA_ARGS are changed
+
+if (CMAKE_VERSION VERSION_LESS "3.15.0")
+    message(FATAL_ERROR "CMake 3.15+ is required!")
+endif ()
+
 function(zserio_generate_cpp)
     find_program(JAVA java)
     if (NOT JAVA)

@@ -13,7 +13,7 @@
 # add_executable(ZserioTestApp HelloWorld.cpp)
 # target_link_libraries(ZserioTestApp ZserioCppRuntime)
 
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.15.0)
 
 project(ZserioCppRuntime)
 

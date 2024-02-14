@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.6.0)
-
 include(ExternalProject)
 
 ExternalProject_add(DeprecatedAttribute

@@ -1,11 +1,14 @@
 # Script called from clang_format_utils.cmake to run clang-format and preserve it's output.
 #
+# Prerequisites:
+#   CMake 3.15+
+#
 # Expected definitions:
 #   CLANG_FORMAT_BIN Clang format binary.
 #   SOURCE           Source to check by clang-format.
 #   CONFIG_FILE      Path to the clang-format config file.
 #   WERROR           Ends with an error in case of any format violation.
-cmake_minimum_required(VERSION 3.6.0)
+cmake_minimum_required(VERSION 3.15.0)
 
 foreach (ARG CLANG_FORMAT_BIN SOURCE CONFIG_FILE WERROR)
     if (NOT DEFINED ${ARG})
