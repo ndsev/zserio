@@ -37,6 +37,16 @@ public final class CppExtensionParameters
         else
             allocatorDefinition = TypesContext.PROPAGATING_POLYMORPHIC_ALLOCATOR;
 
+        final String compoundParameterTreshold = parameters.getCommandLineArg(OptionSetCompoundParameterTreshold);
+        if (compoundParameterTreshold != null)
+        {
+            this.compoundParameterTreshold = Integer.parseInt(compoundParameterTreshold);
+        }
+        else
+        {
+            this.compoundParameterTreshold = DefaultCompoundParameterTreshold;
+        }
+
         final StringJoiner description = new StringJoiner(", ");
         if (withWriterCode)
             description.add("writerCode");
@@ -124,6 +134,11 @@ public final class CppExtensionParameters
         return allocatorDefinition;
     }
 
+    public int getCompoundParameterTreshold()
+    {
+        return compoundParameterTreshold;
+    }
+
     public String getParametersDescription()
     {
         return parametersDescription;
@@ -164,6 +179,12 @@ public final class CppExtensionParameters
         sourcesAmalgamationGroup.addOption(option);
         sourcesAmalgamationGroup.setRequired(false);
         options.addOptionGroup(sourcesAmalgamationGroup);
+
+        option = new Option(OptionSetCompoundParameterTreshold, true,
+                "set the size treshold in bytes to store compound parameters as shared pointers (default is 8)");
+        option.setArgName("size");
+        option.setRequired(false);
+        options.addOption(option);
     }
 
     static boolean hasOptionCpp(ExtensionParameters parameters)
@@ -179,6 +200,20 @@ public final class CppExtensionParameters
         {
             throw new ZserioExtensionException("The specified option '" + OptionSetCppAllocator + "' has "
                     + "unknown allocator '" + cppAllocator + "'!");
+        }
+
+        final String compoundParameterTreshold = parameters.getCommandLineArg(OptionSetCompoundParameterTreshold);
+        if (compoundParameterTreshold != null)
+        {
+            try
+            {
+                Integer.parseInt(compoundParameterTreshold);
+            }
+            catch (NumberFormatException e)
+            {
+                throw new ZserioExtensionException("The specified option '" + OptionSetCompoundParameterTreshold
+                        + "' has invalid value (" + e.getMessage() + ")!");
+            }
         }
 
         final boolean withReflectionCode = parameters.argumentExists(OptionWithReflectionCode);
@@ -211,6 +246,7 @@ public final class CppExtensionParameters
 
     private final static String OptionCpp = "cpp";
     private final static String OptionSetCppAllocator = "setCppAllocator";
+    private static final String OptionSetCompoundParameterTreshold = "setCompoundParameterTreshold";
     private final static String OptionWithoutReflectionCode = "withoutReflectionCode";
     private static final String OptionWithReflectionCode = "withReflectionCode";
     private static final String OptionWithSourcesAmalgamation = "withSourcesAmalgamation";
@@ -218,6 +254,8 @@ public final class CppExtensionParameters
 
     private final static String StdAllocator = "std";
     private final static String PolymorphicAllocator = "polymorphic";
+
+    private final static int DefaultCompoundParameterTreshold = 8;
 
     private final String outputDir;
     private final boolean withWriterCode;
@@ -231,6 +269,7 @@ public final class CppExtensionParameters
     private final boolean withSourcesAmalgamation;
     private final boolean withCodeComments;
     private final TypesContext.AllocatorDefinition allocatorDefinition;
+    private final int compoundParameterTreshold;
     private final String parametersDescription;
     private final String zserioVersion;
 }

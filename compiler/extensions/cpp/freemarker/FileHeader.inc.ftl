@@ -87,6 +87,10 @@ namespace ${namespace}
             <#if types.uniquePtr.needsAllocatorArgument>, ${types.allocator.name}<${typeName}></#if>><#t>
 </#macro>
 
+<#macro shared_ptr_type_name typeName>
+    ${types.sharedPtr.name}<${typeName}><#t>
+</#macro>
+
 <#macro vector_type_name typeName>
     ${types.vector.name}<${typeName}<#t>
             <#if types.vector.needsAllocatorArgument>, ${types.allocator.name}<${typeName}></#if>><#t>

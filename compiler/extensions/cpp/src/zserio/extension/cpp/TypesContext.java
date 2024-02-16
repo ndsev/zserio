@@ -24,6 +24,8 @@ public final class TypesContext
                     ZSERIO_PACKAGE_NAME, "AnyHolder", true, false, "zserio/AnyHolder.h");
             uniquePtr = new NativeTypeDefinition(
                     ZSERIO_PACKAGE_NAME, "unique_ptr", true, false, "zserio/UniquePtr.h");
+            sharedPtr = new NativeTypeDefinition(
+                    STD_PACKAGE_NAME, "shared_ptr", true, false, "memory");
             heapOptionalHolder = new NativeTypeDefinition(
                     ZSERIO_PACKAGE_NAME, "HeapOptionalHolder", true, false, "zserio/OptionalHolder.h");
             bitBuffer = new NativeTypeDefinition(
@@ -71,6 +73,8 @@ public final class TypesContext
                     ZSERIO_PMR_PACKAGE_NAME, "AnyHolder", false, false, "zserio/pmr/AnyHolder.h");
             uniquePtr = new NativeTypeDefinition(
                     ZSERIO_PMR_PACKAGE_NAME, "unique_ptr", true, false, "zserio/pmr/UniquePtr.h");
+            sharedPtr = new NativeTypeDefinition(
+                    STD_PACKAGE_NAME, "shared_ptr", true, false, "memory");
             heapOptionalHolder = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "HeapOptionalHolder", true,
                     false, "zserio/pmr/HeapOptionalHolder.h");
             bitBuffer = new NativeTypeDefinition(
@@ -115,6 +119,8 @@ public final class TypesContext
                     ZSERIO_PACKAGE_NAME, "AnyHolder", true, true, "zserio/AnyHolder.h");
             uniquePtr = new NativeTypeDefinition(
                     ZSERIO_PACKAGE_NAME, "unique_ptr", true, true, "zserio/UniquePtr.h");
+            sharedPtr = new NativeTypeDefinition(
+                    STD_PACKAGE_NAME, "shared_ptr", true, false, "memory");
             heapOptionalHolder = new NativeTypeDefinition(
                     ZSERIO_PACKAGE_NAME, "HeapOptionalHolder", true, true, "zserio/OptionalHolder.h");
             bitBuffer = new NativeTypeDefinition(
@@ -228,6 +234,11 @@ public final class TypesContext
     public NativeTypeDefinition getUniquePtr()
     {
         return uniquePtr;
+    }
+
+    public NativeTypeDefinition getSharedPtr()
+    {
+        return sharedPtr;
     }
 
     public NativeTypeDefinition getBitBuffer()
@@ -358,6 +369,7 @@ public final class TypesContext
     private final NativeTypeDefinition heapOptionalHolder;
     private final NativeTypeDefinition anyHolder;
     private final NativeTypeDefinition uniquePtr;
+    private final NativeTypeDefinition sharedPtr;
     private final NativeTypeDefinition bitBuffer;
     private final NativeTypeDefinition bytesArrayTraits;
     private final NativeTypeDefinition stringArrayTraits;

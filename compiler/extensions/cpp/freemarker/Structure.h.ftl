@@ -37,6 +37,7 @@
 <@type_includes types.inplaceOptionalHolder/>
     </#if>
 </#if>
+<@type_includes types.sharedPtr/>
 <@system_includes headerSystemIncludes/>
 <@user_includes headerUserIncludes/>
 <@namespace_begin package.path/>
@@ -104,20 +105,6 @@ public:
     /** Default destructor. */
 </#if>
     ~${name}() = default;
-<#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
-
-    <@compound_copy_constructor_declaration compoundConstructorsData/>
-    <#if withCodeComments>
-
-    </#if>
-    <@compound_assignment_operator_declaration compoundConstructorsData/>
-
-    <@compound_move_constructor_declaration compoundConstructorsData/>
-    <#if withCodeComments>
-
-    </#if>
-    <@compound_move_assignment_operator_declaration compoundConstructorsData/>
-<#else>
 
     <#if withCodeComments>
     /** Default copy constructor. */
@@ -136,29 +123,8 @@ public:
     /** Default move assignment operator. */
     </#if>
     ${name}& operator=(${name}&&) = default;
-</#if>
-<#if needs_compound_initialization(compoundConstructorsData)>
-
-    <@compound_copy_constructor_no_init_declaration compoundConstructorsData/>
-    <#if withCodeComments>
-
-    </#if>
-    <@compound_assignment_no_init_declaration compoundConstructorsData/>
-
-    <@compound_move_constructor_no_init_declaration compoundConstructorsData/>
-    <#if withCodeComments>
-
-    </#if>
-    <@compound_move_assignment_no_init_declaration compoundConstructorsData/>
-</#if>
 
     <@compound_allocator_propagating_copy_constructor_declaration compoundConstructorsData/>
-<#if needs_compound_initialization(compoundConstructorsData)>
-    <#if withCodeComments>
-
-    </#if>
-    <@compound_allocator_propagating_copy_constructor_no_init_declaration compoundConstructorsData/>
-</#if>
 <#if withTypeInfoCode>
 
     <#if withCodeComments>

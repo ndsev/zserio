@@ -193,6 +193,8 @@ public abstract class CppTemplateData implements IncludeCollector
             anyHolder = new TypeTemplateData(nativeMapper.getAnyHolderType());
             final NativeRuntimeAllocType uniquePtrType = nativeMapper.getUniquePtrType();
             uniquePtr = new TemplatedTypeTemplateData(uniquePtrType, uniquePtrType.needsAllocatorArgument());
+            final NativeRuntimeAllocType sharedPtrType = nativeMapper.getSharedPtrType();
+            sharedPtr = new TemplatedTypeTemplateData(sharedPtrType, sharedPtrType.needsAllocatorArgument());
             final NativeRuntimeAllocType heapOptionalHolderType = nativeMapper.getHeapOptionalHolderType();
             heapOptionalHolder = new TemplatedTypeTemplateData(
                     heapOptionalHolderType, heapOptionalHolderType.needsAllocatorArgument());
@@ -231,6 +233,11 @@ public abstract class CppTemplateData implements IncludeCollector
         public TemplatedTypeTemplateData getUniquePtr()
         {
             return uniquePtr;
+        }
+
+        public TemplatedTypeTemplateData getSharedPtr()
+        {
+            return sharedPtr;
         }
 
         public TemplatedTypeTemplateData getHeapOptionalHolder()
@@ -411,6 +418,7 @@ public abstract class CppTemplateData implements IncludeCollector
         private final AllocatorTemplateData allocator;
         private final TypeTemplateData anyHolder;
         private final TemplatedTypeTemplateData uniquePtr;
+        private final TemplatedTypeTemplateData sharedPtr;
         private final TemplatedTypeTemplateData heapOptionalHolder;
         private final TypeTemplateData inplaceOptionalHolder;
         private final TypeTemplateData string;

@@ -11,9 +11,9 @@ import zserio.ast.Field;
 public final class CppConstraintExpressionFormattingPolicy extends CppExpressionFormattingPolicy
 {
     public CppConstraintExpressionFormattingPolicy(
-            CppNativeMapper cppNativeMapper, IncludeCollector includeCollector, Field constraintField)
+            TemplateDataContext context, IncludeCollector includeCollector, Field constraintField)
     {
-        super(cppNativeMapper, includeCollector);
+        super(context, includeCollector);
 
         this.constraintField = constraintField;
     }

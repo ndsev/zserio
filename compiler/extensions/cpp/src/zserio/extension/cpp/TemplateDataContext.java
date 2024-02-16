@@ -11,12 +11,15 @@ import zserio.extension.common.PackedTypesCollector;
  */
 final class TemplateDataContext
 {
-    public TemplateDataContext(CppExtensionParameters cppParameters, PackedTypesCollector packedTypesCollector)
+    public TemplateDataContext(CppExtensionParameters cppParameters, ContextParameters contextParameters)
     {
-        this.packedTypesCollector = packedTypesCollector;
+        this.packedTypesCollector = contextParameters.getPackedTypesCollector();
+        this.parameterFieldsCollector = contextParameters.getParameterFieldsCollector();
 
         typesContext = new TypesContext(cppParameters.getAllocatorDefinition());
         cppNativeMapper = new CppNativeMapper(typesContext);
+
+        compoundParameterTreshold = cppParameters.getCompoundParameterTreshold();
 
         withWriterCode = cppParameters.getWithWriterCode();
         withRangeCheckCode = cppParameters.getWithRangeCheckCode();
@@ -40,6 +43,11 @@ final class TemplateDataContext
         return packedTypesCollector;
     }
 
+    public ParameterFieldsCollector getParameterFieldsCollector()
+    {
+        return parameterFieldsCollector;
+    }
+
     public CppNativeMapper getCppNativeMapper()
     {
         return cppNativeMapper;
@@ -48,7 +56,7 @@ final class TemplateDataContext
     public ExpressionFormatter getExpressionFormatter(IncludeCollector includeCollector)
     {
         final ExpressionFormattingPolicy expressionFormattingPolicy =
-                new CppExpressionFormattingPolicy(cppNativeMapper, includeCollector);
+                new CppExpressionFormattingPolicy(this, includeCollector);
 
         return new ExpressionFormatter(expressionFormattingPolicy);
     }
@@ -57,7 +65,7 @@ final class TemplateDataContext
             IncludeCollector includeCollector, String compoundTypeAccessPrefix)
     {
         final ExpressionFormattingPolicy expressionFormattingPolicy = new CppIndirectExpressionFormattingPolicy(
-                cppNativeMapper, includeCollector, compoundTypeAccessPrefix);
+                this, includeCollector, compoundTypeAccessPrefix);
 
         return new ExpressionFormatter(expressionFormattingPolicy);
     }
@@ -97,6 +105,11 @@ final class TemplateDataContext
         return typesContext;
     }
 
+    public int getCompoundParameterTreshold()
+    {
+        return compoundParameterTreshold;
+    }
+
     public String getGeneratorDescription()
     {
         return generatorDescription;
@@ -112,9 +125,34 @@ final class TemplateDataContext
         return generatorVersionNumber;
     }
 
+    public static class ContextParameters
+    {
+        public ContextParameters(PackedTypesCollector packedTypesCollector,
+                ParameterFieldsCollector parameterFieldsCollector)
+        {
+            this.packedTypesCollector = packedTypesCollector;
+            this.parameterFieldsCollector = parameterFieldsCollector;
+        }
+
+        public PackedTypesCollector getPackedTypesCollector()
+        {
+            return packedTypesCollector;
+        }
+
+        public ParameterFieldsCollector getParameterFieldsCollector()
+        {
+            return parameterFieldsCollector;
+        }
+
+        private final PackedTypesCollector packedTypesCollector;
+        private final ParameterFieldsCollector parameterFieldsCollector;
+    }
+
     private final PackedTypesCollector packedTypesCollector;
+    private final ParameterFieldsCollector parameterFieldsCollector;
 
     private final TypesContext typesContext;
+    private final int compoundParameterTreshold;
 
     private final CppNativeMapper cppNativeMapper;
 

@@ -1,4 +1,12 @@
 <#include "DocComment.inc.ftl">
+<#macro field_member_dereferenced field>
+    <#if field.usesSharedPointer>
+        (*<@field_member_name field/>)<#t>
+    <#else>
+        <@field_member_name field/><#t>
+    </#if>
+</#macro>
+
 <#macro field_member_name field>
     m_${field.name}_<#t>
 </#macro>
@@ -11,7 +19,11 @@
     <#if field.array??>
         <@array_typedef_name field/><#t>
     <#else>
-        ${field.typeInfo.typeFullName}<#t>
+        <#if field.usesSharedPointer>
+            <@shared_ptr_type_name field.typeInfo.typeFullName/><#t>
+        <#else>
+            ${field.typeInfo.typeFullName}<#t>
+        </#if>
     </#if>
 </#macro>
 
@@ -19,7 +31,11 @@
     <#if field.array??>
         <@vector_type_name field.array.elementTypeInfo.typeFullName/><#t>
     <#else>
-        ${field.typeInfo.typeFullName}<#t>
+        <#if field.usesSharedPointer>
+            <@shared_ptr_type_name field.typeInfo.typeFullName/><#t>
+        <#else>
+            ${field.typeInfo.typeFullName}<#t>
+        </#if>
     </#if>
 </#macro>
 
@@ -29,7 +45,11 @@
     <#elseif field.typeInfo.isSimple>
         ${field.typeInfo.typeFullName}<#t>
     <#else>
-        const ${field.typeInfo.typeFullName}&<#t>
+        <#if field.usesSharedPointer>
+            const <@shared_ptr_type_name field.typeInfo.typeFullName/>&<#t>
+        <#else>
+            const ${field.typeInfo.typeFullName}&<#t>
+        </#if>
     </#if>
 </#macro>
 
@@ -108,7 +128,11 @@ ${I}return <@field_member_type_name field/>(::zserio::NullOpt<#if field.holderNe
         <#local constructorArguments>
             in<#if compoundParamsArguments?has_content>, ${compoundParamsArguments}</#if>, allocator<#t>
         </#local>
-        <#local readCommand><@field_cpp_type_name field/>(${constructorArguments})</#local>
+        <#if field.usesSharedPointer>
+            <#local readCommand>::std::allocate_shared<${field.typeInfo.typeFullName}>(allocator, ${constructorArguments})</#local>
+        <#else>
+            <#local readCommand><@field_cpp_type_name field/>(${constructorArguments})</#local>
+        </#if>
     <#elseif !field.array??>
         <#-- bitmask -->
         <#local readCommand><@field_cpp_type_name field/>(in)</#local>
@@ -287,19 +311,19 @@ ${I}}
 ${I}// check parameters
         <#list field.compound.instantiatedParameters as instantiatedParameter>
             <#local parameter=field.compound.parameters.list[instantiatedParameter?index]/>
-            <#if instantiatedParameter.typeInfo.isSimple>
+            <#if parameter.usesSharedPointer>
+${I}if (<@compound_get_field field/>.${parameter.getterName}() != ${instantiatedParameter.expression})
+${I}{
+${I}    throw ::zserio::CppRuntimeException("Write: Inconsistent parameter ${parameter.name} for field ${compoundName}.${field.name}!");
+${I}}
+            <#else>
                 <#local instantiatedExpression>
                     static_cast<${instantiatedParameter.typeInfo.typeFullName}>(${instantiatedParameter.expression})<#t>
                 </#local>
-${I}if (<@compound_get_field field/>.${parameter.getterName}() != ${instantiatedExpression})
+${I}if (!(<@compound_get_field field/>.${parameter.getterName}() == ${instantiatedExpression}))
 ${I}{
 ${I}    throw ::zserio::CppRuntimeException("Write: Wrong parameter ${parameter.name} for field ${compoundName}.${field.name}: ") <<
 ${I}            <@compound_get_field field/>.${parameter.getterName}() << " != " << ${instantiatedExpression} << "!";
-${I}}
-            <#else>
-${I}if (&(<@compound_get_field field/>.${parameter.getterName}()) != &(${instantiatedParameter.expression}))
-${I}{
-${I}    throw ::zserio::CppRuntimeException("Write: Inconsistent parameter ${parameter.name} for field ${compoundName}.${field.name}!");
 ${I}}
             </#if>
         </#list>
@@ -809,7 +833,12 @@ ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPositi
      * \return Value of the field ${field.name}.
      */
     </#if>
-    <@field_raw_cpp_argument_type_name field/> ${field.getterName}() const;
+    <#if field.usesSharedPointer>
+    <@field_raw_cpp_type_name field/><#rt>
+    <#else>
+    <@field_raw_cpp_argument_type_name field/><#rt>
+    </#if>
+    <#lt> ${field.getterName}() const;
     <#if needs_field_getter(field)>
         <#if withCodeComments>
 
@@ -825,7 +854,12 @@ ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPositi
      * \return Reference to the field ${field.name}.
      */
         </#if>
-    <@field_raw_cpp_type_name field/>& ${field.getterName}();
+        <#if field.usesSharedPointer>
+    <@field_raw_cpp_type_name field/><#rt>
+        <#else>
+    <@field_raw_cpp_type_name field/>&<#rt>
+        </#if>
+    <#lt> ${field.getterName}();
     </#if>
     <#if needs_field_setter(field)>
         <#if withCodeComments>
@@ -863,13 +897,21 @@ ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPositi
     </#if>
 </#macro>
 
-<#macro compound_get_field field>
+<#macro compound_get_field_inner field>
     <#if field.usesAnyHolder>
         m_objectChoice.get<<@field_cpp_type_name field/>>()<#t>
     <#elseif field.optional??>
         <@field_member_name field/>.value()<#t>
     <#else>
         <@field_member_name field/><#t>
+    </#if>
+</#macro>
+
+<#macro compound_get_field field>
+    <#if field.usesSharedPointer>
+        (*<@compound_get_field_inner field/>)<#t>
+    <#else>
+        <@compound_get_field_inner field/><#t>
     </#if>
 </#macro>
 
@@ -905,9 +947,7 @@ ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPositi
 <#macro compound_copy_constructor_initializer_field field hasNext indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.usesAnyHolder>
-${I}m_objectChoice(::zserio::NoInit, other.m_objectChoice)
-    <#elseif has_field_no_init_tag(field)>
-${I}<@field_member_name field/>(::zserio::NoInit, other.<@field_member_name field/>)<#if hasNext>,</#if>
+${I}m_objectChoice(other.m_objectChoice)
     <#else>
 ${I}<@field_member_name field/>(other.<@field_member_name field/>)<#if hasNext>,</#if>
     </#if>
@@ -916,9 +956,7 @@ ${I}<@field_member_name field/>(other.<@field_member_name field/>)<#if hasNext>,
 <#macro compound_move_constructor_initializer_field field hasNext indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.usesAnyHolder>
-${I}m_objectChoice(::zserio::NoInit, ::std::move(other.m_objectChoice))
-    <#elseif has_field_no_init_tag(field)>
-${I}<@field_member_name field/>(::zserio::NoInit, ::std::move(other.<@field_member_name field/>))<#if hasNext>,</#if>
+${I}m_objectChoice(::std::move(other.m_objectChoice))
     <#else>
 ${I}<@field_member_name field/>(::std::move(other.<@field_member_name field/>))<#if hasNext>,</#if>
     </#if>
@@ -927,9 +965,7 @@ ${I}<@field_member_name field/>(::std::move(other.<@field_member_name field/>))<
 <#macro compound_assignment_field field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.usesAnyHolder>
-${I}m_objectChoice.assign(::zserio::NoInit, other.m_objectChoice);
-    <#elseif has_field_no_init_tag(field)>
-${I}<@field_member_name field/>.assign(::zserio::NoInit, other.<@field_member_name field/>);
+${I}m_objectChoice.assign(other.m_objectChoice);
     <#else>
 ${I}<@field_member_name field/> = other.<@field_member_name field/>;
     </#if>
@@ -938,9 +974,7 @@ ${I}<@field_member_name field/> = other.<@field_member_name field/>;
 <#macro compound_move_assignment_field field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.usesAnyHolder>
-${I}m_objectChoice.assign(::zserio::NoInit, ::std::move(other.m_objectChoice));
-    <#elseif has_field_no_init_tag(field)>
-${I}<@field_member_name field/>.assign(::zserio::NoInit, ::std::move(other.<@field_member_name field/>));
+${I}m_objectChoice.assign(::std::move(other.m_objectChoice));
     <#else>
 ${I}<@field_member_name field/> = ::std::move(other.<@field_member_name field/>);
     </#if>
@@ -949,10 +983,7 @@ ${I}<@field_member_name field/> = ::std::move(other.<@field_member_name field/>)
 <#macro compound_allocator_propagating_copy_constructor_initializer_field field hasNext indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.usesAnyHolder>
-${I}m_objectChoice(::zserio::NoInit, other.copyObject(allocator))
-    <#elseif has_field_no_init_tag(field)>
-${I}<@field_member_name field/>(::zserio::NoInit, ::zserio::allocatorPropagatingCopy(<#rt>
-        <#lt>::zserio::NoInit, other.<@field_member_name field/>, allocator))<#if hasNext>,</#if>
+${I}m_objectChoice(other.copyObject(allocator))
     <#else>
 ${I}<@field_member_name field/>(::zserio::allocatorPropagatingCopy(<#rt>
         <#lt>other.<@field_member_name field/>, allocator))<#if hasNext>,</#if>
@@ -1215,11 +1246,6 @@ ${I}context.${field.getterName}().init<<@array_traits_type_name field/>>(<#rt>
         </#if>
     </#list>
     <#return false>
-</#function>
-
-<#function has_field_no_init_tag field>
-    <#return (field.compound?? && needs_field_initialization(field.compound)) ||
-            (field.array?? && field.array.elementCompound?? && needs_field_initialization(field.array.elementCompound))>
 </#function>
 
 <#function needs_field_any_write_check_code field compoundName indent>

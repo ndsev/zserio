@@ -4,6 +4,7 @@ import zserio.ast.ServiceType;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.PackedTypesCollector;
 import zserio.extension.common.ZserioExtensionException;
+import zserio.extension.cpp.TemplateDataContext.ContextParameters;
 
 /**
  * Service emitter.
@@ -11,9 +12,9 @@ import zserio.extension.common.ZserioExtensionException;
 public final class ServiceEmitter extends CppDefaultEmitter
 {
     public ServiceEmitter(OutputFileManager outputFileManager, CppExtensionParameters cppParameters,
-            PackedTypesCollector packedTypesCollector)
+            ContextParameters contextParameters)
     {
-        super(outputFileManager, cppParameters, packedTypesCollector);
+        super(outputFileManager, cppParameters, contextParameters);
     }
 
     @Override

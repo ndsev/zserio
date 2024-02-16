@@ -7,6 +7,7 @@ import zserio.ast.CompoundType;
 import zserio.ast.DocComment;
 import zserio.ast.Parameter;
 import zserio.ast.TypeReference;
+import zserio.ast.ZserioType;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.types.CppNativeType;
 
@@ -45,7 +46,12 @@ public final class CompoundParameterTemplateData
             final CppNativeType cppNativeType = cppNativeMapper.getCppType(parameterTypeReference);
             includeCollector.addHeaderIncludesForType(cppNativeType);
 
+            final ZserioType parameterBaseType = parameterTypeReference.getBaseTypeReference().getType();
+
             name = parameter.getName();
+            usesSharedPointer = (parameterBaseType instanceof CompoundType) &&
+                    CompoundFieldTemplateData.isAboveTreshold(context, (CompoundType)parameterBaseType);
+
             typeInfo = new NativeTypeInfoTemplateData(cppNativeType, parameterTypeReference);
             getterName = AccessorNameFormatter.getGetterName(parameter);
 
@@ -64,6 +70,11 @@ public final class CompoundParameterTemplateData
             return name;
         }
 
+        public boolean getUsesSharedPointer()
+        {
+            return usesSharedPointer;
+        }
+
         public NativeTypeInfoTemplateData getTypeInfo()
         {
             return typeInfo;
@@ -80,6 +91,7 @@ public final class CompoundParameterTemplateData
         }
 
         private final String name;
+        private final boolean usesSharedPointer;
         private final NativeTypeInfoTemplateData typeInfo;
         private final String getterName;
         private final DocCommentsTemplateData docComments;

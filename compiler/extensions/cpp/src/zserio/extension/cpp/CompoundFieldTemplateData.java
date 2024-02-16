@@ -4,9 +4,11 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 
 import zserio.ast.ArrayInstantiation;
+import zserio.ast.BitmaskType;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
 import zserio.ast.DynamicBitFieldInstantiation;
+import zserio.ast.EnumType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
 import zserio.ast.IntegerType;
@@ -44,6 +46,7 @@ public final class CompoundFieldTemplateData
 
         name = field.getName();
 
+        usesSharedPointer = usesSharedPointer(context, field, fieldBaseType);
         typeInfo = new NativeTypeInfoTemplateData(fieldNativeType, fieldTypeInstantiation);
 
         getterName = AccessorNameFormatter.getGetterName(field);
@@ -86,6 +89,11 @@ public final class CompoundFieldTemplateData
     public String getName()
     {
         return name;
+    }
+
+    public boolean getUsesSharedPointer()
+    {
+        return usesSharedPointer;
     }
 
     public NativeTypeInfoTemplateData getTypeInfo()
@@ -635,9 +643,8 @@ public final class CompoundFieldTemplateData
         if (constraintExpression == null)
             return null;
 
-        final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
         final CppConstraintExpressionFormattingPolicy expressionFormattingPolicy =
-                new CppConstraintExpressionFormattingPolicy(cppNativeMapper, includeCollector, field);
+                new CppConstraintExpressionFormattingPolicy(context, includeCollector, field);
         final ExpressionFormatter cppConstaintExpressionFormatter =
                 new ExpressionFormatter(expressionFormattingPolicy);
 
@@ -690,9 +697,77 @@ public final class CompoundFieldTemplateData
         }
     }
 
+    private static boolean usesSharedPointer(TemplateDataContext context, Field field,
+            ZserioType fieldBaseType) throws ZserioExtensionException
+    {
+        if (!context.getParameterFieldsCollector().isUsedAsParameter(field) ||
+                !(fieldBaseType instanceof CompoundType))
+        {
+            return false;
+        }
+
+        return isAboveTreshold(context, (CompoundType)fieldBaseType);
+    }
+
+    static boolean isAboveTreshold(TemplateDataContext context, CompoundType compoundType)
+            throws ZserioExtensionException
+    {
+        return isAboveTreshold(context, compoundType, 0);
+    }
+
+    private static boolean isAboveTreshold(TemplateDataContext context, CompoundType compoundType, int numBytes)
+            throws ZserioExtensionException
+    {
+        if (!compoundType.getTypeParameters().isEmpty())
+            return true; // parameterized type TODO[Mi-L@]
+
+        for (Field field : compoundType.getFields())
+        {
+            TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
+            if (fieldTypeInstantiation instanceof ArrayInstantiation)
+                return true; // array field
+
+            ZserioType fieldBaseType = fieldTypeInstantiation.getBaseType();
+            if (fieldBaseType instanceof CompoundType)
+            {
+                if (fieldBaseType == compoundType)
+                    return true; // recursion
+                return isAboveTreshold(context, (CompoundType)fieldBaseType, numBytes);
+            }
+            else if (fieldBaseType instanceof EnumType)
+            {
+                fieldTypeInstantiation = ((EnumType)fieldBaseType).getTypeInstantiation();
+                fieldBaseType = fieldTypeInstantiation.getBaseType();
+            }
+            else if (fieldBaseType instanceof BitmaskType)
+            {
+                fieldTypeInstantiation = ((BitmaskType)fieldBaseType).getTypeInstantiation();
+                fieldBaseType = fieldTypeInstantiation.getBaseType();
+            }
+
+            if (fieldBaseType instanceof IntegerType)
+            {
+                final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
+                final NativeIntegralType nativeIntegralType =
+                        cppNativeMapper.getCppIntegralType(fieldTypeInstantiation);
+                numBytes += nativeIntegralType.getNumBits() / Byte.SIZE;
+            }
+            else
+            {
+                return true; // type which doesn't have fixed size of the mapped native type
+            }
+
+            if (numBytes > context.getCompoundParameterTreshold())
+                return true;
+        }
+
+        return false;
+    }
+
     private final Optional optional;
     private final Compound compound;
     private final String name;
+    private final boolean usesSharedPointer;
     private final NativeTypeInfoTemplateData typeInfo;
     private final String getterName;
     private final String setterName;

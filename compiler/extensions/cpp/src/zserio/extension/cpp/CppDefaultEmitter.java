@@ -15,6 +15,7 @@ import zserio.extension.common.FreeMarkerUtil;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.PackedTypesCollector;
 import zserio.extension.common.ZserioExtensionException;
+import zserio.extension.cpp.TemplateDataContext.ContextParameters;
 
 /**
  * Base class for all C++ emitters.
@@ -22,11 +23,11 @@ import zserio.extension.common.ZserioExtensionException;
 abstract class CppDefaultEmitter extends DefaultTreeWalker
 {
     public CppDefaultEmitter(OutputFileManager outputFileManager, CppExtensionParameters cppParameters,
-            PackedTypesCollector packedTypesCollector)
+            ContextParameters contextParameters)
     {
         this.outputFileManager = outputFileManager;
         this.cppParameters = cppParameters;
-        this.context = new TemplateDataContext(cppParameters, packedTypesCollector);
+        this.context = new TemplateDataContext(cppParameters, contextParameters);
         this.generatorDescription = context.getGeneratorDescription().split("\\n");
     }
 

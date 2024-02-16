@@ -1,4 +1,12 @@
 <#include "DocComment.inc.ftl">
+<#macro parameter_dereferenced param>
+    <#if param.usesSharedPointer>
+        (*${param.getterName}())<#t>
+    <#else>
+        ${param.getterName}()<#t>
+    </#if>
+</#macro>
+
 <#macro parameter_member_name paramName>
     m_${paramName}_<#t>
 </#macro>
@@ -10,22 +18,20 @@
 <#macro compound_parameter_constructor_initializers compoundParametersData, indent, trailingComma>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#list compoundParametersData.list as compoundParameter>
-    <#local parameterNamePrefix><#if !compoundParameter.typeInfo.isSimple>&</#if></#local>
-${I}<@parameter_member_name compoundParameter.name/>(${parameterNamePrefix}<@parameter_argument_name compoundParameter.name/>)<#if compoundParameter?has_next || trailingComma>,</#if>
+${I}<@parameter_member_name compoundParameter.name/>(<@parameter_argument_name compoundParameter.name/>)<#if compoundParameter?has_next || trailingComma>,</#if>
     </#list>
 </#macro>
 
 <#macro compound_parameter_initialize compoundParametersData, indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#list compoundParametersData.list as compoundParameter>
-${I}<@parameter_member_name compoundParameter.name/> = <#if !compoundParameter.typeInfo.isSimple>&</#if><@parameter_argument_name compoundParameter.name/>;
+${I}<@parameter_member_name compoundParameter.name/> = <@parameter_argument_name compoundParameter.name/>;
     </#list>
 </#macro>
 
 <#macro compound_parameter_copy_argument_list compoundParametersData>
     <#list compoundParametersData.list as compoundParameter>
-        <#if !compoundParameter.typeInfo.isSimple>*(</#if>other.<@parameter_member_name compoundParameter.name/><#t>
-            <#if !compoundParameter.typeInfo.isSimple>)</#if><#if compoundParameter?has_next>, </#if><#t>
+        other.<@parameter_member_name compoundParameter.name/><#if compoundParameter?has_next>, </#if><#t>
     </#list>
 </#macro>
 
@@ -33,12 +39,9 @@ ${I}<@parameter_member_name compoundParameter.name/> = <#if !compoundParameter.t
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#list compoundParametersData.list as compoundParameter>
     <#local parameterType>
-        <#if !compoundParameter.typeInfo.isSimple>
-            <#if withWriterCode>
-                ${compoundParameter.typeInfo.typeFullName}&<#t>
-            <#else>
-                const ${compoundParameter.typeInfo.typeFullName}&<#t>
-            </#if>
+        <#if compoundParameter.usesSharedPointer>
+            <#-- TODO[Mi-L@]: const? -->
+            const <@shared_ptr_type_name compoundParameter.typeInfo.typeFullName/>&<#t>
         <#else>
             ${compoundParameter.typeInfo.typeFullName}<#t>
         </#if>
@@ -52,8 +55,14 @@ ${I}${parameterType} <@parameter_argument_name compoundParameter.name/><#rt>
 
 <#macro compound_parameter_accessors_declaration compoundParametersData>
     <#list compoundParametersData.list as compoundParameter>
-
-        <#if !compoundParameter.typeInfo.isSimple>
+        
+        <#if compoundParameter.usesSharedPointer>
+            <#if withWriterCode>
+    <@shared_ptr_type_name compoundParameter.typeInfo.typeFullName/> ${compoundParameter.getterName}();
+            </#if>
+    <#-- TODO[Mi-L@]: Proper constness! -->
+    <@shared_ptr_type_name compoundParameter.typeInfo.typeFullName/> ${compoundParameter.getterName}() const;
+        <#elseif !compoundParameter.typeInfo.isSimple>
             <#if withWriterCode>
             <#-- non-const getter is necessary for setting of offsets -->
                 <#if withCodeComments>
@@ -109,28 +118,43 @@ ${I}${parameterType} <@parameter_argument_name compoundParameter.name/><#rt>
 
 <#macro compound_parameter_accessors_definition compoundName compoundParametersData>
     <#list compoundParametersData.list as compoundParameter>
-        <#if !compoundParameter.typeInfo.isSimple && withWriterCode>
+        <#if compoundParameter.usesSharedPointer>
+            <#if withWriterCode>
+<@shared_ptr_type_name compoundParameter.typeInfo.typeFullName/> ${compoundName}::${compoundParameter.getterName}()
+{
+    return <@parameter_member_name compoundParameter.name/>;
+}
+
+            </#if>
+<@shared_ptr_type_name compoundParameter.typeInfo.typeFullName/> ${compoundName}::${compoundParameter.getterName}() const
+{
+    return <@parameter_member_name compoundParameter.name/>;
+}
+
+        <#else>
+            <#if !compoundParameter.typeInfo.isSimple && withWriterCode>
 ${compoundParameter.typeInfo.typeFullName}& ${compoundName}::${compoundParameter.getterName}()
 {
     if (!m_isInitialized)
         throw ::zserio::CppRuntimeException("Parameter '${compoundParameter.name}' of compound '${compoundName}' is not initialized!");
 
-    return *<@parameter_member_name compoundParameter.name/>;
+    return <@parameter_member_name compoundParameter.name/>;
 }
 
-        </#if>
-        <#if !compoundParameter.typeInfo.isSimple>
+            </#if>
+            <#if !compoundParameter.typeInfo.isSimple>
 const ${compoundParameter.typeInfo.typeFullName}& ${compoundName}::${compoundParameter.getterName}() const
-        <#else>
+            <#else>
 ${compoundParameter.typeInfo.typeFullName} ${compoundName}::${compoundParameter.getterName}() const
-        </#if>
+            </#if>
 {
     if (!m_isInitialized)
         throw ::zserio::CppRuntimeException("Parameter '${compoundParameter.name}' of compound '${compoundName}' is not initialized!");
 
-    return <#if !compoundParameter.typeInfo.isSimple>*</#if><@parameter_member_name compoundParameter.name/>;
+    return <@parameter_member_name compoundParameter.name/>;
 }
 
+        </#if>
     </#list>
 </#macro>
 
@@ -141,7 +165,11 @@ ${compoundParameter.typeInfo.typeFullName} ${compoundName}::${compoundParameter.
         <#if compoundParameter.typeInfo.isSimple>
             ${compoundParameter.typeInfo.typeFullName}<#t>
         <#else>
-            <#if !withWriterCode>const </#if>${compoundParameter.typeInfo.typeFullName}*<#t>
+            <#if compoundParameter.usesSharedPointer>
+                <@shared_ptr_type_name compoundParameter.typeInfo.typeFullName/><#t>
+            <#else>
+                ${compoundParameter.typeInfo.typeFullName}<#t>
+            </#if>
         </#if>
     </#local>
     ${parameterCppTypeName} <@parameter_member_name compoundParameter.name/>;
@@ -192,7 +220,7 @@ ${I}    return false;
 
 <#macro compound_parameter_hash_code compoundParametersData>
     <#list compoundParametersData.list as compoundParameter>
-    result = ::zserio::calcHashCode(result, ${compoundParameter.getterName}());
+    result = ::zserio::calcHashCode(result, <@parameter_dereferenced compoundParameter/>);
     </#list>
 </#macro>
 

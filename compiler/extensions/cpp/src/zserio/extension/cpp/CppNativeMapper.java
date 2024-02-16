@@ -63,6 +63,7 @@ public final class CppNativeMapper
         anyHolderType =
                 new NativeRuntimeAllocType(typesContext.getAnyHolder(), allocatorDefinition, stdUInt8Type);
         uniquePtrType = new NativeRuntimeAllocType(typesContext.getUniquePtr(), allocatorDefinition);
+        sharedPtrType = new NativeRuntimeAllocType(typesContext.getSharedPtr(), allocatorDefinition);
         heapOptionalHolderType =
                 new NativeRuntimeAllocType(typesContext.getHeapOptionalHolder(), allocatorDefinition);
         inplaceOptionalHolderType = new NativeRuntimeType("InplaceOptionalHolder", "zserio/OptionalHolder.h");
@@ -179,6 +180,11 @@ public final class CppNativeMapper
     public NativeRuntimeAllocType getUniquePtrType()
     {
         return uniquePtrType;
+    }
+
+    public NativeRuntimeAllocType getSharedPtrType()
+    {
+        return sharedPtrType;
     }
 
     public NativeRuntimeAllocType getHeapOptionalHolderType()
@@ -592,6 +598,7 @@ public final class CppNativeMapper
 
     private final NativeRuntimeAllocType anyHolderType;
     private final NativeRuntimeAllocType uniquePtrType;
+    private final NativeRuntimeAllocType sharedPtrType;
     private final NativeRuntimeAllocType heapOptionalHolderType;
     private final NativeRuntimeType inplaceOptionalHolderType;
 

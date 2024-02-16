@@ -8,6 +8,7 @@ import java.util.List;
 import zserio.ast.AstNode;
 import zserio.ast.BitmaskType;
 import zserio.ast.BitmaskValue;
+import zserio.ast.CompoundType;
 import zserio.ast.Constant;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
@@ -33,9 +34,9 @@ import zserio.extension.cpp.types.NativeStringViewType;
  */
 public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPolicy
 {
-    public CppExpressionFormattingPolicy(CppNativeMapper cppNativeMapper, IncludeCollector includeCollector)
+    public CppExpressionFormattingPolicy(TemplateDataContext context, IncludeCollector includeCollector)
     {
-        this.cppNativeMapper = cppNativeMapper;
+        this.context = context;
         this.includeCollector = includeCollector;
     }
 
@@ -131,7 +132,7 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
     @Override
     public String getStringLiteral(Expression expr) throws ZserioExtensionException
     {
-        final NativeStringViewType nativeStringViewType = cppNativeMapper.getStringViewType();
+        final NativeStringViewType nativeStringViewType = context.getCppNativeMapper().getStringViewType();
         includeCollector.addCppIncludesForType(nativeStringViewType);
 
         // string literals in C++ does not support unicode escapes from interval <'\u0000', '\u0031'>
@@ -192,7 +193,7 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
         else if (expr.op1().getExprZserioType() instanceof BitmaskType)
         {
             final BitmaskType bitmaskType = (BitmaskType)expr.op1().getExprZserioType();
-            final CppNativeType bitmaskNativeType = cppNativeMapper.getCppType(bitmaskType);
+            final CppNativeType bitmaskNativeType = context.getCppNativeMapper().getCppType(bitmaskType);
             return new UnaryExpressionFormatting(
                     "static_cast<" + bitmaskNativeType.getFullName() + "::underlying_type>(", ")");
         }
@@ -256,7 +257,7 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
     private void formatTypeIdentifier(StringBuilder result, ZserioType resolvedType)
             throws ZserioExtensionException
     {
-        final CppNativeType resolvedNativeType = cppNativeMapper.getCppType(resolvedType);
+        final CppNativeType resolvedNativeType = context.getCppNativeMapper().getCppType(resolvedType);
         includeCollector.addCppIncludesForType(resolvedNativeType);
         result.append(resolvedNativeType.getFullName());
     }
@@ -265,7 +266,7 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
             AstNode resolvedSymbol, ZserioType exprType, boolean isSetter) throws ZserioExtensionException
     {
         if (resolvedSymbol instanceof Parameter)
-        {
+        {;
             // [Parameter]
             final Parameter param = (Parameter)resolvedSymbol;
             formatParameterAccessor(result, isMostLeftId, param);
@@ -329,12 +330,25 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
     }
 
     private void formatParameterAccessor(StringBuilder result, boolean isMostLeftId, Parameter param)
+            throws ZserioExtensionException
     {
         if (isMostLeftId)
             result.append(getAccessPrefix());
 
-        result.append(AccessorNameFormatter.getGetterName(param));
-        result.append(CPP_GETTER_FUNCTION_CALL);
+        final ZserioType paramBaseType = param.getTypeReference().getBaseTypeReference().getType();
+        if (paramBaseType instanceof CompoundType &&
+                CompoundFieldTemplateData.isAboveTreshold(context, (CompoundType)paramBaseType))
+        {
+            result.append("(*");
+            result.append(AccessorNameFormatter.getGetterName(param));
+            result.append(CPP_GETTER_FUNCTION_CALL);
+            result.append(")");
+        }
+        else
+        {
+            result.append(AccessorNameFormatter.getGetterName(param));
+            result.append(CPP_GETTER_FUNCTION_CALL);
+        }
     }
 
     private void formatFieldAccessor(StringBuilder result, boolean isMostLeftId, Field field, boolean isSetter)
@@ -360,7 +374,7 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
         if (isMostLeftId && exprType instanceof EnumType)
         {
             final EnumType enumType = (EnumType)exprType;
-            final CppNativeType nativeEnumType = cppNativeMapper.getCppType(enumType);
+            final CppNativeType nativeEnumType = context.getCppNativeMapper().getCppType(enumType);
             result.append(nativeEnumType.getFullName());
             result.append("::");
         }
@@ -375,7 +389,7 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
         if (isMostLeftId && exprType instanceof BitmaskType)
         {
             final BitmaskType bitmaskType = (BitmaskType)exprType;
-            final CppNativeType nativeBitmaskType = cppNativeMapper.getCppType(bitmaskType);
+            final CppNativeType nativeBitmaskType = context.getCppNativeMapper().getCppType(bitmaskType);
             result.append(nativeBitmaskType.getFullName());
             result.append("::");
         }
@@ -386,7 +400,7 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
 
     private void formatConstant(StringBuilder result, Constant constant) throws ZserioExtensionException
     {
-        final CppNativeSymbol nativeSymbol = cppNativeMapper.getCppSymbol(constant);
+        final CppNativeSymbol nativeSymbol = context.getCppNativeMapper().getCppSymbol(constant);
         result.append(nativeSymbol.getFullName());
         includeCollector.addCppUserIncludes(Collections.singleton(nativeSymbol.getIncludeFile()));
     }
@@ -414,7 +428,7 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
         }
     }
 
-    private final CppNativeMapper cppNativeMapper;
+    private final TemplateDataContext context;
     private final IncludeCollector includeCollector;
 
     private final static String CPP_GETTER_FUNCTION_CALL = "()";

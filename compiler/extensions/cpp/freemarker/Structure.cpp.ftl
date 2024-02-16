@@ -37,7 +37,9 @@
     <#return fieldIndex - (numFields - numExtendedFields)>
 </#function>
 <#macro field_default_constructor_arguments field>
-    <#if field.initializer??>
+    <#if field.usesSharedPointer>
+        nullptr<#t>
+    <#elseif field.initializer??>
         <#-- cannot be compound or array since it has initializer! -->
         <#if field.optional??>
             <#if field.holderNeedsAllocator>allocator<#else>::zserio::InPlace</#if>, <#t>
@@ -86,32 +88,8 @@
 <@compound_read_constructor_definition compoundConstructorsData, readConstructorInitMacroName, true/>
 </#if>
 
-<#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
-<@compound_copy_constructor_definition compoundConstructorsData/>
-
-<@compound_assignment_operator_definition compoundConstructorsData/>
-
-<@compound_move_constructor_definition compoundConstructorsData/>
-
-<@compound_move_assignment_operator_definition compoundConstructorsData/>
-
-</#if>
-<#if needs_compound_initialization(compoundConstructorsData)>
-<@compound_copy_constructor_no_init_definition compoundConstructorsData/>
-
-<@compound_assignment_no_init_definition compoundConstructorsData/>
-
-<@compound_move_constructor_no_init_definition compoundConstructorsData/>
-
-<@compound_move_assignment_no_init_definition compoundConstructorsData/>
-
-</#if>
 <@compound_allocator_propagating_copy_constructor_definition compoundConstructorsData/>
 
-<#if needs_compound_initialization(compoundConstructorsData)>
-<@compound_allocator_propagating_copy_constructor_no_init_definition compoundConstructorsData/>
-
-</#if>
 <#if withTypeInfoCode>
 const ${types.typeInfo.name}& ${name}::typeInfo()
 {
@@ -265,18 +243,34 @@ void ${name}::initializeChildren()
 </#if>
 <@compound_parameter_accessors_definition name, compoundParametersData/>
 <#list fieldList as field>
-    <#if needs_field_getter(field)>
+    <#if field.usesSharedPointer>
+        <#if needs_field_getter(field)>
+<@field_raw_cpp_type_name field/> ${name}::${field.getterName}()
+{
+    return <@compound_get_field_inner field/>;
+}
+
+        </#if>
+        <#-- TODO[Mi-L@]: constness? -->
+<@field_raw_cpp_type_name field/> ${name}::${field.getterName}() const
+{
+    return <@compound_get_field_inner field/>;
+}
+
+    <#else>
+        <#if needs_field_getter(field)>
 <@field_raw_cpp_type_name field/>& ${name}::${field.getterName}()
 {
     return <@compound_get_field field/><#if field.array??>.getRawArray()</#if>;
 }
 
-    </#if>
+        </#if>
 <@field_raw_cpp_argument_type_name field/> ${name}::${field.getterName}() const
 {
     return <@compound_get_field field/><#if field.array??>.getRawArray()</#if>;
 }
 
+    </#if>
     <#if needs_field_setter(field)>
 void ${name}::${field.setterName}(<@field_raw_cpp_argument_type_name field/> <@field_argument_name field/>)
 {
@@ -483,9 +477,9 @@ bool ${name}::operator<(const ${name}&<#if compoundParametersData.list?has_conte
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
 ${I}if (${field.optional.isUsedIndicatorName}())
-${I}    result = ::zserio::calcHashCode(result, <@field_member_name field/>);
+${I}    result = ::zserio::calcHashCode(result, <@field_member_dereferenced field/>);
     <#else>
-${I}result = ::zserio::calcHashCode(result, <@field_member_name field/>);
+${I}result = ::zserio::calcHashCode(result, <@field_member_dereferenced field/>);
     </#if>
 </#macro>
 uint32_t ${name}::hashCode() const
