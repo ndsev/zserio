@@ -1,12 +1,4 @@
 <#include "DocComment.inc.ftl">
-<#macro field_member_dereferenced field>
-    <#if field.usesSharedPointer>
-        (*<@field_member_name field/>)<#t>
-    <#else>
-        <@field_member_name field/><#t>
-    </#if>
-</#macro>
-
 <#macro field_member_name field>
     m_${field.name}_<#t>
 </#macro>
@@ -57,7 +49,7 @@
     <#local fieldCppTypeName>
         <#if field.array?? && arrayClassPrefix?has_content>${arrayClassPrefix}::</#if><@field_cpp_type_name field/><#t>
     </#local>
-    <#if field.optional??>
+    <#if field.optional?? && !field.usesSharedPointer>
         <#if field.optional.isRecursive>
             <@heap_optional_type_name fieldCppTypeName/><#t>
         <#else>
@@ -88,7 +80,11 @@ ${I}{
         <@compound_read_field_inner field, compoundName, indent+1, packed/>
 ${I}}
 
+        <#if field.usesSharedPointer>
+${I}return <@field_member_type_name field/>(nullptr);
+        <#else>
 ${I}return <@field_member_type_name field/>(::zserio::NullOpt<#if field.holderNeedsAllocator>, allocator</#if>);
+        </#if>
     <#else>
     <@compound_read_field_inner field, compoundName, indent, packed/>
     </#if>
@@ -157,7 +153,7 @@ ${I}return <@compound_read_field_retval field, readCommand, false/>;
 <#macro compound_read_field_retval field readCommand needsMove>
     <#if field.usesAnyHolder>
         ${types.anyHolder.name}(<#if needsMove>::std::move(</#if>${readCommand}<#if needsMove>)</#if>, allocator)<#t>
-    <#elseif field.optional??>
+    <#elseif field.optional?? && !field.usesSharedPointer>
         <#local fieldCppTypeName><@field_cpp_type_name field/></#local>
         <#if field.optional.isRecursive>
             <@heap_optional_type_name fieldCppTypeName/>(<#t>
@@ -900,7 +896,7 @@ ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPositi
 <#macro compound_get_field_inner field>
     <#if field.usesAnyHolder>
         m_objectChoice.get<<@field_cpp_type_name field/>>()<#t>
-    <#elseif field.optional??>
+    <#elseif field.optional?? && !field.usesSharedPointer>
         <@field_member_name field/>.value()<#t>
     <#else>
         <@field_member_name field/><#t>

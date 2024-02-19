@@ -65,7 +65,7 @@ public final class CompoundFieldTemplateData
         usesAnyHolder = (parentType instanceof ChoiceType) || (parentType instanceof UnionType);
 
         needsAllocator = !typeInfo.getIsSimple();
-        holderNeedsAllocator = usesAnyHolder || (optional != null && optional.getIsRecursive());
+        holderNeedsAllocator = usesAnyHolder || (!usesSharedPointer && optional != null && optional.getIsRecursive());
 
         constraint = createConstraint(context, field, includeCollector);
         offset = createOffset(context, field, includeCollector);

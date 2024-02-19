@@ -309,7 +309,7 @@ bool ${name}::${field.optional.isUsedIndicatorName}() const
         <#if withWriterCode>
 bool ${name}::${field.optional.isSetIndicatorName}() const
 {
-    return <@field_member_name field/>.hasValue();
+    return <@field_member_name field/><#if field.usesSharedPointer> != nullptr<#else>.hasValue()</#if>;
 }
 
 void ${name}::${field.optional.resetterName}()
@@ -477,9 +477,9 @@ bool ${name}::operator<(const ${name}&<#if compoundParametersData.list?has_conte
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
 ${I}if (${field.optional.isUsedIndicatorName}())
-${I}    result = ::zserio::calcHashCode(result, <@field_member_dereferenced field/>);
+${I}    result = ::zserio::calcHashCode(result, <@field_member_name field/>);
     <#else>
-${I}result = ::zserio::calcHashCode(result, <@field_member_dereferenced field/>);
+${I}result = ::zserio::calcHashCode(result, <@field_member_name field/>);
     </#if>
 </#macro>
 uint32_t ${name}::hashCode() const

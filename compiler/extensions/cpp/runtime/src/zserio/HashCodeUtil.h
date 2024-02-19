@@ -137,6 +137,15 @@ calcHashCode(uint32_t seedValue, const OBJECT& object)
     return calcHashCode(seedValue, object.hashCode());
 }
 
+template <typename OBJECT>
+inline uint32_t calcHashCode(uint32_t seedValue, const std::shared_ptr<OBJECT>& objectPtr)
+{
+    if (!objectPtr)
+        return calcHashCode(seedValue, 0);
+
+    return calcHashCode(seedValue, *objectPtr);
+}
+
 /**
  * Calculates hash code of the given Zserio array using the given seed value.
  *
