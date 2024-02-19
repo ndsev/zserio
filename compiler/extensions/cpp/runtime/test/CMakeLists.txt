@@ -208,7 +208,6 @@ add_executable(${PROJECT_NAME}
     ${ZSERIO_CPP_RUNTIME_TEST_SRCS}
     ${ZSERIO_CPP_RUNTIME_TEST_HEADERS})
 
-set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS NO)
 target_include_directories(${PROJECT_NAME} PRIVATE .)
 target_include_directories(${PROJECT_NAME} PRIVATE ../src)
 target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${SQLITE_INCDIR})

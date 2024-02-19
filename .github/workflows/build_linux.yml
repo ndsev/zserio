@@ -15,6 +15,7 @@ jobs:
         os: ["ubuntu-20.04"]
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
         java-version: ["8"]
+        cxx-standard-version: ["11"]
         gcc-version: ["7"]
         clang-version: ["11"]
         include:
@@ -22,24 +23,34 @@ jobs:
           - os: "ubuntu-20.04"
             python-version: "3.8"
             java-version: "11"
+            cxx-standard-version: "11"
             gcc-version: "7"
             clang-version: "11"
           # Java 17
           - os: "ubuntu-20.04"
             python-version: "3.8"
             java-version: "17"
+            cxx-standard-version: "11"
             gcc-version: "7"
             clang-version: "11"
-          # Ubuntu 22.04, gcc 11 with gcovr, Clang 14 (needed for clang-format and clang-tidy)
+          # Ubuntu 22.04, C++11, gcc 11 with gcovr, Clang 14 (needed for clang-format and clang-tidy)
           - os: "ubuntu-22.04"
             python-version: "3.8"
             java-version: "8"
+            cxx-standard-version: "11"
+            gcc-version: "11"
+            clang-version: "14"
+          # Ubuntu 22.04, C++17, gcc 11 with gcovr, Clang 14 (needed for clang-format and clang-tidy), C++17
+          - os: "ubuntu-22.04"
+            python-version: "3.8"
+            java-version: "8"
+            cxx-standard-version: "17"
             gcc-version: "11"
             clang-version: "14"
     name: |
       OS ${{matrix.os}}, Python ${{matrix.python-version}},
-      Java ${{matrix.java-version}}, gcc ${{matrix.gcc-version}},
-      Clang ${{matrix.clang-version}}
+      Java ${{matrix.java-version}}, C++${{matrix.cxx-standard-version}},
+      gcc ${{matrix.gcc-version}}, Clang ${{matrix.clang-version}}
     env:
       CPPCHECK_HOME: "${{github.workspace}}/cppcheck-2.6"
       SPOTBUGS_HOME: "${{github.workspace}}/spotbugs-4.8.2"
@@ -47,6 +58,7 @@ jobs:
       MYPY_ENABLED: 1
       NU_HTML_VALIDATOR: "${{github.workspace}}/vnu-20.6.30/vnu.jar"
       XMLLINT_ENABLED: 1
+      CMAKE_CXX_STANDARD: "${{matrix.cxx-standard-version}}"
       GCC_VERSION_SUFFIX: "-${{matrix.gcc-version}}"
       CLANG_VERSION_SUFFIX: "-${{matrix.clang-version}}"
       CMAKE_BUILD_OPTIONS: "-j2"

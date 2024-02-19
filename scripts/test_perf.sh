@@ -288,6 +288,10 @@ set(INPUT_SWITCH "${INPUT_SWITCH}")
 set(INPUT_PATH "${HOST_INPUT_PATH}")
 set(CMAKE_MODULE_PATH "\${ZSERIO_ROOT}/cmake")
 
+set(CMAKE_CXX_STANDARD 11 CACHE STRING "The C++ standard to use.")
+set(CMAKE_CXX_STANDARD_REQUIRED ON CACHE BOOL "Whether C++ standard is required.")
+set(CMAKE_CXX_EXTENSIONS OFF CACHE BOOL "Whether compiler specific C++ standard extensions are allowed.")
+
 EOF
 
 if [[ ${PROFILE} == 1 ]] ; then
@@ -324,8 +328,6 @@ include(sqlite_utils)
 sqlite_add_library(\${CMAKE_CURRENT_SOURCE_DIR}/../../../../..)
 
 add_executable(\${PROJECT_NAME} PerformanceTest.cpp \${SOURCES})
-# CXX_EXTENSIONS are necessary for old MinGW32 to support clock_gettime method
-set_target_properties(\${PROJECT_NAME} PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS NO)
 
 target_include_directories(\${PROJECT_NAME} PUBLIC "\${CMAKE_CURRENT_SOURCE_DIR}/gen")
 target_include_directories(\${PROJECT_NAME} SYSTEM PRIVATE \${SQLITE_INCDIR})

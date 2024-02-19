@@ -212,6 +212,10 @@ set(CMAKE_MODULE_PATH "\${ZSERIO_ROOT}/cmake")
 set(CPPCHECK_HOME "" CACHE PATH "Home directory of cppcheck tool. If empty, cppcheck tool is not called.")
 set(CLANG_TIDY_BIN "" CACHE STRING "Name of clang-tidy binary. If empty, clang-tidy tool is not called.")
 
+set(CMAKE_CXX_STANDARD 11 CACHE STRING "The C++ standard to use.")
+set(CMAKE_CXX_STANDARD_REQUIRED ON CACHE BOOL "Whether C++ standard is required.")
+set(CMAKE_CXX_EXTENSIONS OFF CACHE BOOL "Whether compiler specific C++ standard extensions are allowed.")
+
 # cmake helpers
 include(cmake_utils)
 
@@ -229,7 +233,6 @@ add_subdirectory("\${ZSERIO_RELEASE}/runtime_libs/cpp" ZserioCppRuntime)
 
 file(GLOB_RECURSE SOURCES "gen/*.cpp" "gen/*.h")
 add_library(\${PROJECT_NAME} \${SOURCES})
-set_target_properties(\${PROJECT_NAME} PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS NO)
 target_include_directories(\${PROJECT_NAME} PUBLIC "\${CMAKE_CURRENT_SOURCE_DIR}/gen")
 target_link_libraries(\${PROJECT_NAME} ZserioCppRuntime)${SQLITE_USE}
 

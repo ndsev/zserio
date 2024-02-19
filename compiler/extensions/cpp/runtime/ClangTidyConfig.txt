@@ -91,7 +91,6 @@ Checks: "-*,\
   misc-throw-by-value-catch-by-reference,\
   misc-unconventional-assign-operator,\
   misc-unused-parameters,\
-  modernize-avoid-bind,\
   modernize-deprecated-headers,\
   modernize-deprecated-ios-base-aliases,\
   modernize-loop-convert,\

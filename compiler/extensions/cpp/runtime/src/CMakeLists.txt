@@ -17,6 +17,10 @@ cmake_minimum_required(VERSION 3.15.0)
 
 project(ZserioCppRuntime)
 
+if ("${CMAKE_CXX_STANDARD}" STREQUAL "98")
+  message(FATAL_ERROR "C++98 standard is not supported, please set CMAKE_CXX_STANDARD at least to C++11!")
+endif ()
+
 set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/pmr/AnyHolder.h
     zserio/pmr/ArrayTraits.h
@@ -111,5 +115,4 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
 
 add_library(${PROJECT_NAME} STATIC ${ZSERIO_CPP_RUNTIME_LIB_SRCS})
 
-set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS NO)
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

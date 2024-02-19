@@ -21,6 +21,10 @@ set(ZSERIO_RELEASE_ROOT "${ZSERIO_PROJECT_ROOT}/distr" CACHE PATH "Root director
 set(ZSERIO_USE_BUNDLE ON CACHE BOOL "Generate code using zserio.jar instead of core+cpp.jar directly.")
 set(ZSERIO_TEST_SUITES "**" CACHE STRING "List of test suites to run. Default is '**'.")
 
+set(CMAKE_CXX_STANDARD 11 CACHE STRING "The C++ standard to use.")
+set(CMAKE_CXX_STANDARD_REQUIRED ON CACHE BOOL "Whether C++ standard is required.")
+set(CMAKE_CXX_EXTENSIONS OFF CACHE BOOL "Whether compiler specific C++ standard extensions are allowed.")
+
 # cmake helpers
 set(CMAKE_MODULE_PATH ${ZSERIO_PROJECT_ROOT}/cmake)
 
@@ -32,7 +36,6 @@ include(cppcheck_utils)
 
 # setup compiler
 include(compiler_utils)
-set(CMAKE_CXX_STANDARD 11)
 compiler_set_pthread()
 compiler_set_static_clibs()
 

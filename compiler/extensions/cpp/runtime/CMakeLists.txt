@@ -24,6 +24,10 @@ set(ZSERIO_CODE_COVERAGE_ENABLE OFF CACHE BOOL "Enable unit test code coverage c
 set(ZSERIO_CODE_COVERAGE_FAIL_ON_INCOMPLETE ON CACHE BOOL
     "Fail build if line coverage is not below this threshold.")
 
+set(CMAKE_CXX_STANDARD 11 CACHE STRING "The C++ standard to use.")
+set(CMAKE_CXX_STANDARD_REQUIRED ON CACHE BOOL "Whether C++ standard is required.")
+set(CMAKE_CXX_EXTENSIONS OFF CACHE BOOL "Whether compiler specific C++ standard extensions are allowed.")
+
 # cmake helpers
 include(cmake_utils)
 
