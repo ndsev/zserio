@@ -7,17 +7,17 @@ add_definitions(-D_SCL_SECURE_NO_WARNINGS)
 
 add_definitions(-DNOMINMAX)
 
-# needed by GRPC
-add_definitions(-D_WIN32_WINNT=0x600)
-add_definitions(-D_WINSOCK_DEPRECATED_NO_WARNINGS)
-
 # set /EHsc
 set(COMPILER_EXCEPTION_FLAG "/EHsc")
 
+# set parallel compilation
+set(PROCESS_MAX "$ENV{MSVC_PROCESS_MAX}")
+set(COMPILER_MP_FLAG "/MP${PROCESS_MAX}")
+
 # set C flags
 set(CMAKE_C_FLAGS
-    "${CMAKE_C_FLAGS} ${COMPILER_EXCEPTION_FLAG}" CACHE STRING "C flags")
+    "${CMAKE_C_FLAGS} ${COMPILER_EXCEPTION_FLAG} ${COMPILER_MP_FLAG}" CACHE STRING "C flags")
 
 # set CXX flags
 set(CMAKE_CXX_FLAGS
-    "${CMAKE_CXX_FLAGS} ${COMPILER_EXCEPTION_FLAG}" CACHE STRING "C++ flags")
+    "${CMAKE_CXX_FLAGS} ${COMPILER_EXCEPTION_FLAG} ${COMPILER_MP_FLAG}" CACHE STRING "C++ flags")
