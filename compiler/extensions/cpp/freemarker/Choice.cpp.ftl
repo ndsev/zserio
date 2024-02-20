@@ -639,32 +639,6 @@ void ${name}::write(${name}::ZserioPackingContext&<#if uses_packing_context(fiel
 <#if fieldList?has_content>
 
 <@inner_classes_definition name, fieldList/>
-<#-- macro choice_read_member member packed indent>
-    <#local I>${""?left_pad(indent * 4)}</#local>
-    <#if member.compoundField??>
-        <#if needs_field_read_local_variable(member.compoundField)>
-${I}{
-        <@compound_read_field member.compoundField, name, indent+1, packed/>
-${I}}
-        <#else>
-    <@compound_read_field member.compoundField, name, indent, packed/>
-        </#if>
-    <#else>
-${I}return ${types.anyHolder.name}(allocator);
-    </#if>
-</#macro>
-/*${types.anyHolder.name} ${name}::readObject(::zserio::BitStreamReader& in, const allocator_type& allocator)
-{
-    <@choice_switch "choice_read_member", "choice_no_match", selectorExpression, 1/>
-}*/
-<#if isPackable && usedInPackedArray>
-
-/*${types.anyHolder.name} ${name}::readObject(${name}::ZserioPackingContext&<#if uses_packing_context(fieldList)> context</#if>,
-        ::zserio::BitStreamReader& in, const allocator_type& allocator)
-{
-    <@choice_switch "choice_read_member", "choice_no_match", selectorExpression, 1, true/>
-}*/
-</#if-->
 
 <#macro choice_copy_object member packed indent>
     <#local I>${""?left_pad(indent * 4)}</#local>

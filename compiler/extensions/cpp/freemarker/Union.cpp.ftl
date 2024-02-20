@@ -779,62 +779,6 @@ void ${name}::write(${name}::ZserioPackingContext& context, ::zserio::BitStreamW
 <#if fieldList?has_content>
 
 <@inner_classes_definition name, fieldList/>
-/*${name}::ChoiceTag ${name}::readChoiceTag(::zserio::BitStreamReader& in)
-{
-    return static_cast<${name}::ChoiceTag>(static_cast<int32_t>(in.readVarSize()));
-}*/
-<#if isPackable && usedInPackedArray>
-
-/*${name}::ChoiceTag ${name}::readChoiceTag(${name}::ZserioPackingContext& context, ::zserio::BitStreamReader& in)
-{
-    return static_cast<${name}::ChoiceTag>(static_cast<int32_t>(context.getChoiceTag().read<${choiceTagArrayTraits}>(in)));
-}*/
-</#if>
-
-#if 0
-${types.anyHolder.name} ${name}::readObject(::zserio::BitStreamReader& in, const allocator_type& allocator)
-{
-    switch (m_choiceTag)
-    {
-        <#list fieldList as field>
-    case <@choice_tag_name field/>:
-            <#if needs_field_read_local_variable(field)>
-        {
-            <@compound_read_field field, name, 3/>
-        }
-            <#else>
-        <@compound_read_field field, name, 2/>
-            </#if>
-        </#list>
-    default:
-        throw ::zserio::CppRuntimeException("No match in union ${name}!");
-    }
-}
-#endif
-<#if isPackable && usedInPackedArray>
-
-#if 0
-${types.anyHolder.name} ${name}::readObject(${name}::ZserioPackingContext&<#if uses_packing_context(fieldList)> context</#if>,
-        ::zserio::BitStreamReader& in, const allocator_type& allocator)
-{
-    switch (m_choiceTag)
-    {
-    <#list fieldList as field>
-    case <@choice_tag_name field/>:
-        <#if needs_field_read_local_variable(field)>
-        {
-            <@compound_read_field field, name, 3, true/>
-        }
-        <#else>
-        <@compound_read_field field, name, 2, true/>
-        </#if>
-    </#list>
-    default:
-        throw ::zserio::CppRuntimeException("No match in union ${name}!");
-    }
-}
-#endif
-</#if>
 
 ${types.anyHolder.name} ${name}::copyObject(const allocator_type& allocator) const
 {

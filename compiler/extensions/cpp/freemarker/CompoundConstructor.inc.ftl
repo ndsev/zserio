@@ -108,12 +108,6 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 const allocator_type& allocator<#rt>
 ) :
         ${compoundConstructorsData.compoundName}(::zserio::NoInit, allocator)
-    <#-- #if memberInitializationMacroName != "">
-        <#if (num_extended_fields(compoundConstructorsData.fieldList) > 0)>
-        m_numExtendedFields(0),
-        </#if>
-        <@.vars[memberInitializationMacroName] packed/>
-    </#if-->
 {
     read(<#if packed>context, </#if>in<#if parameterArgs(false)?has_content>, ${parameterArgs(false)}</#if>, allocator);
 }

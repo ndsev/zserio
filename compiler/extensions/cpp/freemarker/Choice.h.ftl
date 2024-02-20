@@ -356,11 +356,6 @@ public:
 private:
     <@private_section_declarations name, fieldList/>
 <#if fieldList?has_content>
-    //${types.anyHolder.name} readObject(::zserio::BitStreamReader& in, const allocator_type& allocator);
-    <#if isPackable && usedInPackedArray>
-    /*${types.anyHolder.name} readObject(ZserioPackingContext& context, ::zserio::BitStreamReader& in,
-            const allocator_type& allocator);*/
-    </#if>
     ${types.anyHolder.name} copyObject(const allocator_type& allocator) const;
 
 </#if>

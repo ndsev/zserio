@@ -406,25 +406,6 @@ public:
 
 private:
     <@private_section_declarations name, fieldList/>
-<#list fieldList as field>
-    /*<@field_member_type_name field/> ${field.readerName}(::zserio::BitStreamReader& in<#rt>
-    <#if field.needsAllocator || field.holderNeedsAllocator>
-            <#lt>,
-            const allocator_type& allocator<#rt>
-    </#if>
-    <#lt>);*/
-    <#if field.isPackable && usedInPackedArray>
-    /*<@field_member_type_name field/> ${field.readerName}(ZserioPackingContext& context,
-            ::zserio::BitStreamReader& in<#rt>
-        <#if field.needsAllocator || field.holderNeedsAllocator>
-            , const allocator_type& allocator<#t>
-        </#if>
-            <#lt>);*/
-    </#if>
-    <#if !field?has_next>
-
-    </#if>
-</#list>
     <@compound_parameter_members compoundParametersData/>
     <@compound_constructor_members compoundConstructorsData/>
 <#if (numExtendedFields > 0)>
