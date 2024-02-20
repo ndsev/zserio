@@ -57,189 +57,6 @@
 <@compound_read_constructor_definition compoundConstructorsData, "read_constructor_field_initialization", true/>
 </#if>
 
-<#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
-${name}::${name}(const ${name}& other) :
-        m_choiceTag(other.m_choiceTag)<#rt>
-    <#if fieldList?has_content>
-        <#lt>,
-        <#list fieldList as field>
-        <@compound_copy_constructor_initializer_field field, field?has_next, 2/>
-            <#if field.usesAnyHolder>
-                <#break>
-            </#if>
-        </#list>
-    <#else>
-
-    </#if>
-{
-    <@compound_copy_initialization compoundConstructorsData/>
-}
-
-${name}& ${name}::operator=(const ${name}& other)
-{
-    m_choiceTag = other.m_choiceTag;
-    <#list fieldList as field>
-    <@compound_assignment_field field, 1/>
-        <#if field.usesAnyHolder>
-            <#break>
-        </#if>
-    </#list>
-    <@compound_copy_initialization compoundConstructorsData/>
-
-    return *this;
-}
-
-${name}::${name}(${name}&& other) :
-        m_choiceTag(other.m_choiceTag)<#rt>
-    <#if fieldList?has_content>
-        <#lt>,
-        <#list fieldList as field>
-        <@compound_move_constructor_initializer_field field, field?has_next, 2/>
-            <#if field.usesAnyHolder>
-                <#break>
-            </#if>
-        </#list>
-    <#else>
-
-    </#if>
-{
-    <@compound_copy_initialization compoundConstructorsData/>
-}
-
-${name}& ${name}::operator=(${name}&& other)
-{
-    m_choiceTag = other.m_choiceTag;
-    <#list fieldList as field>
-    <@compound_move_assignment_field field, 1/>
-        <#if field.usesAnyHolder>
-            <#break>
-        </#if>
-    </#list>
-    <@compound_copy_initialization compoundConstructorsData/>
-
-    return *this;
-}
-
-</#if>
-<#if needs_compound_initialization(compoundConstructorsData)>
-${name}::${name}(::zserio::NoInitT, const ${name}& other) :
-    <#if needs_compound_initialization(compoundConstructorsData)>
-        m_isInitialized(false),
-    <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
-        m_areChildrenInitialized(false),
-    </#if>
-        m_choiceTag(other.m_choiceTag)<#rt>
-    <#if fieldList?has_content>
-        <#lt>,
-        <#list fieldList as field>
-        <@compound_copy_constructor_initializer_field field, field?has_next, 2/>
-            <#if field.usesAnyHolder>
-                <#break>
-            </#if>
-        </#list>
-    <#else>
-
-    </#if>
-{
-}
-
-${name}& ${name}::assign(::zserio::NoInitT, const ${name}& other)
-{
-    <#if needs_compound_initialization(compoundConstructorsData)>
-    m_isInitialized = false;
-    <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
-    m_areChildrenInitialized = false;
-    </#if>
-    m_choiceTag = other.m_choiceTag;
-    <#list fieldList as field>
-    <@compound_assignment_field field, 1/>
-        <#if field.usesAnyHolder>
-            <#break>
-        </#if>
-    </#list>
-
-    return *this;
-}
-
-${name}::${name}(::zserio::NoInitT, ${name}&& other) :
-    <#if needs_compound_initialization(compoundConstructorsData)>
-        m_isInitialized(false),
-    <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
-        m_areChildrenInitialized(false),
-    </#if>
-        m_choiceTag(other.m_choiceTag)<#rt>
-    <#if fieldList?has_content>
-        <#lt>,
-        <#list fieldList as field>
-        <@compound_move_constructor_initializer_field field, field?has_next, 2/>
-            <#if field.usesAnyHolder>
-                <#break>
-            </#if>
-        </#list>
-    <#else>
-
-    </#if>
-{
-}
-
-${name}& ${name}::assign(::zserio::NoInitT, ${name}&& other)
-{
-    m_choiceTag = other.m_choiceTag;
-    <#if needs_compound_initialization(compoundConstructorsData)>
-    m_isInitialized = false;
-    <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
-    m_areChildrenInitialized = false;
-    </#if>
-    <#list fieldList as field>
-    <@compound_move_assignment_field field, 1/>
-        <#if field.usesAnyHolder>
-            <#break>
-        </#if>
-    </#list>
-
-    return *this;
-}
-
-</#if>
-${name}::${name}(::zserio::PropagateAllocatorT,
-        const ${name}& other, const allocator_type&<#rt>
-        <#lt><#if fieldList?has_content> allocator</#if>) :
-        m_choiceTag(other.m_choiceTag)<#rt>
-    <#if fieldList?has_content>
-        <#lt>,
-        <#list fieldList as field>
-        <@compound_allocator_propagating_copy_constructor_initializer_field field, field?has_next, 2/>
-            <#if field.usesAnyHolder>
-                <#break>
-            </#if>
-        </#list>
-    <#else>
-
-    </#if>
-{
-    <@compound_copy_initialization compoundConstructorsData/>
-}
-
-<#if needs_compound_initialization(compoundConstructorsData)>
-
-${name}::${name}(::zserio::PropagateAllocatorT, ::zserio::NoInitT,
-        const ${name}& other, const allocator_type&<#rt>
-        <#lt><#if fieldList?has_content> allocator</#if>) :
-        m_choiceTag(other.m_choiceTag)<#rt>
-    <#if fieldList?has_content>
-        <#lt>,
-        <#list fieldList as field>
-        <@compound_allocator_propagating_copy_constructor_initializer_field field, field?has_next, 2/>
-            <#if field.usesAnyHolder>
-                <#break>
-            </#if>
-        </#list>
-    <#else>
-
-    </#if>
-{
-}
-</#if>
 <#if withTypeInfoCode>
 const ${types.typeInfo.name}& ${name}::typeInfo()
 {
@@ -412,20 +229,29 @@ void ${name}::initializeChildren()
         throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
     </#if>
-    <@compound_initialize_children_epilog_definition compoundConstructorsData/>
 }
 
 </#if>
 <@compound_parameter_accessors_definition name, compoundParametersData/>
 <#list fieldList as field>
     <#if needs_field_getter(field)>
-<@field_raw_cpp_type_name field/>& ${name}::${field.getterName}()
+        <#if field.usesSharedPointer>
+<@field_raw_cpp_type_name field/> <#rt>
+        <#else>
+<@field_raw_cpp_type_name field/>& <#rt>
+        </#if>
+${name}::${field.getterName}()
 {
     return m_objectChoice.get<<@field_cpp_type_name field/>>()<#if field.array??>.getRawArray()</#if>;
 }
 
     </#if>
-<@field_raw_cpp_argument_type_name field/> ${name}::${field.getterName}() const
+        <#if field.usesSharedPointer>
+<@field_raw_cpp_type_name field/> <#rt>
+        <#else>
+<@field_raw_cpp_argument_type_name field/> <#rt>
+        </#if>
+${name}::${field.getterName}() const
 {
     return m_objectChoice.get<<@field_cpp_type_name field/>>()<#if field.array??>.getRawArray()</#if>;
 }
@@ -697,13 +523,13 @@ ${name}::ChoiceTag ${name}::readChoiceTag(::zserio::BitStreamReader& in)
 {
     return static_cast<${name}::ChoiceTag>(static_cast<int32_t>(in.readVarSize()));
 }
-<#if isPackable && usedInPackedArray>
+    <#if isPackable && usedInPackedArray>
 
 ${name}::ChoiceTag ${name}::readChoiceTag(${name}::ZserioPackingContext& context, ::zserio::BitStreamReader& in)
 {
     return static_cast<${name}::ChoiceTag>(static_cast<int32_t>(context.getChoiceTag().read<${choiceTagArrayTraits}>(in)));
 }
-</#if>
+    </#if>
 
 ${types.anyHolder.name} ${name}::readObject(::zserio::BitStreamReader& in, const allocator_type& allocator)
 {
@@ -723,7 +549,7 @@ ${types.anyHolder.name} ${name}::readObject(::zserio::BitStreamReader& in, const
         throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
 }
-<#if isPackable && usedInPackedArray>
+    <#if isPackable && usedInPackedArray>
 
 ${types.anyHolder.name} ${name}::readObject(${name}::ZserioPackingContext&<#if uses_packing_context(fieldList)> context</#if>,
         ::zserio::BitStreamReader& in, const allocator_type& allocator)
@@ -744,19 +570,6 @@ ${types.anyHolder.name} ${name}::readObject(${name}::ZserioPackingContext&<#if u
         throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
 }
-</#if>
-
-${types.anyHolder.name} ${name}::copyObject(const allocator_type& allocator) const
-{
-    switch (m_choiceTag)
-    {
-        <#list fieldList as field>
-    case <@choice_tag_name field/>:
-        return ::zserio::allocatorPropagatingCopy<<@field_cpp_type_name field/>>(m_objectChoice, allocator);
-        </#list>
-    default:
-        return ${types.anyHolder.name}(allocator);
-    }
-}
+    </#if>
 </#if>
 <@namespace_end package.path/>
